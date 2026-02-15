@@ -20,6 +20,7 @@ from .experts.decoder import DecoderExpert
 from .experts.verifier import VerifierExpert
 from .rules import OFFICIAL_PLATFORMS
 from .experts.critic import CriticExpert
+from .experts.synthesizer import SynthesizerExpert
 from .experts.arbiter import ArbiterExpert
 from .models import PostInput, PickvelOutputItemV2, NovelIdentity, DetectedTitle, SentimentProfile, PickvelIdentity, PickvelAnalysis
 from .rules import NOISE_TERMS, NOVEL_SITES, SLANG_DICTIONARY, TROPE_TERMS
@@ -67,6 +68,7 @@ class AgenticPipeline:
             ExpertType.DECODER: DecoderExpert(self.llm),
             ExpertType.VERIFIER: VerifierExpert(self.llm),
             ExpertType.CRITIC: CriticExpert(self.llm),
+            ExpertType.SYNTHESIZER: SynthesizerExpert(self.llm),
             ExpertType.ARBITER: ArbiterExpert(self.llm),
         }
         
@@ -251,7 +253,14 @@ class AgenticPipeline:
             )
             return
 
-        if (not decoder_grounded) or (anchor_found in ("search_only", "none")):
+        # 🆕 session_knowledge 저장 조건 완화:
+        # character_mention 앵커가 있으면, 캐릭터가 검색에서 작품과 연결 검증됐을 가능성이 높으므로 저장 허용
+        # 또한 제목에 key_term이 있고 그 key_term이 약칭으로 해석된 경우도 허용
+        _has_character_anchor = anchor_found == "character_mention"
+        _has_title_anchor = anchor_found == "title_mention"
+        _anchor_is_useful = _has_character_anchor or _has_title_anchor
+
+        if (not decoder_grounded) and (not _anchor_is_useful):
             print(
                 f"[{_ts()}] session_knowledge skip (weak grounding: "
                 f"anchor={anchor_found}, decoder_grounded={decoder_grounded}): "
@@ -259,6 +268,13 @@ class AgenticPipeline:
                 file=sys.stderr,
             )
             return
+
+        if _anchor_is_useful and not decoder_grounded:
+            print(
+                f"[{_ts()}] session_knowledge accepted (anchor={anchor_found} despite "
+                f"decoder_grounded=False): '{official_title}' ({confidence})",
+                file=sys.stderr,
+            )
 
         decoder_out = ctx.get_expert_output(ExpertType.DECODER) or {}
         decoded_terms = decoder_out.get("decoded_terms", [])
@@ -576,6 +592,34 @@ class AgenticPipeline:
                 and bool(official_title)
                 and discussion_type in always_irrelevant_types
             )
+            
+            # 🆕 author_talk + is_author_criticism + 다중 작품 예시 → rescue 차단
+            # 작가 품평/비교 글에서 여러 작품을 예시로 꺼낸 경우,
+            # 특정 단일 작품에 매칭하면 FP 발생
+            if _rescue_irrelevant_with_evidence and discussion_type == "author_talk":
+                _vf_is_author_criticism = False
+                _vf_check = verifier_out.get("verification_result", {}) if verifier_out else {}
+                _vf_author_info = _vf_check.get("author_info") or {}
+                if isinstance(_vf_author_info, dict):
+                    _vf_is_author_criticism = bool(_vf_author_info.get("is_author_criticism"))
+                
+                # Decoder가 2개 이상 고유 작품을 식별했는지 확인
+                _decoder_titles = set()
+                _dec_check = ctx.get_expert_output(ExpertType.DECODER) or {} if ctx else {}
+                for _dt_at in _dec_check.get("decoded_terms", []):
+                    _bm_at = _dt_at.get("best_match") or {}
+                    _t_at = _bm_at.get("title")
+                    if _t_at and str(_bm_at.get("confidence", "")).lower() not in ("none",):
+                        _decoder_titles.add(_t_at)
+                
+                if _vf_is_author_criticism and len(_decoder_titles) >= 2:
+                    _rescue_irrelevant_with_evidence = False
+                    print(
+                        f"[{_ts()}] 🛡️ author_talk rescue 차단: "
+                        f"is_author_criticism=True + 다중 작품({len(_decoder_titles)}건) "
+                        f"→ 작가 품평 글에서 예시 작품 매칭 방지",
+                        file=sys.stderr,
+                    )
             recover_work_type_from_banter = (
                 discussion_type == "community_banter"
                 and _title_deliberately_null
@@ -626,6 +670,100 @@ class AgenticPipeline:
                 file=sys.stderr,
             )
             discussion_type = "noise"
+        
+        # ━━ 개선: relevant=true 코드 레벨 하드 게이트 ━━
+        # 조건: "고유 앵커 1개 이상 + 본문 근거 1개 이상"이 없으면 relevant=false 강제
+        # 현재 anchor/body_evidence가 프롬프트 수준 지시에만 있었던 것을 코드 레벨로 승격
+        if is_relevant and official_title:
+            _anchor_types_strong = {
+                "title_mention", "author_mention", "character_title_link",
+                "character_mention", "plot_mention",
+            }
+            _has_strong_anchor = vf_anchor in _anchor_types_strong
+            _vf_decoder_grounded = vf_grounding.get("decoder_grounded", True)
+            _body_evidence = vf_grounding.get("body_evidence", "")
+            
+            # 본문 증거 없음: anchor가 search_only/none이고 decoder_grounded도 false
+            _no_body_evidence = (
+                not _has_strong_anchor
+                and not _vf_decoder_grounded
+                and _body_evidence in ("none", "", None)
+            )
+            
+            # title_body_consistency 하드 블록 (기존 warning → 차단 승격)
+            _is_association = getattr(ctx, "is_association_post", False)
+            _discourse_warn = getattr(ctx, "discourse_warning", "") or ""
+            _association_block = _is_association and "title_body_mismatch" in _discourse_warn
+            
+            if _no_body_evidence or _association_block:
+                _block_reason = "본문 앵커 부재" if _no_body_evidence else "제목-본문 불일치(연상글)"
+                # 강한 suspected_title이나 작가 증거가 있으면 예외
+                _rescue = has_strong_suspected_title and has_work_anchor
+                
+                # 🆕 Decoder grounding 기반 추가 rescue:
+                # Verifier가 anchor='none'이라 해도, Decoder가 title_mention 앵커를
+                # 보고했고 high-confidence best_match가 있으면 rescue
+                if not _rescue and has_strong_suspected_title:
+                    _dec_out_hg = ctx.get_expert_output(ExpertType.DECODER) or {}
+                    for _dt_hg in _dec_out_hg.get("decoded_terms", []):
+                        _bm_hg = _dt_hg.get("best_match") or {}
+                        _gr_hg = _dt_hg.get("grounding") or {}
+                        _anchor_hg = str(_gr_hg.get("anchor_type") or "").lower()
+                        _conf_hg = str(_bm_hg.get("confidence") or "").lower()
+                        if _anchor_hg in ("title_mention", "character_title_link") and _conf_hg in ("high", "max"):
+                            _rescue = True
+                            print(
+                                f"[{_ts()}] 🔄 Decoder title_mention rescue: "
+                                f"'{_dt_hg.get('original')}' → '{_bm_hg.get('title')}' "
+                                f"(anchor={_anchor_hg}, conf={_conf_hg})",
+                                file=sys.stderr,
+                            )
+                            break
+                
+                # 🆕 캐릭터-작품 검색 검증 완료 시 하드 게이트 rescue
+                if not _rescue and getattr(ctx, 'verified_character_work_links', []):
+                    _rescue = True
+                    _vcwl_t = [v.get("title", "") for v in ctx.verified_character_work_links]
+                    print(
+                        f"[{_ts()}] 🔄 캐릭터-작품 검증 rescue: "
+                        f"verified_character_work_links={_vcwl_t}",
+                        file=sys.stderr,
+                    )
+                
+                if not _rescue:
+                    print(
+                        f"[{_ts()}] 🚫 하드 게이트 발동: is_relevant=true→false "
+                        f"({_block_reason}, anchor='{vf_anchor}', "
+                        f"grounded={_vf_decoder_grounded}, association={_is_association})",
+                        file=sys.stderr,
+                    )
+                    is_relevant = False
+                    confidence = "None"
+                    discussion_type = "noise"
+                else:
+                    print(
+                        f"[{_ts()}] ⚠️ 하드 게이트 면제: {_block_reason}이지만 "
+                        f"suspected_title='{strong_suspected_title}' + work_anchor 존재",
+                        file=sys.stderr,
+                    )
+        
+        # ━━ 개선: 일반어 패턴 부정 신호 (하드코딩 대신 패턴 기반) ━━
+        # 고유명사/앵커가 없고, 매칭된 키워드가 일반어인 경우 → FP 의심
+        if is_relevant and official_title and not has_work_anchor:
+            _general_word_signal = self._check_general_word_signal(
+                official_title, ctx, vf_grounding
+            )
+            if _general_word_signal:
+                print(
+                    f"[{_ts()}] 🚫 일반어 부정 신호: '{official_title}' → "
+                    f"고유 앵커 없이 일반어 패턴만으로 매칭됨 → confidence 하향",
+                    file=sys.stderr,
+                )
+                if confidence in ("High", "Max"):
+                    confidence = "Low"
+                if not has_strong_suspected_title:
+                    is_relevant = False
+                    discussion_type = "noise"
         
         # Confidence normalization
         confidence = self._normalize_confidence(confidence)
@@ -720,6 +858,9 @@ class AgenticPipeline:
             reason=reason if reason else None,
         )
         
+        # Notes 수집 (Decoder/Arbiter의 notes 전달)
+        analysis_notes = self._collect_notes(ctx)
+        
         # PickvelAnalysis output
         analysis = None
         if detected_titles or metadata.get("micro_tags"):
@@ -728,6 +869,7 @@ class AgenticPipeline:
                 micro_tags=metadata.get("micro_tags", []),
                 sentiment_profile=sentiment_profile,
                 is_nsfw=bool(metadata.get("is_nsfw") or False),
+                notes=analysis_notes,
             )
         
         return PickvelOutputItemV2(
@@ -820,6 +962,20 @@ class AgenticPipeline:
         identified_title = self._get_identified_title(ctx)
         url_norm = url.split("?")[0].rstrip("/").lower()
 
+        # 🆕 URL-제목 교차검증: URL 경로에 다른 작품명이 들어있으면 거절
+        if identified_title and self._url_title_mismatch(url, identified_title):
+            print(
+                f"[{_ts()}] ⚠️ heretic_url 제목 불일치 감지: "
+                f"URL 경로에 다른 작품명 → 거절 (title='{identified_title}')",
+                file=sys.stderr,
+            )
+            # 불일치 URL은 거절하고, 검색에서 올바른 URL 탐색
+            if identified_title:
+                matched_url = self._find_title_matched_official_url(identified_title, search_results)
+                if matched_url:
+                    return matched_url
+            return None
+
         for sr in search_results:
             sr_url = (sr.get("url") or "").split("?")[0].rstrip("/").lower()
             if not sr_url:
@@ -831,6 +987,9 @@ class AgenticPipeline:
 
         for expert_url in self._collect_expert_urls(ctx):
             eu_norm = expert_url.split("?")[0].rstrip("/").lower()
+            # 🆕 대체 URL도 제목 교차검증
+            if identified_title and self._url_title_mismatch(expert_url, identified_title):
+                continue
             for sr in search_results:
                 sr_url = (sr.get("url") or "").split("?")[0].rstrip("/").lower()
                 if not sr_url:
@@ -845,6 +1004,53 @@ class AgenticPipeline:
                 return matched_url
 
         return None
+
+    @staticmethod
+    def _url_title_mismatch(url: str, identified_title: str) -> bool:
+        """URL 경로에 포함된 작품명이 identified_title과 다른지 확인.
+        
+        나무위키 등 위키 URL은 경로에 작품명이 인코딩되어 있으므로,
+        URL을 디코딩하여 identified_title과 비교한다.
+        
+        예: URL = namu.wiki/w/즉사기 들고 게임 속으로
+            title = 즉사기 들고 무림에 떨어지다
+            → 경로의 "즉사기 들고 게임 속으로" ≠ title → mismatch!
+        """
+        import urllib.parse as _urlparse
+        try:
+            parsed = _urlparse.urlparse(url)
+            path_decoded = _urlparse.unquote(parsed.path)
+        except Exception:
+            return False
+        
+        # 나무위키: /w/작품명
+        if "namu.wiki" in url:
+            # /w/ 뒤가 작품명
+            if "/w/" in path_decoded:
+                url_title = path_decoded.split("/w/", 1)[1].strip()
+                url_title_norm = url_title.replace(" ", "")
+                id_title_norm = identified_title.replace(" ", "")
+                # 완전히 같으면 OK
+                if url_title_norm == id_title_norm:
+                    return False
+                # 한쪽이 다른쪽을 포함하면 OK (하위문서 등)
+                if id_title_norm in url_title_norm:
+                    return False
+                # 3글자 이상 공유 접두사 + 나머지가 다르면 mismatch
+                # ("즉사기 들고 게임 속으로" vs "즉사기 들고 무림에 떨어지다")
+                common_prefix_len = 0
+                for a, b in zip(url_title_norm, id_title_norm):
+                    if a == b:
+                        common_prefix_len += 1
+                    else:
+                        break
+                if common_prefix_len >= 3 and url_title_norm != id_title_norm:
+                    return True  # 접두사는 같지만 나머지가 다름 → mismatch
+                # 접두사 공유 없으면 → 전혀 다른 작품이므로 mismatch
+                if common_prefix_len < 2:
+                    return True
+        
+        return False
 
     def _is_sr_related_to_title(self, sr: dict, title: Optional[str]) -> bool:
         if not title:
@@ -997,11 +1203,89 @@ class AgenticPipeline:
         return title
 
     @staticmethod
+    def _collect_notes(ctx) -> Optional[str]:
+        """Decoder/Arbiter의 notes를 수집하여 줄바꿈 포맷팅된 문자열로 반환."""
+        import re as _re_notes
+        
+        notes_parts: list[str] = []
+        
+        # 1순위: Arbiter notes
+        arbiter_out = ctx.get_expert_output(ExpertType.ARBITER) or {}
+        arb_notes = arbiter_out.get("notes")
+        if arb_notes and isinstance(arb_notes, str) and arb_notes.strip():
+            notes_parts.append(arb_notes.strip())
+        
+        # 2순위: Decoder notes (Arbiter가 없을 때만)
+        if not notes_parts:
+            decoder_out = ctx.get_expert_output(ExpertType.DECODER) or {}
+            dec_notes = decoder_out.get("notes")
+            if dec_notes and isinstance(dec_notes, str) and dec_notes.strip():
+                notes_parts.append(dec_notes.strip())
+        
+        if not notes_parts:
+            return None
+        
+        combined = "\n".join(notes_parts)
+        
+        # 번호 목록 줄바꿈 포맷팅: "1. ... 2. ... 3. ..." → 각각 줄바꿈
+        # 이미 \n이 있으면 그대로, 없으면 "숫자. " 앞에 줄바꿈 삽입
+        combined = _re_notes.sub(r'(?<!\n)\s*(\d+\.\s)', r'\n\1', combined)
+        # 맨 앞 불필요한 줄바꿈 제거
+        combined = combined.lstrip("\n")
+        # Markdown bold (**...**) 제거 (JSON 출력용)
+        combined = combined.replace("**", "")
+        
+        return combined if combined.strip() else None
+
+    @staticmethod
     def _is_similar_title(title_a: str, title_b: str) -> bool:
         if abs(len(title_a) - len(title_b)) > 4:
             return False
         from difflib import SequenceMatcher
         return SequenceMatcher(None, title_a, title_b).ratio() >= 0.80
+
+    @staticmethod
+    def _check_general_word_signal(
+        official_title: str,
+        ctx: "ConversationContext",
+        vf_grounding: dict,
+    ) -> bool:
+        """
+        일반어 패턴 부정 신호 검사.
+        
+        고유명사/앵커가 없이 일반어(욕설, 일상어, 플랫폼명)만으로 매칭된 경우 True 반환.
+        하드코딩 단어 목록이 아닌, 구조적 패턴으로 판별:
+        1. anchor가 없고
+        2. decoder_grounded=false이고
+        3. 본문에 작품 고유 정보(캐릭터명, 줄거리 키워드)가 없으면
+        → 일반어로 우연히 매칭된 것으로 판정
+        """
+        from .rules import GENRE_ARCHETYPE_TERMS, PLATFORM_ABBREVIATIONS
+        
+        # 제목이 장르 아키타입 용어 자체이면 → 작품이 아닌 장르 언급
+        title_norm = official_title.replace(" ", "")
+        for archetype in GENRE_ARCHETYPE_TERMS:
+            if title_norm == archetype.replace(" ", ""):
+                return True
+        
+        # 제목이 플랫폼 약칭이면 → 플랫폼 논의
+        for plat in PLATFORM_ABBREVIATIONS:
+            if title_norm == plat.replace(" ", ""):
+                return True
+        
+        # decoder_grounded=false이고 anchor도 없으면 → 고유 앵커 부재
+        decoder_grounded = vf_grounding.get("decoder_grounded", True)
+        anchor_found = str(vf_grounding.get("anchor_found", "")).lower()
+        if not decoder_grounded and anchor_found in ("search_only", "none", ""):
+            # 본문에 작품 고유 정보가 있는지 최종 체크
+            # uncertainty_sources에 본문 증거 부재가 이미 기록되어 있으면 → 일반어 신호
+            uncertainty = getattr(ctx, "uncertainty_sources", []) or []
+            body_absent = any("본문에 작품 직접 언급 없음" in u for u in uncertainty)
+            official_absent = any("공식 플랫폼 증거 없음" in u for u in uncertainty)
+            if body_absent and official_absent:
+                return True
+        
+        return False
 
     @staticmethod
     def _normalize_confidence(conf: str) -> str:

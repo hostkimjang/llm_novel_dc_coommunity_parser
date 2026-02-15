@@ -976,6 +976,39 @@ class ArbiterExpert:
             if len(ctx.uncertainty_sources) >= 3:
                 uncertainty_info += "\n→ confidence를 'low'로 하향하거나 notes에 불확실성 명시 권장"
         
+        # ━━ 개선: candidate evidence bucket 요약 + source trust 정보를 Arbiter에 전달 ━━
+        evidence_bucket_info = ""
+        if hasattr(ctx, 'candidate_evidence') and ctx.candidate_evidence:
+            evidence_bucket_info = "\n\n=== 후보별 증거 버킷 (Evidence Buckets) ===\n"
+            for cand_title, bucket in ctx.candidate_evidence.items():
+                post_count = len(bucket.get("post_spans", []))
+                search_count = len(bucket.get("search_snippets", []))
+                official_count = len(bucket.get("official_urls", []))
+                # 소스 신뢰도 가중 점수 계산
+                trust_scores = [s.get("trust_score", 0.2) for s in bucket.get("search_snippets", []) if isinstance(s, dict)]
+                avg_trust = sum(trust_scores) / len(trust_scores) if trust_scores else 0.0
+                evidence_bucket_info += (
+                    f"  [{cand_title}] 본문증거={post_count}, 검색증거={search_count}, "
+                    f"공식URL={official_count}, 평균신뢰도={avg_trust:.2f}\n"
+                )
+            evidence_bucket_info += (
+                "\n⚠️ 후보 간 증거 혼용 금지: 각 후보의 증거는 해당 후보에 대해서만 유효합니다.\n"
+                "   본문증거 0개 + 검색증거만 있는 후보는 확정 불가 (검색 결과만으로 is_relevant=true 판정 금지)\n"
+            )
+        
+        # ━━ 개선: 가설 상태머신 이력 전달 ━━
+        hypothesis_info = ""
+        if hasattr(ctx, 'hypothesis_history') and ctx.hypothesis_history:
+            invalidated = [h for h in ctx.hypothesis_history if h.get("invalidated")]
+            if invalidated:
+                hypothesis_info = "\n\n=== 가설 전환 이력 (Hypothesis History) ===\n"
+                for h in invalidated:
+                    hypothesis_info += (
+                        f"  ❌ v{h['version']} '{h['title']}' → "
+                        f"무효화됨 (by '{h.get('invalidated_by', '?')}', step {h.get('invalidated_at_step', '?')})\n"
+                    )
+                hypothesis_info += "⚠️ 가설이 전환된 경우, 이전 가설의 증거를 현재 후보에 적용하지 마세요.\n"
+        
         discourse_info = ""
         if hasattr(ctx, 'primary_domain') and ctx.primary_domain:
             discourse_info = f"\n\n=== DiscourseAnalyzer 분석 (제안 1) ===\nDomain: {ctx.primary_domain}\nIntent: {ctx.discourse_intent}"
@@ -1001,7 +1034,7 @@ class ArbiterExpert:
             cr_verdict=cr_verdict,
             key_evidence=key_evidence,
             suspected_titles=suspected_titles_str,
-        ) + expert_confidence_info + uncertainty_info + discourse_info
+        ) + expert_confidence_info + uncertainty_info + evidence_bucket_info + hypothesis_info + discourse_info
         
         # 🆕 코드레벨 약어 분석 힌트 주입 → Arbiter 최종 판정 시 참고
         if hasattr(ctx, 'code_level_hints') and ctx.code_level_hints:
@@ -1014,6 +1047,15 @@ class ArbiterExpert:
                 )
             code_hints_section += "위 코드 분석은 음절 매칭 알고리즘의 객관적 결과입니다. 높은 score(≥0.8)는 강한 증거입니다.\n"
             user_prompt += code_hints_section
+        
+        # 🆕 Synthesizer 증거 기반 재해석 결과 주입 (Critic → Synthesizer → Arbiter 흐름)
+        synthesizer_out = ctx.get_expert_output(ExpertType.SYNTHESIZER) if hasattr(ctx, 'get_expert_output') else None
+        if synthesizer_out and "error" not in synthesizer_out:
+            from .synthesizer import SynthesizerExpert
+            synth_section = SynthesizerExpert.summarize_for_arbiter(synthesizer_out)
+            if synth_section:
+                user_prompt += synth_section
+                print(f"[{_ts()}][{self.emoji}] 🔬 Synthesizer 재해석 결과 주입 완료", file=sys.stderr)
         
         try:
             result = self._call_llm(user_prompt)
@@ -1061,6 +1103,35 @@ class ArbiterExpert:
                     for st in (ctx.suspected_titles or [])
                 )
                 if _has_high_suspected:
+                    # 🆕 Verifier가 확인한 풀 제목이 있으면 suspected_titles에 주입
+                    # Arbiter LLM이 약어만 suspected에 넣고 풀 제목을 누락하는 패턴 방지
+                    # 예: Verifier가 '즉사기 들고 무림에 떨어지다'(High)를 확인했는데
+                    #     Arbiter suspected에 '즉사무림'(약어)만 있으면 풀 제목으로 교체
+                    _vf_out = ctx.expert_outputs.get("verifier") or {} if hasattr(ctx, 'expert_outputs') else {}
+                    _vf_vr = _vf_out.get("verification_result") or {}
+                    _vf_ni = _vf_vr.get("novel_identity") or {}
+                    _vf_title = _vf_ni.get("official_novel_title") or _vf_ni.get("official_title", "")
+                    _vf_conf = str(_vf_ni.get("confidence", "")).lower()
+                    _vf_url = _vf_ni.get("heretic_url", "")
+                    if _vf_title and _vf_conf in ("high", "medium") and len(_vf_title) > 4:
+                        # suspected_titles에 Verifier 확인 풀 제목 주입 (최고 우선순위)
+                        _already_in = any(
+                            st.get("title") == _vf_title
+                            for st in (ctx.suspected_titles or [])
+                            if isinstance(st, dict)
+                        )
+                        if not _already_in:
+                            ctx.suspected_titles.insert(0, {
+                                "title": _vf_title,
+                                "confidence": _vf_conf.capitalize(),
+                                "url": _vf_url,
+                                "from": "verifier_confirmed",
+                            })
+                            print(
+                                f"[{_ts()}][{self.emoji}] 🔧 Verifier 확인 풀 제목 suspected에 주입: "
+                                f"'{_vf_title}' (conf={_vf_conf}) — 약어 대신 풀 제목 우선 채택",
+                                file=sys.stderr,
+                            )
                     print(
                         f"[{_ts()}][{self.emoji}] 🔓 Arbiter null 가드 우회: "
                         f"LLM이 official_novel_title=null이지만 suspected_titles에 High 후보 존재 → 강제 적용 허용",
@@ -1121,7 +1192,23 @@ class ArbiterExpert:
                                 file=sys.stderr,
                             )
                             skip_forced_title = True
-                        else:
+                        
+                        # 🆕 연상글(is_association) + Decoder confidence none/low → 강제승격 차단
+                        # Arbiter/Decoder가 모두 작품 매칭을 거부한 연상글에서
+                        # suspected_titles만으로 강제승격하면 FP 발생
+                        if not skip_forced_title:
+                            _is_assoc = getattr(ctx, "is_association_post", False)
+                            _dec_overall_conf = str(decoder_out.get("overall_confidence", "")).lower() if decoder_out else ""
+                            if _is_assoc and _dec_overall_conf in ("none", "low", ""):
+                                print(
+                                    f"[{_ts()}][{self.emoji}] 🛡️ 연상글 강제승격 차단: "
+                                    f"is_association=True + Decoder confidence={_dec_overall_conf} "
+                                    f"→ LLM is_relevant=false 존중",
+                                    file=sys.stderr,
+                                )
+                                skip_forced_title = True
+                        
+                        if not skip_forced_title:
                             # 🛡️ 강제승격 차단 조건 (FP 방지):
                             # - Verifier grounding이 search_only/none 이면 검색 충돌 가능성이 높음
                             # - Discourse warning이 있는데 본문/댓글 강앵커(캐릭터/줄거리/작가)도 없으면 강제승격 금지
@@ -1472,6 +1559,60 @@ class ArbiterExpert:
                                     file=sys.stderr
                                 )
                     
+                    # 🆕 추가 거부권 면제: Arbiter LLM이 is_relevant=true로 판정했고,
+                    # Decoder가 high confidence로 작품을 식별한 경우
+                    # (Verifier 다중호출 시 2차 호출이 1차를 뒤집는 문제 방지)
+                    if not _veto_exempt and decision.get("is_relevant") is True:
+                        for _dt_veto in decoder_out.get("decoded_terms", []):
+                            _bm_veto = _dt_veto.get("best_match") or {}
+                            _conf_veto_str = str(_bm_veto.get("confidence") or "").lower()
+                            _gr_veto = _dt_veto.get("grounding") or {}
+                            _anchor_veto = str(_gr_veto.get("anchor_type") or "").lower()
+                            # Decoder가 high/max + title_mention 앵커 → 강한 증거
+                            if (
+                                _conf_veto_str in ("high", "max")
+                                and _anchor_veto in ("title_mention", "character_title_link")
+                            ):
+                                _veto_exempt = True
+                                print(
+                                    f"[{_ts()}][{self.emoji}] 🔄 Verifier 거부권 면제: "
+                                    f"Arbiter LLM=true + Decoder='{_bm_veto.get('title')}'"
+                                    f"(conf={_conf_veto_str}, anchor={_anchor_veto})",
+                                    file=sys.stderr,
+                                )
+                                break
+                    
+                    # 🆕 추가 거부권 면제: Decoder가 KNOWN_ABBREVIATION + 캐릭터 검색 검증 완료
+                    # (다중호출 시 마지막 결과가 덮어써도 ctx에 영구 저장된 검증 사실 활용)
+                    if not _veto_exempt and getattr(ctx, 'verified_character_work_links', []):
+                        _vcwl = ctx.verified_character_work_links
+                        _vcwl_titles = [v.get("title", "") for v in _vcwl]
+                        _veto_exempt = True
+                        # Arbiter LLM도 is_relevant=false로 판정한 경우 → 강제 복원
+                        if decision.get("is_relevant") == False:
+                            _restore_title = _vcwl_titles[0] if _vcwl_titles else None
+                            decision["is_relevant"] = True
+                            decision["is_novel_discussion"] = True
+                            if _restore_title:
+                                decision["official_title"] = _restore_title
+                                decision["official_novel_title"] = _restore_title
+                            # discussion_type 교정
+                            _dt = decision.get("discussion_type", "")
+                            _ALWAYS_IRRELEVANT_DT = {
+                                "noise", "off_topic", "meta", "community_banter",
+                                "genre_opinion", "trope_discussion", "recommendation",
+                                "image_post",
+                            }
+                            if _dt in _ALWAYS_IRRELEVANT_DT:
+                                decision["discussion_type"] = "character_talk"
+                            decision["confidence"] = "Medium"
+                            decision["final_reasoning"] = self._synthesize_evidence_reason(ctx, "캐릭터검증면제", True)
+                        print(
+                            f"[{_ts()}][{self.emoji}] 🔄 Verifier 거부권 면제 + 강제 복원: "
+                            f"캐릭터-작품 검색 검증 완료 (titles={_vcwl_titles})",
+                            file=sys.stderr,
+                        )
+                    
                     if not _veto_exempt:
                         # Verifier가 is_relevant=false로 판단했으면 거부
                         print(
@@ -1801,15 +1942,52 @@ class ArbiterExpert:
                     # novel_literature 도메인 + 작가 식별 + noise/off_topic 분류 → author_talk로 보정
                     # 단, 연상글/뻘글(is_association_post)이면 보정 차단
                     if disc_domain == "novel_literature" and current_dt in ("noise", "off_topic", "community_banter") and not _is_assoc_post:
-                        print(
-                            f"[{_ts()}][{self.emoji}] 🔧 author_talk 보정: "
-                            f"Decoder 작가 식별={detected_authors}, Discourse={disc_domain}, "
-                            f"기존 discussion_type={current_dt} → author_talk",
-                            file=sys.stderr,
+                        # 🔧 Fix E: 캐릭터 3명 이상 + Gatekeeper가 work_discussion
+                        # → 단순 author_talk이 아닌 실제 작품 토론 (작품명 미확정)
+                        gk_out = ctx.get_expert_output(ExpertType.GATEKEEPER) if ctx else None
+                        gk_post_type = ""
+                        gk_characters = []
+                        if gk_out:
+                            gk_post_type = gk_out.get("post_type", "")
+                            _gk_ent = gk_out.get("detected_entities") or {}
+                            gk_characters = _gk_ent.get("possible_characters") or []
+                        
+                        _is_work_discussion = (
+                            gk_post_type == "work_discussion"
+                            and len(gk_characters) >= 3
+                            and not is_assoc
                         )
-                        decision["discussion_type"] = "author_talk"
-                        decision["is_relevant"] = False  # 작가 토론은 is_relevant=false
+                        
+                        if _is_work_discussion:
+                            print(
+                                f"[{_ts()}][{self.emoji}] 🔧 work_discussion 승격: "
+                                f"Decoder 작가={detected_authors}, GK 캐릭터 {len(gk_characters)}명"
+                                f"({gk_characters[:3]}...), Discourse={disc_domain} "
+                                f"→ 작품 토론(제목 미확정)으로 판정",
+                                file=sys.stderr,
+                            )
+                            decision["discussion_type"] = "work_discussion"
+                            decision["is_relevant"] = True
+                            decision["confidence"] = "Medium"
+                            decision["notes"] = (
+                                f"[work_discussion 승격] 작가 {', '.join(detected_authors)}의 "
+                                f"작품 토론 감지 (캐릭터: {', '.join(gk_characters[:4])}). "
+                                + decision.get("notes", "")
+                            )
+                            if "metadata_synthesis" in result:
+                                result["metadata_synthesis"]["detected_author"] = detected_authors[0]
+                                result["metadata_synthesis"]["detected_characters"] = gk_characters[:5]
+                        else:
+                            print(
+                                f"[{_ts()}][{self.emoji}] 🔧 author_talk 보정: "
+                                f"Decoder 작가 식별={detected_authors}, Discourse={disc_domain}, "
+                                f"기존 discussion_type={current_dt} → author_talk",
+                                file=sys.stderr,
+                            )
+                            decision["discussion_type"] = "author_talk"
+                            decision["is_relevant"] = False  # 작가 토론은 is_relevant=false
                         decision["notes"] = (
+                            decision.get("notes", "") if _is_work_discussion else
                             f"[author_talk 보정] 작가 {', '.join(detected_authors)} 토론 감지. "
                             + decision.get("notes", "")
                         )
@@ -2067,6 +2245,42 @@ class ArbiterExpert:
                     f"discussion_type '{prev_dt}' → 'noise'",
                     file=sys.stderr,
                 )
+            
+            # ━━ 개선: evidence bucket 기반 최종 검증 ━━
+            # is_relevant=true인데 해당 후보의 본문 증거(post_spans)가 0개이면 경고/차단
+            _final_title_eb = decision.get("official_title") or decision.get("official_novel_title")
+            if (
+                decision.get("is_relevant") is True
+                and _final_title_eb
+                and hasattr(ctx, 'candidate_evidence')
+                and ctx.candidate_evidence
+            ):
+                _bucket = ctx.get_candidate_evidence(_final_title_eb)
+                _post_ev_count = len(_bucket.get("post_spans", []))
+                _search_ev_count = len(_bucket.get("search_snippets", []))
+                _official_ev_count = len(_bucket.get("official_urls", []))
+                
+                if _post_ev_count == 0 and _official_ev_count == 0:
+                    # 본문 증거 0 + 공식 URL 0 → 검색 결과만으로 확정됨
+                    if _search_ev_count > 0:
+                        # 검색 증거만 있음 → confidence 하향
+                        _old_conf = decision.get("confidence", "Low")
+                        if _old_conf in ("High", "high", "Max", "max"):
+                            decision["confidence"] = "Low"
+                            print(
+                                f"[{_ts()}][{self.emoji}] 📊 evidence bucket 검증: "
+                                f"'{_final_title_eb}' → 본문증거 0개, 검색만 {_search_ev_count}개 "
+                                f"→ confidence: {_old_conf}→Low (검색만으로 확정 불가)",
+                                file=sys.stderr,
+                            )
+                    else:
+                        # 증거 전혀 없음 → 환각 의심
+                        print(
+                            f"[{_ts()}][{self.emoji}] 📊 evidence bucket 검증: "
+                            f"'{_final_title_eb}' → 증거 버킷 완전 비어있음 → is_relevant 유지하되 Low",
+                            file=sys.stderr,
+                        )
+                        decision["confidence"] = "Low"
 
             metadata_synthesis = result.get("metadata_synthesis")
             if not isinstance(metadata_synthesis, dict):
@@ -2092,6 +2306,25 @@ class ArbiterExpert:
                         detected_author = candidate
                         break
 
+            # 🆕 검색 결과에서 반복 패턴 기반 작가명 추출 (Decoder/Verifier 모두 실패한 경우)
+            if not detected_author and decision.get("is_relevant"):
+                _final_title_for_author = (
+                    decision.get("official_title")
+                    or decision.get("official_novel_title")
+                    or ""
+                )
+                if _final_title_for_author:
+                    _extracted_author = self._extract_author_from_search(
+                        _final_title_for_author, ctx
+                    )
+                    if _extracted_author:
+                        detected_author = _extracted_author
+                        print(
+                            f"[{_ts()}][{self.emoji}] 🔬 검색 패턴 기반 작가명 추출: "
+                            f"'{detected_author}' (제목='{_final_title_for_author}')",
+                            file=sys.stderr,
+                        )
+
             if detected_author and not metadata_synthesis.get("detected_author"):
                 metadata_synthesis["detected_author"] = detected_author
                 print(
@@ -2106,13 +2339,18 @@ class ArbiterExpert:
             )
             if should_inject_author_reason:
                 author_evidence_sentence = (
-                    f"추가 근거: Verifier 및 검색 증거에서 '{detected_author}'가 해당 작품의 작가로 확인됨."
+                    f"추가 근거: 검색 증거에서 '{detected_author}'가 해당 작품의 작가로 확인됨."
                 )
                 reasoning_text = decision.get("final_reasoning") or decision.get("reason") or ""
                 if isinstance(reasoning_text, str):
                     reasoning_text = reasoning_text.strip()
                 else:
                     reasoning_text = ""
+                
+                # 🆕 reasoning이 비어있으면 Decoder/Verifier 정보로 풍부한 reason 생성
+                if not reasoning_text:
+                    reasoning_text = self._build_rich_reason(ctx, detected_author)
+                
                 if reasoning_text and "작가는 식별되지 않았으나" in reasoning_text:
                     reasoning_text = reasoning_text.replace(
                         "작가는 식별되지 않았으나",
@@ -2130,6 +2368,8 @@ class ArbiterExpert:
                         f"[{_ts()}][{self.emoji}] 🔬 final_reasoning 작가 근거 보강: '{detected_author}'",
                         file=sys.stderr,
                     )
+                elif reasoning_text:
+                    decision["final_reasoning"] = reasoning_text
             
             # 🔧 Phase26-D: Arbiter 후처리 완료 후 official_title이 null이면
             # downstream(agentic_pipeline)이 Verifier로 폴백하지 않도록 플래그 설정
@@ -2169,6 +2409,43 @@ class ArbiterExpert:
                         f"[{_ts()}][{self.emoji}] 🏷️ _title_deliberately_null 플래그 설정: "
                         f"Arbiter 후처리 결과 official_title=null → Verifier 폴백 차단",
                         file=sys.stderr
+                    )
+
+            # 🆕 heretic_url 폴백: Arbiter LLM이 null을 출력했지만 Verifier/Decoder에 URL이 있는 경우
+            if decision.get("is_relevant") and not decision.get("heretic_url"):
+                _fallback_url = None
+                # 1순위: Verifier가 확인한 URL
+                _vf_out = ctx.get_expert_output(ExpertType.VERIFIER) or {}
+                _vf_result = _vf_out.get("verification_result") or {}
+                _vf_novel_id = _vf_result.get("novel_identity") or {}
+                _vf_url = _vf_novel_id.get("heretic_url")
+                if _vf_url and isinstance(_vf_url, str) and _vf_url.startswith("http"):
+                    _fallback_url = _vf_url
+                # 2순위: Decoder best_match의 URL
+                if not _fallback_url:
+                    _dc_out = ctx.get_expert_output(ExpertType.DECODER) or {}
+                    for _dt in (_dc_out.get("decoded_terms") or []):
+                        if not isinstance(_dt, dict):
+                            continue
+                        for _cand in (_dt.get("candidates") or []):
+                            _cand_url = _cand.get("url")
+                            if _cand_url and isinstance(_cand_url, str) and _cand_url.startswith("http"):
+                                # URL이 공식 플랫폼인지 확인
+                                _is_official = any(
+                                    p in _cand_url
+                                    for p in ("munpia", "novelpia", "kakao", "naver", "joara", "ridibooks")
+                                )
+                                if _is_official:
+                                    _fallback_url = _cand_url
+                                    break
+                        if _fallback_url:
+                            break
+                if _fallback_url:
+                    decision["heretic_url"] = _fallback_url
+                    print(
+                        f"[{_ts()}][{self.emoji}] 🔗 heretic_url 폴백 적용: "
+                        f"{_fallback_url} (Arbiter LLM이 null 출력 → Verifier/Decoder에서 복구)",
+                        file=sys.stderr,
                     )
 
             # 🔧 후처리로 final_decision이 바뀐 경우(강제승격/차단 등)에도
@@ -2516,6 +2793,154 @@ class ArbiterExpert:
             "evidence_chain": [],
         }
     
+    def _build_rich_reason(self, ctx, detected_author: str = "") -> str:
+        """Decoder/Verifier 정보를 활용하여 풍부한 판정 사유를 생성.
+        
+        Arbiter LLM이 final_reasoning을 비워놓은 경우 사용.
+        """
+        from .orchestrator import ExpertType
+        
+        parts: list[str] = []
+        
+        # 1) Decoder의 decode_logic / best_match 정보
+        _dec = ctx.get_expert_output(ExpertType.DECODER) if hasattr(ctx, 'get_expert_output') else {}
+        _dec = _dec or {}
+        for _dt in _dec.get("decoded_terms", []):
+            _bm = _dt.get("best_match") or {}
+            _title = _bm.get("title")
+            _conf = _bm.get("confidence", "")
+            _orig = _dt.get("original", "")
+            if _title and str(_conf).lower() in ("high", "max"):
+                # decode_logic 추출
+                _candidates = _dt.get("candidates") or []
+                _logic = ""
+                for _c in _candidates:
+                    if (_c.get("official_novel_title") or "") == _title:
+                        _logic = _c.get("decode_logic", "")
+                        break
+                if _logic:
+                    parts.append(f"약칭 '{_orig}' → '{_title}' 디코딩 근거: {_logic}")
+                else:
+                    parts.append(f"약칭 '{_orig}'가 '{_title}'로 디코딩됨 (신뢰도: {_conf})")
+                break  # 최상위 1건만
+        
+        # 2) Verifier의 evidence_chain
+        _vf = ctx.get_expert_output(ExpertType.VERIFIER) if hasattr(ctx, 'get_expert_output') else {}
+        _vf = _vf or {}
+        _vf_result = _vf.get("verification_result") or {}
+        _vf_chain = _vf_result.get("evidence_chain") or []
+        for _ev in _vf_chain[:2]:
+            _content = _ev.get("content", "")
+            _supports = _ev.get("supports", "")
+            if _supports:
+                parts.append(f"검증: {_supports}")
+                break
+        
+        # 3) Verifier의 reason
+        _vf_reason = _vf.get("reason") or ""
+        if _vf_reason and len(_vf_reason) > 20:
+            parts.append(f"Verifier 판단: {_vf_reason}")
+        
+        # 4) 작가 정보
+        if detected_author:
+            parts.append(f"작가 '{detected_author}' 식별됨")
+        
+        return " ".join(parts) if parts else ""
+    
+    def _extract_author_from_search(
+        self,
+        title: str,
+        ctx,
+    ) -> Optional[str]:
+        """검색 결과에서 반복적으로 나타나는 작가명을 패턴 기반으로 추출.
+        
+        한국어 커뮤니티/플랫폼에서 작가명이 언급되는 대표 패턴:
+        - "[작품명] - [작가명]" (플랫폼 검색 결과)
+        - "[작가명] 작가의 [작품명]"  
+        - "작가 [작가명]인것 보고"
+        - "글 [작가명]" (문피아 표기)
+        """
+        import re as _re_auth
+        
+        search_results = getattr(ctx, "search_results", []) or []
+        if not search_results or not title:
+            return None
+        
+        title_clean = title.replace(" ", "").lower()
+        # 제목을 단어별로 분할 (부분 문자열 필터에 사용)
+        _title_words_lower = {w.lower() for w in title.split() if len(w) >= 2}
+        author_candidates: dict[str, int] = {}  # 작가명 → 출현 횟수
+        
+        # 패턴 1: "[제목] - [작가명]" 또는 "[제목] · [작가명]"
+        _pat_dash = _re_auth.compile(
+            r'[-·]\s*([가-힣a-zA-Z0-9]{2,10})\s*(?:$|[·,\s])',
+        )
+        # 패턴 2: "작가\s*[작가명]" 또는 "[작가명]\s*작가"
+        _pat_author = _re_auth.compile(
+            r'(?:작가\s*[:\s]?\s*([가-힣a-zA-Z0-9]{2,10})|([가-힣a-zA-Z0-9]{2,10})\s*작가)',
+        )
+        # 패턴 3: "글\s*[작가명]" (문피아 스타일) 
+        _pat_writer = _re_auth.compile(
+            r'글\s+([가-힣a-zA-Z0-9]{2,10})',
+        )
+        
+        # 일반 명사 / 플랫폼 이름 등 작가가 아닌 것 제외
+        _noise_words = {
+            "문피아", "노벨피아", "카카오", "네이버", "시리즈", "리디",
+            "조아라", "블라인드", "에펨코리아", "나무위키", "소설넷",
+            "웹소설", "소설", "무협", "판타지", "장편", "단편",
+            "마이너", "갤러리", "게시판", "카카오페이지", "종토방",
+        }
+        
+        for sr in search_results:
+            sr_title = sr.get("title", "")
+            sr_content = (sr.get("content") or sr.get("snippet") or "")
+            sr_url = sr.get("url", "")
+            combined = sr_title + " " + sr_content
+            
+            # 이 검색 결과가 해당 작품과 관련 있는지 확인
+            if title_clean not in combined.replace(" ", "").lower():
+                continue
+            
+            # 공식 플랫폼 URL에서의 패턴은 더 신뢰
+            _is_official = any(
+                p in sr_url for p in ("munpia", "novelpia", "kakao", "naver", "joara", "ridibooks")
+            )
+            weight = 3 if _is_official else 1
+            
+            for text in [sr_title, sr_content]:
+                for pat in [_pat_dash, _pat_author, _pat_writer]:
+                    for m in pat.finditer(text):
+                        # 캡처 그룹에서 None이 아닌 첫 번째 값
+                        name = next((g for g in m.groups() if g), None)
+                        if not name:
+                            continue
+                        name = name.strip()
+                        name_lower = name.replace(" ", "").lower()
+                        if (
+                            len(name) >= 2
+                            and name_lower not in _noise_words
+                            and name_lower != title_clean
+                            # 🆕 제목 부분 문자열 차단: "빌어먹을" ⊂ "빌어먹을환생"
+                            and name_lower not in title_clean
+                            and title_clean not in name_lower
+                            # 🆕 제목 개별 단어 차단: "즉사기" == title word
+                            and name_lower not in _title_words_lower
+                            # 🆕 노이즈 접두사 차단: "웹소설로", "카카오페이지에서" 등
+                            and not any(name_lower.startswith(nw) for nw in _noise_words)
+                            and not name_lower.startswith("http")
+                        ):
+                            author_candidates[name] = author_candidates.get(name, 0) + weight
+        
+        if not author_candidates:
+            return None
+        
+        # 가장 빈도 높은 작가명 선택 (최소 2회 이상 출현)
+        best_author = max(author_candidates, key=author_candidates.get)
+        if author_candidates[best_author] >= 2:
+            return best_author
+        return None
+
     def _summarize_gatekeeper(self, gk: Dict[str, Any]) -> Dict[str, Any]:
         """Gatekeeper 결과 요약 (토큰 절약)"""
         if not gk:

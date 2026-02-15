@@ -6,6 +6,7 @@ from .discourse import DiscourseAnalyzer
 from .decoder import DecoderExpert  
 from .verifier import VerifierExpert
 from .critic import CriticExpert
+from .synthesizer import SynthesizerExpert
 from .arbiter import ArbiterExpert
 from .orchestrator import Orchestrator, ExpertType, ExpertMessage, ConversationContext
 
@@ -15,6 +16,7 @@ __all__ = [
     "DecoderExpert",
     "VerifierExpert", 
     "CriticExpert",
+    "SynthesizerExpert",
     "ArbiterExpert",
     "Orchestrator",
     "ExpertType",

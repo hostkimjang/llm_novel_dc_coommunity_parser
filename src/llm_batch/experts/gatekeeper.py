@@ -200,8 +200,12 @@ class GatekeeperExpert:
         Strategy:
         1. Extract all nouns (NNG, NNP) - common/proper nouns
         2. Extract compound nouns (NNB) - bound nouns
-        3. Extract all 2+ character segments
+        3. Extract all 2+ character segments (with linguistic filtering)
         4. Include original text segments
+        
+        Noise filtering:
+        - n-gram segments containing verbal morphemes are excluded
+        - Only noun-dominant segments pass (valid title candidates)
         
         Args:
             title: Post title to analyze
@@ -237,6 +241,7 @@ class GatekeeperExpert:
             # Split title into all possible 2+ character segments
             # 🆕 OPT: 공백/구두점/조사만으로 구성된 세그먼트는 제외
             _JOSA_CHARS = set('을를이가는은의에서와과도만으로부터')
+            raw_segments: list[str] = []
             for i in range(len(title)):
                 for j in range(i + 2, min(i + 6, len(title) + 1)):  # 2-5글자
                     segment = title[i:j]
@@ -252,7 +257,35 @@ class GatekeeperExpert:
                     korean_count = sum(1 for c in segment if ord('가') <= ord(c) <= ord('힣'))
                     if korean_count < 2:
                         continue
-                    candidates.add(segment)
+                    raw_segments.append(segment)
+            
+            # ── n-gram 노이즈 필터: Kiwi 형태소 분석으로 검증 ──
+            # 동사어미(EC/EF/EP), 형용사어간(VA), 접속부사(MAJ) 등이
+            # 포함된 세그먼트는 유효한 제목 후보가 아님
+            _VERBAL_TAGS = {
+                'VV', 'VA', 'VX', 'VCP', 'VCN',   # 동사/형용사 어간
+                'EC', 'EF', 'EP', 'ETN', 'ETM',    # 어미류
+                'MAJ',                              # 접속부사 (하지만, 그런데)
+            }
+            for seg in raw_segments:
+                # 이미 Kiwi 명사 후보에 있으면 그대로 통과
+                if seg in candidates:
+                    continue
+                try:
+                    seg_tokens = self.kiwi.tokenize(seg)
+                    # 세그먼트 내 형태소 태그 확인
+                    seg_tags = {t.tag for t in seg_tokens}
+                    has_verbal = bool(seg_tags & _VERBAL_TAGS)
+                    has_noun = bool(seg_tags & {'NNG', 'NNP', 'NNB', 'SL', 'SH'})
+                    # 동사/형용사 어미가 있으면 → 노이즈 (제외)
+                    # 단, 모든 형태소가 명사류이면 → 유효 (통과)
+                    if has_verbal:
+                        continue
+                    if has_noun:
+                        candidates.add(seg)
+                except Exception:
+                    # Kiwi 오류 시 보수적으로 포함
+                    candidates.add(seg)
         
         except Exception as e:
             print(f"[{_ts()}][{self.emoji}] Kiwi 분석 오류: {e}", file=sys.stderr)
@@ -288,6 +321,31 @@ class GatekeeperExpert:
         for entity in kiwi_entities:
             if entity not in combined:
                 combined.append(entity)
+        
+        # 🆕 커뮤니티 접두어 패턴 정제: "소신발언)", "스포)" 등 제거
+        from ..rules import COMMUNITY_PREFIX_PATTERNS
+        cleaned = []
+        for title in combined:
+            if not isinstance(title, str):
+                cleaned.append(title)
+                continue
+            _t = title.strip()
+            _stripped = _t
+            for prefix in COMMUNITY_PREFIX_PATTERNS:
+                if _t.startswith(prefix):
+                    _stripped = _t[len(prefix):].strip()
+                    break
+            # 접두어 제거 후 남은 부분이 2자 이상이면 교체, 아니면 원래 제목 유지
+            if _stripped and len(_stripped) >= 2 and _stripped != _t:
+                if _stripped not in cleaned:
+                    cleaned.append(_stripped)
+                print(
+                    f"[{_ts()}][{self.emoji}] 🏷️ 커뮤니티 접두어 제거: '{_t}' → '{_stripped}'",
+                    file=sys.stderr,
+                )
+            else:
+                cleaned.append(_t)
+        combined = cleaned
         
         # Update result
         detected["possible_titles"] = combined

@@ -11,6 +11,7 @@
   .step-active { background: #2563eb; color: #fff; box-shadow: 0 0 12px rgba(37,99,235,.5); }
   .step-done { background: #059669; color: #fff; }
   .step-idle { background: rgba(51,65,85,.6); color: #94a3b8; }
+  .step-skipped { background: rgba(51,65,85,.3); color: #475569; text-decoration: line-through; }
   #log-area { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; font-size: 12px; line-height: 1.5; }
   #log-area::-webkit-scrollbar { width: 6px; }
   #log-area::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
@@ -169,6 +170,8 @@
           <div data-step="verifier" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all">🔍 Verifier</div>
           <span class="text-slate-600">→</span>
           <div data-step="critic" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all">📚 Critic</div>
+          <span class="text-slate-600">→</span>
+          <div data-step="synthesizer" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all">🔬 Synthesizer</div>
           <span class="text-slate-600">→</span>
           <div data-step="arbiter" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all">⚖️ Arbiter</div>
         </div>
@@ -485,13 +488,14 @@ function handleEvent(msg) {
           w.recallCounts[data.expert] = (w.recallCounts[data.expert] || 0) + 1;
         }
         if (data.status === 'done') w.doneSteps.add(data.expert);
+        if (data.skipped) w.doneSteps.add(data.expert);  // skipped도 done 처리
         if (data.status === 'running') {
           w.flowLog.push({ expert: data.expert, recall: !!data.recall, from: data.from || '', reason: data.reason || '' });
         }
         renderWorkerCards();
       } else {
         // 순차 모드: 기존 로직
-        updatePipeline(data.expert, data.status, data.recall);
+        updatePipeline(data.expert, data.status, data.recall, data.skipped);
         if (data.status === 'running') {
           addFlowEntry(data.expert, data.recall, data.from, data.reason);
         }
@@ -608,7 +612,7 @@ function updateStatus(s) {
   }
 }
 
-function updatePipeline(expert, status, isRecall) {
+function updatePipeline(expert, status, isRecall, isSkipped) {
   // 재호출(recall) 시: done 상태를 해제하고 다시 running으로
   if (status === 'running' && isRecall) {
     doneSteps.delete(expert);
@@ -624,6 +628,8 @@ function updatePipeline(expert, status, isRecall) {
     const hasRecall = rc > 0 ? ' step-recall' : '';
     if (step === expert && status === 'running') {
       el.className = 'step-active rounded-lg px-3 py-2 text-xs font-medium transition-all anim-pulse' + hasRecall;
+    } else if (step === expert && isSkipped) {
+      el.className = 'step-skipped rounded-lg px-3 py-2 text-xs font-medium transition-all opacity-40';
     } else if (doneSteps.has(step)) {
       el.className = 'step-done rounded-lg px-3 py-2 text-xs font-medium transition-all' + hasRecall;
     } else {
@@ -644,7 +650,7 @@ function resetPipelineSteps() {
 const STEP_LABELS = {
   fast_path: '⚡FP', gatekeeper: '🎭GK', discourse: '📖DC',
   search: '🔎SR', decoder: '🔤DE', verifier: '🔍VR',
-  critic: '📚CR', arbiter: '⚖️AR'
+  critic: '📚CR', synthesizer: '🔬SY', arbiter: '⚖️AR'
 };
 
 function addFlowEntry(expert, isRecall, fromExpert, reason) {
@@ -699,8 +705,8 @@ function clearFlowLog() {
 
 // ─── Parallel Mode UI ──────────────────────────────
 
-const MINI_STEPS = ['fast_path','gatekeeper','discourse','search','decoder','verifier','critic','arbiter'];
-const MINI_LABELS = { fast_path:'FP', gatekeeper:'GK', discourse:'DC', search:'SR', decoder:'DE', verifier:'VR', critic:'CR', arbiter:'AR' };
+const MINI_STEPS = ['fast_path','gatekeeper','discourse','search','decoder','verifier','critic','synthesizer','arbiter'];
+const MINI_LABELS = { fast_path:'FP', gatekeeper:'GK', discourse:'DC', search:'SR', decoder:'DE', verifier:'VR', critic:'CR', synthesizer:'SY', arbiter:'AR' };
 
 function toggleParallelUI(isParallel) {
   const section = document.getElementById('parallel-section');

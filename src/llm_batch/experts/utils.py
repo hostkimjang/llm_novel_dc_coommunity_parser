@@ -52,6 +52,61 @@ _ARRAY_MAX_LENGTHS: Dict[str, int] = {
 _DEFAULT_ARRAY_MAX = 15
 
 
+def _extract_first_complete_json(text: str) -> str | None:
+    """
+    텍스트에서 첫 번째 완전한 JSON 객체를 브라켓 카운팅으로 추출합니다.
+    
+    LLM이 같은 JSON을 여러 번 반복 출력하는 경우, rfind("}")로는 불완전한
+    마지막 복사본의 }를 잡게 됩니다. 이 함수는 첫 번째 완전한 {} 쌍을 추출합니다.
+    
+    Returns:
+        첫 번째 완전한 JSON 문자열, 또는 None (완전한 객체 없음)
+    """
+    start = text.find("{")
+    if start < 0:
+        return None
+    
+    depth = 0
+    in_string = False
+    escape_next = False
+    
+    for i in range(start, len(text)):
+        c = text[i]
+        
+        if escape_next:
+            escape_next = False
+            continue
+        
+        if c == '\\' and in_string:
+            escape_next = True
+            continue
+        
+        if c == '"' and not escape_next:
+            in_string = not in_string
+            continue
+        
+        if in_string:
+            continue
+        
+        if c == '{':
+            depth += 1
+        elif c == '}':
+            depth -= 1
+            if depth == 0:
+                candidate = text[start:i + 1]
+                # 추출한 블록 뒤에 또 다른 JSON이 시작되면 반복 출력임
+                remaining = text[i + 1:].lstrip()
+                if remaining.startswith("{"):
+                    print(
+                        f"[utils] ⚠️ JSON 반복 출력 감지: 첫 번째 완전 객체 추출 "
+                        f"({len(candidate)}자, 잔여 {len(remaining)}자 무시)",
+                        file=sys.stderr,
+                    )
+                return candidate
+    
+    return None  # 완전한 객체 없음 (열린 괄호 미닫힘)
+
+
 def _try_repair_json(broken: str) -> Dict[str, Any]:
     """
     불완전한 JSON 문자열 복구를 시도합니다.
@@ -153,7 +208,24 @@ def parse_json_with_think_removal(text: str) -> Dict[str, Any]:
             lines = lines[:-1]
         text = "\n".join(lines)
     
-    # 3. JSON 객체 추출
+    # 3. JSON 객체 추출 — 반복 출력 방어: 첫 번째 완전한 JSON 우선 추출
+    first_obj = _extract_first_complete_json(text)
+    if first_obj:
+        try:
+            result = json.loads(first_obj)
+            if isinstance(result, dict):
+                # 4. "thinking" 관련 필드 제거
+                forbidden_keys = {"thinking", "thought", "reasoning_process", "internal_reasoning"}
+                for key in list(result.keys()):
+                    if key.lower() in forbidden_keys or key.lower().startswith("think"):
+                        del result[key]
+                # 5. 배열 반복 루프 방어
+                result = _sanitize_arrays(result)
+                return result
+        except json.JSONDecodeError:
+            pass  # fall through to legacy rfind approach
+
+    # 3-b. fallback: rfind 기반 추출 (반복 없는 일반 케이스)
     start = text.find("{")
     end = text.rfind("}") + 1
     if start >= 0 and end > start:

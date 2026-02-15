@@ -844,6 +844,39 @@ class DecoderExpert:
             if ctx:
                 self._init_suspected_titles(result, ctx)
             
+            # ━━ 개선: 가설 상태머신 업데이트 + candidate evidence bucket ━━
+            if ctx and best:
+                best_title = best if isinstance(best, str) else (best.get("title") if isinstance(best, dict) else None)
+                if best_title:
+                    # 가설 업데이트 (충돌 시 자동 무효화)
+                    ev_list = []
+                    for dt in result.get("decoded_terms", []):
+                        bm = dt.get("best_match") or {}
+                        if bm.get("title") == best_title:
+                            gr = dt.get("grounding") or {}
+                            if gr.get("anchor_type"):
+                                ev_list.append(f"anchor:{gr['anchor_type']}")
+                            if bm.get("confidence"):
+                                ev_list.append(f"decoder_conf:{bm['confidence']}")
+                    ctx.update_hypothesis(
+                        title=best_title,
+                        confidence=result.get("overall_confidence", "low"),
+                        evidence=ev_list,
+                        step=ctx.iteration,
+                    )
+                    
+                    # candidate evidence bucket에 본문 근거 추가
+                    for dt in result.get("decoded_terms", []):
+                        bm = dt.get("best_match") or {}
+                        if bm.get("title") == best_title:
+                            gr = dt.get("grounding") or {}
+                            if gr.get("anchor_type") and gr["anchor_type"] != "none":
+                                ctx.add_evidence_for_candidate(best_title, "post_span", {
+                                    "type": gr["anchor_type"],
+                                    "source": "decoder_grounding",
+                                    "original_term": dt.get("original", ""),
+                                })
+            
             return result
             
         except Exception as e:
@@ -1423,10 +1456,36 @@ class DecoderExpert:
                 official_titles_from_search = self._extract_official_titles_from_search(ctx)
                 existing_titles = {s.get('title') for s in existing}
                 
+                # 🔧 Fix F: 제목 후보로 적합하지 않은 매핑 필터링
+                # _resolved_mappings는 증거 기반 맥락 추론용이므로
+                # 일반 명사, 욕설, 사전 항목 등이 포함될 수 있음
+                _TITLE_BLOCKLIST_PATTERNS = {
+                    '/', '(', ')', '국어사전', '나무위키', '위키',
+                    '욕설', '표준어', '줄임', '뜻', '사전',
+                }
+                
                 for abbrev, full_title in _resolved:
                     # 검색 결과의 공식 제목으로 교정
                     corrected = self._correct_title_with_search_result(full_title, official_titles_from_search)
                     if corrected in existing_titles:
+                        continue
+                    
+                    # 🔧 Fix F: 제목 후보 품질 검증
+                    _skip = False
+                    # 1) 약칭과 동일(자기참조) → 스킵
+                    if corrected.strip() == abbrev.strip():
+                        _skip = True
+                    # 2) 차단 패턴 포함 → 스킵
+                    elif any(pat in corrected for pat in _TITLE_BLOCKLIST_PATTERNS):
+                        _skip = True
+                    # 3) 너무 짧거나 한글이 없는 경우 → 스킵
+                    elif len(corrected) < 2 or not any('\uac00' <= c <= '\ud7a3' or c.isascii() and c.isalpha() for c in corrected):
+                        _skip = True
+                    # 4) GENRE_ARCHETYPE_TERMS에 해당 → 스킵
+                    elif corrected in GENRE_ARCHETYPE_TERMS:
+                        _skip = True
+                    
+                    if _skip:
                         continue
                     
                     # 이 매핑이 검색에서 확인된 것인지 체크 (snippet_hints 기반)
@@ -1898,6 +1957,22 @@ class DecoderExpert:
                 file=sys.stderr,
             )
 
+        # ── 🆕 snippet_analyzer 줄임 매핑의 full 제목을 title_pool에 통합 ──
+        # snippet_analyzer가 "즉사무림 → 즉사기 들고 무림에 떨어지다" 매핑을 생성했으면
+        # 해당 정식 제목을 title_pool에 추가하여 약어 가드 2단계에서 교정 후보로 사용
+        _snippet_hints = getattr(ctx, 'snippet_hints', None) or {}
+        _snippet_abbr_mappings = _snippet_hints.get('abbreviation_mappings') or []
+        for _sam in _snippet_abbr_mappings:
+            if isinstance(_sam, dict):
+                _sam_full = _sam.get('full', '').strip()
+                if _sam_full and len(_sam_full) >= 3:
+                    raw_title_pool.append(_sam_full)
+        # ctx에 직접 저장된 snippet abbreviation_mappings도 통합
+        _ctx_abbr_map = getattr(ctx, 'abbreviation_mappings', None) or {}
+        for _abbr_key, _abbr_val in _ctx_abbr_map.items():
+            if isinstance(_abbr_val, str) and len(_abbr_val) >= 3:
+                raw_title_pool.append(_abbr_val)
+
         # 중복 제거
         seen_titles: set[str] = set()
         title_pool: list[str] = []
@@ -1906,6 +1981,35 @@ class DecoderExpert:
             if t_stripped and t_stripped not in seen_titles:
                 seen_titles.add(t_stripped)
                 title_pool.append(t_stripped)
+
+        # 🆕 제목 key_term → anchor_type 보정
+        # 게시글 제목에 존재하는 key_term이 search_only로 표시된 경우 title_mention으로 보정
+        # 예: "즉사무림"은 게시글 제목 "스포) 즉사무림 예상된 전개긴하지만"에 직접 존재
+        #     → is_grounded=false, anchor_type=search_only는 잘못됨 → title_mention으로 보정
+        post_data = ctx.post_data or {}
+        _post_title_raw = (post_data.get("title") or "").replace(" ", "").lower()
+        if _post_title_raw:
+            for term in decoded_terms:
+                if not isinstance(term, dict):
+                    continue
+                _orig = (term.get("original") or "").replace(" ", "").lower()
+                if not _orig or len(_orig) < 2:
+                    continue
+                grounding = term.get("grounding")
+                if not isinstance(grounding, dict):
+                    continue
+                _cur_anchor = (grounding.get("anchor_type") or "none").lower()
+                # 게시글 제목에 해당 용어가 있고, anchor가 search_only/none이면 보정
+                if _orig in _post_title_raw and _cur_anchor in ("search_only", "none"):
+                    grounding["anchor_type"] = "title_mention"
+                    grounding["is_grounded"] = True
+                    grounding["anchor_evidence"] = f"게시글 제목에 '{term.get('original')}' 직접 존재"
+                    print(
+                        f"[{_ts()}][{self.emoji}] 🏷️ anchor_type 보정: "
+                        f"'{term.get('original')}' search_only → title_mention "
+                        f"(게시글 제목에 포함)",
+                        file=sys.stderr,
+                    )
 
         changed = False
 
@@ -1929,12 +2033,38 @@ class DecoderExpert:
                 if isinstance(i, dict)
             )
             if _has_author_interp:
-                print(
-                    f"[{_ts()}][{self.emoji}] ℹ️ 작가명 해석 존재 '{original}' → 약어 가드 스킵 "
-                    f"(is_author_name=false이지만 interpretations에 author_name 있음)",
-                    file=sys.stderr,
-                )
-                continue
+                # 🔧 FIX: 작가명 해석이 있더라도, 약어↔제목 형태소가 극단적 불일치이고
+                # title_pool에 형태소가 완전 매칭되는 경쟁 후보가 있으면 스킵하지 않음
+                # 예: '즉사무림' → interpretations에 author_name "즉사무림작가" (medium)
+                #     하지만 best_match.title="즉사기 들고 게임 속으로" (score=0.00, 무림 없음)
+                #     title_pool에 "즉사기 들고 무림에 떨어지다" (score=0.90) 존재
+                #     → 스킵하면 교정 기회 상실 → 스킵하지 않고 약어 가드 진행
+                _cur_best_match = term.get("best_match") or {}
+                _cur_title_for_skip = _cur_best_match.get("title") or ""
+                _abbr_score_for_skip = abbreviation_match_score(original, _cur_title_for_skip) if _cur_title_for_skip else 0.0
+                _morphemes_for_skip = term.get("morphemes", [])
+                _morpheme_ok_for_skip = True
+                if _morphemes_for_skip and len(_morphemes_for_skip) >= 2 and _cur_title_for_skip:
+                    _tn = _cur_title_for_skip.replace(" ", "")
+                    _morpheme_ok_for_skip = all(m in _tn for m in _morphemes_for_skip)
+                
+                # 형태소도 OK이고 약어 스코어 ≥ 0.5이면 → 원래대로 스킵 (작가→대표작 매핑)
+                if _abbr_score_for_skip >= 0.5 or (_morpheme_ok_for_skip and _abbr_score_for_skip >= 0.3):
+                    print(
+                        f"[{_ts()}][{self.emoji}] ℹ️ 작가명 해석 존재 '{original}' → 약어 가드 스킵 "
+                        f"(is_author_name=false이지만 interpretations에 author_name 있음, "
+                        f"score={_abbr_score_for_skip:.2f})",
+                        file=sys.stderr,
+                    )
+                    continue
+                else:
+                    # 형태소 불일치 + 약어 스코어 극단적 저조 → 경쟁 후보 탐색 허용
+                    print(
+                        f"[{_ts()}][{self.emoji}] ⚠️ 작가명 해석 존재하지만 약어 불일치: "
+                        f"'{original}' → '{_cur_title_for_skip}' (score={_abbr_score_for_skip:.2f}, "
+                        f"morpheme_ok={_morpheme_ok_for_skip}) → 약어 가드 진행 (교정 기회 유지)",
+                        file=sys.stderr,
+                    )
 
             # 🆕 캐릭터명은 약어 가드 대상이 아님 — 스킵
             # Decoder가 anchor_type="character_mention"으로 식별한 term은
@@ -3636,8 +3766,9 @@ class DecoderExpert:
             if not title or confidence in ("none", "low"):
                 continue
             
-            # 🔧 title_clean을 루프 상단에서 미리 계산 (is_author_name 블록에서도 사용)
+            # 🔧 title_clean, original_term을 루프 상단에서 미리 계산
             title_clean = title.replace(" ", "").lower()
+            original_term = (term.get("original") or "").replace(" ", "").lower()
             
             # 🆕 범용 시간참조 가드 (is_author_name 무관)
             # 게시글 제목에 시간참조 키워드가 있고, 매칭된 작품 제목이 본문+제목에 직접 없으면 차단
@@ -3887,12 +4018,81 @@ class DecoderExpert:
             
             # 🆕 캐릭터가 검색으로 검증되었으면 본문증거 가드 스킵
             if has_character_verified_in_search:
-                print(
-                    f"[{_ts()}][{self.emoji}] 🔒 본문증거 가드 스킵: "
-                    f"'{original_term}' → '{title}' (본문 캐릭터가 작품 등장인물로 검색 검증됨)",
-                    file=sys.stderr,
-                )
-                continue
+                # 🔧 FIX: 캐릭터-작품 연결이 검증되었더라도, 약어↔제목 형태소가 불일치이면
+                # "경쟁 작품 오매칭" 위험이 있으므로 경고 플래그를 남김
+                # 예: "즉사무림 서무량" 검색 → n번째 결과에 "즉사기 들고 게임 속으로"와 함께 나옴
+                #     → 서무량이 이 작품의 캐릭터로 검증됨
+                #     → 하지만 "즉사무림"의 형태소 ['즉사','무림']이 제목에 맞지 않음
+                #     → 실제로는 "즉사기 들고 무림에 떨어지다"의 캐릭터일 가능성이 높음
+                _char_verify_abbr_score = abbreviation_match_score(original_term, title) if original_term else 0.0
+                _char_verify_morphemes = []
+                # original_term의 형태소를 best_match에서 가져오기
+                for _dt in decoded_terms:
+                    if _dt.get("original") == original_term:
+                        _char_verify_morphemes = _dt.get("morphemes", [])
+                        break
+                _char_verify_morph_ok = True
+                if _char_verify_morphemes and len(_char_verify_morphemes) >= 2:
+                    _tn_cv = title.replace(" ", "")
+                    _char_verify_morph_ok = all(m in _tn_cv for m in _char_verify_morphemes)
+                
+                if _char_verify_abbr_score < 0.3 and not _char_verify_morph_ok:
+                    print(
+                        f"[{_ts()}][{self.emoji}] ⚠️ 캐릭터-작품 연결 검증됨이지만 약어 불일치: "
+                        f"'{original_term}' → '{title}' (abbr_score={_char_verify_abbr_score:.2f}, "
+                        f"morpheme_ok={_char_verify_morph_ok}) → 경쟁 작품 오매칭 가능성 있음",
+                        file=sys.stderr,
+                    )
+                    # 검증은 저장하되, confidence를 하향하여 경쟁 작품 탐색 유도
+                    if ctx:
+                        if not hasattr(ctx, 'verified_character_work_links'):
+                            ctx.verified_character_work_links = []
+                        _link_entry = {
+                            "abbreviation": original_term,
+                            "title": title,
+                            "source": "decoder",
+                            "_weak_match": True,  # 약어 불일치 플래그
+                        }
+                        _existing = [
+                            v for v in ctx.verified_character_work_links
+                            if v.get("title", "").replace(" ", "").lower() == title_clean
+                        ]
+                        if not _existing:
+                            ctx.verified_character_work_links.append(_link_entry)
+                            print(
+                                f"[{_ts()}][{self.emoji}] 📌 ctx.verified_character_work_links 저장 (약한 매칭): "
+                                f"'{original_term}' → '{title}'",
+                                file=sys.stderr,
+                            )
+                    # 가드 스킵하지 않고 계속 진행 → 나중에 본문증거 가드가 veto 가능
+                else:
+                    print(
+                        f"[{_ts()}][{self.emoji}] 🔒 본문증거 가드 스킵: "
+                        f"'{original_term}' → '{title}' (본문 캐릭터가 작품 등장인물로 검색 검증됨)",
+                        file=sys.stderr,
+                    )
+                    # 🆕 ctx에 검증 사실 영구 저장 (다중호출 시 마지막 결과가 덮어써도 유지)
+                    if ctx:
+                        if not hasattr(ctx, 'verified_character_work_links'):
+                            ctx.verified_character_work_links = []
+                        _link_entry = {
+                            "abbreviation": original_term,
+                            "title": title,
+                            "source": "decoder",
+                        }
+                        # 중복 방지
+                        _existing = [
+                            v for v in ctx.verified_character_work_links
+                            if v.get("title", "").replace(" ", "").lower() == title_clean
+                        ]
+                        if not _existing:
+                            ctx.verified_character_work_links.append(_link_entry)
+                            print(
+                                f"[{_ts()}][{self.emoji}] 📌 ctx.verified_character_work_links 저장: "
+                                f"'{original_term}' → '{title}'",
+                                file=sys.stderr,
+                            )
+                    continue
             
             # 4) 검색에서 추출한 작가명이 본문에 있는지
             has_work_specific = any(

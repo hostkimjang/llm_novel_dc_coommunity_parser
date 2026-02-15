@@ -95,6 +95,7 @@ class ExpertType(Enum):
     DECODER = "decoder"
     VERIFIER = "verifier"
     CRITIC = "critic"
+    SYNTHESIZER = "synthesizer"  # NEW: 증거 기반 재해석기
     ARBITER = "arbiter"
 
 
@@ -151,6 +152,21 @@ class ConversationContext:
     # 검색 쿼리 이력 추적 (중복 검색 방지)
     searched_queries: set = field(default_factory=set)
     
+    # ── 개선: candidate evidence bucket 분리 (증거 누수 방지) ──
+    # 후보 제목별로 증거를 분리 저장하여 후보 A의 증거가 후보 B에 유입되는 것을 방지
+    # 구조: {"작품제목": {"post_spans": [...], "search_snippets": [...], "official_urls": [...]}}
+    candidate_evidence: Dict[str, Dict[str, List[Any]]] = field(default_factory=dict)
+    
+    # ── 개선: 가설 상태머신 (hypothesis invalidation) ──
+    # 현재 활성 가설과 버전 추적. 새 증거가 충돌하면 invalidate하고 재시작
+    active_hypothesis: Optional[Dict[str, Any]] = field(default=None)
+    # {"version": 1, "title": "...", "confidence": "high", "supporting_evidence": [...], "created_at_step": 3}
+    hypothesis_history: List[Dict[str, Any]] = field(default_factory=list)
+    
+    # ── 개선: 소스 신뢰도 가중치 ──
+    # 검색 결과 소스별 신뢰도 점수 (공식 플랫폼 > 위키 > 커뮤니티/블로그)
+    source_trust_scores: Dict[str, float] = field(default_factory=dict)
+    
     # 토큰 사용추적
     token_usage: Dict[str, int] = field(default_factory=lambda: {
         "prompt_tokens": 0,
@@ -160,6 +176,114 @@ class ConversationContext:
     
     def add_message(self, msg: ExpertMessage) -> None:
         self.messages.append(msg)
+    
+    def add_evidence_for_candidate(self, candidate_title: str, evidence_type: str, evidence: Any) -> None:
+        """
+        특정 후보 제목에 대한 증거를 분리 저장.
+        
+        Args:
+            candidate_title: 후보 작품 제목
+            evidence_type: 'post_span' | 'search_snippet' | 'official_url'
+            evidence: 증거 데이터
+        """
+        if candidate_title not in self.candidate_evidence:
+            self.candidate_evidence[candidate_title] = {
+                "post_spans": [],
+                "search_snippets": [],
+                "official_urls": [],
+            }
+        bucket = self.candidate_evidence[candidate_title]
+        if evidence_type == "post_span":
+            bucket["post_spans"].append(evidence)
+        elif evidence_type == "search_snippet":
+            bucket["search_snippets"].append(evidence)
+        elif evidence_type == "official_url":
+            bucket["official_urls"].append(evidence)
+    
+    def get_candidate_evidence(self, candidate_title: str) -> Dict[str, List[Any]]:
+        """특정 후보의 증거 bucket 반환."""
+        return self.candidate_evidence.get(candidate_title, {
+            "post_spans": [], "search_snippets": [], "official_urls": [],
+        })
+    
+    def update_hypothesis(self, title: str, confidence: str, evidence: List[str], step: int) -> bool:
+        """
+        가설 상태머신: 새 가설을 설정하거나 기존 가설과 충돌 시 무효화.
+        
+        Returns:
+            True: 가설이 유지/갱신됨, False: 기존 가설이 무효화되어 리셋됨
+        """
+        from .utils import _ts
+        new_hyp = {
+            "version": (self.active_hypothesis["version"] + 1) if self.active_hypothesis else 1,
+            "title": title,
+            "confidence": confidence,
+            "supporting_evidence": evidence,
+            "created_at_step": step,
+        }
+        
+        if self.active_hypothesis is None:
+            # 첫 가설 설정
+            self.active_hypothesis = new_hyp
+            self.hypothesis_history.append(new_hyp)
+            print(f"[{_ts()}][🎯] 🧪 가설 v{new_hyp['version']} 수립: '{title}' (conf={confidence})", file=sys.stderr)
+            return True
+        
+        old_title = self.active_hypothesis["title"]
+        if old_title and title and old_title.replace(' ', '') != title.replace(' ', ''):
+            # 가설 충돌: 다른 작품으로 전환 → 이전 가설 무효화
+            old_version = self.active_hypothesis["version"]
+            self.active_hypothesis["invalidated"] = True
+            self.active_hypothesis["invalidated_by"] = title
+            self.active_hypothesis["invalidated_at_step"] = step
+            self.hypothesis_history.append(self.active_hypothesis.copy())
+            
+            # 이전 후보의 증거를 새 후보에 재사용하지 않도록 분리
+            print(
+                f"[{_ts()}][🎯] ⚠️ 가설 충돌: v{old_version} '{old_title}' → v{new_hyp['version']} '{title}'"
+                f" (이전 증거 격리, 새 증거로 재시작)",
+                file=sys.stderr,
+            )
+            self.active_hypothesis = new_hyp
+            self.hypothesis_history.append(new_hyp)
+            self.uncertainty_sources.append(
+                f"가설 전환: '{old_title}' → '{title}' (step {step}, 이전 증거 무효화)"
+            )
+            return False
+        else:
+            # 같은 작품 → 가설 강화
+            self.active_hypothesis["confidence"] = confidence
+            self.active_hypothesis["supporting_evidence"].extend(evidence)
+            return True
+    
+    def score_source_trust(self, url: str) -> float:
+        """
+        URL 기반 소스 신뢰도 점수 반환.
+        공식 플랫폼(1.0) > 위키(0.8) > 커뮤니티/블로그(0.4) > 기타(0.2)
+        """
+        if not url:
+            return 0.2
+        url_lower = url.lower()
+        # 공식 소설 플랫폼
+        official_domains = (
+            "novelpia.com", "munpia.com", "page.kakao.com", "kakao.page",
+            "joara.com", "series.naver.com", "ridibooks.com",
+        )
+        for domain in official_domains:
+            if domain in url_lower:
+                return 1.0
+        # 위키 (준공식)
+        if "namu.wiki" in url_lower or "wikipedia.org" in url_lower:
+            return 0.8
+        # 커뮤니티 (신뢰도 중간)
+        community_domains = ("dcinside.com", "ruliweb.com", "fmkorea.com", "theqoo.net", "arca.live")
+        for domain in community_domains:
+            if domain in url_lower:
+                return 0.4
+        # 블로그 (신뢰도 낮음)
+        if "blog.naver.com" in url_lower or "tistory.com" in url_lower:
+            return 0.3
+        return 0.2
     
     def add_search_results(self, new_results: List[Dict[str, Any]]) -> int:
         """
@@ -237,6 +361,10 @@ class ConversationContext:
             self.search_results.append(result)
             if url:
                 existing_urls.add(url)
+                # ━━ 개선: 검색 결과에 소스 신뢰도를 자동 부여 ━━
+                trust = self.score_source_trust(url)
+                result["_trust_score"] = trust
+                self.source_trust_scores[url] = trust
             added_count += 1
         
         # 결과 로깅
@@ -1413,6 +1541,18 @@ class Orchestrator:
                                         file=sys.stderr,
                                     )
                                 
+                                # 🆕 2차 Decoder가 이미 medium/high 결과를 냈으면 3차 스킵
+                                # 3차 LLM 호출은 일관성이 떨어져 2차의 정답을 퇴행시키는 경향이 있음
+                                # 예: '즉사무림' → 2차에서 '즉사기 들고 무림에 떨어지다'(high)를
+                                #     3차에서 '즉사무림 사실상 이번편까지가 프롤로그군'(커뮤니티 글)로 교체
+                                if not _skip_3rd and prev_decoder_conf in ("medium", "high") and prev_decoder_title:
+                                    print(
+                                        f"[{_ts()}] {self.emoji} ⚡Decoder 2차 이미 {prev_decoder_conf} 결과 → "
+                                        f"3차 실행 스킵 (퇴행 방지, title='{prev_decoder_title}')",
+                                        file=sys.stderr,
+                                    )
+                                    _skip_3rd = True
+                                
                                 if not _skip_3rd:
                                     print(f"[{_ts()}] {self.emoji} 🔗 1.5단계: Decoder 3차 실행 (추가 검색 결과 포함하여", file=sys.stderr)
                                 
@@ -1731,6 +1871,35 @@ class Orchestrator:
                 print(f"[{_ts()}] {self.emoji} 종료 조건 충족 → Arbiter 실행", file=sys.stderr)
                 break
         
+        # Phase 3.5: Synthesizer (증거 기반 재해석)
+        # 모든 전문가 분석 완료 후, 축적된 증거로 원문을 재해석
+        if ExpertType.SYNTHESIZER in self.experts:
+            # 스킵 조건: Fast-Path noise이거나, Gatekeeper/Verifier가 명확히 noise 판정
+            _skip_synth = False
+            _gk_out = ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
+            _vf_out = ctx.get_expert_output(ExpertType.VERIFIER) or {}
+            _dc_out = ctx.get_expert_output(ExpertType.DECODER) or {}
+            _vf_result = _vf_out.get("verification_result", {}) or {}
+            
+            # Gatekeeper noise + Decoder 미실행 → 명백한 noise, 재해석 불필요
+            if _gk_out.get("is_noise") and not _dc_out:
+                _skip_synth = True
+                print(f"[{_ts()}] {self.emoji} 🔬 Synthesizer 스킵: Gatekeeper noise + Decoder 미실행", file=sys.stderr)
+            
+            # Decoder confidence=None + Verifier is_relevant=False → 작품 미식별, 재해석 불필요
+            if not _skip_synth:
+                _dc_conf = str(_dc_out.get("overall_confidence", "")).lower()
+                if _dc_conf in ("none", "") and _vf_result.get("is_relevant") is False:
+                    _skip_synth = True
+                    print(f"[{_ts()}] {self.emoji} 🔬 Synthesizer 스킵: Decoder none + Verifier irrelevant", file=sys.stderr)
+            
+            if not _skip_synth:
+                print(f"[{_ts()}] {self.emoji} 🔬 Synthesizer: 증거 기반 재해석 시작", file=sys.stderr)
+                self._call_expert(ExpertType.SYNTHESIZER, ctx, rules_config)
+            else:
+                print(f"[{_ts()}] {self.emoji} 🔬 Synthesizer 스킵됨", file=sys.stderr)
+                _emit_monitor("expert_phase", {"expert": "synthesizer", "status": "done", "skipped": True}, post_id=ctx.post_id)
+        
         # Phase 4: Final Arbiter
         if ExpertType.ARBITER in self.experts:
             self._call_expert(ExpertType.ARBITER, ctx, rules_config)
@@ -1827,6 +1996,8 @@ class Orchestrator:
                     conversation_context=conv_summary,
                     ctx=ctx,
                 )
+            elif expert_type == ExpertType.SYNTHESIZER:
+                result = expert.analyze(ctx)
             elif expert_type == ExpertType.ARBITER:
                 result = expert.analyze(ctx)
             else:
@@ -2372,16 +2543,31 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             result = parse_json_with_think_removal(response_text)
             
             # ── 후처리: 위험 줄임 매핑 제거 ──
-            # key_terms에 없는 줄임, 문법적 축약(조사/어미 포함) 등 필터링
+            # key_terms에 없는 줄임, 문법적 축약(조사/어미 포함), 일반명사 등 필터링
             import re as _re_post
             valid_abbrevs = []
             _kt_set = {_re_post.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', str(t)) for t in key_terms if isinstance(t, str)}
+            # 일반명사 블랙리스트 — 줄임 매핑의 abbrev 키로 사용 불가
+            _SNIPPET_GENERIC_WORDS = frozenset({
+                "작가", "작품", "소설", "웹소설", "연재", "신작", "전작", "최신작",
+                "주인공", "히로인", "캐릭터", "장르", "스포", "결말", "후기",
+                "리뷰", "감상", "추천", "비추", "평가", "댓글", "제목",
+                "예상", "전개", "스토리", "설정", "세계관", "먼치킨",
+                "회귀", "환생", "빙의", "각성", "레벨업", "시스템",
+            })
             for am in (result.get("abbreviation_mappings") or []):
                 abbr = am.get("abbrev", "").strip()
                 full = am.get("full", "").strip()
                 if not abbr or not full or len(abbr) < 2 or len(full) < 4:
                     continue
                 abbr_clean = _re_post.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', abbr)
+                # 일반명사는 줄임 매핑 키로 사용 불가
+                if abbr_clean in _SNIPPET_GENERIC_WORDS:
+                    print(
+                        f"[{_ts()}] {self.emoji} 📌 일반명사 줄임 제거: '{abbr}' → '{full}'",
+                        file=sys.stderr,
+                    )
+                    continue
                 # 줄임이 key_terms에 없으면 위험 가능성 높음
                 if abbr_clean not in _kt_set:
                     print(
@@ -2395,6 +2581,40 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     continue
                 valid_abbrevs.append(am)
             result["abbreviation_mappings"] = valid_abbrevs
+            
+            # ── 후처리: irrelevant_authors에서 작품명이 섞인 경우 제거 ──
+            # LLM이 "정령의 경제학" 같은 작품명을 작가로 잘못 분류하는 경우 방어
+            _irr_authors = result.get("irrelevant_authors") or []
+            if _irr_authors and isinstance(_irr_authors, list):
+                _identified_title = (result.get("identified_title") or "").strip()
+                _valid_abbrev_fulls = {
+                    _re_post.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', am.get("full", "")).lower()
+                    for am in valid_abbrevs
+                    if am.get("full")
+                }
+                _cleaned_irr = []
+                for _ia in _irr_authors:
+                    if not isinstance(_ia, str) or not _ia.strip():
+                        continue
+                    _ia_clean = _re_post.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', _ia).lower()
+                    # 작품명과 동일하면 작가가 아님
+                    if _identified_title and _ia_clean == _re_post.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', _identified_title).lower():
+                        continue
+                    # 줄임 매핑의 full(정식 제목)과 동일하면 작가가 아님
+                    if _ia_clean in _valid_abbrev_fulls:
+                        continue
+                    # 5글자 이상이고 "의" 또는 공백이 포함되면 작품명일 가능성 높음
+                    if len(_ia.strip()) >= 5 and ("의 " in _ia or " " in _ia.strip()):
+                        # 작가명은 보통 2-4음절, 공백 없음. 5글자+공백은 작품명 패턴
+                        # 추가 검증: 작가 패턴 접미사 확인
+                        if not any(_ia.strip().endswith(s) for s in ("작가", "작", "님")):
+                            print(
+                                f"[{_ts()}] {self.emoji} 📌 irrelevant_authors에서 작품명 의심 제거: '{_ia}'",
+                                file=sys.stderr,
+                            )
+                            continue
+                    _cleaned_irr.append(_ia)
+                result["irrelevant_authors"] = _cleaned_irr
             
             # ── 후처리: 비소설 매체 감지 시 작품 매칭 결과 무효화 ──
             category = (result.get("identified_category") or "unknown").lower()
@@ -2445,6 +2665,15 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         
         seen_titles = set()
         seen_authors = set()
+        
+        # ── 일반명사 블랙리스트: 줄임 매핑 key로 사용 불가 ──
+        _GENERIC_WORDS = frozenset({
+            "작가", "작품", "소설", "웹소설", "연재", "신작", "전작", "최신작",
+            "주인공", "히로인", "캐릭터", "장르", "스포", "결말", "후기",
+            "리뷰", "감상", "추천", "비추", "평가", "댓글", "제목",
+            "예상", "전개", "스토리", "설정", "세계관", "먼치킨",
+            "회귀", "환생", "빙의", "각성", "레벨업", "시스템",
+        })
         
         for r in search_results:
             content = r.get("content", "") or ""
@@ -2514,6 +2743,9 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 if not isinstance(kt, str) or len(kt) < 2:
                     continue
                 kt_clean = kt.replace(" ", "")
+                # ── 일반명사는 줄임 매핑 키로 사용 불가 ──
+                if kt_clean in _GENERIC_WORDS:
+                    continue
                 # 이미 작가명으로 사용된 key_term은 줄임 매핑에서 제외
                 if kt_clean in seen_authors:
                     continue
@@ -2621,6 +2853,36 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         fetchable_urls.append(url)
                 except Exception:
                     pass
+        
+        # ── 교차 검증: title_hints에도 있는 이름이 author_hints에 들어간 경우 제거 ──
+        # 예: "즉사무림 작가" 패턴에서 "즉사무림"을 작가로 잡았지만,
+        #     실제로는 작품 약칭 → title_hints에도 있으면 author에서 제거
+        _title_norms = {
+            re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', h.get("title", "")).lower()
+            for h in title_hints if h.get("title")
+        }
+        # abbreviation_hints의 full/abbrev도 title 이름으로 간주
+        for ah in abbreviation_hints:
+            _ab_full = re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', ah.get("full", "")).lower()
+            _ab_abbr = re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', ah.get("abbrev", "")).lower()
+            if _ab_full:
+                _title_norms.add(_ab_full)
+            if _ab_abbr:
+                _title_norms.add(_ab_abbr)
+        
+        if _title_norms:
+            _before_authors = len(author_hints)
+            author_hints = [
+                ah for ah in author_hints
+                if re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', ah.get("name", "")).lower()
+                   not in _title_norms
+            ]
+            _removed = _before_authors - len(author_hints)
+            if _removed > 0:
+                print(
+                    f"[_extract_hints] ⚠️ 작품명과 중복된 작가명 제거: {_removed}건",
+                    file=sys.stderr,
+                )
         
         return {
             "title_hints": title_hints,
@@ -2903,19 +3165,36 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             # ⚡ 핵심: LLM이 무관하다고 판단한 작가 를 기계적 힌트에서 제거
             irrelevant_authors = set(llm_snippet_result.get("irrelevant_authors") or [])
             if irrelevant_authors:
-                before_count = len(hints["author_hints"])
-                hints["author_hints"] = [
-                    ah for ah in hints["author_hints"]
-                    if ah.get("name", "") not in irrelevant_authors
-                    or ah.get("source") in ("url_fetch", "url_fetch_platform", "llm_snippet")
-                ]
-                removed = before_count - len(hints["author_hints"])
-                if removed > 0:
+                # 🔧 Fix G: Gatekeeper가 work_discussion + 캐릭터 3명 이상이면
+                # snippet_analyzer의 irrelevant_authors 판단을 무시
+                # (snippet_analyzer가 검색 결과만 보고 작가를 무관하다고 판단하는 오류 방지)
+                _gk_result_snip = getattr(ctx, 'gatekeeper_result', None) or {}
+                _gk_post_type_snip = _gk_result_snip.get("post_type", "") if isinstance(_gk_result_snip, dict) else ""
+                _gk_ent_snip = (_gk_result_snip.get("detected_entities") or {}) if isinstance(_gk_result_snip, dict) else {}
+                _gk_chars_snip = _gk_ent_snip.get("possible_characters") or []
+                
+                if _gk_post_type_snip == "work_discussion" and len(_gk_chars_snip) >= 3:
                     print(
-                        f"[{_ts()}] {self.emoji} 📌 LLM 무관 작가 제거: "
-                        f"{irrelevant_authors} ({removed}개",
+                        f"[{_ts()}] {self.emoji} 🛡️ irrelevant_authors 무시: "
+                        f"GK=work_discussion + 캐릭터 {len(_gk_chars_snip)}명 → "
+                        f"snippet의 무관 작가 판단 차단 ({irrelevant_authors})",
                         file=sys.stderr,
                     )
+                    irrelevant_authors = set()  # 무효화
+                else:
+                    before_count = len(hints["author_hints"])
+                    hints["author_hints"] = [
+                        ah for ah in hints["author_hints"]
+                        if ah.get("name", "") not in irrelevant_authors
+                        or ah.get("source") in ("url_fetch", "url_fetch_platform", "llm_snippet")
+                    ]
+                    removed = before_count - len(hints["author_hints"])
+                    if removed > 0:
+                        print(
+                            f"[{_ts()}] {self.emoji} 📌 LLM 무관 작가 제거: "
+                            f"{irrelevant_authors} ({removed}개",
+                            file=sys.stderr,
+                        )
             
             # LLM 결과를 ctx에 저장 (Decoder가 활용)
             ctx.llm_snippet_analysis = llm_snippet_result

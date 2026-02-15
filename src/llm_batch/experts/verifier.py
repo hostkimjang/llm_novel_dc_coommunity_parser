@@ -336,6 +336,68 @@ DiscourseAnalyzer 분석 결과:
                 confidence_map = {"high": 0.95, "medium": 0.7, "low": 0.4}
                 ctx.expert_confidence["verifier"] = confidence_map.get(confidence_str, 0.5)
             
+            # ━━ 개선: evidence_type 3분류 + candidate evidence bucket + source trust ━━
+            # evidence_type을 post_span / search_snippet / official_url로 분류
+            if ctx and verification.get("is_relevant") and novel_id:
+                verified_ev_title = (
+                    novel_id.get("official_novel_title")
+                    or novel_id.get("official_title")
+                )
+                grounding_ev = verification.get("grounding_check", {})
+                anchor_ev = grounding_ev.get("anchor_found", "none")
+                
+                if verified_ev_title:
+                    # 1) 본문 증거 분류 (post_span)
+                    if anchor_ev in ("title_mention", "character_mention", 
+                                     "plot_mention", "author_mention", "character_title_link"):
+                        ctx.add_evidence_for_candidate(verified_ev_title, "post_span", {
+                            "type": anchor_ev,
+                            "source": "verifier_grounding",
+                            "grounded": grounding_ev.get("decoder_grounded", False),
+                        })
+                    
+                    # 2) 검색 증거 분류 (search_snippet) + 소스 신뢰도 가중치
+                    all_search_ev = (ctx.search_results or []) + (verification_search or [])
+                    title_norm_ev = verified_ev_title.replace(" ", "")
+                    for sr in all_search_ev:
+                        sr_text = (sr.get("title", "") + " " + (sr.get("content", "") or sr.get("snippet", "")))
+                        sr_url = sr.get("url", "")
+                        if title_norm_ev in sr_text.replace(" ", ""):
+                            trust = ctx.score_source_trust(sr_url)
+                            ctx.add_evidence_for_candidate(verified_ev_title, "search_snippet", {
+                                "url": sr_url,
+                                "snippet": sr_text[:200],
+                                "trust_score": trust,
+                            })
+                            # 소스 신뢰도 기록
+                            if sr_url:
+                                ctx.source_trust_scores[sr_url] = trust
+                            # 3) 공식 URL 분류 (official_url)
+                            if trust >= 0.8:
+                                ctx.add_evidence_for_candidate(verified_ev_title, "official_url", {
+                                    "url": sr_url,
+                                    "trust_score": trust,
+                                })
+                    
+                    # heretic_url이 있으면 official_url로 등록
+                    h_url = novel_id.get("heretic_url")
+                    if h_url and ctx.score_source_trust(h_url) >= 0.8:
+                        ctx.add_evidence_for_candidate(verified_ev_title, "official_url", {
+                            "url": h_url,
+                            "trust_score": ctx.score_source_trust(h_url),
+                        })
+                    
+                    # 가설 상태머신 업데이트
+                    ev_list = [anchor_ev]
+                    if h_url:
+                        ev_list.append(f"url:{h_url[:50]}")
+                    ctx.update_hypothesis(
+                        title=verified_ev_title,
+                        confidence=novel_id.get("confidence", "low"),
+                        evidence=ev_list,
+                        step=ctx.iteration,
+                    )
+            
             # 🔥 본문 증거 교차검증 가드: LLM Verifier가 is_relevant=true로 판정했지만
             # grounding_check에서 decoder_grounded=false이면 코드 레벨 재검증
             if ctx and verification.get("is_relevant") and novel_id:

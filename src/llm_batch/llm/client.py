@@ -276,13 +276,19 @@ class LLMClient:
         
         # ── 반복 루프 다계층 방어 ──
         loop_detected = False
-        _ACC_HARD_CAP = 12000         # 누적 문자 하드캡 (12000자 초과 시 강제 종료)
+        _ACC_HARD_CAP = 16000         # 누적 문자 하드캡 (16000자 초과 시 강제 종료)
         _TEXT_CHECK_INTERVAL = 40     # 40토큰마다 텍스트 레벨 반복 검사
         # 패턴 길이별 임계값: 짧은 패턴은 JSON 구조상 정상 반복될 수 있어 관대하게
         _TEXT_REPEAT_THRESHOLDS = {8: 15, 15: 10, 30: 7, 60: 6, 120: 5}
         # JSON value 리터럴 패턴: 이것들로 끝나는 짧은 패턴은 정상 JSON 구조
         _JSON_VALUE_SUFFIXES = ('null', 'false', 'true', '0', '0.0')
         _last_text_check_count = 0    # 마지막 텍스트 검사 시 토큰 카운트
+        # JSON 객체 반복 감지: 첫 완전 JSON 형성 후 또 {가 오면 반복
+        _json_depth = 0               # 현재 JSON 중괄호 깊이
+        _json_started = False         # 첫 { 발견 여부
+        _json_in_string = False       # JSON 문자열 내부인지
+        _json_escape = False          # 이스케이프 문자 처리
+        _json_complete_pos = -1       # 첫 완전 JSON 객체 완료 위치
         
         try:
             # httpx streaming with iter_text() for better SSE handling
@@ -340,6 +346,42 @@ class LLMClient:
                                         print(piece, end="", file=sys.stderr, flush=True)
                                         
                                         # ── 다계층 반복 루프 방어 ──
+                                        
+                                        # (0) JSON 객체 반복 감지 (대규모 JSON 통째 반복 방어)
+                                        for _ch in piece:
+                                            if _json_escape:
+                                                _json_escape = False
+                                                continue
+                                            if _ch == '\\' and _json_in_string:
+                                                _json_escape = True
+                                                continue
+                                            if _ch == '"':
+                                                _json_in_string = not _json_in_string
+                                                continue
+                                            if _json_in_string:
+                                                continue
+                                            if _ch == '{':
+                                                if not _json_started:
+                                                    _json_started = True
+                                                if _json_complete_pos >= 0:
+                                                    # 이미 완전한 JSON이 형성된 후 새 {가 시작됨 → 반복
+                                                    _acc_len_now = sum(len(s) for s in acc)
+                                                    ts = self._timestamp()
+                                                    print(
+                                                        f"\n[{ts}][llm-stream] ⚠️ JSON 객체 반복 감지 "
+                                                        f"(첫 객체 {_json_complete_pos}자에서 완료, "
+                                                        f"총 {_acc_len_now}자), 조기 종료",
+                                                        file=sys.stderr, flush=True,
+                                                    )
+                                                    loop_detected = True
+                                                    break
+                                                _json_depth += 1
+                                            elif _ch == '}':
+                                                _json_depth -= 1
+                                                if _json_depth == 0 and _json_started and _json_complete_pos < 0:
+                                                    _json_complete_pos = sum(len(s) for s in acc)
+                                        if loop_detected:
+                                            break
                                         
                                         # (1) 누적 문자 하드캡
                                         _acc_len = sum(len(s) for s in acc)
@@ -681,11 +723,17 @@ class LLMClient:
             
             # ── 반복 루프 다계층 방어 ──
             _loop_detected = False
-            _ACC_HARD_CAP = 12000
+            _ACC_HARD_CAP = 16000
             _TEXT_CHECK_INTERVAL = 40
             _TEXT_REPEAT_THRESHOLDS = {8: 15, 15: 10, 30: 7, 60: 6, 120: 5}
             _JSON_VALUE_SUFFIXES = ('null', 'false', 'true', '0', '0.0')
             _last_text_check_count = 0
+            # JSON 객체 반복 감지
+            _json_depth = 0
+            _json_started = False
+            _json_in_string = False
+            _json_escape = False
+            _json_complete_pos = -1
             
             for chunk in chunks:
                 if _loop_detected:
@@ -702,6 +750,41 @@ class LLMClient:
                     print(piece, end="", file=sys.stderr, flush=True)
                     
                     # ── 다계층 반복 루프 방어 ──
+                    
+                    # (0) JSON 객체 반복 감지
+                    for _ch in piece:
+                        if _json_escape:
+                            _json_escape = False
+                            continue
+                        if _ch == '\\' and _json_in_string:
+                            _json_escape = True
+                            continue
+                        if _ch == '"':
+                            _json_in_string = not _json_in_string
+                            continue
+                        if _json_in_string:
+                            continue
+                        if _ch == '{':
+                            if not _json_started:
+                                _json_started = True
+                            if _json_complete_pos >= 0:
+                                _acc_len_now = sum(len(s) for s in acc)
+                                ts = self._timestamp()
+                                print(
+                                    f"\n[{ts}][llm-stream] ⚠️ JSON 객체 반복 감지 "
+                                    f"(첫 객체 {_json_complete_pos}자에서 완료, "
+                                    f"총 {_acc_len_now}자), 조기 종료",
+                                    file=sys.stderr, flush=True,
+                                )
+                                _loop_detected = True
+                                break
+                            _json_depth += 1
+                        elif _ch == '}':
+                            _json_depth -= 1
+                            if _json_depth == 0 and _json_started and _json_complete_pos < 0:
+                                _json_complete_pos = sum(len(s) for s in acc)
+                    if _loop_detected:
+                        break
                     
                     # (1) 누적 문자 하드캡
                     _acc_len = sum(len(s) for s in acc)
