@@ -1,0 +1,26 @@
+services:
+  searchxng:
+    image: searxng/searxng:latest
+    restart: unless-stopped
+    ports:
+      - "9000:8080"
+    volumes:
+      - ./docker/searchxng/settings.yml:/etc/searxng/settings.yml:ro
+    environment:
+      - SEARXNG_BASE_URL=http://localhost:9000/
+      # NOTE: settings.yml에서 secret_key는 ${SEARXNG_SECRET} 로 override됨
+      - SEARXNG_SECRET=change-me-please-change
+
+  mcp-bridge:
+    build:
+      context: .
+      dockerfile: docker/mcp-bridge/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3333:3333"
+    environment:
+      - SEARCHXNG_URL=http://searchxng:8080
+      - MCP_PORT=3333
+      - LLM_ENDPOINT=${LLM_ENDPOINT:-http://host.docker.internal:11434}
+    depends_on:
+      - searchxng

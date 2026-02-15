@@ -1,0 +1,1139 @@
+"""
+Stage 3: Verifier Expert - ì¦ê±° ê²€ì¦?ë¶„ì„ê´€
+Final evidence verification and confirmation.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+import sys
+import time
+from typing import Any, Dict, List, Optional
+
+from .prompts import VERIFIER_SYSTEM, VERIFIER_PROMPT
+from .utils import parse_json_with_think_removal, _ts
+from ..rules import OFFICIAL_PLATFORMS, GENRE_ARCHETYPE_TERMS
+
+
+class VerifierExpert:
+    """
+    ?” Verifier - Evidence Verification Analyst
+    
+    Responsibilities:
+    - Cross-reference evidence from all sources
+    - Final confirmation or rejection
+    - Build evidence chain
+    - Prevent false positives
+    """
+    
+    def __init__(self, llm_client):
+        self.llm = llm_client
+        self.name = "Verifier"
+        self.emoji = "?”"
+    
+    def analyze(
+        self,
+        post: Dict[str, Any],
+        comments: List[str],
+        gatekeeper_result: Dict[str, Any],
+        decoder_result: Dict[str, Any],
+        verification_search: Optional[List[Dict[str, Any]]] = None,
+        conversation_context: Optional[str] = None,
+        ctx: Optional[Any] = None,
+    ) -> Dict[str, Any]:
+        """
+        Verify decoded candidates and make final determination.
+        
+        Args:
+            post: Original post data
+            comments: Comment texts
+            gatekeeper_result: Stage 1 output
+            decoder_result: Stage 2 output
+            verification_search: Additional search results for verification
+            conversation_context: Optional conversation history from other experts
+            
+        Returns:
+            VerifierResult with final identity, evidence chain, confidence
+            May include request_expert/request_reason for dynamic routing
+        """
+        start_time = time.time()
+        
+        # None ì²´í¬
+        post = post or {}
+        comments = comments or []
+        
+        post_id = post.get("post_id", "?")
+        
+        # Build post JSON
+        post_json = self._build_post_json(post, comments)
+        
+        # None ì²´í¬
+        gatekeeper_result = gatekeeper_result or {}
+        decoder_result = decoder_result or {}
+        
+        # ?„ë¬¸ê°€ ê²°ê³¼ ?”ì•½ (? í° ?ˆì•½)
+        gatekeeper_summary = self._summarize_gatekeeper(gatekeeper_result)
+        decoder_summary = self._summarize_decoder(decoder_result)
+        
+        # Suspected titles from Context (?¤ë¥¸ ?„ë¬¸ê°€ê°€ ?ì„±???˜ì‹¬ ?‘í’ˆ ëª©ë¡)
+        suspected_titles_info = ""
+        if ctx and hasattr(ctx, 'suspected_titles') and ctx.suspected_titles:
+            suspected_items = []
+            for st in ctx.suspected_titles[:3]:
+                title = st.get('title', 'Unknown')
+                conf = st.get('confidence', 0.5)
+                try:
+                    conf_str = f"{float(conf):.2f}"
+                except (ValueError, TypeError):
+                    conf_str = str(conf)
+                suspected_items.append(f"- {title} (conf={conf_str})")
+            suspected_titles_info = "\n\n=== SUSPECTED TITLES (?˜ì‹¬ ?‘í’ˆ) ===\n" + "\n".join(suspected_items) + "\n"
+        
+        # ?œì•ˆ 1: DiscourseAnalyzer ê²°ê³¼ë¥?Verifier?ê²Œ ?„ë‹¬
+        discourse_context = ""
+        if ctx and hasattr(ctx, 'primary_domain') and ctx.primary_domain:
+            discourse_context = f"""
+DiscourseAnalyzer ë¶„ì„ ê²°ê³¼:
+- Primary Domain: {ctx.primary_domain}
+- Intent: {ctx.discourse_intent or 'unknown'}
+
+???•ë³´ë¥??œìš©?˜ì—¬ ?„ë©”??ë¶ˆì¼ì¹??¬ë?ë¥?ì²´í¬?˜ì„¸??
+"""
+        else:
+            discourse_context = "DiscourseAnalyzer ?•ë³´ ?†ìŒ (?¤í‚µ ê°€??"
+        
+        # Format prompt
+        context_section = ""
+        if conversation_context:
+            context_section = f"\n\n=== CONVERSATION HISTORY ===\n{conversation_context}\n"
+        
+        user_prompt = VERIFIER_PROMPT.format(
+            post_json=json.dumps(post_json, ensure_ascii=False, indent=2),
+            gatekeeper_json=json.dumps(gatekeeper_summary, ensure_ascii=False, indent=2),
+            decoder_json=json.dumps(decoder_summary, ensure_ascii=False, indent=2),
+            verification_search_json=json.dumps(verification_search or [], ensure_ascii=False, indent=2),
+            discourse_context=discourse_context,
+        ) + suspected_titles_info + context_section
+        
+        # ?†• ì½”ë“œ?ˆë²¨ ?½ì–´ ë¶„ì„ ?ŒíŠ¸ ì£¼ì…
+        # Decoder ?„ì²˜ë¦¬ì—??abbreviation_match_scoreë¡?ë°œê²¬??ë§¤ì¹­ ?•ë³´ë¥?
+        # Verifier LLM?ê²Œ ?„ë‹¬ ??? ë£¨?œë„¤?´ì…˜ ë°©ì? + ?•í™•??ì¶”ë¡  ? ë„
+        if ctx and hasattr(ctx, 'code_level_hints') and ctx.code_level_hints:
+            hints_section = "\n\n=== CODE-LEVEL ABBREVIATION ANALYSIS (ì½”ë“œ ?ˆë²¨ ?½ì–´ ë¶„ì„ ê²°ê³¼) ===\n"
+            hints_section += "?„ë˜??ì½”ë“œ ?ˆë²¨ ?Œì ˆ ë§¤ì¹­ ?Œê³ ë¦¬ì¦˜??ë°œê²¬??ê²°ê³¼?…ë‹ˆ??\n"
+            hints_section += "??ë¶„ì„?€ ?½ì–´??ê°??Œì ˆ???„ë³´ ?œëª©???¨ì–´ ì²?ê¸€?ì? ?œì„œ?€ë¡?ë§¤ì¹­?˜ëŠ”ì§€ë¥?ê²€ì¦í•©?ˆë‹¤.\n"
+            hints_section += "LLM ì¶”ë¡ ê³??…ë¦½?ì¸ ê°ê???ë¶„ì„?´ë?ë¡? ?’ì? score(??.8)??ê°•í•œ ì¦ê±°?…ë‹ˆ??\n\n"
+            for i, hint in enumerate(ctx.code_level_hints[:3], 1):
+                hints_section += (
+                    f"  [{i}] ?½ì–´: '{hint.get('effective_keyword', '?')}' ??"
+                    f"?„ë³´: '{hint.get('corrected_title', '?')}' "
+                    f"(score={hint.get('abbreviation_score', 0):.2f}, "
+                    f"source={hint.get('source', '?')})\n"
+                    f"      ê·¼ê±°: {hint.get('reasoning', '')}\n"
+                )
+            hints_section += "\n? ï¸ ??ì½”ë“œ ë¶„ì„ ê²°ê³¼ë¥??°ì„  ê³ ë ¤?˜ë˜, ê²€??ì¦ê±°Â·ë³¸ë¬¸ ë§¥ë½ê³?êµì°¨ ê²€ì¦í•˜?¸ìš”.\n"
+            hints_section += "ì½”ë“œ ë¶„ì„ê³??¤ë¥¸ ?œëª©??? íƒ?˜ë ¤ë©?ëª…í™•??ë°˜ì¦???œì‹œ?˜ì„¸??\n"
+            user_prompt += hints_section
+        
+        # ?†• snippet_analyzer LLM ë¶„ì„ ê²°ê³¼ ì£¼ì… ??ê²€??ê²°ê³¼ ì¢…í•© ?ë‹¨
+        if ctx:
+            _snippet_analysis = getattr(ctx, 'llm_snippet_analysis', None)
+            if _snippet_analysis and isinstance(_snippet_analysis, dict):
+                _sa_title = _snippet_analysis.get("identified_title")
+                _sa_author = _snippet_analysis.get("identified_author")
+                _sa_category = (_snippet_analysis.get("identified_category") or "").lower()
+                _sa_intent = (_snippet_analysis.get("post_intent") or "").lower()
+                # ë¹„ì†Œ???¥ë¥´?¼ë°˜ë¡ ì´ ?„ë‹Œ ? íš¨??ê²°ê³¼ë§?ì£¼ì…
+                _non_novel = {"genre_discussion", "vocaloid_song", "anime", "manga", "game"}
+                if (_sa_title or _sa_author) and _sa_category not in _non_novel:
+                    snippet_section = "\n\n=== ?† SNIPPET ANALYZER RESULT (ê²€??ê²°ê³¼ ì¢…í•© ë¶„ì„) ===\n"
+                    snippet_section += "ê²€??ê²°ê³¼ snippet?¤ì„ ì¢…í•© ë¶„ì„??ê²°ê³¼?…ë‹ˆ??\n"
+                    if _sa_title:
+                        snippet_section += f"  ???ë³„???‘í’ˆ: \"{_sa_title}\"\n"
+                    if _sa_author:
+                        snippet_section += f"  ???ë³„???‘ê?: \"{_sa_author}\"\n"
+                    _sa_chars = _snippet_analysis.get("relevant_characters", [])
+                    if _sa_chars:
+                        snippet_section += f"  ??ê´€???±ì¥?¸ë¬¼: {_sa_chars[:5]}\n"
+                    _sa_reason = _snippet_analysis.get("post_intent_reason", "")
+                    if _sa_reason:
+                        snippet_section += f"  ??ë¶„ì„ ê·¼ê±°: {_sa_reason[:120]}\n"
+                    snippet_section += "? ï¸ Decoder ê²°ê³¼?€ êµì°¨ ê²€ì¦í•˜?¸ìš”. ?¼ì¹˜?˜ë©´ ? ë¢°???í–¥, ë¶ˆì¼ì¹˜í•˜ë©?ê·¼ê±° ë¹„êµ ???ë‹¨.\n"
+                    user_prompt += snippet_section
+        
+        # ?´ì „ ê²€??ì¿¼ë¦¬ ?´ë ¥ ?„ë‹¬ (ì¤‘ë³µ ê²€??ë°©ì?)
+        if ctx and hasattr(ctx, 'searched_queries') and ctx.searched_queries:
+            searched_list = sorted(ctx.searched_queries)
+            user_prompt += f"\n\n=== PREVIOUS SEARCHES (?´ë? ?¤í–‰??ê²€??ì¿¼ë¦¬) ===\n"
+            for q in searched_list:
+                user_prompt += f"  - {q}\n"
+            user_prompt += "\n? ï¸ verification_search ?”ì²­ ????ì¿¼ë¦¬???´ë? ?¤í–‰?˜ì—ˆ?¼ë?ë¡?ì¤‘ë³µ ?”ì²­?˜ì? ë§ˆì„¸??\n"
+            user_prompt += "?¤ë¥¸ ê´€???¤ì›Œ?œë¡œ ?ˆë¡œ??ì¿¼ë¦¬ë¥??‘ì„±?˜ì„¸??\n"
+        
+        print(f"[{_ts()}][{self.emoji}] {self.name} ê²€ì¦??œì‘: post_id={post_id}", file=sys.stderr)
+        
+        try:
+            result = self._call_llm(user_prompt)
+            elapsed = time.time() - start_time
+            
+            verification = result.get("verification_result", {})
+            novel_id = verification.get("novel_identity") or {}
+            
+            # ?”¥ LLM ?œëª© ?˜ê° êµì •: ê²€??ê²°ê³¼/Decoder best_match?€ ?€ì¡?
+            if novel_id and ctx:
+                llm_title = novel_id.get("official_novel_title") or novel_id.get("official_title")
+                if llm_title:
+                    all_search = (ctx.search_results or []) + (verification_search or [])
+                    corrected = self._correct_title_from_evidence(llm_title, decoder_result, all_search)
+                    if corrected != llm_title:
+                        print(f"[{_ts()}][{self.emoji}] ? ï¸ ?œëª© êµì •: LLM='{llm_title}' ??'{corrected}'", file=sys.stderr)
+                        if novel_id.get("official_novel_title"):
+                            novel_id["official_novel_title"] = corrected
+                        if novel_id.get("official_title"):
+                            novel_id["official_title"] = corrected
+            
+            # ?š¨ ê²Œì‹œê¸€ ?œëª© ?„ìš© ë°©ì? (P0-4 ? ì œ ë°©ì–´)
+            # Verifierê°€ ê²Œì‹œê¸€ ?œëª©??ê·¸ë?ë¡?official_novel_title???£ëŠ” ê²½ìš° ì°¨ë‹¨
+            verified_title = (novel_id.get("official_novel_title") or
+                              novel_id.get("official_title")) if novel_id else None
+            
+            # ?›¡ï¸??„í‚¤?€???©ì–´ ê°€?? Decoderê°€ ì°¨ë‹¨???„í‚¤?€???œëª©??Verifierê°€ ?¬ë„?…í•˜??ê²?ë°©ì?
+            # Decoder??decoded_terms?ì„œ ?„í‚¤?€??ì°¨ë‹¨???ë³¸ ?¤ì›Œ?œë? ?•ì¸?˜ê³ ,
+            # Verifier ?œëª©???´ë‹¹ ?„í‚¤?€???©ì–´ê°€ ?¬í•¨?˜ì–´ ?ˆìœ¼ë©?ì°¨ë‹¨
+            if verified_title and decoder_result:
+                blocked_archetypes = set()
+                for term in decoder_result.get("decoded_terms", []):
+                    original = (term.get("original") or "").strip()
+                    if original in GENRE_ARCHETYPE_TERMS:
+                        blocked_archetypes.add(original)
+                    # Decoderê°€ title=None?¼ë¡œ ì°¨ë‹¨???„í‚¤?€?…ë„ ê°ì?
+                    best = term.get("best_match") or {}
+                    if (best.get("confidence") in ("none", None)
+                            and not best.get("title")
+                            and original in GENRE_ARCHETYPE_TERMS):
+                        blocked_archetypes.add(original)
+                
+                if blocked_archetypes:
+                    # Verifier ?œëª©??ì°¨ë‹¨???„í‚¤?€???©ì–´ê°€ ?¬í•¨?˜ì–´ ?ˆëŠ”ì§€ ?•ì¸
+                    title_norm = verified_title.replace(" ", "")
+                    for arch_term in blocked_archetypes:
+                        if arch_term.replace(" ", "") in title_norm:
+                            print(
+                                f"[{_ts()}][{self.emoji}] ?›¡ï¸??„í‚¤?€???¬ë„??ì°¨ë‹¨: "
+                                f"Decoderê°€ '{arch_term}' ?„í‚¤?€??ì°¨ë‹¨ ??"
+                                f"Verifier '{verified_title}' ?¬ë„??ë¶ˆí—ˆ ??null ê°•ì œ",
+                                file=sys.stderr,
+                            )
+                            novel_id["official_novel_title"] = None
+                            if "official_title" in novel_id:
+                                novel_id["official_title"] = None
+                            novel_id["confidence"] = "Low"
+                            verified_title = None
+                            break
+            
+            if verified_title:
+                post_title = post.get("title", "")
+                if post_title:
+                    self._guard_post_title_as_novel(
+                        novel_id, verified_title, post_title, decoder_result
+                    )
+            
+            # ?›¡ï¸??„ì´?”ì–´ F: heretic_url ?ê¸°ì°¸ì¡° ê²€ì¦?
+            # Verifierê°€ ?œì‹œ??ì¦ê±° URL???„ì¬ ë¶„ì„ ì¤‘ì¸ ê²Œì‹œê¸€ ?ì‹ ??URL?´ë©´
+            # ?œí™˜ ?¼ì¦?´ë?ë¡?ì¦ê±°ë¥?ë¬´íš¨?”í•˜ê³?confidence ?˜í–¥
+            if novel_id and ctx:
+                heretic_url = novel_id.get("heretic_url", "") or ""
+                current_pid = str(post.get("post_id", ""))
+                if heretic_url and current_pid and current_pid in heretic_url:
+                    # dcinside URL???ê¸° post_idê°€ ?¬í•¨ ???ê¸°ì°¸ì¡°
+                    if "dcinside.com" in heretic_url:
+                        print(
+                            f"[{_ts()}][{self.emoji}] ?›¡ï¸?heretic_url ?ê¸°ì°¸ì¡° ê°ì?: "
+                            f"'{heretic_url}' contains post_id={current_pid} -> evidence invalidated",
+                            file=sys.stderr,
+                        )
+                        novel_id["heretic_url"] = None
+                        novel_id["confidence"] = "Low"
+                        novel_id["evidence_type"] = "self_reference_invalid"
+
+            # ?›¡ï¸??„ì´?”ì–´ G: ?‘ê?ëª?vs ?Œì„¤ ?œëª© êµ¬ë¶„
+            # ê²€??ê²°ê³¼?ì„œ Verifier ?œëª©??'?‘ê?ëª??¼ë¡œ ?±ì¥?˜ë©´ ?Œì„¤ ?œëª©???„ë‹˜
+            # ?? Decoderê°€ ë³„ë„ë¡??‘ê?ëª…ì„ ?ë³„?˜ê³  ???œëª©ê³?êµ¬ë¶„??ê²½ìš°?ëŠ” ?ìš© ?ˆí•¨
+            verified_title_g = (novel_id.get("official_novel_title")
+                                or novel_id.get("official_title")) if novel_id else None
+            if verified_title_g and ctx and novel_id.get("confidence") in ("High", "high"):
+                # ?†• Decoderê°€ ?´ë? ?‘ê?ëª…ì„ ë³„ë„ë¡??ë³„?ˆëŠ”ì§€ ?•ì¸
+                # Decoderê°€ is_author_name=true???¤ë¥¸ term???ê³  ??title??'?‘í’ˆ'?¼ë¡œ
+                # ?ì •?ˆìœ¼ë©? Verifierê°€ ?…ì?ìœ¼ë¡??¤ì§‘ì§€ ?ŠìŒ
+                decoder_has_separate_author = False
+                for dt in decoder_result.get("decoded_terms", []):
+                    if dt.get("is_author_name"):
+                        # ?‘ê?ëª?term???ˆê³ , ê·??‘ê????‘í’ˆ?¼ë¡œ verified_title_gë¥?ê°€ë¦¬í‚¤ë©??µê³¼
+                        author_work = (dt.get("author_info") or {}).get("associated_work", "")
+                        if author_work and author_work.replace(" ", "") == verified_title_g.replace(" ", ""):
+                            decoder_has_separate_author = True
+                            break
+                        # associated_work???†ì–´?? ?¤ë¥¸ term????title??best_matchë¡?ê°€ì§€ê³??ˆìœ¼ë©?
+                        for other_dt in decoder_result.get("decoded_terms", []):
+                            if other_dt is not dt and not other_dt.get("is_author_name"):
+                                other_title = (other_dt.get("best_match") or {}).get("title", "")
+                                if other_title and other_title.replace(" ", "") == verified_title_g.replace(" ", ""):
+                                    decoder_has_separate_author = True
+                                    break
+                        if decoder_has_separate_author:
+                            break
+
+                if decoder_has_separate_author:
+                    print(
+                        f"[{_ts()}][{self.emoji}] ?”’ ?‘ê?ëª?ê°€???¤í‚µ: '{verified_title_g}' "
+                        f"-> decoder already separated author from title",
+                        file=sys.stderr,
+                    )
+                else:
+                    import re as _re_g
+                    all_search_g = (ctx.search_results or []) + (verification_search or [])
+                    # ?†• ?¨í„´ ê°œì„ : "?œëª© ?‘ê?"ê°€ ?„ë‹ˆ??"?‘ê?ëª? ?œëª©" ê°™ì? ?¨í„´ë§?ë§¤ì¹­
+                    # "?‘í’ˆ?œëª© ... ?‘ê? XXX" ?¨í„´?€ ?‘í’ˆ ?•ë³´ ?˜ì´ì§€?´ë?ë¡??¤íƒ ë°©ì?
+                    _esc_title = _re_g.escape(verified_title_g)
+                    author_pattern = _re_g.compile(
+                        r'?‘ê?ëª?.:\s]\s*' + _esc_title
+                        + r'|?‘ê?[:\s]\s*' + _esc_title
+                        + r'|ê¸€?‘ê?\s*' + _esc_title,
+                        _re_g.IGNORECASE,
+                    )
+                    # "?œëª©\s*?‘ê?" ?¨í„´?€ "?‘í’ˆ ?•ë³´" ?˜ì´ì§€??"?œëª© ... ?‘ê?: XXX"?€ ?¼ë™?˜ë?ë¡??œê±°
+                    for sr in all_search_g:
+                        sr_text = (sr.get("title", "") + " " + (sr.get("content", "") or sr.get("snippet", "")))
+                        if author_pattern.search(sr_text):
+                            print(
+                                f"[{_ts()}][{self.emoji}] ?›¡ï¸??‘ê?ëª?ê°ì?: '{verified_title_g}' "
+                                f"??ê²€??ê²°ê³¼?ì„œ ?‘ê?ëª…ìœ¼ë¡??±ì¥ ??confidence ?˜í–¥",
+                                file=sys.stderr,
+                            )
+                            novel_id["confidence"] = "Low"
+                            break
+
+            # ?›¡ï¸?Decoder null + community_mention ??confidence ?˜í–¥
+            # Decoderê°€ ?‘í’ˆ??ëª?ì°¾ì•˜?”ë° Verifierê°€ ?…ì?ìœ¼ë¡?High ?•ì‹ ?˜ë©´ ?„í—˜
+            if novel_id and novel_id.get("evidence_type") == "community_mention":
+                decoder_has_title = any(
+                    t.get("best_match", {}).get("title")
+                    for t in decoder_result.get("decoded_terms", [])
+                )
+                if not decoder_has_title and novel_id.get("confidence") in ("High", "high"):
+                    novel_id["confidence"] = "Low"
+                    print(
+                        f"[{_ts()}][{self.emoji}] ?›¡ï¸?community_mention + Decoder null ??"
+                        f"confidence ?˜í–¥: High ??Low",
+                        file=sys.stderr
+                    )
+
+            # ?›¡ï¸??„ì´?”ì–´ D: Decoder null + Verifier ?œëª©??ê²€??ê²°ê³¼???†ìœ¼ë©??˜ê°
+            # Decoderê°€ ?‘í’ˆ??ëª?ì°¾ì•˜?”ë° Verifierê°€ ?…ì?ìœ¼ë¡??œëª©??'ë°œëª…'??ê²½ìš°
+            verified_title_d = (novel_id.get("official_novel_title")
+                                or novel_id.get("official_title")) if novel_id else None
+            if verified_title_d and ctx:
+                decoder_has_title = any(
+                    t.get("best_match", {}).get("title")
+                    for t in decoder_result.get("decoded_terms", [])
+                )
+                if not decoder_has_title:
+                    # ê²€??ê²°ê³¼?????œëª©???•í™•??ì¡´ì¬?˜ëŠ”ì§€ ?•ì¸
+                    all_search = (ctx.search_results or []) + (verification_search or [])
+                    title_in_search = False
+                    title_norm = verified_title_d.replace(" ", "")
+                    for sr in all_search:
+                        sr_title = (sr.get("title", "") + " " + (sr.get("content", "") or sr.get("snippet", "")))
+                        if title_norm in sr_title.replace(" ", ""):
+                            title_in_search = True
+                            break
+                    if not title_in_search:
+                        old_conf = novel_id.get("confidence", "Low")
+                        novel_id["confidence"] = "Low"
+                        print(
+                            f"[{_ts()}][{self.emoji}] ?›¡ï¸?Decoder null + ê²€?‰ì— '{verified_title_d}' ë¶€????"
+                            f"?˜ê° ?˜ì‹¬, confidence: {old_conf} ??Low",
+                            file=sys.stderr,
+                        )
+            
+            # ?œì•ˆ 2: Verifier??? ë¢°?„ë? ctx???€??
+            if ctx:
+                confidence_str = novel_id.get("confidence", "low")
+                confidence_map = {"high": 0.95, "medium": 0.7, "low": 0.4}
+                ctx.expert_confidence["verifier"] = confidence_map.get(confidence_str, 0.5)
+            
+            # ?”¥ ë³¸ë¬¸ ì¦ê±° êµì°¨ê²€ì¦?ê°€?? LLM Verifierê°€ is_relevant=trueë¡??ì •?ˆì?ë§?
+            # grounding_check?ì„œ decoder_grounded=false?´ë©´ ì½”ë“œ ?ˆë²¨ ?¬ê?ì¦?
+            if ctx and verification.get("is_relevant") and novel_id:
+                grounding = verification.get("grounding_check", {})
+                anchor_found = grounding.get("anchor_found", "none")
+                decoder_grounded = grounding.get("decoder_grounded", True)
+                
+                if not decoder_grounded or anchor_found in ("search_only", "none"):
+                    # Decoder??ë³¸ë¬¸ ?µì»¤ë¥?ëª?ì°¾ì•˜ê³? Verifier??search_only/none??ê²½ìš°
+                    # ??ì½”ë“œ ?ˆë²¨?ì„œ ?¤ì œ ë³¸ë¬¸???•ì¸?˜ì—¬ ìµœì¢… ?ì •
+                    verified_title_bc = (
+                        novel_id.get("official_novel_title")
+                        or novel_id.get("official_title")
+                    )
+                    if verified_title_bc:
+                        has_body_evidence = self._code_level_body_check(
+                            post, comments, verified_title_bc, decoder_result
+                        )
+                        if not has_body_evidence:
+                            old_conf = novel_id.get("confidence", "Low")
+                            if old_conf in ("High", "high"):
+                                novel_id["confidence"] = "Low"
+                                print(
+                                    f"[{_ts()}][{self.emoji}] ?›¡ï¸?ë³¸ë¬¸ì¦ê±° êµì°¨ê²€ì¦? "
+                                    f"'{verified_title_bc}' ??grounding=false + "
+                                    f"ì½”ë“œ?ˆë²¨ ë³¸ë¬¸ê²€ì¦??¤íŒ¨ ??confidence: {old_conf}?’Low",
+                                    file=sys.stderr,
+                                )
+                            elif old_conf in ("Medium", "medium"):
+                                novel_id["confidence"] = "Low"
+                                print(
+                                    f"[{_ts()}][{self.emoji}] ?›¡ï¸?ë³¸ë¬¸ì¦ê±° êµì°¨ê²€ì¦? "
+                                    f"'{verified_title_bc}' ??grounding=false + "
+                                    f"ì½”ë“œ?ˆë²¨ ë³¸ë¬¸ê²€ì¦??¤íŒ¨ ??confidence: {old_conf}?’Low",
+                                    file=sys.stderr,
+                                )
+            
+            # ?œì•ˆ 4: ë¶ˆí™•?¤ì„± ?”ì¸ ?˜ì§‘
+            if ctx and verification.get("is_relevant"):
+                # ì¦ê±°ê°€ ?½í•œ ê²½ìš° ë¶ˆí™•?¤ì„± ?„ì 
+                evidence_type = novel_id.get("evidence_type", "")
+                if evidence_type == "community_only":
+                    ctx.uncertainty_sources.append("Verifier: ê³µì‹ ?Œë«??ì¦ê±° ?†ìŒ (ì»¤ë??ˆí‹° ?¬ìŠ¤?¸ë§Œ)")
+                
+                grounding_check = verification.get("grounding_check", {})
+                if not grounding_check.get("decoder_grounded", True):
+                    ctx.uncertainty_sources.append("Verifier: ë³¸ë¬¸???‘í’ˆ ì§ì ‘ ?¸ê¸‰ ?†ìŒ (?œëª©ë§?")
+                
+                if confidence_str == "low":
+                    ctx.uncertainty_sources.append(f"Verifier: ??? ? ë¢°??({novel_id.get('notes', '')})")
+
+            # ?›¡ï¸?entity role ?•í•©??ê°€??
+            # Decoderê°€ ?‘ê?ëª…ìœ¼ë¡??ë³„???©ì–´ê°€ ë³¸ë¬¸/?“ê????ˆëŠ”??            # reason???´ë? ìºë¦­???±ì¥?¸ë¬¼ë¡??¨ì •?˜ë©´ ì¤‘ë¦½ ?œí˜„?¼ë¡œ êµì •.
+            self._sanitize_entity_role_reason(
+                result=result,
+                decoder_result=decoder_result,
+                post=post,
+                comments=comments,
+            )
+            
+            print(f"[{_ts()}][{self.emoji}] {self.name} ?„ë£Œ ({elapsed:.1f}s): "
+                    f"is_relevant={verification.get('is_relevant')}, "
+                    f"title={novel_id.get('official_novel_title') or novel_id.get('official_title')}, "
+                    f"confidence={novel_id.get('confidence')}", 
+                    file=sys.stderr)
+            
+            # â­?suspected_titles ?…ë°?´íŠ¸ (ê²€ì¦?ê²°ê³¼ ë°˜ì˜)
+            if ctx:
+                self._update_suspected_titles(result, ctx)
+            
+            return result
+            
+        except Exception as e:
+            elapsed = time.time() - start_time
+            print(f"[{_ts()}][{self.emoji}] {self.name} ?¤ë¥˜ ({elapsed:.1f}s): {e}", file=sys.stderr)
+            return self._fallback_result(gatekeeper_result, decoder_result, str(e))
+    
+    def _correct_title_from_evidence(self, llm_title: str, decoder_result: Dict[str, Any], search_results: List[Dict[str, Any]]) -> str:
+        """
+        ?”¥ LLM???ì„±???œëª©??Decoder best_match + ê²€??ê²°ê³¼?€ ?€ì¡°í•˜??êµì •
+        ?? 'ì£½ì—ˆ??ê¹¨ì–´?˜ë„ ?˜ì„ ' (LLM ?˜ê°) ??'ì£½ì—ˆ??ê¹¨ì–´???˜ì„ ' (ê²€??ê²°ê³¼ ?•í™•)
+        """
+        # ?”’ ?„ì´?”ì–´ B-1: LLM ?œëª©??Decoder best_match?€ ?¼ì¹˜?˜ë©´ êµì • ?¤í‚µ
+        # Decoderê°€ ?´ë? ?¬ë°”ë¥´ê²Œ ?ë³„???œëª©??Verifierê°€ ? ì‚¬ ?´ë¦„???¤ë¥¸ ?‘í’ˆ?¼ë¡œ
+        # ë°”ê¾¸??ê²ƒì„ ë°©ì? (ë¹Œì–´ë¨¹ì„ ?˜ìƒ ???°ë¨¹???˜ìƒ ë¬¸ì œ)
+        for term in decoder_result.get("decoded_terms", []):
+            best = term.get("best_match", {})
+            decoder_title = best.get("title")
+            if decoder_title and decoder_title == llm_title:
+                # LLM??Decoder?€ ê°™ì? ?µì„ ?ˆìŒ ??ê²€??ê²°ê³¼ë¡?êµì •?˜ì? ?ŠìŒ
+                return llm_title
+
+        # 1?œìœ„: Decoder??best_match.titleê³?ë¹„êµ (ê°€??? ë¢°)
+        for term in decoder_result.get("decoded_terms", []):
+            best = term.get("best_match", {})
+            decoder_title = best.get("title")
+            if decoder_title and decoder_title != llm_title:
+                if self._is_similar_title(llm_title, decoder_title):
+                    return decoder_title
+        
+        # 2?œìœ„: ê²€??ê²°ê³¼??title ?„ë“œ?ì„œ ê³µì‹ ?Œë«???œëª© ë¹„êµ
+        official_platforms = OFFICIAL_PLATFORMS
+        for sr in search_results:
+            url = sr.get("url", "")
+            if not any(p in url for p in official_platforms):
+                continue
+            sr_title = sr.get("title", "")
+            # "?¹ì†Œ?¤ë¡œ ê¿ˆê¾¸???¸ìƒ! - ì£½ì—ˆ??ê¹¨ì–´???˜ì„ " ??"ì£½ì—ˆ??ê¹¨ì–´???˜ì„ "
+            if " - " in sr_title:
+                sr_title = sr_title.split(" - ")[-1].strip()
+            import re
+            sr_title = re.sub(r'\s*\(r\d+\s*\)\s*$', '', sr_title).strip()
+            if sr_title and sr_title != llm_title and len(sr_title) >= 3:
+                if self._is_similar_title(llm_title, sr_title):
+                    return sr_title
+        
+        return llm_title
+    
+    def _is_similar_title(self, title_a: str, title_b: str) -> bool:
+        """???œëª©??? ì‚¬?œì? (ê°™ì? ?‘í’ˆ???œê¸° ì°¨ì´?¸ì? ?ë³„)
+        
+        ?µì‹¬: 'ë¹Œì–´ë¨¹ì„ ?˜ìƒ' vs '?°ë¨¹???˜ìƒ'ì²˜ëŸ¼ ? ì‚¬?˜ì?ë§?
+        ?„ì „???¤ë¥¸ ?‘í’ˆ??êµ¬ë¶„?´ì•¼ ??
+        """
+        if abs(len(title_a) - len(title_b)) > 3:
+            return False
+        from difflib import SequenceMatcher
+        ratio = SequenceMatcher(None, title_a, title_b).ratio()
+        if ratio < 0.7:
+            return False
+        # ?”§ ì²??´ì ˆ(?µì‹¬?´ê·¼)???¤ë¥´ë©??¤ë¥¸ ?‘í’ˆ?¼ë¡œ ê°„ì£¼
+        # 'ë¹Œì–´ë¨¹ì„' vs '?°ë¨¹??, 'K-ë¬¸í™”?? vs 'ì¼€?°í—Œ' ??
+        first_a = title_a.split()[0] if title_a.split() else title_a
+        first_b = title_b.split()[0] if title_b.split() else title_b
+        if first_a != first_b and len(first_a) >= 2 and len(first_b) >= 2:
+            # ì²??´ì ˆ???¤ë¥´ë©?? ì‚¬??ê¸°ì? ?í–¥ (0.85 ?´ìƒ ?„ìš”)
+            if ratio < 0.85:
+                return False
+        return True
+    
+    def _guard_post_title_as_novel(
+        self,
+        novel_id: Dict[str, Any],
+        verified_title: str,
+        post_title: str,
+        decoder_result: Dict[str, Any],
+    ) -> None:
+        """
+        ?š¨ ê²Œì‹œê¸€ ?œëª© ?„ìš© ë°©ì? (Arbiter P0-4??? ì œ ?ìš©)
+        
+        LLM??ê²Œì‹œê¸€ ?œëª©??ê·¸ë?ë¡?official_novel_title???£ëŠ” ê²½ìš°ë¥?ì½”ë“œ ?ˆë²¨?ì„œ ì°¨ë‹¨.
+        Decoderê°€ ê³µì‹ ?Œë«??URL ê¸°ë°˜?¼ë¡œ ?•ì •???œëª©?´ë©´ ?ˆìš©.
+        """
+        from difflib import SequenceMatcher
+        norm_post = post_title.replace(" ", "")
+        norm_title = verified_title.replace(" ", "")
+        sim = SequenceMatcher(None, norm_post, norm_title).ratio()
+        is_substring = norm_title in norm_post or norm_post in norm_title
+        
+        if not ((sim >= 0.7 or is_substring) and len(verified_title) > 3):
+            return  # ? ì‚¬?˜ì? ?Šìœ¼ë©??µê³¼
+        
+        # ?”§ ì¶•ì•½???¬í•¨ ?¨í„´ ?ˆì™¸: ?œëª©??ê²Œì‹œê¸€ ?œëª©???‘ì? ë¶€ë¶??‘ë‘???????ŒëŠ” ?„ìš©???„ë‹˜
+        # ?? "ì¦‰ì‚¬ë¬´ë¦¼" ??"ì¦‰ì‚¬ë¬´ë¦¼?´ìœ ë°?ë¯¸ë˜ê°€ ë²Œì¨ ë³´ì´?? ??ì¶•ì•½??ìºë¦­?°ëª… ?©ì„± (?•ìƒ)
+        # ?„ìš© = ê²Œì‹œê¸€ ?œëª© ?„ì²´ë¥?ê±°ì˜ ê·¸ë?ë¡??Œì„¤ ?œëª©?¼ë¡œ ?£ì? ê²½ìš°
+        if is_substring and norm_title in norm_post:
+            title_ratio = len(norm_title) / max(len(norm_post), 1)
+            if title_ratio < 0.6:
+                # ?Œì„¤ ?œëª©??ê²Œì‹œê¸€ ?œëª©??60% ë¯¸ë§Œ ??ì¶•ì•½?´ë¡œ???¬í•¨??ê²?(?„ìš© ?„ë‹˜)
+                print(
+                    f"[{_ts()}][{self.emoji}] ??ì¶•ì•½???¬í•¨ ?ˆìš©: "
+                    f"'{verified_title}' ??'{post_title}' "
+                    f"(title_ratio={title_ratio:.2f} < 0.6, sim={sim:.2f})",
+                    file=sys.stderr,
+                )
+                return
+        
+        # Decoderê°€ ê³µì‹ ?Œë«??URL ê¸°ë°˜?¼ë¡œ ?•ì •???œëª©?¸ì? ?•ì¸
+        decoder_has_platform_url = False
+        for term in decoder_result.get("decoded_terms", []):
+            best = term.get("best_match") or {}
+            if best and best.get("title") == verified_title:
+                grounding = term.get("grounding") or {}
+                if grounding.get("is_grounded") and grounding.get("anchor_type") in (
+                    "platform_url", "official_api",
+                ):
+                    decoder_has_platform_url = True
+                    break
+                for cand in term.get("candidates") or []:
+                    if cand.get("official_novel_title") == verified_title and cand.get("platform"):
+                        decoder_has_platform_url = True
+                        break
+        
+        if decoder_has_platform_url:
+            return  # Decoderê°€ ?Œë«??ê¸°ë°˜ ?•ì • ??? íš¨
+        
+        # ?„ìš© ê°ì? ??null ê°•ì œ
+        print(
+            f"[{_ts()}][{self.emoji}] ?š¨ ê²Œì‹œê¸€ ?œëª© ?„ìš© ì°¨ë‹¨: "
+            f"official_title='{verified_title}' ??post_title='{post_title}' "
+            f"(sim={sim:.2f}) ??null ê°•ì œ",
+            file=sys.stderr
+        )
+        novel_id["official_novel_title"] = None
+        if "official_title" in novel_id:
+            novel_id["official_title"] = None
+        novel_id["confidence"] = "Low"
+    
+    def _update_suspected_titles(self, result: Dict[str, Any], ctx: Any) -> None:
+        """
+        â­?suspected_titles ?…ë°?´íŠ¸ (ê²€ì¦?ê²°ê³¼ ë°˜ì˜)
+        - ?•ì¸???‘í’ˆ: status ??'verified', confidence ??
+        - ë¶ˆí™•?¤í•œ ?‘í’ˆ: ?œê±° ?ëŠ” confidence ??
+        """
+        verification = result.get("verification_result", {})
+        novel_id = verification.get("novel_identity") or {}
+        
+        verified_title = novel_id.get("official_novel_title") or novel_id.get("official_title")
+        confidence = novel_id.get("confidence", "low")
+        is_relevant = verification.get("is_relevant", False)
+        grounding = verification.get("grounding_check") or {}
+        anchor_found = str(grounding.get("anchor_found") or "").lower()
+        decoder_grounded = bool(grounding.get("decoder_grounded", True))
+        strict_prune = (not is_relevant) and ((not decoder_grounded) or anchor_found in ("none", "search_only"))
+
+        def _norm_text(text: Any) -> str:
+            return re.sub(r"[^\uac00-\ud7a3A-Za-z0-9]", "", str(text or "")).lower()
+
+        post_text_parts: List[str] = []
+        if ctx and hasattr(ctx, "post_data"):
+            _pd = getattr(ctx, "post_data", {}) or {}
+            post_text_parts.append(_pd.get("title", ""))
+            for _blk in (_pd.get("content_blocks") or []):
+                if isinstance(_blk, dict):
+                    post_text_parts.append(_blk.get("text", ""))
+                elif isinstance(_blk, str):
+                    post_text_parts.append(_blk)
+        if ctx and hasattr(ctx, "comments"):
+            post_text_parts.extend([c for c in (ctx.comments or []) if isinstance(c, str)])
+        post_text_norm = _norm_text(" ".join(post_text_parts))
+
+        author_norms = set()
+        if isinstance(verification.get("author_info"), dict):
+            _da = verification.get("author_info", {}).get("detected_author")
+            if _da:
+                author_norms.add(_norm_text(_da))
+        if ctx and hasattr(ctx, "snippet_hints") and ctx.snippet_hints:
+            for ah in (ctx.snippet_hints.get("author_hints") or []):
+                n = _norm_text((ah or {}).get("name"))
+                if n:
+                    author_norms.add(n)
+        
+        if not hasattr(ctx, "suspected_titles") or not ctx.suspected_titles:
+            return
+        
+        updated = []
+        for st in ctx.suspected_titles:
+            title = st.get("title", "")
+            title_norm = _norm_text(title)
+            source_expert = str(st.get("source_expert", ""))
+            try:
+                st_conf = float(st.get("confidence", 0.0))
+            except Exception:
+                st_conf = 0.0
+
+            if not title_norm:
+                continue
+            if title_norm in author_norms:
+                continue
+            if (
+                strict_prune
+                and title_norm not in post_text_norm
+                and source_expert in ("decoder_multi_interp", "decoder_mapping")
+                and st_conf <= 0.55
+            ):
+                continue
+            
+            if is_relevant and verified_title and title == verified_title:
+                # ê²€ì¦??•ì¸: status ?…ê·¸?ˆì´??
+                st["status"] = "verified"
+                # confidence???°ë¼ ì°¨ë“± ?ìš© (lowë©?ê¸°ì¡´ ê°?? ì?, ?í–¥?˜ì? ?ŠìŒ)
+                if confidence == "high":
+                    st["confidence"] = 0.9
+                elif confidence in ("medium", "Medium"):
+                    st["confidence"] = 0.7
+                else:
+                    # Low confidence: ê¸°ì¡´ ê°’ì—???Œí­ ?˜í–¥ (Verifierê°€ ?•ì‹  ?†ìŒ)
+                    st["confidence"] = max(0.3, st.get("confidence", 0.5) - 0.1)
+                st["verified_by"] = "verifier"
+                updated.append(st)
+            elif is_relevant and confidence in ("high", "medium"):
+                # ?¤ë¥¸ ?‘í’ˆ???•ì¸?? ???„ë³´??? ì??˜ë˜ confidence ??¶¤
+                st["confidence"] = max(0.2, st.get("confidence", 0.5) - 0.2)
+                updated.append(st)
+            else:
+                # ê´€???†ìŒ?¼ë¡œ ?ì •: confidence ??¶¤ (?œê±°?˜ì????ŠìŒ)
+                st["confidence"] = max(0.1, st.get("confidence", 0.5) - 0.3)
+                _keep_threshold = 0.35 if strict_prune else 0.2
+                if st["confidence"] >= _keep_threshold:
+                    updated.append(st)
+        
+        # ?ˆë¡œ ?•ì¸???‘í’ˆ ì¶”ê?
+        if is_relevant and verified_title:
+            if not any(s.get("title") == verified_title for s in updated):
+                # ï¿½ï¸ ?„ì´?”ì–´ H: Decoderê°€ ?‘ê?ëª…ìœ¼ë¡??ë³„???´ë¦„?€ suspected_titles??ì¶”ê? ì°¨ë‹¨
+                is_author_name_in_decoder = False
+                if ctx and hasattr(ctx, 'expert_outputs'):
+                    decoder_out_h = ctx.expert_outputs.get("decoder") or {}
+                    for term in decoder_out_h.get("decoded_terms", []):
+                        if term.get("is_author_name"):
+                            author_info = term.get("author_info") or {}
+                            author_name = author_info.get("name", "")
+                            original = term.get("original", "")
+                            if verified_title in (author_name, original):
+                                is_author_name_in_decoder = True
+                                break
+                if is_author_name_in_decoder:
+                    print(
+                        f"[{_ts()}][{self.emoji}] ?›¡ï¸??‘ê?ëª?ì°¨ë‹¨: "
+                        f"'{verified_title}'?€ Decoderê°€ ?‘ê?ëª…ìœ¼ë¡??ë³„ ??suspected_titles ì¶”ê? ?¤í‚µ",
+                        file=sys.stderr,
+                    )
+                    # ?‘ê?ëª…ì? suspected_titles??ì¶”ê??˜ì? ?ŠìŒ
+                    ctx.suspected_titles = sorted(updated, key=lambda x: x.get("confidence", 0), reverse=True)[:5]
+                    return
+
+                # ï¿½ğŸ”?Phase26-B: Decoder ìµœì¢… ê²°ê³¼ê°€ null?´ë©´ Verifier ?…ì ì¶”ê???confidence ?œí•œ
+                decoder_final_null = False
+                if ctx and hasattr(ctx, 'expert_outputs'):
+                    decoder_out = ctx.expert_outputs.get("decoder") or {}
+                    decoder_overall = decoder_out.get("overall_confidence", "")
+                    decoder_has_title = any(
+                        t.get("best_match", {}).get("title")
+                        for t in decoder_out.get("decoded_terms", [])
+                    )
+                    if decoder_overall in ("none", "low") and not decoder_has_title:
+                        decoder_final_null = True
+                
+                new_conf = 0.9 if confidence == "high" else 0.7
+                new_status = "verified"
+                if decoder_final_null:
+                    new_conf = min(new_conf, 0.4)  # Decoder null?´ë©´ ìµœë? 0.4
+                    new_status = "unconfirmed"
+                    print(
+                        f"[{_ts()}][{self.emoji}] ?›¡ï¸?Decoder-null ê°€?? "
+                        f"Decoder ìµœì¢…=null ??Verifier ?…ì ì¶”ê? '{verified_title}' conf={new_conf} (?œí•œ??",
+                        file=sys.stderr
+                    )
+                
+                updated.append({
+                    "title": verified_title,
+                    "confidence": new_conf,
+                    "source_expert": "verifier",
+                    "status": new_status,
+                })
+        
+        ctx.suspected_titles = sorted(updated, key=lambda x: x.get("confidence", 0), reverse=True)[:5]
+        print(f"[{_ts()}][{self.emoji}] ?? suspected_titles ¾÷µ¥ÀÌÆ®: {len(ctx.suspected_titles)}°Ç", file=sys.stderr)
+        for i, st in enumerate(ctx.suspected_titles, 1):
+            title = st.get('title', 'N/A')
+            conf = st.get('confidence', 'N/A')
+            source = st.get('source_expert', 'unknown')
+            print(f"[{_ts()}][{self.emoji}]    [{i}] {title} (conf={conf}, from={source})", file=sys.stderr)
+    
+    def _summarize_gatekeeper(self, gk: Dict[str, Any]) -> Dict[str, Any]:
+        """Gatekeeper ê²°ê³¼ ?”ì•½ (? í° ?ˆì•½)"""
+        if not gk:
+            return {}
+        
+        entities = gk.get("detected_entities") or {}
+        possible_titles = entities.get("possible_titles") or []
+        possible_authors = entities.get("possible_authors") or []
+        key_terms = gk.get("key_terms") or []
+        
+        return {
+            "is_noise": gk.get("is_noise"),
+            "post_type": gk.get("post_type"),
+            "possible_titles": possible_titles[:3] if possible_titles else [],
+            "possible_authors": possible_authors[:2] if possible_authors else [],
+            "key_terms": key_terms[:5] if key_terms else [],
+            "confidence": gk.get("confidence"),
+        }
+    
+    def _summarize_decoder(self, dc: Dict[str, Any]) -> Dict[str, Any]:
+        """Decoder ê²°ê³¼ ?”ì•½ (? í° ?ˆì•½)"""
+        if not dc:
+            return {}
+        
+        decoded = dc.get("decoded_terms") or []
+        summary_terms = []
+        blocked_archetypes = []
+        for term in decoded[:3]:  # ìµœë? 3ê°??©ì–´ë§?
+            if not term:
+                continue
+            best = term.get("best_match") or {}
+            original = term.get("original", "")
+            entry = {
+                "original": original,
+                "title": best.get("title"),
+                "confidence": best.get("confidence"),
+            }
+            # ?‘ê?ëª??ë³„ ?•ë³´ ?„ë‹¬
+            if term.get("is_author_name"):
+                ai = term.get("author_info") or {}
+                entry["is_author_name"] = True
+                entry["author_name"] = ai.get("name") or original
+            # ?„í‚¤?€??ì°¨ë‹¨ ?•ë³´ ?„ë‹¬ (Verifierê°€ ?¬ë„?…í•˜ì§€ ?Šë„ë¡?
+            if (original.strip() in GENRE_ARCHETYPE_TERMS
+                    and not best.get("title")
+                    and best.get("confidence") in ("none", None)):
+                entry["archetype_blocked"] = True
+                blocked_archetypes.append(original.strip())
+            summary_terms.append(entry)
+        
+        notes = dc.get("notes")
+        summary = {
+            "decoded_terms": summary_terms,
+            "overall_confidence": dc.get("overall_confidence"),
+            "needs_verification": dc.get("needs_verification"),
+            "notes": notes[:200] if notes else None,
+        }
+        
+        # ?„í‚¤?€??ì°¨ë‹¨ ê²½ê³ ë¥?ëª…ì‹œ?ìœ¼ë¡?ì¶”ê? (LLM ?„ë¡¬?„íŠ¸???„ë‹¬)
+        if blocked_archetypes:
+            summary["archetype_warning"] = (
+                f"? ï¸ ?¤ìŒ ?©ì–´???¥ë¥´ ?„í‚¤?€?…ìœ¼ë¡??ì •?˜ì–´ ?Œì„¤ ?œëª©???„ë‹™?ˆë‹¤: "
+                f"{blocked_archetypes}. ???©ì–´ê°€ ?¬í•¨???œëª©???ë³„?˜ì? ë§ˆì„¸??"
+            )
+        
+        return summary
+    
+    def _build_post_json(self, post: Dict[str, Any], comments: List[str]) -> Dict[str, Any]:
+        """Build simplified post JSON."""
+        content_texts = []
+        for block in post.get("content_blocks", []):
+            if isinstance(block, dict) and block.get("text"):
+                content_texts.append(block["text"])
+            elif isinstance(block, str):
+                content_texts.append(block)
+        
+        return {
+            "post_id": post.get("post_id"),
+            "title": post.get("title", ""),
+            "author": post.get("author", ""),
+            "content": content_texts,
+            "comments": comments[:10],
+        }
+    
+    def _call_llm(self, user_prompt: str) -> Dict[str, Any]:
+        """Call LLM and parse JSON response."""
+        messages = [
+            {"role": "system", "content": VERIFIER_SYSTEM},
+            {"role": "user", "content": user_prompt},
+        ]
+        
+        response_text = self.llm._stream_chat_http(
+            messages=messages,
+            tag="verifier",
+            use_grammar=True,
+        )
+        
+        return self._parse_json_response(response_text)
+    
+    def _parse_json_response(self, text: str) -> Dict[str, Any]:
+        """Extract and parse JSON from response, removing <think> blocks."""
+        return parse_json_with_think_removal(text)
+    
+    def _fallback_result(
+        self, 
+        gatekeeper: Dict[str, Any], 
+        decoder: Dict[str, Any],
+        error: str
+    ) -> Dict[str, Any]:
+        """Build fallback result from previous stages."""
+        # None ì²´í¬
+        gatekeeper = gatekeeper or {}
+        decoder = decoder or {}
+        
+        # Try to use decoder's best candidate
+        best_title = None
+        best_confidence = "None"
+        
+        for term in decoder.get("decoded_terms", []):
+            best = term.get("best_match", {})
+            if best.get("title"):
+                best_title = best["title"]
+                best_confidence = "Low"  # Downgrade without verification
+                break
+        
+        is_noise = gatekeeper.get("is_noise", False)
+        
+        # CRITICAL: ê²€ì¦??¤ë¥˜ ë°œìƒ ??is_relevant=False (ê²€ì¦??¤íŒ¨)
+        # JSON ?Œì‹± ?ëŸ¬ ?±ìœ¼ë¡?ê²€ì¦??ì²´ê°€ ë¶ˆê??¥í•˜ë¯€ë¡?Falseë¡?ì²˜ë¦¬
+        return {
+            "verification_result": {
+                "is_relevant": False,  # ê²€ì¦??¤íŒ¨ ??False
+                "is_novel_discussion": False,
+                "novel_identity": None,  # ê²€ì¦??¤íŒ¨ ??null
+                "author_info": None,
+                "rejection_reason": f"Verifier ê²€ì¦??¤ë¥˜: {error}",
+                "evidence_chain": [],
+                "slang_insight": None,
+                "inference": gatekeeper.get("inference"),
+            },
+            "final_confidence": "none",
+            "reason": f"ê²€ì¦??¤ë¥˜ë¡??¸í•œ ?´ë°± ê²°ê³¼: {error}",
+        }
+    
+    def get_final_identity(self, result: Dict[str, Any]) -> Dict[str, Any]:
+        """Extract final identity from result."""
+        verification = result.get("verification_result", {})
+        return {
+            "is_relevant": verification.get("is_relevant", False),
+            "novel_identity": verification.get("novel_identity"),
+            "evidence": verification.get("evidence_chain"),
+            "slang_insight": verification.get("slang_insight"),
+            "inference": verification.get("inference"),
+            "reason": verification.get("reason") or result.get("reason"),
+        }
+    
+    def is_confirmed(self, result: Dict[str, Any]) -> bool:
+        """Check if a title was confirmed."""
+        verification = result.get("verification_result", {})
+        novel_id = verification.get("novel_identity") or {}
+        official_title = novel_id.get("official_novel_title") or novel_id.get("official_title")
+        return (
+            official_title is not None
+            and novel_id.get("confidence") in ("Max", "High", "Medium")
+        )
+
+    def _code_level_body_check(
+        self,
+        post: Dict[str, Any],
+        comments: List[str],
+        title: str,
+        decoder_result: Dict[str, Any],
+    ) -> bool:
+        """
+        ?”¥ ì½”ë“œ ?ˆë²¨ ë³¸ë¬¸ ì¦ê±° ?•ì¸
+        
+        LLM??grounding_check ê²°ê³¼ê°€ false???? ì½”ë“œ ?ˆë²¨?ì„œ 
+        ë³¸ë¬¸/?“ê????¤ì œë¡??‘í’ˆ ê´€??ì¦ê±°ê°€ ?ˆëŠ”ì§€ ?•ì¸.
+        
+        Returns:
+            True: ë³¸ë¬¸???‘í’ˆ ê´€??ì¦ê±°ê°€ ?˜ë‚˜?¼ë„ ?ˆìŒ
+            False: ?‘í’ˆ ê´€??ì¦ê±° ?†ìŒ ??FP ê°€?¥ì„± ?’ìŒ
+        """
+        # ê²Œì‹œê¸€ ?„ì²´ ?ìŠ¤???˜ì§‘
+        post_title = post.get("title", "")
+        body_parts = []
+        for block in post.get("content_blocks", []):
+            if isinstance(block, dict) and block.get("text"):
+                body_parts.append(block["text"])
+        post_body = " ".join(body_parts)
+        comments_text = " ".join(comments or [])
+        
+        full_text = f"{post_title} {post_body} {comments_text}"
+        full_text_norm = full_text.lower().replace(" ", "")
+        
+        if not full_text_norm:
+            return False
+        
+        # 1) ?œëª© ?ì²´ê°€ ë³¸ë¬¸???¬í•¨ (?•ì‹ ?œëª© ?ëŠ” ë¶€ë¶?
+        title_norm = title.lower().replace(" ", "")
+        if title_norm in full_text_norm:
+            return True
+        
+        # 2) ?œëª©???µì‹¬ ?¨ì–´(2ê¸€???´ìƒ)ê°€ ë³¸ë¬¸??2ê°??´ìƒ ?ˆëŠ”ì§€
+        title_words = [w for w in title.split() if len(w) >= 2]
+        if title_words:
+            word_hits = sum(
+                1 for w in title_words
+                if w.lower() in full_text.lower()
+            )
+            if word_hits >= 2:
+                return True
+        
+        # 3) Decoder??original term??ë³¸ë¬¸??ëª…ì‹œ?ìœ¼ë¡??ˆëŠ”ì§€ 
+        #    (?½ì–´ê°€ ëª…í™•??ì¡´ì¬?˜ë©´ ?˜ë„???¸ê¸‰ ê°€?¥ì„±)
+        for term in decoder_result.get("decoded_terms", []):
+            original = (term.get("original") or "").strip()
+            best = term.get("best_match") or {}
+            if best.get("title") == title and original:
+                orig_norm = original.lower().replace(" ", "")
+                # ?ë³¸ ?½ì–´ê°€ ?œëª©???¬í•¨ ???½ì–´ë¡??‘í’ˆ ?¸ê¸‰ ì¤?
+                if orig_norm in full_text_norm and len(orig_norm) >= 3:
+                    # ì¶”ê? ?•ì¸: ë³¸ë¬¸???‘í’ˆ ? ë¡  ë¬¸ë§¥???ˆëŠ”ì§€
+                    # (ì¤„ê±°ë¦? ìºë¦­?? ?Œì°¨ ê´€???¤ì›Œ??
+                    work_context_keywords = [
+                        "ÁÖÀÎ°ø", "Ä³¸¯ÅÍ", "¼­»ç", "Ã©ÅÍ", "Àü°³", "°á¸»",
+                        "½ºÆ÷", "¿¬Àç", "ÀÛ°¡", "¸®ºä", "°¨»ó", "¹İÀü",
+                        "Á×À½", "¹è½Å", "°¡Á·", "ÀüÅõ", "´É·Â", "¼ºÀå",
+                    ]
+                    has_context = any(
+                        kw in full_text
+                        for kw in work_context_keywords
+                    )
+                    if has_context:
+                        return True
+
+                    # ?†• ì¶”ê?: ?¬ìŠ¤???œëª©???½ì–´ê°€ ?ˆê³  ë³¸ë¬¸???´ëª¨?°ì½˜/ê°ì • ?œí˜„???ˆìœ¼ë©?OK
+                    # ("ì¦‰ì‚¬ë¬´ë¦¼ ?€?ì´ ?ˆë¬´ ë¶ˆìŒ?? ???œëª©???½ì–´ + ê°ì • ?œí˜„)
+                    if orig_norm in post_title.lower().replace(" ", ""):
+                        # ?¬ìŠ¤???œëª©???½ì–´ê°€ ?ˆìœ¼ë©??˜ë„???‘í’ˆ ?¸ê¸‰
+                        return True
+        
+        # 3.5) Decoder???¤ë¥¸ term???™ì¼ ?œëª©??high scoreë¡?ë§¤ì¹­?˜ì–´ ?ˆìœ¼ë©?
+        #      ???‘í’ˆ???€??? ë¡ ???•ì‹¤ ??ì¦ê±° ?¸ì •
+        high_score_terms = []
+        for term in decoder_result.get("decoded_terms", []):
+            best = term.get("best_match") or {}
+            if best.get("title") == title and best.get("confidence") in ("high", "max"):
+                high_score_terms.append(term.get("original", ""))
+        if high_score_terms:
+            # ê°™ì? ?œëª©???€???¤ë¥¸ term??high confidence ???‘í’ˆ ? ë¡  ?•ì‹¤
+            return True
+
+        # 4) ?“ê????‘í’ˆ ê´€??URL???ˆëŠ”ì§€
+        import re
+        url_pattern = re.compile(
+            r'(novelpia\.com|munpia\.com|namu\.wiki|kakaopage\.com|series\.naver\.com)'
+        )
+        if url_pattern.search(full_text):
+            return True
+        
+        # 5) Decoderê°€ ?ë³„???‘ê?ëª…ì´ ë³¸ë¬¸/?“ê????ˆëŠ”ì§€
+        #    ??5ì¢?ë³¸ë¬¸ ì¦ê±° ì¤?"?‘ê?ëª?ì§ì ‘ ?¸ê¸‰"???´ë‹¹
+        for term in decoder_result.get("decoded_terms", []):
+            if not isinstance(term, dict):
+                continue
+            if term.get("is_author_name"):
+                author_name = (term.get("original") or "").strip()
+                if author_name and len(author_name) >= 2:
+                    # ê²Œì‹œê¸€ ë³¸ë¬¸+?“ê????‘ê?ëª…ì´ ?ˆìœ¼ë©?ì¦ê±°ë¡??¸ì •
+                    if author_name in full_text:
+                        return True
+                    # author_info?ì„œ???•ì¸
+                    author_info = term.get("author_info") or {}
+                    confirmed_name = (author_info.get("name") or "").strip()
+                    if confirmed_name and len(confirmed_name) >= 2 and confirmed_name in full_text:
+                        return True
+        
+        return False
+
+    def _sanitize_entity_role_reason(
+        self,
+        result: Dict[str, Any],
+        decoder_result: Dict[str, Any],
+        post: Dict[str, Any],
+        comments: List[str],
+    ) -> None:
+        """
+        Decoder???‘ê?ëª?ì¦ê±°?€ ì¶©ëŒ?˜ëŠ” ìºë¦­???¨ì • ë¬¸êµ¬ë¥??„í™”?œë‹¤.
+
+        ëª©ì :
+        - ?¹ì • ?´ë¦„??role(?‘ê?/ìºë¦­?????•ì •?˜ì? ?Šì•˜?”ë°
+          reason?ì„œ ìºë¦­?°ë¡œ ?¨ì •?˜ëŠ” ?¤ë¥˜ë¥?ì¤„ì¸??
+        - ?˜ë“œì½”ë”©???¬ë?ëª…ì´ ?„ë‹Œ, ?¼ë°˜ ê·œì¹™?¼ë¡œ ì²˜ë¦¬?œë‹¤.
+        """
+        verification = result.get("verification_result") or {}
+        if not verification:
+            return
+
+        author_names = self._collect_decoder_author_names(decoder_result)
+        if not author_names:
+            return
+
+        text_parts = [post.get("title", "")]
+        for block in post.get("content_blocks", []):
+            if isinstance(block, dict) and block.get("text"):
+                text_parts.append(str(block.get("text")))
+            elif isinstance(block, str):
+                text_parts.append(block)
+        text_parts.extend(comments or [])
+        full_text_norm = " ".join(text_parts).lower().replace(" ", "")
+        if not full_text_norm:
+            return
+
+        mentioned_authors = []
+        for name in author_names:
+            name_norm = name.lower().replace(" ", "")
+            if len(name_norm) >= 2 and name_norm in full_text_norm:
+                mentioned_authors.append(name)
+        if not mentioned_authors:
+            return
+
+        reason_candidates = []
+        if isinstance(verification.get("reason"), str):
+            reason_candidates.append(("verification", verification.get("reason")))
+        if isinstance(result.get("reason"), str):
+            reason_candidates.append(("result", result.get("reason")))
+
+        if not reason_candidates:
+            return
+
+        character_claim_tokens = ("Ä³¸¯ÅÍ", "µîÀåÀÎ¹°", "ÁÖÀÎ°ø", "´ë»ç")
+        conflict_found = False
+        for _, reason_text in reason_candidates:
+            rt_norm = reason_text.lower().replace(" ", "")
+            has_character_claim = any(tok in reason_text for tok in character_claim_tokens)
+            has_author_word = ("ÀÛ°¡" in reason_text) or ("ÇÊ¸í" in reason_text)
+            mentions_author_name_in_reason = any(
+                mn.lower().replace(" ", "") in rt_norm for mn in mentioned_authors
+            )
+            if has_character_claim and mentions_author_name_in_reason and not has_author_word:
+                conflict_found = True
+                break
+
+        if not conflict_found:
+            return
+
+        novel_id = verification.get("novel_identity") or {}
+        official_title = (
+            novel_id.get("official_novel_title")
+            or novel_id.get("official_title")
+            or None
+        )
+        display_name = mentioned_authors[0]
+
+        if official_title:
+            normalized_reason = (
+                f"?œëª©/ë³¸ë¬¸/?“ê???ê³ ìœ ?œí˜„??'{official_title}' ë§¥ë½ê³??°ê²°?˜ì–´ ê´€??? ë¡ ?¼ë¡œ ?ë‹¨?? "
+                f"?? '{display_name}'?€ ê²€?‰Â·Decoder ê·¼ê±°???‘ê?ëª…ìœ¼ë¡œë„ ?•ì¸?˜ì–´ "
+                f"ìºë¦­???±ì¥?¸ë¬¼ë¡??¨ì •?˜ì? ?ŠìŒ."
+            )
+        else:
+            normalized_reason = (
+                f"ë³¸ë¬¸/?“ê???ê³ ìœ ?œí˜„??ë°”íƒ•?¼ë¡œ ê´€??? ë¡  ?¬ë?ë¥??ë‹¨?? "
+                f"?? '{display_name}'?€ ê²€?‰Â·Decoder ê·¼ê±°???‘ê?ëª…ìœ¼ë¡œë„ ?•ì¸?˜ì–´ "
+                f"ìºë¦­???±ì¥?¸ë¬¼ë¡??¨ì •?˜ì? ?ŠìŒ."
+            )
+
+        verification["reason"] = normalized_reason
+        result["reason"] = normalized_reason
+
+        grounding = verification.get("grounding_check") or {}
+        if grounding.get("anchor_found") == "character_mention":
+            grounding["anchor_found"] = "author_mention"
+        if not grounding.get("anchor_text"):
+            grounding["anchor_text"] = display_name
+        verification["grounding_check"] = grounding
+
+        print(
+            f"[{_ts()}][{self.emoji}] ?›¡ï¸?reason role êµì •: "
+            f"author_hint='{display_name}'?€ ìºë¦­???¨ì • ì¶©ëŒ ??ì¤‘ë¦½ ë¬¸êµ¬ë¡?êµì •",
+            file=sys.stderr,
+        )
+
+    def _collect_decoder_author_names(self, decoder_result: Dict[str, Any]) -> List[str]:
+        """Decoder ê²°ê³¼?ì„œ ?‘ê?ëª??„ë³´ë¥??˜ì§‘?œë‹¤."""
+        names: List[str] = []
+        seen_norm = set()
+        for term in decoder_result.get("decoded_terms", []):
+            if not isinstance(term, dict):
+                continue
+            if not term.get("is_author_name"):
+                continue
+            candidates = []
+            original = (term.get("original") or "").strip()
+            if original:
+                candidates.append(original)
+            author_info = term.get("author_info") or {}
+            author_name = (author_info.get("name") or "").strip()
+            if author_name:
+                candidates.append(author_name)
+            for name in candidates:
+                norm = name.lower().replace(" ", "")
+                if len(norm) < 2 or norm in seen_norm:
+                    continue
+                seen_norm.add(norm)
+                names.append(name)
+        return names
+
+

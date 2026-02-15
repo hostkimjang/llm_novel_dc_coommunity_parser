@@ -1,0 +1,3464 @@
+﻿"""
+Orchestrator - ?꾨Ц媛 媛??숈쟻 ?쇱슦???쒖뒪??
+?꾨Ц媛?ㅼ쓽 ?붿껌???댁꽍?섍퀬, ?꾩슂???꾨Ц媛瑜??몄텧?섎ŉ, ??붾? 議곗쑉?⑸땲??
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import re
+import sys
+import time
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional, Callable
+from ..rules import OFFICIAL_PLATFORMS
+from .decoder import KNOWN_ABBREVIATIONS
+
+# ??쒕낫??紐⑤땲??(lazy import, ?놁쑝硫?臾댁떆)
+import threading as _orch_threading
+_orch_thread_local = _orch_threading.local()
+
+def _emit_monitor(event_type: str, data: dict = None, post_id: int = None):
+    try:
+        from ..monitor.event_bus import monitor
+        d = dict(data or {})
+        # 蹂묐젹 紐⑤뱶?먯꽌 post_id ?꾩닔 ?ы븿 (?ㅼ쨷 ?ъ뒪??異붿쟻??
+        if post_id is not None:
+            d["post_id"] = post_id
+        monitor.emit(event_type, d)
+    except Exception:
+        pass
+
+# ?쒓뎅???뺥깭??遺꾩꽍湲?(lazy loading)
+_kiwi_instance = None
+
+def _get_kiwi():
+    """Kiwi ?뺥깭??遺꾩꽍湲??깃???(lazy loading)"""
+    global _kiwi_instance
+    if _kiwi_instance is None:
+        try:
+            from kiwipiepy import Kiwi
+            _kiwi_instance = Kiwi()
+        except ImportError:
+            print("[warn] kiwipiepy not installed, using fallback", file=sys.stderr)
+            _kiwi_instance = False  # ?ㅼ튂 ?????쒖떆
+    return _kiwi_instance if _kiwi_instance else None
+
+
+def _extract_nouns(text: str) -> List[str]:
+    """
+    ?쒓뎅???띿뒪?몄뿉??紐낆궗留?異붿텧 (kiwipiepy ?ъ슜)
+    
+    異붿텧?섎뒗 ?덉궗:
+    - NNG: ?쇰컲 紐낆궗 (?뱀냼?? 寃뚯엫, ?묓뭹)
+    - NNP: 怨좎쑀 紐낆궗 (二쎄묠?? ?뚮쭏?? ?댁쑀諛?
+    - NNB: ?섏〈 紐낆궗 (寃? ?? - ?쒖쇅
+    - NR: ?섏궗 - ?쒖쇅
+    - SL: ?멸뎅??(Genshin, Impact) - ?ы븿
+    """
+    kiwi = _get_kiwi()
+    if not kiwi:
+        # Fallback: 怨듬갚 湲곗? 遺꾨━ ??2湲???댁긽留?
+        return [w for w in text.split() if len(w) >= 2]
+    
+    nouns = []
+    try:
+        result = kiwi.tokenize(text)
+        for token in result:
+            tag = token.tag
+            form = token.form
+            # ?쇰컲紐낆궗(NNG), 怨좎쑀紐낆궗(NNP), ?멸뎅??SL) 留?異붿텧
+            # 2湲???댁긽留?(?덈Т 吏㏃? 寃??쒖쇅)
+            if tag in ("NNG", "NNP", "SL") and len(form) >= 2:
+                nouns.append(form)
+    except Exception:
+        # ?ㅻ쪟 ??fallback
+        return [w for w in text.split() if len(w) >= 2]
+    
+    return nouns
+
+
+def _ts() -> str:
+    wid = getattr(_orch_thread_local, 'worker_id', None)
+    ts = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+    if wid is not None and getattr(_orch_thread_local, 'parallel', 1) > 1:
+        return f"{ts}|W{wid}"
+    return ts
+
+
+class ExpertType(Enum):
+    GATEKEEPER = "gatekeeper"
+    DISCOURSE = "discourse"  # NEW: ?대줎 遺꾩꽍媛 - domain/intent analyzer
+    DECODER = "decoder"
+    VERIFIER = "verifier"
+    CRITIC = "critic"
+    ARBITER = "arbiter"
+
+
+@dataclass
+class ExpertMessage:
+    """?꾨Ц媛 媛?硫붿떆吏"""
+    from_expert: ExpertType
+    to_expert: Optional[ExpertType]  # None?대㈃ ?ㅼ??ㅽ듃?덉씠?곗뿉寃?
+    message_type: str  # "analysis", "request", "question", "answer", "final"
+    content: Dict[str, Any]
+    timestamp: float = field(default_factory=time.time)
+    
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "from": self.from_expert.value,
+            "to": self.to_expert.value if self.to_expert else "orchestrator",
+            "type": self.message_type,
+            "content": self.content,
+            "timestamp": self.timestamp,
+        }
+
+
+@dataclass
+class ConversationContext:
+    """?꾨Ц媛 ???而⑦뀓?ㅽ듃"""
+    post_id: int
+    post_data: Dict[str, Any]
+    comments: List[str]
+    search_results: List[Dict[str, Any]] = field(default_factory=list)
+    messages: List[ExpertMessage] = field(default_factory=list)
+    expert_outputs: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    iteration: int = 0
+    max_iterations: int = 12
+    
+    # NEW: 異붿젙/?섏떖 ?묓뭹 紐⑸줉 (Decoder ?꾨낫?? ?꾨Ц媛??媛?怨듭쑀)
+    suspected_titles: List[Dict[str, Any]] = field(default_factory=list)
+    
+    # ?쒖븞 1: DiscourseAnalyzer 寃곌낵 ???(?꾨찓??援먯감 寃利앹슜)
+    primary_domain: Optional[str] = None  # "novel_work", "real_world", "meta", etc.
+    discourse_intent: Optional[str] = None  # "discussion", "recommendation", "meme", etc.
+    
+    # ?뵦 Discourse ??갑??Override: non-novel ?꾨찓??high) 寃쎄퀬
+    discourse_warning: Optional[str] = None  # e.g. "memes_humor(high)"
+    
+    # ?뵦 ?곗긽湲/六섍? ?먯젙: is_association_not_discussion + title_body_consistency=false
+    is_association_post: bool = False
+    
+    # ?쒖븞 2: ?꾨Ц媛蹂??좊ː??異붿쟻 (Arbiter 媛以??됯퇏??
+    expert_confidence: Dict[str, float] = field(default_factory=dict)  # {"gatekeeper": 0.6, "verifier": 0.95}
+    
+    # ?쒖븞 4: 遺덊솗?ㅼ꽦 ?붿씤 ?꾩쟻 (?붾쾭源?諛?low-confidence ?먯젙??
+    uncertainty_sources: List[str] = field(default_factory=list)
+    
+    # 寃??荑쇰━ ?대젰 異붿쟻 (以묐났 寃??諛⑹?)
+    searched_queries: set = field(default_factory=set)
+    
+    # ?좏겙 ?ъ슜??異붿쟻
+    token_usage: Dict[str, int] = field(default_factory=lambda: {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+    })
+    
+    def add_message(self, msg: ExpertMessage) -> None:
+        self.messages.append(msg)
+    
+    def add_search_results(self, new_results: List[Dict[str, Any]]) -> int:
+        """
+        寃??寃곌낵 異붽? (URL 湲곕컲 以묐났 ?쒓굅 + ?먭린 李몄“ 諛⑹?)
+        
+        Returns:
+            異붽???寃곌낵 ??
+        """
+        if not new_results:
+            return 0
+        
+        # 湲곗〈 URL 異붿텧
+        existing_urls = {r.get("url") for r in self.search_results if r.get("url")}
+        
+        # ?꾩옱 遺꾩꽍 以묒씤 post??URL ?⑦꽩 ?앹꽦 (?먭린 李몄“ 諛⑹?)
+        current_post_id = str(self.post_data.get("post_id", ""))
+        current_post_url = str(self.post_data.get("url", ""))
+        
+        # ?붾쾭源? ?먭린 李몄“ ?꾪꽣 ?뺣낫 濡쒓퉭 (泥섏쓬 ??踰덈쭔)
+        if not hasattr(self, '_logged_self_ref_filter'):
+            from datetime import datetime
+            ts = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+            print(f"[{ts}][?렞] ?뵇 ?먭린李몄“ ?꾪꽣: post_id='{current_post_id}'", file=sys.stderr)
+            self._logged_self_ref_filter = True
+        
+        # 以묐났 ?쒓굅?섎ŉ 異붽?
+        added_count = 0
+        skipped_self_ref = 0
+        skipped_duplicate = 0
+        
+        # DC媛???寃뚯떆??URL?먯꽌 寃뚯떆湲 踰덊샇 異붿텧 ?⑦꽩
+        import re
+        _board_no_re = re.compile(r'[?&]no=(\d+)')
+        # ?꾩옱 ?ъ뒪?몄쓽 寃뚯떆湲 踰덊샇 (DC媛? ?no=XXXXX)
+        current_board_no = None
+        if current_post_url:
+            m = _board_no_re.search(current_post_url)
+            if m:
+                current_board_no = m.group(1)
+        
+        # ?꾩옱 ?ъ뒪???쒕ぉ (snippet 湲곕컲 ?먭린李몄“ ?꾪꽣??
+        current_post_title = str(self.post_data.get("title", ""))
+        
+        for result in new_results:
+            url = str(result.get("url", ""))
+            
+            # ?먭린 李몄“ 泥댄겕: URL???꾩옱 post_id ?먮뒗 ?꾩옱 URL ?ы븿?섎㈃ ?쒖쇅
+            is_self_ref = False
+            if current_post_id and current_post_id in url:
+                is_self_ref = True
+            elif current_post_url and len(current_post_url) > 10 and current_post_url in url:
+                is_self_ref = True
+            # DC媛?寃뚯떆湲 踰덊샇 鍮꾧탳 (m.dcinside vs gall.dcinside ?꾨찓??李⑥씠 ???
+            elif current_board_no and 'dcinside.com' in url:
+                m = _board_no_re.search(url)
+                if m and m.group(1) == current_board_no:
+                    is_self_ref = True
+            # snippet ?쒕ぉ???꾩옱 ?ъ뒪???쒕ぉ??洹몃?濡??ㅼ뼱媛?寃쎌슦
+            elif current_post_title and len(current_post_title) >= 8:
+                sr_title = str(result.get("title", ""))
+                if current_post_title in sr_title or sr_title in current_post_title:
+                    # dcinside URL?대㈃ 嫄곗쓽 ?뺤떎???먭린李몄“
+                    if 'dcinside.com' in url:
+                        is_self_ref = True
+            
+            if is_self_ref:
+                skipped_self_ref += 1
+                # print(f"[{self._ts()}][?렞]   ?좑툘 ?먭린李몄“ ?ㅽ궢: {url[:80]}...", file=sys.stderr)
+                continue  # ?먭린 李몄“ ?ㅽ궢
+            
+            if url and url in existing_urls:
+                skipped_duplicate += 1
+                continue  # 以묐났 ?ㅽ궢
+            
+            self.search_results.append(result)
+            if url:
+                existing_urls.add(url)
+            added_count += 1
+        
+        # 寃곌낵 濡쒓퉭
+        if skipped_self_ref > 0:
+            from datetime import datetime
+            ts = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+            print(f"[{ts}][ℹ️] self-reference filtered: {skipped_self_ref}", file=sys.stderr)
+        if skipped_duplicate > 0:
+            from datetime import datetime
+            ts = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+            print(f"[{ts}][ℹ️] duplicate filtered: {skipped_duplicate}", file=sys.stderr)
+        
+        return added_count
+    
+    def get_time_status(self) -> Dict[str, Any]:
+        """遺꾩꽍 ?쒓컙 ?곹깭 諛섑솚"""
+        remaining = self.max_iterations - self.iteration
+        if remaining <= 2:
+            urgency = "CRITICAL"
+            message = "?좑툘 遺꾩꽍 ?쒓컙 嫄곗쓽 ?뚯쭊! 利됱떆 理쒖쥌 寃곕줎???꾩텧?댁빞 ?⑸땲??"
+        elif remaining <= 4:
+            urgency = "HIGH"
+            message = "?뵸 遺꾩꽍 ?쒓컙???쇰쭏 ?⑥? ?딆븯?듬땲?? ?섍껄???뺣━?섍퀬 寃곕줎??以鍮꾪븯?몄슂."
+        else:
+            urgency = "NORMAL"
+            message = "異⑸텇??遺꾩꽍 ?쒓컙???덉뒿?덈떎. ?꾩슂???ㅻⅨ Expert?먭쾶 ?묐젰???붿껌?섏꽭??"
+        
+        return {
+            "current_step": self.iteration,
+            "remaining_steps": remaining,
+            "urgency": urgency,
+            "message": message,
+        }
+    
+    def get_conversation_summary(self, compact: bool = False) -> str:
+        """????붿빟 ?앹꽦 (LLM ?꾨＼?꾪듃?? - ?쒓컙 ?곹깭 ?ы븿
+        
+        Args:
+            compact: True硫?理쒖냼 ?뺣낫留?(?좏겙 ?덉빟)
+        """
+        lines = []
+        
+        # ?쒓컙 ?곹깭 癒쇱? ?쒖떆
+        time_status = self.get_time_status()
+        lines.append(f"=== 遺꾩꽍 ?곹깭: Step {time_status['current_step']}/{time_status['current_step'] + time_status['remaining_steps']} ===")
+        lines.append(f"[{time_status['urgency']}] {time_status['message']}")
+        
+        if compact:
+            # 媛꾩냼??紐⑤뱶: ?듭떖 寃곕줎留?
+            lines.append("")
+            for expert_name, output in self.expert_outputs.items():
+                if output is None:
+                    continue
+                if expert_name == "decoder":
+                    if not isinstance(output, dict):
+                        continue
+                    decoded = output.get("decoded_terms") or []
+                    conf = output.get("overall_confidence")
+                    best_titles = [t.get("best_match", {}).get("title") for t in decoded[:2] if t.get("best_match", {}).get("title")]
+                    best_anchors = []
+                    for t in decoded[:2]:
+                        if not isinstance(t, dict):
+                            continue
+                        grounding = t.get("grounding") or {}
+                        anchor = grounding.get("anchor_type") or (t.get("best_match") or {}).get("anchor_evidence")
+                        if anchor:
+                            best_anchors.append(anchor)
+                    lines.append(f"[decoder] conf={conf}, titles={best_titles}, anchors={best_anchors}")
+                elif expert_name == "verifier":
+                    if not isinstance(output, dict):
+                        continue
+                    vr = output.get("verification_result") or {}
+                    if not isinstance(vr, dict):
+                        vr = {}
+                    novel_id = vr.get("novel_identity") or {}
+                    if not isinstance(novel_id, dict):
+                        novel_id = {}
+                    title = novel_id.get("official_novel_title") or novel_id.get("official_title")
+                    grounding = vr.get("grounding_check") or {}
+                    lines.append(
+                        f"[verifier] relevant={vr.get('is_relevant')}, title={title}, "
+                        f"anchor={grounding.get('anchor_found')}, grounded={grounding.get('decoder_grounded')}"
+                    )
+            if self.discourse_warning:
+                lines.append(f"[warning] discourse={self.discourse_warning}")
+            return "\n".join(lines)
+        
+        # ?댁쟾 ?꾨Ц媛 遺꾩꽍 寃곌낵 ?붿빟
+        lines.append("\n=== ?댁쟾 ?꾨Ц媛 遺꾩꽍 寃곌낵 ===")
+        for expert_name, output in self.expert_outputs.items():
+            # None 泥댄겕
+            if output is None or not isinstance(output, dict):
+                continue
+
+            lines.append(f"\n[{expert_name}]:")
+            # ?듭떖 ?뺣낫留?異붿텧
+            if expert_name == "gatekeeper":
+                entities = output.get("detected_entities") or {}
+                is_noise = output.get("is_noise", False)
+                possible_titles = entities.get("possible_titles") or []
+                lines.append(f"  - ?몄씠利? {is_noise}")
+                lines.append(f"  - ?꾨낫 ?쒕ぉ: {possible_titles[:3]}")
+            elif expert_name == "discourse":
+                disc = output.get("discourse_analysis") or {}
+                domain = disc.get("primary_domain")
+                intent = disc.get("intent")
+                lines.append(f"  - ?꾨찓?? {domain}")
+                lines.append(f"  - ?섎룄: {intent}")
+            elif expert_name == "decoder":
+                decoded = output.get("decoded_terms") or []
+                conf = output.get("overall_confidence")
+                lines.append(f"  - ?꾩껜 ?좊ː?? {conf}")
+                for term in decoded[:2]:  # 泥섏쓬 2媛쒕쭔
+                    original = term.get("original")
+                    best = term.get("best_match") or {}
+                    grounding = term.get("grounding") or {}
+                    anchor = grounding.get("anchor_type") or best.get("anchor_evidence")
+                    lines.append(
+                        f"    * {original} -> {best.get('title')} "
+                        f"(conf={best.get('confidence')}, grounded={grounding.get('is_grounded')}, anchor={anchor})"
+                    )
+            elif expert_name == "verifier":
+                vr = output.get("verification_result") or {}
+                if not isinstance(vr, dict):
+                    vr = {}
+                is_rel = vr.get("is_relevant")
+                novel_id = vr.get("novel_identity") or {}
+                if not isinstance(novel_id, dict):
+                    novel_id = {}
+                title = novel_id.get("official_novel_title")
+                conf = novel_id.get("confidence")
+                grounding = vr.get("grounding_check") or {}
+                lines.append(f"  - 愿?⑥꽦: {is_rel}")
+                lines.append(f"  - ?묓뭹: {title} (conf={conf})")
+                lines.append(
+                    f"  - ?묒?: anchor={grounding.get('anchor_found')}, "
+                    f"decoder_grounded={grounding.get('decoder_grounded')}"
+                )
+        
+        # ???湲곕줉? compact 紐⑤뱶媛 ?꾨땺 ?뚮쭔
+        if self.messages:
+            lines.append("\n=== ?댁쟾 ???湲곕줉 ===")
+            for msg in self.messages[-3:]:  # 理쒓렐 3媛쒕쭔 (5->3)
+                lines.append(
+                    f"[{msg.from_expert.value}->{msg.to_expert.value if msg.to_expert else 'all'}] "
+                    f"{msg.message_type}: {json.dumps(msg.content, ensure_ascii=False)[:100]}"  # 150->100
+                )
+        
+        return "\n".join(lines)
+    
+    def get_expert_output(self, expert: ExpertType) -> Optional[Dict[str, Any]]:
+        return self.expert_outputs.get(expert.value)
+    
+    def set_expert_output(self, expert: ExpertType, output: Dict[str, Any]) -> None:
+        self.expert_outputs[expert.value] = output
+        # 濡쒓렇??pretty-print??寃곌낵 異쒕젰
+        import json as _json, sys as _sys
+        from datetime import datetime as _dt
+        _ts = _dt.now().strftime("%H:%M:%S.%f")[:-3]
+        _pretty = _json.dumps(output, ensure_ascii=False, indent=2)
+        print(f"\n[{_ts}][?뱥 {expert.value}] 寃곌낵 JSON:\n{_pretty}\n", file=_sys.stderr, flush=True)
+
+
+class Orchestrator:
+    """
+    ?렞 Orchestrator - ?꾨Ц媛 議곗쑉??
+    
+    ??븷:
+    - ?꾨Ц媛?ㅼ쓽 遺꾩꽍 寃곌낵? ?붿껌???댁꽍
+    - ?ㅼ쓬???대뼡 ?꾨Ц媛瑜??몄텧?좎? 寃곗젙
+    - 寃???붿껌 泥섎━
+    - ???醫낅즺 議곌굔 ?먮떒
+    
+    ?묐젰 ?쒗븳:
+    - 媛숈? ?꾨Ц媛 ??媛꾩쓽 ?묐젰? 理쒕? 1??
+    - ?꾩껜 ?묐젰 ?붿껌? 理쒕? 3??
+    """
+    
+    def __init__(
+        self,
+        experts: Dict[ExpertType, Any],
+        search_fn: Optional[Callable[[str], List[Dict[str, Any]]]] = None,
+        fetch_fn: Optional[Callable[[str], Optional[Dict[str, Any]]]] = None,
+        max_iterations: int = 12,  # ?묐젰 3??+ ?ш????ъ씠???ъ쑀
+        worker_id: int = 0,
+        parallel_count: int = 1,
+    ):
+        self.experts = experts
+        self.search_fn = search_fn
+        self.fetch_fn = fetch_fn
+        self.max_iterations = max_iterations
+        self.worker_id = worker_id
+        self.parallel_count = parallel_count
+        self.name = "Orchestrator"
+        self.emoji = "?렞"
+    
+    def _try_fast_path(
+        self,
+        ctx: ConversationContext,
+        rules_config: Dict[str, Any],
+    ) -> Optional[ConversationContext]:
+        """
+        ?뵦 Fast-Path 寃쎈웾 ?ъ쟾?먮퀎
+        
+        LLM ?몄텧 ?놁씠 猷?湲곕컲?쇰줈 紐낇솗???ъ뒪?몃? ?⑥텞 泥섎━?⑸땲??
+        
+        Returns:
+            - ConversationContext: Fast-Path濡?泥섎━ ?꾨즺??寃곌낵
+            - None: Fast-Path 遺덇? ???뺢퇋 ?뚯씠?꾨씪??吏꾪뻾
+        """
+        import re
+        
+        post_data = ctx.post_data or {}
+        title = post_data.get("title", "")
+        
+        # 蹂몃Ц ?띿뒪??異붿텧
+        content_texts = []
+        for block in post_data.get("content_blocks", []):
+            if isinstance(block, dict) and block.get("text"):
+                content_texts.append(block["text"])
+            elif isinstance(block, str):
+                content_texts.append(block)
+        content_joined = " ".join(content_texts[:5])[:300]  # ?곸쐞 300?먮쭔
+        
+        title_stripped = title.strip()
+        
+        # ?곣봺??Fast-Path 1: ?쒕ぉ+蹂몃Ц 紐⑤몢 鍮꾩뼱?덉쓬 ?곣봺??
+        if not title_stripped and not content_joined.strip():
+            print(f"[{_ts()}] {self.emoji} ??Fast-Path NOISE: ?쒕ぉ+蹂몃Ц 鍮꾩뼱?덉쓬", file=sys.stderr)
+            return self._build_fast_noise_ctx(ctx, "?쒕ぉ怨?蹂몃Ц??鍮꾩뼱?덉뒿?덈떎.")
+        
+        # ?곣봺??Fast-Path 2: ?먯쓬/紐⑥쓬/?뱀닔臾몄옄留?(?ㅻ낫???숈꽌) ?곣봺??
+        if title_stripped and re.fullmatch(r'[\u3131-\u314e\u314f-\u3163\s!?.~,;:\u314b\u314e\u3160\u315c]+', title_stripped):
+            if len(content_joined.strip()) < 10:
+                print(
+                    f"[{_ts()}] {self.emoji} ⚡ Fast-Path NOISE: non-semantic title + short body ({len(content_joined.strip())})",
+                    file=sys.stderr,
+                )
+                return self._build_fast_noise_ctx(ctx, f"?ㅻ낫???낅젰 ?⑦꽩: '{title_stripped}'")
+        
+        # ?곣봺??Fast-Path 3: ?꾨같/諛섎났 ?⑦꽩 ?곣봺??
+        if content_joined.strip():
+            unique_chars = set(content_joined.replace(" ", ""))
+            if len(unique_chars) <= 3 and len(content_joined.strip()) > 5:
+                print(f"[{_ts()}] {self.emoji} ??Fast-Path NOISE: ?꾨같 ?⑦꽩 (怨좎쑀 臾몄옄 {len(unique_chars)}媛?", file=sys.stderr)
+                return self._build_fast_noise_ctx(
+                    ctx,
+                    f"반복 패턴 노이즈: unique_chars={len(unique_chars)}",
+                )
+        
+        # ?곣봺??Fast-Path 遺덇? ???뺢퇋 ?뚯씠?꾨씪???곣봺??
+        return None
+    
+    def _build_fast_noise_ctx(
+        self,
+        ctx: ConversationContext,
+        reason: str,
+    ) -> ConversationContext:
+        """Fast-Path ?몄씠利?寃곌낵??ConversationContext ?앹꽦"""
+        ctx.set_expert_output(ExpertType.GATEKEEPER, {
+            "is_noise": True,
+            "noise_reason": reason,
+            "post_type": "noise",
+            "detected_entities": {
+                "possible_titles": [],
+                "possible_authors": [],
+                "possible_characters": [],
+                "platforms_mentioned": [],
+            },
+            "key_terms": [],
+            "context_clues": {},
+            "search_requests": [],
+            "confidence": "high",
+            "notes": f"Fast-Path ?몄씠利??먯젙: {reason}",
+        })
+        
+        ctx.set_expert_output(ExpertType.ARBITER, {
+            "final_decision": {
+                "is_relevant": False,
+                "official_novel_title": None,
+                "discussion_type": "noise",
+                "confidence": "High",
+            },
+            "final_reasoning": f"Fast-Path ?먯젙: {reason}",
+            "metadata_synthesis": {},
+        })
+        
+        ctx.add_message(ExpertMessage(
+            from_expert=ExpertType.GATEKEEPER,
+            to_expert=None,
+            message_type="final",
+            content={"decision": "noise", "reason": reason, "fast_path": True},
+        ))
+        
+        print(f"[{_ts()}] {self.emoji} ⚡ Fast-Path 완료: LLM 호출 0회, 검색 0회", file=sys.stderr)
+        return ctx
+    
+    def process(
+        self,
+        post_data: Dict[str, Any],
+        comments: List[str],
+        rules_config: Dict[str, Any],
+    ) -> ConversationContext:
+        """
+        ?꾨Ц媛?ㅼ쓣 議곗쑉?섏뿬 ?ъ뒪??遺꾩꽍 ?꾨즺
+        
+        Returns:
+            ConversationContext with all expert outputs and messages
+        """
+        ctx = ConversationContext(
+            post_id=post_data.get("post_id", 0),
+            post_data=post_data,
+            comments=comments,
+            max_iterations=self.max_iterations,
+        )
+        
+        # ?ㅻ젅??濡쒖뺄???뚯빱 ID ?ㅼ젙 (_ts() 濡쒓렇 prefix??
+        _orch_thread_local.worker_id = self.worker_id
+        _orch_thread_local.parallel = self.parallel_count
+        
+        print(f"\n[{_ts()}] {self.emoji} Orchestrator ?쒖옉: post_id={ctx.post_id}", file=sys.stderr)
+        self._prev_expert = ''  # ?댁쟾 ?꾨Ц媛 珥덇린??(?뚯씠?꾨씪???먮쫫 異붿쟻??
+        
+        # ?뵦 Fast-Path: 寃쎈웾 ?ъ쟾?먮퀎 ??紐낇솗???ъ뒪?몃뒗 ?⑥텞 泥섎━
+        fast_path = self._try_fast_path(ctx, rules_config)
+        if fast_path is not None:
+            _emit_monitor("expert_phase", {"expert": "fast_path", "status": "done"}, post_id=ctx.post_id)
+            self._last_ctx = fast_path
+            return fast_path
+        
+        # Phase 1: Gatekeeper 珥덇린 遺꾩꽍
+        gatekeeper_result = self._call_expert(
+            ExpertType.GATEKEEPER, ctx, rules_config
+        )
+        
+        # ?몄씠利??먯젙 ??DiscourseAnalyzer濡?2李??뺤씤
+        # Gatekeeper??author_talk/trope_discussion??noise濡??ㅻ텇瑜섑븷 ???덉쓬
+        # DiscourseAnalyzer媛 novel_literature ?꾨찓?몄씠硫?noise ?먯젙 痍⑥냼
+        if gatekeeper_result.get("is_noise"):
+            discourse_override = False
+            if ExpertType.DISCOURSE in self.experts:
+                print(f"[{_ts()}] {self.emoji} ?뵊 ?몄씠利??섏떖 ??DiscourseAnalyzer 2李??뺤씤", file=sys.stderr)
+                discourse_result = self._call_expert(
+                    ExpertType.DISCOURSE, ctx, rules_config
+                )
+                discourse_analysis = discourse_result.get('discourse_analysis', {})
+                domain = discourse_analysis.get('primary_domain')
+                domain_conf = discourse_analysis.get('domain_confidence')
+                ctx.primary_domain = domain
+                ctx.discourse_intent = discourse_analysis.get('intent')
+                print(f"[{_ts()}] {self.emoji} ?뱰 ?대줎 遺꾩꽍 ?꾨즺: domain={domain}, confidence={domain_conf}", file=sys.stderr)
+                
+                # novel_literature ?꾨찓?몄씠硫?noise 痍⑥냼 ???꾨Ц媛 猷⑦봽 吏꾪뻾
+                # ?썳截??? Gatekeeper媛 genre_discussion?닿퀬 ?뷀떚??0媛쒖씠硫????λⅤ ?쇰컲濡?
+                #    ??寃쎌슦 Discourse媛 novel_literature???대룄 noise 痍⑥냼 湲덉?
+                #    (?? "李쎌옉臾쇱뿉 ?섏삤???좊뱾 ??醫녿갈?꾨떂?" ???λⅤ ?쇰컲濡?
+                gk_entities = gatekeeper_result.get("detected_entities") or {}
+                gk_has_entities = bool(
+                    (gk_entities.get("possible_titles") or [])
+                    or (gk_entities.get("possible_authors") or [])
+                    or (gk_entities.get("possible_characters") or [])
+                )
+                gk_post_type = gatekeeper_result.get("post_type", "")
+                discourse_intent = discourse_analysis.get('intent', '')
+                
+                # genre_discussion + ?뷀떚???놁쓬 + intent媛 discuss_work媛 ?꾨땶 寃쎌슦 ??noise ?좎?
+                is_genre_general = (
+                    gk_post_type == "genre_discussion"
+                    and not gk_has_entities
+                    and discourse_intent != "discuss_work"
+                )
+
+                # ?썳截?Discourse 洹쇨굅 ?묒?(lexical grounding) 寃利?                # Discourse媛 ?쒖떆???듭떖 洹쇨굅(domain_evidence/title_novel_terms)媛
+                # ?ㅼ젣 ?쒕ぉ/蹂몃Ц/?볤? ?띿뒪?몄뿉 議댁옱?섎뒗吏 ?뺤씤?쒕떎.
+                # (紐⑤뜽 ?섍컖 洹쇨굅濡?noise瑜?痍⑥냼?섎뒗 寃껋쓣 諛⑹?)
+                _post_title = str((ctx.post_data or {}).get("title") or "")
+                _post_body = " ".join(
+                    (
+                        b.get("text", "") if isinstance(b, dict)
+                        else (str(b) if isinstance(b, str) else "")
+                    )
+                    for b in (ctx.post_data or {}).get("content_blocks", [])
+                )
+                _comment_text = " ".join(ctx.comments or [])
+                _full_text_norm = f"{_post_title} {_post_body} {_comment_text}".lower().replace(" ", "")
+
+                _raw_disc_terms = (
+                    (discourse_analysis.get("title_novel_terms") or [])
+                    + (discourse_analysis.get("domain_evidence") or [])
+                )
+                _disc_terms_norm: List[str] = []
+                for _term in _raw_disc_terms:
+                    if not isinstance(_term, str):
+                        continue
+                    _norm = _term.lower().replace(" ", "").strip()
+                    if len(_norm) >= 2:
+                        _disc_terms_norm.append(_norm)
+
+                _disc_hit_terms = sorted({
+                    _term for _term in _disc_terms_norm
+                    if _term and _term in _full_text_norm
+                })
+                _disc_hit_count = len(_disc_hit_terms)
+
+                # Gatekeeper媛 ?몄씠利?而ㅻ??덊떚 ?〓떞?쇰줈 蹂?寃쎌슦?먮뒗
+                # noise 痍⑥냼 湲곗??????꾧꺽?섍쾶 ?곸슜 (紐⑦샇??1媛??ㅼ썙?쒕줈??遺議?
+                _gk_context = gatekeeper_result.get("context_clues") or {}
+                _has_url_clue = bool(_gk_context.get("has_url_in_comments"))
+                _strict_noise_types = {"community_banter", "noise"}
+                _requires_strict_grounding = gk_post_type in _strict_noise_types
+                _min_discourse_hits = 1 if _has_url_clue else 2
+                
+                # ?썳截?manga_comics ?꾨찓?몄씠硫?noise ?좎? (?뚯꽕???꾨땶 ?쒓컖 留ㅼ껜)
+                # ?? Gatekeeper媛 possible_titles瑜?媛먯???寃쎌슦 ??寃?????먮떒?댁빞 ?섎?濡?硫댁젣
+                _gk_has_titles = bool(gk_entities.get("possible_titles") or [])
+                if domain == 'manga_comics' and domain_conf in ('high', 'medium') and not _gk_has_titles:
+                    print(
+                        f"[{_ts()}] {self.emoji} ?썳截?Discourse=manga_comics({domain_conf})"
+                        f" ??鍮??뚯꽕 留ㅼ껜(留뚰솕/?숈씤吏), noise ?좎?",
+                        file=sys.stderr
+                    )
+                    # manga_comics 寃쎄퀬瑜?而⑦뀓?ㅽ듃?????
+                    ctx.discourse_warning = f"manga_comics({domain_conf})"
+                    ctx.uncertainty_sources.append(
+                        f"DiscourseAnalyzer: domain=manga_comics({domain_conf}) ??留뚰솕/?숈씤吏 留ㅼ껜, ?뚯꽕 ?꾨떂"
+                    )
+                elif domain == 'manga_comics' and _gk_has_titles:
+                    # manga_comics?댁?留?possible_titles媛 ?덉쓬 ??寃?됱쑝濡??뺤씤 ?꾩슂
+                    print(
+                        f"[{_ts()}] {self.emoji} ?좑툘 Discourse=manga_comics BUT possible_titles={gk_entities.get('possible_titles')}"
+                        f" ??noise 痍⑥냼, 寃?????먮떒",
+                        file=sys.stderr
+                    )
+                    gatekeeper_result["is_noise"] = False
+                    gatekeeper_result["noise_reason"] = None
+                    if gatekeeper_result.get("post_type") == "noise":
+                        gatekeeper_result["post_type"] = "work_discussion"
+                    ctx.set_expert_output(ExpertType.GATEKEEPER, gatekeeper_result)
+                    # manga_comics 寃쎄퀬???좎? (Decoder?먯꽌 李멸퀬)
+                    ctx.discourse_warning = f"manga_comics({domain_conf}):possible_titles_exist"
+                    discourse_override = True
+                elif domain == 'novel_literature' and domain_conf in ('high', 'medium') and not is_genre_general:
+                    # community_banter/noise?먯꽌 ?섏뼱?ㅻ뒗 耳?댁뒪??                    # Discourse 洹쇨굅媛 ?ㅼ젣 ?띿뒪?몄뿉 異⑸텇???묒??섏뿀?붿? ?뺤씤 ??痍⑥냼
+                    if _requires_strict_grounding and _disc_hit_count < _min_discourse_hits:
+                        print(
+                            f"[{_ts()}] {self.emoji} ?썳截?Gatekeeper=noise + Discourse 洹쇨굅 ?쏀븿: "
+                            f"hits={_disc_hit_count}<{_min_discourse_hits}, "
+                            f"terms={_disc_hit_terms[:4]} ??noise ?좎?",
+                            file=sys.stderr
+                        )
+                        if not ctx.discourse_warning:
+                            ctx.discourse_warning = "weak_discourse_grounding(novel_literature)"
+                        ctx.uncertainty_sources.append(
+                            f"DiscourseAnalyzer: novel_literature?대굹 洹쇨굅 ?묒? ?쏀븿 "
+                            f"(hits={_disc_hit_count}, post_type={gk_post_type})"
+                        )
+                    else:
+                        print(f"[{_ts()}] {self.emoji} ?좑툘 Gatekeeper=noise BUT Discourse=novel_literature ??noise 痍⑥냼, 遺꾩꽍 怨꾩냽", file=sys.stderr)
+                        gatekeeper_result["is_noise"] = False
+                        gatekeeper_result["noise_reason"] = None
+                        # post_type??noise硫?work_discussion?쇰줈 ?대갚
+                        if gatekeeper_result.get("post_type") == "noise":
+                            gatekeeper_result["post_type"] = "work_discussion"
+                        ctx.set_expert_output(ExpertType.GATEKEEPER, gatekeeper_result)
+                        discourse_override = True
+                elif is_genre_general:
+                    print(
+                        f"[{_ts()}] {self.emoji} ?썳截?Gatekeeper=genre_discussion(?뷀떚??0) + Discourse intent={discourse_intent}"
+                        f" ??noise 痍⑥냼 李⑤떒, ?λⅤ ?쇰컲濡좎쑝濡??좎?",
+                        file=sys.stderr
+                    )
+            
+            if not discourse_override:
+                print(f"[{_ts()}] {self.emoji} ?몄씠利?媛먯? ??議곌린 醫낅즺", file=sys.stderr)
+                ctx.add_message(ExpertMessage(
+                    from_expert=ExpertType.GATEKEEPER,
+                    to_expert=None,
+                    message_type="final",
+                    content={"decision": "noise", "reason": gatekeeper_result.get("noise_reason")},
+                ))
+                return ctx
+        
+        # Phase 1.5: Discourse Analysis (?꾨찓???섎룄 ?뚯븙)
+        # Gatekeeper媛 ?뷀떚?곕? 異붿텧?덉?留? 吏꾩쭨 ?꾨찓??而⑦뀓?ㅽ듃媛 ?꾩슂
+        # (noise 2李??뺤씤?먯꽌 ?대? ?ㅽ뻾??寃쎌슦 ?ㅽ궢)
+        if ExpertType.DISCOURSE in self.experts and not ctx.primary_domain:
+            discourse_result = self._call_expert(
+                ExpertType.DISCOURSE, ctx, rules_config
+            )
+            # ?쒖븞 1: DiscourseAnalyzer 寃곌낵瑜?ctx????ν븯??Verifier/Arbiter媛 ?쒖슜
+            discourse_analysis = discourse_result.get('discourse_analysis', {})
+            ctx.primary_domain = discourse_analysis.get('primary_domain')
+            ctx.discourse_intent = discourse_analysis.get('intent')
+            print(f"[{_ts()}] {self.emoji} ?뱰 ?대줎 遺꾩꽍 ?꾨즺: domain={ctx.primary_domain}, intent={ctx.discourse_intent}", file=sys.stderr)
+        
+        # ?뵦 ?곗긽湲/六섍? 媛먯?: is_association_not_discussion + title_body_consistency 遺덉씪移?
+        # ?쒕ぉ???묓뭹紐낆쿂??蹂댁씠??寃껋씠 ?덉뼱?? 蹂몃Ц???꾪? 臾닿??섎㈃ ???묓뭹 寃??媛뺣룄 ???異뺤냼
+        disc_out_assoc = ctx.get_expert_output(ExpertType.DISCOURSE)
+        if disc_out_assoc:
+            d_assoc = disc_out_assoc.get('discourse_analysis', {})
+            is_assoc = d_assoc.get('is_association_not_discussion', False)
+            title_body_ok = d_assoc.get('title_body_consistency', True)
+            is_coherent = d_assoc.get('is_coherent', True)
+            
+            if is_assoc and not title_body_ok:
+                ctx.is_association_post = True
+                assoc_evidence = d_assoc.get('association_evidence', '')
+                print(
+                    f"[{_ts()}] {self.emoji} ?뤇截??곗긽湲/六섍? 媛먯?: "
+                    f"is_association=true, title_body_consistency=false"
+                    f" ???묓뭹留ㅼ묶 媛뺣룄 異뺤냼",
+                    file=sys.stderr,
+                )
+                # discourse_warning ?ㅼ젙 (Decoder ?쒕룞??
+                if not ctx.discourse_warning:
+                    ctx.discourse_warning = "association_post(title_body_mismatch)"
+                ctx.uncertainty_sources.append(
+                    f"DiscourseAnalyzer: ?곗긽湲 ?먯젙 (?쒕ぉ?좊낯臾?. {assoc_evidence[:100]}"
+                )
+            elif not is_coherent and not title_body_ok:
+                # is_association? ?꾨땲吏留?鍮꾩씪愿 + ?쒕ぉ-蹂몃Ц 遺덉씪移????쏀븳 ?곗긽湲
+                ctx.is_association_post = True
+                print(
+                    f"[{_ts()}] {self.emoji} ?뤇截?鍮꾩씪愿 湲 媛먯?: "
+                    f"is_coherent=false, title_body_consistency=false"
+                    f" ???묓뭹留ㅼ묶 媛뺣룄 異뺤냼",
+                    file=sys.stderr,
+                )
+                if not ctx.discourse_warning:
+                    ctx.discourse_warning = "incoherent_post(title_body_mismatch)"
+        
+        # ?뵦 Discourse ??갑??Override: non-novel ?꾨찓??high)?대㈃ 寃쎄퀬 ?ㅼ젙
+        # Decoder/Verifier/Arbiter媛 ??寃쎄퀬瑜?諛쏆븘??怨쇱엵 ?앸퀎??諛⑹?
+        NOVEL_DOMAINS = {"novel_literature", "novel_work"}
+        if ctx.primary_domain and ctx.primary_domain not in NOVEL_DOMAINS:
+            discourse_output = ctx.get_expert_output(ExpertType.DISCOURSE)
+            d_conf = "high"
+            if discourse_output:
+                d_conf = discourse_output.get("discourse_analysis", {}).get("domain_confidence", "medium")
+            if d_conf in ("high", "medium"):
+                ctx.discourse_warning = f"{ctx.primary_domain}({d_conf})"
+                ctx.uncertainty_sources.append(
+                    f"DiscourseAnalyzer: domain={ctx.primary_domain}({d_conf}), intent={ctx.discourse_intent} ???뚯꽕 愿???ъ뒪?멸? ?꾨땺 媛?μ꽦 ?믪쓬"
+                )
+                print(f"[{_ts()}] {self.emoji} ?좑툘 Discourse ??갑??寃쎄퀬: {ctx.discourse_warning} ??Decoder/Arbiter???꾨떖", file=sys.stderr)
+                
+                # ?썳截?manga_comics ?꾨찓??媛뺤젣 noise: ?뚯꽕???꾨땶 ?쒓컖 留ㅼ껜
+                # Gatekeeper媛 noise=false?쇰룄 Discourse媛 manga_comics(high/medium)?대㈃ 議곌린 醫낅즺
+                # ?? Gatekeeper媛 possible_titles瑜?媛먯???寃쎌슦 ??寃?????먮떒?댁빞 ?섎?濡?硫댁젣
+                _gk2 = (ctx.get_expert_output(ExpertType.GATEKEEPER) or {}).get("detected_entities") or {}
+                _gk2_has_titles = bool(_gk2.get("possible_titles") or [])
+                if ctx.primary_domain == "manga_comics" and d_conf == "high" and not _gk2_has_titles:
+                    # 蹂몃Ц??鍮꾩냼??留ㅼ껜 ?ㅼ썙?쒓? ?ㅼ젣濡??덈뒗吏 ?쒕쾲 ???뺤씤
+                    from ..rules import NON_NOVEL_MEDIA_KEYWORDS
+                    post_title = (ctx.post_data.get("title") or "").lower()
+                    post_texts = " ".join(
+                        (b.get("text", "") if isinstance(b, dict) else str(b))
+                        for b in ctx.post_data.get("content_blocks", [])
+                    ).lower()
+                    all_text = f"{post_title} {post_texts} {' '.join(ctx.comments).lower()}"
+                    
+                    has_media_keyword = any(kw in all_text for kw in NON_NOVEL_MEDIA_KEYWORDS)
+                    has_media_term = "留뚰솕" in all_text or "?숈씤吏" in all_text or "?숈씤" in all_text
+                    
+                    if has_media_keyword or has_media_term:
+                        print(
+                            f"[{_ts()}] {self.emoji} ?썳截?manga_comics 媛뺤젣 noise: "
+                            f"Discourse=manga_comics({d_conf}) + 鍮꾩냼??留ㅼ껜 ?ㅼ썙??媛먯? ??議곌린 醫낅즺",
+                            file=sys.stderr
+                        )
+                        ctx.add_message(ExpertMessage(
+                            from_expert=ExpertType.DISCOURSE,
+                            to_expert=None,
+                            message_type="final",
+                            content={
+                                "decision": "noise",
+                                "reason": f"鍮꾩냼??留ㅼ껜(manga_comics): 留뚰솕/?숈씤吏 愿??湲",
+                            },
+                        ))
+                        return ctx
+
+        # ?뵦 ?λⅤ/?몃줈???쇰컲濡?媛먯?: discuss_genre intent硫??뱀젙 ?묓뭹 ?앸퀎 ?쒕룞
+        if ctx.discourse_intent == "discuss_genre" and not ctx.discourse_warning:
+            discourse_output = ctx.get_expert_output(ExpertType.DISCOURSE)
+            d_conf = "high"
+            if discourse_output:
+                d_conf = discourse_output.get("discourse_analysis", {}).get("intent_confidence", "medium")
+            if d_conf in ("high", "medium"):
+                ctx.discourse_warning = f"discuss_genre({d_conf})"
+                ctx.uncertainty_sources.append(
+                    f"DiscourseAnalyzer: intent=discuss_genre({d_conf}) -> generic genre discussion, title grounding uncertain"
+                )
+                print(f"[{_ts()}] {self.emoji} genre-generalization warning: {ctx.discourse_warning} -> decoder rerun", file=sys.stderr)
+
+        # Phase 2: 寃???ㅽ뻾
+        search_requests = gatekeeper_result.get("search_requests", [])
+        
+        # ?뵦 媛쒖꽑??A: Gatekeeper ?ㅽ뙣 ??key_terms 蹂듦뎄
+        # Gatekeeper媛 JSON ?뚯떛 ?ㅻ쪟 ?깆쑝濡?_default_result瑜?諛섑솚?섎㈃ key_terms=[] (falsy)
+        # DiscourseAnalyzer媛 novel_literature ?꾨찓?몄쓣 媛먯???寃쎌슦, title_novel_terms瑜?key_terms濡?蹂듦뎄
+        gk_key_terms = gatekeeper_result.get("key_terms") or []
+        if not gk_key_terms and ctx.primary_domain == "novel_literature":
+            discourse_output = ctx.get_expert_output(ExpertType.DISCOURSE)
+            if discourse_output:
+                d_analysis = discourse_output.get("discourse_analysis", {})
+                novel_terms = d_analysis.get("title_novel_terms") or []
+                recovered_terms = list(dict.fromkeys(novel_terms))  # ?쒖꽌 ?좎? 以묐났 ?쒓굅
+                
+                if recovered_terms:
+                    gatekeeper_result["key_terms"] = recovered_terms
+                    print(f"[{_ts()}] {self.emoji} ?봽 Gatekeeper key_terms 蹂듦뎄 (Discourse?먯꽌): {recovered_terms}", file=sys.stderr)
+                else:
+                    # Discourse?먯꽌??紐?李얠쑝硫??ъ뒪???쒕ぉ?먯꽌 湲곕낯 異붿텧
+                    post_title = ctx.post_data.get("title", "") if ctx.post_data else ""
+                    if post_title and len(post_title) >= 2:
+                        gatekeeper_result["key_terms"] = [post_title.strip()]
+                        print(f"[{_ts()}] {self.emoji} ?봽 Gatekeeper key_terms 蹂듦뎄 (?ъ뒪???쒕ぉ): [{post_title.strip()}]", file=sys.stderr)
+        
+        # noise 痍⑥냼 ??search_requests媛 鍮꾩뼱?덉쑝硫?key_terms?먯꽌 ?먮룞 ?앹꽦
+        if not search_requests and gatekeeper_result.get("key_terms"):
+            key_terms = gatekeeper_result["key_terms"]
+            print(f"[{_ts()}] {self.emoji} ?뵊 寃???붿껌 ?놁쓬 ??key_terms?먯꽌 ?먮룞 ?앹꽦: {key_terms[:4]}", file=sys.stderr)
+            for term in key_terms[:4]:
+                if len(term) >= 2:  # 理쒖냼 2湲???댁긽
+                    search_requests.append({
+                        "query": f"{term} 소설",
+                        "purpose": "official_title_verify",
+                        "priority": 1,
+                    })
+                    search_requests.append({
+                        "query": f"{term} 작가",
+                        "purpose": "author_verify",
+                        "priority": 2,
+                    })
+        
+        if search_requests and self.search_fn:
+            # ?뵦 Phase28: Discourse-Informed ?ㅻ쭏??寃???앹꽦
+            # 湲곗〈 湲곌퀎??split??Discourse???댄빐??湲곕컲??寃?됱쑝濡??泥?
+            
+            discourse_output = ctx.get_expert_output(ExpertType.DISCOURSE)
+            discourse_novel_terms: set = set()
+            discourse_suggestions: list = []
+            
+            if discourse_output:
+                d_analysis = discourse_output.get("discourse_analysis", {})
+                # Discourse媛 ?앸퀎???뚯꽕 愿???⑹뼱留?split ???
+                discourse_novel_terms = set(d_analysis.get("title_novel_terms") or [])
+                # Discourse LLM???쒖븞??寃??荑쇰━
+                discourse_suggestions = d_analysis.get("search_suggestions") or []
+            
+            # Step A: Discourse search_suggestions ?곗꽑 ?곸슜 (LLM??留λ씫 ?댄빐 ???쒖븞??荑쇰━)
+            existing_queries = {r.get("query", "") for r in search_requests}
+            if discourse_suggestions:
+                for sugg in discourse_suggestions[:3]:
+                    if not isinstance(sugg, dict):
+                        continue
+                    q = sugg.get("query", "").strip()
+                    if q and q not in existing_queries and len(q) <= 50:
+                        search_requests.append({
+                            "query": q,
+                            "purpose": f"discourse_suggestion: {sugg.get('purpose', '')}",
+                            "priority": sugg.get("priority", 1),
+                        })
+                        existing_queries.add(q)
+                print(f"[{_ts()}] {self.emoji} ?쭬 Discourse ?ㅻ쭏??寃??{len(discourse_suggestions)}嫄?異붽?", file=sys.stderr)
+            
+            # Step B: ?⑹꽦??遺꾨━ 寃????Discourse novel_terms?먮쭔 ?곸슜 (湲곗〈 ?꾩껜 key_terms ???
+            # Discourse媛 ?녾굅??novel_terms媛 鍮꾩뼱?덉쑝硫?湲곗〈 諛⑹떇?쇰줈 fallback
+            import re as _re
+            gk_key_terms_for_split = gatekeeper_result.get("key_terms") or []
+            
+            for term in gk_key_terms_for_split:
+                # ?뵩 LLM??由ъ뒪???レ옄 ??鍮꾨Ц?먯뿴??諛섑솚?????덉쑝誘濡?str留?泥섎━
+                if not isinstance(term, str):
+                    continue
+                term_clean = _re.sub(r'[^\uac00-\ud7a3]', '', term)
+                if len(term_clean) < 5:
+                    continue
+                
+                # ?뵦 Discourse ?꾪꽣: novel_terms???ы븿??寃껊쭔 split (?꾨땲硫???퉬)
+                # Discourse媛 ?놁쑝硫?紐⑤뱺 5?뚯젅+ ?⑹뼱 ???(湲곗〈 ?명솚)
+                if discourse_novel_terms:
+                    # term??novel_terms 以??섎굹???ы븿?섍굅??寃뱀튂?붿? ?뺤씤
+                    # ?뵩 LLM???レ옄瑜?諛섑솚?????덉쑝誘濡?str留??꾪꽣
+                    is_novel_term = any(
+                        nt in term or term in nt
+                        for nt in discourse_novel_terms
+                        if isinstance(nt, str)
+                    )
+                    if not is_novel_term:
+                        print(f"[{_ts()}] {self.emoji} ?? ?⑹꽦??遺꾨━ ?ㅽ궢: '{term}' (Discourse novel_terms???놁쓬)", file=sys.stderr)
+                        continue
+                
+                # 3?뚯젅/4?뚯젅 遺꾨━
+                for sp in [3, 4]:
+                    if sp >= len(term_clean):
+                        continue
+                    front = term_clean[:sp]
+                    back = term_clean[sp:]
+                    
+                    # ?욌?遺?寃??(?쎌묶 遺遺?
+                    q_front = f"{front} 소설"
+                    if q_front not in existing_queries:
+                        search_requests.append({
+                            "query": q_front,
+                            "purpose": "abbreviation_split_search",
+                            "priority": 2,
+                        })
+                        existing_queries.add(q_front)
+                    
+                    # ?욌?遺꾩쓣 ??遺꾨━ (4?뚯젅 ??2+2 寃??
+                    if sp == 4 and len(front) == 4:
+                        q_split = f"{front[:2]} {front[2:]} 소설"
+                        if q_split not in existing_queries:
+                            search_requests.append({
+                                "query": q_split,
+                                "purpose": "abbreviation_deep_split_search",
+                                "priority": 3,
+                            })
+                            existing_queries.add(q_split)
+                
+                print(f"[{_ts()}] {self.emoji} ?? ?⑹꽦??遺꾨━ 寃??異붽?: '{term}' ({len(term_clean)}?뚯젅)", file=sys.stderr)
+            
+            # ?뵦 Fix C: key_terms 以?search_requests??而ㅻ쾭 ????寃껋뿉 ???
+            # "{term} ?뱀냼?? 寃???먮룞 異붽? (媛쒕룎 ????寃뚯엫?⑹뼱 dead-end 諛⑹?)
+            # ?좑툘 ?? 罹먮┃?곕챸/?쇰컲?대뒗 ?쒖쇅 (?쒕Т?? ?묐룄?? ?꾧컻 ??遺덊븘??寃??諛⑹?)
+            gk_all_key_terms = gatekeeper_result.get("key_terms") or []
+            gk_entities = gatekeeper_result.get("detected_entities") or {}
+            gk_characters = set()
+            for c in (gk_entities.get("possible_characters") or []):
+                if isinstance(c, str):
+                    gk_characters.add(_re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', c))
+            gk_titles = set()
+            for t in (gk_entities.get("possible_titles") or []):
+                if isinstance(t, str):
+                    gk_titles.add(_re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', t))
+            gk_authors = set()
+            for a in (gk_entities.get("possible_authors") or []):
+                if isinstance(a, str):
+                    gk_authors.add(_re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', a))
+            # ?쇰컲???꾪꽣 (?묓뭹紐??묎?紐낆씠 ?????녿뒗 踰붿슜 ?쒓뎅??
+            _GENERIC_TERMS = {
+                "소개", "내용", "후기", "추천", "스포", "리뷰", "소설", "작가",
+                "주인공", "캐릭터", "결말", "장르", "완결", "연재", "소설가",
+                "작품", "설정", "스토리", "플롯", "세계관", "먼치킨",
+            }
+            for kt in gk_all_key_terms:
+                if not isinstance(kt, str) or len(kt) < 2:
+                    continue
+                kt_clean = _re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', kt)
+                if not kt_clean or len(kt_clean) < 2:
+                    continue
+                # ?슟 罹먮┃?곕챸 ?쒖쇅 (possible_characters???덉쑝硫?罹먮┃?????묓뭹 寃??遺덊븘??
+                if kt_clean in gk_characters:
+                    continue
+                # ?슟 ?쇰컲???쒖쇅
+                if kt_clean in _GENERIC_TERMS:
+                    continue
+                # ?대? existing_queries??"?뱀냼?? 議고빀???덈뒗吏 ?뺤씤
+                q_novel = f"{kt} 소설"
+                if q_novel not in existing_queries:
+                    # ?대떦 key_term???대? ?ㅻⅨ 寃?됱뿉??而ㅻ쾭?섎뒗吏 ?뺤씤
+                    already_has_novel = any(kt_clean in eq.replace(' ', '') and '소설' in eq for eq in existing_queries)
+                    if not already_has_novel:
+                        search_requests.append({
+                            "query": q_novel,
+                            "purpose": "key_term_novel_search",
+                            "priority": 2,
+                        })
+                        existing_queries.add(q_novel)
+            
+            # 珥덇린 寃??荑쇰━ ?대젰 湲곕줉
+            for req in search_requests:
+                q = req.get("query", "").strip()
+                if q:
+                    ctx.searched_queries.add(q)
+            initial_results = self._execute_searches(search_requests, ctx.post_id)
+            ctx.search_results = initial_results  # 珥덇린 寃?됱? 吏곸젒 ?좊떦 (以묐났 ?놁쓬)
+            _emit_monitor("expert_phase", {"expert": "search", "status": "done"}, post_id=ctx.post_id)
+            
+            # ?뵮 Deep Search: snippet 遺꾩꽍 ??URL ?섏묶 ??異붽? 寃??
+            if initial_results:
+                gk_key = gatekeeper_result.get("key_terms") or []
+                safe_key = [t for t in gk_key if isinstance(t, str)]
+                self._deep_search_enrich(
+                    ctx, safe_key, initial_results,
+                    post_data=ctx.post_data or {},
+                    gatekeeper_result=gatekeeper_result,
+                )
+        
+        # Phase 3: ?숈쟻 ?꾨Ц媛 猷⑦봽 (Agentic Collaboration)
+        while ctx.iteration < ctx.max_iterations:
+            ctx.iteration += 1
+            # max_iterations???덉쟾?μ튂??肉? ?ㅼ젣濡쒕뒗 蹂댄넻 3-5踰덈쭔??醫낅즺
+            print(f"\n[{_ts()}] {self.emoji} --- Step {ctx.iteration} ---", file=sys.stderr)
+            
+            # ?ㅼ쓬 ?≪뀡 寃곗젙
+            next_action = self._decide_next_action(ctx, rules_config)
+            
+            if next_action["action"] == "call_expert":
+                # null/None expert 諛⑹뼱: LLM??request_expert??null???ｋ뒗 寃쎌슦 ?鍮?
+                raw_expert = next_action.get("expert")
+                if not raw_expert or raw_expert == "null":
+                    print(f"[{_ts()}] {self.emoji} ?좑툘 null expert ?붿껌 臾댁떆, finalize濡??꾪솚", file=sys.stderr)
+                    next_action = {"action": "finalize"}
+                    break
+                expert_type = ExpertType(raw_expert)
+                is_collaboration = next_action.get("collaboration", False)
+                
+                if is_collaboration:
+                    print(f"[{_ts()}] {self.emoji} ?쩃 ?묐젰 ?몄텧: {expert_type.value}", file=sys.stderr)
+                
+                result = self._call_expert(expert_type, ctx, rules_config)
+                
+                # ?뵦 Fix: ?묐젰 Gatekeeper ?몄텧 ??key_terms 蹂묓빀 + 誘멸????⑹뼱 蹂댁땐 寃??
+                # 2李?GK媛 諛섑솚??key_terms 以?search_requests???녿뒗 ?⑹뼱瑜??먮룞 寃??
+                if is_collaboration and expert_type == ExpertType.GATEKEEPER and result and self.search_fn:
+                    import re as _re_collab
+                    collab_key_terms = result.get("key_terms") or []
+                    collab_search_queries = {r.get("query", "") for r in (result.get("search_requests") or [])}
+                    print(f"[{_ts()}] {self.emoji} ?뵊 蹂댁땐 寃??吏꾩엯: key_terms={collab_key_terms[:6]}, search_queries={list(collab_search_queries)[:4]}", file=sys.stderr)
+                    supplementary_searches = []
+                    for kt in collab_key_terms:
+                        if not isinstance(kt, str) or len(kt) < 2:
+                            continue
+                        kt_clean = _re_collab.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', kt)
+                        if not kt_clean or len(kt_clean) < 2:
+                            continue
+                        # ?대? search_requests???ы븿???⑹뼱?몄? ?뺤씤
+                        already_covered = any(kt_clean in sq.replace(' ', '') for sq in collab_search_queries)
+                        if already_covered:
+                            continue
+                        # ?대? ?댁쟾 寃?됱뿉??而ㅻ쾭???⑹뼱?몄? ?뺤씤
+                        already_searched = any(kt_clean in sq.replace(' ', '') for sq in ctx.searched_queries)
+                        if already_searched:
+                            print(f"[{_ts()}] {self.emoji} ?뵊 蹂댁땐 ?ㅽ궢 (?대? 寃?됰맖): '{kt_clean}'", file=sys.stderr)
+                            continue
+                        # 誘멸???key_term ??蹂댁땐 寃???앹꽦
+                        print(f"[{_ts()}] {self.emoji} ?뵊 蹂댁땐 ??? '{kt}' (clean='{kt_clean}')", file=sys.stderr)
+                        q_novel = f"{kt} 소설"
+                        if q_novel not in ctx.searched_queries:
+                            supplementary_searches.append({"query": q_novel, "purpose": "key_term_supplement", "priority": 1})
+                            ctx.searched_queries.add(q_novel)
+                        q_author = f"{kt} 작가"
+                        if q_author not in ctx.searched_queries:
+                            supplementary_searches.append({"query": q_author, "purpose": "key_term_supplement", "priority": 2})
+                            ctx.searched_queries.add(q_author)
+                    if supplementary_searches:
+                        print(f"[{_ts()}] {self.emoji} ?뵊 key_terms 蹂댁땐 寃??{len(supplementary_searches)}嫄? {[s['query'] for s in supplementary_searches[:4]]}", file=sys.stderr)
+                        sup_results = self._execute_searches(supplementary_searches, ctx.post_id)
+                        if sup_results:
+                            added = ctx.add_search_results(sup_results)
+                            print(f"[{_ts()}] {self.emoji} ?뵊 蹂댁땐 寃??寃곌낵 {added}嫄?異붽?", file=sys.stderr)
+                            # ??寃곌낵?먯꽌 snippet_hints ?ъ텛異?
+                            safe_kt = [t for t in collab_key_terms if isinstance(t, str)]
+                            new_hints = self._extract_hints_from_snippets(sup_results, safe_kt)
+                            if hasattr(ctx, 'snippet_hints') and ctx.snippet_hints:
+                                self._merge_snippet_hints(
+                                    ctx,
+                                    new_hints,
+                                    safe_kt,
+                                    post_data=ctx.post_data,
+                                )
+                    else:
+                        print(f"[{_ts()}] {self.emoji} ?뵊 蹂댁땐 寃???꾩슂 ?놁쓬 (紐⑤뱺 key_terms ?대? 而ㅻ쾭??", file=sys.stderr)
+                
+                # 狩?CRITICAL: ?묐젰 ?몄텧?대뱺 ?쇰컲 ?몄텧?대뱺, verification_search??臾댁“嫄??ㅽ뻾!
+                # 異붽? 寃???붿껌 ?뺤씤 (search_requests ?먮뒗 verification_search)
+                if result.get("search_requests") and self.search_fn:
+                    # 寃??荑쇰━ ?대젰 湲곕줉
+                    for req in result["search_requests"]:
+                        q = req.get("query", "").strip()
+                        if q:
+                            ctx.searched_queries.add(q)
+                    new_results = self._execute_searches(result["search_requests"], ctx.post_id)
+                    added = ctx.add_search_results(new_results)
+                    if added < len(new_results):
+                        print(f"[{_ts()}] {self.emoji} ?뵊 以묐났 {len(new_results) - added}嫄??쒓굅", file=sys.stderr)
+                    
+                    # ?뵦 Fix B: ?묐젰 GK search_requests ?ㅽ뻾 ??snippet_hints ?ъ텛異?
+                    # ??寃??寃곌낵?먯꽌 prefix matching ?깆쓣 ?ㅼ떆 ?섑뻾?섏뿬 媛쒕룎?믨컻?뚯껌??媛숈? 留ㅽ븨 諛쒓껄
+                    if is_collaboration and expert_type == ExpertType.GATEKEEPER and new_results:
+                        collab_kt = result.get("key_terms") or []
+                        safe_collab_kt = [t for t in collab_kt if isinstance(t, str)]
+                        if safe_collab_kt:
+                            sr_hints = self._extract_hints_from_snippets(new_results, safe_collab_kt)
+                            if hasattr(ctx, 'snippet_hints') and ctx.snippet_hints:
+                                self._merge_snippet_hints(
+                                    ctx,
+                                    sr_hints,
+                                    safe_collab_kt,
+                                    post_data=ctx.post_data,
+                                )
+                            if sr_hints.get("title_hints") or sr_hints.get("author_hints") or sr_hints.get("abbreviation_hints"):
+                                print(
+                                    f"[{_ts()}] {self.emoji} ?뵊 ?묐젰 寃????snippet_hints 媛깆떊: "
+                                    f"title={len(sr_hints.get('title_hints', []))}嫄? "
+                                    f"author={len(sr_hints.get('author_hints', []))}嫄? "
+                                    f"abbrev={len(sr_hints.get('abbreviation_hints', []))}",
+                                    file=sys.stderr
+                                )
+                
+                # Decoder/Verifier??verification_search 泥섎━
+                # 狩??듭떖: 寃?????대떦 ?꾨Ц媛瑜??ㅼ떆 ?몄텧?섏뿬 ??寃곌낵濡??щ텇??
+                if result.get("verification_search") and self.search_fn:
+                    verification_queries = result["verification_search"]
+                    
+                    # 諛곗뿴 ?먮뒗 ?⑥씪 臾몄옄??泥섎━
+                    if isinstance(verification_queries, str):
+                        verification_queries = [verification_queries]
+                    elif not isinstance(verification_queries, list):
+                        verification_queries = []
+                    
+                    if verification_queries:
+                        # ?대? 寃?됲븳 荑쇰━ ?꾪꽣留?
+                        new_queries = [q for q in verification_queries if q not in ctx.searched_queries]
+                        skipped = len(verification_queries) - len(new_queries)
+                        if skipped > 0:
+                            print(f"[{_ts()}] {self.emoji} ?뵊 ?대? 寃?됲븳 荑쇰━ {skipped}嫄??ㅽ궢", file=sys.stderr)
+                        if not new_queries:
+                            print(f"[{_ts()}] {self.emoji} ?뵊 紐⑤뱺 verification_search 荑쇰━媛 ?대? 寃?됰맖 ???ㅽ궢", file=sys.stderr)
+                        
+                        verification_queries = new_queries
+                    
+                    if verification_queries:
+                        print(f"[{_ts()}] {self.emoji} ?뵊 異뺤빟???섏떖 ???ш???{len(verification_queries)}媛? {verification_queries[:2]}...", file=sys.stderr)
+                        ctx.searched_queries.update(verification_queries)  # 寃???대젰 湲곕줉
+                        
+                        # ?ㅼ쨷 荑쇰━瑜?寃???붿껌 ?뺤떇?쇰줈 蹂??
+                        search_requests = [
+                            {"query": q, "purpose": "abbreviation_verification", "priority": 1}
+                            for q in verification_queries
+                        ]
+                        
+                        # ?넅 "?앸퀎???묓뭹 ?쒕ぉ + ?몃Ъ/?⑹뼱" 議고빀 寃???먮룞 異붽?
+                        # 狩?KNOWN_ABBREVIATIONS瑜?理쒖슦?좎쑝濡??뺤씤 (媛???좊ː???믪쓬)
+                        _identified_title = None
+                        _gk_out_v = ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
+                        _gk_entities_v = (_gk_out_v.get("detected_entities") or {}) if isinstance(_gk_out_v, dict) else {}
+                        _gk_titles_v = _gk_entities_v.get("possible_titles", []) or []
+                        _post_title_v = (ctx.post_data or {}).get("title", "")
+                        for _kt in (_gk_titles_v + [_post_title_v]):
+                            if isinstance(_kt, str):
+                                import re as _re_v
+                                _kt_clean = _re_v.sub(r'[^\uac00-\ud7a3]', '', _kt)
+                                if _kt_clean in KNOWN_ABBREVIATIONS:
+                                    _identified_title = KNOWN_ABBREVIATIONS[_kt_clean]
+                                    break
+                        
+                        # KNOWN_ABBREVIATIONS???놁쑝硫?snippet_hints?먯꽌 ?뺤씤
+                        if not _identified_title and hasattr(ctx, 'snippet_hints') and ctx.snippet_hints:
+                            _abbrev_hints = ctx.snippet_hints.get("abbreviation_hints", [])
+                            # ?쎌묶 留ㅽ븨?먯꽌 full title 異붿텧 (abbreviation_hints留??ъ슜 ??title_hints???ㅽ깘 ?꾪뿕)
+                            if _abbrev_hints:
+                                _identified_title = _abbrev_hints[0].get("full", "")
+                        
+                        # suspected_titles?먯꽌???뺤씤 (Decoder媛 ?대? ?앸퀎???쒕ぉ)
+                        if not _identified_title and ctx.suspected_titles:
+                            for _st in ctx.suspected_titles:
+                                if isinstance(_st, dict) and _st.get("title") and _st.get("confidence", 0) >= 0.7:
+                                    _identified_title = _st["title"]
+                                    break
+                        
+                        if _identified_title:
+                            _gk_out_c = ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
+                            _gk_entities_c = (_gk_out_c.get("detected_entities") or {}) if isinstance(_gk_out_c, dict) else {}
+                            _gk_chars = _gk_entities_c.get("possible_characters", []) or []
+                            
+                            for _char in _gk_chars[:3]:
+                                if isinstance(_char, str) and len(_char) >= 2:
+                                    combo_q = f"{_identified_title} {_char}"
+                                    if combo_q not in ctx.searched_queries and len(combo_q) <= 50:
+                                        search_requests.append({
+                                            "query": combo_q,
+                                            "purpose": "title_character_verification",
+                                            "priority": 1,
+                                        })
+                                        ctx.searched_queries.add(combo_q)
+                                        print(f"[{_ts()}] {self.emoji} ?뵕 議고빀 寃??異붽?: '{combo_q}'", file=sys.stderr)
+                        
+                        new_results = self._execute_searches(search_requests, ctx.post_id)
+                        
+                        if new_results:
+                            added = ctx.add_search_results(new_results)
+                            print(f"[{_ts()}] {self.emoji} ?봽 ??寃??寃곌낵 {added}嫄?異붽? (以묐났 {len(new_results) - added}嫄??쒓굅)", file=sys.stderr)
+                            print(f"[{_ts()}] {self.emoji} ?봽 ??寃??寃곌낵濡??꾨Ц媛 ?ы샇異??쒖옉", file=sys.stderr)
+                        
+                        # 狩?異뺤빟???ш?????Decoder ??Verifier ?ы샇異??ъ씠??
+                        # 1. Decoder ?ы샇異?(??寃??寃곌낵濡??ы빐??
+                        print(f"[{_ts()}] {self.emoji} ?봽 1?④퀎: Decoder ?ы샇異?(??寃??寃곌낵)", file=sys.stderr)
+                        gatekeeper_out = ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
+                        decoder_expert = self.experts.get(ExpertType.DECODER)
+                        if decoder_expert:
+                            _emit_monitor(
+                                "expert_phase",
+                                {
+                                    "expert": "decoder",
+                                    "status": "running",
+                                    "recall": True,
+                                    "from": "verifier",
+                                    "reason": "verifier requested decoder recall after additional evidence",
+                                },
+                                post_id=ctx.post_id,
+                            )
+                            decoder_result = decoder_expert.analyze(
+                                gatekeeper_out,
+                                ctx.search_results,
+                                rules_config.get("slang_dictionary", {}),
+                                conversation_context=ctx.get_conversation_summary(),
+                                ctx=ctx,  # suspected_titles ?낅뜲?댄듃??
+                            )
+                            ctx.set_expert_output(ExpertType.DECODER, decoder_result)
+                            _emit_monitor("expert_phase", {"expert": "decoder", "status": "done", "recall": True, "from": "verifier"}, post_id=ctx.post_id)
+                            
+                            # ?좏겙 ?ъ슜??異쒕젰
+                            llm = getattr(decoder_expert, 'llm', None)
+                            if llm and llm.last_usage:
+                                usage = llm.last_usage
+                                prompt_tok = usage.get("prompt_tokens", 0)
+                                completion_tok = usage.get("completion_tokens", 0)
+                                total_tok = usage.get("total_tokens", prompt_tok + completion_tok)
+                                print(f"[{_ts()}][{self.emoji}] Decoder(?ы샇異? ?좏겙 ?ъ슜??", file=sys.stderr)
+                                print(f"  ?낅젰: {prompt_tok:,} tokens", file=sys.stderr)
+                                print(f"  異쒕젰: {completion_tok:,} tokens", file=sys.stderr)
+                                print(f"  珥앺빀: {total_tok:,} tokens", file=sys.stderr)
+                                if not hasattr(ctx, 'token_usage'):
+                                    ctx.token_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+                                ctx.token_usage["prompt_tokens"] += prompt_tok
+                                ctx.token_usage["completion_tokens"] += completion_tok
+                                ctx.token_usage["total_tokens"] += total_tok
+                            
+                            # 狩?2李?Decoder??verification_search??異붽? 寃??
+                            recall_vs = decoder_result.get("verification_search")
+                            if recall_vs and self.search_fn:
+                                if isinstance(recall_vs, str):
+                                    recall_vs = [recall_vs]
+                                elif not isinstance(recall_vs, list):
+                                    recall_vs = []
+                                if recall_vs:
+                                    # ?대? 寃?됲븳 荑쇰━ ?꾪꽣留?
+                                    recall_vs = [q for q in recall_vs if q not in ctx.searched_queries]
+                                if recall_vs:
+                                    print(f"[{_ts()}] {self.emoji} ?뵊 ?ы샇異?Decoder 異붽? 寃??{len(recall_vs)}媛? {recall_vs[:2]}...", file=sys.stderr)
+                                    ctx.searched_queries.update(recall_vs)  # 寃???대젰 湲곕줉
+                                    recall_reqs = [
+                                        {"query": q, "purpose": "decoder_recall_verification", "priority": 1}
+                                        for q in recall_vs
+                                    ]
+                                    
+                                    # ?넅 2李??ы샇異쒖뿉?쒕룄 議고빀 寃??異붽?
+                                    # (1李⑥뿉???볦낀嫄곕굹 ?덈줈 ?앸퀎???쒕ぉ+罹먮┃??議고빀)
+                                    _id_title_r = None
+                                    # KNOWN_ABBREVIATIONS ?곗꽑
+                                    for _kt_r in (_gk_titles_v + [_post_title_v]):
+                                        if isinstance(_kt_r, str):
+                                            import re as _re_r
+                                            _kt_r_clean = _re_r.sub(r'[^\uac00-\ud7a3]', '', _kt_r)
+                                            if _kt_r_clean in KNOWN_ABBREVIATIONS:
+                                                _id_title_r = KNOWN_ABBREVIATIONS[_kt_r_clean]
+                                                break
+                                    # suspected_titles?먯꽌???뺤씤
+                                    if not _id_title_r and ctx.suspected_titles:
+                                        for _st_r in ctx.suspected_titles:
+                                            if isinstance(_st_r, dict) and _st_r.get("title") and _st_r.get("confidence", 0) >= 0.7:
+                                                _id_title_r = _st_r["title"]
+                                                break
+                                    if _id_title_r:
+                                        _gk_chars_r = _gk_entities_v.get("possible_characters", []) or []
+                                        for _char_r in _gk_chars_r[:3]:
+                                            if isinstance(_char_r, str) and len(_char_r) >= 2:
+                                                combo_q_r = f"{_id_title_r} {_char_r}"
+                                                if combo_q_r not in ctx.searched_queries and len(combo_q_r) <= 50:
+                                                    recall_reqs.append({
+                                                        "query": combo_q_r,
+                                                        "purpose": "title_character_verification",
+                                                        "priority": 1,
+                                                    })
+                                                    ctx.searched_queries.add(combo_q_r)
+                                                    print(f"[{_ts()}] {self.emoji} ?뵕 議고빀 寃??異붽? (2李?: '{combo_q_r}'", file=sys.stderr)
+                                    
+                                    recall_new = self._execute_searches(recall_reqs, ctx.post_id)
+                                    if recall_new:
+                                        added_r = ctx.add_search_results(recall_new)
+                                        print(f"[{_ts()}] {self.emoji} ?봽 異붽? 寃??寃곌낵 {added_r}嫄?異붽? (以묐났 {len(recall_new) - added_r}嫄??쒓굅)", file=sys.stderr)
+                            
+                            # ?썳截?2李?Decoder?먯꽌 ?뺤떇 ?쒕ぉ 誘몃컻寃??????뚮옯???뱀젙 寃???먮룞 異붽?
+                            # 而ㅻ??덊떚 ?쎌묶留??섏삤怨?怨듭떇 ?뚮옯??URL???놁쓣 ??蹂댁셿
+                            decoder_2_conf = str(decoder_result.get("overall_confidence", "")).lower()
+                            if decoder_2_conf in ("none", "low", "") and self.search_fn:
+                                # Gatekeeper possible_titles?먯꽌 媛??湲?異뺤빟???꾨낫 異붿텧
+                                _gk_entities = gatekeeper_out.get("detected_entities") or {}
+                                gk_titles = (_gk_entities.get("possible_titles") or []) if isinstance(_gk_entities, dict) else []
+                                # key_terms?먯꽌???꾨낫 異붿텧
+                                gk_terms = gatekeeper_out.get("key_terms") or []
+                                abbrev_candidates = []
+                                for t in (gk_titles + gk_terms):
+                                    if isinstance(t, str):
+                                        import re as _re2
+                                        t_clean = _re2.sub(r'[^\uac00-\ud7a3]', '', t)
+                                        if 2 <= len(t_clean) <= 6:  # 2~6?뚯젅 異뺤빟??
+                                            abbrev_candidates.append(t_clean)
+
+                                # ?넅 Decoder best_match/suspected_titles ?쒕ぉ???뚮옯??寃????곸뿉 ?ы븿
+                                for dt in (decoder_result.get("decoded_terms") or []):
+                                    if not isinstance(dt, dict):
+                                        continue
+                                    bm = dt.get("best_match") or {}
+                                    bm_title = bm.get("title")
+                                    if bm_title and isinstance(bm_title, str):
+                                        t_clean = _re2.sub(r'[^\uac00-\ud7a3]', '', bm_title)
+                                        if 2 <= len(t_clean) <= 10:  # Decoder ?쒕ぉ? ??湲?寃껊룄 ?덉슜
+                                            abbrev_candidates.append(t_clean)
+                                    # morphemes?먯꽌 ?쒕ぉ 遺遺?morpheme??異붿텧
+                                    morphs = dt.get("morphemes") or []
+                                    for m in morphs:
+                                        if isinstance(m, str):
+                                            m_clean = _re2.sub(r'[^\uac00-\ud7a3]', '', m)
+                                            if 2 <= len(m_clean) <= 6:
+                                                abbrev_candidates.append(m_clean)
+                                # ctx.suspected_titles?먯꽌??異붿텧
+                                for st in ctx.suspected_titles:
+                                    st_title = st.get("title", "") if isinstance(st, dict) else ""
+                                    if st_title:
+                                        st_clean = _re2.sub(r'[^\uac00-\ud7a3]', '', st_title)
+                                        if 2 <= len(st_clean) <= 10:
+                                            abbrev_candidates.append(st_clean)
+
+                                # 以묐났 ?쒓굅 + ?곸쐞 4媛?(Decoder ?꾨낫 ?ы븿?쇰줈 ?뺣?)
+                                abbrev_candidates = list(dict.fromkeys(abbrev_candidates))[:4]
+                                
+                                if abbrev_candidates:
+                                    platform_searches = []
+                                    for abbr in abbrev_candidates:
+                                        for platform in ("노벨피아", "문피아"):
+                                            q = f"{abbr} {platform}"
+                                            if q not in ctx.searched_queries:
+                                                platform_searches.append({
+                                                    "query": q,
+                                                    "purpose": "platform_title_search",
+                                                    "priority": 1,
+                                                })
+                                                ctx.searched_queries.add(q)
+                                    if platform_searches:
+                                        print(f"[{_ts()}] {self.emoji} ?뵊 ?뺤떇 ?쒕ぉ ?뚮옯??寃??{len(platform_searches)}媛? {[s['query'] for s in platform_searches[:3]]}", file=sys.stderr)
+                                        plat_results = self._execute_searches(platform_searches, ctx.post_id)
+                                        if plat_results:
+                                            added_p = ctx.add_search_results(plat_results)
+                                            print(f"[{_ts()}] {self.emoji} ?봽 ?뚮옯??寃??寃곌낵 {added_p}嫄?異붽?", file=sys.stderr)
+                            
+                            # 3李?Decoder ?몄텧 ?щ? 寃곗젙
+                            # (recall 寃???먮뒗 ?뚮옯??寃?됱뿉????寃곌낵媛 異붽??먯쑝硫??ы샇異?
+                            total_sr_count = len(ctx.search_results)
+                                        
+                            # 狩?2李?Decoder 異붽? 寃??寃곌낵 ?쇰뱶諛? 3李?Decoder ?ы샇異?
+                            # (??寃??寃곌낵???뺤떇 ?쒕ぉ???덉쓣 ???덉쓬)
+                            if decoder_expert:
+                                # ?썳截?2李?Decoder 寃곌낵 湲곕줉 (?듭?留ㅼ묶 媛먯???
+                                prev_decoder_conf = str(decoder_result.get("overall_confidence", "")).lower()
+                                prev_decoder_title = None
+                                for dt in (decoder_result.get("decoded_terms") or []):
+                                    bm = dt.get("best_match") or {}
+                                    if bm.get("title"):
+                                        prev_decoder_title = bm["title"]
+                                        break
+                                
+                                # ?썳截??곗긽湲/六섍??대㈃ 3李?Decoder ?몄텧 李⑤떒 (?좏겙 ??퉬 諛⑹?)
+                                # is_association_post=true?대㈃ 1~2李⑥뿉???대? 異⑸텇???뺣낫瑜??섏쭛?덉쓬
+                                # ?쒕ぉ怨?蹂몃Ц??臾닿???湲?먯꽌 3李④퉴吏 ?듭? 留ㅼ묶 ?쒕룄 ???먯썝 ??퉬
+                                _skip_3rd = getattr(ctx, 'is_association_post', False)
+                                if _skip_3rd:
+                                    print(
+                                        f"[{_ts()}] {self.emoji} ?썳截??곗긽湲/六섍? ??Decoder 3李??몄텧 ?ㅽ궢 "
+                                        f"(?묓뭹留ㅼ묶 媛뺣컯 諛⑹?, ?좏겙 ?덉빟)",
+                                        file=sys.stderr,
+                                    )
+                                
+                                if not _skip_3rd:
+                                    print(f"[{_ts()}] {self.emoji} ?봽 1.5?④퀎: Decoder 3李??몄텧 (異붽? 寃??寃곌낵 ?쇰뱶諛?", file=sys.stderr)
+                                
+                                    # ?넅 3李??몄텧 ??context overflow 諛⑹?: search_results 異뺤냼
+                                    _sr_for_3rd = ctx.search_results
+                                    _sr_chars = sum(
+                                        len(str(sr.get("title", ""))) + len(str(sr.get("content", "")))
+                                        for sr in _sr_for_3rd
+                                    )
+                                    # Gatekeeper JSON + ?쒖뒪???꾨＼?꾪듃 + ?쒗뵆由???怨좎젙 鍮꾩슜 異붿젙 (~30K??
+                                    _gk_json_chars = len(json.dumps(gatekeeper_out, ensure_ascii=False))
+                                    _total_chars = _sr_chars + _gk_json_chars + 30000  # 怨좎젙 ?꾨＼?꾪듃 鍮꾩슜
+                                    _MAX_TOTAL_CHARS = 55000  # ~27.5K ?좏겙 (紐⑤뜽 32K ?쒗븳 ???덉쟾 留덉쭊)
+                                    
+                                    if _total_chars > _MAX_TOTAL_CHARS:
+                                        print(
+                                            f"[{_ts()}] {self.emoji} ?좑툘 3李??몄텧 context 異뺤냼: "
+                                            f"珥?異붿젙 {_total_chars:,}??> {_MAX_TOTAL_CHARS:,}???쒗븳 "
+                                            f"(SR={_sr_chars:,}, GK={_gk_json_chars:,}, 怨좎젙=30K)",
+                                            file=sys.stderr,
+                                        )
+                                        # 1) URL 湲곕컲 以묐났 ?쒓굅 (?숈씪 URL ??媛??湲?content留??좎?)
+                                        _url_best: Dict[str, Dict[str, Any]] = {}
+                                        _no_url = []
+                                        for sr in _sr_for_3rd:
+                                            _u = sr.get("url", "")
+                                            if _u:
+                                                if _u not in _url_best or len(str(sr.get("content", ""))) > len(str(_url_best[_u].get("content", ""))):
+                                                    _url_best[_u] = sr
+                                            else:
+                                                _no_url.append(sr)
+                                        _sr_deduped = list(_url_best.values()) + _no_url
+                                        
+                                        # 2) content 湲몄씠 異뺤냼 (媛?寃곌낵??content瑜?300?먮줈 ?쒗븳)
+                                        _sr_trimmed = []
+                                        for sr in _sr_deduped:
+                                            sr_copy = dict(sr)
+                                            _content = str(sr_copy.get("content", ""))
+                                            if len(_content) > 300:
+                                                sr_copy["content"] = _content[:300] + "..."
+                                            _sr_trimmed.append(sr_copy)
+                                        
+                                        # 3) 理쒕? 20媛?寃곌낵留??좎?
+                                        _sr_trimmed = _sr_trimmed[:20]
+                                        
+                                        _new_sr_chars = sum(
+                                            len(str(sr.get("title", ""))) + len(str(sr.get("content", "")))
+                                            for sr in _sr_trimmed
+                                        )
+                                        print(
+                                            f"[{_ts()}] {self.emoji} context trim complete: "
+                                            f"SR {len(ctx.search_results)} ({_sr_chars:,} chars) -> "
+                                            f"{len(_sr_trimmed)} ({_new_sr_chars:,} chars)",
+                                            file=sys.stderr,
+                                        )
+                                        _sr_for_3rd = _sr_trimmed
+                                    
+                                    _emit_monitor(
+                                        "expert_phase",
+                                        {
+                                            "expert": "decoder",
+                                            "status": "running",
+                                            "recall": True,
+                                            "from": "search",
+                                            "reason": "additional search evidence triggers decoder recall",
+                                        },
+                                        post_id=ctx.post_id,
+                                    )
+                                    decoder_result_3 = decoder_expert.analyze(
+                                        gatekeeper_out,
+                                        _sr_for_3rd,
+                                        rules_config.get("slang_dictionary", {}),
+                                        conversation_context=ctx.get_conversation_summary(),
+                                        ctx=ctx,
+                                    )
+                                    
+                                    # ?썳截?Decoder ?듭?留ㅼ묶 諛⑹?: 1李?2李⑥뿉??null?댁뿀?붾뜲
+                                    # 3李⑥뿉??媛묒옄湲?留ㅼ묶?섎㈃ discourse_warning 媛뺥솕
+                                    # ?? 2李④? ?뚯떛 ?먮윭(鍮?寃곌낵)??寃쎌슦??"?섎룄??null"???꾨땲誘濡??쒖쇅
+                                    _prev_has_decoded = bool(decoder_result.get("decoded_terms"))
+                                    _prev_is_parse_error = not _prev_has_decoded and prev_decoder_conf in ("", "none")
+                                    if prev_decoder_conf in ("none", "low") and prev_decoder_title is None and not _prev_is_parse_error:
+                                        new_conf = str(decoder_result_3.get("overall_confidence", "")).lower()
+                                        if new_conf not in ("none", "low"):
+                                            # 3李⑥뿉??媛묒옄湲?留ㅼ묶 ?쒕룄 ???좊ː???섏떖
+                                            forced_match = False
+                                            for dt3 in (decoder_result_3.get("decoded_terms") or []):
+                                                bm3 = dt3.get("best_match") or {}
+                                                if bm3.get("title") and bm3.get("confidence", "").lower() not in ("none", "low"):
+                                                    forced_match = True
+                                                    break
+                                            if forced_match:
+                                                print(
+                                                    f"[{_ts()}] {self.emoji} ?썳截?Decoder ?듭?留ㅼ묶 媛먯?: "
+                                                    f"1李?2李?null ??3李?{new_conf} ??discourse_warning 媛뺥솕",
+                                                    file=sys.stderr
+                                                )
+                                                if not ctx.discourse_warning:
+                                                    ctx.discourse_warning = "decoder_forced_match(3rd_attempt)"
+                                                ctx.uncertainty_sources.append(
+                                                    "Decoder媛 1李?2李⑥뿉??留ㅼ묶 ?ㅽ뙣 ??3李⑥뿉??媛묒옄湲?留ㅼ묶 ???좊ː???섏떖"
+                                                )
+                                    
+                                    ctx.set_expert_output(ExpertType.DECODER, decoder_result_3)
+                                    _emit_monitor("expert_phase", {"expert": "decoder", "status": "done", "recall": True, "from": "search"}, post_id=ctx.post_id)
+                                    
+                                    # ?좏겙 ?ъ슜??
+                                    llm3 = getattr(decoder_expert, 'llm', None)
+                                    if llm3 and llm3.last_usage:
+                                        u3 = llm3.last_usage
+                                        p3 = u3.get("prompt_tokens", 0)
+                                        c3 = u3.get("completion_tokens", 0)
+                                        t3 = u3.get("total_tokens", p3 + c3)
+                                        print(f"[{_ts()}][{self.emoji}] Decoder(3李? ?좏겙 ?ъ슜??", file=sys.stderr)
+                                        print(f"  ?낅젰: {p3:,} tokens", file=sys.stderr)
+                                        print(f"  異쒕젰: {c3:,} tokens", file=sys.stderr)
+                                        print(f"  珥앺빀: {t3:,} tokens", file=sys.stderr)
+                                        if not hasattr(ctx, 'token_usage'):
+                                            ctx.token_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+                                        ctx.token_usage["prompt_tokens"] += p3
+                                        ctx.token_usage["completion_tokens"] += c3
+                                        ctx.token_usage["total_tokens"] += t3
+                                    # 3李⑥뿉?쒕뒗 異붽? 寃???놁쓬 (臾댄븳 猷⑦봽 諛⑹?)
+                        
+                        # 2. Verifier ?ы샇異?(??Decoder 寃곌낵濡??ш?利?
+                        print(f"[{_ts()}] {self.emoji} ?봽 2?④퀎: Verifier ?ы샇異?(??Decoder 寃곌낵)", file=sys.stderr)
+                        verifier_expert = self.experts.get(ExpertType.VERIFIER)
+                        if verifier_expert:
+                            _emit_monitor(
+                                "expert_phase",
+                                {
+                                    "expert": "verifier",
+                                    "status": "running",
+                                    "recall": True,
+                                    "from": "decoder",
+                                    "reason": "decoder recall completed, verifier re-validation",
+                                },
+                                post_id=ctx.post_id,
+                            )
+                            verifier_result = verifier_expert.analyze(
+                                ctx.post_data,
+                                ctx.comments,
+                                ctx.get_expert_output(ExpertType.GATEKEEPER) or {},
+                                ctx.get_expert_output(ExpertType.DECODER) or {},
+                                ctx.search_results,
+                                conversation_context=ctx.get_conversation_summary(),
+                                ctx=ctx,
+                            )
+                            ctx.set_expert_output(ExpertType.VERIFIER, verifier_result)
+                            _emit_monitor("expert_phase", {"expert": "verifier", "status": "done", "recall": True, "from": "decoder"}, post_id=ctx.post_id)
+                            result = verifier_result  # ?꾩옱 result ?낅뜲?댄듃
+                            
+                            # ?좏겙 ?ъ슜??異쒕젰
+                            llm = getattr(verifier_expert, 'llm', None)
+                            if llm and llm.last_usage:
+                                usage = llm.last_usage
+                                prompt_tok = usage.get("prompt_tokens", 0)
+                                completion_tok = usage.get("completion_tokens", 0)
+                                total_tok = usage.get("total_tokens", prompt_tok + completion_tok)
+                                print(f"[{_ts()}][{self.emoji}] Verifier(?ы샇異? ?좏겙 ?ъ슜??", file=sys.stderr)
+                                print(f"  ?낅젰: {prompt_tok:,} tokens", file=sys.stderr)
+                                print(f"  異쒕젰: {completion_tok:,} tokens", file=sys.stderr)
+                                print(f"  珥앺빀: {total_tok:,} tokens", file=sys.stderr)
+                                if not hasattr(ctx, 'token_usage'):
+                                    ctx.token_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+                                ctx.token_usage["prompt_tokens"] += prompt_tok
+                                ctx.token_usage["completion_tokens"] += completion_tok
+                                ctx.token_usage["total_tokens"] += total_tok
+                        
+                        print(f"[{_ts()}] {self.emoji} ???꾨Ц媛 ?ы샇異??꾨즺", file=sys.stderr)
+                
+                # 狩?Decoder unresolved_terms 泥섎━ (誘명빐寃??⑹뼱 ?먮룞 ?ш???
+                if expert_type == ExpertType.DECODER and self.search_fn:
+                    unresolved = result.get("unresolved_terms", [])
+                    if unresolved:
+                        # needs_search=true??誘명빐寃??⑹뼱留??꾪꽣留?
+                        terms_to_search = [
+                            t for t in unresolved
+                            if t.get("needs_search", False) and t.get("term")
+                        ]
+                        
+                        if terms_to_search:
+                            print(
+                                f"[{_ts()}] {self.emoji} unresolved terms found: {len(terms_to_search)} (auto-search)",
+                                file=sys.stderr,
+                            )
+                            for t in terms_to_search[:3]:  # 理쒕? 3媛?
+                                print(f"[{_ts()}] {self.emoji}    ?붴? '{t.get('term')}' ({t.get('possible_types', ['unknown'])})", file=sys.stderr)
+                            
+                            # 誘명빐寃??⑹뼱 寃??荑쇰━ ?앹꽦
+                            unresolved_searches = []
+                            for t in terms_to_search[:3]:
+                                term = t.get("term", "")
+                                possible_types = t.get("possible_types", ["unknown"])
+                                
+                                # 異붿젙 ?좏삎???곕씪 寃??荑쇰━ 議곗젙
+                                if "novel" in possible_types:
+                                    unresolved_searches.append({
+                                        "query": f'"{term}" 소설',
+                                        "purpose": "unresolved_term_novel",
+                                        "priority": 1
+                                    })
+                                if "author" in possible_types:
+                                    unresolved_searches.append({
+                                        "query": f'"{term}" 작가',
+                                        "purpose": "unresolved_term_author",
+                                        "priority": 1
+                                    })
+                                if "slang" in possible_types or "unknown" in possible_types:
+                                    unresolved_searches.append({
+                                        "query": f'"{term}" 뜻',
+                                        "purpose": "unresolved_term_slang",
+                                        "priority": 2
+                                    })
+                            
+                            if unresolved_searches:
+                                new_results = self._execute_searches(unresolved_searches, ctx.post_id)
+                                if new_results:
+                                    added = ctx.add_search_results(new_results)
+                                    print(f"[{_ts()}] {self.emoji} ?뵊 誘명빐寃??⑹뼱 寃??{added}嫄?異붽?", file=sys.stderr)
+                                    
+                                    # 誘명빐寃??⑹뼱 ?뺣낫瑜?而⑦뀓?ㅽ듃?????(Verifier?먯꽌 ?쒖슜)
+                                    if not hasattr(ctx, 'unresolved_terms_info'):
+                                        ctx.unresolved_terms_info = []
+                                    ctx.unresolved_terms_info.extend(terms_to_search[:3])
+                
+                # 狩?Decoder confidence媛 ??쑝硫??먮룞?쇰줈 ?듭떖 ?⑹뼱 異붽? 寃??
+                if expert_type == ExpertType.DECODER and self.search_fn:
+                    overall_conf = str(result.get("overall_confidence", "")).lower()
+                    has_verification = bool(result.get("verification_search"))
+                    
+                    # confidence媛 low/none?닿퀬 verification_search瑜??붿껌?섏? ?딆? 寃쎌슦
+                    if overall_conf in ("low", "none") and not has_verification:
+                        # decoded_terms?먯꽌 ?듭떖 ?⑹뼱 異붿텧
+                        # (1) ?먮낯 ?⑹뼱 (original) 洹몃?濡??ъ슜 ??kiwipiepy媛 而ㅻ??덊떚 異뺤빟?대? ??遺꾩꽍 紐삵븯誘濡?
+                        # (2) ?뺥깭??遺꾩꽍 寃곌낵??蹂댁“?곸쑝濡??ъ슜
+                        key_terms = []
+                        for dt in (result.get("decoded_terms") or []):
+                            original = dt.get("original", "").strip()
+                            import re as _re_auto
+                            original_clean = _re_auto.sub(r'[^\uac00-\ud7a3a-zA-Z0-9]', '', original)
+                            # ?먮낯 ?⑹뼱 ?곗꽑 異붽? (2湲???댁긽)
+                            if len(original_clean) >= 2 and original_clean not in key_terms:
+                                key_terms.append(original_clean)
+                            # ?뺥깭??遺꾩꽍?쇰줈 紐낆궗 異붿텧 (蹂댁“)
+                            nouns = _extract_nouns(original)
+                            for noun in nouns:
+                                if noun not in key_terms and noun != original_clean:
+                                    key_terms.append(noun)
+                        
+                        # ?듭떖 ?⑹뼱濡?異붽? 寃???섑뻾: ?뱀냼??+ ?뚮옯??寃??
+                        if key_terms:
+                            print(f"[{_ts()}] {self.emoji} ?뵊 Decoder confidence={overall_conf} ???먮룞 異붽? 寃??(?⑹뼱: {key_terms[:3]})", file=sys.stderr)
+                            auto_searches = []
+                            for term in key_terms[:3]:  # 理쒕? 3媛??⑹뼱
+                                auto_searches.append({
+                                    "query": f"{term} 소설",
+                                    "purpose": "auto_verification",
+                                    "priority": 1
+                                })
+                                # ?뚮옯???뱀젙 寃?됰룄 異붽?
+                                for platform in ("노벨피아", "문피아"):
+                                    q = f"{term} {platform}"
+                                    if q not in ctx.searched_queries:
+                                        auto_searches.append({
+                                            "query": q,
+                                            "purpose": "auto_platform_verification",
+                                            "priority": 2
+                                        })
+                                        ctx.searched_queries.add(q)
+                            new_results = self._execute_searches(auto_searches, ctx.post_id)
+                            if new_results:
+                                added = ctx.add_search_results(new_results)
+                                print(f"[{_ts()}] {self.emoji} ?뵊 ?먮룞 寃??{added}嫄?異붽?", file=sys.stderr)
+                                # ??寃??寃곌낵濡?Decoder ?ы샇異?
+                                print(f"[{_ts()}] {self.emoji} additional results -> decoder recall", file=sys.stderr)
+                                result = self._call_expert(expert_type, ctx, rules_config)
+                
+                # ?꾨Ц媛媛 ?ㅻⅨ ?꾨Ц媛 ?붿껌?덈뒗吏 ?뺤씤 (Agentic ?묐젰)
+                requested = result.get("request_expert")
+                if requested and isinstance(requested, str) and requested.lower() not in ("none", "null", ""):
+                    reason = result.get("request_reason", "異붽? 遺꾩꽍 ?꾩슂")
+                    question = (result.get("request_context") or {}).get("question", "")
+                    
+                    try:
+                        to_expert = ExpertType(requested)
+                    except ValueError:
+                        print(
+                            f"[{_ts()}] {self.emoji} ?좑툘 ?????녿뒗 ?꾨Ц媛 ?좏삎 臾댁떆: '{requested}'",
+                            file=sys.stderr,
+                        )
+                        to_expert = None
+                    
+                    if to_expert:
+                        ctx.add_message(ExpertMessage(
+                            from_expert=expert_type,
+                            to_expert=to_expert,
+                            message_type="request",
+                            content={"reason": reason, "context": result.get("request_context", {})},
+                        ))
+                        print(f"[{_ts()}] {self.emoji} ?벂 {expert_type.value} ??{requested} ?묐젰 ?붿껌", file=sys.stderr)
+                        print(f"[{_ts()}] {self.emoji}    ?붴? ?댁쑀: {reason}", file=sys.stderr)
+                        if question:
+                            print(f"[{_ts()}] {self.emoji}    ?붴? 吏덈Ц: {question[:100]}", file=sys.stderr)
+            
+            elif next_action["action"] == "search":
+                query = next_action.get("query", "")
+                if query and self.search_fn:
+                    new_results = self._execute_searches(
+                        [{"query": query, "purpose": "refinement", "priority": 1}],
+                        ctx.post_id
+                    )
+                    ctx.add_search_results(new_results)
+            
+            elif next_action["action"] == "finalize":
+                print(f"[{_ts()}] {self.emoji} 醫낅즺 議곌굔 異⑹” ??Arbiter ?몄텧", file=sys.stderr)
+                break
+        
+        # Phase 4: Final Arbiter
+        if ExpertType.ARBITER in self.experts:
+            self._call_expert(ExpertType.ARBITER, ctx, rules_config)
+        
+        print(f"\n[{_ts()}] {self.emoji} Orchestrator ?꾨즺: {ctx.iteration} iterations", file=sys.stderr)
+        self._last_ctx = ctx
+        return ctx
+    
+    def _call_expert(
+        self,
+        expert_type: ExpertType,
+        ctx: ConversationContext,
+        rules_config: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """Call an expert and persist result into the shared context."""
+        expert = self.experts.get(expert_type)
+        if not expert:
+            print(f"[{_ts()}] {self.emoji} ?좑툘 {expert_type.value} ?꾨Ц媛 ?놁쓬", file=sys.stderr)
+            return {}
+        
+        # ?뱤 ??쒕낫?? ?꾨Ц媛 ?④퀎 ?쒖옉
+        _emit_monitor("expert_phase", {"expert": expert_type.value, "status": "running", "from": getattr(self, '_prev_expert', '')}, post_id=ctx.post_id)
+        self._prev_expert = expert_type.value
+        
+        # ?좏겙 ?ъ슜??異붿쟻 ?쒖옉 - LLM??留덉?留??ъ슜??湲곕줉
+        llm = getattr(expert, 'llm', None)
+        if llm:
+            prev_usage = llm.last_usage.copy() if llm.last_usage else None
+        else:
+            prev_usage = None
+        
+        try:
+            # post_data, comments None 泥댄겕
+            post_data = ctx.post_data or {}
+            comments = ctx.comments or []
+
+            # ?좏겙 ?덉빟: CONVERSATION HISTORY??湲곕낯 compact ?ъ슜 (?섍꼍蹂?섎줈 opt-out 媛??
+            use_compact_ctx = os.getenv("LLM_CONTEXT_COMPACT", "1") != "0"
+            conv_summary = ctx.get_conversation_summary(compact=use_compact_ctx)
+             
+            # ?꾨Ц媛蹂??몄텧 諛⑹떇
+            if expert_type == ExpertType.GATEKEEPER:
+                result = expert.analyze(post_data, comments, rules_config, ctx=ctx)
+            elif expert_type == ExpertType.DISCOURSE:
+                result = expert.analyze(post_data, comments)
+            elif expert_type == ExpertType.DECODER:
+                gatekeeper_out = ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
+                result = expert.analyze(
+                    gatekeeper_out,
+                    ctx.search_results or [],
+                    rules_config.get("slang_dictionary", {}),
+                    conversation_context=conv_summary,
+                    ctx=ctx,  # suspected_titles initialization/update context
+                )
+            elif expert_type == ExpertType.VERIFIER:
+                # ?좏겙 ?ㅼ씠?댄듃: Decoder媛 ?ㅼ젣 ?ъ슜??寃??寃곌낵留??꾨떖
+                # Decoder??decoded_terms?먯꽌 ?ъ슜??URL 異붿텧
+                search_results = ctx.search_results or []
+                decoder_output = ctx.get_expert_output(ExpertType.DECODER) or {}
+                decoded_terms = decoder_output.get("decoded_terms") or []
+                
+                # Decoder媛 李몄“??URL ?섏쭛
+                used_urls = set()
+                for term in decoded_terms:
+                    best_match = term.get("best_match", {})
+                    if best_match and best_match.get("url"):
+                        used_urls.add(best_match["url"])
+                    # supporting_evidence?먯꽌??URL ?섏쭛
+                    for evidence in term.get("supporting_evidence", []):
+                        if evidence.get("url"):
+                            used_urls.add(evidence["url"])
+                
+                # ?ъ슜??寃곌낵留??꾪꽣留?+ ?곸쐞 8媛??쒗븳 (以묐났 ?쒓굅)
+                if used_urls:
+                    limited_search = [r for r in search_results if r.get("url") in used_urls][:8]
+                else:
+                    # Decoder媛 ?꾨Т寃껊룄 ?ъ슜?섏? ?딆븯?쇰㈃ ?곸쐞 5媛쒕쭔 ?꾨떖
+                    limited_search = search_results[:5]
+                
+                result = expert.analyze(
+                    post_data,
+                    comments,
+                    ctx.get_expert_output(ExpertType.GATEKEEPER) or {},
+                    decoder_output,
+                    limited_search,
+                    conversation_context=conv_summary,
+                    ctx=ctx,
+                )
+            elif expert_type == ExpertType.CRITIC:
+                result = expert.analyze(
+                    post_data,
+                    comments,
+                    ctx.get_expert_output(ExpertType.VERIFIER) or {},
+                    conversation_context=conv_summary,
+                    ctx=ctx,
+                )
+            elif expert_type == ExpertType.ARBITER:
+                result = expert.analyze(ctx)
+            else:
+                result = {}
+            
+            # ?좏겙 ?ъ슜??異쒕젰
+            if llm and llm.last_usage:
+                usage = llm.last_usage
+                prompt_tok = usage.get("prompt_tokens", 0)
+                completion_tok = usage.get("completion_tokens", 0)
+                total_tok = usage.get("total_tokens", prompt_tok + completion_tok)
+                
+                print(f"[{_ts()}][{self.emoji}] {expert_type.value} ?좏겙 ?ъ슜??", file=sys.stderr)
+                print(f"  ?낅젰: {prompt_tok:,} tokens", file=sys.stderr)
+                print(f"  異쒕젰: {completion_tok:,} tokens", file=sys.stderr)
+                print(f"  珥앺빀: {total_tok:,} tokens", file=sys.stderr)
+                
+                # 而⑦뀓?ㅽ듃???좏겙 ?ъ슜???꾩쟻
+                if not hasattr(ctx, 'token_usage'):
+                    ctx.token_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+                ctx.token_usage["prompt_tokens"] += prompt_tok
+                ctx.token_usage["completion_tokens"] += completion_tok
+                ctx.token_usage["total_tokens"] += total_tok
+            
+            # ?뵦 Fix: ?묐젰 Gatekeeper ?ы샇異???key_terms/detected_entities 蹂묓빀
+            # 2李?GK 寃곌낵媛 1李⑤? ?꾩쟾 ??뼱?곕㈃ 1李⑥쓽 key_terms/entities媛 ?좎떎??
+            if expert_type == ExpertType.GATEKEEPER:
+                prev_gk = ctx.get_expert_output(ExpertType.GATEKEEPER)
+                if prev_gk and isinstance(prev_gk, dict) and isinstance(result, dict):
+                    # key_terms 蹂묓빀 (?쒖꽌 ?좎? 以묐났 ?쒓굅)
+                    prev_kt = prev_gk.get("key_terms") or []
+                    new_kt = result.get("key_terms") or []
+                    merged_kt = list(dict.fromkeys(new_kt + prev_kt))  # ??寃??곗꽑, 湲곗〈 蹂댁땐
+                    result["key_terms"] = merged_kt
+                    # detected_entities 蹂묓빀
+                    prev_ent = prev_gk.get("detected_entities") or {}
+                    new_ent = result.get("detected_entities") or {}
+                    for ent_key in ("possible_titles", "possible_authors", "possible_characters"):
+                        prev_list = prev_ent.get(ent_key) or []
+                        new_list = new_ent.get(ent_key) or []
+                        merged = list(dict.fromkeys(new_list + prev_list))
+                        if not new_ent:
+                            result["detected_entities"] = {}
+                            new_ent = result["detected_entities"]
+                        new_ent[ent_key] = merged
+            
+            # 寃곌낵 ???
+            ctx.set_expert_output(expert_type, result)
+            ctx.add_message(ExpertMessage(
+                from_expert=expert_type,
+                to_expert=None,
+                message_type="analysis",
+                content=result,
+            ))
+            
+            # ?뱤 ??쒕낫?? ?꾨Ц媛 ?④퀎 ?꾨즺
+            _emit_monitor("expert_phase", {"expert": expert_type.value, "status": "done"}, post_id=ctx.post_id)
+            
+            return result
+            
+        except Exception as e:
+            import traceback
+            print(f"[{_ts()}] {self.emoji} ??{expert_type.value} ?ㅻ쪟: {e}", file=sys.stderr)
+            print(f"[{_ts()}] {self.emoji} ?뵇 Traceback:", file=sys.stderr)
+            traceback.print_exc(file=sys.stderr)
+            error_result = {"error": str(e)}
+            # ?먮윭 寃곌낵????ν븯???ㅻⅨ ?꾨Ц媛媛 ?묎렐 媛?ν븯?꾨줉
+            ctx.set_expert_output(expert_type, error_result)
+            return error_result
+    
+    def _decide_next_action(
+        self,
+        ctx: ConversationContext,
+        rules_config: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """
+        Decide next orchestrator action for the current iteration.
+
+        Priority:
+        1) Process valid expert-to-expert collaboration requests.
+        2) Trigger targeted search when evidence is insufficient.
+        3) Finalize when stop conditions are satisfied.
+
+        Returns:
+            {"action": "call_expert|search|finalize", ...}
+        """
+        gk = ctx.get_expert_output(ExpertType.GATEKEEPER)
+        dc = ctx.get_expert_output(ExpertType.DECODER)
+        vf = ctx.get_expert_output(ExpertType.VERIFIER)
+        cr = ctx.get_expert_output(ExpertType.CRITIC)
+        
+        # ?꾩껜 ?묐젰 ?잛닔 異붿쟻
+        total_collaborations = getattr(ctx, '_total_collaborations', 0)
+        MAX_TOTAL_COLLABORATIONS = 3  # ?꾩껜 ?묐젰 理쒕? 3??
+        
+        # === 1. Expert ?묐젰 ?붿껌 泥섎━ (?잛닔 ?쒗븳) ===
+        for expert_type in [ExpertType.VERIFIER, ExpertType.DECODER, ExpertType.GATEKEEPER]:
+            output = ctx.get_expert_output(expert_type)
+            if output and output.get("request_expert"):
+                requested = output["request_expert"]
+                reason = output.get("request_reason", "?묐젰 ?붿껌")
+                request_context = output.get("request_context") or {}
+                question = request_context.get("question", "")
+                
+                # 狩??묐젰 ?붿껌 ?꾨뱶 利됱떆 ?대━??(臾댄븳 猷⑦봽 諛⑹?)
+                output["request_expert"] = None
+                output["request_reason"] = None
+                output["request_context"] = None
+                
+                # ?대? 泥섎━???붿껌?몄? ?뺤씤
+                request_key = f"{expert_type.value}::{requested}"
+                processed_requests = getattr(ctx, '_processed_requests', set())
+                
+                # 狩??꾩껜 ?묐젰 ?잛닔 珥덇낵 ??臾댁떆
+                if total_collaborations >= MAX_TOTAL_COLLABORATIONS:
+                    print(f"[{_ts()}] {self.emoji} ?뱄툘 ?묐젰 ?붿껌 臾댁떆 (?꾩껜 {total_collaborations}???꾨떖): {request_key}", file=sys.stderr)
+                    continue
+                
+                # 狩?媛숈? ?띿쓽 ?묐젰? 1?뚮쭔
+                if request_key in processed_requests:
+                    print(f"[{_ts()}] {self.emoji} collaboration request ignored (already processed): {request_key}", file=sys.stderr)
+                    continue
+                
+                print(f"[{_ts()}] {self.emoji} ?쩃 ?묐젰 ?붿껌 ({total_collaborations+1}/{MAX_TOTAL_COLLABORATIONS}): {request_key}", file=sys.stderr)
+                print(f"[{_ts()}] {self.emoji}    ?댁쑀: {reason}", file=sys.stderr)
+                if question:
+                    print(f"[{_ts()}] {self.emoji}    吏덈Ц: {question[:100]}", file=sys.stderr)
+                
+                # ?묐젰 泥섎━ 湲곕줉
+                ctx._processed_requests = processed_requests | {request_key}
+                ctx._total_collaborations = total_collaborations + 1
+                
+                return {"action": "call_expert", "expert": requested, "collaboration": True}
+        
+        # 硫붿떆吏 湲곕컲 ?붿껌 ?뺤씤? ?쒓굅 (??濡쒖쭅?쇰줈 異⑸텇)
+        
+        # === 2. ?쒖감 吏꾪뻾 ===
+        if dc and not vf:
+            return {"action": "call_expert", "expert": "verifier"}
+        
+        # Critic? is_relevant=True???뚮쭔 ?몄텧
+        if vf and not cr:
+            # ?먮윭 寃곌낵 臾댁떆
+            if "error" in vf:
+                print(f"[{_ts()}] {self.emoji} ??툘  Verifier ?먮윭濡??명빐 Critic ?몄텧 ?ㅽ궢", file=sys.stderr)
+            else:
+                vf_result = vf.get("verification_result", {})
+                if vf_result and vf_result.get("is_relevant"):
+                    return {"action": "call_expert", "expert": "critic"}
+        
+        # === 3. ?쒖감 ?몄텧 (?꾩쭅 ?몄텧 ?????꾨Ц媛) ===
+        if not dc and gk:
+            return {"action": "call_expert", "expert": "decoder"}
+        
+        # === 4. 紐⑤뱺 ?꾨Ц媛 ?꾨즺 ??醫낅즺 ===
+        # is_relevant=False硫?Critic ?놁씠??醫낅즺 媛??
+        if gk and dc and vf:
+            # ?먮윭 寃곌낵硫?利됱떆 醫낅즺
+            if "error" in vf:
+                return {"action": "finalize"}
+            
+            vf_result = vf.get("verification_result", {})
+            if not vf_result or not vf_result.get("is_relevant"):
+                # is_relevant=False?대㈃ Critic 遺덊븘??
+                return {"action": "finalize"}
+            elif cr:
+                # is_relevant=True?닿퀬 Critic???꾨즺
+                return {"action": "finalize"}
+        
+        # 5. 理쒕? 諛섎났 ?꾨떖
+        if ctx.iteration >= ctx.max_iterations:
+            return {"action": "finalize"}
+        
+        return {"action": "finalize"}
+    
+    def _prioritize_search_results(self, results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """寃??寃곌낵 ?곗꽑?쒖쐞 ?ъ젙??
+        
+        ?곗꽑?쒖쐞:
+        1. 怨듭떇 ?뚮옯??URL (munpia, novelpia, naver, kakao ??
+        2. ?묎? ?⑦꽩 ?ы븿 ("[?묎?紐? ?묎????좎옉")
+        3. 而ㅻ??덊떚 ?좊줎 (fmkorea, dcinside, arca ??
+        4. 湲고?
+        """
+        def get_priority(result: Dict[str, Any]) -> int:
+            url = str(result.get("url", "")).lower()
+            content = result.get("content", "")
+            title = result.get("title", "")
+            
+            # 1?쒖쐞: 怨듭떇 ?뚮옯??
+            if any(platform in url for platform in OFFICIAL_PLATFORMS):
+                # ?묎? ?⑦꽩???덉쑝硫????믪? ?곗꽑?쒖쐞
+                if "작가" in content or "작가" in title:
+                    return 0  # 理쒖슦??
+                return 1
+            
+            # 2?쒖쐞: ?묎? ?⑦꽩 ?ы븿
+            if "작가의 대표작" in content or "작가가 쓴" in content or "작가" in content:
+                return 2
+            
+            # 3?쒖쐞: 而ㅻ??덊떚 ?좊줎
+            community_sites = [
+                "fmkorea.com", "dcinside.com", "arca.live",
+                "ruliweb.com", "clien.net"
+            ]
+            if any(site in url for site in community_sites):
+                return 3
+            
+            # 4?쒖쐞: 湲고?
+            return 4
+        
+        # ?곗꽑?쒖쐞濡??뺣젹 (??? ?レ옄媛 ?곗꽑)
+        return sorted(results, key=get_priority)
+    
+    def _is_relevant_result(self, result: Dict[str, Any], query: str) -> bool:
+        """검색 결과가 현재 쿼리와 충분히 관련 있는지 판단"""
+        url = str(result.get("url", "")).lower()
+        title = str(result.get("title", "")).lower()
+        content = str(result.get("content", "")).lower()
+        text = title + " " + content
+
+        query_words = [w.strip().lower() for w in query.replace('"', "").split() if len(w.strip()) >= 2]
+        query_norm = self._normalize_hint_text(query)
+        text_norm = self._normalize_hint_text(text)
+        url_norm = self._normalize_hint_text(url)
+
+        # 1) 명확히 무관한 도메인 제외
+        irrelevant_domains = [
+            "huggingface.co", "github.com", "scribd.com",
+            "wikipedia.org", "wikisource.org", "wiktionary.org",
+            "youtube.com", "twitter.com", "facebook.com",
+            "instagram.com", "tiktok.com",
+            ".pdf", ".txt", ".csv", ".json",
+            "adversec.com", "snuaa.org", "cau.ac.kr", "kitla.or.kr",
+            "nl.go.kr",
+        ]
+        if any(domain in url for domain in irrelevant_domains):
+            return False
+
+        # 2) 공식 플랫폼은 우선 통과
+        high_trust_domains = [
+            "munpia.com", "novelpia.com", "joara.com", "ridibooks.com",
+            "kakaopage.com", "series.naver.com", "bookcube.com",
+        ]
+        if any(domain in url for domain in high_trust_domains):
+            return True
+
+        # 3) 커뮤니티/위키는 쿼리와의 겹침이 있을 때만 통과
+        medium_trust_domains = [
+            "dcinside.com", "fmkorea.com", "arca.live", "ruliweb.com", "namu.wiki",
+        ]
+        if any(domain in url for domain in medium_trust_domains):
+            query_overlap = any(word and (word in title or word in content) for word in query_words)
+            norm_overlap = bool(query_norm and (query_norm in text_norm or query_norm in url_norm))
+            token_overlap = False
+            for word in query_words:
+                word_norm = self._normalize_hint_text(word)
+                if len(word_norm) >= 2 and (word_norm in text_norm or word_norm in url_norm):
+                    token_overlap = True
+                    break
+            return bool(query_overlap or norm_overlap or token_overlap)
+
+        # 4) 텍스트 기반 보조 판단
+        novel_keywords = [
+            "소설", "웹소설", "웹툰", "작가", "연재", "완결",
+            "문피아", "노벨피아", "로판", "판타지", "장르", "빙의",
+            "리뷰", "추천", "스포", "독자",
+        ]
+        if any(kw in text for kw in novel_keywords):
+            return True
+
+        # 5) 쿼리 단어가 제목에 있으면 통과
+        for word in query_words:
+            if len(word) >= 2 and word in title:
+                return True
+
+        return False
+
+    # ========================================================================
+    # ?뵮 Deep Search: snippet 遺꾩꽍 + URL ?섏묶 + ?쎌뼱/?묎? 異붽? 寃??
+    # ========================================================================
+    
+    # snippet에서 제목/작가/약칭 후보를 미리 추출해 LLM 기반 분석을 보강
+    _SNIPPET_TERM_CHAR = r"\uac00-\ud7a3A-Za-z0-9"
+    _SNIPPET_TITLE_TERM_CLASS = rf"[{_SNIPPET_TERM_CHAR}]"
+    _SNIPPET_TITLE_TERM_SPACE_CLASS = rf"[{_SNIPPET_TERM_CHAR}\s]"
+    _SNIPPET_TITLE_TERM_UNDER_CLASS = rf"[{_SNIPPET_TERM_CHAR}_]"
+    _SNIPPET_WORK_TAG = rf"(?:\uc791\ud488|\uc18c\uc124|\uc6f9\uc18c\uc124|\uc2dc\ub9ac\uc988|\uc5f0\uc7ac)"
+    _SNIPPET_WORK_TAG_SIMPLE = rf"(?:\uc791\ud488|\uc18c\uc124|\uc2dc\ub9ac\uc988)"
+    _SNIPPET_TITLE_PATTERNS = [
+        re.compile(
+            r'(?:^|[\s"\',;.!?])({term}{{2,20}}(?:\s{term}{{1,10}}){{0,5}})(?:\s+{work_tag})'.format(
+                term=_SNIPPET_TITLE_TERM_CLASS,
+                work_tag=_SNIPPET_WORK_TAG,
+            ),
+            re.UNICODE,
+        ),
+        re.compile(
+            r'["\']?({term_space}{{2,40}})["\']?(?:\s*\(?\s*{work_tag_simple}\s*\)?)'.format(
+                term_space=_SNIPPET_TITLE_TERM_SPACE_CLASS,
+                work_tag_simple=_SNIPPET_WORK_TAG_SIMPLE,
+            ),
+            re.UNICODE,
+        ),
+        re.compile(
+            r'(?:{work_tag})\s*[:]?\s*["\']?({term_space}{{2,40}})["\']?'.format(
+                work_tag=_SNIPPET_WORK_TAG,
+                term_space=_SNIPPET_TITLE_TERM_SPACE_CLASS,
+            ),
+            re.UNICODE,
+        ),
+        re.compile(
+            r'({term_under}{{2,15}}),?\s+({term_under}{{2,8}}(?:\s{term_under}{{1,8}}){{0,6}})(?:\s*\.)?'.format(
+                term_under=_SNIPPET_TITLE_TERM_UNDER_CLASS,
+            ),
+            re.UNICODE,
+        ),
+    ]
+    _SNIPPET_AUTHOR_PATTERNS = [
+        # "~ ?묎????곕퇃???좎옉/?묓뭹"
+        re.compile(
+            r'["\']?({_author_term}{{2,15}})["\']?\s*{author}\s*(?:{best}|{novel}|{serial})?'.format(
+                _author_term=_SNIPPET_TITLE_TERM_UNDER_CLASS,
+                author=r"\uc791\uac00",
+                best=r"\ub300\ud45c\uc791",
+                novel=r"\uc791\ud488",
+                serial=r"\uc5f0\uc7ac\uc791",
+            ),
+            re.UNICODE,
+        ),
+        # "?묎?紐?~", "?묎???~"
+        re.compile(
+            r'{author}(?:\uba85)?\s+["\']?({_author_term}{{2,15}})["\']?'.format(
+                author=r"\uc791\uac00",
+                _author_term=_SNIPPET_TITLE_TERM_UNDER_CLASS,
+            ),
+            re.UNICODE,
+        ),
+        # "~ ?묎? ?꾨챸"
+        re.compile(
+            r'({_author_term}{{2,15}})\s*{author}\s*{penname}'.format(
+                _author_term=_SNIPPET_TITLE_TERM_UNDER_CLASS,
+                author=r"\uc791\uac00",
+                penname=r"\ud544\uba85",
+            ),
+            re.UNICODE,
+        ),
+        # "~ ?묎? ~?댄삁??理쒓퀬???꾨젰" ??而ㅻ??덊떚?먯꽌 "?ㅻ뒛?꾩슂 ?묎? 理쒓퀬?? ???ъ슜
+        re.compile(
+            r'(?:^|[\s])({_author_term}{{2,15}})\s+{author}\s+(?:{best}|{author}|{serial})'.format(
+                _author_term=_SNIPPET_TITLE_TERM_UNDER_CLASS,
+                author=r"\uc791\uac00",
+                best=r"\ucd5c\uace0",
+                serial=r"\uc5f0\uc7ac",
+            ),
+            re.UNICODE,
+        ),
+        # "X?묎? Y" ??遺숈뿬?곌린 ("利됱궗臾대┝?묎?" ???쎌묶+?묎? 遺꾨━)
+        re.compile(
+            r'({_author_term}{{2,10}}){author}(?:[{kr}])?'.format(
+                _author_term=_SNIPPET_TITLE_TERM_UNDER_CLASS,
+                author=r"\uc791\uac00",
+                kr=_SNIPPET_TERM_CHAR,
+            ),
+            re.UNICODE,
+        ),
+        # "?ㅻ뒛?꾩슂 珥?53?? ??臾명뵾??寃?됯껐怨쇱뿉???묎?紐?異붿텧
+        re.compile(
+            r'(?:^|[\s])({_author_term}{{2,10}})\s+{cnt}\s+\d+\s*{chapter}'.format(
+                _author_term=_SNIPPET_TITLE_TERM_UNDER_CLASS,
+                cnt=r"\ucd1d",
+                chapter=r"\ud654",
+            ),
+            re.UNICODE,
+        ),
+    ]
+    
+    # 怨듭떇 ?뱀냼???뚮옯???꾨찓??
+    _OFFICIAL_PLATFORM_DOMAINS = {
+        "novelpia.com", "munpia.com", "mm.munpia.com", "m.munpia.com",
+        "series.naver.com", "ridibooks.com", "kakaopage.com",
+        "joara.com", "bookcube.com",
+    }
+    
+    def _llm_analyze_snippets(
+        self,
+        post_data: Dict[str, Any],
+        key_terms: List[str],
+        search_results: List[Dict[str, Any]],
+        gatekeeper_result: Dict[str, Any],
+    ) -> Optional[Dict[str, Any]]:
+        """?쭬 寃??寃곌낵 snippet?ㅼ쓣 LLM???쎄퀬, 寃뚯떆湲怨?愿?⑤맂 ?뺣낫瑜??먮퀎?쒕떎.
+
+        湲곌퀎???뺢퇋??`_extract_hints_from_snippets`)? 臾몃㎘??紐⑤Ⅴ湲??뚮Ц??
+        '利됱궗湲??ㅺ퀬 寃뚯엫 ?띿쑝濡? ?묎?(媛몄삱)? '利됱궗湲??ㅺ퀬 臾대┝???⑥뼱吏?? ?묎?瑜?
+        援щ텇?섏? 紐삵븳?? LLM? snippet 臾몃㎘???쎄퀬 ??寃뚯떆湲???대떦?섎뒗 ?묓뭹쨌?묎?留?
+        怨⑤씪?몃떎.
+
+        Returns:
+            {
+                "identified_title": str | None,  # ??寃뚯떆湲???쇳븯???뺤떇 ?쒕ぉ
+                "identified_author": str | None,  # ?대떦 ?묓뭹???묎?
+                "relevant_authors": [str],        # 愿???묎? 紐⑸줉
+                "irrelevant_authors": [str],      # 臾닿????묎? (?ㅻⅨ ?묓뭹)
+                "abbreviation_mappings": [{"abbrev": str, "full": str}],
+                "relevant_characters": [str],     # ?대떦 ?묓뭹???깆옣?몃Ъ
+            }
+            ?먮뒗 LLM ?몄텧 ?ㅽ뙣 ??None
+        """
+        # LLM 媛앹껜 ?띾뱷 (Gatekeeper??LLM 鍮뚮┝)
+        llm = None
+        for expert_type in (ExpertType.GATEKEEPER, ExpertType.DECODER, ExpertType.VERIFIER):
+            expert = self.experts.get(expert_type)
+            if expert and hasattr(expert, 'llm'):
+                llm = expert.llm
+                break
+        if not llm:
+            return None
+
+        # ?? snippet ?붿빟 ?띿뒪??援ъ꽦 (?좏겙 ?덉빟: ?쒕ぉ+?댁슜 ?듭떖留? ??
+        snippet_lines = []
+        for i, sr in enumerate(search_results[:15], 1):  # 理쒕? 15嫄?
+            title = (sr.get("title") or "")[:80]
+            content = (sr.get("content") or "")[:200].replace("\n", " ")
+            snippet_lines.append(f"[{i}] {title}\n    {content}")
+        if not snippet_lines:
+            return None
+        snippets_text = "\n".join(snippet_lines)
+
+        # ?? 寃뚯떆湲 ?듭떖 ?뺣낫 ??
+        post_title = post_data.get("title", "")
+        content_texts = []
+        for block in post_data.get("content_blocks", []):
+            if isinstance(block, dict) and block.get("text"):
+                content_texts.append(block["text"])
+            elif isinstance(block, str):
+                content_texts.append(block)
+        post_body = " / ".join(content_texts[:5])[:300]
+
+        entities = gatekeeper_result.get("detected_entities") or {}
+        gk_chars = ", ".join(entities.get("possible_characters") or [])
+        gk_titles = ", ".join(entities.get("possible_titles") or [])
+
+        system_msg = (
+            "?뱀떊? ?뱀냼??而ㅻ??덊떚 寃??寃곌낵 遺꾩꽍 ?꾨Ц媛?낅땲?? "
+            "寃뚯떆湲怨?寃??寃곌낵 snippet?ㅼ쓣 瑗쇨세???쎄퀬, ??寃뚯떆湲???쇳븯???뱀젙 ?묓뭹怨?"
+            "愿?⑤맂 ?뺣낫留??뺥솗???앸퀎?섏꽭?? "
+            "?숇챸???ㅻⅨ ?쒕━利덈굹 臾닿????묓뭹???뺣낫瑜??쇰룞?섏? 留덉꽭?? "
+            "snippet???뺤떇 ?쒕ぉ?대굹 ?묎?紐낆씠 ?깆옣?섎㈃ 諛섎뱶??異붿텧?섏꽭??\n\n"
+            "?좑툘 以묒슂: 寃??寃곌낵媛 ?뱀냼?ㅼ씠 ?꾨땶 ?ㅻⅨ 留ㅼ껜(VOCALOID 怨? ?좊땲硫붿씠?? 寃뚯엫, 留뚰솕, ?곹솕 ??瑜?"
+            "媛由ы궎??寃쎌슦, ?듭?濡??뱀냼?ㅼ쓣 留ㅼ묶?섏? 留덉꽭?? "
+            "寃??寃곌낵 ?ㅼ닔媛 ?뱀젙 鍮꾩냼??留ㅼ껜瑜?媛由ы궎硫?identified_category??洹?留ㅼ껜瑜?湲곗엯?섍퀬, "
+            "identified_title/identified_author??null濡??먯꽭?? "
+            "?? 寃??寃곌낵 6嫄댁씠 VOCALOID 怨≪쓣 媛由ы궎怨?1嫄댁씠 AA?묓뭹??媛由ы궎硫???"
+            "?ㅼ닔瑜??곕씪 identified_category='vocaloid_song'?쇰줈 ?먮떒?섏꽭??\n\n"
+            "?좑툘 媛??以묒슂: 寃뚯떆湲??'?λⅤ/?몃줈???쇰컲濡??몄? '?뱀젙 ?묓뭹 ?좊줎'?몄? 諛섎뱶??癒쇱? ?먮퀎?섏꽭??\n"
+            "寃?됱뿉???ㅼ썙?쒖? 留ㅼ묶?섎뒗 ?뚯꽕??諛쒓껄?섎뜑?쇰룄, 寃뚯떆湲 ?먯껜媛 洹??뚯꽕???좊줎?섎뒗吏 ?뺤씤?댁빞 ?⑸땲??\n\n"
+            "?좑툘 [?꾩닔] ?명꽣???좎“??諛?以꾩엫留??뺤씤:\n"
+            "寃??寃곌낵?먯꽌 ?뱀젙 ?⑹뼱媛 '~??以꾩엫留?, '~??, 'MZ?몃? ?좎“??, '?명꽣???좏뻾?? ?깆쑝濡?"
+            "?ㅻ챸?섎뒗 寃쎌슦, 洹??⑹뼱???묎?紐낆씠???묓뭹紐낆씠 ?꾨땲??**踰붿슜???쒓뎅???쒗쁽**?낅땲??\n"
+            "?? '媛먮떎?? ??寃??寃곌낵 '媛먯씠 ???댁븘?덈꽕??以꾩엫留? ???닿쾬? ?묎?紐낆씠 ?꾨떂!\n"
+            "  '?묎? 媛먮떎??誘몄낀怨? = '?묎?(?? 媛먭컖?????댁븘?덉뼱??誘몄낀????移?갔 ?쒗쁽\n"
+            "?대윴 寃쎌슦 identified_author???대떦 ?좎“?대? ?묎?紐낆쑝濡??ｌ? 留덉꽭??\n\n"
+            "?λⅤ ?쇰컲濡??먮퀎 湲곗? (?섎굹?쇰룄 ?대떦 ??identified_category='genre_discussion'):\n"
+            "- 寃뚯떆湲 ?쒕ぉ??二쇱젣?닿? ?뱀젙 ?묓뭹??怨좎쑀紐낆궗媛 ?꾨땲???λⅤ/?몃줈???대━???쇰컲 媛쒕뀗?댁씤 寃쎌슦\n"
+            "- ?쒕ぉ??'[?쇰컲 媛쒕뀗???/??[?쇰컲???쒖닠]' 援ъ“??寃쎌슦\n"
+            "- 蹂몃Ц???묓뭹 怨좎쑀 ?뺣낫(罹먮┃??怨좎쑀紐? 以꾧굅由? ?묎?紐? ?뚯감)媛 ?녾퀬 ?λⅤ ?쇰컲濡좊쭔 ?덉쓬\n"
+            "- 蹂듭닔???쇰컲???쒗쁽 ?ъ슜: '~?섎뒗 ?뚯꽕??, '~?섎뒗 ?묎???, '~??援?０' ??n"
+            "- ?ㅼ썙?쒓? ?λⅤ ????대━???쇰컲 媛쒕뀗?쇰줈 ?ъ슜??(怨좎쑀紐낆궗媛 ?꾨떂)\n"
+            "- 而ㅻ??덊떚 愿???묐몢???섍껄 ?쒖떆 ?묐몢?????묓뭹紐낆씠 ?꾨떂\n\n"
+            "???먮퀎? 寃??寃곌낵 遺꾩꽍蹂대떎 ?좏뻾?댁빞 ?⑸땲?? "
+            "寃뚯떆湲???λⅤ ?쇰컲濡좎씠硫? 寃?됱뿉???숇챸???뚯꽕??李얜뜑?쇰룄 留ㅼ묶?섏? 留덉꽭??\n\n"
+            "?? 二쇱쓽: 寃??寃곌낵?먯꽌 寃뚯떆湲 ?ㅼ썙?쒓? ?뱀젙 ?묓뭹??'?쎌묶/以꾩엫留?濡??뺤씤?섍굅?? "
+            "蹂몃Ц???뱀젙 罹먮┃??怨좎쑀紐낆씠 ?깆옣?섎㈃, 洹멸쾬? ?λⅤ ?쇰컲濡좎씠 ?꾨땲???뱀젙 ?묓뭹 ?좊줎?낅땲?? "
+            "?쎌묶 ?щ?瑜?寃??寃곌낵?먯꽌 諛섎뱶???뺤씤?섏꽭??"
+        )
+
+        user_msg = f"""## 寃뚯떆湲
+?쒕ぉ: {post_title}
+蹂몃Ц: {post_body}
+Gatekeeper 異붿젙 ?쒕ぉ: {gk_titles}
+Gatekeeper 異붿젙 罹먮┃?? {gk_chars}
+?듭떖 ?⑹뼱: {', '.join(str(t) for t in key_terms[:6])}
+
+## 寃??寃곌낵 snippets
+{snippets_text}
+
+## 遺꾩꽍 吏??
+??寃??寃곌낵 snippet?ㅼ쓣 瑗쇨세???쎄퀬 ?꾨옒 JSON??異쒕젰?섏꽭??
+
+以묒슂 洹쒖튃:
+0. **[理쒖슦?? post_intent_analysis: 寃뚯떆湲 ?쒕ぉ怨?蹂몃Ц??癒쇱? 遺꾩꽍?섏뿬, ??湲??'?뱀젙 ?묓뭹 ?좊줎'?몄? '?λⅤ/?몃줈???쇰컲濡??몄? ?먮퀎?섏꽭??**
+   ?먮퀎 諛⑸쾿:
+   - ?쒕ぉ?먯꽌 二쇱젣?대? 異붿텧 ??洹멸쾬???뱀젙 ?묓뭹??怨좎쑀紐낆궗?멸?, ?λⅤ/?몃줈???쇰컲 媛쒕뀗?멸??
+   - 蹂몃Ц???묓뭹 怨좎쑀 ?뺣낫(罹먮┃??怨좎쑀紐? 援ъ껜??以꾧굅由? ?묎?紐? ?뚯감 踰덊샇)媛 ?덈뒗媛?
+   - ?쒕ぉ??"[?쇰컲 媛쒕뀗]?/??[?쇰컲濡좎쟻 ?쒖닠]" 援ъ“?멸??
+   - ?쒕ぉ 泥??댁젅??而ㅻ??덊떚 愿???묐몢???섍껄 ?쒖떆)?멸?? (?묓뭹紐낆씠 ?꾨떂)
+   ???λⅤ ?쇰컲濡좎씠硫?post_intent="genre_discussion", identified_category="genre_discussion"?쇰줈 ?ㅼ젙
+   ???뱀젙 ?묓뭹 ?좊줎?대㈃ post_intent="work_discussion"
+
+   **?좑툘 genre_discussion ?먯젙 ???꾩닔 ?뺤씤:**
+   寃??寃곌낵?먯꽌 寃뚯떆湲???듭떖 ?ㅼ썙?쒓? ?뱀젙 ?묓뭹???쎌묶/以꾩엫留먮줈 ?뺤씤?쒕떎硫? ?λⅤ ?쇰컲濡좎씠 ?꾨땲???뱀젙 ?묓뭹 ?좊줎?낅땲??
+   ?? 寃??寃곌낵媛 "A"?쇰뒗 ?ㅼ썙?쒕? "B?쇰뒗 ?뚯꽕???쎌묶"?대씪怨??ㅻ챸?섎㈃ ??post_intent="work_discussion"
+   ?먰븳: 蹂몃Ц/?볤????뱀젙 ?몃Ъ ?대쫫???깆옣?섎㈃ ?뱀젙 ?묓뭹???쇳븯??寃껋씠誘濡?genre_discussion???꾨떃?덈떎.
+1. identified_title: snippet?먯꽌 ??寃뚯떆湲???쇳븯???묓뭹??"?뺤떇 ?쒕ぉ"??李얠쑝?몄슂. **?? post_intent媛 "genre_discussion"?대㈃ identified_title=null濡??먯꽭??** 寃?됱뿉???ㅼ썙?쒖? ?대쫫??寃뱀튂???뚯꽕??李얜뜑?쇰룄, 寃뚯떆湲??洹??뚯꽕??????좊줎?섎뒗 寃껋씠 ?꾨땲硫?留ㅼ묶?섏? 留덉꽭??
+2. identified_author: snippet?먯꽌 "~?묎?", "?묎?: ~", "~ ?묎? ?묓뭹" ?깆쓽 ?⑦꽩?쇰줈 ?묎?紐낆쓣 李얠쑝?몄슂. ?대떦 ?묓뭹???묎?留?湲곗엯?섏꽭??
+3. irrelevant_authors: ?숇챸 ?쒕━利덉쓽 ?ㅻⅨ ?묎?(?? "利됱궗湲??ㅺ퀬 寃뚯엫 ?띿쑝濡????묎?? "利됱궗湲??ㅺ퀬 臾대┝???⑥뼱吏?????묎????ㅻ쫫)瑜?諛섎뱶??援щ텇?섏꽭??
+4. abbreviation_mappings: 而ㅻ??덊떚?먯꽌 ?ъ슜?섎뒗 ?묓뭹 ?쎌묶?믪젙???쒕ぉ 留ㅽ븨留?湲곗엯?섏꽭?? 寃뚯떆湲 ?쒕ぉ??臾몃쾿??異뺤빟(?? "?꾧컻湲댄븯吏留????꾧컻媛 湲몄?留?)? ?쎌묶???꾨떃?덈떎.
+5. relevant_characters: ???묓뭹???깆옣?섎뒗 ?몃Ъ紐낅쭔 湲곗엯?섏꽭??
+6. identified_category: **癒쇱? post_intent瑜??뺤씤?섏꽭??**
+   - post_intent媛 "genre_discussion"?대㈃: "genre_discussion" (?λⅤ/?몃줈???쇰컲濡?
+   - ?뱀냼?ㅼ씠硫? "web_novel"
+   - VOCALOID 怨≪씠硫? "vocaloid_song"
+   - ?좊땲硫붿씠?섏씠硫? "anime"
+   - 留뚰솕/?뱁댆?대㈃: "manga"
+   - 寃뚯엫?대㈃: "game"
+   - AA?묓뭹?대㈃: "aa_work"
+   - ?먮떒 遺덇?: "unknown"
+
+{{
+  "post_intent": "work_discussion | genre_discussion",
+  "post_intent_reason": "?먮퀎 洹쇨굅 (?쒓뎅?? 理쒕? 100??",
+  "identified_title": "?뺤떇 ?쒕ぉ (work_discussion?닿퀬 ?뱀냼?ㅼ씤 寃쎌슦留? 洹???null)",
+  "identified_author": "?묎?紐?(?뱀냼?ㅼ씤 寃쎌슦留? 鍮꾩냼?ㅼ씠硫?null)",
+  "identified_category": "web_novel | genre_discussion | vocaloid_song | anime | manga | game | aa_work | unknown",
+  "relevant_authors": ["???묓뭹 愿???묎?紐?],
+  "irrelevant_authors": ["snippet???깆옣?섏?留???寃뚯떆湲 ?묓뭹怨?臾닿????묎?紐?],
+  "abbreviation_mappings": [{{"abbrev": "而ㅻ??덊떚 ?쎌묶", "full": "?뺤떇 ?쒕ぉ"}}],
+  "relevant_characters": ["?깆옣?몃Ъ紐?]
+}}"""
+
+        try:
+            from .utils import parse_json_with_think_removal
+            messages = [
+                {"role": "system", "content": system_msg},
+                {"role": "user", "content": user_msg},
+            ]
+            response_text = llm._stream_chat_http(
+                messages=messages,
+                tag="snippet_analyzer",
+                use_grammar=True,
+            )
+            result = parse_json_with_think_removal(response_text)
+            
+            # ?? ?꾩쿂由? ?덉쐞 ?쎌묶 留ㅽ븨 ?쒓굅 ??
+            # key_terms???녿뒗 ?쎌묶, 臾몃쾿??異뺤빟(議곗궗/?대? ?ы븿) ???꾪꽣留?
+            import re as _re_post
+            valid_abbrevs = []
+            _kt_set = {_re_post.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', str(t)) for t in key_terms if isinstance(t, str)}
+            for am in (result.get("abbreviation_mappings") or []):
+                abbr = am.get("abbrev", "").strip()
+                full = am.get("full", "").strip()
+                if not abbr or not full or len(abbr) < 2 or len(full) < 4:
+                    continue
+                abbr_clean = _re_post.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', abbr)
+                # ?쎌묶??key_terms???놁쑝硫??덉쐞 媛?μ꽦 ?믪쓬
+                if abbr_clean not in _kt_set:
+                    print(
+                        f"[{_ts()}] {self.emoji} ?쭬 ?덉쐞 ?쎌묶 ?쒓굅: '{abbr}' ??'{full}' "
+                        f"(key_terms???놁쓬)",
+                        file=sys.stderr,
+                    )
+                    continue
+                # ?쎌묶怨??뺤떇 ?쒕ぉ???숈씪?섎㈃ 臾댁쓽誘?
+                if abbr_clean == _re_post.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', full):
+                    continue
+                valid_abbrevs.append(am)
+            result["abbreviation_mappings"] = valid_abbrevs
+            
+            # ?? ?꾩쿂由? 鍮꾩냼??留ㅼ껜 媛먯? ???묓뭹留ㅼ묶 寃곌낵 臾댄슚????
+            category = (result.get("identified_category") or "unknown").lower()
+            NON_NOVEL_CATEGORIES = {"vocaloid_song", "anime", "manga", "game", "aa_work"}
+            if category in NON_NOVEL_CATEGORIES:
+                print(
+                    f"[{_ts()}] {self.emoji} ?쭬 鍮꾩냼??留ㅼ껜 媛먯?: category={category}"
+                    f" -> identified_title/author invalidated",
+                    file=sys.stderr,
+                )
+                result["identified_title"] = None
+                result["identified_author"] = None
+                result["abbreviation_mappings"] = []
+                result["relevant_authors"] = []
+            
+            print(
+                f"[{_ts()}] {self.emoji} ?쭬 LLM snippet 遺꾩꽍 ?꾨즺: "
+                f"title={result.get('identified_title')}, "
+                f"author={result.get('identified_author')}, "
+                f"category={category}, "
+                f"irrelevant={result.get('irrelevant_authors', [])}",
+                file=sys.stderr,
+            )
+            return result
+        except Exception as e:
+            print(f"[{_ts()}] {self.emoji} ?좑툘 LLM snippet 遺꾩꽍 ?ㅽ뙣 (fallback?믨린怨꾩쟻): {e}", file=sys.stderr)
+            return None
+
+    def _extract_hints_from_snippets(
+        self, search_results: List[Dict[str, Any]], key_terms: List[str]
+    ) -> Dict[str, Any]:
+        """寃??寃곌낵 snippet?먯꽌 ?쒕ぉ/?묎?/?쎌묶 ?꾨낫瑜?肄붾뱶?덈꺼濡?異붿텧?쒕떎.
+        
+        LLM???ъ슜?섏? ?딄퀬, ?뺢퇋???⑦꽩 留ㅼ묶?쇰줈 ?숈옉.
+        
+        Returns:
+            {
+                "title_hints": [{"title": str, "source": str, "url": str}],
+                "author_hints": [{"name": str, "source": str}],
+                "abbreviation_hints": [{"abbrev": str, "full": str}],
+                "fetchable_urls": [str]  -- 怨듭떇 ?뚮옯??URL (?섏묶 ???
+            }
+        """
+        title_hints = []
+        author_hints = []
+        abbreviation_hints = []
+        fetchable_urls = []
+        
+        seen_titles = set()
+        seen_authors = set()
+        
+        for r in search_results:
+            content = r.get("content", "") or ""
+            title = r.get("title", "") or ""
+            url = r.get("url", "") or ""
+            combined = f"{title} {content}"
+            
+            # 1) ?쒕ぉ ?⑦꽩 異붿텧
+            for pat in self._SNIPPET_TITLE_PATTERNS:
+                for m in pat.finditer(combined):
+                    found = m.group(1).strip()
+                    if found and len(found) >= 2 and found not in seen_titles:
+                        seen_titles.add(found)
+                        title_hints.append({
+                            "title": found,
+                            "source": f"snippet_pattern",
+                            "url": url,
+                        })
+            
+            # 2) ?묎? ?⑦꽩 異붿텧
+            for pat in self._SNIPPET_AUTHOR_PATTERNS:
+                for m in pat.finditer(combined):
+                    found = m.group(1).strip()
+                    if found and len(found) >= 2 and found not in seen_authors:
+                        seen_authors.add(found)
+                        author_hints.append({
+                            "name": found,
+                            "source": f"snippet_pattern",
+                            "url": url,
+                        })
+            
+            # 3) ?쎌묶 留ㅽ븨: "~???쎌묶", "~??以꾩뿬??
+            abbrev_match = re.search(
+                r"([\uac00-\ud7a3A-Za-z0-9\s]{3,30})\s*(?:[:=(]?\s*)?([\uac00-\ud7a3A-Za-z0-9]{2,12})",
+                combined
+            )
+            if abbrev_match:
+                abbreviation_hints.append({
+                    "full": abbrev_match.group(1).strip(),
+                    "abbrev": abbrev_match.group(2).strip(),
+                })
+            # ??갑?? "?쎌묶? ~ ?먮뒗 ~"
+            abbrev_match2 = re.search(
+                r"([\uac00-\ud7a3A-Za-z0-9\s]{3,35})(?:\s+([\uac00-\ud7a3A-Za-z0-9]{1,12}))?",
+                combined
+            )
+            if abbrev_match2:
+                # key_terms? 留ㅼ묶?섎뒗 ?쎌묶 李얘린
+                for kt in key_terms:
+                    if not isinstance(kt, str):
+                        continue
+                    for i in range(1, 3):
+                        abbr = abbrev_match2.group(i)
+                        if abbr and kt.replace(" ", "") == abbr.replace(" ", ""):
+                            # ??snippet??title?먯꽌 ?뺤떇 ?쒕ぉ 異붿텧 ?쒕룄
+                            # "二쎌뿀??源⑥뼱???섏꽑 - ?섎Т?꾪궎" ??"二쎌뿀??源⑥뼱???섏꽑"
+                            clean_title = re.sub(r'\s*[-\(\[].*$', '', title).strip()
+                            if clean_title and len(clean_title) >= 3:
+                                abbreviation_hints.append({
+                                    "full": clean_title,
+                                    "abbrev": abbr,
+                                })
+            
+            # 4-pre) key_term??snippet?먯꽌 ?쎌묶?쇰줈 ?ъ슜?섎㈃???뺤떇 ?쒕ぉ??媛숈씠 ?섏삤??寃쎌슦
+            # ?? "利됱궗臾대┝ ?대쫫??洹몃옒??洹몃젃吏" + content??"利됱궗湲??ㅺ퀬 臾대┝???⑥뼱吏?ㅻ? ?뚯꽕"
+            for kt in key_terms:
+                if not isinstance(kt, str) or len(kt) < 2:
+                    continue
+                kt_clean = kt.replace(" ", "")
+                # ?대? ?묎?紐낆쑝濡??앸퀎??key_term? ?쎌묶 留ㅽ븨?먯꽌 ?쒖쇅
+                if kt_clean in seen_authors:
+                    continue
+                # key_term??title?대굹 content??吏곸젒 ?깆옣?섎뒗吏
+                if kt_clean not in combined.replace(" ", ""):
+                    continue
+                # 媛숈? snippet?먯꽌 ?뺤떇 ?쒕ぉ ?꾨낫??李얘린
+                # ?⑦꽩: "~ ?ㅺ퀬 ~???⑥뼱吏?? 媛숈? 湲??쒕ぉ (8???댁긽)
+                # 怨듭떇 ?뚮옯??臾명뵾???몃꺼?쇱븘) URL??寃곌낵?먯꽌 諛쒓껄???쒕ぉ
+                from urllib.parse import urlparse as _urlparse
+                try:
+                    _domain = _urlparse(url).hostname or ""
+                except Exception:
+                    _domain = ""
+                is_platform = any(_domain == d or _domain.endswith("." + d) 
+                                  for d in self._OFFICIAL_PLATFORM_DOMAINS) or "namu.wiki" in _domain
+                
+                if is_platform:
+                    # ?뚮옯??寃곌낵??title?먯꽌 ?뺤떇 ?쒕ぉ 異붿텧
+                    clean_t = re.sub(r'\s*[-\(\[].*$', '', title).strip()
+                    # ?쒕━利?硫뷀? ?쒓굅: "NEW" ?묐몢????
+                    clean_t = re.sub(r'^NEW\s*', '', clean_t).strip()
+                    # ?섎Т?꾪궎 由щ퉬??踰덊샇 ?쒓굅: "二쎌뿀??源⑥뼱???섏꽑 (r173 ??" ??"二쎌뿀??源⑥뼱???섏꽑"
+                    clean_t = re.sub(r'\s*\(r\d+\s*\)\s*$', '', clean_t).strip()
+                    if clean_t and len(clean_t) >= 5 and kt_clean != clean_t.replace(" ", ""):
+                        # ?쎌묶 ???뺤떇 ?쒕ぉ?대㈃ 留ㅽ븨 ?앹꽦
+                        if clean_t not in seen_titles:
+                            seen_titles.add(clean_t)
+                            title_hints.append({
+                                "title": clean_t,
+                                "source": "platform_title",
+                                "url": url,
+                            })
+                        abbreviation_hints.append({
+                            "full": clean_t,
+                            "abbrev": kt_clean,
+                        })
+                else:
+                    # 而ㅻ??덊떚 寃곌낵: content?먯꽌 ?뺤떇 ?쒕ぉ ?⑦꽩 李얘린
+                    # "~??X? ?뚯꽕", "?ㅻ뒛?꾩슂, X" ??
+                    full_title_m = re.search(
+                        r"([\uac00-\ud7a3A-Za-z0-9]{2,8}(?:\s[\uac00-\ud7a3A-Za-z0-9]{1,8}){1,6})",
+                        combined
+                    )
+                    if full_title_m:
+                        ft = full_title_m.group(1).strip()
+                        if ft and len(ft) >= 5 and kt_clean != ft.replace(" ", ""):
+                            if ft not in seen_titles:
+                                seen_titles.add(ft)
+                                title_hints.append({
+                                    "title": ft,
+                                    "source": "community_mention",
+                                    "url": url,
+                                })
+                            abbreviation_hints.append({
+                                "full": ft,
+                                "abbrev": kt_clean,
+                            })
+            
+            # 4-B) key_term ?묎?紐?遺遺?留ㅼ묶: key_term???묎?紐낆쓽 ?묐몢?ъ씤 寃쎌슦
+            # ?? key_term '媛쒕룎' ??寃??寃곌낵??'媛쒕룎泥?뀈' ?묎? 諛쒓껄 ???묎? ?뚰듃 異붽?
+            for kt in key_terms:
+                if not isinstance(kt, str) or len(kt) < 2:
+                    continue
+                kt_clean = kt.replace(" ", "")
+                # ?대? ?뺥솗???묎? ?뚰듃???덉쑝硫??ㅽ궢
+                if kt_clean in seen_authors:
+                    continue
+                # content/title?먯꽌 "kt+N湲?? ?⑦꽩?쇰줈 ?묎?紐??꾨낫 李얘린
+                # ?? '媛쒕룎泥?뀈', '媛쒕룎?뚮뀈' ??
+                _author_prefix_pat = re.compile(
+                    rf'({re.escape(kt_clean)}[\uac00-\ud7a3A-Za-z0-9]{{1,4}})(?:\s*(?:작가|필명))?',
+                    re.IGNORECASE,
+                )
+                for _m in _author_prefix_pat.finditer(combined):
+                    _found_author = _m.group(1).strip()
+                    if _found_author and _found_author not in seen_authors and _found_author != kt_clean:
+                        seen_authors.add(_found_author)
+                        author_hints.append({
+                            "name": _found_author,
+                            "source": "prefix_match",
+                            "url": url,
+                        })
+                        # ?쎌묶 留ㅽ븨??異붽?: '媛쒕룎' ??'媛쒕룎泥?뀈(?묎?)'
+                        abbreviation_hints.append({
+                            "full": f"{_found_author}(?묎?)",
+                            "abbrev": kt_clean,
+                        })
+            
+            # 5) URL ?섏쭛 (fetch ???: 怨듭떇 ?뚮옯??+ ?섎Т?꾪궎 + ?좎슜??而ㅻ??덊떚
+            if url:
+                from urllib.parse import urlparse
+                try:
+                    domain = urlparse(url).hostname or ""
+                    # ?섎Т?꾪궎??理쒖슦??(?쎌묶/?묎?/?λⅤ 援ъ“???뺣낫)
+                    if "namu.wiki" in domain:
+                        fetchable_urls.insert(0, url)  # 留??욎뿉
+                    elif any(domain == d or domain.endswith("." + d) for d in self._OFFICIAL_PLATFORM_DOMAINS):
+                        fetchable_urls.append(url)
+                    elif any(kw in domain for kw in (
+                        "tistory", "blog.naver", "arca.live", "dcinside",
+                        "fmkorea", "ruliweb", "brunch", "wikipedia",
+                    )):
+                        # 釉붾줈洹?而ㅻ??덊떚??蹂몃Ц???좎슜???뺣낫 ?ы븿 媛??
+                        fetchable_urls.append(url)
+                except Exception:
+                    pass
+        
+        return {
+            "title_hints": title_hints,
+            "author_hints": author_hints,
+            "abbreviation_hints": abbreviation_hints,
+            "fetchable_urls": list(dict.fromkeys(fetchable_urls)),  # 以묐났 ?쒓굅, ?쒖꽌 ?좎?
+        }
+
+    @staticmethod
+    def _normalize_hint_text(text: Any) -> str:
+        """Normalize hint text for robust matching."""
+        if text is None:
+            return ""
+        return re.sub(r"[^\uac00-\ud7a3A-Za-z0-9]", "", str(text)).lower()
+
+    def _sanitize_deep_search_hints(
+        self,
+        hints: Dict[str, Any],
+        key_terms: List[str],
+        *,
+        post_text_norm: str = "",
+    ) -> Dict[str, Any]:
+        """Drop low-signal hints and dedupe by normalized value."""
+        if not isinstance(hints, dict):
+            return {"title_hints": [], "author_hints": [], "abbreviation_hints": [], "fetchable_urls": []}
+
+        key_terms_norm = {
+            self._normalize_hint_text(term)
+            for term in (key_terms or [])
+            if isinstance(term, str) and self._normalize_hint_text(term)
+        }
+
+        generic_title_terms = {
+            "일상", "작가", "등장인물", "캐릭터", "내용", "제목", "장르",
+            "커뮤니티", "평가", "리뷰", "추천", "글", "댓글에서", "에서",
+        }
+
+        source_priority = {
+            "url_fetch_platform": 5,
+            "platform_title": 4,
+            "url_fetch": 3,
+            "llm_snippet": 3,
+            "community_mention": 2,
+            "snippet_pattern": 1,
+        }
+
+        sanitized_titles: Dict[str, Dict[str, Any]] = {}
+        for th in (hints.get("title_hints") or []):
+            if not isinstance(th, dict):
+                continue
+            title = th.get("title")
+            title_norm = self._normalize_hint_text(title)
+            if not title_norm:
+                continue
+            source = str(th.get("source", ""))
+            source_score = source_priority.get(source, 0)
+
+            # Low-signal snippet-only title hints are noisy unless tied to current post terms.
+            tied_to_post = bool(
+                title_norm in post_text_norm
+                or any(kt and (kt in title_norm or title_norm in kt) for kt in key_terms_norm)
+            )
+            if source_score <= 2:
+                if len(title_norm) < 3:
+                    continue
+                if title_norm in generic_title_terms and not tied_to_post:
+                    continue
+                if not tied_to_post and len(title_norm) <= 4:
+                    continue
+
+            existing = sanitized_titles.get(title_norm)
+            if (not existing) or (source_score > source_priority.get(str(existing.get("source", "")), 0)):
+                sanitized_titles[title_norm] = th
+
+        sanitized_authors: Dict[str, Dict[str, Any]] = {}
+        for ah in (hints.get("author_hints") or []):
+            if not isinstance(ah, dict):
+                continue
+            name = ah.get("name")
+            author_norm = self._normalize_hint_text(name)
+            if len(author_norm) < 2:
+                continue
+            source = str(ah.get("source", ""))
+            source_score = source_priority.get(source, 0)
+            if source_score <= 1 and author_norm not in post_text_norm:
+                continue
+            existing = sanitized_authors.get(author_norm)
+            if (not existing) or (source_score > source_priority.get(str(existing.get("source", "")), 0)):
+                sanitized_authors[author_norm] = ah
+
+        sanitized_abbrev: Dict[tuple[str, str], Dict[str, Any]] = {}
+        for ab in (hints.get("abbreviation_hints") or []):
+            if not isinstance(ab, dict):
+                continue
+            abbrev_norm = self._normalize_hint_text(ab.get("abbrev"))
+            full_norm = self._normalize_hint_text(ab.get("full"))
+            if len(abbrev_norm) < 2 or len(full_norm) < 3:
+                continue
+            tied_to_post = bool(
+                abbrev_norm in key_terms_norm
+                or abbrev_norm in post_text_norm
+                or any(kt and (kt in abbrev_norm or abbrev_norm in kt) for kt in key_terms_norm)
+            )
+            if not tied_to_post:
+                continue
+            key = (abbrev_norm, full_norm)
+            if key not in sanitized_abbrev:
+                sanitized_abbrev[key] = ab
+
+        return {
+            "title_hints": list(sanitized_titles.values())[:12],
+            "author_hints": list(sanitized_authors.values())[:10],
+            "abbreviation_hints": list(sanitized_abbrev.values())[:15],
+            "fetchable_urls": list(dict.fromkeys(hints.get("fetchable_urls") or [])),
+        }
+
+    def _merge_snippet_hints(
+        self,
+        ctx: "ConversationContext",
+        hints: Dict[str, Any],
+        key_terms: List[str],
+        *,
+        post_data: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        """Merge new deep-search hints into ctx with sanitization and dedupe."""
+        post_text_parts: List[str] = []
+        if isinstance(post_data, dict):
+            post_text_parts.append(post_data.get("title", ""))
+            for block in (post_data.get("content_blocks") or []):
+                if isinstance(block, dict):
+                    post_text_parts.append(block.get("text", ""))
+                elif isinstance(block, str):
+                    post_text_parts.append(block)
+        if hasattr(ctx, "comments") and ctx.comments:
+            post_text_parts.extend([c for c in ctx.comments if isinstance(c, str)])
+        post_text_norm = self._normalize_hint_text(" ".join(post_text_parts))
+
+        sanitized = self._sanitize_deep_search_hints(
+            hints,
+            key_terms,
+            post_text_norm=post_text_norm,
+        )
+
+        source_priority = {
+            "url_fetch_platform": 5,
+            "platform_title": 4,
+            "url_fetch": 3,
+            "llm_snippet": 3,
+            "community_mention": 2,
+            "snippet_pattern": 1,
+        }
+
+        if not hasattr(ctx, "snippet_hints") or not ctx.snippet_hints:
+            ctx.snippet_hints = {
+                "title_hints": [],
+                "author_hints": [],
+                "abbreviation_hints": [],
+            }
+
+        def _merge_by_key(existing_list: List[Dict[str, Any]], incoming_list: List[Dict[str, Any]], key_fn) -> List[Dict[str, Any]]:
+            merged: Dict[Any, Dict[str, Any]] = {}
+            for item in (existing_list or []):
+                if not isinstance(item, dict):
+                    continue
+                k = key_fn(item)
+                if not k or k == ("", ""):
+                    continue
+                merged[k] = item
+            for item in (incoming_list or []):
+                if not isinstance(item, dict):
+                    continue
+                k = key_fn(item)
+                if not k or k == ("", ""):
+                    continue
+                prev = merged.get(k)
+                if not prev:
+                    merged[k] = item
+                    continue
+                prev_score = source_priority.get(str(prev.get("source", "")), 0)
+                new_score = source_priority.get(str(item.get("source", "")), 0)
+                if new_score >= prev_score:
+                    merged[k] = item
+            return list(merged.values())
+
+        ctx.snippet_hints["title_hints"] = _merge_by_key(
+            ctx.snippet_hints.get("title_hints", []),
+            sanitized.get("title_hints", []),
+            key_fn=lambda item: self._normalize_hint_text(item.get("title")),
+        )[:12]
+        ctx.snippet_hints["author_hints"] = _merge_by_key(
+            ctx.snippet_hints.get("author_hints", []),
+            sanitized.get("author_hints", []),
+            key_fn=lambda item: self._normalize_hint_text(item.get("name")),
+        )[:10]
+        ctx.snippet_hints["abbreviation_hints"] = _merge_by_key(
+            ctx.snippet_hints.get("abbreviation_hints", []),
+            sanitized.get("abbreviation_hints", []),
+            key_fn=lambda item: (
+                self._normalize_hint_text(item.get("abbrev")),
+                self._normalize_hint_text(item.get("full")),
+            ),
+        )[:15]
+    
+    def _deep_search_enrich(
+        self,
+        ctx: "AgenticContext",
+        key_terms: List[str],
+        search_results: List[Dict[str, Any]],
+        *,
+        post_data: Optional[Dict[str, Any]] = None,
+        gatekeeper_result: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        """珥덇린 寃??寃곌낵瑜?遺꾩꽍?섏뿬 異붽? 寃??URL ?섏묶?쇰줈 ?뺣낫瑜?蹂닿컯?쒕떎.
+        
+        1?④퀎: snippet?먯꽌 ?쒕ぉ/?묎?/?쎌묶 ?뚰듃 異붿텧 (湲곌퀎???뺢퇋??
+        1-B?④퀎: LLM snippet 遺꾩꽍 (臾몃㎘ 湲곕컲 ?뚰듃 ?꾪꽣留겶룸낫媛?
+        2?④퀎: 怨듭떇 ?뚮옯??URL ?섏묶 (?섎Т?꾪궎, ?몃꺼?쇱븘 ??
+        3?④퀎: 諛쒓껄???묎?紐낆쑝濡?2李?寃??
+        4?④퀎: ?쎌뼱 ?꾩슜 荑쇰━ 異붽? ("??, "??ㅼ엫")
+        """
+        import re as _re
+        
+        hints = self._extract_hints_from_snippets(search_results, key_terms)
+        _key_terms_norm = {
+            self._normalize_hint_text(t)
+            for t in (key_terms or [])
+            if isinstance(t, str) and self._normalize_hint_text(t)
+        }
+        _post_text_parts: List[str] = []
+        if isinstance(post_data, dict):
+            _post_text_parts.append(post_data.get("title", ""))
+            for _blk in (post_data.get("content_blocks") or []):
+                if isinstance(_blk, dict):
+                    _post_text_parts.append(_blk.get("text", ""))
+                elif isinstance(_blk, str):
+                    _post_text_parts.append(_blk)
+        _post_text_parts.extend([c for c in (ctx.comments or []) if isinstance(c, str)])
+        _post_text_norm = self._normalize_hint_text(" ".join(_post_text_parts))
+        
+        # ?? 1-B?④퀎: LLM snippet 遺꾩꽍 (臾몃㎘ 湲곕컲 ?먮퀎) ??
+        # 湲곌퀎???뺢퇋?앹쑝濡?戮묒? ?뚰듃瑜?LLM??臾몃㎘???쎄퀬 ?꾪꽣留?蹂닿컯
+        llm_snippet_result = None
+        if post_data and gatekeeper_result:
+            llm_snippet_result = self._llm_analyze_snippets(
+                post_data, key_terms, search_results, gatekeeper_result
+            )
+        
+        if llm_snippet_result:
+            # LLM???앸퀎???뺤떇 ?쒕ぉ ???쎌묶 留ㅽ븨 蹂닿컯
+            llm_title = llm_snippet_result.get("identified_title")
+            llm_abbrevs = llm_snippet_result.get("abbreviation_mappings") or []
+            if llm_title and llm_abbrevs:
+                existing_abbrevs = {
+                    (h.get("abbrev", ""), h.get("full", ""))
+                    for h in hints.get("abbreviation_hints", [])
+                }
+                for am in llm_abbrevs:
+                    pair = (am.get("abbrev", ""), am.get("full", ""))
+                    if pair[0] and pair[1] and pair not in existing_abbrevs:
+                        hints["abbreviation_hints"].append({
+                            "abbrev": pair[0],
+                            "full": pair[1],
+                        })
+                        print(
+                            f"[{_ts()}] {self.emoji} ?쭬 LLM ?쎌묶 留ㅽ븨 異붽?: "
+                            f"'{pair[0]}' ??'{pair[1]}'",
+                            file=sys.stderr,
+                        )
+            
+            # LLM???앸퀎???묎? ??author_hints 蹂닿컯
+            llm_author = llm_snippet_result.get("identified_author")
+            if llm_author:
+                existing_authors = {h.get("name", "") for h in hints.get("author_hints", [])}
+                if llm_author not in existing_authors:
+                    hints["author_hints"].insert(0, {
+                        "name": llm_author,
+                        "source": "llm_snippet",
+                    })
+            
+            # ?뵎 ?듭떖: LLM??臾닿??섎떎怨??먮떒???묎? ??湲곌퀎???뚰듃?먯꽌 ?쒓굅
+            irrelevant_authors = set(llm_snippet_result.get("irrelevant_authors") or [])
+            if irrelevant_authors:
+                before_count = len(hints["author_hints"])
+                hints["author_hints"] = [
+                    ah for ah in hints["author_hints"]
+                    if ah.get("name", "") not in irrelevant_authors
+                    or ah.get("source") in ("url_fetch", "url_fetch_platform", "llm_snippet")
+                ]
+                removed = before_count - len(hints["author_hints"])
+                if removed > 0:
+                    print(
+                        f"[{_ts()}] {self.emoji} ?쭬 LLM 臾닿? ?묎? ?쒓굅: "
+                        f"{irrelevant_authors} ({removed}嫄?",
+                        file=sys.stderr,
+                    )
+            
+            # LLM 寃곌낵瑜?ctx?????(Decoder媛 ?쒖슜)
+            ctx.llm_snippet_analysis = llm_snippet_result
+            
+            # ?썳截?snippet_analyzer媛 鍮꾩냼??留ㅼ껜 ?먮뒗 ?λⅤ ?쇰컲濡좎쑝濡??먮떒??寃쎌슦
+            _snippet_category = (llm_snippet_result.get("identified_category") or "unknown").lower()
+            _snippet_post_intent = (llm_snippet_result.get("post_intent") or "").lower()
+            _NON_NOVEL_CATS = {"vocaloid_song", "anime", "manga", "game", "aa_work"}
+            
+            # ?넅 ?λⅤ ?쇰컲濡?媛먯?: snippet_analyzer媛 寃뚯떆湲 ?섎룄瑜?genre_discussion?쇰줈 ?먮떒
+            if _snippet_category == "genre_discussion" or _snippet_post_intent == "genre_discussion":
+                _intent_reason = llm_snippet_result.get("post_intent_reason", "")
+                if not ctx.discourse_warning:
+                    ctx.discourse_warning = f"genre_discussion(snippet_analyzer)"
+                ctx.uncertainty_sources.append(
+                    f"snippet_analyzer: 寃뚯떆湲 ?섎룄=?λⅤ ?쇰컲濡?({_intent_reason[:80]}) ???뱀젙 ?묓뭹 留ㅼ묶 二쇱쓽"
+                )
+                print(
+                    f"[{_ts()}] {self.emoji} ?좑툘 snippet_analyzer ?λⅤ ?쇰컲濡?媛먯?: "
+                    f"post_intent=genre_discussion ??Decoder/Arbiter??寃쎄퀬 ?꾨떖 "
+                    f"(reason: {_intent_reason[:60]})",
+                    file=sys.stderr,
+                )
+            elif _snippet_category in _NON_NOVEL_CATS:
+                if not ctx.is_association_post:
+                    ctx.is_association_post = True
+                    print(
+                        f"[{_ts()}] {self.emoji} ?뤇截?snippet_analyzer 鍮꾩냼??留ㅼ껜({_snippet_category}) "
+                        f"??is_association_post=true ?ㅼ젙",
+                        file=sys.stderr,
+                    )
+                if not ctx.discourse_warning:
+                    ctx.discourse_warning = f"non_novel_content({_snippet_category})"
+                ctx.uncertainty_sources.append(
+                    f"snippet_analyzer: 寃??寃곌낵媛 {_snippet_category}瑜?媛由ы궡 ???뱀냼?ㅼ씠 ?꾨땺 媛?μ꽦 ?믪쓬"
+                )
+        
+        # 寃곌낵 濡쒓퉭 ???뺣━
+        # 1) ?쎌묶 留ㅽ븨?먯꽌 ?묎?紐낆씠 abbrev濡??ㅼ뼱媛?寃쎌슦 ?쒓굅
+        _known_authors = {h.get("name", "").replace(" ", "") for h in hints.get("author_hints", []) if h.get("name")}
+        if _known_authors:
+            _before_abbr = len(hints["abbreviation_hints"])
+            hints["abbreviation_hints"] = [
+                ah for ah in hints["abbreviation_hints"]
+                if ah.get("abbrev", "").replace(" ", "") not in _known_authors
+            ]
+            _removed_abbr = _before_abbr - len(hints["abbreviation_hints"])
+            if _removed_abbr > 0:
+                print(f"[{_ts()}] {self.emoji} ?썳截??묎?紐끸넂?쎌묶 留ㅽ븨 ?쒓굅: {_known_authors} ({_removed_abbr}嫄?", file=sys.stderr)
+        
+        # 2) title_hints?먯꽌 ?섎Т?꾪궎 由щ퉬??踰덊샇 ?뺣━
+        for th in hints.get("title_hints", []):
+            t = th.get("title", "")
+            cleaned = re.sub(r'\s*\(r\d+\s*\)\s*$', '', t).strip()
+            if cleaned != t:
+                th["title"] = cleaned
+
+        # 약한 힌트를 정리해 연쇄 오매칭을 줄인다.
+        hints = self._sanitize_deep_search_hints(
+            hints,
+            key_terms,
+            post_text_norm=_post_text_norm,
+        )
+        
+        # 寃곌낵 濡쒓퉭
+        if hints["title_hints"]:
+            titles_str = ", ".join(h["title"] for h in hints["title_hints"][:5])
+            print(f"[{_ts()}] {self.emoji} ?뵮 snippet ?쒕ぉ ?뚰듃: [{titles_str}]", file=sys.stderr)
+        if hints["author_hints"]:
+            authors_str = ", ".join(h["name"] for h in hints["author_hints"][:3])
+            print(f"[{_ts()}] {self.emoji} ?뵮 snippet ?묎? ?뚰듃: [{authors_str}]", file=sys.stderr)
+        if hints["abbreviation_hints"]:
+            for ah in hints["abbreviation_hints"][:3]:
+                print(f"[{_ts()}] {self.emoji} ?뵮 ?쎌묶 留ㅽ븨: '{ah.get('abbrev')}' ??'{ah.get('full')}'", file=sys.stderr)
+        
+        # ?? 2?④퀎: URL ?섏묶 ??content 蹂닿컯 + 援ъ“???뺣낫 異붿텧 ??
+        fetch_fn = getattr(self, 'fetch_fn', None)
+        fetched_info: List[Dict[str, Any]] = []
+        
+        # ?뵮 寃??寃곌낵 URL?믪씤?깆뒪 留?(content 蹂닿컯??
+        url_to_idx: Dict[str, int] = {}
+        for i, sr in enumerate(search_results):
+            u = sr.get("url", "")
+            if u:
+                url_to_idx[u] = i
+        
+        if fetch_fn and hints["fetchable_urls"]:
+            # ?넅 URL 愿?⑥꽦 ?꾪꽣留? ?쎌묶 留ㅽ븨?먯꽌 ?앸퀎???묓뭹怨?愿?⑤맂 URL ?곗꽑
+            _fetch_urls = list(hints["fetchable_urls"])
+            
+            # 신뢰 가능한 제목 앵커 수집
+            _identified_titles_for_filter = set()
+            for _ah in hints.get("abbreviation_hints", []):
+                _full_norm = self._normalize_hint_text(_ah.get("full", ""))
+                _abbr_norm = self._normalize_hint_text(_ah.get("abbrev", ""))
+                if (
+                    _full_norm
+                    and len(_full_norm) >= 3
+                    and (_abbr_norm in _key_terms_norm or _abbr_norm in _post_text_norm)
+                ):
+                    _identified_titles_for_filter.add(_full_norm)
+
+            for _th in hints.get("title_hints", [])[:8]:
+                _t_norm = self._normalize_hint_text(_th.get("title", ""))
+                _source = str(_th.get("source", ""))
+                if not _t_norm or len(_t_norm) < 3:
+                    continue
+                if _source in ("url_fetch_platform", "platform_title", "url_fetch", "llm_snippet"):
+                    _identified_titles_for_filter.add(_t_norm)
+                elif any(kt and (kt in _t_norm or _t_norm in kt) for kt in _key_terms_norm):
+                    _identified_titles_for_filter.add(_t_norm)
+
+            def _query_overlap_score(url: str) -> float:
+                score = 0.0
+                if url in url_to_idx:
+                    _sr = search_results[url_to_idx[url]]
+                    _sr_norm = self._normalize_hint_text(f"{_sr.get('title', '')} {_sr.get('content', '')}")
+                    for _kt in _key_terms_norm:
+                        if _kt and _kt in _sr_norm:
+                            score += 2.0
+                return score
+
+            if _identified_titles_for_filter:
+                def _url_relevance_score(url: str) -> float:
+                    score = 0.0
+                    url_lower = url.lower()
+                    url_norm = self._normalize_hint_text(url)
+
+                    for _ft in _identified_titles_for_filter:
+                        _ft_tokens = re.findall(r"[a-z0-9]{2,}|[가-힣]{2,}", _ft)
+                        if any(tok in url_norm for tok in _ft_tokens[:3]):
+                            score += 2.0
+
+                    if "namu.wiki" in url_lower:
+                        score += 0.6
+                    if any(p in url_lower for p in ("novelpia", "munpia", "kakaopage", "series.naver")):
+                        score += 1.0
+
+                    if url in url_to_idx:
+                        _sr = search_results[url_to_idx[url]]
+                        _sr_text = self._normalize_hint_text(f"{_sr.get('title', '')} {_sr.get('content', '')}")
+                        for _ft in _identified_titles_for_filter:
+                            if len(_ft) >= 3 and _ft in _sr_text:
+                                score += 3.0
+                                break
+                    score += _query_overlap_score(url)
+                    return score
+
+                _scored_urls = [(u, _url_relevance_score(u)) for u in _fetch_urls]
+                _scored_urls.sort(key=lambda x: x[1], reverse=True)
+                _fetch_urls = [u for u, s in _scored_urls if s > 0][:3]
+                if not _fetch_urls:
+                    _fetch_urls = [u for u, _ in _scored_urls[:2]]
+
+                if _scored_urls:
+                    _top_scores = [(u.split("/")[-1][:30], f"{s:.1f}") for u, s in _scored_urls[:5]]
+                    print(f"[{_ts()}] {self.emoji} 🎯 URL 관련성 필터링: {_top_scores}", file=sys.stderr)
+            else:
+                _scored_urls = [(u, _query_overlap_score(u)) for u in _fetch_urls]
+                _scored_urls.sort(key=lambda x: x[1], reverse=True)
+                _fetch_urls = [u for u, s in _scored_urls if s > 0][:3]
+                if not _fetch_urls:
+                    _fetch_urls = [u for u, _ in _scored_urls[:2]]
+
+            for fetch_url in _fetch_urls[:3]:
+                try:
+                    result = fetch_fn(fetch_url)
+                    if result and isinstance(result, dict):
+                        structured = result.get("structured_info") or {}
+                        text_preview = result.get("text") or ""
+                        
+                        if structured or text_preview:
+                            fetched_info.append({
+                                "url": fetch_url,
+                                "structured_info": structured,
+                                "text_preview": text_preview[:500],
+                            })
+                            
+                            # 援ъ“???뺣낫?먯꽌 異붽? ?뚰듃 異붿텧
+                            # ?섎Т?꾪궎 由щ퉬??踰덊샇 ?뺣━ ?ы띁
+                            def _clean_namu_rev(t: str) -> str:
+                                return re.sub(r'\s*\(r\d+\s*\)\s*$', '', t).strip() if t else t
+                            
+                            if structured.get("page_title"):
+                                _pt = _clean_namu_rev(structured["page_title"])
+                                hints["title_hints"].append({
+                                    "title": _pt,
+                                    "source": "url_fetch",
+                                    "url": fetch_url,
+                                })
+                            if structured.get("title"):
+                                _st = _clean_namu_rev(structured["title"])
+                                hints["title_hints"].append({
+                                    "title": _st,
+                                    "source": "url_fetch_platform",
+                                    "url": fetch_url,
+                                })
+                            if structured.get("author"):
+                                hints["author_hints"].append({
+                                    "name": structured["author"],
+                                    "source": "url_fetch",
+                                })
+                            if structured.get("abbreviations"):
+                                _abbr_full = _clean_namu_rev(structured.get("page_title", ""))
+                                for abbr in structured["abbreviations"]:
+                                    hints["abbreviation_hints"].append({
+                                        "full": _abbr_full,
+                                        "abbrev": abbr,
+                                    })
+                            
+                            domain = result.get("domain", "")
+                            
+                            # ?뵮 ?듭떖: fetch??蹂몃Ц??search_results??content??蹂닿컯
+                            if fetch_url in url_to_idx and text_preview:
+                                idx = url_to_idx[fetch_url]
+                                old_content = search_results[idx].get("content", "")
+                                # snippet(~200??蹂대떎 fetch 蹂몃Ц?????띾??섎㈃ 援먯껜
+                                if len(text_preview) > len(old_content) + 50:
+                                    # 湲곗〈 snippet + fetch 蹂몃Ц???⑹퀜??蹂닿컯
+                                    enriched = old_content.rstrip()
+                                    if enriched and not enriched.endswith("."):
+                                        enriched += " "
+                                    enriched += f"[蹂몃Ц] {text_preview}"
+                                    search_results[idx]["content"] = enriched[:800]
+                                    print(
+                                        f"[{_ts()}] {self.emoji} ?뱷 content 蹂닿컯: "
+                                        f"{len(old_content)}????{len(search_results[idx]['content'])}??({domain})",
+                                        file=sys.stderr
+                                    )
+                            
+                            print(
+                                f"[{_ts()}] {self.emoji} ?뙋 URL ?섏묶 ?꾨즺: {domain} "
+                                f"({'SearXNG fallback' if result.get('fallback') else '吏곸젒'}) "
+                                f"(?쒕ぉ={structured.get('page_title') or structured.get('title', '?')}, "
+                                f"?묎?={structured.get('author', '?')})",
+                                file=sys.stderr
+                            )
+                except Exception as e:
+                    print(f"[{_ts()}] {self.emoji} ?좑툘 URL ?섏묶 ?ㅽ뙣: {fetch_url} ??{e}", file=sys.stderr)
+        
+        # ?섏묶 ?뺣낫瑜?ctx?????(Decoder/Verifier媛 ?쒖슜)
+        if fetched_info:
+            if not hasattr(ctx, 'fetched_page_info'):
+                ctx.fetched_page_info = []
+            ctx.fetched_page_info.extend(fetched_info)
+        
+        # hints를 context에 병합 (정제 + 중복 제거)
+        self._merge_snippet_hints(
+            ctx,
+            hints,
+            key_terms,
+            post_data=post_data,
+        )
+        
+        # ?? 3?④퀎: ?묎?紐낆쑝濡?2李?寃????
+        # ?좑툘 ?쎌묶 留ㅽ븨???뺤떇 ?쒕ぉ怨?媛숈? snippet?먯꽌 諛쒓껄???묎?留?寃??(臾닿? ?묎? 諛⑹?)
+        # ?? "利됱궗臾대┝" ??"利됱궗湲??ㅺ퀬 臾대┝???⑥뼱吏?? 留ㅽ븨 ??
+        #     "利됱궗湲??ㅺ퀬 寃뚯엫 ?띿쑝濡????묎?(媛몄삱)??臾닿? ???쒖쇅
+        additional_searches = []
+        
+        if hints["author_hints"] and self.search_fn:
+            # key_term/본문과 연결된 매핑만 신뢰 앵커로 사용
+            _mapped_titles = set()
+            for _ah in hints.get("abbreviation_hints", []):
+                _full_norm = self._normalize_hint_text(_ah.get("full", ""))
+                _abbr_norm = self._normalize_hint_text(_ah.get("abbrev", ""))
+                if (
+                    _full_norm
+                    and len(_full_norm) >= 3
+                    and (_abbr_norm in _key_terms_norm or _abbr_norm in _post_text_norm)
+                ):
+                    _mapped_titles.add(_full_norm)
+
+            _fetched_authors_high = {
+                ah["name"] for ah in hints["author_hints"]
+                if ah.get("source") == "url_fetch_platform"
+            }
+            _fetched_authors_medium = {
+                ah["name"] for ah in hints["author_hints"]
+                if ah.get("source") in ("url_fetch", "llm_snippet")
+            }
+
+            for ah in hints["author_hints"][:4]:
+                author_name = ah.get("name", "")
+                author_norm = self._normalize_hint_text(author_name)
+                if len(author_norm) < 2:
+                    continue
+
+                author_in_post = bool(author_norm and author_norm in _post_text_norm)
+                author_source = str(ah.get("source", ""))
+
+                if author_name in _fetched_authors_high:
+                    pass
+                elif author_name in _fetched_authors_medium:
+                    if not author_in_post and not _mapped_titles:
+                        print(
+                            f"[{_ts()}] {self.emoji} 🔬 작가 힌트 스킵: '{author_name}' "
+                            f"(본문 앵커/신뢰 매핑 없음, source={author_source})",
+                            file=sys.stderr,
+                        )
+                        continue
+                elif _mapped_titles:
+                    is_relevant_author = False
+                    for sr in search_results:
+                        sr_text_norm = self._normalize_hint_text(
+                            f"{sr.get('title', '')} {sr.get('content', '')}"
+                        )
+                        if author_norm in sr_text_norm:
+                            for _mt in _mapped_titles:
+                                if _mt in sr_text_norm:
+                                    is_relevant_author = True
+                                    break
+                        if is_relevant_author:
+                            break
+                    if not is_relevant_author and not author_in_post:
+                        print(
+                            f"[{_ts()}] {self.emoji} 🔬 작가 힌트 스킵: '{author_name}' "
+                            f"(작품 앵커 동시출현 없음)",
+                            file=sys.stderr,
+                        )
+                        continue
+                elif not author_in_post:
+                    # 본문에 없는 저신뢰 작가명은 확장 검색 금지
+                    continue
+
+                q = f"{author_name} 작가 작품"
+                if q not in ctx.searched_queries and len(q) <= 50:
+                    additional_searches.append({
+                        "query": q,
+                        "purpose": "author_works_search",
+                        "priority": 1,
+                    })
+                    ctx.searched_queries.add(q)        
+        # ?? 4?④퀎: ?쎌뼱 ?꾩슜 荑쇰━ ??
+        # key_terms 以??댁꽍?섏? ?딆? ?쎌뼱 ?꾨낫?????"?? "??ㅼ엫" 寃??
+        # ?좑툘 ?쇰컲 ?숈궗/?뺤슜??遺??紐낆궗???쎌뼱媛 ?꾨땲誘濡??ㅽ궢
+        # ?좑툘 罹먮┃?곕챸? ?쎌뼱媛 ?꾨땲誘濡??ㅽ궢 (Gatekeeper possible_characters ?쒖슜)
+        _COMMON_WORDS_NOT_ABBREV = {
+            "죽이고", "죽임", "죽인", "죽었", "이런", "저런", "그런", "하는", "되는",
+            "소개", "결말", "스포", "일상", "작가", "캐릭터", "주인공", "내용",
+            "리뷰", "추천", "연재", "완결", "후기", "설정", "스토리", "장르",
+        }
+        # Gatekeeper 罹먮┃?곕챸 ?섏쭛 ???쎌뼱 寃???쒖쇅 ???
+        _gk_characters_for_abbrev = set()
+        if gatekeeper_result:
+            _gk_ent = gatekeeper_result.get("detected_entities") or {}
+            for _ch in (_gk_ent.get("possible_characters") or []):
+                if isinstance(_ch, str):
+                    _gk_characters_for_abbrev.add(_re.sub(r'[^\uac00-\ud7a3]', '', _ch))
+        # LLM snippet 遺꾩꽍?먯꽌 ?뺤씤??罹먮┃?곕룄 異붽?
+        if llm_snippet_result:
+            for _ch in (llm_snippet_result.get("relevant_characters") or []):
+                if isinstance(_ch, str):
+                    _gk_characters_for_abbrev.add(_re.sub(r'[^\uac00-\ud7a3]', '', _ch))
+        
+        if self.search_fn:
+            for term in key_terms[:3]:
+                if not isinstance(term, str):
+                    continue
+                term_clean = _re.sub(r'[^\uac00-\ud7a3]', '', term)
+                if len(term_clean) < 3 or len(term_clean) > 8:
+                    continue
+                # ?대? ?뺤떇 ?쒕ぉ泥섎읆 湲??⑹뼱???ㅽ궢
+                if len(term_clean) > 6:
+                    continue
+                # ?좑툘 ?쇰컲 ?⑥뼱???쎌뼱媛 ?꾨떂 ???ㅽ궢
+                if term_clean in _COMMON_WORDS_NOT_ABBREV:
+                    continue
+                # ?슟 罹먮┃?곕챸? ?쎌뼱媛 ?꾨떂 ???ㅽ궢 (?쒕Т?? ?묐룄????
+                if term_clean in _gk_characters_for_abbrev:
+                    print(
+                        f"[{_ts()}] {self.emoji} ?뵮 ?쎌뼱 寃???ㅽ궢: '{term_clean}' "
+                        f"(罹먮┃?곕챸)",
+                        file=sys.stderr,
+                    )
+                    continue
+                # ?대? ?쎌묶 留ㅽ븨??諛쒓껄?섏뿀?쇰㈃ ?ㅽ궢
+                known_abbrevs = {h.get("abbrev", "") for h in hints.get("abbreviation_hints", [])}
+                if term_clean in known_abbrevs:
+                    continue
+                
+                q_meaning = f"{term_clean} ???쎌묶"
+                if q_meaning not in ctx.searched_queries:
+                    additional_searches.append({
+                        "query": q_meaning,
+                        "purpose": "abbreviation_meaning_search",
+                        "priority": 2,
+                    })
+                    ctx.searched_queries.add(q_meaning)
+                
+                q_fullname = f"{term_clean} ??ㅼ엫 ?뺤떇紐낆묶"
+                if q_fullname not in ctx.searched_queries:
+                    additional_searches.append({
+                        "query": q_fullname,
+                        "purpose": "abbreviation_fullname_search",
+                        "priority": 2,
+                    })
+                    ctx.searched_queries.add(q_fullname)
+        
+        # 異붽? 寃???ㅽ뻾
+        if additional_searches:
+            print(
+                f"[{_ts()}] {self.emoji} ?뵮 Deep Search 異붽? 寃??{len(additional_searches)}嫄??ㅽ뻾",
+                file=sys.stderr
+            )
+            new_results = self._execute_searches(additional_searches, ctx.post_id)
+            if new_results:
+                added = ctx.add_search_results(new_results)
+                print(
+                    f"[{_ts()}] {self.emoji} ?뵮 Deep Search 寃곌낵 {added}嫄?異붽?",
+                    file=sys.stderr
+                )
+                
+                # ??寃곌낵?먯꽌???뚰듃 ?ъ텛異?
+                new_hints = self._extract_hints_from_snippets(new_results, key_terms)
+                self._merge_snippet_hints(
+                    ctx,
+                    new_hints,
+                    key_terms,
+                    post_data=post_data,
+                )
+    
+    def _execute_searches(
+        self,
+        requests: List[Dict[str, Any]],
+        post_id: int,
+    ) -> List[Dict[str, Any]]:
+        """寃???ㅽ뻾 (URL 湲곕컲 以묐났 ?쒓굅 + ?곗꽑?쒖쐞 ?ъ젙??+ content 異뺤냼)"""
+        if not self.search_fn:
+            return []
+        
+        all_results = []
+        seen_urls = set()  # URL 以묐났 泥댄겕??
+        # 荑쇰━ ???쒗븳: 湲곗〈 怨좎젙 5媛????섍꼍蹂?섎줈 ?쒖뼱 (expert_main?먯꽌 LLM_MAX_SEARCH_QUERIES瑜??대? ?명똿??
+        try:
+            max_q = int(os.getenv("LLM_MAX_SEARCH_QUERIES", "5"))
+        except Exception:
+            max_q = 5
+        max_q = max(1, min(max_q, 20))
+
+        # priority(??쓣?섎줉 ?곗꽑) + stable sort(?먮옒 ?쒖꽌 ?좎?)
+        sortable: list[tuple[int, int, dict]] = []
+        for i, req in enumerate(requests or []):
+            if not isinstance(req, dict):
+                continue
+            pr = req.get("priority", 999)
+            try:
+                pr_i = int(pr)
+            except Exception:
+                pr_i = 999
+            sortable.append((pr_i, i, req))
+        sortable.sort(key=lambda x: (x[0], x[1]))
+
+        seen_queries: set[str] = set()
+        for _, _, req in sortable:
+            if len(seen_queries) >= max_q:
+                break
+            query = str(req.get("query", "")).strip()
+            if not query:
+                continue
+
+            # 以묐났 荑쇰━ ?쒓굅 (怨듬갚 ?뺢퇋??+ lower)
+            q_key = " ".join(query.split()).lower()
+            if q_key in seen_queries:
+                continue
+            seen_queries.add(q_key)
+            
+            # ?썳截?荑쇰━ 湲몄씠 諛⑹뼱: 50??珥덇낵 ???ㅽ궢 (?꾩껜 臾몄옣??荑쇰━濡??ㅼ뼱?ㅻ뒗 LLM ?ㅻ쪟 諛⑹?)
+            if len(query) > 50:
+                print(f"[{_ts()}] ?좑툘 寃??荑쇰━ ?덈Т 源 ({len(query)}?? ???ㅽ궢: {query[:40]}...", file=sys.stderr)
+                continue
+            
+            purpose = req.get("purpose", "search")
+            print(f"[{_ts()}] ?뵊 寃?? {query} (紐⑹쟻: {purpose})", file=sys.stderr)
+            try:
+                results = self.search_fn(query)
+                result_list = results if isinstance(results, list) else []
+                
+                # 以묐났 ?쒓굅 + 愿?⑥꽦 ?꾪꽣留?+ ?먭린李몄“ ?쒓굅: URL 湲곕컲
+                new_results = []
+                filtered_count = 0
+                self_ref_count = 0
+                current_post_id_str = str(post_id) if post_id else ""
+                for r in result_list:
+                    url = r.get("url", "")
+                    
+                    # ?썳截??꾩씠?붿뼱 E: ?먭린李몄“ URL ?꾪꽣 (寃??寃곌낵???먭린 寃뚯떆湲???ы븿??寃쎌슦 ?쒓굅)
+                    if current_post_id_str and url and current_post_id_str in url:
+                        # dcinside 寃뚯떆湲 URL ?⑦꽩 ?뺤씤 (genrenovel/11718111?page=2 ??
+                        if 'dcinside.com' in url:
+                            self_ref_count += 1
+                            continue
+                    
+                    # 愿?⑥꽦 ?꾪꽣留?
+                    if not self._is_relevant_result(r, query):
+                        filtered_count += 1
+                        continue
+                    
+                    if url and url not in seen_urls:
+                        seen_urls.add(url)
+                        # content 異뺤냼 (500?? - fetch 蹂닿컯??content??蹂댁〈
+                        r_copy = r.copy()
+                        content = r_copy.get("content", "")
+                        if content and len(content) > 500:
+                            r_copy["content"] = content[:500]
+                        new_results.append(r_copy)
+                    elif not url:  # URL ?녿뒗 寃곌낵??洹몃?濡?異붽?
+                        r_copy = r.copy()
+                        content = r_copy.get("content", "")
+                        if content and len(content) > 500:
+                            r_copy["content"] = content[:500]
+                        new_results.append(r_copy)
+                
+                all_results.extend(new_results)
+                
+                # 寃??寃곌낵 ?곸꽭 異쒕젰
+                duplicate_count = len(result_list) - len(new_results) - filtered_count - self_ref_count
+                filter_info = f", 臾닿? {filtered_count}嫄??쒖쇅" if filtered_count > 0 else ""
+                dup_info = f", 以묐났 {duplicate_count}嫄??쒓굅" if duplicate_count > 0 else ""
+                self_ref_info = f", ?먭린李몄“ {self_ref_count}嫄??쒓굅" if self_ref_count > 0 else ""
+                print(
+                    f"[{_ts()}] search results: {len(new_results)}{filter_info}{dup_info}{self_ref_info}",
+                    file=sys.stderr,
+                )
+                
+                for i, r in enumerate(new_results[:7], 1):  # 理쒕? 7媛쒕쭔 異쒕젰
+                    title = r.get("title", "?쒕ぉ?놁쓬")[:60]
+                    url = r.get("url", "")[:80]
+                    content = r.get("content", "")[:100].replace("\n", " ")
+                    print(f"[{_ts()}]    [{i}] {title}", file=sys.stderr)
+                    if url:
+                        print(f"[{_ts()}]        URL: {url}", file=sys.stderr)
+                    if content:
+                        print(f"[{_ts()}]        ?댁슜: {content}...", file=sys.stderr)
+            except Exception as e:
+                print(f"[{_ts()}] ?뵊 寃???ㅻ쪟: {e}", file=sys.stderr)
+        
+        # ?곗꽑?쒖쐞 ?ъ젙???곸슜
+        if all_results:
+            all_results = self._prioritize_search_results(all_results)
+            print(f"[{_ts()}] ?렞 寃??寃곌낵 ?곗꽑?쒖쐞 ?ъ젙???꾨즺 (珥?{len(all_results)}嫄?", file=sys.stderr)
+        
+        return all_results
+
+
+
