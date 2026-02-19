@@ -10,6 +10,7 @@ import asyncio
 import json
 import os
 import re
+import socket
 import threading
 from datetime import datetime
 from pathlib import Path
@@ -218,16 +219,43 @@ def start_dashboard(host: str = "0.0.0.0", port: int = 0) -> threading.Thread:
     if port == 0:
         port = int(os.environ.get("DASHBOARD_PORT", "8080"))
 
+    # 포트 충돌 시 자동으로 다음 포트를 탐색한다.
+    # (Windows에서 10048 발생 시 대시보드가 조용히 죽는 문제 방지)
+    def _is_port_available(bind_host: str, bind_port: int) -> bool:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            s.bind((bind_host, bind_port))
+            return True
+        except OSError:
+            return False
+        finally:
+            s.close()
+
+    preferred_port = int(port)
+    selected_port = preferred_port
+    if not _is_port_available(host, selected_port):
+        for candidate in range(preferred_port + 1, preferred_port + 32):
+            if _is_port_available(host, candidate):
+                selected_port = candidate
+                break
+        else:
+            raise RuntimeError(
+                f"Dashboard port unavailable: {host}:{preferred_port} (fallback failed)"
+            )
+
     def _run():
         import uvicorn
         uvicorn.run(
             app,
             host=host,
-            port=port,
+            port=selected_port,
             log_level="warning",  # uvicorn 자체 로그는 최소화
             access_log=False,
         )
 
     t = threading.Thread(target=_run, daemon=True, name="dashboard")
+    # 호출부에서 실제 바인드 포트를 로깅할 수 있게 노출
+    setattr(t, "dashboard_port", selected_port)
     t.start()
     return t
