@@ -27,3 +27,5 @@ venv/
 Thumbs.db
 /tmp
 tests/inputs/test01.jsonl
+/tests
+/tmp02
