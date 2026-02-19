@@ -6,6 +6,8 @@ DiscourseAnalyzer Expert - 담론 분석가
 from __future__ import annotations
 
 import json
+import os
+import re
 import sys
 import time
 from typing import Any, Dict, List
@@ -337,6 +339,7 @@ class DiscourseAnalyzer:
         
         try:
             result = self._call_llm(user_prompt)
+            result = self._sanitize_result(result, post_json=post_json)
             elapsed = time.time() - start_time
             
             analysis = result.get("discourse_analysis", {})
@@ -358,6 +361,78 @@ class DiscourseAnalyzer:
             import traceback
             traceback.print_exc(file=sys.stderr)
             return self._default_result(str(e))
+
+    def _sanitize_result(
+        self,
+        result: Any,
+        *,
+        post_json: Dict[str, Any] | None = None,
+    ) -> Dict[str, Any]:
+        """
+        Sanitize malformed discourse output.
+        - discourse_analysis must be dict
+        - domain_evidence/secondary_domains must be string lists
+        - fill minimal intent when missing
+        """
+        if not isinstance(result, dict):
+            return self._default_result("discourse result is not dict")
+
+        analysis = result.get("discourse_analysis")
+        if not isinstance(analysis, dict):
+            return self._default_result("discourse_analysis is not dict")
+
+        raw_domain_evidence = analysis.get("domain_evidence")
+        domain_evidence: List[str] = []
+        numeric_domain_evidence = False
+        if isinstance(raw_domain_evidence, list):
+            if raw_domain_evidence and all(isinstance(v, (int, float)) for v in raw_domain_evidence):
+                numeric_domain_evidence = True
+                print(
+                    f"[{_ts()}][{self.emoji}] ⚠️ discourse domain_evidence 숫자 배열 감지 → 문자열 증거로 정리",
+                    file=sys.stderr,
+                )
+            for item in raw_domain_evidence:
+                if isinstance(item, str):
+                    clean = " ".join(item.split())
+                    if clean and not clean.isdigit():
+                        domain_evidence.append(clean)
+                if len(domain_evidence) >= 12:
+                    break
+        if numeric_domain_evidence and not domain_evidence:
+            domain_evidence = self._fallback_domain_evidence(post_json)
+            print(
+                f"[{_ts()}][{self.emoji}] 🛡️ discourse domain_evidence 복구: "
+                f"{len(domain_evidence)}개 (title/content 기반)",
+                file=sys.stderr,
+            )
+        analysis["domain_evidence"] = domain_evidence
+
+        raw_secondary = analysis.get("secondary_domains")
+        secondary_domains: List[str] = []
+        if isinstance(raw_secondary, list):
+            for item in raw_secondary:
+                if isinstance(item, str):
+                    clean = item.strip()
+                    if clean:
+                        secondary_domains.append(clean)
+                if len(secondary_domains) >= 8:
+                    break
+        analysis["secondary_domains"] = secondary_domains
+
+        intent = analysis.get("intent")
+        if not isinstance(intent, str) or not intent.strip():
+            if str(analysis.get("primary_domain") or "").strip() == "memes_humor":
+                analysis["intent"] = "make_joke"
+            else:
+                analysis["intent"] = "express_opinion"
+            analysis["intent_confidence"] = analysis.get("intent_confidence") or "low"
+        elif numeric_domain_evidence:
+            # 숫자 폭주가 있었던 응답은 불안정하므로 confidence를 보수적으로 하향
+            cur_conf = str(analysis.get("intent_confidence") or "").strip().lower()
+            if cur_conf in ("max", "high", "medium"):
+                analysis["intent_confidence"] = "low"
+
+        return {"discourse_analysis": analysis}
     
     def _build_post_json(self, post: Dict[str, Any], comments: List[str]) -> Dict[str, Any]:
         """Build simplified post JSON for analysis."""
@@ -390,6 +465,7 @@ class DiscourseAnalyzer:
                 messages=messages,
                 tag="discourse",
                 use_grammar=True,
+                max_tokens=int(os.getenv("DISCOURSE_MAX_TOKENS", "1200")),
             )
             
             # Parse JSON (handle any formatting issues)
@@ -400,6 +476,51 @@ class DiscourseAnalyzer:
         except Exception as e:
             print(f"[{_ts()}][{self.emoji}] LLM 호출 실패: {e}", file=sys.stderr)
             raise
+
+    def _fallback_domain_evidence(self, post_json: Dict[str, Any] | None) -> List[str]:
+        """
+        domain_evidence가 숫자 폭주로 망가졌을 때 title/content/comments에서
+        의미 토큰을 복구한다.
+        """
+        if not isinstance(post_json, dict):
+            return []
+
+        stop = {
+            "그리고", "근데", "그냥", "진짜", "너무", "약간", "이거", "저거",
+            "에서", "으로", "이다", "있다", "없다", "같다", "했다", "한다",
+            "하는", "하게", "해서", "하면", "하면은", "근데요", "입니다",
+        }
+
+        def _tokens(s: str) -> List[str]:
+            out: List[str] = []
+            for t in re.findall(r"[가-힣A-Za-z0-9_]{2,24}", str(s or "")):
+                tt = t.strip()
+                if not tt or tt.isdigit():
+                    continue
+                if tt in stop:
+                    continue
+                out.append(tt)
+            return out
+
+        ordered: List[str] = []
+        for t in post_json.get("title", "").split():
+            ordered.extend(_tokens(t))
+        for c in post_json.get("content") or []:
+            ordered.extend(_tokens(str(c)))
+        for cm in (post_json.get("comments") or [])[:8]:
+            ordered.extend(_tokens(str(cm)))
+
+        dedup: List[str] = []
+        seen = set()
+        for tok in ordered:
+            n = tok.lower()
+            if n in seen:
+                continue
+            seen.add(n)
+            dedup.append(tok)
+            if len(dedup) >= 10:
+                break
+        return dedup
     
     def _default_result(self, error: str) -> Dict[str, Any]:
         """Return safe default when LLM fails."""
