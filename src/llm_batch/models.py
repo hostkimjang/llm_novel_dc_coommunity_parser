@@ -66,6 +66,7 @@ class OutputItem(BaseModel):
     slang_insight: Optional[SlangInsight] = None
     inference: Optional[Inference] = None
     reason: Optional[str] = None
+    reason_lines: Optional[List[str]] = None
 
 
 #
@@ -98,12 +99,15 @@ class PickvelIdentity(BaseModel):
         "genre_opinion",     # 장르/소재 범용 의견 ("~하는 소설 없냐", "하렘은~")
         "image_post",        # 이미지 중심 게시글 (텍스트 부족으로 식별 불가)
         "off_topic",         # 소설/웹소설과 완전 무관 (게임, 현실, 정치, 일상)
-        "noise"              # 기타 미분류 노이즈
+        "noise",             # 기타 미분류 노이즈
+        # === 해독불가 (작품 논의이지만 특정 불가) ===
+        "undecodable_reference"  # 작품 언급이 있으나 마스킹/닉네임/캐릭터명만으로 특정 불가
     ]] = None
     evidence: Optional[Evidence] = None
     slang_insight: Optional[SlangInsight] = None
     inference: Optional[Inference] = None
     reason: Optional[str] = None
+    reason_lines: Optional[List[str]] = None
 
 
 class DetectedTitle(BaseModel):
@@ -155,4 +159,3 @@ class BatchInput(BaseModel):
     posts: List[PostInput]
     comments: List[CommentInput]
     metadata: Dict[str, Any] = Field(default_factory=dict)
-
