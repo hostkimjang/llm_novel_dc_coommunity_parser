@@ -14,6 +14,7 @@ from .pipeline_prompts import (
     SEARCH_PLANNER_PROMPT,
     HYPOTHESIS_PROMPT,
     VERIFICATION_PROMPT,
+    REASON_REVIEW_PROMPT,
 )
 
 from .expert_prompts import (
@@ -27,6 +28,11 @@ from .expert_prompts import (
     CRITIC_PROMPT,
     assemble_final_output,
 )
+from .prompt_router import (
+    build_gatekeeper_system_prompt,
+    build_decoder_system_prompt,
+    build_verifier_system_prompt,
+)
 
 __all__ = [
     # Pipeline (main.py)
@@ -36,6 +42,7 @@ __all__ = [
     "SEARCH_PLANNER_PROMPT",
     "HYPOTHESIS_PROMPT",
     "VERIFICATION_PROMPT",
+    "REASON_REVIEW_PROMPT",
     # Expert (expert_main.py)
     "GATEKEEPER_SYSTEM",
     "GATEKEEPER_PROMPT",
@@ -46,4 +53,7 @@ __all__ = [
     "CRITIC_SYSTEM",
     "CRITIC_PROMPT",
     "assemble_final_output",
+    "build_gatekeeper_system_prompt",
+    "build_decoder_system_prompt",
+    "build_verifier_system_prompt",
 ]
