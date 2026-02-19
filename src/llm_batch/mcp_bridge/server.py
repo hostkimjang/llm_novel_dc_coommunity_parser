@@ -191,10 +191,58 @@ def _extract_novel_platform_info(html: str, url: str) -> Dict[str, Any]:
     
     text = _html_to_text(html, max_length=3000)
     
-    # 작가명 추출
-    author_match = re.search(r'작가(?:명|:)\s*([가-힣A-Za-z0-9_]+)', text)
-    if author_match:
-        info["author"] = author_match.group(1)
+    # 작가명 추출 (플랫폼별 표기 편차 대응)
+    def _clean_author_name(name: str) -> str:
+        import html as _html
+
+        cleaned = _html.unescape(str(name or "")).strip()
+        cleaned = re.sub(r"[\s\u00A0]+", " ", cleaned)
+        cleaned = cleaned.strip(" \"'|[]()")
+        # 구분자 이후 꼬리 제거
+        cleaned = re.split(r"[|,/·•\-]", cleaned)[0].strip()
+        if len(cleaned) < 2 or len(cleaned) > 30:
+            return ""
+        if cleaned in {"작가", "작가명", "원작", "글작가", "unknown"}:
+            return ""
+        return cleaned
+
+    author_candidates: List[str] = []
+
+    # 1) 텍스트 기반 패턴
+    text_patterns = [
+        r"(?:작가명|작가|글작가|원작)\s*[:：]?\s*[\"']?([가-힣A-Za-z0-9_]{2,30})",
+        r"[\"']?([가-힣A-Za-z0-9_]{2,30})[\"']?\s*(?:작가의|작가님의)",
+    ]
+    for pat in text_patterns:
+        for m in re.finditer(pat, text):
+            cand = _clean_author_name(m.group(1))
+            if cand:
+                author_candidates.append(cand)
+
+    # 2) HTML 메타/JSON-LD 기반 패턴
+    html_patterns = [
+        r'<meta[^>]+(?:name|property)=["\']author["\'][^>]+content=["\']([^"\']{2,60})["\']',
+        r'"authorName"\s*:\s*"([^"]{2,60})"',
+        r'"author"\s*:\s*\{[^{}]{0,300}?"name"\s*:\s*"([^"]{2,60})"',
+        r'"writer"\s*:\s*"([^"]{2,60})"',
+    ]
+    for pat in html_patterns:
+        for m in re.finditer(pat, html, re.IGNORECASE):
+            cand = _clean_author_name(m.group(1))
+            if cand:
+                author_candidates.append(cand)
+
+    # 중복 제거 후 첫 후보 채택
+    seen_authors = set()
+    deduped_authors: List[str] = []
+    for cand in author_candidates:
+        key = cand.lower()
+        if key in seen_authors:
+            continue
+        seen_authors.add(key)
+        deduped_authors.append(cand)
+    if deduped_authors:
+        info["author"] = deduped_authors[0]
     
     # 장르/태그 추출
     tags = re.findall(r'#([가-힣A-Za-z]+)', text)
@@ -374,4 +422,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
