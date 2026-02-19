@@ -15,7 +15,7 @@ import threading
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 
 @dataclass
@@ -84,8 +84,10 @@ class MonitorState:
         # 파이프라인 실행 흐름 로그 (현재 포스트 — 순차 모드용)
         self._flow_log: List[Dict[str, Any]] = []
 
-        # SSE 구독자 큐
-        self._subscribers: List[asyncio.Queue] = []
+        # SSE 구독자 큐 (loop, queue)
+        # 브로드캐스트는 메인 스레드에서 오고, 소비는 uvicorn 이벤트루프 스레드에서 하므로
+        # loop.call_soon_threadsafe를 사용하기 위해 loop를 함께 저장한다.
+        self._subscribers: List[Tuple[asyncio.AbstractEventLoop, asyncio.Queue]] = []
         self._sub_lock = threading.Lock()
 
     # ─── 외부 호출 API ────────────────────────────────────
@@ -187,14 +189,14 @@ class MonitorState:
     def subscribe(self) -> asyncio.Queue:
         """SSE 구독자 등록, Queue 반환"""
         q: asyncio.Queue = asyncio.Queue(maxsize=1024)
+        loop = asyncio.get_running_loop()
         with self._sub_lock:
-            self._subscribers.append(q)
+            self._subscribers.append((loop, q))
         return q
 
     def unsubscribe(self, q: asyncio.Queue) -> None:
         with self._sub_lock:
-            if q in self._subscribers:
-                self._subscribers.remove(q)
+            self._subscribers = [(loop, sub_q) for loop, sub_q in self._subscribers if sub_q is not q]
 
     # ─── 내부 ──────────────────────────────────────────────
 
@@ -309,23 +311,43 @@ class MonitorState:
     def _broadcast(self, payload: Dict[str, Any]) -> None:
         """모든 SSE 구독자에게 이벤트 전송"""
         msg = json.dumps(payload, ensure_ascii=False, default=str)
-        dead: List[asyncio.Queue] = []
-        with self._sub_lock:
-            for q in self._subscribers:
-                try:
-                    q.put_nowait(msg)
-                except asyncio.QueueFull:
-                    # 큐 가득 차면 오래된 메시지 50개 버리고 재시도
+        dead: List[Tuple[asyncio.AbstractEventLoop, asyncio.Queue]] = []
+
+        def _push_to_queue(target_q: asyncio.Queue, message: str) -> None:
+            try:
+                target_q.put_nowait(message)
+                return
+            except asyncio.QueueFull:
+                # 큐 가득 차면 오래된 메시지 일부를 버리고 최신 메시지를 우선 전달
+                for _ in range(50):
                     try:
-                        for _ in range(50):
-                            q.get_nowait()
-                        q.put_nowait(msg)
+                        target_q.get_nowait()
                     except Exception:
-                        dead.append(q)
+                        break
+                try:
+                    target_q.put_nowait(message)
                 except Exception:
-                    dead.append(q)
-            for q in dead:
-                self._subscribers.remove(q)
+                    pass
+            except Exception:
+                pass
+
+        with self._sub_lock:
+            subscribers_snapshot = list(self._subscribers)
+
+        for loop, q in subscribers_snapshot:
+            try:
+                loop.call_soon_threadsafe(_push_to_queue, q, msg)
+            except Exception:
+                dead.append((loop, q))
+
+        if dead:
+            dead_set = {(id(loop), id(q)) for loop, q in dead}
+            with self._sub_lock:
+                self._subscribers = [
+                    (loop, q)
+                    for loop, q in self._subscribers
+                    if (id(loop), id(q)) not in dead_set
+                ]
 
 
 # ─── 모듈 레벨 싱글턴 ─────────────────────────────────────
