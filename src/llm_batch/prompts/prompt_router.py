@@ -40,8 +40,84 @@ def _join_text_blocks(post: Optional[Dict[str, Any]]) -> str:
     return " ".join(parts)
 
 
-def _build_common_overlay_lines() -> List[str]:
+def _build_time_attack_overlay(ctx: Optional[Any]) -> List[str]:
+    if ctx is None:
+        return []
+
+    urgency = ""
+    remaining_steps: Optional[int] = None
+
+    get_time_status = getattr(ctx, "get_time_status", None)
+    if callable(get_time_status):
+        try:
+            status = get_time_status() or {}
+            urgency = _safe_str(status.get("urgency", "")).upper()
+            rs = status.get("remaining_steps")
+            if isinstance(rs, int):
+                remaining_steps = rs
+        except Exception:
+            urgency = ""
+
+    if not urgency:
+        try:
+            current = int(getattr(ctx, "iteration", 0))
+            maximum = int(getattr(ctx, "max_iterations", 0))
+            remaining_steps = max(maximum - current, 0)
+            if remaining_steps <= 2:
+                urgency = "CRITICAL"
+            elif remaining_steps <= 4:
+                urgency = "HIGH"
+            else:
+                urgency = "NORMAL"
+        except Exception:
+            return []
+
+    lines: List[str] = [
+        "",
+        f"Time-attack status: urgency={urgency}, remaining_steps={remaining_steps if remaining_steps is not None else 'unknown'}",
+    ]
+    if urgency == "CRITICAL":
+        lines.extend(
+            [
+                "CRITICAL 모드: 새 가설/요청 확장을 중단하고, 현재 증거로 즉시 결론 + 불확실성만 명확히 기술한다.",
+            ]
+        )
+    elif urgency == "HIGH":
+        lines.extend(
+            [
+                "HIGH 모드: 추가 탐색보다 기존 후보 검증/반례 점검을 우선하고, 새 협업 요청은 최소화한다.",
+            ]
+        )
+    else:
+        lines.extend(
+            [
+                "NORMAL 모드: 필요 시 협업 요청과 추가 검증을 수행하되, 근거 없는 확정은 금지한다.",
+            ]
+        )
+    return lines
+
+
+def _build_relevance_contract_overlay() -> List[str]:
     return [
+        "",
+        "Relevance contract (expert_main post-processing alignment):",
+        "discussion_type가 author_talk/recommendation/trope_discussion/meta/community_banter/image_post/off_topic/noise/genre_opinion이면 is_relevant=false를 우선 검토한다.",
+        "general_discussion은 작품 고유 앵커가 있을 때만 is_relevant=true를 허용한다.",
+        "official_title에는 작품 정식명만 허용하며 플랫폼명/URL/커뮤니티 은어는 넣지 않는다.",
+    ]
+
+
+def _build_collaboration_contract_overlay() -> List[str]:
+    return [
+        "",
+        "Collaboration contract:",
+        "request_expert를 사용하면 request_reason + request_context.question + 불확실 용어를 함께 남긴다.",
+        "증거가 이미 충분하거나 타임어택이 HIGH/CRITICAL이면 새 요청 대신 현재 증거 정리/판정에 집중한다.",
+    ]
+
+
+def _build_common_overlay_lines(ctx: Optional[Any]) -> List[str]:
+    lines = [
         "=== DYNAMIC KOREAN UNDERSTANDING OVERLAY ===",
         "Runtime guardrails (high priority for this sample):",
         "1) 일반명사/고유명사 구분은 단어 자체가 아니라 문장 기능(조사, 술어, 담화 역할)으로 판단한다.",
@@ -50,6 +126,10 @@ def _build_common_overlay_lines() -> List[str]:
         "4) 확신 없는 용어는 추정 확정 대신 unresolved 처리하고 추가 검증을 요청한다.",
         "5) 가설 대입 검증: 후보 제목을 원문 문장에 대입했을 때 의미 비약이 생기면 후보를 배제한다.",
     ]
+    lines.extend(_build_time_attack_overlay(ctx))
+    lines.extend(_build_relevance_contract_overlay())
+    lines.extend(_build_collaboration_contract_overlay())
+    return lines
 
 
 def _build_domain_overlay(ctx: Optional[Any]) -> List[str]:
@@ -74,7 +154,7 @@ def _build_gatekeeper_overlay(
     comment_text = _norm(" ".join(comments or []))
     merged = f"{title} {body} {comment_text}".strip()
 
-    lines = _build_common_overlay_lines()
+    lines = _build_common_overlay_lines(ctx)
     lines.extend(_build_domain_overlay(ctx))
 
     platform_like = _contains_any(
@@ -135,7 +215,7 @@ def _build_decoder_overlay(
     ctx: Optional[Any],
 ) -> str:
     clues = (gatekeeper_result or {}).get("context_clues") or {}
-    lines = _build_common_overlay_lines()
+    lines = _build_common_overlay_lines(ctx)
     lines.extend(_build_domain_overlay(ctx))
 
     if clues.get("genre_discussion_detected"):
@@ -199,7 +279,7 @@ def _build_verifier_overlay(
     ctx: Optional[Any],
 ) -> str:
     clues = (gatekeeper_result or {}).get("context_clues") or {}
-    lines = _build_common_overlay_lines()
+    lines = _build_common_overlay_lines(ctx)
     lines.extend(_build_domain_overlay(ctx))
 
     if clues.get("genre_discussion_detected"):
