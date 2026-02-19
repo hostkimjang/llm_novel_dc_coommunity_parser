@@ -1,638 +1,1167 @@
-# LLM Novel Batch Pipeline
+# Expert Orchestration System - 전문가 오케스트레이션 시스템
 
-디시인사이드 장르소설 갤러리 크롤링 데이터에서 **웹소설 관련 글을 식별**하고, 선택적으로 **담론 메타데이터(마이크로태그/감성/NSFW 등)를 추출**하여 JSON으로 출력합니다.
+디시인사이드 장르소설 갤러리 크롤링 데이터를 **유기적 전문가 시스템(Agentic Expert System)**으로 분석하여 웹소설을 식별하고 담론 메타데이터를 추출합니다.
 
 ---
 
 ## 📋 목차
 
-1. [핵심 개념](#-핵심-개념)
-2. [구성 요소](#-구성-요소)
-3. [설치](#-설치)
-4. [빠른 시작](#-빠른-시작)
-5. [실행 옵션](#-실행-옵션)
-6. [분석 파이프라인 흐름도](#-분석-파이프라인-흐름도)
-7. [프롬프트 구조](#-프롬프트-구조)
-8. [프롬프트 작성 지침](#-프롬프트-작성-지침) ⭐ **NEW**
-9. [입출력 형식](#-입출력-형식)
-10. [도커 환경](#-도커-환경)
-11. [고급 설정](#-고급-설정)
+1. [TL;DR 빠른 시작](#-tldr-빠른-시작)
+2. [실행 모드 선택 가이드](#-실행-모드-선택-가이드)
+3. [운영 체크리스트](#-운영-체크리스트)
+4. [문서 맵](#-문서-맵)
+5. [핵심 개념](#-핵심-개념)
+6. [전문가 시스템 아키텍처](#-전문가-시스템-아키텍처)
+7. [전문가 간 협력 메커니즘](#-전문가-간-협력-메커니즘)
+8. [파이프라인 단계별 상세](#-파이프라인-단계별-상세)
+9. [후처리 시스템](#-후처리-시스템)
+10. [타임어택 시스템](#-타임어택-시스템)
+11. [설치 및 실행](#-설치-및-실행)
+12. [프로젝트 구조](#-프로젝트-구조)
+13. [전문가 역할 상세](#-전문가-역할-상세)
+14. [전문가 I/O 계약 & 협업 규칙](#-전문가-io-계약--협업-규칙)
+15. [실행 흐름도](#-실행-흐름도)
+16. [규칙 엔진 (rules.py)](#-규칙-엔진-rulespy)
+17. [출력 형식](#-출력-형식)
+18. [환경 설정](#-환경-설정)
+19. [병렬 처리 & 대시보드](#-병렬-처리--대시보드)
+20. [운영 관측 포인트](#-운영-관측-포인트)
+21. [고급 기능](#-고급-기능)
+22. [트러블슈팅](#-트러블슈팅)
+
+---
+
+## ⚡ TL;DR 빠른 시작
+
+```bash
+# 1) 의존성 설치
+pip install -e .
+
+# 2) (선택) SearchXNG 준비
+docker compose up -d
+
+# 3) 전문가 파이프라인 실행
+python expert_main.py tests/inputs/sample.jsonl --parallel 4
+```
+
+출력:
+- 결과 JSON: `out/expert_result_YYYYMMDD_HHMMSS.json`
+- 실행 로그: `logs/expert_run_YYYYMMDD_HHMMSS.log`
+- 대시보드: `http://127.0.0.1:8765` (기본)
+
+---
+
+## 🧭 실행 모드 선택 가이드
+
+| 목적 | 권장 엔트리포인트 | 설명 |
+|------|------------------|------|
+| **운영/주력 분석** | `expert_main.py` | 8개 전문가 협업, 타임어택, 후처리 하드게이트 포함 |
+| **레거시 단일 흐름 재현** | `main.py` | 기존 Sequential Pipeline 비교/회귀 테스트 용도 |
+| **빠른 로컬 실험** | `expert_main.py --parallel 1 --no-dashboard` | 디버깅 친화적 단일 워커 모드 |
+
+---
+
+## ✅ 운영 체크리스트
+
+- 입력 파일 형식 확인: JSONL 한 줄당 1 post (`post_id`, `title`, `content_blocks`, `comments`)
+- 검색 백엔드 확인: `MCP_ENDPOINT`가 SearchXNG 서버와 통신 가능한지 점검
+- LLM 연결 확인: `LLM_BACKEND`, `LLM_ENDPOINT` 또는 `LLM_MODEL_PATH` 유효성 점검
+- 품질 보호 옵션 확인: `LLM_MAX_SEARCH_ROUNDS`, `LLM_MAX_SEARCH_QUERIES`, `MCP_TOP_K_RESULTS`
+- 병렬 처리 전 확인: 원격 LLM QPS/토큰 한도 대비 `--parallel` 값 조정
+- 추적성 확보: `logs/`, `out/` 아카이브 및 실험별 설정값 기록
+
+---
+
+## 📚 문서 맵
+
+- 현재 문서(`README.md`): 전문가 오케스트레이션 시스템 기준 문서
+- 레거시 문서: [`README_legacy_pipeline.md`](README_legacy_pipeline.md)
+- 장문 전문가 문서 원본: [`expert_readme.md`](expert_readme.md)
 
 ---
 
 ## 🎯 핵심 개념
 
-이 파이프라인은 **3단계 아키텍처**로 동작합니다:
+### 유기적 전문가 시스템 (Agentic Expert System)
+
+기존의 단방향 파이프라인과 달리, **8명의 전문가들이 서로 소통하고 협력**하여 문제를 해결하는 시스템입니다:
 
 ```
-📥 입력(JSONL/JSON)
-      ↓
-┌─────────────────────────────────────────────────────────────┐
-│ Stage 0: 규칙 엔진 (RuleEngine)                              │
-│ • URL/제목 증거 감지 → 즉시 확정                              │
-│ • 속어 사전 매칭 (전독시→전지적 독자 시점)                      │
-│ • 노이즈 필터 (글카/채굴/정치 등)                              │
-│ • 클리셰/개념 담론 캡처                                       │
-└─────────────────────────────────────────────────────────────┘
-      ↓ (reason=Unknown일 때만)
-┌─────────────────────────────────────────────────────────────┐
-│ Stage 1: LLM 식별 (IDENTIFY_PROMPT)                          │
-│ • 커뮤니티 속어/별칭 정규화                                    │
-│ • 검색 필요 여부 판단 (SEARCH_PLANNER_PROMPT)                  │
-│ • SearchXNG 검색 → 결과를 근거로 작품 확정                     │
-│ • 한국어 reason 출력 강제                                     │
-└─────────────────────────────────────────────────────────────┘
-      ↓ (--analyze-metadata 옵션 시)
-┌─────────────────────────────────────────────────────────────┐
-│ Stage 2: 담론 분석 (ANALYZE_PROMPT)                          │
-│ • 마이크로태그: 고구마/사이다/4드론/드리프트/후집피 등           │
-│ • 감성 프로파일: pacing/drift_risk/sentiment                  │
-│ • NSFW 감지 (순화된 태그로 출력)                              │
-│ • 유저 세그먼트: 누렁이/무틀딱/대역퍼거 등                      │
-└─────────────────────────────────────────────────────────────┘
-      ↓
-📤 출력(JSON)
+❌ 기존 방식 (Sequential Pipeline):
+Stage0 → Stage1 → Stage2 → 결과
+
+✅ 전문가 시스템 (Collaborative):
+Orchestrator
+    ↓
+Gatekeeper ↔ Discourse ↔ Decoder ↔ Verifier ↔ Critic ↔ Synthesizer
+    ↕           ↕          ↕          ↕          ↕          ↕
+                    [검색/질문/요청]
+    ↕           ↕          ↕          ↕          ↕          ↕
+                   Arbiter (최종 판정)
+```
+
+**핵심 특징:**
+- 🤝 **협력적**: 전문가들이 서로에게 질문하고 요청
+  - Decoder → Verifier: "이 후보 검증해줘"
+  - Verifier → Gatekeeper: "원문 다시 확인해줘"
+  - Synthesizer → Arbiter: "증거 기반으로 재해석한 결과야"
+- 🔄 **반복적**: 확신이 생길 때까지 재분석
+  - 최대 10회 반복 (max_iterations=10)
+  - 각 반복마다 전문가들이 새로운 정보 교환
+- ⏱️ **타임어택**: 분석 시간이 부족하면 긴급 모드 진입
+  - **NORMAL** → 충분한 시간, 자유로운 협력
+  - **HIGH** → ⚠️ 시간 부족, 의견 정리 요구
+  - **CRITICAL** → 🚨 즉시 결론 도출, Arbiter 강제 소환
+- 🧠 **지능적**: 상황에 따라 동적으로 분석 전략 조정
+- ⚖️ **균형적**: Arbiter가 갈등을 조정하고 최종 판단
+- 🔬 **증거 기반**: Synthesizer가 모든 증거를 종합하여 재해석
+
+---
+
+## 🏗️ 전문가 시스템 아키텍처
+
+### 전문가 구성원 (총 8명)
+
+| 전문가 | 이모지 | 역할 | 전문 분야 | 코드 규모 |
+|--------|--------|------|-----------|-----------|
+| **Orchestrator** | 🎼 | 전문가 조율 | 전문가 간 라우팅, 대화 관리, 반복 제어 | ~3,744줄 |
+| **Gatekeeper** | 🎭 | 커뮤니티 문화 분석 | 게시글 분류, 노이즈 필터, 엔티티 추출 | ~456줄 |
+| **DiscourseAnalyzer** | 📖 | 담론/도메인 분석 | 글의 본질적 의도, 도메인 식별, 연상 vs 토론 구분 | ~367줄 |
+| **Decoder** | 🔤 | 한글 슬랭 해독 | 초성체/축약어 복원, 검색 결과 매칭, snippet 분석 | ~4,060줄 |
+| **Verifier** | 🔍 | 증거 검증 | 교차 검증, 거짓 긍정 방지, 증거 체인 구축 | ~986줄 |
+| **Critic** | 📚 | 문학 비평 | 담론 분석, 감성 프로파일, NSFW 탐지 | ~246줄 |
+| **Synthesizer** | 🔬 | 증거 기반 재해석 | 숨은 참조 발견, 증거 정합성 평가, 댓글 인사이트 | ~460줄 |
+| **Arbiter** | ⚖️ | 최종 판정 | 전문가 의견 종합, 갈등 해소, 최종 결론 | ~2,859줄 |
+
+> 전문가 코드 총 합계: **~13,178줄**
+
+### ExpertType 열거형
+
+```python
+class ExpertType(Enum):
+    GATEKEEPER   = "gatekeeper"
+    DISCOURSE    = "discourse"
+    DECODER      = "decoder"
+    VERIFIER     = "verifier"
+    CRITIC       = "critic"
+    SYNTHESIZER  = "synthesizer"   # 증거 기반 재해석기
+    ARBITER      = "arbiter"
+```
+
+### 시스템 흐름
+
+```mermaid
+graph TB
+    Input[📥 커뮤니티 게시글] --> Orchestrator[🎼 Orchestrator]
+    
+    Orchestrator --> GK[🎭 Gatekeeper<br/>노이즈 필터 & 엔티티 추출]
+    Orchestrator --> DA[📖 DiscourseAnalyzer<br/>도메인 & 의도 분석]
+    
+    DA -->|도메인 판정| GK
+    DA -->|연상 글| Arbiter[⚖️ Arbiter<br/>최종 판정]
+    
+    GK -->|명확한 증거| Arbiter
+    GK -->|불명확| SA[📋 snippet_analyzer<br/>본문/댓글 정밀 분석]
+    
+    SA -->|힌트 추출| Decoder[🔤 Decoder<br/>슬랭 해독]
+    
+    Decoder -->|후보 발견| Verifier[🔍 Verifier<br/>증거 검증]
+    Decoder -->|추가 정보 필요| Search[🔍 SearchXNG]
+    
+    Search --> Decoder
+    Search --> Verifier
+    
+    Verifier -->|확정| Critic[📚 Critic<br/>담론 분석]
+    Verifier -->|불확실| GK
+    
+    Critic --> Synthesizer[🔬 Synthesizer<br/>증거 기반 재해석]
+    
+    Synthesizer --> Arbiter
+    
+    Arbiter --> PostProc[🔧 후처리<br/>일관성 검증 & 하드 게이트]
+    PostProc --> Output[📤 최종 결과<br/>PickvelOutputItemV2]
+    
+    style Orchestrator fill:#e3f2fd
+    style GK fill:#fff3e0
+    style DA fill:#e1f5fe
+    style SA fill:#f1f8e9
+    style Decoder fill:#f3e5f5
+    style Verifier fill:#e8f5e9
+    style Critic fill:#fce4ec
+    style Synthesizer fill:#ede7f6
+    style Arbiter fill:#fff9c4
+    style PostProc fill:#fbe9e7
+    style Search fill:#e0f2f1
 ```
 
 ---
 
-## 🧩 구성 요소
+## 🤝 전문가 간 협력 메커니즘
 
-| 구성 요소 | 설명 |
-|-----------|------|
-| **llm-batch** | 메인 배치 CLI |
-| **RuleEngine** | 규칙 기반 1차 판정 (URL/사전/노이즈) |
-| **LLMClient** | HTTP 또는 로컬(llama-cpp-python) LLM 백엔드 |
-| **MCPClient** | SearchXNG 검색 브릿지 |
-| **Docker Compose** | SearchXNG + MCP 브릿지 컨테이너 |
+### 메시지 교환 시스템
+
+전문가들은 `ExpertMessage` 객체를 통해 서로 소통합니다:
+
+```python
+@dataclass
+class ExpertMessage:
+    from_expert: ExpertType      # 발신 전문가
+    to_expert: ExpertType        # 수신 전문가 (None이면 전체)
+    message_type: str            # "request", "question", "answer", "analysis"
+    content: Dict[str, Any]      # 메시지 내용
+    timestamp: float             # 타임스탬프
+```
+
+### 협력 패턴
+
+#### 패턴 1: 순차 협력 (Sequential)
+```
+🎭 Gatekeeper → 🎼 Orchestrator
+  "작품 토론으로 보이지만 제목이 모호함. 슬랭 해독 필요."
+🎼 Orchestrator → 🔤 Decoder
+  "'전독시' 해독해주세요"
+🔤 Decoder → 🎼 Orchestrator
+  "'전지적 독자 시점'으로 추정됨 (95% 신뢰도)"
+🎼 Orchestrator → 🔍 Verifier
+  "'전지적 독자 시점' 맞는지 검증해주세요"
+```
+
+#### 패턴 2: 증거 기반 재해석 (Synthesizer 협력)
+```
+🔤 Decoder → 🔬 Synthesizer
+  "해독 결과: 캐릭터명 3개, 작가명 1개 식별"
+🔍 Verifier → 🔬 Synthesizer
+  "검증 결과: URL 증거 있지만 본문이 애매"
+🔬 Synthesizer → ⚖️ Arbiter
+  "원본 재해석: 본문+댓글이 작품에 대해 논의. 숨은 참조 2개 발견."
+```
+
+#### 패턴 3: 갈등 해소 (Conflict Resolution)
+```
+🔤 Decoder: "'노피아'는 '노벨피아 웹소설' 추천 글"
+🔍 Verifier: "'노피아'는 플랫폼명, 작품명 아님"
+🎼 Orchestrator → ⚖️ Arbiter
+  "Decoder와 Verifier 의견 충돌. 판정 필요."
+⚖️ Arbiter:
+  "Verifier가 맞음. 플랫폼명 단독 언급은 is_relevant=false"
+```
+
+### 대화 컨텍스트 공유
+
+모든 전문가는 공통 컨텍스트를 공유합니다:
+
+```python
+class ConversationContext:
+    post_data: Dict           # 원본 게시글
+    comments: List[str]       # 댓글 목록 (최대 15개)
+    search_results: List      # 검색 결과 (누적)
+    messages: List            # 전문가 간 메시지 기록
+    expert_outputs: Dict      # 각 전문가의 분석 결과
+    iteration: int            # 현재 반복 횟수
+    snippet_hints: Dict       # snippet_analyzer 힌트
+    verified_character_work_links: List  # 검증된 캐릭터-작품 연결
+```
 
 ---
 
-## 📦 설치
+## 🔬 파이프라인 단계별 상세
+
+Orchestrator가 관리하는 전체 파이프라인 흐름:
+
+### Phase 1: 초기 분석
+| 순서 | 전문가 | 역할 |
+|------|--------|------|
+| 1-1 | **Gatekeeper** | 게시글 분류, 엔티티 추출, 노이즈 필터링 |
+| 1-2 | **DiscourseAnalyzer** | 도메인 식별, 연상 vs 토론 판별 |
+
+### Phase 2: 검색 & 해독
+| 순서 | 전문가 | 역할 |
+|------|--------|------|
+| 2-1 | **snippet_analyzer** | 본문/댓글에서 제목·약어·작가·캐릭터 힌트 정밀 추출 |
+| 2-2 | **Decoder** (1~3차) | 슬랭 해독, 검색 결과 매칭, 후보 생성 |
+| 2-3 | **SearchXNG** | Decoder/Verifier 요청에 따른 웹 검색 |
+
+> **3차 Decoder 최적화**: 2차 결과가 이미 medium/high 이상이면 3차 실행 생략
+
+### Phase 3: 검증 & 비평
+| 순서 | 전문가 | 역할 |
+|------|--------|------|
+| 3-1 | **Verifier** | 교차 검증, URL/앵커 증거 확인, 거짓 긍정 방지 |
+| 3-2 | **Critic** | 담론 메타데이터 추출, 감성 분석, NSFW 탐지 |
+
+### Phase 3.5: 증거 종합 ⭐ NEW
+| 순서 | 전문가 | 역할 |
+|------|--------|------|
+| 3.5 | **Synthesizer** | 축적된 증거를 바탕으로 원본 전문 재해석, 숨은 참조 발견 |
+
+### Phase 4: 최종 판정
+| 순서 | 전문가 | 역할 |
+|------|--------|------|
+| 4-1 | **Arbiter** | 모든 전문가 의견 종합, 갈등 해소, 최종 결론 |
+| 4-2 | **후처리** | 증거 버킷 검증, 앵커 하드 게이트, 일관성 교정 |
+
+---
+
+## 🔧 후처리 시스템
+
+Arbiter 판정 이후 `agentic_pipeline.py`에서 수행되는 자동 교정 로직입니다.
+
+### Discussion Type 분류 체계 (16종)
+
+#### 작품 관련 (is_relevant=True 가능) — 7종
+| 타입 | 설명 |
+|------|------|
+| `general` | 일반 작품 토론 |
+| `review` | 작품 리뷰/평가 |
+| `spoiler` | 스포일러 포함 토론 |
+| `anticipation` | 연재/출간 기대 |
+| `meme` | 작품 관련 밈/드립 |
+| `character_talk` | 등장인물 토론 |
+| `general_discussion` | 범용 토론 |
+
+#### 항상 비관련 (is_relevant=False 강제) — 9종
+| 타입 | 설명 |
+|------|------|
+| `noise` | 무관한 노이즈 |
+| `meta` | 커뮤니티 메타 토론 |
+| `author_talk` | 작가 품평/비교 |
+| `recommendation` | 추천 요청 |
+| `trope_discussion` | 장르/클리셰 토론 |
+| `community_banter` | 커뮤니티 잡담 |
+| `genre_opinion` | 장르 의견 |
+| `image_post` | 이미지 게시글 |
+| `off_topic` | 주제 벗어남 |
+
+### 증거 버킷 검증 (Evidence Bucket)
+
+```python
+# suspected_titles에서 medium 이상만 필터
+strong_suspected_titles = [t for t in suspected if conf_rank >= 2]
+
+# Verifier 앵커 확인
+has_work_anchor = anchor in {
+    "title_mention", "author_mention",
+    "character_title_link", "character_mention", "plot_mention"
+}
+```
+
+### 앵커 하드 게이트
+
+**조건**: `is_relevant=True` + `official_title` 존재 시 적용
+
+```
+차단 트리거:
+  1. 본문에 강한 앵커가 없음 (_no_body_evidence)
+  2. 제목-본문 불일치 연상글 (_association_block)
+
+Rescue 면제 조건 (하나라도 충족하면 차단하지 않음):
+  1. strong_suspected_title + has_work_anchor
+  2. Decoder가 title_mention/character_title_link 앵커 + high/max confidence
+  3. verified_character_work_links 존재
+
+차단 시 → is_relevant=False, confidence="None", discussion_type="noise"
+```
+
+### 일관성 교정 (Consistency Correction)
+
+| 상황 | 교정 내용 |
+|------|-----------|
+| `always_irrelevant` 타입 + `is_relevant=True` + 제목 있음 | **Rescue**: discussion_type → `"general"` |
+| `author_talk` + `is_author_criticism` + 2개 이상 작품 | **Rescue 차단**: FP 방지 |
+| `is_relevant=True` + `discussion_type="noise"` | `"noise"` → `"general"` 교정 |
+| `is_relevant=False` + `work_relevant_types` | discussion_type → `"noise"` 교정 |
+
+---
+
+## ⏱️ 타임어택 시스템
+
+### 시간 상태 3단계
+
+| 단계 | 남은 Step | 전문가 행동 | Orchestrator 행동 |
+|------|-----------|-------------|-------------------|
+| **NORMAL** | 충분 | 자유로운 탐색, 추가 검색 허용 | 메시지 자유롭게 라우팅 |
+| **HIGH** | ≤ 4 | 의견 정리, 불확실성 감소 집중 | 우선순위 높은 전문가만 호출 |
+| **CRITICAL** | ≤ 2 | 즉시 최선의 답변 제공 | Arbiter 강제 소환, 판정 강제 |
+
+### 타임어택 동작 예시
+
+```
+=== Iteration 1/10 (NORMAL) ===
+🎭 Gatekeeper: "작품 토론 같은데 확실하지 않아요. 검색해볼게요."
+
+=== Iteration 2-4/10 (NORMAL) ===
+🔤 Decoder 1~3차: 슬랭 해독 + 검색 결과 매칭
+
+=== Iteration 5-6/10 (NORMAL) ===
+🔍 Verifier: 증거 검증 + 📚 Critic: 담론 분석
+🔬 Synthesizer: 증거 기반 재해석
+
+⚠️ === Iteration 7-8/10 (HIGH) === ⚠️
+🎼 Orchestrator: "분석 시간이 얼마 남지 않았습니다!"
+
+🚨 === Iteration 9-10/10 (CRITICAL) === 🚨
+⚖️ Arbiter: "강제 판정 모드. 현재 증거 기반 최종 결론 도출."
+```
+
+### 조기 종료 조건
+
+시간이 남아도 결론이 명확하면 조기 종료:
+
+```python
+if gatekeeper.noise_score > 0.95:
+    # 명백한 노이즈 → 즉시 Arbiter
+    return arbiter.reject(reason="노이즈")
+
+if verifier.confidence == "Max" and verifier.has_url_evidence:
+    # URL 증거 → 즉시 Arbiter
+    return arbiter.confirm(title_from_url)
+```
+
+### max_iterations 설정 가이드
+
+```python
+pipeline = AgenticPipeline(
+    max_iterations=3,   # 빠른 처리 (정확도 약간 하락)
+    max_iterations=5,   # 가벼운 분석
+    max_iterations=10,  # 정밀 분석 (현재 기본값) ⭐
+)
+```
+
+---
+
+## 🚀 설치 및 실행
+
+### 설치
 
 ```bash
 pip install -e .
 ```
 
-로컬 GGUF 모델 사용 시:
+### 빠른 시작
+
 ```bash
-pip install llama-cpp-python
+# 기본 실행 (단일 워커)
+python expert_main.py
+
+# 입력 파일 지정
+python expert_main.py tests/inputs/sample.jsonl
+
+# 병렬 4워커
+python expert_main.py tests/inputs/sample.jsonl --parallel 4
+
+# 대시보드 비활성화
+python expert_main.py --no-dashboard
+```
+
+### CLI 인자
+
+| 인자 | 타입 | 기본값 | 설명 |
+|------|------|--------|------|
+| `input` | positional | `tests/inputs/test01.jsonl` | 입력 JSONL 파일 경로 |
+| `--parallel`, `-p` | int | `1` | 병렬 처리 워커 수 |
+| `--no-dashboard` | flag | — | 대시보드 비활성화 |
+
+### LLM 모드
+
+#### Remote (기본 — 원격 서버)
+```python
+LLM_MODE = "remote"
+# LLM_ENDPOINT = http://a100:10000/
+# LLM_MODEL = unsloth/GLM-4.7-Flash-GGUF:IQ3_XXS
+```
+
+#### Local (로컬 GGUF)
+```python
+LLM_MODE = "local"
+# LLM_MODEL_PATH = GLM-4.7-Flash-UD-IQ3_XXS.gguf
+# LLM_N_GPU_LAYERS = 60
 ```
 
 ---
 
-## 🚀 빠른 시작
+## 📁 프로젝트 구조
 
-### 기본 실행 (규칙 기반만)
-```bash
-llm-batch --input tests/inputs/sample.jsonl
+### 디렉토리 구조
+
+```
+llm_novel_dc_coommunity_parser/
+├── src/
+│   └── llm_batch/
+│       ├── experts/               # 전문가 시스템 (~13,178줄)
+│       │   ├── orchestrator.py    # 🎼 오케스트레이터 (~3,744줄)
+│       │   ├── decoder.py         # 🔤 디코더 (~4,060줄)
+│       │   ├── arbiter.py         # ⚖️ 중재자 (~2,859줄)
+│       │   ├── verifier.py        # 🔍 검증자 (~986줄)
+│       │   ├── synthesizer.py     # 🔬 재해석기 (~460줄) ⭐ NEW
+│       │   ├── gatekeeper.py      # 🎭 게이트키퍼 (~456줄)
+│       │   ├── discourse.py       # 📖 담론 분석가 (~367줄)
+│       │   ├── critic.py          # 📚 비평가 (~246줄)
+│       │   ├── prompts.py         # 전문가 프롬프트
+│       │   └── utils.py           # 유틸리티 함수
+│       ├── llm/                   # LLM 클라이언트
+│       │   ├── client.py          # LLM 백엔드 인터페이스
+│       │   └── prompt.py          # 프롬프트 템플릿
+│       ├── search/                # 검색 시스템
+│       │   └── client.py          # MCP/SearchXNG 클라이언트
+│       ├── mcp_bridge/            # MCP 브릿지 서버
+│       │   └── server.py
+│       ├── agentic_pipeline.py    # 전문가 파이프라인 (~1,408줄)
+│       ├── pipeline.py            # 기존 Sequential 파이프라인
+│       ├── models.py              # 데이터 모델 (~159줄)
+│       └── rules.py               # 규칙 엔진 (~325줄)
+├── tests/
+│   ├── inputs/                    # 테스트 입력 데이터
+│   └── test_*.py                  # 각종 테스트
+├── docker/                        # Docker 설정
+│   ├── mcp-bridge/Dockerfile
+│   └── searchxng/settings.yml
+├── expert_main.py                 # 전문가 시스템 실행 엔트리포인트 (~816줄)
+├── main.py                        # 기존 파이프라인 엔트리포인트
+├── expert_readme.md               # 이 문서
+└── README.md                      # 기존 파이프라인 문서
 ```
 
-### LLM 활성화 (Unknown 항목 정밀 분석)
-```bash
-llm-batch --input tests/inputs/sample.jsonl --use-llm --trace
-```
+### 주요 파일 역할
 
-### LLM + 검색 + 메타데이터 추출 (풀 파이프라인)
-```bash
-llm-batch --input tests/inputs/sample.jsonl --use-llm --trace --agentic-search --output-schema v2 --analyze-metadata
-```
+| 파일 | 역할 |
+|------|------|
+| `expert_main.py` | 전문가 시스템 원클릭 실행 (병렬 처리, 대시보드, 로깅 관리) |
+| `agentic_pipeline.py` | 유기적 전문가 협력 파이프라인 + 후처리 로직 |
+| `orchestrator.py` | 전문가 라우팅, 대화 관리, snippet_analyzer, Phase 제어 |
+| `decoder.py` | 한글 슬랭 해독, 검색 매칭, resolved_mappings 필터링 |
+| `arbiter.py` | 최종 판정, 갈등 해소, author_talk 업그레이드 로직 |
+| `verifier.py` | 증거 교차 검증, 앵커 확인, 작가 비평 판별 |
+| `synthesizer.py` | 증거 기반 원문 재해석, 숨은 참조 발견 |
+| `gatekeeper.py` | 1차 필터링, 엔티티 추출, 커뮤니티 접두어 제거 |
+| `discourse.py` | 도메인/의도 분석, 연상 vs 토론 구분 |
+| `critic.py` | 담론 메타데이터 추출, 감성 프로파일 |
+| `models.py` | 출력 스키마 (PickvelOutputItemV2), 데이터 모델 |
+| `rules.py` | 장르 용어, 플랫폼 사전, 연상 패턴, 커뮤니티 접두어 |
 
 ---
 
-## ⚙️ 실행 옵션
+## 🧩 전문가 역할 상세
 
-### 입력 방식
+### 🎼 Orchestrator (오케스트레이터)
 
-| 옵션 | 설명 |
-|------|------|
-| `--input <파일>` | JSON/JSONL 파일 경로 |
-| `--input-text <텍스트>` | JSONL 문자열 직접 입력 |
-| `--stdin` | 파이프로 입력 받기 |
+**책임:**
+- 전문가 간 메시지 라우팅 및 대화 컨텍스트 관리
+- 반복 횟수 제어 (기본: 최대 10회)
+- snippet_analyzer 내장 실행 (Phase 2-1)
+- 3차 Decoder 회귀 방지 (2차에서 medium/high면 3차 생략)
+- `irrelevant_authors` 보호 (Gatekeeper가 work_discussion + 3+ 캐릭터면 제거 차단)
 
-### LLM 설정
+**snippet_analyzer:**
 
-| 옵션 | 설명 |
-|------|------|
-| `--use-llm` | LLM 정밀 분석 활성화 |
-| `--llm-backend http\|local` | HTTP 서버 또는 로컬 GGUF |
-| `--model-path <경로>` | 로컬 GGUF 모델 경로 |
-| `--llm-profile tool\|general` | 샘플링 프로파일 |
-| `--temp`, `--top-p`, `--min-p` | 샘플링 파라미터 직접 설정 |
-| `--repeat-penalty 1.0` | 반복 패널티 비활성화 (권장) |
-| `--max-tokens <N>` | 최대 생성 토큰 수 |
-| `--llm-stream` | 토큰 스트리밍 출력 |
+Orchestrator 내부에 구현된 분석 모듈로, Decoder 호출 전에 본문/댓글을 정밀 분석하여 힌트를 추출합니다:
+- 제목 힌트 (`title_hints`)
+- 약어 힌트 (`abbreviation_hints`)
+- 작가/캐릭터 힌트
+- 장르 패턴 식별
 
-### 검색 설정
+### 🎭 Gatekeeper (게이트키퍼)
 
-| 옵션 | 설명 |
-|------|------|
-| `--no-search` | 검색 비활성화 |
-| `--agentic-search` | LLM이 검색 필요 여부와 쿼리를 자율 결정 |
+**전문 분야:**
+- 커뮤니티 문화와 속어 이해
+- 노이즈 게시글 필터링
+- 작품명/작가명/캐릭터명 추출
+- 커뮤니티 접두어 (`소신발언)`, `스포)`, `추천)` 등) 자동 제거
 
-### 출력 설정
-
-| 옵션 | 설명 |
-|------|------|
-| `--output <파일>` | 결과 저장 경로 |
-| `--incremental-output <파일>` | 처리 즉시 저장 (원본+분석 포함) |
-| `--output-schema v1\|v2` | 출력 스키마 선택 |
-| `--analyze-metadata` | Stage2 담론 분석 활성화 (v2 권장) |
-| `--trace` | 상세 로그 출력 (stderr) |
-| `--limit <N>` | 처음 N개만 처리 (디버그용) |
-
-### 로컬 백엔드 설정
-
-| 옵션 | 설명 |
-|------|------|
-| `--n-ctx <N>` | 컨텍스트 윈도우 (권장: 16384) |
-| `--n-gpu-layers <N>` | GPU 오프로드 레이어 수 |
-| `--chat-format <포맷>` | 채팅 포맷 (예: chatml) |
-
-### 예시: 로컬 GGUF 풀 파이프라인
-```powershell
-llm-batch --input tests\inputs\sample.jsonl `
-  --use-llm --trace `
-  --llm-backend local `
-  --model-path "C:\models\gemma-2-2b.gguf" `
-  --n-ctx 16384 `
-  --agentic-search `
-  --output-schema v2 `
-  --analyze-metadata `
-  --llm-profile tool `
-  --repeat-penalty 1.0
-```
-
----
-
-## 📊 분석 파이프라인 흐름도
-
-### 전체 흐름 (Mermaid)
-
-```mermaid
-flowchart TD
-  subgraph INPUT["📥 입력"]
-    I1[JSON/JSONL 파일] --> Parse
-    I2[stdin 파이프] --> Parse
-    I3[--input-text] --> Parse
-  end
-  
-  Parse[Load & Partition<br/>posts/comments 분리] --> Rules
-
-  subgraph STAGE0["Stage 0: 규칙 엔진"]
-    Rules[RuleEngine]
-    Rules --> |URL 증거| E1[✅ Max 확정]
-    Rules --> |사전 매칭| E2[✅ Dictionary 확정]
-    Rules --> |노이즈 감지| E3[❌ Noise 판정]
-    Rules --> |클리셰| E4[📝 Concept 캡처]
-    Rules --> |미확정| Unknown[reason=Unknown]
-  end
-
-  E1 & E2 & E3 & E4 --> PostProcess
-  
-  Unknown --> |--use-llm| LLM1
-
-  subgraph STAGE1["Stage 1: LLM 식별"]
-    LLM1[IDENTIFY_PROMPT<br/>작품 식별]
-    
-    subgraph SEARCH["Agentic Search Loop"]
-      Planner[SEARCH_PLANNER_PROMPT<br/>검색 필요? 쿼리 생성]
-      MCP[SearchXNG 검색]
-      Planner --> |need_search=true| MCP
-      MCP --> |search_results| LLM1
-    end
-    
-    LLM1 --> |--agentic-search| Planner
-  end
-
-  LLM1 --> PostProcess
-
-  subgraph POSTPROCESS["후처리"]
-    PostProcess[추천글 가드레일<br/>한국어 reason 강제]
-  end
-
-  PostProcess --> |--analyze-metadata| LLM2
-
-  subgraph STAGE2["Stage 2: 담론 분석"]
-    LLM2[ANALYZE_PROMPT<br/>메타데이터 추출]
-    LLM2 --> Tags[micro_tags 필터링]
-  end
-
-  PostProcess --> |v1| OutV1[📤 Output v1<br/>identity only]
-  Tags --> OutV2[📤 Output v2<br/>identity + analysis]
-
-  style STAGE0 fill:#e1f5fe
-  style STAGE1 fill:#fff3e0
-  style STAGE2 fill:#f3e5f5
-  style SEARCH fill:#fff8e1
-```
-
-### 단계별 상세 설명
-
-#### Stage 0: 규칙 엔진 (RuleEngine)
-
-| 판정 우선순위 | 조건 | 결과 |
-|---------------|------|------|
-| 1. URL 증거 | 댓글에 novelpia.com 등 URL 포함 | `confidence: Max` 즉시 확정 |
-| 2. 제목 답변 | 댓글이 `[제목]` 형태 단독 | `confidence: Max` 확정 |
-| 3. 사전 매칭 | `전독시` → `전지적 독자 시점` | `confidence: High` |
-| 4. 클리셰 | `학폭 악역`, `사파 복지` 등 | `inference` 캡처 |
-| 5. 노이즈 | `글카`, `채굴`, `정치` 등 | `is_relevant: false` |
-| 6. 미확정 | 위 모두 해당 없음 | `reason: Unknown` → LLM |
-
-#### Stage 1: LLM 식별 (IDENTIFY_PROMPT)
-
-**실행 파이프라인 (Per Item):**
-
-```
-STEP 0: 커뮤니티 정규화
-├── 초성체: ㅈㄷㅅ → 전독시 → 전지적 독자 시점
-├── 축약어: 화귀/죽깨수/약먹마
-├── 별칭/멸칭: 작가/작품 별명
-└── 표기 변형: 띄어쓰기/오타/특수문자 무시
-
-STEP 0.5: 커뮤니티 밴터 필터
-├── 고신뢰: URL, 명시적 제목 답변
-└── 저신뢰: ㅋㅋ/드립/욕설 (증거로 취급 금지)
-
-STEP 1: 증거 체크 (Golden Key)
-├── URL → official_title = URL
-└── 제목만 언급 → 검색으로 확인 필요
-
-STEP 1.5: 검색 결과 활용 (search_results 있을 때)
-├── 소설 사이트 URL → 강한 증거
-├── 스니펫에서 공식 제목 확인 가능
-└── 모호하면 official_title = null
-
-STEP 2: 사전 매칭
-└── rules_config.slang_dictionary 참조
-
-STEP 3: 개념/Unknown 캡처
-└── 클리셰 담론이면 inference로 캡처
-
-STEP 4: 노이즈 필터
-└── 웹소설과 무관한 글
-```
-
-#### Agentic Search (검색 자율 판단)
-
-`--agentic-search` 옵션 활성화 시:
-
-```
-LLM: "검색이 필요한가?" (SEARCH_PLANNER_PROMPT)
-      ↓
+**출력 예시:**
+```json
 {
-  "need_search": true,
-  "queries": [
-    "즉사무림 웹소설",           // 일반 검색
-    "site:namu.wiki 즉사무림",   // 나무위키
-    "site:novelpia.com 즉사무림" // 플랫폼 검색
-  ],
-  "why": "별칭으로 보이나 공식 제목 확인 필요"
+  "classification": "work_discussion",
+  "confidence": 0.85,
+  "detected_entities": {
+    "titles": ["전독시", "ORV"],
+    "authors": ["싱숑"],
+    "characters": ["김독자", "유중혁"]
+  },
+  "noise_score": 0.1,
+  "search_strategy": {
+    "should_search": true,
+    "queries": ["전독시 웹소설", "site:namu.wiki 전독시"]
+  }
 }
-      ↓
-SearchXNG 실행 → 결과 요약 (top-k)
-      ↓
-LLM: search_results를 근거로 최종 판정
 ```
 
-**검색 쿼리 전략:**
-1. 첫 번째: `{term} 웹소설` (넓은 범위)
-2. 두 번째: `site:namu.wiki {term}` (용어 해설)
-3. 세 번째: `site:novelpia.com {term}` (플랫폼 직접)
+### 📖 DiscourseAnalyzer (담론 분석가)
 
-#### Stage 2: 담론 분석 (ANALYZE_PROMPT)
+**전문 분야:**
+- 글의 본질적 의도 파악
+- 도메인 식별 (20+ 도메인: `novel_literature`, `manga_comics`, `gaming`, `medical_health` 등)
+- 연상(Association) vs 토론(Discussion) 구분
 
-`--analyze-metadata` 옵션 활성화 시:
+**연상 vs 토론 구분:**
+```
+# 연상 (Association) - is_relevant: false
+"길 가다가 전독시 생각남"           # 수동적 회상
+"사진 보니까 ㅇㅇ 떠올랐다"         # 외부 자극
 
-**커뮤니티 어휘 매핑:**
+# 토론 (Discussion) - is_relevant: true  
+"전독시 읽는중인데 복선 미쳤다"     # 능동적 몰입
+"ㅇㅇ 봤는데 전개가 이상함"        # 분석적 평가
+```
+
+**출력 예시:**
+```json
+{
+  "domain": "novel_literature",
+  "domain_confidence": 0.95,
+  "intent": "discuss_work",
+  "intent_confidence": 0.90,
+  "is_association": false,
+  "reasoning": "게시글이 '전독시'에 대한 깊이 있는 토론"
+}
+```
+
+### 🔤 Decoder (디코더)
+
+**전문 분야:**
+- 한글 초성체 복원 (ㅈㄷㅅ → 전독시)
+- 축약어 해독 (화귀, 죽깨수, 약먹마)
+- 검색 결과와 후보 매칭
+- `resolved_mappings` 가비지 필터링 (자기 참조, 사전 항목, 비속어, 장르 용어 차단)
+
+**다중 실행 (최대 3차):**
+- 1차: 기본 검색 + 해독
+- 2차: 1차 결과 반영 재검색
+- 3차: (2차가 medium/high 이상이면 **생략**)
+
+**형태소 분석 예시:**
+```
+입력: "즉사무림"
+분석:
+  - 즉[즉시] + 사[死, 사망] + 무림[武林]
+  - 패턴: 즉시 죽는 + 무협
+후보: "즉사 무협", "즉시 사망 무협"
+검색: "즉사무림 웹소설"
+매칭: "모두가 죽는 무림에서 나홀로 즉사합니다"
+```
+
+### 🔍 Verifier (검증자)
+
+**전문 분야:**
+- 증거 교차 검증
+- 앵커 유형 확인 (`title_mention`, `author_mention`, `character_title_link`, `character_mention`, `plot_mention`)
+- 거짓 긍정 방지
+- 작가 비평(`is_author_criticism`) 판별
+
+**검증 프로세스:**
+```
+1. 증거 수집 (본문, 댓글, 검색 URL/스니펫)
+2. 교차 검증 (여러 소스에서 일관성 확인)
+3. 신뢰도 평가
+   - Max: URL 증거 또는 명시적 제목
+   - High: 사전 매칭 + 검색 확인
+   - Medium: 문맥 추론
+   - Low: 불확실
+4. 결론 → Critic/Synthesizer로 전달
+```
+
+### 📚 Critic (비평가)
+
+**전문 분야:**
+- 담론 분석 (고구마/사이다/드리프트)
+- 감성 프로파일 (pacing, sentiment, drift_risk)
+- NSFW/스포일러 탐지
+- 독자 세그먼트 (누렁이/무틀딱)
+
+**커뮤니티 용어 매핑:**
 
 | 용어 | 의미 | 추출 필드 |
 |------|------|-----------|
 | 고구마 | 전개 지연, 답답함 | `pacing: Slow` |
-| 사이다 | 즉각 해결/해소 | `pacing: Fast`, `sentiment: Positive` |
+| 사이다 | 즉각 해결, 시원함 | `pacing: Fast`, `sentiment: Positive` |
 | 4드론 | 초반 자극 몰아치기 | `micro_tag: 4드론` |
-| 드리프트 | 장르 급전환/기만 | `drift_risk: High/Critical` |
-| 후집피 | 후회/집착/피폐 서사 | `micro_tag: 후집피` |
-| 누렁이 | 킬링타임 선호 독자 | `user_segment: 누렁이` |
-| 무틀딱 | 정통무협 선호 | `user_segment: 무틀딱` |
+| 드리프트 | 장르 급전환 | `drift_risk: High` |
+| 후집피 | 후회/집착/피폐 | `micro_tag: 후집피` |
 
-**허용된 마이크로태그 (화이트리스트):**
-```
-고구마, 사이다, 4드론, 드리프트, 드리프트_의심, 후집피,
-아카데미물, 정실_논쟁, 캣파이트, 분양, 킬링타임, 양판소,
-착각계, 헌터물, 무협, 퓨전무협, 하렘, 순애,
-성인요소_언급, 자극적_표현
-```
+### 🔬 Synthesizer (증거 기반 재해석기) ⭐ NEW
 
----
+**Phase 3.5에서 실행** — 모든 전문가(Decoder, Verifier, Critic) 분석 완료 후, Arbiter 판정 전에 개입합니다.
 
-## 📜 프롬프트 구조
+**핵심 역할:**
+1. **텍스트 재해석**: 본문의 각 문장/표현을 증거 기반으로 재해석
+2. **댓글 재해석**: 댓글에서 작품/캐릭터 관련 추가 실마리 발견
+3. **숨은 참조 발견**: 초기 Decoder가 놓쳤지만 증거로 뒷받침되는 참조
+4. **증거 정합성 평가**: 전문가들의 식별이 원문 맥락과 실제로 맞는지
+5. **최종 확신도**: 모든 증거를 종합한 뒤의 판단
 
-### ⭐ 프롬프트 작성 지침
+**입력:** Decoder 해독 결과, Verifier 검증 결과, 검색 증거, snippet 힌트, Discourse 분석, Critic 감지 제목
 
-**중요**: 모든 Expert 프롬프트는 **범용적 원리 기반**으로 작성되어야 하며, **기계적 매칭을 금지**합니다.
-
-📖 **상세 지침**: [PROMPT_GUIDELINES.md](./PROMPT_GUIDELINES.md)
-
-**핵심 원칙:**
-- ❌ 특정 작품명/용어를 예시로 하드코딩 금지
-- ❌ "if X then Y" 형태의 기계적 규칙 금지
-- ✅ 언어학적/형태학적 원리 설명
-- ✅ 새로운 용어/작품에도 적용 가능한 패턴 제시
-
-**예시:**
-```
-❌ 금지: "즉사무림" = "즉사기 들고 무림에 떨어지다"
-✅ 권장: 한글 약어는 음절 추출 또는 형태소 결합 방식으로 형성됨
-```
-
-### 프롬프트 파일 위치
-`src/llm_batch/llm/prompt.py`
-
-### 프롬프트 종류
-
-| 프롬프트 | 용도 | 출력 형식 |
-|----------|------|-----------|
-| `IDENTIFY_PROMPT` | Stage1 작품 식별 | JSON List `[{...}]` |
-| `SEARCH_PLANNER_PROMPT` | 검색 필요 여부 판단 | JSON Object `{need_search, queries, why}` |
-| `ANALYZE_PROMPT` | Stage2 담론 분석 | JSON Object (PickvelAnalysis) |
-
-### 공통 규칙
-
-1. **한국어 강제**: `reason`, `topic` 등 모든 자연어 값은 한국어
-2. **JSON Only**: 마크다운 펜스 금지, 순수 JSON만 출력
-3. **증거 우선**: URL/명시적 제목 > 사전 매칭 > 문맥 추론
-4. **환각 금지**: 확실하지 않으면 `official_title: null`
-
-### IDENTIFY_PROMPT 주요 단계
-
-```
-STEP 0: 커뮤니티 정규화 (Mental Preprocessing)
-- 초성체/축약어/별칭/표기변형 → 핵심 토큰 추출
-
-STEP 0.5: 밴터 신뢰도 필터
-- 고신뢰: URL, [제목] 형식
-- 저신뢰: ㅋㅋ, 드립, 욕설 → 증거로 취급 금지
-
-STEP 1: 증거 체크 (Golden Key)
-- URL/명시적 제목 → 즉시 확정
-
-STEP 1.5: 검색 결과 활용
-- search_results의 소설 사이트 URL → 강한 증거
-- 스니펫 기반 추론 허용 (reason에 명시)
-
-STEP 2: 사전 매칭
-- rules_config.slang_dictionary 참조
-
-STEP 3: 개념/Unknown 캡처
-- 클리셰 담론 → inference로 캡처
-
-STEP 4: 노이즈 필터
-- 웹소설과 무관 → is_relevant: false
-```
-
-### IDENTIFY_PROMPT 출력 스키마
-
-```json
-[
-  {
-    "post_id": 123,
-    "is_relevant": true,
-    "novel_identity": {
-      "official_title": "https://novelpia.com/novel/382324",
-      "confidence": "Max"
-    },
-    "evidence": {
-      "found_in_comment": true,
-      "source_text": "https://novelpia.com/novel/382324"
-    },
-    "slang_insight": {
-      "detected_term": "전독시",
-      "decoded_term": "전지적 독자 시점"
-    },
-    "inference": {
-      "type": "클리셰 담론",
-      "topic": "학폭 악역"
-    },
-    "reason": "댓글에 노벨피아 링크 존재"
-  }
-]
-```
-
-### SEARCH_PLANNER_PROMPT 출력 스키마
-
+**출력 예시:**
 ```json
 {
-  "need_search": true,
-  "queries": [
-    "즉사무림 웹소설",
-    "site:namu.wiki 즉사무림",
-    "site:novelpia.com 즉사무림"
-  ],
-  "why": "별칭으로 보이나 공식 제목 확인 필요"
-}
-```
-
-### ANALYZE_PROMPT 출력 스키마
-
-```json
-{
-  "detected_titles": [
-    {
-      "official_title": "https://novelpia.com/novel/123",
-      "confidence": "High",
-      "alias_or_mention": "전독시"
-    }
-  ],
-  "micro_tags": ["고구마", "아카데미물"],
-  "sentiment_profile": {
-    "pacing": "Slow",
-    "drift_risk": "Low",
-    "sentiment": "Mixed"
+  "reinterpretation": {
+    "post_intent": "개돌청년 작가의 신작에 대한 비평 글",
+    "text_analysis": [
+      {
+        "segment": "초대남이 너무 좆같은데",
+        "interpretation": "작품 속 '초대남' 캐릭터에 대한 부정적 평가",
+        "evidence_source": "search"
+      }
+    ],
+    "comment_insights": [...]
   },
-  "is_nsfw": false,
-  "user_segment": "누렁이",
-  "notes": "초반 전개가 느리다는 평가 다수"
+  "hidden_references": [
+    {
+      "text": "금태양",
+      "reference_type": "character",
+      "matched_to": "신작의 등장인물",
+      "evidence": "검색 결과에서 개돌청년 작품 캐릭터로 확인"
+    }
+  ],
+  "evidence_alignment": {
+    "decoder_match": "strong",
+    "verifier_match": "partial",
+    "overall_coherence": "high"
+  },
+  "confidence_assessment": {
+    "is_about_identified_work": true,
+    "confidence": "High",
+    "reasoning": "캐릭터명 3개 + 작가명이 모두 검색 증거와 일치"
+  },
+  "synthesis_summary": "Arbiter에게 전달할 핵심 요약 3-5문장"
 }
 ```
 
----
+**Arbiter 전달:** `summarize_for_arbiter()` 메서드로 compact 요약을 생성하여 Arbiter 프롬프트에 삽입
 
-## 📁 입출력 형식
+### ⚖️ Arbiter (중재자)
 
-### 입력 형식
+**전문 분야:**
+- 전문가 의견 종합 및 갈등 해소
+- Synthesizer 재해석 결과 반영
+- Verifier의 확정 제목을 suspected_titles에 우선 주입 (null-guard)
+- `author_talk` → `work_discussion` 업그레이드 로직
+  - 조건: Gatekeeper=`work_discussion` + 3+캐릭터 + Decoder가 작가 식별
 
-JSON 배열 또는 JSONL(라인별 JSON). 게시글과 댓글이 섞여 있어도 자동 분리됩니다.
-
-**예시 JSONL:**
-```json
-{"gallery_id":"genrenovel","post_id":11687616,"title":"랫따싶 진짜...","author":"ㅇㅇ","created_at":"2026-01-21 15:05:16","url":"https://gall.dcinside.com/...","content_blocks":[{"type":"text","text":"내용"}]}
-{"comment_id":"40364376","author":"ㅇㅇ","content":"링크좀","created_at":"01.21 15:06:28","post_id":11687616}
-{"comment_id":"40364402","author":"ㅇㅇ","content":"https://novelpia.com/novel/382324","created_at":"01.21 15:08:21","post_id":11687616}
+**판정 프로세스:**
+```
+1. 의견 수집 — 모든 전문가 + Synthesizer 분석 결과 검토
+2. 갈등 해소 — 불일치 지점 파악, 증거 무게 평가
+3. 종합 판정 — is_relevant, official_title, confidence, discussion_type
+4. 메타데이터 병합 — Critic의 분석 통합
 ```
 
-### 출력 형식
-
-#### v1 (기본): 작품 식별만
-```json
-[
-  {
-    "post_id": 11687616,
-    "is_relevant": true,
-    "novel_identity": {
-      "official_title": "https://novelpia.com/novel/382324",
-      "confidence": "Max"
-    },
-    "evidence": {
-      "found_in_comment": true,
-      "source_text": "https://novelpia.com/novel/382324"
-    }
-  }
-]
+**중요 규칙:**
 ```
-
-#### v2: 식별 + 담론 분석
-```json
-[
-  {
-    "post_id": 11687616,
-    "identity": {
-      "is_relevant": true,
-      "novel_identity": {
-        "official_title": "https://novelpia.com/novel/382324",
-        "confidence": "Max"
-      },
-      "evidence": {...}
-    },
-    "analysis": {
-      "detected_titles": [...],
-      "micro_tags": ["사이다"],
-      "sentiment_profile": {
-        "pacing": "Fast",
-        "drift_risk": "Low",
-        "sentiment": "Positive"
-      },
-      "is_nsfw": false,
-      "user_segment": null
-    }
-  }
-]
-```
-
-### Incremental 출력 (`--incremental-output`)
-
-원본 데이터와 분석 결과를 함께 저장:
-```json
-[
-  {
-    "post_id": 11687616,
-    "title": "랫따싶 진짜...",
-    "author": "ㅇㅇ",
-    "created_at": "2026-01-21 15:05:16",
-    "url": "https://gall.dcinside.com/...",
-    "content": ["내용"],
-    "comments": ["링크좀", "https://novelpia.com/novel/382324"],
-    "analysis_result": {
-      "post_id": 11687616,
-      "identity": {...},
-      "analysis": {...}
-    }
-  }
-]
+⚠️ 플랫폼 이름은 작품이 아닙니다:
+- 노벨피아, 문피아, 카카오페이지 → is_relevant: false
+- "노피에서 뭐 볼까?" → 추천 요청, 작품 아님
 ```
 
 ---
 
-## 🐳 도커 환경
+## 🧾 전문가 I/O 계약 & 협업 규칙
 
-### 실행
-```bash
-docker compose up -d --build
-```
+### 공통 메시지 계약 (ExpertMessage)
 
-### 기본 포트
-| 서비스 | URL |
-|--------|-----|
-| SearchXNG | `http://localhost:9000` |
-| MCP 브릿지 | `http://localhost:3333` |
-
-### 환경 변수
-
-| 변수 | 설명 | 기본값 |
-|------|------|--------|
-| `LLM_ENDPOINT` | LLM 서버 주소 | `http://localhost:11434` |
-| `MCP_TOP_K_RESULTS` | 검색 결과 상위 K개 | `5` |
-| `MCP_MAX_CONTENT_CHARS` | 결과 본문 최대 길이 | `400` |
-| `LLM_MAX_SEARCH_ROUNDS` | 검색 라운드 최대 횟수 | `2` |
-| `LLM_MAX_SEARCH_QUERIES` | 라운드당 최대 쿼리 수 | `3` |
-| `LLM_PROGRESS_EVERY` | 진행 로그 간격(초) | `5` |
-| `LLM_N_CTX` | 로컬 백엔드 컨텍스트 | - |
-| `LLM_N_GPU_LAYERS` | GPU 오프로드 레이어 | - |
-
----
-
-## 🔧 고급 설정
-
-### 샘플링 프로파일
-
-| 프로파일 | temp | top_p | min_p | repeat_penalty | 용도 |
-|----------|------|-------|-------|----------------|------|
-| `tool` | 0.7 | 1.0 | 0.01 | 1.0 | JSON 출력 (권장) |
-| `general` | 1.0 | 0.95 | 0.01 | 1.0 | 일반 생성 |
-
-### 사전 설정 (rules.py)
+전문가 간 협업 메시지는 아래 구조로 기록됩니다 (`orchestrator.py`):
 
 ```python
-# 속어 → 공식 제목 매핑
-SLANG_DICTIONARY = {
-    "아카살": "아카데미에서 살아남기",
-    "전독시": "전지적 독자 시점",
-    "빌환": "빌어먹을 환생",
-    "죽깨수": "죽었다 깨어도 수선",
-    ...
+{
+  "from": "gatekeeper|discourse|decoder|verifier|critic|synthesizer|arbiter",
+  "to": "expert_name|orchestrator",
+  "type": "analysis|request|question|answer|final",
+  "content": {...},
+  "timestamp": 1700000000.0
 }
-
-# 소설 플랫폼 도메인
-NOVEL_SITES = (
-    "novelpia.com",
-    "munpia.com",
-    "page.kakao.com",
-    "joara.com",
-    "series.naver.com",
-)
-
-# 노이즈 키워드
-NOISE_TERMS = ("글카", "채굴", "날씨", "음식", ...)
 ```
 
-### 추천글 가드레일
+핵심 원칙:
+- `request` 메시지는 반드시 왜 필요한지(`reason`)와 무엇을 확인할지(`question`)를 포함
+- 동일 요청 루프를 막기 위해 Orchestrator가 처리 이력을 관리
+- 타임어택 `HIGH/CRITICAL` 구간에서는 신규 요청보다 결론 수렴을 우선
 
-"추천좀", "추천해줘" 등의 요청글은 단일 작품으로 확정하지 않고:
-- `is_relevant: true` 유지
-- `novel_identity: null`
-- `inference.type: "추천 요청"`
-- Stage2에서 댓글에 언급된 후보들을 `detected_titles`로 기록
+### 전문가별 핵심 입력/출력 필드
 
-### 한국어 강제
+| Expert | 주요 입력 | 주요 출력 | 다운스트림 영향 |
+|--------|----------|----------|----------------|
+| Gatekeeper | `post_data`, `comments` | `classification`, `search_requests`, `context_clues`, `is_noise` | 검색 전략 및 초깃값 결정 |
+| DiscourseAnalyzer | 제목/본문/댓글 | `discourse_analysis.primary_domain`, `intent`, `is_association_not_discussion` | 도메인 역방향 경고, 연상글 차단 |
+| Decoder | Gatekeeper 힌트 + 검색 결과 | `decoded_terms[]`, `suspected_titles`, `overall_confidence`, `request_expert` | 후보 작품 생성/정제 |
+| Verifier | Decoder 후보 + 원문/검색 증거 | `verification_result`, `final_confidence`, `verification_search`, `counter_arguments` | FP 차단, 앵커 검증 |
+| Critic | 확정/준확정 식별 결과 | `analysis.detected_titles`, `micro_tags`, `sentiment_profile`, `is_nsfw` | 메타데이터 생성 |
+| Synthesizer | Decoder+Verifier+Critic+검색 | `reinterpretation`, `hidden_references`, `evidence_alignment`, `synthesis_summary` | Arbiter 판정 재해석 근거 제공 |
+| Arbiter | 전체 전문가 출력 + 컨텍스트 | `final_decision`, `metadata_synthesis`, `expert_consensus` | 최종 identity/analysis 결정 |
 
-LLM이 영어로 `reason`을 출력하면 자동으로 재시도:
-```
-KOREAN_ONLY_REASON: reason은 반드시 한국어로만 작성. 영어 알파벳(A-Z) 금지.
-```
+### 협업 요청 트리거 가이드
 
-### 디버깅
+| 요청 주체 | 요청 대상 | 요청 시점 | 예시 |
+|----------|----------|----------|------|
+| Decoder | Verifier | 후보 2개 이상 경합, 앵커 약함 | "A/B 중 본문 앵커 일치 쪽 검증 필요" |
+| Verifier | Decoder | 축약 복원이 약칭 수준으로만 남음 | "detected_term은 있는데 정식명 복원 실패" |
+| Verifier | Gatekeeper | 포스트 타입(추천/작가비평/작품토론) 불확실 | "작품이 주제인지 예시 언급인지 재분류 필요" |
+| Orchestrator | Arbiter | 반복 한도 임박, 의견 충돌 지속 | "타임어택 CRITICAL 강제 판정" |
 
-```bash
-# 첫 5개만 처리
-llm-batch --input sample.jsonl --use-llm --trace --limit 5
+실무 팁:
+- `request_expert`를 남길 때는 불확실 용어를 배열로 남기면 후속 검증 품질이 높아집니다.
+- 증거가 이미 충분한데 협업을 반복하면 오히려 false override가 늘어납니다.
 
-# 토큰 스트리밍 확인
-llm-batch --input sample.jsonl --use-llm --trace --llm-stream --llm-backend local --model-path model.gguf
+---
+
+## 📊 실행 흐름도
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant GK as Gatekeeper
+    participant DA as DiscourseAnalyzer
+    participant SA as snippet_analyzer
+    participant D as Decoder
+    participant S as SearchXNG
+    participant V as Verifier
+    participant C as Critic
+    participant SY as Synthesizer
+    participant A as Arbiter
+    participant PP as 후처리
+
+    U->>O: 게시글 입력
+
+    Note over O: Phase 1: 초기 분석
+    O->>GK: 분류 + 엔티티 추출
+    O->>DA: 도메인 + 의도 분석
+
+    alt 명확한 노이즈
+        GK-->>O: is_relevant=false
+        O->>A: 즉시 판정 요청
+        A-->>PP: 결과
+        PP-->>U: 최종 출력
+    else 불명확
+        Note over O: Phase 2: 검색 & 해독
+        O->>SA: 본문/댓글 정밀 분석
+        SA-->>O: snippet 힌트
+        O->>D: 슬랭 해독 (1~3차)
+        D->>S: 검색 쿼리 실행
+        S-->>D: 검색 결과
+
+        Note over O: Phase 3: 검증 & 비평
+        O->>V: 증거 검증
+        O->>C: 담론 분석
+
+        Note over O: Phase 3.5: 증거 종합
+        O->>SY: 증거 기반 재해석
+        SY-->>O: 재해석 + 숨은 참조
+
+        Note over O: Phase 4: 최종 판정
+        O->>A: 전문가 의견 + Synthesizer 요약
+        A-->>PP: Arbiter 판정
+        PP-->>U: 후처리 → 최종 출력
+    end
 ```
 
 ---
 
-## 📄 라이선스
+## 📏 규칙 엔진 (rules.py)
 
-MIT License
+### GENRE_ARCHETYPE_TERMS
+
+작품명이 아닌 **장르/속성 용어** — 제목 후보에서 제외합니다:
+
+```python
+(
+    "초대남", "금태양", "거근쇼타", "거근", "쇼타",
+    "NTR", "네토라레", "순애", "하렘",
+    "먼치킨", "사이다", "고구마", "빌런", "흔막",
+    "현판", "현판물", "백합난입",
+    "회귀물", "환생물", "빙의물", "전생물",
+    "막내아들물", "아카데물", "무협물", "이세계물", "헌터물",
+    "로판", "판무",
+    "시스템", "상태창", "만담", "스텟", "스킬",
+    "파이어볼", "마검사", "타임슬립", "루프물",
+    "농", "ts물", "TS물", "TS"
+)
+```
+
+### COMMUNITY_PREFIX_PATTERNS
+
+게시글 제목에서 자동 제거되는 커뮤니티 태그 접두어:
+
+```python
+(
+    "소신발언)", "소신발언))", "소신발언 )",
+    "스포)", "스포))", "스포 )",
+    "추천)", "추천))", "질문)", "질문))",
+    "정보)", "정보))", "후기)", "후기))",
+    "잡담)", "잡담))", "리뷰)", "리뷰))",
+    "토론)", "토론))", "공지)", "공지))",
+    "속보)", "속보))", "ㅈㄴ)"
+)
+```
+
+### 기타 주요 상수
+
+| 상수 | 설명 |
+|------|------|
+| `NOVEL_SITES` | `novelpia.com`, `munpia.com`, `page.kakao.com`, `kakao.page`, `joara.com`, `series.naver.com`, `ridibooks.com` |
+| `OFFICIAL_PLATFORMS` | `NOVEL_SITES` + `namu.wiki` |
+| `SLANG_DICTIONARY` | 음절 두문자 사전 (아카살, 전독시, 죽신성, 로나좋, 나혼렙 등) |
+| `NOISE_TERMS` | `글카`, `채굴`, `날씨`, `음식`, `애니`, `만화` 등 |
+| `PLATFORM_ABBREVIATIONS` | 노피아, 문피, 카카페, 시리즈, 리디, 조아라 등 |
+| `PLATFORM_FEATURE_TERMS` | 콘, 이모티콘, 뱃지, 캐시, 쿠폰, 이벤트 등 |
+| `ASSOCIATION_PATTERNS` | 연상글 감지 패턴 11종 |
+| `GENRE_KEYWORDS` | `fantasy`, `martial_arts`, `romance`, `modern` 4개 장르별 키워드 사전 |
+| `NON_NOVEL_MEDIA_KEYWORDS` | 히토미, 엔헨, 이헨, 마루마루, 뉴토끼 등 (비소설 미디어) |
+
+---
+
+## 📤 출력 형식
+
+### PickvelOutputItemV2 스키마
+
+```
+PickvelOutputItemV2
+├── post_id: int
+├── identity: PickvelIdentity
+│   ├── is_relevant: bool
+│   ├── novel_identity: Optional[NovelIdentity]
+│   │   ├── official_title: Optional[str]
+│   │   ├── heretic_url: Optional[str]    # 작품 공식 페이지 URL
+│   │   └── confidence: str               # None|Low|Medium|High|Max
+│   ├── discussion_type: Optional[str]    # 16종 중 하나
+│   ├── evidence: Optional[Evidence]
+│   ├── slang_insight: Optional[SlangInsight]
+│   ├── inference: Optional[Inference]
+│   └── reason: Optional[str]
+└── analysis: Optional[PickvelAnalysis]
+    ├── detected_titles: List[DetectedTitle]
+    │   ├── official_title, heretic_url, confidence, alias_or_mention
+    ├── micro_tags: List[str]
+    ├── sentiment_profile: Optional[SentimentProfile]
+    │   ├── pacing: Fast|Normal|Slow|FastStart_SlowEnd|Unknown
+    │   ├── drift_risk: Low|High|Critical|Unknown
+    │   └── sentiment: Positive|Neutral|Negative|Mixed|Unknown
+    ├── is_nsfw: bool
+    ├── user_segment: Optional[str]
+    └── notes: Optional[str]
+```
+
+### 출력 파일
+
+| 파일 | 경로 | 설명 |
+|------|------|------|
+| 결과 JSON | `out/expert_result_YYYYMMDD_HHMMSS.json` | 전체 분석 결과 |
+| 통합 로그 | `logs/expert_run_YYYYMMDD_HHMMSS.log` | 전문가 간 대화 로그 |
+| 워커별 로그 | `logs/expert_run_YYYYMMDD_HHMMSS_W{N}.log` | 병렬 모드 워커별 로그 |
+
+---
+
+## ⚙️ 환경 설정
+
+### LLM 설정
+
+| 변수 | 현재 값 | 설명 |
+|------|---------|------|
+| `LLM_BACKEND` | `http` | `local` 또는 `http` |
+| `LLM_ENDPOINT` | `http://a100:10000/` | HTTP 모드 서버 주소 |
+| `LLM_MODEL` | `unsloth/GLM-4.7-Flash-GGUF:IQ3_XXS` | 모델 이름 |
+| `LLM_N_CTX` | `65536` | 컨텍스트 윈도우 (64K) |
+| `LLM_MAX_TOKENS` | `16384` | 최대 생성 토큰 |
+| `LLM_FLASH_ATTN` | `1` | Flash Attention 활성화 |
+| `LLM_CACHE_TYPE_K` / `V` | `q8_0` | KV 캐시 양자화 |
+| `LLM_JSON_GRAMMAR` | `1` | JSON 문법 강제 |
+| `LLM_STREAM` | `1` | 스트리밍 출력 활성화 |
+| `LLM_ENABLE_THINKING` | `0` | 사고 모드 비활성화 |
+| `LLM_N_GPU_LAYERS` | `60` | GPU 오프로드 레이어 (local 모드) |
+
+### MCP (SearchXNG) 설정
+
+| 변수 | 현재 값 | 설명 |
+|------|---------|------|
+| `MCP_ENDPOINT` | `http://localhost:3333` | SearchXNG 브릿지 주소 |
+| `MCP_TOP_K_RESULTS` | `10` | 최대 검색 결과 수 |
+| `MCP_DEFAULT_NUM_RESULTS` | `15` | 기본 검색 결과 수 |
+| `MCP_MAX_CONTENT_CHARS` | `400` | 결과당 최대 문자 수 |
+
+### Agentic 설정
+
+| 변수 | 현재 값 | 설명 |
+|------|---------|------|
+| `LLM_MAX_SEARCH_ROUNDS` | `2` | 최대 검색 라운드 |
+| `LLM_MAX_SEARCH_QUERIES` | `2` | 라운드당 최대 쿼리 수 |
+| `LLM_PROGRESS_EVERY` | `5` | 진행률 출력 간격 |
+
+### Pipeline 설정
+
+```python
+pipeline = AgenticPipeline(
+    llm=llm_client,
+    mcp=mcp_client,
+    output_dir=Path("out"),
+    max_iterations=10,  # 전문가 협력 최대 반복 횟수 (기본값)
+)
+```
+
+---
+
+## 🔀 병렬 처리 & 대시보드
+
+### 병렬 실행
+
+```bash
+python expert_main.py tests/inputs/sample.jsonl --parallel 4
+```
+
+**ThreadPoolExecutor** 기반 병렬 처리:
+- 각 워커는 독립된 게시글 묶음을 처리
+- `_worker_tls` (thread-local storage)로 워커별 상태 관리
+- `_print_lock` / `_results_lock`으로 스레드 안전 보장
+- `_shutdown_event`로 `Ctrl+C` graceful 종료
+
+### _Tee 로그 시스템
+
+`stdout`/`stderr`를 **파일과 콘솔에 동시 출력**하는 커스텀 스트림:
+
+| 모드 | 콘솔 | 통합 로그 | 워커별 로그 | 대시보드 |
+|------|------|-----------|-------------|----------|
+| 단일 워커 | ✅ | ✅ | — | ✅ |
+| 병렬 (메인 스레드) | ✅ | ✅ | — | ✅ |
+| 병렬 (워커 스레드) | ❌ (억제) | ✅ | ✅ | ✅ |
+
+### 대시보드
+
+`monitor.event_bus`를 통해 실시간 로그 포워딩:
+- 줄바꿈 단위 버퍼링
+- `monitor.add_log(line, worker_id=wid)` 전송
+- `--no-dashboard` 플래그로 비활성화 가능
+
+### Session Knowledge
+
+- `parallel_count <= 1`일 때만 활성화
+- 이전 게시글 분석에서 학습한 지식을 다음 게시글에 전달
+
+---
+
+## 🛰️ 운영 관측 포인트
+
+### 로그에서 먼저 확인할 신호
+
+| 로그 키워드 | 의미 | 우선 액션 |
+|------------|------|-----------|
+| `Discourse 경고` | non-novel 도메인 고신뢰 경고 | 장르/메타/연상글 오분류 여부 점검 |
+| `search_requests 스킵` | 불필요 검색 억제 작동 | 검색 억제가 과도하지 않은지 확인 |
+| `Synthesizer 합의-이탈 가드` | 합의된 제목을 Synthesizer가 덮으려다 차단 | Decoder/Verifier 합의 근거 재확인 |
+| `Arbiter 독자 제목 생성 차단` | Arbiter 환각 후보 차단 | suspected_titles 품질 및 anchor 상태 확인 |
+| `Arbiter null 가드` | 의도적 null 판정 유지 | author_talk/recommendation 분류와 일치 여부 확인 |
+
+### 품질 점검 체크포인트 (샘플 검수 시)
+
+- `official_title`이 URL/플랫폼명이 아닌지 확인
+- `is_relevant=false`인데 `discussion_type`이 작품 관련 타입으로 남지 않았는지 확인
+- `recommendation`/`author_talk`에서 제목 강제 승격이 없는지 확인
+- `general_discussion`이 작품 고유 앵커 없이 `true`로 올라가지 않았는지 확인
+- `reason`이 최종 판정 근거를 설명하고 있는지 확인 (모호한 문구만 반복 금지)
+
+### 장애 대응 루틴 (권장 순서)
+
+1. `logs/expert_run_*.log`에서 `Decoder`, `Verifier`, `Arbiter` 구간을 먼저 확인합니다.
+2. `suspected_titles`, `grounding_check`, `counter_arguments` 필드의 정합성을 점검합니다.
+3. 반복적으로 같은 오판이 나오는 경우 `rules.py` 사전/플랫폼 용어/장르 용어를 우선 수정합니다.
+4. 그래도 해결되지 않으면 `expert_prompts.py`보다 `prompt_router.py` 오버레이부터 최소 수정합니다.
+
+---
+
+## 🔧 고급 기능
+
+### 1. 전문가 협력 모니터링
+
+로그에서 전문가 간 대화 추적:
+
+```
+[14:32:15.123] 🎭 Gatekeeper: 작품 토론 감지 (work_discussion, 5 characters)
+[14:32:16.456] 📋 snippet_analyzer: 제목 힌트 ["전독시"], 약어 힌트 ["ㅈㄷㅅ"]
+[14:32:17.789] 🔤 Decoder 1차: "전독시" → "전지적 독자 시점" (95%)
+[14:32:19.012] 🔍 Verifier: URL 증거 확정, anchor=title_mention
+[14:32:20.345] 📚 Critic: 사이다, 생존물
+[14:32:21.678] 🔬 Synthesizer: 숨은 참조 2개, coherence=high
+[14:32:23.901] ⚖️ Arbiter: is_relevant=true, 전지적 독자 시점 (Max)
+[14:32:24.012] 🔧 후처리: 앵커 하드 게이트 통과
+```
+
+### 2. 동적 검색 전략
+
+전문가들이 상황에 따라 검색 전략 조정:
+
+```python
+# Gatekeeper: 일반 검색
+queries = ["전독시 웹소설"]
+
+# Decoder: 정밀 검색
+queries = [
+    "전독시 웹소설",
+    "site:namu.wiki 전독시",
+    "site:novelpia.com 전독시"
+]
+
+# Verifier: 검증 검색
+queries = [
+    "\"전지적 독자 시점\" 싱숑",
+    "site:novelpia.com \"전지적 독자 시점\""
+]
+```
+
+### 3. 커스텀 전문가 추가
+
+새로운 전문가 추가 방법:
+
+```python
+# 1. 전문가 클래스 정의
+class MyExpert:
+    def __init__(self, llm_client):
+        self.llm = llm_client
+        self.name = "MyExpert"
+        self.emoji = "🌟"
+    
+    def analyze(self, ctx: ConversationContext) -> Dict:
+        # 분석 로직
+        return {...}
+
+# 2. ExpertType에 추가
+class ExpertType(Enum):
+    MY_EXPERT = "my_expert"
+
+# 3. experts/__init__.py에서 export
+```
+
+---
+
+## 🐛 트러블슈팅
+
+### Q: Decoder의 resolved_mappings에 가비지가 섞여요
+A: `decoder.py`의 `resolved_mappings` 필터가 자동으로 차단합니다:
+- 자기 참조 (포스트 제목과 동일)
+- 사전 항목 ("욕설/러시아어", "네이버 국어사전")
+- 장르 용어 (`GENRE_ARCHETYPE_TERMS`)
+- `/ ( )` 패턴 포함 항목
+- 비속어/욕설
+
+### Q: 전문가들이 무한 루프에 빠졌어요
+A: `max_iterations=10`이 기본이므로 반드시 종료됩니다. 그래도 문제 시 값을 낮추세요.
+
+### Q: 작가 품평 글이 작품으로 잘못 매칭돼요
+A: Verifier의 `is_author_criticism` + 2개 이상 작품 식별 시 후처리에서 rescue가 차단됩니다.
+
+### Q: 커뮤니티 접두어가 제목에 포함돼요
+A: Gatekeeper가 `COMMUNITY_PREFIX_PATTERNS`에 매칭되는 접두어를 자동 제거합니다.
+
+### Q: 명백한 작품 토론인데 noise로 분류돼요
+A: Arbiter의 `author_talk` → `work_discussion` 업그레이드 로직이 Gatekeeper 증거(work_discussion + 3+ 캐릭터)를 확인하여 교정합니다.
+
+### Q: 토큰 사용량이 너무 많아요
+A: `max_iterations`를 줄이거나, `SYNTHESIZER_MAX_TOKENS` 환경변수(기본 1536)를 낮추세요.
+
+---
+
+## 🔗 관련 문서
+
+- [README_legacy_pipeline.md](README_legacy_pipeline.md) - 기존 Sequential Pipeline 문서
+- [expert_readme.md](expert_readme.md) - 전문가 문서 원본(상세판)
+- [src/llm_batch/experts/prompts.py](src/llm_batch/experts/prompts.py) - 전문가 프롬프트
+- [src/llm_batch/agentic_pipeline.py](src/llm_batch/agentic_pipeline.py) - Pipeline 구현
+- [src/llm_batch/rules.py](src/llm_batch/rules.py) - 규칙 엔진
+- [src/llm_batch/models.py](src/llm_batch/models.py) - 데이터 모델
+- [expert_main.py](expert_main.py) - 실행 엔트리포인트
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - 아키텍처 문서
