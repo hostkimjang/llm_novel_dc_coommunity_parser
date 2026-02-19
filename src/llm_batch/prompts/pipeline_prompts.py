@@ -268,7 +268,7 @@ Return a single JSON list. Each item MUST match one of these patterns:
 CRITICAL: official_title 필드 규칙
 - official_title에는 **작품의 정식 제목**만 넣어야 함 (문자열)
 - URL은 official_title에 절대 넣지 말 것 (http://, https:// 로 시작하는 문자열 금지)
-- 올바른 예: "즉사기 들고 무림에 떨어지다", "Solo Leveling", "転生したらスライムだった件"
+- 올바른 예: "작품정식명갑", "Example Novel Title", "サンプル作品タイトル"
 - 잘못된 예: "https://mm.munpia.com/...", "https://novelpia.com/...", 어떤 URL이든 금지
 - 검색으로 제목을 찾았으면 decoded_term과 동일한 제목을 official_title에 넣을 것
 - URL을 찾았지만 제목을 모르면: official_title=null, heretic_url에 URL 저장
@@ -619,6 +619,43 @@ JSON SCHEMA:
   "final_confidence": "None|Low|Medium|High|Max",
   "evidence_url": string|null,
   "reasoning": string
+}
+
+OUTPUT NOW: Return JSON immediately.
+"""
+
+
+# reason 병합 검토용 프롬프트 - 점수 기반 후보를 LLM이 재검토
+REASON_REVIEW_PROMPT = """\
+You are a REASON MERGE REVIEWER for Korean community post classification.
+
+Goal:
+- Review scored reason candidates and decide which reasons should be adopted.
+- Produce one rich final reason text for logging/output.
+
+CRITICAL:
+- Return ONLY raw JSON OBJECT.
+- Write Korean text in Korean.
+- Do not invent facts outside candidate texts.
+- Prefer concrete evidence (본문/앵커/작품고유정보/키워드 우연일치).
+
+INPUT:
+- discussion_type
+- candidates: [{id, score, sources, text}]
+
+RULES:
+1) Higher score is preferred, but not blindly. Check logical consistency.
+2) If two candidates overlap, merge concisely.
+3) Keep final reason readable for humans (multi-line ready, concise but rich).
+4) If evidence is weak or conflicting, mention uncertainty briefly.
+
+JSON SCHEMA:
+{
+  "selected_ids": [number],              // 채택한 candidate id 목록 (중요도 순)
+  "primary_reason": string,              // 핵심 사유 1문장
+  "merged_reason": string,               // 최종 합성 사유 (2~5문장, 한국어)
+  "llm_review_note": string,             // 채택/기각 기준 요약 (짧게)
+  "review_confidence": "Low|Medium|High"
 }
 
 OUTPUT NOW: Return JSON immediately.
