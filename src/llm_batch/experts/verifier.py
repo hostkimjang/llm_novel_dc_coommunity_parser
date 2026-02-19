@@ -10,7 +10,11 @@ import sys
 import time
 from typing import Any, Dict, List, Optional
 
-from .prompts import VERIFIER_SYSTEM, VERIFIER_PROMPT
+from .prompts import (
+    VERIFIER_SYSTEM,
+    VERIFIER_PROMPT,
+    build_verifier_system_prompt,
+)
 from .utils import parse_json_with_think_removal, _ts
 from ..rules import OFFICIAL_PLATFORMS, GENRE_ARCHETYPE_TERMS
 
@@ -30,6 +34,24 @@ class VerifierExpert:
         self.llm = llm_client
         self.name = "Verifier"
         self.emoji = "🔍"
+
+    _PLATFORM_BRANDING_NORMS = {
+        "웹소설로꿈꾸는세상",
+        "웹소설의유토피아",
+        "노벨피아",
+        "문피아",
+        "카카오페이지",
+        "네이버시리즈",
+        "리디",
+    }
+
+    @classmethod
+    def _is_platform_branding_title(cls, title: str) -> bool:
+        import re
+        if not isinstance(title, str):
+            return False
+        norm = re.sub(r"[^\w가-힣]", "", title).lower()
+        return norm in cls._PLATFORM_BRANDING_NORMS
     
     def analyze(
         self,
@@ -114,6 +136,19 @@ DiscourseAnalyzer 분석 결과:
             verification_search_json=json.dumps(verification_search or [], ensure_ascii=False, indent=2),
             discourse_context=discourse_context,
         ) + suspected_titles_info + context_section
+
+        # 코드 레벨 본문 존재 사실을 명시해 "본문 비어있음" 오판을 억제한다.
+        _content_text_count = int(post_json.get("content_text_count") or 0)
+        _content_total_chars = int(post_json.get("content_total_chars") or 0)
+        _has_content_text = bool(post_json.get("has_content_text"))
+        user_prompt += (
+            "\n\n=== CODE FACTS: BODY PRESENCE ===\n"
+            f"- has_content_text: {_has_content_text}\n"
+            f"- content_text_count: {_content_text_count}\n"
+            f"- content_total_chars: {_content_total_chars}\n"
+            "규칙: has_content_text=true 이면 '본문 비어있음/본문 없음'으로 판단하지 마세요.\n"
+            "이 경우 본문은 존재하므로, 작품 고유 근거 부족 여부를 별도로 판단하세요.\n"
+        )
         
         # 🆕 코드레벨 약어 분석 힌트 주입
         # Decoder 후처리에서 abbreviation_match_score로 발견한 매칭 정보를
@@ -143,11 +178,17 @@ DiscourseAnalyzer 분석 결과:
                 user_prompt += f"  - {q}\n"
             user_prompt += "\n⚠️ verification_search 요청 시 위 쿼리는 이미 실행되었으므로 중복 요청하지 마세요.\n"
             user_prompt += "다른 관점/키워드로 새로운 쿼리를 작성하세요.\n"
+        user_prompt += "\n⚠️ '웹소설로 꿈꾸는 세상!'은 노벨피아 플랫폼 슬로건입니다. 이 표현만 확인되면 official_novel_title로 채택하지 마세요.\n"
         
         print(f"[{_ts()}][{self.emoji}] {self.name} 검증 시작: post_id={post_id}", file=sys.stderr)
         
         try:
-            result = self._call_llm(user_prompt)
+            result = self._call_llm(
+                user_prompt,
+                gatekeeper_result=gatekeeper_result,
+                decoder_result=decoder_result,
+                ctx=ctx,
+            )
             elapsed = time.time() - start_time
             
             verification = result.get("verification_result", {})
@@ -162,14 +203,29 @@ DiscourseAnalyzer 분석 결과:
                     if corrected != llm_title:
                         print(f"[{_ts()}][{self.emoji}] ⚠️ 제목 교정: LLM='{llm_title}' → '{corrected}'", file=sys.stderr)
                         if novel_id.get("official_novel_title"):
-                            novel_id["official_novel_title"] = corrected
+                            novel_id["official_novel_title"] = corrected or None
                         if novel_id.get("official_title"):
-                            novel_id["official_title"] = corrected
+                            novel_id["official_title"] = corrected or None
             
             # 🚨 게시글 제목 도용 방지 (P0-4 선제 방어)
             # Verifier가 게시글 제목을 그대로 official_novel_title에 넣는 경우 차단
             verified_title = (novel_id.get("official_novel_title") or
                               novel_id.get("official_title")) if novel_id else None
+            if verified_title and self._is_platform_branding_title(verified_title):
+                print(
+                    f"[{_ts()}][{self.emoji}] 🧹 플랫폼 슬로건 제목 제거: '{verified_title}'",
+                    file=sys.stderr,
+                )
+                novel_id["official_novel_title"] = None
+                if "official_title" in novel_id:
+                    novel_id["official_title"] = None
+                novel_id["confidence"] = "Low"
+                verification["is_relevant"] = False
+                verification["is_novel_discussion"] = False
+                existing_rej = str(verification.get("rejection_reason") or "").strip()
+                rej = "플랫폼 슬로건/브랜딩 문구만 확인됨(예: 웹소설로 꿈꾸는 세상). 작품명 증거 부족."
+                verification["rejection_reason"] = f"{existing_rej} | {rej}".strip(" |")
+                verified_title = None
             
             # 🛡️ 아키타입 용어 가드: Decoder가 차단한 아키타입 제목을 Verifier가 재도입하는 것 방지
             # Decoder의 decoded_terms에서 아키타입 차단된 원본 키워드를 확인하고,
@@ -471,6 +527,17 @@ DiscourseAnalyzer 분석 결과:
         🔥 LLM이 생성한 제목을 Decoder best_match + 검색 결과와 대조하여 교정
         예: '죽었다 깨어나도 수선' (LLM 환각) → '죽었다 깨어도 수선' (검색 결과 정확)
         """
+        llm_is_branding = self._is_platform_branding_title(llm_title)
+
+        # 플랫폼 슬로건이면 Decoder에서 비-브랜딩 제목이 확인된 경우에만 대체, 아니면 제거
+        if llm_is_branding:
+            for term in decoder_result.get("decoded_terms", []):
+                best = term.get("best_match", {})
+                decoder_title = str(best.get("title") or "").strip()
+                if decoder_title and (not self._is_platform_branding_title(decoder_title)):
+                    return decoder_title
+            return ""
+
         # 🔒 아이디어 B-1: LLM 제목이 Decoder best_match와 일치하면 교정 스킵
         # Decoder가 이미 올바르게 식별한 제목을 Verifier가 유사 이름의 다른 작품으로
         # 바꾸는 것을 방지 (빌어먹을 환생 → 따먹을 환생 문제)
@@ -501,6 +568,8 @@ DiscourseAnalyzer 분석 결과:
                 sr_title = sr_title.split(" - ")[-1].strip()
             import re
             sr_title = re.sub(r'\s*\(r\d+\s*판\)$', '', sr_title).strip()
+            if self._is_platform_branding_title(sr_title):
+                continue
             if sr_title and sr_title != llm_title and len(sr_title) >= 3:
                 if self._is_similar_title(llm_title, sr_title):
                     return sr_title
@@ -778,19 +847,37 @@ DiscourseAnalyzer 분석 결과:
                 content_texts.append(block["text"])
             elif isinstance(block, str):
                 content_texts.append(block)
+        content_texts = [str(t).strip() for t in content_texts if str(t).strip()]
+        content_total_chars = sum(len(t) for t in content_texts)
         
         return {
             "post_id": post.get("post_id"),
             "title": post.get("title", ""),
             "author": post.get("author", ""),
             "content": content_texts,
+            "content_text_count": len(content_texts),
+            "content_total_chars": content_total_chars,
+            "has_content_text": content_total_chars > 0,
             "comments": comments[:10],
         }
     
-    def _call_llm(self, user_prompt: str) -> Dict[str, Any]:
+    def _call_llm(
+        self,
+        user_prompt: str,
+        *,
+        gatekeeper_result: Optional[Dict[str, Any]] = None,
+        decoder_result: Optional[Dict[str, Any]] = None,
+        ctx: Optional[Any] = None,
+    ) -> Dict[str, Any]:
         """Call LLM and parse JSON response."""
+        system_content = build_verifier_system_prompt(
+            VERIFIER_SYSTEM,
+            gatekeeper_result=gatekeeper_result,
+            decoder_result=decoder_result,
+            ctx=ctx,
+        )
         messages = [
-            {"role": "system", "content": VERIFIER_SYSTEM},
+            {"role": "system", "content": system_content},
             {"role": "user", "content": user_prompt},
         ]
         
