@@ -6,6 +6,34 @@ from typing import Dict, Iterable, List, Optional, Tuple
 from .models import Evidence, Inference, NovelIdentity, OutputItem, SlangInsight
 
 
+# ━━ 3단계 증거등급 (강/중/약) ━━━━━━━━━━━━━━━━━━━━━
+# anchor_score 수치화(0~1)는 튜닝 지옥을 유발하므로,
+# 이산값 3단계로 유지보수 가능한 증거등급 체계를 사용.
+# Gatekeeper→Decoder→Verifier 전 과정에서 사용.
+
+EVIDENCE_GRADE_STRONG = "strong"   # 강: 제목 직접 언급, 플랫폼 URL, 작가명+작품명 동시
+EVIDENCE_GRADE_MEDIUM = "medium"   # 중: 캐릭터명+맥락, 약칭 해독 성공, 회차 번호
+EVIDENCE_GRADE_WEAK = "weak"       # 약: 장르 키워드만, 마스킹 제목, 단일 캐릭터명
+
+# 등급별 대응하는 앵커 타입 매핑
+EVIDENCE_GRADE_MAP = {
+    # strong
+    "title_mention": EVIDENCE_GRADE_STRONG,
+    "author_mention": EVIDENCE_GRADE_STRONG,
+    "character_title_link": EVIDENCE_GRADE_STRONG,
+    "plot_mention": EVIDENCE_GRADE_STRONG,
+    # medium
+    "character_mention": EVIDENCE_GRADE_MEDIUM,
+    "episode_reference": EVIDENCE_GRADE_MEDIUM,
+    "genre_prefix": EVIDENCE_GRADE_MEDIUM,
+    "search_confirmed": EVIDENCE_GRADE_MEDIUM,
+    # weak
+    "search_only": EVIDENCE_GRADE_WEAK,
+    "genre_keyword": EVIDENCE_GRADE_WEAK,
+    "none": EVIDENCE_GRADE_WEAK,
+}
+
+
 URL_PATTERN = re.compile(r"(https?://[^\s)]+)")
 # 커뮤니티 밈/문장 속 [단어]를 제목으로 오인하지 않도록, "댓글 전체가 [제목]인 경우"만 제목으로 취급.
 TITLE_ONLY_PATTERN = re.compile(r"^\s*\[([^\[\]]{2,60})\]\s*$")
@@ -111,6 +139,48 @@ GENRE_ARCHETYPE_TERMS: Tuple[str, ...] = (
     "파이어볼", "마검사", "타임슬립", "루프물",
     "농",  # 농(NTR 파생 은어)
     "ts물", "TS물", "TS",  # TS(성전환) 장르
+    # 🆕 Phase 11j: 장르 복합 용어 (작품명이 아닌 장르/소재 설명 복합어)
+    "후타",  # 후타나리 (장르)
+    "암타", "암타물",  # 암컷타입 TS물 (장르)
+    "백합", "백합물",  # GL (장르)
+    "난입", "백합난입",  # 장르 트로프
+    "하위호환", "상위호환",  # 비교 일반어
+    "리뷰", "리뷰어",  # 리뷰 관련
+    "웹소", "웹소설",  # 매체 일반명
+    "로판물", "무협물",  # 장르+물 형태
+    "판무물", "현판물",  # 장르+물 형태
+    "빌런물", "환생물",  # 장르+물 형태
+)
+
+# ── DC 커뮤니티 의견 접두사 (작품명이 아닌 게시글 태그 키워드) ──
+# "소신발언))" 등에서 추출되는 키워드. 이 키워드가 제목의 '본체'이면 작품명이 아님
+DC_OPINION_KEYWORDS: Tuple[str, ...] = (
+    "소신발언", "소신", "핫테", "핫테이크",
+    "스포", "스포주의", "질문", "잡담", "추천",
+    "후기", "리뷰", "정보", "공지", "속보", "토론",
+    "궁금", "ㅈㄴ", "어그로",
+)
+
+# ── 추천 요청 패턴 키워드 ──
+# "X를 보고싶구나", "X 추천좀" 등 추천 요청 게시글 감지
+RECOMMENDATION_REQUEST_SUFFIXES: Tuple[str, ...] = (
+    "보고싶구나", "보고싶다", "읽고싶다", "읽고싶구나",
+    "보고싶은데", "읽고싶은데", "추천좀", "추천해줘", "추천해주세요",
+    "추천부탁", "읽을만한거", "볼만한거", "없나", "없냐", "있나", "있냐",
+    "찾고있다", "찾고있는데", "알려줘", "알려주세요",
+)
+
+# ── 장르 일반론 제목 패턴 (정규식) ──
+# "X이나 Y에서 Z", "X에서 Z은", "X에 Y이" 등 장르 토론 구조
+# 아래 패턴이 제목에 매칭되면 genre_discussion 가능성 높음
+GENRE_DISCUSSION_TITLE_INDICATORS: Tuple[str, ...] = (
+    "이나 ",   # "로판이나 웹소에서" → 복수 장르/매체 병렬
+    "에서 ",   # 장르 일반론 "X에서 Y은..."
+    "의 공통점", "의 차이점", "의 특징",  # 장르 비교/분석
+    "에 대해", "에 대한",  # "X에 대한 생각"
+    "본적없", "본적 없", "본 적 없", "못봤", "못 봤",  # 부정: 해당 장르 작품 경험 없음
+    "있긴한디", "높긴한디", "높긴한데",  # 소재 잠재력 논의
+    "왜 없", "왜없",  # "왜 이런 소재 작품이 없는지"
 )
 
 # ── 커뮤니티 게시글 접두어 패턴 (작품명이 아닌 게시글 태그/접두어) ──
@@ -128,6 +198,33 @@ COMMUNITY_PREFIX_PATTERNS: Tuple[str, ...] = (
     "공지)", "공지))",
     "속보)", "속보))",
     "ㅈㄴ)",
+)
+
+# ── 장르 접두사 태그 (DC 갤러리 사용자 자발적 장르 태그) ──
+# 게시글 제목 앞에 "TS)" "챗생사)" 등 장르/작품 접두 태그를 붙이는 관행
+# 이 태그는 제목 후보에서 분리하되, 장르 힌트로 보존해야 함
+GENRE_PREFIX_TAGS: Tuple[str, ...] = (
+    # 장르 태그
+    "TS)", "ts)",
+    "BL)", "bl)",
+    "GL)", "gl)",
+    "SF)", "sf)",
+    "판무)",
+    "현판)",
+    "로판)",
+    "무협)",
+    "헌터)",
+    # 작품 약칭 접두 태그 (자주 반복 출현하는 패턴)
+    # 이 패턴은 ")" 앞까지를 작품 약칭으로 추출
+)
+
+# ── 회차 번호 패턴 (작품 연재 논의 강력 앵커) ──
+# "550화", "1234회", "1034일차", "23화차", "100ep" 등
+# 이 패턴이 제목/본문에 있으면 특정 작품 연재 논의가 거의 확실
+import re as _re
+EPISODE_NUMBER_PATTERN = _re.compile(
+    r'(\d{1,5})\s*(?:화|회|일차|화차|ep|EP|편|장|권|부|절|챕터|chapter)',
+    _re.IGNORECASE,
 )
 
 # ── 플랫폼 약칭 (코드 레벨 - 소설 제목이 아닌 플랫폼명) ──
@@ -152,6 +249,14 @@ PLATFORM_FEATURE_TERMS: Tuple[str, ...] = (
 
 # ── 연상 패턴 (제목에서 "X라는 단어가 떠올랐" 등 연상글 감지) ──
 # 이 패턴이 제목에 있으면 X는 소설 제목이 아니라 일반 용어일 가능성 높음
+# ── 제목 마스킹 패턴 (ㅁㅁ, ■■ 등 의도적 제목 은폐) ──
+# 이 패턴이 제목에 있으면 작품명이 의도적으로 숨겨진 것
+# 해독 불가능하므로 Decoder에 과도한 기대를 하지 않아야 함
+TITLE_MASKING_PATTERNS: Tuple[str, ...] = (
+    "ㅁㅁ", "ㅇㅇ세계", "■■", "□□", "●●", "○○",
+    "XX", "xx", "OO",
+)
+
 ASSOCIATION_PATTERNS: Tuple[str, ...] = (
     "이란 단어가 떠올",
     "라는 단어가 떠올",
