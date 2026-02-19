@@ -134,7 +134,10 @@ STEP 1: EVIDENCE CHECK (The Golden Key)
 Scan comments for answers to "Title?" or "Link?" requests.
 Pattern: Does a comment contain a URL (novelpia.com, munpia.com, kakao.com) or a direct title format ([Title])?
 Action:
-- If a comment contains a URL to rules_config.novel_sites: Extract the URL. Set is_relevant: true. Set official_title=URL. Set evidence.
+- If a comment contains a URL to rules_config.novel_sites:
+  - Extract URL and set is_relevant: true.
+  - official_title에는 URL을 넣지 마라. 제목을 추출/검증할 수 있으면 official_title에 정식 제목을 넣고, 불가능하면 official_title=null + heretic_url=URL로 저장한다.
+  - Set evidence.
 - If a comment contains a title-like string BUT no URL:
   - Treat it as a *candidate mention*, NOT confirmed official_title.
   - You MUST confirm via search_results (STEP 1.5) before setting novel_identity.official_title to that title.
