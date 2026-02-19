@@ -9,7 +9,13 @@ from typing import Any, Callable, Dict, List, Optional, TypeVar
 
 import httpx
 
-from .prompt import ANALYZE_PROMPT, HYPOTHESIS_PROMPT, SEARCH_PLANNER_PROMPT, SYSTEM_PROMPT
+from .prompt import (
+    ANALYZE_PROMPT,
+    HYPOTHESIS_PROMPT,
+    REASON_REVIEW_PROMPT,
+    SEARCH_PLANNER_PROMPT,
+    SYSTEM_PROMPT,
+)
 
 T = TypeVar("T")
 
@@ -1560,6 +1566,190 @@ ws ::= [ \t\n\r]*
             except Exception:
                 return default_response
         
+        return retry_with_backoff(
+            _do_http,
+            max_retries=self.max_retries,
+            base_delay=self.retry_base_delay,
+            exceptions=(httpx.HTTPError, httpx.TimeoutException, ConnectionError, OSError),
+            on_failure=lambda e: default_response,
+        )
+
+    def review_reason_candidates(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        reason 후보(점수/근거)를 LLM이 재검토해 최종 merged reason을 생성한다.
+
+        Args:
+            payload: {
+                "discussion_type": str,
+                "candidates": [{"id": int, "score": float, "sources": [str], "text": str}]
+            }
+        """
+        import time as _time
+        import json as _json
+        import re as _re
+
+        messages = [
+            {"role": "system", "content": REASON_REVIEW_PROMPT},
+            {"role": "user", "content": _json.dumps(payload, ensure_ascii=False)},
+        ]
+        self._dump_messages("reason_review", messages)
+        _start = _time.time()
+
+        def _parse_json_object(text: str) -> Optional[Dict[str, Any]]:
+            if not isinstance(text, str):
+                return None
+            s = text.strip()
+            s = _re.sub(r"<think>[\s\S]*?</think>", "", s, flags=_re.IGNORECASE).strip()
+            fence_match = _re.search(r"```(?:json)?\s*([\s\S]*?)```", s, flags=_re.IGNORECASE)
+            if fence_match:
+                s = fence_match.group(1).strip()
+            try:
+                obj = _json.loads(s)
+                return obj if isinstance(obj, dict) else None
+            except Exception:
+                pass
+            m = _re.search(r"\{[\s\S]*\}", s)
+            if not m:
+                return None
+            try:
+                obj = _json.loads(m.group(0))
+                return obj if isinstance(obj, dict) else None
+            except Exception:
+                return None
+
+        default_response = {
+            "selected_ids": [],
+            "primary_reason": "",
+            "merged_reason": "",
+            "llm_review_note": "LLM reason review 실패",
+            "review_confidence": "Low",
+        }
+
+        if self.backend == "local":
+            llm = self._get_local_llm()
+            ts = self._timestamp()
+            print(f"[{ts}][llm-stream] ▶ reason_review 생성 시작...", file=sys.stderr, flush=True)
+
+            if self.think_stream and self.stream:
+                chunks = llm.create_chat_completion(
+                    messages=messages,
+                    temperature=self.temperature,
+                    top_p=self.top_p,
+                    min_p=self.min_p,
+                    repeat_penalty=self.repeat_penalty,
+                    max_tokens=min(self.max_tokens, 420),
+                    grammar=None,
+                    stream=True,
+                )
+                acc: List[str] = []
+                token_count = 0
+                last_chunk = None
+                for chunk in chunks:
+                    last_chunk = chunk
+                    try:
+                        delta = chunk["choices"][0].get("delta", {})
+                        piece = delta.get("content", "")
+                    except Exception:
+                        piece = ""
+                    if piece:
+                        acc.append(piece)
+                        token_count += 1
+                        print(piece, end="", file=sys.stderr, flush=True)
+
+                _elapsed = _time.time() - _start
+                ts = self._timestamp()
+                print(f"\n[{ts}][llm-stream] ■ reason_review 완료 ({_elapsed:.2f}s)", file=sys.stderr, flush=True)
+
+                usage = last_chunk.get("usage") if last_chunk and isinstance(last_chunk, dict) else None
+                if self.print_timings:
+                    print(f"[{ts}][llm-usage] ── reason_review ──", file=sys.stderr, flush=True)
+                    if usage:
+                        print(f"  prompt_tokens: {usage.get('prompt_tokens', 0)}", file=sys.stderr, flush=True)
+                        print(
+                            f"  completion_tokens: {usage.get('completion_tokens', token_count)}",
+                            file=sys.stderr,
+                            flush=True,
+                        )
+                        print(f"  total_tokens: {usage.get('total_tokens', 0)}", file=sys.stderr, flush=True)
+                    else:
+                        prompt_chars = sum(len(m.get("content", "")) for m in messages)
+                        est_prompt_tokens = prompt_chars // 3
+                        print(f"  prompt_tokens (추정): ~{est_prompt_tokens}", file=sys.stderr, flush=True)
+                        print(f"  completion_tokens: {token_count}", file=sys.stderr, flush=True)
+                        print(
+                            f"  total_tokens (추정): ~{est_prompt_tokens + token_count}",
+                            file=sys.stderr,
+                            flush=True,
+                        )
+                    print(f"  elapsed: {_elapsed:.2f}s", file=sys.stderr, flush=True)
+                    if _elapsed > 0:
+                        print(f"  response_tok/s: {token_count / _elapsed:.2f}", file=sys.stderr, flush=True)
+
+                parsed = _parse_json_object("".join(acc))
+                return parsed if parsed else default_response
+
+            data = llm.create_chat_completion(
+                messages=messages,
+                temperature=self.temperature,
+                top_p=self.top_p,
+                min_p=self.min_p,
+                repeat_penalty=self.repeat_penalty,
+                max_tokens=min(self.max_tokens, 420),
+                grammar=None if self.think_stream else self._get_json_object_grammar(),
+            )
+            _elapsed = _time.time() - _start
+            ts = self._timestamp()
+            print(f"[{ts}][llm-stream] ■ reason_review 완료 ({_elapsed:.2f}s)", file=sys.stderr, flush=True)
+            self._print_usage_details("reason_review", data, _elapsed)
+            try:
+                content = data["choices"][0]["message"]["content"]
+                parsed = _parse_json_object(content)
+                return parsed if parsed else default_response
+            except Exception:
+                return default_response
+
+        # HTTP backend
+        url = f"{self.endpoint.rstrip('/')}/v1/chat/completions"
+        body = {
+            "model": self.model,
+            "messages": messages,
+            "temperature": self.temperature,
+            "top_p": self.top_p,
+            "min_p": self.min_p,
+            "repeat_penalty": self.repeat_penalty,
+            "max_tokens": max(128, min(self.max_tokens, 420)),
+            "response_format": {"type": "json_object"},
+            "enable_thinking": self.enable_thinking,
+            "chat_template_kwargs": {"enable_thinking": self.enable_thinking},
+        }
+
+        if self.stream:
+            def _do_http_stream():
+                content = self._http_stream_completion(url, body, "reason_review", messages)
+                parsed = _parse_json_object(content)
+                return parsed if parsed else default_response
+
+            return retry_with_backoff(
+                _do_http_stream,
+                max_retries=self.max_retries,
+                base_delay=self.retry_base_delay,
+                exceptions=(httpx.HTTPError, httpx.TimeoutException, ConnectionError, OSError),
+                on_failure=lambda e: default_response,
+            )
+
+        def _do_http():
+            resp = httpx.post(url, json=body, timeout=self.timeout_s)
+            resp.raise_for_status()
+            data = resp.json()
+            self.last_usage = data.get("usage") if isinstance(data, dict) else None
+            self.last_model = data.get("model") if isinstance(data, dict) else None
+            try:
+                content = data["choices"][0]["message"]["content"]
+                parsed = _parse_json_object(content)
+                return parsed if parsed else default_response
+            except Exception:
+                return default_response
+
         return retry_with_backoff(
             _do_http,
             max_retries=self.max_retries,
