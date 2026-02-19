@@ -19,6 +19,11 @@ from ..prompts.expert_prompts import (
     CRITIC_PROMPT,
     assemble_final_output,
 )
+from ..prompts.prompt_router import (
+    build_gatekeeper_system_prompt,
+    build_decoder_system_prompt,
+    build_verifier_system_prompt,
+)
 
 __all__ = [
     "GATEKEEPER_SYSTEM",
@@ -30,4 +35,7 @@ __all__ = [
     "CRITIC_SYSTEM",
     "CRITIC_PROMPT",
     "assemble_final_output",
+    "build_gatekeeper_system_prompt",
+    "build_decoder_system_prompt",
+    "build_verifier_system_prompt",
 ]
