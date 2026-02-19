@@ -197,6 +197,14 @@ def main() -> None:
                 except Exception:
                     pass
 
+            # 초기 import 타이밍 이슈로 monitor가 비어있을 수 있으므로 lazy attach
+            if self._monitor is None and not _NO_DASHBOARD:
+                try:
+                    from llm_batch.monitor.event_bus import monitor as _mon
+                    self._monitor = _mon
+                except Exception:
+                    pass
+
             # 대시보드 로그 포워딩 — 줄바꿈 단위로 버퍼링
             if self._monitor:
                 try:
@@ -263,10 +271,24 @@ def main() -> None:
                     from llm_batch.monitor.server import start_dashboard
                     from llm_batch.monitor.event_bus import monitor as _monitor
                     _dash_port = int(os.environ.get("DASHBOARD_PORT", "8080"))
-                    start_dashboard(port=_dash_port)
-                    print(f"[expert_main] 📊 Dashboard: http://0.0.0.0:{_dash_port}", file=_orig_err, flush=True)
+                    _dash_thread = start_dashboard(port=_dash_port)
+                    _dash_actual_port = int(getattr(_dash_thread, "dashboard_port", _dash_port))
+                    # _Tee가 초기에 monitor import를 놓쳐도 즉시 연결되도록 재주입
+                    for _tee_stream in (sys.stdout, sys.stderr):
+                        try:
+                            if hasattr(_tee_stream, "_monitor"):
+                                setattr(_tee_stream, "_monitor", _monitor)
+                        except Exception:
+                            pass
+                    # sys.stderr(_Tee)로 출력해 콘솔+로그 파일 모두에 남긴다.
+                    print(
+                        f"[expert_main] 📊 Dashboard: http://127.0.0.1:{_dash_actual_port} (bind=0.0.0.0)",
+                        file=sys.stderr,
+                        flush=True,
+                    )
                 except Exception as _e:
-                    print(f"[expert_main] ⚠️ 대시보드 기동 실패: {_e}", file=_orig_err, flush=True)
+                    # 실패 원인도 로그 파일에 남겨 실행 중 추적 가능하게 한다.
+                    print(f"[expert_main] ⚠️ 대시보드 기동 실패: {_e}", file=sys.stderr, flush=True)
                     _monitor = None
             else:
                 _monitor = None
