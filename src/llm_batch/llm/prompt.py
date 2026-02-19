@@ -15,6 +15,7 @@ from ..prompts.pipeline_prompts import (
     SEARCH_PLANNER_PROMPT,
     HYPOTHESIS_PROMPT,
     VERIFICATION_PROMPT,
+    REASON_REVIEW_PROMPT,
 )
 
 __all__ = [
@@ -24,5 +25,6 @@ __all__ = [
     "SEARCH_PLANNER_PROMPT",
     "HYPOTHESIS_PROMPT",
     "VERIFICATION_PROMPT",
+    "REASON_REVIEW_PROMPT",
 ]
 
