@@ -8,6 +8,7 @@
 <style>
   body { background: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; }
   .glass { background: rgba(30,41,59,.7); backdrop-filter: blur(8px); border: 1px solid rgba(148,163,184,.15); }
+  .page-shell { width: min(80vw, 1680px); margin-left: auto; margin-right: auto; }
   .step-active { background: #2563eb; color: #fff; box-shadow: 0 0 12px rgba(37,99,235,.5); }
   .step-done { background: #059669; color: #fff; }
   .step-idle { background: rgba(51,65,85,.6); color: #94a3b8; }
@@ -17,9 +18,13 @@
   #log-area::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
   .badge-relevant { background: #059669; }
   .badge-noise { background: #64748b; }
+  .badge-core { background: #059669; }
+  .badge-adjacent { background: #d97706; }
+  .badge-unrelated { background: #475569; }
   .badge-high { background: #2563eb; }
   .badge-medium { background: #d97706; }
   .badge-low { background: #dc2626; }
+  .subtle-meta { color: #94a3b8; font-size: 11px; line-height: 1.35; }
   .tab-active { border-bottom: 2px solid #2563eb; color: #fff; }
   .tab-idle { border-bottom: 2px solid transparent; color: #94a3b8; }
   .tab-idle:hover { color: #cbd5e1; }
@@ -33,7 +38,7 @@
   tr.row-clickable:hover { background: rgba(51,65,85,.4); }
   /* Modal */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.65); backdrop-filter: blur(4px); z-index: 900; display: flex; align-items: center; justify-content: center; }
-  .modal-panel { background: #1e293b; border: 1px solid rgba(148,163,184,.2); border-radius: 16px; width: 95vw; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 60px rgba(0,0,0,.5); }
+  .modal-panel { background: #1e293b; border: 1px solid rgba(148,163,184,.2); border-radius: 16px; width: min(96vw, 80vw); max-width: 1500px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 60px rgba(0,0,0,.5); }
   .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid rgba(71,85,105,.4); flex-shrink: 0; }
   .modal-body { overflow-y: auto; padding: 20px 24px; flex: 1; }
   .modal-body::-webkit-scrollbar { width: 6px; }
@@ -42,12 +47,19 @@
   .modal-close:hover { background: #ef4444; color: #fff; }
   .detail-section { margin-bottom: 16px; }
   .detail-section-title { font-size: 13px; font-weight: 600; color: #94a3b8; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-  .detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px 20px; }
+  .detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px 20px; }
   .detail-kv .label { color: #64748b; font-size: 11px; }
   .detail-kv .value { color: #e2e8f0; font-size: 13px; margin-top: 1px; }
   .detail-block { background: rgba(15,23,42,.6); border: 1px solid rgba(71,85,105,.3); border-radius: 8px; padding: 12px; margin-top: 6px; font-size: 12px; line-height: 1.7; color: #cbd5e1; max-height: 200px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; }
   .detail-block::-webkit-scrollbar { width: 5px; }
   .detail-block::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  .reason-block { white-space: normal; line-height: 1.75; }
+  .reason-section { margin-top: 10px; }
+  .reason-section:first-child { margin-top: 0; }
+  .reason-section-header { color: #e2e8f0; font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+  .reason-line { color: #cbd5e1; font-size: 12px; margin: 2px 0; word-break: break-word; }
+  .reason-line.bullet { padding-left: 10px; text-indent: -10px; }
+  .reason-line.muted { color: #94a3b8; }
   .tag-chip { display: inline-block; padding: 2px 8px; border-radius: 6px; background: rgba(71,85,105,.5); color: #cbd5e1; font-size: 11px; margin: 2px 3px 2px 0; }
   @keyframes modalIn { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:none} }
   .modal-panel { animation: modalIn .2s ease; }
@@ -63,6 +75,29 @@
   .flow-step.active { background: rgba(37,99,235,.35); color: #93c5fd; box-shadow: 0 0 6px rgba(37,99,235,.3); }
   .flow-step.recall { background: rgba(245,158,11,.25); color: #fcd34d; }
   .flow-reason { font-size: 10px; color: #94a3b8; font-style: italic; }
+  /* ── Log Viewer Modal ── */
+  .log-modal-panel { background: #0f172a; border: 1px solid rgba(148,163,184,.2); border-radius: 16px; width: min(98vw, 88vw); max-width: 1800px; max-height: 92vh; display: flex; flex-direction: column; box-shadow: 0 25px 60px rgba(0,0,0,.6); animation: modalIn .2s ease; }
+  .log-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid rgba(71,85,105,.4); flex-shrink: 0; }
+  .log-modal-body { flex: 1; overflow-y: auto; padding: 0; font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace; font-size: 11.5px; line-height: 1.6; }
+  .log-modal-body::-webkit-scrollbar { width: 6px; }
+  .log-modal-body::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+  .log-line { padding: 0 16px; white-space: pre-wrap; word-break: break-all; }
+  .log-line:hover { background: rgba(51,65,85,.3); }
+  .log-line.log-gk { color: #6ee7b7; }
+  .log-line.log-dc { color: #93c5fd; }
+  .log-line.log-de { color: #c4b5fd; }
+  .log-line.log-ar { color: #fcd34d; }
+  .log-line.log-vr { color: #f9a8d4; }
+  .log-line.log-sy { color: #7dd3fc; }
+  .log-line.log-dl { color: #fca5a5; }
+  .log-line.log-search { color: #a5b4fc; }
+  .log-line.log-llm { color: #64748b; }
+  .log-line.log-banner { color: #f59e0b; font-weight: 600; }
+  .log-line.log-result { color: #34d399; font-weight: 500; }
+  .log-filter-bar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .log-filter-btn { padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(148,163,184,.2); background: transparent; color: #94a3b8; font-size: 10px; cursor: pointer; transition: .15s; }
+  .log-filter-btn:hover { background: rgba(51,65,85,.5); color: #e2e8f0; }
+  .log-filter-btn.active { background: rgba(37,99,235,.3); border-color: rgba(37,99,235,.5); color: #93c5fd; }
   /* ── Parallel Worker Cards ── */
   .worker-card { background: rgba(30,41,59,.8); border: 1px solid rgba(148,163,184,.12); border-radius: 12px; padding: 14px; transition: all .3s; }
   .worker-card.active { border-color: rgba(37,99,235,.4); box-shadow: 0 0 12px rgba(37,99,235,.15); }
@@ -87,7 +122,7 @@
 <body class="min-h-screen p-4 md:p-6">
 
 <!-- Header -->
-<div class="max-w-7xl mx-auto mb-6">
+<div class="page-shell mb-6">
   <div class="flex items-center justify-between flex-wrap gap-4">
     <h1 class="text-2xl font-bold">🤖 Expert Pipeline Monitor</h1>
     <div class="flex items-center gap-3">
@@ -97,7 +132,7 @@
   </div>
 </div>
 
-<div class="max-w-7xl mx-auto space-y-4">
+<div class="page-shell space-y-4">
 
   <!-- Tab Bar -->
   <div class="flex gap-6 border-b border-slate-700 mb-2">
@@ -133,7 +168,7 @@
       <!-- Stats Cards -->
       <div class="glass rounded-xl p-4 space-y-3">
         <h3 class="text-sm font-semibold text-slate-300 mb-2">📊 통계</h3>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
           <div class="text-center">
             <div id="stat-relevant" class="text-2xl font-bold text-emerald-400">0</div>
             <div class="text-xs text-slate-400">Relevant</div>
@@ -145,6 +180,14 @@
           <div class="text-center">
             <div id="stat-tokens" class="text-2xl font-bold text-blue-400">0</div>
             <div class="text-xs text-slate-400">총 토큰</div>
+          </div>
+          <div class="text-center">
+            <div id="stat-prompt-tokens" class="text-2xl font-bold text-sky-400">0</div>
+            <div class="text-xs text-slate-400">입력 토큰</div>
+          </div>
+          <div class="text-center">
+            <div id="stat-completion-tokens" class="text-2xl font-bold text-violet-400">0</div>
+            <div class="text-xs text-slate-400">출력 토큰</div>
           </div>
           <div class="text-center">
             <div id="stat-cache" class="text-2xl font-bold text-amber-400">-</div>
@@ -206,16 +249,34 @@
 
       <!-- Results Table -->
       <div class="glass rounded-xl p-4">
-        <h3 class="text-sm font-semibold text-slate-300 mb-3">📋 처리 결과</h3>
+        <div class="flex items-center justify-between mb-3 gap-3 flex-wrap">
+          <h3 class="text-sm font-semibold text-slate-300">📋 처리 결과</h3>
+          <div class="flex items-center gap-2 text-xs">
+            <button id="live-prev-btn" onclick="changeLivePage(-1)" class="px-2 py-1 rounded bg-slate-800 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed">이전</button>
+            <span id="live-page-info" class="text-slate-400 min-w-[110px] text-center">0 / 0 · 0건</span>
+            <button id="live-next-btn" onclick="changeLivePage(1)" class="px-2 py-1 rounded bg-slate-800 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed">다음</button>
+          </div>
+        </div>
         <div class="overflow-auto max-h-[50vh]">
-          <table class="w-full text-xs">
+          <table class="w-full text-xs table-fixed min-w-[1100px]">
+            <colgroup>
+              <col class="w-[44px]">
+              <col class="w-[92px]">
+              <col class="w-[29%]">
+              <col class="w-[138px]">
+              <col class="w-[20%]">
+              <col class="w-[24%]">
+              <col class="w-[72px]">
+              <col class="w-[84px]">
+            </colgroup>
             <thead class="text-slate-400 sticky top-0 bg-slate-800/90">
               <tr>
                 <th class="text-left py-2 px-2">#</th>
                 <th class="text-left py-2 px-2">Post ID</th>
                 <th class="text-left py-2 px-2">제목</th>
                 <th class="text-left py-2 px-2">결과</th>
-                <th class="text-left py-2 px-2">소설</th>
+                <th class="text-left py-2 px-2">구조</th>
+                <th class="text-left py-2 px-2">작품 / 해결</th>
                 <th class="text-left py-2 px-2">Conf.</th>
                 <th class="text-right py-2 px-2">시간</th>
               </tr>
@@ -224,6 +285,7 @@
           </table>
           <div id="results-empty" class="text-center text-slate-500 py-8">아직 처리된 포스트가 없습니다</div>
         </div>
+        <div id="live-page-buttons" class="mt-3 flex items-center justify-center gap-1 flex-wrap"></div>
       </div>
 
       <!-- Log Stream (워커별 탭 지원) -->
@@ -278,15 +340,33 @@
             <div class="text-xs text-slate-400">Noise</div>
           </div>
         </div>
+        <div class="flex items-center justify-between mb-3 gap-3 flex-wrap">
+          <span id="history-page-info" class="text-xs text-slate-400">0 / 0 · 0건</span>
+          <div class="flex items-center gap-2 text-xs">
+            <button id="history-prev-btn" onclick="changeHistoryPage(-1)" class="px-2 py-1 rounded bg-slate-800 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed">이전</button>
+            <button id="history-next-btn" onclick="changeHistoryPage(1)" class="px-2 py-1 rounded bg-slate-800 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed">다음</button>
+          </div>
+        </div>
         <div class="overflow-auto max-h-[60vh]">
-          <table class="w-full text-xs">
+          <table class="w-full text-xs table-fixed min-w-[1100px]">
+            <colgroup>
+              <col class="w-[44px]">
+              <col class="w-[92px]">
+              <col class="w-[29%]">
+              <col class="w-[138px]">
+              <col class="w-[20%]">
+              <col class="w-[24%]">
+              <col class="w-[72px]">
+              <col class="w-[96px]">
+            </colgroup>
             <thead class="text-slate-400 sticky top-0 bg-slate-800/90">
               <tr>
                 <th class="text-left py-2 px-2">#</th>
                 <th class="text-left py-2 px-2">Post ID</th>
                 <th class="text-left py-2 px-2">제목</th>
                 <th class="text-left py-2 px-2">결과</th>
-                <th class="text-left py-2 px-2">소설</th>
+                <th class="text-left py-2 px-2">구조</th>
+                <th class="text-left py-2 px-2">작품 / 해결</th>
                 <th class="text-left py-2 px-2">Conf.</th>
                 <th class="text-left py-2 px-2">토론유형</th>
               </tr>
@@ -319,18 +399,322 @@
   </div>
 </div>
 
+<!-- Log Viewer Modal -->
+<div id="log-modal" class="modal-overlay" style="display:none;z-index:950" onclick="if(event.target===this)closeLogModal()">
+  <div class="log-modal-panel">
+    <div class="log-modal-header">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span id="log-modal-title" class="text-sm font-bold">📜 처리 로그</span>
+        <span id="log-modal-source" class="text-xs text-slate-500"></span>
+        <div class="log-filter-bar">
+          <button class="log-filter-btn active" data-filter="all" onclick="toggleLogFilter(this)">전체</button>
+          <button class="log-filter-btn active" data-filter="llm" onclick="toggleLogFilter(this)">LLM</button>
+          <button class="log-filter-btn active" data-filter="search" onclick="toggleLogFilter(this)">검색</button>
+          <button class="log-filter-btn active" data-filter="json" onclick="toggleLogFilter(this)">JSON</button>
+        </div>
+        <span id="log-modal-count" class="text-xs text-slate-500"></span>
+      </div>
+      <button class="modal-close" onclick="closeLogModal()">&times;</button>
+    </div>
+    <div class="log-modal-body" id="log-modal-body"></div>
+  </div>
+</div>
+
 <script>
 // ─── State ──────────────────────────────────────
 let sse = null;
 let currentTab = 'live';
 const doneSteps = new Set();
 const recallCounts = {};  // {expert: count} — 재호출 횟수 추적
-const resultDataStore = [];  // 전체 결과 데이터 저장 (상세 보기용)
 const flowLog = [];  // 파이프라인 실행 흐름 로그
 let sseReconnectAttempts = 0;
 let lastEventTime = Date.now();
 const MAX_LOG_LINES = 500;  // 로그 DOM 최대 줄수
-const MAX_RESULT_ROWS = 300; // 결과 테이블 최대 행수
+const LIVE_PAGE_SIZE = 500;
+const HISTORY_PAGE_SIZE = 200;
+let liveResultPage = [];
+let liveCurrentPage = 0;
+let liveTotalResults = 0;
+let livePageLoading = false;
+let historyFileName = '';
+let historyLogFileName = '';
+let historyPageData = [];
+let historyCurrentPage = 0;
+let historyTotalResults = 0;
+let liveCachedSnapshot = null;
+let liveInitialPageLoaded = false;
+let livePendingRestoreItems = [];
+
+// ─── localStorage 캐시 (서버 종료 후에도 조회 가능) ──
+const _CACHE_PREFIX = 'lndc_';
+const _CACHE_RESULTS_KEY = _CACHE_PREFIX + 'results';
+const _CACHE_LOG_PREFIX = _CACHE_PREFIX + 'log_';
+const _CACHE_MAX_LOGS = 50;  // 최대 캐시할 포스트 로그 수
+
+function _cacheSet(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+}
+function _cacheGet(key) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; } catch { return null; }
+}
+function _cacheSaveResults() {
+  _cacheSet(_CACHE_RESULTS_KEY, {
+    items: liveResultPage.slice(0, LIVE_PAGE_SIZE),
+    total: liveTotalResults,
+    page: liveCurrentPage,
+  });
+}
+function _cacheSavePostLog(postId, data) {
+  // 개별 포스트 로그 캐시 (source, lines)
+  _cacheSet(_CACHE_LOG_PREFIX + postId, data);
+  // 캐시된 로그 ID 목록 관리 (FIFO)
+  let ids = _cacheGet(_CACHE_PREFIX + 'log_ids') || [];
+  ids = ids.filter(id => id !== postId);
+  ids.push(postId);
+  // 오래된 것 삭제
+  while (ids.length > _CACHE_MAX_LOGS) {
+    const old = ids.shift();
+    try { localStorage.removeItem(_CACHE_LOG_PREFIX + old); } catch {}
+  }
+  _cacheSet(_CACHE_PREFIX + 'log_ids', ids);
+}
+function _cacheGetPostLog(postId) {
+  return _cacheGet(_CACHE_LOG_PREFIX + postId);
+}
+function _cacheLoadResults() {
+  return _cacheGet(_CACHE_RESULTS_KEY) || { items: [], total: 0, page: 0 };
+}
+
+function _restoreLiveResultsFromCache() {
+  if (!liveCachedSnapshot || !Array.isArray(liveCachedSnapshot.items) || liveCachedSnapshot.items.length === 0) {
+    return false;
+  }
+  liveResultPage = liveCachedSnapshot.items.slice(0, LIVE_PAGE_SIZE);
+  liveTotalResults = Number(liveCachedSnapshot.total || liveCachedSnapshot.items.length);
+  liveCurrentPage = 0;
+  renderLiveResults();
+  console.log(`[Cache] ${liveCachedSnapshot.items.length}건 결과 캐시에서 복원`);
+  return true;
+}
+
+function toLiveSummary(item) {
+  if (!item || typeof item !== 'object') return null;
+  if (!item.analysis_result) return {
+    ...item,
+    topicality: item.topicality || null,
+    relevance_scope: item.relevance_scope || null,
+    subtype: item.subtype || null,
+    work_resolution: item.work_resolution || null,
+    anchor_type: item.anchor_type || null,
+    anchor_strength: item.anchor_strength || null,
+    context_sources: item.context_sources || [],
+    consistency_flags: item.consistency_flags || [],
+    primary_work: item.primary_work || null,
+    title_candidates: item.title_candidates || [],
+    mentioned_works: item.mentioned_works || [],
+    comparison_target: item.comparison_target || null,
+    recommendation_candidates: item.recommendation_candidates || [],
+    novel_identity: item.novel_identity || {},
+    reason: item.reason || '',
+    reason_lines: item.reason_lines || [],
+    analysis_notes: item.analysis_notes || '',
+  };
+
+  const identity = item.analysis_result?.identity || {};
+  const analysis = item.analysis_result?.analysis || {};
+  const novel = identity.novel_identity || {};
+  return {
+    post_id: item.post_id,
+    title: item.title || '',
+    author: item.author,
+    created_at: item.created_at,
+    url: item.url,
+    is_relevant: identity.is_relevant,
+    official_title: novel.official_title,
+    confidence: novel.confidence,
+    discussion_type: identity.discussion_type,
+    topicality: identity.topicality,
+    relevance_scope: identity.relevance_scope,
+    subtype: identity.subtype,
+    work_resolution: identity.work_resolution,
+    anchor_type: identity.anchor_type,
+    anchor_strength: identity.anchor_strength,
+    context_sources: identity.context_sources || [],
+    consistency_flags: identity.consistency_flags || [],
+    primary_work: identity.primary_work,
+    title_candidates: identity.title_candidates || [],
+    mentioned_works: identity.mentioned_works || [],
+    comparison_target: identity.comparison_target || null,
+    recommendation_candidates: identity.recommendation_candidates || [],
+    novel_identity: novel,
+    reason: identity.reason || '',
+    reason_lines: identity.reason_lines || [],
+    analysis_notes: analysis.notes || '',
+    elapsed: item.elapsed,
+    token_usage: item.token_usage,
+  };
+}
+
+const TOPICALITY_LABELS = {
+  core_relevant: '핵심 관련',
+  adjacent_relevant: '주변 관련',
+  unrelated: '무관',
+};
+
+const SUBTYPE_LABELS = {
+  resolved_work: '단일 작품 확정',
+  unresolved_work: '작품 관련 미확정',
+  multi_work_compare: '복수 작품 비교',
+  character_talk: '캐릭터 담론',
+  plot_spoiler: '플롯/스포일러',
+  review_reaction: '리뷰/반응',
+  author_meta: '작가 메타',
+  platform_meta: '플랫폼 메타',
+  release_serialization_meta: '연재/유료화 메타',
+  recommendation_request: '추천 요청',
+  genre_trope_discussion: '장르/트로프 담론',
+  community_work_banter: '커뮤니티 작품 잡담',
+  daily_life: '일상 잡담',
+  realworld_social_talk: '현실/사회 이야기',
+  cross_media_game: '타매체/게임',
+  pure_meme: '순수 밈',
+  other_quarantine: '기타 격리',
+};
+
+const WORK_RESOLUTION_LABELS = {
+  resolved: 'resolved',
+  unresolved: 'unresolved',
+  multi_work: 'multi_work',
+  none: 'none',
+};
+
+const ANCHOR_TYPE_LABELS = {
+  title_alias: '약칭',
+  title_exact: '정식 제목',
+  character: '캐릭터',
+  author: '작가',
+  platform: '플랫폼',
+  genre: '장르',
+  neighbor: '인접 문맥',
+  image: '이미지',
+  none: '없음',
+};
+
+const ANCHOR_STRENGTH_LABELS = {
+  high: 'high',
+  medium: 'medium',
+  low: 'low',
+  none: 'none',
+};
+
+const CONTEXT_SOURCE_LABELS = {
+  title: '제목',
+  body: '본문',
+  comments: '댓글',
+  neighbor_posts: '인접 글',
+  search: '검색',
+  image: '이미지',
+};
+
+const RELEVANCE_SCOPE_LABELS = {
+  core: 'core',
+  adjacent: 'adjacent',
+  off_topic: 'off_topic',
+};
+
+function enumLabel(value, labels) {
+  if (!value) return '-';
+  return labels[value] || String(value).replaceAll('_', ' ');
+}
+
+function topicalityMeta(topicality, isRelevant) {
+  if (topicality === 'core_relevant') {
+    return { label: TOPICALITY_LABELS[topicality], cls: 'badge-core' };
+  }
+  if (topicality === 'adjacent_relevant') {
+    return { label: TOPICALITY_LABELS[topicality], cls: 'badge-adjacent' };
+  }
+  if (topicality === 'unrelated') {
+    return { label: TOPICALITY_LABELS[topicality], cls: 'badge-unrelated' };
+  }
+  return isRelevant
+    ? { label: 'relevant', cls: 'badge-relevant' }
+    : { label: 'noise', cls: 'badge-noise' };
+}
+
+function compactStructureText(data) {
+  const parts = [];
+  if (data.topicality) parts.push(enumLabel(data.topicality, TOPICALITY_LABELS));
+  if (data.subtype) parts.push(enumLabel(data.subtype, SUBTYPE_LABELS));
+  if (data.work_resolution) parts.push(enumLabel(data.work_resolution, WORK_RESOLUTION_LABELS));
+  return parts.length ? parts.join(' / ') : '-';
+}
+
+function pickDisplayWorkTitle(data) {
+  const novel = data.novel_identity || {};
+  if (data.official_title) return data.official_title;
+  if (novel.official_title) return novel.official_title;
+  const primary = data.primary_work;
+  if (primary && typeof primary === 'object') {
+    const primaryTitle = primary.official_title || primary.alias_or_mention;
+    if (primaryTitle) return primaryTitle;
+  }
+  if (typeof primary === 'string' && primary.trim()) return primary.trim();
+  const candidates = Array.isArray(data.title_candidates) ? data.title_candidates : [];
+  for (const cand of candidates) {
+    if (!cand || typeof cand !== 'object') continue;
+    const candTitle = cand.official_title || cand.alias_or_mention;
+    if (candTitle) return candTitle;
+  }
+  return '-';
+}
+
+function compactWorkMetaText(data) {
+  const parts = [];
+  if (data.work_resolution) parts.push(enumLabel(data.work_resolution, WORK_RESOLUTION_LABELS));
+  if (data.relevance_scope) parts.push(enumLabel(data.relevance_scope, RELEVANCE_SCOPE_LABELS));
+  if (data.anchor_type) {
+    const anchor = enumLabel(data.anchor_type, ANCHOR_TYPE_LABELS);
+    const strength = enumLabel(data.anchor_strength, ANCHOR_STRENGTH_LABELS);
+    parts.push(data.anchor_strength ? `${anchor} · ${strength}` : anchor);
+  }
+  return parts.length ? parts.join(' / ') : '-';
+}
+
+function renderTagChips(values, labelMap = null) {
+  if (!Array.isArray(values) || !values.length) return '-';
+  return values
+    .filter(Boolean)
+    .map(value => `<span class="tag-chip">${escHtml(labelMap ? enumLabel(value, labelMap) : String(value))}</span>`)
+    .join('');
+}
+
+function titleLabel(titleObj) {
+  if (!titleObj || typeof titleObj !== 'object') return '';
+  const title = titleObj.official_title || titleObj.alias_or_mention || '-';
+  const conf = titleObj.confidence ? ` · ${titleObj.confidence}` : '';
+  return `${title}${conf}`;
+}
+
+function normalizeRestoreItems(items) {
+  if (!Array.isArray(items) || items.length === 0) return [];
+  const first = items[0] || {};
+  const isLegacyDetailedPayload =
+    !!first.analysis_result || Array.isArray(first.content) || Array.isArray(first.comments);
+
+  if (isLegacyDetailedPayload) {
+    return [...items]
+      .reverse()
+      .map(toLiveSummary)
+      .filter(Boolean)
+      .slice(0, LIVE_PAGE_SIZE);
+  }
+
+  return items
+    .map(toLiveSummary)
+    .filter(Boolean)
+    .slice(0, LIVE_PAGE_SIZE);
+}
 
 // ── Parallel mode state ──
 let parallelCount = 1;
@@ -349,6 +733,199 @@ function switchTab(tab) {
   document.getElementById('tab-live').className = 'pb-2 text-sm font-medium ' + (tab === 'live' ? 'tab-active' : 'tab-idle');
   document.getElementById('tab-history').className = 'pb-2 text-sm font-medium ' + (tab === 'history' ? 'tab-active' : 'tab-idle');
   if (tab === 'history') loadHistoryList();
+}
+
+function updateLivePager() {
+  const totalPages = liveTotalResults > 0 ? Math.ceil(liveTotalResults / LIVE_PAGE_SIZE) : 0;
+  document.getElementById('live-page-info').textContent = `${totalPages ? liveCurrentPage + 1 : 0} / ${totalPages} · ${fmtNum(liveTotalResults)}건`;
+  document.getElementById('live-prev-btn').disabled = liveCurrentPage <= 0;
+  document.getElementById('live-next-btn').disabled = totalPages === 0 || liveCurrentPage >= totalPages - 1;
+  renderLivePageButtons(totalPages);
+}
+
+function renderLivePageButtons(totalPages) {
+  const container = document.getElementById('live-page-buttons');
+  if (!container) return;
+  if (totalPages <= 1) {
+    container.innerHTML = '';
+    return;
+  }
+
+  const pages = [];
+  const addPage = (page) => {
+    if (page < 0 || page >= totalPages || pages.includes(page)) return;
+    pages.push(page);
+  };
+
+  addPage(0);
+  for (let page = liveCurrentPage - 2; page <= liveCurrentPage + 2; page++) {
+    addPage(page);
+  }
+  addPage(totalPages - 1);
+  pages.sort((a, b) => a - b);
+
+  const html = [];
+  pages.forEach((page, idx) => {
+    const prev = idx > 0 ? pages[idx - 1] : null;
+    if (prev != null && page - prev > 1) {
+      html.push('<span class="px-2 py-1 text-xs text-slate-500">...</span>');
+    }
+    const isActive = page === liveCurrentPage;
+    html.push(`
+      <button
+        onclick="goToLivePage(${page})"
+        class="px-2.5 py-1 rounded text-xs font-medium transition-colors ${isActive ? 'bg-blue-600 text-white ring-1 ring-blue-400' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}"
+      >${page + 1}</button>
+    `);
+  });
+
+  container.innerHTML = html.join('');
+}
+
+function goToLivePage(page) {
+  const totalPages = liveTotalResults > 0 ? Math.ceil(liveTotalResults / LIVE_PAGE_SIZE) : 0;
+  if (page < 0 || page >= totalPages || page === liveCurrentPage) return;
+  loadLiveResults(page);
+}
+
+function renderLiveResults() {
+  const tbody = document.getElementById('results-body');
+  const empty = document.getElementById('results-empty');
+  empty.textContent = '아직 처리된 포스트가 없습니다';
+
+  if (!liveResultPage.length) {
+    tbody.innerHTML = '';
+    empty.classList.remove('hidden');
+    updateLivePager();
+    return;
+  }
+
+  empty.classList.add('hidden');
+  tbody.innerHTML = liveResultPage.map((data, idx) => {
+    const badge = topicalityMeta(data.topicality, data.is_relevant);
+    const conf = data.confidence || '-';
+    const confClass = confBadge(conf);
+    const rowNum = liveTotalResults > 0
+      ? Math.max(liveTotalResults - (liveCurrentPage * LIVE_PAGE_SIZE) - idx, 1)
+      : idx + 1;
+    const structureText = compactStructureText(data);
+    const workTitle = pickDisplayWorkTitle(data);
+    const workText = compactWorkMetaText(data);
+    return `
+      <tr class="border-t border-slate-700/50 fade-in row-clickable" onclick="openLiveModal(${data.post_id})">
+        <td class="py-2 px-2 text-slate-400">${rowNum}</td>
+        <td class="py-2 px-2">${data.post_id || '-'}</td>
+        <td class="py-2 px-2 max-w-[260px] truncate" title="${escHtml(data.title || '')}">${escHtml((data.title || '').slice(0, 60))}</td>
+        <td class="py-2 px-2">
+          <div><span class="px-2 py-0.5 rounded text-xs ${badge.cls}">${escHtml(badge.label)}</span></div>
+          <div class="subtle-meta mt-1">${escHtml(data.discussion_type || '-')}</div>
+        </td>
+        <td class="py-2 px-2 max-w-[220px]">
+          <div class="subtle-meta" title="${escHtml(structureText)}">${escHtml(structureText)}</div>
+        </td>
+        <td class="py-2 px-2 max-w-[320px]">
+          <div class="truncate" title="${escHtml(workTitle)}">${escHtml(workTitle)}</div>
+          <div class="subtle-meta" title="${escHtml(workText)}">${escHtml(workText)}</div>
+        </td>
+        <td class="py-2 px-2"><span class="px-1.5 py-0.5 rounded text-xs ${confClass}">${conf}</span></td>
+        <td class="py-2 px-2 text-right text-slate-400">${data.elapsed ? data.elapsed.toFixed(1) + 's' : '-'}</td>
+      </tr>
+    `;
+  }).join('');
+  updateLivePager();
+}
+
+function mergeLiveResults(items) {
+  if (liveCurrentPage !== 0 || !Array.isArray(items) || items.length === 0) return;
+  const merged = [];
+  const seen = new Set();
+  [...items, ...liveResultPage].forEach(item => {
+    if (!item || seen.has(item.post_id)) return;
+    seen.add(item.post_id);
+    merged.push(item);
+  });
+  liveResultPage = merged.slice(0, LIVE_PAGE_SIZE);
+  renderLiveResults();
+  _cacheSaveResults();
+}
+
+function upsertLiveResult(item) {
+  if (!item) return;
+  if (liveCurrentPage === 0) {
+    liveResultPage = [item, ...liveResultPage.filter(row => row.post_id !== item.post_id)].slice(0, LIVE_PAGE_SIZE);
+    renderLiveResults();
+    _cacheSaveResults();
+  } else {
+    updateLivePager();
+  }
+}
+
+async function loadLiveResults(page = 0) {
+  if (livePageLoading) return;
+  livePageLoading = true;
+  try {
+    const offset = Math.max(page, 0) * LIVE_PAGE_SIZE;
+    const res = await fetch(`/api/results?offset=${offset}&limit=${LIVE_PAGE_SIZE}&order=desc`);
+    const payload = await res.json();
+
+    let nextItems = [];
+    let nextTotal = 0;
+
+    // 신형 API: { items, total, ... }
+    if (payload && Array.isArray(payload.items)) {
+      nextItems = payload.items;
+      nextTotal = Number(payload.total || 0);
+    }
+    // 구형 API 호환: 전체 배열을 반환하는 경우 클라이언트에서 페이지 slice
+    else if (Array.isArray(payload)) {
+      const ordered = [...payload].reverse();
+      nextItems = ordered.slice(offset, offset + LIVE_PAGE_SIZE);
+      nextTotal = ordered.length;
+    } else {
+      throw new Error('unexpected /api/results payload');
+    }
+
+    liveResultPage = nextItems;
+    liveTotalResults = nextTotal;
+    liveCurrentPage = Math.max(page, 0);
+    liveInitialPageLoaded = true;
+    livePendingRestoreItems = [];
+    renderLiveResults();
+    if (liveCurrentPage === 0) _cacheSaveResults();
+  } catch (err) {
+    console.warn('[Dashboard] live results load failed', err);
+    if (!liveInitialPageLoaded && _restoreLiveResultsFromCache()) {
+      return;
+    }
+    if (!liveInitialPageLoaded && livePendingRestoreItems.length > 0) {
+      liveResultPage = livePendingRestoreItems.slice(0, LIVE_PAGE_SIZE);
+      liveTotalResults = Math.max(liveTotalResults, livePendingRestoreItems.length);
+      liveCurrentPage = 0;
+      liveInitialPageLoaded = true;
+      renderLiveResults();
+      return;
+    }
+    if (liveTotalResults > 0) {
+      document.getElementById('results-empty').textContent = '이 페이지를 불러오지 못했습니다';
+      document.getElementById('results-empty').classList.remove('hidden');
+    }
+  } finally {
+    livePageLoading = false;
+  }
+}
+
+function changeLivePage(delta) {
+  const totalPages = liveTotalResults > 0 ? Math.ceil(liveTotalResults / LIVE_PAGE_SIZE) : 0;
+  const nextPage = liveCurrentPage + delta;
+  if (nextPage < 0 || nextPage >= totalPages) return;
+  loadLiveResults(nextPage);
+}
+
+function updateHistoryPager() {
+  const totalPages = historyTotalResults > 0 ? Math.ceil(historyTotalResults / HISTORY_PAGE_SIZE) : 0;
+  document.getElementById('history-page-info').textContent = `${totalPages ? historyCurrentPage + 1 : 0} / ${totalPages} · ${fmtNum(historyTotalResults)}건`;
+  document.getElementById('history-prev-btn').disabled = historyCurrentPage <= 0;
+  document.getElementById('history-next-btn').disabled = totalPages === 0 || historyCurrentPage >= totalPages - 1;
 }
 
 // ─── SSE Connection ─────────────────────────────
@@ -373,16 +950,13 @@ function connectSSE() {
   sse.addEventListener('restore', (e) => {
     lastEventTime = Date.now();
     try {
-      const results = JSON.parse(e.data);
-      if (Array.isArray(results)) {
-        // 현재 저장된 ID 목록
-        const existingIds = new Set(resultDataStore.map(r => r.post_id));
-        results.forEach(r => {
-          if (!existingIds.has(r.post_id)) {
-            addResultRow(r);
-          }
-        });
+      const results = normalizeRestoreItems(JSON.parse(e.data));
+      if (!results.length) return;
+      if (!liveInitialPageLoaded) {
+        livePendingRestoreItems = results;
+        return;
       }
+      mergeLiveResults(results);
     } catch {}
   });
   
@@ -424,9 +998,13 @@ function handleEvent(msg) {
       resetPipelineSteps();
       clearFlowLog();
       activeWorkers.clear();
-      document.getElementById('results-body').innerHTML = '';
-      document.getElementById('results-empty').classList.remove('hidden');
-      resultDataStore.length = 0;
+      liveResultPage = [];
+      liveCurrentPage = 0;
+      liveTotalResults = 0;
+      liveInitialPageLoaded = false;
+      livePendingRestoreItems = [];
+      renderLiveResults();
+      _cacheSaveResults();
       // 병렬 모드 UI 전환
       toggleParallelUI(parallelCount > 1);
       // 워커 로그 초기화
@@ -509,7 +1087,7 @@ function handleEvent(msg) {
         activeWorkers.delete(postId);
         renderWorkerCards();
       }
-      addResultRow(data);
+      upsertLiveResult(data);
       fetch('/api/status').then(r=>r.json()).then(updateStatus);
       break;
     }
@@ -559,11 +1137,16 @@ function updateStatus(s) {
   document.getElementById('stat-relevant').textContent = s.relevant_count || 0;
   document.getElementById('stat-noise').textContent = s.noise_count || 0;
   document.getElementById('stat-tokens').textContent = fmtNum(s.token_usage?.total_tokens || 0);
+  document.getElementById('stat-prompt-tokens').textContent = fmtNum(s.token_usage?.prompt_tokens || 0);
+  document.getElementById('stat-completion-tokens').textContent = fmtNum(s.token_usage?.completion_tokens || 0);
   
   const total_search = (s.search_hits||0) + (s.search_misses||0);
   document.getElementById('stat-cache').textContent = total_search > 0
     ? Math.round(s.search_hits / total_search * 100) + '%'
     : '-';
+
+  liveTotalResults = Number(s.done_count || 0);
+  updateLivePager();
 
   if (s.current_expert) {
     updatePipeline(s.current_expert, s.current_expert_status);
@@ -780,48 +1363,54 @@ function renderWorkerCards() {
   }
 }
 
-function addResultRow(data) {
-  document.getElementById('results-empty').classList.add('hidden');
-  const tbody = document.getElementById('results-body');
-  const idx = resultDataStore.length;
-  resultDataStore.push(data);
-  const rowNum = idx + 1;
-  const relevant = data.is_relevant;
-  const conf = data.confidence || '-';
-  const confClass = confBadge(conf);
-  
-  const tr = document.createElement('tr');
-  tr.className = 'border-t border-slate-700/50 fade-in row-clickable';
-  tr.dataset.idx = idx;
-  tr.onclick = function() { openLiveModal(idx); };
-  tr.innerHTML = `
-    <td class="py-2 px-2 text-slate-400">${rowNum}</td>
-    <td class="py-2 px-2">${data.post_id || '-'}</td>
-    <td class="py-2 px-2 max-w-[200px] truncate" title="${escHtml(data.title||'')}">${escHtml((data.title||'').slice(0,40))}</td>
-    <td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-xs ${relevant ? 'badge-relevant' : 'badge-noise'}">${relevant ? 'relevant' : 'noise'}</span></td>
-    <td class="py-2 px-2 max-w-[150px] truncate" title="${escHtml(data.official_title||'')}">${escHtml(data.official_title||'-')}</td>
-    <td class="py-2 px-2"><span class="px-1.5 py-0.5 rounded text-xs ${confClass}">${conf}</span></td>
-    <td class="py-2 px-2 text-right text-slate-400">${data.elapsed ? data.elapsed.toFixed(1) + 's' : '-'}</td>
-  `;
-  tbody.prepend(tr);
-  // DOM 행 수 제한 (오래된 행 제거, 데이터는 resultDataStore에 유지)
-  while (tbody.children.length > MAX_RESULT_ROWS) {
-    tbody.removeChild(tbody.lastChild);
+// ─── Modal ──────────────────────────────────────
+
+function showModalLoading(title, subtitle = '') {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-subtitle').textContent = subtitle;
+  document.getElementById('modal-body').innerHTML = '<div class="text-center text-slate-500 py-12">⏳ 상세 정보를 불러오는 중...</div>';
+  document.getElementById('detail-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+async function openLiveModal(postId) {
+  const summary = liveResultPage.find(item => item.post_id === postId);
+  if (!summary) return;
+
+  showModalLoading(`#${postId} — ${summary.title || '(제목 없음)'}`);
+  try {
+    const res = await fetch(`/api/results/${postId}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    showModal({
+      ...summary,
+      ...data,
+      flow_log: data.flow_log || summary.flow_log || [],
+      token_usage: data.token_usage || summary.token_usage,
+      elapsed: data.elapsed ?? summary.elapsed,
+    }, 'live');
+  } catch (err) {
+    showModal(summary, 'live');
   }
 }
 
-// ─── Modal ──────────────────────────────────────
+async function openHistoryModal(postId) {
+  if (!historyFileName) return;
 
-function openLiveModal(idx) {
-  const d = resultDataStore[idx];
-  if (!d) return;
-  showModal(d, 'live');
-}
+  const summary = historyPageData.find(item => item.post_id === postId);
+  showModalLoading(
+    `#${postId} — ${summary?.title || '(제목 없음)'}`,
+    historyFileName,
+  );
 
-function openHistoryModal(idx) {
-  const d = historyData[idx];
-  if (!d) return;
-  showModal(d, 'history');
+  try {
+    const res = await fetch(`/api/runs/${encodeURIComponent(historyFileName)}/posts/${postId}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    showModal(data, 'history');
+  } catch (err) {
+    document.getElementById('modal-body').innerHTML = `<div class="text-center text-red-400 py-12">상세 정보를 불러오지 못했습니다.<br><span class="text-xs text-slate-500">${escHtml(err.message || 'unknown error')}</span></div>`;
+  }
 }
 
 function showModal(d, mode) {
@@ -848,8 +1437,42 @@ function showModal(d, mode) {
   const confidence = isHistory ? (novel.confidence || '-') : (d.confidence || '-');
   const officialTitle = isHistory ? (novel.official_title || '-') : (d.official_title || '-');
   const discussionType = isHistory ? (identity.discussion_type || '-') : (d.discussion_type || '-');
+  const topicality = isHistory ? (identity.topicality || '-') : (d.topicality || '-');
+  const relevanceScope = isHistory ? (identity.relevance_scope || '-') : (d.relevance_scope || '-');
+  const subtype = isHistory ? (identity.subtype || '-') : (d.subtype || '-');
+  const workResolution = isHistory ? (identity.work_resolution || '-') : (d.work_resolution || '-');
+  const anchorType = isHistory ? (identity.anchor_type || '-') : (d.anchor_type || '-');
+  const anchorStrength = isHistory ? (identity.anchor_strength || '-') : (d.anchor_strength || '-');
+  const contextSources = isHistory ? (identity.context_sources || []) : (d.context_sources || []);
+  const consistencyFlags = isHistory ? (identity.consistency_flags || []) : (d.consistency_flags || []);
+  const titleCandidates = isHistory ? (identity.title_candidates || []) : (d.title_candidates || []);
+  const primaryWork = isHistory ? identity.primary_work : d.primary_work;
+  const mentionedWorks = isHistory ? (identity.mentioned_works || []) : (d.mentioned_works || []);
+  const futureWatchTarget = isHistory ? identity.future_watch_target : d.future_watch_target;
+  const comparisonTarget = isHistory ? identity.comparison_target : d.comparison_target;
+  const recommendationCandidates = isHistory ? (identity.recommendation_candidates || []) : (d.recommendation_candidates || []);
+  const displayWorkTitle = pickDisplayWorkTitle({
+    official_title: officialTitle === '-' ? null : officialTitle,
+    novel_identity: novel,
+    primary_work: primaryWork,
+    title_candidates: titleCandidates,
+    work_resolution: workResolution === '-' ? null : workResolution,
+    relevance_scope: relevanceScope === '-' ? null : relevanceScope,
+    anchor_type: anchorType === '-' ? null : anchorType,
+    anchor_strength: anchorStrength === '-' ? null : anchorStrength,
+  });
   const reason = isHistory ? (identity.reason || '') : (d.reason || '');
+  const reasonLines = isHistory ? (identity.reason_lines || []) : (d.reason_lines || []);
+  const analysisNotes = isHistory ? ((analysis.notes || d.analysis_notes || '')) : (d.analysis_notes || analysis.notes || '');
   const slangInsight = isHistory ? identity.slang_insight : d.slang_insight;
+  const topicalityBadge = topicalityMeta(topicality === '-' ? null : topicality, isRelevant);
+  const hasPrimaryReason = Boolean((reason && String(reason).trim()) || (Array.isArray(reasonLines) && reasonLines.length));
+  const reasonDisplay = (reason && String(reason).trim())
+    ? String(reason).trim()
+    : (Array.isArray(reasonLines) && reasonLines.length
+      ? reasonLines.filter(Boolean).join('\n').trim()
+      : String(analysisNotes || '').trim());
+  const reasonLabel = hasPrimaryReason ? '📝 판정 사유' : '📝 판정 사유 보조';
   
   // ━━━ ① 원본 게시글 정보 ━━━
   html += `<div class="detail-section">`;
@@ -883,12 +1506,16 @@ function showModal(d, mode) {
   html += `<div class="detail-section" style="border-top:1px solid rgba(71,85,105,.3); padding-top:16px;">`;
   html += `<div class="detail-section-title">🏷️ 판정 결과</div>`;
   html += `<div class="detail-grid">`;
-  html += dkv('결과', isRelevant
+  html += dkv('Topicality', `<span class="px-2 py-0.5 rounded ${topicalityBadge.cls} text-xs font-medium">${escHtml(topicalityBadge.label)}</span>`);
+  html += dkv('기존 relevance', isRelevant
     ? '<span class="px-2 py-0.5 rounded badge-relevant text-xs font-medium">✅ relevant</span>'
     : '<span class="px-2 py-0.5 rounded badge-noise text-xs font-medium">⛔ noise</span>');
-  html += dkv('소설명', `<span class="text-white font-medium">${escHtml(officialTitle)}</span>`);
+  html += dkv('Subtype', escHtml(enumLabel(subtype === '-' ? null : subtype, SUBTYPE_LABELS)));
+  html += dkv('Work Resolution', escHtml(enumLabel(workResolution === '-' ? null : workResolution, WORK_RESOLUTION_LABELS)));
+  html += dkv('소설명', `<span class="text-white font-medium">${escHtml(displayWorkTitle)}</span>`);
   html += dkv('신뢰도', `<span class="px-1.5 py-0.5 rounded text-xs ${confBadge(confidence)}">${confidence}</span>`);
   html += dkv('토론유형', escHtml(discussionType));
+  html += dkv('앵커', escHtml(`${enumLabel(anchorType === '-' ? null : anchorType, ANCHOR_TYPE_LABELS)} / ${enumLabel(anchorStrength === '-' ? null : anchorStrength, ANCHOR_STRENGTH_LABELS)}`));
   if (d.elapsed != null) html += dkv('소요시간', d.elapsed.toFixed(1) + 's');
   if (novel.heretic_url) html += dkv('작품 URL', `<a href="${escHtml(novel.heretic_url)}" target="_blank" class="text-blue-400 hover:underline text-xs">${escHtml(novel.heretic_url)}</a>`);
   const tu = d.token_usage;
@@ -896,14 +1523,38 @@ function showModal(d, mode) {
     html += dkv('토큰', `입력 ${fmtNum(tu.prompt_tokens||0)} / 출력 ${fmtNum(tu.completion_tokens||0)} / 총 ${fmtNum(tu.total_tokens||0)}`);
   }
   html += `</div></div>`;
+
+  if (contextSources.length || consistencyFlags.length) {
+    html += `<div class="detail-section">`;
+    html += `<div class="detail-section-title">🧭 구조화 메타</div>`;
+    html += `<div class="detail-grid">`;
+    if (contextSources.length) html += dkv('컨텍스트 소스', renderTagChips(contextSources, CONTEXT_SOURCE_LABELS));
+    if (consistencyFlags.length) html += dkv('정합성 경고', renderTagChips(consistencyFlags));
+    html += `</div></div>`;
+  }
+
+  if (primaryWork || comparisonTarget || futureWatchTarget || titleCandidates.length || mentionedWorks.length || recommendationCandidates.length) {
+    html += `<div class="detail-section">`;
+    html += `<div class="detail-section-title">📚 작품 구조</div>`;
+    html += `<div class="detail-grid">`;
+    if (primaryWork) html += dkv('Primary', renderTagChips([titleLabel(primaryWork)]));
+    if (comparisonTarget) html += dkv('Comparison', renderTagChips([titleLabel(comparisonTarget)]));
+    if (futureWatchTarget) html += dkv('Future Watch', renderTagChips([titleLabel(futureWatchTarget)]));
+    if (mentionedWorks.length) html += dkv('Mentioned Works', renderTagChips(mentionedWorks.map(titleLabel)));
+    if (recommendationCandidates.length) html += dkv('Recommendation Candidates', renderTagChips(recommendationCandidates.map(titleLabel)));
+    if (titleCandidates.length) html += dkv('Title Candidates', renderTagChips(titleCandidates.map(titleLabel)));
+    html += `</div></div>`;
+  }
   
   // ━━━ ③ 판정 사유 ━━━
-  if (reason) {
-    html += `<div class="detail-section">`;
-    html += `<div class="detail-section-title">📝 판정 사유</div>`;
-    html += `<div class="detail-block" style="max-height:300px">${escHtml(reason)}</div>`;
-    html += `</div>`;
+  html += `<div class="detail-section">`;
+  html += `<div class="detail-section-title">${reasonLabel}</div>`;
+  if (reasonDisplay) {
+    html += `<div class="detail-block reason-block" style="max-height:300px">${renderReasonHtml(reasonDisplay)}</div>`;
+  } else {
+    html += `<div class="detail-block text-slate-400">저장된 판정 사유가 없습니다. 현재 실행이 패치 이전 코드이거나 결과 저장 전에 열린 항목일 수 있습니다.</div>`;
   }
+  html += `</div>`;
   
   // ━━━ ④ 분석 상세 ━━━
   const extras = [];
@@ -953,6 +1604,12 @@ function showModal(d, mode) {
     html += `</div></div>`;
   }
   
+  // ━━━ ⑥ 처리 로그 보기 버튼 ━━━
+  html += `<div class="detail-section" style="border-top:1px solid rgba(71,85,105,.3); padding-top:16px; text-align:center;">`;
+  html += `<button onclick="openPostLog(${postId})" style="padding:8px 24px; border-radius:8px; border:1px solid rgba(37,99,235,.5); background:rgba(37,99,235,.15); color:#93c5fd; font-size:13px; font-weight:500; cursor:pointer; transition:.2s;" onmouseover="this.style.background='rgba(37,99,235,.3)'" onmouseout="this.style.background='rgba(37,99,235,.15)'">`
+  html += `📜 처리 로그 보기</button>`;
+  html += `</div>`;
+  
   document.getElementById('modal-body').innerHTML = html;
   document.getElementById('detail-modal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
@@ -965,11 +1622,244 @@ function closeModal() {
 
 // ESC로 닫기
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Escape') {
+    if (document.getElementById('log-modal').style.display !== 'none') {
+      closeLogModal();
+    } else {
+      closeModal();
+    }
+  }
 });
+
+// ─── Post Log Viewer ────────────────────────────
+
+let _logRawLines = [];  // 원본 로그 라인 보관
+let _logFilters = { all: true, llm: true, search: true, json: true };
+
+async function openPostLog(postId) {
+  const body = document.getElementById('log-modal-body');
+  const titleEl = document.getElementById('log-modal-title');
+  const sourceEl = document.getElementById('log-modal-source');
+  const countEl = document.getElementById('log-modal-count');
+  
+  titleEl.textContent = `📜 Post #${postId} 처리 로그`;
+  sourceEl.textContent = '불러오는 중...';
+  countEl.textContent = '';
+  body.innerHTML = '<div style="padding:40px;text-align:center;color:#64748b">⏳ 로그를 불러오는 중...</div>';
+  
+  document.getElementById('log-modal').style.display = 'flex';
+  
+  // Reset filters
+  _logFilters = { all: true, llm: true, search: true, json: true };
+  document.querySelectorAll('.log-filter-btn').forEach(btn => btn.classList.add('active'));
+  
+  // 헬퍼: 캐시에서 로드 시도
+  function _tryLoadFromCache() {
+    const cached = _cacheGetPostLog(postId);
+    if (cached && cached.lines && cached.lines.length > 0) {
+      _logRawLines = cached.lines;
+      const src = cached.source || '캐시';
+      sourceEl.textContent = `(캐시: ${src})`;
+      sourceEl.style.color = '#f59e0b';
+      renderLogLines();
+      return true;
+    }
+    return false;
+  }
+
+  try {
+    const resp = await fetch(`/api/post_log/${postId}`);
+    
+    // 서버가 JSON이 아닌 HTML을 반환하는 경우 (구 버전 서버 등)
+    const ct = resp.headers.get('content-type') || '';
+    if (!ct.includes('application/json')) {
+      // 캐시 폴백
+      if (_tryLoadFromCache()) return;
+      body.innerHTML = `<div style="padding:40px;text-align:center;color:#f59e0b">
+        ⚠️ 서버가 JSON 대신 ${escHtml(ct || 'unknown')} 응답을 반환했습니다. (HTTP ${resp.status})<br>
+        <span style="font-size:12px;color:#94a3b8">expert_main.py를 재시작하면 해결됩니다.</span>
+      </div>`;
+      sourceEl.textContent = '';
+      return;
+    }
+    
+    if (!resp.ok && resp.status !== 404) {
+      const errText = await resp.text();
+      // 캐시 폴백
+      if (_tryLoadFromCache()) return;
+      body.innerHTML = `<div style="padding:40px;text-align:center;color:#ef4444">❌ 서버 오류 (HTTP ${resp.status}): ${escHtml(errText.slice(0, 200))}</div>`;
+      sourceEl.textContent = '';
+      return;
+    }
+    
+    const data = await resp.json();
+    
+    if (!data.lines || data.lines.length === 0) {
+      // 서버에 없으면 캐시 시도
+      if (_tryLoadFromCache()) return;
+      body.innerHTML = '<div style="padding:40px;text-align:center;color:#94a3b8">📭 이 포스트의 처리 로그를 찾을 수 없습니다.<br><span style="font-size:11px;color:#64748b">로그 파일이 삭제되었거나 아직 처리되지 않은 포스트일 수 있습니다.</span></div>';
+      sourceEl.textContent = '';
+      return;
+    }
+    
+    _logRawLines = data.lines;
+    sourceEl.textContent = data.source === 'memory' ? '(인메모리)' : `(${data.source || '?'})`;
+    // 로그를 localStorage에 캐시 (서버 종료 후에도 열람 가능)
+    _cacheSavePostLog(postId, { source: data.source, lines: data.lines });
+    renderLogLines();
+  } catch (err) {
+    // 네트워크 오류 → 캐시 폴백
+    if (_tryLoadFromCache()) return;
+    
+    const isNetErr = err.message.includes('Failed to fetch') || err.message.includes('NetworkError');
+    if (isNetErr) {
+      body.innerHTML = `<div style="padding:40px;text-align:center;color:#f59e0b">
+        ⚠️ 서버에 연결할 수 없습니다. 캐시된 로그도 없습니다.<br>
+        <span style="font-size:12px;color:#94a3b8">서버 실행 중에 한 번 로그를 열면 자동으로 캐시됩니다.</span>
+      </div>`;
+    } else {
+      body.innerHTML = `<div style="padding:40px;text-align:center;color:#ef4444">❌ 로그 로딩 실패: ${escHtml(err.message)}<br>
+        <span style="font-size:11px;color:#94a3b8">expert_main.py를 재시작하면 해결됩니다.</span></div>`;
+    }
+    sourceEl.textContent = '';
+  }
+}
+
+function classifyLogLine(line) {
+  // 분류: banner, llm, search, json, result, gk/dc/de/ar/vr/sy/dl, default
+  if (line.startsWith('===') || line.startsWith('───') || line.startsWith('━━━')) return 'banner';
+  if (line.includes('📌 Post ID:') || line.includes('📝 제목:') || line.includes('🤖 [W')) return 'banner';
+  if (line.includes('🚀 Agentic Pipeline start:')) return 'banner';
+  if (line.includes('✅ Post') && line.includes('완료')) return 'result';
+  if (line.includes('📊 Post') && line.includes('token usage')) return 'result';
+  if (line.includes('[llm-debug]') || line.includes('[llm-stream]') || line.includes('[llm-usage]') || line.includes('[llm-context]')) return 'llm';
+  if (line.includes('🔍 검') || line.includes('search results:') || line.includes('검색 품질')) return 'search';
+  if (line.trimStart().startsWith('{') || line.trimStart().startsWith('"') || line.trimStart().startsWith('}')) return 'json';
+  if (line.includes('[🎭]') || line.includes('Gatekeeper')) return 'gk';
+  if (line.includes('[📖]') || line.includes('Discourse')) return 'dc';
+  if (line.includes('[🔓]') || line.includes('Decoder')) return 'de';
+  if (line.includes('[⚖]') || line.includes('[⚖️]') || line.includes('Arbiter')) return 'ar';
+  if (line.includes('[✅]') || line.includes('Verifier')) return 'vr';
+  if (line.includes('[📊]') || line.includes('Synthesizer')) return 'sy';
+  if (line.includes('deliberation') || line.includes('Deliberation')) return 'dl';
+  return '';
+}
+
+function shouldShowLine(line) {
+  if (_logFilters.all) {
+    const cls = classifyLogLine(line);
+    if (cls === 'llm' && !_logFilters.llm) return false;
+    if (cls === 'search' && !_logFilters.search) return false;
+    if (cls === 'json' && !_logFilters.json) return false;
+  }
+  return true;
+}
+
+function renderLogLines() {
+  const body = document.getElementById('log-modal-body');
+  const countEl = document.getElementById('log-modal-count');
+  
+  const visibleLines = _logRawLines.filter(shouldShowLine);
+  countEl.textContent = `${visibleLines.length} / ${_logRawLines.length} 줄`;
+  
+  // 가상화: 대용량 로그를 위해 InnerHTML로 일괄 생성
+  const html = visibleLines.map(line => {
+    const cls = classifyLogLine(line);
+    const cssClass = cls ? `log-${cls}` : '';
+    return `<div class="log-line ${cssClass}">${escHtml(line)}</div>`;
+  }).join('');
+  
+  body.innerHTML = html || '<div style="padding:20px;text-align:center;color:#64748b">필터에 맞는 로그가 없습니다.</div>';
+}
+
+function toggleLogFilter(btn) {
+  const filter = btn.dataset.filter;
+  
+  if (filter === 'all') {
+    // 전체 토글: 모두 켜기 또는 끄기
+    const newState = !_logFilters.all;
+    _logFilters.all = newState;
+    _logFilters.llm = newState;
+    _logFilters.search = newState;
+    _logFilters.json = newState;
+    document.querySelectorAll('.log-filter-btn').forEach(b => {
+      b.classList.toggle('active', newState);
+    });
+  } else {
+    _logFilters[filter] = !_logFilters[filter];
+    btn.classList.toggle('active', _logFilters[filter]);
+    // 'all' 상태 동기화
+    const allOn = _logFilters.llm && _logFilters.search && _logFilters.json;
+    _logFilters.all = allOn;
+    document.querySelector('.log-filter-btn[data-filter="all"]').classList.toggle('active', allOn);
+  }
+  
+  renderLogLines();
+}
+
+function closeLogModal() {
+  document.getElementById('log-modal').style.display = 'none';
+  _logRawLines = [];
+}
 
 function dkv(label, value) {
   return `<div class="detail-kv"><div class="label">${label}</div><div class="value">${value ?? '-'}</div></div>`;
+}
+
+function normalizeReasonText(text) {
+  let value = String(text || '').replace(/\r\n/g, '\n').trim();
+  if (!value) return '';
+  value = value.replace(
+    /\s*(\[(?:판정 요약|원문 해석|최종 종합|근거 스코어|근거 요약|정합성 교정)\])/g,
+    '\n$1'
+  );
+  value = value.replace(/\n{3,}/g, '\n\n');
+  return value.trim();
+}
+
+function renderReasonHtml(text) {
+  const normalized = normalizeReasonText(text);
+  if (!normalized) return '';
+
+  const lines = normalized.split('\n');
+  const sections = [];
+  let current = null;
+
+  function ensureSection(defaultTitle = '') {
+    if (!current) {
+      current = { title: defaultTitle, lines: [] };
+      sections.push(current);
+    }
+    return current;
+  }
+
+  lines.forEach(rawLine => {
+    const line = String(rawLine || '').trimEnd();
+    const trimmed = line.trim();
+    if (!trimmed) return;
+
+    const headerMatch = trimmed.match(/^\[(.+)\]$/);
+    if (headerMatch) {
+      current = { title: headerMatch[1], lines: [] };
+      sections.push(current);
+      return;
+    }
+
+    ensureSection().lines.push(trimmed);
+  });
+
+  return sections.map(section => {
+    const titleHtml = section.title
+      ? `<div class="reason-section-header">${escHtml(section.title)}</div>`
+      : '';
+    const bodyHtml = section.lines.map(line => {
+      const cls = ['reason-line'];
+      if (/^-\s+/.test(line)) cls.push('bullet');
+      if (/^discussion_type=/.test(line)) cls.push('muted');
+      return `<div class="${cls.join(' ')}">${escHtml(line)}</div>`;
+    }).join('');
+    return `<div class="reason-section">${titleHtml}${bodyHtml}</div>`;
+  }).join('');
 }
 
 function confBadge(conf) {
@@ -1080,8 +1970,6 @@ function updateLogTabStyles() {
 }
 
 // ─── History ────────────────────────────────────
-let historyData = [];  // 과거 이력 상세 데이터
-
 async function loadHistoryList() {
   const res = await fetch('/api/runs');
   const runs = await res.json();
@@ -1111,49 +1999,68 @@ async function loadHistoryList() {
   `).join('');
 }
 
-async function loadHistoryDetail(filename, logFile) {
-  const res = await fetch('/api/runs/' + filename);
-  const data = await res.json();
-  
-  if (!Array.isArray(data)) return;
-  historyData = data;
-  
-  document.getElementById('history-detail').classList.remove('hidden');
-  document.getElementById('history-detail-title').textContent = filename;
-  
-  const total = data.length;
-  const relevant = data.filter(d => d.analysis_result?.identity?.is_relevant).length;
-  const identified = data.filter(d => d.analysis_result?.identity?.novel_identity?.official_title).length;
-  
-  document.getElementById('hist-total').textContent = total;
-  document.getElementById('hist-relevant').textContent = relevant;
-  document.getElementById('hist-identified').textContent = identified;
-  document.getElementById('hist-noise').textContent = total - relevant;
-  
+function renderHistoryResults() {
   const tbody = document.getElementById('history-results-body');
-  tbody.innerHTML = data.map((d, i) => {
-    const identity = d.analysis_result?.identity || {};
-    const rel = identity.is_relevant;
+  tbody.innerHTML = historyPageData.map((d, i) => {
+    const badge = topicalityMeta(d.topicality, d.is_relevant);
     const title = d.title || '';
-    const novel = identity.novel_identity?.official_title || '-';
-    const conf = identity.novel_identity?.confidence || '-';
-    const dtype = identity.discussion_type || '-';
+    const workTitle = pickDisplayWorkTitle(d);
+    const workText = compactWorkMetaText(d);
+    const structureText = compactStructureText(d);
+    const conf = d.confidence || '-';
+    const dtype = d.discussion_type || '-';
+    const rowNum = historyCurrentPage * HISTORY_PAGE_SIZE + i + 1;
     return `
-      <tr class="border-t border-slate-700/50 row-clickable" onclick="openHistoryModal(${i})">
-        <td class="py-2 px-2 text-slate-400">${i+1}</td>
+      <tr class="border-t border-slate-700/50 row-clickable" onclick="openHistoryModal(${d.post_id})">
+        <td class="py-2 px-2 text-slate-400">${rowNum}</td>
         <td class="py-2 px-2">${d.post_id || '-'}</td>
-        <td class="py-2 px-2 max-w-[200px] truncate" title="${escHtml(title)}">${escHtml(title.slice(0,40))}</td>
-        <td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-xs ${rel ? 'badge-relevant' : 'badge-noise'}">${rel ? 'relevant' : 'noise'}</span></td>
-        <td class="py-2 px-2 max-w-[150px] truncate" title="${escHtml(novel)}">${escHtml(novel)}</td>
+        <td class="py-2 px-2 max-w-[260px] truncate" title="${escHtml(title)}">${escHtml(title.slice(0, 60))}</td>
+        <td class="py-2 px-2">
+          <div><span class="px-2 py-0.5 rounded text-xs ${badge.cls}">${escHtml(badge.label)}</span></div>
+          <div class="subtle-meta mt-1">${escHtml(dtype)}</div>
+        </td>
+        <td class="py-2 px-2 max-w-[220px]">
+          <div class="subtle-meta" title="${escHtml(structureText)}">${escHtml(structureText)}</div>
+        </td>
+        <td class="py-2 px-2 max-w-[320px]">
+          <div class="truncate" title="${escHtml(workTitle)}">${escHtml(workTitle)}</div>
+          <div class="subtle-meta" title="${escHtml(workText)}">${escHtml(workText)}</div>
+        </td>
         <td class="py-2 px-2"><span class="px-1.5 py-0.5 rounded text-xs ${confBadge(conf)}">${conf}</span></td>
         <td class="py-2 px-2 text-slate-400">${dtype}</td>
       </tr>`;
   }).join('');
+  updateHistoryPager();
+}
+
+async function loadHistoryDetail(filename, logFile, page = 0) {
+  historyFileName = filename;
+  historyLogFileName = logFile || '';
+  historyCurrentPage = Math.max(page, 0);
+
+  const offset = historyCurrentPage * HISTORY_PAGE_SIZE;
+  const res = await fetch(`/api/runs/${encodeURIComponent(filename)}?summary=1&offset=${offset}&limit=${HISTORY_PAGE_SIZE}`);
+  const payload = await res.json();
+
+  if (!Array.isArray(payload.items)) return;
+  historyPageData = payload.items;
+  historyTotalResults = Number(payload.total || 0);
+
+  document.getElementById('history-detail').classList.remove('hidden');
+  document.getElementById('history-detail-title').textContent = filename;
+
+  const stats = payload.stats || {};
+  document.getElementById('hist-total').textContent = historyTotalResults;
+  document.getElementById('hist-relevant').textContent = stats.relevant || 0;
+  document.getElementById('hist-identified').textContent = stats.identified || 0;
+  document.getElementById('hist-noise').textContent = stats.noise || 0;
+
+  renderHistoryResults();
   
   const logSection = document.getElementById('history-log-section');
-  if (logFile) {
+  if (historyLogFileName) {
     logSection.classList.remove('hidden');
-    const logRes = await fetch('/api/logs/' + logFile + '?tail=500');
+    const logRes = await fetch('/api/logs/' + historyLogFileName + '?tail=500');
     const lines = await logRes.json();
     document.getElementById('history-log-area').textContent = Array.isArray(lines) ? lines.join('\n') : '';
   } else {
@@ -1161,9 +2068,22 @@ async function loadHistoryDetail(filename, logFile) {
   }
 }
 
+function changeHistoryPage(delta) {
+  const totalPages = historyTotalResults > 0 ? Math.ceil(historyTotalResults / HISTORY_PAGE_SIZE) : 0;
+  const nextPage = historyCurrentPage + delta;
+  if (!historyFileName || nextPage < 0 || nextPage >= totalPages) return;
+  loadHistoryDetail(historyFileName, historyLogFileName, nextPage);
+}
+
 function closeHistoryDetail() {
   document.getElementById('history-detail').classList.add('hidden');
-  historyData = [];
+  historyFileName = '';
+  historyLogFileName = '';
+  historyPageData = [];
+  historyCurrentPage = 0;
+  historyTotalResults = 0;
+  document.getElementById('history-results-body').innerHTML = '';
+  updateHistoryPager();
 }
 
 // ─── Helpers ────────────────────────────────────
@@ -1194,6 +2114,9 @@ setInterval(() => {
 }, 1000);
 
 // ─── Init ───────────────────────────────────────
+// 캐시는 첫 live fetch가 실패했을 때만 폴백으로 사용한다.
+liveCachedSnapshot = _cacheLoadResults();
+
 connectSSE();
 fetch('/api/logs?n=100').then(r=>r.json()).then(lines => {
   if (Array.isArray(lines)) {
@@ -1203,14 +2126,7 @@ fetch('/api/logs?n=100').then(r=>r.json()).then(lines => {
   }
 }).catch(()=>{});
 // 결과 복구 (SSE restore와 별도로 안전하게)
-fetch('/api/results').then(r=>r.json()).then(results => {
-  if (Array.isArray(results) && results.length) {
-    const existingIds = new Set(resultDataStore.map(r => r.post_id));
-    results.forEach(r => {
-      if (!existingIds.has(r.post_id)) addResultRow(r);
-    });
-  }
-}).catch(()=>{});
+loadLiveResults(0);
 </script>
 </body>
 </html>

@@ -23,6 +23,8 @@ from ..prompts.prompt_router import (
     build_gatekeeper_system_prompt,
     build_decoder_system_prompt,
     build_verifier_system_prompt,
+    build_discourse_system_prompt,
+    build_arbiter_system_prompt,
 )
 
 __all__ = [
@@ -38,4 +40,6 @@ __all__ = [
     "build_gatekeeper_system_prompt",
     "build_decoder_system_prompt",
     "build_verifier_system_prompt",
+    "build_discourse_system_prompt",
+    "build_arbiter_system_prompt",
 ]

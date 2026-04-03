@@ -6,12 +6,22 @@ __pycache__/
 dist/
 build/
 .eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
 
 # Logs and outputs
 logs/
 out/
 _last_run.json
 _last_run.stderr
+_last_run*.stderr
+test7_output.log
+ALL_POSTS_CHART.html
+docker-compose.warp-shards.generated.yml
+docker/warp/state/
+scratch/
 
 # IDE
 .vscode/
@@ -20,7 +30,9 @@ _last_run.stderr
 # Environment
 .env
 .venv/
+.venv312/
 venv/
+.tmpvenv/
 
 # OS
 .DS_Store
@@ -29,3 +41,6 @@ Thumbs.db
 tests/inputs/test01.jsonl
 /tests
 /tmp02
+*.bak
+*.badbak
+/slang_db

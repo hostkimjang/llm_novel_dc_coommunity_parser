@@ -87,12 +87,52 @@ class CriticExpert:
                     conf_str = str(conf)
                 suspected_items.append(f"- {title} (conf={conf_str})")
             suspected_titles_info = "\n\n=== SUSPECTED TITLES (후보 작품) ===\n" + "\n".join(suspected_items) + "\n"
+
+        # Canonical search evidence catalog (EID 고정 인용)
+        evidence_catalog_info = ""
+        if ctx:
+            evidence_catalog = ""
+            try:
+                if hasattr(ctx, "build_search_evidence_catalog"):
+                    evidence_catalog = ctx.build_search_evidence_catalog(max_items=20)
+            except Exception:
+                evidence_catalog = ""
+
+            if not evidence_catalog and hasattr(ctx, "search_results"):
+                rows = []
+                items = []
+                for sr in (ctx.search_results or []):
+                    if not isinstance(sr, dict):
+                        continue
+                    try:
+                        rank = int(sr.get("_evidence_rank")) if sr.get("_evidence_rank") is not None else 10**9
+                    except Exception:
+                        rank = 10**9
+                    eid = str(sr.get("_evidence_id") or "").strip()
+                    if not eid:
+                        continue
+                    title = str(sr.get("title") or "").replace("\n", " ").strip()
+                    url = str(sr.get("url") or "").strip()
+                    items.append((rank, eid, title, url))
+                items.sort(key=lambda x: (x[0], x[1]))
+                for _, eid, title, url in items[:20]:
+                    rows.append(f"[{eid}] {title} | {url[:140]}")
+                evidence_catalog = "\n".join(rows)
+
+            if evidence_catalog:
+                evidence_catalog_info = (
+                    "\n\n=== SEARCH EVIDENCE CATALOG (CANONICAL EID) ===\n"
+                    + evidence_catalog
+                    + "\n\nEvidence ID rule:\n"
+                      "- 위 카탈로그의 EID만 인용하세요.\n"
+                      "- 임의 번호([1], [2] 등) 생성 금지.\n"
+                )
         
         # Format prompt
         user_prompt = CRITIC_PROMPT.format(
             verifier_json=json.dumps(verifier_summary, ensure_ascii=False, indent=2),
             post_json=json.dumps(post_json, ensure_ascii=False, indent=2),
-        ) + suspected_titles_info
+        ) + suspected_titles_info + evidence_catalog_info
         
         print(f"[{_ts()}][{self.emoji}] {self.name} 분석 시작: post_id={post_id}", file=sys.stderr)
         

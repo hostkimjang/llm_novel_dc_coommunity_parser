@@ -19,6 +19,36 @@ def _set_env(k: str, v: str) -> None:
     os.environ[k] = v
 
 
+def _configure_mcp_endpoints(default_count: int = 1) -> None:
+    raw_endpoints = os.getenv("MCP_ENDPOINTS", "").strip()
+    raw_endpoint = os.getenv("MCP_ENDPOINT", "").strip()
+
+    if raw_endpoints:
+        endpoints = [p.strip().rstrip("/") for p in raw_endpoints.split(",") if p.strip()]
+        if endpoints and not raw_endpoint:
+            _set_env("MCP_ENDPOINT", endpoints[0])
+        return
+
+    if raw_endpoint:
+        return
+
+    try:
+        shard_count = max(1, int(os.getenv("MCP_SHARD_COUNT", str(default_count))))
+    except Exception:
+        shard_count = max(1, default_count)
+    try:
+        base_port = int(os.getenv("MCP_SHARD_BASE_PORT", "3333"))
+    except Exception:
+        base_port = 3333
+
+    scheme = os.getenv("MCP_SHARD_SCHEME", "http").strip() or "http"
+    host = os.getenv("MCP_SHARD_HOST", "localhost").strip() or "localhost"
+
+    endpoints = [f"{scheme}://{host}:{base_port + idx}" for idx in range(shard_count)]
+    _set_env("MCP_ENDPOINTS", ",".join(endpoints))
+    _set_env("MCP_ENDPOINT", endpoints[0])
+
+
 def main() -> None:
     repo_root = Path(__file__).resolve().parent
 
@@ -47,8 +77,9 @@ def main() -> None:
     # "remote": 원격 llama-server (https://llama.kimjang.me/)
     LLM_MODE = "remote"  # "local" or "remote"
 
-    # MCP(SearchXNG)
-    _set_env("MCP_ENDPOINT", "http://localhost:3333")
+    # MCP(SearchXNG/Crawl4AI shard)
+    # 외부에서 MCP_ENDPOINTS를 넘기면 shard 구성을 그대로 사용한다.
+    _configure_mcp_endpoints()
 
     # ===== LLM 공통 설정 =====
     _set_env("LLM_N_CTX", "16384")
@@ -61,7 +92,7 @@ def main() -> None:
     _set_env("LLM_CACHE_TYPE_V", "f16")
     _set_env("LLM_PRINT_TIMINGS", "1")
     _set_env("MCP_TOP_K_RESULTS", "5")
-    _set_env("MCP_MAX_CONTENT_CHARS", "400")
+    _set_env("MCP_MAX_CONTENT_CHARS", "0")
     if DEBUG_LLM_MESSAGES:
         _set_env("LLM_DEBUG_DUMP_MESSAGES", "0")
         _set_env("LLM_DEBUG_DUMP_MAX_CHARS", "0")

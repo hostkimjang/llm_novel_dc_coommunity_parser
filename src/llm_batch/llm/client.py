@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+import json
 import os
 import sys
 import threading
@@ -97,8 +99,13 @@ class LLMClient:
         min_p: Optional[float] = None,
         repeat_penalty: Optional[float] = None,
         max_tokens: Optional[int] = None,
+        server_type: Optional[str] = None,
     ) -> None:
         self.backend = (backend or os.getenv("LLM_BACKEND", "http")).lower()
+        # 서빙 엔진 선택: "llama" (llama-server / llama.cpp) 또는 "vllm" (vLLM)
+        self.server_type = (server_type or os.getenv("LLM_SERVER_TYPE", "llama")).lower()
+        if self.server_type not in ("llama", "vllm"):
+            self.server_type = "llama"
         self.endpoint = endpoint or os.getenv("LLM_ENDPOINT", "http://127.0.0.1:8080")
         self.model = model or os.getenv("LLM_MODEL", "unsloth/GLM-4.7-Flash-GGUF:IQ3_XXS")
         self.model_path = model_path or os.getenv("LLM_MODEL_PATH")
@@ -127,7 +134,7 @@ class LLMClient:
         self.top_p = float(os.getenv("LLM_TOP_P", str(default_top_p))) if top_p is None else float(top_p)
         self.min_p = float(os.getenv("LLM_MIN_P", str(default_min_p))) if min_p is None else float(min_p)
         self.repeat_penalty = float(os.getenv("LLM_REPEAT_PENALTY", str(default_repeat_penalty))) if repeat_penalty is None else float(repeat_penalty)
-        self.max_tokens = int(os.getenv("LLM_MAX_TOKENS", "512")) if max_tokens is None else int(max_tokens)
+        self.max_tokens = int(os.getenv("LLM_MAX_TOKENS", "32768")) if max_tokens is None else int(max_tokens)
         self.json_grammar = os.getenv("LLM_JSON_GRAMMAR", "1") == "1"
         # A안: <think>... </think> 스트리밍 + 마지막에 JSON만 출력(identify에서 grammar를 끔)
         self.think_stream = os.getenv("LLM_THINK_STREAM", "0") == "1"
@@ -142,11 +149,62 @@ class LLMClient:
         # last call meta (for tracing)
         self.last_usage: Optional[Dict[str, Any]] = None
         self.last_model: Optional[str] = None
+        self.last_finish_reason: Optional[str] = None
 
         self._local_llm = None
         self._local_lock = threading.Lock()
         self._json_grammar_obj = None
         self._json_object_grammar_obj = None
+
+    def _resolve_reason_review_max_tokens(self) -> int:
+        try:
+            default_cap = max(256, int(self.max_tokens))
+        except Exception:
+            default_cap = 65536
+        try:
+            configured = int(os.getenv("LLM_REASON_REVIEW_MAX_TOKENS", str(default_cap)))
+        except Exception:
+            configured = default_cap
+        return max(256, min(configured, default_cap))
+
+    @property
+    def is_vllm(self) -> bool:
+        """현재 서빙 엔진이 vLLM인지 여부"""
+        return self.server_type == "vllm"
+
+    def _adapt_body_for_server(self, body: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        서빙 엔진(llama-server vs vLLM)에 따라 HTTP request body를 변환한다.
+
+        llama-server (기본):
+          - repeat_penalty, min_p, chat_template_kwargs, enable_thinking 그대로 사용
+        vLLM:
+          - repeat_penalty → repetition_penalty (OpenAI 호환 이름)
+          - chat_template_kwargs 유지 (chat template이 enable_thinking 같은 런타임 플래그를 읽을 수 있음)
+          - top_k, presence_penalty 등 vLLM 전용 샘플링 파라미터 추가
+          - min_p: vLLM extra_body로 지원
+          - enable_thinking: vLLM에서도 지원 (chat_template에 따라 다름)
+        """
+        if self.server_type != "vllm":
+            return body
+
+        # repeat_penalty → repetition_penalty
+        if "repeat_penalty" in body:
+            val = body.pop("repeat_penalty")
+            body["repetition_penalty"] = val
+
+        # vLLM 전용 샘플링 파라미터 (환경변수로 오버라이드 가능)
+        # top_k: vLLM은 top_k를 직접 지원 (llama-server는 top_k 미지원)
+        vllm_top_k = int(os.getenv("LLM_VLLM_TOP_K", "20"))
+        if vllm_top_k > 0 and "top_k" not in body:
+            body["top_k"] = vllm_top_k
+
+        # presence_penalty: vLLM OpenAI 호환 API 기본 지원
+        vllm_presence_penalty = float(os.getenv("LLM_VLLM_PRESENCE_PENALTY", "1.5"))
+        if "presence_penalty" not in body:
+            body["presence_penalty"] = vllm_presence_penalty
+
+        return body
 
     @staticmethod
     def _looks_korean(s: str) -> bool:
@@ -167,6 +225,45 @@ class LLMClient:
     def _timestamp() -> str:
         from datetime import datetime
         return datetime.now().strftime("%H:%M:%S.%f")[:-3]
+
+    def _resolve_json_stream_guard(self) -> tuple[bool, int, int]:
+        enabled = os.getenv("LLM_ABORT_AFTER_JSON", "1") == "1"
+        try:
+            piece_cap = int(os.getenv("LLM_POST_JSON_PIECE_CAP", "1"))
+        except Exception:
+            piece_cap = 1
+        try:
+            char_cap = int(os.getenv("LLM_POST_JSON_CHAR_CAP", "24"))
+        except Exception:
+            char_cap = 24
+        return enabled, max(1, min(piece_cap, 8)), max(1, min(char_cap, 4096))
+
+    def _should_abort_after_json_continuation(
+        self,
+        *,
+        json_mode: bool,
+        post_json_piece_count: int,
+        post_json_char_count: int,
+        fragment: str,
+    ) -> Optional[str]:
+        enabled, piece_cap, char_cap = self._resolve_json_stream_guard()
+        if not enabled or not json_mode:
+            return None
+        if not isinstance(fragment, str) or not fragment.strip():
+            return None
+        if post_json_piece_count >= piece_cap:
+            return f"post_json_piece_cap({post_json_piece_count}>={piece_cap})"
+        if post_json_char_count >= char_cap:
+            return f"post_json_char_cap({post_json_char_count}>={char_cap})"
+        return None
+
+    @staticmethod
+    def _trim_to_completed_json(raw_text: str, json_complete_pos: int) -> str:
+        if not isinstance(raw_text, str):
+            return ""
+        if json_complete_pos < 0:
+            return raw_text
+        return raw_text[:json_complete_pos].rstrip()
 
     def _print_usage_details(self, tag: str, data: Dict[str, Any], elapsed_s: float = 0.0) -> None:
         """스크린샷과 같은 상세 토큰 사용량 출력"""
@@ -224,12 +321,27 @@ class LLMClient:
                     content = content[: self.debug_dump_max_chars] + f"\n...(truncated,len={total_len})"
                 safe.append({"role": role, "len": total_len, "content": content})
 
-            print(f"[{ts}][llm-debug] {tag}", file=sys.stderr, flush=True)
+            print(f"[{ts}][llm-debug] FINAL PROMPT {tag}", file=sys.stderr, flush=True)
             for item in safe:
                 r = item.get("role")
                 ln = item.get("len")
                 print(f"[{ts}][llm-debug]   - role={r} chars={ln}", file=sys.stderr, flush=True)
                 print(f"[{ts}][llm-debug]     {item.get('content')}", file=sys.stderr, flush=True)
+        except Exception:
+            return
+
+    def _dump_request_body(self, tag: str, url: str, body: Dict[str, Any]) -> None:
+        if not self.debug_dump_messages:
+            return
+        try:
+            ts = self._timestamp()
+            payload = body if isinstance(body, dict) else {"body": body}
+            dump = json.dumps(payload, ensure_ascii=False, indent=2)
+            if self.debug_dump_max_chars > 0 and len(dump) > self.debug_dump_max_chars:
+                dump = dump[: self.debug_dump_max_chars] + f"\n...(truncated,len={len(dump)})"
+            print(f"[{ts}][llm-debug] REQUEST BODY {tag}", file=sys.stderr, flush=True)
+            print(f"[{ts}][llm-debug]   url={url}", file=sys.stderr, flush=True)
+            print(f"[{ts}][llm-debug]   {dump}", file=sys.stderr, flush=True)
         except Exception:
             return
 
@@ -253,7 +365,9 @@ class LLMClient:
         url: str, 
         body: Dict[str, Any], 
         tag: str,
-        messages: Optional[List[Dict[str, Any]]] = None
+        messages: Optional[List[Dict[str, Any]]] = None,
+        quiet: bool = False,
+        json_mode: Optional[bool] = None,
     ) -> str:
         """
         HTTP 백엔드로 스트리밍 요청을 보내고, 실시간으로 토큰을 출력하며 전체 텍스트를 반환한다.
@@ -268,6 +382,9 @@ class LLMClient:
         import time as _time
         import json as _json
         
+        if json_mode is None:
+            json_mode = bool(((body or {}).get("response_format") or {}).get("type") == "json_object")
+
         # body를 복사하여 stream 옵션 추가 (원본 수정 방지)
         stream_body = dict(body)
         stream_body["stream"] = True
@@ -278,14 +395,26 @@ class LLMClient:
         acc: List[str] = []
         token_count = 0
         last_usage = None
+        last_finish_reason = None
         all_chunks: List[Dict[str, Any]] = []  # 모든 청크 저장 (디버깅용)
+        first_token_at: Optional[float] = None
+        last_chunk_at: Optional[float] = None
+        last_progress_log_at = _start
+        sse_event_count = 0
+        content_chunk_count = 0
+        reasoning_chunk_count = 0
         
         # ── 반복 루프 다계층 방어 ──
         loop_detected = False
-        _ACC_HARD_CAP = 16000         # 누적 문자 하드캡 (16000자 초과 시 강제 종료)
+        try:
+            _ACC_HARD_CAP = int(os.getenv("LLM_ACC_HARD_CAP", "131000"))
+        except (ValueError, TypeError):
+            _ACC_HARD_CAP = 131000    # 누적 문자 하드캡 (vLLM --max-model-len 131072 대응)
         _TEXT_CHECK_INTERVAL = 40     # 40토큰마다 텍스트 레벨 반복 검사
         # 패턴 길이별 임계값: 짧은 패턴은 JSON 구조상 정상 반복될 수 있어 관대하게
         _TEXT_REPEAT_THRESHOLDS = {8: 15, 15: 10, 30: 7, 60: 6, 120: 5}
+        # URL/퍼센트인코딩 조각은 정상적으로 길게 반복될 수 있어 훨씬 느슨하게 본다.
+        _URL_REPEAT_THRESHOLD = 200
         # JSON value 리터럴 패턴: 이것들로 끝나는 짧은 패턴은 정상 JSON 구조
         _JSON_VALUE_SUFFIXES = ('null', 'false', 'true', '0', '0.0')
         _last_text_check_count = 0    # 마지막 텍스트 검사 시 토큰 카운트
@@ -295,6 +424,25 @@ class LLMClient:
         _json_in_string = False       # JSON 문자열 내부인지
         _json_escape = False          # 이스케이프 문자 처리
         _json_complete_pos = -1       # 첫 완전 JSON 객체 완료 위치
+        _json_complete_at: Optional[float] = None
+        _json_complete_event_count = 0
+        _json_complete_piece_count = 0
+        _post_json_piece_count = 0
+        _post_json_char_count = 0
+        _post_json_first_logged = False
+        _post_json_tail = ""
+        try:
+            _STREAM_GAP_WARN_S = float(os.getenv("LLM_STREAM_GAP_WARN_SECONDS", "30"))
+        except (ValueError, TypeError):
+            _STREAM_GAP_WARN_S = 30.0
+        try:
+            _STREAM_PROGRESS_INTERVAL_S = float(os.getenv("LLM_STREAM_PROGRESS_INTERVAL_SECONDS", "15"))
+        except (ValueError, TypeError):
+            _STREAM_PROGRESS_INTERVAL_S = 15.0
+        try:
+            _STREAM_PROGRESS_MIN_CHUNKS = int(os.getenv("LLM_STREAM_PROGRESS_MIN_CHUNKS", "200"))
+        except (ValueError, TypeError):
+            _STREAM_PROGRESS_MIN_CHUNKS = 200
         
         try:
             # httpx streaming with iter_text() for better SSE handling
@@ -306,6 +454,19 @@ class LLMClient:
                 for text_chunk in response.iter_text():
                     if loop_detected:
                         break
+                    _chunk_now = _time.time()
+                    if last_chunk_at is not None:
+                        _gap = _chunk_now - last_chunk_at
+                        if _gap >= _STREAM_GAP_WARN_S:
+                            ts_gap = self._timestamp()
+                            print(
+                                f"[{ts_gap}][llm-stream] ⏳ {tag} 청크 공백 {_gap:.2f}s 후 수신 재개 "
+                                f"(events={sse_event_count}, content_chunks={content_chunk_count}, "
+                                f"reasoning_chunks={reasoning_chunk_count}, pieces={token_count})",
+                                file=sys.stderr,
+                                flush=True,
+                            )
+                    last_chunk_at = _chunk_now
                     buffer += text_chunk
                     
                     # 줄 단위로 처리 (SSE는 \n 또는 \r\n으로 구분)
@@ -318,6 +479,7 @@ class LLMClient:
                         
                         # SSE format: "data: {...}" 또는 "data:{...}"
                         if line.startswith("data:"):
+                            sse_event_count += 1
                             data_str = line[5:].strip()  # "data:" 이후
                             if data_str == "[DONE]":
                                 break
@@ -337,24 +499,67 @@ class LLMClient:
                                 # 토큰 추출
                                 choices = chunk.get("choices", [])
                                 if choices:
+                                    fr = choices[0].get("finish_reason")
+                                    if fr is not None:
+                                        last_finish_reason = str(fr)
                                     delta = choices[0].get("delta", {})
                                     # reasoning_content 먼저 출력 (--reasoning-format deepseek 사용 시)
                                     reasoning = delta.get("reasoning_content", "")
                                     if reasoning:
+                                        reasoning_chunk_count += 1
+                                        if first_token_at is None:
+                                            first_token_at = _time.time()
+                                            ts_ttft = self._timestamp()
+                                            print(
+                                                f"[{ts_ttft}][llm-stream] ⏱️ {tag} TTFT={first_token_at - _start:.2f}s "
+                                                f"(reasoning first chunk, events={sse_event_count})",
+                                                file=sys.stderr,
+                                                flush=True,
+                                            )
                                         # reasoning은 출력만 하고 acc에는 추가하지 않음 (최종 JSON에 포함 안됨)
                                         token_count += 1
-                                        print(reasoning, end="", file=sys.stderr, flush=True)
+                                        if not quiet:
+                                            print(reasoning, end="", file=sys.stderr, flush=True)
                                     # content 출력
                                     piece = delta.get("content", "")
                                     if piece:
+                                        _json_was_complete = _json_complete_pos >= 0
+                                        _acc_len_before_piece = sum(len(s) for s in acc)
+                                        content_chunk_count += 1
+                                        if first_token_at is None:
+                                            first_token_at = _time.time()
+                                            ts_ttft = self._timestamp()
+                                            print(
+                                                f"[{ts_ttft}][llm-stream] ⏱️ {tag} TTFT={first_token_at - _start:.2f}s "
+                                                f"(content first chunk, events={sse_event_count})",
+                                                file=sys.stderr,
+                                                flush=True,
+                                            )
                                         acc.append(piece)
                                         token_count += 1
-                                        print(piece, end="", file=sys.stderr, flush=True)
+                                        if not quiet:
+                                            print(piece, end="", file=sys.stderr, flush=True)
+
+                                        _now = _time.time()
+                                        if (
+                                            (_now - last_progress_log_at) >= _STREAM_PROGRESS_INTERVAL_S
+                                            and (content_chunk_count + reasoning_chunk_count) >= _STREAM_PROGRESS_MIN_CHUNKS
+                                        ):
+                                            ts_prog = self._timestamp()
+                                            print(
+                                                f"\n[{ts_prog}][llm-stream] … {tag} 진행중 "
+                                                f"(elapsed={_now - _start:.2f}s, events={sse_event_count}, "
+                                                f"content_chunks={content_chunk_count}, reasoning_chunks={reasoning_chunk_count}, "
+                                                f"pieces={token_count}, acc_chars={sum(len(s) for s in acc):,})",
+                                                file=sys.stderr,
+                                                flush=True,
+                                            )
+                                            last_progress_log_at = _now
                                         
                                         # ── 다계층 반복 루프 방어 ──
                                         
                                         # (0) JSON 객체 반복 감지 (대규모 JSON 통째 반복 방어)
-                                        for _ch in piece:
+                                        for _idx, _ch in enumerate(piece):
                                             if _json_escape:
                                                 _json_escape = False
                                                 continue
@@ -385,7 +590,65 @@ class LLMClient:
                                             elif _ch == '}':
                                                 _json_depth -= 1
                                                 if _json_depth == 0 and _json_started and _json_complete_pos < 0:
-                                                    _json_complete_pos = sum(len(s) for s in acc)
+                                                    _json_complete_pos = _acc_len_before_piece + _idx + 1
+                                                    _json_complete_at = _time.time()
+                                                    _json_complete_event_count = sse_event_count
+                                                    _json_complete_piece_count = token_count
+                                                    ts_json = self._timestamp()
+                                                    print(
+                                                        f"\n[{ts_json}][llm-stream] ✅ {tag} 첫 JSON 완성 "
+                                                        f"(elapsed={_json_complete_at - _start:.2f}s, "
+                                                        f"events={_json_complete_event_count}, pieces={_json_complete_piece_count}, "
+                                                        f"chars={_json_complete_pos:,})",
+                                                        file=sys.stderr,
+                                                        flush=True,
+                                                    )
+                                        if loop_detected:
+                                            break
+
+                                        _post_json_fragment = ""
+                                        if _json_complete_pos >= 0:
+                                            _offset_in_piece = max(0, _json_complete_pos - _acc_len_before_piece)
+                                            if _offset_in_piece < len(piece):
+                                                _post_json_fragment = piece[_offset_in_piece:]
+                                        if _json_was_complete or _post_json_fragment:
+                                            _fragment = _post_json_fragment if _post_json_fragment else piece
+                                            _sig_fragment = _fragment.strip()
+                                            if _sig_fragment:
+                                                _post_json_piece_count += 1
+                                                _post_json_char_count += len(_sig_fragment)
+                                                _post_json_tail = ("".join(([_post_json_tail, _sig_fragment])))[-400:]
+                                                _abort_reason = self._should_abort_after_json_continuation(
+                                                    json_mode=bool(json_mode),
+                                                    post_json_piece_count=_post_json_piece_count,
+                                                    post_json_char_count=_post_json_char_count,
+                                                    fragment=_sig_fragment,
+                                                )
+                                                if _abort_reason:
+                                                    ts_abort = self._timestamp()
+                                                    print(
+                                                        f"\n[{ts_abort}][llm-stream] ⚠️ {tag} JSON 후속 생성 차단 "
+                                                        f"({_abort_reason})",
+                                                        file=sys.stderr,
+                                                        flush=True,
+                                                    )
+                                                    loop_detected = True
+                                            if not _post_json_first_logged:
+                                                ts_post_json = self._timestamp()
+                                                _since_complete = (
+                                                    (_time.time() - _json_complete_at)
+                                                    if _json_complete_at is not None
+                                                    else 0.0
+                                                )
+                                                print(
+                                                    f"\n[{ts_post_json}][llm-stream] ⚠️ {tag} JSON 완성 후 추가 생성 시작 "
+                                                    f"(since_complete={_since_complete:.2f}s, "
+                                                    f"post_json_pieces={_post_json_piece_count}, "
+                                                    f"post_json_chars={_post_json_char_count})",
+                                                    file=sys.stderr,
+                                                    flush=True,
+                                                )
+                                                _post_json_first_logged = True
                                         if loop_detected:
                                             break
                                         
@@ -420,6 +683,21 @@ class LLMClient:
                                                         continue
                                                     _cnt = _tail.count(_candidate)
                                                     _threshold = _TEXT_REPEAT_THRESHOLDS.get(_plen, 5)
+                                                    _cand_l = _candidate.lower()
+                                                    _pct_cnt = _candidate.count("%")
+                                                    _looks_urlish = (
+                                                        ("http" in _cand_l)
+                                                        or ("www." in _cand_l)
+                                                        or (".com" in _cand_l)
+                                                        or (".net" in _cand_l)
+                                                        or ("viewimage.php" in _cand_l)
+                                                        or ("%2f" in _cand_l)
+                                                        or ("%3a" in _cand_l)
+                                                        or ("%20" in _cand_l)
+                                                        or (_pct_cnt >= max(2, _plen // 8))
+                                                    )
+                                                    if _looks_urlish:
+                                                        _threshold = max(_threshold, _URL_REPEAT_THRESHOLD)
                                                     if _cnt >= _threshold:
                                                         ts = self._timestamp()
                                                         _show = _candidate[:30].replace('\n', '\\n')
@@ -439,9 +717,53 @@ class LLMClient:
         _elapsed = _time.time() - _start
         ts = self._timestamp()
         print(f"\n[{ts}][llm-stream] ■ {tag} 완료 ({_elapsed:.2f}s)", file=sys.stderr, flush=True)
+        if last_finish_reason:
+            print(
+                f"[{ts}][llm-stream] finish_reason={last_finish_reason}",
+                file=sys.stderr,
+                flush=True,
+            )
+            if last_finish_reason.lower() in {"length", "max_tokens"}:
+                print(
+                    f"[{ts}][llm-warn] 출력이 max_tokens 제한으로 종료됐을 가능성",
+                    file=sys.stderr,
+                    flush=True,
+                )
         
         # compact JSON(줄바꿈 없음)으로 출력된 경우 pretty-print 재출력
         _raw = "".join(acc).strip()
+        if json_mode and _json_complete_pos >= 0:
+            _raw = self._trim_to_completed_json(_raw, _json_complete_pos)
+        if _json_complete_pos >= 0:
+            _post_json_tail_final = (_raw[_json_complete_pos:] if _json_complete_pos < len(_raw) else "")
+            _post_json_tail_final = _post_json_tail_final[-400:]
+            _json_complete_elapsed = (
+                (_json_complete_at - _start)
+                if _json_complete_at is not None
+                else None
+            )
+            _json_summary = (
+                f"[{ts}][llm-stream] 📌 {tag} JSON 이후 추가 생성 요약 "
+                f"(post_json_pieces={_post_json_piece_count}, post_json_chars={_post_json_char_count}, "
+                f"json_complete_chars={_json_complete_pos:,}, total_chars={len(_raw):,}, "
+                f"json_complete_elapsed={_json_complete_elapsed:.2f}s)"
+                if _json_complete_elapsed is not None
+                else
+                f"[{ts}][llm-stream] 📌 {tag} JSON 이후 추가 생성 요약 "
+                f"(post_json_pieces={_post_json_piece_count}, post_json_chars={_post_json_char_count}, "
+                f"json_complete_chars={_json_complete_pos:,}, total_chars={len(_raw):,})"
+            )
+            print(
+                _json_summary,
+                file=sys.stderr,
+                flush=True,
+            )
+            if _post_json_tail_final:
+                print(
+                    f"[{ts}][llm-stream] 📌 {tag} post-JSON tail: {_post_json_tail_final[:400]}",
+                    file=sys.stderr,
+                    flush=True,
+                )
         if _raw and "\n" not in _raw and _raw.startswith("{"):
             try:
                 _parsed = _json.loads(_raw)
@@ -485,6 +807,7 @@ class LLMClient:
             "completion_tokens": completion_tokens,
             "total_tokens": total_tokens,
         }
+        self.last_finish_reason = last_finish_reason
         
         # 출력
         if self.print_timings:
@@ -497,7 +820,24 @@ class LLMClient:
                 print(f"  response_tok/s: {completion_tokens / _elapsed:.2f}", file=sys.stderr, flush=True)
                 if prompt_tokens > 0:
                     print(f"  prompt_tok/s: {prompt_tokens / _elapsed:.2f}", file=sys.stderr, flush=True)
-        return "".join(acc)
+        return _raw
+
+    def _resolve_expert_temperature(self, tag: str, temperature: Optional[float] = None) -> float:
+        """전문가별 temperature 해석.
+        
+        우선순위: 직접 전달 > 환경변수 LLM_TEMP_{TAG} > 인스턴스 기본값
+        예: tag="arbiter" → LLM_TEMP_ARBITER 환경변수 조회
+        """
+        if temperature is not None:
+            return temperature
+        env_key = f"LLM_TEMP_{tag.upper()}"
+        env_val = os.getenv(env_key)
+        if env_val is not None:
+            try:
+                return float(env_val)
+            except ValueError:
+                pass
+        return self.temperature
 
     def _stream_chat_http(
         self,
@@ -505,6 +845,8 @@ class LLMClient:
         tag: str = "expert",
         use_grammar: bool = True,
         max_tokens: Optional[int] = None,
+        quiet: bool = False,
+        temperature: Optional[float] = None,
     ) -> str:
         """
         Expert 시스템을 위한 범용 스트리밍 채팅 호출 (HTTP 및 Local 백엔드 모두 지원).
@@ -514,20 +856,24 @@ class LLMClient:
             tag: 로그용 태그 (예: "gatekeeper", "decoder", ...)
             use_grammar: JSON object grammar 강제 여부
             max_tokens: 최대 토큰 수 (None이면 self.max_tokens 사용)
+            temperature: 전문가별 temperature (None이면 LLM_TEMP_{TAG} → self.temperature 순 적용)
             
         Returns:
             LLM 응답 텍스트 (JSON 문자열)
         """
+        # 전문가별 temperature 해석
+        resolved_temp = self._resolve_expert_temperature(tag, temperature)
+        
         # Local 백엔드 처리
         if self.backend == "local":
-            return self._stream_chat_local(messages, tag, use_grammar, max_tokens)
+            return self._stream_chat_local(messages, tag, use_grammar, max_tokens, temperature=resolved_temp)
         
         # HTTP 백엔드 처리
         url = f"{self.endpoint.rstrip('/')}/v1/chat/completions"
         body = {
             "model": self.model,
             "messages": messages,
-            "temperature": self.temperature,
+            "temperature": resolved_temp,
             "top_p": self.top_p,
             "min_p": self.min_p,
             "repeat_penalty": self.repeat_penalty,
@@ -539,9 +885,13 @@ class LLMClient:
             "enable_thinking": self.enable_thinking,
             "chat_template_kwargs": {"enable_thinking": self.enable_thinking},
         }
+        if self.server_type == "vllm":
+            body["stream_options"] = {"include_usage": True}
         
         # body에서 None 값 제거
         body = {k: v for k, v in body.items() if v is not None}
+        # 서빙 엔진별 파라미터 변환
+        body = self._adapt_body_for_server(body)
         
         # 토큰 수 추정 및 로그 출력
         total_chars = sum(len(msg.get("content", "")) for msg in messages)
@@ -549,14 +899,38 @@ class LLMClient:
         # 보수적으로 2자/토큰으로 추정 (한글이 많으면 높게 나옴)
         estimated_tokens = total_chars // 2
         ts = self._timestamp()
-        print(f"[{ts}][llm-context] {tag} 프롬프트: {total_chars:,}자 (~{estimated_tokens:,} 토큰 추정)", file=sys.stderr, flush=True)
+        _temp_info = f" temp={resolved_temp}" if resolved_temp != self.temperature else ""
+        _resolved_max_tokens = max_tokens if max_tokens is not None else self.max_tokens
+        print(
+            f"[{ts}][llm-context] {tag} 프롬프트: {total_chars:,}자 (~{estimated_tokens:,} 토큰 추정)"
+            f"{_temp_info} max_tokens={_resolved_max_tokens}",
+            file=sys.stderr,
+            flush=True,
+        )
         
-        # 컨텍스트 초과 경고 (32768 토큰 제한)
-        context_limit = 32768
+        # 컨텍스트 경고:
+        # LLM_CONTEXT_LIMIT_TOKENS 우선, 없으면 LLM_N_CTX 사용 (기본 131072: vLLM --max-model-len 대응)
+        _ctx_limit_raw = os.getenv("LLM_CONTEXT_LIMIT_TOKENS") or os.getenv("LLM_N_CTX") or "131072"
+        try:
+            context_limit = int(_ctx_limit_raw)
+        except Exception:
+            context_limit = 131072
+        context_limit = max(4096, context_limit)
         if estimated_tokens > context_limit:
-            print(f"[{ts}][llm-warn] ⚠️  컨텍스트 초과 가능: {estimated_tokens:,} > {context_limit:,} 토큰", file=sys.stderr, flush=True)
+            print(
+                f"[{ts}][llm-warn] ⚠️  컨텍스트 초과 가능: {estimated_tokens:,} > {context_limit:,} 토큰",
+                file=sys.stderr,
+                flush=True,
+            )
+        elif estimated_tokens >= int(context_limit * 0.9):
+            print(
+                f"[{ts}][llm-warn] ⚠️  컨텍스트 임박: {estimated_tokens:,}/{context_limit:,} 토큰",
+                file=sys.stderr,
+                flush=True,
+            )
         
         self._dump_messages(tag, messages)
+        self._dump_request_body(tag, url, body)
 
         if self.stream:
             def _do_non_stream_fallback() -> str:
@@ -592,7 +966,7 @@ class LLMClient:
                     return "{}"
 
             def _do_stream():
-                return self._http_stream_completion(url, body, tag, messages)
+                return self._http_stream_completion(url, body, tag, messages, quiet=quiet, json_mode=use_grammar)
 
             try:
                 return retry_with_backoff(
@@ -687,6 +1061,7 @@ class LLMClient:
         tag: str = "expert",
         use_grammar: bool = True,
         max_tokens: Optional[int] = None,
+        temperature: Optional[float] = None,
     ) -> str:
         """
         Expert 시스템을 위한 Local 백엔드 스트리밍 채팅 호출.
@@ -696,11 +1071,14 @@ class LLMClient:
             tag: 로그용 태그 (예: "gatekeeper", "decoder", ...)
             use_grammar: JSON object grammar 강제 여부
             max_tokens: 최대 토큰 수 (None이면 self.max_tokens 사용)
+            temperature: 전문가별 temperature (None이면 self.temperature 사용)
             
         Returns:
             LLM 응답 텍스트 (JSON 문자열)
         """
         import time as _time
+        
+        resolved_temp = temperature if temperature is not None else self.temperature
         
         llm = self._get_local_llm()
         self._dump_messages(tag, messages)
@@ -714,7 +1092,7 @@ class LLMClient:
             
             chunks = llm.create_chat_completion(
                 messages=messages,
-                temperature=self.temperature,
+                temperature=resolved_temp,
                 top_p=self.top_p,
                 min_p=self.min_p,
                 repeat_penalty=self.repeat_penalty,
@@ -726,12 +1104,18 @@ class LLMClient:
             acc: List[str] = []
             token_count = 0
             last_chunk = None
+            last_finish_reason = None
             
             # ── 반복 루프 다계층 방어 ──
             _loop_detected = False
-            _ACC_HARD_CAP = 16000
+            try:
+                _ACC_HARD_CAP = int(os.getenv("LLM_ACC_HARD_CAP", "131000"))
+            except (ValueError, TypeError):
+                _ACC_HARD_CAP = 131000
             _TEXT_CHECK_INTERVAL = 40
             _TEXT_REPEAT_THRESHOLDS = {8: 15, 15: 10, 30: 7, 60: 6, 120: 5}
+            # URL/퍼센트인코딩 조각은 정상적으로 길게 반복될 수 있어 훨씬 느슨하게 본다.
+            _URL_REPEAT_THRESHOLD = 200
             _JSON_VALUE_SUFFIXES = ('null', 'false', 'true', '0', '0.0')
             _last_text_check_count = 0
             # JSON 객체 반복 감지
@@ -740,17 +1124,28 @@ class LLMClient:
             _json_in_string = False
             _json_escape = False
             _json_complete_pos = -1
+            _json_complete_at: Optional[float] = None
+            _post_json_piece_count = 0
+            _post_json_char_count = 0
+            _post_json_first_logged = False
+            _post_json_tail = ""
             
             for chunk in chunks:
                 if _loop_detected:
                     break
                 last_chunk = chunk
                 try:
-                    delta = chunk["choices"][0].get("delta", {})
+                    ch0 = chunk["choices"][0]
+                    fr = ch0.get("finish_reason")
+                    if fr is not None:
+                        last_finish_reason = str(fr)
+                    delta = ch0.get("delta", {})
                     piece = delta.get("content", "")
                 except Exception:
                     piece = ""
                 if piece:
+                    _json_was_complete = _json_complete_pos >= 0
+                    _acc_len_before_piece = sum(len(s) for s in acc)
                     acc.append(piece)
                     token_count += 1
                     print(piece, end="", file=sys.stderr, flush=True)
@@ -758,7 +1153,7 @@ class LLMClient:
                     # ── 다계층 반복 루프 방어 ──
                     
                     # (0) JSON 객체 반복 감지
-                    for _ch in piece:
+                    for _idx, _ch in enumerate(piece):
                         if _json_escape:
                             _json_escape = False
                             continue
@@ -788,7 +1183,54 @@ class LLMClient:
                         elif _ch == '}':
                             _json_depth -= 1
                             if _json_depth == 0 and _json_started and _json_complete_pos < 0:
-                                _json_complete_pos = sum(len(s) for s in acc)
+                                _json_complete_pos = _acc_len_before_piece + _idx + 1
+                                _json_complete_at = _time.time()
+                    if _loop_detected:
+                        break
+
+                    _post_json_fragment = ""
+                    if _json_complete_pos >= 0:
+                        _offset_in_piece = max(0, _json_complete_pos - _acc_len_before_piece)
+                        if _offset_in_piece < len(piece):
+                            _post_json_fragment = piece[_offset_in_piece:]
+                    if _json_was_complete or _post_json_fragment:
+                        _fragment = _post_json_fragment if _post_json_fragment else piece
+                        _sig_fragment = _fragment.strip()
+                        if _sig_fragment:
+                            _post_json_piece_count += 1
+                            _post_json_char_count += len(_sig_fragment)
+                            _post_json_tail = ("".join(([_post_json_tail, _sig_fragment])))[-400:]
+                            _abort_reason = self._should_abort_after_json_continuation(
+                                json_mode=bool(use_grammar),
+                                post_json_piece_count=_post_json_piece_count,
+                                post_json_char_count=_post_json_char_count,
+                                fragment=_sig_fragment,
+                            )
+                            if _abort_reason:
+                                ts_abort = self._timestamp()
+                                print(
+                                    f"\n[{ts_abort}][llm-stream] ⚠️ {tag} JSON 후속 생성 차단 "
+                                    f"({_abort_reason})",
+                                    file=sys.stderr,
+                                    flush=True,
+                                )
+                                _loop_detected = True
+                        if not _post_json_first_logged and _sig_fragment:
+                            ts_post_json = self._timestamp()
+                            _since_complete = (
+                                (_time.time() - _json_complete_at)
+                                if _json_complete_at is not None
+                                else 0.0
+                            )
+                            print(
+                                f"\n[{ts_post_json}][llm-stream] ⚠️ {tag} JSON 완성 후 추가 생성 시작 "
+                                f"(since_complete={_since_complete:.2f}s, "
+                                f"post_json_pieces={_post_json_piece_count}, "
+                                f"post_json_chars={_post_json_char_count})",
+                                file=sys.stderr,
+                                flush=True,
+                            )
+                            _post_json_first_logged = True
                     if _loop_detected:
                         break
                     
@@ -822,6 +1264,21 @@ class LLMClient:
                                     continue
                                 _cnt = _tail.count(_candidate)
                                 _threshold = _TEXT_REPEAT_THRESHOLDS.get(_plen, 5)
+                                _cand_l = _candidate.lower()
+                                _pct_cnt = _candidate.count("%")
+                                _looks_urlish = (
+                                    ("http" in _cand_l)
+                                    or ("www." in _cand_l)
+                                    or (".com" in _cand_l)
+                                    or (".net" in _cand_l)
+                                    or ("viewimage.php" in _cand_l)
+                                    or ("%2f" in _cand_l)
+                                    or ("%3a" in _cand_l)
+                                    or ("%20" in _cand_l)
+                                    or (_pct_cnt >= max(2, _plen // 8))
+                                )
+                                if _looks_urlish:
+                                    _threshold = max(_threshold, _URL_REPEAT_THRESHOLD)
                                 if _cnt >= _threshold:
                                     ts = self._timestamp()
                                     _show = _candidate[:30].replace('\n', '\\n')
@@ -835,9 +1292,23 @@ class LLMClient:
             _elapsed = _time.time() - _start
             ts = self._timestamp()
             print(f"\n[{ts}][llm-stream] ■ {tag} 완료 ({_elapsed:.2f}s)", file=sys.stderr, flush=True)
+            if last_finish_reason:
+                print(
+                    f"[{ts}][llm-stream] finish_reason={last_finish_reason}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+                if last_finish_reason.lower() in {"length", "max_tokens"}:
+                    print(
+                        f"[{ts}][llm-warn] 출력이 max_tokens 제한으로 종료됐을 가능성",
+                        file=sys.stderr,
+                        flush=True,
+                    )
             
             # compact JSON(줄바꿈 없음)으로 출력된 경우 pretty-print 재출력
             _raw = "".join(acc).strip()
+            if use_grammar and _json_complete_pos >= 0:
+                _raw = self._trim_to_completed_json(_raw, _json_complete_pos)
             if _raw and "\n" not in _raw and _raw.startswith("{"):
                 try:
                     import json as _json_local
@@ -867,6 +1338,7 @@ class LLMClient:
                 "completion_tokens": completion_tokens,
                 "total_tokens": total_tokens,
             }
+            self.last_finish_reason = last_finish_reason
             
             # 출력
             if self.print_timings:
@@ -953,6 +1425,7 @@ class LLMClient:
             "enable_thinking": self.enable_thinking,
             "chat_template_kwargs": {"enable_thinking": self.enable_thinking},
         }
+        body = self._adapt_body_for_server(body)
         
         def _do_http():
             response = httpx.post(url, json=body, timeout=self.timeout_s)
@@ -1200,6 +1673,291 @@ ws ::= [ \t\n\r]*
         self._json_object_grammar_obj = LlamaGrammar.from_string(grammar)
         return self._json_object_grammar_obj
 
+    @staticmethod
+    def _parse_json_object_best_effort(text: str) -> Optional[Dict[str, Any]]:
+        import json
+        import re
+
+        if not isinstance(text, str):
+            return None
+
+        s = text.strip()
+        if not s:
+            return None
+
+        s = re.sub(r"<think>[\s\S]*?</think>", "", s, flags=re.IGNORECASE).strip()
+        s = re.sub(r"</think>", "", s, flags=re.IGNORECASE).strip()
+
+        fence_matches = list(re.finditer(r"```(?:json)?\s*([\s\S]*?)```", s, flags=re.IGNORECASE))
+        if fence_matches:
+            s = fence_matches[-1].group(1).strip()
+
+        try:
+            obj = json.loads(s)
+            return obj if isinstance(obj, dict) else None
+        except Exception:
+            pass
+
+        brace_depth = 0
+        start_idx = -1
+        for i, ch in enumerate(s):
+            if ch == "{":
+                if brace_depth == 0:
+                    start_idx = i
+                brace_depth += 1
+            elif ch == "}":
+                brace_depth -= 1
+                if brace_depth == 0 and start_idx >= 0:
+                    try:
+                        obj = json.loads(s[start_idx:i + 1])
+                        return obj if isinstance(obj, dict) else None
+                    except Exception:
+                        start_idx = -1
+                        continue
+        return None
+
+    def complete_json(
+        self,
+        system_prompt: str,
+        user_payload: Any,
+        *,
+        tag: str = "complete_json",
+        max_tokens: Optional[int] = None,
+        temperature: Optional[float] = None,
+    ) -> Dict[str, Any]:
+        """Generic JSON-object completion helper for ad-hoc structured tasks."""
+        import json as _json
+        import time as _time
+
+        user_content = (
+            user_payload
+            if isinstance(user_payload, str)
+            else _json.dumps(user_payload, ensure_ascii=False)
+        )
+        messages = [
+            {"role": "system", "content": str(system_prompt or "")},
+            {"role": "user", "content": user_content},
+        ]
+        self._dump_messages(tag, messages)
+        _start = _time.time()
+        resolved_temp = self.temperature if temperature is None else float(temperature)
+        resolved_max_tokens = max(128, min(self.max_tokens, int(max_tokens or 640)))
+
+        if self.backend == "local":
+            llm = self._get_local_llm()
+            ts = self._timestamp()
+            print(f"[{ts}][llm-stream] ▶ {tag} 생성 시작...", file=sys.stderr, flush=True)
+
+            if self.think_stream and self.stream:
+                chunks = llm.create_chat_completion(
+                    messages=messages,
+                    temperature=resolved_temp,
+                    top_p=self.top_p,
+                    min_p=self.min_p,
+                    repeat_penalty=self.repeat_penalty,
+                    max_tokens=resolved_max_tokens,
+                    grammar=None,
+                    stream=True,
+                )
+                acc: List[str] = []
+                token_count = 0
+                last_chunk = None
+                for chunk in chunks:
+                    last_chunk = chunk
+                    try:
+                        delta = chunk["choices"][0].get("delta", {})
+                        piece = delta.get("content", "")
+                    except Exception:
+                        piece = ""
+                    if piece:
+                        acc.append(piece)
+                        token_count += 1
+                        print(piece, end="", file=sys.stderr, flush=True)
+
+                _elapsed = _time.time() - _start
+                ts = self._timestamp()
+                print(f"\n[{ts}][llm-stream] ■ {tag} 완료 ({_elapsed:.2f}s)", file=sys.stderr, flush=True)
+                if self.print_timings and isinstance(last_chunk, dict):
+                    self._print_usage_details(tag, last_chunk, _elapsed)
+                parsed = self._parse_json_object_best_effort("".join(acc))
+                return parsed if parsed else {}
+
+            data = llm.create_chat_completion(
+                messages=messages,
+                temperature=resolved_temp,
+                top_p=self.top_p,
+                min_p=self.min_p,
+                repeat_penalty=self.repeat_penalty,
+                max_tokens=resolved_max_tokens,
+                grammar=None if self.think_stream else self._get_json_object_grammar(),
+            )
+            _elapsed = _time.time() - _start
+            ts = self._timestamp()
+            print(f"[{ts}][llm-stream] ■ {tag} 완료 ({_elapsed:.2f}s)", file=sys.stderr, flush=True)
+            self._print_usage_details(tag, data, _elapsed)
+            try:
+                self.last_usage = data.get("usage") if isinstance(data, dict) else None
+                self.last_model = data.get("model") if isinstance(data, dict) else None
+                content = data["choices"][0]["message"]["content"]
+            except Exception:
+                return {}
+            parsed = self._parse_json_object_best_effort(content)
+            return parsed if parsed else {}
+
+        url = f"{self.endpoint.rstrip('/')}/v1/chat/completions"
+        body = {
+            "model": self.model,
+            "messages": messages,
+            "temperature": resolved_temp,
+            "top_p": self.top_p,
+            "min_p": self.min_p,
+            "repeat_penalty": self.repeat_penalty,
+            "max_tokens": resolved_max_tokens,
+            "response_format": {"type": "json_object"},
+            "enable_thinking": False,
+        }
+        body = self._adapt_body_for_server(body)
+
+        if self.stream:
+            def _do_http_stream() -> Dict[str, Any]:
+                content = self._http_stream_completion(url, body, tag, messages)
+                parsed = self._parse_json_object_best_effort(content)
+                return parsed if parsed else {}
+
+            return retry_with_backoff(
+                _do_http_stream,
+                max_retries=self.max_retries,
+                base_delay=self.retry_base_delay,
+                exceptions=(httpx.HTTPError, httpx.TimeoutException, ConnectionError, OSError),
+                on_failure=lambda e: {},
+            )
+
+        def _do_http() -> Dict[str, Any]:
+            resp = httpx.post(url, json=body, timeout=self.timeout_s)
+            resp.raise_for_status()
+            data = resp.json()
+            self.last_usage = data.get("usage") if isinstance(data, dict) else None
+            self.last_model = data.get("model") if isinstance(data, dict) else None
+            try:
+                content = data["choices"][0]["message"]["content"]
+            except Exception:
+                return {}
+            parsed = self._parse_json_object_best_effort(content)
+            return parsed if parsed else {}
+
+        return retry_with_backoff(
+            _do_http,
+            max_retries=self.max_retries,
+            base_delay=self.retry_base_delay,
+            exceptions=(httpx.HTTPError, httpx.TimeoutException, ConnectionError, OSError),
+            on_failure=lambda e: {},
+        )
+
+    def _build_multimodal_user_content(
+        self,
+        user_text: str,
+        images: List[Dict[str, Any]],
+    ) -> List[Dict[str, Any]]:
+        content: List[Dict[str, Any]] = [{"type": "text", "text": str(user_text or "")}]
+        for image in images:
+            if not isinstance(image, dict):
+                continue
+            data_url = str(image.get("data_url") or "").strip()
+            raw_data = image.get("data") or image.get("bytes")
+            mime_type = str(image.get("mime_type") or "image/jpeg").strip() or "image/jpeg"
+            if not data_url:
+                if not isinstance(raw_data, (bytes, bytearray)):
+                    continue
+                encoded = base64.b64encode(bytes(raw_data)).decode("ascii")
+                data_url = f"data:{mime_type};base64,{encoded}"
+            image_url: Dict[str, Any] = {"url": data_url}
+            detail = str(image.get("detail") or "").strip()
+            if detail:
+                image_url["detail"] = detail
+            content.append({"type": "image_url", "image_url": image_url})
+        return content
+
+    def complete_multimodal_json(
+        self,
+        system_prompt: str,
+        user_text: str,
+        images: List[Dict[str, Any]],
+        *,
+        tag: str = "complete_multimodal_json",
+        max_tokens: Optional[int] = None,
+        temperature: Optional[float] = None,
+    ) -> Dict[str, Any]:
+        """Remote vLLM 전용 멀티모달 JSON-object completion helper."""
+        if self.backend == "local" or self.server_type != "vllm":
+            return {}
+
+        user_content = self._build_multimodal_user_content(user_text, images)
+        messages = [
+            {"role": "system", "content": str(system_prompt or "")},
+            {"role": "user", "content": user_content},
+        ]
+        debug_messages = [
+            {"role": "system", "content": str(system_prompt or "")},
+            {
+                "role": "user",
+                "content": json.dumps(
+                    {
+                        "text": str(user_text or ""),
+                        "image_count": len(images or []),
+                        "image_sources": [
+                            {
+                                "source_url": str((img or {}).get("source_url") or ""),
+                                "mime_type": str((img or {}).get("mime_type") or ""),
+                                "size": len((img or {}).get("data") or (img or {}).get("bytes") or b""),
+                            }
+                            for img in (images or [])
+                            if isinstance(img, dict)
+                        ],
+                    },
+                    ensure_ascii=False,
+                ),
+            },
+        ]
+        self._dump_messages(tag, debug_messages)
+
+        resolved_temp = self.temperature if temperature is None else float(temperature)
+        default_vlm_max = int(os.getenv("LLM_VLM_MAX_TOKENS", "12288"))
+        resolved_max_tokens = max(512, min(self.max_tokens, int(max_tokens or default_vlm_max)))
+        url = f"{self.endpoint.rstrip('/')}/v1/chat/completions"
+        body = {
+            "model": self.model,
+            "messages": messages,
+            "temperature": resolved_temp,
+            "top_p": self.top_p,
+            "min_p": self.min_p,
+            "repeat_penalty": self.repeat_penalty,
+            "max_tokens": resolved_max_tokens,
+            "response_format": {"type": "json_object"},
+            "enable_thinking": False,
+        }
+        body = self._adapt_body_for_server(body)
+
+        def _do_http() -> Dict[str, Any]:
+            resp = httpx.post(url, json=body, timeout=self.timeout_s)
+            resp.raise_for_status()
+            data = resp.json()
+            self.last_usage = data.get("usage") if isinstance(data, dict) else None
+            self.last_model = data.get("model") if isinstance(data, dict) else None
+            try:
+                content = data["choices"][0]["message"]["content"]
+            except Exception:
+                return {}
+            parsed = self._parse_json_object_best_effort(content)
+            return parsed if parsed else {}
+
+        return retry_with_backoff(
+            _do_http,
+            max_retries=self.max_retries,
+            base_delay=self.retry_base_delay,
+            exceptions=(httpx.HTTPError, httpx.TimeoutException, ConnectionError, OSError),
+            on_failure=lambda e: {},
+        )
+
     def plan_search(self, payload: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         LLM이 스스로 검색 필요 여부/검색어를 제안하게 하는 1단계 호출.
@@ -1360,6 +2118,7 @@ ws ::= [ \t\n\r]*
             "enable_thinking": self.enable_thinking,
             "chat_template_kwargs": {"enable_thinking": self.enable_thinking},
         }
+        body = self._adapt_body_for_server(body)
         
         # 스트리밍 모드면 HTTP 스트리밍 사용
         if self.stream:
@@ -1539,6 +2298,7 @@ ws ::= [ \t\n\r]*
             "enable_thinking": self.enable_thinking,
             "chat_template_kwargs": {"enable_thinking": self.enable_thinking},
         }
+        body = self._adapt_body_for_server(body)
         
         if self.stream:
             def _do_http_stream():
@@ -1624,6 +2384,7 @@ ws ::= [ \t\n\r]*
             "llm_review_note": "LLM reason review 실패",
             "review_confidence": "Low",
         }
+        _reason_review_max_tokens = self._resolve_reason_review_max_tokens()
 
         if self.backend == "local":
             llm = self._get_local_llm()
@@ -1637,7 +2398,7 @@ ws ::= [ \t\n\r]*
                     top_p=self.top_p,
                     min_p=self.min_p,
                     repeat_penalty=self.repeat_penalty,
-                    max_tokens=min(self.max_tokens, 420),
+                    max_tokens=_reason_review_max_tokens,
                     grammar=None,
                     stream=True,
                 )
@@ -1694,7 +2455,7 @@ ws ::= [ \t\n\r]*
                 top_p=self.top_p,
                 min_p=self.min_p,
                 repeat_penalty=self.repeat_penalty,
-                max_tokens=min(self.max_tokens, 420),
+                max_tokens=_reason_review_max_tokens,
                 grammar=None if self.think_stream else self._get_json_object_grammar(),
             )
             _elapsed = _time.time() - _start
@@ -1717,11 +2478,14 @@ ws ::= [ \t\n\r]*
             "top_p": self.top_p,
             "min_p": self.min_p,
             "repeat_penalty": self.repeat_penalty,
-            "max_tokens": max(128, min(self.max_tokens, 420)),
+            "max_tokens": _reason_review_max_tokens,
             "response_format": {"type": "json_object"},
             "enable_thinking": self.enable_thinking,
             "chat_template_kwargs": {"enable_thinking": self.enable_thinking},
         }
+        if self.server_type == "vllm":
+            body["stream_options"] = {"include_usage": True}
+        body = self._adapt_body_for_server(body)
 
         if self.stream:
             def _do_http_stream():
@@ -1903,6 +2667,7 @@ ws ::= [ \t\n\r]*
             "enable_thinking": self.enable_thinking,
             "chat_template_kwargs": {"enable_thinking": self.enable_thinking},
         }
+        body = self._adapt_body_for_server(body)
         
         # 스트리밍 모드면 HTTP 스트리밍 사용
         if self.stream:
@@ -2031,6 +2796,7 @@ ws ::= [ \t\n\r]*
                 "enable_thinking": self.enable_thinking,
                 "chat_template_kwargs": {"enable_thinking": self.enable_thinking},
             }
+            body = self._adapt_body_for_server(body)
             self._dump_messages("enrich_http_stream", body["messages"])
             
             def _do_http_stream():

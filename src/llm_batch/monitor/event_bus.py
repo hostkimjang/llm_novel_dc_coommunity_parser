@@ -84,11 +84,23 @@ class MonitorState:
         # 파이프라인 실행 흐름 로그 (현재 포스트 — 순차 모드용)
         self._flow_log: List[Dict[str, Any]] = []
 
+        # ── 포스트별 로그 라인 (처리 로그 보기용) ──
+        self._post_log_lines: Dict[int, List[str]] = {}  # post_id → [lines]
+        self._active_post_by_worker: Dict[int, int] = {}  # worker_id → post_id (현재 처리 중)
+
         # SSE 구독자 큐 (loop, queue)
         # 브로드캐스트는 메인 스레드에서 오고, 소비는 uvicorn 이벤트루프 스레드에서 하므로
         # loop.call_soon_threadsafe를 사용하기 위해 loop를 함께 저장한다.
         self._subscribers: List[Tuple[asyncio.AbstractEventLoop, asyncio.Queue]] = []
         self._sub_lock = threading.Lock()
+
+        # ─ SSE 로그 쓰로틀링 (병렬 모드 성능 최적화) ─
+        # 이 태그를 포함한 로그 라인은 SSE에서 제외 (로그 파일에는 기록됨)
+        self._LOG_SSE_SKIP_TAGS: frozenset = frozenset({
+            '[llm-debug]', '[llm-stream]', '[llm-usage]', '[llm-context]',
+        })
+        self._log_sse_last_ts: float = 0.0
+        self._LOG_SSE_MIN_INTERVAL: float = 0.05  # 50ms 최소 간격
 
     # ─── 외부 호출 API ────────────────────────────────────
 
@@ -123,6 +135,22 @@ class MonitorState:
                 wlog.append(line)
                 if len(wlog) > self._max_log_lines:
                     self._worker_log_lines[worker_id] = wlog[-self._max_log_lines:]
+            # 포스트별 저장 (워커가 현재 처리 중인 포스트에 연결)
+            if worker_id >= 0 and worker_id in self._active_post_by_worker:
+                pid = self._active_post_by_worker[worker_id]
+                if pid in self._post_log_lines:
+                    self._post_log_lines[pid].append(line)
+
+        # SSE 최적화: verbose LLM 태그는 SSE에서 제외 (로그 파일/REST API로는 조회 가능)
+        for tag in self._LOG_SSE_SKIP_TAGS:
+            if tag in line:
+                return
+
+        # SSE 쓰로틀: 최소 간격 미만이면 건너뛰기 (폭주 방지)
+        now = time.time()
+        if now - self._log_sse_last_ts < self._LOG_SSE_MIN_INTERVAL:
+            return
+        self._log_sse_last_ts = now
 
         self._broadcast({
             "type": "log",
@@ -167,10 +195,34 @@ class MonitorState:
                 "active_posts": {str(k): dict(v) for k, v in self.active_posts.items()},
             }
 
-    def get_results(self) -> List[Dict[str, Any]]:
-        """완료된 포스트 요약 목록 (flow_log 포함)"""
+    def get_results(
+        self,
+        offset: int = 0,
+        limit: int = 200,
+        order: str = "desc",
+    ) -> Dict[str, Any]:
+        """완료된 포스트 요약 목록을 페이지 단위로 반환"""
         with self._lock:
-            return list(self.post_summaries)
+            items = list(self.post_summaries)
+            if order == "desc":
+                items = list(reversed(items))
+            total = len(items)
+            page = items[offset:offset + limit]
+            return {
+                "items": page,
+                "total": total,
+                "offset": offset,
+                "limit": limit,
+                "has_more": offset + limit < total,
+            }
+
+    def get_result_summary(self, post_id: int) -> Optional[Dict[str, Any]]:
+        """특정 post_id의 요약 정보를 반환합니다."""
+        with self._lock:
+            for item in reversed(self.post_summaries):
+                if item.get("post_id") == post_id:
+                    return dict(item)
+        return None
 
     def get_logs(self, n: int = 200, worker_id: int = -1) -> List[str]:
         """최근 로그 n줄
@@ -183,6 +235,14 @@ class MonitorState:
             if worker_id >= 0 and worker_id in self._worker_log_lines:
                 return self._worker_log_lines[worker_id][-n:]
             return self._log_lines[-n:]
+
+    def get_post_logs(self, post_id: int) -> List[str]:
+        """특정 post_id의 인메모리 처리 로그를 반환합니다.
+        
+        현재 실행 중이거나 최근 완료된 포스트의 로그를 반환합니다.
+        """
+        with self._lock:
+            return list(self._post_log_lines.get(post_id, []))
 
     # ─── SSE 구독 ──────────────────────────────────────────
 
@@ -218,6 +278,8 @@ class MonitorState:
                 self.search_misses = 0
                 self._flow_log = []
                 self._worker_log_lines = {}
+                self._post_log_lines = {}
+                self._active_post_by_worker = {}
 
             elif event_type == "post_start":
                 post_id = data.get("post_id")
@@ -238,6 +300,14 @@ class MonitorState:
                         "expert_status": "",
                         "flow_log": [],
                     }
+                    # 포스트별 로그 버퍼 초기화 및 워커 매핑
+                    worker_id = data.get("worker_id", 0)
+                    self._post_log_lines[post_id] = []
+                    self._active_post_by_worker[worker_id] = post_id
+                    # 오래된 로그 정리 (최대 200개 포스트 보관)
+                    if len(self._post_log_lines) > 200:
+                        oldest = list(self._post_log_lines.keys())[0]
+                        del self._post_log_lines[oldest]
                 
                 # 순차 모드 호환: flow_log 초기화
                 if self.parallel_count <= 1:
@@ -278,18 +348,21 @@ class MonitorState:
                 self.current_expert = ""
                 self.current_expert_status = ""
                 
+                # 워커→포스트 매핑 해제 (로그 라우팅용)
+                worker_id = data.get("worker_id")
+                if worker_id is not None and self._active_post_by_worker.get(worker_id) == post_id:
+                    del self._active_post_by_worker[worker_id]
+                
                 # flow_log 결정: 병렬 모드면 active_posts에서, 순차면 self._flow_log
                 if post_id is not None and post_id in self.active_posts:
                     active_flow = self.active_posts[post_id].get("flow_log", [])
-                    summary = dict(data)
+                    summary = self._make_post_summary(data)
                     summary["flow_log"] = list(active_flow)
-                    data["flow_log"] = list(active_flow)
                     # active_posts에서 제거
                     del self.active_posts[post_id]
                 else:
-                    summary = dict(data)
+                    summary = self._make_post_summary(data)
                     summary["flow_log"] = list(self._flow_log)
-                    data["flow_log"] = list(self._flow_log)
                 
                 self.post_summaries.append(summary)
 
@@ -308,8 +381,50 @@ class MonitorState:
                 self.batch_running = False
                 self.active_posts = {}
 
+    def _make_post_summary(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """브라우저에 보낼 최소 요약만 보관합니다."""
+        return {
+            "post_id": data.get("post_id"),
+            "title": data.get("title", ""),
+            "author": data.get("author"),
+            "created_at": data.get("created_at"),
+            "url": data.get("url"),
+            "is_relevant": data.get("is_relevant"),
+            "official_title": data.get("official_title"),
+            "confidence": data.get("confidence"),
+            "discussion_type": data.get("discussion_type"),
+            "topicality": data.get("topicality"),
+            "subtype": data.get("subtype"),
+            "work_resolution": data.get("work_resolution"),
+            "relevance_scope": data.get("relevance_scope"),
+            "anchor_type": data.get("anchor_type"),
+            "anchor_strength": data.get("anchor_strength"),
+            "context_sources": data.get("context_sources"),
+            "consistency_flags": data.get("consistency_flags"),
+            "primary_work": data.get("primary_work"),
+            "title_candidates": data.get("title_candidates"),
+            "mentioned_works": data.get("mentioned_works"),
+            "comparison_target": data.get("comparison_target"),
+            "recommendation_candidates": data.get("recommendation_candidates"),
+            "novel_identity": data.get("novel_identity"),
+            "reason": data.get("reason"),
+            "reason_lines": data.get("reason_lines"),
+            "analysis_notes": data.get("analysis_notes"),
+            "elapsed": data.get("elapsed"),
+            "token_usage": data.get("token_usage"),
+            "worker_id": data.get("worker_id"),
+        }
+
     def _broadcast(self, payload: Dict[str, Any]) -> None:
         """모든 SSE 구독자에게 이벤트 전송"""
+        if payload.get("type") == "post_complete":
+            slim_data = self._make_post_summary(payload.get("data") or {})
+            flow_log = (payload.get("data") or {}).get("flow_log")
+            if flow_log:
+                slim_data["flow_log"] = flow_log
+            payload = dict(payload)
+            payload["data"] = slim_data
+
         msg = json.dumps(payload, ensure_ascii=False, default=str)
         dead: List[Tuple[asyncio.AbstractEventLoop, asyncio.Queue]] = []
 

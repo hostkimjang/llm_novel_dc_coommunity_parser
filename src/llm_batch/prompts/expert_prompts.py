@@ -13,6 +13,8 @@ LINGUISTIC_FRAMEWORK = """\
 
 글을 분석할 때 **기계적 규칙을 적용하지 말고, 인간처럼 읽어라.**
 한 번에 전체 맥락을 파악하고, 글쓴이가 전달하려는 의미를 직관적으로 이해하라.
+모든 자연어 출력(reason/notes/evidence)은 **한국어로만 작성**하고, 중국어(한자/중문 문장)는 출력하지 마라.
+비한국어 원문이 필요하면 원문 복붙 대신 한국어 요약으로 작성하라.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -738,6 +740,19 @@ null 반환이 올바른 경우:
 - 커뮤니티 은어/장르 클리셰만 있는 경우
 - 본문이 없고 제목에 작품 지칭 약어가 없는 경우
 
+## 🚨 팬 요청·비교 참조 ≠ 작품 토론 (FP 주요 원인!)
+"~같은거 써주셈", "X풍으로 써줘", "A처럼 재밌는 거 추천" 등의 패턴은
+**글쓴이가 새로운 작품 또는 추천을 원하는 것**이지, 언급된 작품에 대한 토론이 아니다.
+
+**팬 요청 패턴 (FP 위험!):**
+- "X 같은거 써주셈/써줘/내놔" → X는 비교 참조용, 주제가 아님
+- "X풍 소설 추천" → X는 스타일 힌트, 주제가 아님
+- "X 작가님 신작 언제 나옴?" → 작가 관련 질문, X 작품 토론 아님
+- "X처럼/X같이/X비슷한" + 추천/요청 동사 → X는 부가 정보
+
+→ 이런 맥락에서 X를 official_novel_title로 설정하면 FP!
+→ 글의 주제가 "요청/추천"이면 title=null이 올바름
+
 ## 🚨 DC 장갤 동음이의어 함정 (MUST KNOW!)
 장갤에서는 일상 표현/은어와 실존 작품명이 겹치는 경우가 매우 많다.
 이때 검색하면 동일 키워드를 포함한 작품이 반드시 나온다.
@@ -816,6 +831,30 @@ Decoder가 "[A]작가 [B]" 같은 복합 표현을 파싱한 결과를 검증하
 → 커뮤니티 문화에 대한 잡담 가능성 높음
 → discussion_type="community_banter" 고려
 
+## 🧩 영어 괄호 유머/패러디/드립 감지
+한국 커뮤니티에서 "한글(English)" 패턴을 반복하는 글은 **번역 유머/밈**:
+- 예: "무당파(Zero sugar club)의 최고 고수(High Master)" → 무협 용어를 영어 직역하는 **말장난**
+- 예: "천마신교(Pegasus religion)의 천마(Sky demon)" → 번역 드립
+- 이런 글은 특정 소설 토론이 아닌 **커뮤니티 유머**
+- **감지 시그널**: "한글(English)" 패턴이 2회 이상 반복 + 본문에 "영어병기", "번역", "영어로" 등
+- → discussion_type="meme" 또는 "community_banter", is_relevant=false
+
+## 🏔️ 일반 장르 용어 vs 특정 작품 제목 구분
+무협/판타지/로맨스의 **일반 세계관 용어**는 특정 작품 제목이 아님:
+- 무협: 무당파, 화산파, 소림사, 개방, 천마신교, 사황, 마교, 정파, 사파 등
+- 판타지: 마법사, 기사단, 마탑, 용, 드래곤, 엘프, 아카데미 등
+- 이런 **일반 용어**가 제목에 있을 때 → 바로 소설 제목으로 매칭하지 않기
+- **추가 증거 필요**: 캐릭터 고유명, 작가명, 회차 언급, 줄거리 등이 본문에 있어야 함
+- 검색에서 "무당파"가 포함된 소설이 나와도, 본문이 **특정 작품의 내용**을 논하는지 확인
+
+## 🎭 복수 작품 캐릭터 그룹 밈/약칭
+커뮤니티에서 여러 작품의 캐릭터를 묶어 부르는 약칭/밈이 있음:
+- 이런 용어는 특정 단일 소설의 약칭이 아니라 **복수 소설의 캐릭터 그룹**
+- 검색 결과에서 "캐릭터 그룹", "약어", "밈" 등의 설명이 나오면 → 복수 작품 밈으로 인식
+- **처리**: is_relevant=true + discussion_type="character_talk" 또는 "meme"
+  - official_title은 해당 밈이 가장 대표하는 작품 or null
+  - 핵심: **noise로 자동 차단하지 말 것** — 작품 캐릭터에 대한 실질적 토론이면 relevant
+
 ## 🚨 본문 부재 시 검증 전략 (DC 장갤 필수!)
 장갤 글의 대부분은 본문이 비어있다. 이때의 검증 방법:
 
@@ -852,6 +891,10 @@ LF_ARBITER = """\
 5. **개체 vs 범주**: 고유명사=특정작품 | 일반명사=장르론
 6. **정보 확정성**: 검색 확인=확정 | 축약어=null | 추론=low
 7. **강조 정규화**: 수사적 과장 제거 후 본질만 판정
+8. **비교 참조 구분**: "X 느낌이라/하위호환/처럼" → X는 비교 대상, 주제가 아님
+9. **공식 URL 부재 ≠ 자동 noise**: URL이 없어도 커뮤니티 밈/캐릭터 논의가 확인되면 relevant 가능
+   URL 부재는 confidence 하향 사유이지, is_relevant=false의 충분 조건이 아님
+10. **일반 장르 용어 vs 작품 제목**: 무당파/화산파/마탑 등 일반 용어를 특정 소설로 매칭하지 말 것
 
 ## 🚨 Decoder 작가 식별 존중 (CRITICAL)
 
@@ -1004,9 +1047,25 @@ The same term can be a novel title, author name, character name, or platform nam
 Let search results and context tell you what category each term belongs to.
 Read HOW terms are used in search results, not just whether they appear.
 
-**PRINCIPLE 5: SUBJECT vs REFERENCE**
+**PRINCIPLE 5: SUBJECT vs REFERENCE (주제 vs 참조 — 핵심 원칙)**
 Distinguish what the post is ABOUT versus what's merely mentioned or used as comparison.
 Just because a work is mentioned doesn't mean it's the main topic.
+
+**비교/유사 구문 감지 패턴:**
+- "X 느낌이라", "X 느낌인데", "X 느낌나는데", "X 같은", "X 하위호환", "X 상위호환"
+  → X는 **비교 기준**일 뿐, 게시글의 주제가 아님
+- "X처럼 Y하다", "X랑 비슷한데"
+  → X는 비유 대상, 실질 주제는 다른 곳에 있음
+- 제목의 첫 번째 명사/약어가 주제이고, 본문에서 비교로 언급되는 작품명은 참조임
+  → 예: "172신작은 좀 묵혀야겠네" + 본문 "부캐황태자 느낌이라" → 주제="172의 신작", "부캐황태자"=비교 참조
+- **비교 참조를 official_title로 매칭하면 안 됨** — 주제 작품이 해독 불가면 title=null
+
+**PRINCIPLE 5b: 숫자 기반 작가/작품 약칭 (커뮤니티 관행)**
+장르소설 갤러리에서는 작가를 **숫자**로 부르는 관행이 있음:
+- "172신작" = 172번 작가의 신작
+- "숫자 + 신작/작가/작/새작/형" 패턴은 **작가 번호 약칭**
+- 이 경우 "숫자"는 작가를 지칭하며, 연결된 작품을 찾으려면 "숫자 작가 장갤" 등으로 검색
+- **숫자 작가의 신작이 주제이고, 본문에 비교로 언급된 다른 작품은 참조일 뿐**
 
 **PRINCIPLE 6: ASSOCIATION vs DISCUSSION (연상 vs 토론) - 전문적 분석 원칙**
 
@@ -1037,7 +1096,9 @@ No evidence = no claim.
 
 Determine post_type based on TRUE INTENT:
 - **work_discussion**: Genuinely discusses a specific novel (is_relevant=true)
-- **author_criticism**: Discusses an author's career/style (is_relevant=false, official_novel_title=null)
+- **author_criticism**: Discusses an author's career/style with advice/commands (is_relevant=false, official_novel_title=null)
+- **author_discussion**: Discusses an author's work patterns/style/tendencies (is_relevant=true)
+  핵심 구분: author_criticism은 작가에게 조언/비평("써라", "써야댐"), author_discussion은 작가 작품 패턴 관찰/논의("이 작가는 항상 ~한 캐릭터를 쓴다")
 - **recommendation**: Asks for suggestions (is_relevant=false)
 - **meta**: Platform/community discussion — badges, emoticons, UI, events (is_relevant=false)
 - **genre_discussion**: Discusses genre/trope in general, not a specific work (is_relevant=false)
@@ -1136,6 +1197,9 @@ Mark is_noise=true ONLY if you are 100% certain:
 - Pure memes/images without novel context
 - Spam markers: "dc app", advertisements, personal ads
 - General discussion with NO identifiable work or author
+- **영어 번역 유머/드립**: "한글(English)" 패턴이 2회+ 반복 + 본문에 "영어병기", "번역" 등
+  → 예: "무당파(Zero sugar club)의 최고 고수(High Master)" = 번역 말장난, 소설 토론이 아님
+  → community_banter 또는 meme으로 분류
 
 **post_type 세분화 기준 (noise를 더 정확히 분류):**
 - "community_banter": 커뮤니티 은어/잡담 (장붕=유저, 파딱=완장, 분충=분탕충, 누렵이=다독러 등 DC 개념어 사용)
@@ -1711,7 +1775,7 @@ OUTPUT JSON:
 {{
   "is_noise": boolean,
   "noise_reason": string | null,
-  "post_type": "work_discussion" | "recommendation" | "author_criticism" | "genre_discussion" | "community_banter" | "image_post" | "meta" | "noise",
+  "post_type": "work_discussion" | "recommendation" | "author_criticism" | "author_discussion" | "genre_discussion" | "community_banter" | "image_post" | "meta" | "noise",
   "detected_entities": {{
     "possible_titles": ["string"],  // ❌ 금지: 문장/절은 절대 넣지 마라. 명사/고유명사만! (예: "작품약어", "작가필명" ← O, "작품약어도 후반 말아먹긴했지만..." ← X)
     "possible_authors": ["string"],
@@ -2201,6 +2265,13 @@ Step 3: unresolved_terms에 등록!
   문장의 주어는 "X의 신작"이고, Y는 비교의 기준점이다.
   한국어 "-인데" 접속은 "~한 상황에서 판단하니"라는 전제-결론 구조다.
 
+  **추가 비교 구문 패턴 (확장):**
+  - "X 느낌이라" / "X 느낌인데" / "X 느낌나는데" → X는 비교 대상
+  - "X처럼" / "X같은" / "X 비슷한" → X는 유사성 기준
+  - "X 묵혀야겠네" + 본문 "Y 느낌이라" → 주제=X, Y=비교 참조
+  - 예: "172신작은 좀 묵혀야겠네" + "부캐황태자 느낌이라" → 주제="172 작가의 신작", "부캐황태자"=비교
+  - **비교 참조를 official_title로 설정하면 FP 발생!**
+
 ━━━ 사례 F: 작가 품평/비교 (특정 작품 매칭 금지) ━━━
 
 게시글: 제목 "양치기 작가 ㄹㅇ 필력 쩔었는데 최근작 좀 아쉽다"
@@ -2336,6 +2407,40 @@ Step 2: 세 증거를 비교:
 → 최소 1개의 인-포스트 앵커(제목 중심 약어 주제, 캐릭터/줄거리/작가/회차/플랫폼 URL)가 필요
 → 검색 증거만 있고 인-포스트 앵커가 없으면 confidence를 낮추거나 title=null
 
+**패턴 E: 숫자 기반 작가 약칭 (DC 장갤 관행)**
+
+장르소설 갤러리에서는 작가를 **숫자(번호)**로 부르는 관행이 있다:
+- "172신작" = "172번 작가의 신작"
+- "38작가 신작 봤는데" = "38번 작가의 새 작품"
+
+판별 방법:
+```
+1. 제목 첫 토큰이 숫자(2~4자리)이고, 뒤에 "신작/작가/작/새작/형/님" 등이 결합되어 있는가?
+   → "172신작", "38작", "172형 신작" 등 → 숫자는 **작가 번호**
+   → 이때 주제는 "해당 작가의 신작"이지, 본문에 비교로 언급된 다른 작품이 아님!
+   → 검색: "[숫자] 작가 장갤", "[숫자] 장르소설" 등으로 실제 작가/작품 확인
+
+2. 본문에 "X 느낌이라", "X 하위호환" 등 비교 구문이 있으면:
+   → X는 비교 대상일 뿐, 주제가 아님
+   → official_title은 주제 작품(숫자 작가의 신작)이어야 함
+   → 주제 작품을 해독할 수 없으면 title=null, X를 title로 올리지 마라
+
+⚠️ 주의: 숫자 작가의 신작 자체를 특정하지 못하면 title=null이 올바를 수 있음.
+         본문에 비교로 언급된 작품을 주제로 승격시키는 것은 FP 위험!
+```
+
+**패턴 F: 커뮤니티 밈/캐릭터 그룹 약칭 해석**
+
+검색 결과에서 다음 패턴으로 "밈/그룹 약칭"이 확인될 수 있다:
+- "일컫는 약어이자 밈", "~를 묶어 부르는 약칭", "캐릭터 그룹"
+- 각 음절이 다른 작품 캐릭터의 첫 글자를 따온 합성 약어
+- 나무위키/위키 등에서 "밈" 카테고리에 설명되어 있음
+
+이런 밈 약칭은 **단일 소설 제목이 아니지만 작품 관련 토론**임:
+- 검색 결과의 설명문을 **반드시 상세히 읽어** 어떤 작품/캐릭터를 지칭하는지 파악
+- is_relevant=true + discussion_type="character_talk" 또는 "meme"이 적절
+- 가장 대표적인 작품명을 official_title로 하거나, 핵심 작품이 없으면 null
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 **PRINCIPLE 1: FLEXIBLE TEXT INTERPRETATION**
@@ -2347,6 +2452,16 @@ Search results often reveal the intended meaning.
 Don't skim - ANALYZE search results LINE BY LINE.
 Read HOW terms are used in context, not just whether they appear.
 Connect messy user input to clean official titles found in search results.
+
+**🔑 검색 결과에서 "커뮤니티 사용 맥락" 읽기 (핵심 능력):**
+검색 결과의 content/snippet에서 다음을 **의미 단위로 이해**하라:
+- "~를 일컫는 약어이자 밈이다" → 밈/약칭의 정의를 발견!
+- "~라고 묶이곤 했다" → 캐릭터 그룹 묶음의 맥락
+- "~가 리스트에 추가되어" → 커뮤니티 밈의 역사적 변천
+- "~의 히로인 정실 논쟁" → 캐릭터 논의 맥락
+- **핵심: 검색 결과의 설명문을 단순 키워드 매칭이 아니라 "맥락 이해"로 읽어라**
+- 결과에서 "이 용어가 어떤 의도/목적으로 쓰이는지"를 추출하여 게시글 해석에 활용
+- 특히 나무위키 밈 문서, 위키 설명 등은 정보 밀도가 높으므로 **내용을 꼼꼼히 읽어** 약칭의 실체를 파악
 
 ** CRITICAL: 검색 결과 텍스트에서 패턴 추출 **
 검색 결과의 "내용" 필드를 반드시 분석하라:
@@ -2766,6 +2881,11 @@ Decode the detected terms using search results. Your job is to find OFFICIAL TIT
 
 === SEARCH RESULTS ===
 {search_results_json}
+
+Evidence ID rule:
+- 각 검색 결과에는 `_evidence_id`(예: `E001`)가 있을 수 있습니다.
+- 근거 서술(reason/search_evidence) 시 이 ID만 인용하세요.
+- 존재하지 않는 임의 번호(`[1]`, `[2]` 등) 생성 금지.
 
 === SLANG DICTIONARY ===
 {slang_dictionary}
@@ -3483,7 +3603,18 @@ Decode the detected terms using search results. Your job is to find OFFICIAL TIT
    - 2-3음절 일반 인명은 중복 가능성 높음
    - 작품 A의 캐릭터 ≠ 작품 B의 동명 캐릭터
 
-3. **관련 없는 작품 오매칭 (False Positives)**
+3. **교차 매체 동명 캐릭터 (Cross-Media Homonyms) — 핵심!**
+   - 같은 캐릭터명이 소설/라노벨과 게임/애니에 모두 존재할 수 있음
+   - **장갤(장르소설 갤러리) 맥락에서는 소설/라이트노벨 출처를 우선 고려**
+   - 문맥 단서 활용:
+     * "N장", "N아크", "N부" 표현 → 소설/라노벨의 구조적 단위(장/편/아크)
+     * "N화", "최신화" → 웹소설/연재 회차
+     * "여장", "쇼타" 등 서사 전개 용어 → 소설 줄거리 토론 가능성
+   - 예: "스바루 6장" → 게임 캐릭터가 아니라 Re:Zero 6번째 아크의 나츠키 스바루
+   - **캐릭터명 + 회차/장(arc) 표현이 함께 있으면** → 소설/라노벨 캐릭터일 가능성 극대화
+   - 검색 시 "캐릭터명 N장" 결합 쿼리로 정확한 출처 확인 가능
+
+4. **관련 없는 작품 오매칭 (False Positives)**
    - 나무위키, 범용 DB는 키워드만 일치하면 검색됨
    - **이미 식별된 작품과 관련 있는지 반드시 확인**
    
@@ -4402,7 +4533,11 @@ Decoder가 검색에서 작품을 찾았을 때:
 **STEP 0-B: 매체 타입 확인 (HIGHEST PRIORITY)**
 - 검색 결과에서 찾은 작품이 **웹소설**인가?
 - 음악/노래/가사, 만화/웹툰, 게임, 애니 → 웹소설이 아님 → is_novel_discussion=false
-- 소설 플랫폼(문피아, 노벨피아, 카카오페이지, 리디) URL이 없으면 → 의심
+- 소설 플랫폼(문피아, 노벨피아, 카카오페이지, 리디) URL이 없으면 → 의심하되 자동 차단하지 말 것
+- **중요: 공식 플랫폼 URL 부재 ≠ 자동 noise 판정**
+  - 커뮤니티 밈, 캐릭터 그룹 약칭, 라이트노벨 등은 공식 웹소설 플랫폼에 없을 수 있음
+  - URL 부재는 confidence를 Low/Medium으로 하향하는 근거이지, is_relevant=false의 충분 조건이 아님
+  - 검색 결과에서 커뮤니티 맥락(밈 설명, 캐릭터 논의 등)이 확인되면 relevant로 판정 가능
 - 비-소설 매체를 웹소설로 오인하면 안 됨!
 
 **STEP 0-A: 일반 개념어 필터 (HIGHEST PRIORITY)**
@@ -4610,6 +4745,10 @@ DECODER CANDIDATES:
 
 ADDITIONAL SEARCH RESULTS (if any):
 {verification_search_json}
+
+Evidence ID rule:
+- 추가 검색 결과의 `_evidence_id`(예: `E001`)를 근거 인용 키로 사용하세요.
+- 근거를 쓸 때 임의 번호(`[1]`, `[2]` 등)를 새로 만들지 마세요.
 
 === 제안 1: DiscourseAnalyzer 도메인 교차 검증 ===
 {discourse_context}
@@ -4986,7 +5125,8 @@ OUTPUT JSON:
     "slang_insight": {{
       "detected_term": "string",
       "decoded_term": "string",
-      "decode_verified": boolean
+      "decode_verified": boolean,
+      "cultural_context": "string | null"  // Korean — 이 은어/약칭/밈의 유래, 커뮤니티에서의 용법, 관련 작품군이나 맥락을 상세히 설명 (예: 어떤 캐릭터/작품을 묶은 약어인지, 왜 생겨났는지, 어떤 논쟁/떡밥과 관련되는지)
     }} | null,
     
     // === 미해결 용어 처리 ===
@@ -5175,6 +5315,10 @@ VERIFIED RESULT:
 ORIGINAL POST:
 {post_json}
 
+Evidence ID rule:
+- 프롬프트에 `SEARCH EVIDENCE CATALOG` 섹션이 있으면 해당 EID(`[E001]`)만 인용하세요.
+- 임의 번호(`[1]`, `[2]`) 생성 금지.
+
 MICRO-TAG GENERATION GUIDELINES:
 Generate contextually appropriate tags based on post content. Tags should be:
 - Korean web novel community terminology (e.g., 고구마, 사이다, 먼치킨 - 감정/전개 묘사)
@@ -5256,6 +5400,7 @@ def assemble_final_output(
         identity["slang_insight"] = {
             "detected_term": slang.get("detected_term"),
             "decoded_term": slang.get("decoded_term"),
+            "cultural_context": slang.get("cultural_context"),
         }
     
     # Inference

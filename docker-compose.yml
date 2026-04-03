@@ -6,10 +6,21 @@ services:
       - "9000:8080"
     volumes:
       - ./docker/searchxng/settings.yml:/etc/searxng/settings.yml:ro
+      - ./docker/searchxng/startpage_patched.py:/usr/local/searxng/searx/engines/startpage.py:ro
     environment:
       - SEARXNG_BASE_URL=http://localhost:9000/
       # NOTE: settings.yml에서 secret_key는 ${SEARXNG_SECRET} 로 override됨
       - SEARXNG_SECRET=change-me-please-change
+
+  crawl4ai:
+    image: unclecode/crawl4ai:latest
+    restart: unless-stopped
+    ports:
+      - "11235:11235"
+    shm_size: "2g"
+    environment:
+      # 기본 설정 — LLM 불필요, 순수 크롤링/마크다운 변환 전용
+      - CRAWL4AI_API_TOKEN=${CRAWL4AI_API_TOKEN:-}
 
   mcp-bridge:
     build:
@@ -20,7 +31,25 @@ services:
       - "3333:3333"
     environment:
       - SEARCHXNG_URL=http://searchxng:8080
+      - SEARCHXNG_URLS=http://searchxng:8080
+      - CRAWL4AI_URL=http://crawl4ai:11235
+      - MCP_DISCOVER_PUBLIC_INSTANCES=0
+      - MCP_DISCOVERY_SOURCE_URL=https://searx.space/data/instances.json
+      - MCP_DISCOVERY_MAX_URLS=5
+      - MCP_DISCOVERY_MIN_SEARCH_SUCCESS=80
+      - MCP_DISCOVERY_CACHE_SEC=1800
       - MCP_PORT=3333
       - LLM_ENDPOINT=${LLM_ENDPOINT:-http://host.docker.internal:11434}
+      # recall 확보를 위해 presearch/webcrawler/naver를 primary에 다시 포함한다.
+      # CAPTCHA가 심한 startpage/duckduckgo/brave는 계속 제외한다.
+      - MCP_SEARCH_ENGINES=google,bing,presearch,webcrawler,naver
+      - MCP_SEARCH_FALLBACK_ENGINES=webcrawler,google,bing,presearch,naver
+      - MCP_SEARCH_LANGUAGE=ko-KR
+      - MCP_SEARCH_MAX_RETRIES=4
+      - MCP_SEARCH_MAX_PAGES=3
+      - MCP_SEARCH_RETRY_BACKOFF_MS=400
+      - MCP_SEARCH_RETRY_ON_EMPTY=1
+      - MCP_SEARCH_SOFT_FAIL=1
     depends_on:
       - searchxng
+      - crawl4ai

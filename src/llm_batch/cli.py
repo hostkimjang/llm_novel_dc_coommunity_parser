@@ -66,6 +66,12 @@ def main() -> None:
         help="LLM backend: http (llama.cpp server) or local (llama-cpp-python)",
     )
     parser.add_argument(
+        "--server-type",
+        choices=["llama", "vllm"],
+        default=None,
+        help="LLM serving engine: llama (llama-server, default) or vllm (vLLM)",
+    )
+    parser.add_argument(
         "--llm-endpoint",
         default=None,
         help="LLM endpoint URL for --llm-backend http (e.g. https://llama.kimjang.me)",
@@ -110,6 +116,8 @@ def main() -> None:
         os.environ["LLM_N_CTX"] = str(int(args.n_ctx))
     if args.n_gpu_layers is not None:
         os.environ["LLM_N_GPU_LAYERS"] = str(int(args.n_gpu_layers))
+    if args.server_type is not None:
+        os.environ["LLM_SERVER_TYPE"] = args.server_type
 
     # Staged pipeline mode (multi-expert)
     if args.staged:
@@ -152,6 +160,7 @@ def main() -> None:
             min_p=args.min_p,
             repeat_penalty=args.repeat_penalty,
             max_tokens=args.max_tokens,
+            server_type=args.server_type,
         )
 
     incremental_path = Path(args.incremental_output) if args.incremental_output else None

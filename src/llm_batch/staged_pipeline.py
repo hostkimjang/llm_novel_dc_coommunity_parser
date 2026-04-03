@@ -255,7 +255,7 @@ class StagedPipeline:
     def _compact_results(self, raw: Dict[str, Any]) -> Dict[str, Any]:
         """Compact search results for LLM input."""
         top_k = int(os.getenv("MCP_TOP_K_RESULTS", "5"))
-        max_chars = int(os.getenv("MCP_MAX_CONTENT_CHARS", "400"))
+        max_chars = int(os.getenv("MCP_MAX_CONTENT_CHARS", "0"))
         
         out = {"query": raw.get("query"), "results": []}
         results = raw.get("results", [])
@@ -264,7 +264,7 @@ class StagedPipeline:
             if not isinstance(item, dict):
                 continue
             content = item.get("content", "")
-            if len(content) > max_chars:
+            if max_chars > 0 and len(content) > max_chars:
                 content = content[:max_chars] + "..."
             out["results"].append({
                 "title": item.get("title"),

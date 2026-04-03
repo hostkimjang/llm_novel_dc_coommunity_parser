@@ -40,6 +40,7 @@ SYNTHESIZER_SYSTEM = """\
 2. 원문의 모든 부분(제목, 본문, 댓글)을 빠짐없이 재해석
 3. "이 단어가 캐릭터명인가?"를 검색 증거로 확인된 것만 연결
 4. 댓글에서 추가 작품 관련 실마리 탐색 (작가명, 캐릭터명, 플랫폼명)
+4.5. 밈/은어/약칭 문화 설명 — 커뮤니티 밈이나 은어가 발견되면 그 유래, 의미, 사용 맥락을 상세히 서술 (예: "엘루깐"이 무엇의 약칭이고, 어떤 논쟁/문화에서 쓰이는지)
 
 합의 보존 원칙 (❗️ 최우선):
 5. Decoder와 Verifier가 동일한 작품을 식별했으면 → 그것이 합의된 작품명입니다.
@@ -103,6 +104,12 @@ SYNTHESIZER_PROMPT = """\
    - 이 포스트가 실제로 특정 작품에 대한 것인지
    - 아니면 다른 맥락(작가 품평, 일상, 밈 등)인지
 
+6. **밈/은어/커뮤니티 문화 설명**: 게시물에서 밈, 은어, 약칭이 발견되면 그 문화적 맥락을 상세히 설명
+   - 그 밈/약칭이 무엇의 줄임말이고, 어떤 의미인지 (예: "북모리엘루깐" = 북유럽+모리+엘리+루시아+깐부+α 등 여러 소설 히로인 이름 조합)
+   - 커뮤니티에서 사람들이 어떤 맥락/의도로 사용하는지 (예: "히로인 정실 논쟁 떡밥", "추천 목록", "비교 논의" 등)
+   - 관련 작품군이나 유래, 어떻게 생겨난 밈인지 (예: "원래 3명이었다가 6명으로 확장")
+   - 이 정보를 synthesis_summary에 반드시 포함하세요
+
 OUTPUT JSON:
 {{
   "reinterpretation": {{
@@ -149,6 +156,8 @@ CRITICAL:
 - 증거에 없는 작품/캐릭터를 추측하지 마세요
 - 검색 결과에서 확인된 것만 연결하세요
 - "모르겠다"가 잘못된 추측보다 낫습니다
+- 검색 근거 인용 시 search_evidence에 제공된 EID(`[E001]` 형식)만 사용하세요.
+- 임의 번호(`[1]`, `[2]`) 생성 금지.
 
 ⚠️ 합의 보존 규칙 (절대 위반 금지):
 - Decoder와 Verifier가 동일한 작품을 high confidence로 식별했으면,
@@ -176,9 +185,15 @@ class SynthesizerExpert:
 
     def _call_llm(self, user_prompt: str) -> Optional[Dict[str, Any]]:
         """LLM 호출 + JSON 파싱"""
+        response_text = ""
         try:
             import os
-            max_tokens = int(os.getenv("SYNTHESIZER_MAX_TOKENS", "1536"))
+            _default_max_tokens = os.getenv(
+                "LLM_EXPERT_MAX_TOKENS",
+                os.getenv("LLM_MAX_TOKENS", "32768"),
+            )
+            max_tokens = int(_default_max_tokens)
+            max_tokens = max(512, min(max_tokens, 65536))
             messages = [
                 {"role": "system", "content": SYNTHESIZER_SYSTEM},
                 {"role": "user", "content": user_prompt},
@@ -197,10 +212,19 @@ class SynthesizerExpert:
             parsed = parse_json_with_think_removal(response_text)
             return parsed
         except Exception as e:
+            _finish_reason = getattr(self.llm, "last_finish_reason", None)
+            _raw_len = len(response_text or "")
+            _tail = (response_text or "")[-240:].replace("\n", " ")
             print(
-                f"[{_ts()}][{self.emoji}] {self.name} LLM 오류: {e}",
+                f"[{_ts()}][{self.emoji}] {self.name} LLM 오류: {e} "
+                f"(max_tokens={max_tokens}, finish_reason={_finish_reason}, raw_len={_raw_len})",
                 file=sys.stderr,
             )
+            if _tail:
+                print(
+                    f"[{_ts()}][{self.emoji}] {self.name} 응답 꼬리(디버그): {_tail}",
+                    file=sys.stderr,
+                )
             return None
 
     # ------------------------------------------------------------------ #
@@ -480,27 +504,45 @@ class SynthesizerExpert:
         if not search_results:
             return "(검색 결과 없음)"
 
-        # 신뢰도 순 정렬, 상위 10개
-        sorted_results = sorted(
-            search_results,
-            key=lambda r: r.get("_trust_score", 0),
-            reverse=True,
-        )
+        # 전역 canonical EID 순서(_evidence_rank) 유지
+        ranked_results: List[Dict[str, Any]] = []
+        for i, r in enumerate(search_results, 1):
+            if not isinstance(r, dict):
+                continue
+            try:
+                rank = int(r.get("_evidence_rank")) if r.get("_evidence_rank") is not None else 10**9
+            except Exception:
+                rank = 10**9
+            r2 = dict(r)
+            r2["_rank"] = rank
+            if not r2.get("_evidence_id"):
+                r2["_evidence_id"] = f"T{i:03d}"
+            ranked_results.append(r2)
+        ranked_results.sort(key=lambda r: (r.get("_rank", 10**9), str(r.get("_evidence_id") or "")))
 
         parts: List[str] = []
-        for i, r in enumerate(sorted_results[:10], 1):
-            title = r.get("title", "")
-            url = r.get("url", "")
-            content = r.get("content", "")
-            trust = r.get("_trust_score", 0)
+        for r in ranked_results[:20]:
+            eid = str(r.get("_evidence_id") or "").strip() or "T???"
+            title = str(r.get("title", "")).strip()
+            url = str(r.get("url", "")).strip()
+            content = str(r.get("content", "")).strip()
+            trust = float(r.get("_trust_score", 0) or 0)
+            purpose = str(r.get("_purpose", "")).strip()
+            query = str(r.get("_query", "")).strip()
 
             # 내용 200자 제한
             if len(content) > 200:
                 content = content[:200] + "..."
 
+            meta_lines = ""
+            if purpose:
+                meta_lines += f"    purpose: {purpose}\n"
+            if query:
+                meta_lines += f"    from_query: {query}\n"
             parts.append(
-                f"[{i}] {title}\n"
+                f"[{eid}] {title}\n"
                 f"    URL: {url}\n"
+                f"{meta_lines}"
                 f"    신뢰도: {trust:.1f}\n"
                 f"    내용: {content}"
             )

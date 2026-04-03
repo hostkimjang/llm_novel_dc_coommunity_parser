@@ -6,8 +6,11 @@ Korean abbreviation/slang restoration specialist.
 from __future__ import annotations
 
 import json
+import os
 import sys
 import time
+import re
+from functools import lru_cache
 from typing import Any, Dict, List, Optional
 
 from .prompts import (
@@ -19,38 +22,216 @@ from ..prompts.expert_prompts import PLATFORM_ABBREVIATION_MAP
 from ..rules import (
     OFFICIAL_PLATFORMS, GENRE_KEYWORDS, GENRE_ARCHETYPE_TERMS,
     PLATFORM_ABBREVIATIONS, PLATFORM_FEATURE_TERMS, ASSOCIATION_PATTERNS,
+    is_genre_물_pattern,
 )
-from .utils import parse_json_with_think_removal, _ts
+from .utils import (
+    parse_json_with_think_removal, _ts,
+    _norm_domain_text, _detect_domain_groups, _has_domain_conflict_for_mapping,
+    get_kiwi,
+)
 import re as _re
+
+_NORMALIZE_ALNUM_KOR_RE = re.compile(r"[^\uac00-\ud7a3A-Za-z0-9]")
+
+# 검색 결과 host 판별용 도메인 집합.
+# `OFFICIAL_PLATFORMS`에는 wiki까지 섞여 있어, host 비교용은 플랫폼 도메인만 분리한다.
+OFFICIAL_PLATFORM_DOMAINS = tuple(
+    site for site in OFFICIAL_PLATFORMS
+    if site and site != "namu.wiki"
+)
+
+
+@lru_cache(maxsize=65536)
+def _normalize_alnum_kor_cached(text: str) -> str:
+    return _NORMALIZE_ALNUM_KOR_RE.sub("", str(text or "")).lower().strip()
 
 
 # ============================================================
 # 알려진 약어 사전 (모듈 수준 상수)
 # ============================================================
 KNOWN_ABBREVIATIONS = {
-    "아생갤": "아카데미 생존 갤러리",
-    "아카생존": "아카데미 생존 갤러리",
-    "아카생갤": "아카데미 생존 갤러리",
-    #"아생": "아카데미 생존 갤러리",
-    #"괴담텔": "괴담 호텔 탈출기",
-    #"괴담동": "괴담 동아리",
-    #"망겜성": "망겜의 성기사",
-    #"성좌안무서움": "나만 성좌들이 안 무서움",
-    "지구판역": "판타지에 지구 역사를 풀었다",
-    #"즉사무림": "즉사기 들고 무림에 떨어지다",
-    "숨흑재": "숨겨진 흑막이 되었다",
-    "재벌집막": "재벌집 막내아들",
-    "나혼렙": "나 혼자만 레벨업",
-    "전독시": "전지적 독자 시점",
-    "전지적독자": "전지적 독자 시점",
-    "신화급": "신화급 귀속 아이템을 손에 넣었다",
-    "학전무": "학교전쟁 무한 레벨업",
+    # === 사용자 검증 약칭 ===
+    "주전무": "주무시기 전에 무엇을 하셨나요?",
 }
+
+
+# ============================================================
+# 한글 자모(Jamo) 구조 기반 비작품-약어 판별
+# ────────────────────────────────────────────────────────────
+#  기존: 초성 비속어를 하드코딩 → 한계 명확
+#  개선: 유니코드 음절 분해로 초성 패턴 자동 생성 + 초성 비율 휴리스틱
+#        핵심 프레임: "비속어인가?" 가 아니라 "작품 약어일 가능성이 있는가?"
+# ============================================================
+
+# 한글 초성 19자 (유니코드 한글 음절 분해 표준 순서)
+_CHOSUNG_JAMO = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ'
+
+# 겹자음(호환 자모) → 단자음 분리 매핑
+_COMBINED_JAMO_NORMALIZE: dict[str, str] = {
+    'ㄳ': 'ㄱㅅ', 'ㄵ': 'ㄴㅈ', 'ㄶ': 'ㄴㅎ',
+    'ㄺ': 'ㄹㄱ', 'ㄻ': 'ㄹㅁ', 'ㄼ': 'ㄹㅂ', 'ㄽ': 'ㄹㅅ',
+    'ㄾ': 'ㄹㅌ', 'ㄿ': 'ㄹㅍ', 'ㅀ': 'ㄹㅎ',
+    'ㅄ': 'ㅂㅅ', 'ㅆ': 'ㅅㅅ',
+}
+
+
+def _is_jamo_consonant(ch: str) -> bool:
+    """단일 문자가 한글 호환 자모 자음인지 (ㄱ~ㅎ, U+3131~U+314E)."""
+    return '\u3131' <= ch <= '\u314E'
+
+
+def _syllable_to_chosung(ch: str) -> str | None:
+    """한글 음절 한 글자 → 초성 자모. 음절 아니면 None."""
+    cp = ord(ch)
+    if 0xAC00 <= cp <= 0xD7A3:
+        return _CHOSUNG_JAMO[(cp - 0xAC00) // (21 * 28)]
+    return None
+
+
+def _word_to_chosung(word: str) -> str:
+    """'새끼' → 'ㅅㄲ', '씨발' → 'ㅅㅂ' — 유니코드 기반 자동 초성 추출."""
+    result: list[str] = []
+    for ch in word:
+        cho = _syllable_to_chosung(ch)
+        if cho:
+            result.append(cho)
+        elif _is_jamo_consonant(ch):
+            result.append(ch)
+    return ''.join(result)
+
+
+def _normalize_jamo(text: str) -> str:
+    """겹자음을 단자음으로 분리: 'ㅄ' → 'ㅂㅅ' (패턴 매칭 정규화)."""
+    return ''.join(_COMBINED_JAMO_NORMALIZE.get(c, c) for c in text)
+
+
+def chosung_ratio(text: str) -> float:
+    """텍스트 내 한글 자음(초성) 문자 비율. 공백 제외."""
+    chars = [c for c in text if not c.isspace()]
+    if not chars:
+        return 0.0
+    return sum(1 for c in chars if _is_jamo_consonant(c)) / len(chars)
+
+
+# ── 비속어 원형 리스트 (유지보수: → 여기에 단어만 추가) ──
+_PROFANITY_WORDS: list[str] = [
+    "새끼", "씨발", "병신", "지랄", "꺼져", "존나",
+    "미친", "좆밥", "빡라", "개새끼", "이새끼",
+    "씹", "좆", "닥쳐", "꼴받",
+]
+
+# 쌍자음 → 단자음 간략화 (사람들이 타이핑 시 간략화: ㅆ→ㅅ, ㄲ→ㄱ 등)
+_DOUBLE_TO_SINGLE: dict[str, str] = {
+    'ㄲ': 'ㄱ', 'ㄸ': 'ㄷ', 'ㅃ': 'ㅂ', 'ㅆ': 'ㅅ', 'ㅉ': 'ㅈ',
+}
+
+
+def _simplify_double_consonant(text: str) -> str:
+    """쌍자음을 단자음으로 간략화: 'ㅆㅂ' → 'ㅅㅂ' (타이핑 변형 대응)."""
+    return ''.join(_DOUBLE_TO_SINGLE.get(c, c) for c in text)
+
+
+# 자동 생성: {"ㅅㄲ": "새끼", "ㅅㅂ": "씨발", "ㅂㅅ": "병신", ...}
+# 쌍자음 변형도 자동 추가: "씨발" → exact "ㅆㅂ" + simplified "ㅅㅂ"
+_AUTO_CHOSUNG_PROFANITY: dict[str, str] = {}
+for _pw in _PROFANITY_WORDS:
+    _cho = _word_to_chosung(_pw)
+    if len(_cho) >= 2:
+        if _cho not in _AUTO_CHOSUNG_PROFANITY:
+            _AUTO_CHOSUNG_PROFANITY[_cho] = _pw
+        # 쌍자음 간략화 변형도 등록 (ㅆㅂ→ㅅㅂ, ㅅㄲ→ㅅㄱ 등)
+        _cho_simple = _simplify_double_consonant(_cho)
+        if _cho_simple != _cho and _cho_simple not in _AUTO_CHOSUNG_PROFANITY:
+            _AUTO_CHOSUNG_PROFANITY[_cho_simple] = _pw
+
+# 하위 호환: 기존 코드에서 import 하는 경우 대비
+CHOSUNG_PROFANITY = _AUTO_CHOSUNG_PROFANITY
+
+
+def contains_chosung_profanity(text: str) -> tuple[bool, str]:
+    """
+    텍스트가 작품 약어가 *아닐* 가능성을 구조적으로 판별.
+
+    전략 (하드코딩 사전 → 구조 기반):
+      1) 비속어 원형에서 자동 생성된 초성 패턴 서브스트링 매칭
+      2) 겹자음 정규화 (ㅄ→ㅂㅅ) 후 재매칭
+      3) 초성 비율 ≥50% 이면서 KNOWN_ABBREVIATIONS 미등록 → 비작품 약어 의심
+         (웹소설 약어는 음절 조합이므로 자음만으로 구성될 수 없음)
+
+    Returns:
+        (발견 여부, 매칭된 비속어 원형 또는 사유 문자열)
+    """
+    text_clean = text.strip().replace(" ", "")
+    if not text_clean:
+        return False, ""
+
+    # KNOWN_ABBREVIATIONS 화이트리스트 통과
+    if text_clean in KNOWN_ABBREVIATIONS:
+        return False, ""
+
+    # 겹자음 정규화 (ㅄ→ㅂㅅ 등)
+    text_normalized = _normalize_jamo(text_clean)
+
+    # 1) 자동 생성 패턴 매칭 (longest-match-first)
+    for pattern, expansion in sorted(
+        _AUTO_CHOSUNG_PROFANITY.items(), key=lambda x: -len(x[0])
+    ):
+        if pattern in text_normalized:
+            return True, expansion
+
+    # 2) 초성 비율 휴리스틱: 자음이 절반 이상 → 비작품 약어
+    #    웹소설 약어는 "전독시", "나혼렙" 처럼 음절로 구성되므로
+    #    초성만 나열된 형태('ㅂㄹㅋ', 'ㅈㄹㅁ')는 작품명이 아님
+    if len(text_normalized) >= 2:
+        r = chosung_ratio(text_normalized)
+        if r >= 0.5:
+            return True, f"초성비율 {r:.0%} (비작품 약어 의심)"
+
+    return False, ""
 
 
 # ============================================================
 # 약어-제목 매칭 스코어 (LLM 불필요, 코드 레벨 검증)
 # ============================================================
+
+def _strip_korean_particles(text: str) -> str:
+    """한국어 조사(은/는/이/가/을/를/도/와/과/에/에서/으로/로 등)를 말미에서 제거."""
+    import re as _re_p
+    # 긴 조사부터 매칭 (에서, 으로 먼저 → 은, 는, 이 등 나중)
+    return _re_p.sub(
+        r'(에서|으로|이랑|에게|한테|부터|까지|처럼|만큼|보다|라는'
+        r'|는|은|이|가|을|를|의|에|도|와|과|로|만|조차|마저|밖에)$',
+        '', text,
+    )
+
+
+_KEEP_JAMO_TEXT_RE = re.compile(r"[^\u3131-\u314e\uac00-\ud7a3A-Za-z0-9]")
+_JAMO_TAIL_FOLLOWERS = {"은", "는", "이", "가", "을", "를", "도", "만", "의", "에", "와", "과", "로"}
+
+
+def _normalize_text_keep_jamo(text: str) -> str:
+    return _KEEP_JAMO_TEXT_RE.sub("", str(text or "")).lower().strip()
+
+
+def _is_trailing_jamo_abbreviation(text: str) -> bool:
+    tok = _normalize_text_keep_jamo(text)
+    if len(tok) < 3:
+        return False
+    return any("\uac00" <= ch <= "\ud7a3" for ch in tok[:-1]) and ("\u3131" <= tok[-1] <= "\u314e")
+
+
+def _leading_jamo_title_direct_score(abbr: str, candidate_title: str) -> float:
+    abbr_norm = _normalize_text_keep_jamo(abbr)
+    title_norm = _normalize_text_keep_jamo(candidate_title)
+    if not (_is_trailing_jamo_abbreviation(abbr_norm) and title_norm.startswith(abbr_norm)):
+        return 0.0
+    if len(title_norm) <= len(abbr_norm):
+        return 0.0
+    next_char = title_norm[len(abbr_norm)]
+    if next_char in _JAMO_TAIL_FOLLOWERS:
+        return 0.98
+    return 0.0
+
 
 def abbreviation_match_score(abbr: str, candidate_title: str) -> float:
     """
@@ -64,7 +245,19 @@ def abbreviation_match_score(abbr: str, candidate_title: str) -> float:
     if not abbr or not candidate_title:
         return 0.0
 
-    abbr_clean = abbr.strip()
+    # 🆕 조사 제거: '망겜성은' → '망겜성', '해리포터가' → '해리포터' 등
+    # 조사 포함/제거 양쪽을 모두 시도해 최고 점수를 반환한다.
+    abbr_stripped = _strip_korean_particles(abbr.strip())
+    if abbr_stripped != abbr.strip() and abbr_stripped:
+        score_with_particle = _abbreviation_match_score_inner(abbr.strip(), candidate_title)
+        score_without_particle = _abbreviation_match_score_inner(abbr_stripped, candidate_title)
+        return max(score_with_particle, score_without_particle)
+
+    return _abbreviation_match_score_inner(abbr.strip(), candidate_title)
+
+
+def _abbreviation_match_score_inner(abbr_clean: str, candidate_title: str) -> float:
+    """abbreviation_match_score 의 내부 구현."""
     title_clean = candidate_title.strip()
     title_no_space = title_clean.replace(" ", "")
 
@@ -292,59 +485,7 @@ def _combinations(iterable, r):
         yield [pool[i] for i in indices]
 
 
-# ============================================================
-# 도메인 신호 기반 드리프트 방지 유틸
-# ============================================================
-
-_DOMAIN_SIGNAL_GROUPS: dict[str, tuple[str, ...]] = {
-    # 무협/수선 계열
-    "martial": ("무림", "강호", "협객", "협녀", "협", "수선", "선협"),
-    # 게임/시스템 계열
-    "game": (
-        "게임", "퀘스트", "튜토리얼", "레벨", "스킬", "랭킹",
-        "길드", "로그인", "파밍", "npc",
-    ),
-}
-
-_DOMAIN_CONFLICT_RULES: tuple[tuple[str, str], ...] = (
-    ("martial", "game"),
-    ("game", "martial"),
-)
-
-
-def _norm_domain_text(text: str) -> str:
-    return _re.sub(r"[^\uac00-\ud7a3A-Za-z0-9]", "", str(text or "")).lower()
-
-
-def _detect_domain_groups(text: str) -> set[str]:
-    norm = _norm_domain_text(text)
-    if not norm:
-        return set()
-    groups: set[str] = set()
-    for group, signals in _DOMAIN_SIGNAL_GROUPS.items():
-        if any(sig in norm for sig in signals):
-            groups.add(group)
-    return groups
-
-
-def _has_domain_conflict_for_mapping(source_term: str, candidate_title: str) -> bool:
-    """
-    source_term(원 약어/용어)와 candidate_title(후보 제목) 간 세계관 충돌 판정.
-
-    - source가 도메인 A 신호를 가지고
-    - candidate가 충돌 도메인 B 신호를 가지며
-    - candidate에 source 도메인 A 신호가 전혀 없으면
-      드리프트로 본다.
-    """
-    src_groups = _detect_domain_groups(source_term)
-    cand_groups = _detect_domain_groups(candidate_title)
-    if not src_groups or not cand_groups:
-        return False
-
-    for src_group, cand_group in _DOMAIN_CONFLICT_RULES:
-        if src_group in src_groups and cand_group in cand_groups and src_group not in cand_groups:
-            return True
-    return False
+# 도메인 충돌 감지 유틸: utils.py 에서 import (_norm_domain_text, _detect_domain_groups, _has_domain_conflict_for_mapping)
 
 
 def _abbr_alignment_guard_score(abbr: str, title: str) -> float:
@@ -389,12 +530,70 @@ class DecoderExpert:
         self.llm = llm_client
         self.name = "Decoder"
         self.emoji = "🔤"
-        # Kiwi 형태소 분석기 (후보 제목 명사 추출용)
-        try:
-            from kiwipiepy import Kiwi as _Kiwi
-            self._kiwi = _Kiwi()
-        except ImportError:
-            self._kiwi = None
+        # Kiwi 형태소 분석기 (프로세스 전역 싱글톤)
+        self._kiwi = get_kiwi()
+
+    @staticmethod
+    def _is_novel_platform_url(url: str) -> bool:
+        if not url:
+            return False
+        url_l = str(url).lower()
+        return any(site in url_l for site in OFFICIAL_PLATFORMS)
+
+    def _find_embedded_stable_alias(
+        self,
+        original_term: str,
+        title: str,
+        possible_characters: Optional[List[str]] = None,
+    ) -> str:
+        """
+        긴 제목 표면 안에 작품 약칭이 묻혀 있는 경우 핵심 약칭을 복원한다.
+        예: '즉사무림은영이너무불쌍해' -> '즉사무림'
+            '즉사무림이유백미래가벌써보이네' -> '즉사무림'
+        """
+        original_norm = _normalize_alnum_kor_cached(original_term)
+        title_norm = _normalize_alnum_kor_cached(title)
+        if not original_norm or not title_norm or original_norm == title_norm:
+            return ""
+
+        char_norms = [
+            _normalize_alnum_kor_cached(ch)
+            for ch in (possible_characters or [])
+            if isinstance(ch, str) and str(ch).strip()
+        ]
+        char_norms = [ch for ch in char_norms if 2 <= len(ch) <= 4]
+
+        best_alias = ""
+        best_score = 0.0
+        for ch in char_norms:
+            idx = original_norm.find(ch)
+            if idx >= 3:
+                prefix = original_norm[:idx].strip()
+                score = max(
+                    abbreviation_match_score(prefix, title),
+                    _leading_jamo_title_direct_score(prefix, title),
+                )
+                if score >= 0.75 and score > best_score:
+                    best_alias = prefix
+                    best_score = score
+        for cut in range(max(2, len(original_norm) - 10), len(original_norm) - 1):
+            prefix = original_norm[:cut].strip()
+            suffix = original_norm[cut:].strip()
+            if len(prefix) < 3 or len(suffix) < 2:
+                continue
+            has_bound_character = any(ch and ch in suffix for ch in char_norms)
+            if char_norms and (not has_bound_character):
+                continue
+            if (not char_norms) and len(suffix) > 10:
+                continue
+            score = max(
+                abbreviation_match_score(prefix, title),
+                _leading_jamo_title_direct_score(prefix, title),
+            )
+            if score >= 0.75 and score > best_score:
+                best_alias = prefix
+                best_score = score
+        return best_alias
     
     def analyze(
         self,
@@ -450,11 +649,20 @@ class DecoderExpert:
             if not isinstance(pt, str):
                 continue
             pt_clean = pt.strip()
+            # 🆕 괄호/구두점을 먼저 제거하여 "아생갤)" → "아생갤" 로 복원
+            # 커뮤니티에서 "갤)" "갤]" 형식으로 약칭 뒤에 닫는 괄호를 붙이는 패턴이 흔함
+            import re as _re_pt
+            pt_stripped = _re_pt.sub(r'[)\]>!?.,;:\-~]+$', '', pt_clean)  # 후행 구두점 제거
+            pt_stripped = _re_pt.sub(r'^[(\[<\-~]+', '', pt_stripped)      # 선행 구두점 제거
+            pt_stripped = pt_stripped.strip()
+            if pt_stripped and pt_stripped != pt_clean:
+                pt_clean = pt_stripped
             # 3글자 미만 스킵
             if len(pt_clean) < 3:
                 continue
-            # 공백/구두점 포함 → n-gram 쓰레기 → key_terms에는 넣지 않음
-            if any(c in pt_clean for c in ' \t)(!?.,;:'):
+            # 공백/탭 포함 → n-gram 쓰레기 → key_terms에는 넣지 않음
+            # 🔧 괄호는 위에서 이미 제거했으므로 여기서는 공백/탭만 체크
+            if any(c in pt_clean for c in ' \t'):
                 continue
             # 한글 2음절 이상 포함 요구
             korean_count = sum(1 for c in pt_clean if ord('가') <= ord(c) <= ord('힣'))
@@ -486,6 +694,21 @@ class DecoderExpert:
         
         # 🆕 P0-4 v2: 축약어 경계 분리 전처리 (Kiwi + GK entity 기반)
         tagged_terms = self._try_split_abbreviation_boundary(key_terms, gatekeeper_result)
+
+        # 🆕 P1-2: 초성 비속어 포함 term 필터링
+        # "이ㅅㄲ" = "이 새끼" 같은 욕설을 작품 약어로 오해석하는 것을 방지
+        _filtered_tagged = []
+        for _tt, _tp in tagged_terms:
+            _has_prof, _prof_exp = contains_chosung_profanity(_tt)
+            if _has_prof:
+                print(
+                    f"[{_ts()}][{self.emoji}] 🚫 key_term 제외(초성 비속어): "
+                    f"'{_tt}' → '{_prof_exp}'",
+                    file=sys.stderr,
+                )
+                continue
+            _filtered_tagged.append((_tt, _tp))
+        tagged_terms = _filtered_tagged
         
         # 🆕 P1-4: 반복 패턴 확장 전처리 (priority 2로 태그)
         plain_for_rep = [t for t, _ in tagged_terms]
@@ -523,61 +746,22 @@ class DecoderExpert:
         # Check dictionary first for direct matches
         dict_matches = self._check_dictionary(key_terms, slang_dictionary)
         
-        # ── 프롬프트 토큰 예산 관리 ──
-        # 서버: -c 65536 -np 1 → 슬롯당 65,536 토큰
-        # 한영 혼합 기준 ~2.2자/토큰, max_tokens=512 출력 예약
-        # → 입력 = (65,536 - 512) × 2.2 ≈ 143,053자
-        # 시스템 프롬프트 ~18,138자 제외 → user_prompt ≈ 125,000자
-        # 다만 너무 긴 프롬프트는 LLM 품질 저하 → 실용적 상한 60,000자
-        _USER_PROMPT_BUDGET = 60_000
-        
-        def _truncate_search_results(results: list, max_snippet_len: int, max_results: int) -> list:
-            """검색 결과 snippet 길이와 건수를 제한"""
-            truncated = []
-            for r in results[:max_results]:
-                r_copy = dict(r)
-                snippet = r_copy.get("snippet", "") or r_copy.get("content", "") or ""
-                if len(snippet) > max_snippet_len:
-                    r_copy["snippet"] = snippet[:max_snippet_len] + "..."
-                    if "content" in r_copy:
-                        r_copy["content"] = r_copy["content"][:max_snippet_len] + "..."
-                truncated.append(r_copy)
-            return truncated
+        # ── 검색 결과 콘텐츠 트리밍 후 전달 ──
+        # BM25 트리밍 + 항목당/전체 크기 제한으로 토큰 오버플로 방지
+        from ..search.content_trim import trim_search_results_content
         
         _gk_json = json.dumps(gatekeeper_result, ensure_ascii=False, indent=2)
         _dict_json = json.dumps(slang_dictionary, ensure_ascii=False, indent=2)
         
-        # DECODER_PROMPT 템플릿 고정 텍스트 크기 측정 (변수 제외)
-        _template_fixed_len = len(DECODER_PROMPT) - len("{gatekeeper_json}") - len("{search_results_json}") - len("{slang_dictionary}")
-        # 검색 결과에 쓸 수 있는 예산 (추가 섹션은 최종 가드에서 관리)
-        _sr_budget = _USER_PROMPT_BUDGET - _template_fixed_len - len(_gk_json) - len(_dict_json)
-        print(f"[{_ts()}][{self.emoji}] 토큰 예산: user_budget={_USER_PROMPT_BUDGET:,}, "
-              f"tpl_fixed={_template_fixed_len:,}, gk={len(_gk_json):,}, dict={len(_dict_json):,} "
-              f"→ sr_budget={_sr_budget:,}", file=sys.stderr)
-        
-        # 검색 결과를 예산에 맞게 단계적 축소
-        _LEVELS = [
-            (300, 15),  # snippet 300자, 최대 15건
-            (200, 10),
-            (150, 8),
-            (100, 6),
-            (80, 5),
-        ]
-        _sr_for_prompt = search_results[:15]
+        # 검색 결과 content 트리밍 (항목당 6K, 전체 40K 제한)
+        _sr_for_prompt = trim_search_results_content(
+            search_results,
+            max_per_item=6000,
+            max_total=40000,
+        )
         _sr_json = json.dumps(_sr_for_prompt, ensure_ascii=False, indent=2)
-        
-        for _max_snip, _max_n in _LEVELS:
-            if len(_sr_json) <= max(1, _sr_budget):
-                break
-            _sr_for_prompt = _truncate_search_results(search_results, _max_snip, _max_n)
-            _sr_json = json.dumps(_sr_for_prompt, ensure_ascii=False, indent=2)
-        
-        if len(_sr_json) > max(1, _sr_budget):
-            # 최후 수단: snippet 60자, 3건
-            _sr_for_prompt = _truncate_search_results(search_results, 60, 3)
-            _sr_json = json.dumps(_sr_for_prompt, ensure_ascii=False, indent=2)
-            print(f"[{_ts()}][{self.emoji}] ⚠️ 검색 결과 최소화: {len(search_results)}→3건, "
-                  f"snippet≤60자 (예산={_sr_budget:,}, 실제={len(_sr_json):,})", file=sys.stderr)
+        print(f"[{_ts()}][{self.emoji}] 검색 결과 트리밍 전달: {len(search_results)}건, "
+              f"sr_json={len(_sr_json):,}자, gk={len(_gk_json):,}자, dict={len(_dict_json):,}자", file=sys.stderr)
         
         # Format prompt
         context_section = ""
@@ -609,6 +793,7 @@ class DecoderExpert:
             if _is_genre_disc:
                 # 장르/트로프 일반론 경고 — 특화 메시지
                 user_prompt += "🚨 이 포스트는 특정 소설이 아니라 '장르/트로프/클리셰'에 대한 일반적 토론일 가능성이 높습니다.\n"
+                user_prompt += "🔑 '[한글1~5자]물' 패턴(일상물, 힐링물, 좀비물, 먹방물, 집착물 등)은 모두 장르 카테고리이며 소설 제목이 아닙니다.\n"
                 user_prompt += "제목이나 본문의 주제어가 장르·트로프 관련 일반 개념어인 경우,\n"
                 user_prompt += "검색에서 우연히 비슷한 키워드의 소설이 발견되더라도 그것이 이 포스트의 실제 주제인지 엄격히 확인하세요.\n"
                 user_prompt += "판단 기준: 본문/댓글에 해당 소설의 고유 정보(작가명, 플랫폼, 회차, 캐릭터 고유명, 줄거리)가 있는가?\n"
@@ -639,6 +824,13 @@ class DecoderExpert:
         _gk_order_hits = _gk_ctx_clues.get("order_keywords_found", [])
         _gk_arrow_chain = _gk_ctx_clues.get("has_arrow_chain", False)
         _gk_author_focus = _gk_ctx_clues.get("has_author_focus", False)
+        _gk_title_body_cont = bool(_gk_ctx_clues.get("title_as_body_continuation"))
+        _gk_title_body_joined = str(_gk_ctx_clues.get("title_body_joined_text") or "").strip()
+        _gk_comment_secondary = list(dict.fromkeys(
+            str(t).strip()
+            for t in (_gk_ctx_clues.get("comment_title_candidates") or [])
+            if isinstance(t, str) and t.strip()
+        ))
         
         _gk_flags = _gk_ctx_clues.get("genre_discussion_flags", [])
         if _gk_flags and not getattr(ctx, 'discourse_warning', None):
@@ -654,10 +846,44 @@ class DecoderExpert:
             if _gk_recommendation:
                 user_prompt += "🚨 추천 요청 게시글입니다. 댓글의 URL/추천은 주제가 아닙니다.\n"
             if _gk_comparison:
-                user_prompt += "🚨 비교 패턴('신작...하위호환') 감지. 비교 대상은 주제가 아닐 수 있습니다.\n"
+                _comp_target = _gk_ctx_clues.get('comparison_target', '')
+                _comp_type = _gk_ctx_clues.get('comparison_type', '')
+                user_prompt += f"🚨 비교 패턴 감지: '{_comp_target} {_comp_type}'\n"
+                user_prompt += "비교 대상(예: 'X 느낌이라', 'X 하위호환')의 X는 주제가 아닙니다.\n"
+                user_prompt += "비교 대상 작품을 official_title로 올리지 마세요.\n"
+                user_prompt += "주제 작품을 해독할 수 없으면 → best_match.title=null, confidence=none\n"
             if _gk_negation:
                 user_prompt += "🚨 본문에 '본적없다/못봤다' 표현 감지. 소재 토론이지 작품 리뷰가 아닙니다.\n"
             user_prompt += "고유 정보가 없으면 → best_match.title=null, confidence=none으로 판정하세요.\n"
+
+        if _gk_comment_secondary:
+            user_prompt += "\n\n=== 🧭 COMMENT SECONDARY EXAMPLES ===\n"
+            user_prompt += f"댓글의 작품 예시 후보: {', '.join(_gk_comment_secondary[:5])}\n"
+            user_prompt += (
+                "이 제목들은 장르 일반론/추천/비교 문맥의 보조 예시일 수 있습니다. "
+                "본문 주제가 특정 작품으로 직접 잠기지 않으면 best_match.title로 승격하지 말고 "
+                "secondary example/reference로만 취급하세요.\n"
+            )
+
+        # 🆕 숫자 작가 닉네임 경고
+        _gk_numeric_author = _gk_ctx_clues.get("is_numeric_author_post", False)
+        if _gk_numeric_author:
+            _num_id = _gk_ctx_clues.get("numeric_author_id", "")
+            _num_suffix = _gk_ctx_clues.get("numeric_author_suffix", "")
+            user_prompt += f"\n\n=== 🔢 NUMERIC AUTHOR NICKNAME ===\n"
+            user_prompt += f"제목의 '{_num_id}{_num_suffix}'에서 '{_num_id}'는 작가 닉네임입니다.\n"
+            user_prompt += f"DC 장르소설 갤러리에서는 작가를 숫자로 부르는 관행이 있습니다.\n"
+            user_prompt += f"'{_num_id}{_num_suffix}' = '{_num_id}' 작가의 {_num_suffix}\n"
+            user_prompt += "본문에 비교 참조(예: 'X 느낌이라')가 있으면, X는 비교 대상이지 주제 작품이 아닙니다.\n"
+            user_prompt += "주제는 '{0}' 작가의 작품이며, 작품 제목을 특정할 수 없으면 title=null로 두세요.\n".format(_num_id)
+
+        # 🆕 제목+본문 연속문 힌트: 커뮤니티 문체에서 제목이 본문 1행 역할을 하는 경우
+        if _gk_title_body_cont and _gk_title_body_joined:
+            user_prompt += "\n\n=== 🧩 TITLE-BODY CONTINUATION HINT ===\n"
+            user_prompt += "이 포스트는 제목이 본문 첫 문장의 일부(리드 문장)일 가능성이 높습니다.\n"
+            user_prompt += "제목과 본문 첫 줄을 분리 해석하지 말고, 하나의 연속 발화로 먼저 해석하세요.\n"
+            user_prompt += f"- joined_text: {_gk_title_body_joined}\n"
+            user_prompt += "규칙: 작품 앵커/감상 문맥 판단 시 joined_text를 우선 증거로 사용하세요.\n"
         
         # 🆕 다작/순서 질문 경고: 단일 제목 강제 고정 방지
         if _gk_multi_order:
@@ -679,6 +905,27 @@ class DecoderExpert:
         user_prompt += "커뮤니티 문장형 헤드라인(예: 지시어+연도+평가문, '...장갤픽임' 같은 표현)은 작품명이 아닙니다.\n"
         user_prompt += "그런 문장만 근거일 때는 best_match.title=null로 두고 verification_search를 요청하세요.\n"
         user_prompt += "⚠️ '웹소설로 꿈꾸는 세상!' 같은 플랫폼 슬로건은 작품명이 아닙니다. 해당 표현만 검색 증거로 있으면 title=null로 두세요.\n"
+
+        # 🆕 밈 합성 약어 분해 힌트
+        user_prompt += "\n=== 🏷️ MIM COMPOUND ABBREVIATION HINT (밈 합성 약어) ===\n"
+        user_prompt += "장르소설 갤러리에서는 여러 작품의 약칭 첫 글자를 합쳐서 밈으로 부릅니다.\n"
+        user_prompt += "예: '모리엘루깐' = 모닝글로리 + 리버스 + 엘루깐 + 루깐 (각각 다른 작품)\n"
+        user_prompt += "\n"
+        user_prompt += "🚨 핵심 규칙: 합성 밈 약어 전체(모리엘루깐)는 작품 묶음이지만,\n"
+        user_prompt += "   각 구성 요소(예: '엘루깐')는 실제 존재하는 개별 작품의 커뮤니티 통용 약칭입니다.\n"
+        user_prompt += "   게시글 제목에 구성 요소 중 하나가 사용되면 → 해당 개별 작품에 대한 논의입니다.\n"
+        user_prompt += "\n"
+        user_prompt += "판별 방법:\n"
+        user_prompt += "1. 포스트 제목의 키워드가 밈 합성어의 일부 구성 요소와 일치하는지 확인\n"
+        user_prompt += "2. 일치하면 → 그 구성 요소가 가리키는 개별 작품을 best_match.title에 기록\n"
+        user_prompt += "3. 본문에 캐릭터 고유명(예: '엘황')이 언급되면 → 작품 토론이 맞음\n"
+        user_prompt += "4. 검색 결과에서 '~를 일컫는 약어이자 밈', '~를 묶어 부르는 약칭' 등이 발견되면\n"
+        user_prompt += "   각 구성 요소를 abbreviation_mappings에 개별적으로 기록하세요\n"
+        user_prompt += "\n"
+        user_prompt += "⚠️ 커뮤니티 약칭 → 공식 제목 매핑을 못 찾더라도:\n"
+        user_prompt += "   - 커뮤니티 통용 약칭 자체를 best_match.title로 보고하세요 (confidence=low)\n"
+        user_prompt += "   - '밈이라 작품이 아님' 또는 '공식 제목 확인 불가'라고 단정하지 마세요\n"
+        user_prompt += "   - 커뮤니티에서 독립적으로 작품을 가리키는 약칭은 유효한 작품 식별자입니다\n"
         
         # 이전 검색 쿼리 이력 전달 (중복 검색 방지)
         if ctx and hasattr(ctx, 'searched_queries') and ctx.searched_queries:
@@ -749,6 +996,7 @@ class DecoderExpert:
         # 본문/댓글을 다시 읽고, 글의 실제 맥락을 LLM이 자유롭게 추론하도록 유도
         _do_reasoning = False
         _resolved_mappings = []
+        _resolved_mapping_entries = []
         _gk_characters = []
         _gk_authors = []
         _post_title_r = ""
@@ -786,8 +1034,15 @@ class DecoderExpert:
                     t_clean = _re_reinterpret.sub(r'[^\uac00-\ud7a3]', '', term_k)
                     if t_clean and t_clean in KNOWN_ABBREVIATIONS:
                         full_title = KNOWN_ABBREVIATIONS[t_clean]
-                        if (t_clean, full_title) not in _resolved_mappings:
-                            _resolved_mappings.insert(0, (t_clean, full_title))
+                        if not any(
+                            _re.get("abbrev") == t_clean and _re.get("full") == full_title
+                            for _re in _resolved_mapping_entries
+                        ):
+                            _resolved_mapping_entries.insert(0, {
+                                "abbrev": t_clean,
+                                "full": full_title,
+                                "source": "known_abbreviation",
+                            })
             
             # snippet_hints 매핑 추가 (junk + 약칭 정합성 필터링 적용)
             if hasattr(ctx, 'snippet_hints') and ctx.snippet_hints:
@@ -825,8 +1080,45 @@ class DecoderExpert:
                             file=sys.stderr,
                         )
                         continue
-                    if (abbrev, full) not in _resolved_mappings:
-                        _resolved_mappings.append((abbrev, full))
+                    # 🛡️ 짧은 약칭 가드: 2자 이하 약칭은 일반명사일 확률이 높으므로
+                    # KNOWN_ABBREVIATIONS 확정쌍이 아니면 정합성 기준을 대폭 강화한다.
+                    # (예: '초식' → '5000살 먹은 초식 드래곤' 같은 우연 매칭 방지)
+                    if len(_a_norm) <= 2 and not _known_match:
+                        _short_min = 0.70 if not _official_match else 0.55
+                        if _abbr_score < _short_min:
+                            print(
+                                f"[{_ts()}][{self.emoji}] ⏭️ resolved_mapping 스킵(짧은약칭 가드): "
+                                f"'{abbrev}' → '{full}' (len={len(_a_norm)}, "
+                                f"score={_abbr_score:.2f} < {_short_min:.2f})",
+                                file=sys.stderr,
+                            )
+                            continue
+                    if not any(
+                        _re.get("abbrev") == abbrev and _re.get("full") == full
+                        for _re in _resolved_mapping_entries
+                    ):
+                        _resolved_mapping_entries.append({
+                            "abbrev": abbrev,
+                            "full": full,
+                            "source": _source or "snippet_hint",
+                        })
+
+            if _resolved_mapping_entries:
+                try:
+                    _resolved_mappings = self._refine_resolved_mappings(ctx, _resolved_mapping_entries)
+                except Exception as _mapping_refine_err:
+                    print(
+                        f"[{_ts()}][{self.emoji}] ⚠️ resolved_mapping refinement 실패: "
+                        f"{_mapping_refine_err}",
+                        file=sys.stderr,
+                    )
+                    _resolved_mappings = [
+                        (str(_re.get("abbrev") or "").strip(), str(_re.get("full") or "").strip())
+                        for _re in _resolved_mapping_entries
+                        if isinstance(_re, dict)
+                        and str(_re.get("abbrev") or "").strip()
+                        and str(_re.get("full") or "").strip()
+                    ]
             
             _do_reasoning = True  # 상시 활성화: 매핑 없어도 LLM이 자체 추론
         
@@ -903,6 +1195,9 @@ class DecoderExpert:
             user_prompt += "- 작가에 대한 팬 반응(응원, 연재 기원, 불만 등)인가?\n"
             user_prompt += "- 작품 추천/비교인가?\n"
             user_prompt += "- 작품과 무관한 밈/은어인가?\n"
+            user_prompt += "- **팬 요청/창작 요구인가?** (\"~같은거 써주셈\", \"X풍 써줘\"는 비교 참조용 언급이지, 해당 작품이 본문 주제인 것이 아님)\n"
+            user_prompt += "- **비교 참조인가?** (\"A처럼 재밌는 거\", \"A랑 비슷한 느낌\", \"A 느낌이라\"는 A가 비교 대상이지, 글의 주제가 아님)\n"
+            user_prompt += "  → 비교 대상 작품을 best_match.title에 올리지 마세요. 주제 작품이 불명이면 title=null\n"
             user_prompt += "- 본문+댓글의 전체 분위기에서 어떤 해석이 가장 자연스러운가?\n\n"
             user_prompt += "**Step 3 — 인물 역할 판정:**\n"
             user_prompt += "검색 결과를 참고하여 인물명의 역할을 확인하라.\n"
@@ -912,64 +1207,66 @@ class DecoderExpert:
             user_prompt += "**Step 4 — 결론:**\n"
             user_prompt += "추론 결과를 notes 필드에 '치환 읽기 → 맥락 추론 → 결론' 형태로 간결하게 기록하세요.\n"
         
-        # �🌐 Fetched Page Info: URL 페칭으로 얻은 구조적 정보
+        # 🌐 Fetched Page Info: URL 페칭으로 얻은 구조적 정보
         if ctx and hasattr(ctx, 'fetched_page_info') and ctx.fetched_page_info:
-            user_prompt += "\n\n=== 🌐 FETCHED PAGE INFO (공식 페이지 분석) ===\n"
-            user_prompt += "아래는 나무위키/공식 플랫폼 페이지에서 추출한 정보입니다.\n\n"
-            for fi in ctx.fetched_page_info[:3]:
+            # Phase 34: 삭제된 소설 제목 경고
+            _dead_titles_list = getattr(ctx, '_deleted_titles_list', []) if ctx else []
+            user_prompt += "\n\n=== 🌐 FETCHED PAGE INFO (crawl4ai 크롤링 결과) ===\n"
+            user_prompt += (
+                "아래는 crawl4ai로 실제 웹 페이지를 크롤링하여 얻은 본문 정보입니다.\n"
+                "각 페이지의 전체 내용을 읽고, 이 페이지가 무엇인지(소설 작품 페이지인지, "
+                "독자 커뮤니티 게시글인지, 위키 문서인지) 직접 판단하세요.\n\n"
+                "📌 핵심 판단 규칙:\n"
+                "1. page_type='community_post' → 독자들이 쓴 커뮤니티 게시글. "
+                "이 페이지의 제목(page_title)은 게시글 제목이지 소설 제목이 아닙니다.\n"
+                "   본문 내용을 읽고 실제로 어떤 소설을 논하고 있는지 파악하세요.\n"
+                "2. page_type='novel_page' → 소설 플랫폼의 작품 페이지. "
+                "title이 정식 소설 제목이며 가장 신뢰할 수 있습니다.\n"
+                "3. page_type='wiki' → 위키 문서. 약칭, 등장인물, 줄거리 등 참고 가능.\n"
+                "4. page_type='unknown'/'blog' → 본문 내용을 직접 읽어 맥락을 판단하세요.\n\n"
+            )
+            if _dead_titles_list:
+                user_prompt += (
+                    "⛔ 삭제/미존재 확인된 작품 목록 (실제 크롤링 결과 사라진 작품):\n"
+                )
+                for _dt in _dead_titles_list:
+                    user_prompt += f"  - '{_dt}' (삭제됨 — 이 제목을 정답으로 선택하지 마세요)\n"
+                user_prompt += (
+                    "위 삭제된 작품과 유사한 제목의 다른 활성 작품을 우선 선택하세요.\n\n"
+                )
+            for fi in ctx.fetched_page_info[:5]:
                 url = fi.get("url", "")
                 structured = fi.get("structured_info", {})
                 preview = fi.get("text_preview", "")
+                _pt = structured.get("page_type", "unknown")
+                user_prompt += f"--- 크롤링 페이지 ---\n"
                 user_prompt += f"URL: {url}\n"
+                user_prompt += f"  [page_type: {_pt}]\n"
+                # Phase 34: content_status 표시 (삭제/미존재 작품 경고)
+                _cs = structured.get("content_status", "active")
+                if _cs in ("deleted", "unavailable"):
+                    user_prompt += (
+                        f"  ⛔ content_status: {_cs} — 이 페이지의 작품은 삭제/비공개/미존재 상태입니다.\n"
+                        f"  ⚠️ 이 페이지에서 추출한 소설 제목을 정답으로 사용하지 마세요!\n"
+                        f"  삭제된 작품과 유사한 제목의 다른 활성 작품을 우선 고려하세요.\n"
+                    )
+                if _pt == "community_post":
+                    user_prompt += (
+                        "  ⚠️ 커뮤니티 게시글: 이 페이지 제목은 독자가 쓴 글 제목입니다.\n"
+                        "  본문을 읽고 실제 논의 대상 소설이 무엇인지 파악하세요.\n"
+                    )
                 if structured:
                     for k, v in structured.items():
-                        if v and k != "text_preview":
+                        if v and k not in ("text_preview", "page_type", "fetch_method"):
                             user_prompt += f"  {k}: {v}\n"
                 if preview:
-                    user_prompt += f"  내용 미리보기: {preview[:300]}\n"
+                    user_prompt += f"  📄 크롤링 본문:\n{preview[:1500]}\n"
                 user_prompt += "\n"
         
         print(f"[{_ts()}][{self.emoji}] {self.name} 분석 시작: terms={key_terms}", file=sys.stderr)
         
-        # ── 최종 프롬프트 크기 가드 ──
-        # user_prompt가 예산을 초과하면 추가 섹션부터 점진적으로 제거
-        if len(user_prompt) > _USER_PROMPT_BUDGET:
-            _over = len(user_prompt) - _USER_PROMPT_BUDGET
-            print(f"[{_ts()}][{self.emoji}] ⚠️ user_prompt 초과 ({len(user_prompt):,}자 > "
-                  f"{_USER_PROMPT_BUDGET:,}), {_over:,}자 초과 → 재축소", file=sys.stderr)
-            
-            # 검색 결과를 최소화하여 user_prompt 재구성
-            _sr_for_prompt = _truncate_search_results(search_results, max_snippet_len=80, max_results=5)
-            _sr_json_min = json.dumps(_sr_for_prompt, ensure_ascii=False, indent=2)
-            user_prompt = DECODER_PROMPT.format(
-                gatekeeper_json=_gk_json,
-                search_results_json=_sr_json_min,
-                slang_dictionary=_dict_json,
-            )
-            # 핵심 정보만 최소한으로 추가
-            if ctx and getattr(ctx, 'discourse_warning', None):
-                user_prompt += f"\n\n⚠️ DISCOURSE WARNING: {getattr(ctx, 'discourse_warning', '')}\n"
-            # Deep Search Hints는 가장 중요한 약칭 매핑만
-            if _resolved_mappings:
-                user_prompt += "\n📌 약칭 매핑:\n"
-                for abbrev, full in _resolved_mappings[:2]:
-                    user_prompt += f"  • '{abbrev}' = '{full}'\n"
-            if _gk_characters:
-                user_prompt += f"📌 감지된 인물명: {_gk_characters[:3]}\n"
-            
-            # 그래도 초과하면 최후 수단
-            if len(user_prompt) > _USER_PROMPT_BUDGET:
-                _sr_for_prompt = _truncate_search_results(search_results, 50, 3)
-                _sr_json_min = json.dumps(_sr_for_prompt, ensure_ascii=False, indent=2)
-                user_prompt = DECODER_PROMPT.format(
-                    gatekeeper_json=_gk_json,
-                    search_results_json=_sr_json_min,
-                    slang_dictionary=_dict_json,
-                )
-                print(f"[{_ts()}][{self.emoji}] ⚠️ 최후 축소: user_prompt={len(user_prompt):,}자", file=sys.stderr)
-        
-        print(f"[{_ts()}][{self.emoji}] 최종 user_prompt={len(user_prompt):,}자 "
-              f"(budget={_USER_PROMPT_BUDGET:,})", file=sys.stderr)
+        # 프롬프트 크기 로그 (제한 없음 — vLLM 서버가 최종 안전장치)
+        print(f"[{_ts()}][{self.emoji}] 최종 user_prompt={len(user_prompt):,}자 (제한 없음)", file=sys.stderr)
         
         try:
             result = self._call_llm(
@@ -982,6 +1279,7 @@ class DecoderExpert:
             # Merge dictionary matches with LLM result
             # 🔥 ctx 전달: 사전값도 검색 결과로 교정 가능하도록
             result = self._merge_dict_matches(result, dict_matches, ctx)
+            result = self._sanitize_decoded_term_payload(result)
             # 사전 항목 간 유사어 오인 치환 방지
             result = self._sanitize_cross_term_dictionary_inference(result, slang_dictionary)
             
@@ -999,7 +1297,7 @@ class DecoderExpert:
             # 제안 2: Decoder의 신뢰도를 ctx에 저장
             if ctx:
                 confidence_str = result.get("overall_confidence", "medium")
-                confidence_map = {"high": 0.85, "max": 0.95, "medium": 0.6, "low": 0.3}
+                confidence_map = {"high": 0.85, "max": 0.95, "medium": 0.6, "low": 0.3, "none": 0.0}
                 ctx.expert_confidence["decoder"] = confidence_map.get(confidence_str, 0.6)
             
             # 🔥 커뮤니티 제목 방어: LLM이 dcinside/arca 게시글 제목을 공식 제목으로 착각한 경우 교정
@@ -1026,6 +1324,10 @@ class DecoderExpert:
             if ctx:
                 result = self._rescue_author_as_work_abbreviation(result, ctx)
             
+            # 🔥 작가 토론 감지: 다중 작가 비교/품평 게시글 → 작품 매칭 차단
+            if ctx:
+                result = self._detect_author_discussion(result, ctx)
+            
             # 🔥 형태소 매칭 검증: 축약어의 형태소가 후보 제목에 실제 포함되는지 확인
             if ctx:
                 result = self._validate_morpheme_in_title(result, ctx)
@@ -1046,6 +1348,17 @@ class DecoderExpert:
             # best_match.title이 null이지만 interpretations에 novel_title + context_fit=high가 있으면
             # → best_match를 자동으로 승격 (Decoder가 결론을 내지 못한 것을 보충)
             result = self._auto_promote_high_fit_interpretation(result, ctx)
+
+            # 🔥 커뮤니티 약칭 브리지 보류:
+            # 공식 제목 브리지가 아직 안 붙은 상태에서 장르 일반화 후보로 굳는 것을 막는다.
+            if ctx:
+                result = self._guard_alias_bridge_pending(result, ctx, gatekeeper_result)
+
+            # 🔥 약한 테마/캐릭터 연상으로 인한 작품명 환각 차단:
+            # 약칭-정식명 연결 근거가 없는데, 줄거리 문구/캐릭터명만으로 unrelated title을
+            # 올리는 경로를 막는다. (예: 망겜힐 -> 빌런 플레이어의 세계 정상화)
+            if ctx:
+                result = self._guard_weak_thematic_title_inference(result, ctx, gatekeeper_result)
             
             best = self._get_best_candidate(result)
             print(f"[{_ts()}][{self.emoji}] {self.name} 완료 ({elapsed:.1f}s): "
@@ -1529,6 +1842,59 @@ class DecoderExpert:
         
         return result
 
+    def _sanitize_decoded_term_payload(self, result: Dict[str, Any]) -> Dict[str, Any]:
+        """Drop malformed nested decoder items so later passes can keep working."""
+        decoded_terms = result.get("decoded_terms", [])
+        if not isinstance(decoded_terms, list):
+            result["decoded_terms"] = []
+            return result
+
+        cleaned_terms: List[Dict[str, Any]] = []
+        removed_terms = 0
+        removed_candidates = 0
+        removed_interpretations = 0
+
+        for term in decoded_terms:
+            if not isinstance(term, dict):
+                removed_terms += 1
+                continue
+
+            candidates = term.get("candidates", [])
+            if isinstance(candidates, list):
+                filtered_candidates = [cand for cand in candidates if isinstance(cand, dict)]
+                removed_candidates += max(0, len(candidates) - len(filtered_candidates))
+                term["candidates"] = filtered_candidates
+            else:
+                if candidates is not None:
+                    removed_candidates += 1
+                term["candidates"] = []
+
+            interpretations = term.get("interpretations", [])
+            if isinstance(interpretations, list):
+                filtered_interps = [interp for interp in interpretations if isinstance(interp, dict)]
+                removed_interpretations += max(0, len(interpretations) - len(filtered_interps))
+                term["interpretations"] = filtered_interps
+            else:
+                if interpretations is not None:
+                    removed_interpretations += 1
+                term["interpretations"] = []
+
+            if not isinstance(term.get("best_match"), dict):
+                term["best_match"] = {"title": None, "confidence": "none"}
+
+            cleaned_terms.append(term)
+
+        if removed_terms or removed_candidates or removed_interpretations:
+            print(
+                f"[{_ts()}][{self.emoji}] ⚠️ decoder payload 정제: "
+                f"terms -{removed_terms}, candidates -{removed_candidates}, "
+                f"interpretations -{removed_interpretations}",
+                file=sys.stderr,
+            )
+
+        result["decoded_terms"] = cleaned_terms
+        return result
+
     def _sanitize_cross_term_dictionary_inference(
         self,
         result: Dict[str, Any],
@@ -1600,7 +1966,6 @@ class DecoderExpert:
                 kept_candidates = []
                 for cand in candidates:
                     if not isinstance(cand, dict):
-                        kept_candidates.append(cand)
                         continue
                     search_evidence = str(cand.get("search_evidence") or "")
                     cand_title = str(cand.get("official_novel_title") or cand.get("official_title") or "").strip()
@@ -1709,9 +2074,50 @@ class DecoderExpert:
         """
         suspected = []
         decoded_terms = result.get("decoded_terms", [])
+        decoded_terms = [t for t in decoded_terms if isinstance(t, dict)]
         
         # 🔥 Step 0: 검색 결과에서 공식 플랫폼의 정확한 제목 추출
         official_titles_from_search = self._extract_official_titles_from_search(ctx)
+        _decoded_original_norms = [
+            _re.sub(r"[^\uac00-\ud7a3A-Za-z0-9]", "", str(t.get("original", ""))).lower()
+            for t in decoded_terms
+            if isinstance(t, dict) and t.get("original")
+        ]
+
+        def _looks_short_fragment_term(_term: Dict[str, Any], _candidate_title: str) -> bool:
+            """
+            제목 문맥에 붙어 나온 짧은 일반어 단어가 단일 작품명으로 승격되는 것을 방지한다.
+            - 특정 작품 하드코딩 없이 구조적 특징만 사용
+            - 짧은 토큰(<=3) + 비작품 해석(high) + 더 긴 복합 토큰에 포함 → 파편으로 간주
+            """
+            if not isinstance(_term, dict) or not _candidate_title:
+                return False
+            _orig_norm = _re.sub(r"[^\uac00-\ud7a3A-Za-z0-9]", "", str(_term.get("original", ""))).lower()
+            _title_norm = _re.sub(r"[^\uac00-\ud7a3A-Za-z0-9]", "", str(_candidate_title)).lower()
+            if not _orig_norm or not _title_norm or _orig_norm != _title_norm:
+                return False
+            if len(_title_norm) > 3:
+                return False
+
+            _non_title_high = False
+            for _it in (_term.get("interpretations") or []):
+                if not isinstance(_it, dict):
+                    continue
+                _itype = str(_it.get("type") or "").lower()
+                _fit = str(_it.get("context_fit") or "").lower()
+                if _fit in {"high", "medium"} and _itype in {"genre_term", "common_noun", "unknown"}:
+                    _non_title_high = True
+                    break
+            if not _non_title_high:
+                return False
+
+            _embedded_in_longer = any(
+                _orig_norm != _n
+                and len(_n) >= len(_orig_norm) + 2
+                and _orig_norm in _n
+                for _n in _decoded_original_norms
+            )
+            return _embedded_in_longer
         
         for term in decoded_terms:
             if not term:
@@ -1729,6 +2135,13 @@ class DecoderExpert:
             if not best_title or best_conf not in ("high", "medium"):
                 continue
             best_title = self._correct_title_with_search_result(best_title, official_titles_from_search)
+            if _looks_short_fragment_term(term, best_title):
+                print(
+                    f"[{_ts()}][{self.emoji}] ⏭️ suspected 단일어 파편 스킵: "
+                    f"term='{term.get('original', '')}', title='{best_title}'",
+                    file=sys.stderr,
+                )
+                continue
             
             # candidates에서 후보 추출
             candidates = term.get("candidates", [])
@@ -1742,6 +2155,13 @@ class DecoderExpert:
                 
                 # 🔥 CRITICAL: LLM 생성 제목을 검색 결과의 공식 제목과 비교하여 교정
                 title = self._correct_title_with_search_result(title, official_titles_from_search)
+                if _looks_short_fragment_term(term, title):
+                    print(
+                        f"[{_ts()}][{self.emoji}] ⏭️ candidate 단일어 파편 스킵: "
+                        f"term='{term.get('original', '')}', cand='{title}'",
+                        file=sys.stderr,
+                    )
+                    continue
                 # best_match와 동떨어진 후보는 노이즈 가능성이 높으므로 제외
                 if title != best_title:
                     cand_score = abbreviation_match_score(term.get("original", ""), title)
@@ -1845,7 +2265,34 @@ class DecoderExpert:
         
         # 🆕 decoded_terms에서 제목을 못 찾았지만 _resolved_mappings에 매핑이 있으면 보충
         # 핵심: LLM이 이미 해독된 약칭을 decoded_terms에 반복하지 않는 경우 대비
-        if not suspected and ctx:
+        #
+        # 🛡️ Genre Discussion Guard:
+        # snippet_analyzer가 genre_discussion으로 판정 + decoder LLM도 best_match=None이면
+        # _resolved_mappings 폴백으로 제목을 승격시키지 않는다.
+        # (장르 클리셰 용어가 우연히 작품 제목에 포함된 경우 false positive 방지)
+        _genre_discussion_block = False
+        if ctx:
+            _dw = getattr(ctx, 'discourse_warning', '') or ''
+            _snippet_analysis = getattr(ctx, 'llm_snippet_analysis', None) or {}
+            _snippet_cat = ''
+            _snippet_intent = ''
+            if isinstance(_snippet_analysis, dict):
+                _snippet_cat = str(_snippet_analysis.get('identified_category') or '').lower()
+                _snippet_intent = str(_snippet_analysis.get('post_intent') or '').lower()
+            if (
+                'genre_discussion' in _dw
+                or _snippet_cat == 'genre_discussion'
+                or _snippet_intent == 'genre_discussion'
+            ):
+                _genre_discussion_block = True
+                print(
+                    f"[{_ts()}][{self.emoji}] 🛡️ genre_discussion 감지 + decoder null → "
+                    f"_resolved_mappings 폴백 차단 (discourse_warning='{_dw[:60]}', "
+                    f"snippet_cat='{_snippet_cat}', snippet_intent='{_snippet_intent}')",
+                    file=sys.stderr,
+                )
+        
+        if not suspected and ctx and not _genre_discussion_block:
             _resolved = getattr(ctx, '_resolved_mappings', []) or []
             if _resolved:
                 # 검색 결과에서 공식 제목 확인
@@ -1982,6 +2429,33 @@ class DecoderExpert:
         
         decoded_terms = result.get("decoded_terms", [])
         changed = False
+        post_title_raw = str((getattr(ctx, "post_data", {}) or {}).get("title", "") or "")
+        post_title_norm = _norm_domain_text(post_title_raw)
+
+        def _looks_sentence_like_title(text: str) -> bool:
+            """
+            커뮤니티 본문/리뷰 문장을 작품명으로 오인하는 패턴을 방어한다.
+            - 규칙은 특정 작품/키워드가 아닌 문장 구조 기반으로만 판단
+            - 단, 이 함수는 'community_only' 분기에서만 사용되어 과차단을 줄임
+            """
+            if not text or not isinstance(text, str):
+                return False
+            t = re.sub(r"\s+", " ", text).strip()
+            if not t:
+                return False
+
+            token_count = len(re.findall(r"[가-힣A-Za-z0-9]+", t))
+            has_clause_connector = bool(
+                re.search(r"(는데|면서|해서|하며|라고|이라는|같은|처럼|듯이)", t)
+            )
+            has_meta_prefix = bool(
+                re.match(r"^(제목|내용|스토리|줄거리)\s*(그대로|요약)", t)
+            )
+
+            # 긴 어절 + 서술/연결 어미를 가진 경우는 커뮤니티 문장일 가능성이 높다.
+            if token_count >= 8 and (has_clause_connector or len(t) >= 30 or has_meta_prefix):
+                return True
+            return False
         
         for term in decoded_terms:
             best_match = term.get("best_match") or {}
@@ -2017,10 +2491,22 @@ class DecoderExpert:
             if found_in_community and not found_in_official:
                 original_term = term.get("original", "")
                 
+                grounding = term.get("grounding") or {}
+                anchor_type = str(grounding.get("anchor_type") or "").lower()
+                original_norm = _norm_domain_text(original_term)
+                original_in_post_title = bool(
+                    original_norm and post_title_norm and (original_norm in post_title_norm)
+                )
+                preserve_anchor_term = (
+                    anchor_type in {"title_mention", "character_title_link"}
+                    and original_in_post_title
+                )
+
                 # 🆕 복합어 보정: morphemes에서 제목 부분만 추출
+                # 단, 제목 앵커로 직접 등장한 약칭은 원문 보존(과차단 방지)
                 effective_term = original_term
                 morphs = term.get("morphemes") or []
-                if morphs and len(morphs) >= 2 and title:
+                if morphs and len(morphs) >= 2 and title and not preserve_anchor_term:
                     title_n = title.replace(" ", "")
                     title_morphs = [m for m in morphs if m in title_n or m in title]
                     if title_morphs and len(title_morphs) < len(morphs):
@@ -2057,7 +2543,21 @@ class DecoderExpert:
                             best_alt_score = sim
                             best_alt = alt
                 
+                current_abbr_score = abbreviation_match_score(
+                    (original_term or effective_term),
+                    title,
+                ) if (original_term or effective_term) and title else 0.0
+
                 if best_alt and best_alt_score >= 0.3:
+                    # 현재 제목이 약칭 정합도가 충분히 높은 경우,
+                    # 더 낮은 점수의 대체 제목으로 덮어쓰지 않는다.
+                    if current_abbr_score >= 0.55 and (best_alt_score + 0.05) < current_abbr_score:
+                        print(
+                            f"[{_ts()}][{self.emoji}] ⏭️ 커뮤니티 제목 교정 스킵: "
+                            f"현재 정합도 유지('{title}', cur={current_abbr_score:.2f} > alt={best_alt_score:.2f})",
+                            file=sys.stderr,
+                        )
+                        continue
                     # 대안 제목으로 교체
                     old_title = title
                     new_title = best_alt["title"]
@@ -2085,7 +2585,31 @@ class DecoderExpert:
                     # 커뮤니티 문장형 제목을 작품명으로 유지하지 않도록 방어한다.
                     _score_term = effective_term or original_term
                     _abbr_score = abbreviation_match_score(_score_term, title) if _score_term else 0.0
-                    if _abbr_score < 0.35:
+                    _sentence_like = _looks_sentence_like_title(title)
+                    if _sentence_like:
+                        old_title = best_match.get("title")
+                        best_match["title"] = None
+                        best_match["confidence"] = "none"
+                        candidates = term.get("candidates", [])
+                        if isinstance(candidates, list):
+                            filtered = []
+                            for cand in candidates:
+                                cand_title = str(
+                                    (cand or {}).get("official_novel_title")
+                                    or (cand or {}).get("official_title")
+                                    or ""
+                                ).strip()
+                                if cand_title and cand_title == title:
+                                    continue
+                                filtered.append(cand)
+                            term["candidates"] = filtered
+                        print(
+                            f"[{_ts()}][{self.emoji}] 🚫 문장형 제목 제거: '{old_title}' "
+                            f"(community_only=True, sentence_like=True, abbr_score={_abbr_score:.2f})",
+                            file=sys.stderr,
+                        )
+                        changed = True
+                    elif _abbr_score < 0.35:
                         old_title = best_match.get("title")
                         best_match["title"] = None
                         best_match["confidence"] = "none"
@@ -2207,6 +2731,8 @@ class DecoderExpert:
                 continue
             
             for cand in term.get("candidates", []):
+                if not isinstance(cand, dict):
+                    continue
                 cand_url = cand.get("url", "")
                 if not cand_url:
                     continue
@@ -2221,6 +2747,40 @@ class DecoderExpert:
                 # 제목이 이미 동일하면 스킵
                 if official_title == bm_title:
                     continue
+
+                # 🆕 BUG-C 방어: 파생작/2차창작 URL 교정 거부
+                # 노벨피아 등에서 [원작약칭] 제목 패턴은 해당 원작의 팬픽/스핀오프
+                # 예: "[망겜성] 여자가 되다." = 원작 "망겜의 성기사"의 2차창작
+                _deriv_m = re.match(
+                    r'^\[([가-힣A-Za-z0-9\s]+)\]\s*(.+)', official_title
+                )
+                if _deriv_m:
+                    _bracket_tag = _deriv_m.group(1).strip()
+                    _original_term = term.get("original", "").strip()
+                    if _bracket_tag and _original_term:
+                        _bt_n = _bracket_tag.replace(" ", "").lower()
+                        _ot_n = _original_term.replace(" ", "").lower()
+                        if (
+                            _bt_n == _ot_n
+                            or _bt_n in _ot_n
+                            or _ot_n in _bt_n
+                            or SequenceMatcher(
+                                None, _bt_n, _ot_n
+                            ).ratio() >= 0.7
+                        ):
+                            print(
+                                f"[{_ts()}][{self.emoji}] 🛡️ 파생작(2차창작) URL 교정 거부: "
+                                f"'{official_title}' (tag='{_bracket_tag}' "
+                                f"≈ term='{_original_term}') — 원작 아님",
+                                file=sys.stderr,
+                            )
+                            # 해당 URL의 검색결과에 파생작 플래그 설정
+                            for _sr in search_results:
+                                _sr_url_n = _sr.get("url", "").split("?")[0].rstrip("/")
+                                if _sr_url_n == cand_norm:
+                                    _sr["_is_derivative"] = True
+                                    _sr["_derivative_of"] = _bracket_tag
+                            continue
                 
                 # 유사도 확인 (너무 다르면 오교정 방지)
                 sim = SequenceMatcher(
@@ -2347,6 +2907,8 @@ class DecoderExpert:
             # 후보 작품의 장르 추출: candidates의 genre_match 또는 검색 결과에서
             candidate_genres = set()
             for cand in term.get("candidates", []):
+                if not isinstance(cand, dict):
+                    continue
                 gm = cand.get("genre_match") or {}
                 tg = gm.get("target_genre", "")
                 if tg:
@@ -2383,7 +2945,136 @@ class DecoderExpert:
                       file=sys.stderr)
         
         return result
-    
+
+    # ────────────────────────────────────────────────────────────
+    # 🆕 검색 증거 기반 일반 어휘 탐지  (Generic — 하드코딩 아님)
+    # ────────────────────────────────────────────────────────────
+    def _detect_common_word_from_search(
+        self,
+        term_text: str,
+        search_results: list,
+        ctx: Any = None,
+    ) -> str | None:
+        """
+        🔤 Gatekeeper가 캐릭터명/작품명 후보로 식별한 용어가 실제로는
+        일반 어휘(감탄사·대명사·조사 등)인지 검색 결과에서 확인.
+
+        확인 방법:
+          1. 참고 사이트(namu.wiki, wikipedia, 사전 등) 중
+             해당 용어 전용 문서(URL에 용어 포함)만 검토
+          2. 전용 문서의 title+content에 언어학적 분류 카테고리가
+             등장하면 "이 용어는 일반 어휘"로 판정
+          3. 검색 snippet이 잘려서 분류 레이블이 누락되었을 수 있으므로
+             crawl4ai fetched_page_info의 본문도 추가 확인
+
+        Returns:
+            감지된 어휘 분류 문자열 (예: "감탄사", "대명사") 또는 None
+        """
+        if not term_text or len(term_text) < 2:
+            return None
+
+        term_clean = _re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', term_text).lower()
+        if not term_clean:
+            return None
+
+        # 언어학적 어휘 분류 카테고리 — 범용 목록
+        # (하드코딩된 단어 목록이 아니라, 사전/위키가 사용하는 *분류 레이블*)
+        _LINGUISTIC_CATEGORIES = (
+            "감탄사", "대명사", "인칭대명사", "1인칭", "2인칭", "3인칭",
+            "조사", "접미사", "부사", "의성어", "의태어", "접속사",
+            "관용구", "관용어", "호칭", "존칭",
+            "전치사", "관사", "수사", "종결어미", "어미", "접두사",
+        )
+
+        # 의미 설명 패턴 — "X는 ~를 뜻하는 Y" 등 사전/위키 정의문
+        # (언어와 무관하게, 외국어 단어·표현을 설명하는 패턴)
+        _MEANING_PATTERNS = (
+            "을 뜻하는", "를 뜻하는", "라는 뜻", "이라는 뜻",
+            "을 의미하", "를 의미하", "뜻을 가진",
+            "일본어 표현", "일본어로 ", "일본어의 ",
+            "영어 표현", "영어로 ", "영어의 ",
+            "중국어 표현", "중국어로 ",
+            "한자로 ", "한자어 ",
+        )
+
+        # 참고 사이트 도메인 (사전·백과사전·레퍼런스)
+        _REFERENCE_DOMAINS = (
+            "namu.wiki", "wikipedia.org", "ko.dict", "korean.go.kr",
+            "jisho.org", "weblio.jp", "dic.daum.net", "dict.naver.com",
+            "ko.wiktionary.org",
+        )
+
+        import urllib.parse as _urlparse
+
+        def _check_text_for_signals(text: str) -> str | None:
+            """텍스트에서 일반어휘 신호 탐지."""
+            text_lower = text.lower()
+            # 1차: 언어학적 분류 카테고리 직접 매칭
+            for cat in _LINGUISTIC_CATEGORIES:
+                if cat in text_lower:
+                    return cat
+            # 2차: 의미 설명 패턴 매칭
+            for pat in _MEANING_PATTERNS:
+                if pat in text_lower:
+                    return f"어휘설명({pat.strip()})"
+            return None
+
+        # ── Pass A: 검색 결과 snippet에서 확인 ──
+        _dedicated_urls: list[str] = []  # Pass B용 전용 문서 URL 목록
+        for sr in search_results:
+            sr_url = (sr.get("url") or "").lower()
+
+            # 참고 사이트만 대상
+            is_reference = any(d in sr_url for d in _REFERENCE_DOMAINS)
+            if not is_reference:
+                continue
+
+            # URL에 용어가 직접 포함된 전용 문서만 체크
+            try:
+                decoded_url = _urlparse.unquote(sr_url)
+            except Exception:
+                decoded_url = sr_url
+            url_norm = _re.sub(r'[^\uac00-\ud7a3a-z0-9]', '', decoded_url)
+            if term_clean not in url_norm:
+                continue
+
+            _dedicated_urls.append(sr_url)
+
+            # 검색 snippet에서 신호 탐지
+            combined = (
+                (sr.get("title") or "") + " " +
+                (sr.get("content") or sr.get("snippet") or "")
+            )
+            result = _check_text_for_signals(combined)
+            if result:
+                return result
+
+        # ── Pass B: 크롤링된 페이지 본문에서 확인 ──
+        # 검색 snippet이 너무 짧아 분류 레이블이 잘린 경우,
+        # crawl4ai가 페치한 전체 페이지에서 재확인
+        if ctx and _dedicated_urls:
+            fetched_pages = getattr(ctx, 'fetched_page_info', []) or []
+            for fp in fetched_pages:
+                if not isinstance(fp, dict):
+                    continue
+                fp_url = (fp.get("url") or "").lower()
+                # 전용 문서 URL과 매칭되는 페치 결과만 확인
+                if not any(du in fp_url or fp_url in du for du in _dedicated_urls):
+                    continue
+                # 구조적 정보 + 본문 미리보기 확인
+                structured = fp.get("structured_info") or {}
+                text_parts = [
+                    str(structured.get("title") or ""),
+                    str(structured.get("description") or ""),
+                    str(fp.get("text_preview") or ""),
+                ]
+                page_text = " ".join(text_parts)
+                result = _check_text_for_signals(page_text)
+                if result:
+                    return result
+
+        return None
+
     def _validate_morpheme_in_title(self, result: Dict[str, Any], ctx: Any) -> Dict[str, Any]:
         """
         🔥 약어-제목 매칭 검증 (코드 레벨 + LLM morphemes 병행)
@@ -2423,9 +3114,57 @@ class DecoderExpert:
         gk_out = ctx.expert_outputs.get("gatekeeper") or {}
         gk_entities = gk_out.get("detected_entities") or {}
         gk_possible = gk_entities.get("possible_titles") or []
+        gk_clues = gk_out.get("context_clues") or {}
+        gk_post_type = str(gk_out.get("post_type") or "").strip().lower()
+        gk_comment_candidates = gk_clues.get("comment_title_candidates") or []
+        comment_secondary_examples: List[str] = []
+        comment_secondary_mode = bool(
+            gk_clues.get("is_recommendation_request")
+            or gk_clues.get("is_comparison_post")
+            or gk_clues.get("genre_discussion_detected")
+            or gk_clues.get("genre_negation_detected")
+            or gk_clues.get("multi_work_order_detected")
+            or gk_post_type in {"genre_discussion", "trope_discussion", "genre_opinion", "recommendation"}
+        )
+        gk_comment_norms = {
+            _re.sub(r"[^\w가-힣]", "", str(t)).lower()
+            for t in gk_comment_candidates
+            if isinstance(t, str) and t.strip()
+        }
+        _post_data_local = ctx.post_data or {}
+        _post_main_parts = [str(_post_data_local.get("title") or "")]
+        for _blk in _post_data_local.get("content_blocks", []) or []:
+            if isinstance(_blk, dict):
+                _post_main_parts.append(str(_blk.get("text") or ""))
+            elif isinstance(_blk, str):
+                _post_main_parts.append(_blk)
+        _post_main_norm = _re.sub(r"[^\w가-힣]", "", " ".join(_post_main_parts)).lower()
+        _official_norms = {
+            _re.sub(r"[^\w가-힣]", "", str(o.get("title") or "")).lower()
+            for o in all_search_titles
+            if isinstance(o, dict)
+        }
         for gk_title in gk_possible:
-            if isinstance(gk_title, str) and len(gk_title) >= 2:
-                raw_title_pool.append(gk_title)
+            if not (isinstance(gk_title, str) and len(gk_title) >= 2):
+                continue
+            _gk_norm = _re.sub(r"[^\w가-힣]", "", gk_title).lower()
+            _is_comment_only = _gk_norm and (_gk_norm in gk_comment_norms) and (_gk_norm not in _post_main_norm)
+            if _is_comment_only and comment_secondary_mode:
+                comment_secondary_examples.append(gk_title)
+                print(
+                    f"[{_ts()}][{self.emoji}] 🧭 comment-only 제목 후보 secondary 분리: "
+                    f"'{gk_title}' (genre/reco/compare context)",
+                    file=sys.stderr,
+                )
+                continue
+            if _is_comment_only and _gk_norm not in _official_norms:
+                print(
+                    f"[{_ts()}][{self.emoji}] ⚖️ comment-only 후보 보류: "
+                    f"'{gk_title}' (post_main 미등장 + 공식 근거 없음)",
+                    file=sys.stderr,
+                )
+                continue
+            raw_title_pool.append(gk_title)
         if gk_possible:
             print(
                 f"[{_ts()}][{self.emoji}] 📥 Gatekeeper possible_titles → title_pool: "
@@ -2526,13 +3265,51 @@ class DecoderExpert:
                 
                 # 형태소도 OK이고 약어 스코어 ≥ 0.5이면 → 원래대로 스킵 (작가→대표작 매핑)
                 if _abbr_score_for_skip >= 0.5 or (_morpheme_ok_for_skip and _abbr_score_for_skip >= 0.3):
-                    print(
-                        f"[{_ts()}][{self.emoji}] ℹ️ 작가명 해석 존재 '{original}' → 약어 가드 스킵 "
-                        f"(is_author_name=false이지만 interpretations에 author_name 있음, "
-                        f"score={_abbr_score_for_skip:.2f})",
-                        file=sys.stderr,
-                    )
-                    continue
+                    # 🆕 BUG-C 방어: snippet_analyzer가 더 우수한 매핑을 제공하면 스킵하지 않음
+                    # 예: "망겜성" → Decoder="망겜성이 생각나는 게임이 현실이 된 소설"(0.30)
+                    #     snippet="망겜의 성기사"(0.85) → 가드 진행하여 교정
+                    _snippet_better = False
+                    _sh_skip = getattr(ctx, 'snippet_hints', None) or {}
+                    for _am_skip in (_sh_skip.get('abbreviation_mappings') or []):
+                        if not isinstance(_am_skip, dict):
+                            continue
+                        _am_abbr = (_am_skip.get('abbrev') or _am_skip.get('abbr') or '').strip()
+                        _am_full = (_am_skip.get('full') or '').strip()
+                        if _am_abbr == original and _am_full and _am_full != _cur_title_for_skip:
+                            _am_score = abbreviation_match_score(original, _am_full)
+                            if _am_score > _abbr_score_for_skip + 0.15:
+                                _snippet_better = True
+                                print(
+                                    f"[{_ts()}][{self.emoji}] ⚠️ snippet 매핑이 더 우수: "
+                                    f"'{original}' → snippet='{_am_full}'(score={_am_score:.2f}) "
+                                    f"vs decoder='{_cur_title_for_skip}'(score={_abbr_score_for_skip:.2f}) "
+                                    f"→ 약어 가드 진행",
+                                    file=sys.stderr,
+                                )
+                                break
+                    # ctx.abbreviation_mappings도 확인
+                    if not _snippet_better:
+                        _ctx_am = getattr(ctx, 'abbreviation_mappings', None) or {}
+                        _ctx_full = _ctx_am.get(original)
+                        if _ctx_full and isinstance(_ctx_full, str) and _ctx_full != _cur_title_for_skip:
+                            _ctx_am_score = abbreviation_match_score(original, _ctx_full)
+                            if _ctx_am_score > _abbr_score_for_skip + 0.15:
+                                _snippet_better = True
+                                print(
+                                    f"[{_ts()}][{self.emoji}] ⚠️ ctx 약칭 매핑이 더 우수: "
+                                    f"'{original}' → ctx='{_ctx_full}'(score={_ctx_am_score:.2f}) "
+                                    f"vs decoder='{_cur_title_for_skip}'(score={_abbr_score_for_skip:.2f}) "
+                                    f"→ 약어 가드 진행",
+                                    file=sys.stderr,
+                                )
+                    if not _snippet_better:
+                        print(
+                            f"[{_ts()}][{self.emoji}] ℹ️ 작가명 해석 존재 '{original}' → 약어 가드 스킵 "
+                            f"(is_author_name=false이지만 interpretations에 author_name 있음, "
+                            f"score={_abbr_score_for_skip:.2f})",
+                            file=sys.stderr,
+                        )
+                        continue
                 else:
                     # 형태소 불일치 + 약어 스코어 극단적 저조
                     # 🆕 FIX: 작가명→대표작 매핑이 snippet_analyzer로 검증된 경우 스킵
@@ -2621,6 +3398,14 @@ class DecoderExpert:
             # Decoder가 anchor_type="character_mention"으로 식별한 term은
             # 제목 약어가 아니라 캐릭터 이름이므로 abbreviation_match_score 검증 불필요
             grounding_info = term.get("grounding") or {}
+            _primary_interps_for_skip = term.get("interpretations") or []
+            _primary_type_for_skip = ""
+            if _primary_interps_for_skip and isinstance(_primary_interps_for_skip[0], dict):
+                _primary_type_for_skip = str(_primary_interps_for_skip[0].get("type") or "")
+            _work_interp_types_for_skip = {
+                "novel_title", "work_abbreviation", "abbreviation",
+                "title_abbreviation", "novel_abbreviation",
+            }
             is_character_term = (
                 grounding_info.get("anchor_type") == "character_mention"
                 or (len(original) <= 3 and any(
@@ -2628,12 +3413,137 @@ class DecoderExpert:
                     for c in (ctx.expert_outputs.get("gatekeeper") or {}).get("detected_entities", {}).get("possible_characters", [])
                 ))
             )
-            if is_character_term:
+            _gk_possible_titles_for_skip = (
+                ((ctx.expert_outputs.get("gatekeeper") or {}).get("detected_entities") or {}).get("possible_titles", [])
+                if ctx else []
+            )
+            _original_base_for_skip = _strip_korean_particles(original) or original
+            _original_base_norm_for_skip = _normalize_alnum_kor_cached(_original_base_for_skip)
+            _is_title_candidate_for_skip = any(
+                _normalize_alnum_kor_cached(str(_cand or "")) in {
+                    _normalize_alnum_kor_cached(original),
+                    _original_base_norm_for_skip,
+                }
+                or _normalize_alnum_kor_cached(_strip_korean_particles(str(_cand or ""))) in {
+                    _normalize_alnum_kor_cached(original),
+                    _original_base_norm_for_skip,
+                }
+                for _cand in (_gk_possible_titles_for_skip or [])
+            )
+            if is_character_term and _primary_type_for_skip in _work_interp_types_for_skip:
+                is_character_term = False
                 print(
-                    f"[{_ts()}][{self.emoji}] ℹ️ 캐릭터명 '{original}' → 약어 가드 스킵 "
-                    f"(anchor_type={grounding_info.get('anchor_type')})",
+                    f"[{_ts()}][{self.emoji}] ⚠️ 캐릭터 앵커 우회 취소: "
+                    f"'{original}'은 anchor_type=character_mention 이지만 "
+                    f"primary_interpretation={_primary_type_for_skip} → 약어 가드 정상 진행",
                     file=sys.stderr,
                 )
+            elif is_character_term and _is_title_candidate_for_skip and self._is_low_specificity_mapping_abbrev(original):
+                is_character_term = False
+                print(
+                    f"[{_ts()}][{self.emoji}] ⚠️ 캐릭터 앵커 우회 취소: "
+                    f"'{original}'은 Gatekeeper title 후보이자 저특이 약칭 → 약어 가드 정상 진행",
+                    file=sys.stderr,
+                )
+            elif (
+                is_character_term
+                and _original_base_norm_for_skip
+                and _original_base_norm_for_skip != _normalize_alnum_kor_cached(original)
+                and self._is_low_specificity_mapping_abbrev(_original_base_for_skip)
+            ):
+                is_character_term = False
+                print(
+                    f"[{_ts()}][{self.emoji}] ⚠️ 캐릭터 앵커 우회 취소: "
+                    f"'{original}'은 조사 제거형 '{_original_base_for_skip}' 기준 저특이 약칭 → 약어 가드 정상 진행",
+                    file=sys.stderr,
+                )
+            # 🆕 검색 증거 기반 일반 어휘 필터 (Generic):
+            # Gatekeeper가 캐릭터명으로 분류 했더라도, 검색 결과의 참고 사이트
+            # (namu.wiki 등)에서 해당 용어가 감탄사/대명사 등 일반 어휘로
+            # 분류되면 캐릭터 바이패스를 취소하고 약어 가드를 정상 진행.
+            if is_character_term:
+                _common_word_cat = self._detect_common_word_from_search(
+                    original, search_results, ctx=ctx,
+                )
+                if _common_word_cat:
+                    is_character_term = False
+                    print(
+                        f"[{_ts()}][{self.emoji}] 🔤 캐릭터→일반어휘 강등: "
+                        f"'{original}'은 검색 증거상 '{_common_word_cat}'로 분류됨 "
+                        f"→ 약어 가드 정상 진행",
+                        file=sys.stderr,
+                    )
+            if is_character_term:
+                # 🆕 Phase34.5: 커뮤니티 글제목 verbatim 오인 방어
+                # anchor_type=character_mention이라도 약어가 제목에 그대로(verbatim) 포함되면
+                # LLM이 커뮤니티 글제목을 소설 제목으로 오인한 것
+                # → Rescue로 정식 제목 복원 시도
+                _cm_match = term.get("best_match") or {}
+                _cm_title = _cm_match.get("title")
+                _cm_needs_rescue = False
+                if _cm_title and len(original) >= 3:
+                    # 약어가 제목에 그대로 포함되는지 확인 (verbatim 패턴)
+                    _cm_orig_clean = _re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', original).lower()
+                    _cm_title_clean = _re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', _cm_title).lower()
+                    if _cm_orig_clean and _cm_orig_clean in _cm_title_clean and _cm_orig_clean != _cm_title_clean:
+                        _cm_needs_rescue = True
+                        _cm_score = abbreviation_match_score(original, _cm_title)
+                        print(
+                            f"[{_ts()}][{self.emoji}] ⚠️ 캐릭터명 '{original}' "
+                            f"verbatim 제목 감지: '{_cm_title}' (score={_cm_score:.2f}) "
+                            f"→ Rescue 시도",
+                            file=sys.stderr,
+                        )
+                        rescue_title, rescue_score, rescue_src = self._rescue_null_title(
+                            original, term, title_pool, all_search_titles,
+                            search_results, ctx,
+                        )
+                        if rescue_title and rescue_score >= 0.75:
+                            _cm_match["title"] = rescue_title
+                            _cm_match["confidence"] = "medium"
+                            # candidates에도 추가
+                            cands = term.get("candidates") or []
+                            cands.insert(0, {
+                                "official_novel_title": rescue_title,
+                                "url": None,
+                                "platform": rescue_src,
+                                "decode_logic": f"verbatim rescue: {_cm_score:.2f} → {rescue_score:.2f}",
+                                "morphological_score": rescue_score,
+                                "search_evidence": f"rescue from {rescue_src}",
+                            })
+                            term["candidates"] = cands
+                            changed = True
+                            print(
+                                f"[{_ts()}][{self.emoji}] 🚀 Verbatim→Rescue 교정: "
+                                f"'{original}' → '{rescue_title}' "
+                                f"(score={rescue_score:.2f}, src={rescue_src})",
+                                file=sys.stderr,
+                            )
+                            # code_level_hints 저장
+                            if ctx:
+                                if not hasattr(ctx, 'code_level_hints'):
+                                    ctx.code_level_hints = []
+                                ctx.code_level_hints.append({
+                                    "type": "verbatim_rescue",
+                                    "original_term": original,
+                                    "corrected_title": rescue_title,
+                                    "abbreviation_score": round(rescue_score, 2),
+                                    "source": rescue_src or "search_pool",
+                                    "reasoning": f"LLM이 커뮤니티 글제목 '{_cm_title}'을 반환했으나 verbatim 매칭(score={_cm_score:.2f})이므로 약어 rescue에서 '{rescue_title}'(score={rescue_score:.2f})로 교정",
+                                })
+                        else:
+                            print(
+                                f"[{_ts()}][{self.emoji}] ℹ️ Verbatim rescue 실패: "
+                                f"'{original}' (best rescue={rescue_title}, "
+                                f"score={rescue_score:.2f})",
+                                file=sys.stderr,
+                            )
+                if not _cm_needs_rescue:
+                    print(
+                        f"[{_ts()}][{self.emoji}] ℹ️ 캐릭터명 '{original}' → 약어 가드 스킵 "
+                        f"(anchor_type={grounding_info.get('anchor_type')})",
+                        file=sys.stderr,
+                    )
                 continue
 
             best_match = term.get("best_match") or {}
@@ -2688,7 +3598,10 @@ class DecoderExpert:
                     continue
 
             # ── 1단계: 현재 후보의 약어 매칭 스코어 ──
-            current_score = abbreviation_match_score(original, current_title)
+            current_score = max(
+                abbreviation_match_score(original, current_title),
+                _leading_jamo_title_direct_score(original, current_title),
+            )
 
             # LLM morphemes 보조 검증 (있으면 추가 체크)
             morphemes = term.get("morphemes", [])
@@ -2710,7 +3623,10 @@ class DecoderExpert:
                     if title_morphemes and non_title_morphemes:
                         # 제목 부분 morpheme를 합쳐서 effective_original 생성
                         effective_abbr = "".join(title_morphemes)
-                        comp_score = abbreviation_match_score(effective_abbr, current_title)
+                        comp_score = max(
+                            abbreviation_match_score(effective_abbr, current_title),
+                            _leading_jamo_title_direct_score(effective_abbr, current_title),
+                        )
                         if comp_score > current_score:
                             current_score = comp_score
                             effective_original = effective_abbr
@@ -2743,7 +3659,10 @@ class DecoderExpert:
                         for part in parts:
                             part_clean = part.strip()
                             if len(part_clean) >= 2:
-                                pscore = abbreviation_match_score(part_clean, current_title)
+                                pscore = max(
+                                    abbreviation_match_score(part_clean, current_title),
+                                    _leading_jamo_title_direct_score(part_clean, current_title),
+                                )
                                 if pscore > best_part_score:
                                     best_part_score = pscore
                                     best_part = part_clean
@@ -2783,7 +3702,10 @@ class DecoderExpert:
                     stripped = _re.sub(r"\s+", " ", stripped).strip()
                     # 제거 후 남은 문자열이 2글자 이상이면 재시도
                     if stripped and len(stripped) >= 2 and stripped != original:
-                        stripped_score = abbreviation_match_score(stripped, current_title)
+                        stripped_score = max(
+                            abbreviation_match_score(stripped, current_title),
+                            _leading_jamo_title_direct_score(stripped, current_title),
+                        )
                         # 🔧 entity 제거로 생성된 stripped는 2단계 탐색에서 중요하므로
                         # current_title에 대한 score 개선 여부와 무관하게 effective_original 채택
                         # (현재 제목이 이미 틀린 경우, 2단계 title_pool에서 올바른 매칭이 나올 수 있음)
@@ -2811,7 +3733,10 @@ class DecoderExpert:
                                 trimmed = stripped[:-trim_len]
                                 if len(trimmed) < 2:
                                     break
-                                trim_score = abbreviation_match_score(trimmed, current_title)
+                                trim_score = max(
+                                    abbreviation_match_score(trimmed, current_title),
+                                    _leading_jamo_title_direct_score(trimmed, current_title),
+                                )
                                 if trim_score > current_score:
                                     print(
                                         f"[{_ts()}][{self.emoji}] 🔀 suffix trim: "
@@ -2828,8 +3753,8 @@ class DecoderExpert:
             # 🆕 FIX: 약어와 제목이 정규화 기준으로 동일한 경우(예: "광마회귀"→"광마회귀"),
             # abbreviation_match_score의 verbatim 차단(0.00)로 인한 오강등을 방지한다.
             # 단, 제목 앵커가 있거나 공식 검색 제목으로 확인된 경우에만 적용한다.
-            _orig_norm_exact = _re.sub(r"[^\w가-힣]", "", original).lower()
-            _title_norm_exact = _re.sub(r"[^\w가-힣]", "", str(current_title or "")).lower()
+            _orig_norm_exact = _normalize_text_keep_jamo(original)
+            _title_norm_exact = _normalize_text_keep_jamo(str(current_title or ""))
             _anchor_type_exact = str(grounding_info.get("anchor_type") or "").lower()
             _has_title_anchor_exact = _anchor_type_exact in {
                 "title_mention",
@@ -2837,24 +3762,57 @@ class DecoderExpert:
                 "fulltext_mention",
             }
             _is_official_exact = any(
-                _re.sub(r"[^\w가-힣]", "", str(o.get("title") or "")).lower() == _title_norm_exact
+                _normalize_text_keep_jamo(str(o.get("title") or "")) == _title_norm_exact
                 for o in all_search_titles
                 if isinstance(o, dict)
             )
-            if (
+            _post_main_parts_exact = [str((ctx.post_data or {}).get("title") or "")]
+            for _b_exact in ((ctx.post_data or {}).get("content_blocks", []) or []):
+                if isinstance(_b_exact, dict):
+                    _post_main_parts_exact.append(str(_b_exact.get("text") or ""))
+                elif isinstance(_b_exact, str):
+                    _post_main_parts_exact.append(_b_exact)
+            _post_main_norm_exact = _normalize_text_keep_jamo(" ".join(_post_main_parts_exact))
+            _title_in_post_main_exact = bool(_title_norm_exact and _title_norm_exact in _post_main_norm_exact)
+            _comment_only_term_exact = False
+            try:
+                _gk_ctx_exact = ((ctx.expert_outputs.get("gatekeeper") or {}).get("context_clues") or {})
+                _ctcs_exact = _gk_ctx_exact.get("comment_title_candidates") or []
+                _comment_norms_exact = {
+                    _normalize_text_keep_jamo(str(c))
+                    for c in _ctcs_exact
+                    if isinstance(c, str) and c.strip()
+                }
+                _comment_only_term_exact = bool(
+                    _orig_norm_exact
+                    and _orig_norm_exact in _comment_norms_exact
+                    and _orig_norm_exact not in _post_main_norm_exact
+                )
+            except Exception:
+                _comment_only_term_exact = False
+
+            _same_string_guard_ok = (
                 _orig_norm_exact
                 and _title_norm_exact
                 and _orig_norm_exact == _title_norm_exact
-                and (_has_title_anchor_exact or _is_official_exact)
-            ):
-                if current_score < 0.8:
+                and (
+                    _is_official_exact
+                    or _title_in_post_main_exact
+                    or (_has_title_anchor_exact and not _comment_only_term_exact)
+                )
+            )
+
+            if _same_string_guard_ok:
+                _target_score_exact = 1.0 if (_is_official_exact or _title_in_post_main_exact) else 0.9
+                if current_score < _target_score_exact:
                     _old_score_exact = current_score
-                    current_score = 1.0
+                    current_score = _target_score_exact
                     print(
                         f"[{_ts()}][{self.emoji}] 🔒 동일문자열 예외 가드: "
                         f"'{original}' → '{current_title}' "
-                        f"(score {_old_score_exact:.2f}→1.00, "
-                        f"anchor={_anchor_type_exact or 'none'}, official={_is_official_exact})",
+                        f"(score {_old_score_exact:.2f}→{_target_score_exact:.2f}, "
+                        f"anchor={_anchor_type_exact or 'none'}, official={_is_official_exact}, "
+                        f"post_main={_title_in_post_main_exact}, comment_only={_comment_only_term_exact})",
                         file=sys.stderr,
                     )
                 morpheme_ok = True
@@ -2932,6 +3890,56 @@ class DecoderExpert:
                             for part in sr_title_raw.split(" - "):
                                 community_titles.add(part.strip())
 
+            def _official_title_soft_matches(target_title: str, official_title: str) -> bool:
+                target_norm = _normalize_text_keep_jamo(str(target_title or ""))
+                official_raw = str(official_title or "").strip()
+                official_norm = _normalize_text_keep_jamo(official_raw)
+                if not target_norm or not official_norm:
+                    return False
+                if target_norm == official_norm:
+                    return True
+                split_parts = [official_raw]
+                for sep in (" - ", " | ", " / ", " · ", " :: "):
+                    if sep in official_raw:
+                        split_parts.extend(p.strip() for p in official_raw.split(sep) if p.strip())
+                seen_parts: set[str] = set()
+                for part in split_parts:
+                    part_norm = _normalize_text_keep_jamo(part)
+                    if not part_norm or part_norm in seen_parts:
+                        continue
+                    seen_parts.add(part_norm)
+                    if part_norm == target_norm:
+                        return True
+                platformish = any(
+                    token in official_raw.lower()
+                    for token in (
+                        "카카오페이지",
+                        "novelpia",
+                        "노벨피아",
+                        "문피아",
+                        "series",
+                        "시리즈",
+                        "나무위키",
+                        "thewiki",
+                    )
+                )
+                if platformish and official_norm.startswith(target_norm):
+                    tail = official_norm[len(target_norm):]
+                    if tail and any(
+                        token in tail
+                        for token in (
+                            "웹소설",
+                            "카카오페이지",
+                            "노벨피아",
+                            "문피아",
+                            "시리즈",
+                            "나무위키",
+                            "thewiki",
+                        )
+                    ):
+                        return True
+                return False
+
             for candidate in title_pool:
                 if candidate == current_title:
                     continue
@@ -2943,7 +3951,10 @@ class DecoderExpert:
                 if candidate in community_titles:
                     continue
 
-                score = abbreviation_match_score(effective_original, candidate)
+                score = max(
+                    abbreviation_match_score(effective_original, candidate),
+                    _leading_jamo_title_direct_score(effective_original, candidate),
+                )
 
                 # morphemes 보조: morphemes도 모두 포함하면 보너스
                 if morphemes and len(morphemes) >= 2:
@@ -2957,26 +3968,263 @@ class DecoderExpert:
                     # 출처 판별
                     best_alt_source = "search_pool"
                     for official in all_search_titles:
-                        if official["title"] == candidate:
+                        if _official_title_soft_matches(candidate, str(official.get("title") or "")):
                             best_alt_source = f"platform:{official.get('platform', '?')}"
                             break
 
             # ── 3단계: 교체 또는 confidence 하향 ──
             # 🔧 현재 제목이 공식 플랫폼 출처면 교정 기준 강화
             current_from_official = any(
-                official["title"] == current_title
+                _official_title_soft_matches(current_title, str(official.get("title") or ""))
                 for official in all_search_titles
+            )
+            current_official_support_count = sum(
+                1 for official in all_search_titles
+                if _official_title_soft_matches(current_title, str(official.get("title") or ""))
+            )
+            best_alt_official_support_count = sum(
+                1 for official in all_search_titles
+                if best_alt_title and _official_title_soft_matches(best_alt_title, str(official.get("title") or ""))
+            ) if best_alt_title else 0
+            best_alt_from_official = bool(
+                isinstance(best_alt_source, str) and best_alt_source.startswith("platform:")
+            )
+            current_has_official_keyword_support = False
+            current_wiki_support_count = 0
+            current_nonplatform_support_count = 0
+            best_alt_wiki_support_count = 0
+            best_alt_nonplatform_support_count = 0
+            if effective_original:
+                _eff_norm = _normalize_text_keep_jamo(str(effective_original or ""))
+                _cur_norm = _normalize_text_keep_jamo(str(current_title or ""))
+                if _eff_norm and _cur_norm:
+                    for sr in search_results:
+                        sr_url = str(sr.get("url", "") or "")
+                        if not sr_url:
+                            continue
+                        sr_title = str(sr.get("title", "") or "")
+                        sr_content = str(sr.get("content", "") or "")
+                        _sr_title_norm = _normalize_text_keep_jamo(sr_title)
+                        _sr_content_norm = _normalize_text_keep_jamo(sr_content)
+                        if _cur_norm and (_cur_norm in _sr_title_norm or _cur_norm in _sr_content_norm):
+                            sr_url_lower = sr_url.lower()
+                            if "namu.wiki" in sr_url_lower or "thewiki.kr" in sr_url_lower:
+                                current_wiki_support_count += 1
+                            elif not self._is_novel_platform_url(sr_url):
+                                current_nonplatform_support_count += 1
+                        if current_official_support_count < 1:
+                            continue
+                        if not self._is_novel_platform_url(sr_url):
+                            continue
+                        if _cur_norm and _cur_norm not in _sr_title_norm and _cur_norm not in _sr_content_norm:
+                            continue
+                        if _eff_norm in _sr_title_norm or _eff_norm in _sr_content_norm:
+                            current_has_official_keyword_support = True
+                            break
+            if best_alt_title:
+                _alt_norm = _normalize_text_keep_jamo(str(best_alt_title or ""))
+                if _alt_norm:
+                    for sr in search_results:
+                        sr_url = str(sr.get("url", "") or "")
+                        if not sr_url:
+                            continue
+                        sr_title = str(sr.get("title", "") or "")
+                        sr_content = str(sr.get("content", "") or "")
+                        _sr_title_norm = _normalize_text_keep_jamo(sr_title)
+                        _sr_content_norm = _normalize_text_keep_jamo(sr_content)
+                        if _alt_norm not in _sr_title_norm and _alt_norm not in _sr_content_norm:
+                            continue
+                        sr_url_lower = sr_url.lower()
+                        if "namu.wiki" in sr_url_lower or "thewiki.kr" in sr_url_lower:
+                            best_alt_wiki_support_count += 1
+                        elif not self._is_novel_platform_url(sr_url):
+                            best_alt_nonplatform_support_count += 1
+            current_has_structural_alias_support = bool(
+                (current_from_official or current_official_support_count > 0 or current_wiki_support_count > 0)
+                and morpheme_ok
+                and (
+                    current_has_official_keyword_support
+                    or current_score >= 0.25
+                    or _same_string_guard_ok
+                )
+            )
+            current_support_strength = (
+                (current_official_support_count * 3.0)
+                + (current_wiki_support_count * 2.0)
+                + (current_nonplatform_support_count * 1.0)
+                + (2.0 if current_has_official_keyword_support else 0.0)
+            )
+            best_alt_support_strength = (
+                (best_alt_official_support_count * 3.0)
+                + (best_alt_wiki_support_count * 2.0)
+                + (best_alt_nonplatform_support_count * 1.0)
+                + (1.0 if best_alt_from_official else 0.0)
             )
             replace_margin = 0.30 if current_from_official else 0.15
 
+            def _looks_sentence_like_title_local(text: str) -> bool:
+                if not text or not isinstance(text, str):
+                    return False
+                t = re.sub(r"\s+", " ", text).strip()
+                if not t:
+                    return False
+                token_count = len(re.findall(r"[가-힣A-Za-z0-9]+", t))
+                has_clause_connector = bool(
+                    re.search(r"(는데|면서|해서|하며|라고|이라는|같은|처럼|듯이)", t)
+                )
+                has_meta_prefix = bool(
+                    re.match(r"^(제목|내용|스토리|줄거리)\s*(그대로|요약)", t)
+                )
+                return bool(
+                    token_count >= 8 and (has_clause_connector or len(t) >= 30 or has_meta_prefix)
+                )
+
+            _best_alt_derivativeish = bool(
+                best_alt_title
+                and (
+                    self._is_derivative_or_variant_title(current_title, best_alt_title)
+                    or _looks_sentence_like_title_local(best_alt_title)
+                    or bool(
+                        re.search(
+                            r"[\[\]<>]|(?:\b|[가-힣])x(?:\b|[가-힣])|크로스오버|세계관|팬픽|팬아트|리메이크|외전|패러디",
+                            str(best_alt_title or ""),
+                            re.IGNORECASE,
+                        )
+                    )
+                )
+            )
+
+            if (
+                best_alt_title
+                and current_from_official
+                and (not best_alt_from_official)
+                and current_has_official_keyword_support
+                and (not has_explicit_alias)
+            ):
+                print(
+                    f"[{_ts()}][{self.emoji}] 🛡️ 공식제목 유지: "
+                    f"'{current_title}' ←/→ '{best_alt_title}' "
+                    f"(official_keyword_support=True, alt_source={best_alt_source or 'search_pool'})",
+                    file=sys.stderr,
+                )
+                best_alt_title = None
+            elif (
+                best_alt_title
+                and current_has_structural_alias_support
+                and (not best_alt_from_official)
+                and (best_alt_source or "search_pool") == "search_pool"
+            ):
+                print(
+                    f"[{_ts()}][{self.emoji}] 🛡️ 공식/위키 약칭 제목 유지: "
+                    f"'{current_title}' ←/→ '{best_alt_title}' "
+                    f"(official_support_count={current_official_support_count}, "
+                    f"score={current_score:.2f}, morpheme_ok={morpheme_ok}, "
+                    f"alt_source={best_alt_source or 'search_pool'})",
+                    file=sys.stderr,
+                )
+                best_alt_title = None
+            elif (
+                best_alt_title
+                and _best_alt_derivativeish
+                and current_has_structural_alias_support
+                and current_official_support_count >= 1
+                and current_wiki_support_count >= 1
+            ):
+                print(
+                    f"[{_ts()}][{self.emoji}] 🛡️ canonical title 유지(파생작 교정 차단): "
+                    f"'{current_title}' ←/→ '{best_alt_title}' "
+                    f"(current_official={current_official_support_count}, "
+                    f"current_wiki={current_wiki_support_count}, "
+                    f"alt_source={best_alt_source or 'search_pool'}, "
+                    f"alt_derivativeish=True)",
+                    file=sys.stderr,
+                )
+                best_alt_title = None
+            elif (
+                best_alt_title
+                and current_has_structural_alias_support
+                and self._is_derivative_or_variant_title(current_title, best_alt_title)
+                and (
+                    current_official_support_count >= max(1, best_alt_official_support_count)
+                    or current_wiki_support_count > best_alt_wiki_support_count
+                    or current_nonplatform_support_count > best_alt_nonplatform_support_count
+                    or (
+                        current_official_support_count >= 1
+                        and current_wiki_support_count >= 1
+                        and best_alt_official_support_count == 0
+                        and best_alt_wiki_support_count == 0
+                    )
+                )
+                and (
+                    current_has_official_keyword_support
+                    or current_official_support_count >= 2
+                    or current_wiki_support_count >= 1
+                    or current_nonplatform_support_count >= 2
+                )
+            ):
+                print(
+                    f"[{_ts()}][{self.emoji}] 🛡️ 원작 canonical 제목 유지: "
+                    f"'{current_title}' ←/→ '{best_alt_title}' "
+                    f"(current_official={current_official_support_count}, "
+                    f"alt_official={best_alt_official_support_count}, "
+                    f"current_wiki={current_wiki_support_count}, "
+                    f"alt_wiki={best_alt_wiki_support_count}, "
+                    f"current_nonplatform={current_nonplatform_support_count}, "
+                    f"alt_nonplatform={best_alt_nonplatform_support_count}, "
+                    f"alt_source={best_alt_source or 'search_pool'}, "
+                    f"alt_derivative=True)",
+                    file=sys.stderr,
+                )
+                best_alt_title = None
+            elif (
+                best_alt_title
+                and current_has_structural_alias_support
+                and current_support_strength >= best_alt_support_strength + 2.0
+                and (
+                    current_official_support_count >= 1
+                    and (
+                        current_wiki_support_count >= 1
+                        or current_nonplatform_support_count >= 2
+                        or current_has_official_keyword_support
+                    )
+                )
+                and (
+                    best_alt_official_support_count < current_official_support_count
+                    or best_alt_wiki_support_count < current_wiki_support_count
+                    or best_alt_nonplatform_support_count < current_nonplatform_support_count
+                    or not best_alt_from_official
+                )
+            ):
+                print(
+                    f"[{_ts()}][{self.emoji}] 🛡️ canonical support 우세 유지: "
+                    f"'{current_title}' ←/→ '{best_alt_title}' "
+                    f"(current_strength={current_support_strength:.1f}, "
+                    f"alt_strength={best_alt_support_strength:.1f}, "
+                    f"current_official={current_official_support_count}, "
+                    f"alt_official={best_alt_official_support_count}, "
+                    f"current_wiki={current_wiki_support_count}, "
+                    f"alt_wiki={best_alt_wiki_support_count}, "
+                    f"current_nonplatform={current_nonplatform_support_count}, "
+                    f"alt_nonplatform={best_alt_nonplatform_support_count}, "
+                    f"alt_source={best_alt_source or 'search_pool'})",
+                    file=sys.stderr,
+                )
+                best_alt_title = None
             if best_alt_title and best_alt_score >= 0.7 and best_alt_score > current_score + replace_margin:
                 old_title = current_title
                 best_match["title"] = best_alt_title
+                if str(best_match.get("url") or "").strip():
+                    # 제목만 교체되면 기존 URL은 다른 작품을 가리킬 수 있으므로 초기화한다.
+                    best_match["url"] = None
 
                 # candidates도 업데이트
                 for cand in term.get("candidates", []):
+                    if not isinstance(cand, dict):
+                        continue
                     if cand.get("official_novel_title") == old_title:
                         cand["official_novel_title"] = best_alt_title
+                        if str(cand.get("url") or "").strip():
+                            cand["url"] = None
 
                 print(
                     f"[{_ts()}][{self.emoji}] 🔧 약어 스코어 기반 제목 교정: "
@@ -3007,12 +4255,19 @@ class DecoderExpert:
                 # morpheme_ok 여부와 무관하게 강제 하향/무효화
                 # ⚠️ 단, 검색 결과에 명시적 약칭 증거가 있으면 스킵
                 # 🆕 BUG-2: effective_original이 보정되어 높은 점수를 가지면 가드 우회
-                effective_score = abbreviation_match_score(effective_original, current_title) if effective_original != original else current_score
-                if effective_score >= 0.5:
+                effective_score = (
+                    max(
+                        abbreviation_match_score(effective_original, current_title),
+                        _leading_jamo_title_direct_score(effective_original, current_title),
+                    )
+                    if effective_original != original else current_score
+                )
+                if effective_score >= 0.5 or current_has_official_keyword_support:
                     print(
                         f"[{_ts()}][{self.emoji}] ℹ️ 약어 가드 우회: "
                         f"original '{original}' score={current_score:.2f} < 0.2이지만, "
-                        f"effective '{effective_original}' score={effective_score:.2f} ≥ 0.5 "
+                        f"effective '{effective_original}' score={effective_score:.2f}, "
+                        f"official_keyword_support={current_has_official_keyword_support} "
                         f"→ confidence 유지",
                         file=sys.stderr,
                     )
@@ -3063,12 +4318,14 @@ class DecoderExpert:
             (rescue_title, score, source) or (None, 0.0, None)
         """
         # ── 커뮤니티 은어 사전 (BUG-5, BUG-6) ──
+        # ⚠️ 소설 약칭과 혼동되는 용어(아생갤 등)는 KNOWN_ABBREVIATIONS로 이동
         _COMMUNITY_SLANG = {
             "파딱", "완장", "고닉", "장붕이", "장붕", "장갤", "고로시", "탈갤",
             "뿜명어", "설레발", "무개념", "악플러", "겹채", "닭판",
             "반바기", "본덕", "다링", "찬모리",
             "웹연갤", "노벨피아", "문피아", "카케페", "시리즈",
             "장판갤", "로판갤", "무협갤", "판갤",
+            "노피아",  # 노벨피아 약칭 (플랫폼명, 소설명 아님)
         }
 
         # ── 장르 트로프/클리셰 키워드 (BUG-1) ──
@@ -3086,6 +4343,101 @@ class DecoderExpert:
             print(
                 f"[{_ts()}][{self.emoji}] 🚫 Rescue 스킵: "
                 f"'{original}'은 커뮤니티 은어 (COMMUNITY_SLANG)",
+                file=sys.stderr,
+            )
+            return (None, 0.0, None)
+
+        # 🆕 P1-2: 초성 비속어가 포함된 원본은 Rescue 대상에서 제외
+        # "이ㅅㄲ" = "이 새끼" 같은 욕설을 작품 약어로 오해석하는 것을 방지
+        _has_profanity, _profanity_expansion = contains_chosung_profanity(original_clean)
+        if _has_profanity:
+            print(
+                f"[{_ts()}][{self.emoji}] 🚫 Rescue 스킵: "
+                f"'{original}' 에 초성 비속어 포함 ('{_profanity_expansion}')",
+                file=sys.stderr,
+            )
+            return (None, 0.0, None)
+
+        # ── 🆕 LLM 의도(Intent) 기반 Rescue 스킵 ──
+        # LLM이 structured output에서 "이건 제목이 아님"을 명시적으로 판단한 경우,
+        # 코드가 그 결론을 뒤집지 않는다. 블랙리스트 없이 LLM의 분류 신호를 종합.
+        #
+        # 판단 신호:
+        #   (A) interpretations[].type 이 모두 비-제목 유형인가
+        #   (B) best_match.confidence 가 "none"인가
+        #   (C) best_match.reason 에 "제목이 아닌" 등 부정 표현이 있는가
+        #   (D) best_match.is_grounded 가 false인가
+        # → 2개 이상 신호가 겹치면 LLM이 의도적으로 비-제목 판단한 것
+
+        best_match = term.get("best_match") or {}
+
+        _TITLE_LIKE_TYPES = {
+            "title", "novel_title", "abbreviation", "work_abbreviation",
+            "novel_abbreviation", "series_name", "book_title", "work_title",
+            "manhwa_title", "webtoon_title", "webnovel_title",
+        }
+        _NON_TITLE_TYPES = {
+            "setting_term", "plot_element", "plot_reference",
+            "slang", "general_term", "cultural_reference",
+            "cultural_term", "idiom", "expression", "reaction",
+            "meme", "joke", "community_slang", "internet_slang",
+            "general_expression", "colloquial", "proverb",
+            "worldbuilding", "character_trait", "genre_term",
+            "trope", "emotion", "onomatopoeia", "interjection",
+        }
+
+        interps = term.get("interpretations") or []
+        interp_types = {
+            (ip.get("type") or "").lower().replace(" ", "_")
+            for ip in interps if isinstance(ip, dict)
+        }
+        # (A) 모든 interpretation이 비-제목 유형인가?
+        has_title_interp = bool(interp_types & _TITLE_LIKE_TYPES)
+        all_non_title = bool(interp_types) and interp_types <= _NON_TITLE_TYPES
+
+        # (B) confidence가 "none"인가?
+        bm_conf = (best_match.get("confidence") or "").lower()
+        conf_none = bm_conf in ("none", "")
+
+        # (C) reason에 "제목이 아닌" 등 부정 표현이 있는가?
+        bm_reason = (best_match.get("reason") or "").lower()
+        _NOT_TITLE_SIGNALS = (
+            "제목이 아닌", "제목이 아님", "작품 제목이 아닌", "작품 제목이 아님",
+            "작품명이 아닌", "작품명이 아님", "제목은 아님", "제목은 아닌",
+            "특정 작품 제목은 아님", "특정 작품 제목이 아님", "특정 작품이 아닌",
+            "작품 제목으로 보이지 않", "제목으로 보이지 않",
+            "일반적인 표현", "관용적 표현", "일상 용어", "문화적 표현",
+            "not a title", "not a novel", "not a work",
+        )
+        reason_says_not_title = any(sig in bm_reason for sig in _NOT_TITLE_SIGNALS)
+
+        # (D) is_grounded가 false인가?
+        not_grounded = best_match.get("is_grounded") is False
+
+        # 종합 판단: 2개 이상 신호가 겹치면 LLM이 의도적으로 비-제목 판단한 것
+        llm_intent_signals = sum([
+            all_non_title and not has_title_interp,  # (A)
+            conf_none,                                # (B)
+            reason_says_not_title,                    # (C)
+            not_grounded,                             # (D)
+        ])
+        # KNOWN_ABBREVIATIONS에 등록된 약칭은 LLM 판단 무시 (검증된 매핑)
+        is_known = original_clean in set(KNOWN_ABBREVIATIONS.keys())
+
+        if llm_intent_signals >= 2 and not is_known:
+            signals_detail = []
+            if all_non_title:
+                signals_detail.append(f"interp_types={interp_types}")
+            if conf_none:
+                signals_detail.append(f"confidence={bm_conf or 'none'}")
+            if reason_says_not_title:
+                signals_detail.append("reason='비제목'")
+            if not_grounded:
+                signals_detail.append("is_grounded=false")
+            print(
+                f"[{_ts()}][{self.emoji}] 🧠 Rescue 스킵 (LLM 의도 존중): "
+                f"'{original}' — LLM이 비-제목으로 판단 "
+                f"(signals={llm_intent_signals}/4: {', '.join(signals_detail)})",
                 file=sys.stderr,
             )
             return (None, 0.0, None)
@@ -3227,7 +4579,10 @@ class DecoderExpert:
             # 🆕 작가 페이지 제목은 작품명이 아님 → 스킵
             if any(p in candidate for p in _AUTHOR_PAGE_PATTERNS):
                 continue
-            score = abbreviation_match_score(original, candidate)
+            score = max(
+                abbreviation_match_score(original, candidate),
+                _leading_jamo_title_direct_score(original, candidate),
+            )
             if score > best_score:
                 best_score = score
                 best_title = candidate
@@ -3242,7 +4597,10 @@ class DecoderExpert:
             # 🆕 작가 페이지 제목은 작품명이 아님 → 스킵
             if any(p in candidate for p in _AUTHOR_PAGE_PATTERNS):
                 continue
-            score = abbreviation_match_score(original, candidate)
+            score = max(
+                abbreviation_match_score(original, candidate),
+                _leading_jamo_title_direct_score(original, candidate),
+            )
             if score > best_score:
                 best_score = score
                 best_title = candidate
@@ -3266,7 +4624,10 @@ class DecoderExpert:
                     candidate = m.group(1).strip()
                     candidate = _re_rescue.sub(r'[\.\s]+$', '', candidate)
                     if 3 <= len(candidate) <= 30:
-                        score = abbreviation_match_score(original, candidate)
+                        score = max(
+                            abbreviation_match_score(original, candidate),
+                            _leading_jamo_title_direct_score(original, candidate),
+                        )
                         if score > best_score:
                             best_score = score
                             best_title = candidate
@@ -3285,7 +4646,10 @@ class DecoderExpert:
                 if m:
                     candidate = m.group(1).strip()
                     if 4 <= len(candidate) <= 30 and candidate not in community_titles:
-                        score = abbreviation_match_score(original, candidate)
+                        score = max(
+                            abbreviation_match_score(original, candidate),
+                            _leading_jamo_title_direct_score(original, candidate),
+                        )
                         if score > best_score:
                             best_score = score
                             best_title = candidate
@@ -3365,7 +4729,10 @@ class DecoderExpert:
                         for candidate in all_candidates:
                             if len(candidate) < 4 or len(candidate) > 40:
                                 continue
-                            score = abbreviation_match_score(abbr_from_morphemes, candidate)
+                            score = max(
+                                abbreviation_match_score(abbr_from_morphemes, candidate),
+                                _leading_jamo_title_direct_score(abbr_from_morphemes, candidate),
+                            )
                             if score > best_score:
                                 best_score = score
                                 best_title = candidate
@@ -3379,7 +4746,10 @@ class DecoderExpert:
                                     candidate = m_pat.group(1).strip()
                                     candidate = _re_rescue.sub(r'[\.\s]+$', '', candidate)
                                     if 3 <= len(candidate) <= 30:
-                                        score = abbreviation_match_score(abbr_from_morphemes, candidate)
+                                        score = max(
+                                            abbreviation_match_score(abbr_from_morphemes, candidate),
+                                            _leading_jamo_title_direct_score(abbr_from_morphemes, candidate),
+                                        )
                                         if score > best_score:
                                             best_score = score
                                             best_title = candidate
@@ -3395,7 +4765,10 @@ class DecoderExpert:
                                 if m_pat:
                                     candidate = m_pat.group(1).strip()
                                     if 4 <= len(candidate) <= 30 and candidate not in community_titles:
-                                        score = abbreviation_match_score(abbr_from_morphemes, candidate)
+                                        score = max(
+                                            abbreviation_match_score(abbr_from_morphemes, candidate),
+                                            _leading_jamo_title_direct_score(abbr_from_morphemes, candidate),
+                                        )
                                         if score > best_score:
                                             best_score = score
                                             best_title = candidate
@@ -3410,6 +4783,114 @@ class DecoderExpert:
                                 file=sys.stderr,
                             )
 
+        # ── Pass 6: 다중 Verbatim 후보 맥락 재선별 (Generic) ──
+        # 동일 약칭이 여러 소설 제목에 그대로(verbatim) 포함될 때,
+        # 형태소 점수만으로는 올바른 작품을 고를 수 없음.
+        # 게시글의 맥락 키워드(GK key_terms + 본문)와 각 후보의
+        # 검색 증거(장르, 키워드)를 대조하여 맥락 적합도가 높은 후보를 승격.
+        verbatim_candidates: list[tuple[str, float, str]] = []  # (title, score, source)
+        for ot in official_titles:
+            _vt = ot["title"]
+            if len(_vt) < 4 or len(_vt) > 40:
+                continue
+            _vs = abbreviation_match_score(original, _vt)
+            if 0.20 <= _vs <= 0.35:  # verbatim range
+                verbatim_candidates.append((_vt, _vs, ot.get("platform", "")))
+        for _vt in title_pool:
+            if _vt in community_titles or len(_vt) < 4 or len(_vt) > 40:
+                continue
+            _vs = abbreviation_match_score(original, _vt)
+            if 0.20 <= _vs <= 0.35:
+                # 중복 제거 (같은 제목이 official_titles에도 있을 수 있음)
+                if not any(_vt == vc[0] for vc in verbatim_candidates):
+                    verbatim_candidates.append((_vt, _vs, "title_pool"))
+
+        if len(verbatim_candidates) >= 2:
+            # 맥락 키워드 풀 구성 (게시글 제목 + 본문 + GK key_terms)
+            _post_data_ctx = getattr(ctx, 'post_data', {}) or {}
+            _ctx_title = (_post_data_ctx.get('title') or '')
+            _ctx_body_parts: list[str] = []
+            for _blk in _post_data_ctx.get('content_blocks', []) or []:
+                if isinstance(_blk, dict) and _blk.get('text'):
+                    _ctx_body_parts.append(_blk['text'])
+                elif isinstance(_blk, str):
+                    _ctx_body_parts.append(_blk)
+            _ctx_body = ' '.join(_ctx_body_parts)
+
+            _gk_out_ctx = (ctx.expert_outputs.get('gatekeeper') or {}) if ctx else {}
+            _gk_key_terms_ctx = _gk_out_ctx.get('key_terms') or []
+
+            _context_words: set[str] = set()
+            for _kw in _gk_key_terms_ctx:
+                if isinstance(_kw, str) and len(_kw) >= 2:
+                    _context_words.add(_re.sub(r'[^\uac00-\ud7a3a-z0-9]', '', _kw.lower()))
+            for _txt in [_ctx_title, _ctx_body]:
+                for _w in _re.findall(r'[\uac00-\ud7a3]{2,}', _txt.lower()):
+                    _context_words.add(_w)
+            # 약어 자체/약어 내 개별 음절 제거 (모든 후보에 공통 → 변별력 없음)
+            _orig_norm_ctx = _re.sub(r'[^\uac00-\ud7a3]', '', original).lower()
+            _context_words.discard(_orig_norm_ctx)
+            for _seg in _orig_norm_ctx:
+                _context_words.discard(_seg)
+            # 너무 일반적인 단어 제거
+            _context_words -= {"살짝", "이거", "이건", "좀", "진짜", "ㅋㅋ", "ㅎㅎ"}
+
+            if _context_words:
+                _best_ctx_cand = None
+                _best_ctx_score = 0.0
+                _best_ctx_overlap: set[str] = set()
+
+                for _vc_title, _vc_morph, _vc_src in verbatim_candidates:
+                    # 후보 키워드 = 제목 자체 + 이 후보를 언급하는 검색 결과의 키워드
+                    _cand_words: set[str] = set(
+                        _re.findall(r'[\uac00-\ud7a3]{2,}', _vc_title.lower())
+                    )
+                    _vc_norm = _re.sub(r'[^\uac00-\ud7a3]', '', _vc_title).lower()
+                    for _sr in search_results:
+                        _sr_combined = (
+                            ((_sr.get('title') or '') + ' '
+                             + (_sr.get('content') or _sr.get('snippet') or ''))
+                        ).lower()
+                        if _vc_norm not in _sr_combined.replace(' ', ''):
+                            continue
+                        for _sw in _re.findall(r'[\uac00-\ud7a3]{2,}', _sr_combined):
+                            _cand_words.add(_sw)
+                    # 약어 자체 단어 제거
+                    _cand_words.discard(_orig_norm_ctx)
+
+                    _overlap = _context_words & _cand_words
+                    _ctx_score = len(_overlap) / max(len(_context_words), 1)
+                    if _ctx_score > _best_ctx_score:
+                        _best_ctx_score = _ctx_score
+                        _best_ctx_cand = (_vc_title, _vc_morph, _vc_src)
+                        _best_ctx_overlap = _overlap
+
+                # 맥락 적합도가 25% 이상이고, 현재 best보다 유리하면 승격
+                if _best_ctx_cand and _best_ctx_score >= 0.25:
+                    _boosted = min(0.50 + _best_ctx_score * 0.45, 0.90)
+                    if _boosted > best_score or (
+                        _boosted >= best_score and best_source
+                        and best_source.startswith("title_")
+                    ):
+                        print(
+                            f"[{_ts()}][{self.emoji}] 🎯 Verbatim 맥락 재선별: "
+                            f"'{original}' → '{_best_ctx_cand[0]}' "
+                            f"(context_fit={_best_ctx_score:.2f}, overlap={_best_ctx_overlap}, "
+                            f"boosted={_boosted:.2f} > prev={best_score:.2f})",
+                            file=sys.stderr,
+                        )
+                        best_title = _best_ctx_cand[0]
+                        best_score = _boosted
+                        best_source = f"verbatim_context({_best_ctx_cand[2]})"
+                    else:
+                        print(
+                            f"[{_ts()}][{self.emoji}] ℹ️ Verbatim 맥락 후보: "
+                            f"'{_best_ctx_cand[0]}' "
+                            f"(ctx={_best_ctx_score:.2f}, boosted={_boosted:.2f}) "
+                            f"≤ current({best_title}, {best_score:.2f})",
+                            file=sys.stderr,
+                        )
+
         # 🆕 BUG-6: rescue 후보의 출처 검증 — 소설 플랫폼 도메인이 아니면 거부
         _NOVEL_PLATFORM_DOMAINS = (
             "novelpia.com", "munpia.com", "series.naver.com", "page.kakao.com",
@@ -3421,6 +4902,47 @@ class DecoderExpert:
             # (제목 매치뿐 아니라 content/페치 보강 본문 매치까지 허용)
             has_novel_platform_src = False
             _best_norm = _re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', best_title).lower()
+
+            # 🆕 Phase34.5: best_title에서 핵심 제목 추출 (커뮤니티 접미사 제거)
+            # "'사이버펑크 속 드래곤이 되었다' 표지 - 웹툰/웹소설/만화"
+            # → 핵심 norm = "사이버펑크속드래곤이되었다" (따옴표+접미어 제거)
+            _core_norms: dict[str, str] = {}  # norm → clean_title
+            # (1) 따옴표/괄호 내부 텍스트 추출
+            _QUOTED_CORE_RE = _re.compile(
+                r"[\u2018\u201C\u300E\u300C\u3010'\"]"
+                r"([\uac00-\ud7a3A-Za-z0-9\s]{3,40}?)"
+                r"[\u2019\u201D\u300F\u300D\u3011'\"]"
+            )
+            for _qm in _QUOTED_CORE_RE.finditer(best_title):
+                _core = _qm.group(1).strip()
+                if len(_core) >= 3:
+                    _c_norm = _re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', _core).lower()
+                    if _c_norm and _c_norm != _best_norm:
+                        _core_norms[_c_norm] = _core
+            # (2) 커뮤니티 접미사 제거: 표지/후기/리뷰/감상 + "- 웹툰/웹소설/만화" 등
+            _stripped = _re.sub(
+                r"\s*[-\u2013\u2014]\s*(?:웹툰|웹소설|만화|에펨코리아|루리웹|아카라이브|fmkorea).*$",
+                "", best_title, flags=_re.IGNORECASE,
+            ).strip()
+            _stripped = _re.sub(
+                r"\s+(?:표지|후기|리뷰|감상문?|독후감|스포일러|스포)\s*$",
+                "", _stripped,
+            ).strip()
+            # 바깥 따옴표 제거
+            _stripped = _re.sub(
+                r"^[\u2018\u201C\u300E\u300C\u3010'\"]|[\u2019\u201D\u300F\u300D\u3011'\"]$",
+                "", _stripped,
+            ).strip()
+            if len(_stripped) >= 3:
+                _s_norm = _re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', _stripped).lower()
+                if _s_norm and _s_norm != _best_norm and _s_norm not in _core_norms:
+                    _core_norms[_s_norm] = _stripped
+
+            # 모든 후보 norm 통합: 원문 + 핵심 추출분
+            _all_norms: list[tuple[str, str | None]] = [(_best_norm, None)]
+            for _cn, _ct in _core_norms.items():
+                _all_norms.append((_cn, _ct))
+
             for sr in search_results:
                 sr_url = str(sr.get("url", "") or "")
                 if not any(d in sr_url.lower() for d in _NOVEL_PLATFORM_DOMAINS):
@@ -3429,8 +4951,19 @@ class DecoderExpert:
                 sr_content_raw = str(sr.get("content") or sr.get("snippet") or "")
                 sr_title_norm = _re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', sr_title_raw).lower()
                 sr_content_norm = _re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', sr_content_raw).lower()
-                if _best_norm and (_best_norm in sr_title_norm or _best_norm in sr_content_norm):
-                    has_novel_platform_src = True
+                for _cn, _ct in _all_norms:
+                    if _cn and (_cn in sr_title_norm or _cn in sr_content_norm):
+                        has_novel_platform_src = True
+                        # 핵심 norm으로 매칭되었으면 best_title을 정제된 제목으로 갱신
+                        if _ct is not None:
+                            print(
+                                f"[{_ts()}][{self.emoji}] ✅ Rescue 핵심제목 추출: "
+                                f"'{best_title}' → '{_ct}' (platform={sr_url[:60]})",
+                                file=sys.stderr,
+                            )
+                            best_title = _ct
+                        break
+                if has_novel_platform_src:
                     break
             # URL 페치 보강(structured_info/text_preview)까지 확인
             if not has_novel_platform_src and ctx is not None:
@@ -3449,8 +4982,18 @@ class DecoderExpert:
                         str(fe.get("text_preview") or ""),
                     ])
                     fe_norm = _re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', fe_blob).lower()
-                    if _best_norm and _best_norm in fe_norm:
-                        has_novel_platform_src = True
+                    for _cn, _ct in _all_norms:
+                        if _cn and _cn in fe_norm:
+                            has_novel_platform_src = True
+                            if _ct is not None:
+                                print(
+                                    f"[{_ts()}][{self.emoji}] ✅ Rescue 핵심제목 추출(fetch): "
+                                    f"'{best_title}' → '{_ct}' (url={fe_url[:60]})",
+                                    file=sys.stderr,
+                                )
+                                best_title = _ct
+                            break
+                    if has_novel_platform_src:
                         break
             if not has_novel_platform_src:
                 # 커뮤니티 글 제목을 소설 제목으로 오인하는 것 방지
@@ -3532,7 +5075,13 @@ class DecoderExpert:
         if not isinstance(title, str):
             return False
         norm = _re.sub(r"[^\w가-힣]", "", title).lower()
-        return norm in cls._PLATFORM_BRANDING_NORMS
+        if norm in cls._PLATFORM_BRANDING_NORMS:
+            return True
+        raw = str(title).strip()
+        # 비소설 이벤트/스포츠 명칭 오염 (대문자 약어 + ...시리즈/리그/컵)
+        if _re.match(r"^[A-Z]{2,6}\s*[가-힣A-Za-z]{1,12}(?:시리즈|리그|컵)\s*$", raw):
+            return True
+        return False
 
     def _clean_search_result_title(self, raw_title: str) -> list[str]:
         """검색 결과 제목에서 사이트명/게시판 접두어를 정제하여 작품명 후보 목록 반환.
@@ -3623,6 +5172,23 @@ class DecoderExpert:
             if after_colon and after_colon not in results and 3 <= len(after_colon) <= 50:
                 results.append(after_colon)
 
+        # 🆕 Phase34.5: 인용 부호 내 제목 추출
+        # "'사이버펑크 속 드래곤이 되었다' 표지 - 웹툰/웹소설/만화"
+        # → "사이버펑크 속 드래곤이 되었다" (핵심 작품명)
+        _QUOTED_TITLE_RE = _re.compile(
+            r"[\u2018\u201C\u300E\u300C\u3010'\"]"   # 열림 따옴표
+            r"([\uac00-\ud7a3A-Za-z0-9\s]{3,40}?)"   # 작품명 (한글/영문/숫자/공백)
+            r"[\u2019\u201D\u300F\u300D\u3011'\"]"    # 닫힘 따옴표
+        )
+        for _qm in _QUOTED_TITLE_RE.finditer(raw_title):
+            _quoted = _qm.group(1).strip()
+            if (
+                3 <= len(_quoted) <= 40
+                and not self._is_platform_branding_title(_quoted)
+                and _quoted not in results
+            ):
+                results.append(_quoted)
+
         return results
 
     def _extract_title_candidates_from_text(
@@ -3637,10 +5203,31 @@ class DecoderExpert:
         3. 장르 접두사 + 작품명 (munpia 검색 페이지)
         4. Kiwi 명사 2~4개 연결 구문
         """
+        def _sanitize_candidate(cand: str) -> str:
+            c = _re.sub(r"\s+", " ", str(cand or "")).strip(" -|:;,.[]()'\"")
+            if not c:
+                return ""
+            if len(c) < 3 or len(c) > 30:
+                return ""
+            # 설명문/리뷰 꼬리로 보이는 문장형 후보 차단
+            if c.count(" ") >= 6:
+                return ""
+            if any(ch in c for ch in ("\n", "\t")):
+                return ""
+            sentence_like_tokens = (
+                "작가", "리뷰", "후기", "독후감", "감상", "추천",
+                "있는데", "보면", "합니다", "입니다", "했는데", "라고",
+            )
+            if any(tok in c for tok in sentence_like_tokens):
+                # 단어 수가 충분히 짧은 경우(예: 제목 자체에 일반어 포함)는 허용
+                if len(c.split()) > 4:
+                    return ""
+            return c
+
         # 패턴 1: "제목 그대로 X"
         for m in _re.finditer(r'제목\s*그대로\s+(.+?)(?:인|의|을|를|이|가|에)\s', text):
-            cand = m.group(1).strip()
-            if 3 <= len(cand) <= 30:
+            cand = _sanitize_candidate(m.group(1))
+            if cand:
                 pool.append(cand)
 
         # 패턴 2: "문피아에 X란" / "X란 소설"
@@ -3648,8 +5235,8 @@ class DecoderExpert:
             r'(?:문피아|노벨피아|카카오페이지|네이버시리즈|조아라)(?:에)?\s+(.+?)'
             r'(?:란|라는|이란|이라는|\.)', text
         ):
-            cand = m.group(1).strip()
-            if 3 <= len(cand) <= 30:
+            cand = _sanitize_candidate(m.group(1))
+            if cand:
                 pool.append(cand)
 
         # 패턴 3: munpia 검색 페이지 장르 접두사
@@ -3663,18 +5250,665 @@ class DecoderExpert:
                 rf'{genre}\.\s*(?:NEW\s*)?(.+?)(?:\.\s*총\s*\d+화|\.\s*\d+|$)',
                 text, _re.DOTALL,
             ):
-                cand = _re.sub(r'[.\s]+$', '', m.group(1)).strip()
-                if 3 <= len(cand) <= 30:
+                cand = _sanitize_candidate(_re.sub(r'[.\s]+$', '', m.group(1)))
+                if cand:
                     pool.append(cand)
 
         # 패턴 4: Kiwi 명사 연결 (후보 제목 내 명사 추출)
         nouns = kiwi_nouns(self._kiwi, text)
-        # 인접 명사 2~3개 연결을 후보로 추가
         for wlen in range(2, min(4, len(nouns) + 1)):
             for start in range(len(nouns) - wlen + 1):
-                phrase = " ".join(nouns[start:start + wlen])
-                if 4 <= len(phrase) <= 25:
+                phrase = _sanitize_candidate(" ".join(nouns[start:start + wlen]))
+                if phrase and 4 <= len(phrase) <= 25:
                     pool.append(phrase)
+
+    def _score_resolved_mapping_candidate(
+        self,
+        ctx: Any,
+        abbrev: str,
+        full: str,
+        sources: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        """약칭 주입 전, 후보 정식명을 검색/증거 버킷 기준으로 재평가한다."""
+        abbrev = str(abbrev or "").strip()
+        full = str(full or "").strip()
+        source_list = [str(s or "").strip() for s in (sources or []) if str(s or "").strip()]
+        abbr_norm = _normalize_alnum_kor_cached(abbrev)
+        full_norm = _normalize_alnum_kor_cached(full)
+        if not abbr_norm or not full_norm:
+            return {
+                "title": full,
+                "score": -99.0,
+                "abbr_score": 0.0,
+                "source_bonus": 0.0,
+                "official_title_hits": 0,
+                "search_hit_count": 0,
+                "alias_joint_hits": 0,
+                "bucket_score": 0,
+                "official_url_count": 0,
+                "official_search_hits": 0,
+                "wiki_search_hits": 0,
+                "domain_conflict": False,
+                "low_specific_abbrev": False,
+                "sources": source_list,
+            }
+
+        source_bonus_map = {
+            "known_abbreviation": 3.2,
+            "url_fetch_platform": 2.6,
+            "platform_title": 2.3,
+            "llm_snippet": 2.1,
+            "author_bridge": 1.8,
+            "snippet_hint": 1.3,
+            "unknown": 1.0,
+        }
+
+        def _candidate_bucket() -> Dict[str, List[Any]]:
+            bucket = {}
+            try:
+                if hasattr(ctx, "get_candidate_evidence"):
+                    bucket = ctx.get_candidate_evidence(full) or {}
+            except Exception:
+                bucket = {}
+            if bucket:
+                return bucket
+            store = getattr(ctx, "candidate_evidence", None) or {}
+            if not isinstance(store, dict):
+                return {}
+            for key, value in store.items():
+                if _normalize_alnum_kor_cached(key) == full_norm and isinstance(value, dict):
+                    return value
+            return {}
+
+        def _uniq_count(items: Any) -> int:
+            if not isinstance(items, list):
+                return 0
+            seen = set()
+            for item in items:
+                key = str(item or "").strip()
+                if key:
+                    seen.add(key)
+            return len(seen)
+
+        def _has_strong_author_signal_for_abbrev() -> bool:
+            snippet_hints = getattr(ctx, "snippet_hints", None) or {}
+            for hint in (snippet_hints.get("author_hints") or []):
+                if not isinstance(hint, dict):
+                    continue
+                name = str(hint.get("name") or "").strip()
+                if _normalize_alnum_kor_cached(name) == abbr_norm:
+                    return True
+
+            llm_snippet = getattr(ctx, "llm_snippet_analysis", None) or {}
+            for role_hint in (llm_snippet.get("entity_role_hints") or []):
+                if not isinstance(role_hint, dict):
+                    continue
+                role = str(role_hint.get("role") or "").strip().lower()
+                if role not in {"author_name", "author_alias"}:
+                    continue
+                confidence = str(role_hint.get("confidence") or "").strip().lower()
+                if confidence not in {"high", "medium"}:
+                    continue
+                for raw in (
+                    role_hint.get("term"),
+                    role_hint.get("resolved_to"),
+                    role_hint.get("author"),
+                ):
+                    if _normalize_alnum_kor_cached(str(raw or "").strip()) == abbr_norm:
+                        return True
+
+            gk_result = getattr(ctx, "gatekeeper_result", None) or {}
+            gk_entities = (gk_result.get("detected_entities") or {}) if isinstance(gk_result, dict) else {}
+            for author in (gk_entities.get("possible_authors") or []):
+                if _normalize_alnum_kor_cached(str(author or "").strip()) == abbr_norm:
+                    return True
+            return False
+
+        def _has_explicit_work_alias_signal() -> bool:
+            llm_snippet = getattr(ctx, "llm_snippet_analysis", None) or {}
+            for role_hint in (llm_snippet.get("entity_role_hints") or []):
+                if not isinstance(role_hint, dict):
+                    continue
+                role = str(role_hint.get("role") or "").strip().lower()
+                if role not in {"work_alias", "work_title_alias", "explicit_work_alias"}:
+                    continue
+                confidence = str(role_hint.get("confidence") or "").strip().lower()
+                if confidence not in {"high", "medium"}:
+                    continue
+                term_norm = _normalize_alnum_kor_cached(str(role_hint.get("term") or "").strip())
+                resolved_norm = _normalize_alnum_kor_cached(str(role_hint.get("resolved_to") or "").strip())
+                if term_norm == abbr_norm and resolved_norm == full_norm:
+                    return True
+            return False
+
+        official_titles = self._extract_official_titles_from_search(ctx) if ctx else []
+        official_title_urls = set()
+        for ot in official_titles or []:
+            if not isinstance(ot, dict):
+                continue
+            ot_title = str(ot.get("title") or "").strip()
+            if _normalize_alnum_kor_cached(ot_title) == full_norm:
+                _url = str(ot.get("url") or "").strip()
+                if _url:
+                    official_title_urls.add(_url)
+        official_title_hits = len(official_title_urls)
+
+        search_hit_count = 0
+        alias_joint_hits = 0
+        official_search_hits = 0
+        wiki_search_hits = 0
+        derivative_search_hits = 0
+        search_seen = set()
+        for sr in (getattr(ctx, "search_results", None) or []):
+            if not isinstance(sr, dict):
+                continue
+            sr_title = str(sr.get("title") or "").strip()
+            sr_content = str(sr.get("content") or sr.get("snippet") or "").strip()
+            sr_blob = f"{sr_title} {sr_content}".strip()
+            sr_blob_norm = _normalize_alnum_kor_cached(sr_blob)
+            if not sr_blob_norm:
+                continue
+            matched = full_norm in sr_blob_norm
+            if not matched and sr_title:
+                for cand in self._clean_search_result_title(sr_title):
+                    if _normalize_alnum_kor_cached(cand) == full_norm:
+                        matched = True
+                        break
+            if not matched:
+                continue
+            sr_url = str(sr.get("url") or "").strip()
+            sr_key = _normalize_alnum_kor_cached(sr_url) or sr_blob_norm
+            if sr_key in search_seen:
+                continue
+            search_seen.add(sr_key)
+            search_hit_count += 1
+            if abbr_norm and abbr_norm in sr_blob_norm:
+                alias_joint_hits += 1
+            sr_url_lower = sr_url.lower()
+            if any(p in sr_url_lower for p in OFFICIAL_PLATFORMS):
+                official_search_hits += 1
+            if "namu.wiki" in sr_url_lower or "thewiki.kr" in sr_url_lower:
+                wiki_search_hits += 1
+            if sr.get("_is_derivative"):
+                derivative_search_hits += 1
+
+        bucket = _candidate_bucket()
+        bucket_score = (
+            (_uniq_count(bucket.get("post_spans")) * 2)
+            + _uniq_count(bucket.get("search_snippets"))
+            + (_uniq_count(bucket.get("official_urls")) * 3)
+        )
+        official_url_count = _uniq_count(bucket.get("official_urls"))
+        post_span_count = _uniq_count(bucket.get("post_spans"))
+        snippet_bucket_count = _uniq_count(bucket.get("search_snippets"))
+
+        domain_conflict = _has_domain_conflict_for_mapping(abbrev, full)
+        abbr_score = abbreviation_match_score(abbrev, full)
+        low_specific_abbrev = self._is_low_specificity_mapping_abbrev(abbrev, full_title=full)
+        derivative_title_like = bool(
+            re.search(
+                r"[\[\]<>]|(?:\b|[가-힣])x(?:\b|[가-힣])|크로스오버|세계관|팬픽|팬아트|리메이크|외전|패러디|도플갱어|전독시",
+                str(full or ""),
+                re.IGNORECASE,
+            )
+        )
+        author_contamination = _has_strong_author_signal_for_abbrev()
+        explicit_work_alias_signal = _has_explicit_work_alias_signal()
+        source_bonus = 0.0
+        if source_list:
+            source_bonus = max(source_bonus_map.get(src, source_bonus_map["unknown"]) for src in source_list)
+            source_bonus += 0.2 * max(0, len(set(source_list)) - 1)
+
+        score = 0.0
+        score += source_bonus
+        score += abbr_score * 2.8
+        score += official_title_hits * 2.8
+        score += official_url_count * 1.8
+        score += official_search_hits * 1.3
+        score += wiki_search_hits * 1.0
+        score += min(search_hit_count, 8) * 0.9
+        score += min(alias_joint_hits, 6) * 0.8
+        score += min(bucket_score, 10) * 0.7
+        score += min(post_span_count, 4) * 0.8
+        score += min(snippet_bucket_count, 4) * 0.4
+        if low_specific_abbrev:
+            score -= 3.2
+            if official_title_hits <= 0 and official_url_count <= 0:
+                score -= 1.8
+            if search_hit_count < 2:
+                score -= 0.8
+
+        if len(full_norm) <= len(abbr_norm):
+            score -= 1.5
+        if not official_title_hits and not official_url_count and search_hit_count <= 1:
+            score -= 1.5
+        if domain_conflict:
+            score -= 4.0
+        if derivative_search_hits > 0:
+            score -= 3.4 + (0.4 * max(0, derivative_search_hits - 1))
+        if derivative_title_like:
+            score -= 2.2
+            if official_title_hits <= 0 and official_url_count <= 0:
+                score -= 1.2
+        if author_contamination and not explicit_work_alias_signal:
+            score -= 4.6
+            if official_title_hits <= 1 and official_url_count <= 0 and post_span_count <= 0 and alias_joint_hits <= 1:
+                score -= 2.4
+
+        return {
+            "title": full,
+            "score": round(score, 3),
+            "abbr_score": round(abbr_score, 3),
+            "source_bonus": round(source_bonus, 3),
+            "official_title_hits": official_title_hits,
+            "search_hit_count": search_hit_count,
+            "alias_joint_hits": alias_joint_hits,
+            "bucket_score": bucket_score,
+            "official_url_count": official_url_count,
+            "official_search_hits": official_search_hits,
+            "wiki_search_hits": wiki_search_hits,
+            "derivative_search_hits": derivative_search_hits,
+            "derivative_title_like": derivative_title_like,
+            "post_span_count": post_span_count,
+            "snippet_bucket_count": snippet_bucket_count,
+            "domain_conflict": domain_conflict,
+            "low_specific_abbrev": low_specific_abbrev,
+            "author_contamination": author_contamination,
+            "explicit_work_alias_signal": explicit_work_alias_signal,
+            "sources": sorted(set(source_list)),
+        }
+
+    def _is_low_specificity_mapping_abbrev(
+        self,
+        abbrev: str,
+        *,
+        full_title: Optional[str] = None,
+    ) -> bool:
+        raw = str(abbrev or "").strip()
+        if not raw:
+            return True
+
+        norm = _normalize_alnum_kor_cached(raw)
+        if not norm or len(norm) <= 1:
+            return True
+
+        generic_fragments = (
+            "정식제목", "작품명", "작가", "후기", "리뷰", "장르", "뜻", "무슨소설", "어디나오는",
+            "웹소설", "신작", "최신작", "전개", "내용", "주인공", "캐릭터",
+        )
+        if any(frag in norm for frag in generic_fragments):
+            return True
+
+        low_specific_suffixes = (
+            "은", "는", "이", "가", "을", "를", "의", "도", "만", "에", "와", "과", "로",
+            "인", "임", "다", "요", "냐", "까", "네", "군", "함", "됨", "중",
+        )
+        stripped_norm = norm
+        for sfx in low_specific_suffixes:
+            if len(stripped_norm) > len(sfx) + 1 and stripped_norm.endswith(sfx):
+                stripped_norm = stripped_norm[: -len(sfx)]
+                break
+
+        generic_stems = {
+            "이제", "이제는", "지금", "오늘", "이번", "그냥", "진짜", "가자",
+            "됐다", "되었다", "예감", "무슨", "어디", "나오는", "저거", "이거",
+            "불륜", "순애", "하렘", "ntr", "ts", "bl", "gl", "백합",
+            "제정신", "농이", "장르", "후기", "리뷰", "작품", "작가",
+        }
+        generic_stems.update(
+            _normalize_alnum_kor_cached(t)
+            for t in GENRE_ARCHETYPE_TERMS
+            if isinstance(t, str) and t.strip()
+        )
+        if norm in generic_stems or stripped_norm in generic_stems:
+            return True
+        if is_genre_물_pattern(raw) or (stripped_norm and is_genre_물_pattern(stripped_norm)):
+            return True
+        if len(norm) <= 6 and any(norm.endswith(sfx) for sfx in low_specific_suffixes):
+            return True
+
+        full_norm = _normalize_alnum_kor_cached(full_title or "")
+        if full_norm and norm == full_norm:
+            return False
+        if (
+            full_norm
+            and stripped_norm
+            and stripped_norm in full_norm
+            and len(stripped_norm) <= max(4, len(full_norm) // 3)
+            and (
+                stripped_norm in generic_stems
+                or len(norm) <= 6
+                or any(norm.endswith(sfx) for sfx in low_specific_suffixes)
+            )
+        ):
+            return True
+        return False
+
+    def _is_derivative_or_variant_title(
+        self,
+        base_title: str,
+        candidate_title: str,
+    ) -> bool:
+        """
+        원작 canonical title 위에 덧붙은 파생작/패러디/외전형 제목인지 느슨하게 판별한다.
+        예:
+        - "괴담 동아리" -> "[괴담동아리] 괴담 메이커"
+        - "괴담 동아리" -> "괴담동아리 if"
+        - "괴담 동아리" -> "괴담동아리 세계에 전생했다"
+        """
+        base_raw = str(base_title or "").strip()
+        cand_raw = str(candidate_title or "").strip()
+        if not base_raw or not cand_raw or base_raw == cand_raw:
+            return False
+
+        base_norm = _normalize_alnum_kor_cached(base_raw)
+        cand_norm = _normalize_alnum_kor_cached(cand_raw)
+        if not base_norm or not cand_norm or base_norm == cand_norm:
+            return False
+        if base_norm not in cand_norm:
+            return False
+
+        remainder = cand_norm.replace(base_norm, "", 1)
+        if len(remainder) < 2:
+            return False
+
+        cand_compact = re.sub(r"\s+", "", cand_raw).lower()
+        base_compact = re.sub(r"\s+", "", base_raw).lower()
+        if not base_compact or base_compact == cand_compact:
+            return False
+
+        derivative_markers = (
+            "if", "외전", "패러디", "빙의", "환생", "전생", "세계", "속",
+            "메이커", "표절", "작가", "조력자", "리메이크", "스핀오프",
+            "팬아트", "팬픽", "이미지", "짤", "리뷰", "분석", "감상", "후기",
+            "괴담", "시즌", "세계관", "마왕", "주인공", "겨울",
+            "크로스오버", "crossover",
+        )
+        if any(marker in cand_compact for marker in derivative_markers):
+            return True
+        if cand_raw.startswith("[") and "]" in cand_raw:
+            return True
+        if len(cand_norm) >= len(base_norm) + 4:
+            return True
+        return False
+
+    def _refine_resolved_mappings(
+        self,
+        ctx: Any,
+        mapping_entries: List[Dict[str, Any]],
+    ) -> List[tuple[str, str]]:
+        """같은 약칭의 경쟁 후보 중 검색/공식 근거가 더 강한 제목만 주입한다."""
+        discourse_warning = str(getattr(ctx, "discourse_warning", "") or "").lower()
+        llm_snippet_result = getattr(ctx, "llm_snippet_analysis", None) or {}
+        snippet_category = str(llm_snippet_result.get("identified_category") or "").lower().strip()
+        snippet_intent = str(llm_snippet_result.get("post_intent") or "").lower().strip()
+        gk_result = getattr(ctx, "gatekeeper_result", None) or {}
+        gk_post_type = str(gk_result.get("post_type") or "").lower().strip()
+        genre_generalization_context = bool(
+            (
+                discourse_warning
+                and any(
+                    marker in discourse_warning
+                    for marker in (
+                        "genre_discussion",
+                        "trope_discussion",
+                        "genre_opinion",
+                        "community_banter",
+                        "title_body_mismatch",
+                        "incoherent_post",
+                    )
+                )
+            )
+            or snippet_category == "genre_discussion"
+            or snippet_intent == "genre_discussion"
+            or gk_post_type in {"genre_discussion", "trope_discussion", "genre_opinion"}
+        )
+
+        grouped: Dict[str, Dict[str, Dict[str, Any]]] = {}
+        for entry in mapping_entries or []:
+            if not isinstance(entry, dict):
+                continue
+            abbrev = str(entry.get("abbrev") or "").strip()
+            full = str(entry.get("full") or "").strip()
+            source = str(entry.get("source") or "unknown").strip() or "unknown"
+            abbr_norm = _normalize_alnum_kor_cached(abbrev)
+            full_norm = _normalize_alnum_kor_cached(full)
+            if not abbr_norm or not full_norm:
+                continue
+            grouped.setdefault(abbr_norm, {})
+            bucket = grouped[abbr_norm].setdefault(
+                full_norm,
+                {"abbrev": abbrev, "full": full, "sources": set()},
+            )
+            # 더 정보량 큰 표기를 유지
+            if len(_normalize_alnum_kor_cached(full)) > len(_normalize_alnum_kor_cached(bucket["full"])):
+                bucket["full"] = full
+            if len(_normalize_alnum_kor_cached(abbrev)) > len(_normalize_alnum_kor_cached(bucket["abbrev"])):
+                bucket["abbrev"] = abbrev
+            bucket["sources"].add(source)
+
+        refined: List[tuple[str, str]] = []
+        for abbr_norm, candidate_map in grouped.items():
+            scored: List[Dict[str, Any]] = []
+            for candidate in candidate_map.values():
+                eval_info = self._score_resolved_mapping_candidate(
+                    ctx,
+                    candidate["abbrev"],
+                    candidate["full"],
+                    sources=sorted(candidate["sources"]),
+                )
+                eval_info["abbrev"] = candidate["abbrev"]
+                scored.append(eval_info)
+
+            scored.sort(
+                key=lambda x: (
+                    float(x.get("score", 0.0)),
+                    int(x.get("official_title_hits", 0)),
+                    int(x.get("bucket_score", 0)),
+                    int(x.get("search_hit_count", 0)),
+                    len(_normalize_alnum_kor_cached(x.get("title", ""))),
+                ),
+                reverse=True,
+            )
+            if not scored:
+                continue
+
+            top = scored[0]
+            second = scored[1] if len(scored) > 1 else None
+
+            def _looks_derivativeish_mapping_title(title: str) -> bool:
+                raw = str(title or "").strip()
+                norm = _normalize_alnum_kor_cached(raw)
+                if not raw or not norm:
+                    return False
+                if (
+                    "[" in raw or "]" in raw
+                    or re.search(
+                        r"(?:\b|[가-힣])x(?:\b|[가-힣])|크로스오버|세계관|팬픽|팬아트|리메이크|외전|패러디|도플갱어|전독시",
+                        raw,
+                        re.IGNORECASE,
+                    )
+                ):
+                    return True
+                if abbr_norm and abbr_norm in norm and len(norm) >= len(abbr_norm) + 4:
+                    return True
+                return False
+
+            if bool(top.get("derivative_title_like")) or _looks_derivativeish_mapping_title(top.get("title") or ""):
+                replacement = None
+                for cand in scored[1:]:
+                    cand_title = str(cand.get("title") or "").strip()
+                    cand_norm = _normalize_alnum_kor_cached(cand_title)
+                    cand_official_total = (
+                        int(cand.get("official_title_hits", 0))
+                        + int(cand.get("official_url_count", 0))
+                        + int(cand.get("official_search_hits", 0))
+                        + int(cand.get("wiki_search_hits", 0))
+                    )
+                    cand_structural = int(cand.get("bucket_score", 0)) + int(cand.get("post_span_count", 0))
+                    cand_abbr_score = float(cand.get("abbr_score", 0.0))
+                    cand_derivativeish = bool(cand.get("derivative_title_like")) or _looks_derivativeish_mapping_title(cand_title)
+                    if cand_derivativeish:
+                        continue
+                    if not cand_title or not cand_norm:
+                        continue
+                    if cand_official_total <= 0 and cand_structural <= 0:
+                        continue
+                    if cand_abbr_score < 0.35 and (not abbr_norm or abbr_norm not in cand_norm):
+                        continue
+                    if float(cand.get("score", 0.0)) < 3.0:
+                        continue
+                    replacement = cand
+                    break
+                if replacement:
+                    print(
+                        f"[{_ts()}][{self.emoji}] 🛡️ resolved_mapping canonical 승격(파생작 억제): "
+                        f"'{top.get('abbrev')}' top='{top.get('title')}' "
+                        f"→ canonical='{replacement.get('title')}'",
+                        file=sys.stderr,
+                    )
+                    top = replacement
+                    second = None
+
+            gap = float(top.get("score", 0.0)) - float((second or {}).get("score", 0.0))
+            top_source_diversity = len(set(top.get("sources") or []))
+            second_source_diversity = len(set((second or {}).get("sources") or []))
+            top_support = (
+                int(top.get("official_title_hits", 0))
+                + int(top.get("official_url_count", 0))
+                + int(top.get("bucket_score", 0))
+            )
+            second_support = (
+                int((second or {}).get("official_title_hits", 0))
+                + int((second or {}).get("official_url_count", 0))
+                + int((second or {}).get("bucket_score", 0))
+            )
+            top_official_total = (
+                int(top.get("official_title_hits", 0))
+                + int(top.get("official_url_count", 0))
+                + int(top.get("official_search_hits", 0))
+                + int(top.get("wiki_search_hits", 0))
+            )
+            second_official_total = (
+                int((second or {}).get("official_title_hits", 0))
+                + int((second or {}).get("official_url_count", 0))
+                + int((second or {}).get("official_search_hits", 0))
+                + int((second or {}).get("wiki_search_hits", 0))
+            )
+
+            if float(top.get("score", 0.0)) < 3.0:
+                print(
+                    f"[{_ts()}][{self.emoji}] ⏭️ resolved_mapping 보류(근거 약함): "
+                    f"'{top.get('abbrev')}' 후보='{top.get('title')}' "
+                    f"(score={float(top.get('score', 0.0)):.2f})",
+                    file=sys.stderr,
+                )
+                continue
+
+            if bool(top.get("low_specific_abbrev")):
+                _top_official_support = (
+                    int(top.get("official_title_hits", 0))
+                    + int(top.get("official_url_count", 0))
+                    + int(top.get("official_search_hits", 0))
+                    + int(top.get("wiki_search_hits", 0))
+                )
+                _second_score = float((second or {}).get("score", 0.0))
+                _second_title = str((second or {}).get("title") or "")
+                if (
+                    _top_official_support <= 0
+                    and int(top.get("search_hit_count", 0)) < 3
+                ) or (
+                    second
+                    and len(_normalize_alnum_kor_cached(_second_title)) > len(_normalize_alnum_kor_cached(str(top.get("title") or "")))
+                    and float(top.get("score", 0.0)) <= (_second_score + 1.2)
+                ):
+                    print(
+                        f"[{_ts()}][{self.emoji}] ⏭️ resolved_mapping 보류(저특이 약칭): "
+                        f"'{top.get('abbrev')}' 후보='{top.get('title')}' "
+                        f"(score={float(top.get('score', 0.0)):.2f}, official={_top_official_support})",
+                        file=sys.stderr,
+                    )
+                    continue
+
+            if genre_generalization_context:
+                _weak_contextual_mapping = (
+                    bool(top.get("low_specific_abbrev"))
+                    or len(_normalize_alnum_kor_cached(str(top.get("abbrev") or ""))) <= 4
+                    or len(_normalize_alnum_kor_cached(str(top.get("title") or ""))) <= 8
+                )
+                _support_is_thin = (
+                    top_official_total <= 1
+                    and int(top.get("bucket_score", 0)) <= 0
+                    and int(top.get("post_span_count", 0)) <= 0
+                    and int(top.get("alias_joint_hits", 0)) <= 1
+                )
+                if _weak_contextual_mapping and _support_is_thin:
+                    print(
+                        f"[{_ts()}][{self.emoji}] ⏭️ resolved_mapping 보류(장르 일반론 문맥): "
+                        f"'{top.get('abbrev')}' 후보='{top.get('title')}' "
+                        f"(official={top_official_total}, bucket={top.get('bucket_score', 0)}, "
+                        f"alias_joint={top.get('alias_joint_hits', 0)})",
+                        file=sys.stderr,
+                    )
+                    continue
+
+            if (
+                second
+                and gap < 1.4
+                and second_official_total >= top_official_total + 1
+                and second_source_diversity >= top_source_diversity
+                and int((second or {}).get("search_hit_count", 0)) >= int(top.get("search_hit_count", 0)) - 1
+            ):
+                print(
+                    f"[{_ts()}][{self.emoji}] ⏭️ resolved_mapping 보류(공식근거 경쟁): "
+                    f"'{top.get('abbrev')}' top='{top.get('title')}' "
+                    f"(score={float(top.get('score', 0.0)):.2f}, official={top_official_total}) vs "
+                    f"'{second.get('title')}' (score={float(second.get('score', 0.0)):.2f}, official={second_official_total})",
+                    file=sys.stderr,
+                )
+                continue
+
+            if (
+                second
+                and gap < 0.9
+                and top_support <= second_support + 1
+                and int(top.get("official_title_hits", 0)) <= int(second.get("official_title_hits", 0)) + 1
+            ):
+                print(
+                    f"[{_ts()}][{self.emoji}] ⏭️ resolved_mapping 보류(경쟁후보 근접): "
+                    f"'{top.get('abbrev')}' top='{top.get('title')}' "
+                    f"(score={float(top.get('score', 0.0)):.2f}) vs "
+                    f"'{second.get('title')}' (score={float(second.get('score', 0.0)):.2f})",
+                    file=sys.stderr,
+                )
+                continue
+
+            if (
+                bool(top.get("author_contamination"))
+                and not bool(top.get("explicit_work_alias_signal"))
+                and int(top.get("post_span_count", 0)) <= 0
+                and int(top.get("bucket_score", 0)) <= 0
+                and int(top.get("alias_joint_hits", 0)) <= 1
+                and float(top.get("abbr_score", 0.0)) < 0.45
+            ):
+                print(
+                    f"[{_ts()}][{self.emoji}] ⏭️ resolved_mapping 보류(작가명 오염): "
+                    f"'{top.get('abbrev')}' 후보='{top.get('title')}' "
+                    f"(score={float(top.get('score', 0.0)):.2f}, author_contamination=True)",
+                    file=sys.stderr,
+                )
+                continue
+
+            refined.append((str(top.get("abbrev") or "").strip(), str(top.get("title") or "").strip()))
+            print(
+                f"[{_ts()}][{self.emoji}] ✅ resolved_mapping 채택: "
+                f"'{top.get('abbrev')}' → '{top.get('title')}' "
+                f"(score={float(top.get('score', 0.0)):.2f}, "
+                f"official_titles={top.get('official_title_hits', 0)}, "
+                f"bucket={top.get('bucket_score', 0)}, search_hits={top.get('search_hit_count', 0)})",
+                file=sys.stderr,
+            )
+        return refined
     
     def _guard_platform_feature_as_title(self, result: Dict[str, Any], ctx: Any) -> Dict[str, Any]:
         """
@@ -3724,6 +5958,8 @@ class DecoderExpert:
                 best_match["title"] = None
                 best_match["confidence"] = "none"
             for cand in term.get("candidates", []):
+                if not isinstance(cand, dict):
+                    continue
                 cand["official_novel_title"] = None
 
         result["overall_confidence"] = "none"
@@ -3913,6 +6149,18 @@ class DecoderExpert:
                             if (char_overlap >= len(author_clean) * 0.6 
                                 and len(potential) > len(author_name)
                                 and potential != author_name):
+                                # 🛡️ Phase37 Fix: 작가명이 제목에 연속 부분문자열로 포함되면
+                                # 이것은 약칭 패턴이 아니라 '작가명 ⊂ 소설제목' 패턴
+                                # 예: "컵라면"(작가) → "컵라면 먹다가 게임 속으로 들어간 썰 푼다"
+                                # 이 경우 rescue하면 안 됨 (작가명≠약칭)
+                                if author_clean in potential_clean:
+                                    print(
+                                        f"[{_ts()}][{self.emoji}] 🛡️ 작가명=약칭 rescue P4 차단: "
+                                        f"'{author_name}' 이 '{potential}' 에 연속 부분문자열로 포함 "
+                                        f"→ 작가명⊂제목 패턴, 약칭 아님",
+                                        file=sys.stderr,
+                                    )
+                                    continue
                                 found_title = potential
                                 found_url = sr_url
                                 found_platform = next(
@@ -3921,6 +6169,27 @@ class DecoderExpert:
                                 )
                 
                 if found_title:
+                    # 🛡️ Phase37 통합 가드: 모든 패턴에 대해 "작가명⊂제목" 최종 검증
+                    # 작가명이 found_title에 연속 부분문자열로 포함되면 약칭이 아닌 작가명
+                    # 또한 1글자 오차 허용 (예: 컵라인 vs 컵라면 — 커뮤니티 오타 대응)
+                    _ft_clean = found_title.replace(" ", "").replace("[독점]", "").replace("[완결]", "")
+                    _author_is_in_title = author_clean in _ft_clean
+                    # 퍼지 접두사 검사: 작가명이 제목 시작부분과 1글자 이내 차이
+                    if not _author_is_in_title and len(author_clean) >= 2 and len(_ft_clean) >= len(author_clean):
+                        _prefix = _ft_clean[:len(author_clean)]
+                        _match_cnt = sum(1 for a, b in zip(author_clean, _prefix) if a == b)
+                        if _match_cnt >= len(author_clean) - 1:
+                            _author_is_in_title = True
+                    if _author_is_in_title:
+                        print(
+                            f"[{_ts()}][{self.emoji}] 🛡️ 작가명=약칭 rescue 통합차단: "
+                            f"'{author_name}' ⊂ '{found_title}' → 작가명이 제목에 포함, 약칭 아님",
+                            file=sys.stderr,
+                        )
+                        found_title = None
+                        found_url = None
+                        found_platform = None
+                        continue
                     break
             
             if found_title:
@@ -3954,6 +6223,134 @@ class DecoderExpert:
                     file=sys.stderr,
                 )
         
+        return result
+
+    def _detect_author_discussion(self, result: Dict[str, Any], ctx: Any) -> Dict[str, Any]:
+        """
+        🛡️ 작가 토론/비교 글 감지: 모든(또는 대부분) decoded_terms가 작가명이고
+        서로 다른 작가를 가리키며, 작품 약칭 해석의 context_fit이 약할 때
+        → 특정 작품이 아닌 '작가 비교/토론' 글로 판정.
+
+        예: 게시글 "싱숑이랑 퉁구스카랑 같은 말 하는거 아닌"
+          - "싱숑" → author_name (context_fit=high), 작품약칭 (context_fit=medium)
+          - "퉁구스카" → author_name (context_fit=high), 작품약칭 (context_fit=medium)
+          → 두 작가의 행동을 비교하는 글. 특정 1개 작품이 주제가 아님.
+
+        처리:
+        - best_match.title → null (특정 작품 비매칭)
+        - result["author_discussion"] = True
+        - overall_confidence → "low"
+        - notes에 작가 토론 감지 기록
+        """
+        decoded_terms = result.get("decoded_terms", [])
+        if not decoded_terms or len(decoded_terms) < 2:
+            return result
+
+        # 각 term이 작가명인지 / 작가명 해석이 primary인지 판별
+        author_terms = []
+        non_author_terms = []
+        for term in decoded_terms:
+            if not isinstance(term, dict):
+                continue
+            is_author = term.get("is_author_name", False)
+            interps = term.get("interpretations", [])
+
+            # LLM이 is_author_name=false로 설정했더라도
+            # interpretations에서 author_name이 context_fit=high/medium이면 작가 후보
+            author_interp_fit = None
+            work_interp_fit = None
+            for interp in interps:
+                if not isinstance(interp, dict):
+                    continue
+                itype = interp.get("type", "")
+                fit = interp.get("context_fit", "").lower()
+                if itype == "author_name":
+                    if fit in ("high", "medium"):
+                        author_interp_fit = fit
+                elif itype in (
+                    "novel_title_abbreviation", "work_abbreviation",
+                    "novel_abbreviation", "abbreviation", "title_abbreviation",
+                ):
+                    if fit in ("high", "medium"):
+                        work_interp_fit = fit
+
+            # 작가 해석이 primary (author_name 해석 >= work 해석)
+            _author_primary = False
+            if is_author:
+                _author_primary = True
+            elif author_interp_fit == "high" and work_interp_fit != "high":
+                _author_primary = True
+            elif author_interp_fit == "high" and work_interp_fit == "high":
+                # 둘 다 high일 때 — interpretations 순서로 판단
+                # 첫 번째 해석이 author_name이면 작가 primary
+                for interp in interps:
+                    if isinstance(interp, dict):
+                        first_type = interp.get("type", "")
+                        if first_type == "author_name":
+                            _author_primary = True
+                        break
+
+            if _author_primary:
+                author_terms.append(term)
+            else:
+                non_author_terms.append(term)
+
+        # 조건: 작가 term이 2개 이상이고, 비-작가 term이 없어야 함
+        if len(author_terms) < 2 or len(non_author_terms) > 0:
+            return result
+
+        # 추가 조건: 서로 다른 작가를 가리키는지 확인
+        # (같은 작가명의 다른 표기라면 작가 토론이 아님)
+        author_names = set()
+        author_works = set()
+        for term in author_terms:
+            original = (term.get("original") or "").strip()
+            if original:
+                author_names.add(original)
+            # 매핑된 작품도 수집
+            bm = term.get("best_match") or {}
+            bm_title = (bm.get("title") or "").strip()
+            if bm_title:
+                author_works.add(bm_title)
+
+        if len(author_names) < 2:
+            return result
+
+        # 모든 조건 충족: 작가 토론글로 판정
+        result["author_discussion"] = True
+
+        # best_match.title을 null로 전환 (특정 작품 비매칭)
+        cleared_titles = []
+        for term in author_terms:
+            bm = term.get("best_match") or {}
+            old_title = bm.get("title")
+            if old_title:
+                cleared_titles.append(old_title)
+                bm["title"] = None
+                bm["confidence"] = "none"
+                term["best_match"] = bm
+
+        # overall_confidence 하향
+        if result.get("overall_confidence") in ("high", "medium"):
+            result["overall_confidence"] = "low"
+
+        # notes 기록
+        _authors_str = ", ".join(sorted(author_names))
+        _works_str = ", ".join(sorted(author_works)) if author_works else "없음"
+        _note = (
+            f" [작가토론 감지] 다중 작가 비교글: 작가={_authors_str}, "
+            f"매핑됐던 작품={_works_str} → 특정 작품 비매칭으로 전환."
+        )
+        result["notes"] = (result.get("notes", "") or "") + _note
+
+        print(
+            f"[{_ts()}][{self.emoji}] 🛡️ 작가 토론 감지: "
+            f"작가 {len(author_terms)}명 ({_authors_str}) → "
+            f"서로 다른 작품 {len(author_works)}개 ({_works_str}) 매핑 차단 "
+            f"→ author_discussion=True, best_match.title=null",
+            file=sys.stderr,
+        )
+
         return result
 
     def _guard_archetype_as_title(self, result: Dict[str, Any], ctx: Any) -> Dict[str, Any]:
@@ -4011,6 +6408,156 @@ class DecoderExpert:
                   file=sys.stderr)
         
         return result
+
+    def _guard_alias_bridge_pending(
+        self,
+        result: Dict[str, Any],
+        ctx: Any,
+        gatekeeper_result: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """
+        커뮤니티 약칭이 강하게 보이지만 공식 제목 브리지가 아직 붙지 않은 경우,
+        Decoder가 장르/아키타입 일반화 제목으로 굳는 것을 차단한다.
+        """
+        gk_out = gatekeeper_result or {}
+        if not isinstance(gk_out, dict):
+            gk_out = {}
+        gk_post_type = str(gk_out.get("post_type") or "").strip().lower()
+        if gk_post_type in {"noise", "off_topic", "community_banter"}:
+            return result
+
+        gk_entities = gk_out.get("detected_entities") or {}
+        alias_norms: set[str] = set()
+        for raw in (gk_entities.get("possible_titles") or []):
+            raw_norm = _normalize_alnum_kor_cached(str(raw or ""))
+            if 2 <= len(raw_norm) <= 14:
+                alias_norms.add(raw_norm)
+        if not alias_norms:
+            return result
+
+        named_anchor_count = len(gk_entities.get("possible_characters") or []) + len(gk_entities.get("possible_authors") or [])
+        snippet_hints = getattr(ctx, "snippet_hints", None) or {}
+        bridge_activity = bool(getattr(ctx, "alias_bridge_queries_executed", 0))
+        if snippet_hints.get("author_bridge_evidence"):
+            bridge_activity = True
+        for ah in (snippet_hints.get("abbreviation_hints") or []):
+            if str(ah.get("source", "") or "") in {"author_bridge", "alias_bridge"}:
+                bridge_activity = True
+                break
+
+        if (not bridge_activity) and named_anchor_count <= 0:
+            return result
+
+        generic_title_terms = {
+            "장르", "클리셰", "트로프", "작품명추정", "작품추정",
+            "무림물", "회귀물", "헌터물", "아카데미물", "판타지물",
+        }
+        official_sources = {"url_fetch_platform", "platform_title", "url_fetch", "author_bridge", "alias_bridge", "llm_snippet"}
+
+        def _has_official_title_signal(title: str) -> bool:
+            title_norm = _normalize_alnum_kor_cached(title)
+            if not title_norm:
+                return False
+            for th in (snippet_hints.get("title_hints") or []):
+                if not isinstance(th, dict):
+                    continue
+                if str(th.get("source", "") or "") not in official_sources:
+                    continue
+                if _normalize_alnum_kor_cached(str(th.get("title", "") or "")) == title_norm:
+                    return True
+            for ah in (snippet_hints.get("abbreviation_hints") or []):
+                if not isinstance(ah, dict):
+                    continue
+                if str(ah.get("source", "") or "") not in official_sources:
+                    continue
+                if _normalize_alnum_kor_cached(str(ah.get("full", "") or "")) == title_norm:
+                    return True
+            for sr in (getattr(ctx, "search_results", None) or [])[:25]:
+                sr_url = str(sr.get("url") or "")
+                sr_title = str(sr.get("title") or "")
+                sr_title_norm = _normalize_alnum_kor_cached(sr_title)
+                if title_norm not in sr_title_norm:
+                    continue
+                try:
+                    from urllib.parse import urlparse as _urlparse_d
+                    host = (_urlparse_d(sr_url).hostname or "").lower()
+                except Exception:
+                    host = ""
+                if "namu.wiki" in host:
+                    return True
+                if any(host == d or host.endswith("." + d) for d in OFFICIAL_PLATFORM_DOMAINS):
+                    return True
+            return False
+
+        pending = False
+        changed = False
+        for term in (result.get("decoded_terms") or []):
+            if not isinstance(term, dict):
+                continue
+            original = str(term.get("original") or "").strip()
+            original_norm = _normalize_alnum_kor_cached(original)
+            if not original_norm:
+                continue
+            if not any(original_norm == an or original_norm in an or an in original_norm for an in alias_norms):
+                continue
+
+            best_match = term.get("best_match") or {}
+            title = str(best_match.get("title") or "").strip()
+            if not title:
+                term["_alias_bridge_pending"] = True
+                pending = True
+                continue
+
+            title_clean = re.sub(r"\s*\([^)]*추정[^)]*\)\s*$", "", title).strip()
+            title_norm = _normalize_alnum_kor_cached(title_clean)
+            if not title_norm:
+                continue
+            abbr_score = max(
+                abbreviation_match_score(original, title_clean),
+                _leading_jamo_title_direct_score(original, title_clean),
+            )
+            is_generic_fallback = (
+                title_norm in generic_title_terms
+                or any(gt in title_norm for gt in ("작품명추정", "장르", "클리셰", "트로프"))
+                or (len(title_norm) <= 12 and title_norm.endswith("물"))
+            )
+            if not is_generic_fallback:
+                continue
+            if _has_official_title_signal(title_clean):
+                continue
+            if abbr_score >= 0.72:
+                continue
+
+            old_conf = str(best_match.get("confidence") or "low")
+            best_match["title"] = None
+            best_match["confidence"] = "none"
+            best_match["_alias_bridge_pending"] = True
+            term["_alias_bridge_pending"] = True
+            pending = True
+            changed = True
+            _overall_bm = result.get("overall_best_match") or {}
+            if isinstance(_overall_bm, dict) and _normalize_alnum_kor_cached(str(_overall_bm.get("title") or "")) == title_norm:
+                result["overall_best_match"] = {"title": None, "confidence": "none"}
+            if result.get("overall_confidence") in ("high", "medium"):
+                result["overall_confidence"] = "low"
+            elif result.get("overall_confidence") in ("none", ""):
+                result["overall_confidence"] = "low"
+            print(
+                f"[{_ts()}][{self.emoji}] 🌉 약칭 브리지 보류 가드: "
+                f"'{original}' → '{title}' "
+                f"(generic_fallback, score={abbr_score:.2f}, conf={old_conf}→none)",
+                file=sys.stderr,
+            )
+
+        if pending:
+            ctx.alias_bridge_pending = True
+            if bridge_activity:
+                ctx.alias_bridge_queries_executed = max(1, int(getattr(ctx, "alias_bridge_queries_executed", 0) or 0))
+            if hasattr(ctx, "uncertainty_sources"):
+                _msg = "community alias bridge pending: 공식 제목 브리지 탐색 중"
+                if _msg not in ctx.uncertainty_sources:
+                    ctx.uncertainty_sources.append(_msg)
+        return result
     
     def _apply_discourse_warning(self, result: Dict[str, Any], ctx: Any) -> Dict[str, Any]:
         """
@@ -4058,7 +6605,22 @@ class DecoderExpert:
             "회귀", "환생", "전생", "이세계", "헌터",
         ]
         
-        is_genre_warning = discourse_warning and ("discuss_genre" in discourse_warning or "genre_discussion" in discourse_warning)
+        is_genre_warning = bool(
+            discourse_warning
+            and any(
+                marker in str(discourse_warning).lower()
+                for marker in (
+                    "discuss_genre",
+                    "genre_discussion",
+                    "trope_discussion",
+                    "genre_opinion",
+                    "community_banter",
+                    "title_body_mismatch",
+                    "incoherent_post",
+                    "non_novel(",
+                )
+            )
+        )
         
         if is_genre_warning:
             # 장르 일반론 경고: 더 엄격한 기준 — 역할명/장르키워드는 증거 불충분
@@ -4102,7 +6664,143 @@ class DecoderExpert:
                     f"검색 확인 작가명이 본문에 존재 (작가: {_matched})",
                     file=sys.stderr,
                 )
-        
+
+        # 🆕 장르 경고가 있더라도, "제목/본문 앵커 + 공식 플랫폼 제목" 결속이 있으면 역제동을 면제
+        # 목적: 약칭 중심 커뮤니티 글(제목 약칭 + 본문 전개/캐릭터)이 genre_warning으로 과도하게 low로 떨어지는 현상 완화
+        if not evidence_found:
+            post_data_local = getattr(ctx, "post_data", {}) or {}
+            post_main_chunks = [str(post_data_local.get("title") or "")]
+            for block in post_data_local.get("content_blocks", []) or []:
+                if isinstance(block, dict):
+                    post_main_chunks.append(str(block.get("text") or ""))
+                elif isinstance(block, str):
+                    post_main_chunks.append(block)
+            post_main_norm = _re.sub(r"[^\w가-힣]", "", " ".join(post_main_chunks)).lower()
+            official_titles = self._extract_official_titles_from_search(ctx)
+            official_norms = {
+                _re.sub(r"[^\w가-힣]", "", str(o.get("title") or "")).lower()
+                for o in official_titles
+                if isinstance(o, dict)
+            }
+            strong_anchor_types = {"title_mention", "plot_mention", "character_title_link", "character_mention"}
+            for term in result.get("decoded_terms", []):
+                if not isinstance(term, dict):
+                    continue
+                best = term.get("best_match") or {}
+                title = str(best.get("title") or "").strip()
+                conf = str(best.get("confidence") or "").lower()
+                if not title or conf not in ("high", "medium"):
+                    continue
+                title_norm = _re.sub(r"[^\w가-힣]", "", title).lower()
+                if not title_norm or title_norm not in official_norms:
+                    continue
+                orig_norm = _re.sub(r"[^\w가-힣]", "", str(term.get("original") or "")).lower()
+                grounding = term.get("grounding") or {}
+                anchor_type = str(grounding.get("anchor_type") or "").lower()
+                in_post_main = (orig_norm and orig_norm in post_main_norm) or (title_norm in post_main_norm)
+                strong_anchor = anchor_type in strong_anchor_types
+                if in_post_main and (strong_anchor or len(orig_norm) >= 2):
+                    evidence_found = True
+                    print(
+                        f"[{_ts()}][{self.emoji}] 🔒 Discourse 역방향 제동 면제: "
+                        f"공식제목+게시글앵커 결속 확인 ('{title}', anchor={anchor_type or 'none'})",
+                        file=sys.stderr,
+                    )
+                    break
+
+        # 🆕 밈/커뮤니티 반응 글이라도, 제목 약칭과 강한 canonical evidence가 결속되면 역제동을 면제
+        # 목적: "괴담동", "죽깨수"처럼 본문은 팬 반응/밈 톤이지만 작품 식별은 명확한 경우 보호
+        if not evidence_found and discourse_warning:
+            _dw_lower = str(discourse_warning).lower()
+            _is_banterish_warning = any(
+                marker in _dw_lower
+                for marker in ("memes_humor", "community_banter", "association_post", "non_novel(")
+            )
+            if _is_banterish_warning:
+                _snippet_hints = getattr(ctx, "snippet_hints", None) or {}
+                _official_sources = {
+                    "url_fetch_platform",
+                    "platform_title",
+                    "url_fetch",
+                    "author_bridge",
+                    "alias_bridge",
+                    "llm_snippet",
+                }
+
+                def _canonical_support_counts(_title: str) -> tuple[int, int, int]:
+                    _title_norm = _normalize_alnum_kor_cached(_title)
+                    if not _title_norm:
+                        return 0, 0, 0
+                    _hint_support = 0
+                    for _th in (_snippet_hints.get("title_hints") or []):
+                        if not isinstance(_th, dict):
+                            continue
+                        if str(_th.get("source", "") or "") not in _official_sources:
+                            continue
+                        if _normalize_alnum_kor_cached(str(_th.get("title", "") or "")) == _title_norm:
+                            _hint_support += 1
+                    for _ah in (_snippet_hints.get("abbreviation_hints") or []):
+                        if not isinstance(_ah, dict):
+                            continue
+                        if str(_ah.get("source", "") or "") not in _official_sources:
+                            continue
+                        if _normalize_alnum_kor_cached(str(_ah.get("full", "") or "")) == _title_norm:
+                            _hint_support += 1
+
+                    _official_hits = 0
+                    _wiki_hits = 0
+                    for _sr in (getattr(ctx, "search_results", None) or [])[:60]:
+                        _sr_title_norm = _normalize_alnum_kor_cached(str(_sr.get("title") or ""))
+                        _sr_url = str(_sr.get("url") or "")
+                        if not _sr_title_norm or _title_norm not in _sr_title_norm:
+                            continue
+                        try:
+                            from urllib.parse import urlparse as _urlparse_dw
+                            _host = (_urlparse_dw(_sr_url).hostname or "").lower()
+                        except Exception:
+                            _host = ""
+                        if "namu.wiki" in _host:
+                            _wiki_hits += 1
+                        elif any(_host == d or _host.endswith("." + d) for d in OFFICIAL_PLATFORM_DOMAINS):
+                            _official_hits += 1
+                    return _hint_support, _official_hits, _wiki_hits
+
+                for term in result.get("decoded_terms", []):
+                    if not isinstance(term, dict):
+                        continue
+                    best = term.get("best_match") or {}
+                    title = str(best.get("title") or "").strip()
+                    conf = str(best.get("confidence") or "").lower()
+                    if not title or conf not in ("high", "medium"):
+                        continue
+                    grounding = term.get("grounding") or {}
+                    anchor_type = str(grounding.get("anchor_type") or "").lower()
+                    orig_norm = _normalize_alnum_kor_cached(str(term.get("original") or ""))
+                    title_norm = _normalize_alnum_kor_cached(title)
+                    title_line_norm = _normalize_alnum_kor_cached(str(post_data_local.get("title") or ""))
+                    alias_in_title = bool(
+                        (orig_norm and orig_norm in title_line_norm)
+                        or (title_norm and title_norm in title_line_norm)
+                    )
+                    hint_support, official_hits, wiki_hits = _canonical_support_counts(title)
+                    if (
+                        alias_in_title
+                        and anchor_type in {"title_mention", "character_title_link", "character_mention"}
+                        and (
+                            (official_hits >= 1 and (wiki_hits >= 1 or hint_support >= 2))
+                            or (official_hits >= 2)
+                            or (hint_support >= 3 and wiki_hits >= 2)
+                        )
+                    ):
+                        evidence_found = True
+                        print(
+                            f"[{_ts()}][{self.emoji}] 🔒 Discourse 역방향 제동 면제: "
+                            f"밈/반응글이지만 canonical evidence 충분 "
+                            f"('{title}', hints={hint_support}, official={official_hits}, wiki={wiki_hits}, anchor={anchor_type or 'none'})",
+                            file=sys.stderr,
+                        )
+                        break
+
         # 본문/댓글에 소설 관련 증거 전무 → 신뢰도 강제 하향
         # (evidence_found=True이면 면제)
         if not evidence_found:
@@ -4124,7 +6822,9 @@ class DecoderExpert:
     def _get_best_candidate(self, result: Dict[str, Any]) -> Optional[str]:
         """Get the best decoded title from result."""
         for term in result.get("decoded_terms", []):
-            best = term.get("best_match", {})
+            best = term.get("best_match") or {}
+            if not isinstance(best, dict):
+                continue
             if best.get("title") and best.get("confidence") in ("high", "medium"):
                 return best["title"]
         return None
@@ -4354,13 +7054,66 @@ class DecoderExpert:
         
         from difflib import SequenceMatcher
         from collections import Counter
+        import re
         
         llm_title_normalized = llm_title.strip()
+        llm_title_compact = re.sub(r"[^\w가-힣]", "", llm_title_normalized).lower()
         
         # 🔥 Step 0: LLM 제목이 검색 결과에 정확히 존재하면 교정 불필요
         for official in official_titles:
             if llm_title_normalized == official["title"].strip():
                 return llm_title_normalized
+
+        # 🔧 일반형 확장 보정:
+        # LLM이 검색 키워드/짧은 축약(예: "즉사기")만 반환한 경우,
+        # 공식 플랫폼에서 더 긴 정식 제목(예: "즉사기 들고 무림에 떨어지다")으로 확장한다.
+        # 하드코딩 없이, "짧은 제목이 긴 공식 제목의 선두/핵심 부분과 일치"할 때만 적용.
+        if 2 <= len(llm_title_normalized) <= 6 and llm_title_compact:
+            expansion_candidates = []
+            for official in official_titles:
+                official_title = str(official.get("title") or "").strip()
+                if not official_title:
+                    continue
+                official_compact = re.sub(r"[^\w가-힣]", "", official_title).lower()
+                if len(official_compact) <= len(llm_title_compact):
+                    continue
+
+                first_token = official_title.split()[0] if official_title.split() else official_title
+                first_token_compact = re.sub(r"[^\w가-힣]", "", first_token).lower()
+
+                # 짧은 제목이 정식 제목의 첫 토큰 또는 선두 부분과 맞아야 함
+                prefix_match = (
+                    first_token_compact == llm_title_compact
+                    or official_compact.startswith(llm_title_compact)
+                )
+                if not prefix_match:
+                    continue
+
+                # 검색 소스 신뢰도 반영 (공식 플랫폼 + content_field 우대)
+                platform_bonus = 0.12 if any(
+                    p in str(official.get("platform", "")).lower() for p in OFFICIAL_PLATFORMS
+                ) else 0.0
+                source_bonus = 0.12 if str(official.get("source", "")) == "content_field" else 0.0
+                sim_bonus = 0.16 * SequenceMatcher(
+                    None, llm_title_compact, first_token_compact
+                ).ratio()
+                score = 0.70 + platform_bonus + source_bonus + sim_bonus
+                expansion_candidates.append((score, official_title))
+
+            if expansion_candidates:
+                expansion_candidates.sort(key=lambda x: x[0], reverse=True)
+                best_score, best_title = expansion_candidates[0]
+                second_score = expansion_candidates[1][0] if len(expansion_candidates) > 1 else -1.0
+                # 상위 후보가 충분히 강하고(>=0.82), 2위와 간격이 있으면 확정
+                if best_score >= 0.82 and (best_score - second_score >= 0.08):
+                    if best_title != llm_title_normalized:
+                        print(
+                            f"[{_ts()}][{self.emoji}] ⚠️ 짧은 제목 확장 교정: "
+                            f"LLM='{llm_title_normalized}' → 공식='{best_title}' "
+                            f"(score={best_score:.2f}, gap={best_score-second_score:.2f})",
+                            file=sys.stderr,
+                        )
+                    return best_title
         
         # 🔥 Step 1: 빈도 계산 — 같은 제목이 여러 검색 결과에 등장하면 신뢰도↑
         title_freq = Counter(o["title"].strip() for o in official_titles)
@@ -4377,6 +7130,7 @@ class DecoderExpert:
                 continue
             
             # 길이 차이가 너무 크면 스킵 (완전히 다른 제목)
+            # 단, 짧은 제목 확장 보정(위 블록)은 이미 처리했으므로 여기서는 기존 기준 유지.
             if abs(len(llm_title_normalized) - len(official_title)) > 4:
                 continue
             
@@ -4612,6 +7366,49 @@ class DecoderExpert:
                     _title_anchor_candidates.append(_part_norm)
         _title_anchor_candidates = sorted(set(_title_anchor_candidates), key=len, reverse=True)
         _title_anchor_term = _title_anchor_candidates[0] if _title_anchor_candidates else ""
+
+        def _pick_embedded_anchor_token(raw_term: str, candidate_title: str) -> str:
+            raw = str(raw_term or "").strip()
+            if not raw or not candidate_title:
+                return ""
+            title_norm = _normalize_alnum_kor_cached(candidate_title)
+            best_token = ""
+            best_score = 0.0
+            for tok in _re.findall(r"[가-힣A-Za-z0-9]{2,12}", raw):
+                tok = str(tok or "").strip()
+                tok_norm = _normalize_alnum_kor_cached(tok)
+                if len(tok_norm) < 2:
+                    continue
+                score = max(
+                    abbreviation_match_score(tok, candidate_title),
+                    _leading_jamo_title_direct_score(tok, candidate_title),
+                )
+                if tok_norm in title_norm:
+                    score = max(score, 0.80)
+                if score >= 0.72 and score > best_score:
+                    best_token = tok
+                    best_score = score
+            return best_token
+
+        def _has_explicit_alias_signal(surface: str, candidate_title: str) -> bool:
+            surface_norm = _normalize_alnum_kor_cached(surface)
+            title_norm = _normalize_alnum_kor_cached(candidate_title)
+            if not surface_norm or not title_norm:
+                return False
+            alias_cues = ("약칭", "통칭", "줄여서", "줄임말")
+            for sr in (getattr(ctx, "search_results", []) or [])[:40]:
+                if not isinstance(sr, dict):
+                    continue
+                sr_url = str(sr.get("url") or "").lower()
+                sr_text_raw = f"{sr.get('title', '')} {sr.get('content', '')} {sr.get('snippet', '')}"
+                sr_text_norm = _normalize_alnum_kor_cached(sr_text_raw)
+                if surface_norm not in sr_text_norm or title_norm not in sr_text_norm:
+                    continue
+                if not any(cue in sr_text_raw for cue in alias_cues):
+                    continue
+                if self._is_novel_platform_url(sr_url) or "namu.wiki" in sr_url:
+                    return True
+            return False
         
         # 🆕 범용 시간참조 가드: 게시글 제목에 "신작/최신작/전작" 등이 있는지 사전 감지
         # is_author_name 여부와 무관하게, 시간참조 키워드가 게시글 제목에 있으면
@@ -4789,8 +7586,57 @@ class DecoderExpert:
             # 핵심: "즉사무림" 토론인데 캐릭터 term이 다른 작품으로 흘러가는 드리프트 차단
             grounding_info = term.get("grounding") or {}
             is_character_term = grounding_info.get("anchor_type") == "character_mention"
+            # 🆕 BUG-C 방어: 작품 제목/약칭 term은 캐릭터 드리프트 대상이 아님
+            # anchor_type=character_mention은 "이 term이 캐릭터 이름"이 아니라
+            # "이 term은 캐릭터 언급에 의해 근거됨"을 의미할 수 있음
+            # 예: "망겜성"은 작품 약칭이지만 "황건욱"(캐릭터) 언급으로 근거됨
+            if is_character_term:
+                _primary_interps = term.get("interpretations") or []
+                _primary_type = ""
+                if _primary_interps and isinstance(_primary_interps[0], dict):
+                    _primary_type = _primary_interps[0].get("type", "")
+                _work_interp_types = {
+                    "novel_title", "work_abbreviation", "abbreviation",
+                    "title_abbreviation", "novel_abbreviation",
+                }
+                if _primary_type in _work_interp_types:
+                    is_character_term = False
             if is_character_term and _title_anchor_term and confidence in ("high", "medium"):
-                anchor_score = abbreviation_match_score(_title_anchor_term, title)
+                _raw_original_surface = str(term.get("original") or "")
+                _effective_title_anchor_term = ""
+                _snippet_hints_local = getattr(ctx, "snippet_hints", None) or {}
+                for _ah_local in (_snippet_hints_local.get("abbreviation_hints") or []):
+                    if not isinstance(_ah_local, dict):
+                        continue
+                    _ab_local = str(_ah_local.get("abbrev") or "").strip()
+                    _full_local = str(_ah_local.get("full") or "").strip()
+                    if not _ab_local or not _full_local:
+                        continue
+                    if _normalize_alnum_kor_cached(_full_local) != _normalize_alnum_kor_cached(title):
+                        continue
+                    _ab_local_norm = _normalize_alnum_kor_cached(_ab_local)
+                    if _ab_local_norm and (
+                        _ab_local_norm in _normalize_alnum_kor_cached(_raw_original_surface)
+                        or _ab_local_norm in _post_title_norm
+                    ):
+                        _effective_title_anchor_term = _ab_local
+                        break
+                if not _effective_title_anchor_term:
+                    _effective_title_anchor_term = _pick_embedded_anchor_token(_raw_original_surface, title) or _title_anchor_term
+                anchor_score = abbreviation_match_score(_effective_title_anchor_term, title)
+                _explicit_alias_signal = _has_explicit_alias_signal(_effective_title_anchor_term, title)
+                if (
+                    _effective_title_anchor_term
+                    and _effective_title_anchor_term in full_text_lower
+                    and _explicit_alias_signal
+                ):
+                    print(
+                        f"[{_ts()}][{self.emoji}] 🔒 캐릭터 드리프트 가드 스킵: "
+                        f"term='{original_term}', title='{title}' "
+                        f"(anchor='{_effective_title_anchor_term}', explicit_alias_signal=True)",
+                        file=sys.stderr,
+                    )
+                    continue
                 if anchor_score < 0.30:
                     old_conf = confidence
                     best["confidence"] = "none"
@@ -4798,16 +7644,18 @@ class DecoderExpert:
                     best["_title_anchor_conflict"] = True
                     # 같은 캐릭터 term의 candidate도 드리프트 제목이면 비활성화
                     for _cand in (term.get("candidates") or []):
+                        if not isinstance(_cand, dict):
+                            continue
                         _cand_title = _cand.get("official_novel_title")
                         if not _cand_title:
                             continue
-                        _cand_score = abbreviation_match_score(_title_anchor_term, _cand_title)
+                        _cand_score = abbreviation_match_score(_effective_title_anchor_term, _cand_title)
                         if _cand_score < 0.30:
                             _cand["official_novel_title"] = None
                     print(
                         f"[{_ts()}][{self.emoji}] 🛡️ 캐릭터 드리프트 가드: "
                         f"term='{original_term}', title='{title}' "
-                        f"(title_anchor='{_title_anchor_term}', score={anchor_score:.2f}) "
+                        f"(title_anchor='{_effective_title_anchor_term}', score={anchor_score:.2f}) "
                         f"→ confidence {old_conf}→none, title 제거",
                         file=sys.stderr,
                     )
@@ -5012,7 +7860,7 @@ class DecoderExpert:
                         }
                         _existing = [
                             v for v in ctx.verified_character_work_links
-                            if v.get("title", "").replace(" ", "").lower() == title_clean
+                            if str(v.get("title") or "").replace(" ", "").lower() == title_clean
                         ]
                         if not _existing:
                             ctx.verified_character_work_links.append(_link_entry)
@@ -5049,7 +7897,7 @@ class DecoderExpert:
                     if _char_verify_abbr_score < 0.1:
                         for _dt in decoded_terms:
                             _bm = _dt.get("best_match") or {}
-                            if _bm.get("title", "").replace(" ", "").lower() == title_clean:
+                            if str(_bm.get("title") or "").replace(" ", "").lower() == title_clean:
                                 old_conf = _bm.get("confidence", "")
                                 if old_conf in ("high", "max", "very_high"):
                                     _bm["confidence"] = "low"
@@ -5074,7 +7922,7 @@ class DecoderExpert:
                         }
                         _existing = [
                             v for v in ctx.verified_character_work_links
-                            if v.get("title", "").replace(" ", "").lower() == title_clean
+                            if str(v.get("title") or "").replace(" ", "").lower() == title_clean
                         ]
                         if not _existing:
                             ctx.verified_character_work_links.append(_link_entry)
@@ -5102,7 +7950,7 @@ class DecoderExpert:
                         # 중복 방지
                         _existing = [
                             v for v in ctx.verified_character_work_links
-                            if v.get("title", "").replace(" ", "").lower() == title_clean
+                            if str(v.get("title") or "").replace(" ", "").lower() == title_clean
                         ]
                         if not _existing:
                             ctx.verified_character_work_links.append(_link_entry)
@@ -5121,15 +7969,35 @@ class DecoderExpert:
             
             # 5) 원본 키워드(약어)와 매칭 제목의 형태소 겹침 확인
             original_term = (term.get("original") or "").replace(" ", "").lower()
-            
+            _effective_guard_term = str(locals().get("effective_original") or original_term).replace(" ", "").lower()
+            _embedded_stable_alias = self._find_embedded_stable_alias(
+                original_term,
+                title,
+                possible_characters=gk_characters,
+            )
+            if _embedded_stable_alias:
+                _effective_guard_term = _embedded_stable_alias.replace(" ", "").lower()
+                print(
+                    f"[{_ts()}][{self.emoji}] 🧩 내장 약칭 복원: "
+                    f"'{original_term}' → '{_effective_guard_term}' (title='{title}')",
+                    file=sys.stderr,
+                )
+
             # 5-1) 검색 결과에 명시적 약칭 증거가 있으면 본문증거 가드 스킵
             import re as _re_alias
-            _alias_patterns = [
-                _re_alias.compile(rf'약칭[은이가]?\s*{_re_alias.escape(original_term)}'),
-                _re_alias.compile(rf'통칭\s*{_re_alias.escape(original_term)}'),
-                _re_alias.compile(rf'줄여서\s*{_re_alias.escape(original_term)}'),
-                _re_alias.compile(rf'줄임말[은이가]?\s*{_re_alias.escape(original_term)}'),
-            ]
+            _alias_terms_for_guard = [original_term]
+            if _effective_guard_term and _effective_guard_term not in _alias_terms_for_guard:
+                _alias_terms_for_guard.append(_effective_guard_term)
+            _alias_patterns = []
+            for _alias_term in _alias_terms_for_guard:
+                _alias_patterns.extend(
+                    [
+                        _re_alias.compile(rf'약칭[은이가]?\s*{_re_alias.escape(_alias_term)}'),
+                        _re_alias.compile(rf'통칭\s*{_re_alias.escape(_alias_term)}'),
+                        _re_alias.compile(rf'줄여서\s*{_re_alias.escape(_alias_term)}'),
+                        _re_alias.compile(rf'줄임말[은이가]?\s*{_re_alias.escape(_alias_term)}'),
+                    ]
+                )
             has_explicit_alias_evidence = False
             for sr in search_results:
                 sr_combined = f"{sr.get('title', '')} {sr.get('content', '')}".lower()
@@ -5173,6 +8041,7 @@ class DecoderExpert:
                 
                 # 추가 조건: 본문이 매우 짧거나 이미지 위주인 경우 더 엄격
                 body_len = len(post_body.strip())
+                guard_term = _effective_guard_term or original_term
                 
                 if is_genre_keyword:
                     # 장르 키워드 → 작품 매칭은 거의 항상 FP
@@ -5191,7 +8060,10 @@ class DecoderExpert:
                     # 매우 짧은 본문 + 증거 없음 → 높은 FP 가능성
                     # 🆕 예외: 제목 약어 매칭 score ≥ 0.85이면 medium 유지
                     # ("즉사무림"→0.90, "빌환"→0.95 등 명확한 축약어는 보호)
-                    abbr_score = abbreviation_match_score(original_term, title)
+                    abbr_score = max(
+                        abbreviation_match_score(original_term, title),
+                        abbreviation_match_score(guard_term, title) if guard_term and guard_term != original_term else 0.0,
+                    )
                     if abbr_score >= 0.85:
                         # 약어 매칭이 강력하면 짧은 본문이어도 medium 유지
                         old_conf = confidence
@@ -5205,6 +8077,20 @@ class DecoderExpert:
                             )
                             changed = True
                         # medium 이하는 유지
+                    elif abbr_score < 0.01:
+                        # 🆕 P1 강화: abbr_score≈0 + 짧은 본문 + 증거 없음 → title=None (모르면 모른다)
+                        old_conf = confidence
+                        best["confidence"] = "none"
+                        best["title"] = None
+                        result["overall_confidence"] = "none"
+                        print(
+                            f"[{_ts()}][{self.emoji}] 🛡️ 본문증거 가드 (모르면 모른다): "
+                            f"'{original_term}' → '{title}' 매칭 차단 "
+                            f"(본문 {body_len}자, abbr_score={abbr_score:.2f}≈0, "
+                            f"guard_term='{guard_term}', 증거 전무, {old_conf}→none)",
+                            file=sys.stderr,
+                        )
+                        changed = True
                     else:
                         old_conf = confidence
                         best["confidence"] = "low"
@@ -5215,27 +8101,45 @@ class DecoderExpert:
                             file=sys.stderr,
                         )
                         changed = True
-                elif confidence in ("high",):
-                    # High confidence인데 본문 증거 없음 → Medium으로 하향
-                    # 🆕 예외: 약어 매칭이 강력하면(score≥0.85) 하향 안함
-                    abbr_score_high = abbreviation_match_score(original_term, title)
-                    if abbr_score_high >= 0.85:
+                else:
+                    # 🆕 P1 강화: 일반 본문 (≥50자) + 증거 없음
+                    abbr_score_gen = max(
+                        abbreviation_match_score(original_term, title),
+                        abbreviation_match_score(guard_term, title) if guard_term and guard_term != original_term else 0.0,
+                    )
+                    if abbr_score_gen < 0.01:
+                        # abbr_score≈0 + 본문 증거 0개 → title=None (모르면 모른다)
+                        old_conf = confidence
+                        best["confidence"] = "none"
+                        best["title"] = None
+                        result["overall_confidence"] = "none"
                         print(
-                            f"[{_ts()}][{self.emoji}] 🔒 본문증거 가드 스킵 (강한 약어): "
-                            f"'{original_term}' → '{title}' "
-                            f"(abbr_score={abbr_score_high:.2f}≥0.85 → high 유지)",
-                            file=sys.stderr,
-                        )
-                        # high 유지, 변경 없음
-                    else:
-                        best["confidence"] = "medium"
-                        print(
-                            f"[{_ts()}][{self.emoji}] 🛡️ 본문증거 가드 (증거 미약): "
-                            f"'{original_term}' → '{title}' confidence 하향 "
-                            f"(본문에 작품 고유 정보 없음, abbr_score={abbr_score_high:.2f}, high→medium)",
+                            f"[{_ts()}][{self.emoji}] 🛡️ 본문증거 가드 (모르면 모른다/일반): "
+                            f"'{original_term}' → '{title}' 매칭 차단 "
+                            f"(abbr_score={abbr_score_gen:.2f}≈0 + 작품 증거 전무, {old_conf}→none)",
                             file=sys.stderr,
                         )
                         changed = True
+                    elif confidence in ("high",):
+                        # High confidence인데 본문 증거 없음 → Medium으로 하향
+                        # 예외: 약어 매칭이 강력하면(score≥0.85) 하향 안함
+                        if abbr_score_gen >= 0.85:
+                            print(
+                                f"[{_ts()}][{self.emoji}] 🔒 본문증거 가드 스킵 (강한 약어): "
+                                f"'{original_term}' → '{title}' "
+                                f"(abbr_score={abbr_score_gen:.2f}≥0.85 → high 유지)",
+                                file=sys.stderr,
+                            )
+                            # high 유지, 변경 없음
+                        else:
+                            best["confidence"] = "medium"
+                            print(
+                                f"[{_ts()}][{self.emoji}] 🛡️ 본문증거 가드 (증거 미약): "
+                                f"'{original_term}' → '{title}' confidence 하향 "
+                                f"(본문에 작품 고유 정보 없음, abbr_score={abbr_score_gen:.2f}, high→medium)",
+                                file=sys.stderr,
+                            )
+                            changed = True
         
         if changed:
             # overall_confidence도 재계산
@@ -5249,4 +8153,228 @@ class DecoderExpert:
                 max_conf = max(all_confs, key=lambda c: conf_rank.get(c, 0))
                 result["overall_confidence"] = max_conf
         
+        return result
+
+    def _guard_weak_thematic_title_inference(
+        self,
+        result: Dict[str, Any],
+        ctx: Any,
+        gatekeeper_result: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        약칭-정식명 연결 근거 없이, 테마/캐릭터/줄거리 유사성만으로 unrelated 작품명을
+        best_match로 올리는 경로를 차단한다.
+
+        핵심 기준:
+        - 약칭 정합성 점수가 낮음
+        - explicit alias mapping/bridge 근거 없음
+        - 본문에 정식 제목 직접 언급 없음
+        - grounding이 character/plot/search_only 같은 약한 축
+        """
+        decoded_terms = result.get("decoded_terms", []) or []
+        if not decoded_terms:
+            return result
+
+        post_data = getattr(ctx, "post_data", {}) or {}
+        comments = getattr(ctx, "comments", []) or []
+        post_chunks: List[str] = [str(post_data.get("title") or "")]
+        for block in (post_data.get("content_blocks") or []):
+            if isinstance(block, dict):
+                post_chunks.append(str(block.get("text") or ""))
+            elif isinstance(block, str):
+                post_chunks.append(block)
+        post_chunks.extend([c for c in comments if isinstance(c, str)])
+        post_norm = _normalize_alnum_kor_cached(" ".join(post_chunks))
+        gk_characters = []
+        if isinstance(gatekeeper_result, dict):
+            ents = gatekeeper_result.get("detected_entities") or {}
+            if isinstance(ents, dict):
+                gk_characters = ents.get("possible_characters") or []
+
+        snippet_hints = getattr(ctx, "snippet_hints", None) or {}
+        llm_snippet = getattr(ctx, "llm_snippet_analysis", None) or {}
+        search_results = getattr(ctx, "search_results", None) or []
+
+        def _has_explicit_alias_support(orig_norm: str, title_norm: str) -> bool:
+            if not orig_norm or not title_norm:
+                return False
+
+            for _k, _v in (KNOWN_ABBREVIATIONS or {}).items():
+                if (
+                    _normalize_alnum_kor_cached(_strip_korean_particles(_k)) == orig_norm
+                    and _normalize_alnum_kor_cached(_v) == title_norm
+                ):
+                    return True
+
+            for _ah in (snippet_hints.get("abbreviation_hints") or []):
+                if not isinstance(_ah, dict):
+                    continue
+                if (
+                    _normalize_alnum_kor_cached(_strip_korean_particles(str(_ah.get("abbrev") or ""))) == orig_norm
+                    and _normalize_alnum_kor_cached(str(_ah.get("full") or "")) == title_norm
+                ):
+                    return True
+
+            for _am in (llm_snippet.get("abbreviation_mappings") or []):
+                if not isinstance(_am, dict):
+                    continue
+                if (
+                    _normalize_alnum_kor_cached(_strip_korean_particles(str(_am.get("abbrev") or ""))) == orig_norm
+                    and _normalize_alnum_kor_cached(str(_am.get("full") or "")) == title_norm
+                ):
+                    return True
+
+            # 같은 검색 결과 blob 안에 약칭과 정식 제목이 같이 등장하면 explicit bridge로 본다.
+            for _sr in search_results[:40]:
+                _sr_title = str(_sr.get("title") or "")
+                _sr_title_norm = _normalize_alnum_kor_cached(_sr_title)
+                _sr_url = str(_sr.get("url") or "")
+                try:
+                    from urllib.parse import urlparse as _urlparse_d
+                    _host = (_urlparse_d(_sr_url).hostname or "").lower()
+                except Exception:
+                    _host = ""
+                _official_like = (
+                    "namu.wiki" in _host
+                    or any(_host == d or _host.endswith("." + d) for d in OFFICIAL_PLATFORM_DOMAINS)
+                    or _sr_title_norm == title_norm
+                )
+                _blob = _normalize_alnum_kor_cached(
+                    f"{_sr.get('title', '')} {_sr.get('content', '')} {_sr.get('snippet', '')}"
+                )
+                if _official_like and orig_norm in _blob and title_norm in _blob:
+                    return True
+            return False
+
+        def _candidate_evidence_blob(term: Dict[str, Any], title_norm: str) -> str:
+            parts: List[str] = []
+            for _cand in (term.get("candidates") or []):
+                if not isinstance(_cand, dict):
+                    continue
+                _cand_title_norm = _normalize_alnum_kor_cached(str(_cand.get("official_novel_title") or ""))
+                if title_norm and _cand_title_norm and _cand_title_norm != title_norm:
+                    continue
+                parts.append(str(_cand.get("decode_logic") or ""))
+                parts.append(str(_cand.get("search_evidence") or ""))
+            for _interp in (term.get("interpretations") or []):
+                if not isinstance(_interp, dict):
+                    continue
+                if _normalize_alnum_kor_cached(str(_interp.get("value") or "")) != title_norm:
+                    continue
+                parts.append(str(_interp.get("evidence") or ""))
+            return _normalize_alnum_kor_cached(" ".join(parts))
+
+        weak_anchor_types = {
+            "character_mention",
+            "plot_mention",
+            "search_only",
+            "association",
+            "context_inference",
+            "none",
+        }
+        changed = False
+
+        for term in decoded_terms:
+            if not isinstance(term, dict):
+                continue
+            if term.get("is_author_name"):
+                continue
+
+            best_match = term.get("best_match") or {}
+            title = str(best_match.get("title") or "").strip()
+            conf = str(best_match.get("confidence") or "").lower()
+            if not title or conf not in ("high", "medium"):
+                continue
+
+            original = str(term.get("original") or "").strip()
+            original_base = _strip_korean_particles(original) or original
+            effective_original = self._find_embedded_stable_alias(
+                original,
+                title,
+                possible_characters=gk_characters,
+            ) or original_base
+            orig_norm = _normalize_alnum_kor_cached(original_base)
+            effective_orig_norm = _normalize_alnum_kor_cached(effective_original)
+            title_norm = _normalize_alnum_kor_cached(title)
+            if not title_norm or (
+                (not orig_norm or len(orig_norm) < 2)
+                and (not effective_orig_norm or len(effective_orig_norm) < 2)
+            ):
+                continue
+
+            # 약칭 자체가 제목 내에 직접 들어 있거나, 본문에 정식 제목이 직접 있으면 유지.
+            if (
+                orig_norm in title_norm
+                or effective_orig_norm in title_norm
+                or title_norm in post_norm
+                or (effective_orig_norm and effective_orig_norm in post_norm)
+            ):
+                continue
+
+            abbr_score = max(
+                abbreviation_match_score(original_base, title),
+                _leading_jamo_title_direct_score(original_base, title),
+                abbreviation_match_score(effective_original, title) if effective_original != original_base else 0.0,
+                _leading_jamo_title_direct_score(effective_original, title) if effective_original != original_base else 0.0,
+            )
+            explicit_alias_support = _has_explicit_alias_support(orig_norm, title_norm) or (
+                bool(effective_orig_norm) and _has_explicit_alias_support(effective_orig_norm, title_norm)
+            )
+            low_specific_orig = self._is_low_specificity_mapping_abbrev(original_base, full_title=title)
+            if abbr_score >= 0.55:
+                if not low_specific_orig:
+                    continue
+
+            if explicit_alias_support:
+                continue
+
+            grounding = term.get("grounding") or {}
+            anchor_type = str(grounding.get("anchor_type") or "none").lower()
+            if anchor_type not in weak_anchor_types:
+                continue
+
+            evidence_blob = _candidate_evidence_blob(term, title_norm)
+            explicit_original_link = bool(orig_norm and orig_norm in evidence_blob)
+            if low_specific_orig and not explicit_alias_support:
+                explicit_original_link = False
+
+            # 공식 제목이 검색에 존재해도, 약칭과의 explicit bridge가 없고
+            # 증거가 줄거리/테마 설명뿐이면 unrelated title 환각으로 본다.
+            if (
+                (abbr_score < 0.35 and not explicit_original_link)
+                or (
+                    low_specific_orig
+                    and abbr_score < 0.55
+                    and not explicit_original_link
+                )
+            ):
+                old_conf = best_match.get("confidence")
+                best_match["title"] = None
+                best_match["confidence"] = "none"
+                best_match["_weak_thematic_rejected"] = True
+                best_match["_weak_thematic_reason"] = (
+                    f"abbr_score={abbr_score:.2f}, anchor={anchor_type}, low_specific={low_specific_orig}"
+                )
+                term["_weak_thematic_rejected"] = True
+                term["_weak_thematic_reason"] = best_match["_weak_thematic_reason"]
+                if isinstance(result.get("overall_best_match"), dict):
+                    _overall_title_norm = _normalize_alnum_kor_cached(
+                        str((result.get("overall_best_match") or {}).get("title") or "")
+                    )
+                    if _overall_title_norm == title_norm:
+                        result["overall_best_match"] = {"title": None, "confidence": "none"}
+                if result.get("overall_confidence") in ("high", "medium"):
+                    result["overall_confidence"] = "low"
+                print(
+                    f"[{_ts()}][{self.emoji}] 🛡️ 약한 테마 추론 차단: "
+                    f"'{original}' → '{title}' "
+                    f"(score={abbr_score:.2f}, anchor={anchor_type}, conf={old_conf}→none)",
+                    file=sys.stderr,
+                )
+                changed = True
+
+        if changed and hasattr(ctx, "uncertainty_sources"):
+            _msg = "decoder: weak thematic title inference rejected"
+            if _msg not in ctx.uncertainty_sources:
+                ctx.uncertainty_sources.append(_msg)
         return result

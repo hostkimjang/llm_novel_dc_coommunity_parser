@@ -10,9 +10,10 @@ import os
 import re
 import sys
 import time
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from .utils import parse_json_with_think_removal, _ts
+from ..prompts.prompt_router import build_discourse_system_prompt
 
 
 DISCOURSE_SYSTEM = """\
@@ -114,6 +115,15 @@ Intents:
   - 작가 간 비교: "[작가A]도...했지만...[작가B]도..." 
   - 장르 약칭 + 작가 조합: "현판이나 써야댐" = 현대판타지 장르를 작가에게 권유
   - 작품이 "~같은거 써라" 형태로 예시 참조됨 → 작품이 주제가 아님
+- **author_discussion**: 특정 작가의 작품 스타일/패턴/경향을 논의하는 글
+  🚨 author_discussion vs author_talk 구분:
+  - author_talk: 작가에게 비평/조언/지시 → 결과물 평가
+  - author_discussion: 작가의 작품 패턴/특징 관찰/논의 → 작가 스타일 분석
+  핵심 신호:
+  - 작가명(필명) + 해당 작가의 복수 작품/캐릭터 참조
+  - "이 작가는 항상 ~한 캐릭터를 쓴다", "[작가명] 작품은 ~패턴이 있다"
+  - 작가명이 주어이고 작품 특성이 서술어: "[필명] 작품들은 여주가 항상 ~"
+  - is_relevant=True로 처리 (작가 단위의 작품 토론)
 - **ask_question**: Seeking specific information
 - **make_joke**: Humor, memes, shitposting
 - **platform_meta**: Discussing the platform itself
@@ -200,6 +210,7 @@ You are an investigator. Based on everything you've analyzed so far, think deepl
 - 고유 정보 있음 → 실제로 그 콘텐츠를 소비하고 토론 중
 - 고유 정보 없음, 일반적 감상만 → 연상/언급 수준
 - ⚠️ **장르/트로프 용어 vs 작품 약칭 구분**: 제목의 핵심어가 장르 패턴(회귀물, 빙의물, 백합난입, 하렘물 등)이고 본문이 그 장르의 **일반적 특성/선호도**를 논하면 → intent="discuss_genre", 특정 작품이 아님
+  * 🔑 **"[한글1~5자]물" 패턴은 모두 장르 용어**: 일상물, 힐링물, 좀비물, 먹방물, 집착물 등 "~물"로 끝나는 짧은 한글 단어는 장르 카테고리이지 소설 제목이 아님. 리스트에 없는 신조어 "X물"도 동일 적용
 
 **원칙 4: 화자의 관여도 (Speaker Engagement)**
 - 화자가 해당 콘텐츠를 실제로 소비/경험하고 있는 흔적이 있는가?
@@ -236,8 +247,10 @@ You must output VALID JSON only. No markdown, no extra text.
     "domain_evidence": ["term1", "term2", ...],  // Key terms that indicate this domain
     "secondary_domains": ["domain1", "domain2", ...],  // Optional: if post spans multiple domains
     
-    "intent": "discuss_work" | "discuss_genre" | "author_talk" | "request_recommendation" | "share_information" | "express_opinion" | "ask_question" | "make_joke" | "platform_meta" | "debate" | "vent" | "seek_advice",
+    "intent": "discuss_work" | "discuss_genre" | "author_talk" | "author_discussion" | "request_recommendation" | "share_information" | "express_opinion" | "ask_question" | "make_joke" | "platform_meta" | "debate" | "vent" | "seek_advice",
     "intent_confidence": "high" | "medium" | "low",
+    "speech_act": "review" | "complaint" | "question" | "support" | "announcement" | "banter" | "comparison" | "other",
+    "target_kind": "work" | "author" | "platform" | "genre" | "community" | "multi" | "none" | "unknown",
     
     "is_coherent": boolean,  // Do title, body, comments form unified discourse?
     "coherence_reason": "string",  // Why coherent or incoherent?
@@ -267,9 +280,11 @@ CRITICAL RULES:
 - primary_domain: Use actual domain name (lowercase_underscore format). Don't force into predefined categories.
 - secondary_domains: Optional array. Use when post clearly spans multiple domains (e.g., ["gaming", "economy_finance"] for "게임 아이템 거래")
 - Be specific: Instead of generic "other", identify actual domain (e.g., "astrology", "gardening", "fishing")
-- All Korean text in Korean, domain names andg", "analysis", "thought", "comment" - NEVER include these!
+- FORBIDDEN FIELDS: "thinking", "reasoning_process", "analysis", "thought", "comment" - NEVER include these!
 - All Korean text in Korean, technical terms in English
 - Be honest - if uncertain, say "medium" or "low" confidence
+- 매체 단정 금지: 본문/댓글에 직접 단서가 없으면 "웹툰/만화/애니"를 확정 표현으로 쓰지 말고 "작품(매체 미확정)"으로 표현하라.
+- search_suggestions도 동일 원칙 적용: 매체 단서가 없으면 "웹툰/애니" 전제 쿼리 대신 중립 쿼리(작품명/등장인물/줄거리 중심)를 제안하라.
 """
 
 DISCOURSE_PROMPT = """\
@@ -310,6 +325,8 @@ class DiscourseAnalyzer:
         self,
         post: Dict[str, Any],
         comments: List[str],
+        gatekeeper_result: Optional[Dict[str, Any]] = None,
+        ctx: Optional[Any] = None,
     ) -> Dict[str, Any]:
         """
         Analyze the fundamental discourse of a post.
@@ -317,6 +334,8 @@ class DiscourseAnalyzer:
         Args:
             post: Post data
             comments: List of comment texts
+            gatekeeper_result: Optional gatekeeper output for discourse-aware overlay
+            ctx: Conversation context (time-attack and runtime hints)
             
         Returns:
             Discourse analysis result
@@ -338,7 +357,13 @@ class DiscourseAnalyzer:
         print(f"[{_ts()}][{self.emoji}] {self.name} 분석 시작: post_id={post.get('post_id')}", file=sys.stderr)
         
         try:
-            result = self._call_llm(user_prompt)
+            result = self._call_llm(
+                user_prompt,
+                post=post,
+                comments=comments,
+                gatekeeper_result=gatekeeper_result,
+                ctx=ctx,
+            )
             result = self._sanitize_result(result, post_json=post_json)
             elapsed = time.time() - start_time
             
@@ -432,7 +457,139 @@ class DiscourseAnalyzer:
             if cur_conf in ("max", "high", "medium"):
                 analysis["intent_confidence"] = "low"
 
+        speech_act = analysis.get("speech_act")
+        target_kind = analysis.get("target_kind")
+        if not isinstance(speech_act, str) or not speech_act.strip() or not isinstance(target_kind, str) or not target_kind.strip():
+            inferred = self._infer_speech_act_target_kind(analysis, post_json)
+            analysis["speech_act"] = inferred["speech_act"]
+            analysis["target_kind"] = inferred["target_kind"]
+        else:
+            analysis["speech_act"] = str(speech_act).strip().lower()
+            analysis["target_kind"] = str(target_kind).strip().lower()
+
+        analysis = self._apply_short_worklike_recovery(analysis, post_json)
+
+        # 매체(웹툰/애니 등) 과단정 완화:
+        # 본문/댓글에 매체 단서가 없는데 결과 텍스트가 특정 매체를 확정하면
+        # reason/search_suggestions를 중립 문구로 보정한다.
+        analysis = self._sanitize_speculative_medium_claims(analysis, post_json)
+
         return {"discourse_analysis": analysis}
+
+    def _apply_short_worklike_recovery(
+        self,
+        analysis: Dict[str, Any],
+        post_json: Dict[str, Any] | None,
+    ) -> Dict[str, Any]:
+        if not isinstance(analysis, dict) or not isinstance(post_json, dict):
+            return analysis
+
+        title = str(post_json.get("title") or "").strip()
+        content = " ".join(str(x or "").strip() for x in (post_json.get("content") or []) if str(x or "").strip())
+        title_terms = [str(x or "").strip() for x in (analysis.get("title_novel_terms") or []) if str(x or "").strip()]
+        if not title_terms or not title:
+            return analysis
+
+        title_norm = re.sub(r"\s+", "", title)
+        content_norm = re.sub(r"\s+", "", content)
+        if len(content_norm) > 16:
+            return analysis
+
+        has_title_term = any(term and term in title for term in title_terms)
+        cheer_like = any(tok in content_norm for tok in ("드가자", "가자", "가즈아", "레츠고", "화이팅", "슛"))
+        temporal_or_serial_frame = bool(
+            re.search(r"(?:\d+\s*(?:일|주|달|개월|년|화)\s*만의|올해|이번|마지막|다시|드디어|오랜만)", title)
+        ) or any(tok in title_norm.lower() for tok in ("연재", "정시연재", "복귀", "재개", "on", "up"))
+        title_led_event = bool(
+            temporal_or_serial_frame and re.search(r"(?:슛|on|왔다|됐다)[~!ㅋㅎ?]*$", title, flags=re.IGNORECASE)
+        )
+
+        primary_domain = str(analysis.get("primary_domain") or "").strip().lower()
+        target_kind = str(analysis.get("target_kind") or "").strip().lower()
+        speech_act = str(analysis.get("speech_act") or "").strip().lower()
+        assoc = bool(analysis.get("is_association_not_discussion"))
+        title_body_consistency = analysis.get("title_body_consistency")
+
+        if not (has_title_term and temporal_or_serial_frame and (cheer_like or title_led_event)):
+            return analysis
+        if primary_domain not in {"memes_humor", "daily_life", "other"} and target_kind not in {"none", "community", "unknown"}:
+            return analysis
+
+        analysis["primary_domain"] = "novel_literature"
+        if str(analysis.get("domain_confidence") or "").strip().lower() in {"", "low"}:
+            analysis["domain_confidence"] = "medium"
+        analysis["target_kind"] = "work"
+        if speech_act not in {"announcement", "support"}:
+            analysis["speech_act"] = "announcement"
+        if title_body_consistency is False or assoc:
+            analysis["title_body_consistency"] = True
+            analysis["is_association_not_discussion"] = False
+            analysis["association_evidence"] = None
+        recovery_note = "짧은 제목-주도형 연재 알림/응원 포스트로 보정"
+        cur_reason = str(analysis.get("coherence_reason") or "").strip()
+        if recovery_note not in cur_reason:
+            analysis["coherence_reason"] = (cur_reason + " | " + recovery_note).strip(" |")
+        cur_subject = str(analysis.get("real_subject") or "").strip()
+        if not cur_subject:
+            analysis["real_subject"] = "작품 약칭을 축으로 한 짧은 연재 알림/응원 포스트"
+        return analysis
+
+    def _infer_speech_act_target_kind(
+        self,
+        analysis: Dict[str, Any],
+        post_json: Dict[str, Any] | None,
+    ) -> Dict[str, str]:
+        title = str((post_json or {}).get("title") or "").strip()
+        content = " ".join(str(x or "") for x in ((post_json or {}).get("content") or []))
+        merged = f"{title} {content}".strip()
+        merged_nospace = re.sub(r"\s+", "", merged)
+        intent = str(analysis.get("intent") or "").strip().lower()
+        domain = str(analysis.get("primary_domain") or "").strip().lower()
+        title_terms = [str(x or "").strip() for x in (analysis.get("title_novel_terms") or []) if str(x or "").strip()]
+
+        if intent in {"author_talk", "author_discussion"}:
+            target_kind = "author"
+        elif intent == "platform_meta" or domain == "meta_platform":
+            target_kind = "platform"
+        elif intent == "discuss_genre":
+            target_kind = "genre"
+        elif title_terms:
+            target_kind = "work"
+        elif domain in {"memes_humor", "daily_life"}:
+            target_kind = "community"
+        elif domain == "novel_literature":
+            target_kind = "work"
+        else:
+            target_kind = "unknown"
+
+        if intent == "ask_question":
+            speech_act = "question"
+        elif intent == "request_recommendation":
+            speech_act = "question"
+        elif intent == "make_joke":
+            speech_act = "banter"
+        elif intent == "share_information":
+            speech_act = "announcement"
+        elif intent in {"author_talk", "author_discussion"}:
+            speech_act = "comparison" if "같은거" in merged_nospace or "하위호환" in merged_nospace else "complaint"
+        elif intent == "express_opinion":
+            if re.search(r"(?:가자|가즈아|드가자|화이팅|레츠고|존버)", merged_nospace):
+                speech_act = "support"
+            elif re.search(r"(?:별로|노잼|보기힘들|불쌍|아쉽|좆같|개같|싫)", merged_nospace):
+                speech_act = "complaint"
+            else:
+                speech_act = "other"
+        elif intent == "discuss_work":
+            speech_act = "review"
+        elif intent == "debate":
+            speech_act = "comparison"
+        else:
+            speech_act = "other"
+
+        return {
+            "speech_act": speech_act,
+            "target_kind": target_kind,
+        }
     
     def _build_post_json(self, post: Dict[str, Any], comments: List[str]) -> Dict[str, Any]:
         """Build simplified post JSON for analysis."""
@@ -451,21 +608,43 @@ class DiscourseAnalyzer:
             "comments": comments[:15],  # More comments for better context
         }
     
-    def _call_llm(self, user_prompt: str) -> Dict[str, Any]:
+    def _call_llm(
+        self,
+        user_prompt: str,
+        *,
+        post: Optional[Dict[str, Any]] = None,
+        comments: Optional[List[str]] = None,
+        gatekeeper_result: Optional[Dict[str, Any]] = None,
+        ctx: Optional[Any] = None,
+    ) -> Dict[str, Any]:
         """Call LLM and parse JSON response."""
         print(f"[{_ts()}][llm-stream] ▶ {self.name.lower()} 토큰 생성 시작...", file=sys.stderr)
         
         try:
+            system_content = build_discourse_system_prompt(
+                DISCOURSE_SYSTEM,
+                post=post,
+                comments=comments,
+                gatekeeper_result=gatekeeper_result,
+                ctx=ctx,
+            )
             messages = [
-                {"role": "system", "content": DISCOURSE_SYSTEM},
+                {"role": "system", "content": system_content},
                 {"role": "user", "content": user_prompt},
             ]
+            try:
+                _max_tokens = int(
+                    os.getenv("LLM_EXPERT_MAX_TOKENS", os.getenv("LLM_MAX_TOKENS", "32768"))
+                )
+            except Exception:
+                _max_tokens = 32768
+            _max_tokens = max(512, min(_max_tokens, 65536))
             
             response_text = self.llm._stream_chat_http(
                 messages=messages,
                 tag="discourse",
                 use_grammar=True,
-                max_tokens=int(os.getenv("DISCOURSE_MAX_TOKENS", "1200")),
+                max_tokens=_max_tokens,
             )
             
             # Parse JSON (handle any formatting issues)
@@ -521,6 +700,128 @@ class DiscourseAnalyzer:
             if len(dedup) >= 10:
                 break
         return dedup
+
+    def _sanitize_speculative_medium_claims(
+        self,
+        analysis: Dict[str, Any],
+        post_json: Dict[str, Any] | None,
+    ) -> Dict[str, Any]:
+        if not isinstance(analysis, dict):
+            return analysis
+
+        cues = self._collect_post_medium_cues(post_json)
+        speculative_groups = self._find_speculative_media_groups(analysis, cues)
+        if not speculative_groups:
+            return analysis
+
+        text_keys = ("coherence_reason", "consistency_note", "real_subject", "reasoning")
+        for key in text_keys:
+            val = analysis.get(key)
+            if isinstance(val, str) and val.strip():
+                analysis[key] = self._neutralize_media_text(val, speculative_groups)
+
+        suggestions = analysis.get("search_suggestions")
+        if isinstance(suggestions, list):
+            sanitized: List[Dict[str, Any]] = []
+            for raw in suggestions[:3]:
+                if not isinstance(raw, dict):
+                    continue
+                q = str(raw.get("query") or "").strip()
+                p = str(raw.get("purpose") or "").strip()
+                if q:
+                    q = self._neutralize_media_text(q, speculative_groups, query_mode=True)
+                if p and self._contains_media_term_group(p, speculative_groups):
+                    p = "매체 미확정 상태이므로 중립 검색으로 작품/용어 정체를 확인"
+                if not q:
+                    continue
+                item = dict(raw)
+                item["query"] = q
+                if p:
+                    item["purpose"] = p
+                sanitized.append(item)
+            analysis["search_suggestions"] = sanitized
+
+        primary_domain = str(analysis.get("primary_domain") or "").strip().lower()
+        domain_conf = str(analysis.get("domain_confidence") or "").strip().lower()
+        if primary_domain in {"manga_comics", "anime"} and domain_conf in {"high", "max"}:
+            analysis["domain_confidence"] = "medium"
+            note = "본문/댓글 매체 단서 부족으로 매체 판정을 보수적으로 조정"
+            cur_note = str(analysis.get("consistency_note") or "").strip()
+            analysis["consistency_note"] = f"{cur_note} | {note}".strip(" |")
+
+        print(
+            f"[{_ts()}][{self.emoji}] 🛡️ 매체 과단정 보정: speculative={sorted(speculative_groups)}",
+            file=sys.stderr,
+        )
+        return analysis
+
+    def _collect_post_medium_cues(self, post_json: Dict[str, Any] | None) -> Dict[str, bool]:
+        if not isinstance(post_json, dict):
+            return {"webtoon": False, "anime": False, "novel": False}
+        parts: List[str] = [str(post_json.get("title") or "")]
+        for c in post_json.get("content") or []:
+            parts.append(str(c))
+        for c in post_json.get("comments") or []:
+            parts.append(str(c))
+        blob = " ".join(parts).lower()
+        return {
+            "webtoon": any(t in blob for t in ("웹툰", "만화", "코믹", "comic", "webtoon", "manga", "manhwa")),
+            "anime": any(t in blob for t in ("애니메이션", "애니", "anime")),
+            "novel": any(t in blob for t in ("웹소설", "장르소설", "소설", "novel")),
+        }
+
+    def _find_speculative_media_groups(self, analysis: Dict[str, Any], cues: Dict[str, bool]) -> set[str]:
+        text_fields = []
+        for k in ("coherence_reason", "consistency_note", "real_subject", "reasoning"):
+            v = analysis.get(k)
+            if isinstance(v, str):
+                text_fields.append(v.lower())
+        for item in (analysis.get("search_suggestions") or []):
+            if isinstance(item, dict):
+                text_fields.append(str(item.get("query") or "").lower())
+                text_fields.append(str(item.get("purpose") or "").lower())
+        blob = " ".join(text_fields)
+        speculative: set[str] = set()
+        if not cues.get("webtoon") and any(t in blob for t in ("웹툰", "만화", "코믹", "comic", "webtoon", "manga", "manhwa")):
+            speculative.add("webtoon")
+        if not cues.get("anime") and any(t in blob for t in ("애니메이션", "애니", "anime")):
+            speculative.add("anime")
+        return speculative
+
+    def _contains_media_term_group(self, text: str, groups: set[str]) -> bool:
+        s = str(text or "").lower()
+        if "webtoon" in groups and any(t in s for t in ("웹툰", "만화", "코믹", "comic", "webtoon", "manga", "manhwa")):
+            return True
+        if "anime" in groups and any(t in s for t in ("애니메이션", "애니", "anime")):
+            return True
+        return False
+
+    def _neutralize_media_text(self, text: str, groups: set[str], query_mode: bool = False) -> str:
+        out = str(text or "")
+        repl = "작품" if query_mode else "작품(매체 미확정)"
+        # 매체 단정 표현(직접 용어가 아닌 우회 표현 포함)을 중립화
+        out = re.sub(
+            r"(시각적\s*매체|visual\s*media?|graphic\s*storytelling)",
+            "작품" if query_mode else "해당 작품",
+            out,
+            flags=re.IGNORECASE,
+        )
+        if "webtoon" in groups:
+            out = re.sub(
+                r"(웹툰|만화|코믹스?|comic|webtoon|manga|manhwa)",
+                repl,
+                out,
+                flags=re.IGNORECASE,
+            )
+        if "anime" in groups:
+            out = re.sub(
+                r"(애니메이션|애니|anime)",
+                repl,
+                out,
+                flags=re.IGNORECASE,
+            )
+        out = re.sub(r"\s{2,}", " ", out).strip()
+        return out
     
     def _default_result(self, error: str) -> Dict[str, Any]:
         """Return safe default when LLM fails."""
@@ -531,6 +832,8 @@ class DiscourseAnalyzer:
                 "domain_evidence": [],
                 "intent": "express_opinion",
                 "intent_confidence": "low",
+                "speech_act": "other",
+                "target_kind": "unknown",
                 "is_coherent": True,
                 "coherence_reason": f"분석 오류: {error}",
                 "is_association_not_discussion": False,

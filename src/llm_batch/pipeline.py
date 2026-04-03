@@ -106,9 +106,9 @@ def _compact_search_response(data: dict) -> dict:
     except Exception:
         top_k = 5
     try:
-        max_chars = int(os.getenv("MCP_MAX_CONTENT_CHARS", "400"))
+        max_chars = int(os.getenv("MCP_MAX_CONTENT_CHARS", "0"))
     except Exception:
-        max_chars = 400
+        max_chars = 0
 
     out = {"query": data.get("query"), "results": []}
     results = data.get("results") if isinstance(data, dict) else None
@@ -123,7 +123,7 @@ def _compact_search_response(data: dict) -> dict:
         content = item.get("content") or ""
         if not isinstance(content, str):
             content = str(content)
-        if len(content) > max_chars:
+        if max_chars > 0 and len(content) > max_chars:
             content = content[:max_chars] + f"...(truncated,len={len(content)})"
         out["results"].append({"title": title, "url": url, "content": content})
     return out

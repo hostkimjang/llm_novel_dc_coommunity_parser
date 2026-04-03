@@ -15,7 +15,7 @@ from .prompts import (
     GATEKEEPER_PROMPT,
     build_gatekeeper_system_prompt,
 )
-from .utils import parse_json_with_think_removal, _ts
+from .utils import parse_json_with_think_removal, _ts, get_kiwi
 
 
 class GatekeeperExpert:
@@ -34,14 +34,9 @@ class GatekeeperExpert:
         self.name = "Gatekeeper"
         self.emoji = "🎭"
         
-        # Initialize Kiwi morphological analyzer
-        try:
-            from kiwipiepy import Kiwi
-            self.kiwi = Kiwi()
-            self.use_kiwi = True
-        except ImportError:
-            self.kiwi = None
-            self.use_kiwi = False
+        # Kiwi 형태소 분석기 (프로세스 전역 싱글톤)
+        self.kiwi = get_kiwi()
+        self.use_kiwi = self.kiwi is not None
     
     def analyze(
         self,
@@ -101,6 +96,10 @@ class GatekeeperExpert:
             
             # 🆕 장르 접두사 태그 파싱 (TS), BL) 등)
             result = self._parse_genre_prefix_tags(result, post)
+
+            # 🆕 제목이 사실상 본문 1행 역할을 하는 커뮤니티 문체 감지
+            # (예: "즉사무림 은영이 너무 불쌍해" + "어렵게 생긴 가족을 위해 죽는다니")
+            result = self._detect_title_body_continuation(result, post, comments)
             
             # 🆕 회차 번호 감지 (N화/N회/N일차 → 연재 작품 앵커)
             result = self._detect_episode_numbers(result, post, comments)
@@ -110,6 +109,16 @@ class GatekeeperExpert:
             
             # 🆕 Phase 11j: 장르 토론 / 추천 요청 코드 레벨 감지
             result = self._detect_genre_discussion_patterns(result, post, comments)
+
+            # 의견 접두사/잔여부 문맥이 준비된 뒤 다시 한 번 제목 후보를 정제한다.
+            _detected_entities = result.get("detected_entities") or {}
+            result = self._prune_dc_opinion_fragment_candidates(
+                result,
+                _detected_entities.get("possible_titles") or [],
+            )
+            
+            # 🆕 플랫폼 기능/장애 불만 패턴 감지
+            result = self._detect_meta_platform_issue_patterns(result, post, comments)
             
             # 🆕 다작/순서 질문 감지 (작가 전작 순서, A->B->C 체인 등)
             result = self._detect_multi_work_order_patterns(result, post, comments)
@@ -149,12 +158,15 @@ class GatekeeperExpert:
                     image_count += 1
             elif isinstance(block, str):
                 content_texts.append(block)
+        title_text = str(post.get("title", "") or "")
+        title_body_joined = self._compose_title_body_joined(title_text, content_texts)
         
         result = {
             "post_id": post.get("post_id"),
-            "title": post.get("title", ""),
+            "title": title_text,
             "author": post.get("author", ""),
             "content": content_texts,
+            "title_body_joined_preview": title_body_joined,
             "comments": comments[:10],  # Limit comments
         }
         
@@ -276,7 +288,7 @@ class GatekeeperExpert:
             
             # Extract compound patterns (복합 명사 패턴)
             # Split title into all possible 2+ character segments
-            # 🆕 OPT: 공백/구두점/조사만으로 구성된 세그먼트는 제외
+            # OPT: 공백/구두점/조사만으로 구성된 세그먼트는 제외
             _JOSA_CHARS = set('을를이가는은의에서와과도만으로부터')
             raw_segments: list[str] = []
             for i in range(len(title)):
@@ -330,8 +342,8 @@ class GatekeeperExpert:
         return sorted(list(candidates), key=len, reverse=True)  # 긴 것부터
     
     def _merge_entities(
-        self, 
-        llm_result: Dict[str, Any], 
+        self,
+        llm_result: Dict[str, Any],
         kiwi_entities: List[str]
     ) -> Dict[str, Any]:
         """
@@ -383,12 +395,153 @@ class GatekeeperExpert:
             else:
                 cleaned.append(_t)
         combined = cleaned
-        
+
+        # DC 의견 접두사 뒤의 문장 조각이 제목 후보를 오염시키는 것을 막는다.
+        llm_result = self._prune_dc_opinion_fragment_candidates(llm_result, combined)
+        detected = llm_result.get("detected_entities") or {}
+        combined = detected.get("possible_titles") or combined
+
+        llm_result = self._prune_overlapping_fragment_candidates(llm_result, combined)
+        detected = llm_result.get("detected_entities") or {}
+        combined = detected.get("possible_titles") or combined
+
         # Update result
         detected["possible_titles"] = combined
         llm_result["detected_entities"] = detected
         
         return llm_result
+
+    @staticmethod
+    def _looks_like_colloquial_fragment_token(text: str) -> bool:
+        import re
+
+        compact = re.sub(r"\s+", "", str(text or "").strip().lower())
+        if not compact:
+            return False
+
+        if re.fullmatch(r"\d{1,3}(?:센|세)?줄", compact):
+            return True
+        if re.fullmatch(r"\d{1,3}살인줄", compact):
+            return True
+
+        colloquial_suffixes = (
+            "인줄", "줄", "몰랐음", "실화냐", "같음", "같은데", "같더라",
+            "아님", "아니냐", "맞음", "맞냐", "라던데", "이라던데",
+        )
+        if len(compact) <= 12 and any(compact.endswith(suf) for suf in colloquial_suffixes):
+            return True
+
+        return False
+
+    def _prune_dc_opinion_fragment_candidates(
+        self,
+        result: Dict[str, Any],
+        possible_titles: List[Any],
+    ) -> Dict[str, Any]:
+        context_clues = result.get("context_clues") or {}
+        if not context_clues.get("dc_opinion_prefix"):
+            return result
+
+        remainder = str(
+            context_clues.get("dc_opinion_remainder")
+            or context_clues.get("title_after_prefix_strip")
+            or ""
+        ).strip()
+        if not remainder:
+            return result
+
+        detected = result.get("detected_entities") or {}
+        key_terms = result.get("key_terms") or []
+        removed: List[str] = []
+
+        def _keep_token(tok: Any) -> bool:
+            if not isinstance(tok, str):
+                return True
+            stripped = tok.strip()
+            if not stripped:
+                return False
+            if not self._looks_like_colloquial_fragment_token(stripped):
+                return True
+            if stripped not in remainder:
+                return True
+            removed.append(stripped)
+            return False
+
+        filtered_titles = [tok for tok in possible_titles if _keep_token(tok)]
+        filtered_key_terms = [tok for tok in key_terms if _keep_token(tok)]
+
+        if removed:
+            detected["possible_titles"] = filtered_titles
+            result["detected_entities"] = detected
+            result["key_terms"] = filtered_key_terms
+            print(
+                f"[{_ts()}][{self.emoji}] 🧹 DC 의견 문장조각 후보 제거: {removed[:5]}",
+                file=sys.stderr,
+            )
+
+        return result
+
+    def _prune_overlapping_fragment_candidates(
+        self,
+        result: Dict[str, Any],
+        possible_titles: List[Any],
+    ) -> Dict[str, Any]:
+        import re
+
+        texts = [str(tok or "").strip() for tok in possible_titles if isinstance(tok, str)]
+        if len(texts) < 2:
+            return result
+
+        def _norm(text: str) -> str:
+            return re.sub(r"\s+", "", str(text or "").strip().lower())
+
+        particle_suffixes = ("이", "가", "은", "는", "군", "구나", "겠다", "겠네")
+        removed: List[str] = []
+        kept: List[Any] = []
+
+        for tok in possible_titles:
+            if not isinstance(tok, str):
+                kept.append(tok)
+                continue
+            stripped = tok.strip()
+            norm = _norm(stripped)
+            if not norm:
+                continue
+
+            longer_overlaps = [
+                other for other in texts
+                if other != stripped
+                and len(_norm(other)) >= len(norm) + 2
+                and norm in _norm(other)
+            ]
+            looks_fragment = (
+                len(norm) <= 2
+                or (
+                    len(norm) <= 4
+                    and any(stripped.endswith(suf) for suf in particle_suffixes)
+                )
+                or self._looks_like_colloquial_fragment_token(stripped)
+            )
+            if longer_overlaps and looks_fragment:
+                removed.append(stripped)
+                continue
+            kept.append(stripped)
+
+        if removed:
+            detected = result.get("detected_entities") or {}
+            key_terms = result.get("key_terms") or []
+            removed_set = set(removed)
+            detected["possible_titles"] = [tok for tok in kept if tok not in removed_set]
+            result["detected_entities"] = detected
+            result["key_terms"] = [
+                tok for tok in key_terms
+                if not (isinstance(tok, str) and tok.strip() in removed_set)
+            ]
+            print(
+                f"[{_ts()}][{self.emoji}] 🧹 중첩 제목 파편 제거: {removed[:6]}",
+                file=sys.stderr,
+            )
+        return result
     
     # ── 댓글 제목 후보 추출 ───────────────────────
     
@@ -420,6 +573,8 @@ class GatekeeperExpert:
                 candidate_lines = [ln.strip() for ln in raw.splitlines() if ln.strip()]
 
             for stripped in candidate_lines:
+                if self._looks_like_repeated_reaction_comment(stripped):
+                    continue
                 # 구조적으로 제목 후보가 될 수 있는지 먼저 검사
                 if not self._is_title_like_surface(stripped):
                     continue
@@ -444,20 +599,141 @@ class GatekeeperExpert:
                 _deduped.append(ct)
             comment_title_candidates = _deduped
         
-        # 댓글 제목 후보를 possible_titles에 추가
-        for ct in comment_title_candidates:
-            if ct not in possible_titles:
-                possible_titles.append(ct)
+        # 댓글 제목 후보는 context clue로는 남기되, 초기 감지가 noise/무앵커면
+        # possible_titles를 직접 오염시키지 않는다.
+        _detected_authors = detected.get("possible_authors") or []
+        _detected_chars = detected.get("possible_characters") or []
+        _existing_title_anchors = [t for t in possible_titles if isinstance(t, str) and t.strip()]
+        _has_main_anchor = bool(_existing_title_anchors or _detected_authors or _detected_chars)
+        _allow_comment_title_merge = not (bool(result.get("is_noise")) and not _has_main_anchor)
+
+        # 댓글 제목 후보를 possible_titles "앞쪽"에 배치하여 후속 단계가
+        # 제목형 답변 힌트를 우선 해석하도록 한다.
+        if comment_title_candidates and _allow_comment_title_merge:
+            merged_titles = []
+            seen_norm = set()
+            for ct in comment_title_candidates + list(possible_titles):
+                key = str(ct).replace(" ", "").lower()
+                if not key or key in seen_norm:
+                    continue
+                seen_norm.add(key)
+                merged_titles.append(ct)
+            possible_titles = merged_titles
         
         if comment_title_candidates:
             print(
-                f"[{_ts()}][{self.emoji}] 📝 댓글 제목 후보 추출: {comment_title_candidates}",
+                f"[{_ts()}][{self.emoji}] 📝 댓글 제목 후보 추출: {comment_title_candidates}"
+                f"{' (possible_titles 보류)' if not _allow_comment_title_merge else ''}",
                 file=sys.stderr,
             )
+            context_clues = result.get("context_clues") or {}
+            context_clues["has_comment_title_answer"] = True
+            context_clues["comment_title_candidates"] = comment_title_candidates[:5]
+            result["context_clues"] = context_clues
         
         detected["possible_titles"] = possible_titles
         result["detected_entities"] = detected
         
+        return result
+
+    @staticmethod
+    def _extract_text_blocks(post: Dict[str, Any]) -> List[str]:
+        """Extract text blocks from post.content_blocks."""
+        texts: List[str] = []
+        for block in post.get("content_blocks", []) or []:
+            if isinstance(block, dict):
+                txt = str(block.get("text") or "").strip()
+                if txt:
+                    texts.append(txt)
+            elif isinstance(block, str):
+                txt = block.strip()
+                if txt:
+                    texts.append(txt)
+        return texts
+
+    @staticmethod
+    def _compose_title_body_joined(title: str, content_texts: List[str], *, max_body_lines: int = 2) -> str:
+        """
+        Compose a natural joined string from title + first body lines.
+        Community posts often write the lead clause in title and continue in body.
+        """
+        title = str(title or "").strip()
+        if not title:
+            return ""
+        if not content_texts:
+            return title
+
+        body_parts = [str(t).strip() for t in content_texts[:max_body_lines] if str(t).strip()]
+        if not body_parts:
+            return title
+        return f"{title} {' '.join(body_parts)}".strip()
+
+    def _detect_title_body_continuation(
+        self,
+        result: Dict[str, Any],
+        post: Dict[str, Any],
+        comments: List[str],
+    ) -> Dict[str, Any]:
+        """
+        Detect when title functions as the first sentence of body (community writing style).
+
+        Goal:
+        - Add a generic clue so downstream experts read title+body as one utterance.
+        - Avoid hardcoded case mapping.
+        """
+        import re
+
+        title_raw = str(post.get("title") or "").strip()
+        if not title_raw:
+            return result
+
+        context_clues = result.get("context_clues") or {}
+        title_core = str(context_clues.get("title_after_prefix_strip") or title_raw).strip()
+        body_texts = self._extract_text_blocks(post)
+        if not title_core or not body_texts:
+            return result
+
+        first_body = body_texts[0].strip()
+        if not first_body:
+            return result
+
+        # Basic noise guards: links/code-like body are not continuation signals.
+        first_body_norm = first_body.replace(" ", "")
+        if first_body_norm.startswith("http") or first_body_norm.startswith("www."):
+            return result
+        if re.search(r"[{}<>]|```", first_body):
+            return result
+
+        # Heuristic: title looks like an unfinished lead and body starts as continuation.
+        # Keep this broad and language-generic for Korean community posts.
+        unfinished_suffix = (
+            "는데", "ㄴ데", "지만", "더니", "같은데", "인듯", "인 거", "인가", "인가요",
+            "너무", "진짜", "왜", "어떻게", "불쌍해", "아쉽네", "맞지", "맞는듯",
+        )
+        has_terminal = bool(re.search(r"[.!?…]$|[다요함]\.$", title_core))
+        title_lead_like = (
+            (not has_terminal and len(title_core) >= 6)
+            or any(title_core.endswith(sfx) for sfx in unfinished_suffix)
+        )
+        body_clause_like = len(first_body) <= 80 and not re.match(r"^\d+[.)]\s*", first_body)
+
+        if not (title_lead_like and body_clause_like):
+            return result
+
+        joined = self._compose_title_body_joined(title_core, body_texts)
+        if not joined:
+            return result
+
+        context_clues["title_as_body_continuation"] = True
+        context_clues["title_body_joined_text"] = joined
+        context_clues["title_body_first_line"] = first_body
+        result["context_clues"] = context_clues
+
+        print(
+            f"[{_ts()}][{self.emoji}] 🧩 제목-본문 연속문 감지: "
+            f"title='{title_core[:28]}', body='{first_body[:28]}'",
+            file=sys.stderr,
+        )
         return result
 
     # ── 다작/순서 질문 감지 ──────────────────────────────
@@ -585,6 +861,22 @@ class GatekeeperExpert:
             return False
         
         return True
+
+    @staticmethod
+    def _looks_like_repeated_reaction_comment(text: str) -> bool:
+        import re
+
+        stripped = str(text or "").strip()
+        if not stripped:
+            return False
+        tokens = [re.sub(r"[^0-9A-Za-z가-힣]", "", tok.lower()) for tok in stripped.split()]
+        tokens = [tok for tok in tokens if tok]
+        if len(tokens) < 2:
+            return False
+        if len(set(tokens)) != 1:
+            return False
+        token = tokens[0]
+        return 1 <= len(token) <= 8
 
     def _classify_comment_speech_act(self, text: str) -> str:
         """
@@ -753,7 +1045,7 @@ class GatekeeperExpert:
         3. 장르 힌트를 context_clues에 저장
         """
         import re
-        from ..rules import GENRE_PREFIX_TAGS
+        from ..rules import GENRE_PREFIX_TAGS, DC_OPINION_KEYWORDS
         
         title = post.get("title", "").strip()
         if not title:
@@ -790,15 +1082,27 @@ class GatekeeperExpert:
                 if remaining_after and len(remaining_after) >= 2:
                     genre_hints.append(abbrev)
                     remaining_title = remaining_after
-                    # 약칭을 key_terms에 추가 (검색 후보)
-                    if abbrev not in key_terms:
-                        key_terms.append(abbrev)
-                    # 약칭을 possible_titles에도 추가
-                    if abbrev not in possible_titles:
-                        possible_titles.append(abbrev)
+                    # DC 의견 접두사(예: 스포, 소신발언)는 작품명 후보로 넣지 않는다.
+                    _abbrev_norm = abbrev.strip().lower()
+                    _is_dc_opinion_prefix = _abbrev_norm in {
+                        str(k).strip().lower() for k in (DC_OPINION_KEYWORDS or [])
+                    }
+                    if not _is_dc_opinion_prefix:
+                        # 약칭을 key_terms에 추가 (검색 후보)
+                        if abbrev not in key_terms:
+                            key_terms.append(abbrev)
+                        # 약칭을 possible_titles에도 추가
+                        if abbrev not in possible_titles:
+                            possible_titles.append(abbrev)
+                    else:
+                        print(
+                            f"[{_ts()}][{self.emoji}] 🧹 접두사 약칭 제외: '{abbrev})' "
+                            f"(DC 의견 태그로 판단, key_terms/possible_titles 미추가)",
+                            file=sys.stderr,
+                        )
                     print(
                         f"[{_ts()}][{self.emoji}] 🏷️ 약칭 접두사 감지: '{abbrev})' "
-                        f"→ key_terms/possible_titles 추가, 나머지='{remaining_after[:30]}'",
+                        f"→ 나머지='{remaining_after[:30]}'",
                         file=sys.stderr,
                     )
         
@@ -811,10 +1115,21 @@ class GatekeeperExpert:
                 if remaining_after and len(remaining_after) >= 2:
                     genre_hints.append(nested_abbrev)
                     remaining_title = remaining_after
-                    if nested_abbrev not in key_terms:
-                        key_terms.append(nested_abbrev)
-                    if nested_abbrev not in possible_titles:
-                        possible_titles.append(nested_abbrev)
+                    _nested_norm = nested_abbrev.strip().lower()
+                    _is_nested_dc_prefix = _nested_norm in {
+                        str(k).strip().lower() for k in (DC_OPINION_KEYWORDS or [])
+                    }
+                    if not _is_nested_dc_prefix:
+                        if nested_abbrev not in key_terms:
+                            key_terms.append(nested_abbrev)
+                        if nested_abbrev not in possible_titles:
+                            possible_titles.append(nested_abbrev)
+                    else:
+                        print(
+                            f"[{_ts()}][{self.emoji}] 🧹 중첩 접두사 제외: '{nested_abbrev})' "
+                            f"(DC 의견 태그로 판단)",
+                            file=sys.stderr,
+                        )
                     print(
                         f"[{_ts()}][{self.emoji}] 🏷️ 중첩 접두사 감지: '{nested_abbrev})'",
                         file=sys.stderr,
@@ -876,6 +1191,38 @@ class GatekeeperExpert:
                         "source": source_name,
                     })
         
+        if all_matches:
+            title_body_cont = bool(context_clues.get("title_as_body_continuation"))
+            detected = result.get("detected_entities") or {}
+            author_anchors = [
+                a for a in (detected.get("possible_authors") or [])
+                if isinstance(a, str) and a.strip()
+            ]
+            character_anchors = [
+                c for c in (detected.get("possible_characters") or [])
+                if isinstance(c, str) and c.strip()
+            ]
+
+            filtered_matches = []
+            for match in all_matches:
+                matched_text = str(match.get("matched_text") or "").strip()
+                if (
+                    title_body_cont
+                    and match.get("source") == "title"
+                    and matched_text.endswith("편")
+                    and not author_anchors
+                    and not character_anchors
+                ):
+                    print(
+                        f"[{_ts()}][{self.emoji}] 📺 회차 후보 보류: "
+                        f"'{matched_text}' (title-body continuation + 편 단위 수량 가능성)",
+                        file=sys.stderr,
+                    )
+                    continue
+                filtered_matches.append(match)
+
+            all_matches = filtered_matches
+
         if all_matches:
             context_clues["has_episode_reference"] = True
             context_clues["episode_info"] = all_matches[0]  # 첫 번째 매치
@@ -961,13 +1308,12 @@ class GatekeeperExpert:
         감지 패턴:
         1. DC 의견 접두사 패턴: "소신발언)) X" → 의견 게시글
         2. 장르 일반론 패턴: "X이나 Y에서 Z" → 장르/트로프 토론
-        3. 추천 요청 패턴: "X를 보고싶구나" → 추천 요청
+        3. 추천 요청 보조 신호: LLM이 판단한 recommendation intent를 정규화
         4. 본문 부정 표현: "본적없음", "못봤음" → 장르 소재 토론
         """
         import re
         from ..rules import (
             DC_OPINION_KEYWORDS,
-            RECOMMENDATION_REQUEST_SUFFIXES,
             GENRE_DISCUSSION_TITLE_INDICATORS,
             GENRE_ARCHETYPE_TERMS,
         )
@@ -1034,19 +1380,21 @@ class GatekeeperExpert:
                 file=sys.stderr,
             )
         
-        # ━━ 패턴 3: 추천 요청 패턴 ━━
-        # "후타 암타물을 보고싶구나..", "빌환 추천좀"
-        for suffix in RECOMMENDATION_REQUEST_SUFFIXES:
-            if title.rstrip(".!? ").endswith(suffix):
-                _flags.append(f"recommendation_request:{suffix}")
-                context_clues["is_recommendation_request"] = True
-                context_clues["recommendation_suffix"] = suffix
-                print(
-                    f"[{_ts()}][{self.emoji}] 🔍 추천 요청 감지: "
-                    f"'{suffix}' in '{title[:40]}' → 추천 요청 게시글",
-                    file=sys.stderr,
-                )
-                break
+        # ━━ 패턴 3: 추천 요청 보조 신호(LLM intent 기반) ━━
+        # 하드코딩된 접미사/표현 매칭 대신, Gatekeeper LLM 출력 신호를 재사용
+        _llm_recommendation = (
+            str(result.get("post_type", "")).lower() == "recommendation"
+            or bool(context_clues.get("is_asking_recommendation"))
+        )
+        if _llm_recommendation:
+            _flags.append("recommendation_request:llm_intent")
+            context_clues["is_recommendation_request"] = True
+            print(
+                f"[{_ts()}][{self.emoji}] 🔍 추천 요청(LLM 신호) 감지: "
+                f"post_type='{result.get('post_type')}', "
+                f"is_asking_recommendation={bool(context_clues.get('is_asking_recommendation'))}",
+                file=sys.stderr,
+            )
         
         # ━━ 패턴 4: 본문 부정 표현 (장르 소재 토론) ━━
         # "본적없음", "못봤음" → "이 소재/장르의 작품을 본 적 없다" = 장르 토론
@@ -1084,19 +1432,103 @@ class GatekeeperExpert:
                 f"→ 비교 대상은 주제가 아님",
                 file=sys.stderr,
             )
+
+        # ━━ 패턴 5b: 본문 비교 구문 감지 (확장) ━━
+        # "X 느낌이라", "X 느낌인데", "X 처럼", "X 같은" 등 본문 비교
+        _body_combined = body if body else ""
+        if not context_clues.get("is_comparison_post"):
+            _comp_body_match = re.search(
+                r'([가-힣A-Za-z0-9]{2,15})\s*'
+                r'(느낌이라|느낌인데|느낌나는데|느낌인듯|느낌임|느낌이야'
+                r'|하위호환|상위호환|열화판|짝퉁|같은\s*느낌|처럼)',
+                _body_combined
+            )
+            if _comp_body_match:
+                _comp_target = _comp_body_match.group(1)
+                _comp_type = _comp_body_match.group(2)
+                _flags.append(f"body_comparison:{_comp_target}:{_comp_type}")
+                context_clues["is_comparison_post"] = True
+                context_clues["comparison_type"] = _comp_type
+                context_clues["comparison_target"] = _comp_target
+                print(
+                    f"[{_ts()}][{self.emoji}] ⚖️ 본문 비교 패턴 감지: "
+                    f"'{_comp_target} {_comp_type}' → 비교 대상은 주제가 아님",
+                    file=sys.stderr,
+                )
+
+        # ━━ 패턴 6: 숫자 작가 닉네임 + 신작 패턴 ━━
+        # "172신작은", "38작가", "205형 신작" → 숫자는 작가 닉네임
+        _author_num_match = re.search(
+            r'^(\d{2,4})\s*(신작|작가|작|새작|형|님)', title
+        )
+        if _author_num_match:
+            _author_num = _author_num_match.group(1)
+            _author_suffix = _author_num_match.group(2)
+            _flags.append(f"numeric_author_nickname:{_author_num}:{_author_suffix}")
+            context_clues["is_numeric_author_post"] = True
+            context_clues["numeric_author_id"] = _author_num
+            context_clues["numeric_author_suffix"] = _author_suffix
+            print(
+                f"[{_ts()}][{self.emoji}] 🔢 숫자 작가 닉네임 감지: "
+                f"'{_author_num}{_author_suffix}' → 작가 닉네임이지 작품명이 아님",
+                file=sys.stderr,
+            )
+
+        # ━━ 패턴 7: 역할어+평가문 기반 트로프 일반론 ━━
+        # "백합난입은 공을 따먹는 게...", "공들은 죄다 표독하고..." 류
+        _entities = result.get("detected_entities") or {}
+        _possible_chars = [
+            str(c or "").strip()
+            for c in (_entities.get("possible_characters") or [])
+            if isinstance(c, str) and str(c or "").strip()
+        ]
+        _possible_authors = [
+            str(a or "").strip()
+            for a in (_entities.get("possible_authors") or [])
+            if isinstance(a, str) and str(a or "").strip()
+        ]
+        _generic_role_chars = {"공", "수", "남주", "여주", "남캐", "여캐", "히로인"}
+        _only_generic_chars = bool(_possible_chars) and all(c in _generic_role_chars for c in _possible_chars)
+        _joined_for_trope = " ".join(x for x in (title, body) if x).strip()
+        _role_terms = ("공", "수", "공들", "수들", "남주", "여주", "남캐", "여캐", "히로인")
+        _eval_terms = (
+            "꼴려", "꼴림", "맛있", "좋음", "좋다", "좋네", "싫다", "싫음",
+            "표독", "앙칼", "협박", "따먹", "취향", "좆같", "별로",
+        )
+        _role_hits = [tok for tok in _role_terms if tok in _joined_for_trope]
+        _eval_hits = [tok for tok in _eval_terms if tok in _joined_for_trope]
+        if (
+            _role_hits
+            and _eval_hits
+            and (context_clues.get("title_as_body_continuation") or any(tok in _joined_for_trope for tok in ("공들은", "수들은", "남주들은", "여주들은")))
+            and not _possible_authors
+            and (not _possible_chars or _only_generic_chars)
+        ):
+            _flags.append(f"trope_generalization:{'+'.join(_role_hits[:3])}")
+            context_clues["trope_generalization_detected"] = True
+            context_clues["trope_generalization_roles"] = _role_hits[:6]
+            context_clues["trope_generalization_eval_terms"] = _eval_hits[:6]
+            current_post_type = result.get("post_type", "")
+            if current_post_type in ("work_discussion", "unknown"):
+                result["post_type"] = "genre_discussion"
+            print(
+                f"[{_ts()}][{self.emoji}] 🧪 역할어/평가문 기반 트로프 일반론 감지: "
+                f"roles={_role_hits[:4]}, eval={_eval_hits[:4]} "
+                f"→ post_type '{current_post_type}' -> '{result.get('post_type')}'",
+                file=sys.stderr,
+            )
         
         # ━━ 결과 반영 ━━
         if _flags:
             context_clues["genre_discussion_flags"] = _flags
             result["context_clues"] = context_clues
             
-            # 장르 토론 or 추천 요청이 강하게 감지되면 post_type 보정
+            # 장르 토론이 강하게 감지되면 post_type 보정
             _strong_genre = (
                 context_clues.get("genre_discussion_detected")
                 and context_clues.get("genre_negation_detected")
             )
             _strong_opinion = bool(context_clues.get("dc_opinion_prefix"))
-            _strong_recommendation = bool(context_clues.get("is_recommendation_request"))
             
             current_post_type = result.get("post_type", "")
             if _strong_genre and current_post_type not in ("genre_discussion", "noise"):
@@ -1106,14 +1538,109 @@ class GatekeeperExpert:
                     f"'{current_post_type}' → 'genre_discussion' (장르토론+부정표현)",
                     file=sys.stderr,
                 )
-            elif _strong_recommendation and current_post_type == "work_discussion":
-                result["post_type"] = "recommendation"
-                context_clues["is_asking_recommendation"] = True
-                result["context_clues"] = context_clues
-                print(
-                    f"[{_ts()}][{self.emoji}] 🔍 post_type 보정: "
-                    f"'{current_post_type}' → 'recommendation' (추천요청)",
-                    file=sys.stderr,
-                )
         
+        return result
+
+    def _detect_meta_platform_issue_patterns(
+        self,
+        result: Dict[str, Any],
+        post: Dict[str, Any],
+        comments: List[str],
+    ) -> Dict[str, Any]:
+        """
+        플랫폼 기능/장애 불만형 게시글을 구조적으로 감지해
+        작품명 탐색 과확장을 줄인다.
+        """
+        import re
+
+        title = str(post.get("title", "") or "").strip()
+        if not title:
+            return result
+        content_texts = []
+        for block in post.get("content_blocks", []):
+            if isinstance(block, dict) and block.get("text"):
+                content_texts.append(str(block.get("text") or ""))
+            elif isinstance(block, str):
+                content_texts.append(block)
+        body = " ".join(content_texts).strip()
+        merged = " ".join([title, body] + [str(c) for c in (comments or [])[:5]]).strip()
+        merged_norm = re.sub(r"\s+", "", merged.lower())
+        if not merged_norm:
+            return result
+
+        platform_terms = ("시리즈", "series", "광고", "파워링크", "쿠키")
+        issue_terms = ("회차", "다운", "다운로드", "안되", "안됨", "오류", "불가", "실패", "버그", "막힘")
+        complaint_terms = ("왜", "안", "안되", "안됨", "좆같", "개같", "불편", "짜증")
+
+        p_hits = [t for t in platform_terms if t in merged_norm]
+        i_hits = [t for t in issue_terms if t in merged_norm]
+        c_hits = [t for t in complaint_terms if t in merged_norm]
+
+        # 고유 작품 신호(캐릭터/작가/줄거리 문맥)가 약할 때만 발동
+        detected = result.get("detected_entities") or {}
+        chars = [x for x in (detected.get("possible_characters") or []) if isinstance(x, str) and x.strip()]
+        authors = [x for x in (detected.get("possible_authors") or []) if isinstance(x, str) and x.strip()]
+        has_strong_work_anchor = bool(chars or authors)
+
+        is_platform_issue = (
+            len(p_hits) >= 1
+            and len(i_hits) >= 1
+            and len(c_hits) >= 1
+            and not has_strong_work_anchor
+        )
+        if not is_platform_issue:
+            return result
+
+        context_clues = result.get("context_clues") or {}
+        context_clues["meta_platform_issue_detected"] = True
+        context_clues["platform_issue_keywords"] = sorted(set((p_hits + i_hits + c_hits)))[:10]
+        result["context_clues"] = context_clues
+
+        old_type = str(result.get("post_type", "") or "")
+        old_noise = bool(result.get("is_noise"))
+        if old_type not in ("image_post",):
+            result["post_type"] = "meta_platform"
+            result["is_noise"] = False
+            result["noise_reason"] = None
+
+        # key_terms를 플랫폼 기능 용어 위주로 정리 (욕설/작품 오인 토큰 제거)
+        curated_terms = []
+        for t in ("시리즈", "광고", "회차", "다운로드", "오류"):
+            if t in merged_norm and t not in curated_terms:
+                curated_terms.append(t)
+        if curated_terms:
+            result["key_terms"] = curated_terms
+
+        # 검색요청도 플랫폼 이슈 확인 중심으로 재구성
+        search_requests: List[Dict[str, Any]] = []
+        search_requests.append(
+            {
+                "query": "시리즈 광고 회차 다운로드 오류",
+                "purpose": "platform_issue_verify",
+                "priority": 1,
+            }
+        )
+        search_requests.append(
+            {
+                "query": "네이버 시리즈 회차 다운로드 안됨",
+                "purpose": "platform_issue_verify",
+                "priority": 1,
+            }
+        )
+        search_requests.append(
+            {
+                "query": "디시인사이드 시리즈 광고 다운로드 제한",
+                "purpose": "platform_issue_verify",
+                "priority": 2,
+            }
+        )
+        result["search_requests"] = search_requests
+
+        print(
+            f"[{_ts()}][{self.emoji}] 🧰 meta_platform 이슈 감지: "
+            f"post_type='{old_type}'→'{result.get('post_type')}', "
+            f"is_noise={old_noise}→{result.get('is_noise')}, "
+            f"keywords={context_clues.get('platform_issue_keywords')}",
+            file=sys.stderr,
+        )
         return result

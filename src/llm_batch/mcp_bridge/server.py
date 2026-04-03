@@ -2,27 +2,119 @@ from __future__ import annotations
 
 import os
 import re
+import time
 from typing import Any, Dict, List, Optional
+from urllib.parse import urlparse
+
+import random
 
 import httpx
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import sys
 
+# ── UA 로테이션: 업스트림 차단 회피를 위해 실제 브라우저 UA를 순환 사용 ──
+_BROWSER_USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.2 Safari/605.1.15",
+]
+
+
+def _random_browser_ua() -> str:
+    return random.choice(_BROWSER_USER_AGENTS)
+
+
+# ── 비한국어 노이즈 도메인 블랙리스트 ──
+_NOISE_DOMAIN_BLACKLIST = {
+    # 중국 포털/커뮤니티
+    "zhihu.com", "www.zhihu.com", "zhuanlan.zhihu.com",
+    "baidu.com", "www.baidu.com", "tieba.baidu.com", "baike.baidu.com", "zhidao.baidu.com",
+    "bilibili.com", "www.bilibili.com",
+    "douban.com", "www.douban.com",
+    "weibo.com", "www.weibo.com",
+    "sohu.com", "www.sohu.com",
+    "sina.com.cn", "www.sina.com.cn",
+    "163.com", "www.163.com",
+    "qq.com", "www.qq.com",
+    "csdn.net", "blog.csdn.net",
+    "jianshu.com", "www.jianshu.com",
+    "sogou.com", "www.sogou.com",
+    "360.cn", "www.360.cn",
+    "ifeng.com", "www.ifeng.com",
+    "toutiao.com", "www.toutiao.com",
+    "xiaohongshu.com", "www.xiaohongshu.com",
+    "taobao.com", "www.taobao.com",
+    "jd.com", "www.jd.com",
+    "alipay.com", "www.alipay.com",
+    "cnblogs.com", "www.cnblogs.com",
+    "51cto.com", "www.51cto.com",
+    "ithome.com", "www.ithome.com",
+    # 인도 도메인
+    "epfindia.gov.in",
+}
+
+# 블랙리스트 TLD 패턴 (중국 .cn, 인도 .in 정부 사이트 등)
+_NOISE_TLD_PATTERNS = {".gov.in", ".gov.cn", ".edu.cn", ".ac.cn"}
+
+
+def _is_blacklisted_host(hostname: str) -> bool:
+    """도메인 블랙리스트 및 TLD 패턴 검사"""
+    if hostname in _NOISE_DOMAIN_BLACKLIST:
+        return True
+    # 서브도메인도 검사 (예: xxx.zhihu.com)
+    for bd in _NOISE_DOMAIN_BLACKLIST:
+        if hostname.endswith("." + bd):
+            return True
+    # TLD 패턴 검사
+    for tld in _NOISE_TLD_PATTERNS:
+        if hostname.endswith(tld):
+            return True
+    return False
+
 
 class SearchRequest(BaseModel):
     query: str
     num_results: int = 10  # 기본값: 10개 결과
+    purpose: str = ""
 
 
 class FetchRequest(BaseModel):
     url: str
-    max_length: int = 2000  # 반환할 최대 텍스트 길이
+    max_length: int = 0  # 0 = 무제한 (제한 없음)
 
 
 app = FastAPI(title="SearchXNG MCP Bridge")
 SEARCHXNG_URL = os.getenv("SEARCHXNG_URL", "http://searchxng:8080")
+CRAWL4AI_URL = os.getenv("CRAWL4AI_URL", "http://crawl4ai:11235")
 DEFAULT_NUM_RESULTS = int(os.getenv("MCP_DEFAULT_NUM_RESULTS", "10"))
+_RETRYABLE_SEARCH_STATUS = {403, 429, 500, 502, 503, 504}
+_BLOCKED_ENGINES = {
+    "yahoo",
+    "yahoo_news",
+    "wikidata",
+    "wikipedia",
+}
+_DIRECTORY_ONLY_HOSTS = {
+    "searx.space",
+    "www.searx.space",
+}
+_ENDPOINT_BACKOFF_UNTIL: Dict[str, float] = {}
+_DISCOVERY_CACHE: Dict[str, Any] = {"at": 0.0, "urls": []}
+
+# 공개 인스턴스 발견 실패 시 사용할 하드코딩 폴백 인스턴스 목록
+# - searx.space 접근 불가 시에도 최소한의 외부 인스턴스 사용 가능
+# - 주기적으로 업데이트 필요 (searx.space에서 상위 안정 인스턴스 선별)
+_HARDCODED_FALLBACK_INSTANCES: List[str] = [
+    "https://search.im-in.space",
+    "https://searxng.site",
+    "https://search.mdosch.de",
+    "https://searxng.website",
+    "https://www.gruble.de",
+]
 
 # URL 페칭 허용 도메인 (웹소설 관련 공식/커뮤니티 + 주요 검색 결과 소스)
 _ALLOWED_FETCH_DOMAINS = {
@@ -30,7 +122,7 @@ _ALLOWED_FETCH_DOMAINS = {
     "namu.wiki", "ko.wikipedia.org",
     # 웹소설 공식 플랫폼
     "novelpia.com", "www.novelpia.com",
-    "munpia.com", "mm.munpia.com", "m.munpia.com", "novel.munpia.com",
+    "munpia.com", "mm.munpia.com", "m.munpia.com", "novel.munpia.com", "square.munpia.com",
     "series.naver.com", "m.series.naver.com",
     "ridibooks.com", "www.ridibooks.com",
     "kakaopage.com", "page.kakao.com",
@@ -40,21 +132,457 @@ _ALLOWED_FETCH_DOMAINS = {
     "gall.dcinside.com", "m.dcinside.com",
     "m.fmkorea.com", "www.fmkorea.com",
     "m.ruliweb.com", "www.ruliweb.com",
+    "teamblind.com", "www.teamblind.com",
     # 블로그/리뷰
     "blog.naver.com", "m.blog.naver.com",
     "tistory.com",  # *.tistory.com 매칭용은 endswith 로직에서 처리
     "brunch.co.kr",
 }
 
+_OFFICIAL_PLATFORM_DOMAINS = {
+    "novelpia.com", "www.novelpia.com",
+    "munpia.com", "mm.munpia.com", "m.munpia.com", "novel.munpia.com", "square.munpia.com",
+    "series.naver.com", "m.series.naver.com",
+    "ridibooks.com", "www.ridibooks.com",
+    "kakaopage.com", "page.kakao.com",
+    "joara.com", "www.joara.com",
+}
+
+_COMMUNITY_DOMAINS = {
+    "arca.live",
+    "gall.dcinside.com", "m.dcinside.com",
+    "m.fmkorea.com", "www.fmkorea.com",
+    "m.ruliweb.com", "www.ruliweb.com",
+    "teamblind.com", "www.teamblind.com",
+}
+
+_REFERENCE_DOMAINS = {
+    "namu.wiki", "ko.wikipedia.org", "thewiki.kr",
+    "blog.naver.com", "m.blog.naver.com", "brunch.co.kr",
+}
+
+_QUERY_GENERIC_HANGUL_TOKENS = {
+    "검색", "정식", "제목", "작품", "작품명", "작가", "추천", "리뷰", "후기",
+    "웹소설", "소설", "문피아", "노벨피아", "시리즈", "카카오", "카카오페이지",
+    "네이버", "플랫폼", "웹", "등장인물", "캐릭터", "정식제목", "의미", "뜻",
+    "무슨", "어디", "나오는", "나오냐", "나오는지", "어디서", "정보",
+}
+
+
+def _env_bool(name: str, default: bool = False) -> bool:
+    val = os.getenv(name, "1" if default else "0").strip().lower()
+    return val in {"1", "true", "yes", "on"}
+
+
+def _get_searchxng_urls() -> List[str]:
+    """
+    SEARCHXNG_URLS(콤마구분)가 있으면 우선 사용, 없으면 SEARCHXNG_URL 단일값 사용.
+    예: SEARCHXNG_URLS=http://searchxng:8080,https://searx.space
+    """
+    raw_list = os.getenv("SEARCHXNG_URLS", "").strip()
+    urls: List[str] = []
+    if raw_list:
+        for u in raw_list.split(","):
+            u2 = (u or "").strip().rstrip("/")
+            if not u2:
+                continue
+            try:
+                host = (urlparse(u2).hostname or "").lower()
+            except Exception:
+                host = ""
+            # searx.space 자체는 인스턴스 디렉터리 포털이며 검색 API(/search)를 제공하지 않는다.
+            # 잘못 추가되어도 자동 제외해 404 재시도를 방지한다.
+            if host in _DIRECTORY_ONLY_HOSTS:
+                continue
+            if u2 not in urls:
+                urls.append(u2)
+    primary = (os.getenv("SEARCHXNG_URL", SEARCHXNG_URL) or "").strip().rstrip("/")
+    if primary and primary not in urls:
+        urls.insert(0, primary)
+
+    # 공개 인스턴스 자동 발견 (옵션): searx.space instances.json 메타 기반 선별
+    if _env_bool("MCP_DISCOVER_PUBLIC_INSTANCES", False):
+        for u in _discover_public_instances():
+            if u not in urls:
+                urls.append(u)
+
+    if not urls:
+        urls = [SEARCHXNG_URL.rstrip("/")]
+    return urls
+
+
+def _discover_public_instances() -> List[str]:
+    """searx.space 인스턴스 메타를 기반으로 공개 인스턴스 후보를 선별한다.
+
+    주의:
+    - 포털(searx.space) 자체는 제외한다.
+    - 이 함수는 메타데이터 필터링만 수행한다(능동 프로빙 없음).
+    - 실제 요청 실패는 런타임 백오프로 자동 격리된다.
+    """
+    now = time.time()
+    ttl_sec = max(60, min(int(os.getenv("MCP_DISCOVERY_CACHE_SEC", "1800")), 86400))
+    if (now - float(_DISCOVERY_CACHE.get("at", 0.0))) < ttl_sec:
+        cached = _DISCOVERY_CACHE.get("urls") or []
+        return [u for u in cached if isinstance(u, str)]
+
+    source_url = os.getenv("MCP_DISCOVERY_SOURCE_URL", "https://searx.space/data/instances.json").strip()
+    max_urls = max(1, min(int(os.getenv("MCP_DISCOVERY_MAX_URLS", "3")), 10))
+    min_search_success = float(os.getenv("MCP_DISCOVERY_MIN_SEARCH_SUCCESS", "80.0"))
+
+    discovered: List[str] = []
+    try:
+        resp = httpx.get(source_url, timeout=8.0)
+        resp.raise_for_status()
+        payload = resp.json()
+        instances = payload.get("instances") or {}
+        scored: List[tuple[float, str]] = []
+
+        for raw_url, meta in instances.items():
+            if not isinstance(raw_url, str) or not isinstance(meta, dict):
+                continue
+            url = raw_url.strip().rstrip("/")
+            if not url.startswith(("http://", "https://")):
+                continue
+            try:
+                host = (urlparse(url).hostname or "").lower()
+            except Exception:
+                host = ""
+            if host in _DIRECTORY_ONLY_HOSTS:
+                continue
+            if meta.get("network_type") != "normal":
+                continue
+            if not bool(meta.get("main", False)):
+                continue
+            http_status = int((meta.get("http") or {}).get("status_code") or 0)
+            if http_status != 200:
+                continue
+            search_ok = float((((meta.get("timing") or {}).get("search") or {}).get("success_percentage")) or 0.0)
+            if search_ok < min_search_success:
+                continue
+            latency = float(((((meta.get("timing") or {}).get("initial") or {}).get("all") or {}).get("value")) or 999.0)
+            scored.append((latency, url))
+
+        scored.sort(key=lambda x: x[0])
+        for _, u in scored[:max_urls]:
+            discovered.append(u)
+
+    except Exception as e:
+        try:
+            print(f"[mcp-bridge] public instance discovery failed: {e!r}", file=sys.stderr, flush=True)
+        except Exception:
+            pass
+        discovered = []
+
+    # 발견 실패 시 하드코딩 폴백 인스턴스 사용
+    if not discovered:
+        fallback_count = max(1, min(max_urls, len(_HARDCODED_FALLBACK_INSTANCES)))
+        discovered = list(_HARDCODED_FALLBACK_INSTANCES[:fallback_count])
+        try:
+            print(
+                f"[mcp-bridge] using {len(discovered)} hardcoded fallback instances",
+                file=sys.stderr, flush=True,
+            )
+        except Exception:
+            pass
+
+    _DISCOVERY_CACHE["at"] = now
+    _DISCOVERY_CACHE["urls"] = discovered
+    return discovered
+
+
+def _mark_endpoint_backoff(endpoint: str, status_code: Optional[int] = None, exc: Optional[Exception] = None) -> None:
+    if not endpoint:
+        return
+    ttl = 60
+    if status_code == 404:
+        ttl = 6 * 60 * 60
+    elif status_code in {403, 429}:
+        ttl = 15 * 60
+    elif status_code in _RETRYABLE_SEARCH_STATUS:
+        ttl = 3 * 60
+    elif isinstance(exc, (httpx.ConnectError, httpx.TimeoutException)):
+        ttl = 90
+    _ENDPOINT_BACKOFF_UNTIL[endpoint] = time.time() + ttl
+
+
+def _active_searchxng_urls() -> List[str]:
+    base = _get_searchxng_urls()
+    now = time.time()
+    active = [u for u in base if _ENDPOINT_BACKOFF_UNTIL.get(u, 0.0) <= now]
+    return active or base
+
+
+def _sanitize_engines(raw: str, default_csv: str) -> str:
+    """Remove blocked engines and normalize comma-separated engine list."""
+    parts = [p.strip() for p in (raw or "").split(",") if p.strip()]
+    parts = [p for p in parts if p not in _BLOCKED_ENGINES]
+    if not parts:
+        parts = [p.strip() for p in default_csv.split(",") if p.strip()]
+        parts = [p for p in parts if p not in _BLOCKED_ENGINES]
+    return ",".join(parts)
+
+
+def _contains_hangul(text: str) -> bool:
+    return bool(re.search(r"[\uac00-\ud7a3]", text or ""))
+
+
+def _extract_hangul_tokens(text: str) -> List[str]:
+    toks = re.findall(r"[\uac00-\ud7a3]{2,}", text or "")
+    # 길이가 너무 짧거나 의미 약한 범용어는 제외
+    stop = {"검색", "정식", "제목", "작품", "작가", "추천", "리뷰", "웹소설", "소설"}
+    out: List[str] = []
+    seen = set()
+    for t in toks:
+        cand = [t]
+        # 합성어를 보수적으로 분해해 부분 일치(예: 즉사무림 -> 즉사, 무림) 허용
+        if len(t) >= 4:
+            cand.extend([t[:2], t[2:]])
+        if len(t) >= 6:
+            cand.extend([t[:3], t[3:]])
+        for c in cand:
+            if c in stop or len(c) < 2:
+                continue
+            if c not in seen:
+                seen.add(c)
+                out.append(c)
+    return out
+
+
+def _is_korean_friendly_host(url: str) -> bool:
+    try:
+        from urllib.parse import urlparse
+
+        host = (urlparse(url or "").hostname or "").lower()
+    except Exception:
+        host = ""
+    if not host:
+        return False
+    if host.endswith(".kr"):
+        return True
+    for dom in _ALLOWED_FETCH_DOMAINS:
+        _d = str(dom or "").lower()
+        if host == _d or host.endswith("." + _d):
+            return True
+    return False
+
+
+def _host_matches(hostname: str, allowed: set[str]) -> bool:
+    if not hostname:
+        return False
+    for dom in allowed:
+        _d = str(dom or "").lower()
+        if hostname == _d or hostname.endswith("." + _d):
+            return True
+    return False
+
+
+def _classify_korean_host(url: str) -> str:
+    try:
+        host = (urlparse(url or "").hostname or "").lower()
+    except Exception:
+        host = ""
+    if _host_matches(host, _OFFICIAL_PLATFORM_DOMAINS):
+        return "official"
+    if _host_matches(host, _COMMUNITY_DOMAINS):
+        return "community"
+    if _host_matches(host, _REFERENCE_DOMAINS) or host.endswith(".tistory.com"):
+        return "reference"
+    if host.endswith(".kr"):
+        return "korean"
+    return "other"
+
+
+def _extract_query_core_tokens(query: str) -> List[str]:
+    toks = re.findall(r"[\uac00-\ud7a3]{2,}[\u3131-\u314e]?", query or "")
+    out: List[str] = []
+    seen = set()
+    for tok in toks:
+        if tok in _QUERY_GENERIC_HANGUL_TOKENS or len(tok) < 2:
+            continue
+        if tok not in seen:
+            seen.add(tok)
+            out.append(tok)
+    return out
+
+
+def _query_token_fragments(token: str) -> List[str]:
+    norm = re.sub(r"\s+", "", token or "")
+    if len(norm) < 4:
+        return []
+    frags: List[str] = []
+    for cand in (norm[:2], norm[-2:], norm[:3], norm[-3:]):
+        if len(cand) < 2 or cand in _QUERY_GENERIC_HANGUL_TOKENS:
+            continue
+        if cand not in frags:
+            frags.append(cand)
+    return frags
+
+
+_PURPOSE_RELAXED_TITLE_RESOLUTION = {
+    "official_title_verify",
+    "platform_title_search",
+    "title_search_community",
+    "alias_bridge_search",
+    "known_abbr_fullname_search",
+    "abbreviation_fullname_search",
+    "abbreviation_verification",
+    "decoder_recall_verification",
+    "adaptive_official_url",
+    "adaptive_wiki",
+}
+
+_PURPOSE_STRICT_ANCHOR = {
+    "community_chain_search",
+    "community_chain_verify",
+    "character_verify",
+    "character_event_reverse_track",
+    "counter_evidence_character_track",
+}
+
+_NOVEL_CUE_TOKENS = {
+    "웹소설", "소설", "문피아", "노벨피아", "시리즈", "카카오페이지", "조아라",
+    "리디", "작가", "연재", "완결", "줄거리", "선호작", "추천수", "#novel",
+}
+
+
+def _purpose_key(raw: str) -> str:
+    return str(raw or "").split(":", 1)[0].strip().lower()
+
+
+def _has_novel_cues(text: str) -> bool:
+    norm = (text or "").lower()
+    if not norm:
+        return False
+    return any(tok.lower() in norm for tok in _NOVEL_CUE_TOKENS)
+
+
+def _is_non_korean_noise_result(query: str, item: Dict[str, Any], purpose: str = "") -> bool:
+    """
+    한글 질의에서 한국 웹소설 문맥과 무관한 외국어 결과를 제거한다.
+    로직:
+    0) 비한국어 노이즈 도메인 블랙리스트 즉시 차단 (zhihu, baidu 등)
+    1) 공식/국내 도메인(.kr, 허용도메인)은 유지
+    2) title+content에 한글이 없으면 노이즈
+    3) 질의의 한글 핵심 토큰이 스니펫에 없으면 노이즈
+    4) 중국어/일본어/베트남어 위주 콘텐츠면 노이즈
+    """
+    if not _contains_hangul(query):
+        return False
+    url = str(item.get("url") or "")
+    # 0) 노이즈 도메인 블랙리스트 (중국 포털, 인도 정부 등)
+    try:
+        _host = (urlparse(url).hostname or "").lower()
+    except Exception:
+        _host = ""
+    if _is_blacklisted_host(_host):
+        return True
+    title = str(item.get("title") or "")
+    content = str(item.get("content") or "")
+    merged = f"{title} {content}"
+    host_kind = _classify_korean_host(url)
+    purpose_key = _purpose_key(purpose)
+    novel_cues = _has_novel_cues(merged)
+    # 2) 한글이 전혀 없으면 바로 노이즈
+    if not _contains_hangul(merged):
+        return True
+    # 3) 질의의 한글 핵심 토큰이 스니펫에 없으면 노이즈
+    q_tokens = _extract_query_core_tokens(query)
+    if q_tokens:
+        merged_norm = re.sub(r"\s+", "", merged)
+        full_overlap = any(tok in merged_norm for tok in q_tokens)
+        frag_overlap = any(
+            frag in merged_norm
+            for tok in q_tokens
+            for frag in _query_token_fragments(tok)
+        )
+        if purpose_key in _PURPOSE_RELAXED_TITLE_RESOLUTION:
+            # 제목/플랫폼 검증 계열은 약칭→정식명 브리지가 필요한 경우가 많다.
+            # 공식/커뮤니티/참고 도메인에서는 "웹소설/연재/작가/플랫폼" 단서가 있으면
+            # 질의 토큰 직접 일치가 약해도 일단 후보를 남긴다.
+            if host_kind == "official":
+                if not (full_overlap or frag_overlap or novel_cues):
+                    return True
+            elif host_kind in {"community", "reference", "korean"}:
+                if not (full_overlap or frag_overlap or novel_cues):
+                    return True
+            else:
+                if not (full_overlap or frag_overlap):
+                    return True
+        elif purpose_key in _PURPOSE_STRICT_ANCHOR:
+            # 캐릭터/체인 검색은 인명 일반어 노이즈가 많아서 더 엄격하게 본다.
+            if not (full_overlap or frag_overlap):
+                return True
+            if len(q_tokens) <= 1 and not novel_cues:
+                return True
+        elif host_kind == "official":
+            if not (full_overlap or frag_overlap):
+                return True
+        elif host_kind == "community":
+            if not (full_overlap or frag_overlap):
+                return True
+        elif host_kind in {"reference", "korean"}:
+            if not full_overlap:
+                return True
+        else:
+            if not full_overlap:
+                return True
+    # 4) 중국어/일본어/베트남어 위주 콘텐츠 탐지 (한글이 있더라도 중국어가 더 많으면 노이즈)
+    _cjk_non_hangul = len(re.findall(r'[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]', merged))
+    _hangul_count = len(re.findall(r'[\uac00-\ud7a3]', merged))
+    if _cjk_non_hangul > 0 and _cjk_non_hangul > _hangul_count * 2:
+        return True
+    return False
+
+
+def _dedupe_search_items(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    deduped: List[Dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
+    for item in items or []:
+        if not isinstance(item, dict):
+            continue
+        url = str(item.get("url") or "").strip()
+        title = str(item.get("title") or "").strip()
+        key = (url, title)
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(item)
+    return deduped
+
 
 @app.get("/healthz")
 def healthz():
     """헬스체크 엔드포인트 — SearXNG 연결까지 확인"""
-    try:
-        resp = httpx.get(f"{SEARCHXNG_URL}/healthz", timeout=5.0)
-        return {"status": "ok", "searxng": resp.status_code == 200}
-    except Exception as e:
-        return {"status": "degraded", "searxng": False, "error": str(e)}
+    urls = _get_searchxng_urls()
+    checks: List[Dict[str, Any]] = []
+    any_ok = False
+    for u in urls:
+        try:
+            resp = httpx.get(f"{u}/healthz", timeout=5.0)
+            ok = bool(resp.status_code == 200)
+            checks.append(
+                {
+                    "url": u,
+                    "ok": ok,
+                    "status_code": resp.status_code,
+                    "backoff_until": _ENDPOINT_BACKOFF_UNTIL.get(u, 0.0),
+                }
+            )
+            any_ok = any_ok or ok
+        except Exception as e:
+            checks.append(
+                {
+                    "url": u,
+                    "ok": False,
+                    "error": str(e),
+                    "backoff_until": _ENDPOINT_BACKOFF_UNTIL.get(u, 0.0),
+                }
+            )
+    return {
+        "status": "ok" if any_ok else "degraded",
+        "searxng": any_ok,
+        "checks": checks,
+    }
 
 
 @app.post("/mcp/search")
@@ -64,33 +592,241 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
 
     num_results = request.num_results or DEFAULT_NUM_RESULTS
     params = {"q": request.query, "format": "json", "safesearch": "0", "pageno": "1"}
+    default_language = os.getenv("MCP_SEARCH_LANGUAGE", "ko-KR").strip()
+    if default_language:
+        params["language"] = default_language
+    try:
+        max_retries = max(0, min(int(os.getenv("MCP_SEARCH_MAX_RETRIES", "3")), 8))
+    except Exception:
+        max_retries = 1
+    try:
+        max_pages = max(1, min(int(os.getenv("MCP_SEARCH_MAX_PAGES", "3")), 5))
+    except Exception:
+        max_pages = 3
+    try:
+        backoff_ms = max(50, min(int(os.getenv("MCP_SEARCH_RETRY_BACKOFF_MS", "250")), 5000))
+    except Exception:
+        backoff_ms = 250
+    retry_on_empty = _env_bool("MCP_SEARCH_RETRY_ON_EMPTY", True)
+    soft_fail = _env_bool("MCP_SEARCH_SOFT_FAIL", True)
+    timeout_sec = float(os.getenv("MCP_SEARCH_TIMEOUT_SEC", "20"))
+    endpoint_candidates = _active_searchxng_urls()
+    # 기본 엔진을 명시해 인스턴스 기본값(yahoo/wikidata 등) 유입을 방지한다.
+    # recall 확보를 위해 google/bing + presearch/webcrawler/naver를 기본 조합으로 둔다.
+    # CAPTCHA가 잦은 startpage/duckduckgo/brave는 기본값에서 제외한다.
+    _query_has_hangul = _contains_hangul(request.query)
+    _default_primary = "google,bing,presearch,webcrawler,naver"
+    _default_fallback = "webcrawler,google,bing,presearch,naver"
+    primary_engines = _sanitize_engines(
+        os.getenv("MCP_SEARCH_ENGINES", _default_primary).strip(),
+        _default_primary,
+    )
+    fallback_engines = _sanitize_engines(
+        os.getenv("MCP_SEARCH_FALLBACK_ENGINES", _default_fallback).strip(),
+        _default_fallback,
+    )
+
     # SearXNG botdetection은 X-Forwarded-For / X-Real-IP 헤더가 없으면 에러/차단을 유발할 수 있음.
+    # 실제 브라우저 UA 로테이션으로 업스트림 검색엔진 차단 회피
     headers = {
-        "User-Agent": "llm-batch/0.1 (+mcp-bridge)",
+        "User-Agent": _random_browser_ua(),
         "X-Forwarded-For": "127.0.0.1",
         "X-Real-IP": "127.0.0.1",
         "X-Forwarded-Proto": "http",
+        "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
     }
-    try:
-        response = httpx.get(
-            f"{SEARCHXNG_URL.rstrip('/')}/search",
-            params=params,
-            headers=headers,
-            timeout=20.0,
-        )
-        response.raise_for_status()
-    except httpx.HTTPError as exc:
-        # 원인 파악을 위해 stderr에 디테일을 남긴다.
-        try:
-            print(f"[mcp-bridge] searchxng request failed: {exc!r}", file=sys.stderr, flush=True)
-        except Exception:
-            pass
-        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    data: Dict[str, Any] = {}
+    attempts = 0
+    possible_throttle = False
+    retry_errors: List[str] = []
+    used_endpoint = endpoint_candidates[0] if endpoint_candidates else SEARCHXNG_URL.rstrip("/")
+    local_endpoint = used_endpoint
+    remote_candidates = endpoint_candidates[1:] if len(endpoint_candidates) > 1 else []
 
-    data = response.json()
+    _local_degraded = False  # 로컬 인스턴스에서 연속 저하 감지
+    pages_fetched = 0
+
+    for attempt in range(max_retries + 1):
+        attempts = attempt + 1
+        # 재시도 전략:
+        # 1) local + primary engines
+        # 2) local + fallback engines (단, 로컬 저하면 즉시 remote로 전환)
+        # 3+) remote endpoints 라운드로빈 (엔진 미지정 — 원격 인스턴스 기본 엔진 사용)
+        if attempt == 0:
+            used_endpoint = local_endpoint
+        elif attempt == 1 and not _local_degraded:
+            used_endpoint = local_endpoint
+        else:
+            if remote_candidates:
+                # 로컬 저하 시 attempt=1부터 바로 원격 사용
+                ridx = (attempt - (1 if _local_degraded else 2)) % len(remote_candidates)
+                used_endpoint = remote_candidates[ridx]
+            else:
+                used_endpoint = local_endpoint
+        req_params = dict(params)
+        if used_endpoint == local_endpoint:
+            if attempt == 0 and primary_engines:
+                req_params["engines"] = primary_engines
+            elif attempt > 0 and fallback_engines:
+                req_params["engines"] = fallback_engines
+        # 원격 인스턴스에서는 site: 접두어를 제거한 단순 쿼리 사용
+        # (공개 인스턴스는 site: 연산자 지원이 불안정할 수 있음)
+        if used_endpoint != local_endpoint and "site:" in req_params.get("q", ""):
+            _orig_q = req_params["q"]
+            _clean_q = re.sub(r"site:\S+\s*(?:OR\s+site:\S+\s*)*", "", _orig_q).strip()
+            if _clean_q:
+                req_params["q"] = _clean_q
+        try:
+            response = httpx.get(
+                f"{used_endpoint.rstrip('/')}/search",
+                params=req_params,
+                headers=headers,
+                timeout=timeout_sec,
+            )
+            status = int(response.status_code)
+            if status in _RETRYABLE_SEARCH_STATUS:
+                possible_throttle = True
+                _mark_endpoint_backoff(used_endpoint, status_code=status)
+                if attempt < max_retries:
+                    retry_errors.append(f"http:{status}")
+                    sleep_sec = (backoff_ms / 1000.0) * (attempt + 1)
+                    time.sleep(sleep_sec)
+                    continue
+            response.raise_for_status()
+            data = response.json() if response.content else {}
+        except httpx.HTTPError as exc:
+            # 원인 파악을 위해 stderr에 디테일을 남긴다.
+            try:
+                print(
+                    f"[mcp-bridge] searchxng request failed: endpoint={used_endpoint} err={exc!r}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+            except Exception:
+                pass
+            retry_errors.append(str(exc))
+            status_code = None
+            if isinstance(exc, httpx.HTTPStatusError):
+                status_code = int(exc.response.status_code)
+            # 일부 퍼블릭 인스턴스는 /search JSON API를 비활성화(404)한다.
+            # 이런 경우 현재 인스턴스를 건너뛰고 다음 시도로 넘어간다.
+            if status_code == 404 and attempt < max_retries:
+                _mark_endpoint_backoff(used_endpoint, status_code=status_code)
+                retry_errors.append("http:404(search_api_unsupported)")
+                sleep_sec = (backoff_ms / 1000.0) * (attempt + 1)
+                time.sleep(sleep_sec)
+                continue
+            if status_code in _RETRYABLE_SEARCH_STATUS and attempt < max_retries:
+                possible_throttle = True
+                _mark_endpoint_backoff(used_endpoint, status_code=status_code)
+                sleep_sec = (backoff_ms / 1000.0) * (attempt + 1)
+                time.sleep(sleep_sec)
+                continue
+            if attempt < max_retries and isinstance(exc, (httpx.ConnectError, httpx.TimeoutException)):
+                _mark_endpoint_backoff(used_endpoint, status_code=status_code, exc=exc)
+                sleep_sec = (backoff_ms / 1000.0) * (attempt + 1)
+                time.sleep(sleep_sec)
+                continue
+            if soft_fail:
+                data = {
+                    "results": [],
+                    "errors": retry_errors[-5:],
+                    "unresponsive_engines": [],
+                }
+                break
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+        # 1페이지가 비한국어/브릿지 필터로 비거나, accepted 결과가 부족해도
+        # 2~3페이지를 더 훑어 관련 결과를 보충한다.
+        raw_items = list(data.get("results", []) or [])
+        if _query_has_hangul:
+            filtered_items = [
+                it for it in raw_items
+                if not _is_non_korean_noise_result(request.query, it, request.purpose)
+            ]
+        else:
+            filtered_items = list(raw_items)
+        pages_fetched = 1
+
+        if max_pages > 1 and len(filtered_items) < num_results:
+            for page_no in range(2, max_pages + 1):
+                page_params = dict(req_params)
+                page_params["pageno"] = str(page_no)
+                try:
+                    page_response = httpx.get(
+                        f"{used_endpoint.rstrip('/')}/search",
+                        params=page_params,
+                        headers=headers,
+                        timeout=timeout_sec,
+                    )
+                    if int(page_response.status_code) in _RETRYABLE_SEARCH_STATUS:
+                        possible_throttle = True
+                        break
+                    page_response.raise_for_status()
+                    page_data = page_response.json() if page_response.content else {}
+                except Exception as exc:
+                    retry_errors.append(f"page{page_no}:{exc}")
+                    break
+
+                page_raw_items = list(page_data.get("results", []) or [])
+                if not page_raw_items:
+                    break
+                if _query_has_hangul:
+                    page_filtered_items = [
+                        it for it in page_raw_items
+                        if not _is_non_korean_noise_result(request.query, it, request.purpose)
+                    ]
+                else:
+                    page_filtered_items = list(page_raw_items)
+                raw_items.extend(page_raw_items)
+                filtered_items.extend(page_filtered_items)
+                pages_fetched = page_no
+                if len(filtered_items) >= num_results:
+                    break
+
+        raw_items = _dedupe_search_items(raw_items)
+        filtered_items = _dedupe_search_items(filtered_items)
+        data = dict(data or {})
+        data["results"] = filtered_items
+
+        raw_results = raw_items
+        unresponsive_engines = data.get("unresponsive_engines") or []
+        engine_errors = data.get("errors") or []
+        degraded = bool(unresponsive_engines) or bool(engine_errors)
+        empty_result = len(filtered_items) == 0
+
+        # 로컬 인스턴스에서 저하/빈결과 감지 시 → 다음 시도부터 원격으로 전환
+        if used_endpoint == local_endpoint and (degraded or (empty_result and possible_throttle)):
+            _local_degraded = True
+
+        # 한국어 질의에서 naver 단독 무결과일 때는 1회 fallback 엔진으로 재시도한다.
+        if (
+            empty_result
+            and _query_has_hangul
+            and attempt == 0
+            and fallback_engines
+            and fallback_engines != primary_engines
+            and max_retries > 0
+        ):
+            sleep_sec = max(0.05, backoff_ms / 1000.0)
+            time.sleep(sleep_sec)
+            continue
+        if empty_result and retry_on_empty and attempt < max_retries:
+            # 200 + 빈 결과가 연속될 때, 엔진 지연/차단 가능성을 고려해 짧게 재시도
+            if degraded:
+                possible_throttle = True
+            if degraded or possible_throttle:
+                sleep_sec = (backoff_ms / 1000.0) * (attempt + 1)
+                time.sleep(sleep_sec)
+                continue
+        break
+
+    raw_items = raw_items if 'raw_items' in locals() else list(data.get("results", []) or [])
+    filtered_items = filtered_items if 'filtered_items' in locals() else list(data.get("results", []) or [])
+
     results: List[Dict[str, Any]] = []
     # 요청한 개수만큼만 반환 (SearXNG가 더 많이 반환할 수 있음)
-    for item in data.get("results", [])[:num_results]:
+    for item in filtered_items[:num_results]:
         results.append(
             {
                 "title": item.get("title"),
@@ -98,7 +834,26 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
                 "content": item.get("content"),
             }
         )
-    return {"query": request.query, "results": results, "total": len(data.get("results", []))}
+    _unresponsive = data.get("unresponsive_engines") or []
+    _engine_errors = data.get("errors") or []
+    degraded = bool(_unresponsive) or bool(_engine_errors)
+    return {
+        "query": request.query,
+        "results": results,
+        "total": len(filtered_items),
+        "raw_total": len(raw_items),
+        "lang_filtered": max(0, len(raw_items) - len(filtered_items)),
+        "attempts": attempts,
+        "retry_count": max(0, attempts - 1),
+        "pages_fetched": pages_fetched,
+        "possible_throttle": possible_throttle,
+        "degraded": degraded,
+        "engines": (fallback_engines if attempts > 1 else primary_engines),
+        "provider_url": used_endpoint,
+        "provider_candidates": endpoint_candidates,
+        "unresponsive_engines": _unresponsive if isinstance(_unresponsive, list) else [],
+        "engine_errors": _engine_errors if isinstance(_engine_errors, list) else retry_errors[-5:],
+    }
 
 
 def _extract_domain(url: str) -> str:
@@ -111,8 +866,11 @@ def _extract_domain(url: str) -> str:
         return ""
 
 
-def _html_to_text(html: str, max_length: int = 2000) -> str:
-    """HTML → 순수 텍스트 추출 (경량, 외부 의존성 없음)"""
+def _html_to_text(html: str, max_length: int = 0) -> str:
+    """HTML → 순수 텍스트 추출 (경량, 외부 의존성 없음)
+    
+    max_length=0 이면 길이 제한 없음 (전문 반환).
+    """
     # script, style 태그 제거
     text = re.sub(r'<script[^>]*>.*?</script>', '', html, flags=re.DOTALL | re.IGNORECASE)
     text = re.sub(r'<style[^>]*>.*?</style>', '', text, flags=re.DOTALL | re.IGNORECASE)
@@ -126,15 +884,201 @@ def _html_to_text(html: str, max_length: int = 2000) -> str:
     text = html_mod.unescape(text)
     # 연속 공백/개행 정리
     text = re.sub(r'\s+', ' ', text).strip()
-    # 길이 제한
-    if len(text) > max_length:
+    # 길이 제한 (max_length > 0 일 때만)
+    if max_length > 0 and len(text) > max_length:
         text = text[:max_length]
     return text
 
 
+# ---------------------------------------------------------------------------
+# 마크다운 클리닝 — crawl4ai 반환 마크다운에서 LLM에 불필요한 요소 제거
+# ---------------------------------------------------------------------------
+
+def _clean_markdown_for_llm(md: str) -> str:
+    """crawl4ai 마크다운에서 URL/이미지/네비게이션 노이즈를 제거하여 텍스트만 남긴다.
+
+    나무위키 등 링크 밀도가 높은 페이지에서 233K→30~50K로 대폭 축소.
+    LLM 컨텍스트 효율을 위해 의미 있는 텍스트만 보존한다.
+    """
+    if not md:
+        return md
+    import re as _re_cm
+
+    # 1) 이미지 제거: ![alt](url) → (빈 문자열)
+    md = _re_cm.sub(r'!\[[^\]]*\]\([^)]*\)', '', md)
+
+    # 2) 하이퍼링크 → 텍스트만 보존: [텍스트](url) → 텍스트
+    #    중첩 대괄호 처리: [[편집]](url) → [편집]
+    md = _re_cm.sub(r'\[([^\]]*)\]\([^)]*\)', r'\1', md)
+    # 나무위키 [[편집]](url) 잔여 처리 (2pass)
+    md = _re_cm.sub(r'\[([^\]]*)\]\([^)]*\)', r'\1', md)
+
+    # 3) 베어 URL 제거 (http/https로 시작하는 단독 URL)
+    md = _re_cm.sub(r'https?://\S+', '', md)
+
+    # 4) [편집] 같은 잔여 위키 액션 링크 텍스트 제거
+    md = _re_cm.sub(r'\[편집\]', '', md)
+
+    # 4) 빈 마크다운 헤더 제거 (# 만 남은 줄)
+    md = _re_cm.sub(r'^#+\s*$', '', md, flags=_re_cm.MULTILINE)
+
+    # 5) 연속 빈 줄 정리 (3줄 이상 → 2줄)
+    md = _re_cm.sub(r'\n{3,}', '\n\n', md)
+
+    # 6) 각 줄 앞뒤 공백 정리 + 빈 줄 최소화
+    lines = md.split('\n')
+    cleaned = []
+    prev_empty = False
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            if not prev_empty:
+                cleaned.append('')
+            prev_empty = True
+        else:
+            cleaned.append(stripped)
+            prev_empty = False
+
+    return '\n'.join(cleaned).strip()
+
+
+# ---------------------------------------------------------------------------
+# Crawl4AI 연동 — Playwright 기반 심층 크롤링 + 마크다운 변환
+# ---------------------------------------------------------------------------
+
+def _crawl4ai_fetch(url: str, max_length: int = 0) -> Optional[Dict[str, Any]]:
+    """Crawl4AI Docker 서비스를 호출하여 페이지 마크다운을 획득한다.
+
+    max_length=0 이면 길이 제한 없음 (전문 반환).
+
+    Returns:
+        성공 시 {"markdown": str, "html": str | None} dict,
+        실패 시 None.
+    """
+    crawl4ai_url = CRAWL4AI_URL.rstrip("/")
+
+    # ── JS 헤비 사이트 감지: text_mode=False로 전환 + 추가 대기 ──
+    _JS_HEAVY_DOMAINS = ("novelpia.com", "kakaopage.com", "page.kakao.com", "series.naver.com", "munpia.com")
+    _is_js_heavy = any(d in url for d in _JS_HEAVY_DOMAINS)
+
+    # ── wait_until 전략 ──
+    # 현대 웹사이트 대부분은 광고/트래킹/웹소켓 등으로 networkidle에 도달 불가.
+    # 기본값을 domcontentloaded로 하고, delay_before_return_html로 JS 렌더링 대기.
+    _delay = 5 if _is_js_heavy else 3  # JS 헤비 사이트는 5초, 일반 3초
+
+    # ── 1) /crawl 엔드포인트 호출 ──
+    payload = {
+        "urls": [url],
+        "browser_config": {
+            "type": "BrowserConfig",
+            "params": {
+                "headless": True,
+                "text_mode": not _is_js_heavy,  # JS 헤비 사이트는 이미지 포함 렌더링
+            },
+        },
+        "crawler_config": {
+            "type": "CrawlerRunConfig",
+            "params": {
+                "cache_mode": "bypass",
+                "exclude_external_links": True,
+                "excluded_tags": ["nav", "footer", "header", "aside", "script", "style"],
+                "word_count_threshold": 5,
+                "page_timeout": 60000,
+                "wait_until": "domcontentloaded",
+                "delay_before_return_html": _delay,
+            },
+        },
+    }
+
+    try:
+        resp = httpx.post(
+            f"{crawl4ai_url}/crawl",
+            json=payload,
+            timeout=90.0 if _is_js_heavy else 60.0,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception as exc:
+        try:
+            print(
+                f"[mcp-bridge][crawl4ai] /crawl request failed: {url} → {exc!r}",
+                file=sys.stderr, flush=True,
+            )
+        except Exception:
+            pass
+        return None
+
+    # ── 2) 응답 파싱 ──
+    # Crawl4AI /crawl 은 결과를 results[] 배열로 반환한다.
+    results = data if isinstance(data, list) else data.get("results", data.get("result", []))
+    if isinstance(results, dict):
+        results = [results]
+    if not results:
+        return None
+
+    first = results[0] if isinstance(results, list) else results
+    if not first.get("success", False):
+        err_msg = first.get("error_message", "unknown")
+        try:
+            print(
+                f"[mcp-bridge][crawl4ai] crawl unsuccessful: {url} → {err_msg}",
+                file=sys.stderr, flush=True,
+            )
+        except Exception:
+            pass
+        return None
+
+    # 마크다운 추출 — Crawl4AI 0.5.x+ 에서는 markdown이 dict일 수 있음
+    md_field = first.get("markdown")
+    markdown = ""
+    if isinstance(md_field, dict):
+        # fit_markdown > raw_markdown > markdown_with_citations 순으로 선호
+        markdown = (
+            md_field.get("fit_markdown")
+            or md_field.get("raw_markdown")
+            or md_field.get("markdown_with_citations")
+            or ""
+        )
+    elif isinstance(md_field, str):
+        markdown = md_field
+
+    # 최상위 fit_markdown 필드도 확인 (구버전 호환)
+    if not markdown:
+        markdown = first.get("fit_markdown") or ""
+
+    if not markdown:
+        return None
+
+    # 길이 제한 (max_length > 0 일 때만)
+    if max_length > 0 and len(markdown) > max_length:
+        markdown = markdown[:max_length]
+
+    raw_html = first.get("html") or first.get("cleaned_html") or None
+
+    try:
+        print(
+            f"[mcp-bridge][crawl4ai] success: {url}  md_len={len(markdown)}",
+            file=sys.stderr, flush=True,
+        )
+    except Exception:
+        pass
+
+    return {"markdown": markdown, "html": raw_html}
+
+
+def _crawl4ai_health_ok() -> bool:
+    """Crawl4AI 서비스가 살아있는지 빠르게 확인."""
+    try:
+        r = httpx.get(f"{CRAWL4AI_URL.rstrip('/')}/health", timeout=3.0)
+        return r.status_code == 200
+    except Exception:
+        return False
+
+
 def _extract_namu_wiki_info(html: str) -> Dict[str, Any]:
-    """나무위키 페이지에서 작품 정보를 구조적으로 추출"""
+    """나무위키 페이지에서 작품 정보를 구조적으로 추출 (강화버전)"""
     info: Dict[str, Any] = {}
+    info["page_type"] = "wiki"
     
     # 제목 추출 (h1.title 또는 document-title)
     title_match = re.search(r'<title>([^<]+)</title>', html, re.IGNORECASE)
@@ -142,41 +1086,220 @@ def _extract_namu_wiki_info(html: str) -> Dict[str, Any]:
         raw_title = title_match.group(1)
         # " - 나무위키" 제거
         raw_title = re.sub(r'\s*[-–—]\s*나무위키\s*$', '', raw_title).strip()
+        # 리비전 번호 제거: "(r173 판)" → ""
+        raw_title = re.sub(r'\s*\(r\d+\s*판?\)\s*$', '', raw_title).strip()
         info["page_title"] = raw_title
     
-    text = _html_to_text(html, max_length=5000)
+    text = _html_to_text(html)  # 전문 추출 (길이 제한 없음)
     
-    # 약칭 패턴: "약칭은 X", "약칭은 X 또는 Y"
-    abbrev_match = re.search(r'약칭(?:은|으로)\s+([^\s,.]+(?:\s+또는\s+[^\s,.]+)*)', text)
-    if abbrev_match:
-        info["abbreviations"] = [a.strip() for a in abbrev_match.group(1).split("또는")]
+    # ── 약칭 패턴 (5종으로 확대) ──
+    _abbreviations: List[str] = []
+    _abbrev_patterns = [
+        # "약칭은 X", "약칭은 X 또는 Y"
+        re.compile(r'약칭(?:은|으로)\s+([^\s,.]+(?:\s+또는\s+[^\s,.]+)*)'),
+        # "줄여서 X라고", "줄여서 X로"
+        re.compile(r'줄여서\s+([가-힣A-Za-z0-9]{2,10})(?:라고|로|이라)'),
+        # "통칭 X", "통상 X"
+        re.compile(r'(?:통칭|통상)\s+([가-힣A-Za-z0-9]{2,10})'),
+        # "약칭: X" / "약칭 : X"
+        re.compile(r'약칭\s*[:：]\s*([가-힣A-Za-z0-9]{2,10})'),
+        # "(약칭 X)"
+        re.compile(r'\(약칭\s+([가-힣A-Za-z0-9]{2,10})\)'),
+    ]
+    for pat in _abbrev_patterns:
+        for m in pat.finditer(text[:3000]):
+            for part in m.group(1).split("또는"):
+                a = part.strip()
+                if a and len(a) >= 2 and a not in _abbreviations:
+                    _abbreviations.append(a)
+    if _abbreviations:
+        info["abbreviations"] = _abbreviations
     
-    # 작가 패턴: "작가는 X", "X 작가의", "작가명 X"
-    author_match = re.search(r"['\"]?([가-힣A-Za-z0-9_]+)['\"]?\s*작가의", text)
-    if author_match:
-        info["author"] = author_match.group(1)
-    else:
-        author_match2 = re.search(r'작가(?:는|명)\s+["\']?([가-힣A-Za-z0-9_]+)', text)
-        if author_match2:
-            info["author"] = author_match2.group(1)
+    # ── 작가 패턴 (확대) ──
+    _author_patterns = [
+        re.compile(r"['\"]?([가-힣A-Za-z0-9_]{2,20})['\"]?\s*작가의"),
+        re.compile(r'작가(?:는|명)\s+["\']?([가-힣A-Za-z0-9_]{2,20})'),
+        re.compile(r'(?:글|원작)\s*[:：]?\s*["\']?([가-힣A-Za-z0-9_]{2,20})["\']?\s*(?:\||$|\n)'),
+        re.compile(r'(?:저자|필자|작성자)\s*[:：]?\s*["\']?([가-힣A-Za-z0-9_]{2,20})'),
+    ]
+    for pat in _author_patterns:
+        m = pat.search(text[:3000])
+        if m:
+            author_cand = m.group(1).strip()
+            if author_cand and len(author_cand) >= 2 and author_cand not in (
+                "작가", "작품", "소설", "웹소설", "원작", "글작가"
+            ):
+                info["author"] = author_cand
+                break
     
-    # 장르 패턴
-    genre_match = re.search(r'(?:장르|분류)\s*[:\s]\s*([^\n.]{3,30})', text)
+    # ── 장르 패턴 ──
+    genre_match = re.search(r'(?:장르|분류)\s*[:\s]\s*([^\n.]{3,40})', text)
     if genre_match:
         info["genre"] = genre_match.group(1).strip()
     
-    # 연재 플랫폼
-    for platform in ("노벨피아", "문피아", "카카오페이지", "네이버 시리즈"):
+    # ── 연재 상태 ──
+    for status_kw, status_val in [
+        ("완결", "completed"), ("연재중", "ongoing"), ("연재 중", "ongoing"),
+        ("휴재", "hiatus"), ("휴재중", "hiatus"),
+    ]:
+        if status_kw in text[:2000]:
+            info["serialization_status"] = status_val
+            break
+    
+    # ── 연재 플랫폼 ──
+    for platform in ("노벨피아", "문피아", "카카오페이지", "네이버 시리즈", "조아라", "리디북스"):
         if platform in text:
             info.setdefault("platforms", []).append(platform)
     
-    info["text_preview"] = text[:2000]
+    # ── 등장인물 추출 (나무위키 '등장인물' 섹션) ──
+    _characters: List[str] = []
+    # 패턴1: "등장인물" 섹션 이후 이름 패턴
+    char_section = re.search(r'등장인물|등장\s*캐릭터|주요\s*인물', text)
+    if char_section:
+        char_text = text[char_section.end():char_section.end() + 1500]
+        # 한국 이름 패턴: 2-4글자 한글 이름
+        char_names = re.findall(
+            r'(?:^|\n|\s)([가-힣]{2,4})(?:\s*[-:·]|\s*\()',
+            char_text
+        )
+        for cn in char_names[:15]:
+            cn = cn.strip()
+            if cn and len(cn) >= 2 and cn not in _characters:
+                # 일반 명사 제외
+                if cn not in ("등장인물", "주인공", "히로인", "조연", "악역", "주요인물",
+                              "보스몹", "사이드", "서브히로인"):
+                    _characters.append(cn)
+    if _characters:
+        info["characters"] = _characters[:10]
+    
+    # ── 화수 정보 ──
+    ep_match = re.search(r'(?:총\s*)?([\d,]+)\s*(?:화|회|편|장)', text[:2000])
+    if ep_match:
+        try:
+            info["episode_count"] = int(ep_match.group(1).replace(",", ""))
+        except ValueError:
+            pass
+    
+    info["text_preview"] = text  # 전문 반환 (길이 제한 제거)
     return info
+
+
+def _mine_novel_title_from_community(text: str) -> Optional[str]:
+    """커뮤니티 게시글 본문에서 실제 소설 제목을 채굴한다.
+
+    패턴 예시:
+      - "망겜의 성기사 읽고 있는데"
+      - "〇〇이라는 소설 추천"
+      - "〇〇 연재중인데"
+      - "[〇〇] 감상"
+    """
+    if not text:
+        return None
+
+    _patterns = [
+        # "〇〇 읽고 있는데 / 읽었는데 / 읽는중"
+        re.compile(
+            r'["\']?([가-힣A-Za-z0-9][가-힣A-Za-z0-9\s]{2,30}?)["\']?\s*'
+            r'(?:읽고\s*있|읽었|읽는\s*중|정주행|보고\s*있|봤는데)',
+        ),
+        # "〇〇이라는/라는 소설/작품"
+        re.compile(
+            r'["\']?([가-힣A-Za-z0-9][가-힣A-Za-z0-9\s]{2,30}?)["\']?\s*'
+            r'(?:이라는|라는)\s*(?:소설|작품|웹소설)',
+        ),
+        # "〇〇 추천 / 〇〇 소설 추천"
+        re.compile(
+            r'["\']?([가-힣A-Za-z0-9][가-힣A-Za-z0-9\s]{2,30}?)["\']?\s*'
+            r'(?:소설\s*)?(?:추천합니다|추천드|추천함|강추)',
+        ),
+        # "〇〇 연재중 / 완결"
+        re.compile(
+            r'["\']?([가-힣A-Za-z0-9][가-힣A-Za-z0-9\s]{2,30}?)["\']?\s*'
+            r'(?:연재중|연재\s*중|완결|휴재)',
+        ),
+        # "[〇〇] 또는 <〇〇> 형태"
+        re.compile(
+            r'[\[<「『]([가-힣A-Za-z0-9][가-힣A-Za-z0-9\s]{2,30}?)[\]>」』]',
+        ),
+    ]
+
+    # 텍스트 상위 1500자에서 탐색
+    search_text = text[:1500]
+    _GENERIC = {
+        "이", "그", "저", "이거", "그거", "저거", "뭐", "어떤", "무슨",
+        "이건", "그건", "요즘", "최근", "다른", "비슷한", "같은",
+    }
+    for pat in _patterns:
+        m = pat.search(search_text)
+        if m:
+            candidate = m.group(1).strip()
+            # 일반어/대명사 필터
+            if candidate and len(candidate) >= 3 and candidate not in _GENERIC:
+                return candidate
+    return None
+
+
+def _classify_platform_page_type(url: str, html: str) -> str:
+    """플랫폼 URL + HTML 구조로 페이지 유형을 분류한다.
+
+    Returns:
+        "novel_page"      - 작품 메인/뷰어 페이지 (제목·작가 신뢰 가능)
+        "community_post"  - 독자 커뮤니티/게시판 글 (제목은 게시글 제목, 소설 제목 아님)
+        "search_page"     - 검색 결과 페이지
+        "unknown"         - 분류 불가
+    """
+    url_lower = (url or "").lower()
+
+    # ── 문피아 커뮤니티 (독자마당 / 자유게시판) ──
+    if "square.munpia.com" in url_lower:
+        return "community_post"
+    if re.search(r"munpia\.com/(?:board|community|forum|square|free)", url_lower):
+        return "community_post"
+
+    # ── 노벨피아 커뮤니티 ──
+    if re.search(r"novelpia\.com/(?:freeboard|forum|community|board|arena)", url_lower):
+        return "community_post"
+    # 노벨피아 뷰어 = 작품 페이지
+    if re.search(r"novelpia\.com/(?:novel|viewer)", url_lower):
+        return "novel_page"
+
+    # ── 문피아 소설 페이지 ──
+    if re.search(r"munpia\.com/(?:novel|book|page)", url_lower):
+        return "novel_page"
+
+    # ── 카카오/네이버/조아라/리디 ──
+    if re.search(r"(?:kakaopage|page\.kakao|series\.naver|joara|ridibooks)\.com", url_lower):
+        return "novel_page"
+
+    # ── HTML 기반 보조 판정 (URL로 구분 불가 시) ──
+    if html:
+        html_lower = html[:5000].lower()
+        # 커뮤니티 시그널: 댓글 입력란, 게시판 네비게이션 등
+        _community_signals = (
+            "글쓰기", "댓글 작성", "게시판", "추천하기", "비추천",
+            "comment-write", "reply-form", "board-list",
+        )
+        _novel_signals = (
+            "연재중", "작가:", "총 화", "이어보기", "첫화보기",
+            "novel-info", "author-name", "episode-list",
+        )
+        community_score = sum(1 for s in _community_signals if s in html_lower)
+        novel_score = sum(1 for s in _novel_signals if s in html_lower)
+        if community_score >= 2 and community_score > novel_score:
+            return "community_post"
+        if novel_score >= 2 and novel_score > community_score:
+            return "novel_page"
+
+    return "unknown"
 
 
 def _extract_novel_platform_info(html: str, url: str) -> Dict[str, Any]:
     """노벨피아/문피아 등 공식 플랫폼 페이지에서 정보 추출"""
     info: Dict[str, Any] = {}
+
+    # ── page_type 분류 (커뮤니티 vs 소설 페이지) ──
+    page_type = _classify_platform_page_type(url, html)
+    info["page_type"] = page_type
     
     # <title> 태그에서 제목 추출
     title_match = re.search(r'<title>([^<]+)</title>', html, re.IGNORECASE)
@@ -187,9 +1310,69 @@ def _extract_novel_platform_info(html: str, url: str) -> Dict[str, Any]:
                         " | 카카오페이지", " - 네이버 시리즈"):
             if raw_title.endswith(suffix):
                 raw_title = raw_title[:-len(suffix)].strip()
+        # 플랫폼 접두사 제거 (예: "노벨피아 - 웹소설로 꿈꾸는 세상! - 작품명")
+        for prefix in ("노벨피아 - 웹소설로 꿈꾸는 세상! - ",
+                        "노벨피아 - ", "문피아 - "):
+            if raw_title.startswith(prefix):
+                raw_title = raw_title[len(prefix):].strip()
         info["title"] = raw_title
+
+        # 커뮤니티 글이면 title을 page_title(게시글 제목)로 저장하고 title 제거
+        if page_type == "community_post":
+            info["page_title"] = raw_title
+            info.pop("title", None)
     
-    text = _html_to_text(html, max_length=3000)
+    text = _html_to_text(html)  # 전문 추출 (길이 제한 없음)
+
+    # ── Phase 34: 삭제/비공개/미존재 작품 감지 ──
+    # crawl4ai로 실제 페이지를 방문했을 때, 삭제된 소설인지 콘텐츠 기반 검증
+    _content_status = "active"  # 기본값: 정상
+    if page_type in ("novel_page", "unknown") or not text or len(text.strip()) < 80:
+        _deleted_patterns = [
+            r"삭제된\s*작품", r"작품이?\s*삭제", r"해당\s*작품은?\s*삭제",
+            r"존재하지\s*않는\s*(?:작품|페이지|소설)",
+            r"찾을\s*수\s*없(?:습니다|는)", r"접근할\s*수\s*없",
+            r"비공개\s*(?:처리|작품|된)", r"작품을?\s*비공개",
+            r"서비스가?\s*종료", r"연재\s*(?:중단|취소)",
+            r"삭제\s*(?:되었습니다|됐습니다|됨)",
+            r"해당\s*(?:페이지|콘텐츠)(?:를?|는?)\s*(?:찾을|존재|확인)",
+            r"This\s+(?:novel|work|page)\s+(?:has been|is)\s+(?:deleted|removed)",
+            r"페이지를?\s*찾을\s*수\s*없",
+            r"요청하신\s*페이지",
+        ]
+        _check_text = (text or "")[:1500].lower() + " " + html[:3000].lower()
+        for _dp in _deleted_patterns:
+            if re.search(_dp, _check_text, re.IGNORECASE):
+                _content_status = "deleted"
+                break
+        # 추가: 본문이 극히 짧으면(소설페이지인데 80자 미만) unavailable 의심
+        if _content_status == "active" and page_type == "novel_page":
+            _stripped = (text or "").strip()
+            if len(_stripped) < 80:
+                _content_status = "unavailable"
+    info["content_status"] = _content_status
+    if _content_status != "active":
+        try:
+            print(
+                f"[mcp-bridge] ⚠️ content_status={_content_status}: {url}",
+                file=sys.stderr, flush=True,
+            )
+        except Exception:
+            pass
+
+    # ── 커뮤니티 게시글이면 본문에서 실제 소설 제목 마이닝 ──
+    if page_type == "community_post" and text:
+        _novel_title_from_community = _mine_novel_title_from_community(text)
+        if _novel_title_from_community:
+            info["mined_novel_title"] = _novel_title_from_community
+            try:
+                print(
+                    f"[mcp-bridge] 📌 community→novel title mined: "
+                    f"'{_novel_title_from_community}' from {url}",
+                    file=sys.stderr, flush=True,
+                )
+            except Exception:
+                pass
     
     # 작가명 추출 (플랫폼별 표기 편차 대응)
     def _clean_author_name(name: str) -> str:
@@ -249,7 +1432,41 @@ def _extract_novel_platform_info(html: str, url: str) -> Dict[str, Any]:
     if tags:
         info["tags"] = tags[:10]
     
-    info["text_preview"] = text[:2000]
+    # ── 장르 메타태그 추출 ──
+    genre_meta = re.findall(
+        r'(?:장르|분류|카테고리)\s*[:：]?\s*([가-힣A-Za-z/,·\s]{2,40})',
+        text[:1000]
+    )
+    if genre_meta:
+        info["genre"] = genre_meta[0].strip()
+    
+    # ── 연재 상태 추출 ──
+    for status_kw, status_val in [
+        ("완결", "completed"), ("연재중", "ongoing"), ("연재 중", "ongoing"),
+        ("휴재", "hiatus"),
+    ]:
+        if status_kw in text[:1500]:
+            info["serialization_status"] = status_val
+            break
+    
+    # ── 화수/편수 추출 ──
+    ep_match = re.search(r'(?:총\s*)?([\d,]+)\s*(?:화|회|편|장)', text[:1500])
+    if ep_match:
+        try:
+            info["episode_count"] = int(ep_match.group(1).replace(",", ""))
+        except ValueError:
+            pass
+    
+    # ── HTML에서 JSON-LD 장르/태그 추가 추출 ──
+    for m in re.finditer(r'"genre"\s*:\s*"([^"]{2,40})"', html[:5000], re.IGNORECASE):
+        if "genre" not in info:
+            info["genre"] = m.group(1).strip()
+    for m in re.finditer(r'"keywords"\s*:\s*"([^"]{2,100})"', html[:5000], re.IGNORECASE):
+        kw_list = [k.strip() for k in m.group(1).split(",") if k.strip()]
+        info.setdefault("tags", []).extend(kw_list[:10])
+        break
+    
+    info["text_preview"] = text  # 전문 반환 (길이 제한 제거)
     return info
 
 
@@ -299,7 +1516,9 @@ def _searxng_site_fallback(url: str, domain: str, max_length: int) -> Optional[D
             if c and c not in combined_texts:
                 combined_texts.append(c)
         fallback_text = " | ".join(combined_texts)
-        if len(fallback_text) > max_length:
+        # searxng fallback도 길이 제한 없이 전문 반환
+        # (max_length > 0 일 때만 잘라줌)
+        if max_length > 0 and len(fallback_text) > max_length:
             fallback_text = fallback_text[:max_length]
 
         structured_info: Dict[str, Any] = {}
@@ -328,17 +1547,19 @@ def _searxng_site_fallback(url: str, domain: str, max_length: int) -> Optional[D
 @app.post("/mcp/fetch")
 def mcp_fetch(request: FetchRequest) -> Dict[str, Any]:
     """URL의 웹 페이지를 가져와서 텍스트를 추출하여 반환한다.
-    
+
+    크롤링 우선 순위:
+      1) Crawl4AI (Playwright 기반 심층 크롤링 + 마크다운 변환)
+      2) httpx 직접 fetch + regex 텍스트 추출  (Crawl4AI 다운 시)
+      3) SearXNG site: 검색 fallback       (위 모두 실패 시)
+
     웹소설 관련 공식/커뮤니티 도메인만 허용하여 악용 방지.
     나무위키, 노벨피아, 문피아 등의 페이지에서 작품 정보를 구조적으로 추출.
-    
-    직접 fetch 실패 시 SearXNG site: 검색으로 fallback하여
-    검색엔진 캐시에서 콘텐츠를 획득한다.
     """
     url = request.url.strip()
     if not url:
         raise HTTPException(status_code=400, detail="url is required")
-    
+
     # 도메인 허용 체크
     domain = _extract_domain(url)
     is_allowed = any(domain == d or domain.endswith("." + d) for d in _ALLOWED_FETCH_DOMAINS)
@@ -346,21 +1567,83 @@ def mcp_fetch(request: FetchRequest) -> Dict[str, Any]:
     if not is_allowed and domain and domain.endswith(".tistory.com"):
         is_allowed = True
     if not is_allowed:
+        # 허용 도메인이 아니어도 SearXNG 캐시 기반 fallback은 시도한다.
+        fallback_result = _searxng_site_fallback(url, domain, request.max_length)
+        if fallback_result is not None:
+            fallback_result["restricted_domain"] = True
+            fallback_result["direct_fetch_error"] = "domain_not_allowed"
+            try:
+                print(
+                    f"[mcp-bridge] restricted domain fallback success: {url}",
+                    file=sys.stderr, flush=True,
+                )
+            except Exception:
+                pass
+            return fallback_result
         raise HTTPException(
             status_code=403,
-            detail=f"Domain '{domain}' is not in the allowed list for fetching"
+            detail=f"Domain '{domain}' is not in the allowed list for fetching",
         )
-    
+
+    # ── 1단계: Crawl4AI 심층 크롤링 시도 ──
+    crawl4ai_result = _crawl4ai_fetch(url)  # 길이 제한 없이 전문 크롤링
+    if crawl4ai_result is not None:
+        markdown_text = crawl4ai_result["markdown"]
+        raw_html = crawl4ai_result.get("html")
+
+        # 구조적 정보 추출 — Crawl4AI가 반환한 HTML이 있으면 기존 추출기를 재활용
+        structured_info: Dict[str, Any] = {}
+        if raw_html:
+            if "namu.wiki" in domain:
+                structured_info = _extract_namu_wiki_info(raw_html)
+            elif any(p in domain for p in ("novelpia", "munpia", "kakaopage", "series.naver", "joara")):
+                structured_info = _extract_novel_platform_info(raw_html, url)
+            else:
+                title_match = re.search(r'<title>([^<]+)</title>', raw_html, re.IGNORECASE)
+                if title_match:
+                    structured_info["title"] = title_match.group(1).strip()
+                # 커뮤니티 도메인이면 page_type 설정
+                _community_domains = ("dcinside", "fmkorea", "ruliweb", "arca.live", "teamblind")
+                if any(cd in domain for cd in _community_domains):
+                    structured_info["page_type"] = "community_post"
+                    # 커뮤니티 본문에서 소설 제목 마이닝
+                    _comm_text = _html_to_text(raw_html)  # 전문 추출
+                    _mined = _mine_novel_title_from_community(_comm_text)
+                    if _mined:
+                        structured_info["mined_novel_title"] = _mined
+                elif any(bd in domain for bd in ("tistory", "blog.naver", "brunch")):
+                    structured_info["page_type"] = "blog"
+                else:
+                    structured_info["page_type"] = "unknown"
+        else:
+            # HTML 없으면 마크다운 첫 줄에서 제목 추출 시도
+            first_line = (markdown_text.split("\n", 1)[0] or "").strip().lstrip("# ").strip()
+            if first_line:
+                structured_info["title"] = first_line
+
+        structured_info["fetch_method"] = "crawl4ai"
+
+        # 최종 텍스트 — 마크다운 클리닝 후 반환 (URL/이미지 노이즈 제거)
+        final_text = _clean_markdown_for_llm(markdown_text)
+
+        return {
+            "url": url,
+            "domain": domain,
+            "text": final_text,
+            "structured_info": structured_info,
+        }
+
+    # ── 2단계: httpx 직접 fetch (기존 경량 경로) ──
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                        "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
     }
-    
+
     fetch_error: Optional[str] = None
     html: Optional[str] = None
-    
+
     try:
         response = httpx.get(url, headers=headers, timeout=15.0, follow_redirects=True)
         response.raise_for_status()
@@ -372,46 +1655,65 @@ def mcp_fetch(request: FetchRequest) -> Dict[str, Any]:
     except httpx.HTTPError as exc:
         fetch_error = str(exc)
         try:
-            print(f"[mcp-bridge] direct fetch failed, trying searxng fallback: {url} → {exc!r}",
-                  file=sys.stderr, flush=True)
+            print(
+                f"[mcp-bridge] direct fetch failed, trying searxng fallback: {url} → {exc!r}",
+                file=sys.stderr, flush=True,
+            )
         except Exception:
             pass
-    
-    # --- 직접 fetch 실패 → SearXNG site: 검색 fallback ---
+
+    # ── 3단계: 직접 fetch 실패 → SearXNG site: 검색 fallback ──
     if html is None:
         fallback_result = _searxng_site_fallback(url, domain, request.max_length)
         if fallback_result is not None:
-            # fallback 성공 — 검색엔진 캐시에서 콘텐츠 획득
             fallback_result["direct_fetch_error"] = fetch_error
             return fallback_result
-        # fallback도 실패 — 에러 반환
         raise HTTPException(
             status_code=502,
-            detail=f"Fetch failed (direct + searxng fallback): {fetch_error}"
+            detail=f"Fetch failed (crawl4ai + direct + searxng fallback): {fetch_error}",
         )
-    
-    # --- 직접 fetch 성공 → 기존 로직 ---
-    # 도메인별 구조적 정보 추출
-    structured_info: Dict[str, Any] = {}
+
+    # ── httpx 성공 → 기존 텍스트 추출 로직 ──
+    structured_info_httpx: Dict[str, Any] = {}
     if "namu.wiki" in domain:
-        structured_info = _extract_namu_wiki_info(html)
+        structured_info_httpx = _extract_namu_wiki_info(html)
     elif any(p in domain for p in ("novelpia", "munpia", "kakaopage", "series.naver", "joara")):
-        structured_info = _extract_novel_platform_info(html, url)
+        structured_info_httpx = _extract_novel_platform_info(html, url)
     else:
-        # 범용: 최소한 <title>과 본문 미리보기 추출
         title_match = re.search(r'<title>([^<]+)</title>', html, re.IGNORECASE)
         if title_match:
-            structured_info["title"] = title_match.group(1).strip()
-    
-    # 일반 텍스트 추출 — 본문 내용을 충분히 보존
-    text = _html_to_text(html, max_length=request.max_length)
-    
+            structured_info_httpx["title"] = title_match.group(1).strip()
+
+    structured_info_httpx["fetch_method"] = "httpx"
+
+    text = _html_to_text(html)  # 전문 추출 (길이 제한 없음)
+
     return {
         "url": url,
         "domain": domain,
         "text": text,
-        "structured_info": structured_info,
+        "structured_info": structured_info_httpx,
     }
+
+
+@app.get("/healthz")
+@app.get("/health")
+def health_check() -> Dict[str, Any]:
+    """MCP Bridge 및 백엔드 서비스 상태 확인."""
+    status: Dict[str, Any] = {
+        "status": "ok",
+        "searchxng": False,
+        "crawl4ai": False,
+    }
+    # SearXNG 상태
+    try:
+        r = httpx.get(f"{SEARCHXNG_URL.rstrip('/')}/", timeout=3.0)
+        status["searchxng"] = r.status_code < 500
+    except Exception:
+        pass
+    # Crawl4AI 상태
+    status["crawl4ai"] = _crawl4ai_health_ok()
+    return status
 
 
 def main() -> None:

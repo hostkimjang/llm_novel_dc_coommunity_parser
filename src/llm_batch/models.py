@@ -51,6 +51,7 @@ class SlangInsight(BaseModel):
     # (원칙상 null이면 slang_insight 자체를 생략하는게 맞지만, 파이프라인 안정성을 위해 완화)
     detected_term: Optional[str] = None
     decoded_term: Optional[str] = None
+    cultural_context: Optional[str] = None  # 밈/은어의 유래·용법·커뮤니티 맥락 설명
 
 
 class Inference(BaseModel):
@@ -106,8 +107,86 @@ class PickvelIdentity(BaseModel):
     evidence: Optional[Evidence] = None
     slang_insight: Optional[SlangInsight] = None
     inference: Optional[Inference] = None
+    # 관련 포스트에서 단일 official_title 외에 후보군을 함께 노출
+    # (복수 작품/작품군 비교 맥락, 미확정 케이스 대응)
+    title_candidates: Optional[List["DetectedTitle"]] = None
+    primary_work: Optional["DetectedTitle"] = None
+    mentioned_works: Optional[List["DetectedTitle"]] = None
+    future_watch_target: Optional["DetectedTitle"] = None
+    comparison_target: Optional["DetectedTitle"] = None
+    recommendation_candidates: Optional[List["DetectedTitle"]] = None
+    primary_subject_type: Optional[str] = None
+    primary_subject_text: Optional[str] = None
+    secondary_reference_works: Optional[List["DetectedTitle"]] = None
+    entity_mentions: Optional[List["EntityMention"]] = None
+    topicality: Optional[Literal[
+        "core_relevant",
+        "adjacent_relevant",
+        "unrelated",
+    ]] = None
+    relevance_scope: Optional[Literal[
+        "core",
+        "adjacent",
+        "off_topic",
+    ]] = None
+    subtype: Optional[Literal[
+        "resolved_work",
+        "unresolved_work",
+        "multi_work_compare",
+        "support_cheer",
+        "resume_announcement",
+        "character_talk",
+        "plot_spoiler",
+        "review_reaction",
+        "author_meta",
+        "platform_meta",
+        "release_serialization_meta",
+        "recommendation_request",
+        "genre_trope_discussion",
+        "community_work_banter",
+        "fandom_meta",
+        "daily_life",
+        "realworld_social_talk",
+        "cross_media_game",
+        "pure_meme",
+        "other_quarantine",
+    ]] = None
+    work_resolution: Optional[Literal[
+        "resolved",
+        "unresolved",
+        "multi_work",
+        "none",
+    ]] = None
+    anchor_type: Optional[Literal[
+        "title_alias",
+        "title_exact",
+        "character",
+        "author",
+        "platform",
+        "genre",
+        "neighbor",
+        "image",
+        "none",
+    ]] = None
+    anchor_strength: Optional[Literal["high", "medium", "low", "none"]] = None
+    context_sources: Optional[List[Literal[
+        "title",
+        "body",
+        "comments",
+        "neighbor_posts",
+        "search",
+        "image",
+    ]]] = None
+    consistency_flags: Optional[List[str]] = None
     reason: Optional[str] = None
     reason_lines: Optional[List[str]] = None
+    identity_state: Optional[Literal[
+        "resolved_title",    # 관련 + 정식 제목 확정
+        "unresolved_title",  # 관련이나 정식 제목 미확정
+        "adjacent_relevant", # 주변 관련
+        "technical_inconclusive",  # 기술 실패로 비관련로 단정하기 어려움
+        "non_relevant",      # 비관련
+    ]] = None
 
 
 class DetectedTitle(BaseModel):
@@ -117,6 +196,44 @@ class DetectedTitle(BaseModel):
     heretic_url: Optional[str] = None  # 작품 공식 페이지 URL (제목과 별도)
     confidence: Literal["None", "Low", "Medium", "High", "Max"] = "None"
     alias_or_mention: Optional[str] = None
+    source_tier: Optional[Literal[
+        "official_detail",
+        "official_search",
+        "community",
+        "listing",
+        "llm_only",
+        "mixed",
+    ]] = None
+    page_type: Optional[str] = None
+    content_status: Optional[str] = None
+    locked: Optional[bool] = None
+    negative_evidence: Optional[List[str]] = None
+    reference_role: Optional[Literal[
+        "primary",
+        "mentioned",
+        "future_watch_target",
+        "candidate",
+    ]] = None
+
+
+class EntityMention(BaseModel):
+    """작품/작가/캐릭터/밈 등 엔티티를 평탄화하지 않고 보존."""
+
+    text: str
+    entity_type: Literal["work", "author", "character", "slang", "meme", "other"] = "other"
+    canonical_value: Optional[str] = None
+    confidence: Literal["None", "Low", "Medium", "High", "Max"] = "None"
+    source: Optional[str] = None
+    role: Optional[Literal[
+        "primary",
+        "mentioned",
+        "future_watch_target",
+        "author_focus",
+        "character_focus",
+        "slang",
+        "meme",
+        "candidate",
+    ]] = None
 
 
 class SentimentProfile(BaseModel):

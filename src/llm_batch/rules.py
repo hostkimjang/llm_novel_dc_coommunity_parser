@@ -23,6 +23,8 @@ EVIDENCE_GRADE_MAP = {
     "character_title_link": EVIDENCE_GRADE_STRONG,
     "plot_mention": EVIDENCE_GRADE_STRONG,
     # medium
+    "title_abbrev_mention": EVIDENCE_GRADE_MEDIUM,
+    "body_abbrev_mention": EVIDENCE_GRADE_MEDIUM,
     "character_mention": EVIDENCE_GRADE_MEDIUM,
     "episode_reference": EVIDENCE_GRADE_MEDIUM,
     "genre_prefix": EVIDENCE_GRADE_MEDIUM,
@@ -71,6 +73,54 @@ NON_NOVEL_MEDIA_DOMAINS: Tuple[str, ...] = (
     "exhentai.org",
     "pixiv.net",
 )
+
+# 담론 도메인 정규화용 상수
+NOVEL_DOMAINS: Tuple[str, ...] = (
+    "novel_literature",
+    "novel_work",
+    "web_novel",
+)
+
+# 웹소설이 아닌 도메인들
+# (DiscourseAnalyzer의 primary_domain 값과 연동)
+NON_NOVEL_DOMAINS: Tuple[str, ...] = (
+    "manga_comics",
+    "anime",
+    "game",
+    "aa_work",
+    "vocaloid",
+    "vocaloid_song",
+    "daily_life",
+    "community_banter",
+    "memes_humor",
+    "real_world",
+    "medical_health",
+    "technology",
+    "sports",
+    "off_topic",
+    "other",
+)
+
+
+def normalize_domain_tag(domain: str) -> str:
+    return str(domain or "").strip().lower()
+
+
+def is_novel_domain(domain: str) -> bool:
+    d = normalize_domain_tag(domain)
+    return d in NOVEL_DOMAINS
+
+
+def is_non_novel_domain(domain: str) -> bool:
+    d = normalize_domain_tag(domain)
+    if not d:
+        return False
+    if is_novel_domain(d):
+        return False
+    if d in NON_NOVEL_DOMAINS:
+        return True
+    # 명시 목록 외에도, novel이 아닌 확정 도메인은 비소설로 간주
+    return d not in {"unknown", "ambiguous", "mixed"}
 
 SLANG_DICTIONARY: Dict[str, str] = {
     # 음절 두문자 (첫 글자만 따온 형태) - 형태소 분석으로 유추 불가능한 것들만
@@ -122,35 +172,76 @@ GENRE_KEYWORDS: Dict[str, Tuple[str, ...]] = {
 
 # ── 장르 아키타입 용어 (작품 제목이 아니라 장르 내 역할/속성 용어) ──
 # 이 용어들이 key_terms에 있으면 소설 제목 후보에서 제외해야 함
+# ⚠️ 여기에 없는 "X물" 패턴도 is_genre_물_pattern()으로 자동 감지됨
 GENRE_ARCHETYPE_TERMS: Tuple[str, ...] = (
+    # ── 캐릭터 역할/속성 ──
     "초대남", "금태양", "거근쇼타", "거근", "쇼타",
+    "빌런", "흔막", "먼치킨", "사이다", "고구마",
+    "마검사", "파이어볼",
+    # ── 장르 약칭 (작품명이 아닌 장르/시취 패턴) ──
+    "현판", "로판", "판무",  # 현대판타지, 로맨스판타지, 판타지무협
+    "다크판", "하이판",  # 다크판타지, 하이판타지
     "NTR", "네토라레", "순애", "하렘",
-    "먼치킨", "사이다", "고구마",
-    "빌런", "흔막",
-    # 장르 약칭 (작품명이 아닌 장르/시취 패턴)
-    "현판", "현판물",  # 현대판타지
+    "에로", "19금", "성인",
     "백합난입",  # 백합에 남자 난입 시취
-    "회귀물", "환생물", "빙의물", "전생물",
-    "막내아들물", "아카데물",
-    "무협물", "이세계물", "헌터물",
-    "로판", "판무",  # 로맨스판타지, 판타지무협
-    # 🆕 일반 명사/장르 트로프 (작품명이 아닌 장르 통칭 용어)
-    "시스템", "상태창", "만담", "스텟", "스킬",
-    "파이어볼", "마검사", "타임슬립", "루프물",
     "농",  # 농(NTR 파생 은어)
-    "ts물", "TS물", "TS",  # TS(성전환) 장르
-    # 🆕 Phase 11j: 장르 복합 용어 (작품명이 아닌 장르/소재 설명 복합어)
     "후타",  # 후타나리 (장르)
-    "암타", "암타물",  # 암컷타입 TS물 (장르)
-    "백합", "백합물",  # GL (장르)
-    "난입", "백합난입",  # 장르 트로프
-    "하위호환", "상위호환",  # 비교 일반어
-    "리뷰", "리뷰어",  # 리뷰 관련
-    "웹소", "웹소설",  # 매체 일반명
-    "로판물", "무협물",  # 장르+물 형태
-    "판무물", "현판물",  # 장르+물 형태
-    "빌런물", "환생물",  # 장르+물 형태
+    "암타",  # 암컷타입 TS (장르)
+    "난입",  # 장르 트로프
+    "ts", "TS",  # TS(성전환) 장르
+    "bl", "BL", "gl", "GL",
+    # ── 장르 통칭 + "물" 형태 (포괄 목록) ──
+    # ※ 이 목록에 없어도 is_genre_물_pattern()이 "X물" 자동 감지
+    "회귀물", "환생물", "빙의물", "전생물", "루프물",
+    "막내아들물", "아카데물", "아카데미물",
+    "무협물", "이세계물", "헌터물", "던전물", "타워물", "게임물",
+    "현판물", "로판물", "판무물", "빌런물",
+    "ts물", "TS물", "암타물", "백합물",
+    "일상물", "힐링물", "개그물", "연애물",  # 분위기/톤 장르
+    "능력물", "각성물", "성장물", "귀환물", "솔플물",  # 성장/각성 계열
+    "학원물", "학교물", "군대물", "궁정물",  # 배경 계열
+    "추리물", "미스터리물", "공포물", "호러물", "스릴러물",  # 서스펜스 계열
+    "좀비물", "괴수물", "생존물", "디스토피아물",  # 재난/서바이벌 계열
+    "재벌물", "정치물", "범죄물", "복수물",  # 사회/복수 계열
+    "액션물", "모험물", "전쟁물",  # 액션 계열
+    "소년물", "소녀물", "요리물", "음악물", "스포츠물",  # 소재 계열
+    "사극물", "시대물", "왕조물",  # 시대극 계열
+    "드라마물", "SF물", "먼치킨물",  # 기타 장르+물
+    "계략물", "두뇌물", "전략물",  # 지략 계열
+    "육성물", "경영물", "건설물",  # 시뮬 계열
+    "로맨스물", "로코물", "순정물",  # 로맨스 계열
+    "라노벨물", "오버로드물",  # 매체/스타일 계열
+    # ── 일반 명사/장르 트로프 ("물" 없는 형태) ──
+    "시스템", "상태창", "만담", "스텟", "스킬",
+    "타임슬립",
+    "스릴러", "호러", "미스터리",
+    "드라마", "코미디", "로코",  # 로맨틱코미디
+    "하극상", "성장", "복수극", "각성",
+    "공략", "육성",
+    "라노벨", "라이트노벨",
+    # ── 비교/일반 용어 ──
+    "하위호환", "상위호환",
+    "리뷰", "리뷰어",
+    "웹소", "웹소설",
 )
+
+
+def is_genre_물_pattern(term: str) -> bool:
+    """한글 1~5자 + '물' 패턴인지 판별 (자동 장르 감지).
+
+    '회귀물', '일상물', '힐링물' 등 GENRE_ARCHETYPE_TERMS에 없는
+    새로운 장르명도 패턴으로 자동 차단.
+    단, 실제 소설 제목과 충돌할 수 있는 긴 형태(6자+물)는 제외.
+    """
+    import re
+    if not isinstance(term, str):
+        return False
+    clean = re.sub(r"[^가-힣]", "", term)
+    # 1~5자 한글 + "물" 패턴
+    if re.fullmatch(r"[가-힣]{1,5}물", clean):
+        return True
+    return False
+
 
 # ── DC 커뮤니티 의견 접두사 (작품명이 아닌 게시글 태그 키워드) ──
 # "소신발언))" 등에서 추출되는 키워드. 이 키워드가 제목의 '본체'이면 작품명이 아님

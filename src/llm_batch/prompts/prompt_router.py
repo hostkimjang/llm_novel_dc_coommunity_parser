@@ -104,6 +104,9 @@ def _build_relevance_contract_overlay() -> List[str]:
         "discussion_type가 author_talk/recommendation/trope_discussion/meta/community_banter/image_post/off_topic/noise/genre_opinion이면 is_relevant=false를 우선 검토한다.",
         "general_discussion은 작품 고유 앵커가 있을 때만 is_relevant=true를 허용한다.",
         "official_title에는 작품 정식명만 허용하며 플랫폼명/URL/커뮤니티 은어는 넣지 않는다.",
+        "작품 본체 토론이 아니어도 작가/플랫폼/유료화/추천요청/장르 일반론이면 adjacent_relevant 성격의 주변 담론일 수 있으므로 noise로 단순 압축하지 마라.",
+        "복수 작품 비교/추천/순서 질문은 단일 official_title 강제보다 multi-work 맥락을 우선 기술하라.",
+        "정식 제목 미확정 또는 작가/플랫폼 메타 글에서는 notes/reason에 단일 작품 확정 문장을 쓰지 마라.",
     ]
 
 
@@ -125,6 +128,9 @@ def _build_common_overlay_lines(ctx: Optional[Any]) -> List[str]:
         "3) 제목-본문-댓글 담화가 끊기면 특정 작품 매칭보다 장르/커뮤니티 일반론 가능성을 우선 검토한다.",
         "4) 확신 없는 용어는 추정 확정 대신 unresolved 처리하고 추가 검증을 요청한다.",
         "5) 가설 대입 검증: 후보 제목을 원문 문장에 대입했을 때 의미 비약이 생기면 후보를 배제한다.",
+        "6) 모든 자연어 출력(reason/notes/evidence 등)은 한국어로 작성한다.",
+        "7) 중국어(한자/중문 문장) 출력은 금지한다. 비한국어 원문은 한국어 요약으로 바꿔라.",
+        "8) URL/고유 링크는 원문 유지 가능하나, 설명 문장은 반드시 한국어로 작성한다.",
     ]
     lines.extend(_build_time_attack_overlay(ctx))
     lines.extend(_build_relevance_contract_overlay())
@@ -315,6 +321,185 @@ def _build_verifier_overlay(
     return "\n".join(lines)
 
 
+def _build_discourse_overlay(
+    post: Optional[Dict[str, Any]],
+    comments: Optional[List[str]],
+    gatekeeper_result: Optional[Dict[str, Any]],
+    ctx: Optional[Any],
+) -> str:
+    clues = (gatekeeper_result or {}).get("context_clues") or {}
+    title = _norm((post or {}).get("title", ""))
+    body = _norm(_join_text_blocks(post))
+    comment_text = _norm(" ".join(comments or []))
+    merged = f"{title} {body} {comment_text}".strip()
+
+    lines = _build_common_overlay_lines(ctx)
+    lines.extend(_build_domain_overlay(ctx))
+
+    if clues.get("dc_opinion_prefix"):
+        lines.extend(
+            [
+                "",
+                f"의견 접두사 감지: {clues.get('dc_opinion_prefix')}",
+                "접두사(예: 스포/질문/잡담)는 작품명이 아닌 담화 마커일 수 있으므로 도메인/의도 분류 근거에서 분리하라.",
+            ]
+        )
+
+    if clues.get("multi_work_order_detected"):
+        order_hits = clues.get("order_keywords_found") or []
+        lines.extend(
+            [
+                "",
+                "다작/순서 질문 담화 가능성:",
+                f"order_keywords={order_hits}",
+                "단일 작품 비평으로 단정하지 말고 recommendation/author_talk/작품군 비교 의도를 우선 검토하라.",
+            ]
+        )
+
+    has_specific_anchor = _contains_any(
+        merged,
+        ("주인공", "작가", "회차", "전개", "서사", "복선", "캐릭터", "스포", "죽이고", "결말"),
+    )
+    if has_specific_anchor:
+        lines.extend(
+            [
+                "",
+                "담화-앵커 우선 규칙:",
+                "제목/본문/댓글에 고유 앵커(인명·전개·회차·작가)가 반복되면 genre_discussion보다 discuss_work 가능성을 먼저 평가하라.",
+            ]
+        )
+
+    if len(body) < 30:
+        lines.extend(
+            [
+                "",
+                "본문 단문 보정:",
+                "본문이 짧아도 제목/댓글의 화행이 강하면 장르 일반론으로 과도 축소하지 말고 문맥 연속성을 점검하라.",
+            ]
+        )
+
+    return "\n".join(lines)
+
+
+def _build_arbiter_overlay(
+    gatekeeper_result: Optional[Dict[str, Any]],
+    decoder_result: Optional[Dict[str, Any]],
+    verifier_result: Optional[Dict[str, Any]],
+    discourse_result: Optional[Dict[str, Any]],
+    ctx: Optional[Any],
+) -> str:
+    clues = (gatekeeper_result or {}).get("context_clues") or {}
+    vf = (verifier_result or {}).get("verification_result") or {}
+    dc_analysis = (discourse_result or {}).get("discourse_analysis") or {}
+
+    lines = _build_common_overlay_lines(ctx)
+    lines.extend(_build_domain_overlay(ctx))
+
+    def _confidence_rank(conf: Any) -> int:
+        c = _norm(conf)
+        return {"none": 0, "low": 1, "medium": 2, "high": 3, "max": 4}.get(c, 0)
+
+    def _extract_decoder_title_and_conf(decoder: Optional[Dict[str, Any]]) -> tuple[str, int]:
+        if not isinstance(decoder, dict):
+            return "", 0
+        overall = decoder.get("overall_best_match") or {}
+        if isinstance(overall, dict):
+            t = _safe_str(overall.get("title")).strip()
+            c = _confidence_rank(overall.get("confidence"))
+            if t:
+                return t, c
+        best_title = ""
+        best_conf = 0
+        for term in decoder.get("decoded_terms") or []:
+            if not isinstance(term, dict) or term.get("is_author_name"):
+                continue
+            bm = term.get("best_match") or {}
+            t = _safe_str(bm.get("title")).strip()
+            c = _confidence_rank(bm.get("confidence"))
+            if t and c > best_conf:
+                best_title = t
+                best_conf = c
+        return best_title, best_conf
+
+    dc_title, dc_conf = _extract_decoder_title_and_conf(decoder_result)
+    vf_relevant = vf.get("is_relevant")
+    vf_title = ""
+    vf_identity = vf.get("novel_identity") or {}
+    if isinstance(vf_identity, dict):
+        vf_title = _safe_str(
+            vf_identity.get("official_novel_title")
+            or vf_identity.get("official_title")
+            or vf_identity.get("title")
+        ).strip()
+    vf_relation = vf.get("relation_judgment") or {}
+    dc_domain = _norm(dc_analysis.get("primary_domain"))
+    dc_intent = _norm(dc_analysis.get("intent"))
+
+    if dc_title and vf_title and _norm(dc_title) == _norm(vf_title) and vf_relevant is True:
+        lines.extend(
+            [
+                "",
+                "강한 합의 신호:",
+                f"Decoder/Verifier 합의 제목='{dc_title}'",
+                "합의 제목을 뒤집으려면 본문 반증(맥락 불일치/앵커 부재/반례 링크)을 final_reasoning에 명시하라.",
+            ]
+        )
+
+    if vf_relevant is False:
+        lines.extend(
+            [
+                "",
+                "Verifier 거부권 해석 규칙:",
+                "거부를 유지/해제할 때는 '본문 앵커 강도'와 '검색 일치'를 분리해 설명하라.",
+                "검색 결과 존재만으로 거부권을 해제하지 말고 본문 직접 근거(캐릭터/줄거리/회차/작가)를 요구하라.",
+            ]
+        )
+
+    if isinstance(vf_relation, dict) and vf_relation:
+        rel_type = _norm(vf_relation.get("relation_type"))
+        rel_target = _norm(vf_relation.get("discussion_target"))
+        rel_promotion = _norm(vf_relation.get("promotion_decision"))
+        if rel_promotion in {"hold", "reject"}:
+            lines.extend(
+                [
+                    "",
+                    "Verifier relation-judge signal:",
+                    f"relation_type={rel_type or 'unknown'}, discussion_target={rel_target or 'mixed_or_uncertain'}, promotion={rel_promotion}",
+                    "장르/플랫폼/커뮤니티 메타 또는 thematic overlap 판정이면 제목을 되살리지 마라.",
+                    "이 신호를 뒤집으려면 본문 안의 직접 앵커나 명시적 alias bridge를 final_reasoning에 제시하라.",
+                ]
+            )
+
+    if dc_conf >= 3 and vf_relevant is True and dc_domain in _NOVEL_DOMAINS and dc_intent in {"discuss_work", "review", "spoiler"}:
+        lines.extend(
+            [
+                "",
+                "소설 담론 일치 신호:",
+                "Discourse가 novel + discuss_work이고 Decoder/Verifier도 양성인 경우, 장르 일반론으로 축소 판정하지 마라.",
+            ]
+        )
+
+    if clues.get("multi_work_order_detected"):
+        lines.extend(
+            [
+                "",
+                "다작/순서 질문 최종 판정:",
+                "작품명이 여러 개면 '단일 official_title 강제'보다 질문 의도(순서/추천/비교)와 주제 대상을 먼저 확정하라.",
+            ]
+        )
+
+    lines.extend(
+        [
+            "",
+            "정합성 체크:",
+            "final_decision, final_reasoning, evidence_chain의 결론이 모순되지 않게 작성하라.",
+            "예: final_reasoning이 작품 토론 근거를 제시했다면 is_relevant=false/noise로 끝내지 마라.",
+        ]
+    )
+
+    return "\n".join(lines)
+
+
 def build_gatekeeper_system_prompt(
     base_system: str,
     *,
@@ -344,4 +529,35 @@ def build_verifier_system_prompt(
     ctx: Optional[Any] = None,
 ) -> str:
     overlay = _build_verifier_overlay(gatekeeper_result, decoder_result, ctx)
+    return f"{base_system}\n\n{overlay}" if overlay else base_system
+
+
+def build_discourse_system_prompt(
+    base_system: str,
+    *,
+    post: Optional[Dict[str, Any]] = None,
+    comments: Optional[List[str]] = None,
+    gatekeeper_result: Optional[Dict[str, Any]] = None,
+    ctx: Optional[Any] = None,
+) -> str:
+    overlay = _build_discourse_overlay(post, comments, gatekeeper_result, ctx)
+    return f"{base_system}\n\n{overlay}" if overlay else base_system
+
+
+def build_arbiter_system_prompt(
+    base_system: str,
+    *,
+    gatekeeper_result: Optional[Dict[str, Any]] = None,
+    decoder_result: Optional[Dict[str, Any]] = None,
+    verifier_result: Optional[Dict[str, Any]] = None,
+    discourse_result: Optional[Dict[str, Any]] = None,
+    ctx: Optional[Any] = None,
+) -> str:
+    overlay = _build_arbiter_overlay(
+        gatekeeper_result,
+        decoder_result,
+        verifier_result,
+        discourse_result,
+        ctx,
+    )
     return f"{base_system}\n\n{overlay}" if overlay else base_system

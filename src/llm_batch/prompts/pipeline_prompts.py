@@ -6,6 +6,7 @@ CRITICAL: Return ONLY raw JSON. Do NOT wrap in markdown fences. Do NOT add extra
 CRITICAL: A rules_config object (dictionary/terms/sites) will be provided in the user payload. You MUST follow it.
 CRITICAL: All natural-language VALUES (e.g. reason/topic/decoded_term) MUST be written in Korean.
 CRITICAL: The 'reason' field MUST be Korean only. Do NOT use English letters (A-Z) in reason.
+CRITICAL: Do NOT output Chinese sentences or Han-character-only text in natural-language fields. Summarize non-Korean evidence in Korean.
 
 OUTPUT FORMAT:
 Return ONLY the final JSON LIST. Start with '[' and end with ']'.
@@ -645,12 +646,23 @@ CRITICAL:
 INPUT:
 - discussion_type
 - candidates: [{id, score, sources, text}]
+- entity_hints (optional): {
+    detected_author,
+    detected_characters,
+    is_author_criticism,
+    inference_type,
+    inference_topic
+  }
 
 RULES:
 1) Higher score is preferred, but not blindly. Check logical consistency.
 2) If two candidates overlap, merge concisely.
 3) Keep final reason readable for humans (multi-line ready, concise but rich).
 4) If evidence is weak or conflicting, mention uncertainty briefly.
+5) Entity-type consistency is mandatory:
+   - If evidence says detected_author exists, do NOT rewrite that person as a character.
+   - Keep author/character labels consistent with evidence and candidates.
+   - Avoid statements like "'작가 X'가 캐릭터로 확인됨".
 
 JSON SCHEMA:
 {
