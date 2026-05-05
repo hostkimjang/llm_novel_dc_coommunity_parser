@@ -1,0 +1,327 @@
+# Feature Improvement TODO
+
+검색 품질, slang DB 회수율, 대시보드/운영 UX처럼 사용자 체감 품질에 가까운 개선 항목을 관리한다.
+
+## 검색 품질
+
+- [ ] 개선 전후 자동 비교 리뷰 문서 생성
+  - 상태: first_manual_comparison_done / mandatory_200_1000_policy_added / automation_tool_next
+  - 문제: 품질 개선을 구현해도 baseline/improved run 비교와 전문가 리뷰 패킷 생성이 사람이 기억해야 하는 절차로 남아 누락될 수 있음.
+  - 기대 효과: 개선 작업마다 자동으로 테스트 런, run audit, 주요 지표 delta, known bad 판정 변화, LLM 리뷰 패킷 경로가 남음.
+  - 1차 확인: late search budget 개선 후 `20260427_121338_563339` vs `20260427_143145_922090` 비교 문서 생성.
+  - 2026-04-28 지침: 품질 개선은 targeted/unit 통과 후 200건 canary를 기본으로 실행하고, canary가 `completed=200/200`, `failed=0`, `pending=0`이면 1,000건 risk discovery까지 자동 진행한다.
+  - 산출물: `out/comparisons/query_gate_canary_200_20260427_baseline_vs_late_budget.md`, `out/comparisons/query_gate_canary_200_20260427_baseline_vs_late_budget.json`
+  - 완료 기준: baseline run id, improved run id, 입력 JSONL, 200건 canary, 1,000건 risk discovery, 비교 Markdown/JSON, 남은 리뷰 항목을 자동 생성하는 도구화
+- [x] LLM/전문가 정성 리뷰 패킷 생성 도구 추가
+  - 상태: implemented
+  - 관련 파일: `tools/build_llm_judgment_review_packet.py`
+  - 완료 기준: checkpoint, run audit, slang DB를 묶어 JSONL/Markdown 리뷰 패킷 생성
+- [ ] 같은 입력의 대형 표본 재처리로 검색 저하율 비교
+  - 상태: afterfix12_parallel36_canary_done / quality_review_required
+  - 문제: `20260423_170321_250907` run은 shard 장애가 섞인 baseline이라 품질 승인 기준으로 쓰기 어렵다.
+  - 현재 확인: `20260427_121338_563339`와 late budget 개선 run `20260427_143145_922090` 모두 checkpoint `200/200`, failed `0`, missing `0`.
+  - late budget 비교: 검색 오류 `81 -> 75`, timeout `82 -> 75`, identified title `72 -> 76`, relevant `148 -> 153`.
+  - 1,000건 확인: `20260427_212634_728016` risk discovery는 `completed=1000`, `failed=0`, `Relevant=746`, `Identified=351`, `search_timeout=29`, `search_upstream_zero=539`, `search_degraded_detected=130`.
+  - afterfix12 36병렬 canary: run id `20260428_142042_238055`, `completed=200/200`, `failed=0`, `Relevant=146`, `Identified=67`, `search_timeout=8`, `search_upstream_zero=105`, `search_degraded_detected=12`.
+  - 남은 확인: 품질은 critical FP/alias FN이 남아 `quality_fix_required`. 10,000건 validation 전 parenthetical/generic/title validator 개선 필요.
+  - 완료 기준: 안정화 후 200건 canary, 1,000건 risk discovery, 10,000건 validation 표본에서 `search_upstream_zero`, `search_degraded_detected`, `search_timeout` 변화 기록
+  - 검증 기록 위치: `VERIFICATION_RESULTS.md`
+- [ ] 검색 실패 post 재처리 queue 설계
+  - 상태: proposed
+  - 기대 효과: 검색 실패/저하가 큰 post를 별도 재처리해 품질 손실을 줄임
+  - 완료 기준: post id, query stats, failure reason을 포함한 CSV/JSON 산출물 생성
+- [x] 일반 장르/세력명 title-reaction 과확정 차단
+  - 상태: afterfix12_parallel36_verified / alias_long_tail_review
+  - 발견 사례: `11631298` (`무림맹에 시발 마교 혈교 대가리가 다 있네...`)가 `무림맹주 막내제자`로 resolved.
+  - 문제: `무림맹`, `마교`, `혈교`, `맹주`, `제자` 같은 무협 일반 세력/역할어만으로 검색하면 수많은 작품이 뜨며, 특정 작품 고유 앵커가 아님.
+  - 개선 방향: 후보 제목과 post 사이의 공유 토큰에서 장르 일반어를 제거한 뒤 남는 고유 토큰이 없으면 `resolved_title` 승격 금지. 본문이 `ㅋㅋㅋㅋ`처럼 짧으면 `genre_general`/`unresolved_title`/`adjacent_relevant` 우선.
+  - 2026-04-27 조치: Verifier relation judge에 `generic_relation_only` 가드를 추가하고, code-level body check/FN recovery에서도 무협 일반 세력명만 겹치는 후보를 차단.
+  - 2026-04-27 추가 조치: `generic_relation_only` 후처리에서 후보/primary/mentioned를 비우고, 최종 interpretation을 재계산해 `secondary_reference_works` 누수를 제거.
+  - 2026-04-27 targeted 결과: `targeted_generic_character_3_20260427_afterfix11_result.json`에서 `11631298`은 `is_relevant=false`, `work_resolution=none`, `title_candidates=[]`, `secondary_reference_works=[]`, `generic_relation_only_demoted`.
+  - 2026-04-27 canary 결과: `query_gate_canary_200_afterfix11_20260427_result.json`에서 `11631298`은 비관련/후보 없음으로 유지. 전체 200건은 `completed=200`, `failed=0`, `generic_relation_only_demoted=3`.
+  - 2026-04-27 정성 리뷰: 120건 adjudication에서 `11631298`은 ACCEPT. 단, `서울마탑`처럼 확인된 별칭이 generic guard로 과차단되는 사례는 REPROCESS로 남김.
+  - 2026-04-27 1,000건 결과: `generic_relation_only_demoted=8`. `11631298`은 정상 차단됐지만 `11562020(서울마탑)`, `11417268(화귀)`, `11459433(언니약혼)` 같은 strong alias 후보 과차단이 섞임.
+  - 2026-04-28 afterfix12 36병렬 결과: `11631298`은 non-relevant/title 없음 유지, `11562020(서울마탑)`은 `서울에 마탑 세웠더니 돈이 미쳤다`로 resolved.
+  - 남은 작업: `11702067(폴랩)`, `11576520(망교성)`, `화귀`, `언니약혼` long-tail alias를 positive 이웃 케이스로 추가 확인.
+  - 완료 기준: `11631298`이 특정 공식 제목/보조 작품 후보로 노출되지 않고, 유사한 무협 일반 세력명 케이스의 false positive가 감소.
+- [x] 캐릭터 페이지 parenthetical 작품명 회수
+  - 상태: afterfix12_parallel36_verified / adjacent_review_required
+  - 발견 사례: `11663540` (`주서연`)은 나무위키 검색 결과 `주서연(전 버튜버가 하고 싶은데요)`가 있으나 최신 canary는 정식 제목 미확정.
+  - 문제: 캐릭터명 단독은 동명이인/실존/타매체 위험이 있어 곧장 resolved하면 안 되지만, 검색 결과 title parenthetical에 작품명이 명시되면 중간 강도의 근거로 사용할 수 있음.
+  - 개선 방향: `인물명(작품명)` 형태의 wiki/result title을 `character_title_link` 후보로 추출하되, post의 캐릭터명 반복, 장르/TS/작품 맥락, 비소설 도메인 부재를 함께 요구.
+  - 2026-04-27 조치: snippet/search-result 재스캔에서 캐릭터형 parenthetical bridge를 등록하고, `줄다리기(오징어 게임)` 같은 사건/게임 parenthetical은 제외.
+  - 2026-04-27 추가 조치: 최종 consistency pass에서 `ctx.verified_character_work_links`가 비어 있어도 `ctx.search_results`의 `캐릭터명(작품명)` parenthetical을 재구성해 title 후보로 승격. `전차`, `줄다리기`, 사건/게임/일반명사 parenthetical은 캐릭터 앵커에서 제외.
+  - 2026-04-27 추가 조치: `comparison_target`이 실제 작품 비교가 아니라 `주서연` 같은 약한 캐릭터 표면 후보일 때는 parenthetical 작품 확정을 막지 않도록 좁은 예외를 추가하고, 해당 캐릭터 표면 후보가 secondary reference로 새지 않게 정리.
+  - 2026-04-27 targeted 결과: `targeted_generic_character_3_20260427_afterfix11_result.json`에서 `11663540`은 `is_relevant=true`, `official_title=전 버튜버가 하고 싶은데요`, `discussion_type=character_talk`, `work_resolution=resolved`, `system_state=clean`.
+  - 2026-04-27 canary 결과: `query_gate_canary_200_afterfix11_20260427_result.json`에서 `11663540`은 `전 버튜버가 하고 싶은데요`로 resolved. 전체 200건은 `character_parenthetical_title_resolved=5`, `verifier_technical_failure=0`, `[Errno 22] Invalid argument=0`.
+  - 2026-04-27 정성 리뷰: 120건 adjudication에서 `11663540`은 ACCEPT였지만, `11718070`, `11689276`, `11620037`, `11512300`, `11141333`은 parenthetical bridge 계열 critical FP로 REJECT.
+  - 2026-04-27 1,000건 결과: `character_parenthetical_title_resolved=37`. `11663540`은 회수됐지만 `11718070 -> Depressive disorder`, `11689276 -> 뮤지컬 배우`, `11620037 -> 또는 라쇼몽, 아쿠타가와 류노스케`, `11512300 -> 마피아42`가 critical FP로 재현.
+  - 2026-04-28 afterfix12 36병렬 결과: `11663540`은 `전 버튜버가 하고 싶은데요`로 resolved 유지, `11718070`은 non-relevant/title 없음, `11620037`은 non-relevant/title 없음. `11689276`은 title은 제거됐지만 adjacent로 남아 정성 검토 필요.
+  - 남은 작업: title FP는 줄었지만 adjacent/relevant 경계가 남은 케이스를 120건 리뷰 패킷에서 판독하고, 1,000건에서 재발률 확인.
+  - 완료 기준: `11663540`은 `전 버튜버가 하고 싶은데요`로 resolved되고, 동명이인 character page false positive는 막음.
+- [ ] 검색 쿼리 확장 실험
+  - 상태: implemented_smoke
+  - 관련 파일: `tools/run_search_query_expansion_probe.py`, `src/llm_batch/experts/orchestrator.py`
+  - 가설: 작품/약칭 단독 검색보다 `소설`, `장르소설`, `웹소설`, 플랫폼명 조합 검색이 웹소설 도메인 회수율을 높일 수 있음
+  - 주의: `장르소설` 추가가 일반 장르 토론/추천글을 특정 작품으로 과잉 확정하는지 함께 확인
+  - 현재 관찰: `괴담텔 노벨피아`, `즉사무림 문피아`는 platform detail hit를 늘림. 4건 병렬 smoke에서 일반 제목에도 suffix가 붙는 위험을 발견해 gate를 재조정함.
+  - 적용: 확정 약칭은 alias-only 예외로 허용하고, 일반 표면어는 Discourse가 `novel_literature`로 잡은 경우에만 confident query expansion 적용
+  - 완료 기준: 200/1,000/10,000건 표본에서 기본 쿼리와 확장 쿼리의 `official_url`, `search_snippets`, false positive/false negative 변화 비교
+- [ ] 쿼리 확장 후 대형 병렬 canary 실행
+  - 상태: afterfix12_parallel36_canary_done / quality_review_required
+  - 관련 입력:
+    - `out/sampling/query_gate_canary_200_20260426.jsonl`
+    - `out/sampling/query_gate_risk_discovery_1000_20260426.jsonl`
+    - `out/sampling/query_gate_validation_10000_20260426.jsonl`
+  - 1차 결과: `20260427_002737_046977` canary는 checkpoint `199/200`, false failed `105`, stuck `1`로 NO-GO.
+  - 조치: CLI progress 오류 방어, 비소설 매체 indirect 보강 차단, MCP client failover budget 추가.
+  - 2차 결과: `20260427_121338_563339` canary는 checkpoint `200/200`, false failed `0`, stuck `0`, manifest `completed_count=200`.
+  - 리뷰 패킷: `out/llm_judgment_reviews/llm_judgment_review_20260427_121338_563339_20260427_135409.md`, `selected=80`.
+  - afterfix11 120건 adjudication: `out/llm_judgment_reviews/llm_judgment_review_20260427_191203_030136_afterfix11_adjudicated.md`, `ACCEPT=63`, `HOLD=24`, `RESEARCH=11`, `REPROCESS=15`, `REJECT=7`.
+  - 1,000건 결과: run id `20260427_212634_728016`, `completed=1000`, `failed=0`, audit `out/sampling/query_gate_risk_discovery_1000_afterfix11_20260427_audit.json`, 리뷰 패킷 `out/llm_judgment_reviews/llm_judgment_review_20260427_212634_728016_risk1000_afterfix11.md`.
+  - afterfix12 36병렬 결과: run id `20260428_142042_238055`, `completed=200`, `failed=0`, 사후 shard audit `ok=36/36`, 리뷰 패킷 `out/llm_judgment_reviews/llm_judgment_review_20260428_142042_238055_afterfix12_parallel36.md`.
+  - 완료 기준: 1,000건 risk discovery와 10,000건 validation에서 개선 전후 같은 post id 결과 비교, 잡담/비소설 제목의 `confident_title_*` 과확장 재발 없음
+- [x] MCP client 검색 failover budget 추가
+  - 상태: verified_canary / long_tail_review
+  - 관련 파일: `src/llm_batch/search/client.py`
+  - 문제: 검색 1건이 failover 과정에서 전체 36 endpoint를 순차로 훑으면 `timeout * retry * shard 수`만큼 long-tail이 발생.
+  - 조치: `MCP_CLIENT_SEARCH_TIMEOUT_SEC`, `MCP_CLIENT_MAX_ENDPOINTS_PER_SEARCH` 추가.
+  - 권장 canary env: `MCP_CLIENT_MAX_ENDPOINTS_PER_SEARCH=4`, `MCP_CLIENT_SEARCH_TIMEOUT_SEC=12`, `MCP_CLIENT_SEARCH_MAX_RETRIES=1`
+  - 검증: `20260427_121338_563339` 200건 canary에서 checkpoint `200/200`, failed `0`; 단, long-tail 상위 `11457804=886.4s`, `11478694=703.9s` 추가 분석 필요
+- [x] post별 late search 누적 예산 가드 추가
+  - 상태: verified_canary / quality_review
+  - 관련 파일: `src/llm_batch/experts/orchestrator.py`
+  - 문제: `_execute_searches` 배치 내부 cap은 있어도 verification/search/recall batch가 반복되면 post 단위 검색 수가 계속 증가해 long-tail이 남음.
+  - 조치: `ctx.executed_queries` 기준 post 누적 예산을 `_execute_searches` 중앙 관문에 추가. 초기 탐색은 보존하고, late iteration 또는 `abbreviation_verification`, `decoder_recall_verification`, `unresolved_term_*` 같은 late-purpose batch는 누적 예산을 적용.
+  - 기본 cap: `core_fast_resolve=14`, `uncertain_core=16`, `adjacent_meta=10`, `adjacent_meta_cheap=6`, `quarantine_candidate=3`, `deep_research=24`, default `18`.
+  - 검증: `py_compile` 통과, late budget 단위 테스트 3건 통과. `11478694` 1 shard 참고 실행은 `completed_count=1`, `291.8s`, 검색 실행 `13건`; 단, 최종 late-purpose refinement 전 시작된 smoke이므로 품질 gate로 쓰지 않음.
+  - canary 확인: `20260427_143145_922090` 200건 완료, failed `0`, 사후 shard audit `ok=36/36`.
+  - 비교 결과: late budget cap/exhausted `22/14`, 검색 오류 `81 -> 75`, timeout `82 -> 75`, `11478694` `703.9s -> 361.7s`, `11456200` `586.5s -> 267.4s`.
+  - 남은 위험: `11457804` `886.4s -> 911.5s`, `11718077` `151.8s -> 496.2s`로 추가 로그 분석 필요.
+  - 완료 기준: 1,000건 risk discovery에서도 timeout 감소와 false negative 증가 없음 확인
+- [x] 비소설 매체 indirect title/alias/fetch 보강 차단
+  - 상태: verified_canary / quality_review
+  - 관련 파일: `src/llm_batch/experts/orchestrator.py`
+  - 문제: snippet analyzer가 `anime/manga/webtoon/game` 등으로 판단해도 alias bridge가 계속 붙어 false positive와 long-tail을 만들 수 있음.
+  - 조치: `hard_non_novel_media` guard로 title/abbreviation/fetchable hints를 비우고 indirect reinforcement를 차단.
+  - 단일 확인: `11478694` 재현에서 `비소설 매체 간접 보강 차단` 로그 확인, manifest `completed_count=1`.
+  - canary 확인: `20260427_121338_563339` 로그에서 `비소설 매체 간접 보강 차단` 22건, `11478694` 완료.
+  - 완료 기준: 1,000/10,000건에서도 off-domain media stuck 및 false positive 재발 없음
+- [ ] headless fallback 성공률 리포트
+  - 상태: proposed
+  - 완료 기준: `headless_used`, `headless_count`, `headless_error`, provider별 성공률 집계
+- [ ] 검색 근거 0 resolved_title 승격 제한
+  - 상태: proposed
+  - 문제: `search_snippets=0 AND official_urls=0`인데 resolved/high로 확정한 오판 존재
+  - 1,000건 발견: `Depressive disorder`, `Sword Master`, `BLACKPINK`, `Truth`, `Cecil`, `Ubuya`, `성장판`, `rNN 판`, `主人公,2153` 같은 common/person/media/malformed 후보가 official title로 승격.
+  - 완료 기준: 직접 title/OCR/platform URL 근거가 없으면 `unresolved_title` 또는 재처리 큐로 이동
+- [x] 의도적 오타/자모 포함 title alias의 HOLD/resolve 정책
+  - 상태: afterfix19_targeted_verified / canary_required
+  - 발견 사례: `11198715` (`마법소녀ㄴ 생각해보니 공백의 2년 어떻게 한거지`)
+  - 문제:
+    - `마법소녀ㄴ`은 일반 장르어처럼 보이지만 실제 작품 제목에도 의도적으로 포함될 수 있음.
+    - afterfix16 canary에서는 넓은 alias 검색이 `마법소녀물 신전사가 되었다`로 오매칭 resolved.
+    - afterfix17 targeted에서는 오답 title lock은 제거됐지만 작품 내부 단서(`세린/세진/계약/은퇴`)까지 무시되어 `Relevant=0`으로 과보수.
+  - 개선 방향:
+    - broad alias stem은 단일 official title 확정 금지.
+    - 단, 본문에 캐릭터명/계약/설정/기간/전개 단서가 있으면 `비관련`이 아니라 `core_relevant + unresolved_work`로 유지.
+    - candidate title의 alias stem과 body predicate가 함께 맞는 경우(`마법소녀ㄴ` + `은퇴`)는 별도 RESEARCH/HOLD 큐에 보내고, 캐릭터명 공식 연결 없이는 slang DB 확정 저장 금지.
+  - 완료 기준:
+    - `11198715`는 오답 title 없이 관련-미확정 또는 정확한 후보로 처리.
+    - `11456200`처럼 본문이 장르 클리셰만 있는 이웃은 non-relevant 유지.
+    - `불꽃의 마법소녀ㄴ`, `마법소녀ㄴ은 은퇴하고 싶다` 같은 official detail 이웃을 positive/negative로 함께 테스트.
+  - 확인:
+    - `tests.test_agentic_pipeline_rework`: 155건 OK.
+    - afterfix19 targeted `out/sampling/targeted_magicgirl_11198715_afterfix19_20260429_result.json`: `Relevant=1`, `Identified=0`, `official_title=null`, `internal_work_signal_unresolved_recovered`.
+    - 단위 negative 이웃 `11456200`은 단일 캐릭터/폼체인지 클리셰만으로 rescue하지 않음.
+  - 남은 확인: afterfix19 200건 canary와 1,000건 risk discovery에서 broad alias stem이 과차단/과확정되지 않는지 재집계.
+- [x] malformed/generic official title validator 추가
+  - 상태: parallel36_verified_afterfix12 / risk_discovery_required
+  - 문제: 검색/LLM 후보가 `rNN 판`, `主人公,2153`, 영어 일반어, 인물/그룹명, 너무 짧은 일반명사여도 최종 official title로 들어갈 수 있음.
+  - 발견 예시: `Depressive disorder`, `Sword Master`, `BLACKPINK`, `Truth`, `Cecil`, `Ubuya`, `성장판`, `독점`, `아포칼립스`, `r51 판`.
+  - 확인: afterfix12 targeted unittest와 `11620037` 단건 실제 rerun에서 source metadata title 제거 확인.
+  - 36병렬 확인: `11718070 -> Depressive disorder`, `11620037 -> 라쇼몽 source metadata` resolved title FP는 제거됨.
+  - 남은 확인: 1,000건에서 `Sword Master`, `BLACKPINK`, `Truth`, `Cecil`, `rNN 판`류 재발률 재집계.
+- [x] character parenthetical bridge false positive gate 강화
+  - 상태: parallel36_verified_afterfix12 / adjacent_review_required
+  - 문제: `캐릭터명(작품명)` 패턴 회수는 필요하지만, common term/person/media parenthetical이 작품 title로 승격됨.
+  - 발견 예시: `11718070`, `11689276`, `11620037`, `11512300`, `11469068`, `11174128`.
+  - 확인: `11689276` targeted 실제 run에서 `뮤지컬 배우` title 제거, `11620037` 라쇼몽 메타문구 단건 rerun에서 title 제거.
+  - 추가 확인: `11718070` ECT 의학 일반글은 `medical_common_topic_demoted`로 `is_relevant=false`, title 없음.
+  - 36병렬 확인: `11718070`, `11620037`은 title 없음. `11663540` positive 회수 유지. `11689276`은 title 없음이나 adjacent로 남아 human review 대상.
+  - 남은 확인: `11512300` 포함 1,000건 재처리와 120건 afterfix12 리뷰 판독.
+- [x] generic guard 이후 confirmed/strong alias rescue
+  - 상태: parallel36_verified_afterfix12 / long_tail_required
+  - 문제: generic relation guard가 맞는 케이스와 strong alias 케이스를 같이 non-relevant로 내림.
+  - 발견 예시: `11631298`은 정상 차단, `11562020(서울마탑)`, `11417268(화귀)`, `11459433(언니약혼)`은 rescue 필요.
+  - 확인: `11562020(서울마탑)`은 `generic_relation_alias_rescued`, `11631298(무림맹)`은 non-relevant/title 없음 유지.
+  - 36병렬 확인: `11562020` resolved, `11631298` non-relevant 유지.
+  - 남은 확인: `화귀`, `언니약혼`, `폴랩`, `망교성` long-tail targeted 및 1,000건 재집계.
+- [x] 공통 제목 stem 충돌 검색 이웃 분리
+  - 상태: targeted_verified / canary_needed
+  - 발견 사례: `11684407`에서 `마법소녀ㄴ` 표면형이 `마법소녀ㄴ은 은퇴하고 싶다`와 `불꽃의 마법소녀ㄴ` 양쪽 공식 제목에 포함되어, 검색 이웃인 `불꽃의 마법소녀ㄴ`이 `comparison_target`, `recommendation_candidate`, `secondary_reference` 및 slang DB pending 후보로 새는 문제가 발생.
+  - 일반 실패 유형: 짧은 표면형이 여러 공식 제목의 공통 stem/prefix/suffix인 경우. 이때 본문/댓글의 캐릭터·설정·작가·회차 앵커가 닫힌 후보만 primary로 남기고, 나머지 공식 제목은 검색 이웃으로 취급해야 함.
+  - 2026-04-28 조치: 자모 표기(`ㄴ`)를 보존하는 stem 비교를 추가하고, locked 공식 후보가 decisive support를 갖는 경우 공통 stem 이웃이 단일 후보 rescue를 막지 않도록 변경. 이웃 후보는 outward reference 역할(comparison/recommendation/secondary)에서 제거.
+  - LLM 지시: `ambiguous_title_stem` 규칙을 verifier/router prompt에 추가. 복수 공식 제목 공통 stem은 `alias_scope=mixed_unknown`, `store_in_slang_db=false`, 검색 이웃은 slang 후보가 아니라고 명시.
+  - 테스트: positive(`마법소녀ㄴ` -> `마법소녀ㄴ은 은퇴하고 싶다`), negative(`불꽃의 마법소녀ㄴ` 직접 언급 시 차단 유지), outward reference pruning 이웃 케이스 추가.
+  - targeted 실제 결과: `out/sampling/targeted_ambiguous_title_stem_11684407_afterfix13_20260428_result.json`에서 `official_title=마법소녀ㄴ은 은퇴하고 싶다`, `work_resolution=resolved`, `comparison_target=null`, `mentioned_works=null`, `secondary_reference_works=[]`.
+  - 남은 확인: afterfix13 200건 canary 및 1,000건 risk discovery에서 공통 stem 계열 후보가 과차단/과확정되지 않는지 재집계.
+- [x] adjacent relevance legacy flag 및 budget profile 정리
+  - 상태: regression_verified / canary_needed
+  - 발견 계기: 공통 제목 stem guard 이후 `tests.test_agentic_pipeline_rework` 전체 회귀에서 adjacent author/meta/recommendation 및 budget profile 계열 실패 7건을 추출.
+  - 일반 실패 유형: `adjacent_relevant`는 주변 담론으로 남겨야 하지만 legacy `is_relevant=true`가 되면 핵심 작품 토론, official title 확정, slang DB 저장 근거로 새어 false positive 지표를 만든다.
+  - 개선: 최종 `is_relevant`를 `topicality == core_relevant`로 제한하고, prompt/router/arbiter 지시에 adjacent는 `is_relevant=false`, official title null 기본값을 명시.
+  - budget 개선: `adjacent_meta_cheap`은 작가/플랫폼/meta 계열 `max_q=2`, 장르 토론 계열은 공식 근거 확인 슬롯을 남겨 `max_q=3`으로 분기.
+  - 테스트: targeted adjacent 7건 OK, budget 이웃 3건 OK, `tests.test_agentic_pipeline_rework` 145건 OK, `tests.test_agentic_pipeline_alias_contract` 30건 OK, 변경 파일 `py_compile` 통과.
+  - 남은 확인: 200건 canary와 1,000건 risk discovery에서 adjacent 판정이 `Relevant/Identified/slang DB`로 새지 않는지, 장르 토론 budget 3쿼리가 FP를 늘리지 않는지 집계.
+- [x] Namu 의학/일반 개념 official title 승격 차단
+  - 상태: risk_discovery_done / residual_fp_found
+  - 발견 계기: `11718111`이 `조현병` 나무위키 일반 의학 항목을 official title로 승격.
+  - 일반 실패 유형: 위키 URL과 괄호형 검색 결과가 있어도, 표면어가 현실 의학/건강/사회 개념이고 작품 고유 앵커가 없으면 웹소설 title 근거가 아니다.
+  - 개선: `medical_common_topic_title` hard reject profile을 추가하고, character-parenthetical bridge 및 URL-backed replacement가 같은 rejection profile을 사용.
+  - 테스트: targeted 5건 OK, `tests.test_agentic_pipeline_rework` 147건 OK, `tests.test_agentic_pipeline_alias_contract` 30건 OK, 단건 actual run `20260428_230857_637381`에서 `11718111` non-relevant/title 없음.
+  - 200건 canary 확인: run id `20260428_233059_378617`, `completed=200/200`, `failed=0`, `Relevant=70`, `Identified=61`.
+  - 1,001건 risk discovery 확인: run id `20260429_002511_375830`, `completed=1001/1001`, `failed=0`, `pending=0`, `Relevant=381`, `Identified=297`, 사후 shard audit `ok=36/36`.
+  - 통과한 이웃: `11718070` ECT와 `11631298` 무림맹은 title 없음, `11616838/11198715` 마법소녀ㄴ positive stem은 resolved 유지.
+  - 잔존 실패: `11718111`은 risk discovery에서 `정신과 의사`로 재발. 의료 명사만이 아니라 현실 직업/일반 개념 title과 platform URL-backed 승격을 함께 막아야 함.
+  - 산출물: `out/sampling/query_gate_risk_discovery_1000_plus11718111_afterfix14_20260429_audit.json`, `out/llm_judgment_reviews/llm_judgment_review_20260429_002511_375830_risk1000_afterfix14.md`.
+  - 후속: 아래 weak-evidence official title guard로 확장.
+- [ ] weak-evidence official title 승격 제한
+  - 상태: discovered_afterfix14_risk1001
+  - 발견 계기: afterfix14 risk discovery에서 약한 근거 official title 후보 35건 추출.
+  - 일반 실패 유형: reason 내부에는 `official_title_evidence=false`, `search_snippets=0`, `official_urls=0`, `post_spans=0`, `thematic_overlap_only`, `search_only` 같은 반론이 있는데, 후처리 스코어가 플랫폼 URL 또는 title_in_post 가산점으로 resolved title을 확정함.
+  - 대표 사례: `11718111 -> 정신과 의사`, `11684415 -> 小數, decimal number`, `11505857 -> Cecil`, `11713208 -> 코믹 메이플스토리`, `11684401 -> 추리 소설`, `11205227 -> 챌린지`.
+  - 해결 방향: 특정 title blacklist가 아니라 evidence invariant로 처리. `post_spans=0 AND search_snippets=0 AND official_urls=0` 또는 `official_title_evidence=false`인 경우 플랫폼 URL 가산점만으로 resolved를 허용하지 않고 `unresolved_title`/`REPROCESS`로 보냄.
+  - positive 이웃: 안정 약칭과 직접 앵커가 있는 `나혼렙`, `마법소녀ㄴ은 은퇴하고 싶다`, `전 버튜버가 하고 싶은데요`, `서울에 마탑 세웠더니 돈이 미쳤다`는 유지.
+  - 완료 기준: targeted positive/negative 이웃 통과 후 200건 canary와 1,000건 risk discovery 자동 재실행. 약한 근거 35건의 resolved 재발률과 alias rescue 회귀를 비교 문서로 기록.
+- [ ] 댓글 URL evidence 역할 분리
+  - 상태: proposed
+  - 문제: 댓글 추천/예시 URL이 원글 primary work로 과잉 승격됨
+  - 완료 기준: 댓글 URL이 `primary_evidence`인지 `secondary_reference`인지 구분
+- [ ] off-domain media gate 추가
+  - 상태: proposed
+  - 대상 예시: `블아`, `페그오`, 현실 의학, 영화, 연예인 비교
+  - 완료 기준: 비웹소설/타매체가 웹소설 작품으로 자동 승격되지 않음
+- [ ] reason/최종 필드 불일치 validator
+  - 상태: proposed
+  - 완료 기준: reason은 비관련/미확정인데 최종 필드가 relevant/resolved인 케이스를 REPROCESS 큐로 분리
+- [ ] 과거 result 파일의 처리 오류 row 회수/표시
+  - 상태: discovered_fixed_in_latest
+  - 발견 사례: `out/sampling/query_gate_canary_200_20260427_result.json`의 `11549038`은 `[Errno 22] Invalid argument`로 실패 row가 남아 있음.
+  - 현재 확인: `20260427_121338_563339`, `20260427_143145_922090`에서는 같은 post가 정상 처리되어 재발하지 않음.
+  - 완료 기준: 오래된 partial/failed result 파일을 볼 때 false failed인지 최신 rerun에서 회수됐는지 자동 표시하는 audit 리포트 생성
+
+## LLM / 전문가 정성 리뷰
+
+- [ ] LLM 프롬프트/후처리 규칙 일반화 원칙 적용
+  - 상태: guideline_added / ongoing_review
+  - 문제: `11718070` 같은 오답을 볼 때 해당 게시글이나 오답 제목만 직접 막으면 다른 현실 주제/검색 메타데이터/타매체 케이스에서 같은 문제가 반복된다.
+  - 원칙: 사례별 해결이 아니라 실패 유형을 정의한다. 예: 실제 의학/건강 주제 + 작품 앵커 없음, 장르 일반어만 겹침, 검색 결과의 저자/출판 메타데이터가 제목으로 승격, 타매체/인물명이 웹소설 제목으로 오인.
+  - 프롬프트 기준: 예시는 암기 대상이 아니라 rubric 설명용이다. 모델은 `본문/댓글 고유 앵커`, `공식 플랫폼 근거`, `안정된 약칭`, `캐릭터-작품 연결`, `도메인 불일치` 같은 증거 조건으로 결론을 내야 한다.
+  - 코드 기준: exact bad-title blacklist 대신 범주형 lexicon과 증거 게이트를 우선한다. lexicon 추가 시 범주 이름, 목적, 과차단 방지 rescue 조건, positive/negative 이웃 테스트를 남긴다.
+  - 완료 기준: 새 품질 패치마다 `CHECKLIST.md`의 일반화/하드코딩 금지 항목을 통과하고, 200/1,000건 표본에서 새 FP/FN을 재확인.
+- [ ] Locked official bad metadata 재승격 방지
+  - 상태: afterfix20_risk_guard_go / overall_quality_review
+  - 문제: afterfix19 risk discovery에서 locked official candidate가 `community_post/deleted/url_deleted_or_unavailable` 음성 메타를 가진 상태인데도 resolved title로 되살아남.
+  - 대표 사례: `11631298 -> 무림맹주 막내제자`
+  - 일반화: 작품명 blacklist가 아니라 candidate의 page/content/evidence metadata를 기준으로 rescue eligibility를 판단한다.
+  - 구현: afterfix20에서 locked candidate selection이 `community_post`, `deleted/unavailable`, `url_deleted_or_unavailable`, `url_is_community_post`, `listing_only`, `title_url_mismatch` 신호를 가진 후보를 제외.
+  - 검증: `tests.test_agentic_pipeline_rework` 157건 OK, targeted `20260430_015935_598854`에서 `11631298` title 없음.
+  - canary: `20260430_021001_693350`, `completed=200/200`, `Relevant=73`, `Identified=57`, `reason_errors=0`, `11631298` title 없음.
+  - risk: `20260430_025849_885589`, `completed=1001/1001`, `Relevant=382`, `Identified=277`, `reason_errors=0`, `11631298` title 없음.
+  - 남은 상태: locked metadata guard 자체는 통과. 전체 risk 품질은 `11505857 -> Cecil`, `11456200` 과복구 때문에 REVIEW.
+- [ ] 캐릭터 괄호형 search bridge recall 안정화
+  - 상태: discovered
+  - 문제: `주서연(전 버튜버가 하고 싶은데요)` 같은 캐릭터-작품 괄호형 bridge가 검색 결과에 잡히면 resolved되지만, 검색 결과가 누락되면 같은 post가 unresolved/non-relevant로 흔들림.
+  - 대표 사례: `11663540`
+  - 개선 방향: character-only query, character + `웹소설/장르소설/나무위키/노벨피아` query, search miss 시 RESEARCH/HOLD 큐를 검토.
+  - 완료 기준: `11663540` positive 이웃은 검색 결과 편차에도 non-relevant로 떨어지지 않고, 단일 작품 title이 불충분하면 관련-미확정으로 유지.
+- [x] 짧은 인명/캐릭터 surface의 영문 title 오승격 방지
+  - 상태: verified_afterfix21_risk
+  - 문제: 본문/제목의 짧은 인명 표면이 검색 결과의 영문 제목으로 과도하게 연결됨.
+  - 대표 사례: `11505857 -> Cecil`
+  - 일반화: character-parenthetical bridge는 `캐릭터명(작품명)` 형태와 본문 캐릭터 anchor, 공식/작품 URL 또는 명확한 작품 설명이 함께 있을 때만 title resolved를 허용.
+  - positive 보존: `11663540 -> 전 버튜버가 하고 싶은데요`.
+  - 구현: afterfix21에서 짧은 영어 인명형 title은 post-side work anchor 없이 resolved 승격하지 않도록 제한.
+  - 검증: `tests.test_agentic_pipeline_rework` 159건 OK, targeted/canary/risk에서 `11505857` title 없음, `11663540` resolved 유지.
+  - 완료 기준: `Cecil`류는 title 없음 또는 RESEARCH/HOLD, 실제 캐릭터-작품 괄호형 bridge는 유지.
+- [x] Internal work signal trope-only 과복구 축소
+  - 상태: verified_afterfix21_risk
+  - 문제: `internal_work_signal_unresolved_recovered`가 단일 캐릭터 + 트로프 일반론까지 관련-미확정으로 복구할 수 있음.
+  - 대표 사례: `11456200` (`마법소녀ㄴ 생각해보니 이거 완전 폼체인지`)
+  - positive 보존: `11198715`, `11616838`처럼 복수/구체 캐릭터와 설정/전개 단서가 같이 있는 글.
+  - 구현: `폼체인지/변신/의상/추가파츠/마법소녀` trope-only 표면은 강한 plot term 없이 internal work signal rescue 불가. `승급`은 strong plot term으로 추가.
+  - 검증: afterfix21 targeted/canary/risk에서 `11456200` non-relevant/title 없음, risk에서 `11198715`, `11616838` 관련-미확정 유지.
+  - 완료 기준: trope-only neighbor는 non-relevant/adjacent로 유지하고, plot/character density가 높은 positive neighbor만 unresolved core로 복구.
+- [ ] afterfix21 resolved 증가분 정성 리뷰
+  - 상태: risk_review_required
+  - 문제: afterfix21 risk에서 `Relevant=396`, `Identified=308`로 afterfix20 `Relevant=382`, `Identified=277` 대비 증가.
+  - 확인된 개선: `11505857`, `11456200`, `11718070`, `11718111`, `11631298` known bad는 title 없음.
+  - 남은 위험: 증가분이 검색 회수율 개선인지 resolved false positive 증가인지 미확정.
+  - 완료 기준: afterfix21 risk 결과에서 고위험 resolved 표본을 추출해 `ACCEPT/HOLD/REPROCESS/REJECT` 판독 후 다음 개선 항목으로 분리.
+- [x] 20k run 위험군 정성 리뷰 1차 배치 수행
+  - 상태: verified
+  - 관련 run id: `20260423_170321_250907`
+  - 완료 기준: 검색 저하, slang 후보, resolved 저근거, unresolved/multi_work, non-relevant 경계, 정상군 대조 샘플 리뷰 완료
+- [ ] 20k run 계층 샘플 정성 리뷰 확대
+  - 상태: packet_generated
+  - 문제: 300건 위험군 샘플은 오류 유형 발견에는 충분하지만 전체 20k 품질 승인에는 부족
+  - 관련 패킷: `out/llm_judgment_reviews/llm_judgment_review_20260423_170321_250907_20260426_234227.jsonl`
+  - 완료 기준: 위험군 1,000건 이상, 검색 정상 대조군, bucket별 최소 표본, 개선 후 10,000건 이상 재처리 비교 결과 기록
+- [ ] 리뷰 결과 adjudication sheet 누적
+  - 상태: first_afterfix11_sheet_recorded
+  - 2026-04-27 기록: `out/llm_judgment_reviews/llm_judgment_review_20260427_191203_030136_afterfix11_adjudicated.md`, `ACCEPT=63`, `HOLD=24`, `RESEARCH=11`, `REPROCESS=15`, `REJECT=7`
+  - 완료 기준: `ACCEPT/HOLD/RESEARCH/REPROCESS/REJECT` 집계와 error type/severity 기록
+- [x] afterfix11 120건 리뷰 패킷 adjudication
+  - 상태: completed
+  - 관련 run id: `20260427_191203_030136`
+  - 관련 패킷: `out/llm_judgment_reviews/llm_judgment_review_20260427_191203_030136_afterfix11.md`
+  - 판독 산출물: `out/llm_judgment_reviews/llm_judgment_review_20260427_191203_030136_afterfix11_adjudicated.md`
+  - 집계: `ACCEPT=63`, `HOLD=24`, `RESEARCH=11`, `REPROCESS=15`, `REJECT=7`
+  - 후속: 1,000건 risk discovery 완료 후 같은 rubric으로 재집계 비교
+- [ ] 200건 canary 2차 리뷰 패킷 adjudication
+  - 상태: packet_generated
+  - 관련 run id: `20260427_121338_563339`
+  - 관련 패킷: `out/llm_judgment_reviews/llm_judgment_review_20260427_121338_563339_20260427_135409.md`
+  - 표본: `selected=80`, `search_degraded_majority=64`, `slang_insight=43`, `relevant_without_official_title=15`
+  - 완료 기준: 전문가가 직접 읽고 `ACCEPT/HOLD/REPROCESS/REJECT` 집계, long-tail/검색저하가 판정 품질에 미친 영향 분리
+- [ ] 다음 run checkpoint에 검색 evidence 필드 추가
+  - 상태: proposed
+  - 완료 기준: `search_health_flags`, `used_evidence_urls`, `raw/filtered search preview`, `executed_queries`, `degraded_queries` 저장
+
+## Slang DB 품질
+
+- [ ] `unclear_canonical_alias` 후보 review queue 분리
+  - 상태: proposed
+  - 문제: `빌환`, `무마`, `악엔`, `림조`, `드유`처럼 실제 약칭 가능성이 있는 후보가 차단됨
+  - 완료 기준: 실제 약칭 가능성이 높은 후보와 차단 유지 후보를 분리한 review artifact 생성
+- [ ] `pending` 하위 버킷 설계
+  - 상태: proposed
+  - 후보: `pending_alias`, `secondary_reference`, `comparison_only`
+  - 완료 기준: 스키마 변경 여부와 대시보드 표시 정책 결정
+- [ ] `family_aliases` 승격 조건 재조정
+  - 상태: proposed
+  - 완료 기준: 실데이터 샘플에서 false positive/false negative를 비교해 조건 확정
+- [ ] `alias_span` 추출 도입
+  - 상태: proposed
+  - 문제: `즉사무림이유백`, `괴담텔이 뭔데`, `전능뇌 히로인`처럼 phrase 전체가 잡힘
+  - 완료 기준: surface phrase와 실제 alias span을 분리 저장
+- [ ] 조사/어미/캐릭터 결합 제거
+  - 상태: proposed
+  - 완료 기준: `이유백`, `히로인`, `엘리`, `봐볼려는데`, `이 뭔데`, `올 때 됐다` 같은 suffix 제거
+- [ ] already_confirmed alias risk 분리
+  - 상태: proposed
+  - 완료 기준: 이미 DB confirmed인 alias가 `slang_not_stored` 고위험으로 잡히지 않음
+
+## 대시보드/운영 UX
+
+- [ ] slang DB 화면에 `examples.bucket`, `family_aliases` 표시
+  - 상태: proposed
+  - 문제: 현재 조회 레이어가 `titles[].slang/pending`만 보면 저장이 누락된 것처럼 보일 수 있음
+  - 완료 기준: confirmed slang, pending, examples bucket, family aliases가 모두 확인됨
+- [ ] run audit 요약 대시보드 표시
+  - 상태: proposed
+  - 완료 기준: run id, completed/failed/pending/flushed, reason errors, 검색 저하/timeout, bad shard count가 표시됨
+- [ ] shard audit 요약 대시보드 표시
+  - 상태: proposed
+  - 완료 기준: `ok_count/count`, bad shard 목록, `/healthz`/`/readyz`/SearchXNG UI 상태, Docker exited/OOM/dead 여부 표시

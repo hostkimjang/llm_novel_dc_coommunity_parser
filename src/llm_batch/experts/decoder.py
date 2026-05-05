@@ -540,6 +540,43 @@ class DecoderExpert:
         url_l = str(url).lower()
         return any(site in url_l for site in OFFICIAL_PLATFORMS)
 
+    @staticmethod
+    def _is_novel_detail_url(url: str) -> bool:
+        """공식 플랫폼 URL 중 작품 상세 URL만 허용한다."""
+        if not isinstance(url, str) or not url:
+            return False
+        try:
+            from urllib.parse import urlparse
+            import re
+
+            parsed = urlparse(url)
+            host = (parsed.netloc or "").lower()
+            path = (parsed.path or "").lower()
+            query = (parsed.query or "").lower()
+        except Exception:
+            return False
+
+        if any(tok in path for tok in ("/arena/", "/community/", "/board/", "/forum/", "/review/", "/reviews/")):
+            return False
+        if any(tok in path for tok in ("/search", "/author", "/writers", "/ranking", "/best", "/genre", "/tag", "/list")):
+            return False
+        if any(tok in query for tok in ("search=", "q=", "query=", "keyword=", "writer=", "author=", "tag=", "genre=", "page=")):
+            return False
+
+        if "novelpia.com" in host and re.search(r"/novel/\d+", path):
+            return True
+        if "series.naver.com" in host and "/novel/detail.series" in path and "productno=" in query:
+            return True
+        if "ridibooks.com" in host and re.search(r"^/books/\d+", path):
+            return True
+        if "munpia.com" in host and (("action=view" in query and "id=" in query) or re.search(r"/novel/\d+", path)):
+            return True
+        if "joara.com" in host and ("/book/" in path or "book_no=" in query or "bookcode=" in query):
+            return True
+        if ("kakao.page" in host or "page.kakao.com" in host) and "/content/" in path:
+            return True
+        return False
+
     def _find_embedded_stable_alias(
         self,
         original_term: str,
@@ -3144,10 +3181,35 @@ class DecoderExpert:
             for o in all_search_titles
             if isinstance(o, dict)
         }
+        _gk_title_norms = {
+            _re.sub(r"[^\w가-힣]", "", str(t or "")).lower()
+            for t in gk_possible
+            if isinstance(t, str) and str(t or "").strip()
+        }
         for gk_title in gk_possible:
             if not (isinstance(gk_title, str) and len(gk_title) >= 2):
                 continue
             _gk_norm = _re.sub(r"[^\w가-힣]", "", gk_title).lower()
+            _looks_like_speculative_expansion = bool(
+                _gk_norm
+                and len(_gk_norm) >= 6
+                and _gk_norm not in _post_main_norm
+                and _gk_norm not in _official_norms
+                and any(
+                    raw_norm != _gk_norm
+                    and len(raw_norm) <= 5
+                    and raw_norm in _post_main_norm
+                    and _gk_norm.startswith(raw_norm)
+                    for raw_norm in _gk_title_norms
+                )
+            )
+            if _looks_like_speculative_expansion:
+                print(
+                    f"[{_ts()}][{self.emoji}] 🧹 speculative GK 제목 보류: "
+                    f"'{gk_title}' (raw alias 우선)",
+                    file=sys.stderr,
+                )
+                continue
             _is_comment_only = _gk_norm and (_gk_norm in gk_comment_norms) and (_gk_norm not in _post_main_norm)
             if _is_comment_only and comment_secondary_mode:
                 comment_secondary_examples.append(gk_title)
@@ -3617,8 +3679,18 @@ class DecoderExpert:
                 # 🆕 복합어 보정: original이 [제목부분 + 캐릭터/작가명]으로 구성된 경우
                 # morphemes 중 title에 포함되는 부분만 추출하여 스코어 재계산
                 # 예: original='즉사무림이유백', morphemes=['즉사무림','이유백'], title='즉사무림'
-                if current_score < 0.2 and len(original) > len(current_title.replace(" ", "")):
-                    title_morphemes = [m for m in morphemes if m in title_norm or m in current_title]
+                if current_score < 0.2:
+                    title_morphemes = []
+                    for m in morphemes:
+                        if m in title_norm or m in current_title:
+                            title_morphemes.append(m)
+                            continue
+                        _m_score = max(
+                            abbreviation_match_score(m, current_title),
+                            _leading_jamo_title_direct_score(m, current_title),
+                        )
+                        if _m_score >= 0.65:
+                            title_morphemes.append(m)
                     non_title_morphemes = [m for m in morphemes if m not in title_morphemes]
                     if title_morphemes and non_title_morphemes:
                         # 제목 부분 morpheme를 합쳐서 effective_original 생성
@@ -5381,6 +5453,108 @@ class DecoderExpert:
                     return True
             return False
 
+        def _collect_related_anchor_terms() -> Dict[str, Dict[str, str]]:
+            gk_result = getattr(ctx, "gatekeeper_result", None) or {}
+            if (not gk_result) and hasattr(ctx, "get_expert_output"):
+                try:
+                    from .orchestrator import ExpertType as _ExpertTypeDecoder
+
+                    gk_result = ctx.get_expert_output(_ExpertTypeDecoder.GATEKEEPER) or {}
+                except Exception:
+                    gk_result = {}
+
+            entities = (gk_result.get("detected_entities") or {}) if isinstance(gk_result, dict) else {}
+            post_data = getattr(ctx, "post_data", None) or {}
+            main_context_chunks: List[str] = []
+            for block in post_data.get("content_blocks") or []:
+                if isinstance(block, dict):
+                    main_context_chunks.append(str(block.get("text") or ""))
+                elif isinstance(block, str):
+                    main_context_chunks.append(block)
+            main_context_chunks.extend(
+                str(comment or "").strip()
+                for comment in (getattr(ctx, "comments", None) or [])
+                if str(comment or "").strip()
+            )
+            main_context_norm = _normalize_alnum_kor_cached(" ".join(main_context_chunks))
+
+            llm_snippet = getattr(ctx, "llm_snippet_analysis", None) or {}
+            snippet_role_map: Dict[str, str] = {}
+            for role_hint in (llm_snippet.get("entity_role_hints") or []):
+                if not isinstance(role_hint, dict):
+                    continue
+                term_norm = _normalize_alnum_kor_cached(str(role_hint.get("term") or "").strip())
+                if not term_norm:
+                    continue
+                snippet_role_map[term_norm] = str(role_hint.get("role") or "").strip().lower()
+
+            raw_terms: List[tuple[str, str]] = []
+            for role_name, source_terms in (
+                ("author", entities.get("possible_authors") or []),
+                ("character", entities.get("possible_characters") or []),
+                ("key_term", gk_result.get("key_terms") or []),
+            ):
+                for term in source_terms:
+                    term_raw = str(term or "").strip()
+                    if term_raw:
+                        raw_terms.append((term_raw, role_name))
+
+            deduped: Dict[str, Dict[str, str]] = {}
+            for term_raw, role_name in raw_terms:
+                term_norm = _normalize_alnum_kor_cached(term_raw)
+                if not term_norm or len(term_norm) < 2:
+                    continue
+                if term_norm == abbr_norm or term_norm == full_norm:
+                    continue
+                if term_norm in full_norm:
+                    continue
+                if term_norm not in main_context_norm:
+                    continue
+                if role_name == "key_term":
+                    if self._is_low_specificity_mapping_abbrev(term_raw, full_title=term_raw):
+                        continue
+                    if snippet_role_map.get(term_norm) in {"genre_term", "community_meta"}:
+                        continue
+                if term_norm not in deduped:
+                    deduped[term_norm] = {
+                        "surface": term_raw,
+                        "role": role_name,
+                    }
+            return deduped
+
+        def _post_has_author_status_context() -> bool:
+            post_data = getattr(ctx, "post_data", None) or {}
+            chunks: List[str] = [str(post_data.get("title") or "")]
+            for block in post_data.get("content_blocks") or []:
+                if isinstance(block, dict):
+                    chunks.append(str(block.get("text") or ""))
+                elif isinstance(block, str):
+                    chunks.append(block)
+            chunks.extend(
+                str(comment or "").strip()
+                for comment in (getattr(ctx, "comments", None) or [])
+                if str(comment or "").strip()
+            )
+            joined_norm = _normalize_alnum_kor_cached(" ".join(chunks))
+            if not joined_norm:
+                return False
+            author_context_markers = (
+                "현생",
+                "유학",
+                "바쁠",
+                "바쁘",
+                "휴재",
+                "복귀",
+                "연재",
+                "완결",
+                "orpg",
+                "trpg",
+                "안오는가",
+                "안오",
+                "늦",
+            )
+            return any(marker in joined_norm for marker in author_context_markers)
+
         official_titles = self._extract_official_titles_from_search(ctx) if ctx else []
         official_title_urls = set()
         for ot in official_titles or []:
@@ -5398,7 +5572,47 @@ class DecoderExpert:
         official_search_hits = 0
         wiki_search_hits = 0
         derivative_search_hits = 0
+        purpose_support_keys: set[str] = set()
+        alias_support_purpose_keys: set[str] = set()
+        official_support_purpose_keys: set[str] = set()
+        official_support_hosts: set[str] = set()
+        weighted_purpose_support = 0.0
+        weighted_alias_support = 0.0
+        weighted_official_support = 0.0
+        raw_anchor_query_support = 0.0
+        self_expansion_query_support = 0.0
+        related_anchor_term_map = _collect_related_anchor_terms()
+        related_anchor_hits: set[str] = set()
+        author_marker_anchor_hits: set[str] = set()
+        post_has_author_status_context = _post_has_author_status_context()
         search_seen = set()
+
+        def _purpose_key(raw: Any) -> str:
+            key = str(raw or "").strip().lower()
+            if ":" in key:
+                key = key.split(":", 1)[0].strip()
+            return key or "search"
+
+        # resolved_mapping 단계에서 의미/작가/리콜 쿼리는 후보 선택을 보강할 수는 있지만,
+        # canonical을 뒤집는 1차 증거로 쓰기에는 자기강화 루프가 되기 쉽다.
+        purpose_weight_map = {
+            "official_title_verify": 1.0,
+            "platform_title_search": 1.0,
+            "alias_raw_probe": 0.9,
+            "title_search_community": 0.7,
+            "community_site_probe": 0.7,
+            "alias_bridge_search": 0.7,
+            "abbreviation_meaning_search": 0.45,
+            "abbreviation_fullname_search": 0.45,
+            "author_verify": 0.2,
+            "author_disambiguation": 0.2,
+            "author_works_search": 0.15,
+            "adaptive_author": 0.1,
+            "abbreviation_verification": 0.15,
+            "title_character_verification": 0.15,
+            "decoder_recall_verification": 0.0,
+        }
+
         for sr in (getattr(ctx, "search_results", None) or []):
             if not isinstance(sr, dict):
                 continue
@@ -5422,15 +5636,50 @@ class DecoderExpert:
                 continue
             search_seen.add(sr_key)
             search_hit_count += 1
+            sr_purpose = _purpose_key(sr.get("_purpose") or sr.get("purpose"))
+            sr_query_norm = _normalize_alnum_kor_cached(sr.get("_query") or "")
+            if sr_purpose not in purpose_support_keys:
+                purpose_support_keys.add(sr_purpose)
+                weighted_purpose_support += purpose_weight_map.get(sr_purpose, 0.35)
             if abbr_norm and abbr_norm in sr_blob_norm:
                 alias_joint_hits += 1
+                if sr_purpose not in alias_support_purpose_keys:
+                    alias_support_purpose_keys.add(sr_purpose)
+                    weighted_alias_support += purpose_weight_map.get(sr_purpose, 0.35)
+            if sr_query_norm:
+                _weight = purpose_weight_map.get(sr_purpose, 0.35)
+                if abbr_norm and abbr_norm in sr_query_norm:
+                    raw_anchor_query_support += _weight
+                elif full_norm and full_norm in sr_query_norm:
+                    self_expansion_query_support += _weight
             sr_url_lower = sr_url.lower()
             if any(p in sr_url_lower for p in OFFICIAL_PLATFORMS):
                 official_search_hits += 1
+                if sr_purpose not in official_support_purpose_keys:
+                    official_support_purpose_keys.add(sr_purpose)
+                    weighted_official_support += purpose_weight_map.get(sr_purpose, 0.35)
+                try:
+                    from urllib.parse import urlparse as _urlparse_rm
+
+                    _host = (_urlparse_rm(sr_url).hostname or "").lower()
+                except Exception:
+                    _host = ""
+                if _host:
+                    official_support_hosts.add(_host)
             if "namu.wiki" in sr_url_lower or "thewiki.kr" in sr_url_lower:
                 wiki_search_hits += 1
             if sr.get("_is_derivative"):
                 derivative_search_hits += 1
+            if related_anchor_term_map:
+                for anchor_norm, _anchor_meta in related_anchor_term_map.items():
+                    if anchor_norm not in sr_blob_norm:
+                        continue
+                    related_anchor_hits.add(anchor_norm)
+                    if any(
+                        marker in sr_blob_norm
+                        for marker in ("작가명", "작가", "저자", "연재자", "author")
+                    ):
+                        author_marker_anchor_hits.add(anchor_norm)
 
         bucket = _candidate_bucket()
         bucket_score = (
@@ -5452,6 +5701,21 @@ class DecoderExpert:
                 re.IGNORECASE,
             )
         )
+        matched_related_anchor_terms = [
+            related_anchor_term_map[norm]["surface"]
+            for norm in sorted(related_anchor_hits)
+            if norm in related_anchor_term_map
+        ]
+        author_context_anchor_terms = [
+            related_anchor_term_map[norm]["surface"]
+            for norm in sorted(author_marker_anchor_hits)
+            if norm in related_anchor_term_map
+        ]
+        related_anchor_hit_count = len(related_anchor_hits)
+        author_marker_hit_count = len(author_marker_anchor_hits)
+        author_context_bridge = bool(
+            post_has_author_status_context and author_marker_hit_count > 0
+        )
         author_contamination = _has_strong_author_signal_for_abbrev()
         explicit_work_alias_signal = _has_explicit_work_alias_signal()
         source_bonus = 0.0
@@ -5464,13 +5728,19 @@ class DecoderExpert:
         score += abbr_score * 2.8
         score += official_title_hits * 2.8
         score += official_url_count * 1.8
-        score += official_search_hits * 1.3
+        score += min(weighted_official_support, 3.0) * 1.3
+        score += min(len(official_support_hosts), 3) * 0.8
         score += wiki_search_hits * 1.0
-        score += min(search_hit_count, 8) * 0.9
-        score += min(alias_joint_hits, 6) * 0.8
+        score += min(weighted_purpose_support, 4.0) * 1.0
+        score += min(search_hit_count, 8) * 0.2
+        score += min(weighted_alias_support, 3.0) * 0.8
         score += min(bucket_score, 10) * 0.7
         score += min(post_span_count, 4) * 0.8
         score += min(snippet_bucket_count, 4) * 0.4
+        score += min(related_anchor_hit_count, 4) * 1.1
+        score += min(author_marker_hit_count, 2) * 1.8
+        if author_context_bridge:
+            score += 2.4
         if low_specific_abbrev:
             score -= 3.2
             if official_title_hits <= 0 and official_url_count <= 0:
@@ -5494,6 +5764,47 @@ class DecoderExpert:
             score -= 4.6
             if official_title_hits <= 1 and official_url_count <= 0 and post_span_count <= 0 and alias_joint_hits <= 1:
                 score -= 2.4
+        direct_grounded_support = (
+            post_span_count
+            + official_title_hits
+            + official_url_count
+            + (1 if explicit_work_alias_signal else 0)
+        )
+        weak_direct_support = direct_grounded_support <= 0
+        closed_bridge = bool(
+            author_context_bridge
+            and (
+                official_title_hits >= 1
+                or official_url_count >= 1
+                or weighted_official_support >= 1.0
+            )
+            and (
+                explicit_work_alias_signal
+                or post_span_count >= 1
+                or bucket_score >= 2
+                or abbr_score >= 0.55
+            )
+        )
+        bridge_quality = (
+            "closed"
+            if closed_bridge
+            else "supporting"
+            if (author_context_bridge or related_anchor_hit_count > 0)
+            else "weak"
+        )
+        if weak_direct_support and abbr_score < 0.45:
+            low_value_reinforcement = max(
+                0.0,
+                weighted_purpose_support - max(weighted_official_support, 1.0),
+            )
+            if low_value_reinforcement > 0:
+                score -= min(low_value_reinforcement, 2.5) * 1.1
+        if (
+            weak_direct_support
+            and abbr_score < 0.45
+            and self_expansion_query_support > raw_anchor_query_support + 0.4
+        ):
+            score -= min(4.0, (self_expansion_query_support - raw_anchor_query_support) * 2.0)
 
         return {
             "title": full,
@@ -5507,8 +5818,23 @@ class DecoderExpert:
             "official_url_count": official_url_count,
             "official_search_hits": official_search_hits,
             "wiki_search_hits": wiki_search_hits,
+            "weighted_purpose_support": round(weighted_purpose_support, 3),
+            "weighted_alias_support": round(weighted_alias_support, 3),
+            "weighted_official_support": round(weighted_official_support, 3),
+            "raw_anchor_query_support": round(raw_anchor_query_support, 3),
+            "self_expansion_query_support": round(self_expansion_query_support, 3),
+            "official_host_count": len(official_support_hosts),
             "derivative_search_hits": derivative_search_hits,
             "derivative_title_like": derivative_title_like,
+            "related_anchor_hit_count": related_anchor_hit_count,
+            "author_marker_hit_count": author_marker_hit_count,
+            "author_context_bridge": author_context_bridge,
+            "author_status_context": post_has_author_status_context,
+            "matched_related_anchor_terms": matched_related_anchor_terms,
+            "author_context_anchor_terms": author_context_anchor_terms,
+            "direct_grounded_support": direct_grounded_support,
+            "closed_bridge": closed_bridge,
+            "bridge_quality": bridge_quality,
             "post_span_count": post_span_count,
             "snippet_bucket_count": snippet_bucket_count,
             "domain_conflict": domain_conflict,
@@ -5664,6 +5990,51 @@ class DecoderExpert:
             or gk_post_type in {"genre_discussion", "trope_discussion", "genre_opinion"}
         )
 
+        _post_data_rm = getattr(ctx, "post_data", None) or {}
+        _image_enrichment_rm = [
+            item for item in (_post_data_rm.get("image_enrichment") or [])
+            if isinstance(item, dict)
+        ]
+        _direct_image_titles_rm = [
+            str(item.get("explicit_work_title") or "").strip()
+            for item in _image_enrichment_rm
+            if str(item.get("explicit_work_title") or "").strip()
+            and str(item.get("title_role") or "").strip() in {"", "work_title"}
+        ]
+        _direct_image_title_norms_rm = {
+            _normalize_alnum_kor_cached(title)
+            for title in _direct_image_titles_rm
+            if _normalize_alnum_kor_cached(title)
+        }
+        _ocr_text_rm = " ".join(
+            str(item.get("ocr_text") or "")
+            for item in _image_enrichment_rm
+            if isinstance(item, dict)
+        )
+
+        def _mapping_conflicts_with_direct_image_title(abbrev: str, full: str) -> bool:
+            abbr_norm_local = _normalize_alnum_kor_cached(abbrev)
+            full_norm_local = _normalize_alnum_kor_cached(full)
+            if not abbr_norm_local or not full_norm_local or not _direct_image_title_norms_rm:
+                return False
+            if any(
+                full_norm_local == dt_norm
+                or full_norm_local in dt_norm
+                or dt_norm in full_norm_local
+                for dt_norm in _direct_image_title_norms_rm
+            ):
+                return False
+
+            if "/목록" in str(full or "") or str(full or "").endswith("목록"):
+                return True
+            if _is_genre_물_pattern(str(abbrev or "")) or self._is_low_specificity_mapping_abbrev(abbrev, full_title=full):
+                return True
+            if _ocr_text_rm and f"#{str(abbrev or '').strip()}" in _ocr_text_rm:
+                return True
+            if any(abbr_norm_local in dt_norm for dt_norm in _direct_image_title_norms_rm):
+                return True
+            return False
+
         grouped: Dict[str, Dict[str, Dict[str, Any]]] = {}
         for entry in mapping_entries or []:
             if not isinstance(entry, dict):
@@ -5691,6 +6062,13 @@ class DecoderExpert:
         for abbr_norm, candidate_map in grouped.items():
             scored: List[Dict[str, Any]] = []
             for candidate in candidate_map.values():
+                if _mapping_conflicts_with_direct_image_title(candidate["abbrev"], candidate["full"]):
+                    print(
+                        f"[{_ts()}][{self.emoji}] ⏭️ resolved_mapping 보류(direct_image_conflict): "
+                        f"'{candidate['abbrev']}' 후보='{candidate['full']}'",
+                        file=sys.stderr,
+                    )
+                    continue
                 eval_info = self._score_resolved_mapping_candidate(
                     ctx,
                     candidate["abbrev"],
@@ -5698,6 +6076,35 @@ class DecoderExpert:
                     sources=sorted(candidate["sources"]),
                 )
                 eval_info["abbrev"] = candidate["abbrev"]
+                if hasattr(ctx, "merge_candidate_bridge_profile"):
+                    try:
+                        ctx.merge_candidate_bridge_profile(
+                            candidate["full"],
+                            {
+                                "title": candidate["full"],
+                                "abbrev": candidate["abbrev"],
+                                "bridge_quality": eval_info.get("bridge_quality"),
+                                "closed_bridge": bool(eval_info.get("closed_bridge")),
+                                "author_context_bridge": bool(eval_info.get("author_context_bridge")),
+                                "author_status_context": bool(eval_info.get("author_status_context")),
+                                "matched_related_anchor_terms": list(eval_info.get("matched_related_anchor_terms") or []),
+                                "author_context_anchor_terms": list(eval_info.get("author_context_anchor_terms") or []),
+                                "related_anchor_hit_count": int(eval_info.get("related_anchor_hit_count") or 0),
+                                "author_marker_hit_count": int(eval_info.get("author_marker_hit_count") or 0),
+                                "weighted_official_support": float(eval_info.get("weighted_official_support") or 0.0),
+                                "weighted_purpose_support": float(eval_info.get("weighted_purpose_support") or 0.0),
+                                "official_title_hits": int(eval_info.get("official_title_hits") or 0),
+                                "official_url_count": int(eval_info.get("official_url_count") or 0),
+                                "official_host_count": int(eval_info.get("official_host_count") or 0),
+                                "post_span_count": int(eval_info.get("post_span_count") or 0),
+                                "bucket_score": int(eval_info.get("bucket_score") or 0),
+                                "explicit_work_alias_signal": bool(eval_info.get("explicit_work_alias_signal")),
+                                "abbr_score": float(eval_info.get("abbr_score") or 0.0),
+                                "score": float(eval_info.get("score") or 0.0),
+                            },
+                        )
+                    except Exception:
+                        pass
                 scored.append(eval_info)
 
             scored.sort(
@@ -5769,6 +6176,114 @@ class DecoderExpert:
                     )
                     top = replacement
                     second = None
+
+            _snippet_title_raw = str(
+                (getattr(ctx, "llm_snippet_analysis", None) or {}).get("identified_title") or ""
+            ).strip()
+            _snippet_title_norm = _normalize_alnum_kor_cached(_snippet_title_raw)
+            _snippet_candidate = None
+            if _snippet_title_norm:
+                for cand in scored:
+                    if _normalize_alnum_kor_cached(str(cand.get("title") or "")) == _snippet_title_norm:
+                        _snippet_candidate = cand
+                        break
+            if _snippet_candidate and _normalize_alnum_kor_cached(str(top.get("title") or "")) != _snippet_title_norm:
+                _snippet_official_total = (
+                    int(_snippet_candidate.get("official_title_hits", 0))
+                    + int(_snippet_candidate.get("official_url_count", 0))
+                    + int(_snippet_candidate.get("official_search_hits", 0))
+                    + int(_snippet_candidate.get("wiki_search_hits", 0))
+                )
+                _snippet_direct_support = (
+                    int(_snippet_candidate.get("bucket_score", 0))
+                    + int(_snippet_candidate.get("post_span_count", 0))
+                )
+                _top_direct_support = int(top.get("bucket_score", 0)) + int(top.get("post_span_count", 0))
+                _top_official_title_hits = int(top.get("official_title_hits", 0))
+                _top_low_abbr = float(top.get("abbr_score", 0.0)) < 0.45
+                _top_indirect_only = (
+                    _top_direct_support <= 0
+                    and _top_official_title_hits <= 0
+                    and int(top.get("official_url_count", 0)) <= 0
+                    and not bool(top.get("explicit_work_alias_signal"))
+                )
+                _snippet_is_stable = (
+                    _snippet_official_total >= 2
+                    or _snippet_direct_support > 0
+                )
+                _snippet_not_derivative = not (
+                    bool(_snippet_candidate.get("derivative_title_like"))
+                    or _looks_derivativeish_mapping_title(_snippet_candidate.get("title") or "")
+                )
+                _top_self_expansion = float(top.get("self_expansion_query_support", 0.0))
+                _top_raw_anchor = float(top.get("raw_anchor_query_support", 0.0))
+                if (
+                    _top_low_abbr
+                    and _top_indirect_only
+                    and _snippet_is_stable
+                    and _snippet_not_derivative
+                    and (
+                        float(top.get("score", 0.0))
+                        <= float(_snippet_candidate.get("score", 0.0)) + 3.5
+                        or _top_self_expansion > _top_raw_anchor + 0.5
+                        or (_top_official_title_hits <= 0 and _snippet_official_total >= 2)
+                    )
+                ):
+                    print(
+                        f"[{_ts()}][{self.emoji}] 🛡️ resolved_mapping snippet canonical 보존: "
+                        f"'{top.get('abbrev')}' top='{top.get('title')}' "
+                        f"→ snippet='{_snippet_candidate.get('title')}' "
+                        f"(top_abbr={float(top.get('abbr_score', 0.0)):.2f}, "
+                        f"snippet_official={_snippet_official_total}, "
+                        f"self_expand={_top_self_expansion:.2f}, raw_anchor={_top_raw_anchor:.2f})",
+                        file=sys.stderr,
+                    )
+                    top = _snippet_candidate
+                    second = None
+
+            _lock_title_raw = str(getattr(ctx, "canonical_title_lock", "") or "").strip()
+            _lock_title_norm = _normalize_alnum_kor_cached(_lock_title_raw)
+            if _lock_title_norm and _normalize_alnum_kor_cached(str(top.get("title") or "")) != _lock_title_norm:
+                _lock_candidate = None
+                for cand in scored:
+                    if _normalize_alnum_kor_cached(str(cand.get("title") or "")) == _lock_title_norm:
+                        _lock_candidate = cand
+                        break
+                if _lock_candidate:
+                    _top_low_abbr = float(top.get("abbr_score", 0.0)) < 0.45
+                    _top_direct = int(top.get("direct_grounded_support", 0) or 0)
+                    _top_official_hits = int(top.get("official_title_hits", 0) or 0)
+                    _top_self_expand = float(top.get("self_expansion_query_support", 0.0) or 0.0)
+                    _top_raw_anchor = float(top.get("raw_anchor_query_support", 0.0) or 0.0)
+                    _lock_official_total = (
+                        int(_lock_candidate.get("official_title_hits", 0))
+                        + int(_lock_candidate.get("official_url_count", 0))
+                        + int(_lock_candidate.get("official_search_hits", 0))
+                        + int(_lock_candidate.get("wiki_search_hits", 0))
+                    )
+                    _lock_bridge = bool(
+                        _lock_candidate.get("closed_bridge")
+                        or _lock_candidate.get("author_context_bridge")
+                    )
+                    if (
+                        _top_low_abbr
+                        and _top_direct <= 0
+                        and _top_official_hits <= 0
+                        and (
+                            _top_self_expand > _top_raw_anchor + 0.5
+                            or float(top.get("score", 0.0)) <= float(_lock_candidate.get("score", 0.0)) + 4.0
+                        )
+                        and (_lock_official_total >= 2 or _lock_bridge)
+                    ):
+                        print(
+                            f"[{_ts()}][{self.emoji}] 🔒 resolved_mapping canonical lock 유지: "
+                            f"top='{top.get('title')}' → lock='{_lock_candidate.get('title')}' "
+                            f"(top_abbr={float(top.get('abbr_score', 0.0)):.2f}, "
+                            f"self_expand={_top_self_expand:.2f}, raw_anchor={_top_raw_anchor:.2f})",
+                            file=sys.stderr,
+                        )
+                        top = _lock_candidate
+                        second = None
 
             gap = float(top.get("score", 0.0)) - float((second or {}).get("score", 0.0))
             top_source_diversity = len(set(top.get("sources") or []))

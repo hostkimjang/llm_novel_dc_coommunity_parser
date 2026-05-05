@@ -6,7 +6,6 @@ services:
       - "9000:8080"
     volumes:
       - ./docker/searchxng/settings.yml:/etc/searxng/settings.yml:ro
-      - ./docker/searchxng/startpage_patched.py:/usr/local/searxng/searx/engines/startpage.py:ro
     environment:
       - SEARXNG_BASE_URL=http://localhost:9000/
       # NOTE: settings.yml에서 secret_key는 ${SEARXNG_SECRET} 로 override됨
@@ -22,6 +21,26 @@ services:
       # 기본 설정 — LLM 불필요, 순수 크롤링/마크다운 변환 전용
       - CRAWL4AI_API_TOKEN=${CRAWL4AI_API_TOKEN:-}
 
+  browser-search:
+    image: llm-batch-browser-search:latest
+    build:
+      context: .
+      dockerfile: docker/browser-search/Dockerfile
+    restart: unless-stopped
+    shm_size: "2g"
+    ports:
+      - "8765:8765"
+    environment:
+      - BROWSER_SEARCH_PROVIDER_ORDER=${BROWSER_SEARCH_PROVIDER_ORDER:-cloak,naver}
+      - BROWSER_SEARCH_HEADLESS=${BROWSER_SEARCH_HEADLESS:-1}
+      - BROWSER_SEARCH_HUMANIZE=${BROWSER_SEARCH_HUMANIZE:-1}
+      - BROWSER_SEARCH_HUMAN_PRESET=${BROWSER_SEARCH_HUMAN_PRESET:-default}
+      - BROWSER_SEARCH_WAIT_MS=${BROWSER_SEARCH_WAIT_MS:-3000}
+      - BROWSER_SEARCH_GOOGLE_MIN_INTERVAL_SEC=${BROWSER_SEARCH_GOOGLE_MIN_INTERVAL_SEC:-45}
+      - BROWSER_SEARCH_GOOGLE_JITTER_SEC=${BROWSER_SEARCH_GOOGLE_JITTER_SEC:-15}
+      - BROWSER_SEARCH_BLOCK_COOLDOWN_SEC=${BROWSER_SEARCH_BLOCK_COOLDOWN_SEC:-7200}
+      - CLOAKBROWSER_AUTO_UPDATE=${CLOAKBROWSER_AUTO_UPDATE:-false}
+
   mcp-bridge:
     build:
       context: .
@@ -33,6 +52,8 @@ services:
       - SEARCHXNG_URL=http://searchxng:8080
       - SEARCHXNG_URLS=http://searchxng:8080
       - CRAWL4AI_URL=http://crawl4ai:11235
+      - HEADLESS_SEARCH_URL=http://browser-search:8765/search
+      - HEADLESS_SEARCH_ENABLED=${HEADLESS_SEARCH_ENABLED:-1}
       - MCP_DISCOVER_PUBLIC_INSTANCES=0
       - MCP_DISCOVERY_SOURCE_URL=https://searx.space/data/instances.json
       - MCP_DISCOVERY_MAX_URLS=5
@@ -53,3 +74,4 @@ services:
     depends_on:
       - searchxng
       - crawl4ai
+      - browser-search

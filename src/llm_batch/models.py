@@ -51,7 +51,20 @@ class SlangInsight(BaseModel):
     # (원칙상 null이면 slang_insight 자체를 생략하는게 맞지만, 파이프라인 안정성을 위해 완화)
     detected_term: Optional[str] = None
     decoded_term: Optional[str] = None
+    decode_verified: Optional[bool] = None
     cultural_context: Optional[str] = None  # 밈/은어의 유래·용법·커뮤니티 맥락 설명
+    canonical_work_alias: Optional[str] = None
+    alias_scope: Optional[Literal[
+        "pure_work_alias",
+        "work_plus_character",
+        "work_plus_author",
+        "work_plus_meme",
+        "mixed_unknown",
+    ]] = None
+    attached_entity_text: Optional[str] = None
+    attached_entity_type: Optional[Literal["character", "author", "meme", "other"]] = None
+    store_in_slang_db: Optional[bool] = None
+    store_reason: Optional[str] = None
 
 
 class Inference(BaseModel):
@@ -180,6 +193,13 @@ class PickvelIdentity(BaseModel):
     consistency_flags: Optional[List[str]] = None
     reason: Optional[str] = None
     reason_lines: Optional[List[str]] = None
+    system_state: Optional[Literal[
+        "clean",
+        "verifier_failed",
+        "search_degraded",
+        "partial_evidence",
+        "pending_retry",
+    ]] = None
     identity_state: Optional[Literal[
         "resolved_title",    # 관련 + 정식 제목 확정
         "unresolved_title",  # 관련이나 정식 제목 미확정

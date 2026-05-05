@@ -5,28 +5,50 @@ import time
 import random
 import threading
 from typing import Any, Dict, List, Optional
+from urllib.parse import urlsplit, urlunsplit
 
 import httpx
 
 
 _ENDPOINT_SELECT_LOCK = threading.Lock()
 _ENDPOINT_SELECT_NEXT = 0
+_CLIENT_ENDPOINT_BACKOFF_LOCK = threading.Lock()
+_CLIENT_ENDPOINT_BACKOFF_UNTIL: Dict[str, float] = {}
 
 
 def _parse_endpoints(raw: str) -> List[str]:
     endpoints: List[str] = []
     for part in (raw or "").split(","):
-        endpoint = part.strip().rstrip("/")
+        endpoint = _normalize_endpoint(part)
         if endpoint and endpoint not in endpoints:
             endpoints.append(endpoint)
     return endpoints
+
+
+def _normalize_endpoint(endpoint: str) -> str:
+    raw = str(endpoint or "").strip().rstrip("/")
+    if not raw:
+        return ""
+    normalize_localhost = os.getenv("MCP_NORMALIZE_LOCALHOST", "1").strip().lower() not in {"0", "false", "no", "off"}
+    if not normalize_localhost:
+        return raw
+    try:
+        parts = urlsplit(raw)
+        if parts.hostname and parts.hostname.lower() == "localhost":
+            netloc = "127.0.0.1"
+            if parts.port:
+                netloc = f"{netloc}:{parts.port}"
+            return urlunsplit((parts.scheme or "http", netloc, parts.path, parts.query, parts.fragment)).rstrip("/")
+    except Exception:
+        pass
+    return raw
 
 
 def _select_endpoint(endpoints: List[str], strategy: str) -> str:
     global _ENDPOINT_SELECT_NEXT
 
     if not endpoints:
-        return "http://localhost:3333"
+        return "http://127.0.0.1:3333"
     if len(endpoints) == 1:
         return endpoints[0]
 
@@ -42,6 +64,32 @@ def _select_endpoint(endpoints: List[str], strategy: str) -> str:
     return endpoints[idx]
 
 
+def _env_bool(name: str, default: bool = False) -> bool:
+    value = os.getenv(name, "1" if default else "0").strip().lower()
+    return value in {"1", "true", "yes", "on"}
+
+
+def _client_endpoint_backoff_sec() -> float:
+    try:
+        return max(5.0, min(float(os.getenv("MCP_CLIENT_ENDPOINT_BACKOFF_SEC", "90")), 3600.0))
+    except Exception:
+        return 90.0
+
+
+def _mark_client_endpoint_backoff(endpoint: str) -> None:
+    if not endpoint:
+        return
+    with _CLIENT_ENDPOINT_BACKOFF_LOCK:
+        _CLIENT_ENDPOINT_BACKOFF_UNTIL[endpoint] = time.time() + _client_endpoint_backoff_sec()
+
+
+def _is_client_endpoint_backed_off(endpoint: str) -> bool:
+    if not endpoint:
+        return False
+    with _CLIENT_ENDPOINT_BACKOFF_LOCK:
+        return _CLIENT_ENDPOINT_BACKOFF_UNTIL.get(endpoint, 0.0) > time.time()
+
+
 class MCPClient:
     def __init__(self, endpoint: Optional[str] = None, default_num_results: Optional[int] = None) -> None:
         # 다중 MCP shard가 있을 때는 클라이언트 생성 시 1개를 골라 고정한다.
@@ -49,16 +97,41 @@ class MCPClient:
         raw_endpoints = (
             endpoint
             if endpoint is not None
-            else (os.getenv("MCP_ENDPOINTS", "").strip() or os.getenv("MCP_ENDPOINT", "http://localhost:3333"))
+            else (os.getenv("MCP_ENDPOINTS", "").strip() or os.getenv("MCP_ENDPOINT", "http://127.0.0.1:3333"))
         )
-        self.endpoints = _parse_endpoints(raw_endpoints)
+        parsed_endpoints = _parse_endpoints(raw_endpoints)
+        self.endpoint_failover = _env_bool("MCP_CLIENT_ENDPOINT_FAILOVER", True)
+        if endpoint is not None and self.endpoint_failover:
+            # expert_main은 워커별 기본 shard를 단일 endpoint로 넘긴다. 런 중 shard가 죽으면
+            # 같은 워커가 전체 MCP_ENDPOINTS pool 안에서 살아있는 shard로 우회할 수 있게 둔다.
+            fallback_pool = _parse_endpoints(os.getenv("MCP_ENDPOINTS", ""))
+            merged: List[str] = []
+            for item in parsed_endpoints + fallback_pool:
+                if item and item not in merged:
+                    merged.append(item)
+            self.endpoints = merged or parsed_endpoints
+        else:
+            self.endpoints = parsed_endpoints
         self.endpoint_strategy = os.getenv("MCP_ENDPOINT_STRATEGY", "round_robin")
-        self.endpoint = _select_endpoint(self.endpoints, self.endpoint_strategy)
+        if endpoint is not None and parsed_endpoints:
+            self.endpoint = parsed_endpoints[0]
+        else:
+            self.endpoint = _select_endpoint(self.endpoints, self.endpoint_strategy)
         self.default_num_results = default_num_results or int(os.getenv("MCP_DEFAULT_NUM_RESULTS", "10"))
+        try:
+            self.search_timeout_sec = max(3.0, min(float(os.getenv("MCP_CLIENT_SEARCH_TIMEOUT_SEC", "20")), 120.0))
+        except Exception:
+            self.search_timeout_sec = 20.0
         try:
             self.search_max_retries = max(0, min(int(os.getenv("MCP_CLIENT_SEARCH_MAX_RETRIES", "2")), 5))
         except Exception:
             self.search_max_retries = 1
+        try:
+            self.max_endpoints_per_search = max(
+                1, min(int(os.getenv("MCP_CLIENT_MAX_ENDPOINTS_PER_SEARCH", "4")), 64)
+            )
+        except Exception:
+            self.max_endpoints_per_search = 4
         try:
             self.search_retry_backoff_ms = max(
                 50, min(int(os.getenv("MCP_CLIENT_SEARCH_RETRY_BACKOFF_MS", "250")), 5000)
@@ -70,54 +143,88 @@ class MCPClient:
             in {"1", "true", "yes", "on"}
         )
 
+    def _candidate_endpoints(self) -> List[str]:
+        endpoints: List[str] = []
+        for item in [self.endpoint] + list(self.endpoints or []):
+            item = _normalize_endpoint(item)
+            if item and item not in endpoints:
+                endpoints.append(item)
+        if not endpoints:
+            endpoints = ["http://127.0.0.1:3333"]
+        if not self.endpoint_failover or len(endpoints) <= 1:
+            return [endpoints[0]]
+
+        active = [item for item in endpoints if not _is_client_endpoint_backed_off(item)]
+        if active:
+            return active
+        return endpoints
+
     def search(self, query: str, num_results: Optional[int] = None, purpose: str = "") -> Dict[str, Any]:
-        url = f"{self.endpoint.rstrip('/')}/mcp/search"
         payload = {
             "query": query,
             "num_results": num_results or self.default_num_results,
             "purpose": purpose or "",
         }
         last_error: Optional[Exception] = None
-        for attempt in range(self.search_max_retries + 1):
-            try:
-                response = httpx.post(url, json=payload, timeout=20.0)
-                response.raise_for_status()
-                data = response.json()
-                if not isinstance(data, dict):
-                    return {"query": query, "results": [], "total": 0}
+        last_data: Optional[Dict[str, Any]] = None
 
-                results = data.get("results", [])
-                degraded = bool(data.get("degraded") or data.get("possible_throttle"))
-                if (
-                    self.search_retry_on_degraded_empty
-                    and attempt < self.search_max_retries
-                    and isinstance(results, list)
-                    and len(results) == 0
-                    and degraded
-                ):
+        for endpoint in self._candidate_endpoints()[: self.max_endpoints_per_search]:
+            url = f"{endpoint.rstrip('/')}/mcp/search"
+            endpoint_degraded_empty = False
+            endpoint_error = False
+            for attempt in range(self.search_max_retries + 1):
+                try:
+                    response = httpx.post(url, json=payload, timeout=self.search_timeout_sec)
+                    response.raise_for_status()
+                    data = response.json()
+                    if not isinstance(data, dict):
+                        return {"query": query, "results": [], "total": 0}
+
+                    results = data.get("results", [])
+                    degraded = bool(data.get("degraded") or data.get("possible_throttle"))
+                    if (
+                        self.search_retry_on_degraded_empty
+                        and isinstance(results, list)
+                        and len(results) == 0
+                        and degraded
+                    ):
+                        last_data = data
+                        endpoint_degraded_empty = True
+                        if attempt < self.search_max_retries:
+                            sleep_sec = (self.search_retry_backoff_ms / 1000.0) * (attempt + 1)
+                            time.sleep(sleep_sec)
+                            continue
+                        break
+
+                    self.endpoint = endpoint
+                    return data
+                except httpx.HTTPError as exc:
+                    last_error = exc
+                    endpoint_error = True
+                    if attempt >= self.search_max_retries:
+                        break
                     sleep_sec = (self.search_retry_backoff_ms / 1000.0) * (attempt + 1)
                     time.sleep(sleep_sec)
-                    continue
+                except Exception as exc:  # JSON parse 등 비HTTP 에러도 1회 재시도 허용
+                    last_error = exc
+                    endpoint_error = True
+                    if attempt >= self.search_max_retries:
+                        break
+                    sleep_sec = (self.search_retry_backoff_ms / 1000.0) * (attempt + 1)
+                    time.sleep(sleep_sec)
 
-                return data
-            except httpx.HTTPError as exc:
-                last_error = exc
-                if attempt >= self.search_max_retries:
-                    break
-                sleep_sec = (self.search_retry_backoff_ms / 1000.0) * (attempt + 1)
-                time.sleep(sleep_sec)
-            except Exception as exc:  # JSON parse 등 비HTTP 에러도 1회 재시도 허용
-                last_error = exc
-                if attempt >= self.search_max_retries:
-                    break
-                sleep_sec = (self.search_retry_backoff_ms / 1000.0) * (attempt + 1)
-                time.sleep(sleep_sec)
+            if self.endpoint_failover and (endpoint_error or endpoint_degraded_empty):
+                _mark_client_endpoint_backoff(endpoint)
+                continue
+
+        if last_data is not None:
+            return last_data
 
         if last_error:
             raise last_error
         return {"query": query, "results": [], "total": 0}
 
-    def health_check(self, timeout: float = 5.0) -> Dict[str, Any]:
+    def health_check(self, timeout: float = 5.0, include_search: bool = True) -> Dict[str, Any]:
         """SearXNG/MCP Bridge 연결 상태를 확인한다.
 
         Returns:
@@ -131,6 +238,43 @@ class MCPClient:
             resp = httpx.get(url_check, timeout=timeout)
             latency = (_time.perf_counter() - t0) * 1000
             if resp.status_code == 200:
+                if not include_search:
+                    if _env_bool("MCP_HEALTH_USE_READYZ", True):
+                        try:
+                            ready_url = f"{self.endpoint.rstrip('/')}/readyz"
+                            ready_resp = httpx.get(ready_url, timeout=timeout)
+                            if ready_resp.status_code != 404:
+                                ready_payload = ready_resp.json() if ready_resp.content else {}
+                                ready_ok = (
+                                    ready_resp.status_code == 200
+                                    and isinstance(ready_payload, dict)
+                                    and str(ready_payload.get("status") or "").lower() == "ok"
+                                    and bool(ready_payload.get("searxng"))
+                                )
+                                if not ready_ok:
+                                    return {
+                                        "ok": False,
+                                        "latency_ms": round(latency, 1),
+                                        "search_latency_ms": 0.0,
+                                        "error": f"Bridge OK but readyz degraded: {ready_payload}",
+                                        "readyz_status": ready_resp.status_code,
+                                    }
+                        except httpx.HTTPStatusError:
+                            pass
+                        except Exception as e:
+                            return {
+                                "ok": False,
+                                "latency_ms": round(latency, 1),
+                                "search_latency_ms": 0.0,
+                                "error": f"Bridge OK but readyz failed: {e}",
+                            }
+                    return {
+                        "ok": True,
+                        "latency_ms": round(latency, 1),
+                        "search_latency_ms": 0.0,
+                        "error": None,
+                        "search_skipped": True,
+                    }
                 # 실제 검색도 한 번 테스트
                 t1 = _time.perf_counter()
                 try:
@@ -167,11 +311,16 @@ class MCPClient:
         Returns:
             {url, domain, text, structured_info} 또는 실패 시 None
         """
-        endpoint = f"{self.endpoint.rstrip('/')}/mcp/fetch"
         payload = {"url": url, "max_length": max_length}
-        try:
-            response = httpx.post(endpoint, json=payload, timeout=50.0)
-            response.raise_for_status()
-            return response.json()
-        except Exception:
-            return None
+        for endpoint in self._candidate_endpoints():
+            fetch_url = f"{endpoint.rstrip('/')}/mcp/fetch"
+            try:
+                response = httpx.post(fetch_url, json=payload, timeout=50.0)
+                response.raise_for_status()
+                self.endpoint = endpoint
+                return response.json()
+            except Exception:
+                if self.endpoint_failover:
+                    _mark_client_endpoint_backoff(endpoint)
+                continue
+        return None

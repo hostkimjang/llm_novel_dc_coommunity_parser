@@ -487,9 +487,9 @@ class JuryPanel:
         except Exception:
             global_cap = 32768
         try:
-            configured = int(os.getenv("LLM_JURY_MAX_TOKENS", "2048"))
+            configured = int(os.getenv("LLM_JURY_MAX_TOKENS", "4096"))
         except Exception:
-            configured = 2048
+            configured = 4096
         return max(512, min(configured, global_cap, 8192))
 
     def deliberate(
@@ -699,6 +699,15 @@ YOUR ROLE: Argue FOR relevance (is_relevant=true).
 - Highlight Decoder matches, Verifier confirmations, platform URLs
 - Interpret ambiguous signals favorably for relevance
 - Consider community slang/abbreviations as potential novel references
+- Before arguing, internally classify the post into one of these scope types:
+  1) direct_work_discussion
+  2) adjacent_meta_or_fandom
+  3) multi_work_reference
+  4) work_internal_concept (song, martial art, in-universe object, review title)
+  5) generic_or_off_topic
+- If the post is 2), argue for relevance with official title null unless there is a direct work anchor.
+- If the post is 3), do not force a single title unless one work is clearly the main subject.
+- If the post is 4), require a bridge from the internal concept to the parent work; community/review page title alone is not enough.
 
 You must output valid JSON only:
 {{
@@ -730,6 +739,13 @@ consider whether it might be a community meme, character group abbreviation, or 
 However, DO NOT automatically reject it — community-specific terms can still be relevant \
 if they refer to specific novels, characters from specific novels, or well-known abbreviations. \
 Use the SEARCH RESULTS to determine what the term actually means in context.
+- Explicitly test these failure modes:
+  1) review/arena/community post title mistaken for a novel title
+  2) fanart/cover/release meta mistaken for direct plot discussion
+  3) multiple works used as examples but one title over-promoted
+  4) in-work concept (song, technique, slogan, nickname) mistaken for the parent work without direct bridge
+  5) generic trope/concept mistaken for a specific title
+- If the post is still novel-related but not direct-work discussion, prefer the conclusion “relevant but title should remain null/adjacent”.
 
 You must output valid JSON only:
 {{
@@ -757,6 +773,21 @@ give significant weight to these signals. Pipeline overrides can introduce false
 - **IMPORTANT**: A title that appears ONLY in community posts (DC갤러리, 아카라이브) \
 but NOT on any novel platform (novelpia, munpia, series.naver.com) is likely NOT a real novel title. \
 Community-only titles are often memes, character group abbreviations, or inside jokes.
+- First, internally classify the discourse scope:
+  1) direct_work_discussion
+  2) adjacent_meta_or_fandom
+  3) multi_work_reference
+  4) work_internal_concept
+  5) generic_or_off_topic
+- Decision policy:
+  - 1) can be relevant + single title
+  - 2) can be relevant, but official_novel_title should usually be null
+  - 3) can be relevant, but official_novel_title should usually be null unless one work is clearly central
+  - 4) require an explicit bridge from the concept/review page/song/technique to the parent work before assigning title
+  - 5) should usually be irrelevant
+- Treat review pages, arena posts, fanart pages, cover posts, and community summaries as weak evidence for title promotion unless they directly link and ground the parent work in the post body.
+- If a generic/trope-like token could match a standalone title, but another interpretation explains the post via character/IP anchors more coherently, do NOT output the trope-matched title. Prefer relevant + official_novel_title=null.
+- If the final_reasoning concludes “작품 주변 메타/팬아트/플랫폼 주변 담론” then do NOT collapse it to irrelevant by default.
 
 You must output valid JSON matching the standard Arbiter output schema:
 {{
@@ -790,9 +821,9 @@ class DebateDeliberation:
         except Exception:
             global_cap = 32768
         try:
-            configured = int(os.getenv("LLM_DEBATE_MAX_TOKENS", "2048"))
+            configured = int(os.getenv("LLM_DEBATE_MAX_TOKENS", "4096"))
         except Exception:
-            configured = 2048
+            configured = 4096
         return max(512, min(configured, global_cap, 8192))
 
     def deliberate(
@@ -1610,6 +1641,59 @@ class DeliberationOrchestrator:
         votes_against = 0  # 비관련성 지지
         title_votes: Dict[str, int] = {}
         all_reasonings: List[str] = []
+        _blocked_title_vote_logged: set[str] = set()
+
+        _ctx_ref = getattr(self, "_last_ctx", None)
+        try:
+            from .orchestrator import ExpertType as _RuntimeExpertType
+        except Exception:
+            _RuntimeExpertType = None  # type: ignore[assignment]
+        _vf_out_final = (
+            _ctx_ref.get_expert_output(_RuntimeExpertType.VERIFIER)
+            if (_ctx_ref and _RuntimeExpertType is not None)
+            else {}
+        )
+        _vf_out_final = _vf_out_final or {}
+        _vf_res_final = (_vf_out_final.get("verification_result") or {}) if isinstance(_vf_out_final, dict) else {}
+        _vf_relation_final = (_vf_res_final.get("relation_judgment") or {}) if isinstance(_vf_res_final, dict) else {}
+        _vf_relation_type_final = str(_vf_relation_final.get("relation_type") or "").strip().lower()
+        _vf_relation_target_final = str(_vf_relation_final.get("discussion_target") or "").strip().lower()
+        _vf_relation_promotion_final = str(_vf_relation_final.get("promotion_decision") or "").strip().lower()
+        if _vf_relation_promotion_final in {"promote", "accept", "keep"}:
+            _vf_relation_promotion_final = "allow"
+        elif _vf_relation_promotion_final in {"defer", "pending"}:
+            _vf_relation_promotion_final = "hold"
+        _vf_relation_summary = (
+            _vf_relation_final.get("evidence_summary") if isinstance(_vf_relation_final.get("evidence_summary"), dict) else {}
+        )
+        _vf_explicit_bridge_count = int((_vf_relation_summary or {}).get("explicit_alias_bridge_count") or 0)
+        _vf_official_detail_count = int((_vf_relation_summary or {}).get("official_detail_count") or 0)
+        _vf_post_direct_grounding = bool(_vf_relation_final.get("post_direct_grounding"))
+        _block_title_votes_on_hold = bool(
+            _vf_relation_promotion_final in {"hold", "reject"}
+            and _vf_res_final.get("is_relevant") is False
+            and _vf_relation_type_final in {"thematic_overlap_only", "community_slang_or_meta", "unknown"}
+            and _vf_relation_target_final in {"mixed_or_uncertain", "community_banter", "platform_meta", ""}
+            and _vf_explicit_bridge_count <= 0
+            and _vf_official_detail_count <= 0
+            and not _vf_post_direct_grounding
+        )
+
+        def _can_cast_title_vote(_candidate_title: Any, source: str) -> bool:
+            _cand = str(_candidate_title or "").strip()
+            if not _cand:
+                return False
+            if not _block_title_votes_on_hold:
+                return True
+            if _cand not in _blocked_title_vote_logged:
+                print(
+                    f"[{_ts()}][⚖️🔮] 심의 title vote 차단: "
+                    f"source={source}, relation={_vf_relation_type_final}/{_vf_relation_promotion_final}, "
+                    f"target={_vf_relation_target_final}, title='{_cand}'",
+                    file=sys.stderr,
+                )
+                _blocked_title_vote_logged.add(_cand)
+            return False
 
         # ── Primary Arbiter (2표) ──
         # 🆕 Smart Deliberation: 후처리 가드가 LLM 원본 판정을 뒤집은 경우,
@@ -1634,7 +1718,7 @@ class DeliberationOrchestrator:
                 votes_for += 2
             else:
                 votes_against += 2
-            if _raw_llm_title:
+            if _raw_llm_title and _can_cast_title_vote(_raw_llm_title, "primary_raw"):
                 title_votes[_raw_llm_title] = title_votes.get(_raw_llm_title, 0) + 2
         else:
             if p_rel is True:
@@ -1642,7 +1726,7 @@ class DeliberationOrchestrator:
             else:
                 votes_against += 2
             p_title = p_dec.get("official_novel_title") or p_dec.get("official_title")
-            if p_title:
+            if p_title and _can_cast_title_vote(p_title, "primary"):
                 title_votes[p_title] = title_votes.get(p_title, 0) + 2
         if primary.get("final_reasoning"):
             all_reasonings.append(f"[Primary] {str(primary['final_reasoning'])}")
@@ -1653,7 +1737,8 @@ class DeliberationOrchestrator:
             votes_for += jury_votes.get("relevant", 0)
             votes_against += jury_votes.get("irrelevant", 0)
             for t, cnt in jury.get("jury_titles", {}).items():
-                title_votes[t] = title_votes.get(t, 0) + cnt
+                if _can_cast_title_vote(t, "jury"):
+                    title_votes[t] = title_votes.get(t, 0) + cnt
             for reason in jury.get("dissent_reasons", []):
                 all_reasonings.append(f"[Jury dissent] {reason}")
 
@@ -1672,7 +1757,7 @@ class DeliberationOrchestrator:
             else:
                 votes_against += 2
             j_title = j_dec.get("official_novel_title")
-            if j_title:
+            if j_title and _can_cast_title_vote(j_title, "debate_judge"):
                 title_votes[j_title] = title_votes.get(j_title, 0) + 2
             if judge.get("judge_reasoning"):
                 all_reasonings.append(f"[Judge] {str(judge['judge_reasoning'])}")
@@ -1709,6 +1794,28 @@ class DeliberationOrchestrator:
         if title_votes and is_relevant:
             best_title = max(title_votes, key=title_votes.get)
 
+        jury_votes = jury.get("jury_votes", {}) if isinstance(jury, dict) else {}
+        jury_relevant = int(jury_votes.get("relevant", 0) or 0)
+        jury_irrelevant = int(jury_votes.get("irrelevant", 0) or 0)
+        _jury_unanimous_irrelevant = jury_irrelevant >= 3 and jury_relevant == 0
+        _suppress_title_on_hold = bool(
+            best_title
+            and is_relevant
+            and _jury_unanimous_irrelevant
+            and _vf_res_final.get("is_relevant") is False
+            and _vf_relation_promotion_final == "hold"
+            and _vf_relation_type_final in {"thematic_overlap_only", "community_slang_or_meta", "unknown"}
+            and _vf_relation_target_final in {"mixed_or_uncertain", "community_banter", "platform_meta", ""}
+        )
+        if _suppress_title_on_hold:
+            print(
+                f"[{_ts()}][⚖️🔮] 심의 title 확정 억제: "
+                f"jury=0:3 비관련 + relation={_vf_relation_type_final}/{_vf_relation_promotion_final} "
+                f"→ title='{best_title}' 보류",
+                file=sys.stderr,
+            )
+            best_title = None
+
         # confidence 결정 (투표 비율 기반)
         if total_votes > 0:
             ratio = max(votes_for, votes_against) / total_votes
@@ -1727,6 +1834,7 @@ class DeliberationOrchestrator:
         final_dec = final.get("final_decision", {})
         final_dec["is_relevant"] = is_relevant
         final_dec["official_novel_title"] = best_title
+        final_dec["official_title"] = best_title
         final_dec["confidence"] = confidence
 
         # 🛡️ Fix E-3: 심의 결과 관련+제목 확정 시 _title_deliberately_null 해제
@@ -1743,9 +1851,8 @@ class DeliberationOrchestrator:
             _title_on_platform = False
             _ctx_ref = getattr(self, '_last_ctx', None)
             try:
-                from .orchestrator import ExpertType
-                if _ctx_ref:
-                    _vf_out_m = _ctx_ref.get_expert_output(ExpertType.VERIFIER) or {}
+                if _ctx_ref and _RuntimeExpertType is not None:
+                    _vf_out_m = _ctx_ref.get_expert_output(_RuntimeExpertType.VERIFIER) or {}
                     _vf_r_m = _vf_out_m.get('verification_result') or {}
                     _vf_ni_m = _vf_r_m.get('novel_identity') or {}
                     _vf_conf_for_margin = str(_vf_ni_m.get('confidence', 'low')).lower()

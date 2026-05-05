@@ -2043,7 +2043,10 @@ engines:
     shortcut: sp
     startpage_categ: web
     categories: [general, web]
-    disabled: false
+    # Startpage currently returns an HTML shell without the React result payload
+    # on local WARP shards, which causes SearXNG parsing errors.
+    disabled: true
+    inactive: true
     timeout: 10.0
     additional_tests:
       rosebud: *test_rosebud

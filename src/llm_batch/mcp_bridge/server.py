@@ -87,10 +87,19 @@ class FetchRequest(BaseModel):
     max_length: int = 0  # 0 = 무제한 (제한 없음)
 
 
+def _env_bool(name: str, default: bool = False) -> bool:
+    val = os.getenv(name, "1" if default else "0").strip().lower()
+    return val in {"1", "true", "yes", "on"}
+
+
 app = FastAPI(title="SearchXNG MCP Bridge")
 SEARCHXNG_URL = os.getenv("SEARCHXNG_URL", "http://searchxng:8080")
 CRAWL4AI_URL = os.getenv("CRAWL4AI_URL", "http://crawl4ai:11235")
 DEFAULT_NUM_RESULTS = int(os.getenv("MCP_DEFAULT_NUM_RESULTS", "10"))
+HEADLESS_SEARCH_ENABLED = _env_bool("HEADLESS_SEARCH_ENABLED", True)
+HEADLESS_SEARCH_URL = os.getenv("HEADLESS_SEARCH_URL", "http://browser-search:8765/search").strip()
+HEADLESS_COOLDOWN_SEC = 900
+_HEADLESS_BACKOFF_UNTIL = 0.0
 _RETRYABLE_SEARCH_STATUS = {403, 429, 500, 502, 503, 504}
 _BLOCKED_ENGINES = {
     "yahoo",
@@ -167,12 +176,6 @@ _QUERY_GENERIC_HANGUL_TOKENS = {
     "네이버", "플랫폼", "웹", "등장인물", "캐릭터", "정식제목", "의미", "뜻",
     "무슨", "어디", "나오는", "나오냐", "나오는지", "어디서", "정보",
 }
-
-
-def _env_bool(name: str, default: bool = False) -> bool:
-    val = os.getenv(name, "1" if default else "0").strip().lower()
-    return val in {"1", "true", "yes", "on"}
-
 
 def _get_searchxng_urls() -> List[str]:
     """
@@ -431,6 +434,36 @@ _PURPOSE_RELAXED_TITLE_RESOLUTION = {
     "adaptive_wiki",
 }
 
+_PURPOSE_HEADLESS_ALLOWED = {
+    "official_title_verify",
+    "platform_title_search",
+    "adaptive_official_url",
+    "abbreviation_verification",
+    "title_search_community",
+    "alias_bridge_search",
+    "known_abbr_fullname_search",
+    "abbreviation_fullname_search",
+    "decoder_recall_verification",
+}
+
+_PURPOSE_HEADLESS_CRITICAL_OFFICIAL = {
+    "official_title_verify",
+    "platform_title_search",
+    "adaptive_official_url",
+    "abbreviation_verification",
+}
+
+_PURPOSE_HEADLESS_EXCLUDED = {
+    "trope_discussion",
+    "genre_trope_discussion",
+    "recommendation",
+    "recommendation_request",
+    "term_definition",
+    "dictionary",
+    "meaning",
+    "counter_evidence_character_track",
+}
+
 _PURPOSE_STRICT_ANCHOR = {
     "community_chain_search",
     "community_chain_verify",
@@ -456,18 +489,14 @@ def _has_novel_cues(text: str) -> bool:
     return any(tok.lower() in norm for tok in _NOVEL_CUE_TOKENS)
 
 
-def _is_non_korean_noise_result(query: str, item: Dict[str, Any], purpose: str = "") -> bool:
+def _non_korean_noise_reason(query: str, item: Dict[str, Any], purpose: str = "") -> Optional[str]:
     """
-    한글 질의에서 한국 웹소설 문맥과 무관한 외국어 결과를 제거한다.
-    로직:
-    0) 비한국어 노이즈 도메인 블랙리스트 즉시 차단 (zhihu, baidu 등)
-    1) 공식/국내 도메인(.kr, 허용도메인)은 유지
-    2) title+content에 한글이 없으면 노이즈
-    3) 질의의 한글 핵심 토큰이 스니펫에 없으면 노이즈
-    4) 중국어/일본어/베트남어 위주 콘텐츠면 노이즈
+    한글 질의에서 한국 웹소설 문맥과 무관한 외국어 결과의 필터 사유를 반환한다.
+
+    None 이면 유지, 문자열이면 해당 사유로 브릿지에서 제외한다.
     """
     if not _contains_hangul(query):
-        return False
+        return None
     url = str(item.get("url") or "")
     # 0) 노이즈 도메인 블랙리스트 (중국 포털, 인도 정부 등)
     try:
@@ -475,7 +504,7 @@ def _is_non_korean_noise_result(query: str, item: Dict[str, Any], purpose: str =
     except Exception:
         _host = ""
     if _is_blacklisted_host(_host):
-        return True
+        return f"blacklisted_host:{_host or 'unknown'}"
     title = str(item.get("title") or "")
     content = str(item.get("content") or "")
     merged = f"{title} {content}"
@@ -484,7 +513,7 @@ def _is_non_korean_noise_result(query: str, item: Dict[str, Any], purpose: str =
     novel_cues = _has_novel_cues(merged)
     # 2) 한글이 전혀 없으면 바로 노이즈
     if not _contains_hangul(merged):
-        return True
+        return f"no_hangul:{host_kind}"
     # 3) 질의의 한글 핵심 토큰이 스니펫에 없으면 노이즈
     q_tokens = _extract_query_core_tokens(query)
     if q_tokens:
@@ -501,37 +530,79 @@ def _is_non_korean_noise_result(query: str, item: Dict[str, Any], purpose: str =
             # 질의 토큰 직접 일치가 약해도 일단 후보를 남긴다.
             if host_kind == "official":
                 if not (full_overlap or frag_overlap or novel_cues):
-                    return True
+                    return f"token_mismatch:{host_kind}"
             elif host_kind in {"community", "reference", "korean"}:
                 if not (full_overlap or frag_overlap or novel_cues):
-                    return True
+                    return f"token_mismatch:{host_kind}"
             else:
                 if not (full_overlap or frag_overlap):
-                    return True
+                    return f"token_mismatch:{host_kind or 'other'}"
         elif purpose_key in _PURPOSE_STRICT_ANCHOR:
             # 캐릭터/체인 검색은 인명 일반어 노이즈가 많아서 더 엄격하게 본다.
             if not (full_overlap or frag_overlap):
-                return True
+                return f"strict_anchor_mismatch:{host_kind or 'other'}"
             if len(q_tokens) <= 1 and not novel_cues:
-                return True
+                return f"strict_anchor_without_novel_cue:{host_kind or 'other'}"
         elif host_kind == "official":
             if not (full_overlap or frag_overlap):
-                return True
+                return f"token_mismatch:{host_kind}"
         elif host_kind == "community":
             if not (full_overlap or frag_overlap):
-                return True
+                return f"token_mismatch:{host_kind}"
         elif host_kind in {"reference", "korean"}:
             if not full_overlap:
-                return True
+                return f"token_mismatch:{host_kind}"
         else:
             if not full_overlap:
-                return True
+                return f"token_mismatch:{host_kind or 'other'}"
     # 4) 중국어/일본어/베트남어 위주 콘텐츠 탐지 (한글이 있더라도 중국어가 더 많으면 노이즈)
     _cjk_non_hangul = len(re.findall(r'[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]', merged))
     _hangul_count = len(re.findall(r'[\uac00-\ud7a3]', merged))
     if _cjk_non_hangul > 0 and _cjk_non_hangul > _hangul_count * 2:
-        return True
-    return False
+        return f"cjk_dominant:{host_kind or 'other'}"
+    return None
+
+
+def _is_non_korean_noise_result(query: str, item: Dict[str, Any], purpose: str = "") -> bool:
+    return _non_korean_noise_reason(query, item, purpose) is not None
+
+
+def _merge_count_map(dst: Dict[str, int], src: Dict[str, int]) -> None:
+    for key, value in (src or {}).items():
+        if not key:
+            continue
+        try:
+            delta = int(value)
+        except Exception:
+            continue
+        if delta <= 0:
+            continue
+        dst[key] = int(dst.get(key, 0)) + delta
+
+
+def _filter_korean_noise(
+    query: str,
+    items: List[Dict[str, Any]],
+    purpose: str = "",
+) -> tuple[List[Dict[str, Any]], List[Dict[str, Any]], Dict[str, int]]:
+    kept: List[Dict[str, Any]] = []
+    removed: List[Dict[str, Any]] = []
+    reason_counts: Dict[str, int] = {}
+
+    for item in items or []:
+        if not isinstance(item, dict):
+            continue
+        reason = _non_korean_noise_reason(query, item, purpose)
+        if not reason:
+            kept.append(item)
+            continue
+        reason_key = str(reason).split(":", 1)[0].strip() or "unknown"
+        reason_counts[reason_key] = int(reason_counts.get(reason_key, 0)) + 1
+        removed_item = dict(item)
+        removed_item["filter_reason"] = reason
+        removed.append(removed_item)
+
+    return kept, removed, reason_counts
 
 
 def _dedupe_search_items(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -550,9 +621,211 @@ def _dedupe_search_items(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return deduped
 
 
-@app.get("/healthz")
-def healthz():
-    """헬스체크 엔드포인트 — SearXNG 연결까지 확인"""
+def _dedupe_by_url(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    deduped: List[Dict[str, Any]] = []
+    seen_urls: set[str] = set()
+    seen_title_url: set[tuple[str, str]] = set()
+    for item in items or []:
+        if not isinstance(item, dict):
+            continue
+        url = str(item.get("url") or "").strip()
+        title = str(item.get("title") or "").strip()
+        if url:
+            key_url = re.sub(r"#.*$", "", url)
+            if key_url in seen_urls:
+                continue
+            seen_urls.add(key_url)
+        else:
+            key = (title, str(item.get("content") or "")[:80])
+            if key in seen_title_url:
+                continue
+            seen_title_url.add(key)
+        deduped.append(item)
+    return deduped
+
+
+def _has_official_platform_result(items: List[Dict[str, Any]]) -> bool:
+    for item in items or []:
+        if not isinstance(item, dict):
+            continue
+        try:
+            host = (urlparse(str(item.get("url") or "")).hostname or "").lower()
+        except Exception:
+            host = ""
+        if _host_matches(host, _OFFICIAL_PLATFORM_DOMAINS):
+            return True
+    return False
+
+
+def _is_short_generic_query(query: str) -> bool:
+    tokens = _extract_query_core_tokens(query)
+    if not tokens:
+        return True
+    non_generic = [tok for tok in tokens if tok not in _QUERY_GENERIC_HANGUL_TOKENS]
+    if len(non_generic) == 1 and len(non_generic[0]) <= 2:
+        return True
+    return False
+
+
+def _is_meaning_only_query(query: str, purpose: str) -> bool:
+    purpose_key = _purpose_key(purpose)
+    if purpose_key in {"term_definition", "dictionary", "meaning"}:
+        return True
+    q = str(query or "")
+    if re.search(r"(뜻|의미|차이|무슨\s*뜻|무슨\s*의미)", q) and not re.search(
+        r"(정식\s*제목|작품명|웹소설|소설|노벨피아|문피아|시리즈|카카오페이지)",
+        q,
+    ):
+        return True
+    return False
+
+
+def _foreign_noise_ratio(items: List[Dict[str, Any]]) -> float:
+    if not items:
+        return 0.0
+    noisy = 0
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        reason = str(item.get("filter_reason") or "")
+        if reason.startswith(("no_hangul", "blacklisted_host", "cjk_dominant", "token_mismatch")):
+            noisy += 1
+            continue
+        merged = f"{item.get('title') or ''} {item.get('content') or ''}"
+        hangul = len(re.findall(r"[\uac00-\ud7a3]", merged))
+        cjk = len(re.findall(r"[\u4e00-\u9fff\u3040-\u30ff]", merged))
+        latin = len(re.findall(r"[A-Za-z]", merged))
+        if (cjk > hangul * 2 and cjk > 6) or (latin > max(20, hangul * 5)):
+            noisy += 1
+    return noisy / max(1, len(items))
+
+
+def _headless_fallback_reason(
+    *,
+    request: SearchRequest,
+    filtered_items: List[Dict[str, Any]],
+    raw_items: List[Dict[str, Any]],
+    filtered_out_items: List[Dict[str, Any]],
+    filter_reason_counts: Dict[str, int],
+    degraded: bool,
+    possible_throttle: bool,
+    num_results: int,
+) -> Optional[str]:
+    if not HEADLESS_SEARCH_ENABLED:
+        return None
+    if time.time() < _HEADLESS_BACKOFF_UNTIL:
+        return None
+    query = request.query.strip()
+    purpose_key = _purpose_key(request.purpose)
+    if not _contains_hangul(query):
+        return None
+    if purpose_key in _PURPOSE_HEADLESS_EXCLUDED:
+        return None
+    if _is_meaning_only_query(query, request.purpose):
+        return None
+    if _is_short_generic_query(query):
+        return None
+
+    accepted_count = len(filtered_items or [])
+    raw_count = len(raw_items or [])
+    official_missing = not _has_official_platform_result(filtered_items)
+    allowed_purpose = purpose_key in _PURPOSE_HEADLESS_ALLOWED
+    critical_official_purpose = purpose_key in _PURPOSE_HEADLESS_CRITICAL_OFFICIAL
+    noise_ratio = _foreign_noise_ratio(list(filtered_out_items or []) + list(raw_items or []))
+    mismatch_count = sum(
+        int(filter_reason_counts.get(key, 0))
+        for key in ("token_mismatch", "no_hangul", "blacklisted_host", "cjk_dominant")
+    )
+
+    if accepted_count == 0:
+        return "empty_results"
+    if (degraded or possible_throttle) and accepted_count < min(3, max(1, num_results // 3)):
+        return "degraded_low_accepted"
+    if raw_count >= 8 and accepted_count <= 2 and mismatch_count >= max(4, raw_count // 2):
+        return "low_bridge_after_filter"
+    if raw_count >= 8 and noise_ratio >= 0.65 and accepted_count < num_results:
+        return "foreign_noise_dominant"
+    if critical_official_purpose and official_missing and accepted_count < min(5, max(2, num_results // 2)):
+        return "official_candidate_missing"
+    if allowed_purpose and official_missing and (degraded or accepted_count < 3 or mismatch_count >= 5):
+        return "official_candidate_missing"
+    return None
+
+
+def _call_headless_search(query: str, num_results: int, purpose: str) -> Dict[str, Any]:
+    global _HEADLESS_BACKOFF_UNTIL
+    try:
+        response = httpx.post(
+            HEADLESS_SEARCH_URL,
+            json={
+                "query": query,
+                "num_results": max(1, min(int(num_results or 10), 10)),
+                "purpose": purpose or "",
+            },
+            timeout=45.0,
+        )
+        response.raise_for_status()
+        payload = response.json() if response.content else {}
+        if bool(payload.get("blocked")):
+            _HEADLESS_BACKOFF_UNTIL = time.time() + HEADLESS_COOLDOWN_SEC
+        return payload if isinstance(payload, dict) else {"results": [], "blocked": False, "raw_total": 0}
+    except Exception as exc:
+        _HEADLESS_BACKOFF_UNTIL = time.time() + min(HEADLESS_COOLDOWN_SEC, 120)
+        try:
+            print(f"[mcp-bridge] headless fallback failed: {exc!r}", file=sys.stderr, flush=True)
+        except Exception:
+            pass
+        return {"results": [], "blocked": False, "raw_total": 0, "error": str(exc)}
+
+
+def _normalize_headless_items(payload: Dict[str, Any], query: str, purpose: str) -> List[Dict[str, Any]]:
+    raw_results = payload.get("results") or []
+    normalized: List[Dict[str, Any]] = []
+    if not isinstance(raw_results, list):
+        return normalized
+    for item in raw_results:
+        if not isinstance(item, dict):
+            continue
+        candidate = {
+            "title": str(item.get("title") or "").strip(),
+            "url": str(item.get("url") or "").strip(),
+            "content": str(item.get("content") or "").strip(),
+            "engine": str(item.get("engine") or "headless_google").strip() or "headless_google",
+        }
+        if not candidate["title"] or not candidate["url"]:
+            continue
+        if _non_korean_noise_reason(query, candidate, purpose):
+            continue
+        normalized.append(candidate)
+    return normalized
+
+
+def _build_search_preview_items(items: List[Dict[str, Any]], *, limit: int = 5) -> List[Dict[str, Any]]:
+    preview: List[Dict[str, Any]] = []
+    try:
+        safe_limit = max(1, min(int(limit), 10))
+    except Exception:
+        safe_limit = 5
+
+    for item in (items or [])[:safe_limit]:
+        if not isinstance(item, dict):
+            continue
+        preview.append(
+            {
+                "title": str(item.get("title") or "").strip(),
+                "url": str(item.get("url") or "").strip(),
+                "content": str(item.get("content") or "").strip()[:240],
+                "engine": str(item.get("engine") or "").strip(),
+                "filter_reason": str(item.get("filter_reason") or "").strip(),
+            }
+        )
+    return preview
+
+
+@app.get("/readyz")
+@app.get("/healthz/deep")
+def readyz():
+    """깊은 준비 상태 확인 — SearXNG/headless 연결까지 확인한다."""
     urls = _get_searchxng_urls()
     checks: List[Dict[str, Any]] = []
     any_ok = False
@@ -581,8 +854,20 @@ def healthz():
     return {
         "status": "ok" if any_ok else "degraded",
         "searxng": any_ok,
+        "headless_search": _headless_health_ok(),
         "checks": checks,
     }
+
+
+def _headless_health_ok() -> bool:
+    if not HEADLESS_SEARCH_ENABLED:
+        return False
+    try:
+        url = HEADLESS_SEARCH_URL.rsplit("/", 1)[0].rstrip("/") + "/healthz"
+        response = httpx.get(url, timeout=2.0)
+        return response.status_code == 200
+    except Exception:
+        return False
 
 
 @app.post("/mcp/search")
@@ -645,6 +930,8 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
 
     _local_degraded = False  # 로컬 인스턴스에서 연속 저하 감지
     pages_fetched = 0
+    filtered_out_items: List[Dict[str, Any]] = []
+    filter_reason_counts: Dict[str, int] = {}
 
     for attempt in range(max_retries + 1):
         attempts = attempt + 1
@@ -740,15 +1027,19 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
         # 2~3페이지를 더 훑어 관련 결과를 보충한다.
         raw_items = list(data.get("results", []) or [])
         if _query_has_hangul:
-            filtered_items = [
-                it for it in raw_items
-                if not _is_non_korean_noise_result(request.query, it, request.purpose)
-            ]
+            filtered_items, _removed_items, _removed_counts = _filter_korean_noise(
+                request.query,
+                raw_items,
+                request.purpose,
+            )
+            filtered_out_items = list(_removed_items)
+            filter_reason_counts = dict(_removed_counts)
         else:
             filtered_items = list(raw_items)
         pages_fetched = 1
+        all_filtered_first_page = bool(raw_items) and not filtered_items
 
-        if max_pages > 1 and len(filtered_items) < num_results:
+        if max_pages > 1 and (len(filtered_items) < num_results or all_filtered_first_page):
             for page_no in range(2, max_pages + 1):
                 page_params = dict(req_params)
                 page_params["pageno"] = str(page_no)
@@ -761,21 +1052,32 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
                     )
                     if int(page_response.status_code) in _RETRYABLE_SEARCH_STATUS:
                         possible_throttle = True
+                        retry_errors.append(f"page{page_no}:http:{int(page_response.status_code)}")
+                        # 1페이지 raw가 전부 필터된 경우에는 다음 페이지를 더 훑어본다.
+                        if all_filtered_first_page and page_no < max_pages:
+                            continue
                         break
                     page_response.raise_for_status()
                     page_data = page_response.json() if page_response.content else {}
                 except Exception as exc:
                     retry_errors.append(f"page{page_no}:{exc}")
+                    if all_filtered_first_page and page_no < max_pages:
+                        continue
                     break
 
                 page_raw_items = list(page_data.get("results", []) or [])
                 if not page_raw_items:
+                    if all_filtered_first_page and page_no < max_pages:
+                        continue
                     break
                 if _query_has_hangul:
-                    page_filtered_items = [
-                        it for it in page_raw_items
-                        if not _is_non_korean_noise_result(request.query, it, request.purpose)
-                    ]
+                    page_filtered_items, _page_removed, _page_removed_counts = _filter_korean_noise(
+                        request.query,
+                        page_raw_items,
+                        request.purpose,
+                    )
+                    filtered_out_items.extend(_page_removed)
+                    _merge_count_map(filter_reason_counts, _page_removed_counts)
                 else:
                     page_filtered_items = list(page_raw_items)
                 raw_items.extend(page_raw_items)
@@ -824,6 +1126,47 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
     raw_items = raw_items if 'raw_items' in locals() else list(data.get("results", []) or [])
     filtered_items = filtered_items if 'filtered_items' in locals() else list(data.get("results", []) or [])
 
+    _unresponsive = data.get("unresponsive_engines") or []
+    _engine_errors = data.get("errors") or []
+    degraded = bool(_unresponsive) or bool(_engine_errors)
+    headless_used = False
+    headless_reason = ""
+    headless_count = 0
+    headless_blocked = False
+    headless_error = ""
+
+    fallback_reason = _headless_fallback_reason(
+        request=request,
+        filtered_items=filtered_items,
+        raw_items=raw_items,
+        filtered_out_items=filtered_out_items,
+        filter_reason_counts=filter_reason_counts,
+        degraded=degraded,
+        possible_throttle=possible_throttle,
+        num_results=num_results,
+    )
+    if fallback_reason:
+        headless_reason = fallback_reason
+        headless_payload = _call_headless_search(request.query, num_results, request.purpose)
+        headless_blocked = bool(headless_payload.get("blocked"))
+        headless_error = str(headless_payload.get("error") or "")
+        headless_items = _normalize_headless_items(headless_payload, request.query, request.purpose)
+        headless_count = len(headless_items)
+        headless_used = True
+        if headless_items:
+            filtered_items = _dedupe_by_url(list(filtered_items or []) + headless_items)
+            raw_items = _dedupe_by_url(list(raw_items or []) + headless_items)
+        try:
+            print(
+                "[mcp-bridge] headless_google fallback: "
+                f"reason={fallback_reason}, accepted={headless_count}, "
+                f"blocked={headless_blocked}, error={headless_error[:120]}",
+                file=sys.stderr,
+                flush=True,
+            )
+        except Exception:
+            pass
+
     results: List[Dict[str, Any]] = []
     # 요청한 개수만큼만 반환 (SearXNG가 더 많이 반환할 수 있음)
     for item in filtered_items[:num_results]:
@@ -832,27 +1175,35 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
                 "title": item.get("title"),
                 "url": item.get("url"),
                 "content": item.get("content"),
+                "engine": item.get("engine"),
             }
         )
-    _unresponsive = data.get("unresponsive_engines") or []
-    _engine_errors = data.get("errors") or []
-    degraded = bool(_unresponsive) or bool(_engine_errors)
     return {
         "query": request.query,
         "results": results,
         "total": len(filtered_items),
         "raw_total": len(raw_items),
+        "raw_preview": _build_search_preview_items(raw_items, limit=5),
+        "filtered_preview": _build_search_preview_items(filtered_out_items, limit=5),
         "lang_filtered": max(0, len(raw_items) - len(filtered_items)),
+        "lang_filter_reasons": filter_reason_counts,
         "attempts": attempts,
         "retry_count": max(0, attempts - 1),
         "pages_fetched": pages_fetched,
         "possible_throttle": possible_throttle,
         "degraded": degraded,
         "engines": (fallback_engines if attempts > 1 else primary_engines),
+        "requested_language": default_language,
+        "request_accept_language": headers.get("Accept-Language", ""),
         "provider_url": used_endpoint,
         "provider_candidates": endpoint_candidates,
         "unresponsive_engines": _unresponsive if isinstance(_unresponsive, list) else [],
         "engine_errors": _engine_errors if isinstance(_engine_errors, list) else retry_errors[-5:],
+        "headless_used": headless_used,
+        "headless_reason": headless_reason,
+        "headless_count": headless_count,
+        "headless_blocked": headless_blocked,
+        "headless_error": headless_error,
     }
 
 
@@ -1696,24 +2047,21 @@ def mcp_fetch(request: FetchRequest) -> Dict[str, Any]:
     }
 
 
-@app.get("/healthz")
 @app.get("/health")
+@app.get("/healthz")
 def health_check() -> Dict[str, Any]:
-    """MCP Bridge 및 백엔드 서비스 상태 확인."""
-    status: Dict[str, Any] = {
+    """빠른 liveness 확인.
+
+    expert_main startup에서 40개 이상의 shard를 동시에 확인하므로,
+    여기서는 내부 검색/크롤러/backend 호출을 하지 않는다. 깊은 준비 상태는
+    /readyz 또는 /healthz/deep에서 확인한다.
+    """
+    return {
         "status": "ok",
-        "searchxng": False,
-        "crawl4ai": False,
+        "bridge": True,
+        "searchxng_url": SEARCHXNG_URL,
+        "headless_search_enabled": HEADLESS_SEARCH_ENABLED,
     }
-    # SearXNG 상태
-    try:
-        r = httpx.get(f"{SEARCHXNG_URL.rstrip('/')}/", timeout=3.0)
-        status["searchxng"] = r.status_code < 500
-    except Exception:
-        pass
-    # Crawl4AI 상태
-    status["crawl4ai"] = _crawl4ai_health_ok()
-    return status
 
 
 def main() -> None:

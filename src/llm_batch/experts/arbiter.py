@@ -218,22 +218,21 @@ is_relevant=true일 때, discussion_type으로 토론 형태를 구분:
 - "등장인물/대사"라고 쓰려면 검색/전문가 출력에 명시적 캐릭터 근거가 있어야 함
 - Decoder가 is_author_name=true로 식별한 이름은 반증 없으면 작가/중립으로 유지
 
-**항상 is_relevant=false인 discussion_type:**
+**기본적으로 adjacent_relevant를 우선 검토할 discussion_type:**
 - "author_talk": 작가에 대한 토론/비평 ("[작가명]은 [장르]이나 써야됨" 패턴) → official_novel_title=null
-- "recommendation": 추천 요청 ("추천좀", "뭐 읽을거" 패턴)
-- "meta": 플랫폼 메타
-- "noise": 노이즈/뻘글
-- "trope_discussion": 특정 작품 없이 장르/트로프 일반 토론
+- "recommendation": 추천 요청 ("추천좀", "뭐 읽을거" 패턴) → official_novel_title=null
+- "meta": 플랫폼 메타 → official_novel_title=null
+- "trope_discussion": 특정 작품 없이 장르/트로프 일반 토론 → official_novel_title=null
+- "community_banter": 작품 주변 팬덤/반응/팬아트 감상처럼 주변 담론이면 adjacent_relevant 가능
+- 단, "noise", "image_post", "off_topic", "genre_opinion"은 여전히 is_relevant=false를 우선한다.
 
 🚨 **discussion_type 정합성 규칙:**
-- is_relevant=true + discussion_type="recommendation" → 불가!
+- adjacent_relevant는 주변 담론으로 보존하되, legacy is_relevant는 false가 기본값이다. 이 경우 official_novel_title은 null이 기본값이다.
 - is_relevant=true + discussion_type="noise" → 불가!
-- is_relevant=true + discussion_type="author_talk" → 불가! (작가 비평은 항상 is_relevant=false)
-- is_relevant=true + discussion_type="community_banter" → 불가!
 - is_relevant=true + discussion_type="genre_opinion" → 불가!
 - is_relevant=true + discussion_type="image_post" → 불가!
 - is_relevant=true + discussion_type="off_topic" → 불가!
-- 작가 비평인데 예시로 작품이 언급되면 → discussion_type="author_talk", is_relevant=false, official_novel_title=null
+- 작가 비평/플랫폼 메타인데 작품 예시가 언급되면 → discussion_type은 유지하되 single official_novel_title 강제 확정은 금지
 
 **💡 discussion_type 선택 우선순위 (is_relevant=false일 때):**
 1. 본문이 type=image만 있고 텍스트 부족 → "image_post"
@@ -804,6 +803,31 @@ class ArbiterExpert:
             os.getenv("PIPELINE_REASON_FULL_MODE", os.getenv("REASON_FULL_MODE", "1")),
         ) == "1"
 
+    @staticmethod
+    def _normalize_match_text(text: Any) -> str:
+        import re as _re_norm
+        return _re_norm.sub(r"[^\w가-힣]", "", str(text or "")).lower()
+
+    def _text_matches_title_strict(self, raw_text: Any, title: Any) -> bool:
+        raw_norm = self._normalize_match_text(raw_text)
+        title_norm = self._normalize_match_text(title)
+        if not raw_norm or not title_norm:
+            return False
+        return title_norm in raw_norm
+
+    def _title_mentioned_in_post_main_context(self, ctx: "ConversationContext", title: Optional[str]) -> bool:
+        if not title:
+            return False
+        post_data = getattr(ctx, "post_data", None) or {}
+        chunks: List[str] = [str(post_data.get("title") or "")]
+        for block in (post_data.get("content_blocks") or []):
+            if isinstance(block, dict):
+                chunks.append(str(block.get("text") or ""))
+            elif isinstance(block, str):
+                chunks.append(block)
+        raw_text = " ".join(chunk for chunk in chunks if str(chunk or "").strip())
+        return self._text_matches_title_strict(raw_text, title)
+
     def _has_strong_work_signals(
         self,
         ctx: "ConversationContext",
@@ -1055,8 +1079,28 @@ class ArbiterExpert:
         sy_ca = (synthesizer_out or {}).get("confidence_assessment") or {}
         sy_is_work = sy_ca.get("is_about_identified_work")
         sy_conf = self._confidence_to_unit(sy_ca.get("confidence"))
+        vf_relation = vf.get("relation_judgment") or {}
+        vf_relation_type = str(vf_relation.get("relation_type") or "").lower().strip()
+        vf_relation_target = str(vf_relation.get("discussion_target") or "").lower().strip()
+        vf_relation_promotion = str(vf_relation.get("promotion_decision") or "").lower().strip()
+        vf_relation_support = vf_relation.get("search_support_summary") or {}
+        vf_explicit_alias_bridge = int(vf_relation_support.get("explicit_alias_bridge_count") or 0)
+        vf_community_alias_support = int(vf_relation_support.get("community_alias_support_count") or 0)
+        vf_hold_without_bridge = bool(
+            vf_relevant is True
+            and not vf_identity.get("official_novel_title")
+            and vf_relation_type in {"explicit_alias", "work_specific_nickname"}
+            and vf_relation_target == "specific_work"
+            and vf_relation_promotion == "hold"
+            and vf_explicit_alias_bridge <= 0
+            and vf_community_alias_support <= 0
+            and not getattr(ctx, "verified_character_work_links", [])
+        )
         if sy_is_work is True:
-            add("single_work", 0.08 + 0.12 * max(sy_conf, 0.4), "synthesizer.is_about_identified_work=true")
+            if vf_hold_without_bridge:
+                add("noise", 0.06, "synthesizer.deferred_to_verifier_hold")
+            else:
+                add("single_work", 0.08 + 0.12 * max(sy_conf, 0.4), "synthesizer.is_about_identified_work=true")
         elif sy_is_work is False:
             add("genre_discussion", 0.10 + 0.08 * max(0.3, 1.0 - sy_conf), "synthesizer.is_about_identified_work=false")
             add("noise", 0.06, "synthesizer.non_work_bias")
@@ -1317,7 +1361,7 @@ class ArbiterExpert:
                     _adjusted.append(_st)
                     continue
                 # 신뢰도 너무 낮으면 제거
-                if _st.get("confidence", 0) < 0.2:
+                if self._confidence_to_unit(_st.get("confidence", 0)) < 0.2:
                     continue
                 _st["critic_reviewed"] = True
                 _adjusted.append(_st)
@@ -1694,6 +1738,26 @@ class ArbiterExpert:
                 file=sys.stderr,
             )
 
+        _canonical_lock_title = str(getattr(ctx, "canonical_title_lock", "") or "").strip()
+        _canonical_lock_author = str(getattr(ctx, "canonical_author_lock", "") or "").strip()
+        if _canonical_lock_title:
+            _canonical_lock_norm = _norm_title_local(_canonical_lock_title)
+            _overlap_norms = set(_dv_overlap)
+            if _canonical_lock_norm and _canonical_lock_norm not in _overlap_norms:
+                user_prompt += (
+                    "\n\n=== SNIPPET CANONICAL LOCK (스니펫 정식 후보 잠금) ===\n"
+                    f"- snippet canonical title: {_canonical_lock_title}\n"
+                    f"{f'- snippet canonical author: {_canonical_lock_author}\n' if _canonical_lock_author else ''}"
+                    "- 이 제목은 약칭, 본문 앵커, 작가/캐릭터 단서가 결합된 스니펫 기반 정식 후보입니다.\n"
+                    "- 이후 검색에서 표면 유사 후보가 나타나더라도, "
+                    "본문 직접 단서와 작가/캐릭터 결합이 약한 후보로 대체하지 마세요.\n"
+                )
+                print(
+                    f"[{_ts()}][{self.emoji}] 🔐 snippet canonical lock 주입: "
+                    f"'{_canonical_lock_title}'",
+                    file=sys.stderr,
+                )
+
         # 🆕 Synthesizer 증거 기반 재해석 결과 주입 (Critic → Synthesizer → Arbiter 흐름)
         synthesizer_out = ctx.get_expert_output(ExpertType.SYNTHESIZER) if hasattr(ctx, 'get_expert_output') else None
         if synthesizer_out and "error" not in synthesizer_out:
@@ -1910,6 +1974,16 @@ class ArbiterExpert:
                     _seen_hit_urls.add(_key)
                     _search_hit_cnt += 1
 
+                _character_parenthetical_support = any(
+                    isinstance(_v, dict)
+                    and not bool(_v.get("_weak_match"))
+                    and _norm_title_local(_v.get("title")) == _norm_title_local(_title)
+                    and str(_v.get("source") or "") == "character_parenthetical_wiki"
+                    for _v in (getattr(ctx, "verified_character_work_links", []) or [])
+                )
+                if _character_parenthetical_support:
+                    _has_post_or_official = True
+
                 if _has_post_or_official:
                     _add(0.24, "post_or_official_evidence")
                 else:
@@ -1930,10 +2004,15 @@ class ArbiterExpert:
                     _add(min(0.10, 0.05 * (_support_type_cnt - 1)), "evidence_type_diversity")
                 if _search_hit_cnt > 0:
                     _add(min(0.09, 0.03 * _search_hit_cnt), "search_hit_count")
+                if _character_parenthetical_support:
+                    _add(0.36, "character_parenthetical_bridge")
                 if _snippet_cnt > 0 and _search_hit_cnt <= 1 and _official_cnt == 0 and _post_cnt == 0:
                     _add(-0.08, "single_path_snippet_support")
                 if _title_in_main_post:
                     _add(0.08, "title_in_main_post")
+
+                if self._looks_like_platform_event_meta_post(ctx) and not _title_in_main_post:
+                    _add(-0.35, "platform_event_meta_comment_only")
 
                 if self._is_platform_branding_title(_title):
                     _add(-0.25, "platform_branding_title")
@@ -2215,15 +2294,25 @@ class ArbiterExpert:
                     _bucket = ctx.get_candidate_evidence(_title) if hasattr(ctx, "get_candidate_evidence") else {}
                     _post_cnt = len((_bucket or {}).get("post_spans", []))
                     _official_cnt = len((_bucket or {}).get("official_urls", []))
+                    _character_parenthetical_supported = any(
+                        isinstance(_v, dict)
+                        and not bool(_v.get("_weak_match"))
+                        and _st_norm(_v.get("title")) == _title_norm
+                        and str(_v.get("source") or "") == "character_parenthetical_wiki"
+                        for _v in (getattr(ctx, "verified_character_work_links", []) or [])
+                    )
+                    _strong_title_support = bool(self._has_strong_title_support(ctx, _title))
 
                     # Arbiter-LLM 후보 수용 조건:
                     # 1) Decoder/Verifier 합의 타이틀과 일치, 또는
                     # 2) 최소한 본문/공식URL 증거 버킷이 존재
+                    # 3) 캐릭터명(작품명) 위키 브리지 + 공식/강검색 근거가 존재
                     _is_supported = (
                         (_title_norm in _decoder_norm_titles)
                         or (_title_norm in _verifier_norm_titles)
                         or (_post_cnt > 0)
                         or (_official_cnt > 0)
+                        or (_character_parenthetical_supported and _strong_title_support)
                     )
 
                     if _is_supported:
@@ -2329,7 +2418,19 @@ class ArbiterExpert:
                 gatekeeper_out=gatekeeper_out,
                 discourse_out=discourse_out,
             )
-            if _is_reco_request_post and not author_criticism_guard_active:
+            _reco_candidate_title = str(
+                decision.get("official_title")
+                or decision.get("official_novel_title")
+                or ""
+            ).strip()
+            _recommendation_specific_work_exempt = self._has_question_plot_title_support(
+                ctx=ctx,
+                candidate_title=_reco_candidate_title,
+                post_data=post_data,
+                gatekeeper_out=gatekeeper_out,
+                discourse_out=discourse_out,
+            )
+            if _is_reco_request_post and not author_criticism_guard_active and not _recommendation_specific_work_exempt:
                 skip_forced_title = True
                 decision["is_relevant"] = False
                 decision["is_novel_discussion"] = False
@@ -2357,6 +2458,12 @@ class ArbiterExpert:
                 print(
                     f"[{_ts()}][{self.emoji}] 🛡️ recommendation 선제 가드: "
                     f"signals={_reco_signals[:4]} → 강제승격 차단 + recommendation 고정",
+                    file=sys.stderr,
+                )
+            elif _recommendation_specific_work_exempt:
+                print(
+                    f"[{_ts()}][{self.emoji}] 🛡️ recommendation 가드 면제: "
+                    f"question+comment_plot_support title='{_reco_candidate_title}'",
                     file=sys.stderr,
                 )
 
@@ -2430,15 +2537,56 @@ class ArbiterExpert:
                 decision.get("official_novel_title") is None
                 and decision.get("is_relevant", False)
             )
+            def _suspected_conf_highish(_st: Dict[str, Any]) -> bool:
+                if not isinstance(_st, dict):
+                    return False
+                return _st_conf_num(_st.get("confidence")) >= 3
+
+            def _character_parenthetical_suspect_supported(_st: Dict[str, Any]) -> bool:
+                if not isinstance(_st, dict):
+                    return False
+                _title = str(_st.get("title") or "").strip()
+                if not _title:
+                    return False
+                _src = str(_st.get("source_expert") or _st.get("from") or "").lower()
+                if _src != "character_parenthetical":
+                    return False
+                _title_norm = _st_norm(_title)
+                _has_link = any(
+                    isinstance(_v, dict)
+                    and not bool(_v.get("_weak_match"))
+                    and _st_norm(_v.get("title")) == _title_norm
+                    and str(_v.get("source") or "") == "character_parenthetical_wiki"
+                    for _v in (getattr(ctx, "verified_character_work_links", []) or [])
+                )
+                if not _has_link:
+                    return False
+                _parenthetical_search_hit = False
+                for _sr in (getattr(ctx, "search_results", None) or []):
+                    if not isinstance(_sr, dict):
+                        continue
+                    _sr_title_norm = _st_norm(_sr.get("title"))
+                    if _title_norm and _title_norm in _sr_title_norm and "(" in str(_sr.get("title") or ""):
+                        _parenthetical_search_hit = True
+                        break
+                return bool(
+                    self._has_strong_title_support(ctx, _title)
+                    or _title_has_supported_evidence(_title, require_post_or_official=False)
+                    or _parenthetical_search_hit
+                )
+
             if arbiter_explicit_null and not skip_forced_title:
                 # suspected_titles에 High confidence 후보가 있으면 null 가드를 우회
                 _has_high_suspected = any(
                     isinstance(st, dict)
                     and st.get("title")
-                    and str(st.get("confidence", "")).lower() in ("high", "0.95")
-                    and _title_has_supported_evidence(
-                        st.get("title"),
-                        require_post_or_official=True,
+                    and _suspected_conf_highish(st)
+                    and (
+                        _title_has_supported_evidence(
+                            st.get("title"),
+                            require_post_or_official=True,
+                        )
+                        or _character_parenthetical_suspect_supported(st)
                     )
                     for st in (ctx.suspected_titles or [])
                 )
@@ -3044,6 +3192,13 @@ class ArbiterExpert:
                         decoder_out_raw, _st_title, min_score=0.45
                     )
                     _st_strong_support = self._has_strong_title_support(ctx, _st_title)
+                    _st_character_parenthetical_support = any(
+                        isinstance(_v, dict)
+                        and not bool(_v.get("_weak_match"))
+                        and _norm_title_local(_v.get("title")) == _norm_title_local(_st_title)
+                        and str(_v.get("source") or "") == "character_parenthetical_wiki"
+                        for _v in (getattr(ctx, "verified_character_work_links", []) or [])
+                    )
                     if _is_weak_fragment_title(_st_title) and (not _st_strong_support):
                         print(
                             f"[{_ts()}][{self.emoji}] 🚫 suspected_titles 필터: 단일어 파편 "
@@ -3067,7 +3222,7 @@ class ArbiterExpert:
                             + len(_st_eb.get("official_urls", [])) * 3
                         )
                         _st_has_evidence_bucket = _st_eb_score >= 3
-                    if not (_st_direct_anchor or _st_decoder_align or _st_strong_support):
+                    if not (_st_direct_anchor or _st_decoder_align or _st_strong_support or _st_character_parenthetical_support):
                         if _st_from_verifier and (_st_conf_val >= 3 or _st_has_evidence_bucket):
                             print(
                                 f"[{_ts()}][{self.emoji}] ✅ suspected_titles 필터: 앵커 부재지만 "
@@ -3524,6 +3679,7 @@ class ArbiterExpert:
                 if vf_result.get("is_relevant") == False:
                     # 약칭+작가명 동시 존재 확인
                     _veto_exempt = False
+                    _relation_guard_blocks_loose_veto = False
                     _genre_warning_effective = self._is_effective_genre_warning(
                         ctx, decoder_out, verifier_out
                     )
@@ -3790,6 +3946,7 @@ class ArbiterExpert:
                                 }
                                 or _vf_relation_promotion_veto in {"hold", "reject"}
                             )
+                            _relation_guard_blocks_loose_veto = _authorish_veto_block
                             
                             _snippet_h = getattr(ctx, 'snippet_hints', {}) or {}
                             _author_h = _snippet_h.get("author_hints", []) or []
@@ -3831,13 +3988,18 @@ class ArbiterExpert:
                     # 🆕 추가 거부권 면제: 게시글 제목에 snippet_analyzer 약칭 존재
                     # "게시글 제목 = 본문의 시작점" 원칙: 제목에 약칭이 있으면 작품 직접 지칭
                     # 예: "즉사무림이유백 미래가 벌써 보이네" — 제목 자체에 약칭
-                    if not _veto_exempt and decision.get("is_relevant") is True:
+                    _post_title_veto = (
+                        (getattr(ctx, 'post_data', {}) or {}).get('title', '')
+                        .replace(' ', '').lower()
+                    )
+
+                    if (
+                        (not _veto_exempt)
+                        and decision.get("is_relevant") is True
+                        and (not _relation_guard_blocks_loose_veto)
+                    ):
                         _sh_veto = getattr(ctx, 'snippet_hints', None) or {}
                         _abbrev_hints_veto = _sh_veto.get('abbreviation_hints', []) or []
-                        _post_title_veto = (
-                            (getattr(ctx, 'post_data', {}) or {}).get('title', '')
-                            .replace(' ', '').lower()
-                        )
                         if _post_title_veto and _abbrev_hints_veto:
                             for _abh_veto in _abbrev_hints_veto:
                                 if isinstance(_abh_veto, dict):
@@ -3905,7 +4067,11 @@ class ArbiterExpert:
 
                     # 🆕 추가 거부권 면제: 제목 내 '검증된 고정 약칭'이 Decoder/의심제목과 합치되는 경우
                     # 예: "아생갤" → "아카데미 생존 갤러리"
-                    if not _veto_exempt and decision.get("is_relevant") is True:
+                    if (
+                        (not _veto_exempt)
+                        and decision.get("is_relevant") is True
+                        and (not _relation_guard_blocks_loose_veto)
+                    ):
                         _title_norm = (
                             (getattr(ctx, "post_data", {}) or {}).get("title", "")
                             .replace(" ", "")
@@ -3963,7 +4129,11 @@ class ArbiterExpert:
                     # 🆕 추가 거부권 면제: snippet_analyzer의 identified_title이 게시글 제목에 존재
                     # "지구온라인 재밌다며 장붕아" — snippet_analyzer가 "지구온라인"을 식별
                     # 제목에 작품명이 직접 있으면 제목=본문 시작점 원칙 적용
-                    if not _veto_exempt and decision.get("is_relevant") is True:
+                    if (
+                        (not _veto_exempt)
+                        and decision.get("is_relevant") is True
+                        and (not _relation_guard_blocks_loose_veto)
+                    ):
                         _lsa_veto = getattr(ctx, 'llm_snippet_analysis', None) or {}
                         _snippet_id_title = (_lsa_veto.get('identified_title') or '').strip()
                         _snippet_cat = str(_lsa_veto.get("identified_category") or "").lower().strip()
@@ -4000,7 +4170,11 @@ class ArbiterExpert:
                     # 🆕 추가 거부권 면제: Arbiter LLM이 is_relevant=true로 판정했고,
                     # Decoder가 high confidence로 작품을 식별한 경우
                     # (Verifier 다중호출 시 2차 호출이 1차를 뒤집는 문제 방지)
-                    if not _veto_exempt and decision.get("is_relevant") is True:
+                    if (
+                        (not _veto_exempt)
+                        and decision.get("is_relevant") is True
+                        and (not _relation_guard_blocks_loose_veto)
+                    ):
                         for _dt_veto in decoder_out.get("decoded_terms", []):
                             _bm_veto = _dt_veto.get("best_match") or {}
                             _conf_veto_str = str(_bm_veto.get("confidence") or "").lower()
@@ -4292,6 +4466,33 @@ class ArbiterExpert:
                             print(
                                 f"[{_ts()}][{self.emoji}] ✅ 거부권 면제 + 제목 복원: "
                                 f"'{_cand_for_veto}' (from={'rescue' if _cand_from_fallback else 'decision'})",
+                                file=sys.stderr,
+                            )
+
+                    if not _veto_exempt:
+                        _decision_title_for_question = str(
+                            decision.get("official_title")
+                            or decision.get("official_novel_title")
+                            or ""
+                        ).strip()
+                        _question_plot_veto_exempt = self._has_question_plot_title_support(
+                            ctx=ctx,
+                            candidate_title=_decision_title_for_question,
+                            post_data=post_data,
+                            gatekeeper_out=gatekeeper_out,
+                            discourse_out=discourse_out,
+                        )
+                        if _question_plot_veto_exempt:
+                            _veto_exempt = True
+                            decision["_verifier_veto_exempt"] = True
+                            if decision.get("is_relevant") is False:
+                                decision["is_relevant"] = True
+                                decision["is_novel_discussion"] = True
+                            if decision.get("discussion_type") in {"noise", "off_topic", "meta", "community_banter", "recommendation"}:
+                                decision["discussion_type"] = "general"
+                            print(
+                                f"[{_ts()}][{self.emoji}] ✅ Verifier 거부권 면제(question_plot_support): "
+                                f"title='{_decision_title_for_question}'",
                                 file=sys.stderr,
                             )
                     
@@ -4971,8 +5172,38 @@ class ArbiterExpert:
                         if not best.get("title") and best.get("confidence") in ("none", None):
                             blocked_archetypes.add(original)
                 if blocked_archetypes:
+                    _final_url = str(decision.get("heretic_url") or "").strip()
+                    _vf_out = ctx.get_expert_output(ExpertType.VERIFIER) or {}
+                    _vf_res = (_vf_out.get("verification_result") or {}) if isinstance(_vf_out, dict) else {}
+                    _vf_novel = (_vf_res.get("novel_identity") or {}) if isinstance(_vf_res, dict) else {}
+                    _vf_title = str(
+                        _vf_novel.get("official_novel_title")
+                        or _vf_novel.get("official_title")
+                        or ""
+                    ).strip()
+                    _vf_url = str(_vf_novel.get("heretic_url") or "").strip()
+                    _vf_relation = (_vf_res.get("relation_judgment") or {}) if isinstance(_vf_res, dict) else {}
+                    _vf_promotion = str(_vf_relation.get("promotion_decision") or "").strip().lower()
+                    if _vf_promotion in {"promote", "accept", "keep"}:
+                        _vf_promotion = "allow"
+                    _strong_exact_title_support = bool(
+                        self._title_directly_in_post(ctx, final_title)
+                        and (
+                            self._is_novel_detail_url(_final_url)
+                            or (
+                                _vf_title
+                                and re.sub(r"[^\w가-힣]", "", _vf_title).lower()
+                                == re.sub(r"[^\w가-힣]", "", str(final_title or "")).lower()
+                                and self._is_novel_detail_url(_vf_url)
+                                and _vf_promotion == "allow"
+                            )
+                            or self._has_strong_title_support(ctx, final_title)
+                        )
+                    )
                     title_norm = final_title.replace(" ", "")
                     for arch_term in blocked_archetypes:
+                        if _strong_exact_title_support:
+                            break
                         if arch_term.replace(" ", "") in title_norm:
                             print(
                                 f"[{_ts()}][{self.emoji}] 🛡️ 아키타입 재도입 차단: "
@@ -6038,31 +6269,44 @@ class ArbiterExpert:
                         and (not _cur_supported2)
                     )
                 )
-                if _needs_lock_apply:
-                    _prev_title_lock2 = _cur_title_lock2 or "None"
-                    decision["is_relevant"] = True
-                    decision["is_novel_discussion"] = True
-                    decision["official_title"] = _vf_title_lock2
-                    decision["official_novel_title"] = _vf_title_lock2
-                    _vf_url_lock2 = (vf_result.get("novel_identity") or {}).get("heretic_url")
-                    if _vf_url_lock2 and isinstance(_vf_url_lock2, str) and _vf_url_lock2.startswith("http"):
-                        decision["heretic_url"] = _vf_url_lock2
-                    if _st_conf_num(decision.get("confidence")) < 3:
-                        decision["confidence"] = "High"
-                    if decision.get("discussion_type") in {
-                        "noise", "off_topic", "meta", "community_banter",
-                        "genre_opinion", "trope_discussion", "recommendation", "image_post",
-                    }:
-                        decision["discussion_type"] = "general"
-                    decision["final_reasoning"] = self._synthesize_evidence_reason(ctx, "verifier_high_lock", True)
-                    if decision.get("reason"):
-                        decision["reason"] = decision["final_reasoning"]
+                _event_meta_lock_block = bool(
+                    self._looks_like_platform_event_meta_post(ctx)
+                    and not self._title_mentioned_in_post_main_context(ctx, _vf_title_lock2)
+                )
+                if _event_meta_lock_block:
                     print(
-                        f"[{_ts()}][{self.emoji}] 🧷 Verifier High-title lock 적용: "
-                        f"'{_prev_title_lock2}' → '{_vf_title_lock2}' "
-                        f"(anchor={_vf_anchor_lock2 or 'none'}, post={_vf_post2}, search={_vf_snip2}, official={_vf_off2})",
+                        f"[{_ts()}][{self.emoji}] 🛡️ Verifier High-title lock 차단: "
+                        f"title='{_vf_title_lock2}', reason=platform_event_meta",
                         file=sys.stderr,
                     )
+                if _needs_lock_apply:
+                    if _event_meta_lock_block:
+                        pass
+                    else:
+                        _prev_title_lock2 = _cur_title_lock2 or "None"
+                        decision["is_relevant"] = True
+                        decision["is_novel_discussion"] = True
+                        decision["official_title"] = _vf_title_lock2
+                        decision["official_novel_title"] = _vf_title_lock2
+                        _vf_url_lock2 = (vf_result.get("novel_identity") or {}).get("heretic_url")
+                        if _vf_url_lock2 and isinstance(_vf_url_lock2, str) and _vf_url_lock2.startswith("http"):
+                            decision["heretic_url"] = _vf_url_lock2
+                        if _st_conf_num(decision.get("confidence")) < 3:
+                            decision["confidence"] = "High"
+                        if decision.get("discussion_type") in {
+                            "noise", "off_topic", "meta", "community_banter",
+                            "genre_opinion", "trope_discussion", "recommendation", "image_post",
+                        }:
+                            decision["discussion_type"] = "general"
+                        decision["final_reasoning"] = self._synthesize_evidence_reason(ctx, "verifier_high_lock", True)
+                        if decision.get("reason"):
+                            decision["reason"] = decision["final_reasoning"]
+                        print(
+                            f"[{_ts()}][{self.emoji}] 🧷 Verifier High-title lock 적용: "
+                            f"'{_prev_title_lock2}' → '{_vf_title_lock2}' "
+                            f"(anchor={_vf_anchor_lock2 or 'none'}, post={_vf_post2}, search={_vf_snip2}, official={_vf_off2})",
+                            file=sys.stderr,
+                        )
 
             metadata_synthesis = result.get("metadata_synthesis")
             if not isinstance(metadata_synthesis, dict):
@@ -6404,10 +6648,13 @@ class ArbiterExpert:
                 _has_high_suspected_for_null = any(
                     isinstance(st, dict)
                     and st.get("title")
-                    and str(st.get("confidence", "")).lower() in ("high", "0.95")
-                    and _title_has_supported_evidence(
-                        st.get("title"),
-                        require_post_or_official=True,
+                    and _suspected_conf_highish(st)
+                    and (
+                        _title_has_supported_evidence(
+                            st.get("title"),
+                            require_post_or_official=True,
+                        )
+                        or _character_parenthetical_suspect_supported(st)
                     )
                     for st in (ctx.suspected_titles or [])
                 )
@@ -6417,8 +6664,8 @@ class ArbiterExpert:
                     _best_suspected = max(
                         (st for st in (ctx.suspected_titles or [])
                          if isinstance(st, dict) and st.get("title")
-                         and str(st.get("confidence", "")).lower() in ("high", "0.95")),
-                        key=lambda s: s.get("confidence", ""),
+                         and _suspected_conf_highish(st)),
+                        key=lambda s: _st_conf_num(s.get("confidence")),
                         default=None,
                     )
                     if _best_suspected:
@@ -6537,10 +6784,11 @@ class ArbiterExpert:
         except Exception:
             global_cap = 32768
         try:
-            max_tokens = int(os.getenv("LLM_ARBITER_MAX_TOKENS", "4096"))
+            # Arbiter는 최종 JSON + reasoning을 함께 내보내므로 4k는 실제 런에서 자주 부족했다.
+            max_tokens = int(os.getenv("LLM_ARBITER_MAX_TOKENS", "8192"))
         except Exception:
-            max_tokens = 4096
-        max_tokens = max(512, min(max_tokens, global_cap, 8192))
+            max_tokens = 8192
+        max_tokens = max(512, min(max_tokens, global_cap, 16384))
         messages = [
             {"role": "system", "content": system_content},
             {"role": "user", "content": user_prompt},
@@ -6573,6 +6821,30 @@ class ArbiterExpert:
                         if cand.get("official_novel_title") == final_title and cand.get("platform"):
                             decoder_has_platform_url = True
                             break
+        norm_post = str(post_title or "").replace(" ", "").lower()
+        norm_title = str(final_title or "").replace(" ", "").lower()
+        _detail_url = str(decision.get("heretic_url") or "").strip()
+        if norm_title and norm_title in norm_post and self._is_novel_detail_url(_detail_url):
+            _remainder = norm_post.replace(norm_title, "", 1).strip()
+            if len(_remainder) <= 8:
+                print(
+                    f"[{_ts()}][{self.emoji}] ✅ 제목+짧은 접미사 허용: "
+                    f"official_title='{final_title}' ⊂ post_title='{post_title}' "
+                    f"(remainder='{_remainder or '-'}', official_url='{_detail_url}')",
+                    file=sys.stderr,
+                )
+                return
+        if self._is_novel_detail_url(_detail_url):
+            _post_stem = re.split(r"(?:무슨내용임|무슨\s*내용|내용임|뭐임|뭔내용|\?)", str(post_title or ""), maxsplit=1)[0].strip()
+            _post_stem_norm = str(_post_stem or "").replace(" ", "").lower()
+            if _post_stem_norm and norm_title and _post_stem_norm in norm_title and (len(norm_title) - len(_post_stem_norm)) <= 2:
+                print(
+                    f"[{_ts()}][{self.emoji}] ✅ 제목 stem 허용: "
+                    f"official_title='{final_title}' ~ post_stem='{_post_stem}' "
+                    f"(official_url='{_detail_url}')",
+                    file=sys.stderr,
+                )
+                return
         if not decoder_has_platform_url:
             print(
                 f"[{_ts()}][{self.emoji}] ⚠️ 포스트 제목 도용 감지: "
@@ -6971,6 +7243,149 @@ class ArbiterExpert:
             return True
 
         return False
+
+    def _looks_like_platform_event_meta_post(self, ctx: "ConversationContext") -> bool:
+        post_data = getattr(ctx, "post_data", None) or {}
+        chunks: List[str] = [str(post_data.get("title") or "")]
+        for block in (post_data.get("content_blocks") or []):
+            if isinstance(block, dict):
+                chunks.append(str(block.get("text") or ""))
+            elif isinstance(block, str):
+                chunks.append(block)
+        chunks.extend([str(c or "") for c in (getattr(ctx, "comments", None) or []) if str(c or "").strip()])
+        for item in (post_data.get("image_enrichment") or []):
+            if not isinstance(item, dict):
+                continue
+            chunks.append(str(item.get("ocr_text") or ""))
+            chunks.append(str(item.get("visual_summary") or ""))
+            chunks.append(" ".join(str(x or "") for x in (item.get("work_cues") or [])))
+
+        raw = " ".join(part for part in chunks if str(part or "").strip())
+        if not raw:
+            return False
+        norm = re.sub(r"[^\w가-힣]", "", raw).lower()
+        if not norm:
+            return False
+
+        event_terms = (
+            "행사", "이벤트", "현장", "오프라인", "팝업", "부스", "방문", "참여",
+            "스탭", "스태프", "굿즈", "뱃지", "쇼핑백", "드레스코드", "agf",
+            "킨텍스", "vvip", "마일리지", "출석체크",
+        )
+        event_hits = sum(
+            1 for term in event_terms
+            if term in raw.lower() or re.sub(r"[^\w가-힣]", "", term).lower() in norm
+        )
+        if event_hits < 2:
+            experience_terms = ("먹고", "남아서", "떠들", "줄서", "대답해", "물어보", "옆자리", "현장", "후기")
+            social_terms = ("스탭", "스태프", "스탭쟝", "staff")
+            has_social = any(term in raw.lower() or self._normalize_match_text(term) in norm for term in social_terms)
+            has_experience = any(term in raw.lower() or self._normalize_match_text(term) in norm for term in experience_terms)
+            if not (has_social and has_experience):
+                return False
+            event_hits = 2
+
+        work_anchor_terms = (
+            "주인공", "작가", "회차", "줄거리", "설정", "캐릭터",
+            "최신화", "막화", "엔딩", "하차", "리뷰",
+        )
+        work_hits = sum(1 for term in work_anchor_terms if term in raw)
+        return event_hits >= max(2, work_hits + 1)
+
+    def _has_question_plot_title_support(
+        self,
+        *,
+        ctx: "ConversationContext",
+        candidate_title: str,
+        post_data: Dict[str, Any],
+        gatekeeper_out: Dict[str, Any],
+        discourse_out: Dict[str, Any],
+    ) -> bool:
+        candidate_title = str(candidate_title or "").strip()
+        if not candidate_title:
+            return False
+
+        _is_reco_request_post, _ = self._detect_recommendation_request_post(
+            post_data or {},
+            gatekeeper_out or {},
+            discourse_out or {},
+        )
+        discourse_analysis = (discourse_out or {}).get("discourse_analysis") or {}
+        discourse_intent = str(discourse_analysis.get("intent") or "").lower()
+        if (not _is_reco_request_post) and discourse_intent != "ask_question":
+            return False
+
+        def _norm(v: Any) -> str:
+            return re.sub(r"[^\w가-힣]", "", str(v or "")).lower()
+
+        post_title = str((post_data or {}).get("title") or "").strip()
+        stem_match = re.split(r"(?:무슨내용임|무슨\s*내용|내용임|뭐임|뭔내용|\?)", post_title, maxsplit=1)[0].strip()
+        stem_norm = _norm(stem_match)
+        cand_norm = _norm(candidate_title)
+        if not cand_norm:
+            return False
+        if stem_norm and stem_norm not in cand_norm and cand_norm not in stem_norm:
+            return False
+
+        comments = [
+            str(c or "").strip()
+            for c in (getattr(ctx, "comments", None) or [])
+            if str(c or "").strip()
+        ]
+        if len(comments) < 2:
+            return False
+
+        support_parts: List[str] = []
+        support_urls: set[str] = set()
+        for sr in (getattr(ctx, "search_results", None) or []):
+            if not isinstance(sr, dict):
+                continue
+            sr_url = str(sr.get("url") or "").strip()
+            if not self._is_novel_detail_url(sr_url):
+                continue
+            sr_title = str(sr.get("title") or "").strip()
+            sr_title_norm = _norm(sr_title)
+            if cand_norm != sr_title_norm and cand_norm not in sr_title_norm and sr_title_norm not in cand_norm:
+                continue
+            support_parts.append(sr_title)
+            support_parts.append(str(sr.get("content") or sr.get("snippet") or ""))
+            support_urls.add(sr_url.rstrip("/").lower())
+
+        for fe in (getattr(ctx, "fetched_page_info", None) or []):
+            if not isinstance(fe, dict):
+                continue
+            fe_url = str(fe.get("url") or "").strip().rstrip("/").lower()
+            if support_urls and fe_url not in support_urls:
+                continue
+            structured = fe.get("structured_info") or {}
+            support_parts.append(str(fe.get("text") or fe.get("text_preview") or ""))
+            if isinstance(structured, dict):
+                for key in ("title", "page_title", "work_title", "summary", "description", "synopsis"):
+                    support_parts.append(str(structured.get(key) or ""))
+
+        support_blob = " ".join(part for part in support_parts if str(part or "").strip())
+        support_norm = _norm(support_blob)
+        if not support_norm:
+            return False
+
+        stop_terms = {
+            "하렘", "캐빨", "좋음", "좋냐", "작품", "내용", "질문", "추천",
+            "주인공", "중도하차", "댓글", "설명", "정도", "작가", "개연성",
+            "평가", "정보", "문의", "먼치킨",
+        }
+        stop_norms = {_norm(term) for term in stop_terms if _norm(term)}
+        seen_terms: set[str] = set()
+        match_count = 0
+        for comment in comments:
+            for tok in re.findall(r"[가-힣A-Za-z0-9]{2,}", comment):
+                tok_norm = _norm(tok)
+                if not tok_norm or tok_norm in stop_norms or tok_norm in seen_terms:
+                    continue
+                seen_terms.add(tok_norm)
+                if tok_norm in support_norm:
+                    match_count += 1
+
+        return match_count >= 2 and self._has_strong_title_support(ctx, candidate_title)
 
     def _is_character_like_short_title(
         self,
@@ -8194,6 +8609,26 @@ class ArbiterExpert:
             signals.append("question_tone")
         if has_author_focus:
             signals.append("author_focus")
+
+        gk_entities = gatekeeper_out.get("detected_entities") or {}
+        has_character_anchor = any(
+            isinstance(ch, str) and len(ch.strip()) >= 2
+            for ch in (gk_entities.get("possible_characters") or [])
+        )
+        character_power_scaling = bool(
+            has_character_anchor
+            and has_list_connector
+            and has_question_tone
+            and not has_multi_titles
+            and re.search(
+                r"(?:이길|비비|상대|붙(?:이|는|어|는다)?|대결|전투력|강함|세냐|줄다리기|vs)",
+                merged_text_no_url,
+                flags=re.IGNORECASE,
+            )
+        )
+        if character_power_scaling:
+            signals.append("character_power_scaling_override")
+            return False, signals
 
         # 강한 단일작 앵커가 확인되면 multi-work 가드보다 단일작을 우선한다.
         vf_grounding = (vf_result.get("grounding_check") or {}) if isinstance(vf_result, dict) else {}

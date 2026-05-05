@@ -1,0 +1,176 @@
+# Developer TODO Index
+
+이 문서는 개발/기능개선 TODO의 색인이다. 실제 항목 관리는 아래 문서에서 나누어 진행한다.
+
+- 개발/인프라/테스트: `DEV_TODO.md`
+- 기능 개선/품질 개선: `FEATURE_IMPROVEMENT_TODO.md`
+- 품질 승인 체크: `OPERATION_QUALITY_CHECKLIST.md`
+- 검증 결과: `VERIFICATION_RESULTS.md`
+
+## P0 - 런 안정성
+
+- [x] 죽은 MCP/SearchXNG shard가 endpoint pool에 남는 문제 확인
+  - 완료 기준: `tools/audit_search_shards.py --count 36`에서 문제 shard 목록 확인
+  - 결과: 최초 `27/36` 정상, 문제 `[1,10,13,15,26,27,29,33,34]`
+- [x] 문제 shard recreate 후 재확인
+  - 완료 기준: 재감사 `ok=36/36`
+  - 상세: `docs/search_reliability_review_20260426.md`
+- [x] 런 시작 health check가 `/readyz`까지 확인하도록 보강
+  - 완료 기준: bridge는 살아 있고 SearchXNG가 죽은 shard를 실패로 판정
+- [x] MCP client failover 보강
+  - 완료 기준: 워커 기본 shard 실패/저하 시 다른 endpoint 후보를 시도
+- [x] MCP client failover budget 추가
+  - 완료 기준: 검색 1건이 전체 36 shard를 순차 순회하지 않도록 `MCP_CLIENT_MAX_ENDPOINTS_PER_SEARCH`와 `MCP_CLIENT_SEARCH_TIMEOUT_SEC` 지원
+  - 상세: `IMPROVEMENT_REGISTER.md`
+- [x] post별 late search 누적 예산 가드 추가
+  - 완료 기준: 반복 verification/recall 검색이 post 단위 누적 예산을 넘으면 cap 또는 skip
+  - 상세: `FEATURE_IMPROVEMENT_TODO.md`, `IMPROVEMENT_REGISTER.md`
+- [x] VLM/OCR degenerate image geometry guard 추가
+  - 완료 기준: 1px 높이, 0px 크기, 극단 비율 이미지가 vLLM multimodal payload로 들어가기 전에 fetch 단계 limitation으로 격리됨
+  - 발견: run `20260501_010427_282685`와 과거 run `20260423_170321_250907` 모두 loaded index `4049`, post `11589463`에서 `bytes=448` VLM 요청 직후 `500 -> 502`로 전파
+  - 원인 증거: 해당 dcimg 응답은 `application/octet-stream`이지만 JPEG signature이며 실제 dimensions는 `389x1`
+  - 확인: `tests.test_agentic_pipeline_rework` 161건 OK, `tools/audit_expert_run_health.py --run-id 20260501_010427_282685` 재실행
+  - 서버 재기동 후 확인: 단건 canary `20260501_160410_623323`에서 completed `1/1`, VLM chunk request 없음, 500/502 없음
+  - 상세: `DEV_TODO.md`, `IMPROVEMENT_REGISTER.md`, `HISTORY.md`, `VERIFICATION_RESULTS.md`
+- [ ] VLM image fetch limitation observability 보강
+  - 완료 기준: full pipeline result/log/audit에서 `image_geometry_too_small:389x1` 같은 VLM fetch skip 사유가 post별로 확인됨
+  - 발견: 단건 canary `20260501_160410_623323`은 `vlm: used=False, fetch=0/1`로 crash 방어는 확인됐지만 limitation 문자열은 최종 output/log에 노출되지 않음
+  - 상세: `IMPROVEMENT_REGISTER.md`, `VERIFICATION_RESULTS.md`
+- [ ] 장시간 런 중 shard readiness 주기 snapshot 추가
+  - 완료 기준: N분 단위 `out/search_shard_audit_*.json` 또는 monitor event 기록
+  - 상세: `DEV_TODO.md`
+- [ ] post별 search health flag 저장
+  - 완료 기준: 검색 빈 결과/저하/timeout이 결과 JSON에서 후처리 대상으로 식별됨
+  - 상세: `FEATURE_IMPROVEMENT_TODO.md`
+
+## P1 - 검색 품질
+
+- [x] generic relation only / character parenthetical targeted 회귀 수정
+  - 완료 기준: `11631298`은 비관련/후보 누수 없음, `11663540`은 `전 버튜버가 하고 싶은데요`로 resolved
+  - 남은 상태: afterfix11 200건 canary 통과, 120건 LLM 리뷰 패킷 판독 완료, 1,000건 risk discovery 완료. 품질은 critical FP/FN 재현으로 추가 개선 필요
+  - 상세: `FEATURE_IMPROVEMENT_TODO.md`, `VERIFICATION_RESULTS.md`
+- [x] afterfix12 P0 title/alias gate targeted 수정
+  - 완료 기준: `뮤지컬 배우`, `라쇼몽 source metadata`, `무림맹` 과구제를 막고 `서울마탑`은 구제
+  - 확인: targeted unittest `13/13 OK`, core4 targeted run 및 `11620037` 단건 rerun 통과
+  - 확인 추가: afterfix12 36병렬 canary `20260428_142042_238055`에서 `200/200`, failed `0`, `11718070/11620037` FP 제거, `11663540/11562020` positive 유지
+  - 남은 상태: 120건 리뷰 패킷 판독과 1,000건 risk discovery에서 재발률 확인 필요
+  - 상세: `VERIFICATION_RESULTS.md`, `HISTORY.md`
+- [x] 공통 제목 stem 충돌 검색 이웃 분리
+  - 완료 기준: `마법소녀ㄴ`처럼 복수 공식 제목에 공통으로 들어가는 stem에서 본문 앵커가 닫힌 후보만 primary로 유지하고, 검색 이웃은 comparison/recommendation/slang 후보로 저장하지 않음
+  - 확인: `tests.test_agentic_pipeline_alias_contract` 30건 통과, `11684407` 단건 실제 rerun에서 `마법소녀ㄴ은 은퇴하고 싶다` resolved 및 `comparison_target=null`
+  - 남은 상태: afterfix13 200건 canary와 1,000건 risk discovery에서 과차단/과확정 재집계 필요
+  - 상세: `FEATURE_IMPROVEMENT_TODO.md`, `VERIFICATION_RESULTS.md`, `IMPROVEMENT_REGISTER.md`
+- [x] adjacent relevance legacy flag 및 budget profile 정리
+  - 완료 기준: adjacent author/meta/recommendation은 주변 담론으로 보존하되 legacy `is_relevant`와 official title 확정으로 새지 않고, genre discussion budget은 공식 근거 확인 슬롯을 유지
+  - 확인: targeted adjacent 7건, budget 이웃 3건, `tests.test_agentic_pipeline_rework` 145건, `tests.test_agentic_pipeline_alias_contract` 30건 통과
+  - 남은 상태: 200건 canary와 1,000건 risk discovery에서 adjacent 누수와 genre budget FP 증가 여부 확인 필요
+  - 상세: `FEATURE_IMPROVEMENT_TODO.md`, `VERIFICATION_RESULTS.md`, `IMPROVEMENT_REGISTER.md`
+- [x] Namu 의학/일반 개념 official title 승격 차단
+  - 완료 기준: `11718111`처럼 나무위키 일반 의학 항목이 URL-backed 보정이나 character-parenthetical bridge로 작품 title이 되지 않음
+  - 확인: targeted 5건, `tests.test_agentic_pipeline_rework` 147건, `tests.test_agentic_pipeline_alias_contract` 30건, 단건 actual run `20260428_230857_637381` 통과
+  - 확대 확인: afterfix14 canary `20260428_233059_378617`은 `completed=200/200`, risk discovery `20260429_002511_375830`은 `completed=1001/1001`, 모두 failed/pending 0
+  - 남은 상태: risk discovery에서 `11718111 -> 정신과 의사`가 재발하여 weak-evidence official title guard로 확장 필요
+  - 상세: `FEATURE_IMPROVEMENT_TODO.md`, `VERIFICATION_RESULTS.md`, `IMPROVEMENT_REGISTER.md`
+- [ ] weak-evidence official title 승격 제한
+  - 완료 기준: `official_title_evidence=false` 또는 `post_spans=0/search_snippets=0/official_urls=0`인데 플랫폼 URL/검색 bootstrap만으로 resolved되는 케이스를 HOLD/REPROCESS로 이동
+  - 발견: afterfix14 risk discovery `20260429_002511_375830`에서 약한 근거 official title 후보 35건 추출
+  - 대표 사례: `11718111 -> 정신과 의사`, `11684415 -> 小數, decimal number`, `11505857 -> Cecil`, `11684401 -> 추리 소설`, `11205227 -> 챌린지`
+  - positive 보존: `나혼렙`, `마법소녀ㄴ은 은퇴하고 싶다`, `전 버튜버가 하고 싶은데요`, `서울에 마탑 세웠더니 돈이 미쳤다`
+  - 진행: afterfix15~16에서 literal/dictionary/medical unresolved guard 추가, `tests.test_agentic_pipeline_rework` 153건 OK, afterfix16 200 canary `20260429_175638_261091` 완료.
+  - 보류: afterfix17 targeted에서 `11198715` 오답 title lock은 제거됐지만 `Relevant=0` 과보수라 1,000건 risk discovery는 HOLD.
+  - 다음 단계: 의도적 오타/자모 title alias가 본문 고유 단서와 결합할 때 `관련-미확정`으로 유지하는 positive/negative 이웃 테스트 추가 후 200 canary 재실행
+  - 상세: `FEATURE_IMPROVEMENT_TODO.md`, `IMPROVEMENT_REGISTER.md`, `VERIFICATION_RESULTS.md`
+- [ ] generic concept parenthetical bridge 차단
+  - 완료 기준: `오러(판타지 용어)`처럼 개념어 parenthetical이 character/work bridge로 등록되어 `판타지 용어`를 official title로 승격하지 않음
+  - 발견: VLM runtime canary `20260501_160410_623323`에서 internal reasoning은 장르 일반론/non-relevant였지만 최종 output은 `판타지 용어` resolved/title로 뒤집힘
+  - 일반화: parenthetical 내부가 `용어`, `개념`, `설정`, `장르`, `목록`, `대문`, `분류` 등 비작품 범주일 때는 작품명 bridge 후보에서 제외
+  - 이웃 보존: `주서연(전 버튜버가 하고 싶은데요)` 같은 character(work title) bridge는 유지
+  - 상세: `VERIFICATION_RESULTS.md`
+- [x] 의도적 오타/자모 포함 title alias 정책
+  - 완료 기준: `마법소녀ㄴ`처럼 일반 장르어와 실제 작품명이 겹치는 표면에서 오답 resolved를 막고, 본문 고유 캐릭터/설정 단서가 있으면 비관련이 아니라 관련-미확정으로 유지
+  - 대표 사례: `11198715`은 afterfix16에서 `마법소녀물 신전사가 되었다`로 오매칭, afterfix17 targeted에서 오매칭은 제거됐으나 과보수 non-relevant
+  - negative 이웃: `11456200`처럼 장르 클리셰만 있는 폼체인지 글은 non-relevant 유지
+  - 확인: afterfix19 targeted `11198715`은 `Relevant=1`, `Identified=0`, `official_title=null`, flag `internal_work_signal_unresolved_recovered`; 단위 테스트에서 `11456200` negative 이웃은 rescue되지 않음
+  - 확대 확인: afterfix19 200건 canary `20260429_204443_104695`, 1,001건 risk discovery `20260429_213837_418990` 완료. `11198715`은 관련-미확정 유지.
+  - 남은 상태: `11616838`처럼 body 내부 캐릭터/설정 단서가 더 많은 positive 이웃은 resolved가 맞는지 계속 리뷰 필요
+  - 상세: `FEATURE_IMPROVEMENT_TODO.md`, `VERIFICATION_RESULTS.md`
+- [ ] locked official 후보 bad metadata 재승격 방지
+  - 완료 기준: locked 공식 후보라도 `community_post`, `deleted/unavailable`, `url_deleted_or_unavailable`, `url_is_community_post`, `listing_only`, `title_url_mismatch` 신호가 있으면 unresolved/non-relevant를 resolved로 되살리지 않음
+  - 발견: afterfix19 risk discovery `20260429_213837_418990`에서 `11631298 -> 무림맹주 막내제자` 재승격
+  - 진행: afterfix20에서 구조 가드 추가, `tests.test_agentic_pipeline_rework` 157건 OK, targeted `20260430_015935_598854`에서 `11631298` title 없음 확인
+  - 확대 확인: afterfix20 200건 canary `20260430_021001_693350` 완료, `completed=200/200`, `reason_errors=0`, `11631298` title 없음
+  - 확대 확인: afterfix20 1,001건 risk discovery `20260430_025849_885589` 완료, `completed=1001/1001`, `reason_errors=0`, `11631298` title 없음
+  - 남은 상태: 기능 자체는 통과했지만 risk 전체 품질은 `11505857 -> Cecil`, `11456200` 과복구 때문에 REVIEW
+  - 상세: `VERIFICATION_RESULTS.md`, `IMPROVEMENT_REGISTER.md`
+- [x] 짧은 인명/캐릭터 표면 title 오승격 방지
+  - 완료 기준: 본문이 `세실` 같은 인명/캐릭터 표면만 갖고 있고 작품 고유 앵커가 약하면 `Cecil` 같은 영문 title로 resolved하지 않음
+  - 발견: afterfix20 risk discovery `20260430_025849_885589`에서 `11505857 -> Cecil` 재발
+  - 일반화: 단어 blacklist가 아니라 character-parenthetical bridge의 대상 title이 작품 페이지/공식 URL/캐릭터-작품 링크로 닫히는지 확인
+  - positive 보존: 실제 캐릭터 괄호형 bridge가 검색 title/snippet과 본문 캐릭터를 함께 만족하는 `11663540 -> 전 버튜버가 하고 싶은데요`
+  - 진행: afterfix21에서 짧은 영어 인명형 title은 post-side work anchor가 없으면 resolved 금지
+  - 확인: targeted `20260430_120419_466550`, canary `20260430_121717_430655`, risk `20260430_131615_234022`에서 `11505857` title 없음, `11663540` resolved 유지
+  - 상세: `FEATURE_IMPROVEMENT_TODO.md`, `IMPROVEMENT_REGISTER.md`
+- [x] trope-only internal work signal 과복구 축소
+  - 완료 기준: `11456200`처럼 단일 캐릭터 + 폼체인지/장르 클리셰만 있는 글은 관련-미확정으로 과복구하지 않음
+  - 발견: afterfix20 risk discovery에서 `11456200`이 official title은 없지만 `is_relevant=true + unresolved`로 복구됨
+  - positive 보존: `11198715`, `11616838`처럼 복수/구체 캐릭터와 설정/전개 단서가 같이 있는 경우는 관련-미확정 유지
+  - 진행: afterfix21에서 trope-only 표면은 강한 plot term 없이는 internal work signal rescue 금지
+  - 확인: targeted/canary/risk에서 `11456200` title 없음 및 non-relevant, risk에서 `11198715`, `11616838` 관련-미확정 유지
+  - 상세: `FEATURE_IMPROVEMENT_TODO.md`, `IMPROVEMENT_REGISTER.md`
+- [ ] afterfix21 risk resolved 증가분 정성 리뷰
+  - 완료 기준: afterfix21 risk `Identified=308` 증가분이 recall 개선인지 false positive 증가인지 `ACCEPT/HOLD/REPROCESS/REJECT`로 분류
+  - 발견: afterfix20 risk `Identified=277` 대비 afterfix21 risk `Identified=308`, `Relevant=382 -> 396`
+  - 다음 단계: resolved 저근거, character_parenthetical, locked rescue, single_candidate_unresolved_promoted 표본을 우선 리뷰 패킷으로 추출
+  - 상세: `VERIFICATION_RESULTS.md`, `HISTORY.md`
+- [ ] 캐릭터 괄호형 bridge recall 손실 개선
+  - 완료 기준: `주서연(전 버튜버가 하고 싶은데요)`처럼 검색 snippet/title에 character(work) bridge가 잡히면 resolved하고, 검색 결과가 누락되면 non-relevant로 흔들리지 않도록 RESEARCH/HOLD 또는 추가 query로 보완
+  - 발견: `11663540`은 canary/targeted run마다 `전 버튜버가 하고 싶은데요` resolved, unresolved, non-relevant가 변동
+  - 다음 단계: character-only + 장르/플랫폼 query 후보를 보강하고, 검색 결과 누락 시 RESEARCH queue로 보내는 정책 검토
+  - 상세: `FEATURE_IMPROVEMENT_TODO.md`, `VERIFICATION_RESULTS.md`
+- [ ] 개선 전후 자동 테스트/비교 문서 생성 루틴 도입
+  - 현재 상태: 지침 추가 완료, afterfix11 vs afterfix12 parallel36 수동 비교 문서 생성 완료, 2026-04-28부터 품질 개선 후 200건 canary와 1,000건 risk discovery 자동 진행을 기본 정책으로 격상, 전용 자동 비교 도구는 미구현
+  - 완료 기준: 개선 작업 후 200건 canary, 1,000건 risk discovery, baseline/improved run 감사와 비교 Markdown/JSON이 자동 생성되고 `VERIFICATION_RESULTS.md`에 링크됨
+  - 상세: `CHECKLIST.md`, `SAMPLING_AND_PARALLEL_TEST_GUIDE.md`, `DEV_TODO.md`, `FEATURE_IMPROVEMENT_TODO.md`
+- [ ] 같은 입력의 소량 재처리로 검색 저하율 비교
+  - 현재 상태: 2차 200건 canary는 안정성 `GO` (`20260427_121338_563339`, checkpoint `200/200`, failed `0`, missing `0`)
+  - 남은 상태: 품질은 `REVIEW`; late search budget 추가 후 검색 오류/timeout/infra no-result와 long-tail 상위 post는 200/1,000/10,000건에서 계속 비교 필요
+  - 완료 기준: 200건 canary, 1,000건 risk discovery, 10,000건 validation 표본에서 `search_upstream_zero`, `search_degraded_detected`, `search_timeout` 변화 기록
+  - 상세: `VERIFICATION_RESULTS.md`
+- [ ] 쿼리 확장 gate 개선 후 대형 샘플 재처리
+  - 현재 상태: afterfix12 P0 title/alias gate targeted 검증 및 36병렬 200건 canary 완료
+  - 다음 단계: afterfix12 120건 리뷰 판독, `폴랩/망교성/화귀/언니약혼` long-tail targeted, 1,000건 risk discovery 재실행
+  - 완료 기준: 확정 약칭/웹소설 도메인 표면어는 회수율 개선, 잡담/비소설 제목은 false positive 증가 없음
+  - 상세: `FEATURE_IMPROVEMENT_TODO.md`
+- [ ] 검색 실패 post 재처리 queue 설계
+  - 완료 기준: 검색 실패/저하가 많은 post id 목록을 CSV/JSON으로 추출
+  - 상세: `FEATURE_IMPROVEMENT_TODO.md`
+- [ ] headless fallback 효율 점검
+  - 완료 기준: `headless_used`, `headless_count`, `headless_error`별 성공률 리포트
+  - 상세: `FEATURE_IMPROVEMENT_TODO.md`
+
+## P1 - Slang DB 품질
+
+- [x] 20k run 기준 slang DB audit
+  - 결과: `slang_insight=1817`, 보정 후 저장 후보 `532`, 오염성 alias `0`
+- [ ] `unclear_canonical_alias` 차단 후보 review queue 분리
+  - 완료 기준: 실제 약칭 가능성이 높은 후보와 차단 유지 후보가 분리됨
+  - 상세: `FEATURE_IMPROVEMENT_TODO.md`
+- [ ] 대시보드에서 `examples.bucket`, `family_aliases` 노출
+  - 완료 기준: `titles[].slang/pending` 외 보류/가족 alias가 화면에서 확인됨
+  - 상세: `FEATURE_IMPROVEMENT_TODO.md`
+- [ ] `pending` 하위 버킷 설계
+  - 완료 기준: `pending_alias`, `secondary_reference`, `comparison_only` 같은 구분 도입 여부 결정
+  - 상세: `FEATURE_IMPROVEMENT_TODO.md`
+
+## P2 - 문서/운영
+
+- [x] `docs/devs` 문서 허브 생성
+- [x] 개선 레지스터/체크리스트/히스토리 규격화
+- [x] 샘플링/병렬 테스트 규모 기준 문서화
+  - 상세: `SAMPLING_AND_PARALLEL_TEST_GUIDE.md`
+- [ ] 새 기능 변경 시 PR/commit 전 문서 갱신 확인 루틴 도입
+  - 완료 기준: `CHECKLIST.md` 항목이 실제 변경 흐름에 사용됨
+  - 상세: `DEV_TODO.md`
+- [ ] README에서 `docs/devs` 링크 추가 검토
+  - 완료 기준: 사용자가 개발 운영 문서를 바로 찾을 수 있음
+  - 상세: `DEV_TODO.md`

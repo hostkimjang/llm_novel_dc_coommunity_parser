@@ -204,6 +204,56 @@ def _merge_malformed_string_suffixes(text: str) -> tuple[str, bool]:
     return repaired, changed
 
 
+def _escape_control_chars_in_json_strings(text: str) -> tuple[str, bool]:
+    """JSON 문자열 내부의 비이스케이프 제어문자를 안전하게 치환한다."""
+    if not text:
+        return text, False
+
+    out: List[str] = []
+    in_string = False
+    escape_next = False
+    changed = False
+
+    for ch in text:
+        if escape_next:
+            out.append(ch)
+            escape_next = False
+            continue
+
+        if ch == "\\" and in_string:
+            out.append(ch)
+            escape_next = True
+            continue
+
+        if ch == '"':
+            out.append(ch)
+            in_string = not in_string
+            continue
+
+        if in_string:
+            code = ord(ch)
+            if ch == "\n":
+                out.append("\\n")
+                changed = True
+                continue
+            if ch == "\r":
+                out.append("\\r")
+                changed = True
+                continue
+            if ch == "\t":
+                out.append("\\t")
+                changed = True
+                continue
+            if code < 0x20:
+                out.append(f"\\u{code:04x}")
+                changed = True
+                continue
+
+        out.append(ch)
+
+    return "".join(out), changed
+
+
 def _try_repair_json(broken: str) -> Dict[str, Any]:
     """
     불완전한 JSON 문자열 복구를 시도합니다.
@@ -214,6 +264,12 @@ def _try_repair_json(broken: str) -> Dict[str, Any]:
     if suffix_fixed:
         print(
             f"[utils] ⚠️ 문자열 suffix JSON 보정 적용 ({len(broken)}자)",
+            file=sys.stderr,
+        )
+    broken, control_fixed = _escape_control_chars_in_json_strings(broken)
+    if control_fixed:
+        print(
+            f"[utils] ⚠️ JSON 문자열 내부 제어문자 보정 적용 ({len(broken)}자)",
             file=sys.stderr,
         )
 
@@ -359,6 +415,29 @@ def parse_json_with_think_removal(text: str) -> Dict[str, Any]:
                         return result
                 except json.JSONDecodeError:
                     pass
+            repaired_first_obj, control_fixed = _escape_control_chars_in_json_strings(
+                repaired_first_obj if fixed else first_obj
+            )
+            if control_fixed:
+                try:
+                    result = json.loads(repaired_first_obj)
+                    if isinstance(result, dict):
+                        forbidden_keys = {"thinking", "thought", "reasoning_process", "internal_reasoning"}
+                        for key in list(result.keys()):
+                            if key.lower() in forbidden_keys or key.lower().startswith("think"):
+                                del result[key]
+                        result = _sanitize_arrays(result)
+                        if sanitize_non_ko:
+                            result, changed = _sanitize_non_korean_text(result)
+                            if changed > 0:
+                                print(f"[utils] ⚠️ 비한국어(중문) 문자열 정리: {changed}건", file=sys.stderr)
+                        print(
+                            "[utils] ⚠️ control-char 보정으로 JSON 파싱 성공",
+                            file=sys.stderr,
+                        )
+                        return result
+                except json.JSONDecodeError:
+                    pass
             # fall through to legacy rfind approach
 
     # 3-b. fallback: rfind 기반 추출 (반복 없는 일반 케이스)
@@ -370,6 +449,12 @@ def parse_json_with_think_removal(text: str) -> Dict[str, Any]:
         if suffix_fixed:
             print(
                 "[utils] ⚠️ malformed string suffix 보정 적용 (fallback 경로)",
+                file=sys.stderr,
+            )
+        json_str, control_fixed = _escape_control_chars_in_json_strings(json_str)
+        if control_fixed:
+            print(
+                "[utils] ⚠️ JSON 문자열 내부 제어문자 보정 적용 (fallback 경로)",
                 file=sys.stderr,
             )
         try:

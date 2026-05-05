@@ -18,6 +18,17 @@ LINGUISTIC_FRAMEWORK = """\
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+## 0. 일반화 우선 원칙 (No Case Hardcoding)
+
+아래 예시는 판별 원리를 설명하기 위한 샘플이다. 특정 작품명, 게시글 ID, 검색 결과 문구를 외워서 판정하지 마라.
+
+- 새로 본 실패 사례는 먼저 "어떤 일반 실패유형인가"로 설명하라: 일반 의학/현실 주제, 장르 일반어, 검색 메타데이터 꼬리, 타매체/인물명, 댓글의 보조 참조 등.
+- 공식 제목 확정은 사례명 매칭이 아니라 증거 조건으로 판단하라: 본문/댓글 고유 앵커, 소비/감상 대상성, 공식 플랫폼 근거, 안정된 약칭, 동일 검색 근거 내 캐릭터-작품 연결.
+- 반대로 비관련/보류도 특정 금지어가 아니라 증거 부재와 도메인 불일치로 설명하라.
+- 예시와 비슷한 문자열이 나와도, 주변 문맥과 증거가 다르면 다른 결론을 낼 수 있다.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ## 1. 화용론적 이해 (Pragmatic Understanding)
 
 **글은 단어의 나열이 아니라 "행위"다.**
@@ -846,6 +857,13 @@ Decoder가 "[A]작가 [B]" 같은 복합 표현을 파싱한 결과를 검증하
 - 이런 **일반 용어**가 제목에 있을 때 → 바로 소설 제목으로 매칭하지 않기
 - **추가 증거 필요**: 캐릭터 고유명, 작가명, 회차 언급, 줄거리 등이 본문에 있어야 함
 - 검색에서 "무당파"가 포함된 소설이 나와도, 본문이 **특정 작품의 내용**을 논하는지 확인
+- 특히 "무림맹/마교/혈교/정파/사파/천마/제자/맹주"처럼 여러 무협 작품에 반복되는 세력·역할어만 겹치면 특정 작품의 약칭으로 보지 말 것
+
+## 🧷 캐릭터명(작품명) 검색 결과 처리
+검색 결과 제목이 "캐릭터명(작품명)" 형태이고, 그 캐릭터명이 게시글/댓글에서 반복된다면:
+- 괄호 안 텍스트는 캐릭터의 소속 작품 후보로 기록 가능
+- 단, 캐릭터명 자체를 작품명으로 승격하지 말 것
+- 작품 확정은 캐릭터 반복 + 같은 검색 근거의 괄호 작품명 + 다른 후보 충돌 여부를 함께 본다
 
 ## 🎭 복수 작품 캐릭터 그룹 밈/약칭
 커뮤니티에서 여러 작품의 캐릭터를 묶어 부르는 약칭/밈이 있음:
@@ -2088,6 +2106,24 @@ Step 3: unresolved_terms에 등록!
 - 모르는 용어를 추측으로 작가명/작품명으로 확정하는 것
 - 검색 결과에 "~의 줄임말", "~뜻", "유행어" 설명이 있는데 무시하는 것
 - 확신 없는데 unresolved_terms를 비워두는 것
+
+━━━ 🧹 소형 모델용 약칭 표면 분리 규칙 ━━━
+
+작품 약칭을 찾을 때 `문장 전체`를 약칭으로 보지 마라.
+
+**detected/original로 잡아도 되는 것**
+- 짧은 작품 별칭/약칭 표면: 2~8음절의 붙은 표현, 초성/음절축약, 반복음절 약칭
+- 공식 제목과 다르고, 원문에서 작품을 부르는 호칭으로 쓰인 표면
+
+**detected/original로 잡으면 안 되는 것**
+- 정식 제목 그대로인 표현
+- 띄어쓰기 있는 긴 구절이나 문장형 제목 표면
+- 약칭 뒤에 캐릭터/작가/감상/질문/상태어가 붙은 전체 구절
+- `on/off`, `하렘임?`, `몇화`, `너무 불쌍`, `무서워`, `후기`, `리뷰`, `봤다`, `재밌다` 같은 상태/평가 접미사
+- 장르/트로프 일반어, 장면용어, 커뮤니티 유저 용어
+
+예외적으로 전체 구절을 `original`에 남기더라도, 후보 판단에서는 순수 약칭 표면만 분리해서 다루고
+정식 제목/문장형 표면 자체를 작품 약칭으로 저장 가능한 것으로 판단하지 마라.
 
 ━━━ 🚫 FP 트랩 패턴: 절대 매칭하지 마라 (DO NOT MATCH) ━━━
 
@@ -5067,6 +5103,56 @@ Decoder가 어떤 작품을 매칭했을 때, 다음 질문에 답하라:
    is_relevant=false, confidence=None, official_title=null
    counter_arguments에 구체적 판별 사유 추가 (severity=critical)
 
+=== [소형 모델용 강제 규칙] 모르면 채우지 말 것 ===
+
+- `official_novel_title`과 `decoded_term`은 원문/댓글/검색 근거가 직접 받칠 때만 값으로 쓴다.
+- `Mixed Unknown`, `unknown`, `N/A`, `null` 같은 실패 라벨은 `decoded_term` 값이 아니다.
+  이런 경우에는 `slang_insight=null` 또는 `slang_insight.store_in_slang_db=false`로 둔다.
+- 일반명사/트로프/장면용어/코스튬+인명 조합/위키 설명어로도 자연스러운 표현은 작품 약칭이 아니다.
+- 나무위키 결과가 있어도 작품 개별 문서인지 불확실하고 본문이 뜻/의미/차이/장면 희망을 묻는 글이면 title을 승격하지 않는다.
+- OCR 표지 텍스트만으로 title lock을 걸지 않는다. 본문/댓글/플랫폼 검색 중 최소 하나가 같은 제목을 다시 지지해야 한다.
+- 감지어와 해독어가 정규화 후 동일하고 공식 작품 브리지가 없으면, 슬랭이 아니라 일반 토픽으로 본다.
+- 약칭 후보가 OCR/이미지 표지 텍스트와 충돌하면 오염 문자열을 새 정식 제목으로 만들지 말고, 검증 가능한 URL/본문 앵커/기존 후보를 우선한다.
+- 짧은 표면형이 여러 공식 제목의 공통 stem/prefix/suffix로 동시에 등장하면 ambiguous_title_stem으로 본다. 본문/댓글의 캐릭터·설정·작가·회차 앵커가 특정 후보에만 닫힐 때만 그 후보를 primary로 두고, 나머지 공식 제목은 검색 이웃(search neighbor)이지 comparison/recommendation/slang 후보가 아니다.
+
+=== [slang_insight DB 저장 계약: 매우 중요] ===
+
+`slang_insight`는 "문화적 설명"과 "DB 저장 후보"를 분리한다.
+작품 식별에 도움이 된 표현이라고 해서 곧바로 DB에 저장할 은어/약칭은 아니다.
+
+개념 구분:
+- work_identifier_clue: 이 포스트에서 작품을 찾는 데 도움이 된 단서. 단발성 OCR/검색/문맥 추론, 문장 파편, 작가/장르/캐릭터 단서가 여기에 해당한다.
+- persistent_work_alias: 여러 포스트에서 작품명을 대신해 재사용될 수 있는 짧고 안정적인 별칭. DB 저장 후보는 이것뿐이다.
+- community_or_trope_term: 유저 호칭, 밈, 장르/트로프, 플랫폼명, 작가명, 문장형 설명어. 작품 식별에 도움이 되어도 DB 저장 대상이 아니다.
+
+- detected_term: 원문에서 감지한 표면. 가능하면 순수 약칭만 넣는다.
+- decoded_term: 정식 작품명 또는 해석. 실패 라벨 금지.
+- canonical_work_alias: 순수 작품 약칭만. 정식 제목을 복사하지 않는다.
+- alias_scope:
+  - pure_work_alias: 작품만 가리키는 깨끗한 약칭
+  - work_plus_character/work_plus_author/work_plus_meme: 작품 약칭에 인물/작가/밈/감상이 붙은 합성 표현
+  - mixed_unknown: 분리 불가/범위 불명
+- store_in_slang_db=true는 pure_work_alias일 때만 허용한다.
+- 다음은 반드시 store_in_slang_db=false:
+  1. detected_term이 정식 제목 그대로인 경우
+  2. detected_term이 띄어쓰기 있는 긴 구절/문장/질문/감상인 경우
+  3. detected_term에 on/off/하렘임/몇화/후기/리뷰/봤다/너무/불쌍/무서워 같은 상태·평가어가 붙은 경우
+  4. 작품+캐릭터/작가/밈 합성 표현인 경우
+  5. 장르/트로프/커뮤니티 용어인 경우
+  6. OCR/검색 결과로 작품은 찾았지만 detected_term 자체가 재사용 별칭인지 검증되지 않은 경우
+  7. 검색에서만 약칭 관계가 추정되고 본문/댓글에 해당 정식 제목·캐릭터·설정이 직접 닫히지 않는 경우
+  8. author_talk/recommendation/trope_discussion/community_banter/noise 문맥에서 나온 표면어
+  9. detected_term이 여러 공식 작품 제목에 공통으로 포함되는 짧은 stem인 경우. 이때 alias_scope=mixed_unknown, store_in_slang_db=false로 둔다.
+- 순수 약칭을 분리할 수 있으면 canonical_work_alias에는 그 짧은 약칭만 넣고, 합성 표면은 attached_entity_*로 설명한다.
+- 순수 약칭을 분리할 수 없으면 canonical_work_alias=null, alias_scope=mixed_unknown, store_in_slang_db=false.
+- 작품 관련 가능성이 있지만 확정 약칭은 아니면 slang_insight는 설명용으로 남겨도 되지만 store_in_slang_db=false로 둔다.
+
+미확정 작품담론 처리:
+- 제목/본문이 특정 작품 약칭처럼 보이고 검색에서 후보 작품이 발견되면, 본문 앵커가 약해도 곧바로 noise로 닫지 말라.
+- 단일 작품명 확정이 위험하면 is_relevant=true, official_novel_title=null, confidence=Low/Medium, discussion_type=general/review로 두고 relation_judgment나 counter_arguments에 "hold" 사유를 설명하라.
+- "앵커 부족"은 official_title을 null로 두는 이유이지, 작품담론 가능성 자체를 반드시 false로 만드는 이유가 아니다.
+- 단, 명백한 현실/게임/플랫폼/커뮤니티 잡담이면 is_relevant=false가 맞다.
+
 =============================================================================
 
 OUTPUT JSON:
@@ -5124,9 +5210,15 @@ OUTPUT JSON:
     
     "slang_insight": {{
       "detected_term": "string",
-      "decoded_term": "string",
+      "decoded_term": "string | null",
       "decode_verified": boolean,
-      "cultural_context": "string | null"  // Korean — 이 은어/약칭/밈의 유래, 커뮤니티에서의 용법, 관련 작품군이나 맥락을 상세히 설명 (예: 어떤 캐릭터/작품을 묶은 약어인지, 왜 생겨났는지, 어떤 논쟁/떡밥과 관련되는지)
+      "cultural_context": "string | null",  // Korean — 이 은어/약칭/밈의 유래, 커뮤니티에서의 용법, 관련 작품군이나 맥락을 상세히 설명 (예: 어떤 캐릭터/작품을 묶은 약어인지, 왜 생겨났는지, 어떤 논쟁/떡밥과 관련되는지)
+      "canonical_work_alias": "string | null",  // 순수 작품 약칭만. 정식 제목/문장형 표면/상태어 포함 구절 금지
+      "alias_scope": "pure_work_alias | work_plus_character | work_plus_author | work_plus_meme | mixed_unknown | null",
+      "attached_entity_text": "string | null",
+      "attached_entity_type": "character | author | meme | other | null",
+      "store_in_slang_db": "boolean | null",  // true는 pure_work_alias + 짧은 순수 약칭일 때만
+      "store_reason": "string | null"  // 예: pure_work_alias, character_attached_composite, exact_title_not_alias, sentence_like_alias_surface
     }} | null,
     
     // === 미해결 용어 처리 ===
@@ -5400,7 +5492,14 @@ def assemble_final_output(
         identity["slang_insight"] = {
             "detected_term": slang.get("detected_term"),
             "decoded_term": slang.get("decoded_term"),
+            "decode_verified": slang.get("decode_verified"),
             "cultural_context": slang.get("cultural_context"),
+            "canonical_work_alias": slang.get("canonical_work_alias"),
+            "alias_scope": slang.get("alias_scope"),
+            "attached_entity_text": slang.get("attached_entity_text"),
+            "attached_entity_type": slang.get("attached_entity_type"),
+            "store_in_slang_db": slang.get("store_in_slang_db"),
+            "store_reason": slang.get("store_reason"),
         }
     
     # Inference

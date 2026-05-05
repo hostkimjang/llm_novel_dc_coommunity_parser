@@ -46,6 +46,14 @@ _GENRE_ARCHETYPE_TERMS_NORMALIZED = {
     for item in GENRE_ARCHETYPE_TERMS
 }
 
+_FAMILY_ALIAS_AUTO_PROMOTE_MIN_TITLES = 3
+_FAMILY_ALIAS_AUTO_PROMOTE_MIN_CONFIRMED_TITLES = 2
+_FLUSH_PREVIEW_LIMIT = 5
+_PENDING_KIND_ALIAS_CANDIDATE = "alias_candidate"
+_PENDING_KIND_REFERENCE_MENTION = "reference_mention"
+_PENDING_KIND_META_LABEL = "meta_label"
+_PENDING_KIND_TROPE_OR_GENRE = "trope_or_genre"
+
 
 def _now_iso() -> str:
     return datetime.now().isoformat(timespec="seconds")
@@ -77,6 +85,22 @@ def _is_generic_title_label(title: str) -> bool:
     raw = str(title or "").strip()
     if not raw:
         return True
+    meta_suffixes = {
+        "캐릭터",
+        "등장인물",
+        "인물",
+        "작가",
+        "표지",
+        "리뷰",
+        "설정",
+        "설정오류지적",
+        "댓글",
+    }
+    raw_norm = _normalize_title(raw)
+    for suffix in meta_suffixes:
+        suffix_norm = _normalize_title(suffix)
+        if raw_norm and suffix_norm and raw_norm != suffix_norm and raw_norm.endswith(suffix_norm):
+            return True
     tokens = [
         _NORMALIZE_TERM_RE.sub("", tok).lower().strip()
         for tok in re.findall(r"[가-힣A-Za-z0-9]+", raw)
@@ -112,6 +136,46 @@ def _is_generic_title_label(title: str) -> bool:
     return bool(any(tok in genre_tokens for tok in tokens) and any(tok in medium_tokens for tok in tokens))
 
 
+def _classify_pending_kind(
+    *,
+    title: str,
+    source_roles: List[str],
+    discussion_type: str,
+    subtype: str,
+    work_resolution: str,
+) -> Tuple[str, str, str]:
+    title_raw = str(title or "").strip()
+    source_set = {str(x or "").strip().lower() for x in (source_roles or []) if str(x or "").strip()}
+    discussion_type_norm = str(discussion_type or "").strip().lower()
+    subtype_norm = str(subtype or "").strip().lower()
+    work_resolution_norm = str(work_resolution or "").strip().lower()
+
+    if _is_generic_title_label(title_raw):
+        return _PENDING_KIND_META_LABEL, "generic_or_meta_title_label", "high"
+
+    if discussion_type_norm in {"trope_discussion", "genre_opinion"} or subtype_norm == "genre_trope_discussion":
+        return _PENDING_KIND_TROPE_OR_GENRE, "genre_or_trope_context", "high"
+
+    if subtype_norm in {
+        "author_meta",
+        "platform_meta",
+        "release_serialization_meta",
+        "community_work_banter",
+    }:
+        return _PENDING_KIND_META_LABEL, "meta_context", "medium"
+
+    if source_set & {"comparison_target", "mentioned_work", "secondary_reference", "recommendation_candidate"}:
+        return _PENDING_KIND_REFERENCE_MENTION, "reference_or_comparison_context", "high"
+
+    if work_resolution_norm in {"multi_work", "none"}:
+        return _PENDING_KIND_REFERENCE_MENTION, "non_single_work_resolution", "medium"
+
+    if source_set & {"slang_insight", "primary_work", "title_candidate"}:
+        return _PENDING_KIND_ALIAS_CANDIDATE, "work_alias_candidate", "medium"
+
+    return _PENDING_KIND_REFERENCE_MENTION, "fallback_reference_context", "low"
+
+
 def _looks_sentence_like_term(term: str) -> bool:
     raw = str(term or "").strip()
     if not raw:
@@ -120,6 +184,8 @@ def _looks_sentence_like_term(term: str) -> bool:
     if not norm:
         return True
     tokens = [tok for tok in re.findall(r"[가-힣A-Za-z0-9]+", raw) if tok]
+    if len(tokens) >= 2 and re.search(r"\s", raw):
+        return True
     if len(tokens) >= 4:
         return True
     if len(norm) >= 18:
@@ -133,11 +199,100 @@ def _looks_sentence_like_term(term: str) -> bool:
         return True
     if separator_count >= 1 and len(tokens) >= 2:
         return True
+    if len(tokens) >= 2 and any(tok.lower() in {"on", "off"} for tok in tokens[1:]):
+        return True
+    phrase_markers = (
+        "너무",
+        "불쌍",
+        "무서",
+        "하차",
+        "하렘",
+        "몇화",
+        "급함",
+        "떡씬",
+        "후기",
+        "리뷰",
+        "스포",
+        "질문",
+        "어떰",
+        "어때",
+        "봤",
+        "보고",
+        "보는중",
+        "재밌",
+        "재미",
+        "아쉽",
+        "왔다",
+        "떴",
+        "휴재",
+        "각임",
+        "같아",
+        "같음",
+        "좋네",
+        "좋다",
+        "싫네",
+        "싫다",
+    )
+    if len(tokens) >= 2 and any(marker in raw for marker in phrase_markers):
+        return True
     sentence_tail_patterns = (
         r"(뭔데|뭐냐|맞냐|아니냐|같음|같다|아쉽노|가능하다는말이있다|더보고싶었는데|보고싶었는데|해결가능하다는말이있다)$",
     )
     if len(tokens) >= 2 and any(re.search(pat, raw) for pat in sentence_tail_patterns):
         return True
+    return False
+
+
+def _looks_mixed_entity_slang(term: str, title: str, decoded_term: Any = None) -> bool:
+    raw_decoded = str(decoded_term or "").strip()
+    if not raw_decoded:
+        return False
+    term_norm = _normalize_term(term)
+    title_norm = _normalize_title(title)
+    decoded_norm = _normalize_title(raw_decoded)
+    if not term_norm or not title_norm or not decoded_norm:
+        return False
+    if title_norm not in decoded_norm or decoded_norm == title_norm:
+        return False
+
+    raw_decoded_lower = raw_decoded.lower()
+    has_role_marker = (
+        "+" in raw_decoded
+        or "캐릭터" in raw_decoded
+        or "인물" in raw_decoded
+        or "작가" in raw_decoded
+        or "character" in raw_decoded_lower
+        or "author" in raw_decoded_lower
+    )
+    if not has_role_marker:
+        return False
+
+    extra_norm = decoded_norm.replace(title_norm, "", 1).strip()
+    return bool(extra_norm)
+
+
+def _looks_title_plus_entity_alias(term: str, title: str, entity_terms: List[str]) -> bool:
+    term_norm = _normalize_term(term)
+    title_norm = _normalize_title(title)
+    if not term_norm or not title_norm or not entity_terms:
+        return False
+
+    for entity_term in entity_terms:
+        ent_norm = _normalize_term(entity_term)
+        if not ent_norm or len(ent_norm) < 2 or term_norm == ent_norm:
+            continue
+        if not term_norm.endswith(ent_norm):
+            continue
+        prefix_norm = term_norm[: len(term_norm) - len(ent_norm)]
+        if len(prefix_norm) < 2:
+            continue
+        if prefix_norm == title_norm or prefix_norm in title_norm or title_norm.startswith(prefix_norm):
+            return True
+        try:
+            if float(abbreviation_match_score(prefix_norm, title)) >= 0.45:
+                return True
+        except Exception:
+            continue
     return False
 
 
@@ -190,6 +345,17 @@ def _looks_strong_pipeline_alias(
     return False
 
 
+def _should_hold_direct_slang_promotion(source_roles: List[str]) -> bool:
+    normalized_roles = {
+        str(role or "").strip().lower()
+        for role in (source_roles or [])
+        if str(role or "").strip()
+    }
+    # slang_insight 단독 관측은 한 번의 LLM/OCR 추정만으로 확정 slang 버킷에 오를 수 있어
+    # ambiguous alias 오염을 만들기 쉽다. 1차로 pending에 두고 후속 근거를 기다린다.
+    return normalized_roles == {"slang_insight"}
+
+
 def _is_reviewable_context(
     *,
     topicality: str,
@@ -231,6 +397,36 @@ def _example_is_reviewable(example: Dict[str, Any]) -> bool:
         discussion_type=str(example.get("discussion_type") or ""),
         anchor_type=str(example.get("anchor_type") or ""),
     )
+
+
+def _normalized_source_roles(raw_roles: Any, raw_role: Any = None) -> set[str]:
+    roles: set[str] = set()
+    if isinstance(raw_roles, (list, tuple, set)):
+        for role in raw_roles:
+            role_norm = str(role or "").strip().lower()
+            if role_norm:
+                roles.add(role_norm)
+    elif isinstance(raw_roles, str):
+        role_norm = str(raw_roles or "").strip().lower()
+        if role_norm:
+            roles.add(role_norm)
+
+    role_single = str(raw_role or "").strip().lower()
+    if role_single:
+        roles.add(role_single)
+    return roles
+
+
+def _is_title_candidate_only_roles(raw_roles: Any, raw_role: Any = None) -> bool:
+    roles = _normalized_source_roles(raw_roles, raw_role)
+    return bool(roles) and roles <= {"title_candidate"}
+
+
+def _has_strong_work_roles(raw_roles: Any, raw_role: Any = None, bucket: Any = None) -> bool:
+    roles = _normalized_source_roles(raw_roles, raw_role)
+    if roles & {"primary_work", "slang_insight"}:
+        return True
+    return str(bucket or "").strip().lower() == "slang"
 
 
 def _empty_title_bucket() -> Dict[str, Any]:
@@ -337,8 +533,8 @@ class SlangDBManager:
         path: Path,
         run_id: str,
         enabled: bool = False,
-        flush_posts: int = 5,
-        flush_seconds: int = 5,
+        flush_posts: int = 1,
+        flush_seconds: int = 0,
         max_examples_per_title: int = 30,
         log_fn: Optional[Callable[[str], None]] = None,
     ) -> None:
@@ -346,13 +542,14 @@ class SlangDBManager:
         self.run_id = str(run_id or "").strip() or "unknown"
         self.enabled = bool(enabled)
         self.flush_posts = max(1, int(flush_posts))
-        self.flush_seconds = max(1, int(flush_seconds))
+        self.flush_seconds = max(0, int(flush_seconds))
         self.max_examples_per_title = max(1, int(max_examples_per_title))
         self.log_fn = log_fn
         self._db = self._load_db()
         self._processed_since_flush = 0
         self._observations_since_flush = 0
         self._touched_titles_since_flush: set[str] = set()
+        self._observation_previews_since_flush: list[str] = []
         self._dirty = False
         self._last_flush_monotonic = time.monotonic()
 
@@ -420,7 +617,7 @@ class SlangDBManager:
         if self._processed_since_flush >= self.flush_posts:
             self.flush(force=True, reason=f"posts>={self.flush_posts}")
             return
-        if elapsed >= self.flush_seconds:
+        if self.flush_seconds > 0 and elapsed >= self.flush_seconds:
             self.flush(force=True, reason=f"seconds>={self.flush_seconds}")
 
     def flush(self, *, force: bool = False, reason: str = "manual") -> None:
@@ -431,6 +628,7 @@ class SlangDBManager:
         buffered_posts = self._processed_since_flush
         buffered_observations = self._observations_since_flush
         touched_titles = sorted(self._touched_titles_since_flush)
+        previews = list(self._observation_previews_since_flush)
         self._rebuild_conflicts()
         written_at = _now_iso()
         self._db["version"] = max(int(self._db.get("version") or 0), 2)
@@ -446,12 +644,14 @@ class SlangDBManager:
             buffered_posts=buffered_posts,
             buffered_observations=buffered_observations,
             touched_titles=touched_titles,
+            previews=previews,
             written_at=written_at,
             reason=reason,
         )
         self._processed_since_flush = 0
         self._observations_since_flush = 0
         self._touched_titles_since_flush.clear()
+        self._observation_previews_since_flush.clear()
         self._dirty = False
         self._last_flush_monotonic = time.monotonic()
 
@@ -572,6 +772,7 @@ class SlangDBManager:
         title = str(obs.get("official_title") or "").strip()
         term = str(obs.get("term") or "").strip()
         bucket_name = str(obs.get("bucket") or "").strip().lower()
+        self._remember_observation_preview(obs)
         if bucket_name == "family_alias":
             self._merge_family_alias_observation(obs)
             return
@@ -606,6 +807,19 @@ class SlangDBManager:
         existing_sources = {str(x) for x in (existing.get("sources") or []) if str(x).strip()}
         existing_sources.update(str(x) for x in (obs.get("sources") or []) if str(x).strip())
         existing["sources"] = sorted(existing_sources)
+        if target_key == "pending":
+            existing["pending_kind"] = str(obs.get("pending_kind") or existing.get("pending_kind") or _PENDING_KIND_REFERENCE_MENTION)
+            existing["pending_reason"] = str(obs.get("pending_reason") or existing.get("pending_reason") or "").strip() or None
+            existing["classification_confidence"] = str(
+                obs.get("classification_confidence") or existing.get("classification_confidence") or "low"
+            ).strip().lower()
+            evidence_roles = {
+                str(x).strip()
+                for x in (existing.get("evidence_roles") or [])
+                if str(x).strip()
+            }
+            evidence_roles.update(str(x).strip() for x in (obs.get("sources") or []) if str(x).strip())
+            existing["evidence_roles"] = sorted(evidence_roles)
         if target_key == "slang":
             bucket["pending"] = [
                 item
@@ -654,6 +868,7 @@ class SlangDBManager:
         buffered_posts: int,
         buffered_observations: int,
         touched_titles: List[str],
+        previews: List[str],
         written_at: str,
         reason: str,
     ) -> None:
@@ -664,11 +879,30 @@ class SlangDBManager:
             title_preview += f" ... (+{len(touched_titles) - 5})"
         if not title_preview:
             title_preview = "-"
+        obs_preview = "; ".join(previews[:_FLUSH_PREVIEW_LIMIT])
+        if len(previews) > _FLUSH_PREVIEW_LIMIT:
+            obs_preview += f" ... (+{len(previews) - _FLUSH_PREVIEW_LIMIT})"
+        if not obs_preview:
+            obs_preview = "-"
         self.log_fn(
             "🗂️ Slang DB flush: "
             f"reason={reason}, buffered_posts={buffered_posts}, buffered_observations={buffered_observations}, "
-            f"titles={len(touched_titles)} [{title_preview}], written_at={written_at}, path={self.path}"
+            f"titles={len(touched_titles)} [{title_preview}], previews=[{obs_preview}], "
+            f"written_at={written_at}, path={self.path}"
         )
+
+    def _remember_observation_preview(self, obs: Dict[str, Any]) -> None:
+        term = str(obs.get("term") or "").strip()
+        title = str(obs.get("official_title") or "").strip()
+        bucket = str(obs.get("bucket") or "").strip().lower() or "pending"
+        if not term or not title:
+            return
+        preview = f"{term} -> {title} ({bucket})"
+        if preview in self._observation_previews_since_flush:
+            return
+        self._observation_previews_since_flush.append(preview)
+        if len(self._observation_previews_since_flush) > (_FLUSH_PREVIEW_LIMIT * 2):
+            del self._observation_previews_since_flush[:-(_FLUSH_PREVIEW_LIMIT * 2)]
 
     def _rebuild_conflicts(self) -> None:
         titles = self._db.setdefault("titles", {})
@@ -736,7 +970,14 @@ class SlangDBManager:
 
         for norm_term, refs in list(alias_map.items()):
             title_names = sorted({title for title, _, _ in refs})
-            if len(title_names) < 3:
+            confirmed_titles = {
+                title
+                for title, entry, source_key in refs
+                if source_key == "slang" or str((entry or {}).get("bucket") or "").strip().lower() == "slang"
+            }
+            if len(title_names) < _FAMILY_ALIAS_AUTO_PROMOTE_MIN_TITLES:
+                continue
+            if len(confirmed_titles) < _FAMILY_ALIAS_AUTO_PROMOTE_MIN_CONFIRMED_TITLES:
                 continue
             display_term = ""
             last_seen = ""
@@ -757,16 +998,28 @@ class SlangDBManager:
                 if not display_term:
                     display_term = str(entry.get("term") or "").strip()
                 last_seen = max(last_seen, str(entry.get("last_seen") or ""))
-                if source_key and source_key != "example":
-                    sources.add(str(source_key))
+                if source_key in {"slang", "pending"}:
+                    sources.update(
+                        str(x).strip()
+                        for x in ((entry or {}).get("sources") or [])
+                        if str(x).strip()
+                    )
             for title in title_names:
                 bucket = titles.get(title) or {}
-                examples.extend(
-                    [
-                        e for e in (bucket.get("examples") or [])
-                        if _normalize_term(e.get("alias") or "") == norm_term
-                    ]
-                )
+                matched_examples = [
+                    e for e in (bucket.get("examples") or [])
+                    if _normalize_term(e.get("alias") or "") == norm_term
+                ]
+                examples.extend(matched_examples)
+                for example in matched_examples:
+                    src_role = str(example.get("source_role") or "").strip()
+                    if src_role:
+                        sources.add(src_role)
+                    sources.update(
+                        str(x).strip()
+                        for x in (example.get("source_roles") or [])
+                        if str(x).strip()
+                    )
 
             key, family_bucket = self._ensure_family_alias_bucket(display_term or norm_term)
             family_bucket["titles"] = sorted({*list(family_bucket.get("titles") or []), *title_names})
@@ -800,6 +1053,13 @@ class SlangDBManager:
 
         for norm_term, refs in alias_map.items():
             title_names = sorted({title for title, _, _ in refs})
+            confirmed_titles = {
+                title
+                for title, entry, source_key in refs
+                if source_key == "slang" or str((entry or {}).get("bucket") or "").strip().lower() == "slang"
+            }
+            if len(confirmed_titles) == 1:
+                continue
             if len(title_names) <= 1:
                 continue
             display_term = ""
@@ -848,6 +1108,24 @@ class SlangDBManager:
 
     def _prune_unreviewable_entries(self) -> None:
         titles = self._db.setdefault("titles", {})
+        strong_titles_by_post: Dict[str, set[str]] = {}
+        for title, bucket in list(titles.items()):
+            if not isinstance(bucket, dict):
+                continue
+            for example in (bucket.get("examples") or []):
+                if not isinstance(example, dict):
+                    continue
+                post_id = str(example.get("post_id") or "").strip()
+                if not post_id:
+                    continue
+                if not _has_strong_work_roles(
+                    example.get("source_roles"),
+                    example.get("source_role"),
+                    example.get("bucket"),
+                ):
+                    continue
+                strong_titles_by_post.setdefault(post_id, set()).add(title)
+
         for title, bucket in list(titles.items()):
             if not isinstance(bucket, dict):
                 continue
@@ -855,12 +1133,20 @@ class SlangDBManager:
             if not isinstance(examples, list):
                 examples = []
             pending_entries = list(bucket.get("pending") or [])
+            slang_norms = {
+                _normalize_term(item.get("normalized_term") or item.get("term"))
+                for item in (bucket.get("slang") or [])
+                if _normalize_term(item.get("normalized_term") or item.get("term"))
+            }
             kept_pending: List[Dict[str, Any]] = []
             removed_norms: set[str] = set()
 
             for entry in pending_entries:
                 norm = _normalize_term(entry.get("normalized_term") or entry.get("term"))
                 if not norm:
+                    continue
+                if norm in slang_norms:
+                    removed_norms.add(norm)
                     continue
                 matching_examples = [
                     e for e in examples
@@ -869,6 +1155,16 @@ class SlangDBManager:
                 if matching_examples and not any(_example_is_reviewable(e) for e in matching_examples):
                     removed_norms.add(norm)
                     continue
+                if matching_examples and all(
+                    _is_title_candidate_only_roles(e.get("source_roles"), e.get("source_role"))
+                    for e in matching_examples
+                ):
+                    if any(
+                        any(other_title != title for other_title in strong_titles_by_post.get(str(e.get("post_id") or "").strip(), set()))
+                        for e in matching_examples
+                    ):
+                        removed_norms.add(norm)
+                        continue
                 kept_pending.append(entry)
 
             if removed_norms:
@@ -914,6 +1210,9 @@ class SlangDBManager:
         slang_insight = identity.get("slang_insight") or {}
         if not isinstance(slang_insight, dict):
             slang_insight = {}
+        slang_detected_term = str(slang_insight.get("detected_term") or "").strip()
+        slang_canonical_alias = str(slang_insight.get("canonical_work_alias") or "").strip()
+        slang_store_in_db = slang_insight.get("store_in_slang_db")
         is_reviewable_context = _is_reviewable_context(
             topicality=topicality,
             subtype=subtype,
@@ -983,6 +1282,21 @@ class SlangDBManager:
             }
             and discussion_type not in {"noise", "author_talk", "meta", "undecodable_reference"}
         )
+        entity_tail_terms: List[str] = []
+        for mention in (identity.get("entity_mentions") or []):
+            if not isinstance(mention, dict):
+                continue
+            mention_type = str(mention.get("entity_type") or "").strip().lower()
+            mention_role = str(mention.get("role") or "").strip().lower()
+            if mention_type not in {"character", "author"} and mention_role not in {"character_focus", "author_focus"}:
+                continue
+            mention_text = str(mention.get("text") or "").strip()
+            if mention_text:
+                entity_tail_terms.append(mention_text)
+        entity_tail_terms = list(dict.fromkeys(entity_tail_terms))
+        blocked_surface_norms: set[str] = set()
+        if slang_store_in_db is False and slang_detected_term:
+            blocked_surface_norms.add(_normalize_term(slang_detected_term))
 
         refs: Dict[Tuple[str, str], Dict[str, Any]] = {}
 
@@ -993,6 +1307,7 @@ class SlangDBManager:
             *,
             confidence_hint: Any = None,
             source_tier: Any = None,
+            decoded_term_hint: Any = None,
         ) -> None:
             title_raw = str(title or "").strip()
             term_raw = str(term or "").strip()
@@ -1003,6 +1318,20 @@ class SlangDBManager:
                 or _is_generic_title_label(title_raw)
                 or _looks_sentence_like_term(term_raw)
                 or _is_exact_title_alias(term_raw, title_raw)
+            ):
+                return
+            if _normalize_term(term_raw) in blocked_surface_norms:
+                return
+            if source_role == "slang_insight" and _looks_mixed_entity_slang(
+                term_raw,
+                title_raw,
+                decoded_term_hint,
+            ):
+                return
+            if source_role in {"slang_insight", "primary_work", "title_candidate"} and _looks_title_plus_entity_alias(
+                term_raw,
+                title_raw,
+                entity_tail_terms,
             ):
                 return
             confidence_raw = str(confidence_hint or "").strip()
@@ -1071,13 +1400,15 @@ class SlangDBManager:
                 slang_fallback_source_tier = str((obj or {}).get("source_tier") or "").strip()
                 break
 
-        if official_title or slang_fallback_title:
+        slang_term_for_storage = slang_canonical_alias or slang_detected_term
+        if (official_title or slang_fallback_title) and slang_term_for_storage and slang_store_in_db is not False:
             _append_ref(
                 "slang_insight",
                 official_title or slang_fallback_title or slang_insight.get("decoded_term"),
-                slang_insight.get("detected_term"),
+                slang_term_for_storage,
                 confidence_hint=confidence or slang_insight.get("confidence"),
                 source_tier="verified" if official_title else (slang_fallback_source_tier or "pending"),
+                decoded_term_hint=slang_insight.get("decoded_term"),
             )
 
         for obj in _iter_title_objs(identity.get("primary_work")):
@@ -1129,21 +1460,58 @@ class SlangDBManager:
                 source_tier=obj.get("source_tier"),
             )
 
+        preferred_title_norms: set[str] = set()
+        if official_title:
+            official_title_norm = _normalize_title(official_title)
+            if official_title_norm:
+                preferred_title_norms.add(official_title_norm)
+        preferred_title_norms.update(
+            _normalize_title(str(ref.get("title") or "").strip())
+            for ref in refs.values()
+            if _normalized_source_roles(ref.get("sources")) & {"primary_work", "slang_insight"}
+        )
+        preferred_title_norms = {norm for norm in preferred_title_norms if norm}
+        if preferred_title_norms:
+            refs = {
+                key: ref
+                for key, ref in refs.items()
+                if not (
+                    _is_title_candidate_only_roles(ref.get("sources"))
+                    and _normalize_title(str(ref.get("title") or "").strip()) not in preferred_title_norms
+                )
+            }
+
         observations: List[Dict[str, Any]] = []
         for ref in refs.values():
             title = str(ref.get("title") or "").strip()
             term = str(ref.get("term") or "").strip()
             source_roles = sorted(str(x) for x in (ref.get("sources") or set()) if str(x).strip())
+            pending_kind = None
+            pending_reason = None
+            classification_confidence = None
             if ref.get("family_alias"):
                 bucket = "family_alias"
             else:
                 bucket = "slang" if (is_confirmable and _normalize_title(title) == _normalize_title(official_title)) else "pending"
+                if bucket == "slang" and _should_hold_direct_slang_promotion(source_roles):
+                    bucket = "pending"
+                if bucket == "pending":
+                    pending_kind, pending_reason, classification_confidence = _classify_pending_kind(
+                        title=title,
+                        source_roles=source_roles,
+                        discussion_type=discussion_type,
+                        subtype=subtype,
+                        work_resolution=work_resolution,
+                    )
             observations.append(
                 {
                     "official_title": title,
                     "term": term,
                     "bucket": bucket,
                     "sources": source_roles,
+                    "pending_kind": pending_kind,
+                    "pending_reason": pending_reason,
+                    "classification_confidence": classification_confidence,
                     "seen_at": seen_at,
                     "example": {
                         **example_base,
@@ -1152,6 +1520,9 @@ class SlangDBManager:
                         "bucket": bucket,
                         "source_role": source_roles[0] if source_roles else None,
                         "source_roles": source_roles,
+                        "pending_kind": pending_kind,
+                        "pending_reason": pending_reason,
+                        "classification_confidence": classification_confidence,
                     },
                 }
             )

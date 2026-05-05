@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 import time
 from typing import Any, Dict, List, Optional, Tuple
@@ -22,7 +23,7 @@ from .utils import (
     build_search_aggregation_summary,
     _ts,
 )
-from ..rules import OFFICIAL_PLATFORMS, GENRE_ARCHETYPE_TERMS, is_novel_domain
+from ..rules import OFFICIAL_PLATFORMS, GENRE_ARCHETYPE_TERMS, GENRE_KEYWORDS, is_novel_domain
 
 
 class VerifierExpert:
@@ -40,6 +41,124 @@ class VerifierExpert:
         self.llm = llm_client
         self.name = "Verifier"
         self.emoji = "🔍"
+
+    _GENERIC_RELATION_EXTRA_TERMS = (
+        "무림맹", "맹주", "마교", "혈교", "정파", "사파", "혈파", "마파",
+        "천마", "천마신교", "신교", "문파", "종파", "교단", "교주",
+        "장문인", "문주", "소교주", "장로", "사부", "사형", "사제",
+        "제자", "막내", "막내제자", "협객", "고수", "절정고수",
+        "화경", "현경", "검법", "도법", "내공", "무공", "강호",
+        "기사단", "마탑", "마법사", "드래곤", "엘프", "아카데미",
+        "히로인", "주인공", "빌런", "헌터", "던전", "탑", "시스템",
+    )
+
+    @classmethod
+    def _generic_relation_term_norms(cls) -> set[str]:
+        terms: set[str] = set()
+        for values in (GENRE_KEYWORDS or {}).values():
+            for token in values:
+                if isinstance(token, str) and token.strip():
+                    terms.add(cls._norm_text(token))
+        for token in GENRE_ARCHETYPE_TERMS:
+            if isinstance(token, str) and token.strip():
+                terms.add(cls._norm_text(token))
+        for token in cls._GENERIC_RELATION_EXTRA_TERMS:
+            if token:
+                terms.add(cls._norm_text(token))
+        return {term for term in terms if len(term) >= 2}
+
+    @classmethod
+    def _is_generic_relation_surface(cls, value: Any) -> bool:
+        norm = cls._norm_text(value)
+        if not norm or len(norm) < 2:
+            return False
+        generic_terms = cls._generic_relation_term_norms()
+        if norm in generic_terms:
+            return True
+        remaining = norm
+        for term in sorted(generic_terms, key=len, reverse=True):
+            if len(term) < 2:
+                continue
+            remaining = remaining.replace(term, "")
+            if not remaining:
+                return True
+        remaining = re.sub(r"(들|에|에서|으로|로|은|는|이|가|을|를|도|만|랑|와|과|네|임|냐|다)$", "", remaining)
+        return not remaining
+
+    @classmethod
+    def _title_non_generic_terms(cls, title: Any) -> List[str]:
+        terms: List[str] = []
+        seen: set[str] = set()
+        for token in re.findall(r"[가-힣A-Za-z0-9]{2,}", str(title or "")):
+            norm = cls._norm_text(token)
+            if not norm or norm in seen:
+                continue
+            seen.add(norm)
+            if not cls._is_generic_relation_surface(token):
+                terms.append(norm)
+        return terms
+
+    @classmethod
+    def _post_discussion_text(cls, post: Dict[str, Any], comments: Optional[List[str]] = None) -> str:
+        chunks: List[str] = [str((post or {}).get("title") or "")]
+        for block in ((post or {}).get("content_blocks") or (post or {}).get("content") or []):
+            if isinstance(block, dict):
+                chunks.append(str(block.get("text") or block.get("content") or ""))
+            elif isinstance(block, str):
+                chunks.append(block)
+        chunks.extend(str(c or "") for c in (comments or []) if str(c or "").strip())
+        return " ".join(chunk for chunk in chunks if str(chunk or "").strip())
+
+    def _is_generic_relation_only_mapping(
+        self,
+        candidate_title: Any,
+        post: Dict[str, Any],
+        comments: Optional[List[str]] = None,
+        alias_terms: Optional[List[str]] = None,
+    ) -> bool:
+        """
+        Detect title promotion driven only by reusable genre/faction vocabulary.
+
+        Example: post mentions "무림맹/마교/혈교" and search finds a real title
+        "무림맹주 막내제자".  The shared terms prove the genre, not that work.
+        """
+        title = str(candidate_title or "").strip()
+        if not title:
+            return False
+        post_text = self._post_discussion_text(post or {}, comments or [])
+        post_norm = self._norm_text(post_text)
+        title_norm = self._norm_text(title)
+        if not post_norm or not title_norm:
+            return False
+        if title_norm in post_norm:
+            return False
+
+        generic_terms = self._generic_relation_term_norms()
+        generic_hits = [
+            term for term in generic_terms
+            if term and term in title_norm and term in post_norm
+        ]
+        if not generic_hits:
+            return False
+
+        title_specific_terms = self._title_non_generic_terms(title)
+        if any(term and term in post_norm for term in title_specific_terms):
+            return False
+
+        aliases = [
+            str(alias or "").strip()
+            for alias in (alias_terms or [])
+            if str(alias or "").strip()
+        ]
+        non_generic_alias_hits = [
+            alias for alias in aliases
+            if self._norm_text(alias) in post_norm
+            and not self._is_generic_relation_surface(alias)
+        ]
+        if non_generic_alias_hits:
+            return False
+
+        return True
 
     @staticmethod
     def _env_int(name: str, default: int, *, minimum: int, maximum: Optional[int] = None) -> int:
@@ -147,6 +266,8 @@ class VerifierExpert:
             return False
 
         # 검색/목록 URL 우선 차단
+        if any(tok in path for tok in ("/arena/", "/community/", "/board/", "/forum/", "/review/", "/reviews/")):
+            return False
         if any(tok in path for tok in ("/search", "/author", "/writers", "/ranking", "/best", "/genre", "/tag", "/list")):
             return False
         if any(tok in query for tok in ("search=", "q=", "query=", "keyword=", "writer=", "author=", "tag=", "genre=", "page=")):
@@ -170,6 +291,35 @@ class VerifierExpert:
     def _norm_text(value: Any) -> str:
         import re
         return re.sub(r"[^\w가-힣]", "", str(value or "")).lower()
+
+    @classmethod
+    def _confidence_to_unit(cls, value: Any, *, default: float = 0.0) -> float:
+        if isinstance(value, (int, float)):
+            try:
+                raw = float(value)
+            except Exception:
+                return default
+            if raw > 1.0:
+                raw = raw / 100.0 if raw <= 100.0 else 1.0
+            return max(0.0, min(1.0, raw))
+        text = str(value or "").strip().lower()
+        if not text:
+            return default
+        mapping = {
+            "max": 1.0,
+            "very_high": 0.95,
+            "very high": 0.95,
+            "high": 0.9,
+            "medium": 0.65,
+            "low": 0.35,
+            "none": 0.0,
+        }
+        if text in mapping:
+            return mapping[text]
+        try:
+            return max(0.0, min(1.0, float(text)))
+        except Exception:
+            return default
 
     @staticmethod
     def _contains_as_token(raw_text: str, token: str) -> bool:
@@ -284,6 +434,95 @@ class VerifierExpert:
         if surface_norm and surface_norm in raw_norm:
             return True
         return cls._contains_as_token(raw_text, surface)
+
+    @classmethod
+    def _title_surface_matches(cls, observed: Any, target: Any) -> bool:
+        observed_norm = cls._norm_text(observed)
+        target_norm = cls._norm_text(target)
+        if not observed_norm or not target_norm:
+            return False
+        return bool(
+            observed_norm == target_norm
+            or observed_norm in target_norm
+            or target_norm in observed_norm
+        )
+
+    def _has_direct_title_tuple_support(
+        self,
+        ctx: Any,
+        title: str,
+    ) -> bool:
+        if not ctx or not isinstance(title, str) or not title.strip():
+            return False
+
+        post_data = getattr(ctx, "post_data", None) or {}
+        image_enrichment = [
+            item for item in (post_data.get("image_enrichment") or [])
+            if isinstance(item, dict)
+        ]
+        for item in image_enrichment:
+            explicit_title = str(item.get("explicit_work_title") or "").strip()
+            title_role = str(item.get("title_role") or "").strip()
+            if title_role not in {"", "work_title"}:
+                continue
+            if not self._title_surface_matches(explicit_title, title):
+                continue
+
+            tuple_hits = 0
+            if str(item.get("explicit_author_name") or "").strip():
+                tuple_hits += 1
+            item_blob = " ".join(
+                str(item.get(key) or "")
+                for key in ("ocr_text", "visual_summary", "screen_type", "surface_type")
+            )
+            if re.search(
+                r"(?:작가명|작가|PLUS\s*연재|자유\s*연재|독점|조회\s*[0-9,]+|추천\s*[0-9,]+|\d+\s*(?:회차|화))",
+                item_blob,
+                flags=re.IGNORECASE,
+            ):
+                tuple_hits += 1
+            if str(item.get("screen_type") or "").strip() == "work_surface":
+                tuple_hits += 1
+            if tuple_hits >= 2:
+                return True
+
+        text_chunks: List[str] = [str(post_data.get("title") or "")]
+        for block in (post_data.get("content_blocks") or []):
+            if isinstance(block, dict):
+                text_chunks.append(str(block.get("text") or ""))
+            elif isinstance(block, str):
+                text_chunks.append(block)
+        joined = " ".join(chunk for chunk in text_chunks if isinstance(chunk, str) and chunk.strip())
+        if not joined or not self._surface_in_text(joined, title):
+            return False
+
+        tuple_hits = 0
+        if re.search(r"(?:작가명|작가)\s*[가-힣A-Za-z0-9]{2,20}", joined):
+            tuple_hits += 1
+        if re.search(
+            r"(?:PLUS\s*연재|자유\s*연재|독점|조회\s*[0-9,]+|추천\s*[0-9,]+|\d+\s*(?:회차|화)|노벨피아|문피아|시리즈|카카오페이지)",
+            joined,
+            flags=re.IGNORECASE,
+        ):
+            tuple_hits += 1
+        if tuple_hits >= 2:
+            return True
+
+        # 댓글에 직접 작품 상세 URL이 있고, 게시글 제목이 그 작품명을 그대로 가리키는 경우는
+        # OCR/VLM tuple support와 동급의 직접 증거로 본다.
+        comments = list(getattr(ctx, "comments", None) or [])
+        detail_urls: List[str] = []
+        for comment in comments:
+            if not isinstance(comment, str) or not comment.strip():
+                continue
+            for match in re.findall(r"https?://[^\s)>\"]+", comment):
+                if self._is_novel_detail_url(match):
+                    detail_urls.append(match.rstrip("/"))
+
+        if detail_urls and self._surface_in_text(str(post_data.get("title") or ""), title):
+            return True
+
+        return tuple_hits >= 2
 
     def _detect_decoder_alias_mention(
         self,
@@ -1060,8 +1299,30 @@ class VerifierExpert:
             if novel_id and ctx:
                 llm_title = novel_id.get("official_novel_title") or novel_id.get("official_title")
                 if llm_title:
-                    all_search = (ctx.search_results or []) + (verification_search or [])
-                    corrected = self._correct_title_from_evidence(llm_title, decoder_result, all_search)
+                    _title_norm_v = re.sub(r"[^\w가-힣]", "", str(llm_title or "")).lower()
+                    _post_title_norm_v = re.sub(r"[^\w가-힣]", "", str(post.get("title", "") or "")).lower()
+                    _novel_url_v = str(novel_id.get("heretic_url") or "").strip()
+                    _relation_v = verification.get("relation_judgment") or {}
+                    _relation_promotion_v = str(_relation_v.get("promotion_decision") or "").strip().lower()
+                    if _relation_promotion_v in {"promote", "accept", "keep"}:
+                        _relation_promotion_v = "allow"
+                    _skip_title_correction = bool(
+                        _title_norm_v
+                        and _title_norm_v in _post_title_norm_v
+                        and self._is_novel_detail_url(_novel_url_v)
+                        and _relation_promotion_v in {"", "allow", "hold"}
+                    )
+                    if _skip_title_correction:
+                        print(
+                            f"[{_ts()}][{self.emoji}] 🛡️ 제목 교정 스킵: "
+                            f"post title exact support + official detail url "
+                            f"(title='{llm_title}', url='{_novel_url_v}')",
+                            file=sys.stderr,
+                        )
+                        corrected = llm_title
+                    else:
+                        all_search = (ctx.search_results or []) + (verification_search or [])
+                        corrected = self._correct_title_from_evidence(llm_title, decoder_result, all_search)
                     if corrected != llm_title:
                         print(f"[{_ts()}][{self.emoji}] ⚠️ 제목 교정: LLM='{llm_title}' → '{corrected}'", file=sys.stderr)
                         if novel_id.get("official_novel_title"):
@@ -1106,9 +1367,20 @@ class VerifierExpert:
                         blocked_archetypes.add(original)
                 
                 if blocked_archetypes:
+                    post_title_norm = re.sub(r"[^0-9A-Za-z가-힣]", "", str(post.get("title", "") or "").lower())
+                    verified_title_norm = re.sub(r"[^0-9A-Za-z가-힣]", "", str(verified_title or "").lower())
+                    heretic_url_now = str(novel_id.get("heretic_url") or "").strip() if isinstance(novel_id, dict) else ""
+                    strong_exact_title_support = bool(
+                        verified_title_norm
+                        and post_title_norm
+                        and verified_title_norm in post_title_norm
+                        and self._is_novel_detail_url(heretic_url_now)
+                    )
                     # Verifier 제목에 차단된 아키타입 용어가 포함되어 있는지 확인
                     title_norm = verified_title.replace(" ", "")
                     for arch_term in blocked_archetypes:
+                        if strong_exact_title_support:
+                            break
                         if arch_term.replace(" ", "") in title_norm:
                             print(
                                 f"[{_ts()}][{self.emoji}] 🛡️ 아키타입 재도입 차단: "
@@ -1451,6 +1723,7 @@ class VerifierExpert:
                     novel_id["confidence"] = "Low"
                     heretic_url_now = str(novel_id.get("heretic_url") or "").strip()
                     heretic_in_search = False
+                    direct_title_tuple_support = self._has_direct_title_tuple_support(ctx, verified_title_d)
                     if heretic_url_now:
                         hu_norm = heretic_url_now.rstrip("/")
                         for sr in all_search:
@@ -1465,6 +1738,8 @@ class VerifierExpert:
                         or (not self._is_novel_detail_url(heretic_url_now))
                         or (not heretic_in_search)
                     )
+                    if direct_title_tuple_support:
+                        should_nullify = False
                     if should_nullify:
                         novel_id["official_novel_title"] = None
                         if "official_title" in novel_id:
@@ -1472,7 +1747,8 @@ class VerifierExpert:
                     print(
                         f"[{_ts()}][{self.emoji}] 🛡️ 검색에 '{verified_title_d}' 부재 → "
                         f"환각 의심, confidence: {old_conf} → Low"
-                        + (", title=null" if should_nullify else ""),
+                        + (", title=null" if should_nullify else "")
+                        + (" (direct OCR/VLM title tuple support)" if direct_title_tuple_support else ""),
                         file=sys.stderr,
                     )
                     counter_args = verification.get("counter_arguments")
@@ -1485,7 +1761,7 @@ class VerifierExpert:
                         "action": "nullify_title" if should_nullify else "downgrade_confidence",
                         "explanation": (
                             f"Verifier 제목 '{verified_title_d}'이(가) 검색 근거에 직접 등장하지 않아 "
-                            "독자 추정/환각 가능성이 높음."
+                            + ("다만 direct OCR/VLM title tuple support가 있어 제목 nullify는 보류함." if direct_title_tuple_support else "독자 추정/환각 가능성이 높음.")
                         ),
                     })
 
@@ -2010,16 +2286,16 @@ class VerifierExpert:
                     st["confidence"] = 0.7
                 else:
                     # Low confidence: 기존 값에서 소폭 하향 (Verifier가 확신 없음)
-                    st["confidence"] = max(0.3, st.get("confidence", 0.5) - 0.1)
+                    st["confidence"] = max(0.3, self._confidence_to_unit(st.get("confidence", 0.5), default=0.5) - 0.1)
                 st["verified_by"] = "verifier"
                 updated.append(st)
             elif is_relevant and confidence in ("high", "medium"):
                 # 다른 작품이 확인됨: 이 후보는 유지하되 confidence 낮춤
-                st["confidence"] = max(0.2, st.get("confidence", 0.5) - 0.2)
+                st["confidence"] = max(0.2, self._confidence_to_unit(st.get("confidence", 0.5), default=0.5) - 0.2)
                 updated.append(st)
             else:
                 # 관련 없음으로 판정: confidence 낮춤 (제거하지는 않음)
-                st["confidence"] = max(0.1, st.get("confidence", 0.5) - 0.3)
+                st["confidence"] = max(0.1, self._confidence_to_unit(st.get("confidence", 0.5), default=0.5) - 0.3)
                 if st["confidence"] >= 0.2:  # 너무 낮으면 제거
                     updated.append(st)
         
@@ -2158,7 +2434,7 @@ class VerifierExpert:
             st_norm = _norm(st_title)
             # 정규화 매칭 또는 부분 포함 매칭
             if confirmed_norm in st_norm or st_norm in confirmed_norm:
-                old_conf = st.get("confidence", 0.5)
+                old_conf = self._confidence_to_unit(st.get("confidence", 0.5), default=0.5)
                 st["confidence"] = max(old_conf, 0.85)
                 st["comment_confirmed"] = True
                 boosted = True
@@ -2585,6 +2861,9 @@ class VerifierExpert:
    - 단, 게시글 표면 alias가 있고 official_exact_title_count>=1 이며 support_channel_count>=2 로 여러 검색 경로가 같은 공식 작품에 수렴하면 specific_work는 검토할 수 있다. 이 경우 본문 직접 앵커가 약하면 promotion_decision은 allow보다 hold를 우선 검토하라.
    - 게시글 본문 직접 앵커가 없고 검색 근거가 community/listing 중심이면 discussion_target은 specific_work보다 mixed_or_uncertain / community_banter / genre_general 쪽을 우선 검토하라.
    - work_specific_nickname은 실제 별칭 근거가 있을 때만 쓰고, 장르 복합어/분위기어/서비스 카테고리어에는 쓰지 마라.
+   - 무림맹/마교/혈교/정파/사파/천마/제자/맹주 같은 무협 세력·역할어, 또는 헌터/던전/마탑/아카데미 같은 장르어만 후보 제목과 겹치면 explicit_alias가 아니다.
+   - 후보 제목의 비일반 고유 요소(캐릭터명, 독자적 제목 조각, 작가명, 회차/플롯)가 게시글/댓글에 없으면 genre_or_trope_label 또는 thematic_overlap_only로 보라.
+   - review/arena/community page 제목은 작품 존재의 보조 단서일 수는 있어도, 그 제목 자체를 official_title 후보로 승격하는 직접 근거가 아니다.
 3. 다음은 절대 allow가 아니다.
    - 장르/트로프/분위기 단어만 겹침
    - 플랫폼 카테고리/장르 목록/서비스 페이지
@@ -2721,6 +3000,20 @@ OUTPUT JSON:
         body_and_comments_norm = body_and_comments.lower().replace(" ", "")
         
         if not body_and_comments_norm:
+            return False
+
+        candidate_alias_terms: List[str] = []
+        for term in (decoder_result or {}).get("decoded_terms", []):
+            if not isinstance(term, dict):
+                continue
+            best = term.get("best_match") or {}
+            best_title = best.get("title") or best.get("official_novel_title")
+            if self._norm_text(best_title) != self._norm_text(title):
+                continue
+            original = str(term.get("original") or "").strip()
+            if original:
+                candidate_alias_terms.append(original)
+        if self._is_generic_relation_only_mapping(title, post, comments, candidate_alias_terms):
             return False
         
         # 1) 정식 제목이 본문+댓글에 포함 (제목 제외)
@@ -3201,7 +3494,13 @@ OUTPUT JSON:
         for term in (decoder_result or {}).get("decoded_terms", []):
             if not isinstance(term, dict):
                 continue
-            if not self._decoder_term_matches_title(term, title):
+            best = term.get("best_match") or {}
+            best_title = best.get("title") or best.get("official_novel_title")
+            if self._norm_text(best_title) != self._norm_text(title):
+                continue
+            grounding = term.get("grounding") or {}
+            anchor_type = str(grounding.get("anchor_type") or "").strip().lower()
+            if anchor_type in {"character_mention", "plot_mention"}:
                 continue
             _push(term.get("original"))
 
@@ -3398,6 +3697,7 @@ OUTPUT JSON:
         alias_terms: List[str],
         search_results: List[Dict[str, Any]],
         *,
+        ctx: Optional[Any] = None,
         post: Optional[Dict[str, Any]] = None,
         comments: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
@@ -3428,6 +3728,12 @@ OUTPUT JSON:
             ]
             + [str(c) for c in (comments or []) if isinstance(c, str)]
         ).strip()
+        bridge_profile = {}
+        if ctx is not None and hasattr(ctx, "get_candidate_bridge_profile"):
+            try:
+                bridge_profile = ctx.get_candidate_bridge_profile(title) or {}
+            except Exception:
+                bridge_profile = {}
 
         official_exact_urls: set[str] = set()
         official_alias_urls: set[str] = set()
@@ -3435,12 +3741,14 @@ OUTPUT JSON:
         support_purposes: set[str] = set()
         explicit_alias_bridge_count = 0
         best_official_url = ""
+        title_words = [tok for tok in re.findall(r"[가-힣A-Za-z0-9]+", title) if len(tok) >= 2]
 
         for sr in search_results or []:
             if not isinstance(sr, dict):
                 continue
             sr_title = str(sr.get("title") or "")
             sr_content = str(sr.get("content") or sr.get("snippet") or "")
+            sr_query = str(sr.get("_query") or "")
             sr_url = str(sr.get("url") or "")
             sr_blob = f"{sr_title} {sr_content}".strip()
             sr_blob_norm = self._norm_text(sr_blob)
@@ -3463,6 +3771,7 @@ OUTPUT JSON:
                     title_norm in self._norm_text(sr_title)
                     or title_norm in sr_blob_norm
                     or self._contains_as_token(sr_title, title)
+                    or sum(1 for word in title_words if word in sr_title) >= min(2, len(title_words))
                 )
             )
             if self._is_novel_detail_url(sr_url):
@@ -3474,6 +3783,13 @@ OUTPUT JSON:
                         best_official_url = sr_url
                 if alias_hits:
                     official_alias_urls.add(sr_url)
+                    if purpose_key:
+                        support_purposes.add(purpose_key)
+                    if not best_official_url and (
+                        self._norm_text(sr_query) in alias_norms
+                        or title_hit
+                    ):
+                        best_official_url = sr_url
             else:
                 page_type = str(sr.get("page_type") or "").lower()
                 if page_type == "community_post" and alias_hits:
@@ -3484,6 +3800,13 @@ OUTPUT JSON:
             if str(alias).strip() and self._surface_in_text(post_text, str(alias))
         )
         support_channel_count = len(support_purposes)
+        related_anchor_hit_count = int(bridge_profile.get("related_anchor_hit_count") or 0)
+        author_context_match_count = int(1 if bridge_profile.get("author_context_bridge") else 0)
+        character_context_match_count = max(
+            0,
+            related_anchor_hit_count - int(bridge_profile.get("author_marker_hit_count") or 0),
+        )
+        closed_bridge = bool(bridge_profile.get("closed_bridge"))
         converged_official_signal = bool(
             alias_in_post_count >= 1
             and len(official_exact_urls) >= 1
@@ -3504,6 +3827,13 @@ OUTPUT JSON:
             "alias_in_post_count": alias_in_post_count,
             "best_official_url": best_official_url or None,
             "converged_official_signal": converged_official_signal,
+            "bridge_quality": str(bridge_profile.get("bridge_quality") or "weak"),
+            "closed_bridge": closed_bridge,
+            "related_anchor_hit_count": related_anchor_hit_count,
+            "author_context_match_count": author_context_match_count,
+            "character_context_match_count": character_context_match_count,
+            "matched_related_anchor_terms": list(bridge_profile.get("matched_related_anchor_terms") or [])[:4],
+            "author_context_anchor_terms": list(bridge_profile.get("author_context_anchor_terms") or [])[:4],
         }
 
     def _select_relation_judge_search_results(
@@ -3756,6 +4086,7 @@ OUTPUT JSON:
             title,
             alias_terms,
             all_search,
+            ctx=ctx,
             post=post,
             comments=comments,
         )
@@ -3768,6 +4099,12 @@ OUTPUT JSON:
             ]
         ).strip()
         post_direct_grounding = bool(self._surface_in_text(post_text, title))
+        generic_relation_only = self._is_generic_relation_only_mapping(
+            title,
+            post or {},
+            comments or [],
+            alias_terms,
+        )
 
         prompt = self._RELATION_JUDGE_PROMPT.format(
             candidate_title=title,
@@ -3796,6 +4133,7 @@ OUTPUT JSON:
                     **evidence_summary,
                     **search_support_summary,
                     "post_direct_grounding": post_direct_grounding,
+                    "generic_relation_only": generic_relation_only,
                 },
                 ensure_ascii=False,
                 indent=2,
@@ -3828,6 +4166,10 @@ OUTPUT JSON:
             confidence = str(parsed.get("confidence") or "low").strip().lower()
             if confidence not in {"high", "medium", "low"}:
                 confidence = "low"
+            if generic_relation_only:
+                relation_type = "genre_or_trope_label"
+                discussion_target = "genre_general" if discussion_target != "platform_meta" else discussion_target
+                promotion_decision = "reject"
             return {
                 "relation_type": relation_type or "unknown",
                 "discussion_target": discussion_target or "mixed_or_uncertain",
@@ -3844,6 +4186,7 @@ OUTPUT JSON:
                 "evidence_summary": evidence_summary,
                 "search_support_summary": search_support_summary,
                 "post_direct_grounding": post_direct_grounding,
+                "generic_relation_only": generic_relation_only,
             }
         except Exception as exc:
             print(
@@ -3877,7 +4220,12 @@ OUTPUT JSON:
         support_channel_count = int(search_support_summary.get("support_channel_count") or 0)
         alias_in_post_count = int(search_support_summary.get("alias_in_post_count") or 0)
         converged_official_signal = bool(search_support_summary.get("converged_official_signal"))
+        related_anchor_hit_count = int(search_support_summary.get("related_anchor_hit_count") or 0)
+        author_context_match_count = int(search_support_summary.get("author_context_match_count") or 0)
+        closed_bridge = bool(search_support_summary.get("closed_bridge"))
+        best_official_url = str(search_support_summary.get("best_official_url") or "").strip()
         post_direct_grounding = bool(relation.get("post_direct_grounding"))
+        generic_relation_only = bool(relation.get("generic_relation_only"))
         grounding = verification.get("grounding_check") if isinstance(verification.get("grounding_check"), dict) else {}
         anchor_found = str(grounding.get("anchor_found") or "").strip().lower()
         decoder_grounded = bool(grounding.get("decoder_grounded", True))
@@ -3952,6 +4300,16 @@ OUTPUT JSON:
             )
         )
 
+        if generic_relation_only:
+            relation_type = "genre_or_trope_label"
+            if target == "specific_work":
+                target = "genre_general"
+            promotion = "reject"
+            reason = (
+                reason
+                or "후보 제목과 게시글의 연결이 무림/세력/역할 같은 일반 장르어 겹침뿐이라 특정 작품 승격을 차단함"
+            )
+
         if (
             promotion in {"hold", "reject"}
             and relation_type == "thematic_overlap_only"
@@ -3995,6 +4353,7 @@ OUTPUT JSON:
             "evidence_summary": evidence_summary,
             "search_support_summary": search_support_summary,
             "post_direct_grounding": post_direct_grounding,
+            "generic_relation_only": generic_relation_only,
         }
 
         counter_args = verification.get("counter_arguments")
@@ -4006,6 +4365,53 @@ OUTPUT JSON:
             verification["is_relevant"] = True
             verification["is_novel_discussion"] = True
             verification["rejection_reason"] = None
+            return
+
+        strong_character_or_plot_anchor = anchor_found in {
+            "character_mention",
+            "character_title_link",
+            "plot_mention",
+            "decoder_grounded_official",
+            "llm_cross_check",
+            "title_reaction_link",
+        }
+        official_platform_with_character_anchor = bool(
+            current_title
+            and promotion == "hold"
+            and target == "specific_work"
+            and relation_type in {"explicit_alias", "work_specific_nickname"}
+            and explicit_bridge_count <= 0
+            and strong_character_or_plot_anchor
+            and (
+                official_detail_count >= 1
+                or official_exact_title_count >= 1
+                or converged_official_signal
+                or bool(best_official_url)
+            )
+        )
+        if official_platform_with_character_anchor:
+            novel_id["official_novel_title"] = current_title
+            if "official_title" in novel_id:
+                novel_id["official_title"] = current_title
+            if best_official_url and not novel_id.get("heretic_url"):
+                novel_id["heretic_url"] = best_official_url
+            novel_id["confidence"] = novel_id.get("confidence") or "Medium"
+            verification["is_relevant"] = True
+            verification["is_novel_discussion"] = True
+            verification["rejection_reason"] = None
+            if reason:
+                verification["relation_hold_reason"] = reason
+            counter_args.append(
+                {
+                    "issue": f"relation_judge:{relation_type}",
+                    "severity": "minor",
+                    "action": "note_only",
+                    "explanation": (
+                        reason
+                        or "explicit_alias_bridge는 부족하지만 공식 플랫폼 URL과 캐릭터/플롯 앵커가 확인되어 제목 nullify는 생략함"
+                    ),
+                }
+            )
             return
 
         if current_title:
@@ -4047,6 +4453,12 @@ OUTPUT JSON:
                     and support_channel_count >= 2
                 )
                 or alias_grounding_confirmed
+                or (
+                    author_context_match_count >= 1
+                    and related_anchor_hit_count >= 1
+                    and official_exact_title_count >= 1
+                )
+                or closed_bridge
             )
             if keep_specific_work_hold:
                 reason = (
@@ -4142,6 +4554,7 @@ OUTPUT JSON:
                 candidate_title,
                 alias_terms,
                 all_search,
+                ctx=ctx,
                 post=post,
                 comments=comments,
             )
@@ -4656,6 +5069,19 @@ OUTPUT JSON:
 
         candidate_title = candidate.get("title") or ""
         if not candidate_title:
+            return False
+
+        if self._is_generic_relation_only_mapping(
+            candidate_title,
+            post,
+            comments,
+            [str(candidate.get("original") or "").strip()],
+        ):
+            print(
+                f"[{_ts()}][{self.emoji}] 🛡️ FN 복구 차단(generic_relation_only): "
+                f"title='{candidate_title}', original='{candidate.get('original') or ''}'",
+                file=sys.stderr,
+            )
             return False
 
         # ━━━ Phase29-C3: 다중 작품 캐릭터명 confidence 제한 ━━━

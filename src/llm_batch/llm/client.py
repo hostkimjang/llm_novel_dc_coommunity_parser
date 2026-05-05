@@ -3,10 +3,12 @@ from __future__ import annotations
 import base64
 import json
 import os
+import select
 import sys
 import threading
 import time
 import socket
+from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, TypeVar
 
 import httpx
@@ -20,6 +22,325 @@ from .prompt import (
 )
 
 T = TypeVar("T")
+
+
+def _env_flag(name: str, default: str = "0") -> bool:
+    raw = str(os.getenv(name, default) or default).strip().lower()
+    return raw in {"1", "true", "yes", "on"}
+
+
+def _env_int(name: str, default: int) -> int:
+    try:
+        return int(os.getenv(name, str(default)))
+    except Exception:
+        return int(default)
+
+
+def _stdin_is_interactive() -> bool:
+    stdin = getattr(sys, "stdin", None)
+    return bool(stdin and hasattr(stdin, "isatty") and stdin.isatty())
+
+
+def _emit_monitor_event(event_type: str, data: Optional[Dict[str, Any]] = None) -> None:
+    try:
+        from llm_batch.monitor.event_bus import monitor
+
+        monitor.emit(event_type, data or {})
+    except Exception:
+        return
+
+
+class _LLMServerSuspendController:
+    """공유 LLM transport 이상 감시 및 사용자 승인 재개 게이트."""
+
+    def __init__(self) -> None:
+        self._cv = threading.Condition()
+        self._consecutive_failures = 0
+        self._prompt_active = False
+        self._last_error = ""
+        self._noninteractive_notice_emitted = False
+        self._resume_requested = False
+        self._resume_source = ""
+        self._console_line_buffer = ""
+
+    def reset_for_tests(self) -> None:
+        with self._cv:
+            self._consecutive_failures = 0
+            self._prompt_active = False
+            self._last_error = ""
+            self._noninteractive_notice_emitted = False
+            self._resume_requested = False
+            self._resume_source = ""
+            self._console_line_buffer = ""
+            self._cv.notify_all()
+
+    def wait_if_paused(self) -> None:
+        with self._cv:
+            while self._prompt_active:
+                self._cv.wait(timeout=0.2)
+
+    def request_resume(self, source: str = "external") -> bool:
+        with self._cv:
+            if not self._prompt_active:
+                return False
+            self._resume_requested = True
+            self._resume_source = str(source or "external").strip() or "external"
+            self._cv.notify_all()
+            return True
+
+    def record_success(self) -> None:
+        with self._cv:
+            if self._prompt_active:
+                return
+            self._consecutive_failures = 0
+            self._last_error = ""
+            self._noninteractive_notice_emitted = False
+
+    def record_final_failure(self, exc: Exception) -> None:
+        if not self._is_server_anomaly(exc):
+            self.record_success()
+            return
+
+        threshold = max(0, _env_int("LLM_SUSPEND_FAILURE_THRESHOLD", 3))
+        enabled = _env_flag("LLM_SUSPEND_ON_SERVER_ANOMALY", "1")
+        interactive = _stdin_is_interactive()
+
+        should_prompt = False
+        should_warn_noninteractive = False
+        count = 0
+        error_text = f"{type(exc).__name__}: {exc}"
+
+        with self._cv:
+            self._consecutive_failures += 1
+            self._last_error = error_text
+            count = self._consecutive_failures
+            self._resume_requested = False
+            self._resume_source = ""
+            self._console_line_buffer = ""
+
+            if not enabled or threshold <= 0 or count < threshold:
+                return
+
+            if not interactive:
+                if not self._noninteractive_notice_emitted:
+                    self._noninteractive_notice_emitted = True
+                    should_warn_noninteractive = True
+                return
+
+            if self._prompt_active:
+                return
+
+            self._prompt_active = True
+            should_prompt = True
+
+        if should_warn_noninteractive:
+            ts = time.strftime("%H:%M:%S")
+            self._write_notice(
+                f"[{ts}][llm-watchdog] LLM 서버 이상 응답이 {count}회 누적됐지만 "
+                "현재 표준입력이 비대화형이라 일시중지를 건너뜁니다."
+            )
+            return
+
+        if not should_prompt:
+            return
+
+        started_at = datetime.now().isoformat()
+        _emit_monitor_event(
+            "llm_suspend",
+            {
+                "failure_count": count,
+                "threshold": threshold,
+                "last_error": error_text,
+                "started_at": started_at,
+                "message": "HTTP 스트리밍 오류가 관측되었습니다. 관리자님은 LLM 서버측을 확인해주세요.",
+            },
+        )
+        resume_source = "unknown"
+        try:
+            resume_source = self._prompt_until_resume(
+                count=count,
+                threshold=threshold,
+                error_text=error_text,
+            )
+        finally:
+            _emit_monitor_event(
+                "llm_resume",
+                {
+                    "failure_count": count,
+                    "threshold": threshold,
+                    "last_error": error_text,
+                    "started_at": started_at,
+                    "resumed_at": datetime.now().isoformat(),
+                    "resumed_by": resume_source,
+                    "message": self._resume_message_for_source(resume_source),
+                },
+            )
+            with self._cv:
+                self._consecutive_failures = 0
+                self._last_error = ""
+                self._noninteractive_notice_emitted = False
+                self._prompt_active = False
+                self._resume_requested = False
+                self._resume_source = ""
+                self._console_line_buffer = ""
+                self._cv.notify_all()
+
+    @staticmethod
+    def _is_server_anomaly(exc: Exception) -> bool:
+        if isinstance(exc, (httpx.TimeoutException, httpx.ConnectError, ConnectionError, OSError)):
+            return True
+        if isinstance(exc, httpx.HTTPStatusError):
+            try:
+                status_code = int(exc.response.status_code)
+            except Exception:
+                status_code = 0
+            if status_code == 429 or status_code >= 500:
+                return True
+            if status_code in {404, 405}:
+                # vLLM/llama 서버가 내려갔거나 프록시가 잘못 라우팅될 때
+                # OpenAI 호환 chat/completions 경로가 404/405로 보이는 경우가 있다.
+                try:
+                    request_path = str(exc.request.url.path or "")
+                except Exception:
+                    request_path = ""
+                if request_path.endswith("/chat/completions"):
+                    return True
+            return False
+        if isinstance(exc, httpx.RequestError):
+            return True
+        return False
+
+    @staticmethod
+    def _iter_notice_streams():
+        seen: set[int] = set()
+        for stream in (getattr(sys, "__stderr__", None), getattr(sys, "stderr", None)):
+            if stream is None:
+                continue
+            sid = id(stream)
+            if sid in seen:
+                continue
+            seen.add(sid)
+            yield stream
+
+    def _write_notice(self, message: str, *, end: str = "\n") -> None:
+        for stream in self._iter_notice_streams():
+            try:
+                print(message, end=end, file=stream, flush=True)
+            except Exception:
+                continue
+
+    @staticmethod
+    def _resume_message_for_source(source: str) -> str:
+        source_norm = str(source or "").strip().lower()
+        if source_norm in {"web_dashboard", "web_keyboard"}:
+            return "웹 대시보드 사용자 확인 후 처리 재개"
+        if source_norm == "terminal":
+            return "터미널 사용자 확인 후 처리 재개"
+        return "사용자 확인 후 처리 재개"
+
+    def _take_resume_request(self) -> str:
+        with self._cv:
+            if not self._resume_requested:
+                return ""
+            source = self._resume_source or "external"
+            self._resume_requested = False
+            self._resume_source = ""
+            return source
+
+    def _poll_resume_input(self, timeout_s: float = 0.2) -> Optional[str]:
+        stdin = getattr(sys, "stdin", None)
+        if stdin is None:
+            time.sleep(timeout_s)
+            return None
+        if os.name == "nt":
+            return self._poll_resume_input_windows(timeout_s)
+        return self._poll_resume_input_posix(stdin, timeout_s)
+
+    def _poll_resume_input_posix(self, stdin: Any, timeout_s: float) -> Optional[str]:
+        try:
+            ready, _, _ = select.select([stdin], [], [], max(0.0, timeout_s))
+        except Exception:
+            time.sleep(timeout_s)
+            return None
+        if not ready:
+            return None
+        try:
+            line = stdin.readline()
+        except Exception:
+            return ""
+        if line is None:
+            return ""
+        return str(line).strip()
+
+    def _poll_resume_input_windows(self, timeout_s: float) -> Optional[str]:
+        try:
+            import msvcrt  # type: ignore
+        except Exception:
+            time.sleep(timeout_s)
+            return None
+
+        deadline = time.monotonic() + max(0.0, timeout_s)
+        while time.monotonic() < deadline:
+            while msvcrt.kbhit():
+                ch = msvcrt.getwch()
+                if ch in {"\r", "\n"}:
+                    line = self._console_line_buffer
+                    self._console_line_buffer = ""
+                    return line.strip()
+                if ch == "\003":
+                    raise KeyboardInterrupt
+                if ch in {"\b", "\x7f"}:
+                    self._console_line_buffer = self._console_line_buffer[:-1]
+                    continue
+                self._console_line_buffer += ch
+            time.sleep(0.05)
+        return None
+
+    def _prompt_until_resume(self, *, count: int, threshold: int, error_text: str) -> str:
+        ts = time.strftime("%H:%M:%S")
+        self._write_notice(
+            f"\n[{ts}][llm-watchdog] ⚠️ HTTP 스트리밍 오류가 관측되었습니다. "
+            "관리자님은 LLM 서버측을 확인해주세요. "
+            f"(연속 실패 {count}회, 임계값 {threshold}회)"
+        )
+        if error_text:
+            self._write_notice(f"[{ts}][llm-watchdog] 최근 오류: {error_text}")
+        self._write_notice(
+            f"[{ts}][llm-watchdog] 터미널에 y를 입력하거나 웹 대시보드에서 재개하세요.",
+        )
+
+        while True:
+            resume_source = self._take_resume_request()
+            if resume_source:
+                ts_resume = time.strftime("%H:%M:%S")
+                self._write_notice(
+                    f"[{ts_resume}][llm-watchdog] {self._resume_message_for_source(resume_source)}"
+                )
+                return resume_source
+
+            answer = self._poll_resume_input(timeout_s=0.2)
+            if answer is None:
+                continue
+            if answer.strip().lower() == "y":
+                ts_resume = time.strftime("%H:%M:%S")
+                self._write_notice(f"[{ts_resume}][llm-watchdog] 터미널 사용자 확인 후 처리 재개")
+                return "terminal"
+            if answer.strip():
+                ts_retry = time.strftime("%H:%M:%S")
+                self._write_notice(
+                    f"[{ts_retry}][llm-watchdog] 'y'를 입력하거나 웹 대시보드에서 재개하세요."
+                )
+
+
+_LLM_SERVER_SUSPEND_CONTROLLER = _LLMServerSuspendController()
+
+
+def _reset_llm_server_suspend_controller_for_tests() -> None:
+    _LLM_SERVER_SUSPEND_CONTROLLER.reset_for_tests()
+
+
+def request_llm_server_resume(source: str = "external") -> bool:
+    return _LLM_SERVER_SUSPEND_CONTROLLER.request_resume(source=source)
 
 
 def retry_with_backoff(
@@ -49,12 +370,24 @@ def retry_with_backoff(
     """
     last_exception = None
     for attempt in range(max_retries):
+        _LLM_SERVER_SUSPEND_CONTROLLER.wait_if_paused()
         try:
-            return func()
+            result = func()
+            _LLM_SERVER_SUSPEND_CONTROLLER.record_success()
+            return result
         except exceptions as e:
             last_exception = e
+            retryable = True
+            if isinstance(e, httpx.HTTPStatusError):
+                try:
+                    status_code = int(e.response.status_code)
+                except Exception:
+                    status_code = 0
+                if status_code in {400, 401, 403, 413, 422}:
+                    retryable = False
             
-            if attempt >= max_retries - 1:
+            if (not retryable) or attempt >= max_retries - 1:
+                _LLM_SERVER_SUSPEND_CONTROLLER.record_final_failure(e)
                 # 재시도하지 않거나 마지막 시도 실패
                 ts = time.strftime("%H:%M:%S")
                 print(

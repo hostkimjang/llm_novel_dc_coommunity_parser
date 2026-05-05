@@ -12,6 +12,7 @@ Agentic Pipeline (유기적 전문가 시스템) 원클릭 엔트리포인트.
 import argparse
 import json
 import os
+import re
 import signal
 import subprocess
 import sys
@@ -22,6 +23,7 @@ from queue import Queue, Empty
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any, Optional
+from urllib.parse import urlsplit, urlunsplit
 
 # 대시보드 비활성화 플래그: --no-dashboard
 _NO_DASHBOARD = "--no-dashboard" in sys.argv
@@ -52,6 +54,18 @@ def _build_arg_parser(*, add_help: bool) -> argparse.ArgumentParser:
     parser.add_argument("--vlm-max-total-bytes", type=int, default=None, help="포스트당 이미지 총 바이트 상한")
     parser.add_argument("--vlm-chunk-max-images", type=int, default=None, help="멀티모달 청크당 최대 이미지 수")
     parser.add_argument("--vlm-chunk-max-bytes", type=int, default=None, help="멀티모달 청크당 최대 바이트")
+    parser.add_argument(
+        "--llm-suspend-on-anomaly",
+        choices=["on", "off"],
+        default=None,
+        help="LLM 서버 무응답/이상 응답 누적 시 사용자 확인 후 재개",
+    )
+    parser.add_argument(
+        "--llm-suspend-threshold",
+        type=int,
+        default=None,
+        help="LLM 서버 이상 응답 누적 시 일시중지 임계값 (0=비활성)",
+    )
     parser.add_argument("--slang-db", choices=["on", "off"], default=None, help="중앙 slang DB 검토용 저장 사용 여부")
     parser.add_argument("--slang-db-path", default=None, help="중앙 slang DB JSON 경로")
     parser.add_argument("--slang-db-flush-posts", type=int, default=None, help="slang DB flush post 간격")
@@ -102,6 +116,41 @@ def _resolve_toggle(value: Optional[str], *, env_key: str, default: str) -> str:
     return "1" if str(default).strip().lower() in {"1", "true", "yes", "on"} else "0"
 
 
+def _normalize_mcp_endpoint(endpoint: str) -> str:
+    raw = str(endpoint or "").strip().rstrip("/")
+    if not raw:
+        return ""
+    normalize_localhost = _env_bool_runtime("MCP_NORMALIZE_LOCALHOST", True)
+    if not normalize_localhost:
+        return raw
+    try:
+        parts = urlsplit(raw)
+        if parts.hostname and parts.hostname.lower() == "localhost":
+            netloc = "127.0.0.1"
+            if parts.port:
+                netloc = f"{netloc}:{parts.port}"
+            return urlunsplit((parts.scheme or "http", netloc, parts.path, parts.query, parts.fragment)).rstrip("/")
+    except Exception:
+        pass
+    return raw
+
+
+def _dedupe_mcp_endpoints(raw_endpoints: str) -> List[str]:
+    """쉼표/공백/개행으로 섞인 MCP endpoint 목록을 순서 보존 dedupe한다."""
+    seen: set[str] = set()
+    out: List[str] = []
+    for token in re.split(r"[\s,]+", str(raw_endpoints or "")):
+        endpoint = _normalize_mcp_endpoint(token)
+        if not endpoint:
+            continue
+        key = endpoint.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(endpoint)
+    return out
+
+
 def _configure_mcp_endpoints(default_count: int) -> None:
     """MCP shard endpoint를 자동 구성한다.
 
@@ -114,27 +163,55 @@ def _configure_mcp_endpoints(default_count: int) -> None:
     raw_endpoint = os.getenv("MCP_ENDPOINT", "").strip()
 
     if raw_endpoints:
-        endpoints = [p.strip().rstrip("/") for p in raw_endpoints.split(",") if p.strip()]
+        endpoints = _dedupe_mcp_endpoints(raw_endpoints)
         if endpoints and not raw_endpoint:
             _set_env("MCP_ENDPOINT", endpoints[0])
+        if endpoints:
+            _set_env("MCP_ENDPOINTS", ",".join(endpoints))
+        raw_count = len([p for p in re.split(r"[\s,]+", raw_endpoints) if p.strip()])
+        if raw_count != len(endpoints):
+            print(
+                f"[config] MCP_ENDPOINTS 중복 제거: {raw_count}→{len(endpoints)}",
+                file=sys.stderr,
+                flush=True,
+            )
         _set_env("MCP_ENDPOINTS_AUTOGEN", "0")
         return
 
     if raw_endpoint:
+        _set_env("MCP_ENDPOINT", _normalize_mcp_endpoint(raw_endpoint))
         _set_env("MCP_ENDPOINTS_AUTOGEN", "0")
         return
 
+    explicit_shard_count = os.getenv("MCP_SHARD_COUNT", "").strip()
     try:
-        shard_count = max(1, int(os.getenv("MCP_SHARD_COUNT", str(default_count))))
+        shard_count = max(1, int(explicit_shard_count or str(default_count)))
     except Exception:
         shard_count = max(1, default_count)
+
+    auto_shard_limit_raw = os.getenv("MCP_AUTO_SHARD_LIMIT", "0").strip()
+    try:
+        auto_shard_limit = max(0, int(auto_shard_limit_raw))
+    except Exception:
+        auto_shard_limit = 0
+    if auto_shard_limit > 0 and not explicit_shard_count and shard_count > auto_shard_limit:
+        print(
+            "[config] MCP shard 자동 생성 수를 {limit}개로 제한합니다 "
+            "(parallel={parallel}, 필요 시 MCP_SHARD_COUNT 또는 MCP_AUTO_SHARD_LIMIT로 override)".format(
+                limit=auto_shard_limit,
+                parallel=default_count,
+            ),
+            file=sys.stderr,
+            flush=True,
+        )
+        shard_count = auto_shard_limit
     try:
         base_port = int(os.getenv("MCP_SHARD_BASE_PORT", "3333"))
     except Exception:
         base_port = 3333
 
     scheme = os.getenv("MCP_SHARD_SCHEME", "http").strip() or "http"
-    host = os.getenv("MCP_SHARD_HOST", "localhost").strip() or "localhost"
+    host = os.getenv("MCP_SHARD_HOST", "127.0.0.1").strip() or "127.0.0.1"
 
     endpoints = [f"{scheme}://{host}:{base_port + idx}" for idx in range(shard_count)]
     _set_env("MCP_ENDPOINTS", ",".join(endpoints))
@@ -145,15 +222,35 @@ def _configure_mcp_endpoints(default_count: int) -> None:
 def _get_mcp_endpoint_pool() -> List[str]:
     raw_endpoints = os.getenv("MCP_ENDPOINTS", "").strip()
     if raw_endpoints:
-        endpoints = [p.strip().rstrip("/") for p in raw_endpoints.split(",") if p.strip()]
+        endpoints = _dedupe_mcp_endpoints(raw_endpoints)
         if endpoints:
+            normalized = ",".join(endpoints)
+            if normalized != raw_endpoints:
+                _set_env("MCP_ENDPOINTS", normalized)
             return endpoints
 
-    raw_endpoint = os.getenv("MCP_ENDPOINT", "").strip().rstrip("/")
+    raw_endpoint = _normalize_mcp_endpoint(os.getenv("MCP_ENDPOINT", ""))
     if raw_endpoint:
         return [raw_endpoint]
 
-    return ["http://localhost:3333"]
+    return ["http://127.0.0.1:3333"]
+
+
+def _format_mcp_endpoint_pool(endpoints: List[str]) -> str:
+    if not endpoints:
+        return "(none)"
+    if len(endpoints) <= 8:
+        return ",".join(endpoints)
+    return f"{endpoints[0]}..{endpoints[-1]} (count={len(endpoints)})"
+
+
+def _env_bool_runtime(name: str, default: bool = False) -> bool:
+    raw = os.getenv(name, "1" if default else "0").strip().lower()
+    if raw in {"1", "true", "yes", "on"}:
+        return True
+    if raw in {"0", "false", "no", "off"}:
+        return False
+    return default
 
 
 def _can_auto_manage_local_shards() -> bool:
@@ -161,7 +258,7 @@ def _can_auto_manage_local_shards() -> bool:
         return False
     if os.getenv("MCP_ENDPOINTS_AUTOGEN", "0").strip() != "1":
         return False
-    host = os.getenv("MCP_SHARD_HOST", "localhost").strip().lower()
+    host = os.getenv("MCP_SHARD_HOST", "127.0.0.1").strip().lower()
     return host in {"localhost", "127.0.0.1"}
 
 
@@ -185,10 +282,17 @@ def _auto_up_local_shards(repo_root: Path, shard_count: int) -> None:
         file=sys.stderr,
         flush=True,
     )
-    subprocess.run(cmd, cwd=repo_root, check=True)
+    env = os.environ.copy()
+    env.setdefault("WARP_SHARDS_PRINT_ENDPOINTS", "0")
+    subprocess.run(cmd, cwd=repo_root, check=True, env=env)
+    print(
+        f"[expert_main] 로컬 MCP/WARP shard {shard_count}개 자동 기동 완료",
+        file=sys.stderr,
+        flush=True,
+    )
 
 
-def _memo_local_shard_status(repo_root: Path, memo_path: Path) -> None:
+def _load_local_shard_status(repo_root: Path) -> List[Dict[str, Any]]:
     tool_path = repo_root / "tools" / "warp_shards.py"
     cmd = [sys.executable, str(tool_path), "status", "--json"]
     proc = subprocess.run(
@@ -203,6 +307,177 @@ def _memo_local_shard_status(repo_root: Path, memo_path: Path) -> None:
         raise RuntimeError("empty shard status payload")
 
     items = json.loads(payload)
+    if not isinstance(items, list):
+        raise RuntimeError("invalid shard status payload")
+    return items
+
+
+def _collect_non_warp_on_shards(items: List[Dict[str, Any]]) -> List[int]:
+    shard_indices: List[int] = []
+    for item in items:
+        try:
+            shard_index = int(item.get("shard_index") or 0)
+        except Exception:
+            shard_index = 0
+        if shard_index <= 0:
+            service = str(item.get("service") or "").strip()
+            if service.startswith("warp-"):
+                try:
+                    shard_index = int(service.split("-", 1)[1])
+                except Exception:
+                    shard_index = 0
+        if shard_index <= 0:
+            continue
+
+        running = bool(item.get("running"))
+        trace = item.get("trace") or {}
+        if not isinstance(trace, dict):
+            trace = {}
+        warp = str(trace.get("warp") or "").strip().lower()
+        if (not running) or warp != "on":
+            if shard_index not in shard_indices:
+                shard_indices.append(shard_index)
+    shard_indices.sort()
+    return shard_indices
+
+
+def _summarize_warp_items(items: List[Dict[str, Any]]) -> str:
+    total = len(items or [])
+    running_count = 0
+    warp_on_count = 0
+    off_samples: List[str] = []
+    for item in items or []:
+        service = str(item.get("service") or "?")
+        running = bool(item.get("running"))
+        if running:
+            running_count += 1
+        trace = item.get("trace") or {}
+        if not isinstance(trace, dict):
+            trace = {}
+        warp = str(trace.get("warp") or "?").strip().lower()
+        if warp == "on":
+            warp_on_count += 1
+        elif len(off_samples) < 8:
+            off_samples.append(f"{service}:running={'yes' if running else 'no'},warp={warp or '?'}")
+    sample_text = f", not_ready_sample={off_samples}" if off_samples else ""
+    return f"running={running_count}/{total}, warp_on={warp_on_count}/{total}{sample_text}"
+
+
+def _format_shard_indices(shard_indices: List[int]) -> str:
+    if not shard_indices:
+        return "-"
+    ranges: List[str] = []
+    start = shard_indices[0]
+    end = shard_indices[0]
+    for idx in shard_indices[1:]:
+        if idx == end + 1:
+            end = idx
+            continue
+        ranges.append(str(start) if start == end else f"{start}-{end}")
+        start = end = idx
+    ranges.append(str(start) if start == end else f"{start}-{end}")
+    return ",".join(ranges)
+
+
+def _endpoint_to_local_shard_index(endpoint: str) -> Optional[int]:
+    try:
+        port = urlsplit(str(endpoint or "")).port
+    except Exception:
+        port = None
+    if port is None:
+        return None
+    try:
+        base_port = int(os.getenv("MCP_SHARD_BASE_PORT", "3333"))
+    except Exception:
+        base_port = 3333
+    shard_index = port - base_port + 1
+    if shard_index <= 0:
+        return None
+    return shard_index
+
+
+def _recreate_local_shards(repo_root: Path, shard_indices: List[int]) -> None:
+    if not shard_indices:
+        return
+    tool_path = repo_root / "tools" / "warp_shards.py"
+    cmd = [
+        sys.executable,
+        str(tool_path),
+        "recreate",
+        "--shards",
+        _format_shard_indices(shard_indices),
+    ]
+    print(
+        f"[expert_main] WARP shard 재생성 실행: shards={_format_shard_indices(shard_indices)}",
+        file=sys.stderr,
+        flush=True,
+    )
+    subprocess.run(cmd, cwd=repo_root, check=True)
+
+
+def _ensure_local_shards_warp_on(repo_root: Path) -> List[Dict[str, Any]]:
+    attempt = 0
+    pause_sec_raw = os.getenv("WARP_SHARDS_ENSURE_PAUSE_SEC", "5").strip()
+    try:
+        pause_sec = max(0.0, float(pause_sec_raw))
+    except Exception:
+        pause_sec = 5.0
+    max_attempts_raw = os.getenv("WARP_SHARDS_ENSURE_MAX_ATTEMPTS", "0").strip()
+    try:
+        max_attempts = max(0, int(max_attempts_raw))
+    except Exception:
+        max_attempts = 0
+
+    while True:
+        attempt += 1
+        print(
+            f"[expert_main] WARP 상태 확인 중... attempt={attempt}"
+            + (f"/{max_attempts}" if max_attempts > 0 else ""),
+            file=sys.stderr,
+            flush=True,
+        )
+        items = _load_local_shard_status(repo_root)
+        not_ready = _collect_non_warp_on_shards(items)
+        print(
+            f"[expert_main] WARP 상태 요약: {_summarize_warp_items(items)}",
+            file=sys.stderr,
+            flush=True,
+        )
+        if not not_ready:
+            print(
+                f"[expert_main] 모든 WARP shard가 정상 연결됨 (attempt={attempt})",
+                file=sys.stderr,
+                flush=True,
+            )
+            return items
+
+        print(
+            "[expert_main] WARP 미연결 shard 감지: {shards} (attempt={attempt})".format(
+                shards=_format_shard_indices(not_ready),
+                attempt=attempt,
+            ),
+            file=sys.stderr,
+            flush=True,
+        )
+        if max_attempts > 0 and attempt >= max_attempts:
+            raise RuntimeError(
+                "WARP shard가 끝내 연결되지 않았습니다: "
+                f"{_format_shard_indices(not_ready)} (attempt={attempt})"
+            )
+
+        _recreate_local_shards(repo_root, not_ready)
+        if pause_sec > 0:
+            print(
+                f"[expert_main] WARP 재확인 대기: {pause_sec:.1f}s",
+                file=sys.stderr,
+                flush=True,
+            )
+            time.sleep(pause_sec)
+
+
+def _memo_local_shard_status(repo_root: Path, memo_path: Path, items: Optional[List[Dict[str, Any]]] = None) -> None:
+    if items is None:
+        items = _load_local_shard_status(repo_root)
     memo_path.write_text(json.dumps(items, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(f"[expert_main] WARP shard 메모 저장: {memo_path}", file=sys.stderr, flush=True)
@@ -287,6 +562,22 @@ def main() -> None:
     _set_env("LLM_VLM", _resolve_toggle(_CLI_ARGS.vlm, env_key="LLM_VLM", default="0"))
     _set_env("LLM_OCR", _resolve_toggle(_CLI_ARGS.ocr, env_key="LLM_OCR", default="1"))
     _set_env(
+        "LLM_SUSPEND_ON_SERVER_ANOMALY",
+        _resolve_toggle(
+            _CLI_ARGS.llm_suspend_on_anomaly,
+            env_key="LLM_SUSPEND_ON_SERVER_ANOMALY",
+            default="1",
+        ),
+    )
+    _set_env(
+        "LLM_SUSPEND_FAILURE_THRESHOLD",
+        str(
+            _CLI_ARGS.llm_suspend_threshold
+            if _CLI_ARGS.llm_suspend_threshold is not None
+            else os.getenv("LLM_SUSPEND_FAILURE_THRESHOLD", "3")
+        ),
+    )
+    _set_env(
         "LLM_VLM_FETCH_TIMEOUT",
         str(_CLI_ARGS.vlm_fetch_timeout if _CLI_ARGS.vlm_fetch_timeout is not None else os.getenv("LLM_VLM_FETCH_TIMEOUT", "12")),
     )
@@ -314,11 +605,11 @@ def main() -> None:
     )
     _set_env(
         "PIPELINE_SLANG_DB_FLUSH_POSTS",
-        str(_CLI_ARGS.slang_db_flush_posts if _CLI_ARGS.slang_db_flush_posts is not None else os.getenv("PIPELINE_SLANG_DB_FLUSH_POSTS", "5")),
+        str(_CLI_ARGS.slang_db_flush_posts if _CLI_ARGS.slang_db_flush_posts is not None else os.getenv("PIPELINE_SLANG_DB_FLUSH_POSTS", "1")),
     )
     _set_env(
         "PIPELINE_SLANG_DB_FLUSH_SECONDS",
-        str(_CLI_ARGS.slang_db_flush_seconds if _CLI_ARGS.slang_db_flush_seconds is not None else os.getenv("PIPELINE_SLANG_DB_FLUSH_SECONDS", "5")),
+        str(_CLI_ARGS.slang_db_flush_seconds if _CLI_ARGS.slang_db_flush_seconds is not None else os.getenv("PIPELINE_SLANG_DB_FLUSH_SECONDS", "0")),
     )
     
     # GLM-4.7-Flash reasoning 모드 제어
@@ -346,10 +637,15 @@ def main() -> None:
             #_set_env("LLM_ENDPOINT", _CLI_ARGS.llm_endpoint or os.getenv("LLM_ENDPOINT", "http://localhost:20000/"))
             _set_env("LLM_ENDPOINT", _CLI_ARGS.llm_endpoint or os.getenv("LLM_ENDPOINT", "http://a100:10000/"))
             #_set_env("LLM_ENDPOINT", _CLI_ARGS.llm_endpoint or os.getenv("LLM_ENDPOINT", "http://10.20.0.101:8000/"))
-            _set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "Sehyo/Qwen3.5-35B-A3B-NVFP4"))
+            # 참고용 기존 Qwen 설정
+            #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "Sehyo/Qwen3.5-35B-A3B-NVFP4"))
             #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "AxionML/Qwen3.5-35B-A3B-NVFP4"))
+            #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "google/gemma-4-26B-A4B-it"))
+            _set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "bg-digitalservices/Gemma-4-E4B-it-NVFP4"))
             # vLLM 전용 샘플링 기본값
-            _set_env("LLM_TEMP", os.getenv("LLM_TEMP", "0.7"))
+            # 작은 모델은 애매한 title/slang을 그럴듯하게 채우는 경향이 있어
+            # 기본값을 보수적으로 둔다. 필요하면 환경변수로 즉시 override 가능.
+            _set_env("LLM_TEMP", os.getenv("LLM_TEMP", "0.35"))
             _set_env("LLM_TOP_P", os.getenv("LLM_TOP_P", "0.8"))
             _set_env("LLM_MIN_P", os.getenv("LLM_MIN_P", "0.0"))
             _set_env("LLM_REPEAT_PENALTY", os.getenv("LLM_REPEAT_PENALTY", "1.0"))
@@ -357,24 +653,26 @@ def main() -> None:
             _set_env("LLM_VLLM_PRESENCE_PENALTY", os.getenv("LLM_VLLM_PRESENCE_PENALTY", "1.5"))
             
             # ===== 전문가별 temperature =====
-            # Qwen 공식 권장값 0.7로 통일 (local LLM 최적 샘플링)
+            # 기본 temperature는 보수적으로 통일하고, 필요하면 전문가별로 오버라이드한다.
             # 환경변수로 오버라이드 가능: LLM_TEMP_{EXPERT} (예: LLM_TEMP_DECODER=0.4)
-            _QWEN_TEMP = "0.7"
-            _set_env("LLM_TEMP_GATEKEEPER", os.getenv("LLM_TEMP_GATEKEEPER", _QWEN_TEMP))
-            _set_env("LLM_TEMP_DISCOURSE", os.getenv("LLM_TEMP_DISCOURSE", _QWEN_TEMP))
-            _set_env("LLM_TEMP_DECODER", os.getenv("LLM_TEMP_DECODER", _QWEN_TEMP))
-            _set_env("LLM_TEMP_VERIFIER", os.getenv("LLM_TEMP_VERIFIER", _QWEN_TEMP))
-            _set_env("LLM_TEMP_CRITIC", os.getenv("LLM_TEMP_CRITIC", _QWEN_TEMP))
-            _set_env("LLM_TEMP_SYNTHESIZER", os.getenv("LLM_TEMP_SYNTHESIZER", _QWEN_TEMP))
-            _set_env("LLM_TEMP_ARBITER", os.getenv("LLM_TEMP_ARBITER", _QWEN_TEMP))
-            _set_env("LLM_TEMP_JURY", os.getenv("LLM_TEMP_JURY", _QWEN_TEMP))
-            _set_env("LLM_TEMP_ADVOCATE", os.getenv("LLM_TEMP_ADVOCATE", _QWEN_TEMP))
-            _set_env("LLM_TEMP_SKEPTIC", os.getenv("LLM_TEMP_SKEPTIC", _QWEN_TEMP))
-            _set_env("LLM_TEMP_JUDGE", os.getenv("LLM_TEMP_JUDGE", _QWEN_TEMP))
+            _DEFAULT_EXPERT_TEMP = os.getenv("LLM_DEFAULT_EXPERT_TEMP", "0.35")
+            _set_env("LLM_TEMP_GATEKEEPER", os.getenv("LLM_TEMP_GATEKEEPER", _DEFAULT_EXPERT_TEMP))
+            _set_env("LLM_TEMP_DISCOURSE", os.getenv("LLM_TEMP_DISCOURSE", _DEFAULT_EXPERT_TEMP))
+            _set_env("LLM_TEMP_DECODER", os.getenv("LLM_TEMP_DECODER", _DEFAULT_EXPERT_TEMP))
+            _set_env("LLM_TEMP_VERIFIER", os.getenv("LLM_TEMP_VERIFIER", _DEFAULT_EXPERT_TEMP))
+            _set_env("LLM_TEMP_CRITIC", os.getenv("LLM_TEMP_CRITIC", _DEFAULT_EXPERT_TEMP))
+            _set_env("LLM_TEMP_SYNTHESIZER", os.getenv("LLM_TEMP_SYNTHESIZER", _DEFAULT_EXPERT_TEMP))
+            _set_env("LLM_TEMP_ARBITER", os.getenv("LLM_TEMP_ARBITER", _DEFAULT_EXPERT_TEMP))
+            _set_env("LLM_TEMP_JURY", os.getenv("LLM_TEMP_JURY", _DEFAULT_EXPERT_TEMP))
+            _set_env("LLM_TEMP_ADVOCATE", os.getenv("LLM_TEMP_ADVOCATE", _DEFAULT_EXPERT_TEMP))
+            _set_env("LLM_TEMP_SKEPTIC", os.getenv("LLM_TEMP_SKEPTIC", _DEFAULT_EXPERT_TEMP))
+            _set_env("LLM_TEMP_JUDGE", os.getenv("LLM_TEMP_JUDGE", _DEFAULT_EXPERT_TEMP))
         else:
             # ===== llama-server 서빙 (기본) =====
             _set_env("LLM_ENDPOINT", _CLI_ARGS.llm_endpoint or os.getenv("LLM_ENDPOINT", "http://a100:10000/"))
-            _set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "unsloth/Qwen3.5-35B-A3B-GGUF:UD-IQ3_XXS"))
+            # 참고용 기존 Qwen GGUF 설정
+            #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "unsloth/Qwen3.5-35B-A3B-GGUF:UD-IQ3_XXS"))
+            _set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "google/gemma-4-26B-A4B-it"))
         #_set_env("LLM_ENDPOINT", "https://llama.kimjang.me")
         #_set_env("LLM_ENDPOINT", "http://127.0.0.1:20000/")
     else:
@@ -399,6 +697,14 @@ def main() -> None:
         file=sys.stderr,
         flush=True,
     )
+    print(
+        "[config] llm_suspend_on_anomaly={enabled}, llm_suspend_threshold={threshold}".format(
+            enabled=os.getenv("LLM_SUSPEND_ON_SERVER_ANOMALY", "1"),
+            threshold=os.getenv("LLM_SUSPEND_FAILURE_THRESHOLD", "3"),
+        ),
+        file=sys.stderr,
+        flush=True,
+    )
     print(f"[config] python={sys.executable}", file=sys.stderr, flush=True)
     print(
         f"[config] virtual_env={os.getenv('VIRTUAL_ENV', '(none)')}",
@@ -409,8 +715,8 @@ def main() -> None:
         "[config] slang_db={enabled}, path={path}, flush_posts={posts}, flush_seconds={seconds}".format(
             enabled=os.getenv("PIPELINE_SLANG_DB", "0"),
             path=os.getenv("PIPELINE_SLANG_DB_PATH", "slang_db/slang_db.json"),
-            posts=os.getenv("PIPELINE_SLANG_DB_FLUSH_POSTS", "5"),
-            seconds=os.getenv("PIPELINE_SLANG_DB_FLUSH_SECONDS", "5"),
+            posts=os.getenv("PIPELINE_SLANG_DB_FLUSH_POSTS", "1"),
+            seconds=os.getenv("PIPELINE_SLANG_DB_FLUSH_SECONDS", "0"),
         ),
         file=sys.stderr,
         flush=True,
@@ -448,6 +754,9 @@ def main() -> None:
         out_result_path.parent.mkdir(parents=True, exist_ok=True)
     else:
         out_result_path = OUT_DIR / f"expert_result_{ts}.json"
+    checkpoint_jsonl_path = out_result_path.with_name(out_result_path.stem + "_checkpoint.jsonl")
+    pending_snapshot_path = out_result_path.with_name(out_result_path.stem + "_pending_snapshot.json")
+    result_manifest_path = out_result_path.with_name(out_result_path.stem + "_manifest.json")
 
     _orig_out = sys.stdout
     _orig_err = sys.stderr
@@ -610,7 +919,7 @@ def main() -> None:
             print(f"[expert_main] LLM_MODE: {LLM_MODE}", file=sys.stderr, flush=True)
             print(f"[expert_main] 입력: {INPUT_PATH}", file=sys.stderr, flush=True)
             print(
-                f"[expert_main] MCP shards: {os.getenv('MCP_ENDPOINTS', os.getenv('MCP_ENDPOINT', 'http://localhost:3333'))}",
+                f"[expert_main] MCP shards: {_format_mcp_endpoint_pool(_get_mcp_endpoint_pool())}",
                 file=sys.stderr,
                 flush=True,
             )
@@ -638,30 +947,120 @@ def main() -> None:
             # ─── 검색 서버 헬스체크 ──────────────────────────
             print(f"\n🔍 검색 서버 연결 확인 중...", file=sys.stderr, flush=True)
             _mcp_endpoint_pool = _get_mcp_endpoint_pool()
+            _local_shard_status_items = None
             if _can_auto_manage_local_shards():
                 try:
                     _auto_up_local_shards(repo_root, len(_mcp_endpoint_pool))
                 except Exception as exc:
                     print(f"[expert_main] ⚠️ shard 자동 기동 실패: {exc}", file=sys.stderr, flush=True)
+                _local_shard_status_items = _ensure_local_shards_warp_on(repo_root)
 
             _health_failures = []
             _health_ok = {}
             _health_attempts = 6 if _can_auto_manage_local_shards() else 1
+            try:
+                _health_timeout = max(1.0, float(os.getenv("MCP_HEALTH_TIMEOUT_SEC", "8")))
+            except Exception:
+                _health_timeout = 8.0
+            _health_include_search = _env_bool_runtime(
+                "MCP_HEALTH_INCLUDE_SEARCH",
+                default=not _can_auto_manage_local_shards(),
+            )
+            try:
+                _health_workers = max(1, min(len(_mcp_endpoint_pool), int(os.getenv("MCP_HEALTH_WORKERS", "12"))))
+            except Exception:
+                _health_workers = min(len(_mcp_endpoint_pool), 12) or 1
+            print(
+                f"[expert_main] 검색 서버 헬스체크 시작: endpoints={len(_mcp_endpoint_pool)}, "
+                f"attempts={_health_attempts}, timeout={_health_timeout:.1f}s, "
+                f"workers={_health_workers}, include_search={_health_include_search}",
+                file=sys.stderr,
+                flush=True,
+            )
+
+            def _check_one_endpoint(_idx: int, _endpoint: str):
+                _hc_mcp = MCPClient(endpoint=_endpoint)
+                _hc = _hc_mcp.health_check(timeout=_health_timeout, include_search=_health_include_search)
+                return _idx, _endpoint, _hc
+
             for _attempt in range(_health_attempts):
                 _health_failures = []
                 _health_ok = {}
-                for _idx, _endpoint in enumerate(_mcp_endpoint_pool):
-                    _hc_mcp = MCPClient(endpoint=_endpoint)
-                    _hc = _hc_mcp.health_check(timeout=30.0)
-                    if _hc["ok"]:
-                        _health_ok[_endpoint] = _hc
-                    else:
-                        _health_failures.append((_endpoint, _hc.get("error") or "unknown error"))
+                print(
+                    f"[expert_main] 검색 서버 헬스체크 attempt={_attempt + 1}/{_health_attempts}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+                print(
+                    f"[expert_main]   병렬 확인 시작... workers={_health_workers}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+                with ThreadPoolExecutor(max_workers=_health_workers) as _health_executor:
+                    _future_map = {
+                        _health_executor.submit(_check_one_endpoint, _idx, _endpoint): (_idx, _endpoint)
+                        for _idx, _endpoint in enumerate(_mcp_endpoint_pool)
+                    }
+                    _done_count = 0
+                    for _future in as_completed(_future_map):
+                        _idx, _endpoint = _future_map[_future]
+                        _done_count += 1
+                        try:
+                            _idx, _endpoint, _hc = _future.result()
+                        except Exception as _exc:
+                            _hc = {"ok": False, "latency_ms": 0, "error": str(_exc)}
+                        if _hc.get("ok"):
+                            _health_ok[_endpoint] = _hc
+                            _search_note = "Search skipped" if _hc.get("search_skipped") else f"Search {_hc.get('search_latency_ms', 0):.0f}ms"
+                            print(
+                                f"[expert_main]   [{_done_count}/{len(_mcp_endpoint_pool)}] OK shard#{_idx + 1} {_endpoint}: "
+                                f"Bridge {_hc.get('latency_ms', 0):.0f}ms, {_search_note}",
+                                file=sys.stderr,
+                                flush=True,
+                            )
+                        else:
+                            _err = _hc.get("error") or "unknown error"
+                            _health_failures.append((_endpoint, _err))
+                            print(
+                                f"[expert_main]   [{_done_count}/{len(_mcp_endpoint_pool)}] FAIL shard#{_idx + 1} {_endpoint}: {_err}",
+                                file=sys.stderr,
+                                flush=True,
+                            )
                 if not _health_failures:
+                    print(
+                        f"[expert_main] 검색 서버 헬스체크 완료: ok={len(_health_ok)}/{len(_mcp_endpoint_pool)}",
+                        file=sys.stderr,
+                        flush=True,
+                    )
                     break
                 if _attempt + 1 < _health_attempts:
+                    if _can_auto_manage_local_shards():
+                        _failed_shards = sorted(
+                            {
+                                shard
+                                for _endpoint, _err in _health_failures
+                                for shard in [_endpoint_to_local_shard_index(_endpoint)]
+                                if shard is not None
+                            }
+                        )
+                        if _failed_shards:
+                            try:
+                                print(
+                                    "[expert_main] 검색 shard readiness 실패 감지: "
+                                    f"shards={_format_shard_indices(_failed_shards)} 재생성 후 재확인",
+                                    file=sys.stderr,
+                                    flush=True,
+                                )
+                                _recreate_local_shards(repo_root, _failed_shards)
+                            except Exception as exc:
+                                print(
+                                    f"[expert_main] ⚠️ 검색 shard 재생성 실패: {exc}",
+                                    file=sys.stderr,
+                                    flush=True,
+                                )
                     print(
-                        f"[expert_main] shard 초기화 대기 중... ({_attempt + 1}/{_health_attempts - 1})",
+                        f"[expert_main] shard 초기화 대기 중... failures={len(_health_failures)} "
+                        f"({_attempt + 1}/{_health_attempts - 1})",
                         file=sys.stderr,
                         flush=True,
                     )
@@ -677,8 +1076,13 @@ def main() -> None:
                     )
 
             if _can_auto_manage_local_shards():
+                _local_shard_status_items = _ensure_local_shards_warp_on(repo_root)
                 try:
-                    _memo_local_shard_status(repo_root, LOG_DIR / f"warp_shards_status_{ts}.json")
+                    _memo_local_shard_status(
+                        repo_root,
+                        LOG_DIR / f"warp_shards_status_{ts}.json",
+                        items=_local_shard_status_items,
+                    )
                 except Exception as exc:
                     print(f"[expert_main] ⚠️ WARP shard 메모 저장 실패: {exc}", file=sys.stderr, flush=True)
 
@@ -722,8 +1126,8 @@ def main() -> None:
                 path=_slang_db_path,
                 run_id=ts,
                 enabled=_slang_db_enabled,
-                flush_posts=int(os.getenv("PIPELINE_SLANG_DB_FLUSH_POSTS", "5") or 5),
-                flush_seconds=int(os.getenv("PIPELINE_SLANG_DB_FLUSH_SECONDS", "5") or 5),
+                flush_posts=int(os.getenv("PIPELINE_SLANG_DB_FLUSH_POSTS", "1") or 1),
+                flush_seconds=int(os.getenv("PIPELINE_SLANG_DB_FLUSH_SECONDS", "0") or 0),
                 log_fn=lambda msg: print(msg, file=sys.stderr, flush=True),
             )
             if _slang_db_enabled:
@@ -826,6 +1230,9 @@ def main() -> None:
                         "llm_mode": LLM_MODE,
                         "prompt_version": _prompt_version,
                         "config_hash": _config_hash,
+                        "worker_id": worker_id,
+                        "worker_log_file": str(LOG_DIR / f"expert_run_{ts}_W{worker_id}.log") if _PARALLEL > 1 else str(log_path),
+                        "main_log_file": str(log_path),
                     },
                 }
 
@@ -911,11 +1318,36 @@ def main() -> None:
             def _cli_progress(msg: str) -> None:
                 """병렬 모드에서 콘솔에 간결한 진행 상황만 표시"""
                 with _print_lock:
-                    _orig_err.write(msg + "\n")
-                    _orig_err.flush()
+                    try:
+                        _orig_err.write(msg + "\n")
+                        _orig_err.flush()
+                    except (BrokenPipeError, OSError, ValueError):
+                        pass
+                    except Exception:
+                        pass
 
             if _PARALLEL <= 1:
                 # ===== 순차 모드 (기존 동작 유지) =====
+                checkpoint_jsonl_path.write_text("", encoding="utf-8")
+                pending_snapshot_path.write_text("[]\n", encoding="utf-8")
+                result_manifest_path.write_text(
+                    json.dumps(
+                        {
+                            "run_id": ts,
+                            "output_file": str(out_result_path),
+                            "checkpoint_jsonl": str(checkpoint_jsonl_path),
+                            "pending_snapshot": str(pending_snapshot_path),
+                            "completed_count": 0,
+                            "flushed_count": 0,
+                            "pending_count": 0,
+                            "failed_count": 0,
+                            "next_save_idx": 1,
+                        },
+                        ensure_ascii=False,
+                        indent=2,
+                    ),
+                    encoding="utf-8",
+                )
                 pipeline = _create_pipeline(worker_id=0)
                 try:
                     for i, post in enumerate(posts, 1):
@@ -924,10 +1356,40 @@ def main() -> None:
                         full_result = _process_one(post, i, len(posts), pipeline, worker_id=0)
                         results.append(full_result)
                         _slang_db_manager.record_result(full_result)
+                        with checkpoint_jsonl_path.open("a", encoding="utf-8", newline="\n") as _fp:
+                            _fp.write(
+                                json.dumps(
+                                    {
+                                        "global_idx": i,
+                                        "post_id": post.post_id,
+                                        "status": "completed",
+                                        "result": full_result,
+                                    },
+                                    ensure_ascii=False,
+                                ) + "\n"
+                            )
                         # 점진적 저장
                         out_result_path.write_text(
                             json.dumps(results, ensure_ascii=False, indent=2),
                             encoding="utf-8"
+                        )
+                        result_manifest_path.write_text(
+                            json.dumps(
+                                {
+                                    "run_id": ts,
+                                    "output_file": str(out_result_path),
+                                    "checkpoint_jsonl": str(checkpoint_jsonl_path),
+                                    "pending_snapshot": str(pending_snapshot_path),
+                                    "completed_count": len(results),
+                                    "flushed_count": len(results),
+                                    "pending_count": 0,
+                                    "failed_count": 0,
+                                    "next_save_idx": len(results) + 1,
+                                },
+                                ensure_ascii=False,
+                                indent=2,
+                            ),
+                            encoding="utf-8",
                         )
                 except KeyboardInterrupt:
                     _shutdown_event.set()
@@ -936,6 +1398,24 @@ def main() -> None:
                         out_result_path.write_text(
                             json.dumps(results, ensure_ascii=False, indent=2),
                             encoding="utf-8"
+                        )
+                        result_manifest_path.write_text(
+                            json.dumps(
+                                {
+                                    "run_id": ts,
+                                    "output_file": str(out_result_path),
+                                    "checkpoint_jsonl": str(checkpoint_jsonl_path),
+                                    "pending_snapshot": str(pending_snapshot_path),
+                                    "completed_count": len(results),
+                                    "flushed_count": len(results),
+                                    "pending_count": 0,
+                                    "failed_count": 0,
+                                    "next_save_idx": len(results) + 1,
+                                },
+                                ensure_ascii=False,
+                                indent=2,
+                            ),
+                            encoding="utf-8",
                         )
                         _slang_db_manager.finalize()
                         print(f"💾 중단 시점까지 {len(results)}건 저장됨: {out_result_path}", file=sys.stderr, flush=True)
@@ -947,6 +1427,25 @@ def main() -> None:
                 # ===== 병렬 모드 =====
                 global _parallel_mode
                 _parallel_mode = True
+                checkpoint_jsonl_path.write_text("", encoding="utf-8")
+                pending_snapshot_path.write_text("[]\n", encoding="utf-8")
+                result_manifest_path.write_text(
+                    json.dumps(
+                        {
+                            "run_id": ts,
+                            "output_file": str(out_result_path),
+                            "checkpoint_jsonl": str(checkpoint_jsonl_path),
+                            "pending_snapshot": str(pending_snapshot_path),
+                            "completed_count": 0,
+                            "flushed_count": 0,
+                            "pending_count": 0,
+                            "failed_count": 0,
+                        },
+                        ensure_ascii=False,
+                        indent=2,
+                    ),
+                    encoding="utf-8",
+                )
                 
                 print(f"\n🚀 병렬 모드 활성화: {_PARALLEL} 워커", file=sys.stderr, flush=True)
                 
@@ -1000,6 +1499,51 @@ def main() -> None:
                 _pending_results: Dict[int, Any] = {}
                 _next_save_idx = 1  # 다음으로 results에 추가할 global_idx
 
+                def _append_checkpoint(*, global_idx: int, post_id: int, result_item: Any, status: str) -> None:
+                    payload = {
+                        "global_idx": global_idx,
+                        "post_id": post_id,
+                        "status": status,
+                        "result": result_item,
+                    }
+                    with _results_lock:
+                        with checkpoint_jsonl_path.open("a", encoding="utf-8", newline="\n") as _fp:
+                            _fp.write(json.dumps(payload, ensure_ascii=False) + "\n")
+
+                def _write_manifest(*, failed_count: int = 0) -> None:
+                    payload = {
+                        "run_id": ts,
+                        "output_file": str(out_result_path),
+                        "checkpoint_jsonl": str(checkpoint_jsonl_path),
+                        "pending_snapshot": str(pending_snapshot_path),
+                        "completed_count": len(results) + len(_pending_results),
+                        "flushed_count": len(results),
+                        "pending_count": len(_pending_results),
+                        "failed_count": failed_count,
+                        "next_save_idx": _next_save_idx,
+                    }
+                    with _results_lock:
+                        result_manifest_path.write_text(
+                            json.dumps(payload, ensure_ascii=False, indent=2),
+                            encoding="utf-8",
+                        )
+
+                def _write_pending_snapshot() -> None:
+                    pending_rows = [
+                        {
+                            "global_idx": idx,
+                            "post_id": int((item or {}).get("post_id") or 0),
+                            "result": item,
+                        }
+                        for idx, item in sorted(_pending_results.items(), key=lambda kv: kv[0])
+                    ]
+                    with _results_lock:
+                        pending_snapshot_path.write_text(
+                            json.dumps(pending_rows, ensure_ascii=False, indent=2),
+                            encoding="utf-8",
+                        )
+                    _write_manifest()
+
                 def _flush_ordered():
                     """순서가 맞는 결과를 results에 flush하고 점진 저장"""
                     nonlocal _next_save_idx
@@ -1007,7 +1551,6 @@ def main() -> None:
                     while _next_save_idx in _pending_results:
                         _result_item = _pending_results.pop(_next_save_idx)
                         results.append(_result_item)
-                        _slang_db_manager.record_result(_result_item)
                         _next_save_idx += 1
                         flushed = True
                     if flushed:
@@ -1016,6 +1559,7 @@ def main() -> None:
                                 json.dumps(results, ensure_ascii=False, indent=2),
                                 encoding="utf-8"
                             )
+                        _write_pending_snapshot()
 
                 _executor_ref = None  # Ctrl+C에서 접근용
 
@@ -1026,7 +1570,14 @@ def main() -> None:
                         gidx, pid, wid_done = futures_dict.pop(fut)
                         try:
                             full_result = fut.result()
+                            _slang_db_manager.record_result(full_result)
                             _pending_results[gidx] = full_result
+                            _append_checkpoint(
+                                global_idx=gidx,
+                                post_id=pid,
+                                result_item=full_result,
+                                status="completed",
+                            )
                         except (SystemExit, KeyboardInterrupt):
                             pass  # 셧다운 중 — 무시
                         except Exception as e:
@@ -1038,8 +1589,15 @@ def main() -> None:
                                     "identity": {"is_relevant": False, "reason": f"처리 오류: {e}"},
                                 },
                             }
+                            _append_checkpoint(
+                                global_idx=gidx,
+                                post_id=pid,
+                                result_item=_pending_results[gidx],
+                                status="failed",
+                            )
                         _worker_pool.put(wid_done)
                     if done_list:
+                        _write_pending_snapshot()
                         _flush_ordered()
 
                 try:
@@ -1105,6 +1663,7 @@ def main() -> None:
                                 json.dumps(results, ensure_ascii=False, indent=2),
                                 encoding="utf-8"
                             )
+                        _write_pending_snapshot()
                         _slang_db_manager.finalize()
                         _cli_progress(f"💾 중단 시점까지 {len(results)}건 저장됨: {out_result_path}")
                     sys.stdout = _orig_out
@@ -1134,6 +1693,10 @@ def main() -> None:
             
             # 전체 완료
             _slang_db_manager.finalize()
+            if _PARALLEL > 1:
+                with _results_lock:
+                    pending_snapshot_path.write_text("[]\n", encoding="utf-8")
+                _write_manifest()
             total_elapsed = time.time() - total_start
             print(f"\n{'='*70}", file=sys.stderr, flush=True)
             print(f"✅ 처리 완료!", file=sys.stderr, flush=True)

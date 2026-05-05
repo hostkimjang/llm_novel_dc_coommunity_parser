@@ -40,7 +40,9 @@ Thumbs.db
 /tmp
 tests/inputs/test01.jsonl
 /tests
-/tmp02
+/tmp*
 *.bak
 *.badbak
 /slang_db
+/tools
+

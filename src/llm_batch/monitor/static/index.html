@@ -138,15 +138,16 @@
   <div class="flex gap-6 border-b border-slate-700 mb-2">
     <button onclick="switchTab('live')" id="tab-live" class="pb-2 text-sm font-medium tab-active">📡 실시간 모니터</button>
     <button onclick="switchTab('history')" id="tab-history" class="pb-2 text-sm font-medium tab-idle">📁 과거 실행 이력</button>
+    <button onclick="switchTab('slang-db')" id="tab-slang-db" class="pb-2 text-sm font-medium tab-idle">🗂️ Slang DB</button>
   </div>
 
   <!-- ===== LIVE TAB ===== -->
   <div id="panel-live">
 
-    <!-- Progress Bar -->
-    <div class="glass rounded-xl p-4 mb-4">
-      <div class="flex items-center justify-between mb-2">
-        <div class="flex items-center gap-2">
+	    <!-- Progress Bar -->
+	    <div class="glass rounded-xl p-4 mb-4">
+	      <div class="flex items-center justify-between mb-2">
+	        <div class="flex items-center gap-2">
           <span id="batch-status-icon" class="text-lg">⏸️</span>
           <span id="batch-status-text" class="text-sm font-medium">배치 대기 중</span>
         </div>
@@ -155,15 +156,40 @@
       <div class="w-full bg-slate-700 rounded-full h-3 overflow-hidden">
         <div id="progress-bar" class="bg-blue-500 h-3 rounded-full transition-all duration-500" style="width:0%"></div>
       </div>
-      <div class="flex justify-between mt-2 text-xs text-slate-400">
-        <span id="elapsed-text">경과: -</span>
-        <span id="eta-text">ETA: -</span>
-        <span id="avg-text">평균: -</span>
-      </div>
-    </div>
+	      <div class="flex justify-between mt-2 text-xs text-slate-400">
+	        <span id="elapsed-text">경과: -</span>
+	        <span id="eta-text">ETA: -</span>
+	        <span id="avg-text">평균: -</span>
+	      </div>
+	    </div>
 
-    <!-- Stats Cards + Pipeline -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+	    <div id="llm-suspend-banner" class="hidden glass rounded-xl p-4 mb-4 border border-amber-500/30 bg-amber-950/20">
+	      <div class="flex items-start gap-3">
+	        <div class="text-2xl leading-none">⚠️</div>
+	        <div class="min-w-0">
+	          <div id="llm-suspend-title" class="text-sm font-semibold text-amber-200">LLM 서버 확인 대기 중</div>
+	          <div id="llm-suspend-message" class="text-xs text-amber-100 mt-1">HTTP 스트리밍 오류가 관측되었습니다. 관리자님은 LLM 서버측을 확인해주세요.</div>
+	          <div id="llm-suspend-error" class="text-xs text-amber-300/90 mt-2 break-all"></div>
+	          <div class="flex flex-wrap gap-3 mt-2 text-[11px] text-amber-200/80">
+	            <span id="llm-suspend-count"></span>
+	            <span id="llm-suspend-started"></span>
+	          </div>
+	          <div class="flex flex-wrap items-center gap-3 mt-3">
+	            <button
+	              id="llm-suspend-resume-btn"
+	              onclick="resumeLlmSuspend('web_dashboard')"
+	              class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-400 text-slate-900 hover:bg-amber-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+	            >확인 후 재개 (Y)</button>
+	            <div id="llm-suspend-action-status" class="text-[11px] text-amber-200/80">
+	              대시보드에서 버튼을 누르거나 y 키를 눌러 재개할 수 있습니다.
+	            </div>
+	          </div>
+	        </div>
+	      </div>
+	    </div>
+
+	    <!-- Stats Cards + Pipeline -->
+	    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
 
       <!-- Stats Cards -->
       <div class="glass rounded-xl p-4 space-y-3">
@@ -245,10 +271,35 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="glass rounded-xl p-4 mb-4">
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div>
+          <h3 class="text-sm font-semibold text-slate-300">🪟 패널 표시</h3>
+          <div class="text-xs text-slate-500 mt-1">실시간 모니터 하단 패널을 원하는 형태로 전환합니다.</div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button id="toggle-live-results" onclick="toggleLivePanel('results')" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">
+            <span>📋 처리 결과</span>
+            <span id="toggle-live-results-state" class="ml-2 rounded px-1.5 py-0.5 text-[10px] font-bold">ON</span>
+          </button>
+          <button id="toggle-live-logs" onclick="toggleLivePanel('logs')" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">
+            <span>📜 실시간 로그</span>
+            <span id="toggle-live-logs-state" class="ml-2 rounded px-1.5 py-0.5 text-[10px] font-bold">ON</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="live-panels-empty" class="hidden glass rounded-xl p-8 text-center">
+      <div class="text-lg font-semibold text-slate-200">표시할 패널이 없습니다</div>
+      <div class="text-sm text-slate-500 mt-2">처리 결과나 실시간 로그를 다시 켜면 모니터를 이어서 볼 수 있습니다.</div>
+      <button onclick="restoreAllLivePanels()" class="mt-4 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-500 transition-colors">둘 다 켜기</button>
+    </div>
+
+    <div id="live-panels-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
       <!-- Results Table -->
-      <div class="glass rounded-xl p-4">
+      <div id="live-results-panel" class="glass rounded-xl p-4">
         <div class="flex items-center justify-between mb-3 gap-3 flex-wrap">
           <h3 class="text-sm font-semibold text-slate-300">📋 처리 결과</h3>
           <div class="flex items-center gap-2 text-xs">
@@ -289,15 +340,15 @@
       </div>
 
       <!-- Log Stream (워커별 탭 지원) -->
-      <div class="glass rounded-xl p-4 flex flex-col">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-3">
+      <div id="live-logs-panel" class="glass rounded-xl p-4 flex flex-col">
+        <div class="flex items-start justify-between mb-3 gap-3 flex-wrap">
+          <div class="flex flex-col gap-2 min-w-0 flex-1">
             <h3 class="text-sm font-semibold text-slate-300">📜 실시간 로그</h3>
-            <div id="log-worker-tabs" class="hidden flex items-center gap-1">
+            <div id="log-worker-tabs" class="hidden flex flex-wrap items-center gap-1 max-w-full">
               <button onclick="switchLogWorker(-1)" data-log-w="-1" class="text-xs px-2 py-0.5 rounded-full bg-blue-900/60 text-blue-300 font-medium">전체</button>
             </div>
           </div>
-          <label class="flex items-center gap-1 text-xs text-slate-400">
+          <label class="flex items-center gap-1 text-xs text-slate-400 shrink-0">
             <input type="checkbox" id="log-autoscroll" checked class="rounded"> 자동 스크롤
           </label>
         </div>
@@ -383,6 +434,69 @@
       </div>
     </div>
   </div>
+
+  <!-- ===== SLANG DB TAB ===== -->
+  <div id="panel-slang-db" class="hidden">
+    <div class="glass rounded-xl p-4">
+      <div class="flex items-center justify-between mb-3 gap-3 flex-wrap">
+        <div>
+          <h3 class="text-sm font-semibold text-slate-300">🗂️ Slang DB</h3>
+          <div class="text-xs text-slate-500 mt-1">원본 제목별 slang 집계를 테이블로 조회합니다.</div>
+        </div>
+        <div class="flex items-center gap-4 text-xs text-slate-400 flex-wrap">
+          <span>업데이트: <span id="slang-db-updated-at">-</span></span>
+          <span>총 <span id="slang-db-total">0</span>건</span>
+          <span>slang <span id="slang-db-summary-slang">0</span></span>
+          <span>pending <span id="slang-db-summary-pending">0</span></span>
+          <span>conflict <span id="slang-db-summary-conflict">0</span></span>
+          <span>family <span id="slang-db-summary-family">0</span></span>
+        </div>
+      </div>
+      <div class="flex items-center justify-between mb-3 gap-3 flex-wrap">
+        <span id="slang-db-page-info" class="text-xs text-slate-400">0 / 0 · 0건</span>
+        <div class="flex items-center gap-2 text-xs">
+          <label class="flex items-center gap-2 text-slate-400">
+            <span>페이지당</span>
+            <select id="slang-db-page-size" onchange="setSlangDbPageSize(this.value)" class="rounded bg-slate-800 border border-slate-700 text-slate-200 px-2 py-1 text-xs focus:outline-none focus:border-blue-500">
+              <option value="100">100</option>
+              <option value="250">250</option>
+              <option value="500">500</option>
+              <option value="1000">1000</option>
+            </select>
+          </label>
+          <button id="slang-db-prev-btn" onclick="changeSlangDbPage(-1)" class="px-2 py-1 rounded bg-slate-800 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed">이전</button>
+          <button id="slang-db-next-btn" onclick="changeSlangDbPage(1)" class="px-2 py-1 rounded bg-slate-800 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed">다음</button>
+        </div>
+      </div>
+      <div class="overflow-auto max-h-[65vh]">
+        <table class="w-full text-xs table-fixed min-w-[980px]">
+          <colgroup>
+            <col class="w-[64px]">
+            <col class="w-[30%]">
+            <col class="w-[18%]">
+            <col class="w-[20%]">
+            <col class="w-[14%]">
+            <col class="w-[12%]">
+            <col class="w-[16%]">
+          </colgroup>
+          <thead class="text-slate-400 sticky top-0 bg-slate-800/90">
+            <tr>
+              <th class="text-left py-2 px-2">#</th>
+              <th class="text-left py-2 px-2">원본 제목</th>
+              <th class="text-left py-2 px-2">slang</th>
+              <th class="text-left py-2 px-2">pending</th>
+              <th class="text-left py-2 px-2">conflict</th>
+              <th class="text-left py-2 px-2">family</th>
+              <th class="text-left py-2 px-2">examples</th>
+            </tr>
+          </thead>
+          <tbody id="slang-db-body"></tbody>
+        </table>
+        <div id="slang-db-empty" class="text-center text-slate-500 py-8">slang_db 데이터가 없습니다</div>
+      </div>
+      <div id="slang-db-page-buttons" class="mt-3 flex items-center justify-center gap-1 flex-wrap"></div>
+    </div>
+  </div>
 </div>
 
 <!-- Detail Modal -->
@@ -432,6 +546,8 @@ let lastEventTime = Date.now();
 const MAX_LOG_LINES = 500;  // 로그 DOM 최대 줄수
 const LIVE_PAGE_SIZE = 500;
 const HISTORY_PAGE_SIZE = 200;
+const SLANG_DB_PAGE_SIZE_DEFAULT = 100;
+const SLANG_DB_PAGE_SIZE_OPTIONS = [100, 250, 500, 1000];
 let liveResultPage = [];
 let liveCurrentPage = 0;
 let liveTotalResults = 0;
@@ -441,13 +557,24 @@ let historyLogFileName = '';
 let historyPageData = [];
 let historyCurrentPage = 0;
 let historyTotalResults = 0;
+let slangDbRows = [];
+let slangDbCurrentPage = 0;
+let slangDbTotalRows = 0;
+let slangDbUpdatedAt = null;
+let slangDbSummary = { titles_with_slang: 0, titles_with_pending: 0, titles_with_conflicts: 0, titles_with_family_aliases: 0 };
+let slangDbLoaded = false;
+let slangDbLoading = false;
+let slangDbPageSize = SLANG_DB_PAGE_SIZE_DEFAULT;
 let liveCachedSnapshot = null;
 let liveInitialPageLoaded = false;
 let livePendingRestoreItems = [];
+let livePanelVisibility = { results: true, logs: true };
 
 // ─── localStorage 캐시 (서버 종료 후에도 조회 가능) ──
 const _CACHE_PREFIX = 'lndc_';
 const _CACHE_RESULTS_KEY = _CACHE_PREFIX + 'results';
+const _CACHE_LIVE_PANELS_KEY = _CACHE_PREFIX + 'live_panels';
+const _CACHE_SLANG_DB_PAGE_SIZE_KEY = _CACHE_PREFIX + 'slang_db_page_size';
 const _CACHE_LOG_PREFIX = _CACHE_PREFIX + 'log_';
 const _CACHE_MAX_LOGS = 50;  // 최대 캐시할 포스트 로그 수
 
@@ -484,6 +611,23 @@ function _cacheGetPostLog(postId) {
 function _cacheLoadResults() {
   return _cacheGet(_CACHE_RESULTS_KEY) || { items: [], total: 0, page: 0 };
 }
+function _cacheSaveLivePanels() {
+  _cacheSet(_CACHE_LIVE_PANELS_KEY, livePanelVisibility);
+}
+function _cacheLoadLivePanels() {
+  const cached = _cacheGet(_CACHE_LIVE_PANELS_KEY);
+  return {
+    results: cached?.results !== false,
+    logs: cached?.logs !== false,
+  };
+}
+function _cacheSaveSlangDbPageSize() {
+  _cacheSet(_CACHE_SLANG_DB_PAGE_SIZE_KEY, slangDbPageSize);
+}
+function _cacheLoadSlangDbPageSize() {
+  const cached = Number(_cacheGet(_CACHE_SLANG_DB_PAGE_SIZE_KEY));
+  return SLANG_DB_PAGE_SIZE_OPTIONS.includes(cached) ? cached : SLANG_DB_PAGE_SIZE_DEFAULT;
+}
 
 function _restoreLiveResultsFromCache() {
   if (!liveCachedSnapshot || !Array.isArray(liveCachedSnapshot.items) || liveCachedSnapshot.items.length === 0) {
@@ -501,6 +645,7 @@ function toLiveSummary(item) {
   if (!item || typeof item !== 'object') return null;
   if (!item.analysis_result) return {
     ...item,
+    identity_state: item.identity_state || null,
     topicality: item.topicality || null,
     relevance_scope: item.relevance_scope || null,
     subtype: item.subtype || null,
@@ -533,6 +678,7 @@ function toLiveSummary(item) {
     official_title: novel.official_title,
     confidence: novel.confidence,
     discussion_type: identity.discussion_type,
+    identity_state: identity.identity_state || null,
     topicality: identity.topicality,
     relevance_scope: identity.relevance_scope,
     subtype: identity.subtype,
@@ -628,6 +774,9 @@ function enumLabel(value, labels) {
 }
 
 function topicalityMeta(topicality, isRelevant) {
+  if (!topicality && typeof isRelevant !== 'boolean') {
+    return { label: 'unknown', cls: 'bg-slate-700 text-slate-300' };
+  }
   if (topicality === 'core_relevant') {
     return { label: TOPICALITY_LABELS[topicality], cls: 'badge-core' };
   }
@@ -652,19 +801,15 @@ function compactStructureText(data) {
 
 function pickDisplayWorkTitle(data) {
   const novel = data.novel_identity || {};
-  if (data.official_title) return data.official_title;
-  if (novel.official_title) return novel.official_title;
-  const primary = data.primary_work;
-  if (primary && typeof primary === 'object') {
-    const primaryTitle = primary.official_title || primary.alias_or_mention;
-    if (primaryTitle) return primaryTitle;
+  const identityState = data.identity_state || null;
+  const workResolution = data.work_resolution || null;
+  const resolved = identityState === 'resolved_title' || workResolution === 'resolved';
+  if (resolved) {
+    if (data.official_title) return data.official_title;
+    if (novel.official_title) return novel.official_title;
   }
-  if (typeof primary === 'string' && primary.trim()) return primary.trim();
-  const candidates = Array.isArray(data.title_candidates) ? data.title_candidates : [];
-  for (const cand of candidates) {
-    if (!cand || typeof cand !== 'object') continue;
-    const candTitle = cand.official_title || cand.alias_or_mention;
-    if (candTitle) return candTitle;
+  if (identityState === 'unresolved_title' || identityState === 'adjacent_relevant' || identityState === 'technical_inconclusive') {
+    return '미확정';
   }
   return '-';
 }
@@ -687,6 +832,73 @@ function renderTagChips(values, labelMap = null) {
     .filter(Boolean)
     .map(value => `<span class="tag-chip">${escHtml(labelMap ? enumLabel(value, labelMap) : String(value))}</span>`)
     .join('');
+}
+
+function hasDetailPayload(data) {
+  if (!data || typeof data !== 'object') return false;
+
+  const textKeys = [
+    'title', 'author', 'created_at', 'url', 'reason', 'analysis_notes',
+    'official_title', 'discussion_type', 'topicality', 'relevance_scope',
+    'subtype', 'work_resolution', 'anchor_type', 'anchor_strength',
+  ];
+  if (textKeys.some(key => String(data[key] || '').trim())) return true;
+
+  const arrayKeys = [
+    'content', 'comments', 'reason_lines', 'context_sources', 'consistency_flags',
+    'title_candidates', 'mentioned_works', 'recommendation_candidates', 'entity_mentions',
+  ];
+  if (arrayKeys.some(key => Array.isArray(data[key]) && data[key].length > 0)) return true;
+
+  if (typeof data.is_relevant === 'boolean') return true;
+
+  const analysis = data.analysis;
+  if (analysis && typeof analysis === 'object' && Object.keys(analysis).length > 0) return true;
+
+  const novel = data.novel_identity;
+  if (novel && typeof novel === 'object' && Object.keys(novel).length > 0) return true;
+
+  return false;
+}
+
+function mergeLiveDetail(summary, detail) {
+  const merged = { ...(summary || {}) };
+  const src = (detail && typeof detail === 'object') ? detail : {};
+
+  for (const [key, value] of Object.entries(src)) {
+    if (value == null) continue;
+
+    if (typeof value === 'string') {
+      if (!value.trim()) continue;
+      merged[key] = value;
+      continue;
+    }
+
+    if (Array.isArray(value)) {
+      if (value.length === 0 && Array.isArray(merged[key]) && merged[key].length > 0) continue;
+      merged[key] = value;
+      continue;
+    }
+
+    if (typeof value === 'object') {
+      if (Object.keys(value).length === 0 && merged[key] && Object.keys(merged[key]).length > 0) continue;
+      merged[key] = value;
+      continue;
+    }
+
+    merged[key] = value;
+  }
+
+  if (src.flow_log) merged.flow_log = src.flow_log;
+  else if (summary?.flow_log) merged.flow_log = summary.flow_log;
+
+  if (src.token_usage) merged.token_usage = src.token_usage;
+  else if (summary?.token_usage) merged.token_usage = summary.token_usage;
+
+  if (src.elapsed != null) merged.elapsed = src.elapsed;
+  else if (summary?.elapsed != null) merged.elapsed = summary.elapsed;
+
+  return merged;
 }
 
 function titleLabel(titleObj) {
@@ -719,6 +931,18 @@ function normalizeRestoreItems(items) {
 // ── Parallel mode state ──
 let parallelCount = 1;
 const activeWorkers = new Map();  // post_id → { worker_id, title, index, expert, status, doneSteps: Set, recallCounts: {}, flowLog: [] }
+let lastKnownStatus = {};
+let llmSuspendState = {
+  active: false,
+  message: '',
+  error: '',
+  failureCount: 0,
+  threshold: 0,
+  startedAt: '',
+  resumedAt: '',
+};
+let llmResumeRequestPending = false;
+let llmResumeRequestMessage = '';
 
 // ── Worker log state ──
 let currentLogWorker = -1;  // -1=전체, 0+=워커별
@@ -730,9 +954,167 @@ function switchTab(tab) {
   currentTab = tab;
   document.getElementById('panel-live').classList.toggle('hidden', tab !== 'live');
   document.getElementById('panel-history').classList.toggle('hidden', tab !== 'history');
+  document.getElementById('panel-slang-db').classList.toggle('hidden', tab !== 'slang-db');
   document.getElementById('tab-live').className = 'pb-2 text-sm font-medium ' + (tab === 'live' ? 'tab-active' : 'tab-idle');
   document.getElementById('tab-history').className = 'pb-2 text-sm font-medium ' + (tab === 'history' ? 'tab-active' : 'tab-idle');
+  document.getElementById('tab-slang-db').className = 'pb-2 text-sm font-medium ' + (tab === 'slang-db' ? 'tab-active' : 'tab-idle');
   if (tab === 'history') loadHistoryList();
+  if (tab === 'slang-db' && !slangDbLoaded) loadSlangDb(0);
+}
+
+function formatDateTimeLabel(value) {
+  if (!value) return '-';
+  const dt = new Date(value);
+  if (Number.isNaN(dt.getTime())) return String(value);
+  return dt.toLocaleString('ko-KR');
+}
+
+function setLlmSuspendState(nextState) {
+  const nextActive = !!nextState.active;
+  const nextStartedAt = nextState.startedAt || '';
+  if (!nextActive) {
+    llmResumeRequestPending = false;
+    llmResumeRequestMessage = '';
+  } else if (llmSuspendState.startedAt !== nextStartedAt) {
+    llmResumeRequestPending = false;
+    llmResumeRequestMessage = '';
+  }
+  llmSuspendState = {
+    active: nextActive,
+    message: nextState.message || '',
+    error: nextState.error || '',
+    failureCount: Number(nextState.failureCount || 0),
+    threshold: Number(nextState.threshold || 0),
+    startedAt: nextStartedAt,
+    resumedAt: nextState.resumedAt || '',
+  };
+  renderLlmSuspendBanner();
+}
+
+function renderLlmSuspendBanner() {
+  const banner = document.getElementById('llm-suspend-banner');
+  if (!banner) return;
+  if (!llmSuspendState.active) {
+    banner.classList.add('hidden');
+    return;
+  }
+  banner.classList.remove('hidden');
+  document.getElementById('llm-suspend-title').textContent = 'LLM 서버 확인 대기 중';
+  document.getElementById('llm-suspend-message').textContent =
+    llmSuspendState.message || 'HTTP 스트리밍 오류가 관측되었습니다. 관리자님은 LLM 서버측을 확인해주세요.';
+  document.getElementById('llm-suspend-error').textContent =
+    llmSuspendState.error ? `최근 오류: ${llmSuspendState.error}` : '';
+  document.getElementById('llm-suspend-count').textContent =
+    llmSuspendState.failureCount > 0
+      ? `연속 실패 ${llmSuspendState.failureCount}회 / 임계값 ${llmSuspendState.threshold || '-'}회`
+      : '';
+  document.getElementById('llm-suspend-started').textContent =
+    llmSuspendState.startedAt ? `중단 시각: ${formatDateTimeLabel(llmSuspendState.startedAt)}` : '';
+  const resumeBtn = document.getElementById('llm-suspend-resume-btn');
+  const actionStatus = document.getElementById('llm-suspend-action-status');
+  if (resumeBtn) {
+    resumeBtn.disabled = llmResumeRequestPending;
+    resumeBtn.textContent = llmResumeRequestPending ? '재개 요청 중...' : '확인 후 재개 (Y)';
+  }
+  if (actionStatus) {
+    actionStatus.textContent = llmResumeRequestMessage || '대시보드에서 버튼을 누르거나 y 키를 눌러 재개할 수 있습니다.';
+  }
+}
+
+async function resumeLlmSuspend(source = 'web_dashboard') {
+  if (!llmSuspendState.active || llmResumeRequestPending) return;
+
+  llmResumeRequestPending = true;
+  llmResumeRequestMessage = '재개 요청을 보내는 중입니다...';
+  renderLlmSuspendBanner();
+
+  try {
+    const res = await fetch(`/api/llm/resume?source=${encodeURIComponent(source)}`, {
+      method: 'POST',
+    });
+    const payload = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(payload.error || `HTTP ${res.status}`);
+    }
+    llmResumeRequestMessage = source === 'web_keyboard'
+      ? '대시보드 y 입력으로 재개 요청을 보냈습니다. 곧 이어집니다.'
+      : '대시보드에서 재개 요청을 보냈습니다. 곧 이어집니다.';
+    renderLlmSuspendBanner();
+    fetch('/api/status').then(r => r.json()).then(updateStatus).catch(() => {});
+  } catch (err) {
+    llmResumeRequestPending = false;
+    llmResumeRequestMessage = `재개 요청 실패: ${err?.message || err}`;
+    renderLlmSuspendBanner();
+  }
+}
+
+function updateLiveToggleButton(panelKey, enabled) {
+  const button = document.getElementById(panelKey === 'results' ? 'toggle-live-results' : 'toggle-live-logs');
+  const badge = document.getElementById(panelKey === 'results' ? 'toggle-live-results-state' : 'toggle-live-logs-state');
+  if (!button || !badge) return;
+
+  button.className = enabled
+    ? 'px-3 py-1.5 rounded-lg text-xs font-medium transition-colors bg-blue-600/20 text-blue-200 border border-blue-500/40 hover:bg-blue-600/30'
+    : 'px-3 py-1.5 rounded-lg text-xs font-medium transition-colors bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700';
+  badge.textContent = enabled ? 'ON' : 'OFF';
+  badge.className = enabled
+    ? 'ml-2 rounded px-1.5 py-0.5 text-[10px] font-bold bg-blue-500/20 text-blue-200'
+    : 'ml-2 rounded px-1.5 py-0.5 text-[10px] font-bold bg-slate-700 text-slate-300';
+}
+
+function renderLivePanelVisibility() {
+  const grid = document.getElementById('live-panels-grid');
+  const resultsPanel = document.getElementById('live-results-panel');
+  const logsPanel = document.getElementById('live-logs-panel');
+  const emptyState = document.getElementById('live-panels-empty');
+  const showResults = !!livePanelVisibility.results;
+  const showLogs = !!livePanelVisibility.logs;
+
+  resultsPanel.classList.toggle('hidden', !showResults);
+  logsPanel.classList.toggle('hidden', !showLogs);
+
+  if (showResults && showLogs) {
+    grid.className = 'grid grid-cols-1 lg:grid-cols-2 gap-4';
+    emptyState.classList.add('hidden');
+  } else if (showResults || showLogs) {
+    grid.className = 'grid grid-cols-1 gap-4';
+    emptyState.classList.add('hidden');
+  } else {
+    grid.className = 'hidden';
+    emptyState.classList.remove('hidden');
+  }
+
+  updateLiveToggleButton('results', showResults);
+  updateLiveToggleButton('logs', showLogs);
+}
+
+function toggleLivePanel(panelKey) {
+  if (!(panelKey in livePanelVisibility)) return;
+  livePanelVisibility[panelKey] = !livePanelVisibility[panelKey];
+  _cacheSaveLivePanels();
+  renderLivePanelVisibility();
+}
+
+function restoreAllLivePanels() {
+  livePanelVisibility = { results: true, logs: true };
+  _cacheSaveLivePanels();
+  renderLivePanelVisibility();
+}
+
+function syncSlangDbPageSizeSelect() {
+  const select = document.getElementById('slang-db-page-size');
+  if (select) select.value = String(slangDbPageSize);
+}
+
+function setSlangDbPageSize(value) {
+  const next = Number(value);
+  slangDbPageSize = SLANG_DB_PAGE_SIZE_OPTIONS.includes(next) ? next : SLANG_DB_PAGE_SIZE_DEFAULT;
+  _cacheSaveSlangDbPageSize();
+  syncSlangDbPageSizeSelect();
+  if (slangDbLoaded || currentTab === 'slang-db') {
+    slangDbCurrentPage = 0;
+    loadSlangDb(0);
+  }
 }
 
 function updateLivePager() {
@@ -928,6 +1310,207 @@ function updateHistoryPager() {
   document.getElementById('history-next-btn').disabled = totalPages === 0 || historyCurrentPage >= totalPages - 1;
 }
 
+function updateSlangDbPager() {
+  const totalPages = slangDbTotalRows > 0 ? Math.ceil(slangDbTotalRows / slangDbPageSize) : 0;
+  document.getElementById('slang-db-page-info').textContent = `${totalPages ? slangDbCurrentPage + 1 : 0} / ${totalPages} · ${fmtNum(slangDbTotalRows)}건`;
+  document.getElementById('slang-db-prev-btn').disabled = slangDbCurrentPage <= 0;
+  document.getElementById('slang-db-next-btn').disabled = totalPages === 0 || slangDbCurrentPage >= totalPages - 1;
+  renderSlangDbPageButtons(totalPages);
+}
+
+function renderSlangDbPageButtons(totalPages) {
+  const container = document.getElementById('slang-db-page-buttons');
+  if (!container) return;
+  if (totalPages <= 1) {
+    container.innerHTML = '';
+    return;
+  }
+
+  const pages = [];
+  const addPage = (page) => {
+    if (page < 0 || page >= totalPages || pages.includes(page)) return;
+    pages.push(page);
+  };
+
+  addPage(0);
+  for (let page = slangDbCurrentPage - 2; page <= slangDbCurrentPage + 2; page++) {
+    addPage(page);
+  }
+  addPage(totalPages - 1);
+  pages.sort((a, b) => a - b);
+
+  container.innerHTML = pages.map((page, idx) => {
+    const prev = idx > 0 ? pages[idx - 1] : null;
+    const gap = prev != null && page - prev > 1
+      ? '<span class="px-2 py-1 text-xs text-slate-500">...</span>'
+      : '';
+    const activeClass = page === slangDbCurrentPage
+      ? 'bg-blue-600 text-white ring-1 ring-blue-400'
+      : 'bg-slate-800 text-slate-300 hover:bg-slate-700';
+    return `${gap}<button onclick="goToSlangDbPage(${page})" class="px-2.5 py-1 rounded text-xs font-medium transition-colors ${activeClass}">${page + 1}</button>`;
+  }).join('');
+}
+
+function renderSlangDbRows() {
+  const tbody = document.getElementById('slang-db-body');
+  const empty = document.getElementById('slang-db-empty');
+  const updatedAt = document.getElementById('slang-db-updated-at');
+  const total = document.getElementById('slang-db-total');
+  const summarySlang = document.getElementById('slang-db-summary-slang');
+  const summaryPending = document.getElementById('slang-db-summary-pending');
+  const summaryConflict = document.getElementById('slang-db-summary-conflict');
+  const summaryFamily = document.getElementById('slang-db-summary-family');
+
+  updatedAt.textContent = formatDateTimeLabel(slangDbUpdatedAt);
+  total.textContent = fmtNum(slangDbTotalRows);
+  summarySlang.textContent = fmtNum(slangDbSummary.titles_with_slang || 0);
+  summaryPending.textContent = fmtNum(slangDbSummary.titles_with_pending || 0);
+  summaryConflict.textContent = fmtNum(slangDbSummary.titles_with_conflicts || 0);
+  summaryFamily.textContent = fmtNum(slangDbSummary.titles_with_family_aliases || 0);
+
+  if (!slangDbRows.length) {
+    tbody.innerHTML = '';
+    empty.classList.remove('hidden');
+    updateSlangDbPager();
+    return;
+  }
+
+  empty.classList.add('hidden');
+  const renderTerms = (terms, tone) => {
+    const items = Array.isArray(terms) ? terms.filter(Boolean) : [];
+    if (!items.length) return '<span class="text-slate-500">-</span>';
+    const toneClass = {
+      sky: 'bg-sky-900/40 text-sky-300 ring-sky-700/60',
+      amber: 'bg-amber-900/40 text-amber-300 ring-amber-700/60',
+      rose: 'bg-rose-900/30 text-rose-300 ring-rose-700/60',
+      violet: 'bg-violet-900/30 text-violet-300 ring-violet-700/60',
+    }[tone] || 'bg-slate-800 text-slate-300 ring-slate-700/60';
+    return `<div class="flex flex-wrap gap-1">${items.map(term => `<span class="px-2 py-0.5 rounded-full ring-1 ${toneClass}">${escHtml(term)}</span>`).join('')}</div>`;
+  };
+  const renderPendingKinds = (counts) => {
+    const entries = counts && typeof counts === 'object' ? Object.entries(counts) : [];
+    if (!entries.length) return '';
+    return `<div class="mt-1 flex flex-wrap gap-1">${entries.map(([kind, count]) => `<span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">${escHtml(kind)} ${fmtNum(count)}</span>`).join('')}</div>`;
+  };
+  const renderExamples = (row) => {
+    const examples = Array.isArray(row.example_preview) ? row.example_preview : [];
+    if (!examples.length) return '<span class="text-slate-500">-</span>';
+    return `<div class="space-y-1">${examples.map(ex => `
+      <div class="rounded bg-slate-900/40 px-2 py-1">
+        <div class="text-slate-200">#${escHtml(String(ex.post_id || '-'))} · ${escHtml(ex.alias || '-')}</div>
+        <div class="text-slate-500">${escHtml(ex.bucket || '-')} / ${escHtml(ex.source_role || '-')} / ${escHtml(ex.pending_kind || '-')}</div>
+      </div>
+    `).join('')}</div>`;
+  };
+  tbody.innerHTML = slangDbRows.map((row, idx) => {
+    const rowNum = slangDbCurrentPage * slangDbPageSize + idx + 1;
+    const slangTerms = Array.isArray(row.slang_terms) ? row.slang_terms : [];
+    const pendingTerms = Array.isArray(row.pending_terms) ? row.pending_terms : [];
+    const conflictTerms = Array.isArray(row.conflict_terms) ? row.conflict_terms : [];
+    const familyTerms = Array.isArray(row.family_alias_terms) ? row.family_alias_terms : [];
+    return `
+      <tr class="border-t border-slate-700/50">
+        <td class="py-2 px-2 text-slate-400">${rowNum}</td>
+        <td class="py-2 px-2">
+          <div class="text-slate-100 break-words">${escHtml(row.title || '-')}</div>
+        </td>
+        <td class="py-2 px-2">
+          ${renderTerms(slangTerms, 'sky')}
+        </td>
+        <td class="py-2 px-2">
+          ${renderTerms(pendingTerms, 'amber')}
+          ${renderPendingKinds(row.pending_kind_counts)}
+        </td>
+        <td class="py-2 px-2">
+          ${renderTerms(conflictTerms, 'rose')}
+        </td>
+        <td class="py-2 px-2">
+          ${renderTerms(familyTerms, 'violet')}
+        </td>
+        <td class="py-2 px-2">
+          ${renderExamples(row)}
+        </td>
+      </tr>
+    `;
+  }).join('');
+  updateSlangDbPager();
+}
+
+function setSlangDbEmptyMessage(message) {
+  const empty = document.getElementById('slang-db-empty');
+  if (empty) empty.textContent = message;
+}
+
+async function loadSlangDb(page = 0) {
+  if (slangDbLoading) return;
+  slangDbLoading = true;
+  try {
+    const requestedPage = Math.max(page, 0);
+    const offset = requestedPage * slangDbPageSize;
+    const res = await fetch(`/api/slang-db?offset=${offset}&limit=${slangDbPageSize}`);
+    const contentType = res.headers.get('content-type') || '';
+    let payload = null;
+    try {
+      payload = contentType.includes('application/json') ? await res.json() : null;
+    } catch {
+      payload = null;
+    }
+
+    if (!res.ok) {
+      if (res.status === 404) {
+        throw new Error('현재 서버에 /api/slang-db 라우트가 없습니다. 모니터 서버 재시작 또는 최신 배포가 필요합니다.');
+      }
+      throw new Error((payload && (payload.error || payload.detail)) || `HTTP ${res.status}`);
+    }
+    if (!payload || !Array.isArray(payload.items)) {
+      throw new Error('unexpected /api/slang-db payload');
+    }
+
+    const nextTotal = Number(payload.total || 0);
+    const totalPages = nextTotal > 0 ? Math.ceil(nextTotal / slangDbPageSize) : 0;
+    if (totalPages > 0 && requestedPage >= totalPages) {
+      slangDbLoading = false;
+      await loadSlangDb(totalPages - 1);
+      return;
+    }
+
+    slangDbRows = payload.items;
+    slangDbTotalRows = nextTotal;
+    slangDbUpdatedAt = payload.updated_at || null;
+    slangDbSummary = payload.summary || { titles_with_slang: 0, titles_with_pending: 0, titles_with_conflicts: 0, titles_with_family_aliases: 0 };
+    slangDbCurrentPage = requestedPage;
+    slangDbLoaded = true;
+    setSlangDbEmptyMessage('slang_db 데이터가 없습니다');
+    renderSlangDbRows();
+  } catch (err) {
+    console.warn('[Dashboard] slang db load failed', err);
+    slangDbRows = [];
+    slangDbTotalRows = 0;
+    slangDbUpdatedAt = null;
+    slangDbSummary = { titles_with_slang: 0, titles_with_pending: 0, titles_with_conflicts: 0, titles_with_family_aliases: 0 };
+    slangDbCurrentPage = 0;
+    slangDbLoaded = false;
+    const message = String(err?.message || '').trim() || 'slang_db 데이터를 불러오지 못했습니다';
+    setSlangDbEmptyMessage(message);
+    renderSlangDbRows();
+  } finally {
+    slangDbLoading = false;
+  }
+}
+
+function goToSlangDbPage(page) {
+  const totalPages = slangDbTotalRows > 0 ? Math.ceil(slangDbTotalRows / slangDbPageSize) : 0;
+  if (page < 0 || page >= totalPages || page === slangDbCurrentPage) return;
+  loadSlangDb(page);
+}
+
+function changeSlangDbPage(delta) {
+  const totalPages = slangDbTotalRows > 0 ? Math.ceil(slangDbTotalRows / slangDbPageSize) : 0;
+  const nextPage = slangDbCurrentPage + delta;
+  if (nextPage < 0 || nextPage >= totalPages) return;
+  loadSlangDb(nextPage);
+}
+
 // ─── SSE Connection ─────────────────────────────
 function connectSSE() {
   if (sse) { try { sse.close(); } catch {} }
@@ -993,6 +1576,7 @@ function handleEvent(msg) {
   switch (type) {
     case 'batch_start':
       parallelCount = data.parallel_count || 1;
+      setLlmSuspendState({ active: false });
       doneSteps.clear();
       Object.keys(recallCounts).forEach(k => delete recallCounts[k]);
       resetPipelineSteps();
@@ -1003,6 +1587,7 @@ function handleEvent(msg) {
       liveTotalResults = 0;
       liveInitialPageLoaded = false;
       livePendingRestoreItems = [];
+      slangDbLoaded = false;
       renderLiveResults();
       _cacheSaveResults();
       // 병렬 모드 UI 전환
@@ -1014,13 +1599,13 @@ function handleEvent(msg) {
       document.getElementById('log-area').textContent = '';
       // 로그 탭 초기화
       const tabContainer = document.getElementById('log-worker-tabs');
-      tabContainer.innerHTML = '<button onclick="switchLogWorker(-1)" data-log-w="-1" class="text-xs px-2 py-0.5 rounded-full bg-blue-600 text-white ring-1 ring-blue-400 font-medium">전체</button>';
+      tabContainer.innerHTML = '<button onclick="switchLogWorker(-1)" data-log-w="-1" class="text-xs px-2 py-0.5 rounded-full bg-blue-600 text-white ring-1 ring-blue-400 font-medium whitespace-nowrap">전체</button>';
       if (parallelCount > 1) {
         tabContainer.classList.remove('hidden');
         for (let i = 0; i < parallelCount; i++) {
           workerLogs.set(i, []);
           const c = WORKER_TAB_COLORS[i % WORKER_TAB_COLORS.length];
-          tabContainer.innerHTML += `<button onclick="switchLogWorker(${i})" data-log-w="${i}" class="text-xs px-2 py-0.5 rounded-full bg-${c}-900/40 text-${c}-300 hover:bg-${c}-900/70 font-medium transition-colors">W${i}</button>`;
+          tabContainer.innerHTML += `<button onclick="switchLogWorker(${i})" data-log-w="${i}" class="text-xs px-2 py-0.5 rounded-full bg-${c}-900/40 text-${c}-300 hover:bg-${c}-900/70 font-medium transition-colors whitespace-nowrap">W${i}</button>`;
         }
       } else {
         tabContainer.classList.add('hidden');
@@ -1096,11 +1681,39 @@ function handleEvent(msg) {
       break;
 
     case 'batch_complete':
+      setLlmSuspendState({ active: false });
       document.getElementById('batch-status-icon').textContent = '✅';
       document.getElementById('batch-status-text').textContent = '배치 완료';
       resetPipelineSteps();
       activeWorkers.clear();
       renderWorkerCards();
+      slangDbLoaded = false;
+      if (currentTab === 'slang-db') loadSlangDb(slangDbCurrentPage);
+      break;
+
+    case 'llm_suspend':
+      setLlmSuspendState({
+        active: true,
+        message: data.message || '',
+        error: data.last_error || '',
+        failureCount: data.failure_count || 0,
+        threshold: data.threshold || 0,
+        startedAt: data.started_at || '',
+      });
+      updateStatus({ ...lastKnownStatus, llm_suspended: true, llm_suspend_message: data.message || '', llm_suspend_error: data.last_error || '', llm_suspend_failure_count: data.failure_count || 0, llm_suspend_threshold: data.threshold || 0, llm_suspend_started_at: data.started_at || '' });
+      break;
+
+    case 'llm_resume':
+      setLlmSuspendState({
+        active: false,
+        message: data.message || '',
+        error: data.last_error || '',
+        failureCount: data.failure_count || 0,
+        threshold: data.threshold || 0,
+        startedAt: data.started_at || '',
+        resumedAt: data.resumed_at || '',
+      });
+      updateStatus({ ...lastKnownStatus, llm_suspended: false, llm_suspend_resumed_at: data.resumed_at || '' });
       break;
 
     case 'log':
@@ -1112,11 +1725,25 @@ function handleEvent(msg) {
 // ─── UI Updates ─────────────────────────────────
 
 function updateStatus(s) {
+  lastKnownStatus = { ...(s || {}) };
+  setLlmSuspendState({
+    active: !!s.llm_suspended,
+    message: s.llm_suspend_message || '',
+    error: s.llm_suspend_error || '',
+    failureCount: s.llm_suspend_failure_count || 0,
+    threshold: s.llm_suspend_threshold || 0,
+    startedAt: s.llm_suspend_started_at || '',
+    resumedAt: s.llm_suspend_resumed_at || '',
+  });
   const pct = s.progress_pct || 0;
   document.getElementById('progress-bar').style.width = pct + '%';
   document.getElementById('progress-text').textContent = `${s.done_count || 0} / ${s.total_posts || 0}`;
   
-  if (s.batch_running) {
+  if (s.llm_suspended) {
+    document.getElementById('batch-status-icon').textContent = '⚠️';
+    document.getElementById('batch-status-icon').classList.remove('anim-pulse');
+    document.getElementById('batch-status-text').textContent = 'LLM 서버 확인 대기';
+  } else if (s.batch_running) {
     document.getElementById('batch-status-icon').textContent = '🔄';
     document.getElementById('batch-status-icon').classList.add('anim-pulse');
     document.getElementById('batch-status-text').textContent = '배치 실행 중';
@@ -1167,7 +1794,7 @@ function updateStatus(s) {
         if (!tabContainer.querySelector(`[data-log-w="${i}"]`)) {
           workerLogs.set(i, []);
           const c = WORKER_TAB_COLORS[i % WORKER_TAB_COLORS.length];
-          tabContainer.innerHTML += `<button onclick="switchLogWorker(${i})" data-log-w="${i}" class="text-xs px-2 py-0.5 rounded-full bg-${c}-900/40 text-${c}-300 hover:bg-${c}-900/70 font-medium transition-colors">W${i}</button>`;
+          tabContainer.innerHTML += `<button onclick="switchLogWorker(${i})" data-log-w="${i}" class="text-xs px-2 py-0.5 rounded-full bg-${c}-900/40 text-${c}-300 hover:bg-${c}-900/70 font-medium transition-colors whitespace-nowrap">W${i}</button>`;
         }
       }
       updateLogTabStyles();
@@ -1382,15 +2009,28 @@ async function openLiveModal(postId) {
     const res = await fetch(`/api/results/${postId}`);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-    showModal({
-      ...summary,
-      ...data,
-      flow_log: data.flow_log || summary.flow_log || [],
-      token_usage: data.token_usage || summary.token_usage,
-      elapsed: data.elapsed ?? summary.elapsed,
-    }, 'live');
+    const detailReady = hasDetailPayload(data);
+    const summaryReady = hasDetailPayload(summary);
+    if (!detailReady && !summaryReady) {
+      throw new Error('상세 결과가 아직 저장되지 않았습니다.');
+    }
+    if (!detailReady && summaryReady) {
+      showModal({
+        ...mergeLiveDetail(summary, data),
+        _detail_warning: '상세 API 응답이 불완전하여 목록 요약 데이터를 우선 표시했습니다.',
+      }, 'live');
+      return;
+    }
+    showModal(mergeLiveDetail(summary, data), 'live');
   } catch (err) {
-    showModal(summary, 'live');
+    if (hasDetailPayload(summary)) {
+      showModal({
+        ...summary,
+        _detail_warning: err.message || '상세 정보를 아직 불러오지 못했습니다.',
+      }, 'live');
+      return;
+    }
+    document.getElementById('modal-body').innerHTML = `<div class="text-center text-amber-300 py-12">상세 정보를 아직 불러오지 못했습니다.<br><span class="text-xs text-slate-500">${escHtml(err.message || 'unknown error')}</span></div>`;
   }
 }
 
@@ -1438,6 +2078,7 @@ function showModal(d, mode) {
   const officialTitle = isHistory ? (novel.official_title || '-') : (d.official_title || '-');
   const discussionType = isHistory ? (identity.discussion_type || '-') : (d.discussion_type || '-');
   const topicality = isHistory ? (identity.topicality || '-') : (d.topicality || '-');
+  const identityState = isHistory ? (identity.identity_state || null) : (d.identity_state || null);
   const relevanceScope = isHistory ? (identity.relevance_scope || '-') : (d.relevance_scope || '-');
   const subtype = isHistory ? (identity.subtype || '-') : (d.subtype || '-');
   const workResolution = isHistory ? (identity.work_resolution || '-') : (d.work_resolution || '-');
@@ -1454,6 +2095,7 @@ function showModal(d, mode) {
   const displayWorkTitle = pickDisplayWorkTitle({
     official_title: officialTitle === '-' ? null : officialTitle,
     novel_identity: novel,
+    identity_state: isHistory ? (identity.identity_state || null) : (d.identity_state || null),
     primary_work: primaryWork,
     title_candidates: titleCandidates,
     work_resolution: workResolution === '-' ? null : workResolution,
@@ -1464,6 +2106,7 @@ function showModal(d, mode) {
   const reason = isHistory ? (identity.reason || '') : (d.reason || '');
   const reasonLines = isHistory ? (identity.reason_lines || []) : (d.reason_lines || []);
   const analysisNotes = isHistory ? ((analysis.notes || d.analysis_notes || '')) : (d.analysis_notes || analysis.notes || '');
+  const detailWarning = !isHistory ? String(d._detail_warning || '').trim() : '';
   const slangInsight = isHistory ? identity.slang_insight : d.slang_insight;
   const topicalityBadge = topicalityMeta(topicality === '-' ? null : topicality, isRelevant);
   const hasPrimaryReason = Boolean((reason && String(reason).trim()) || (Array.isArray(reasonLines) && reasonLines.length));
@@ -1473,6 +2116,12 @@ function showModal(d, mode) {
       ? reasonLines.filter(Boolean).join('\n').trim()
       : String(analysisNotes || '').trim());
   const reasonLabel = hasPrimaryReason ? '📝 판정 사유' : '📝 판정 사유 보조';
+
+  if (detailWarning) {
+    html += `<div class="detail-section">`;
+    html += `<div class="detail-block text-amber-200" style="border:1px solid rgba(245,158,11,.25); background:rgba(120,53,15,.18)">${escHtml(detailWarning)}</div>`;
+    html += `</div>`;
+  }
   
   // ━━━ ① 원본 게시글 정보 ━━━
   html += `<div class="detail-section">`;
@@ -1507,9 +2156,11 @@ function showModal(d, mode) {
   html += `<div class="detail-section-title">🏷️ 판정 결과</div>`;
   html += `<div class="detail-grid">`;
   html += dkv('Topicality', `<span class="px-2 py-0.5 rounded ${topicalityBadge.cls} text-xs font-medium">${escHtml(topicalityBadge.label)}</span>`);
-  html += dkv('기존 relevance', isRelevant
-    ? '<span class="px-2 py-0.5 rounded badge-relevant text-xs font-medium">✅ relevant</span>'
-    : '<span class="px-2 py-0.5 rounded badge-noise text-xs font-medium">⛔ noise</span>');
+  html += dkv('기존 relevance', typeof isRelevant === 'boolean'
+    ? (isRelevant
+      ? '<span class="px-2 py-0.5 rounded badge-relevant text-xs font-medium">✅ relevant</span>'
+      : '<span class="px-2 py-0.5 rounded badge-noise text-xs font-medium">⛔ noise</span>')
+    : '<span class="px-2 py-0.5 rounded bg-slate-700 text-slate-300 text-xs font-medium">unknown</span>');
   html += dkv('Subtype', escHtml(enumLabel(subtype === '-' ? null : subtype, SUBTYPE_LABELS)));
   html += dkv('Work Resolution', escHtml(enumLabel(workResolution === '-' ? null : workResolution, WORK_RESOLUTION_LABELS)));
   html += dkv('소설명', `<span class="text-white font-medium">${escHtml(displayWorkTitle)}</span>`);
@@ -1517,7 +2168,9 @@ function showModal(d, mode) {
   html += dkv('토론유형', escHtml(discussionType));
   html += dkv('앵커', escHtml(`${enumLabel(anchorType === '-' ? null : anchorType, ANCHOR_TYPE_LABELS)} / ${enumLabel(anchorStrength === '-' ? null : anchorStrength, ANCHOR_STRENGTH_LABELS)}`));
   if (d.elapsed != null) html += dkv('소요시간', d.elapsed.toFixed(1) + 's');
-  if (novel.heretic_url) html += dkv('작품 URL', `<a href="${escHtml(novel.heretic_url)}" target="_blank" class="text-blue-400 hover:underline text-xs">${escHtml(novel.heretic_url)}</a>`);
+  const workUrl = novel.heretic_url || d.heretic_url || null;
+  const showWorkUrl = (identityState === 'resolved_title' || workResolution === 'resolved') && !!workUrl;
+  if (showWorkUrl) html += dkv('작품 URL', `<a href="${escHtml(workUrl)}" target="_blank" class="text-blue-400 hover:underline text-xs">${escHtml(workUrl)}</a>`);
   const tu = d.token_usage;
   if (tu && tu.total_tokens) {
     html += dkv('토큰', `입력 ${fmtNum(tu.prompt_tokens||0)} / 출력 ${fmtNum(tu.completion_tokens||0)} / 총 ${fmtNum(tu.total_tokens||0)}`);
@@ -1931,7 +2584,7 @@ function initLogTabs() {
       btn.setAttribute('data-log-w', wid);
       btn.onclick = () => switchLogWorker(wid);
       const c = WORKER_TAB_COLORS[wid % WORKER_TAB_COLORS.length];
-      btn.className = `text-xs px-2 py-0.5 rounded-full bg-${c}-900/40 text-${c}-300 hover:bg-${c}-900/70 transition-colors`;
+      btn.className = `text-xs px-2 py-0.5 rounded-full bg-${c}-900/40 text-${c}-300 hover:bg-${c}-900/70 transition-colors whitespace-nowrap`;
       btn.textContent = `W${wid}`;
       container.appendChild(btn);
     }
@@ -1959,11 +2612,11 @@ function updateLogTabStyles() {
     const w = Number(btn.dataset.logW);
     const isActive = (w === currentLogWorker);
     if (w === -1) {
-      btn.className = `text-xs px-2 py-0.5 rounded-full font-medium transition-colors ${
+      btn.className = `text-xs px-2 py-0.5 rounded-full font-medium transition-colors whitespace-nowrap ${
         isActive ? 'bg-blue-600 text-white ring-1 ring-blue-400' : 'bg-blue-900/40 text-blue-300 hover:bg-blue-900/70'}`;
     } else {
       const c = WORKER_TAB_COLORS[w % WORKER_TAB_COLORS.length];
-      btn.className = `text-xs px-2 py-0.5 rounded-full font-medium transition-colors ${
+      btn.className = `text-xs px-2 py-0.5 rounded-full font-medium transition-colors whitespace-nowrap ${
         isActive ? `bg-${c}-600 text-white ring-1 ring-${c}-400` : `bg-${c}-900/40 text-${c}-300 hover:bg-${c}-900/70`}`;
     }
   });
@@ -2109,6 +2762,17 @@ function escHtml(s) {
   return d.innerHTML;
 }
 
+document.addEventListener('keydown', (e) => {
+  if (!llmSuspendState.active || llmResumeRequestPending) return;
+  const target = e.target;
+  const tag = target && target.tagName ? String(target.tagName).toLowerCase() : '';
+  if (tag === 'input' || tag === 'textarea' || (target && target.isContentEditable)) return;
+  if (e.key === 'y' || e.key === 'Y') {
+    e.preventDefault();
+    resumeLlmSuspend('web_keyboard');
+  }
+});
+
 setInterval(() => {
   document.getElementById('clock').textContent = new Date().toLocaleTimeString('ko-KR');
 }, 1000);
@@ -2116,6 +2780,10 @@ setInterval(() => {
 // ─── Init ───────────────────────────────────────
 // 캐시는 첫 live fetch가 실패했을 때만 폴백으로 사용한다.
 liveCachedSnapshot = _cacheLoadResults();
+livePanelVisibility = _cacheLoadLivePanels();
+slangDbPageSize = _cacheLoadSlangDbPageSize();
+renderLivePanelVisibility();
+syncSlangDbPageSizeSelect();
 
 connectSSE();
 fetch('/api/logs?n=100').then(r=>r.json()).then(lines => {

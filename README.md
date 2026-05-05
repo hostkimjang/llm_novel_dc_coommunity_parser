@@ -37,17 +37,33 @@
 # 1) 의존성 설치
 pip install -e .
 
-# 2) (선택) SearchXNG 준비
-docker compose up -d
+# 2) 검색 스택 준비 (SearchXNG + Crawl4AI + CloakBrowser fallback + MCP bridge)
+docker compose up -d --build
 
 # 3) 전문가 파이프라인 실행
+#    --parallel 4이면 로컬 WARP shard 4개가 자동 구성됨
 python expert_main.py tests/inputs/sample.jsonl --parallel 4
 ```
 
 출력:
 - 결과 JSON: `out/expert_result_YYYYMMDD_HHMMSS.json`
 - 실행 로그: `logs/expert_run_YYYYMMDD_HHMMSS.log`
-- 대시보드: `http://127.0.0.1:8765` (기본)
+- 대시보드: `http://127.0.0.1:8080` (기본, `DASHBOARD_PORT`로 변경 가능)
+
+### 검색 스택 한눈에 보기
+
+현재 검색 경로는 비용 없는 로컬/브라우저 fallback을 기본값으로 둡니다.
+
+```
+expert_main.py worker
+  -> MCPClient
+  -> mcp-bridge-N
+  -> SearchXNG-N / Crawl4AI-N
+  -> 필요 시 browser-search-N (CloakBrowser 기반 Google fallback)
+  -> 같은 shard의 WARP egress
+```
+
+기본값은 `BROWSER_SEARCH_PROVIDER_ORDER=cloak`입니다. 비용이 발생하는 검색 API 키는 필요 없고, Google 직접 브라우저 fallback은 shard별 최소 간격(`45s + jitter 0~15s`)을 두고 호출됩니다. CAPTCHA/차단 징후가 보이면 해당 shard에서 2시간 쿨다운합니다.
 
 ---
 
@@ -64,11 +80,12 @@ python expert_main.py tests/inputs/sample.jsonl --parallel 4
 ## ✅ 운영 체크리스트
 
 - 입력 파일 형식 확인: JSONL 한 줄당 1 post (`post_id`, `title`, `content_blocks`, `comments`)
-- 검색 백엔드 확인: `MCP_ENDPOINT`가 SearchXNG 서버와 통신 가능한지 점검
+- 검색 백엔드 확인: `docker compose up -d --build` 또는 자동 WARP shard가 `mcp-bridge`/`SearchXNG`/`Crawl4AI`/`browser-search`와 통신 가능한지 점검
 - LLM 연결 확인: `LLM_BACKEND`, `LLM_ENDPOINT` 또는 `LLM_MODEL_PATH` 유효성 점검
 - 품질 보호 옵션 확인: `LLM_MAX_SEARCH_ROUNDS`, `LLM_MAX_SEARCH_QUERIES`, `MCP_TOP_K_RESULTS`
-- 병렬 처리 전 확인: 원격 LLM QPS/토큰 한도 대비 `--parallel` 값 조정
+- 병렬 처리 전 확인: 원격 LLM QPS/토큰 한도와 WARP shard 수 대비 `--parallel` 값 조정
 - 추적성 확보: `logs/`, `out/` 아카이브 및 실험별 설정값 기록
+- 검색 안정성 확인: `logs/warp_shards_status_*.json`의 `warp=on` 및 `browser-search` `/healthz` 상태 확인
 
 ---
 
@@ -77,6 +94,7 @@ python expert_main.py tests/inputs/sample.jsonl --parallel 4
 - 현재 문서(`README.md`): 전문가 오케스트레이션 시스템 기준 문서
 - 레거시 문서: [`README_legacy_pipeline.md`](README_legacy_pipeline.md)
 - 장문 전문가 문서 원본: [`expert_readme.md`](expert_readme.md)
+- WARP/search shard 운영 문서: [`docs/warp_sharding.md`](docs/warp_sharding.md)
 
 ---
 
@@ -440,6 +458,9 @@ pip install -e .
 ### 빠른 시작
 
 ```bash
+# 검색 스택 준비
+docker compose up -d --build
+
 # 기본 실행 (단일 워커)
 python expert_main.py
 
@@ -447,6 +468,7 @@ python expert_main.py
 python expert_main.py tests/inputs/sample.jsonl
 
 # 병렬 4워커
+# 로컬 자동 shard 모드에서는 WARP/SearchXNG/Crawl4AI/browser-search/MCP 4묶음 자동 구성
 python expert_main.py tests/inputs/sample.jsonl --parallel 4
 
 # 대시보드 비활성화
@@ -505,6 +527,8 @@ llm_novel_dc_coommunity_parser/
 │       │   └── client.py          # MCP/SearchXNG 클라이언트
 │       ├── mcp_bridge/            # MCP 브릿지 서버
 │       │   └── server.py
+│       ├── browser_search/        # CloakBrowser 기반 headless Google fallback
+│       │   └── server.py
 │       ├── agentic_pipeline.py    # 전문가 파이프라인 (~1,408줄)
 │       ├── pipeline.py            # 기존 Sequential 파이프라인
 │       ├── models.py              # 데이터 모델 (~159줄)
@@ -513,12 +537,17 @@ llm_novel_dc_coommunity_parser/
 │   ├── inputs/                    # 테스트 입력 데이터
 │   └── test_*.py                  # 각종 테스트
 ├── docker/                        # Docker 설정
+│   ├── browser-search/Dockerfile  # CloakBrowser fallback 서비스
 │   ├── mcp-bridge/Dockerfile
+│   ├── warp/Dockerfile
 │   └── searchxng/settings.yml
+├── docs/
+│   ├── ARCHITECTURE.md
+│   └── warp_sharding.md           # WARP/SearchXNG/Crawl4AI/browser-search shard 문서
 ├── expert_main.py                 # 전문가 시스템 실행 엔트리포인트 (~816줄)
 ├── main.py                        # 기존 파이프라인 엔트리포인트
-├── expert_readme.md               # 이 문서
-└── README.md                      # 기존 파이프라인 문서
+├── expert_readme.md               # 전문가 문서 원본(상세판)
+└── README.md                      # 현재 기준 문서
 ```
 
 ### 주요 파일 역할
@@ -529,6 +558,9 @@ llm_novel_dc_coommunity_parser/
 | `agentic_pipeline.py` | 유기적 전문가 협력 파이프라인 + 후처리 로직 |
 | `orchestrator.py` | 전문가 라우팅, 대화 관리, snippet_analyzer, Phase 제어 |
 | `decoder.py` | 한글 슬랭 해독, 검색 매칭, resolved_mappings 필터링 |
+| `browser_search/server.py` | CloakBrowser 기반 비용 없는 Google fallback 검색 서버 |
+| `mcp_bridge/server.py` | SearchXNG/Crawl4AI/browser-search를 묶는 MCP 브릿지 |
+| `tools/warp_shards.py` | WARP/SearchXNG/Crawl4AI/browser-search/MCP shard 생성·상태확인·재기동 |
 | `arbiter.py` | 최종 판정, 갈등 해소, author_talk 업그레이드 로직 |
 | `verifier.py` | 증거 교차 검증, 앵커 확인, 작가 비평 판별 |
 | `synthesizer.py` | 증거 기반 원문 재해석, 숨은 참조 발견 |
@@ -967,14 +999,53 @@ PickvelOutputItemV2
 | `LLM_ENABLE_THINKING` | `0` | 사고 모드 비활성화 |
 | `LLM_N_GPU_LAYERS` | `60` | GPU 오프로드 레이어 (local 모드) |
 
-### MCP (SearchXNG) 설정
+### MCP/Search/WARP 설정
 
 | 변수 | 현재 값 | 설명 |
 |------|---------|------|
-| `MCP_ENDPOINT` | `http://localhost:3333` | SearchXNG 브릿지 주소 |
+| `MCP_ENDPOINT` | `http://localhost:3333` | 단일 MCP 브릿지 주소 |
+| `MCP_ENDPOINTS` | — | 콤마 구분 shard 브릿지 주소 목록. 지정하면 자동 shard 구성을 존중 |
+| `MCP_ENDPOINT_STRATEGY` | `round_robin` | `round_robin`, `random`, `first` 중 선택 |
+| `MCP_SHARD_COUNT` | `--parallel` 값 | 로컬 자동 WARP shard 개수 |
+| `MCP_SHARD_BASE_PORT` | `3333` | 자동 shard MCP 포트 시작값 |
+| `MCP_AUTO_SHARD_LIMIT` | `0` | 자동 생성 shard 상한. `0`이면 제한 없음 |
 | `MCP_TOP_K_RESULTS` | `10` | 최대 검색 결과 수 |
 | `MCP_DEFAULT_NUM_RESULTS` | `15` | 기본 검색 결과 수 |
 | `MCP_MAX_CONTENT_CHARS` | `400` | 결과당 최대 문자 수 |
+| `MCP_SEARCH_ENGINES` | `google,bing,presearch,webcrawler,naver` | SearchXNG 1차 검색 엔진 |
+| `MCP_SEARCH_FALLBACK_ENGINES` | `webcrawler,google,bing,presearch,naver` | SearchXNG 재시도/저하 시 fallback 엔진 |
+
+### CloakBrowser fallback 설정
+
+`browser-search`는 SearchXNG 결과가 비거나 외국어/저품질 결과가 지배적일 때만 보조로 호출됩니다. 기본 설정은 비용 없는 CloakBrowser 단일 provider입니다.
+
+| 변수 | 기본값 | 설명 |
+|------|--------|------|
+| `BROWSER_SEARCH_PROVIDER_ORDER` | `cloak` | 비용 없는 CloakBrowser fallback만 사용 |
+| `BROWSER_SEARCH_HEADLESS` | `1` | headless 브라우저 실행 |
+| `BROWSER_SEARCH_HUMANIZE` | `1` | CloakBrowser humanize 동작 활성화 |
+| `BROWSER_SEARCH_HUMAN_PRESET` | `default` | humanize preset |
+| `BROWSER_SEARCH_WAIT_MS` | `3000` | Google 결과 DOM 대기 시간 |
+| `BROWSER_SEARCH_GOOGLE_MIN_INTERVAL_SEC` | `45` | shard별 Google 직접 검색 최소 간격 |
+| `BROWSER_SEARCH_GOOGLE_JITTER_SEC` | `15` | 검색 간격 랜덤 지터 |
+| `BROWSER_SEARCH_BLOCK_COOLDOWN_SEC` | `7200` | CAPTCHA/차단 감지 시 해당 shard Google 직접 검색 쿨다운 |
+| `CLOAKBROWSER_AUTO_UPDATE` | `false` | Docker 빌드 시 받은 바이너리를 런타임에서 자동 갱신하지 않음 |
+
+주의:
+- `BROWSER_SEARCH_PROVIDER_ORDER=playwright,ucd`처럼 Google 직접 provider를 여러 개 이어붙이면 CAPTCHA 시 연쇄 재시도가 늘 수 있습니다.
+- 현재 기본값은 비용 없는 운영을 전제로 하며, 유료 검색 API 키를 요구하지 않습니다.
+- Google 직접 브라우저 검색인 이상 CAPTCHA를 100% 피할 수는 없으므로, shard별 저빈도 호출과 쿨다운으로 리스크를 낮춥니다.
+
+### WARP shard 운영 설정
+
+| 변수 | 기본값 | 설명 |
+|------|--------|------|
+| `WARP_SHARDS_COMPOSE_PARALLEL` | `8` | `docker compose` 내부 병렬도 |
+| `WARP_SHARDS_BATCH_SIZE` | compose 병렬도 | 대량 shard를 나눠 올릴 배치 크기 |
+| `WARP_SHARDS_WAIT_TIMEOUT` | `180` | 배치별 `docker compose up --wait` 타임아웃 |
+| `WARP_SHARDS_BATCH_PAUSE_SEC` | `1` | 배치 사이 대기 시간 |
+| `WARP_SHARDS_ENSURE_PAUSE_SEC` | `5` | WARP 미연결 shard 재기동 후 재확인 대기 |
+| `WARP_SHARDS_ENSURE_MAX_ATTEMPTS` | `0` | `warp=on` 보장 재시도 횟수. `0`이면 계속 재시도 |
 
 ### Agentic 설정
 
@@ -1007,9 +1078,32 @@ python expert_main.py tests/inputs/sample.jsonl --parallel 4
 
 **ThreadPoolExecutor** 기반 병렬 처리:
 - 각 워커는 독립된 게시글 묶음을 처리
+- 로컬 자동 shard 모드에서는 `--parallel 4`에 맞춰 `mcp-bridge-1..4`가 `localhost:3333..3336`으로 자동 구성
+- 각 shard는 `warp-N + searchxng-N + crawl4ai-N + browser-search-N + mcp-bridge-N` 번들
+- 한 워커의 `search()`/`fetch()`는 같은 MCP endpoint에 고정되어 같은 WARP egress를 사용
 - `_worker_tls` (thread-local storage)로 워커별 상태 관리
 - `_print_lock` / `_results_lock`으로 스레드 안전 보장
 - `_shutdown_event`로 `Ctrl+C` graceful 종료
+
+자동 shard를 끄고 직접 endpoint를 지정하려면:
+
+```bash
+export MCP_ENDPOINTS="http://localhost:3333,http://localhost:3334"
+export MCP_ENDPOINT_STRATEGY=round_robin
+python expert_main.py tests/inputs/sample.jsonl --parallel 2 --no-auto-up-shards
+```
+
+WARP 연결 상태 확인:
+
+```bash
+python tools/warp_shards.py status
+```
+
+특정 shard만 재기동:
+
+```bash
+python tools/warp_shards.py recreate --shards 33,35-38
+```
 
 ### _Tee 로그 시스템
 
@@ -1027,6 +1121,7 @@ python expert_main.py tests/inputs/sample.jsonl --parallel 4
 - 줄바꿈 단위 버퍼링
 - `monitor.add_log(line, worker_id=wid)` 전송
 - `--no-dashboard` 플래그로 비활성화 가능
+- 기본 포트는 `8080`이며 `DASHBOARD_PORT`로 변경 가능
 
 ### Session Knowledge
 
@@ -1043,6 +1138,10 @@ python expert_main.py tests/inputs/sample.jsonl --parallel 4
 |------------|------|-----------|
 | `Discourse 경고` | non-novel 도메인 고신뢰 경고 | 장르/메타/연상글 오분류 여부 점검 |
 | `search_requests 스킵` | 불필요 검색 억제 작동 | 검색 억제가 과도하지 않은지 확인 |
+| `MCP shards:` | 워커가 사용할 MCP endpoint 목록 | `localhost:3333+` 포트 수와 `--parallel` 값 확인 |
+| `WARP shard 메모 저장` | shard별 `warp-cli status`/Cloudflare trace 저장 | `logs/warp_shards_status_*.json`에서 `warp=on` 확인 |
+| `WARP 미연결 shard 감지` | 특정 shard가 WARP 경유 상태가 아님 | 자동 재기동 로그 이후에도 지속되면 `tools/warp_shards.py recreate` 실행 |
+| `headless_google fallback` | SearchXNG 저하/빈 결과로 CloakBrowser fallback 호출 | `headless_count`, `blocked`, `error` 확인 |
 | `Synthesizer 합의-이탈 가드` | 합의된 제목을 Synthesizer가 덮으려다 차단 | Decoder/Verifier 합의 근거 재확인 |
 | `Arbiter 독자 제목 생성 차단` | Arbiter 환각 후보 차단 | suspected_titles 품질 및 anchor 상태 확인 |
 | `Arbiter null 가드` | 의도적 null 판정 유지 | author_talk/recommendation 분류와 일치 여부 확인 |
@@ -1059,8 +1158,10 @@ python expert_main.py tests/inputs/sample.jsonl --parallel 4
 
 1. `logs/expert_run_*.log`에서 `Decoder`, `Verifier`, `Arbiter` 구간을 먼저 확인합니다.
 2. `suspected_titles`, `grounding_check`, `counter_arguments` 필드의 정합성을 점검합니다.
-3. 반복적으로 같은 오판이 나오는 경우 `rules.py` 사전/플랫폼 용어/장르 용어를 우선 수정합니다.
-4. 그래도 해결되지 않으면 `expert_prompts.py`보다 `prompt_router.py` 오버레이부터 최소 수정합니다.
+3. 검색 품질 문제는 `raw_preview`, `filtered_preview`, `lang_filter_reasons`, `headless_*` 필드를 함께 확인합니다.
+4. shard 문제는 `logs/warp_shards_status_*.json`에서 `ip`, `warp`, `loc`, `colo`를 먼저 확인합니다.
+5. 반복적으로 같은 오판이 나오는 경우 `rules.py` 사전/플랫폼 용어/장르 용어를 우선 수정합니다.
+6. 그래도 해결되지 않으면 `expert_prompts.py`보다 `prompt_router.py` 오버레이부터 최소 수정합니다.
 
 ---
 
@@ -1153,6 +1254,29 @@ A: Arbiter의 `author_talk` → `work_discussion` 업그레이드 로직이 Gate
 ### Q: 토큰 사용량이 너무 많아요
 A: `max_iterations`를 줄이거나, `SYNTHESIZER_MAX_TOKENS` 환경변수(기본 1536)를 낮추세요.
 
+### Q: Google fallback에서 CAPTCHA가 걸려요
+A: 기본값은 `BROWSER_SEARCH_PROVIDER_ORDER=cloak` 단일 provider입니다. `playwright,ucd`를 이어붙이면 같은 Google에 연속 재시도하므로 기본값으로 되돌리세요. CAPTCHA 징후가 보이면 해당 shard는 `BROWSER_SEARCH_BLOCK_COOLDOWN_SEC` 동안 Google 직접 검색을 쉽니다.
+
+권장 운영값:
+
+```bash
+export BROWSER_SEARCH_PROVIDER_ORDER=cloak
+export BROWSER_SEARCH_GOOGLE_MIN_INTERVAL_SEC=45
+export BROWSER_SEARCH_GOOGLE_JITTER_SEC=15
+export BROWSER_SEARCH_BLOCK_COOLDOWN_SEC=7200
+```
+
+### Q: WARP shard가 계속 `warp=off`로 보여요
+A: 자동 관리 모드에서는 `expert_main.py`가 미연결 shard를 감지해 재기동합니다. 수동으로 확인/복구하려면 아래 명령을 사용하세요.
+
+```bash
+python tools/warp_shards.py status
+python tools/warp_shards.py recreate --shards 3
+```
+
+### Q: `browser-search`와 대시보드 포트가 헷갈려요
+A: `browser-search` 컨테이너는 내부 포트 `8765`를 사용합니다. 전문가 대시보드는 기본 `8080`이며 `DASHBOARD_PORT`로 바꿀 수 있습니다.
+
 ---
 
 ## 🔗 관련 문서
@@ -1165,3 +1289,4 @@ A: `max_iterations`를 줄이거나, `SYNTHESIZER_MAX_TOKENS` 환경변수(기�
 - [src/llm_batch/models.py](src/llm_batch/models.py) - 데이터 모델
 - [expert_main.py](expert_main.py) - 실행 엔트리포인트
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - 아키텍처 문서
+- [docs/warp_sharding.md](docs/warp_sharding.md) - WARP/SearchXNG/Crawl4AI/CloakBrowser shard 운영 문서

@@ -50,6 +50,13 @@ class MonitorState:
         self.input_file: str = ""
         self.output_file: str = ""
         self.parallel_count: int = 1  # 병렬 워커 수
+        self.llm_suspended: bool = False
+        self.llm_suspend_message: str = ""
+        self.llm_suspend_error: str = ""
+        self.llm_suspend_failure_count: int = 0
+        self.llm_suspend_threshold: int = 0
+        self.llm_suspend_started_at: str = ""
+        self.llm_suspend_resumed_at: str = ""
 
         # 현재 처리 중인 포스트 (순차 모드 호환용)
         self.current_post_id: Optional[int] = None
@@ -193,6 +200,13 @@ class MonitorState:
                 # 🔥 병렬 모드 필드
                 "parallel_count": self.parallel_count,
                 "active_posts": {str(k): dict(v) for k, v in self.active_posts.items()},
+                "llm_suspended": self.llm_suspended,
+                "llm_suspend_message": self.llm_suspend_message,
+                "llm_suspend_error": self.llm_suspend_error,
+                "llm_suspend_failure_count": self.llm_suspend_failure_count,
+                "llm_suspend_threshold": self.llm_suspend_threshold,
+                "llm_suspend_started_at": self.llm_suspend_started_at,
+                "llm_suspend_resumed_at": self.llm_suspend_resumed_at,
             }
 
     def get_results(
@@ -280,6 +294,13 @@ class MonitorState:
                 self._worker_log_lines = {}
                 self._post_log_lines = {}
                 self._active_post_by_worker = {}
+                self.llm_suspended = False
+                self.llm_suspend_message = ""
+                self.llm_suspend_error = ""
+                self.llm_suspend_failure_count = 0
+                self.llm_suspend_threshold = 0
+                self.llm_suspend_started_at = ""
+                self.llm_suspend_resumed_at = ""
 
             elif event_type == "post_start":
                 post_id = data.get("post_id")
@@ -377,9 +398,27 @@ class MonitorState:
                 self.search_hits = data.get("hits", 0)
                 self.search_misses = data.get("misses", 0)
 
+            elif event_type == "llm_suspend":
+                self.llm_suspended = True
+                self.llm_suspend_message = str(data.get("message", "") or "")
+                self.llm_suspend_error = str(data.get("last_error", "") or "")
+                self.llm_suspend_failure_count = int(data.get("failure_count", 0) or 0)
+                self.llm_suspend_threshold = int(data.get("threshold", 0) or 0)
+                self.llm_suspend_started_at = str(data.get("started_at", "") or "")
+                self.llm_suspend_resumed_at = ""
+
+            elif event_type == "llm_resume":
+                self.llm_suspended = False
+                self.llm_suspend_message = str(data.get("message", "") or "")
+                self.llm_suspend_error = str(data.get("last_error", "") or "")
+                self.llm_suspend_failure_count = int(data.get("failure_count", 0) or 0)
+                self.llm_suspend_threshold = int(data.get("threshold", 0) or 0)
+                self.llm_suspend_resumed_at = str(data.get("resumed_at", "") or "")
+
             elif event_type == "batch_complete":
                 self.batch_running = False
                 self.active_posts = {}
+                self.llm_suspended = False
 
     def _make_post_summary(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """브라우저에 보낼 최소 요약만 보관합니다."""

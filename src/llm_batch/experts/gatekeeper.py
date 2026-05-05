@@ -87,12 +87,15 @@ class GatekeeperExpert:
                 title = post.get("title", "")
                 kiwi_entities = self._extract_morphemes_kiwi(title)
                 result = self._merge_entities(result, kiwi_entities)
+
+            # 약칭을 임의의 정식 제목으로 자동 완성하는 초기 오염을 정리한다.
+            result = self._prune_speculative_alias_expansions(result, post)
             
             # 🚨 코드 레벨 보강: 댓글에서 제목 답변 후보 추출
-            result = self._postprocess_comment_titles(result, comments)
+            result = self._postprocess_comment_titles(result, post, comments)
             
             # 🔥 이미지 전용 게시글 코드 레벨 감지
-            result = self._detect_image_only_post(result, post)
+            result = self._detect_image_only_post(result, post, ctx=ctx)
             
             # 🆕 장르 접두사 태그 파싱 (TS), BL) 등)
             result = self._parse_genre_prefix_tags(result, post)
@@ -411,6 +414,86 @@ class GatekeeperExpert:
         
         return llm_result
 
+    def _prune_speculative_alias_expansions(
+        self,
+        result: Dict[str, Any],
+        post: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        import re
+
+        detected = result.get("detected_entities") or {}
+        possible_titles = [
+            str(tok or "").strip()
+            for tok in (detected.get("possible_titles") or [])
+            if isinstance(tok, str) and str(tok or "").strip()
+        ]
+        if len(possible_titles) < 2:
+            return result
+
+        title_text = str(post.get("title") or "")
+        body_text = " ".join(self._extract_text_blocks(post))
+        image_titles = " ".join(
+            str(item.get("explicit_work_title") or "").strip()
+            for item in (post.get("image_enrichment") or [])
+            if isinstance(item, dict) and str(item.get("explicit_work_title") or "").strip()
+        )
+        main_norm = re.sub(r"[^\w가-힣]", "", f"{title_text} {body_text} {image_titles}").lower()
+        if not main_norm:
+            return result
+
+        def _norm(text: str) -> str:
+            return re.sub(r"[^\w가-힣]", "", str(text or "")).lower()
+
+        raw_aliases: List[tuple[str, str]] = []
+        for cand in possible_titles:
+            norm = _norm(cand)
+            if not norm:
+                continue
+            if len(norm) <= 5 and " " not in cand and norm in main_norm:
+                raw_aliases.append((cand, norm))
+        if not raw_aliases:
+            return result
+
+        removed: List[str] = []
+        kept: List[str] = []
+        for cand in possible_titles:
+            cand_norm = _norm(cand)
+            should_remove = False
+            for _raw, raw_norm in raw_aliases:
+                if cand_norm == raw_norm:
+                    continue
+                if len(cand_norm) < len(raw_norm) + 2:
+                    continue
+                if not cand_norm.startswith(raw_norm):
+                    continue
+                if cand_norm in main_norm:
+                    continue
+                cand_token_count = len(re.findall(r"[A-Za-z0-9가-힣]+", cand))
+                if cand_token_count <= 1 and len(cand_norm) < len(raw_norm) + 4:
+                    continue
+                should_remove = True
+                break
+            if should_remove:
+                removed.append(cand)
+                continue
+            kept.append(cand)
+
+        if removed:
+            detected["possible_titles"] = kept
+            key_terms = result.get("key_terms") or []
+            removed_norms = {_norm(x) for x in removed}
+            result["key_terms"] = [
+                tok for tok in key_terms
+                if not (isinstance(tok, str) and _norm(tok) in removed_norms)
+            ]
+            result["detected_entities"] = detected
+            print(
+                f"[{_ts()}][{self.emoji}] 🧹 추정 확장 제목 제거: {removed[:4]}",
+                file=sys.stderr,
+            )
+
+        return result
+
     @staticmethod
     def _looks_like_colloquial_fragment_token(text: str) -> bool:
         import re
@@ -548,6 +631,7 @@ class GatekeeperExpert:
     def _postprocess_comment_titles(
         self,
         result: Dict[str, Any],
+        post: Dict[str, Any],
         comments: List[str],
     ) -> Dict[str, Any]:
         """
@@ -558,13 +642,23 @@ class GatekeeperExpert:
         """
         detected = result.get("detected_entities") or {}
         possible_titles = detected.get("possible_titles") or []
-        
+
+        raw_comment_records = [
+            rec for rec in ((post or {}).get("comments_raw") or [])
+            if isinstance(rec, dict)
+        ]
         comment_title_candidates = []
-        
-        for comment in (comments or []):
+        comment_title_candidate_details = []
+        merge_candidates = []
+
+        for idx, comment in enumerate(comments or []):
             raw = (comment or "").strip()
             if not raw:
                 continue
+            raw_meta = raw_comment_records[idx] if idx < len(raw_comment_records) else {}
+            reply_level = raw_meta.get("reply_level") if isinstance(raw_meta, dict) else None
+            reply_to_comment_id = raw_meta.get("reply_to_comment_id") if isinstance(raw_meta, dict) else None
+            author = str((raw_meta.get("author") if isinstance(raw_meta, dict) else "") or "").strip()
 
             # 멀티라인 댓글은 "첫 줄=제목, 다음 줄=설명" 패턴이 흔하다.
             # 예) "Harry Potter: Ero World\n200화 정도 연재..."
@@ -572,33 +666,69 @@ class GatekeeperExpert:
             if "\n" in raw:
                 candidate_lines = [ln.strip() for ln in raw.splitlines() if ln.strip()]
 
-            for stripped in candidate_lines:
+            for line_idx, stripped in enumerate(candidate_lines):
                 if self._looks_like_repeated_reaction_comment(stripped):
                     continue
                 # 구조적으로 제목 후보가 될 수 있는지 먼저 검사
                 if not self._is_title_like_surface(stripped):
                     continue
 
-                # 문장 행위 분류(질문/요청/설명/답변)
-                # 질문·요청·설명은 제목 후보에서 제외하고, 답변형만 채택
                 speech_act = self._classify_comment_speech_act(stripped)
-                if speech_act != "answer_like":
-                    continue
-
                 comment_title_candidates.append(stripped)
+                has_at_mention = stripped.startswith("@") or raw.lstrip().startswith("@") or "\n@" in raw or " @" in stripped
+                detail = {
+                    "text": stripped,
+                    "comment_index": idx,
+                    "line_index": line_idx,
+                    "speech_act": speech_act,
+                    "has_at_mention": bool(has_at_mention),
+                    "reply_level": reply_level,
+                    "reply_to_comment_id": reply_to_comment_id,
+                    "author": author,
+                }
+                comment_title_candidate_details.append(detail)
+                is_safe_merge = bool(
+                    speech_act == "answer_like"
+                    and not has_at_mention
+                    and not reply_to_comment_id
+                    and int(reply_level or 0) <= 0
+                )
+                if is_safe_merge:
+                    merge_candidates.append(stripped)
 
-        # 동일 댓글/중복 줄 제거
-        if comment_title_candidates:
+        def _dedupe_titles(values: List[str]) -> List[str]:
+            if not values:
+                return []
             _deduped = []
             _seen = set()
-            for ct in comment_title_candidates:
+            for ct in values:
                 key = ct.replace(" ", "").lower()
                 if key in _seen:
                     continue
                 _seen.add(key)
                 _deduped.append(ct)
-            comment_title_candidates = _deduped
-        
+            return _deduped
+
+        comment_title_candidates = _dedupe_titles(comment_title_candidates)
+        merge_candidates = _dedupe_titles(merge_candidates)
+
+        if comment_title_candidate_details:
+            _deduped_details = []
+            _seen_detail_keys = set()
+            for detail in comment_title_candidate_details:
+                if not isinstance(detail, dict):
+                    continue
+                key = (
+                    str(detail.get("text") or "").replace(" ", "").lower(),
+                    int(detail.get("comment_index") or 0),
+                    int(detail.get("line_index") or 0),
+                )
+                if key in _seen_detail_keys:
+                    continue
+                _seen_detail_keys.add(key)
+                _deduped_details.append(detail)
+            comment_title_candidate_details = _deduped_details
+
         # 댓글 제목 후보는 context clue로는 남기되, 초기 감지가 noise/무앵커면
         # possible_titles를 직접 오염시키지 않는다.
         _detected_authors = detected.get("possible_authors") or []
@@ -609,10 +739,10 @@ class GatekeeperExpert:
 
         # 댓글 제목 후보를 possible_titles "앞쪽"에 배치하여 후속 단계가
         # 제목형 답변 힌트를 우선 해석하도록 한다.
-        if comment_title_candidates and _allow_comment_title_merge:
+        if merge_candidates and _allow_comment_title_merge:
             merged_titles = []
             seen_norm = set()
-            for ct in comment_title_candidates + list(possible_titles):
+            for ct in merge_candidates + list(possible_titles):
                 key = str(ct).replace(" ", "").lower()
                 if not key or key in seen_norm:
                     continue
@@ -628,7 +758,9 @@ class GatekeeperExpert:
             )
             context_clues = result.get("context_clues") or {}
             context_clues["has_comment_title_answer"] = True
-            context_clues["comment_title_candidates"] = comment_title_candidates[:5]
+            context_clues["comment_title_candidates"] = comment_title_candidates[:8]
+            context_clues["comment_title_merge_candidates"] = merge_candidates[:5]
+            context_clues["comment_title_candidate_details"] = comment_title_candidate_details[:8]
             result["context_clues"] = context_clues
         
         detected["possible_titles"] = possible_titles
@@ -972,6 +1104,7 @@ class GatekeeperExpert:
         self,
         result: Dict[str, Any],
         post: Dict[str, Any],
+        ctx: Optional[Any] = None,
     ) -> Dict[str, Any]:
         """
         🔥 이미지 전용 게시글 코드 레벨 감지
@@ -983,6 +1116,62 @@ class GatekeeperExpert:
         - "글 쓰고 보니까" (제목만 있고 본문은 이미지만) → LLM이 work_discussion으로 분류
         - 이미지만 있는 포스트는 소설 작품 논의가 아닐 가능성 매우 높음
         """
+        image_enrichment = [
+            item for item in (post.get("image_enrichment") or [])
+            if isinstance(item, dict)
+        ]
+        if not image_enrichment and ctx is not None:
+            ctx_post = getattr(ctx, "post_data", None) or {}
+            image_enrichment = [
+                item for item in (ctx_post.get("image_enrichment") or [])
+                if isinstance(item, dict)
+            ]
+
+        def _has_work_surface_signal() -> bool:
+            for item in image_enrichment:
+                if bool(item.get("background_listing_only")):
+                    continue
+                explicit_title = str(item.get("explicit_work_title") or "").strip()
+                if not explicit_title:
+                    continue
+                title_role = str(item.get("title_role") or "").strip().lower()
+                if title_role not in {"", "work_title"}:
+                    continue
+                evidence_type = str(item.get("evidence_type") or "").strip().lower()
+                if evidence_type not in {"explicit_text", "cover_title"}:
+                    continue
+                screen_type = str(item.get("screen_type") or "").strip().lower()
+                surface_type = str(item.get("surface_type") or "").strip().lower()
+                merged_blob = " ".join(
+                    str(item.get(key) or "")
+                    for key in ("ocr_text", "visual_summary", "explicit_author_name", "screen_type", "surface_type")
+                )
+                if (
+                    (screen_type == "work_surface" and surface_type in {"official_detail_page", "quoted_text_screenshot", "episode_reader_page"})
+                    or str(item.get("explicit_author_name") or "").strip()
+                    or self._contains_platform_ui_text(merged_blob)
+                    or re.search(
+                        r"(?:작가명|조회\s*[0-9,]+|추천\s*[0-9,]+|선호\s*[0-9,]+|알림\s*[0-9,]+|\d+\s*(?:회차|화)|노벨피아|문피아|카카오페이지|plus|자유연재|독점)",
+                        merged_blob,
+                        flags=re.IGNORECASE,
+                    )
+                ):
+                    return True
+            return False
+
+        work_surface_signal = _has_work_surface_signal()
+        current_post_type = str(result.get("post_type") or "").strip().lower()
+        if work_surface_signal and current_post_type in {"image_post", "noise"} and bool(result.get("is_noise")):
+            result["is_noise"] = False
+            result["noise_reason"] = None
+            result["post_type"] = "work_discussion"
+            print(
+                f"[{_ts()}][{self.emoji}] 🖼️ 작품상세 스샷 감지: "
+                f"post_type='{current_post_type}' → 'work_discussion' (image-only 예외)",
+                file=sys.stderr,
+            )
+            return result
+
         content_blocks = post.get("content_blocks", [])
         if not content_blocks:
             return result
@@ -1003,6 +1192,13 @@ class GatekeeperExpert:
         total_text_len = sum(len(t.strip()) for t in text_blocks)
         
         if image_blocks and total_text_len < 10:
+            if work_surface_signal:
+                print(
+                    f"[{_ts()}][{self.emoji}] 🖼️ 이미지 전용 가드 스킵: "
+                    f"작품상세 스샷 강신호 감지 (image={len(image_blocks)}, text={total_text_len}자)",
+                    file=sys.stderr,
+                )
+                return result
             # LLM이 이미 image_post/noise로 분류했으면 스킵
             current_post_type = result.get("post_type", "")
             if current_post_type in ("image_post", "noise"):

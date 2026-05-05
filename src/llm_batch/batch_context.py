@@ -8,6 +8,7 @@ BatchContextMemory — 포스트 간 지식 공유 (thread-safe)
 from __future__ import annotations
 
 import sys
+import re
 import threading
 import time
 from datetime import datetime
@@ -70,6 +71,48 @@ class BatchContextMemory:
                 return entry["title"]
             return None
 
+    @staticmethod
+    def _looks_generic_inline_alias(abbrev: str, title: str) -> bool:
+        """짧은 직접 부분일치 alias는 즉시 메모리 고정하지 않는다.
+
+        하드코딩 단어 목록 대신 구조만 본다.
+        - 길이가 짧고
+        - 정식 제목 내부에 그대로 연속 출현하며
+        - 제목의 일부 토큰(또는 조사 붙은 토큰)만 따온 형태면
+          community alias라기보다 일반 부분문자열일 가능성이 높다.
+        """
+        abbr_norm = re.sub(r"[^\w가-힣]", "", str(abbrev or "")).lower()
+        title_norm = re.sub(r"[^\w가-힣]", "", str(title or "")).lower()
+        if not abbr_norm or not title_norm or abbr_norm == title_norm:
+            return False
+        if len(abbr_norm) < 2 or len(abbr_norm) > 5 or re.search(r"\d", abbr_norm):
+            return False
+        if abbr_norm not in title_norm:
+            return False
+
+        raw_tokens = [
+            re.sub(r"[^\w가-힣]", "", tok).lower()
+            for tok in re.split(r"\s+", str(title or "").strip())
+            if str(tok or "").strip()
+        ]
+        tokens = [tok for tok in raw_tokens if tok]
+        token_exact = abbr_norm in tokens
+        token_affix = any(
+            tok != abbr_norm
+            and len(tok) - len(abbr_norm) <= 2
+            and (tok.startswith(abbr_norm) or tok.endswith(abbr_norm))
+            for tok in tokens
+        )
+        contiguous_substring = abbr_norm in title_norm
+        title_surplus = len(title_norm) - len(abbr_norm)
+        multi_chunk_title = len(tokens) >= 2
+
+        return bool(
+            contiguous_substring
+            and title_surplus >= 3
+            and (token_exact or token_affix or multi_chunk_title)
+        )
+
     def register_abbreviation(
         self,
         abbrev: str,
@@ -86,6 +129,7 @@ class BatchContextMemory:
         if not self.enabled or not abbrev or not title:
             return
         key = self._normalize(abbrev)
+        generic_inline_alias = self._looks_generic_inline_alias(abbrev, title)
         with self._lock:
             if key in self.resolved_abbreviations:
                 # 이미 해소됨 — 더 높은 신뢰도면 갱신
@@ -95,7 +139,7 @@ class BatchContextMemory:
                     existing["confidence"] = confidence
                 return
 
-            if fast_promote or confidence >= 3:
+            if (fast_promote or confidence >= 3) and not generic_inline_alias:
                 self.resolved_abbreviations[key] = {
                     "title": title,
                     "confidence": confidence,
@@ -107,6 +151,13 @@ class BatchContextMemory:
                     file=sys.stderr,
                 )
                 return
+
+            if generic_inline_alias:
+                print(
+                    f"[{_ts()}] 🧠 BatchMem: 일반명사형 약칭 즉시등록 보류 '{abbrev}' → '{title}' "
+                    f"(conf={confidence})",
+                    file=sys.stderr,
+                )
 
             # pending에 축적
             if key not in self.pending_abbreviations:
@@ -305,13 +356,40 @@ class BatchContextMemory:
         conf_rank = {"max": 4, "high": 3, "medium": 2, "mid": 2, "low": 1}.get(
             str(confidence_str).strip().lower(), 1
         )
+        slang_insight = identity.get("slang_insight") or {}
+        preferred_aliases: List[str] = []
+        blocked_surface_norms: set[str] = set()
+        canonical_alias_norm = ""
+        if isinstance(slang_insight, dict):
+            canonical_alias = str(slang_insight.get("canonical_work_alias") or "").strip()
+            detected_term = str(slang_insight.get("detected_term") or "").strip()
+            store_in_db = slang_insight.get("store_in_slang_db")
+            if canonical_alias:
+                preferred_aliases.append(canonical_alias)
+                canonical_alias_norm = self._normalize(canonical_alias)
+                if detected_term and self._normalize(detected_term) != self._normalize(canonical_alias):
+                    blocked_surface_norms.add(self._normalize(detected_term))
+            elif detected_term and store_in_db is not False:
+                preferred_aliases.append(detected_term)
 
         # 약칭 학습
+        if conf_rank >= 2:
+            for alias in preferred_aliases:
+                self.register_abbreviation(
+                    alias,
+                    official_title,
+                    confidence=conf_rank,
+                    fast_promote=(conf_rank >= 3),
+                )
         if decoded_terms and conf_rank >= 2:
             for term in decoded_terms:
                 if not isinstance(term, dict):
                     continue
                 original = str(term.get("original") or "").strip()
+                if canonical_alias_norm and self._normalize(original) != canonical_alias_norm:
+                    continue
+                if self._normalize(original) in blocked_surface_norms:
+                    continue
                 best_match = term.get("best_match") or {}
                 if not isinstance(best_match, dict):
                     continue

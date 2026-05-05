@@ -467,8 +467,9 @@ class SynthesizerExpert:
         parts.append(f"관련성: {vr.get('is_relevant', '?')}")
 
         novel_id = vr.get("novel_identity", {}) or {}
-        if novel_id.get("official_title"):
-            parts.append(f"작품: {novel_id['official_title']} ({novel_id.get('confidence', '?')})")
+        novel_title = novel_id.get("official_novel_title") or novel_id.get("official_title")
+        if novel_title:
+            parts.append(f"작품: {novel_title} ({novel_id.get('confidence', '?')})")
         if novel_id.get("heretic_url"):
             parts.append(f"URL: {novel_id['heretic_url']}")
 
@@ -480,13 +481,35 @@ class SynthesizerExpert:
                 f"decoder_grounded={gc.get('decoder_grounded', '?')}"
             )
 
+        relation = vr.get("relation_judgment", {}) or {}
+        if relation:
+            parts.append(
+                f"관계판정: type={relation.get('relation_type', '?')}, "
+                f"target={relation.get('discussion_target', '?')}, "
+                f"promotion={relation.get('promotion_decision', '?')}, "
+                f"confidence={relation.get('confidence', '?')}"
+            )
+            relation_reason = str(
+                relation.get("reason")
+                or vr.get("relation_hold_reason")
+                or ""
+            ).strip()
+            if relation_reason:
+                parts.append(f"관계판정 사유: {relation_reason}")
+
         # 반론
         counter_args = vr.get("counter_arguments", [])
         if counter_args:
             for ca in counter_args[:2]:
                 if isinstance(ca, dict):
+                    counter_text = str(
+                        ca.get("explanation")
+                        or ca.get("argument")
+                        or ca.get("issue")
+                        or ""
+                    ).strip()
                     parts.append(
-                        f"⚠️ 반론: {ca.get('argument', '?')} "
+                        f"⚠️ 반론: {counter_text or '?'} "
                         f"(severity={ca.get('severity', '?')}, action={ca.get('action', '?')})"
                     )
 

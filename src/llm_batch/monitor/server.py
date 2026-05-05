@@ -31,6 +31,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 _OUT_DIR = _REPO_ROOT / "out"
 _LOG_DIR = _REPO_ROOT / "logs"
 _STATIC_DIR = Path(__file__).resolve().parent / "static"
+_SLANG_DB_PATH = _REPO_ROOT / "slang_db" / "slang_db.json"
 
 # ─── REST API ──────────────────────────────────────────────
 
@@ -50,6 +51,30 @@ async def api_status():
     return JSONResponse(monitor.get_status())
 
 
+@app.post("/api/llm/resume")
+async def api_llm_resume(
+    source: str = Query("web_dashboard", pattern="^[a-z_]{1,32}$"),
+):
+    """대시보드에서 LLM suspend 상태를 재개합니다."""
+    try:
+        from llm_batch.llm.client import request_llm_server_resume
+
+        ok = request_llm_server_resume(source=source)
+    except Exception as exc:
+        return JSONResponse(
+            {"ok": False, "error": f"{type(exc).__name__}: {exc}"},
+            status_code=500,
+        )
+
+    if not ok:
+        return JSONResponse(
+            {"ok": False, "error": "llm suspend 상태가 아닙니다.", "source": source},
+            status_code=409,
+        )
+
+    return JSONResponse({"ok": True, "source": source})
+
+
 @app.get("/api/results")
 async def api_results(
     offset: int = Query(0, ge=0),
@@ -57,32 +82,7 @@ async def api_results(
     order: str = Query("desc", pattern="^(asc|desc)$"),
 ):
     """현재 실행의 포스트별 결과 요약 (페이지 단위)"""
-    payload = monitor.get_results(offset=offset, limit=limit, order=order)
-    items = payload.get("items") or []
-
-    if items and any(_summary_needs_identity_enrichment(item) for item in items):
-        for path in _candidate_result_paths():
-            if not path.exists():
-                continue
-            try:
-                raw_items = _load_result_file(path)
-            except Exception:
-                continue
-            by_post_id = {item.get("post_id"): item for item in raw_items}
-            enriched_items = []
-            changed = False
-            for summary in items:
-                raw_item = by_post_id.get(summary.get("post_id"))
-                if raw_item is not None and _summary_needs_identity_enrichment(summary):
-                    enriched_items.append(_enrich_summary_from_result(summary, raw_item))
-                    changed = True
-                else:
-                    enriched_items.append(summary)
-            if changed:
-                payload["items"] = enriched_items
-                break
-
-    return JSONResponse(payload)
+    return JSONResponse(_build_live_results_payload(offset=offset, limit=limit, order=order))
 
 
 @app.get("/api/results/{post_id}")
@@ -111,10 +111,20 @@ async def api_logs(
     return JSONResponse(monitor.get_logs(n, worker_id=worker))
 
 
+@app.get("/api/slang-db")
+async def api_slang_db(
+    offset: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+):
+    """slang_db titles 버킷을 페이지 단위로 반환"""
+    return JSONResponse(_build_slang_db_payload(offset=offset, limit=limit))
+
+
 # ─── 과거 실행 이력 ──────────────────────────────────────
 
 
 _TS_RE = re.compile(r"(\d{8}_\d{6})")
+_FINAL_RESULT_RE = re.compile(r"^expert_result_\d{8}_\d{6}_\d+\.json$")
 
 
 def _parse_run_ts(filename: str) -> Optional[str]:
@@ -137,31 +147,224 @@ def _load_result_file(filepath: Path) -> List[Dict[str, Any]]:
     return data
 
 
+def _unwrap_result_item(item: Dict[str, Any]) -> Dict[str, Any]:
+    """중간 스냅샷 항목이면 실제 result payload를 꺼낸다."""
+    if not isinstance(item, dict):
+        return {}
+    nested = item.get("result")
+    if isinstance(nested, dict):
+        return nested
+    return item
+
+
 def _find_post_in_result_file(filepath: Path, post_id: int) -> Optional[Dict[str, Any]]:
     try:
         data = _load_result_file(filepath)
     except Exception:
         return None
 
-    for item in data:
+    for raw_item in data:
+        item = _unwrap_result_item(raw_item)
         if item.get("post_id") == post_id:
             return item
     return None
+
+
+def _is_final_result_file(path_or_name: Any) -> bool:
+    name = path_or_name.name if isinstance(path_or_name, Path) else str(path_or_name or "")
+    return bool(_FINAL_RESULT_RE.fullmatch(name))
+
+
+def _recent_final_result_paths() -> List[Path]:
+    if not _OUT_DIR.exists():
+        return []
+    return [
+        path
+        for path in sorted(_OUT_DIR.glob("expert_result_*.json"), reverse=True)
+        if _is_final_result_file(path)
+    ]
 
 
 def _candidate_result_paths() -> List[Path]:
     candidate_paths: List[Path] = []
     status = monitor.get_status()
     output_name = status.get("output_file")
-    if output_name:
-        candidate_paths.append(_OUT_DIR / output_name)
-    if _OUT_DIR.exists():
-        for path in sorted(_OUT_DIR.glob("expert_result_*.json"), reverse=True):
-            if path not in candidate_paths:
-                candidate_paths.append(path)
-            if len(candidate_paths) >= 4:
-                break
+    if output_name and _is_final_result_file(output_name):
+        output_path = _OUT_DIR / output_name
+        candidate_paths.append(output_path)
+
+        # 실행 중에는 final JSON이 아직 flush 중일 수 있으므로 현재 run의 snapshot을 폴백으로 둔다.
+        pending_snapshot = _OUT_DIR / f"{Path(output_name).stem}_pending_snapshot.json"
+        if pending_snapshot not in candidate_paths:
+            candidate_paths.append(pending_snapshot)
+
+    for path in _recent_final_result_paths():
+        if path not in candidate_paths:
+            candidate_paths.append(path)
+        if len(candidate_paths) >= 4:
+            break
     return candidate_paths
+
+
+def _load_slang_db_file() -> Dict[str, Any]:
+    if not _SLANG_DB_PATH.exists():
+        return {"updated_at": None, "titles": {}, "family_aliases": {}}
+
+    try:
+        payload = json.loads(_SLANG_DB_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return {"updated_at": None, "titles": {}, "family_aliases": {}}
+
+    if not isinstance(payload, dict):
+        return {"updated_at": None, "titles": {}, "family_aliases": {}}
+
+    titles = payload.get("titles")
+    if not isinstance(titles, dict):
+        titles = {}
+    family_aliases = payload.get("family_aliases")
+    if not isinstance(family_aliases, dict):
+        family_aliases = {}
+
+    return {
+        "updated_at": payload.get("updated_at"),
+        "titles": titles,
+        "family_aliases": family_aliases,
+    }
+
+
+def _extract_term_list(bucket: Any, key: str) -> List[str]:
+    if not isinstance(bucket, dict):
+        return []
+
+    terms: List[str] = []
+    seen: set[str] = set()
+    for entry in bucket.get(key) or []:
+        raw_term = entry.get("term") if isinstance(entry, dict) else entry
+        term = str(raw_term or "").strip()
+        if not term or term in seen:
+            continue
+        seen.add(term)
+        terms.append(term)
+    return terms
+
+
+def _extract_slang_terms(bucket: Any) -> List[str]:
+    return _extract_term_list(bucket, "slang")
+
+
+def _extract_pending_terms(bucket: Any) -> List[str]:
+    return _extract_term_list(bucket, "pending")
+
+
+def _extract_conflict_terms(bucket: Any) -> List[str]:
+    return _extract_term_list(bucket, "conflicts")
+
+
+def _build_pending_kind_counts(bucket: Any) -> Dict[str, int]:
+    counts: Dict[str, int] = {}
+    if not isinstance(bucket, dict):
+        return counts
+    for entry in bucket.get("pending") or []:
+        if not isinstance(entry, dict):
+            continue
+        kind = str(entry.get("pending_kind") or "unknown").strip()
+        if not kind:
+            kind = "unknown"
+        counts[kind] = counts.get(kind, 0) + 1
+    return counts
+
+
+def _extract_example_preview(bucket: Any, *, limit: int = 3) -> List[Dict[str, Any]]:
+    preview: List[Dict[str, Any]] = []
+    if not isinstance(bucket, dict):
+        return preview
+    for example in (bucket.get("examples") or [])[:limit]:
+        if not isinstance(example, dict):
+            continue
+        preview.append(
+            {
+                "post_id": example.get("post_id"),
+                "alias": example.get("alias"),
+                "bucket": example.get("bucket"),
+                "source_role": example.get("source_role"),
+                "discussion_type": example.get("discussion_type"),
+                "work_resolution": example.get("work_resolution"),
+                "pending_kind": example.get("pending_kind"),
+                "classification_confidence": example.get("classification_confidence"),
+                "created_at": example.get("created_at"),
+            }
+        )
+    return preview
+
+
+def _extract_family_alias_terms(payload: Dict[str, Any], title: str) -> List[str]:
+    terms: List[str] = []
+    seen: set[str] = set()
+    for key, bucket in (payload.get("family_aliases") or {}).items():
+        if not isinstance(bucket, dict):
+            continue
+        titles = [str(x).strip() for x in (bucket.get("titles") or []) if str(x).strip()]
+        if str(title or "").strip() not in titles:
+            continue
+        term = str(bucket.get("term") or key or "").strip()
+        if not term or term in seen:
+            continue
+        seen.add(term)
+        terms.append(term)
+    return terms
+
+
+def _build_slang_db_payload(offset: int = 0, limit: int = 100) -> Dict[str, Any]:
+    payload = _load_slang_db_file()
+    rows: List[Dict[str, Any]] = []
+    summary = {
+        "titles_with_slang": 0,
+        "titles_with_pending": 0,
+        "titles_with_conflicts": 0,
+        "titles_with_family_aliases": 0,
+    }
+
+    for title, bucket in sorted((payload.get("titles") or {}).items(), key=lambda item: str(item[0])):
+        title_text = str(title or "").strip()
+        slang_terms = _extract_slang_terms(bucket)
+        pending_terms = _extract_pending_terms(bucket)
+        conflict_terms = _extract_conflict_terms(bucket)
+        family_alias_terms = _extract_family_alias_terms(payload, title_text)
+        example_preview = _extract_example_preview(bucket)
+        pending_kind_counts = _build_pending_kind_counts(bucket)
+        if slang_terms:
+            summary["titles_with_slang"] += 1
+        if pending_terms:
+            summary["titles_with_pending"] += 1
+        if conflict_terms:
+            summary["titles_with_conflicts"] += 1
+        if family_alias_terms:
+            summary["titles_with_family_aliases"] += 1
+        rows.append({
+            "title": title_text,
+            "slang_terms": slang_terms,
+            "slang_count": len(slang_terms),
+            "pending_terms": pending_terms,
+            "pending_count": len(pending_terms),
+            "pending_kind_counts": pending_kind_counts,
+            "conflict_terms": conflict_terms,
+            "conflict_count": len(conflict_terms),
+            "family_alias_terms": family_alias_terms,
+            "family_alias_count": len(family_alias_terms),
+            "example_preview": example_preview,
+            "example_count": len(bucket.get("examples") or []),
+        })
+
+    total = len(rows)
+    page = rows[offset:offset + limit]
+    return {
+        "items": page,
+        "total": total,
+        "offset": offset,
+        "limit": limit,
+        "updated_at": payload.get("updated_at"),
+        "summary": summary,
+    }
 
 
 def _has_text(value: Any) -> bool:
@@ -184,7 +387,48 @@ def _summary_needs_identity_enrichment(item: Dict[str, Any]) -> bool:
     return missing_structure or missing_reason
 
 
+def _build_live_results_payload(
+    offset: int = 0,
+    limit: int = 200,
+    order: str = "desc",
+) -> Dict[str, Any]:
+    payload = monitor.get_results(offset=offset, limit=limit, order=order)
+    items = payload.get("items") or []
+
+    if not items or not any(_summary_needs_identity_enrichment(item) for item in items):
+        return payload
+
+    for path in _candidate_result_paths():
+        if not path.exists():
+            continue
+        try:
+            raw_items = _load_result_file(path)
+        except Exception:
+            continue
+        by_post_id = {}
+        for raw_item in raw_items:
+            item = _unwrap_result_item(raw_item)
+            post_id = item.get("post_id")
+            if post_id is not None:
+                by_post_id[post_id] = raw_item
+        enriched_items = []
+        changed = False
+        for summary in items:
+            raw_item = by_post_id.get(summary.get("post_id"))
+            if raw_item is not None and _summary_needs_identity_enrichment(summary):
+                enriched_items.append(_enrich_summary_from_result(summary, raw_item))
+                changed = True
+            else:
+                enriched_items.append(summary)
+        if changed:
+            payload["items"] = enriched_items
+            break
+
+    return payload
+
+
 def _enrich_summary_from_result(summary: Dict[str, Any], item: Dict[str, Any]) -> Dict[str, Any]:
+    item = _unwrap_result_item(item)
     identity = (item.get("analysis_result") or {}).get("identity") or {}
     novel = identity.get("novel_identity") or {}
     enriched = dict(summary)
@@ -215,6 +459,7 @@ def _enrich_summary_from_result(summary: Dict[str, Any], item: Dict[str, Any]) -
 
 
 def _to_history_summary(item: Dict[str, Any]) -> Dict[str, Any]:
+    item = _unwrap_result_item(item)
     identity = (item.get("analysis_result") or {}).get("identity") or {}
     novel = identity.get("novel_identity") or {}
     return {
@@ -235,6 +480,7 @@ def _to_history_summary(item: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _to_live_detail(item: Dict[str, Any], summary: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    item = _unwrap_result_item(item)
     identity = (item.get("analysis_result") or {}).get("identity") or {}
     novel = identity.get("novel_identity") or {}
     detail = {
@@ -285,7 +531,7 @@ async def api_runs():
         return JSONResponse([])
 
     runs: List[Dict[str, Any]] = []
-    for f in sorted(_OUT_DIR.glob("expert_result_*.json"), reverse=True):
+    for f in _recent_final_result_paths():
         stat = f.stat()
         # 포스트 개수 빠르게 읽기 (JSON 배열 최상위만)
         post_count = 0
@@ -333,7 +579,7 @@ async def api_run_detail(
         return JSONResponse({"error": "invalid filename"}, status_code=400)
 
     filepath = _OUT_DIR / filename
-    if not filepath.exists() or not filepath.name.startswith("expert_result_"):
+    if not filepath.exists() or not _is_final_result_file(filepath.name):
         return JSONResponse({"error": "not found"}, status_code=404)
 
     try:
@@ -375,13 +621,13 @@ async def api_run_post_detail(filename: str, post_id: int):
         return JSONResponse({"error": "invalid filename"}, status_code=400)
 
     filepath = _OUT_DIR / filename
-    if not filepath.exists() or not filepath.name.startswith("expert_result_"):
+    if not filepath.exists() or not _is_final_result_file(filepath.name):
         return JSONResponse({"error": "not found"}, status_code=404)
 
     item = _find_post_in_result_file(filepath, post_id)
     if item is None:
         return JSONResponse({"error": "not found"}, status_code=404)
-    return JSONResponse(item)
+    return JSONResponse(_unwrap_result_item(item))
 
 
 @app.get("/api/logs/{filename}")
@@ -558,7 +804,7 @@ async def sse_stream():
             status = monitor.get_status()
             yield f"event: status\ndata: {json.dumps(status, ensure_ascii=False)}\n\n"
             # 현재까지의 결과도 전송 (재연결 시 누락 복구)
-            results = monitor.get_results(offset=0, limit=200, order="desc")
+            results = _build_live_results_payload(offset=0, limit=200, order="desc")
             if results["items"]:
                 yield f"event: restore\ndata: {json.dumps(results['items'], ensure_ascii=False, default=str)}\n\n"
 
