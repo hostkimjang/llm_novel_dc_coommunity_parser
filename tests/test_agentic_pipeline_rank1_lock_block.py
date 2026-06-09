@@ -62,6 +62,9 @@ def _conflict_decoder(official_title="즉사기 들고 무림에 떨어지다", 
 class Rank1LockBlockSignalTest(unittest.TestCase):
     def setUp(self):
         self.p = object.__new__(AgenticPipeline)
+        # decoder conflict 분기는 _detect_title_anchor_drift 와 동형으로 lexical_overlap<0.45 가드를 둔다.
+        # 기본은 낮은 overlap(0.0)으로 두어 conflict 신호가 발화 가능하게 하고, 가드 억제는 별도 테스트로 검증.
+        self.p._title_anchor_lexical_overlap = lambda *a, **k: 0.0
 
     def test_clean_no_signal_not_blocked(self):
         ctx = _make_ctx()
@@ -93,6 +96,18 @@ class Rank1LockBlockSignalTest(unittest.TestCase):
         ctx = _make_ctx(decoder=_conflict_decoder(aligned=True))
         sig = self.p._abbrev_alias_lock_block_signal(ctx, "즉사기 들고 무림에 떨어지다", {})
         self.assertFalse(sig["blocked"])
+
+    def test_decoder_conflict_suppressed_by_high_lexical_overlap(self):
+        # fix3: anchor-title lexical_overlap>=0.45 이면 정당 결속으로 보고 conflict 신호 억제(over-trigger 방지)
+        self.p._title_anchor_lexical_overlap = lambda *a, **k: 0.9
+        ctx = _make_ctx(decoder=_conflict_decoder(aligned=False))
+        sig = self.p._abbrev_alias_lock_block_signal(ctx, "즉사기 들고 무림에 떨어지다", {})
+        self.assertFalse(sig["blocked"])
+        # 단 verifier critical 은 lexical_overlap 와 무관하게 여전히 차단
+        sig2 = self.p._abbrev_alias_lock_block_signal(
+            ctx, "즉사기 들고 무림에 떨어지다", _critical_verifier("reject")
+        )
+        self.assertTrue(sig2["blocked"])
 
 
 class Rank1ChokepointDemoteTest(unittest.TestCase):
@@ -135,6 +150,14 @@ class Rank1ChokepointDemoteTest(unittest.TestCase):
         p._search_inferred_alias_nonwork_block_reason = lambda *a, **k: ""
         p._can_promote_title_after_semantic_no_work = lambda *a, **k: True
         p._find_title_matched_official_url = lambda *a, **k: matched_url
+        # rank3 상호작용 격리: 본문 직앵커(하드앵커) 존재로 고정 → rank3가 독립적으로 lock 해제하지 않게 하여
+        # 여기서는 rank1 효과(음수신호 시 conf High→Medium·lock 해제)만 검증한다. rank3 하드앵커 게이트
+        # 자체(하드앵커 부재 시 unlock)는 test_agentic_pipeline_rank3_lock_anchor.py 에서 별도 검증.
+        p._title_mentioned_in_post_main_context = lambda *a, **k: True
+        p._has_image_explicit_title_anchor = lambda *a, **k: False
+        p._has_curated_alias_contextual_work_anchor = lambda *a, **k: False
+        # decoder conflict 분기의 lexical_overlap 가드: 낮게 고정해 conflict 신호가 발화 가능하게 함
+        p._title_anchor_lexical_overlap = lambda *a, **k: 0.0
         return p
 
     def _run(self, *, verifier=None, decoder=None, matched_url=None):

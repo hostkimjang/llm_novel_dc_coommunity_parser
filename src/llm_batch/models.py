@@ -266,6 +266,10 @@ class DetectedTitle(BaseModel):
     page_type: Optional[str] = None
     content_status: Optional[str] = None
     locked: Optional[bool] = None
+    # rank1/rank3 precision 게이트가 lock(locked)을 분리한 뒤에도, 게이트 전에 확정 가능했던
+    # (lock 가능했던) 정당 resolved 후보임을 다운스트림 displace 보호용으로 표시한다. locked(precision)과
+    # 분리된 recall 보호 신호 — final-semantic-reread demotion 가드(has_official_candidate)가 참조한다.
+    resolved_recall_anchor: Optional[bool] = None
     negative_evidence: Optional[List[str]] = None
     reference_role: Optional[Literal[
         "primary",

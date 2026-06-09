@@ -15788,7 +15788,15 @@ class AgenticPipeline:
             cand_tier = str(getattr(cand, "source_tier", "") or "").strip().lower()
             if cand_url and not official_url:
                 official_url = cand_url
-            if cand_url or cand_tier in {"official_detail", "official_search"} or bool(getattr(cand, "locked", False)):
+            if (
+                cand_url
+                or cand_tier in {"official_detail", "official_search"}
+                or bool(getattr(cand, "locked", False))
+                # rank1/rank3 precision 게이트로 unlock된 정당 resolved 후보도 displace 보호 대상으로 인정
+                # (locked 가 유일 신호이던 케이스의 recall 손실 0 보장). lock(precision)·우열비교(37325/37501/40008,
+                # locked·source_tier 직접 참조)에는 영향 없음 — 이 신호는 이 보호 컨텍스트에서만 소비된다.
+                or bool(getattr(cand, "resolved_recall_anchor", False))
+            ):
                 has_official_candidate = True
             alias = str(getattr(cand, "alias_or_mention", "") or "").strip()
             if alias and self._normalize_match_text(alias) != title_norm and alias not in aliases:
@@ -35755,8 +35763,9 @@ OUTPUT JSON:
           (a) Verifier critical 반론 — verification_result.counter_arguments 중 severity=="critical"
               (action reject/nullify_title/downgrade_confidence). 기존 패턴 _vf_has_critical_reject_j와 동형.
           (b) Decoder 음수 정합 — best_match의 _title_anchor_conflict / _abbr_mismatch_downgrade 플래그.
-              단 이 title과 정합되는 decoder 매칭(rank>=2)이 별도로 있으면 conflict가 상쇄된 것으로 보고 제외
-              (drift 판정 로직 _title_keyword_drift_signal과 동형 — 42479-42492).
+              단 이 title과 정합되는 decoder 매칭(rank>=2)이 별도로 있으면 conflict가 상쇄된 것으로 보고 제외,
+              추가로 anchor-title lexical_overlap>=0.45면 정당 결속으로 보고 제외(canonical drift 판정
+              _detect_title_anchor_drift와 동형 — lexical_overlap<0.45 가드 포함).
 
         반환: {"blocked": bool, "reasons": [str, ...]}. 특정 post id/제목/별칭을 보지 않고 구조 신호로만 동작.
         title 보존·강등은 호출부가 책임진다(이 함수는 신호만 판정)."""
@@ -35809,9 +35818,35 @@ OUTPUT JSON:
                 if bool(bm.get("_title_anchor_conflict")) or bool(bm.get("_abbr_mismatch_downgrade")):
                     dec_has_conflict = True
             if dec_has_conflict and not dec_has_aligned:
-                reasons.append("decoder_anchor_conflict")
+                # canonical drift 판정 _detect_title_anchor_drift 와 동형: anchor-title lexical_overlap 가
+                # 0.45 이상으로 충분히 결속되면 정당 매칭으로 보고 conflict 신호를 올리지 않음(over-trigger 방지).
+                if self._title_anchor_lexical_overlap(ctx, str(title or "")) < 0.45:
+                    reasons.append("decoder_anchor_conflict")
 
         return {"blocked": bool(reasons), "reasons": reasons}
+
+    def _has_image_explicit_title_anchor(self, ctx, title: Optional[str]) -> bool:
+        """rank3 하드앵커 구성요소: 이미지 OCR/VLM이 공식 표제를 직접 제공한 경우.
+
+        image_enrichment item의 explicit_work_title 이 official_title 과 정규화 일치하고
+        evidence_type 이 explicit_text/cover_title(표지·명시 텍스트)일 때만 True. 배경 리스팅
+        VLM item은 제외. 분위기·캐릭터·밈만으로는 False(precision). image_direct_title 인라인
+        로직(_classify 경로)과 동형이며 lock 하드앵커 판정에 재사용한다."""
+        title_norm = self._normalize_match_text(str(title or ""))
+        if not title_norm:
+            return False
+        post_data = getattr(ctx, "post_data", None) or {}
+        for item in (post_data.get("image_enrichment") or []):
+            if not isinstance(item, dict):
+                continue
+            if self._is_background_listing_vlm_item(item):
+                continue
+            if (
+                self._normalize_match_text(item.get("explicit_work_title") or "") == title_norm
+                and str(item.get("evidence_type") or "") in {"explicit_text", "cover_title"}
+            ):
+                return True
+        return False
 
     def _resolve_batch_memory_alias_candidate(
         self,
@@ -36071,6 +36106,10 @@ OUTPUT JSON:
             if hit_confidence < 3 and self._has_family_alias_ambiguity(ctx, official_title=title):
                 continue
             rank = 3 if hit_confidence >= 3 else 2
+            # 게이트 적용 전 lock 가능성(hit_confidence>=3) 포착 — rank1/rank3 가 lock 을 분리(제거)해도
+            # 이 정당 resolved 후보가 다운스트림 final-semantic-reread 에서 displace(title null화)되지 않도록
+            # has_official_candidate(_verified_alias_context_for_final_semantic_reread)에 recall 보호 신호로 전달.
+            _orig_lockable = rank >= 3
             # rank1 게이트 (precision / 근본원인 B): 음수 정합(decoder conflict) OR Verifier critical 반론이
             # 있으면 lock/High 승격을 차단하고 한 단계만 강등(High→Medium, locked True→False). title은 그대로
             # 보존되어 candidate로 반환되므로 work_resolution=resolved·recall 손실 0.
@@ -36089,6 +36128,26 @@ OUTPUT JSON:
                         f"reasons={_lock_block.get('reasons')}",
                         file=sys.stderr,
                     )
+            # rank3 게이트 (precision / 근본원인 B): lock 부여를 'title_alias 단독 표면일치'에서 분리한다.
+            # 본문 직앵커 / OCR 공식표제 / 공식 URL(matched_url) 중 1개 이상 동반 시에만 locked=True.
+            # 하드앵커 부재 시 locked 만 False 로 두고 official_title·confidence·source_tier 는 보존 →
+            # work_resolution=resolved·title_resolution_state resolved 카운트 불변(recall 손실 0). title 보존
+            # 회귀테스트가 배포 전제(미충족 시 drop). matched_url 은 official_detail 1차 앵커이므로 항상 충족.
+            _lock_hard_anchor = bool(
+                matched_url
+                or self._title_mentioned_in_post_main_context(ctx, title)
+                or self._has_image_explicit_title_anchor(ctx, title)
+                # 사람이 큐레이션한 확정 별칭이 본문에 표면으로 등장 + 작품논의 컨텍스트 동반 시(단순 substring 아님,
+                # _semantic_seed_no_work_signal이면 차단). 약칭만 본문 등장하고 정식제목/URL/OCR이 없는 정당
+                # KNOWN_ABBREVIATION 케이스의 lock 보존(하드앵커 비대칭 제거). 무근거 약칭은 여전히 unlock.
+                or self._has_curated_alias_contextual_work_anchor(ctx, title)
+            )
+            if rank >= 3 and not _lock_hard_anchor:
+                print(
+                    f"[{_ts()}] rank3 gate: title_alias 단독 표면 lock 차단 → locked=False(High 유지·title 보존) "
+                    f"title='{title}', alias='{alias or surface}' (본문직앵커/OCR공식표제/공식URL 부재)",
+                    file=sys.stderr,
+                )
             candidate = DetectedTitle(
                 official_title=title,
                 heretic_url=matched_url,
@@ -36103,7 +36162,8 @@ OUTPUT JSON:
                         else "mixed"
                     )
                 ),
-                locked=rank >= 3,
+                locked=(rank >= 3) and _lock_hard_anchor,
+                resolved_recall_anchor=_orig_lockable,
                 reference_role="primary",
             )
             return candidate, hit
