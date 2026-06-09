@@ -35742,6 +35742,77 @@ OUTPUT JSON:
             and len(canonical_hits) > len(current_hits)
         )
 
+    def _abbrev_alias_lock_block_signal(
+        self,
+        ctx,
+        title: Optional[str],
+        verification_result: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """rank1 (precision / 근본원인 B): alias/stability 복구 경로가 locked/High로 닫기 전에
+        "음수 정합 신호 OR Verifier critical 반론"을 탐지한다.
+
+        코드에는 raw 음수 정수 스코어가 없고, 코드는 "음수 정합"을 다음 일반 신호로 표현한다:
+          (a) Verifier critical 반론 — verification_result.counter_arguments 중 severity=="critical"
+              (action reject/nullify_title/downgrade_confidence). 기존 패턴 _vf_has_critical_reject_j와 동형.
+          (b) Decoder 음수 정합 — best_match의 _title_anchor_conflict / _abbr_mismatch_downgrade 플래그.
+              단 이 title과 정합되는 decoder 매칭(rank>=2)이 별도로 있으면 conflict가 상쇄된 것으로 보고 제외
+              (drift 판정 로직 _title_keyword_drift_signal과 동형 — 42479-42492).
+
+        반환: {"blocked": bool, "reasons": [str, ...]}. 특정 post id/제목/별칭을 보지 않고 구조 신호로만 동작.
+        title 보존·강등은 호출부가 책임진다(이 함수는 신호만 판정)."""
+        reasons: List[str] = []
+        title_norm = self._normalize_match_text(str(title or ""))
+
+        # (a) Verifier critical 반론
+        vf = verification_result if isinstance(verification_result, dict) else {}
+        if not vf:
+            try:
+                vf_out = ctx.get_expert_output(ExpertType.VERIFIER) or {}
+                if isinstance(vf_out, dict):
+                    vf = vf_out.get("verification_result") or vf_out or {}
+            except Exception:
+                vf = {}
+        for _ca in (vf.get("counter_arguments") or []):
+            if not isinstance(_ca, dict):
+                continue
+            if str(_ca.get("severity") or "").strip().lower() != "critical":
+                continue
+            if str(_ca.get("action") or "").strip().lower() in {
+                "reject",
+                "nullify_title",
+                "downgrade_confidence",
+            }:
+                reasons.append("verifier_critical_counter")
+                break
+
+        # (b) Decoder 음수 정합 (anchor conflict / abbr mismatch downgrade)
+        if title_norm:
+            try:
+                dec_out = ctx.get_expert_output(ExpertType.DECODER) or {}
+            except Exception:
+                dec_out = {}
+            dec_has_conflict = False
+            dec_has_aligned = False
+            for dt in (dec_out.get("decoded_terms", []) or []):
+                if not isinstance(dt, dict):
+                    continue
+                bm = dt.get("best_match") or {}
+                if not isinstance(bm, dict):
+                    continue
+                bm_title_norm = self._normalize_match_text(str(bm.get("title") or ""))
+                if (
+                    bm_title_norm
+                    and bm_title_norm == title_norm
+                    and self._confidence_rank_value(bm.get("confidence")) >= 2
+                ):
+                    dec_has_aligned = True
+                if bool(bm.get("_title_anchor_conflict")) or bool(bm.get("_abbr_mismatch_downgrade")):
+                    dec_has_conflict = True
+            if dec_has_conflict and not dec_has_aligned:
+                reasons.append("decoder_anchor_conflict")
+
+        return {"blocked": bool(reasons), "reasons": reasons}
+
     def _resolve_batch_memory_alias_candidate(
         self,
         ctx,
@@ -36000,6 +36071,24 @@ OUTPUT JSON:
             if hit_confidence < 3 and self._has_family_alias_ambiguity(ctx, official_title=title):
                 continue
             rank = 3 if hit_confidence >= 3 else 2
+            # rank1 게이트 (precision / 근본원인 B): 음수 정합(decoder conflict) OR Verifier critical 반론이
+            # 있으면 lock/High 승격을 차단하고 한 단계만 강등(High→Medium, locked True→False). title은 그대로
+            # 보존되어 candidate로 반환되므로 work_resolution=resolved·recall 손실 0.
+            # matched_url(official_detail 1차 앵커)이 있으면 강근거이므로 면제(정당 official_detail lock 회귀 방지).
+            if rank >= 3 and not matched_url:
+                _lock_block = self._abbrev_alias_lock_block_signal(
+                    ctx,
+                    title,
+                    verification_result=verification_result or {},
+                )
+                if _lock_block.get("blocked"):
+                    rank = 2
+                    print(
+                        f"[{_ts()}] rank1 gate: alias/stability lock 차단 → 한 단계 강등 "
+                        f"(High→Medium, locked→False) title='{title}', alias='{alias or surface}', "
+                        f"reasons={_lock_block.get('reasons')}",
+                        file=sys.stderr,
+                    )
             candidate = DetectedTitle(
                 official_title=title,
                 heretic_url=matched_url,
