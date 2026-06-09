@@ -28414,15 +28414,18 @@ OUTPUT JSON:
                 continue
             if str(item.get("evidence_type") or "") not in {"explicit_text", "cover_title"}:
                 continue
-            # 작품명(vetted)에 더해 작가명 라벨 OR 강구조신호(메트릭/시놉시스/플랫폼) 공기 → 카탈로그 상세 2종 충족
-            has_author = bool(str(item.get("explicit_author_name") or "").strip())
+            # rank2 v2 (ground-truth 강화): 작품명(vetted)에 더해 **카탈로그 구조신호(메트릭/시놉시스/플랫폼마커)를
+            # 필수**로 요구한다. 작가명만으로는 불충분 — 비-웹소설 이미지(밈/게임/실존 비급 등)가 표지로 오인되어
+            # 작가 라벨만 달고 통과하던 누출(예: 'School Days/Wataru Higashida' AI일러, '三才剣法精解' 무공비급)을 차단.
+            # 실제 웹소설 플랫폼 상세/표지 OCR은 조회/추천/회차/선호작/연재 또는 플랫폼명을 거의 항상 동반하므로
+            # 정답 카탈로그(노벨피아/문피아 + 메트릭)는 유지되고, 플랫폼 마커 없는 비-웹소설만 배제된다.
             cues_text = " ".join(
                 [
                     str(item.get("ocr_text") or ""),
                     " ".join(str(c or "") for c in (item.get("work_cues") or [])),
                 ]
             )
-            if has_author or self._ocr_catalog_structure_marker(cues_text):
+            if self._ocr_catalog_structure_marker(cues_text):
                 return True
         return False
 

@@ -76,13 +76,19 @@ class Rank2OcrCatalogEvidenceTest(unittest.TestCase):
         ctx = _ctx([_catalog_item()])
         self.assertTrue(self.p._has_ocr_catalog_official_title_evidence(ctx, TITLE))
 
-    def test_title_plus_author_only_two_signals_is_official(self):
-        # 메트릭 없음, 작품명+작가 2종 → True
+    def test_author_only_without_structure_not_official(self):
+        # rank2 v2: 작가명만 있고 플랫폼/메트릭 구조신호 없으면 False — 비-웹소설 이미지(밈/게임/비급)가
+        # 작가 라벨만으로 표지 오인되어 통과하던 누출(예: 'School Days', '三才剣法精解 무공비급') 차단.
         ctx = _ctx([_catalog_item(ocr_text="", work_cues=[])])
+        self.assertFalse(self.p._has_ocr_catalog_official_title_evidence(ctx, TITLE))
+
+    def test_title_plus_structure_marker_is_official(self):
+        # 작품명 + 구조신호(플랫폼/메트릭) 2종 → True (작가 없어도 실제 카탈로그면 인정)
+        ctx = _ctx([_catalog_item(explicit_author_name="", ocr_text="노벨피아 조회 12만 추천 5천 연재중", work_cues=[])])
         self.assertTrue(self.p._has_ocr_catalog_official_title_evidence(ctx, TITLE))
 
     def test_title_only_one_signal_not_official(self):
-        # 작가 없음 + 메트릭 없음 → 신호 1종 → False (단편 표면만으로 과확정 금지)
+        # 작가 없음 + 구조신호 없음 → 작품명 1종뿐 → False (단편 표면만으로 과확정 금지)
         ctx = _ctx([_catalog_item(explicit_author_name="", ocr_text="", work_cues=[])])
         self.assertFalse(self.p._has_ocr_catalog_official_title_evidence(ctx, TITLE))
 
