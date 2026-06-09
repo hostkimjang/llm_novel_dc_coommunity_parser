@@ -285,6 +285,16 @@ class SynthesizerExpert:
             )
         else:
             full_comments = "(댓글 없음)"
+        comment_context_lines = [
+            str(line)
+            for line in ((post_data or {}).get("comment_context_lines") or [])[:20]
+            if str(line).strip()
+        ]
+        comment_dialogue_lines = [
+            str(line)
+            for line in ((post_data or {}).get("comment_dialogue_context_lines") or [])[:20]
+            if str(line).strip()
+        ]
 
         # ── 2. Decoder 발견사항 요약 ──
         decoder_out = ctx.get_expert_output(ExpertType.DECODER) or {}
@@ -305,6 +315,18 @@ class SynthesizerExpert:
         if hasattr(ctx, "primary_domain") and ctx.primary_domain:
             extra_parts.append(
                 f"📊 Discourse 분석: domain={ctx.primary_domain}, intent={getattr(ctx, 'discourse_intent', '?')}"
+            )
+        if comment_context_lines:
+            extra_parts.append(
+                "댓글 작성자/대화 맥락: "
+                + " / ".join(comment_context_lines)
+                + " (role=post_author는 본문 작성자의 댓글)"
+            )
+        if comment_dialogue_lines:
+            extra_parts.append(
+                "댓글 발화 재구성: "
+                + " / ".join(comment_dialogue_lines)
+                + " (speaker/author/ip는 대화 흐름 추적용이며 작품명 증거가 아님)"
             )
 
         discourse_out = ctx.get_expert_output(ExpertType.DISCOURSE) or {}

@@ -917,7 +917,7 @@ def run_batch(
                         "noise_terms": list(NOISE_TERMS),
                         "priority": [
                             "Evidence from comments (URL or [Title])",
-                            "Dictionary hard match",
+                            "Dictionary alias hint (requires independent evidence before title resolution)",
                             "Trope/unknown capture",
                             "Noise filter",
                         ],

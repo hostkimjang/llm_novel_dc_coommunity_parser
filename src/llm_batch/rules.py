@@ -122,6 +122,97 @@ def is_non_novel_domain(domain: str) -> bool:
     # 명시 목록 외에도, novel이 아닌 확정 도메인은 비소설로 간주
     return d not in {"unknown", "ambiguous", "mixed"}
 
+
+SURFACE_EXPRESSION_REREAD_PUBLIC_LABEL = "표현 오타/축약 패턴(범용)"
+SURFACE_EXPRESSION_REREAD_PUBLIC_STATEMENT = (
+    f"{SURFACE_EXPRESSION_REREAD_PUBLIC_LABEL}으로만 보며, "
+    "packet-local 원문 재검토 신호이지 특정 정상형이나 작품명/별칭 근거가 아니다."
+)
+SURFACE_EXPRESSION_REREAD_PUBLIC_NOTE = (
+    f"{SURFACE_EXPRESSION_REREAD_PUBLIC_LABEL}으로만 보고, "
+    "결정적 치환/전역 규칙/작품명 근거로 쓰지 않는다."
+)
+
+
+SURFACE_EXPRESSION_REREAD_CANDIDATE_RE = re.compile(
+    r"(?P<surface>"
+    r"(?=[0-9A-Za-z가-힣]{2,24}(?![0-9A-Za-z가-힣]))"
+    r"(?:\d+[A-Za-z가-힣]{1,14}|[A-Za-z가-힣]{1,14}\d+[A-Za-z가-힣]{0,14})"
+    r"(?:인?\s*줄|인?\s*지|줄|지|같(?:음|다)?|듯|몰랐(?:음)?)?"
+    r")"
+    r"(?![A-Za-z0-9가-힣])"
+)
+
+
+def surface_expression_reread_notes(text: str) -> List[Dict[str, str]]:
+    """Return packet-local non-title semantic hints for rereading surface text.
+
+    These notes are not title/alias block rules and must not be reused as a
+    global lexical mapping. They only tell the semantic reread step that a
+    surface phrase may be an expression typo, abbreviation, or spacing break in
+    the current packet.
+    """
+    out: List[Dict[str, str]] = []
+    seen: set[str] = set()
+    for match in SURFACE_EXPRESSION_REREAD_CANDIDATE_RE.finditer(str(text or "")):
+        surface = re.sub(r"\s+", "", match.group("surface") or "").strip()
+        if not surface:
+            continue
+        if len(surface) < 2 or surface in seen:
+            continue
+        seen.add(surface)
+        out.append(
+            {
+                "kind": "expression_typo_abbreviation_or_spacing_candidate",
+                "source_surface": surface,
+                "role": "non_title_semantic_context",
+                "interpretation": "packet_local_expression_reread_candidate",
+                "scope": "packet_local_reread_hint",
+                "evidence_role": "not_title_or_alias_evidence",
+                "pattern_scope": "generic_expression_typo_abbreviation_spacing_pattern",
+                "rule_scope": "not_surface_specific_rule",
+                "note": SURFACE_EXPRESSION_REREAD_PUBLIC_NOTE,
+            }
+        )
+    return out
+
+
+def surface_expression_reread_public_notes(notes: Iterable[Dict[str, str]]) -> List[Dict[str, str]]:
+    """Return public prompt/reason-safe reread hints without deterministic rewrites.
+
+    Older packets may still carry a ``paraphrase`` field such as a concrete
+    ``X -> Y`` reading. For semantic review prompts we expose only the local
+    surface and the generic pattern contract so the model does not learn or
+    reuse a surface-specific rule.
+    """
+    out: List[Dict[str, str]] = []
+    seen: set[str] = set()
+    for note in notes or []:
+        if not isinstance(note, dict):
+            continue
+        source = re.sub(r"\s+", "", str(note.get("source_surface") or "")).strip()
+        if not source or source in seen:
+            continue
+        seen.add(source)
+        out.append(
+            {
+                "kind": str(note.get("kind") or "expression_typo_abbreviation_or_spacing_candidate"),
+                "source_surface": source,
+                "role": "non_title_semantic_context",
+                "interpretation": "packet_local_expression_reread_candidate",
+                "scope": "packet_local_reread_hint",
+                "evidence_role": "not_title_or_alias_evidence",
+                "pattern_scope": "generic_expression_typo_abbreviation_spacing_pattern",
+                "rule_scope": "not_surface_specific_rule",
+                "note": SURFACE_EXPRESSION_REREAD_PUBLIC_NOTE,
+            }
+        )
+    return out
+
+
+def has_surface_expression_reread_candidate(text: str) -> bool:
+    return bool(surface_expression_reread_notes(text))
+
 SLANG_DICTIONARY: Dict[str, str] = {
     # 음절 두문자 (첫 글자만 따온 형태) - 형태소 분석으로 유추 불가능한 것들만
     "아카살": "아카데미에서 살아남기",
@@ -481,13 +572,20 @@ def apply_rules(
             post_id=post_id,
             is_relevant=True,
             novel_identity=NovelIdentity(
-                official_title=slang[1],
-                confidence="High",
+                official_title=None,
+                confidence="None",
             ),
             slang_insight=SlangInsight(
                 detected_term=slang[0],
                 decoded_term=slang[1],
+                decode_verified=False,
+                store_in_slang_db=False,
+                store_reason="curated_dictionary_hint_requires_independent_evidence",
             ),
+            reason="Unknown",
+            reason_lines=[
+                "SLANG_DICTIONARY hit is an alias hint, not standalone title evidence.",
+            ],
         )
 
     trope = _detect_trope(text_sources)

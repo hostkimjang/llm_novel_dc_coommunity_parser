@@ -272,6 +272,8 @@ class VerifierExpert:
             return False
         if any(tok in query for tok in ("search=", "q=", "query=", "keyword=", "writer=", "author=", "tag=", "genre=", "page=")):
             return False
+        if ("kakao.page" in host or "page.kakao.com" in host) and "tab_type=comment" in query:
+            return False
 
         if "novelpia.com" in host and re.search(r"/novel/\d+", path):
             return True
@@ -286,6 +288,19 @@ class VerifierExpert:
         if ("kakao.page" in host or "page.kakao.com" in host) and "/content/" in path:
             return True
         return False
+
+    @classmethod
+    def _is_official_detail_evidence_url(cls, url: Any, trust_score: Optional[float] = None) -> bool:
+        url_text = str(url or "").strip()
+        if not url_text:
+            return False
+        if trust_score is not None:
+            try:
+                if float(trust_score) < 0.8:
+                    return False
+            except Exception:
+                return False
+        return cls._is_novel_detail_url(url_text)
 
     @staticmethod
     def _norm_text(value: Any) -> str:
@@ -1881,10 +1896,11 @@ class VerifierExpert:
                         })
                     
                     # heretic_url이 있으면 해당 제목에 official_url로 등록
-                    if h_url and ctx.score_source_trust(h_url) >= 0.8:
+                    h_url_trust = ctx.score_source_trust(h_url) if h_url else 0.0
+                    if h_url and self._is_official_detail_evidence_url(h_url, h_url_trust):
                         ctx.add_evidence_for_candidate(verified_ev_title, "official_url", {
                             "url": h_url,
-                            "trust_score": ctx.score_source_trust(h_url),
+                            "trust_score": h_url_trust,
                         })
                 
                 # 2) 🆕 검색 증거: 모든 후보 제목에 대해 독립적으로 매칭
@@ -1916,9 +1932,10 @@ class VerifierExpert:
                         if sr_url:
                             ctx.source_trust_scores[sr_url] = trust
                         # 3) 공식 URL 분류 (official_url)
-                        if trust >= 0.8:
+                        if self._is_official_detail_evidence_url(sr_url, trust):
                             ctx.add_evidence_for_candidate(_cand_title, "official_url", {
                                 "url": sr_url,
+                                "title": str(sr.get("title") or ""),
                                 "trust_score": trust,
                             })
                 
@@ -2632,9 +2649,11 @@ class VerifierExpert:
         if clipped_content:
             title_body_joined = f"{title_text} {clipped_content[0]}".strip()
         
-        return {
+        result = {
             "post_id": post.get("post_id"),
+            "gallery_id": post.get("gallery_id", ""),
             "title": title_text,
+            "post_author": post.get("post_author") or post.get("author", ""),
             "author": post.get("author", ""),
             "content": clipped_content,
             "title_body_joined_preview": self._clip_text(
@@ -2649,6 +2668,13 @@ class VerifierExpert:
             "comments": clipped_comments,
             "comments_truncated": comments_truncated,
         }
+        comment_context = post.get("comment_context_lines") or []
+        if comment_context:
+            result["comment_context"] = comment_context[:max_comments]
+        comment_dialogue = post.get("comment_dialogue_context_lines") or []
+        if comment_dialogue:
+            result["comment_dialogue_context"] = comment_dialogue[:max_comments]
+        return result
     
     def _call_llm(
         self,

@@ -108,6 +108,7 @@ def _build_relevance_contract_overlay() -> List[str]:
         "작품 본체 토론이 아니어도 작가/플랫폼/유료화/추천요청/장르 일반론이면 adjacent_relevant 성격의 주변 담론일 수 있으므로 noise로 단순 압축하지 마라.",
         "복수 작품 비교/추천/순서 질문은 단일 official_title 강제보다 multi-work 맥락을 우선 기술하라.",
         "정식 제목 미확정 또는 작가/플랫폼 메타 글에서는 notes/reason에 단일 작품 확정 문장을 쓰지 마라.",
+        "기억 회수/제목 찾기 글에서는 '소설 관련성'과 '단일 작품 매칭 가능성'을 분리한다. 전자는 인정해도 후자가 없으면 official_title=null, work_resolution=none/unresolved로 둔다.",
         "decoded_term에는 Mixed Unknown/unknown/N/A 같은 실패 라벨을 쓰지 말고, 불명확하면 slang_insight=null을 우선한다.",
         "일반명사·트로프·장면용어·코스튬+인명 조합·개념어는 작품 고유 브리지가 없으면 작품 약칭으로 승격하지 않는다.",
         "의미/뜻/차이를 묻는 질문형 문맥에서는 검색 결과의 개념 문서를 작품 제목으로 승격하지 않는다.",
@@ -116,6 +117,10 @@ def _build_relevance_contract_overlay() -> List[str]:
         "짧은 표면형이 여러 공식 제목에 공통으로 들어가면 ambiguous_title_stem으로 보고, 본문 앵커가 닫힌 후보만 primary로 둔다. 나머지는 검색 이웃이지 comparison/recommendation/slang 후보가 아니다.",
         "slang_insight.detected_term은 최소 표면형만 넣는다. 감상/질문/상태 접미사(on/off/하렘임/몇화/너무/불쌍/무서워/후기/리뷰/봤다)는 detected_term에 포함하지 않는다.",
         "canonical_work_alias에는 정식 제목을 넣지 않는다. 순수 작품 약칭을 분리할 수 없으면 canonical_work_alias=null, store_in_slang_db=false로 둔다.",
+        "정식 제목과 짧은 약칭이 함께 보이면 detected_term/canonical_work_alias에는 짧은 약칭만 남기고, 정식 제목은 decoded_term/official_title에 둔다.",
+        "제목 맨 앞의 작품 약칭 뒤에 이벤트/무료분/후기/리뷰/봤다/별로/문체/캐릭터명이 붙어도 전체를 noise로 닫지 말고, 순수 약칭과 상태·감상어를 분리하라.",
+        "문체가 유치함/별로네 같은 짧은 평가는 제목이 작품 약칭으로 시작하면 작가 메타가 아니라 작품 감상 후보로 먼저 본다.",
+        "플랫폼·시장 이야기도 특정 작품 약칭이 직접 나오면 trope/general만으로 압축하지 말고 named work reference 또는 adjacent work reference를 보존하라.",
         "정식 제목 그대로, 띄어쓰기 있는 구절, 문장형 제목 표면, 작품+캐릭터/작가/밈 합성 표현은 slang DB 저장 대상이 아니다.",
         "store_in_slang_db=true는 순수 작품 약칭(pure_work_alias)이고 감지어가 짧은 별칭 표면일 때만 허용한다.",
     ]
@@ -139,9 +144,12 @@ def _build_common_overlay_lines(ctx: Optional[Any]) -> List[str]:
         "3) 제목-본문-댓글 담화가 끊기면 특정 작품 매칭보다 장르/커뮤니티 일반론 가능성을 우선 검토한다.",
         "4) 확신 없는 용어는 추정 확정 대신 unresolved 처리하고 추가 검증을 요청한다.",
         "5) 가설 대입 검증: 후보 제목을 원문 문장에 대입했을 때 의미 비약이 생기면 후보를 배제한다.",
-        "6) 모든 자연어 출력(reason/notes/evidence 등)은 한국어로 작성한다.",
-        "7) 중국어(한자/중문 문장) 출력은 금지한다. 비한국어 원문은 한국어 요약으로 바꿔라.",
-        "8) URL/고유 링크는 원문 유지 가능하나, 설명 문장은 반드시 한국어로 작성한다.",
+        "6) '무슨 소설인지 기억 안남', '대사만 기억남', '뭐였지'처럼 기억 회수/제목 찾기 글은 작품 관련일 수 있지만, 원문 title/body/comment에 직접 제목·안정 별칭·고유 대사 출처가 없으면 official_title=null을 유지한다.",
+        "7) 검색 결과가 원문 일부 단어와 겹치거나 공식 URL을 갖고 있어도, 원문 span→후보 title을 직접 잇는 anchor가 없으면 단일 작품으로 확정하지 않는다.",
+        "8) comment_context_lines/comment_dialogue_context의 speaker/author/ip는 대화 참여자 추적용 메타다. 그 자체를 작품명/별칭 증거로 쓰지 말고, 댓글 원문이 명시한 제목·별칭·캐릭터·줄거리만 작품 앵커로 사용한다.",
+        "9) 모든 자연어 출력(reason/notes/evidence 등)은 한국어로 작성한다.",
+        "10) 중국어(한자/중문 문장) 출력은 금지한다. 비한국어 원문은 한국어 요약으로 바꿔라.",
+        "11) URL/고유 링크는 원문 유지 가능하나, 설명 문장은 반드시 한국어로 작성한다.",
     ]
     lines.extend(_build_time_attack_overlay(ctx))
     lines.extend(_build_relevance_contract_overlay())
@@ -327,8 +335,10 @@ def _build_verifier_overlay(
             "감지 표현이 '순수 작품 약칭'인지, '작품+캐릭터/작가 합성'인지 구분하라.",
             "작품+캐릭터/작가 합성이라면 canonical_work_alias에 순수 작품 약칭을 넣고 alias_scope를 work_plus_character/work_plus_author로 표시하라.",
             "합성 표현은 store_in_slang_db=false, 순수 작품 약칭만 store_in_slang_db=true로 표시하라.",
+            "정식 제목과 짧은 약칭이 함께 보이면 detected_term/canonical_work_alias에는 짧은 약칭만 남기고, 정식 제목은 decoded_term/official_title에 둔다.",
             "detected_term은 문장 전체가 아니라 실제 약칭 표면만 써라. '약칭 + 캐릭터/감상/질문/상태어'는 surface composite이므로 store_in_slang_db=false다.",
             "canonical_work_alias에 정식 제목을 복사하지 마라. 정식 제목뿐이면 canonical_work_alias=null, store_in_slang_db=false다.",
+            "noisy term은 차단하되 clean alias는 보존한다. 한 표현에 문장형 term과 짧은 작품 약칭이 함께 있으면 noisy detected surface는 저장하지 말고 clean alias를 canonical_work_alias로 분리하라.",
             "짧은 표면형이 복수 공식 제목의 공통 stem이면 alias_scope=mixed_unknown, store_in_slang_db=false로 두고 본문 앵커가 닫힌 후보만 primary로 판단하라.",
             "앵커가 약하지만 검색이 특정 후보로 수렴하면 noise로 단정하지 말고 title hold/unresolved 가능성을 설명하라.",
         ]

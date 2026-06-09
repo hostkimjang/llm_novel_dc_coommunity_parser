@@ -166,12 +166,20 @@ class GatekeeperExpert:
         
         result = {
             "post_id": post.get("post_id"),
+            "gallery_id": post.get("gallery_id", ""),
             "title": title_text,
+            "post_author": post.get("post_author") or post.get("author", ""),
             "author": post.get("author", ""),
             "content": content_texts,
             "title_body_joined_preview": title_body_joined,
             "comments": comments[:10],  # Limit comments
         }
+        comment_context = post.get("comment_context_lines") or []
+        if comment_context:
+            result["comment_context"] = comment_context[:10]
+        comment_dialogue = post.get("comment_dialogue_context_lines") or []
+        if comment_dialogue:
+            result["comment_dialogue_context"] = comment_dialogue[:10]
         
         # 🔥 이미지 전용 게시글 정보 추가
         if total_blocks > 0:

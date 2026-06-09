@@ -52,6 +52,7 @@ def _normalize_alnum_kor_cached(text: str) -> str:
 KNOWN_ABBREVIATIONS = {
     # === 사용자 검증 약칭 ===
     "주전무": "주무시기 전에 무엇을 하셨나요?",
+    "히집악": "히어로가 집착하는 악당이 되었다",
 }
 
 
@@ -1173,6 +1174,16 @@ class DecoderExpert:
             _body_text = " ".join(_body_parts).strip()
             _comments_raw = getattr(ctx, 'comments', []) or []
             _comments_text = " / ".join(c for c in _comments_raw if isinstance(c, str) and c.strip())
+            _comment_context_lines = [
+                str(line)
+                for line in (post_data.get("comment_context_lines") or [])[:10]
+                if str(line).strip()
+            ]
+            _comment_dialogue_lines = [
+                str(line)
+                for line in (post_data.get("comment_dialogue_context_lines") or [])[:10]
+                if str(line).strip()
+            ]
             
             # --- 로그 ---
             _entities_info = []
@@ -1207,6 +1218,18 @@ class DecoderExpert:
                 user_prompt += f"  본문: {_body_text[:300]}\n"
             if _comments_text:
                 user_prompt += f"  댓글: {_comments_text[:300]}\n"
+            if _comment_context_lines:
+                user_prompt += (
+                    "  댓글 작성자/대화 맥락: "
+                    + " / ".join(_comment_context_lines)
+                    + " (role=post_author는 본문 작성자의 댓글)\n"
+                )
+            if _comment_dialogue_lines:
+                user_prompt += (
+                    "  댓글 발화 재구성: "
+                    + " / ".join(_comment_dialogue_lines)
+                    + " (speaker/author/ip는 대화 흐름 추적용이며 작품명 증거가 아님)\n"
+                )
             
             # 자유 추론 지시
             user_prompt += "\n🧠 **추론 과제 (매우 중요!):**\n"
@@ -1815,9 +1838,10 @@ class DecoderExpert:
         dict_matches: Dict[str, str],
         ctx: Any = None,
     ) -> Dict[str, Any]:
-        """Merge dictionary matches into result with high confidence.
+        """Merge dictionary matches as alias hints, not standalone title evidence.
         
-        🔥 사전값도 검색 결과의 공식 플랫폼 제목으로 교정 가능.
+        Curated dictionaries improve recall, but a dictionary hit by itself is
+        not independent evidence that the post is about the mapped work.
         """
         if not dict_matches:
             return result
@@ -1845,16 +1869,19 @@ class DecoderExpert:
             existing = next((d for d in decoded_terms if d.get("original") == term), None)
             
             if existing:
-                # Add dictionary match as top candidate
+                # Add dictionary match as a reviewable hint. Do not override
+                # best_match; independent search/post evidence must promote it.
                 existing["candidates"].insert(0, {
                     "official_title": title,
                     "url": None,
                     "platform": None,
-                    "decode_logic": "사전 매칭",
+                    "decode_logic": "사전 매칭 힌트",
                     "morphological_score": 1.0,
-                    "search_evidence": "slang_dictionary",
+                    "search_evidence": "slang_dictionary_hint",
+                    "dictionary_alias_hint": True,
                 })
-                existing["best_match"] = {"title": title, "confidence": "high"}
+                if not isinstance(existing.get("best_match"), dict):
+                    existing["best_match"] = {"title": None, "confidence": "none"}
             else:
                 decoded_terms.append({
                     "original": term,
@@ -1862,20 +1889,18 @@ class DecoderExpert:
                         "official_title": title,
                         "url": None,
                         "platform": None,
-                        "decode_logic": "사전 매칭",
+                        "decode_logic": "사전 매칭 힌트",
                         "morphological_score": 1.0,
-                        "search_evidence": "slang_dictionary",
+                        "search_evidence": "slang_dictionary_hint",
+                        "dictionary_alias_hint": True,
                     }],
-                    "best_match": {"title": title, "confidence": "high"},
+                    "best_match": {"title": None, "confidence": "none"},
                     "is_author_name": False,
                     "author_info": None,
+                    "resolution_note": "dictionary_alias_hint_requires_independent_evidence",
                 })
         
         result["decoded_terms"] = decoded_terms
-        
-        # Upgrade confidence if we have dictionary matches
-        if dict_matches and result.get("overall_confidence") in ("low", "none"):
-            result["overall_confidence"] = "high"
         
         return result
 
@@ -1963,6 +1988,43 @@ class DecoderExpert:
             t = (text or "").lower()
             return ("slang_dictionary" in t) or ("slang dictionary" in t) or ("사전" in t)
 
+        def _title_text(value: Any) -> str:
+            return str(value or "").strip()
+
+        def _candidate_title(candidate: Dict[str, Any]) -> str:
+            return _title_text(
+                candidate.get("official_novel_title")
+                or candidate.get("official_title")
+                or candidate.get("title")
+            )
+
+        def _has_independent_title_support(term_entry: Dict[str, Any], title: str) -> bool:
+            for cand in term_entry.get("candidates", []):
+                if not isinstance(cand, dict):
+                    continue
+                cand_title = _candidate_title(cand)
+                if cand_title and cand_title != title:
+                    continue
+                search_evidence = str(cand.get("search_evidence") or cand.get("evidence") or "")
+                url = str(cand.get("url") or cand.get("source_url") or "")
+                platform = str(cand.get("platform") or "")
+                if cand.get("dictionary_alias_hint") is True:
+                    continue
+                if _is_dict_evidence(search_evidence):
+                    continue
+                if url or platform or search_evidence:
+                    return True
+            for interp in term_entry.get("interpretations", []):
+                if not isinstance(interp, dict):
+                    continue
+                value = _title_text(interp.get("value") or interp.get("title"))
+                if value and value != title:
+                    continue
+                evidence = str(interp.get("evidence") or "")
+                if evidence and not _is_dict_evidence(evidence):
+                    return True
+            return False
+
         removed_total = 0
 
         for term_entry in decoded_terms:
@@ -2030,6 +2092,18 @@ class DecoderExpert:
                     if not still_supported:
                         term_entry["best_match"] = {"title": None, "confidence": "none"}
                         removed_total += 1
+                elif (
+                    bm_title
+                    and bm_title in allowed_titles
+                    and not _has_independent_title_support(term_entry, bm_title)
+                ):
+                    term_entry["best_match"] = {
+                        "title": None,
+                        "confidence": "none",
+                        "reason": "slang_dictionary_hint_requires_independent_evidence",
+                    }
+                    term_entry["resolution_note"] = "dictionary_alias_hint_requires_independent_evidence"
+                    removed_total += 1
 
         if removed_total > 0:
             print(
@@ -2100,6 +2174,91 @@ class DecoderExpert:
             "overall_confidence": "none",
             "notes": reason,
         }
+
+    def _has_known_abbreviation_independent_anchor(
+        self,
+        ctx: Any,
+        alias: str,
+        title: str,
+        *,
+        official_titles: Optional[List[Dict[str, str]]] = None,
+        search_results: Optional[List[Dict[str, Any]]] = None,
+        term: Optional[Dict[str, Any]] = None,
+        source_hint: str = "",
+    ) -> bool:
+        """Return true when a curated alias mapping has evidence beyond the registry pair."""
+        title_norm = _normalize_alnum_kor_cached(title)
+        alias_norm = _normalize_alnum_kor_cached(_strip_korean_particles(alias) or alias)
+        if not title_norm:
+            return False
+
+        if source_hint in {"url_fetch_platform", "platform_title", "author_bridge"}:
+            return True
+
+        for ot in official_titles or []:
+            if not isinstance(ot, dict):
+                continue
+            if _normalize_alnum_kor_cached(ot.get("title", "")) == title_norm:
+                return True
+
+        post_chunks: List[str] = []
+        post_data = getattr(ctx, "post_data", {}) or {}
+        if isinstance(post_data, dict):
+            post_chunks.append(str(post_data.get("title") or ""))
+            for block in post_data.get("content_blocks", []) or []:
+                if isinstance(block, dict):
+                    post_chunks.append(str(block.get("text") or ""))
+                elif isinstance(block, str):
+                    post_chunks.append(block)
+        post_chunks.extend([
+            str(c)
+            for c in (getattr(ctx, "comments", []) or [])
+            if isinstance(c, str) and c.strip()
+        ])
+        if title_norm and title_norm in _normalize_alnum_kor_cached(" ".join(post_chunks)):
+            return True
+
+        def _url_is_official(url: str) -> bool:
+            url_l = str(url or "").lower()
+            return any(p and p in url_l for p in OFFICIAL_PLATFORMS)
+
+        for sr in search_results or getattr(ctx, "search_results", []) or []:
+            if not isinstance(sr, dict):
+                continue
+            blob_norm = _normalize_alnum_kor_cached(
+                f"{sr.get('title', '')} {sr.get('content', '')} {sr.get('snippet', '')}"
+            )
+            if title_norm and title_norm in blob_norm and _url_is_official(str(sr.get("url") or "")):
+                return True
+            if (
+                title_norm
+                and alias_norm
+                and title_norm in blob_norm
+                and alias_norm in blob_norm
+                and _url_is_official(str(sr.get("url") or ""))
+            ):
+                return True
+
+        if term:
+            for cand in term.get("candidates", []) or []:
+                if not isinstance(cand, dict):
+                    continue
+                cand_title = (
+                    cand.get("official_novel_title")
+                    or cand.get("official_title")
+                    or cand.get("title")
+                )
+                if cand_title and _normalize_alnum_kor_cached(cand_title) != title_norm:
+                    continue
+                search_evidence = str(cand.get("search_evidence") or cand.get("evidence") or "")
+                if cand.get("dictionary_alias_hint") is True:
+                    continue
+                if "slang_dictionary" in search_evidence or "사전" in search_evidence:
+                    continue
+                if cand.get("url") or cand.get("source_url") or cand.get("platform") or search_evidence:
+                    return True
+
+        return False
     
     def _init_suspected_titles(self, result: Dict[str, Any], ctx: Any) -> None:
         """
@@ -2404,7 +2563,14 @@ class DecoderExpert:
                         and known_abbrev_norm_map[abbrev_norm] == corrected_norm
                     )
                     official_match = corrected_norm in official_title_norms
-                    if not (known_match or official_match or source_is_official):
+                    known_match_has_anchor = known_match and self._has_known_abbreviation_independent_anchor(
+                        ctx,
+                        abbrev,
+                        corrected,
+                        official_titles=official_titles_from_search,
+                        source_hint=source_hint,
+                    )
+                    if not (known_match_has_anchor or official_match or source_is_official):
                         print(
                             f"[{_ts()}][{self.emoji}] ⏭️ resolved_mapping 스킵(공식근거 부족): "
                             f"'{abbrev}' → '{corrected}'",
@@ -2412,7 +2578,7 @@ class DecoderExpert:
                         )
                         continue
 
-                    conf = 0.92 if known_match else (0.82 if official_match else 0.74)
+                    conf = 0.88 if known_match_has_anchor else (0.82 if official_match else 0.74)
                     suspected.append({
                         "title": corrected,
                         "confidence": conf,
@@ -4419,6 +4585,32 @@ class DecoderExpert:
             )
             return (None, 0.0, None)
 
+        known_title = KNOWN_ABBREVIATIONS.get(original_clean)
+
+        def _has_known_abbreviation_evidence(_known_title: str | None) -> bool:
+            if not _known_title:
+                return False
+            _known_norm = _normalize_alnum_kor_cached(_known_title)
+            if not _known_norm:
+                return False
+            for _ot in official_titles or []:
+                if not isinstance(_ot, dict):
+                    continue
+                if _normalize_alnum_kor_cached(_ot.get("title", "")) == _known_norm:
+                    return True
+            for _sr in search_results or []:
+                if not isinstance(_sr, dict):
+                    continue
+                _sr_text = " ".join([
+                    str(_sr.get("title") or ""),
+                    str(_sr.get("content") or _sr.get("snippet") or ""),
+                ])
+                if _known_norm in _normalize_alnum_kor_cached(_sr_text):
+                    return True
+            return False
+
+        known_abbreviation_has_evidence = _has_known_abbreviation_evidence(known_title)
+
         # 🆕 P1-2: 초성 비속어가 포함된 원본은 Rescue 대상에서 제외
         # "이ㅅㄲ" = "이 새끼" 같은 욕설을 작품 약어로 오해석하는 것을 방지
         _has_profanity, _profanity_expansion = contains_chosung_profanity(original_clean)
@@ -4493,10 +4685,10 @@ class DecoderExpert:
             reason_says_not_title,                    # (C)
             not_grounded,                             # (D)
         ])
-        # KNOWN_ABBREVIATIONS에 등록된 약칭은 LLM 판단 무시 (검증된 매핑)
-        is_known = original_clean in set(KNOWN_ABBREVIATIONS.keys())
+        # 등록 약칭도 검색/공식 근거가 없으면 LLM의 비-제목 판단을 뒤집지 않는다.
+        is_verified_known = bool(known_title and known_abbreviation_has_evidence)
 
-        if llm_intent_signals >= 2 and not is_known:
+        if llm_intent_signals >= 2 and not is_verified_known:
             signals_detail = []
             if all_non_title:
                 signals_detail.append(f"interp_types={interp_types}")
@@ -4524,11 +4716,11 @@ class DecoderExpert:
             if w and any(t in w or w in t for t in _GENRE_TROPE_KEYWORDS)
         }
         if original_words and trope_words_in_original == original_words and len(original_words) >= 1:
-            # 🔥 알려진 약칭이면 트로프 체크 무시
-            if original_clean in _KNOWN_ABBREVIATIONS_PRECHECK:
+            # 등록 약칭도 검색/공식 근거가 있어야 트로프 체크를 우회한다.
+            if original_clean in _KNOWN_ABBREVIATIONS_PRECHECK and is_verified_known:
                 print(
                     f"[{_ts()}][{self.emoji}] ✅ 트로프 체크 통과: "
-                    f"'{original}'은 KNOWN_ABBREVIATIONS에 등록됨",
+                    f"'{original}'은 KNOWN_ABBREVIATIONS에 등록되고 독립 근거가 있음",
                     file=sys.stderr,
                 )
             else:
@@ -4608,17 +4800,8 @@ class DecoderExpert:
         best_source = None
 
         # ── 🆕 BUG-5: 알려진 약어 사전 직접 매핑 (LLM 실패 시 코드레벨 보정) ──
-        # (KNOWN_ABBREVIATIONS는 모듈 수준 상수 참조)
-        known_title = KNOWN_ABBREVIATIONS.get(original_clean)
         if known_title:
-            # 검증: 검색 결과에 해당 제목이 있는지 확인 (환각 방지)
-            found_in_search = False
-            for sr in search_results:
-                sr_text = (sr.get("title", "") + " " + (sr.get("content") or sr.get("snippet") or ""))
-                if known_title.replace(" ", "") in sr_text.replace(" ", ""):
-                    found_in_search = True
-                    break
-            if found_in_search or known_title in [ot["title"] for ot in official_titles]:
+            if known_abbreviation_has_evidence:
                 print(
                     f"[{_ts()}][{self.emoji}] 📘 Known abbreviation: "
                     f"'{original}' → '{known_title}' (KNOWN_ABBREVIATIONS)",
@@ -4626,15 +4809,12 @@ class DecoderExpert:
                 )
                 return known_title, 0.95, "known_abbreviation"
             else:
-                # 검색 결과에 없어도 높은 신뢰도로 후보 제시
                 print(
-                    f"[{_ts()}][{self.emoji}] 📘 Known abbreviation (미검증): "
-                    f"'{original}' → '{known_title}' (검색 결과에서 미확인, 후보로 설정)",
+                    f"[{_ts()}][{self.emoji}] 📘 Known abbreviation hint-only: "
+                    f"'{original}' → '{known_title}' "
+                    f"(검색/공식 근거 없음, rescue 후보 승격 안 함)",
                     file=sys.stderr,
                 )
-                best_title = known_title
-                best_score = 0.80
-                best_source = "known_abbreviation_unverified"
 
         # 🆕 작가 페이지 패턴: "~님의 작품", "작품 목록" 등은 작품명이 아님
         _AUTHOR_PAGE_PATTERNS = (
@@ -7750,6 +7930,13 @@ class DecoderExpert:
                     for k, v in KNOWN_ABBREVIATIONS.items()
                 }
                 _known_match = bool(_orig_norm and _known_map.get(_orig_norm) == _prom_norm)
+                _known_match_has_anchor = _known_match and self._has_known_abbreviation_independent_anchor(
+                    ctx,
+                    term.get("original", ""),
+                    promoted_title,
+                    search_results=getattr(ctx, "search_results", []) if ctx else [],
+                    term=term,
+                )
 
                 # 🛡️ 도메인 충돌 차단: 약어의 세계관 신호와 승격 후보가 충돌하면 스킵
                 if _has_domain_conflict_for_mapping(term.get("original", ""), promoted_title):
@@ -7760,11 +7947,11 @@ class DecoderExpert:
                     )
                     continue
 
-                if _abbr_score < 0.35 and not _known_match:
+                if _abbr_score < 0.35 and not _known_match_has_anchor:
                     print(
                         f"[{_ts()}][{self.emoji}] 🛡️ 자동 승격 차단 (약칭 정합성 낮음): "
                         f"'{term.get('original', '?')}' → '{promoted_title}' "
-                        f"(score={_abbr_score:.2f})",
+                        f"(score={_abbr_score:.2f}, known_anchor={bool(_known_match_has_anchor)})",
                         file=sys.stderr,
                     )
                     continue
@@ -8714,12 +8901,8 @@ class DecoderExpert:
             if not orig_norm or not title_norm:
                 return False
 
-            for _k, _v in (KNOWN_ABBREVIATIONS or {}).items():
-                if (
-                    _normalize_alnum_kor_cached(_strip_korean_particles(_k)) == orig_norm
-                    and _normalize_alnum_kor_cached(_v) == title_norm
-                ):
-                    return True
+            # Registry pair alone is only recall provenance. Explicit support
+            # must come from snippet/search/post evidence below.
 
             for _ah in (snippet_hints.get("abbreviation_hints") or []):
                 if not isinstance(_ah, dict):

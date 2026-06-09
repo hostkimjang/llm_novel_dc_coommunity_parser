@@ -59,9 +59,164 @@ class EvidenceScorer:
         "gatekeeper_novel": 1.0,   # Gatekeeper가 novel 관련으로 판단
         "discourse_novel": 1.0,    # Discourse가 novel 도메인으로 판단
         "synthesizer_agree": 2.0,  # Synthesizer가 작품 식별에 동의
-        "abbreviation_match": 3.5, # 🆕 KNOWN_ABBREVIATIONS 매칭 (강한 신호)
+        "abbreviation_match": 1.0, # Curated alias hit is a recall hint, not standalone proof.
         "dv_consensus": 3.0,       # Decoder+Verifier 제목 합의
     }
+
+    @staticmethod
+    def _norm_text(value: Any) -> str:
+        return re.sub(r"\s+", "", str(value or "")).lower()
+
+    @staticmethod
+    def _contains_alias_surface(text: Any, alias: str) -> bool:
+        raw = str(text or "")
+        alias_raw = str(alias or "").strip()
+        if not raw or not alias_raw:
+            return False
+        # Prefer a visible surface boundary. If Korean particles are attached,
+        # downstream title recovery can still use stronger pipeline guards.
+        return bool(
+            re.search(
+                rf"(?<![0-9A-Za-z가-힣]){re.escape(alias_raw)}(?![0-9A-Za-z가-힣])",
+                raw,
+                flags=re.IGNORECASE,
+            )
+        )
+
+    @classmethod
+    def _post_text_parts(cls, ctx: "ConversationContext", post_data: Optional[Dict[str, Any]] = None) -> List[str]:
+        post_data = post_data or getattr(ctx, "post_data", None) or {}
+        parts: List[str] = [str(post_data.get("title") or "")]
+        for block in post_data.get("content_blocks") or []:
+            if isinstance(block, dict):
+                text = block.get("text")
+                if text:
+                    parts.append(str(text))
+            elif isinstance(block, str):
+                parts.append(block)
+        for comment in getattr(ctx, "comments", None) or []:
+            if isinstance(comment, dict):
+                text = comment.get("content") or comment.get("text")
+                if text:
+                    parts.append(str(text))
+            elif isinstance(comment, str):
+                parts.append(comment)
+        return parts
+
+    @classmethod
+    def _semantic_seed_denies_work(cls, ctx: "ConversationContext", disc: Optional[Dict[str, Any]] = None) -> bool:
+        disc = disc or {}
+        analysis = disc.get("discourse_analysis") if isinstance(disc.get("discourse_analysis"), dict) else {}
+        semantic_seed = analysis.get("semantic_seed_review") if isinstance(analysis.get("semantic_seed_review"), dict) else {}
+        if semantic_seed.get("is_specific_work_discussion") is False:
+            return True
+        warnings = analysis.get("warnings") or disc.get("warnings") or []
+        if any("semantic_seed_review_specific_work_denied" in str(item) for item in warnings):
+            return True
+        uncertainty = getattr(ctx, "uncertainty_sources", None) or []
+        return any("intent_permit_for_title_search=false" in str(item) for item in uncertainty)
+
+    @classmethod
+    def _has_independent_work_anchor(
+        cls,
+        ctx: "ConversationContext",
+        *,
+        gk: Optional[Dict[str, Any]] = None,
+        disc: Optional[Dict[str, Any]] = None,
+        post_data: Optional[Dict[str, Any]] = None,
+    ) -> bool:
+        gk = gk or {}
+        disc = disc or {}
+        post_data = post_data or getattr(ctx, "post_data", None) or {}
+        gk_type = str(gk.get("post_type") or "").lower()
+        if gk_type in ("work_discussion", "novel_discussion", "novel_review", "novel_spoiler"):
+            return True
+        analysis = disc.get("discourse_analysis") if isinstance(disc.get("discourse_analysis"), dict) else {}
+        intent = str(analysis.get("intent") or getattr(ctx, "discourse_intent", "") or "").lower()
+        if intent in ("discuss_work", "work_discussion", "review_work"):
+            return True
+        clues = gk.get("context_clues") if isinstance(gk.get("context_clues"), dict) else {}
+        if any(clues.get(key) for key in ("has_episode_reference", "is_spoiler_discussion")):
+            return True
+        full_text = " ".join(cls._post_text_parts(ctx, post_data))
+        return any(
+            domain in full_text
+            for domain in ("novelpia.com", "munpia.com", "series.naver.com", "page.kakao.com")
+        )
+
+    @classmethod
+    def _find_curated_alias_hint(
+        cls,
+        ctx: "ConversationContext",
+        *,
+        gk: Optional[Dict[str, Any]] = None,
+        disc: Optional[Dict[str, Any]] = None,
+        post_data: Optional[Dict[str, Any]] = None,
+    ) -> Optional[Dict[str, Any]]:
+        try:
+            from .decoder import KNOWN_ABBREVIATIONS
+            from .utils import KNOWN_TITLE_ABBREVIATIONS
+            from .orchestrator import ExpertType
+        except ImportError:
+            return None
+
+        post_data = post_data or getattr(ctx, "post_data", None) or {}
+        gk = gk or ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
+        disc = disc or ctx.get_expert_output(ExpertType.DISCOURSE) or {}
+        key_terms = [
+            str(term).strip()
+            for term in (gk.get("key_terms") or [])
+            if isinstance(term, str) and term.strip()
+        ]
+        surfaces = cls._post_text_parts(ctx, post_data) + key_terms
+        registries = (
+            ("KNOWN_ABBREVIATIONS", KNOWN_ABBREVIATIONS or {}),
+            ("KNOWN_TITLE_ABBREVIATIONS", KNOWN_TITLE_ABBREVIATIONS or {}),
+        )
+        for registry_name, mapping in registries:
+            for alias, canonical in mapping.items():
+                alias_text = str(alias or "").strip()
+                if not alias_text:
+                    continue
+                if any(cls._contains_alias_surface(surface, alias_text) for surface in surfaces):
+                    no_work = cls._semantic_seed_denies_work(ctx, disc)
+                    work_anchor = cls._has_independent_work_anchor(
+                        ctx,
+                        gk=gk,
+                        disc=disc,
+                        post_data=post_data,
+                    )
+                    return {
+                        "alias": alias_text,
+                        "canonical": str(canonical or ""),
+                        "registry": registry_name,
+                        "eligible": bool(work_anchor and not no_work),
+                        "work_anchor": bool(work_anchor),
+                        "semantic_no_work": bool(no_work),
+                    }
+        return None
+
+    @classmethod
+    def build_curated_alias_prompt_note(
+        cls,
+        ctx: "ConversationContext",
+        *,
+        gk: Optional[Dict[str, Any]] = None,
+        disc: Optional[Dict[str, Any]] = None,
+        post_data: Optional[Dict[str, Any]] = None,
+    ) -> str:
+        hint = cls._find_curated_alias_hint(ctx, gk=gk, disc=disc, post_data=post_data)
+        if not hint or not hint.get("eligible"):
+            return ""
+        return (
+            "\n\n🔑 **등록 약칭 후보 (검토용 힌트)**:\n"
+            f"- 표면 약칭: '{hint['alias']}'\n"
+            f"- 후보 정식명: '{hint['canonical']}'\n"
+            f"- 출처 registry: {hint['registry']}\n"
+            "- 이 매핑은 작품 후보 recall 힌트이며, 단독 확정 근거가 아닙니다.\n"
+            "- 원문/댓글/공식 URL/검색 snippet/VLM-OCR 등 독립 작품 앵커가 같은 작품을 지지할 때만 판정 보조로 사용하세요.\n"
+            "- 독립 앵커가 약하거나 잡담/no-work 문맥이면 title=null 또는 HOLD를 우선 고려하세요.\n"
+        )
 
     # 감점 요인
     PENALTIES = {
@@ -222,31 +377,24 @@ class EvidenceScorer:
                 positives.append({"signal": "dv_consensus", "detail": dc_title})
                 total += cls.WEIGHTS["dv_consensus"]
 
-        # ─── 🆕 KNOWN_ABBREVIATIONS 매칭 ───
-        # Gatekeeper key_terms나 게시글 제목에 KNOWN_ABBREVIATIONS 키가 포함되면
-        # 강한 관련성 신호로 반영 (밈 가드가 뒤집어도 evidence 투표에서 보정)
-        try:
-            from .decoder import KNOWN_ABBREVIATIONS
-            _post_data_ev = getattr(ctx, "post_data", None) or {}
-            _post_title_ev = str(_post_data_ev.get("title") or "").replace(" ", "").lower()
-            _gk_key_terms = [
-                str(t).strip().lower()
-                for t in (gk.get("key_terms") or [])
-                if isinstance(t, str) and t.strip()
-            ]
-            _abbrev_matched = False
-            _abbrev_detail = ""
-            for _abbr_key, _abbr_full in (KNOWN_ABBREVIATIONS or {}).items():
-                _abbr_norm = _abbr_key.replace(" ", "").lower()
-                if _abbr_norm in _post_title_ev or _abbr_norm in _gk_key_terms:
-                    _abbrev_matched = True
-                    _abbrev_detail = f"{_abbr_key}→{_abbr_full}"
-                    break
-            if _abbrev_matched:
-                positives.append({"signal": "abbreviation_match", "detail": _abbrev_detail})
-                total += cls.WEIGHTS["abbreviation_match"]
-        except ImportError:
-            pass
+        # ─── Curated abbreviation hint ───
+        # A registry hit is a recall hint. It becomes a weak positive only when
+        # the packet also has an independent work anchor and no semantic no-work
+        # signal.
+        _alias_hint = cls._find_curated_alias_hint(ctx, gk=gk, disc=disc)
+        if _alias_hint and _alias_hint.get("eligible"):
+            positives.append({
+                "signal": "abbreviation_match",
+                "detail": (
+                    f"{_alias_hint.get('alias')}→{_alias_hint.get('canonical')} "
+                    f"({ _alias_hint.get('registry') }, hint_with_work_anchor)"
+                ),
+            })
+            total += cls.WEIGHTS["abbreviation_match"]
+        elif _alias_hint:
+            conflicts.append(
+                "curated alias hint lacks independent work anchor or is blocked by semantic no-work"
+            )
 
         # ─── 🆕 댓글 작품명 언급 ───
         # Critic이 감지한 제목이 댓글에서도 언급되면 추가 신호
@@ -487,9 +635,9 @@ class JuryPanel:
         except Exception:
             global_cap = 32768
         try:
-            configured = int(os.getenv("LLM_JURY_MAX_TOKENS", "4096"))
+            configured = int(os.getenv("LLM_JURY_MAX_TOKENS", "2048"))
         except Exception:
-            configured = 4096
+            configured = 2048
         return max(512, min(configured, global_cap, 8192))
 
     def deliberate(
@@ -821,9 +969,9 @@ class DebateDeliberation:
         except Exception:
             global_cap = 32768
         try:
-            configured = int(os.getenv("LLM_DEBATE_MAX_TOKENS", "4096"))
+            configured = int(os.getenv("LLM_DEBATE_MAX_TOKENS", "2048"))
         except Exception:
-            configured = 4096
+            configured = 2048
         return max(512, min(configured, global_cap, 8192))
 
     def deliberate(
@@ -1195,29 +1343,20 @@ class DeliberationOrchestrator:
             arbiter_user_prompt, ctx, gk, dc, vf, disc
         )
 
-        # Debate — KNOWN_ABBREVIATIONS 매칭 정보 추가
+        # Debate — curated alias hint. This is not standalone proof.
         _debate_expert_summary = expert_summary
-        try:
-            from .decoder import KNOWN_ABBREVIATIONS
-            _pt_norm = str(post_data.get("title", "")).replace(" ", "").lower()
-            for _ak, _av in (KNOWN_ABBREVIATIONS or {}).items():
-                _ak_n = _ak.replace(" ", "").lower()
-                if _ak_n and _ak_n in _pt_norm:
-                    _debate_expert_summary += (
-                        f"\n\n🔑 **KNOWN_ABBREVIATIONS 매칭 (시스템 확인)**:\n"
-                        f"- 게시글 제목의 '{_ak}'은(는) 등록된 약칭입니다.\n"
-                        f"- 정식 제목: '{_av}'\n"
-                        f"- 이 매핑은 시스템에 사전 등록된 확인된 약칭→정식명 매핑입니다.\n"
-                        f"- Decoder가 실패했더라도 이 약칭이 해당 작품을 지칭하는 것은 확정적입니다.\n"
-                        f"- 본문이 이 작품에 대한 논의(설정비판, 리뷰, 추천 등)면 → is_relevant=true입니다.\n"
-                    )
-                    print(
-                        f"[{_ts()}][⚖️💬] 🔑 Debate에 KNOWN_ABBREVIATIONS 매칭 주입: {_ak} → {_av}",
-                        file=sys.stderr,
-                    )
-                    break
-        except Exception:
-            pass
+        _alias_note = EvidenceScorer.build_curated_alias_prompt_note(
+            ctx,
+            gk=gk,
+            disc=disc,
+            post_data=post_data,
+        )
+        if _alias_note:
+            _debate_expert_summary += _alias_note
+            print(
+                f"[{_ts()}][⚖️💬] 🔑 Debate에 등록 약칭 힌트 주입(확정 근거 아님)",
+                file=sys.stderr,
+            )
 
         # Phase31: Debate에 dissent 정보 (원본 GK noise + Verifier critical) 주입
         _dissent_lines: List[str] = []
@@ -1316,6 +1455,27 @@ class DeliberationOrchestrator:
             )
             return False
 
+        if self._should_skip_deliberation_for_settled_veto(evidence, primary, ctx):
+            print(
+                f"[{_ts()}][⚖️🔮] 심의 스킵: Verifier critical veto + 음수 evidence로 비관련 확정",
+                file=sys.stderr,
+            )
+            return False
+
+        if self._should_skip_deliberation_for_memory_query_unresolved(primary, ctx):
+            print(
+                f"[{_ts()}][⚖️🔮] 심의 스킵: memory-query unresolved null-title",
+                file=sys.stderr,
+            )
+            return False
+
+        if self._should_skip_deliberation_for_title_lead_alias_resolved(evidence, primary, ctx):
+            print(
+                f"[{_ts()}][⚖️🔮] 심의 스킵: title-lead alias search bridge resolved",
+                file=sys.stderr,
+            )
+            return False
+
         # Condition 1: 전문가 충돌 감지
         if evidence.get("conflict_detected"):
             print(f"[{_ts()}][⚖️🔮] 심의 트리거: 전문가 충돌 감지", file=sys.stderr)
@@ -1350,6 +1510,415 @@ class DeliberationOrchestrator:
             return True
 
         return False
+
+    @staticmethod
+    def _compact_match_text(text: Any) -> str:
+        return re.sub(r"[^0-9A-Za-z가-힣]", "", str(text or "")).lower()
+
+    @classmethod
+    def _title_lead_alias_terms(cls, ctx: "ConversationContext", title: str) -> List[str]:
+        post_data = getattr(ctx, "post_data", None) or {}
+        post_title = str(post_data.get("title") or "").strip()
+        if not post_title:
+            return []
+
+        first = post_title.split()[0] if post_title.split() else post_title
+        first = re.split(r"[\]\)\},.!?;:/\\|\"'`~]+", first, maxsplit=1)[0]
+        first = first.strip()
+        if not first:
+            return []
+
+        suffixes = (
+            "으로서는",
+            "으로써는",
+            "에게서는",
+            "에서는",
+            "이라는",
+            "이라고",
+            "이라면",
+            "이라서",
+            "으로도",
+            "로도",
+            "부터",
+            "까지",
+            "에게",
+            "한테",
+            "으로",
+            "랑",
+            "하고",
+            "은",
+            "는",
+            "이",
+            "가",
+            "을",
+            "를",
+            "의",
+            "에",
+            "와",
+            "과",
+            "도",
+            "만",
+            "로",
+        )
+        candidates = [first]
+        for suffix in suffixes:
+            if len(first) > len(suffix) + 1 and first.endswith(suffix):
+                candidates.append(first[: -len(suffix)])
+                break
+
+        title_norm = cls._compact_match_text(title)
+        out: List[str] = []
+        seen: set[str] = set()
+        for cand in candidates:
+            norm = cls._compact_match_text(cand)
+            if len(norm) < 2 or norm == title_norm or norm in seen:
+                continue
+            seen.add(norm)
+            out.append(cand)
+        return out
+
+    @classmethod
+    def _search_results_support_title_lead_alias(
+        cls,
+        ctx: "ConversationContext",
+        *,
+        title: str,
+        aliases: List[str],
+        require_title_field: bool = False,
+    ) -> bool:
+        title_norm = cls._compact_match_text(title)
+        if not title_norm or not aliases:
+            return False
+        alias_norms = [cls._compact_match_text(alias) for alias in aliases if cls._compact_match_text(alias)]
+        if not alias_norms:
+            return False
+
+        for result in getattr(ctx, "search_results", []) or []:
+            if not isinstance(result, dict):
+                continue
+            query_norm = cls._compact_match_text(result.get("query"))
+            title_text_norm = cls._compact_match_text(result.get("title"))
+            content_norm = cls._compact_match_text(
+                " ".join(
+                    str(result.get(key) or "")
+                    for key in ("content", "snippet", "summary")
+                )
+            )
+            merged_norm = f"{title_text_norm} {content_norm}"
+            has_alias_edge = any(
+                alias_norm
+                and (
+                    alias_norm in query_norm
+                    or alias_norm in title_text_norm
+                    or alias_norm in content_norm
+                )
+                for alias_norm in alias_norms
+            )
+            has_title_edge = title_norm in title_text_norm
+            if require_title_field:
+                if has_alias_edge and has_title_edge:
+                    return True
+                continue
+            if has_alias_edge and (has_title_edge or title_norm in merged_norm):
+                return True
+
+        return False
+
+    def _should_skip_deliberation_for_title_lead_alias_resolved(
+        self,
+        evidence: Dict[str, Any],
+        primary: Dict[str, Any],
+        ctx: "ConversationContext",
+    ) -> bool:
+        """Skip expensive Jury/Debate when a title-leading alias already bridges to one work.
+
+        This is deliberately narrower than general conflict suppression. It only
+        handles cases where the sole conflict is Decoder=None versus Verifier
+        relevant, while the post title's leading alias is directly bridged by
+        search evidence to the same work title chosen by Arbiter/Verifier.
+        """
+        if str(getattr(ctx, "search_budget_profile", "") or "") == "memory_query_lookup":
+            return False
+        if getattr(ctx, "original_gatekeeper_noise", False):
+            return False
+
+        primary_decision = primary.get("final_decision") or {}
+        if primary_decision.get("is_relevant") is not True:
+            return False
+        title = (
+            primary_decision.get("official_novel_title")
+            or primary_decision.get("official_title")
+        )
+        title = str(title or "").strip()
+        if not title:
+            return False
+
+        from .orchestrator import ExpertType
+
+        verifier_out = ctx.get_expert_output(ExpertType.VERIFIER) or {}
+        verifier_result = verifier_out.get("verification_result") or {}
+        if verifier_result.get("is_relevant") is not True:
+            return False
+        novel_identity = verifier_result.get("novel_identity") or {}
+        verifier_title = (
+            novel_identity.get("official_novel_title")
+            or novel_identity.get("official_title")
+        )
+        if verifier_title and self._compact_match_text(verifier_title) != self._compact_match_text(title):
+            return False
+        verifier_conf = str(
+            novel_identity.get("confidence")
+            or verifier_result.get("final_confidence")
+            or verifier_result.get("confidence")
+            or ""
+        ).strip().lower()
+        if verifier_conf in {"none", "low"}:
+            return False
+
+        counters = verifier_result.get("counter_arguments") or []
+        if any(
+            isinstance(counter, dict)
+            and str(counter.get("severity") or "").strip().lower() == "critical"
+            for counter in counters
+        ):
+            return False
+
+        conflict_details = [str(item or "") for item in (evidence.get("conflict_details") or [])]
+        allowed_conflicts = {"Decoder=None but Verifier=relevant"}
+        if conflict_details and not all(item in allowed_conflicts for item in conflict_details):
+            return False
+
+        try:
+            score = float(evidence.get("total_score", 0) or 0)
+        except Exception:
+            score = 0.0
+        if score < 2:
+            return False
+
+        disc = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
+        disc_analysis = disc.get("discourse_analysis") or {}
+        domain = str(disc_analysis.get("primary_domain") or getattr(ctx, "primary_domain", "") or "").lower()
+        intent = str(disc_analysis.get("intent") or getattr(ctx, "discourse_intent", "") or "").lower()
+        target_kind = str(disc_analysis.get("target_kind") or "").lower()
+        if "novel" not in domain and "fiction" not in domain:
+            return False
+        if intent in {"request_recommendation", "ask_recommendation"}:
+            return False
+        if target_kind in {"author", "trope", "genre"}:
+            return False
+
+        aliases = self._title_lead_alias_terms(ctx, title)
+        if not aliases:
+            return False
+        strong_title_field_bridge = self._search_results_support_title_lead_alias(
+            ctx,
+            title=title,
+            aliases=aliases,
+            require_title_field=True,
+        )
+        if score < 3 and not strong_title_field_bridge:
+            return False
+        return self._search_results_support_title_lead_alias(ctx, title=title, aliases=aliases)
+
+    def _should_skip_deliberation_for_settled_veto(
+        self,
+        evidence: Dict[str, Any],
+        primary: Dict[str, Any],
+        ctx: "ConversationContext",
+    ) -> bool:
+        """이미 충분히 거부된 low-evidence memory/search-only 케이스는 추가 LLM 심의를 생략한다."""
+        from .orchestrator import ExpertType
+
+        final_decision = primary.get("final_decision") or {}
+        if final_decision.get("is_relevant") is not False:
+            return False
+        if final_decision.get("official_novel_title") or final_decision.get("official_title"):
+            return False
+        if not final_decision.get("_title_deliberately_null"):
+            return False
+
+        try:
+            score = float(evidence.get("total_score", 0) or 0)
+        except Exception:
+            score = 0.0
+        if score > 0:
+            return False
+
+        verifier_out = ctx.get_expert_output(ExpertType.VERIFIER) or {}
+        verifier_result = verifier_out.get("verification_result") or {}
+        if verifier_result.get("is_relevant") is not False:
+            return False
+
+        grounding = verifier_result.get("grounding_check") or {}
+        anchor = str(grounding.get("anchor_found") or "").strip().lower()
+        counters = verifier_result.get("counter_arguments") or []
+        has_critical_counter = any(
+            isinstance(counter, dict)
+            and str(counter.get("severity") or "").strip().lower() == "critical"
+            for counter in counters
+        )
+        has_search_only_rejection = anchor in {"", "none", "search_only"}
+        if not (has_critical_counter or has_search_only_rejection):
+            return False
+
+        # 직접 원문 제목 앵커가 있는 high suspected title은 비싼 심의를 유지한다.
+        for item in getattr(ctx, "suspected_titles", []) or []:
+            if not isinstance(item, dict):
+                continue
+            title = str(item.get("title") or "").strip()
+            conf = item.get("confidence")
+            try:
+                high_numeric = float(conf) >= 0.7
+            except Exception:
+                high_numeric = False
+            high_text = str(conf or "").strip().lower() in {"high", "max", "very_high", "very high"}
+            if title and (high_numeric or high_text) and self._title_mentioned_in_post_main_context(ctx, title):
+                return False
+
+        conflict_details = " | ".join(str(x) for x in (evidence.get("conflict_details") or []))
+        if "Verifier critical counter" in conflict_details or has_critical_counter:
+            return True
+        return has_search_only_rejection and evidence.get("relevance_probability") in {"very_low", "low"}
+
+    def _should_skip_deliberation_for_memory_query_unresolved(
+        self,
+        primary: Dict[str, Any],
+        ctx: "ConversationContext",
+    ) -> bool:
+        """Skip expensive Jury/Debate when a memory-query has already settled to null-title."""
+        from .orchestrator import ExpertType
+
+        if str(getattr(ctx, "search_budget_profile", "") or "").strip().lower() != "memory_query_lookup":
+            return False
+
+        final_decision = primary.get("final_decision") or {}
+        if final_decision.get("is_relevant") is not False:
+            return False
+        if final_decision.get("official_novel_title") or final_decision.get("official_title"):
+            return False
+        if not final_decision.get("_title_deliberately_null"):
+            return False
+
+        verifier_out = ctx.get_expert_output(ExpertType.VERIFIER) or {}
+        verifier_result = verifier_out.get("verification_result") or {}
+        if not isinstance(verifier_result, dict):
+            return False
+
+        novel_identity = verifier_result.get("novel_identity")
+        verifier_title = None
+        if isinstance(novel_identity, dict):
+            verifier_title = (
+                novel_identity.get("official_novel_title")
+                or novel_identity.get("official_title")
+                or novel_identity.get("title")
+                or novel_identity.get("resolved_title")
+            )
+        verifier_title = verifier_title or verifier_result.get("official_novel_title") or verifier_result.get("official_title")
+
+        grounding = verifier_result.get("grounding_check") or {}
+        if not isinstance(grounding, dict):
+            grounding = {}
+        anchor = str(grounding.get("anchor_found") or "").strip().lower()
+        if anchor in {
+            "quote_source",
+            "direct_quote_source",
+            "official_url",
+            "post_official_url",
+            "character_work_link",
+            "character_title_link",
+            "direct_title",
+        }:
+            return False
+
+        relation = verifier_result.get("relation_judgment") or {}
+        if not isinstance(relation, dict):
+            relation = {}
+        promotion = str(relation.get("promotion_decision") or "").strip().lower()
+        target = str(relation.get("discussion_target") or "").strip().lower()
+        post_direct_grounding = bool(relation.get("post_direct_grounding"))
+        bridge_quality = ""
+        support_summary = relation.get("search_support_summary") or {}
+        if isinstance(support_summary, dict):
+            bridge_quality = str(support_summary.get("bridge_quality") or "").strip().lower()
+        else:
+            support_summary = {}
+        explicit_bridge_count = int(support_summary.get("explicit_alias_bridge_count") or 0)
+        closed_bridge = bool(support_summary.get("closed_bridge"))
+        converged_official_signal = bool(support_summary.get("converged_official_signal"))
+
+        counters = verifier_result.get("counter_arguments") or []
+        has_nullifying_counter = any(
+            isinstance(counter, dict)
+            and str(counter.get("severity") or "").strip().lower() in {"critical", "major"}
+            and str(counter.get("action") or "").strip().lower()
+            in {"reject", "nullify_title", "downgrade_confidence"}
+            for counter in counters
+        )
+        title_confidence = ""
+        if isinstance(novel_identity, dict):
+            title_confidence = str(novel_identity.get("confidence") or "").strip().lower()
+        if not title_confidence:
+            title_confidence = str(
+                verifier_result.get("confidence")
+                or verifier_out.get("final_confidence")
+                or ""
+            ).strip().lower()
+        confidence_rank = {"none": 0, "low": 1, "medium": 2, "high": 3, "max": 4}.get(
+            title_confidence,
+            0,
+        )
+        relation_reason = str(
+            relation.get("reason")
+            or verifier_result.get("relation_hold_reason")
+            or verifier_result.get("reason")
+            or verifier_out.get("reason")
+            or ""
+        )
+        weak_bridge_for_titled_memory_query = bool(
+            not post_direct_grounding
+            and not explicit_bridge_count
+            and not closed_bridge
+            and not converged_official_signal
+            and (
+                bridge_quality in {"", "weak", "thematic_overlap_only", "supporting"}
+                or str(relation.get("relation_type") or "").strip().lower() in {
+                    "",
+                    "thematic_overlap_only",
+                    "work_specific_nickname",
+                    "mixed_or_uncertain",
+                }
+                or bool(
+                    re.search(
+                        r"(직접|명시|bridge|브릿지|브리지|검증|확정).{0,24}(부족|불충분|불가|없)",
+                        relation_reason,
+                    )
+                )
+            )
+        )
+        weak_titled_memory_query = bool(
+            verifier_title
+            and weak_bridge_for_titled_memory_query
+            and confidence_rank <= 2
+            and (
+                verifier_result.get("is_relevant") is False
+                or promotion in {"hold", "reject", "nullify", "nullify_title"}
+                or has_nullifying_counter
+            )
+        )
+        if verifier_title and not weak_titled_memory_query:
+            return False
+
+        if target == "memory_query" or has_nullifying_counter:
+            return True
+        return bool(
+            promotion in {"hold", "reject", "nullify", "nullify_title"}
+            and not post_direct_grounding
+            and (
+                anchor in {"", "none", "search_only", "title_mention"}
+                or bridge_quality in {"", "weak", "thematic_overlap_only"}
+            )
+            or weak_titled_memory_query
+        )
 
     def _should_skip_deliberation_for_clear_non_novel(
         self,
@@ -1559,26 +2128,13 @@ class DeliberationOrchestrator:
             suspected_titles=suspected_titles_str,
         )
 
-        # 🆕 KNOWN_ABBREVIATIONS 매칭 정보를 Jury에게 명시적으로 전달
-        # Decoder가 실패해도 약칭→정식명 매핑이 확인된 경우 Jury가 이를 참고
-        try:
-            from .decoder import KNOWN_ABBREVIATIONS
-            _pt_norm = str(post_data.get("title", "")).replace(" ", "").lower()
-            for _ak, _av in (KNOWN_ABBREVIATIONS or {}).items():
-                _ak_n = _ak.replace(" ", "").lower()
-                if _ak_n and _ak_n in _pt_norm:
-                    user_prompt += (
-                        f"\n\n🔑 **KNOWN_ABBREVIATIONS 매칭 (시스템 확인)**:\n"
-                        f"- 게시글 제목의 '{_ak}'은(는) 등록된 약칭입니다.\n"
-                        f"- 정식 제목: '{_av}'\n"
-                        f"- 이 매핑은 시스템에 사전 등록된 확인된 약칭→정식명 매핑입니다.\n"
-                        f"- Decoder가 HTTP 오류로 제목을 식별하지 못했더라도, "
-                        f"이 약칭이 해당 작품을 지칭하는 것은 확정적입니다.\n"
-                        f"- 본문/댓글이 이 작품에 대한 논의면 → is_relevant=true로 판정하세요.\n"
-                    )
-                    break
-        except Exception:
-            pass
+        # Curated alias hint for Jury. Keep it weaker than direct evidence.
+        user_prompt += EvidenceScorer.build_curated_alias_prompt_note(
+            ctx,
+            gk=gk,
+            disc=disc,
+            post_data=post_data,
+        )
 
         user_prompt += evidence_text
         return user_prompt

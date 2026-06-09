@@ -12,8 +12,10 @@ import sys
 import time
 from typing import Any, Dict, List, Optional
 
-from .utils import parse_json_with_think_removal, _ts
+from .decoder import KNOWN_ABBREVIATIONS
+from .utils import parse_json_with_think_removal, _ts, KNOWN_TITLE_ABBREVIATIONS
 from ..prompts.prompt_router import build_discourse_system_prompt
+from ..rules import surface_expression_reread_notes, surface_expression_reread_public_notes
 
 
 DISCOURSE_SYSTEM = """\
@@ -138,6 +140,13 @@ Coherence Indicators:
 
 **STEP 4: TITLE TERM VERIFICATION**
 Does the post title contain specific domain-related abbreviations or compound terms?
+
+Surface typo/paraphrase hints:
+- If POST DATA contains `surface_paraphrase_notes`, treat them as semantic reading aids.
+- These hints are packet-local rereading aids, not fixed lexical rules.
+- Hints with `role=non_title_semantic_context` are NOT title/alias evidence.
+- Do not copy their `source_surface` into `title_novel_terms` or search suggestions.
+- Use them only to reread whether the surrounding sentence is a typo/abbreviation/spacing-break expression, a comment reaction, or a direct title/alias mention.
 
 Korean Abbreviation Patterns:
 - **Syllable extraction**: Taking first syllable from each word
@@ -467,6 +476,8 @@ class DiscourseAnalyzer:
             analysis["speech_act"] = str(speech_act).strip().lower()
             analysis["target_kind"] = str(target_kind).strip().lower()
 
+        analysis = self._apply_semantic_seed_review(analysis, post_json)
+        analysis = self._sanitize_surface_paraphrase_context(analysis, post_json)
         analysis = self._apply_short_worklike_recovery(analysis, post_json)
 
         # 매체(웹툰/애니 등) 과단정 완화:
@@ -475,6 +486,666 @@ class DiscourseAnalyzer:
         analysis = self._sanitize_speculative_medium_claims(analysis, post_json)
 
         return {"discourse_analysis": analysis}
+
+    @staticmethod
+    def _semantic_seed_norm(value: Any) -> str:
+        return re.sub(r"[^0-9A-Za-z가-힣]", "", str(value or "").lower())
+
+    def _is_known_alias_term(self, term: str) -> bool:
+        term_norm = self._semantic_seed_norm(term)
+        if not term_norm:
+            return False
+        for mapping in (KNOWN_ABBREVIATIONS, KNOWN_TITLE_ABBREVIATIONS):
+            try:
+                keys = mapping.keys()
+            except Exception:
+                keys = []
+            for raw_key in keys:
+                key_norm = self._semantic_seed_norm(raw_key)
+                if len(key_norm) >= 3 and key_norm == term_norm:
+                    return True
+        return False
+
+    def _text_contains_known_alias_term(self, text: Any) -> bool:
+        text_norm = self._semantic_seed_norm(text)
+        if not text_norm:
+            return False
+        for mapping in (KNOWN_ABBREVIATIONS, KNOWN_TITLE_ABBREVIATIONS):
+            try:
+                items = mapping.items()
+            except Exception:
+                items = []
+            for raw_key, raw_title in items:
+                key_norm = self._semantic_seed_norm(raw_key)
+                title_norm = self._semantic_seed_norm(raw_title)
+                if key_norm and len(key_norm) >= 2 and key_norm in text_norm:
+                    return True
+                if title_norm and len(title_norm) >= 3 and title_norm in text_norm:
+                    return True
+        return False
+
+    def _is_social_lament_or_generic_discourse_context(self, text: Any) -> bool:
+        """소설 관련 단어가 있어도 단일 작품 매칭이 아닌 친구/대화 한탄인지 본다."""
+        raw = str(text or "")
+        if not raw.strip():
+            return False
+        norm = self._semantic_seed_norm(raw)
+        if not norm:
+            return False
+
+        # 기억 회수/작품 찾기 글은 친구/장면 단어가 있어도 검색 가치가 있으므로 제외한다.
+        memory_or_lookup = bool(
+            re.search(
+                r"(무슨|어느|어떤)\s*(?:웹)?소설|(?:웹)?소설(?:인|인지|이었|였|이였)|"
+                r"기억(?:이)?\s*(?:안\s*남|안남|안\s*나|안나)|찾(?:고|아|음|는)|대사|장면",
+                raw,
+            )
+        )
+        if memory_or_lookup:
+            return False
+
+        webnovel_general = any(
+            self._semantic_seed_norm(term) in norm
+            for term in (
+                "소설",
+                "웹소설",
+                "웹소",
+                "장르소설",
+                "ts",
+                "갈드컵",
+                "주류",
+                "트로프",
+                "장르",
+            )
+        )
+        if not webnovel_general:
+            return False
+
+        social_anchor = any(
+            self._semantic_seed_norm(term) in norm
+            for term in (
+                "친구",
+                "지인",
+                "같이",
+                "함께",
+                "밥",
+                "혼밥",
+                "토론",
+                "대화",
+                "얘기",
+                "이야기",
+                "말할사람",
+                "보는친구",
+                "읽는친구",
+            )
+        )
+        wish_or_lament = bool(
+            re.search(
+                r"(있으면\s*좋|있었으면|없어서|없네|부럽|외롭|한탄|같이\s*(?:보|읽|얘기|이야기|토론)|"
+                r"(?:얘기|이야기|토론)\s*할\s*(?:친구|사람|상대))",
+                raw,
+            )
+        )
+        return bool(social_anchor and wish_or_lament)
+
+    def _semantic_seed_review_enabled(self) -> bool:
+        raw = str(os.getenv("LLM_SEMANTIC_SEED_REVIEW", "auto") or "auto").strip().lower()
+        return raw not in {"0", "false", "off", "no", "disabled"}
+
+    def _should_run_semantic_seed_review(
+        self,
+        analysis: Dict[str, Any],
+        post_json: Dict[str, Any] | None,
+    ) -> bool:
+        if not self._semantic_seed_review_enabled():
+            return False
+        if not isinstance(analysis, dict) or not isinstance(post_json, dict):
+            return False
+
+        title_terms = [
+            str(term or "").strip()
+            for term in (analysis.get("title_novel_terms") or [])
+            if str(term or "").strip()
+        ]
+        suggestions = [
+            item for item in (analysis.get("search_suggestions") or [])
+            if isinstance(item, dict) and str(item.get("query") or "").strip()
+        ]
+        notes = post_json.get("surface_paraphrase_notes") or []
+        title = str(post_json.get("title") or "")
+        content = " ".join(str(x or "") for x in (post_json.get("content") or []))
+        comments = " ".join(str(x or "") for x in (post_json.get("comments") or [])[:5])
+        full_text = " ".join([title, content, comments]).strip()
+        if not full_text:
+            return False
+
+        if notes:
+            return True
+
+        if title_terms and all(self._is_known_alias_term(term) for term in title_terms):
+            return False
+
+        short_context = len(self._semantic_seed_norm(full_text)) <= 180
+        sentence_like_title = bool(
+            re.search(
+                r"(소신발언|잡담|한탄|몰랐|인\s*줄|줄\s*알|어려\s*보|어린|나이|외모|묘사|머리|친구|같이|"
+                r"싶|없|있|네|냐|임|듯|보임|잖아|ㅋㅋ|ㅠㅠ|\?{2,}|!{2,})",
+                full_text,
+            )
+        )
+        query_probe = any(
+            re.search(
+                r"(정식\s*제목|웹소설|소설|캐릭터|등장인물|작품명|줄임말|뜻|의미)",
+                str(item.get("query") or "") + " " + str(item.get("purpose") or ""),
+            )
+            for item in suggestions
+        )
+        social_lament_context = self._is_social_lament_or_generic_discourse_context(full_text)
+        target_kind = str(analysis.get("target_kind") or "").strip().lower()
+        intent = str(analysis.get("intent") or "").strip().lower()
+        if not title_terms and not suggestions:
+            claimed_specific_work = target_kind in {"work", "character"} or intent in {"discuss_work"}
+            return bool(
+                short_context
+                and (claimed_specific_work or social_lament_context)
+                and (sentence_like_title or social_lament_context)
+                and not self._text_contains_known_alias_term(full_text)
+            )
+
+        ambiguous_short_term = any(
+            2 <= len(self._semantic_seed_norm(term)) <= 4
+            and re.fullmatch(r"[가-힣]+", self._semantic_seed_norm(term) or "")
+            and not self._is_known_alias_term(term)
+            for term in title_terms
+        )
+
+        return bool(
+            short_context
+            and (ambiguous_short_term or query_probe or social_lament_context)
+            and (sentence_like_title or target_kind in {"work", "character", "unknown"} or intent in {"discuss_work", "express_opinion"})
+        )
+
+    def _call_semantic_seed_review(
+        self,
+        analysis: Dict[str, Any],
+        post_json: Dict[str, Any],
+    ) -> Optional[Dict[str, Any]]:
+        if not hasattr(self.llm, "_stream_chat_http"):
+            return None
+
+        title_terms = [
+            str(term or "").strip()
+            for term in (analysis.get("title_novel_terms") or [])
+            if str(term or "").strip()
+        ][:8]
+        suggestions = []
+        for item in (analysis.get("search_suggestions") or [])[:8]:
+            if not isinstance(item, dict):
+                continue
+            query = str(item.get("query") or "").strip()
+            if not query:
+                continue
+            suggestions.append({
+                "query": query,
+                "purpose": str(item.get("purpose") or "")[:160],
+            })
+
+        comment_context = post_json.get("comment_context")
+        if not comment_context:
+            comment_context = post_json.get("comment_context_lines") or []
+        comment_dialogue_context = post_json.get("comment_dialogue_context")
+        if not comment_dialogue_context:
+            comment_dialogue_context = post_json.get("comment_dialogue_context_lines") or []
+
+        surface_public_notes = surface_expression_reread_public_notes(
+            post_json.get("surface_paraphrase_notes", [])[:8]
+        )
+        payload = {
+            "post_id": post_json.get("post_id"),
+            "title": post_json.get("title", ""),
+            "content": post_json.get("content", [])[:4],
+            "comments": post_json.get("comments", [])[:8],
+            "comment_context": comment_context[:8],
+            "comment_dialogue_context": comment_dialogue_context[:8],
+            "surface_paraphrase_notes": surface_public_notes,
+            "current_intent": analysis.get("intent"),
+            "current_target_kind": analysis.get("target_kind"),
+            "title_seed_candidates": title_terms,
+            "search_suggestions": suggestions,
+        }
+        user_prompt = f"""아래 게시글의 작품명/별칭 후보 seed가 실제 검색할 가치가 있는지 재검토하세요.
+목표는 작품 매칭이 아니라, 1차 담론 분석이 문장 일부·인명처럼 보이는 표면·일반 반응을 작품 seed로 과승격했는지 확인하는 것입니다.
+숨은 사고과정은 쓰지 말고 공개 가능한 짧은 근거만 JSON으로 답하세요.
+
+판정 원칙:
+- title_seed_candidates가 실제 작품명/약칭이면 keep.
+- 사람 이름처럼 보이는 표면, 문장 일부, 일반어, 화행 표지, 작품 고유 앵커가 없는 일반 반응이라면 context_only 또는 drop.
+- 짧은 인명/캐릭터명처럼 보이는 seed는 단독으로 keep하지 않습니다. 원문 title/body/comment에 작품명, 공식 별칭, 작가, 회차, 플랫폼 작품 URL, 또는 작품 고유 설정 앵커가 없고 일반 반응만 있으면 context_only 또는 drop입니다.
+- 직접 작품 앵커가 없으면 content_interpretation/reason에서 "작품 속", "원작", "해당 작품"처럼 작품 존재를 확정하는 표현을 쓰지 말고, "인명/캐릭터명처럼 보이는 표면", "대상", "댓글 반응"처럼 약하게 표현합니다.
+- 오타/축약처럼 보이는 가능성은 "표현 오타/축약 패턴(범용)"으로만 다룹니다. 즉, 표현 오타/축약 패턴 자체를 범용 신호로 보는 것이지 특정 정상형을 복원하지 않습니다.
+- 어떤 표면 범주도 예시적 위험 신호일 뿐이며, 같은 계열을 자동 차단/허용하는 일반규칙으로 만들지 않습니다.
+- 특정 표면어를 정답 표현으로 결정적으로 치환하거나, 전역 규칙으로 만들거나, 다른 post에 재사용하지 않습니다.
+- content_interpretation/reason에는 "X -> Y"식 단정 치환을 쓰지 말고, 해당 packet 안에서 작품 고유 앵커가 부족한 원문 반응/문장 일부 가능성이 있어 작품 seed가 아니라는 식으로 약하게 씁니다.
+- "소설 보는 친구", "같이 얘기할 사람", "토론할 친구"처럼 단일 작품 지시가 아니라 사회적 한탄/장르 잡담인 글은 작품명 검색 seed로 확정하지 않습니다.
+- 재해독 결과가 직접 작품 앵커가 아니면 작품 seed로 쓰지 않습니다.
+- surface_paraphrase_notes의 role이 non_title_semantic_context이면 작품 seed 근거가 아니라 원문 이해 힌트로 우선 반영.
+- comment_dialogue_context가 있으면 본문 작성자와 댓글 작성자의 발화 흐름을 같이 읽습니다.
+- 단, speaker/author/ip/comment_id/reply_to는 대화 흐름 메타이지 작품명/별칭/공식 근거가 아닙니다.
+- 재해독 결과가 직접 작품 앵커 없는 원문 반응/문장 일부라면 작품명/별칭 후보에서 제외하고 public reason에 근거 경계를 남깁니다.
+- 구체 사례 문구를 일반 규칙으로 만들지 말고, 각 packet의 title/body/comment에서 단일 작품 지시가 있는지 먼저 확인합니다.
+- search_suggestions가 그 잘못된 seed를 검색으로 확장하면 drop.
+- 캐릭터명 단독 + 일반어 검색은 작품 식별을 보장하지 않으므로, 직접 작품 앵커가 없으면 drop 또는 low-confidence context_only로 둡니다.
+- 특정 작품 토론인지 불확실하면 is_specific_work_discussion=false로 두고, 단정하지 않습니다.
+
+INPUT:
+{json.dumps(payload, ensure_ascii=False, indent=2)}
+
+OUTPUT JSON:
+{{
+  "post_intent": "게시글의 자연어 의도 1문장",
+  "content_interpretation": "표현 오타/축약 패턴(범용)으로만 설명하고, 특정 표면어 치환을 단정하지 않는 1문장",
+  "is_specific_work_discussion": true,
+  "recommended_intent": "discuss_work | express_opinion | ask_question | make_joke | other",
+  "recommended_target_kind": "work | character | author | trope | community | unknown",
+  "title_seed_reviews": [
+    {{"surface": "후보", "decision": "keep | context_only | drop", "confidence": "high | medium | low", "reason": "짧은 근거"}}
+  ],
+  "search_query_reviews": [
+    {{"query": "검색쿼리", "decision": "keep | drop", "confidence": "high | medium | low", "reason": "짧은 근거"}}
+  ],
+  "warnings": ["필요 시 짧은 공개 경고"]
+}}"""
+        try:
+            response_text = self.llm._stream_chat_http(
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "당신은 웹소설 커뮤니티 게시글의 자연어 의도를 읽고, "
+                            "검색 seed가 작품명인지 문맥 표현인지 보수적으로 판정하는 전문가입니다. "
+                            "반드시 JSON만 반환하세요."
+                        ),
+                    },
+                    {"role": "user", "content": user_prompt},
+                ],
+                tag="discourse_semantic_seed_guard",
+                use_grammar=True,
+                max_tokens=1024,
+            )
+            parsed = parse_json_with_think_removal(response_text)
+            if isinstance(parsed, dict):
+                return parsed
+        except Exception as exc:
+            print(
+                f"[{_ts()}][{self.emoji}] ⚠️ semantic seed review 실패: {exc}",
+                file=sys.stderr,
+            )
+        return None
+
+    def _apply_semantic_seed_review(
+        self,
+        analysis: Dict[str, Any],
+        post_json: Dict[str, Any] | None,
+    ) -> Dict[str, Any]:
+        if not self._should_run_semantic_seed_review(analysis, post_json):
+            return analysis
+        if not isinstance(post_json, dict):
+            return analysis
+
+        review = self._call_semantic_seed_review(analysis, post_json)
+        if not isinstance(review, dict):
+            return analysis
+
+        analysis["semantic_seed_review"] = {
+            "post_intent": str(review.get("post_intent") or "")[:300],
+            "content_interpretation": str(review.get("content_interpretation") or "")[:300],
+            "is_specific_work_discussion": bool(review.get("is_specific_work_discussion", True)),
+            "recommended_intent": str(review.get("recommended_intent") or "")[:80],
+            "recommended_target_kind": str(review.get("recommended_target_kind") or "")[:80],
+            "warnings": [
+                str(item or "").strip()[:160]
+                for item in (review.get("warnings") or [])
+                if str(item or "").strip()
+            ][:6],
+        }
+
+        def _decision(value: Any) -> str:
+            return str(value or "").strip().lower().replace("-", "_").replace(" ", "_")
+
+        def _conf_ok(value: Any) -> bool:
+            return _decision(value) in {"high", "medium", "med"}
+
+        removable_norms: set[str] = set()
+        context_terms: List[str] = []
+        for item in (review.get("title_seed_reviews") or []):
+            if not isinstance(item, dict):
+                continue
+            surface = str(item.get("surface") or item.get("term") or "").strip()
+            norm = self._semantic_seed_norm(surface)
+            if not norm or self._is_known_alias_term(surface):
+                continue
+            decision = _decision(item.get("decision"))
+            if decision in {"context_only", "context", "drop", "non_title", "not_title", "move_to_context"} and _conf_ok(item.get("confidence")):
+                removable_norms.add(norm)
+                context_terms.append(surface)
+
+        keep_query_norms = {
+            self._semantic_seed_norm(item.get("query"))
+            for item in (review.get("search_query_reviews") or [])
+            if isinstance(item, dict)
+            and _decision(item.get("decision")) in {"keep", "search", "allow", "verify"}
+            and _conf_ok(item.get("confidence"))
+            and self._semantic_seed_norm(item.get("query"))
+        }
+        query_keep_supports_removed_term = bool(
+            removable_norms
+            and any(
+                norm and query_norm and norm in query_norm
+                for norm in removable_norms
+                for query_norm in keep_query_norms
+            )
+        )
+
+        raw_terms = [
+            str(term or "").strip()
+            for term in (analysis.get("title_novel_terms") or [])
+            if str(term or "").strip()
+        ]
+        if removable_norms and raw_terms:
+            kept_terms: List[str] = []
+            removed_terms: List[str] = []
+            for term in raw_terms:
+                norm = self._semantic_seed_norm(term)
+                if norm in removable_norms and not self._is_known_alias_term(term):
+                    removed_terms.append(term)
+                else:
+                    kept_terms.append(term)
+            if removed_terms:
+                analysis["title_novel_terms"] = kept_terms
+                context_terms.extend(removed_terms)
+                warnings = [
+                    str(item or "").strip()
+                    for item in (analysis.get("warnings") or [])
+                    if str(item or "").strip()
+                ]
+                if "semantic_seed_review_non_title_terms_removed" not in warnings:
+                    warnings.append("semantic_seed_review_non_title_terms_removed")
+                analysis["warnings"] = warnings
+
+        drop_queries = {
+            self._semantic_seed_norm(item.get("query"))
+            for item in (review.get("search_query_reviews") or [])
+            if isinstance(item, dict)
+            and _decision(item.get("decision")) in {"drop", "remove", "no_search", "context_only"}
+            and _conf_ok(item.get("confidence"))
+            and self._semantic_seed_norm(item.get("query"))
+        }
+        if drop_queries and isinstance(analysis.get("search_suggestions"), list):
+            kept_suggestions: List[Dict[str, Any]] = []
+            removed_queries: List[str] = []
+            for suggestion in analysis.get("search_suggestions") or []:
+                if not isinstance(suggestion, dict):
+                    continue
+                query = str(suggestion.get("query") or "").strip()
+                if self._semantic_seed_norm(query) in drop_queries:
+                    removed_queries.append(query)
+                    continue
+                kept_suggestions.append(suggestion)
+            if removed_queries:
+                analysis["search_suggestions"] = kept_suggestions
+                warnings = [
+                    str(item or "").strip()
+                    for item in (analysis.get("warnings") or [])
+                    if str(item or "").strip()
+                ]
+                if "semantic_seed_review_search_suggestions_removed" not in warnings:
+                    warnings.append("semantic_seed_review_search_suggestions_removed")
+                analysis["warnings"] = warnings
+
+        if (
+            removable_norms
+            and not analysis.get("title_novel_terms")
+            and not query_keep_supports_removed_term
+            and isinstance(analysis.get("search_suggestions"), list)
+        ):
+            kept_suggestions = []
+            removed_queries = []
+            for suggestion in analysis.get("search_suggestions") or []:
+                if not isinstance(suggestion, dict):
+                    continue
+                query = str(suggestion.get("query") or "").strip()
+                query_norm = self._semantic_seed_norm(query)
+                if any(norm and norm in query_norm for norm in removable_norms):
+                    removed_queries.append(query)
+                    continue
+                kept_suggestions.append(suggestion)
+            if removed_queries:
+                analysis["search_suggestions"] = kept_suggestions
+                warnings = [
+                    str(item or "").strip()
+                    for item in (analysis.get("warnings") or [])
+                    if str(item or "").strip()
+                ]
+                if "semantic_seed_review_search_suggestions_removed" not in warnings:
+                    warnings.append("semantic_seed_review_search_suggestions_removed")
+                analysis["warnings"] = warnings
+
+        if context_terms:
+            merged_context_terms = [
+                str(item or "").strip()
+                for item in (analysis.get("semantic_seed_review_context_terms") or [])
+                if str(item or "").strip()
+            ]
+            merged_context_terms.extend(context_terms)
+            analysis["semantic_seed_review_context_terms"] = list(dict.fromkeys(merged_context_terms))
+
+        specific_work = bool(review.get("is_specific_work_discussion", True))
+        if removable_norms and not analysis.get("title_novel_terms") and not query_keep_supports_removed_term:
+            specific_work = False
+            if isinstance(analysis.get("semantic_seed_review"), dict):
+                analysis["semantic_seed_review"]["is_specific_work_discussion"] = False
+        if not specific_work and not analysis.get("title_novel_terms"):
+            recommended_intent = _decision(review.get("recommended_intent"))
+            if recommended_intent in {"express_opinion", "ask_question", "make_joke", "other"}:
+                analysis["intent"] = recommended_intent
+                analysis["intent_confidence"] = "medium"
+            elif str(analysis.get("intent") or "").strip().lower() == "discuss_work":
+                analysis["intent"] = "express_opinion"
+                analysis["intent_confidence"] = "low"
+
+            recommended_target = _decision(review.get("recommended_target_kind"))
+            if recommended_target in {"character", "author", "trope", "community", "unknown"}:
+                analysis["target_kind"] = recommended_target
+            elif str(analysis.get("target_kind") or "").strip().lower() == "work":
+                analysis["target_kind"] = "unknown"
+
+            if not str(analysis.get("real_subject") or "").strip():
+                analysis["real_subject"] = str(
+                    review.get("content_interpretation")
+                    or review.get("post_intent")
+                    or "특정 작품명 확정보다는 게시글 자연어 의도 확인이 필요한 문맥"
+                )[:300]
+            warnings = [
+                str(item or "").strip()
+                for item in (analysis.get("warnings") or [])
+                if str(item or "").strip()
+            ]
+            if "semantic_seed_review_specific_work_denied" not in warnings:
+                warnings.append("semantic_seed_review_specific_work_denied")
+            analysis["warnings"] = warnings
+
+        return analysis
+
+    def _sanitize_surface_paraphrase_context(
+        self,
+        analysis: Dict[str, Any],
+        post_json: Dict[str, Any] | None,
+    ) -> Dict[str, Any]:
+        if not isinstance(analysis, dict) or not isinstance(post_json, dict):
+            return analysis
+
+        text_parts = [str(post_json.get("title") or "")]
+        text_parts.extend(str(x or "") for x in (post_json.get("content") or []))
+        text_parts.extend(str(x or "") for x in (post_json.get("comments") or [])[:8])
+        full_text = " ".join(text_parts)
+
+        notes: List[Dict[str, str]] = []
+        for item in (post_json.get("surface_paraphrase_notes") or []):
+            if isinstance(item, dict):
+                notes.append({str(k): str(v) for k, v in item.items()})
+        notes.extend(surface_expression_reread_notes(full_text))
+        if not notes:
+            return analysis
+
+        semantic_review = analysis.get("semantic_seed_review")
+        warnings = [
+            str(item or "").strip()
+            for item in (analysis.get("warnings") or [])
+            if str(item or "").strip()
+        ]
+        review_allows_sanitize = bool(
+            isinstance(semantic_review, dict)
+            and semantic_review.get("is_specific_work_discussion") is False
+        ) or any(
+            warning in {
+                "semantic_seed_review_non_title_terms_removed",
+                "semantic_seed_review_search_suggestions_removed",
+                "semantic_seed_review_specific_work_denied",
+            }
+            for warning in warnings
+        )
+        if not review_allows_sanitize:
+            return analysis
+
+        def _norm(value: Any) -> str:
+            return re.sub(r"[^0-9A-Za-z가-힣]", "", str(value or "").lower())
+
+        note_norms = {
+            _norm(note.get("source_surface"))
+            for note in notes
+            if _norm(note.get("source_surface"))
+        }
+
+        raw_terms = [
+            str(term or "").strip()
+            for term in (analysis.get("title_novel_terms") or [])
+            if str(term or "").strip()
+        ]
+        kept_terms: List[str] = []
+        removed_terms: List[str] = []
+        for term in raw_terms:
+            term_norm = _norm(term)
+            if term_norm and any(term_norm == note_norm or term_norm in note_norm for note_norm in note_norms):
+                removed_terms.append(term)
+            else:
+                kept_terms.append(term)
+
+        def _known_alias(term: str) -> bool:
+            term_norm = _norm(term)
+            if not term_norm:
+                return False
+            for mapping in (KNOWN_ABBREVIATIONS, KNOWN_TITLE_ABBREVIATIONS):
+                try:
+                    keys = mapping.keys()
+                except Exception:
+                    keys = []
+                for raw_key in keys:
+                    key_norm = _norm(raw_key)
+                    if len(key_norm) >= 3 and key_norm == term_norm:
+                        return True
+            return False
+
+        surface_expression_context = bool(note_norms)
+        character_like_terms: List[str] = []
+        if surface_expression_context:
+            next_terms: List[str] = []
+            for term in kept_terms:
+                term_norm = _norm(term)
+                if (
+                    term_norm
+                    and 2 <= len(term_norm) <= 4
+                    and re.fullmatch(r"[가-힣]+", term_norm)
+                    and not _known_alias(term)
+                ):
+                    character_like_terms.append(term)
+                else:
+                    next_terms.append(term)
+            kept_terms = next_terms
+
+        if removed_terms or character_like_terms:
+            analysis["title_novel_terms"] = kept_terms
+            moved_terms = list(dict.fromkeys(removed_terms + character_like_terms))
+            analysis["surface_paraphrase_context_terms"] = moved_terms
+            warnings = [
+                str(item or "").strip()
+                for item in (analysis.get("warnings") or [])
+                if str(item or "").strip()
+            ]
+            if "surface_paraphrase_non_title_terms_removed" not in warnings:
+                warnings.append("surface_paraphrase_non_title_terms_removed")
+            analysis["warnings"] = warnings
+
+            if surface_expression_context and not kept_terms:
+                if str(analysis.get("target_kind") or "").strip().lower() == "work":
+                    analysis["target_kind"] = "unknown"
+                if str(analysis.get("intent") or "").strip().lower() == "discuss_work":
+                    analysis["intent"] = "express_opinion"
+                    analysis["intent_confidence"] = "low"
+                if str(analysis.get("speech_act") or "").strip().lower() in {"review", "discussion"}:
+                    analysis["speech_act"] = "banter"
+                analysis["real_subject"] = (
+                    "표현 오타/축약 패턴(범용)으로 재검토해야 하는 짧은 커뮤니티 반응"
+                )
+                if isinstance(analysis.get("semantic_seed_review"), dict):
+                    analysis["semantic_seed_review"]["is_specific_work_discussion"] = False
+                    existing_interp = str(
+                        analysis["semantic_seed_review"].get("content_interpretation") or ""
+                    ).strip()
+                    if not existing_interp:
+                        analysis["semantic_seed_review"]["content_interpretation"] = (
+                            "표현 오타/축약 패턴(범용)이며 작품명/별칭 seed가 아니다."
+                        )
+                if "surface_paraphrase_specific_work_denied" not in warnings:
+                    warnings.append("surface_paraphrase_specific_work_denied")
+                    analysis["warnings"] = warnings
+            if surface_expression_context:
+                moved_norms = {_norm(term) for term in moved_terms if _norm(term)}
+                filtered_suggestions: List[Dict[str, Any]] = []
+                removed_suggestions: List[str] = []
+                for suggestion in analysis.get("search_suggestions") or []:
+                    if not isinstance(suggestion, dict):
+                        continue
+                    query = str(suggestion.get("query") or "").strip()
+                    query_norm = _norm(query)
+                    if not query or not query_norm:
+                        continue
+                    generic_surface_probe = bool(
+                        re.search(r"\d+[A-Za-z가-힣]{0,12}", query)
+                        and re.search(r"(소설|웹소설|작품|제목|정식|캐릭터|등장인물)", query)
+                    )
+                    mentions_context_term = any(
+                        term_norm and term_norm in query_norm
+                        for term_norm in moved_norms
+                    )
+                    mentions_note = any(
+                        note_norm and (note_norm in query_norm or query_norm in note_norm)
+                        for note_norm in note_norms
+                    )
+                    if generic_surface_probe or mentions_context_term or mentions_note:
+                        removed_suggestions.append(query)
+                        continue
+                    filtered_suggestions.append(suggestion)
+                if removed_suggestions:
+                    analysis["search_suggestions"] = filtered_suggestions
+                    warnings = [
+                        str(item or "").strip()
+                        for item in (analysis.get("warnings") or [])
+                        if str(item or "").strip()
+                    ]
+                    if "surface_paraphrase_search_suggestions_removed" not in warnings:
+                        warnings.append("surface_paraphrase_search_suggestions_removed")
+                    analysis["warnings"] = warnings
+        return analysis
 
     def _apply_short_worklike_recovery(
         self,
@@ -600,13 +1271,25 @@ class DiscourseAnalyzer:
             elif isinstance(block, str):
                 content_texts.append(block)
         
-        return {
+        result = {
             "post_id": post.get("post_id"),
+            "gallery_id": post.get("gallery_id", ""),
             "title": post.get("title", ""),
+            "post_author": post.get("post_author") or post.get("author", ""),
             "author": post.get("author", ""),
             "content": content_texts,
             "comments": comments[:15],  # More comments for better context
         }
+        comment_context = post.get("comment_context_lines") or []
+        if comment_context:
+            result["comment_context"] = comment_context[:15]
+        comment_dialogue = post.get("comment_dialogue_context_lines") or []
+        if comment_dialogue:
+            result["comment_dialogue_context"] = comment_dialogue[:15]
+        surface_notes = post.get("surface_paraphrase_notes") or []
+        if surface_notes:
+            result["surface_paraphrase_notes"] = surface_notes[:10]
+        return result
     
     def _call_llm(
         self,

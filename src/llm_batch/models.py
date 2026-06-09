@@ -16,6 +16,9 @@ class PostInput(BaseModel):
     post_id: int
     title: str
     author: Optional[str] = None
+    ip: Optional[str] = None
+    author_ip: Optional[str] = None
+    post_ip: Optional[str] = None
     created_at: Optional[str] = None
     url: Optional[str] = None
     content_blocks: List[ContentBlock] = Field(default_factory=list)
@@ -39,6 +42,7 @@ class NovelIdentity(BaseModel):
     official_title: Optional[str]
     heretic_url: Optional[str] = None  # 작품 공식 페이지 URL (제목과 별도)
     confidence: str
+    alias_resolution_sources: Optional[List[Dict[str, Any]]] = None
 
 
 class Evidence(BaseModel):
@@ -95,6 +99,25 @@ class PickvelIdentity(BaseModel):
     """
 
     is_relevant: bool
+    # Legacy `is_relevant` remains the core-work-discussion boolean.
+    # These fields separate broader novel-community relevance from resolved
+    # single-work identity so unresolved/memory-query posts are not forced into
+    # either title pollution or plain noise.
+    is_novel_related: Optional[bool] = None
+    is_resolved_work_discussion: Optional[bool] = None
+    title_resolution_state: Optional[Literal[
+        "resolved",
+        "unresolved_matchable",
+        "unresolvable_memory_query",
+        "context_only",
+        "author_new_work_context",
+        "ocr_explicit_title_unresolved",
+        "multi_work",
+        "adjacent",
+        "nonwork",
+        "technical_missing",
+    ]] = None
+    title_resolution_allowed: Optional[bool] = None
     novel_identity: Optional[NovelIdentity] = None
     discussion_type: Optional[Literal[
         # === is_relevant=true 가능 ===
@@ -191,6 +214,22 @@ class PickvelIdentity(BaseModel):
         "image",
     ]]] = None
     consistency_flags: Optional[List[str]] = None
+    # Compact public search-hit preview for qualitative review packets.
+    # Full raw search payloads are intentionally not stored here.
+    search_evidence_catalog: Optional[List[Dict[str, Any]]] = None
+    # Compact public VLM/OCR preview for qualitative review packets.
+    # This keeps image evidence reviewable without scraping worker logs/reasons.
+    image_evidence_catalog: Optional[List[Dict[str, Any]]] = None
+    # Public VLM/OCR execution counters for row-level auditability.
+    # These separate "image evidence text exists" from "VLM/OCR actually ran".
+    vlm_enabled: Optional[bool] = None
+    ocr_enabled: Optional[bool] = None
+    vlm_enrichment_used: Optional[bool] = None
+    image_fetch_count: Optional[int] = None
+    image_fetch_success: Optional[int] = None
+    vlm_chunks_sent: Optional[int] = None
+    vlm_total_bytes: Optional[int] = None
+    image_enrichment_limitations: Optional[List[str]] = None
     reason: Optional[str] = None
     reason_lines: Optional[List[str]] = None
     system_state: Optional[Literal[

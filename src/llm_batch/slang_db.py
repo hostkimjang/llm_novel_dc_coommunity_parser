@@ -46,6 +46,73 @@ _GENRE_ARCHETYPE_TERMS_NORMALIZED = {
     for item in GENRE_ARCHETYPE_TERMS
 }
 
+_LOW_INFORMATION_ALIAS_SURFACES = {
+    "있다",
+    "없다",
+    "있어",
+    "있음",
+    "있네",
+    "있고",
+    "있냐",
+    "있니",
+    "있어도",
+    "있어서",
+    "없어",
+    "없음",
+    "없네",
+    "없고",
+    "없냐",
+    "없어도",
+    "없어서",
+    "했다",
+    "한다",
+    "하는",
+    "하면",
+    "됐다",
+    "된다",
+    "같다",
+    "보다",
+    "본다",
+    "봤다",
+    "너무",
+    "그냥",
+    "진짜",
+    "무슨",
+    "뭐냐",
+    "이거",
+    "저거",
+    "그거",
+    "네가",
+    "내가",
+    "너가",
+    "제가",
+    "그가",
+    "너에겐",
+    "나에겐",
+    "너에게",
+    "나에게",
+    "친구",
+    "위기",
+    "소설",
+    "작품",
+    "제목",
+    "내용",
+}
+
+_LOW_INFORMATION_ALIAS_SURFACES_NORMALIZED = {
+    _NORMALIZE_TERM_RE.sub("", item).lower().strip()
+    for item in _LOW_INFORMATION_ALIAS_SURFACES
+}
+
+_PRONOUN_PARTICLE_ALIAS_RE = re.compile(
+    r"^(?:"
+    r"너|나|네|내|저|제|그|이|걔|쟤|얘|누구|무엇|뭐|그것|이것|저것"
+    r")(?:"
+    r"에게|에겐|한테|한텐|에게서|한테서|와|과|랑|하고|의|도|만|조차|마저|부터|까지|"
+    r"가|이|는|은|를|을|로|으로|야|냐|네"
+    r")$"
+)
+
 _FAMILY_ALIAS_AUTO_PROMOTE_MIN_TITLES = 3
 _FAMILY_ALIAS_AUTO_PROMOTE_MIN_CONFIRMED_TITLES = 2
 _FLUSH_PREVIEW_LIMIT = 5
@@ -72,6 +139,8 @@ def _is_generic_term(term: str) -> bool:
     norm = _normalize_term(raw)
     if not norm or len(norm) < 2:
         return True
+    if _is_low_information_alias_term(raw):
+        return True
     if norm in _GENERIC_TERM_STOPLIST_NORMALIZED:
         return True
     if norm in _GENRE_ARCHETYPE_TERMS_NORMALIZED:
@@ -79,6 +148,16 @@ def _is_generic_term(term: str) -> bool:
     if re.fullmatch(r"(로판|판무|현판|무협|bl|gl|ts|ntr|장르|웹소설)", norm):
         return True
     return False
+
+
+def _is_low_information_alias_term(term: str) -> bool:
+    raw = str(term or "").strip()
+    norm = _normalize_term(raw)
+    if not norm:
+        return True
+    if norm in _LOW_INFORMATION_ALIAS_SURFACES_NORMALIZED:
+        return True
+    return bool(_PRONOUN_PARTICLE_ALIAS_RE.fullmatch(norm))
 
 
 def _is_generic_title_label(title: str) -> bool:
@@ -397,6 +476,136 @@ def _example_is_reviewable(example: Dict[str, Any]) -> bool:
         discussion_type=str(example.get("discussion_type") or ""),
         anchor_type=str(example.get("anchor_type") or ""),
     )
+
+
+def _is_unresolvable_memory_query_context(
+    *,
+    title_resolution_state: str,
+    title_resolution_allowed: Any,
+    subtype: str,
+    work_resolution: str,
+    discussion_type: str,
+) -> bool:
+    state_norm = str(title_resolution_state or "").strip().lower()
+    subtype_norm = str(subtype or "").strip().lower()
+    work_resolution_norm = str(work_resolution or "").strip().lower()
+    discussion_type_norm = str(discussion_type or "").strip().lower()
+    allowed_false = (
+        title_resolution_allowed is False
+        or str(title_resolution_allowed).strip().lower() in {"false", "0", "no", "off"}
+    )
+    return bool(
+        allowed_false
+        and state_norm == "unresolvable_memory_query"
+        and work_resolution_norm == "none"
+        and (
+            subtype_norm
+            in {"recommendation_request", "unresolved_work", "memory_query", "other_quarantine"}
+            or discussion_type_norm in {"recommendation", "off_topic", "undecodable_reference", "noise"}
+        )
+    )
+
+
+def _example_has_polluted_alias_seed_signal(example: Dict[str, Any]) -> bool:
+    flags = {
+        str(flag or "").strip().lower()
+        for flag in (example.get("consistency_flags") or [])
+        if str(flag or "").strip()
+    }
+    title_resolution_state = str(example.get("title_resolution_state") or "").strip().lower()
+    title_resolution_allowed = example.get("title_resolution_allowed")
+    allowed_false = (
+        title_resolution_allowed is False
+        or str(title_resolution_allowed).strip().lower() in {"false", "0", "no", "off"}
+    )
+    if allowed_false and (
+        title_resolution_state in {"context_only", "nonwork", "unresolvable_memory_query"}
+        or flags
+        & {
+            "context_only_no_work_anchor",
+            "semantic_seed_review_specific_work_denied",
+            "semantic_seed_review_non_title_terms_removed",
+            "surface_paraphrase_non_title_terms_removed",
+            "batch_memory_alias_rescue_blocked_semantic_seed",
+        }
+    ):
+        return True
+    if _is_unresolvable_memory_query_context(
+        title_resolution_state=title_resolution_state,
+        title_resolution_allowed=title_resolution_allowed,
+        subtype=str(example.get("subtype") or ""),
+        work_resolution=str(example.get("work_resolution") or ""),
+        discussion_type=str(example.get("discussion_type") or ""),
+    ):
+        return True
+    rescue_flags = {
+        "batch_memory_exact_alias_rescued",
+        "title_surface_primary_candidate_rescued",
+    }
+    demotion_flags = {
+        "notes_demoted_for_unresolved",
+        "primary_work_cleared_non_core",
+        "primary_work_cleared_non_resolved",
+        "memory_query_canonical_rescue_blocked",
+    }
+    source_roles = _normalized_source_roles(example.get("source_roles"), example.get("source_role"))
+    legacy_reference_memory_query = bool(
+        str(example.get("subtype") or "").strip().lower() == "recommendation_request"
+        and str(example.get("work_resolution") or "").strip().lower() == "none"
+        and str(example.get("discussion_type") or "").strip().lower() == "recommendation"
+        and source_roles
+        & {
+            "mentioned_work",
+            "secondary_reference",
+            "recommendation_candidate",
+            "comparison_target",
+        }
+        and flags
+        & {
+            "notes_demoted_for_unresolved",
+            "primary_work_cleared_non_core",
+            "memory_query_canonical_rescue_blocked",
+        }
+    )
+    if legacy_reference_memory_query:
+        return True
+    return bool(flags & rescue_flags and flags & demotion_flags)
+
+
+def slang_db_alias_seed_is_safe(title: Any, entry: Dict[str, Any], bucket: Dict[str, Any]) -> bool:
+    """Return whether a persisted slang entry may seed batch-memory alias recall."""
+    title_raw = str(title or "").strip()
+    term_raw = str((entry or {}).get("term") or "").strip()
+    if (
+        not title_raw
+        or not term_raw
+        or _is_generic_term(term_raw)
+        or _is_generic_title_label(title_raw)
+        or _looks_sentence_like_term(term_raw)
+        or _is_exact_title_alias(term_raw, title_raw)
+    ):
+        return False
+    examples = (bucket or {}).get("examples") or []
+    if not isinstance(examples, list):
+        return True
+    title_norm = _normalize_title(title_raw)
+    term_norm = _normalize_term(term_raw)
+    matching_examples = [
+        ex
+        for ex in examples
+        if isinstance(ex, dict)
+        and _normalize_title(str(ex.get("official_title") or "")) == title_norm
+        and _normalize_term(str(ex.get("alias") or "")) == term_norm
+    ]
+    if not matching_examples:
+        return True
+    polluted_examples = [
+        ex for ex in matching_examples
+        if _example_has_polluted_alias_seed_signal(ex)
+    ]
+    if polluted_examples and len(polluted_examples) == len(matching_examples):
+        return False
+    return True
 
 
 def _normalized_source_roles(raw_roles: Any, raw_role: Any = None) -> set[str]:
@@ -1132,6 +1341,35 @@ class SlangDBManager:
             examples = list(bucket.get("examples") or [])
             if not isinstance(examples, list):
                 examples = []
+            slang_entries = list(bucket.get("slang") or [])
+            kept_slang: List[Dict[str, Any]] = []
+            removed_slang_norms: set[str] = set()
+            for entry in slang_entries:
+                norm = _normalize_term(entry.get("normalized_term") or entry.get("term"))
+                if not norm:
+                    continue
+                if _is_generic_term(entry.get("term") or entry.get("normalized_term")):
+                    removed_slang_norms.add(norm)
+                    continue
+                matching_examples = [
+                    e for e in examples
+                    if _normalize_term(e.get("alias") or "") == norm
+                ]
+                if matching_examples and all(_example_has_polluted_alias_seed_signal(e) for e in matching_examples):
+                    removed_slang_norms.add(norm)
+                    continue
+                kept_slang.append(entry)
+            if removed_slang_norms:
+                bucket["slang"] = kept_slang
+                bucket["examples"] = [
+                    e for e in examples
+                    if not (
+                        _normalize_term(e.get("alias") or "") in removed_slang_norms
+                        and str(e.get("bucket") or "") == "slang"
+                    )
+                ]
+                examples = list(bucket.get("examples") or [])
+                bucket["updated_at"] = _now_iso()
             pending_entries = list(bucket.get("pending") or [])
             slang_norms = {
                 _normalize_term(item.get("normalized_term") or item.get("term"))
@@ -1145,6 +1383,9 @@ class SlangDBManager:
                 norm = _normalize_term(entry.get("normalized_term") or entry.get("term"))
                 if not norm:
                     continue
+                if _is_generic_term(entry.get("term") or entry.get("normalized_term")):
+                    removed_norms.add(norm)
+                    continue
                 if norm in slang_norms:
                     removed_norms.add(norm)
                     continue
@@ -1153,6 +1394,9 @@ class SlangDBManager:
                     if _normalize_term(e.get("alias") or "") == norm
                 ]
                 if matching_examples and not any(_example_is_reviewable(e) for e in matching_examples):
+                    removed_norms.add(norm)
+                    continue
+                if matching_examples and all(_example_has_polluted_alias_seed_signal(e) for e in matching_examples):
                     removed_norms.add(norm)
                     continue
                 if matching_examples and all(
@@ -1195,6 +1439,8 @@ class SlangDBManager:
         anchor_type = str(identity.get("anchor_type") or "").strip().lower()
         anchor_strength = str(identity.get("anchor_strength") or "").strip()
         discussion_type = str(identity.get("discussion_type") or "").strip()
+        title_resolution_state = str(identity.get("title_resolution_state") or "").strip().lower()
+        title_resolution_allowed = identity.get("title_resolution_allowed")
         consistency_flags = {
             str(flag or "").strip().lower()
             for flag in (identity.get("consistency_flags") or [])
@@ -1242,6 +1488,50 @@ class SlangDBManager:
                 or anchor_type in {"title_exact", "title_alias", "character", "image"}
             )
         )
+        reason_l = reason.lower()
+        zero_public_evidence_signal = bool(
+            "evidence_bucket: post_spans=0, search_snippets=0, official_urls=0" in reason_l
+            or "evidence bucket: post_spans=0, search_snippets=0, official_urls=0" in reason_l
+        )
+        weak_grounding_signal = bool(
+            "grounding_anchor: none" in reason_l
+            or "grounding_anchor: search_only" in reason_l
+            or "anchor=none" in reason_l
+        )
+        critical_negative_signal = bool(
+            "critical" in reason_l
+            or "thematic_overlap_only" in reason_l
+            or "no specific work" in reason_l
+            or "no direct work" in reason_l
+            or "특정 작품" in reason
+        )
+        late_rescue_contaminated = bool(
+            consistency_flags
+            & {
+                "batch_memory_exact_alias_rescued",
+                "title_surface_primary_candidate_rescued",
+            }
+            and (
+                zero_public_evidence_signal
+                or consistency_flags
+                & {
+                    "notes_demoted_for_unresolved",
+                    "primary_work_cleared_non_core",
+                    "primary_work_cleared_non_resolved",
+                }
+            )
+            and weak_grounding_signal
+            and critical_negative_signal
+        )
+        unresolvable_memory_query_context = _is_unresolvable_memory_query_context(
+            title_resolution_state=title_resolution_state,
+            title_resolution_allowed=title_resolution_allowed,
+            subtype=subtype,
+            work_resolution=work_resolution,
+            discussion_type=discussion_type,
+        )
+        if unresolvable_memory_query_context:
+            return []
 
         seen_at = _now_iso()
         example_base = {
@@ -1255,6 +1545,8 @@ class SlangDBManager:
             "anchor_strength": anchor_strength or None,
             "created_at": full_result.get("created_at"),
             "discussion_type": discussion_type or None,
+            "title_resolution_state": title_resolution_state or None,
+            "title_resolution_allowed": title_resolution_allowed,
             "consistency_flags": sorted(consistency_flags) if consistency_flags else None,
         }
         family_alias_signal = bool(
@@ -1311,6 +1603,21 @@ class SlangDBManager:
         ) -> None:
             title_raw = str(title or "").strip()
             term_raw = str(term or "").strip()
+            if (
+                late_rescue_contaminated
+                and source_role in {"slang_insight", "primary_work", "title_candidate"}
+            ):
+                return
+            if (
+                unresolvable_memory_query_context
+                and source_role in {
+                    "mentioned_work",
+                    "secondary_reference",
+                    "recommendation_candidate",
+                    "comparison_target",
+                }
+            ):
+                return
             if (
                 not title_raw
                 or not term_raw

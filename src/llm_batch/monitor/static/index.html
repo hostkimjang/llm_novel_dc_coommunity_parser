@@ -834,6 +834,38 @@ function renderTagChips(values, labelMap = null) {
     .join('');
 }
 
+function slangInsightDetailLabel(slangInsight) {
+  return slangInsight && slangInsight.store_in_slang_db === true
+    ? '슬랭 저장 후보'
+    : '슬랭 후보(저장 차단)';
+}
+
+function renderSlangInsightDetail(slangInsight) {
+  if (!slangInsight) return '-';
+  const detected = String(slangInsight.detected_term || '').trim();
+  const decoded = String(slangInsight.decoded_term || '').trim();
+  const canonical = String(slangInsight.canonical_work_alias || '').trim();
+  const reason = String(slangInsight.store_reason || '').trim();
+  const scope = String(slangInsight.alias_scope || '').trim();
+  const stored = slangInsight.store_in_slang_db === true;
+  const lines = [];
+
+  if (!stored && canonical && canonical !== detected) {
+    lines.push(`정제 별칭 후보: <strong>${escHtml(canonical)}</strong>`);
+    if (detected) lines.push(`원문 감지 표면: ${escHtml(detected)}`);
+    if (decoded) lines.push(`해독 후보: ${escHtml(decoded)}`);
+  } else {
+    const left = detected || canonical || '-';
+    const right = decoded || '-';
+    lines.push(`${escHtml(left)} → ${escHtml(right)}`);
+  }
+
+  if (!stored) lines.push(`<span class="tag-chip">DB 저장 차단</span>`);
+  if (scope) lines.push(`scope: ${escHtml(scope)}`);
+  if (reason) lines.push(`reason: ${escHtml(reason)}`);
+  return lines.join('<br>');
+}
+
 function hasDetailPayload(data) {
   if (!data || typeof data !== 'object') return false;
 
@@ -2212,7 +2244,7 @@ function showModal(d, mode) {
   // ━━━ ④ 분석 상세 ━━━
   const extras = [];
   if (slangInsight) {
-    extras.push(dkv('슬랭 감지', `${escHtml(slangInsight.detected_term || '-')} → ${escHtml(slangInsight.decoded_term || '-')}`));
+    extras.push(dkv(slangInsightDetailLabel(slangInsight), renderSlangInsightDetail(slangInsight)));
   }
   if (analysis.detected_titles && analysis.detected_titles.length) {
     const tt = analysis.detected_titles.map(t => `${escHtml(t.official_title||'?')} (${t.confidence||'-'})`).join(', ');

@@ -2225,8 +2225,8 @@ Step 3: unresolved_terms에 등록!
 
 ━━━ 사례 C: DC갤러리 의견 태그 (작품명이 아님!) ━━━
 
-게시글: 제목 "소신발언)) 캐릭터갑이 나이 몰랐음"
-       본문 "묘사만 보면 한 16살인줄???"
+게시글: 제목 "소신발언)) 캐릭터갑 관련 짧은 반응"
+       본문 "본문은 작품명보다 표면 반응에 가까운 짧은 표현"
        댓글 "ㄹㅇ 머리도 안올렷잖아 더어린줄"
 
 → 한국어 맥락 해석:
@@ -2236,8 +2236,8 @@ Step 3: unresolved_terms에 등록!
   이것은 게시글의 유형을 표시하는 태그이지, 작품명이 아니다.
 
   "캐릭터갑이 나이 몰랐음"이 실제 의견 내용이다.
-  "캐릭터갑"은 맥락상 다른 작품의 캐릭터를 지칭하는 것이고,
-  화자는 그 캐릭터의 나이/외모에 대한 감상을 말하고 있다.
+  "캐릭터갑"은 맥락상 인명/캐릭터명처럼 보이는 표면일 수 있지만,
+  화자의 실제 의도는 해당 packet의 title/body/comment에서 다시 읽어야 한다.
 
   검색에서 "소신발언 2025"라는 동명의 소설을 찾을 수 있다.
   하지만 "소신발언"은 한국어에서 "소신 있는 발언"이라는 일반 표현이고,
@@ -2591,7 +2591,7 @@ Step 6: 교차 검증
 커뮤니티에서 "[A]작가 [B]" 형태는 매우 빈번하다. 이것을 올바르게 파싱하지 못하면
 작가명과 작품명을 혼동하는 치명적 오류가 발생한다.
 
-**범용 규칙 (어떤 작품명이든 적용):**
+**공통 해석 절차 (작품명마다 증거로 재확인):**
 ```
 구조: [고유명사A] + 작가 + [고유명사B 또는 동사구]
 
@@ -2926,6 +2926,16 @@ Evidence ID rule:
 === SLANG DICTIONARY ===
 {slang_dictionary}
 
+Dictionary policy:
+- The slang dictionary is a recall hint, not standalone official title evidence.
+- A dictionary hit may be listed as a candidate or alias explanation, but do not set
+  best_match.title or confidence=high from the dictionary alone.
+- Promote a dictionary candidate only when the current post has independent support:
+  direct title/alias usage in the post, official platform/detail URL, strict search
+  snippet/content alignment, VLM/OCR direct work title, or verified character-work link.
+- If independent support is missing, keep best_match.title=null and request/record
+  verification instead of treating the dictionary as proof.
+
 === YOUR DECODING TASK ===
 
 **[CRITICAL] decoded_terms.original은 key_terms 그대로!**
@@ -2958,7 +2968,7 @@ Evidence ID rule:
    - 정식 제목을 찾을 수 없음
    - official_novel_title = null, needs_verification = true
 
-**예시 (범용 패턴):**
+**예시 (순환 참조 처리 절차):**
 ```
 현재 포스트: post_id=[ID], 제목="[축약어] [내용]"
 
@@ -5128,6 +5138,8 @@ Decoder가 어떤 작품을 매칭했을 때, 다음 질문에 답하라:
 - detected_term: 원문에서 감지한 표면. 가능하면 순수 약칭만 넣는다.
 - decoded_term: 정식 작품명 또는 해석. 실패 라벨 금지.
 - canonical_work_alias: 순수 작품 약칭만. 정식 제목을 복사하지 않는다.
+- 정식 제목과 짧은 약칭이 함께 보이면 detected_term/canonical_work_alias에는 짧은 약칭만 남기고, 정식 제목은 decoded_term/official_title에 둔다.
+- noisy term은 차단하되 clean alias는 보존한다. 문장형 term과 짧은 작품 약칭이 한 표현에 함께 있으면 noisy detected surface는 저장하지 말고 clean alias를 canonical_work_alias로 분리한다.
 - alias_scope:
   - pure_work_alias: 작품만 가리키는 깨끗한 약칭
   - work_plus_character/work_plus_author/work_plus_meme: 작품 약칭에 인물/작가/밈/감상이 붙은 합성 표현
@@ -5146,6 +5158,10 @@ Decoder가 어떤 작품을 매칭했을 때, 다음 질문에 답하라:
 - 순수 약칭을 분리할 수 있으면 canonical_work_alias에는 그 짧은 약칭만 넣고, 합성 표면은 attached_entity_*로 설명한다.
 - 순수 약칭을 분리할 수 없으면 canonical_work_alias=null, alias_scope=mixed_unknown, store_in_slang_db=false.
 - 작품 관련 가능성이 있지만 확정 약칭은 아니면 slang_insight는 설명용으로 남겨도 되지만 store_in_slang_db=false로 둔다.
+- 정식명과 약칭/상태어가 함께 있으면 detected_term/canonical_work_alias는 짧은 약칭, decoded_term/official_title은 검색으로 확인된 정식명 후보로 분리한다.
+- 문장형 term과 clean alias가 같이 잡히면 문장형 term은 store_in_slang_db=false로 막고 clean alias만 canonical_work_alias 후보로 보존한다.
+- 제목 선두에 작품 약칭이 있고 뒤에 감상/후기/캐릭터 질문이 붙으면 전체를 noise/author_talk로 닫지 말고 순수 약칭을 작품 식별 단서로 보존한다.
+- 플랫폼/시장 논평이어도 작품 약칭이 직접 시장 영향의 주어이면 named work reference를 보존한다. 단일 작품 확정이 위험하면 adjacent_relevant 또는 unresolved로 낮추되 약칭 후보를 제거하지 않는다.
 
 미확정 작품담론 처리:
 - 제목/본문이 특정 작품 약칭처럼 보이고 검색에서 후보 작품이 발견되면, 본문 앵커가 약해도 곧바로 noise로 닫지 말라.

@@ -25,6 +25,8 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 from urllib.parse import urlsplit, urlunsplit
 
+_DEFAULT_VLM_MAX_IMAGE_BYTES = "16777216"
+
 # 대시보드 비활성화 플래그: --no-dashboard
 _NO_DASHBOARD = "--no-dashboard" in sys.argv
 
@@ -37,7 +39,7 @@ def _build_arg_parser(*, add_help: bool) -> argparse.ArgumentParser:
     parser.add_argument("input", nargs="?", default=None, help="입력 JSONL 파일 경로")
     parser.add_argument("--input", dest="input_flag", default=None, help="입력 JSONL 파일 경로 (--input 형식)")
     parser.add_argument("--output", "-o", default=None, help="출력 JSON 파일 경로")
-    parser.add_argument("--parallel", "-p", type=int, default=1, help="병렬 처리 워커 수 (기본: 1)")
+    parser.add_argument("--parallel", "-p", type=int, default=1, help="최대 병렬 처리 워커 수 (기본: 1, 실제 워커 수는 입력 post 수로 상한 조정)")
     parser.add_argument("--no-dashboard", action="store_true", help="대시보드 비활성화")
     parser.add_argument(
         "--server-type", "-s",
@@ -55,6 +57,11 @@ def _build_arg_parser(*, add_help: bool) -> argparse.ArgumentParser:
     parser.add_argument("--vlm-chunk-max-images", type=int, default=None, help="멀티모달 청크당 최대 이미지 수")
     parser.add_argument("--vlm-chunk-max-bytes", type=int, default=None, help="멀티모달 청크당 최대 바이트")
     parser.add_argument(
+        "--require-vlm-ocr-for-images",
+        action="store_true",
+        help="이미지 post가 있으면 VLM/OCR이 모두 켜져 있지 않은 run을 시작 전에 실패 처리",
+    )
+    parser.add_argument(
         "--llm-suspend-on-anomaly",
         choices=["on", "off"],
         default=None,
@@ -70,7 +77,32 @@ def _build_arg_parser(*, add_help: bool) -> argparse.ArgumentParser:
     parser.add_argument("--slang-db-path", default=None, help="중앙 slang DB JSON 경로")
     parser.add_argument("--slang-db-flush-posts", type=int, default=None, help="slang DB flush post 간격")
     parser.add_argument("--slang-db-flush-seconds", type=int, default=None, help="slang DB flush 시간 간격(초)")
+    parser.add_argument(
+        "--auto-up-shards",
+        action="store_true",
+        help="로컬 MCP/WARP shard가 부족할 때 docker compose up 자동 실행을 명시적으로 허용",
+    )
     parser.add_argument("--no-auto-up-shards", action="store_true", help="로컬 MCP/WARP shard 자동 기동 비활성화")
+    parser.add_argument(
+        "--auto-recreate-shards",
+        action="store_true",
+        help="WARP/search 헬스 실패 시 docker compose force-recreate 자동 실행을 명시적으로 허용",
+    )
+    parser.add_argument(
+        "--no-auto-recreate-shards",
+        action="store_true",
+        help="WARP/search 헬스 실패 시 docker compose force-recreate 자동 실행 비활성화",
+    )
+    parser.add_argument(
+        "--reuse-shards-only",
+        action="store_true",
+        help="기존 MCP/WARP shard만 재사용하고 docker compose up/recreate 자동 실행을 모두 생략",
+    )
+    parser.add_argument(
+        "--allow-goal-shard-lifecycle",
+        action="store_true",
+        help="Allow Docker shard up/recreate in small goal/test runs. Requires --auto-up-shards or --auto-recreate-shards.",
+    )
     return parser
 
 
@@ -88,7 +120,57 @@ _CLI_ARGS = _parse_args()
 # --input 플래그가 positional input보다 우선
 if _CLI_ARGS.input_flag:
     _CLI_ARGS.input = _CLI_ARGS.input_flag
-_PARALLEL = max(1, _CLI_ARGS.parallel)
+def _default_llm_model_for_server_type(server_type: Optional[str]) -> str:
+    if str(server_type or "").strip().lower() == "vllm":
+        return "bg-digitalservices/Gemma-4-E4B-it-NVFP4"
+    return "google/gemma-4-26B-A4B-it"
+
+
+def _model_parallel_max(model_name: Optional[str]) -> Optional[int]:
+    """Return the model-specific worker cap when the ops contract defines one."""
+    model = str(model_name or "").strip().lower()
+    if not model:
+        return None
+    normalized = re.sub(r"[^a-z0-9]+", "-", model)
+    if (
+        "gemma-4-e4b" in normalized
+        or "gemma-4-4b" in normalized
+        or "gemma-4b" in normalized
+    ):
+        return 36
+    return None
+
+
+def _resolve_model_for_parallel_policy() -> str:
+    server_type = _CLI_ARGS.server_type or os.getenv("LLM_SERVER_TYPE", "vllm")
+    return (
+        _CLI_ARGS.llm_model
+        or os.getenv("LLM_MODEL")
+        or _default_llm_model_for_server_type(server_type)
+    )
+
+
+def _apply_model_parallel_cap(requested_parallel: int, model_name: Optional[str]) -> Dict[str, Any]:
+    requested = max(1, int(requested_parallel or 1))
+    model_max = _model_parallel_max(model_name)
+    capped = min(requested, model_max) if model_max else requested
+    return {
+        "requested_parallel_raw": requested,
+        "requested_parallel": capped,
+        "model_parallel_max": model_max,
+        "model_parallel_cap_applied": bool(model_max and capped != requested),
+        "model_parallel_cap_model": str(model_name or ""),
+    }
+
+
+_REQUESTED_PARALLEL_RAW = max(1, _CLI_ARGS.parallel)
+_PARALLEL_POLICY_MODEL = _resolve_model_for_parallel_policy()
+_PARALLEL_CAP_META = _apply_model_parallel_cap(_REQUESTED_PARALLEL_RAW, _PARALLEL_POLICY_MODEL)
+_REQUESTED_PARALLEL = int(_PARALLEL_CAP_META["requested_parallel"])
+_MODEL_PARALLEL_MAX = _PARALLEL_CAP_META["model_parallel_max"]
+_MODEL_PARALLEL_CAP_APPLIED = bool(_PARALLEL_CAP_META["model_parallel_cap_applied"])
+_PARALLEL = _REQUESTED_PARALLEL
+_INPUT_POST_COUNT = 0
 
 # ─── 스레드 안전 로그 출력 ──────────────────────────────
 _print_lock = threading.Lock()
@@ -99,6 +181,264 @@ _worker_tls = threading.local()  # .log_file, .worker_id 저장
 _parallel_mode = False  # _Tee에서 참조
 _shutdown_event = threading.Event()  # Ctrl+C 종료 시그널
 _main_thread_id = threading.main_thread().ident  # 병렬 모드 콘솔 출력 제어
+
+
+def _effective_parallel_for_post_count(post_count: int) -> int:
+    """Treat --parallel as a maximum, not a fixed worker count."""
+    if post_count <= 0:
+        return 1
+    return max(1, min(_REQUESTED_PARALLEL, post_count))
+
+
+def _build_completed_subset_rows(
+    flushed_results: List[Any],
+    pending_results: Dict[int, Any],
+) -> List[Any]:
+    """Return flushed rows plus completed pending rows in global index order.
+
+    The primary result file remains the ordered flushed prefix. This helper is
+    only for a recovery artifact when a later completed row is blocked behind an
+    earlier missing global index.
+    """
+    return list(flushed_results) + [
+        item for _, item in sorted(pending_results.items(), key=lambda kv: kv[0])
+    ]
+
+
+def _public_comment_metadata(
+    comments: List[Any],
+    post_author: Optional[str],
+    post_gallery_id: Optional[str] = None,
+    post_ip: Optional[str] = None,
+) -> List[Dict[str, Any]]:
+    """Preserve public author/IP context without duplicating full comment text."""
+    out: List[Dict[str, Any]] = []
+    post_author_text = str(post_author or "").strip()
+    post_ip_text = str(post_ip or "").strip()
+    gallery_id_text = str(post_gallery_id or "").strip()
+    speaker_by_key: Dict[str, str] = {}
+    next_speaker_idx = 1
+
+    def _is_generic_author(value: str) -> bool:
+        norm = re.sub(r"\s+", "", str(value or "").strip().lower())
+        return norm in {"ㅇㅇ", "익명", "유동", "무명", "anonymous", "anon", "unknown", "-"}
+
+    def _is_post_author_comment(author: str, ip: str) -> bool:
+        if post_ip_text and ip and ip == post_ip_text:
+            if not post_author_text or not author or author == post_author_text or _is_generic_author(post_author_text):
+                return True
+        if post_author_text and author and author == post_author_text:
+            if _is_generic_author(author) or _is_generic_author(post_author_text):
+                return False
+            if post_ip_text and ip and ip != post_ip_text and _is_generic_author(author):
+                return False
+            if post_ip_text and not ip and _is_generic_author(author):
+                return False
+            return True
+        return False
+
+    def _post_author_match_unverified(author: str, ip: str) -> bool:
+        if not post_author_text or not author or author != post_author_text:
+            return False
+        if not (_is_generic_author(author) or _is_generic_author(post_author_text)):
+            return False
+        return not (post_ip_text and ip and ip == post_ip_text)
+
+    def _speaker_label(author: str, ip: str) -> str:
+        nonlocal next_speaker_idx
+        if _is_post_author_comment(author, ip):
+            return "post_author"
+        if author and ip and _is_generic_author(author):
+            key = f"author:{author}|ip:{ip}"
+        else:
+            key = f"author:{author}" if author else f"ip:{ip}" if ip else ""
+        if not key:
+            return "unknown"
+        if key not in speaker_by_key:
+            speaker_by_key[key] = f"user{next_speaker_idx}"
+            next_speaker_idx += 1
+        return speaker_by_key[key]
+
+    for idx, comment in enumerate(comments or []):
+        source: Dict[str, Any] = {}
+        if isinstance(comment, dict):
+            source = comment
+        elif hasattr(comment, "model_dump"):
+            try:
+                dumped = comment.model_dump()
+                if isinstance(dumped, dict):
+                    source = dumped
+            except Exception:
+                source = {}
+        elif hasattr(comment, "__dict__"):
+            source = {
+                key: getattr(comment, key, None)
+                for key in (
+                    "comment_id",
+                    "author",
+                    "ip",
+                    "created_at",
+                    "reply_to_comment_id",
+                    "reply_level",
+                    "gallery_id",
+                )
+            }
+
+        author = str(source.get("author") or "").strip()
+        ip = str(source.get("ip") or "").strip()
+        comment_gallery_id = str(source.get("gallery_id") or gallery_id_text).strip()
+        meta = {
+            "index": idx,
+            "comment_id": source.get("comment_id"),
+            "gallery_id": comment_gallery_id or None,
+            "author": author or None,
+            "ip": ip or None,
+            "speaker": _speaker_label(author, ip),
+            "created_at": source.get("created_at"),
+            "reply_to_comment_id": source.get("reply_to_comment_id"),
+            "reply_level": source.get("reply_level"),
+            "is_post_author": _is_post_author_comment(author, ip),
+            "post_author_match_unverified": _post_author_match_unverified(author, ip),
+        }
+        if any(value is not None and value != "" for key, value in meta.items() if key != "index"):
+            out.append(meta)
+    return out
+
+
+def _public_comment_context_lines(
+    comment_metadata: List[Dict[str, Any]],
+    *,
+    limit: int = 15,
+) -> List[str]:
+    """Build compact public speaker/thread context for review artifacts."""
+    lines: List[str] = []
+    for rec in (comment_metadata or [])[:limit]:
+        if not isinstance(rec, dict):
+            continue
+        parts = [
+            f"#{int(rec.get('index') or 0) + 1}",
+            f"speaker={rec.get('speaker') or 'unknown'}",
+        ]
+        if rec.get("author"):
+            parts.append(f"author={rec.get('author')}")
+        if rec.get("is_post_author"):
+            parts.append("role=post_author")
+        elif rec.get("post_author_match_unverified"):
+            parts.append("role=author_match_unverified")
+        if rec.get("ip"):
+            parts.append(f"ip={rec.get('ip')}")
+        if rec.get("reply_level") not in (None, "", 0, "0"):
+            parts.append(f"reply_level={rec.get('reply_level')}")
+        if rec.get("reply_to_comment_id"):
+            parts.append(f"reply_to={rec.get('reply_to_comment_id')}")
+        if rec.get("comment_id"):
+            parts.append(f"comment_id={rec.get('comment_id')}")
+        lines.append(" ".join(parts))
+    return lines
+
+
+def _comment_text_from_any(comment: Any) -> str:
+    if isinstance(comment, dict):
+        return str(comment.get("content") or comment.get("text") or "").strip()
+    if hasattr(comment, "content"):
+        return str(getattr(comment, "content") or "").strip()
+    return str(comment or "").strip()
+
+
+def _public_comment_dialogue_context_lines(
+    comments: List[Any],
+    comment_metadata: List[Dict[str, Any]],
+    *,
+    limit: int = 15,
+    max_text_chars: int = 140,
+) -> List[str]:
+    """Build speaker-aware dialogue lines for prompts/review artifacts."""
+    meta_by_index = {
+        int(rec.get("index") or 0): rec
+        for rec in (comment_metadata or [])
+        if isinstance(rec, dict)
+    }
+    lines: List[str] = []
+    for idx, comment in enumerate(comments or []):
+        if len(lines) >= limit:
+            break
+        text = " ".join(_comment_text_from_any(comment).split())
+        if not text:
+            continue
+        if len(text) > max_text_chars:
+            text = text[:max_text_chars].rstrip() + "..."
+        rec = meta_by_index.get(idx, {})
+        parts = [
+            f"#{idx + 1}",
+            f"speaker={rec.get('speaker') or 'unknown'}",
+        ]
+        if rec.get("author"):
+            parts.append(f"author={rec.get('author')}")
+        if rec.get("is_post_author"):
+            parts.append("role=post_author")
+        elif rec.get("post_author_match_unverified"):
+            parts.append("role=author_match_unverified")
+        if rec.get("ip"):
+            parts.append(f"ip={rec.get('ip')}")
+        if rec.get("reply_level") not in (None, "", 0, "0"):
+            parts.append(f"reply_level={rec.get('reply_level')}")
+        if rec.get("reply_to_comment_id"):
+            parts.append(f"reply_to={rec.get('reply_to_comment_id')}")
+        if rec.get("comment_id"):
+            parts.append(f"comment_id={rec.get('comment_id')}")
+        parts.append(f"text={text}")
+        lines.append(" ".join(parts))
+    return lines
+
+
+def _public_content_blocks(content_blocks: List[Any]) -> List[Dict[str, Any]]:
+    """Preserve reviewable public text/image block order in result artifacts."""
+    out: List[Dict[str, Any]] = []
+    for block in content_blocks or []:
+        source: Dict[str, Any] = {}
+        if isinstance(block, dict):
+            source = block
+        elif hasattr(block, "model_dump"):
+            try:
+                dumped = block.model_dump()
+                if isinstance(dumped, dict):
+                    source = dumped
+            except Exception:
+                source = {}
+        elif hasattr(block, "__dict__"):
+            source = {
+                key: getattr(block, key, None)
+                for key in ("type", "url", "text")
+            }
+        elif isinstance(block, str):
+            source = {"type": "text", "text": block}
+
+        source_url = source.get("url") or source.get("image_url") or source.get("src")
+        block_type = str(source.get("type") or "").strip() or ("image" if source_url else "text")
+        rec: Dict[str, Any] = {"type": block_type}
+        text = str(source.get("text") or "").strip()
+        url = str(source_url or "").strip()
+        if text:
+            rec["text"] = text
+        if url:
+            rec["url"] = url
+        if rec.get("text") or rec.get("url"):
+            out.append(rec)
+    return out
+
+
+def _public_image_urls(content_blocks: List[Any]) -> List[str]:
+    seen: set[str] = set()
+    urls: List[str] = []
+    for block in _public_content_blocks(content_blocks):
+        url = str(block.get("url") or "").strip()
+        block_type = str(block.get("type") or "").strip().lower()
+        if not url or url in seen:
+            continue
+        if block_type in {"image", "img", "photo", "picture"} or re.search(r"\.(?:png|jpe?g|gif|webp)(?:[?#].*)?$", url, re.I):
+            seen.add(url)
+            urls.append(url)
+    return urls
 
 
 def _set_env(k: str, v: str) -> None:
@@ -189,6 +529,7 @@ def _configure_mcp_endpoints(default_count: int) -> None:
     except Exception:
         shard_count = max(1, default_count)
 
+    auto_shard_limit_configured = "MCP_AUTO_SHARD_LIMIT" in os.environ
     auto_shard_limit_raw = os.getenv("MCP_AUTO_SHARD_LIMIT", "0").strip()
     try:
         auto_shard_limit = max(0, int(auto_shard_limit_raw))
@@ -205,6 +546,58 @@ def _configure_mcp_endpoints(default_count: int) -> None:
             flush=True,
         )
         shard_count = auto_shard_limit
+
+    small_run_threshold_raw = os.getenv("MCP_SMALL_RUN_SHARD_THRESHOLD", "10").strip()
+    small_run_limit_raw = os.getenv("MCP_SMALL_RUN_AUTO_SHARD_LIMIT", "2").strip()
+    try:
+        small_run_threshold = max(0, int(small_run_threshold_raw))
+    except Exception:
+        small_run_threshold = 10
+    try:
+        small_run_limit = max(0, int(small_run_limit_raw))
+    except Exception:
+        small_run_limit = 2
+    if (
+        small_run_threshold > 0
+        and small_run_limit > 0
+        and not explicit_shard_count
+        and not auto_shard_limit_configured
+        and default_count < small_run_threshold
+        and shard_count > small_run_limit
+    ):
+        print(
+            "[config] 소규모 targeted run shard 자동 생성 수를 {limit}개로 제한합니다 "
+            "(effective_parallel={parallel}, 필요 시 MCP_SHARD_COUNT, MCP_AUTO_SHARD_LIMIT, "
+            "MCP_SMALL_RUN_AUTO_SHARD_LIMIT로 override)".format(
+                limit=small_run_limit,
+                parallel=default_count,
+            ),
+            file=sys.stderr,
+            flush=True,
+        )
+        shard_count = small_run_limit
+
+    goal_run_limit_raw = os.getenv("MCP_GOAL_RUN_AUTO_SHARD_LIMIT", "8").strip()
+    try:
+        goal_run_limit = max(0, int(goal_run_limit_raw))
+    except Exception:
+        goal_run_limit = 8
+    if (
+        goal_run_limit > 0
+        and _small_run_shard_lifecycle_blocked()
+        and shard_count > goal_run_limit
+    ):
+        print(
+            "[config] goal/targeted run shard autogen count capped to {limit} "
+            "(effective_parallel={parallel}, override with MCP_GOAL_RUN_AUTO_SHARD_LIMIT "
+            "or explicit shard lifecycle opt-in)".format(
+                limit=goal_run_limit,
+                parallel=default_count,
+            ),
+            file=sys.stderr,
+            flush=True,
+        )
+        shard_count = goal_run_limit
     try:
         base_port = int(os.getenv("MCP_SHARD_BASE_PORT", "3333"))
     except Exception:
@@ -253,8 +646,273 @@ def _env_bool_runtime(name: str, default: bool = False) -> bool:
     return default
 
 
+def _reuse_only_health_filter_enabled() -> bool:
+    """Allow reuse-only runs to shrink autogenerated shard pools to live shards."""
+    return _healthy_autogen_endpoint_filter_reason() == "reuse_shards_only"
+
+
+def _healthy_endpoint_filter_reason() -> Optional[str]:
+    """Return why startup may shrink the endpoint pool to healthy shards.
+
+    Goal/test reruns should not stop/start Docker just because an old explicit
+    MCP_ENDPOINTS list still contains dead local shards.  In those contexts we
+    prefer the existing healthy subset, while large validation keeps explicit
+    endpoint failures visible unless reuse-only is requested.
+    """
+    autogen = os.getenv("MCP_ENDPOINTS_AUTOGEN", "0").strip() == "1"
+    if getattr(_CLI_ARGS, "reuse_shards_only", False):
+        env_key = "MCP_REUSE_ONLY_FILTER_HEALTHY_AUTOGEN" if autogen else "MCP_REUSE_ONLY_FILTER_HEALTHY_ENDPOINTS"
+        if _env_bool_runtime(env_key, True):
+            return "reuse_shards_only"
+        return None
+    if _small_run_shard_lifecycle_blocked():
+        env_key = "MCP_GOAL_RUN_FILTER_HEALTHY_AUTOGEN" if autogen else "MCP_GOAL_RUN_FILTER_HEALTHY_ENDPOINTS"
+        if _env_bool_runtime(env_key, True):
+            return "goal_run_lifecycle_blocked"
+    return None
+
+
+def _healthy_autogen_endpoint_filter_reason() -> Optional[str]:
+    """Backward-compatible wrapper for older tests/docs wording."""
+    return _healthy_endpoint_filter_reason()
+
+
+def _mcp_goal_run_light_health_mode() -> bool:
+    """Use cheaper startup health checks for goal/test reuse paths."""
+    return bool(getattr(_CLI_ARGS, "reuse_shards_only", False) or _small_run_shard_lifecycle_blocked())
+
+
+def _default_mcp_health_include_search() -> bool:
+    """Default to Bridge readiness only in small goal/reuse-only loops."""
+    if _mcp_goal_run_light_health_mode():
+        return False
+    return not _can_auto_manage_local_shards()
+
+
+def _mcp_health_required_ok_count(endpoint_pool: List[str]) -> int:
+    """Return how many healthy endpoints are needed before startup may proceed."""
+    endpoints = list(endpoint_pool or [])
+    if not endpoints:
+        return 1
+    raw = os.getenv("MCP_HEALTH_REQUIRED_OK", "").strip()
+    if raw:
+        try:
+            return max(1, min(len(endpoints), int(raw)))
+        except Exception:
+            pass
+    if _mcp_goal_run_light_health_mode():
+        return max(1, min(len(endpoints), _PARALLEL))
+    return len(endpoints)
+
+
+def _mcp_health_probe_batch_size(
+    endpoint_pool: List[str],
+    *,
+    required_ok_count: int,
+    health_workers: int,
+) -> int:
+    """Limit stale explicit endpoint probing in small goal/reuse-only runs."""
+    endpoints = list(endpoint_pool or [])
+    if not endpoints:
+        return 1
+    raw = os.getenv("MCP_HEALTH_PROBE_BATCH_SIZE", "").strip()
+    if raw:
+        try:
+            return max(1, min(len(endpoints), int(raw)))
+        except Exception:
+            pass
+    if _mcp_goal_run_light_health_mode():
+        return max(1, min(len(endpoints), required_ok_count, max(1, health_workers)))
+    return len(endpoints)
+
+
+def _apply_reuse_only_healthy_endpoint_filter(
+    endpoint_pool: List[str],
+    health_ok: Dict[str, Any],
+) -> tuple[List[str], Dict[str, Any]]:
+    """Use healthy shards for reuse-only or lifecycle-blocked goal runs.
+
+    This keeps targeted/goal runs from paying a docker compose restart cost while
+    still failing fast when no reusable shard is actually alive.
+    """
+    global _PARALLEL
+
+    filter_reason = _healthy_endpoint_filter_reason()
+    autogen = os.getenv("MCP_ENDPOINTS_AUTOGEN", "0").strip() == "1"
+    endpoints = list(endpoint_pool or [])
+    healthy = [endpoint for endpoint in endpoints if endpoint in health_ok]
+    before_parallel = _PARALLEL
+    meta: Dict[str, Any] = {
+        "mcp_healthy_endpoint_filter": False,
+        "mcp_healthy_endpoint_filter_reason": filter_reason or "",
+        "mcp_healthy_endpoint_filter_autogen": autogen,
+        "mcp_healthy_autogen_endpoint_filter": False,
+        "mcp_healthy_autogen_endpoint_filter_reason": filter_reason or "",
+        "mcp_reuse_shards_only_health_filtered": False,
+        "mcp_goal_run_health_filtered": False,
+        "mcp_requested_endpoint_count_before_health_filter": len(endpoints),
+        "mcp_healthy_endpoint_count": len(healthy),
+        "mcp_endpoint_count_after_health_filter": len(endpoints),
+        "mcp_parallel_before_health_filter": before_parallel,
+        "mcp_parallel_after_health_filter": before_parallel,
+    }
+
+    if not filter_reason:
+        return endpoints, meta
+    if not endpoints or not healthy or len(healthy) == len(endpoints):
+        return endpoints, meta
+
+    _set_env("MCP_ENDPOINTS", ",".join(healthy))
+    _set_env("MCP_ENDPOINT", healthy[0])
+    _PARALLEL = max(1, min(_PARALLEL, len(healthy)))
+    meta.update(
+        {
+            "mcp_healthy_endpoint_filter": True,
+            "mcp_healthy_autogen_endpoint_filter": autogen,
+            "mcp_healthy_autogen_endpoint_filter_reason": filter_reason,
+            "mcp_reuse_shards_only_health_filtered": filter_reason == "reuse_shards_only",
+            "mcp_goal_run_health_filtered": filter_reason == "goal_run_lifecycle_blocked",
+            "mcp_endpoint_count_after_health_filter": len(healthy),
+            "mcp_parallel_after_health_filter": _PARALLEL,
+        }
+    )
+    return healthy, meta
+
+
+def _small_run_threshold() -> int:
+    raw = os.getenv("MCP_SMALL_RUN_SHARD_THRESHOLD", "10").strip()
+    try:
+        return max(0, int(raw))
+    except Exception:
+        return 10
+
+
+def _shard_lifecycle_block_threshold() -> int:
+    raw = os.getenv("MCP_GOAL_RUN_SHARD_LIFECYCLE_THRESHOLD", "36").strip()
+    try:
+        return max(0, int(raw))
+    except Exception:
+        return 36
+
+
+def _current_run_post_count_for_lifecycle() -> int:
+    return _INPUT_POST_COUNT if _INPUT_POST_COUNT > 0 else _PARALLEL
+
+
+def _is_small_targeted_run() -> bool:
+    threshold = _shard_lifecycle_block_threshold()
+    run_size = _current_run_post_count_for_lifecycle()
+    return bool(threshold > 0 and 0 < run_size <= threshold)
+
+
+def _small_run_allows_shard_lifecycle() -> bool:
+    """Allow docker shard lifecycle in goal/test runs only by command opt-in.
+
+    Stale MCP_AUTO_* environment variables are easy to carry between large
+    validation runs and goal/targeted reruns.  For runs at or below the
+    lifecycle threshold we require the operator to opt in on the current
+    command.  Environment variables alone must not stop/start shards during a
+    small semantic regression loop.
+    """
+    if not _is_small_targeted_run():
+        return True
+    if _CLI_ARGS.reuse_shards_only:
+        return False
+    return bool(getattr(_CLI_ARGS, "allow_goal_shard_lifecycle", False))
+
+
+def _small_run_shard_lifecycle_blocked() -> bool:
+    return _is_small_targeted_run() and not _small_run_allows_shard_lifecycle()
+
+
+def _interactive_codex_run() -> bool:
+    """Detect runs launched from Codex so stale shell env cannot restart shards."""
+    return bool(os.getenv("CODEX_SHELL") or os.getenv("CODEX_THREAD_ID"))
+
+
+def _env_shard_lifecycle_requested() -> bool:
+    for name in ("MCP_AUTO_UP_SHARDS", "MCP_AUTO_RECREATE_SHARDS"):
+        raw = os.getenv(name, "").strip().lower()
+        if raw in {"1", "true", "yes", "on"}:
+            return True
+    return False
+
+
+def _env_shard_lifecycle_global_opt_in() -> bool:
+    return _env_bool_runtime("MCP_ALLOW_ENV_SHARD_LIFECYCLE", False)
+
+
+def _local_shard_status_audit_requested() -> bool:
+    return _env_bool_runtime("MCP_LOCAL_SHARD_STATUS_AUDIT", False)
+
+
+def _local_shard_status_audit_allowed() -> bool:
+    """Gate Docker Compose based shard status checks for goal/test reruns.
+
+    The status audit path calls tools/warp_shards.py status, which itself uses
+    docker compose ps/exec.  That is useful for shard maintenance, but too
+    expensive and surprising in small semantic regression loops.
+    """
+    if not _local_shard_status_audit_requested():
+        return False
+    if _CLI_ARGS.reuse_shards_only:
+        return False
+    if _small_run_shard_lifecycle_blocked():
+        return _env_bool_runtime("MCP_ALLOW_GOAL_SHARD_STATUS_AUDIT", False)
+    if _interactive_codex_run() and not _env_bool_runtime("MCP_ALLOW_CODEX_SHARD_STATUS_AUDIT", False):
+        return False
+    return True
+
+
+def _env_shard_lifecycle_allowed() -> bool:
+    """Return whether MCP_AUTO_* env vars may control Docker shard lifecycle.
+
+    Codex goal/test reruns often inherit old MCP_AUTO_* values from larger
+    validation runs. Env-based lifecycle now requires its own explicit
+    acknowledgement, and Codex/small goal runs also require the current command
+    to opt in so a stale shell profile cannot stop/start shards during a review
+    loop.
+    """
+    legacy_codex_ack = _env_bool_runtime("MCP_CODEX_ALLOW_ENV_SHARD_LIFECYCLE", False)
+    if not (_env_shard_lifecycle_global_opt_in() or legacy_codex_ack):
+        return False
+    if (_interactive_codex_run() or _is_small_targeted_run()) and not getattr(
+        _CLI_ARGS,
+        "allow_goal_shard_lifecycle",
+        False,
+    ):
+        return False
+    return True
+
+
+def _env_shard_lifecycle_blocked_by_context() -> bool:
+    return _env_shard_lifecycle_requested() and not _env_shard_lifecycle_allowed()
+
+
+def _command_shard_lifecycle_allowed_by_context() -> bool:
+    """Require an extra explicit opt-in before goal/test runs can restart shards."""
+    if _CLI_ARGS.reuse_shards_only:
+        return False
+    if getattr(_CLI_ARGS, "allow_goal_shard_lifecycle", False):
+        return True
+    if _is_small_targeted_run():
+        return False
+    if not _interactive_codex_run():
+        return True
+    return _env_bool_runtime("MCP_CODEX_ALLOW_ENV_SHARD_LIFECYCLE", False)
+
+
 def _can_auto_manage_local_shards() -> bool:
-    if _CLI_ARGS.no_auto_up_shards:
+    if _CLI_ARGS.no_auto_up_shards or _CLI_ARGS.reuse_shards_only:
+        return False
+    status_audit = _local_shard_status_audit_allowed()
+    if _small_run_shard_lifecycle_blocked() and not status_audit:
+        return False
+    if not (
+        _allow_local_shard_auto_up()
+        or _allow_local_shard_recreate()
+        or status_audit
+    ):
         return False
     if os.getenv("MCP_ENDPOINTS_AUTOGEN", "0").strip() != "1":
         return False
@@ -262,8 +920,69 @@ def _can_auto_manage_local_shards() -> bool:
     return host in {"localhost", "127.0.0.1"}
 
 
+def _allow_local_shard_auto_up() -> bool:
+    if _CLI_ARGS.no_auto_up_shards or _CLI_ARGS.reuse_shards_only:
+        return False
+    if _small_run_shard_lifecycle_blocked():
+        return False
+    if getattr(_CLI_ARGS, "auto_up_shards", False):
+        return _command_shard_lifecycle_allowed_by_context()
+    if _env_shard_lifecycle_blocked_by_context():
+        return False
+    raw = os.getenv("MCP_AUTO_UP_SHARDS", "").strip().lower()
+    if raw:
+        return raw in {"1", "true", "yes", "on"}
+    return False
+
+
+def _allow_local_shard_recreate() -> bool:
+    """Return whether expert_main may force-recreate docker compose shards.
+
+    Test/goal runs default to reuse-only for docker lifecycle actions.
+    Auto up/recreate must be an explicit operator choice because compose
+    stop/start cycles are expensive and can hide the actual pipeline issue.
+    """
+    if _CLI_ARGS.no_auto_recreate_shards or _CLI_ARGS.reuse_shards_only:
+        return False
+    if _small_run_shard_lifecycle_blocked():
+        return False
+    if getattr(_CLI_ARGS, "auto_recreate_shards", False):
+        return _command_shard_lifecycle_allowed_by_context()
+    if _env_shard_lifecycle_blocked_by_context():
+        return False
+    raw = os.getenv("MCP_AUTO_RECREATE_SHARDS", "").strip().lower()
+    if raw:
+        return raw in {"1", "true", "yes", "on"}
+    return False
+
+
 def _auto_up_local_shards(repo_root: Path, shard_count: int) -> None:
     if shard_count <= 0 or not _can_auto_manage_local_shards():
+        return
+    if _env_bool_runtime("MCP_AUTO_UP_REUSE_HEALTHY", True):
+        try:
+            items = _load_local_shard_status(repo_root)
+            ready_indices = _collect_ready_warp_shard_indices(items, required_count=shard_count)
+            if len(ready_indices) >= shard_count:
+                print(
+                    f"[expert_main] 로컬 MCP/WARP shard {shard_count}개 이미 healthy → 자동 기동 생략",
+                    file=sys.stderr,
+                    flush=True,
+                )
+                return
+        except Exception as exc:
+            print(
+                f"[expert_main] shard healthy 재사용 확인 실패: {exc} → 자동 기동 계속",
+                file=sys.stderr,
+                flush=True,
+            )
+    if not _allow_local_shard_auto_up():
+        print(
+            "[expert_main] 로컬 MCP/WARP shard 자동 기동 생략: "
+            "policy=docker-lifecycle-explicit-opt-in",
+            file=sys.stderr,
+            flush=True,
+        )
         return
 
     base_port = os.getenv("MCP_SHARD_BASE_PORT", "3333").strip() or "3333"
@@ -312,21 +1031,54 @@ def _load_local_shard_status(repo_root: Path) -> List[Dict[str, Any]]:
     return items
 
 
-def _collect_non_warp_on_shards(items: List[Dict[str, Any]]) -> List[int]:
+def _shard_index_from_status_item(item: Dict[str, Any]) -> int:
+    try:
+        shard_index = int(item.get("shard_index") or 0)
+    except Exception:
+        shard_index = 0
+    if shard_index <= 0:
+        service = str(item.get("service") or "").strip()
+        if service.startswith("warp-"):
+            try:
+                shard_index = int(service.split("-", 1)[1])
+            except Exception:
+                shard_index = 0
+    return shard_index
+
+
+def _collect_ready_warp_shard_indices(
+    items: List[Dict[str, Any]],
+    *,
+    required_count: Optional[int] = None,
+) -> List[int]:
     shard_indices: List[int] = []
     for item in items:
-        try:
-            shard_index = int(item.get("shard_index") or 0)
-        except Exception:
-            shard_index = 0
+        shard_index = _shard_index_from_status_item(item)
         if shard_index <= 0:
-            service = str(item.get("service") or "").strip()
-            if service.startswith("warp-"):
-                try:
-                    shard_index = int(service.split("-", 1)[1])
-                except Exception:
-                    shard_index = 0
+            continue
+        if required_count is not None and required_count > 0 and shard_index > required_count:
+            continue
+        trace = item.get("trace") or {}
+        if not isinstance(trace, dict):
+            trace = {}
+        if bool(item.get("running")) and str(trace.get("warp") or "").strip().lower() == "on":
+            if shard_index not in shard_indices:
+                shard_indices.append(shard_index)
+    shard_indices.sort()
+    return shard_indices
+
+
+def _collect_non_warp_on_shards(
+    items: List[Dict[str, Any]],
+    *,
+    required_count: Optional[int] = None,
+) -> List[int]:
+    shard_indices: List[int] = []
+    for item in items:
+        shard_index = _shard_index_from_status_item(item)
         if shard_index <= 0:
+            continue
+        if required_count is not None and required_count > 0 and shard_index > required_count:
             continue
 
         running = bool(item.get("running"))
@@ -341,12 +1093,23 @@ def _collect_non_warp_on_shards(items: List[Dict[str, Any]]) -> List[int]:
     return shard_indices
 
 
-def _summarize_warp_items(items: List[Dict[str, Any]]) -> str:
-    total = len(items or [])
+def _summarize_warp_items(
+    items: List[Dict[str, Any]],
+    *,
+    required_count: Optional[int] = None,
+) -> str:
+    scoped_items: List[Dict[str, Any]] = []
+    for item in items or []:
+        shard_index = _shard_index_from_status_item(item)
+        if required_count is not None and required_count > 0 and shard_index > required_count:
+            continue
+        scoped_items.append(item)
+
+    total = len(scoped_items)
     running_count = 0
     warp_on_count = 0
     off_samples: List[str] = []
-    for item in items or []:
+    for item in scoped_items:
         service = str(item.get("service") or "?")
         running = bool(item.get("running"))
         if running:
@@ -399,6 +1162,15 @@ def _endpoint_to_local_shard_index(endpoint: str) -> Optional[int]:
 def _recreate_local_shards(repo_root: Path, shard_indices: List[int]) -> None:
     if not shard_indices:
         return
+    if not _allow_local_shard_recreate():
+        print(
+            "[expert_main] WARP shard 재생성 생략: "
+            f"shards={_format_shard_indices(shard_indices)}, "
+            "policy=docker-lifecycle-explicit-opt-in",
+            file=sys.stderr,
+            flush=True,
+        )
+        return
     tool_path = repo_root / "tools" / "warp_shards.py"
     cmd = [
         sys.executable,
@@ -415,7 +1187,11 @@ def _recreate_local_shards(repo_root: Path, shard_indices: List[int]) -> None:
     subprocess.run(cmd, cwd=repo_root, check=True)
 
 
-def _ensure_local_shards_warp_on(repo_root: Path) -> List[Dict[str, Any]]:
+def _ensure_local_shards_warp_on(
+    repo_root: Path,
+    *,
+    required_count: Optional[int] = None,
+) -> List[Dict[str, Any]]:
     attempt = 0
     pause_sec_raw = os.getenv("WARP_SHARDS_ENSURE_PAUSE_SEC", "5").strip()
     try:
@@ -437,9 +1213,9 @@ def _ensure_local_shards_warp_on(repo_root: Path) -> List[Dict[str, Any]]:
             flush=True,
         )
         items = _load_local_shard_status(repo_root)
-        not_ready = _collect_non_warp_on_shards(items)
+        not_ready = _collect_non_warp_on_shards(items, required_count=required_count)
         print(
-            f"[expert_main] WARP 상태 요약: {_summarize_warp_items(items)}",
+            f"[expert_main] WARP 상태 요약: {_summarize_warp_items(items, required_count=required_count)}",
             file=sys.stderr,
             flush=True,
         )
@@ -464,6 +1240,14 @@ def _ensure_local_shards_warp_on(repo_root: Path) -> List[Dict[str, Any]]:
                 "WARP shard가 끝내 연결되지 않았습니다: "
                 f"{_format_shard_indices(not_ready)} (attempt={attempt})"
             )
+        if not _allow_local_shard_recreate():
+            print(
+                "[expert_main] WARP shard 자동 재생성 비활성화: "
+                f"not_ready={_format_shard_indices(not_ready)}",
+                file=sys.stderr,
+                flush=True,
+            )
+            return items
 
         _recreate_local_shards(repo_root, not_ready)
         if pause_sec > 0:
@@ -499,6 +1283,7 @@ def _memo_local_shard_status(repo_root: Path, memo_path: Path, items: Optional[L
 
 
 def main() -> None:
+    global _PARALLEL, _INPUT_POST_COUNT
     repo_root = Path(__file__).resolve().parent
 
     # PowerShell/Windows 콘솔/리다이렉트 인코딩 이슈 완화
@@ -516,6 +1301,24 @@ def main() -> None:
     LOG_DIR = repo_root / "logs"
     OUT_DIR = repo_root / "out"
     LIMIT = None  # 디버그 시 숫자 지정, 전체 돌리려면 None
+
+    if not INPUT_PATH.exists():
+        raise FileNotFoundError(f"Input not found: {INPUT_PATH}")
+
+    input_nonempty_lines = _count_nonempty_jsonl_lines(INPUT_PATH)
+    posts = load_jsonl_posts(INPUT_PATH)
+    if input_nonempty_lines and not posts:
+        raise ValueError(
+            "입력 JSONL에 내용이 있지만 로드된 post가 0개입니다. "
+            "post_id/content_blocks 또는 post_id/content 형식과 UTF-8/BOM 상태를 확인하세요."
+        )
+    if LIMIT:
+        posts = posts[:LIMIT]
+
+    _INPUT_POST_COUNT = len(posts)
+    _effective_parallel = _effective_parallel_for_post_count(len(posts))
+    _parallel_adjusted = _effective_parallel != _REQUESTED_PARALLEL
+    _PARALLEL = _effective_parallel
 
     # ===== LLM 실행 환경 선택 =====
     # "local": 로컬 llama-cpp-python (GPU 필요)
@@ -561,6 +1364,34 @@ def main() -> None:
     _set_env("LLM_STREAM", "1")
     _set_env("LLM_VLM", _resolve_toggle(_CLI_ARGS.vlm, env_key="LLM_VLM", default="0"))
     _set_env("LLM_OCR", _resolve_toggle(_CLI_ARGS.ocr, env_key="LLM_OCR", default="1"))
+    image_post_count = _count_image_posts(posts)
+    image_post_sample_post_ids = _image_post_sample_post_ids(posts)
+    vlm_enabled = _env_toggle_enabled("LLM_VLM", "0")
+    ocr_enabled = _env_toggle_enabled("LLM_OCR", "1")
+    vlm_ocr_semantic_review_ready = image_post_count == 0 or (vlm_enabled and ocr_enabled)
+    vlm_ocr_semantic_review_skip_reason_codes = _vlm_ocr_semantic_review_skip_reasons(
+        image_post_count=image_post_count,
+        vlm_enabled=vlm_enabled,
+        ocr_enabled=ocr_enabled,
+    )
+    require_vlm_ocr_for_image_posts = _require_vlm_ocr_for_image_posts()
+    if image_post_count and not vlm_ocr_semantic_review_ready:
+        print(
+            "[config] WARNING: image posts are present but VLM/OCR is not fully enabled; "
+            "this run is text-only for visual evidence and must not be used for semantic image approval. "
+            f"image_post_count={image_post_count}, vlm={os.getenv('LLM_VLM', '0')}, "
+            f"ocr={os.getenv('LLM_OCR', '1')}, skip_reasons={vlm_ocr_semantic_review_skip_reason_codes}",
+            file=sys.stderr,
+            flush=True,
+        )
+        if require_vlm_ocr_for_image_posts:
+            print(
+                "[config] ERROR: --require-vlm-ocr-for-images is set and image posts require "
+                "--vlm on --ocr on before semantic/VLM review can run.",
+                file=sys.stderr,
+                flush=True,
+            )
+            raise SystemExit(2)
     _set_env(
         "LLM_SUSPEND_ON_SERVER_ANOMALY",
         _resolve_toggle(
@@ -583,7 +1414,7 @@ def main() -> None:
     )
     _set_env(
         "LLM_VLM_MAX_IMAGE_BYTES",
-        str(_CLI_ARGS.vlm_max_image_bytes if _CLI_ARGS.vlm_max_image_bytes is not None else os.getenv("LLM_VLM_MAX_IMAGE_BYTES", "8388608")),
+        str(_CLI_ARGS.vlm_max_image_bytes if _CLI_ARGS.vlm_max_image_bytes is not None else os.getenv("LLM_VLM_MAX_IMAGE_BYTES", _DEFAULT_VLM_MAX_IMAGE_BYTES)),
     )
     _set_env(
         "LLM_VLM_MAX_TOTAL_BYTES",
@@ -635,13 +1466,14 @@ def main() -> None:
         if LLM_SERVER_TYPE == "vllm":
             # ===== vLLM 서빙 =====
             #_set_env("LLM_ENDPOINT", _CLI_ARGS.llm_endpoint or os.getenv("LLM_ENDPOINT", "http://localhost:20000/"))
-            _set_env("LLM_ENDPOINT", _CLI_ARGS.llm_endpoint or os.getenv("LLM_ENDPOINT", "http://a100:10000/"))
-            #_set_env("LLM_ENDPOINT", _CLI_ARGS.llm_endpoint or os.getenv("LLM_ENDPOINT", "http://10.20.0.101:8000/"))
+            #_set_env("LLM_ENDPOINT", _CLI_ARGS.llm_endpoint or os.getenv("LLM_ENDPOINT", "http://a100:10000/"))
+            _set_env("LLM_ENDPOINT", _CLI_ARGS.llm_endpoint or os.getenv("LLM_ENDPOINT", "http://10.20.0.101:8000/"))
             # 참고용 기존 Qwen 설정
             #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "Sehyo/Qwen3.5-35B-A3B-NVFP4"))
             #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "AxionML/Qwen3.5-35B-A3B-NVFP4"))
             #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "google/gemma-4-26B-A4B-it"))
             _set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "bg-digitalservices/Gemma-4-E4B-it-NVFP4"))
+            #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "cyankiwi/gemma-4-26B-A4B-it-AWQ-4bit"))
             # vLLM 전용 샘플링 기본값
             # 작은 모델은 애매한 title/slang을 그럴듯하게 채우는 경향이 있어
             # 기본값을 보수적으로 둔다. 필요하면 환경변수로 즉시 override 가능.
@@ -689,7 +1521,7 @@ def main() -> None:
             vlm=os.getenv("LLM_VLM", "0"),
             ocr=os.getenv("LLM_OCR", "1"),
             timeout=os.getenv("LLM_VLM_FETCH_TIMEOUT", "12"),
-            img=os.getenv("LLM_VLM_MAX_IMAGE_BYTES", "8388608"),
+            img=os.getenv("LLM_VLM_MAX_IMAGE_BYTES", _DEFAULT_VLM_MAX_IMAGE_BYTES),
             total=os.getenv("LLM_VLM_MAX_TOTAL_BYTES", "50331648"),
             chunk_i=os.getenv("LLM_VLM_CHUNK_MAX_IMAGES", "8"),
             chunk_b=os.getenv("LLM_VLM_CHUNK_MAX_BYTES", "12582912"),
@@ -708,6 +1540,19 @@ def main() -> None:
     print(f"[config] python={sys.executable}", file=sys.stderr, flush=True)
     print(
         f"[config] virtual_env={os.getenv('VIRTUAL_ENV', '(none)')}",
+        file=sys.stderr,
+        flush=True,
+    )
+    print(
+        "[config] mcp_shard_lifecycle_policy=docker_up_recreate_opt_in, "
+        f"auto_up={_allow_local_shard_auto_up()}, auto_recreate={_allow_local_shard_recreate()}, "
+        f"small_run={_is_small_targeted_run()}, small_run_lifecycle_blocked={_small_run_shard_lifecycle_blocked()}, "
+        f"command_lifecycle_allowed={_command_shard_lifecycle_allowed_by_context()}, "
+        f"codex_run={_interactive_codex_run()}, env_lifecycle_requested={_env_shard_lifecycle_requested()}, "
+        f"env_lifecycle_allowed={_env_shard_lifecycle_allowed()}, "
+        f"status_audit_requested={_local_shard_status_audit_requested()}, "
+        f"status_audit_allowed={_local_shard_status_audit_allowed()}, "
+        f"lifecycle_threshold={_shard_lifecycle_block_threshold()}, run_posts={_current_run_post_count_for_lifecycle()}",
         file=sys.stderr,
         flush=True,
     )
@@ -734,13 +1579,52 @@ def main() -> None:
     ts = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     import hashlib
     _prompt_version = os.getenv("PIPELINE_PROMPT_VERSION", "2026-03-30-semantic-contract-v1").strip() or "unknown"
+    _reuse_health_filter_meta: Dict[str, Any] = {}
+
+    def _parallel_policy_text() -> str:
+        requested_term = "requested_parallel"
+        if _MODEL_PARALLEL_MAX:
+            requested_term = "min(requested_parallel_raw,model_parallel_max)"
+        if (
+            _reuse_health_filter_meta.get("mcp_healthy_endpoint_filter")
+            or _reuse_health_filter_meta.get("mcp_healthy_autogen_endpoint_filter")
+        ):
+            return f"effective_parallel=min({requested_term},input_post_count,healthy_mcp_endpoint_count)"
+        return f"effective_parallel=min({requested_term},input_post_count)"
+
     _run_config_payload = {
         "llm_mode": LLM_MODE,
         "server_type": LLM_SERVER_TYPE,
         "llm_endpoint": os.getenv("LLM_ENDPOINT", ""),
         "llm_model": os.getenv("LLM_MODEL", ""),
         "parallel": _PARALLEL,
+        "requested_parallel_raw": _REQUESTED_PARALLEL_RAW,
+        "requested_parallel": _REQUESTED_PARALLEL,
+        "effective_parallel": _PARALLEL,
+        "parallel_policy": _parallel_policy_text(),
+        "model_parallel_max": _MODEL_PARALLEL_MAX,
+        "model_parallel_cap_applied": _MODEL_PARALLEL_CAP_APPLIED,
+        "model_parallel_cap_model": _PARALLEL_POLICY_MODEL,
+        "input_post_count": len(posts),
         "mcp_endpoints": os.getenv("MCP_ENDPOINTS", os.getenv("MCP_ENDPOINT", "")),
+        "mcp_auto_up_shards": _allow_local_shard_auto_up(),
+        "mcp_auto_recreate_shards": _allow_local_shard_recreate(),
+        "mcp_local_shard_management_enabled": _can_auto_manage_local_shards(),
+        "mcp_local_shard_status_audit": _local_shard_status_audit_allowed(),
+        "mcp_local_shard_status_audit_requested": _local_shard_status_audit_requested(),
+        "mcp_local_shard_status_audit_allowed": _local_shard_status_audit_allowed(),
+        "mcp_shard_lifecycle_policy": "docker_up_recreate_opt_in",
+        "mcp_allow_goal_shard_lifecycle": bool(getattr(_CLI_ARGS, "allow_goal_shard_lifecycle", False)),
+        "mcp_command_shard_lifecycle_allowed": _command_shard_lifecycle_allowed_by_context(),
+        "mcp_interactive_codex_run": _interactive_codex_run(),
+        "mcp_env_shard_lifecycle_requested": _env_shard_lifecycle_requested(),
+        "mcp_env_shard_lifecycle_global_opt_in": _env_shard_lifecycle_global_opt_in(),
+        "mcp_env_shard_lifecycle_allowed": _env_shard_lifecycle_allowed(),
+        "mcp_env_shard_lifecycle_blocked_by_context": _env_shard_lifecycle_blocked_by_context(),
+        "mcp_shard_lifecycle_block_threshold": _shard_lifecycle_block_threshold(),
+        "mcp_run_post_count_for_lifecycle": _current_run_post_count_for_lifecycle(),
+        "mcp_small_targeted_run": _is_small_targeted_run(),
+        "mcp_small_run_shard_lifecycle_blocked": _small_run_shard_lifecycle_blocked(),
         "slang_db": os.getenv("PIPELINE_SLANG_DB", "0"),
         "reason_full_mode": os.getenv("PIPELINE_REASON_FULL_MODE", os.getenv("REASON_FULL_MODE", "1")),
         "prompt_version": _prompt_version,
@@ -756,6 +1640,10 @@ def main() -> None:
         out_result_path = OUT_DIR / f"expert_result_{ts}.json"
     checkpoint_jsonl_path = out_result_path.with_name(out_result_path.stem + "_checkpoint.jsonl")
     pending_snapshot_path = out_result_path.with_name(out_result_path.stem + "_pending_snapshot.json")
+    completed_subset_path = out_result_path.with_name(out_result_path.stem + "_completed_subset.json")
+    completed_subset_manifest_path = out_result_path.with_name(
+        out_result_path.stem + "_completed_subset_manifest.json"
+    )
     result_manifest_path = out_result_path.with_name(out_result_path.stem + "_manifest.json")
 
     _orig_out = sys.stdout
@@ -932,17 +1820,36 @@ def main() -> None:
             from llm_batch.search.client import MCPClient
             from llm_batch.models import PostInput, ContentBlock
             from llm_batch.batch_context import BatchContextMemory
-            from llm_batch.slang_db import SlangDBManager
-
-            # 입력 로드
-            posts = load_jsonl_posts(INPUT_PATH)
-            if LIMIT:
-                posts = posts[:LIMIT]
+            from llm_batch.slang_db import SlangDBManager, slang_db_alias_seed_is_safe
 
             print(f"\n{'='*70}", file=sys.stderr, flush=True)
             print(f"🤖 Agentic Pipeline (유기적 전문가 시스템)", file=sys.stderr, flush=True)
             print(f"{'='*70}", file=sys.stderr, flush=True)
             print(f"📂 입력: {INPUT_PATH} ({len(posts)}개 포스트)", file=sys.stderr, flush=True)
+            if _MODEL_PARALLEL_MAX:
+                print(
+                    "[expert_main] model parallel cap: "
+                    f"model={_PARALLEL_POLICY_MODEL}, max={_MODEL_PARALLEL_MAX}, "
+                    f"requested_raw={_REQUESTED_PARALLEL_RAW}, requested_after_cap={_REQUESTED_PARALLEL}, "
+                    f"cap_applied={_MODEL_PARALLEL_CAP_APPLIED}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+            if _parallel_adjusted:
+                print(
+                    "[expert_main] adaptive parallel: "
+                    f"requested_raw={_REQUESTED_PARALLEL_RAW}, requested={_REQUESTED_PARALLEL}, "
+                    f"input_posts={len(posts)}, effective={_PARALLEL}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+            else:
+                print(
+                    f"[expert_main] parallel: requested_raw={_REQUESTED_PARALLEL_RAW}, "
+                    f"requested={_REQUESTED_PARALLEL}, effective={_PARALLEL}",
+                    file=sys.stderr,
+                    flush=True,
+                )
 
             # ─── 검색 서버 헬스체크 ──────────────────────────
             print(f"\n🔍 검색 서버 연결 확인 중...", file=sys.stderr, flush=True)
@@ -953,27 +1860,45 @@ def main() -> None:
                     _auto_up_local_shards(repo_root, len(_mcp_endpoint_pool))
                 except Exception as exc:
                     print(f"[expert_main] ⚠️ shard 자동 기동 실패: {exc}", file=sys.stderr, flush=True)
-                _local_shard_status_items = _ensure_local_shards_warp_on(repo_root)
+                _local_shard_status_items = _ensure_local_shards_warp_on(
+                    repo_root,
+                    required_count=len(_mcp_endpoint_pool),
+                )
 
             _health_failures = []
             _health_ok = {}
-            _health_attempts = 6 if _can_auto_manage_local_shards() else 1
+            _health_attempts_default = 6 if (_can_auto_manage_local_shards() and _allow_local_shard_recreate()) else 1
+            try:
+                _health_attempts = max(1, int(os.getenv("MCP_HEALTH_ATTEMPTS", str(_health_attempts_default))))
+            except Exception:
+                _health_attempts = _health_attempts_default
             try:
                 _health_timeout = max(1.0, float(os.getenv("MCP_HEALTH_TIMEOUT_SEC", "8")))
             except Exception:
                 _health_timeout = 8.0
             _health_include_search = _env_bool_runtime(
                 "MCP_HEALTH_INCLUDE_SEARCH",
-                default=not _can_auto_manage_local_shards(),
+                default=_default_mcp_health_include_search(),
             )
             try:
                 _health_workers = max(1, min(len(_mcp_endpoint_pool), int(os.getenv("MCP_HEALTH_WORKERS", "12"))))
             except Exception:
                 _health_workers = min(len(_mcp_endpoint_pool), 12) or 1
+            _health_light_mode = _mcp_goal_run_light_health_mode()
+            _health_required_ok = _mcp_health_required_ok_count(_mcp_endpoint_pool)
+            _health_probe_batch_size = _mcp_health_probe_batch_size(
+                _mcp_endpoint_pool,
+                required_ok_count=_health_required_ok,
+                health_workers=_health_workers,
+            )
+            _health_checked_endpoint_count = 0
+            _health_probe_stopped_after_required_ok = False
             print(
                 f"[expert_main] 검색 서버 헬스체크 시작: endpoints={len(_mcp_endpoint_pool)}, "
                 f"attempts={_health_attempts}, timeout={_health_timeout:.1f}s, "
-                f"workers={_health_workers}, include_search={_health_include_search}",
+                f"workers={_health_workers}, include_search={_health_include_search}, "
+                f"required_ok={_health_required_ok}, batch={_health_probe_batch_size}, "
+                f"light_mode={_health_light_mode}",
                 file=sys.stderr,
                 flush=True,
             )
@@ -986,6 +1911,8 @@ def main() -> None:
             for _attempt in range(_health_attempts):
                 _health_failures = []
                 _health_ok = {}
+                _health_checked_endpoint_count = 0
+                _health_probe_stopped_after_required_ok = False
                 print(
                     f"[expert_main] 검색 서버 헬스체크 attempt={_attempt + 1}/{_health_attempts}",
                     file=sys.stderr,
@@ -996,36 +1923,62 @@ def main() -> None:
                     file=sys.stderr,
                     flush=True,
                 )
-                with ThreadPoolExecutor(max_workers=_health_workers) as _health_executor:
-                    _future_map = {
-                        _health_executor.submit(_check_one_endpoint, _idx, _endpoint): (_idx, _endpoint)
-                        for _idx, _endpoint in enumerate(_mcp_endpoint_pool)
-                    }
-                    _done_count = 0
-                    for _future in as_completed(_future_map):
-                        _idx, _endpoint = _future_map[_future]
-                        _done_count += 1
-                        try:
-                            _idx, _endpoint, _hc = _future.result()
-                        except Exception as _exc:
-                            _hc = {"ok": False, "latency_ms": 0, "error": str(_exc)}
-                        if _hc.get("ok"):
-                            _health_ok[_endpoint] = _hc
-                            _search_note = "Search skipped" if _hc.get("search_skipped") else f"Search {_hc.get('search_latency_ms', 0):.0f}ms"
+                _indexed_endpoint_pool = list(enumerate(_mcp_endpoint_pool))
+                for _batch_start in range(0, len(_indexed_endpoint_pool), _health_probe_batch_size):
+                    _batch = _indexed_endpoint_pool[_batch_start : _batch_start + _health_probe_batch_size]
+                    if not _batch:
+                        continue
+                    _batch_workers = max(1, min(_health_workers, len(_batch)))
+                    with ThreadPoolExecutor(max_workers=_batch_workers) as _health_executor:
+                        _future_map = {
+                            _health_executor.submit(_check_one_endpoint, _idx, _endpoint): (_idx, _endpoint)
+                            for _idx, _endpoint in _batch
+                        }
+                        for _future in as_completed(_future_map):
+                            _idx, _endpoint = _future_map[_future]
+                            _health_checked_endpoint_count += 1
+                            try:
+                                _idx, _endpoint, _hc = _future.result()
+                            except Exception as _exc:
+                                _hc = {"ok": False, "latency_ms": 0, "error": str(_exc)}
+                            if _hc.get("ok"):
+                                _health_ok[_endpoint] = _hc
+                                _search_note = "Search skipped" if _hc.get("search_skipped") else f"Search {_hc.get('search_latency_ms', 0):.0f}ms"
+                                print(
+                                    f"[expert_main]   [{_health_checked_endpoint_count}/{len(_mcp_endpoint_pool)}] OK shard#{_idx + 1} {_endpoint}: "
+                                    f"Bridge {_hc.get('latency_ms', 0):.0f}ms, {_search_note}",
+                                    file=sys.stderr,
+                                    flush=True,
+                                )
+                            else:
+                                _err = _hc.get("error") or "unknown error"
+                                _health_failures.append((_endpoint, _err))
+                                print(
+                                    f"[expert_main]   [{_health_checked_endpoint_count}/{len(_mcp_endpoint_pool)}] FAIL shard#{_idx + 1} {_endpoint}: {_err}",
+                                    file=sys.stderr,
+                                    flush=True,
+                                )
+                    if _health_light_mode and len(_health_ok) >= _health_required_ok:
+                        _health_probe_stopped_after_required_ok = (
+                            _batch_start + len(_batch) < len(_indexed_endpoint_pool)
+                        )
+                        if _health_probe_stopped_after_required_ok:
                             print(
-                                f"[expert_main]   [{_done_count}/{len(_mcp_endpoint_pool)}] OK shard#{_idx + 1} {_endpoint}: "
-                                f"Bridge {_hc.get('latency_ms', 0):.0f}ms, {_search_note}",
+                                "[expert_main] goal/reuse-only health probe: "
+                                f"required healthy endpoints 확보({len(_health_ok)}/{_health_required_ok}); "
+                                f"remaining={len(_indexed_endpoint_pool) - (_batch_start + len(_batch))} endpoint probe 생략",
                                 file=sys.stderr,
                                 flush=True,
                             )
-                        else:
-                            _err = _hc.get("error") or "unknown error"
-                            _health_failures.append((_endpoint, _err))
-                            print(
-                                f"[expert_main]   [{_done_count}/{len(_mcp_endpoint_pool)}] FAIL shard#{_idx + 1} {_endpoint}: {_err}",
-                                file=sys.stderr,
-                                flush=True,
-                            )
+                        break
+                if _health_light_mode and len(_health_ok) >= _health_required_ok:
+                    print(
+                        f"[expert_main] 검색 서버 헬스체크 완료: ok={len(_health_ok)}/{len(_mcp_endpoint_pool)} "
+                        f"(checked={_health_checked_endpoint_count}, required_ok={_health_required_ok})",
+                        file=sys.stderr,
+                        flush=True,
+                    )
+                    break
                 if not _health_failures:
                     print(
                         f"[expert_main] 검색 서버 헬스체크 완료: ok={len(_health_ok)}/{len(_mcp_endpoint_pool)}",
@@ -1034,6 +1987,13 @@ def main() -> None:
                     )
                     break
                 if _attempt + 1 < _health_attempts:
+                    if _can_auto_manage_local_shards() and not _allow_local_shard_recreate():
+                        print(
+                            "[expert_main] 검색 shard 자동 재생성 비활성화로 추가 헬스 재시도 생략",
+                            file=sys.stderr,
+                            flush=True,
+                        )
+                        break
                     if _can_auto_manage_local_shards():
                         _failed_shards = sorted(
                             {
@@ -1066,6 +2026,63 @@ def main() -> None:
                     )
                     time.sleep(5)
 
+            _before_filter_endpoint_count = len(_mcp_endpoint_pool)
+            _before_filter_parallel = _PARALLEL
+            _mcp_endpoint_pool, _reuse_health_filter_meta = _apply_reuse_only_healthy_endpoint_filter(
+                _mcp_endpoint_pool,
+                _health_ok,
+            )
+            if (
+                _reuse_health_filter_meta.get("mcp_healthy_endpoint_filter")
+                or _reuse_health_filter_meta.get("mcp_healthy_autogen_endpoint_filter")
+            ):
+                _health_failures = [
+                    (_endpoint, _err)
+                    for _endpoint, _err in _health_failures
+                    if _endpoint in set(_mcp_endpoint_pool)
+                ]
+                _filter_reason = _reuse_health_filter_meta.get("mcp_healthy_autogen_endpoint_filter_reason") or "unknown"
+                _filter_label = (
+                    "healthy-autogen-shard-filter"
+                    if _reuse_health_filter_meta.get("mcp_healthy_endpoint_filter_autogen")
+                    else "healthy-endpoint-filter"
+                )
+                print(
+                    f"[expert_main] {_filter_label}({_filter_reason}): "
+                    f"endpoints={_before_filter_endpoint_count}->{len(_mcp_endpoint_pool)}, "
+                    f"parallel={_before_filter_parallel}->{_PARALLEL}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+                print(
+                    f"[expert_main] 검색 서버 헬스체크 완료: ok={len(_mcp_endpoint_pool)}/{len(_mcp_endpoint_pool)} "
+                    f"(filtered {_filter_reason})",
+                    file=sys.stderr,
+                    flush=True,
+                )
+
+            _run_config_payload.update(
+                {
+                    "parallel": _PARALLEL,
+                    "effective_parallel": _PARALLEL,
+                    "parallel_policy": _parallel_policy_text(),
+                    "mcp_endpoints": os.getenv("MCP_ENDPOINTS", os.getenv("MCP_ENDPOINT", "")),
+                    "mcp_health_include_search": _health_include_search,
+                    "mcp_health_light_mode": _health_light_mode,
+                    "mcp_health_required_ok_count": _health_required_ok,
+                    "mcp_health_checked_endpoint_count": _health_checked_endpoint_count,
+                    "mcp_health_probe_batch_size": _health_probe_batch_size,
+                    "mcp_health_probe_stopped_after_required_ok": _health_probe_stopped_after_required_ok,
+                    "mcp_health_workers": _health_workers,
+                    "mcp_health_attempts": _health_attempts,
+                    "mcp_health_timeout_sec": _health_timeout,
+                    **_reuse_health_filter_meta,
+                }
+            )
+            _config_hash = hashlib.sha256(
+                json.dumps(_run_config_payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
+            ).hexdigest()[:12]
+
             for _idx, _endpoint in enumerate(_mcp_endpoint_pool):
                 _hc = _health_ok.get(_endpoint)
                 if _hc:
@@ -1076,7 +2093,10 @@ def main() -> None:
                     )
 
             if _can_auto_manage_local_shards():
-                _local_shard_status_items = _ensure_local_shards_warp_on(repo_root)
+                _local_shard_status_items = _ensure_local_shards_warp_on(
+                    repo_root,
+                    required_count=len(_mcp_endpoint_pool),
+                )
                 try:
                     _memo_local_shard_status(
                         repo_root,
@@ -1092,9 +2112,28 @@ def main() -> None:
                 for _endpoint, _err in _health_failures:
                     print(f"   - {_endpoint} -> {_err}", file=sys.stderr, flush=True)
                 print(f"", file=sys.stderr, flush=True)
-                print(f"   💡 해결 방법:", file=sys.stderr, flush=True)
-                print(f"      {sys.executable} tools/warp_shards.py up --count {_PARALLEL}", file=sys.stderr, flush=True)
-                print(f"      docker ps  # 컨테이너 상태 확인", file=sys.stderr, flush=True)
+                print(f"   💡 운영 기준:", file=sys.stderr, flush=True)
+                if _CLI_ARGS.reuse_shards_only or _small_run_shard_lifecycle_blocked():
+                    print(
+                        "      현재 goal/reuse-only 경로에서는 Docker Compose up/recreate를 자동 실행하지 않습니다.",
+                        file=sys.stderr,
+                        flush=True,
+                    )
+                    print(
+                        "      기존 healthy shard만 쓰려면 MCP_ENDPOINTS를 살아있는 shard로 줄이거나 "
+                        "MCP_GOAL_RUN_FILTER_HEALTHY_ENDPOINTS=1 기본 필터를 사용하세요.",
+                        file=sys.stderr,
+                        flush=True,
+                    )
+                    print(
+                        "      shard 복구 자체가 검증 대상일 때만 --allow-goal-shard-lifecycle "
+                        "--auto-up-shards 또는 --auto-recreate-shards를 명시합니다.",
+                        file=sys.stderr,
+                        flush=True,
+                    )
+                else:
+                    print(f"      {sys.executable} tools/warp_shards.py up --count {_PARALLEL}", file=sys.stderr, flush=True)
+                    print(f"      docker ps  # 컨테이너 상태 확인", file=sys.stderr, flush=True)
                 print(f"{'❌'*30}\n", file=sys.stderr, flush=True)
                 print(f"검색 없이 계속 진행하시겠습니까? (y/N): ", end="", file=_orig_err, flush=True)
                 try:
@@ -1132,6 +2171,43 @@ def main() -> None:
             )
             if _slang_db_enabled:
                 print(f"🗂️ Slang DB 저장 활성화: {_slang_db_path}", file=sys.stderr, flush=True)
+                _seeded_slang_aliases = 0
+                _held_slang_alias_seeds = 0
+                try:
+                    for _title, _bucket in ((_slang_db_manager.data or {}).get("titles") or {}).items():
+                        _title_clean = str(_title or "").strip()
+                        if not _title_clean or not isinstance(_bucket, dict):
+                            continue
+                        for _entry in (_bucket.get("slang") or []):
+                            if not isinstance(_entry, dict):
+                                continue
+                            if not slang_db_alias_seed_is_safe(_title_clean, _entry, _bucket):
+                                _held_slang_alias_seeds += 1
+                                continue
+                            _term = str(_entry.get("term") or "").strip()
+                            if not _term:
+                                continue
+                            try:
+                                _count = int(_entry.get("count") or 0)
+                            except Exception:
+                                _count = 0
+                            _batch_context.register_abbreviation_seed(
+                                _term,
+                                _title_clean,
+                                count=_count,
+                                source_roles=list(_entry.get("sources") or []),
+                            )
+                            _seeded_slang_aliases += 1
+                    _batch_context.flush_seed_log_summary(
+                        log_fn=lambda msg: print(msg, file=sys.stderr, flush=True)
+                    )
+                    print(
+                        f"🗂️ Slang DB alias seed 주입: {_seeded_slang_aliases}건 (held={_held_slang_alias_seeds})",
+                        file=sys.stderr,
+                        flush=True,
+                    )
+                except Exception as _exc:
+                    print(f"🗂️ Slang DB alias seed 주입 실패: {_exc}", file=sys.stderr, flush=True)
 
             # ─── 워커 팩토리 ──────────────────────────────
             def _create_pipeline(worker_id: int = 0) -> AgenticPipeline:
@@ -1163,6 +2239,8 @@ def main() -> None:
                 
                 # 원본 데이터 추출
                 content_texts = []
+                content_blocks_public = _public_content_blocks(post.content_blocks)
+                image_urls = _public_image_urls(post.content_blocks)
                 for block in post.content_blocks:
                     if hasattr(block, "text") and block.text:
                         content_texts.append(block.text)
@@ -1177,6 +2255,23 @@ def main() -> None:
                         comment_texts.append(c.content)
                     else:
                         comment_texts.append(str(c))
+                post_ip_public = (
+                    getattr(post, "ip", None)
+                    or getattr(post, "author_ip", None)
+                    or getattr(post, "post_ip", None)
+                )
+                comment_metadata = _public_comment_metadata(
+                    post.comments or [],
+                    post.author,
+                    getattr(post, "gallery_id", None),
+                    post_ip_public,
+                )
+                comment_context_lines = _public_comment_context_lines(comment_metadata, limit=15)
+                comment_dialogue_context_lines = _public_comment_dialogue_context_lines(
+                    post.comments or [],
+                    comment_metadata,
+                    limit=15,
+                )
                 
                 # 📊 대시보드: post_start — 배너 출력 전에 emit하여
                 # 인메모리 포스트별 로그에 배너 라인도 포함되도록 함
@@ -1216,20 +2311,51 @@ def main() -> None:
                 result_dict = result.model_dump() if hasattr(result, "model_dump") else dict(result)
                 
                 full_result = {
+                    "gallery_id": getattr(post, "gallery_id", ""),
                     "post_id": post.post_id,
                     "title": post.title,
+                    "post_author": post.author,
                     "author": post.author,
+                    "ip": getattr(post, "ip", None),
+                    "author_ip": getattr(post, "author_ip", None),
+                    "post_ip": post_ip_public,
                     "created_at": post.created_at,
                     "url": post.url,
                     "content": content_texts,
+                    "content_blocks": content_blocks_public,
+                    "image_urls": image_urls,
+                    "image_count": len(image_urls),
                     "comments": comment_texts,
+                    "comment_metadata": comment_metadata,
+                    "comment_context_lines": comment_context_lines,
+                    "comment_dialogue_context_lines": comment_dialogue_context_lines,
                     "analysis_result": result_dict,
                     "run_meta": {
                         "run_id": ts,
                         "model": os.getenv("LLM_MODEL", ""),
                         "llm_mode": LLM_MODE,
+                        "llm_endpoint": os.getenv("LLM_ENDPOINT", ""),
                         "prompt_version": _prompt_version,
                         "config_hash": _config_hash,
+                        "requested_parallel_raw": _REQUESTED_PARALLEL_RAW,
+                        "requested_parallel": _REQUESTED_PARALLEL,
+                        "effective_parallel": _PARALLEL,
+                        "parallel_policy": _parallel_policy_text(),
+                        "model_parallel_max": _MODEL_PARALLEL_MAX,
+                        "model_parallel_cap_applied": _MODEL_PARALLEL_CAP_APPLIED,
+                        "model_parallel_cap_model": _PARALLEL_POLICY_MODEL,
+                        "mcp_health_include_search": _health_include_search,
+                        "mcp_health_light_mode": _health_light_mode,
+                        "mcp_health_required_ok_count": _health_required_ok,
+                        "mcp_health_checked_endpoint_count": _health_checked_endpoint_count,
+                        "mcp_health_probe_batch_size": _health_probe_batch_size,
+                        "mcp_health_probe_stopped_after_required_ok": _health_probe_stopped_after_required_ok,
+                        "mcp_health_workers": _health_workers,
+                        "mcp_health_attempts": _health_attempts,
+                        "mcp_health_timeout_sec": _health_timeout,
+                        "mcp_health_ok_count": len(_health_ok),
+                        "mcp_health_failure_count": len(_health_failures),
+                        **_reuse_health_filter_meta,
                         "worker_id": worker_id,
                         "worker_log_file": str(LOG_DIR / f"expert_run_{ts}_W{worker_id}.log") if _PARALLEL > 1 else str(log_path),
                         "main_log_file": str(log_path),
@@ -1326,6 +2452,83 @@ def main() -> None:
                     except Exception:
                         pass
 
+            def _parallel_manifest_fields() -> Dict[str, Any]:
+                return {
+                    "requested_parallel_raw": _REQUESTED_PARALLEL_RAW,
+                    "requested_parallel": _REQUESTED_PARALLEL,
+                    "effective_parallel": _PARALLEL,
+                    "parallel_count": _PARALLEL,
+                    "parallel_policy": _parallel_policy_text(),
+                    "model_parallel_max": _MODEL_PARALLEL_MAX,
+                    "model_parallel_cap_applied": _MODEL_PARALLEL_CAP_APPLIED,
+                    "model_parallel_cap_model": _PARALLEL_POLICY_MODEL,
+                    "llm_model": os.getenv("LLM_MODEL", ""),
+                    "llm_endpoint": os.getenv("LLM_ENDPOINT", ""),
+                    "input_post_count": len(posts),
+                    "vlm_enabled": vlm_enabled,
+                    "ocr_enabled": ocr_enabled,
+                    "image_post_count": image_post_count,
+                    "image_post_sample_post_ids": image_post_sample_post_ids,
+                    "image_posts_present": image_post_count > 0,
+                    "vlm_ocr_semantic_review_ready": vlm_ocr_semantic_review_ready,
+                    "vlm_ocr_semantic_review_skip_reasons": vlm_ocr_semantic_review_skip_reason_codes,
+                    "vlm_ocr_semantic_review_skip_reason": (
+                        vlm_ocr_semantic_review_skip_reason_codes[0]
+                        if vlm_ocr_semantic_review_skip_reason_codes
+                        else ""
+                    ),
+                    "vlm_ocr_semantic_review_required_for_images": require_vlm_ocr_for_image_posts,
+                    "vlm_ocr_semantic_review_blocker": bool(
+                        image_post_count and not vlm_ocr_semantic_review_ready
+                    ),
+                    "vlm_ocr_semantic_review_blocker_code": (
+                        "image_posts_without_vlm_ocr_ready"
+                        if image_post_count and not vlm_ocr_semantic_review_ready
+                        else ""
+                    ),
+                    "vlm_ocr_semantic_review_blocker_action": (
+                        "rerun_with_vlm_on_ocr_on_or_browser_review"
+                        if image_post_count and not vlm_ocr_semantic_review_ready
+                        else ""
+                    ),
+                    "vlm_ocr_semantic_review_warning": (
+                        "image_posts_present_but_vlm_ocr_not_fully_enabled"
+                        if image_post_count and not vlm_ocr_semantic_review_ready
+                        else ""
+                    ),
+                    "mcp_auto_up_shards": _allow_local_shard_auto_up(),
+                    "mcp_auto_recreate_shards": _allow_local_shard_recreate(),
+                    "mcp_local_shard_management_enabled": _can_auto_manage_local_shards(),
+                    "mcp_local_shard_status_audit": _local_shard_status_audit_allowed(),
+                    "mcp_local_shard_status_audit_requested": _local_shard_status_audit_requested(),
+                    "mcp_local_shard_status_audit_allowed": _local_shard_status_audit_allowed(),
+                    "mcp_shard_lifecycle_policy": "docker_up_recreate_opt_in",
+                    "mcp_allow_goal_shard_lifecycle": bool(getattr(_CLI_ARGS, "allow_goal_shard_lifecycle", False)),
+                    "mcp_command_shard_lifecycle_allowed": _command_shard_lifecycle_allowed_by_context(),
+                    "mcp_interactive_codex_run": _interactive_codex_run(),
+                    "mcp_env_shard_lifecycle_requested": _env_shard_lifecycle_requested(),
+                    "mcp_env_shard_lifecycle_global_opt_in": _env_shard_lifecycle_global_opt_in(),
+                    "mcp_env_shard_lifecycle_allowed": _env_shard_lifecycle_allowed(),
+                    "mcp_env_shard_lifecycle_blocked_by_context": _env_shard_lifecycle_blocked_by_context(),
+                    "mcp_shard_lifecycle_block_threshold": _shard_lifecycle_block_threshold(),
+                    "mcp_run_post_count_for_lifecycle": _current_run_post_count_for_lifecycle(),
+                    "mcp_small_targeted_run": _is_small_targeted_run(),
+                    "mcp_small_run_shard_lifecycle_blocked": _small_run_shard_lifecycle_blocked(),
+                    "mcp_endpoints": os.getenv("MCP_ENDPOINTS", os.getenv("MCP_ENDPOINT", "")),
+                    "mcp_health_include_search": _health_include_search,
+                    "mcp_health_light_mode": _health_light_mode,
+                    "mcp_health_required_ok_count": _health_required_ok,
+                    "mcp_health_checked_endpoint_count": _health_checked_endpoint_count,
+                    "mcp_health_probe_batch_size": _health_probe_batch_size,
+                    "mcp_health_probe_stopped_after_required_ok": _health_probe_stopped_after_required_ok,
+                    "mcp_health_workers": _health_workers,
+                    "mcp_health_attempts": _health_attempts,
+                    "mcp_health_timeout_sec": _health_timeout,
+                    "mcp_health_ok_count": len(_health_ok),
+                    "mcp_health_failure_count": len(_health_failures),
+                    **_reuse_health_filter_meta,
+                }
+
             if _PARALLEL <= 1:
                 # ===== 순차 모드 (기존 동작 유지) =====
                 checkpoint_jsonl_path.write_text("", encoding="utf-8")
@@ -1337,6 +2540,7 @@ def main() -> None:
                             "output_file": str(out_result_path),
                             "checkpoint_jsonl": str(checkpoint_jsonl_path),
                             "pending_snapshot": str(pending_snapshot_path),
+                            **_parallel_manifest_fields(),
                             "completed_count": 0,
                             "flushed_count": 0,
                             "pending_count": 0,
@@ -1380,6 +2584,7 @@ def main() -> None:
                                     "output_file": str(out_result_path),
                                     "checkpoint_jsonl": str(checkpoint_jsonl_path),
                                     "pending_snapshot": str(pending_snapshot_path),
+                                    **_parallel_manifest_fields(),
                                     "completed_count": len(results),
                                     "flushed_count": len(results),
                                     "pending_count": 0,
@@ -1406,6 +2611,7 @@ def main() -> None:
                                     "output_file": str(out_result_path),
                                     "checkpoint_jsonl": str(checkpoint_jsonl_path),
                                     "pending_snapshot": str(pending_snapshot_path),
+                                    **_parallel_manifest_fields(),
                                     "completed_count": len(results),
                                     "flushed_count": len(results),
                                     "pending_count": 0,
@@ -1436,6 +2642,7 @@ def main() -> None:
                             "output_file": str(out_result_path),
                             "checkpoint_jsonl": str(checkpoint_jsonl_path),
                             "pending_snapshot": str(pending_snapshot_path),
+                            **_parallel_manifest_fields(),
                             "completed_count": 0,
                             "flushed_count": 0,
                             "pending_count": 0,
@@ -1498,6 +2705,14 @@ def main() -> None:
                 # 결과를 순서대로 저장하기 위한 dict
                 _pending_results: Dict[int, Any] = {}
                 _next_save_idx = 1  # 다음으로 results에 추가할 global_idx
+                _failed_count = 0
+                _completed_subset_state: Dict[str, Any] = {
+                    "completed_subset_written": False,
+                    "completed_subset_json": "",
+                    "completed_subset_manifest": "",
+                    "completed_subset_count": 0,
+                    "completed_subset_reason": "",
+                }
 
                 def _append_checkpoint(*, global_idx: int, post_id: int, result_item: Any, status: str) -> None:
                     payload = {
@@ -1511,16 +2726,27 @@ def main() -> None:
                             _fp.write(json.dumps(payload, ensure_ascii=False) + "\n")
 
                 def _write_manifest(*, failed_count: int = 0) -> None:
+                    failed_total = max(failed_count, _failed_count)
+                    pending_count = len(_pending_results)
                     payload = {
                         "run_id": ts,
                         "output_file": str(out_result_path),
                         "checkpoint_jsonl": str(checkpoint_jsonl_path),
                         "pending_snapshot": str(pending_snapshot_path),
-                        "completed_count": len(results) + len(_pending_results),
+                        "completed_subset_json": _completed_subset_state["completed_subset_json"],
+                        "completed_subset_manifest": _completed_subset_state["completed_subset_manifest"],
+                        "completed_subset_written": _completed_subset_state["completed_subset_written"],
+                        "completed_subset_count": _completed_subset_state["completed_subset_count"],
+                        "completed_subset_reason": _completed_subset_state["completed_subset_reason"],
+                        **_parallel_manifest_fields(),
+                        "completed_count": len(results) + pending_count,
                         "flushed_count": len(results),
-                        "pending_count": len(_pending_results),
-                        "failed_count": failed_count,
+                        "pending_count": pending_count,
+                        "failed_count": failed_total,
                         "next_save_idx": _next_save_idx,
+                        "partial_flush_gap": pending_count > 0,
+                        "ordered_flush_blocked": bool(pending_count and _next_save_idx <= len(posts)),
+                        "large_run_complete": bool(len(results) == len(posts) and pending_count == 0 and failed_total == 0),
                     }
                     with _results_lock:
                         result_manifest_path.write_text(
@@ -1528,11 +2754,65 @@ def main() -> None:
                             encoding="utf-8",
                         )
 
+                def _result_item_post_id(item: Any) -> int:
+                    if isinstance(item, dict):
+                        try:
+                            return int(item.get("post_id") or 0)
+                        except Exception:
+                            return 0
+                    return 0
+
+                def _write_completed_subset(*, reason: str) -> None:
+                    subset_rows = _build_completed_subset_rows(results, _pending_results)
+                    pending_rows = [
+                        {
+                            "global_idx": idx,
+                            "post_id": _result_item_post_id(item),
+                        }
+                        for idx, item in sorted(_pending_results.items(), key=lambda kv: kv[0])
+                    ]
+                    manifest = {
+                        "run_id": ts,
+                        "output_file": str(out_result_path),
+                        "checkpoint_jsonl": str(checkpoint_jsonl_path),
+                        "pending_snapshot": str(pending_snapshot_path),
+                        "completed_subset_json": str(completed_subset_path),
+                        "completed_subset_count": len(subset_rows),
+                        "flushed_count": len(results),
+                        "pending_count": len(_pending_results),
+                        "next_save_idx": _next_save_idx,
+                        "reason": reason,
+                        "pending_rows": pending_rows,
+                        "source_policy": (
+                            "primary result keeps the ordered flushed prefix; "
+                            "completed subset is a recovery artifact for completed rows blocked by an ordered flush gap"
+                        ),
+                    }
+                    with _results_lock:
+                        completed_subset_path.write_text(
+                            json.dumps(subset_rows, ensure_ascii=False, indent=2),
+                            encoding="utf-8",
+                        )
+                        completed_subset_manifest_path.write_text(
+                            json.dumps(manifest, ensure_ascii=False, indent=2),
+                            encoding="utf-8",
+                        )
+                    _completed_subset_state.update(
+                        {
+                            "completed_subset_written": True,
+                            "completed_subset_json": str(completed_subset_path),
+                            "completed_subset_manifest": str(completed_subset_manifest_path),
+                            "completed_subset_count": len(subset_rows),
+                            "completed_subset_reason": reason,
+                        }
+                    )
+                    _write_manifest()
+
                 def _write_pending_snapshot() -> None:
                     pending_rows = [
                         {
                             "global_idx": idx,
-                            "post_id": int((item or {}).get("post_id") or 0),
+                            "post_id": _result_item_post_id(item),
                             "result": item,
                         }
                         for idx, item in sorted(_pending_results.items(), key=lambda kv: kv[0])
@@ -1565,6 +2845,7 @@ def main() -> None:
 
                 def _collect_done(futures_dict):
                     """완료된 future들을 수거하고 워커 반환"""
+                    nonlocal _failed_count
                     done_list = [f for f in futures_dict if f.done()]
                     for fut in done_list:
                         gidx, pid, wid_done = futures_dict.pop(fut)
@@ -1581,6 +2862,7 @@ def main() -> None:
                         except (SystemExit, KeyboardInterrupt):
                             pass  # 셧다운 중 — 무시
                         except Exception as e:
+                            _failed_count += 1
                             _pending_results[gidx] = {
                                 "post_id": pid,
                                 "title": "",
@@ -1657,15 +2939,23 @@ def main() -> None:
 
                 # 셧다운 시 결과 저장 후 즉시 종료 (httpx 스레드 강제 종료)
                 if _shutdown_event.is_set():
-                    if results:
+                    if results or _pending_results:
                         with _results_lock:
                             out_result_path.write_text(
                                 json.dumps(results, ensure_ascii=False, indent=2),
                                 encoding="utf-8"
                             )
+                        if _pending_results:
+                            _write_completed_subset(reason="shutdown_pending_flush_gap")
                         _write_pending_snapshot()
                         _slang_db_manager.finalize()
-                        _cli_progress(f"💾 중단 시점까지 {len(results)}건 저장됨: {out_result_path}")
+                        _cli_progress(
+                            "💾 중단 시점까지 flushed={flushed}, pending={pending}건 저장됨: {path}".format(
+                                flushed=len(results),
+                                pending=len(_pending_results),
+                                path=out_result_path,
+                            )
+                        )
                     sys.stdout = _orig_out
                     sys.stderr = _orig_err
                     print("\n🛑 사용자 중단 (Ctrl+C) — 프로세스 종료", file=sys.stderr, flush=True)
@@ -1694,8 +2984,20 @@ def main() -> None:
             # 전체 완료
             _slang_db_manager.finalize()
             if _PARALLEL > 1:
-                with _results_lock:
-                    pending_snapshot_path.write_text("[]\n", encoding="utf-8")
+                _flush_ordered()
+                if _pending_results:
+                    _write_completed_subset(reason="finalize_pending_flush_gap")
+                    _write_pending_snapshot()
+                    _cli_progress(
+                        "⚠️ ordered flush gap 유지: flushed={flushed}, pending={pending}, completed_subset={subset}".format(
+                            flushed=len(results),
+                            pending=len(_pending_results),
+                            subset=completed_subset_path,
+                        )
+                    )
+                else:
+                    with _results_lock:
+                        pending_snapshot_path.write_text("[]\n", encoding="utf-8")
                 _write_manifest()
             total_elapsed = time.time() - total_start
             print(f"\n{'='*70}", file=sys.stderr, flush=True)
@@ -1719,6 +3021,15 @@ def main() -> None:
             print(f"   Total Time: {total_elapsed:.1f}s", file=sys.stderr, flush=True)
             if len(results) > 0:
                 print(f"   Avg Time/Post: {total_elapsed/len(results):.1f}s", file=sys.stderr, flush=True)
+            for line in _vlm_ocr_semantic_review_gate_lines(
+                image_post_count=image_post_count,
+                vlm_enabled=vlm_enabled,
+                ocr_enabled=ocr_enabled,
+                ready=vlm_ocr_semantic_review_ready,
+                sample_post_ids=image_post_sample_post_ids,
+                skip_reasons=vlm_ocr_semantic_review_skip_reason_codes,
+            ):
+                print(f"   {line}", file=sys.stderr, flush=True)
             
             # 전체 배치 토큰 통계는 각 포스트 처리 중 출력됨
             # 여기서는 요약만 표시
@@ -1751,11 +3062,103 @@ def load_jsonl_posts(path: Path) -> List:
     sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
     from llm_batch.models import PostInput, ContentBlock
 
+    def _post_id_key(value: Any) -> Optional[int | str]:
+        if value in (None, ""):
+            return None
+        try:
+            return int(str(value).strip())
+        except (TypeError, ValueError):
+            return str(value).strip()
+
+    def _content_blocks_from_data(data: Dict[str, Any]) -> List[ContentBlock]:
+        raw_blocks = data.get("content_blocks")
+        if raw_blocks is None:
+            raw_blocks = data.get("content")
+        if raw_blocks is None:
+            raw_blocks = []
+        if isinstance(raw_blocks, str):
+            raw_blocks = [raw_blocks]
+        if not isinstance(raw_blocks, list):
+            raw_blocks = [raw_blocks]
+
+        blocks: List[ContentBlock] = []
+        for block in raw_blocks:
+            if isinstance(block, dict):
+                block_url = block.get("url") or block.get("image_url") or block.get("src")
+                block_type = block.get("type") or ("image" if block_url else "text")
+                blocks.append(ContentBlock(
+                    type=str(block_type),
+                    text=block.get("text") if block.get("text") is not None else block.get("content"),
+                    url=block_url,
+                ))
+            else:
+                text = str(block).strip()
+                if text:
+                    blocks.append(ContentBlock(type="text", text=text))
+        return blocks
+
+    def _embedded_comments_from_data(pid: int, data: Dict[str, Any]) -> List[Dict[str, Any]]:
+        raw_comments = data.get("comments")
+        if raw_comments in (None, ""):
+            raw_comments = data.get("comments_raw") or []
+        if isinstance(raw_comments, (str, dict)):
+            raw_comments = [raw_comments]
+        if not isinstance(raw_comments, list):
+            return []
+
+        raw_metadata = data.get("comment_metadata") or []
+        if not isinstance(raw_metadata, list):
+            raw_metadata = []
+        metadata_keys = (
+            "comment_id",
+            "author",
+            "ip",
+            "created_at",
+            "reply_to_comment_id",
+            "reply_level",
+            "gallery_id",
+        )
+
+        comments: List[Dict[str, Any]] = []
+        for idx, comment in enumerate(raw_comments):
+            if isinstance(comment, dict):
+                item = dict(comment)
+                if "content" not in item and "text" in item:
+                    item["content"] = item.get("text")
+            else:
+                text = str(comment).strip()
+                if not text:
+                    continue
+                item = {"content": text}
+            meta = raw_metadata[idx] if idx < len(raw_metadata) and isinstance(raw_metadata[idx], dict) else {}
+            for key in metadata_keys:
+                value = meta.get(key)
+                if value not in (None, "") and item.get(key) in (None, ""):
+                    item[key] = value
+            item.setdefault("post_id", pid)
+            item.setdefault("comment_id", f"{pid}:embedded:{idx}")
+            comments.append(item)
+        return comments
+
+    def _comment_dedupe_key(comment: Any) -> tuple:
+        if not isinstance(comment, dict):
+            return ("text", str(comment or "").strip())
+        comment_id = str(comment.get("comment_id") or "").strip()
+        if comment_id:
+            return ("id", comment_id)
+        return (
+            "body",
+            str(comment.get("author") or "").strip(),
+            str(comment.get("ip") or "").strip(),
+            str(comment.get("created_at") or "").strip(),
+            str(comment.get("content") or comment.get("text") or "").strip(),
+        )
+
     posts = []
     post_map: Dict[int, Dict[str, Any]] = {}
     comments_map: Dict[int, List[Dict[str, Any]]] = {}
 
-    with path.open("r", encoding="utf-8") as f:
+    with path.open("r", encoding="utf-8-sig") as f:
         for line in f:
             line = line.strip()
             if not line:
@@ -1768,36 +3171,52 @@ def load_jsonl_posts(path: Path) -> List:
             # 댓글인지 포스트인지 구분
             if "comment_id" in item:
                 # 댓글
-                pid = item.get("post_id")
-                if pid:
+                pid = _post_id_key(item.get("post_id"))
+                if pid is not None:
                     if pid not in comments_map:
                         comments_map[pid] = []
                     comments_map[pid].append(item)
             elif "post_id" in item:
                 # 포스트
-                pid = item["post_id"]
+                pid = _post_id_key(item.get("post_id"))
+                if pid is None:
+                    continue
                 post_map[pid] = item
 
     # PostInput으로 변환
     for pid, data in post_map.items():
-        content_blocks = []
-        for block in data.get("content_blocks", []):
-            if isinstance(block, dict):
-                content_blocks.append(ContentBlock(
-                    type=block.get("type", "text"),
-                    text=block.get("text"),
-                    url=block.get("url"),
-                ))
-            else:
-                content_blocks.append(ContentBlock(type="text", text=str(block)))
+        content_blocks = _content_blocks_from_data(data)
 
-        # 댓글 연결
-        comments = comments_map.get(pid, [])
+        # 댓글 연결: 기존 별도 comment_id 라인과 packet 내부 embedded comments를 모두 지원한다.
+        comments = []
+        seen_comment_keys = set()
+        for comment in comments_map.get(pid, []):
+            dedupe_key = _comment_dedupe_key(comment)
+            if dedupe_key in seen_comment_keys:
+                continue
+            seen_comment_keys.add(dedupe_key)
+            if isinstance(comment, dict):
+                item = dict(comment)
+                item.setdefault("gallery_id", data.get("gallery_id", ""))
+                comments.append(item)
+            else:
+                comments.append(comment)
+        for comment in _embedded_comments_from_data(pid, data):
+            dedupe_key = _comment_dedupe_key(comment)
+            if dedupe_key in seen_comment_keys:
+                continue
+            seen_comment_keys.add(dedupe_key)
+            if isinstance(comment, dict):
+                comment.setdefault("gallery_id", data.get("gallery_id", ""))
+            comments.append(comment)
 
         posts.append(PostInput(
             post_id=pid,
             title=data.get("title", ""),
             author=data.get("author", ""),
+            ip=data.get("ip") or data.get("author_ip") or data.get("post_ip") or data.get("writer_ip"),
+            author_ip=data.get("author_ip"),
+            post_ip=data.get("post_ip"),
             content_blocks=content_blocks,
             gallery_id=data.get("gallery_id", ""),
             url=data.get("url", ""),
@@ -1806,6 +3225,115 @@ def load_jsonl_posts(path: Path) -> List:
         ))
 
     return posts
+
+
+def _count_nonempty_jsonl_lines(path: Path) -> int:
+    """입력 파일이 비어 있는지 빠르게 확인한다. BOM은 내용으로 세지 않는다."""
+    count = 0
+    with path.open("r", encoding="utf-8-sig") as f:
+        for line in f:
+            if line.strip():
+                count += 1
+    return count
+
+
+def _post_has_image_block(post: Any) -> bool:
+    """Return whether a loaded post contains an image-like content block."""
+    for block in getattr(post, "content_blocks", []) or []:
+        if isinstance(block, dict):
+            block_type = str(block.get("type") or "").strip().lower()
+            url = str(block.get("url") or block.get("image_url") or block.get("src") or "").strip()
+        else:
+            block_type = str(getattr(block, "type", "") or "").strip().lower()
+            url = str(getattr(block, "url", "") or "").strip()
+        if block_type == "image" or url:
+            return True
+    return False
+
+
+def _count_image_posts(posts: List[Any]) -> int:
+    return sum(1 for post in posts if _post_has_image_block(post))
+
+
+def _image_post_sample_post_ids(posts: List[Any], *, limit: int = 10) -> List[Any]:
+    samples: List[Any] = []
+    for post in posts:
+        if not _post_has_image_block(post):
+            continue
+        post_id = getattr(post, "post_id", None)
+        if post_id is None and isinstance(post, dict):
+            post_id = post.get("post_id")
+        samples.append(post_id if post_id is not None else "<unknown>")
+        if len(samples) >= limit:
+            break
+    return samples
+
+
+def _vlm_ocr_semantic_review_gate_lines(
+    *,
+    image_post_count: int,
+    vlm_enabled: bool,
+    ocr_enabled: bool,
+    ready: bool,
+    sample_post_ids: List[Any] | None = None,
+    skip_reasons: List[str] | None = None,
+) -> List[str]:
+    if image_post_count <= 0:
+        return ["VLM/OCR Semantic Gate: NOT_APPLICABLE (image_post_count=0)"]
+    state = "READY" if ready else "NO-GO"
+    sample_text = ", ".join(str(item) for item in (sample_post_ids or [])[:10]) or "none"
+    reason_codes = (
+        skip_reasons
+        if skip_reasons is not None
+        else _vlm_ocr_semantic_review_skip_reasons(
+            image_post_count=image_post_count,
+            vlm_enabled=vlm_enabled,
+            ocr_enabled=ocr_enabled,
+        )
+    )
+    reason_text = ", ".join(reason_codes or []) or "none"
+    lines = [
+        (
+            "VLM/OCR Semantic Gate: "
+            f"{state} (image_post_count={image_post_count}, "
+            f"vlm={vlm_enabled}, ocr={ocr_enabled}, ready={ready}, "
+            f"skip_reasons=[{reason_text}], sample_post_ids=[{sample_text}])"
+        )
+    ]
+    if not ready:
+        lines.append(
+            "VLM/OCR Semantic Gate Action: "
+            "rerun_with_vlm_on_ocr_on_or_browser_review; "
+            "image rows from this run are not semantic image approval evidence"
+        )
+    return lines
+
+
+def _vlm_ocr_semantic_review_skip_reasons(
+    *,
+    image_post_count: int,
+    vlm_enabled: bool,
+    ocr_enabled: bool,
+) -> List[str]:
+    if image_post_count <= 0:
+        return ["no_image_blocks"]
+    reasons: List[str] = []
+    if not vlm_enabled:
+        reasons.append("vlm_disabled")
+    if not ocr_enabled:
+        reasons.append("ocr_disabled")
+    return reasons
+
+
+def _require_vlm_ocr_for_image_posts() -> bool:
+    return bool(
+        getattr(_CLI_ARGS, "require_vlm_ocr_for_images", False)
+        or _env_toggle_enabled("LLM_REQUIRE_VLM_OCR_FOR_IMAGES", "0")
+    )
+
+
+def _env_toggle_enabled(key: str, default: str = "0") -> bool:
+    return str(os.getenv(key, default)).strip().lower() in {"1", "true", "yes", "on"}
 
 
 if __name__ == "__main__":

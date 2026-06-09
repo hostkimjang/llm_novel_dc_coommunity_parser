@@ -815,6 +815,137 @@ class ArbiterExpert:
             return False
         return title_norm in raw_norm
 
+    def _should_block_memory_query_forced_upgrade(
+        self,
+        ctx: Optional["ConversationContext"],
+        verifier_out: Optional[Dict[str, Any]],
+        candidate_title: Optional[Any] = None,
+    ) -> bool:
+        """Block suspected-title rescue when a memory-query only has weak search overlap.
+
+        This is intentionally structural: it keys off memory-query wording,
+        relation-hold fields, missing direct post grounding, and missing explicit
+        bridge evidence. It must not depend on a particular post id or title.
+        """
+        if ctx is None:
+            return False
+        verifier_out = verifier_out or {}
+        verifier_result = verifier_out.get("verification_result") or {}
+        if not isinstance(verifier_result, dict):
+            verifier_result = {}
+
+        post_data = getattr(ctx, "post_data", None) or {}
+        chunks: List[str] = [
+            str(post_data.get("title") or ""),
+            str(post_data.get("normalized_title") or ""),
+        ]
+        for block in post_data.get("content_blocks") or []:
+            if isinstance(block, dict):
+                chunks.append(str(block.get("text") or block.get("content") or ""))
+            else:
+                chunks.append(str(block or ""))
+        for comment in getattr(ctx, "comments", None) or []:
+            if isinstance(comment, dict):
+                chunks.append(str(comment.get("content") or comment.get("text") or ""))
+            else:
+                chunks.append(str(comment or ""))
+        merged_text = " ".join(chunk for chunk in chunks if str(chunk or "").strip())
+        merged_norm = merged_text.lower()
+
+        relation = verifier_result.get("relation_judgment") or {}
+        if not isinstance(relation, dict):
+            relation = {}
+        relation_reason = str(
+            relation.get("reason")
+            or verifier_result.get("relation_hold_reason")
+            or verifier_result.get("reason")
+            or verifier_out.get("reason")
+            or ""
+        )
+        memory_query_context = bool(
+            str(getattr(ctx, "search_budget_profile", "") or "").strip().lower() == "memory_query_lookup"
+            or re.search(
+                r"(무슨|어떤).{0,16}(소설|작품)|"
+                r"(소설|작품).{0,16}(기억|기억이|모르|못찾|뭐였)|"
+                r"(대사|문장).{0,16}(기억|기억이|뭐였|어디서|나온)|"
+                r"기억.{0,8}(안남|안 남|안나|안 나|못|없)|뭐였지",
+                merged_norm,
+            )
+            or "기억 회수" in relation_reason
+        )
+        if not memory_query_context:
+            return False
+
+        title = str(candidate_title or "").strip()
+        if not title:
+            novel_identity = verifier_result.get("novel_identity") or {}
+            if isinstance(novel_identity, dict):
+                title = str(
+                    novel_identity.get("official_novel_title")
+                    or novel_identity.get("official_title")
+                    or novel_identity.get("title")
+                    or ""
+                ).strip()
+        if title and self._text_matches_title_strict(merged_text, title):
+            return False
+
+        grounding = verifier_result.get("grounding_check") or {}
+        if not isinstance(grounding, dict):
+            grounding = {}
+        anchor = str(grounding.get("anchor_found") or "").strip().lower()
+        if anchor in {
+            "quote_source",
+            "direct_quote_source",
+            "official_url",
+            "post_official_url",
+            "character_work_link",
+            "character_title_link",
+            "direct_title",
+        }:
+            return False
+
+        support_summary = relation.get("search_support_summary") or {}
+        if not isinstance(support_summary, dict):
+            support_summary = {}
+        explicit_bridge_count = int(support_summary.get("explicit_alias_bridge_count") or 0)
+        closed_bridge = bool(support_summary.get("closed_bridge"))
+        converged_official_signal = bool(support_summary.get("converged_official_signal"))
+        post_direct_grounding = bool(relation.get("post_direct_grounding"))
+        promotion = str(relation.get("promotion_decision") or "").strip().lower()
+        relation_type = str(relation.get("relation_type") or "").strip().lower()
+        bridge_quality = str(support_summary.get("bridge_quality") or "").strip().lower()
+
+        counters = verifier_result.get("counter_arguments") or []
+        has_downgrade_counter = any(
+            isinstance(counter, dict)
+            and str(counter.get("severity") or "").strip().lower() in {"critical", "major"}
+            and str(counter.get("action") or "").strip().lower()
+            in {"reject", "nullify_title", "downgrade_confidence"}
+            for counter in counters
+        )
+
+        weak_relation = bool(
+            not post_direct_grounding
+            and not explicit_bridge_count
+            and not closed_bridge
+            and not converged_official_signal
+            and (
+                promotion in {"hold", "reject", "nullify", "nullify_title"}
+                or has_downgrade_counter
+            )
+            and (
+                bridge_quality in {"", "weak", "thematic_overlap_only", "supporting"}
+                or relation_type in {"", "thematic_overlap_only", "work_specific_nickname", "mixed_or_uncertain"}
+                or bool(
+                    re.search(
+                        r"(직접|명시|bridge|브릿지|브리지|검증|확정).{0,24}(부족|불충분|불가|없)",
+                        relation_reason,
+                    )
+                )
+            )
+        )
+        return weak_relation
+
     def _title_mentioned_in_post_main_context(self, ctx: "ConversationContext", title: Optional[str]) -> bool:
         if not title:
             return False
@@ -940,6 +1071,13 @@ class ArbiterExpert:
             except Exception:
                 return 0.0
         return 0.0
+
+    def _suspected_title_sort_key(self, item: Dict[str, Any]) -> tuple[float, str]:
+        """suspected_titles 정렬용 confidence 키를 숫자로 정규화."""
+        return (
+            self._confidence_to_unit((item or {}).get("confidence", 0)),
+            str((item or {}).get("title") or ""),
+        )
 
     def _build_hypothesis_scores(
         self,
@@ -1428,6 +1566,16 @@ class ArbiterExpert:
                         _ct = _ct[:80] + "..."
                     _comment_texts.append(_ct)
         _comment_preview = "\n".join(f"  - {ct}" for ct in _comment_texts) if _comment_texts else "(\ub313\uae00 \uc5c6\uc74c)"
+        _comment_context_lines = [
+            str(line)
+            for line in ((post_data or {}).get("comment_context_lines") or [])[:_max_comment_preview]
+            if str(line).strip()
+        ]
+        _comment_dialogue_lines = [
+            str(line)
+            for line in ((post_data or {}).get("comment_dialogue_context_lines") or [])[:_max_comment_preview]
+            if str(line).strip()
+        ]
         
         # Expert verdict 요약 (안전한 문자열 변환)
         gk_verdict = f"noise={gk_summary.get('is_noise')}, type={gk_summary.get('post_type')}, conf={gk_summary.get('confidence')}"
@@ -1566,7 +1714,7 @@ class ArbiterExpert:
                 st['source_expert'] = 'arbiter'
                 merged.append(st)
         
-        ctx.suspected_titles = sorted(merged, key=lambda x: x.get('confidence', 0), reverse=True)[:5]
+        ctx.suspected_titles = sorted(merged, key=self._suspected_title_sort_key, reverse=True)[:5]
         print(f"[{_ts()}][{self.emoji}] 📋 suspected_titles 최종 병합: {len(ctx.suspected_titles)}건", file=sys.stderr)
         
         # suspected_titles 내용 출력
@@ -1651,6 +1799,18 @@ class ArbiterExpert:
             key_evidence=key_evidence,
             suspected_titles=suspected_titles_str,
         ) + expert_confidence_info + uncertainty_info + evidence_bucket_info + hypothesis_info + discourse_info
+        if _comment_context_lines:
+            user_prompt += (
+                "\n\n=== 댓글 작성자/대화 맥락 ===\n"
+                "아래 #번호는 댓글 preview 순서와 대응합니다. role=post_author는 본문 작성자의 댓글입니다.\n"
+                + "\n".join(f"  - {line}" for line in _comment_context_lines)
+            )
+        if _comment_dialogue_lines:
+            user_prompt += (
+                "\n\n=== 댓글 발화 재구성 ===\n"
+                "speaker/author/ip는 대화 흐름 추적용이며, 그 자체를 작품명/별칭 증거로 쓰지 마세요.\n"
+                + "\n".join(f"  - {line}" for line in _comment_dialogue_lines)
+            )
 
         # 검색 집계 요약을 Arbiter에 직접 주입 (전문가 충돌 시 인프라/효율 맥락 보정)
         _search_agg = build_search_aggregation_summary(
@@ -2479,26 +2639,19 @@ class ArbiterExpert:
                 verifier_out=verifier_out,
             )
             if _is_multi_work_context and not author_criticism_guard_active:
-                # 🆕 Smart Deliberation: KNOWN_ABBREVIATIONS 매칭 면제
-                # LLM이 확정한 제목이 KNOWN_ABBREVIATIONS 매칭이면 multi_work 가드 건너뜀
                 _mw_abbrev_exempt = False
                 _mw_current_title = decision.get("official_novel_title") or decision.get("official_title")
                 if _mw_current_title:
-                    _mw_title_norm = _mw_current_title.replace(" ", "").lower()
-                    for _mw_av in KNOWN_ABBREVIATIONS.values():
-                        if _mw_av.replace(" ", "").lower() == _mw_title_norm:
-                            _mw_abbrev_exempt = True
-                            break
-                if not _mw_abbrev_exempt:
-                    _mw_post_title = str(post_data.get("title") or "").replace(" ", "").lower()
-                    for _mw_ak in KNOWN_ABBREVIATIONS:
-                        if _mw_ak.replace(" ", "").lower() in _mw_post_title:
-                            _mw_abbrev_exempt = True
-                            break
+                    _mw_abbrev_exempt = self._has_curated_alias_guard_exception(
+                        ctx,
+                        _mw_current_title,
+                        decoder_out=decoder_out,
+                        verifier_out=verifier_out,
+                    )
                 if _mw_abbrev_exempt:
                     print(
                         f"[{_ts()}][{self.emoji}] 🔑 multi_work 가드 면제: "
-                        f"KNOWN_ABBREVIATIONS 매칭 → title 유지",
+                        f"등록 약칭 + 독립 작품 앵커 확인 → title 유지",
                         file=sys.stderr,
                     )
                 else:
@@ -2684,6 +2837,26 @@ class ArbiterExpert:
                         decision["_forced_upgrade_threshold"] = forced_upgrade_eval["threshold"]
                         decision["_forced_upgrade_title"] = forced_upgrade_eval["title"]
                         _has_strong_suspect = forced_upgrade_eval["allowed"]
+                        if _has_strong_suspect and self._should_block_memory_query_forced_upgrade(
+                            ctx,
+                            verifier_out,
+                            forced_upgrade_eval.get("title"),
+                        ):
+                            _has_strong_suspect = False
+                            forced_upgrade_eval["allowed"] = False
+                            skip_forced_title = True
+                            _null_reasons = decision.get("_title_null_block_reasons")
+                            if not isinstance(_null_reasons, list):
+                                _null_reasons = []
+                            _null_reasons.append("memory_query_forced_upgrade_guard")
+                            decision["_title_null_block_reasons"] = sorted(set(_null_reasons))
+                            print(
+                                f"[{_ts()}][{self.emoji}] 🛡️ memory-query 강제승격 차단: "
+                                f"title='{forced_upgrade_eval.get('title')}', "
+                                f"score={forced_upgrade_eval.get('score', 0.0):.3f} "
+                                "→ relation hold + direct bridge 없음",
+                                file=sys.stderr,
+                            )
                         if _has_strong_suspect:
                             print(
                                 f"[{_ts()}][{self.emoji}] 📈 강제승격 점수 통과: "
@@ -4105,14 +4278,23 @@ class ArbiterExpert:
                                 _known_decoder_align = self._has_decoder_alignment_support(
                                     decoder_out, _full, min_score=0.50
                                 )
+                                _known_curated_anchor = self._has_curated_alias_guard_exception(
+                                    ctx,
+                                    _full,
+                                    decoder_out=decoder_out,
+                                    verifier_out=verifier_out,
+                                )
                                 if not _known_hard_support:
                                     continue
-                                if not (_known_direct_anchor or _known_decoder_align):
+                                if not (
+                                    _known_direct_anchor
+                                    or (_known_decoder_align and _known_curated_anchor)
+                                ):
                                     continue
                                 if (
                                     _genre_warning_effective
                                     and (not _known_direct_anchor)
-                                    and (not (_known_decoder_align and _known_hard_support))
+                                    and (not (_known_decoder_align and _known_hard_support and _known_curated_anchor))
                                 ):
                                     continue
                                 _veto_exempt = True
@@ -5378,22 +5560,20 @@ class ArbiterExpert:
                 # ★핵심 변경: 검색 결과 기반 _has_strong_title_support 대신
                 # 포스트 로컬 증거만 체크 — 소설이 실제 존재해도 포스트가 밈이면 차단
 
-                # 🆕 Smart Deliberation: KNOWN_ABBREVIATIONS 매칭 면제
-                # 게시글 제목/key_terms에 KNOWN_ABBREVIATIONS 키가 포함되면
-                # 밈 가드를 건너뜀 (기계공주, 즉사무림 등 약칭이 알려진 작품)
                 _abbrev_meme_exempt = False
-                if _meme_signals >= 3:
-                    _post_title_meme_norm = _post_title_meme.replace(" ", "").lower()
-                    for _ak in KNOWN_ABBREVIATIONS:
-                        _ak_norm = _ak.replace(" ", "").lower()
-                        if _ak_norm and _ak_norm in _post_title_meme_norm:
-                            _abbrev_meme_exempt = True
-                            print(
-                                f"[{_ts()}][{self.emoji}] 🔑 밈 가드 면제: "
-                                f"KNOWN_ABBREVIATIONS '{_ak}' 매칭 → 밈 가드 건너뜀",
-                                file=sys.stderr,
-                            )
-                            break
+                if _meme_signals >= 3 and final_title:
+                    _abbrev_meme_exempt = self._has_curated_alias_guard_exception(
+                        ctx,
+                        final_title,
+                        decoder_out=decoder_out,
+                        verifier_out=verifier_out,
+                    )
+                    if _abbrev_meme_exempt:
+                        print(
+                            f"[{_ts()}][{self.emoji}] 🔑 밈 가드 면제: "
+                            f"등록 약칭 + 독립 작품 앵커 확인 → 밈 가드 건너뜀",
+                            file=sys.stderr,
+                        )
 
                 _verified_alias_meme_exempt = False
                 if _meme_signals >= 3 and (not _abbrev_meme_exempt) and final_title:
@@ -5415,6 +5595,10 @@ class ArbiterExpert:
                         _vf_relation = (verifier_out or {}).get("verification_result", {}).get("relation_judgment") or {}
                         _vf_relation_target = str(_vf_relation.get("discussion_target") or "").strip().lower()
                         _vf_relation_promotion = str(_vf_relation.get("promotion_decision") or "").strip().lower()
+                        _vf_anchor_is_abbrev_only = _vf_anchor_meme_norm in {
+                            "title_abbrev_mention",
+                            "body_abbrev_mention",
+                        }
                         _has_official_support = bool(
                             self._has_strong_title_support(ctx, final_title)
                             or self._has_official_title_evidence(ctx, final_title)
@@ -5431,6 +5615,10 @@ class ArbiterExpert:
                             }
                             and _vf_alias_support
                             and _has_official_support
+                            and (
+                                not _vf_anchor_is_abbrev_only
+                                or _abbrev_meme_exempt
+                            )
                         ):
                             _verified_alias_meme_exempt = True
                         elif (
@@ -5443,6 +5631,10 @@ class ArbiterExpert:
                                     "decoder_grounded_official",
                                     "llm_cross_check",
                                 }
+                            )
+                            and (
+                                not _vf_anchor_is_abbrev_only
+                                or _abbrev_meme_exempt
                             )
                         ):
                             _verified_alias_meme_exempt = True
@@ -5597,21 +5789,30 @@ class ArbiterExpert:
                         )
                         and _lowconf_strong_anchor
                     )
-                    # 🆕 Smart Deliberation: KNOWN_ABBREVIATIONS 매칭 면제
-                    # 게시글 제목에 KNOWN_ABBREVIATIONS 키가 포함되면
-                    # 저신뢰 매칭 차단을 건너뜀 (약칭이 알려진 작품은 Decoder 실패해도 보호)
                     _abbrev_lowconf_exempt = False
-                    _post_title_lc = str(getattr(ctx, "post_title", "") or "").replace(" ", "").lower()
-                    for _ak_lc in KNOWN_ABBREVIATIONS:
-                        _ak_lc_norm = _ak_lc.replace(" ", "").lower()
-                        if _ak_lc_norm and _ak_lc_norm in _post_title_lc:
-                            _abbrev_lowconf_exempt = True
+                    if final_title:
+                        _abbrev_lowconf_exempt = self._has_curated_alias_guard_exception(
+                            ctx,
+                            final_title,
+                            decoder_out=decoder_out,
+                            verifier_out=verifier_out,
+                        )
+                        if _abbrev_lowconf_exempt:
                             print(
                                 f"[{_ts()}][{self.emoji}] 🔑 저신뢰 차단 면제: "
-                                f"KNOWN_ABBREVIATIONS '{_ak_lc}' 매칭 → 저신뢰 차단 건너뜀",
+                                f"등록 약칭 + 독립 작품 앵커 확인 → 저신뢰 차단 건너뜀",
                                 file=sys.stderr,
                             )
-                            break
+                    _lowconf_abbrev_anchor_only = str(vf_anchor or "").lower() in {
+                        "title_abbrev_mention",
+                        "body_abbrev_mention",
+                    }
+                    if (
+                        _lowconf_abbrev_verified
+                        and _lowconf_abbrev_anchor_only
+                        and not _abbrev_lowconf_exempt
+                    ):
+                        _lowconf_abbrev_verified = False
 
                     if _abbrev_lowconf_exempt:
                         # KNOWN_ABBREVIATIONS 면제 — Arbiter LLM의 원래 판정 유지
@@ -6065,6 +6266,23 @@ class ArbiterExpert:
                 _r in {"author_criticism_guard", "recommendation_guard", "temporal_reference_guard", "post_title_theft_guard"}
                 for _r in _null_block_reasons2
             )
+            _memory_query_vf_lock_block2 = bool(
+                _vf_title_lock2
+                and self._should_block_memory_query_forced_upgrade(
+                    ctx,
+                    verifier_out,
+                    _vf_title_lock2,
+                )
+            )
+            if _memory_query_vf_lock_block2:
+                _null_block_reasons2.append("memory_query_forced_upgrade_guard")
+                decision["_title_null_block_reasons"] = sorted(set(_null_block_reasons2))
+                _has_hard_null_block2 = True
+                print(
+                    f"[{_ts()}][{self.emoji}] 🛡️ Verifier High-title lock 차단: "
+                    f"title='{_vf_title_lock2}', reason=memory_query_forced_upgrade_guard",
+                    file=sys.stderr,
+                )
             _vf_skip_for_author_new_work2 = False
             _vf_skip_for_author_talk2 = False
             _vf_skip_for_genre_talk2 = False
@@ -6578,6 +6796,7 @@ class ArbiterExpert:
                 _vf_search_cnt = 0
                 _vf_official_cnt = 0
                 _vf_domain_conflict = False
+                _vf_out_for_null: Dict[str, Any] = {}
                 try:
                     _vf_out_for_null = ctx.get_expert_output(ExpertType.VERIFIER) or {}
                     _vf_result_for_null = _vf_out_for_null.get("verification_result") or {}
@@ -6624,6 +6843,22 @@ class ArbiterExpert:
                     or _vf_post_cnt > 0
                     or (_vf_search_cnt >= 2 and _vf_anchor_strong)
                 )
+                _memory_query_null_upgrade_block = self._should_block_memory_query_forced_upgrade(
+                    ctx,
+                    _vf_out_for_null,
+                    _vf_title_for_null,
+                )
+                if _memory_query_null_upgrade_block:
+                    _null_block_reasons.append("memory_query_forced_upgrade_guard")
+                    decision["_title_null_block_reasons"] = sorted(set(_null_block_reasons))
+                    _has_strong_null_block = True
+                    print(
+                        f"[{_ts()}][{self.emoji}] 🛡️ memory-query null 우회 차단: "
+                        f"verifier_title='{_vf_title_for_null or '-'}' "
+                        "→ suspected title 복구 금지",
+                        file=sys.stderr,
+                    )
+
                 if (
                     decision.get("is_relevant", False)
                     and (not _has_strong_null_block)
@@ -6688,7 +6923,11 @@ class ArbiterExpert:
                     )
 
             # 🆕 heretic_url 폴백: Arbiter LLM이 null을 출력했지만 Verifier/Decoder에 URL이 있는 경우
-            if decision.get("is_relevant") and not decision.get("heretic_url"):
+            _null_block_reasons_for_url = decision.get("_title_null_block_reasons")
+            if not isinstance(_null_block_reasons_for_url, list):
+                _null_block_reasons_for_url = []
+            _memory_query_null_block_for_url = "memory_query_forced_upgrade_guard" in _null_block_reasons_for_url
+            if decision.get("is_relevant") and not decision.get("heretic_url") and not _memory_query_null_block_for_url:
                 _fallback_url = None
                 # 1순위: Verifier가 확인한 URL
                 _vf_out = ctx.get_expert_output(ExpertType.VERIFIER) or {}
@@ -7075,6 +7314,7 @@ class ArbiterExpert:
                 "active_detail_match_count": 0,
                 "deleted_detail_match_count": 0,
                 "community_post_match_count": 0,
+                "listing_match_count": 0,
                 "official_search_hit_count": 0,
                 "trusted_official_search_hit_count": 0,
                 "search_trust_sum": 0.0,
@@ -7099,6 +7339,8 @@ class ArbiterExpert:
                     quality["deleted_detail_match_count"] += 1
                 elif state["is_community_post"]:
                     quality["community_post_match_count"] += 1
+                elif state["is_listing"]:
+                    quality["listing_match_count"] += 1
                 elif state["has_active_detail_like"]:
                     quality["active_detail_match_count"] += 1
 
@@ -7160,23 +7402,20 @@ class ArbiterExpert:
                 + min(float(quality["search_trust_sum"]), 2.5)
                 - (quality["deleted_detail_match_count"] * 7.0)
                 - (quality["community_post_match_count"] * 4.0)
+                - (quality["listing_match_count"] * 3.0)
             )
             return quality
 
-    def _has_official_title_evidence(self, ctx: "ConversationContext", title: Optional[str]) -> bool:
-        """
-        Arbiter 경로용 얇은 official-title evidence helper.
-        AgenticPipeline의 richer helper만큼 정밀하진 않아도,
-        최소한 공식 플랫폼 상세/페치 기반 title support 여부는 일관되게 판단한다.
-        """
-        if not title:
-            return False
-        try:
-            return bool(self._has_strong_title_support(ctx, str(title)))
-        except Exception:
-            return False
-
         source_quality = _collect_source_quality()
+        if (
+            source_quality["active_detail_match_count"] == 0
+            and (
+                source_quality["deleted_detail_match_count"] > 0
+                or source_quality["community_post_match_count"] > 0
+                or source_quality["listing_match_count"] > 0
+            )
+        ):
+            return False
         has_official_detail_hit = bool(
             source_quality["active_detail_match_count"] > 0
             or source_quality["trusted_official_search_hit_count"] > 0
@@ -7184,16 +7423,10 @@ class ArbiterExpert:
                 source_quality["official_search_hit_count"] > 0
                 and source_quality["deleted_detail_match_count"] == 0
                 and source_quality["community_post_match_count"] == 0
+                and source_quality["listing_match_count"] == 0
                 and source_quality["score"] >= 2.0
             )
         )
-        if (
-            source_quality["deleted_detail_match_count"] > 0
-            and source_quality["active_detail_match_count"] == 0
-            and source_quality["trusted_official_search_hit_count"] == 0
-        ):
-            return False
-
         post_title = str((getattr(ctx, "post_data", {}) or {}).get("title") or "")
         post_title_norm = _norm(post_title)
         snippet_hints = getattr(ctx, "snippet_hints", None) or {}
@@ -7209,8 +7442,7 @@ class ArbiterExpert:
                 continue
             src = str(ah.get("source") or "").lower()
             conf = str(ah.get("confidence") or "").lower()
-            trusted_sources = {
-                "known_abbreviation",
+            trusted_non_registry_sources = {
                 "platform_title",
                 "url_fetch_platform",
                 "author_bridge",
@@ -7222,11 +7454,12 @@ class ArbiterExpert:
             # short title은 공식 상세 증거가 없으면 약칭 힌트만으로 강증거 처리 금지
             if short_title and not has_official_detail_hit:
                 continue
+            if has_official_detail_hit or source_quality["score"] >= 6.0:
+                return True
             if (
-                src in trusted_sources
-                or conf in {"high", "max"}
-                or has_official_detail_hit
-                or source_quality["score"] >= 6.0
+                src in trusted_non_registry_sources
+                and conf in {"high", "max"}
+                and source_quality["official_search_hit_count"] > 0
             ):
                 return True
 
@@ -7242,6 +7475,330 @@ class ArbiterExpert:
         if has_official_detail_hit:
             return True
 
+        return False
+
+    def _has_official_title_evidence(self, ctx: "ConversationContext", title: Optional[str]) -> bool:
+        """
+        Arbiter 경로용 얇은 official-title evidence helper.
+        AgenticPipeline의 richer helper만큼 정밀하진 않아도,
+        최소한 공식 플랫폼 상세/페치 기반 title support 여부는 일관되게 판단한다.
+        """
+        title_raw = str(title or "").strip()
+        if not title_raw:
+            return False
+
+        def _norm(v: Any) -> str:
+            return re.sub(r"[^\w가-힣]", "", str(v or "")).lower()
+
+        title_norm = _norm(title_raw)
+        if not title_norm:
+            return False
+        short_title = len(title_norm) <= 4 and (" " not in title_raw)
+
+        def _contains_as_token(raw_text: Any, token: str) -> bool:
+            raw = str(raw_text or "")
+            if not raw:
+                return False
+            return bool(
+                re.search(
+                    rf"(?<![가-힣A-Za-z0-9]){re.escape(token)}(?![가-힣A-Za-z0-9])",
+                    raw,
+                )
+            )
+
+        def _title_supported(raw_text: Any) -> bool:
+            if short_title:
+                return _contains_as_token(raw_text, title_raw)
+            raw_norm = _norm(raw_text)
+            return bool(title_norm and title_norm in raw_norm)
+
+        def _normalized_url(url: Any) -> str:
+            return re.sub(r"/+$", "", str(url or "").strip().lower())
+
+        def _page_state(url: str) -> Dict[str, Any]:
+            state = {
+                "has_fetched_entry": False,
+                "is_deleted_or_unavailable": False,
+                "is_community_post": False,
+                "is_listing": False,
+                "has_active_detail_like": False,
+            }
+            norm_url = _normalized_url(url)
+            if not norm_url:
+                return state
+            for fe in (getattr(ctx, "fetched_page_info", None) or []):
+                if not isinstance(fe, dict):
+                    continue
+                if _normalized_url(fe.get("url")) != norm_url:
+                    continue
+                state["has_fetched_entry"] = True
+                structured = fe.get("structured_info") or {}
+                if not isinstance(structured, dict):
+                    structured = {}
+                page_type = str(structured.get("page_type") or "").strip().lower()
+                content_status = str(structured.get("content_status") or "").strip().lower()
+                if fe.get("_content_deleted") and not content_status:
+                    content_status = "deleted"
+                if content_status in {"deleted", "unavailable"}:
+                    state["is_deleted_or_unavailable"] = True
+                if page_type == "community_post":
+                    state["is_community_post"] = True
+                elif page_type == "listing":
+                    state["is_listing"] = True
+                break
+            state["has_active_detail_like"] = bool(
+                self._is_novel_detail_url(url)
+                and not state["is_deleted_or_unavailable"]
+                and not state["is_community_post"]
+                and not state["is_listing"]
+            )
+            return state
+
+        def _state_allows_official(state: Dict[str, Any]) -> bool:
+            return bool(
+                state.get("has_active_detail_like")
+                and not state.get("is_deleted_or_unavailable")
+                and not state.get("is_community_post")
+                and not state.get("is_listing")
+            )
+
+        seen: Set[str] = set()
+        for sr in (getattr(ctx, "search_results", None) or []):
+            if not isinstance(sr, dict) or sr.get("_is_derivative"):
+                continue
+            sr_url = str(sr.get("url") or "").strip()
+            norm_url = _normalized_url(sr_url)
+            if not norm_url or norm_url in seen:
+                continue
+            if not any(p in sr_url for p in OFFICIAL_PLATFORMS):
+                continue
+            if not self._is_novel_detail_url(sr_url):
+                continue
+            if not (
+                _title_supported(sr.get("title"))
+                or _title_supported(sr.get("content"))
+                or _title_supported(sr.get("snippet"))
+            ):
+                continue
+            state = _page_state(sr_url)
+            if not _state_allows_official(state):
+                continue
+            seen.add(norm_url)
+            return True
+
+        for fe in (getattr(ctx, "fetched_page_info", None) or []):
+            if not isinstance(fe, dict):
+                continue
+            fe_url = str(fe.get("url") or "").strip()
+            norm_url = _normalized_url(fe_url)
+            if not norm_url or norm_url in seen:
+                continue
+            if not any(p in fe_url for p in OFFICIAL_PLATFORMS):
+                continue
+            if not self._is_novel_detail_url(fe_url):
+                continue
+            state = _page_state(fe_url)
+            if not _state_allows_official(state):
+                continue
+            structured = fe.get("structured_info") or {}
+            if not isinstance(structured, dict):
+                structured = {}
+            if any(
+                _title_supported(candidate)
+                for candidate in (
+                    structured.get("llm_identified_title"),
+                    structured.get("title"),
+                    structured.get("page_title"),
+                    structured.get("work_title"),
+                    fe.get("title"),
+                    fe.get("page_title"),
+                    fe.get("text_preview"),
+                )
+            ):
+                return True
+
+        return False
+
+    def _post_main_text_for_curated_alias(self, ctx: "ConversationContext") -> str:
+        post_data = getattr(ctx, "post_data", None) or {}
+        chunks: List[str] = [
+            str(post_data.get("title") or ""),
+            str(post_data.get("normalized_title") or ""),
+        ]
+        for block in (post_data.get("content_blocks") or []):
+            if isinstance(block, dict):
+                block_type = str(block.get("type") or "").strip().lower()
+                if block_type in {"image", "ocr_text", "image_summary"}:
+                    continue
+                chunks.append(str(block.get("text") or block.get("content") or ""))
+            elif isinstance(block, str):
+                chunks.append(block)
+        return " ".join(chunk for chunk in chunks if str(chunk or "").strip())
+
+    def _curated_alias_surface_in_text(self, text: Any, alias: Any) -> bool:
+        alias_raw = str(alias or "").strip()
+        alias_norm = self._normalize_match_text(alias_raw)
+        raw_text = str(text or "")
+        if not raw_text or not alias_norm or len(alias_norm) < 2:
+            return False
+        if re.search(
+            rf"(?<![0-9A-Za-z가-힣]){re.escape(alias_raw)}(?![0-9A-Za-z가-힣])",
+            raw_text,
+        ):
+            return True
+        suffix = (
+            r"(?:의|은|는|이|가|을|를|도|만|에서|에게|한테|랑|하고|와|과|로|으로|"
+            r"작가|스포|최신화|휴재|연재|완결|후기|리뷰|팬덤|캐릭터|등장인물)"
+        )
+        if re.search(
+            rf"(?<![0-9A-Za-z가-힣]){re.escape(alias_raw)}(?={suffix}|[^0-9A-Za-z가-힣]|$)",
+            raw_text,
+        ):
+            return True
+        return bool(len(alias_norm) >= 4 and alias_norm in self._normalize_match_text(raw_text))
+
+    def _curated_alias_for_title_mentioned_in_post_main(
+        self,
+        ctx: "ConversationContext",
+        title: Optional[str],
+    ) -> bool:
+        title_norm = self._normalize_match_text(title)
+        if not ctx or not title_norm:
+            return False
+        post_text = self._post_main_text_for_curated_alias(ctx)
+        if not self._normalize_match_text(post_text):
+            return False
+        for mapping in (KNOWN_ABBREVIATIONS or {}, KNOWN_TITLE_ABBREVIATIONS or {}):
+            for alias, full_title in mapping.items():
+                if self._normalize_match_text(full_title) != title_norm:
+                    continue
+                if self._curated_alias_surface_in_text(post_text, alias):
+                    return True
+        return False
+
+    def _semantic_no_work_signal_for_curated_alias(
+        self,
+        ctx: "ConversationContext",
+        *,
+        verifier_out: Optional[Dict[str, Any]] = None,
+    ) -> bool:
+        try:
+            from .orchestrator import ExpertType
+            discourse_out = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
+            gatekeeper_out = ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
+        except Exception:
+            discourse_out = {}
+            gatekeeper_out = {}
+
+        da = (discourse_out.get("discourse_analysis") or {}) if isinstance(discourse_out, dict) else {}
+        if not isinstance(da, dict):
+            da = {}
+        seed = da.get("semantic_seed_review") or {}
+        if isinstance(seed, dict) and seed.get("is_specific_work_discussion") is False:
+            return True
+
+        intent = str(da.get("intent") or "").strip().lower()
+        gk_type = str(
+            gatekeeper_out.get("post_type") or gatekeeper_out.get("classification") or ""
+        ).strip().lower() if isinstance(gatekeeper_out, dict) else ""
+        if intent in {"community_banter", "daily_life", "make_joke", "vent", "noise", "off_topic"}:
+            return True
+        if gk_type in {"community_banter", "noise", "off_topic", "daily_life"}:
+            return True
+
+        vf_result = (verifier_out or {}).get("verification_result") or {}
+        relation = vf_result.get("relation_judgment") or {}
+        if isinstance(relation, dict):
+            target = str(relation.get("discussion_target") or "").strip().lower()
+            promotion = str(relation.get("promotion_decision") or "").strip().lower()
+            if target in {"generic_topic", "non_work", "author_talk", "community_banter"}:
+                return True
+            if promotion == "reject":
+                return True
+
+        for src in getattr(ctx, "uncertainty_sources", []) or []:
+            src_text = str(src or "").lower()
+            if (
+                "semantic_seed_review_not_specific_work" in src_text
+                or "intent_permit_for_title_search=false" in src_text
+                or "context_only_no_work_anchor" in src_text
+            ):
+                return True
+        return False
+
+    def _has_curated_alias_contextual_work_anchor(
+        self,
+        ctx: "ConversationContext",
+        title: Optional[str],
+        *,
+        verifier_out: Optional[Dict[str, Any]] = None,
+    ) -> bool:
+        if not self._curated_alias_for_title_mentioned_in_post_main(ctx, title):
+            return False
+        if self._semantic_no_work_signal_for_curated_alias(ctx, verifier_out=verifier_out):
+            return False
+
+        post_text = self._post_main_text_for_curated_alias(ctx)
+        try:
+            from .orchestrator import ExpertType
+            gatekeeper_out = ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
+            discourse_out = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
+        except Exception:
+            gatekeeper_out = {}
+            discourse_out = {}
+
+        gk_entities = (gatekeeper_out.get("detected_entities") or {}) if isinstance(gatekeeper_out, dict) else {}
+        gk_clues = (gatekeeper_out.get("context_clues") or {}) if isinstance(gatekeeper_out, dict) else {}
+        gk_type = str(
+            gatekeeper_out.get("post_type") or gatekeeper_out.get("classification") or ""
+        ).strip().lower() if isinstance(gatekeeper_out, dict) else ""
+        da = (discourse_out.get("discourse_analysis") or {}) if isinstance(discourse_out, dict) else {}
+        if not isinstance(da, dict):
+            da = {}
+        seed = da.get("semantic_seed_review") or {}
+        if not isinstance(seed, dict):
+            seed = {}
+        intent = str(da.get("intent") or "").strip().lower()
+
+        has_episode_or_serial_cue = bool(
+            gk_clues.get("has_episode_reference")
+            or gk_clues.get("is_spoiler_discussion")
+            or re.search(r"\d+\s*(?:화|회차|호)\b|휴재|연재|스포|작가의\s*말|최신화|완결", post_text)
+        )
+        has_positive_semantic_cue = bool(
+            seed.get("is_specific_work_discussion") is True
+            or intent in {"discuss_work", "express_opinion", "review_work", "ask_work_question"}
+            or gk_type in {"work_discussion", "review", "spoiler_discussion", "character_talk"}
+        )
+        has_entity_cue = bool(
+            gk_entities.get("possible_titles")
+            or gk_entities.get("possible_characters")
+        )
+        return bool(has_positive_semantic_cue and (has_episode_or_serial_cue or has_entity_cue))
+
+    def _has_curated_alias_guard_exception(
+        self,
+        ctx: "ConversationContext",
+        title: Optional[str],
+        *,
+        decoder_out: Optional[Dict[str, Any]] = None,
+        verifier_out: Optional[Dict[str, Any]] = None,
+    ) -> bool:
+        title_raw = str(title or "").strip()
+        if not ctx or not title_raw:
+            return False
+        if self._title_directly_in_post(ctx, title_raw):
+            return True
+        title_norm = self._normalize_match_text(title_raw)
+        for entry in getattr(ctx, "verified_character_work_links", []) or []:
+            if not isinstance(entry, dict) or entry.get("_weak_match"):
+                continue
+            if self._normalize_match_text(entry.get("title")) == title_norm:
+                return True
+        if self._has_curated_alias_contextual_work_anchor(ctx, title_raw, verifier_out=verifier_out):
+            return True
+        if self._has_non_character_anchor_support(title_raw, decoder_out=decoder_out, verifier_out=verifier_out):
+            return True
         return False
 
     def _looks_like_platform_event_meta_post(self, ctx: "ConversationContext") -> bool:

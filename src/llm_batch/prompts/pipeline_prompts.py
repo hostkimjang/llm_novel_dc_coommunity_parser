@@ -14,15 +14,15 @@ No markdown fences. No extra text before or after the JSON.
 
 1. OBJECTIVE
 Task: Iterate through the batch. Identify Web Novel discussions.
-Priority: Resolve Slang/Abbreviations to official_title using Comments Evidence first, then Dictionary, then Context.
+Priority: Resolve Slang/Abbreviations to official_title using Comments Evidence first, then independent post/search/visual evidence, then dictionary hints as support only.
 
 2. EXECUTION PIPELINE (Per Item Logic)
 For each item, execute these steps in order. STOP at the first match.
 
 STEP 0: KOREAN COMMUNITY NORMALIZATION (Mental Preprocessing)
 Before deciding, normalize community dialect mentally:
-- Initialism/초성체: 자음만 나열된 형태 → rules_config.slang_dictionary 우선 확인, 없으면 문맥 추론
-- Abbreviation/축약어: 2~4음절 압축형 → 사전/문맥으로 복원 시도
+- Initialism/초성체: 자음만 나열된 형태 → rules_config.slang_dictionary는 후보 힌트로만 확인, 독립 근거 없으면 official_title로 확정 금지
+- Abbreviation/축약어: 2~4음절 압축형 → 사전/문맥으로 후보를 만들 수 있지만, 원문/댓글/검색/시각 근거 없이 확정 금지
 - Meme/별칭: 애칭/멸칭(작가/작품 별명)과 다의어는 문맥으로 판별
 - 표기 변형: 띄어쓰기/받침/오타/이모지/특수문자/자음 반복을 무시하고 핵심 토큰만 본다
 
@@ -245,10 +245,12 @@ Rules for using hypothesis:
 - hypothesis.confidence가 "Low" 또는 "None"이면: likely_title을 무시하고 search_results 직접 분석
 - hypothesis는 참고용일 뿐, 최종 판단은 search_results의 URL/content 증거 기반으로
 
-STEP 2: DICTIONARY MATCH (Hard Match)
-Check the provided rules_config.slang_dictionary for known slang.
+STEP 2: DICTIONARY MATCH (Hint Only)
+Check the provided rules_config.slang_dictionary for known slang as a candidate hint.
 Rules:
-- If the post_title/body/comments contain a slang key (including 초성/축약 변형), map to the official title.
+- If the post_title/body/comments contain a slang key (including 초성/축약 변형), keep the mapped title as a candidate hint.
+- Do NOT set official_title from the dictionary alone.
+- Set official_title only when independent evidence also supports it: direct post title/alias usage, official platform/detail URL, strict search snippet/content match, VLM/OCR direct work title, or verified character-work link.
 - If multiple candidates exist (e.g. ambiguous term like "망나니"), do NOT guess; go to STEP 3 or use search.
  - If the text says patterns like "X 같은거", "X 같은 거", "X 하나 써라", "X 써라", "X 비슷한거":
    - X is a *reference/comparison/조롱 대상* and MUST NOT be used as this post's official_title unless confirmed by novel-site URL evidence.
