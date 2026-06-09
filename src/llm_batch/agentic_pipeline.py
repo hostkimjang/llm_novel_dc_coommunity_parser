@@ -21662,7 +21662,9 @@ OUTPUT JSON:
         if not ctx or not title_raw or not isinstance(vf_result, dict):
             return False
 
-        if self._has_official_title_evidence(ctx, title_raw):
+        # verifier promotion 게이트 불변(계약): OCR 카탈로그(rank2) 근거만으로는 verifier 의 nullify 거부권을
+        # 무력화하지 못하게 한다. 본문/검색/공식URL 1차 앵커가 있을 때만 거부권이 풀린다.
+        if self._has_official_title_evidence(ctx, title_raw, allow_ocr_catalog=False):
             return False
         if self._find_title_matched_official_url(title_raw, getattr(ctx, "search_results", []) or []):
             return False
@@ -28202,11 +28204,14 @@ OUTPUT JSON:
         taxonomy["secondary_reference_works"] = interpretation.get("secondary_reference_works")
         return taxonomy
 
-    def _has_official_title_evidence(self, ctx, title: Optional[str]) -> bool:
+    def _has_official_title_evidence(self, ctx, title: Optional[str], *, allow_ocr_catalog: bool = True) -> bool:
         """
         특정 제목이 공식 소설 플랫폼 증거로 확인되는지 판별.
         - 검색 결과의 공식 플랫폼 URL + 제목 매칭
         - fetch된 공식 플랫폼 페이지의 제목/본문 매칭
+        - (rank2) 깨끗한 이미지 OCR 카탈로그 상세 — allow_ocr_catalog=True 일 때만. verifier promotion 게이트처럼
+          'OCR-only 근거로 무효화/재승격을 흔들면 안 되는' precision-critical 소비처는 allow_ocr_catalog=False 로 호출해
+          OCR 카탈로그가 그 게이트를 우회하지 못하게 한다(계약: verifier promotion 게이트 불변).
         """
         if not title:
             return False
@@ -28347,6 +28352,78 @@ OUTPUT JSON:
                 if fetched_author and self._author_supported_in_context(fetched_author, ctx):
                     return True
 
+        # rank2 (recall / 근본원인 A): 깨끗한 이미지 OCR 카탈로그 상세를 official_detail 에 준하는 근거로 인정.
+        # vetted work-title 카탈로그(작품명)+(작가 또는 강구조신호) 공기 시에만 발화(명시 seed 게이트).
+        # allow_ocr_catalog=False 소비처(verifier promotion veto 등)에는 OCR 근거를 노출하지 않아 게이트 불변 보존.
+        if allow_ocr_catalog and self._has_ocr_catalog_official_title_evidence(ctx, title_raw):
+            return True
+
+        return False
+
+    def _ocr_catalog_structure_marker(self, text: Any) -> bool:
+        """rank2: OCR 카탈로그 상세의 구조 신호(메트릭/시놉시스/플랫폼마커) 탐지. 일반 패턴만 — hardcode-free."""
+        t = str(text or "")
+        if not t.strip():
+            return False
+        if self._has_platform_meta_signal(t):  # 노벨피아/문피아/시리즈/조회수/표지/연재처/유료화 등
+            return True
+        return bool(
+            re.search(
+                r"(조회수|추천수|선호작|관심수|별점|평점|회차|\d+\s*화\b|완결|연재중|줄거리|시놉시스|소개글)",
+                t,
+            )
+        )
+
+    def _has_ocr_catalog_official_title_evidence(self, ctx, title: Optional[str]) -> bool:
+        """rank2 (recall / 근본원인 A): 이미지 OCR 카탈로그 상세를 official_title_evidence 로 인정할지 판정.
+
+        명시 seed 게이트 — 기존 이미지 1차 승격 계약(promotion_eligible + focus_role work_anchor/supporting_text +
+        title_role work_title + explicit_work_title==official_title)을 그대로 재사용해(`_has_image_primary_promotion_signal`)
+        게임 UI 아이템명·배경 리스팅·약신호·meme item을 동일하게 배제한 뒤, 그 vetted work-title 카탈로그 item에
+        (작가명 라벨) 또는 (메트릭/시놉시스/플랫폼마커 강구조신호)가 공기할 때만 official 로 인정한다(작품명+1종 추가 = 2종 공기).
+        - evidence_type 은 explicit_text/cover_title(표지·명시 텍스트)만 — 분위기·캐릭터·밈 추정 배제(멀티모달 precision).
+        - 본문-OCR 주제 정합성: 본문이 플랫폼/연재 메타(_looks_like_platform_meta_post) 또는 커뮤니티 잡담/밈
+          (_looks_like_community_meta_banter_post)이면 카탈로그 제목이 부수적 → 제외(author_talk/release_meta·meme 오확정 방지).
+        특정 작품/작가/별칭/post id hardcode 없음 — 전부 VLM 산정 스키마 필드·일반 패턴으로만 동작."""
+        title_norm = self._normalize_match_text(str(title or ""))
+        if not title_norm:
+            return False
+        if self._is_platform_branding_title(title) or self._looks_like_listing_title(title):
+            return False
+        if self._is_structural_nonwork_title(title):
+            return False
+        # 기존 이미지 1차 승격 계약을 만족하는 vetted work-title 카탈로그 item이 있어야 함(promotion_eligible 등).
+        if not self._has_image_primary_promotion_signal(ctx, title):
+            return False
+        # 본문-OCR 주제 정합성: 메타/잡담 본질이면 부수 카탈로그 제목으로 over-confirm 금지
+        if self._looks_like_platform_meta_post(ctx) or self._looks_like_community_meta_banter_post(ctx):
+            return False
+        post_data = getattr(ctx, "post_data", None) or {}
+        for item in (post_data.get("image_enrichment") or []):
+            if not isinstance(item, dict):
+                continue
+            if self._is_background_listing_vlm_item(item):
+                continue
+            if not bool(item.get("promotion_eligible")):
+                continue
+            if str(item.get("focus_role") or "").strip() not in {"work_anchor", "supporting_text"}:
+                continue
+            if str(item.get("title_role") or "").strip() not in {"", "work_title"}:
+                continue
+            if self._normalize_match_text(item.get("explicit_work_title") or "") != title_norm:
+                continue
+            if str(item.get("evidence_type") or "") not in {"explicit_text", "cover_title"}:
+                continue
+            # 작품명(vetted)에 더해 작가명 라벨 OR 강구조신호(메트릭/시놉시스/플랫폼) 공기 → 카탈로그 상세 2종 충족
+            has_author = bool(str(item.get("explicit_author_name") or "").strip())
+            cues_text = " ".join(
+                [
+                    str(item.get("ocr_text") or ""),
+                    " ".join(str(c or "") for c in (item.get("work_cues") or [])),
+                ]
+            )
+            if has_author or self._ocr_catalog_structure_marker(cues_text):
+                return True
         return False
 
     def _detect_multi_work_order_context(self, ctx, vf_result: Dict[str, Any]) -> Dict[str, Any]:
