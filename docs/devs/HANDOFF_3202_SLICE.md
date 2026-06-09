@@ -125,13 +125,16 @@ D. 일반화·검증가능성
 모두 적대적 검증(hardcode 아님 / 표본 지지 / 반대축 regression)을 거쳤다. rank는 임팩트순. 각 항목은 4절 균형
 원칙의 가드 조건을 반드시 동반한다(특히 precision은 title 보존, recall은 명시 seed 게이트).
 
-- **R1·근본원인 B/C (precision):** alias/stability 복구의 locked/confidence 승격 앞에 **'음수 정합 스코어 OR
-  Verifier critical 반론' 차단 게이트** 추가. title 보존, locked→false·High→Medium 강등만. (근거 11697261, 11674702)
-- **R2·근본원인 A (recall):** **OCR 카탈로그 상세를 'ocr_catalog_detail' tier로 승격** — (작품명)+(작가)+
+- **[닫힘 ✅ 2026-06-09 · 커밋 614a2b8] R1·근본원인 B/C (precision):** alias/stability 복구의 locked/confidence 승격 앞에
+  **'음수 정합 스코어 OR Verifier critical 반론' 차단 게이트** 추가. title 보존, locked→false·High→Medium 강등만. (근거 11697261, 11674702)
+  → `_abbrev_alias_lock_block_signal` + chokepoint 게이트. 검증 `docs/devs/RANK1-3_3202_VERIFICATION.md`.
+- **[닫힘 ✅ 2026-06-09 · 커밋 c9cef00] R2·근본원인 A (recall):** **OCR 카탈로그 상세를 official 증거로 승격** — (작품명)+(작가)+
   (메트릭/시놉시스/플랫폼마커) 중 2종 공기 시에만 `_has_official_title_evidence=true`. 본문-OCR 주제 정합성
   체크로 author_talk/release_meta 제외. (근거 11695625, 11645787, 11637724)
-- **R3 (precision):** lock 부여를 'title_alias 단독 표면'에서 분리 — 본문 직앵커/OCR 공식표제/공식 URL 중 1개
+  → `_has_ocr_catalog_official_title_evidence`(기존 이미지-승격 계약 재사용·verifier promotion 게이트 불변). 검증 동 문서.
+- **[닫힘 ✅ 2026-06-09 · 커밋 ddf8820] R3 (precision):** lock 부여를 'title_alias 단독 표면'에서 분리 — 본문 직앵커/OCR 공식표제/공식 URL 중 1개
   동반 시에만 locked. **title 보존 회귀테스트 선행**(미충족 시 drop). (근거 11674702, 11676327)
+  → `_lock_hard_anchor` 게이트 + `resolved_recall_anchor` displace 보호. title 보존 회귀 통과. 검증 동 문서.
 - **R4 (precision):** 약칭이 둘 이상 상이한 정식제목으로 분기(동일 original 약칭 cardinality≥2 & 본문 교차증거
   부재)면 locked 금지·Medium 이하. `_distinct_titles_for_orig` 방식 한정, 수렴 약칭(즉사무림 등) 무영향. (11674702)
 - **R5 (recall):** 검색 degraded/무결과 시 **쿼리 변형 1~2회 재시도**(플랫폼 컨텍스트 부착/한국어 원형 복원/
