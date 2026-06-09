@@ -114,6 +114,30 @@ effective_parallel = min(132,16,16) = **16**.
 - 산출물: `out/_rank_rerun/combined_before.json`(BEFORE), `final_after.json`(MYCODE), `base132_after.json`(BASECTL),
   `_attribute.py`(분석), `*.stderr.log`(런타임). 입력 `combined_input.jsonl`(132 = 32 ∪ 100).
 
+## 5b. Ground-truth 정확성 검증 (본문+댓글+OCR 정독 + 웹검색 대조)
+신호 분포(resolved 수)만으로는 "정답을 찾았는지" 알 수 없으므로, rank2가 **새로 해소한 R2 순증분 28건**에 대해
+각 post의 본문+댓글+이미지 OCR을 정독하고 **웹검색으로 실제 작품을 규명**해 파이프라인 해석의 정답 여부를 판정했다
+(워크플로우 28에이전트, 웹검색 기반).
+
+판정: correct 10 / correct_work_title_noisy 7(작품 맞고 제목만 OCR 잡음) / wrong_work 2 / garbage_title 2 /
+non_work_should_be_unresolved 6 / uncertain 1. → **작품 식별 정답 17/28(61%), 문제 10/28(36%)**.
+
+**귀속(중요):** 문제 10건의 해소 경로를 보면 **6건은 rank2(OCR 카탈로그) 경로가 아님** — title_alias 5건
+(URL 'novel.munpia.com', '광고', '림월드'(게임), '욕망의전차'/'빙의 생활로 창작물 속으로' 오매칭) + author 1건('마왕들의 각오').
+이는 **title_alias/author 과매칭(기존 버그)**이며 rank2와 무관(원본 3202에도 URL-as-title 3건 전부 title_alias).
+rank2(image-OCR) 도메인의 진짜 누출은 ~4건 중 명확한 2건: **'School Days'(일본 미연시 와이푸 밈)·'三才剣法精解'(실존 무공비급)**
+— VLM이 비-웹소설 이미지를 표지로 오인했고 rank2가 '작가 OR 구조' 중 작가만으로 통과시킴.
+
+**조치:**
+- **rank2 v2 (커밋 616aea7)**: OCR official 인정에 **구조신호(플랫폼/메트릭/시놉시스) 필수화**(작가-only 배제).
+  웹확인 정답 카탈로그는 전부 노벨피아/문피아+조회/추천 동반 → 유지, 플랫폼 마커 없는 비-웹소설(School Days/무공비급) → 배제.
+  결정적 검증: unittest(작가-only 배제·작품명+구조 인정). rank2 도메인 정답률 추정 ↑(누출 2건 차단, 정답 17건 유지).
+- **신규 백로그(다음 세션, rank2 범위 밖)**: ① **title_alias 과매칭** — 'novel.munpia.com'(URL)·게임명·무관작으로
+  locked 확정(원본부터 존재, 본 슬라이스 빈도 낮으나 정밀도 영향 큼). official_title이 URL/도메인/플랫폼명 형태면
+  거부하는 일반 가드 필요. ② **OCR 제목 토큰 위생**(누출어 '죽 ' 등, 백로그 R6) — 작품은 맞고 제목 문자열만 정정.
+
+> 이 ground-truth는 **표본 spot-check**(rank2 순증분 28)이며 모집단 정답률/semantic approval로 환산하지 않는다(head slice).
+
 ## 6. 종료 상태 / 다음 세션
 - Task A·B·C(rank1-3) **종료**. HANDOFF 백로그 R1·R2·R3 닫음(HANDOFF 문서에 표시).
 - large-scale 진입 조건(HANDOFF 8절 ①②③): 본 작업은 discovery+gate 검증 단계이며 large-scale 미진입(미충족 명시).
