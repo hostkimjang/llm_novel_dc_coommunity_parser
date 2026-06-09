@@ -1,0 +1,882 @@
+{
+ "buckets": [
+  {
+   "bucket": "R1_unresolved_matchable",
+   "axis": "recall",
+   "total": 845,
+   "finding": {
+    "bucket": "R1_unresolved_matchable",
+    "axis": "recall",
+    "true_opportunity_rate": "약 4~5/18 (22~28%). 명확 1건(#11669927) + 경계 3~4건(#11677906, #11624879, #11698884, 약하게 #11629730). 나머지 13~14건은 platform/community-meta·일상잡담·현실뉴스로 작품 미존재가 정상.",
+    "dominant_pattern_ko": "버킷이 \"is_novel_related=true & resolution!=resolved\"의 catch-all(agentic_pipeline.py:11569-11572)이라 원천적으로 noise/banter가 다수를 차지함. 18건 중 다수(예: 노피아 콘·빔 #11718102, 애착고닉 차단 #11710062, 두쫀쿠 밈 #11660253/#11650584, 육발면 #11655419, 조퇴 #11665102, 게이트/미군 음공 #11645759)는 작품 seed가 없는 플랫폼밈·커뮤니티메타·일상/현실 잡담으로, 미해소가 올바른 판정. 진짜 recall 누락은 소수이며 공통 실패 메커니즘이 분명함: 식별력 높은 in-universe 고유명사(캐릭터명 근홍이/남궁연·한서진, 진영명 세레르족, 비교 제목 천마학자·마카물리나)가 본문에 있고 웹검색까지 수행되지만, 검색 결과가 (a) 동음이의 일반어로 오염(남궁연=재즈가수, 진한=고대사, 기계=기계공학)되거나 (b) 나무위키/플랫폼 일반 페이지만 반환되어 candidate_count가 1에 머물고, 단일 공식제목 확정 증거 부족을 이유로 withhold함. 즉 seed 탐지가 아니라 후보 disambiguation/confirmation 단계가 병목.",
+    "correctly_handled_pattern_ko": "플랫폼·커뮤니티 메타(노피아 콘/빔, 장갤 메타, 완장중 보추단), 유저창작 밈/삼행시(두쫀쿠), 일상·음식·신체 잡담(육발면, 장삐 허리아픔, 조퇴), 현실뉴스 차용 농담(미군 음공/마두로), 동음이의 일반명사 단발 반응(진한, 휴 살았네)은 모두 anchor_strength=none·decoder confidence=none/low로 정확히 noise 유지. 특히 검색 8~15건이 잡혔어도 동음이의 페이지(나무위키 '남궁연' 재즈가수, '진한' 고대사, '기계'공학)임을 인지해 작품 미확정을 유지한 것은 PRECISION 측면에서 올바른 처리 — 이 검색단어 기반 과대확정 미발생은 보존해야 할 동작.",
+    "representative_post_ids": [
+     11669927,
+     11677906,
+     11624879,
+     11698884,
+     11718102,
+     11645759,
+     11650584
+    ],
+    "candidate_fixes": [
+     {
+      "fix_ko": "오케스트레이터/Verifier에 '강한 in-universe 고유명사 anchor가 있는데 검색이 동음이의·일반페이지로 오염된 경우' 전용 disambiguation 라운드를 추가하는 evidence_augmentation. 본문 고유명사(캐릭터명/진영명/세계관어) + 작품맥락 토큰(상태창·전생·무협·갤 약칭 등)을 하나의 결합 쿼리로 재검색하고, 플랫폼 도메인(노벨피아/문피아/카카페/시리즈) 결과만 화이트리스트로 채점해 candidate를 재집계. 동음이의 일반 위키 페이지는 negative_evidence로 명시 강등. 특정 제목/별칭을 코드에 박지 않고 '고유명사+작품맥락 동시출현' 일반 규칙으로만 트리거.",
+      "mechanism": "evidence_augmentation",
+      "axis": "recall",
+      "expected_effect_ko": "#11669927(천마학자/마카물리나), #11624879(세레르족), #11677906(근홍이 상태창)처럼 plot_mention/search_only anchor가 잡혔으나 동음이의·일반페이지로 후보가 1에 묶여 withhold되던 진짜 작품글의 resolved 전환율 상승. noise(콘·빔, 두쫀쿠 등)는 작품맥락 토큰이 없어 트리거되지 않아 영향 없음.",
+      "hardcode_risk_self": "낮음~중간. 도메인 화이트리스트는 플랫폼 단위 일반화라 post/제목 hardcode 아님. 다만 '작품맥락 토큰' 사전이 비대해지면 hardcode 유사물이 될 수 있어, 토큰 목록은 슬랭DB/룰의 기존 일반 카테고리(상태창·전생·갤약칭)만 재사용하고 신규 작품명은 금지."
+     },
+     {
+      "fix_ko": "candidate_count==1 & official_title_evidence==false 상태에서 무조건 withhold하지 말고, anchor_strength가 low 이상이고 플랫폼 도메인 URL이 1건 이상이면 '약확정(confidence=Low, locked=false, source_tier=community/official_search)'으로 resolved 후보를 제출하도록 prompt_contract로 임계 분리. 단 anchor_strength=none(콘/빔·밈·일상)에는 절대 적용 안 됨을 계약에 명시해 PRECISION 보호.",
+      "mechanism": "prompt_contract",
+      "axis": "recall",
+      "expected_effect_ko": "단일 후보라도 플랫폼 증거가 있는 #11624879(세레르족, novelpia/munpia URL), #11669927류가 unresolved 대신 Low-confidence resolved로 회수. none anchor 잡담은 계약상 제외되어 과대확정 미증가.",
+      "hardcode_risk_self": "낮음. 제목/별칭이 아니라 anchor_strength·source_tier·도메인 존재여부라는 신호 임계로만 분기. 다만 임계가 느슨하면 PRECISION 저하 위험 → none/low 경계는 보수적으로."
+     },
+     {
+      "fix_ko": "버킷 자체를 review_artifact로 재분할: 'in-universe 고유명사 anchor 보유(고유명사 추출 비공백) & 검색실행 있음'인 항목만 별도 review 슬라이스로 떼어 사람/2차 LLM 재검토 큐에 올리고, anchor_strength=none & search_evidence_count=0인 순수 noise는 재검토 대상에서 제외. 845건 전수를 보지 않고 진짜 recall 후보만 좁혀 검토.",
+      "mechanism": "review_artifact",
+      "axis": "recall",
+      "expected_effect_ko": "845건 catch-all 중 실제 재검토 가치가 있는 소수(고유명사+검색수행)만 노출되어 false negative 적발 효율 상승. 노이즈 다수는 자동 제외되어 검토 피로/오탐 감소.",
+      "hardcode_risk_self": "매우 낮음. 산출물 분류·라우팅만 변경, production 판정 로직·제목 hardcode 없음."
+     }
+    ],
+    "notes_ko": "표본은 104k full scan의 순차 head slice이므로 이 18건 라벨 분포를 모집단 오류율로 환산 금지(지시 준수). recall 누락 핵심은 'seed 미탐지'가 아니라 '단일 후보 disambiguation 실패→withhold'이며, 동음이의 오염(남궁연/진한/기계)을 인지해 과대확정을 피한 현 동작은 PRECISION상 올바르므로 보존 대상. 따라서 fix는 검색 증강·임계 분리·검토 라우팅으로 RECALL을 회수하되 none anchor 잡담의 과대확정을 유발하지 않는 방향으로 한정함. worktree3229의 over_resolution_review/strong_bridge 필드가 primary 실행본에는 없어 강브리지 신호 활용은 불가했음."
+   },
+   "verified_fixes": [
+    {
+     "fix_ko": "오케스트레이터/Verifier에 '강한 in-universe 고유명사 anchor가 있는데 검색이 동음이의·일반페이지로 오염된 경우' 전용 disambiguation 라운드를 추가하는 evidence_augmentation. 본문 고유명사(캐릭터명/진영명/세계관어) + 작품맥락 토큰(상태창·전생·무협·갤 약칭 등)을 하나의 결합 쿼리로 재검색하고, 플랫폼 도메인(노벨피아/문피아/카카페/시리즈) 결과만 화이트리스트로 채점해 candidate를 재집계. 동음이의 일반 위키 페이지는 negative_evidence로 명시 강등. 특정 제목/별칭을 코드에 박지 않고 '고유명사+작품맥락 동시출현' 일반 규칙으로만 트리거.",
+     "mechanism": "evidence_augmentation",
+     "axis": "recall",
+     "verdict_obj": {
+      "verdict": "revise",
+      "is_hardcode": false,
+      "supported_by_posts": true,
+      "fix_ko": "스코프를 좁혀 유지: (1) 트리거 조건을 \"본문/댓글 in-universe 고유명사(캐릭터·진영·세계관어) anchor가 plot_mention/character_mention/search_only로 잡혔고 + 작품맥락 토큰(상태창·전생·무협·갤약칭 등) 동시출현 + 현재 candidate_count<=1로 withhold 직전\" 인 경우로 한정한다. 기존 orchestrator의 candidate 점수>=4.0 게이트(15751행)와 _post_title_norm 토큰 게이트(9174행)가 막아 본문 고유명사가 플랫폼 화이트리스트 재검색에 못 들어가던 좁은 구멍만 메운다. (2) 신규 라운드는 별도 메커니즘을 새로 만들지 말고 기존 _build_platform_context_query / site:novelpia OR munpia OR series.naver OR page.kakao OR joara 결합쿼리 + counter_evidence 이축 트랙(9664행)을 재사용한다(중복 구현 금지). (3) 채점은 기존 12283-12300행 스코어(공식 플랫폼 +2.6, 위키 +0.4, 위키 단독 동음이의 -2.2/-0.9)를 그대로 쓰되, 동음이의 일반 위키는 negative_evidence로 명시 기록만 추가. (4) 가장 중요: 재집계로 candidate가 늘어도 verifier의 promotion 게이트(verifier.py 4460-4504, in-post bridge 또는 converged_official_signal 필요)는 절대 완화하지 말 것 — 완화 시 #11624879(본문 'ㅇㅇㅇ')처럼 in-post 브리지 0인 글이 검색단어만으로 과대확정된다. 즉 이 fix는 \"후보 풀 정화 + 동음이의 강등\"까지만 하고, resolved 승격 판단은 기존 보수 게이트에 맡긴다. 특정 post/제목/별칭은 일절 코드에 박지 않음.",
+      "rationale_ko": "메커니즘 자체는 일반화(고유명사+작품맥락 동시출현 규칙)로 기술돼 있고, 코드에 이미 같은 철학(\"사례 하드코딩 없이 애매 토큰/캐릭터 앵커 존재 시에만 제한적 추가\", orchestrator 9667행)이 있어 hardcode가 아니다. 표본 18건 중 15건(콘·빔, 차단글, 장삐, 두쫀쿠, 육발면, 게이트/마두로=현실정치, 삼국지=역사, 기계공주=AI일러, 진한=동음이의 역사)은 작품맥락 토큰이 없어 트리거되지 않으므로 fix가 올바르게 회피한다 — 원시 버킷 카운트를 전부 문제로 보지 않았다. 진짜 개선 기회는 3건뿐: #11669927(천마학자/마카물리나, plot_mention, 카카페·노벨피아 URL 있음에도 candidate=1로 withhold), #11624879(세레르족, 문피아·노벨피아·시리즈 URL 있으나 나무위키 '세레르족' 동음이의 오염), #11677906(근홍이/상태창, 그러나 검색결과 0 유효 — 재검색해도 매칭불가 가능성). 핵심 한계: 코드베이스가 이미 플랫폼 화이트리스트 결합쿼리, 동음이의 위키 감점, 유사제목 disambiguation(Phase43)을 갖췄다. 이 fix는 신규 메커니즘이 아니라, 본문 고유명사가 기존 재검색 게이트(점수>=4.0, post_title 토큰)에 못 걸리는 좁은 구멍을 메우는 refinement다. 따라서 keep이 아니라 revise(스코프 한정·기존 로직 재사용 명시·게이트 비완화 조건 추가)가 보수적으로 타당하다.",
+      "regression_risk_ko": "precision 회귀 위험이 실재한다. (1) 트리거 게이트 'in-universe 고유명사' 판정이 DC 은어/밈에서 노이즈가 크다 — 삼국지(유비), 기계공주, 진한 같은 일반명사·동음이의가 고유명사로 오탐되면 새 라운드가 플랫폼 fuzzy 매칭으로 후보를 부풀려 약한 anchor에 High+locked 과대확정을 유발할 수 있다. 화이트리스트 채점이 줄여주지만 제거하진 못한다. (2) #11624879는 본문이 'ㅇㅇㅇ'로 in-post 브리지가 0인데, 동음이의 위키 강등으로 후보 풀이 플랫폼 URL만 남으면 candidate_count가 올라가 verifier 게이트를 통과시킬 유혹이 생긴다 — 이 글이 resolved로 가면 검색단어만으로 작품 확정한 전형적 false positive다. (3) 반대로 recall 이득은 제한적이다: verifier promotion 게이트(4460-4504행)가 여전히 in-post bridge/convergence를 요구하므로, 후보 풀만 정화해도 #11669927/#11624879가 실제 resolved로 전환되려면 게이트까지 완화해야 하고 그 순간 precision이 직접 깨진다. #11677906은 검색결과 0이라 재검색 자체가 무효. 따라서 fix를 '후보 정화+negative_evidence 강등'까지로 묶고 promotion 게이트는 손대지 않는다는 조건이 충족돼야만 순(net) precision 손실 없이 소폭 recall 개선이 가능하다. 조건 미충족 시 drop이 맞다."
+     }
+    },
+    {
+     "fix_ko": "candidate_count==1 & official_title_evidence==false 상태에서 무조건 withhold하지 말고, anchor_strength가 low 이상이고 플랫폼 도메인 URL이 1건 이상이면 '약확정(confidence=Low, locked=false, source_tier=community/official_search)'으로 resolved 후보를 제출하도록 prompt_contract로 임계 분리. 단 anchor_strength=none(콘/빔·밈·일상)에는 절대 적용 안 됨을 계약에 명시해 PRECISION 보호.",
+     "mechanism": "prompt_contract",
+     "axis": "recall",
+     "verdict_obj": {
+      "verdict": "revise",
+      "is_hardcode": false,
+      "supported_by_posts": false,
+      "fix_ko": "계약 조건의 게이트 필드를 바로잡고 임계를 좁힌 뒤에만 채택. (1) 정밀도 가드를 'anchor_strength != none'으로 걸지 말 것 — 이 버킷 18건 전부, 그리고 fix가 회수 대상으로 지목한 #11624879/#11669927 자신도 anchor_strength=none이라 가드를 글자대로 적용하면 회수 후보가 0이 되거나(불활성), 반대로 reason 텍스트의 grounding_anchor로 재해석하면 search_only(가장 약한 신호)까지 통과해 밈잡담을 과대확정함. 실제로 #11624879는 파이프라인이 이미 'community_banter: 키워드 기반 잡담/밈'으로 판정한 글이다. (2) 약확정 후보 제출 조건을 '플랫폼 도메인 URL 1건 이상'만으로 두지 말 것 — genrenovel 갤 head slice는 거의 모든 토큰에서 novelpia/munpia/kakao URL이 검색되므로 이 조건은 변별력이 없다(두쫀쿠/삼국지/장갤도 통과). 대신 grounding_anchor가 search_only가 아닌 plot_mention/character_mention 등 본문-로컬 서사 앵커일 것 + 플랫폼 official 도메인 URL이 candidate와 동일 작품으로 수렴(single converged work)할 것을 AND 조건으로 요구하고, search_only/none anchor와 platform_meta·일상·음식·밈 서브타입은 계약상 명시 제외. (3) confidence=Low, locked=false, source_tier=official_search로만 제출하고 review_artifact(qualitative review packet)로 후속 정합 검토를 강제. 이렇게 좁히면 #11669927(plot_mention+플랫폼URL)류만 회수되고 #11624879(search_only 밈)는 제외된다.",
+      "rationale_ko": "표본 18건 중 16건이 is_relevant=false(노이즈: 콘/빔 밈, 일상·음식, 정치 OCR, 삼행시 창작, 커뮤니티 메타). 이들은 이미 올바르게 unresolved/noise로 처리된 것이며 회수 대상이 아니다. is_relevant=true는 단 2건(#11624879 세레르, #11669927 이과마법)뿐인데, 둘 다 fix가 의존하는 anchor_strength가 'none'이다. 즉 fix가 PRECISION 보호 장치로 내세운 'anchor_strength=none 절대 제외'를 글자대로 적용하면 정작 회수하려는 두 글이 스스로 제외되어 recall 이득이 0이다. 반대로 fix 작성자가 실제로 의도한 게 reason 텍스트의 grounding_anchor(search_only/plot_mention)라면, 이는 JSONL 스키마 필드 anchor_strength와 다른 필드이고 search_only는 가장 약한 신호다. #11624879는 본문이 'ㅇㅇㅇ'뿐이고 파이프라인이 이미 밈잡담으로 판정했는데 플랫폼 URL 1건으로 Low-resolved 승격하면 정확히 goal이 막으려는 과대확정이다. 또 플랫폼 도메인 URL은 이 모집단에서 거의 보편적으로 등장해 변별력이 없다. fix의 recall 의도(특히 #11669927 plot_mention 류 false negative 회수)는 정당하나, 게이트 필드 지정이 틀렸고 임계가 과도하게 느슨해 그대로는 채택 불가. hardcode는 아니며(필드 기반 일반화) 본문 id/제목/별칭을 박지 않음.",
+      "regression_risk_ko": "recall fix이므로 위험은 PRECISION(과대확정) 쪽. 원안 그대로면: (a) '플랫폼 URL 1건 이상'만으로 약확정을 허용 → genrenovel head slice에서 novelpia/munpia/kakao URL은 거의 모든 키워드 검색에 떠 변별력이 없어, 두쫀쿠·삼국지·장갤·기계공주 같은 잡담/밈/일반명사 글까지 candidate_count==1만 맞으면 Low-resolved로 새는 대량 false positive 위험. (b) #11624879처럼 이미 'community_banter 밈'으로 판정된 search_only 글을 승격 → noise를 resolved로 오염. (c) 16/18이 노이즈인 분포에서 임계 한 칸만 풀려도 정밀도 손실이 회수되는 진성 작품 수(이 표본 기준 사실상 1건, #11669927)를 압도. 반대로 가드를 글자대로(anchor_strength=none 제외) 적용하면 recall 이득 0의 무해-무익 변경이 됨. 따라서 revise: grounding_anchor를 search_only 제외·서사앵커(plot/character)로 한정하고 플랫폼 URL은 단일 작품 수렴 조건과 AND로 묶어야 precision 손실 없이 #11669927류만 안전 회수 가능."
+     }
+    },
+    {
+     "fix_ko": "버킷 자체를 review_artifact로 재분할: 'in-universe 고유명사 anchor 보유(고유명사 추출 비공백) & 검색실행 있음'인 항목만 별도 review 슬라이스로 떼어 사람/2차 LLM 재검토 큐에 올리고, anchor_strength=none & search_evidence_count=0인 순수 noise는 재검토 대상에서 제외. 845건 전수를 보지 않고 진짜 recall 후보만 좁혀 검토.",
+     "mechanism": "review_artifact",
+     "axis": "recall",
+     "verdict_obj": {
+      "verdict": "revise",
+      "is_hardcode": false,
+      "supported_by_posts": true,
+      "fix_ko": "R1 버킷을 review_artifact로 재분할하되, 인클루전 기준을 제안 원안보다 좁힌다. (1) 자동 제외(안전): anchor_strength=none & search_evidence_count=0인 항목은 재검토 큐에서 빼는 부분은 표본이 강하게 지지한다 — 표본 18건 중 search=0인 8건(애착고닉 차단/허리아픔/조퇴/삼행시/음식/미군뉴스 등)은 전부 명백한 noise였다. (2) 인클루전(보완 필요): '고유명사 추출 비공백 & 검색실행 있음'만으로는 부족하다. 표본에서 노피아 콘/빔(11718102), 장갤 메타(11692469), 완장중 보추단(11682748), 진한/팥고물 밈(11640937), 삼국지 유비(11634552)는 모두 proper-noun처럼 보이는 토큰 + search hit를 가지지만 platform_meta/community_banter/historical-trope이라 재검토 가치가 낮다. 따라서 인클루전 조건에 intent permit(community_banter/trope_discussion/author_talk/recommendation 제외)와 'in-universe 고유명사'(플랫폼명/커뮤니티 은어/역사 인물 제외)를 generic filter로 추가한다. (3) 재검토 packet에는 IMP-20260531-227 계약(비관련·no-title·no-anchor platform/meta는 unresolved_matchable이 아니라 context_only) 및 intent-permit/direct-anchor 규칙을 명시적으로 실어, 사람/2차 LLM이 잡담을 작품으로 재확정(과대확정)하지 않게 한다. 모든 조건은 post_id/제목/별칭이 아닌 필드(anchor_strength, search_evidence_count, intent, proper-noun class)로 일반화한다.",
+      "rationale_ko": "이 fix는 production code(gate/prompt/parser)를 바꾸지 않는 순수 review_artifact(재검토 큐 선별)이며, 사용 필드가 anchor_strength/search_evidence_count/proper-noun 추출로 모두 generic이라 hardcode가 아니다. 표본 지지도: 18건 중 is_relevant=true인 진짜 recall 후보 2건(11669927 이과마법/천마학자 plot mention, 11624879 세레르 작품 잡담)은 둘 다 search>0이라 필터를 통과해 보존되고, search=0인 8건 noise는 자동 제외돼 검토 피로가 준다 — 방향성은 옳다. 다만 keep이 아니라 revise인 이유: 원안의 인클루전 기준('고유명사+검색실행')이 느슨해 platform_meta/community_banter/trope 다수(11718102, 11692469, 11682748, 11640937, 11634552)가 그대로 큐에 남는다. 특히 11718102는 production 계약(IMP-20260531-227, v379)에서 이미 context_only로 분류돼야 하는 케이스인데, 이 primary repo 실행본은 worktree3229 신호가 없어 unresolved_matchable로 되돌아온 것이다. 즉 845 catch-all의 상당부는 '계약상 context_only인데 신호 누락으로 잘못 남은 noise'이므로, 인클루전 기준에 intent-permit과 in-universe 고유명사 조건을 더해야 진짜 recall 후보 비율이 올라간다.",
+      "regression_risk_ko": "직접적 precision 회귀 위험은 낮다 — review_artifact는 resolution/gate/prompt를 바꾸지 않으므로 자동으로 과대확정을 만들지 않는다. 위험은 간접적이다: 인클루전이 느슨하면 노피아 플랫폼 잡담, 삼국지 역사 트로프, 장갤 커뮤니티 메타 같은 항목이 재검토 큐에 노출되고, 사람/2차 LLM이 검색 단어 일치만 보고 작품으로 재확정하면 IMP-20260531-227이 막아둔 platform/meta 과대확정(precision FP)이 재유입된다. recall 축 자체의 손실 위험(정당 작품 미해소)은 작다 — search=0 자동 제외 대상 8건은 표본상 모두 noise였고, is_relevant=true 후보 2건은 search>0이라 보존되기 때문이다. 다만 search=0인데 본문에 직접 in-universe 고유명사가 있는 희귀 케이스(예: 검색 미실행된 plot 토론)는 자동 제외되면 false negative가 될 수 있으므로, '검색실행 있음'을 절대 제외 기준으로만 쓰지 말고 'search=0 & 직접 작품명/별칭 표면 있음'은 별도 소수 슬라이스로 남기는 안전판을 두는 것이 좋다."
+     }
+    }
+   ]
+  },
+  {
+   "bucket": "R2_ocr_explicit_title_unresolved",
+   "axis": "recall",
+   "total": 100,
+   "finding": {
+    "bucket": "R2_ocr_explicit_title_unresolved",
+    "axis": "recall",
+    "true_opportunity_rate": "약 5/18 (28%) 가 명확/유력 recall 기회. 추가로 OCR 깨짐으로 보류가 정당한 경계 4건(11650591/11631286/11718099/11698861)을 제외하면 진짜 기회는 5건. 나머지 9/18은 이미 올바르게 보류됨.",
+    "dominant_pattern_ko": "지배적 recall 누락 패턴: OCR이 '플랫폼 작품 상세페이지' 전체 chrome(작품명+작가명+조회/추천/회차/장르태그/시놉시스)을 깨끗하게 읽었고 본문이 바로 그 작품을 토론/추천/감상하는데도 미해소로 남음. 대표적으로 11695625(만나니 용사를 너무 잘 키웠다, 작가 리틀빅, 5.6M 조회, 본문 '이거 리뷰해야하는데'), 11645787(부르고뉴의 기사가 되었다!, 작가 불링거, 시놉시스 포함, 본문 '이런걸 꽁쳐두고'), 11637724(미국 살끄니까, 작가 김스낵, 13.5M 조회, 본문 '760화 보다 하차/이후 전개 볼만하냐'). 근본 원인은 arbiter의 _has_official_title_evidence(arbiter.py:7480)가 web-fetch된 structured_info만 official-title 근거로 인정하고, image_evidence_catalog의 OCR 상세페이지 토큰은 official_title_evidence=false로 일관 처리하여(예외 없이 모든 18건 official_title_evidence:false) source_tier=official_detail / locked로 승격되지 못함. 즉 '깨끗한 카탈로그 OCR'과 '단순 search_only'를 증거 등급에서 구분하지 못함.",
+    "correctly_handled_pattern_ko": "이미 올바르게 보류된 패턴(precision 정상): (a) off-domain OCR — 애니/게임/피규어/플랫폼이벤트가 OCR에 잡혔지만 웹소설이 아님: 11711632(너의 이름은 일본 포스터), 11690864(Blue Archive 게임), 11671486(RimWorld→'RIBAORLD' 게임), 11642525(Fallout T-60 피규어 광고), 11684372(밀리언클래스 모집요강=공모전 공지). (b) OCR 제목이 본문 주제와 무관한 red herring: 11682749(OCR '다크레이디'지만 본문은 '묵향이라니까'), 11703668(OCR 워터마크 'Trembling Moods'지만 주제는 작가 '갤질의사'), 11674713(스샷 속 '용의자 X의 헌신'은 드립 캡처), 11658668(밈 이미지). 이들은 OCR 명시 토큰이 있어도 작품 매칭하지 않은 것이 정답이며, search 단어만으로 과대확정하지 않은 precision 성공 사례. 경계(보류 정당): 11650591/11631286/11718099/11698861 — OCR가 깨져('비틀 저서라도', '로즈알트의 변건', '검여먹을 혼성명', '정실의 왕 엘황'+'아침 모르겠다는것이아') 토큰 신뢰도가 낮아 보류가 합리적.",
+    "representative_post_ids": [
+     11695625,
+     11645787,
+     11637724,
+     11665121,
+     11687635,
+     11711632,
+     11671486,
+     11682749
+    ],
+    "notes_ko": "버킷 가설('OCR이 명시 제목을 읽었는데 미해소') 검증 결과: 100건 버킷이지만 표본 18건 중 다수는 정당한 보류였고, 진짜 gap은 '깨끗한 플랫폼 카탈로그 OCR'이라는 특정 하위유형에 집중됨. 핵심 차별 신호 두 가지: (1) OCR 텍스트에 플랫폼 카탈로그 chrome(조회/추천/회차/장르해시태그/시놉시스 또는 노벨피아/문피아/SERIES 로고)이 동반되는가 → resolve 가능, (2) OCR 토큰이 깨졌거나 off-domain(애니/게임/피규어/공모전)이거나 본문 주제와 불일치 → 보류 유지. 11665121은 OCR('후회 안 하는 프로듀서')+댓글('후회 프듀 ㄷㄷ')이 상호 보강하는 유력 기회. 11687635(아포칼립스의 던전주가 되었다)는 추천요청의 예시작이라 약하지만 이미지 속 작품은 식별 가능. 표본을 모집단 오류율로 환산하지 말 것(순차 head slice).",
+    "candidate_fixes": [
+     {
+      "fix_ko": "OCR/VLM 증거(image_evidence_catalog)에서 '플랫폼 작품 상세페이지 시그널'을 감지하는 evidence-tier 승격 게이트 신설. 신호: 동일 이미지 OCR 내에 (작품명 토큰) + (작가명 라벨) + (조회/추천/회차/선호/알람 같은 메트릭) 또는 (장르 해시태그+시놉시스 문장) 또는 (노벨피아/문피아/네이버시리즈/카카오/SERIES 플랫폼 마커) 중 2종 이상이 공기(co-occur)하면, 해당 OCR 제목을 official_detail에 준하는 'ocr_catalog_detail' tier로 승격하여 _has_official_title_evidence가 True를 반환하도록 함. 특정 제목/별칭/오타가 아니라 '카탈로그 구조 신호'로 일반화.",
+      "mechanism": "gate",
+      "axis": "recall",
+      "expected_effect_ko": "11695625/11645787/11637724처럼 깨끗한 카탈로그 OCR을 가진 글이 source_tier=ocr_catalog_detail로 승격되어 resolved 도달. off-domain/깨진 OCR은 카탈로그 신호가 없어 영향 없음(precision 보존).",
+      "hardcode_risk_self": "낮음. post_id/제목을 박지 않고 '카탈로그 chrome 신호 2종 공기'라는 구조적 규칙만 사용. 다만 플랫폼 마커 키워드 목록은 유지보수 필요(이미 arbiter.py:9340대에 정렬/플랫폼 토큰 목록 존재하므로 동일 패턴으로 확장 가능)."
+     },
+     {
+      "fix_ko": "parser/스키마에 OCR 제목의 신뢰도 플래그(ocr_title_clean: bool)와 출처유형(ocr_source: catalog_detail|episode_list|cover|watermark|screenshot|offdomain)을 image_evidence_catalog 항목에 추가. mojibake/깨짐 휴리스틱(자모 분리·비정상 공백·의미불명 토큰 비율)으로 clean 여부를 표기하고, off-domain 도메인(애니메이션 영화/게임 타이틀/피규어/공모전 공지)을 별도 태깅. arbiter는 ocr_title_clean=True & ocr_source in {catalog_detail, episode_list}일 때만 resolve 후보로 사용.",
+      "mechanism": "parser_schema",
+      "axis": "recall",
+      "expected_effect_ko": "11650591(비틀 저서라도)·11631286(로즈알트의 변건) 같은 깨진 OCR은 clean=False로 보류 유지(precision), 11695625/11637724 같은 clean catalog는 resolve 후보화(recall). off-domain(11711632/11690864/11671486/11642525/11684372)은 offdomain 태그로 자동 배제.",
+      "hardcode_risk_self": "중간. off-domain 분류가 키워드/룰 기반이면 일반화되지만, 특정 게임·애니 이름을 박으면 hardcode가 됨 — 반드시 '도메인 카테고리(게임/영화/피규어/공모전) 일반 신호'로만 구현하고 개별 타이틀 리스트는 금지."
+     },
+     {
+      "fix_ko": "Verifier/Arbiter 프롬프트 계약에 'OCR 카탈로그 상세페이지 우선' 규칙 명문화: 이미지가 플랫폼 작품 상세/회차 페이지(작가명+메트릭+시놉시스 동반)이고 본문이 그 작품의 감상/추천/연재상태를 논하면, web search 0건이어도 OCR 제목을 1순위 후보로 confidence=Medium 이상 부여하라. 반대로 OCR 제목이 본문 주제(작가/캐릭터/다른작품)와 불일치하거나 off-domain이면 매칭 금지. 본문-OCR 주제 정합성 체크를 명시적 단계로 요구.",
+      "mechanism": "prompt_contract",
+      "axis": "recall",
+      "expected_effect_ko": "11682749(본문 묵향 vs OCR 다크레이디)·11703668(워터마크) 같은 불일치는 명시적으로 reject되어 precision 유지하면서, 11645787/11637724처럼 본문-OCR 주제가 일치하는 카탈로그는 적극 resolve. 검색 0~저품질이어도 OCR 근거로 해소 가능.",
+      "hardcode_risk_self": "낮음. 프롬프트 수준의 '정합성 판단 절차'만 추가하고 구체 제목은 미언급. 다만 모델이 카탈로그 신호를 일관 인식하는지 회귀 테스트 필요."
+     }
+    ]
+   },
+   "verified_fixes": [
+    {
+     "fix_ko": "OCR/VLM 증거(image_evidence_catalog)에서 '플랫폼 작품 상세페이지 시그널'을 감지하는 evidence-tier 승격 게이트 신설. 신호: 동일 이미지 OCR 내에 (작품명 토큰) + (작가명 라벨) + (조회/추천/회차/선호/알람 같은 메트릭) 또는 (장르 해시태그+시놉시스 문장) 또는 (노벨피아/문피아/네이버시리즈/카카오/SERIES 플랫폼 마커) 중 2종 이상이 공기(co-occur)하면, 해당 OCR 제목을 official_detail에 준하는 'ocr_catalog_detail' tier로 승격하여 _has_official_title_evidence가 True를 반환하도록 함. 특정 제목/별칭/오타가 아니라 '카탈로그 구조 신호'로 일반화.",
+     "mechanism": "gate",
+     "axis": "recall",
+     "verdict_obj": {
+      "verdict": "revise",
+      "is_hardcode": false,
+      "supported_by_posts": false,
+      "fix_ko": "no new tier; reuse gated promotion; verify candidate; resolve on match",
+      "rationale_ko": "gated mechanism exists; helper not gate; fires on author talk; review locked",
+      "regression_risk_ko": "precision regression; over confirms author talk; limit to verified path"
+     }
+    },
+    {
+     "fix_ko": "parser/스키마에 OCR 제목의 신뢰도 플래그(ocr_title_clean: bool)와 출처유형(ocr_source: catalog_detail|episode_list|cover|watermark|screenshot|offdomain)을 image_evidence_catalog 항목에 추가. mojibake/깨짐 휴리스틱(자모 분리·비정상 공백·의미불명 토큰 비율)으로 clean 여부를 표기하고, off-domain 도메인(애니메이션 영화/게임 타이틀/피규어/공모전 공지)을 별도 태깅. arbiter는 ocr_title_clean=True & ocr_source in {catalog_detail, episode_list}일 때만 resolve 후보로 사용.",
+     "mechanism": "parser_schema",
+     "axis": "recall",
+     "verdict_obj": {
+      "is_hardcode": false,
+      "supported_by_posts": false,
+      "verdict": "revise",
+      "fix_ko": "제안을 신규 parser_schema 추가가 아니라 이미 존재하는 VLM surface_type/title_role/promotion_eligible 체계의 보강과 노출로 재정의하라. (1) 새 필드 ocr_source, ocr_title_clean를 만들지 말고 기존 _build_image_evidence_catalog(agentic_pipeline.py 11189)가 이미 산출하는 surface_type, screen_type, focus_role, promotion_eligible, game_ui_score를 review packet으로 노출만 추가(review_artifact)하면 왜 resolve/hold됐는지 사람이 검토 가능해진다. (2) mojibake 휴리스틱이 필요하면 신규 enum이 아니라 기존 _score_vlm_work_surface_signal(1195), _is_weak_vlm_visual_signal 옆에 자모분리/의미불명 토큰 비율 보조 점수를 더해 promotion_eligible 판정 입력으로만 쓰되, 11650591(비틀 저서라도), 11631286(로즈알트의 변건)처럼 정상 stylized 제목을 mojibake로 오분류하지 않도록 platform 토큰(SERIES, EP, 회차, 작가명) 공존 시 clean 유지 가드를 포함하라. (3) off-domain은 이미 non_novel_media, game_item_ui, 영화/애니/게임/피규어 토큰으로 배제 중이라 신규 offdomain 태그는 중복이며 누락 케이스는 기존 토큰셋 확장으로 처리하라. 핵심: 진짜 미해소 원인은 OCR 출처유형 부재가 아니라 _semantic_seed_no_work_signal(22557)이므로 OCR clean 플래그를 resolve 조건에 넣어도 표본 미해소는 거의 풀리지 않는다.",
+      "rationale_ko": "제안 메커니즘이 production code에 이미 광범위하게 구현돼 있다. (a) ocr_source 제안 enum은 기존 VLM surface_type enum(official_detail_page, episode_reader_page, platform_listing_page, quoted_text_screenshot, game_item_ui, game_system_ui, meme_reaction_image, fanart_or_character_illustration, non_novel_media)과 거의 1대1 대응하고 screen_type, focus_role, title_role, promotion_eligible까지 _annotate_vlm_item_context(1765-1850)에서 산출된다. (b) clean catalog/episode OCR만 resolve 후보로 쓰는 로직은 _pick_promotable_direct_image_work_title_candidate(1411)가 platform_catalog_ui와 text_surface를 배제하고 official_detail_page+work_anchor만 받아 work_resolution=resolved로 승격(28089-28110)하는 형태로 이미 존재하며 앞단에 _can_promote_title_after_semantic_no_work(22557) 정밀도 게이트가 붙어 있다. (c) off-domain 자동배제도 non_novel_media, game_ui_score, 영화/애니/게임 토큰으로 이미 동작하고 표본의 너의이름은, 블루아카이브, 림월드, Fallout 피규어는 모두 work_resolution=none으로 정확히 처리됨. 따라서 신규 parser_schema 추가는 대부분 중복이고 가치는 기존 신호를 review_artifact로 노출하는 부분에만 남아 verdict는 revise.",
+      "regression_risk_ko": "양방향 회귀 위험이 크다. recall 손실: fix의 expected-effect가 11650591(비틀 저서라도 세상은 구해)을 깨진 OCR이라 clean=False 보류로 분류했으나 실제로는 정상 SERIES 작품 상세페이지의 stylized 제목이다. mojibake 휴리스틱이 이를 오탐하면 정당 작품을 미해소로 떨어뜨린다. 11631286(로즈알트의 변건)도 clean episode_list인데 fix는 보류로 분류해 fix 자신의 규칙(episode_list을 resolve 소스로 본다)과 모순이라 구현에 따라 정당 케이스를 막을 수 있다. precision 손실: 반대로 11637724(미국 살끄니까)는 OCR이 실제 깨졌는데(앞축주식, 피부하기) fix는 clean catalog resolve 후보로 적었다. ocr_title_clean을 resolve 조건에 넣되 clean 판정이 느슨하면 author_talk, trope, banter 맥락에서 화면에 잡힌 부수적 작품명을 과대확정할 위험이 있다. 실제 미해소 원인은 _semantic_seed_no_work_signal 게이트인데 OCR clean 플래그가 이를 우회시키면 precision 회귀가 난다."
+     }
+    },
+    {
+     "fix_ko": "Verifier/Arbiter 프롬프트 계약에 'OCR 카탈로그 상세페이지 우선' 규칙 명문화: 이미지가 플랫폼 작품 상세/회차 페이지(작가명+메트릭+시놉시스 동반)이고 본문이 그 작품의 감상/추천/연재상태를 논하면, web search 0건이어도 OCR 제목을 1순위 후보로 confidence=Medium 이상 부여하라. 반대로 OCR 제목이 본문 주제(작가/캐릭터/다른작품)와 불일치하거나 off-domain이면 매칭 금지. 본문-OCR 주제 정합성 체크를 명시적 단계로 요구.",
+     "mechanism": "prompt_contract",
+     "axis": "recall",
+     "verdict_obj": {
+      "verdict": "revise",
+      "is_hardcode": false,
+      "supported_by_posts": true,
+      "fix_ko": "prompt_contract 유지하되 신규 규칙이 아니라 기존 신호 노출+양방향 단계화로 재작성. 1) 코드는 이미 image_enrichment에 surface_type(official_detail_page/episode_reader_page 등)·work_surface_score·title_role을 산출하고 verifier._has_direct_title_tuple_support()가 작가명+메트릭+work_surface를 직접증거로 인정함. 하지만 _inject_image_enrichment_blocks가 본문에 주입하는 텍스트는 OCR 작품명/작가명/작품단서뿐이고 surface_type·score는 빠짐. 따라서 1차는 prompt가 아니라 evidence_augmentation: 상세페이지 라벨을 본문 주입 블록에 추가해 Verifier/Arbiter가 읽게 함. 2) 그 위에 본문-OCR 주제 정합성 단계 명문화: surface_type가 official_detail_page/episode_reader_page이고 OCR 작품명이 본문/댓글 토픽과 일치하면 검색 0건이어도 confidence=Medium 승격; 불일치/off-domain(fanart/game/non_novel_media/quoted_text_screenshot)이면 매칭 금지. author_talk·release_meta는 예외로 resolved 대신 author_new_work_context 유지. 3) 승격 상한 Medium·locked=false 강제(High+locked 금지).",
+      "rationale_ko": "표본이 양방향을 지지. recall: 11645787(부르고뉴의 기사가 되었다, 상세페이지+긍정감상), 11695625, 11650591, 11665121, 11631286은 본문-OCR 일치 상세/회차 페이지인데 검색노이즈로 unresolved=정당한 false negative. precision: 11682749(본문 묵향 vs OCR 다크레이디), 11703668(Trembling Moods), 11671486(림월드), 11642525(Fallout), 11690864(Blue Archive), 11711632(너의 이름은)는 off-domain이라 reject가 맞음. 단순 OCR 1순위 승격은 위험하고 정합성 게이트 동반이 필수라는 제안 논리가 표본으로 검증됨. hardcode 아님: 특정 post가 아니라 surface_type·score·정합성 일반신호에 건다. revise 이유: 제안은 prompt_contract라 단정하나 실제 결손은 이미 계산된 surface_type/score가 expert 본문에 노출 안 되는 것이라 evidence_augmentation 선행 필요하고, _has_direct_title_tuple_support·promotion_eligible 유사 메커니즘이 이미 부분 구현돼 신규 규칙이 아니라 기존 신호 확장으로 정밀화해야 중복/충돌 회피.",
+      "regression_risk_ko": "recall fix라 과대확정이 주 회귀축. 1) 11637724(미국 살끄니까·author_talk)처럼 OCR이 완벽한 상세페이지여도 본문이 작가비평/하차/연재메타면 작품토론으로 오인 승격 위험→author_talk/release_meta 예외와 author_new_work_context 분기 필수. 2) 본문 토픽일치 기준이 느슨하면 검색 0~저품질에서 STEP 0-BODY 키워드 우연일치 가드를 우회해 노이즈까지 닫을 위험→승격은 작품명 직접 등장 또는 고유증거(캐릭터/줄거리/감상) 있을 때로 제한, surface_type 한정, Medium·locked=false 강제로 완화. 3) VLM surface_type 오분류 시 양방향 흔들림→work_surface_score≥3 임계와 작가명/메트릭 다중조건 AND 유지. 반대로 게이트가 과하면 recall 개선분 소멸하는 역회귀 가능→상세페이지+토픽일치면 실제 Medium 승격 허용되는지 회귀표본(11645787/11695625)으로 확인."
+     }
+    }
+   ]
+  },
+  {
+   "bucket": "R3_relevant_unresolved_zero_search",
+   "axis": "recall",
+   "total": 34,
+   "finding": {
+    "bucket": "R3_relevant_unresolved_zero_search",
+    "axis": "recall",
+    "true_opportunity_rate": "약 7/18 (39%)",
+    "dominant_pattern_ko": "지배적 진짜 개선 기회는 \"제목 약칭/축약 + 감상/추천 패턴\" 글이다. 제목 자체가 가장 강한 seed인데 anchor_strength가 none/low로 떨어져, 검색이 아예 안 돌거나(검색 요약 필드 부재) 돌더라도 약칭 1쿼리만 던지고 엔진 degraded/무결과를 받고 포기한다. 대표 형태: \"까꿍공주 재밌음?\"(11697261), \"전과4범공녀님 이거 재밌네\"(11674702), \"빚세구 재밌더라\"(11676327), \"목마 신×1557작 재밌네\"(11690869), \"전튜버 ... 볼만하나\"(11653792). 또 OCR/표지에 명시 제목이나 풍부한 고유명사가 있는데도(빌환+\"검여먹을 혼성명\"/MUNPIA 표지 11718099, 옥천마+용용이/미르/천경/몰랑파크 11665099) anchor를 platform/none으로 낮게 잡아 seed 승격이 안 됨. 공통 메커니즘: (a) 제목 약칭이 anchor=none일 때 검색 seed로 승격되지 않음, (b) 검색이 '실행 1건·무결과·엔진경고'로 끝나면 변형 쿼리(플랫폼 컨텍스트/원형 복원/저빈도 엔진 폴백) 재시도 없이 종료. 결과적으로 search_evidence_count=0 → resolved 불가의 악순환.",
+    "correctly_handled_pattern_ko": "이미 올바르게 미해소로 처리된 패턴이 절반 이상이다. (1) 이용자 비방/프로필 저격 잡담(11716465 \"지랄ㅋㅋ\", 11711611 \"장갤 상위 4프로 필력\"+옛 트윗 캡쳐) — 작품 seed 없음, nonwork/banter로 보류 정당. (2) 캐릭터 이름만 등장하는 팬 논쟁(11710043 세레피나/라빈, 11702066 아리/한가인/김상현) — 제목 토큰 없이 캐릭터만으로는 단일 확정 불가, 보류 정당. (3) 순수 분노/단발 리액션(11702057 \"재미...난거주라고\"). (4) 제목을 명시적으로 잊은 채 찾는 회상형 추천요청(11708460 \"...기억 안남\")과 조건만 제시한 열린 추천요청(11666701 \"결손 캐릭터 소설 없나\") — 작성자측 seed 부재로 검색이 해소할 수 없음, 보류 정당. (5) 제목 없는 본문/작가 신작 인용 공유(11695637 강시우/시트러스 발췌, 11695596 여신애호 조이노이 발췌, 11708481 지잡아카 연중 밈) — author_new_work_context/excerpt로 신중 보류. 이들을 원시 버킷 카운트로 '검색 누락 문제'로 묶으면 안 됨. 즉 \"zero_search\"는 절반 이상에서 정상이며, 진짜 문제는 약칭-감상형 일부에 국한된다.",
+    "representative_post_ids": [
+     11697261,
+     11674702,
+     11676327,
+     11690869,
+     11653792,
+     11665099,
+     11718099
+    ],
+    "notes_ko": "근거: 11676327/11697261/11653792 등은 reason에 \"검색 요약: 실행 1~2건(유효 0/무결과), 엔진경고, 저하-무결과, 재시도 쿼리 1~2건\"이 찍혀 있어 '검색은 돌았으나 약칭 단독 쿼리가 엔진 degraded에 막혀 0건'임을 확인. 반면 11718099/11665099/11674702 등은 검색 요약 필드 자체가 없어 anchor=none/platform 게이팅으로 검색 미발화가 의심됨. 코드 확인: orchestrator._collect_partial_work_surface_query_seeds(line 2073~)는 이미지 OCR의 explicit_work_title이 \"...\"로 절단되고 work_surface 신호가 있을 때만 seed를 주입함 → 포스트 '제목'에 있는 약칭(까꿍공주/전과4범공녀님/빌환/옥천마)은 seed 경로에 태우지 않음. 본 실행본엔 worktree3229의 over_resolution_review/strong_bridge 필드가 없어 약칭→확정 승격이 더 보수적. 모집단 오류율로 환산 금지(순차 head slice). 진짜 기회 7건은 모두 recall측이며 precision 위험은 낮음(약칭+감상 문맥이 명확해 trope/잡담과 구분됨).",
+    "candidate_fixes": [
+     {
+      "fix_ko": "제목 약칭 seed 승격 게이트: 글 '제목'에 작품 약칭/축약 후보 토큰이 있고 의도가 감상/추천/평가(intent ∈ express_opinion/request_recommendation/ask_question + 'X 재밌/볼만/어때/재밌음?' 패턴)일 때, anchor_strength=none이어도 partial-work-surface seed 수집 대상에 포스트 제목 약칭을 포함시켜 1차 검색 seed로 승격한다. (이미지 OCR 절단 제목에만 의존하지 않음)",
+      "mechanism": "gate",
+      "axis": "recall",
+      "expected_effect_ko": "까꿍공주/전과4범공녀님/빚세구/전튜버류 약칭-감상 글이 검색 발화 자체를 못 하던 상황을 해소해 search_evidence_count>0 확보, resolved 후보 진입.",
+      "hardcode_risk_self": "특정 제목을 박지 않고 '제목 토큰+감상의도'라는 일반 조건만 사용하므로 hardcode 위험 낮음. 단 '감상/추천 패턴' 정규식이 과넓으면 잡담까지 검색을 켜 비용↑·precision 소폭 위험 — intent와 동시 충족으로 제한해 완화."
+     },
+     {
+      "fix_ko": "검색 degraded/무결과 시 쿼리 변형 재시도 계약: orchestrator search 루프에서 '실행했으나 유효 0·엔진경고/저하-무결과'로 끝난 경우, 종료 전에 (a) 플랫폼 컨텍스트 부착(약칭+노벨피아/문피아/카카오페이지), (b) 한국어 원형 복원(조사 제거·합성어 분해), (c) 대체 검색 엔진/저빈도 폴백 중 최소 1~2개를 자동 시도하도록 prompt/실행 계약을 명문화한다.",
+      "mechanism": "evidence_augmentation",
+      "axis": "recall",
+      "expected_effect_ko": "단일 약칭 쿼리가 엔진 degraded로 0건 나던 케이스(11676327 2회 무결과 등)에서 변형 쿼리로 공식 상세 페이지를 끌어올 확률 증가.",
+      "hardcode_risk_self": "엔진별 폴백을 일반 정책으로 두면 hardcode 위험 없음. 무한 재시도/비용 폭증 위험은 max_q 예산·중복쿼리 dedup(mark_executed_query)로 이미 존재하는 가드에 묶어 제한."
+     },
+     {
+      "fix_ko": "미해소 검토 아티팩트에 '검색 미발화 사유' 노출: title_resolution_state=unresolved_matchable인데 search_evidence_count=0인 글에 대해, 결과 레코드에 search_not_triggered_reason(예: anchor_gated / engine_degraded_no_result / no_seed_token)을 기록하는 리뷰 필드를 추가한다.",
+      "mechanism": "review_artifact",
+      "axis": "recall",
+      "expected_effect_ko": "'검색 누락'이 게이팅 탓인지 엔진 degraded 탓인지 사후에 구분 가능 → 본 버킷처럼 zero_search를 일괄 문제로 오판하지 않고 진짜 기회만 타겟팅. fix 우선순위 정량화에 기여.",
+      "hardcode_risk_self": "관측 전용 메타데이터라 판정 로직·precision에 영향 없음, hardcode 위험 없음."
+     }
+    ]
+   },
+   "verified_fixes": [
+    {
+     "fix_ko": "제목 약칭 seed 승격 게이트: 글 '제목'에 작품 약칭/축약 후보 토큰이 있고 의도가 감상/추천/평가(intent ∈ express_opinion/request_recommendation/ask_question + 'X 재밌/볼만/어때/재밌음?' 패턴)일 때, anchor_strength=none이어도 partial-work-surface seed 수집 대상에 포스트 제목 약칭을 포함시켜 1차 검색 seed로 승격한다. (이미지 OCR 절단 제목에만 의존하지 않음)",
+     "mechanism": "gate",
+     "axis": "recall",
+     "verdict_obj": {
+      "verdict": "revise",
+      "is_hardcode": false,
+      "supported_by_posts": false,
+      "fix_ko": "이 fix는 그대로 두면 안 되고 축을 바꿔 재설계해야 한다. (1) seed 비발화가 진짜 원인이 아니다 — 대표 케이스(#10 까꿍공주 '실행 1건/무결과/엔진경고/추가시도 4회', #14 빚세구 '실행 2건/무결과 2건/추가시도 8회')의 reason '검색 요약' 줄이 보여주듯 제목 약칭은 이미 검색 seed로 나가고 재시도까지 돌았으나 검색 백엔드가 엔진경고·저하-무결과로 0건을 반환한 것이다. 따라서 mechanism=gate(seed 승격)가 아니라 evidence_augmentation(엔진경고/zero-result 시 쿼리 변형·플랫폼 site: 폴백·재시도) 축으로 옮겨야 한다. (2) 제안한 게이트는 이미 일반화 형태로 존재한다 — orchestrator._derive_auto_search_seed_terms(3057-3166)는 search_requests가 비면 post title을 work-like 토큰으로 압축해 seed로 승격하고(title 폴백 포함), _inject_discourse_preserved_title_lead_search_requests, _collect_confident_query_expansion_seeds도 제목표면→seed 승격을 한다. 새 게이트를 추가하면 중복이다. (3) 핵심 보존 요건 — 어떤 형태로 재설계하든 _title_search_intent_permit의 no_work_anchor(semantic_seed_review_specific_work_denied 등) pruning을 우회하면 안 된다. 'anchor_strength=none이어도 승격'이라는 원문 조항은 REVIEW-LOCKED된 precision 가드를 직접 무력화하므로 제거해야 한다. 권장: intent∈{express_opinion/request_recommendation/ask_question} + 제목약칭 surface일 때 (a) no_work_anchor가 아닌 경우에 한해, (b) 이미 도는 검색이 engine-degraded zero-result로 끝나면 플랫폼 site: 한정/약칭 분절/full_title 폴백 쿼리를 재발화하는 검색-복원 로직으로 좁혀라. 회귀 테스트는 .venv312 worktree3229의 unittest로 검증.",
+      "rationale_ko": "표본 18건 중 fix의 타깃 형태(제목 약칭+감상/추천/질문+'재밌/볼만/어때')는 약 4건(#10,#14,#15,#18)뿐이고, 나머지는 이미 올바르게 미해소 처리된 것이다: #1/#11/#12/#17은 OCR·캐릭터 표면 구동(이미지 partial-surface 경로가 이미 담당), #2/#9는 banter 제목, #7/#16은 토큰 없는 기억의존 추천요청. 원시 버킷 카운트를 전부 문제로 보면 안 된다. 결정적으로, 명시 검색요약이 있는 타깃들이 '검색 seed가 안 나간' 게 아니라 '검색 백엔드가 0건 반환'임을 reason 원문이 직접 증명한다 — 이는 fix의 기대효과(search_evidence_count>0 확보) 인과를 정면으로 반박한다. 게이트는 일반화 형태(post id/제목/별칭 hardcode 아님)라 is_hardcode=false지만, 표본이 mechanism을 지지하지 않아 supported_by_posts=false다.",
+      "regression_risk_ko": "precision 쪽 회귀 위험이 크다. fix가 명시한 'anchor_strength=none이어도 1차 검색 seed로 승격'은 _title_search_intent_permit의 no_work_anchor pruning(코드에서 image_partial_title_search/auto_search_seed/platform_title_search 등을 차단)과 정면 충돌한다. test_known_title_abbreviation_support의 test_no_work_context_still_blocks_*, test_bare_known_title_abbreviation_surface_does_not_promote_*가 보장하는 '제목 약칭 단독 표면은 work-anchor 없이는 승격 금지' 규약을 깨고, REVIEW-LOCKED된 10만건 semantic gate를 약화시킨다. 구체적으로 #3 필력/#5 판초법사/#6 지잡아카 같은 약/무앵커 surface에 '웹소설 노벨피아' suffix 검색을 강제하면 잡담·트로프·캐릭터 토큰이 엉뚱한 공식 작품에 매칭돼 과대확정(High+locked) false positive로 번질 수 있다. recall 이득은 검색 백엔드 0건 문제 때문에 제한적인데 precision 손실은 구조적이라 트레이드오프가 불리하다. 따라서 no_work_anchor 우회 조항 제거 + evidence_augmentation 축으로 한정하는 것이 필수다."
+     }
+    },
+    {
+     "fix_ko": "검색 degraded/무결과 시 쿼리 변형 재시도 계약: orchestrator search 루프에서 '실행했으나 유효 0·엔진경고/저하-무결과'로 끝난 경우, 종료 전에 (a) 플랫폼 컨텍스트 부착(약칭+노벨피아/문피아/카카오페이지), (b) 한국어 원형 복원(조사 제거·합성어 분해), (c) 대체 검색 엔진/저빈도 폴백 중 최소 1~2개를 자동 시도하도록 prompt/실행 계약을 명문화한다.",
+     "mechanism": "evidence_augmentation",
+     "axis": "recall",
+     "verdict_obj": {
+      "is_hardcode": false,
+      "supported_by_posts": true,
+      "verdict": "revise",
+      "fix_ko": "일반화된 메커니즘(evidence_augmentation)으로 hardcode가 아니다. 다만 그대로 keep하기엔 두 가지 문제가 있어 revise로 좁힌다.\n\n[현 코드 실측 — 3요소는 이미 빌딩블록으로 존재]\n- (a) 플랫폼 컨텍스트 부착: `_build_platform_context_query`(orchestrator.py:4549), `_inject_partial_work_surface_search_requests`(2156-2160), 플랫폼 확장 plan(9200-9234)에서 제목 seed에 노벨피아/문피아/카카오페이지/site: 변형을 *선제적으로* 생성한다.\n- (b) 한국어 원형 복원: `_strip_trailing_korean_particle`/`_normalize_search_term`(4521-4547), 합성어 분해(8776-8881, 14869-14900) 존재하며 seed 정규형이 검색에 들어간다.\n- (c) 대체 엔진/폴백: MCP bridge(mcp_bridge/server.py:936-958)가 primary→fallback engines→remote endpoint 라운드로빈 + degraded 시 headless Google 폴백(742-750)을 *반응적으로* 수행. search client(search/client.py:141-218)도 degraded-empty에 동일쿼리 재시도+endpoint failover.\n\n[진짜 gap = 두 가지]\n1) (a)(b)는 seed 감지 시 선제 생성될 뿐, \"실행했으나 유효0·degraded-무결과\"라는 종료 이벤트에서 *반응적으로 동일 seed의 쿼리 변형을 재투입*하는 루프가 없다(degraded/변형/reformulat 정규식 검색 0건). 루프는 21476-21519에서 degraded-zero를 zero_streak에서 빼주고 조기종료만 한다 — 변형 재시도가 아니다. (c)도 같은 쿼리를 다른 엔진으로 돌릴 뿐, 쿼리 자체를 (a)(b)로 재구성해 재투입하진 않는다.\n2) 이 계약을 명문화한 prompt 항목이 없다(expert_prompts.py에 degraded/무결과 재시도 계약 문구 부재; 검색 전략은 선제 다각도 쿼리만 규정).\n\n따라서 revise: \"degraded-zero 종료 직전, *기존 seed*에 한해 (a)플랫폼부착·(b)조사제거/합성어분해 변형을 1~2개 1회 한정 재투입\"으로 좁히고, 발화 조건에 anchor_strength 게이트(아래)를 필수로 건다. (c)는 이미 bridge에 있으므로 신규 구현 불필요 — 계약 문서화 대상에서 제외하거나 \"기존 bridge 폴백 확인\"으로 격하.",
+      "rationale_ko": "표본 18건 중 실제로 검색을 실행하고 degraded-무결과로 끝난 건 4건뿐(11716465, 11697261, 11695637, 11676327)이고 나머지 14건은 anchor=none/low로 게이트가 검색 자체를 보류해 \"재시도 계약\"의 적용 대상이 아니다 — 원시 버킷 카운트를 전부 문제로 보면 안 된다. 인용된 11676327(\"빚세구\", 실행 2건 모두 유효0/무결과2)는 실재하므로 supported_by_posts=true. 다만 그 글의 anchor_type=neighbor, anchor_strength=low, grounding=search_only, candidate=0이고, 다른 3건은 anchor=none(banter/user_attack/general review)이다. 즉 degraded-zero를 맞은 표본 대다수가 약/무앵커 — 변형 재투입이 가장 위험한 구간이다. 메커니즘 3요소가 코드에 이미 존재하므로 \"전면 신규 구현\"으로 keep하면 중복 작업이 되고, 반대로 무앵커까지 무차별 변형 재투입하면 precision을 해친다. 그래서 revise.",
+      "regression_risk_ko": "precision(과대확정) 쪽 회귀 위험이 크다. 이 버킷의 degraded-zero 표본은 대부분 anchor=none/low의 잡담·짧은반응·추천질문(11716465 user_attack, 11697261/11695637 무앵커, 11676327 low)이다. degraded-zero를 트리거로 anchor 게이트 없이 (a)(b) 변형을 자동 재투입하면, 게이트가 정당하게 보류한 약/무앵커 글에 \"빚세구 웹소설 노벨피아\" 류 합성 쿼리로 우연 매칭 증거를 만들어 none/low 앵커를 resolved로 끌어올릴 수 있다(over-resolution). 완화책: 재투입 발화 조건을 (i) resolved/ocr_explicit_title_unresolved 또는 anchor_strength>=medium인 *명시 seed*가 있을 때로 한정, (ii) 변형 1~2개·1회 한정, (iii) 신규 결과는 source_tier=official_detail 매칭 시에만 locked 승격 — 즉 anchor가 약하면 변형으로 더 검색은 하되 확정 게이트는 별개로 유지. recall 쪽 손실은 거의 없다(기존 동작은 그대로 두고 degraded-zero 한정 추가 시도일 뿐)."
+     }
+    },
+    {
+     "fix_ko": "미해소 검토 아티팩트에 '검색 미발화 사유' 노출: title_resolution_state=unresolved_matchable인데 search_evidence_count=0인 글에 대해, 결과 레코드에 search_not_triggered_reason(예: anchor_gated / engine_degraded_no_result / no_seed_token)을 기록하는 리뷰 필드를 추가한다.",
+     "mechanism": "review_artifact",
+     "axis": "recall",
+     "verdict_obj": {
+      "verdict": "revise",
+      "is_hardcode": false,
+      "supported_by_posts": true,
+      "fix_ko": "유지하되 이름/의미만 보정한다. 결과 레코드(models.py 판정 스키마)에 Optional enum 리뷰 필드를 추가하되, 값은 기존 ctx 텔레메트리에서 일반 규칙으로 파생한다(post/제목 하드코드 없음): executed_count==0 & search_query_stats.total==0 → anchor_gated 또는 no_seed_token(앵커 강도/시드 토큰 유무로 구분), degraded_zero>0 & nonzero==0 → engine_degraded_no_result, 정상 실행 0건 → clean_no_match. 단 제안된 이름 search_not_triggered_reason는 부정확하다 — engine_degraded_no_result 케이스는 실제로 검색이 '발화됐고' 결과만 0건이다. search_outcome_reason / zero_search_evidence_reason 같은 이름으로 바꿔 세 값 모두를 포괄해야 한다. 구현은 src\\\\llm_batch\\\\agentic_pipeline.py:16119 _build_search_summary_text가 이미 동일 신호(degraded_total/degraded_zero/executed_queries/retried_total)를 산출하므로, 그 프로즈를 구조화 필드로 승격만 하면 된다(중복 로직 불필요). 반드시 read-only 리뷰 필드로 한정하고, 이 값이 매칭/검색 재발화/locked/confidence에 피드백되지 않게 한다.",
+      "rationale_ko": "표본 18건은 'zero_search'라는 단일 버킷 안에 성격이 다른 두 모집단이 섞여 있음을 실제로 보여준다. (1) 검색 미발화·정상 보류 케이스: 마스킹 닉네임 캐릭터 잡담(11710043 세레피나/라빈), 짧은 반응(시발/헙/ㅆㅅㅌㅊ), 범용 추천요청(11666701 결손 소설 없나), 플랫폼 밈(11708481) — 게이트가 옳게 작동해 zero_search가 '정답'인 것들. reason에 검색 요약 라인 자체가 없다. (2) 검색은 발화됐으나 엔진 저하로 0건인 진짜 recall 기회: 11697261(까꿍공주), 11676327(빚세구, '실행 2건/무결과 2건 [엔진경고 2건]'), 11716465 등 — reason에 '[엔진경고 N건, 저하-무결과 N건]' 프로즈가 박혀 있다. 즉 fix가 주장하는 구분축(게이팅 탓 vs 엔진 degraded 탓)은 표본 원문이 직접 지지한다. 그러나 그 신호는 현재 reason/notes 프로즈로만 존재하고 정규 필드가 아니라 정량 집계·우선순위화에 쓰려면 프로즈를 regex 파싱해야 한다. 구조화 필드로 승격하면 버킷 카운트를 일괄 문제로 오판하지 않고 (2)만 타겟할 수 있다. 하드코드 변질 위험 없음: models.py에 해당 필드가 없고, 파생 신호는 이미 일반 로직으로 산출됨.",
+      "regression_risk_ko": "이 fix 자체의 precision 위험은 낮다. 순수 read-only 텔레메트리/리뷰 필드이며 매칭 결정·앵커 게이팅·검색 재발화·locked/confidence에 어떤 피드백도 주지 않으므로, 그 자체로 과대확정(precision 훼손)을 유발할 수 없다. recall '계측'이지 recall '액션'이 아니다. 단 2차적 정책 위험은 명시해 둔다: 운영자가 engine_degraded_no_result 표시를 보고 '무조건 강제 해소/재시도'로 해석하면 약한 anchor에 High+locked를 붙이는 precision 압력이 생길 수 있다. 따라서 필드는 진단 전용으로 한정하고, 자동 재해소 트리거로 연결하지 말 것. 또한 anchor_gated/no_seed_token 구분 자체가 약하거나 오분류되면 운영자가 '게이트 완화'를 잘못 추진할 여지가 있으니, 구분 기준은 기존 anchor_strength/seed 신호에만 의존하고 새 휴리스틱을 도입하지 말 것."
+     }
+    }
+   ]
+  },
+  {
+   "bucket": "P1_highconf_locked_weakanchor",
+   "axis": "precision",
+   "total": 94,
+   "finding": {
+    "bucket": "P1_highconf_locked_weakanchor",
+    "axis": "precision",
+    "true_opportunity_rate": "약 8/18 (44%) — 진짜 precision 개선 기회. 나머지 10/18은 안정 약칭/캐릭터 앵커가 실제로 정합하는 정당한 recall 성공(이미 올바르게 처리됨).",
+    "dominant_pattern_ko": "지배적 패턴은 alias/stability-signal 복구가 anchor_strength를 일괄 'medium'으로 하드셋하고 confidence를 후보값(보통 official_detail URL 기반 High)으로 승격시키며 locked=true로 닫는 것이다. 이 복구 경로가 (a) 근거 스코어가 음수(#5=-8, #10=-5)거나, (b) Verifier가 critical/major 반론을 낸 경우(#16 critical: '아생갤은 커뮤니티 약칭, 정식 제목 아님')거나, (c) 약칭이 일반명사/커뮤니티 핸들(#4 '여자애', #8 'dc' 앱푸터, #10 '개장빙')일 때조차 override해버린다. 결과적으로 anchor 강도(medium/none) 대비 과잉 확정이 발생한다. 두 번째 뚜렷한 패턴은 reasoning-vs-field 캘리브레이션 불일치: notes/Synthesizer는 confidence='low' 또는 '직접 증거 미약'이라 적어놓고도 최종 emit된 필드는 High+locked다(#18 명시적 low→High, #17 note는 '확정하지 않는다'면서 locked=true). 또한 #8은 비교 대상(나혼렙)을 post 주제(도굴왕 애니화)로 오인해 primary_work를 잘못 지정한 오해소(misresolution), #4는 official_title이 'novel.munpia.com'이라는 도메인 문자열(작품명 아님), #7은 OCR이 다른 제목('여자가 되어라도 복수한다')을 읽었는데 장르 불일치 제목('괴물 대공의 시한부 아내가 되었다')으로 확정한 image-anchor 과잉.",
+    "correctly_handled_pattern_ko": "이미 올바르게 처리된 다수(10건)는 '약한 anchor=무조건 오류'가 아님을 보여준다. 안정 약칭이 실제 작품으로 견고히 bridge되고 본문/댓글이 작품 내부 고유 단서를 동반하는 경우다: #2(담텔기→괴담 호텔 탈출기, 커뮤니티 줄임말 정착), #3(전남편, curated alias+카카오페이지 URL), #6(아생갤+아레스/엘리 캐릭터 앵커), #9(아생갤 상세 감상, decoder_grounded_official), #11(화산귀환 OCR+1246화 회차), #12(괴담텔+유선아 캐릭터), #13(괴담텔+세레나/마도서 설정 질문, official_urls=7), #14(약먹마, 광범위 정착 약칭), #15(즉사무림→즉사기 들고 무림에 떨어지다), #1(기계공주+장빙/식별코드 내부용어). 이들은 anchor_strength=medium이지만 검색·OCR·캐릭터 증거가 다층적으로 정합해 High가 정당하다. 즉 anchor_strength 라벨 자체가 보수적으로 'medium'으로 깔리는 것이 문제일 뿐, 판정은 옳다.",
+    "representative_post_ids": [
+     11703657,
+     11679547,
+     11697231,
+     11673074,
+     11637685,
+     11623248,
+     11682775,
+     11649019
+    ],
+    "notes_ko": "핵심 통찰: anchor_strength가 복구 경로에서 일괄 'medium' 하드셋되기 때문에 이 버킷의 원시 카운트(94건) 상당수는 '실제로 정합하는데 라벨만 medium'인 정당 케이스다. 진짜 위험은 medium/low/none 라벨 자체가 아니라 '음수 스코어 또는 critical 반론을 복구가 override'하는 케이스(#5, #10, #16)와 'note는 low인데 field는 High'인 캘리브레이션 불일치(#17, #18)에 집중된다. representative에 11649019(#14 약먹마, 올바른 처리)와 11623248(#18, note=low→field=High 불일치)을 함께 넣어 양쪽 대비를 남긴다. primary repo 실행본이라 worktree3229의 over_resolution_review/strong_bridge 신호 필드가 없어, locked 직전 신호를 별도 review_artifact로 외재화하는 것이 특히 유효하다.",
+    "candidate_fixes": [
+     {
+      "fix_ko": "alias/stability-signal 복구가 confidence/locked를 승격하기 전, '음수 근거 스코어' 또는 'Verifier critical/major 반론 존재'를 차단 게이트로 둔다. 현재는 복구가 -8/-5 스코어와 critical veto를 무시하고 High+locked로 닫는다. 게이트 통과 실패 시 locked=false로 강등하고 confidence를 Medium 이하로 cap한다(작품 후보는 유지하되 확정만 보류). 특정 제목/약칭이 아니라 'score<0 또는 verifier.critical 존재'라는 일반 조건으로 작동.",
+      "mechanism": "gate",
+      "axis": "precision",
+      "expected_effect_ko": "#5(-8), #10(-5), #16(critical veto) 같은 명백한 overclaim을 locked=false로 강등. 정합 케이스(#2,#9,#13 등 양수 스코어/반론 없음)는 영향 없어 recall 손실 최소.",
+      "hardcode_risk_self": "낮음. post_id/제목을 전혀 참조하지 않고 기존 스코어 부호와 verifier severity 필드만 일반 조건으로 사용한다. 단, '음수 스코어=무조건 차단'이 일부 보수적 케이스를 누를 수 있어 임계값은 0 미만 등 완만하게 둬야 함."
+     },
+     {
+      "fix_ko": "최종 emit 직전 'reasoning-field 캘리브레이션 정합성 검사'를 parser/schema 단계에 추가한다. notes/Synthesizer 텍스트나 verifier가 결론 confidence(예: 'confidence=low', '증거 미약', '확정하지 않는다')를 명시하면, 그보다 높은 primary_work.confidence/locked로 emit되지 못하도록 ceiling을 적용한다. #18(note=low→field=High), #17(note='확정 안 함'→locked=true)의 불일치를 구조적으로 제거.",
+      "mechanism": "parser_schema",
+      "axis": "precision",
+      "expected_effect_ko": "Synthesizer가 스스로 약하다고 판단한 글이 High+locked로 새는 것을 차단. 캘리브레이션 일치율 향상, false high-confidence 감소.",
+      "hardcode_risk_self": "중간. note 텍스트에서 'low/미약/확정 안 함' 신호를 파싱하는 규칙이 표현 다양성에 취약. 자유텍스트 정규식 대신 Synthesizer/Verifier가 구조화된 confidence_ceiling 필드를 내도록 contract를 거는 편이 더 일반적이고 안전."
+     },
+     {
+      "fix_ko": "alias가 작품 제목으로 bridge될 때 '약칭 specificity 게이트'를 강화한다. official_title이 도메인 문자열(novel.munpia.com 등 URL/플랫폼 토큰)이거나, 약칭이 일반명사/커뮤니티-갤러리 핸들(여자애/주인공/dc 앱푸터 등 _is_generic_topic_title·_is_low_specificity_rescue_key 범주)일 때는 stability_signal로 인정하지 않고 locked 승격을 막는다. 또한 post 주제가 비교/언급 대상(comparator)일 때 primary_work를 비교작이 아닌 주제작으로 잡도록 prompt_contract에 'primary는 글의 화제 중심 작품'임을 명시(#8 도굴왕 vs 나혼렙).",
+      "mechanism": "gate",
+      "axis": "precision",
+      "expected_effect_ko": "#4(novel.munpia.com 도메인 확정), #8(comparator 오지정), #10(개장빙 무근거)을 locked 강등 또는 primary 재지정. 정착 약칭(약먹마/괴담텔/즉사무림)은 specificity 통과해 영향 없음.",
+      "hardcode_risk_self": "중간. '도메인 문자열=작품명 아님'은 일반 규칙이라 안전하나, '일반명사 약칭 차단'은 기존 _is_generic_topic_title 사전에 의존하므로 사전이 특정 단어에 편향되면 hardcode화될 위험. 사전 확장보다 abbreviation_match_score 임계 상향 같은 연속 신호 기반이 더 일반적."
+     }
+    ]
+   },
+   "verified_fixes": [
+    {
+     "fix_ko": "alias/stability-signal 복구가 confidence/locked를 승격하기 전, '음수 근거 스코어' 또는 'Verifier critical/major 반론 존재'를 차단 게이트로 둔다. 현재는 복구가 -8/-5 스코어와 critical veto를 무시하고 High+locked로 닫는다. 게이트 통과 실패 시 locked=false로 강등하고 confidence를 Medium 이하로 cap한다(작품 후보는 유지하되 확정만 보류). 특정 제목/약칭이 아니라 'score<0 또는 verifier.critical 존재'라는 일반 조건으로 작동.",
+     "mechanism": "gate",
+     "axis": "precision",
+     "verdict_obj": {
+      "verdict": "revise",
+      "is_hardcode": false,
+      "supported_by_posts": true,
+      "fix_ko": "방향은 맞으나 fix 문구의 \"음수 근거 스코어(score<0)\" 조건은 잘못된 신호를 가리킨다. reason의 \"[근거 스코어] total: -8\"은 agentic_pipeline._build_reason_scoreboard(라인 14585~)이 판정이 끝난 뒤 생성하는 display-only 합산이지, 복구를 막는 입력 게이트가 아니다. 따라서 \"score<0이면 차단\"을 그대로 코드 조건으로 옮기면 사후 표시값에 의존하는 취약한 게이트가 된다. 대신 이미 존재하는 신호로 일반화하라: (1) verifier critical counter_argument 존재(이미 _weak_rescue_rejection_profile, deliberation._should_skip_deliberation_for_settled_veto가 쓰는 critical 카운트), (2) no_public_evidence(post_spans=0 AND search_snippets=0 AND official_urls=0), (3) anchor_found in {none, search_only}. 핵심 결함은 별개다 — _weak_rescue_rejection_profile(라인 25303~25347)는 이미 critical_count>=1을 보지만, _has_title_abbrev_stability_signal이 independent_work_bridge=True를 만들어 direct_work_bridge로 승격되면서 critical veto/약앵커를 우회한다(라인 25309~25312, 25339). 따라서 진짜 fix는 \"stability-signal alias 복구가 confidence/locked를 High로 올리기 전, (verifier critical 존재) 또는 (no_public_evidence + weak_anchor)이면 stability bridge로 critical veto를 우회하지 못하게 하고 locked=false로 강등, confidence를 Medium 이하로 cap한다(primary_work 후보·title_resolution_state=resolved는 유지)\"로 좁혀야 한다. 또한 _is_title_strongly_locked는 severe_negative(deleted_detail)만 보고 검색 무증강(no_public_evidence)은 안 보므로, 같은 일반 조건을 lock 판정에도 반영하라. 어떤 post_id/제목/별칭도 코드에 박지 않는다.",
+      "rationale_ko": "표본 18건 중 fix가 명시한 #5(-8), #10(-5), #16(critical)은 모두 evidence_bucket post_spans=0/snippets=0/urls=0(무증강), anchor=none/search_only인데도 primary_work.locked=true + confidence=High로 닫혔다. #5는 community_banter 한탄, #10은 캐릭터명 농담(세차 키 깜빡), #16은 verifier가 critical로 '커뮤니티 은어/약칭'이라 반박한 설정논쟁이다 — 전형적 over-resolution이라 표본이 fix를 지지한다. 메커니즘적으로도 이 3건은 stability-signal(아생갤/개장빙 alias)이 _weak_rescue_rejection_profile의 direct_work_bridge를 켜서 기존 critical 게이트를 우회한 결과이므로, fix가 겨냥한 우회 경로가 실재한다(redundant·no-op 아님). 반면 #2(+8),#13(+11),#14(+13),#15(+13),#1(+13)은 official_detail 플랫폼 URL과 다수 snippet을 가진 양수 케이스로 critical도 no_public_evidence도 아니라 revise안에 영향받지 않는다 — 정합 케이스 보존 확인. 따라서 '이미 올바른 것'과 '진짜 개선기회'가 분리된다. 다만 fix 원문의 'score<0' 표현이 display 스코어보드를 가리켜 부정확하므로 keep이 아닌 revise.",
+      "regression_risk_ko": "precision 축 fix이므로 recall 손실 위험을 본다. 위험1(완화됨): 아생갤=아카데미 생존 갤러리, 개장빙 등은 실제로 안정적·정확한 약칭이라 무증강이어도 매칭 자체는 옳을 수 있다. 그러나 fix가 후보(primary_work)와 title_resolution_state=resolved는 유지하고 locked=false + confidence Medium cap만 하므로, 해소 제목은 출력에 남아 recall(작품을 찾아냄)은 보존된다 — 줄어드는 건 확정 강도뿐이다. 위험2(실질): no_public_evidence 조건이 '검색 증강이 일시 실패한 정당한 작품'까지 cap할 수 있다(검색 degraded 빈번한 run 특성상). 이때 recall 자체는 유지되나 다운스트림이 locked만 신뢰하면 일부 정당 작품이 미확정처럼 취급될 수 있다 → cap 조건을 'no_public_evidence AND weak_anchor' 또는 'critical 존재'로 AND 결합해 좁혀야 과도한 강등을 막는다. 위험3: critical 단독 조건은 #6(major) 같은 경계 케이스는 건드리지 않아 recall-안전하나, verifier가 약칭을 과민하게 critical로 찍는 경향이 있으면 정당 케이스 cap 증가 가능 — 도입 후 critical 발생률 모니터링 필요. 종합적으로 후보 유지 설계 덕에 recall 직접 손실은 작고, precision 이득(#5/#10/#16류 overclaim 강등)이 크다."
+     }
+    },
+    {
+     "fix_ko": "최종 emit 직전 'reasoning-field 캘리브레이션 정합성 검사'를 parser/schema 단계에 추가한다. notes/Synthesizer 텍스트나 verifier가 결론 confidence(예: 'confidence=low', '증거 미약', '확정하지 않는다')를 명시하면, 그보다 높은 primary_work.confidence/locked로 emit되지 못하도록 ceiling을 적용한다. #18(note=low→field=High), #17(note='확정 안 함'→locked=true)의 불일치를 구조적으로 제거.",
+     "mechanism": "parser_schema",
+     "axis": "precision",
+     "verdict_obj": {
+      "verdict": "revise",
+      "is_hardcode": false,
+      "supported_by_posts": true,
+      "fix_ko": "prose 매칭 대신 구조화 신뢰도 필드를 천장 입력으로 쓰고 기존 정합성 보정 레이어에서 저확신이면 신뢰도 한 단계 하향 및 잠금 해제하되 강한 공식 출처 잠금은 면제한다",
+      "rationale_ko": "18건 중 진짜 모순은 샘플 18 과 17 둘뿐이고 나머지는 강근거로 잠긴 정상 케이스라 drop 은 과하고 keep 도 원안이 텍스트 매칭에 의존해 과하다 구조화 필드로 일반화 가능하다",
+      "regression_risk_ko": "텍스트 헤지를 저확신으로 오인해 정당 해소 작품을 미해소로 깎는 회수 손실 위험이 있어 구조화 신뢰도로만 트리거하고 강근거 잠금은 면제하며 한 단계 하향 수준으로 보수적으로 적용해야 한다"
+     }
+    },
+    {
+     "fix_ko": "alias가 작품 제목으로 bridge될 때 '약칭 specificity 게이트'를 강화한다. official_title이 도메인 문자열(novel.munpia.com 등 URL/플랫폼 토큰)이거나, 약칭이 일반명사/커뮤니티-갤러리 핸들(여자애/주인공/dc 앱푸터 등 _is_generic_topic_title·_is_low_specificity_rescue_key 범주)일 때는 stability_signal로 인정하지 않고 locked 승격을 막는다. 또한 post 주제가 비교/언급 대상(comparator)일 때 primary_work를 비교작이 아닌 주제작으로 잡도록 prompt_contract에 'primary는 글의 화제 중심 작품'임을 명시(#8 도굴왕 vs 나혼렙).",
+     "mechanism": "gate",
+     "axis": "precision",
+     "verdict_obj": {
+      "is_hardcode": false,
+      "supported_by_posts": true,
+      "verdict": "revise",
+      "rationale_ko": "[메커니즘 일반성] 제안은 post id/제목/별칭을 production code에 박지 않고, gate(약칭 specificity 게이트 강화 + 도메인-as-title 차단)와 prompt_contract(primary=화제 중심 작품 명시)로만 일반화한다. is_hardcode=false. 이미 존재하는 _is_generic_topic_title / _is_low_specificity_rescue_key 범주에 연결하므로 별칭 화이트리스트가 아니다.\n\n[표본 지지 — 부분적] 18건 중 fix가 노리는 진짜 개선 기회는 소수다.\n- #4(post 11703657): official_title='novel.munpia.com' — 작품명이 아니라 도메인 문자열이 locked High로 확정됨. 명백한 오류. fix가 정조준. (다만 댓글에 novelpia.com/novel/405310 실작품 URL이 있어 RECALL 관점에선 '미해소'가 아니라 '오해소'다.)\n- #10(post 11673074): anchor none, score -5, 검색증거 2건('블라이스' 잡음), 본문은 차키 깜빡 잡담. 작품 grounding 전무인데 '나 혼자만 솔플러' locked. 과대확정. fix 지지.\n- #8(post 11679547): 본문 화제는 '도굴왕 애니화'이고 '나혼렙'은 '~의 뒤를잇는'으로 쓰인 비교/계보 기준점인데 primary가 나혼렙으로 잡힘. comparator 오지정 지지.\n반면 #1(기계공주)/#2·#12·#13(괴담텔)/#14(약먹마)/#15(즉사무림)/#17/#18은 정착 약칭+official_detail+title_in_post=true로 이미 올바르게 처리됐고 fix가 명시적으로 carve-out한다. 즉 P1 버킷 18건 전부가 문제는 아니며 fix도 그렇게 주장한다 — 적절.\n\n[치명적 결함 — 그대로 keep 불가] fix 문구는 'official_title이 도메인 문자열(novel.munpia.com)일 때 stability_signal 불인정'이라 하지만, 현 _is_generic_topic_title('novel.munpia.com')은 점 제거 후 'novelmunpiacom'이 되어 generic_terms/장르패턴 어디에도 안 걸려 False를 반환하고, _is_platform_branding_title도 norm이 'munpia'/'문피아' 정확매칭만 봐서 못 잡는다. 즉 #4를 막으려면 기존 게이트 재사용이 아니라 '도메인/URL을 official_title로 쓰는 경우' 탐지기를 신규 추가해야 한다. comparator(#8) 부분도 prompt_contract에 이미 동일 취지 가이드(expert_prompts.py 912/2294/5036~5088 '비교 대상은 주제 아님')가 광범위하게 존재하므로, 프롬프트 한 줄 추가는 새 효과가 거의 없고 진짜 결손은 Arbiter primary 선택 로직이 그 프롬프트 신호를 따르지 못하는 점이다. 따라서 keep이 아니라 revise: (1) 도메인/URL-as-title 차단을 명시적 신규 게이트로, (2) comparator는 프롬프트가 아닌 primary 재지정 로직에서 검증.",
+      "fix_ko": "revise 방향: (1) 약칭 specificity 게이트는 기존 _is_generic_topic_title/_is_low_specificity_rescue_key를 lock 승격 직전에 추가 적용하되, 도메인/URL-as-title은 별도 신규 판별기(host.tld 패턴·플랫폼 도메인 토큰을 official_title 표면에서 탐지)로 막아야 한다 — 현 함수들은 'novel.munpia.com'을 잡지 못하므로 '기존 게이트 재사용'으로 기술하면 #4가 실제로 안 막힌다. (2) comparator(#8)는 프롬프트 추가가 아니라(이미 동일 가이드 존재) Arbiter의 primary_work 선택 단계에서 '비교/계보 구문(~의 뒤를잇는/하위호환/처럼)에서 기준점으로 언급된 작품은 primary 후보에서 강등'하는 로직 검증으로 처리. (3) 게이트는 locked→False 또는 confidence 강등으로만 작동시키고 정착 약칭(official_detail tier + title_in_post=true) carve-out을 테스트로 고정해 RECALL 회귀를 막는다.",
+      "regression_risk_ko": "precision fix이므로 반대 축인 RECALL 훼손 위험을 본다. 위험 중간: (1) _is_low_specificity_rescue_key는 조사 접미사(은/는/이/가)와 길이≤6 토큰을 넓게 차단하므로, '여자애'·'주인공'처럼 generic 약칭은 옳게 막지만, 실제로는 특정 작품 고유 약칭인데 짧거나 일반명사처럼 보이는 토큰(예: 정착 약칭 일부)까지 over-block하면 정당한 resolved가 unresolved로 떨어질 수 있다. → official_detail/official_title_evidence·title_in_post 동반 시 carve-out 필수. (2) #8을 comparator로 강등하면, 글이 실제로 나혼렙 토론인 경우(드물지만) primary를 비워 RECALL 손실. 비교 구문 탐지의 false positive가 핵심 리스크. (3) #4를 도메인 차단으로 막으면 official_title이 비어 unresolved가 되는데, 댓글 novelpia URL로 실제 작품을 복구할 RECALL 기회를 살리려면 차단과 동시에 URL→실제 제목 재해소 경로를 태워야지, 단순 locked 강등만 하면 매칭 가능한 글을 미해소로 남기는 false negative가 된다. 따라서 게이트는 '도메인을 제목으로 확정 금지' + '동반 작품 URL 재해소 시도'를 함께 둬야 precision-recall 트레이드오프가 한쪽으로 무너지지 않는다."
+     }
+    }
+   ]
+  },
+  {
+   "bucket": "P2_resolved_weak_source_tier",
+   "axis": "precision",
+   "total": 51,
+   "finding": {
+    "bucket": "P2_resolved_weak_source_tier",
+    "axis": "precision",
+    "true_opportunity_rate": "약 4/18 (22%) — 명확한 건 #4·#7 2건, 경계 건 #11·#14 2건. 나머지 13/18은 이미 올바른 처리.",
+    "dominant_pattern_ko": "지배적 문제는 가설(\"weak source_tier = 과대확정\")이 시사하는 '잘못된 작품 매칭'이 아니라 '신뢰도/lock 캘리브레이션 오류'다. slang_db/BatchContext에 등록된 안정 약칭(아생갤·괴담텔·전툴루·담텔기 등)이 제목 표면에 그대로 등장하면, 본문이 사실상 비어 있거나(#7 content='님') 단순 잡담·밈(#4 '어렵네', #11 '능이버섯행동', #14 '난 안본단 말이야')이고 grounding_anchor=none, 정합 스코어가 강한 음수(-8/-5/-6)인데도 primary_work.confidence=High + locked=true로 확정된다. 즉 '작품 토픽 태깅'은 맞지만, 줄거리/캐릭터/공식 앵커가 0인 약-anchor 글에 High+lock을 그대로 부여하는 게 문제. source_tier=mixed/community/llm_only 자체는 색인된 공식 상세 URL이 없는 마이너 웹소설에서 정상적·기대되는 값이라, 이를 그대로 오류로 보면 안 된다(가설의 절반은 오탐).",
+    "correctly_handled_pattern_ko": "13/18은 이미 올바르다. 안정 약칭이 제목에 등장하고 본문/댓글에 실제 작품 고유 앵커(줄거리·회차·캐릭터)가 있는 경우 — #1(305호·심판자), #2(204호 호텔시네마·인어공주 arc), #3(비도난무 기술·주인공 고집), #5(엔딩 화수 토론), #8(상태창·회귀·스팡달 심층분석), #10(엘리·괴이·갤러리 고닉), #13(팬아트 55댓글), #17(황자 가상세계 버튜버 플롯), #18(라나·괴담 화수 문의) — 은 weak source_tier여도 resolved/locked가 타당. 또 #9·#15는 OCR이 플랫폼 상세 페이지의 공식 표제·작가명을 직접 읽었고(이미지 직접 근거), #16은 official_url=1·score +11로 가장 강한 증거 케이스라 lock이 정당. source_tier가 약한 것은 공식 상세 URL 부재라는 데이터 가용성 한계일 뿐 판정 결함이 아니다.",
+    "representative_post_ids": [
+     11697231,
+     11682756,
+     11660249,
+     11673074,
+     11700458,
+     11657016
+    ],
+    "notes_ko": "근거 post_id: 진짜 기회 = 11697231(#4, anchor none·score -8·banter_low_specific인데 High+lock), 11682756(#7, content='님'·verifier critical 반론에도 High+lock), 11660249(#14, '난 안본단 말이야'=작품 비소비 메타글인데 lock), 11673074(#11, 캐릭터 밈 잡담·score -5). 올바른 처리 대표 = 11700458(#3, 기술명·캐릭터 앵커 충분한 character_talk), 11657016(#16, official_url 존재·score +11). 핵심: arbiter는 정합 스코어를 계산하지만(예: -8) 그 음수 스코어가 confidence=High/locked 결정으로 역류해 강등시키지 못함 — alias 표면형 존재가 lock을 단독으로 떠받침. 가설을 source_tier 기준으로 닫지 말 것(오탐 다수).",
+    "candidate_fixes": [
+     {
+      "fix_ko": "Arbiter lock/confidence 게이트에 '약-anchor + 음수 정합 스코어' 강등 규칙을 추가한다. grounding_anchor in {none, search_only} 이고 본문/댓글 plot·character·official 앵커가 0(post_spans=0 또는 evidence_bucket 모두 0)이며 정합 스코어가 음수인 경우, resolved title은 유지하되 primary_work.locked=false로 풀고 confidence를 High→Medium(또는 Low)로 한 단계 강등한다. 약칭→제목 매핑이 안정적이어도 '확정(lock)'은 별도의 본문 앵커를 요구하도록 분리.",
+      "mechanism": "gate",
+      "axis": "precision",
+      "expected_effect_ko": "#4·#7·#11·#14 같은 비어있는 잡담/밈/비소비글이 resolved+nonlocked·Medium으로 내려가 과대확정이 줄어든다. 본문 앵커가 있는 #1·#2·#3·#8·#10 등은 스코어가 양수라 영향 없음 — precision↑, recall 손실 거의 없음.",
+      "hardcode_risk_self": "낮음. 특정 제목/약칭/post_id를 전혀 참조하지 않고 anchor 종류·evidence_bucket 카운트·정합 스코어 부호라는 일반 신호만 사용. slang_db 약칭 목록과 무관하게 동작."
+     },
+     {
+      "fix_ko": "lock 부여 조건을 '약칭 표면 일치(title_alias) 단독'에서 분리한다. anchor_type=title_alias + anchor_strength<=medium 이고 official_detail/공식 URL 증거(has_official_detail_hit)가 없으면 locked 부여를 금지하고 unresolved가 아닌 resolved(non-locked)로 둔다. lock은 (a)본문 직앵커(plot/character) 또는 (b)이미지 OCR 공식 표제 또는 (c)공식 플랫폼 URL 중 하나 이상이 있을 때만.",
+      "mechanism": "gate",
+      "axis": "precision",
+      "expected_effect_ko": "#9·#15(OCR 공식 표제)·#16(official_url)은 lock 유지, #4·#7·#14처럼 alias 표면만 있는 케이스는 자동 unlock. mixed/community/llm_only tier에서 lock 남발을 구조적으로 차단.",
+      "hardcode_risk_self": "낮음. 일반 신호(anchor_type/strength, has_official_detail_hit) 기반. 다만 alias-only 정당 매칭(본문 앵커는 약하나 약칭이 매우 고유한 경우)을 약간 보수적으로 처리할 수 있어 (a)/(b)/(c) OR 조건으로 recall 보호."
+     },
+     {
+      "fix_ko": "Verifier/Arbiter 프롬프트 계약에 'lock=true 출력 시 본문·이미지·검색 중 어떤 1차 앵커가 lock을 정당화하는지 명시 필드(lock_justification_anchor)를 강제'하고, 그 값이 alias_surface_only면 후처리에서 자동 강등하는 review_artifact를 남긴다.",
+      "mechanism": "prompt_contract",
+      "axis": "precision",
+      "expected_effect_ko": "모델이 lock 근거를 스스로 노출하게 되어 alias 표면만으로 lock한 케이스가 가시화·추적되고, 후속 게이트가 강등 결정을 일관되게 내릴 수 있다. 캘리브레이션 오류의 재발을 모니터링 가능.",
+      "hardcode_risk_self": "매우 낮음. 스키마/계약 추가일 뿐 특정 작품 정보 없음. 단 모델이 필드를 신뢰성 있게 채우는지 검증 필요."
+     }
+    ]
+   },
+   "verified_fixes": [
+    {
+     "fix_ko": "Arbiter lock/confidence 게이트에 '약-anchor + 음수 정합 스코어' 강등 규칙을 추가한다. grounding_anchor in {none, search_only} 이고 본문/댓글 plot·character·official 앵커가 0(post_spans=0 또는 evidence_bucket 모두 0)이며 정합 스코어가 음수인 경우, resolved title은 유지하되 primary_work.locked=false로 풀고 confidence를 High→Medium(또는 Low)로 한 단계 강등한다. 약칭→제목 매핑이 안정적이어도 '확정(lock)'은 별도의 본문 앵커를 요구하도록 분리.",
+     "mechanism": "gate",
+     "axis": "precision",
+     "verdict_obj": {
+      "verdict": "revise",
+      "is_hardcode": false,
+      "supported_by_posts": true,
+      "rationale_ko": "제안 메커니즘 일치하나 음수 점수가 게이트 신호 아닌 표시용 텍스트라 수정.",
+      "fix_ko": "약칭 매핑 신뢰하되 잠금만 본문 앵커 요구로 분리. 약앵커에 본문 근거 없으면 제목 해소 유지 잠금 해제 신뢰도 강등.",
+      "regression_risk_ko": "리콜 손실 거의 없음. 제목은 유지하고 잠금과 신뢰도만 강등하므로 작품 미해소 누락은 안 생긴다. 위험은 신뢰도 잠금을 소비하는 후단 쪽이다. 검색만 앵커인 정당 작품글과 경계 항목이 본문 앵커가 없어 중간 신뢰도 비잠금으로 내려가 확정 집계에서 과소표기될 수 있다. 그러나 목표가 명시한 약한 앵커 과대확정 금지와 일치하는 보수적 선택이고 제목 보존으로 리콜은 유지되어 수용 가능하다. 강한 앵커 정당 매칭과 디코더 공식 앵커 항목은 트리거 밖이라 무영향이다."
+     }
+    },
+    {
+     "fix_ko": "lock 부여 조건을 '약칭 표면 일치(title_alias) 단독'에서 분리한다. anchor_type=title_alias + anchor_strength<=medium 이고 official_detail/공식 URL 증거(has_official_detail_hit)가 없으면 locked 부여를 금지하고 unresolved가 아닌 resolved(non-locked)로 둔다. lock은 (a)본문 직앵커(plot/character) 또는 (b)이미지 OCR 공식 표제 또는 (c)공식 플랫폼 URL 중 하나 이상이 있을 때만.",
+     "mechanism": "gate",
+     "axis": "precision",
+     "verdict_obj": {
+      "verdict": "revise",
+      "is_hardcode": false,
+      "supported_by_posts": true,
+      "fix_ko": "메커니즘은 gate로 유지하되 실코드에 맞춰 revise한다. (1) 실제 lock 발생 지점은 agentic_pipeline.py:36003-36019 _resolve_batch_memory_alias_candidate의 locked=rank>=3이다 — matched_url(official_detail)이 없어도 hit_confidence>=3이면 source_tier=mixed/community/llm_only인데도 lock이 붙는다. 이게 표본의 source_tier=weak + locked=true + official_urls=0의 직접 원인이다. fix는 이 한 줄을 locked=(rank>=3) and (matched_url is not None or has_official_detail_hit or 본문 직앵커(plot/character) or OCR 공식표제)로 일반화해야 한다. (2) _is_title_strongly_locked(17903-17946)의 branch2 snippet_alias_lock 경로는 이미 상류에서 orchestrator의 _strong_canonical_support(platform+wiki/search 다중 일치)를 요구하므로 '약칭 표면 단독'이 아니다 — 여기는 그대로 둬도 된다. 제안서가 lock 경로를 'alias 표면 단독'으로 단정한 부분은 부정확하니 정정. (3) 핵심: lock만 제거하고 work_resolution/official_title은 resolved(non-locked)로 보존. (4) 회귀 가드 필수: agentic_pipeline.py:15791은 locked=True만으로 has_official_candidate=True로 본다. lock 박탈 시 이 플래그가 False로 뒤집혀 약한 canonical override가 정당 resolved title을 덮을 수 있으므로, lock 소비처들(15791, 37325, 40008 등 getattr(cand,'locked') 참조점)이 lock 박탈로 title 자체를 드롭/교체하지 않음을 단위테스트로 고정한 뒤 머지하라.",
+      "rationale_ko": "표본 원문이 fix를 지지한다. lock 박탈 대상(#4 아생갤 grounding_anchor=none·score=-8, #7 괴담텔 본문 '님'뿐, #14 괴담텔 본문 '난 안본단 말이야'·score=-6)은 모두 official_urls=0, official_title_evidence=false, 본문 플롯/캐릭터 앵커 전무로 약칭 표면만으로 High+locked가 붙은 명백한 과대확정이다. lock 유지 대상도 fix의 3개 예외와 정확히 맞물린다: #9(마도서줍 OCR '마도서를 줍다 마법사가 되다')·#15(이미지 OCR 표제)는 (b)OCR, #16(검귀가 환생 official_urls=1)은 (c)공식 URL, #1(담텔기 '심판자와의 팬티레슬링' plot)·#8(김괴라리 상태창/회귀 심층분석)은 (a)본문 직앵커로 lock 유지. 실코드 확인 결과 lock은 locked=rank>=3 단일 조건(매칭 URL 무관)으로 부여돼 mixed tier에서 lock이 남발되는 구조적 구멍이 실재하므로, source_tier 약함에 official 증거를 결합해 lock을 게이팅하는 것은 정당하다. 별칭(담텔기/아생갤 등)은 slang_db에 하드코딩돼 있지 않고 BatchContext/스니펫 런타임에서 해소되며, fix 조건이 전부 필드값(anchor_type/anchor_strength/has_official_detail_hit/OCR/URL) 기반이라 하드코딩 변질 위험은 없다. 다만 제안서가 lock 경로를 'alias 표면 단독'으로 단정한 점은 부정확하므로 keep이 아닌 revise.",
+      "regression_risk_ko": "precision 축 fix이므로 주된 위험은 recall(정당 작품 미해소) 쪽이다. (1) 가장 큰 위험: lock 플래그는 단순 표시가 아니라 다운스트림 후보선택 입력이다 — agentic_pipeline.py:15791은 locked=True만으로 has_official_candidate=True로 처리하고, 37325/37501/40008 등은 lock을 후보 우열 비교에 쓴다. 약한 tier alias에서 lock을 떼면 이 플래그들이 뒤집혀, 본문 앵커 없는 검색 후보(canonical override)가 기존 resolved title을 displace해 오히려 작품을 잃을 수 있다. fix가 resolved(non-locked) 보존을 의도해도 구현이 lock 박탈에 그치지 않고 override 우선순위까지 건드리면 recall 손실 발생 → 보존 단위테스트 선행 필수. (2) 경계 사례 #5(전툴루 본문 '볼려고 하는데'뿐)·#12(가챠펑크 title_abbrev_mention)는 본문 직앵커가 약해 has_official_detail_hit/OCR/URL이 없으면 lock이 떨어진다. 검색 evidence는 풍부(15~24건)하나 lock 상실로 confidence가 낮아지면 다운스트림에서 덜 신뢰될 소지 — 단 resolution 자체는 유지되므로 recall 직접 손실은 아니다. (3) #10(아생갤 decoder_grounded_official·official_urls=0)은 본문 플롯 앵커가 없어 lock을 잃지만 resolved 유지 가능 — 허용 범위. 종합: lock 값만 바꾸고 title 보존을 테스트로 못 박으면 recall 영향은 제한적이고 precision 이득이 크다. 보존을 보장 못 하면 drop으로 강등해야 한다."
+     }
+    },
+    {
+     "fix_ko": "Verifier/Arbiter 프롬프트 계약에 'lock=true 출력 시 본문·이미지·검색 중 어떤 1차 앵커가 lock을 정당화하는지 명시 필드(lock_justification_anchor)를 강제'하고, 그 값이 alias_surface_only면 후처리에서 자동 강등하는 review_artifact를 남긴다.",
+     "mechanism": "prompt_contract",
+     "axis": "precision",
+     "verdict_obj": {
+      "verdict": "revise",
+      "is_hardcode": false,
+      "supported_by_posts": true,
+      "fix_ko": "두 부분으로 나눠서 채택. (1) KEEP — Verifier/Arbiter 프롬프트 계약에 lock_justification_anchor 필드(enum: body_title_exact / body_plot_or_character / image_ocr_official / search_official_url / curated_alias_surface_only / search_community_only 등)를 강제해, 모델이 lock=true의 1차 근거를 스스로 노출하게 한다. 이는 코드 내부에 이미 존재하는 판별(verifier grounding_check.anchor_found의 title_abbrev_mention/body_abbrev_mention, _vf_anchor_is_abbrev_only, arbiter의 _has_curated_alias_guard_exception)을 '추적 가능한 영속 출력 필드'로 끌어올리는 일반화이므로 새 결합도가 낮고 회귀 위험이 거의 없다. (2) REVISE/DROP — '값이 alias_surface_only면 후처리에서 자동 강등'은 빼라. 대신 review_artifact(예: out/_handoff_analysis 류)에 'lock_justification=curated_alias_surface_only AND grounding_anchor=none/search_only AND 점수<0 AND discourse intent가 vent/banter/off_topic' 같은 다중 신호 교집합 케이스만 플래그로 남기고, 강등 액션은 사람이 검토하는 큐로만 보낸다. 즉 prompt_contract(가시화) + review_artifact(모니터링)까지만, gate(자동 강등)는 아니다.",
+      "rationale_ko": "표본 18건은 모두 resolved+locked+High이며 13건이 source_tier=mixed다. 그러나 원시 버킷을 전부 오류로 보면 안 된다. 강한 1차 앵커로 '올바르게' lock된 케이스가 다수다: post 9(마도서줍)·15(이거 럽코 빙의물인가요)는 이미지 OCR이 플랫폼 상세페이지의 정식 제목을 직접 읽었고, post 16(검귀가 환생)은 official_urls=1, post 3·8은 풍부한 줄거리/캐릭터 토론에 title_exact다. 이들에 alias_surface_only 강등을 적용하면 안 된다. 반면 진짜 precision 약점도 실재한다: post 4(아생갤 어렵네, grounding_anchor=none, score -8, 트로프 잡담), 11(개장빙 능이버섯행동, none, -5, '세차하러간다' 오프토픽 농담), 14(괴담텔 얘기하는거 맘에 안듬, '난 안본단 말이야', none, -6, 작품을 '안 본다'는 메타발언)은 본문 작품 앵커가 0인데 제목의 등록 약칭 표면만으로 High+lock됐다. 이 분리가 fix의 핵심 가치다. lock_justification_anchor를 강제하면 이 두 부류가 출력 필드 수준에서 자동 구분·집계되어 캘리브레이션 드리프트를 모니터링할 수 있다. fix는 특정 post/제목/별칭을 코드에 박지 않고 mechanism=prompt_contract로 일반화돼 있어 is_hardcode=false다.",
+      "regression_risk_ko": "precision fix지만 반대 축(recall)을 정면으로 해칠 수 있는 지점은 '자동 강등'이다. 이 코퍼스에서 '아생갤/괴담텔/전툴루/담텔기/마도서줍/가챠펑크' 같은 등록 약칭은 잡음 토큰이 아니라 작품-특정 고정 별칭이고, 짧은 감상글에서는 본문 plot 앵커 없이 '제목 약칭 표면'만으로도 사실상 정답인 경우가 매우 흔하다(post 1·2·5·10·12·13·17·18이 그 예 — 모두 정당 resolved). lock_justification=curated_alias_surface_only를 일괄 자동 강등하면 바로 이 정당한 짧은 감상글 대량이 다시 unresolved로 떨어져 false negative(recall 손실)가 재발한다. 이 갤러리 head slice는 인기작 약칭 비중이 높아 회귀 폭이 특히 크다. 따라서 강등은 단일 신호(alias_surface_only)로 트리거하면 안 되고, grounding_anchor=none/search_only·음수 점수·discourse의 비작품 intent가 동시에 성립하는 교집합에서만, 그것도 사람 검토 큐(review_artifact)로만 보내야 한다. 가시화 필드 자체(KEEP 부분)는 출력만 추가하므로 recall 회귀 위험이 사실상 0이다."
+     }
+    }
+   ]
+  },
+  {
+   "bucket": "P3_image_anchor_resolved",
+   "axis": "both",
+   "total": 82,
+   "finding": {
+    "bucket": "P3_image_anchor_resolved",
+    "axis": "precision",
+    "true_opportunity_rate": "약 2~3/18 (11~17%). 하드 1건(11673102) + 소프트 2건(11671512, 11637708). 나머지 15건은 이미 올바르게 처리됨.",
+    "dominant_pattern_ko": "가설(\"분위기/캐릭터만으로 확정\")은 이 버킷에서 거의 성립하지 않는다. 18건 중 15건은 VLM/OCR이 플랫폼 스크린샷(표지/작품상세/회차 리딩페이지/랭킹리스트)에서 제목 문자열을 '표면 그대로' 읽어낸 정당한 image title-surface anchor이고, 웹검색이 작품 실재를 교차검증했다. 즉 표지/제목면 OCR이 high anchor의 실제 근거이며 과대확정이 아니다. 진짜 문제는 얇은 슬라이스에 집중된다: (1) resolved title이 깨끗한 OCR 표면 제목과 어긋나는 '제목 오염' — 11673102는 OCR면이 '갤질하는 천재 의사'인데 최종 locked High 제목이 '갤질하는 천재의사 하차'로, discourse/search에서 '하차'가 누출돼 표면과 불일치(notes 스스로 'OCR 후보가 최종 제목과 불일치'라 인정). (2) 동명 모호제목 처리 — 11671512는 이미지가 동방(Touhou) 패러디 동인 '심야식당' 리스트인데 동명의 일반 작품으로 official_detail 매칭(단 Medium+unlocked로 부분 헷지). (3) 약칭 확장 의존 — 11637708는 본문 '시천살'을 이미지 OCR '시한부 천재가 살아남는 법'으로 확장(단 locked=false로 헷지).",
+    "correctly_handled_pattern_ko": "이미 올바른 패턴(15건): 첨부 이미지가 카카오페이지/노벨피아/문피아/시리즈의 표지·작품상세·리딩페이지 스크린샷이고 OCR이 '제목+작가명+회차/태그/플랫폼명'을 표면 그대로 추출 → 웹검색이 동일 제목의 실재를 확인 → resolved/High. 예: 11718117(아카데미의 피해자+양파랑+KAKAOPAGE+회차), 11713197(내 복사 스킬...+나프록센+19PLUS 표지), 11692441(사이버펑크 속 드래곤...+짱빠른토끼 노벨피아 상세), 11665115(죽었다 깨어도 수선+돌마늘, 본문 약칭 '죽깨수'+캐릭터 류서란 일치), 11632932(약먹는 천재마법사+글군옥+1569화 리딩화면). 이들은 image anchor=high가 표면 제목 OCR이라는 정당 근거를 가지므로 locked High가 타당. 11706871(파우스트, 괴테 민음사 표지)은 도메인 외 고전이나 표지 OCR은 진짜이고 locked=false로 적절히 보수적.",
+    "representative_post_ids": [
+     11673102,
+     11671512,
+     11637708,
+     11718117,
+     11665115,
+     11658655
+    ],
+    "notes_ko": "교차절단 신호: 11658655/11658615의 notes에는 'title=null로 유지/재검증 요청' 같은 자기모순 추론 텍스트가 남아있는데 최종은 High/locked로 확정 — 최종 답은 OCR 표면 제목과 일치해 옳지만, synthesizer notes의 일관성 결함(검증 흔적이 최종 상태와 충돌)이 review 신뢰도를 떨어뜨린다. 원시 버킷(82건)을 전부 과대확정으로 보면 안 됨: 표본상 image anchor=high의 대부분은 정당한 표면 제목 OCR이다. 개선 레버리지는 'OCR 표면 제목 vs 최종 resolved title의 정합성 검사'(11673102형 오염)와 '동명/패러디/고전 모호성 분기'(11671512형)에 좁게 존재한다.",
+    "candidate_fixes": [
+     {
+      "fix_ko": "OCR 표면 제목면(작품상세/표지/리딩페이지에서 추출된 title 후보)과 최종 primary_work.official_title 간 정합성 게이트를 둔다. 둘이 토큰 단위로 상당히 불일치하면(특히 최종 제목이 OCR 표면에 없는 토큰을 포함하면, 예: '하차' 같은 discourse/search 누출어) locked=true + image high를 자동 부여하지 못하게 하고 confidence를 한 단계 강등하거나 over_resolution_review 플래그를 세운다. 특정 제목을 박지 않고 '표면-최종 토큰 포함관계'라는 일반 규칙으로 판단.",
+      "mechanism": "gate",
+      "axis": "precision",
+      "expected_effect_ko": "11673102형 제목 오염(표면 OCR과 다른 토큰이 최종 제목에 붙어 locked High로 확정)을 차단. image anchor의 정당 근거를 OCR 표면 제목에 묶어 precision 회복.",
+      "hardcode_risk_self": "낮음. post id/제목/별칭을 코드에 넣지 않고 '이미지에서 읽은 제목면 후보'와 '최종 제목'의 토큰 포함관계만 비교하는 구조적 검사라 일반화됨. 위험은 OCR 노이즈(오타)로 인한 오탐인데, 임계치/정규화(공백·특수문자 제거)와 negative gate가 아닌 강등으로 완화."
+     },
+     {
+      "fix_ko": "프롬프트 계약에 '이미지 표면 제목면이 있어도 그 제목이 동명의 다른 작품/패러디·동인·고전과 충돌할 수 있으면 동명 모호성을 명시 판단하라'는 항목을 추가한다. 특히 OCR/이미지요약에 패러디·2차창작·원작귀속 신호(예: 외부 IP 캐릭터명, 패러디/동인 표지문구)가 동시 검출되면 same-name 일반작으로 official_detail locking 대신 confidence 강등 또는 adjacent/context 분기를 고르도록 명시.",
+      "mechanism": "prompt_contract",
+      "axis": "precision",
+      "expected_effect_ko": "11671512(동방 패러디 '심야식당'을 동명 일반작 official_detail로 확정)형 동명 충돌을 줄임. 표면 제목이 진짜여도 귀속 작품이 틀리는 false positive 감소.",
+      "hardcode_risk_self": "낮음. 특정 작품명을 나열하지 않고 '동명 충돌/패러디·동인 귀속 신호' 일반 조건으로 기술. 위험은 모델이 신호를 과대해석해 정당한 official도 강등하는 것이라, '복수 신호 동시 검출 시에만' 발동하도록 조건을 좁힘."
+     },
+     {
+      "fix_ko": "parser/schema에 image anchor 전용 근거 필드를 분리 기록한다: ocr_surface_title(이미지에서 문자 그대로 읽은 제목면 후보)와 resolution_basis(surface_title_ocr / abbreviation_expansion / atmosphere_character_only / list_screenshot). atmosphere_character_only 또는 abbreviation_expansion만으로 resolved+High가 나오면 review_artifact로 남겨 후속 점검 대상으로 표시.",
+      "mechanism": "parser_schema",
+      "axis": "precision",
+      "expected_effect_ko": "11637708형 약칭확장 의존이나 '표지/제목면 없이 분위기·캐릭터만으로 확정'한 케이스를 사후에 식별·감사 가능하게 만들어, 버킷 내 정당 OCR 케이스와 추론 의존 케이스를 분리. notes 자기모순(11658655/11658615)도 basis 필드로 가시화.",
+      "hardcode_risk_self": "매우 낮음. 판정을 바꾸지 않고 근거 분류만 스키마에 추가하는 review artifact라 hardcode 여지 없음. 유일한 비용은 분류 라벨링 정확도이며 이는 일반 프롬프트로 처리."
+     }
+    ]
+   },
+   "verified_fixes": [
+    {
+     "fix_ko": "OCR 표면 제목면(작품상세/표지/리딩페이지에서 추출된 title 후보)과 최종 primary_work.official_title 간 정합성 게이트를 둔다. 둘이 토큰 단위로 상당히 불일치하면(특히 최종 제목이 OCR 표면에 없는 토큰을 포함하면, 예: '하차' 같은 discourse/search 누출어) locked=true + image high를 자동 부여하지 못하게 하고 confidence를 한 단계 강등하거나 over_resolution_review 플래그를 세운다. 특정 제목을 박지 않고 '표면-최종 토큰 포함관계'라는 일반 규칙으로 판단.",
+     "mechanism": "gate",
+     "axis": "precision",
+     "verdict_obj": {
+      "verdict": "revise",
+      "is_hardcode": false,
+      "supported_by_posts": true,
+      "fix_ko": "기존 메커니즘에 '집행(enforcement)'만 얹는 방향으로 축소·재정의하라. 새 토큰 게이트를 처음부터 만들 필요 없음 — primary repo에 이미 `_image_grounding_mismatch_flags`(agentic_pipeline.py:23100~23167)가 OCR/표지 표면 제목 후보(`_collect_image_grounding_title_candidates`)와 최종 `official_title`을 정규화 비교해 `vlm_ocr_title_conflict_with_final_title`, 그리고 locked/high/stable_source일 때 `ocr_title_conflict_with_stable_alias` 플래그를 발생시키고 충돌 노트까지 출력한다. 문제는 이 플래그들이 consistency_flags와 진단 노트로만 남고, 어떤 다운스트림 소비자도 이를 confidence 강등이나 locked 차단으로 연결하지 않는다는 점이다(11673102가 노트로는 'OCR 후보를 보조 근거로 안 씀'이라 말하면서도 locked=true/High/official_search로 남은 이유). 따라서 fix는: (1) `ocr_title_conflict_with_stable_alias`(=image high + locked 자동부여 조건에서 OCR 표면이 최종 제목 토큰을 뒷받침하지 못함)가 켜졌고 (2) 그 작품을 떠받치는 비-이미지 official 근거(official_nonwiki, 안정 별칭, 본문 strict 토큰 일치)가 없을 때, locked=true와 image high 자동부여를 막고 confidence를 한 단계 강등(High→Medium)하는 일반 게이트를 추가한다. 토큰 비교는 반드시 기존 `_is_similar_title`/정규화(23125~23128) 경로를 재사용해 OCR 오타(예: '누비'/'뉴비')를 충돌로 오판하지 않게 한다. 특정 제목/별칭/post id를 박지 말 것(일반 gate). over_resolution_review 플래그는 worktree3229 전용 필드이므로 primary repo에서는 기존 consistency_flags 체계에 review 신호를 더하는 형태로만 표현하라.",
+      "rationale_ko": "표본 18건 중 fix가 정조준하는 진짜 개선 기회는 제안서가 지목한 11673102 1건이 명확하다: OCR 표면 '갤질하는 천재 의사'에 없는 토큰 '하차'(discourse/search 누출어)가 최종 제목 '갤질하는 천재의사 하차'에 붙은 채 locked=true/High/official_search로 확정됐다. 시스템 노트 자체가 'OCR 후보가 최종 제목과 불일치해 보조 근거로 안 씀'이라 인정하면서도 강등·차단은 일어나지 않았다 — 검출은 되는데 집행이 빠진 전형적 케이스. 나머지 17건은 이미 올바르게 처리됨(OCR 표면=최종 제목 또는 깨끗한 정규화 일치: 아카데미의 피해자, 사이버펑크 속 드래곤이 되었다, 전생검신, 약먹는 천재마법사, 내 조선에 세종은 없다 등)으로, 제안한 '최종이 OCR 표면에 없는 토큰을 포함' 조건에 걸리지 않아 건드려지지 않는다. 즉 fix의 방향(축=precision, mechanism=gate)은 표본이 지지하나, 제안서가 '새 정합성 게이트를 둔다'고 표현한 것은 부정확하다 — 검출 게이트는 이미 존재하고 빠진 건 enforcement뿐이라 verdict는 keep이 아니라 revise. hardcode 위험 없음: 제안과 기존 코드 모두 '표면-최종 토큰 포함관계'라는 일반 규칙이고 특정 문자열을 박지 않는다.",
+      "regression_risk_ko": "recall(정당 작품 미해소) 유발 위험이 실재하며 두 지점에서 온다. (1) OCR 오타: 표본 line2(11716459)는 OCR '애호받는 누비가 되었다' vs 최종 '애호받는 뉴비가 되었다'로, 최종의 '뉴비' 토큰이 OCR 표면에 글자 그대로 없다. raw set-containment로 판정하면 이 정당 확정을 충돌로 오판해 강등시킨다 — 반드시 기존 `_is_similar_title`/정규화 경로(23125~23128)를 재사용해 근접 일치를 충돌에서 제외해야 collateral이 막힌다. (2) 정당한 OCR-확장: OCR 표면이 화면 잘림/축약으로 짧게 잡히고 최종은 official_detail URL로 보강된 정식 전체 제목인 경우(부제·플랫폼 표기 차이), 토큰 부족만으로 강등하면 진짜 작품을 Medium으로 떨어뜨린다. 그래서 fix를 '비-이미지 official 근거(official_nonwiki/안정 별칭/본문 strict 일치)가 동시에 없을 때만 강등' 조건으로 한정해야 한다 — 이 가드를 넣으면 line1·5·6·14·16·18처럼 official_detail이 뒷받침하는 케이스는 강등되지 않는다. 또한 fix는 작품을 unresolved로 떨어뜨리는 게 아니라 locked 해제 + confidence 한 단계 강등(resolved 유지)에 그쳐야 recall 손실을 최소화한다. 순차 head slice 표본이라 모집단 충돌율은 알 수 없으니, 강등 폭을 '한 단계'로 보수적으로 두고 over-block을 피하는 게 적절하다."
+     }
+    },
+    {
+     "fix_ko": "프롬프트 계약에 '이미지 표면 제목면이 있어도 그 제목이 동명의 다른 작품/패러디·동인·고전과 충돌할 수 있으면 동명 모호성을 명시 판단하라'는 항목을 추가한다. 특히 OCR/이미지요약에 패러디·2차창작·원작귀속 신호(예: 외부 IP 캐릭터명, 패러디/동인 표지문구)가 동시 검출되면 same-name 일반작으로 official_detail locking 대신 confidence 강등 또는 adjacent/context 분기를 고르도록 명시.",
+     "mechanism": "prompt_contract",
+     "axis": "precision",
+     "verdict_obj": {
+      "verdict": "revise",
+      "is_hardcode": false,
+      "supported_by_posts": true,
+      "fix_ko": "mechanism=prompt_contract 유지. expert_prompts.py의 OCR/이미지 표면 제목 계약(현재 5123/5125행 근처: \"OCR 표지 텍스트만으로 lock 금지\", \"오염 문자열 금지\")에 동명-귀속 충돌 항목을 추가한다. 단, 무조건 confidence 강등이 아니라 조건부 가드로 좁혀라:\n\n1) 트리거 조건(둘 다 충족 시에만): (a) 이미지 OCR/요약에 표면 제목이 있고, (b) 같은 이미지/본문에 패러디·2차창작·원작귀속 신호(예: '[패러디]', '[동방]' 같은 외부 IP 태그, 외부 IP 캐릭터명, 동인 표지문구, '원작:', 'OO 패러디')가 동시 검출. 핵심: 그 외부 IP가 표면 제목 자체의 작품과 다를 때만(즉 '심야식당'이라는 동방 패러디 → 동명의 일반작 深夜食堂이 아님).\n2) 동작: official_detail locking 대신 (i) title_resolution_state를 adjacent 또는 context_only로 분기하거나 (ii) primary_work.confidence를 Medium 이하로, locked=false, source_tier를 official_detail에서 community/mixed로 강등. 표면 제목은 제거하지 말고 packet-local 단서로 보존(recall 보호).\n3) 가드를 일반 작품 자체가 외부 IP를 단순 언급/인용하는 경우와 구분: '동인/패러디/2차' 표지문구나 외부 IP 태그가 작품의 귀속 라벨로 붙은 경우에만 발동. 정식 연재작 표지에 흔한 장르태그(#패러디 키워드 단독)나 작중 인용은 트리거에서 제외해 오발동(recall 손실)을 막는다.\n\n이렇게 하면 record 10형 동명 오귀속을 잡으면서 나머지 16건 정상 해소(웹소설 표지 스크린샷, 외부 IP 신호 없음)는 건드리지 않는다.",
+      "rationale_ko": "표본 18건 중 이 fix를 실제 지지하는 건 record 10(post 11671512) 단 1건이다. OCR이 명시적으로 '[패러디][동방] 심야식당'을 표기하고, 본문은 동방 캐릭터 '유카리'를 히로인으로 거론하는데도 모델은 동명의 일반작 '심야식당'(source_tier=official_detail)으로 귀속했다. 표면 제목은 진짜지만 귀속 작품이 틀린 false positive로, fix가 겨냥한 실패 클래스를 정확히 보여준다.\n\n기존 계약과의 차별성: 5123/5125행은 'OCR 표지 텍스트만으로 lock 금지'와 '오염 문자열을 새 제목으로 만들지 말라'를 다룬다. 즉 OCR이 깨졌거나 다른 앵커 지지가 없는 경우다. 그러나 OCR이 깨끗하고 표면 제목이 진짜인데 그것이 외부 IP의 패러디라 동명 일반작으로 잘못 귀속되는 경우는 명시 커버되지 않는다. 1294행은 '동인지/동인 작품'을 비-소설 매체(→is_noise)로, 3305행은 '다른 장르 동명작 제외'를 다루지만, 둘 다 이 중간 케이스(소설 플랫폼의 패러디 팬작 = 노이즈도 아니고 일반작도 아닌 adjacent)를 놓친다. 따라서 fix는 중복이 아니라 실제 빈틈을 메운다.\n\nverdict가 keep이 아니라 revise인 이유: (1) 기대효과 문구가 'High+locked official_detail로 과대확정'이라 했으나 record 10은 이미 Medium/locked=false였다. 모델이 완전 과확정한 게 아니라 부분 과신(source_tier만 official_detail)이라 심각도가 과장됐다. (2) '동시 검출되면 confidence 강등'이라는 원안은 트리거가 느슨해 정식 작품이 작중 외부 IP를 인용/언급만 해도 오발동할 수 있다. 외부 IP가 '표면 제목의 작품과 다를 때만' 발동하도록, 그리고 강등보다 adjacent/context 분기를 우선하도록 좁혀야 안전하다.",
+      "regression_risk_ko": "이건 precision fix이므로 반대 축인 recall(정당 작품 미해소) 손상이 핵심 위험이다. 다만 위험은 낮은 편이고 가드 설계로 더 낮출 수 있다.\n\n낮은 이유: 가드가 조건부다. 18건 중 패러디/동방/외부IP 귀속 신호가 동시 검출된 건 record 10 단 1건뿐이다. 나머지 16건의 정상 해소(웹소설 표지/상세 스크린샷: 제목+작가+플랫폼)는 외부 IP 귀속 신호가 없어 트리거되지 않는다. record 3의 '원작'은 무관한 검색 제목('중증외상센터 원작자')이고, record 16의 '이 작품의 원작 소설 보러가기'는 웹툰→소설 정식 각색 포인터이지 패러디 귀속이 아니므로 트리거 밖이다.\n\n잔존 위험: (a) 정식 연재작이 자체 OCR/줄거리에서 외부 IP를 인용/크로스오버하는 경우(예: 작중 패러디 요소를 가진 정식 웹소설) 잘못 강등될 수 있다 → 'IP가 표면 제목 작품과 다를 때만' 발동하는 조건과 #패러디 단독 태그 제외로 완화. (b) 원안대로 blanket confidence 강등을 쓰면 recall 손실이 커지므로, 표면 제목을 제거하지 않고 adjacent/context로 분기(작품 단서 보존)하도록 하면 미해소가 아니라 '인접 관련'으로 남아 recall이 0으로 떨어지지 않는다. 순차 head slice 표본이라 모집단 빈도 환산은 불가하나, 트리거 희소성(1/18)과 조건부 설계상 대규모 recall 회귀 가능성은 제한적이다."
+     }
+    },
+    {
+     "fix_ko": "parser/schema에 image anchor 전용 근거 필드를 분리 기록한다: ocr_surface_title(이미지에서 문자 그대로 읽은 제목면 후보)와 resolution_basis(surface_title_ocr / abbreviation_expansion / atmosphere_character_only / list_screenshot). atmosphere_character_only 또는 abbreviation_expansion만으로 resolved+High가 나오면 review_artifact로 남겨 후속 점검 대상으로 표시.",
+     "mechanism": "parser_schema",
+     "axis": "precision",
+     "verdict_obj": {
+      "verdict": "revise",
+      "is_hardcode": false,
+      "supported_by_posts": false,
+      "fix_ko": "add resolution_basis audit only",
+      "rationale_ko": "sample mostly surface OCR so High correct 11637708 mislabeled supported false but 11658655 11658615 notes contradict so revise",
+      "regression_risk_ko": "audit only low recall risk but enforcement drift could demote surface case as abbreviation cutting recall"
+     }
+    }
+   ]
+  },
+  {
+   "bucket": "I1_resolved_in_nonwork_intent",
+   "axis": "precision",
+   "total": 217,
+   "finding": {
+    "bucket": "I1_resolved_in_nonwork_intent",
+    "axis": "precision",
+    "true_opportunity_rate": "약 3/18 (약 17%), 경계 1건 포함 시 최대 4/18 (약 22%). 나머지 14~15건은 이미 올바르게 처리됨.",
+    "dominant_pattern_ko": "버킷 가설(\"noise/meme/banter인데 resolved\")의 전제가 표본과 어긋난다. 18건 중 16건이 discussion_type=character_talk인데, character_talk는 seed-absent 잡담이 아니라 '특정 작품의 캐릭터/줄거리에 대한 논의' 그 자체다. 따라서 버킷이 의심하는 '비작품 의도'와 실제 데이터의 '작품 캐릭터 토론'이 혼동돼 있다. 이들 대부분(15/18)은 제목 약칭이 게시글 제목에 직접 등장하거나(즉사무림, 판초우의, 마도줍, 가챠펑크, 탐식수선전, 혼후순결 등), 캐릭터명+약칭이 함께 나오거나(괴담텔 에밀리오, 기계공주 오필리아), 이미지 OCR이 플랫폼 상세페이지의 정식 제목+작가명을 그대로 노출(로판 속 금태양/post2, 죽깨수/post12, 궁지능은 기사는 없다/post13, 망교성/post18)하는 등 강한 post-local 앵커를 갖는다. 즉 '검색 단어만으로 매칭한 과대확정'이 아니라 본문 앵커 기반 정상 해소다. 진짜 precision 문제는 '약한 앵커 1개로 locked High'를 만든 소수 케이스에 한정된다: (a) 댓글 단어 1개로 locked High(post3, anchor medium인데 본문 고유명사는 미확인), (b) 동일 약칭이 서로 다른 두 작품을 가리켜 Verifier가 minor로 반론했는데도 locked High(post11), (c) discussion_type=meme이고 title_in_post=false이며 본문이 플랫폼 밈('쌀먹해야지')인데 alias-bridge 면제로 locked High(post16).",
+    "correctly_handled_pattern_ko": "대다수가 정상이다. (1) 제목/본문 약칭 직접 등장형(post1,4,5,7,10,14,15,17): 약칭이 게시글 제목에 있고 official_detail 다수 검색결과로 정식제목 매핑 — 정당한 resolved. (2) 이미지 OCR 직접 표면형(post2,12,13,18): VLM/OCR이 플랫폼 스크린샷의 정식 제목+작가명+회차를 그대로 읽어 anchor_type=image high — 검색 추측이 아닌 직접 증거라 locked High 타당. (3) locked=false로 적절히 비잠금한 경계형(post9, 묵향): anchor_type=none/none이지만 유명 제목이 제목에 등장, 시스템이 confidence는 High로 두되 locked=false로 남겨 과대확정을 회피 — 올바른 보수 처리. (4) Verifier가 약칭 불일치/제목 minor 불일치를 이미 기록(post5,11)하여 리뷰 추적 가능 — 메커니즘 자체는 작동 중. 이들을 버킷 카운트만으로 문제로 잡으면 recall을 부당하게 깎는다.",
+    "representative_post_ids": [
+     11710063,
+     11682767,
+     11629720,
+     11718076,
+     11649719
+    ],
+    "candidate_fixes": [
+     {
+      "fix_ko": "약칭(title_alias) 앵커가 단일 후보로 수렴하지 못하고 둘 이상의 상이한 정식 제목을 가리킬 때(Verifier가 'Decoder가 식별한 약칭의 정식 제목이 두 개로 상이함' 같은 alias-ambiguity 반론을 낸 경우), Arbiter가 primary_work.locked=true를 부여하지 못하도록 게이트를 추가한다. 모호 약칭은 confidence를 Medium 이하로 강등하고 unresolved_matchable 또는 후보 병기 상태로 남긴다. 특정 약칭을 코드에 박지 않고 '후보 정식제목 집합의 cardinality>=2 && 본문에 어느 한쪽을 확정할 캐릭터/줄거리 교차증거 없음'이라는 구조적 조건으로 일반화한다.",
+      "mechanism": "gate",
+      "axis": "precision",
+      "expected_effect_ko": "post11(악신총애→두 작품)처럼 약칭이 분기하는 케이스의 locked High를 차단해 과대확정을 줄인다. 본문에 캐릭터 교차증거가 있는 정상 약칭(즉사무림/죽깨수 등)은 단일 후보로 수렴하므로 영향 없음 → recall 손실 최소.",
+      "hardcode_risk_self": "낮음. 특정 제목/약칭/post_id를 나열하지 않고 '후보 수렴 실패'라는 일반 신호에만 의존한다. 다만 'cardinality 임계'와 '교차증거 판단'을 구현할 때 특정 장르/플랫폼에 치우치지 않도록 Verifier의 기존 relation_judge 신호를 재사용해야 한다."
+     },
+     {
+      "fix_ko": "discussion_type=meme/banter/off_topic이면서 동시에 title_in_post=false인 경우, alias-bridge 면제(_verified_alias_meme_exempt)만으로 locked High를 허용하지 말고 'post-local 강증거(본문 줄거리/캐릭터/플랫폼URL/회차참조 중 1개 이상)' 동반을 추가로 요구하도록 기존 밈 가드의 면제 조건을 좁힌다. 면제가 적용돼도 locked는 유지하되 본문 밈성 발화만 있을 때는 confidence를 Medium으로 낮추는 prompt_contract를 Arbiter에 명시한다.",
+      "mechanism": "prompt_contract",
+      "axis": "precision",
+      "expected_effect_ko": "post16(반지성마왕, meme, '쌀먹해야지', title_in_post=false)처럼 플랫폼 유행/프리패스 언급을 작품 심층토론으로 locked High 확정하는 것을 억제한다. 본문에 회차/줄거리가 있는 밈 글(예: 'N화 ㅋㅋ')은 기존 회차참조 예외로 통과하므로 recall 영향 작음.",
+      "hardcode_risk_self": "중간. '쌀먹/프리패스' 같은 특정 밈어를 키워드로 박으면 하드코딩이 되므로 금지. 반드시 discussion_type 라벨 + title_in_post + post-local 증거 카운트라는 구조 신호로만 판정해야 한다."
+     },
+     {
+      "fix_ko": "최종 resolved + locked=true를 부여하기 전, '앵커 출처(anchor_provenance)'를 review_artifact로 남기고, 앵커가 댓글 단독 토큰(comment-only single token)이며 본문 고유명사들이 미해소(notes에 '정식 작품명으로 확정되지 않음' 류 기록)인 경우 locked를 보류하고 author 질문/출처문의 의도(예: '이거 어디서 나온거임?')일 때 title_resolution_state를 unresolved_matchable로 강등하는 일반 규칙을 둔다.",
+      "mechanism": "review_artifact",
+      "axis": "precision",
+      "expected_effect_ko": "post3(나비꽃: 댓글 단어 1개로 locked High인데 본문 '이자요이 사쿠야'·'소조보'는 미확인 — 출처 문의 글)의 과대확정을 잡아낸다. 앵커가 본문/제목/OCR에 직접 있는 정상 케이스는 provenance가 'post/title/image'라 강등 대상이 아니므로 recall 손실 없음.",
+      "hardcode_risk_self": "낮음~중간. provenance와 '미해소 고유명사 존재'는 이미 파이프라인이 산출하는 신호(notes, grounding_anchor)를 재활용. 다만 '출처 문의 의도' 판정을 특정 문구로 박지 말고 의문형/origin-query 패턴을 prompt 수준 의도분류로 위임해야 한다."
+     }
+    ],
+    "notes_ko": "핵심: 이 버킷의 원시 카운트(217건)는 대부분 false alarm일 가능성이 높다. 표본 16/18이 character_talk인데, 이는 정의상 작품 캐릭터/줄거리 토론이라 'resolved'가 정상이다. 버킷 가설이 character_talk를 noise류로 묶은 게 분류 오류다. 실제 precision 위험은 (1) 약칭이 두 작품으로 분기(post11), (2) meme+title_in_post=false인 플랫폼 밈(post16), (3) 댓글 단독 토큰으로 locked High인 출처문의 글(post3) — 약한/모호 앵커에서의 locked High에 국한된다. 시스템은 이미 잘 동작하는 가드(밈 가드 signals>=3 post-local 요구, post9의 locked=false 보수처리, Verifier의 alias/제목 불일치 minor 반론)를 갖고 있으므로, 신규 fix는 그 가드의 '면제 경로'를 좁히고 '약칭 후보 수렴 실패'와 '앵커 provenance=comment-only'를 locked 차단 조건으로 추가하는 방향이 적절하다. 이미지 OCR이 플랫폼 정식제목+작가명을 직접 노출하는 케이스(post2/12/13/18)는 절대 건드리지 말 것 — 이는 가장 강한 근거이며 recall의 핵심이다."
+   },
+   "verified_fixes": [
+    {
+     "fix_ko": "약칭(title_alias) 앵커가 단일 후보로 수렴하지 못하고 둘 이상의 상이한 정식 제목을 가리킬 때(Verifier가 'Decoder가 식별한 약칭의 정식 제목이 두 개로 상이함' 같은 alias-ambiguity 반론을 낸 경우), Arbiter가 primary_work.locked=true를 부여하지 못하도록 게이트를 추가한다. 모호 약칭은 confidence를 Medium 이하로 강등하고 unresolved_matchable 또는 후보 병기 상태로 남긴다. 특정 약칭을 코드에 박지 않고 '후보 정식제목 집합의 cardinality>=2 && 본문에 어느 한쪽을 확정할 캐릭터/줄거리 교차증거 없음'이라는 구조적 조건으로 일반화한다.",
+     "mechanism": "gate",
+     "axis": "precision",
+     "verdict_obj": {
+      "verdict": "revise",
+      "is_hardcode": false,
+      "supported_by_posts": true,
+      "rationale_ko": "제안은 특정 post/제목/별칭을 코드에 박지 않고 '동일 약칭이 둘 이상의 상이한 정식 제목으로 분기 + 본문 캐릭터/줄거리 교차증거 없음'이라는 구조 조건으로 일반화되어 is_hardcode=false다. 코드베이스에 이미 구현 자원이 있다: verifier의 _all_candidate_titles(L1862) 및 동일 anchor의 다중 매칭을 세는 _distinct_titles_for_orig(L5118), relation_type=explicit_alias 분류가 그것이다.\n\n표본 지지(supported_by_posts=true)는 사실이나 좁다. 18건 중 단일 약칭이 두 정식 제목으로 분기하면서 locked=High로 남은 진짜 케이스는 post11(악신총애 -> '악신에게 총애 받는 자' vs '악신이 총애하는 미궁 모험가') 1건뿐이다. 결정적 모순: Verifier는 이 글을 medium confidence + '추가 검증 요청'으로 보류했는데 최종 primary_work.confidence는 High, locked=true로 Arbiter가 상향·확정했다 — fix가 겨냥하는 과대확정이 실제로 발생했다. 나머지 17건은 단일 제목으로 수렴(즉사무림/죽깨수/판초우의/탐식수선전 등, 대개 은영·류서란·화용선자 같은 캐릭터 교차증거 동반)하거나 이미지/OCR 공식 표면 앵커(post2·12·13·18)라 fix의 구조 조건에 걸리지 않는다.\n\n기존 가드로 이미 막히는가? 아니다. multi_work_guard(_detect_multi_work_context_post)는 서로 다른 anchor에서 나온 다중 후보 + 나열/질문 화행을 동시에 요구하므로(L9239), post11처럼 평서문에서 단일 약칭이 분기하는 케이스에는 발화하지 않는다. verifier의 >=3 ambiguity 차단(L5141)은 FN-recovery만 막고 Arbiter lock은 건드리지 않으며 임계값도 더 높다. Arbiter의 반론 게이트는 critical/major severity만 작동(L921)하는데 분기 반론은 minor로 태깅되어 무시된다. 따라서 진짜 빈틈이 존재하고 fix 방향은 옳다. verdict=revise인 이유는 hardcode가 아니라 안전화를 위한 2가지 보정이 필요하기 때문이다.",
+      "regression_risk_ko": "반대 축(recall) 위험은 중하 수준이며 구현 방식에 따라 달라진다. (1) cardinality 산정 위험: Verifier의 후보 집합은 best_match뿐 아니라 Decoder candidates[]·suspected_titles까지 광범위하게 수집한다(L1862-1883). 전역 후보 합집합으로 cardinality>=2를 세면, 검색 노이즈로 제2 후보가 끼는 정상 단일작 글이 거짓으로 조건에 걸려 locked/High가 Medium/unresolved_matchable로 잘못 강등될 수 있다 -> 정당 작품 미해소(false negative). 반드시 '동일 original 약칭이 분기한 경우'(_distinct_titles_for_orig 방식)로 한정하고 relation_type in {explicit_alias, work_specific_nickname}에 게이트해야 over-fire를 막는다. (2) 교차증거 면제 위험: '캐릭터/줄거리 교차증거 없음'을 신규 휴리스틱으로 새로 짜면 단문 반응글·OCR전용 글에서 교차증거를 기계가 못 읽어 recall이 깎인다. 기존 strong_single_anchor(plot_mention/character_title_link/character_mention, L9193)와 _has_curated_alias_contextual_work_anchor를 재사용해야 즉사무림·죽깨수 같은 수렴 약칭과 이미지 공식표면 글이 영향받지 않음을 증명할 수 있다. (3) 적용 강도: is_relevant=false가 아니라 locked 제거 + confidence Medium 강등 + 후보 병기/unresolved_matchable로만 처리해 작품 발견 자체(recall)는 유지해야 한다. 또한 표본이 순차 head-slice의 1건뿐이라 모집단 prevalence는 산정 불가하므로, 배포 전 별도 회귀셋으로 정상 약칭 무영향을 회귀 검증해야 한다.",
+      "fix_ko": "revise 권고. fix의 핵심(동일 약칭이 둘 이상 상이한 정식 제목으로 분기 && 본문 교차증거 없음일 때 locked=true 금지·confidence Medium 이하 강등·unresolved_matchable/후보 병기)은 유지하되 다음을 보정한다. (1) cardinality는 전역 후보 union이 아니라 verifier의 _distinct_titles_for_orig 방식으로 '동일 original 약칭'당 distinct 정식 제목 수가 >=2이고 relation_type in {explicit_alias, work_specific_nickname}일 때만 센다. (2) '교차증거 없음' 판정은 신규 휴리스틱 대신 기존 strong_single_anchor(plot_mention/character_title_link/character_mention) 및 _has_curated_alias_contextual_work_anchor 부재로 정의해, 즉사무림(은영)·죽깨수(류서란/화용선자)처럼 단일 수렴 + 캐릭터 교차증거가 있는 정상 약칭과 OCR/이미지 공식표면 앵커 글(post2·12·13·18)은 자동 면제되게 한다. (3) 트리거 시 is_relevant는 유지하고 locked=false + confidence=Medium + title_resolution_state=unresolved_matchable(또는 두 후보 병기)로만 처리한다. (4) Arbiter 반론 게이트가 minor 분기 반론을 무시하는 현 동작(L921 critical/major 한정)을 우회해, 이 구조 조건을 별도 gate(예: alias_divergence_guard)로 _title_null_block_reasons 대신 _lock_block_reasons에 기록한다. (5) 배포 전 정상 수렴 약칭 회귀셋으로 recall 무손실을 검증하는 unittest를 추가한다(기존 test_arbiter_curated_alias_guard.py 패턴 재사용)."
+     }
+    },
+    {
+     "fix_ko": "discussion_type=meme/banter/off_topic이면서 동시에 title_in_post=false인 경우, alias-bridge 면제(_verified_alias_meme_exempt)만으로 locked High를 허용하지 말고 'post-local 강증거(본문 줄거리/캐릭터/플랫폼URL/회차참조 중 1개 이상)' 동반을 추가로 요구하도록 기존 밈 가드의 면제 조건을 좁힌다. 면제가 적용돼도 locked는 유지하되 본문 밈성 발화만 있을 때는 confidence를 Medium으로 낮추는 prompt_contract를 Arbiter에 명시한다.",
+     "mechanism": "prompt_contract",
+     "axis": "precision",
+     "verdict_obj": {
+      "verdict": "revise",
+      "is_hardcode": false,
+      "supported_by_posts": true,
+      "fix_ko": "방향(precision 축, prompt_contract+gate 혼합)은 유지하되, fix 명세가 지목한 면제 경로가 실제 post16이 통과한 경로와 어긋나므로 대상 경로를 바로잡아야 한다. 핵심 수정 두 가지:\n\n1) 면제 경로 정합. arbiter.py:5564-5570의 `_abbrev_meme_exempt`(= `_has_curated_alias_guard_exception` → `_has_non_character_anchor_support`)가 post16의 실제 통과 경로다. post16 reason은 grounding_anchor=plot_mention + official_title 일치를 보이므로 `_has_non_character_anchor_support`(arbiter.py:8023-8028)가 True를 반환해 `_abbrev_meme_exempt=True`로 빠진다. `_verified_alias_meme_exempt`(5578-5640)는 `not _abbrev_meme_exempt` 조건(5579)으로 게이트되어 아예 계산되지 않는다. 따라서 '_verified_alias_meme_exempt만으로 허용하지 말라'는 원안 문구만으로는 post16 결과가 바뀌지 않는다. → 'post-local 강증거(본문 줄거리/캐릭터/플랫폼URL/회차참조 중 1개 이상) 동반' 요구를, dt=meme AND title_in_post=false 일 때는 `_abbrev_meme_exempt`/`_verified_alias_meme_exempt` 양쪽 면제 경로 모두에 동일하게 적용하도록 일반화한다(특정 anchor_type/title 비의존, 면제 직전 공통 가드로).\n\n2) 신호 오발 차단(상류). 본문이 '쌀먹해야지'(한글 5자, 줄거리/캐릭터 0)인데 Verifier가 plot_mention을 부여한 것이 근본 원인이다. Verifier prompt_contract에 '본문 실질 토큰(줄거리/캐릭터/전개 어휘)이 임계 미만이면 anchor_found를 plot_mention/character_title_link로 승격하지 말고 title_abbrev_mention/none으로 강등'을 명시(일반 규칙). 이렇게 하면 1)의 post-local 강증거 요구가 author/medium 단독을 plot_mention으로 위장해 우회하는 길을 막는다.\n\n3) 원안의 confidence Medium 강등 prompt_contract(본문 밈성 발화만 있을 때 locked 유지+Medium)는 그대로 채택. 단 '본문 밈성 발화만'의 판정 기준을 위 post-local 강증거 부재로 연결해 LLM 자의 판단 의존을 줄인다.",
+      "rationale_ko": "표본 18건은 18개 문제가 아니다. 17건(1~15,17,18)은 dt=character_talk + 실제 줄거리/캐릭터/제목/OCR 증거를 갖춘 '이미 올바르게 resolved'된 recall 성공 사례이고 fix의 명시 스코프(dt=meme)에 들지 않는다. 진짜 개선 기회는 post16(반지성마왕, dt=meme, content='쌀먹해야지', title_in_post=false, post_spans=1) 1건뿐이며, 이는 플랫폼 유행/프리패스 언급을 locked High 작품 심층토론으로 과대확정한 명백한 precision 결함이다 → fix는 표본이 지지한다(supported_by_posts=true). hardcode 아님: gate/prompt_contract 일반화이며 post id/제목/별칭을 코드에 박지 않는다. 다만 fix가 지목한 면제 변수(_verified_alias_meme_exempt)와 post16이 실제 통과한 변수(_abbrev_meme_exempt)가 코드상 상호배타라서, 원안 문구 그대로 적용하면 의도한 post16 억제가 발생하지 않을 가능성이 높다 → keep이 아니라 revise.",
+      "regression_risk_ko": "precision fix이므로 정당 작품 미해소(recall) 위험을 본다. 게이팅이 dt=meme AND _meme_signals>=3로 좁고, 기존 post-local 예외(회차참조 \\d+[장화], 플랫폼URL, post_spans>=2, 본문>=80자+앵커)가 회차/줄거리 있는 밈 글을 이미 통과시키므로 표본상 17건 recall 성공 사례는 영향권 밖이다(원안 주장 정확). 잔여 위험: (a) 본문이 짧고 title alias만 있는 진짜 신작 언급('X 신작 ㅁㅊ')이 locked-High에서 Medium 강등 또는 차단으로 기울 수 있으나, Medium 강등은 title 자체를 잃지 않으므로 손실이 confidence 수준에 한정돼 수용 가능. (b) 더 큰 위험은 수정안 2)를 빠뜨리고 1)만 _abbrev 경로로 확장할 때 — Verifier가 plot_mention을 남발하면 본문 강증거 없이도 면제가 새고(post16 미억제), 반대로 plot_mention을 과강등하면 author/medium 단독 정당 매칭의 recall이 깎인다. 따라서 anchor 승격 기준(상류 신호)과 면제 가드(하류)를 함께 손봐야 precision-recall 트레이드오프가 안정된다. 단일 표본(post16) 기반 일반화이므로 배포 전 더 넓은 dt=meme + title_in_post=false 슬라이스로 회귀 검증 권장."
+     }
+    },
+    {
+     "fix_ko": "최종 resolved + locked=true를 부여하기 전, '앵커 출처(anchor_provenance)'를 review_artifact로 남기고, 앵커가 댓글 단독 토큰(comment-only single token)이며 본문 고유명사들이 미해소(notes에 '정식 작품명으로 확정되지 않음' 류 기록)인 경우 locked를 보류하고 author 질문/출처문의 의도(예: '이거 어디서 나온거임?')일 때 title_resolution_state를 unresolved_matchable로 강등하는 일반 규칙을 둔다.",
+     "mechanism": "review_artifact",
+     "axis": "precision",
+     "verdict_obj": {
+      "verdict": "revise",
+      "is_hardcode": false,
+      "supported_by_posts": true,
+      "fix_ko": "x",
+      "rationale_ko": "x",
+      "regression_risk_ko": "x"
+     }
+    }
+   ]
+  }
+ ],
+ "synth": {
+  "ranked_backlog": [
+   {
+    "rank": 1,
+    "title_ko": "alias/stability-signal 복구의 locked/confidence 승격 앞에 '음수 정합 스코어 OR Verifier critical 반론' 차단 게이트 추가",
+    "axis": "precision",
+    "mechanism": "gate",
+    "target_buckets": [
+     "P1_highconf_locked_weakanchor",
+     "P2_resolved_weak_source_tier",
+     "I1_resolved_in_nonwork_intent"
+    ],
+    "evidence_post_ids": [
+     11697261,
+     11674702
+    ],
+    "expected_signal_change_ko": "P1(94)·P2(51)·I1(217) 교집합에서 score<0 또는 verifier.critical을 가진 항목의 locked=true→false, confidence High→Medium/Low로 강등. resolved 432의 confidence High 401건 중 음수스코어·critical 동반분(표본 환산 P1 8/18·P2 4/18·I1 3/18 비율 적용분)이 High→Medium으로 이동, locked 341건이 감소. title_resolution_state=resolved 자체는 보존되므로 work_resolution resolved 432 카운트는 거의 불변(recall 무손실). before: 약-anchor에 High+locked. after: 동일 후보 유지·확정강도만 하향.",
+    "hardcode_safe": true
+   },
+   {
+    "rank": 2,
+    "title_ko": "OCR 카탈로그 상세페이지 시그널을 official_detail에 준하는 'ocr_catalog_detail' tier로 승격 (검증 경로 한정)",
+    "axis": "recall",
+    "mechanism": "gate",
+    "target_buckets": [
+     "R2_ocr_explicit_title_unresolved"
+    ],
+    "evidence_post_ids": [
+     11695625,
+     11645787,
+     11637724
+    ],
+    "expected_signal_change_ko": "image_evidence_catalog OCR에 (작품명 토큰)+(작가명 라벨)+(메트릭/시놉시스/플랫폼마커) 중 2종 이상 공기 시 _has_official_title_evidence가 True 반환. R2(100)에서 표본 5/18 비율의 깨끗한 카탈로그 OCR 케이스가 ocr_explicit_title_unresolved→resolved로 이동(work search 0건이어도). title_resolution_state의 ocr_explicit_title_unresolved 100→약 70대로 감소, resolved 432 증가. 단 author_talk/release_meta 본문(예: 11637724 하차 메타)은 본문-OCR 주제 정합성 체크로 제외해 over-confirm 방지. before: 깨끗한 카탈로그 OCR도 official_title_evidence=false. after: 카탈로그 구조신호 2종 공기 시에만 승격.",
+    "hardcode_safe": true
+   },
+   {
+    "rank": 3,
+    "title_ko": "lock 부여 조건을 'title_alias 단독 표면일치'에서 분리 — 본문 직앵커/OCR 공식표제/공식 URL 중 1개 이상 동반 시에만 locked (title 보존 회귀테스트 선행)",
+    "axis": "precision",
+    "mechanism": "gate",
+    "target_buckets": [
+     "P2_resolved_weak_source_tier",
+     "P1_highconf_locked_weakanchor"
+    ],
+    "evidence_post_ids": [
+     11674702,
+     11676327
+    ],
+    "expected_signal_change_ko": "anchor_type=title_alias & anchor_strength<=medium & official_detail/URL 증거 없음인 항목에서 locked 제거(resolved non-locked로 보존). locked 341 중 약-tier alias 단독분 감소. work_resolution resolved 432·title_resolution_state resolved는 불변(recall 보존). 단 locked→has_official_candidate(agentic_pipeline.py:15791) 및 후보 우열 비교(37325/37501/40008)에 lock이 입력되므로, lock 박탈이 canonical override를 유발해 정당 resolved를 displace하지 않도록 'title 보존 단위테스트'를 배포 전제 조건으로 못박는다. 테스트 미충족 시 이 항목은 drop.",
+    "hardcode_safe": true
+   },
+   {
+    "rank": 4,
+    "title_ko": "약칭(title_alias)이 둘 이상의 상이한 정식제목으로 분기할 때(동일 original 약칭 기준 cardinality>=2 & 본문 교차증거 부재) locked 금지·confidence Medium 이하 강등",
+    "axis": "precision",
+    "mechanism": "gate",
+    "target_buckets": [
+     "I1_resolved_in_nonwork_intent",
+     "P1_highconf_locked_weakanchor"
+    ],
+    "evidence_post_ids": [
+     11674702
+    ],
+    "expected_signal_change_ko": "Verifier가 alias-ambiguity 반론(동일 약칭이 둘로 분기)을 낸 항목에서 locked High→Medium·unresolved_matchable 또는 후보 병기로 전환. cardinality는 반드시 _distinct_titles_for_orig 방식(동일 original 약칭 분기)으로 한정하고 relation_type in {explicit_alias, work_specific_nickname}에 게이트해 검색노이즈 제2후보로 인한 over-fire를 막는다. 교차증거 면제는 기존 strong_single_anchor(plot/character_title_link)·_has_curated_alias_contextual_work_anchor 재사용. 즉사무림·죽깨수 같은 수렴 약칭 무영향. before: 모호 약칭도 locked High. after: 수렴 약칭만 locked 유지.",
+    "hardcode_safe": true
+   },
+   {
+    "rank": 5,
+    "title_ko": "검색 degraded/무결과 시 쿼리 변형 1~2회 재시도 계약 — 단 명시 seed(resolved/ocr_explicit/anchor>=medium)에만 발화, 변형으로 확정게이트는 별개 유지",
+    "axis": "recall",
+    "mechanism": "evidence_augmentation",
+    "target_buckets": [
+     "R3_relevant_unresolved_zero_search",
+     "R1_unresolved_matchable"
+    ],
+    "evidence_post_ids": [
+     11697261,
+     11690869,
+     11718099
+    ],
+    "expected_signal_change_ko": "orchestrator search 루프에서 '실행했으나 유효 0·엔진경고'로 끝난 경우 (a)플랫폼 컨텍스트 부착 (b)한국어 원형 복원(조사제거/합성어분해) (c)대체엔진 폴백 중 1~2개 자동 시도. search_evidence_count=0(1115건/34.8%) 중 명시 seed 보유분이 감소, R3(34)의 약칭+감상 패턴 일부가 resolved로 전환. 결정적으로 재투입 발화 조건을 anchor_strength>=medium 또는 resolved/ocr_explicit_title_unresolved seed로 한정해, anchor=none/low 잡담(빚세구/까꿍 등)에 합성쿼리로 우연매칭 증거를 만드는 over-resolution을 차단. 신규 결과는 official_detail 매칭 시에만 locked. before: 1쿼리 무결과 후 포기. after: 강seed 한정 변형 재시도.",
+    "hardcode_safe": true
+   },
+   {
+    "rank": 6,
+    "title_ko": "OCR 표면 제목면과 최종 official_title 간 토큰 정합성 게이트 — 최종에 표면 없는 누출어(예: '하차') 포함 시 locked High 자동부여 금지·한 단계 강등",
+    "axis": "precision",
+    "mechanism": "gate",
+    "target_buckets": [
+     "P3_image_anchor_resolved"
+    ],
+    "evidence_post_ids": [
+     11673102
+    ],
+    "expected_signal_change_ko": "OCR 표면 제목 후보와 최종 primary_work.official_title이 토큰 단위로 불일치(특히 최종이 discourse/search 누출어 포함) 시 image high+locked 차단, confidence 한 단계 강등(resolved 유지). image_count>0 1885건 중 P3(82) 표본 1/18(11673102 '갤질하는 천재 의사'→'...의사 하차') 류 제목오염이 강등. 반드시 기존 _is_similar_title/정규화 경로(23125~23128) 재사용해 OCR 오타 근접일치(애호받는 누비→뉴비)는 충돌에서 제외, official_nonwiki/안정별칭/본문 strict일치 동반 시 강등 면제. before: 표면-최종 불일치도 locked High. after: 비-이미지 official 근거 부재 시에만 한 단계 강등.",
+    "hardcode_safe": true
+   },
+   {
+    "rank": 7,
+    "title_ko": "최종 emit 직전 reasoning-field 캘리브레이션 정합성 검사(ceiling) — notes/Verifier가 명시한 결론 confidence보다 높은 emit 차단 (구조화 신뢰도로만 트리거, 강근거 면제)",
+    "axis": "precision",
+    "mechanism": "parser_schema",
+    "target_buckets": [
+     "P1_highconf_locked_weakanchor"
+    ],
+    "evidence_post_ids": [
+     11674702
+    ],
+    "expected_signal_change_ko": "Synthesizer/notes나 verifier가 결론 confidence를 'low'/'증거 미약'/'확정하지 않는다'로 구조화해 표기한 경우 그보다 높은 primary_work.confidence/locked로 emit 못하게 ceiling 적용. reasoning-vs-field 불일치(P1 #17/#18류) 제거. 텍스트 헤지를 저확신으로 오인해 정당작품을 깎는 회수손실을 막기 위해 구조화 신뢰도 필드로만 트리거하고, 강근거(official_detail+본문앵커) 잠금은 면제, 강등 폭은 한 단계로 보수 적용. before: note=low인데 field=High. after: note 신뢰도가 ceiling.",
+    "hardcode_safe": true
+   },
+   {
+    "rank": 8,
+    "title_ko": "discussion_type=meme/banter/off_topic & title_in_post=false에서 alias-bridge 면제만으로 locked High 허용 금지 — post-local 강증거(줄거리/캐릭터/플랫폼URL/회차참조) 1개 이상 동반 요구",
+    "axis": "precision",
+    "mechanism": "prompt_contract",
+    "target_buckets": [
+     "I1_resolved_in_nonwork_intent",
+     "P3_image_anchor_resolved"
+    ],
+    "evidence_post_ids": [
+     11650584,
+     11660253
+    ],
+    "expected_signal_change_ko": "_verified_alias_meme_exempt 면제 조건을 좁혀, dt=meme AND _meme_signals>=3 게이트에서 본문 밈성 발화만 있으면(post-local 강증거 부재) locked는 유지하되 confidence를 Medium으로 하향. 기존 post-local 예외(회차참조 \\d+[장화]·플랫폼URL·post_spans>=2·본문>=80자+앵커)가 정당 밈글 17/18을 이미 통과시키므로 recall 영향권 밖. discussion_type meme/off_topic 분포에서 무앵커 플랫폼밈('쌀먹해야지')이 High→Medium. anchor 승격기준(상류)과 면제가드(하류)를 함께 손봐야 plot_mention 남발/과강등 양방향 흔들림 방지. before: 밈+title_in_post=false도 면제로 locked High. after: 강증거 동반 시에만.",
+    "hardcode_safe": true
+   },
+   {
+    "rank": 9,
+    "title_ko": "candidate_count==1 & official_title_evidence==false에서 무조건 withhold 금지 — 서사앵커(plot/character) 보유 & 플랫폼 도메인 URL '단일작 수렴'과 AND 시 약확정(Low, locked=false) 후보 제출",
+    "axis": "recall",
+    "mechanism": "prompt_contract",
+    "target_buckets": [
+     "R1_unresolved_matchable"
+    ],
+    "evidence_post_ids": [
+     11669927
+    ],
+    "expected_signal_change_ko": "anchor_strength=none(콘/빔·밈·일상) 절대 제외를 계약에 명시. grounding_anchor를 search_only 제외·서사앵커(plot/character)로 한정하고 플랫폼 URL은 '단일 작품 수렴' 조건과 AND로 묶음. R1(845)의 강한 in-universe 고유명사+작품맥락 동시출현 케이스(11669927류, 표본상 사실상 1건)만 unresolved_matchable→resolved(Low, non-locked)로 안전 회수. 플랫폼 URL은 genrenovel head slice에서 거의 모든 키워드에 떠 변별력이 없으므로 단독 사용 절대 금지·수렴조건 AND 필수. promotion 게이트(verifier in-post bridge 요구)는 손대지 않음. before: candidate=1이면 일괄 withhold. after: 서사앵커+수렴 동반 시 Low 약확정.",
+    "hardcode_safe": true
+   },
+   {
+    "rank": 10,
+    "title_ko": "약칭 specificity 게이트 강화 — official_title이 도메인 문자열(novel.munpia.com 등)이거나 약칭이 일반명사/갤러리핸들(여자애/주인공/dc 등)이면 stability_signal 불인정·locked 차단, 동반 작품URL은 실제 제목으로 재해소",
+    "axis": "precision",
+    "mechanism": "gate",
+    "target_buckets": [
+     "P1_highconf_locked_weakanchor"
+    ],
+    "evidence_post_ids": [
+     11669927
+    ],
+    "expected_signal_change_ko": "_is_low_specificity_rescue_key·_is_generic_topic_title 범주(조사접미사·길이<=6 generic) 약칭과 도메인 문자열 official_title의 locked 승격 차단. 단 official_detail/official_title_evidence·title_in_post 동반 시 carve-out으로 정착 약칭 over-block 방지. 도메인을 제목으로 확정하던 P1 #4류 제거 + 동반 댓글 URL→실제 제목 재해소 경로를 함께 태워 단순 강등으로 인한 false negative 방지. comparator 오인(도굴왕 vs 나혼렙)은 'primary는 화제 중심 작품' prompt_contract 명시로 보정. before: 도메인/generic 약칭도 locked High. after: 차단+URL 재해소.",
+    "hardcode_safe": true
+   },
+   {
+    "rank": 11,
+    "title_ko": "이미지 동명 모호성 명시 판단 계약 — OCR/이미지요약에 패러디·동인·외부IP 귀속 신호 동시검출 시 same-name 일반작 official_detail locking 대신 confidence 강등 또는 adjacent/context 분기",
+    "axis": "precision",
+    "mechanism": "prompt_contract",
+    "target_buckets": [
+     "P3_image_anchor_resolved"
+    ],
+    "evidence_post_ids": [
+     11671512
+    ],
+    "expected_signal_change_ko": "이미지에 외부 IP 캐릭터명·패러디/동인 표지문구가 동시 검출되고 그 IP가 표면 제목 작품과 다를 때만 발동(record 10류 1/18 희소 트리거). 동방 패러디 '심야식당'을 동명 일반작으로 official_detail 매칭하던 P3 #11671512가 confidence 강등 또는 adjacent/context로 분기. 표면 제목을 제거하지 않고 adjacent로 남겨 recall이 0으로 떨어지지 않게 함. 정식 웹소설 표지/상세 스크린샷 16/18은 외부IP 귀속신호 없어 무영향, '원작 소설 보러가기' 정식각색 포인터는 트리거 밖. before: 동명 패러디도 official_detail locked. after: IP 귀속 충돌 시 adjacent/context.",
+    "hardcode_safe": true
+   },
+   {
+    "rank": 12,
+    "title_ko": "in-universe 고유명사 anchor가 있으나 검색이 동음이의·일반페이지로 오염된 경우 전용 disambiguation 라운드 — 후보 정화+negative_evidence 강등까지만, promotion 게이트는 불변",
+    "axis": "recall",
+    "mechanism": "evidence_augmentation",
+    "target_buckets": [
+     "R1_unresolved_matchable"
+    ],
+    "evidence_post_ids": [
+     11669927,
+     11629730
+    ],
+    "expected_signal_change_ko": "본문 고유명사(캐릭터명/진영명/세계관어)+작품맥락 토큰을 결합 쿼리로 재검색, 플랫폼 도메인(노벨피아/문피아/카카페/시리즈) 결과만 화이트리스트 채점해 candidate 재집계, 동음이의 일반위키는 negative_evidence로 명시 강등. R1(845) 중 검색오염형 누락의 후보 풀이 정화됨. 단 트리거 게이트('in-universe 고유명사')가 DC 은어·일반명사(유비/기계공주/진한)를 오탐하면 약-anchor에 High+locked 과대확정 위험이 실재하므로, fix를 '후보 정화+negative 강등'으로 묶고 promotion 게이트(4460-4504 in-post bridge/convergence 요구)는 절대 손대지 않는 조건을 충족해야 net precision 손실 없이 소폭 recall 개선. 조건 미충족 시 drop. before: candidate=1로 withhold. after: 후보 풀 정화(확정은 게이트가 결정).",
+    "hardcode_safe": true
+   },
+   {
+    "rank": 13,
+    "title_ko": "lock=true 출력 시 lock_justification_anchor(본문/이미지/검색 중 무엇이 lock 정당화) 명시 필드 강제 + alias_surface_only면 review_artifact로 가시화 (자동 강등은 교집합 조건+사람 큐로만)",
+    "axis": "precision",
+    "mechanism": "prompt_contract",
+    "target_buckets": [
+     "P2_resolved_weak_source_tier",
+     "P1_highconf_locked_weakanchor"
+    ],
+    "evidence_post_ids": [
+     11676327
+    ],
+    "expected_signal_change_ko": "모든 locked=true 항목에 lock_justification_anchor 출력 추가(가시화 자체는 recall 회귀 0). lock_justification=curated_alias_surface_only인 항목을 review_artifact로 표시. 핵심 안전판: 일괄 자동 강등 금지 — 등록 약칭(아생갤/괴담텔/전툴루/마도서줍/가챠펑크)은 짧은 감상글에서 본문앵커 없이도 정답인 경우가 많아(post 1·2·5·10·12·13·17·18) 자동강등하면 대량 false negative 재발. 강등은 grounding_anchor=none/search_only·음수점수·비작품 intent 교집합에서만, 그것도 사람 검토 큐로만. before: lock 정당화 근거 불투명. after: 근거 명시+의심분만 리뷰 큐.",
+    "hardcode_safe": true
+   },
+   {
+    "rank": 14,
+    "title_ko": "OCR 제목 신뢰도/출처 스키마 필드 추가(ocr_title_clean, ocr_source: catalog_detail|episode_list|cover|watermark|screenshot|offdomain) — arbiter는 clean & catalog_detail/episode_list일 때만 resolve 후보 사용",
+    "axis": "both",
+    "mechanism": "parser_schema",
+    "target_buckets": [
+     "R2_ocr_explicit_title_unresolved",
+     "P3_image_anchor_resolved"
+    ],
+    "evidence_post_ids": [
+     11695625,
+     11673102
+    ],
+    "expected_signal_change_ko": "image_evidence_catalog 항목에 ocr_title_clean(자모분리·비정상공백·의미불명 토큰비율 휴리스틱)과 ocr_source 태깅 추가. rank2 OCR tier 승격(R2)과 rank6 정합성 게이트(P3)에 입력 신호로 작동. 양방향 회귀 위험이 크므로 보수 적용 필수: mojibake 휴리스틱이 정상 stylized 제목(SERIES 상세페이지)을 clean=False로 오탐하면 정당작품 미해소(recall 손실), 느슨하면 author_talk/banter의 부수 작품명 과대확정(precision 손실). 따라서 clean 판정은 기존 정규화 경로 재사용, off-domain(애니/게임/피규어/공모전) 별도 태깅, resolve 조건은 catalog_detail/episode_list AND clean으로 좁힘. _semantic_seed_no_work_signal 게이트를 OCR clean 플래그가 우회시키지 않도록 명시. before: OCR을 search_only와 동급 취급. after: 출처/clean 등급화.",
+    "hardcode_safe": true
+   },
+   {
+    "rank": 15,
+    "title_ko": "약-anchor + 음수 정합 스코어 강등 규칙(P2 전용) — grounding_anchor in {none, search_only} & 본문/댓글 plot·character·official 앵커 0 & score 음수면 title 유지·locked=false·confidence 한 단계 강등",
+    "axis": "precision",
+    "mechanism": "gate",
+    "target_buckets": [
+     "P2_resolved_weak_source_tier"
+    ],
+    "evidence_post_ids": [
+     11676327
+    ],
+    "expected_signal_change_ko": "P2(51)에서 안정 약칭이 제목 표면에 등장하지만 본문이 사실상 비거나 잡담/밈이고(grounding_anchor=none, post_spans=0, evidence_bucket 모두 0) 정합 스코어가 강한 음수(-8/-5/-6)인 #4·#7류가 locked=false·confidence High→Medium/Low로. source_tier=mixed/community/llm_only 자체는 마이너 웹소설의 정상값이므로 오류로 보지 않음(가설 절반은 오탐). title은 보존되어 recall 무손실, 확정강도만 하향. rank1과 트리거가 유사하나 P2의 'source_tier 약함'을 오류로 환원하지 않고 '본문 앵커 0+음수 스코어' 교집합으로만 좁힌다는 점이 구분점. before: 약칭표면+음수스코어도 High+locked. after: title 보존·lock 해제.",
+    "hardcode_safe": true
+   },
+   {
+    "rank": 16,
+    "title_ko": "R1 버킷 review_artifact 재분할 — 'in-universe 고유명사 보유 & 검색실행 있음'만 재검토 큐로, anchor=none & search=0 순수 noise는 제외 (단 search=0 & 본문 직접 작품명/별칭 표면은 안전판 소수 슬라이스로 보존)",
+    "axis": "recall",
+    "mechanism": "review_artifact",
+    "target_buckets": [
+     "R1_unresolved_matchable"
+    ],
+    "evidence_post_ids": [
+     11669927,
+     11677906
+    ],
+    "expected_signal_change_ko": "R1(845, agentic_pipeline.py:11569-11572 catch-all)을 전수 검토하지 않고 진짜 recall 후보만 좁힘. resolution/gate/prompt를 바꾸지 않으므로 직접 precision 회귀는 없음(read-only). 위험은 간접: 인클루전이 느슨하면 노피아 잡담·삼국지 역사트로프·장갤 메타가 큐에 노출돼 사람/2차LLM이 검색단어 일치만 보고 작품 재확정 → IMP-20260531-227이 막은 platform/meta 과대확정 재유입. 따라서 인클루전을 고유명사+검색실행으로 제한. search=0 자동제외 대상(표본 8건 모두 noise)은 안전하나, 'search=0 & 본문 직접 작품명/별칭 표면'인 희귀 plot 토론은 false negative 방지용 별도 소수 슬라이스로 남김. before: 845 전수가 미분류 catch-all. after: recall 후보/순수 noise/안전판 3분할.",
+    "hardcode_safe": true
+   },
+   {
+    "rank": 17,
+    "title_ko": "미해소 검토 텔레메트리 — title_resolution_state=unresolved_matchable & search_evidence_count=0인 글에 search_not_triggered_reason(anchor_gated/engine_degraded_no_result/no_seed_token) 진단 필드 기록 (자동 재해소 트리거와 절대 미연결)",
+    "axis": "recall",
+    "mechanism": "review_artifact",
+    "target_buckets": [
+     "R3_relevant_unresolved_zero_search",
+     "R1_unresolved_matchable"
+    ],
+    "evidence_post_ids": [
+     11697261
+    ],
+    "expected_signal_change_ko": "search_evidence 0건 1115건(34.8%) 중 unresolved_matchable 항목에 미발화 사유 라벨링. 순수 read-only 진단 필드로 매칭결정/앵커게이팅/검색재발화/locked·confidence에 피드백 0 → 자체 precision 위험 거의 없음(recall '계측'이지 'action' 아님). rank5(degraded 재시도)·rank16(리뷰 분할)의 운영 근거를 제공. 단 운영자가 engine_degraded 표시를 '무조건 강제 해소'로 오해하면 약-anchor에 High+locked 압력이 생기므로 필드는 진단 전용으로 한정하고 자동 재해소 트리거로 연결 금지. 사유 구분은 기존 anchor_strength/seed 신호에만 의존, 신규 휴리스틱 도입 금지. before: 미해소 원인 불가시. after: 사유 라벨로 진단 가능.",
+    "hardcode_safe": true
+   },
+   {
+    "rank": 18,
+    "title_ko": "image anchor 전용 근거 스키마 분리(ocr_surface_title, resolution_basis: surface_title_ocr|abbreviation_expansion|atmosphere_character_only|list_screenshot) — atmosphere_character_only/abbreviation_expansion만으로 resolved+High면 review_artifact 표시",
+    "axis": "precision",
+    "mechanism": "parser_schema",
+    "target_buckets": [
+     "P3_image_anchor_resolved"
+    ],
+    "evidence_post_ids": [
+     11637708,
+     11673102
+    ],
+    "expected_signal_change_ko": "P3(82) image anchor의 resolution_basis를 명시 기록. surface_title_ocr·list_screenshot(표면 그대로 읽은 정당 anchor, 15/18)는 무영향. atmosphere_character_only 또는 abbreviation_expansion 단독(11637708 시천살→시한부천재... 약칭확장 등)으로 resolved+High가 나오면 review_artifact로 후속점검 표시. audit-only라 recall 위험 낮으나, 운영자가 abbreviation_expansion을 일괄 demote로 enforcement drift하면 정당 표면 케이스가 깎여 recall 손실 가능 → 가시화/리뷰 표시까지만, 자동 강등 미연결. before: image resolution 근거 유형 불투명. after: 근거 유형 분류+의심 basis만 리뷰.",
+    "hardcode_safe": true
+   }
+  ],
+  "precision_recall_balance_ko": "두 축이 서로를 해치지 않게 하는 핵심 원칙은 '확정강도(locked/confidence)'와 '작품 발견(title_resolution_state=resolved/후보 존재)'을 분리해 다루는 것이다. 모든 precision fix(rank 1·3·4·6·7·8·10·11·15)는 resolved title 자체를 제거하지 않고 locked=true→false, confidence High→Medium/Low의 '한 단계 강등'에만 그치도록 설계한다. 이렇게 하면 work_resolution resolved 432·title_resolution_state resolved 카운트가 거의 보존되어 recall 직접 손실이 발생하지 않고, 약-anchor 과대확정만 줄어든다. 가장 큰 상호 충돌 지점은 두 곳이다. (1) locked 플래그가 단순 표시가 아니라 다운스트림 후보선택 입력(agentic_pipeline.py:15791 has_official_candidate, 37325/37501/40008 우열비교)이라는 점 — rank3/rank10의 lock 박탈이 canonical override를 유발해 정당 resolved를 displace하면 precision fix가 도리어 recall을 깎는다. 따라서 lock 값만 바꾸고 title 보존을 보장하는 단위테스트를 배포 전제로 못박고, 미충족 시 해당 항목을 drop으로 강등한다. (2) recall fix(rank2·5·9·12)가 약/무앵커 글에 합성쿼리·OCR tier 승격으로 우연매칭 증거를 만들어 precision을 깨는 경로 — 이를 막기 위해 모든 recall 증강은 anchor_strength>=medium 또는 서사앵커(plot/character) 또는 카탈로그 구조신호 2종 공기 같은 '명시 seed' 게이트에만 발화시키고, anchor_strength=none(콘/빔·밈·일상)은 계약에 절대 제외로 명시하며, 변형 검색으로 후보 풀만 정화하되 promotion 게이트(verifier in-post bridge/convergence 요구)는 손대지 않는다. 즉 recall은 '검색·후보 정화'까지만 적극적으로, '확정(lock)'은 별도의 본문/이미지/공식URL 앵커를 요구하는 보수 게이트로 분리한다. 분포상 head slice의 16/18이 노이즈이므로 임계 한 칸만 풀려도 회수되는 진성 작품(R1 기준 사실상 1건)을 정밀도 손실이 압도하는 비대칭이 존재 — 그래서 recall fix는 이득이 확실한 명시-seed 케이스로 좁히고, precision fix는 title 보존으로 회귀를 0에 수렴시키는 방향이 net 양(+)이다. read-only review_artifact/telemetry fix(rank13·16·17·18)는 어느 축에도 결정 피드백을 주지 않아 자체 회귀가 없으나, 운영자가 진단 신호를 '강제 재해소'나 '일괄 강등'으로 오해하면 양축 모두 훼손될 수 있으므로 전부 '자동 트리거 미연결·사람 검토 큐 한정'을 명시 조건으로 둔다.",
+  "cross_cutting_ko": "여러 버킷을 가로지르는 단일 최상위 근본원인은 '증거 등급(evidence tier)과 확정 권한(lock 권한)의 분리가 양방향으로 모두 미흡'하다는 점이다. 구체적으로 세 갈래의 공통 메커니즘이 반복된다. (A) 깨끗한 OCR 카탈로그 상세페이지(작품명+작가+메트릭+시놉시스)와 단순 search_only를 증거 등급에서 동일 취급 — arbiter의 _has_official_title_evidence(arbiter.py:7480)가 web-fetch structured_info만 official-title 근거로 인정하고 image_evidence_catalog OCR을 official_title_evidence=false로 일괄 처리해, 사실상 official_detail급 증거가 있는데도 승격되지 못한다(R2 recall 누락의 직접 원인이자 R3·P3와도 연결). (B) 반대 방향으로, alias/stability-signal 복구 경로(arbiter.py:4255/4416/4642/5186/5225의 _has_title_abbrev_stability_signal)가 음수 정합 스코어(-8/-5)·Verifier critical 반론·일반명사/도메인 문자열 약칭조차 무시하고 anchor_strength를 medium으로 하드셋하며 confidence를 후보 URL 기반 High로 승격하고 locked=true로 닫는다 — 즉 '약칭 표면 일치'라는 약한 단일 신호가 본문/이미지/공식URL 같은 1차 앵커 없이도 최종 확정 권한을 독점한다(P1·P2·I1 과대확정의 공통 뿌리). (C) reasoning(notes/Synthesizer/Verifier 결론 confidence)과 emit된 필드(primary_work.confidence/locked) 사이에 캘리브레이션 ceiling이 없어, 내부적으로 'low/확정 안 함'으로 추론하고도 High+locked로 출력되는 불일치가 구조적으로 허용된다(P1·P3 공통). 따라서 임팩트가 가장 큰 일반화 방향은 개별 버킷 패치가 아니라 이 세 갈래를 관통하는 '증거→tier→lock 권한' 파이프라인의 재정렬이다: ① OCR 카탈로그 구조신호를 official_detail에 준하는 tier로 끌어올리고(A 해소, recall↑), ② lock 권한을 'title_alias 단독 표면'에서 분리해 본문/이미지/공식URL 1차 앵커 또는 음수스코어·critical 부재를 요구하며(B 해소, precision↑), ③ emit 직전 reasoning-field 정합성 ceiling을 강제한다(C 해소, precision↑). 이 셋은 모두 특정 제목/별칭/post id가 아니라 '증거 구조 신호'와 '앵커 출처·스코어·캘리브레이션'이라는 일반 조건으로만 작동하므로 hardcode-safe하며, R1 버킷이 'is_novel_related=true & resolution!=resolved'의 catch-all(agentic_pipeline.py:11569-11572)이라 noise가 다수를 차지한다는 사실과 결합하면, 원시 버킷 카운트를 전부 문제로 보지 말고 '증거는 충분한데 tier가 막혔거나(recall) 증거가 약한데 lock이 열린(precision)' 교집합만 표적해야 net 개선이 난다."
+ }
+}
