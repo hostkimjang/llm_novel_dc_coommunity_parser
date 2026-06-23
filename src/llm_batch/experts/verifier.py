@@ -1134,19 +1134,21 @@ class VerifierExpert:
         return user_prompt
 
     def _resolve_verifier_max_tokens(self, prompt_chars: int, *, compact_mode: bool = False) -> int:
-        """Use verifier generation budget, defaulting to the global expert limit."""
+        """Use a bounded verifier generation budget instead of the client max."""
         global_default = max(256, int(getattr(self.llm, "max_tokens", 65536)))
-        default_cap = global_default
+        default_cap = 4096 if compact_mode else 8192
         env_key = "LLM_VERIFIER_COMPACT_MAX_TOKENS" if compact_mode else "LLM_VERIFIER_MAX_TOKENS"
-        configured = self._env_int(env_key, default_cap, minimum=256, maximum=global_default)
+        hard_key = "LLM_VERIFIER_COMPACT_HARD_CAP" if compact_mode else "LLM_VERIFIER_HARD_CAP"
+        hard_cap = self._env_int(hard_key, default_cap, minimum=256, maximum=global_default)
+        configured = self._env_int(env_key, min(default_cap, hard_cap), minimum=256, maximum=global_default)
 
         global_limit = self._env_int(
             "LLM_EXPERT_MAX_TOKENS",
-            getattr(self.llm, "max_tokens", configured),
+            hard_cap,
             minimum=256,
             maximum=max(256, getattr(self.llm, "max_tokens", configured)),
         )
-        max_tokens = min(configured, global_limit, max(256, getattr(self.llm, "max_tokens", configured)))
+        max_tokens = min(configured, hard_cap, global_limit, max(256, getattr(self.llm, "max_tokens", configured)))
 
         context_limit = self._env_int(
             "LLM_VERIFIER_CONTEXT_LIMIT_TOKENS",
@@ -1163,6 +1165,23 @@ class VerifierExpert:
         estimated_prompt_tokens = max(1, prompt_chars // 2)
         available = max(256, context_limit - estimated_prompt_tokens - reserve)
         return max(256, min(max_tokens, available))
+
+    def _resolve_relation_judge_max_tokens(self) -> int:
+        """Relation judge returns compact JSON; keep it from inheriting the client max."""
+        client_cap = max(192, int(getattr(self.llm, "max_tokens", 65536)))
+        hard_cap = self._env_int(
+            "LLM_RELATION_JUDGE_HARD_CAP",
+            2048,
+            minimum=192,
+            maximum=client_cap,
+        )
+        configured = self._env_int(
+            "LLM_RELATION_JUDGE_MAX_TOKENS",
+            hard_cap,
+            minimum=192,
+            maximum=client_cap,
+        )
+        return min(configured, hard_cap, client_cap)
     
     def analyze(
         self,
@@ -3717,6 +3736,21 @@ OUTPUT JSON:
             raw = raw.split(":", 1)[0].strip()
         return raw
 
+    @staticmethod
+    def _is_community_discussion_url(value: Any) -> bool:
+        url = str(value or "").strip().lower()
+        return any(
+            domain in url
+            for domain in (
+                "dcinside.com",
+                "arca.live",
+                "fmkorea.com",
+                "ruliweb.com",
+                "theqoo.net",
+                "instiz.net",
+            )
+        )
+
     def _build_relation_search_support_summary(
         self,
         title: str,
@@ -3818,7 +3852,7 @@ OUTPUT JSON:
                         best_official_url = sr_url
             else:
                 page_type = str(sr.get("page_type") or "").lower()
-                if page_type == "community_post" and alias_hits:
+                if (page_type == "community_post" or self._is_community_discussion_url(sr_url)) and alias_hits:
                     community_alias_urls.add(sr_url or sr_title)
 
         alias_in_post_count = sum(
@@ -3892,7 +3926,7 @@ OUTPUT JSON:
             source_class = "other"
             if self._is_novel_detail_url(url):
                 source_class = "official_detail"
-            elif page_type == "community_post":
+            elif page_type == "community_post" or self._is_community_discussion_url(url):
                 source_class = "community_post"
             elif page_type == "listing":
                 source_class = "listing_or_category"
@@ -4176,12 +4210,7 @@ OUTPUT JSON:
                 messages=messages,
                 tag="verifier_relation_judge",
                 use_grammar=True,
-                max_tokens=self._env_int(
-                    "LLM_RELATION_JUDGE_MAX_TOKENS",
-                    int(getattr(self.llm, "max_tokens", 65536)),
-                    minimum=192,
-                    maximum=max(192, int(getattr(self.llm, "max_tokens", 65536))),
-                ),
+                max_tokens=self._resolve_relation_judge_max_tokens(),
             )
             parsed = parse_json_with_think_removal(response_text)
             if not isinstance(parsed, dict):
@@ -4237,7 +4266,10 @@ OUTPUT JSON:
         key_evidence = relation.get("key_evidence") or []
         evidence_summary = relation.get("evidence_summary") if isinstance(relation.get("evidence_summary"), dict) else {}
         search_support_summary = relation.get("search_support_summary") if isinstance(relation.get("search_support_summary"), dict) else {}
-        explicit_bridge_count = int(evidence_summary.get("explicit_alias_bridge_count") or 0)
+        explicit_bridge_count = max(
+            int(evidence_summary.get("explicit_alias_bridge_count") or 0),
+            int(search_support_summary.get("explicit_alias_bridge_count") or 0),
+        )
         community_count = int(evidence_summary.get("community_post_count") or 0)
         official_detail_count = int(evidence_summary.get("official_detail_count") or 0)
         official_exact_title_count = int(search_support_summary.get("official_exact_title_count") or 0)
@@ -4316,14 +4348,36 @@ OUTPUT JSON:
                 or (
                     decoder_grounded
                     and anchor_found in {
+                        "title_mention",
                         "title_abbrev_mention",
                         "body_abbrev_mention",
                         "character_mention",
                         "plot_mention",
                     }
+                    and (anchor_found != "title_mention" or matched_alias or title_abbrev_mentioned)
                     and len(observed_aliases) >= 1
                 )
             )
+        )
+        character_setting_official_convergence = bool(
+            current_title
+            and not self._is_community_artifact_title(current_title)
+            and promotion in {"hold", "reject"}
+            and relation_type == "thematic_overlap_only"
+            and target in {"mixed_or_uncertain", "community_banter"}
+            and explicit_bridge_count <= 0
+            and decoder_grounded
+            and anchor_found in {
+                "character_mention",
+                "character_title_link",
+                "plot_mention",
+                "decoder_grounded_official",
+                "llm_cross_check",
+            }
+            and official_detail_count >= 2
+            and official_exact_title_count >= 1
+            and (bool(best_official_url) or converged_official_signal)
+            and not generic_relation_only
         )
 
         if generic_relation_only:
@@ -4348,6 +4402,14 @@ OUTPUT JSON:
             reason = (
                 reason
                 or "게시글 표면 alias와 공식 상세 페이지, 커뮤니티 alias 사용례가 같은 작품으로 수렴하여 특정 작품 hold로 유지함"
+            )
+        elif character_setting_official_convergence:
+            relation_type = "work_specific_nickname"
+            target = "specific_work"
+            promotion = "hold"
+            reason = (
+                "작품명 직접 브리지는 부족하지만 캐릭터/설정 앵커와 공식 상세 URL이 같은 작품으로 수렴하여 "
+                "특정 작품 hold로 유지함"
             )
         elif (
             promotion in {"reject", "hold"}
@@ -4407,7 +4469,7 @@ OUTPUT JSON:
             and target == "specific_work"
             and relation_type in {"explicit_alias", "work_specific_nickname"}
             and explicit_bridge_count <= 0
-            and strong_character_or_plot_anchor
+            and (strong_character_or_plot_anchor or work_meme_anchor_confirmed)
             and (
                 official_detail_count >= 1
                 or official_exact_title_count >= 1

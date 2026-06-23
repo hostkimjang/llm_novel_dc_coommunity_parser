@@ -6,6 +6,7 @@ First-line filter for noise detection and entity extraction.
 from __future__ import annotations
 
 import json
+import os
 import sys
 import time
 from typing import Any, Dict, List, Optional
@@ -37,6 +38,23 @@ class GatekeeperExpert:
         # Kiwi 형태소 분석기 (프로세스 전역 싱글톤)
         self.kiwi = get_kiwi()
         self.use_kiwi = self.kiwi is not None
+
+    def _resolve_max_tokens(self) -> int:
+        """Keep first-pass classification bounded even when global LLM caps are large."""
+        raw = os.getenv("LLM_GATEKEEPER_MAX_TOKENS", os.getenv("LLM_EXPERT_MAX_TOKENS", "4096"))
+        try:
+            configured = int(raw)
+        except Exception:
+            configured = 4096
+        try:
+            llm_cap = int(getattr(self.llm, "max_tokens", configured) or configured)
+        except Exception:
+            llm_cap = configured
+        try:
+            hard_cap = int(os.getenv("LLM_GATEKEEPER_HARD_CAP", "8192"))
+        except Exception:
+            hard_cap = 8192
+        return max(512, min(configured, llm_cap, max(512, hard_cap)))
     
     def analyze(
         self,
@@ -217,6 +235,7 @@ class GatekeeperExpert:
             messages=messages,
             tag="gatekeeper",
             use_grammar=True,
+            max_tokens=self._resolve_max_tokens(),
         )
         
         # Parse JSON

@@ -3,10 +3,12 @@ from __future__ import annotations
 import os
 import re
 import time
+from html.parser import HTMLParser
 from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, unquote, urljoin, urlparse
 
 import random
+import base64
 
 import httpx
 from fastapi import FastAPI, HTTPException
@@ -131,6 +133,7 @@ _ALLOWED_FETCH_DOMAINS = {
     "namu.wiki", "ko.wikipedia.org",
     # 웹소설 공식 플랫폼
     "novelpia.com", "www.novelpia.com",
+    "book.novelpia.com",
     "munpia.com", "mm.munpia.com", "m.munpia.com", "novel.munpia.com", "square.munpia.com",
     "series.naver.com", "m.series.naver.com",
     "ridibooks.com", "www.ridibooks.com",
@@ -150,6 +153,7 @@ _ALLOWED_FETCH_DOMAINS = {
 
 _OFFICIAL_PLATFORM_DOMAINS = {
     "novelpia.com", "www.novelpia.com",
+    "book.novelpia.com",
     "munpia.com", "mm.munpia.com", "m.munpia.com", "novel.munpia.com", "square.munpia.com",
     "series.naver.com", "m.series.naver.com",
     "ridibooks.com", "www.ridibooks.com",
@@ -169,6 +173,21 @@ _REFERENCE_DOMAINS = {
     "namu.wiki", "ko.wikipedia.org", "thewiki.kr",
     "blog.naver.com", "m.blog.naver.com", "brunch.co.kr",
 }
+
+_DIRECT_OFFICIAL_DETAIL_URL_RE = re.compile(
+    r"(?i)"
+    r"(?:novelpia\.com/novel/\d+|book\.novelpia\.com/novel/\d+|"
+    r"(?:m\.)?novel\.munpia\.com/\d+|m\.munpia\.com/novel/detail/\d+|"
+    r"(?:m|mm)\.munpia\.com/\?menu=novel&id=\d+|"
+    r"page\.kakao\.com/content/\d+|"
+    r"series\.naver\.com/novel/detail\.series\?productNo=\d+|"
+    r"ridibooks\.com/books/\d+)"
+)
+
+_DIRECT_NON_DETAIL_URL_RE = re.compile(
+    r"(?i)/(?:viewer|episode|search|ranking|rank|author|fanart|community|review|board|forum|arena|freeboard)(?:/|$)|"
+    r"detailSearch|keyword=|tab_type=comment"
+)
 
 _QUERY_GENERIC_HANGUL_TOKENS = {
     "검색", "정식", "제목", "작품", "작품명", "작가", "추천", "리뷰", "후기",
@@ -393,6 +412,23 @@ def _classify_korean_host(url: str) -> str:
     if host.endswith(".kr"):
         return "korean"
     return "other"
+
+
+def _is_direct_official_detail_url(url: str) -> bool:
+    return bool(_DIRECT_OFFICIAL_DETAIL_URL_RE.search(str(url or "")))
+
+
+def _is_direct_non_detail_url(url: str) -> bool:
+    text = str(url or "")
+    if not text:
+        return True
+    try:
+        host = (urlparse(text).hostname or "").lower()
+    except Exception:
+        host = ""
+    if _host_matches(host, _REFERENCE_DOMAINS) or _host_matches(host, _COMMUNITY_DOMAINS):
+        return True
+    return bool(_DIRECT_NON_DETAIL_URL_RE.search(text))
 
 
 def _extract_query_core_tokens(query: str) -> List[str]:
@@ -644,6 +680,302 @@ def _dedupe_by_url(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return deduped
 
 
+_DIRECT_SEARCH_PROVIDERS = {"naver", "bing"}
+_DIRECT_SEARCH_EXCLUDED_HOSTS = {
+    "search.naver.com",
+    "m.search.naver.com",
+    "www.naver.com",
+    "naver.com",
+    "search.shopping.naver.com",
+    "dict.naver.com",
+    "map.naver.com",
+    "m.map.naver.com",
+    "book.naver.com",
+    "ader.naver.com",
+    "adcr.naver.com",
+    "m.adcr.naver.com",
+    "www.bing.com",
+    "bing.com",
+    "www.google.com",
+    "google.com",
+    "search.daum.net",
+}
+
+
+class _SearchAnchorParser(HTMLParser):
+    def __init__(self, base_url: str) -> None:
+        super().__init__(convert_charrefs=True)
+        self.base_url = base_url
+        self._in_anchor = False
+        self._href = ""
+        self._parts: List[str] = []
+        self.anchors: List[Dict[str, str]] = []
+
+    def handle_starttag(self, tag: str, attrs: List[tuple[str, Optional[str]]]) -> None:
+        if tag.lower() != "a":
+            return
+        attr_map = {str(k).lower(): str(v or "") for k, v in attrs}
+        href = attr_map.get("href", "").strip()
+        if not href:
+            return
+        self._in_anchor = True
+        self._href = urljoin(self.base_url, href)
+        self._parts = []
+
+    def handle_data(self, data: str) -> None:
+        if self._in_anchor and data:
+            self._parts.append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag.lower() != "a" or not self._in_anchor:
+            return
+        text = re.sub(r"\s+", " ", " ".join(self._parts)).strip()
+        if text and self._href:
+            self.anchors.append({"title": text, "url": self._href})
+        self._in_anchor = False
+        self._href = ""
+        self._parts = []
+
+
+def _decode_bing_redirect_url(url: str) -> str:
+    try:
+        parsed = urlparse(url)
+        qs = parse_qs(parsed.query)
+        encoded = (qs.get("u") or [""])[0]
+        if not encoded:
+            return url
+        if encoded.startswith("a1"):
+            encoded = encoded[2:]
+        padded = encoded + "=" * (-len(encoded) % 4)
+        decoded = base64.urlsafe_b64decode(padded.encode("ascii")).decode("utf-8", "ignore")
+        return decoded if decoded.startswith(("http://", "https://")) else url
+    except Exception:
+        return url
+
+
+def _clean_direct_search_url(url: str) -> str:
+    candidate = unquote(str(url or "").strip())
+    if not candidate:
+        return ""
+    parsed = urlparse(candidate)
+    host = (parsed.hostname or "").lower()
+    if host in {"www.bing.com", "bing.com"} and parsed.path.startswith("/ck/"):
+        candidate = _decode_bing_redirect_url(candidate)
+        parsed = urlparse(candidate)
+        host = (parsed.hostname or "").lower()
+    if host in _DIRECT_SEARCH_EXCLUDED_HOSTS:
+        qs = parse_qs(parsed.query)
+        for key in ("url", "u", "r", "target"):
+            for raw in qs.get(key, []):
+                decoded = _decode_bing_redirect_url(unquote(raw))
+                if decoded.startswith(("http://", "https://")):
+                    return _clean_direct_search_url(decoded)
+        return ""
+    if not candidate.startswith(("http://", "https://")):
+        return ""
+    if re.search(r"\.(?:css|js|png|jpe?g|gif|svg|ico)(?:$|[?#])", candidate, re.IGNORECASE):
+        return ""
+    return candidate
+
+
+def _title_from_direct_url(url: str) -> str:
+    try:
+        parsed = urlparse(url or "")
+        host = (parsed.hostname or "").lower()
+        path = unquote(parsed.path or "")
+    except Exception:
+        return ""
+    if host == "namu.wiki" and path.startswith("/w/"):
+        title = path.split("/w/", 1)[1].split("/", 1)[0]
+        return re.sub(r"[_\s]+", " ", title).strip()
+    if host in {"arca.live"} and "/b/" in path:
+        return ""
+    return ""
+
+
+def _is_direct_search_breadcrumb_title(title: str, url: str) -> bool:
+    clean = re.sub(r"\s+", " ", title or "").strip()
+    if not clean:
+        return True
+    lower = clean.lower()
+    try:
+        host = (urlparse(url or "").hostname or "").lower()
+    except Exception:
+        host = ""
+    if clean in {"NAVER", "Bing", "Google", "Daum"}:
+        return True
+    if clean.endswith("›"):
+        return True
+    if "›" in clean and host:
+        host_label = host.replace("www.", "").split(".", 1)[0]
+        if host_label and host_label in lower and len(clean) <= 80:
+            return True
+    if host and lower in {host, host.replace("www.", ""), f"{host} ›"}:
+        return True
+    return False
+
+
+def _direct_search_url(provider: str, query: str) -> str:
+    from urllib.parse import urlencode
+
+    if provider == "naver":
+        return "https://search.naver.com/search.naver?" + urlencode({"query": query})
+    if provider == "bing":
+        return "https://www.bing.com/search?" + urlencode({"q": query})
+    raise ValueError(f"unsupported direct search provider: {provider}")
+
+
+def _normalize_direct_search_items(
+    *,
+    html: str,
+    provider: str,
+    base_url: str,
+    query: str,
+    purpose: str,
+    limit: int,
+) -> List[Dict[str, Any]]:
+    parser = _SearchAnchorParser(base_url)
+    try:
+        parser.feed(html or "")
+    except Exception:
+        return []
+    items: List[Dict[str, Any]] = []
+    seen_urls: set[str] = set()
+    for anchor in parser.anchors:
+        title = re.sub(r"\s+", " ", str(anchor.get("title") or "")).strip()
+        url = _clean_direct_search_url(anchor.get("url") or "")
+        if not title or len(title) < 2 or not url:
+            continue
+        clean_title = re.sub(r"\s*[-|:]\s*(네이버\s*검색|Bing|검색)$", "", title).strip()
+        if _is_direct_search_breadcrumb_title(clean_title or title, url):
+            recovered_title = _title_from_direct_url(url)
+            if not recovered_title:
+                continue
+            clean_title = recovered_title
+        item = {
+            "title": clean_title or title,
+            "url": url,
+            "content": clean_title or title,
+            "engine": f"direct_{provider}",
+        }
+        if _non_korean_noise_reason(query, item, purpose):
+            continue
+        key = re.sub(r"#.*$", "", url)
+        if key in seen_urls:
+            continue
+        seen_urls.add(key)
+        items.append(item)
+        if len(items) >= limit:
+            break
+    return items
+
+
+def _direct_search_fallback_reason(
+    *,
+    filtered_items: List[Dict[str, Any]],
+    degraded: bool,
+    possible_throttle: bool,
+    num_results: int,
+) -> str:
+    if not _env_bool("MCP_DIRECT_SEARCH_FALLBACK", True):
+        return ""
+    accepted_count = len(filtered_items or [])
+    if accepted_count == 0:
+        return "empty_results"
+    if (degraded or possible_throttle) and accepted_count < min(3, max(1, num_results // 3)):
+        return "degraded_low_accepted"
+    return ""
+
+
+def _direct_search_fallback_readyz_ok() -> bool:
+    if not _env_bool("MCP_DIRECT_SEARCH_FALLBACK_READYZ_OK", False):
+        return False
+    if not _env_bool("MCP_DIRECT_SEARCH_FALLBACK", True):
+        return False
+    providers = [
+        p.strip().lower()
+        for p in os.getenv("MCP_DIRECT_SEARCH_PROVIDERS", "naver,bing").split(",")
+        if p.strip().lower() in _DIRECT_SEARCH_PROVIDERS
+    ]
+    return bool(providers)
+
+
+def _call_direct_search_fallback(query: str, num_results: int, purpose: str) -> Dict[str, Any]:
+    providers_raw = os.getenv("MCP_DIRECT_SEARCH_PROVIDERS", "naver,bing")
+    providers = [
+        p.strip().lower()
+        for p in providers_raw.split(",")
+        if p.strip().lower() in _DIRECT_SEARCH_PROVIDERS
+    ] or ["naver", "bing"]
+    try:
+        timeout_sec = max(3.0, min(float(os.getenv("MCP_DIRECT_SEARCH_TIMEOUT_SEC", "12")), 30.0))
+    except Exception:
+        timeout_sec = 12.0
+    max_items = max(1, min(int(num_results or DEFAULT_NUM_RESULTS), 10))
+    headers = {
+        "User-Agent": _random_browser_ua(),
+        "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    }
+    items: List[Dict[str, Any]] = []
+    errors: List[str] = []
+    used_providers: List[str] = []
+    for provider in providers:
+        search_url = _direct_search_url(provider, query)
+        try:
+            resp = httpx.get(search_url, headers=headers, timeout=timeout_sec, follow_redirects=True)
+            resp.raise_for_status()
+            found = _normalize_direct_search_items(
+                html=resp.text,
+                provider=provider,
+                base_url=search_url,
+                query=query,
+                purpose=purpose,
+                limit=max_items,
+            )
+            if found:
+                used_providers.append(provider)
+                items = _dedupe_by_url(items + found)
+            if len(items) >= max_items:
+                break
+        except Exception as exc:
+            errors.append(f"{provider}:{exc}")
+    return {
+        "results": _rank_direct_search_items(items, query)[:max_items],
+        "count": len(_rank_direct_search_items(items, query)[:max_items]),
+        "providers": used_providers,
+        "errors": errors[-5:],
+    }
+
+
+def _rank_direct_search_items(items: List[Dict[str, Any]], query: str) -> List[Dict[str, Any]]:
+    def _rank(item: Dict[str, Any], idx: int) -> tuple[int, int, int]:
+        url = str(item.get("url") or "")
+        kind = _classify_korean_host(url)
+        if _is_direct_official_detail_url(url):
+            tier = 0
+        elif kind == "official" and not _is_direct_non_detail_url(url):
+            tier = 1
+        else:
+            tier = {
+                "official": 2,
+                "reference": 3,
+                "community": 4,
+                "korean": 5,
+            }.get(kind, 6)
+        merged = re.sub(r"\s+", "", f"{item.get('title') or ''} {item.get('content') or ''}")
+        overlap = sum(1 for tok in _extract_query_core_tokens(query) if tok and tok in merged)
+        return (tier, -overlap, idx)
+
+    return [
+        item
+        for _, item in sorted(
+            enumerate(items or []),
+            key=lambda pair: _rank(pair[1], pair[0]),
+        )
+    ]
+
+
 def _has_official_platform_result(items: List[Dict[str, Any]]) -> bool:
     for item in items or []:
         if not isinstance(item, dict):
@@ -851,10 +1183,14 @@ def readyz():
                     "backoff_until": _ENDPOINT_BACKOFF_UNTIL.get(u, 0.0),
                 }
             )
+    headless_ok = _headless_health_ok()
+    direct_fallback_ready = _direct_search_fallback_readyz_ok()
     return {
-        "status": "ok" if any_ok else "degraded",
+        "status": "ok" if (any_ok or headless_ok or direct_fallback_ready) else "degraded",
         "searxng": any_ok,
-        "headless_search": _headless_health_ok(),
+        "headless_search": headless_ok,
+        "direct_search_fallback": direct_fallback_ready,
+        "direct_search_degraded_provider": bool(direct_fallback_ready and not any_ok and not headless_ok),
         "checks": checks,
     }
 
@@ -1134,6 +1470,11 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
     headless_count = 0
     headless_blocked = False
     headless_error = ""
+    direct_search_used = False
+    direct_search_reason = ""
+    direct_search_count = 0
+    direct_search_providers: List[str] = []
+    direct_search_errors: List[str] = []
 
     fallback_reason = _headless_fallback_reason(
         request=request,
@@ -1161,6 +1502,34 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
                 "[mcp-bridge] headless_google fallback: "
                 f"reason={fallback_reason}, accepted={headless_count}, "
                 f"blocked={headless_blocked}, error={headless_error[:120]}",
+                file=sys.stderr,
+                flush=True,
+            )
+        except Exception:
+            pass
+
+    direct_reason = _direct_search_fallback_reason(
+        filtered_items=filtered_items,
+        degraded=degraded,
+        possible_throttle=possible_throttle,
+        num_results=num_results,
+    )
+    if direct_reason:
+        direct_search_reason = direct_reason
+        direct_payload = _call_direct_search_fallback(request.query, num_results, request.purpose)
+        direct_items = list(direct_payload.get("results") or [])
+        direct_search_count = len(direct_items)
+        direct_search_providers = list(direct_payload.get("providers") or [])
+        direct_search_errors = list(direct_payload.get("errors") or [])
+        direct_search_used = True
+        if direct_items:
+            filtered_items = _dedupe_by_url(list(filtered_items or []) + direct_items)
+            raw_items = _dedupe_by_url(list(raw_items or []) + direct_items)
+        try:
+            print(
+                "[mcp-bridge] direct_search fallback: "
+                f"reason={direct_reason}, accepted={direct_search_count}, "
+                f"providers={direct_search_providers}, errors={direct_search_errors[:2]}",
                 file=sys.stderr,
                 flush=True,
             )
@@ -1204,6 +1573,11 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
         "headless_count": headless_count,
         "headless_blocked": headless_blocked,
         "headless_error": headless_error,
+        "direct_search_used": direct_search_used,
+        "direct_search_reason": direct_search_reason,
+        "direct_search_count": direct_search_count,
+        "direct_search_providers": direct_search_providers,
+        "direct_search_errors": direct_search_errors,
     }
 
 

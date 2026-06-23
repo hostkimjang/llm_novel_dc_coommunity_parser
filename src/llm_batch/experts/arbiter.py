@@ -959,6 +959,114 @@ class ArbiterExpert:
         raw_text = " ".join(chunk for chunk in chunks if str(chunk or "").strip())
         return self._text_matches_title_strict(raw_text, title)
 
+    def _ocr_catalog_structure_marker(self, text: Any) -> bool:
+        raw = str(text or "")
+        if not raw.strip():
+            return False
+        platform_terms = (
+            "노벨피아",
+            "문피아",
+            "카카오페이지",
+            "네이버시리즈",
+            "시리즈",
+            "조아라",
+            "리디",
+            "novelpia",
+            "munpia",
+            "kakaopage",
+        )
+        if any(term.lower() in raw.lower() for term in platform_terms):
+            return True
+        return bool(
+            re.search(
+                r"(조회수?|추천수?|선호작|관심수|별점|평점|회차|\d+\s*화\b|완결|연재중|연재|줄거리|시놉시스|소개글)",
+                raw,
+            )
+        )
+
+    def _collect_direct_image_ocr_catalog_titles(self, ctx: "ConversationContext") -> List[str]:
+        """Collect vetted OCR work-surface titles without granting URL evidence."""
+        post_data = getattr(ctx, "post_data", None) or {}
+        if not isinstance(post_data, dict):
+            return []
+        titles: List[str] = []
+        for item in post_data.get("image_enrichment") or []:
+            if not isinstance(item, dict):
+                continue
+            explicit_title = str(item.get("explicit_work_title") or "").strip()
+            title_norm = self._normalize_match_text(explicit_title)
+            if not title_norm:
+                continue
+            if self._is_platform_branding_title(explicit_title):
+                continue
+            if bool(item.get("is_background_listing")):
+                continue
+            evidence_type = str(item.get("evidence_type") or "").strip().lower()
+            title_role = str(item.get("title_role") or "").strip().lower()
+            focus_role = str(item.get("focus_role") or "").strip().lower()
+            screen_type = str(item.get("screen_type") or "").strip().lower()
+            surface_type = str(item.get("surface_type") or "").strip().lower()
+            if evidence_type not in {"explicit_text", "cover_title"}:
+                continue
+            if title_role not in {"", "work_title"}:
+                continue
+            if focus_role not in {"work_anchor", "supporting_text"}:
+                continue
+            if screen_type in {"text_surface", "platform_catalog_ui", "search_results", "ranking", "home"}:
+                continue
+            if surface_type in {"platform_catalog", "search_results", "ranking", "home"}:
+                continue
+            if item.get("promotion_eligible") is not True:
+                continue
+            cues_text = " ".join(
+                [
+                    str(item.get("ocr_text") or ""),
+                    " ".join(str(cue or "") for cue in (item.get("work_cues") or [])),
+                ]
+            )
+            if not self._ocr_catalog_structure_marker(cues_text):
+                continue
+            titles.append(explicit_title)
+        return list(dict.fromkeys(titles))
+
+    def _direct_image_forced_title_guard(
+        self,
+        ctx: "ConversationContext",
+        candidate_title: Optional[str],
+        decoder_out: Optional[Dict[str, Any]],
+        verifier_out: Optional[Dict[str, Any]],
+    ) -> str:
+        """Prefer a vetted OCR work-surface title over a weak conflicting forced title.
+
+        This is a precision guard for suspected-title forcing. It preserves the
+        packet-local direct image title as title evidence, but it does not grant
+        a heretic URL or external official verification.
+        """
+        candidate = str(candidate_title or "").strip()
+        candidate_norm = self._normalize_match_text(candidate)
+        if not candidate_norm:
+            return ""
+        direct_titles = self._collect_direct_image_ocr_catalog_titles(ctx)
+        direct_norms = {
+            self._normalize_match_text(title): title
+            for title in direct_titles
+            if self._normalize_match_text(title)
+        }
+        if len(direct_norms) != 1:
+            return ""
+        direct_norm, direct_title = next(iter(direct_norms.items()))
+        if candidate_norm == direct_norm:
+            return ""
+        candidate_has_strong_support = bool(
+            self._has_strong_title_support(ctx, candidate)
+            or self._title_directly_in_post(ctx, candidate)
+            or self._has_decoder_alignment_support(decoder_out or {}, candidate, min_score=0.45)
+            or self._has_non_character_anchor_support(candidate, decoder_out or {}, verifier_out or {})
+        )
+        if candidate_has_strong_support:
+            return ""
+        return direct_title
+
     def _has_strong_work_signals(
         self,
         ctx: "ConversationContext",
@@ -3666,7 +3774,25 @@ class ArbiterExpert:
                                 file=sys.stderr,
                             )
                             best_title = _vf_title_lock
-                    
+
+                    _direct_image_guard_title = self._direct_image_forced_title_guard(
+                        ctx,
+                        best_title,
+                        decoder_out_raw,
+                        verifier_out or {},
+                    )
+                    if _direct_image_guard_title:
+                        print(
+                            f"[{_ts()}][{self.emoji}] 🖼️ direct-image forced-title guard: "
+                            f"best='{best_title}' → image_title='{_direct_image_guard_title}'",
+                            file=sys.stderr,
+                        )
+                        best_title = _direct_image_guard_title
+                        best = dict(best or {})
+                        best["title"] = best_title
+                        best["confidence"] = best.get("confidence") or "High"
+                        best["source_expert"] = "direct_image_ocr_catalog"
+
                     # 🔧 검색 결과에서 정확한 제목 찾기 (title 필드 + content 직접 비교)
                     if best_title and ctx.search_results:
                         corrected_title = self._correct_title_from_search(best_title, ctx.search_results)

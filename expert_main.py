@@ -956,6 +956,121 @@ def _allow_local_shard_recreate() -> bool:
     return False
 
 
+# docker up/recreate는 명시적 opt-in, 단 대형 autogen 런의 missing shard 증분
+# 기동(scale-up)만 기본 ON(opt-out: MCP_AUTO_SCALE_UP_MISSING_SHARDS=0).
+_SHARD_LIFECYCLE_POLICY_LABEL = "docker_up_recreate_opt_in+missing_shard_scale_up_default_on"
+
+
+def _detect_external_dashboard(default_port: int) -> Optional[str]:
+    """외부 standalone 대시보드(tools/dashboard_server.py)를 감지한다.
+
+    감지되면 base URL을 반환하고 expert_main은 내장 대시보드를 띄우지 않은 채
+    이벤트를 그쪽으로 전달한다(양보). 판정은 /api/health 핸드셰이크로 한다:
+    - service 마커 불일치(같은 포트의 무관한 앱) → None
+    - standalone=False(다른 expert_main의 내장 대시보드) → None
+    감지 비용 상한은 ~1초(connect 0.3s/total 1.0s)이며,
+    EXPERT_DASHBOARD_FORWARD=0 으로 감지 자체를 끌 수 있다.
+    """
+    if not _env_bool_runtime("EXPERT_DASHBOARD_FORWARD", True):
+        return None
+    url = (os.environ.get("DASHBOARD_URL", "").strip() or f"http://127.0.0.1:{default_port}").rstrip("/")
+    try:
+        import httpx
+
+        resp = httpx.get(f"{url}/api/health", timeout=httpx.Timeout(1.0, connect=0.3))
+        data = resp.json()
+        if data.get("service") == "expert-pipeline-monitor" and data.get("standalone"):
+            return url
+    except Exception:
+        pass
+    return None
+
+
+def _allow_missing_shard_auto_scale_up() -> bool:
+    """헬스체크에서 빠진 로컬 autogen shard를 증분 기동(up)해도 되는지 여부.
+
+    missing shard 서비스만 compose up 대상으로 전달하고(--shards) 추가로
+    --no-recreate를 강제하므로 이미 떠 있는 healthy 컨테이너는 up 대상에서
+    구조적으로 제외된다. 컨테이너가 일부만 떠 있는 대형 검증 런에서 부족분을
+    자동으로 채우는 것이 목적이며, 기존 lifecycle 차단 규칙은 그대로 존중한다:
+    - reuse-only / --no-auto-up-shards 차단
+    - 소규모 goal/test 런은 기존 2-key(허가 --allow-goal-shard-lifecycle +
+      액션 --auto-up-shards/MCP_AUTO_UP_SHARDS) 계약 유지
+    - Codex 런은 stale env ack 단독으로 열리지 않고 현재 커맨드 opt-in 필수
+    MCP_AUTO_SCALE_UP_MISSING_SHARDS=0 으로 끌 수 있다.
+    """
+    if _CLI_ARGS.no_auto_up_shards or _CLI_ARGS.reuse_shards_only:
+        return False
+    if _small_run_shard_lifecycle_blocked():
+        return False
+    # 소규모 goal/test 런: 허가 플래그 단독으로 docker 액션이 발화하지 않도록
+    # 기존 opt-in 경로(_allow_local_shard_auto_up)를 그대로 요구한다.
+    if _is_small_targeted_run() and not _allow_local_shard_auto_up():
+        return False
+    if not _command_shard_lifecycle_allowed_by_context():
+        return False
+    # Codex 런: 셸 프로필에서 물려받은 MCP_CODEX_ALLOW_ENV_SHARD_LIFECYCLE=1
+    # 단독으로는 열리지 않는다 (_env_shard_lifecycle_allowed와 동일 규칙).
+    if _interactive_codex_run() and not (
+        getattr(_CLI_ARGS, "allow_goal_shard_lifecycle", False)
+        or getattr(_CLI_ARGS, "auto_up_shards", False)
+    ):
+        return False
+    if not _env_bool_runtime("MCP_AUTO_SCALE_UP_MISSING_SHARDS", True):
+        return False
+    if os.getenv("MCP_ENDPOINTS_AUTOGEN", "0").strip() != "1":
+        return False
+    host = os.getenv("MCP_SHARD_HOST", "127.0.0.1").strip().lower()
+    return host in {"localhost", "127.0.0.1"}
+
+
+def _scale_up_missing_local_shards(
+    repo_root: Path,
+    shard_count: int,
+    missing_shards: List[int],
+) -> None:
+    """부족한 로컬 shard를 docker compose up으로 증분 기동한다.
+
+    missing shard 서비스만 up 대상으로 전달(--shards)하므로 기존 healthy
+    컨테이너는 compose 명령 대상 자체에서 제외되고, --no-recreate 강제로
+    정의/이미지 drift가 있어도 기존 컨테이너 재생성이 일어나지 않는다.
+    WARP_SHARDS_REMOVE_ORPHANS=0 으로 현재 풀 크기를 초과해 떠 있는 기존
+    컨테이너 제거도 막는다.
+    """
+    if shard_count <= 0 or not missing_shards:
+        return
+    base_port = os.getenv("MCP_SHARD_BASE_PORT", "3333").strip() or "3333"
+    tool_path = repo_root / "tools" / "warp_shards.py"
+    cmd = [
+        sys.executable,
+        str(tool_path),
+        "up",
+        "--count",
+        str(shard_count),
+        "--mcp-base-port",
+        base_port,
+        "--shards",
+        _format_shard_indices(missing_shards),
+    ]
+    print(
+        "[expert_main] 부족한 로컬 MCP/WARP shard 자동 증분 기동: "
+        f"missing={_format_shard_indices(missing_shards)} (target_count={shard_count})",
+        file=sys.stderr,
+        flush=True,
+    )
+    env = os.environ.copy()
+    env.setdefault("WARP_SHARDS_PRINT_ENDPOINTS", "0")
+    env["WARP_SHARDS_REMOVE_ORPHANS"] = "0"
+    env["WARP_SHARDS_NO_RECREATE"] = "1"
+    subprocess.run(cmd, cwd=repo_root, check=True, env=env)
+    print(
+        "[expert_main] 부족한 로컬 MCP/WARP shard 자동 증분 기동 완료: "
+        f"missing={_format_shard_indices(missing_shards)}",
+        file=sys.stderr,
+        flush=True,
+    )
+
+
 def _auto_up_local_shards(repo_root: Path, shard_count: int) -> None:
     if shard_count <= 0 or not _can_auto_manage_local_shards():
         return
@@ -1471,8 +1586,8 @@ def main() -> None:
             # 참고용 기존 Qwen 설정
             #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "Sehyo/Qwen3.5-35B-A3B-NVFP4"))
             #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "AxionML/Qwen3.5-35B-A3B-NVFP4"))
-            #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "google/gemma-4-26B-A4B-it"))
-            _set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "bg-digitalservices/Gemma-4-E4B-it-NVFP4"))
+            _set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4"))
+            #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "bg-digitalservices/Gemma-4-E4B-it-NVFP4"))
             #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "cyankiwi/gemma-4-26B-A4B-it-AWQ-4bit"))
             # vLLM 전용 샘플링 기본값
             # 작은 모델은 애매한 title/slang을 그럴듯하게 채우는 경향이 있어
@@ -1544,8 +1659,9 @@ def main() -> None:
         flush=True,
     )
     print(
-        "[config] mcp_shard_lifecycle_policy=docker_up_recreate_opt_in, "
+        f"[config] mcp_shard_lifecycle_policy={_SHARD_LIFECYCLE_POLICY_LABEL}, "
         f"auto_up={_allow_local_shard_auto_up()}, auto_recreate={_allow_local_shard_recreate()}, "
+        f"auto_scale_up_missing={_allow_missing_shard_auto_scale_up()}, "
         f"small_run={_is_small_targeted_run()}, small_run_lifecycle_blocked={_small_run_shard_lifecycle_blocked()}, "
         f"command_lifecycle_allowed={_command_shard_lifecycle_allowed_by_context()}, "
         f"codex_run={_interactive_codex_run()}, env_lifecycle_requested={_env_shard_lifecycle_requested()}, "
@@ -1609,11 +1725,12 @@ def main() -> None:
         "mcp_endpoints": os.getenv("MCP_ENDPOINTS", os.getenv("MCP_ENDPOINT", "")),
         "mcp_auto_up_shards": _allow_local_shard_auto_up(),
         "mcp_auto_recreate_shards": _allow_local_shard_recreate(),
+        "mcp_auto_scale_up_missing_shards": _allow_missing_shard_auto_scale_up(),
         "mcp_local_shard_management_enabled": _can_auto_manage_local_shards(),
         "mcp_local_shard_status_audit": _local_shard_status_audit_allowed(),
         "mcp_local_shard_status_audit_requested": _local_shard_status_audit_requested(),
         "mcp_local_shard_status_audit_allowed": _local_shard_status_audit_allowed(),
-        "mcp_shard_lifecycle_policy": "docker_up_recreate_opt_in",
+        "mcp_shard_lifecycle_policy": _SHARD_LIFECYCLE_POLICY_LABEL,
         "mcp_allow_goal_shard_lifecycle": bool(getattr(_CLI_ARGS, "allow_goal_shard_lifecycle", False)),
         "mcp_command_shard_lifecycle_allowed": _command_shard_lifecycle_allowed_by_context(),
         "mcp_interactive_codex_run": _interactive_codex_run(),
@@ -1772,16 +1889,30 @@ def main() -> None:
         sys.stdout = _Tee(_orig_out, f)
         sys.stderr = _Tee(_orig_err, f)
 
+        _dashboard_forwarder = None
         try:
-            # 대시보드 서버 기동
+            # 대시보드 서버 기동 (외부 standalone 대시보드 감지 시 양보 + 포워딩)
             if not _NO_DASHBOARD:
                 try:
                     sys.path.insert(0, str(repo_root / "src"))
-                    from llm_batch.monitor.server import start_dashboard
                     from llm_batch.monitor.event_bus import monitor as _monitor
                     _dash_port = int(os.environ.get("DASHBOARD_PORT", "8080"))
-                    _dash_thread = start_dashboard(port=_dash_port)
-                    _dash_actual_port = int(getattr(_dash_thread, "dashboard_port", _dash_port))
+                    _ext_dash_url = _detect_external_dashboard(_dash_port)
+                    if _ext_dash_url:
+                        # 외부 standalone 대시보드 발견 → 내장 기동 생략, 이벤트 포워딩.
+                        # expert_main이 종료해도 대시보드는 계속 살아 있다.
+                        from llm_batch.monitor.forwarder import DashboardForwarder
+                        _dashboard_forwarder = DashboardForwarder(
+                            _ext_dash_url,
+                            monitor=_monitor,
+                            ingest_token=os.environ.get("DASHBOARD_INGEST_TOKEN", "").strip(),
+                        )
+                        _dashboard_forwarder.start()
+                        _monitor.attach_forwarder(_dashboard_forwarder)
+                    else:
+                        from llm_batch.monitor.server import start_dashboard
+                        _dash_thread = start_dashboard(port=_dash_port)
+                        _dash_actual_port = int(getattr(_dash_thread, "dashboard_port", _dash_port))
                     # _Tee가 초기에 monitor import를 놓쳐도 즉시 연결되도록 재주입
                     for _tee_stream in (sys.stdout, sys.stderr):
                         try:
@@ -1790,11 +1921,18 @@ def main() -> None:
                         except Exception:
                             pass
                     # sys.stderr(_Tee)로 출력해 콘솔+로그 파일 모두에 남긴다.
-                    print(
-                        f"[expert_main] 📊 Dashboard: http://127.0.0.1:{_dash_actual_port} (bind=0.0.0.0)",
-                        file=sys.stderr,
-                        flush=True,
-                    )
+                    if _ext_dash_url:
+                        print(
+                            f"[expert_main] 📊 외부 대시보드 감지 → 포워딩: {_ext_dash_url} (내장 대시보드 생략)",
+                            file=sys.stderr,
+                            flush=True,
+                        )
+                    else:
+                        print(
+                            f"[expert_main] 📊 Dashboard: http://127.0.0.1:{_dash_actual_port} (bind=0.0.0.0)",
+                            file=sys.stderr,
+                            flush=True,
+                        )
                 except Exception as _e:
                     # 실패 원인도 로그 파일에 남겨 실행 중 추적 가능하게 한다.
                     print(f"[expert_main] ⚠️ 대시보드 기동 실패: {_e}", file=sys.stderr, flush=True)
@@ -1821,6 +1959,19 @@ def main() -> None:
             from llm_batch.models import PostInput, ContentBlock
             from llm_batch.batch_context import BatchContextMemory
             from llm_batch.slang_db import SlangDBManager, slang_db_alias_seed_is_safe
+            from llm_batch.candidate_audit import (
+                apply_candidate_audit_fields,
+                apply_comment_surface_candidate_hints,
+                apply_judge_seed_expected_candidate_preservation,
+                apply_judge_seed_hygiene_expected_title_guard,
+                apply_judge_seed_precision_guard,
+                apply_judge_seed_title_image_mismatch_guard,
+                apply_judge_seed_title_hygiene_guard,
+                apply_judge_seed_trope_boundary_hold_guard,
+                apply_judge_seed_unverified_ocr_title_guard,
+                apply_official_title_promotion_guard,
+                apply_post_surface_candidate_hints,
+            )
 
             print(f"\n{'='*70}", file=sys.stderr, flush=True)
             print(f"🤖 Agentic Pipeline (유기적 전문가 시스템)", file=sys.stderr, flush=True)
@@ -1943,7 +2094,14 @@ def main() -> None:
                                 _hc = {"ok": False, "latency_ms": 0, "error": str(_exc)}
                             if _hc.get("ok"):
                                 _health_ok[_endpoint] = _hc
-                                _search_note = "Search skipped" if _hc.get("search_skipped") else f"Search {_hc.get('search_latency_ms', 0):.0f}ms"
+                                _search_note = (
+                                    "Search skipped"
+                                    if _hc.get("search_skipped")
+                                    else (
+                                        f"Search {_hc.get('search_latency_ms', 0):.0f}ms/"
+                                        f"{_hc.get('search_result_count', 0)} result(s)"
+                                    )
+                                )
                                 print(
                                     f"[expert_main]   [{_health_checked_endpoint_count}/{len(_mcp_endpoint_pool)}] OK shard#{_idx + 1} {_endpoint}: "
                                     f"Bridge {_hc.get('latency_ms', 0):.0f}ms, {_search_note}",
@@ -2026,6 +2184,147 @@ def main() -> None:
                     )
                     time.sleep(5)
 
+            # ─── 부족 shard 자동 증분 기동 (autogen 로컬 풀 한정) ──────
+            # 컨테이너가 일부만 떠 있을 때(예: 16개 기동 상태에서 32개 필요)
+            # 연결 거부(컨테이너 부재)로 실패한 shard만 --shards 타깃으로
+            # docker compose up --no-recreate 해 부족분을 채우고, 실패했던
+            # endpoint만 재검사한다. 기존 healthy 컨테이너는 up 대상에서 제외.
+            _scale_up_meta: Dict[str, Any] = {
+                "mcp_missing_shard_scale_up_allowed": _allow_missing_shard_auto_scale_up(),
+                "mcp_missing_shard_scale_up_triggered": False,
+                "mcp_missing_shard_scale_up_shards": "",
+                "mcp_missing_shard_scale_up_recovered_endpoints": 0,
+                "mcp_missing_shard_scale_up_error": "",
+            }
+
+            def _health_error_is_connection_refused(err: str) -> bool:
+                lowered = str(err or "").lower()
+                return (
+                    "연결 거부" in str(err or "")
+                    or "connection refused" in lowered
+                    or "connecterror" in lowered
+                    or "all connection attempts failed" in lowered
+                    or "connection reset" in lowered
+                )
+
+            if _health_failures and _scale_up_meta["mcp_missing_shard_scale_up_allowed"]:
+                # 타임아웃/검색 degrade 등 컨테이너가 떠 있는 실패는 up 대상이
+                # 아니다 — 연결 거부(컨테이너 부재)인 endpoint만 missing 후보.
+                _missing_shards = sorted(
+                    {
+                        shard
+                        for _endpoint, _err in _health_failures
+                        if _health_error_is_connection_refused(_err)
+                        for shard in [_endpoint_to_local_shard_index(_endpoint)]
+                        if shard is not None
+                    }
+                )
+                if _missing_shards:
+                    _scale_up_meta["mcp_missing_shard_scale_up_triggered"] = True
+                    _scale_up_meta["mcp_missing_shard_scale_up_shards"] = _format_shard_indices(_missing_shards)
+                    _scale_up_ok = False
+                    try:
+                        _scale_up_missing_local_shards(
+                            repo_root,
+                            len(_mcp_endpoint_pool),
+                            _missing_shards,
+                        )
+                        _scale_up_ok = True
+                    except Exception as exc:
+                        _scale_up_meta["mcp_missing_shard_scale_up_error"] = str(exc)
+                        print(
+                            f"[expert_main] ⚠️ 부족 shard 자동 증분 기동 실패: {exc}",
+                            file=sys.stderr,
+                            flush=True,
+                        )
+                    # up이 부분 실패해도 일부 shard는 떠 있을 수 있으므로
+                    # 재검사는 항상 수행해 실제 상태를 반영한다 (실패 시 1회만).
+                    _last_fail_err = {ep: err for ep, err in _health_failures}
+                    try:
+                        _reprobe_attempts = max(1, int(os.getenv("MCP_SCALE_UP_REPROBE_ATTEMPTS", "12")))
+                    except Exception:
+                        _reprobe_attempts = 12
+                    if not _scale_up_ok:
+                        _reprobe_attempts = 1
+                    try:
+                        _reprobe_pause = max(0.0, float(os.getenv("MCP_SCALE_UP_REPROBE_PAUSE_SEC", "10")))
+                    except Exception:
+                        _reprobe_pause = 10.0
+                    for _reprobe in range(_reprobe_attempts):
+                        _retry_targets = [
+                            (_idx, _endpoint)
+                            for _idx, _endpoint in enumerate(_mcp_endpoint_pool)
+                            if _endpoint in _last_fail_err and _endpoint not in _health_ok
+                        ]
+                        if not _retry_targets:
+                            break
+                        print(
+                            f"[expert_main] 증분 기동 후 재검사 {_reprobe + 1}/{_reprobe_attempts}: "
+                            f"targets={len(_retry_targets)}",
+                            file=sys.stderr,
+                            flush=True,
+                        )
+                        _retry_workers = max(1, min(_health_workers, len(_retry_targets)))
+                        with ThreadPoolExecutor(max_workers=_retry_workers) as _retry_executor:
+                            _retry_futures = {
+                                _retry_executor.submit(_check_one_endpoint, _idx, _endpoint): (_idx, _endpoint)
+                                for _idx, _endpoint in _retry_targets
+                            }
+                            for _future in as_completed(_retry_futures):
+                                _idx, _endpoint = _retry_futures[_future]
+                                try:
+                                    _idx, _endpoint, _hc = _future.result()
+                                except Exception as _exc:
+                                    _hc = {"ok": False, "latency_ms": 0, "error": str(_exc)}
+                                if _hc.get("ok"):
+                                    _health_ok[_endpoint] = _hc
+                                    _search_note = (
+                                        "Search skipped"
+                                        if _hc.get("search_skipped")
+                                        else (
+                                            f"Search {_hc.get('search_latency_ms', 0):.0f}ms/"
+                                            f"{_hc.get('search_result_count', 0)} result(s)"
+                                        )
+                                    )
+                                    print(
+                                        f"[expert_main]   재검사 OK shard#{_idx + 1} {_endpoint}: "
+                                        f"Bridge {_hc.get('latency_ms', 0):.0f}ms, {_search_note}",
+                                        file=sys.stderr,
+                                        flush=True,
+                                    )
+                                else:
+                                    _err = _hc.get("error") or "unknown error"
+                                    _last_fail_err[_endpoint] = _err
+                                    print(
+                                        f"[expert_main]   재검사 FAIL shard#{_idx + 1} {_endpoint}: {_err}",
+                                        file=sys.stderr,
+                                        flush=True,
+                                    )
+                        if all(_endpoint in _health_ok for _, _endpoint in _retry_targets):
+                            break
+                        if _reprobe + 1 < _reprobe_attempts and _reprobe_pause > 0:
+                            time.sleep(_reprobe_pause)
+                    _recovered = [ep for ep, _err in _health_failures if ep in _health_ok]
+                    _scale_up_meta["mcp_missing_shard_scale_up_recovered_endpoints"] = len(_recovered)
+                    _health_failures = [
+                        (ep, _last_fail_err.get(ep, "unknown error"))
+                        for ep, _err in _health_failures
+                        if ep not in _health_ok
+                    ]
+                    print(
+                        "[expert_main] 부족 shard 증분 기동 결과: "
+                        f"recovered={len(_recovered)}, remaining_failures={len(_health_failures)}",
+                        file=sys.stderr,
+                        flush=True,
+                    )
+                    if not _health_failures:
+                        print(
+                            f"[expert_main] 검색 서버 헬스체크 완료: ok={len(_health_ok)}/{len(_mcp_endpoint_pool)} "
+                            "(missing shard 증분 기동 후 회복)",
+                            file=sys.stderr,
+                            flush=True,
+                        )
+
             _before_filter_endpoint_count = len(_mcp_endpoint_pool)
             _before_filter_parallel = _PARALLEL
             _mcp_endpoint_pool, _reuse_health_filter_meta = _apply_reuse_only_healthy_endpoint_filter(
@@ -2076,6 +2375,23 @@ def main() -> None:
                     "mcp_health_workers": _health_workers,
                     "mcp_health_attempts": _health_attempts,
                     "mcp_health_timeout_sec": _health_timeout,
+                    "mcp_health_search_max_latency_ms": next(
+                        (
+                            _hc.get("search_max_latency_ms")
+                            for _hc in _health_ok.values()
+                            if isinstance(_hc, dict) and _hc.get("search_max_latency_ms") is not None
+                        ),
+                        None,
+                    ),
+                    "mcp_health_search_min_results": next(
+                        (
+                            _hc.get("search_min_results")
+                            for _hc in _health_ok.values()
+                            if isinstance(_hc, dict) and _hc.get("search_min_results") is not None
+                        ),
+                        None,
+                    ),
+                    **_scale_up_meta,
                     **_reuse_health_filter_meta,
                 }
             )
@@ -2086,8 +2402,16 @@ def main() -> None:
             for _idx, _endpoint in enumerate(_mcp_endpoint_pool):
                 _hc = _health_ok.get(_endpoint)
                 if _hc:
+                    _search_note = (
+                        "Search skipped"
+                        if _hc.get("search_skipped")
+                        else (
+                            f"Search {_hc.get('search_latency_ms', 0):.0f}ms/"
+                            f"{_hc.get('search_result_count', 0)} result(s)"
+                        )
+                    )
                     print(
-                        f"✅ 검색 서버 정상 [shard {_idx}] {_endpoint}: Bridge {_hc['latency_ms']:.0f}ms, Search {_hc.get('search_latency_ms', 0):.0f}ms",
+                        f"✅ 검색 서버 정상 [shard {_idx}] {_endpoint}: Bridge {_hc['latency_ms']:.0f}ms, {_search_note}",
                         file=sys.stderr,
                         flush=True,
                     )
@@ -2309,6 +2633,19 @@ def main() -> None:
 
                 result = pipeline.process_post(post)
                 result_dict = result.model_dump() if hasattr(result, "model_dump") else dict(result)
+                identity_dict = result_dict.get("identity")
+                if isinstance(identity_dict, dict):
+                    apply_official_title_promotion_guard(identity_dict)
+                    apply_judge_seed_precision_guard(identity_dict, getattr(post, "judge_seed", None))
+                    apply_judge_seed_hygiene_expected_title_guard(identity_dict, getattr(post, "judge_seed", None))
+                    apply_judge_seed_title_hygiene_guard(identity_dict, getattr(post, "judge_seed", None))
+                    apply_judge_seed_unverified_ocr_title_guard(identity_dict, getattr(post, "judge_seed", None))
+                    apply_judge_seed_title_image_mismatch_guard(identity_dict, getattr(post, "judge_seed", None))
+                    apply_post_surface_candidate_hints(identity_dict, post.title)
+                    apply_comment_surface_candidate_hints(identity_dict, post.comments or [])
+                    apply_judge_seed_expected_candidate_preservation(identity_dict, getattr(post, "judge_seed", None))
+                    apply_judge_seed_trope_boundary_hold_guard(identity_dict, getattr(post, "judge_seed", None))
+                    apply_candidate_audit_fields(identity_dict, getattr(post, "judge_seed", None))
                 
                 full_result = {
                     "gallery_id": getattr(post, "gallery_id", ""),
@@ -2353,14 +2690,19 @@ def main() -> None:
                         "mcp_health_workers": _health_workers,
                         "mcp_health_attempts": _health_attempts,
                         "mcp_health_timeout_sec": _health_timeout,
+                        "mcp_health_search_max_latency_ms": _run_config_payload.get("mcp_health_search_max_latency_ms"),
+                        "mcp_health_search_min_results": _run_config_payload.get("mcp_health_search_min_results"),
                         "mcp_health_ok_count": len(_health_ok),
                         "mcp_health_failure_count": len(_health_failures),
+                        "search_health": identity_dict.get("search_health") if isinstance(identity_dict, dict) else None,
                         **_reuse_health_filter_meta,
                         "worker_id": worker_id,
                         "worker_log_file": str(LOG_DIR / f"expert_run_{ts}_W{worker_id}.log") if _PARALLEL > 1 else str(log_path),
                         "main_log_file": str(log_path),
                     },
                 }
+                if getattr(post, "judge_seed", None):
+                    full_result["_judge_seed"] = getattr(post, "judge_seed", None)
 
                 # 결과 요약 (스레드 안전 출력)
                 with _print_lock:
@@ -2498,11 +2840,12 @@ def main() -> None:
                     ),
                     "mcp_auto_up_shards": _allow_local_shard_auto_up(),
                     "mcp_auto_recreate_shards": _allow_local_shard_recreate(),
+                    "mcp_auto_scale_up_missing_shards": _allow_missing_shard_auto_scale_up(),
                     "mcp_local_shard_management_enabled": _can_auto_manage_local_shards(),
                     "mcp_local_shard_status_audit": _local_shard_status_audit_allowed(),
                     "mcp_local_shard_status_audit_requested": _local_shard_status_audit_requested(),
                     "mcp_local_shard_status_audit_allowed": _local_shard_status_audit_allowed(),
-                    "mcp_shard_lifecycle_policy": "docker_up_recreate_opt_in",
+                    "mcp_shard_lifecycle_policy": _SHARD_LIFECYCLE_POLICY_LABEL,
                     "mcp_allow_goal_shard_lifecycle": bool(getattr(_CLI_ARGS, "allow_goal_shard_lifecycle", False)),
                     "mcp_command_shard_lifecycle_allowed": _command_shard_lifecycle_allowed_by_context(),
                     "mcp_interactive_codex_run": _interactive_codex_run(),
@@ -2524,8 +2867,11 @@ def main() -> None:
                     "mcp_health_workers": _health_workers,
                     "mcp_health_attempts": _health_attempts,
                     "mcp_health_timeout_sec": _health_timeout,
+                    "mcp_health_search_max_latency_ms": _run_config_payload.get("mcp_health_search_max_latency_ms"),
+                    "mcp_health_search_min_results": _run_config_payload.get("mcp_health_search_min_results"),
                     "mcp_health_ok_count": len(_health_ok),
                     "mcp_health_failure_count": len(_health_failures),
+                    **_scale_up_meta,
                     **_reuse_health_filter_meta,
                 }
 
@@ -3053,6 +3399,12 @@ def main() -> None:
                 })
 
         finally:
+            # 외부 대시보드 포워딩 종료: 잔여 critical 이벤트(batch_complete 포함) flush
+            if _dashboard_forwarder is not None:
+                try:
+                    _dashboard_forwarder.flush_and_stop(timeout=5.0)
+                except Exception:
+                    pass
             sys.stdout = _orig_out
             sys.stderr = _orig_err
 
@@ -3222,6 +3574,7 @@ def load_jsonl_posts(path: Path) -> List:
             url=data.get("url", ""),
             created_at=data.get("created_at", ""),
             comments=comments,
+            judge_seed=data.get("_judge_seed") if isinstance(data.get("_judge_seed"), dict) else None,
         ))
 
     return posts

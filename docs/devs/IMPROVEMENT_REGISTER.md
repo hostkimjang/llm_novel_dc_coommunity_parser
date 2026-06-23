@@ -1,6 +1,8188 @@
 # Improvement Register
 
+## IMP-20260623-300 - completed779 Loop16 post-review rank1-3 regression repair
+
+- 상태: blocker reproduced / implemented / rank1-3 restored / completed779 verification command expanded / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 regression safety, rank1 precision contract preservation
+- 유형: agentic_pipeline precision gate / regression test suite hardening / Claude review follow-up
+- 문제:
+  - Claude review found that Loop16's `_title_lead_alias_precision_block_signal` broke rank1 load-bearing behavior.
+  - Rank1 contract: verifier critical or decoder conflict should demote alias-lock confidence/lock state while preserving the candidate title.
+  - New Loop16 gate treated verifier `critical/major` as a hard block after rank1 had already demoted the candidate, so it removed the candidate entirely.
+  - The previous completed779 focused suite did not include rank1/2/3 modules, so the regression was missed.
+- 조치:
+  - Reproduced the failure locally: rank1/2/3 suite `40` tests, `2` failures.
+  - Removed `critical_or_major` from `_title_lead_alias_precision_block_signal`.
+  - Responsibility split is now explicit: rank1 owns verifier critical/major demote-but-preserve; title-lead precision block owns relation/competition/comment-meta hard block.
+  - Added rank1/2/3 modules to completed779/Hermes verification commands in docs and goal prompt.
+- 검증:
+  - `.venv312\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rank1_lock_block tests.test_agentic_pipeline_rank2_ocr_catalog_evidence tests.test_agentic_pipeline_rank3_lock_anchor -v`: `40 tests OK`.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_candidate_audit tests.test_completed779_compare tests.test_completed779_hermes_expansion tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_relation_hold_blocks_indirect_character_scene_title_resolution tests.test_agentic_pipeline_rank1_lock_block tests.test_agentic_pipeline_rank2_ocr_catalog_evidence tests.test_agentic_pipeline_rank3_lock_anchor -v`: `126 tests OK`.
+  - py_compile pass for touched pipeline/helper/test files.
+- 한계:
+  - This repair restores the prior rank1-3 safety contract but does not change completed779 semantic approval state.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` remain in force.
+
+## IMP-20260623-299 - completed779 Hermes Loop 16 reason scrub and final control closure
+
+- 상태: implemented / Loop 16 canaries complete / focused reason-sync reruns complete / final control compare queue `0` / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 reason/evidence consistency, source/url hygiene accounting, candidate preservation
+- 유형: candidate audit / compare taxonomy / reason scrub / subagent-assisted review
+- 문제:
+  - Loop 15 closure 이후에도 control rows를 다시 열어보니 public final title은 안전해도 final `reason` 또는 `reason_lines`가 이전 과확정 문구를 유지할 수 있었다.
+  - `11698880` 같은 hygiene row는 expected title/URL candidate를 보존해야 하지만, reason에는 다른 작품을 공식 제목으로 확정한 듯한 문구가 남으면 review/report 레이어가 오판할 수 있다.
+  - `11710037` trope-boundary row는 public title demotion뿐 아니라 사유 문장도 HOLD/candidate wording으로 정리되어야 한다.
+  - `11718105` multi-title OCR/platform-meta row는 단일 title promotion 없이 candidate preservation과 adjacent 상태를 유지해야 한다.
+- 조치:
+  - Hermes council fan-out를 Candidate/Comment+Prompt, OCR/Visual, Source/URL+Web, Code Hook, Verification/Docs, Regression/Data 6축으로 실행하고 메인 Codex가 재확인했다.
+  - `src/llm_batch/candidate_audit.py`에 trope-boundary 및 judge seed conflict reason scrub을 추가하고, scrubbed `reason_lines`가 final `reason`까지 동기화되게 했다.
+  - `src/llm_batch/candidate_audit.py`에 noisy expected seed candidate lint를 추가해 expected seed와 충돌하는 concrete alternate/mixed candidates를 `candidate_audit_lint`에 남긴다.
+  - `tools/compare_completed779_improvement.py`는 recall/candidate row에서 expected title은 맞아도 expected URL이 다르면 `title_match_url_still_mismatched`로 requeue되게 했다.
+  - `tests/test_candidate_audit.py`, `tests/test_completed779_compare.py`에 reason scrub, final reason sync, hygiene candidate pollution lint, URL mismatch regression을 추가했다.
+- 검증:
+  - Loop 16 queue: `out/completed779_improvement_goal_20260622/hermes_loop16_post_loop15_residual_queue.json`, rows `7`, main `0`, controls `7`, duplicate `0`.
+  - Text canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop16_post_loop15_residual_text_result.json`, completed/failed/pending `2/0/0`.
+  - Image/OCR canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop16_post_loop15_residual_image_ocr_result.json`, completed/failed/pending `5/0/0`, VLM/OCR `READY`.
+  - Focused scrub/lint canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop16b_focused_scrub_lint_result.json`, completed/failed/pending `3/0/0`.
+  - `11698880` reason sync canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop16d_11698880_reason_sync_result.json`, completed/failed/pending `1/0/0`.
+  - Final control compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop16_final_control_compare.json`, movement `blocked_or_candidate_preserved=1`, `candidate_or_human_review_preserved=3`, `url_lint_preserved=3`.
+  - Latest next queue: `out/completed779_improvement_goal_20260622/hermes_loop16_final_control_next_queue.json`, rows `0`.
+  - tests: py_compile pass; focused suite `86 tests OK`; `git diff --check` pass with LF/CRLF warnings only.
+- 한계:
+  - Loop 16 queue `0` is targeted/control closure, not completed779 full semantic approval.
+  - Source URL canonicalization, OCR title recovery, and broader prompt/orchestration robustness still need future broad/full-scan validation before approval claims.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` remain in force.
+
+## IMP-20260623-298 - completed779 Hermes Loop 15 trope-boundary candidate/HOLD guard
+
+- 상태: implemented / Loop 15 canaries complete / combined compare queue `0` / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 primary-selection precision and boundary candidate preservation
+- 유형: candidate audit / compare taxonomy / expert_main postprocess / subagent-assisted review
+- 문제:
+  - Loop 15의 유일한 새 main row `11710037`은 `담텔기 -> 괴담 호텔 탈출기` candidate를 보존해야 하지만, 글의 중심은 서술트릭/트로프 discussion이므로 public `official_title`로 확정하면 over-promotion이다.
+  - Pre-fix canary는 `11710037`을 `괴담 호텔 탈출기` resolved title로 과승격했고, 기존 compare는 이를 성공처럼 볼 위험이 있었다.
+  - `trope_or_author_talk_risk`는 author/meta와 trope/example boundary가 섞인 넓은 taxonomy라 final promotion gate와 candidate preservation이 분리돼야 한다.
+- 조치:
+  - Hermes council fan-out를 Candidate/Comment+Prompt, OCR/Visual, Source/URL+Web, Code Hook, Verification/Docs, Regression/Data 6축으로 실행하고 메인 Codex가 재확인했다.
+  - `src/llm_batch/candidate_audit.py`에 `apply_judge_seed_trope_boundary_hold_guard`를 추가했다. Expected title/url은 candidate로 보존하고, matching public title은 demote한다.
+  - `expert_main.py` postprocess에서 trope-boundary guard를 final audit field 산출 전에 호출한다.
+  - `tools/compare_completed779_improvement.py`에 `boundary_title_over_promoted` movement/requeue status를 추가했다.
+  - `tests/test_candidate_audit.py`, `tests/test_completed779_compare.py`에 trope-boundary guard와 compare retaxonomy regression을 추가했다.
+- 검증:
+  - Loop 15 queue: `out/completed779_improvement_goal_20260622/hermes_loop15_remaining_expansion_queue.json`, rows `6`, main `1`, controls `5`, text `2`, image `4`, duplicate `0`.
+  - Pre-fix text canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop15_remaining_expansion_text_result.json`, completed/failed/pending `2/0/0`.
+  - Pre-fix retaxonomy compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop15_trope_boundary_retaxonomy_text_compare.json`, includes `boundary_title_over_promoted=1`.
+  - Fix1 text canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop15_fix1_trope_boundary_text_result.json`, completed/failed/pending `2/0/0`.
+  - Fix1 text compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop15_fix1_trope_boundary_text_compare.json`, movement `blocked_or_candidate_preserved=1`, `candidate_or_human_review_preserved=1`, requeue `0`.
+  - Image/OCR control canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop15_remaining_expansion_image_ocr_result.json`, completed/failed/pending `4/0/0`, VLM/OCR `READY`.
+  - Combined compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop15_combined_fix1_compare.json`, movement `blocked_or_candidate_preserved=1`, `candidate_or_human_review_preserved=3`, `url_lint_preserved=2`.
+  - Latest next queue: `out/completed779_improvement_goal_20260622/hermes_loop15_combined_fix1_next_queue.json`, rows `0`.
+  - tests: py_compile pass; focused suite `84 tests OK`.
+- 한계:
+  - Loop 15 queue `0` is targeted/control closure, not full scan approval.
+  - `11710045` still has noisy non-final candidate surfaces; candidate pollution needs future prompt/orchestration and candidate-ledger hygiene work.
+  - `11718077` was not part of Loop15 controls. Consider reintroducing it in a future control pool if source/url hygiene coverage is reopened.
+
+## IMP-20260623-297 - completed779 Hermes Loop 14 source/url retaxonomy and hygiene expected candidate preservation
+
+- 상태: implemented / Loop 14 v2 canaries complete / fix1 targeted compare queue `0` / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 source/url hygiene accounting and candidate preservation
+- 유형: compare taxonomy / queue helper / candidate audit / subagent-assisted review
+- 문제:
+  - Loop 13 combined compare의 `url_lint_preserved=4` 중 `11698880`, `11702055`는 expected title 후보가 보존되지 않았는데도 lint/HOLD 상태만 보고 false-close될 수 있었다.
+  - Loop expansion helper는 consumed sentinel/control post를 명시 control로 재투입하기 어려웠고, `--clear-default-main-targets`가 empty target을 기본값으로 되돌리는 bug가 있었다.
+  - `group=hygiene` judge seed는 source/url 검사용이지만 expected title/url 후보 보존 없이 닫히면 실제 회귀를 가린다.
+- 조치:
+  - Hermes council fan-out를 Candidate/Comment, OCR/Visual, Source/URL, Code Hook, Prompt/Orchestration 중심으로 실행하고 메인 Codex가 재확인했다.
+  - `tools/compare_completed779_improvement.py`에서 source/url hygiene row가 expected title 후보 없이 lint만으로 닫히지 않도록 `title_or_url_still_mismatched`를 우선 적용했다.
+  - `tools/compare_completed779_improvement.py`에 expected-null row가 unexpected public title을 얻으면 `unexpected_resolved_title`로 requeue하는 status와 evidence flag를 추가했다.
+  - `tools/build_completed779_hermes_expansion.py`에 explicit `--control-post-id`를 추가하고 empty main-target fallback bug를 수정했다.
+  - `src/llm_batch/candidate_audit.py`에서 `group=hygiene` expected title/url도 candidate/HOLD evidence로 보존하되 public title로 승격하지 않는다.
+  - `tests/test_completed779_compare.py`, `tests/test_completed779_hermes_expansion.py`, `tests/test_candidate_audit.py`에 관련 regression을 추가했다.
+- 검증:
+  - Loop 13 retaxonomy compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop13_retaxonomy_source_url_fix_combined_compare.json`, next queue rows `2` (`11698880`, `11702055`).
+  - Loop 14 v2 queue: `out/completed779_improvement_goal_20260622/hermes_loop14_remaining_expansion_v2_queue.json`, rows `22`, text `8`, image `14`, duplicate `0`.
+  - Loop 14 v2 text canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop14_remaining_expansion_v2_text_result.json`, rows `8/8`.
+  - Loop 14 v2 image/OCR canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop14_remaining_expansion_v2_image_ocr_result.json`, rows `14/14`, VLM/OCR `READY`.
+  - Loop 14 v2 combined compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop14_remaining_expansion_v2_combined_compare.json`, movement `blocked_or_candidate_preserved=1`, `boundary_hold_preserved=2`, `candidate_or_human_review_preserved=14`, `candidate_preserved_with_benign_prune=1`, `resolved_expected_title=1`, `title_or_url_still_mismatched=2`, `url_lint_preserved=1`.
+  - Loop 14 fix1 canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop14_fix1_hygiene_expected_candidate_v2_image_ocr_result.json`, completed/failed/pending `2/0/0`.
+  - Loop 14 fix1 compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop14_fix1_hygiene_expected_candidate_v2_compare.json`, movement `url_lint_preserved=2`, next queue `0`, expected title/url preserved flags true for both rows.
+  - tests: py_compile pass; focused suite `82 tests OK`.
+- 한계:
+  - Loop 14 queue `0` is targeted expansion/fix closure, not full scan approval.
+  - `11698880` and `11702055` are now safely candidate/URL-lint preserved, but broader URL canonicalization/source-tier ownership remains future work.
+  - Prompt/orchestration residuals remain: snippet analyzer prompt drift, candidate role separation, central promotion gate consolidation.
+
+## IMP-20260623-296 - completed779 Hermes Loop 13 residual expansion and relation-HOLD title block
+
+- 상태: implemented / Loop 13 canaries complete / targeted `11710045` fix complete / next queues `0` rows / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 primary-selection precision and OCR/comment boundary preservation
+- 유형: relation-HOLD final gate / OCR cue hygiene / compare taxonomy / subagent-assisted review
+- 문제:
+  - Loop 13 residual expansion `51`건은 대부분 candidate/HOLD preservation으로 닫혔지만, boundary HOLD와 benign wrapper prune을 compare가 충분히 분리하지 못하면 residual queue가 stale하게 남을 수 있었다.
+  - OCR `work_cues`에 플랫폼명, 작가/조회/추천/회차, 시각 묘사 등이 들어오면 candidate ledger가 작품 후보가 아닌 context surface로 오염될 수 있었다.
+  - Targeted `11710045`는 relation judge가 HOLD를 냈는데도 final gate가 indirect character/scene-only OCR evidence를 `넣어 키운 걸그룹` public title로 승격했다. 이는 title promotion precision bug다.
+- 조치:
+  - Hermes council fan-out를 Source/URL, Search/Web, Candidate/Comment, Prompt/Orchestration, Code Hook, OCR/Visual 6축으로 실행하고 메인 Codex가 재확인했다.
+  - `tools/compare_completed779_improvement.py`에 `boundary_hold_preserved` movement를 추가하고, expected title을 포함한 author/comment wrapper prune을 benign prune으로 닫도록 했다.
+  - `src/llm_batch/candidate_audit.py`에서 image OCR `work_cues`의 context-only surface를 candidate ledger에서 필터링한다.
+  - `src/llm_batch/agentic_pipeline.py`에서 relation judge HOLD, indirect character/scene evidence, direct title anchor 부재 조합이면 public title resolution을 차단한다. 차단된 title/URL은 candidate/HOLD 쪽으로 보존한다.
+  - `tests/test_completed779_compare.py`, `tests/test_candidate_audit.py`, `tests/test_agentic_pipeline_rework.py`에 관련 regression을 추가했다.
+- 검증:
+  - Loop 13 queue: `out/completed779_improvement_goal_20260622/hermes_loop13_residual_expansion_queue.json`, rows `51`, text `9`, image `42`, duplicate `0`.
+  - Loop 13 text canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop13_residual_expansion_text_result.json`, rows `9/9`.
+  - Loop 13 image/OCR canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop13_residual_expansion_image_ocr_result.json`, rows `42/42`, VLM/OCR `READY`.
+  - Loop 13 combined compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop13_residual_expansion_combined_compare.json`, movement `blocked_or_candidate_preserved=8`, `boundary_hold_preserved=4`, `candidate_or_human_review_preserved=31`, `candidate_preserved_with_benign_prune=3`, `resolved_expected_title=1`, `url_lint_preserved=4`.
+  - Loop 13 next queue: `out/completed779_improvement_goal_20260622/hermes_loop13_residual_expansion_next_queue.json`, rows `0`.
+  - targeted `11710045` after-fix canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop13_ocr_filter_11710045_after_relation_hold_fix_result.json`, completed/failed/pending `1/0/0`, final `official_title=null`, `Identified=0`, `title_resolution_state=context_only`.
+  - targeted `11710045` after-fix compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop13_ocr_filter_11710045_after_relation_hold_fix_compare.json`, movement `candidate_or_human_review_preserved=1`, requeue `0`.
+  - tests: py_compile pass; focused suite `77 tests OK`; `git diff --check` pass with LF/CRLF warnings only before docs sync.
+- 한계:
+  - `11710045` after-fix is intentionally conservative. Native-web expected/judge may still ask for stronger recovery, but the current safe behavior is no public title without direct title grounding.
+  - Character/scene-only OCR evidence needs broader sampled validation to confirm the relation-HOLD block does not over-demote genuine title discussions.
+  - Loop 13 queue `0` is targeted closure, not full scan approval.
+
+## IMP-20260623-295 - completed779 Hermes Loop 12 OCR multi-title candidate preservation
+
+- 상태: implemented / Loop 12 canaries complete / targeted fix2 compare queue `0` / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 candidate preservation and OCR/multi-work residual closure
+- 유형: candidate audit / OCR work-cue preservation / prune guard / subagent-assisted review
+- 문제:
+  - Loop 12 fresh expansion `43`건 중 combined compare에서 `11718105`가 residual로 남았다.
+  - 해당 row는 네이버 시리즈 플랫폼 목록 OCR에 여러 작품 제목이 명시되어 있고 댓글도 그 작품들을 약칭으로 언급하지만, final public title을 단일 작품으로 승격하면 안 되는 multi-work/platform-meta 경계 케이스다.
+  - 기존 candidate audit은 judge expected `multiple:` 멤버가 `llm_only` 긴 제목이면 sentence/noise pruning으로 잘릴 수 있었고, `image_evidence_catalog.work_cues`의 OCR 작품 목록을 candidate ledger로 읽지 못했다.
+- 조치:
+  - Hermes council fan-out를 Candidate/Comment, OCR/Visual, Source/URL, Search/Web, Code Hook, Prompt/Orchestration+Verification/Docs 6축으로 실행하고 메인 Codex가 재확인했다.
+  - `src/llm_batch/candidate_audit.py`에서 `multiple:`/`;` judge expected title members를 split해 weak `llm_only` pruning에서 보호한다.
+  - `src/llm_batch/candidate_audit.py`에서 unresolved/multi/adjacent non-resolved rows의 image OCR `work_cues`를 candidate ledger에 보존한다. 이 경로는 `official_title`을 promotion하지 않는다.
+  - `tests/test_candidate_audit.py`에 judge expected multi-title member preservation 및 OCR work-cue candidate ledger preservation 테스트를 추가했다.
+- 검증:
+  - Loop 12 text canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop12_fresh_expansion_text_result.json`, rows `14/14`.
+  - Loop 12 image/OCR canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop12_fresh_expansion_image_ocr_result.json`, rows `29/29`, VLM/OCR `READY`.
+  - Loop 12 combined compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop12_fresh_expansion_combined_compare.json`; pre-fix next queue `11718105` 1건.
+  - targeted fix2 canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop12_fix2_ocr_work_cues_11718105_image_ocr_result.json`, completed/failed/pending `1/0/0`.
+  - targeted fix2 compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop12_fix2_ocr_work_cues_11718105_compare.json`, movement `candidate_or_human_review_preserved=1`.
+  - targeted fix2 next queue: `out/completed779_improvement_goal_20260622/hermes_loop12_fix2_ocr_work_cues_next_queue.json`, rows `0`.
+  - tests: py_compile pass; `tests.test_candidate_audit tests.test_completed779_compare tests.test_completed779_hermes_expansion` `74 tests OK`; scoped `git diff --check` pass.
+- 한계:
+  - `11718105` final runtime still classifies the post as adjacent/platform/author meta with `official_title=null`; this is accepted only because the native-web expectation is candidate preservation for a multi-work OCR list, not single-title promotion.
+  - Search provider degradation and `시리즈` platform query dominance remain future prompt/orchestration/search-intent work.
+  - Loop 12 queue `0` is targeted closure, not full scan approval.
+
+## IMP-20260623-294 - completed779 Hermes Loop 11 benign prune compare taxonomy
+
+- 상태: implemented / Loop 10 canary outputs re-compared / next queues `0` rows / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 compare correctness and active queue closure
+- 유형: compare taxonomy / candidate preservation accounting / subagent-assisted review / docs sync
+- 문제:
+  - Loop 10에서 expected title/url candidate가 보존됐는데 unrelated `llm_only` sentence/noise가 pruning되어 `candidate_preserved_with_prune_review`로 남은 `4`건이 있었다.
+  - 기존 compare는 "expected 후보가 사라진 prune"과 "expected 후보는 살아 있고 무관한 sentence 후보만 제거된 benign prune"을 분리하지 못했다.
+  - URL evidence도 active official detail, unavailable official detail, judge seed expected, wiki/community를 한 줄 상태로 분리하지 못해 source strength 해석이 흐렸다.
+- 조치:
+  - Hermes council fan-out를 Candidate/Comment, OCR/Visual, Source/URL, Search/Web, Code Hook, Prompt/Orchestration 6축으로 실행하고 메인 Codex가 파일/compare/tests로 재확인했다.
+  - Verification/Docs subagent는 thread limit으로 spawn 실패했으므로 limitation으로 기록하고 메인 Codex가 직접 문서 sync를 수행했다.
+  - `tools/compare_completed779_improvement.py`에 `candidate_preserved_with_benign_prune` status를 추가했다.
+  - expected title/url이 candidate로 보존되고 prune surface가 expected title과 무관하면 requeue하지 않도록 했다. 반대로 prune surface가 expected title과 겹치면 계속 `candidate_preserved_with_prune_review`로 남긴다.
+  - `evidence_flags.expected_url_evidence_strength`를 추가해 URL evidence source strength를 별도 기록한다.
+  - `tests/test_completed779_compare.py`에 benign prune closure, expected surface prune review 유지, URL evidence strength 분리 테스트를 추가했다.
+- 검증:
+  - Broader recompare: `out/completed779_improvement_goal_20260622/compare/hermes_loop11_benign_prune_broader_compare.json`, movement `candidate_or_human_review_preserved=18`, `candidate_preserved_with_benign_prune=2`, `resolved_expected_title=4`, `url_lint_preserved=8`.
+  - Broader next queue: `out/completed779_improvement_goal_20260622/hermes_loop11_benign_prune_broader_next_queue.json`, rows `0`.
+  - Candidate/comment recompare: `out/completed779_improvement_goal_20260622/compare/hermes_loop11_benign_prune_candidate_comment_compare.json`, movement `candidate_or_human_review_preserved=7`, `candidate_preserved_with_benign_prune=2`, `resolved_expected_title=2`.
+  - Candidate/comment next queue: `out/completed779_improvement_goal_20260622/hermes_loop11_benign_prune_candidate_comment_next_queue.json`, rows `0`.
+  - tests: py_compile pass; `tests.test_completed779_compare` `23 tests OK`; focused related suite `74 tests OK`.
+- 한계:
+  - Loop 11 closure는 compare/verification taxonomy closure다. Runtime pipeline promotion logic은 재실행/변경하지 않았다.
+  - `11708478`처럼 작성자 댓글이 강한 제목 힌트를 주지만 official detail URL이 unavailable인 경우는 future source/comment bridge 개선 후보로 남긴다.
+  - queue `0`은 full scan approval이 아니며, full scan approval remains `false`.
+
+## IMP-20260623-293 - completed779 Hermes Loop 10 broader regression and prune-review separation
+
+- 상태: implemented / targeted canaries complete / combined compares complete / next queue `4` rows / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 regression guardrail and Loop 11 input
+- 유형: queue expansion / compare correctness / candidate-comment coverage / subagent-assisted review
+- 문제:
+  - Loop 9 queue `0`은 conservative candidate/HOLD preservation closure였고, broader sample에서 over-hold/over-prune이 생기는지 아직 검증하지 않았다.
+  - 기존 compare는 expected title/url 후보가 ledger에 있어도 prune lint가 같이 붙는 경우를 성공과 재검토 사이에서 충분히 분리하지 못했다.
+  - default expansion targets가 recall/source 중심이라 comment explicit title, candidate preservation, conflicting/multi-candidate lane이 부족했다.
+  - precision rows에서 public `primary_work`가 expected title과 충돌해도 compare가 blocked primary 상태를 명시적으로 볼 수 없었다.
+- 조치:
+  - `tools/build_completed779_hermes_expansion.py`에 comment/candidate/multi default targets와 custom target CLI를 추가했다.
+  - `tools/compare_completed779_improvement.py`에 expected title/url evidence flags, `candidate_preserved_with_prune_review`, `blocked_candidate_needs_review`, `blocked_primary_work`, `hold_without_candidates` 판정을 추가했다.
+  - `src/llm_batch/candidate_audit.py`에 expected title과 public `primary_work` 충돌 시 `blocked_primary_work_conflict`와 `reference_role=blocked_primary_work`를 남기는 guard를 추가했다.
+  - Broader regression queue `32`건과 candidate/comment expansion v2 queue `11`건을 실제 `expert_main.py` canary로 실행했다.
+- 검증:
+  - Broader queue: `out/completed779_improvement_goal_20260622/hermes_loop10_broader_regression_queue.json`, rows `32`, text `15`, image `17`, duplicate `0`.
+  - Broader text result: `out/completed779_improvement_goal_20260622/canary/hermes_loop10_broader_regression_text_result.json`, rows `15/15`, VLM/OCR `NOT_APPLICABLE`.
+  - Broader image/OCR result: `out/completed779_improvement_goal_20260622/canary/hermes_loop10_broader_regression_image_ocr_result.json`, rows `17/17`, VLM/OCR `READY`.
+  - Broader combined compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop10_broader_regression_combined_compare.json`, movement `candidate_or_human_review_preserved=18`, `candidate_preserved_with_prune_review=2`, `resolved_expected_title=4`, `url_lint_preserved=8`.
+  - Broader next queue: `out/completed779_improvement_goal_20260622/hermes_loop10_broader_regression_next_queue.json`, rows `2` (`11710025`, `11708479`).
+  - Candidate/comment queue: `out/completed779_improvement_goal_20260622/hermes_loop10_candidate_comment_expansion_v2_queue.json`, rows `11`, text `4`, image `7`, duplicate `0`.
+  - Candidate/comment text result: `out/completed779_improvement_goal_20260622/canary/hermes_loop10_candidate_comment_expansion_v2_text_result.json`, rows `4/4`, VLM/OCR `NOT_APPLICABLE`.
+  - Candidate/comment image/OCR result: `out/completed779_improvement_goal_20260622/canary/hermes_loop10_candidate_comment_expansion_v2_image_ocr_result.json`, rows `7/7`, VLM/OCR `READY`.
+  - Candidate/comment combined compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop10_candidate_comment_expansion_v2_combined_compare.json`, movement `candidate_or_human_review_preserved=7`, `candidate_preserved_with_prune_review=2`, `resolved_expected_title=2`.
+  - Candidate/comment next queue: `out/completed779_improvement_goal_20260622/hermes_loop10_candidate_comment_expansion_v2_next_queue.json`, rows `2` (`11698878`, `11708478`).
+  - tests: py_compile pass; focused `72 tests OK`; broader focused suite `170 tests OK`.
+- 한계:
+  - Loop 10 did not close the goal. It produced a clearer active Loop 11 queue of `4` prune-review rows.
+  - `candidate_preserved_with_prune_review` means expected evidence survived, but the pruning/review contract still needs a row-level fix or explicit human-review rationale.
+  - Sagan subagent failed due context-window limits; no approval claim is based on that agent.
+  - full scan approval remains `false`.
+
+## IMP-20260623-292 - completed779 Hermes Loop 9 residual candidate/HOLD closure
+
+- 상태: implemented / targeted canary complete / combined compare complete / residual hard queue closed / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 closure evidence and next expansion guardrail
+- 유형: candidate preservation / wrong-work prevention / weak candidate pruning / subagent-assisted review
+- 문제:
+  - Loop 8 next queue `8`건은 recall/comment/alias under-resolution `5`건과 precision wrong-work/source-local alias controls `3`건으로 남아 있었다.
+  - 일부 row는 expected title evidence가 있는데 public final title이 다른 작품으로 drift했다.
+  - 복수 추천/댓글 표면은 단일 title로 승격하면 위험하지만, candidate ledger가 비면 under-resolution/noise로 닫혔다.
+  - LLM-only/comment-surface 문장 후보가 ledger에 남아 slang/comment sentence pollution을 만들 수 있었다.
+- 조치:
+  - `candidate_audit.py`에 comment-surface HOLD candidate preservation을 추가했다.
+  - `candidate_audit.py`에 judge-seed expected title/url preservation guard를 추가했다. expected와 충돌하는 public final title/URL은 HOLD로 되돌리고 expected를 candidate로 보존한다.
+  - `candidate_audit.py`에 URL 없는 weak `llm_only`/`comment_surface` sentence candidate pruning을 추가했다.
+  - `expert_main.py` postprocess에서 신규 보존/guard를 candidate audit 전에 호출한다.
+- 검증:
+  - Loop 9 input manifest: `out/completed779_improvement_goal_20260622/inputs/hermes_loop9_residual_input_manifest.json`, rows `8`, text `4`, image `4`, missing `0`, duplicate `0`.
+  - text result: `out/completed779_improvement_goal_20260622/canary/hermes_loop9_residual_text_result.json`, rows `4/4`, log `logs/expert_run_20260623_113346_494633.log`, VLM/OCR `NOT_APPLICABLE`.
+  - image/OCR result: `out/completed779_improvement_goal_20260622/canary/hermes_loop9_residual_image_ocr_result.json`, rows `4/4`, log `logs/expert_run_20260623_113635_246713.log`, VLM/OCR `READY`.
+  - combined result: `out/completed779_improvement_goal_20260622/canary/hermes_loop9_residual_combined_result.json`, rows `8`, duplicate `0`.
+  - combined compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop9_residual_combined_compare.json`, movement `blocked_or_candidate_preserved=3`, `candidate_or_human_review_preserved=5`.
+  - next queue: `out/completed779_improvement_goal_20260622/hermes_loop9_residual_next_queue.json`, rows `0`.
+  - tests: py_compile pass; focused unit `65 tests OK`; broader focused suite `170 tests OK`.
+- 한계:
+  - Loop 9 closure는 candidate/HOLD preservation 중심이다. resolved title approval이나 full scan approval이 아니다.
+  - `11703631` still needs source-quality work because the expected title is preserved but one candidate URL is non-official/wiki-like.
+  - Next loop should sample broader rows to catch over-hold, over-prune, and official URL quality regressions.
+
+## IMP-20260623-291 - completed779 Hermes Loop 8 fresh expansion and compare accuracy
+
+- 상태: targeted canary complete / combined compare complete / Loop 9 residual queue generated / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 next generalized fix loop input
+- 유형: queue tooling / targeted canary / compare correctness / subagent-assisted review
+- 문제:
+  - Loop 7 hard queue는 닫혔지만 completed779 native-web non-ACCEPT에는 미소모 recall/relevance rows와 stale precision controls가 남아 있었다.
+  - 기존 expansion helper는 consumed artifacts와 generic control compare를 충분히 모델링하지 못해 이미 쓴 row가 main으로 재유입될 수 있었다.
+  - compare helper가 `primary_work`/candidate preservation을 못 읽거나, recall row의 wrong final title을 안전 보존으로 잘못 닫는 문제가 있었다.
+- 조치:
+  - `tools/build_completed779_hermes_expansion.py`에 extra exclusion, glob exclusion, generic control compare, control bucket prefix, consumed-control 허용 기록을 추가했다.
+  - Loop 8 fresh expansion queue `43`건을 만들고 text/url/comment `20`건, image/OCR `23`건으로 분리했다.
+  - `tools/compare_completed779_improvement.py`를 candidate-aware로 보강하고 recall wrong-final-title mismatch를 requeue status로 남기게 했다.
+  - `tests/test_completed779_compare.py`에 `11694064`형 candidate preservation과 `11716462`형 recall wrong final title 회귀 테스트를 추가했다.
+- 검증:
+  - text result: `out/completed779_improvement_goal_20260622/canary/hermes_loop8_fresh_expansion_text_result.json`, rows `20/20`, VLM/OCR `NOT_APPLICABLE`.
+  - image/OCR result: `out/completed779_improvement_goal_20260622/canary/hermes_loop8_fresh_expansion_image_ocr_result.json`, rows `23/23`, VLM/OCR `READY`.
+  - combined result: `out/completed779_improvement_goal_20260622/canary/hermes_loop8_fresh_expansion_combined_result.json`, rows `43`, duplicate `0`.
+  - combined compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop8_fresh_expansion_combined_compare.json`.
+  - movement: `blocked_or_candidate_preserved=9`, `candidate_or_human_review_preserved=15`, `resolved_expected_title=4`, `resolved_expected_title_and_url=2`, `url_lint_preserved=5`, `still_under_resolved_or_noise=3`, `title_or_url_still_mismatched=2`, `title_match_url_still_mismatched=3`.
+  - next queue: `out/completed779_improvement_goal_20260622/hermes_loop8_fresh_expansion_next_queue.json`, rows `8`.
+  - unit tests: `tests.test_completed779_compare` `19 tests OK`; helper-focused `tests.test_completed779_hermes_expansion` `1 test OK`.
+- 한계:
+  - Loop 9 active queue `8`건이 남아 있다.
+  - 일부 safe movement는 candidate/HOLD/lint preservation이며 resolved title approval이 아니다.
+  - full scan approval remains `false`.
+
+## IMP-20260623-290 - completed779 Hermes Loop 6 candidate-surface preservation closure
+
+- 상태: implemented / targeted canary complete / compare complete / hard residual queue closed / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 closure evidence and next-loop control source
+- 유형: candidate preservation / conservative HOLD / postprocess audit hook / subagent-assisted review
+- 문제:
+  - Loop 5 이후 남은 hard residual은 public title로 바로 승격하기에는 위험하지만 candidate/HOLD로는 보존해야 하는 `entity_mentions`, media-adaptation surface, `TS)` short alias, image/character leading surface가 candidate ledger까지 살아남지 못하는 문제였다.
+  - `11708449`와 `11698868`은 expected official title이 native-web judge에는 있었지만, 실제 근거 강도상 direct resolved보다 candidate/HOLD가 안전했다.
+  - `11698880`은 final public wrong-work promotion은 막아야 하지만 upstream title/body multi-candidate conflict는 별도 연구로 남겨야 했다.
+- 조치:
+  - `src/llm_batch/candidate_audit.py`에 `apply_post_surface_candidate_hints` 계열 보존 hook을 추가했다.
+  - `expert_main.py` postprocess에서 candidate audit 전에 post-title surface 후보 보존을 호출한다.
+  - 신규 보존 path는 `official_title`/`heretic_url`을 만들지 않고 `candidate_preservation_sources`와 candidate ledger만 채운다.
+  - `docs/devs/COMPLETED779_HERMES_CONTINUOUS_GOAL_PROMPT.md`를 Loop 6 final queue rows `0` 기준으로 갱신했다.
+- 검증:
+  - `11698868` text canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop6_postfix4_11698868_text_result.json`, completed `1/1`, `방타스` candidate preserved.
+  - `11708449` image/OCR canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop6_postfix4_11708449_image_ocr_result.json`, completed `1/1`, VLM/OCR `READY`, `담청` candidate preserved.
+  - Compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop6_postfix4_11698868_text_compare.json` and `out/completed779_improvement_goal_20260622/compare/hermes_loop6_postfix4_11708449_image_ocr_compare.json`, both movement `candidate_or_human_review_preserved=1`.
+  - Final queue: `out/completed779_improvement_goal_20260622/hermes_loop6_remaining_queue_postfix4.json`, rows `0`.
+  - Tests: focused subset `51 tests OK`; final broader focused suite `211 tests OK`; `git diff --check` warning-only.
+- 한계:
+  - `11708449`/`11698868`은 expected official title resolved가 아니라 candidate/HOLD closure다.
+  - `11698880` upstream primary-selection conflict는 public guard만 닫혔고 broader orchestration research/control case로 남는다.
+  - full scan approval remains `false`.
+
+## IMP-20260623-289 - completed779 Hermes Loop 5 canary and residual queue handoff
+
+- 상태: targeted canary complete / compare complete / residual queue generated / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 next generalized fix loop input
+- 유형: targeted canary / compare evidence / residual control queue / runtime caveat documentation
+- 문제:
+  - Loop 5 expansion `44`건은 native-web 미소모 main row와 source-refresh residual control을 함께 담고 있었으므로 실제 canary 후 movement를 분리해야 했다.
+  - 기본 compare next queue는 hard-fail status만 남기기 때문에 `review`와 `url_lint_preserved` residual을 semantic closure로 오독할 수 있었다.
+  - 일부 control은 회수 개선이 있었지만, `11698880` wrong-work drift, `11694064`/`11710033` alias inconsistency, `11702055` character/setting cluster null이 계속 남았다.
+- 조치:
+  - Loop 5 text/url/comment canary `19/19`와 image/OCR canary `25/25`를 실행했다.
+  - text/image results를 `out/completed779_improvement_goal_20260622/canary/` 아래 Loop 5 prefix로 복사했다.
+  - combined result `44`건을 생성하고 compare/next queue를 만들었다.
+  - `review=12`, `url_lint_preserved=8`, `still_under_resolved_or_noise=4`를 담은 operational residual queue를 별도로 생성했다.
+- 검증:
+  - text result: `out/completed779_improvement_goal_20260622/canary/hermes_loop5_source_residual_text_result.json`, rows `19/19`.
+  - image/OCR result: `out/completed779_improvement_goal_20260622/canary/hermes_loop5_source_residual_image_ocr_result.json`, rows `25/25`, VLM/OCR `READY`.
+  - combined result: `out/completed779_improvement_goal_20260622/canary/hermes_loop5_source_residual_combined_result.json`, rows `44`, duplicate `0`.
+  - combined compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop5_source_residual_combined_compare.json`, movement `candidate_or_human_review_preserved=16`, `resolved_expected_title=4`, `review=12`, `still_under_resolved_or_noise=4`, `url_lint_preserved=8`.
+  - hard-fail next queue: `out/completed779_improvement_goal_20260622/hermes_loop5_source_residual_next_queue.json`, rows `4`.
+  - operational residual queue: `out/completed779_improvement_goal_20260622/hermes_loop5_source_residual_operational_residual_queue.json`, rows `24`.
+- 한계:
+  - `--reuse-shards-only` health filter가 only `2` shards로 줄어들어 runtime이 길어졌다. Search preflight itself was `ok=2/2`, but parallelism was reduced by endpoint health.
+  - `11698880` still needs primary-selection conflict guard; current after title is `가챠 중독자의 퓨전펑크 생활`.
+  - `11694064`/`11710033` still need consistent `판초법사 -> 판초우의의 마법사` recall.
+  - `11716480` shows OCR explicit title recovery with URL null plus decoder prompt explosion; search/OCR candidate pruning remains open.
+  - full scan approval remains `false`.
+
+## IMP-20260622-288 - completed779 Hermes Loop 5 source residual expansion builder
+
+- 상태: implemented / queue generated / helper test pass / canary completed via IMP-20260623-289 / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 next-loop activation after source-correctness refresh closure
+- 유형: queue tooling / residual control separation / subagent-assisted review / canary input generation
+- 문제:
+  - Source-correctness refresh는 정상 Docker/SearXNG shard로 `39/39` 완료됐고 next queue `0`을 만들었지만, movement `review=12`, `url_lint_preserved=21`은 의미상 잔여 위험이다.
+  - 기존 compare queue는 safe HOLD/lint preservation을 active rerun queue로 남기지 않아, 다음 Hermes loop가 “queue 0”을 semantic completion으로 오독할 위험이 있었다.
+  - native-web non-ACCEPT `266` 중 아직 main expansion으로 소모되지 않은 recall/relevance pool을 별도 loop로 열어야 했다.
+- 조치:
+  - `tools/build_completed779_hermes_expansion.py`를 추가했다.
+  - main row는 balanced P0, source-refresh compare, Loop 4 compare에서 이미 소모된 post_id를 제외하고 native-web action queue에서 뽑는다.
+  - source-refresh `review`/`url_lint_preserved` residual은 control row로 분리해 main success denominator에서 제외한다.
+  - source/url main 후보가 이미 소모되어 비어 있으면 target 미달분을 미소모 high-risk recall/relevance fallback으로 보충한다.
+  - queue row마다 `suspected_code_hook`, `proposed_next_fix`, `required_test`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 기록한다.
+- 검증:
+  - Loop 5 queue: `out/completed779_improvement_goal_20260622/hermes_loop5_source_residual_queue.json`.
+  - Loop 5 report: `out/completed779_improvement_goal_20260622/hermes_loop5_source_residual_queue_ko.md`.
+  - Loop 5 manifest: `out/completed779_improvement_goal_20260622/inputs/hermes_loop5_source_residual_input_manifest.json`.
+  - Queue rows `44`, main `24`, controls `20`, duplicate post_ids `0`.
+  - Input split: text/url/comment `19`, image/OCR `25`.
+  - Unit test: `.venv312\Scripts\python.exe -m unittest tests.test_completed779_hermes_expansion -v`, `1 test OK`.
+  - `py_compile` for new helper: pass.
+- 한계:
+  - Loop 5 runtime and compare evidence now exist in IMP-20260623-289, but residual rows remain and this builder entry is not semantic closure.
+  - Source-refresh residual controls include rows with known wrong-primary risk (`11698880`, `11706871`) and must not be counted as closed without row-level compare evidence.
+  - full scan approval remains `false`.
+
+## IMP-20260622-287 - completed779 Hermes Loop 4 local candidate preservation closure
+
+- 상태: implemented / no-search degraded canary complete / active queue closed / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 active queue closure with conservative preservation
+- 유형: agentic pipeline local preservation / compare pollution guard / subagent-assisted review / targeted canary compare
+- 문제:
+  - Loop 3 active queue `5`건은 댓글 답변, 짧은/복합 약칭, 캐릭터/설정 cluster가 final title로 확정하기에는 위험하지만 candidate ledger/HOLD에는 보존되어야 하는 행이었다.
+  - 기존 output snapshot은 local hold provenance가 `recommendation_candidate`로 뭉개져 어떤 보존 규칙이 작동했는지 추적하기 어려웠다.
+  - compare helper가 URL/domain-shaped `official_title` pollution을 garbage title로 충분히 잡지 못했다.
+- 조치:
+  - `agentic_pipeline.py`에 comment answer, short/compound alias, character/setting cluster local preservation 후보 수집/merge hook을 추가했다.
+  - final promotion 없이 `candidate_preservation_sources`와 candidate snapshot에 후보를 남기고, `local_preservation_type`과 `promotion_policy=hold_without_promotion`을 기록했다.
+  - `_post_likely_requests_title_answer`를 보강해 `뭐임`/`알려다오`류 짧은 요청이 댓글 답변 후보 보존으로 이어지게 했다.
+  - `compare_completed779_improvement.py`에 URL/domain-shaped title pollution detection을 추가했다.
+  - regression tests를 추가/보강했다: comment answer preservation, slash-separated comment answers, local hold snapshot type, short/compound alias hold, character/setting cluster hold, URL/domain title pollution.
+- 검증:
+  - Loop 4 text canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop4_text_result.json`, completed `4/4`.
+  - Loop 4 image/OCR canary: `out/completed779_improvement_goal_20260622/canary/hermes_loop4_image_ocr_result.json`, completed `1/1`, VLM/OCR Semantic Gate `READY`.
+  - Combined result: `out/completed779_improvement_goal_20260622/canary/hermes_loop4_combined_result.json`, rows `5`.
+  - Compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop4_compare.json`, movement `candidate_or_human_review_preserved=5`.
+  - Active queue: `out/completed779_improvement_goal_20260622/hermes_loop4_queue.json`, rows `0`.
+  - Source-correctness refresh queue prepared: `out/completed779_improvement_goal_20260622/source_correctness_refresh_20260622/source_correctness_refresh_queue.json`, rows `39`.
+  - Source-correctness refresh inputs prepared: text/url/comment `14`, image/OCR `25`, missing `0`.
+  - Search shard preflight: `out/completed779_improvement_goal_20260622/source_correctness_refresh_20260622/search_shard_audit_preflight.json`, ok `0/2`.
+  - Next expansion plan: unseen pool `201` after excluding balanced P0 and closed5, documented in `out/completed779_improvement_goal_20260622/source_correctness_refresh_20260622/next_expansion_queue_plan_ko.md`.
+- 한계:
+  - Local MCP shards and Docker/SearXNG search were unavailable, so canary used no-search continuation. This is candidate-preservation evidence only.
+  - Source-correctness refresh must wait for normal search shard restoration or a separately labeled degraded-provider run.
+  - full scan approval remains `false`.
+
+## IMP-20260622-286 - completed779 Hermes Loop 3 candidate preservation narrowing
+
+- 상태: partial deterministic improvement / live canary blocked / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 active queue shrink and next-loop setup
+- 유형: candidate audit preservation / compare semantics / queue tooling / subagent-assisted review
+- 문제:
+  - Loop 2 remaining queue `8`건 중 일부는 실제 코드 실패가 아니라 compare가 explicit `unresolved_matchable` 보류를 성공 movement로 읽지 못해 계속 active queue에 남았다.
+  - `11695623`은 image/OCR evidence에 `explicit_work_title=림월드`가 있었지만 `promotion_eligible=false`라 candidate ledger에도 남지 않았다.
+  - 다음 loop 입력 생성 helper가 loop2 파일명에 고정되어 있고, queue diagnosis/hook/test metadata를 seed에 충분히 보존하지 못했다.
+- 조치:
+  - `candidate_audit.collect_candidate_titles()`가 image/OCR context의 weak `explicit_work_title`을 candidate로 세되 final `official_title` promotion은 하지 않도록 보강했다.
+  - `compare_completed779_improvement.py`가 explicit `unresolved_matchable`/`hold`/`author_new_work_context`를 `candidate_or_human_review_preserved`로 분류하게 했다.
+  - `build_completed779_reimprovement_inputs.py`에 `--prefix`, `--loop-label`을 추가하고 queue metadata preservation을 보강했다.
+  - Hermes prompt와 `goal.md`를 active queue `5`건 기준으로 갱신했다.
+- 검증:
+  - focused tests: `tests.test_candidate_audit`, `tests.test_completed779_compare`, `tests.test_completed779_reimprovement_inputs` pass.
+  - precompare: `out/completed779_improvement_goal_20260622/compare/hermes_loop3_precompare.json`, `8/8`, movement `candidate_or_human_review_preserved=2`, `still_under_resolved_or_noise=6`.
+  - deterministic re-audit result: `out/completed779_improvement_goal_20260622/compare/hermes_loop3_deterministic_reaudit_result.json`, rows `6`.
+  - deterministic re-audit compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop3_deterministic_reaudit_compare.json`, movement `candidate_or_human_review_preserved=1`, `still_under_resolved_or_noise=5`.
+  - active queue: `out/completed779_improvement_goal_20260622/hermes_loop3_queue.json`, rows `5`.
+- 한계:
+  - `expert_main.py` live text canary was blocked before result generation by local MCP shard connection refusal and missing Docker Desktop Linux engine pipe. Evidence log: `logs/expert_run_20260622_211133_748990.log`.
+  - Remaining rows require upstream candidate generation/preservation fixes in `agentic_pipeline.py`/orchestration, not just audit reinterpretation.
+  - full scan approval remains `false`.
+
+## IMP-20260622-285 - completed779 reimprovement Loop 2 active queue goal
+
+- 상태: goal authored / execution pending / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 follow-up on active `reimprovement_queue` `25`
+- 유형: goal prompt / queue split / targeted improvement contract
+- 문제:
+  - Loop 1은 `garbage_title_after`를 닫고 `wrong_work=9`를 bad pipeline title에서 벗어나게 했지만, active queue에 `25`건이 남았다.
+  - 남은 문제는 두 축이다: comment/alias/OCR/character cluster 후보가 candidate ledger/HOLD로 충분히 보존되지 않는 `still_under_resolved_or_noise=16`, 그리고 official detail URL/title-url canonicalization이 부족한 `title_or_url_still_mismatched=9`.
+  - 다음 루프가 원래 `65`건 P0 전체를 다시 반복하면 목표가 흐려지므로 active `25`건만 좁히는 별도 contract가 필요하다.
+- 조치:
+  - `goal.md`를 Loop 2 active contract로 갱신했다.
+  - `docs/devs/COMPLETED779_REIMPROVEMENT_LOOP2_GOAL_PROMPT.md`를 추가했다.
+  - Candidate/comment/recall preservation group `16`건과 source/url hygiene group `9`건을 명시했다.
+  - Loop 1 controls를 acceptance gate에 고정했다: active `garbage_title_after=0`, `11694064` bad-title 재승격 금지, `wrong_work=9` bad pipeline title 회귀 금지.
+- 검증:
+  - Source queue: `out/completed779_improvement_goal_20260622/reimprovement_queue.json`.
+  - Active queue baseline: rows `25`, `still_under_resolved_or_noise=16`, `title_or_url_still_mismatched=9`.
+  - This entry is a goal-authoring artifact; pipeline behavior has not been rerun under Loop 2 yet.
+- 한계:
+  - Loop 2 input split, code changes, canary, compare, and queue shrink are pending.
+  - Direct fallback may be used only as degraded-provider evidence if normal Docker/SearXNG shards are unavailable.
+  - full scan approval remains `false`.
+
+## IMP-20260622-284 - completed779 direct-search fallback and snippet-title pollution guard
+
+- 상태: implemented / direct-search fallback canaries complete / snippet post-fix mini canary complete / focused tests OK / reimprovement queue updated / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 search availability + title hygiene
+- 유형: MCP bridge direct search fallback / candidate audit promotion guard / compare queue classifier / targeted canary compare
+- 문제:
+  - Docker Desktop Linux engine pipe가 없어 normal SearXNG/Docker MCP shards를 사용할 수 없었고, public SearXNG instance는 throttling/403/429가 많았다.
+  - search-enabled canary가 필요했기 때문에 local MCP bridge에서 Naver/Bing direct HTTP search fallback이 필요했다.
+  - direct fallback은 검색 증거를 되살렸지만, 검색 스니펫/정의문/브레드크럼이 public `official_title`로 승격되는 새 title pollution risk를 드러냈다.
+- 조치:
+  - `src/llm_batch/mcp_bridge/server.py`에 Naver/Bing direct fallback을 추가했다. fallback은 `MCP_DIRECT_SEARCH_FALLBACK=1` 기본 on이며, search/nav/ad host와 breadcrumb title을 필터링하고 official/platform URL을 우선 정렬한다.
+  - `tools/compare_completed779_improvement.py`에 snippet/breadcrumb/긴 정의문 title을 `garbage_title_after`로 분리하는 movement status를 추가했다.
+  - `src/llm_batch/candidate_audit.py` promotion guard에 `official_title_looks_like_search_snippet`, `official_title_looks_like_breadcrumb`를 추가했다. public title은 demote하고 `blocked_official_title`/candidate ledger에 보존한다.
+  - `tests/test_mcp_bridge_direct_search.py`, `tests/test_completed779_compare.py`, `tests/test_candidate_audit.py`를 보강했다.
+- 검증:
+  - vLLM `/v1/models`: live model `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4`; stale planned `bg-digitalservices/Gemma-4-E4B-it-NVFP4` returned 404.
+  - text/url/comment direct-search fallback canary: `out/expert_result_20260622_165552_032705.json`, rows `19/19`.
+  - image/OCR direct-search fallback canary: `out/expert_result_20260622_171928_162115.json`, rows `46/46`, VLM/OCR Semantic Gate `READY`.
+  - combined direct-search compare: `out/completed779_improvement_goal_20260622/compare/combined_direct_search_compare.json`, rows `65/65`, movement `blocked_or_candidate_preserved=15`, `candidate_or_human_review_preserved=20`, `garbage_title_after=3`, `resolved_expected_title=2`, `resolved_expected_title_and_url=1`, `still_under_resolved_or_noise=15`, `title_or_url_still_mismatched=9`.
+  - `11694064` no longer finalizes as the bad pipeline title. `wrong_work=9` all remain off bad pipeline title as `blocked_or_candidate_preserved`.
+  - polluted-title post-fix mini canary: text 2 rows `out/expert_result_20260622_183047_118075.json`, image/OCR 1 row `out/expert_result_20260622_183544_060718.json`.
+  - post-fix combined compare: `out/completed779_improvement_goal_20260622/compare/garbage_title_postfix_combined_compare.json`, movement `candidate_or_human_review_preserved=2`, `still_under_resolved_or_noise=1`, `garbage_title_after=0`.
+  - adjusted combined compare: `out/completed779_improvement_goal_20260622/compare/combined_direct_search_postfix_adjusted_compare.json`, rows `65/65`, movement `blocked_or_candidate_preserved=15`, `candidate_or_human_review_preserved=22`, `resolved_expected_title=2`, `resolved_expected_title_and_url=1`, `still_under_resolved_or_noise=16`, `title_or_url_still_mismatched=9`.
+  - root reimprovement queue: `out/completed779_improvement_goal_20260622/reimprovement_queue.json`, active rows `25`.
+  - focused verification: `tests.test_candidate_audit tests.test_judge_seed_registry tests.test_title_lead_search_inferred_guard tests.test_agentic_pipeline_alias_contract tests.test_final_semantic_reread_gate tests.test_expert_main_comment_metadata tests.test_expert_main_input_loader tests.test_completed779_issue_index tests.test_completed779_compare tests.test_mcp_bridge_direct_search`: `190 tests OK`.
+- 한계:
+  - Direct fallback is degraded-provider search evidence, not normal Docker/SearXNG shard approval.
+  - Search-enabled direct canary improved availability but worsened some recall statuses versus degraded no-search (`still_under_resolved_or_noise=15` combined direct vs `8` degraded), so semantic quality remains `REVIEW-LOCKED`.
+  - Snippet/breadcrumb pollution is closed for the observed 3 rows, but `11716482` remains an active multi-candidate/comment preservation follow-up rather than a resolved semantic success.
+
+## IMP-20260622-283 - completed779 P0 native-web taxonomy guard and degraded canary loop
+
+- 상태: implemented / focused tests OK / degraded no-search canaries complete / reimprovement queue generated / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 precision + candidate preservation + source/url hygiene
+- 유형: candidate audit taxonomy / comment candidate ledger preservation / prompt and orchestration guard / targeted canary compare
+- 문제:
+  - completed779 native-web issue taxonomy가 `candidate_audit.py`에서 충분히 반영되지 않아 `under_resolved`, `comment_explicit_title_missed`, `candidate_preservation_missing`, `heretic_url_null`, `reason_evidence_mismatch`, `overresolved_generic_trope` 등이 audit group에서 새거나 같은 방식으로 처리됐다.
+  - 댓글 명시 제목은 final promotion이 안전하지 않은 경우에도 후보 ledger에는 남아야 하는데, 추천/비교/semantic seed denial 문맥에서 후보가 사라지는 위험이 있었다.
+  - compare helper가 title만 맞으면 expected URL mismatch/missing을 성공처럼 볼 수 있어 source/url hygiene seed를 과대평가할 수 있었다.
+- 조치:
+  - `src/llm_batch/candidate_audit.py`에 completed779 disagreement taxonomy와 `seed_bucket` 기반 group 분류를 추가했다.
+  - judge-seeded precision guard는 `wrong_work`/`overresolved_generic_trope` 등 unsafe resolved title을 demote하고, source/url hygiene `reason_evidence_mismatch`는 demote하지 않고 lint로 남기도록 분리했다.
+  - `src/llm_batch/agentic_pipeline.py`에서 `comment_title_candidates`를 `title_candidates`에 보존하는 경로를 추가했다.
+  - `src/llm_batch/experts/orchestrator.py`에서 댓글 제목 기반 official/platform probe가 semantic seed denial 때문에 전부 잘리지 않게 했다.
+  - `src/llm_batch/prompts/prompt_router.py`에 댓글/URL/OCR/짧은 약칭/캐릭터 cluster의 ledger 보존과 final promotion gate 분리를 명시했다.
+  - `tools/compare_completed779_improvement.py`에 `--only-after-posts`, expected URL mismatch/missing movement, `--out-queue`를 추가했다.
+  - `tests/test_completed779_compare.py`를 추가하고, `tests/test_candidate_audit.py`에 completed779 taxonomy/seed bucket 회귀 테스트를 보강했다.
+- 검증:
+  - preflight issue index 재현: `total=779`, `non_accept=266`, `missing=0`, `duplicate_after_dedupe=0`, seed `65`, bucket `15/15/25/10`.
+  - `py_compile expert_main.py src\llm_batch\candidate_audit.py src\llm_batch\agentic_pipeline.py src\llm_batch\experts\orchestrator.py src\llm_batch\prompts\prompt_router.py tools\build_completed779_issue_index.py tools\compare_completed779_improvement.py`: pass.
+  - focused suite: `190 tests OK` in the latest post-fix verification pass.
+  - `git diff --check`: pass. LF/CRLF warnings only.
+  - text/url/comment degraded canary: `out/expert_result_20260622_161924_359370.json`, rows `19/19`.
+  - image/OCR degraded canary: `out/expert_result_20260622_162557_711822.json`, rows `46/46`, VLM/OCR Semantic Gate `READY`.
+  - combined compare: `out/completed779_improvement_goal_20260622/compare/combined_degraded_compare.json`, rows `65/65`.
+  - `wrong_work=9` all moved to `blocked_or_candidate_preserved`; `11694064` no longer finalizes as `무협 게임에 빙의했다...스킵충이다`.
+  - reimprovement queue: `out/completed779_improvement_goal_20260622/compare/combined_degraded_reimprovement_queue.json`, rows `19`.
+- 한계:
+  - Docker Desktop engine pipe was unavailable and all MCP shards returned connection refused, so both canaries used `echo y` no-search continuation.
+  - This proves runtime integrity, VLM/OCR readiness, candidate-audit demotion, and compare movement under degraded infrastructure, but not search-enabled semantic recovery.
+  - Remaining queue: `still_under_resolved_or_noise=8`, source/url mismatch or missing URL `11`.
+  - Keep `semantic_quality=REVIEW-LOCKED` and `full_scan_approval=false` until search-enabled canary and broader review are complete.
+
+## IMP-20260622-282 - completed779 native-web issue index and balanced P0 seed
+
+- 상태: goal redesigned / issue index generated / balanced seed ready / pipeline fix pending / expert_main canary pending / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 research-to-fix queue (recall, relevance boundary, primary precision, source/url hygiene, candidate preservation)
+- 유형: native-web judge aggregate / action queue / canary seed packet / compare scaffold
+- 문제:
+  - completed779 native-web verdict를 전부 읽어보면 non-ACCEPT가 `266/779`이며, `wrong_work`와 대표 recall만으로는 전체 이슈를 설명하지 못한다.
+  - 이전 deterministic full-post aggregate와 native-web aggregate가 섞이면 `wrong_work` 등 핵심 수치가 낡은 값으로 되돌아가 개선 우선순위가 흐려진다.
+  - `11694064`만 대표로 보면 `wrong_work=9` 전체와 source/url hygiene, candidate preservation, comment/OCR evidence 누락이 빠진다.
+- 조치:
+  - active `goal.md`를 completed779 native-web improvement contract로 갱신하고, 기존 JUDGE3905 goal은 `llm_judge_goal.md`로 보관했다.
+  - `tools/build_completed779_issue_index.py`를 추가해 `out/expert_result_20260620_165159_711176_completed_subset.json`과 `out/codex_native_web_judge_20260620_165159_711176_completed779/`를 입력으로 issue index/action queue/seed input을 생성한다.
+  - `tools/compare_completed779_improvement.py`를 추가해 P0 seed before/after movement를 post별로 비교할 수 있게 했다.
+  - `tests/test_completed779_issue_index.py`를 추가했다.
+  - requested suite에서 드러난 memory-query taxonomy 회귀를 좁게 보정했다. `memory_query_unsupported_title_blocked`가 붙은 unsupported title은 후단 recommendation context-only guard가 `recommendation_request`로 다시 덮어쓰지 못한다.
+  - `docs/devs/COMPLETED779_AUTO_IMPROVEMENT_GOAL_PROMPT.md`를 추가해 다음 자동 개선 연구·검증·재개선 루프의 Copy-Paste Prompt를 고정했다.
+- 검증:
+  - output root: `out/completed779_improvement_goal_20260622/`.
+  - native-web issue index: unique/source coverage `779/779`, missing `0`, duplicate after dedupe `0`, non-ACCEPT `266`.
+  - resolution labels: `ACCEPT=513`, `REPROCESS=208`, `HOLD=49`, `INFO_MISSING=7`, `REJECT=2`.
+  - major issue counts: `under_resolved=68`, `under_resolved_false_negative=64`, `wrong_relevance=62`, `heretic_url_null=13`, `wrong_work=9`, `candidate_preservation_missing=6`, `garbage_title=6`, `reason_evidence_mismatch=6`, `conflicting_or_multi_candidate=5`, `comment_explicit_title_missed=4`.
+  - balanced P0 seed: total `65`, precision/identity `15`, candidate/comment/multi `15`, recall/relevance `25`, source/url hygiene `10`.
+  - sentinel and wrong-work coverage: `11694064` included, `wrong_work=9` all seeded.
+  - canary input split: text/url/comment `19`, image/OCR `46`.
+  - `py_compile expert_main.py src\llm_batch\candidate_audit.py src\llm_batch\agentic_pipeline.py src\llm_batch\experts\orchestrator.py src\llm_batch\prompts\prompt_router.py tools\build_completed779_issue_index.py tools\compare_completed779_improvement.py`: pass.
+  - `unittest tests.test_candidate_audit tests.test_judge_seed_registry tests.test_title_lead_search_inferred_guard tests.test_agentic_pipeline_alias_contract tests.test_final_semantic_reread_gate tests.test_expert_main_comment_metadata tests.test_expert_main_input_loader tests.test_completed779_issue_index -v`: 178 tests OK.
+  - `git diff --check`: pass. LF/CRLF warnings only.
+- 한계:
+  - 이 항목은 issue index와 seed packet 생성이다. `expert_main.py` behavior fix와 targeted canary는 아직 실행하지 않았다.
+  - auto-loop prompt는 다음 실행 계약이다. 실제 code-hook 개선, canary, compare, re-improvement queue는 후속 goal에서 수행해야 한다.
+  - native-web judge는 강한 외부 기준선이지만 gold label은 아니다. 웹 source drift와 judge 오류 가능성은 남는다.
+  - full scan approval은 별도 대규모 rerun/random/high-risk review 전까지 `false`다.
+
+## IMP-20260621-281 - completed779 full_post_judge primary-selection conflict audit
+
+- 상태: evidence generated / sentinel captured / runbook subagent fan-out and Korean row-rationale updated / Codex-native web judge route corrected / native-web completed779 779/779 / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 precision (primary candidate selection / wrong_work)
+- 유형: full-post judge artifact / source coverage / multi-candidate conflict detection
+- 문제:
+  - 최신 run `20260620_165159_711176`의 primary JSON은 flushed `757`행만 포함했고, shutdown flush gap `22`건에 `11694064`가 있었다. primary JSON만 judge하면 known-bad sentinel이 누락된다.
+  - `11694064`는 원문 앵커 `판초법사`와 후보 `판초우의의 마법사`(문피아 detail URL)가 있었는데도 final primary가 `무협 게임에 빙의했다. 문제는 나는 스토리를 보지 않는 스킵충이다`로 선택된 wrong-work 사례다.
+  - 기존 judge driver는 pipeline official_title 자체의 검색근거는 보지만, source-local alias가 다른 candidate를 더 강하게 지지하는 경합 resolved를 별도 precision 오류로 분리하지 못했다.
+- 조치:
+  - 판정 모수를 `out/expert_result_20260620_165159_711176_completed_subset.json` `779`건으로 고정했다.
+  - `tools/full_post_judge_codex_driver.py`의 projection에 `title_candidates` compact block을 포함하고, current official title이 원문에 직접 앵커되지 않는 반면 다른 candidate의 `alias_or_mention`이 원문에 있고 official/detail support가 있으면 `wrong_work + conflicting_or_multi_candidate`로 분리한다.
+  - `_source_coverage.json`과 report §0.8에 completed subset `779`, primary flushed `757`, shutdown_pending_flush_gap `22`, `11694064` gap 포함 여부를 기록한다.
+  - `docs/devs/FULL_POST_JUDGE_RUNBOOK.md`에 subagent fan-out 지침을 추가했다. subagent는 search/recall/slang/report 축별 verdict를 병렬 작성하고, 메인이 post_id completeness와 missing=0 merge를 검증한다.
+  - `report/rows/full_post_judge_rows_pNN.md`를 `LLM 판단 사유(한글)` 열 중심으로 재생성하고, runbook에 모든 post 행의 한국어 judge 사유 필수 규약을 추가했다.
+  - 사용자 정정에 따라 외부 LLM judge 경로를 Codex 5.5 native web search/open으로 분리했다. `agbrowse`와 API key 없이 Codex가 post 원문을 직접 읽고 웹검색 URL을 verdict에 남기는 방식이다.
+  - `out/codex_native_web_judge_20260620_165159_711176_completed779/`에 `11694064` sentinel Codex-native web verdict를 남겼다.
+  - Codex subagent fan-out으로 batch `000`..`155`을 진행했다. raw return은 `subagent_returns/`, 표준 verdict는 `verdicts/verdict_000.json`..`verdicts/verdict_155.json`, 진행률은 `report/codex_native_web_judge_progress.json`에 남겼다.
+  - batch `006`..`017` 저장 중 PowerShell literal 경로가 한국어를 `???`로 변환하는 문제를 확인했고, `apply_patch`로 생성한 UTF-8 repair script 경로로 표준 verdict/raw/rows를 복구했다. batch `018`..`155`은 UTF-8-safe ingest 경로로 저장했다.
+  - `tools/codex_native_web_judge_ingest.py`를 추가해 subagent raw JSON을 raw/verdict/progress/rows로 병합하는 coordinator helper를 만들고, external judge enum drift normalization을 보강했다.
+  - `tools/codex_native_web_judge_ingest.py` rows renderer를 post_id 기준으로 dedupe해 standalone sentinel과 표준 batch `153`의 `11694064` 중복을 제거했다.
+- 검증:
+  - output root: `out/full_post_judge_20260620_165159_711176_completed779/`.
+  - coverage: processed/judged/missing/pending `779/779/0/0`, bad files `0`, run integrity `GO`.
+  - gates: semantic quality `REVIEW-LOCKED`, full scan approval `false`.
+  - `11694064`: `wrong_work`, `REPROCESS`, `conflicting_or_multi_candidate`, `Strong`, `high`, `re_judge`; note `경합후보=판초우의의 마법사`, `원문별칭=판초법사`, `후보URL=https://novel.munpia.com/530500`.
+  - rows dump: `11694064` 행의 `LLM 판단 사유(한글)`에 `경합 후보 '판초우의의 마법사'`, `원문 별칭 '판초법사'`, `현재 primary보다 직접적인 근거`가 남았다.
+  - Codex-native web sentinel: 문피아 공식 상세, 네이버시리즈, 장갤 용례 URL을 근거로 `판초법사 -> 판초우의의 마법사`를 확인했다.
+  - Codex-native web progress: 표준 batch `779`건, unique `779/779`, remaining `0`, full scope complete `true`. 상세 batch별 이슈는 `docs/devs/HISTORY.md`와 `docs/devs/VERIFICATION_RESULTS.md`에 보존했다. 현재 반복 패턴은 약칭/댓글 URL/OCR 명시 제목 under_resolved, 괴담호텔 캐릭터·설정 단서 누락, 추천·플랫폼 글 wrong_relevance, 위키 문서형 garbage title, title-correct URL mismatch다. final wave에서는 `랫따싶` 후보 보존, `예수천국 불신지옥`, `로판 속 바바리안 부부`, `창관전생(娼館轉生)`, `_172` 신작 `S급 헌터도 결혼이 하고 싶다`, `판초법사 -> 판초우의의 마법사`, 플랫폼 추천글 multi-candidate, `김근홍/2회차 -> 괴담에 휘말렸다`가 추가 확인됐다.
+  - encoding check: replacement question run `0`, rows `779`, progress standard/unique/remaining `779/779/0`; helper progress JSON 저장 순서와 enum drift normalization도 보정해 `rows_written=779`, `bad_question_runs=0`이 파일에 남는다.
+  - aggregate: `wrong_work=2`, `garbage_title=1`, `uncertain=29`; action queue `human_review=46`, `re_judge=37`, `re_search=28`, `slang_db_review=25`, `no_action=643`.
+  - `py_compile tools\full_post_judge_codex_driver.py src\llm_batch\candidate_audit.py tools\codex_native_web_judge_ingest.py`: pass.
+  - `unittest tests.test_candidate_audit tests.test_judge_seed_registry tests.test_codex_native_web_judge_ingest -v`: 25 tests OK.
+- 한계:
+  - 이번 산출물은 judge/review artifact이며 pipeline fix 자체는 아직 아니다.
+  - `wrong_work=2`는 primary-selection fix seed로 분리해야 한다. 공식 URL 존재만으로 primary를 확정하지 말고 source-local alias/candidate 경합을 함께 본다는 일반화가 필요하다.
+  - full scan approval은 별도 대규모 rerun/random/high-risk review 전까지 열지 않는다.
+  - completed779 전체 Codex-native web judge는 unique `779/779`, missing `0`으로 닫혔지만, pipeline fix 자체는 후속 targeted fix/canary로 분리한다.
+
+## IMP-20260619-280 - Track C title-body official detail recall and search stop guard
+
+- 상태: implemented / focused tests OK / 실제 C33 canary GO / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 recall (URL-present title-body posts)
+- 유형: `agentic_pipeline.py` final official URL recall / `orchestrator.py` title-body search budget and early-stop
+- 문제:
+  - `11661853`은 title/body가 이어진 형태라 `두바이`, `쫀득`, `TS/환생/인방` 단서가 공식 노벨피아 상세 제목 `두바이의 쫀득한 여초딩 재벌 9세`로 이어질 수 있지만, final recall은 search result title 자체를 충분히 회수하지 못했다.
+  - C32 actual rerun에서는 `site:novelpia.com/novel ...` 두 쿼리가 degraded-zero 뒤, 일반 `두바이 ... 노벨피아`가 여행/위키 nonzero를 반환하자 `adjacent_meta_cheap` 조기 종료가 걸려 남은 specific title-body probe를 실행하지 못했다.
+- 조치:
+  - title-body official URL recall helper가 `search_results`와 compact `search_evidence_catalog`의 공식 detail URL/title을 직접 후보로 삼는다.
+  - 후보 승격은 공식 detail URL + 정제된 검색 title + post title/body clue 2개 이상 일치로 제한한다. obscene/generic surface는 clue에서 제외한다.
+  - helper가 설정한 `_title_body_official_detail_anchor_*`를 final anchor 재검사에서도 인정한다.
+  - title-body sanitized probe가 있는 `adjacent_meta_cheap` 경로는 max query 6을 허용하고, non-official nonzero만으로 남은 specific title-body probe를 조기 종료하지 않는다.
+- 검증:
+  - `py_compile src\llm_batch\agentic_pipeline.py src\llm_batch\experts\orchestrator.py tests\test_title_lead_search_inferred_guard.py`: pass.
+  - focused suite: `tests.test_title_lead_search_inferred_guard tests.test_candidate_audit tests.test_judge_seed_registry tests.test_known_title_abbreviation_support -v` 95 tests OK.
+  - C32 actual canary: requested `--parallel 16`, effective 7, completed/failed/pending `7/0/0`였으나 `11661853` 공식 URL 유실을 재현해 검색 조기 종료 보강의 근거가 됐다.
+  - C33 actual canary: output `out/recall_gate_canary/trackC_blocked7_C33_20260619_194100.json`, run id `20260619_193831_833176`, requested `--parallel 16`, effective 7, completed/failed/pending `7/0/0`, search health `7/7 OK`.
+  - C33 positives: `11652175` resolved `괴담 호텔 탈출기`, `11661853` resolved `두바이의 쫀득한 여초딩 재벌 9세`, `11677911` resolved `잘생기면 편해지는 인방 생활`.
+  - C33 negatives/control: `11665081`, `11687635`, `11695607`, `11705276` public title 없음.
+- 한계:
+  - C33은 VLM/OCR off targeted canary다. image rows are not semantic approval evidence.
+  - full scan approval은 별도 대규모 rerun/expanded review 전까지 열지 않는다.
+
+## IMP-20260619-279 - Track B normal-path precision: hidden-setting late recall sticky demote
+
+- 상태: implemented / focused tests OK / 실제 B19 canary GO / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 precision (normal-path over-resolution)
+- 유형: `agentic_pipeline.py` final precision demote / official-url recall 후단 재승격 차단
+- 문제:
+  - B18 full 8-row precision probe에서 `11661847`은 설정/회차 표면(`심해 호텔`, `202화`)을 특정 작품 제목으로 직접 확정하지 않아야 했지만, 한 차례 `track_b_precision_demoted_hidden_setting_surface`가 붙은 뒤 후단 official-url recall/locked rescue 경로로 `괴담 호텔 탈출기`가 public `official_title`로 되살아났다.
+  - 이 케이스는 official platform/title evidence 자체가 존재하더라도, 원문에 작품 full title 또는 본문 official URL 직접 앵커가 없고 post-side 표면이 작중 설정/회차 분석에 머무르면 `relevant + unresolved`로 보존해야 하는 precision 경계다.
+- 조치:
+  - `_final_precision_title_demote_profile()`에 sticky precision-demote guard를 추가했다.
+  - 이미 `track_b_precision_demoted_hidden_setting_surface`, `track_b_precision_demoted_setting_surface`, `track_b_precision_demoted_stable_alias_surface`, comment-thread/author demote 계열 flag가 붙은 late recovery는 direct full title/main official URL이 없는 한 같은 flag로 재보류한다.
+  - candidate는 삭제하지 않고 ledger/flags에 보존한다. post_id 하드코딩 없음. slang DB write-back 없음.
+- 검증:
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_agentic_pipeline_rework.py`: pass.
+  - focused sticky regression: `test_final_precision_demotes_setting_surface_single_candidate_resolution` OK.
+  - Track B focused suite: 32 tests OK.
+  - 실제 `expert_main.py` B19: output `out/recall_gate_canary/trackB_precision_B19_20260619_095623.json`, run id `20260619_095624_908880`, requested `--parallel 16`, effective `8`, `completed/flushed/pending/failed=8/8/0/0`, `large_run_complete=true`, search health `2/2 OK`.
+  - B19 `11661847`: `is_relevant=True`, `work_resolution=unresolved`, `title_resolution_state=unresolved_matchable`, `novel_identity=None`; log `hold: final precision demoted late-rescue title official_title='괴담 호텔 탈출기', reason='episode_setting_surface_without_direct_full_title'`.
+- 한계:
+  - B19는 VLM/OCR off(`image_post_count=6`, blocker `image_posts_without_vlm_ocr_ready`)라 image-positive semantic approval 증거가 아니다.
+  - `11661847` 단건은 1953초가 걸려 postprocess 장시간 경로가 남아 있다. 런타임 성능/timeout 안정성은 별도 이슈로 추적한다.
+- 후속:
+  - Track C recall 보정은 이 precision guard 이후에만 적용한다.
+  - full scan approval은 별도 대규모 rerun 전까지 열지 않는다.
+
+## IMP-20260618-278 - recall 누락 일반화 fix: in-pipeline official-URL 승격 게이트 (+ OCR explicit-title 해소)
+
+- 상태: Phase B seed expanded / Phase A implemented / **런타임 canary로 anchor_type literal_error 버그 적발·수정·재검증** / 게이트 회수 신뢰도는 controlled canary 후속 / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 recall (양면 목표 최대 손실축)
+- 유형: agentic_pipeline.py work_resolution 승격 게이트 / candidate_audit promotion guard / recall regression seed
+- 근거: IMP-277 전수 판정의 적대적 감사에서 recall 러버스탬프 적발(고신호 ACCEPT-미해소 40행 중 57.5% 실제 누락작). 강판정 recall 회수(score≥7 123행)에서 65건 회수, 그중 **42건(65%)이 파이프라인 내부 데이터로 회수 가능** — official 플랫폼 DETAIL URL이 `search_evidence`/본문에 이미 존재(25) 또는 OCR explicit-title 스샷(17).
+- 제안(일반화·과승격 가드 필수): `search_evidence_catalog`(catalog source_tier in {official_detail, novel_platform}) 또는 본문 URL이 작품 **DETAIL** 페이지(작가/검색/랭킹/장르/목록/뷰어/커뮤니티/리뷰 탭 제외)이고 그 페이지 제목이 post 단서(제목/본문/댓글/OCR)와 fuzzy 일치하면 `work_resolution=resolved` 승격. URL 존재만으로 승격 금지(precision 감사 26.7% false-accept 경계). OCR explicit_work_title는 `_explicit_image_work_titles` 기반 official/플랫폼 재확인 후 해소.
+- Phase B 확장(2026-06-18): score>=5 `high_recovery` 629행 중 기존 123행을 제외한 506행을 compact projection 기준으로 전부 true/false verdict 처리했다. 새 회수 59건, 새 deterministic_catchable 59건, high_recovery missing 0. `recall_recovery_seed.jsonl`은 124행, deterministic_catchable 101행으로 확대됐다.
+- 구현(Phase A): `candidate_audit.official_url_recoverable()`와 `agentic_pipeline` official-url recall gate를 추가했다. 공식 DETAIL URL + evidence/page title + 강한 post-side clue(full title/OCR/confirmed alias/제목 약칭/본문 URL) 조건에서만 title-null/hold 계열을 resolved로 승격하고, viewer/search/listing/community/review/comment tab URL은 제외한다. `mm.munpia.com/?menu=novel&id=...` 모바일 문피아 detail query는 `https://m.munpia.com/novel/detail/...`로 정규화한다.
+- 가드레일: no-work/context-only/memory-query/nonwork state는 helper에서 차단하고, pipeline 연결부도 `_can_promote_title_after_semantic_no_work()`를 통과해야 한다. 후보는 삭제하지 않고 `title_candidates`/`primary_work`에 보존·동기화한다. post_id 하드코딩 없음. slang_db write-back 없음.
+- 보수화: seed 회귀에서 mismatch가 나온 공식 page tag/희귀 토큰/괄호 tag 단독 anchor는 자동승격에서 제외하고 후보/리뷰 영역으로 남겼다.
+- 검증:
+  - `.venv312\Scripts\python.exe tools\build_recall_recovery_phase_b.py`: high total/previous/new/missing `629/123/506/0`, phaseB recovered `59`, seed deterministic `101`.
+  - `.venv312\Scripts\python.exe tools\verify_official_url_recall_gate_seed.py`: deterministic seed `101`, official URL gate eligible `93`, compact projection missing `0`, gate promoted/title matched `47`, exact title+URL matched `46`(`49.46%` of eligible).
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py src\llm_batch\candidate_audit.py tests\test_candidate_audit.py tools\build_recall_recovery_phase_b.py tools\verify_official_url_recall_gate_seed.py`: pass.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_candidate_audit tests.test_judge_seed_registry -v`: 21 tests OK.
+- 미자동화/주의: Phase B의 `confirmed_slang_alias`는 seed 확장 산출물에 남기되 pipeline gate는 slang_db write-back 없이 현재 후보/known alias/검증된 slang insight 계열만 사용한다. 공식 page tag/희귀 토큰/괄호 tag 단독 신호는 자동승격하지 않고 리뷰 후보로 남긴다. full scan approval로 승격하지 않는다.
+- 적대적 검증(2026-06-18 후속): Phase A 게이트를 독립 검증한 결과 구조는 건전(recall 전용 — `official_title` 있으면 즉시 None이라 기존 resolved 행을 못 건드림; post-side anchor 필수). 그러나 **장르/서술어 표면 과승격 누수 1건 확인**: `full_title_surface`가 "ts인방물"(TS인터넷방송물 장르 토론, post_id 11716479)을 동명 novelpia 작품으로 High 승격. precision 누수.
+- 재개선(genre-surface 가드): `candidate_audit`에 `GENRE_DESCRIPTOR_SURFACES` + `_is_genre_descriptor_surface()` 추가, `_official_recall_anchor`의 약한 anchor(full_title_surface/bracket_alias/official_page_alias_tag/title_unique_rare_token)를 장르 표면에서 차단. OCR explicit-title/confirmed-alias/in-body URL 같은 강한 anchor는 통과(장르명 실제작도 회수 가능). 11716479 NOT FIRED 확인, 정답 회수(예수천국/죽깨수/시천살/림월드/창작물 속으로) 전부 보존, `11703645 남매근친물`은 OCR 강-anchor로 보존(false-block 0).
+- 재검증: 신규 회귀 테스트 2건(genre 약-anchor 차단 / OCR 강-anchor 통과) 추가, `unittest tests.test_candidate_audit tests.test_judge_seed_registry` **23 tests OK**, py_compile pass, `git diff --check` 클린(CRLF 경고만). 패치 게이트를 전체 1772행에 결정적 재실행한 precision probe(런타임 입력 일부 부재로 과소계상): 승격 14건, `full_title_surface` 5건 전부 특정 작품, **장르 과승격 0**.
+- 잔여(후속 검증 필요): 위 probe는 저장 결과만 사용해 런타임 `alias_clues`/`body_official_detail_candidates`를 복원 못 해 게이트의 실제 승격 47건 전수가 아님. 실제 47 승격 set의 over-promotion 전수 감사는 canary 재실행(파이프라인)으로 emit 후 수행해야 한다. genre stoplist는 관측 기반 최소셋이라 후속 코퍼스에서 확장 가능.
+- **런타임 canary 검증 + anchor_type 버그 수정(2026-06-18)**: 실제 `expert_main.py` canary(7 post, 26B, `--reuse-shards-only --slang-db off --vlm/ocr on`) 구동에서 **연결부 런타임 버그 적발** — `agentic_pipeline._apply_official_url_recall_promotion`가 `anchor_type="official_url_recall"`(`PickvelIdentity.anchor_type` Literal `{title_alias,title_exact,character,author,platform,genre,neighbor,image,none}`에 없는 값)을 설정 → Pydantic literal_error → 게이트 승격 행이 resolved가 아니라 `review_only`+`work_resolution=None`으로 추락(회수가 아니라 파괴). helper/seed regression은 반환 dict만 봐서 미검출.
+- **수정**: `matched_clue`→유효 anchor_type 매핑(ocr_explicit_title→image / full_title_surface→title_exact / official_url_in_body→platform / 그 외→title_alias). recall 출처는 `consistency_flags`에 보존.
+- **재-canary 검증**: v1 literal_error 3건 → v2 0건. 게이트 정상 회수(11689254 title_exact, 11650585), genre 가드 유지(11716479 미해소), 23 tests OK, diff-check 클린.
+- **상태 정정**: 위 "Phase A implemented / focused tests pass"는 helper/seed regression만이었고 **런타임 미검증**이었음. 현 상태 = **anchor_type 버그 런타임 수정 검증됨; 게이트 회수 신뢰도(시드 회수율)는 원본과 동일 evidence를 고정한 controlled canary로 별도 검증 필요**(canary가 26B+fresh-search라 비결정성·시드 일부 미회수). 관측된 garbage(자유연재/베라)는 `via_gate=False`로 게이트 아닌 기존 정상경로(OCR/batch_memory alias rescue) 이슈 → 분리 추적.
+- **런타임 회수율 실측(2026-06-19, 26B-A4B 55-row controlled canary)**: 시드 det 50 중 resolved 20·**via_gate 3**·expected 일치 12. official-detail URL이 fresh search_evidence에 잔존 23/50(나머지 search drift). URL 잔존 23 중 16 해소, 7 미해소는 전부 게이트 precision 가드(`official_url_recall_blocked_semantic_no_work` 등) 차단(결함 아님, 보수성). → **helper "47/101"은 런타임 ~2–4배 과대**(저장 증거+no-work 가드 미적용 기준). **게이트 런타임 recall 기여는 작음**(via_gate 3/50): search drift + 강한 26B 직접 해소 + no-work 보수 차단. **최대 recall 레버는 게이트 로직이 아니라 search 신뢰도(official URL evidence 일관 확보)**로 재설정. anchor_type 수정·genre 가드는 런타임 유지(literal_error 0). 별개: precision-negative 컨트롤 3/5가 26B author/image 정상경로로 과해소(비결정적, 게이트 무관) → 별도 precision register 후보.
+- **Track A search-health gate 적용(2026-06-19)**: `MCPClient.health_check()`를 응답 여부가 아니라 `MCP_HEALTH_SEARCH_MAX_LATENCY_MS`(기본 8000) + `MCP_HEALTH_SEARCH_MIN_RESULTS`(기본 1) 기준으로 강화했다. A1에서 `degraded=true` 무조건 실패가 false stop을 만들었고, live probe는 `test`/`novelpia` 결과가 존재하지만 `presearch` access denied로 partial degraded가 붙는 구조임을 확인했다. 따라서 결과가 있고 latency가 기준 이하면 통과, 0건/고지연은 실패로 정리했다.
+- **Track A 검증**: `py_compile` pass, `tests.test_search_health_gate` 4건 OK, `tests.test_candidate_audit tests.test_judge_seed_registry tests.test_search_health_gate` 27건 OK. 실제 `expert_main.py` text-only probe 2회(A4 run id `20260619_041415_907232`, A5 run id `20260619_042227_627770`)는 requested `--parallel 16`, effective 4, health OK, `completed/flushed/pending/failed=4/4/0/0`, `large_run_complete=true`. 55-row A2는 health 16/16 OK까지 확인했으나 본체가 `completed=14/55` partial에서 멈춰 full canary 성공으로 보지 않는다. image probe A3도 `completed=1/2` partial이라 VLM/image 장시간 이슈로 분리한다.
+
+## IMP-20260618-277 - full_post_judge 전수 판정 보조 기준선과 후속 큐 분해
+
+- 상태: evidence generated / action queue open / semantic quality REVIEW-LOCKED / full scan approval false
+- 우선순위: P0 search correctness follow-up, P0 slang pollution review, P1 human review packetization
+- 유형: full-post judge artifact / candidate audit shadow rebucket / adversarial overlay / docs sync
+- 문제:
+  - `out/expert_result_20260616_224555_632905.json`는 flushed `2246`건과 manifest pending `23`건이 분리되어 있어, 판정 모수와 re_run 큐를 명확히 갈라야 했다.
+  - resolved `351`건 중 web/search evidence가 `Missing`인 row `132`건과 `heretic_url_null while resolved` `72`건이 있어, resolved public title을 그대로 품질 승인으로 볼 수 없다.
+  - slang route가 필요한 row와 deterministic `na` row를 분리하지 않으면 slang DB review queue가 과대 또는 과소 산출될 수 있다.
+- 조치:
+  - `tools/full_post_judge_codex_driver.py`를 추가해 runbook §3 절차를 멱등 산출물로 고정했다.
+  - compact projection `450`개(`BATCH=5`)와 FULL 16필드 verdict `450`개를 만들고, `candidate_audit` precompute 및 shadow rebucket을 실행했다.
+  - repo MCP search bridge 기반 web probe cache를 `_web_probe_cache.json`에 보존하고, decisive URL이 없는 행은 title을 생성하지 않고 `Missing` 또는 재검증 큐로 남겼다.
+  - precision overlay와 hold/unresolved 15% recall overlay를 `verify/` 아래에 분리했다.
+- 검증:
+  - output root: `out/full_post_judge_20260616_224555_632905/`.
+  - coverage: processed/judged/missing/pending `2246/2246/0/23`, bad files `0`.
+  - FULL 16필드 누락 `0`, enum/invariant 위반 `0`, `candidate_audit` shadow mismatch `0`.
+  - final resolution: `ACCEPT=1993`, `HOLD=195`, `REPROCESS=52`, `REJECT=6`.
+  - action queue: `no_action=1983`, `human_review=110`, `re_judge=87`, `re_search=44`, `slang_db_review=22`.
+  - slang route: `llm=94`, deterministic `na=2152`, `pollution_risk=22`, slang DB write-back 없음.
+  - `py_compile tools/full_post_judge_codex_driver.py`: pass.
+- 후속:
+  - `re_search=44`, resolved search `Missing=132`, `heretic_url_null while resolved=72`를 official_detail URL/title-match 재탐색 seed로 전환한다.
+  - `slang_db_review=22`와 store=true pollution risk `11`건은 DB 쓰기 전에 사람 검수한다.
+  - `human_review=110`은 false-negative 가능성을 버리지 않고 별도 source-backed rerun 또는 packet review로 분해한다.
+  - 이 보조 기준선을 full scan approval로 승격하지 않는다.
+
+## IMP-20260616-276 - JUDGE3905 continuous loop runtime audit and OCR title mismatch hold
+
+- 상태: implemented / targeted reruns GO / 9-run historical runtime NO-GO / semantic quality REVIEW-LOCKED
+- 우선순위: P0 runtime exception visibility, P0 Deliberation prompt bug, P0 OCR title promotion guard
+- 유형: pipeline runtime fix / candidate audit guard / targeted canary rerun / audit-tool hardening
+- 문제:
+  - continuous targeted 9건 run은 result completeness는 `9/9`였지만, `11639284` Deliberation path에서 `NameError: disc` fallback이 발생했다.
+  - runtime audit 도구가 generic traceback을 잡지 못해 runtime bug를 `GO`로 오판할 수 있었다.
+  - `11650591`은 noisy OCR seed임에도 검색 중 무관 official URL/title(`주관적인 모바일 앱`)이 public `official_title`로 승격되는 회귀가 드러났다.
+- 조치:
+  - `DeliberationOrchestrator._rebuild_arbiter_user_prompt()`에서 discourse output을 복원해 curated alias hint에 넘기도록 수정했다.
+  - `tools/audit_goal_test_run_contract.py`에 `Traceback`, `NameError`, `Deliberation 오류` 로그 스캔을 추가하고 `runtime_log_exception`을 `NO-GO`로 분류했다.
+  - `apply_judge_seed_title_image_mismatch_guard()`를 추가했다. `title_noisy_ocr` seed에서 direct image work title과 final public title이 충돌하면 official URL이 있더라도 public title을 보류하고 `blocked_official_title`/`candidate_ledger`에 보존한다.
+  - `expert_main.py` postprocess chain에 새 guard를 연결했다.
+- 검증:
+  - targeted 9건 run id `20260615_231925_533889`: completed/flushed/pending/failed `9/9/0/0`, `image_post_count=9`, VLM/OCR `READY`, compare expected/result/compared `9/9/9`; runtime audit은 `runtime_log_exception` 때문에 `NO-GO`.
+  - runtime fix rerun `11639284` run id `20260615_234526_746998`: completed/flushed/pending/failed `1/1/0/0`, runtime audit `GO`, compare `promotion_blocked`.
+  - title mismatch rerun `11650591` run id `20260616_000415_830530`: completed/flushed/pending/failed `1/1/0/0`, runtime audit `GO`, compare `hold_unresolved`.
+  - summary: `out/judge3905_p0_seed_registry/judge3905_p0_continuous_loop_summary.json`, `out/judge3905_p0_seed_registry/judge3905_p0_continuous_loop_summary_ko.md`.
+  - tests: focused candidate audit, deliberation prompt rebuild, runtime audit traceback tests passed.
+- 후속:
+  - `11602367` wrong_relevance는 manual semantic review로 남긴다.
+  - `11632915`, `11650591`은 public title blocker는 닫혔지만 semantic accept가 아니라 conservative hold 상태다.
+  - full scan approval로 승격하지 않는다.
+
+## IMP-20260615-275 - JUDGE3905 output-lint title hygiene closure and 11639284 control cleanup
+
+- 상태: implemented / control runtime GO / combined evidence complete / semantic quality REVIEW-LOCKED
+- 우선순위: P0 OCR title evidence guard, P1 run-integrity cleanup, P1 manual semantic closure
+- 유형: pipeline title hygiene guard / control-only expert_main rerun / targeted compare
+- 문제:
+  - `11636134`는 image OCR과 official/platform search가 같은 URL에서 같은 제목을 가리키는데도 noisy final title이 남아 `output_consistency_lint`였다.
+  - `11602367`, `11632915`, `11650591`은 source/image/search evidence만으로 자동 승격 또는 OCR correction을 하기에 근거가 부족했다.
+  - original remaining-lint run `20260615_165906_220298`는 target 11건은 checkpoint에 있었지만 control `11639284` final flush가 빠져 runtime contract `NO-GO`였다.
+- 조치:
+  - `apply_judge_seed_title_hygiene_guard()`를 추가했다. `title_noisy_ocr` seed에서 image explicit work title과 official/platform search title이 같은 current URL에 일치할 때만 current `official_title`을 재정렬한다.
+  - `expert_main.py` postprocess에 title hygiene guard를 candidate audit field 생성 전에 연결했다.
+  - `11639284`는 단건 control rerun으로 ordered flush gap을 닫고, cross-media/famous mismatch precision control로 `promotion_blocked`를 유지했다.
+- 검증:
+  - control run id `20260615_194903_574111`: input/completed/flushed/pending/failed `1/1/1/0/0`, `image_post_count=1`, VLM/OCR `READY`, runtime contract `GO`.
+  - combined15 compare: expected/result/compared `15/15/15`, missing `0`, after labels `safe_resolved=4`, `promotion_blocked=7`, `hold_unresolved=1`, `output_consistency_lint=3`.
+  - closure summary: `out/judge3905_p0_seed_registry/judge3905_p0_remaining_output_lint_closure_summary.json`, `out/judge3905_p0_seed_registry/judge3905_p0_remaining_output_lint_closure_summary_ko.md`.
+  - manual evidence packets: `out/judge3905_p0_seed_registry/judge3905_p0_remaining_output_lint_manual_evidence_packets.json`, `out/judge3905_p0_seed_registry/judge3905_p0_remaining_output_lint_manual_evidence_packets_ko.md`.
+  - tests: `py_compile` pass, `tests.test_candidate_audit tests.test_judge_seed_registry tests.test_goal_test_run_contract_audit` 30 tests `OK`.
+- 후속:
+  - `11602367`, `11632915`, `11650591`은 manual semantic/OCR source review로 남긴다.
+  - original 15-row run은 historical runtime `NO-GO`이며, combined15는 recovered+control evidence completeness로만 해석한다.
+  - full scan approval로 승격하지 않는다.
+
+## IMP-20260615-274 - JUDGE3905 remaining-lint precision guard and OCR title evidence split
+
+- 상태: implemented / focused run partial-recovered / semantic quality REVIEW-LOCKED
+- 우선순위: P0 precision promotion guard, P0 OCR title evidence hygiene, P1 runtime recovery
+- 유형: pipeline audit guard / targeted remaining-lint canary / checkpoint recovery
+- 문제:
+  - domain/lint focused canary 이후 `11634549`, `11657028`, `11673108`은 precision seed인데 platform/search 후보가 다시 official title로 승격됐다.
+  - `title_noisy_ocr` safe 판정이 `primary_work` self-claim과 URL만으로 닫힐 수 있어, `11636134`처럼 platform search title과 final title이 다른 row가 safe로 빠질 위험이 있었다.
+  - remaining-lint focused run은 control `11639284`가 장기 지연되어 ordered flush gap이 생겼다.
+- 조치:
+  - `apply_judge_seed_precision_guard()`를 judge-seed-only 보수 guard로 강화했다. precision disagreement row에서 official title은 `promotion_blocked`로 내리고 `blocked_official_title`에 보존한다.
+  - `_has_platform_url_for_title()`는 official search title match만 인정하도록 좁혔다. `primary_work` self-claim은 `title_noisy_ocr` safe 근거로 쓰지 않는다.
+  - `tests/test_candidate_audit.py`에 platform URL이 있어도 precision seed는 review로 남는 케이스와, title mismatch primary self-claim이 safe 처리되지 않는 케이스를 추가했다.
+- 검증:
+  - focused input: `out/judge3905_p0_seed_registry/judge3905_p0_remaining_lint_focus_input.jsonl` (`15`건, target `11`건).
+  - focused run id `20260615_165906_220298`: input/completed/flushed/pending/failed `15/14/8/6/0`, `image_post_count=15`, VLM/OCR `READY`, runtime contract `NO-GO`.
+  - recovery summary: checkpoint completed `14`, recovered `14`, final flushed `8`, incomplete control `11639284`.
+  - final postprocess target status: `safe_resolved=3`, `promotion_blocked=3`, `hold_unresolved=1`, `output_consistency_lint=4`.
+  - compare: recovered 14-row scope after labels `promotion_blocked=6`, `output_consistency_lint=4`, `safe_resolved=3`, `hold_unresolved=1`.
+  - tests: `py_compile` pass, `tests.test_candidate_audit` `9` tests `OK`.
+- 후속:
+  - `11602367`, `11632915`, `11636134`, `11650591`은 사람 semantic review 또는 별도 OCR/title evidence patch 전까지 open이다.
+  - control `11639284` runtime 미완료는 lower-parallel/control-only rerun으로 닫을 수 있다.
+  - recovered subset은 semantic target evidence일 뿐 original run-integrity `GO`가 아니다.
+  - full scan approval로 승격하지 않는다.
+
+## IMP-20260615-273 - JUDGE3905 URL/domain official title promotion guard와 random50 baseline
+
+- 상태: implemented / focused canary GO / random50 p32 runtime GO / semantic quality REVIEW-LOCKED
+- 우선순위: P0 title-promotion-guard, P0 regression validation, P1 random baseline guardrail
+- 유형: pipeline promotion guard / targeted regression canary / source-backed random baseline
+- 문제:
+  - high-risk/slang focused run 이후에도 `11663514`처럼 URL/domain/platform label이 `official_title` 또는 title 확정 표면으로 남을 수 있었다.
+  - slang DB storage guard는 `novel`, `dc`, `그리고` 같은 alias 오염을 막지만, 이미 생성된 pipeline output의 official title 승격 자체는 별도 promotion guard가 필요했다.
+  - targeted high-risk evidence만으로는 편향이 크므로 source-backed random baseline이 필요했다.
+- 조치:
+  - `src/llm_batch/candidate_audit.py`에 `apply_official_title_promotion_guard()`를 추가해 URL/domain/platform/generic official title을 demote한다.
+  - demoted title은 삭제하지 않고 `blocked_official_title`, `blocked_official_title_url`, `promotion_blocked_reasons`, `candidate_ledger`로 보존한다.
+  - `expert_main.py`에서 audit field 생성 전에 promotion guard를 적용한다.
+  - `tests/test_candidate_audit.py`에 `novel.munpia.com` demotion과 실제 후보 보존 회귀를 추가했다.
+- 검증:
+  - focused input: `out/judge3905_p0_seed_registry/judge3905_p0_domain_guard_lint_focus_input.jsonl` (`15`건).
+  - focused run id `20260615_105502_850042`: input/completed/flushed/pending/failed `15/15/15/0/0`, `image_post_count=15`, VLM/OCR `READY`, runtime contract `GO`.
+  - focused compare: expected/result/compared `15/15/15`, missing `0`, after labels `promotion_blocked=4`, `identity_consistency_lint=3`, `output_consistency_lint=8`, official title lint after `0`.
+  - `11663514`: after `official_title=null`, `promotion_blocked`, candidate titles include `전생했더니 슬라임이었던 건에 대하여`; domain label은 official title로 남지 않는다.
+  - random50 p32 run id `20260615_120734_501402`: completed/failed `50/0`, `image_post_count=30`, VLM/OCR `READY`, runtime contract `GO`.
+  - random50 p32 quality summary: official/identity/output lint counts `{}`, domain/URL official title rows `[]`, candidate ledger status `safe_resolved=10`, `review_only=2`, `hold_unresolved=31`, `promotion_blocked=7`.
+- 후속:
+  - focused canary의 `identity_consistency_lint=3`(`11634549`, `11657028`, `11673108`)은 cross-media/famous mismatch precision review로 남긴다.
+  - focused canary의 `output_consistency_lint=8`은 OCR/title hygiene row라 다음 semantic review 또는 targeted patch로 닫는다.
+  - random50은 작은 baseline이므로 full scan approval로 승격하지 않는다.
+
+## IMP-20260615-272 - JUDGE3905 high-risk expansion과 slang DB low-info alias 오염 차단
+
+- 상태: high-risk expansion GO / slang guard focused canary GO / semantic quality REVIEW-LOCKED
+- 우선순위: P0 candidate-retention expansion, P0 slang-db-pollution guard, P0 title-promotion-guard follow-up
+- 유형: source-backed expansion / pipeline regression validation / slang DB storage guard
+- 문제:
+  - source-enriched 24건 canary는 image URL 누락 한계를 닫았지만, head-slice P0 seed가 너무 작아 recall/precision/hygiene 패턴을 더 넓은 high-risk slice에서 봐야 했다.
+  - high-risk expansion run 중 `novel`, `dc`, `그리고` 같은 저정보 표면이 slang DB alias observation으로 flush됐다.
+  - 특히 `11663514`는 `official_title=novel.munpia.com`이 남아, slang DB 오염과 official title domain 승격을 분리해서 다뤄야 했다.
+- 조치:
+  - `tools/build_judge3905_expansion_inputs.py`를 추가해 기존 canary와 겹치지 않는 high-risk source-backed input 36건을 생성했다.
+  - `src/llm_batch/slang_db.py`의 generic/low-information guard에 URL/domain/platform token과 Korean connective surface를 추가했다.
+  - `_looks_domain_or_url_label()`을 추가해 domain/URL label이 generic term/title label로 처리되게 했다.
+  - `tests/test_slang_db_low_information_alias.py`를 추가해 `novel`, `dc`, `그리고`, `novel.munpia.com`이 storage observation을 만들지 않고 `검머대` 같은 정상 약칭은 유지되는지 고정했다.
+- 검증:
+  - high-risk input: selected `36`, restore missing `0`, image post `36`, group count `recall=12`, `precision=16`, `hygiene=8`.
+  - high-risk run id `20260615_012056_067394`: input/completed/flushed/pending/failed `36/36/36/0/0`, effective parallel `36`, MCP health `8/8`, `image_post_count=36`, VLM/OCR `READY`.
+  - high-risk compare: expected/result/compared `36/36/36`, missing `0`, after labels `safe_resolved=7`, `promotion_blocked=12`, `hold_unresolved=3`, `output_consistency_lint=8`, `identity_consistency_lint=5`, `official_title_lint=1`.
+  - focused slang guard run id `20260615_021205_542965`: input/completed/flushed/pending/failed `3/3/3/0/0`, `image_post_count=3`, VLM/OCR `READY`, finalize flush `buffered_observations=0`, runtime contract `GO`.
+  - tests: `py_compile`, `tests.test_slang_db_low_information_alias`, `tests.test_candidate_audit`, `tests.test_judge3905_expansion_inputs`, `tests.test_batch_context`, `tests.test_agentic_pipeline_alias_contract` 모두 통과했다.
+- 후속:
+  - `11663514`의 `official_title=novel.munpia.com`은 여전히 `official_title_lint`로 남아 있어 URL/domain official title promotion 자체를 막는 후속 guard가 필요하다.
+  - random baseline과 remaining identity/hygiene lint review 전까지 full scan approval로 승격하지 않는다.
+
+## IMP-20260615-271 - JUDGE3905 source-enriched canary와 pipeline candidate audit 연결
+
+- 상태: implemented / source-enriched targeted canary GO / semantic quality REVIEW-LOCKED
+- 우선순위: P0 candidate-retention, P0 title-promotion-guard, P0 VLM/OCR source evidence
+- 유형: pipeline instrumentation / source restoration / targeted regression canary
+- 문제:
+  - 기존 JUDGE3905 24건 canary는 run integrity는 `GO`였지만 judge batch source에 원본 image URL이 빠져 `image_post_count=0`, VLM/OCR skip reason `no_image_blocks`였다.
+  - `candidate_ledger`, promotion guard, lint가 sidecar shadow artifact에만 있어 실제 pipeline output에서 후속 비교/리뷰가 바로 읽기 어려웠다.
+- 조치:
+  - `tools/build_judge3905_source_enriched_canary.py`로 기존 canary 24건을 원본 `out/expert_result_20260612_174715_296791_checkpoint.jsonl`에서 복원했다.
+  - image seed 18건의 URL을 모두 복원했고, DC loading placeholder GIF는 drop count로 기록했다. unrecovered post는 `0`이다.
+  - `src/llm_batch/candidate_audit.py`를 추가해 pipeline output에 `candidate_ledger`, `candidate_ledger_status`, promotion/lint flags를 남긴다.
+  - `PostInput.judge_seed`와 `expert_main.py` post-processing으로 `_judge_seed` 기반 recall/precision/hygiene audit label을 실제 result row에 연결했다.
+  - `prompt_router`에는 후보 보존과 official title 승격 guard를 보강했다.
+- 검증:
+  - source-enriched input: rows `24`, image posts `18`, image URLs `27`.
+  - run id `20260615_001642_376095`: input/completed/flushed/pending/failed `24/24/24/0/0`, requested/effective parallel `24/24`, MCP health `8/8`, `image_post_count=18`, VLM/OCR `READY`.
+  - 이미지 post 18/18에 `image_evidence_catalog`, `vlm_enrichment_used`, image fetch counters가 남았다.
+  - compare: expected/result/compared `24/24/24`, missing `0`, run integrity `GO`.
+  - after labels: `safe_resolved=3`, `promotion_blocked=7`, `hold_unresolved=4`, `output_consistency_lint=8`, `identity_consistency_lint=2`.
+  - candidate ledger present `24/24`.
+  - py_compile, 관련 unittest 44건, runtime contract audit `GO`를 확인했다.
+- 후속:
+  - `identity_consistency_lint=2`와 hygiene `output_consistency_lint=8`은 semantic spot review 또는 P0/P1 expansion으로 닫는다.
+  - 이 targeted canary를 full 10만 scan approval로 승격하지 않는다.
+
+## IMP-20260614-270 - GPT judge 기반 candidate-ledger / promotion-policy 연구 방향 정리
+
+- 상태: seed registry + shadow canary implemented / pipeline instrumentation linked by IMP-20260615-271
+- 우선순위: P0 semantic-quality-seed-registry, P0 candidate-retention, P0 title-promotion-guard
+- 유형: LLM judge synthesis / architecture research / regression planning
+- 문제:
+  - GPT Pro judge 전수 결과에서 `under_resolved_false_negative=644`로 recall 손실이 가장 컸다.
+  - 동시에 `cross_media_or_famous_mismatch`, `wrong_work`, `over_resolved`, `garbage_title`는 수는 적지만 high severity 비율이 높아, 단순 recall 보강은 precision 회귀를 만들 수 있다.
+  - 현재 schema와 prompt는 관련성/해소상태/후보 역할을 분리하려는 구조가 있으나, 최종 output과 후단 promotion에서 일관되게 정렬되지 않는 것으로 보인다.
+- 조치:
+  - `GPT_PRO_PIPELINE_RESEARCH_CONTEXT_20260614.md`로 bounded context를 만들었다.
+  - ChatGPT web-ai 분석을 통해 “후보 보존 recall은 넓게, `official_title` promotion은 좁게”라는 개선 원칙을 정리했다.
+  - `GPT_PRO_PIPELINE_RESEARCH_DIRECTIONS_20260614.md`에 P0/P1/P2 goal tree, acceptance criteria, ablation plan을 남겼다.
+  - `tools/build_judge_seed_registry.py`로 GPT Pro judge 결과를 seed registry, candidate-ledger shadow, expert_main canary input으로 변환했다.
+  - manifest-scope compare를 추가해 1505건 registry population과 24건 targeted canary run integrity를 분리했다.
+- 검증:
+  - context zip은 ChatGPT에서 정상 인식됐다.
+  - 세션 `01KV2YPF1YGHWH9B311QTWGBGJ`는 complete 상태로 종료됐다.
+  - caveat: ChatGPT UI model selector 미검출로 requested `pro/extended` 강제 확인은 실패했다.
+  - 2026-06-14 재실행: 전송 전 UI snapshot은 `Pro 확장 모드`였고, `--model pro --effort extended --research deep`로 session `01KV31C9QFS5YN3SZF7BBJNHZ9`를 전송했다.
+  - 2026-06-14 재실행 caveat: `agbrowse`는 reasoning effort selector를 찾지 못해 `extended` 강제를 확인하지 못했고, 응답 본문도 실제 Deep Research/API 실행 상태가 아니라 zip 기반 정적 분석이라고 고지했다.
+  - 재실행 기록은 `docs/devs/GPT_PRO_DEEP_RESEARCH_RERUN_20260614.md`, 응답 원문은 `out/agbrowse_deep_research_poll_20260614.json`에 보존했다.
+  - seed registry: `1505` seed, source missing `0`, group count `recall=644`, `precision=123`, `hygiene=738`.
+  - expert_main canary run id `20260614_230245_886140`: input/completed/flushed/pending/failed `24/24/24/0/0`, MCP health `8/8`.
+  - canary compare: manifest scope expected/result/compared `24/24/24`, missing `0`, run integrity `GO`, semantic quality `REVIEW-LOCKED`.
+  - canary 한계: source image URL 누락으로 `image_post_count=0`, VLM/OCR skip reason `no_image_blocks`; full VLM/browser evidence 검증이 아니다.
+- 후속:
+  - 원본 image URL을 보존한 source-enriched VLM/OCR canary를 만든다.
+  - shadow artifact를 실제 pipeline-level `candidate_ledger`, `official_title_lint`, `identity_consistency_lint` instrumentation으로 연결한다.
+  - head slice seed metric과 full scan approval을 계속 분리한다.
+
+## IMP-20260613-269 - dashboard search/filter handoff UX hardening
+
+- 상태: implemented / browser-smoked / Tailwind CDN follow-up open
+- 우선순위: P2 dashboard UX reliability
+- 유형: frontend interaction hardening / Browser verification / Claude handoff takeover
+- 문제:
+  - Claude 인계 TODO의 검색/관련성 필터 UX는 구현 흐름이 있었지만, live reload 중 새 검색/필터 요청이 유실될 수 있었다.
+  - SSE restore/gap reload가 필터 활성 상태의 스냅샷을 덮어쓸 수 있었다.
+  - 상세 모달 JSON 복사는 non-secure HTTP 환경에서 실패할 수 있고, 내부 `_detail_warning` 필드가 복사 payload에 섞일 수 있었다.
+- 조치:
+  - `loadLiveResults`에 latest-wins pending reload와 captured query/filter stale response discard를 추가했다.
+  - `liveFilterActive()` 중에는 SSE restore/gap reload가 live 필터 결과를 덮어쓰지 않게 했다.
+  - `copyModalJson`은 `_detail_warning`을 제외하고 clipboard API 실패 시 textarea fallback을 사용한다.
+  - static UI contract test 2건을 추가했다.
+- 검증:
+  - inline script parse `ok`, inline chars `106585`.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_dashboard_standalone -v`: `26` tests `OK`.
+  - standalone dashboard `127.0.0.1:18099` Browser smoke에서 검색/필터 row, 상세 모달, JSON 버튼 클릭, history/live tab 전환, app console error `0`을 확인했다.
+- 판정:
+  - Claude 인계 TODO 중 검색/필터와 모달 안정성의 confirmed issue는 닫혔다.
+  - Tailwind CDN warning과 full browser UI E2E 승격은 별도 follow-up으로 유지한다.
+
+## IMP-20260612-268 - live dashboard DOM/update budget bounded
+
+- 상태: implemented / browser-verified / Tailwind CDN follow-up open
+- 우선순위: P2 dashboard browser performance
+- 유형: frontend runtime optimization / Browser verification
+- 문제:
+  - live dashboard가 page 0 결과 `500`행을 한 번에 렌더링해 settled DOM이 약 `8739` nodes까지 커졌다.
+  - 병렬 worker 상태는 250ms로 코얼레싱되지만 렌더 시 active worker 카드 전체의 `innerHTML`을 다시 써서 변경 없는 카드까지 layout/update 비용을 냈다.
+  - live 로그는 대형 LLM 로그 라인이 들어올 때 표시 텍스트가 커져 DOM snapshot/layout 비용을 키울 수 있었다.
+- 조치:
+  - live 결과 페이지 크기를 `500 -> 100`으로 낮췄다.
+  - worker card render signature cache를 추가해 변경된 카드만 DOM을 갱신한다.
+  - live 로그 DOM 표시 상한 `MAX_LOG_RENDER_CHARS=80000`을 추가했다.
+- 검증:
+  - inline script parse `ok`.
+  - Browser settled state: `2342` nodes, `100` result rows, `26` worker cards.
+  - history tab 전환 후 live 복귀 정상, app console error `0`.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_dashboard_standalone`: 후속 UX guard 포함 현재 `26` tests `OK`.
+- 판정:
+  - live dashboard의 기본 DOM/update budget은 실사용 모니터링에 맞게 축소됐다.
+  - Tailwind CDN production warning은 local Tailwind build pipeline 설계가 필요하므로 별도 개선으로 남긴다.
+
+## IMP-20260602-267 - 11718094는 작품 장면 가능성을 인정하되 unresolved로 닫는다
+
+- 상태: manual review complete / issue-focused seed queue GO / semantic approval REVIEW-LOCKED
+- 우선순위: P1 unresolved-boundary, P1 VLM-OCR scene evidence, P2 human-source-identification
+- 유형: manual semantic review / unresolved preservation / anti-overresolve gate
+- 문제:
+  - `11718094`는 이미지 OCR상 웹소설 장면처럼 보이지만, 이미지에 작품명/작가명/플랫폼 footer가 없다.
+  - 캐릭터명 `에세르/예세르`, `아르타`와 관계성 묘사만으로 공식 작품 title을 추정하면 generic scene/character overresolve 위험이 크다.
+- 조치:
+  - browser visual artifact와 VLM/OCR image evidence catalog를 재확인했다.
+  - 검색 evidence와 exact phrase search가 공식 작품 detail로 연결되지 않는 것을 확인했다.
+  - row-level label은 `HOLD`로 보존하되, 수동 리뷰 완료 후 action은 `no_action`으로 닫았다.
+- 검증:
+  - image evidence type은 `scene_inference_only`, `title_role=unknown`, `promotion_eligible=false`.
+  - result decision은 `resolved_title=null`, `work_resolution=unresolved`, `title_resolution_state=unresolved_matchable`.
+  - 댓글 author match unverified 신호는 title resolution에 쓰이지 않았다.
+- 판정:
+  - `11718094`는 자동 재검색/재런으로 더 밀지 않는다.
+  - 임의 title/alias로 승격하지 않는다.
+  - issue-focused seed queue는 닫혔지만 10만 semantic approval은 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260602-266 - v527 잔여 2건 중 11718099를 재검색으로 닫고 11718094는 HOLD로 보존한다
+
+- 상태: targeted residual follow-up complete / superseded by v529 manual unresolved closure / semantic approval REVIEW-LOCKED
+- 우선순위: P1 issue-focused-seed-closure, P1 VLM-OCR evidence alignment, P2 unresolved-scene-source-review
+- 유형: targeted re-search / browser visual evidence / semantic after-review
+- 문제:
+  - v527 after-review에서 `11718099`는 final title은 맞아 보였지만 공개 field의 primary work가 `llm_only`라 `REPROCESS/re_search`로 남았다.
+  - `11718094`는 VLM/OCR이 장면 텍스트를 읽었으나 작품명/공식 출처가 없어 `HOLD/human_review`로 남았다.
+- 조치:
+  - 두 post만 `v528_remaining_review_11718099_11718094_input.jsonl`로 분리해 재실행했다.
+  - 실행은 `--parallel 36` max, effective parallel `2`, `--reuse-shards-only`, VLM/OCR on 기준이다.
+  - `11718099`는 v528에서 official/detail URL과 `빌환` alias가 정합해 `ACCEPT/no_action`으로 닫았다.
+  - `11718094`는 장면 텍스트를 읽었지만 공식 작품 출처가 없으므로 HOLD를 보존했다.
+- 검증:
+  - v528 runtime contract audit `GO`.
+  - v528 reason hygiene hit files `0`.
+  - v528 semantic coverage `GO`, browser visual required/available/missing `2/2/0`, image catalog present/missing `2/0`.
+  - v528 after-review `ACCEPT=1`, `HOLD=1`.
+- 판정:
+  - v527 잔여 `11718099` REPROCESS는 닫혔다.
+  - `11718094`는 임의 제목 매칭 대신 `HOLD/human_review`로 유지하는 것이 올바른 보수적 판정이다.
+  - 이 follow-up은 issue-focused closure이며 10만 semantic approval이 아니다.
+
+## IMP-20260602-265 - v284 residual run의 raw row와 post execution unit을 분리한다
+
+- 상태: preflight patched / targeted rerun complete / issue-focused closure REVIEW / semantic approval REVIEW-LOCKED
+- 우선순위: P1 goal-runtime-contract, P1 issue-focused-seed-closure, P2 remaining-semantic-follow-up
+- 유형: expert_main small-run preflight / VLM-OCR targeted rerun / review gate hygiene
+- 문제:
+  - v284 residual input은 raw JSONL `98`줄이지만 댓글 row가 포함된 입력 형식이라 실제 실행 단위는 selected post `21`개였다.
+  - 이전 preflight는 raw row count를 실행 단위처럼 해석해 required shard를 과대 계산했고, open shard `32/36` 때문에 재런을 deferred로 남겼다.
+  - 이 상태는 사용자가 지적한 small targeted run에서 불필요하게 shard/worker를 크게 요구하는 문제와 같은 계열이다.
+- 조치:
+  - `tools/preflight_expert_rerun_runtime.py`가 manifest의 `input_post_count`, `selected_post_count`, `found_post_count`, execution contract count, unique post count를 raw row count보다 우선하도록 보강했다.
+  - preflight 출력에 `raw_input_row_count`, `unique_post_count`, `input_count_source`를 추가했다.
+  - 4 JSONL rows / 2 unique posts / selected post 2개 회귀 테스트를 추가했다.
+  - v527 preflight 이후 `v284_residual_p0p1_core21_input.jsonl`을 `--parallel 36 --reuse-shards-only --vlm on --ocr on --require-vlm-ocr-for-images`로 재실행했다.
+- 검증:
+  - v527 preflight: input count `21`, raw rows `98`, unique post `21`, input source `manifest.selected_post_count`, rerun execution `GO`.
+  - v527 run id `20260602_014729_612198`: requested/effective parallel `36/21`, completed/flushed/pending/failed `21/21/0/0`, VLM/OCR ready.
+  - runtime contract audit: `GO`.
+  - reason hygiene: hit files `0`.
+  - semantic coverage: browser visual required/available/missing `14/14/0`, image catalog present/missing `14/0`, gate `REVIEW`.
+  - after-review: `ACCEPT=19`, `REPROCESS=1`, `HOLD=1`.
+- 판정:
+  - raw row와 post execution unit 혼동은 current preflight/test에서 닫혔다.
+  - `11718099`는 공식/detail 근거 보강 전까지 `REPROCESS/re_search`, `11718094`는 작품 출처 확인 전까지 `HOLD/human_review`로 남긴다.
+  - 이 targeted rerun은 issue-focused seed closure이며, 10만 semantic approval이 아니다.
+
+## IMP-20260602-264 - issue-focused browser visual HOLD 2건을 닫고 자동 카운터/직접 시각 증거를 분리한다
+
+- 상태: targeted browser visual closure complete / issue-focused GO / semantic approval REVIEW-LOCKED
+- 우선순위: P1 browser-visual-gate, P1 issue-focused-seed-closure, P2 counter-conflict-follow-up
+- 유형: VLM-OCR browser evidence / targeted seed closure / review artifact hygiene
+- 문제:
+  - v523 issue-focused queue에서 `11718069`, `11718076`은 semantic decision 자체는 큰 방향에서 맞아 보였지만 browser visual artifact가 없어 `HOLD/browser_visual`로 남아 있었다.
+  - Codex 내장 Browser plugin / in-app browser iab는 현재 세션에서 setup 단계 실패가 반복되어 직접 캡처 surface로 사용할 수 없었다.
+  - `11718069`은 direct headless CLI counter가 article image `0/1` Weak로 떨어졌지만, Playwright MCP full-page screenshot에서는 같은 원문 페이지의 본문 이미지가 렌더링되어 보였다.
+- 조치:
+  - `v526_browser_visual_targets_11718069_11718076.jsonl`로 두 HOLD post만 분리했다.
+  - `tools/capture_vlm_ocr_browser_review_cli.py`를 사용해 direct Playwright eval/screenshot/manifest를 생성했다.
+  - Playwright MCP full-page screenshot/snapshot을 별도 보조 증거로 저장하고, `11718069`의 CLI counter conflict를 `combined_manifest.json`에 명시했다.
+  - v518 누적 browser artifact에 v526 override를 결합한 `v526_combined_browser_visual_artifacts_manifest.json`을 만들었다.
+  - `v526_browser_visual_after_review_labels.jsonl`, `v526_browser_visual_closure_review_ko.md`, `v526_issue_focused_action_queue_ko.md`를 추가했다.
+- 검증:
+  - v526 direct capture: target/captured `2/2`, screenshot `2`, blocked `0`, image gate passed `1`, Weak `1`, Strong `1`.
+  - v526 combined manifest: unique post `37`, Strong `27`, Weak `8`, Missing `2`, image gate passed `27`.
+  - v523 seed coverage with combined browser artifact: browser visual required/available/missing `6/6/0`, external browser artifact available `6`.
+  - `11718069`: model decision은 `official_title=null`, `discussion_type=author_talk`, `subtype=author_meta`, `topicality=adjacent_relevant`, `work_resolution=none`으로 작가/장르 주변담을 작품으로 승격하지 않았다.
+  - `11718076`: `official_title=즉사기 들고 무림에 떨어지다`, `discussion_type=character_talk`, article image `1/1` loaded로 확인됐다.
+- 판정:
+  - v523 browser visual HOLD 두 건은 targeted seed 기준 닫혔다.
+  - v523 원본 11건 audit에서 보이는 `11718083` image catalog missing은 v524 단건 재런으로 supersede된 구 artifact 잔여 issue이므로 재오픈하지 않는다.
+  - 이 closure는 10만 semantic approval이 아니며, expanded random/P0P1 review 전까지 전체 gate는 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260601-292 - Playwright CLI eval/daemon 불안정성과 DC UI 차단 오탐을 우회한다
+
+- 상태: patched / direct fallback validated / original visual coverage improved / semantic approval REVIEW-LOCKED
+- 우선순위: P1 browser-visual-gate, P1 tooling-reliability, P2 remaining-image-retry
+- 유형: VLM-OCR browser capture / Windows Playwright fallback / evidence classification
+- 문제:
+  - v511/v512 canary에서 screenshot은 생성됐지만 `playwright-cli eval --filename`이 `.eval.json`을 만들지 못해 `article_image_count=0`으로 기록됐다.
+  - stdout을 확인하니 JS eval 인자가 `npx.cmd`/playwright-cli wrapper에서 깨져 `Unexpected token ')'`가 발생했다.
+  - 같은 환경에서 npx cache/daemon 파일 접근도 `EPERM`으로 흔들려 batch wrapper 경로만으로는 반복 검증이 불안정했다.
+  - DC 페이지의 일반 UI 단어 `차단`이 blocked signal로 잡혀, 이미지가 정상 로드된 row가 `Missing`으로 낮아졌다.
+- 조치:
+  - eval 결과 파일이 없으면 stdout JSON을 파싱해 `.eval.json`으로 정규화한다.
+  - installed Chromium revision이 있는 cached Playwright `node_modules`를 찾아 direct Node Playwright로 URL open/eval/screenshot을 수행한다.
+  - capture row에 `eval_payload_source`, stdout excerpts, `capture_engine`을 남긴다.
+  - generic `차단` 단독 매칭을 제거하고 실제 접근 차단 문구만 blocked signal로 본다.
+  - v519 audit 기준 v520 current-state/action queue를 재생성했다.
+  - action queue의 `source_browser_visual_missing`과 `visual_gate_blocker_signal_count`를 분리해 unique post count와 결손 신호 합산을 혼동하지 않게 했다.
+- 검증:
+  - `tests.test_vlm_browser_review_cli` 8건 OK.
+  - 관련 `py_compile` OK.
+  - v515 completed subset 16건 캡처: `Strong=10`, `Weak=5`, `Missing=1`.
+  - v519 원본 71행 audit: browser visual required/available/missing `37/25/12`, external artifact rows `25`.
+  - v520 action queue: `source_browser_visual_missing=12`, `visual_gate_blocker_signal_count=85`.
+- 판정:
+  - `11718082`는 direct browser artifact에서 loading counter와 screenshot이 확보됐다.
+  - 남은 12건은 image loading failure 또는 image node missing으로 계속 `REVIEW-LOCKED`다.
+  - browser visual `Strong`은 semantic ACCEPT가 아니라 시각 증거 확보 상태일 뿐이다.
+
+## IMP-20260601-291 - memory-query title restore와 browser artifact 과승격을 막는다
+
+- 상태: patched / strict gate applied / focused validation passed / semantic approval REVIEW-LOCKED
+- 우선순위: P0 semantic-monotonicity, P0 browser-visual-gate, P1 follow-up-canary
+- 유형: Arbiter title restore guard / semantic coverage audit / browser visual artifact contract
+- 문제:
+  - Arbiter에서 `Verifier High-title lock`과 verifier-null restore가 memory-query/no-work weak relation-hold보다 먼저 title을 복구할 수 있었다.
+  - 이 경우 `memory_query_forced_upgrade_guard`가 나중에 붙어도 이미 `official_title`과 `heretic_url`이 살아남을 위험이 있었다.
+  - external browser artifact는 screenshot/snapshot과 `Medium/Strong` grade만 있으면 article image loading counter 없이도 `browser_visual_available`로 인정될 수 있었다.
+- 조치:
+  - `Verifier High-title lock` 전에 `_should_block_memory_query_forced_upgrade()`를 호출해 block이면 title lock 적용을 중단한다.
+  - verifier-null restore도 memory-query block을 먼저 계산한 뒤 `official_title`, `official_novel_title`, `heretic_url` 복구 여부를 결정한다.
+  - external browser artifact available 판정에 `_browser_loading_counters_ok()`를 필수 조건으로 추가했다.
+  - browser target manifest coverage가 0 count도 표시하도록 했다.
+- 검증:
+  - focused Arbiter/browser/audit tests 36건 OK.
+  - 관련 파일 `py_compile`: OK.
+  - v510 strict browser audit에서 browser visual required/available/missing `16/0/16`, external artifact rows `0`, gate `REVIEW-LOCKED`를 확인했다.
+- 판정:
+  - no-work/memory-query 계열 title 복원 과승격은 targeted guard로 닫혔다.
+  - screenshot만 있던 11718049 fallback artifact는 strict gate에서는 available이 아니므로 target에 복귀했다.
+  - 남은 16건은 loading counter와 screenshot/observation이 함께 있는 browser artifact로 다시 닫아야 한다.
+
+## IMP-20260601-290 - 브라우저 접근 성공과 article image 로딩 성공을 분리한다
+
+- 상태: browser attempt recorded / loading failure preserved / superseded by v510 strict target count 16 / semantic approval REVIEW-LOCKED
+- 우선순위: P1 browser-visual-gate, P1 image-loading-retry-follow-up, P1 Codex-subagent-integration
+- 유형: VLM-OCR-browser evidence gate / semantic coverage follow-up / goal orchestration
+- 문제:
+  - `11718068`은 fallback browser로 원문 페이지와 본문 텍스트가 열렸지만, article image 노드는 `naturalWidth=0`, `complete=false`로 로딩되지 않았다.
+  - screenshot/snapshot이 있다는 이유만으로 image row를 `browser_visual_available`로 세면, 이미지 로딩 지연/실패가 text-only/OCR/search 근거로 우회될 수 있다.
+  - 사용자가 말한 병렬 검토는 Codex `spawn_agent` 전문가 병렬이므로, runtime worker `--parallel` 조정과 계속 분리해야 한다.
+- 조치:
+  - `v509_browser_visual_attempt_manifest.json`에 `11718049` verified fallback row와 `11718068` failed loading row를 함께 기록했다.
+  - `11718068` row는 `status=failed`, `evidence_grade=Missing`, `article_image_count=1`, `article_loaded_count=0`, `article_incomplete_count=1`로 남겨 external browser artifact loader가 visual gate를 열지 않게 했다.
+  - v509 semantic coverage audit과 browser target builder를 같은 attempt manifest로 재실행했다.
+  - `LLM_JUDGMENT_REVIEW.md` 합의 방식에 Codex subagent 병렬 리뷰와 `expert_main.py --parallel` runtime worker 병렬의 경계를 보강했다.
+- 검증:
+  - fallback screenshot/snapshot/eval JSON을 확인했다.
+  - v509에서는 browser target builder에서 `11718068`이 target에 남는 것을 확인했다.
+  - 이후 v510 strict gate에서 loading counter 없는 11718049도 target에 복귀해 browser visual required/available/missing `16/0/16`, external artifact rows `0`으로 재산출됐다.
+- 판정:
+  - `11718068`은 visual evidence가 아니라 image loading failure evidence다.
+  - 남은 target 15건을 실제 image-loaded artifact로 닫기 전까지 OCR/search/text-only 근거는 Strong/GO로 승격하지 않는다.
+  - Codex subagent finding은 메인 Codex가 evidence path/post_id/line을 재확인한 뒤에만 gate에 반영한다.
+
+## IMP-20260601-289 - no-work/context-only와 title 공존을 별도 blocker로 잡는다
+
+- 상태: audit patched / fallback artifact consumed / remaining browser targets 15 / semantic approval REVIEW-LOCKED
+- 우선순위: P1 semantic-audit-gate, P1 browser-visual-gate, P0 pipeline-follow-up
+- 유형: semantic coverage audit / intent-first review gate / browser visual artifact manifest
+- 문제:
+  - v507 자연어 이해 subagent는 no-work/social lament/context-only 판단이 여러 후단 보정으로 흩어져 있어 search/rescue/known alias/session knowledge/Arbiter promotion이 title을 되살릴 수 있다고 지적했다.
+  - 기존 audit은 주로 `resolved` 상태를 보았기 때문에, `title_resolution_state=context_only` 또는 `title_resolution_allowed=false`인데 `official_title`이 같이 남는 모순을 별도 blocker로 세지 못할 수 있었다.
+  - v507 fallback browser artifact도 사람이 읽는 manifest에는 남았지만, semantic coverage audit과 browser target builder가 같은 manifest를 직접 소비하지 못했다.
+- 조치:
+  - `intent_denied_title_present` coverage/issue를 추가했다.
+  - `intent_permit_for_title_search=false`, `semantic_seed_review_specific_work_denied`, `context_only_no_work_anchor`, `title_resolution_allowed=false`, `context_only/no_work` 상태와 title 공존을 `REVIEW-LOCKED`로 잡는다.
+  - `fallback_browser` attempt manifest를 external browser artifact로 읽도록 semantic coverage audit을 보강했다.
+  - browser visual target builder에 `--browser-artifacts-manifest`를 추가해 이미 확인된 fallback post를 target에서 제외한다.
+  - no-title no-work row를 blocker로 오탐하지 않는 회귀도 추가했다.
+- 검증:
+  - focused audit/target tests 33건 OK.
+  - 관련 도구/테스트 `py_compile`: OK.
+  - v508 JSON manifest validation: OK.
+  - v506 completed subset + v507 fallback audit에서 browser visual required/available/missing `16/1/15`, `intent_denied_title_present=0`, gate `REVIEW-LOCKED`를 확인했다.
+- 판정:
+  - no-work/context-only title-present 모순은 future audit에서 blocker로 잡힌다.
+  - 현재 v506 completed subset에는 이 모순이 `0`건이지만 browser visual missing `15`건이 남아 있다.
+  - pipeline 자체의 공통 선행 게이트 강화와 live canary는 후속 P0로 유지한다.
+
+## IMP-20260601-288 - browser visual missing target은 sample list가 아니라 result 전체에서 추출한다
+
+- 상태: target extraction added / fallback 1건 확인 / Codex in-app Browser blocked / semantic approval REVIEW-LOCKED
+- 우선순위: P1 browser-visual-gate, P1 review-artifact-integrity, P2 Codex-browser-runtime
+- 유형: semantic coverage follow-up / VLM-OCR-browser evidence gate / Codex subagent integration
+- 문제:
+  - v506 completed subset의 semantic coverage audit은 browser visual missing `16`건을 보고했지만 issue payload의 `sample_post_ids`는 10건까지만 보여준다.
+  - 이 sample list만 후속 browser target으로 쓰면 실제 visual missing 대상이 잘려, image row evidence gate가 과소 처리될 수 있다.
+  - Codex in-app Browser 직접 확인이 실패한 상태에서 OCR/search/text-only 근거를 Strong으로 올리면 이미지 로딩 누락과 본문 이미지 오독을 놓친다.
+  - 사용자가 말한 병렬 검토는 repo worker 수가 아니라 Codex `spawn_agent` 전문가 병렬이므로, 런타임 병렬과 검토 병렬을 계속 분리해야 한다.
+- 조치:
+  - Codex `spawn_agent` 전문가 축을 실행 오케스트레이션, VLM-OCR-browser visual gate, 자연어 이해/프롬프트 한계로 다시 분리했다.
+  - `tools/build_browser_visual_targets_from_result.py`를 추가해 result JSON 전체에서 browser visual required/missing row를 추출한다.
+  - `tests/test_browser_visual_targets_from_result.py`로 issue sample 10건 제한에 의존하지 않는지 검증한다.
+  - v506 completed subset에서 target `16`건을 생성하고 manifest/JSONL/한국어 summary를 남겼다.
+  - Codex in-app Browser 직접 제어 실패를 blocked evidence로 기록했다.
+  - fallback Playwright로 `11718049` 1건의 screenshot/snapshot을 남겼고, 이를 Codex in-app Browser 성공이 아닌 fallback `Medium` evidence로 분리했다.
+  - 오케스트레이션/VLM-browser/natural-language subagent 보고를 `v507_subagent_review_summary_ko.md`로 통합했다.
+- 검증:
+  - browser visual target test + semantic coverage audit: 29건 OK.
+  - 관련 도구/테스트 `py_compile`: OK.
+  - v507 target manifest와 browser attempt manifest JSON validation: OK.
+  - fallback screenshot에서 `11718049` DC 게시글 본문 영역과 본문 이미지가 표시됨을 확인했다.
+- 판정:
+  - browser visual target 추출 누락 위험은 targeted 기준 보강됐다.
+  - 오케스트레이션 축은 small rerun에서 `36` worker 강제 compose lifecycle P0를 찾지 못했으며, 남은 항목은 stale endpoint pool/문서 혼동 P2와 대형 run shard readiness snapshot P1이다.
+  - 자연어 이해 축은 no-work/social lament/context-only를 닫는 공통 선행 게이트가 아직 search/rescue/known alias/session knowledge/Arbiter promotion 전체에 걸친 단일 계약으로 충분히 고정되지 않았음을 P0로 남긴다.
+  - image-based resolution은 VLM/OCR direct evidence catalog와 browser image-loading evidence를 함께 요구해야 하며, OCR variant는 global slang/alias가 아니라 packet-local evidence로만 둔다.
+  - 그러나 전체 `16` target 중 Codex in-app Browser 직접 evidence는 `0`건이고 fallback evidence는 `1`건뿐이다.
+  - 남은 `15`건과 in-app Browser runtime blocker가 닫히기 전까지 v506 completed subset과 10만 semantic approval은 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260601-287 - interrupted targeted rerun은 completed subset으로만 감사하고 unresolved reason 문구를 낮춘다
+
+- 상태: interrupted partial recovered / runtime NO-GO / patched / semantic approval REVIEW-LOCKED
+- 우선순위: P1 run-integrity, P1 browser-visual-gate, P2 reason-hygiene
+- 유형: expert_main interrupted-run recovery / semantic coverage audit / Agentic reason wording
+- 문제:
+  - v504 targeted rerun이 사용자 중단 후에도 일부 worker가 남아 output을 계속 쓰는 상태가 됐다.
+  - manifest는 input `24` 중 completed `23`, flushed `14`, pending `9`, failed `0`이라 full run으로 승인할 수 없다.
+  - ordered flush gap 때문에 plain result JSON만 보면 completed evidence가 `14`행으로 축소된다.
+  - completed subset에서 VLM catalog/comment metadata는 개선됐지만 browser visual missing `16`이 남아 semantic gate를 열 수 없다.
+  - reason hygiene에서 `작품 관련 단서는 충분하지만` phrase가 stale hit로 잡혔고, 원인은 unresolved relevant reason 템플릿의 과한 문구였다.
+- 조치:
+  - 사용자 중단 뒤 남은 `expert_main` 계열 Python PID를 정리했다.
+  - runtime audit을 별도 생성해 partial run을 `NO-GO`로 고정했다.
+  - checkpoint/pending snapshot에서 `v506_v504_interrupted_completed_subset.json`을 복구했다.
+  - completed subset semantic coverage/reason hygiene를 별도 실행해 full result와 분리했다.
+  - `_format_unresolved_relevant_reason()`의 기본 문구를 `웹소설/장르 맥락은 보이나 단일 공식 제목을 확정할 직접 증거가 부족...`으로 낮췄다.
+  - unresolved relevant reason이 stale hygiene phrase를 재사용하지 않는 회귀 테스트를 추가했다.
+- 검증:
+  - runtime audit: `NO-GO`, completed/input mismatch와 pending/flush gap 확인.
+  - recovery summary: recovered rows `23`, integrity `recoverable_pending_flush_gap`, safe completed subset `true`.
+  - completed subset semantic coverage: browser visual missing `16`, comment author review-only `3`, gate `REVIEW-LOCKED`.
+  - focused reason/sanitize/semantic coverage 31건 OK.
+  - 관련 파일 `py_compile`: OK.
+- 판정:
+  - interrupted run은 partial evidence로는 유용하지만 targeted canary GO가 아니다.
+  - browser visual artifacts와 completed rerun 전까지 semantic approval은 열지 않는다.
+  - old partial artifact의 reason hygiene hit는 old output으로 기록하고, future run에서 템플릿 fix를 재검증한다.
+
+## IMP-20260601-286 - adjacent/trope reason은 비관련 단정과 섞지 않는다
+
+- 상태: patched / focused validation passed / old artifact REVIEW / semantic approval REVIEW-LOCKED
+- 우선순위: P1 reason-hygiene, P1 semantic-reporting, P2 artifact-gate
+- 유형: Agentic reason sanitizer / semantic coverage audit / Codex subagent integration / VLM-OCR-browser evidence gate
+- 문제:
+  - `11718080`은 친구/일상 한탄 + TS 장르/트로프 담론이라 특정 작품 매칭 대상이 아니며 `adjacent`, `trope_discussion`, `title_resolution_allowed=false`가 맞다.
+  - 하지만 기존 v493 public reason은 `주변 관련`과 `최종 판정은 비관련 포스트`를 함께 남겨 adjacent/social lament 범위를 단순 noise처럼 읽히게 했다.
+  - 이 문제는 matching bug보다 public reason wording/hygiene 문제이며, 단건 runtime GO나 browser visual GO와 별개로 semantic coverage gate에 남아야 한다.
+- 조치:
+  - `_sanitize_reason()`에서 adjacent/trope/author/meta/community-banter류 non-relevant 결과는 `adjacent_relevant` consistency note를 사용하도록 분리했다.
+  - strong-positive marker에서 넓은 `특정 작품` 단독 표현을 제거해 `특정 작품보다 장르/트로프 일반론` 같은 안전한 문장을 과도하게 중화하지 않게 했다.
+  - semantic coverage audit에 `adjacent_reason_non_relevant_wording_conflict` issue를 추가해 old artifact의 wording 충돌을 REVIEW로 노출한다.
+  - `11718082` OCR 오타/표면 변형은 특정 문자열 하드코딩이나 전역 slang/alias 규칙이 아니라 packet-local VLM/OCR direct evidence로만 취급한다.
+- 검증:
+  - focused sanitize 회귀 3건 + semantic coverage audit 28건: 총 31건 OK.
+  - 관련 pipeline/audit/test 파일 `py_compile`: OK.
+  - v505 audit에서 browser artifact 없는 v493는 `REVIEW-LOCKED`, browser artifact 포함 v494는 visual missing이 닫히지만 adjacent wording issue로 `REVIEW` 유지.
+- 판정:
+  - future run의 reason wording은 targeted 기준 보강됐다.
+  - 기존 v493 artifact는 old output이므로 `11718080` reason wording conflict를 HOLD/REVIEW로 기록한다.
+  - 단건 카나리 통과를 10만 semantic approval로 승격하지 않는다. completed VLM/OCR-on source, expanded random baseline, P0/P1 high-risk expansion 전까지 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260601-285 - Codex goal 병렬은 spawn_agent 전문가 병렬로 추적하고 다음 seed package를 분리한다
+
+- 상태: seed package generated / subagent review running / semantic approval REVIEW-LOCKED
+- 우선순위: P1 goal-orchestration-clarity, P1 follow-up-run-packaging, P1 browser-visual-gate
+- 유형: Codex subagent integration / goal test-run package / VLM-OCR-browser evidence gate
+- 문제:
+  - 사용자가 말한 병렬은 `expert_main.py --parallel` worker 조정이 아니라 Codex `/goal` 안에서 여러 `spawn_agent` 전문가를 병렬로 호출하는 운영이었다.
+  - 원본 `20260528_141006_620986`은 partial/regression seed라 곧바로 10만 semantic approval source가 아니며, 다음 확인 입력과 browser target을 별도로 패키징해야 했다.
+  - Codex in-app Browser visual artifact가 없으면 이미지 loading/evidence가 Missing이므로 OCR/search/text-only 근거를 Strong으로 승격하면 안 된다.
+- 조치:
+  - goal 문서/오케스트레이션, `expert_main.py` small-run/runtime 계약, VLM/OCR/browser visual gate를 독립 `spawn_agent` 축으로 분리했다.
+  - `tools/build_goal_next_seed_package.py`를 추가해 semantic coverage issue sample post를 rerun input/browser target/manifest/summary로 변환한다.
+  - v504 package는 target post `28`, rerun post `24`, rerun row `86`, browser visual required `11`을 기록한다.
+  - 권장 parallel은 `min(input_post_count,36)=24`로 산출했다. `36`은 Gemma 4 4B runtime worker 상한이며 Codex subagent 병렬과 별개다.
+  - `_effective_parallel_for_post_count()` 직접 회귀와 stale `MCP_SHARD_COUNT=36` small-run health budget 회귀를 추가했다.
+  - `.gitignore` 예외에 v504 tool/test 파일을 추가해 follow-up 검증 파일이 무시되지 않게 했다.
+  - `README.md`와 `expert_readme.md`의 `병렬 실행` 절에 Codex `spawn_agent` 병렬과 repo runtime worker/shard 병렬 구분 주석을 추가했다.
+  - Codex in-app Browser 연결 실패는 visual gate 통과가 아니라 Missing/blocked evidence로 기록한다.
+- 검증:
+  - `tests.test_goal_next_seed_package`: 1건 OK.
+  - `tests.test_expert_main_input_loader`: 36건 OK.
+  - 관련 tool/test `py_compile`: OK.
+  - v504 manifest JSON validation: OK.
+- 판정:
+  - 이번 조치는 다음 실행과 browser visual 확인을 위한 운영/패키징 보강이다.
+  - 실제 rerun, runtime audit, semantic coverage audit, browser visual artifact, after-review 전까지 10만 semantic approval은 계속 `NO-GO/REVIEW-LOCKED`다.
+
+## IMP-20260601-284 - image block alias와 known-abbreviation title rewrite도 semantic gate를 공유해야 한다
+
+- 상태: patched / focused+expanded validation passed / semantic approval REVIEW-LOCKED
+- 우선순위: P1 VLM/OCR input coverage, P1 semantic-monotonicity, P2 docs-runtime-contract
+- 유형: expert_main input loader / Agentic post-processing / Codex subagent integration / docs gate
+- 문제:
+  - VLM/OCR-on 테스트 기준인데 JSONL content block이 `image_url` 또는 `src`만 제공하면 `ContentBlock.url`이 비어 image post count가 0으로 떨어질 수 있었다.
+  - `_apply_known_abbreviation_title_guard()`는 `_try_promote_best_candidate()`와 별도 title rewrite 경로라 no-work/context-only 공통 promotion gate가 직접 보이지 않았다.
+  - 오래된 TODO/CHECKLIST 문구는 `--parallel 36`을 small run 필수 재실행 조건처럼 읽히게 할 여지가 있었다.
+- 조치:
+  - `expert_main.py` loader와 public serializer에서 `url`, `image_url`, `src`를 모두 URL alias로 보존한다.
+  - `_apply_known_abbreviation_title_guard()`가 rewrite 전에 `_can_promote_title_after_semantic_no_work()`를 통과하도록 했다.
+  - no-work/context-only + direct anchor 없음이면 official detail URL이 있어도 known abbreviation title rewrite를 차단한다.
+  - 문서에서 Codex worker-type subagent와 repo runtime worker를 분리했고, 새 small-run 명령은 `--parallel min(input_count,36)`, 완료된 p36 run은 `effective_parallel` 검증으로 정리했다.
+  - 추가 Codex `spawn_agent` 재확인에서 드러난 과거 이력의 future-facing 36-worker 문구와 "하드코딩/고정" 주석 표현을 상한/effective_parallel 및 evidence-gated wording으로 정리했다.
+- 검증:
+  - `tests.test_expert_main_input_loader` + `tests.test_expert_main_comment_metadata`: 41건 OK.
+  - `tests.test_known_title_abbreviation_support`: 16건 OK.
+  - 관련 파일 `py_compile`: OK.
+  - 관련 확장 회귀 묶음: 167건 OK.
+  - broader `py_compile` 및 `git diff --check`: OK. `git diff --check` 출력은 CRLF 경고뿐이다.
+- 판정:
+  - subagent가 찾은 P1은 targeted 기준 보강됐다.
+  - 이 변경은 특정 post id/alias 문자열 하드코딩이 아니라 입력 evidence 보존과 no-work 단조성 gate 공유다.
+  - 10만 semantic approval은 completed VLM/OCR-on source, Browser image-loading gate, random baseline, P0/P1 high-risk expansion 전까지 계속 `NO-GO/REVIEW-LOCKED`다.
+
+## IMP-20260601-283 - P2 late rescue source도 static coverage와 공통 gate를 공유한다
+
+- 상태: patched / focused+expanded validation passed / semantic approval REVIEW-LOCKED
+- 우선순위: P2 static-coverage, P1 semantic-monotonicity 예방
+- 유형: Agentic post-processing / no-work 단조성 / BatchContext alias / VLM direct image
+- 문제:
+  - v501 이후 `direct_full_title_candidate_rescued`, `post_main_official_url_title_recovered_from_null`, `direct_image_explicit_title_rescued`, `batch_memory_exact_alias_rescued`가 late rescue static coverage 후보로 남았다.
+  - 일부는 직접 원문/VLM positive path지만, static coverage상 공통 no-work gate 연결이 빠지면 다음 리뷰에서 같은 공백으로 반복 지적될 수 있다.
+- 조치:
+  - 네 source 모두 `_can_promote_title_after_semantic_no_work()`를 통과하도록 연결했다.
+  - `batch_memory_exact_alias_rescued`는 후보 반환 직전 gate를 적용하고 block metadata를 남긴다.
+  - static test expected source 목록을 확장했다.
+- 검증:
+  - `tests.test_title_lead_search_inferred_guard`: 23건 OK.
+  - VLM counter 회귀 포함 focused 묶음: 24건 OK.
+  - 관련 확장 회귀 묶음: 125건 OK.
+  - 관련 pipeline/test/audit 파일 `py_compile`: OK.
+- 판정:
+  - v501의 remaining static coverage 후보는 targeted 기준 닫혔다.
+  - 10만 semantic approval은 completed VLM/OCR-on source, Browser image-loading gate, random baseline, P0/P1 high-risk expansion 전까지 계속 `NO-GO/REVIEW-LOCKED`다.
+
+## IMP-20260601-282 - 추가 late rescue와 이미지 미로딩 text-match는 별도 gate로 드러나야 한다
+
+- 상태: patched / focused+expanded validation passed / semantic approval REVIEW-LOCKED
+- 우선순위: P1 semantic-monotonicity, P1 browser-visual-gate, P2 report-clarity
+- 유형: Agentic post-processing / VLM-OCR-browser audit / Codex subagent integration
+- 문제:
+  - subagent 감사에서 `short_alias_spoiler_recovered`, `multi_work_placeholder_collapsed`, canonical rescue lock이 no-work/context-only 공통 gate 없이 title을 되살릴 수 있는 추가 P1로 확인됐다.
+  - 이미지 로딩 실패/대기 상태에서 OCR/search/text match가 결론 근거로 쓰이면 기존 `browser_visual_or_direct_evidence_missing`만으로는 위험명이 덜 직접적이다.
+- 조치:
+  - 위 추가 title rescue source에 `_can_promote_title_after_semantic_no_work()`를 연결했다.
+  - semantic coverage audit에 `browser_loading_failed_or_pending_text_match_used` coverage와 `image_loading_failed_or_pending_text_match_used` issue를 추가했다.
+  - pending/lazy/placeholder 상태에서 resolved/OCR text-match가 있으면 `REVIEW-LOCKED`로 잡는 회귀를 추가했다.
+- 검증:
+  - `tests.test_title_lead_search_inferred_guard`: 23건 OK.
+  - `tests.test_semantic_coverage_audit`: 27건 OK.
+  - 관련 확장 회귀 묶음: 125건 OK.
+  - 관련 pipeline/test/audit 파일 `py_compile`: OK.
+- 판정:
+  - subagent가 추가로 찾은 P1은 targeted 기준 보강됐다.
+  - 이 변경은 특정 post id 하드코딩이 아니라 no-work 단조성 및 browser visual evidence gate 보강이다.
+  - 10만 semantic approval은 completed VLM/OCR-on source, Browser image-loading gate, random baseline, P0/P1 high-risk expansion 전까지 계속 `NO-GO/REVIEW-LOCKED`다.
+
+## IMP-20260601-281 - structural/comment/character rescue도 no-work 공통 gate를 통과해야 한다
+
+- 상태: patched / focused+expanded validation passed / semantic approval REVIEW-LOCKED
+- 우선순위: P1 semantic-monotonicity, P1 late-rescue, P2 helper-contract
+- 유형: Agentic post-processing / Codex subagent integration / no-work 단조성 / comment-character rescue
+- 문제:
+  - v499 이후에도 structural title rescue와 comment/character 기반 answer/page rescue가 no-work/context-only 상태를 공통 gate 없이 resolved title로 되살릴 수 있는 P1 후보로 남았다.
+  - 이 경로들은 특정 post id나 alias 하드코딩 문제가 아니라, 후단 rescue source가 앞단 자연어 no-work 판단을 다시 여는 구조적 문제다.
+  - `_has_direct_post_or_visual_work_anchor_for_no_work_search_rescue()`는 이름보다 넓은 support helper로 쓰일 수 있어 hard direct anchor와 contextual support의 경계가 흐릴 수 있다.
+- 조치:
+  - structural title rescue에 `_can_promote_title_after_semantic_no_work(..., source="structural_title_rescued")`를 추가했다.
+  - comment title answer, comment plot answer, character parenthetical, character page title rescue에도 같은 공통 gate를 연결했다.
+  - gate 실패 시 `structural_title_semantic_no_work_blocked`, `comment_plot_semantic_no_work_blocked`, `character_parenthetical_semantic_no_work_blocked`, `character_page_semantic_no_work_blocked` 같은 flag를 남긴다.
+  - session knowledge context-only/no-work 학습 차단 회귀와 late rescue source static coverage를 확장했다.
+  - 이번 라운드는 Codex `spawn_agent` 전문가 병렬로 code gate, goal/runtime docs, VLM/OCR/browser gate를 분리했다. repo `expert_main.py --parallel` worker 조정으로 대체하지 않았다.
+- 검증:
+  - `tests.test_title_lead_search_inferred_guard`: 23건 OK.
+  - 관련 확장 회귀 묶음: title-lead guard, final semantic reread, known title abbreviation, Arbiter curated alias, VLM public evidence, semantic coverage audit, goal runtime audit 총 125건 OK.
+  - 관련 pipeline/test/audit 파일 `py_compile`: OK.
+- 판정:
+  - structural/comment/character 후단 rescue의 no-work 단조성 공백은 targeted 기준 보강됐다.
+  - 남은 P2는 hard direct anchor helper와 contextual support helper 분리다.
+  - 10만 semantic approval은 completed VLM/OCR-on source, Browser image-loading gate, random baseline, P0/P1 high-risk expansion 전까지 계속 `NO-GO/REVIEW-LOCKED`다.
+
+## IMP-20260601-280 - late promotion rescue 전 경로가 no-work/context-only 공통 gate를 공유해야 한다
+
+- 상태: patched / focused validation passed / semantic approval REVIEW-LOCKED
+- 우선순위: P1 semantic-monotonicity, P1 late-promotion-rescue, P1 session-knowledge-pollution, P2 docs-hygiene
+- 유형: Agentic post-processing / Codex subagent integration / no-work 단조성 / docs gate
+- 문제:
+  - v497 공통 gate 이후에도 Codex code-path subagent가 canonical stable-hold, question-title official URL recovery, comment URL answer recovery, title-surface rescue, generic-relation alias rescue, short-support recovery, session knowledge learning 일부가 같은 gate를 공유하지 않는다고 보고했다.
+  - ARBITER `final_decision`에만 `title_resolution_allowed=false` 또는 `title_resolution_state=context_only`가 남는 경우 helper 호출자가 `final_decision`을 직접 넘기지 않으면 no-work 신호가 약해질 수 있었다.
+  - session knowledge는 BatchContext wrapper보다 별도 경로라, late rescue가 잘못 resolved를 만든 경우 alias/knowledge 오염으로 이어질 수 있었다.
+  - 문서에서는 `official/detail URL`, `검색 title/snippet`, `회차/스포/작가의 말`이 일반 evidence tier와 no-work 해제용 strict anchor처럼 함께 읽힐 여지가 있었다.
+- 조치:
+  - `_semantic_seed_no_work_signal()`이 `ctx.get_expert_output(ExpertType.ARBITER).final_decision` fallback을 읽도록 했다.
+  - `_allow_stable_hold_canonical_rescue()`는 semantic no-work/context-only 상태에서 `_has_strict_direct_work_anchor_for_no_work_rescue()` 없이는 `False`를 반환한다.
+  - question-title official URL, locked official candidate, title-surface primary, short-support anticipation, generic-relation alias, comment URL answer recovery에 `_can_promote_title_after_semantic_no_work()`를 연결했다.
+  - `_update_session_knowledge()`는 result identity/final fields가 no-work/context-only이고 strict direct anchor가 없으면 학습을 건너뛴다.
+  - `SCAN_RESULT_REVIEW_GUIDE.md`, `QUALITATIVE_SEMANTIC_REVIEW_LOOP.md`, `OPERATION_QUALITY_CHECKLIST.md`에서 일반 official/search evidence tier와 no-work 해제용 strict direct anchor를 분리했다.
+  - v499 subagent manifest/summary를 남겨 Codex subagent 병렬 검토 evidence를 파일화했다.
+- 검증:
+  - `tests.test_title_lead_search_inferred_guard`: 22건 OK.
+  - 관련 확장 회귀 묶음: title-lead guard, final semantic reread, known title abbreviation, Arbiter curated alias, VLM public evidence, semantic coverage audit, goal runtime audit 총 124건 OK.
+  - 관련 pipeline/test/audit 파일 `py_compile`: OK.
+- 판정:
+  - focused late-promotion 우회는 더 넓은 경로에서 막혔다.
+  - 이 변경은 특정 post id/문자열/오타 하드코딩이 아니라 semantic no-work sticky invariant다.
+  - 10만 semantic approval은 completed VLM/OCR-on source, Codex Browser image-loading gate, random baseline, P0/P1 high-risk expansion 전까지 계속 `NO-GO/REVIEW-LOCKED`다.
+
+## IMP-20260601-279 - no-work/context-only 후단 promotion/rescue는 strict packet anchor 없이는 금지한다
+
+- 상태: patched / focused validation passed / semantic approval REVIEW-LOCKED
+- 우선순위: P1 semantic-monotonicity, P1 final-validator-rescue, P1 candidate-promotion, P2 output-override
+- 유형: Agentic post-processing / no-work 단조성 게이트 / title 승격 / canonical rescue
+- 문제:
+  - v496은 `search_evidence_alias_inference`와 BatchContext alias rescue 직접 경로를 막았지만, Codex subagent 코드 리뷰에서 후단 공통 경로가 여전히 넓은 direct anchor 정의를 재사용할 수 있다고 확인됐다.
+  - 특히 `_title_mentioned_in_post_main_context()`는 Decoder alias 매핑을 포함할 수 있어, 원문에 정식 작품명이 없어도 "본문 단어 -> Decoder best_match.title -> direct anchor처럼 취급"되는 경로가 남을 수 있었다.
+  - official detail URL, search evidence, canonical convergence, episode ref 단독은 작품 존재/검색 근거일 수 있으나 no-work/context-only 발화 의도를 특정 작품 토론으로 바꾸는 직접 앵커가 아니다.
+- 조치:
+  - `_has_strict_direct_work_anchor_for_no_work_rescue()`와 `_can_promote_title_after_semantic_no_work()`를 추가해 no-work/context-only 이후 후단 title 승격/rescue를 공통 gate로 통합했다.
+  - strict anchor는 원문 title/body/comment의 직접 작품 표면, VLM/OCR 직접 작품 표면, image primary work anchor, verified character-work link, compound title-character bridge로 제한했다.
+  - `_has_direct_work_anchor_for_no_work_rescue()` semantic 분기를 strict helper 기반으로 축소했다.
+  - `_compute_title_acceptance()`는 no-work/context-only + direct anchor 없음이면 `semantic_no_work_block=true`, `decision=reject`로 고정한다.
+  - `_try_promote_best_candidate()`, `_pick_safe_single_candidate_unresolved_promotion()`, recommendation guard override, irrelevant canonical rescue block에 공통 gate를 연결했다.
+  - Decoder alias + official URL + episode ref 조합, candidate promotion, single-candidate promotion, direct image positive path 회귀를 추가했다.
+- 검증:
+  - `tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest`: 19건 OK.
+  - `py_compile src\llm_batch\agentic_pipeline.py tests\test_title_lead_search_inferred_guard.py`: OK.
+  - 확장 회귀 묶음: title-lead guard, final semantic reread, known title abbreviation, Arbiter curated alias, VLM public evidence, semantic coverage audit, goal runtime audit 총 121건 OK.
+  - 관련 pipeline/test/audit 파일 `py_compile`: OK.
+- 판정:
+  - v496 직접 경로 보강에 이어 v497은 후단 공통 승격/rescue 단조성 gate를 넓혔다.
+  - 이 변경은 특정 post id/표현 하드코딩이 아니라 no-work/context-only sticky invariant다.
+  - 10만 semantic approval은 completed source, random baseline, P0/P1 high-risk expansion 전까지 계속 `NO-GO/REVIEW-LOCKED`다.
+
+## IMP-20260601-278 - no-work/context-only 후단 search alias rescue는 official URL만으로 열지 않는다
+
+- 상태: patched / focused validation passed / semantic approval REVIEW-LOCKED
+- 우선순위: P1 semantic-monotonicity, P1 batch-alias-rescue, P1 no-work-sticky-gate
+- 유형: Agentic post-processing / search evidence alias inference / BatchContext rescue / semantic gate
+- 문제:
+  - `11718080`류 글은 자연어적으로 특정 작품 감상/검색이 아니라 "소설 같이 볼 친구가 있었으면" 같은 한탄/잡담이다.
+  - 앞단 `semantic_seed_review`가 no-work/context-only를 표시해도, 후단 `_search_inferred_alias_nonwork_block_reason()`이 `_has_official_title_evidence()`를 강한 앵커로 보아 search-inferred alias 또는 BatchContext rescue를 다시 열 수 있었다.
+  - 공식 플랫폼 상세 URL은 작품 존재 증거일 수 있지만, no-work/context-only 발화 의도를 특정 작품 토론으로 바꾸는 직접 앵커는 아니다.
+- 조치:
+  - `_search_inferred_alias_nonwork_block_reason()`의 no-work 해제 기준을 `_has_direct_post_or_visual_work_anchor_for_no_work_search_rescue()`로 통일했다.
+  - `verification_result.title_resolution_state=context_only`, `title_resolution_allowed=false`처럼 discourse 원본 없이 공개 final field만 남은 no-work도 `_semantic_seed_no_work_signal()`로 block reason에 반영한다.
+  - official detail URL이 있어도 direct post/visual work anchor가 없으면 `semantic_seed_no_work_context`로 search-inferred alias와 batch alias rescue를 차단하는 회귀를 추가했다.
+  - VLM/OCR direct image title이 있는 `11718082`류 positive path는 계속 허용되는 회귀를 함께 추가했다.
+  - review guide와 semantic loop 문서에 `context_only_late_rescue_without_direct_anchor` bucket을 추가했다.
+- 검증:
+  - `tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest`: 15건 OK.
+  - `py_compile src\llm_batch\agentic_pipeline.py tests\test_title_lead_search_inferred_guard.py`: OK.
+- 판정:
+  - official URL only late rescue 공백은 targeted 기준 닫혔다.
+  - 이 변경은 post id/문자열 하드코딩이 아니라 no-work/context-only 단조성 invariant다.
+  - 10만 semantic approval은 completed source, random baseline, P0/P1 high-risk expansion 전까지 계속 `NO-GO/REVIEW-LOCKED`다.
+
+## IMP-20260601-277 - Codex goal subagent 병렬 운영과 expert_main runtime 병렬도를 분리한다
+
+- 상태: guidance patched / subagent round used / semantic approval REVIEW-LOCKED
+- 우선순위: P1 goal-operation, P1 review-gate, P2 docs-hygiene
+- 유형: Codex goal orchestration / review workflow / docs checklist sync
+- 문제:
+  - 사용자가 요구한 "여러 전문가와 병렬"은 Codex `/goal` 자체를 `spawn_agent` subagent로 나누자는 뜻인데, repo runtime `expert_main.py --parallel` worker 수 조정과 섞이면 작은 targeted run을 불필요하게 반복 실행할 수 있다.
+  - 과거 docs/checklist에는 `--parallel 36`/36워커 runtime 이력이 많아 새 작업자가 Codex subagent 병렬 지침으로 오독할 위험이 있다.
+  - subagent 보고와 runtime `GO`, targeted canary `GO`, semantic approval gate가 섞이면 10만 건 품질 승인 근거가 과장될 수 있다.
+- 조치:
+  - 이번 라운드에서 `docs/guidance`, `VLM/browser coverage`, `subagent operation model`을 별도 subagent로 병렬 검토했다.
+  - `SCAN_RESULT_REVIEW_GUIDE.md`를 canonical로 두고, goal에서 "여러 전문가/병렬 검토"가 나오면 먼저 `spawn_agent` 축을 선언하고 실제 subagent를 배정하도록 강화했다.
+  - `QUALITATIVE_SEMANTIC_REVIEW_LOOP.md`와 `SAMPLING_AND_PARALLEL_TEST_GUIDE.md`에 subagent 부족을 `expert_main.py --parallel` 재실행으로 대체하지 않는다고 명시했다.
+  - `OPERATION_QUALITY_CHECKLIST.md`와 `CHECKLIST.md`에 과거 36워커 기록은 runtime 이력이며 Codex goal subagent 병렬 지침이 아니라는 해석 가드를 추가했다.
+  - v493은 VLM/OCR public counter schema 공백, v494는 Browser visual artifact linkage 공백을 닫은 별도 라운드로 분리 기록했다.
+- 검증:
+  - subagent 3개 축의 읽기 전용 보고를 받아 메인 Codex가 문서 반영 범위와 v493/v494 gate 경계를 재확인했다.
+  - v494 semantic coverage audit은 `gate=GO`, `issues=[]`지만 `semantic_approval=not_granted_by_semantic_coverage_audit`로 남아 있다.
+- 판정:
+  - Codex goal subagent 병렬 운영 지침은 보강됐다.
+  - runtime worker cap, shard 수, 내부 LLM 전문가 체인 병렬은 별도 runtime 최적화 계층이다.
+  - 10만 semantic approval은 completed VLM/OCR-on source, random baseline, P0/P1 high-risk expansion, Browser visual/image-loading gate 전까지 계속 `NO-GO/REVIEW-LOCKED`다.
+
+## IMP-20260601-276 - VLM/OCR 실행 counter를 public result identity에 보존한다
+
+- 상태: patched / live canary passed / runtime GO / semantic coverage REVIEW-LOCKED
+- 우선순위: P1 VLM-observability, P1 review-packet-quality, P2 browser-artifact-linkage
+- 유형: result schema / Agentic pipeline output / semantic coverage audit
+- 문제:
+  - VLM/OCR counter는 `_maybe_enrich_post_images()` 이후 `ctx.post_data`에 있었지만 `PickvelIdentity` 모델에 필드가 없어 `result.model_dump()` public row에서 사라졌다.
+  - 이 때문에 `11718082`처럼 실제 VLM/OCR이 돈 row도 review packet만 보면 image catalog는 있으나 실행 증거가 없어 `image_catalog_present_but_vlm_counter_missing`으로 잠겼다.
+- 조치:
+  - `PickvelIdentity`에 `vlm_enabled`, `ocr_enabled`, `vlm_enrichment_used`, `image_fetch_count`, `image_fetch_success`, `vlm_chunks_sent`, `vlm_total_bytes`, `image_enrichment_limitations`를 추가했다.
+  - `_build_image_execution_public_fields()`를 추가해 이미지 관련 신호가 있는 row에만 counter를 공개한다.
+  - `_context_to_output()`에서 `ctx.post_data` counter를 public identity로 조인한다.
+  - `_context_to_output()` 경계 회귀 테스트를 추가했다.
+- 검증:
+  - v493 live canary completed/failed/pending: `2/0/0`.
+  - `11718082` public identity: `image_fetch_count=1`, `image_fetch_success=1`, `vlm_chunks_sent=1`, `vlm_total_bytes=28264`.
+  - v493 semantic coverage audit: `image_catalog_present_but_vlm_counter_missing=0`, `image_ocr_reason_without_public_vlm_counter=0`.
+  - v493 runtime audit: `runtime_contract=GO`, issues `[]`.
+  - `tests.test_agentic_pipeline_rework.AgenticPipelineVLMTest`, `tests.test_semantic_coverage_audit`, `tests.test_goal_test_run_contract_audit`: 60건 OK.
+- 판정:
+  - VLM/OCR 실행 증거의 public schema 공백은 닫혔다.
+  - Browser visual/direct evidence artifact linkage가 남아 semantic coverage는 계속 `REVIEW-LOCKED`다.
+  - 10만 semantic approval은 계속 `NO-GO/REVIEW-LOCKED`다.
+
+## IMP-20260601-275 - 이미지/VLM public evidence와 Codex subagent 통합 산출물을 분리한다
+
+- 상태: patched / focused validation passed / runtime GO / semantic coverage REVIEW-LOCKED
+- 우선순위: P1 VLM-observability, P1 semantic-review-gate, P2 subagent-ops
+- 유형: semantic coverage audit / runtime contract audit / Codex subagent report contract
+- 문제:
+  - `11718082`처럼 이미지 OCR/VLM으로 작품명을 맞힌 케이스도 public row에 `image_evidence_catalog`만 있고 VLM/OCR fetch/chunk counter와 Browser visual artifact linkage가 없으면, 다음 reviewer가 실제 VLM/OCR 실행 여부를 로그에 의존해야 한다.
+  - `image_evidence_catalog` 존재를 VLM/OCR 실행 증거로 오독하면 text/OCR 문자열만으로 `Strong` evidence 또는 semantic `GO`를 열 위험이 있다.
+  - Codex goal subagent 병렬 검토 결과를 manifest/summary로 남기지 않으면 repo runtime `--parallel`과 subagent 병렬이 다시 섞일 수 있다.
+- 조치:
+  - `tools/build_semantic_coverage_audit.py`가 image catalog와 VLM/OCR fetch/chunk counter를 분리 audit한다.
+  - `image_catalog_present_but_vlm_counter_missing`, `image_ocr_reason_without_public_vlm_counter`, `image_evidence_catalog_unreviewable`, `browser_loading_ok_but_visual_artifact_missing` issue를 추가했다.
+  - `tools/audit_goal_test_run_contract.py`가 `llm_endpoint`, `mcp_health_ok_count`, `mcp_health_failure_count`를 small goal/test runtime audit 필드로 검증한다.
+  - `qualitative_review/20260528_141006_620986/v492_subagent_review_manifest.json`와 `v492_subagent_review_summary_ko.md`를 추가했다.
+  - scan/semantic review 문서에 subagent report contract와 initial triage vs 10만 approval sample size 구분을 추가했다.
+- 검증:
+  - `tests.test_semantic_coverage_audit`: 27건 OK.
+  - `tests.test_goal_test_run_contract_audit`: 18건 OK.
+  - 관련 `py_compile`: OK.
+  - v492 runtime audit: `runtime_contract=GO`, issues `[]`.
+  - v492 semantic coverage audit: `11718082`가 public VLM/OCR counter와 Browser visual artifact 누락으로 `REVIEW-LOCKED`.
+- 판정:
+  - runtime canary는 정상이나 semantic coverage gate는 의도대로 닫혔다.
+  - 다음 구현은 result row에 VLM/OCR fetch/chunk/bytes/status counter를 조인하고, Codex in-app Browser artifact를 packet/result에 연결하는 것이다.
+  - 10만 semantic approval은 계속 `NO-GO/REVIEW-LOCKED`다.
+
+## IMP-20260601-274 - Goal runtime health 증거를 manifest/run_meta까지 보존한다
+
+- 상태: patched / live canary passed / runtime audit GO / semantic approval REVIEW-LOCKED
+- 우선순위: P1 runtime-audit, P1 manifest-contract, P2 VLM-observability
+- 유형: expert_main manifest contract / post-run audit / Codex subagent review integration
+- 문제:
+  - v490 live canary는 로그상 `include_search=false`, `light_mode=true`, `checked=2`, `required_ok=2`로 정상 동작했지만 최종 manifest와 row `run_meta`에는 `mcp_health_*` 필드가 없었다.
+  - audit 도구가 missing health field를 `GO`로 통과시키면 runtime 증거가 로그에만 남아 다음 goal에서 재현 가능한 계약이 약해진다.
+  - 사용자가 요청한 병렬 검토는 Codex `spawn_agent` 전문가 병렬인데, repo runtime `--parallel 36`과 섞이면 작은 canary를 불필요하게 재실행하는 비용 문제가 생긴다.
+- 조치:
+  - Codex goal을 `runtime/shard`, `VLM/OCR/browser`, `semantic/prompt`, `docs/gate` subagent 축으로 병렬 검토하고 메인 Codex가 live artifact로 통합했다.
+  - `expert_main.py` 최종 manifest와 row `run_meta`에 `llm_endpoint` 및 `mcp_health_*` 필드를 추가했다.
+  - `tools/audit_goal_test_run_contract.py`가 small goal/test run에서 health manifest field missing을 `REVIEW`로 승격한다.
+  - v491 live canary는 입력 2건에 맞춰 `--parallel 2`로 실행해 `requested_parallel=2`, `effective_parallel=2`를 남겼다. Gemma 4 4B max 36은 대형/상한 검증용이며 작은 입력을 36 worker로 맞추려고 재실행하지 않는다.
+- 검증:
+  - v490 preflight: `llm=GO`, `mcp=GO`, `open=2/2`.
+  - v490 after-fix audit: 기존 manifest health field missing으로 `runtime_contract=REVIEW`가 되었고 누락을 잡았다.
+  - v491 live audit: `runtime_contract=GO`, issues `[]`.
+  - v491 manifest: `mcp_health_include_search=false`, `mcp_health_light_mode=true`, `mcp_health_required_ok_count=2`, `mcp_health_checked_endpoint_count=2`, `mcp_health_probe_batch_size=2`, `mcp_health_workers=2`.
+  - `tests.test_goal_test_run_contract_audit`: 16건 OK.
+  - `tests.test_expert_main_input_loader`: 33건 OK.
+  - 관련 `py_compile`: OK.
+- 판정:
+  - small goal/test runtime health evidence는 manifest/run_meta/audit까지 닫혔다.
+  - `11718082`는 VLM/OCR 미실행이 아니라 public 구조 증거가 약했던 과거 관측성 문제로 분류한다.
+  - `11718080`은 작품 매칭 대상이 아닌 장르/사회적 한탄으로 유지되며, 후단 rescue invariant는 계속 확대 검증 대상이다.
+  - runtime `GO`와 targeted canary `GO`는 10만 semantic approval이 아니다. approval은 계속 `NO-GO/REVIEW-LOCKED`다.
+
+## IMP-20260601-273 - v488 health manifest 필드를 goal runtime audit에 연결한다
+
+- 상태: patched / focused validation passed / semantic approval REVIEW-LOCKED
+- 우선순위: P1 runtime-audit, P1 goal-test-loop, P2 observability
+- 유형: post-run audit / MCP health accounting / runtime contract
+- 문제:
+  - v488에서 `expert_main.py`가 light health 필드를 남기게 되었지만, post-run 감사 도구가 이 필드를 읽지 않으면 다음 small run에서 search health 비용 회귀를 놓칠 수 있었다.
+  - runtime `GO`는 Docker lifecycle과 parallel만 확인하면 부족하다. small goal/reuse-only에서는 `include_search=false`, light mode, required-ok/checked count도 함께 봐야 한다.
+- 조치:
+  - `tools/audit_goal_test_run_contract.py`에 `mcp_health_*` 관측 필드를 추가했다.
+  - small run에서 `mcp_health_include_search=true` 또는 `mcp_health_light_mode=false`이면 `REVIEW` issue를 낸다.
+  - health count 모순은 `NO-GO` issue로 승격한다.
+  - 감사 markdown에 health 상태 요약을 추가했다.
+- 검증:
+  - `tests.test_goal_test_run_contract_audit`: 15건 OK.
+  - `py_compile tools\audit_goal_test_run_contract.py tests\test_goal_test_run_contract_audit.py`: OK.
+- 판정:
+  - v488 light-health runtime 계약이 post-run audit gate까지 이어졌다.
+  - 다음 live small run에서 실제 manifest/log를 감사해야 실서버 증거가 닫힌다.
+  - semantic approval은 계속 `NO-GO/REVIEW-LOCKED`다.
+
+## IMP-20260601-272 - Small goal/reuse-only health check를 light mode로 낮춘다
+
+- 상태: patched / focused validation passed / semantic approval REVIEW-LOCKED
+- 우선순위: P1 runtime-startup-cost, P1 goal-test-loop, P2 observability
+- 유형: expert_main startup health / MCP endpoint probing / Codex subagent review integration
+- 문제:
+  - 현재 `expert_main.py --parallel 36`은 small input에서 실제 worker를 input count로 낮추지만, stale explicit `MCP_ENDPOINTS`가 36개 남아 있으면 health loop가 filter 전에 전체 endpoint를 probe할 수 있었다.
+  - small/reuse-only goal run은 Docker lifecycle이 막혀 있는데도 `MCP_HEALTH_INCLUDE_SEARCH` 기본값이 true가 되어 endpoint마다 실제 search health를 수행할 수 있었다.
+  - 이 비용은 semantic 판정 품질 문제가 아니라 startup/runtime 운영 문제인데, repo runtime `--parallel`과 Codex goal `spawn_agent` 병렬이 섞여 해석될 위험이 있었다.
+- 조치:
+  - Codex goal을 `runtime/shard`, `VLM/OCR/browser`, `semantic/prompt`, `docs/checklist` subagent 축으로 병렬 검토하고 메인 Codex가 통합했다.
+  - `_mcp_goal_run_light_health_mode()`와 `_default_mcp_health_include_search()`를 추가해 small/reuse-only run은 기본 Bridge readiness만 확인한다.
+  - `_mcp_health_required_ok_count()`와 `_mcp_health_probe_batch_size()`를 추가해 필요한 healthy endpoint 수를 확보하면 남은 stale endpoint probe를 생략한다.
+  - health 관련 manifest/run config 필드를 추가해 다음 감사에서 startup health 비용을 직접 볼 수 있게 했다.
+- 검증:
+  - `tests.test_expert_main_input_loader`: 33건 OK.
+  - `py_compile expert_main.py tests\test_expert_main_input_loader.py`: OK.
+- 판정:
+  - small goal/test loop의 불필요한 endpoint/search readiness 비용을 줄였다.
+  - 실제 live run의 log/manifest 확인은 다음 실행에서 필요하다.
+  - 이 runtime 보정은 10만 semantic approval 근거가 아니며 gate는 계속 `NO-GO/REVIEW-LOCKED`다.
+
+## IMP-20260601-271 - Search alias stability를 hard support와 분리한다
+
+- 상태: patched / focused validation passed / semantic approval REVIEW-LOCKED
+- 우선순위: P1 semantic-stability, P1 Verifier-veto, P1 canonical-rescue
+- 유형: Agentic post-processing / search alias stability / natural-language evidence boundary / subagent review integration
+- 문제:
+  - `_has_title_abbrev_stability_signal()`은 비공식 검색 alias 반복도 `True`로 반환할 수 있는데, 일부 후단에서는 이 raw bool이 Verifier veto override, structural rescue, canonical rescue strong/lock 보조처럼 쓰였다.
+  - `11718080`류 no-work 글은 앞단 의미판정이 맞아도 후단 search/alias/BatchContext rescue가 다시 resolved work로 되살릴 수 있었다.
+  - `11718082`류 이미지 글은 VLM이 돌았는지 여부보다 packet/result에 image catalog/chunk/browser visual 증거가 남는지가 semantic review gate의 핵심이다.
+- 조치:
+  - `_has_title_abbrev_stability_hard_support()`를 추가해 raw stability와 hard support를 분리했다.
+  - hard support는 official title evidence, 원문 full title 표면, direct image title, image primary promotion, verified character-work link, compound title-character bridge로 제한했다.
+  - J1 Verifier veto override, multi-source consensus, structural rescue, canonical rescue strength, canonical candidate selection, J0.6 final rescue, candidate promotion, final rejection profile, nonrelevant candidate exposure 일부는 hard support를 요구한다.
+  - 비공식 검색 alias stability만 있는 actual `_context_to_output()` 회귀와 canonical rescue soft-only 회귀를 추가했다.
+- 검증:
+  - `tests.test_title_lead_search_inferred_guard` focused 2건 OK.
+  - `tests.test_title_lead_search_inferred_guard`, `tests.test_known_title_abbreviation_support`, `tests.test_arbiter_curated_alias_guard`, `tests.test_goal_action_queue`: 48건 OK.
+  - 관련 `py_compile`: OK.
+- 판정:
+  - soft alias stability가 강한 자연어 근거처럼 증폭되는 대표 경로는 줄었다.
+  - raw `abbrev_stable`은 아직 일부 진단/차단/랭킹 보조 경로에 남아 있으므로 새 실패 pattern 기반으로 추가 축소한다.
+  - completed VLM/OCR-on source, browser visual evidence, random baseline 1000, P0/P1 high-risk expansion 전까지 10만 semantic approval은 닫지 않는다.
+
+## IMP-20260601-270 - Arbiter Verifier veto actual branch와 packet label closure를 분리한다
+
+- 상태: patched / focused validation passed / packet label blocker closed / semantic approval REVIEW-LOCKED
+- 우선순위: P1 hardcoded-alias-risk, P1 Arbiter-actual-branch, P1 action-queue-hygiene
+- 유형: Arbiter actual path regression / hardcoded alias packet label reconciliation / action queue status
+- 문제:
+  - v485 이후 `Arbiter title veto actual branch`는 helper 테스트보다 actual `analyze()` 경로 검증이 더 필요했다.
+  - v485 action queue는 v409 원라벨을 다시 참조해 v465에서 닫힌 hardcoded alias packet label 후속을 stale blocker처럼 보이게 만들었다.
+  - packet label gate가 `GO`여도 `hardcoded_alias_packet_label_followup`이 `ready_review`로 남아 실행 큐 의미가 흐려졌다.
+- 조치:
+  - Verifier `is_relevant=false` actual branch에서 약칭 표면만 있고 hard support가 없으면 `official_title=null`, `_verifier_veto_exempt=false`가 유지되는 회귀를 추가했다.
+  - post-title abbreviation + official/detail hard support가 있으면 actual branch에서 `_verifier_veto_exempt=true`와 resolved title이 유지되는 positive control을 추가했다.
+  - v465 closure labels를 v486 action queue 입력으로 사용해 `hardcoded_alias_packet_effective_gate=GO`, `hardcoded_alias_packet_closed_by_labels=true`, `hardcoded_alias_packet_label_gate=GO`를 확인했다.
+  - `build_goal_action_queue.py`는 label gate가 `GO`이면 followup action을 `closed_by_packet_labels` / `executable_now=false`로 표시한다.
+- 검증:
+  - `tests.test_arbiter_curated_alias_guard`: 15건 OK.
+  - `tests.test_goal_action_queue`, `tests.test_arbiter_curated_alias_guard`: 22건 OK.
+  - 관련 `py_compile`: OK.
+- 판정:
+  - Arbiter title veto actual branch와 hardcoded alias packet label stale blocker는 targeted 기준 줄었다.
+  - stability boolean이 J1 override, structural rescue, canonical rescue에서 hard support 없이 High/lock 보조가 되는지는 다음 P1이다.
+  - completed VLM/OCR-on source와 expanded random/high-risk review 전까지 10만 semantic approval은 닫지 않는다.
+
+## IMP-20260601-269 - Agentic registry alias provenance와 후단 rewrite guard를 끝까지 보존한다
+
+- 상태: patched / focused validation passed / registry risk REVIEW / semantic approval REVIEW-LOCKED
+- 우선순위: P1 hardcoded-alias-risk, P1 Agentic-post-processing, P1 review-packet-provenance
+- 유형: Agentic final serialization / hardcoded alias / title rewrite guard / qualitative review label
+- 문제:
+  - v484는 registry direct promotion을 `Medium/registry_anchor_only`로 낮췄지만, 그 metadata가 최종 output/reason/review packet에 빠지면 자연어 리뷰에서 Strong처럼 오독될 수 있었다.
+  - `_apply_known_abbreviation_title_guard()`는 registry alias + suspected/decoder/search 반복 같은 soft support만으로 final title rewrite를 열 수 있었다.
+  - title-lead alias search inferred candidate는 비공식 검색 반복만으로도 `High` 후보가 될 수 있었다.
+- 조치:
+  - `alias_resolution_sources`에 promotion tier/confidence/support/demotion flag를 직렬화하고, reason에도 registry-only evidence boundary를 노출했다.
+  - J11 title drift는 curated alias lock + 같은 promotion title이면 registry-only provenance를 지우지 않는다.
+  - `_apply_known_abbreviation_title_guard()`의 hardcoded registry source rewrite는 official/detail/direct hard support 없이는 차단한다.
+  - candidate fallback과 title-lead search inferred path에서 hard support 없는 alias stability/search support는 `High`로 유지하지 않는다.
+  - round2/LLM judgment review packet에 alias provenance를 보존하고, registry-only weak resolved row를 `HOLD/re_judge`로 라벨링한다.
+- 검증:
+  - `tests.test_known_title_abbreviation_support`, `tests.test_title_lead_search_inferred_guard`, `tests.test_qualitative_review_packet_tools`: 78건 OK.
+  - 관련 `py_compile`: OK.
+  - v485 risk audit: `KNOWN_ABBREVIATIONS` positive usage `69`, `KNOWN_TITLE_ABBREVIATIONS` positive usage `19`, positive blocker `2`.
+  - v485 action queue: `semantic_approval=REVIEW-LOCKED`, approval blockers 9개 유지.
+- 판정:
+  - Agentic 후단 alias evidence overstatement/rewrite 경로는 targeted 기준 줄었다.
+  - Arbiter title veto actual branch와 stability `High` 보조 경로는 후속이다.
+  - completed source와 expanded random/high-risk review 전까지 10만 semantic approval은 닫지 않는다.
+
+## IMP-20260601-268 - Agentic registry alias direct High promotion을 evidence-tier로 낮춘다
+
+- 상태: patched / focused validation passed / registry risk REVIEW / semantic approval REVIEW-LOCKED
+- 우선순위: P1 hardcoded-alias-risk, P1 Agentic-direct-promotion, P1 confidence-evidence-boundary
+- 유형: Agentic post-processing / hardcoded alias / confidence tier / natural-language evidence boundary
+- 문제:
+  - v479는 registry alias promotion 전에 post-side work anchor를 요구했지만, anchor가 통과하면 `_try_promote_best_candidate()`가 official/detail evidence 없이도 `High`를 반환할 수 있었다.
+  - registry alias + work anchor는 후보 검토 조건이지, 10만 결과 승인이나 `High` 확정 근거가 아니다.
+- 조치:
+  - registry direct promotion에서 hard support를 별도로 평가한다.
+  - hard support는 official title evidence, official detail URL, 원문 full title 직접 표면, direct image title, image primary title, verified character-work link, compound title-character bridge 중 하나로 제한했다.
+  - hard support가 없으면 `confidence=Medium`, `evidence=registry_anchor_only`, `_known_abbreviation_promotion_demoted_without_hard_evidence=True`로 낮춘다.
+- 검증:
+  - `tests.test_known_title_abbreviation_support`: registry+anchor Medium, official evidence High, `KNOWN_ABBREVIATIONS` Medium demotion을 확인했다.
+  - 관련 unittest 59건 OK, 관련 `py_compile` OK.
+  - v484 risk audit: `KNOWN_ABBREVIATIONS` positive usage `69`, `KNOWN_TITLE_ABBREVIATIONS` positive usage `19`, positive blocker `2`.
+  - v484 action queue: `semantic_approval=REVIEW-LOCKED`, approval blockers 5개 유지.
+- 판정:
+  - Agentic direct High 과확정 경로 하나는 targeted 기준 줄었다.
+  - `_apply_known_abbreviation_title_guard()` rewrite, stability/lock 증폭, Arbiter title veto actual branch가 후속으로 남는다.
+  - completed source와 expanded random/high-risk review 전까지 10만 semantic approval은 닫지 않는다.
+
+## IMP-20260601-267 - Arbiter alias-only guard exception을 actual decision-path에서 차단한다
+
+- 상태: patched / actual branch validation passed / registry risk REVIEW / semantic approval REVIEW-LOCKED
+- 우선순위: P1 hardcoded-alias-risk, P1 Arbiter-decision-path, P1 no-work-rescue-guard
+- 유형: Arbiter post-processing / multi_work guard / meme guard / low-confidence guard / alias-only anchor
+- 문제:
+  - v482에서 strong/official helper 계약은 정리했지만, 실제 `analyze()` 후처리에서는 abbreviation-only anchor와 official support가 결합되어 `meme` 또는 `low-confidence` guard 면제를 열 수 있었다.
+  - helper-only 테스트는 실제 final decision이 null/보존되는지 증명하지 못한다.
+- 조치:
+  - `meme/noise` guard의 verified-alias 면제에서 `title_abbrev_mention` / `body_abbrev_mention`은 curated alias guard exception 통과 시에만 허용한다.
+  - `low-confidence` guard의 abbreviation verified 면제도 abbreviation-only anchor이면 curated alias guard exception이 없을 때 무효화한다.
+  - actual `analyze()` 테스트로 multi-work alias-only negative, multi-work work-anchor positive, meme no-work negative, low-confidence no-work negative를 고정했다.
+- 검증:
+  - `tests.test_arbiter_curated_alias_guard`: 13건 OK.
+  - 관련 `py_compile`: OK.
+  - v483 risk audit: `KNOWN_ABBREVIATIONS` positive usage `69`, `KNOWN_TITLE_ABBREVIATIONS` positive usage `19`, positive blocker `2`.
+  - v483 action queue: `semantic_approval=REVIEW-LOCKED`, approval blockers 5개 유지.
+- 판정:
+  - Arbiter의 대표 alias-only actual branch는 targeted 기준 줄었다.
+  - Agentic `_try_promote_best_candidate()`의 `KNOWN_* -> High` direct rescue는 v484에서 confidence/evidence tier 계약으로 낮췄다.
+  - completed source와 expanded random/high-risk review 전까지 10만 semantic approval은 닫지 않는다.
+
+## IMP-20260601-266 - Arbiter strong support와 official evidence helper 계약을 분리한다
+
+- 상태: patched / focused validation passed / decision-path regression pending / registry risk REVIEW / semantic approval REVIEW-LOCKED
+- 우선순위: P1 hardcoded-alias-risk, P1 Arbiter-evidence-contract, P1 source-quality
+- 유형: Arbiter support helper / official evidence / hardcoded alias boundary / short-title overmatch
+- 문제:
+  - Arbiter `_has_strong_title_support()`는 source quality 계산 로직이 있어도 반환 계약이 불명확하면 official/detail evidence와 약칭 hint의 경계가 흐려질 수 있었다.
+  - `_has_official_title_evidence()`가 broad strong support와 섞이면 `known_abbreviation`/registry hint가 official evidence처럼 쓰일 위험이 있다.
+  - 짧은 제목은 공식 상세 검색 결과 title 안의 substring만으로도 오탐될 수 있었다.
+- 조치:
+  - `_has_strong_title_support()`가 active official detail/search hit, deleted/community/listing state, search trust score를 계산한 뒤 정상 반환하도록 고정했다.
+  - `_has_official_title_evidence()`는 official platform detail URL과 fetched official detail title match만 확인하며 registry/abbreviation hint를 보지 않는다.
+  - short title match는 token boundary를 요구해 substring-only official evidence를 막았다.
+- 검증:
+  - `tests.test_arbiter_curated_alias_guard`: 9건 OK.
+  - 관련 `py_compile`: OK.
+  - v482 risk audit: `KNOWN_ABBREVIATIONS` positive usage `69`, `KNOWN_TITLE_ABBREVIATIONS` positive usage `19`, positive blocker `2`.
+  - v482 action queue: `semantic_approval=REVIEW-LOCKED`, approval blockers 5개 유지.
+- 판정:
+  - Arbiter helper 계약은 targeted 기준 정리됐다.
+  - actual decision-path regression은 후속으로 남긴다.
+  - hardcoded alias registry 전체와 10만 semantic approval은 닫지 않는다.
+
+## IMP-20260601-265 - Arbiter registry-only guard exception을 post-side work anchor 조건 뒤로 이동한다
+
+- 상태: patched / helper validation passed / decision-path regression pending / registry risk REVIEW / semantic approval REVIEW-LOCKED
+- 우선순위: P1 hardcoded-alias-risk, P1 Arbiter-guard-exception, P1 evidence-boundary
+- 유형: hardcoded alias / Arbiter multi_work guard / meme guard / low-confidence guard / verifier veto exception
+- 문제:
+  - Arbiter `multi_work`, `meme/noise`, `low-confidence` guard에서 `KNOWN_ABBREVIATIONS` key/value match만으로 차단을 면제할 수 있었다.
+  - `KNOWN_TITLE_ABBREVIATIONS` verifier/veto exception도 hard support 조건은 있었지만 decoder alignment가 registry map 일치만으로 통과할 수 있는 여지가 있었다.
+- 조치:
+  - `_has_curated_alias_guard_exception()` 계열 helper를 추가했다.
+  - raw registry match 대신 정식 title 직접 원문 표면, verified character-work link, 등록 약칭 surface + post-side work anchor, non-character decoder/verifier anchor support를 요구한다.
+  - `multi_work`, `meme/noise`, `low-confidence`, title veto exception 경로에 helper 조건을 적용했다.
+- 검증:
+  - `tests.test_arbiter_curated_alias_guard`: 4건 OK.
+  - 관련 `py_compile`: OK.
+  - v481 risk audit: `KNOWN_ABBREVIATIONS` positive usage `69`, `KNOWN_TITLE_ABBREVIATIONS` positive usage `19`, positive blocker `2`.
+  - v481 action queue: `semantic_approval=REVIEW-LOCKED`, approval blockers 5개 유지.
+- 판정:
+  - Arbiter registry-only guard exception은 targeted 기준 줄었다.
+  - helper-only 테스트이므로 actual decision-path regression은 후속으로 남긴다.
+  - `_has_strong_title_support()` / `_has_official_title_evidence()` 반환 구조 의심은 별도 P1 구조 버그 후보로 둔다.
+
+## IMP-20260601-264 - Agentic 등록 약칭 surface와 강한 alias support를 분리한다
+
+- 상태: patched / focused validation passed / registry risk REVIEW / semantic approval REVIEW-LOCKED
+- 우선순위: P1 hardcoded-alias-risk, P1 Agentic-support-score, P1 evidence-boundary
+- 유형: hardcoded alias / Agentic alias support / support kinds / explicit title support
+- 문제:
+  - v479 이후 direct promotion/stability/lock은 줄었지만, `_has_alias_title_support()`는 등록 약칭이 title/body에 보이면 바로 `True`를 반환할 수 있었다.
+  - `_collect_title_support_kinds()`는 등록 약칭 surface 하나를 `known_abbreviation_alias`와 `post_main_mention` 두 근거처럼 계산할 수 있었다.
+- 조치:
+  - `_has_alias_title_support()`에 `_has_curated_alias_resolution_anchor()` 조건을 적용했다.
+  - `_collect_title_support_kinds()`는 anchor를 통과한 등록 약칭에 `known_abbreviation_alias`, `curated_alias_work_anchor`를 기록하고, full title 직접 언급이 아닌 경우 `post_main_mention`을 추가하지 않는다.
+  - bare alias/context-only negative의 alias support, support kinds, explicit support 실패를 회귀로 고정했다.
+- 검증:
+  - `tests.test_known_title_abbreviation_support`: 9건 OK.
+  - 관련 `py_compile`: OK.
+  - v480 risk audit: `hardcoded_alias_gate=REVIEW`, positive blocker `2`.
+  - v480 action queue: `semantic_approval=REVIEW-LOCKED`, approval blockers 5개 유지.
+- 판정:
+  - Agentic 보조 support helper의 registry-only 우회는 targeted 기준 줄었다.
+  - Arbiter guard exception과 정적 registry positive path가 남아 hardcoded alias risk 전체는 닫지 않는다.
+
+## IMP-20260601-263 - Agentic 등록 약칭 promotion/stability/lock에 post-side work anchor를 요구한다
+
+- 상태: patched / focused validation passed / registry risk REVIEW / semantic approval REVIEW-LOCKED
+- 우선순위: P1 hardcoded-alias-risk, P1 no-work-rescue-guard, P1 Agentic-stability-lock
+- 유형: hardcoded alias / Agentic promotion / stability signal / title lock / action queue
+- 문제:
+  - v478 이후 Decoder의 registry-only rescue는 줄었지만, Agentic에서 등록 약칭 표면이 direct `High` promotion, abbreviation stability, title lock으로 이어질 수 있는 경로가 남아 있었다.
+  - social lament/no-work 글은 LLM 자연어 이해상 특정 작품 찾기나 작품 토론이 아니므로, 검색/별칭 후보만으로 resolved title을 되살리면 안 된다.
+- 조치:
+  - Codex `spawn_agent` subagent로 코드 위험, 문서 누락, 회귀 검증을 병렬 분리했다.
+  - `_has_curated_alias_resolution_anchor()`를 추가해 post-side work anchor 또는 compound title-character bridge를 공통 조건으로 사용한다.
+  - `_try_promote_best_candidate`, `_has_title_abbrev_stability_signal`, `_known_title_abbreviation_context_locks_title`에 해당 조건을 적용했다.
+  - comment-only alias는 title lock surface에서 제외한다.
+- 검증:
+  - `tests.test_known_title_abbreviation_support`: 9건 OK.
+  - subagent Arendt 검증: 관련 unittest 묶음 44건 OK, 관련 `py_compile` OK, `git diff --check` exit code 0.
+  - v479 risk audit: `hardcoded_alias_gate=REVIEW`, positive blocker `2`, `KNOWN_ABBREVIATIONS` positive usage `81`, `KNOWN_TITLE_ABBREVIATIONS` positive usage `18`, `SLANG_DICTIONARY` positive usage `0`.
+  - v479 action queue: semantic approval `REVIEW-LOCKED`.
+- 판정:
+  - Agentic direct promotion/stability/lock의 registry-only 우회는 targeted 기준 줄었다.
+  - Arbiter guard exception과 정적 registry positive path가 남아 hardcoded alias risk 전체는 닫지 않는다.
+  - completed source와 expanded random/high-risk review 전까지 10만 semantic approval은 계속 `NO-GO/REVIEW-LOCKED`다.
+
+## IMP-20260601-260 - KNOWN_* 등록 약칭을 LLM/Jury 확정 압력에서 recall hint로 낮춘다
+
+- 상태: patched / focused validation passed / prompt pressure reduced / registry risk REVIEW / semantic approval REVIEW-LOCKED
+- 우선순위: P1 hardcoded-alias-risk, P1 deliberation-prompt-contract, P1 audit-correctness
+- 유형: hardcoded alias / EvidenceScorer / Jury-Debate prompt / audit tooling / action queue
+- 문제:
+  - v474 이후 `KNOWN_ABBREVIATIONS`, `KNOWN_TITLE_ABBREVIATIONS`가 positive hardcoded alias blocker 2개로 남았다.
+  - 특히 Deliberation/EvidenceScorer/Jury/Debate 쪽은 등록 약칭을 `강한 신호`, `확정적`, `is_relevant=true`처럼 LLM 판단을 밀어붙이는 방향으로 전달할 수 있었다.
+  - v475/v476 audit에서 import-only usage와 provenance tuple도 positive usage로 일부 잡혀 실제 runtime risk와 audit noise가 섞였다.
+- 조치:
+  - Codex `spawn_agent` subagent로 current KNOWN_* 코드 경로와 v475/v476 gate 설계를 병렬 검토했다.
+  - `EvidenceScorer.WEIGHTS["abbreviation_match"]`를 3.5에서 1.0으로 낮췄다.
+  - registered alias는 no-work가 아니고 독립 work anchor가 있을 때만 weak positive signal로 들어간다.
+  - Jury/Debate prompt는 `등록 약칭 후보(검토용 힌트)`로만 전달하고, 단독 확정 근거가 아니며 독립 evidence가 필요하다고 명시한다.
+  - hardcoded alias risk audit는 import-only usage와 `_collect_alias_resolution_sources()` provenance tuple을 positive blocker에서 제외한다.
+- 검증:
+  - v476 risk audit: `KNOWN_ABBREVIATIONS` positive usage `83`, prompt pressure `7`; v474의 `103`, `18`에서 감소.
+  - v476 risk audit: `KNOWN_TITLE_ABBREVIATIONS` positive usage `18`; v474의 `20`에서 감소.
+  - v476 action queue: `hardcoded_alias_positive_blocker_count=2`, `hardcoded_alias_gate=REVIEW`, `semantic_approval=REVIEW-LOCKED`.
+  - `tests.test_deliberation_curated_alias_guard tests.test_known_title_abbreviation_support tests.test_hardcoded_alias_risk_audit`: 22건 OK.
+  - 관련 `py_compile`: OK.
+- 판정:
+  - LLM/Jury prompt pressure와 audit noise는 줄었다.
+  - `Decoder._rescue_null_title`, `AgenticPipeline._try_promote_best_candidate`, Arbiter guard exception 등 runtime direct/guard 경로가 남아 hardcoded alias risk는 계속 `REVIEW`다.
+  - 전체 10만 semantic approval은 completed source와 expanded qualitative review 전까지 계속 `NO-GO/REVIEW-LOCKED`다.
+
+## IMP-20260601-259 - SLANG_DICTIONARY를 단독 작품 확정 근거가 아닌 hint-only 계약으로 낮춘다
+
+- 상태: patched / focused validation passed / SLANG_DICTIONARY blocker cleared / registry risk REVIEW / semantic approval REVIEW-LOCKED
+- 우선순위: P1 hardcoded-alias-risk, P1 prompt-contract, P1 decoder-output-guard
+- 유형: hardcoded alias / Decoder guard / prompt policy / audit tooling / action queue
+- 문제:
+  - v470 audit 기준 `SLANG_DICTIONARY`가 `KNOWN_ABBREVIATIONS`, `KNOWN_TITLE_ABBREVIATIONS`와 함께 positive hardcoded alias blocker로 남아 있었다.
+  - `apply_rules()` 직접 반환은 낮췄더라도 Decoder나 LLM 출력 후처리에서 dictionary-only mapped title이 `best_match.title/high`로 남으면 같은 리스크가 반복될 수 있었다.
+  - 최초 v474 audit에서는 tooling metadata와 provenance usage가 섞여 `SLANG_DICTIONARY`가 아직 positive blocker 2건으로 남았다.
+- 조치:
+  - Codex `spawn_agent` subagent로 SLANG 계약 검토와 v474 gate 검증을 병렬 수행했다.
+  - `apply_rules()`의 SLANG hit를 `official_title=None`, `confidence=None`, `store_in_slang_db=False` hint로 낮췄다.
+  - `Decoder._merge_dict_matches()`는 dictionary hit를 `slang_dictionary_hint` candidate로만 보존하고 `best_match`를 덮어쓰지 않는다.
+  - `Decoder._sanitize_cross_term_dictionary_inference()`는 LLM이 dictionary-only mapped title을 high로 출력해도 독립 URL/플랫폼/비사전 evidence가 없으면 `best_match.title=null`로 되돌린다.
+  - prompt는 dictionary를 recall hint로만 설명하고, 단독 title/high 근거가 아니라고 명시했다.
+  - `audit_hardcoded_alias_risk.py`는 SLANG provenance tuple과 packet-review tooling metadata를 positive blocker에서 제외한다.
+- 검증:
+  - v474 risk audit: `SLANG_DICTIONARY gate_status=INFO`, `positive_usage=false`, `positive_usage_count=0`.
+  - v474 risk audit: `positive_hardcoded_alias_blocker_count=2`, 남은 blocker는 `KNOWN_ABBREVIATIONS`, `KNOWN_TITLE_ABBREVIATIONS`.
+  - v474 action queue: `hardcoded_alias_positive_blocker_count=2`, `hardcoded_alias_packet_effective_gate=GO`, semantic approval `REVIEW-LOCKED`.
+  - `tests.test_decoder_slang_dictionary_guard tests.test_rules_slang_dictionary_guard tests.test_hardcoded_alias_risk_audit tests.test_known_title_abbreviation_support`: 23건 OK.
+  - 관련 `py_compile`: OK.
+- 판정:
+  - `SLANG_DICTIONARY` 단독 확정/High 경로와 감사 오탐은 닫혔다.
+  - hardcoded alias registry 전체는 닫히지 않았다. `KNOWN_ABBREVIATIONS`, `KNOWN_TITLE_ABBREVIATIONS`가 계속 blocker다.
+  - 10만 semantic approval은 completed source와 expanded qualitative review 전까지 계속 `NO-GO/REVIEW-LOCKED`다.
+
+## IMP-20260601-258 - hardcoded alias audit의 tooling marker false-positive와 packet duplicate blocker를 분리한다
+
+- 상태: patched / focused validation passed / packet effective gate GO / registry risk REVIEW / semantic approval REVIEW-LOCKED
+- 우선순위: P1 audit-correctness, P1 hardcoded-alias-packet-dedupe, P1 Codex-subagent-integration
+- 유형: hardcoded alias / audit tooling / action queue / semantic gate hygiene
+- 문제:
+  - `tools/build_semantic_coverage_audit.py`의 `TITLE_ALIAS_SUPPORT_MARKERS`는 coverage scanner marker tuple인데, 이름에 `ALIAS`가 있어 `positive_resolution/REVIEW` blocker로 잘못 잡혔다.
+  - v468 packet review는 raw scan artifact 중복 때문에 `matched_packets=40`이었지만, post-side direct alias coverage는 `담텔기 -> 괴담 호텔 탈출기` 1개뿐이었다.
+  - raw duplicate count를 그대로 closure 기준으로 쓰면 v465에서 이미 닫힌 packet follow-up이 다시 approval blocker로 보인다.
+- 조치:
+  - Codex `spawn_agent` subagent로 audit 분류 경로와 semantic/VLM 구조 리스크를 병렬 검토했다.
+  - `audit_hardcoded_alias_risk.py`에 `tooling_marker` risk class를 추가하고 `tools/` 아래 marker tuple은 `INFO`로 분리했다.
+  - `build_hardcoded_alias_packet_review.py`에 unique registry/post-context/decision-context/context-only match count를 추가했다.
+  - `build_goal_action_queue.py`가 packet closure 판단 시 `unique_post_context_registry_match_count`를 우선 사용하게 했다.
+- 검증:
+  - v470 risk audit: positive blocker는 `KNOWN_ABBREVIATIONS`, `KNOWN_TITLE_ABBREVIATIONS`, `SLANG_DICTIONARY` 3개만 남고, `TITLE_ALIAS_SUPPORT_MARKERS`와 `OFFICIAL_OR_PLATFORM_SUPPORT_MARKERS`는 `tooling_marker/INFO`.
+  - v470 packet review: raw `matched_packets=40`, `unique_post_context_registry_match_count=1`.
+  - v470 action queue: `hardcoded_alias_packet_effective_gate=GO`, `hardcoded_alias_packet_closed_by_labels=True`, approval blockers 5개.
+  - `tests.test_hardcoded_alias_packet_review tests.test_goal_action_queue tests.test_hardcoded_alias_risk_audit`: 22건 OK.
+  - 관련 `py_compile`: OK.
+- 판정:
+  - audit false-positive와 packet duplicate blocker는 닫혔다.
+  - positive registry risk와 10만 semantic approval은 계속 `REVIEW-LOCKED`다.
+  - `11718080`형 no-work/social lament 후단 재승격과 `11718082`형 VLM/OCR evidence boundary는 별도 P0 semantic 구조 리스크로 남긴다.
+
+## IMP-20260601-257 - v407 packet review raw gate를 v465/v450 provenance closure로 reconciliation한다
+
+- 상태: patched / focused validation passed / packet effective gate GO / semantic approval REVIEW-LOCKED
+- 우선순위: P1 action-queue-accuracy, P1 hardcoded-alias-packet-review, P2 gate-deduplication
+- 유형: hardcoded alias / action queue / packet review reconciliation
+- 문제:
+  - v466에서 `hardcoded_alias_packet_label_followup`은 `GO`였지만, v407 raw packet review의 `gate=REVIEW`가 `hardcoded_alias_packet_review_required` approval blocker로 계속 남았다.
+  - 실제 요구사항은 v407 matched packet 11건을 라벨링하고 provenance를 확인하는 것이었고, v465/v450으로 이 요구는 충족됐다.
+  - raw artifact gate와 follow-up closure gate를 reconciliation하지 않으면 같은 packet 문제가 중복 blocker로 남는다.
+- 조치:
+  - `build_goal_action_queue.py`에 `_packet_review_closed_by_labels()`를 추가했다.
+  - matched packet 수 이상이 후속 label에서 모두 `ACCEPT`이고 `HOLD/REJECT=0`이면 packet review action을 `closed_by_packet_labels`로 처리한다.
+  - v467 reconciliation JSON/Markdown을 만들어 v407 packet id, v465 closure label, v450 provenance field를 매핑했다.
+  - v467 action queue를 재생성했다.
+- 검증:
+  - `tests.test_goal_action_queue`: 6건 OK.
+  - `py_compile tools\build_goal_action_queue.py tests\test_goal_action_queue.py`: OK.
+  - v467 queue: `hardcoded_alias_packet_effective_gate=GO`, `hardcoded_alias_packet_closed_by_labels=true`.
+  - v467 queue: `hardcoded_alias_packet_review_required.approval_blocker=false`, `status=closed_by_packet_labels`.
+- 판정:
+  - v407 matched packet review 요구사항은 닫혔다.
+  - `hardcoded_alias_risk_review_required`는 positive registry 3건 때문에 계속 `REVIEW`다.
+  - 10만 semantic approval은 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260601-256 - v409 hardcoded alias packet label follow-up을 v450 최신 canary로 닫는다
+
+- 상태: closure labels written / v466 action queue updated / semantic approval REVIEW-LOCKED
+- 우선순위: P1 hardcoded-alias-provenance, P1 packet-label-follow-up, P2 action-queue-accuracy
+- 유형: hardcoded alias / qualitative packet label / action queue
+- 문제:
+  - v409 hardcoded alias packet label review는 `ACCEPT=6`, `HOLD=2`, `REJECT=3`이라 historical packet label follow-up이 approval blocker로 남았다.
+  - 기존 HOLD/REJECT는 weak evidence, provenance missing, author/noise 과차단, wrong canonical title, generic bridge가 섞여 있었다.
+  - v450 이후 최신 canary가 이 문제를 닫았더라도, 이를 명시적 closure label과 action queue로 반영하지 않으면 계속 같은 blocker가 남는다.
+- 조치:
+  - v450 `11718120` 최신 canary를 기준으로 `담텔기 -> 괴담 호텔 탈출기` packet을 재확인했다.
+  - `source_registry=KNOWN_TITLE_ABBREVIATIONS`, `alias_resolution_source=known_title_abbreviation`, `matched_surface_kind=post_title` provenance와 official/platform evidence를 closure 기준으로 삼았다.
+  - v465 closure labels 11건을 모두 `ACCEPT`, `CLOSED_BY_V450_CANARY`로 작성했다.
+  - v466 action queue를 재생성해 label follow-up gate만 `GO`로 낮췄다.
+- 검증:
+  - `v465_hardcoded_alias_packet_followup_labels.jsonl`: 11행, labels `ACCEPT`, qualities `CLOSED_BY_V450_CANARY`.
+  - `v466_goal_action_queue_after_hardcoded_alias_followup.json`: `hardcoded_alias_packet_label_gate=GO`, `hardcoded_alias_packet_label_counts={'ACCEPT': 11}`.
+  - `v466_goal_action_queue_after_hardcoded_alias_followup.json`: approval blockers에는 `hardcoded_alias_risk_review_required`, `hardcoded_alias_packet_review_required`, completed source, random baseline, P0/P1 expansion이 계속 남는다.
+  - Codex subagent Halley도 read-only 감사에서 `hardcoded_alias_packet_label_followup`은 `GO / CLOSED_BY_V465`, 전체 10만 semantic approval은 `REVIEW-LOCKED`, 원본 source approval은 `NO-GO`로 판정했다.
+- 판정:
+  - historical packet label follow-up은 v465/v466 기준 닫혔다.
+  - hardcoded alias positive registry와 packet/provenance review 전체는 아직 `REVIEW`다.
+  - 10만 semantic approval은 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260601-255 - v460 small canary의 image row Browser visual evidence를 fallback artifact로 보강한다
+
+- 상태: evidence captured / v462 small-canary coverage GO / semantic approval REVIEW-LOCKED
+- 우선순위: P1 browser-visual-gate, P1 VLM-OCR-evidence-coverage, P2 fallback-artifact-hygiene
+- 유형: Browser visual / VLM-OCR coverage / action-queue refresh
+- 문제:
+  - v460 targeted canary는 runtime/anchor/slang output이 닫혔지만, semantic coverage audit 기준 `11718082` image row의 Browser visual evidence가 Missing이었다.
+  - 사용자는 VLM/OCR 이미지 row에 대해 직접 Browser visual/loading evidence를 요구했으므로, image evidence catalog만으로는 충분하지 않다.
+- 조치:
+  - Codex 내장 Browser iab를 먼저 시도했지만 node_repl 연결이 2회 종료되어 직접 iab 캡처는 실패했다.
+  - 대체 Playwright MCP로 post `11718082`를 열고 full-page screenshot과 metrics를 남겼다.
+  - fallback artifact manifest에 iab 실패 사유, preferred surface, fallback surface, screenshot path, metrics path, image loading counters를 함께 기록했다.
+  - v462 semantic coverage audit를 외부 Browser artifact manifest와 함께 재실행했다.
+  - v463 current-state map과 v464 action queue를 다시 생성해 닫힌 small-canary visual gate와 남은 10만 approval blocker를 분리했다.
+- 검증:
+  - `v461_browser_visual_post11718082_playwright_metrics.json`: `.write_div img[src*="dcimg"]` 본문 이미지 1개가 `complete=true`, `naturalWidth=850`, `naturalHeight=850`, `renderedWidth=850`, `renderedHeight=850`.
+  - `v461_browser_visual_post11718082_playwright_fullpage.png`: 게시글 제목, 본문 이미지, 이미지 하단 `두렵구나`가 함께 보인다.
+  - `v462_v460_with_post11718082_browser_visual_semantic_coverage.json`: `gate=GO`, `browser_visual_required/available/missing=1/1/0`, `browser_visual_external_artifact_available=1`, issues 없음.
+  - `v464_goal_action_queue_after_v460_visual.json`: semantic coverage gate는 `GO`지만 10만 semantic approval은 `REVIEW-LOCKED`.
+- 판정:
+  - v460 small canary의 image row Browser visual/loading coverage는 fallback evidence 기준 닫혔다.
+  - Codex iab 직접 캡처는 실패했으므로 fallback caveat를 유지한다.
+  - 원본 10만 source는 partial이므로 전체 semantic approval은 계속 `REVIEW-LOCKED`.
+
+## IMP-20260601-254 - 이미지 OCR 변형 anchor taxonomy와 slang context 과장 잔여를 v460에서 닫는다
+
+- 상태: patched / focused validation passed / v460 targeted canary GO / semantic approval REVIEW-LOCKED
+- 우선순위: P1 VLM-OCR-anchor-taxonomy, P1 slang-context-output-hygiene, P1 Codex-subagent-integration
+- 유형: VLM-OCR / final identity taxonomy / slang_insight / semantic-output hygiene
+- 문제:
+  - v458 `11718082`는 공개 reason에서 `title_in_post=false`, `image_ocr_variant=true`라고 낮췄지만, final identity의 `anchor_type`이 `title_exact`로 남을 수 있었다.
+  - 같은 계열에서 `slang_insight.cultural_context`가 `특정 웹소설의 일부 인용`, `작품의 설정`, `캐릭터 관계`, `비표준적인 커뮤니티 약칭 또는 OCR 오인`처럼 말해 OCR/표지 표면을 작품 설정/지속 alias 근거처럼 강화할 수 있었다.
+- 조치:
+  - Codex `spawn_agent` 2개 축(anchor consistency, slang/context output hygiene)을 읽기 전용으로 병렬 투입하고, 메인 Codex가 패치/검증/문서화를 통합했다.
+  - `_derive_output_taxonomy()`와 consistency validator가 `image_ocr_variant + non-image title 없음 + direct image anchor` 조건에서 `anchor_type=image`, `anchor_strength=high`, `image_ocr_variant_not_title_in_post` flag를 남기게 했다.
+  - `_sanitize_slang_cultural_context_for_image_conflict()`에 작품 일부 인용/작품 설정/캐릭터 관계/커뮤니티 약칭 또는 OCR 오인 계열을 일반 패턴으로 추가해 packet-local OCR/표지/이미지 장면 단서로 낮췄다.
+- 검증:
+  - `tests.test_title_lead_search_inferred_guard`: anchor taxonomy assertion과 v459식 slang/context overstatement sanitizer 회귀 포함.
+  - v459 live canary: `anchor_type=image`와 `image_ocr_variant_not_title_in_post` flag 확인. 단, 최종 sanitizer 전 산출물이므로 중간 증거로만 둔다.
+  - v460 live canary: `qualitative_review\20260528_141006_620986\v460_post11718080_11718082_anchor_slang_clean_result.json`, run id `20260601_051538_953769`.
+  - v460 audit: `qualitative_review\20260528_141006_620986\v460_goal_test_run_contract_audit.json`, `runtime_contract=GO`, `issues=[]`, requested/raw/capped/effective `64/36/2`, VLM/OCR ready.
+  - v460 result: `11718082`는 `anchor_type=image`, `anchor_strength=high`, `image_ocr_variant_not_title_in_post`; `11718080`은 `official_title=null`, `work_resolution=none`, `anchor_type=genre`.
+  - `py_compile`과 `tests.test_title_lead_search_inferred_guard tests.test_goal_test_run_contract_audit` 20건 OK.
+- 판정:
+  - 이미지 OCR 변형 anchor taxonomy와 public slang/context overstatement는 v460 targeted 기준 `GO`.
+  - Browser visual은 새로 수행하지 않았으므로 image row approval은 계속 Browser loading evidence가 필요하다.
+  - 전체 10만 semantic approval은 계속 `REVIEW-LOCKED`.
+
+## IMP-20260601-253 - 이미지 OCR 변형은 reason score와 slang context에서도 원문 title 근거로 과장하지 않는다
+
+- 상태: patched / focused validation passed / v458 targeted canary GO / v460 follow-up supersedes residuals / semantic approval REVIEW-LOCKED
+- 우선순위: P1 VLM-OCR-reason-score-hygiene, P1 slang-context-evidence-boundary, P1 output-hygiene
+- 유형: VLM-OCR / reason scoreboard / slang_insight / semantic-output hygiene
+- 문제:
+  - v454/v456 계열에서 공개 reason의 `[근거 요약]`은 `title_in_post=false`, `image_ocr_variant=true`로 낮아졌지만, score board 쪽에는 `title_in_post:+2`가 남을 수 있었다.
+  - `slang_insight.cultural_context`가 이미지 OCR 표면을 `게시글/제목에 사용된`, `일반적인 오타 또는 축약`, `공식적인 제목`, `고유 명칭`처럼 말해 원문 직접 제목 언급이나 지속 alias 규칙처럼 보일 수 있었다.
+- 조치:
+  - `_build_reason_scoreboard_lines()`도 이미지 OCR 변형이면 원문 직접 제목 언급 가산점을 주지 않게 했다.
+  - `_sanitize_slang_cultural_context_for_image_conflict()`에 v455/v456/v457에서 실제로 나온 표현 계열을 일반 패턴으로 추가했다.
+  - Codex subagent 3개 축(runtime, semantic/VLM/slang, docs/gate)을 읽기 전용으로 병렬 투입하고 메인 Codex가 패치/검증을 통합했다.
+- 검증:
+  - `tests.test_title_lead_search_inferred_guard`: 8건 OK. v455/v456/v457식 문구와 score board 모순을 회귀로 포함한다.
+  - v458 live canary: `qualitative_review\20260528_141006_620986\v458_post11718080_11718082_scoreboard_slang_runtime_result.json`, run id `20260601_045115_070873`.
+  - v458 audit: `qualitative_review\20260528_141006_620986\v458_goal_test_run_contract_audit.json`, `runtime_contract=GO`, `issues=[]`, requested/raw/capped/effective `64/36/2`, VLM/OCR ready.
+  - v458 log grep에서 `title_in_post:+2`, old slang wording, Docker/Compose lifecycle hit 없음. `11718082` VLM chunk/enrichment는 `fetch=1/1 chunks=1`.
+- 판정:
+  - v458 targeted 기준 reason score/slang context hygiene는 `GO`.
+  - Browser visual은 새로 수행하지 않았으므로 image row approval은 계속 Browser loading evidence가 필요하다.
+  - 전체 10만 semantic approval은 계속 `REVIEW-LOCKED`.
+
+## IMP-20260601-252 - Codex 전문가 병렬 운영과 Gemma 4 4B parallel cap을 분리 기록한다
+
+- 상태: patched / focused validation passed / v454 runtime canary GO / semantic approval REVIEW-LOCKED
+- 우선순위: P1 runtime-contract-clarity, P1 Codex-goal-orchestration, P1 VLM-OCR-reason-hygiene
+- 유형: 런타임 계약 / Codex subagent 운영 / VLM-OCR reason 정합성 / 문서 동기화
+- 문제:
+  - 사용자가 요구한 병렬화는 repo 내부 `expert_main.py --parallel` worker 수를 늘리라는 뜻이 아니라, Codex goal 진행 자체를 여러 `spawn_agent` 전문가 축으로 나눠 병렬 감사/구현하라는 뜻이었다.
+  - `expert_main.py --parallel 36`은 Gemma 4 4B 운영 기준 최대치지만, 코드/manifest/run_meta에는 모델별 cap이 별도 필드로 드러나지 않았다.
+  - 이미지 OCR 변형 표면이 final title과 유사할 때 reason이 `title_in_post=true` 또는 `게시글 제목에 사용된 축약어/오타`처럼 실제 증거보다 강하게 보일 수 있었다.
+- 조치:
+  - 이번 라운드를 Codex `spawn_agent` 4개 축으로 재분해했다: 런타임/오케스트레이션, 의미판정/VLM, 10만건 정성 gate, docs/checklist 감사.
+  - `expert_main.py`에 `requested_parallel_raw`, cap 적용 후 `requested_parallel`, `model_parallel_max`, `model_parallel_cap_applied`, `model_parallel_cap_model`을 추가했다.
+  - Gemma 4 E4B/4B 계열은 요청 worker가 36을 넘으면 cap 후 small input/effective worker 계산을 수행한다.
+  - `tools\audit_goal_test_run_contract.py`가 모델 cap 필드를 읽고 Markdown 관측값에 raw/cap/effective 병렬도를 분리해 쓰도록 했다.
+  - 이미지 OCR 변형은 `title_in_post=false`, `image_ocr_variant=true`, `official_search_resolution=true`로 reason에 분리하고, slang cultural context의 게시글 제목 표현을 이미지 OCR/표지 표면으로 낮췄다.
+- 검증:
+  - `py_compile expert_main.py tools\audit_goal_test_run_contract.py src\llm_batch\agentic_pipeline.py tests\test_goal_test_run_contract_audit.py tests\test_title_lead_search_inferred_guard.py`: OK.
+  - `tests.test_goal_test_run_contract_audit`: 12건 OK.
+  - `tests.test_title_lead_search_inferred_guard`: 8건 OK.
+  - `tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest tests.test_known_title_abbreviation_support tests.test_title_lead_search_inferred_guard tests.test_final_semantic_reread_gate`: 333건 OK.
+  - `tests.test_audit_comment_metadata_coverage tests.test_expert_main_comment_metadata tests.test_goal_test_run_contract_audit`: 22건 OK.
+  - v454 live cap canary: `qualitative_review\20260528_141006_620986\v454_post11718080_11718082_model_cap_reason_contract_result_manifest.json`, run id `20260601_042151_464777`, `requested_parallel_raw=64`, cap 이후 `requested_parallel=36`, `effective_parallel=2`, completed/flushed/pending/failed `2/2/0/0`, VLM/OCR ready, shard/docker lifecycle 재기동 없음.
+  - v454 runtime audit: `qualitative_review\20260528_141006_620986\v454_goal_test_run_contract_audit.json`, `runtime_contract=GO`, `issues=[]`, `llm_model=bg-digitalservices/Gemma-4-E4B-it-NVFP4`.
+  - v454 live result는 `11718082` reason의 `title_in_post=false`, `image_ocr_variant=true`, `official_search_resolution=true`를 확인했다. 다만 후속 sanitizer 패치 전 산출물이므로 `slang_insight.cultural_context`의 old wording은 다음 live canary에서 다시 확인한다.
+- 판정:
+  - Codex goal 병렬 운영과 repo 런타임 worker 병렬도 혼동은 문서/체크리스트에서 다시 분리했다.
+  - Gemma 4 4B parallel cap runtime 계약은 focused 기준 `GO`.
+  - 이미지 OCR reason hygiene는 focused 기준 `GO`.
+  - 10만 semantic approval은 partial source와 expanded review 미완 때문에 계속 `REVIEW-LOCKED`.
+
+## IMP-20260601-251 - semantic no-work must stay sticky across late URL recovery and BatchContext learning
+
+- 상태: patched / focused validation passed / v453 live canary passed / semantic approval REVIEW-LOCKED
+- 우선순위: P1 no-work-rescue-monotonicity, P1 BatchContext seed hygiene, P1 raw-search-escape-hatch
+- Type: semantic-guard / late-url-recovery / alias-support / BatchContext / no-work-intent / post-processing-monotonicity
+- 문제:
+  - `11718080`류 글은 자연어적으로 특정 작품 찾기/감상이 아니라 소설 보는 친구, TS/갈드컵 같은 장르·커뮤니티 대화를 말한다.
+  - 앞단이 `semantic_seed_review.is_specific_work_discussion=false`, `title_resolution_allowed=false`, `context_only/adjacent/nonwork` 신호를 냈더라도 후단 corrected-title URL recovery, decoder alias support helper, BatchContext/slang seed 학습 wrapper가 search/alias 근거로 다시 작품 resolved를 만들 수 있는 표면이 남아 있었다.
+  - 이는 특정 오답 작품명을 외워 막을 문제가 아니라, no-work intent가 후단 구조 전체에 단조적으로 전달되지 않는 문제다.
+- 조치:
+  - `_recover_corrected_title_official_url()`은 semantic no-work 상태에서 direct post title, direct image title, image primary promotion, verified character-work link 같은 독립 작품 앵커가 없으면 기존 검색 결과 재사용과 `_search_with_meta()` 직접 호출을 모두 막는다.
+  - `_has_alias_title_support()`는 decoder/gatekeeper/verifier slang 표면을 보기 전에 같은 no-work/direct-anchor gate를 먼저 적용한다.
+  - `_learn_batch_context()` wrapper가 `title_resolution_state`, `title_resolution_allowed`, `discussion_type`, `subtype`, `work_resolution`, `anchor_type`, `consistency_flags`를 BatchContext에 전달하게 했다. BatchContext 내부의 polluted/context-only seed 차단 로직이 실제 result wrapper 경로에서도 동작한다.
+  - Codex `spawn_agent` 두 축으로 late-search/raw `_search_with_meta`와 BatchContext/slang/known alias rescue를 읽기 전용 감사했고, 메인 Codex가 guard/test를 통합했다.
+- 검증:
+  - focused:
+    - `tests.test_title_lead_search_inferred_guard`: 7건 OK.
+    - 추가 회귀는 no-work corrected-title URL recovery 검색 미실행, direct image anchor positive URL recovery, no-work decoder alias support 차단, BatchContext wrapper field propagation을 포함한다.
+    - `test_raw_search_with_meta_call_sites_stay_guarded`는 raw `_search_with_meta()` 직접 호출부가 `_search`와 guarded recovery 외로 늘어나면 실패한다.
+    - `tests.test_audit_comment_metadata_coverage tests.test_expert_main_comment_metadata`: 10건 OK. 댓글 author/IP/comment_id/gallery_id export와 coverage audit는 현재 checkout 기준 존재하고 통과한다.
+  - broad:
+    - `tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest tests.test_known_title_abbreviation_support tests.test_title_lead_search_inferred_guard tests.test_final_semantic_reread_gate`: 332건 OK.
+    - `py_compile src\llm_batch\agentic_pipeline.py tests\test_title_lead_search_inferred_guard.py`: OK.
+  - v453:
+    - result: `qualitative_review\20260528_141006_620986\v453_post11718080_11718082_no_work_url_recovery_guard_result.json`
+    - manifest: `qualitative_review\20260528_141006_620986\v453_post11718080_11718082_no_work_url_recovery_guard_result_manifest.json`
+    - log: `logs\expert_run_20260601_033913_917424.log`
+    - run id `20260601_033913_917424`, counters `2/2/2/0/0`, requested/effective `36/2`, VLM/OCR ready, shard/docker lifecycle 재기동 없음.
+    - `11718080`: `official_title=null`, `title_resolution_allowed=false`, `work_resolution=none`, `anchor_type=genre`.
+    - `11718082`: `official_title=재벌가 차녀의 2회차 걸그룹`, `heretic_url=https://page.kakao.com/content/66692543`, `anchor_type=image`, VLM/OCR fetch/chunk `1/1`.
+- 판정:
+  - no-work late URL recovery / alias support / BatchContext wrapper guard는 targeted 기준 `GO`.
+  - `_search_with_meta()` 자체는 여전히 context-free raw search wrapper이므로, 새 직접 호출부가 생기면 intent gate를 통과했는지 static/focused review가 필요하다.
+  - 전체 10만 semantic approval은 completed source와 expanded random/high-risk review 전까지 계속 `REVIEW-LOCKED`.
+
+## IMP-20260601-250 - verified image/title lock must block unanchored canonical suspect override
+
+- 상태: patched / focused validation passed / v452 live canary passed / semantic approval REVIEW-LOCKED
+- 우선순위: P1 canonical-suspect-candidate-hygiene, P1 VLM/OCR evidence alignment, P1 no-work false-positive regression
+- Type: semantic-guard / canonical-rescue / VLM-OCR / no-work-intent / post-processing-monotonicity
+- 문제:
+  - 원본 5/28 partial result에서 `11718080`은 reason이 특정 작품 앵커 부족을 말하면서도 `official_title=소보로설`, `work_resolution=resolved`, `batch_memory_exact_alias_rescued`로 뒤집혔다. 자연어적으로는 특정 작품 찾기가 아니라 소설/TS/갈드컵을 같이 이야기할 친구를 바라는 장르·트로프 잡담이다.
+  - `11718082`는 이미지에 작품명/작가/회차가 있어 VLM/OCR 직접 근거가 필요한 케이스다. text-only나 result title만으로는 image semantic approval 근거가 아니다.
+  - v451 최신 재실행에서 `11718080`과 `11718082`의 최종 판정은 맞았지만, `11718082` 로그에 `canonical suspect 보정: '재벌가 차녀의 2회차 걸그룹' -> '맹인 성녀인데 눈이 보인다 [독점]'` 중간 흔들림이 남았다. final이 회복되더라도 candidate hygiene과 후처리 단조성 관점에서는 P1 residual이다.
+- 조치:
+  - `_should_preserve_verified_title_against_unanchored_canonical_override()`를 추가했다.
+  - 현재 title이 official evidence, canonical convergence, direct image/title evidence 등으로 이미 잠겨 있고 replacement title이 post-side title surface, alias support, abbreviation stability, direct image, image primary promotion, verified character-work link를 갖지 않으면 canonical suspect override를 막는다.
+  - episode/detail canonical base 보정이나 OCR 근접 보정은 `_is_similar_title()` / derivative variant 조건으로 계속 허용한다.
+  - 특정 post id, 작품명, 오답 문자열을 넣지 않고 evidence/provenance 조건으로만 처리했다.
+- 검증:
+  - v451:
+    - result: `qualitative_review\20260528_141006_620986\v451_post11718080_11718082_current_no_work_vlm_guard_result.json`
+    - manifest: `qualitative_review\20260528_141006_620986\v451_post11718080_11718082_current_no_work_vlm_guard_result_manifest.json`
+    - run id `20260601_031256_503992`, counters `2/2/2/0/0`, requested/effective `36/2`, VLM/OCR ready.
+    - `11718080`은 `is_relevant=false`, `official_title=null`, `discussion_type=trope_discussion`, `title_resolution_allowed=false`로 회복.
+    - `11718082`는 VLM/OCR `fetch=1/1`, 최종 title 회복. 단, canonical suspect 중간 흔들림 확인.
+  - focused tests:
+    - `py_compile src\llm_batch\agentic_pipeline.py tests\test_agentic_pipeline_rework.py`: OK.
+    - `tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest`: 306건 OK.
+    - `tests.test_known_title_abbreviation_support tests.test_title_lead_search_inferred_guard tests.test_final_semantic_reread_gate`: 21건 OK.
+  - v452:
+    - result: `qualitative_review\20260528_141006_620986\v452_post11718080_11718082_verified_title_canonical_guard_result.json`
+    - manifest: `qualitative_review\20260528_141006_620986\v452_post11718080_11718082_verified_title_canonical_guard_result_manifest.json`
+    - log: `logs\expert_run_20260601_032216_459678.log`
+    - run id `20260601_032216_459678`, counters `2/2/2/0/0`, requested/effective `36/2`, `vlm_ocr_semantic_review_ready=true`, shard/docker lifecycle 재기동 없음.
+    - `11718082`: `official_title=재벌가 차녀의 2회차 걸그룹`, `heretic_url=https://page.kakao.com/content/66692543`, `anchor_type=image`, VLM `used=True, fetch=1/1, chunks=1`.
+    - v451에서 보였던 원문 미언급 `맹인 성녀인데 눈이 보인다 [독점]` canonical suspect override 로그는 v452에서 사라졌다.
+- 판정:
+  - `11718080` no-work false-positive targeted 재검증: `GO`.
+  - `11718082` VLM/OCR image-title targeted 재검증: `GO`.
+  - verified title lock vs unanchored canonical override: focused + v452 targeted 기준 `GO`.
+  - 전체 10만 semantic approval은 completed source와 expanded random/high-risk review 전까지 계속 `REVIEW-LOCKED`.
+
+## IMP-20260601-249 - curated abbreviation primary must not keep unmentioned adjacent derivative candidates
+
+- 상태: patched / focused validation passed / v450 live canary passed / semantic approval REVIEW-LOCKED
+- 우선순위: P1 adjacent-derivative-candidate-pollution, P1 evidence-state-alignment, P2 candidate-hygiene
+- Type: semantic-guard / known-title-abbreviation / canonical-rescue / adjacent-candidate-pruning / no-work-episode-gate / alias-surface-match / drift-keyword-generalization
+- 문제:
+  - v448 `11718120` canary는 result/manifest/checkpoint 기준으로 완료됐다. manifest counters는 input/completed/flushed/pending/failed `1/1/1/0/0`, requested/effective parallel `36/1`, VLM/OCR on, image post count `0`이다.
+  - final은 `official_title=괴담 호텔 탈출기`, `work_resolution=resolved`, `anchor_type=title_exact`, `alias_resolution_sources.source_registry=KNOWN_TITLE_ABBREVIATIONS`로 회복됐다. 즉 `담텔기 -> 괴담 호텔 탈출기` known title abbreviation 회복 자체는 v448에서 확인됐다.
+  - 그러나 `title_candidates`에 원문 title/body/comment에 언급되지 않은 인접 파생 후보 `괴담 학교 탈출기`가 남았다. 해당 후보는 `https://novelpia.com/novel/309968` URL과 함께 `mixed` candidate로 보였고, v448 로그에는 `canonical suspect 보정: '괴담 호텔 탈출기' -> '괴담 학교 탈출기'` 흐름이 남았다.
+  - final title은 맞더라도 후보 목록과 reason/evidence state가 인접 파생 후보를 같이 보존하면, 대량 리뷰에서는 `multi_work_or_adjacent_risk`와 `weak_evidence_but_strong_resolution` bucket 오염으로 본다. 따라서 v448 semantic label은 `ACCEPT`가 아니라 `HOLD`다.
+- 조치:
+  - 후속 패치는 curated title abbreviation primary가 packet-local work anchor를 가진 경우, 다른 canonical rescue 후보가 원문 main context에 언급되지 않았고 alias support도 없고 강한 verified character-work link도 없으면 canonical override와 synthetic rescue candidate 보존을 막는 방향으로 작성됐다.
+  - 이 조치는 특정 `괴담 학교 탈출기` 문자열 hardcode가 아니라, "curated alias primary와 충돌하는 unmentioned adjacent derivative candidate"를 후보 오염으로 낮추는 범용 gate다.
+  - subagent 코드 리뷰에서 지적한 no-work 우회도 함께 닫았다. `semantic_seed_no_work` 상태에서는 회차/스포/작가의 말 단서만으로 known title abbreviation promotion을 되살리지 않고, 직접 title/visual/검증된 character-work bridge 같은 독립 앵커를 요구한다.
+  - curated alias 매칭은 `alias_norm in post_text_norm` 부분일치 대신 visible surface 경계/허용 suffix 기준으로 좁혔다. 짧은 alias가 일반 문장 내부 substring으로 우연히 걸리는 것을 막는다.
+  - drift keyword는 `괴담/호텔/탈출기/305호` 같은 작품군 토큰 묶음 hardcode를 제거하고 일반 토큰 추출 + 약한 공유 토큰만으로 drift를 무효화하지 않는 방식으로 바꿨다.
+- 검증:
+  - v448 evidence paths:
+    - result: `qualitative_review\20260528_141006_620986\v448_post11718120_known_title_abbrev_support_result.json`
+    - manifest: `qualitative_review\20260528_141006_620986\v448_post11718120_known_title_abbrev_support_result_manifest.json`
+    - log: `logs\expert_run_20260601_022806_880146.log`
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_known_title_abbreviation_support.py`: OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_known_title_abbreviation_support -v`: 6건 OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard tests.test_known_title_abbreviation_support -v`: 8건 OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest -v`: 305건 OK.
+  - v449 live canary는 final `괴담 호텔 탈출기`, `heretic_url=https://novelpia.com/novel/102155`, adjacent candidate 미포함을 확인했다.
+  - v450 live canary는 no-work/alias/drift 추가 guard까지 포함해 재실행했다. run id `20260601_025447_503393`, manifest input/completed/flushed/pending/failed `1/1/1/0/0`, requested/effective parallel `36/1`, VLM/OCR on, image post count `0`.
+  - v450 result는 `official_title=괴담 호텔 탈출기`, `heretic_url=https://novelpia.com/novel/102155`, `confidence=High`, `work_resolution=resolved`, `discussion_type=character_talk`, `title_candidates=괴담 호텔 탈출기` 1건, `괴담 학교 탈출기` 후보 없음이다.
+- 판정:
+  - v448 run integrity: `GO`.
+  - v448 known title abbreviation recovery: `GO`.
+  - v448 semantic candidate hygiene: `HOLD`.
+  - v450 adjacent derivative candidate cleanup: `GO` for targeted canary.
+  - v450 no-work episode cue / alias surface / drift keyword guard: focused regression `GO`.
+  - 전체 10만 semantic approval은 completed source와 expanded random/high-risk review 전까지 계속 `REVIEW-LOCKED`.
+
+## IMP-20260601-248 - KNOWN_TITLE_ABBREVIATIONS must participate in promotion/support/stability paths
+
+- 상태: implemented / focused validation passed / semantic approval REVIEW-LOCKED
+- 우선순위: P1 alias-provenance, P1 semantic-rescue, P1 no-work-guard
+- Type: semantic-guard / known-title-abbreviation / alias-support / run-integrity
+- 문제:
+  - v446 `11718120` canary는 LLM 판단 흐름까지 갔지만 output flush 전에 끊겨 result JSON/checkpoint completed row가 없었다. 이는 Docker/shard restart 문제가 아니라 `runtime-incomplete canary`로 분리해야 한다.
+  - 로그상 `담텔기 -> 괴담 호텔 탈출기` seed는 있었지만, 자동 승격 1순위와 abbreviation stability bridge는 주로 `KNOWN_ABBREVIATIONS`만 보아 `KNOWN_TITLE_ABBREVIATIONS` 계열이 후단 support에서 약해졌다.
+  - 그 사이 `305호 -> 어서오세요, 305호에!`, `심판자 -> 악마 같은 불의 심판자` 같은 numeric/episode/일반 후보가 검색 후보로 섞이고, 최종은 `official_title=null`, `discussion_type=noise`로 drift했다.
+- 조치:
+  - `KNOWN_ABBREVIATIONS`와 `KNOWN_TITLE_ABBREVIATIONS`를 같은 curated abbreviation registry로 묶어 `_try_promote_best_candidate()` 1순위 promotion에 사용한다.
+  - `_known_abbreviation_alias_mentioned_in_post_main_context()`와 `_has_curated_alias_contextual_work_anchor()`를 추가해, 안정 약칭이 post title/body에 있고 회차/스포/작가의 말/positive work intent 같은 packet-local work anchor가 있을 때만 no-work 차단을 풀 수 있게 했다.
+  - `_collect_title_support_kinds()`, `_has_alias_title_support()`, `_has_title_abbrev_stability_signal()`이 `KNOWN_TITLE_ABBREVIATIONS` provenance를 explicit support/stability로 볼 수 있게 했다.
+  - `semantic_seed_no_work` 상태에서 contextual work anchor가 없으면 known title abbreviation도 계속 promotion/stability를 차단한다. 따라서 `11718080`류 잡담/한탄글을 hardcode 없이 보호한다.
+- 검증:
+  - `tests\test_known_title_abbreviation_support.py`를 추가했다.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_known_title_abbreviation_support -v`: 3건 OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard tests.test_known_title_abbreviation_support -v`: 5건 OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest -v`: 305건 OK.
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_known_title_abbreviation_support.py`: OK.
+- 판정:
+  - targeted known title abbreviation support: `GO`.
+  - v446 자체는 result flush가 없어 `REPROCESS/runtime-incomplete`이며 semantic approval source가 아니다.
+  - 전체 10만 semantic approval은 completed source와 expanded random/high-risk review 전까지 계속 `REVIEW-LOCKED`.
+
+## IMP-20260601-247 - semantic no-work must block abbrev/snippet/stable-hold rescue paths
+
+- 상태: implemented / focused validation passed / semantic approval REVIEW-LOCKED
+- 우선순위: P1 semantic-intent-gate, P1 canonical-rescue, P1 alias-stability
+- Type: semantic-guard / canonical-rescue / snippet-alias-lock / no-work-intent
+- 문제:
+  - v439는 title-lead search-inferred 직접 경로를 닫았지만, `_has_title_abbrev_stability_signal()`, `_has_snippet_canonical_alias_lock_support()`, irrelevant canonical rescue, stable-hold canonical rescue가 검색/decoder/snippet alias 근거로 no-work 판정을 다시 풀 가능성이 남았다.
+  - 특히 decoder `original` 약칭이나 snippet abbreviation mapping은 원문에 alias가 있다는 신호일 뿐, semantic no-work 상태에서 full title 직접 앵커와 같게 취급하면 안 된다.
+- 조치:
+  - `_has_title_abbrev_stability_signal()`과 `_has_snippet_canonical_alias_lock_support()`가 semantic no-work 상태에서는 raw title surface, direct image, image promotion, verified character-work link가 없으면 `False`를 반환하게 했다.
+  - `_should_block_canonical_rescue_ir()`도 semantic no-work + direct post/visual anchor 부재 상태에서 canonical rescue를 차단한다.
+  - `_allow_stable_hold_canonical_rescue()`가 semantic no-work + direct post/visual anchor 부재 상태에서는 stable-hold override를 허용하지 않는다.
+  - no-work rescue용 direct title mention은 decoder alias mapping이 아니라 raw title surface 기준으로 좁혔다.
+- 검증:
+  - `tests.test_title_lead_search_inferred_guard`에 decoder alias, snippet canonical lock, stable-hold rescue가 no-work 상태에서 모두 차단되는 assertion을 추가했다.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard -v`: 2건 OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest -v`: 305건 OK.
+- 판정:
+  - targeted semantic no-work rescue guard: `GO`.
+  - 전체 10만 semantic approval은 계속 `REVIEW-LOCKED`.
+
+## IMP-20260601-246 - malformed Strong browser artifact must obey loading counters
+
+- 상태: implemented / focused validation passed / semantic approval REVIEW-LOCKED
+- 우선순위: P1 browser-visual-gate, P1 coverage-audit
+- Type: semantic-coverage-audit / browser-visual-sidecar / VLM-OCR-review
+- 문제:
+  - v436/v437 실제 산출물은 `visual_evidence_grade=Missing`, `browser_visual_available=0`으로 gate를 열지 않았다.
+  - 다만 외부 browser artifact row가 실수로 `visual_evidence_grade=Strong`을 달고도 `article_loaded_count < article_image_count` 같은 로딩 실패 counter를 함께 가진 경우, 기존 `_browser_artifact_row_available()`는 grade를 먼저 신뢰할 수 있었다.
+  - 이는 malformed sidecar가 screenshot 성공만으로 visual gate를 여는 방어 공백이다.
+- 조치:
+  - `tools\build_semantic_coverage_audit.py`의 `_browser_artifact_row_available()`가 external artifact grade를 보기 전에 `_browser_loading_state_failed()`를 먼저 적용하게 했다.
+  - `tools\capture_vlm_ocr_browser_review_cli.py`의 Missing 관찰 문구에 접근/차단/스크린샷 실패뿐 아니라 본문 이미지 노드 미검출과 이미지 로딩 근거 없음을 포함했다.
+  - `tests\test_semantic_coverage_audit.py`에 `visual_evidence_grade=Strong`이지만 로딩 counter 실패인 external artifact가 gate를 만족하지 못하는 회귀를 추가했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard tests.test_vlm_browser_review_cli tests.test_semantic_coverage_audit -v`: 29건 OK.
+- 판정:
+  - targeted browser visual sidecar guard: `GO`.
+  - VLM/OCR/browser visual axis와 10만 semantic approval은 계속 `REVIEW-LOCKED`.
+
+## IMP-20260601-245 - semantic no-work must block title-lead search-inferred support resurrection
+
+- 상태: implemented / focused validation passed / semantic approval REVIEW-LOCKED
+- 우선순위: P1 semantic-intent-gate, P1 search-inferred-alias, P2 observability
+- Type: semantic-guard / search-inferred-candidate / no-work-intent
+- 문제:
+  - `11718080`류 한탄/잡담 글은 앞단 semantic seed가 `is_specific_work_discussion=false`와 `intent_permit_for_title_search=false`를 낼 수 있다.
+  - 그런데 제목 첫 약칭처럼 보이는 표면이 있고 검색 결과가 충분히 그럴듯하면, 후단 `title_lead_alias_search_inferred_candidates`가 다시 resolved candidate를 만들 위험이 있었다.
+  - candidate 생성만 막아도 reason scoreboard나 canonical lock 후보에서 `title_lead_alias_search_work_support`, `search_evidence_alias_stability`가 검색-only 근거를 계속 강하게 볼 수 있었다.
+  - 이 문제는 특정 작품명/오타 hardcode가 아니라, "검색 이후 후보 재승격"이 앞단 자연어 no-work 판단을 관통하지 못하는 구조 문제다.
+- 조치:
+  - `_has_direct_post_or_visual_work_anchor_for_no_work_search_rescue()`를 추가해 no-work 상태의 검색-only rescue 예외를 원문 직접 title mention, 직접 이미지 title, image primary promotion, 강한 character-work link로만 제한했다.
+  - `_has_title_lead_alias_search_work_support()`와 `_has_search_evidence_alias_stability_signal()`이 같은 no-work gate를 먼저 적용한다.
+  - `_build_title_lead_alias_search_inferred_candidates()`도 같은 helper를 사용해, 직접 post/visual work anchor가 없으면 search-inferred candidate 생성을 차단한다.
+  - 특정 alias/작품/오타 문자열은 추가하지 않았다. 범용 intent permit/no-work gate로만 처리한다.
+- 검증:
+  - `tests.test_title_lead_search_inferred_guard`: 검색 결과가 충분해도 semantic no-work이면 title-lead support/stability가 `False`이고 candidate가 비어 있으며, 실제 작품 반응형 title-lead alias는 계속 search-inferred candidate로 회복됨을 확인.
+  - 기존 positive control `test_topic_particle_title_lead_alias_can_be_search_inferred`: 기존 대형 rework suite에서도 회복 경로가 유지된다.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard -v`: 2건 OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest -v`: 305건 OK.
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_title_lead_search_inferred_guard.py`: OK.
+- 판정:
+  - targeted semantic guard: `GO`.
+  - 검색 이후 후보 재승격 계열 전체는 expanded known-bad/positive-control 재검증 전까지 `HOLD/REPROCESS`.
+  - 10만 semantic approval은 계속 `REVIEW-LOCKED`.
+
+## IMP-20260601-244 - weak browser fallback screenshots must not satisfy visual gate
+
+- 상태: implemented / validation passed / targeted coverage REVIEW-LOCKED
+- 우선순위: P1 browser-visual-gate, P1 coverage-audit, P2 artifact-metadata
+- Type: semantic-coverage-audit / browser-visual-sidecar / VLM-OCR-review
+- 문제:
+  - v433 browser visual fallback에서 Playwright CLI screenshot은 4건 모두 생성됐지만, article image selector는 `0/0`, visual grade는 `Weak=4`였다.
+  - 기존 `build_semantic_coverage_audit.py`의 external browser artifact loader는 artifact row가 `rows[]`로 연결되면 screenshot/snapshot path 존재만으로 `browser_visual_available=true`가 될 수 있었다.
+  - `capture_vlm_ocr_browser_review_cli.py` manifest는 `output_path` JSONL을 만들지만 coverage loader가 이 JSONL을 직접 읽지 못했고, 기본 `RUN_ID`도 오래된 값으로 고정돼 v433 evidence 추적을 흐릴 수 있었다.
+- 조치:
+  - coverage audit가 external browser artifact manifest의 `output_path` JSONL을 직접 읽도록 보강했다.
+  - external artifact row는 screenshot/snapshot path만으로 통과하지 않고, `visual_evidence_grade=Strong|Medium`, image loading counter pass, `visible_signals=article_image_node` 등 직접 시각/로딩 신호가 있을 때만 available로 본다.
+  - `visual_evidence_grade=Weak|Missing`은 screenshot이 있어도 `browser_visual_available`로 세지 않는다.
+  - `capture_vlm_ocr_browser_review_cli.py`에 `--run-id`를 추가해 sidecar review/manifest의 run id를 실제 rerun id로 남길 수 있게 했다.
+  - Windows `npx.cmd` 경유 Playwright CLI에서는 DCInside URL의 `&no=`가 cmd separator로 두 번 파싱될 수 있으므로, `.cmd/.bat` wrapper에서만 `&|<>^()`를 이중 파싱 안전 형태로 escape한다.
+- 검증:
+  - Codex in-app Browser는 재시도에서 `windows sandbox failed: spawn setup refresh`로 실패했다.
+  - sandbox 내 Playwright CLI fallback은 npm cache `EPERM`으로 `Missing=4`였다.
+  - 외부 권한 Playwright CLI fallback은 screenshot `4/4`, visual grade `Weak=4`, article image missing `4`, error rows `4`, row별 `open_return_code=1`이었다.
+  - v436 fallback recapture는 URL open/eval/screenshot return code `0`으로 `&no=` cmd separator 문제는 사라졌지만, article image selector `0/0`, visual evidence `Missing=4`, article image gate passed `0`이므로 visual evidence로는 사용할 수 없다.
+  - v437 coverage with v436 missing browser fallback: `browser_visual_required/available/missing=4/0/4`, `browser_visual_external_artifact_available=0`, gate `REVIEW-LOCKED`.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_vlm_browser_review_cli tests.test_semantic_coverage_audit -v`: 26건 OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_semantic_coverage_audit -v`: 21건 OK.
+  - `.\venv\Scripts\python.exe -m py_compile tools\build_semantic_coverage_audit.py tests\test_semantic_coverage_audit.py tools\capture_vlm_ocr_browser_review_cli.py`: OK.
+  - v434 coverage with weak browser fallback: `browser_visual_required/available/missing=4/0/4`, `browser_visual_external_artifact_available=0`, gate `REVIEW-LOCKED`.
+- 판정:
+  - weak browser fallback artifact guard: `GO`.
+  - v433 visual evidence: screenshot은 남았지만 image loading evidence가 약해 `Weak`; semantic coverage는 계속 `REVIEW-LOCKED`.
+  - 10만 semantic approval은 계속 `REVIEW-LOCKED`.
+
+## IMP-20260531-243 - valid comment recommendation URL should not collapse to noise/unrelated
+
+- 상태: implemented / focused validation passed / live rerun confirmed / semantic approval REVIEW-LOCKED
+- 우선순위: P1 comment-url, P1 recommendation-intent, P2 schema-observability
+- Type: qualitative-review / comment-url / recommendation-candidate
+- 문제:
+  - `11718049`에서 false-positive title 확정은 제거됐지만, 댓글 URL `https://novelpia.com/novel/50764`가 실제 작품 추천 링크로 확인됐는데 final은 `discussion_type=noise`, `topicality=unrelated`로 남았다.
+  - 원문 제목은 장르/취향 요청이고 댓글 URL은 실제 추천 답변에 가까우므로, 단일 final title 확정은 피하더라도 recommendation/comment URL candidate로 보존해야 한다.
+- 조치:
+  - v432 closure review에서 `11718049`를 `HOLD/re_judge`로 유지했다.
+  - `11718083`, `11718097`, `11718075`는 targeted follow-up 기준 닫아 남은 이슈를 `11718049`로 좁혔다.
+  - 댓글 공식 작품 상세 URL을 final title answer로 자동 승격하는 조건에서 짧은 제목 길이만 보는 경로를 제거했다.
+  - 공식 댓글 URL이 추천/탐색 맥락이면 final `official_title`은 null로 두고 `adjacent_relevant` / `recommendation_request` / `recommendation_candidates`로 후보를 보존하도록 보강했다.
+  - 검색 결과의 등장인물 페이지 제목은 원문 본문 앵커가 아니므로, verifier가 `community_banter/reject`로 본 짧은 캐릭터 반응에서는 character-page rescue를 막았다.
+  - `text_surface` 또는 `promotion_eligible=false`인 VLM/OCR 이미지 제목은 direct image title rescue와 image anchor 승격에서 제외했다.
+  - worklike gatekeeper surface가 있는 짧은 캐릭터 반응은 자동 `context_only`로 접지 않고, `semantic_seed_review` no-work 근거가 있을 때만 context-only로 내리도록 scope를 분리했다.
+- 검증:
+  - `https://novelpia.com/novel/50764`는 `[TS?] 깨어나 보니 여자가 되어 있었다. 그런데 달려 있는.` / 작가 `프룻푸릇` 작품 페이지로 확인됐다.
+  - v432 labels: `ACCEPT=3`, `HOLD=1`.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_comment_url_recommendation_preserved_as_adjacent_candidate tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_comment_url_title_answer_still_resolves_for_explicit_title_question tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_recommendation_request_without_title_stays_adjacent -v`: OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_comment_url_recommendation_preserved_as_adjacent_candidate tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_comment_url_title_answer_still_resolves_for_explicit_title_question tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_recommendation_request_without_title_stays_adjacent tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_character_page_search_does_not_resolve_weak_character_banter_verifier_veto tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_context_to_output_separates_novel_related_from_resolved_identity tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_text_surface_script_candidates_do_not_stay_core_relevant tests.test_targeted_followup_remaining_queue tests.test_semantic_coverage_audit -v`: 28건 OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest -v`: 305건 OK.
+  - v433 live rerun: input `4`, completed/failed/pending `4/0/0`, requested/effective parallel `1/1`, VLM/OCR `READY`, `run_id=20260531_234334_468163`.
+  - v433 manifest/log: `mcp_small_targeted_run=true`, `mcp_small_run_shard_lifecycle_blocked=true`, `requested=1`, `effective=1`, `workers=1`, shard `http://127.0.0.1:3333`만 사용했으며 Docker/shard recreate 흔적은 없다.
+  - v433 VLM log: 4개 post 모두 `VLM chunk request/result`, `fetch=1/1`, `chunks=1`이 있다. 단, image catalog는 `character_visual_only` / `title_role=unknown` / `promotion_eligible=false`라 작품 직접 근거로 보지 않는다.
+  - v433 `11718049`: `is_relevant=false`, `discussion_type=recommendation`, `topicality=adjacent_relevant`, `subtype=recommendation_request`, `work_resolution=none`, `title_resolution_state=adjacent`, `title_resolution_allowed=false`, `consistency_flags=comment_url_recommendation_candidate_preserved`.
+  - v433 `11718049` recommendation candidate: `깨어나 보니 여자가 되어 있었다. 그런데 달려 있는.` / `https://novelpia.com/novel/50764` / `reference_role=mentioned`.
+  - v433 semantic coverage: image catalog `4/0`, comment metadata/dialogue `4/0`과 `4/0`, search-only/blocked-intent resolved title `0/0`, browser visual `required/available/missing=4/0/4`, gate `REVIEW-LOCKED`.
+  - Codex in-app Browser 연결은 `windows sandbox failed: spawn setup refresh`로 재실패했다. v433에는 run-level VLM/OCR evidence는 있으나 direct browser visual artifact는 아직 연결되지 않았다.
+- 판정:
+  - recommendation comment URL preservation focused regression: `GO`.
+  - character-page/text-surface/context-scope focused regression: `GO`.
+  - live `11718049` rerun: targeted behavior `GO`.
+  - browser visual artifact linkage: `REVIEW-LOCKED`.
+  - 단일 resolved title 승격은 금지하되, comment recommendation candidate 또는 adjacent recommendation context 보존이 필요하다.
+  - 10만 semantic approval은 계속 `REVIEW-LOCKED`.
+
+## IMP-20260531-242 - targeted follow-up needs a remaining queue after hard blockers move to review-only
+
+- 상태: implemented / validation passed / targeted gate REVIEW / semantic approval REVIEW-LOCKED
+- 우선순위: P1 targeted-followup, P1 review-artifact, P1 gate-separation
+- Type: action-queue / qualitative-review / targeted-followup
+- 문제:
+  - v430에서 coverage hard blocker는 review-only로 내려갔지만, v429 `HOLD`와 v430 `REVIEW_ONLY`가 서로 다른 파일에 흩어져 있었다.
+  - 이 상태에서는 targeted follow-up이 실제로 무엇을 닫아야 하는지와 전체 10만 semantic approval gate가 쉽게 섞일 수 있다.
+- 조치:
+  - `tools\build_targeted_followup_remaining_queue.py`를 추가해 v429 label과 v430 coverage issue를 하나의 remaining queue로 합성한다.
+  - `tests\test_targeted_followup_remaining_queue.py`를 추가해 `HOLD`와 `REVIEW_ONLY` 큐 생성, 한국어 gate summary를 검증한다.
+  - v431 manifest, queue JSONL, packet JSONL, 한국어 summary를 생성했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile tools\build_targeted_followup_remaining_queue.py tests\test_targeted_followup_remaining_queue.py`: OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_targeted_followup_remaining_queue -v`: 2건 OK.
+  - v431 manifest: `queue_items=4`, `packet_items=4`, `unique_posts=4`, `missing_packet_posts=[]`.
+  - v431 label counts: `HOLD=2`, `REVIEW_ONLY=2`.
+- 판정:
+  - targeted follow-up remaining queue generation: `GO`.
+  - targeted follow-up gate: `REVIEW`.
+  - 10만 semantic approval: v431은 approval evidence가 아니며 계속 `REVIEW-LOCKED`.
+
+## IMP-20260531-241 - semantic coverage hard blockers need review-only downshift when independent title evidence exists
+
+- 상태: implemented / validation passed / targeted coverage REVIEW / semantic approval REVIEW-LOCKED
+- 우선순위: P1 semantic-coverage, P1 comment-attribution, P1 search-evidence-boundary
+- Type: semantic-coverage-audit / qualitative-review-gate / comment-author-attribution
+- 문제:
+  - v429 coverage에서는 `11718097`이 `comment_author_match_unverified_used_for_resolution`, `11718075`가 `search_only_resolved_title` hard issue 후보로 남았다.
+  - 실제 v428 result를 재판독하면 `11718097`은 `망겜힐` title/alias 및 검색 support가 있고, 댓글 author 미확정은 final title의 유일 bridge가 아니었다.
+  - `11718075`도 `죽었다 깨어도 수선` title exact/official-platform evidence가 있어, 남은 search-only marker만으로 hard blocker로 두면 targeted follow-up 상태를 과하게 잠근다.
+- 조치:
+  - `tools\build_semantic_coverage_audit.py`에 title/alias support marker, official/platform support marker, platform evidence catalog 검사를 추가했다.
+  - `comment_author_match_unverified_used_for_resolution`은 별도 title/alias/search support가 있으면 `comment_author_match_unverified_resolution_review_only`로 내린다.
+  - `search_only_resolved_title`은 direct title/alias anchor와 official/platform evidence가 함께 있으면 `search_only_resolved_title_review_only`로 내린다.
+  - `tests\test_semantic_coverage_audit.py`에 두 review-only 하향 회귀 테스트를 추가했다.
+  - v430 refined semantic coverage audit를 생성하고 한국어 문서/가이드에 hard blocker와 review-only 분기 기준을 반영했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile tools\build_semantic_coverage_audit.py tests\test_semantic_coverage_audit.py`: OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_semantic_coverage_audit -v`: 20건 OK.
+  - v430 coverage gate: `REVIEW`.
+  - v430 coverage: browser visual `6/6/0`, image catalog `6/0`, comment metadata/dialogue `7/0`과 `7/0`.
+  - v430 hard counts: `comment_author_match_unverified_used_for_resolution=0`, `search_only_resolved_title=0`.
+  - v430 review-only counts: `comment_author_match_unverified_resolution_review_only=1`, `search_only_resolved_title_review_only=1`.
+- 판정:
+  - targeted follow-up의 coverage hard blocker는 해소됐고, `11718075`/`11718097`은 packet-level review-only로 남긴다.
+  - `11718049` comment URL verify와 `11718083` quote/title recall은 v429 HOLD queue로 유지한다.
+  - 전체 10만 semantic approval은 completed source와 expanded random/high-risk review 전까지 계속 `REVIEW-LOCKED`/`NO-GO`다.
+
+## IMP-20260531-240 - semantic seed context-term warning must not override keep-query positive work discussion
+
+- 상태: implemented / validation passed / targeted canary fixed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 semantic-gate, P1 positive-alias-regression, P1 after-review-guard
+- Type: semantic-seed-review / prompt-orchestration / qualitative-after-review / browser-artifact-sidecar
+- 문제:
+  - `11718098`에서 `discourse_semantic_seed_guard`는 `is_specific_work_discussion=true`와 `search_query_reviews.keep`를 냈지만, 후처리가 `title_seed_reviews=context_only`만 보고 `semantic_seed_review_specific_work_denied`를 붙였다.
+  - v427에서는 이 신호가 `semantic seed demotion 조기종료`와 `batch alias rescue blocked: semantic_seed_no_work_context`로 이어져 positive alias/title-discussion을 no-work로 과차단했다.
+  - v423 자동 after-review는 후속 human/comment/positive-alias 문제가 닫히지 않았는데도 `11/11 ACCEPT`로 과낙관했다.
+- 조치:
+  - `DiscourseAnalyzer`가 context-only 표면어 제거와 `search_query_reviews.keep` positive seed를 분리하게 했다. 같은 term을 keep-query가 지지하면 검색 제안과 `is_specific_work_discussion=true`를 보존한다.
+  - `Orchestrator._has_discourse_semantic_seed_demotion()`은 semantic seed positive 상태에서 context-term warning만으로 조기 noise 종료하지 않는다.
+  - `AgenticPipeline` resolution scope, `_search_inferred_alias_nonwork_block_reason()`, `_semantic_seed_no_work_signal()`은 semantic positive/title-term 신호가 있으면 stale no-work warning을 hard deny로 읽지 않는다.
+  - `11718080`류 보호를 위해 seed review prompt에 사회적 한탄/장르 잡담 경계 문구를 복구했다.
+  - `build_qualitative_round3_after_review.py`에 follow-up guard를 추가해 human/comment/quote 확인 미종결과 positive alias overblock을 자동 ACCEPT로 올리지 않게 했다.
+  - `build_semantic_coverage_audit.py`가 외부 browser artifact manifest를 sidecar evidence로 읽게 했다.
+- 검증:
+  - focused semantic seed/no-work 회귀 9건 OK.
+  - `tests.test_final_semantic_reread_gate` 12건 OK.
+  - v428 targeted rerun: completed/failed/pending `11/0/0`, requested/effective parallel `11/11`, VLM/OCR `READY`.
+  - v428 `11718098`: `is_relevant=true`, official title `마법 좋아좋아좋아`, confidence `Medium`.
+  - v429 guarded after-review: `ACCEPT=9`, `HOLD=2`, `REJECT=0`.
+  - v429 semantic coverage with browser sidecar: browser visual `6/6/0`, image catalog `6/0`, comment metadata `7/0`.
+- 판정:
+  - `11718098` 과차단 회귀는 targeted canary 기준 fixed.
+  - targeted follow-up은 `REVIEW`로 개선됐지만, `11718049`, `11718083`, `11718097`, `11718075` 관련 남은 review issue 때문에 10만 semantic approval은 계속 `REVIEW-LOCKED`.
+
+## IMP-20260531-239 - search-only blocked-intent follow-up needs manual gate after targeted rerun
+
+- 상태: implemented / validation passed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 semantic-gate, P1 browser-evidence, P1 positive-alias-regression
+- Type: targeted-rerun / codex-subagent-orchestration / browser-visual-gate / semantic-after-review
+- 문제:
+  - v421 search-only/blocked-intent triage 11건은 후속 `re_judge/re_search`가 필요한 targeted seed였고, 이를 대량 semantic approval 근거로 볼 수 없었다.
+  - 후속 입력을 만들 때 source post row만 쓰면 댓글과 image URL이 빠져 VLM/OCR/browser 검증이 text-only로 약해질 수 있었다.
+  - v423 자동 after-review가 `11/11 ACCEPT`를 내면서 false-positive 차단 회복과 남은 HOLD/REJECT를 구분하지 못하는 과낙관 위험이 드러났다.
+  - `11718098`처럼 positive alias/title-discussion이 no-work로 과차단되는 반대 방향 회귀가 남았다.
+- 조치:
+  - Codex `spawn_agent` subagent를 병렬 투입했다. source 복원(`Popper`), semantic gate(`Wegener`), runtime/shard 계약(`Aquinas`)을 분리했고, 이 병렬성은 repo 내부 `expert_main.py --parallel` worker cap과 분리했다.
+  - `tools\build_search_only_intent_followup_inputs.py`를 추가해 v421 labels와 `tests\inputs\test01.jsonl`에서 post/body/comment/image fields를 복원했다.
+  - v422 package를 생성했다. target `11`, source post rows `11`, source comment rows `25`, missing post `0`, browser target `6`이다.
+  - v422 preflight를 실행해 rerun execution `GO`, LLM `GO`, effective MCP readiness `GO`, full 36-shard readiness `NO-GO (32/36)`를 분리했다.
+  - v422 targeted rerun을 `--parallel 36 --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on --require-vlm-ocr-for-images`로 실행했다.
+  - v424 semantic coverage audit와 v425 수동 review를 생성해 자동 v423 all-ACCEPT를 gate 근거에서 제외했다.
+  - Codex in-app Browser `node_repl` 실패와 Playwright CLI fallback 실패를 기록하고, MCP Playwright screenshot/snapshot을 별도 browser artifact로 남겼다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile tools\build_search_only_intent_followup_inputs.py tests\test_search_only_intent_followup_inputs.py`: OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_search_only_intent_followup_inputs -v`: 1건 OK.
+  - v422 rerun result: input `11`, completed `11`, failed `0`, pending `0`, requested/effective parallel `36/11`, VLM/OCR `READY`, image post count `6`.
+  - v424 coverage: `search_only_resolved_title=0`, `blocked_intent_resolved_title=0`, image evidence catalog `6/0`, comment metadata `7/0`, browser visual required/available/missing `6/0/6`.
+  - v425 manual labels: `ACCEPT=8`, `HOLD=2`, `REJECT=1`.
+- 판정:
+  - v422 targeted rerun runtime/VLM/OCR: `GO`
+  - v423 automated all-ACCEPT gate: `NO-GO as approval evidence`
+  - v425 manual semantic gate: `REVIEW-LOCKED`
+  - `11718098`: P1 positive alias/title-discussion overblock
+  - `11718049`, `11718083`: `HOLD`
+  - 10만 semantic approval: completed source, browser visual schema linkage, expanded random/high-risk review 전까지 `REVIEW-LOCKED`
+
+## IMP-20260531-238 - search-only and blocked-intent resolved titles need coverage buckets
+
+- 상태: implemented / validation passed / semantic gate REVIEW-LOCKED
+- 우선순위: P0 semantic-coverage, P0 prompt-orchestration, P1 browser-evidence
+- Type: semantic-coverage-audit / search-evidence-boundary / codex-subagent-integration
+- 문제:
+  - 본체에는 `search_only` 약근거 처리, intent permit gate, 후단 rescue guard가 이미 여러 층에 들어가 있지만, completed source에서 `search_only` 또는 차단 intent가 그래도 final resolved title로 살아남았는지 자동 집계하는 bucket이 부족했다.
+  - `community_banter/trope_discussion/author_talk/recommendation` 표면 intent는 직접 작품 앵커가 없으면 title 확정 근거가 아닌데, 후단 검색/BatchContext/known alias/slang_db rescue가 앞단 no-work 판단을 뒤집을 수 있다.
+  - VLM/OCR Browser visual gate는 `modern_semantic_coverage_source_required` 안에 blocker로 들어가 있었지만, 별도 action에서는 approval blocker가 아니어서 Missing/Weak visual evidence의 무게가 약해 보였다.
+- 조치:
+  - Codex `spawn_agent` 전문가 병렬 운영으로 `Ramanujan`, `Copernicus`, `Arendt`를 투입해 search-only/문맥 이해/VLM browser evidence gate를 읽기 전용으로 분리 검토했다.
+  - `tools\build_semantic_coverage_audit.py`에 `search_only_resolved_title`, `blocked_intent_resolved_title`, `search_only_resolved_title_review_only`, `blocked_intent_resolved_title_review_only` coverage bucket을 추가했다.
+  - `specific_work + hold/allow + direct anchor` 조합은 hard blocker가 아니라 review-only로 분리해, 작품 직접 앵커가 있는 positive control을 과차단하지 않게 했다.
+  - `tools\build_goal_action_queue.py`가 semantic coverage evidence에 search-only/blocked-intent bucket을 포함하게 했다.
+  - `vlm_ocr_browser_visual_gate` action은 source의 browser visual/image catalog/context catalog가 Missing/Weak이면 P0 approval blocker로 승격되게 했다.
+  - `tests\test_semantic_coverage_audit.py`에 search-only resolved, blocked intent resolved, specific-work hold positive-control 테스트를 추가했다.
+  - `VERIFICATION_RESULTS.md`, `CHECKLIST.md`, `TODO.md`, `HISTORY.md`를 한국어로 갱신했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile tools\build_semantic_coverage_audit.py tools\build_goal_action_queue.py tests\test_semantic_coverage_audit.py`: OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_semantic_coverage_audit -v`: 17건 OK.
+  - `.\venv\Scripts\python.exe -m py_compile tools\build_goal_action_queue.py tests\test_goal_action_queue.py`: OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_goal_action_queue -v`: 5건 OK.
+  - v419 original semantic coverage audit 생성 OK: `search_only_resolved_title=6`, `blocked_intent_resolved_title=7`, `search_only_resolved_title_review_only=0`, `blocked_intent_resolved_title_review_only=0`, gate `REVIEW-LOCKED`.
+  - v420 action queue 생성 OK: `total_actions=14`, `approval_blockers=9`, `vlm_ocr_browser_visual_gate=P0/approval_blocker`.
+  - v421 search-only/blocked-intent bucket 정성 triage 작성 OK: unique post `11`, `HOLD=4`, `REJECT=7`, gate `REVIEW-LOCKED`.
+- 판정:
+  - search-only/blocked-intent coverage tooling: `GO`
+  - Browser visual action blocker contract: `GO`
+  - 본체 최종 `search_only` 완전 차단: `REVIEW`, completed source에서 새 bucket 관측 후 추가 판단
+  - original 10만 partial source: `NO-GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-237 - image context claims need VLM catalog/counter and browser loading proof
+
+- 상태: implemented / validation passed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 VLM-OCR, P1 browser-evidence, P1 review-tooling
+- Type: semantic-coverage-audit / VLM-OCR / browser-visual-gate
+- 문제:
+  - `context_sources=image` 또는 `anchor_type=image`만으로 이미지/VLM 근거가 있다고 볼 수 없다.
+  - `browser_screenshot_path`나 `browser_visual_manifest` 경로만 있어도 visual available처럼 보일 수 있고, lazy/data-original/placeholder/incomplete/broken pending 상태가 반영되지 않으면 이미지 로딩 실패를 놓친다.
+  - `vlm_chunk_count="failed"`, `image_fetch_success="timeout"`, `vlm.status="pending"` 같은 문자열이 positive VLM evidence로 오인될 수 있다.
+- 조치:
+  - `expert_main.py` Summary/manifest에 `VLM/OCR Semantic Gate`, `image_post_sample_post_ids`, NO-GO code/action을 추가했다.
+  - `--require-vlm-ocr-for-images`와 `LLM_REQUIRE_VLM_OCR_FOR_IMAGES=1` guard를 추가해 이미지 post가 있는 semantic test에서 VLM/OCR 누락을 시작 전 exit code 2로 실패시킬 수 있게 했다.
+  - manifest/Summary용 `vlm_ocr_semantic_review_skip_reasons`를 추가해 `no_image_blocks`, `vlm_disabled`, `ocr_disabled` run-level reason을 구조화했다.
+  - `build_semantic_coverage_audit.py`에 `image_context_without_vlm_catalog` bucket을 추가했다.
+  - VLM/fetch/chunk 상태 문자열 중 `failed`, `timeout`, `pending`, `skipped`, `unsupported`, `disabled` 등은 positive evidence로 세지 않게 했다.
+  - browser screenshot/manifest path만으로 visual evidence를 available로 보지 않고, loading counter가 pending/failure를 가리키면 explicit verified flag보다 우선해 missing으로 낮춘다.
+  - `build_goal_action_queue.py`가 semantic coverage evidence에 `image_context_without_vlm_catalog` count를 포함하게 했다.
+  - Codex `spawn_agent` 병렬 운영과 `expert_main.py --parallel` runtime 병렬도를 문서에서 분리했다.
+- 검증:
+  - `py_compile` OK.
+  - `tests.test_expert_main_comment_metadata` 7건 OK.
+  - `tests.test_semantic_coverage_audit` 11건 OK.
+  - v416 fast-fail smoke OK: 이미지 포함 `v117_targeted_4_input.jsonl`에 `--vlm off --ocr on --require-vlm-ocr-for-images`를 주입하면 PowerShell `$LASTEXITCODE=2`이고 output/manifest가 생성되지 않는다.
+  - v414 original semantic coverage audit 생성 OK: `total_rows=71`, `image_context_without_vlm_catalog=36`, `browser_visual_missing=37`, `image_evidence_catalog_missing=37`, gate `REVIEW-LOCKED`.
+  - v415 action queue 생성 OK: `total_actions=14`, `ready_now=9`, `blocked_until_completed_source=5`, approval blocker `8`.
+- 판정:
+  - VLM catalog/counter audit tooling: `GO`
+  - VLM/OCR image-run fast-fail guard: `GO`
+  - browser loading evidence gate: `GO`
+  - original 10만 partial source: `NO-GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-236 - Codex goal work should use parallel subagents with disjoint evidence/implementation scopes
+
+- 상태: implemented / validation passed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 goal-continuity, P1 review-tooling, P1 coordination
+- Type: codex-subagent-orchestration / review-workflow / approval-gate
+- 문제:
+  - active goal 작업량이 gate 확인, runtime/shard/process 확인, semantic/VLM/comment 확인, 도구 구현으로 나뉘는데 이를 한 흐름에서 순차 처리하면 오래 걸리고 오해가 생긴다.
+  - `expert_main.py --parallel`과 Codex subagent 병렬 운영을 혼동하면 사용자가 요청한 goal 운영 방식과 다른 문서를 만들 수 있다.
+- 조치:
+  - v411에서 Runtime/manifest, semantic 품질, VLM/OCR 이미지 게이트, 프롬프트/오케스트레이션 한계 subagent 결과를 통합했다.
+  - `11718082`는 세대별로 재분류했다. v179는 VLM-ready/log가 없어 승인 근거에서 제외하고, v181/v259/v311/v325/v330은 VLM/OCR 실행 증거가 있으며, 원본 10만 partial은 catalog 부재로 승인 근거가 아니다.
+  - 원본 5/28 result의 `batch_memory_exact_alias_rescued` P0 seed를 `11718080`, `11718062`, `11718083`, `11718118`, `11718069`로 분리했다.
+  - `11718080`류는 LLM 이해 전문가 실패만이 아니라 앞단 no-work/title-null 판단을 후단 검색, BatchContext, known alias, `slang_db`, canonical/deliberation rescue가 다시 뒤집는 비단조 파이프라인 문제로 기록했다.
+  - `context_sources=image` 또는 `anchor_type=image`만으로 VLM/OCR Strong evidence를 인정하지 않고, `image_evidence_catalog` 또는 VLM fetch/chunk counter를 요구하는 기준을 v411에 남겼다.
+  - Codex explorer 3개를 병렬 투입해 gate/evidence, runtime/shard/process, semantic/VLM/comment 축을 분리 확인했다.
+  - 후속 worker 2개를 disjoint write scope로 투입했다: runtime audit process snapshot, semantic coverage audit.
+  - `OPERATION_QUALITY_CHECKLIST.md`, `CHECKLIST.md`, `TODO.md`, `HISTORY.md`에 Codex subagent 운영 원칙과 현재 진행 상태를 기록했다.
+  - runtime audit에 `--collect-process-snapshot` 옵션을 추가하고 v395 산출물을 생성했다.
+  - semantic/VLM/comment coverage audit 도구를 추가하고 v396 산출물을 생성했다.
+  - `--process-snapshot-json` 외부 snapshot 주입 경로를 추가하고, v397 audit에서 stale process 후보 `0`건을 확인했다.
+  - process snapshot 기본 패턴에서 넓은 `openai`를 제거해 Codex 앱 프로세스 오탐을 줄였다.
+  - v396 semantic coverage audit와 v397 process snapshot audit를 v398 action queue에 통합해 approval blocker와 ready action을 다시 산출했다.
+  - `final_semantic_reread_required/present/missing`을 추가해 final reread 요구 row와 단순 부재 row를 분리했다.
+  - v399 clean canary refined coverage audit, v400 refined original coverage audit, v401 refined action queue, v402 현재 goal 요약을 생성했다.
+  - 사용자 재정정 후 hardcoded alias risk explorer, VLM/OCR browser evidence gate explorer, hardcoded alias audit tool/test worker를 추가 병렬 투입했다.
+  - `tools\audit_hardcoded_alias_risk.py`와 `tests\test_hardcoded_alias_risk_audit.py`를 추가했고, curated registry 분류에 `SLANG_DICTIONARY`, `STOPLIST`, `NOISE`, `PLATFORM`, `GENERIC_TERM`, `LOW_INFORMATION`, `TROPE` 계열을 포함했다.
+  - v405 refined hardcoded alias risk audit를 생성했다. 함수 내부 local literal은 `local_runtime_literal/INFO`로 분리했고, approval blocker는 module-level positive registry 3개로 좁혔다.
+  - `build_goal_action_queue.py --hardcoded-alias-audit`를 추가하고 v406 refined action queue에 hardcoded alias blocker를 통합했다.
+  - `tools\build_hardcoded_alias_packet_review.py`와 `tests\test_hardcoded_alias_packet_review.py`를 추가했다.
+  - v407 packet review를 생성해 실제 result/review packet의 registry alias hit를 별도 확인했다. report self-hit를 제외하고 evidence snippet only alias hit는 context-only로 분리했다.
+  - v407 결과는 scanned files `388`, scanned records `763`, matched packets `11`, packet coverage `FOUND`, gate `REVIEW`다.
+  - v407 packet match는 `KNOWN_TITLE_ABBREVIATIONS:담텔기 -> 괴담 호텔 탈출기` 계열로 좁혀졌고, provenance가 registry명으로 직접 남지 않는 공백을 확인했다.
+  - `build_goal_action_queue.py --hardcoded-alias-packet-review`를 추가하고 v408 action queue에 hardcoded alias packet review blocker를 통합했다.
+  - v409 hardcoded alias packet label review를 작성했다. 11건 중 `ACCEPT=6`, `HOLD=2`, `REJECT=3`이며, REJECT는 author/meta 과차단, noise 과차단, wrong canonical title 변형이다.
+  - `build_goal_action_queue.py --hardcoded-alias-packet-labels`를 추가하고 v410 action queue에 hardcoded alias packet label follow-up blocker를 통합했다.
+  - `NovelIdentity.alias_resolution_sources[]`를 추가해 final identity에 registry provenance를 남기고, qualitative packet `final_decision_fields.alias_resolution_sources`로 노출했다.
+  - `tools\build_current_remaining_action_inputs.py` 실행 계약을 input count 기반으로 바꿔 소규모 재실행 입력의 권장 `--parallel`을 `min(input_count,36)`로 표시하고, `MCP_SHARD_COUNT=36`을 required contract에서 제거했다.
+  - `Orchestrator._prune_title_search_requests_for_intent_permit()`를 추가해 no-work/context-only semantic seed review 상태에서 title/alias/key-term 목적 검색을 실행 직전에 차단했다.
+  - subagent coverage 피드백을 반영해 permit false 상태를 닫힌 기본값으로 보강했다. `term_definition` 등 안전 목적만 통과하고 unknown/title-like purpose는 기본 차단한다.
+  - `adaptive_wiki`, `author_works_search` 직접 `search_fn` 호출을 `_execute_searches(..., ctx=ctx)`로 통일해 중앙 intent permit gate 우회를 막았다.
+  - `BatchContext`/known alias late rescue가 `semantic_seed_review` no-work, `intent_permit_for_title_search=false`, `title_resolution_allowed=false`, `context_only` 신호를 읽고 official title 되살리기를 차단하도록 보강했다.
+  - `KNOWN_ABBREVIATIONS` 직접 승격과 final deliberation/canonical rescue도 같은 no-work guard를 타게 해, 검색 gate 뒤쪽에서 title이 다시 살아나는 우회 경로를 닫았다.
+  - `BatchContextMemory.learn_from_result()`는 `title_resolution_allowed=false` 또는 `context_only/nonwork/unresolvable_memory_query` 결과를 alias seed로 학습하지 않는다.
+  - `slang_db` seed safety는 `semantic_seed_review_specific_work_denied`, `context_only_no_work_anchor`, `batch_memory_alias_rescue_blocked_semantic_seed` 신호를 오염 seed로 취급해 다음 run의 BatchContext seed 주입을 막는다.
+  - runtime/shard explorer가 현재 `--parallel 36` max/effective shrink 계약과 small goal/test lifecycle opt-in 계약을 read-only로 재확인했다.
+  - semantic/VLM explorer가 `search suppression` 기본 off, `key_terms` 자동 검색, Verifier 검색 우선 문구 조합을 P0 semantic risk로 정리했다.
+- 검증:
+  - explorer 3개는 read-only로 완료됐다.
+  - 추가 subagent 3개도 완료됐다: hardcoded alias risk explorer, VLM/OCR browser evidence gate explorer, hardcoded alias audit worker.
+  - worker 2개 결과를 메인 Codex가 통합 검토했다.
+  - `py_compile` OK.
+  - hardcoded alias risk unittest 7건 OK.
+  - hardcoded alias packet review unittest 5건 OK.
+  - hardcoded alias packet/action queue 통합 unittest 10건 OK.
+  - hardcoded alias 통합 goal action queue unittest 포함 34건 OK.
+  - 최종 focused combined unittest 39건 OK.
+  - v409 labels JSONL parse OK: 11 rows, `ACCEPT=6`, `HOLD=2`, `REJECT=3`.
+  - v410 action queue generation OK.
+  - alias provenance field py_compile OK.
+  - qualitative packet alias provenance focused unittest 1건 OK.
+  - current remaining action input execution contract focused unittest OK.
+  - intent permit search gate focused unittest 3건 OK.
+  - current remaining action input parallel cap boundary unittest OK.
+  - BatchContext/slang_db semantic seed rescue guard focused unittest 8건 OK.
+  - known abbreviation/direct deliberation 우회 focused unittest 5건 OK.
+  - BatchContext/slang_db/intent permit 관련 회귀 묶음 50건 OK.
+  - goal 관련 회귀 묶음 25건 OK.
+  - focused semantic coverage unittest 7건 OK.
+  - focused goal action queue unittest 5건 OK.
+  - `git diff --check` OK. 줄끝 변환 경고만 있었다.
+- 판정:
+  - v411 latest small-run/subagent integration review: `targeted GO / original source NO-GO / semantic approval REVIEW-LOCKED`
+  - subagent orchestration: `GO`
+  - process snapshot audit tooling: `GO`
+  - semantic coverage audit tooling: `GO`
+  - v398 action queue: `total_actions=11`, `ready_now=6`, `blocked_until_completed_source=5`, approval blocker `5`.
+  - v401 refined action queue: `total_actions=11`, `ready_now=6`, `blocked_until_completed_source=5`, approval blocker `5`.
+  - v405 refined hardcoded alias risk audit: `semantic_approval=REVIEW`, registry `85`, positive blocker `3`, quarantine-only `10`.
+  - v406 refined action queue: `total_actions=12`, `ready_now=7`, `blocked_until_completed_source=5`, approval blocker `6`, hardcoded alias gate `REVIEW`.
+  - v407 hardcoded alias packet review: `packet_coverage=FOUND`, matched packets `11`, direct packet registry match `KNOWN_TITLE_ABBREVIATIONS`.
+  - v408 refined action queue: `total_actions=13`, `ready_now=8`, `blocked_until_completed_source=5`, approval blocker `7`, hardcoded alias packet gate `REVIEW`.
+  - v409 hardcoded alias packet label review: `ACCEPT=6`, `HOLD=2`, `REJECT=3`, gate `REVIEW`.
+  - v410 refined action queue: `total_actions=14`, `ready_now=9`, `blocked_until_completed_source=5`, approval blocker `8`, hardcoded alias packet label gate `REVIEW`.
+  - semantic search-intent permit: `P0 execution gate implemented / downstream BatchContext/known alias/slang_db/deliberation rescue guard covered`
+  - semantic search-intent execution gate: `P0 implemented`
+  - semantic seed late rescue guard: `GO for focused BatchContext/known alias/slang_db/deliberation regressions`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-235 - active goal needs a current-state evidence map
+
+- 상태: implemented / validation passed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 review-tooling, P1 goal-continuity
+- Type: review-tooling / approval-gate / evidence-map
+- 문제:
+  - 원본 10만 run source, locked preflight, 소규모 canary runtime audit, reason hygiene scan이 각각 흩어져 있어 `GO`와 `REVIEW-LOCKED`를 다시 혼동할 수 있다.
+  - goal을 이어받는 에이전트가 원본 partial source를 현재 approval source처럼 다시 쓰면 같은 검토가 반복된다.
+- 조치:
+  - `tools\build_goal_current_state_map.py`를 추가했다.
+  - 상태맵은 원본 source approval, 소규모 runtime contract, reason hygiene, semantic approval을 별도 gate로 출력한다.
+  - v393 상태맵을 생성해 원본 source `NO-GO`, 소규모 runtime `GO`, reason hygiene `GO`, 10만 semantic approval `REVIEW-LOCKED`를 고정했다.
+- 검증:
+  - `py_compile` OK.
+  - focused unittest 10건 OK: goal current-state map 3건, goal runtime audit 6건, reason hygiene colon-payload 1건.
+- 판정:
+  - current-state map tooling: `GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-234 - expression reread label must not carry colon payload
+
+- 상태: implemented / validation passed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 public-output, P1 prompt-contract
+- Type: output-hygiene / semantic-reread / hardcode-prevention
+- 문제:
+  - `표현 오타/축약 패턴(범용)` label 자체는 맞아도, public reason에 `표현 오타/축약 패턴(범용): ...`처럼 콜론 payload가 붙으면 다시 표면값 나열이나 특정 정상형 복원처럼 읽힐 수 있다.
+  - 이 형태는 재해독을 packet-local 범용 신호가 아니라 특정 계열 일반규칙처럼 오해하게 만든다.
+- 조치:
+  - public reason 안내를 `표현 오타/축약 패턴(범용)은 packet-local 원문 재검토 신호` 문장형으로 바꿨다.
+  - reason hygiene scanner에 `surface_reread_label_colon_payload` hit를 추가했다.
+  - 운영/리뷰 문서에 label 뒤 payload 금지 원칙을 반영했다.
+- 검증:
+  - `py_compile` OK.
+  - focused unittest: `tests.test_agentic_pipeline_rework` 2건 OK, `tests.test_final_semantic_reread_gate` 9건 OK, `tests.test_qualitative_review_packet_tools` 3건 OK.
+  - latest clean canary 4건 raw reason hygiene scan: `hit_files=0`, `clean_files=4`.
+- 판정:
+  - wording contract: `GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-233 - post-run contract audit should find logs from manifest run_id
+
+- 상태: implemented / validation passed / semantic gate REVIEW-LOCKED
+- 우선순위: P2 runtime-tooling, P2 operator-ergonomics
+- Type: runtime-audit / expert-main / log-evidence
+- 문제:
+  - `audit_goal_test_run_contract.py`가 manifest와 log를 같이 받도록 만들었지만, 운영자가 run id와 log path를 다시 맞춰야 했다.
+  - log를 빠뜨린 manifest-only 감사가 `GO`처럼 보이면 Docker/shard lifecycle log hit 부재를 증명하지 못한다.
+- 조치:
+  - manifest `run_id`로 `logs\expert_run_<run_id>.log`와 worker log를 자동 발견한다.
+  - 자동 발견도 실패하면 `log_evidence_missing`으로 `runtime_contract=REVIEW`를 남긴다.
+  - 명시 log, log dir, worker log 제외, manifest-only 허용 옵션을 분리했다.
+- 검증:
+  - focused unittest 6건 OK.
+  - v381 manifest-only 감사에서 `auto_discovered_logs=true`, `log_evidence_present=true`, `runtime_contract=GO`.
+- 판정:
+  - audit usability: `GO`
+  - semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-232 - small goal/test reruns need a post-run contract audit artifact
+
+- 상태: implemented / validation passed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 runtime-contract, P1 review-tooling
+- Type: runtime-audit / expert-main / VLM-OCR / shard-lifecycle
+- 문제:
+  - 소규모 goal/test run에서 `--parallel 36`은 max이고 실제 worker는 줄어야 하지만, 완료 후 매번 manifest/log를 손으로 확인해야 했다.
+  - Docker Compose/shard lifecycle이 실제로 열렸는지, 이미지 row가 VLM/OCR ready였는지, pending/failed/flushed 상태가 맞는지 한 산출물로 묶는 절차가 없었다.
+- 조치:
+  - `tools\audit_goal_test_run_contract.py`를 추가했다.
+  - 감사 도구는 manifest/log를 읽어 runtime contract를 `GO/REVIEW/NO-GO`로 판정하고, semantic approval은 평가하지 않는다고 명시한다.
+  - forbidden log pattern으로 `docker compose`, `force-recreate`, `warp_shards.py up/recreate`, `compose down`을 확인한다.
+- 검증:
+  - focused unittest 4건 OK.
+  - `py_compile` OK.
+  - v381 clean canary manifest/log 실제 감사 결과 `runtime_contract=GO`, requested/effective `36/1`, VLM/OCR ready true, lifecycle false, forbidden log hit 0.
+- 판정:
+  - post-run runtime contract audit: `GO`
+  - semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-231 - expression reread active wording must not drift past the generic label
+
+- 상태: implemented / validation passed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 public-output, P1 prompt-contract
+- Type: output-hygiene / semantic-reread / hardcode-prevention
+- 문제:
+  - 재해독 문구가 `표현 오타/축약 패턴(범용)`보다 길어지면 특정 정상형 복원, 계열 일반규칙, 검색 seed처럼 읽힐 수 있다.
+  - 이 상태는 LLM 자연어 재독해를 다시 문자열 규칙처럼 보이게 만든다.
+- 조치:
+  - active prompt/reason/report/test 기대 문구를 `표현 오타/축약 패턴(범용)` 하나로 재정리했다.
+  - non-relevant reason 문구는 `packet-local 원문 재검토 신호`로 낮췄고, 작품명/별칭 근거가 아니라는 경계를 유지했다.
+  - 운영 지침과 자연어 리뷰 루프 문서도 같은 wording으로 맞췄다.
+- 검증:
+  - focused unittest 7건 OK.
+  - `py_compile` OK.
+  - active code/test/review guide grep에서 확장 label drift 0건.
+- 판정:
+  - wording contract: `GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-230 - downstream qualitative builders must not bypass REVIEW-LOCKED preflight
+
+- 상태: implemented / validation passed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 review-tooling, P1 automation-gate
+- Type: review-tooling / approval-gate / source-integrity
+- 문제:
+  - preflight CLI는 `--fail-on-locked`로 locked source를 exit code 2로 막지만, random/round2 builder가 preflight 없이 직접 실행되면 partial source 기반 artifact를 계속 만들 수 있다.
+  - 이 경우 source 부족 증거가 approval pipeline 산출물처럼 보일 수 있다.
+- 조치:
+  - random control builder와 round2 high-risk builder에 `--preflight`와 `--fail-on-locked-source`를 추가했다.
+  - `--fail-on-locked-source` 사용 시 preflight 누락, source mismatch, `gate.overall=REVIEW-LOCKED`를 모두 exit code 2로 막는다.
+  - block은 review dir 생성 전에 수행해 실패 실행이 빈 output artifact를 남기지 않게 했다.
+- 검증:
+  - helper unit test: missing/mismatched/locked source 차단, unlocked source 통과 확인.
+  - v386 original locked preflight를 붙인 random/round2 dry-run: 둘 다 `preflight_review_locked`, exit code `2`, output dir 미생성.
+- 판정:
+  - downstream locked-source gate: `GO`
+  - original source approval: `NO-GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-229 - expression reread wording must stay generic, not generic-rule-like
+
+- 상태: implemented / validation passed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 public-output, P1 prompt-contract
+- Type: output-hygiene / semantic-reread / hardcode-prevention
+- 문제:
+  - 재해독 문구가 `표현 오타/축약 패턴(범용)`보다 길게 풀리면, 다시 특정 표면 계열 일반규칙처럼 읽힐 수 있다.
+  - 사용자가 재지적한 핵심은 재해독을 `표현 오타/축약 패턴(범용)`이라는 public label로만 두고, 의미 판단은 packet-local 원문/evidence 재검토에 맡기라는 것이다.
+- 조치:
+  - `SURFACE_EXPRESSION_REREAD_PUBLIC_LABEL`을 `표현 오타/축약 패턴(범용)`으로 좁혔다.
+  - final semantic reread와 discourse 재검토 prompt가 특정 정상형 복원/표면 계열 규칙으로 읽히지 않게 문구를 정리했다.
+  - 운영 문서 상단의 active contract를 새 label 기준으로 갱신했다.
+- 검증:
+  - `py_compile src\llm_batch\rules.py src\llm_batch\agentic_pipeline.py src\llm_batch\experts\discourse.py src\llm_batch\experts\orchestrator.py tests\test_final_semantic_reread_gate.py tests\test_qualitative_review_packet_tools.py`: OK.
+  - `tests.test_final_semantic_reread_gate`: 9건 OK.
+  - focused qualitative review packet unittest 3건 OK.
+- 판정:
+  - wording contract: `GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-228 - preflight REVIEW-LOCKED must fail explicitly in approval automation
+
+- 상태: implemented / validation passed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 review-tooling, P1 automation-gate
+- Type: review-tooling / run-integrity / approval-gate
+- 문제:
+  - 대규모 정성 리뷰 preflight는 원본 source 부족을 `REVIEW-LOCKED`로 잘 표시하지만, CLI 종료코드는 항상 0이었다.
+  - 자동화가 종료코드 0만 보면 partial source를 보고도 random/high-risk expansion을 approval pipeline처럼 이어갈 수 있다.
+- 조치:
+  - `tools\preflight_qualitative_large_scale_review.py`에 `--fail-on-locked` 옵션을 추가했다.
+  - 기본 실행은 기존 호환성을 위해 종료코드 0을 유지한다.
+  - 옵션 사용 시 `gate.overall=REVIEW-LOCKED`이면 종료코드 2를 반환한다.
+  - `tests\test_qualitative_review_packet_tools.py`에 exit-code helper 회귀 테스트를 추가했다.
+- 검증:
+  - v386 원본 objective preflight: gate `REVIEW-LOCKED`, expected CLI exit code `2`.
+  - 산출물: `qualitative_review\20260528_141006_620986\v386_original_fail_on_locked_preflight.json`, `_ko.md`.
+  - focused preflight unittest 4건 OK, `py_compile` OK.
+- 판정:
+  - preflight fail-on-locked gate: `GO`
+  - original source approval: `NO-GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-227 - non-relevant platform meta must not look unresolved-matchable, and suffix drift must be scanner-blocked
+
+- 상태: implemented / v379 canary passed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 public-output, P1 scope-field
+- Type: output-hygiene / semantic-scope / review-tooling
+- 문제:
+  - `11718102`처럼 플랫폼 UI/아이콘/콘에 대한 비관련 잡담은 broad novel/platform context가 있어도 단일 작품 매칭 후보가 아니다.
+  - v377 result에는 `단정하기 어려움할...` suffix drift가 남아 공개 reason 품질을 떨어뜨렸다.
+  - v378 result는 bad phrase는 사라졌지만, 비관련/no-title/no-anchor platform meta가 `unresolved_matchable`로 남아 사람이 보면 아직 작품 매칭 가능 후보처럼 읽힐 수 있었다.
+- 조치:
+  - `agentic_pipeline.py` sanitizer가 `단정하기 어려움할...` suffix drift를 정리한다.
+  - `tools\scan_reason_hygiene.py`의 `bad_phrase`에 `단정하기 어려움할`을 추가했다.
+  - non-relevant, no-title, no-anchor, no-memory-query, no-OCR-title platform/meta/quarantine context는 `context_only`로 둔다.
+- 검증:
+  - v377 after-extension scan: `hit_files=1`, `bad_phrase=6`.
+  - v379 run_id `20260531_141523_506800`: `11718102`이 `is_relevant=false`, `title_resolution_state=context_only`, `title_resolution_allowed=false`로 회복.
+  - v379 reason hygiene scan: `hit_files=0`, `clean_files=1`.
+  - focused tests 3건 OK, `py_compile` OK.
+- 판정:
+  - latest targeted canary: `GO`
+  - v377/v378 historical artifacts: `HOLD_AS_REPRO_EVIDENCE`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-226 - expression reread public wording must stay exact generic pattern
+
+- 상태: implemented / v376 focused tests passed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 public-output, P1 prompt-contract
+- Type: output-hygiene / semantic-reread / hardcode-prevention
+- 문제:
+  - old wording drift는 재해독을 특정 표현군 일반규칙처럼 보이게 만든다.
+  - 사용자가 지적한 핵심은 재해독을 `표현 오타/축약 패턴(범용)`라는 packet-local 범용 신호로만 보고하라는 것이다.
+- 조치:
+  - public label/statement/note를 `src\llm_batch\rules.py` 상수로 고정했다.
+  - `agentic_pipeline.py`와 `discourse.py`의 public reason/prompt wording을 새 계약에 맞췄다.
+  - `tools\scan_reason_hygiene.py`에 `reread_wording_drift` 패턴을 추가했다.
+- 검증:
+  - `py_compile` OK.
+  - reason hygiene scanner tests 2건 OK.
+  - semantic reread/reason focused tests 3건 OK.
+  - v370/v372 latest canary raw scan: `hit_files=0`, `clean_files=2`.
+- 판정:
+  - expression reread public wording contract: `GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-225 - original partial result still contains stale public reason patterns
+
+- 상태: documented / v375 original scan completed / semantic gate REVIEW-LOCKED
+- 우선순위: P0 approval-gate, P1 public-output
+- Type: result-audit / output-hygiene / gate-policy
+- 문제:
+  - active goal objective 원본 result 자체에는 stale public reason 문구가 남아 있다.
+  - 최신 targeted canary에서 회복됐더라도 원본 파일 자체를 current approval source로 쓰면 stale reason과 partial source 문제가 다시 섞인다.
+- 조치:
+  - `tools\scan_reason_hygiene.py`로 `out\expert_result_20260528_141006_620986.json`를 직접 검사했다.
+  - affected rows와 manifest/coverage gap을 v375 산출물로 남겼다.
+- 검증:
+  - raw scan: `stale_relevant=18`, `llm_flip=9`.
+  - affected rows: `11718085`, `11718103`, `11718102`, `11718096`.
+  - manifest: input/completed/flushed/pending/failed `104502/80/71/9/0`.
+  - result rows `71`, `comment_metadata=0`, `comment_dialogue_context_lines=0`, `image_evidence_catalog=0`.
+- 판정:
+  - original result as approval source: `NO-GO`
+  - original result as regression seed source: `GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-224 - raw reason hygiene scan should be a reusable tool
+
+- 상태: implemented / v374 tool report generated / semantic gate REVIEW-LOCKED
+- 우선순위: P1 review-tooling, P1 public-output
+- Type: tooling / artifact-review / output-hygiene
+- 문제:
+  - v373 raw scan이 임시 PowerShell/Python 조각에 의존하면 콘솔 인코딩, 범위 필터, 리포트 자체 재스캔 같은 실수가 생긴다.
+  - public reason hygiene 검증은 반복될 가능성이 높으므로 재사용 가능한 repo tool이어야 한다.
+- 조치:
+  - `tools\scan_reason_hygiene.py`를 추가했다.
+  - forbidden pattern은 tool 내부에서 관리하고 raw UTF-8 text를 직접 검사한다.
+  - `--min-version`과 기본 제외 suffix로 result JSON 범위를 좁힌다.
+  - `--json-out`과 `--fail-on-hit`을 제공한다.
+  - `.gitignore` 예외를 추가해 새 도구가 `/tools/*` ignore 정책에 묻히지 않게 했다.
+- 검증:
+  - v374 tool report: `files_scanned=12`, `hit_files=10`, `clean_files=2`.
+  - clean latest canaries: v370, v372.
+  - focused unittest 1건 OK, `py_compile` OK.
+- 판정:
+  - reason hygiene scan tooling: `GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-223 - reason hygiene scans must separate latest canaries from historical repro artifacts
+
+- 상태: documented / v373 raw scan completed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 review-gate, P1 output-hygiene
+- Type: artifact-review / gate-policy / public-output
+- 문제:
+  - `qualitative_review` 폴더에는 실패를 재현하던 v360-v369/v371 artifact와 최신 보정 canary가 같이 남아 있다.
+  - 폴더 전체를 한 번에 approval source처럼 보면, historical failure evidence와 current code evidence가 섞인다.
+- 조치:
+  - v360 이후 result JSON 12개를 raw text 기준으로 스캔했다.
+  - v360-v369/v371은 `HOLD_AS_REPRO_EVIDENCE`, v370/v372는 latest clean canary로 분리했다.
+  - raw scan 산출물과 label JSONL을 남겼다.
+- 검증:
+  - v360-v369/v371 raw hit: `seed 후보(`, `작품 seed 제외`, stale relevant template, `LLM(False)→최종(True)`, old wording.
+  - v370/v372 raw scan: forbidden pattern clean.
+- 판정:
+  - latest targeted reason hygiene: `GO`
+  - historical artifacts as approval source: `NO-GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-222 - BatchMem seed preload logs must summarize, and ranked reason must hide generic seed terms
+
+- 상태: implemented / v372 canary passed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 operation-log, P1 public-output
+- Type: runtime-ergonomics / output-hygiene / semantic-reread
+- 문제:
+  - Slang DB seed preload가 targeted run 시작 로그를 과도하게 채워 실제 semantic 회귀를 읽기 어렵게 만들었다.
+  - v371에서 BatchMem summary는 성공했지만, 검색/랭킹 경로 public reason이 `작품 seed 제외: 로판 [전문가별 판단]`을 다시 노출했다.
+  - 이는 특정 장르어를 hardcode로 막을 문제가 아니라, 장르 조합/클리셰/커뮤니티 조어/작품 앵커 부족 계열을 public reason에서 raw seed 목록으로 되살리지 않는 출력 계약 문제다.
+- 조치:
+  - `PIPELINE_BATCHMEM_SEED_LOG_MODE=summary|full|off`를 추가하고 기본값을 `summary`로 둔다.
+  - summary 모드는 seed preload count와 대표 preview만 남기고, per-alias 등록/보류 로그를 억제한다.
+  - ranked/search path에서도 semantic seed topic 또는 inferred topic이 장르/클리셰/앵커 부족 계열이면 `작품 seed 제외:` 라인을 숨긴다.
+- 검증:
+  - v371 run_id `20260531_130613_397740`: BatchMem summary `total=190 (registered=132, low_evidence_hold=9, generic_hold=48, quarantined=1)` 확인, reason hygiene는 `HOLD`.
+  - v372 run_id `20260531_131517_712392`: requested/effective parallel `36/1`, VLM/OCR on, VLM fetch `1/1`, image evidence catalog `1`.
+  - v372 `11718085`: `is_relevant=false`, `discussion_type=noise`, `title_resolution_state=context_only`, `title_resolution_allowed=false`, `novel_identity=null`.
+  - v372 forbidden scan: `seed 후보(`, `작품 seed 제외`, `최종 판정은 관련 포스트`, `LLM(False)→최종(True)`, `작품 관련 단서는 충분하지만`, `단정하기 어려움하기`, `표면 계열` 검출 없음.
+  - `py_compile` OK, reason hygiene unittest 5건 OK, BatchMem logging unittest 5건 OK.
+- 판정:
+  - BatchMem seed preload log summary: `GO`
+  - ranked/search reason hygiene: `GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-221 - abbreviation reread reason must collapse to generic pattern
+
+- 상태: implemented / v370 canary passed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 public-output, P1 semantic-reread
+- Type: output-hygiene / semantic-reread / hardcode-prevention
+- 문제:
+  - `11718085`류 장르 약칭/비표준 조합 surface에서 identity는 `context_only/title-null`로 맞아도, public reason이 `seed 후보(...)` 또는 `작품 seed 제외:`를 남기면 재해독 후보를 다시 작품 seed처럼 보이게 만든다.
+  - 사용자가 지적한 핵심은 재해독을 특정 surface나 새 일반규칙으로 고정하지 말고 `표현 오타/축약 패턴(범용)`로만 공개해야 한다는 점이다.
+- 조치:
+  - 장르 약칭, 비표준 조합, 작품 앵커 확정 어려움 계열 semantic seed review topic은 raw seed 목록 대신 범용 재해독 경계 문구로 접었다.
+  - reread public line에서 `표면 계열 규칙` 표현을 제거하고 `특정 정상형/작품 seed로 확정하지 않음`만 남겼다.
+  - 비관련 reason sanitizer가 `단정하기 어려움하기에는` 같은 접합 비문을 정리하게 했다.
+- 검증:
+  - v368 run_id `20260531_124939_273156`: 회귀 재현. identity는 context-only/title-null이지만 public reason에 `seed 후보(...)`, `작품 seed 제외:`가 남았다.
+  - v370 run_id `20260531_125531_474288`: requested/effective parallel `36/1`, VLM/OCR `true/true`, completed/flushed/pending/failed `1/1/0/0`, shard lifecycle blocked.
+  - v370 public reason scan: `seed 후보(`, `작품 seed 제외`, `단정하기 어려움하기에는`, `최종 판정은 관련 포스트`, `LLM(False)→최종(True)` 검출 없음.
+  - `py_compile` OK, focused unittest 5건 OK.
+- 판정:
+  - targeted public-output guard: `GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-220 - original result must be treated as stale regression seed, not approval source
+
+- 상태: documented / semantic gate REVIEW-LOCKED
+- 우선순위: P0 semantic-gate, P1 regression-review
+- Type: result-audit / gate-policy / qualitative-review
+- 문제:
+  - 목표 파일 `out\expert_result_20260528_141006_620986.json`은 10만 input run의 산출물처럼 보이지만, 실제 저장 rows는 `71`개뿐이다.
+  - 원본 result에는 current code에서 쓰는 `title_resolution_state`, `comment_metadata`, `image_evidence_catalog`가 없어 modern semantic review gate를 직접 통과시킬 수 없다.
+  - 원본의 known-bad 케이스는 유용한 회귀 seed지만, 그 자체를 current 품질 승인 근거로 쓰면 런 건강성과 semantic approval이 섞인다.
+- 조치:
+  - 원본 manifest와 rows 구조를 재확인했다.
+  - v360/v363 current small-run과 known-bad 4건 delta를 별도 산출물로 작성했다.
+  - 원본 result gate를 `approval source=NO-GO`, `regression seed source=GO`로 분리했다.
+- 검증:
+  - 원본 manifest: input `104502`, completed `80`, flushed `71`, pending `9`, failed `0`, requested/effective parallel `16/16`.
+  - 원본 rows: `71`, relevant `29`, irrelevant `42`, official_title rows `27`.
+  - 원본 modern coverage: `title_resolution_state=0`, `comment_metadata=0`, `image_evidence_catalog=0`.
+  - current delta: `11718083`, `11718091`, `11718097`, `11718099` known-bad는 v360/v363에서 기대 방향으로 회복됐다.
+- 판정:
+  - original result as approval source: `NO-GO`
+  - original result as regression seed source: `GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-219 - generic reread public reason must not repeat raw seed candidates
+
+- 상태: implemented / v363 canary passed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 public-output, P1 semantic-reread
+- Type: output-hygiene / semantic-reread / hardcode-prevention
+- 문제:
+  - `표현 오타/축약 패턴(범용)`로 낮춰도, public reason이 `seed 후보(...)` 또는 `작품 seed 제외: ...`에 raw 후보를 다시 적으면 특정 표면어를 규칙처럼 처리한 인상을 준다.
+  - 원문 title/body/comment에는 raw text가 필요하지만, 해석/판정 문장은 packet-local 범용 표현 재독해 신호와 직접 작품 앵커 부족만 말해야 한다.
+- 조치:
+  - generic surface reread branch에서는 fallback 결론에서 raw seed 후보 term note를 제거했다.
+  - surface reread가 활성화된 비관련 reason에서는 `작품 seed 제외: ...` raw 후보 라인을 출력하지 않게 했다.
+  - 관련 unittest 기대값을 raw 후보 반복 금지로 갱신했다.
+- 검증:
+  - `py_compile` OK.
+  - focused unittest 4건 OK.
+  - v363 run_id `20260531_115718_534533`: `11718091` 단건 completed/flushed/pending/failed `1/1/0/0`, requested/effective parallel `36/1`, VLM/OCR `true/true`, shard lifecycle blocked.
+  - v363 public reason: 원문 title/body는 보존하되 해석/판정 문장에는 `표현 오타/축약 패턴(범용)`와 `직접 작품 앵커 없음`만 남고, raw seed 후보 반복이 없다.
+- 판정:
+  - public-output guard: `GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-218 - expression reread wording must say generic pattern, not category rule
+
+- 상태: implemented / focused tests passed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 semantic-reread, P1 prompt-contract
+- Type: public-output / semantic-reread / hardcode-prevention
+- 문제:
+  - 재해독을 설명할 때 구체 설명 범주가 반복되면, 특정 정상형 복원은 아니더라도 또 다른 계열 일반규칙처럼 읽힌다.
+  - 사용자가 지적한 핵심은 `표현 오타/축약 패턴`을 범용 재해독 신호로만 두고, 판단은 packet-local 원문/evidence로 해야 한다는 점이다.
+- 조치:
+  - public reason label을 `표현 오타/축약 패턴(범용)`로 고정했다.
+  - semantic reread prompt와 Discourse prompt에서 구체 설명 범주를 조건문처럼 반복하던 표현을 `작품 고유 앵커 부족` 중심 경계 표현으로 낮췄다.
+  - 표면 재해독 차단은 특정 단어 계열 단독이 아니라 `surface_paraphrase_notes`/semantic review 경계 신호가 있을 때만 작동하도록 정리했다.
+- 검증:
+  - `py_compile` OK.
+  - focused semantic reread unittest 13건 OK.
+  - source/test guard scan에서 이전 public wording과 `X -> Y`식 재해독 회귀가 실행 source에 남지 않음을 확인했다.
+- 판정:
+  - prompt/output contract: `GO` 후보
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-217 - targeted GO is not goal completion
+
+- 상태: documented / gate remains REVIEW-LOCKED
+- 우선순위: P0 semantic-gate, P1 completion-audit
+- Type: completion-audit / qualitative-review / gate-policy
+- 문제:
+  - v356/v357 targeted canary가 좋아졌지만, 이를 원본 10만 result 승인이나 active goal complete로 오해할 위험이 있다.
+  - 원본 result는 partial이고, public metadata/VLM catalog coverage가 부족하다.
+- 조치:
+  - v358 completion matrix와 remaining action queue를 작성했다.
+  - targeted known-bad guard, public reason guard, original source approval, semantic quality approval을 분리했다.
+- 검증:
+  - 원본 manifest: input `104502`, completed `80`, flushed `71`, pending `9`.
+  - 원본 coverage: rows_with_comment_metadata `0`, rows_with_dialogue_context `0`, rows_with_image_catalog `0`.
+  - v356/v357 targeted canary는 각각 `GO`로 보되 10만 semantic gate는 올리지 않는다.
+- 판정:
+  - targeted guard: `GO`
+  - source approval: `NO-GO`
+  - semantic quality approval: `REVIEW-LOCKED`
+  - goal completion: `NOT COMPLETE`
+
+## IMP-20260531-216 - live canary exposed non-verbatim interpretation parentheses in public reason
+
+- 상태: implemented / v357 canary passed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 semantic-reread, P1 public-output
+- Type: public-output / live-regression / semantic-reread
+- 문제:
+  - v356 known-bad 4건 canary에서 wrong-title 경계는 유지됐지만, `11718091` 공개 reason에 원문에 없는 정규화 해석 괄호가 남았다.
+  - 이 문구는 `X -> Y` 직접 치환은 아니지만, 사용자가 지적한 "특정 정상형 복원처럼 보이는 출력"에 가까웠다.
+- 조치:
+  - 표면 재해독 후보가 있는 public semantic topic에서 숫자, slash, arrow가 들어간 해석성 괄호를 제거하는 출력 가드를 추가했다.
+  - 이 가드는 특정 숫자/나이 규칙이 아니라, 원문에 없는 compact interpretation payload를 공개 reason에 남기지 않는 hygiene guard다.
+- 검증:
+  - v356 run_id `20260531_051249_145070`: completed/flushed/pending/failed `4/4/0/0`, requested/effective parallel `36/4`, VLM/OCR `true/true`.
+  - v356 Round2 review: `ACCEPT=3`, `HOLD=1`; 남은 HOLD는 `11718083`.
+  - v357 run_id `20260531_052423_474129`: `11718091` 단건 completed/flushed/pending/failed `1/1/0/0`, requested/effective parallel `36/1`.
+  - v357 result: `official_title=null`, `discussion_type=noise`, `title_resolution_state=context_only`, `title_resolution_allowed=false`.
+  - v357 공개 reason에는 `23세/16세`, `23세인 줄`, `X -> Y`, `작품 seed 제외: ..., 23센줄` 계열 회귀가 없다.
+- 판정:
+  - public-output live canary: `GO`
+  - `11718083` actual quote/title recall: `HOLD/human_review`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-215 - expression reread public reason must not enumerate surface terms
+
+- 상태: implemented / focused tests passed / semantic gate REVIEW-LOCKED
+- 우선순위: P1 semantic-reread, P1 prompt-contract
+- Type: public-output / semantic-reread / hardcode-prevention
+- 문제:
+  - `표현 오타/축약/띄어쓰기 패턴`을 범용 후보로 둬도, 공개 reason이 `재해독 후보: X; Y`처럼 표면어를 따로 나열하면 사용자 관점에서는 다시 특정 문자열 처리처럼 보인다.
+  - 공개 `작품 seed 제외` 목록에 표면 재해독 후보가 섞이면, 그 표면어가 작품 seed였다는 인상을 남긴다.
+- 조치:
+  - 최종 비관련 reason에서 표면 재해독 후보를 별도 나열하지 않고, `packet-local 범용 표현 재독해 신호`라는 경계 문장만 남기게 했다.
+  - 표면 재해독 후보는 공개 `작품 seed 제외` 목록에서 제거했다.
+  - legacy `paraphrase` 필드는 sanitizer 기준으로 쓰지 않게 했다.
+- 검증:
+  - focused unittest 11건 OK.
+  - `py_compile` OK.
+  - source/test guard scan에서 새 source에는 공개 reason 회귀 패턴이 없다.
+- 판정:
+  - public-output wording guard: `GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-214 - Playwright fallback visual evidence does not close IAB gate
+
+- 상태: fallback visual captured / IAB closure pending / semantic gate REVIEW-LOCKED
+- 우선순위: P1 browser-review, P1 source-alignment
+- Type: visual-review / browser-fallback / qualitative-review
+- 문제:
+  - 사용자 지침상 visual review는 Codex in-app Browser가 우선이다.
+  - 현재 세션에서도 in-app Browser 연결이 setup 단계에서 실패해 IAB target closure로 처리할 수 없다.
+- 조치:
+  - Playwright fallback으로 `11718083`, `11718094` 실제 DC post page full-page screenshot과 snapshot을 확보했다.
+  - fallback evidence는 supplemental visual evidence로만 기록하고 IAB target closure와 분리했다.
+- 검증:
+  - `11718083`: DC post 이미지 로딩 확인, 게임/캐릭터 화면, 작품명/플랫폼/URL/quote source anchor 없음.
+  - `11718094`: 소설 발췌처럼 보이는 본문 텍스트 확인, title/platform/URL/회차/source anchor 없음.
+  - 산출물: `v354_browser_playwright_fallback_visual_review_ko.md`, `visual_fallback_manifest.json`, `visual_fallback_labels.jsonl`.
+- 판정:
+  - Playwright fallback visual evidence: `PARTIAL`
+  - Codex in-app Browser target closure: `PENDING`
+  - remaining HOLD closure: `HOLD/human_review`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-213 - v352 contract canary keeps known-bad boundaries
+
+- 상태: targeted canary verified / one HOLD remains / semantic gate REVIEW-LOCKED
+- 우선순위: P1 regression-canary, P1 semantic-gate
+- Type: targeted-rerun / VLM-OCR / semantic-reread
+- 문제:
+  - v352에서 재해독 wording을 고친 뒤, known-bad 4건의 기존 회복 경계가 깨지지 않는지 확인해야 했다.
+  - 특히 `11718091`에서 deterministic paraphrase가 재등장하거나, `11718083`이 다시 wrong-title로 resolved되면 안 된다.
+- 조치:
+  - known-bad 4건을 VLM/OCR on, `--parallel 36 --reuse-shards-only --no-dashboard`로 재실행했다.
+  - 결과를 Round2 review로 다시 라벨링했다.
+- 검증:
+  - manifest: completed/flushed/pending/failed `4/4/0/0`, requested/effective parallel `36/4`, VLM/OCR `true/true`, shard lifecycle blocked.
+  - `11718083`: `official_title=null`, `unresolvable_memory_query`, `title_resolution_allowed=false`.
+  - `11718091`: `official_title=null`, `context_only`, deterministic paraphrase 없음.
+  - `11718097`: `망겜의 힐러`, `https://novel.munpia.com/328421`.
+  - `11718099`: `빌어먹을 환생`, `https://novel.munpia.com/222360`, OCR conflict flags 유지.
+  - Round2 review: `ACCEPT=3`, `HOLD=1`.
+- 판정:
+  - known-bad wrong-title regression guard: `GO`
+  - `11718083` actual quote/title recall: `HOLD/human_review`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-212 - expression reread must not become a surface-family rule
+
+- 상태: prompt/output contract tightened / semantic gate REVIEW-LOCKED
+- 우선순위: P1 semantic-reread, P1 prompt-contract
+- Type: prompt-contract / semantic-review / hardcode-prevention
+- 문제:
+  - 재해독을 `표현 오타/축약 패턴 범용 후보`로 둔다고 해도, 설명이 `나이/외모/친구/한탄` 같은 표면 계열 전용 규칙처럼 읽히면 또 다른 hardcode가 된다.
+  - 사용자가 지적한 핵심은 특정 정상형 복원뿐 아니라 비슷한 계열 일반규칙도 만들면 안 된다는 점이다.
+- 조치:
+  - `agentic_pipeline`, `discourse`, `rules`의 prompt/rule note에 표면 계열 일반규칙 금지를 추가했다.
+  - 운영 문서에 해당 범주는 packet-local 자연어 재검토를 시작하는 예시적 위험 신호일 뿐, 자동 차단/허용 규칙이 아니라고 명시했다.
+- 검증:
+  - 공개 label은 `표현 오타/축약 패턴(범용)`로 유지한다.
+  - 새 prompt/report/reason에서는 `X -> Y`식 복원, post id/string hardcode, 계열별 deterministic rule을 쓰지 않는 계약으로 정리했다.
+- 판정:
+  - wording/contract guard: `GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-211 - remaining HOLD rows need source alignment or human review
+
+- 상태: additional source alignment searched / two HOLD remain / semantic gate REVIEW-LOCKED
+- 우선순위: P1 quote-source-alignment, P1 human-review
+- Type: qualitative-review / source-alignment / hold-closure
+- 문제:
+  - v350 이후 남은 `11718083`, `11718094`는 wrong-title 방지는 됐지만 actual title recall을 자동으로 닫을 직접 quote/source evidence가 부족했다.
+- 조치:
+  - `11718083`은 exact/near quote 계열 검색을 수행했다.
+  - `11718094`는 exact/near quote와 `에세르`/`아르타` character-pair 계열 검색을 수행했다.
+- 검증:
+  - 두 건 모두 직접 source/title/platform/quote alignment를 확인하지 못했다.
+  - 산출물: `v351_remaining_hold_quote_source_alignment_ko.md`, `v351_remaining_hold_quote_source_alignment_manifest.json`.
+- 판정:
+  - wrong-title regression guard: `GO`
+  - actual title recall: `HOLD/human_review`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-210 - Browser visual fallback confirms remaining HOLD boundaries
+
+- 상태: fallback visual evidence captured / Browser control pending / semantic gate REVIEW-LOCKED
+- 우선순위: P1 browser-review, P1 memory-query, P1 image-excerpt-title-recall
+- Type: visual-review / browser-fallback / qualitative-review
+- 문제:
+  - v349 이후 남은 `11718083`, `11718094`는 이미지가 포함되어 있어 Browser visual evidence 없이 자연어 품질 승인을 하기 어렵다.
+  - 현재 Codex in-app Browser 제어 연결이 setup 중 끊겨 실제 browser screenshot을 확보하지 못했다.
+- 조치:
+  - PowerShell/curl 실패 후 repo venv `httpx` fallback으로 이미지 원본을 확보했다.
+  - `11718083`과 `11718094`를 직접 시각 확인하고 visual fallback labels를 남겼다.
+- 검증:
+  - `11718083`: image bytes `8323790`, 게임/캐릭터 화면, 작품명/플랫폼/quote alignment 텍스트 없음.
+  - `11718094`: image bytes `47412`, 소설 본문 발췌, 작품명/플랫폼/URL anchor 없음.
+  - 산출물: `v350_browser_fallback_visual_review_ko.md`, `visual_fallback_manifest.json`, `visual_fallback_labels.jsonl`.
+- 판정:
+  - `11718083`: title-null guard `GO`, actual quote/title recall `HOLD/human_review`.
+  - `11718094`: wrong-title regression guard `GO`, excerpt title recall `HOLD/human_review`.
+  - Browser visual target closure: `PENDING`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-209 - blocked OCR surface can close when official detail resolves title
+
+- 상태: targeted subtype closure verified / two HOLD remain / browser visual pending
+- 우선순위: P1 slang-db-subtype, P1 VLM-OCR, P1 action-queue-closure
+- Type: qualitative-review / slang-db / VLM-OCR
+- 문제:
+  - `11718082`는 final title과 official URL은 맞지만, OCR 표면형이 `slang_db_review` HOLD로 남았다.
+  - 이 상태를 무조건 HOLD로 두면 저장 차단이 정상 작동한 케이스와 실제 alias 오염 케이스가 섞인다.
+- 조치:
+  - `slang_db_store_block_pending_family_noise` labeler에서 저장 차단된 OCR/표면형이 official detail title preferred/pruned flag와 함께 닫힌 경우 `ACCEPT/no_action`으로 분리했다.
+  - boundary risk에는 `slang_db_subtype_closed`를 남겨 승인 경계를 추적한다.
+- 검증:
+  - `11718082`: `재벌가 차녀의 2회차 걸그룹`, `https://page.kakao.com/content/66692543`, OCR surface `재벌가 차녀의 2회차 결그룹`, `store_in_slang_db=false`, `store_reason=character_attached_composite`.
+  - v349 relabel: `ACCEPT=13`, `HOLD=2`.
+  - `tests.test_qualitative_review_packet_tools`: 42건 OK.
+  - `py_compile`: OK.
+- 판정:
+  - slang/OCR subtype closure: `GO`
+  - remaining HOLD closure: `HOLD`
+  - Browser visual target closure: `PENDING`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-208 - relabel false positives reduced and reread wording tightened
+
+- 상태: review-label refinement verified / HOLD remains / semantic gate REVIEW-LOCKED
+- 우선순위: P1 review-tooling, P1 prompt-output contract, P1 action-queue-closure
+- Type: qualitative-review / semantic-reread / regression-test
+- 문제:
+  - v347 action queue rerun은 hard failure를 줄였지만, 일부 `HOLD`는 review labeler가 근거보다 보수적으로 잡은 false positive였다.
+  - 재해독 문구가 "가능성은 범용" 정도로만 남으면 특정 표면어를 정상형으로 복원하는 규칙처럼 다시 읽힐 수 있다.
+- 조치:
+  - official detail URL과 title anchor가 충분한 경우 nearby platform non-detail URL만으로 `HOLD/re_search`를 만들지 않게 했다.
+  - title-null social-lament/trope boundary와 context-only/no-title author_match_unverified boundary를 승인 가능한 `ACCEPT/no_action`으로 분리했다.
+  - public prompt/reason note에서 "표현 오타/축약/띄어쓰기 패턴은 범용 신호"라고 명시해 특정 정상형 복원이 아님을 강화했다.
+- 검증:
+  - v348 relabel 결과: `ACCEPT=12`, `HOLD=3`, `REJECT=0`, `REPROCESS=0`, `INFO_MISSING=0`.
+  - 새로 ACCEPT: `11718078`, `11718119`, `11718080`, `11718118`, `11718091`.
+  - 남은 HOLD: `11718083`, `11718094`, `11718082`.
+  - `tests.test_qualitative_review_packet_tools`: 41건 OK.
+  - `tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest` surface/semantic seed focused: 3건 OK.
+  - `py_compile`: `tools/build_qualitative_round2_review.py`, `tests/test_qualitative_review_packet_tools.py`, `src/llm_batch/rules.py`, `src/llm_batch/agentic_pipeline.py`, `src/llm_batch/experts/discourse.py` OK.
+- 판정:
+  - review-label false-positive reduction: `GO`
+  - remaining action closure: `HOLD`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-207 - action queue rerun lowers hard failures but leaves HOLD closure
+
+- 상태: targeted rerun completed / HOLD remains / semantic gate REVIEW-LOCKED
+- 우선순위: P1 action-queue-closure, P1 browser-review, P1 semantic-quality
+- Type: targeted-rerun / qualitative-review / gate-boundary
+- 문제:
+  - v345 original partial review의 non-ACCEPT action queue가 많았고, 이 중 재실행 대상이 current-code에서 회복되는지 확인해야 했다.
+  - action queue를 원본 result에서만 재실행하면 image/comment source가 빠질 수 있다.
+- 조치:
+  - `tests\inputs\test01.jsonl`을 source로 사용해 action queue 48건을 rerun/review/browser target으로 재구성했다.
+  - combined rerun 15건을 VLM/OCR on, `--parallel 36`, `--reuse-shards-only`, `--no-dashboard`로 실행했다.
+  - rerun result에 Round2 review tool을 다시 적용했다.
+- 검증:
+  - run id `20260531_030937_599726`: completed/failed/pending `15/0/0`, requested/effective parallel `36/15`, image_post_count `7`, search health `8/8`.
+  - relabel 결과: `ACCEPT=7`, `HOLD=8`, `REJECT=0`, `REPROCESS=0`, `INFO_MISSING=0`.
+- 판정:
+  - targeted rerun runtime: `GO`
+  - hard failure reduction: `GO`
+  - remaining HOLD closure: `HOLD`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-206 - goal remains in progress despite targeted known-bad recovery
+
+- 상태: completion audit added / goal IN_PROGRESS / semantic gate REVIEW-LOCKED
+- 우선순위: P0 gate-boundary, P0 large-review, P1 known-bad-follow-up
+- Type: completion-audit / gate-boundary / semantic-quality
+- 문제:
+  - known-bad 4건의 current-code targeted canary가 좋아진 사실을 원 objective 전체 완료로 오해할 수 있다.
+  - 원본 result는 partial source이고 v345 Round2는 non-ACCEPT가 많아 semantic approval 근거가 부족하다.
+- 조치:
+  - `v346_goal_objective_completion_matrix_ko.md`를 작성해 요구사항별 증거, 판정, 남은 작업을 분리했다.
+  - targeted `GO`, source/result `NO-GO`, semantic quality `REVIEW-LOCKED`를 명시했다.
+- 검증:
+  - v341 known-bad canary: completed/failed/pending `4/0/0`.
+  - v345 Round2: `ACCEPT=22`, `HOLD=30`, `REPROCESS=7`, `REJECT=6`, `INFO_MISSING=5`.
+  - v345 source policy: `final_result_json`, `large_run_complete=false`.
+- 판정:
+  - known-bad regression guard: `GO`
+  - goal completion: `IN_PROGRESS`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-205 - memory-query candidate page hit is not quote alignment evidence
+
+- 상태: review tooling patched / focused verified / semantic gate REVIEW-LOCKED
+- 우선순위: P1 memory-query, P1 evidence-alignment, P2 review-tooling
+- Type: qualitative-review / quote-search / evidence-boundary
+- 문제:
+  - `11718083`류 memory-query/대사 회수 글은 후보 공식 작품 페이지가 검색되어도, 그 페이지가 원문 대사/장면을 직접 지지하지 않으면 title 확정 근거로 쓰기 어렵다.
+  - 기존 Round2 review tooling은 `memory_query_resolved`는 잡았지만, "공식 후보 페이지 hit"와 "quote/source alignment 직접 근거"를 별도 field로 분리하지 않았다.
+  - LLM이 원문 표면을 `title_candidates`나 `entity_mentions`에 다시 적은 echo를 quote alignment로 세면 자기 출력을 evidence처럼 재사용하는 문제가 생긴다.
+- 조치:
+  - `tools/build_qualitative_round2_review.py`에 `quote_alignment_missing_for_memory_query` bucket을 추가했다.
+  - packet/result public field에 `memory_query_quote_terms`, `quote_alignment_support_count`, `candidate_official_page_hits`, `quote_alignment_missing_for_memory_query`를 남기게 했다.
+  - quote alignment support는 direct evidence catalog인 `identity.search_evidence_catalog`, `identity.image_evidence_catalog`, `identity.evidence`만 세도록 제한했다.
+- 검증:
+  - `tests.test_qualitative_review_packet_tools`에 후보 공식 페이지 hit는 있으나 quote snippet이 없는 memory-query를 `HOLD/human_review`로 보내는 회귀 테스트를 추가했다.
+  - direct quote snippet이 있으면 `quote_alignment_missing_for_memory_query`가 켜지지 않는 회귀 테스트를 추가했다.
+  - 원본 `11718083` row에 새 extractor를 대입해 LLM candidate echo가 quote support로 세지 않음을 확인했다.
+  - v345 original partial review artifact를 재생성해 source policy가 `final_result_json`, `large_run_complete=false`로 남는지 확인했다. 따라서 원본 partial result는 semantic approval source가 아니다.
+  - `tests.test_qualitative_review_packet_tools`: 38건 OK.
+- 판정:
+  - review tooling guard: `GO`
+  - expanded population coverage: `HOLD`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-204 - expression reread docs must not imply deterministic restoration
+
+- 상태: docs corrected / semantic gate REVIEW-LOCKED
+- 우선순위: P1 prompt-output contract, P1 no-hardcoding, P2 docs-guidance
+- Type: semantic-reread / documentation-contract / no-hardcoding
+- 문제:
+  - 최신 지침은 범용 신호로 정리되어 있었지만, 오래된 판단 리뷰 항목 일부가 특정 표면어를 특정 정상 표현으로 복원하는 active rule처럼 읽힐 여지가 있었다.
+  - 사용자가 재지적한 핵심은 재해독을 `표현 오타/축약 패턴(범용)`로만 두고, 실제 의미는 packet-local 자연어 재검토로 판단해야 한다는 점이다.
+- 조치:
+  - `LLM_JUDGMENT_REVIEW.md`에 v344 정정 항목을 추가하고, v195/v199/v210의 active-looking 표현을 현재 계약으로 고쳤다.
+  - `SCAN_RESULT_REVIEW_GUIDE.md`에 새 재검토 문서에서는 `X -> Y` 복원 예시를 쓰지 않는다는 문구를 보강했다.
+  - `EXPERT_ORCHESTRATION_LIMITATIONS.md` 상단에 historical observation과 active rule을 분리하는 지침을 추가했다.
+  - 재해독 표현은 `표현 오타/축약 패턴`을 범용 후보로 보는 것으로 고정하고, 특정 표면어의 정상형을 새 reason/report에 쓰지 않는다고 재확인했다.
+- 검증:
+  - 문서 변경 범위에서 `rg`로 결정론적 표현 잔여 위치를 확인했다. 남은 구체 치환 문구는 오래된 history/result/TODO 섹션에 historical artifact로 존재한다.
+- 판정:
+  - active docs wording correction: `GO`
+  - historical artifact cleanup: `HOLD`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-203 - quote search can find official pages without proving quote alignment
+
+- 상태: evidence audit added / action human_review / semantic gate REVIEW-LOCKED
+- 우선순위: P1 memory-query, P1 quote-search, P1 evidence-alignment
+- Type: quote-search / evidence-alignment / false-positive-candidate
+- 문제:
+  - `11718083`은 wrong-title guard 이후에도 실제 원작 회수 여부가 남아 있었다.
+  - 검색이 공식 작품 페이지를 찾더라도, 그 작품이 원문 대사/장면을 직접 지지하지 않으면 title 확정 근거로 쓰면 안 된다.
+- 조치:
+  - exact quote/variant search와 `하차 이후의 소설 속` 후보를 별도 감사했다.
+  - 공식 작품 페이지 존재와 quote alignment evidence를 분리해 v343 산출물로 남겼다.
+- 검증:
+  - v341 result: `official_title=null`, `title_resolution_state=unresolvable_memory_query`, `title_resolution_allowed=false`.
+  - v341 image evidence: `character_visual_only`, `promotion_eligible=false`.
+  - exact quote/variant search에서 직접 quote/source match는 확인되지 않았다.
+  - `하차 이후의 소설 속`은 공식 페이지가 있으나 공개 synopsis가 `11718083`의 친구/위기/동료 대사를 직접 지지하지 않는다.
+- 판정:
+  - wrong-title guard: `GO`
+  - strong quote recall: `HOLD`
+  - action: `human_review`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-202 - goal audit separates comment dialogue proof from missing IP proof
+
+- 상태: evidence audit added / semantic gate REVIEW-LOCKED
+- 우선순위: P1 goal-audit, P1 comment-dialogue, P1 run-integrity
+- Type: goal-completion-audit / comment-metadata-coverage / gate-boundary
+- 문제:
+  - 원래 goal은 본문 작성자/댓글 작성자/IP 맥락을 LLM 이해에 반영하는 것이었지만, 원본 결과와 current-code canary가 각각 어느 수준의 author evidence를 제공하는지 분리되어 있지 않았다.
+  - known-bad 4건에서 IP 기반 작성자 확정까지 된 것처럼 보고하면 evidence를 과장하게 된다.
+- 조치:
+  - `tools\audit_comment_metadata_coverage.py`로 원본 result, v341 current-code result, v341 input, `tests\inputs\test01.jsonl` coverage를 다시 감사했다.
+  - v342 목표 충족 감사 문서에 원본 partial run 상태, current-code 댓글 metadata 개선, IP proof 부재, 남은 작업을 정리했다.
+- 검증:
+  - 원본 manifest: input `104502`, completed `80`, flushed `71`, pending `9`.
+  - 원본 result: rows_with_comments `55`, rows_with_comment_metadata `0`, rows_with_dialogue_context `0`, image_rows `0`.
+  - v341 result: rows `4`, rows_with_comment_metadata `2`, rows_with_dialogue_context `2`, image_rows `3`, rows_with_image_catalog `3`.
+  - `tests\inputs\test01.jsonl`: posts_with_any_ip `0`, comment_ip_present `70337`; known-bad 4건 자체는 post/comment IP 없음.
+- 판정:
+  - nickname/comment-id/reply dialogue preservation: `GO`
+  - known-bad 4 IP-based author proof: `Missing`
+  - original run approval source: `NO-GO`
+  - 10만 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-201 - current-code known-bad rerun keeps expression reread generic
+
+- 상태: targeted verified / semantic gate REVIEW-LOCKED
+- 우선순위: P1 goal-audit, P1 semantic-reread, P1 VLM/OCR, P1 no-hardcoding
+- Type: current-code-canary / expression-reread-contract / known-bad-regression
+- 문제:
+  - v340은 최신 단건/부분 run을 묶은 rollup이었으므로, v339 이후 현재 코드가 known-bad 4건을 한 run에서 같은 계약으로 처리하는지 별도 확인이 필요했다.
+  - 특히 `11718091`류 재해독은 특정 오타 치환이나 나이 규칙이 아니라 `표현 오타/축약 패턴(범용)`로만 읽혀야 한다.
+- 조치:
+  - `v341_known_bad_4_current_code_input.jsonl`을 현재 코드로 VLM/OCR on, `--parallel 36`, `--reuse-shards-only`, `--no-dashboard`, `--slang-db on` 조건에서 실행했다.
+  - 결과/manifest를 한국어 산출물 `v341_known_bad_4_current_code_recheck_ko.md`와 action queue로 정리했다.
+  - `11718091`은 `표현 오타/축약 패턴(범용)`로만 남기고, `은영`, `23센줄`을 작품 seed에서 제외한 상태를 확인했다.
+- 검증:
+  - run id `20260531_021609_723758`: completed/failed/pending `4/0/0`, flushed `4`, VLM/OCR `true/true`, image_post_count `3`, requested/effective parallel `36/4`.
+  - manifest: `parallel_policy=effective_parallel=min(requested_parallel,input_post_count)`, `mcp_small_run_shard_lifecycle_blocked=true`, shard auto up/recreate `false/false`.
+  - `11718083`: `official_title=null`, `title_resolution_state=unresolvable_memory_query`, `title_resolution_allowed=false`.
+  - `11718091`: `official_title=null`, `discussion_type=noise`, `title_resolution_state=context_only`, `title_resolution_allowed=false`.
+  - `11718097`: `official_title=망겜의 힐러`, URL `https://novel.munpia.com/328421`, `망겜힐 -> 망겜의 힐러`.
+  - `11718099`: `official_title=빌어먹을 환생`, URL `https://m.munpia.com/novel/detail/222360`, OCR conflict flags 유지, `빌환 -> 빌어먹을 환생`.
+- 판정:
+  - known-bad 4 current-code targeted canary: `GO`
+  - expression reread generic wording contract: `GO`
+  - `11718083` actual quote/title recall: `HOLD`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-200 - known-bad latest reruns prove correction but not full 100k approval
+
+- 상태: targeted verified / semantic gate REVIEW-LOCKED
+- 우선순위: P1 goal-audit, P1 semantic-gate, P1 known-bad-regression
+- Type: targeted-evidence-rollup / gate-boundary / known-bad
+- 문제:
+  - 원본 `out\expert_result_20260528_141006_620986.json`에는 `11718083`, `11718091`, `11718097`, `11718099` 오판이 실제로 남아 있었다.
+  - targeted 회복 증거를 10만 건 semantic approval로 혼동하면 안 된다.
+- 조치:
+  - v337/v338/v331/v334 최신 결과를 원본 오판과 대조해 한국어 산출물 `v340_known_bad_latest_goal_recheck_ko.md`로 정리했다.
+  - `11718083`은 wrong-title 방어 성공과 actual quote/title recall 미완료를 분리했다.
+  - `11718097`은 `망겜힐 -> 망겜의 힐러` clean alias positive-control로, `11718099`는 OCR conflict boundary 유지 케이스로 분리했다.
+- 검증:
+  - 원본: `11718083=네이버`, `11718091=Re:제로부터 시작하는 원신생존기`, `11718097=검미성 신작...`, `11718099=표지변경`.
+  - v337: `11718083`, run id `20260531_015040_688914`, completed/failed/pending `1/0/0`, VLM/OCR `true/true`, effective parallel `1`, `official_title=null`, `title_resolution_state=unresolvable_memory_query`.
+  - v338: `11718097`, run id `20260531_015353_412366`, completed/failed/pending `1/0/0`, VLM/OCR `true/true`, effective parallel `1`, `official_title=망겜의 힐러`, URL `https://novel.munpia.com/328421`.
+  - v331/v334: `11718091` title-null/context-only, `11718099` `빌어먹을 환생` + OCR conflict flags.
+- 판정:
+  - known-bad targeted correction: `GO`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-199 - expression reread guard must stay generic, not age/surface-specific
+
+- 상태: patched / focused verified / semantic gate REVIEW-LOCKED
+- 우선순위: P1 prompt-output contract, P1 no-hardcoding, P1 semantic-reread
+- Type: semantic-reread / sanitizer-contract / docs-guidance
+- 문제:
+  - 재해독 후단 정리 코드와 일부 fixture/doc 문구가 특정 표면어 치환 또는 나이/외모 전용 규칙으로 읽힐 여지가 있었다.
+  - 사용자 지침상 이 계열은 특정 변환 hardcode가 아니라 `표현 오타/축약 패턴(범용)`로만 다뤄야 한다.
+- 조치:
+  - `_sanitize_surface_paraphrase_context()`의 후단 context 이름과 처리 기준을 `surface_expression_context` 중심으로 바꿨다.
+  - 검색 제안 제거도 `23세` 치환 전용이 아니라 semantic review가 context-only/no-work로 낮춘 표현 재해독 후보와 generic surface probe 기준으로 동작하게 했다.
+  - unit/review fixture와 운영 지침 문서에서 `X -> Y`식 공개 reason 예시를 범용 후보 label로 교체했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m unittest tests.test_final_semantic_reread_gate -v`: 9건 OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_qualitative_review_packet_tools -v`: 35건 OK.
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\experts\discourse.py tests\test_final_semantic_reread_gate.py tests\test_qualitative_review_packet_tools.py`: OK.
+  - `git diff --check`: exit 0, CRLF warning only.
+- 판정:
+  - targeted wording guard: `GO`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-198 - v336 title prefix and exact-title/author surface must not pollute slang identity
+
+- 상태: patched / focused+live verified / semantic gate REVIEW-LOCKED
+- 우선순위: P1 VLM/OCR, P1 slang/BatchMem-pollution, P1 no-hardcoding
+- Type: title-normalization / slang-output-contract / BatchMem-author-boundary / dashboard-display
+- 문제:
+  - `11718117` v335에서 검색 결과 제목 `스포) 아카데미의 피해자 리뷰 - 장르소설 마이너 갤러리`의 말머리와 리뷰 꼬리가 정식 제목 후보에 섞여 `스포) 아카데미의 피해자`로 승격될 수 있었다.
+  - exact-title surface `아카데미의 피해자`는 작품 별칭이 아닌데 `slang_insight`에 `pure_work_alias`처럼 보일 수 있었다.
+  - VLM/OCR footer의 작가명 `양파랑`은 작품 alias가 아니라 author surface인데, decoded/session learning 경로에서 약칭 후보처럼 취급될 위험이 있었다.
+- 조치:
+  - `_normalize_title_candidate()`가 커뮤니티 말머리와 후기/리뷰 꼬리를 함께 제거하도록 했다.
+  - `_should_surface_slang_insight()`와 `_infer_slang_alias_contract()`에서 exact-title-only surface는 slang output/alias scope에서 제외한다.
+  - BatchMem/session knowledge는 author role surface를 abbreviation alias로 승격하지 않고 author mapping으로만 유지한다.
+  - 모니터 UI는 저장 차단 slang 후보를 `슬랭 후보(저장 차단)`으로 표시해 문장형/합성형 surface가 confirmed alias처럼 보이지 않게 했다.
+- 검증:
+  - focused unittest 9건 OK: title preprocessing, image-platform URL, author surface skip, exact-title slang hide, clean alias positive control.
+  - `py_compile` OK.
+  - v336 run id `20260531_013802_053945`: `11718117` VLM/OCR on, completed/failed/pending `1/0/0`, requested/effective parallel `36/1`, small-run lifecycle blocked.
+  - v336 result: `official_title=아카데미의 피해자`, URL `https://page.kakao.com/content/66611775`, `anchor_type=image`, `slang_insight=null`, Slang DB flush `titles=0`.
+- 판정:
+  - targeted canary: `GO`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-197 - v334 OCR conflict alias claims must be neutralized in notes too
+
+- 상태: patched / focused+live verified / semantic gate REVIEW-LOCKED
+- 우선순위: P1 VLM/OCR, P1 reason/evidence alignment, P1 public-field-sanitizer
+- Type: OCR-conflict / analysis-notes-sanitizer / live-canary
+- 문제:
+  - final title과 `slang_insight.cultural_context`는 안전해도, `analysis.notes`가 OCR conflict 후보 prefix를 공식/비공식 별칭처럼 말하면 review packet에서 근거 과장으로 읽힌다.
+- 조치:
+  - OCR conflict title/prefix가 별칭·공식명 주장 문장에 나타나면, 해당 문장을 중립 conflict note로 바꾼다.
+  - 안정 alias `빌환`은 유지하고, conflict OCR surface만 evidence role을 낮춘다.
+- 검증:
+  - focused OCR conflict unittest 3건 OK.
+  - v334 run id `20260531_012307_985170`: `11718099` VLM/OCR on, completed/failed/pending `1/0/0`, requested/effective parallel `36/1`.
+  - v334 result: `빌환 -> 빌어먹을 환생`, URL `https://novel.munpia.com/222360`, `store_in_slang_db=true`, OCR conflict flags 유지.
+- 판정:
+  - OCR conflict notes guard: `GO`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-196 - v330 expression reread wording must stay generic
+
+- 상태: patched / focused+live verified / semantic gate REVIEW-LOCKED
+- 우선순위: P1 prompt-output contract, P1 no-hardcoding
+- Type: prompt-contract / public-reason-sanitizer / semantic-reread
+- 문제:
+  - 재해독 단계가 특정 표면어를 `X -> Y`처럼 공개 reason/prompt에 남기면, 범용 meaning pass가 아니라 표면어별 치환 규칙처럼 보일 수 있다.
+  - 사용자가 지적한 핵심은 특정 문자열을 맞히는 것이 아니라 `표현 오타/축약/띄어쓰기 가능성`을 packet-local 범용 후보로 재검토하는 것이다.
+- 조치:
+  - public payload용 `surface_expression_reread_public_notes()`를 추가해 예전 packet의 `paraphrase`를 LLM prompt에 넘기지 않는다.
+  - semantic seed review와 final semantic reread prompt에 `표현 오타/축약 패턴(범용)` wording과 `X -> Y` 단정 치환 금지를 명시했다.
+  - non-relevant public reason도 local source surface만 보여주고, 결정적 paraphrase 대신 범용 후보 label을 사용한다.
+- 검증:
+  - `tests.test_final_semantic_reread_gate` 9건 OK.
+  - focused `tests.test_agentic_pipeline_rework` 6건 OK.
+  - `py_compile` OK.
+  - v331 `11718091` live rerun: requested/effective parallel `36/1`, completed/failed/pending `1/0/0`, public reason에 `표현 오타/축약 패턴(범용)`가 남고 deterministic paraphrase는 남지 않음.
+- 판정:
+  - targeted wording guard: `GO`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260531-195 - v329 OCR conflict cultural_context must not overstate image text
+
+- 상태: patched / live canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v329_known_bad_4_after_ocr_context_sanitize_v2_recheck_ko.md`
+- 우선순위: P1 VLM/OCR, P1 reason/evidence alignment, P1 no-hardcoding
+- Type: VLM-OCR / public-field-sanitizer / semantic-output-consistency / live-canary
+- 문제:
+  - v326/v328에서 final title은 맞았지만, `slang_insight.cultural_context`가 OCR 오독 후보를 "본문에 병기된 다른 제목" 또는 "해당 작품의 설정/2차 창작 단서"처럼 과하게 설명할 수 있었다.
+  - review packet은 `slang_insight`도 공개 evidence로 쓰므로, final reason만 안전해도 품질 리뷰에서는 OCR 후보가 title evidence처럼 보일 수 있다.
+- 조치:
+  - `_sanitize_slang_cultural_context_for_image_conflict()`를 추가해 final title과 충돌하는 OCR/표지 후보가 cultural context에서 본문/별칭/공식 제목 근거로 승격되지 않게 했다.
+  - 이 조치는 특정 OCR 문자열을 고치는 규칙이 아니라, final title과 image direct title 후보가 충돌할 때 evidence role을 낮추는 범용 sanitizer다.
+- 검증:
+  - focused unittest 4건 OK.
+  - `py_compile` OK.
+  - v329 run id `20260531_001118_634562`: VLM/OCR on, completed/failed/pending `4/0/0`, requested/effective parallel `36/4`, search health `ok=2/2`, shard lifecycle restart 없음.
+  - v329 `11718099`: `빌환 -> 빌어먹을 환생`은 유지하고 OCR 후보 `붉여먹을 혼성명`은 `promotion_eligible=false`, `vlm_ocr_title_conflict_with_final_title`, `ocr_title_conflict_with_stable_alias`로 낮췄다.
+  - v329 `11718091`: deterministic paraphrase를 만들지 않았다. v330부터 public label은 `표현 오타/축약 패턴(범용)`로 정정한다.
+- 판정:
+  - known-bad 4 targeted canary: `GO`
+  - OCR conflict public field sanitizer: `GO`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-194 - v325 expression reread must be generic packet-local hint
+
+- 상태: patched / live canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v325_generic_reread_and_title_variant_prefix_guard_recheck_ko.md`
+- 우선순위: P1 no-hardcoding, P1 semantic-understanding, P1 slang/BatchMem-pollution
+- Type: prompt-contract / surface-reread / BatchMem-alias-boundary / live-canary
+- 문제:
+  - 재해독 단계가 deterministic 치환 또는 나이 표현 일반 규칙으로 읽히면, 사용자가 지적한 대로 기계적 하드코딩이 된다.
+  - v324에서는 OCR 표면 전체 오타 alias는 막았지만 `재벌가 차녀의 2회차` 같은 긴 공식 제목 prefix가 BatchMem alias로 등록되는 신호가 남았다.
+- 조치:
+  - `surface_expression_reread_notes()`는 이제 deterministic `paraphrase`를 만들지 않고 `expression_typo_abbreviation_or_spacing_candidate` packet-local 힌트만 남긴다.
+  - Orchestrator 검색 pruning 명칭/조건을 `surface_expression_reread` 계열로 일반화했다. 특정 나이/오타 치환이 아니라 semantic review와 evidence boundary에 기대도록 낮췄다.
+  - BatchMem은 긴 OCR/VLM 표면 변형뿐 아니라 공식 제목의 긴 prefix도 alias로 학습하지 않는다.
+- 검증:
+  - focused unittest 8건 OK.
+  - `tests.test_final_semantic_reread_gate`: 9건 OK.
+  - `tests.test_qualitative_review_packet_tools`: 35건 OK.
+  - 관련 파일 `py_compile` OK.
+  - v325 run id `20260530_233539_039734`: VLM/OCR on, requested/effective parallel `36/2`, small-run lifecycle blocked, search health `ok=2/2`.
+  - v325 `11718082`: 공식 제목 `재벌가 차녀의 2회차 걸그룹` 유지, OCR 표면형은 보조 title 근거에서 제외.
+  - v325 `11718080`: title null/adjacent 유지.
+- 판정:
+  - deterministic expression paraphrase removal: `GO`
+  - title variant/prefix alias pollution guard: `GO`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-193 - v311 OCR/VLM surface form must not override locked official detail title
+
+- 상태: patched / live canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v311_post11718080_11718082_surface_reference_prune_recheck_ko.md`
+- 우선순위: P1 VLM/OCR, P1 evidence-boundary, P1 no-hardcoding, P1 output-consistency
+- Type: VLM-OCR / official-detail / semantic-guard / live-canary
+- 문제:
+  - VLM/OCR이 이미지 속 작품 표면을 `재벌가 차녀의 2회차 결그룹`으로 읽었고, 검색/공식 상세 후보는 같은 URL에서 `재벌가 차녀의 2회차 걸그룹`을 지지했다.
+  - 기존 후단 freeze는 final title만 어느 정도 맞춰도 같은 URL의 OCR 표면형을 보조 work reference에 남길 수 있었다.
+  - 이 문제는 특정 오타 치환 문제가 아니라, OCR/VLM 표면 문자열과 locked official detail evidence의 우선순위 문제다.
+- 조치:
+  - `_freeze_identity_references()`에서 동일 official detail URL의 locked 공식 후보가 OCR/VLM 표면 alias/variant보다 우선되게 했다.
+  - 표면형 duplicate reference는 별도 작품으로 남기지 않고 `surface_form_duplicate_reference_pruned`로 제거한다.
+  - 특정 post id, 제목, 오타 문자열 하드코딩은 추가하지 않았다.
+- 검증:
+  - unit: `test_locked_official_detail_title_beats_ocr_surface_variant_same_url` OK.
+  - unit: `test_image_platform_cue_prefers_matching_official_url` OK.
+  - unit: `test_nonmatching_ocr_title_sets_structured_conflict_flags` OK.
+  - compile: `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_agentic_pipeline_rework.py` OK.
+  - v311 run id `20260530_204031_664775`: completed/failed/pending `2/0/0`, requested/effective parallel `36/2`, VLM/OCR `true/true`, image_post_count `1`, `mcp_small_run_shard_lifecycle_blocked=true`.
+  - v311 `11718082`: `official_title=재벌가 차녀의 2회차 걸그룹`, URL `https://page.kakao.com/content/66692543`, flags `official_detail_title_preferred_over_surface_form`, `surface_form_duplicate_reference_pruned`.
+  - v311 `11718080`: `official_title=null`, `discussion_type=trope_discussion`, `title_resolution_state=adjacent`.
+- 판정:
+  - targeted canary: `GO`
+  - OCR/VLM surface-to-official realignment: `GO`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-192 - v308 author_match_unverified must not become independent work evidence
+
+- 상태: patched / live canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v308_known_bad_4_unverified_author_context_recheck_ko.md`
+- 우선순위: P1 comment-author-context, P1 semantic-understanding, P1 evidence-boundary
+- Type: author-ip-context / semantic-guard / live-canary
+- 문제:
+  - 익명 `ㅇㅇ` 댓글은 post IP가 없으면 원글 작성자 발화로 확정하면 안 된다.
+  - 반대로 `author_match_unverified` 댓글만 있는 짧은 캐릭터 나이/외모 반응은 독립 작품 evidence처럼 강하게 쓰면 안 된다.
+- 조치:
+  - `AgenticPipeline._has_only_post_author_or_unverified_same_author_comment_context()`를 추가했다.
+  - weak character reaction unresolved block에서 post-author-only뿐 아니라 same-author-unverified-only 댓글도 독립 작품 근거로 강화하지 않게 했다.
+  - final flags에 `comment_author_match_unverified_not_independent_evidence`를 남긴다.
+- 검증:
+  - unit: `test_unverified_same_author_comment_does_not_strengthen_character_age_banter` OK.
+  - unit: `CommentTitleRecoveryTest.test_anonymous_comment_without_post_ip_is_unverified_not_post_author` OK.
+  - v308 run id `20260530_195609_675876`: completed/failed/pending `4/0/0`, requested/effective parallel `36/4`, VLM/OCR `true/true`, image_post_count `3`, `mcp_small_run_shard_lifecycle_blocked=true`.
+  - v308 `11718091`: `official_title=null`, `discussion_type=noise`, `title_resolution_state=context_only`, flag `comment_author_match_unverified_not_independent_evidence`.
+  - v308 `11718083`: `title_resolution_state=unresolvable_memory_query`.
+  - v308 `11718097`: `official_title=망겜의 힐러`.
+  - v308 `11718099`: `official_title=빌어먹을 환생`.
+- 판정:
+  - known-bad 4 targeted canary: `GO`
+  - author/IP dialogue boundary: `GO`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-191 - v307 11718117 direct image title regression state audit
+
+- 상태: audited / no new run required / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v307_post11718117_regression_state_audit_ko.md`
+- 우선순위: P1 VLM/OCR direct evidence, P1 exact-title alias pollution guard
+- Type: regression-audit / VLM-OCR / slang-boundary
+- 확인:
+  - v292 run id `20260530_171212_296758`: VLM/OCR on, completed/failed/pending `1/0/0`, requested/effective parallel `36/1`, Docker/shard auto up/recreate `false/false`.
+  - result: `official_title=아카데미의 피해자`, `heretic_url=https://page.kakao.com/content/66611775?tab_type=product`, `title_resolution_state=resolved`, `title_resolution_allowed=true`, `anchor_type=image`, `anchor_strength=high`.
+  - log: VLM이 `아카데미의 피해자`, `양파랑`, `268 테세우스의 배 (6) 중`을 직접 읽었다.
+  - exact-title surface는 `store_in_slang_db=false`, `store_reason=exact_title_not_alias`, Slang DB flush `titles=0`으로 운영 alias 저장/오염이 재현되지 않았다.
+- 판정:
+  - `11718117` regression state: `ACCEPT / no_action`
+  - direct image explicit title + KakaoPage URL recovery: `GO`
+  - exact-title alias pollution: `NOT REPRODUCED`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-190 - v306 11718114 visual-only image is not title evidence
+
+- 상태: visual evidence rechecked / browser tool blocked / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v306_post11718114_browser_retry_visual_evidence_recheck_ko.md`
+- 우선순위: P1 VLM/OCR evidence boundary, P1 browser-tool-health
+- Type: VLM-OCR / visual-evidence / environment-follow-up
+- 문제:
+  - `11718114`는 원본 리뷰에서 이미지/OCR public state가 약해 human/browser review queue로 남아 있었다.
+  - v286에서 VLM image limit mismatch는 고쳤지만, Codex in-app Browser가 당시 실패해 브라우저 경로 follow-up이 남았다.
+- 확인:
+  - 이번 재시도에서도 Browser 연결은 `windows sandbox failed: spawn setup refresh`로 실패했다.
+  - v286 직접 이미지 파일을 다시 확인했고, 이미지는 `HONEYCAM.ORG` 워터마크가 있는 게임/영상 장면이었다.
+  - 작품명/작가/회차/플랫폼/OCR title로 볼 direct evidence는 없었다.
+  - v286 result는 `official_title=null`, `title_resolution_state=adjacent`, `title_resolution_allowed=false`, `anchor_type=genre`, `anchor_strength=low`, `image_evidence_catalog_count=1`로 보수 유지됐다.
+- 판정:
+  - `11718114` semantic result: `ACCEPT / no_action` at targeted canary level
+  - Browser tool health: `BLOCKED / environment follow-up`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-189 - v305 title alias positive-control must survive reread guards
+
+- 상태: live canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v305_post11718078_positive_alias_control_recheck_ko.md`
+- 우선순위: P1 semantic-understanding, P1 no-hardcoding, P1 title-alias-evidence
+- Type: positive-control / evidence-gate / live-canary
+- 문제:
+  - `11718078`은 `critical_counter_but_resolved` 잔여 큐에 있었지만, 실제로는 제목 약칭 `즉사무림`과 공식 URL evidence가 강한 케이스다.
+  - `23센줄`류 context-only 재해독과 같은 no-anchor 규칙으로 묶으면 정상 제목 약칭 recall을 과차단한다.
+- 조치:
+  - v305 단건 입력을 만들어 comment metadata까지 보존한 상태로 재실행했다.
+  - no-hardcoding wording 보강 뒤에도 title alias + official URL evidence가 resolved로 유지되는지 확인했다.
+- 검증:
+  - v305 run id `20260530_193926_880222`: VLM/OCR on, completed/failed/pending `1/0/0`, requested/effective parallel `36/1`, Docker/shard auto up/recreate `false/false`.
+  - v305 result: `official_title=즉사기 들고 무림에 떨어지다`, `heretic_url=https://m.munpia.com/novel/detail/528383`, `title_resolution_state=resolved`, `title_resolution_allowed=true`, `anchor_type=title_exact`, `anchor_strength=high`, `search_evidence_catalog=24`.
+  - `slang_insight`: `즉사무림 -> 즉사기 들고 무림에 떨어지다`, `store_in_slang_db=true`, `store_reason=pure_work_alias`.
+- 판정:
+  - `11718078` positive alias control: `ACCEPT / no_action`
+  - over-demotion by reread guard: `NOT REPRODUCED`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-188 - v304 reread wording must not imply universal typo/abbreviation patterns
+
+- 상태: patched / tests verified / semantic gate REVIEW-LOCKED
+- 우선순위: P1 prompt-contract, P1 no-hardcoding, P1 semantic-understanding
+- Type: prompt-contract / docs-correction / evidence-gate
+- 문제:
+  - 재해독 지침에 전역 규칙처럼 읽히는 표현이 남으면, 오타/축약 해석을 자동 치환 규칙으로 오해할 수 있다.
+  - 사용자가 지적한 핵심은 `23센줄` 같은 사례를 전역 규칙으로 박지 말고, 해당 packet의 title/body/comment/comment_dialogue를 읽는 후보 해석으로만 다루라는 것이다.
+- 조치:
+  - final semantic reread prompt를 "특정 표면어를 고정 규칙으로 만들거나 다른 post에 재사용하지 않는다"로 좁혔다.
+  - semantic seed review prompt도 "해당 packet 문맥 안의 후보 해석"으로 바꿨다.
+  - 회귀 테스트가 `후보 해석`, `다른 post에 재사용하지 않음` 문구를 확인하게 했다.
+  - `LLM_JUDGMENT_REVIEW.md`, `SCAN_RESULT_REVIEW_GUIDE.md`, `CHECKLIST.md`에 같은 계약을 한국어로 갱신했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m unittest tests.test_final_semantic_reread_gate -v`: 9건 OK.
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py src\llm_batch\experts\discourse.py tests\test_final_semantic_reread_gate.py`: OK.
+- 판정:
+  - reread wording no-universal-pattern: `GO`
+  - deterministic typo/abbreviation expansion: `NOT ADDED`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-187 - v303 OCR-noise visual-only image must not become image anchor
+
+- 상태: patched / live canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v303_post11718083_ocr_noise_visual_anchor_guard_recheck_ko.md`
+- 우선순위: P1 VLM/OCR evidence boundary, P1 reason/field alignment, P1 no-hardcoding
+- Type: VLM-OCR / output-taxonomy / evidence-gate / prompt-contract / live-canary
+- 문제:
+  - v302에서 reason은 `grounding_anchor: search_only`로 내려갔지만 public JSON에는 `anchor_type=image`, `anchor_strength=medium`이 남았다.
+  - VLM 결과가 `character_visual_only`, `promotion_eligible=false`, direct title/author 없음이어도, OCR 잡음과 일반 `work_cues`가 있으면 weak visual-only로 분류되지 않는 경로가 있었다.
+  - 동시에 재해독 문서/prompt에 일괄 적용처럼 보이는 표현이 남으면 사용자가 지적한 대로 표면어 일반화/하드코딩으로 오해될 수 있었다.
+- 조치:
+  - `_is_weak_vlm_visual_signal()`이 OCR 문자열 존재만으로 weak visual 판정을 포기하지 않게 했다.
+  - image anchor 승격은 `promotion_eligible=true`, `title_role=work_title`, `focus_role=work_anchor`, `explicit_work_title`, `explicit_author_name` 같은 구조화된 직접 작품 근거가 있을 때만 허용한다.
+  - v302 형태의 `ocr_text` + `work_cues` + `focus_role=supporting_text`를 회귀 테스트에 반영했다.
+  - 재해독 prompt/test/docs에서 일괄 적용처럼 보이는 표현을 제거하고 packet-local 후보 해석/evidence boundary 표현으로 바꿨다.
+- 검증:
+  - v303 run id `20260530_191650_675920`: VLM/OCR on, completed `1`, failed `0`, pending `0`, requested/effective parallel `36/1`, Docker/shard auto up/recreate `false/false`.
+  - v303 result: `official_title=null`, `title_resolution_state=unresolvable_memory_query`, `title_resolution_allowed=false`, `image_evidence_catalog_count=1`, `anchor_type=none`, `anchor_strength=none`.
+  - v303 log: image evidence `character_visual_only`, `confidence=Low`, `title_role=unknown`, `promote=no`, `weak_visual_only=true`, OCR은 `Bandisoft.com` UI 잡음.
+  - focused VLM tests 2건 OK, `py_compile` OK.
+- 판정:
+  - OCR-noise visual-only image anchor guard: `GO`
+  - `11718083` quote recall true-title recovery: `HOLD`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-186 - v301 weak visual-only image must not become image anchor
+
+- 상태: superseded by IMP-20260530-187 / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v301_post11718083_weak_visual_anchor_guard_recheck_ko.md`
+- 우선순위: P1 VLM/OCR evidence boundary, P1 memory-query, P1 reason/field alignment
+- Type: VLM-OCR / output-taxonomy / evidence-gate / live-canary
+- 문제:
+  - `11718083` v214는 final title을 잘 null로 낮췄지만, VLM이 visual-only 이미지를 처리했다는 이유로 `anchor_type=image`, `anchor_strength=medium`이 남았다.
+  - 이 상태는 reason의 `grounding_anchor=none/search_only` 및 `title_resolution_allowed=false`와 충돌하고, 대량 리뷰에서 visual-only 이미지를 작품 근거로 오인하게 만든다.
+- 조치:
+  - `vlm_enrichment_used`와 `image_primary_anchor`를 분리했다.
+  - `character_visual_only`/`scene_inference_only`/`unknown`이면서 OCR/title/author가 없는 약한 시각 신호는 `context_sources=image`에만 남기고 `anchor_type=image`로 승격하지 않는다.
+  - 리뷰 가이드에 `weak_visual_only_promoted_to_image_anchor` bucket을 추가했다.
+- 검증:
+  - v301 run id `20260530_185331_504977`: VLM/OCR on, completed `1`, failed `0`, pending `0`, requested/effective parallel `36/1`, Docker/shard auto up/recreate `false/false`.
+  - v301 result: `official_title=null`, `title_resolution_state=unresolvable_memory_query`, `title_resolution_allowed=false`, `image_evidence_catalog_count=1`, `anchor_type=genre`, `anchor_strength=low`.
+  - log lines `239-243`: image evidence `character_visual_only`, `promotion_eligible=false`, `weak_visual_only=true`.
+  - new VLM anchor regression 1건, VLM 주변 회귀 3건, memory-query focused regression 5건, `py_compile` 통과.
+- 판정:
+  - weak visual-only image anchor guard: `GO`
+  - `11718083` quote recall true-title recovery: `HOLD`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-185 - v300g packet-local reread wording correction
+
+- 상태: patched / tests verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v300g_packet_local_reread_wording_recheck_ko.md`
+- 우선순위: P1 semantic-understanding, P1 no-hardcoding
+- Type: prompt-contract / docs-correction / evidence-gate
+- 문제:
+  - 재해독 단계의 오타/축약/띄어쓰기 깨짐 가능성을 일반화된 검토 관점처럼 표현하면 표면 패턴을 일반 규칙으로 승격하는 것으로 오해될 수 있다.
+  - 사용자가 지적한 방향은 특정 문자열이나 표면 패턴 일반화가 아니라, 해당 packet의 원문 문맥 안에서만 가설로 읽고 direct evidence로 다시 검증하는 것이다.
+- 조치:
+  - final semantic reread와 semantic seed review prompt에 "다른 post에 재사용하지 않음"과 "해당 packet 문맥 안의 후보 해석" 기준을 명시했다.
+  - `SCAN_RESULT_REVIEW_GUIDE.md`의 전역 규칙처럼 보이는 표현을 packet-local 후보 해석/evidence boundary 기준으로 바꿨다.
+  - 회귀 테스트가 prompt에 packet-local 후보 해석 문구가 들어가는지 확인하게 했다.
+- 검증:
+  - `tests.test_final_semantic_reread_gate`: 9건 OK.
+  - `py_compile` 대상: `agentic_pipeline.py`, `experts\discourse.py`, `tests\test_final_semantic_reread_gate.py`.
+- 판정:
+  - packet-local reread wording: `GO`
+  - deterministic typo/abbreviation rule expansion: `NOT ADDED`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-184 - v300f comment payload live proof and context-only reason softening
+
+- 상태: patched / live canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v300f_comment_payload_and_reason_softening_recheck_ko.md`
+- 우선순위: P1 semantic-understanding, P1 reason-quality, P1 comment-dialogue-context
+- Type: prompt-contract / reason-quality / live-canary / no-hardcoding
+- 문제:
+  - `11718091`은 표현 오타/축약 가능성을 재해독해야 하는 사례인데, 이를 특정 문자열 또는 표면 패턴 확정 규칙으로 처리하면 안 된다.
+  - v300 계열 live run에서 raw LLM은 seed를 낮추면서도 `작품 속/작품 내` 같은 과잉 표현을 만들 수 있었다.
+  - comment dialogue line이 실제 LLM payload에 들어가는지 로그 증거가 필요했다.
+- 조치:
+  - semantic seed review 지침에 짧은 인명/캐릭터명 단독 seed와 일반어 검색 조합은 직접 작품 앵커 없이는 keep하지 않도록 추가했다.
+  - 직접 작품 앵커가 없으면 `content_interpretation/reason`에서 `작품 속`, `원작`, `해당 작품`처럼 작품 존재를 확정하지 말라고 명시했다.
+  - non-relevant public reason 후처리에서 final title이 없는 non-workish context-only 문장의 `작품 속/작품 내`류 표현을 약한 문맥 표현으로 낮췄다.
+- 검증:
+  - v300f run id `20260530_183515_762412`: completed `1`, failed `0`, pending `0`, requested parallel `36`, effective parallel `1`, VLM/OCR `true`, Docker/shard auto up/recreate `false`.
+  - v300f log lines `694-700`: `comment_context`, `comment_dialogue_context`, `surface_paraphrase_notes`가 `discourse_semantic_seed_guard` payload에 포함.
+  - v300f final reason: `문맥상 언급된 특정 인물('은영')...`, `official_title=null`, `title_resolution_state=context_only`, `title_resolution_allowed=false`.
+  - `tests.test_final_semantic_reread_gate`: 9건 OK.
+  - `py_compile` 대상: `agentic_pipeline.py`, `experts\discourse.py`, `tests\test_final_semantic_reread_gate.py`.
+- 판정:
+  - comment payload live proof: `GO`
+  - context-only public reason softening: `GO`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-183 - v299 comment dialogue context key mismatch
+
+- 상태: patched / tests verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v299_comment_dialogue_payload_key_recheck_ko.md`
+- 우선순위: P1 comment-dialogue-context, P1 semantic-understanding
+- Type: prompt-payload / comment-metadata / meaning-pass
+- 문제:
+  - `AgenticPipeline._post_to_dict()`와 result/review packet은 `comment_context_lines`, `comment_dialogue_context_lines`를 만들지만, semantic seed review payload는 `comment_context`, `comment_dialogue_context`만 읽었다.
+  - final semantic reread payload도 comments 본문만 싣고 speaker/author/ip role line을 싣지 않았다.
+- 조치:
+  - semantic seed review payload에 `*_lines` fallback을 추가했다.
+  - final semantic reread payload에 `comment_context`, `comment_dialogue_context`를 추가했다.
+  - `author_match_unverified` line이 LLM user message에 들어가는 regression을 추가했다.
+- 검증:
+  - `tests.test_final_semantic_reread_gate`: 8건 OK.
+  - `tests.test_expert_main_comment_metadata`: 4건 OK.
+  - `tests.test_qualitative_review_packet_tools`: 35건 OK.
+  - `py_compile` 대상: `agentic_pipeline.py`, `experts\discourse.py`, `tests\test_final_semantic_reread_gate.py`.
+- 판정:
+  - comment dialogue payload contract: `GO`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-182 - v298 semantic reread should not become fixed-rule blocking
+
+- 상태: wording corrected / tests verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v298_semantic_reread_not_fixed_rule_recheck_ko.md`
+- 우선순위: P1 semantic-understanding, P1 no-hardcoding
+- Type: prompt-contract / meaning-pass / evidence-gate
+- 문제:
+  - `11718091` 회귀 입력을 표면 패턴 확정 규칙처럼 고정하면 사용자가 지적한 본래 의도와 달리 deterministic 차단 규칙이 된다.
+  - 올바른 방향은 재해독 단계에서 표현 오타/축약/띄어쓰기 깨짐 가능성을 해당 packet의 title/body/comment 안에서만 가설로 검토하고, direct evidence 없이 제목 근거로 쓰지 않는 것이다.
+- 조치:
+  - final semantic reread와 semantic seed review 지침을 fixed-rule 표현에서 재해독/evidence-gate 표현으로 정정했다.
+  - `surface_paraphrase_notes`만으로는 seed/search를 내리지 않고, LLM semantic seed review가 no-work/context-only 위험을 표시한 경우에만 sanitizer가 보조 적용되게 했다.
+  - 방금 시도했던 regex 확장은 되돌려 새 조사/표면 패턴을 규칙으로 추가하지 않았다.
+- 검증:
+  - `tests.test_final_semantic_reread_gate`: 7건 OK.
+  - `tests.test_qualitative_review_packet_tools`: 35건 OK.
+  - `py_compile` 대상: `rules.py`, `agentic_pipeline.py`, `experts\discourse.py`, `tests\test_final_semantic_reread_gate.py`.
+- 판정:
+  - meaning-pass prompt contract: `GO`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-181 - v297 active goal completion audit
+
+- 상태: audited / goal NOT COMPLETE / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v297_goal_objective_completion_audit_ko.md`
+- 우선순위: P1 goal-gate, P1 semantic-quality-audit
+- Type: completion-audit / evidence-gate / goal-state
+- 문제:
+  - targeted known-bad 회복과 active goal 전체 완료가 섞일 위험이 있었다.
+  - 원본 `out\expert_result_20260528_141006_620986.json` 자체는 10만 건 완료 결과가 아니라 partial artifact다.
+- 조치:
+  - 원본 manifest와 원본 wrong-title 4건을 다시 확인했다.
+  - current targeted/v296 결과를 요구사항별로 완료/미완료로 분리했다.
+- 검증:
+  - 원본 manifest: `input_post_count=104502`, `completed_count=80`, `flushed_count=71`, `pending_count=9`.
+  - 원본 wrong-title 재현: `11718083 -> 네이버`, `11718091 -> Re:제로부터 시작하는 원신생존기`, `11718097 -> 검미성 신작 'A급 헌터로 살아남는 법' 최신화`, `11718099 -> 표지변경`.
+  - current status: `11718097`/`11718099` targeted `ACCEPT`; `11718083`/`11718091` targeted wrong-title 방어 but `HOLD / human_review`.
+- 판정:
+  - original out artifact: `PARTIAL / NOT_APPROVAL_SOURCE`
+  - targeted known-bad fixes: `REVIEW`
+  - active goal: `NOT COMPLETE`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-180 - v296 goal known-bad semantic review tooling fix
+
+- 상태: patched / review regenerated / unit tests verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v296_after_review_tooling_minor_counter_fixed\`
+  - `qualitative_review\20260528_141006_620986\v296_goal_known_bad_semantic_review_tooling_fix_ko.md`
+- 우선순위: P1 semantic-understanding, P1 review-tooling, P2 reason-evidence-alignment
+- Type: qualitative-review-tooling / reason-quality / meaning-pass / no-hardcoding
+- 문제:
+  - `11718099`는 `빌환 -> 빌어먹을 환생` alias와 공식 상세 URL이 있는데, reason 설명문 `설정(캐릭터 구성, 장르)`가 generic parenthetical bridge처럼 잡힐 수 있었다.
+  - `11718097`은 `망겜힐` 약칭과 `망겜의 힐러` 정식명 차이가 minor note인데도 `critical_counter_but_resolved` bucket에서 HOLD로 남을 수 있었다.
+  - `11718091`은 결론은 title-null/context-only가 맞지만, LLM semantic seed review 문구가 "작품 자체에 대한 논의"처럼 과하게 표현될 수 있었다.
+- 조치:
+  - review builder가 설명문 괄호를 `generic_parenthetical_bridge`로 오탐하지 않도록 `GENERIC_EXPLANATORY_OUTER_TERMS`를 추가했다.
+  - `critical_counter_but_resolved`에서 official evidence가 직접 지지하는 minor alias normalization은 `ACCEPT / no_action`으로 분리했다.
+  - non-relevant reason 조립부가 과한 "작품 자체 논의" 문구를 일반 잡담/미특정 맥락으로 낮추게 했다.
+- 검증:
+  - v296 after-review: `round2_packets=21`, `ACCEPT=7`, `HOLD=13`, `REPROCESS=1`, `REJECT=0`.
+  - `11718099`: `R2-0004`, `ACCEPT / no_action`, evidence `Strong`.
+  - `11718097`: `R2-0005`, `ACCEPT / no_action`, evidence `Strong`.
+  - `11718083`: `R2-0011`, `HOLD / human_review`, title null, memory-query recall.
+  - `11718091`: `R2-0020`, `HOLD / human_review`, title null/context-only, author/IP unverified dialogue.
+  - final semantic reread tests 6건 OK, focused semantic reason tests 3건 OK, qualitative review packet tests 35건 OK, py_compile OK.
+- 판정:
+  - targeted goal known-bad review tooling: `GO`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-179 - v291 BatchMem exact-title alias guard
+
+- 상태: patched / unit tests verified / syntax verified / live canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v291_batch_memory_exact_title_alias_guard_ko.md`
+  - `qualitative_review\20260528_141006_620986\v292_post11718117_exact_title_batchmem_guard_result.json`
+  - `qualitative_review\20260528_141006_620986\v292_post11718117_exact_title_batchmem_guard_live_recheck_ko.md`
+- 우선순위: P2 slang_db/BatchMem hygiene, P2 no-hardcoding, P2 semantic-understanding
+- Type: batch-memory / exact-title-alias / slang-db-hygiene
+- 문제:
+  - v290 `11718117`은 운영 `slang_db` 저장은 막혔지만, `decoded_terms` 학습 경로가 exact title surface `아카데미의 피해자 -> 아카데미의 피해자`를 BatchMem alias처럼 즉시 등록할 수 있었다.
+  - 이는 운영 DB 오염은 아니지만 같은 batch 안에서 정식 제목을 별칭 seed처럼 재사용하는 노이즈가 된다.
+- 조치:
+  - `BatchContextMemory.register_abbreviation()`에서 normalized alias와 normalized title이 같으면 resolved/pending 등록을 건너뛰고 `abbreviation_exact_title_skipped`로 계측한다.
+  - 특정 title/post id hardcode가 아니라 모든 exact-title surface에 적용되는 구조 guard로 처리했다.
+- 검증:
+  - `tests.test_batch_context.BatchContextMemoryContractTest.test_exact_title_surface_is_not_learned_as_batch_alias` 추가.
+  - BatchMem/final semantic reread/VLM URL focused regression 18건 OK.
+  - `py_compile` 6개 파일 OK.
+  - v292 live run_id `20260530_171212_296758`: `requested_parallel=36`, `effective_parallel=1`, VLM/OCR on, `fetch=1/1`, Docker/shard auto up/recreate false.
+  - v292 result: `slang_insight.store_in_slang_db=false`, `store_reason=exact_title_not_alias`, `identity.novel_identity.heretic_url=https://page.kakao.com/content/66611775?tab_type=product`.
+  - v292 log search: `BatchMem: 약칭 즉시등록 '아카데미의 피해자'`는 `NOT_FOUND`, `Slang DB flush ... titles=0`.
+- 판정:
+  - BatchMem exact-title alias guard: `GO` at unit/syntax/runtime level
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-178 - v290 `11718117` VLM/OCR image platform URL recovery
+
+- 상태: patched / live canary verified / unit tests verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v290_post11718117_kakao_platform_url_result.json`
+  - `qualitative_review\20260528_141006_620986\v290_post11718117_kakao_platform_url_recheck_ko.md`
+- 우선순위: P1 VLM/OCR evidence gate, P1 official URL sync, P1 semantic-understanding
+- Type: VLM/OCR / image-platform-url / no-hardcoding / meaning-pass
+- 문제:
+  - `11718117`은 이미지 OCR/VLM에 `아카데미의 피해자`, `양파랑`, `KAKAO PAGE`가 보이는데도, image-only seed pruning이 공식 검증 검색을 과하게 잘라 official URL이 비거나 다른 플랫폼 URL로 기울 수 있었다.
+  - 검색이 복구된 뒤에도 카카오페이지 소개문 안의 `원작 주인공`을 파생/팬픽 신호로 기계적으로 오해해 legitimate Kakao novel detail URL을 낮췄다.
+  - 사용자가 재지적한 `23센줄`류와 마찬가지로, 단어 하나를 금칙/허용으로 처리하는 문제가 아니라 문맥을 한 번 더 읽어야 하는 의미판정 문제다.
+- 조치:
+  - promotable image anchor가 `explicit_work_title + explicit_author_name + promotion_eligible=true`를 갖는 경우 해당 title/author 검증 검색을 image-only pruning에서 보호했다.
+  - 이미지 OCR/VLM platform cue가 final title과 같은 작품을 지지하면 그 플랫폼의 공식 상세 URL을 우선하도록 보강했다.
+  - derivative/fanfic 판정에서 단독 `원작` marker를 제거하고 `원작 소설`, `원작 웹툰`, `원작 기반`, `패러디`, `팬픽`, `2차 창작` 같은 강한 문맥만 파생 신호로 보게 했다.
+- 검증:
+  - v290 run_id `20260530_165600_447262`: `requested_parallel=36`, `effective_parallel=1`, Docker shard auto up/recreate false, VLM/OCR on, fetch `1/1`.
+  - final `official_title=아카데미의 피해자`, `novel_identity.heretic_url=https://page.kakao.com/content/66611775`, `primary_work.heretic_url=https://page.kakao.com/content/66611775`.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_final_semantic_reread_gate -v`: 5건 OK.
+  - focused URL/VLM regression 7건 OK.
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py src\llm_batch\experts\orchestrator.py tests\test_agentic_pipeline_rework.py tests\test_final_semantic_reread_gate.py`: OK.
+- 판정:
+  - `11718117` image platform official URL recovery: `GO`
+  - `23센줄` final semantic reread contract: `GO` at focused regression level
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-177 - v286/v287 VLM limit 정합화와 `23센줄` meaning-pass live 재확인
+
+- 상태: patched / live canary verified / unit tests verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v286_post11718114_result.json`
+  - `qualitative_review\20260528_141006_620986\v286_post11718114_vlm_limit_recheck_ko.md`
+  - `qualitative_review\20260528_141006_620986\v287_post11718091_semantic_reread_result.json`
+  - `qualitative_review\20260528_141006_620986\v287_post11718091_semantic_reread_live_recheck_ko.md`
+- 우선순위: P1 VLM/OCR evidence gate, P1 semantic-understanding, P2 runtime-config-consistency
+- Type: vlm-config / meaning-pass / no-hardcoding / small-run-policy
+- 문제:
+  - `11718114`는 이미지가 `8,428,632` bytes라 pipeline 기본 `16MiB`에서는 처리 가능하지만, `expert_main.py` 기본이 `8MiB`여서 `image_too_large`로 VLM chunk가 전송되지 않았다.
+  - `23센줄`은 사용자가 지적한 대로 `23세인 줄` 오타/축약으로 먼저 읽어야 하며, 단어 검색이나 post id/string hardcode로 해결할 문제가 아니다.
+  - v287 live에서 1차 Discourse는 여전히 `은영이`, `23센줄`을 seed로 올릴 수 있었다. 따라서 "LLM을 한 번 더 부름"만으로 끝나지 않고, 재독해 결과를 surface/context sanitizer와 final scope guard가 끝까지 보존해야 한다.
+- 조치:
+  - `expert_main.py`의 기본 `LLM_VLM_MAX_IMAGE_BYTES`를 pipeline 기본값과 같은 `16777216`으로 정렬했다.
+  - `tests\test_expert_main_input_loader.py`에 `expert_main.py` 기본 VLM 이미지 한도가 pipeline 기본값과 같은지 확인하는 회귀 테스트를 추가했다.
+  - `11718091` 단건을 Gemma 4 4B vLLM, VLM/OCR on, `--parallel 36 --reuse-shards-only --no-dashboard`로 재실행해 실제 `discourse_semantic_seed_guard` 호출과 context-only 조기종료를 확인했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_input_loader -v`: 30건 OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_final_semantic_reread_gate -v`: 5건 OK.
+  - semantic seed/social lament focused regression 6건 OK.
+  - `.\venv\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_input_loader.py`: OK.
+  - v286 run_id `20260530_160308_744767`: `max_image_bytes=16777216`, VLM chunk `bytes=8428632`, final title null/adjacent.
+  - v287 run_id `20260530_161141_435171`: `requested_parallel=36`, `effective_parallel=1`, Docker shard auto up/recreate false, `title_novel_terms=[]`, `search_suggestions=[]`, final `official_title=null`, `title_resolution_state=context_only`.
+- 판정:
+  - `11718114` VLM too-large config mismatch: `GO`
+  - `11718091` meaning-pass live recheck: `GO`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-176 - v285 no-anchor 리뷰 오탐 보정 / v284 잔여 meaning pass 확인
+
+- 상태: patched / unit tests verified / targeted after-review regenerated / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v284_residual_p0p1_core21_result.json`
+  - `qualitative_review\20260528_141006_620986\v285_after_review_tooling_fixed\round2_summary.md`
+  - `qualitative_review\20260528_141006_620986\v285_v284_residual_semantic_review_ko.md`
+- 우선순위: P1 semantic-understanding, P1 review-tooling, P2 reason-evidence-alignment
+- Type: qualitative-review-tooling / meaning-pass / no-hardcoding / title-alias-evidence
+- 문제:
+  - `23센줄`은 `23세인 줄`의 오타/축약으로 읽는 meaning pass 문제이며, v284에서도 `11718091`은 final title null/context-only로 유지됐다.
+  - 별도 문제로 Round2 리뷰 도구가 reason의 `고유 앵커 부족` 문구만 보고, 원문 제목 약칭과 공식 상세 URL이 직접 받치는 케이스까지 `reason_says_no_anchor_but_resolved` REJECT로 과잉 분류했다.
+  - 이 유형은 특정 post id/title 하드코딩이 아니라 "캐릭터/줄거리 앵커 부족"과 "제목 약칭 + 공식 상세 URL evidence"를 분리하지 못한 리뷰 도구 문제다.
+- 조치:
+  - `tools\build_qualitative_round2_review.py`에 `strong_title_alias_or_direct_evidence`를 추가했다.
+  - `official_title_evidence=true`, 공식 URL/catalog evidence, `title_in_post` 또는 `title_abbrev_mention`류 제목 앵커가 함께 있으면 no-anchor 충돌 bucket에서 제외한다.
+  - `tests\test_qualitative_review_packet_tools.py`에 제목 약칭 + 공식 상세 URL 케이스 회귀 테스트를 추가했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m unittest tests.test_qualitative_review_packet_tools -v`: 33건 OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_final_semantic_reread_gate -v`: 5건 OK.
+  - `.\venv\Scripts\python.exe -m py_compile tools\build_qualitative_round2_review.py tests\test_qualitative_review_packet_tools.py`: OK.
+  - v285 after-review에서 `reason_says_no_anchor_but_resolved` 후보/선택은 `0/0`, `REJECT=0`으로 정리됐다.
+- 판정:
+  - v285 no-anchor 리뷰 오탐 수정: `GO`
+  - v284 targeted semantic runtime: `GO`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-175 - v280 final meaning pass 이후 URL 재오염 차단
+
+- 상태: patched / unit tests verified / live canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v280_known_bad_4_semantic_url_guard_result.json`
+  - `qualitative_review\20260528_141006_620986\v280_known_bad_4_semantic_url_guard_result_manifest.json`
+  - `qualitative_review\20260528_141006_620986\v280_final_meaning_url_guard_review_ko.md`
+- 우선순위: P1 final-scope-monotonicity, P1 stale-url-guard, P2 reason-evidence-alignment
+- Type: final-freeze / batch-memory-alias-rescue / semantic-understanding / no-hardcoding
+- 문제:
+  - `11718091`의 `23센줄`은 `23세인 줄` 오타/축약으로 읽는 meaning pass가 맞고, v279/v280에서 이미 `context_only`로 내려갔다.
+  - 별도 문제로 `11718097`은 `망겜힐 -> 망겜의 힐러` 제목 판정은 맞았지만, 앞단 URL 검증이 `book.novelpia.com/novel/13336`을 `앤드북스` 대표 제목 불일치로 기각한 뒤에도 호출부가 `or heretic_url`로 오래된 URL을 다시 붙였다.
+  - 이 유형은 특정 post/title 하드코딩 문제가 아니라 "final freeze가 제거한 public URL/evidence를 후단 BatchContext alias rescue가 다시 살리는 비단조성" 문제다.
+- 조치:
+  - `_freeze_identity_references()` 호출부가 제거된 URL을 기존 `heretic_url` fallback으로 되살리지 않도록 변경했다.
+  - `_safe_official_detail_url_for_title()`를 추가해 title과 맞지 않는 공식 상세 URL을 재사용하지 않고, 검색 결과에 title-compatible official detail URL이 있으면 그 URL을 우선 사용한다.
+  - BatchContext alias rescue 두 경로와 stable alias/canonical base correction 경로가 candidate URL을 사용하기 전에 title-compatible URL 검사를 통과하도록 보강했다.
+  - `23센줄`은 그대로 meaning pass에서 처리하며, `23센줄`/`11718091` 같은 문자열 하드코딩을 추가하지 않았다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m unittest tests.test_final_semantic_reread_gate -v`: 3건 OK.
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_final_semantic_reread_gate.py`: OK.
+  - v280 live canary command: `.\venv\Scripts\python.exe expert_main.py --input qualitative_review\20260528_141006_620986\v117_targeted_4_input.jsonl --output qualitative_review\20260528_141006_620986\v280_known_bad_4_semantic_url_guard_result.json --server-type vllm --parallel 36 --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`
+  - run_id `20260530_142320_588781`, `requested_parallel=36`, `effective_parallel=4`, `completed/failed/pending=4/0/0`, `vlm_enabled=true`, `ocr_enabled=true`, Docker shard auto up/recreate `false`.
+  - `11718091`: final title null, `title_resolution_state=context_only`, `title_resolution_allowed=false`, log에 `23센줄 -> 23세인 줄`, `semantic seed demotion 조기종료`.
+  - `11718097`: final `망겜의 힐러`, URL `https://novel.munpia.com/328421`, stale `https://book.novelpia.com/novel/13336` 재오염 없음.
+- 판정:
+  - targeted known-bad semantic/url guard: `GO`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-174 - v278 final semantic reread gate 추가
+
+- 상태: patched / focused tests verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v278_final_semantic_reread_gate_ko.md`
+- 우선순위: P1 semantic-understanding, P1 search-overpromotion-guard, P2 evidence-alignment
+- Type: final-semantic-reread / meaning-pass / no-hardcoding / search-promotion-veto
+- 문제:
+  - `23센줄`은 `23세인 줄` 오타/축약으로 읽어야 하는 자연어 이해 케이스다.
+  - 기존 `discourse_semantic_seed_guard`는 검색 전 seed를 낮추지만, 후단 search/Decoder/BatchContext가 후보 작품을 다시 올리는 구조에서는 "최종 후보와 원문/evidence가 맞는가"를 한 번 더 물어야 한다.
+  - 이 문제를 `23센줄`, `은영`, 특정 post id 금칙어로 막으면 같은 나이/외모 감상·장르 잡담·사회적 한탄 변형을 계속 놓친다.
+- 조치:
+  - `PIPELINE_FINAL_SEMANTIC_REREAD=1` 기본값으로 final high-risk resolved output에 `final_semantic_reread` LLM gate를 추가했다.
+  - trigger는 `semantic_seed_review.is_specific_work_discussion=false`, `semantic_seed_review_*`, `surface_paraphrase_*`, `context_only/no_work_anchor`, `community_banter`, `genre_discussion`류 risk가 있는데 final title이 살아남은 경우로 제한했다.
+  - 직접 원문 title+official evidence 또는 direct image/VLM title promotion처럼 강한 앵커가 있는 경우는 불필요하게 흔들지 않는다.
+  - gate가 `REJECT/HOLD/REPROCESS` 또는 `is_specific_work_discussion=false + Weak/Missing evidence`를 반환하면 final title을 null로 낮추고 `final_semantic_reread_rejected_resolution` 또는 `final_semantic_reread_reprocess_resolution` flag를 남긴다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m unittest tests.test_final_semantic_reread_gate -v`: 1건 OK. 추적 가능한 전용 회귀 테스트로 `23센줄 -> 23세인 줄` context-only 재독해 후 search-only 후보를 낮추는 경로를 확인했다.
+  - `test_final_semantic_reread_rejects_search_promotion_after_context_only_review`: OK.
+  - `test_age_typo_surface_becomes_non_title_semantic_hint`: OK.
+  - `test_surface_paraphrase_runs_semantic_review_without_title_seed`: OK.
+  - `test_age_typo_surface_is_not_promoted_to_search_seed`: OK.
+  - semantic/social-lament focused regression 7건 추가 OK.
+- 판정:
+  - final high-risk semantic reread path: `GO`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-173 - v277 comment metadata coverage audit 도구화
+
+- 상태: patched / audit generated / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v277_comment_metadata_coverage_audit.json`
+  - `qualitative_review\20260528_141006_620986\v277_comment_metadata_coverage_audit_ko.md`
+- 우선순위: P1 evidence-coverage, P1 comment-dialogue-context, P2 source-integrity
+- Type: audit-tooling / source-profile / comment-metadata / VLM-OCR-catalog
+- 문제:
+  - 댓글 대화 맥락 개선이 targeted run에는 들어갔지만, 원본 partial result와 원본 JSONL/source coverage를 같은 표로 다시 볼 수 있는 재사용 도구가 없었다.
+  - 사용자가 기대한 "본문 작성자 IP로 댓글 이어쓰기 이해"는 원본 `tests\inputs\test01.jsonl`에 post IP가 있는지부터 확인해야 했다.
+- 조치:
+  - `tools\audit_comment_metadata_coverage.py`를 추가해 source JSONL과 여러 result JSON의 comment metadata, dialogue context, post IP, image catalog coverage를 함께 산출한다.
+  - known post id별 원본/source 상태와 result 상태를 한 줄로 비교한다.
+- 확인:
+  - source `tests\inputs\test01.jsonl`: posts `104517`, posts_with_any_ip `0`, comments `368334`, comment_ip_present `70337`, duplicate_comment_ids `43`.
+  - original partial result: rows `71`, rows_with_comments `55`, rows_with_comment_metadata `0`, image_rows `0`.
+  - v267 rerun result: rows `24`, rows_with_comments/comment_metadata/dialogue `16/16/16`, image_rows/catalog `13/13`.
+  - v275 `11718117`: comments/meta/dialogue `2/2/2`, image/catalog `1/true`.
+- 검증:
+  - `tests.test_audit_comment_metadata_coverage`: 3건 OK.
+  - syntax `compile()` check OK.
+  - `py_compile`은 `tools\__pycache__` pyc rename 권한 문제로 실패해 bytecode 없는 syntax check로 대체했다.
+- 판정:
+  - coverage audit tooling: `GO`
+  - post IP source coverage: `MISSING`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-172 - v276 comment metadata loader/output 보강
+
+- 상태: patched / focused tests verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v276_comment_metadata_loader_output_audit_ko.md`
+- 우선순위: P1 comment-dialogue-context, P2 review-packet-evidence
+- Type: input-loader / comment-metadata / review-output / dedupe
+- 문제:
+  - 현재 파이프라인 내부 `post_data`에는 `post_ip`와 `comment_dialogue_context_lines`가 들어가지만, `expert_main.py` public result top-level에는 `post_ip/ip/author_ip`가 빠져 review packet에서 원글 작성자 댓글 판별 근거가 약해질 수 있었다.
+  - JSONL source에서 post row의 `post_id`는 숫자, comment row의 `post_id`는 문자열로 들어오면 댓글 연결이 실패할 수 있었다.
+  - `tests\inputs\test01.jsonl` 기준 `11718091` comment row가 중복되어 같은 댓글이 두 번 prompt/review context에 붙을 수 있었다.
+- 조치:
+  - `expert_main.py` 결과 row에 `ip`, `author_ip`, `post_ip`를 공개 필드로 남기게 했다.
+  - `load_jsonl_posts()`에서 post/comment `post_id` key를 정규화해 숫자/문자열 혼합에도 댓글이 붙도록 했다.
+  - comment row는 `comment_id` 우선, 없으면 author/ip/time/content tuple 기준으로 dedupe한다.
+- 검증:
+  - `tests.test_expert_main_comment_metadata`: 4건 OK.
+  - known-bad focused regression 포함 20건 OK.
+  - `py_compile` OK.
+  - 현재 원본 입력 재구성에서 `11718091`은 댓글 1건, `11718097`은 댓글 5건, `11718117`은 댓글 2건으로 확인됐다.
+- 판정:
+  - comment metadata loader/output path: `GO`
+  - 원본 20260528 partial result approval: `NO-GO`
+  - 10만 건 semantic approval: `REVIEW-LOCKED`
+
+## IMP-20260530-171 - v269 v264 VLM/OCR action rerun 및 residual semantic issue 정리
+
+- 상태: rerun completed / targeted runtime GO / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v268_v264_rerun_runtime_preflight_after_cap_fix_ko.md`
+  - `qualitative_review\20260528_141006_620986\v267_v264_rerun_combined_result.json`
+  - `qualitative_review\20260528_141006_620986\v267_v264_rerun_combined_result_manifest.json`
+  - `qualitative_review\20260528_141006_620986\v269_v264_rerun_result_review_ko.md`
+- 우선순위: P1 semantic-regression, P1 VLM/OCR-title-evidence, P2 small-run-runtime-contract
+- Type: targeted-rerun / VLM-OCR / semantic-reread / worker-max-policy
+- 확인:
+  - `--parallel 36`은 max로 적용되어 입력 24건에서 `effective_parallel=24`였다.
+  - goal/targeted run 보호 cap으로 MCP endpoint pool은 8개였고 health check는 `8/8 OK`였다.
+  - Docker shard lifecycle은 auto up/recreate 없이 재사용만 했다.
+  - manifest 기준 `vlm_enabled=true`, `ocr_enabled=true`, `image_post_count=13`, `completed/failed/pending=24/0/0`.
+  - `11718080`, `11718082`, `11718083`, `11718091`, `11718097`, `11718099` known-bad는 의도한 방향으로 회복 또는 보류됐다.
+- 남은 문제:
+  - `11718094`: `집착` 같은 추상 명사/generic 제목 collision이 아직 resolved로 남을 수 있다.
+  - `11718117`: OCR이 `아카데미의 피해자 ... KAKAOPAGE`를 읽었는데 공식 제목 확정으로 이어지지 않았다.
+- 판정:
+  - targeted runtime health는 `GO`.
+  - targeted semantic regression은 residual P1 때문에 `REVIEW`.
+  - 10만 건 semantic approval은 계속 `REVIEW-LOCKED`.
+- 다음 조치:
+  - generic abstract title collision bucket을 P1로 확대 리뷰한다.
+  - OCR explicit title/author/platform pattern을 candidate 승격 후 검색 검증하는 경로를 보강한다.
+
+## IMP-20260530-170 - v266 v264 rerun readiness 확인
+
+- 상태: readiness checked / rerun not executed / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v266_v264_rerun_readiness_ko.md`
+- 우선순위: P1 runtime-readiness, P1 shard-coverage, P1 VLM/OCR-rerun-gate
+- Type: runtime-preflight / shard-readiness / vllm-endpoint / rerun-gate
+- 확인:
+  - vLLM endpoint `http://10.20.0.101:8000/v1/models`는 HTTP 200과 `bg-digitalservices/Gemma-4-E4B-it-NVFP4`를 반환했다.
+  - 관련 `python.exe` 점유 프로세스는 없었다.
+  - Docker/TCP 기준 MCP shard는 5/36만 열려 있었다.
+  - `docker compose ... ps` 기반 `warp_shards.py status --json`은 Docker Desktop pipe access denied로 실패했다.
+  - `tools\warp_shards.py up --count 36` escalated 실행 요청은 abort되어 shard 기동을 수행하지 않았다.
+- 판정:
+  - LLM readiness는 `GO`.
+  - MCP/WARP 36-shard readiness는 `NO-GO`.
+  - v264 24건 VLM/OCR 재런은 `NOT_RUN`.
+- 남은 작업:
+  - 36 shard가 준비되면 v264 rerun combined 24건을 `--parallel 36 --reuse-shards-only --no-dashboard --server-type vllm --slang-db on --vlm on --ocr on`으로 실행한다.
+  - 실행 후 manifest의 `requested_parallel`, `effective_parallel`, VLM/OCR flags, Docker lifecycle false, completed/failed/pending을 확인한다.
+
+## IMP-20260530-169 - v265 의미 재독해 경로 재확인
+
+- 상태: no-code confirmation / focused regression verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v265_semantic_reread_reconfirmation_ko.md`
+- 우선순위: P1 semantic-understanding, P1 no-hardcoded-alias-policy, P2 review-operation-discipline
+- Type: semantic-reread / surface-paraphrase / social-lament / no-hardcoding
+- 문제:
+  - `23센줄`은 `23세인 줄` 오타/축약으로 읽어야 하는데, bucket/re_judge 중심으로만 보면 다시 검색 seed 문제처럼 처리될 수 있다.
+  - 이 유형은 특정 문자열 차단이 아니라 제목/본문/댓글을 한 번 더 읽는 meaning pass 문제다.
+- 확인:
+  - 현재 경로는 `surface_age_expression_paraphrases` -> `surface_paraphrase_notes` -> `discourse_semantic_seed_guard` -> seed demotion -> Decoder/search 재승격 차단 순서다.
+  - `23센줄` 같은 표면은 작품명/별칭으로 하드코딩 차단하지 않고, 구조 조건과 LLM 의미 재독해로 context-only 처리한다.
+  - 친구/밥/소설/같이/한탄형 문맥도 social-lament/generic-discourse로 한 번 더 의미 재독해한다.
+- 검증:
+  - focused semantic reread regression 5건 OK.
+- 남은 작업:
+  - 대형 action queue에서는 `re_judge` 전에 title/body/comment를 포함한 semantic reread packet을 먼저 확인한다.
+  - expanded review에서 `context_only_no_work_anchor`, `surface_paraphrase_non_title_terms_removed`, `friend_social_lament_or_generic_discourse`를 random/high-risk로 분리 집계한다.
+
+## IMP-20260530-168 - v264 v263 action input 원본 JSONL 기반 재생성
+
+- 상태: patched / action inputs prepared / rerun not executed / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v264_v263_action_input_preparation_ko.md`
+  - `qualitative_review\20260528_141006_620986\v263_original_partial_latest_review\v264_v263_action_from_input_manifest.json`
+  - `qualitative_review\20260528_141006_620986\v263_original_partial_latest_review\v264_v263_action_from_input_rerun_combined_input.jsonl`
+  - `qualitative_review\20260528_141006_620986\v263_original_partial_latest_review\v264_v263_action_from_input_browser_targets.jsonl`
+- 우선순위: P1 action-input-source-integrity, P1 VLM/OCR-rerun-readiness, P2 duplicate-action-preservation
+- Type: action-queue / source-input-reconstruction / content-blocks / comment-context
+- 문제:
+  - v263 `action_queue.json`은 `action/label/packet_id` 스키마인데 기존 action input builder는 예전 `final_action/final_label` JSONL만 안정적으로 처리했다.
+  - source로 원본 result JSON을 쓰면 이미지 post 37건의 `content_blocks/image_urls`가 빠져 VLM/OCR 후속 검토가 text-only 입력이 된다.
+  - 같은 post가 random/Round2에 중복 등장할 때 처음 action만 남겨 `slang_db_review` 같은 보조 action을 잃을 수 있었다.
+- 조치:
+  - action input builder가 JSON array action queue와 JSONL source를 모두 읽게 했다.
+  - `tests\inputs\test01.jsonl`의 post row + comment row를 병합해 `content_blocks`, image URL, comments를 보존한다.
+  - post 중복은 rerun 입력에서는 1회만 유지하되, action별 review packet은 보존한다.
+  - execution contract를 `--parallel 36`, effective `min(input_count, 36)`, `--reuse-shards-only`, `--vlm on`, `--ocr on` 기준으로 갱신했다.
+- 검증:
+  - `tests.test_qualitative_review_packet_tools`: 30건 OK.
+  - `py_compile` OK.
+  - v264 from-input 생성 결과: `remaining=117`, `unique=68`, `rerun_combined=24`, `browser_targets=37`, `human_review=56`, `slang_db_review=7`, `image_source_missing=0`.
+  - 관련 Python 점유 프로세스 없음, Docker shard는 현재 5개만 확인됨.
+- 남은 작업:
+  - 36 shard 상태를 확인한 뒤 v264 rerun combined 24건을 Gemma 4 4B, VLM/OCR on으로 재실행한다.
+  - browser targets 37건은 Codex in-app Browser 또는 동등 시각 증거로 확인한다.
+
+## IMP-20260530-167 - v263 original partial 최신 정성 리뷰 재산출 및 random/high-risk label 보강
+
+- 상태: patched / original partial review regenerated / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v263_original_partial_latest_review_ko.md`
+  - `qualitative_review\20260528_141006_620986\v263_original_partial_latest_preflight.json`
+  - `qualitative_review\20260528_141006_620986\v263_original_partial_latest_review\summary.json`
+  - `qualitative_review\20260528_141006_620986\v263_original_partial_latest_review\review_labels.jsonl`
+- 우선순위: P1 review-label-policy, P1 random/high-risk-separation, P1 original-partial-audit
+- Type: qualitative-review-tooling / random-control-risk-policy / partial-source-regeneration
+- 문제:
+  - 같은 review dir에서 random control을 먼저 만들면 Round2가 random post_id까지 dedupe 대상으로 보아 high-risk sample이 0건으로 사라질 수 있었다.
+  - `random_control` label이 내부 high-risk bucket policy를 적용하지 않아 `11718091` 같은 no-anchor resolved row가 `ACCEPT`로 미끄러질 수 있었다.
+- 조치:
+  - Round2 dedupe에서 `random_control` label은 제외해 random baseline과 high-risk oversample을 별도 층으로 유지한다.
+  - `random_control` label 산출 시 `reason_says_no_anchor_but_resolved`, `batch_memory_exact_alias_rescued_no_anchor`, `image_evidence_catalog_missing` 같은 high-risk bucket policy를 우선 적용한다.
+  - 원본 partial 71행을 v263 산출물로 다시 생성했다.
+- 검증:
+  - focused tests 4건 OK.
+  - `tests.test_qualitative_review_packet_tools`: 28건 OK.
+  - `py_compile` OK.
+  - v263 canonical review rows `141`, label 분포 `ACCEPT=24`, `HOLD=32`, `REPROCESS=37`, `REJECT=18`, `INFO_MISSING=30`.
+  - known-bad `11718083`, `11718099`, `11718091`, `11718097`, `11718080`은 random 또는 Round2에서 `REJECT`/`REPROCESS`/`HOLD`로 분리됐다.
+- 남은 작업:
+  - 원본 source는 `input=104502` 중 result `71`행 partial이므로 10만 건 semantic approval에 사용하지 않는다.
+  - 새 completed source 또는 대형 재런에서 같은 bucket coverage를 다시 산출한다.
+
+## IMP-20260530-166 - Round2/random packet image evidence catalog gate
+
+- 상태: patched / focused tests verified / semantic gate REVIEW-LOCKED
+- 우선순위: P1 VLM/OCR-review-packet, P1 image-evidence-gap, P2 random-baseline-schema
+- Type: qualitative-review-tooling / vlm-ocr-catalog / image-evidence-catalog-missing
+- 문제:
+  - v259 결과 JSON에는 `identity.image_evidence_catalog`, `content_blocks`, `image_urls`, `image_count`가 생겼지만, Round2/random review packet이 이 필드를 직접 싣지 않으면 대형 정성 리뷰가 다시 reason/log 파싱에 의존한다.
+  - 이미지가 있는데 구조화된 VLM/OCR 공개 근거가 없는 row를 `VLM_OCR_involved` 안에 묻어두면 `11718082`류 이미지 로딩 누락을 체계적으로 잡기 어렵다.
+- 조치:
+  - `tools\build_qualitative_round2_review.py`의 `evidence_catalog`가 `identity.image_evidence_catalog`를 수집하도록 확장했다.
+  - Round2 high-risk bucket에 `image_evidence_catalog_missing`을 추가하고, 이미지/VLM/OCR 근거가 필요한데 catalog가 없으면 `REPROCESS`로 보낸다.
+  - Round2/random packet에 `content_blocks`, `image_urls`, `image_count`, `image_evidence_catalog`, `image_evidence_catalog_count`, `image_evidence_catalog_missing`을 공개 필드로 남긴다.
+- 검증:
+  - focused tests 2건: OK.
+  - `tests.test_qualitative_review_packet_tools`: 26건 OK.
+  - `py_compile` OK.
+  - v259 실제 결과 대입: `11718082`는 `image_count=1`, catalog 1건, missing false, `VLM_OCR_involved`; `11718080`은 image bucket 없음.
+- 남은 작업:
+  - 새 completed 10만 source에서 `image_evidence_catalog_missing` population/selected/coverage를 분리 집계한다.
+  - 이 변경은 review tooling 보강이므로 10만 건 semantic approval은 여전히 expanded random/high-risk review 전까지 `REVIEW-LOCKED`다.
+
+## IMP-20260530-165 - v259 social-lament/VLM evidence schema 재검증
+
+- 상태: patched / live canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v259_post11718080_11718082_schema_review_ko.md`
+  - `qualitative_review\20260528_141006_620986\v259_post11718080_11718082_schema_result.json`
+  - `qualitative_review\20260528_141006_620986\v259_post11718080_11718082_schema_result_manifest.json`
+  - `logs\expert_run_20260530_081237_130510.log`
+- 우선순위: P1 semantic-understanding, P1 VLM/OCR-evidence-preservation, P2 review-packet-schema
+- Type: semantic-seed-review / social-lament / vlm-ocr-catalog / public-result-schema
+- 문제:
+  - `23센줄`은 `23세인 줄` 오타/축약으로 먼저 읽어야 하듯, `11718080`도 단어 검색보다 "소설 보는 친구가 있었으면"이라는 자연어 의도 재검토가 먼저 필요하다.
+  - `11718082`는 VLM/OCR이 실제로 돌고 작품명을 잡아도, 결과 JSON에 구조적 이미지 근거가 없으면 리뷰어가 reason/log를 파싱해야 했다.
+- 조치:
+  - `PickvelIdentity.image_evidence_catalog`를 추가해 VLM/OCR 공개 근거를 결과 JSON에 남긴다.
+  - `expert_main.py` public result에 원문 `content_blocks`, `image_urls`, `image_count`를 보존한다.
+  - 이미지가 없는 글에는 status-only image catalog를 남기지 않아 10만 건 결과가 불필요하게 부풀지 않게 했다.
+- 검증:
+  - v259 live run: `input=2`, `completed/failed/pending=2/0/0`, `requested_parallel=36`, `effective_parallel=2`, VLM/OCR on, Docker lifecycle false.
+  - `11718080`: `official_title=null`, `discussion_type=trope_discussion`, `title_resolution_state=adjacent`, `title_resolution_allowed=false`; W1 로그에 `discourse_semantic_seed_guard`와 semantic seed demotion이 남았다.
+  - `11718082`: `official_title=재벌가 차녀의 2회차 걸그룹`, `discussion_type=character_talk`, `context_sources=["title","body","search","image"]`; W0 로그에 VLM chunk request/result와 KakaoPage page analysis가 남았다.
+  - 결과 JSON에서 `11718082`는 `image_count=1`, `content_blocks=["image","text"]`, `image_evidence_catalog[0]` 보존. `11718080`은 `image_count=0`, `image_evidence_catalog` 없음.
+  - semantic seed/age/social-lament 9건, VLM image catalog 2건, expert_main public block 2건, `py_compile` 통과.
+- 남은 작업:
+  - v259는 targeted canary이므로 10만 건 semantic approval로 승격하지 않는다.
+  - expanded review에서 `friend_social_lament_or_generic_discourse`, `VLM_OCR_involved`, `image_evidence_catalog_missing`, `context_only_no_work_anchor` bucket을 분리 집계한다.
+
+## IMP-20260530-164 - v256 known-bad 4건 VLM/OCR-on comment attribution 후 재검증
+
+- 상태: targeted canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v256_known_bad_4_after_comment_attribution_review_ko.md`
+  - `qualitative_review\20260528_141006_620986\v256_known_bad_4_after_comment_attribution_result.json`
+  - `qualitative_review\20260528_141006_620986\v256_known_bad_4_after_comment_attribution_result_manifest.json`
+  - `logs\expert_run_20260530_073412_285282.log`
+- 우선순위: P1 targeted-known-bad-regression, P1 semantic-understanding, P1 VLM/OCR-evidence
+- Type: vllm-canary / comment-attribution / semantic-reread / vlm-ocr-conflict
+- 문제:
+  - `11718091`은 `23센줄`을 `23세인 줄`로 자연어 재독해해야 하는 케이스이며, 작품 검색 후보로 밀어붙이면 안 된다.
+  - 댓글 author가 `ㅇㅇ`으로 같아도 post/comment IP가 없으면 원글 작성자 댓글이라고 확정하면 안 된다.
+  - known-bad 4건은 VLM/OCR on 기준으로 다시 검증해야 한다.
+- 조치/확인:
+  - Gemma 4 4B vLLM 기준 `--parallel 36 --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`으로 재실행했다.
+  - manifest 기준 `input=4`, `completed/failed/pending=4/0/0`, `requested_parallel=36`, `effective_parallel=4`, VLM/OCR on, Docker lifecycle false를 확인했다.
+  - `11718091`은 `official_title=null`, `discussion_type=noise`, `title_resolution_state=context_only`, `title_resolution_allowed=false`로 유지됐다.
+  - reason에는 `23센줄 -> 23세인 줄`, `16살인줄 -> 16살인 줄`, `작품 seed 제외`가 남았다.
+  - `11718091` 댓글은 `speaker=user1`, `is_post_author=false`, `post_author_match_unverified=true`로 남았다.
+  - `11718097`은 `망겜의 힐러`, `11718099`는 `빌어먹을 환생`으로 회복됐고 `11718099`는 VLM/OCR title conflict flag를 유지했다.
+- 남은 작업:
+  - v256은 targeted canary이므로 10만 건 semantic approval로 승격하지 않는다.
+  - `search_degraded_or_timeout`, `VLM_OCR_involved`, `context_only_no_work_anchor`, `comment_author_match_unverified_dialogue` bucket을 expanded review에서 다시 집계한다.
+  - 향후 비교 run은 필요하면 별도 slang DB snapshot path를 사용해 live DB flush 영향을 분리한다.
+
+## IMP-20260530-163 - 댓글 author/IP attribution 미확정 처리 v255
+
+- 상태: patched / focused regression verified / source audit documented / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v255_comment_author_ip_attribution_audit_ko.md`
+  - `src\llm_batch\agentic_pipeline.py`
+  - `expert_main.py`
+  - `tools\build_qualitative_round2_review.py`
+  - `tests\test_agentic_pipeline_rework.py`
+  - `tests\test_expert_main_comment_metadata.py`
+  - `tests\test_qualitative_review_packet_tools.py`
+- 우선순위: P1 comment-dialogue-understanding, P1 review-packet-evidence, P2 crawler-input-enrichment
+- Type: comment-author-ip / anonymous-author / dialogue-attribution / qualitative-bucket
+- 문제:
+  - `tests\inputs\test01.jsonl`에는 댓글 author/comment_id/reply 구조가 `368,334` rows 있었지만 20260528 원본 result 71 rows에는 `comment_metadata/comment_context_lines/comment_dialogue_context_lines`가 모두 없었다.
+  - 같은 입력 기준 post row의 `ip/author_ip/post_ip/writer_ip`는 모두 비어 있었다.
+  - current-code는 post/comment IP가 없고 author만 `ㅇㅇ`으로 같은 경우에도 `post_author`로 확정할 수 있어, 없는 증거를 원글 작성자 댓글처럼 말할 위험이 있었다.
+- 조치:
+  - 익명/공통 author(`ㅇㅇ`, `익명`, `유동` 등)는 post IP와 comment IP가 모두 있고 같을 때만 `role=post_author`로 확정한다.
+  - author 문자열은 같지만 IP 확인이 없으면 `post_author_match_unverified=true`와 `role=author_match_unverified`를 남긴다.
+  - Round2 high-risk bucket에 `comment_author_match_unverified_dialogue`를 추가했다.
+- 검증:
+  - `test_anonymous_comment_without_post_ip_is_unverified_not_post_author`: OK.
+  - `tests.test_expert_main_comment_metadata`: OK.
+  - 댓글/IP/`23센줄` 관련 focused regression 10건: OK.
+  - `tests.test_qualitative_review_packet_tools`: 24건 OK.
+  - `py_compile`: OK.
+  - current-code 재구성에서 `11718091`은 `speaker=user1`, `role=author_match_unverified`, `is_post_author=false`로 확인했다.
+  - current-code 재구성에서 `11718097`의 `ㅇㅇ` 댓글 4건은 `author_match_unverified`, `리세` 댓글은 `user2`로 분리됐다.
+- 남은 작업:
+  - crawler/input 단계에서 post IP 또는 DC 원글 작성자 표시를 확보할 수 있는지 확인한다.
+  - 새 completed source에서 댓글 메타 bucket을 expanded high-risk review로 별도 집계한다.
+  - 20260528 원본 partial result는 댓글 맥락 품질 승인 근거로 쓰지 않는다.
+
+## IMP-20260530-162 - `11718091` 의미 재독해 경로 current-code 재확인 v254
+
+- 상태: no-code confirmation / focused regression verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v254_post11718091_semantic_reread_confirmation_ko.md`
+  - `src\llm_batch\experts\orchestrator.py`
+  - `tests\test_agentic_pipeline_rework.py`
+- 우선순위: P1 semantic-understanding, P2 evidence-reporting
+- Type: surface-paraphrase / semantic-seed-review / context-only-scope / no-hardcoding
+- 문제:
+  - 사용자가 지적한 대로 `23센줄`은 `23세인 줄` 오타/축약으로 먼저 읽어야 하며, 검색어/작품 alias로 밀어붙이면 안 된다.
+  - 이 유형은 "검색을 더 잘하기"보다 "검색 전 한 번 더 자연어로 읽고, 직접 작품 앵커가 없으면 후단 재승격을 막는" 오케스트레이션 문제다.
+- 확인:
+  - current-code v251 canary의 `analysis_result.identity` 기준 `11718091`은 `official_title=null`, `is_relevant=false`, `title_resolution_state=context_only`, `title_resolution_allowed=false`다.
+  - reason에는 `표면 표현 해석: 23센줄 -> 23세인 줄; 16살인줄 -> 16살인 줄`과 `작품 seed 제외: 은영`이 남는다.
+  - 현재 구조는 `surface_paraphrase_notes` -> `discourse_semantic_seed_guard` -> `semantic_seed_review` demotion -> 검색/Decoder 재승격 차단 순서다.
+- 검증:
+  - `test_age_typo_surface_becomes_non_title_semantic_hint`: OK.
+  - `test_surface_paraphrase_runs_semantic_review_without_title_seed`: OK.
+  - `test_non_relevant_reason_exposes_age_typo_surface_reading`: OK.
+  - `test_semantic_seed_context_only_scope_is_not_unresolved_matchable`: OK.
+  - `test_age_typo_surface_is_not_promoted_to_search_seed`: OK.
+  - `test_character_age_banter_same_author_comment_does_not_use_search_character_link_as_anchor`: OK.
+- 남은 작업:
+  - v254는 current-code focused 확인이다. 20260528 원본 partial source나 10만 건 semantic approval로 승격하지 않는다.
+  - expanded review에서 `context_only_no_work_anchor`, `surface_paraphrase_non_title_terms_removed`, `semantic_seed_review_non_title_terms_removed` bucket의 과차단/미차단을 별도 집계한다.
+  - 이 경로는 post id, `은영`, `23센줄` 하드코딩이 아니라 나이/외모 표면 + strong work anchor 부재 + stable alias 부재 조건으로 유지한다.
+
+## IMP-20260530-161 - Round2 systemic bucket 추출을 현재 known-bad 패턴으로 확장 v253
+
+- 상태: implemented / focused test verified / partial-source preflight generated / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `tools\build_qualitative_round2_review.py`
+  - `tests\test_qualitative_review_packet_tools.py`
+  - `qualitative_review\20260528_141006_620986\v253_systemic_bucket_preflight.json`
+  - `qualitative_review\20260528_141006_620986\v253_systemic_bucket_preflight_ko.md`
+  - `qualitative_review\20260528_141006_620986\v253_systemic_bucket_round2\round2_manifest.json`
+  - `qualitative_review\20260528_141006_620986\v253_systemic_bucket_round2\round2_summary.md`
+  - `qualitative_review\20260528_141006_620986\v253_systemic_bucket_round2\action_queue.md`
+- 우선순위: P1 qualitative-review-tooling, P1 systemic-pattern-coverage
+- Type: review-bucket-expansion / batch-memory-overreach / critical-counter / image-ocr-conflict / partial-source-gate
+- 문제:
+  - v252 audit에서 원본 partial source 71행 안에 `batch_memory_exact_alias_rescued_no_anchor`, `critical_counter_but_resolved`, `title_surface_primary_candidate_rescued`, `official_url_missing_for_resolved` 같은 반복 패턴이 보였다.
+  - 일부 패턴은 문서/TODO에는 있었지만 Round2 packet builder의 공식 bucket target으로 잡히지 않아, 다음 대형 정성 리뷰에서 누락될 수 있었다.
+- 조치:
+  - Round2 high-risk bucket에 다음 항목을 추가했다.
+    - `batch_memory_exact_alias_rescued_no_anchor`
+    - `critical_counter_but_resolved`
+    - `notes_demoted_then_resolved`
+    - `title_surface_primary_candidate_rescued`
+    - `official_url_missing_for_resolved`
+    - `reason_says_no_anchor_but_resolved`
+    - `search_absent_verified_title_direct_image_title`
+  - 각 bucket의 label/action 정책을 추가했다.
+  - packet의 `evidence_counts`와 `result_public_fields`에 해당 systemic flag를 노출한다.
+- 검증:
+  - `test_round2_flags_batch_memory_rescue_without_anchor_buckets`: OK.
+  - `test_round2_flags_search_absent_image_title_bucket`: OK.
+  - `test_large_scale_preflight_blocks_partial_recovered_subset`: OK.
+  - `py_compile tools\build_qualitative_round2_review.py tools\preflight_qualitative_large_scale_review.py tests\test_qualitative_review_packet_tools.py`: OK.
+  - v253 preflight: overall `REVIEW-LOCKED`, blockers `completed_count_lt_input_post_count`, `flushed_count_lt_completed_count`, `large_run_completion_not_proven`, `pending_count_gt_zero`, `random_baseline_target_not_feasible`, `result_rows_lt_completed_count`.
+  - v253 bucket population: `batch_memory_exact_alias_rescued_no_anchor=9`, `critical_counter_but_resolved=20`, `notes_demoted_then_resolved=12`, `title_surface_primary_candidate_rescued=1`, `official_url_missing_for_resolved=10`, `reason_says_no_anchor_but_resolved=10`, `search_absent_verified_title_direct_image_title=1`, `VLM_OCR_involved=37`.
+  - v253 Round2 partial-source sample: 69 packets, labels `ACCEPT=22`, `HOLD=27`, `REPROCESS=3`, `REJECT=7`, `INFO_MISSING=10`.
+- 남은 작업:
+  - 원본 source가 partial이므로 v253 수치는 전체 비율이 아니라 next-run failure-pattern seed다.
+  - 새 completed source 또는 recovered completed subset에서 같은 bucket을 다시 실행하고, random baseline과 high-risk expansion을 분리 보고한다.
+  - `search_absent_verified_title_direct_image_title`는 dedupe 때문에 selected bucket count는 0이지만 covered count는 1이므로, image/OCR 전용 follow-up에서는 이 bucket을 우선 선택하도록 별도 target set을 만들 수 있다.
+
+## IMP-20260530-160 - VLM/OCR 오독 제목이 안정 별칭을 덮어쓰는 경로 차단 v250/v251
+
+- 상태: patched / focused unittest verified / live vLLM canary recovered / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `src\llm_batch\agentic_pipeline.py`
+  - `tests\test_agentic_pipeline_rework.py`
+  - `qualitative_review\20260528_141006_620986\v250_known_bad_4_current_semantic_reread_result.json`
+  - `qualitative_review\20260528_141006_620986\v250_known_bad_4_current_semantic_reread_result_manifest.json`
+  - `qualitative_review\20260528_141006_620986\v251_known_bad_4_weak_image_title_canonical_rescue_result.json`
+  - `qualitative_review\20260528_141006_620986\v251_known_bad_4_weak_image_title_canonical_rescue_result_manifest.json`
+  - `qualitative_review\20260528_141006_620986\v251_post11718099_browser_actual.png`
+  - `logs\expert_run_20260530_061916_614682_W3.log`
+  - `logs\expert_run_20260530_063929_178214_W3.log`
+- 우선순위: P1 VLM/OCR-evidence-alignment, P1 semantic-understanding, P2 batch-memory-contamination
+- Type: weak-image-title / OCR-misread / canonical-rescue / browser-visual-evidence / no-hardcoding
+- 문제:
+  - `11718099`의 원문 제목은 `빌환 표지변경됨`이고, 브라우저로 실제 이미지를 확인하면 표지 하단에 `빌어먹을...` 계열 제목이 보인다.
+  - 그러나 v250에서 VLM/OCR이 이미지를 `검은 여왕의 혼성명`으로 읽었고, Verifier가 `search_absent_verified_title`로 nullify했음에도 후단 Arbiter/suspected title 경로가 이를 다시 final title로 올렸다.
+  - 같은 run 안에는 `빌환 -> 빌어먹을 환생` 안정 별칭/검색 근거가 있었으므로, image/OCR-only title이 공식/별칭 근거를 덮어쓴 것은 semantic evidence alignment 실패다.
+  - 이 케이스는 특정 post id 문제가 아니라 "이미지/OCR 직접 후보 + 검색 부재 critical + 비이미지 안정 별칭" 충돌 유형이다.
+- 조치:
+  - weak direct image/OCR title canonical rescue guard를 추가했다.
+  - 현재 title이 image/OCR-only이고, official evidence가 없고, 비이미지 원문에 없으며, Verifier가 `search_absent_verified_title`/`nullify_title`/critical로 낮췄다면 바로 신뢰하지 않는다.
+  - 동시에 다른 canonical 후보가 안정 alias, stable abbrev, official detail URL, 충분한 search hit를 갖고 있으면 그 canonical 후보가 final title을 이길 수 있게 했다.
+  - OCR/VLM 후보와 final title이 충돌하면 `vlm_ocr_title_conflict_with_final_title`, 안정 alias/official 근거가 있으면 `ocr_title_conflict_with_stable_alias`를 구조 flag로 남긴다.
+  - post id, `빌환`, `검은 여왕의 혼성명`, `빌어먹을 환생` 문자열 하드코딩이 아니라 evidence source와 verifier/search 상태를 조건으로 둔다.
+- 검증:
+  - focused unittest `test_verifier_nullified_image_ocr_title_yields_to_stable_alias_canonical_rescue`: OK.
+  - 관련 focused unittest 5건 OK.
+  - `py_compile src\llm_batch\agentic_pipeline.py tests\test_agentic_pipeline_rework.py`: OK.
+  - v250 live canary `run_id=20260530_061916_614682`: `11718099`가 잘못 `official_title=검은 여왕의 혼성명`, `heretic_url=null`로 끝나는 회귀를 확인했다.
+  - 브라우저 실제 확인: `qualitative_review\20260528_141006_620986\v251_post11718099_browser_actual.png`. 이미지 로딩 완료 화면 기준으로 VLM/OCR title은 Strong evidence가 아니라 conflict evidence다.
+  - v251 live canary `run_id=20260530_063929_178214`: `requested_parallel=36`, `effective_parallel=4`, `completed/failed/pending=4/0/0`, `vlm_enabled=true`, `ocr_enabled=true`, small-run shard lifecycle blocked.
+  - v251 `11718099`: `official_title=빌어먹을 환생`, `heretic_url=https://m.munpia.com/novel/detail/222360`, flags `vlm_ocr_title_conflict_with_final_title`, `ocr_title_conflict_with_stable_alias`.
+  - v251 실런의 직접 회복 로그는 `batch_memory_exact_alias_rescued` 경로다. 새 weak-image canonical rescue branch 자체는 focused unittest로 증명했고, live 케이스에서는 conflict flag와 batch-memory alias rescue가 최종 회복을 담당했다.
+- 남은 작업:
+  - expanded high-risk review에서 `search_absent_verified_title + direct_image_title`, `vlm_ocr_title_conflict_with_stable_alias`, `image_only_title_no_official_evidence`를 별도 bucket으로 과표집한다.
+  - `BatchMem: 약칭 즉시등록 '검은 여왕의 혼성명' -> '검은 여왕의 혼성명'`처럼 OCR-only/title-identical alias가 메모리에 저장되는 경로를 별도 오염 후보로 본다.
+  - 브라우저 이미지 로딩 실패나 lazy-load 상태에서 text-only 판단으로 넘어간 packet은 `REPROCESS` 또는 `browser_visual_review` action으로 보낸다.
+  - v251도 targeted canary다. 10만 건 semantic approval은 expanded random/high-risk review 전까지 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260530-159 - 친구/한탄형 장르 잡담도 검색 전 의미 재독해로 낮춤 v248/v249
+
+- 상태: patched / focused unittest verified / live vLLM canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `src\llm_batch\experts\discourse.py`
+  - `tests\test_agentic_pipeline_rework.py`
+  - `qualitative_review\20260528_141006_620986\v248_post11718080_social_lament_semantic_result.json`
+  - `qualitative_review\20260528_141006_620986\v248_post11718080_social_lament_semantic_result_manifest.json`
+  - `qualitative_review\20260528_141006_620986\v249_post11718080_social_lament_broadened_result.json`
+  - `qualitative_review\20260528_141006_620986\v249_post11718080_social_lament_broadened_result_manifest.json`
+  - `logs\expert_run_20260530_060425_880984.log`
+  - `logs\expert_run_20260530_061108_125280.log`
+- 우선순위: P1 semantic-understanding, P1 no-hardcoding, P2 search-cost-reduction
+- Type: semantic-seed-review / social-lament / genre-generalization / no-hardcoding
+- 문제:
+  - `23센줄`은 `23세인 줄` 오타/축약으로 읽는 게 맞고, 이미 `discourse_semantic_seed_guard`가 검색 전 의미 재독해를 수행한다.
+  - 그러나 `11718080`처럼 `소설 보는 친구 있으면 좋음`, `밥 먹으며 TS/갈드컵 얘기` 계열은 특정 작품 찾기가 아니라 사회적 한탄/장르 잡담인데, 1차 Discourse가 `discuss_genre`로 맞게 보더라도 `ts`, `갈드컵`이 title/search seed로 남아 검색 비용과 오매칭 위험을 만들 수 있었다.
+  - 사용자가 지적한 것처럼 이 유형은 기계적 단어 검색보다 원문 의도를 한 번 더 읽어야 하는 문제다.
+- 조치:
+  - `DiscourseAnalyzer._is_social_lament_or_generic_discourse_context()`를 추가했다.
+  - 소설/웹소/TS/갈드컵 같은 일반 문맥어와 친구/밥/같이/토론/한탄 신호가 함께 있고, 기억 회수/작품 찾기 신호가 없으면 검색 전 semantic seed review를 한 번 더 실행한다.
+  - v249에서 이 trigger를 seed가 아예 없는 경우에만 쓰지 않고, `title_novel_terms`나 `search_suggestions`가 이미 있어도 독립적으로 적용되게 확장했다.
+  - `discourse_semantic_seed_guard` 프롬프트에 `소설 보는 친구 있으면 좋음`, `밥 먹으며 TS/갈드컵 얘기할 친구`는 단일 작품 찾기보다 사회적 한탄/장르 잡담일 수 있다는 규칙을 추가했다.
+  - 특정 post id, `11718080`, `23센줄`, `ts`, `갈드컵` 하드코딩이 아니라 공개 텍스트의 사회적 한탄/장르 일반론 패턴으로 트리거한다.
+- 검증:
+  - 새 테스트 `test_social_lament_genre_discourse_runs_semantic_review_once_more`: OK.
+  - 새 테스트 `test_social_lament_review_runs_even_with_non_short_generic_seed`: OK.
+  - 기존 context-only 의미 재독해 테스트 2건과 함께 focused unittest 4건 OK.
+  - `py_compile src\llm_batch\experts\discourse.py tests\test_agentic_pipeline_rework.py`: OK.
+  - v248 live canary `run_id=20260530_060425_880984`: `requested_parallel=36`, `effective_parallel=1`, `completed/failed/pending=1/0/0`, VLM/OCR on, small targeted run shard lifecycle blocked.
+  - v248 `11718080`: 1차 Discourse의 `title_novel_terms=["ts","갈드컵"]`, `search_suggestions=["ts 갈드컵 소설"]`이 semantic seed review 후 `[]`로 제거됐다.
+  - v249 live canary `run_id=20260530_061108_125280`: 1차 Discourse의 `title_novel_terms=["소설"]`, `search_suggestions=["TS 주류 소설","갈드컵 TS 소설"]`이 semantic seed review 후 `[]`로 제거됐다.
+  - 최종 `11718080`: `official_title=null`, `is_relevant=false`, `is_novel_related=true`, `is_resolved_work_discussion=false`, `discussion_type=trope_discussion`, `work_resolution=none`, `title_resolution_allowed=false`.
+- 남은 작업:
+  - expanded high-risk review에서 `friend_social_lament_or_generic_discourse`, `semantic_seed_review_specific_work_denied`, `genre_trope_discussion`을 같이 과표집한다.
+  - 10만 건 semantic approval은 이번 targeted canary가 아니라 expanded random/high-risk review가 끝날 때까지 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260530-158 - 익명 author/IP 댓글 대화 맥락 오분류 방지 v246
+
+- 상태: patched / focused unittest verified / compile verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `src\llm_batch\models.py`
+  - `src\llm_batch\agentic_pipeline.py`
+  - `expert_main.py`
+  - `tests\test_agentic_pipeline_rework.py`
+  - `qualitative_review\20260528_141006_620986\v246_comment_author_ip_dialogue_guard_summary_ko.md`
+  - `tools\build_qualitative_round2_review.py`
+  - `qualitative_review\20260528_141006_620986\v247_comment_dialogue_bucket_preflight.json`
+  - `qualitative_review\20260528_141006_620986\v247_comment_dialogue_bucket_preflight_ko.md`
+- 우선순위: P1 comment-dialogue-context, P1 semantic-understanding, P2 no-hardcoding
+- Type: comment-author-ip / dialogue-context / post-author-role / no-hardcoding
+- 문제:
+  - DC 댓글에서는 `ㅇㅇ` 같은 익명 author가 여러 사용자에게 반복될 수 있다.
+  - 기존 메타 구성은 comment `author`가 post `author`와 같으면 `post_author`로 분류했기 때문에, post IP와 다른 `ㅇㅇ` 댓글도 원글 작성자의 이어쓰기처럼 프롬프트에 들어갈 위험이 있었다.
+  - 이 오분류는 `11718091`류 짧은 감상/댓글 유추 케이스에서 독립 댓글 근거와 원글 작성자 보충 발화를 혼동하게 만든다.
+- 조치:
+  - `PostInput`에 `ip`, `author_ip`, `post_ip`를 추가해 입력에 존재하는 post IP를 보존한다.
+  - `expert_main.py`가 `ip/author_ip/post_ip/writer_ip` 계열 필드를 `PostInput`으로 전달한다.
+  - `AgenticPipeline._post_to_dict()`가 `post_ip`를 공개 packet에 남긴다.
+  - `comment_metadata` speaker 계산에서 익명/공통 author는 IP가 있으면 `author+ip` 단위로 분리한다.
+  - post IP와 comment IP가 모두 있고 서로 다르면, `ㅇㅇ` 같은 익명 author match만으로 `role=post_author`를 부여하지 않는다.
+  - Round 2 qualitative review bucket에 `comment_author_ip_mismatch_dialogue`, `post_author_comment_not_independent_evidence`, `comment_answer_side_conversation`을 추가했다.
+  - packet의 `prompt_public_fields`/`result_public_fields`/`evidence_counts`에 `post_ip`와 comment author/IP mismatch count를 노출한다.
+- 검증:
+  - 새 테스트 `test_anonymous_comment_author_uses_ip_before_post_author_role`: OK.
+  - 기존 `test_pipeline_preserves_comment_author_ip_context_separately_from_text`: OK.
+  - 의미 재독해 연결 테스트 `test_semantic_seed_review_demotes_short_banter_terms_before_search`: OK.
+  - 같은 작성자 댓글이 독립 근거가 아님을 보는 `test_character_age_banter_same_author_comment_does_not_use_search_character_link_as_anchor`: OK.
+  - `py_compile src\llm_batch\models.py src\llm_batch\agentic_pipeline.py expert_main.py tests\test_agentic_pipeline_rework.py`: OK.
+  - `tests.test_qualitative_review_packet_tools`: OK, 21 tests.
+  - `py_compile tools\build_qualitative_round2_review.py tools\preflight_qualitative_large_scale_review.py tests\test_qualitative_review_packet_tools.py`: OK.
+  - v247 preflight on original partial source: gate `REVIEW-LOCKED`; `comments_without_author_metadata=55`, `comment_speaker_context_unavailable=55`, `comment_author_ip_mismatch_dialogue=0`, `post_author_comment_not_independent_evidence=0`, `comment_answer_side_conversation=0`.
+- 남은 작업:
+  - 실제 10만 completed source 또는 expanded review packet에서 `post_ip`, `comment_metadata.ip`, `speaker=post_author` 분포를 별도 bucket으로 감사한다. v247 원본 partial source는 post IP coverage가 부족해 mismatch 후보를 증명하지 못했다.
+  - 익명 author + IP mismatch 댓글이 final title rescue 근거로 쓰인 케이스는 `comment_author_ip_mismatch_dialogue` high-risk bucket으로 재검토한다.
+  - targeted deterministic guard이므로 10만 건 semantic gate는 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260530-157 - title-null 문맥의 reason scoreboard 앵커 과장 방지 v245
+
+- 상태: patched / focused unittest verified / compile verified / live vLLM VLM-OCR canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v244_post11718089_author_scope_result.json`
+  - `qualitative_review\20260528_141006_620986\v244_post11718089_author_scope_result_manifest.json`
+  - `logs\expert_run_20260530_045640_988000.log`
+  - `qualitative_review\20260528_141006_620986\v245_post11718089_scoreboard_guard_result.json`
+  - `qualitative_review\20260528_141006_620986\v245_post11718089_scoreboard_guard_result_manifest.json`
+  - `logs\expert_run_20260530_052428_641974.log`
+  - `qualitative_review\20260528_141006_620986\v245_author_newwork_scoreboard_guard_summary_ko.md`
+- 우선순위: P2 review-signal-quality, P2 reason-evidence-alignment
+- Type: reason-scoreboard / title-null-evidence-alignment / no-hardcoding
+- 문제:
+  - v244 `11718089`는 final identity가 `official_title=null`, `is_relevant=false`, `title_resolution_state=author_new_work_context`, `title_resolution_allowed=false`로 맞았지만, reason scoreboard가 `grounding_anchor: +2 (강한 앵커(plot_mention))`를 남겼다.
+  - 이는 최종 판정이 title-null인데도 리뷰어에게 "강한 작품명 확정 근거가 있다"처럼 보이게 하는 공개 reason 품질 문제다.
+- 조치:
+  - `official_title`이 없으면 `plot_mention/character_title_link/character_mention/author_mention`을 title 확정용 강한 앵커로 표시하지 않는다.
+  - `is_relevant=false` + title-null이면 `grounding_anchor: +0 (작품명 확정에는 쓰지 않는 맥락 앵커(...))`로 표시한다.
+  - `is_relevant=true` + title-null이면 작품 관련 맥락은 인정하되 `정식 제목 미확정`이라고 명시한다.
+- 검증:
+  - 새 테스트 `test_scoreboard_does_not_call_plot_anchor_strong_when_title_blocked`: OK.
+  - author/new-work scope, polluted batch alias block, semantic context-only, unresolved relevant reason regression 포함 focused unittest 5건 OK.
+  - `py_compile` OK.
+  - v245 live canary: `run_id=20260530_052428_641974`, `requested/effective parallel=36/1`, `completed/failed/pending=1/0/0`, VLM/OCR on, Docker lifecycle false.
+  - v245 `11718089`: `official_title=null`, `is_relevant=false`, `work_resolution=none`, `title_resolution_state=author_new_work_context`, `title_resolution_allowed=false`, score line `grounding_anchor: -2 (약한 앵커(search_only))`.
+  - log에서 `rescue blocked ... deliberate_null_nonwork_context`, `Slang DB flush ... buffered_observations=0, titles=0`을 확인했다.
+- 남은 작업:
+  - expanded review에서 `title_resolution_allowed=false`인데 scoreboard가 positive strong evidence처럼 보이는 케이스를 별도 bucket으로 스캔한다.
+  - 10만 건 semantic gate는 expanded random/high-risk review 전까지 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260530-156 - author/new-work 문맥의 후단 alias rescue 비단조 차단 v243
+
+- 상태: patched / focused unittest verified / live vLLM VLM-OCR canary verified / slang_db pollution cleaned / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v243_post11718089_input.jsonl`
+  - `qualitative_review\20260528_141006_620986\v243_post11718089_author_newwork_alias_block_result.json`
+  - `qualitative_review\20260528_141006_620986\v243_post11718089_author_newwork_alias_block_result_manifest.json`
+  - `logs\expert_run_20260530_042526_026150.log`
+- 우선순위: P1 non-monotonic-rescue, P1 slang-db-pollution, P2 semantic-orchestration-cost
+- Type: author-new-work-alias / deliberate-null-monotonicity / no-hardcoding
+- 문제:
+  - v242 `11718089`는 Discourse/Arbiter가 `discuss_genre(high)`와 `official_title=null`을 이미 결론냈지만, 후단 BatchContext/search alias rescue가 `개돌 -> 파벨 주니어`를 다시 `resolved`로 승격했다.
+  - `개돌 신작 ...`, 댓글 `개돌 대체 뭘쓰고...`의 `개돌`은 작가/별명 + 신작 문맥으로 읽어야지, 단일 작품 alias 관측으로 저장하면 안 된다.
+  - v242 run이 `slang_db`에 `개돌 -> 파벨 주니어` 오염 entry를 남겼다.
+- 조치:
+  - `AgenticPipeline._collect_author_new_work_alias_surfaces()`를 추가해 `[작성자/별명] 신작`, `[별명] 대체 뭘 쓰...` 같은 author/new-work 표면을 추출한다.
+  - `search_evidence_alias_inference`와 기존 `batch_memory` hit가 author/new-work 표면에 걸리면 공식 detail URL이 있어도 alias rescue를 차단한다.
+  - Arbiter의 deliberate null, `multi_work_guard`, `discuss_genre/trope/community/no_work_anchor` 경고가 있고 직접 title/강한 캐릭터-작품 edge/snippet alias lock이 없으면 검색 추정 alias rescue를 차단한다.
+  - 차단 결과를 `batch_memory_alias_rescue_blocked_nonwork_context`, `batch_memory_alias_rescue_blocked_author_new_work`, `batch_memory_alias_rescue_blocked_deliberate_null` flags로 남긴다.
+  - v242가 만든 `slang_db` 오염 bucket `파벨 주니어 / 개돌`을 제거했다.
+- 검증:
+  - focused unittest 5건 OK.
+  - 새 테스트 `test_author_new_work_search_inferred_alias_does_not_override_null_title`, `test_author_new_work_polluted_batch_alias_is_blocked_before_rescue`, `test_author_new_work_alias_block_survives_context_to_output`을 추가했다.
+  - `test_topic_particle_title_lead_alias_can_be_search_inferred`, `test_batch_alias_rescue_clears_stale_demotions`로 정상 alias rescue 회귀를 함께 확인했다.
+  - `py_compile` OK.
+  - v243 live canary: `run_id=20260530_042526_026150`, `input_post_count=1`, `requested/effective parallel=36/1`, `completed/failed/pending=1/0/0`, VLM/OCR on, Docker lifecycle false.
+  - v243 `11718089`: `official_title=null`, `is_relevant=false`, `discussion_type=noise`, `topicality=unrelated`, `work_resolution=none`, `title_resolution_allowed=false`, flags `batch_memory_alias_rescue_blocked_nonwork_context`, `batch_memory_alias_rescue_blocked_deliberate_null`.
+  - log에서 `arbiter deliberate null title`, `suspected canonical rescue 차단`, `rescue blocked: search-inferred batch alias ... deliberate_null_nonwork_context`, `Slang DB flush ... buffered_observations=0`을 확인했다.
+- 남은 작업:
+  - `title_resolution_state=unresolved_matchable`은 이번 post가 "작가 신작/장르 클리셰 글이지만 특정 작품명 미확정"으로 남은 결과라, `author_new_work_context` 별도 scope enum이 필요한지 expanded review에서 판단한다.
+  - `개돌 신작` 같은 author/new-work 표면은 expanded high-risk review에서 `author_new_work_alias_rescue_blocked` bucket으로 과표집한다.
+  - targeted canary 성공만으로 10만 건 semantic gate를 올리지 않는다.
+
+## IMP-20260530-155 - `23센줄`류 의미 재독해 결과를 final scope field까지 반영 v240
+
+- 상태: patched / focused unittest verified / known-bad 4건 VLM-OCR canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v240_known_bad_4_context_only_scope_result.json`
+  - `qualitative_review\20260528_141006_620986\v240_known_bad_4_context_only_scope_result_manifest.json`
+  - `qualitative_review\20260528_141006_620986\v240_context_only_scope_summary_ko.md`
+  - `qualitative_review\20260528_141006_620986\v240_original_out_partial_pattern_scan_summary_ko.md`
+  - `logs\expert_run_20260530_032804_873598.log`
+  - `logs\expert_run_20260530_032804_873598_W1.log`
+- 우선순위: P1 semantic-scope-field, P1 no-work-anchor, P2 review-signal-quality
+- Type: semantic-seed-review / context-only-resolution-state / no-hardcoding
+- 문제:
+  - v239 `11718091`은 `23센줄 -> 23세인 줄` 자연어 재독해와 `official_title=null`은 맞았지만, final `title_resolution_state=unresolved_matchable`이 남아 "아직 찾을 수 있는 작품 미해결 후보"처럼 보였다.
+  - 사용자가 지적한 대로 이 유형은 검색을 더 돌릴 문제가 아니라, 원문이 캐릭터 나이/외모 감상인지 먼저 이해하고 작품 seed가 아니라고 공개 필드에 남겨야 하는 문제다.
+- 조치:
+  - `title_resolution_state` enum에 `context_only`를 추가했다.
+  - `semantic_seed_review(no_work_anchor)` 또는 seed review warning이 "작품 seed가 아닌 문맥 표현"을 가리키고 title/직접 작품 앵커가 없으면 `unresolved_matchable` 대신 `context_only`로 둔다.
+  - 약한 캐릭터 나이/외모 반응 차단 경로에 `context_only_no_work_anchor` flag를 추가했다.
+  - 특정 post id, `은영`, `23센줄` 하드코딩이 아니라 `semantic_seed_review`의 공개 판단과 no-work-anchor 상태를 final scope에 반영하는 구조 보강이다.
+- 검증:
+  - focused unittest 4건 OK.
+  - 새 테스트 `test_semantic_seed_context_only_scope_is_not_unresolved_matchable`은 novel_literature domain이라도 no-work-anchor semantic demotion이면 `title_resolution_state=context_only`가 되는지 확인한다.
+  - `py_compile` OK.
+  - v240 known-bad 4건 live canary: `run_id=20260530_032804_873598`, `input_post_count=4`, `requested/effective parallel=36/4`, `completed/failed/pending=4/0/0`, VLM/OCR on, Docker lifecycle false.
+  - v240 `11718091`: `official_title=null`, `discussion_type=noise`, `topicality=unrelated`, `work_resolution=none`, `title_resolution_state=context_only`, `title_resolution_allowed=false`, flags `context_only_no_work_anchor`.
+  - W1 log에서 `discourse_semantic_seed_guard`, `semantic seed demotion 조기종료`, `title_resolution_state=context_only`를 확인했다.
+  - v240 `11718083=null/unresolvable_memory_query`, `11718097=망겜의 힐러`, `11718099=빌어먹을 환생`도 유지됐다.
+- 남은 작업:
+  - `context_only_no_work_anchor`, `semantic_seed_review_specific_work_denied`, `weak_character_reaction_unresolved_blocked`를 expanded high-risk review bucket에 포함한다.
+  - v240도 targeted canary이므로 10만 건 semantic approval은 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260530-154 - 문피아 모바일 브랜딩 title을 URL-title mismatch로 오인하지 않도록 보강 v239
+
+- 상태: patched / focused unittest verified / known-bad 4건 VLM-OCR canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v239_known_bad_4_after_branding_url_patch_result.json`
+  - `qualitative_review\20260528_141006_620986\v239_known_bad_4_after_branding_url_patch_result_manifest.json`
+  - `logs\expert_run_20260530_031006_533601.log`
+  - `logs\expert_run_20260530_031006_533601_W2.log`
+- 우선순위: P1 evidence-alignment, P2 platform-fetch-noise, P2 review-signal-quality
+- Type: platform-branding-title / official-url-fetch-mismatch / no-hardcoding
+- 문제:
+  - v237 `11718097`은 최종 title과 URL이 `망겜의 힐러`로 맞았지만, `m.munpia.com/novel/detail/328421` 직접 fetch가 `<title>` 계열 브랜딩 문구 `웹소설의 유토피아, 글세상 문피아`를 읽어 `heretic_url 제목 불일치` 경고를 냈다.
+  - 실제 검색 evidence는 같은 URL을 `망겜의 힐러 - 문피아 웹소설 - Munpia`로 지지하고 있었으므로, 이 경고는 URL 오류라기보다 플랫폼 브랜딩 title 파서 노이즈에 가깝다.
+  - 이런 false mismatch 로그는 리뷰어가 "작품 URL이 틀렸다"고 오판할 수 있게 만든다.
+- 조치:
+  - `_is_platform_branding_title()`가 `웹소설의 유토피아, 글세상 문피아`류 문피아 브랜딩 title을 platform branding으로 인식하게 했다.
+  - `_fetch_and_attach_page_info()`의 fetched-title mismatch 검사에서 platform branding/listing/generic title은 mismatch로 세지 않도록 했다.
+  - `_collect_heretic_url_support_titles()`에서도 같은 브랜딩 title이 대표 support title로 섞이지 않음을 회귀 테스트로 고정했다.
+  - 특정 post id나 `망겜힐` 하드코딩이 아니라, 플랫폼 브랜딩 title과 search result title evidence를 분리하는 구조 보강이다.
+- 검증:
+  - focused unittest 4건 OK.
+  - 새 테스트 `test_munpia_branding_title_is_not_url_title_mismatch_signal`은 문피아 브랜딩 title을 platform branding으로 보고 support title에서 제외하는지 확인한다.
+  - `test_nonmatching_ocr_title_sets_structured_conflict_flags`, `test_non_relevant_reason_exposes_age_typo_surface_reading`, `test_batch_memory_exact_alias_rescue_recovers_official_url`도 함께 통과했다.
+  - `py_compile` OK.
+  - v239 동일 known-bad 4건 live canary: `run_id=20260530_031006_533601`, `input_post_count=4`, `requested/effective parallel=36/4`, `completed/failed/pending=4/0/0`, VLM/OCR on, Docker lifecycle false.
+  - v239 `11718083`: `official_title=null`, `is_novel_related=true`, `is_resolved_work_discussion=false`, `title_resolution_state=unresolvable_memory_query`, `title_resolution_allowed=false`.
+  - v239 `11718091`: `official_title=null`, `discussion_type=noise`, `title_resolution_state=unresolved_matchable`, `title_resolution_allowed=false`, reason tail에 `23센줄` 계열이 작품명/별칭이 아니라고 남음.
+  - v239 `11718097`: `official_title=망겜의 힐러`, `heretic_url=https://novel.munpia.com/328421`, 댓글 metadata/dialogue 5건 보존, W2 log에서 `heretic_url 제목 불일치`와 `웹소설의 유토피아` 경고 검색 결과 없음.
+  - v239 `11718099`: `official_title=빌어먹을 환생`, `heretic_url=https://novel.munpia.com/222360`, flags `vlm_ocr_title_conflict_with_final_title`, `ocr_title_conflict_with_stable_alias`.
+- 남은 작업:
+  - `11718097`은 targeted 기준 `ACCEPT`에 가까우나, 대형 리뷰에서는 `platform_branding_fetch_title`, `official_url_fetch_title_mismatch_false_positive` bucket으로 더 넓게 확인한다.
+  - v239도 targeted canary이므로 10만 건 semantic approval은 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260530-153 - VLM/OCR 표지 title 충돌을 구조 flag로 노출 v238
+
+- 상태: patched / focused unittest verified / live VLM-OCR canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v238_post11718099_ocr_conflict_flags_result.json`
+  - `qualitative_review\20260528_141006_620986\v238_post11718099_ocr_conflict_flags_result_manifest.json`
+  - `logs\expert_run_20260530_025454_691972.log`
+- 우선순위: P1 semantic-evidence-alignment, P1 VLM-OCR-conflict-bucket, P2 review-artifact-quality
+- Type: vlm-ocr-title-conflict / structured-risk-flag / no-hardcoding
+- 문제:
+  - v237 `11718099`는 final reason에서 "이미지 OCR/표지 후보가 최종 제목과 일치하지 않아 보조 제목 근거로 사용하지 않는다"고 설명했지만, `identity.consistency_flags`는 비어 있었다.
+  - 자연어 reason에만 충돌이 남으면 10만 건 정성 리뷰 builder가 위험 bucket을 구조적으로 과표집하기 어렵다.
+  - 사용자가 지적한 `23센줄 -> 23세인 줄`류도 같은 원칙이다. 사람이 읽어야 하는 의미 해석은 reason에 남기되, 대규모 검토에서는 구조 flag로 다시 잡혀야 한다.
+- 조치:
+  - `AgenticPipeline._image_grounding_mismatch_flags()`를 추가했다.
+  - VLM/OCR 직접 title 후보가 final `official_title`과 normalized/similar match되지 않으면 `vlm_ocr_title_conflict_with_final_title`를 남긴다.
+  - final title이 locked official/detail 또는 안정 alias 후보로 뒷받침되면 `ocr_title_conflict_with_stable_alias`도 함께 남긴다.
+  - `image_grounding_note`를 reason에 붙이는 시점에 같은 구조 flag를 `extended_identity.consistency_flags`에 병합한다.
+  - 특정 post id, `빌환`, `붉여먹을 혼성명`, `빌어먹을 환생` 하드코딩이 아니라 "이미지 direct title 후보와 final title의 불일치 + 별도 안정 title 근거" 조건으로 처리했다.
+- 검증:
+  - focused unittest 4건 OK.
+  - 새 테스트 `test_nonmatching_ocr_title_sets_structured_conflict_flags`는 OCR 후보 `붉여먹을 혼성명`과 final title `빌어먹을 환생`이 충돌할 때 두 구조 flag가 생성되는지 확인한다.
+  - `test_non_relevant_reason_exposes_age_typo_surface_reading`도 함께 통과해 `23센줄 -> 23세인 줄` 자연어 재독해 reason이 유지됨을 재확인했다.
+  - `py_compile` OK.
+  - v238 단건 live canary: `run_id=20260530_025454_691972`, `input_post_count=1`, `requested/effective parallel=36/1`, `completed/failed/pending=1/0/0`, VLM/OCR on, Docker lifecycle false.
+  - v238 `11718099`: `official_title=빌어먹을 환생`, `heretic_url=https://novel.munpia.com/222360`, `consistency_flags`에 `vlm_ocr_title_conflict_with_final_title`, `ocr_title_conflict_with_stable_alias`가 남았다.
+  - log line `2880` active-learning queue에도 동일 flag가 적재됐다.
+- 남은 작업:
+  - Arbiter/Verifier 중간 reasoning은 여전히 OCR 후보를 강하게 말할 수 있으므로, 대규모 정성 리뷰에서는 final identity뿐 아니라 중간 expert output의 OCR 과확정도 별도 HOLD bucket으로 본다.
+  - `vlm_ocr_title_conflict_with_final_title`, `ocr_title_conflict_with_stable_alias`는 high-risk expansion bucket에 포함한다.
+  - targeted canary 성공만으로 10만 건 semantic gate를 올리지 않는다.
+
+## IMP-20260530-152 - batch memory exact alias rescue 이후 공식 URL/evidence 누락 방지 v237
+
+- 상태: patched / focused unittest verified / same-batch VLM-OCR canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v236_post11718099_batch_alias_url_result.json`
+  - `qualitative_review\20260528_141006_620986\v236_post11718099_batch_alias_url_result_manifest.json`
+  - `qualitative_review\20260528_141006_620986\v237_known_bad_4_after_batch_alias_url_patch_result.json`
+  - `qualitative_review\20260528_141006_620986\v237_known_bad_4_after_batch_alias_url_patch_result_manifest.json`
+  - `logs\expert_run_20260530_023033_856559.log`
+  - `logs\expert_run_20260530_023511_350246.log`
+  - `logs\expert_run_20260530_023511_350246_W3.log`
+- 우선순위: P1 evidence-alignment, P1 batch-memory-rescue, P2 VLM-OCR-conflict
+- Type: batch-memory-exact-alias-url-recovery / reason-evidence-sync / no-hardcoding
+- 문제:
+  - v235 동일 4건 targeted run에서 `11718099`는 `빌환 -> 빌어먹을 환생` title은 회복했지만 `heretic_url=null`, `official_title_evidence=false`, `official_urls=0`이 남을 수 있었다.
+  - 이 경로는 v234의 stable alias conflict/canonical base correction과 다르게, `batch_memory_exact_alias_rescued` 일반 경로에서 URL이 비어도 corrected title URL recovery를 호출하지 않았기 때문이다.
+  - VLM/OCR은 표지 제목을 `붉여먹을 혼성명`처럼 오독할 수 있으므로, 이미지 후보는 최종 title과 직접 일치하지 않으면 보조 근거로만 둬야 한다.
+- 조치:
+  - `AgenticPipeline`의 `batch_memory_exact_alias_rescued` 경로에 `_recover_corrected_title_official_url()` 호출을 추가했다.
+  - 안정 alias 후보에 URL이 없고 final title이 alias로 회복되면 corrected title 기준의 짧은 official URL recovery를 수행한다.
+  - URL이 회복되면 candidate, `primary_work`, `heretic_url`, `source_tier=official_detail`, `page_type=novel_page`를 함께 동기화한다.
+  - 회귀 flag `batch_memory_alias_official_url_recovered`를 추가했다.
+  - 특정 post id, `빌환`, `빌어먹을 환생` 하드코딩 없이 "확정 alias 후보 + 비어 있는 URL + corrected title official detail URL" 조건으로 처리했다.
+- 검증:
+  - focused unittest 4건 OK.
+  - 새 테스트 `test_batch_memory_exact_alias_rescue_recovers_official_url`은 `batch_memory_exact_alias_rescued` 후 URL이 비어 있을 때 `https://novel.munpia.com/222360`을 회복하고 `official_urls=1`로 reason이 동기화되는지 확인한다.
+  - `py_compile` OK.
+  - v236 단건 live canary: `completed/failed/pending=1/0/0`, `requested/effective parallel=36/1`, VLM/OCR on, Docker lifecycle false. 최종 `11718099`: `official_title=빌어먹을 환생`, `heretic_url=https://novel.munpia.com/222360`, `official_title_evidence=true`, `official_urls=4`.
+  - v237 동일 4건 live canary: `completed/failed/pending=4/0/0`, `requested/effective parallel=36/4`, VLM/OCR on, image post 3건, Docker lifecycle false. 최종 `11718099`: `official_title=빌어먹을 환생`, `heretic_url=https://novel.munpia.com/222360`, `official_title_evidence=true`, `official_urls=1`.
+  - v237 `11718091`도 `23센줄 -> 23세인 줄`, `작품 seed 제외: 23센줄, 은영`, `title_resolution_allowed=false`를 유지했다.
+- 남은 작업:
+  - v236/v237 live에서는 정상 검색/Verifier 경로가 먼저 URL을 확보해 새 `batch_memory_alias_official_url_recovered` flag는 뜨지 않았다. 이 특정 rescue branch 자체는 focused unittest가 구조적으로 검증한다.
+  - VLM/OCR 표지 후보 `붉여먹을 혼성명`은 최종 title과 불일치하므로 Strong title evidence가 아니라 conflict/weak visual evidence로 계속 리뷰한다.
+  - `batch_memory_exact_alias_missing_url`, `batch_memory_alias_official_url_recovered`, `ocr_title_conflict_with_stable_alias` bucket을 expanded high-risk review에 포함한다.
+  - targeted canary 성공만으로 10만 건 semantic gate를 올리지 않는다.
+
+## IMP-20260530-151 - late title correction 이후 공식 URL/evidence 회복 v234
+
+- 상태: patched / focused unittest verified / live VLM-OCR canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v234_post11718075_11718077_alias_url_fallback_result.json`
+  - `qualitative_review\20260528_141006_620986\v234_post11718075_11718077_alias_url_fallback_result_manifest.json`
+  - `qualitative_review\20260528_141006_620986\v234_post11718075_11718077_alias_url_fallback_summary_ko.md`
+  - `logs\expert_run_20260530_015610_155152.log`
+- 우선순위: P1 evidence-alignment, P1 non-monotonic-rescue, P2 official-url-recovery
+- Type: corrected-title-url-recovery / reason-evidence-sync / generic-search-title-snippet-match / no-hardcoding
+- 문제:
+  - v230에서 `11718077`의 title은 `즉사기 들고 무림에 떨어지다`로 교정됐지만 `heretic_url=null`, `official_title_evidence=false`가 남았다.
+  - late title correction 후 공식 URL/evidence를 다시 찾지 않으면, 실제 title은 맞아도 evidence grade가 낮고 reason의 `official_urls=0` 같은 counter가 final URL 상태와 어긋날 수 있다.
+  - 검색 결과 title이 `네이버 시리즈`, `novel.munpia.com`처럼 generic하게 보일 수 있어, result title만 보면 실제 작품 상세 URL을 놓친다.
+- 조치:
+  - `AgenticPipeline._recover_corrected_title_official_url()`를 추가해 late-corrected title 기준의 짧은 공식 URL 회복 검색을 수행한다.
+  - `stable_alias_conflict_corrected`와 canonical base correction 경로에서 corrected title URL recovery를 호출한다.
+  - `_find_title_matched_official_url()`가 검색 결과 title뿐 아니라 snippet/content/description에 있는 strict title match도 본다.
+  - URL validator가 실패하더라도, 공식 플랫폼 상세 URL이고 snippet/content가 corrected title을 직접 포함하면 `source=title_matched_search`, `validated=false`로 보수적으로 회복한다.
+  - final `reason`의 `official_title_evidence`와 `official_urls` 요약을 실제 final URL/candidate evidence 상태와 동기화한다.
+  - 특정 post id, `즉사무림`, `즉사기 들고 무림에 떨어지다` 하드코딩 없이 late-corrected-title + official detail URL 조건으로 처리했다.
+- 검증:
+  - focused unittest 9건 OK.
+  - `py_compile` OK.
+  - v234 live canary: `completed/failed/pending=2/0/0`, `requested/effective parallel=36/2`, VLM/OCR on, Docker lifecycle false.
+  - 로그에서 `corrected title URL recovery: title='즉사기 들고 무림에 떨어지다', alias='즉사무림', url='https://series.naver.com/novel/detail.series?productNo=14041321', validated=false, source=title_matched_search`를 확인했다.
+  - 최종 `11718077`: `official_title=즉사기 들고 무림에 떨어지다`, `heretic_url=https://series.naver.com/novel/detail.series?productNo=14041321`, `confidence=High`, flags `official_detail_url_repaired_from_search`, `stable_batch_alias_conflict_corrected`, `stable_alias_official_url_recovered`.
+  - reason은 `official_title_evidence: true`, `official_urls=1`로 동기화됐고 `official_urls=0` 불일치는 사라졌다.
+- 남은 작업:
+  - `validated=false` 회복은 title-matched official detail evidence로 보되, validator/fetch 확인이 빠진 경우 evidence grade를 과하게 `Strong`으로 승격하지 않는다.
+  - `corrected_title_official_url_recovery`, `reason_official_url_summary_sync`, `generic_search_title_snippet_match` bucket을 expanded high-risk review에 포함한다.
+  - 10만 건 semantic gate는 expanded random/high-risk review 전까지 `REVIEW-LOCKED`로 둔다.
+
+## IMP-20260530-150 - 안정 slang/BatchContext alias가 느슨한 검색 title을 이기도록 보정 v230
+
+- 상태: patched / focused unittest verified / live VLM-OCR canary verified / official URL follow-up closed by IMP-20260530-151 / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v230_post11718075_11718077_alias_conflict_result.json`
+  - `qualitative_review\20260528_141006_620986\v230_post11718075_11718077_alias_conflict_result_manifest.json`
+  - `qualitative_review\20260528_141006_620986\v230_post11718075_11718077_alias_conflict_summary_ko.md`
+  - `logs\expert_run_20260530_010824_738895.log`
+- 우선순위: P1 semantic-understanding, P1 non-monotonic-rescue, P1 slang-db-alias-collision
+- Type: stable-alias-conflict / loose-official-search-collision / no-hardcoding
+- 문제:
+  - `11718077`은 제목 `스포) 즉사무림 예상된 전개긴하지만`, 본문 `서무량`, `흑도애들` 등 특정 작품 전개 감상이다.
+  - `slang_db`/BatchContext에는 `즉사무림 -> 즉사기 들고 무림에 떨어지다` 안정 매핑이 이미 있었다.
+  - v229에서는 Decoder/Verifier/Synthesizer가 느슨한 검색 결과를 따라 `즉사무림 -> 즉사수선전: 선협 세계에서 즉사기로 살아남기`로 수렴했다.
+  - 더 큰 구조 문제는, 후단 보정이 이전 Decoder 오판을 다시 원문 언급 증거처럼 사용했다는 점이다. `23센줄 -> 23세인 줄`처럼 자연어 재이해를 하더라도, 그 재이해가 이전 LLM 오판을 증거로 재사용하면 같은 비단조 오류가 난다.
+- 조치:
+  - `AgenticPipeline._stable_batch_alias_conflicts_with_official_title()`의 current title 직접 언급 검사를 raw title/body/comment strict match 기준으로 바꿨다.
+  - Decoder가 만든 `original -> wrong best_match.title` 간접 매핑은 안정 alias 충돌 판단에서 원문 direct evidence로 쓰지 않는다.
+  - 안정 alias hit는 `confidence>=3` 또는 BatchContext/known abbreviation source일 때만 보정 후보가 된다.
+  - 원문에 alias가 직접 있고, canonical title이 alias chunk를 current search title보다 더 잘 설명할 때만 보정한다.
+  - 특정 post id, `즉사무림`, `즉사수선전` 하드코딩 없이 안정 alias vs loose search title 충돌 조건으로 처리했다.
+- 검증:
+  - focused unittest 3건 OK.
+  - 새 회귀 테스트는 Decoder가 `즉사무림 -> 즉사수선전`으로 이미 오판한 상태에서도 stable alias 보정이 동작하는지 확인한다.
+  - `py_compile` OK.
+  - v230 live canary: `completed/failed/pending=2/0/0`, `requested/effective parallel=36/2`, VLM/OCR on, Docker lifecycle false.
+  - 로그에서 `rescue: stable alias conflict correction alias='즉사무림', title='즉사수선전...' -> '즉사기 들고 무림에 떨어지다'`를 확인했다.
+  - 최종 `11718077`: `official_title=즉사기 들고 무림에 떨어지다`, `discussion_type=review`, `subtype=review_reaction`, `anchor_type=title_alias`, flags `stable_batch_alias_conflict_corrected`, `search_title_conflict_with_stable_alias`.
+- 남은 작업:
+  - v230 결과에서 남았던 corrected title의 `heretic_url=null`, `official_title_evidence=false` 후속은 IMP-20260530-151/v234에서 targeted 기준 닫았다.
+  - `stable_alias_conflict_corrected`, `search_title_conflict_with_stable_alias`, `corrected_alias_missing_official_url` bucket을 expanded high-risk review에 포함한다.
+  - 10만 건 semantic gate는 expanded random/high-risk review 전까지 `REVIEW-LOCKED`로 둔다.
+
+## IMP-20260530-149 - 짧은 응원/기대글의 약칭 검증 쿼리 보존 v228
+
+- 상태: patched / focused unittest verified / live VLM-OCR canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v228_post11718075_support_cheer_taxonomy_result.json`
+  - `qualitative_review\20260528_141006_620986\v228_post11718075_support_cheer_taxonomy_result_manifest.json`
+  - `qualitative_review\20260528_141006_620986\v228_post11718075_support_cheer_taxonomy_summary_ko.md`
+  - `logs\expert_run_20260530_003717_935082.log`
+- 우선순위: P1 semantic-understanding, P1 alias-recall, P2 taxonomy-consistency
+- Type: short-support-cheer / alias-probe-preservation / no-hardcoding
+- 문제:
+  - `11718075`는 제목 `이제는 죽깨수 올 때 됐다`, 본문 `가자 돌마늘!`인 짧은 응원/기대글이다.
+  - v226에서는 Discourse/Decoder가 `죽깨수 웹소설` 검증 필요를 냈지만, `association_post(title_body_mismatch)` 정합성 필터가 `죽깨수 웹소설`을 제거했다.
+  - 남은 검색이 `이제는 죽깨수 올 때 됐다 뜻`으로 미끄러져 `이제는` 노래/나무위키 evidence가 점유했다.
+  - 이 유형은 `23센줄 -> 23세인 줄`처럼 검색 차단해야 하는 오타/나이표현과 반대다. 짧은 응원/기대 화행에서는 최종 확정은 보수적으로 하더라도 compact alias 검증 쿼리는 보존해야 한다.
+- 조치:
+  - `Orchestrator._collect_short_support_alias_probe_terms()`를 추가했다.
+  - 제목의 `올 때 됐다/복귀/재개/존버/기우제`류 기대 프레임과 본문의 `가자/가즈아/드가자/레츠고/화이팅`류 응원 화행이 함께 있을 때만 제목 compact token을 검증 alias로 보존한다.
+  - 나이/오타 표면, 상태어, 일반어, 감탄어, meta action seed는 제외한다.
+  - `verification_search` 정합성 필터에서 short support alias query는 `association_post` 상태여도 제거하지 않고, `웹소설/소설/작품` suffix 쿼리를 먼저 실행한다.
+  - 복구 후 taxonomy를 `subtype=support_cheer`, `anchor_type=title_alias`, `anchor_strength=medium`으로 정렬했다.
+  - 특정 post id나 `죽깨수` 하드코딩 없이 구조 조건으로 처리했다.
+- 검증:
+  - focused unittest 3건 OK.
+  - `py_compile` OK.
+  - v228 live canary: `completed/failed/pending=1/0/0`, `requested/effective parallel=36/1`, VLM/OCR on, Docker lifecycle false.
+  - 로그에서 `죽깨수 웹소설 리뷰`, `죽깨수 웹소설 노벨피아` 계열 검색 실행을 확인했다.
+  - VLM은 이미지 1개를 반응 밈으로 판단해 작품명/작가 evidence로 과승격하지 않았다.
+  - 최종 `11718075`: `official_title=죽었다 깨어도 수선`, `is_relevant=true`, `discussion_type=anticipation`, `subtype=support_cheer`, `anchor_type=title_alias`, `anchor_strength=medium`.
+- 남은 작업:
+  - 이 케이스는 targeted action 기준 `ACCEPT`지만 evidence grade는 `Medium`이다. 본문 직접 앵커가 약하므로 expanded sample에서 `short_support_alias_probe` bucket을 확인한다.
+  - `11718077` alias collision은 v230 targeted 기준으로 닫았다. corrected title의 공식 URL/evidence 회복은 별도 후속이다.
+  - 10만 건 semantic gate는 expanded random/high-risk review 전까지 `REVIEW-LOCKED`로 둔다.
+
+## IMP-20260530-148 - seed 후보가 없어도 짧은 work 과분류를 LLM 의미 재독해로 재확인 v225
+
+- 상태: patched / focused unittest verified / live VLM-OCR canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v225_post11718091_context_only_semantic_result.json`
+  - `qualitative_review\20260528_141006_620986\v225_post11718091_context_only_semantic_result_manifest.json`
+  - `qualitative_review\20260528_141006_620986\v225_post11718091_context_only_semantic_summary_ko.md`
+  - `logs\expert_run_20260530_001113_086437.log`
+- 우선순위: P1 semantic-understanding, P1 prompt-limit-guard, P2 runtime-cost-control
+- Type: semantic-seed-review / context-only-reread / no-hardcoding
+- 문제:
+  - `23센줄`은 `23세인 줄` 오타/축약으로 읽어야 한다. 검색어 후보로 밀면 자연어 이해가 아니라 문자열 매칭이 된다.
+  - v222에서 `surface_paraphrase_notes`가 있으면 후보가 없어도 `discourse_semantic_seed_guard`가 실행되도록 했지만, 표면 note가 없는 짧은 글에서 1차 Discourse가 `discuss_work/work`로 과분류하면서 seed 후보는 비워 둔 경우에는 재독해가 생략될 수 있었다.
+  - 이 경우 후단 Gatekeeper/key_terms/search rescue가 문맥어를 다시 작품 단서처럼 되살릴 위험이 있다.
+- 조치:
+  - `DiscourseAnalyzer._should_run_semantic_seed_review()`를 보강했다.
+  - title/search seed가 비어 있어도, 짧은 문맥이고 1차 결과가 `work/character/discuss_work`를 주장하며 문장형/잡담형 표지가 있으면 LLM 의미 재독해를 한 번 더 실행한다.
+  - 단, 원문에 `히집악` 같은 안정 약칭/정식 제목이 직접 있으면 이 context-only 재독해를 강제하지 않는다.
+  - 특정 post id, `은영`, `23센줄` 하드코딩이 아니라 `short_context + claimed_specific_work + sentence_like_title + stable_alias_absent` 조건으로 처리했다.
+- 검증:
+  - focused unittest 5건 OK.
+  - `py_compile` OK.
+  - 안정 약칭이 있는 짧은 글은 새 재독해가 불필요하게 실행되지 않는 회귀 테스트를 추가했다.
+  - v225 live canary: `completed/failed/pending=1/0/0`, `requested/effective parallel=36/1`, VLM/OCR on, Docker lifecycle false.
+  - `11718091`: `official_title=null`, `is_relevant=false`, `discussion_type=noise`, `title_resolution_allowed=false`.
+  - 로그에서 `discourse_semantic_seed_guard`, `semantic seed demotion 조기종료`, `canonical rescue 차단`, `Slang DB buffered_observations=0`을 확인했다.
+- 남은 작업:
+  - `context_only_short_reaction`, `short_banter_seed_demoted`, `surface_paraphrase_specific_work_denied` bucket을 expanded sample에서 확인한다.
+  - 이번 패치는 targeted 구조 보강이며 10만 건 semantic approval 근거로 쓰지 않는다.
+
+## IMP-20260529-147 - `11718069` author-meta 판단을 BatchContext alias rescue가 뒤집는 문제 차단 v223
+
+- 상태: patched / focused unittest verified / live VLM-OCR canary verified / browser evidence captured / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v223_post11718069_result.json`
+  - `qualitative_review\20260528_141006_620986\v223_post11718069_author_meta_batch_rescue_summary_ko.md`
+  - `qualitative_review\20260528_141006_620986\v223_11718069_browser_full.png`
+  - `logs\expert_run_20260529_233229_514489.log`
+- 우선순위: P1 semantic-understanding, P1 non-monotonic-rescue, P2 slang-db-observation-review
+- Type: author-meta / batch-memory-rescue / targeted-regression / VLM-OCR-browser-evidence
+- 문제:
+  - `11718069`는 자연어적으로 "작가가 이런 현판을 써라"는 작가 품평/방향 제안이다.
+  - `애호뉴비`는 본문에 나온 부차 참조 작품 별칭이지만, 최종 단일 작품 identity가 아니다.
+  - 기존 경로는 Arbiter/consistency가 `author_meta/adjacent`로 내린 뒤에도, final assembly의 BatchContext alias rescue가 `애호뉴비 -> 애호받는 뉴비가 되었다`를 다시 공식 제목으로 되살릴 수 있었다.
+- 조치:
+  - `forced_adjacent_author_meta_context`, `adjacent_relevant/author_meta`, `release_serialization_meta`, 작가 벤치마크/조언 신호가 있으면 BatchContext alias rescue를 실행하지 않는다.
+  - 이 경우 `batch_memory_alias_rescue_blocked_by_author_meta`를 남겨 후속 리뷰에서 왜 alias rescue가 막혔는지 보이게 했다.
+  - 특정 post id나 `애호뉴비` 하드코딩이 아니라 author-meta/adjacent 컨텍스트 기반 차단으로 처리했다.
+- 검증:
+  - focused unittest 5건 OK.
+  - `py_compile` OK.
+  - v223 live canary: `completed/failed/pending=1/0/0`, `requested/effective parallel=36/1`, VLM/OCR on, Docker lifecycle false.
+  - Browser visual check에서 원문 제목/본문/이미지/댓글 0개를 확인했다.
+  - 최종 `11718069`: `official_title=null`, `is_relevant=false`, `discussion_type=author_talk`, `topicality=adjacent_relevant`, `title_resolution_allowed=false`.
+  - flags에 `batch_memory_alias_rescue_blocked_by_author_meta`가 남았다.
+- 남은 작업:
+  - `author_meta_with_secondary_work_alias`, `batch_memory_alias_rescue_blocked_by_author_meta` bucket을 expanded sample에서 확인한다.
+  - Slang DB의 `pending` alias preview가 실제 오염인지, 이미 안정 alias 재관측인지 분리한다.
+  - 이 패치는 targeted correction이며 10만 건 semantic approval 근거로 쓰지 않는다.
+
+## IMP-20260529-146 - `23센줄` surface paraphrase 의미 재검토 강제 v222
+
+- 상태: patched / focused unittest verified / live canary verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v222_post11718091_surface_paraphrase_semantic_result.json`
+  - `qualitative_review\20260528_141006_620986\v222_surface_paraphrase_semantic_review_summary_ko.md`
+  - `logs\expert_run_20260529_232222_633490.log`
+- 우선순위: P1 semantic-understanding, P1 prompt-limit-guard
+- Type: semantic-seed-review / surface-paraphrase / targeted-regression
+- 문제:
+  - `23센줄`은 사람이 읽으면 `23세인 줄` 오타/축약인데, 작품/별칭 후보로 검색에 밀면 의미 이해가 아니라 문자열 매칭으로 흐른다.
+  - 기존 구조는 `surface_paraphrase_notes`가 있어도 1차 Discourse가 title/search 후보를 아예 만들지 않으면 `semantic_seed_review`가 실행되지 않는 순서였다.
+  - 의미 재검토 LLM도 완벽하지 않다. 이번 live canary에서도 `23센줄`을 나이 표현으로 읽었지만 동시에 "작품 자체 토론"이라고 과하게 말할 수 있었다.
+- 조치:
+  - `surface_paraphrase_notes`가 있으면 title/search 후보가 비어 있어도 `discourse_semantic_seed_guard`를 실행하게 했다.
+  - seed review가 제거한 후보와 surface sanitizer 결과를 결합해, 직접 작품 앵커가 없으면 `title_novel_terms=[]`, `search_suggestions=[]`, `title_resolution_allowed=false`로 내린다.
+  - final reason에는 `23센줄 -> 23세인 줄`처럼 사람이 읽을 수 있는 표면 해석을 남긴다.
+- 검증:
+  - focused unittest 5건 OK.
+  - `py_compile` OK.
+  - v222 live canary: `completed/failed/pending=1/0/0`, `requested/effective parallel=36/1`, VLM/OCR on, Docker lifecycle false.
+  - `11718091`: `official_title=null`, `is_relevant=false`, `discussion_type=noise`, `title_resolution_allowed=false`.
+  - log evidence: `discourse_semantic_seed_guard` 실행, `semantic seed demotion 조기종료`, reason에 `표면 표현 해석`과 `작품 seed 제외` 노출.
+- 남은 작업:
+  - `short_banter_seed_demoted`, `surface_paraphrase_specific_work_denied` bucket에서 과차단/미차단을 expanded sample로 확인한다.
+  - 이 패치는 targeted correction이며 10만 건 semantic approval 근거로 쓰지 않는다.
+
+## IMP-20260529-145 - `11716499`/`11718087` 후속 semantic guard v221
+
+- 상태: patched / targeted rerun verified / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v221_post11718087_11716499_result.json`
+  - `qualitative_review\20260528_141006_620986\v221_post11718087_11716499_summary_ko.md`
+  - `logs\expert_run_20260529_230123_759595.log`
+- 우선순위: P1 semantic-understanding, P1 VLM/OCR-priority, P1 batch-memory-pollution
+- Type: targeted-regression / orchestration-guard / qualitative-follow-up
+- 문제:
+  - `11716499`는 `그러는데` 같은 문장 접속 조각이 후단 BatchContext/search alias rescue를 통해 작품 후보로 되살아날 수 있었다.
+  - `11718087`은 제목이 추천 요청인데 VLM/OCR 카드 이미지가 비작품 신호를 크게 만들어 `off_topic/noise`로 덮을 수 있었다.
+  - 둘 다 특정 post ID 하드코딩이 아니라, 자연어 의미 처리와 후단 rescue priority의 구조적 문제다.
+- 조치:
+  - non-image title/body/comment와 VLM/OCR synthetic text를 분리해 recommendation/memory-query 의도를 계산한다.
+  - 비홍보 이미지가 있어도 non-image 추천 요청은 `adjacent_relevant/recommendation_request`로 보존한다.
+  - `그러는데/하는데/같은데/근데` 같은 접속형 문장 조각은 low-specificity rescue key로 보고 batch memory alias rescue에서 제외한다.
+  - generic relation demotion이 추천 요청을 `unrelated`로 밀어내지 않게 했다.
+- 검증:
+  - focused unittest 4건 OK: VLM recommendation preservation, connective alias block, 정상 batch alias rescue, memory-query alias block.
+  - batch alias/VLM regression 7건 OK.
+  - `py_compile` OK.
+  - v221 live rerun: `completed/failed/pending=2/0/0`, `requested/effective parallel=36/2`, VLM/OCR on, Docker lifecycle false.
+  - `11718087`: `official_title=null`, `discussion_type=recommendation`, `topicality=adjacent_relevant`.
+  - `11716499`: `official_title=null`, `is_relevant=false`; `그러는데 -> 어느날` rescue 없음.
+- 남은 작업:
+  - `11718069`의 author-meta alias rescue는 v223에서 targeted 기준으로 닫았다.
+  - `11718075` weak evidence 후속 action은 v228 short support-cheer alias probe 보존으로 targeted 기준 닫았다.
+  - `11718077` alias collision 후속 action은 v230 targeted 기준으로 닫았다. corrected title의 공식 URL/evidence 회복은 별도 후속이다.
+  - v221은 targeted follow-up이며 10만 건 semantic approval로 승격하지 않는다.
+
+## IMP-20260529-144 - v219 실패군 확대 재실행 및 정성 리뷰
+
+- 상태: rerun complete / qualitative labels written / semantic gate REVIEW-LOCKED
+- 최신 산출물:
+  - `qualitative_review\20260528_141006_620986\v219_failure_family_expansion_manifest.json`
+  - `qualitative_review\20260528_141006_620986\v219_failure_family_expansion_input.jsonl`
+  - `qualitative_review\20260528_141006_620986\v219_failure_family_expansion_summary_ko.md`
+  - `qualitative_review\20260528_141006_620986\v219_failure_family_action_queue_ko.md`
+  - `qualitative_review\20260528_141006_620986\v219_failure_family_expansion_result.json`
+  - `qualitative_review\20260528_141006_620986\v219_failure_family_expansion_result_manifest.json`
+  - `qualitative_review\20260528_141006_620986\v219_failure_family_expansion_result_review_ko.md`
+  - `qualitative_review\20260528_141006_620986\v219_failure_family_expansion_review_labels.jsonl`
+- 우선순위: P1 expansion-planning, P1 semantic-review, P1 evidence-gate
+- Type: targeted-expansion-package / failure-family-queue
+- 문제:
+  - known-bad 단건 canary는 닫혔지만, 원본 partial run에서 반복 패턴으로 보이는 family를 다음 실행 단위로 쪼개야 한다.
+  - 원본 source는 partial이므로 approval 표본이 아니라 discovery/targeted expansion으로만 사용해야 한다.
+- 조치:
+  - v215 pattern scan에서 failure family별 후보를 추출하고 중복 post id를 제거했다.
+  - metadata-preserved input이 있는 known-bad는 기존 enriched input을 우선 사용하고, 없으면 `tests\inputs\test01.jsonl` 원본 row를 사용했다.
+  - 30개 post / 36개 JSONL row / 8개 family 패키지를 생성했다.
+  - `--parallel 36 --reuse-shards-only --vlm on --ocr on`으로 v219 확대 세트를 재실행했다.
+  - 결과 packet별 `ACCEPT/HOLD/REPROCESS/REJECT` 라벨을 남겼다.
+- 검증:
+  - input JSONL parse: `lines=36`, `posts=30`, `comments=6`.
+  - source missing post id: `0`.
+  - run id: `20260529_221420_463966`.
+  - completed/failed/pending: `30/0/0`.
+  - requested/effective parallel: `36/5`.
+  - VLM/OCR: `true/true`, image post count `19`.
+  - Docker/shard lifecycle false, healthy endpoint filter `8 -> 5`.
+  - labels: `ACCEPT=25`, `HOLD=3`, `REPROCESS=1`, `REJECT=1`.
+- 남은 작업:
+  - `11716499` generic alias 과확정은 v221에서 targeted 기준으로 닫았다.
+  - `11718087` VLM/OCR 우선순위 충돌은 v221에서 targeted 기준으로 닫았다.
+  - `11718069` author-meta alias rescue는 v223에서 targeted 기준으로 닫았다.
+  - `11718075` weak evidence 후속 확인은 v228 short support-cheer alias probe 보존으로 targeted 기준 닫았다.
+  - `11718077` slang alias collision은 v230 targeted 기준으로 닫았다. corrected title의 공식 URL/evidence 회복은 별도 후속이다.
+  - v219 결과는 targeted expansion이며 10만 건 semantic approval로 승격하지 않는다.
+
+## IMP-20260529-143 - 현재 semantic root-cause matrix v218
+
+- 상태: documented / evidence mapped / semantic gate REVIEW-LOCKED
+- 최신 산출물: `qualitative_review\20260528_141006_620986\v218_current_semantic_root_cause_matrix_ko.md`
+- 우선순위: P1 semantic-understanding, P1 orchestration-limits, P1 expansion-planning
+- Type: root-cause-matrix / qualitative-review / gate-policy
+- 문제:
+  - known-bad 단건은 상당수 닫혔지만, 사용자가 지적한 “이해력 저하”는 코드 한 줄이나 프롬프트 한 문장으로 설명하기 어렵다.
+  - 원본 `out\expert_result_20260528_141006_620986.json`는 10만 건 완료 산출물이 아니라 partial run이므로, 이 파일만으로 전체 품질을 승인할 수 없다.
+- 조치:
+  - 원본 partial run integrity, v215 pattern scan, v212~v217 current targeted 결과를 하나의 root-cause matrix로 정리했다.
+  - 원인을 검색 전 자연어 의미 재판독, 댓글 대화 흐름, 후단 rescue 비단조 오류, VLM/OCR conflict, URL/evidence-state, slang DB/BatchContextMemory 오염으로 분리했다.
+- 근거:
+  - 원본 manifest: `input_post_count=104502`, `completed_count=80`, `flushed_count=71`, `pending_count=9`.
+  - v215 pattern scan: `comment_speaker_context_unavailable=64`, `comments_without_author_metadata=64`, `image_or_ocr_involved=43`, `search_degraded_resolved=27`, `weak_evidence_but_strong_resolution=18`.
+  - v212~v217에서 `11718083`, `11718091`, `11718097`, `11718099`, `11718080` targeted/current-code 상태를 재확인했다.
+- 남은 작업:
+  - 새 completed source 또는 충분한 random baseline/P0/P1 high-risk expansion 없이는 10만 건 semantic gate를 올리지 않는다.
+  - failure family별 확대 표본을 `friend/social lament`, `memory-query`, `weak character reaction`, `VLM/OCR conflict`, `URL/evidence-state`, `slang_db pollution`으로 나눈다.
+
+## IMP-20260529-142 - `11718080` 친구/한탄형 장르 잡담 current-code 재검증 v217
+
+- 상태: live verified / focused unittest verified / no new code patch / semantic gate REVIEW-LOCKED
+- 최신 확인: v217 single canary `20260529_215812_243878`
+- 우선순위: P1 semantic-understanding, P1 late-rescue guard, P1 no-hardcoding
+- Type: generic-discourse-veto / semantic-seed-reread / current-code-canary
+- 문제:
+  - `11718080`은 사람이 읽으면 “밥 먹으며 TS/갈드컵 같은 소설 장르 얘기를 할 친구가 있으면 좋겠다”는 한탄/잡담이다.
+  - 원본 partial run에서는 검색 결과의 우연한 작품/작가 표면과 후단 batch memory/title rescue가 결합해 `소보로설`, `아발리스트`, `2. 보는 눈이 없었다` 같은 title로 뒤집힌 이력이 있었다.
+  - 이는 LLM 이해 전문가가 항상 못 읽은 문제가 아니라, 전문가들이 장르 일반론으로 맞게 낮춘 뒤 후단 rescue가 다시 올리는 구조적 경로까지 함께 봐야 하는 사례다.
+- 조치:
+  - 새 코드 변경은 하지 않았다.
+  - v181 `late_rescue_blocked_by_verifier_generic_veto`와 v216 `discourse_semantic_seed_guard` 계열이 현재 서버/현재 코드에서 같은 글을 다시 막는지 단건으로 재검증했다.
+- 검증:
+  - v217 command: `.\venv\Scripts\python.exe expert_main.py --input qualitative_review\20260528_141006_620986\v217_post11718080_friend_lament_input.jsonl --output qualitative_review\20260528_141006_620986\v217_post11718080_friend_lament_result.json --server-type vllm --parallel 36 --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`.
+  - v217 manifest: `input_post_count=1`, `requested_parallel=36`, `effective_parallel=1`, `vlm_enabled=true`, `ocr_enabled=true`, `completed_count=1`, `failed_count=0`, `pending_count=0`, Docker lifecycle false.
+  - v217 result `11718080`: `is_relevant=false`, `official_title=null`, `discussion_type=trope_discussion`, `is_novel_related=true`, `is_resolved_work_discussion=false`, `title_resolution_state=adjacent`, `title_resolution_allowed=false`.
+  - semantic seed review: `소설`은 `context_only`, `ts 주류 소설`/`갈드컵 ts 토론`은 `drop`, `semantic_seed_review_specific_work_denied` 확인.
+  - focused unittest 7건과 관련 `py_compile` OK.
+- 남은 작업:
+  - 이 변경은 `11718080` current-code 단건 확인이다. 같은 failure family인 `friend/social lament`, `genre_generalization`, `late_rescue_without_public_work_anchor`를 expanded high-risk sample에서 확대 확인한다.
+  - 10만 건 semantic approval은 expanded random/high-risk review 전까지 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260529-141 - 검색 전 의미 재판독 dialogue-context 입력 보강 v216
+
+- 상태: patched / focused unittest verified / VLM-OCR live verified / semantic gate REVIEW-LOCKED
+- 최신 확인: v216 single canary `20260529_214738_328891`
+- 우선순위: P1 semantic-understanding, P1 dialogue-context, P1 no-hardcoding
+- Type: discourse-semantic-reread / prompt-grounding / short-banter-seed-demotion
+- 문제:
+  - `23센줄`은 사람이 읽으면 `23세인 줄` 오타/축약이다. 이 유형을 문자열 차단처럼만 처리하면 사용자가 지적한 대로 기계적 판정이 된다.
+  - v199 이후 `discourse_semantic_seed_guard`가 title/body/comment와 seed 후보를 다시 읽지만, 새로 추가한 `comment_dialogue_context_lines`는 이 검색 전 의미 재판독 payload에 포함되지 않았다.
+  - 따라서 본문 작성자가 댓글에서 이어 말하는 흐름은 Gatekeeper/Discourse/Verifier 등에는 전달되지만, seed 검색 직전의 LLM 재검토 단계에는 충분히 반영되지 않는 빈틈이 있었다.
+- 조치:
+  - `DiscourseAnalyzer._call_semantic_seed_review()` payload에 `comment_context`와 `comment_dialogue_context`를 추가했다.
+  - 의미 재검토 프롬프트에 오타/축약/띄어쓰기 깨짐을 먼저 자연어 의미로 풀어 읽고, 나이/외모/잡담이면 작품 seed로 쓰지 말라고 명시했다.
+  - `speaker/author/ip/comment_id/reply_to`는 대화 흐름 메타이지 작품명/별칭/공식 근거가 아니라는 규칙을 semantic seed review 단계에도 추가했다.
+- 검증:
+  - focused unittest: `test_semantic_seed_review_demotes_short_banter_terms_before_search`, `test_age_typo_surface_becomes_non_title_semantic_hint`, `test_non_relevant_reason_exposes_age_typo_surface_reading`, `test_age_typo_surface_is_not_promoted_to_search_seed` OK.
+  - `py_compile`: `src\llm_batch\experts\discourse.py`, `tests\test_agentic_pipeline_rework.py` OK.
+  - v216 command: `.\venv\Scripts\python.exe expert_main.py --input qualitative_review\20260528_141006_620986\v216_post11718091_dialogue_semantic_input.jsonl --output qualitative_review\20260528_141006_620986\v216_post11718091_dialogue_semantic_result.json --server-type vllm --parallel 36 --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`.
+  - v216 manifest: `input_post_count=1`, `requested_parallel=36`, `effective_parallel=1`, `vlm_enabled=true`, `ocr_enabled=true`, `mcp_small_run_shard_lifecycle_blocked=true`, Docker lifecycle false.
+  - v216 result `11718091`: `is_relevant=false`, `official_title=null`, `discussion_type=noise`, `is_novel_related=true`, `is_resolved_work_discussion=false`, `title_resolution_state=unresolved_matchable`, `title_resolution_allowed=false`.
+  - v216 reason: `표면 표현 해석: 23센줄 -> 23세인 줄; 16살인줄 -> 16살인 줄`, `의미 재검토`, `작품 seed 제외: 은영이`.
+- 남은 작업:
+  - 이 변경은 단건 targeted correction이다. 10만 건 semantic approval은 expanded random/high-risk review 전까지 계속 `REVIEW-LOCKED`다.
+  - `short_banter_seed_demoted`와 `semantic_seed_review_specific_work_denied` bucket에서 dialogue context 포함 후 과차단/미차단을 확대 확인한다.
+
+## IMP-20260529-140 - 댓글 발화 재구성 context / memory-query HOLD 재승격 차단 v214
+
+- 상태: patched / focused unittest verified / VLM-OCR live verified / semantic gate REVIEW-LOCKED
+- 최신 확인: v213 targeted run `20260529_211723_327967`, v214 single canary `20260529_213151_621141`
+- 우선순위: P1 dialogue-context, P1 semantic-understanding, P1 memory-query, P1 no-hardcoding
+- Type: comment-dialogue-context / prompt-grounding / qualitative-packet / memory-query-demotion
+- 문제:
+  - 기존 `comment_context_lines`는 speaker/author/ip/reply 메타를 분리 보존했지만 댓글 본문은 별도 `comments` 배열에 있어, LLM이 `#번호`와 실제 발화를 직접 맞춰 읽어야 했다.
+  - 본문 작성자가 댓글에서 이어 말하거나, 타 유저 답변에 원 작성자가 재반응하는 경우에는 `speaker + text`가 붙은 대화 재구성이 있어야 문맥 이해가 안정적이다.
+  - `11718083`은 v213에서 잘못된 title/URL은 막혔지만, memory-query가 `unresolved_worklike_hold:alias_character_discussion`으로 되살아나 `character_talk`로 남는 잔여가 있었다.
+- 조치:
+  - `expert_main.py`와 `AgenticPipeline._post_to_dict()`에 `comment_dialogue_context_lines`를 추가했다.
+  - 형식은 `#번호 speaker=... author=... role=post_author ip=... reply_to=... comment_id=... text=...`이며, 댓글 text는 짧은 excerpt로 제한한다.
+  - Gatekeeper/Discourse/Verifier prompt JSON, Decoder evidence-based reread, Arbiter/Synthesizer prompt, qualitative random/round2 packet에 dialogue context를 전달했다.
+  - prompt overlay에는 `speaker/author/ip`가 대화 흐름 추적용 메타이며 그 자체를 작품명/별칭 근거로 쓰지 말라는 규칙을 유지했다.
+  - memory-query 신호가 있으면 `_has_unresolved_worklike_hold_signal()`이 unresolved 작품 HOLD를 반환하지 않게 했다.
+- 검증:
+  - v213 command: `.\venv\Scripts\python.exe expert_main.py --input qualitative_review\20260528_141006_620986\v117_targeted_4_input.jsonl --output qualitative_review\20260528_141006_620986\v213_targeted_4_dialogue_context_result.json --server-type vllm --parallel 36 --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`.
+  - v213 run: `input_posts=4`, `requested_parallel=36`, `effective_parallel=4`, Docker lifecycle flags false, VLM/OCR on.
+  - v213 `11718091`: `comment_dialogue_context_lines` 1건, `speaker=post_author author=ㅇㅇ role=post_author ... text=ㄹㅇ 머리도 안올렷잖아 더어린줄`.
+  - v213 `11718097`: 댓글 5건의 post_author/user speaker, reply 관계, text excerpt 보존. final은 `망겜의 힐러`, URL `https://m.munpia.com/novel/detail/328421`.
+  - v213 `11718099`: `빌환 -> 빌어먹을 환생`, URL `https://novel.munpia.com/222360`, OCR drift title은 보조 제목 근거에서 제외.
+  - v214 command: `.\venv\Scripts\python.exe expert_main.py --input qualitative_review\20260528_141006_620986\v120_post11718083_input.jsonl --output qualitative_review\20260528_141006_620986\v214_post11718083_memory_query_dialogue_guard_result.json --server-type vllm --parallel 36 --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`.
+  - v214 `11718083`: `is_relevant=false`, `discussion_type=recommendation`, `official_title=null`, `title_resolution_state=unresolvable_memory_query`, `title_resolution_allowed=false`.
+  - focused unittest: comment dialogue context 4건 + memory-query hold 차단 2건 OK.
+- 남은 작업:
+  - v213/v214는 known-bad targeted correction이다. 10만 건 semantic approval은 expanded random/high-risk review 전까지 계속 `REVIEW-LOCKED`다.
+  - `comment_dialogue_context_lines`가 대형 재런 결과와 review packet에 충분히 분포하는지 expanded sample에서 별도 집계한다.
+
+## IMP-20260529-139 - `11718097` resolved title 공식 URL 보강 / `단행본-웹소설` 오분류 수정 v212
+
+- 상태: patched / focused unittest verified / VLM-OCR live verified / semantic gate REVIEW-LOCKED
+- 최신 확인: v212 live run `20260529_205511_871370`
+- 우선순위: P1 official-evidence, P1 semantic-understanding, P1 no-hardcoding
+- Type: resolved-title-followup / official-url-validation / non-novel-media-disambiguation
+- 문제:
+  - v210에서 `11718097`은 `망겜힐 -> 망겜의 힐러` title recall은 맞았지만 final URL이 비어 evidence strength가 `Medium`이었다.
+  - 원인 1: `망겜의 힐러 [단행본] - 웹소설 - 카카오페이지`가 `단행본` 표면 때문에 `non_novel_media_platform_detail`로 기각될 수 있었다.
+  - 원인 2: `오행복` 주변어에서 엉뚱한 공식 URL이 먼저 잡히면, 오케스트레이터가 "공식 비슷한 힌트 있음"으로 보고 `망겜힐 -> 망겜의 힐러` resolved title 공식 검증 검색을 생략했다.
+  - 이 문제는 특정 작품/URL 하드코딩이 아니라 `단행본+웹소설` 구분과 "주변어 공식 hit와 resolved title 공식 검증은 별도"라는 일반 규칙으로 처리해야 한다.
+- 조치:
+  - `단행본`은 단독으로는 비소설/웹툰 의심 신호지만, 같은 제목 표면에 `웹소설/#NOVEL/novel/장르소설` 명시 표지가 있으면 비소설 매체 hit로 보지 않게 했다.
+  - `웹툰/만화/COMIC/manga/anime` 계열 hard media marker는 계속 비소설 매체 hit로 유지했다.
+  - `_extract_resolved_title_followup_queries()`가 unrelated official hint 때문에 resolved title 검증 검색을 조기 생략하지 않도록 했다.
+  - `_has_official_like_title_hints()`는 실제 공식 플랫폼 상세 URL일 때만 official-like로 세도록 좁혔다.
+- 검증:
+  - v212 command: `.\venv\Scripts\python.exe expert_main.py --input qualitative_review\20260528_141006_620986\v211_post11718097_input.jsonl --output qualitative_review\20260528_141006_620986\v212_post11718097_resolved_title_followup_result.json --server-type vllm --parallel 36 --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`.
+  - v212 manifest/log: `input_post_count=1`, `requested_parallel=36`, `effective_parallel=1`, `vlm_enabled=true`, `ocr_enabled=true`, Docker lifecycle 차단 유지.
+  - v212 log: `resolved title 검증 검색 추가` 3건 실행, query에 `망겜의 힐러` 공식 플랫폼 검색 포함.
+  - v212 result `11718097`: `official_title=망겜의 힐러`, `heretic_url=https://m.munpia.com/novel/detail/328421`, `confidence=High`.
+  - evidence catalog: `망겜의 힐러 [단행본] - 웹소설 - 카카오페이지`, 문피아, 네이버 시리즈 등 공식 플랫폼 URL 확인.
+  - focused unittest: `test_resolved_title_followup_runs_when_unrelated_official_hint_exists`, `test_kakao_webnovel_danhenbon_detail_is_not_non_novel_media`, `23센줄` semantic seed 관련 5건 OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework -v`: `335` tests OK.
+  - `py_compile`: `src\llm_batch\agentic_pipeline.py`, `src\llm_batch\experts\orchestrator.py`, `tests\test_agentic_pipeline_rework.py` OK.
+  - `git diff --check`: 공백 오류 없음. CRLF 변환 warning만 출력.
+- 남은 작업:
+  - v212는 targeted correction이다. 10만 건 semantic approval은 expanded random/high-risk review 전까지 계속 `REVIEW-LOCKED`다.
+  - `m.munpia.com` fetch title이 generic title로 보이는 로그는 page fetch 품질 리스크로 별도 관찰한다.
+
+## IMP-20260529-138 - `23센줄` 자연어 해석 재확인 및 저정보 slang alias cleanup v210
+
+- 상태: patched / full unittest verified / VLM-OCR targeted reviewed / semantic gate REVIEW-LOCKED
+- 최신 확인: v210 live run `20260529_202045_468532`
+- 우선순위: P1 semantic-understanding, P1 slang-db-pollution, P1 no-hardcoding
+- Type: semantic-understanding / low-information-alias / memory-query / slang-db-cleanup
+- 문제:
+  - `11718091`의 `23센줄`은 자연어적으로 `23세인 줄` 오타/축약이다. 이 표면은 작품명/별칭/search seed가 아니라 나이/외모 감상 문맥 힌트다.
+  - v210에서 final title null 방어는 성공했지만, 기존 `slang_db`에 `너에겐 -> 너 따위에겐 절대X3 공략되지 않을 거니까!` 같은 대명사+조사 alias 오염이 남아 있었다.
+  - 이 문제를 특정 문자열이나 post id 하드코딩으로 막으면 안 된다. 대명사+조사, 일반 술어, 담화 표면, 기억 회수 no-anchor 문맥을 일반 규칙으로 분리해야 한다.
+- 조치:
+  - slang DB 저장/cleanup 단계에 low-information alias term 가드를 추가했다.
+  - `너/나/네/내/저/제/그/이/걔/쟤/얘`류 대명사와 조사 결합 표면은 작품 alias로 저장하지 않는다.
+  - `있어`, `있어도`, `했다`, `그냥`, `이거` 등 일반 술어/담화 표면도 저장/seed 재사용에서 제외한다.
+  - `title_resolution_allowed=false` 및 `unresolvable_memory_query`인 기억 회수 글은 slang DB observation 자체를 남기지 않는다.
+  - 기존 `slang_db/slang_db.json`을 prune해 `너에겐`, `너 따위에겐 절대X3` 오염을 제거했다.
+- 검증:
+  - v210 command: `.\venv\Scripts\python.exe expert_main.py --input qualitative_review\20260528_141006_620986\v117_targeted_4_input.jsonl --output qualitative_review\20260528_141006_620986\v210_targeted_4_current_vlm_ocr_result.json --server-type vllm --parallel 36 --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`.
+  - v210 manifest: `input_post_count=4`, `requested_parallel=36`, `effective_parallel=4`, `vlm_enabled=true`, `ocr_enabled=true`, `image_post_count=3`, Docker lifecycle 차단 유지.
+  - v210 result `11718091`: `official_title=null`, `is_relevant=false`, `discussion_type=noise`, `title_resolution_state=unresolved_matchable`, `title_resolution_allowed=false`, reason에 `23센줄 -> 23세인 줄`.
+  - v210 result `11718083`: `official_title=null`, `is_novel_related=true`, `is_resolved_work_discussion=false`, `title_resolution_state=unresolvable_memory_query`.
+  - `slang_db/slang_db.json` 재검색: `너에겐`, `너 따위에겐 절대X3` match 0건.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_slang_db -v`: `25` tests OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework -v`: `333` tests OK.
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\slang_db.py tests\test_slang_db.py`: OK.
+- 산출물:
+  - `qualitative_review/20260528_141006_620986/v210_targeted_4_semantic_review_ko_20260529.md`
+- 남은 작업:
+  - `11718097`은 title recall은 맞지만 final URL이 비어 evidence strength `Medium`이다.
+  - `11718099`는 final title은 맞지만 VLM/OCR conflict가 reason 내부에 남아 `HOLD`다.
+  - v210도 targeted canary다. 10만 건 semantic approval은 expanded random/high-risk review 전까지 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260529-137 - `11718099` OCR-only conflicting query prune v209
+
+- 상태: patched / full unittest verified / VLM-OCR live reviewed / semantic gate REVIEW-LOCKED
+- 최신 확인: v209 live run `20260529_200421_352908`
+- 우선순위: P1 VLM/OCR-conflict, P1 reason-quality, P1 performance
+- Type: VLM-OCR-conflict / title-lead-alias / search-pruning / no-hardcoding
+- 문제:
+  - v208은 최종 title을 회복했지만 VLM/OCR 오독 후보가 검색/심의 long-tail을 만들었다.
+  - v209에서도 VLM/OCR은 실제 브라우저 표지 `빌어먹을 환생`과 달리 `불먹을 혼성명`으로 읽었다.
+  - OCR-only 후보는 최종 reason 끝에서 낮춰졌지만, Gatekeeper/Discourse/Decoder/Deliberation 내부에서는 여전히 작품 단서처럼 사용됐다.
+- 조치:
+  - BatchContext resolved alias를 stable direct seed로 취급해 title-lead alias가 OCR/status seed보다 우선하도록 했다.
+  - OCR/image-only 후보 수집 범위를 Gatekeeper possible title뿐 아니라 Discourse title terms/search suggestions, `image_enrichment.explicit_work_title`, `ocr_text`, `work_cues`까지 확장했다.
+  - `alias_bridge_search`, `abbreviation_verification`, `decoder_recall_verification`, `discourse_suggestion`, `title_character_verification`, `unresolved_term_novel` 등 long-tail query purpose에도 OCR-only conflict pruning을 적용했다.
+  - `_execute_searches()` 직전에도 OCR-only title seed pruning을 다시 수행하게 했다.
+- 검증:
+  - v209 command: `.\venv\Scripts\python.exe expert_main.py --input qualitative_review\20260528_141006_620986\v206_post11718099_input.jsonl --output qualitative_review\20260528_141006_620986\v209_post11718099_ocr_conflict_prune_result.json --server-type vllm --parallel 36 --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`.
+  - v209 manifest: `input_post_count=1`, `requested_parallel=36`, `effective_parallel=1`, `vlm_enabled=true`, `ocr_enabled=true`, `image_post_count=1`, Docker lifecycle 차단 유지.
+  - v209 result: `official_title=빌어먹을 환생`, `url=https://novel.munpia.com/222360`, `discussion_type=character_talk`.
+  - v209 performance: 345.7s, total tokens `63,718`, 최종 reason 기준 `executed_queries=9`, `effective_executed_queries=7`.
+  - v209 log: OCR/image-only pruning initial `skip=2`, execute_searches 추가 pruning 확인.
+  - `slang_db` 재검색: `불먹을`, `검은 여왕`, `따먹을 환생`, `"있어"`, `"있어도"` match 0건. `빌환`만 정상 유지.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework -v`: `333` tests OK.
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\experts\orchestrator.py src\llm_batch\experts\discourse.py src\llm_batch\agentic_pipeline.py src\llm_batch\rules.py tests\test_agentic_pipeline_rework.py`: OK.
+- 산출물:
+  - `qualitative_review/20260528_141006_620986/v209_post11718099_ocr_conflict_prune_review_ko_20260529.md`
+- 남은 작업:
+  - 검색 query pruning만으로는 부족하다. OCR-only 충돌 후보가 전문가 prompt/reason/deliberation support에서 Strong title evidence가 되지 않게 더 이른 입력 단계에서 `conflict_ocr_title`로 낮춰야 한다.
+  - v209도 targeted canary다. 10만 건 semantic approval은 expanded random/high-risk review 전까지 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260529-136 - `11718099` title-lead alias/status/OCR conflict guard v208
+
+- 상태: patched / full unittest verified / VLM-OCR live reviewed / browser visual checked / semantic gate REVIEW-LOCKED
+- 최신 확인: v208 live run `20260529_193739_113865`
+- 우선순위: P1 semantic-understanding, P1 VLM/OCR-conflict, P1 slang-db-pollution, P1 performance
+- Type: title-lead-alias / status-seed-filter / VLM-OCR-conflict / slang-db-cleanup / no-hardcoding
+- 문제:
+  - `11718099`의 원문 제목 `빌환 표지변경됨`에서 `빌환`은 안정 alias이고 `표지변경됨`은 상태어다.
+  - VLM/OCR은 실제 표지 이미지를 `검은 여왕을 혼성명`으로 오독했고, 이 후보가 작품명처럼 심의/검색 경로를 흔들었다.
+  - v207에서는 본문 술어 조각 `있어`가 검색 evidence alias로 오인되어 `따먹을 환생`으로 잘못 resolved되고 slang_db에 `있어 -> 따먹을 환생` 오염을 남겼다.
+  - 이 유형은 특정 post id나 특정 약칭 하드코딩으로 막으면 안 되며, 제목 선두 안정 alias, 상태어, OCR conflict, 저정보 alias surface를 일반 규칙으로 분리해야 한다.
+- 조치:
+  - BatchContext resolved alias를 검색 budget/seed 보존 경로에 포함했다.
+  - 제목 선두의 안정 alias는 OCR 후보나 상태어가 함께 있어도 search seed로 보존한다.
+  - `표지변경됨` 같은 meta/action/status token은 standalone 작품 seed와 compact query suffix로 쓰지 않는다.
+  - `있어`, `있어도`, `없어` 계열 술어/어미 조각은 low-information alias surface로 차단했다.
+  - search-evidence alias inference가 `있어도` 같은 문장 조각을 alias form으로 만들지 않게 했다.
+  - episode/detail variant title이 안정 alias의 canonical base와 맞으면 `빌어먹을 환생 2화`류를 `빌어먹을 환생`으로 보정한다.
+  - v207이 남긴 `slang_db` 오염 항목 `따먹을 환생`/`있어`를 제거하고 JSON 유효성을 확인했다.
+- 브라우저 시각 확인:
+  - Codex 내장 브라우저로 `11718099` 원문을 열어 본문 첨부 이미지 1개가 로딩 완료됨을 확인했다.
+  - article image: `complete=true`, `naturalWidth=850`, `naturalHeight=1190`.
+  - 화면상 표지 제목은 `빌어먹을 환생`으로 보였고, v208 VLM/OCR의 `검은 여왕을 혼성명`은 시각 근거와 충돌한다.
+- 검증:
+  - v206 `20260529_191549_133661`: `official_title=빌어먹을 환생`, `url=https://page.kakao.com/content/56071101?tab_type=about`, 393.3s, token `130,879`.
+  - v207 `20260529_192351_056652`: `official_title=따먹을 환생`, `url=https://novelpia.com/novel/165061`, 497.6s, token `165,300`, `있어 -> 따먹을 환생` 오염 확인.
+  - v208 `20260529_193739_113865`: `official_title=빌어먹을 환생`, `url=https://novel.munpia.com/222360`, `vlm_enabled=true`, `ocr_enabled=true`, `effective_parallel=1`, Docker lifecycle 차단 유지.
+  - v208 log: `빌환표지변경됨` query 0건, `search_absent_verified_title` counter 잔존, `rescue: batch memory alias alias='빌환'`.
+  - v208 performance: 595.8s, `prompt=136,454`, `completion=9,218`, `total=145,672`, 검색 13건.
+  - `slang_db` 재검색: `검은 여왕`, `따먹을 환생`, `"있어"`, `"있어도"` match 0건.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework -v`: `333` tests OK.
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py src\llm_batch\experts\orchestrator.py src\llm_batch\experts\discourse.py src\llm_batch\rules.py`: OK.
+  - `git diff --check`: 공백 오류 없음. CRLF 변환 warning만 출력.
+- 산출물:
+  - `qualitative_review/20260528_141006_620986/v208_post11718099_alias_status_ocr_conflict_review_ko_20260529.md`
+- 남은 작업:
+  - v208은 title targeted recovery일 뿐이다. VLM/OCR conflict가 browser visual evidence와 충돌할 때 더 이른 단계에서 OCR 후보를 낮춰 long-tail을 줄여야 한다.
+  - `search_absent_verified_title`와 최종 title rescue가 동시에 남는 reason 품질은 `HOLD/docs_issue`로 계속 추적한다.
+  - 10만 건 semantic approval은 expanded random/high-risk review 전까지 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260529-135 - `23센줄` 오타/의미 재검토 reason 명시 v204
+
+- 상태: patched / focused verified / VLM-OCR live verified / semantic gate REVIEW-LOCKED
+- 최신 확인: v204 live run `20260529_184305_203976`
+- 우선순위: P1 semantic-understanding, P1 reason-quality
+- Type: semantic-seed-review / surface-paraphrase / no-hardcoding
+- 문제:
+  - `23센줄`은 자연어적으로 `23세인 줄` 오타/축약인데, 단순히 "검색 seed 아님"으로만 처리하면 기계적 차단처럼 보인다.
+  - LLM 1차 Discourse는 짧은 인명/나이 감상 글을 여전히 특정 작품 캐릭터 감상처럼 올릴 수 있다.
+  - 최종 reason에는 왜 작품명을 못 잡는지뿐 아니라, 원문 표면을 어떻게 읽었는지가 남아야 한다.
+- 조치:
+  - semantic seed review 프롬프트에 `surface_paraphrase_notes`의 `non_title_semantic_context`를 원문 이해 힌트로 우선 반영하도록 명시했다.
+  - 해당 검증 입력의 `surface_paraphrase_notes`를 원문 이해 힌트로 반영해 작품명/별칭 후보와 나이/외모 감상 표현을 분리하게 했다.
+  - 비관련 reason 합성기가 `surface_paraphrase_notes`와 `surface_paraphrase_context_terms`를 읽어 `표면 표현 해석`과 `작품 seed 제외`에 반영한다.
+  - age/appearance sanitizer가 마지막 seed를 제거하면 `semantic_seed_review.is_specific_work_discussion=false`로 내부 필드도 같이 낮춘다.
+  - `은영이은` 같은 조사 깨짐을 피하도록 `seed 후보(...)는` 형식으로 reason을 바꿨다.
+- 검증:
+  - `test_non_relevant_reason_exposes_age_typo_surface_reading`: `표면 표현 해석: 23센줄 -> 23세인 줄; 16살인줄 -> 16살인 줄`, `작품 seed 제외`, 조사 깨짐 방지를 확인.
+  - `test_age_typo_surface_becomes_non_title_semantic_hint`: surface sanitizer가 마지막 seed 제거 시 `surface_paraphrase_specific_work_denied`와 `semantic_seed_review.is_specific_work_discussion=false`를 남기는지 확인.
+  - focused unittest: `test_non_relevant_reason_exposes_age_typo_surface_reading`, `test_non_relevant_reason_includes_semantic_seed_review_interpretation`, `test_age_typo_surface_becomes_non_title_semantic_hint`, `test_age_typo_surface_is_not_promoted_to_search_seed`: OK.
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py src\llm_batch\experts\discourse.py`: OK.
+  - v204 command: `.\venv\Scripts\python.exe expert_main.py --input qualitative_review\20260528_141006_620986\v192_post11718091_input.jsonl --output qualitative_review\20260528_141006_620986\v204_post11718091_age_typo_semantic_reason_result.json --server-type vllm --parallel 36 --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`.
+  - v204 manifest: `input_post_count=1`, `requested_parallel=36`, `effective_parallel=1`, `completed/failed/pending/flushed=1/0/0/1`, `vlm_enabled=true`, `ocr_enabled=true`, `image_post_count=0`, Docker lifecycle flags false.
+  - v204 result: `11718091`은 `is_relevant=false`, `official_title=null`, `discussion_type=noise`, `work_resolution=none`, `title_resolution_allowed=false`.
+  - v204 reason: `표면 표현 해석: 23센줄 -> 23세인 줄; 16살인줄 -> 16살인 줄`, `의미 재검토`, `작품 seed 제외: 은영이`, `직접 작품 앵커가 없어 공식 제목은 미확정` 포함.
+- 남은 작업:
+  - 이 변경은 targeted canary다. 10만 건 semantic approval은 expanded random baseline/high-risk bucket review 전까지 계속 `REVIEW-LOCKED`다.
+  - `N센줄`, `N살인줄`, 짧은 인명 + 나이/외모 감상 케이스를 high-risk bucket에서 확대 확인한다.
+
+## IMP-20260529-134 - semantic seed review reason 반영 v201
+
+- 상태: patched / focused verified / VLM-OCR live verified / semantic gate REVIEW-LOCKED
+- 최신 확인: v201 live run `20260529_182419_053298`
+- 우선순위: P1 reason-quality, P1 semantic-understanding
+- Type: reason-synthesis / semantic-seed-review / no-hardcoding
+- 문제:
+  - v199는 `11718091`의 작품명 과확정과 검색/Decoder 재승격을 막았지만, final reason의 핵심 결론이 `작품 고유 근거 부족`으로 너무 짧았다.
+  - 사용자가 지적한 것처럼 이 유형은 단순 기계 차단이 아니라 "글이 실제로 캐릭터 나이/외모 감상이라는 자연어 이해"가 결과에 남아야 한다.
+- 조치:
+  - 비관련 reason 합성기가 Discourse의 `semantic_seed_review.content_interpretation`, `post_intent`, `semantic_seed_review_context_terms`를 읽어 final reason에 반영한다.
+  - `의미 재검토`와 `작품 seed 제외` 섹션을 추가해 어떤 표현을 작품명/별칭 seed로 보지 않았는지 공개한다.
+  - core reason도 `직접 작품 앵커가 없어 공식 제목은 미확정`을 함께 말하도록 낮췄다.
+- 검증:
+  - `test_non_relevant_reason_includes_semantic_seed_review_interpretation`: semantic seed review 해석, seed 제외 term, 문맥 해석이 reason에 들어가는지 확인.
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_agentic_pipeline_rework.py`: OK.
+  - focused unittest: `test_non_relevant_reason_includes_semantic_seed_review_interpretation`, `test_semantic_seed_review_demotes_short_banter_terms_before_search`: OK.
+  - v201 command: `.\venv\Scripts\python.exe expert_main.py --input qualitative_review\20260528_141006_620986\v192_post11718091_input.jsonl --output qualitative_review\20260528_141006_620986\v201_post11718091_semantic_reason_result.json --server-type vllm --parallel 36 --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`.
+  - v201 manifest: `input_post_count=1`, `requested_parallel=36`, `effective_parallel=1`, `completed/failed/pending=1/0/0`, `vlm_enabled=true`, `ocr_enabled=true`, `image_post_count=0`, Docker lifecycle flags false.
+  - v201 result reason: `의미 재검토`, `작품 seed 제외: 은영이, 23센줄`, `직접 작품 앵커가 없어 공식 제목은 미확정` 포함.
+  - v201 log: `semantic seed demotion 조기종료` 기록, `Decoder 분석 시작` 및 실제 검색 실행 없음.
+- 남은 작업:
+  - 이 변경은 reason 품질 targeted improvement다. 10만 건 semantic approval은 expanded review 전까지 계속 `REVIEW-LOCKED`다.
+  - 같은 reason-quality 요구를 `short_banter_seed_demoted` bucket 전체에 확대 확인해야 한다.
+
+## IMP-20260529-133 - LLM semantic seed review와 no-anchor 조기종료 v199
+
+- 상태: patched / unit verified / VLM-OCR live verified / semantic gate REVIEW-LOCKED
+- 최신 확인: v199 live run `20260529_180942_149514`
+- 우선순위: P1 semantic-understanding, P1 search-pruning, P1 expert-orchestration
+- Type: LLM-semantic-seed-review / no-hardcoding / search-decoder-early-exit
+- 문제:
+  - v195 표면 오타/나이 표현 sanitizer는 필요했지만, `23센줄` 같은 표현을 규칙으로만 낮추면 여전히 기계적인 surface guard에 가깝다.
+  - 1차 Discourse가 짧은 인명/나이/외모 감상 표면을 `title_novel_terms` 또는 `search_suggestions`로 올리고, 후단 fallback/Decoder가 raw title을 다시 검색 seed로 되살릴 수 있었다.
+  - 자연어적으로는 "23세인 줄 몰랐다"는 캐릭터 나이/외모 반응이지, 작품명/별칭/공식 title 탐색 요청이 아니다.
+- 조치:
+  - `discourse_semantic_seed_guard` LLM hook을 추가해 공개 post title/body/comment와 1차 Discourse seed를 다시 읽고, seed가 작품명/별칭인지 자연어 문맥어인지 판정한다.
+  - `title_novel_terms`와 `search_suggestions`가 `context_only/drop/non_title`로 판정되면 제거하고, `semantic_seed_review`와 `semantic_seed_review_context_terms`에 근거를 남긴다.
+  - known alias/strong work anchor는 보호해, 안정 약칭까지 무조건 제거하지 않는다.
+  - Orchestrator fallback이 demoted seed를 다시 `key_terms`로 부활시키지 않도록 막았다.
+  - 모든 title seed가 demote됐고 이미지/OCR/VLM 또는 강한 작품 앵커가 없으면 Decoder/search rescue를 열지 않고 조기 종료한다.
+  - 특정 post id, 캐릭터명, 작품명 하드코딩 없이 LLM 의미 재검토 결과, known alias 여부, image/VLM 존재 여부, strong work anchor 여부로 처리한다.
+- 검증:
+  - `test_semantic_seed_review_demotes_short_banter_terms_before_search`: LLM seed review가 캐릭터/나이 반응 seed를 title/search 후보에서 제거하고 Orchestrator auto seed를 비운다.
+  - `test_semantic_seed_review_does_not_recheck_known_alias_seed`: 안정 known alias는 semantic seed review로 재검토/삭제하지 않는다.
+  - `test_age_typo_surface_becomes_non_title_semantic_hint`, `test_age_typo_surface_is_not_promoted_to_search_seed`: 기존 표면 오타/나이 표현 guard도 유지된다.
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\experts\discourse.py src\llm_batch\experts\orchestrator.py tests\test_agentic_pipeline_rework.py`: OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework -v`: `329` tests OK.
+  - v199 command: `.\venv\Scripts\python.exe expert_main.py --input qualitative_review\20260528_141006_620986\v192_post11718091_input.jsonl --output qualitative_review\20260528_141006_620986\v199_post11718091_semantic_early_exit_result.json --server-type vllm --parallel 36 --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`.
+  - v199 manifest: `input_post_count=1`, `requested_parallel=36`, `effective_parallel=1`, `completed/failed/pending/flushed=1/0/0/1`, `vlm_enabled=true`, `ocr_enabled=true`, `image_post_count=0`, Docker lifecycle flags false, `mcp_small_run_shard_lifecycle_blocked=true`.
+  - v199 log: raw Discourse의 `title_novel_terms=["23센줄"]`와 검색 제안은 sanitized result에서 제거됐다. `semantic seed review demotion → key_terms 자동검색 생략` 뒤 `semantic seed demotion 조기종료`가 실행됐고, `Decoder 분석 시작` 및 실제 검색 실행은 없었다.
+  - v199 result: `is_relevant=false`, `official_title=null`, `discussion_type=noise`, `work_resolution=none`, `title_resolution_allowed=false`, comment metadata 보존.
+- 남은 작업:
+  - v199는 exact known-bad targeted canary다. 10만 건 semantic approval은 expanded random baseline/high-risk bucket review 전까지 계속 `REVIEW-LOCKED`다.
+  - early-exit final reason 보강은 v201에서 targeted 확인 완료. 동일 reason 품질을 high-risk bucket에서 확대 확인해야 한다.
+  - high-risk bucket에서 `short_banter_seed_demoted`, `semantic_seed_review_specific_work_denied`, `search_decoder_early_exit` 패턴을 별도 감시한다.
+
+## IMP-20260529-132 - 표면 오타/나이 감상 문맥 검색 오염 차단 v195
+
+- 상태: patched / unit verified / VLM-OCR live verified / semantic gate REVIEW-LOCKED
+- 최신 확인: v195 live run `20260529_174446_003479`
+- 우선순위: P1 semantic-guard, P1 expert-orchestration, P1 query-noise
+- Type: surface-paraphrase / discourse-sanitizer / search-pruning / no-hardcoding
+- 문제:
+  - `11718091`의 `23센줄`은 자연어적으로 `23세인 줄` 오타/축약에 가깝다.
+  - 기존 경로는 이 표면을 작품명/별칭/캐릭터 검색 단서처럼 다루어 `은영 23세`, `은영이 캐릭터`, `소신발언은영` 같은 검색을 만들 수 있었다.
+  - 이 경우 final title은 null로 안전해져도, 검색 결과와 reason에 실제 인물/비소설 자료가 섞이며 자연어 품질이 흔들린다.
+- 조치:
+  - `surface_paraphrase_notes`를 추가해 제목/본문/댓글의 `23센줄`, `16살인줄` 같은 표면을 `non_title_semantic_context`로 전달한다.
+  - Discourse sanitizer가 해당 표면과 짧은 인명형 토큰을 `title_novel_terms`에서 제거하고, 관련 `search_suggestions`도 제거한다.
+  - Orchestrator가 같은 post 문맥에서 파생된 나이/외모 감상 검색, 담화 표지 compact 검색, verification_search를 실행 전에 제거한다.
+  - 특정 post id, `은영`, 특정 작품명 하드코딩 없이 나이 표현, 커뮤니티 담화 표지, 약한 캐릭터 반응, known alias 여부, strong work anchor 여부로 처리한다.
+- 검증:
+  - `test_age_typo_surface_becomes_non_title_semantic_hint`: `23센줄 -> 23세인 줄`, `16살인줄 -> 16살인 줄` 힌트 생성과 Discourse sanitizer 확인.
+  - `test_age_typo_surface_is_not_promoted_to_search_seed`: `은영 23센 소설`, `은영이 정식 제목`, `은영이 캐릭터`, `소신발언은영`, `23센 줄 몰랐음 소설` 제거 확인.
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\rules.py src\llm_batch\agentic_pipeline.py src\llm_batch\experts\discourse.py src\llm_batch\experts\orchestrator.py tests\test_agentic_pipeline_rework.py`: OK.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework -v`: `327` tests OK.
+  - v195 command: `.\venv\Scripts\python.exe expert_main.py --input qualitative_review\20260528_141006_620986\v192_post11718091_input.jsonl --output qualitative_review\20260528_141006_620986\v195_post11718091_age_typo_semantic_result.json --server-type vllm --parallel 36 --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`.
+  - v195 manifest: `input_post_count=1`, `requested_parallel=36`, `effective_parallel=1`, `vlm_enabled=true`, `ocr_enabled=true`, `image_post_count=0`, Docker lifecycle flags false.
+  - v195 log: 실제 `🔍 검 ...` 검색 실행 없음. Discourse raw suggestion `은영 23세`는 sanitized result에서 `search_suggestions=[]`로 제거됨. verification_search는 `kept=0 pruned=3`.
+  - v195 result: `is_relevant=false`, `official_title=null`, `discussion_type=noise`, 해석 주제 `community_banter: 캐릭터 외모에 대한 개인적 감상 공유`.
+- 남은 작업:
+  - 이 변경은 targeted canary다. 10만 건 semantic approval은 expanded random baseline/high-risk bucket review 전까지 계속 `REVIEW-LOCKED`다.
+  - 비슷한 `N센줄`, `N살인줄`, 짧은 인명 + 외모/나이 감상 케이스를 high-risk bucket에서 계속 감시한다.
+
+## IMP-20260529-131 - v187 VLM/OCR Reason Evidence Alignment
+
+- 상태: patched / unit verified / live rerun pending / semantic gate REVIEW-LOCKED
+- 최신 확인: v187 unit verification, v184 live result residual review
+- 우선순위: P2 reason-quality, P1 VLM/OCR-evidence when image title conflicts
+- Type: reason-quality / VLM-OCR / evidence-alignment
+- 문제:
+  - v184 `11718099`는 final title을 `빌어먹을 환생`으로 회복했지만, 이미지 OCR drift 후보 `불먹을 혼성명`을 reason 끝에서 "보조 제목 표기"처럼 표현했다.
+  - 이 후보는 최종 제목을 오염시키지는 않았으나, 자연어 품질 리뷰에서는 evidence가 결론보다 약한데 reason이 보조 근거처럼 말하는 잔여 리스크다.
+- 조치:
+  - `_build_image_grounding_note()`에서 최종 title과 OCR/표지 후보가 일치할 때만 직접 이미지 근거로 표현한다.
+  - 최종 title이 있는데 OCR/표지 후보가 다르면 "최종 제목과 일치하지 않아 보조 제목 근거로 사용하지 않습니다"로 낮춘다.
+  - 최종 title이 없고 OCR/표지 후보만 있으면 "제목 후보"로만 표현한다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_image_grounding_note_softens_nonmatching_ocr_title tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_ocr_drift_title_is_vetoed_and_alias_bundle_recovers_correct_primary_work -v`: `2` tests OK.
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_agentic_pipeline_rework.py`: OK.
+  - 감사 산출물: `qualitative_review\20260528_141006_620986\v187_active_goal_requirement_audit_ko_20260529.md`.
+- 남은 작업:
+  - 다음 `--vlm on --ocr on` live canary에서 `11718099` reason이 OCR drift 후보를 보조 근거로 과확정하지 않는지 확인한다.
+  - 10만 건 전체 semantic gate는 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260529-130 - v184 URL Media-Type Guard + Weak Character-Page Veto
+
+- 상태: patched / unit verified / VLM-OCR live verified / semantic gate REVIEW-LOCKED
+- 최신 확인: v184 live run `20260529_155118_539513`
+- 우선순위: P1 evidence-integrity, P1 semantic-overresolution
+- Type: semantic-guard / URL-validator / character-page-rescue
+- 문제:
+  - v183에서 `11718099`는 title은 `빌어먹을 환생`으로 맞았지만, final URL이 validator에서 기각된 KakaoPage 웹툰 URL로 남을 수 있었다.
+  - v183에서 `11718091`은 Verifier가 캐릭터 외모/나이 잡담으로 거부했는데, 후단 캐릭터 등장인물 page 검색 경로가 `집이 없어`를 작품명으로 승격했다.
+  - 두 증상 모두 특정 post id 문제가 아니라, 검색 결과의 매체 타입과 Verifier veto가 후단 rescue/freeze보다 약하게 취급된 구조 문제였다.
+- 조치:
+  - `_is_title_matched_non_novel_media_url()`를 추가해 같은 URL의 검색 근거가 웹툰/만화/파생 팬픽 매체로만 지지되면 소설 상세 URL 근거에서 제외한다.
+  - `_title_matched_official_url_quality()`와 `_find_title_matched_official_url()`이 웹툰/만화 media hit를 title/url pair 후보로 쓰지 않게 했다.
+  - `_evaluate_heretic_url_candidate()`는 `non_novel_media_platform_detail`을 명시적으로 invalid 처리한다.
+  - `_freeze_identity_references()`는 final URL이 비소설 매체 URL로만 지지되면 지우고, 정확한 소설 상세 검색 URL이 있으면 그 URL로 `primary_work`를 동기화한다.
+  - `_pick_character_page_confirmed_title()`은 약한 캐릭터 나이/외모 반응글에서 Verifier/관계판정이 작품 승격을 거부하면 등장인물 page search rescue를 막는다.
+  - 특정 post id, `집이 없어`, `빌환`, Kakao/Naver URL 하드코딩 없이 검색 매체 타입과 공개 Verifier/evidence field 조합으로 처리한다.
+- 검증:
+  - `test_title_matched_official_url_prefers_novel_detail_over_webtoon_media_hit`: KakaoPage 웹툰 URL은 제외되고 Naver Series novel detail이 선택됨.
+  - `test_character_page_search_does_not_resolve_weak_character_banter_verifier_veto`: 캐릭터 외모/나이 잡담은 등장인물 page 검색만으로 작품 확정되지 않음.
+  - focused regression 7건 OK.
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_agentic_pipeline_rework.py expert_main.py tests\test_expert_main_input_loader.py`: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework -v`: `323` tests OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_input_loader -v`: `29` tests OK
+  - v184 live command: `.\venv\Scripts\python.exe expert_main.py --input qualitative_review\20260528_141006_620986\v117_targeted_4_input.jsonl --output qualitative_review\20260528_141006_620986\v184_semantic_url_character_vlm_ocr_result.json --server-type vllm --parallel 36 --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`
+  - v184 manifest: `input_post_count=4`, `requested_parallel=36`, `effective_parallel=4`, `completed/failed/pending/flushed=4/0/0/4`, `vlm_enabled=true`, `ocr_enabled=true`, `image_post_count=3`, Docker lifecycle flags false.
+  - v184 result: `11718091`은 `is_relevant=false`, title null, `work_resolution=none`.
+  - v184 result: `11718099`는 `빌어먹을 환생 + https://series.naver.com/novel/detail.series?productNo=5935188`.
+  - v184 result: `11718097`은 `망겜의 힐러`, URL null. title 판정은 회복됐지만 official detail URL 근거는 별도 `Medium`으로 둔다.
+  - v184 result: `11718083`은 `is_relevant=true`지만 `novel_identity=null`, `title_resolution_state=unresolvable_memory_query`, `title_resolution_allowed=false`, `is_resolved_work_discussion=false`.
+- 남은 작업:
+  - `11718083`류 memory-query는 `is_relevant`만으로 성공/실패를 판정하지 말고 `title_resolution_state/title_resolution_allowed/work_resolution`까지 함께 본다.
+  - v184는 targeted 4건 canary이므로 10만 건 semantic approval에는 충분하지 않다. expanded random baseline과 high-risk bucket review 전까지 전체 gate는 `REVIEW-LOCKED`다.
+
+## IMP-20260529-129 - Title/URL Match-Quality Ordering v182
+
+- 상태: patched / unit verified / live verified with follow-up
+- 최신 확인: v182 live run `20260529_151429_633557`
+- 우선순위: P1 evidence-integrity, P1 title-url-pair
+- Type: semantic-guard / evidence-url / title-resolution
+- 문제:
+  - 원본 run `20260528_141006_620986`의 `11718099`는 `표지변경` 같은 상태/행위 표면어가 title로 승격된 버그였다.
+  - 이후 canary에서 title은 `빌어먹을 환생`으로 회복됐지만, v178 result JSON은 `https://book.novelpia.com/novel/19205`처럼 source title이 `25화무 빌어먹을 환생 목마`인 embedded-title page를 primary URL로 잡을 수 있었다.
+  - 로그상 Arbiter는 `https://series.naver.com/novel/detail.series?productNo=5935188`를 복구했지만, 후단 reference freeze에서 플랫폼 선호 rank가 정확 제목 match보다 앞서 URL이 흔들릴 여지가 있었다.
+- 조치:
+  - `_source_title_match_quality()`를 추가해 검색/페치 제목 match를 `0=정확`, `1=유사/strict`, `2=부분 phrase`로 분리했다.
+  - `_find_title_matched_official_url()`은 이제 플랫폼 선호 rank보다 match quality를 우선해 URL을 선택한다.
+  - `_freeze_identity_references()`의 `primary_work` URL 동기화도 기존 URL의 플랫폼 rank가 더 좋아도 match quality가 낮으면 정확 제목 URL로 교체한다.
+  - 특정 post id, `빌환`, Naver/Novelpia URL 하드코딩 없이 일반 title/url pair 정합성으로 처리한다.
+- 검증:
+  - `test_title_matched_official_url_prefers_exact_title_over_platform_rank`: 정확 제목 Naver Series 상세가 embedded-title Novelpia page보다 우선됨.
+  - `test_freeze_identity_replaces_embedded_title_url_with_exact_title_url`: `primary_work.heretic_url`도 정확 제목 URL로 동기화됨.
+  - 기존 `test_freeze_identity_repairs_kakao_comment_tab_url_to_official_detail`: 계속 통과.
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_agentic_pipeline_rework.py expert_main.py tests\test_expert_main_input_loader.py`: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework -v`: `318` tests OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_input_loader -v`: `29` tests OK
+  - v182 live command: `.\venv\Scripts\python.exe expert_main.py --input qualitative_review\20260528_141006_620986\v117_targeted_4_input.jsonl --output qualitative_review\20260528_141006_620986\v182_title_url_quality_vlm_ocr_result.json --server-type vllm --parallel 36 --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`
+  - v182 manifest: `input_post_count=4`, `requested_parallel=36`, `effective_parallel=4`, `completed/failed/pending/flushed=4/0/0/4`, `vlm_enabled=true`, `ocr_enabled=true`, `image_post_count=3`, Docker lifecycle flags false.
+  - v182 result: `11718099` final `official_title=빌어먹을 환생`, `heretic_url=https://series.naver.com/novel/detail.series?productNo=5935188`.
+  - v182 result: `11718083` title null/unresolvable, `11718091` title null/unresolved, `11718097=망겜의 힐러`.
+- 남은 작업:
+  - v182 로그에서 Naver Series URL 직접 fetch가 `content_deleted_or_unavailable`로 기각됐지만 최종 result에는 batch-memory exact alias rescue로 URL이 유지됐다. URL validator와 final rescue의 evidence state 불일치를 별도 P1로 정리한다.
+  - v182 `11718099` flags에 `multi_work_title_cleared`, `primary_work_cleared_non_resolved`, `batch_memory_exact_alias_rescued`가 함께 남아 final resolved 상태와 일부 stale flag가 섞인다. final flag cleanup을 별도 후속으로 둔다.
+  - 10만 건 전체 semantic gate는 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260529-128 - Semantic/VLM Test Baseline v181
+
+- 상태: patched / unit verified / v181 VLM-OCR live baseline verified
+- 최신 확인: v181 run `20260529_144914_316168`
+- 우선순위: P1 semantic-gate, P1 VLM/OCR-evidence
+- Type: test-baseline / manifest / visual-evidence / semantic-review
+- 문제:
+  - v179 known-bad run은 이미지가 있는 post를 포함했지만 VLM/OCR 시각 증거가 제공되지 않은 상태로 판단했다.
+  - `11718082`는 이미지 안에 작품명/회차가 있는 케이스인데, 로그상 Synthesizer가 `[이미지]`를 "시각 자료가 존재했으나 제공되지 않음"으로 처리했다.
+  - 따라서 이 run은 Docker/runtime 회귀 확인에는 쓸 수 있어도 이미지 기반 semantic approval에는 사용할 수 없다.
+- 조치:
+  - semantic 품질 regression 기본 기준을 `--vlm on --ocr on`으로 재고정했다.
+  - `expert_main.py` manifest에 `vlm_enabled`, `ocr_enabled`, `image_post_count`, `image_posts_present`, `vlm_ocr_semantic_review_ready`, `vlm_ocr_semantic_review_warning`을 추가했다.
+  - 이미지 post가 있는데 VLM/OCR이 완전히 켜지지 않으면 startup warning과 manifest warning을 남겨 해당 run을 `INFO_MISSING/REPROCESS` 증거로 분리한다.
+  - `11718080`처럼 전문가들이 장르/트로프/한탄글로 맞게 거부한 뒤 후단 batch-memory/title-surface rescue가 뒤집는 경로를 `late_rescue_blocked_by_verifier_generic_veto`로 막았다.
+  - 이 guard는 특정 post id, 특정 alias, 특정 작품명 하드코딩이 아니라 Verifier의 generic-discourse veto, 직접 작품 앵커 부재, 독립 bridge 부재를 조합해 적용한다.
+- 검증:
+  - v181 command: `.\venv\Scripts\python.exe expert_main.py --input qualitative_review\20260528_141006_620986\v149_reason_evidence_zero_guard_input.jsonl --output qualitative_review\20260528_141006_620986\v181_vlm_ocr_on_semantic_baseline_result.json --server-type vllm --parallel 36 --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`
+  - v181 manifest: `input_post_count=5`, `requested_parallel=36`, `effective_parallel=5`, `vlm_enabled=true`, `ocr_enabled=true`, `image_post_count=4`, `vlm_ocr_semantic_review_ready=true`, Docker lifecycle flags all false.
+  - v181 `11718082`: 이미지 OCR/VLM에서 작품명/작가/회차를 읽어 `재벌가 차녀의 2회차 걸그룹`으로 resolved.
+  - v181 `11718080`: 이미지 없는 한탄/장르 일반론으로 `is_relevant=false`, title null 유지.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework -v`: `316` tests OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_input_loader -v`: `29` tests OK
+- 남은 작업:
+  - v181은 5건 targeted canary이므로 10만 건 semantic approval에는 사용할 수 없다.
+  - large qualitative expansion random baseline/high-risk bucket 결과가 나오기 전까지 전체 gate는 `REVIEW-LOCKED`로 유지한다.
+  - `11718082`류 이미지 OCR/VLM 케이스는 browser visual evidence와 VLM/OCR 로그를 함께 보존한다.
+- 운영 경계:
+  - `--vlm off --ocr off`는 text-only guard, crash isolation, 또는 non-image canary 전용이다.
+  - 이미지 post가 섞인 자연어 품질 승인에는 VLM/OCR 또는 Browser visual evidence가 필요하다.
+
+## IMP-20260529-127 - Goal/Reuse-Only Explicit Endpoint Healthy Filter v180
+
+- 상태: patched / unit verified
+- 최신 확인: `tests.test_expert_main_input_loader` 27건
+- 우선순위: P1 runtime-efficiency, P1 operations-safety
+- Type: goal-test-loop / endpoint-health / docker-lifecycle / operator-guidance
+- 문제:
+  - Docker Compose `up/recreate`는 hard opt-in으로 막혀 있었지만, 사용자가 예전 `MCP_ENDPOINTS` 24/36개 목록을 명시 env로 남긴 경우 goal/test run이 dead endpoint를 그대로 들고 갈 수 있었다.
+  - 이 경우 실제 compose 실행이 아니더라도 startup failure 안내가 `warp_shards.py up`을 기본 해결책처럼 보여 goal loop에서 shard 재시작을 유도하는 UX가 남았다.
+- 조치:
+  - healthy endpoint 필터를 autogen endpoint 전용에서 goal/reuse-only 명시 endpoint 목록까지 확장했다.
+  - 36건 이하 goal/test 또는 `--reuse-shards-only`에서는 health check 후 살아있는 endpoint subset만 사용하고 `_PARALLEL`도 그 수 이하로 낮춘다.
+  - large explicit endpoint validation은 기본적으로 실패 endpoint를 숨기지 않도록 유지했다.
+  - manifest/run_meta용 `mcp_healthy_endpoint_filter`, `mcp_healthy_endpoint_filter_autogen` 메타를 추가했다.
+  - goal/reuse-only health failure 안내는 Docker lifecycle이 차단된 상태와 복구 opt-in 조건을 먼저 설명한다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_input_loader.py`: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_input_loader -v`: `27` tests OK
+  - 현재 프로세스 env에는 `CODEX_SHELL`, `CODEX_THREAD_ID`만 있고 `MCP_AUTO_*` 계열은 관측되지 않았다.
+  - 현재 Docker shard group은 `1..5`가 `Up 16 hours`로 유지되어 있었고, 이번 확인에서 Docker lifecycle은 실행하지 않았다.
+  - v179 live run `20260529_142409_196841`은 `requested_parallel=36`, `effective_parallel=5`, `mcp_auto_up_shards=false`, `mcp_auto_recreate_shards=false`, `mcp_local_shard_management_enabled=false`였다.
+- 운영 경계:
+  - 이 변경은 goal/test startup 비용과 오해를 줄이는 runtime guard다.
+  - 10만 건 semantic quality gate는 계속 random baseline과 high-risk expansion 검토가 필요하며 이 변경만으로 GO가 되지 않는다.
+
+## IMP-20260529-126 - Title-Lead Alias Deliberation Skip v178
+
+- 상태: patched / unit verified / live verified
+- 최신 확인: v178 live known-bad run `20260529_141334_062130`
+- 우선순위: P1 runtime-efficiency, P1 expert-orchestration
+- Type: deliberation / title-alias / goal-test-loop / no-hardcoding
+- 문제:
+  - `11718097`은 `망겜힐 -> 망겜의 힐러`로 semantic result는 맞았지만, `Decoder=None but Verifier=relevant` 충돌 때문에 full Jury/Debate가 열려 long-tail이 남았다.
+  - v177에서 같은 현상을 재현했다. W2 로그 기준 `method=full_deliberation_ABC`, elapsed `81.4s`, post total `236.4s`였다.
+  - v175/v177 모두 Docker/Compose lifecycle은 열리지 않았으므로 병목은 shard stop/start가 아니라 전문가 후단 루프였다.
+- 조치:
+  - title-leading alias가 검색 결과에서 동일 작품명으로 닫히고 Verifier가 같은 title을 지지하면 full deliberation을 스킵한다.
+  - score `2.0` 케이스는 검색 결과 `title` 필드 자체가 작품명을 직접 포함하는 강한 bridge일 때만 허용한다.
+  - memory-query, original Gatekeeper noise, recommendation, author/trope/genre target, critical counterargument는 제외한다.
+  - post id/약칭 하드코딩 없이 공개 title, search result, expert output, evidence fields만 사용한다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\experts\deliberation.py tests\test_llm_client_multimodal.py`: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_llm_client_multimodal.DeliberationLimitTest -v`: `5` tests OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework tests.test_llm_client_multimodal tests.test_expert_main_input_loader -v`: `354` tests OK
+  - v178 result: `11718083=null/unresolvable`, `11718091=null/noise`, `11718097=망겜의 힐러`, `11718099=빌어먹을 환생`
+  - v178 W2: `심의 스킵: title-lead alias search bridge resolved`, `method=evidence_scorer_only`, `Post 11718097 완료 (190.5s, 2 iterations)`
+  - v178 log grep: `full_deliberation_ABC`/debate/jury `0`건, Docker/Compose/shard lifecycle `0`건
+- 성능:
+  - v175 total `278.6s`, `11718097 273.2s`
+  - v177 total `237.6s`, `11718097 236.4s`, full deliberation 재현
+  - v178 total `191.7s`, `11718097 190.5s`, full Jury/Debate 제거
+- 남은 작업:
+  - URL 없는 resolved title은 title resolution과 official detail evidence strength를 분리해 `Medium` 근거로 보고한다.
+  - targeted canary 통과는 10만 건 semantic approval 근거가 아니며 전체 gate는 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260529-125 - Goal/Test Compose Status-Audit Hard Block v176
+
+- 상태: patched / unit verified / live reverified / docs updated
+- 최신 확인: v178 live manifest/log 재확인 및 v176 unit regression
+- 우선순위: P1 runtime-efficiency, P1 operations-safety
+- Type: goal-test-loop / docker-lifecycle / shard-management / status-audit
+- 문제:
+  - goal/test run에서 Docker Compose `up/recreate`는 이미 hard opt-in으로 막았지만, `MCP_LOCAL_SHARD_STATUS_AUDIT=1`이 남아 있으면 `warp_shards.py status`를 통해 Docker Compose `ps/exec` 조회가 열릴 수 있었다.
+  - 이 status audit은 lifecycle은 아니지만 소량 semantic regression에서는 체감상 같은 지연/불안정 원인이 되므로 기본 경로에서 분리해야 한다.
+- 조치:
+  - `MCP_LOCAL_SHARD_STATUS_AUDIT=1` 단독으로는 goal/test run의 local shard management를 열지 않는다.
+  - status audit 목적의 작업은 `MCP_LOCAL_SHARD_STATUS_AUDIT=1`과 `MCP_ALLOW_GOAL_SHARD_STATUS_AUDIT=1`을 함께 명시한다.
+  - manifest/run config에 `mcp_local_shard_status_audit_requested`, `mcp_local_shard_status_audit_allowed`를 추가했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_input_loader.py`: OK
+  - focused lifecycle regression 4건: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_input_loader -v`: `25` tests OK
+  - v175 live manifest: `requested_parallel=36`, `effective_parallel=4`, `mcp_auto_up_shards=false`, `mcp_auto_recreate_shards=false`, `mcp_local_shard_management_enabled=false`, `mcp_local_shard_status_audit=false`
+  - v175 log grep: `docker`, `compose`, `force-recreate`, `warp_shards.py` 실행 흔적 `0`건
+  - v178 live manifest/log에서도 `mcp_auto_up_shards=false`, `mcp_auto_recreate_shards=false`, `mcp_local_shard_management_enabled=false`, `mcp_local_shard_status_audit=false`, Docker/Compose/shard lifecycle 실행 흔적 `0`건
+- 운영 경계:
+  - 일반 goal/test regression은 기본값 또는 `--reuse-shards-only`로 실행한다.
+  - shard lifecycle/status audit 자체가 검증 대상일 때만 관련 opt-in을 현재 명령/환경에 명시한다.
+  - 이 변경은 runtime/operation gate이며, 10만 건 semantic approval은 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260529-124 - Memory Query Weak-Title Forced-Upgrade Guard v175
+
+- 상태: patched / unit verified / live verified / perf follow-up closed for title-lead alias
+- 최신 확인: v175 live known-bad run `20260529_134510_545218`
+- 우선순위: P1 semantic-guard, P1 runtime-efficiency
+- Type: expert-orchestration / memory-query / arbiter / deliberation
+- 문제:
+  - v174에서 `11718083`은 최종적으로 null-title이 됐지만, weak title candidate가 Arbiter/Synthesizer 경로에서 반복 복구되며 단건 `330.9s`가 걸렸다.
+  - 핵심 위험은 "작품 찾기/기억 회수 글"에서 직접 증거 없는 thematic relation이 title 확정으로 승격되는 forced-upgrade였다.
+- 조치:
+  - memory-query 글에서 direct title/official URL/quote/character-title link가 없고 `post_direct_grounding=false`, relation hold/downgrade, explicit bridge 부재이면 추가 collaboration/full deliberation을 차단한다.
+  - Arbiter의 suspected-title forced-upgrade와 `_title_deliberately_null` 우회도 같은 조건에서 막는다.
+  - 조건은 공개 필드와 evidence/relation flags 기반이며 post id 하드코딩은 사용하지 않는다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\experts\orchestrator.py src\llm_batch\experts\deliberation.py src\llm_batch\experts\arbiter.py tests\test_agentic_pipeline_rework.py`: OK
+  - focused memory-query regression 5건: OK
+  - v175 known-bad 4건 result: `11718083=null/unresolvable`, `11718091=null/noise`, `11718097=망겜의 힐러`, `11718099=빌어먹을 환생`
+  - v175 lifecycle: Docker/Compose/shard recreate 실행 흔적 `0`건
+- 성능:
+  - v174 total `331.9s` -> v175 total `278.6s`
+  - `11718083` `330.9s` -> `102.6s`
+  - search requests `26` -> `22`
+- 남은 작업:
+  - `11718097` full deliberation long-tail은 v178 title-lead alias deliberation skip으로 targeted canary 기준 닫았다.
+  - targeted canary 통과는 10만 건 semantic approval 근거가 아니며 전체 gate는 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260529-123 - Memory Query Unresolved Fast-Path v173
+
+- 상태: patched / unit verified / live verified / perf follow-up open
+- 최신 확인: v173 live goal run `20260529_132113_820839`
+- 우선순위: P1 runtime-efficiency, P1 semantic-guard
+- Type: expert-orchestration / memory-query / deliberation / goal-test-loop
+- 문제:
+  - `11718083`처럼 "이 내용으로는 작품을 특정할 수 없는 기억 회수/소설 찾기" 글은 null-title로 남겨야 한다.
+  - v171은 semantic 결과는 맞았지만, Verifier 이후 추가 collaboration, Synthesizer, full Jury/Debate가 열려 단건 `365.3s`, `102,794` tokens가 필요했다.
+  - v171 manifest/log 기준 Docker lifecycle은 열리지 않았으므로, 느린 원인은 compose 재시작이 아니라 전문가 오케스트레이션의 불필요한 후단 루프였다.
+- 조치:
+  - memory-query settled rejection은 Verifier 공개 출력이 실제로 있을 때만 인정한다. 빈 Verifier dict에서 Decoder/Verifier를 건너뛰는 v172식 조기 skip은 금지했다.
+  - Verifier가 no-title/weak bridge/hold-nullify 방향으로 정리한 memory-query unresolved 케이스는 추가 collaboration과 Synthesizer를 종료한다.
+  - 동일 조건에서 Deliberation은 full Jury/Debate 대신 `evidence_scorer_only`로 끝낸다.
+  - direct quote/source, official URL, character/title link, direct title anchor가 있으면 fast-path를 열지 않는다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\experts\orchestrator.py src\llm_batch\experts\deliberation.py tests\test_agentic_pipeline_rework.py`: OK
+  - focused regression 5건: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework tests.test_llm_client_multimodal tests.test_expert_main_input_loader -v`: `349` tests OK
+  - v173 live run: `input_post_count=1`, `requested_parallel=36`, `effective_parallel=1`, `completed/failed/pending/flushed=1/0/0/1`
+  - v173 manifest: `mcp_auto_up_shards=false`, `mcp_auto_recreate_shards=false`, `mcp_local_shard_management_enabled=false`, `mcp_small_run_shard_lifecycle_blocked=true`
+  - v173 result: `post_id=11718083`, `is_relevant=false`, `novel_identity=null`, `work_resolution=none`, `title_resolution_state=unresolvable_memory_query`, `title_resolution_allowed=false`
+  - v173 log: 추가 collaboration 종료, Synthesizer skip, `Deliberation 완료: method=evidence_scorer_only`, Docker/Compose/shard recreate 실행 흔적 `0`건
+- 성능:
+  - v171: `365.3s`, `102,794` tokens
+  - v173: `155.5s`, `62,730` tokens
+  - 단건 기준 약 `57%` 시간 감소, 약 `39%` token 감소
+- 남은 작업:
+  - v173도 search/deep-search/page analyzer와 대형 Decoder/Verifier prompt는 남아 있어 단건 `155.5s`다.
+  - memory-query lookup profile에서 direct proof가 없고 weak evidence가 반복될 때 검색 retry, page analyzer, Decoder prompt 크기, reason_review를 더 줄일지 별도 P1로 검토한다.
+  - 이 canary는 runtime/known-bad 회귀 증거이며, 10만 건 semantic approval은 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260529-122 - Env-only Docker Lifecycle Block v171
+
+- 상태: patched / unit verified / live environment observed
+- 최신 확인: v171 live goal run `20260529_125908_474586`에서 compose-free 재확인
+- 우선순위: P1 runtime-efficiency, P1 operations-safety
+- Type: goal-test-loop / docker-lifecycle / shard-management
+- 문제:
+  - goal/test regression에서 `expert_main.py`가 Docker Compose `up/recreate` 경로에 들어가면 실제 semantic 회귀 확인보다 shard lifecycle 비용이 커진다.
+  - 기존 차단은 Codex/small-run 경로에서는 동작했지만, 오래된 `MCP_AUTO_UP_SHARDS=1`/`MCP_AUTO_RECREATE_SHARDS=1` 환경변수가 남아 있거나 Codex 밖 터미널에서 실행하면 env 단독 opt-in으로 lifecycle이 다시 열릴 수 있는 운영 위험이 남았다.
+- 조치:
+  - `MCP_AUTO_UP_SHARDS`/`MCP_AUTO_RECREATE_SHARDS`만으로는 더 이상 Docker lifecycle을 열지 않는다.
+  - env 기반 lifecycle은 `MCP_ALLOW_ENV_SHARD_LIFECYCLE=1` 또는 legacy `MCP_CODEX_ALLOW_ENV_SHARD_LIFECYCLE=1` ack가 있어야 하며, Codex 또는 small goal/test run에서는 현재 명령의 `--allow-goal-shard-lifecycle`도 함께 필요하다.
+  - 36건 이하 goal/test run은 `MCP_SMALL_RUN_ALLOW_SHARD_LIFECYCLE=1` 같은 env만으로는 lifecycle block을 해제하지 않는다.
+  - manifest/run config에 `mcp_env_shard_lifecycle_requested`와 `mcp_env_shard_lifecycle_global_opt_in`을 추가해 stale env 차단 여부를 증거로 남긴다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_input_loader.py`: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_input_loader -v`: `25` tests OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework tests.test_llm_client_multimodal tests.test_expert_main_input_loader -v`: `344` tests OK
+  - 현재 프로세스 점검: `expert_main|llm_batch|warp_shards|vllm|uvicorn|openai` 매칭 Python 점유 없음
+  - 현재 Docker 점검: WARP/MCP shard group `1..5`는 `Up 14 hours`로 유지되어 있었고, 이번 확인에서 Compose 재시작은 수행하지 않았다.
+  - v171 live goal run: `requested_parallel=36`, `effective_parallel=1`, `input_post_count=1`, `completed/failed/pending=1/0/0`
+  - v171 manifest: `mcp_auto_up_shards=false`, `mcp_auto_recreate_shards=false`, `mcp_local_shard_management_enabled=false`, `mcp_local_shard_status_audit=false`, `mcp_small_run_shard_lifecycle_blocked=true`
+  - v171 log grep: `docker`, `compose`, `force-recreate`, `warp_shards.py` 실행 흔적 `0`건
+- 운영 경계:
+  - shard lifecycle 자체를 검증할 때만 `--allow-goal-shard-lifecycle`과 `--auto-up-shards` 또는 `--auto-recreate-shards`를 현재 명령에 함께 명시한다.
+  - 일반 goal/test regression은 기본값 또는 `--reuse-shards-only`로 실행하고, manifest에서 `mcp_auto_up_shards=false`, `mcp_auto_recreate_shards=false`, `mcp_local_shard_management_enabled=false`를 확인한다.
+  - 이 변경은 runtime/lifecycle 승인이지, 10만 건 semantic approval 근거가 아니다.
+
+## IMP-20260529-121 - Settled Verifier Veto Deliberation Skip v169
+
+- 상태: patched / unit verified / live verified / perf follow-up open
+- 우선순위: P1 runtime-efficiency, P1 semantic-guard
+- Type: expert-orchestration / deliberation / goal-test-loop
+- 문제:
+  - `11718083` 같은 기억 회수/소설 찾기 글은 Verifier와 Arbiter가 이미 `official_title=null`, `title_resolution_state=unresolvable_memory_query`로 정리해도, 후단 Jury/Debate 심의가 다시 열리면 goal 테스트런이 단건에서도 과도하게 길어질 수 있다.
+  - v168 known-bad 5건 live run은 Docker Compose lifecycle에는 들어가지 않았지만, `11718083` 처리 후반에서 비싼 심의 경로가 열려 orphan Python process가 남는 운영 병목을 드러냈다.
+- 조치:
+  - `src\llm_batch\experts\deliberation.py`에 settled Verifier veto fast-path를 추가했다.
+  - 조건은 final `is_relevant=false`, `official_title=null`, `_title_deliberately_null=true`, evidence score `<=0`, Verifier critical counter 또는 `anchor_found=none/search_only`, 그리고 post 본문 직접 title mention 부재다.
+  - 이 조건에서는 Jury/Debate를 열지 않고 `evidence_scorer_only`로 심의를 종료한다.
+  - Jury/Debate 기본 `max_tokens`를 `4096`에서 `2048`로 낮췄다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\experts\deliberation.py tests\test_llm_client_multimodal.py expert_main.py tests\test_expert_main_input_loader.py`: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_llm_client_multimodal tests.test_expert_main_input_loader -v`: `36` tests OK
+  - v169 live run `20260529_121701_071316`: input `1`, requested/effective parallel `36/1`, completed/flushed/pending/failed `1/1/0/0`
+  - v169 manifest: `mcp_auto_up_shards=false`, `mcp_auto_recreate_shards=false`, `mcp_local_shard_management_enabled=false`, `mcp_small_run_shard_lifecycle_blocked=true`
+  - v169 log: `심의 스킵: Verifier critical veto + 음수 evidence로 비관련 확정`, `Deliberation 완료: method=evidence_scorer_only`, `docker compose`/`force-recreate`/`warp_shards.py`/`compose up` 실행 흔적 없음
+  - v169 result: `post_id=11718083`, `is_relevant=false`, `official_title=null`, `work_resolution=none`, `title_resolution_state=unresolvable_memory_query`, `title_resolution_allowed=false`
+- 남은 작업:
+  - v169는 Jury/Debate는 스킵했지만 단건 `441.6s`, `prompt_tokens=167,767`, `total_tokens=176,274`, search degraded `10/13`으로 여전히 무겁다.
+  - memory-query/unresolvable fast-path에서 late rescue, 과도한 search retry, reason_review, 대형 decoder prompt를 줄이는 후속 최적화가 필요하다.
+  - targeted canary 통과는 10만 건 semantic approval 근거가 아니며, 전체 gate는 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260529-120 - Goal/Test Compose Avoidance and Partial Subset Preservation v167
+
+- 상태: patched / unit verified
+- 우선순위: P1 runtime-efficiency, P1 run-integrity
+- Type: goal-test-loop / docker-lifecycle / partial-run-recovery
+- 문제:
+  - goal 테스트런에서 `expert_main.py`가 Docker Compose stop/start/recreate 경로에 들어가면 판단 회귀 확인보다 shard lifecycle 비용이 커진다.
+  - 병렬 run에서 ordered flush gap이 남은 상태로 종료되면 final result JSON은 flushed prefix만 보이고, checkpoint/pending을 별도 복구해야 했다.
+- 조치:
+  - 기존 lifecycle hard opt-in 정책을 재확인하고, partial/중단 run에서 pending completed rows가 있으면 `_completed_subset.json`과 `_completed_subset_manifest.json`을 자동으로 남기도록 했다.
+  - primary result JSON은 ordered flushed prefix로 유지하고, completed subset은 recovery artifact로 분리한다.
+  - manifest에 `completed_subset_written`, `completed_subset_count`, `completed_subset_reason`, `partial_flush_gap`, `ordered_flush_blocked`, `large_run_complete`를 기록한다.
+  - failure row count를 병렬 manifest의 `failed_count`에 반영하도록 했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_input_loader.py`: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_input_loader -v`: `24` tests OK
+  - 신규 helper test가 flushed prefix 뒤에 pending rows를 `global_idx` 순서로 붙이는지 확인했다.
+  - 기존 lifecycle tests가 `--allow-goal-shard-lifecycle` 없는 Codex/소규모 goal run에서 up/recreate/local shard management를 차단하는지 재확인했다.
+- 운영 경계:
+  - completed subset은 partial recovery/triage용이다.
+  - `partial_flush_gap=true` 또는 `large_run_complete=false`이면 10만 건 run completion 및 semantic approval은 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260529-119 - Large Rerun Readiness Plan v166
+
+- 상태: documented / environment observed
+- 우선순위: P1 run-readiness
+- Type: large-rerun / operations / semantic-gate
+- 문제:
+  - 현재 partial/recovered source는 approval에 부족하지만, 다음 large rerun을 어떤 모드로 실행할지 명확히 고정하지 않으면 Docker lifecycle 비용 또는 source 덮어쓰기 위험이 있다.
+- 조치:
+  - reuse-only safe mode와 explicit 36-shard validation mode를 분리한 실행 계획을 작성했다.
+  - 실행 전 Python 점유, Docker shard 상태, vLLM endpoint, output overwrite 금지 확인을 명시했다.
+  - 실행 후 manifest, run health audit, large-scale preflight, random baseline, high-risk expansion 순서를 명령 단위로 정리했다.
+- 증거:
+  - `qualitative_review\20260528_141006_620986\v166_large_rerun_readiness_plan_ko_20260529.md`
+  - 현재 Python 점유 없음
+  - 현재 Docker shard group `1..5`
+- 남은 작업:
+  - 실제 large rerun은 새 timestamp output으로 실행하고, clean completion manifest를 확보해야 한다.
+
+## IMP-20260529-118 - Large-Scale Qualitative Preflight v165
+
+- 상태: implemented / unit verified / original-and-recovered checked
+- 우선순위: P1 review-gate
+- Type: qualitative-review / preflight / run-integrity
+- 문제:
+  - partial/recovered source에서 바로 large-scale qualitative expansion을 실행하면 부족한 source로 만든 산출물이 approval 증거처럼 보일 수 있다.
+  - large-scale 실행 전 source completeness와 random/high-risk feasibility를 선행 gate로 확인해야 한다.
+- 조치:
+  - `tools\preflight_qualitative_large_scale_review.py`를 추가했다.
+  - result rows, manifest counts, checkpoint completed rows, pending snapshot rows, source policy, random baseline shortfall, high-risk bucket population을 JSON/Markdown으로 남긴다.
+  - original partial source와 recovered subset source를 모두 preflight했다.
+- 검증:
+  - `tests.test_qualitative_review_packet_tools`: `20` tests OK
+  - `py_compile`: OK
+  - original source gate: `REVIEW-LOCKED`, random shortfall `929`
+  - recovered subset gate: `REVIEW-LOCKED`, random shortfall `920`
+- 남은 작업:
+  - 충분한 completed source가 생긴 뒤 preflight를 먼저 통과시키고 large-scale qualitative expansion을 실행한다.
+
+## IMP-20260529-117 - Sample Target Shortage Audit v164
+
+- 상태: implemented / unit verified / shortage audit generated
+- 우선순위: P1 review-gate
+- Type: qualitative-review / sampling / gate-reporting
+- 문제:
+  - partial/recovered subset에서 `--size 1000` 같은 large-scale 표본 목표를 요청해도 실제 선택 수가 부족하면, 그 부족분이 gate에 명확히 드러나야 한다.
+  - high-risk bucket 목표도 target 대비 selected가 부족하면 `GO` 근거가 아니라 `Missing` evidence로 남아야 한다.
+- 조치:
+  - random control manifest에 `requested_sample_size`, `selected_sample_size`, `sample_shortfall`, `sample_target_satisfied`, `sample_coverage_ratio`를 추가했다.
+  - Round2 manifest에 `target_total`, `selected_total`, `target_satisfied`, `target_shortfalls`, `bucket_coverage_ratios`를 추가했다.
+  - gate가 random baseline `1,000`건 미달과 Round2 high-risk target 미달을 각각 `Weak/Missing` evidence로 보고한다.
+- 검증:
+  - `tests.test_qualitative_review_packet_tools`: `19` tests OK
+  - `py_compile`: OK
+  - v164 shortage audit: Round2 selected `79/340`, random selected `1/1000`, gate `NO-GO`
+- 남은 작업:
+  - 충분한 completed source가 생긴 뒤 random baseline `1,000+`와 P0/P1 bucket별 `200~500`건 확대를 다시 생성해야 한다.
+
+## IMP-20260529-116 - Recovered Subset Review Source Policy v163
+
+- 상태: implemented / unit verified / smoke verified
+- 우선순위: P1 review-tooling
+- Type: qualitative-review / source-integrity / gate-reporting
+- 문제:
+  - recovered completed subset을 후속 qualitative review 도구에 넣으면 final result JSON과 같은 방식으로 취급될 위험이 있었다.
+  - recovered artifact 파일명은 `expert_result_<run_id>.json` 패턴이 아니어서 run id가 기본값으로 오염될 수 있었다.
+  - random control 추가 후 canonical gate/summary가 재계산되지 않으면 random baseline 반영 여부가 문서와 실제 labels 사이에서 어긋날 수 있었다.
+- 조치:
+  - `tools\build_qualitative_round2_review.py`의 run id 추론을 파일명과 상위 path component까지 보도록 확장했다.
+  - Round2/random manifest에 `source_review_policy`를 추가했다.
+  - `tools\build_qualitative_random_control_review.py`가 random control 추가 후 canonical `summary.json`/`gate_decision.md`를 재계산하도록 했다.
+  - 재계산 시 `round2_manifest.run_id`/`sample_seed`를 Round2 module global에 재주입해 gate 제목 오염을 막았다.
+- 검증:
+  - `tests.test_qualitative_review_packet_tools`: `18` tests OK
+  - `py_compile`: OK
+  - v163 smoke: recovered subset `80`건에서 Round2 `30`건, random `20`건, canonical labels `50`, gate `NO-GO`
+- 남은 작업:
+  - v163은 도구 정합성 smoke일 뿐이다. 10만 건 semantic approval은 random baseline `1,000+`와 P0/P1 bucket expansion 전까지 금지한다.
+
+## IMP-20260529-115 - Partial Run Checkpoint Recovery v162
+
+- 상태: patched / unit-verified / recovery-generated / review-locked
+- 우선순위: P1 run-integrity
+- Type: run-health / checkpoint-recovery / partial-run
+- 관련 파일:
+  - `tools\recover_expert_run_from_checkpoint.py`
+  - `tests\test_recover_expert_run_from_checkpoint.py`
+  - `qualitative_review\20260528_141006_620986\v162_run_integrity_recovery_ko_20260529.md`
+  - `qualitative_review\20260528_141006_620986\v162_run_integrity_recovery_summary.json`
+  - `qualitative_review\20260528_141006_620986\v162_run_integrity_recovered_completed_80.json`
+- 배경:
+  - 원본 manifest는 `completed_count=80`, `flushed_count=71`, `pending_count=9`였다.
+  - final result JSON만 보면 9건 누락처럼 보이지만 checkpoint와 pending snapshot까지 봐야 원인을 알 수 있다.
+- 조치:
+  - checkpoint `status=completed` row를 `global_idx` 순서로 재구성하는 복구 도구를 추가했다.
+  - 원본 result는 덮어쓰지 않고 recovered completed subset을 별도 artifact로 남긴다.
+  - final/checkpoint/pending set difference와 `large_run_complete` 여부를 summary JSON에 기록한다.
+- 검증:
+  - unit test `1`건 OK
+  - py_compile OK
+  - v162 recovery summary: `final_result_rows=71`, `checkpoint_completed_rows=80`, `pending_snapshot_rows=9`, `recovered_rows=80`
+  - `integrity_classification=recoverable_pending_flush_gap`
+  - `recovery_safe_to_use_as_completed_subset=true`
+  - `large_run_complete=false`
+- 운영 경계:
+  - recovered subset은 partial triage에는 사용할 수 있다.
+  - clean completion이 없고 입력 `104,502`건 중 completed `80`건뿐이므로 전체 run health는 `REVIEW`, semantic quality는 `NO-GO / REVIEW-LOCKED`다.
+
+## IMP-20260529-114 - Comment Author Context Lines v161
+
+- 상태: patched / unit-verified / live-regression-passed / review-locked
+- 우선순위: P0 semantic-quality
+- Type: dialogue-context / prompt-public-fields / qualitative-review-packet
+- 관련 파일:
+  - `expert_main.py`
+  - `src/llm_batch/agentic_pipeline.py`
+  - `tools/build_qualitative_round2_review.py`
+  - `tests/test_expert_main_input_loader.py`
+  - `tests/test_agentic_pipeline_rework.py`
+  - `tests/test_qualitative_review_packet_tools.py`
+  - `qualitative_review/20260528_141006_620986/v161_known_bad_author_context_lines_result.json`
+  - `qualitative_review/20260528_141006_620986/v161_known_bad_author_context_lines_result_manifest.json`
+- 배경:
+  - `comment_metadata`와 `comment_context_lines`가 있어도 compact line에 댓글 작성자 닉네임이 없으면, post author가 댓글에서 재발화하는 흐름을 리뷰어/모델이 바로 확인하기 어렵다.
+  - 댓글 본문 문자열에 작성자/IP를 직접 합치면 작품 근거와 메타 근거가 섞이므로, 공개 메타 필드에서만 보존해야 한다.
+- 조치:
+  - result row, pipeline prompt context, qualitative packet 재구성 경로의 `comment_context_lines`에 `author=<comment author>`를 추가했다.
+  - 기존 `speaker`, `role=post_author`, `ip`, `reply_level`, `reply_to`, `comment_id`는 유지하고 `author`를 추가했다.
+  - 댓글 작성자 메타는 대화 흐름 해석용이며, 직접 작품명/별칭/줄거리/공식 URL이 없는 한 independent identity evidence로 세지 않는다는 운영 경계를 유지한다.
+- 검증:
+  - `tests.test_expert_main_input_loader`: `23` OK
+  - `tests.test_qualitative_review_packet_tools`: `17` OK
+  - focused pipeline tests: `3` OK
+  - `tests.test_agentic_pipeline_rework`: `305` OK
+  - v161 live run `20260529_104847_516862`: `completed/failed/pending=5/0/0`, `requested_parallel=36`, `effective_parallel=5`
+  - v161 manifest: `mcp_auto_up_shards=false`, `mcp_auto_recreate_shards=false`, `mcp_local_shard_management_enabled=false`, `mcp_small_run_shard_lifecycle_blocked=true`
+  - v161 logs: Docker/warp lifecycle pattern 및 `rescue: batch memory alias` match 없음
+  - v161 result: `11718091` context line에 `speaker=post_author author=ㅇㅇ role=post_author comment_id=40479972`가 남았다.
+  - v161 result: `11718097` context lines 5건에 post author/user speaker와 `author=`가 남았다.
+- 운영 경계:
+  - v161은 known-bad targeted regression이다. 전체 10만 건 gate는 expanded random/high-risk review 전까지 `REVIEW-LOCKED`다.
+
+## IMP-20260529-113 - Memory Query Batch Alias Rescue Guard v159
+
+- 상태: patched / unit-verified / live-canary-passed / review-locked
+- 우선순위: P0 semantic-quality
+- Type: semantic-guard / memory-query / batch-context-alias
+- 관련 파일:
+  - `src/llm_batch/agentic_pipeline.py`
+  - `tests/test_agentic_pipeline_rework.py`
+  - `qualitative_review/20260528_141006_620986/v159_post11718083_memory_query_batch_alias_guard_result.json`
+  - `qualitative_review/20260528_141006_620986/v159_post11718083_memory_query_batch_alias_guard_result_manifest.json`
+- 배경:
+  - `11718083`은 "어느 소설인지 기억이 안 남"이라고 명시한 memory-query/quote recall 글이다.
+  - v157/v158에서는 canonical rescue 차단 후에도 `plot_mention` 또는 BatchContext alias rescue가 검색 후보를 official title처럼 재승격하는 경로가 남았다.
+  - 이 유형은 검색 결과에 공식 상세 URL이 있어도 원문이 작품 고유 앵커를 주지 않으면 resolved work discussion으로 승인하면 안 된다.
+- 조치:
+  - memory-query direct resolution edge에서 `plot_mention`을 직접 작품 증거로 인정하지 않도록 했다.
+  - `_memory_query_blocks_batch_alias_rescue()`를 추가해 canonical rescue가 이미 차단된 title 또는 direct title proof 없는 memory-query title은 BatchContext alias candidate를 만들지 못하게 했다.
+  - batch alias 차단 상태를 output consistency flag로 노출할 수 있게 했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework -v`: `305` tests OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_input_loader -v`: `23` tests OK
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_agentic_pipeline_rework.py expert_main.py tests\test_expert_main_input_loader.py`: OK
+  - v159 live run `20260529_101858_579879`: `11718083`이 `is_relevant=false`, `official_title=null`, `work_resolution=none`, `title_resolution_state=unresolvable_memory_query`, `title_resolution_allowed=false`로 내려갔다.
+  - v159 manifest: `requested_parallel=36`, `effective_parallel=1`, `completed/failed/pending=1/0/0`, `mcp_auto_up_shards=false`, `mcp_auto_recreate_shards=false`.
+  - v159 log: `rescue: batch memory alias`, `BatchMem: 약칭 즉시등록 '기억'`, `BatchMem: 약칭 즉시등록 '너에겐'`, Docker Compose lifecycle pattern match 없음.
+  - v160 known-bad 5건 regression `20260529_103040_519314`: `completed/failed/pending=5/0/0`, `requested_parallel=36`, `effective_parallel=5`, `mcp_auto_up_shards=false`, `mcp_auto_recreate_shards=false`, Docker/warp lifecycle pattern match 없음.
+  - v160 result: `11718083` null/unresolvable memory-query, `11718091` null/unresolved_matchable, `11718118` null/adjacent, `11718097=망겜의 힐러`, `11718099=빌어먹을 환생`.
+- 운영 경계:
+  - v159/v160은 targeted known-bad regression이다. 10만 건 semantic gate는 expanded random/high-risk review 전까지 `REVIEW-LOCKED`다.
+
+## IMP-20260529-112 - Codex Goal Env Lifecycle Hard Opt-In v3
+
+- 상태: patched / live-verified / semantic-follow-up-needed
+- 우선순위: P1 runtime-efficiency
+- Type: runtime-policy / docker-lifecycle / goal-test-loop
+- 관련 파일:
+  - `expert_main.py`
+  - `tests/test_expert_main_input_loader.py`
+  - `qualitative_review/20260528_141006_620986/v157_known_bad_metadata_preserved_current_result_manifest.json`
+  - `docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md`
+  - `docs/devs/OPERATION_QUALITY_CHECKLIST.md`
+- 배경:
+  - goal 테스트런은 expert 판단 변화 확인이 목적이므로 Docker Compose stop/start/recreate가 끼면 시간이 과도하게 늘고, 실제 판단 문제와 shard 복구 문제를 섞어버린다.
+  - 기존 Codex guard는 stale `MCP_AUTO_*`는 막았지만, `MCP_CODEX_ALLOW_ENV_SHARD_LIFECYCLE=1` env escape가 있으면 현재 명령의 hard opt-in 없이도 lifecycle을 다시 열 수 있었다.
+- 조치:
+  - Codex 실행에서는 env 기반 lifecycle opt-in도 현재 명령에 `--allow-goal-shard-lifecycle`이 있을 때만 인정하도록 `_env_shard_lifecycle_allowed()`를 좁혔다.
+  - env-only 차단 테스트와 env+command hard opt-in 허용 테스트를 분리했다.
+  - 운영 가이드에 `MCP_CODEX_ALLOW_ENV_SHARD_LIFECYCLE=1` 단독으로는 goal lifecycle을 열 수 없다고 명시했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_input_loader -v`: `23` tests OK
+  - `.\venv\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_input_loader.py`: OK
+  - v157 live run: `requested_parallel=36`, `effective_parallel=5`, `completed/failed/pending=5/0/0`
+  - v157 manifest: `mcp_auto_up_shards=false`, `mcp_auto_recreate_shards=false`, `mcp_local_shard_management_enabled=false`, `mcp_env_shard_lifecycle_allowed=false`
+  - v157 log grep: `docker compose`, `force-recreate`, `warp_shards.py`, `compose up/down` match 없음
+- 남은 이슈:
+  - runtime lifecycle 문제는 닫혔지만 v157 `11718083`은 memory-query post를 `너 따위에겐 절대X3 공략되지 않을 거니까!`로 잘못 resolved했다. semantic gate는 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260529-111 - Review Packet Comment Metadata Completeness v156b
+
+- 상태: patched / packet-regenerated / review-locked
+- 우선순위: P0 semantic-quality
+- Type: qualitative-review / packet-schema / dialogue-context
+- 관련 파일:
+  - `tools/build_qualitative_round2_review.py`
+  - `tests/test_qualitative_review_packet_tools.py`
+  - `qualitative_review/20260528_141006_620986/v156_bucket_expansion/round2_packets.jsonl`
+  - `qualitative_review/20260528_141006_620986/v156_bucket_expansion/round2_labels.jsonl`
+  - `qualitative_review/20260528_141006_620986/v156_bucket_expansion/summary.json`
+- 배경:
+  - 사용자 목표의 핵심 중 하나는 본문 작성자와 댓글 작성자/IP/댓글 id를 분리 보존해, 본문 작성자가 댓글에서 대화하는 맥락을 모델/리뷰가 이해하게 하는 것이다.
+  - 기존 v156 packet은 댓글 metadata count는 세었지만 실제 `gallery_id`, `post_author`, `comment_metadata`, `comment_context_lines`를 packet 최상위와 public fields에 싣지 못했다.
+  - 댓글은 있으나 작성자/IP/comment id가 없는 packet은 자연어 대화 맥락 검증에서 `HOLD`가 아니라 `INFO_MISSING`으로 분리해야 한다.
+- 조치:
+  - Round 2 packet에 `gallery_id`, `post_author`, `comment_metadata`, `comment_context_lines`, `comment_context_source`를 추가했다.
+  - `comment_context_lines`가 없고 `comment_metadata`가 있으면 `comment_metadata`에서 compact line을 재구성한다.
+  - 댓글은 있는데 metadata/context line이 모두 없으면 `comments_without_author_metadata` bucket label을 `INFO_MISSING/human_review/Missing`으로 내린다.
+  - Munpia 모바일 작품 상세 URL `mm.munpia.com/?menu=novel&id=...`를 detail URL로 인정해 기존 official URL 회귀 테스트를 복구했다.
+- v156 재생성 결과:
+  - packets: `70`
+  - labels: `ACCEPT=23`, `HOLD=31`, `REPROCESS=10`, `REJECT=1`, `INFO_MISSING=5`
+  - `comments_without_author_metadata`: selected `5`, labels `INFO_MISSING=5`
+  - known-bad 4건은 계속 packet에 포함된다. `11718097`은 원본 partial result 기준 `comment_metadata_count=0`, `comment_context_source=missing`이므로 dialogue-context 품질 승인은 새 metadata-preserved source rerun 전까지 불가하다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m unittest tests.test_qualitative_review_packet_tools -v`: `17` tests OK
+  - `.\venv\Scripts\python.exe -m py_compile tools\build_qualitative_round2_review.py`: OK
+- 운영 경계:
+  - v156b는 packet completeness와 자동 label 정책 보강이다. packet별 인간/LLM 자연어 판독 완료가 아니므로 semantic gate는 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260529-110 - High-Risk Bucket Expansion v156
+
+- 상태: packet-generated / review-locked
+- 우선순위: P0 semantic-quality
+- Type: qualitative-review / high-risk-bucket / known-bad-coverage
+- 관련 파일:
+  - `tools/build_qualitative_round2_review.py`
+  - `qualitative_review/20260528_141006_620986/v156_bucket_expansion/round2_manifest.json`
+  - `qualitative_review/20260528_141006_620986/v156_bucket_expansion/round2_packets.jsonl`
+  - `qualitative_review/20260528_141006_620986/v156_bucket_expansion/round2_labels.jsonl`
+  - `qualitative_review/20260528_141006_620986/v156_bucket_expansion/sample_manifest.json`
+  - `qualitative_review/20260528_141006_620986/v156_bucket_expansion/pattern_summary.md`
+  - `qualitative_review/20260528_141006_620986/v156_bucket_expansion/gate_decision.md`
+  - `qualitative_review/20260528_141006_620986/v156_bucket_expansion/action_queue.md`
+- 배경:
+  - v155 자동 scan에서 확인된 `comments_without_author_metadata`, `memory_query_resolved`, `official_title_evidence_true_but_zero_official_urls`, `platform_non_detail_url_used_near_official_evidence`, `image_or_ocr_involved`를 실제 Round 2 high-risk packet 추출 bucket으로 승격했다.
+  - 기존 builder는 run id를 `20260505_214349_324347` 상수로 기록했으므로, `--run-id`와 filename 기반 추론을 추가해 evidence 경로 오염을 막았다.
+  - rare bucket이 큰 bucket에 dedupe 선점되는 문제가 있어 candidate count가 적은 bucket을 먼저 선택하고, primary selected count와 risk-tag covered count를 분리 기록하도록 했다.
+- v156 결과:
+  - run id: `20260528_141006_620986`
+  - source result: `out/expert_result_20260528_141006_620986.json`
+  - rows scanned: `71`
+  - packets: `70`
+  - labels: `ACCEPT=23`, `HOLD=31`, `REPROCESS=10`, `REJECT=1`, `INFO_MISSING=5`
+  - covered buckets: `comment_speaker_context_unavailable=55`, `memory_query_resolved=1`, `official_title_evidence_true_but_zero_official_urls=6`, `platform_non_detail_url_used_near_official_evidence=10`, `vlm_ocr_public_state_weak=1`
+- known-bad coverage:
+  - `11718083`: `memory_query_resolved`, `REJECT`, `re_judge`, evidence `Weak`.
+  - `11718091`: `official_title_evidence_true_but_zero_official_urls`, `HOLD`, `re_search`.
+  - `11718099`: `official_title_evidence_true_but_zero_official_urls`, `HOLD`, `re_search`.
+  - `11718097`: `weak_evidence_but_strong_resolution`, `REPROCESS`, `re_search`, evidence `Weak`.
+- 운영 경계:
+  - v156은 자동 packet/label 생성이며, 인간 또는 LLM의 packet별 정성 검토 완료가 아니다.
+  - `ACCEPT=23`도 partial run의 자동 label이므로 전체 scan approval로 사용하지 않는다.
+  - 댓글은 있지만 `comment_metadata`/`comment_context_lines`가 없는 packet은 `INFO_MISSING`으로 승인 제외한다.
+  - 10만 건 semantic gate는 expanded random baseline과 P0/P1 high-risk review 전까지 `REVIEW-LOCKED`다.
+
+## IMP-20260529-109 - Original Partial Run Semantic Pattern Scan v155
+
+- 상태: evidence-captured / follow-up-needed
+- 우선순위: P0 semantic-quality
+- Type: scan-review / semantic-pattern / run-integrity
+- 관련 파일:
+  - `tools/scan_original_semantic_patterns.py`
+  - `qualitative_review/20260528_141006_620986/v155_original_semantic_pattern_scan.json`
+  - `qualitative_review/20260528_141006_620986/v155_original_semantic_pattern_scan_examples.jsonl`
+  - `qualitative_review/20260528_141006_620986/v155_original_semantic_pattern_scan_ko.md`
+- 배경:
+  - `out/expert_result_20260528_141006_620986.json`는 manifest상 `input_post_count=104502`지만 `completed=80`, `flushed=71`, `pending=9`인 partial run이다.
+  - final result JSON은 71건이고 checkpoint completed row는 80건이라, 이 산출물은 10만 건 semantic approval 근거가 아니라 known-bad와 반복 패턴 triage 근거로만 사용할 수 있다.
+- 확인된 반복 패턴:
+  - `comments_without_author_metadata`: 64건
+  - `comment_speaker_context_unavailable`: 64건
+  - `image_or_ocr_involved`: 43건
+  - `search_degraded_resolved`: 27건
+  - `weak_evidence_but_strong_resolution`: 18건
+  - `resolved_without_direct_post_title_anchor`: 15건
+  - `zero_search_and_official_bucket_resolved`: 14건
+  - `platform_non_detail_url_used_near_official_evidence`: 12건
+  - `run_integrity_checkpoint_completed_missing_from_final_result`: 9건
+- known-bad 매핑:
+  - `11718083`: `네이버`로 잘못 resolved, `memory_query_resolved`, `generic_resolved_title`, `weak_evidence_but_strong_resolution`.
+  - `11718091`: `Re:제로부터 시작하는 원신생존기`로 과잉 resolved, 댓글 2건이 있으나 author metadata 없음.
+  - `11718097`: `검미성 신작 'A급 헌터로 살아남는 법' 최신화`로 잘못 resolved, 실제 의도는 `망겜의 힐러`.
+  - `11718099`: `표지변경`으로 잘못 resolved, 실제 의도는 `빌환 -> 빌어먹을 환생`.
+- 운영 경계:
+  - v155는 원본 partial run의 자동 패턴 스캔이며 자연어 label review가 아니다.
+  - 10만 건 semantic gate는 `REVIEW-LOCKED`로 유지한다.
+  - 다음 확장 review는 `comments_without_author_metadata`, `memory_query_resolved`, `weak_evidence_but_strong_resolution`, `official_title_evidence_true_but_zero_official_urls`, `platform_non_detail_url_used_near_official_evidence`, `image_or_ocr_involved`를 P0/P1 bucket으로 분리해야 한다.
+
+## IMP-20260529-108 - Small Goal Run Shard Lifecycle Hard Opt-In v2
+
+- 상태: patched / unit-verified
+- 우선순위: P1 runtime-efficiency
+- Type: runtime-policy / docker-lifecycle / goal-test-loop
+- 관련 파일:
+  - `expert_main.py`
+  - `tests/test_expert_main_input_loader.py`
+  - `docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md`
+  - `docs/devs/OPERATION_QUALITY_CHECKLIST.md`
+- 배경:
+  - Codex 환경에서는 이미 stale env와 `--auto-*`만으로 Docker Compose lifecycle이 열리지 않았다.
+  - 그러나 일반 PowerShell에서 36건 이하 goal/test 입력에 `--auto-up-shards` 또는 `--auto-recreate-shards`가 복사되면 hard opt-in 없이 lifecycle이 열릴 수 있었다.
+  - 소규모 판단 회귀의 목적은 expert 판단 변화 확인이지 shard stop/start/recreate 검증이 아니므로, 36건 이하에서는 환경과 무관하게 hard opt-in을 요구한다.
+- 조치:
+  - `_command_shard_lifecycle_allowed_by_context()`가 36건 이하 small/goal run에서는 `--allow-goal-shard-lifecycle` 없이는 `False`를 반환하도록 좁혔다.
+  - `--allow-goal-shard-lifecycle` help 문구를 Codex 전용이 아니라 small goal/test run 정책으로 바꿨다.
+  - non-Codex small goal run에서 `--auto-*`만 붙은 경우 up/recreate/local shard management가 꺼지는 회귀 테스트를 추가했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_input_loader -v`: OK
+- 운영 경계:
+  - 36건 이하 일반 goal/test regression은 기본값 또는 `--reuse-shards-only`로 실행한다.
+  - 36건 이하에서 shard 복구 자동화까지 검증해야 할 때만 `--allow-goal-shard-lifecycle --auto-up-shards` 또는 `--allow-goal-shard-lifecycle --auto-recreate-shards`를 사용한다.
+  - 이 변경은 runtime 효율 정책이며, semantic 품질 `GO` 근거가 아니다.
+
+## IMP-20260529-107 - Official URL Evidence Bucket Detail-Only Filter
+
+- 상태: patched / unit-verified / live-confirmed
+- 우선순위: P0 semantic-quality
+- Type: evidence-accounting / official-url / reason-final-alignment
+- 관련 파일:
+  - `src/llm_batch/experts/verifier.py`
+  - `src/llm_batch/agentic_pipeline.py`
+  - `tests/test_agentic_pipeline_rework.py`
+- 관련 post id:
+  - `11718097`
+  - `11718099`
+- 배경:
+  - v153 `11718097`은 최종 title이 `망겜의 힐러`로 회복됐지만 `heretic_url=null`이었다.
+  - 동시에 reason에는 `evidence_bucket: ... official_urls=5`가 남아 있어 final URL 상태와 evidence count가 맞지 않았다.
+  - 원인은 `ridibooks.com/author/...` 같은 작가/목록 페이지나 Kakao 댓글 탭처럼 작품 상세가 아닌 플랫폼 URL도 `official_url` bucket에 들어갈 수 있는 구조였다.
+- 조치:
+  - Verifier evidence 저장 단계에서 `official_url`은 작품 상세 URL만 허용하도록 `VerifierExpert._is_official_detail_evidence_url()`을 추가했다.
+  - Kakao `tab_type=comment` URL은 작품 상세 URL로 보지 않도록 Verifier의 `_is_novel_detail_url()`도 pipeline 기준과 맞췄다.
+  - 후단 `_get_candidate_evidence_bucket()` 읽기 경로에서도 `official_urls`를 detail URL로 재필터링해 기존 수집 누수를 방어했다.
+  - 작가/목록/랭킹/검색/댓글 탭 URL은 `search_snippet` 참고 근거로 남을 수 있지만, `official_urls` 강근거로는 카운트하지 않는다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py src\llm_batch\experts\verifier.py tests\test_agentic_pipeline_rework.py`: OK
+  - focused regression 3건: `test_candidate_evidence_bucket_counts_only_novel_detail_official_urls`, `test_freeze_identity_repairs_kakao_comment_tab_url_to_official_detail`, `test_official_detail_evidence_url_rejects_author_and_comment_tabs`: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework -v`: `Ran 304 tests ... OK`
+  - v154 live run `20260529_083800_817905`: `requested_parallel=36`, `effective_parallel=4`, `completed/failed/pending=4/0/0`, `--reuse-shards-only`, Docker lifecycle 미실행.
+  - v154 `11718097`: `official_title=망겜의 힐러`, `heretic_url=null`, `official_title_evidence=false`, `evidence_bucket=(post_spans=2, search_snippets=6, official_urls=0)`로 reason/final alignment 회복.
+  - v154 `11718099`: `official_title=빌어먹을 환생`, `heretic_url=https://series.naver.com/novel/detail.series?productNo=5935188`, `source_tier=official_detail`, `official_urls=2`.
+- 운영 경계:
+  - `11718097`은 작품명 판정은 맞지만, 이번 run의 공식 상세 URL 근거는 `Weak/Medium`이다. URL 없는 resolved title은 `ACCEPT`가 아니라 evidence strength를 별도로 표기한다.
+  - 이 변경은 official URL evidence accounting 보정이며, 10만 건 semantic `GO` 근거가 아니다.
+
+## IMP-20260529-106 - Unresolvable Memory Query Slang Pending Guard
+
+- 상태: patched / unit-verified / exact-row-verified
+- 우선순위: P0 semantic-quality
+- Type: slang-db-pollution / memory-query / reference-pending
+- 관련 파일:
+  - `src/llm_batch/slang_db.py`
+  - `tests/test_slang_db.py`
+- 관련 post id:
+  - `11718083`
+- 배경:
+  - v153 결과에서 `11718083`은 `title_resolution_state=unresolvable_memory_query`, `title_resolution_allowed=false`, `work_resolution=none`, `discussion_type=recommendation`으로 단일 작품명을 확정하지 않는 것이 맞다.
+  - 그런데 `secondary_reference_works`의 `너에겐 -> 너 따위에겐 절대X3 공략되지 않을 거니까!`가 slang DB `pending`으로 저장됐다.
+  - 이는 원문 기억 회수 문장의 일부를 별칭 후보로 보존하는 경로라서, 다음 run의 alias recall 또는 review queue를 오염시킬 수 있다.
+- 조치:
+  - `unresolvable_memory_query` + `title_resolution_allowed=false` + `work_resolution=none` + `recommendation_request/recommendation` 조합을 별도 차단 컨텍스트로 분리했다.
+  - 해당 컨텍스트에서는 `mentioned_work`, `secondary_reference`, `recommendation_candidate`, `comparison_target` 계열 pending 저장을 하지 않는다.
+  - 기존 slang DB에 이미 남은 polluted confirmed alias도 batch memory seed로 주입되지 않도록 `slang_db_alias_seed_is_safe()`를 추가했다.
+  - `expert_main.py`의 Slang DB alias seed 주입 단계에서 unsafe seed는 `held`로 카운트하고 건너뛴다.
+  - DB flush/finalize의 cleanup 경로에서도 matching example이 모두 polluted 신호인 `slang`/`pending` entry는 제거되도록 했다.
+  - 기존 `adjacent_meta`와 `trope_discussion` pending 분류는 유지하도록 차단 조건을 좁게 제한했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile expert_main.py src\llm_batch\slang_db.py tests\test_slang_db.py`: OK
+  - focused: `test_finalize_prunes_polluted_rescue_and_memory_query_entries`, `test_polluted_rescue_alias_is_not_used_as_batch_memory_seed`, positive confirmed slang control: `Ran 3 tests ... OK`
+  - `.\venv\Scripts\python.exe -m unittest tests.test_slang_db -v`: `Ran 23 tests ... OK`
+  - exact-row verification: `qualitative_review/20260528_141006_620986/v153_official_url_repair_result.json`의 `11718083`을 현재 `SlangDBManager._extract_observations()`에 통과시켰을 때 `observation_count=0`.
+  - existing seed verification: `v153_official_url_repair_slang_db.json`의 `네이버/네가` confirmed alias는 `slang_db_alias_seed_is_safe(...)=false`.
+  - v153 slang DB 사본 finalize cleanup: title count `373 -> 354`, `네이버/네가`와 `너에겐` entry가 결과에서 사라짐.
+- 운영 경계:
+  - 이미 생성된 polluted slang DB 파일의 과거 entry는 자동 삭제하지 않는다. 재사용 시 clean DB로 시작하거나 별도 cleanup/review queue를 적용해야 한다.
+  - 이 변경은 `11718083` 계열 memory-query 오염 방지 증거이며, 10만 건 semantic `GO` 근거가 아니다.
+
+## IMP-20260529-105 - Codex Goal Run Shard Lifecycle Hard Opt-In
+
+- 상태: patched / unit-verified
+- 우선순위: P1 runtime-efficiency
+- Type: runtime-policy / docker-lifecycle / codex-goal-loop
+- 관련 파일:
+  - `expert_main.py`
+  - `tests/test_expert_main_input_loader.py`
+  - `docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md`
+- 배경:
+  - v152/v153 최신 goal run manifest와 로그 기준으로는 `docker compose`, `force-recreate`, `warp_shards.py up/recreate` 실행 흔적이 없었다.
+  - 그러나 Codex goal/test 명령에 `--auto-up-shards` 또는 `--auto-recreate-shards`가 복사되어 들어가면, 기존 정책상 현재 명령 opt-in으로 간주되어 Docker shard lifecycle이 다시 열릴 수 있었다.
+  - 일반 goal/test loop의 목적은 expert 판단 변화 확인이며, shard stop/start 또는 force-recreate 검증이 아니다.
+- 조치:
+  - `--allow-goal-shard-lifecycle` 플래그를 추가했다.
+  - Codex goal/test 실행에서는 `--auto-up-shards`/`--auto-recreate-shards`만으로는 Docker shard lifecycle을 켜지 않는다.
+  - Codex goal/test에서 실제 shard up/recreate를 검증하려면 `--allow-goal-shard-lifecycle`과 `--auto-up-shards` 또는 `--auto-recreate-shards`를 함께 명시해야 한다.
+  - manifest/run config에 `mcp_allow_goal_shard_lifecycle`, `mcp_command_shard_lifecycle_allowed`를 남긴다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_input_loader.py`: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_input_loader -v`: `Ran 21 tests ... OK`
+  - `.\venv\Scripts\python.exe expert_main.py --help`: `--allow-goal-shard-lifecycle` 노출 확인
+  - `test_codex_goal_run_blocks_auto_flags_without_goal_lifecycle_allow`: Codex env + `--auto-*`만으로는 up/recreate/local shard management가 꺼지는 것 확인
+  - `test_codex_goal_run_allows_current_command_lifecycle_with_hard_opt_in`: `--allow-goal-shard-lifecycle`까지 붙이면 의도적으로 lifecycle이 열리는 것 확인
+- 운영 경계:
+  - 일반 goal/test regression은 기본값 또는 `--reuse-shards-only`로 실행한다.
+  - shard 복구 자동화 자체가 검증 대상일 때만 `--allow-goal-shard-lifecycle --auto-up-shards` 또는 `--allow-goal-shard-lifecycle --auto-recreate-shards`를 사용한다.
+  - 이 변경은 runtime 효율/안전 정책이며, 10만 건 semantic 품질 `GO` 근거가 아니다.
+
+## IMP-20260529-104 - Late Rescue Alias Self-Confirmation Guard
+
+- 상태: patched / unit-verified / live-confirmed
+- 우선순위: P0 semantic-quality
+- Type: final-title-guard / batch-memory-rescue / slang-db-pollution
+- 관련 파일:
+  - `src/llm_batch/agentic_pipeline.py`
+  - `src/llm_batch/slang_db.py`
+  - `tests/test_agentic_pipeline_rework.py`
+  - `tests/test_slang_db.py`
+- 관련 post id:
+  - `11718080`, `11718082`, `11718090`, `11716486`
+- 배경:
+  - v151 live run `20260529_065944_476354`에서 reason은 이미 `grounding_anchor:none`, `evidence_bucket=0`, `critical` 신호를 냈지만, 후단 `batch_memory_exact_alias_rescued`가 `보는`, `이게`, `눈의꽃` 같은 일반 표면을 작품 alias로 재승격했다.
+  - 이 경로는 코드 하드코딩 문제가 아니라, late rescue가 자기 자신이 만든 alias support를 독립 작품 근거처럼 재사용하는 self-confirmation 문제다.
+  - 같은 결과가 slang DB에 `primary_work`/`title_candidate` 기반 alias로 저장되면 다음 run에서 오염 seed가 더 강해질 수 있었다.
+- 조치:
+  - `_weak_rescue_rejection_profile()`에서 `batch_memory`/`title_surface` late rescue는 공개 evidence bucket이 0이고 verifier가 critical/absent-grounding 신호를 낸 경우 alias support만으로 direct work bridge를 인정하지 않는다.
+  - slang DB observation 수집에서 `batch_memory_exact_alias_rescued` 또는 `title_surface_primary_candidate_rescued` + evidence bucket 0 + weak grounding + critical 신호 조합은 `primary_work`/`title_candidate`/`slang_insight` alias 저장을 차단한다.
+  - 기존 polluted slang DB를 복사한 v152 live run으로, 오염 seed가 있어도 final title rescue가 다시 살아나지 않는지 확인했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py src\llm_batch\slang_db.py tests\test_agentic_pipeline_rework.py tests\test_slang_db.py`: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework -v`: `Ran 301 tests ... OK`
+  - `.\venv\Scripts\python.exe -m unittest tests.test_slang_db -v`: `Ran 20 tests ... OK`
+  - v152 live run `20260529_072232_140417`: `completed=8`, `failed=0`, `pending=0`, `requested_parallel=36`, `effective_parallel=8`.
+  - v152 결과: `11718080`, `11718082`, `11718090`, `11718091`, `11718083`, `11716486`은 `official_title=null`; `11718097=망겜의 힐러`, `11718099=빌어먹을 환생`만 resolved.
+  - v152 slang DB flush는 `망겜의 힐러`, `빌어먹을 환생` 2건만 새 observation으로 기록했고 finalize flush는 `buffered_observations=0`.
+- 운영 경계:
+  - v152는 8건 known-bad regression이다. 해당 실패 유형의 회귀 증거로는 강하지만, 10만 건 semantic `GO` 근거는 아니다.
+  - 이미지 의존 케이스는 브라우저/VLM 직접 확인 전까지 Strong evidence로 승격하지 않는다.
+
+## IMP-20260529-103 - Codex Goal Run Env Lifecycle Guard
+
+- 상태: patched / unit-verified / live-confirmed
+- 우선순위: P1 runtime-efficiency
+- Type: runtime-policy / docker-lifecycle / codex-goal-loop
+- 관련 파일:
+  - `expert_main.py`
+  - `tests/test_expert_main_input_loader.py`
+- 배경:
+  - 기존 보강은 36건 이하 goal/test run에서 stale `MCP_AUTO_UP_SHARDS=1`/`MCP_AUTO_RECREATE_SHARDS=1`을 차단했다.
+  - 그러나 goal 테스트 입력이 37건 이상이면 `_INPUT_POST_COUNT`가 lifecycle threshold를 넘어 stale env가 다시 Docker Compose `up/recreate` 경로를 켤 수 있었다.
+  - Codex goal/test loop의 목적은 expert 판단 변화 검증이지 shard stop/start 또는 force-recreate 검증이 아니다.
+- 조치:
+  - Codex 실행 환경(`CODEX_SHELL` 또는 `CODEX_THREAD_ID`)에서는 `MCP_AUTO_UP_SHARDS`/`MCP_AUTO_RECREATE_SHARDS` env만으로 Docker shard lifecycle을 켜지 않도록 했다.
+  - 후속 IMP-20260529-105에서 Codex goal/test 실행은 `--auto-up-shards`/`--auto-recreate-shards`만으로 부족하고 `--allow-goal-shard-lifecycle`까지 요구하도록 더 좁혔다.
+  - 후속 IMP-20260529-112 이후 env 기반 lifecycle이 꼭 필요해도 `MCP_CODEX_ALLOW_ENV_SHARD_LIFECYCLE=1`과 현재 명령의 `--allow-goal-shard-lifecycle`을 함께 명시해야 한다.
+  - manifest/run config에 `mcp_interactive_codex_run`, `mcp_env_shard_lifecycle_allowed`, `mcp_env_shard_lifecycle_blocked_by_context`를 남긴다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_input_loader.py`: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_input_loader -v`: `Ran 20 tests ... OK`
+  - `test_codex_goal_run_ignores_stale_env_lifecycle_even_above_threshold`: Codex env + 입력 1000건 + stale `MCP_AUTO_*`에서도 up/recreate/local shard management가 꺼지는 것 확인
+  - `test_codex_goal_run_allows_current_command_lifecycle_with_hard_opt_in`: 현재 명령 `--auto-*`와 hard opt-in 조합 확인
+  - 후속 테스트 `test_codex_goal_run_blocks_env_lifecycle_without_command_hard_opt_in`: `MCP_CODEX_ALLOW_ENV_SHARD_LIFECYCLE=1` env-only escape 차단 확인
+  - 후속 테스트 `test_codex_goal_run_can_allow_env_lifecycle_with_command_hard_opt_in`: env opt-in과 `--allow-goal-shard-lifecycle`을 함께 둔 경우만 허용 확인
+  - v152 live run `20260529_072232_140417`: `requested_parallel=36`, `effective_parallel=8`, `mcp_auto_up_shards=false`, `mcp_auto_recreate_shards=false`, `mcp_local_shard_management_enabled=false`.
+  - v152 manifest에서 `mcp_interactive_codex_run=true`, `mcp_env_shard_lifecycle_allowed=false`, `mcp_env_shard_lifecycle_blocked_by_context=true` 확인.
+  - v152 통합/워커 로그에서 `docker compose`, `force-recreate`, `warp_shards.py up/recreate`, `compose up` 실행 흔적 없음.
+- 운영 경계:
+  - goal/test run에서는 기본 명령으로 실행하고, shard 복구 자동화 자체가 검증 대상일 때만 `--allow-goal-shard-lifecycle`과 `--auto-up-shards`/`--auto-recreate-shards`를 함께 붙인다.
+  - 이 변경은 runtime 효율/안전 정책이며, 10만 건 semantic 품질 `GO` 근거가 아니다.
+
+## IMP-20260529-102 - Goal Run Healthy Shard Default Filter
+
+- 상태: patched / unit-verified / live-confirmed
+- 우선순위: P1 runtime-efficiency
+- Type: runtime-policy / shard-health-filter / goal-test-loop
+- 관련 파일:
+  - `expert_main.py`
+  - `tests/test_expert_main_input_loader.py`
+  - `docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md`
+- 배경:
+  - 24건 goal/high-risk targeted run에서 `--parallel 36`이 `effective_parallel=24`로 낮아지는 것은 맞지만, autogen endpoint도 24개가 생성되어 실제 healthy shard 5개 외 endpoint 19개 실패가 startup을 막았다.
+  - 이는 실제 `docker compose up/recreate` 실행은 아니어도, goal 테스트 목적에서는 불필요한 shard 맞춤/재실행 유도 비용이다.
+- 조치:
+  - 36건 이하 lifecycle-blocked goal/test run은 `MCP_GOAL_RUN_AUTO_SHARD_LIMIT` 기본 `8`로 autogen endpoint 수를 먼저 제한한다.
+  - lifecycle opt-in이 없는 goal/test run에서는 `MCP_GOAL_RUN_FILTER_HEALTHY_AUTOGEN=1` 기본값으로 health check 후 healthy endpoint만 남기고 `_PARALLEL`도 그 수로 낮춘다.
+  - `--reuse-shards-only` 없이도 36건 이하 기본 goal run은 healthy autogen shard가 있으면 실패 shard 때문에 중단하지 않는다.
+  - Codex goal/test에서 복구/샤드 수 검증이 목적이면 `--allow-goal-shard-lifecycle`과 `--auto-up-shards`/`--auto-recreate-shards`를 함께 요구한다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_input_loader.py`: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_input_loader -v`: `Ran 17 tests ... OK`
+  - `test_goal_run_caps_autogen_shards_without_lifecycle_opt_in`: 24건 synthetic goal run에서 autogen endpoint `24 -> 8` 확인
+  - `test_goal_run_cap_overrides_stale_explicit_shard_count_without_lifecycle_opt_in`: stale `MCP_SHARD_COUNT=36`도 goal cap `8`로 낮추는 것 확인
+  - `test_goal_run_autogen_filters_to_healthy_endpoints_by_default`: 기본 goal run에서 healthy endpoint만 남기고 parallel `24 -> 2` 확인
+  - v150 live goal run `20260529_063616_661442`: `requested_parallel=36`, `effective_parallel=8`, `input_post_count=8`, `mcp_auto_up_shards=false`, `mcp_auto_recreate_shards=false`, `mcp_local_shard_management_enabled=false`.
+  - v150 log grep: `docker compose`, `force-recreate`, `warp_shards.py up`, `warp_shards.py recreate`, `warp_shards.py status` 실행 흔적 없음.
+- 운영 경계:
+  - 이 보강은 startup/runtime 효율 정책이다. semantic `GO` 근거가 아니며, 10만 건 품질 gate는 여전히 random baseline과 high-risk expansion을 요구한다.
+
+## IMP-20260529-101 - Result Row Comment Speaker Context Lines
+
+- 상태: patched / unit-verified
+- 우선순위: P1 review-artifact-integrity
+- Type: comment-context / result-schema / qualitative-review-packet
+- 관련 파일:
+  - `expert_main.py`
+  - `tests/test_expert_main_input_loader.py`
+- 배경:
+  - Pipeline 내부 prompt용 `comment_context_lines`는 생성되고 있었지만, `expert_main.py` 최종 결과 row에는 `comment_metadata`만 있고 `comment_context_lines`가 없었다.
+  - 10만 건 결과 JSON에서 review packet을 다시 만들 때 post author 댓글, reply 관계, IP 기반 발화자 구분 근거가 빠질 수 있었다.
+- 조치:
+  - `expert_main.py`에 `_public_comment_context_lines()`를 추가했다.
+  - 결과 row에 `comment_context_lines`를 `comment_metadata`와 함께 남기도록 했다.
+  - 댓글 본문에는 author/IP를 섞지 않고, `speaker`, `author`, `role=post_author`, `ip`, `reply_to`, `comment_id`를 별도 공개 메타로 보존한다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_input_loader.py`: OK
+  - `tests.test_expert_main_input_loader`: `Ran 13 tests ... OK`
+  - `CommentTitleRecoveryTest.test_pipeline_preserves_comment_author_ip_context_separately_from_text`: OK
+  - `AgenticPipelineReworkTest.test_character_age_banter_same_author_comment_does_not_use_search_character_link_as_anchor`: OK
+- 운영 경계:
+  - `comment_context_lines`는 대화 흐름/발화자 추적 근거다. 댓글 원문이 직접 작품명, 안정 별칭, 줄거리, 공식 URL을 제공하지 않으면 독립 작품 identity evidence로 세지 않는다.
+
+## IMP-20260529-100 - Title-Lead Alias Discourse Preservation
+
+- 상태: patched / unit-verified / live-rerun-pending
+- 우선순위: P0 semantic-quality
+- Type: expert-orchestration / alias-recall / premature-noise-exit
+- 관련 파일:
+  - `src/llm_batch/experts/orchestrator.py`
+  - `tests/test_agentic_pipeline_rework.py`
+- 관련 post id:
+  - `11718097`
+- 배경:
+  - v148에서 `11718097`은 제목 선두에 작품 약칭 후보가 있었고 Discourse가 `novel_literature`/`work` 및 검색 제안을 냈지만, Gatekeeper의 low-specific `community_banter` 판정이 유지되면서 검색 전 조기 종료됐다.
+  - 이 문제는 특정 작품명 하드코딩 문제가 아니라, 제목 선두 약칭을 Discourse가 회복했는데 Orchestrator가 noise override로 넘기지 못한 구조적 alias recall 비단조성이다.
+- 조치:
+  - 제목 선두 표면 anchor가 조사 제거 후 3자 이상이고, Discourse의 `title_novel_terms`/`domain_evidence`/`search_suggestions`에도 다시 나타나며, 캐릭터/플롯 논의 신호가 있으면 `worklike_alias_preservation`으로 noise 조기 종료를 보류한다.
+  - 이때 검색 요청은 Discourse가 재포착한 제목 선두 alias만 복구하고, `빌런이였어야돼` 같은 술어 꼬리는 검색 seed에서 제외한다.
+  - `vent`/잡담형 약한 단일 토큰은 기존처럼 noise로 유지한다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\experts\orchestrator.py tests\test_agentic_pipeline_rework.py`: OK
+  - focused regression: `test_title_lead_alias_discourse_signal_revives_low_specific_noise_search`: `망겜힐`, `망겜힐 웹소설` 검색 복구 확인
+  - negative control: `test_weak_single_token_noise_is_not_revived_by_novel_discourse`: noise 유지 확인
+  - `tests.test_agentic_pipeline_rework`: `Ran 298 tests ... OK`
+  - `tests.test_expert_main_input_loader`: `Ran 12 tests ... OK`
+- 남은 확인:
+  - v178 live run에서 `11718097` 포함 known-bad set을 `--parallel 36 --reuse-shards-only`로 재실행했고, `11718097=망겜의 힐러` resolved를 확인했다.
+  - 이 패치는 “검색까지 보내는 회복”이며, 최종 작품 확정은 여전히 검색 evidence/reason/final decision gate를 통과해야 한다. v178 기준 `11718097`은 URL 없는 resolved title이므로 evidence strength는 `Medium` 축으로 유지한다.
+
+## IMP-20260529-099 - Goal/Test Lifecycle Threshold Split
+
+- 상태: patched / unit-verified / live-rerun-pending
+- 우선순위: P1 runtime-efficiency
+- Type: runtime-policy / docker-lifecycle / goal-test-loop
+- 관련 파일:
+  - `expert_main.py`
+  - `tests/test_expert_main_input_loader.py`
+  - `docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md`
+- 배경:
+  - 기존 차단은 기본 `10건 미만`과 `_PARALLEL` 기준이라, 24건/36건 goal regression에서 stale `MCP_AUTO_UP_SHARDS=1` 또는 `MCP_AUTO_RECREATE_SHARDS=1` 환경변수가 남으면 Docker Compose lifecycle이 다시 켜질 수 있었다.
+  - goal regression 목적은 expert 판단 변화 확인이며, shard stop/start 또는 force-recreate 검증이 아니다.
+- 조치:
+  - lifecycle 차단 기준을 입력 post 수 기준으로 분리했다.
+  - `MCP_GOAL_RUN_SHARD_LIFECYCLE_THRESHOLD` 기본값을 `36`으로 두어 36건 이하 goal/test regression은 stale env만으로 up/recreate를 켜지 않게 했다.
+  - endpoint 자동 생성 제한 기준 `MCP_SMALL_RUN_SHARD_THRESHOLD`는 기존 역할로 남기고, lifecycle 기준과 혼동하지 않도록 문서화했다.
+  - manifest/run config에 `mcp_shard_lifecycle_block_threshold`, `mcp_run_post_count_for_lifecycle`를 추가했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_input_loader.py`: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_input_loader -v`: `Ran 12 tests ... OK`
+  - stale `MCP_AUTO_*` env + 입력 24건 synthetic 조건에서 up/recreate와 local shard management가 꺼지는 것을 확인했다.
+  - 입력 1000건 synthetic 조건에서는 env opt-in이 유지됨을 확인했다.
+- 운영 경계:
+  - Codex goal/test에서 shard 복구 자동화 자체가 검증 대상이면 `--allow-goal-shard-lifecycle`과 `--auto-up-shards`/`--auto-recreate-shards`를 함께 명시한다.
+  - status 감사만 필요하면 `MCP_LOCAL_SHARD_STATUS_AUDIT=1`을 사용한다.
+
+## IMP-20260529-098 - Official Search Only Without Post Anchor Demotion
+
+- 상태: patched / unit-verified / live-rerun-pending
+- 우선순위: P0 semantic-quality
+- Type: final-title-guard / evidence-alignment / reason-decision-contradiction
+- 관련 파일:
+  - `src/llm_batch/agentic_pipeline.py`
+  - `tests/test_agentic_pipeline_rework.py`
+  - `qualitative_review/20260528_141006_620986/v149_reason_evidence_zero_guard_notes_ko.md`
+- 배경:
+  - v148 잔여 false positive는 공식 플랫폼 검색 hit가 존재한다는 이유만으로 final title이 확정되는 경로였다.
+  - 원문 title/body/comment가 후보 title을 직접 지지하지 않고 candidate evidence bucket도 비어 있으면, 공식 검색 hit는 “검색 가능성”이지 “이 post의 결론”이 아니다.
+- 조치:
+  - `_final_title_rejection_profile()`의 `official_ev` 조기 통과 전에 `official_search_only_without_post_anchor` guard를 추가했다.
+  - `post_spans=0`, `search_snippets=0`, `official_urls=0`, 원문 anchor 없음, alias bridge 없음, strong character-work link 없음, weak/decoder-only anchor, critical/thematic counter-argument 조합이면 final title을 제거한다.
+- 검증:
+  - `py_compile`: OK
+  - focused 4 tests: OK
+  - `tests.test_agentic_pipeline_rework`: `Ran 297 tests ... OK`
+  - `tests.test_expert_main_input_loader`: `Ran 12 tests ... OK`
+- 남은 확인:
+  - LLM endpoint가 닫혀 있어 v149 exact live rerun은 보류됐다.
+  - endpoint 복구 후 `v149_reason_evidence_zero_guard_input.jsonl`을 재실행해 v148 false positive exact post에서 동일하게 내려가는지 확인한다.
+
+## IMP-20260529-097 - Goal/Test Run Local Shard Management Opt-In Tightening
+
+- 상태: patched / unit-verified
+- 우선순위: P1 runtime-efficiency
+- Type: runtime-policy / docker-lifecycle / goal-test-loop
+- 관련 파일:
+  - `expert_main.py`
+  - `tests/test_expert_main_input_loader.py`
+  - `docs/devs/OPERATION_QUALITY_CHECKLIST.md`
+  - `docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md`
+- 배경:
+  - 앞선 정책은 `docker compose up`과 `force-recreate`를 기본 차단했지만, local shard status/ensure 경로는 일부 goal/test run에서 여전히 Docker-adjacent 비용을 만들 수 있었다.
+  - goal 회귀의 목적은 LLM/판정 변경 확인이지 shard stop/start 또는 compose 상태 복구 검증이 아니다.
+- 조치:
+  - `_can_auto_manage_local_shards()`가 `--auto-up-shards`, `--auto-recreate-shards`, `MCP_AUTO_UP_SHARDS=1`, `MCP_AUTO_RECREATE_SHARDS=1`, `MCP_LOCAL_SHARD_STATUS_AUDIT=1` 중 하나가 없으면 `False`를 반환하도록 변경했다.
+  - 기본 goal/test run은 endpoint health check만 수행하고 `warp_shards.py status/ensure/up/recreate` 관리 경로에 진입하지 않는다.
+  - manifest/run config에 `mcp_local_shard_management_enabled`, `mcp_local_shard_status_audit`를 기록한다.
+  - status 감사만 필요한 경우를 위해 `MCP_LOCAL_SHARD_STATUS_AUDIT=1` escape hatch를 둔다.
+- 검증:
+  - `py_compile expert_main.py tests\test_expert_main_input_loader.py`: OK
+  - `tests.test_expert_main_input_loader`: `Ran 12 tests ... OK`
+  - 신규 테스트 `test_default_goal_run_does_not_enter_local_shard_management`로 기본 autogen endpoint + parallel 24에서도 local shard management가 꺼지는 것을 확인했다.
+- 운영 경계:
+  - shard 복구 자동화 자체가 테스트 대상이면 opt-in 플래그를 명령에 명시한다.
+  - runtime 정책은 semantic approval과 별개이며, 10만 건 품질 gate는 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260529-096 - Reuse-Only Healthy Shard Filter and v148 Semantic Triage
+
+- 상태: runtime-patched / unit-verified / v148-live-confirmed / semantic-review-locked
+- 우선순위: P1 runtime, P0 semantic follow-up
+- Type: runtime-efficiency / shard-policy / semantic-quality
+- 관련 파일:
+  - `expert_main.py`
+  - `tests/test_expert_main_input_loader.py`
+  - `qualitative_review/20260528_141006_620986/v148_partial_run_high_risk_live_review_ko.md`
+- 관련 run id:
+  - v148 `20260529_043012_788628`
+- 배경:
+  - `--reuse-shards-only`는 Docker Compose lifecycle을 실행하지 않고 현재 살아 있는 shard만 써야 한다.
+  - v148 전에는 입력 24건 때문에 endpoint 24개를 자동 생성하고, 실제 healthy shard 5개 외 19개 실패를 fatal로 봐 run이 중단됐다.
+- 조치:
+  - 자동 생성 endpoint + reuse-only 조합에서 health check 후 healthy endpoint가 1개 이상이면 endpoint pool을 healthy subset으로 줄인다.
+  - `_PARALLEL`도 healthy endpoint 수 이하로 낮춘다.
+  - manifest/run_meta에 health filter 전후 endpoint 수와 parallel 수를 기록한다.
+- 검증:
+  - `py_compile expert_main.py tests\test_expert_main_input_loader.py`: OK
+  - `tests.test_expert_main_input_loader`: `Ran 11 tests ... OK`
+  - v148 manifest: `completed=24`, `failed=0`, `pending=0`, `mcp_reuse_shards_only_health_filtered=true`, `mcp_healthy_endpoint_count=5`
+  - v148 logs: Docker Compose lifecycle 실행 흔적 없음.
+- 운영 경계:
+  - runtime policy는 PASS다.
+  - `11718097` alias recall 비단조성은 v178 targeted canary 기준 닫혔다.
+  - semantic quality는 `11718082`, `11718080`, `11718090`, `11716486` false positive 등 다른 high-risk bucket이 남아 `REVIEW-LOCKED`다.
+
+## IMP-20260529-095 - Weak Character Reaction Preserve/Rescue Block
+
+- 상태: patched / unit-verified / v147-live-confirmed / quality-review-locked
+- 우선순위: P0
+- Type: semantic-quality / postprocessing-guard / comment-context
+- 관련 파일:
+  - `src/llm_batch/agentic_pipeline.py`
+  - `tests/test_agentic_pipeline_rework.py`
+  - `docs/devs/VERIFICATION_RESULTS.md`
+  - `docs/devs/CHECKLIST.md`
+  - `docs/devs/TODO.md`
+- 관련 run id:
+  - v146 `20260529_034833_003532`
+  - v147 `20260529_040313_425572`
+- 관련 post id:
+  - `11718091`
+- 배경:
+  - v146에서 `11718091`은 `title_resolution_state=unresolved_matchable`로 memory-query 오분류는 해소됐지만, 후처리 `unresolved_worklike_preserve`가 `is_relevant=true`를 다시 올렸다.
+  - 같은 케이스에서 검색 후보나 batch memory alias support가 있더라도 원문은 캐릭터 나이/외모에 대한 짧은 반응이고, Verifier는 `community_banter/reject`였다.
+  - post author 댓글은 대화 흐름 해석에는 유용하지만, 독립 작품 identity evidence가 아니다.
+- 조치:
+  - weak-character reaction guard를 `unresolved_worklike_preserve` 조건에 추가했다.
+  - final identity validator에서 `_unresolved_worklike_preserve`가 남아 있어도 weak-character context면 preserve를 끄도록 했다.
+  - batch memory alias rescue와 title-surface rescue 진입 전에 같은 weak-character guard를 적용했다.
+  - 검색 후보/alias support는 직접 원문 title/안정 별칭/작품 내부 앵커가 없는 캐릭터 나이/외모 반응을 title로 되살리는 근거가 되지 않게 했다.
+- 검증:
+  - focused 4건 회귀 테스트 OK.
+  - `py_compile src\llm_batch\agentic_pipeline.py tests\test_agentic_pipeline_rework.py expert_main.py tests\test_expert_main_input_loader.py`: OK.
+  - `tests.test_expert_main_input_loader`: `Ran 10 tests ... OK`.
+  - `tests.test_agentic_pipeline_rework`: `Ran 295 tests ... OK`.
+  - v147 run id `20260529_040313_425572`: `requested_parallel=36`, `effective_parallel=5`, `completed/failed/pending=5/0/0`.
+  - v147 `11718091`: `is_relevant=false`, `official_title=null`, `work_resolution=none`, `discussion_type=noise`, `title_resolution_state=unresolved_matchable`, flags=`weak_character_reaction_unresolved_blocked`, `post_author_comment_not_independent_evidence`.
+  - v147 no-compose proof: manifest `mcp_auto_up_shards=false`, `mcp_auto_recreate_shards=false`, `mcp_small_run_shard_lifecycle_blocked=true`, logs에서 `docker compose`/`force-recreate`/`warp_shards.py recreate`/`compose up` 실행 흔적 없음.
+- 운영 경계:
+  - 이 패치는 `11718091`류 과승격 방지다. 10만 건 품질 승인 근거가 아니며, high-risk expansion에서 false negative 증가 여부를 별도로 봐야 한다.
+
+## IMP-20260529-094 - Goal/Test Run Docker Lifecycle Opt-In
+
+- 상태: patched / stale-env-small-run-guarded / local-verification-passed / v145-live-goal-policy-confirmed
+- 우선순위: P1
+- Type: runtime-efficiency / shard-policy / goal-test-loop
+- 관련 파일:
+  - `expert_main.py`
+  - `tests/test_expert_main_input_loader.py`
+  - `docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md`
+  - `docs/devs/CHECKLIST.md`
+  - `docs/devs/TODO.md`
+  - `docs/devs/HISTORY.md`
+- 배경:
+  - 기존 IMP-20260528-093은 1~9건 소규모 run에서만 compose lifecycle을 기본 차단했다.
+  - goal 테스트런은 10건 이상이어도 known-bad 회귀, 작은 canary, 문맥 파이프라인 확인 목적일 수 있다.
+  - 이때 WARP/search 헬스 실패를 이유로 `docker compose up --force-recreate`가 자동 실행되면 검증보다 shard stop/start 비용이 커진다.
+- 조치:
+  - `expert_main.py`의 `docker compose up`과 shard `force-recreate` 실행을 입력 건수와 무관하게 기본 비활성으로 변경했다.
+  - 자동 기동은 `--auto-up-shards`로 켠다. env 자동화는 v171 이후 `MCP_AUTO_UP_SHARDS=1`과 `MCP_ALLOW_ENV_SHARD_LIFECYCLE=1`을 함께 둬야 한다.
+  - 자동 재생성은 `--auto-recreate-shards`로 켠다. env 자동화는 v171 이후 `MCP_AUTO_RECREATE_SHARDS=1`과 `MCP_ALLOW_ENV_SHARD_LIFECYCLE=1`을 함께 둬야 한다.
+  - `--reuse-shards-only`는 모든 opt-in보다 우선하는 완전 재사용 모드로 유지했다.
+  - `MCP_SMALL_RUN_SHARD_THRESHOLD` 미만 goal/targeted run은 stale `MCP_AUTO_UP_SHARDS=1`/`MCP_AUTO_RECREATE_SHARDS=1` 환경변수가 남아 있어도 compose lifecycle을 켜지 않는다.
+  - 소규모 Codex goal/test run에서 lifecycle을 정말 켜야 하면 `--allow-goal-shard-lifecycle`과 `--auto-up-shards`/`--auto-recreate-shards`를 함께 명시한다.
+  - 위 차단 상태에서는 `expert_main.py`가 compose 기반 shard status/ensure 경로(`warp_shards.py status/up/recreate`)로 진입하지 않는다.
+  - manifest/run config에 `mcp_shard_lifecycle_policy=docker_up_recreate_opt_in`을 기록한다.
+  - manifest/run config에 `mcp_small_run_shard_lifecycle_blocked`를 기록한다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_input_loader.py`: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_input_loader -v`: `Ran 10 tests ... OK`
+  - `.\venv\Scripts\python.exe expert_main.py --help`: `--auto-up-shards`, `--auto-recreate-shards` 노출 확인
+  - v141 run id `20260529_020958_837665`: `requested_parallel=36`, `effective_parallel=5`, `completed/failed/pending=5/0/0`
+  - v141 manifest: `mcp_auto_up_shards=false`, `mcp_auto_recreate_shards=false`, `mcp_shard_lifecycle_policy=docker_up_recreate_opt_in`
+  - v141 통합/워커 로그: `docker compose`, `force-recreate`, `warp_shards.py recreate`, `자동 기동`, `재생성` 검색 결과 없음
+  - `src/llm_batch/agentic_pipeline.py` 회귀 검증: `tests.test_agentic_pipeline_rework` 293건 OK
+  - v145 run id `20260529_032731_379356`: `--reuse-shards-only`, `requested_parallel=36`, `effective_parallel=5`, `completed/failed/pending=5/0/0`
+  - v145 startup config: `mcp_shard_lifecycle_policy=docker_up_recreate_opt_in`, `auto_up=False`, `auto_recreate=False`, `small_run_lifecycle_blocked=True`
+  - v145 통합/워커 로그: `docker compose`, `force-recreate`, `warp_shards.py recreate`, `compose up` 검색 결과 없음
+- 운영 경계:
+  - goal/known-bad 회귀처럼 입력이 작으면 stale env보다 현재 명령의 명시성이 우선한다.
+  - shard 복구 자동화 자체가 검증 대상인 canary/validation에서만 `--auto-up-shards`, `--auto-recreate-shards`를 명시한다.
+  - 일반 goal 회귀/판정 테스트는 기본값 또는 `--reuse-shards-only`로 실행한다.
+
+## IMP-20260528-093 - Small Targeted Run Shard Reuse-Only Policy
+
+- 상태: patched / compile-verified / v138-live-log-confirmed / v139-manifest-policy-confirmed
+- 우선순위: P1
+- Type: runtime-efficiency / shard-policy / goal-test-loop
+- 관련 파일:
+  - `expert_main.py`
+  - `docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md`
+  - `logs/expert_run_20260529_005903_511505.log`
+  - `qualitative_review/20260528_141006_620986/v138_known_bad_alias_lock_character_page_result_manifest.json`
+  - `logs/expert_run_20260529_012138_862062.log`
+  - `qualitative_review/20260528_141006_620986/v139_known_bad_weak_character_banter_guard_result_manifest.json`
+- 배경:
+  - 1~9건 goal/targeted 테스트에서 `expert_main.py --parallel 36`을 상한으로 쓰더라도 실제 워커는 입력 건수로 줄어든다.
+  - 그러나 기존 startup auto-manage는 WARP 상태 또는 검색 health 실패를 만나면 `tools/warp_shards.py recreate` 경로로 `docker compose up --force-recreate`를 실행할 수 있어 소규모 테스트 루프가 불필요하게 길어졌다.
+- 조치:
+  - `expert_main.py`에 `--no-auto-recreate-shards`와 `--reuse-shards-only` 옵션을 추가했다.
+  - `MCP_SMALL_RUN_SHARD_THRESHOLD` 미만 소규모 targeted run은 기본적으로 shard `up`/`force-recreate` 자동 실행을 생략하고 기존 healthy shard 재사용을 우선한다.
+  - 소규모 run에서 자동 기동/재생성이 필요하면 현재 명령에 `--allow-goal-shard-lifecycle`과 `--auto-up-shards`/`--auto-recreate-shards`를 함께 붙인다. env 자동화는 v171 이후 `MCP_AUTO_*`와 `MCP_ALLOW_ENV_SHARD_LIFECYCLE=1`이 함께 필요하다.
+  - health retry 기본값은 자동 재생성이 허용될 때만 `6`, 소규모 reuse-only 정책에서는 `1`로 낮춘다. 필요 시 `MCP_HEALTH_ATTEMPTS`로 override한다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile expert_main.py`: OK
+  - `.\venv\Scripts\python.exe expert_main.py --help`: 신규 옵션 노출 확인.
+  - v138 run id `20260529_005903_511505`: `requested_parallel=36`, `input_post_count=5`, `effective_parallel=5`, `completed/failed/pending=5/0/0`.
+  - v138 startup log에서 healthy shard 2개 재사용, WARP/health attempt `1/1`, `docker compose`/`force-recreate` 미실행을 확인했다.
+  - v139 run id `20260529_012138_862062`: `requested_parallel=36`, `input_post_count=5`, `effective_parallel=5`, `completed/failed/pending=5/0/0`.
+  - v139 manifest에서 `mcp_auto_up_shards=false`, `mcp_auto_recreate_shards=false`, `mcp_small_targeted_run=true`를 확인했다.
+  - v139 startup log에서도 health attempt `1/1`이며 `docker compose`/`force-recreate` 실행 흔적이 없었다.
+- 운영 경계:
+  - 1~9건 goal/targeted run에서 compose 재시작을 확실히 피해야 하면 `--reuse-shards-only`를 붙인다.
+  - canary/validation에서 shard 복구 자동화까지 검증할 때만 CLI `--auto-up-shards`/`--auto-recreate-shards`를 명시한다. env 자동화는 `MCP_AUTO_*`와 `MCP_ALLOW_ENV_SHARD_LIFECYCLE=1`을 함께 둔다.
+
+## IMP-20260528-092 - Expert Orchestration Schema/Prompt Responsibility Split
+
+- 상태: schema-patched / unit-verified / quality-review-locked
+- 우선순위: P0
+- Type: semantic-quality / orchestration / prompt-contract / output-schema
+- 관련 run id:
+  - v133 `20260528_225755_175469`
+- 관련 post id:
+  - `11718091`
+  - `11718083`
+  - `11718097`
+  - `11718099`
+  - `11718118`
+- 근거:
+  - `docs/devs/EXPERT_ORCHESTRATION_LIMITATIONS.md`
+  - `docs/devs/LLM_JUDGMENT_REVIEW.md`
+  - `src/llm_batch/models.py`
+  - `src/llm_batch/agentic_pipeline.py`
+  - `src/llm_batch/prompts/prompt_router.py`
+  - `src/llm_batch/experts/arbiter.py`
+- 배경:
+  - v133 targeted rerun에서 기존 wrong-title 오판은 대부분 닫혔지만, `11718091`은 `official_title=null` 방어와 별개로 reason/schema 혼선이 남았다.
+  - 현재 프롬프트는 기억 회수/제목 찾기, 장르 일반론, 작가론에서 `official_title=null`을 요구하지만, 최종 output schema는 소설 관련성, 단일 작품 확정 가능성, 주변 담론을 명시적으로 분리하지 못한다.
+  - Arbiter/Verifier/Decoder가 보수적으로 판단해도 `_context_to_output()` 후처리 rescue/demotion 경로가 title을 다시 넣거나 지울 수 있다.
+- 조치:
+  - 전문가 오케스트레이션 한계를 LLM 자연어 이해, 작품 identity, 후처리/구조 보정, 리뷰/승인 책임으로 분리해 문서화했다.
+  - prompt-only fix가 충분하지 않고 schema/lock/evidence 공개 필드가 필요함을 명시했다.
+  - `11718091`류는 title 오염이 없어도 schema/reason 혼선이 남으면 `HOLD/docs_issue`로 유지하도록 체크리스트/TODO에 반영했다.
+  - `PickvelIdentity`에 `is_novel_related`, `is_resolved_work_discussion`, `title_resolution_state`, `title_resolution_allowed`를 optional field로 추가했다.
+  - `_context_to_output()`에서 broad novel relatedness와 resolved work identity를 분리 산출하고, 필요한 경우 reason에 `[범위 분리]`를 남기도록 했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework -v`: `Ran 279 tests ... OK`
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\models.py src\llm_batch\agentic_pipeline.py tests\test_agentic_pipeline_rework.py`: OK
+  - synthetic `11718091` context: title null 유지, `is_novel_related=true`, `is_resolved_work_discussion=false`, `title_resolution_state=unresolved_matchable`, `title_resolution_allowed=false`.
+  - synthetic `11718083` memory-query/no-anchor context: title null 유지, `title_resolution_state=unresolvable_memory_query`, `title_resolution_allowed=false`.
+- 남은 작업:
+  - `title_lock_state`와 `evidence_edges`를 후처리 단계 간 공유하고 review packet에 공개한다.
+  - `reason_decision_contradiction` detector를 action queue에 직접 연결한다.
+  - live LLM targeted rerun에서 새 공개 필드가 result/checkpoint JSON에 남는지 확인한다.
+  - 10만 건 semantic gate는 expanded random baseline과 P0/P1 high-risk review 전까지 `REVIEW-LOCKED`로 유지한다.
+
+## IMP-20260528-091 - Metadata-Preserved Known-Bad Rerun and Small-Run Shard Policy
+
+- 상태: targeted-verified / policy-patched / quality-review-locked
+- 우선순위: P0
+- Type: semantic-quality / runtime-efficiency / shard-policy / comment-context
+- 관련 run id:
+  - v133 `20260528_225755_175469`
+- 관련 post id:
+  - `11718083`
+  - `11718091`
+  - `11718097`
+  - `11718099`
+  - `11718118`
+- 근거:
+  - `qualitative_review/20260528_141006_620986/v133_known_bad_metadata_preserved_result_manifest.json`
+  - `qualitative_review/20260528_141006_620986/v133_known_bad_metadata_preserved_after_review_summary_ko_20260528.md`
+  - `tests/test_expert_main_input_loader.py`
+  - `logs/expert_run_20260528_225755_175469.log`
+- 배경:
+  - v132까지는 title canary와 dialogue-context 검증이 분리되어 있었고, 메타가 없는 packet은 author/comment 문맥 승인에 쓸 수 없었다.
+  - v133은 실제 comment row 메타가 살아있는 입력으로 known-bad 5건을 재구성해 재실행했다.
+  - 실행 중 worker는 `effective_parallel=5`로 줄었지만 shard auto-manage는 5개를 맞추며 compose 재구성을 수행해 소규모 테스트 비용이 커졌다.
+- 조치:
+  - v133 known-bad metadata-preserved input/result/labels/summary/action queue를 생성했다.
+  - `expert_main.py`에 10건 미만 소규모 자동 endpoint 생성 시 기본 2 shard 제한을 추가했다.
+  - 필요한 로컬 shard가 이미 healthy이면 `warp_shards.py up`을 생략하도록 했다.
+  - 명시적 `MCP_SHARD_COUNT` 또는 `MCP_AUTO_SHARD_LIMIT`가 있으면 사용자 지정값을 우선한다.
+- 검증:
+  - v133 `completed/failed/pending=5/0/0`.
+  - `11718083`, `11718097`, `11718099`, `11718118`은 targeted `ACCEPT`.
+  - `11718091`은 null-title은 안전하지만 reason/schema 혼선으로 `HOLD/docs_issue`.
+  - `tests.test_expert_main_input_loader`: `5 tests OK`.
+  - `py_compile expert_main.py tests\test_expert_main_input_loader.py`: OK.
+- 남은 경계:
+  - 새 shard 정책의 runtime 효과는 다음 1~9건 targeted run에서 확인해야 한다.
+  - 5건 targeted 결과는 10만 건 semantic approval 근거가 아니다.
+  - `is_novel_related`와 `resolved_work_identity` 분리 전까지 `11718091`류는 reason 혼선이 재발할 수 있다.
+
+## IMP-20260528-090 - Context Metadata Carrier for Targeted Review Inputs
+
+- 상태: patched / verification-passed / dialogue-context-review-locked
+- 우선순위: P0
+- Type: semantic-quality / review-tooling / input-contract / comment-context
+- 관련 run id:
+  - source `20260528_141006_620986`
+  - v131 `20260528_222656_377121`
+- 관련 post id:
+  - `11718097`
+  - `11718118`
+  - `11718083`
+  - `11718091`
+  - `11718099`
+- 근거:
+  - `qualitative_review/20260528_141006_620986/v132_orchestration_prompt_limit_context_audit_ko_20260528.md`
+  - `qualitative_review/20260528_141006_620986/v132_topic_particle_title_lead_alias_review_context_audit_manifest.json`
+  - `tests/test_expert_main_input_loader.py`
+- 배경:
+  - v131은 `11718097` title 회복과 `11718118` trope/null 유지 canary로는 유효하다.
+  - 그러나 v126/v132 경로의 targeted input/packet에는 실제 `gallery_id`, `post_author`, `comment_metadata`, `comment_context_lines`가 없거나 소실되어 있었다.
+  - 이 상태에서는 글쓴이 댓글과 타인 댓글의 발화 관계, reply 구조, IP 기반 동일인 추적을 LLM이 사용할 수 없으므로 dialogue-context approval로 볼 수 없다.
+- 조치:
+  - `expert_main.py` loader가 입력 row의 `comment_metadata`를 문자열 댓글에 index 기준으로 재부착하도록 보강했다.
+  - 주요 targeted/review builder들이 원본 row에 존재하는 context metadata를 산출물로 넘기도록 보강했다.
+- 검증:
+  - `tests.test_expert_main_input_loader`: `3 tests OK`
+  - 관련 py_compile: OK
+  - v132 context audit packet 생성: OK
+- 남은 경계:
+  - 현재 source row 자체에 메타가 없으면 임의 복구하지 않는다.
+  - 원본 crawl/input에서 실제 comment metadata가 살아있는 source로 known-bad targeted input을 다시 만들어 재실행해야 한다.
+  - 메타가 없는 packet은 자연어 대화 맥락 검증에서 `INFO_MISSING / REVIEW-LOCKED`로 둔다.
+
+## IMP-20260528-089 - Post-Arbiter Correction Monotonicity and Filtered Official Evidence
+
+- 상태: targeted-fixed / limitation-documented / quality-review-locked
+- 우선순위: P0
+- Type: semantic-quality / orchestration / post-processing / evidence-alignment
+- 관련 run id:
+  - v126 `20260528_212656_149981`
+  - v127 `20260528_213847_152176`
+  - v128 `20260528_214738_593132`
+  - v129 `20260528_220550_932036`
+  - v130 `20260528_221625_363611`
+  - v131 `20260528_222656_377121`
+- 관련 post id:
+  - `11718097`
+  - `11718118`
+- 근거:
+  - v125 summary `qualitative_review/20260528_141006_620986/v125_topic_particle_title_lead_alias_review_summary_ko.md`
+  - v128 manifest `qualitative_review/20260528_141006_620986/v128_topic_particle_reject_2_result_manifest.json`
+  - v131 summary `qualitative_review/20260528_141006_620986/v131_topic_particle_reject_2_after_review_summary_ko_20260528.md`
+  - orchestration guide `docs/devs/EXPERT_ORCHESTRATION_LIMITATIONS.md`
+  - verification results `docs/devs/VERIFICATION_RESULTS.md`
+- 배경:
+  - v126 `11718097`은 검색/스니펫/Deliberation 단계에서 `망겜의 힐러`가 확인됐지만, 후단 correction과 batch memory author alias rescue가 `게임4판타지`로 final title을 뒤집었다.
+  - v127 `11718118`은 장르/트로프 일반론인데 `대협`이 `장르소설 마이너 갤러리/밈`으로 rescue됐다.
+  - v128에서는 `11718118` false positive는 닫혔지만, `11718097`은 wrong title 방어 후 `HOLD/unresolved`로 남았다.
+  - v129는 `11718097` final title을 회복했지만 canonical suspect 단계가 `오크 행복`으로 흔들려 후단 회복에 의존했다.
+  - v130은 canonical suspect 흔들림을 줄였지만 작가앵커-후보작가 충돌 guard가 locked title을 삭제해 `11718097`이 다시 `HOLD/unresolved`로 회귀했다.
+- 조치:
+  - author-name search-inferred alias가 단독으로 batch memory title rescue를 만들지 못하게 차단했다.
+  - genre/trope discourse warning 상태에서 장르어/역할어가 title rescue로 승격되는 경로를 차단했다.
+  - snippet canonical alias lock이 있는 title을 canonical suspect override가 약한 공식 URL 또는 decoder alias만으로 덮지 못하게 했다.
+  - filtered official detail이 snippet/alias lock과 같은 후보를 가리키면 `weak_support`로 보존하도록 했다.
+  - 작가앵커-후보작가 충돌 guard가 snippet/alias lock 또는 filtered official detail 보조 근거가 있는 title을 무조건 삭제하지 않게 했다.
+  - 구조 한계 문서와 정성 리뷰 프로토콜에 중간 전문가 판단과 최종 JSON을 분리 검토하는 규칙을 추가했다.
+- 검증:
+  - focused 회귀 3건: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework -v`: `277 tests OK`
+  - v131 targeted 2건: `requested_parallel=36`, `effective_parallel=2`, `completed/failed/pending=2/0/0`.
+  - v131 after-review: `ACCEPT=2`, `HOLD=0`, `REPROCESS=0`, `REJECT=0`.
+- 남은 경계:
+  - v130 실패 유형은 회귀 seed로 남긴다.
+  - `post_arbiter_lock_preserved`, `author_anchor_conflict_guard_skip`, `filtered_official_weak_support`를 high-risk expansion bucket에 포함해야 한다.
+  - 이 항목은 targeted/bucket evidence이며 10만 건 semantic approval 근거가 아니다.
+
+## IMP-20260528-088 - Topic-Particle Title Lead Alias Recall
+
+- 상태: targeted-fixed / canary-verified / quality-review-locked
+- 우선순위: P1
+- Type: semantic-quality / alias-recall / search-anchor / orchestration
+- 관련 run id:
+  - v123 `20260528_202833_336004`
+  - v124 `20260528_210753_915155`
+- 관련 post id:
+  - `11718097`
+- 근거:
+  - v124 manifest `qualitative_review/20260528_141006_620986/v124_targeted_4_result_manifest.json`
+  - v124 summary `qualitative_review/20260528_141006_620986/v124_targeted_4_after_review_summary_ko_20260528.md`
+  - v124 labels `qualitative_review/20260528_141006_620986/v124_targeted_4_after_review_labels.jsonl`
+  - action queue `qualitative_review/20260528_141006_620986/v124_title_lead_alias_recall_action_queue_ko_20260528.md`
+- 배경:
+  - v123에서 `족장님 -> 두 번 각성하는 대족장님` wrong-title rescue는 차단됐지만, `망겜힐 -> 망겜의 힐러` correct title recall은 `HOLD/re_search`로 남았다.
+  - Gatekeeper remainder가 `빌런이였어야돼`처럼 빗나가면, 원문 제목 첫머리의 `망겜힐은`이 검색 앵커로 충분히 우선되지 않았다.
+- 조치:
+  - Orchestrator title surface anchor 추출에서 raw post title을 Gatekeeper clue보다 먼저 보도록 조정했다.
+  - `AgenticPipeline._extract_post_title_lead_alias_terms()`에서 제목 첫 토큰에 붙은 조사를 제거한 clean alias를 후보 합성/검색 추론에 보존했다.
+  - 3음절 이상 clean alias는 generic topic, role/species, low-information 필터를 통과할 때만 검색 앵커로 허용한다.
+- 검증:
+  - focused 4 tests: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework -v`: `271 tests OK`
+  - v124 targeted 4건: `requested_parallel=36`, `effective_parallel=4`, `completed/failed/pending=4/0/0`.
+  - v124 after-review: `ACCEPT=4`, `HOLD=0`, `REPROCESS=0`, `REJECT=0`.
+- 남은 경계:
+  - 이 보강은 recall 개선이므로 high-risk expansion에서 false positive 증가 여부를 봐야 한다.
+  - 검색 degraded와 official evidence 약함이 섞인 결과는 `ACCEPT`라도 대량 gate에서는 별도 evidence strength로 분리한다.
+  - targeted canary이므로 10만 건 semantic approval 근거가 아니다.
+
+## IMP-20260528-087 - Role/Honorific Search Alias Rescue Guard and v123 Canary
+
+- 상태: targeted-fixed / canary-verified / quality-review-locked
+- 우선순위: P0
+- Type: semantic-quality / alias-inference / orchestration-rescue / evidence-alignment
+- 관련 run id:
+  - v122 `20260528_200800_267494`
+  - v123 `20260528_202833_336004`
+- 관련 post id:
+  - `11718083`
+  - `11718091`
+  - `11718097`
+  - `11718099`
+- 근거:
+  - v122 summary `qualitative_review/20260528_141006_620986/v122_targeted_4_after_review_summary_ko_20260528.md`
+  - v122 labels `qualitative_review/20260528_141006_620986/v122_targeted_4_after_review_labels.jsonl`
+  - v123 manifest `qualitative_review/20260528_141006_620986/v123_targeted_4_result_manifest.json`
+  - v123 summary `qualitative_review/20260528_141006_620986/v123_targeted_4_after_review_summary_ko_20260528.md`
+  - v123 labels `qualitative_review/20260528_141006_620986/v123_targeted_4_after_review_labels.jsonl`
+  - action queue `qualitative_review/20260528_141006_620986/v123_role_honorific_alias_rescue_action_queue_ko_20260528.md`
+- 배경:
+  - v122는 런 건강은 `completed=4`, `failed=0`, `pending=0`이었지만, 두 건은 `_context_to_output()`의 `post_data` NameError로 처리 실패했고 한 건은 역할·호칭성 표현이 title rescue 근거로 과승격됐다.
+  - `11718097`에서 Arbiter는 null-title을 유지했으나 후단 batch memory alias rescue가 `족장님`을 `두 번 각성하는 대족장님`과 연결했다. reason 내부에는 `search_only`, `community_mention`, `post_spans=0`, `official_urls=0`이 남아 evidence보다 final이 강했다.
+- 조치:
+  - `_context_to_output()`의 `post_data` 참조를 `ctx.post_data` 기반으로 수정했다.
+  - `족장`, `족장님`, `대족장`, `대족장님` 같은 역할·호칭성 표현을 generic alias seed로 취급하고, `search_evidence_alias_inference` 단독 경로에서는 batch memory title rescue를 차단했다.
+  - 특정 post id/작품명 매핑이 아니라 역할·호칭성 alias class에 대한 일반 guard와 회귀 테스트로 보정했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_agentic_pipeline_rework.py`: OK
+  - focused 4 tests: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework`: `269 tests OK`
+  - v123 targeted 4건: `requested_parallel=36`, `effective_parallel=4`, `completed/failed/pending=4/0/0`.
+  - v123 after-review: `ACCEPT=3`, `HOLD=1`, `REPROCESS=0`, `REJECT=0`.
+- 남은 경계:
+  - `11718097`은 wrong-title final 삽입은 차단됐지만 correct title recall이 아직 `HOLD/re_search`다.
+  - canonical suspect 단계에서 역할·호칭 후보가 한 번 생성되는 노이즈는 남아 있어 `role_or_honorific_alias_rescue_blocked` bucket으로 감시해야 한다.
+  - 이번 항목은 targeted canary이며 10만 건 semantic approval 근거가 아니다.
+
+## IMP-20260528-086 - Memory Query Hard Veto and Expert Orchestration Limitations
+
+- 상태: documented / prompt-contract-updated / canary-verified / quality-review-locked
+- 우선순위: P0
+- Type: semantic-quality / prompt-contract / orchestration-rescue / evidence-alignment
+- 관련 run id:
+  - v119 `20260528_173601_372561`
+  - v121 `20260528_192101_896423`
+- 관련 post id:
+  - `11718083`
+  - `11718091`
+  - `11718097`
+  - `11718099`
+- 근거:
+  - guide `docs/devs/EXPERT_ORCHESTRATION_LIMITATIONS.md`
+  - protocol `docs/devs/LLM_JUDGMENT_REVIEW.md`
+  - v119 labels `qualitative_review/20260528_141006_620986/v119_targeted_4_after_review_labels.jsonl`
+  - v119 summary `qualitative_review/20260528_141006_620986/v119_targeted_4_after_review_summary_ko_20260528.md`
+  - v121 labels `qualitative_review/20260528_141006_620986/v121_post11718083_after_review_labels.jsonl`
+  - v121 summary `qualitative_review/20260528_141006_620986/v121_post11718083_after_review_summary_ko_20260528.md`
+  - action queue `qualitative_review/20260528_141006_620986/v121_memory_query_hard_veto_action_queue_ko_20260528.md`
+- 배경:
+  - `11718083`은 자연어적으로 "기억나는 대사로 작품명을 찾는 글"이며, 원문은 작품명을 모른다고 명시한다.
+  - v119에서는 reason 내부에 `search_only`, `official_title_evidence=false`, `post_spans=0` 반대 근거가 남았는데도 단일 title이 확정됐다.
+  - 이는 LLM 프롬프트 한계뿐 아니라 후단 rescue/정합성 보정이 null-title 결정을 다시 되돌릴 수 있는 구조적 한계다.
+- 조치:
+  - `prompt_router.py` 공통 overlay에 memory-query/no-direct-anchor official_title null 규칙을 추가했다.
+  - comment author/ip/gallery metadata는 대화 참여자 추적용이며 작품 identity evidence가 아니라는 경계를 prompt에 추가했다.
+  - `LLM_JUDGMENT_REVIEW.md`에 memory-query, reason/final contradiction, 후처리 rescue 리뷰 규칙을 추가했다.
+  - `EXPERT_ORCHESTRATION_LIMITATIONS.md`에 오케스트레이션 흐름, 구조 한계, hard veto 개선안을 정리했다.
+- 검증:
+  - v119 after-review: `ACCEPT=1`, `HOLD=2`, `REJECT=1`.
+  - v121 `11718083` canary: `official_title=null`, `novel_identity=null`, `work_resolution=none`, `anchor_type=none`, `discussion_type=recommendation`.
+  - `tests.test_agentic_pipeline_rework`: `267 tests OK`.
+- 남은 경계:
+  - v121은 단건 canary라 10만 건 semantic approval 근거가 아니다.
+  - memory-query/no-anchor hard veto는 high-risk bucket 확대 표본으로 재검증해야 한다.
+  - `11718091` reason/final 충돌과 `11718097` correct title recall은 후속 이슈로 남는다.
+
+## IMP-20260528-085 - Partial Run Semantic Over-Resolution and Comment Author Context Guard
+
+- 상태: targeted-rerun-completed / partial-fixed / two-rejects-remain / quality-review-locked
+- 우선순위: P0
+- Type: semantic-quality / evidence-alignment / comment-context / runtime-artifact
+- 관련 run id:
+  - `20260528_141006_620986`
+- 관련 post id:
+  - `11718083`
+  - `11718099`
+  - `11718091`
+  - `11718097`
+- 근거:
+  - summary `qualitative_review/20260528_141006_620986/v117_partial_run_semantic_issue_review_ko_20260528.md`
+  - labels `qualitative_review/20260528_141006_620986/v117_partial_run_semantic_issue_labels.jsonl`
+  - action queue `qualitative_review/20260528_141006_620986/v117_partial_run_action_queue_ko_20260528.md`
+  - after-review summary `qualitative_review/20260528_141006_620986/v117_targeted_4_after_review_summary_ko_20260528.md`
+  - after-review labels `qualitative_review/20260528_141006_620986/v117_targeted_4_after_review_labels.jsonl`
+- 배경:
+  - 10만 건 입력에 대한 `20260528_141006_620986` 결과는 `completed=80`, `flushed=71`, `pending=9`인 부분 산출물이며 전체 품질 승인 근거로 사용할 수 없다.
+  - 부분 결과 안에서 플랫폼/브랜드 표면, 표지 변경 같은 상태 표현, character-only 약한 언급, 작가/신작/최신화 headline이 작품 title로 과확정되는 패턴이 확인됐다.
+  - 입력 JSONL에는 post row의 `gallery_id`/`author`와 comment row의 `comment_id`/`author`/`ip`/reply 메타가 존재하므로, 자연어 판정에는 댓글 본문과 별도 메타를 함께 보존해야 한다.
+- 조치:
+  - platform/community label과 meta action/status title을 final title 승격에서 차단했다.
+  - 결과 row와 pipeline post dict에 `gallery_id`, `post_author`, `comment_metadata`, `comment_context_lines`를 분리 보존했다.
+  - gatekeeper/discourse/verifier 계열 prompt JSON에 `gallery_id`, `post_author`, `comment_context`를 포함했다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile expert_main.py src\llm_batch\agentic_pipeline.py src\llm_batch\experts\gatekeeper.py src\llm_batch\experts\discourse.py src\llm_batch\experts\verifier.py tests\test_agentic_pipeline_rework.py`: OK
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework.CommentTitleRecoveryTest.test_pipeline_preserves_comment_author_ip_context_separately_from_text`: OK
+  - v117 targeted rerun `20260528_153350_626964`: `requested_parallel=36`, `effective_parallel=4`, `completed/failed/pending=4/0/0`.
+  - after-review distribution: `ACCEPT=2`, `REJECT=2`.
+- 남은 경계:
+  - `11718083`은 platform label 승격은 사라졌지만 quote-search overresolve가 남았다.
+  - `11718091`은 generic phrase alias overresolve가 남았다.
+  - semantic gate는 계속 `NO-GO / REVIEW-LOCKED`다.
+
+## IMP-20260528-084 - Search Alias Common-Word Pollution Guard
+
+- 상태: targeted-fixed / verified-single-case / gate-locked
+- 우선순위: P0
+- Type: alias-inference / semantic-quality / search-evidence-hygiene
+- 관련 post id:
+  - `11365197`
+- 관련 run id:
+  - v115 `20260528_015206_759785`
+  - v116 `20260528_021407_860207`
+- 근거:
+  - summary `qualitative_review/20260505_214349_324347/v116_alias_commonword_guard_review_summary_ko_20260528.md`
+  - labels `qualitative_review/20260505_214349_324347/v116_alias_commonword_guard_review_labels.jsonl`
+  - action queue `qualitative_review/20260505_214349_324347/v116_alias_commonword_guard_action_queue_ko_20260528.md`
+- 배경:
+  - 검색 evidence 기반 alias inference가 `애들`, `성이` 같은 일반어/문법 조각을 작품 약칭처럼 승격해 엉뚱한 검색 결과 title을 final title로 확정했다.
+- 조치:
+  - 일반어/문법 조각 alias 후보를 차단했다.
+  - `웹소설 작법서`, `공략집`, `작성법`, `by ... 저` 같은 문서/가이드형 검색 title을 작품 후보에서 제외했다.
+  - 특정 작품명/URL 하드코딩 없이 일반 규칙과 회귀 테스트로 보정했다.
+- 확인:
+  - v116 단건에서 `전1시 -> 전지적 1인칭 시점`으로 복구됐다.
+  - `tests.test_agentic_pipeline_rework tests.test_agentic_pipeline_alias_contract tests.test_batch_context`: `298 tests OK`.
+- 남은 경계:
+  - v115/v116 shell exit code `1`과 manifest success 불일치는 후속 조사한다.
+  - 이번 항목은 targeted bug fix이며 10만 건 semantic approval 근거가 아니다.
+
+## IMP-20260527-083 - v105 REJECT Alias Recall False Negative Patch
+
+- 상태: rerun-completed / after-reviewed / rejects-closed / hold-open
+- 우선순위: P0
+- Type: alias-recall / prompt-contract / semantic-quality
+- 관련 post id:
+  - `8834919`, `8388455`, `11515413`, `10499540`, `11365197`, `10887145`, `9621816`
+- 근거:
+  - summary `qualitative_review/20260505_214349_324347/v108_v105_reject_alias_recall_patch_ko_20260527.md`
+  - closure summary `qualitative_review/20260505_214349_324347/v109_v105_reject_closure_after_review_summary_ko_20260527.md`
+  - labels `qualitative_review/20260505_214349_324347/v109_v105_reject_closure_after_review_labels.jsonl`
+  - manifest `qualitative_review/20260505_214349_324347/v108_v105_reject_rejudge_targeted_manifest.json`
+- 배경:
+  - v105 after-review에서 정상 웹소설 short alias가 noise/author_talk/platform talk로 사라지는 false negative 7건이 남았다.
+- 조치:
+  - title abbreviation 사전, suffix-trim abbreviation resolver, batch alias fallback, prompt/router 예시를 보강했다.
+  - source 라벨 회귀를 잡아 `known_abbreviation`과 `known_title_abbreviation`을 분리했다.
+  - v108 p7 재실행과 v109 단건 guard 재실행 후 `REJECT=0`까지 낮췄다.
+- 남은 경계:
+  - `탑매`, `괴담텔`, `괴출` 3건은 `HOLD`로 남아 추가 `re_search`/`re_judge`가 필요하다.
+  - 10만 건 semantic gate는 계속 `NO-GO / REVIEW-LOCKED`다.
+
+## IMP-20260527-082 - Adaptive Parallel Policy for Small Targeted Runs
+
+- 상태: documented / tooling-updated
+- 우선순위: P1
+- Type: runtime-efficiency / test-operation / docs
+- 관련 run id:
+  - v98 `20260527_190502_986325`
+  - v102 `20260527_192017_408654`
+- 근거:
+  - summary `qualitative_review/20260505_214349_324347/v106_adaptive_parallel_policy_ko_20260527.md`
+  - guide `docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md`
+  - code `tools/build_v102_clean_alias_targeted_input.py`
+- 배경:
+  - 7건/25건 targeted run에 `--parallel 36`을 고정 적용해 불필요한 worker 로그와 대기 비용이 발생했다.
+- 조치:
+  - 36을 고정값이 아니라 상한으로 정의했다.
+  - 소규모 targeted run의 실제 병렬도는 `parallel=min(input_count,36)`으로 정정했다.
+- 남은 경계:
+  - 과거 실행 기록의 `--parallel 36`은 사실 기록으로 보존한다.
+
+## IMP-20260527-081 - v105 Targeted Rerun After Review
+
+- 상태: rerun-completed / after-reviewed / quality-no-go
+- 우선순위: P1
+- Type: qualitative-review / targeted-regression / slang-db / alias-recall
+- 관련 run id:
+  - v98 `20260527_190502_986325`
+  - v102 `20260527_192017_408654`
+- 근거:
+  - labels `qualitative_review/20260505_214349_324347/v105_targeted_after_review_labels.jsonl`
+  - summary `qualitative_review/20260505_214349_324347/v105_targeted_after_review_summary_ko_20260527.md`
+- 확인:
+  - v98/v102 총 `32`건 after-review 결과 `ACCEPT=16`, `HOLD=9`, `REJECT=7`.
+  - `강연금`, `프리렌` 외부 매체 seed는 되살아나지 않았다.
+  - `아집숨` positive control과 `탑매/괴무직/괴담텔/전1시/괴출/성녀속마음` alias recall 계열은 후속 IMP-20260527-083에서 `REJECT=0`까지 낮췄다.
+- 남은 경계:
+  - 후속 closure 기준 `탑매`, `괴담텔`, `괴출` `HOLD=3`이 남아 추가 확인이 필요하다.
+  - semantic gate는 계속 `NO-GO / REVIEW-LOCKED`다.
+
+## IMP-20260527-080 - Current 100k Remaining Gap/Bug Resolution Plan
+
+- 상태: documented / action-queued / quality-no-go
+- 우선순위: P0
+- Type: qualitative-review / gate-management / 100k-scan
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - summary `qualitative_review/20260505_214349_324347/v103_current_100k_remaining_gap_bug_resolution_plan_ko_20260527.md`
+  - closure `qualitative_review/20260505_214349_324347/round3_exit_action_current_combined_manifest.json`
+  - targeted manifest `qualitative_review/20260505_214349_324347/v102_clean_alias_preservation_targeted_manifest.json`
+- 배경:
+  - 10만 건 테스트는 run health와 semantic decision quality를 분리해야 한다.
+  - 현재 closure는 `ACCEPT=375`, `HOLD=208`, `INFO_MISSING=1`이며 `human_review=122`, `slang_db_review=87`이 남아 있다.
+- 조치:
+  - 현재 부족점, 이미 해결한 버그, 바로 해결 가능한 후속 작업을 한국어 summary로 분리했다.
+  - v98/v102 targeted rerun, slang DB closure, VLM/OCR browser gate, expanded baseline을 다음 gate 조건으로 고정했다.
+- 남은 경계:
+  - `127.0.0.1:8000` LLM endpoint가 닫혀 있어 실서버 재실행은 pending이다.
+  - random baseline `1000+`와 P0/P1 high-risk expansion 전까지 semantic `GO`를 내지 않는다.
+
+## IMP-20260527-079 - Clean Alias Preservation Contract
+
+- 상태: fixed-in-contract-and-prompts / rerun-reviewed / hold-open / quality-no-go
+- 우선순위: P1
+- Type: slang-db / alias-recall / prompt-contract / regression
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - summary `qualitative_review/20260505_214349_324347/v102_clean_alias_preservation_contract_summary_ko.md`
+  - code `src/llm_batch/agentic_pipeline.py`
+  - prompt `src/llm_batch/prompts/prompt_router.py`
+  - prompt `src/llm_batch/prompts/expert_prompts.py`
+  - test `tests/test_agentic_pipeline_alias_contract.py`
+- 배경:
+  - v101에서 noisy detected surface 차단과 clean short alias 보존이 분리되지 않아 `BLOCK_TOO_STRONG`과 `MISSING_SHORT_ALIAS_EXTRACTION` 패턴이 확인됐다.
+- 조치:
+  - `_infer_slang_alias_contract`에 title initial 기반 clean alias segment 복구를 추가했다.
+  - 정식 제목과 짧은 약칭이 함께 보이면 짧은 약칭을 `detected_term/canonical_work_alias`에 남기고 정식명은 `decoded_term/official_title`에 두도록 prompt를 강화했다.
+  - noisy term은 저장하지 않되 clean alias는 보존하는 regression을 추가했다.
+- 확인:
+  - `tests.test_agentic_pipeline_alias_contract`: `33 tests OK`.
+  - `tests.test_batch_context tests.test_qualitative_review_packet_tools tests.test_exit_action_closure`: `38 tests OK`.
+  - `tests.test_agentic_pipeline_rework`: `239 tests OK`.
+  - 후속 v105/v108/v109 재실행과 after-review로 alias recall REJECT는 `REJECT=0`까지 낮췄다.
+- 남은 경계:
+  - 후속 closure 기준 `탑매`, `괴담텔`, `괴출` `HOLD=3`이 남아 추가 `re_search`/`re_judge`가 필요하다.
+  - semantic gate는 계속 `NO-GO / REVIEW-LOCKED`다.
+
+## IMP-20260527-078 - v101 Blocked Contract Overblock Spot Review
+
+- 상태: spot-reviewed / action-queued / quality-no-go
+- 우선순위: P1
+- Type: qualitative-review / slang-db / alias-recall / contract-overblock
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - labels `qualitative_review/20260505_214349_324347/v101_blocked_contract_spot_review_labels.jsonl`
+  - summary `qualitative_review/20260505_214349_324347/v101_blocked_contract_spot_review_summary_ko.md`
+  - action queue `qualitative_review/20260505_214349_324347/v101_blocked_contract_spot_review_action_queue.md`
+- 배경:
+  - v99에서 `blocked_by_result_contract=79`가 남았지만, 저장 차단이 모두 타당한지 또는 정상 alias 후보까지 과차단하는지 분리해야 했다.
+- 조치:
+  - store_reason/alias_scope/relevance 기준 25건을 과표집해 `ACCEPT/HOLD/REJECT`로 수동 판독했다.
+- 확인:
+  - `ACCEPT=6`, `HOLD=5`, `REJECT=14`.
+  - `sentence_like_alias_surface`에는 문장형 term과 정상 약칭 후보가 섞였다.
+  - `pure_work_alias`와 short alias 후보가 저장 차단에 남는 alias recall 손실 패턴을 확인했다.
+- 남은 경계:
+  - noisy detected term과 clean alias를 같은 packet에서 분리하는 prompt/router 또는 slang DB 후처리 보강이 필요하다.
+  - 이 표본은 전체 `blocked_by_result_contract=79` 승인 근거가 아니며, semantic gate는 계속 `NO-GO / REVIEW-LOCKED`다.
+
+## IMP-20260527-077 - v100 Slang DB Small-State Manual Review
+
+- 상태: reviewed / action-queued / quality-no-go
+- 우선순위: P1
+- Type: qualitative-review / slang-db / manual-semantic-review
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - labels `qualitative_review/20260505_214349_324347/v100_slang_db_small_state_manual_review_labels.jsonl`
+  - summary `qualitative_review/20260505_214349_324347/v100_slang_db_small_state_manual_review_summary_ko.md`
+  - action queue `qualitative_review/20260505_214349_324347/v100_slang_db_small_state_manual_review_action_queue.md`
+- 배경:
+  - v99 상태별 큐 중 저장됨/conflict/pending 상태 8건은 소량이어서 자연어 판독으로 우선 방향을 잡을 수 있었다.
+- 조치:
+  - 정상 웹소설 alias 후보 4건, 보류 2건, 외부 매체 quarantine 후보 2건으로 나눴다.
+- 확인:
+  - `ACCEPT=4`, `HOLD=2`, `REJECT=2`.
+- 남은 경계:
+  - DB 반영과 전체 closure는 아직 아니다.
+  - v98 실서버 재실행 결과와 대조가 필요하다.
+
+## IMP-20260527-076 - v99 Current Slang DB Status Queue
+
+- 상태: fixed-tooling / queue-regenerated / quality-no-go
+- 우선순위: P1
+- Type: qualitative-review / slang-db / queue-splitting / tooling-traceability
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - manifest `qualitative_review/20260505_214349_324347/v99_current_slang_db_status_review_manifest.json`
+  - action queue `qualitative_review/20260505_214349_324347/v99_current_slang_db_status_review_action_queue.md`
+  - code `tools/build_slang_db_status_review.py`
+  - test `tests/test_qualitative_review_packet_tools.py`
+- 배경:
+  - 남은 `slang_db_review=87`은 하나의 균질한 큐가 아니라 저장 차단, 저장됨, conflict, pending 상태가 섞인 큐다.
+  - 도구가 prefix를 바꿔도 packet id가 `V85-SLANG`으로 고정되어 후속 산출물 추적에 혼선을 만들 수 있었다.
+- 조치:
+  - v99 current status review queue를 생성했다.
+  - packet id가 prefix를 반영하도록 도구를 수정했다.
+- 확인:
+  - `blocked_by_result_contract=79`, `persisted_as_slang=3`, `persisted_conflict=3`, `persisted_pending=2`.
+  - 관련 38개 테스트 통과.
+- 남은 경계:
+  - 이 작업은 큐 분리 및 도구 보정이며, 실제 `slang_db_review=87`의 자연어 승인 완료가 아니다.
+
+## IMP-20260527-075 - v98 Targeted Rerun Input and Image Loading Probe
+
+- 상태: prepared / server-rerun-blocked / quality-no-go
+- 우선순위: P1
+- Type: qualitative-review / slang-db / batch-memory / VLM-OCR / browser-evidence
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - input `qualitative_review/20260505_214349_324347/v98_non_novel_slang_seed_quarantine_targeted_input.jsonl`
+  - manifest `qualitative_review/20260505_214349_324347/v98_non_novel_slang_seed_quarantine_targeted_manifest.json`
+  - summary `qualitative_review/20260505_214349_324347/v98_non_novel_slang_seed_quarantine_targeted_summary_ko.md`
+  - browser probe `qualitative_review/20260505_214349_324347/browser_visual_vlm_ocr_iab_image_gate/v98_11097334_current_image_loading_probe_20260527.json`
+- 배경:
+  - v97 code fix는 known-bad seed 재발 방지 장치이므로, 실제 `expert_main.py --parallel 36` 결과로 다시 확인해야 한다.
+  - VLM/OCR image gate는 lazy placeholder가 `complete=true`로 잡히는 현상을 계속 고려해야 한다.
+- 조치:
+  - non-novel negative control `3`건과 positive webnovel alias control `4`건의 targeted input을 준비했다.
+  - v98 input/manifest의 한국어 메타데이터를 정리했다.
+  - `11097334` 현재 iab 브라우저 probe에서 placeholder가 추가 스크롤 전까지 남는 것을 재확인했다.
+- 남은 경계:
+  - 이 섹션 작성 당시 v98 실서버 재실행은 대기 중이었다. 후속 v105 재실행에서 외부 매체 seed가 되살아나지 않음을 확인했다.
+  - 브라우저 screenshot 저장은 CDP timeout으로 실패했으므로, 이번 시각 증거는 DOM/image state JSON 기준이다.
+  - semantic gate는 계속 `NO-GO / REVIEW-LOCKED`다.
+
+## IMP-20260527-074 - Non-Novel Slang Seed Quarantine
+
+- 상태: fixed-in-code / rerun-reviewed / quality-no-go
+- 우선순위: P1
+- Type: slang-db / batch-memory / non-novel-media / regression
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - summary `qualitative_review/20260505_214349_324347/v97_non_novel_slang_seed_quarantine_ko_20260527.md`
+  - source review `qualitative_review/20260505_214349_324347/v86_slang_db_status_review_after_conflict_detection_packets.jsonl`
+  - code `src/llm_batch/batch_context.py`
+  - tests `tests/test_batch_context.py`
+- 배경:
+  - `post_id=9687991`에서 `프리렌 -> 장송의 프리렌`이 `server_poc:saved_slang`으로 확인됐다.
+  - `post_id=11097307`에서 `시달소 -> 시간을 달리는 소녀`가 conflict seed로 확인됐다.
+  - 두 seed는 비웹소설/외부 매체 alias가 batch memory resolved alias로 재학습될 수 있는 경계다.
+- 조치:
+  - `BatchContextMemory.NON_NOVEL_MEDIA_ALIAS_SEED_BLOCKLIST`에 두 known-bad seed를 추가했다.
+  - structured slang support가 있어도 pending/resolved memory로 승격되지 않도록 테스트를 추가했다.
+- 확인:
+  - `tests.test_batch_context`: `9 tests OK`.
+  - `tests.test_agentic_pipeline_rework tests.test_batch_context`: `248 tests OK`.
+  - `py_compile`: OK.
+  - 후속 v105 after-review에서 `강연금`, `프리렌` 외부 매체 seed는 되살아나지 않았다.
+- 남은 경계:
+  - 이 패치는 seed 재발 방지이며, `slang_db_review=87` 전체를 닫은 것이 아니다.
+  - semantic gate는 계속 `NO-GO / REVIEW-LOCKED`다.
+
+## IMP-20260527-073 - VLM/OCR Attachment Popup Evidence Recovery
+
+- 상태: fixed / closure-updated / quality-no-go
+- 우선순위: P1
+- Type: qualitative-review / VLM-OCR / browser-evidence / attachment-popup / closure
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - summary `qualitative_review/20260505_214349_324347/v96_info_missing_attachment_popup_summary_ko_20260527.md`
+  - manual review `qualitative_review/20260505_214349_324347/browser_visual_vlm_ocr_iab_image_gate/v96_10794867_attachment_popup_manual_review.json`
+  - browser review `qualitative_review/20260505_214349_324347/browser_visual_vlm_ocr_iab_image_gate/v96_info_missing_attachment_popup_browser_reviews.jsonl`
+  - closure manifest `qualitative_review/20260505_214349_324347/round3_exit_action_current_combined_manifest.json`
+- 배경:
+  - `post_id=10794867`은 본문 인라인 이미지 selector가 `0`개라 `INFO_MISSING`으로 남았지만, 실제 게시글에는 `원본 첨부파일 1`과 `viewimagePop.php` 첨부 이미지 링크가 있었다.
+- 조치:
+  - 첨부 팝업 이미지가 `550x350`으로 로드되는 것을 Codex 내장 브라우저로 확인했다.
+  - 확인 이미지는 갤러리 소개 이미지라 작품 직접 근거가 아니므로 `HOLD/human_review`로 재분류했다.
+  - browser capture 도구가 attachment links를 수집하도록 보강했다.
+  - VLM/OCR relabel packet이 source `final_decision_fields/reason` 등 공개 필드를 보존하도록 보강했다.
+  - closure가 v96 supplemental browser review를 병합하고 browser gate count를 최신 browser index 기준으로 재계산하게 했다.
+- 확인:
+  - `10794867`: `INFO_MISSING -> HOLD/human_review`.
+  - `10892069`: 삭제/리다이렉트 상태라 `INFO_MISSING/human_review` 유지.
+  - latest closure는 `ACCEPT=375`, `HOLD=208`, `INFO_MISSING=1`, approval excluded `209`.
+  - browser image gate는 `pass=99`, `fail=1`.
+  - 관련 `32`개 테스트와 넓은 `278`개 테스트 통과.
+- 남은 경계:
+  - attachment popup evidence는 image loading evidence일 뿐 semantic approval이 아니다.
+  - `human_review=122`, `slang_db_review=87`, `INFO_MISSING=1`이 남아 있다.
+
+## IMP-20260527-072 - Structured Evidence Catalog Review Labeler Count
+
+- 상태: fixed / closure-updated / quality-no-go
+- 우선순위: P1
+- Type: qualitative-review / evidence-catalog / after-review-labeler / closure
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - v94 rerun `20260527_154551_959262`
+- 근거:
+  - summary `qualitative_review/20260505_214349_324347/v95_catalog_evidence_relabel_summary_ko_20260527.md`
+  - labels `qualitative_review/20260505_214349_324347/v95_re_search1_catalog_evidence_after_review_labels.jsonl`
+  - closure manifest `qualitative_review/20260505_214349_324347/round3_exit_action_current_combined_manifest.json`
+- 배경:
+  - `post_id=9803986`은 structured `identity.search_evidence_catalog`에 문피아 작품 URL이 있었지만, reason 문자열의 `official_urls=0` counter 때문에 after-review가 `REPROCESS/re_search`로 남겼다.
+- 조치:
+  - review labeler가 catalog 기반 `official_urls/search_snippets`를 세도록 보정했다.
+  - stale reason counter가 structured public evidence를 덮지 못하게 했다.
+  - 회귀 테스트와 v95 after-review를 추가했다.
+- 확인:
+  - `9803986`은 v95 after-review에서 `ACCEPT/no_action`.
+  - latest closure는 `ACCEPT=375`, approval excluded `209`, `re_search=0`.
+- 남은 경계:
+  - 이 수정은 review tooling 보정이며 전체 semantic approval이 아니다.
+- `human_review=122`, `slang_db_review=87`, `INFO_MISSING=1`이 남아 있다.
+
+## IMP-20260527-071 - Broad Topic Comment Composite Over-Resolution Guard
+
+- 상태: fixed-for-targeted-cases / rerun-verified / quality-no-go
+- 우선순위: P1
+- Type: semantic-quality / title-resolution / broad-topic / comment-composite / rescue-guard
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - v93 failed canary `20260527_153305_824291`
+  - v94 passing rerun `20260527_154551_959262`
+- 근거:
+  - summary `qualitative_review/20260505_214349_324347/v94_broad_topic_comment_conflict_guard_summary_ko_20260527.md`
+  - result `qualitative_review/20260505_214349_324347/v94_re_search3_broad_topic_comment_conflict_guard_p36_20260527.json`
+  - closure manifest `qualitative_review/20260505_214349_324347/round3_exit_action_current_combined_manifest.json`
+- 배경:
+  - `post_id=10529582`는 `삼국지 떡밥`이라는 광범위한 소재/메타 화제를 특정 작품 `삼국지 태사자`로 확정했다.
+  - `post_id=10870841`은 body의 추측형 `괴담동?` alias가 댓글의 `악엔/악역의 엔딩은` 답변과 충돌했다.
+- 조치:
+  - broad topic title-surface guard가 특정 넘버링 작품뿐 아니라 character-attached composite title도 차단하도록 확장했다.
+  - 질문형 post에서 body guess alias와 댓글 답변 alias가 충돌하면 batch memory alias rescue를 막았다.
+  - 해당 패턴을 회귀 테스트로 추가했다.
+- 확인:
+  - `10529582`는 v94에서 `official_title=null`, `discussion_type=off_topic`, `work_resolution=none`.
+  - `10870841`은 title 확정이 차단되고 `HOLD/human_review`로 남았다.
+  - v94 closure는 `ACCEPT=374`, approval excluded `210`, 남은 `re_search=1`이었다.
+  - v95에서 structured evidence catalog 보정을 반영해 `re_search=0`, latest closure `ACCEPT=375`, approval excluded `209`로 갱신됐다.
+  - 관련 테스트 `274`개 통과.
+- 남은 경계:
+  - `9803986`은 v95에서 structured evidence catalog 보정 후 `ACCEPT/no_action`으로 닫혔다.
+  - `human_review=122`, `slang_db_review=87`, VLM/OCR 재리뷰가 닫히기 전까지 semantic gate는 `NO-GO / REVIEW-LOCKED`이다.
+
+## IMP-20260527-070 - Explicit Non-Novel Disclaimer False Positive Guard
+
+- 상태: fixed / canary-verified / quality-no-go
+- 우선순위: P1
+- Type: semantic-quality / title-resolution / non-novel-disclaimer / rescue-guard
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - v91 failed canary `20260527_143240_164190`
+  - v92 passing canary `20260527_144930_833190`
+- 근거:
+  - summary `qualitative_review/20260505_214349_324347/v92_100k_fixable_gap_bug_action_summary_ko_20260527.md`
+  - result `qualitative_review/20260505_214349_324347/v92_explicit_non_novel_disclaimer_9197737_p36_20260527.json`
+  - closure manifest `qualitative_review/20260505_214349_324347/round3_exit_action_current_combined_manifest.json`
+- 배경:
+  - `post_id=9197737`은 제목에 `소설얘기아닌데`가 있었고, 본문은 TV 드라마 `브레이킹 배드` 감상이었다.
+  - 기존 파이프라인은 후반 rescue에서 `브레이킹 배드 리뷰집` 같은 비웹소설/리뷰집 근거를 title 확정에 과대 반영했다.
+- 조치:
+  - 명시적 비소설 disclaimer 감지 helper를 추가했다.
+  - final identity 및 output consistency 단계에서 disclaimer + verifier critical/non-novel mismatch 조합을 차단했다.
+  - unresolved worklike preserve 및 title-surface rescue가 같은 케이스를 다시 살리지 못하게 했다.
+  - locked official detail 후보 중복/role 변환 회귀를 함께 보정했다.
+- 확인:
+  - v92 canary에서 `9197737`은 `is_relevant=false`, `official_title=null`, `work_resolution=none`.
+  - v92 closure는 `ACCEPT=373`, approval excluded `211`, 남은 `re_search=3`이었다.
+  - v94/v95 이후 latest closure는 `ACCEPT=375`, approval excluded `209`, `re_search=0`이다.
+  - 관련 회귀 테스트 `274`개 통과.
+- 남은 경계:
+  - v92 시점의 `9803986`, `10529582`, `10870841` re_search 큐는 v94/v95에서 닫혔다.
+  - `human_review=121`, `slang_db_review=87`, VLM/OCR gap `27`이 닫히기 전까지 semantic gate는 `NO-GO / REVIEW-LOCKED`이다.
+
+## IMP-20260527-069 - v89 Remaining Action Rerun Closure
+
+- 상태: targeted-rerun-merged / after-review-updated / quality-no-go
+- 우선순위: P1
+- Type: qualitative-review / action-queue / rerun / closure
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - v89 partial `20260527_123405_959952`
+  - v89 remaining `20260527_130614_144799`
+- 근거:
+  - summary `qualitative_review/20260505_214349_324347/v89_100k_fixable_gap_bug_action_summary_ko_20260527.md`
+  - combined manifest `qualitative_review/20260505_214349_324347/v89_current_remaining_action_after_v88_tooling_rerun_p36_combined_20260527_manifest.json`
+  - after-review manifest `qualitative_review/20260505_214349_324347/v89_current_remaining_action_after_v88_tooling_after_review_manifest.json`
+  - closure manifest `qualitative_review/20260505_214349_324347/round3_exit_action_current_combined_manifest.json`
+- 배경:
+  - 기존 approval excluded `391` 중 `re_search=127`, `re_judge=72`는 실제 36워커 LLM 재실행으로 닫아야 했다.
+- 조치:
+  - timeout된 첫 실행 checkpoint `74`건과 잔여 실행 `125`건을 병합해 `199/199` 무결성을 확인했다.
+  - after-review 결과 `170`건을 `ACCEPT/no_action`으로 닫았다.
+  - closure 생성기가 v89 after-review label/packet을 최신 supplemental source로 읽도록 갱신했다.
+- 확인:
+  - latest closure `ACCEPT=363`, `HOLD=206`, `REPROCESS=13`, `INFO_MISSING=2`.
+  - approval excluded `221`.
+- 남은 경계:
+  - `human_review=121`, `slang_db_review=87`, `re_search=13`이 남아 semantic gate는 계속 `NO-GO / REVIEW-LOCKED`다.
+
+## IMP-20260527-068 - VLM/OCR Lazy Placeholder Tooling Gate
+
+- 상태: tooling-fixed / tested / quality-no-go
+- 우선순위: P1
+- Type: qualitative-review / VLM-OCR / browser-evidence / tooling-gate
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - summary `qualitative_review/20260505_214349_324347/v88_vlm_lazy_placeholder_tooling_fix_ko_20260527.md`
+  - tools `tools/capture_vlm_ocr_browser_review_cli.py`, `tools/build_qualitative_exit_action_closure.py`, `tools/build_v78_vlm_browser_semantic_relabel.py`
+  - tests `tests/test_exit_action_closure.py`, `tests/test_qualitative_review_packet_tools.py`
+- 배경:
+  - placeholder가 `complete=true`, `naturalWidth>0`으로 보이는 경우가 있어 기존 loaded check만으로는 부족했다.
+  - legacy `imageGatePass=true`가 counter 실패를 덮으면 VLM/OCR row가 과승격될 수 있다.
+- 조치:
+  - lazy pending, data-original pending, placeholder current src count를 capture/relabel/closure gate에 반영했다.
+  - explicit gate와 counter gate가 모두 통과해야 image gate pass로 본다.
+- 확인:
+  - `tests.test_exit_action_closure tests.test_qualitative_review_packet_tools` `27 tests OK`.
+- 남은 경계:
+  - 기존 VLM/OCR browser target `27`건은 새 카운터가 포함된 packet으로 다시 리뷰해야 한다.
+  - semantic gate는 계속 `NO-GO / REVIEW-LOCKED`다.
+
+## IMP-20260527-067 - VLM/OCR Lazy Image Placeholder Complete Trap
+
+- 상태: guide-updated / quality-no-go
+- 우선순위: P1
+- Type: qualitative-review / VLM-OCR / browser-evidence / image-loading
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - summary `qualitative_review/20260505_214349_324347/v87_100k_fixable_gap_bug_action_summary_ko_20260527.md`
+  - probe `qualitative_review/20260505_214349_324347/browser_visual_vlm_ocr_iab_image_gate/v87_11097334_placeholder_complete_trap_probe_20260527.json`
+  - screenshot `qualitative_review/20260505_214349_324347/browser_visual_vlm_ocr_iab_image_gate/v87_11097334_placeholder_complete_trap_probe_20260527.png`
+  - guide `docs/devs/SCAN_RESULT_REVIEW_GUIDE.md`
+- 배경:
+  - DCInside 본문 이미지 lazy-load 중 placeholder 이미지가 남아 있어도 DOM에서는 `complete=true`, `naturalWidth>0`으로 보일 수 있다.
+  - 이 상태를 로딩 완료로 보면 VLM/OCR evidence를 Strong으로 과승격할 수 있다.
+- 조치:
+  - scan result review guide에 `data-original` 교체 확인, placeholder currentSrc 감지, lazy pending count 기록 규칙을 추가했다.
+  - 10만 건 부족점/버그 action summary에 이미지 로딩 결함을 P1 해결 가능 항목으로 정리했다.
+- 확인:
+  - `post_id=11097334` 초기 3번째 이미지는 `gallview_loading_ori.gif` placeholder였고, 스크롤/대기 후 실제 `dcimg` URL로 교체됐다.
+  - `2026-05-27 12:26:14 +09:00` 기준 LLM endpoint는 연결 실패 상태였고, 8000 listener와 관련 Python 점유는 보이지 않았다.
+- 남은 경계:
+  - VLM/OCR browser target `27`건은 placeholder 교체 완료와 이미지 의미 판정을 분리해 다시 라벨링해야 한다.
+  - 이미지 로딩 `Strong`만으로 semantic `ACCEPT`를 주면 안 된다.
+
+## IMP-20260527-066 - Slang DB Conflict Status Classification
+
+- 상태: status-classifier-fixed / quality-no-go
+- 우선순위: P1
+- Type: qualitative-review / slang-db / conflicts / status-classifier
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - tool `tools/build_qualitative_exit_action_closure.py`
+  - tool `tools/build_slang_db_status_review.py`
+  - manifest `qualitative_review/20260505_214349_324347/v86_slang_db_status_review_after_conflict_detection_manifest.json`
+  - summary `qualitative_review/20260505_214349_324347/v86_slang_conflict_status_correction_ko_20260527.md`
+- 배경:
+  - `post_id=10173521`의 `말하는검`은 DB에 없던 것이 아니라 `server_poc:conflict`에 있었다.
+  - 기존 classifier가 `conflicts` bucket을 보지 않아 `extracted_not_persisted`로 오분류했다.
+- 조치:
+  - `titles[].conflicts[]`를 검사해 `persisted_conflict`로 분류한다.
+  - status review followup action `resolve_conflicting_alias`를 추가했다.
+- 확인:
+  - `extracted_not_persisted=0`
+  - `persisted_conflict=3`
+  - conflict row: `8650236`, `10173521`, `11097307`
+  - 관련 테스트 `24`건 통과.
+- 남은 경계:
+  - conflict 해소는 아직 완료되지 않았다.
+  - endpoint 복구 후 v84 rerun combined `199`건 재실행이 필요하다.
+
+## IMP-20260527-065 - Slang DB Status-Specific Review Queue
+
+- 상태: superseded-by-v86 / 중간 상태 큐
+- 우선순위: P1
+- Type: qualitative-review / slang-db / status-queue / action-routing
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - tool `tools/build_slang_db_status_review.py`
+  - manifest `qualitative_review/20260505_214349_324347/v85_slang_db_status_review_manifest.json`
+  - summary `qualitative_review/20260505_214349_324347/v85_slang_db_status_review_summary_ko.md`
+  - queue `qualitative_review/20260505_214349_324347/v85_slang_db_status_review_action_queue.md`
+- 배경:
+  - `slang_db_review=87`은 저장 차단/저장됨/pending/family/추출-미저장 상태가 섞인 큐다.
+  - 같은 `slang_db_review` action이라도 후속 확인 내용이 다르므로 상태별로 분리해야 한다.
+- 조치:
+  - 상태별 packet/label/action queue를 생성했다.
+  - `extracted_not_persisted`는 `REPROCESS/investigate_persistence_gap`으로 올렸다.
+- 확인:
+  - `blocked_by_result_contract=79`
+  - `persisted_as_slang=3`
+  - `persisted_pending=2`
+  - `family_alias=2`
+  - `extracted_not_persisted=1`
+  - 관련 테스트 `12`건 통과.
+- 남은 경계:
+  - 이 큐 생성은 semantic approval이 아니다.
+  - `post_id=10173521` persistence gap과 endpoint 복구 후 v84 rerun 199건이 남아 있다.
+
+## IMP-20260527-064 - Source Slang Fallback for Closure Review Packets
+
+- 상태: tooling-verified / source-fallback-fixed / quality-no-go
+- 우선순위: P1
+- Type: qualitative-review / slang-db / packet-fallback / action-routing
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - tool `tools/build_qualitative_exit_action_closure.py`
+  - manifest `qualitative_review/20260505_214349_324347/v84_current_remaining_action_after_source_slang_fallback_manifest.json`
+  - summary `qualitative_review/20260505_214349_324347/v84_source_slang_fallback_correction_ko_20260527.md`
+- 배경:
+  - v83에서 `docs_issue=64`로 분리한 row는 실제 source result에는 `identity.slang_insight`가 있었다.
+  - review packet의 `slang_db_fields`가 key만 있고 term 값이 모두 비어 있어 fallback이 막혔다.
+- 조치:
+  - closure가 source result를 fallback packet source로 사용하게 했다.
+  - 실제 slang term이 없을 때만 source `identity.slang_insight`로 보강한다.
+- 확인:
+  - `docs_issue=0`, `slang_db_review=87`로 정정됐다.
+  - `slang_db_review=87`: `blocked_by_result_contract=79`, `persisted_as_slang=3`, `persisted_pending=2`, `family_alias=2`, `extracted_not_persisted=1`.
+  - 관련 테스트 `29`건 통과.
+- 남은 경계:
+  - 이 보정은 packet/routing 오류를 고친 것이며 semantic approval은 아니다.
+  - endpoint 복구 후 v84 rerun combined 199건 재실행과 post-fix review가 필요하다.
+
+## IMP-20260527-063 - Slang DB Field Guard and v83 Current Remaining Package
+
+- 상태: superseded-by-v84 / 중간 가설
+- 우선순위: P1
+- Type: qualitative-review / slang-db / packet-fields / action-routing
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - tool `tools/build_qualitative_exit_action_closure.py`
+  - tool `tools/build_current_remaining_action_inputs.py`
+  - manifest `qualitative_review/20260505_214349_324347/v83_current_remaining_action_after_slang_field_routing_manifest.json`
+  - summary `qualitative_review/20260505_214349_324347/v83_100k_fixable_gap_bug_summary_ko_20260527.md`
+- 배경:
+  - `slang_db_review=87`이 실제 DB 차단 계약 검토와 공개 field 결손을 섞고 있었다.
+  - 공개 `slang_db_fields`가 없으면 자연어 품질 리뷰에서 DB 저장/오염 여부를 판정할 수 없다.
+- 조치:
+  - `no_slang_term_in_packet` row를 `INFO_MISSING/docs_issue`로 라우팅했다.
+  - `blocked_by_result_contract` row만 `HOLD/slang_db_review`로 남겼다.
+  - current remaining review packet에 `slang_db_fields`, `final_decision_fields`, `reason`, `search_health_flags`를 포함했다.
+- 확인:
+  - current actions: `docs_issue=64`, `slang_db_review=23`.
+  - v83 rerun combined `199`, browser target `27`.
+  - `28`개 관련 테스트 통과.
+- 남은 경계:
+  - `docs_issue=64`의 packet/export 결손 원인 분류가 필요하다.
+  - endpoint 복구 전까지 실제 36워커 재실행은 대기 상태다.
+  - semantic gate는 계속 `NO-GO / REVIEW-LOCKED`다.
+
+## IMP-20260527-061 - VLM/OCR Current Remaining Browser Semantic Relabel
+
+- 상태: tooling-verified / browser-evidence-separated / quality-no-go
+- 우선순위: P0/P1
+- Type: qualitative-review / vlm-ocr / browser-gate / semantic-relabel
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - tool `tools/build_v78_vlm_browser_semantic_relabel.py`
+  - closure tool `tools/build_qualitative_exit_action_closure.py`
+  - manifest `qualitative_review/20260505_214349_324347/v80_vlm_ocr_current_remaining_iab_semantic_relabel_manifest.json`
+  - v81 manifest `qualitative_review/20260505_214349_324347/v81_current_remaining_action_after_v80_vlm_manifest.json`
+- 배경:
+  - VLM/OCR row는 이미지 로딩 성공과 이미지가 작품 판정을 지지한다는 사실을 분리해야 한다.
+  - v78 기준 VLM/OCR `28`건이 아직 `REPROCESS/re_run` 또는 `INFO_MISSING`으로 남아 있었다.
+- 조치:
+  - 기존 Codex in-app browser 이미지 게이트 결과를 v78 browser targets와 조인했다.
+  - `9531764` 단건 수동 브라우저 리뷰를 supplemental label로 반영했다.
+  - 이미지 로딩이 `Strong`이어도 semantic evidence가 별도 확인되지 않으면 `HOLD/human_review`로 유지하도록 테스트를 추가했다.
+- 확인:
+  - v80 labels `ACCEPT=1`, `HOLD=25`, `INFO_MISSING=2`.
+  - latest closure `ACCEPT=193`, approval excluded `391/584`.
+  - v81 rerun combined `199`, browser target `27`, `re_run=0`.
+  - `tests.test_exit_action_closure tests.test_qualitative_review_packet_tools` 18건 통과.
+- 남은 경계:
+  - VLM/OCR `27`건은 이미지 의미와 final decision 정합성 리뷰가 아직 남아 있다.
+  - semantic gate는 계속 `NO-GO / REVIEW-LOCKED`다.
+
+## IMP-20260527-062 - Slang DB Current Remaining Status Split
+
+- 상태: review-queue-split / quality-no-go
+- 우선순위: P1
+- Type: qualitative-review / slang-db / packet-fields / label-routing
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - `qualitative_review/20260505_214349_324347/round3_manual_guard_slang_reviews.jsonl`
+  - `qualitative_review/20260505_214349_324347/v82_slang_db_current_remaining_status_split_ko.md`
+- 배경:
+  - `slang_db_review=87`건은 저장됨/차단됨/pending/family/noise가 섞인 것으로 보였으나, 실제 current closure 공개 필드 기준으로는 더 단순하게 갈렸다.
+- 조치:
+  - `closure_action=slang_db_review` row만 필터링해 `slang_db_review.status`를 집계했다.
+- 확인:
+  - `no_slang_term_in_packet=64`
+  - `blocked_by_result_contract=23`
+- 남은 경계:
+  - `no_slang_term_in_packet`은 slang DB 저장 오염 검토가 아니라 packet 공개 필드/export 또는 label routing 개선 대상이다.
+  - `blocked_by_result_contract`은 저장이 이미 차단된 상태이므로 차단 사유와 recall 영향만 검토한다.
+  - semantic gate는 계속 `NO-GO / REVIEW-LOCKED`다.
+
+## IMP-20260527-060 - Current Remaining Action Input Package
+
+- 상태: input-package-verified / quality-no-go
+- 우선순위: P0/P1
+- Type: qualitative-review / remaining-queue / action-inputs / rerun-readiness
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - tool `tools/build_current_remaining_action_inputs.py`
+  - manifest `qualitative_review/20260505_214349_324347/v78_current_remaining_action_manifest.json`
+  - summary `qualitative_review/20260505_214349_324347/v78_current_remaining_action_summary_ko.md`
+- 배경:
+  - latest closure approval-excluded `392`건을 P0 일부가 아니라 전체 action queue로 관리해야 한다.
+- 조치:
+  - `re_search`, `re_judge`, `re_run`을 36워커 rerun input으로 분리했다.
+  - `human_review`, `slang_db_review`는 리뷰 패킷으로 분리했다.
+  - `vlm_ocr_evidence_gap`/`re_run` 계열은 browser target으로 별도 분리했다.
+- 확인:
+  - remaining `392`, rerun combined `226`, browser target `28`.
+  - missing post_id `0`.
+  - action split 회귀 테스트 통과.
+- 남은 경계:
+  - endpoint가 살아나야 실제 `expert_main.py --parallel 36` 재실행이 가능하다.
+  - 패키징은 승인 근거가 아니며, post-fix result와 after-review label이 필요하다.
+
+## IMP-20260527-059 - Round3 After-Review Target Lineage Fallback
+
+- 상태: tooling-verified / preflight-verified / quality-no-go
+- 우선순위: P0
+- Type: qualitative-review / after-review / lineage / targeted-rerun
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - 정리 `qualitative_review/20260505_214349_324347/v76_after_review_readiness_fix_ko_20260527.md`
+  - tool `tools/build_qualitative_round3_after_review.py`
+  - preflight manifest `qualitative_review/20260505_214349_324347/v75_p0_generic_weak_remaining_preflight_original_after_manifest.json`
+- 배경:
+  - v75 P0 재실행 입력은 `base_packet_id`/`primary_pattern` 중심으로 만들어졌고, after-review 도구는 `packet_id`/`bucket`을 직접 기대했다.
+- 조치:
+  - after-review target map에 lineage fallback을 추가했다.
+  - v75 input에도 packet/bucket 메타를 명시적으로 backfill했다.
+- 확인:
+  - `tests.test_qualitative_review_packet_tools` 7건 통과.
+  - preflight after-review `96`건, missing target `0`.
+- 남은 경계:
+  - preflight는 원본 결과 기반 도구 검증이며 post-fix quality approval 근거가 아니다.
+  - LLM endpoint 복구 후 실제 36워커 재실행 결과로 다시 after-review를 생성해야 한다.
+
+## IMP-20260527-058 - P0 Remaining Generic/Weak Evidence Targeted Input
+
+- 상태: input-prepared / rerun-blocked-by-llm-endpoint / quality-no-go
+- 우선순위: P0
+- Type: qualitative-review / targeted-rerun / generic-common-surface / weak-evidence
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - manifest `qualitative_review/20260505_214349_324347/v75_p0_generic_weak_remaining_input_manifest.json`
+  - input `qualitative_review/20260505_214349_324347/v75_p0_generic_weak_remaining_input.jsonl`
+  - summary `qualitative_review/20260505_214349_324347/v75_p0_generic_weak_remaining_input_summary_ko.md`
+- 배경:
+  - latest closure에서 `generic_common_surface=80`, `weak_evidence_strong_resolution=16`이 남아 semantic approval을 막고 있다.
+- 조치:
+  - 두 pattern의 approval-excluded row 전체를 중복 제거해 `96`건 targeted input으로 생성했다.
+  - 각 row에 `_round3_target`과 `_issue_regression` 메타를 붙여 before/after 비교가 가능하게 했다.
+- 확인:
+  - targeted input row `96`.
+  - missing post_id `0`.
+  - manifest/input assertion 통과.
+  - `expert_main.py --help`로 실행 플래그 확인.
+- 남은 경계:
+  - LLM endpoint가 현재 connection refused라 실제 `expert_main.py --parallel 36` 재실행은 아직 미수행이다.
+  - after-review label이 생성되기 전까지 semantic gate는 `NO-GO / REVIEW-LOCKED`다.
+
+## IMP-20260527-057 - Supplemental After-Review Closure Merge
+
+- 상태: tooling-verified / quality-no-go
+- 우선순위: P0/P1 follow-up
+- Type: qualitative-review / closure-merge / after-review / approval-gate
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - 정리 `qualitative_review/20260505_214349_324347/supplemental_after_review_closure_merge_ko_20260527.md`
+  - closure manifest `qualitative_review/20260505_214349_324347/round3_exit_action_current_combined_manifest.json`
+  - current summary `qualitative_review/20260505_214349_324347/current_100k_fixable_gap_bug_summary_ko_20260527.md`
+- 배경:
+  - v68/v71/v73 after-review 결과가 latest closure에 모두 반영되지 않으면 이미 닫은 targeted row가 계속 `HOLD`처럼 보이는 문서/집계 오차가 생긴다.
+- 조치:
+  - `tools/build_qualitative_exit_action_closure.py`의 supplemental after-review source 병합 결과를 latest closure 기준 문서에 반영했다.
+  - `supplemental_update_rows=19`와 `source_state=supplemental_after_review`를 현재 gate 설명의 근거로 삼는다.
+- 확인:
+  - latest closure `ACCEPT=192`, `HOLD=297`, `REPROCESS=93`, `INFO_MISSING=2`.
+  - approved subset `192/584`, approval excluded `392/584`.
+  - 남은 action queue는 `human_review=79`, `re_search=127`, `re_judge=72`, `slang_db_review=87`, `re_run=27`.
+- 남은 경계:
+  - 이 항목은 closure 병합 정확도 개선이며 semantic quality `GO` 근거가 아니다.
+  - LLM endpoint가 현재 connection refused라 추가 36워커 targeted 재실행은 endpoint 복구 후 진행한다.
+
+## IMP-20260527-056 - Weak Evidence Closure Guard Over-Lock Fix
+
+- 상태: tooling-verified / quality-no-go
+- 우선순위: P0/P1 follow-up
+- Type: qualitative-review / closure-guard / weak-evidence / approval-gate
+- 관련 run id:
+  - source `20260505_214349_324347`
+- 근거:
+  - 정리 `qualitative_review/20260505_214349_324347/weak_evidence_closure_guard_fix_ko_20260527.md`
+  - closure manifest `qualitative_review/20260505_214349_324347/round3_exit_action_current_combined_manifest.json`
+- 배경:
+  - `weak_evidence_strong_resolution` guard는 약한 evidence로 강한 작품 확정이 `ACCEPT`되는 것을 막기 위한 장치다.
+  - v73 closure에서는 이미 `relevance=false`, `resolved_title=null`로 내려간 안전 row까지 `HOLD/human_review`로 되돌리는 과차단이 있었다.
+- 조치:
+  - `tools/build_qualitative_exit_action_closure.py`에서 비관련/title-null row는 weak-evidence strong-resolution guard 대상에서 제외했다.
+  - 관련 unresolved row와 resolved title row는 계속 `Strong` evidence 없이는 approval excluded로 유지한다.
+- 확인:
+  - `tests.test_exit_action_closure` 6건 통과.
+  - `py_compile` 통과.
+  - closure 재생성 결과 `ACCEPT=183`, `HOLD=306`, `REPROCESS=93`, `INFO_MISSING=2`.
+  - approval excluded `401/584`.
+  - `weak_evidence_strong_resolution=16` (`HOLD=15`, `REPROCESS=1`).
+- 남은 경계:
+  - 이 수정은 review tooling/closure 과차단 보정이며 모델 판정 품질 GO가 아니다.
+  - `generic_common_surface`, `alias_recall_loss_false_negative`, `slang_db_alias_subtype`, `worker_shard_degraded_window`, `vlm_ocr_evidence_gap`가 남아 있다.
+
+## IMP-20260527-055 - Generic Concept Question Rescue Guard
+
+- 상태: targeted-verified / quality-no-go
+- 우선순위: P0/P1 follow-up
+- Type: generic-common-surface / generic-concept-question / canonical-rescue / title-surface-rescue
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - targeted v71 `20260527_021145_875530`
+- 근거:
+  - 정리 `qualitative_review/20260505_214349_324347/generic_concept_question_guard_fix_ko_20260527.md`
+  - 결과 `qualitative_review/20260505_214349_324347/v71_generic_concept_question_9218133_p36_20260527.json`
+  - manifest `qualitative_review/20260505_214349_324347/v71_generic_concept_question_9218133_p36_20260527_manifest.json`
+  - after-review `qualitative_review/20260505_214349_324347/v71_generic_concept_question_9218133_after_packet_review_manifest.json`
+- 배경:
+  - `post_id=9218133`은 `반로환동/환골탈태` 차이를 묻는 무협 개념 질문인데, 검색 결과의 작품 상세 URL과 canonical convergence를 근거로 `반로환동으로 신분세탁` 작품 토론처럼 과확정됐다.
+- 조치:
+  - generic concept question mismatch를 canonical rescue, canonical lock, strongest rescue, best canonical candidate 선택에 적용했다.
+  - title-surface primary rescue에서 `generic_concept_question_surface_title`은 clean detail URL 예외로 살리지 않게 했다.
+  - 회귀 테스트 1건을 추가하고 기존 generic concept guard 테스트를 보강했다.
+- 확인:
+  - py_compile 통과.
+  - focused unittest 4건 통과.
+  - v71 completed `1`, failed `0`, pending `0`.
+  - `9218133` final `is_relevant=false`, `official_title=null`, `work_resolution=none`, `discussion_type=trope_discussion`.
+  - after-review `ACCEPT=1`, `HOLD->ACCEPT=1`.
+- 남은 정책 경계:
+  - decoder/verifier 내부 resolved mapping 시도는 final에서 차단됐지만 로그에는 남아 있다.
+  - 같은 계열이 final decision에 영향을 주는지 `generic_common_surface`, `weak_evidence_strong_resolution`, `slang_db_review` bucket에서 확장 회귀가 필요하다.
+- 다음 조치:
+  - generic concept/setting/trope question 계열을 P0/P1 regression으로 묶어 확인한다.
+  - post-fix P0/P1 regression과 random baseline 전까지 semantic gate `GO` 금지.
+
+## IMP-20260527-054 - Character Surface Title Exact Detail Guard
+
+- 상태: targeted-verified / quality-no-go
+- 우선순위: P0/P1 follow-up
+- Type: generic-common-surface / character-surface-title / evidence-guard / browser-image-gate
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - targeted v68 `20260527_004625_654237`
+- 근거:
+  - 정리 `qualitative_review/20260505_214349_324347/character_surface_title_rescue_fix_ko_20260527.md`
+  - 결과 `qualitative_review/20260505_214349_324347/v68_character_surface_title_8424362_p36_20260527.json`
+  - manifest `qualitative_review/20260505_214349_324347/v68_character_surface_title_8424362_p36_20260527_manifest.json`
+  - after-review `qualitative_review/20260505_214349_324347/v68_character_surface_title_8424362_after_packet_review_manifest.json`
+  - Browser image probe `qualitative_review/20260505_214349_324347/browser_visual_vlm_ocr_iab_image_gate/11097334_image_loading_probe_20260527.json`
+- 배경:
+  - `post_id=8424362`에서 `에미야 키리츠구` 캐릭터 표면명이 `[fate]에미야 키리츠구의 성배대전` 검색 제목 안의 substring으로 잡혔고, NovelPia 상세 URL 존재만으로 작품명처럼 승격됐다.
+- 조치:
+  - 캐릭터 표면명 후보는 source/fetched title이 후보를 작품명으로 정확히 지칭할 때만 clean detail evidence로 인정한다.
+  - substring 상세 URL hit는 `generic_character_surface_title` rejection을 유지한다.
+  - 회귀 테스트 2건을 추가했다.
+- 확인:
+  - py_compile 통과.
+  - 신규 focused unittest 2건 및 관련 회귀 unittest 7건 통과.
+  - search shard audit `ok=36/36`.
+  - v68 completed `1`, failed `0`, pending `0`.
+  - `8424362` final `is_relevant=false`, `official_title=null`, `work_resolution=none`.
+  - after-review `ACCEPT=1`, `HOLD->ACCEPT=1`.
+- 남은 정책 경계:
+  - 이번 항목은 단건 targeted fix이며, `generic_common_surface` 잔여 HOLD와 `weak_evidence_strong_resolution` bucket 전체를 닫지는 않는다.
+  - VLM/OCR row는 Browser `iab`에서 최종 이미지 상태 `loaded == article_image_count`, `placeholder/incomplete/broken=0`을 확인하기 전까지 `Strong`으로 승격하지 않는다.
+- 다음 조치:
+  - `generic_common_surface` 잔여 HOLD를 패턴별로 재분류한다.
+  - post-fix P0/P1 regression과 random baseline 전까지 semantic gate `GO` 금지.
+
+## IMP-20260526-053 - v62 Slang Seed Support Gate and Current 100k Gap Summary
+
+- 상태: targeted-verified / quality-no-go
+- 우선순위: P0/P1 follow-up
+- Type: slang-db-seed-review / semantic-quality-gate / review-labeler / vlm-ocr-image-gate
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - targeted v62 `20260526_223527_932869`
+- 근거:
+  - 결과 `qualitative_review/20260505_214349_324347/v62_slang_seed_support_gate_p36_20260526.json`
+  - manifest `qualitative_review/20260505_214349_324347/v62_slang_seed_support_gate_p36_20260526_manifest.json`
+  - 수동 라벨 `qualitative_review/20260505_214349_324347/v62_slang_seed_support_gate_after_manual_labels.jsonl`
+  - 수동 요약 `qualitative_review/20260505_214349_324347/v62_slang_seed_support_gate_after_manual_summary_ko.md`
+  - 최신 부족점 정리 `qualitative_review/20260505_214349_324347/current_100k_gap_bug_fixable_summary_ko_20260526.md`
+  - Browser image state `qualitative_review/20260505_214349_324347/browser_visual_vlm_ocr_iab_image_gate/current_11097334_image_state_current_20260526.json`
+- 배경:
+  - exact `강연금 -> 강철의 연금술사` quarantine만으로는 원본 slang DB의 저근거 seed 오염을 충분히 일반화하지 못한다.
+  - `count>=2` seed라도 `slang_insight` 없이 `primary_work/title_candidate`만 있으면 false memory로 승격될 위험이 있다.
+- 조치:
+  - `register_abbreviation_seed()` 경로에서 `count>=3` 또는 `slang_insight`가 있는 경우만 strong seed로 보고 즉시 promote를 허용한다.
+  - `count>=2`이지만 구조화된 slang 근거가 없는 seed는 pending/review로 보류한다.
+  - v62 targeted run을 36워커로 재실행하고 수동 라벨 `ACCEPT=4`, `HOLD=2`로 기록했다.
+- 확인:
+  - v62 manifest completed `6`, failed `0`, pending `0`, flushed `6`.
+  - 검색 health `36/36 OK`.
+  - `히집악` positive alias 복구 유지.
+  - `8531521`, `8601885`는 final `non-relevant/title null`.
+  - Browser `iab` 현재 확인 기준 `11097334` 본문 이미지 `3/3` loaded, placeholder `0`.
+- 남은 정책 경계:
+  - `11663540`은 false title은 막았지만 v62에서 `relevant/title null/unresolved`로 다시 흔들렸다.
+  - `10426463`은 adjacent/trope/setting-borrowing 경계로 `HOLD`.
+  - 자동 after-review 라벨러가 `Weak + unresolved/title null + boundary risk`를 `ACCEPT`로 올리는 과허용을 보인다.
+- 다음 조치:
+  - `11663540` 계열 character-only virtual battle policy 확정 및 regression 추가.
+  - `10426463` 계열 adjacent/trope bucket 확장 표본화.
+  - 리뷰 라벨러의 weak/unresolved boundary 기본 라벨을 `HOLD`로 보수화.
+  - P0/P1 high-risk bucket과 post-fix random baseline 전까지 semantic gate `GO` 금지.
+
+## IMP-20260526-052 - v61 Slang Seed Quarantine and NovelPia UI Marker Catalog Fix
+
+- 상태: targeted-verified / quality-no-go
+- 우선순위: P1
+- Type: slang-db-seed-review / evidence-catalog / non-novel-media-guard / positive-alias-regression
+- 관련 run id:
+  - `20260526_214432_691680` v59
+  - `20260526_215425_447877` v60
+  - `20260526_221106_422763` v61
+- 근거:
+  - 결과 `qualitative_review/20260505_214349_324347/v61_catalog_tier_fix_p36_20260526.json`
+  - manifest `qualitative_review/20260505_214349_324347/v61_catalog_tier_fix_p36_20260526_manifest.json`
+  - packets `qualitative_review/20260505_214349_324347/v61_catalog_tier_fix_after_packet_review_packets.jsonl`
+  - labels `qualitative_review/20260505_214349_324347/v61_catalog_tier_fix_after_packet_review_labels.jsonl`
+  - summary `qualitative_review/20260505_214349_324347/v61_catalog_tier_fix_after_packet_review_summary.md`
+- 배경:
+  - `강연금 -> 강철의 연금술사` seed는 외부 만화/애니 IP라 웹소설 alias memory로 즉시 등록되면 안 된다.
+  - v59에서 seed quarantine은 확인됐지만 `9981263` positive alias control이 `non-relevant/title null`로 떨어졌다.
+  - 원인은 노벨피아 상세 페이지 snippet의 지갑 UI 문구 `웹툰코인`이 `non_novel_media_platform` marker처럼 처리된 것이다.
+- 조치:
+  - known non-novel media alias seed `강연금 -> 강철의 연금술사`를 BatchContextMemory 주입 단계에서 quarantine.
+  - clean NovelPia novel detail URL + source title match는 snippet UI의 `웹툰코인` 문구만으로 media platform으로 보지 않도록 보강.
+  - `search_evidence_catalog.source_tier`도 같은 판단을 사용해 v61에서 E001 `novel_platform`을 보존.
+- 확인:
+  - `py_compile` 통과.
+  - focused unittest 5건 통과.
+  - v61 manifest completed `6`, failed `0`, pending `0`, flushed `6`.
+  - 검색 health `36/36 OK`.
+  - `9981263`, `11205204` positive alias control 유지.
+  - `11663540`, `8531521`, `8601885` negative control 유지.
+- 남은 정책 경계:
+  - `10426463`은 `relevant/unresolved` HOLD로 남았다.
+  - 현재 seed quarantine은 exact blocklist이므로 외부 IP seed 일반화 검증이 필요하다.
+- 다음 조치:
+  - 외부 IP alias seed를 일반화된 quarantine/review 규칙으로 확장.
+  - P0/P1 high-risk bucket과 post-fix random baseline 전까지 semantic gate `GO` 금지.
+
+## IMP-20260526-051 - Current 100k Actionable Issue Summary Refresh
+
+- 상태: documented / quality-no-go
+- 우선순위: P0/P1 follow-up
+- Type: review-gate / semantic-quality / vlm-ocr-image-gate / slang-db-seed-review
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - targeted v61 `20260526_221106_422763`
+- 근거:
+  - `qualitative_review/20260505_214349_324347/current_100k_actionable_issue_summary_ko_20260526.md`
+  - `qualitative_review/20260505_214349_324347/round3_exit_action_current_combined_manifest.json`
+  - `qualitative_review/20260505_214349_324347/random_control_v3_manifest.json`
+  - `qualitative_review/20260505_214349_324347/high_risk_expansion_manifest.json`
+- 배경:
+  - 기존 `current_100k_gap_bug_fixable_summary_ko_20260526.md`는 시점별 히스토리가 길어 v42/v43의 과거 P0 문장과 최신 closure가 함께 보였다.
+  - 최신 판단만 별도로 분리할 필요가 있었다.
+- 정리:
+  - v61 기준 `8531521 -> 강철의 연금술사` resolved 회귀는 최종 `non-relevant/title null`로 닫힌 상태로 정리했다.
+  - `강연금 -> 강철의 연금술사`는 런타임 seed quarantine 확인, 원본 DB cleanup/generalization 후보로 분리했다.
+  - random baseline, high-risk expansion, current combined review 수치를 분리 기록했다.
+  - `post_id=11097334` Browser 재확인으로 VLM/OCR image loaded gate와 semantic evidence label 분리가 필요함을 다시 기록했다.
+- 다음 조치:
+  - `weak_evidence_strong_resolution=75`, `generic_common_surface=89` 확장 회귀 재검증.
+  - `slang_db_review=87` 상태 분리 및 외부 IP seed quarantine 일반화.
+  - VLM/OCR `28`건 Browser image gate와 semantic evidence 재라벨.
+  - `10426463` adjacent/trope policy boundary 확정.
+
+## IMP-20260526-050 - v58 Detail URL and Non-novel Media Evidence Guard
+
+- 상태: targeted-verified / adjacent-hold / quality-no-go
+- 우선순위: P1
+- Type: judgment-quality / url-classification / non-novel-media-guard / search-evidence-export
+- 관련 run id:
+  - `20260526_203308_859635` v56
+  - `20260526_204702_342713` v57
+  - `20260526_210850_328711` v58
+- 근거:
+  - 결과 `qualitative_review/20260505_214349_324347/v58_detail_url_media_guard_p36_20260526.json`
+  - manifest `qualitative_review/20260505_214349_324347/v58_detail_url_media_guard_p36_20260526_manifest.json`
+  - packets `qualitative_review/20260505_214349_324347/v58_detail_url_media_guard_after_packet_review_packets.jsonl`
+  - labels `qualitative_review/20260505_214349_324347/v58_detail_url_media_guard_after_packet_review_labels.jsonl`
+  - summary `qualitative_review/20260505_214349_324347/v58_detail_url_media_guard_after_packet_review_summary.md`
+- 배경:
+  - v56에서 result JSON `search_evidence_catalog` export는 동작했지만 `11663540`이 relevant/unresolved로 다시 열렸다.
+  - v57에서 `11663540 -> 주서연 전차`, `8531521 -> 강철의 연금술사` false positive가 재발했다.
+  - 원인은 fanart/viewer/comic/webtoon URL이 clean novel detail evidence로 계산되고, 캐릭터+대결 객체 합성 표면어가 direct full-title rescue를 통과한 것이다.
+- 조치:
+  - `PickvelIdentity.search_evidence_catalog`와 pipeline export를 추가했다.
+  - review packet builder가 result JSON catalog를 읽도록 보강했다.
+  - fanart/comic/webtoon/viewer URL을 `_is_novel_detail_url`에서 제외했다.
+  - `non_novel_media_platform`, `platform_reader_page` source tier를 분리했다.
+  - `주서연 전차` 같은 virtual battle object surface phrase를 clean detail evidence 없이는 direct full-title rescue하지 않도록 막았다.
+  - 카카오/네이버 웹툰·코믹·애니 marker를 non-novel media evidence로 분리했다.
+- 확인:
+  - `py_compile` 통과.
+  - focused unittest 10건 통과.
+  - v58 manifest completed `6`, failed `0`, pending `0`.
+  - `11663540`, `8531521`, `8601885` negative/boundary control 정상.
+  - `9981263`, `11205204` positive alias control 유지.
+- 남은 정책 경계:
+  - `10426463`은 `relevant/unresolved` HOLD로 남았다.
+  - `강연금 -> 강철의 연금술사` 같은 외부 IP alias seed는 slang DB review가 필요하다.
+- 다음 조치:
+  - `media_platform_url_demoted`, `generic_battle_anchor`, `adjacent_ip_unresolved_policy_boundary` bucket 확장 검증.
+  - random baseline/P0/P1 expansion 전까지 semantic gate `GO` 금지.
+
+## IMP-20260526-049 - v55 Known-Bad Media/Alias Guard Targeted Closure
+
+- 상태: targeted-verified / adjacent-hold / quality-no-go
+- 우선순위: P1
+- Type: judgment-quality / non-novel-ip-guard / generic-anchor-guard / character-bridge-policy
+- 관련 run id:
+  - `20260526_191700_092471` v52
+  - `20260526_193059_599130` v53
+  - `20260526_194520_463194` v54
+  - `20260526_195550_803682` v55
+- 근거:
+  - 결과 `qualitative_review/20260505_214349_324347/v55_known_bad_media_alias_guard_p36_20260526.json`
+  - manifest `qualitative_review/20260505_214349_324347/v55_known_bad_media_alias_guard_p36_20260526_manifest.json`
+  - summary `qualitative_review/20260505_214349_324347/v55_known_bad_media_alias_guard_after_summary_ko.md`
+  - packets `qualitative_review/20260505_214349_324347/v55_known_bad_media_alias_guard_after_packets.jsonl`
+  - packet manifest `qualitative_review/20260505_214349_324347/v55_known_bad_media_alias_guard_after_packet_manifest.json`
+  - labels `qualitative_review/20260505_214349_324347/v55_known_bad_media_alias_guard_after_labels.jsonl`
+- 배경:
+  - v52는 `11663540` character-parenthetical resolved를 막았지만 `8531521` external IP unresolved preserve가 다시 열렸다.
+  - v53은 `8531521`을 닫았지만 `11663540`이 `주서연 전차` direct full-title false positive로 열렸다.
+  - v54는 `주서연 전차`를 막았지만 `줄다리기 -> 패티시` generic title-surface alias false positive가 열렸다.
+- 조치:
+  - locked official candidate rescue에서 character-only virtual battle context를 hold 처리했다.
+  - weak/community external IP 후보가 clean detail noise만으로 unresolved preserve를 통과하지 못하게 했다.
+  - character name + battle/object surface phrase는 웹소설 플랫폼 상세 URL이 없으면 direct full-title candidate로 복구하지 않게 했다.
+  - 원문 제목에 작품명은 없고 일반 대결어 alias만 있는 경우 title-surface primary rescue를 금지했다.
+- 확인:
+  - `py_compile` 통과.
+  - focused unittest 7건 통과.
+  - v55 manifest completed `6`, failed `0`, pending `0`.
+  - `9981263`, `11205204` positive alias control 유지.
+  - `11663540`, `8531521`, `8601885` negative/boundary control 정상.
+  - v55 packet `6`행 생성 및 manifest parse 확인.
+  - packet evidence URL 보강 확인: `9981263`, `11205204`에 NovelPia detail URL 포함.
+  - packet `evidence_catalog` 보강 확인: 6건 모두 후보별 title/alias/URL/source metadata 존재.
+  - packet `evidence_counts` 보강 확인: reason 기반 evidence count 구조화.
+- 남은 정책 경계:
+  - `10426463`은 `relevant/unresolved` HOLD로 남았다.
+  - adjacent/trope/setting-borrowing 글을 관련성 보존으로 둘지 승인 제외로 둘지 확장 표본 검증이 필요하다.
+- 다음 조치:
+  - `generic_battle_anchor`, `adjacent_ip_unresolved_policy_boundary`, `weak_evidence_strong_resolution` bucket에서 v55 guard 전이 확인.
+  - result JSON의 row별 raw search evidence catalog/EID/URL/snippet 구조화 export 보강.
+  - random baseline/P0/P1 expansion 전까지 semantic gate `GO` 금지.
+
+## IMP-20260526-048 - v51 title-side alias priority fixed, character bridge policy open
+
+- 상태: targeted-verified / policy-open / quality-no-go
+- 우선순위: P1
+- Type: judgment-quality / alias-priority / character-bridge-policy
+- 관련 run id:
+  - `20260526_185600_839070`
+- 근거:
+  - 결과 `qualitative_review/20260505_214349_324347/v51_known_bad_media_alias_guard_p36_20260526.json`
+  - manifest `qualitative_review/20260505_214349_324347/v51_known_bad_media_alias_guard_p36_20260526_manifest.json`
+  - summary `qualitative_review/20260505_214349_324347/v51_known_bad_media_alias_guard_after_summary_ko.md`
+  - labels `qualitative_review/20260505_214349_324347/v51_known_bad_media_alias_guard_after_labels.jsonl`
+- 배경:
+  - v50에서 `9981263`의 제목 표면 alias `성녀 속마음`이 본문 비교 후보에 밀려 `아카데미의 순애`로 잘못 resolved됐다.
+  - title-side direct alias 후보를 locked official rescue 전에 보강하지 못한 것이 원인이었다.
+- 조치:
+  - `_with_direct_title_surface_candidates`를 추가해 post title에서 합성 가능한 direct title 후보를 candidate pool에 보강했다.
+  - `_select_single_locked_official_candidate`, `_has_supported_title_surface_candidate_in_post_title`, `_pick_title_surface_primary_candidate_for_hold`가 보강된 pool을 사용하도록 수정했다.
+  - `test_title_alias_surface_blocks_locked_comparison_candidate_rescue`를 추가했다.
+- 확인:
+  - `py_compile` 통과.
+  - focused unittest 11건 통과.
+  - v51 manifest completed `6`, failed `0`, pending `0`.
+  - `9981263`은 `성녀의 속마음이 들린다`로 복구됐다.
+  - `8531521`, `8601885` negative control은 non-relevant로 유지됐다.
+- 남은 정책 경계:
+  - `11663540`은 `주서연(전 버튜버가 하고 싶은데요)` character-parenthetical bridge와 NovelPia detail 근거로 resolved됐다.
+  - 원문에 작품 제목 span이 없는 character-only 가상 대결 글을 resolved로 허용할지 아직 정책이 고정되지 않았다.
+- 다음 조치:
+  - character-parenthetical bridge를 `resolved`, `relevant_unresolved`, `human_review` 중 어디까지 허용할지 결정한다.
+  - `locked_official_candidate_rescued` + character-only 조합을 P1 high-risk bucket으로 확장 검증한다.
+  - review packet용 evidence URL/snippet 구조화 export를 보강한다.
+
+## IMP-20260526-047 - v50 external IP fix confirmed, positive alias inversion open
+
+- 상태: open
+- 우선순위: P0/P1
+- Type: judgment-quality / alias-priority / non-novel-ip-guard
+- 관련 run id:
+  - `20260526_182412_783072`
+- 근거:
+  - 결과 `qualitative_review/20260505_214349_324347/v50_known_bad_media_alias_guard_p36_20260526.json`
+  - manifest `qualitative_review/20260505_214349_324347/v50_known_bad_media_alias_guard_p36_20260526_manifest.json`
+  - summary `qualitative_review/20260505_214349_324347/v50_known_bad_media_alias_guard_after_summary_ko.md`
+  - labels `qualitative_review/20260505_214349_324347/v50_known_bad_media_alias_guard_after_labels.jsonl`
+- 배경:
+  - v48까지 `8531521`은 `강철의 연금술사` resolved false positive는 막았지만 relevant/unresolved로 살아나는 경로가 남아 있었다.
+  - v50에서는 외부 media/IP final recovery를 더 강하게 차단해 `8531521`, `8601885` negative control을 non-relevant로 유지했다.
+- 확인:
+  - v50 manifest completed `6`, failed `0`, pending `0`.
+  - focused unittest 8건 통과.
+  - `8531521`, `8601885`는 non-relevant로 격리됐다.
+  - `11205204`는 positive alias control을 유지했다.
+- 새 회귀:
+  - `9981263`은 제목 `성녀 속마음`이 primary alias인데 v50에서 `아카데미의 순애`로 resolved됐다.
+  - reason 내부에 title mismatch 반론이 있는데도 final decision이 강하게 확정되어 `positive_alias_inversion`으로 본다.
+- 남은 정책 경계:
+  - `10426463`: 설정 차용/인접 IP 글의 relevant/unresolved 보존 여부.
+  - `11663540`: character-only 가상 대결 글의 relevant/unresolved vs non-relevant 정책.
+- 다음 조치:
+  - title-side primary alias를 comparison/mentioned 후보보다 우선 보존한다.
+  - reason mismatch 반론이 있으면 resolved 확정을 낮춘다.
+  - v51에서 같은 6건을 Gemma 4 4B, 36워커로 재실행한다.
+
+## IMP-20260526-046 - Snippet `identified_category` Non-novel IP Final Recovery Block
+
+- 상태: targeted-verified / quality-no-go
+- 우선순위: P0
+- Type: judgment-quality / non-novel-ip-guard / final-consistency
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - v47 regression `20260526_164636_102602`
+  - v48 verified rerun `20260526_170233_055943`
+- 관련 문서:
+  - `qualitative_review/20260505_214349_324347/v48_known_bad_media_alias_guard_after_summary_ko.md`
+  - `qualitative_review/20260505_214349_324347/v48_known_bad_media_alias_guard_after_labels.jsonl`
+  - `docs/devs/VERIFICATION_RESULTS.md`
+  - `docs/devs/TODO.md`
+  - `docs/devs/CHECKLIST.md`
+- 문제:
+  - `post_id=8601885`에서 snippet analyzer는 `identified_category=game`을 반환하고 Arbiter/Verifier는 비관련으로 판단했다.
+  - v47까지 최종 후처리 가드는 `category` 키만 읽어 `identified_category=game`을 놓쳤고, 그 결과 `internal_work_signal_unresolved_recovered`가 최종 결과를 다시 `is_relevant=true / unresolved`로 되살렸다.
+- 조치:
+  - `_has_unresolved_external_ip_rejection`과 `_has_non_novel_media_evidence_for_title`에서 `category`와 `identified_category`를 모두 비소설 매체 신호로 처리했다.
+  - snippet category 차단이 clean novel detail short-circuit보다 먼저 적용되도록 순서를 유지했다.
+  - focused unittest에서 실제 로그 형태와 같은 `identified_category=game` 케이스를 검증하도록 갱신했다.
+- 확인:
+  - `py_compile` 통과.
+  - focused unittest 8건 통과.
+  - v48 completed `6`, failed `0`, pending `0`.
+  - `8601885` 최종 결과가 `is_relevant=false`, `official_title=null`, `discussion_type=noise`, `work_resolution=none`, flag `external_ip_unresolved_hold_blocked`로 유지되었다.
+- 남은 검증:
+  - `8531521`처럼 외부 IP를 title false positive 없이 `relevant/unresolved`로 보존하는 경계 정책은 별도 HOLD로 남긴다.
+  - P0/P1 bucket 확장 검증과 random baseline 전까지 semantic gate `GO` 금지.
+
+## IMP-20260526-045 - Title Surface Rescue Reopens Non-novel Media IP
+
+- 상태: open / P0 / quality-no-go
+- 우선순위: P0
+- Type: judgment-quality / non-novel-ip-guard / evidence-bucket
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - v42 `20260526_153538_350152`
+  - v43 `20260526_154837_721537`
+- 관련 문서:
+  - `qualitative_review/20260505_214349_324347/current_100k_gap_bug_fixable_summary_ko_20260526.md`
+  - `qualitative_review/20260505_214349_324347/v42_v43_known_bad_media_alias_guard_after_summary_ko.md`
+  - `qualitative_review/20260505_214349_324347/v42_v43_known_bad_media_alias_guard_after_labels.jsonl`
+  - `docs/devs/VERIFICATION_RESULTS.md`
+  - `docs/devs/TODO.md`
+  - `docs/devs/CHECKLIST.md`
+- 문제:
+  - `post_id=8531521`에서 v42는 `강철의 연금술사` title 확정을 제거했지만, v43 단건 재확인에서 `title_surface_primary_candidate_rescued`가 다시 `강철의 연금술사`를 resolved title로 살렸다.
+  - 검색 evidence는 나무위키, 애니/영화/단행본, 파생/크로스오버 플랫폼 hit 중심이며 웹소설 직접 근거가 아니다.
+  - `official_title_evidence`와 `search_platform_url` 분류가 비웹소설 media evidence를 강한 근거처럼 세는 경로가 남아 있다.
+- 조치 계획:
+  - title-surface primary rescue 직전에 non-novel media/IP guard를 재적용한다.
+  - wiki/media/영화/단행본/OTT/만화 원작 hit를 웹소설 `official_title_evidence`에서 제외한다.
+  - 파생/패러디/크로스오버 플랫폼 hit는 원작 title direct evidence가 아니라 adjacent/derivative evidence로 분리한다.
+  - direct webnovel detail URL 또는 원문 title span이 없으면 `resolved` 승격을 금지한다.
+- 완료 기준:
+  - `8531521` v43 canary가 더 이상 `강철의 연금술사` resolved title로 올라가지 않는다.
+  - `9981263`, `11205204` positive control resolved가 유지된다.
+  - `11663540`, `8601885` negative/boundary control이 회귀하지 않는다.
+  - post-fix known-bad set과 P0 bucket 회귀 결과가 docs와 qualitative_review 산출물에 남는다.
+
+## IMP-20260526-044 - Known-Bad Media/Alias Guard v38 Closure
+
+- 상태: targeted-verified / quality-no-go
+- 우선순위: P0/P1
+- Type: judgment-quality / alias-recall / non-novel-ip-guard
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - v38 verified rerun `20260526_141931_661420`
+- 관련 문서:
+  - `qualitative_review/20260505_214349_324347/v38_known_bad_media_alias_guard_after_summary_ko.md`
+  - `qualitative_review/20260505_214349_324347/v38_known_bad_media_alias_guard_after_labels.jsonl`
+  - `docs/devs/VERIFICATION_RESULTS.md`
+  - `docs/devs/TODO.md`
+  - `docs/devs/CHECKLIST.md`
+  - `docs/devs/HISTORY.md`
+- 문제:
+  - `11205204`처럼 fresh/custom slang DB에서 검증 alias seed가 없으면 `히집악` 같은 내장 별칭 recall이 흔들릴 수 있었다.
+  - `9981263`처럼 제목란 primary official-detail 후보가 있어도 본문 비교작 mention 후보가 blocker가 되어 title이 과보수 demote될 수 있었다.
+  - `8531521`, `8601885`처럼 비웹소설 media/IP가 title-surface, character-parenthetical, unresolved preserve 경로에서 되살아날 수 있었다.
+- 조치:
+  - `히집악 -> 히어로가 집착하는 악당이 되었다` 내장 alias를 추가했다.
+  - 감상어가 붙은 제목 표면에서도 검증 alias만 분리해 search seed와 batch memory rescue에 사용하도록 했다.
+  - locked 공식 상세 primary 후보와 본문 mention 후보를 구분해, mention blocker만으로 primary 후보를 막지 않도록 했다.
+  - non-novel media/IP rejection이 후단 rescue/preserve 경로를 차단하도록 guard를 추가했다.
+- 확인:
+  - `py_compile` 통과.
+  - focused unittest 통과.
+  - v38 completed `6`, failed `0`, pending `0`.
+  - `9981263`, `11205204`, `8601885`는 targeted 기준 ACCEPT.
+  - `11663540`, `10426463`, `8531521`은 HOLD로 남김.
+- 남은 검증:
+  - `8531521` 계열에서 non-webnovel IP가 `official_title=null`이어도 `is_relevant=true`로 보존되는 관련성 과포함 처리.
+  - `11663540` 계열 character talk의 non-relevant vs relevant/unresolved 정책 확정.
+  - `weak_evidence_strong_resolution`, `generic_common_surface`, `alias_recall_loss_false_negative`, `non_novel_ip_alias_pollution` 확장 bucket 검증.
+  - post-fix random baseline 및 P0/P1 regression 전까지 semantic gate `GO` 금지.
+
+## IMP-20260526-043 - Deliberate Null Preservation for Weak Character Parenthetical Bridges
+
+- 상태: targeted-verified / quality-no-go
+- 우선순위: P0
+- Type: judgment-quality
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - v32 canary `20260526_114153_549448`
+  - v33 verified rerun `20260526_121555_048435`
+- 관련 문서:
+  - `qualitative_review/20260505_214349_324347/v33_single_11663540_after_summary_ko.md`
+  - `qualitative_review/20260505_214349_324347/v33_single_11663540_after_labels.jsonl`
+  - `docs/devs/VERIFICATION_RESULTS.md`
+  - `docs/devs/TODO.md`
+  - `docs/devs/CHECKLIST.md`
+  - `docs/devs/HISTORY.md`
+- 문제:
+  - `post_id=11663540`에서 Arbiter가 `_title_deliberately_null=true`로 제목 확정을 보류했고 구조적 제목 추출도 기각했다.
+  - 이후 canonical suspect 보정이 검색/괄호형 캐릭터 bridge 후보 `전 버튜버가 하고 싶은데요`를 다시 살려 `resolved_title`처럼 과확정했다.
+  - 원문은 `주서연`, `전차`, `줄다리기` 능력 비교성 잡담에 가까워 단일 공식 제목 확정 근거가 부족하다.
+- 조치:
+  - `_should_preserve_deliberate_null_against_title_restore`를 추가해 약앵커 후보가 post-side title/alias support 없이 제목으로 복구되는 것을 차단했다.
+  - canonical suspect 보정, character-parenthetical final resolution, safe-single promotion에 동일 guard를 적용했다.
+  - 테스트에서 character-parenthetical hint 등록과 final title 확정을 분리했다.
+- 확인:
+  - `py_compile` 통과.
+  - focused unittest 6건 통과.
+  - v33 completed `1`, failed `0`, pending `0`, shard `36/36 OK`.
+  - `11663540`은 `is_relevant=true`, `official_title=null`, `work_resolution=unresolved`, flag `character_parenthetical_title_null_blocked`.
+- 남은 검증:
+  - `weak_evidence_strong_resolution=75`, `generic_common_surface=89` 확장 bucket에서 false positive 감소와 positive control recall 손실 여부 확인.
+  - post-fix random baseline 및 P0/P1 regression 전까지 semantic gate `GO` 금지.
+
+## IMP-20260526-042 - 100k Residual Issue Queue and Targeted Rerun Input Contract
+
+- 상태: partial-verified / quality-no-go
+- 우선순위: P0/P1
+- Type: review-gate / run-input-contract
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - invalid rerun `20260526_111511_939101`
+  - verified rerun `20260526_112719_797981`
+- 관련 문서:
+  - `qualitative_review/20260505_214349_324347/current_100k_fixable_issue_queue_ko_20260526.md`
+  - `qualitative_review/20260505_214349_324347/round3_exit_action_current_combined_manifest.json`
+  - `qualitative_review/20260505_214349_324347/v30_single_10426463_p36_20260526_manifest.json`
+- 문제:
+  - 최신 closure에서 approval excluded가 `460/584`로 남아 semantic decision quality가 `NO-GO`다.
+  - `weak_evidence_strong_resolution`, `generic_common_surface`, `alias_recall_loss_false_negative`, `slang_db_alias_subtype`, `worker_shard_degraded_window`, `vlm_ocr_evidence_gap`가 주요 잔여 queue다.
+  - `v30_single_10426463` 단건 rerun은 UTF-8 BOM 입력을 loader가 처리하지 못해 `completed=0`으로 끝났다.
+- 조치:
+  - `expert_main.py` JSONL loader를 `utf-8-sig`로 보강했다.
+  - 입력 파일에 내용이 있는데 로드된 post가 `0`개이면 shard/LLM 실행 전 실패하도록 preflight를 추가했다.
+  - `tests/test_expert_main_input_loader.py`에 BOM 포함 JSONL 및 `content` fallback 회귀 테스트를 추가했다.
+  - `10426463` v31 rerun을 수행해 `completed=1`, `failed=0`, `pending=0`을 확인했다.
+- 조치 계획:
+  - P0 queue인 `weak_evidence_strong_resolution=75`, `generic_common_surface=89`부터 직접 evidence/demote 규칙으로 닫는다.
+  - VLM/OCR row는 Browser `iab` image gate pass와 semantic ACCEPT를 분리한다.
+- 완료 기준:
+  - `10426463` 단건 rerun이 실제 `completed=1` 이상으로 수행된다. `20260526_112719_797981`에서 충족.
+  - P0 queue가 ACCEPT/HOLD/REPROCESS/REJECT로 재라벨되고, approval excluded가 감소한다.
+  - post-fix random baseline 및 P0/P1 regression 결과가 별도 문서로 남는다.
+
+## IMP-20260526-041 - Alias Pollution / Character Surface / Body URL Targeted Guard
+
+- 상태: partial-verified / quality-no-go
+- 우선순위: P0/P1
+- Type: judgment-quality
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - v23 `20260526_001642_295323`
+- 관련 문서:
+  - `qualitative_review/20260505_214349_324347/current_100k_issue_resolution_summary_ko_20260525.md`
+  - `qualitative_review/20260505_214349_324347/v23_final_targeted_guard_after_summary.md`
+  - `docs/devs/VERIFICATION_RESULTS.md`
+  - `docs/devs/TODO.md`
+  - `docs/devs/CHECKLIST.md`
+  - `docs/devs/HISTORY.md`
+- 문제:
+  - `post_id=8531521`에서 `강연금` alias가 batch memory/slang_db exact rescue를 통해 `강철의 연금술사` manga/anime IP로 되살아났다.
+  - `post_id=8424362`에서 `에미야 키리츠구` 캐릭터 표면명이 작품 title처럼 승격됐다.
+  - `post_id=8705431`에서 본문 직접 title과 공식 URL이 있음에도 무관 URL-backed search title로 교체될 수 있었다.
+  - v23 보강 후 `post_id=8834919` `아집숨` positive control이 false negative로 떨어지는 recall 회귀가 남았다.
+- 조치:
+  - exact alias rescue 전 non-novel media evidence guard를 추가했다.
+  - 파생/패러디/크로스오버 플랫폼 hit를 원작 공식 작품 근거에서 제외했다.
+  - 본문 공식 URL title을 기존 title `null` 상태에서도 복구 후보로 보존했다.
+  - 캐릭터 표면명 title 후보는 공식 작품 근거와 강한 연결이 없으면 final validation 및 direct rescue에서 제외했다.
+  - 본문 직접 title이 있으면 무관 URL-backed replacement가 최종 title을 교체하지 않도록 제한했다.
+- 확인:
+  - `py_compile` 통과.
+  - focused unittest 5건 통과.
+  - v23 completed `5`, failed `0`, pending `0`.
+  - `8705431`, `8601885`, `8424362`, `8531521`의 targeted 오탐 경로는 제거 또는 보류 처리됨.
+- 남은 검증:
+  - `8834919` false negative 회귀 수정.
+  - `alias_recall_loss_false_negative`, `weak_evidence_but_strong_resolution`, `generic_common_surface` 확장 bucket 검증.
+  - expanded random baseline 및 P0/P1 bucket review 전까지 semantic gate `GO` 금지.
+
 개선안은 문제, 조치, 확인 결과를 한 묶음으로 관리한다. 완료된 항목도 지우지 않고 상태를 `verified`로 바꾼다.
+
+## IMP-20260525-040 - Non-novel IP Guard and Body Official URL Evidence
+
+- 상태: partial-verified / quality-no-go
+- 우선순위: P0
+- Type: judgment-quality
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - v16 `20260525_223437_827517`
+  - v17 `20260525_224651_388855`
+  - v18 `20260525_230144_480975`
+  - v19 `20260525_231813_131527`
+- 관련 문서:
+  - `qualitative_review/20260505_214349_324347/current_100k_issue_resolution_summary_ko_20260525.md`
+  - `docs/devs/VERIFICATION_RESULTS.md`
+  - `docs/devs/TODO.md`
+  - `docs/devs/CHECKLIST.md`
+  - `docs/devs/HISTORY.md`
+- 문제:
+  - `post_id=8601885`, `8424362`, `8531521`에서 게임/만화/애니 IP가 웹소설 title처럼 확정되는 경로가 있었다.
+  - `post_id=8531521`은 앞단 guard 뒤에도 `batch_memory_exact_alias_rescued` 경로로 `강연금 -> 강철의 연금술사`가 되살아난다.
+  - `post_id=8705431`은 본문에 문피아 URL과 직접 title이 있는데, fetch unavailable 및 author mismatch 뒤 title evidence가 `author_meta`로 소실된다.
+- 조치:
+  - generic topic title과 promotional sentence title 후보를 primary title에서 제외하는 guard를 추가했다.
+  - 비웹소설 media evidence가 강한 title은 명시적 웹소설 맥락이 없으면 demote하도록 보강했다.
+  - 본문 공식 플랫폼 URL에서 title을 회수하는 helper와 단위 테스트를 추가했다.
+- 확인:
+  - `py_compile` 통과.
+  - focused unittest 4건 통과.
+  - v19 completed `5`, failed `0`, pending `0`.
+  - `post_id=8601885`: `리그 오브 레전드` 제거, `other_quarantine`.
+  - `post_id=8424362`: `official_title=null`, `work_resolution=unresolved`.
+  - `post_id=8834919`: positive control 유지.
+- 남은 검증:
+  - exact alias rescue 직전에 non-novel media guard와 slang_db pollution block을 재적용한다.
+  - 본문 플랫폼 URL+직접 title은 fetch unavailable이어도 evidence를 보존하고 `author_meta` 단독 demotion으로 버리지 않는다.
+  - 확장 bucket 및 random baseline 전까지 semantic gate `GO` 금지.
+
+## IMP-20260525-039 - Supported Title Surface Candidate Guard
+
+- 상태: targeted-verified / quality-no-go
+- 우선순위: P0
+- Type: judgment-quality
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - v15 `20260525_210222_899635`
+- 관련 문서:
+  - `qualitative_review/20260505_214349_324347/current_100k_issue_resolution_summary_ko_20260525.md`
+  - `docs/devs/VERIFICATION_RESULTS.md`
+  - `docs/devs/TODO.md`
+  - `docs/devs/CHECKLIST.md`
+  - `docs/devs/HISTORY.md`
+- 문제:
+  - `post_id=9981263`에서 `성녀 속마음`이 제목란에 있고 `성녀의 속마음이 들린다` official detail 후보가 있었지만, generic character-parenthetical 보류가 정확 title까지 demote했다.
+  - 반대로 `성기사`, `라미아` 같은 일반 역할/종족 표면은 계속 작품 title로 승격되면 안 된다.
+- 조치:
+  - 제목란 surface form이 `DetectedTitle` 후보 및 공식 detail URL/공식 title evidence와 정합하면 supported title surface 후보로 인정했다.
+  - supported 후보는 generic character-parenthetical 보류와 weak-evidence demotion에서 과보수 demote하지 않도록 했다.
+  - 일반 역할/종족 표면은 기존 generic surface filter를 유지해 supported 후보가 되지 않도록 했다.
+  - 관련 단위 테스트 2건을 추가했다.
+- 확인:
+  - `py_compile` 통과.
+  - focused unittest 7건 통과.
+  - v15 completed `8`, failed `0`, pending `0`.
+  - `post_id=9981263`: `성녀의 속마음이 들린다` resolved.
+  - `post_id=9901127`: `multi_work`, `official_title=null` 유지.
+  - `post_id=10190186`, `11205204`, `11113480`: positive/control resolved 유지.
+  - `post_id=9000828`, `9019735`: generic/common surface 과확정 없음.
+- 남은 검증:
+  - `alias_recall_loss_false_negative`, `generic_parenthetical_bridge`, `weak_evidence_strong_resolution` 확장 bucket에서 과확정/과보수 전이를 확인한다.
+  - expanded random baseline 및 P0/P1 bucket review 전까지 semantic gate `GO` 금지.
+
+## IMP-20260525-038 - Multi-work Title-list Final Demotion
+
+- 상태: targeted-partial-verified / quality-no-go
+- 우선순위: P0
+- Type: judgment-quality
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - v11 `20260525_193840_310458`
+  - v12 `20260525_195506_155856`
+  - v13 `20260525_200735_669612`
+  - v14 `20260525_202201_766849`
+- 관련 문서:
+  - `qualitative_review/20260505_214349_324347/current_100k_issue_resolution_summary_ko_20260525.md`
+  - `docs/devs/VERIFICATION_RESULTS.md`
+  - `docs/devs/TODO.md`
+  - `docs/devs/CHECKLIST.md`
+  - `docs/devs/HISTORY.md`
+- 문제:
+  - `post_id=9901127`처럼 제목에 여러 작품이 나열된 비교/감상 글이 `나 혼자만 솔플러` 단일 작품으로 과확정됐다.
+  - v11에서는 mixed/no-url title-surface 후보 `노피아 솔플러`가 이전 URL을 빌려 fake official title로 승격되는 증상이 확인됐다.
+  - `post_id=9981263`은 비교작과 제목란 alias가 같이 잡힐 때 정확한 primary title 복구가 v14까지 안정적이지 않았다. 이 하위 문제는 v15/`IMP-20260525-039`에서 targeted 기준 해결을 확인했다.
+- 조치:
+  - title-surface primary candidate rescue에서 `source_tier=mixed` 후보는 플랫폼 detail URL이 없으면 제외했다.
+  - 제목란에 복수 작품 연결어가 있고 multi-work/비교/보류 신호가 있으면 title-surface rescue를 차단했다.
+  - 최종 단계에서도 같은 위험이 남으면 `official_title`을 `null`로 내리고 `work_resolution=multi_work`, `subtype=multi_work_compare`, flag `multi_work_title_list_resolution_demoted`를 남기도록 했다.
+  - 관련 단위 테스트 3건을 추가하고 기존 positive/negative 테스트를 보강했다.
+- 확인:
+  - `py_compile` 통과.
+  - focused unittest 6건 통과.
+  - v11/v12/v13/v14 모두 completed `8`, failed `0`, pending `0`.
+  - `post_id=9901127`: v14에서 `is_relevant=true`, `work_resolution=multi_work`, `official_title=null`.
+  - `post_id=9981263`: v14에서 `official_title=null`, `unresolved_work`로 보수 처리.
+- 남은 검증:
+  - `post_id=9981263` 계열 제목란 alias primary 복구는 v15 targeted 기준 해결됐으므로 확장 bucket 전이를 확인한다.
+  - `multi_work_title_list_resolution_demoted`가 정상 단일 작품 감상글을 과보수 demote하지 않는지 positive neighbor 회귀.
+  - P0/P1 bucket 확장 회귀와 random baseline 전까지 semantic gate `GO` 금지.
+
+## IMP-20260525-037 - Alias/Bridge v8-v10 Residual Instability
+
+- 상태: partial-verified / quality-no-go
+- 우선순위: P0
+- Type: judgment-quality
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - v8 `20260525_183704_522400`
+  - v9 `20260525_185932_392781`
+  - v10 `20260525_191458_896289`
+- 관련 문서:
+  - `qualitative_review/20260505_214349_324347/current_100k_issue_resolution_summary_ko_20260525.md`
+  - `docs/devs/VERIFICATION_RESULTS.md`
+  - `docs/devs/TODO.md`
+  - `docs/devs/CHECKLIST.md`
+- 문제:
+  - `post_id=9901127`은 여러 작품 감상 비교 글인데 v9/v10에서 `나 혼자만 솔플러` 단일 title로 과확정됐다.
+  - `post_id=9981263`은 v8/v9에서 `성녀의 속마음이 들린다`로 회수됐지만 v10에서 다시 `unresolved_work`로 회귀했다.
+  - targeted run은 모두 성공했으나 모델 판정 품질은 아직 실행 간 안정성이 부족하다.
+- 조치:
+  - mixed direct title candidate가 URL 근거 없이 direct rescue되는 경로를 차단했다.
+  - high-confidence slang alias rescue가 noisy search ambiguity에 과도하게 밀리지 않도록 보강했다.
+  - multi-work relation hold가 locked official rescue를 막도록 단위 테스트를 추가했다.
+- 확인:
+  - `py_compile` 통과.
+  - focused unittest 5건 통과.
+  - v8/v9/v10 모두 completed `8`, failed `0`, pending `0`.
+- 남은 검증:
+  - `title_surface_primary_candidate_rescued`가 multi-work relation hold를 뚫는 경로를 차단한다.
+  - 제목란 alias 후보가 본문 비교작 후보보다 primary로 유지되는지 `9981263` 계열 회귀를 보강한다.
+  - v11 targeted 재실행 후 expanded bucket과 random baseline 전까지 semantic gate `GO` 금지.
+
+## IMP-20260525-036 - Generic Role Parenthetical Bridge Block
+
+- 상태: targeted-verified / quality-no-go
+- 우선순위: P0
+- Type: judgment-quality
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - targeted rerun `20260525_174243_300254`
+- 관련 문서:
+  - `qualitative_review/20260505_214349_324347/current_100k_issue_resolution_summary_ko_20260525.md`
+  - `qualitative_review/20260505_214349_324347/generic_common_surface_full_regression_review_ko_20260525.md`
+  - `docs/devs/VERIFICATION_RESULTS.md`
+  - `docs/devs/TODO.md`
+  - `docs/devs/CHECKLIST.md`
+- 문제:
+  - v5에서 `성기사 -> 월드 오브 워크래프트`, `라미아 -> 신비아파트 시리즈`처럼 일반 역할/종족어가 character-parenthetical 검색 결과만으로 다시 `official_title`이 됐다.
+  - Verifier/Judge가 비관련 또는 약근거라고 판단한 뒤에도 후단 synthetic/canonical 보정이 해당 제목을 되살렸다.
+- 조치:
+  - generic role/species character-parenthetical bridge는 원문 제목/본문에 직접 작품 title이 없으면 primary title로 승격하지 않도록 차단했다.
+  - 후단 정합성 보정에서도 같은 generic bridge가 플랫폼 URL 또는 wiki parenthetical만으로 되살아나지 않도록 차단했다.
+  - 회귀 테스트 2건을 추가했다.
+- 확인:
+  - `py_compile` 통과.
+  - targeted unittest 11건 통과.
+  - shard audit `ok=36/36`.
+  - targeted rerun: completed `8`, failed `0`, pending `0`.
+  - `post_id=9000828`: `official_title=null`, `is_relevant=false`.
+  - `post_id=10190186`: `망한 교단의 성기사` resolved.
+  - `post_id=11205204`, `11113480`: positive control 유지.
+- 남은 검증:
+  - `post_id=9981263`: 제목란 alias 후보 `성녀 속마음`을 후보 pool에 보존하고 primary로 선택하는 보강.
+  - `post_id=9901127`: 여러 작품 감상 비교 글을 단일 title 미확정 때문에 `non_relevant/noise`로 과차단하지 않도록 보강.
+  - 확장 bucket과 random baseline 전까지 semantic gate `GO` 금지.
+
+## IMP-20260525-035 - Alias/Bridge Targeted v4 Stabilization
+
+- 상태: verified-targeted / quality-no-go
+- 우선순위: P0
+- Type: judgment-quality
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - targeted rerun `20260525_164258_948961`
+- 관련 문서:
+  - `qualitative_review/20260505_214349_324347/current_100k_issue_resolution_summary_ko_20260525.md`
+  - `qualitative_review/20260505_214349_324347/generic_common_surface_full_regression_review_ko_20260525.md`
+  - `docs/devs/VERIFICATION_RESULTS.md`
+  - `docs/devs/TODO.md`
+  - `docs/devs/CHECKLIST.md`
+- 문제:
+  - targeted v3에서 `PickvelIdentity.anchor_type`에 내부 evidence anchor `title_abbrev_mention`이 들어가 validation error가 발생했다.
+  - 짧은 감탄형 제목 `아 히집악 너무 좋아`가 slang_db alias로 복구되지 않아 false negative가 재발했다.
+- 조치:
+  - 내부 evidence anchor는 output schema 허용값 `title_alias`로 매핑했다.
+  - BatchContext alias surface lookup이 감탄사/감상어가 붙은 alias 표면을 복구하도록 유지하고, 해당 rescue 경로를 targeted run으로 검증했다.
+- 확인:
+  - `py_compile` 통과.
+  - targeted unittest 4건 통과.
+  - shard audit `ok=36/36`.
+  - targeted rerun: completed `8`, failed `0`, pending `0`.
+  - `post_id=9000828`: generic species/trope title 과잉 확정 제거.
+  - `post_id=9901127`, `11113480`: positive control resolved 유지.
+  - `post_id=11205204`: `히집악 -> 히어로가 집착하는 악당이 되었다` resolved.
+- 남은 검증:
+  - `post_id=9981263`: 제목란 alias 후보와 본문 비교작 후보가 충돌하는 multi-work primary 선택 보강.
+  - `post_id=10190186`: 제목란 full-title이 author/meta로 밀리는 direct-title rescue 보강.
+  - 확장 bucket과 random baseline 전까지 semantic gate `GO` 금지.
+
+## IMP-20260525-034 - 100k Semantic Issue Exit Plan
+
+- 상태: documented / quality-no-go
+- 우선순위: P0
+- Type: judgment-quality
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - targeted rerun `20260525_164258_948961`
+- 관련 문서:
+  - `qualitative_review/20260505_214349_324347/current_100k_issue_resolution_summary_ko_20260525.md`
+  - `docs/devs/VERIFICATION_RESULTS.md`
+  - `docs/devs/TODO.md`
+  - `docs/devs/CHECKLIST.md`
+- 문제:
+  - 10만건 테스트는 실행 자체는 완료됐지만 최신 closure에서 approval excluded `460/584`가 남아 semantic decision quality 승인이 불가하다.
+  - targeted v4에서 `라미아` generic title 오매칭과 `히집악` false negative는 개선됐지만, `성녀 속마음` multi-work primary 선택과 `망한 교단의 성기사` direct full-title rescue가 남았다.
+- 조치:
+  - 현재 부족점과 해결 가능 항목을 별도 한국어 summary 문서로 고정했다.
+  - 해결 방향을 character/wiki parenthetical bridge 승격 가드, 원문 full-title 우선순위 보정, slang_db exact alias rescue, multi-work primary 선택 보정으로 분리했다.
+- 확인:
+  - latest targeted run: completed `8`, failed `0`, pending `0`.
+  - `post_id=9000828`: generic species/trope title 과잉 확정 제거.
+  - `post_id=11205204`: `히집악 -> 히어로가 집착하는 악당이 되었다` resolved.
+  - positive control `9901127`, `11113480` resolved 유지.
+- 남은 검증:
+  - `post_id=9981263`, `10190186`를 고치는 일반화 패치.
+  - targeted 8건 36워커 재실행.
+  - `generic_common_surface`, `weak_evidence_strong_resolution`, `alias_recall_loss_false_negative` 확장 회귀.
+  - post-fix random baseline 및 P0/P1 regression validation.
+
+## IMP-20260525-033 - Generic Common Surface Thin-Bridge Guard
+
+- 상태: verified-full-bucket / quality-hold
+- 우선순위: P1
+- Type: judgment-quality
+- 관련 run id:
+  - source `20260505_214349_324347`
+  - full regression `20260525_134217_119077`
+  - residual v2 `20260525_143013_533933`
+- 관련 문서:
+  - `docs/devs/VERIFICATION_RESULTS.md`
+  - `docs/devs/TODO.md`
+  - `docs/devs/CHECKLIST.md`
+  - `qualitative_review/20260505_214349_324347/generic_common_surface_full_regression_review_ko_20260525.md`
+- 문제:
+  - `generic_common_surface` row에서 일반어, 트로프, 캐릭터 표면, 검색 snippet의 얕은 bridge가 단일 `official_title`로 과잉 확정되는 사례가 남았다.
+  - 예: `거짓말`, `라미아`, 캐릭터/인명 표면, 비교작 언급이 primary work로 미끄러지는 패턴.
+- 조치:
+  - `thin-bridge title` guard를 추가해 직접 post span, official URL, non-wiki official evidence가 없고 search snippet도 얕으면 title 확정을 보류했다.
+  - `unverified alias/plot title` guard를 추가해 공식 evidence 또는 원문 full-title 직접 등장 없는 LLM-only alias/비교작 확정을 보류했다.
+- 확인:
+  - `generic_common_surface` full regression: completed `89`, failed `0`, pending `0`.
+  - after-review: `ACCEPT=1`, `HOLD=88`.
+  - residual v2 regression: completed `8`, failed `0`, pending `0`.
+  - `9019735`, `9325585`, `9000828`의 잔여 과잉 title 확정은 제거됐다.
+  - positive control `9901127`, `11113480`은 resolved를 유지했다.
+- 남은 검증:
+  - `11205204` `히집악` false negative alias recall 처리.
+  - `9981263` `성녀 속마음` alias recall 처리.
+  - `weak_evidence_strong_resolution` bucket에서 과보수/과확정 전이 여부 재검증.
+
+## IMP-20260525-032 - Search-Only Zero-Bucket Title Guard
+
+- 상태: verified-targeted / expanded-by-IMP-20260525-033
+- 우선순위: P1
+- Type: judgment-quality
+- 관련 run id:
+  - `20260505_214349_324347`
+  - `20260525_132234_217009`
+- 관련 문서:
+  - `docs/devs/VERIFICATION_RESULTS.md`
+  - `docs/devs/TODO.md`
+  - `docs/devs/CHECKLIST.md`
+  - `qualitative_review/20260505_214349_324347/search_only_zero_bucket_guard_review_ko_20260525.md`
+- 문제:
+  - 일부 `generic_common_surface`/`weak_evidence_strong_resolution` row에서 검색 snippet 표면 유사성만으로 단일 작품명이 확정될 수 있었다.
+  - 대표 케이스 `post_id=11663540`은 `post_spans=0`, `official_urls=0`인데도 이전 재판정에서 단일 작품명이 남았다.
+- 조치:
+  - 약한 anchor 상태에서 본문 직접 span, 공식 URL, non-wiki 공식 근거가 모두 없으면 `official_title` 확정을 보류하는 guard를 추가했다.
+  - 관련성은 유지하고 title resolution만 `unresolved`로 내린다.
+- 확인:
+  - `expert_main.py --parallel 36` 회귀런 completed `3`, failed `0`, pending `0`.
+  - `post_id=11663540`, `10824887`은 unresolved title로 내려갔다.
+  - positive control `post_id=9722392`는 `아카데미 플레이어를 죽였다` resolved title을 유지했다.
+- 남은 검증:
+  - `generic_common_surface` bucket은 IMP-20260525-033에서 population `89/89` 전수 회귀 완료. 결과는 `HOLD=88/89`라 승인 불가.
+  - `weak_evidence_strong_resolution` bucket 직접 evidence 기준 재판정.
+  - guard branch 발화를 확인하는 synthetic/unit fixture.
+
+## IMP-20260525-031 - VLM/OCR Image Lazy-Load Gate
+
+- 상태: verified / tooling-updated
+- 우선순위: P1
+- Type: docs/quality
+- 관련 run id:
+  - `20260505_214349_324347`
+- 관련 문서:
+  - `docs/devs/QUALITATIVE_SEMANTIC_REVIEW_LOOP.md`
+  - `docs/devs/SCAN_RESULT_REVIEW_GUIDE.md`
+  - `docs/devs/OPERATION_QUALITY_CHECKLIST.md`
+  - `docs/devs/CHECKLIST.md`
+  - `docs/devs/VERIFICATION_RESULTS.md`
+- 문제:
+  - DCInside 본문 이미지는 페이지가 열린 뒤에도 lazy-load placeholder가 남을 수 있다.
+  - URL/title/body 확인만으로 VLM/OCR `Strong`을 주면, 실제 검증 대상 이미지가 로드되지 않은 row가 통과할 수 있다.
+- 조치:
+  - Codex 내장 Browser `iab`로 VLM/OCR 100건을 재검증하고 본문 이미지 스크롤/대기 게이트를 추가했다.
+  - `post_id=11097334`에서 스크롤 전 placeholder `1`, 스크롤 후 placeholder `0`을 확인했다.
+  - closure builder가 `browser_visual_vlm_ocr_iab_image_gate` combined 결과를 우선 사용하도록 갱신했다.
+  - fallback 캡처 도구도 `article_image_count/loaded/incomplete/placeholder/broken`을 기록하고, 이미지 미로딩 상태를 `Strong`으로 승격하지 않도록 패치했다.
+  - VLM/OCR target builder에 Codex 내장 Browser `iab` 우선 표면과 본문 이미지 acceptance gate를 명시했다.
+- 확인:
+  - VLM/OCR image gate combined 결과: `Strong=98`, `Missing=2`.
+  - closure 재계산 결과: `ACCEPT=124`, `HOLD=365`, `REPROCESS=93`, `INFO_MISSING=2`.
+  - target 재생성 테스트: `vlm_ocr_image_gate_patch_test_manifest.json`, 대상 `100`, packet 누락 `0`.
+  - `expert_main.py --parallel 36` smoke test: completed `2`, failed `0`, shard health `36/36`.
+  - semantic gate는 approval excluded `460/584`로 계속 `NO-GO`.
+
+## IMP-20260523-030 - Korean Review Artifacts And 36-Worker Execution Policy
+
+- 상태: documented / tooling-updated
+- 우선순위: P1
+- Type: docs/operations
+- 관련 문서:
+  - `docs/devs/QUALITATIVE_SEMANTIC_REVIEW_LOOP.md`
+  - `docs/devs/SCAN_RESULT_REVIEW_GUIDE.md`
+  - `docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md`
+  - `docs/devs/OPERATION_QUALITY_CHECKLIST.md`
+  - `docs/devs/CHECKLIST.md`
+  - `tools/build_qualitative_random_control_review.py`
+  - `tools/build_qualitative_round2_review.py`
+  - `tools/build_qualitative_round3_targets.py`
+  - `tools/build_qualitative_round3_after_review.py`
+- 문제:
+  - 리뷰/분석/검토/피드백 Markdown이 영어 heading이나 영어 설명을 섞어 만들면 운영자가 빠르게 판독하기 어렵다.
+  - Gemma 4 4B 후속 실행 기준이 `--parallel 32`와 36 worker 지시 사이에서 혼선이 생길 수 있다.
+- 조치:
+  - 사람이 읽는 Markdown 본문, 결론, 근거, 판정, 후속 작업 설명은 한국어로 작성하도록 지침화.
+  - JSON key, enum, action id, bucket id, 명령어, 로그 원문, 코드 심볼은 원문 유지로 분리.
+  - Gemma 4 4B 후속 재확인/재처리 실행 상한을 `36`으로 갱신하되, 새 소규모 run은 `--parallel min(input_count,36)`와 manifest `effective_parallel`로 판단하도록 정정.
+  - shard 검증은 대형/샤드 검증 run에서 `MCP_SHARD_COUNT=36` 및 shard audit `36/36`을 확인하고, 소규모 targeted run에서는 healthy endpoint와 `effective_parallel` 축소를 별도로 기록하도록 문서화.
+- 다음 작업:
+  - 완료: Markdown을 생성하는 qualitative builder의 heading/요약/gate/action 설명 문구를 한국어 출력으로 보강.
+  - 확인: qualitative builder 4개 파일 `py_compile` 통과.
+  - 실제 후속 재확인 run을 수행할 때 `36` 상한/effective_parallel 계약과 shard audit 결과를 `VERIFICATION_RESULTS.md`에 기록.
+
+## IMP-20260523-029 - VLM/OCR Browser Visual Evidence Gate
+
+- 상태: documented
+- 우선순위: P1
+- Type: docs/quality
+- 관련 run id:
+  - discovery: `20260505_214349_324347`
+- 관련 문서:
+  - `docs/devs/QUALITATIVE_SEMANTIC_REVIEW_LOOP.md`
+  - `docs/devs/SCAN_RESULT_REVIEW_GUIDE.md`
+  - `docs/devs/OPERATION_QUALITY_CHECKLIST.md`
+  - `docs/devs/CHECKLIST.md`
+- 문제:
+  - VLM/OCR 개입 케이스는 OCR text, result field, reason만 보면 실제 화면/이미지 의미와 맞는지 확인되지 않는다.
+  - image-only evidence, OCR-derived title, screenshot/webtoon panel 기반 판정은 원문 화면 확인 없이 `ACCEPT`하면 semantic quality gate가 허술해진다.
+- 조치:
+  - VLM/OCR 대상은 원문 post URL, image URL, evidence URL을 브라우저로 직접 열고 screenshot path와 vision/manual observation을 packet/label에 남기도록 지침화.
+  - 브라우저 접근 실패, 삭제, 로그인/성인 인증, 404, blocked response는 `Missing`/`Weak` evidence로 처리하고 `ACCEPT` 금지.
+  - screenshot/vision 관찰이 OCR text 또는 model reason과 충돌하면 `REJECT` 또는 `REPROCESS` 후보로 승격.
+- 다음 작업:
+  - `VLM_OCR_involved` packet builder가 browser URL, access status, screenshot path, visual evidence grade를 출력하도록 tooling 보강.
+  - 실제 `vlm_ocr_quarantine` 잔여 케이스에 브라우저 screenshot/vision review를 적용하고 gate decision에 반영.
+
+## IMP-20260522-001 - Scan result review guide and issue taxonomy
+
+- 상태: implemented
+- 우선순위: P2
+- 관련 run id: 없음
+- 관련 문서: `docs/devs/SCAN_RESULT_REVIEW_GUIDE.md`, `docs/devs/OPERATION_QUALITY_CHECKLIST.md`, `docs/devs/CHECKLIST.md`, `docs/slang_db_improvement_todo.md`
+- 문제:
+  - scan result directory를 받았을 때 재사용 가능한 리뷰 절차와 특정 런 분석 절차가 섞여, Codex/리뷰어가 지침 작성과 실제 판정을 혼동할 수 있음.
+  - 증거 강도, GO/REVIEW/NO-GO gate, 실패 taxonomy, `slang_db` 저장/차단/표시 상태 구분이 문서상 한곳에 고정되어 있지 않음.
+- 조치:
+  - `GUIDE_MODE`, `RUN_REVIEW_MODE`, `MIXED_MODE`를 분리한 scan result review guide 추가.
+  - `Strong`/`Medium`/`Weak`/`Missing` 증거 등급, 최초 원인/fanout 분리 절차, runtime/search/judgment/slang_db/docs-tooling taxonomy를 문서화.
+  - `generic_parenthetical_bridge`와 `extracted_not_persisted`/`persisted_but_not_displayed`를 별도 리뷰 리스크로 승격.
+  - 운영 체크리스트에 scan result directory intake gate와 action queue 항목 추가.
+- 확인:
+  - 문서 추가 및 기존 dev docs hub/checklist/operation quality checklist에 링크 반영.
+- 남은 위험:
+  - 실제 스캔 결과 디렉터리에 적용해보며 누락 필드와 자동 audit 명령을 더 구체화해야 함.
+- 다음 작업:
+  - 첫 실제 `RUN_REVIEW_MODE` 수행 후 output template과 issue taxonomy를 보정.
+  - `slang_db` audit에서 `extracted_not_persisted`와 `persisted_but_not_displayed`를 자동으로 분리하는 tooling 검토.
 
 ## IMP-20260501-001 - VLM/OCR degenerate image geometry guard
 
@@ -746,3 +8928,959 @@
 - 완료 기준:
   - afterfix21 risk resolved 증가분 정성 리뷰 완료.
   - 다음 개선 항목이 실제 false positive 유형별로 분리됨.
+
+## IMP-20260522-022 - Arbiter Suspected Title Confidence Sort Safety
+
+- 상태: patched / targeted_verified
+- 우선순위: P1
+- Type: runtime
+- 관련 run id:
+  - discovery: `20260505_214349_324347`
+- 관련 사례:
+  - W12/post `9984573`
+  - W10/post `8641648`
+  - W26/post `9775371`
+  - W5/post `9785421`
+- 문제:
+  - Arbiter가 `ctx.suspected_titles` 병합 후 `confidence`를 그대로 정렬했다.
+  - 후보 confidence가 `float`와 `str`로 섞이면 `TypeError: '<' not supported between instances of 'float' and 'str'`가 발생한다.
+  - deliberation fallback도 같은 정렬 경로를 다시 타서 폴백 안정성이 약해졌다.
+- 조치:
+  - `ArbiterExpert._suspected_title_sort_key` 추가.
+  - `_confidence_to_unit`으로 confidence를 0~1 점수로 정규화한 뒤 정렬.
+  - mixed confidence regression test 추가.
+- 확인:
+  - `.venv312\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_arbiter_confidence_to_unit_handles_string_labels tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_arbiter_suspected_title_sort_key_handles_mixed_confidence_types tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_character_parenthetical_bridge_rejects_korean_medical_common_term tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_namu_medical_common_url_does_not_replace_weak_final_title tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_unresolved_medical_keyword_overlap_is_not_kept_core_relevant -v`: `Ran 5 tests`, `OK`.
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\experts\arbiter.py tests\test_agentic_pipeline_rework.py`: pass.
+- 완료 기준:
+  - 충족. 같은 mixed confidence 입력에서 정렬 TypeError가 재현되지 않음.
+
+## IMP-20260522-023 - Server POC Medical/Common Concept Regression Review
+
+- 상태: server_run_review_hold
+- 우선순위: P1
+- Type: quality
+- 관련 run id:
+  - discovery: `20260505_214349_324347`
+- 관련 사례:
+  - `11718111` (`나도 조현병으로 오해받은 적 있음`) -> `정신분열병`
+- 문제:
+  - server result에서 `official_title_evidence=false`, `post_spans=0`, `official_urls=0`인데 `official_title=정신분열병`, `work_resolution=resolved`로 확정됐다.
+  - flags는 `character_parenthetical_title_resolved`, `synthetic_primary_frozen`라서, 이전 afterfix19~21 문서의 기대값(`11718111` title 없음)과 충돌한다.
+- 현재 코드 확인:
+  - current worktree의 `11718111` medical/common targeted tests는 통과.
+  - 따라서 이 항목은 서버 run 시점 산출물 품질 hold와 배포본/현재 코드 차이 확인 이슈로 분리한다.
+- 다음 작업:
+  - 같은 입력을 현재 코드로 단건 재처리해 server result와 비교.
+  - 차이가 재현되면 `synthetic_primary_frozen` 또는 character-parenthetical bridge 최종 freeze 경로를 추가 보강.
+- 완료 기준:
+  - `11718111`이 현재 코드/서버 동일 환경에서 non-relevant/title 없음 또는 명시 HOLD로 닫힘.
+
+## IMP-20260522-024 - Degraded Majority Resolved Review Packet
+
+- 상태: first_packet_reviewed / expand_required
+- 우선순위: P1
+- Type: quality/search
+- 관련 run id:
+  - discovery: `20260505_214349_324347`
+- 관련 지표:
+  - `resolved_with_weak_evidence_text=3223`
+  - `resolved_low_anchor_structured=1096`
+  - `resolved_with_degraded_majority=12220`
+  - search degraded log lines `65380`
+  - upstream zero `40211`
+  - bridge-after-filter zero `157061`
+- 문제:
+  - full run은 완료됐지만 resolved title의 상당수가 degraded-heavy 검색 상태를 포함한다.
+  - smoke/canary 성공과 달리 full run 품질 승인을 위해서는 risk packet 판독이 필요하다.
+- 해결 방향:
+  - result JSON 기반 review packet builder를 만들거나, 서버 checkpoint를 동기화해 기존 `build_llm_judgment_review_packet.py`를 사용.
+  - degraded-majority resolved, weak-evidence resolved, generic title surface, known-case mismatch를 우선 bucket으로 추출.
+- 완료 기준:
+  - 1차 기준 충족: stratified packet `172`건 생성 및 `ACCEPT/HOLD/REPROCESS/REJECT` 판독 완료.
+  - 1차 산출물:
+    - `server-poc/qualitative_review_packet_20260505_214349_324347_20260522.jsonl`
+    - `server-poc/qualitative_review_packet_20260505_214349_324347_20260522.md`
+    - `server-poc/qualitative_review_adjudication_20260505_214349_324347_20260522.md`
+    - `qualitative_review/20260505_214349_324347/sample_manifest.json`
+    - `qualitative_review/20260505_214349_324347/review_packets.jsonl`
+    - `qualitative_review/20260505_214349_324347/review_labels.jsonl`
+    - `qualitative_review/20260505_214349_324347/pattern_summary.md`
+    - `qualitative_review/20260505_214349_324347/gate_decision.md`
+    - `qualitative_review/20260505_214349_324347/action_queue.md`
+  - 1차 결과: `ACCEPT=107`, `HOLD=26`, `REPROCESS=27`, `REJECT=12`.
+  - 확장 기준: non-accepted 유형 중심 추가 packet으로 bucket별 오판율 산출.
+
+## IMP-20260522-025 - Server POC Evidence Package Gap
+
+- 상태: proposed
+- 우선순위: P2
+- Type: tooling/docs
+- 관련 run id:
+  - discovery: `20260505_214349_324347`
+- 문제:
+  - `server-poc`에는 result JSON, logs, WARP status, `slang_db` snapshot은 있으나 manifest/checkpoint/run audit/comparison/review packet이 없다.
+  - 기존 run audit 도구는 checkpoint/manifest 중심이라 `server-poc`만으로 Strong evidence chain을 만들기 어렵다.
+- 해결 방향:
+  - 서버 산출물 복사 규격에 manifest, checkpoint JSONL, run audit JSON, review packet을 포함.
+  - 또는 result JSON 직접 audit 옵션을 추가해 `server-poc` 패키지만으로도 gate 판정을 재현 가능하게 한다.
+- 완료 기준:
+  - 다음 서버 run 디렉터리에서 `SCAN_RESULT_REVIEW_GUIDE.md`의 `필수 입력` 누락이 없거나, 누락 사유와 영향이 자동 report에 남음.
+
+## IMP-20260522-026 - Server POC Natural Language Quality No-Go
+
+- 상태: discovered
+- 우선순위: P1
+- Type: quality/search
+- 관련 run id:
+  - discovery: `20260505_214349_324347`
+- 관련 산출물:
+  - `server-poc/qualitative_review_adjudication_20260505_214349_324347_20260522.md`
+  - `qualitative_review/20260505_214349_324347/review_labels.jsonl`
+  - `qualitative_review/20260505_214349_324347/pattern_summary.md`
+  - `qualitative_review/20260505_214349_324347/gate_decision.md`
+  - `qualitative_review/20260505_214349_324347/action_queue.md`
+- 문제:
+  - 1차 정성 packet `172`건 중 `HOLD=26`, `REPROCESS=27`, `REJECT=12`로, 자연어 품질 승인에는 실패했다.
+  - 초기 Round 2 failure-pattern expansion `200`건에서도 `HOLD=60`, `REPROCESS=62`, `REJECT=1`이 추가되어 merged `472`건 중 non-ACCEPT `202`건이 남았다. 이 `472`건은 initial semantic triage로만 취급한다.
+  - large-scale expansion 이후에도 high-risk `5000`건 중 `HOLD=1528`, `REPROCESS=1430`, `REJECT=1`이 남아 semantic quality approval은 불가하다.
+  - generic/common surface가 공식 제목으로 승격되고, 명확한 별칭이 unresolved/non-relevant로 남는 반대 방향 오류가 함께 발생한다.
+- 주요 유형:
+  - generic/common surface promotion: `정신분열병`, `판타지 용어`, `2016`, `Legend`, `떡씬 많은 19금 판타지`.
+  - canonical drift: `갤질의사 -> 갤질하는 천재 의사 / 댓글 보는 천재 의사 / 개질하는 천재 의사`.
+  - unresolved/false-negative recall loss: `즉사무림`, `죽깨수`, `망겜성`, `아생갤`, `괴담동`, `갤질의사`.
+- 해결 방향:
+  - generic/common surface를 final freeze 전에 재차 차단.
+  - canonical alias family를 한 run 안에서 안정화하고 OCR-corrupted title을 공식 제목으로 freeze하지 않음.
+  - 관련-without-title alias를 re-search/re-judge queue로 보내고, non-relevant로 바로 버리지 않음.
+- 완료 기준:
+  - non-accepted 유형별 targeted cases가 현재 코드에서 `ACCEPT` 또는 명시 `HOLD`로 수렴.
+  - 2차 packet에서 `REJECT` 유형이 재발하지 않음.
+  - Round 3 P0/P1 재검색/재판정에서 새 systemic failure pattern이 거의 나오지 않음.
+
+## IMP-20260522-027 - Qualitative Semantic Review Loop Standardization
+
+- 상태: documented / round2_artifact_generated / tooling_partial
+- 우선순위: P2
+- Type: docs/tooling
+- 문제:
+  - 자동 감사, run 정합성, 자연어 판정 품질이 한 문맥에서 섞이면 `런은 완료됨`이 `판정 품질 승인`처럼 오해될 수 있다.
+  - 위험 bucket 표본만 보면 전체 기준선을 놓치고, random sample만 보면 rare but critical failure pattern을 놓칠 수 있다.
+- 조치:
+  - `docs/devs/QUALITATIVE_SEMANTIC_REVIEW_LOOP.md` 추가.
+  - `SCAN_RESULT_REVIEW_GUIDE.md`, `OPERATION_QUALITY_CHECKLIST.md`, `CHECKLIST.md`, `TODO.md`, `HISTORY.md`에 gate와 후속 작업 반영.
+  - 라벨 체계 `ACCEPT/HOLD/REPROCESS/REJECT/INFO_MISSING` 고정.
+  - `sample_manifest`, `review_packets`, `review_labels`, `pattern_summary`, `gate_decision`, `action_queue` 산출물 규격 고정.
+  - server-poc 1차 172건 판독을 `qualitative_review/20260505_214349_324347/` 표준 디렉터리 구조로 정규화.
+- 확인:
+  - `review_packets.jsonl`와 `review_labels.jsonl`가 각각 `6172`행으로 갱신됨.
+  - random control v3 `1000`건을 stratified로 추가해 `ACCEPT=889`, `HOLD=2`, `REPROCESS=109`, `REJECT=0` baseline을 기록.
+  - high-risk expansion `5000`건을 추가해 `ACCEPT=2041`, `HOLD=1528`, `REPROCESS=1430`, `REJECT=1` failure-pattern expansion을 기록.
+  - `tools/build_qualitative_round2_review.py`로 result JSON 직접 스트리밍 기반 Round 2 packet/label/gate/action queue를 재생성 가능하게 함.
+  - `gate_decision.md`는 run integrity `REVIEW`, semantic decision quality `NO-GO`, overall `NO-GO`를 분리 기록.
+  - `sample_manifest.json`은 random control first-pass와 Round 2 dedicated buckets 충족, `worker_or_shard_degraded_window`/`unresolved_to_resolved` partial evidence를 분리 명시.
+- 다음 작업:
+  - Round 2 전용 builder를 범용 `qualitative_review` builder로 일반화.
+  - random control과 high-risk bucket 추출 조건을 run id/source path CLI 옵션으로 노출.
+- 완료 기준:
+  - 다음 대량 런 리뷰에서 새 구조의 `qualitative_review/<run_id>/...` 산출물이 자동 생성됨.
+  - gate decision이 run integrity와 semantic decision quality를 분리해 기록함.
+
+## IMP-20260522-028 - Round 3 Semantic Gate Remediation
+
+- 상태: discovered
+- 우선순위: P1
+- Type: quality/search/slang
+- 관련 run id:
+  - discovery: `20260505_214349_324347`
+- 관련 산출물:
+  - `qualitative_review/20260505_214349_324347/round2_labels.jsonl`
+  - `qualitative_review/20260505_214349_324347/action_queue.json`
+  - `qualitative_review/20260505_214349_324347/gate_decision.md`
+- 문제:
+  - Round 2는 dedicated bucket을 채웠지만 semantic decision quality gate는 여전히 `NO-GO`.
+  - 특히 weak evidence 기반 strong resolution, generic parenthetical bridge, degraded search window, slang DB subtype, false-negative recall loss가 반복된다.
+- 해결 방향:
+  - `round3_targeted_input.jsonl`의 P0/P1 후보 `584`건을 현재 코드로 targeted re-search/re-judge/re-run.
+  - generic/common surface는 final freeze 전 차단하고, alias recall loss는 `REPROCESS` 또는 `HOLD` queue로 분리.
+  - `slang_db` 후보는 confirmed/pending/family/noise/display state를 분리해 store 여부를 결정.
+- 완료 기준:
+  - Round 3에서 P0/P1 후보별 before/after packet과 라벨이 남음.
+  - 최근 2개 round에서 새 failure pattern이 거의 나오지 않음.
+  - semantic decision quality gate가 `REVIEW` 이상으로 올라갈 근거가 생기거나, 계속 `NO-GO`인 이유가 pattern별로 고정됨.
+
+### 2026-05-22 update
+
+- 준비 완료:
+  - `tools/build_qualitative_round3_targets.py` 추가.
+  - P0/P1 대표 후보 `584`건과 `round3_targeted_input.jsonl` `584`건 생성.
+  - `round3_issue_templates.md`와 `round3_action_plan.md` 생성.
+- 현재 라벨:
+  - `REJECT=13`, `REPROCESS=442`, `HOLD=129`.
+- pattern coverage:
+  - `generic_common_surface`, `weak_evidence_strong_resolution`, `alias_recall_loss_false_negative`, `slang_db_alias_subtype`, `vlm_ocr_evidence_gap`, `worker_shard_degraded_window`, `boundary_domain_drift` 각 `100`건.
+- 남은 작업:
+  - readiness: search shards는 `8/8` OK이고 기본 vLLM endpoint `http://10.20.0.101:8000/v1/models`도 HTTP 200.
+  - targeted input을 현재 코드로 실제 재검색/재판정/재실행하고 `round3_after_packets.jsonl`, `round3_after_labels.jsonl`을 생성.
+
+### 2026-05-23 update
+
+- 실행 완료:
+  - `round3_after_merged_result.json`: `584`건, duplicate post id `0`, failed `0`.
+  - `round3_after_packets.jsonl`, `round3_after_labels.jsonl`, `round3_after_summary.md`, `round3_after_gate_decision.md` 생성.
+- 결과:
+  - after labels: `ACCEPT=179`, `HOLD=268`, `REPROCESS=137`, `REJECT=0`.
+  - hard reject는 사라졌지만 `HOLD/REPROCESS=405`가 남아 gate는 계속 `NO-GO`.
+  - residual `re_search + re_run` `189`건 재처리 후 combined latest는 `ACCEPT=195`, `HOLD=288`, `REPROCESS=101`, `REJECT=0`.
+  - 최신 잔여 `HOLD/REPROCESS=389`로 gate는 계속 `NO-GO`.
+  - quarantine split: accepted subset `195`, approval excluded `389`, `P0=91`, `P1=298`.
+- 후속 개선:
+  - `generic_common_surface`: `HOLD=88`, `REPROCESS=1`.
+  - `alias_recall_loss_false_negative`: `HOLD=59`, `REPROCESS=37`.
+  - `slang_db_alias_subtype`: `HOLD=87`, `REPROCESS=1`.
+  - `vlm_ocr_evidence_gap`: `REPROCESS=30`.
+  - `worker_shard_degraded_window`: `HOLD=54`, `REPROCESS=30`.
+  - exit action: fresh search/demote `125`, judgment guard/manual relabel `88`, slang DB state review `87`, manual adjudication `59`, VLM/OCR modality rerun or quarantine `30`.
+
+## IMP-20260526-029 - 외부 매체/플랫폼 URL 기반 title 오확정 차단
+
+- 상태: 진행 중
+- 우선순위: P0/P1
+- 배경: 10만 건 semantic review에서 외부 만화/애니/게임 IP가 웹소설 플랫폼 URL, 파생 팬픽 URL, slang DB alias, locked official candidate rescue를 타고 웹소설 title로 확정되는 문제가 반복 확인됐다.
+- 조치:
+  - comic/webtoon/detail marker가 있는 플랫폼 URL은 웹소설 official evidence로 세지 않는다.
+  - non-novel media marker가 있으면 final title, direct full-title rescue, locked official candidate rescue, batch memory/slang alias rescue에서 demote 또는 hold한다.
+  - 실제 웹소설 alias + 특정 작품 + 캐릭터 link가 확인되는 positive control은 예외로 보존한다.
+- 검증:
+  - `8531521`: `v29_single_8531521_p36_20260526.json`, `official_title=null`
+  - `8834919`: `v29_single_8834919_p36_20260526.json`, `아포칼립스에 집을 숨김` 유지
+  - `8424362`: `v26_single_8424362_p36_20260526.json`, `official_title=null`, unresolved
+  - 집중 unittest 8건 `OK`
+- 남은 작업:
+  - 잔여 `389`건 action queue 처리
+  - slang DB 외부 매체 alias quarantine
+  - Browser/VLM image gate를 packet builder 전반에 반영
+  - post-fix random baseline 및 P0/P1 regression
+
+## IMP-20260526-030 - VLM/OCR 본문 이미지 lazy-load 캡처 보강
+
+- 상태: 진행 중
+- 우선순위: P1
+- 배경: `post_id=11097334`에서 DC 본문 첨부 이미지가 `gallview_loading_ori.gif` placeholder로 남아 있는데도 검토가 넘어갈 수 있는 위험이 확인됐다. 또한 광범위 selector는 댓글/우측 추천/캡차 이미지를 본문 첨부로 세어 gate 판단을 흐릴 수 있다.
+- 조치:
+  - `tools/capture_vlm_ocr_browser_review_cli.py`의 selector를 `.write_div .img_area/.imgwrap` 중심으로 좁혔다.
+  - `rcont_imgtxt_box`, `comment`, `kcaptcha`, 광고/추천 영역 ancestor는 본문 첨부 이미지에서 제외한다.
+  - 평가 전에 본문 첨부 이미지를 `scrollIntoView`하고 대기해 lazy-load를 유도한다.
+  - `articleCandidateImageCount`와 `dataOriginal`을 남겨 selector 후보와 원본 이미지 URL 교체 여부를 추적한다.
+  - `tools/build_vlm_browser_targets_from_review.py`와 `tools/build_qualitative_exit_action_closure.py`도 같은 image gate를 사용하도록 보강했다.
+- 검증:
+  - Browser `iab` 기준 `11097334`: 본문 첨부 `3`, 스크롤 전 loaded `2/3`, placeholder `1`; 스크롤/대기 후 loaded `3/3`, placeholder `0`
+  - `.\venv\Scripts\python.exe -m py_compile tools\capture_vlm_ocr_browser_review_cli.py tests\test_vlm_browser_review_cli.py`
+  - `.\venv\Scripts\python.exe -m unittest tests.test_vlm_browser_review_cli`: `OK`
+  - `.\venv\Scripts\python.exe -m unittest tests.test_vlm_browser_review_cli tests.test_exit_action_closure`: `OK`
+  - `vlm_ocr_all_browser_gate_v2_20260526_manifest.json`: VLM/OCR target `100`, packet 누락 `0`
+  - `round3_exit_action_current_combined_manifest.json`: approval excluded `460`, gate `NO-GO`
+- 남은 작업:
+  - VLM/OCR quarantine `30`건 재캡처/재라벨
+
+## IMP-20260526-031 - character-only virtual battle 관련성 누수 및 자동 라벨 과허용 차단
+
+- 상태: targeted fix 검증 완료, 대량 회귀 대기
+- 우선순위: P1
+- 배경:
+  - `post_id=11663540`은 캐릭터 단독 가상 대결/전차 줄다리기 맥락이다.
+  - v62에서는 false title은 막혔지만 `is_relevant=true`, `title null`, `work_resolution=unresolved`로 남아 semantic approval에 혼선을 줬다.
+  - 자동 after-review도 `Weak + title null/unresolved + boundary risk` 조합을 `ACCEPT`로 올릴 수 있었다.
+- 조치:
+  - `src/llm_batch/agentic_pipeline.py`의 최종 validator에 `title_deliberately_null + no official title + virtual battle context` 차단을 추가.
+  - `tools/build_qualitative_round2_review.py`의 라벨러에서 `Weak + unresolved/title null + boundary/search risk`는 `HOLD`로 내리도록 보강.
+  - `generic_parenthetical_bridge`가 최종 non-relevant/title-null로 끝난 경우는 오히려 generic bridge가 작품 확정으로 승격되지 않은 성공 케이스로 `ACCEPT` 처리.
+- 검증:
+  - focused pipeline unittest 6건 `OK`.
+  - qualitative packet tool unittest 3건 `OK`.
+  - v63 targeted run: `v63_character_virtual_battle_unresolved_guard_p36_20260526.json`, completed `6`, failed `0`, pending `0`, search health `36/36 OK`.
+  - v63 after packet review: `ACCEPT=5`, `HOLD=1`.
+  - `11663540`: `is_relevant=false`, `official_title=null`, `work_resolution=none`.
+- 남은 작업:
+  - 같은 character-only virtual battle pattern의 P0/P1 regression 표본을 추가 확인.
+  - `10426463` adjacent/trope/setting-borrowing `HOLD`를 별도 정책/수동 리뷰로 처리.
+  - post-fix random baseline `500~1000`건과 high-risk regression 전까지 semantic gate는 `NO-GO / REVIEW-LOCKED` 유지.
+
+## IMP-20260527-032 - direct/locked title rescue 후 stale demotion 상태 오염 차단
+
+- 상태: targeted fix 검증 완료, 확대 평가 대기
+- 우선순위: P0/P1
+- 배경:
+  - `v64_generic_common_surface_hold19_p36_20260526` after-review에서 `post_id=10190186`이 `REJECT`로 확인됐다.
+  - 원문에 직접 등장한 작품명 `망한 교단의 성기사`를 복구한 뒤에도 `discussion_type=noise`, `family_alias_group_unresolved`, `primary_work_cleared_non_core`, `primary_work_cleared_non_resolved`, `external_ip_unresolved_final_blocked` 같은 이전 demotion 상태가 최종 identity에 남았다.
+  - 이 때문에 resolved title/reason/evidence와 flags가 서로 충돌했다.
+- 조치:
+  - direct full-title rescue 성공 시 stale demotion flag를 제거하고 `direct_full_title_rescue_cleared_stale_demotions`를 남긴다.
+  - locked official candidate rescue 성공 시 stale demotion flag를 제거하고 `locked_official_rescue_cleared_stale_demotions`를 남긴다.
+  - rescue 후 `official_title/heretic_url/confidence`를 `verification_result.novel_identity`에 동기화한다.
+  - rescue 후보 confidence가 더 높으면 최종 confidence를 승격한다.
+  - `discussion_type=announcement`처럼 schema에 없는 값을 쓰지 않는다.
+  - `m.munpia.com/novel/detail/<id>`를 문피아 모바일 작품 상세 URL로 인정한다.
+- 검증:
+  - direct/locked rescue stale demotion 단위 테스트 2건 `OK`.
+  - direct full-title 관련 11건 `OK`.
+  - `tests.test_qualitative_review_packet_tools` 3건 `OK`.
+  - v66 단건: `10190186` stale demotion flag 없음.
+  - v67 `generic_common_surface_current_hold19_input.jsonl` 19건 재실행: completed `19`, failed `0`, pending `0`, after-review `ACCEPT=7`, `HOLD=12`, `REJECT=0`.
+- 남은 작업:
+  - `generic_common_surface` 잔여 `HOLD=12`를 별도 pattern으로 분리.
+  - post-fix random baseline과 P0/P1 high-risk regression 전까지 semantic gate는 `NO-GO / REVIEW-LOCKED` 유지.
+
+## IMP-20260527-033 - BatchContextMemory generic inline alias 반복 승격 차단
+
+- 상태: targeted fix 검증 완료, 확대 평가 대기
+- 우선순위: P1
+- 배경:
+  - `v67_generic_common_surface_hold19_p36_20260527`의 `post_id=11113480` 로그에서 `카드아카 -> 카드 아카데미 1타강사`가 `일반명사형 약칭 즉시등록 보류`로 찍힌 직후, 같은 seed가 반복되어 `count=2`로 `BatchMem` resolved memory에 승격됐다.
+  - 해당 post의 최종 작품 판정은 제목의 회차 언급과 본문/댓글의 캐릭터 맥락 때문에 맞을 가능성이 높지만, 보류 판정 seed가 반복만으로 resolved memory가 되는 경로는 slang DB/BatchMem 오염 위험이다.
+- 근거:
+  - `logs/expert_run_20260527_000930_077939_W12.log`
+  - `src/llm_batch/batch_context.py`의 `register_abbreviation` pending count 2 승격 경로
+  - `tests/test_batch_context.py`에는 단일 저근거 seed pending 검증은 있으나 반복 hit 비승격 검증이 부족함
+- 조치 방향:
+  - `generic_inline_alias`와 저근거 seed는 structured slang support가 없으면 pending count 2만으로 resolved memory에 승격하지 못하게 했다.
+  - 반복 pending hit 비승격 테스트를 추가했다.
+  - positive structured slang support 승격 테스트는 유지했다.
+- 검증:
+  - `tests.test_batch_context` 7건 `OK`.
+  - v72 targeted run id `20260527_094306_107869`: completed `1`, failed `0`, pending `0`, search health `36/36 OK`.
+  - `11113480`: final `카드 아카데미 1타강사` resolved 유지.
+  - worker log: `BatchMem: 약칭 승격 '카드아카'` 없음, `약칭 승격 보류 ... reason=generic_inline_alias` 확인.
+  - after-review: `HOLD=1`, `HOLD->HOLD`.
+- 남은 작업:
+  - broader `generic_common_surface`와 `slang_db_review` bucket에서 같은 차단이 과차단/미차단 없이 동작하는지 P0/P1 regression 확인.
+  - after-review `HOLD`가 유지된 이유는 generic bridge broader risk이므로 별도 re_judge queue로 유지.
+
+## IMP-20260527-034 - review labeler direct evidence/degraded action routing 보정
+
+- 상태: targeted tooling fix 검증 완료, 확대 적용 대기
+- 우선순위: P1
+- 배경:
+  - `generic_parenthetical_bridge` bucket은 공식 상세 근거가 있는 row도 대부분 `HOLD/re_judge`로 보내 action queue가 부정확했다.
+  - `degraded_queries: 0` 필드명 안의 `degraded` 문자열만 보고 `search_degraded=true`가 되는 버그가 있었다.
+- 조치:
+  - `degraded_queries` 값이 0이면 필드명만으로 search degraded를 true로 만들지 않도록 수정.
+  - 직접 작품 근거 조건을 `official_title_evidence=true`, `official_urls>0`, `title_in_post=true`, `source_tier=official_detail|novel_platform`로 고정.
+  - 직접 작품 근거가 있고 degraded가 없으면 `ACCEPT/no_action`, degraded가 있으면 `HOLD/re_search`, generic bridge 자체 문제는 `HOLD/re_judge`로 분리.
+- 검증:
+  - `tests.test_qualitative_review_packet_tools` 6건 `OK`.
+  - v72 단건 after-review 재생성: `HOLD=1`, action `re_search=1`.
+  - v67 generic_common_surface 19건 재적용: `ACCEPT=7`, `HOLD=12`, actions `no_action=7`, `re_search=7`, `re_judge=5`.
+- 남은 작업:
+  - 전체 Round 3 current closure/action queue에 새 라벨러를 적용할지 별도 manifest로 비교한다.
+  - 라벨 count를 올리는 목적이 아니라 action queue 분해 정확도를 높이는 방향으로만 사용한다.
+
+## IMP-20260530-035 - VLM/OCR 직접 작품 표면 rescue 및 official URL 제목 불일치 차단
+
+- 상태: targeted fix 검증 완료, 확대 평가 대기
+- 우선순위: P1
+- 배경:
+  - `post_id=11718117`은 본문 이미지에 KakaoPage 웹소설 스크린샷이 있고 VLM/OCR이 `아카데미의 피해자`, `양파랑`, `테세우스의 배`를 직접 읽었다.
+  - v272에서는 작품명은 맞게 잡았지만 다른 작품 KakaoPage URL이 `primary_work.heretic_url`로 남는 URL/evidence sync 버그가 있었다.
+  - v273에서는 URL 오염은 막았지만 VLM/OCR 직접 작품명을 `noise`로 떨어뜨려, 이미지 기반 작품 장면 반응을 비관련으로 오판했다.
+  - v274에서는 direct image rescue가 탔지만 schema에 없는 `anchor_type=image_ocr` 때문에 처리 오류가 발생했다.
+- 조치:
+  - official URL 후보의 대표 제목이 선택 작품명과 다르면 `url_title_mismatch`로 후보를 기각한다.
+  - 최종 reference graph 동결 시에도 제목 불일치 URL을 `primary_work`와 `title_candidates`에서 제거한다.
+  - VLM/OCR `explicit_text|cover_title`, `title_role=work_title`, `promotion_eligible=true`인 단일 직접 작품 표면은 direct image title candidate로 승격한다.
+  - direct image title candidate가 있으면 unresolved external-IP 차단기가 이를 `noise`로 떨어뜨리지 못하게 한다.
+  - direct image rescue의 anchor는 schema 허용값인 `image`로 기록한다.
+- 검증:
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py src\llm_batch\models.py tests\test_agentic_pipeline_rework.py`: 통과.
+  - focused unittest 4건 `OK`.
+  - v275 단건 run id `20260530_130539_724278`: completed `1`, failed `0`, pending `0`, requested parallel `36`, effective parallel `1`, VLM/OCR `used=True`, `fetch=1/1`.
+  - `11718117`: `is_relevant=true`, `discussion_type=review`, `official_title=아카데미의 피해자`, `heretic_url=null`, `title_resolution_state=resolved`, flags `direct_image_explicit_title_rescued`.
+- 산출물:
+  - `qualitative_review/20260528_141006_620986/v275_post11718117_direct_image_rescue_review_ko.md`
+  - `qualitative_review/20260528_141006_620986/v275_post11718117_direct_image_rescue_result.json`
+- 남은 작업:
+  - official detail URL은 아직 `Missing` evidence이므로 URL 품질은 title 품질과 분리 보고한다.
+  - VLM/OCR direct image bucket에서 같은 패턴의 P0/P1 regression을 추가 확인한다.
+  - 10만 건 semantic gate는 post-fix random baseline과 high-risk expansion 전까지 계속 `NO-GO / REVIEW-LOCKED` 유지.
+
+## IMP-20260530-036 - 최종 의미 재독해와 공식 URL 시놉시스 오판 보정
+
+- 상태: targeted fix 검증 완료, 확대 평가 대기
+- 우선순위: P0/P1
+- 배경:
+  - 해당 검증 입력에서는 표면 표현이 작품명 후보가 아니라 오타/축약성 자연어 감상으로 읽히는지 재해독해야 했다. 검색어/별칭 기계 매칭으로 작품명을 되살리면 안 된다.
+  - v281에서 `11718097`은 `망겜의 힐러` 제목은 맞게 유지됐지만, 문피아 모바일 상세 URL fetch 결과의 대표 제목이 시놉시스 문장으로 잡혀 공식 URL이 제거됐다.
+  - VLM/Vision이 캐릭터/장면 보조 정보만 준 경우 reason에서 제목 확정 근거처럼 쓰면 안 된다.
+- 조치:
+  - high-risk final output에 `final_semantic_reread`를 적용해 원문 title/body/comment, surface paraphrase, discourse warning, evidence를 한 번 더 읽고 `search_only/context_only` 승격을 낮춘다.
+  - 특정 표면어, post id, 오답 문자열을 하드코딩하지 않고 `surface_paraphrase`, `semantic_seed_review`, evidence strength, direct anchor 유무로 판정한다.
+  - 같은 공식 상세 URL의 검색 결과 제목이 최종 작품명을 직접 지지하면, fetch/page analyzer가 시놉시스나 플랫폼 브랜딩을 대표 제목으로 잡아도 URL mismatch로 제거하지 않는다.
+  - VLM이 visual-only 보조 정보만 준 경우 reason에 "최종 제목 확정 근거로 사용하지 않았다"고 명시한다.
+- 검증:
+  - `tests.test_final_semantic_reread_gate` 5건 `OK`.
+  - `py_compile src\llm_batch\agentic_pipeline.py tests\test_final_semantic_reread_gate.py`: 통과.
+  - v282 run id `20260530_145554_611788`: completed `4`, failed `0`, pending `0`, requested parallel `36`, effective parallel `4`, VLM/OCR `true`, small run shard lifecycle blocked `true`.
+  - `11718091`: `is_relevant=false`, `official_title=null`, `title_resolution_state=context_only`, reason에 `23센줄 -> 23세인 줄` 공개.
+  - `11718097`: `official_title=망겜의 힐러`, `heretic_url=https://m.munpia.com/novel/detail/328421`, flags `official_detail_url_repaired_from_search`.
+  - `11718099`: `official_title=빌어먹을 환생`, OCR title conflict flag 유지, 문피아 URL 유지.
+- 산출물:
+  - `qualitative_review/20260528_141006_620986/v282_official_url_synopsis_mismatch_guard_ko.md`
+- 추가 도구화:
+  - `tools/build_qualitative_round2_review.py`에 `final_semantic_reread_missing_for_semantic_seed`, `final_semantic_reread_reviewed`, `official_url_synopsis_or_branding_mismatch` bucket을 추가했다.
+  - review packet의 `evidence_counts`, `result_public_fields`, `final_semantic_reread_fields`에 해당 공개 필드를 남긴다.
+  - 문피아 모바일 상세 `m.munpia.com/novel/detail/<id>`와 `novel.munpia.com/<id>`를 review tool에서도 작품 상세 URL로 센다.
+- 추가 검증:
+  - `tests.test_qualitative_review_packet_tools` 32건 `OK`.
+  - v283 v282 bucket check: `11718097`이 `official_url_synopsis_or_branding_mismatch` bucket으로 선택되고 `ACCEPT/no_action` 처리.
+  - v283 original partial bucket check: 원본 partial `80`행에서는 새 final semantic reread/URL synopsis bucket 후보 `0`건. 이는 v282 이전 partial 결과라 새 flag가 없는 한계로 기록한다.
+- 남은 작업:
+  - final semantic reread의 과차단/미차단을 post-fix P0/P1 regression bucket으로 확대 확인한다.
+  - fetch 대표 제목과 검색 제목이 충돌하는 공식 URL 케이스를 `official_url_synopsis_or_branding_mismatch` bucket으로 추가 표본화한다.
+  - 10만 건 semantic gate는 계속 `NO-GO / REVIEW-LOCKED` 유지.
+
+## IMP-20260601-261 - Decoder KNOWN_ABBREVIATIONS 미검증 rescue 차단
+
+- 상태: targeted fix 검증 완료, hardcoded alias gate 계속 REVIEW
+- 우선순위: P0/P1
+- 배경:
+  - Codex `spawn_agent` 병렬 감사에서 `KNOWN_ABBREVIATIONS` registry hit가 검색/공식 근거 없이 `known_abbreviation_unverified` 0.80 rescue 후보로 승격될 수 있음이 확인됐다.
+  - 등록 약칭이라는 이유로 LLM의 공개 필드상 `비제목/비작품` 판단과 트로프 체크도 우회할 수 있었다.
+  - 이는 특정 alias를 더 하드코딩해서 해결할 문제가 아니라, registry hit를 독립 evidence로 쓰는 구조 문제다.
+- 조치:
+  - Decoder `_rescue_null_title`에서 등록 약칭 direct rescue 전에 검색 결과 또는 공식 제목 근거를 확인한다.
+  - 근거 없는 등록 약칭은 hint-only로 로그만 남기고 `best_title`, `best_score`, `known_abbreviation_unverified`를 세우지 않는다.
+  - LLM 비제목 판단과 트로프 체크 우회는 `등록 약칭 + 독립 근거 있음`일 때만 허용한다.
+- 검증:
+  - `tests.test_decoder_known_abbreviation_guard` 추가.
+  - focused unittest 29건 `OK`.
+  - `src\llm_batch\experts\decoder.py`, `tests\test_decoder_known_abbreviation_guard.py` py_compile 통과.
+  - v477 hardcoded alias risk audit 생성.
+- 산출물:
+  - `qualitative_review/20260528_141006_620986/v477_decoder_known_abbrev_unverified_guard_review_ko.md`
+  - `qualitative_review/20260528_141006_620986/v477_hardcoded_alias_risk_audit_after_decoder_known_abbrev_unverified_guard_ko.md`
+  - `qualitative_review/20260528_141006_620986/v477_goal_action_queue_after_decoder_known_abbrev_unverified_guard_ko.md`
+- 남은 작업:
+  - Decoder `_init_suspected_titles`, high-fit interpretation, weak thematic guard의 registry-only 예외를 점검한다.
+  - Agentic `_try_promote_best_candidate`, `_has_title_abbrev_stability_signal`, `_known_title_abbreviation_context_locks_title`에 독립 work anchor 조건을 적용한다.
+  - Arbiter multi_work/meme/low-confidence guard exception이 registry-only로 열리지 않게 한다.
+  - v477 기준 `hardcoded_alias_gate=REVIEW`, positive blocker `2`이므로 semantic approval은 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260601-262 - Decoder 등록 약칭 suspected/best_match 예외 차단
+
+- 상태: targeted fix 검증 완료, Agentic/Arbiter 확대 대기
+- 우선순위: P0/P1
+- 배경:
+  - v477에서 미검증 rescue는 차단했지만, Decoder 내부 `_resolved_mappings`, high-fit interpretation, weak thematic guard가 여전히 `KNOWN_ABBREVIATIONS` registry pair를 독립 근거처럼 사용할 수 있었다.
+  - 이 경로는 LLM prompt hint나 registry provenance가 suspected title, `best_match`, guard exception으로 재상승하는 구조 리스크다.
+- 조치:
+  - `_has_known_abbreviation_independent_anchor()` helper를 추가해 registry pair와 독립 evidence를 분리했다.
+  - `_init_suspected_titles`는 `known_match` 단독으로 `0.92` suspected title을 만들지 않는다.
+  - high-fit `novel_title` interpretation은 registry pair만으로 낮은 약칭 정합성 차단을 우회하지 않는다.
+  - weak thematic guard는 `KNOWN_ABBREVIATIONS` pair 자체를 explicit alias support로 보지 않는다.
+- 검증:
+  - `tests.test_decoder_known_abbreviation_guard` 9건 `OK`.
+  - `src\llm_batch\experts\decoder.py`, `tests\test_decoder_known_abbreviation_guard.py` py_compile 통과.
+  - v478 hardcoded alias risk audit 생성.
+- 산출물:
+  - `qualitative_review/20260528_141006_620986/v478_decoder_known_abbrev_suspected_guard_review_ko.md`
+  - `qualitative_review/20260528_141006_620986/v478_hardcoded_alias_risk_audit_after_decoder_known_abbrev_suspected_guard_ko.md`
+  - `qualitative_review/20260528_141006_620986/v478_goal_action_queue_after_decoder_known_abbrev_suspected_guard_ko.md`
+- 남은 작업:
+  - Agentic direct `High`, stability/lock에 같은 anchor 조건을 적용한다.
+  - Arbiter `KNOWN_ABBREVIATIONS` raw exception을 제거하거나 post/official/verified relation anchor를 요구한다.
+  - v478 기준 `hardcoded_alias_gate=REVIEW`, positive blocker `2`이므로 semantic approval은 계속 `REVIEW-LOCKED`다.
+
+## IMP-20260602-263 - v523/v525 issue-focused seed closure 잔존 이슈
+
+- 상태: targeted issue triage 진행 중, v525 P1 reason/discussion_type closure 완료
+- 우선순위: P0/P1
+- 범위:
+  - 이번 항목은 10만 전체 semantic approval이 아니라, 원본 partial run에서 간추린 issue seed의 closure를 추적한다.
+  - v523은 `v422_search_only_blocked_intent_followup_rerun_combined_input.jsonl` 11건 follow-up에 대한 현재 코드 재검증이다.
+- 검증:
+  - run id `20260602_002014_213782`
+  - completed/flushed/pending/failed `11/11/0/0`
+  - requested/effective parallel `36/11`
+  - VLM/OCR ready `true`
+  - Docker lifecycle auto up/recreate `false`
+  - reason hygiene hit files `0`
+- 회복:
+  - `11718080` no-work/social lament의 title 과확정이 재발하지 않았다.
+  - `11718097`과 `11718098`은 약칭/공식 근거 기반 resolved title이 회복됐다.
+- 잔존 이슈:
+  - P0 `11718083`: memory query/unresolved work request가 `PickvelIdentity subtype` validation error로 깨진다. 2026-06-02 v524에서 코드 보정 및 live rerun으로 닫힘.
+  - P1 `11718118`: TS trope discussion이 `noise` 및 표면 재해독 reason으로 잘못 설명됐다. 2026-06-02 v525에서 `trope_discussion / genre_trope_discussion / adjacent_relevant`로 닫힘.
+  - P1 `11718091`: `23센줄` 표면 재해독과 character-context-only/anchor 부족 설명이 분리되지 않았다. 2026-06-02 v525에서 `undecodable_reference / unresolved_work / context_only`로 닫힘.
+  - P1 `11718069`, `11718076`: browser visual artifact가 아직 packet에 연결되지 않았다.
+- 브라우저 차단:
+  - Codex in-app Browser 제어는 `node_repl kernel exited unexpectedly`.
+  - fallback Playwright MCP는 `Target page, context or browser has been closed`.
+  - repo venv에는 `playwright`, `selenium`, `requests`, `bs4`, `PIL`이 없어 즉시 shell screenshot fallback 불가.
+- 산출물:
+  - `qualitative_review/20260528_141006_620986/v523_issue_focused_scope_and_review_ko.md`
+  - `qualitative_review/20260528_141006_620986/v523_issue_focused_action_queue_ko.md`
+  - `qualitative_review/20260528_141006_620986/v523_v422_after_review_labels.jsonl`
+  - `qualitative_review/20260528_141006_620986/v524_post11718083_validation_fallback_review_ko.md`
+  - `qualitative_review/20260528_141006_620986/v524_issue_focused_action_queue_ko.md`
+  - `qualitative_review/20260528_141006_620986/v525_reason_discussion_type_rejudge_review_ko.md`
+  - `qualitative_review/20260528_141006_620986/v525_issue_focused_action_queue_ko.md`
+- v525 검증:
+  - run id `20260602_011626_306351`
+  - completed/flushed/pending/failed `2/2/0/0`
+  - requested/effective parallel `36/2`
+  - Docker lifecycle auto up/recreate 없음
+  - runtime audit `GO`, semantic coverage sanity `GO`, reason hygiene hit files `0`
+  - `tests.test_title_lead_search_inferred_guard` 27건 `OK`
+
+## IMP-20260620-264 - recall gate title-anchor 보존 및 verifier runaway cap
+
+- 상태: targeted/suspect/patch-target/integrated 55-row runtime 검증 완료, semantic review locked
+- 우선순위: P0/P1
+- 배경:
+  - C38/C40에서 저특이 title seed pruning, filtered official detail reason field mismatch, unavailable/stale representative title handling 때문에 공식 검색 근거가 있어도 resolved title/URL이 사라질 수 있었다.
+  - D4 integrated VLM/OCR run에서는 verifier가 JSON 이후 과잉 생성으로 `acc_chars=121,531`까지 커져 long-tail runtime risk가 확인됐다.
+- 조치:
+  - title/body compact anchor가 있는 official probe/search seed를 저특이 pruning에서 보존한다.
+  - filtered search preview의 `reason`, `filter_reason`, `_filter_reason`을 모두 official detail support 판정에 사용한다.
+  - unavailable/deleted fetch라도 같은 URL의 정확 검색 제목이 식별 작품명을 지지하면 stale 대표 제목 mismatch만으로 URL을 제거하지 않는다.
+  - Gatekeeper/Decoder/Verifier/Verifier relation judge `max_tokens`를 bounded default로 제한한다.
+  - packet-local direct official detail URL은 same-platform search repair보다 우선하도록 final URL 선택과 candidate URL sync를 보강했다.
+  - `KNOWN_TITLE_ABBREVIATIONS` update-question anchor는 semantic no-work seed만으로 차단하지 않되, recommendation request와 bare/no-work alias는 계속 차단한다.
+- 검증:
+  - C41 `--parallel 16` targeted canary 완료: `requested/effective=16/7`, completed/failed/pending `7/0/0`.
+  - D5 `--parallel 16`, VLM/OCR on suspect subset 완료: `requested/effective=16/5`, completed/pending/failed `5/0/0`, VLM/OCR semantic gate `READY`.
+  - D5 로그: verifier `max_tokens=8192`, relation judge `max_tokens=2048`, 최대 `acc_chars=6,363`.
+  - 관련 broad unittest `111`건 `OK`.
+  - D10 `--parallel 16`, VLM/OCR on, patch target 8건 완료: run meta `requested/effective=16/8`, completed/pending/failed `8/0/0`, VLM/OCR semantic gate `READY`.
+  - D10에서 `11682781`은 direct packet URL `https://novelpia.com/novel/405193` 유지, `11652175`는 `괴담 호텔 탈출기` / `https://novelpia.com/novel/102155`로 회수.
+  - 추가 targeted unittest 8건 `OK`, 관련 `py_compile` 통과.
+  - D11 `--parallel 16`, VLM/OCR on, 55-row integrated canary 완료: run meta `requested/effective=16/16`, completed/flushed/pending/failed `55/55/0/0`, `large_run_complete=true`, search health `16/16 OK`, VLM/OCR semantic gate `READY`.
+  - D11 acceptance pin: B precision `11661847`/`11657013`/`11666700` hold-or-unresolved, B boundary `11648980`/`11650585`/`11682781` resolved, C positive `11652175`/`11661853`/`11677911` resolved, C negative `11687635`/`11695607`/`11705276`/`11665081` hold 계열 유지.
+- 산출물:
+  - `out\recall_gate_canary\trackC_blocked7_C41_unavailable_exact_20260619_225712.json`
+  - `out\recall_gate_canary\integrated_D4_vlmocr_16_20260619_230720.json`
+  - `out\recall_gate_canary\verifier_cap_suspects_D5_20260619_235000.json`
+  - `out\recall_gate_canary\patch_targets_D10_vlmocr16_20260620_0203.json`
+  - `out\recall_gate_canary\integrated_D11_vlmocr16_20260620_current.json`
+  - `out\recall_gate_canary\integrated_D11_vlmocr16_20260620_current_summary.json`
+  - `logs\expert_run_20260619_235147_169107.log`
+  - `logs\expert_run_20260620_020258_749960.log`
+  - `logs\expert_run_20260620_022104_296011.log`
+- 남은 작업:
+  - D11은 55-row integrated runtime과 B/C target acceptance 근거이나 full scan approval 근거가 아니다.
+  - 잔여 품질 후보 `11657008` 플랫폼명 title, `11698889` OCR typo title, `11661893` wrong-work title은 별도 P1 개선 큐로 다룬다.
+  - semantic approval은 random/high-risk expansion 전까지 `REVIEW-LOCKED / NO-GO`를 유지한다.
+
+## IMP-20260622-265 - completed779 Loop 2 direct fallback health/candidate-url hygiene canary
+
+- 상태: targeted Loop 2 canary/compare 완료, semantic review locked
+- 우선순위: P0/P1
+- 범위:
+  - completed779 전체 approval이 아니라 Loop 1 post-fix-adjusted active queue `25`건 개선 루프다.
+  - deterministic full-post aggregate와 native-web/Loop 2 queue aggregate를 섞지 않는다.
+- 배경:
+  - Loop 2 active queue는 `still_under_resolved_or_noise=16`, `title_or_url_still_mismatched=9`였다.
+  - 정상 Docker/SearXNG shard가 없어서 direct Naver/Bing fallback을 degraded-provider canary evidence로 사용해야 했다.
+  - 기존 health client는 `/readyz status=ok`여도 `searxng=false`면 실패해 direct fallback canary를 시작하지 못했다.
+- 조치:
+  - `src/llm_batch/mcp_bridge/server.py`: `MCP_DIRECT_SEARCH_FALLBACK_READYZ_OK=1`이 명시된 canary에서만 direct fallback을 `/readyz` ready provider로 노출했다.
+  - `src/llm_batch/search/client.py`: readyz `status=ok`와 `searxng/headless_search/direct_search_fallback` 중 하나를 provider로 인정하도록 health gate를 보강했다.
+  - `tools/compare_completed779_improvement.py`: remaining queue Markdown writer(`--out-queue-md`)를 추가했다.
+  - bounded decoder env를 canary에 사용해 stream 폭주 run을 재실행 완료했다.
+- 검증:
+  - text/url/comment result `out\expert_result_20260622_201044_448457.json`, rows `8/8`.
+  - image/OCR result `out\expert_result_20260622_201630_167085.json`, rows `17/17`, VLM/OCR Semantic Gate `READY`.
+  - combined compare `out\completed779_improvement_goal_20260622\compare\reimprovement_loop2_combined_compare.json`, rows `25/25`.
+  - movement: `candidate_or_human_review_preserved=7`, `resolved_expected_title=1`, `url_lint_preserved=9`, `still_under_resolved_or_noise=8`.
+  - focused suite `204 tests OK`, 관련 `py_compile` 통과.
+- control audit:
+  - active `garbage_title_after=0`.
+  - `11694064`는 bad pipeline title로 재확정되지 않았다.
+  - Loop 1 `wrong_work=9`는 bad pipeline title로 회귀하지 않았다.
+- 산출물:
+  - `out\completed779_improvement_goal_20260622\inputs\reimprovement_loop2_text_url_comment.jsonl`
+  - `out\completed779_improvement_goal_20260622\inputs\reimprovement_loop2_image_ocr.jsonl`
+  - `out\completed779_improvement_goal_20260622\compare\reimprovement_loop2_text_compare.json`
+  - `out\completed779_improvement_goal_20260622\compare\reimprovement_loop2_image_ocr_compare.json`
+  - `out\completed779_improvement_goal_20260622\compare\reimprovement_loop2_combined_result.json`
+  - `out\completed779_improvement_goal_20260622\compare\reimprovement_loop2_combined_compare.json`
+  - `out\completed779_improvement_goal_20260622\reimprovement_loop2_queue.json`
+  - `out\completed779_improvement_goal_20260622\reimprovement_loop2_queue_ko.md`
+- 남은 작업:
+  - remaining queue `8`건은 모두 `still_under_resolved_or_noise`다.
+  - 다음 루프는 comment answer, short alias, OCR/title image, character/setting cluster, recommendation candidate를 candidate ledger/HOLD/human_review로 더 보존하는 방향이어야 한다.
+  - full scan approval은 계속 `false`, semantic quality는 `REVIEW-LOCKED`다.
+
+## IMP-20260622-266 - completed779 Hermes Continuous Loop 운영 계약
+
+- 상태: implemented
+- 우선순위: P0/P1
+- 범위:
+  - completed779 Loop 2 remaining queue `8`건부터 시작해, queue가 빌 때까지 또는 모든 잔여 row가 명시 HOLD/human_review/INFO_MISSING/quarantine/no_generalizable_fix_left가 될 때까지 반복하는 운영 계약이다.
+  - 이 항목은 full scan approval이 아니라 개선 loop orchestration 개선이다.
+- 배경:
+  - Loop 1/Loop 2는 각각 목표를 끝내고 새 prompt를 다시 작성하는 방식이어서, 남은 실패가 있을 때 자동으로 다음 loop를 이어가는 계약이 약했다.
+  - 사용자 요구는 단발 개선이 아니라 다양한 전문가, 다양한 모델, 다양한 도구 호출을 이용하는 Hermes형 agentic 처리다.
+- 조치:
+  - `goal.md` 맨 위에 Hermes Continuous active contract를 추가했다.
+  - `docs/devs/COMPLETED779_HERMES_CONTINUOUS_GOAL_PROMPT.md`를 새 copy-paste prompt로 추가했다.
+  - Council role을 7축으로 확장했다: Candidate/Comment, OCR/Visual, Source/URL, Search/Web, Code Hook, Prompt/Orchestration, Verification/Docs.
+  - 모델 다양성 및 도구 다양성 규칙을 명시했다.
+  - completion 기준을 queue empty 또는 row-level HOLD/human_review/INFO_MISSING/quarantine/no_generalizable_fix_left로 고정했다.
+  - `unresolved_matchable`을 안전한 terminal/movement taxonomy에 추가해 prompt, goal, checklist의 stop 조건을 맞췄다.
+  - active 8-row queue의 `suspected_code_hook`, `proposed_next_fix`, `required_test`를 채워 다음 loop가 수동 재해석 없이 시작되도록 했다.
+- 검증:
+  - active queue `out\completed779_improvement_goal_20260622\reimprovement_loop2_queue.json` rows `8` 확인.
+  - 현재 prompt/docs contract 수준 변경이며, 코드/canary 개선은 다음 Hermes Loop 3에서 실행한다.
+  - `git diff --check`는 문서 patch 범위에서 LF/CRLF warning만 출력했다.
+- 남은 작업:
+  - Hermes Loop 3에서 subagent fan-out, generalized fix, targeted canary, compare, next queue를 실제 실행한다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
+
+## IMP-20260622-267 - completed779 source-correctness refresh 정상 shard canary
+
+- 상태: targeted refresh completed, residual expansion needed
+- 우선순위: P0/P1
+- 범위:
+  - completed779 전체 approval이 아니라 source-correctness refresh seed `39`건의 정상 Docker/SearXNG shard 실행과 compare다.
+  - Hermes Loop 4의 no-search candidate-preservation evidence와 분리한다.
+- 배경:
+  - Loop 4에서는 local MCP shards가 connection refused였고, closed 5 rows는 search 없는 candidate-preservation 증거였다.
+  - source/url correctness, wrong_work, garbage_title, reason_evidence_mismatch, OCR explicit title, character/setting cluster는 정상 search shard로 재확인이 필요했다.
+- 조치:
+  - Docker Desktop을 기동하고 `tools/warp_shards.py up --count 2`로 shard `3333/3334`를 복구했다.
+  - `tools/audit_search_shards.py`로 `ok=2/2`, direct fallback `false`를 확인했다.
+  - prepared source-correctness input을 text/url/comment `14`건과 image/OCR `25`건으로 분리 실행했다.
+  - text/image 결과를 `source_correctness_refresh_combined_result.json`으로 결합하고 compare/next queue를 생성했다.
+- 검증:
+  - text/url/comment result `out\completed779_improvement_goal_20260622\source_correctness_refresh_20260622\canary\source_correctness_refresh_text_result.json`, completed/flushed/pending/failed `14/14/0/0`.
+  - image/OCR result `out\completed779_improvement_goal_20260622\source_correctness_refresh_20260622\canary\source_correctness_refresh_image_ocr_result.json`, completed/flushed/pending/failed `25/25/0/0`, VLM/OCR Semantic Gate `READY`.
+  - combined result `out\completed779_improvement_goal_20260622\source_correctness_refresh_20260622\canary\source_correctness_refresh_combined_result.json`, rows `39`, duplicate `0`.
+  - compare `out\completed779_improvement_goal_20260622\source_correctness_refresh_20260622\compare\source_correctness_refresh_compare.json`, rows `39/39`.
+  - movement: `resolved_expected_title_and_url=6`, `review=12`, `url_lint_preserved=21`.
+  - next queue `out\completed779_improvement_goal_20260622\source_correctness_refresh_20260622\source_correctness_refresh_next_queue.json`, rows `0`.
+- control audit:
+  - `11694064`: bad pipeline title `무협 게임에 빙의했다...스킵충이다`는 재확정되지 않았지만 `판초우의의 마법사` recall은 미회수.
+  - `11710033`: `판초법사` alias는 title null / promotion blocked로 남음.
+  - wrong_work controls는 bad pipeline title로 회귀하지 않았다.
+- 잔여 이슈:
+  - source-local alias recall: `판초법사 -> 판초우의의 마법사`.
+  - character/setting cluster recall: `괴담 호텔 탈출기` / `압소르망` / `104호` / `반지`.
+  - OCR explicit title과 search-absent/URL-null evidence 분리.
+  - classic/cross-domain OCR surface가 웹소설 title로 오염되는 경로 차단.
+  - source-local alias conflict guard: expected candidate와 after primary가 갈라질 때 final promotion보다 HOLD/lint/candidate conflict 우선.
+- 남은 작업:
+  - 기존 39건 단순 재실행이 아니라 `review=12`, `url_lint_preserved=21`, native-web unused non-ACCEPT에서 새 high-risk expansion queue를 만든다.
+  - semantic approval은 계속 `REVIEW-LOCKED`, full scan approval은 `false`.
+
+## IMP-20260623-268 - Loop 5 source-local alias conflict final-promotion guard
+
+- 상태: targeted slice implemented, upstream orchestration still open
+- 우선순위: P0
+- 범위:
+  - completed779 Hermes Loop 5 residual 중 `11698880`류 source/url hygiene seed에서 expected title과 runtime after title이 다른 작품으로 갈라지는 경우.
+  - post_id/title 하드코딩 없이 judge-seed scoped guard와 compare taxonomy를 보강했다.
+- 배경:
+  - `11698880`은 expected `아카데미 생존 갤러리`인데, runtime 내부 검색/Verifier/Arbiter가 body-side `가챠펑크/세드릭`을 `가챠 중독자의 퓨전펑크 생활`로 확정했다.
+  - 기존 compare는 lint/hold가 있으면 `url_lint_preserved`로 닫아, expected-title conflict를 residual queue에 올리지 못했다.
+- 조치:
+  - `candidate_audit.apply_judge_seed_hygiene_expected_title_guard` 추가:
+    - seed group `hygiene`에서 `independent_official_title`과 current official title이 다르면 official title/url/confidence를 clear.
+    - `blocked_official_title`, `blocked_official_title_url`, `expected_official_title_conflict`, `promotion_blocked_reasons`, `output_consistency_lint`를 남김.
+    - `title_resolution_state=unresolved_matchable`, `title_resolution_allowed=false`, `is_resolved_work_discussion=false`로 되돌림.
+  - `expert_main.py` postprocess audit chain에 guard를 연결.
+  - `compare_completed779_improvement.py`:
+    - source/url hygiene expected-title mismatch를 `title_or_url_still_mismatched`로 분리.
+    - OCR close variant title match와 embedded `_judge_seed` unwrapping을 추가.
+- 검증:
+  - `py_compile` pass: `expert_main.py`, `src\llm_batch\candidate_audit.py`, `tools\compare_completed779_improvement.py`.
+  - first focused tests: `tests.test_candidate_audit tests.test_completed779_compare`, `45 tests OK`.
+  - broadened focused suite: `tests.test_candidate_audit tests.test_completed779_compare tests.test_judge_seed_registry tests.test_title_lead_search_inferred_guard tests.test_agentic_pipeline_alias_contract tests.test_final_semantic_reread_gate tests.test_expert_main_comment_metadata tests.test_expert_main_input_loader`, `205 tests OK`.
+  - `git diff --check`: exit `0`, LF->CRLF warnings only.
+  - Loop 5 combined compare postfix1:
+    - `title_or_url_still_mismatched=1`, `url_lint_preserved=7`, next queue rows `5`.
+  - `11698880` single-row canary:
+    - result `out\completed779_improvement_goal_20260622\canary\hermes_loop5_postfix1_11698880_image_ocr_result.json`
+    - final public title/url `None/None`, blocked title `가챠 중독자의 퓨전펑크 생활`, expected conflict `아카데미 생존 갤러리`.
+    - compare `url_lint_preserved=1`.
+- 남은 작업:
+  - upstream root cause는 아직 열려 있다. `가챠펑크/세드릭` body-side candidate가 title-lead alias보다 먼저 Arbiter lock 되는 경로를 primary selection 전 `multi_candidate_hold`로 분리해야 한다.
+  - `11710039`, `11705237`, `11708449`, `11698868`, plus postfix queue `11698880`을 다음 residual loop 입력에 포함한다.
+  - semantic quality `REVIEW-LOCKED`, full scan approval `false` 유지.
+
+## IMP-20260623-269 - Loop 6 candidate-surface preservation closure
+
+- 상태: patched / targeted canary verified / focused tests verified / queue rows 0 / semantic gate REVIEW-LOCKED
+- 우선순위: P0
+- 범위:
+  - Loop 5 hard residual/postfix rows 중 title/url promotion은 위험하지만 후보 표면 자체가 비어 `hold_without_candidates`로 남는 케이스.
+  - 대상 패턴: entity mention, media-adaptation title surface, `TS)` short alias, image/character leading surface.
+- 배경:
+  - `11710039`은 `기계공주`/official detail evidence가 있었지만 author-meta guard로 title promotion은 막히고 candidate ledger가 빈 상태였다.
+  - `11705237`은 `월야환담 웹툰` direct surface가 nonwork/cross-media로 닫히며 expected title 후보가 사라졌다.
+  - `11698868`은 `TS) 방타스)` short alias가 trope/no-work로 닫혀 candidate가 비었다.
+  - `11708449`는 VLM/OCR visual-only + `담청` character/setting surface가 정식 제목으로는 부족하지만 HOLD 후보로는 보존되어야 했다.
+- 조치:
+  - `candidate_audit.py`:
+    - unresolved/hold 상태의 `entity_mentions` character/work/title surface를 candidate ledger에 보존.
+    - post title marker(`웹툰`, `소설`, `레진판` 등) 앞 표면을 candidate로 보존.
+    - `TS)` short alias 표면을 candidate로 보존.
+    - image/character context에서 제목 선두 surface를 candidate로 보존.
+    - resolved row는 신규 surface로 오염하지 않도록 차단.
+  - `expert_main.py`:
+    - candidate audit 전에 `apply_post_surface_candidate_hints(identity, post.title)` 호출.
+- 검증:
+  - `11710039`/`11705237` postfix2 canary:
+    - result `out\completed779_improvement_goal_20260622\canary\hermes_loop5_postfix2_entity_hold_text_result.json`
+    - compare `out\completed779_improvement_goal_20260622\compare\hermes_loop5_postfix2_entity_hold_compare.json`
+    - movement `candidate_or_human_review_preserved=2`
+  - `11705237` postfix3b canary:
+    - result `out\completed779_improvement_goal_20260622\canary\hermes_loop5_postfix3b_11705237_title_surface_result.json`
+    - candidate ledger contains `월야환담`
+  - `11698868` postfix4 canary:
+    - result `out\completed779_improvement_goal_20260622\canary\hermes_loop6_postfix4_11698868_text_result.json`
+    - candidate ledger contains `방타스`
+  - `11708449` postfix4 canary:
+    - result `out\completed779_improvement_goal_20260622\canary\hermes_loop6_postfix4_11708449_image_ocr_result.json`
+    - VLM/OCR gate `READY`, candidate ledger contains `담청`
+  - final queue:
+    - `out\completed779_improvement_goal_20260622\hermes_loop6_remaining_queue_postfix4.json`, rows `0`
+  - tests:
+    - postfix4 focused subset `tests.test_candidate_audit tests.test_completed779_compare`, `51 tests OK`
+    - broader focused suite before postfix4 final canaries, `209 tests OK`
+    - `git diff --check` pass with LF/CRLF warnings only
+- 남은 작업:
+  - `11698880` public guard는 닫혔지만 upstream title/body multi-candidate conflict는 broader orchestration research로 남긴다.
+  - 이번 closure는 targeted hard residual queue closure다. completed779 전체 semantic approval이 아니며 full scan approval은 계속 `false`다.
+
+## IMP-20260623-270 - Loop 7 character/setting cluster search probe and lead-token guard
+
+- 상태: partial implemented / focused tests verified / downstream guard open
+- 우선순위: P0
+- 범위:
+  - completed779 Hermes Loop 7 text/control row `11702087`에서 드러난 character/setting cluster recall 문제.
+  - post_id/title 하드코딩 없이 `semantic_seed_review` 조기 종료와 low-specific lead-token search pollution을 줄이는 generalized fix다.
+- 배경:
+  - `11702087`은 제목 선두 `그래서`가 search seed로 오염되고, `아리/가인/부등변/파이어오니파티` 같은 작품 내부 설정 cluster가 있음에도 `semantic_seed_review`가 no-search/noise로 조기 종료했다.
+  - 첫 단건 path에서는 `_context_to_output` early `flags` 미초기화로 `UnboundLocalError`도 발생했다.
+- 조치:
+  - `src/llm_batch/agentic_pipeline.py`: `_context_to_output` 초기에 `flags`를 초기화하고 `extended_identity["consistency_flags"]`에 merge.
+  - `src/llm_batch/experts/orchestrator.py`: dense internal work character/setting cluster는 `semantic_seed_review` 조기 종료를 우회해 search probe로 진행할 수 있게 함.
+  - `src/llm_batch/experts/orchestrator.py`: `그래서`, `그러니까`, `그럼`, `근데`, `대체`, `뭐임` 등 Korean connective/question lead token을 low-specificity seed로 분류.
+  - `src/llm_batch/experts/orchestrator.py`: low-specific lead token은 Phase34.5 reaction-tail augmentation으로 다시 추가하지 않게 함.
+  - `tests/test_title_lead_search_inferred_guard.py`: internal work cluster probe와 Korean connective lead-token guard regression 추가.
+- 검증:
+  - `py_compile` pass for changed agentic/orchestrator/test files.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard -v`, `67 tests OK`.
+  - `11702087` fix3 runtime log에서 `그래서` lead-token augmentation skip 후 `괴담 호텔 탈출기` character/search evidence와 official NovelPia URL evidence가 잡힘.
+- 남은 작업:
+  - relation judge/Jury가 explicit title bridge를 과하게 요구해 dense character/setting cluster를 title-null로 되돌리는 downstream guard가 남았다.
+  - character drift guard가 weak title anchor(`소원`)를 기준으로 `괴담 호텔 탈출기`를 drop하는 경로를 보정해야 한다.
+  - snippet title invalidation이 source-local character evidence를 반영하지 못하고 `괴담 호텔 탈출기`를 무효화하는 경로를 보정해야 한다.
+  - `multi_work_guard`가 question/list wording을 복수 작품 맥락으로 오탐하는 경로를 줄여야 한다.
+
+## IMP-20260623-271 - Loop 7 runtime blocker quarantine
+
+- 상태: open / blocker documented
+- 우선순위: P0
+- 범위:
+  - Loop 7 text/url/comment canary partial run의 ordered flush blocker.
+- 증거:
+  - first text run `20260623_022342_639179`: completed/flushed/pending/failed `12/11/1/0`, `ordered_flush_blocked=true`.
+  - resume run `20260623_024758_871942`: completed/flushed/pending/failed `2/0/2/0`, `ordered_flush_blocked=true`.
+  - partial combined rows `14`, missing text rows `11702087`, `11705239`.
+  - blocker report `out\completed779_improvement_goal_20260622\hermes_loop7_text_runtime_blockers_ko.md`.
+- 남은 작업:
+  - `11705239`는 broad parallel canary에 바로 재투입하지 않고 single-row runtime root cause 또는 explicit quarantine/resume command를 남긴다.
+  - `11702087` fix3는 semantic evidence까지 진행했으나 flush 전 kill됐으므로 downstream guard fix 후 single-row 재검증이 필요하다.
+- 게이트:
+  - runtime integrity는 partial evidence이며 complete가 아니다.
+  - semantic_quality `REVIEW-LOCKED`, full_scan_approval `false`.
+
+## IMP-20260623-272 - Loop 7 character/setting convergence downstream rescue
+
+- 상태: patched / targeted canary verified / focused tests verified / performance caveat open / semantic gate REVIEW-LOCKED
+- 우선순위: P0
+- 범위:
+  - completed779 Hermes Loop 7 text row `11702087`류: 원문에 정식 제목은 없지만 캐릭터/설정 cluster가 검색/전문가 심의에서 하나의 작품으로 강하게 수렴하는 경우.
+  - post_id/title 하드코딩 없이 character/setting convergence evidence를 downstream guard에 전달한다.
+- 배경:
+  - `11702087`은 `아리`, `가인`, `부등변`, `소원`, `유산`이 `괴담 호텔 탈출기`로 수렴했지만, relation/J1/multi-work/final reread guard가 explicit title alias bridge 부족을 이유로 title을 null 처리했다.
+  - fix8에서는 postprocess 내부 rescue가 성공했지만, `source_url_hygiene` seed bucket인데도 `garbage_title` disagreement가 precision demotion으로 적용되어 public title이 다시 null이 됐다.
+- 조치:
+  - `agentic_pipeline.py`:
+    - `_has_deliberated_character_setting_work_convergence`가 `character|setting` 같은 복합 reference type과 Arbiter raw/suspected title을 보게 보강.
+    - `multi_work_guard` deliberate-null path에서 Synth/Jury/search convergence가 있으면 cleared title을 release하고 official detail URL을 연결.
+    - canonical rescue, semantic no-work rescue, J1 verifier veto, final reread hold가 deliberated convergence note를 존중.
+    - Verifier official detail lock fast path를 추가해 동일 title+official URL의 heavy final correction을 빠르게 반환.
+  - `candidate_audit.py`:
+    - precision seed guard가 `seed_group == precision`일 때만 실행되도록 수정.
+    - `source_url_hygiene + garbage_title`은 expected-title conflict가 없으면 demote하지 않고 `judge_hygiene_seed_garbage_title` lint로 남김.
+  - tests:
+    - live-shape `11702087` context-to-output regression.
+    - source/url hygiene garbage-title bucket regression.
+    - Verifier official detail fast-path regression.
+- 검증:
+  - fix9 canary:
+    - result `out\completed779_improvement_goal_20260622\canary\hermes_loop7_text_single_11702087_fix9_result.json`
+    - log `logs\expert_run_20260623_044236_767318.log`
+    - completed/failed/pending `1/0/0`
+    - title/url `괴담 호텔 탈출기` / `https://novelpia.com/novel/102155`
+    - `work_resolution=resolved`, `title_resolution_state=resolved`, `title_resolution_allowed=true`
+  - focused tests:
+    - `py_compile` pass for changed files.
+    - `tests.test_candidate_audit` + selected rework tests, `42 tests OK`.
+    - fast-path/guard focused subset, `5 tests OK`.
+- 남은 작업:
+  - fix9 runtime `436.8s` remains a performance smell. Fast path is unit-verified but not full-canary rerun.
+  - `11705239` ordered-flush blocker still requires single-row root cause or quarantine.
+  - Loop 7 image/OCR `20` rows and combined compare are still pending.
+- 게이트:
+  - semantic_quality `REVIEW-LOCKED`
+  - full_scan_approval `false`
+
+## IMP-20260623-274 - Short community alias bridge and J11 official-detail lock
+
+- 상태: patched / targeted canary verified / Loop 7 hard queue closed / semantic gate REVIEW-LOCKED
+- 우선순위: P0
+- 범위:
+  - 짧은 커뮤니티 약칭이 원 작품을 가리키지만, 검색/검증/최종 보정 단계에서 약칭 자체로 되돌아가거나 no-work/noise로 남는 행.
+  - 공식 상세 URL과 커뮤니티 alias bridge가 함께 있는데도 J11 title drift correction이 정식 제목을 약칭 텍스트로 되돌리는 행.
+- 대표 사례:
+  - `11706832`: `황제분충 ㄱㅊ함?` + `문피안가`
+  - expected/native-web direction: `황제폐하가 웹소설 작가임을 숨김`
+  - official URL: `https://novelpia.com/novel/385635`
+- observed mechanics:
+  - 약칭 검색 쿼리에서 조사/어미가 붙으면 search intent가 약해진다.
+  - official detail result가 alias를 직접 포함하지 않는 경우 false positive로 필터링해야 하지만, 커뮤니티 bridge phrase가 있으면 official detail을 보존해야 한다.
+  - relation verifier가 `page_type` 없는 커뮤니티 URL을 community alias support로 세지 못하면 explicit_alias bridge가 약해진다.
+  - Verifier/Arbiter가 정식 제목+공식 URL을 잡은 뒤에도 J11 correction이 post title alias로 되돌릴 수 있다.
+- 조치:
+  - `orchestrator.py`:
+    - short worklike alias probe에서 Korean particle stripping 적용.
+    - `short_alias_bridge` search profile 추가/확장.
+    - community bridge phrase support를 수집하고 official detail false positive filtering에 반영.
+    - alias + `작가/정식/제목/줄임/뜻/명칭` 쿼리를 semantic no-work seed 이후에도 허용.
+  - `verifier.py`:
+    - community URL domain 기반 alias support counting.
+    - relation judge search result에 community source class 추론.
+    - title mention + matched alias를 work meme/explicit alias anchor로 보존.
+  - `agentic_pipeline.py`:
+    - relation alias official-detail lock 추가.
+    - J11 title drift correction과 final title correction에서 lock을 존중.
+    - OCR-only title evidence와 official search evidence provenance 분리.
+  - `tools/compare_completed779_improvement.py`:
+    - result wrapper row unwrap 지원.
+- 검증:
+  - fix7 compare:
+    - `out\completed779_improvement_goal_20260622\compare\hermes_loop7_broader_residual_combined_fix7_unwrapped_final36_compare.json`
+    - movement `candidate_or_human_review_preserved=13`, `resolved_expected_title=1`, `resolved_expected_title_and_url=1`, `review=12`, `still_under_resolved_or_noise=2`, `url_lint_preserved=7`
+    - next queue rows `2`
+  - fix17 canary:
+    - result `out\completed779_improvement_goal_20260622\canary\hermes_loop7_fix17_j11_alias_lock_11706832_result.json`
+    - final `황제폐하가 웹소설 작가임을 숨김`
+    - URL `https://novelpia.com/novel/385635`
+    - compare `out\completed779_improvement_goal_20260622\compare\hermes_loop7_fix17_j11_alias_lock_11706832_compare.json`
+    - movement `resolved_expected_title=1`
+    - next queue rows `0`
+  - focused tests:
+    - short alias bridge search/filtering regressions.
+    - relation community alias support by domain.
+    - relation alias official-detail lock protects verifier title.
+    - OCR-only reason/provenance no official-search overclaim.
+    - completed779 compare wrapper-row unwrap.
+- 남은 작업:
+  - Loop 7 hard queue is closed; next loop should not reprocess it as main work.
+  - Build a fresh expansion from completed779 non-ACCEPT residuals, source-correctness rows, stale review rows, or URL hygiene residuals.
+  - Keep `11706832` as a regression control for short alias bridge and J11 drift.
+- 게이트:
+  - semantic_quality `REVIEW-LOCKED`
+  - full_scan_approval `false`
+
+## 2026-06-23 - Loop 7 fix1 OCR direct-title preservation and postprocess hang
+
+- 상태: discovered / partially mitigated / runtime quarantine open / semantic gate REVIEW-LOCKED
+- 우선순위: P0
+- 범위:
+  - image/OCR posts where VLM sees an `official_detail_page` or direct work title, but web search lacks an exact candidate-map entry.
+  - posts where generic search/entity titles can outrank source-local OCR title evidence.
+  - postprocess paths after canonical suspect correction, J10 exception, and confidence normalization.
+- 대표 사례:
+  - `11716480`:
+    - VLM/OCR direct title: `여대생 가랑이 사이 무릎 꿇은 엄마들`
+    - author: `후타보로`
+    - image surface: work detail page with title/author/tags/episode-like UI metadata.
+    - broad image/OCR run wrote `19/20`; `11716480` missing.
+    - single rerun reached Arbiter/Jury title recovery but did not flush checkpoint/result.
+  - `11698880`:
+    - input title/body points to `아생갤`, but search/primary selection can drift to `가챠 중독자의 퓨전펑크 생활`.
+  - `11711620`:
+    - OCR title evidence conflicted with platform/meta guard and URL title mismatch, leaving a candidate/HOLD-like result.
+- Observed mechanics:
+  - `snippet_analyzer` can identify the OCR title, then invalidate it because `candidate_map` lacks the same title.
+  - `suspected_titles` can promote generic parenthetical entities such as `인터넷 방송인` over direct image title.
+  - repeated decoder recall spends large prompts on genre/adult tags after the actual title/author is already visible in OCR.
+  - author normalization can truncate `후타보로` to `후타보`.
+  - result can hang before checkpoint flush after late canonical/J10/confidence transitions.
+- Required generalized fixes:
+  - Preserve VLM direct title and author as source-local evidence in the candidate ledger even when search is absent or degraded.
+  - Add an image-primary guard: generic wiki/person/parenthetical titles must not displace OCR `official_detail_page` titles.
+  - Bound decoder recall over tag-only terms when a direct OCR title exists.
+  - Make author normalization conservative for Korean pen names ending in `로`.
+  - Add checkpoint-safe postprocess watchdog or a bounded fallback result writer around late correction phases.
+- Evidence:
+  - broad image result: `out/completed779_improvement_goal_20260622/canary/hermes_loop7_broader_residual_image_ocr_fix1_result.json`
+  - broad log: `logs/expert_run_20260623_052157_158066.log`
+  - single quarantine log: `logs/expert_run_20260623_061321_455105.log`
+  - image compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop7_broader_residual_image_ocr_fix1_compare.json`
+  - combined partial compare: `out/completed779_improvement_goal_20260622/compare/hermes_loop7_broader_residual_combined_fix1_partial35_compare.json`
+- Gate:
+  - runtime integrity: not complete until `11716480` flushes or is explicitly no-generalizable-fix quarantined.
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+
+## IMP-20260623-273 - Loop 7 `11716480` focused OCR retry and close-title hygiene guard
+
+- 상태: patched / targeted canary verified / URL hygiene residual open / semantic gate REVIEW-LOCKED
+- 우선순위: P0
+- 범위:
+  - VLM first-pass가 `weak_visual_only`로 끝나 OCR/title/author/work cue를 놓치는 image/OCR post.
+  - OCR title close variant가 expected-title hygiene guard에서 mismatch로 오판되어 public title이 demote되는 source/url hygiene row.
+- 배경:
+  - `11716480`은 이미지에 작품 상세 페이지와 title/author가 보이지만 broad image/OCR run에서는 `19/20`만 flush되고 빠졌다.
+  - fix4는 runtime은 닫았으나 OCR을 못 읽어 no-title/noise로 실패했다.
+  - fix5는 OCR title을 recovered했지만 expected title `여대학생 가랑이 사이 무릎 꿇은 엄마들`와 observed close variant `여대생 가랑이 사이 무릎 끓은 엄마들` 차이를 mismatch로 판단해 URL hygiene guard가 title을 demote했다.
+- 조치:
+  - `agentic_pipeline.py`:
+    - `_build_vlm_ocr_retry_system_prompt`와 retry user text를 추가.
+    - first-pass VLM chunk가 전부 weak visual이고 OCR/title/author/work cue가 없을 때 focused OCR retry를 실행.
+    - retry 결과에 text evidence가 있으면 normalized chunk를 merge하고, 더 강한 `screen_type`, `surface_type`, `focus_role`, `title_role`, `promotion_eligible`, `background_listing_only`, `game_ui_score`, `work_surface_score`를 보존.
+    - `vlm_ocr_retry_count`를 public fields에 보존.
+  - `candidate_audit.py`:
+    - `_titles_match`에 close-title variant matching을 추가해 길고 유사한 OCR/title 변형을 source/url hygiene demotion trigger에서 제외.
+  - tests:
+    - weak visual only chunk focused OCR retry regression.
+    - source/url hygiene OCR close-title variant no-demotion regression.
+- 검증:
+  - fix6 canary:
+    - result `out\completed779_improvement_goal_20260622\canary\hermes_loop7_image_ocr_single_11716480_fix6_result.json`
+    - log `logs\expert_run_20260623_074025_102949.log`
+    - completed/flushed/pending/failed `1/1/0/0`
+    - final title `여대생 가랑이 사이 무릎 끓은 엄마들`
+    - `work_resolution=resolved`, `title_resolution_state=resolved`, `title_resolution_allowed=true`
+    - `heretic_url=null`, lint `judge_hygiene_seed_heretic_url_null`
+  - compare:
+    - `out\completed779_improvement_goal_20260622\compare\hermes_loop7_image_ocr_single_11716480_fix6_compare.json`
+    - movement `url_lint_preserved=1`
+    - remaining queue rows `0`
+  - focused tests:
+    - OCR retry and weak visual no-injection regressions passed.
+    - candidate audit close OCR variant regression passed.
+    - broader completed779 focused suite `205 tests OK`.
+- 남은 작업:
+  - URL/source hygiene remains open: no official detail URL was verified.
+  - Search still drifts toward generic/cross-domain entities; future loop should prune tag-heavy OCR search expansion and strengthen official detail URL discovery.
+  - Loop 7 final combined `36/36` compare still needs regeneration before next queue accounting.
+- 게이트:
+  - semantic_quality `REVIEW-LOCKED`
+  - full_scan_approval `false`

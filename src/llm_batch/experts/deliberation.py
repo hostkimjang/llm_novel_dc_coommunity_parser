@@ -255,10 +255,10 @@ class EvidenceScorer:
 
         gk = ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
         dc = ctx.get_expert_output(ExpertType.DECODER) or {}
+        disc = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
         vf = ctx.get_expert_output(ExpertType.VERIFIER) or {}
         vr = vf.get("verification_result") or {}
         cr = ctx.get_expert_output(ExpertType.CRITIC) or {}
-        disc = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
         synth = ctx.get_expert_output(ExpertType.SYNTHESIZER) or {}
 
         positives: List[Dict[str, Any]] = []
@@ -2058,6 +2058,7 @@ class DeliberationOrchestrator:
 
         gk = ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
         dc = ctx.get_expert_output(ExpertType.DECODER) or {}
+        disc = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
         vf = ctx.get_expert_output(ExpertType.VERIFIER) or {}
         vr = vf.get("verification_result") or {}
         cr = ctx.get_expert_output(ExpertType.CRITIC) or {}

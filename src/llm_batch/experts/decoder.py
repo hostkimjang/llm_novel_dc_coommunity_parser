@@ -2137,9 +2137,27 @@ class DecoderExpert:
             messages=messages,
             tag="decoder",
             use_grammar=True,
+            max_tokens=self._resolve_max_tokens(),
         )
         
         return self._parse_json_response(response_text)
+
+    def _resolve_max_tokens(self) -> int:
+        """Bound decoder retries so recall loops cannot consume the full global cap."""
+        raw = os.getenv("LLM_DECODER_MAX_TOKENS", os.getenv("LLM_EXPERT_MAX_TOKENS", "8192"))
+        try:
+            configured = int(raw)
+        except Exception:
+            configured = 8192
+        try:
+            llm_cap = int(getattr(self.llm, "max_tokens", configured) or configured)
+        except Exception:
+            llm_cap = configured
+        try:
+            hard_cap = int(os.getenv("LLM_DECODER_HARD_CAP", "12288"))
+        except Exception:
+            hard_cap = 12288
+        return max(512, min(configured, llm_cap, max(512, hard_cap)))
     
     def _parse_json_response(self, text: str) -> Dict[str, Any]:
         """Extract and parse JSON from response, removing <think> blocks."""

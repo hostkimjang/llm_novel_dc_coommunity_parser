@@ -24,6 +24,7 @@ class PostInput(BaseModel):
     content_blocks: List[ContentBlock] = Field(default_factory=list)
     page_no: Optional[int] = None
     comments: List[Any] = Field(default_factory=list)  # Staged pipeline용 comments
+    judge_seed: Optional[Dict[str, Any]] = None
 
 
 class CommentInput(BaseModel):
@@ -217,6 +218,9 @@ class PickvelIdentity(BaseModel):
     # Compact public search-hit preview for qualitative review packets.
     # Full raw search payloads are intentionally not stored here.
     search_evidence_catalog: Optional[List[Dict[str, Any]]] = None
+    # Compact per-post search health counters used to distinguish clean
+    # no-evidence cases from degraded upstream/search-zero cases.
+    search_health: Optional[Dict[str, Any]] = None
     # Compact public VLM/OCR preview for qualitative review packets.
     # This keeps image evidence reviewable without scraping worker logs/reasons.
     image_evidence_catalog: Optional[List[Dict[str, Any]]] = None
@@ -230,6 +234,29 @@ class PickvelIdentity(BaseModel):
     vlm_chunks_sent: Optional[int] = None
     vlm_total_bytes: Optional[int] = None
     image_enrichment_limitations: Optional[List[str]] = None
+    # Candidate references kept for audit even when non-core pruning removes
+    # public title_candidates to avoid unsafe final-title promotion.
+    candidate_preservation_sources: Optional[List[Dict[str, Any]]] = None
+    candidate_ledger: Optional[Dict[str, Any]] = None
+    candidate_ledger_status: Optional[Literal[
+        "candidate_generation_miss",
+        "promotion_blocked",
+        "hold_unresolved",
+        "hold_without_candidates",
+        "safe_resolved",
+        "official_title_lint",
+        "identity_consistency_lint",
+        "output_consistency_lint",
+        "review_only",
+    ]] = None
+    candidate_generation_miss: Optional[bool] = None
+    promotion_blocked: Optional[bool] = None
+    hold_unresolved: Optional[bool] = None
+    hold_without_candidates: Optional[bool] = None
+    safe_resolved: Optional[bool] = None
+    official_title_lint: Optional[List[str]] = None
+    identity_consistency_lint: Optional[List[str]] = None
+    output_consistency_lint: Optional[List[str]] = None
     reason: Optional[str] = None
     reason_lines: Optional[List[str]] = None
     system_state: Optional[Literal[

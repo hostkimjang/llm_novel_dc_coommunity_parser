@@ -35,6 +35,26 @@ _GENERIC_TERM_STOPLIST = {
     "결말",
     "다운",
     "기우제",
+    "novel",
+    "dc",
+    "www",
+    "http",
+    "https",
+    "com",
+    "net",
+    "org",
+    "kr",
+    "munpia",
+    "novelpia",
+    "kakao",
+    "page",
+    "naver",
+    "series",
+    "dcinside",
+    "novel.munpia.com",
+    "novelpia.com",
+    "series.naver.com",
+    "page.kakao.com",
 }
 
 _GENERIC_TERM_STOPLIST_NORMALIZED = {
@@ -78,6 +98,13 @@ _LOW_INFORMATION_ALIAS_SURFACES = {
     "그냥",
     "진짜",
     "무슨",
+    "그리고",
+    "그래서",
+    "그러나",
+    "근데",
+    "또",
+    "더",
+    "좀",
     "뭐냐",
     "이거",
     "저거",
@@ -113,6 +140,11 @@ _PRONOUN_PARTICLE_ALIAS_RE = re.compile(
     r")$"
 )
 
+_DOMAIN_OR_URL_LABEL_RE = re.compile(
+    r"^(?:https?://)?(?:www\.)?(?:[a-z0-9-]+\.)+(?:com|net|org|kr|co)(?:/[^\s]*)?$",
+    re.IGNORECASE,
+)
+
 _FAMILY_ALIAS_AUTO_PROMOTE_MIN_TITLES = 3
 _FAMILY_ALIAS_AUTO_PROMOTE_MIN_CONFIRMED_TITLES = 2
 _FLUSH_PREVIEW_LIMIT = 5
@@ -134,10 +166,19 @@ def _normalize_title(text: Any) -> str:
     return _normalize_term(text)
 
 
+def _looks_domain_or_url_label(text: Any) -> bool:
+    raw = str(text or "").strip()
+    if not raw:
+        return True
+    return bool(_DOMAIN_OR_URL_LABEL_RE.fullmatch(raw))
+
+
 def _is_generic_term(term: str) -> bool:
     raw = str(term or "").strip()
     norm = _normalize_term(raw)
     if not norm or len(norm) < 2:
+        return True
+    if _looks_domain_or_url_label(raw):
         return True
     if _is_low_information_alias_term(raw):
         return True
@@ -163,6 +204,8 @@ def _is_low_information_alias_term(term: str) -> bool:
 def _is_generic_title_label(title: str) -> bool:
     raw = str(title or "").strip()
     if not raw:
+        return True
+    if _looks_domain_or_url_label(raw):
         return True
     meta_suffixes = {
         "캐릭터",

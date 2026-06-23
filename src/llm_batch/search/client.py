@@ -69,6 +69,18 @@ def _env_bool(name: str, default: bool = False) -> bool:
     return value in {"1", "true", "yes", "on"}
 
 
+def _readyz_payload_ok(payload: Dict[str, Any]) -> bool:
+    if not isinstance(payload, dict):
+        return False
+    if str(payload.get("status") or "").lower() != "ok":
+        return False
+    return bool(
+        payload.get("searxng")
+        or payload.get("headless_search")
+        or payload.get("direct_search_fallback")
+    )
+
+
 def _client_endpoint_backoff_sec() -> float:
     try:
         return max(5.0, min(float(os.getenv("MCP_CLIENT_ENDPOINT_BACKOFF_SEC", "90")), 3600.0))
@@ -231,6 +243,63 @@ class MCPClient:
             {"ok": True/False, "latency_ms": float, "error": str|None}
         """
         import time as _time
+
+        try:
+            max_search_latency_ms = max(1.0, float(os.getenv("MCP_HEALTH_SEARCH_MAX_LATENCY_MS", "8000")))
+        except Exception:
+            max_search_latency_ms = 8000.0
+        try:
+            min_search_results = max(0, int(os.getenv("MCP_HEALTH_SEARCH_MIN_RESULTS", "1")))
+        except Exception:
+            min_search_results = 1
+        health_search_query = os.getenv("MCP_HEALTH_SEARCH_QUERY", "test").strip() or "test"
+
+        def _search_result_count(data: Dict[str, Any]) -> int:
+            results = data.get("results")
+            if isinstance(results, list):
+                return len(results)
+            try:
+                return max(0, int(data.get("total") or 0))
+            except Exception:
+                return 0
+
+        def _search_health_failure(
+            *,
+            bridge_latency: float,
+            search_latency: float,
+            data: Dict[str, Any],
+        ) -> Optional[Dict[str, Any]]:
+            result_count = _search_result_count(data)
+            degraded = bool(data.get("degraded") or data.get("possible_throttle"))
+            base = {
+                "ok": False,
+                "latency_ms": round(bridge_latency, 1),
+                "search_latency_ms": round(search_latency, 1),
+                "search_result_count": result_count,
+                "search_min_results": min_search_results,
+                "search_max_latency_ms": max_search_latency_ms,
+                "search_degraded": degraded,
+                "search_query": health_search_query,
+            }
+            if search_latency > max_search_latency_ms:
+                return {
+                    **base,
+                    "error": (
+                        f"Bridge OK but search too slow: {search_latency:.0f}ms "
+                        f"> {max_search_latency_ms:.0f}ms"
+                    ),
+                }
+            if result_count < min_search_results:
+                suffix = " (degraded/throttled)" if degraded else ""
+                return {
+                    **base,
+                    "error": (
+                        f"Bridge OK but search returned too few results: "
+                        f"{result_count} < {min_search_results}{suffix}"
+                    ),
+                }
+            return None
+
         t0 = _time.perf_counter()
         try:
             # 1) /healthz 시도
@@ -245,12 +314,7 @@ class MCPClient:
                             ready_resp = httpx.get(ready_url, timeout=timeout)
                             if ready_resp.status_code != 404:
                                 ready_payload = ready_resp.json() if ready_resp.content else {}
-                                ready_ok = (
-                                    ready_resp.status_code == 200
-                                    and isinstance(ready_payload, dict)
-                                    and str(ready_payload.get("status") or "").lower() == "ok"
-                                    and bool(ready_payload.get("searxng"))
-                                )
+                                ready_ok = ready_resp.status_code == 200 and _readyz_payload_ok(ready_payload)
                                 if not ready_ok:
                                     return {
                                         "ok": False,
@@ -278,17 +342,51 @@ class MCPClient:
                 # 실제 검색도 한 번 테스트
                 t1 = _time.perf_counter()
                 try:
-                    self.search("test", num_results=1)
+                    search_data = self.search(health_search_query, num_results=1, purpose="health_check")
                     search_latency = (_time.perf_counter() - t1) * 1000
-                    return {"ok": True, "latency_ms": round(latency, 1), "search_latency_ms": round(search_latency, 1), "error": None}
+                    failure = _search_health_failure(
+                        bridge_latency=latency,
+                        search_latency=search_latency,
+                        data=search_data if isinstance(search_data, dict) else {},
+                    )
+                    if failure:
+                        return failure
+                    return {
+                        "ok": True,
+                        "latency_ms": round(latency, 1),
+                        "search_latency_ms": round(search_latency, 1),
+                        "search_result_count": _search_result_count(search_data),
+                        "search_min_results": min_search_results,
+                        "search_max_latency_ms": max_search_latency_ms,
+                        "search_degraded": bool(search_data.get("degraded") or search_data.get("possible_throttle")),
+                        "search_query": health_search_query,
+                        "error": None,
+                    }
                 except Exception as e:
                     return {"ok": False, "latency_ms": round(latency, 1), "error": f"Bridge OK but search failed: {e}"}
             # 2) /healthz가 404면 직접 검색으로 폴백
             t1 = _time.perf_counter()
             try:
-                self.search("test", num_results=1)
+                search_data = self.search(health_search_query, num_results=1, purpose="health_check")
                 search_latency = (_time.perf_counter() - t1) * 1000
-                return {"ok": True, "latency_ms": round(search_latency, 1), "search_latency_ms": round(search_latency, 1), "error": None}
+                failure = _search_health_failure(
+                    bridge_latency=search_latency,
+                    search_latency=search_latency,
+                    data=search_data if isinstance(search_data, dict) else {},
+                )
+                if failure:
+                    return failure
+                return {
+                    "ok": True,
+                    "latency_ms": round(search_latency, 1),
+                    "search_latency_ms": round(search_latency, 1),
+                    "search_result_count": _search_result_count(search_data),
+                    "search_min_results": min_search_results,
+                    "search_max_latency_ms": max_search_latency_ms,
+                    "search_degraded": bool(search_data.get("degraded") or search_data.get("possible_throttle")),
+                    "search_query": health_search_query,
+                    "error": None,
+                }
             except Exception as e:
                 return {"ok": False, "latency_ms": round(latency, 1), "error": f"Bridge responded but search failed: {e}"}
         except httpx.ConnectError:
