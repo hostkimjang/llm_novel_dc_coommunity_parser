@@ -1,5 +1,47 @@
 # Verification Results
 
+## 2026-07-02 Loop260 comment-author review label / queue semantics verification
+
+- Scope: Loop259 잔여 `11658637` comment author review-only issue를 packet label로 닫고, current-source audit 완료 상태를 action queue에서 `done`으로 분리한다.
+- Review label:
+  - labels `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop260_11658637_comment_author_review_labels.jsonl`
+  - note `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop260_11658637_comment_author_review_ko.md`
+  - label `ACCEPT`, action `no_action`, issue `comment_author_match_unverified_resolution_review_only`
+  - evidence: `11658637`의 final publish 근거는 direct image/OCR/official URL이며 댓글 author 동일성 추정이 아니다.
+- Code verification:
+  - `tools\build_semantic_coverage_audit.py`: `--review-labels` 추가, `REVIEW` 전용 issue closure 지원, hard blocker closure 금지.
+  - `tools\build_goal_action_queue.py`: current-source audit 통과 항목을 `done`으로 표시, summary `done` 분리.
+- Semantic coverage:
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop260_loop258_semantic_coverage_with_browser_and_comment_label_audit.md/json`
+  - gate `GO`
+  - issues `[]`
+  - browser visual required/available/missing `5/5/0`
+  - review closure `comment_author_match_unverified_resolution_review_only`, post `11658637`
+- Action queue:
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop260_loop258_goal_action_queue_after_comment_label.md/json`
+  - total_actions `7`
+  - ready_now `0`
+  - done `6`
+  - blocked_until_completed_source `1`
+  - approval blocker `p0_p1_high_risk_expansion`
+- Goal convergence:
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop260_loop258_after_comment_label_goal_convergence.md/json`
+  - gate `GO`
+  - actionable queue `7 -> 1`, decreased `true`
+  - same_packet `true`
+  - safe_resolved `3 -> 3`, monotonic `true`
+  - safe_loss_post_ids `[]`
+- Tests:
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\build_semantic_coverage_audit.py tools\build_goal_action_queue.py tests\test_semantic_coverage_audit.py tests\test_goal_action_queue.py`: PASS
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_semantic_coverage_audit tests.test_goal_action_queue -v`: `43` tests OK
+- Gate:
+  - semantic coverage: `GO`
+  - stop-condition convergence: `GO`
+  - p0/p1 high-risk expansion: `BLOCKED_BY_PARTIAL_SOURCE`
+  - semantic quality: `REVIEW-LOCKED`
+  - full scan approval: `false`
+  - full375 previous: `NO-GO`
+
 ## 2026-07-02 Loop259 Loop258 browser visual evidence verification
 
 - Scope: Loop258 semantic coverage blocker `browser_visual_or_direct_evidence_missing=5`를 external browser artifact로 해소한다.

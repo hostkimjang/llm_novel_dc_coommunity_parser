@@ -1,5 +1,29 @@
 # Improvement Register
 
+## IMP-20260702-455 - Loop260 closes comment-author review-only signal and fixes current-source queue semantics
+
+- 상태: semantic coverage GO / convergence GO / p0_p1_high_risk_expansion BLOCKED_BY_PARTIAL_SOURCE / parent replay NOT_RUN / full375 previous NO-GO / full scan approval false / goal NOT_COMPLETE
+- 문제:
+  - Loop259 이후 `11658637`의 `comment_author_match_unverified_resolution_review_only`가 남아 semantic coverage gate가 `REVIEW`였다.
+  - 기존 action queue는 current-source에서 이미 수행된 semantic coverage/runtime/process snapshot/reason hygiene/browser visual gate도 `ready` open action으로 계속 세어 convergence queue 감소를 왜곡했다.
+- 조치:
+  - `tools/build_semantic_coverage_audit.py`에 `--review-labels` closure를 추가했다.
+  - `REVIEW` 전용 issue만 post_id/issue_code/`ACCEPT`/`no_action` label로 닫고, `REVIEW-LOCKED` hard blocker는 닫지 않도록 테스트했다.
+  - `11658637` review label과 한국어 note를 남겼다.
+  - `tools/build_goal_action_queue.py`가 current-source에서 이미 통과한 audit류를 `done`으로 표시하고 summary에서 `done`과 blocked count를 분리하도록 보정했다.
+- 검증:
+  - review label: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop260_11658637_comment_author_review_labels.jsonl`
+  - semantic coverage: gate `GO`, issues `[]`, browser visual `5/5/0`, review closure `11658637`.
+  - action queue: total_actions `7`, ready_now `0`, done `6`, blocked_until_completed_source `1`, approval blocker `p0_p1_high_risk_expansion`.
+  - convergence: actionable queue `7 -> 1`, same packet safe_resolved `3 -> 3`, safe_loss `[]`, gate `GO`.
+  - py_compile PASS, semantic coverage/action queue tests `43` OK.
+- 결정:
+  - `11658637` comment author review-only 신호는 닫혔다.
+  - convergence `GO`는 stop-condition 회차 수렴이며 full semantic approval이 아니다.
+  - completed source 기반 `p0_p1_high_risk_expansion`이 남아 있으므로 `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+- 다음 조치:
+  - completed source 확보 또는 completed source 기반 P0/P1 high-risk bucket label review를 진행한다.
+
 ## IMP-20260702-454 - Loop259 attaches browser visual evidence for Loop258 image rows
 
 - 상태: browser visual GO / semantic coverage REVIEW / convergence NO-GO / parent replay NOT_RUN / full375 previous NO-GO / full scan approval false / goal NOT_COMPLETE

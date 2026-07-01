@@ -288,6 +288,17 @@ BROWSER_LOADING_PENDING_BOOL_KEYS = (
     "article_image_loading_pending",
     "browser_image_loading_pending",
 )
+REVIEW_LABEL_CLOSABLE_ISSUES = {
+    "comment_author_match_unverified_resolution_review_only",
+    "search_only_resolved_title_review_only",
+    "blocked_intent_resolved_title_review_only",
+    "adjacent_reason_non_relevant_wording_conflict",
+    "final_semantic_reread_coverage_missing",
+    "comment_metadata_missing",
+    "comment_dialogue_context_missing",
+}
+REVIEW_LABEL_ACCEPT_VALUES = {"ACCEPT"}
+REVIEW_LABEL_NO_ACTION_VALUES = {"no_action", "docs_issue"}
 
 
 def load_json(path: Path) -> Any:
@@ -304,6 +315,10 @@ def load_jsonl(path: Path) -> list[dict[str, Any]]:
             if isinstance(value, dict):
                 rows.append(value)
     return rows
+
+
+def load_review_labels(path: Path) -> list[dict[str, Any]]:
+    return load_jsonl(path)
 
 
 def _as_dict(value: Any) -> dict[str, Any]:
@@ -1040,6 +1055,94 @@ def _gate_from_issues(issues: list[dict[str, Any]]) -> str:
     return "GO"
 
 
+def _label_issue_codes(label: dict[str, Any]) -> set[str]:
+    values: list[Any] = []
+    for key in (
+        "issue_code",
+        "coverage_issue_code",
+        "semantic_coverage_issue_code",
+        "review_issue_code",
+    ):
+        values.extend(_list_values(label.get(key)))
+    for key in (
+        "issue_codes",
+        "coverage_issue_codes",
+        "semantic_coverage_issue_codes",
+        "risk_tags",
+    ):
+        values.extend(_list_values(label.get(key)))
+    return {str(value).strip() for value in values if str(value or "").strip()}
+
+
+def _label_actions(label: dict[str, Any]) -> set[str]:
+    values = _list_values(label.get("action") or label.get("actions"))
+    return {str(value).strip() for value in values if str(value or "").strip()}
+
+
+def _review_label_closes_issue(label: dict[str, Any], *, issue_code: str, post_id: str) -> bool:
+    if str(label.get("post_id") or "").strip() != str(post_id):
+        return False
+    if issue_code not in _label_issue_codes(label):
+        return False
+    if str(label.get("review_label") or "").strip().upper() not in REVIEW_LABEL_ACCEPT_VALUES:
+        return False
+    actions = _label_actions(label)
+    if actions and not actions.issubset(REVIEW_LABEL_NO_ACTION_VALUES):
+        return False
+    if _has_value(label.get("rationale_ko")) or _has_value(label.get("rationale")):
+        return True
+    return False
+
+
+def _apply_review_label_closures(
+    issues: list[dict[str, Any]],
+    review_labels: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    if not review_labels:
+        return issues, []
+
+    remaining: list[dict[str, Any]] = []
+    closures: list[dict[str, Any]] = []
+    for issue in issues:
+        issue_code = str(issue.get("code") or "")
+        severity = str(issue.get("severity") or "")
+        samples = [str(value) for value in issue.get("sample_post_ids") or []]
+        if severity != "REVIEW" or issue_code not in REVIEW_LABEL_CLOSABLE_ISSUES:
+            remaining.append(issue)
+            continue
+
+        closed_posts: list[str] = []
+        for post_id in samples:
+            if any(
+                _review_label_closes_issue(label, issue_code=issue_code, post_id=post_id)
+                for label in review_labels
+            ):
+                closed_posts.append(post_id)
+
+        closed_count = len(set(closed_posts))
+        issue_count = _to_int(issue.get("count")) or 0
+        if closed_count <= 0:
+            remaining.append(issue)
+            continue
+
+        closures.append(
+            {
+                "issue_code": issue_code,
+                "closed_count": closed_count,
+                "closed_post_ids": sorted(set(closed_posts)),
+                "closure_source": "review_labels",
+            }
+        )
+        if closed_count < issue_count:
+            kept = [post_id for post_id in samples if post_id not in set(closed_posts)]
+            updated = dict(issue)
+            updated["count"] = issue_count - closed_count
+            updated["sample_post_ids"] = kept[:10]
+            remaining.append(updated)
+
+    return remaining, closures
+
+
 def _recommended_actions(issues: list[dict[str, Any]]) -> list[str]:
     actions: list[str] = []
     seen: set[str] = set()
@@ -1064,6 +1167,8 @@ def audit_rows(
     rows_source: str = "$",
     browser_artifacts: dict[str, dict[str, Any]] | None = None,
     browser_artifact_manifest: Path | None = None,
+    review_labels: list[dict[str, Any]] | None = None,
+    review_labels_path: Path | None = None,
 ) -> dict[str, Any]:
     counters: Counter[str] = Counter()
     samples: dict[str, list[str]] = defaultdict(list)
@@ -1535,6 +1640,7 @@ def audit_rows(
             )
         )
 
+    issues, review_closures = _apply_review_label_closures(issues, review_labels or [])
     gate = _gate_from_issues(issues)
     return {
         "tool_purpose": (
@@ -1554,7 +1660,9 @@ def audit_rows(
         "gate": gate,
         "coverage": coverage,
         "issues": issues,
+        "review_closures": review_closures,
         "recommended_actions": _recommended_actions(issues),
+        "review_labels_path": review_labels_path.as_posix() if review_labels_path else None,
         "external_browser_artifact_manifest": browser_artifact_manifest.as_posix()
         if browser_artifact_manifest
         else None,
@@ -1568,6 +1676,8 @@ def audit_data(
     result_path: Path | None = None,
     browser_artifacts: dict[str, dict[str, Any]] | None = None,
     browser_artifact_manifest: Path | None = None,
+    review_labels: list[dict[str, Any]] | None = None,
+    review_labels_path: Path | None = None,
 ) -> dict[str, Any]:
     rows, rows_source = result_rows(data)
     return audit_rows(
@@ -1576,20 +1686,30 @@ def audit_data(
         rows_source=rows_source,
         browser_artifacts=browser_artifacts,
         browser_artifact_manifest=browser_artifact_manifest,
+        review_labels=review_labels,
+        review_labels_path=review_labels_path,
     )
 
 
-def audit_result(path: Path, *, browser_artifact_manifest: Path | None = None) -> dict[str, Any]:
+def audit_result(
+    path: Path,
+    *,
+    browser_artifact_manifest: Path | None = None,
+    review_labels_path: Path | None = None,
+) -> dict[str, Any]:
     browser_artifacts = (
         load_browser_artifacts(browser_artifact_manifest)
         if browser_artifact_manifest
         else None
     )
+    review_labels = load_review_labels(review_labels_path) if review_labels_path else None
     return audit_data(
         load_json(path),
         result_path=path,
         browser_artifacts=browser_artifacts,
         browser_artifact_manifest=browser_artifact_manifest,
+        review_labels=review_labels,
+        review_labels_path=review_labels_path,
     )
 
 
@@ -1597,6 +1717,7 @@ def build_markdown(audit: dict[str, Any]) -> str:
     coverage = audit.get("coverage") or {}
     issues = audit.get("issues") or []
     actions = audit.get("recommended_actions") or []
+    closures = audit.get("review_closures") or []
     issue_lines = "\n".join(
         "- `{severity}` `{code}` count=`{count}` samples=`{samples}`: {description}".format(
             severity=item.get("severity"),
@@ -1608,6 +1729,14 @@ def build_markdown(audit: dict[str, Any]) -> str:
         for item in issues
     ) or "- 없음"
     action_lines = "\n".join(f"- {action}" for action in actions) or "- 추가 조치 없음"
+    closure_lines = "\n".join(
+        "- `{code}` closed_count=`{count}` posts=`{posts}`".format(
+            code=item.get("issue_code"),
+            count=item.get("closed_count"),
+            posts=", ".join(str(value) for value in item.get("closed_post_ids") or []) or "none",
+        )
+        for item in closures
+    ) or "- 없음"
     text = f"""# Semantic/VLM/댓글 커버리지 감사
 
 ## 요약
@@ -1617,6 +1746,7 @@ def build_markdown(audit: dict[str, Any]) -> str:
 - result: `{audit.get('result_path') or 'stdin/object'}`
 - rows_source: `{audit.get('rows_source')}`
 - total_rows: `{coverage.get('total_rows', 0)}`
+- review_labels_path: `{audit.get('review_labels_path') or 'none'}`
 - external_browser_artifact_manifest: `{audit.get('external_browser_artifact_manifest') or 'none'}`
 
 ## 커버리지
@@ -1649,6 +1779,10 @@ def build_markdown(audit: dict[str, Any]) -> str:
 
 {issue_lines}
 
+## Review Label Closure
+
+{closure_lines}
+
 ## 권장 조치
 
 {action_lines}
@@ -1670,6 +1804,12 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Optional manifest with browser screenshots/snapshots keyed by post_id.",
     )
+    parser.add_argument(
+        "--review-labels",
+        type=Path,
+        default=None,
+        help="Optional JSONL labels that close REVIEW-only packet issues by post_id and issue_code.",
+    )
     parser.add_argument("--output-json", type=Path, default=None)
     parser.add_argument("--output-md", type=Path, default=None)
     return parser.parse_args()
@@ -1677,7 +1817,11 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    audit = audit_result(args.result, browser_artifact_manifest=args.browser_artifacts_manifest)
+    audit = audit_result(
+        args.result,
+        browser_artifact_manifest=args.browser_artifacts_manifest,
+        review_labels_path=args.review_labels,
+    )
     payload = json.dumps(audit, ensure_ascii=False, indent=2)
     if args.output_json:
         args.output_json.parent.mkdir(parents=True, exist_ok=True)

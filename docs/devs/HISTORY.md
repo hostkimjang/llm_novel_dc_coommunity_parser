@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-02 - Loop260 closes comment-author review-only issue and fixes queue semantics
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- `11658637`의 `comment_author_match_unverified_resolution_review_only`를 packet review label로 확인했다. 댓글 author 동일성은 작품 근거가 아니고, publish 근거는 direct image/OCR/official URL이다.
+- `tools/build_semantic_coverage_audit.py`는 `--review-labels`를 받아 `REVIEW` 전용 issue를 ACCEPT/no_action label로 닫는다. `REVIEW-LOCKED` hard blocker는 닫지 않는다.
+- `tools/build_goal_action_queue.py`는 현 source에서 이미 통과한 semantic coverage/runtime/process snapshot/reason hygiene/browser visual/preserve-original policy를 `done`으로 표시하고, summary에 `done`을 분리한다.
+- Loop260 semantic coverage는 gate `GO`, issues `[]`, browser visual `5/5/0`, review closure `11658637`이다.
+- Loop260 action queue는 total_actions `7`, ready_now `0`, done `6`, blocked_until_completed_source `1`, approval blocker `p0_p1_high_risk_expansion`이다.
+- Loop260 convergence는 actionable queue `7 -> 1`, same packet safe_resolved `3 -> 3`, safe_loss `[]`로 `GO`다.
+- Gate는 semantic coverage `GO`, convergence `GO`지만 full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 - Loop259 attaches browser visual evidence for Loop258 image rows
 
 - 동일 38-row parent packet은 재실행하지 않고 Loop258 semantic coverage의 `browser_visual_or_direct_evidence_missing=5` blocker만 좁혔다.

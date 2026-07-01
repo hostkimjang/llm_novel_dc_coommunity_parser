@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop260 comment-author review label / queue semantics quality gate
+
+- 근거:
+  - [x] 동일 38-row parent packet을 재실행하지 않았다.
+  - [x] `11658637`의 comment author marker는 작품명 확정의 필수 근거가 아님을 packet review label로 확인했다.
+  - [x] direct image/OCR/official URL evidence가 final publish를 독립 지지한다.
+  - [x] `--review-labels` closure는 `REVIEW` 전용 issue만 닫고 `REVIEW-LOCKED` hard blocker는 닫지 않도록 테스트했다.
+  - [x] current-source audit 완료 항목은 action queue에서 `done`으로 분리했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_260_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] Semantic coverage gate `GO`를 10만 건 semantic approval로 쓰지 않는다.
+  - [x] Convergence `GO`를 full scan approval로 쓰지 않는다.
+  - [x] `p0_p1_high_risk_expansion`이 남아 있으면 approval blocker를 유지한다.
+  - [x] full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop251 11663535 character-title collision quality gate
 
 - 근거:

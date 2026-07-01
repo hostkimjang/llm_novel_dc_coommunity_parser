@@ -200,7 +200,8 @@ class GoalActionQueueTest(unittest.TestCase):
         self.assertIn("expanded_random_baseline_1000", queue["summary"]["approval_blockers"])
         actions = {item["action_id"]: item for item in queue["actions"]}
         self.assertFalse(actions["obtain_completed_vlm_ocr_source"]["executable_now"])
-        self.assertTrue(actions["small_run_runtime_audit_required"]["executable_now"])
+        self.assertFalse(actions["small_run_runtime_audit_required"]["executable_now"])
+        self.assertEqual(actions["small_run_runtime_audit_required"]["status"], "done")
         self.assertTrue(actions["vlm_ocr_browser_visual_gate"]["requires_browser_visual"])
 
     def test_visual_gate_evidence_separates_unique_browser_missing_from_signal_sum(self):
@@ -215,11 +216,13 @@ class GoalActionQueueTest(unittest.TestCase):
         self.assertEqual(action["evidence"]["visual_gate_blocker_signal_count"], 85)
         self.assertIn("not unique post count", action["evidence"]["visual_gate_missing_count_note"])
 
-    def test_runtime_go_is_ready_action_not_semantic_approval(self):
+    def test_runtime_go_is_done_action_not_semantic_approval(self):
         mod = load_action_queue_module()
         queue = mod.build_action_queue(sample_state_map())
         action = next(item for item in queue["actions"] if item["action_id"] == "small_run_runtime_audit_required")
 
+        self.assertEqual(action["status"], "done")
+        self.assertFalse(action["executable_now"])
         self.assertEqual(action["evidence"]["runtime_contract"], "GO")
         self.assertEqual(action["evidence"]["semantic_approval"], "not_evaluated_by_runtime_contract_audit")
         self.assertFalse(action["approval_blocker"])
@@ -278,8 +281,9 @@ class GoalActionQueueTest(unittest.TestCase):
         )
         self.assertEqual(
             actions["process_snapshot_required_for_goal_reruns"]["status"],
-            "ready_clean_snapshot",
+            "done",
         )
+        self.assertFalse(actions["process_snapshot_required_for_goal_reruns"]["executable_now"])
         self.assertTrue(actions["hardcoded_alias_risk_review_required"]["executable_now"])
         self.assertFalse(actions["hardcoded_alias_risk_review_required"]["requires_completed_source"])
         self.assertEqual(actions["hardcoded_alias_packet_review_required"]["status"], "ready_packet_review")
@@ -317,6 +321,44 @@ class GoalActionQueueTest(unittest.TestCase):
         self.assertFalse(actions["hardcoded_alias_packet_label_followup"]["executable_now"])
         self.assertEqual(actions["hardcoded_alias_packet_label_followup"]["status"], "closed_by_packet_labels")
         self.assertIn("모두 ACCEPT/no_action", actions["hardcoded_alias_packet_label_followup"]["next_step"])
+
+    def test_current_source_green_audits_are_not_open_convergence_actions(self):
+        mod = load_action_queue_module()
+        coverage = {
+            "gate": "GO",
+            "semantic_approval": {"status": "not_granted_by_semantic_coverage_audit"},
+            "coverage": {
+                "total_rows": 1,
+                "browser_visual_missing": 0,
+                "image_evidence_catalog_missing": 0,
+                "image_context_without_vlm_catalog": 0,
+            },
+            "issues": [],
+        }
+        queue = mod.build_action_queue(
+            sample_state_map(),
+            semantic_coverage_audit=coverage,
+            process_snapshot_audit=sample_process_snapshot_audit(),
+        )
+        actions = {item["action_id"]: item for item in queue["actions"]}
+
+        self.assertEqual(queue["summary"]["done"], 6)
+        self.assertEqual(queue["summary"]["blocked_until_completed_source"], 4)
+        self.assertEqual(actions["semantic_coverage_audit_required_for_new_source"]["status"], "done")
+        self.assertFalse(actions["semantic_coverage_audit_required_for_new_source"]["executable_now"])
+        self.assertEqual(actions["small_run_runtime_audit_required"]["status"], "done")
+        self.assertEqual(actions["reason_hygiene_before_using_canary"]["status"], "done")
+        self.assertEqual(actions["vlm_ocr_browser_visual_gate"]["status"], "done")
+        self.assertEqual(actions["preserve_original_as_regression_seed_only"]["status"], "done")
+        self.assertEqual(
+            [item["action_id"] for item in queue["actions"] if item["status"] != "done"],
+            [
+                "obtain_completed_vlm_ocr_source",
+                "rerun_large_scale_preflight_on_completed_source",
+                "expanded_random_baseline_1000",
+                "p0_p1_high_risk_expansion",
+            ],
+        )
 
     def test_packet_review_closure_uses_unique_post_context_matches(self):
         mod = load_action_queue_module()

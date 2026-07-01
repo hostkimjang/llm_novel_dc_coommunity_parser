@@ -6,6 +6,19 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop260 Addendum - comment-author review label and queue semantics
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: Loop259 잔여 `11658637` comment author review-only issue를 packet label로 닫고, current-source audit 완료 항목을 action queue에서 `done`으로 분리한다.
+- 코드 변경: `tools/build_semantic_coverage_audit.py`는 `--review-labels`를 받아 `REVIEW` 전용 issue를 닫는다. `REVIEW-LOCKED` hard blocker는 label로 닫지 않는다. `tools/build_goal_action_queue.py`는 이미 수행된 current-source audit류를 `done`으로 표시하고 summary에 `done`을 추가한다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_260_REPORT_20260702.md`, label `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop260_11658637_comment_author_review_labels.jsonl`, semantic coverage `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop260_loop258_semantic_coverage_with_browser_and_comment_label_audit.md/json`, action queue `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop260_loop258_goal_action_queue_after_comment_label.md/json`, convergence `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop260_loop258_after_comment_label_goal_convergence.md/json`.
+- Evidence: `11658637`의 댓글 author 동일성은 검증되지 않았지만 final publish 근거는 direct image/OCR/official URL이다. 댓글 author marker는 작품명 확정의 필수 근거가 아니므로 `ACCEPT/no_action` label로 review-only issue를 닫았다.
+- Semantic coverage: gate `GO`, issues `[]`, browser visual required/available/missing `5/5/0`, review closure `11658637`.
+- Action queue: total_actions `7`, ready_now `0`, done `6`, blocked_until_completed_source `1`, approval blocker `p0_p1_high_risk_expansion`.
+- Convergence: gate `GO`, actionable queue `7 -> 1`, same packet `true`, safe_resolved `3 -> 3`, safe_loss `[]`.
+- Verification: py_compile PASS, `tests.test_semantic_coverage_audit + tests.test_goal_action_queue` `43` tests OK.
+- Gate: convergence `GO`는 stop-condition 수렴이지 full approval이 아니다. full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop259 Addendum - Loop258 image-row browser visual evidence
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
@@ -88,6 +101,11 @@
 
 ## Current Evidence
 
+- Latest Loop260 comment author review label report: `docs/devs/loop_reports/LOOP_260_REPORT_20260702.md`
+- Latest Loop260 review label: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop260_11658637_comment_author_review_labels.jsonl`
+- Latest Loop260 semantic coverage with review label: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop260_loop258_semantic_coverage_with_browser_and_comment_label_audit.md/json`
+- Latest Loop260 action queue: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop260_loop258_goal_action_queue_after_comment_label.md/json`
+- Latest Loop260 goal convergence audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop260_loop258_after_comment_label_goal_convergence.md/json`
 - Latest Loop259 browser visual evidence report: `docs/devs/loop_reports/LOOP_259_REPORT_20260702.md`
 - Latest Loop259 browser visual capture manifest: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop259_loop258_browser_visual/loop259_browser_visual_manifest.json`
 - Latest Loop259 semantic coverage with browser audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop259_loop258_semantic_coverage_with_browser_audit.md/json`

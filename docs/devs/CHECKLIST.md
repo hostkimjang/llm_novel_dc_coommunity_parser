@@ -1,5 +1,31 @@
 # Development Checklist
 
+## 2026-07-02 Loop260 comment author review label / queue semantics 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] `11658637`의 `comment_author_match_unverified_resolution_review_only`를 packet review label로 확인했다.
+  - label `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop260_11658637_comment_author_review_labels.jsonl`
+  - review note `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop260_11658637_comment_author_review_ko.md`
+  - 판단: 댓글 author 동일성은 작품 근거가 아니며, publish 근거는 direct image/OCR/official URL이다.
+- [x] `tools\build_semantic_coverage_audit.py`에 `--review-labels` closure를 추가했다.
+  - `REVIEW` 전용 issue만 ACCEPT/no_action 라벨로 닫는다.
+  - `REVIEW-LOCKED` hard blocker는 label로 닫지 않는다.
+- [x] `tools\build_goal_action_queue.py`가 이미 수행된 current-source audit류를 `done`으로 표시하도록 보정했다.
+  - summary는 `ready_now`, `done`, `blocked_until_completed_source`를 분리한다.
+- [x] semantic coverage를 재실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop260_loop258_semantic_coverage_with_browser_and_comment_label_audit.md`
+  - gate `GO`, issues `[]`, review closure `11658637`
+- [x] action queue를 재생성했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop260_loop258_goal_action_queue_after_comment_label.md`
+  - total_actions `7`, ready_now `0`, done `6`, blocked_until_completed_source `1`
+  - approval blocker `p0_p1_high_risk_expansion`
+- [x] goal convergence를 재평가했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop260_loop258_after_comment_label_goal_convergence.md`
+  - gate `GO`, actionable queue `7 -> 1`, same_packet `true`, safe_resolved `3 -> 3`, safe_loss `[]`
+- [x] 검증: py_compile PASS, `tests.test_semantic_coverage_audit + tests.test_goal_action_queue` `43` tests OK.
+- [ ] completed source 기반 `p0_p1_high_risk_expansion`을 닫기 전까지 full semantic approval로 보지 않는다.
+- Gate: semantic coverage `GO`, convergence `GO`, p0/p1 expansion `BLOCKED_BY_PARTIAL_SOURCE`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, full375 previous `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop259 Loop258 browser visual evidence 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

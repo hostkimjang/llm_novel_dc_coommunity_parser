@@ -65,6 +65,23 @@ def _safe_int(value: Any) -> int:
         return 0
 
 
+def _done_status(condition: bool, fallback: str) -> str:
+    return "done" if condition else fallback
+
+
+def _done_executable(condition: bool, fallback: bool = True) -> bool:
+    return False if condition else fallback
+
+
+QUEUE_CLOSED_STATUSES = {
+    "done",
+    "closed",
+    "complete",
+    "completed",
+    "closed_by_packet_labels",
+}
+
+
 def _semantic_coverage_evidence(semantic_coverage_audit: dict[str, Any] | None) -> dict[str, Any]:
     if not semantic_coverage_audit:
         return {}
@@ -412,14 +429,15 @@ def build_action_queue(
                     ),
                 )
             )
+        semantic_coverage_done = semantic_coverage.get("gate") == "GO"
         items.append(
             _item(
                 action_id="semantic_coverage_audit_required_for_new_source",
                 priority="P1",
                 title="새 source마다 semantic coverage audit 실행",
-                status="ready",
+                status=_done_status(semantic_coverage_done, "ready"),
                 owner_mode="RUN_REVIEW_MODE",
-                executable_now=True,
+                executable_now=_done_executable(semantic_coverage_done),
                 requires_completed_source=False,
                 approval_blocker=False,
                 related_gate="semantic_approval",
@@ -431,14 +449,15 @@ def build_action_queue(
             )
         )
 
+    runtime_done = runtime.get("runtime_contract") == "GO"
     items.append(
         _item(
             action_id="small_run_runtime_audit_required",
             priority="P1",
             title="소규모 targeted rerun 후 runtime 감사 고정",
-            status="ready",
+            status=_done_status(runtime_done, "ready"),
             owner_mode="RUN_REVIEW_MODE",
-            executable_now=True,
+            executable_now=_done_executable(runtime_done),
             approval_blocker=False,
             related_gate="small_run_runtime_contract",
             evidence={
@@ -459,16 +478,19 @@ def build_action_queue(
         stale_count = process_snapshot.get("stale_process_candidate_count")
         available = process_snapshot.get("snapshot_available")
         if available is True and stale_count == 0:
-            status = "ready_clean_snapshot"
+            status = "done"
+            executable_now = False
             next_step = (
                 "현재 외부 process snapshot 기준 stale expert_main/llm_batch/warp_shards/vllm/uvicorn 후보가 0건이다. "
                 "다음 run 전에도 같은 snapshot audit를 남긴다."
             )
         elif available is True:
             status = "review_process_candidates"
+            executable_now = True
             next_step = "matching process가 있으므로 다음 run 전 PID/command_line을 확인하고 필요한 경우 정리한다."
         else:
             status = "ready_requires_external_snapshot"
+            executable_now = True
             next_step = (
                 "sandbox/CIM 권한 문제로 direct snapshot이 실패하면 외부에서 process JSON을 캡처해 "
                 "`--process-snapshot-json`으로 audit에 주입한다."
@@ -480,7 +502,7 @@ def build_action_queue(
                 title="goal/test rerun 전 process snapshot 확인",
                 status=status,
                 owner_mode="RUN_REVIEW_MODE",
-                executable_now=True,
+                executable_now=executable_now,
                 requires_completed_source=False,
                 approval_blocker=False,
                 related_gate="small_run_runtime_contract",
@@ -584,14 +606,15 @@ def build_action_queue(
             )
         )
 
+    hygiene_done = hygiene.get("gate") == "GO"
     items.append(
         _item(
             action_id="reason_hygiene_before_using_canary",
             priority="P1",
             title="canary를 증거로 쓰기 전 reason hygiene 스캔",
-            status="ready",
+            status=_done_status(hygiene_done, "ready"),
             owner_mode="RUN_REVIEW_MODE",
-            executable_now=True,
+            executable_now=_done_executable(hygiene_done),
             approval_blocker=False,
             related_gate="latest_reason_hygiene",
             evidence={
@@ -620,6 +643,7 @@ def build_action_queue(
     )
     visual_gate_blocker = visual_gate_blocker_signal_count > 0
 
+    visual_gate_done = bool(semantic_coverage) and not visual_gate_blocker
     items.append(
         _item(
             action_id="vlm_ocr_browser_visual_gate",
@@ -628,10 +652,10 @@ def build_action_queue(
             status=(
                 "blocked_by_missing_or_weak_visual_evidence"
                 if visual_gate_blocker
-                else "ready_when_image_rows_exist"
+                else _done_status(visual_gate_done, "ready_when_image_rows_exist")
             ),
             owner_mode="MIXED_MODE",
-            executable_now=True,
+            executable_now=_done_executable(visual_gate_done),
             requires_browser_visual=True,
             approval_blocker=visual_gate_blocker,
             related_gate="semantic_approval",
@@ -659,14 +683,15 @@ def build_action_queue(
         )
     )
 
+    original_policy_done = gates.get("original_source_approval") in {"REVIEW", "NO-GO"}
     items.append(
         _item(
             action_id="preserve_original_as_regression_seed_only",
             priority="P1",
             title="원본 partial source는 regression seed로만 사용",
-            status="ready",
+            status=_done_status(original_policy_done, "ready"),
             owner_mode="RUN_REVIEW_MODE",
-            executable_now=True,
+            executable_now=_done_executable(original_policy_done),
             approval_blocker=False,
             related_gate="original_source_approval",
             evidence={
@@ -682,7 +707,17 @@ def build_action_queue(
     )
 
     ready_count = sum(1 for item in items if item["executable_now"])
-    blocked_count = sum(1 for item in items if not item["executable_now"])
+    done_count = sum(
+        1
+        for item in items
+        if str(item.get("status") or "").strip().lower() in QUEUE_CLOSED_STATUSES
+    )
+    blocked_count = sum(
+        1
+        for item in items
+        if not item["executable_now"]
+        and str(item.get("status") or "").strip().lower() not in QUEUE_CLOSED_STATUSES
+    )
     approval_blockers = [item["action_id"] for item in items if item["approval_blocker"]]
     return {
         "queue_type": "goal_action_queue",
@@ -694,6 +729,7 @@ def build_action_queue(
         "summary": {
             "total_actions": len(items),
             "ready_now": ready_count,
+            "done": done_count,
             "blocked_until_completed_source": blocked_count,
             "approval_blockers": approval_blockers,
             "semantic_approval": gates.get("semantic_approval"),
@@ -753,6 +789,7 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
         "",
         f"- total_actions: `{summary['total_actions']}`",
         f"- ready_now: `{summary['ready_now']}`",
+        f"- done: `{summary.get('done')}`",
         f"- blocked_until_completed_source: `{summary['blocked_until_completed_source']}`",
         f"- semantic_approval: `{summary.get('semantic_approval')}`",
         f"- semantic_coverage_gate: `{summary.get('semantic_coverage_gate')}`",

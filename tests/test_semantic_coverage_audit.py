@@ -669,6 +669,89 @@ class SemanticCoverageAuditTest(unittest.TestCase):
         self.assertNotIn("comment_author_match_unverified_used_for_resolution", codes)
         self.assertIn("comment_author_match_unverified_resolution_review_only", codes)
 
+    def test_review_label_closes_comment_author_review_only_issue(self):
+        mod = load_audit_module()
+        row = {
+            "post_id": 11718097,
+            "is_relevant": True,
+            "comments": ["동일 닉네임 댓글"],
+            "comment_metadata": [
+                {
+                    "comment_id": "c1",
+                    "speaker": "user1",
+                    "post_author_match_unverified": True,
+                }
+            ],
+            "comment_dialogue_context_lines": [
+                "#1 speaker=user1 role=author_match_unverified text=동일 닉네임 댓글"
+            ],
+            "analysis_result": {
+                "identity": {
+                    "official_title": "직접 별칭으로 지지되는 후보",
+                    "title_resolution_state": "resolved",
+                    "context_sources": ["title", "comments", "search"],
+                    "anchor_type": "title_exact",
+                    "reason": (
+                        "title_in_post: true; "
+                        "title_lead_alias_search_work_support; "
+                        "evidence_type: search_platform_url"
+                    ),
+                }
+            },
+        }
+        labels = [
+            {
+                "review_id": "sca-11718097",
+                "post_id": 11718097,
+                "issue_code": "comment_author_match_unverified_resolution_review_only",
+                "review_label": "ACCEPT",
+                "semantic_decision_quality": "INDEPENDENT_SUPPORT_CONFIRMED",
+                "action": ["no_action"],
+                "rationale_ko": "댓글 author marker와 별개로 title/search support가 독립 근거다.",
+            }
+        ]
+        audit = mod.audit_data([row], review_labels=labels)
+
+        codes = {item["code"] for item in audit["issues"]}
+        self.assertEqual(audit["gate"], "GO")
+        self.assertNotIn("comment_author_match_unverified_resolution_review_only", codes)
+        self.assertEqual(audit["review_closures"][0]["closed_post_ids"], ["11718097"])
+
+    def test_review_label_does_not_close_hard_comment_author_blocker(self):
+        mod = load_audit_module()
+        row = {
+            "post_id": 11718098,
+            "is_relevant": True,
+            "comments": ["동일 닉네임 댓글만 작품 근거"],
+            "comment_metadata": [{"comment_id": "c1", "post_author_match_unverified": True}],
+            "comment_dialogue_context_lines": [
+                "#1 speaker=user1 role=author_match_unverified text=동일 닉네임 댓글만 작품 근거"
+            ],
+            "analysis_result": {
+                "identity": {
+                    "official_title": "댓글만으로 되살아난 후보",
+                    "title_resolution_state": "resolved",
+                    "context_sources": ["comments"],
+                }
+            },
+        }
+        labels = [
+            {
+                "review_id": "sca-11718098",
+                "post_id": 11718098,
+                "issue_code": "comment_author_match_unverified_used_for_resolution",
+                "review_label": "ACCEPT",
+                "action": ["no_action"],
+                "rationale_ko": "잘못된 라벨은 hard blocker를 닫지 못해야 한다.",
+            }
+        ]
+        audit = mod.audit_data([row], review_labels=labels)
+
+        codes = {item["code"] for item in audit["issues"]}
+        self.assertEqual(audit["gate"], "REVIEW-LOCKED")
+        self.assertIn("comment_author_match_unverified_used_for_resolution", codes)
+        self.assertEqual(audit["review_closures"], [])
+
     def test_comment_context_with_attribution_does_not_create_missing_attribution_issue(self):
         mod = load_audit_module()
         audit = mod.audit_data(
