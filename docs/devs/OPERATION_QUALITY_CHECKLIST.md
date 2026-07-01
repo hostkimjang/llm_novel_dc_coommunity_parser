@@ -6,6 +6,19 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop274 frontier worker trace quality gate
+
+- 근거:
+  - [x] `audit_expert_run_health.py`가 `frontier_worker_trace`를 기록한다.
+  - [x] frontier source post의 worker, event_count, first_event, last_event를 audit JSON에 남긴다.
+  - [x] 실제 Loop264 진행 중 run에서 frontier worker trace audit를 실행했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_274_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] frontier post `11714889`는 worker `W35`에서 `arbiter_start`까지 관측됐고 completed source가 아니다.
+  - [x] 현재 audit의 `run_integrity_gate=IN_PROGRESS`와 `search_evidence=REVIEW`를 approval blocker로 유지한다.
+  - [x] 동일 38-row parent packet 재실행 대신 worker trace와 final health audit로 다음 상태를 확인한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop273 completed source 후보 quality gate
 
 - 근거:

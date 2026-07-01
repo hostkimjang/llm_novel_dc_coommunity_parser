@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop274 Addendum - health audit frontier worker trace
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: ordered flush frontier가 artifact mismatch인지, 특정 worker에서 진행 중인지, 완료 로그가 있는데 flush 반영 전인지 health audit가 직접 보여주게 한다.
+- 코드 변경: `tools/audit_expert_run_health.py`에 `frontier_worker_trace`를 추가했다. `flush_integrity.frontier.source_post`의 `global_idx/post_id`로 worker log 이벤트를 집계한다. `tests/test_audit_expert_run_health.py`에 in-progress/completed frontier 계약을 추가했다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_274_REPORT_20260702.md`, audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop274_frontier_worker_trace_health_audit.json`.
+- Evidence: audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows `145`, checkpoint_rows `181`, pending_count_actual `36`이다. frontier는 post_id `11714889`, title `김괴라리 괴신 ㅈㄴ무섭네ㅋㅋㅋㅋ`, source_line `161`이고 `frontier_worker_trace=in_progress_in_worker_log`, worker `W35`, last_event `arbiter_start`다.
+- Verification: `tests.test_audit_expert_run_health` `14` tests OK, py_compile PASS.
+- Gate: completed source `PENDING`, current run integrity `IN_PROGRESS`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop273 Addendum - completed source 후보 search-health requirement
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

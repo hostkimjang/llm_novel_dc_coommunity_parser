@@ -1,5 +1,30 @@
 # Development Checklist
 
+## 2026-07-02 Loop274 frontier worker trace 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] `audit_expert_run_health.py`에 `frontier_worker_trace`를 추가했다.
+- [x] worker log에서 frontier `global_idx/post_id`의 lifecycle event를 집계하게 했다.
+- [x] in-progress frontier와 completed frontier 계약 테스트를 추가했다.
+- [x] 실제 Loop264 진행 중 run에 frontier worker trace audit를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop274_frontier_worker_trace_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `145`
+  - checkpoint_rows `181`
+  - pending_count_actual `36`
+  - frontier `next_save_idx=146`
+  - source post `11714889`
+  - source title `김괴라리 괴신 ㅈㄴ무섭네ㅋㅋㅋㅋ`
+  - `frontier_worker_trace.status=in_progress_in_worker_log`
+  - worker `W35`, event_count `15`, last_event `arbiter_start`
+- [x] focused verification을 실행했다.
+  - `tests.test_audit_expert_run_health`: PASS, `14` tests.
+  - py_compile: PASS.
+- [ ] run 완료 후 `run_integrity_gate=GO`, `classification=clean_completed_source`, `search_evidence=GO`인지 final health audit로 확인한다.
+- [ ] frontier가 장시간 고정되면 같은 packet 재실행 전에 `frontier_worker_trace`의 worker/last_event/error를 먼저 감사한다.
+- Gate: frontier worker trace `PASS`, current run integrity `IN_PROGRESS`, completed source `PENDING`, search evidence `REVIEW`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop273 completed source 후보 search-health 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

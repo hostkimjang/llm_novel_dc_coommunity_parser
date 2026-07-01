@@ -1,5 +1,37 @@
 # Verification Results
 
+## 2026-07-02 Loop274 frontier worker trace health audit
+
+- 범위: health audit에서 ordered flush frontier source post의 worker log 진행 단계를 `frontier_worker_trace`로 기록한다.
+- Code:
+  - `tools/audit_expert_run_health.py`
+  - `tests/test_audit_expert_run_health.py`
+- New audit field:
+  - `frontier_worker_trace`
+- Explicit frontier worker trace audit:
+  - command: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_065642_030743 --manifest out\expert_result_20260702_065632_479765_manifest.json --checkpoint out\expert_result_20260702_065632_479765_checkpoint.jsonl --result-json out\expert_result_20260702_065632_479765.json --pending-snapshot out\expert_result_20260702_065632_479765_pending_snapshot.json --input-jsonl tests\inputs\test01.jsonl --log-glob "logs\expert_run_20260702_065642_030743_W*.log" --output out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop274_frontier_worker_trace_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `145`, checkpoint_rows `181`, pending_count_actual `36`
+  - frontier post `11714889`, title `김괴라리 괴신 ㅈㄴ무섭네ㅋㅋㅋㅋ`, source_line `161`
+  - `frontier_worker_trace.status=in_progress_in_worker_log`
+  - worker `W35`, event_count `15`, first_event `global_start`, last_event `arbiter_start`
+  - `search_evidence.gate=REVIEW`
+  - blockers `manifest_search_health_not_included`, `manifest_light_health_only`, `search_degraded_observed`
+- Focused test:
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_audit_expert_run_health -v` -> PASS, `14` tests.
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\audit_expert_run_health.py tests\test_audit_expert_run_health.py` -> PASS.
+- Gate:
+  - frontier worker trace: `PASS`
+  - current run integrity: `IN_PROGRESS`
+  - completed source: `PENDING`
+  - search evidence: `REVIEW`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_274_REPORT_20260702.md`
+
 ## 2026-07-02 Loop273 completed source 후보 search-health requirement
 
 - 범위: completed source approval 후보 탐색에서 direct search-health evidence를 필수 조건으로 둔다.

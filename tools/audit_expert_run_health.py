@@ -779,6 +779,124 @@ def _audit_logs(log_files: List[Path]) -> Dict[str, Any]:
     }
 
 
+def _classify_worker_trace_event(line: str, *, post_id: str, global_idx: int | None) -> str | None:
+    if global_idx is not None:
+        start_match = re.search(r"\[(W\d+)\]\[(\d+)/\d+\].*Agentic Pipeline 시작", line)
+        if start_match and _as_int(start_match.group(2)) == global_idx:
+            return "global_start"
+    if post_id and post_id not in line:
+        return None
+    if "📌 Post ID:" in line:
+        return "post_header"
+    if "Agentic Pipeline start: Post" in line:
+        return "pipeline_start"
+    if "VLM chunk request" in line:
+        return "vlm_chunk_request"
+    if "VLM chunk result" in line:
+        return "vlm_chunk_result"
+    if "VLM merged evidence" in line:
+        return "vlm_merged_evidence"
+    if "VLM image enrichment" in line:
+        return "vlm_image_enrichment"
+    if "Orchestrator 시작" in line:
+        return "orchestrator_start"
+    if "분석 시작" in line:
+        return "expert_start"
+    if "검증 시작" in line:
+        return "verifier_start"
+    if "재해석 시작" in line:
+        return "synthesizer_start"
+    if "최종 판정 시작" in line:
+        return "arbiter_start"
+    if "✅ Post " in line and "완료" in line:
+        return "post_complete"
+    if "processing error" in line or "처리 오류:" in line or "Traceback" in line:
+        return "error"
+    return "mention"
+
+
+def _trace_frontier_worker_logs(
+    log_files: List[Path],
+    frontier: Dict[str, Any],
+    *,
+    max_events: int = 80,
+) -> Dict[str, Any]:
+    source_post = frontier.get("source_post") if isinstance(frontier, dict) else None
+    if not isinstance(source_post, dict):
+        return {
+            "target": None,
+            "status": "no_source_post",
+            "event_count": 0,
+            "events": [],
+        }
+
+    post_id_raw = source_post.get("post_id")
+    post_id = str(post_id_raw or "").strip()
+    global_idx = _as_int(source_post.get("global_idx") or frontier.get("frontier_gap_global_idx"))
+    if not post_id and global_idx is None:
+        return {
+            "target": source_post,
+            "status": "no_trace_key",
+            "event_count": 0,
+            "events": [],
+        }
+
+    events: List[Dict[str, Any]] = []
+    counts: Counter[str] = Counter()
+    workers: Counter[str] = Counter()
+    omitted = 0
+    for path in log_files:
+        worker_match = re.search(r"_W(\d+)\.log$", path.name)
+        worker_key = f"W{worker_match.group(1)}" if worker_match else path.name
+        try:
+            f = path.open(encoding="utf-8", errors="ignore")
+        except Exception:
+            continue
+        with f:
+            for lineno, line in enumerate(f, 1):
+                event_type = _classify_worker_trace_event(line, post_id=post_id, global_idx=global_idx)
+                if not event_type:
+                    continue
+                counts[event_type] += 1
+                workers[worker_key] += 1
+                event = {
+                    "file": path.name,
+                    "line": lineno,
+                    "worker": worker_key,
+                    "event": event_type,
+                    "text": line.strip()[:500],
+                }
+                if len(events) < max_events:
+                    events.append(event)
+                else:
+                    omitted += 1
+
+    status = "not_found"
+    if counts.get("post_complete", 0) > 0:
+        status = "completed_in_worker_log"
+    elif counts.get("error", 0) > 0:
+        status = "error_observed"
+    elif events:
+        status = "in_progress_in_worker_log"
+
+    return {
+        "target": {
+            "global_idx": global_idx,
+            "post_id": post_id_raw,
+            "title": source_post.get("title"),
+            "source_line": source_post.get("source_line"),
+        },
+        "status": status,
+        "event_count": sum(counts.values()),
+        "omitted_event_count": omitted,
+        "event_counts": dict(counts.most_common()),
+        "workers": dict(workers.most_common()),
+        "first_event": events[0] if events else None,
+        "last_event": events[-1] if events else None,
+        "events": events,
+    }
+
+
 def _build_search_evidence_gate(
     *,
     manifest_data: Dict[str, Any],
@@ -994,6 +1112,7 @@ def build_audit(
         input_post_lookup=input_post_lookup,
     )
     log_audit = _audit_logs(log_files)
+    frontier_worker_trace = _trace_frontier_worker_logs(log_files, flush_integrity.get("frontier") or {})
     search_evidence = _build_search_evidence_gate(
         manifest_data=manifest_data if isinstance(manifest_data, dict) else {},
         rows=rows,
@@ -1023,6 +1142,7 @@ def build_audit(
         "checkpoint_rows": len(rows),
         "pending_count_actual": pending_count_actual,
         "flush_integrity": flush_integrity,
+        "frontier_worker_trace": frontier_worker_trace,
         "search_evidence": search_evidence,
         "status_counts": dict(status_counts),
         "identity_state_counts": dict(identity_state_counts.most_common(30)),
@@ -1096,6 +1216,7 @@ def main() -> None:
         f"{audit['flush_integrity']['classification']}"
     )
     print(f"frontier={audit['flush_integrity']['frontier']}")
+    print(f"frontier_worker_trace={audit['frontier_worker_trace']['status']} events={audit['frontier_worker_trace']['event_count']}")
     print(f"checkpoint_rows={audit['checkpoint_rows']} status_counts={audit['status_counts']}")
     print(f"reason_errors={audit['reason_error_count']}")
     print(

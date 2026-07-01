@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-02 - Loop274 health audit frontier worker trace 추가
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- `tools/audit_expert_run_health.py`에 `frontier_worker_trace`를 추가해 ordered flush frontier post가 어느 worker log에서 어느 단계까지 진행됐는지 기록한다.
+- 실제 Loop264 진행 중 run에 frontier worker trace audit를 실행했고 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop274_frontier_worker_trace_health_audit.json`이다.
+- audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows `145`, checkpoint_rows `181`, pending_count_actual `36`이다.
+- frontier source는 `global_idx=146`, post_id `11714889`, title `김괴라리 괴신 ㅈㄴ무섭네ㅋㅋㅋㅋ`, source_line `161`이다.
+- `frontier_worker_trace`는 `in_progress_in_worker_log`, worker `W35`, event_count `15`, last_event `arbiter_start`다.
+- Gate는 frontier worker trace `PASS`, current run integrity `IN_PROGRESS`, completed source `PENDING`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop273 completed source 후보 search-health requirement 추가
 
 - 동일 38-row parent packet은 재실행하지 않았다.

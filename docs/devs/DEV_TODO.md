@@ -94,8 +94,9 @@
   - 2026-07-02 Loop270 조치: `flush_integrity.frontier`를 추가해 `next_save_idx`가 checkpoint/pending에 있는지 또는 in-flight/missing인지 기록한다.
   - 2026-07-02 Loop271 조치: `--input-jsonl`과 `flush_integrity.frontier.source_post`를 추가해 frontier `global_idx`의 원본 post_id/title/url/source_line을 기록한다.
   - 2026-07-02 Loop272 조치: `search_evidence` gate를 추가해 manifest direct search-health, row-level `search_health`, worker log 검색 저하 신호를 `GO/REVIEW/SEPARATE_AUDIT_REQUIRED/NO-GO`로 분리한다.
+  - 2026-07-02 Loop274 조치: `frontier_worker_trace`를 추가해 ordered flush frontier source post의 worker log lifecycle event와 last_event를 기록한다.
   - 완료 기준: `--checkpoint`, `--result-json`, `--manifest`, `--pending-snapshot` 또는 output prefix 옵션으로 sampling 결과를 직접 감사.
-  - 검증: `tests.test_audit_expert_run_health` `12` tests OK, Loop264 진행 중 run search evidence audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop272_search_evidence_health_audit.json`.
+  - 검증: `tests.test_audit_expert_run_health` `14` tests OK, Loop274 frontier worker trace audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop274_frontier_worker_trace_health_audit.json`.
 - [ ] 장시간 런 중 shard readiness 주기 snapshot
   - 상태: proposed
   - 관련 파일 후보: `expert_main.py`, `src/llm_batch/monitor/*`

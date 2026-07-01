@@ -1,5 +1,35 @@
 # Improvement Register
 
+## IMP-20260702-274 - health audit frontier worker trace
+
+- Status: Implemented / approval blocked
+- Loop: 274
+- Problem:
+  - ordered flush frontier가 checkpoint/pending 양쪽에 없을 때 어떤 worker에서 어느 단계까지 진행됐는지 수동 로그 추적이 필요했다.
+  - 같은 frontier가 장시간 보이면 artifact mismatch, in-flight, completed-before-flush를 구분해야 하며 동일 38-row parent packet 재실행으로 대체하면 안 된다.
+- Change:
+  - `frontier_worker_trace`를 추가했다.
+  - `global_idx/post_id` 기반 worker log lifecycle event를 집계한다.
+  - in-progress frontier와 completed frontier 계약 테스트를 추가했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_274_REPORT_20260702.md`
+  - audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop274_frontier_worker_trace_health_audit.json`
+- Result:
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - frontier post `11714889`
+  - `frontier_worker_trace.status=in_progress_in_worker_log`
+  - worker `W35`, event_count `15`, last_event `arbiter_start`
+- Verification:
+  - `tests.test_audit_expert_run_health` `14` tests OK
+  - py_compile PASS
+- Gate:
+  - completed source `PENDING`
+  - run integrity `IN_PROGRESS`
+  - search evidence `REVIEW`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-273 - completed source candidate search-health requirement
 
 - Status: Implemented / approval blocked

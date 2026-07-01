@@ -9,6 +9,7 @@ from tools.audit_expert_run_health import (
     _count_result_rows,
     _load_input_post_lookup,
     _resolve_run_artifacts,
+    _trace_frontier_worker_logs,
 )
 
 
@@ -311,6 +312,72 @@ class AuditExpertRunHealthTest(unittest.TestCase):
         self.assertEqual(audit["worker_log_search"]["search_timeout"], 1)
         self.assertIn("search_timeout_observed", audit["blockers"])
         self.assertIn("search_degraded_observed", audit["blockers"])
+
+    def test_frontier_worker_trace_finds_in_progress_frontier(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            log_path = Path(tmp) / "expert_run_sample_W10.log"
+            log_path.write_text(
+                "\n".join(
+                    [
+                        "🤖 [W10][137/104502] Agentic Pipeline 시작",
+                        "📌 Post ID: 11714898",
+                        "[07:44:59.020|W10] 🚀 Agentic Pipeline start: Post 11714898 - title...",
+                        "[07:46:07.785|W10] 🎯 Orchestrator 시작: post_id=11714898",
+                        "[08:09:53.734|W10][⚖️] Arbiter 최종 판정 시작: post_id=11714898",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            trace = _trace_frontier_worker_logs(
+                [log_path],
+                {
+                    "frontier_gap_global_idx": 137,
+                    "source_post": {
+                        "global_idx": 137,
+                        "post_id": 11714898,
+                        "title": "frontier",
+                    },
+                },
+            )
+
+        self.assertEqual(trace["status"], "in_progress_in_worker_log")
+        self.assertEqual(trace["target"]["post_id"], 11714898)
+        self.assertEqual(trace["event_counts"]["global_start"], 1)
+        self.assertEqual(trace["event_counts"]["pipeline_start"], 1)
+        self.assertEqual(trace["event_counts"]["arbiter_start"], 1)
+        self.assertEqual(trace["workers"], {"W10": 5})
+
+    def test_frontier_worker_trace_detects_completed_frontier(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            log_path = Path(tmp) / "expert_run_sample_W2.log"
+            log_path.write_text(
+                "\n".join(
+                    [
+                        "🤖 [W2][5/10] Agentic Pipeline 시작",
+                        "[07:00:00.000|W2] 🚀 Agentic Pipeline start: Post 500 - title...",
+                        "[07:01:00.000|W2] ✅ Post 500 완료 (60.0s, 0 iterations)",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            trace = _trace_frontier_worker_logs(
+                [log_path],
+                {
+                    "frontier_gap_global_idx": 5,
+                    "source_post": {
+                        "global_idx": 5,
+                        "post_id": 500,
+                        "title": "done",
+                    },
+                },
+            )
+
+        self.assertEqual(trace["status"], "completed_in_worker_log")
+        self.assertEqual(trace["event_counts"]["post_complete"], 1)
 
 
 if __name__ == "__main__":
