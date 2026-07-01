@@ -2,9 +2,17 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+_REPO_ROOT_FOR_IMPORTS = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT_FOR_IMPORTS) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT_FOR_IMPORTS))
+
+from tools.audit_publication_contract_convergence import audit_rows as _audit_publication_contract_rows
+from tools.audit_publication_contract_convergence import load_rows as _load_publication_contract_rows
 
 
 def load_json(path: Path) -> Any:
@@ -58,6 +66,41 @@ def count_result_rows(path: Path) -> int | None:
     return None
 
 
+def publication_contract_convergence(path: Path, *, evaluate: bool) -> dict[str, Any]:
+    if not evaluate:
+        return {
+            "publication_contract_convergence_gate": "NOT_EVALUATED",
+            "publication_contract_ready": False,
+            "publication_contract_violation_row_count": None,
+            "publication_contract_violation_counts": {},
+        }
+    if not path.exists():
+        return {
+            "publication_contract_convergence_gate": "MISSING",
+            "publication_contract_ready": False,
+            "publication_contract_violation_row_count": None,
+            "publication_contract_violation_counts": {},
+        }
+    try:
+        report = _audit_publication_contract_rows(_load_publication_contract_rows(path))
+    except Exception as exc:
+        return {
+            "publication_contract_convergence_gate": "NO-GO",
+            "publication_contract_ready": False,
+            "publication_contract_violation_row_count": None,
+            "publication_contract_violation_counts": {},
+            "publication_contract_error": str(exc)[:500],
+        }
+    summary = report.get("summary") if isinstance(report.get("summary"), dict) else {}
+    gate = str(report.get("gate") or "").strip() or "NO-GO"
+    return {
+        "publication_contract_convergence_gate": gate,
+        "publication_contract_ready": gate == "GO",
+        "publication_contract_violation_row_count": summary.get("violation_row_count"),
+        "publication_contract_violation_counts": summary.get("violation_counts") or {},
+    }
+
+
 def summarize_manifest(manifest_path: Path, *, root: Path, random_target: int) -> dict[str, Any] | None:
     try:
         manifest = load_json(manifest_path)
@@ -99,12 +142,20 @@ def summarize_manifest(manifest_path: Path, *, root: Path, random_target: int) -
     if available_rows is None:
         available_rows = flushed_count if flushed_count is not None else completed_count
     random_feasible = bool(available_rows is not None and available_rows >= random_target)
-    approval_candidate = bool(
+    candidate_before_publication_contract = bool(
         clean_by_counts
         and vlm_ready
         and search_health_ready
         and result_path.exists()
         and random_feasible
+    )
+    publication_contract = publication_contract_convergence(
+        result_path,
+        evaluate=candidate_before_publication_contract,
+    )
+    approval_candidate = bool(
+        candidate_before_publication_contract
+        and publication_contract["publication_contract_ready"]
     )
 
     partial_signals: list[str] = []
@@ -148,6 +199,7 @@ def summarize_manifest(manifest_path: Path, *, root: Path, random_target: int) -
         "search_health_light_mode": search_health_light_mode,
         "search_health_failure_count": search_health_failure_count,
         "search_health_ready": search_health_ready,
+        **publication_contract,
         "random_target": random_target,
         "random_feasible": random_feasible,
         "approval_source_candidate": approval_candidate,
@@ -199,6 +251,16 @@ def build_audit(manifest_root: Path, *, random_target: int = 1000, max_candidate
         and item["vlm_ocr_ready"]
         and not item["search_health_ready"]
     ]
+    clean_publication_contract_not_ready = [
+        item
+        for item in candidates
+        if item["clean_by_counts"]
+        and item["vlm_ocr_ready"]
+        and item["search_health_ready"]
+        and item["random_feasible"]
+        and item["result_exists"]
+        and not item["publication_contract_ready"]
+    ]
     partial_population = [
         item
         for item in candidates
@@ -212,6 +274,7 @@ def build_audit(manifest_root: Path, *, random_target: int = 1000, max_candidate
     clean_shortfall.sort(key=_sort_key, reverse=True)
     clean_search_health_blocked.sort(key=_sort_key, reverse=True)
     clean_search_health_not_ready.sort(key=_sort_key, reverse=True)
+    clean_publication_contract_not_ready.sort(key=_sort_key, reverse=True)
     partial_population.sort(key=_sort_key, reverse=True)
     clean_any.sort(key=_sort_key, reverse=True)
 
@@ -225,6 +288,8 @@ def build_audit(manifest_root: Path, *, random_target: int = 1000, max_candidate
         blockers.append("clean_sources_exist_but_random_target_shortfall")
     if clean_search_health_blocked:
         blockers.append("clean_sources_exist_but_search_health_not_ready")
+    if clean_publication_contract_not_ready:
+        blockers.append("clean_sources_exist_but_publication_contract_not_ready")
 
     return {
         "report_type": "completed_source_candidate_audit",
@@ -239,6 +304,7 @@ def build_audit(manifest_root: Path, *, random_target: int = 1000, max_candidate
             "clean_vlm_ocr_random_shortfall_count": len(clean_shortfall),
             "clean_vlm_ocr_search_health_not_ready_count": len(clean_search_health_not_ready),
             "clean_vlm_ocr_search_health_blocked_count": len(clean_search_health_blocked),
+            "clean_vlm_ocr_publication_contract_not_ready_count": len(clean_publication_contract_not_ready),
             "partial_vlm_ocr_population_ge_random_target_count": len(partial_population),
             "largest_clean_vlm_ocr_available_rows": (
                 clean_any[0].get("available_rows_for_random") if clean_any else None
@@ -267,6 +333,7 @@ def build_audit(manifest_root: Path, *, random_target: int = 1000, max_candidate
         "clean_vlm_ocr_random_shortfall_candidates": clean_shortfall[:max_candidates],
         "clean_vlm_ocr_search_health_not_ready_candidates": clean_search_health_not_ready[:max_candidates],
         "clean_vlm_ocr_search_health_blocked_candidates": clean_search_health_blocked[:max_candidates],
+        "clean_vlm_ocr_publication_contract_not_ready_candidates": clean_publication_contract_not_ready[:max_candidates],
         "partial_vlm_ocr_population_candidates": partial_population[:max_candidates],
     }
 
@@ -294,6 +361,10 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         f"- clean_vlm_ocr_search_health_not_ready_count: `{summary['clean_vlm_ocr_search_health_not_ready_count']}`",
         f"- clean_vlm_ocr_search_health_blocked_count: `{summary['clean_vlm_ocr_search_health_blocked_count']}`",
         (
+            "- clean_vlm_ocr_publication_contract_not_ready_count: "
+            f"`{summary['clean_vlm_ocr_publication_contract_not_ready_count']}`"
+        ),
+        (
             "- partial_vlm_ocr_population_ge_random_target_count: "
             f"`{summary['partial_vlm_ocr_population_ge_random_target_count']}`"
         ),
@@ -314,7 +385,8 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
                 f"- `{item['manifest_path']}`: available `{item['available_rows_for_random']}`, "
                 f"input/completed/pending/failed `{item['input_post_count']}/{item['completed_count']}/"
                 f"{item['pending_count']}/{item['failed_count']}`, "
-                f"search_health_ready `{item['search_health_ready']}`"
+                f"search_health_ready `{item['search_health_ready']}`, "
+                f"publication_contract `{item['publication_contract_convergence_gate']}`"
             )
     else:
         lines.append("- 없음")
@@ -337,6 +409,15 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
             f"failure_count `{item['search_health_failure_count']}`"
         )
     if not report["clean_vlm_ocr_search_health_not_ready_candidates"]:
+        lines.append("- 없음")
+    lines.extend(["", "## Clean VLM/OCR Sources Blocked By Publication Contract", ""])
+    for item in report["clean_vlm_ocr_publication_contract_not_ready_candidates"][:10]:
+        lines.append(
+            f"- `{item['manifest_path']}`: available `{item['available_rows_for_random']}`, "
+            f"publication_contract `{item['publication_contract_convergence_gate']}`, "
+            f"violations `{item['publication_contract_violation_row_count']}`"
+        )
+    if not report["clean_vlm_ocr_publication_contract_not_ready_candidates"]:
         lines.append("- 없음")
     lines.extend(["", "## Clean VLM/OCR Sources With Random Shortfall", ""])
     for item in report["clean_vlm_ocr_random_shortfall_candidates"][:10]:

@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop277 Addendum - completed source 후보 publication contract gate
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: completed source approval 후보 탐색이 source completion/search/random 조건만으로 열리지 않고 publication contract convergence `GO`까지 요구하도록 한다.
+- 코드 변경: `tools/build_completed_source_candidate_audit.py`가 candidate 직전 result에 `audit_publication_contract_convergence.py`를 적용하고, `publication_contract_convergence_gate`, `publication_contract_ready`, violation count를 report에 기록한다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_277_REPORT_20260702.md`, candidate audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop277_completed_source_candidate_publication_contract_audit.md/json`.
+- Evidence: manifest `733`개 감사 결과 approval_source_candidate_count `0`, clean_vlm_ocr_source_count `429`, clean_vlm_ocr_random_shortfall_count `9`, clean_vlm_ocr_search_health_not_ready_count `420`, clean_vlm_ocr_publication_contract_not_ready_count `0`, partial_vlm_ocr_population_ge_random_target_count `6`이다.
+- Verification: `tests.test_completed_source_candidate_audit + tests.test_publication_contract_convergence_audit` `7` tests OK, py_compile PASS.
+- Gate: completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, publication contract requirement `ENFORCED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop276 Addendum - health audit publication contract gate integration
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

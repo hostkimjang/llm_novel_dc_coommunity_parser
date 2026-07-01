@@ -6,6 +6,19 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop277 completed source 후보 publication contract quality gate
+
+- 근거:
+  - [x] completed source 후보 감사가 `publication_contract_convergence_gate=GO`를 approval source candidate 조건으로 요구한다.
+  - [x] clean/VLM/OCR/search/random/result 조건을 통과했지만 publication contract가 준비되지 않은 source를 별도 목록으로 남긴다.
+  - [x] 실제 `out` manifest 후보 감사를 재실행했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_277_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] approval_source_candidate_count `0`을 유지한다.
+  - [x] 현재는 random target `1000`을 만족하는 clean completed source가 없어 publication contract blocker 후보도 `0`임을 기록한다.
+  - [x] publication contract requirement `ENFORCED`를 residual 감소나 full approval로 해석하지 않는다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop276 integrated health audit quality gate
 
 - 근거:

@@ -72,11 +72,11 @@
   - 관련 파일 후보: `tools/compare_improvement_runs.py`, `tools/audit_expert_run_health.py`, `tools/build_llm_judgment_review_packet.py`
   - 완료 기준: baseline run과 improved run을 입력하면 동일 입력 여부, 200건 canary, 1,000건 risk discovery, manifest/checkpoint, timeout/degraded, top latency, known bad post 변화, slang/store 지표를 Markdown/JSON으로 생성
   - 검증 방법: 200건 canary와 1,000건 risk discovery baseline/improved 결과로 `out/comparisons/<baseline>_vs_<improved>.md` 생성 확인
-- [x] completed source 후보 감사에 direct search-health requirement 추가
-  - 상태: implemented_loop273 / approval blocked
-  - 문제: clean counts, VLM/OCR ready, random target rows만으로 approval source candidate가 열리면 Bridge-only/light health run이 full-scan approval 후보로 오인될 수 있다.
-  - 조치: `tools/build_completed_source_candidate_audit.py`가 `search_health_ready`를 계산하고 approval source candidate 조건에 포함한다.
-  - 검증: `tests.test_completed_source_candidate_audit` `3` tests OK, Loop273 후보 감사 `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop273_completed_source_candidate_search_health_audit.md`.
+- [x] completed source 후보 감사에 direct search-health와 publication contract requirement 추가
+  - 상태: implemented_loop277 / approval blocked
+  - 문제: clean counts, VLM/OCR ready, random target rows만으로 approval source candidate가 열리면 Bridge-only/light health run 또는 stale publication contract result가 full-scan approval 후보로 오인될 수 있다.
+  - 조치: `tools/build_completed_source_candidate_audit.py`가 `search_health_ready`와 `publication_contract_ready`를 계산하고 approval source candidate 조건에 포함한다.
+  - 검증: `tests.test_completed_source_candidate_audit + tests.test_publication_contract_convergence_audit` `7` tests OK, Loop277 후보 감사 `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop277_completed_source_candidate_publication_contract_audit.md`.
 - [x] publication contract convergence artifact audit 추가
   - 상태: implemented_loop275 / approval blocked
   - 문제: `PromotionDecision`, `publish_contract_trace`, `publish_ledger`, serialized public identity가 helper 내부에서는 수렴해도 실제 result artifact에서 stale trace나 blocked public leak가 남을 수 있다.

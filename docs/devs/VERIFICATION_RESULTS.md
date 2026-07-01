@@ -1,5 +1,37 @@
 # Verification Results
 
+## 2026-07-02 Loop277 completed source 후보 publication contract gate
+
+- 범위: completed source approval 후보 탐색에서 publication contract convergence `GO`를 필수 조건으로 둔다.
+- Code:
+  - `tools/build_completed_source_candidate_audit.py`
+  - `tests/test_completed_source_candidate_audit.py`
+  - `tools/audit_publication_contract_convergence.py`
+- Explicit candidate audit:
+  - command: `.\.venv312\Scripts\python.exe tools\build_completed_source_candidate_audit.py --manifest-root out --random-target 1000 --output-json out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop277_completed_source_candidate_publication_contract_audit.json --output-md out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop277_completed_source_candidate_publication_contract_audit.md`
+  - manifest_count `733`
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `9`
+  - clean_vlm_ocr_search_health_not_ready_count `420`
+  - clean_vlm_ocr_search_health_blocked_count `0`
+  - clean_vlm_ocr_publication_contract_not_ready_count `0`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+  - largest_clean_vlm_ocr_available_rows `375`
+  - largest_partial_vlm_ocr_available_rows `3812`
+- Focused test:
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_completed_source_candidate_audit tests.test_publication_contract_convergence_audit -v` -> PASS, `7` tests.
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\build_completed_source_candidate_audit.py tools\audit_publication_contract_convergence.py tests\test_completed_source_candidate_audit.py tests\test_publication_contract_convergence_audit.py` -> PASS.
+- Gate:
+  - completed source candidate: `MISSING`
+  - candidate audit: `REVIEW-LOCKED`
+  - publication contract requirement: `ENFORCED`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_277_REPORT_20260702.md`
+
 ## 2026-07-02 Loop276 health audit publication contract gate integration
 
 - 범위: `audit_expert_run_health.py`가 publication contract convergence를 health audit top-level gate로 함께 기록한다.

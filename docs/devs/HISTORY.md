@@ -1,5 +1,14 @@
 # Development History
 
+## 2026-07-02 - Loop277 completed source 후보 publication contract gate 추가
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- `tools/build_completed_source_candidate_audit.py`의 approval source candidate 조건에 publication contract convergence `GO`를 추가했다.
+- clean counts, VLM/OCR, direct search-health, random target을 통과해도 `PromotionDecision`/`publish_contract_trace`/`publish_ledger`/serialized identity가 수렴하지 않으면 후보가 아니다.
+- 실제 `out` manifest 후보 감사를 재실행했고 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop277_completed_source_candidate_publication_contract_audit.md/json`이다.
+- audit summary는 manifest `733`, approval_source_candidate_count `0`, clean_vlm_ocr_source_count `429`, clean_vlm_ocr_random_shortfall_count `9`, clean_vlm_ocr_search_health_not_ready_count `420`, clean_vlm_ocr_publication_contract_not_ready_count `0`, partial_vlm_ocr_population_ge_random_target_count `6`이다.
+- Gate는 completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, publication contract requirement `ENFORCED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop276 health audit publication contract gate 통합
 
 - 동일 38-row parent packet은 재실행하지 않았다.

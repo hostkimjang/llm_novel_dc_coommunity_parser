@@ -1,5 +1,36 @@
 # Improvement Register
 
+## IMP-20260702-277 - completed source candidate publication contract requirement
+
+- Status: Implemented / approval blocked
+- Loop: 277
+- Problem:
+  - completed source 후보 감사가 search-health까지 보강됐지만, 후보 직전 result의 publication contract convergence를 필수로 보지는 않았다.
+  - clean source가 생겼을 때 stale `publish_contract_trace`나 serialized public title leak가 approval source candidate로 통과하면 안 된다.
+- Change:
+  - `build_completed_source_candidate_audit.py`가 후보 직전 result에 publication contract convergence audit를 적용한다.
+  - approval source candidate는 `publication_contract_ready=true`일 때만 열린다.
+  - publication contract 미준비 clean source 목록과 count를 report에 추가했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_277_REPORT_20260702.md`
+  - audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop277_completed_source_candidate_publication_contract_audit.md`
+- Result:
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `9`
+  - clean_vlm_ocr_search_health_not_ready_count `420`
+  - clean_vlm_ocr_publication_contract_not_ready_count `0`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+- Verification:
+  - `tests.test_completed_source_candidate_audit + tests.test_publication_contract_convergence_audit` `7` tests OK
+  - py_compile PASS
+- Gate:
+  - completed source candidate `MISSING`
+  - candidate audit `REVIEW-LOCKED`
+  - publication contract requirement `ENFORCED`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-276 - health audit publication contract gate integration
 
 - Status: Implemented / approval blocked

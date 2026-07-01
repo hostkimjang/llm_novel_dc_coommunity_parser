@@ -1,5 +1,27 @@
 # Development Checklist
 
+## 2026-07-02 Loop277 completed source 후보 publication contract gate 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] `build_completed_source_candidate_audit.py`가 approval source candidate에 publication contract convergence `GO`를 요구하도록 했다.
+- [x] clean/VLM/OCR/search/random/result 조건은 통과했지만 publication contract가 준비되지 않은 source를 별도 카운트로 출력하게 했다.
+- [x] public title이 `PromotionDecision` 없이 serialized 되면 approval candidate가 되지 않는 계약 테스트를 추가했다.
+- [x] 실제 `out` manifest 후보 감사를 재실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop277_completed_source_candidate_publication_contract_audit.md`
+  - manifest_count `733`
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `9`
+  - clean_vlm_ocr_search_health_not_ready_count `420`
+  - clean_vlm_ocr_publication_contract_not_ready_count `0`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+- [x] focused verification을 실행했다.
+  - `tests.test_completed_source_candidate_audit + tests.test_publication_contract_convergence_audit`: PASS, `7` tests.
+  - py_compile: PASS.
+- [ ] Loop264 대형 run 완료 후 completed source 후보 감사를 다시 실행한다.
+- [ ] completed source 후보가 생기면 publication contract convergence `GO`와 final health audit를 함께 확인한다.
+- Gate: completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, publication contract requirement `ENFORCED`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop276 health audit publication contract gate 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

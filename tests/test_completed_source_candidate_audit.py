@@ -22,6 +22,17 @@ def write_json(path: Path, payload) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
 
 
+def neutral_identity_row(post_id: int) -> dict:
+    return {
+        "post_id": post_id,
+        "analysis_result": {
+            "identity": {
+                "candidate_ledger_status": "promotion_blocked",
+            }
+        },
+    }
+
+
 class CompletedSourceCandidateAuditTest(unittest.TestCase):
     def test_missing_completed_source_candidate_stays_review_locked(self):
         mod = load_module()
@@ -43,7 +54,7 @@ class CompletedSourceCandidateAuditTest(unittest.TestCase):
                     "ocr_enabled": True,
                 },
             )
-            write_json(out / "clean_short.json", [{"post_id": 10}, {"post_id": 11}])
+            write_json(out / "clean_short.json", [neutral_identity_row(10), neutral_identity_row(11)])
             write_json(
                 out / "clean_short_manifest.json",
                 {
@@ -81,7 +92,10 @@ class CompletedSourceCandidateAuditTest(unittest.TestCase):
         with TemporaryDirectory() as tmp:
             root = Path(tmp)
             out = root / "out"
-            write_json(out / "complete.json", [{"post_id": 1}, {"post_id": 2}, {"post_id": 3}])
+            write_json(
+                out / "complete.json",
+                [neutral_identity_row(1), neutral_identity_row(2), neutral_identity_row(3)],
+            )
             write_json(
                 out / "complete_manifest.json",
                 {
@@ -114,6 +128,11 @@ class CompletedSourceCandidateAuditTest(unittest.TestCase):
         self.assertEqual(report["summary"]["approval_source_candidate_count"], 1)
         self.assertEqual(report["approval_source_candidates"][0]["run_id"], "complete")
         self.assertTrue(report["approval_source_candidates"][0]["search_health_ready"])
+        self.assertTrue(report["approval_source_candidates"][0]["publication_contract_ready"])
+        self.assertEqual(
+            report["approval_source_candidates"][0]["publication_contract_convergence_gate"],
+            "GO",
+        )
 
     def test_clean_candidate_without_direct_search_health_is_blocked(self):
         mod = load_module()
@@ -157,6 +176,70 @@ class CompletedSourceCandidateAuditTest(unittest.TestCase):
         self.assertFalse(blocked["search_health_ready"])
         self.assertFalse(blocked["search_health_included"])
         self.assertTrue(blocked["search_health_light_mode"])
+
+    def test_clean_candidate_without_publication_contract_convergence_is_blocked(self):
+        mod = load_module()
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            out = root / "out"
+            write_json(
+                out / "complete.json",
+                [
+                    {
+                        "post_id": 1,
+                        "analysis_result": {
+                            "identity": {
+                                "novel_identity": {
+                                    "official_title": "테라포밍",
+                                    "heretic_url": "https://novel.munpia.com/416826",
+                                }
+                            }
+                        },
+                    },
+                    neutral_identity_row(2),
+                    neutral_identity_row(3),
+                ],
+            )
+            write_json(
+                out / "complete_manifest.json",
+                {
+                    "run_id": "complete-publication-contract-leak",
+                    "input_post_count": 3,
+                    "completed_count": 3,
+                    "flushed_count": 3,
+                    "pending_count": 0,
+                    "failed_count": 0,
+                    "large_run_complete": True,
+                    "vlm_enabled": True,
+                    "ocr_enabled": True,
+                    "mcp_health_include_search": True,
+                    "mcp_health_light_mode": False,
+                    "mcp_health_failure_count": 0,
+                },
+            )
+            old_cwd = Path.cwd()
+            try:
+                import os
+
+                os.chdir(root)
+                report = mod.build_audit(out, random_target=3)
+            finally:
+                os.chdir(old_cwd)
+
+        self.assertEqual(report["gate"]["overall"], "REVIEW-LOCKED")
+        self.assertEqual(report["summary"]["approval_source_candidate_count"], 0)
+        self.assertEqual(
+            report["summary"]["clean_vlm_ocr_publication_contract_not_ready_count"],
+            1,
+        )
+        self.assertIn(
+            "clean_sources_exist_but_publication_contract_not_ready",
+            report["gate"]["blockers"],
+        )
+        blocked = report["clean_vlm_ocr_publication_contract_not_ready_candidates"][0]
+        self.assertEqual(blocked["run_id"], "complete-publication-contract-leak")
+        self.assertFalse(blocked["publication_contract_ready"])
+        self.assertEqual(blocked["publication_contract_convergence_gate"], "NO-GO")
 
 
 if __name__ == "__main__":
