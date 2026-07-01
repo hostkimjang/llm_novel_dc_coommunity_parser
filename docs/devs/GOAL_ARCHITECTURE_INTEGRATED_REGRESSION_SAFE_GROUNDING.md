@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop269 Addendum - health audit flush integrity classifier
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: completed-source 판정 전에 manifest/checkpoint/result/pending count 정합성을 audit가 직접 분류하게 한다.
+- 코드 변경: `tools/audit_expert_run_health.py`에 `flush_integrity` classifier를 추가했다. `run_integrity_gate`, `classification`, `blockers`, count consistency, pending blocker sample을 기록한다. `tests/test_audit_expert_run_health.py`에 clean completion, ordered flush gap, count mismatch 계약을 추가했다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_269_REPORT_20260702.md`, flush integrity audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop269_flush_integrity_health_audit.json`.
+- Evidence: audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows `80`, checkpoint_rows `119`, pending_count_actual `39`이다. count consistency는 result/flushed, checkpoint/completed, pending/completed-minus-flushed 모두 `true`다. 직후 manifest poll은 input/completed/flushed/pending/failed `104502/119/80/39/0`, `large_run_complete=false`, `ordered_flush_blocked=true`.
+- Verification: `tests.test_audit_expert_run_health` `8` tests OK, py_compile PASS.
+- Gate: completed source `PENDING`, current run integrity `IN_PROGRESS`, search-health direct probe `SEPARATE_AUDIT_REQUIRED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop268 Addendum - health audit result JSON row count 지원
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

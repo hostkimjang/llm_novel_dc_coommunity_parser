@@ -1,5 +1,36 @@
 # Development Checklist
 
+## 2026-07-02 Loop269 flush integrity classifier 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] `audit_expert_run_health.py`에 `flush_integrity` classifier를 추가했다.
+- [x] clean completion / ordered flush gap / count mismatch 계약 테스트를 추가했다.
+  - `tests\test_audit_expert_run_health.py`
+- [x] 실제 Loop264 진행 중 run에 flush integrity audit를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop269_flush_integrity_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `80`
+  - checkpoint_rows `119`
+  - pending_count_actual `39`
+  - reason_error_count `0`
+- [x] count consistency를 분리 확인했다.
+  - result_rows == flushed_count `true`
+  - checkpoint_completed == completed_count `true`
+  - pending_snapshot_rows == pending_count `true`
+  - pending_snapshot_rows == completed_count - flushed_count `true`
+- [x] 직후 manifest poll을 분리 확인했다.
+  - input/completed/flushed/pending/failed `104502/119/80/39/0`
+  - `large_run_complete=false`
+  - `partial_flush_gap=true`
+  - `ordered_flush_blocked=true`
+- [x] focused verification을 실행했다.
+  - `tests.test_audit_expert_run_health`: PASS, `8` tests.
+  - py_compile: PASS.
+- [ ] run 완료 후 `run_integrity_gate=GO`, `classification=clean_completed_source`인지 확인한다.
+- [ ] run 완료 후 search-health direct probe 또는 search error evidence audit를 별도로 수행한다.
+- Gate: flush integrity classifier `PASS`, current run integrity `IN_PROGRESS`, completed source `PENDING`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop268 result JSON row count health audit 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

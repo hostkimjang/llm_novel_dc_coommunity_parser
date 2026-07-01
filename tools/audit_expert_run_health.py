@@ -193,6 +193,183 @@ def _count_result_rows(path: Path) -> Dict[str, Any]:
     }
 
 
+def _as_int(value: Any) -> int | None:
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value
+    try:
+        return int(value)
+    except Exception:
+        return None
+
+
+def _summarize_pending_row(row: Dict[str, Any]) -> Dict[str, Any]:
+    result = row.get("result") if isinstance(row.get("result"), dict) else {}
+    return {
+        "global_idx": row.get("global_idx"),
+        "post_id": row.get("post_id") or result.get("post_id"),
+        "title": row.get("title") or result.get("title"),
+    }
+
+
+def _build_flush_integrity(
+    *,
+    manifest_data: Dict[str, Any],
+    status_counts: Dict[str, int],
+    result_audit: Dict[str, Any],
+    pending_count_actual: int | None,
+    pending_samples: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+    input_count = _as_int(manifest_data.get("input_post_count"))
+    completed_count = _as_int(manifest_data.get("completed_count"))
+    flushed_count = _as_int(manifest_data.get("flushed_count"))
+    pending_count = _as_int(manifest_data.get("pending_count"))
+    failed_count = _as_int(manifest_data.get("failed_count"))
+    checkpoint_completed = _as_int(status_counts.get("completed")) or 0
+    checkpoint_failed = _as_int(status_counts.get("failed")) or 0
+    result_rows = _as_int(result_audit.get("row_count"))
+    completed_minus_flushed = (
+        completed_count - flushed_count
+        if completed_count is not None and flushed_count is not None
+        else None
+    )
+
+    required_counts = {
+        "input_post_count": input_count,
+        "completed_count": completed_count,
+        "flushed_count": flushed_count,
+        "pending_count": pending_count,
+        "failed_count": failed_count,
+        "result_rows": result_rows,
+        "pending_count_actual": pending_count_actual,
+    }
+    blockers: List[str] = [f"{name}_missing" for name, value in required_counts.items() if value is None]
+
+    if input_count is not None and completed_count is not None and completed_count < input_count:
+        blockers.append("completed_count_lt_input_post_count")
+    if pending_count is not None and pending_count > 0:
+        blockers.append("pending_count_gt_zero")
+    if failed_count is not None and failed_count > 0:
+        blockers.append("failed_count_gt_zero")
+    if completed_count is not None and flushed_count is not None and flushed_count < completed_count:
+        blockers.append("flushed_count_lt_completed_count")
+    if completed_count is not None and result_rows is not None and result_rows < completed_count:
+        blockers.append("result_rows_lt_completed_count")
+    if manifest_data.get("large_run_complete") is not True:
+        blockers.append("large_run_completion_not_proven")
+    if manifest_data.get("ordered_flush_blocked") is True:
+        blockers.append("ordered_flush_blocked")
+    if manifest_data.get("partial_flush_gap") is True:
+        blockers.append("partial_flush_gap")
+
+    consistency = {
+        "result_rows_eq_flushed_count": (
+            result_rows is not None and flushed_count is not None and result_rows == flushed_count
+        ),
+        "checkpoint_completed_eq_manifest_completed": (
+            completed_count is not None and checkpoint_completed == completed_count
+        ),
+        "checkpoint_failed_eq_manifest_failed": (
+            failed_count is not None and checkpoint_failed == failed_count
+        ),
+        "pending_snapshot_rows_eq_manifest_pending": (
+            pending_count_actual is not None and pending_count is not None and pending_count_actual == pending_count
+        ),
+        "pending_snapshot_rows_eq_completed_minus_flushed": (
+            pending_count_actual is not None
+            and completed_minus_flushed is not None
+            and pending_count_actual == completed_minus_flushed
+        ),
+    }
+    if result_rows is not None and flushed_count is not None and result_rows != flushed_count:
+        blockers.append("result_rows_ne_flushed_count")
+    if completed_count is not None and checkpoint_completed != completed_count:
+        blockers.append("checkpoint_completed_ne_manifest_completed")
+    if failed_count is not None and checkpoint_failed != failed_count:
+        blockers.append("checkpoint_failed_ne_manifest_failed")
+    if pending_count_actual is not None and pending_count is not None and pending_count_actual != pending_count:
+        blockers.append("pending_snapshot_rows_ne_manifest_pending")
+    if (
+        pending_count_actual is not None
+        and completed_minus_flushed is not None
+        and pending_count_actual != completed_minus_flushed
+    ):
+        blockers.append("pending_snapshot_rows_ne_completed_minus_flushed")
+
+    artifact_mismatch = any(
+        not value
+        for key, value in consistency.items()
+        if key
+        in {
+            "result_rows_eq_flushed_count",
+            "checkpoint_completed_eq_manifest_completed",
+            "checkpoint_failed_eq_manifest_failed",
+            "pending_snapshot_rows_eq_manifest_pending",
+            "pending_snapshot_rows_eq_completed_minus_flushed",
+        }
+    )
+    clean_completion = (
+        not blockers
+        and input_count is not None
+        and completed_count == input_count
+        and flushed_count == completed_count
+        and result_rows == flushed_count
+        and pending_count == 0
+        and pending_count_actual == 0
+        and failed_count == 0
+        and manifest_data.get("large_run_complete") is True
+        and manifest_data.get("ordered_flush_blocked") is not True
+        and manifest_data.get("partial_flush_gap") is not True
+    )
+
+    if clean_completion:
+        gate = "GO"
+        classification = "clean_completed_source"
+    elif artifact_mismatch:
+        gate = "NO-GO"
+        classification = "artifact_count_mismatch"
+    elif failed_count is not None and failed_count > 0:
+        gate = "NO-GO"
+        classification = "failed_rows_present"
+    elif (
+        (pending_count is not None and pending_count > 0)
+        or (flushed_count is not None and completed_count is not None and flushed_count < completed_count)
+        or manifest_data.get("ordered_flush_blocked") is True
+        or manifest_data.get("partial_flush_gap") is True
+    ):
+        gate = "IN_PROGRESS"
+        classification = "ordered_flush_gap_in_progress"
+    elif input_count is not None and completed_count is not None and completed_count < input_count:
+        gate = "IN_PROGRESS"
+        classification = "incomplete_run_in_progress"
+    else:
+        gate = "IN_PROGRESS"
+        classification = "incomplete_or_unclassified"
+
+    return {
+        "run_integrity_gate": gate,
+        "classification": classification,
+        "completion_ready": clean_completion,
+        "approval_ready": clean_completion,
+        "blockers": blockers,
+        "counts": {
+            "manifest_input_post_count": input_count,
+            "manifest_completed_count": completed_count,
+            "manifest_flushed_count": flushed_count,
+            "manifest_pending_count": pending_count,
+            "manifest_failed_count": failed_count,
+            "checkpoint_completed_count": checkpoint_completed,
+            "checkpoint_failed_count": checkpoint_failed,
+            "result_rows": result_rows,
+            "pending_snapshot_rows": pending_count_actual,
+            "completed_minus_flushed": completed_minus_flushed,
+        },
+        "consistency": consistency,
+        "pending_blocker_samples": pending_samples,
+    }
+
+
 def _iter_checkpoint(path: Path) -> Iterable[Dict[str, Any]]:
     with path.open(encoding="utf-8", errors="ignore") as f:
         for line in f:
@@ -496,18 +673,30 @@ def build_audit(
             degraded_queries.append(d_count)
 
     pending_count_actual: int | None = None
+    pending_samples: List[Dict[str, Any]] = []
     if pending.exists():
         payload = _load_json(pending)
+        pending_items: List[Any] = []
         if isinstance(payload, list):
-            pending_count_actual = len(payload)
+            pending_items = payload
         elif isinstance(payload, dict):
             for key in ("pending", "items", "posts", "data"):
                 if isinstance(payload.get(key), list):
-                    pending_count_actual = len(payload[key])
+                    pending_items = payload[key]
                     break
+        pending_count_actual = len(pending_items)
+        pending_rows = [row for row in pending_items if isinstance(row, dict)]
+        pending_samples = [_summarize_pending_row(row) for row in pending_rows[:10]]
 
     manifest_data = _load_json(manifest) if manifest.exists() else {}
     result_audit = _count_result_rows(result_json)
+    flush_integrity = _build_flush_integrity(
+        manifest_data=manifest_data if isinstance(manifest_data, dict) else {},
+        status_counts=dict(status_counts),
+        result_audit=result_audit,
+        pending_count_actual=pending_count_actual,
+        pending_samples=pending_samples,
+    )
     log_audit = _audit_logs(log_files)
     slang_audit = _audit_slang(rows, repo=repo)
 
@@ -530,6 +719,7 @@ def build_audit(
         "result_rows": result_audit["row_count"],
         "checkpoint_rows": len(rows),
         "pending_count_actual": pending_count_actual,
+        "flush_integrity": flush_integrity,
         "status_counts": dict(status_counts),
         "identity_state_counts": dict(identity_state_counts.most_common(30)),
         "discussion_type_counts_top": dict(discussion_counts.most_common(40)),
@@ -594,6 +784,11 @@ def main() -> None:
 
     print(f"WROTE {output}")
     print(f"result_rows={audit['result_rows']} result_shape={audit['result_json']['shape']}")
+    print(
+        "flush_integrity="
+        f"{audit['flush_integrity']['run_integrity_gate']}/"
+        f"{audit['flush_integrity']['classification']}"
+    )
     print(f"checkpoint_rows={audit['checkpoint_rows']} status_counts={audit['status_counts']}")
     print(f"reason_errors={audit['reason_error_count']}")
     print(

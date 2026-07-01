@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.audit_expert_run_health import _count_result_rows, _resolve_run_artifacts
+from tools.audit_expert_run_health import _build_flush_integrity, _count_result_rows, _resolve_run_artifacts
 
 
 class AuditExpertRunHealthTest(unittest.TestCase):
@@ -126,6 +126,79 @@ class AuditExpertRunHealthTest(unittest.TestCase):
             self.assertEqual(_count_result_rows(missing_json)["row_count"], None)
             self.assertEqual(_count_result_rows(missing_json)["exists"], False)
             self.assertEqual(_count_result_rows(missing_json)["load_error"], "missing")
+
+    def test_flush_integrity_go_for_clean_completed_source(self):
+        audit = _build_flush_integrity(
+            manifest_data={
+                "input_post_count": 2,
+                "completed_count": 2,
+                "flushed_count": 2,
+                "pending_count": 0,
+                "failed_count": 0,
+                "large_run_complete": True,
+                "ordered_flush_blocked": False,
+                "partial_flush_gap": False,
+            },
+            status_counts={"completed": 2},
+            result_audit={"row_count": 2},
+            pending_count_actual=0,
+            pending_samples=[],
+        )
+
+        self.assertEqual(audit["run_integrity_gate"], "GO")
+        self.assertEqual(audit["classification"], "clean_completed_source")
+        self.assertEqual(audit["blockers"], [])
+        self.assertTrue(audit["completion_ready"])
+
+    def test_flush_integrity_in_progress_for_ordered_flush_gap(self):
+        audit = _build_flush_integrity(
+            manifest_data={
+                "input_post_count": 10,
+                "completed_count": 6,
+                "flushed_count": 4,
+                "pending_count": 2,
+                "failed_count": 0,
+                "large_run_complete": False,
+                "ordered_flush_blocked": True,
+                "partial_flush_gap": True,
+            },
+            status_counts={"completed": 6},
+            result_audit={"row_count": 4},
+            pending_count_actual=2,
+            pending_samples=[{"global_idx": 5, "post_id": 123, "title": "held"}],
+        )
+
+        self.assertEqual(audit["run_integrity_gate"], "IN_PROGRESS")
+        self.assertEqual(audit["classification"], "ordered_flush_gap_in_progress")
+        self.assertIn("completed_count_lt_input_post_count", audit["blockers"])
+        self.assertIn("flushed_count_lt_completed_count", audit["blockers"])
+        self.assertIn("pending_count_gt_zero", audit["blockers"])
+        self.assertIn("large_run_completion_not_proven", audit["blockers"])
+        self.assertTrue(audit["consistency"]["result_rows_eq_flushed_count"])
+        self.assertEqual(audit["pending_blocker_samples"][0]["post_id"], 123)
+
+    def test_flush_integrity_no_go_for_count_mismatch(self):
+        audit = _build_flush_integrity(
+            manifest_data={
+                "input_post_count": 10,
+                "completed_count": 6,
+                "flushed_count": 4,
+                "pending_count": 1,
+                "failed_count": 0,
+                "large_run_complete": False,
+                "ordered_flush_blocked": True,
+                "partial_flush_gap": True,
+            },
+            status_counts={"completed": 6},
+            result_audit={"row_count": 3},
+            pending_count_actual=2,
+            pending_samples=[],
+        )
+
+        self.assertEqual(audit["run_integrity_gate"], "NO-GO")
+        self.assertEqual(audit["classification"], "artifact_count_mismatch")
+        self.assertIn("result_rows_ne_flushed_count", audit["blockers"])
+        self.assertIn("pending_snapshot_rows_ne_manifest_pending", audit["blockers"])
 
 
 if __name__ == "__main__":

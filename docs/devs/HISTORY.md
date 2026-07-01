@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-02 - Loop269 adds flush integrity classifier to health audit
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- `tools/audit_expert_run_health.py`에 `flush_integrity` classifier를 추가해 manifest/checkpoint/result/pending count 정합성을 `GO/IN_PROGRESS/NO-GO`로 분류한다.
+- 실제 Loop264 진행 중 run에 flush integrity audit를 실행했고 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop269_flush_integrity_health_audit.json`이다.
+- audit snapshot은 `run_integrity_gate=IN_PROGRESS`, `classification=ordered_flush_gap_in_progress`, result_rows `80`, checkpoint_rows `119`, pending_count_actual `39`이다.
+- audit snapshot의 count consistency는 result/flushed, checkpoint/completed, pending/completed-minus-flushed가 모두 `true`라 artifact mismatch가 아니라 ordered flush gap 진행 중 상태다.
+- 직후 manifest poll은 input/completed/flushed/pending/failed `104502/119/80/39/0`, `large_run_complete=false`, `ordered_flush_blocked=true`다.
+- Gate는 flush integrity classifier `PASS`, current run integrity `IN_PROGRESS`, completed source `PENDING`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop268 adds result JSON row count to health audit
 
 - 동일 38-row parent packet은 재실행하지 않았다.

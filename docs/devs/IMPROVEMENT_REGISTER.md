@@ -1,5 +1,35 @@
 # Improvement Register
 
+## IMP-20260702-269 - health audit flush integrity classifier
+
+- Status: Implemented / approval blocked
+- Loop: 269
+- Problem:
+  - result row count만으로는 진행 중 ordered flush gap과 artifact count mismatch를 구분하기 어렵다.
+  - completed-source 판정에는 `manifest/checkpoint/result/pending` 정합성 자체가 gate로 남아야 한다.
+- Change:
+  - `flush_integrity` audit section을 추가했다.
+  - clean completion은 `GO`, ordered flush gap은 `IN_PROGRESS`, count mismatch는 `NO-GO`로 분류한다.
+  - blocker 목록과 pending blocker sample을 기록한다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_269_REPORT_20260702.md`
+  - audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop269_flush_integrity_health_audit.json`
+- Result:
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `80`
+  - checkpoint_rows `119`
+  - pending_count_actual `39`
+  - latest manifest poll `104502/119/80/39/0`
+- Verification:
+  - `tests.test_audit_expert_run_health` `8` tests OK
+  - py_compile PASS
+- Gate:
+  - completed source `PENDING`
+  - run integrity `IN_PROGRESS`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-268 - health audit result JSON row count 지원
 
 - Status: Implemented / approval blocked
