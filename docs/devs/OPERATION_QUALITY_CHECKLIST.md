@@ -6,6 +6,24 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop251 11663535 character-title collision quality gate
+
+- 근거:
+  - [x] 동일 38-row parent packet을 재실행하지 않았다.
+  - [x] Loop248 `11663535` `조선 퇴마록` public-title drift를 P0D blocker로 분리했다.
+  - [x] `character_title_collision(major)`와 후보 제목 직접 언급 부재를 resolved-public-title scope conflict로 반영했다.
+  - [x] `_post_discusses_work_as_work(...)` shared predicate를 경유해 단일 술어 계약을 유지했다.
+  - [x] Loop251 patched run은 completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`로 runtime `GO`다.
+  - [x] 최종 serialized output은 public title/url `null`, `candidate_ledger_status=promotion_blocked`, `publish_allowed=false`다.
+  - [x] reason hygiene hit_files `0`.
+  - [x] title-lead `176`, candidate-audit `107`, promotion trace/contract `55`, architecture gate/work-bridge `19`, py_compile PASS.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_251_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] targeted canary `GO_BLOCK_PUBLIC_TITLE`를 full scan approval로 쓰지 않는다.
+  - [x] semantic coverage `GO`를 full semantic approval로 쓰지 않는다.
+  - [x] convergence `NO-GO(queue 7 -> 7, packet identity changed)`를 approval blocker로 유지한다.
+  - [x] Parent replay `NOT_RUN`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop250 11658668 image scope guard quality gate
 
 - 근거:

@@ -1,5 +1,44 @@
 # Development Checklist
 
+## 2026-07-02 Loop251 11663535 character-title collision canonicalization hold 체크
+
+- [x] 동일 38-row parent packet을 재실행하지 않았다.
+- [x] `11663535` P0D canonicalization drift를 분리했다.
+  - Loop248 current: `조선 퇴마록` public publish
+  - Loop251 target: character-title collision이 있으면 public title publish 금지
+- [x] resolved-public-title gate를 보강했다.
+  - `src/llm_batch/agentic_pipeline.py`
+  - 후보 제목이 비이미지 본문에 직접 없고 `character_title_collision(major)`가 있으면 shared `_post_discusses_work_as_work(...)` bridge 없이는 publish하지 않는다.
+  - `_has_verified_contextual_alias_work_bridge(...)`는 `_post_discusses_work_as_work(..., source="verified_contextual_alias_work_bridge")` 경유 wrapper임을 유지한다.
+- [x] 계약 테스트를 추가했다.
+  - `조선 퇴마록` alias-variant publish 차단
+  - 후보 제목 직접 언급 positive control 유지
+- [x] Loop251 단건 run을 실행했다.
+  - run id `20260702_034658_596805`
+  - completed/flushed/pending/failed `1/1/0/0`
+  - VLM/OCR `READY`, image_post_count `0`
+  - result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop251_11663535_p0d_canonicalization_guard_result.json`
+- [x] 최종 계약을 확인했다.
+  - `candidate_ledger_status=promotion_blocked`
+  - public title/url `null`
+  - blocked candidate `퇴마록`
+  - `title_resolution_state=author_new_work_context`
+  - `title_resolution_allowed=false`
+  - `publish_allowed=false`
+- [x] 검증을 완료했다.
+  - runtime audit `GO`
+  - reason hygiene hit_files `0`
+  - semantic coverage `GO` but approval 아님
+  - title-lead suite `176` PASS
+  - candidate-audit `107` PASS
+  - promotion trace/contract `55` PASS
+  - architecture gate/work-bridge `19` PASS
+  - py_compile PASS
+- [x] 한국어 loop report를 남겼다.
+  - `docs/devs/loop_reports/LOOP_251_REPORT_20260702.md`
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- [ ] Same parent/representative packet 또는 full375 collateral gate를 통과하기 전까지 approval을 갱신하지 않는다.
+
 ## 2026-07-02 Loop250 11658668 resolved-public image scope guard 체크
 
 - [x] 동일 38-row parent packet을 재실행하지 않았다.

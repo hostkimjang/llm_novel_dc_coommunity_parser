@@ -905,6 +905,129 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertIn("image_title_not_promotion_eligible", decision["reason_codes"])
         self.assertEqual(final_decision["_promotion_gate_state"]["scope"]["scope_kind"], "context_only")
 
+    def test_resolved_public_title_scope_blocks_character_collision_alias_variant(self):
+        pipeline = build_pipeline()
+        title = "조선 퇴마록"
+        url = "https://m.munpia.com/novel/detail/424777"
+        post = PostInput(
+            post_id=11663535,
+            title="퇴마록에 온갖 능력 다나오네 생각해보니",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(
+                    type="text",
+                    text=(
+                        "박신부 - 신성 오오라, 예수 만남\n"
+                        "이현암 - 무협캐릭터, 부동심결, 월향검, 청홍검 사용\n"
+                        "승희 - 신의 아바타\n"
+                        "장준후 - 주술, 술법캐"
+                    ),
+                )
+            ],
+            comments=["괜히 그시절 goat이 아니지", "도서관 죽치고 앉아있었을 듯"],
+        )
+        ctx = ConversationContext(post_id=post.post_id, post_data=pipeline._post_to_dict(post), comments=post.comments)
+        ctx.search_results = [
+            {
+                "title": "조선 퇴마록 - 문피아 웹소설",
+                "url": url,
+                "content": "조선 퇴마록 작품 상세 페이지",
+            }
+        ]
+        final_decision = {
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "review",
+            "context_sources": ["title", "body", "comments", "search"],
+            "anchor_type": "title_alias",
+        }
+        verification_result = {
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "grounding_check": {
+                "anchor_found": "character_mention",
+                "anchor_text": "박신부, 이현암, 승희, 장준후",
+            },
+            "counter_arguments": [
+                {
+                    "issue": "character_title_collision",
+                    "severity": "major",
+                    "action": "nullify_title",
+                    "explanation": "short title + 캐릭터 언급 충돌 패턴",
+                }
+            ],
+        }
+
+        decision = pipeline._record_resolved_public_title_gate_decision(
+            ctx,
+            title,
+            candidate_url=url,
+            final_decision=final_decision,
+            verification_result=verification_result,
+            source="serialized_public_identity",
+        )
+
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertTrue(decision["candidate_preserved"])
+        self.assertIn("scope_context_only", decision["reason_codes"])
+        self.assertIn("character_title_collision", decision["reason_codes"])
+        self.assertIn("missing_direct_candidate_title", decision["reason_codes"])
+        self.assertEqual(final_decision["_promotion_gate_state"]["scope"]["scope_kind"], "context_only")
+
+    def test_resolved_public_title_scope_allows_character_collision_when_candidate_title_is_direct(self):
+        pipeline = build_pipeline()
+        title = "조선 퇴마록"
+        url = "https://m.munpia.com/novel/detail/424777"
+        post = PostInput(
+            post_id=11663535,
+            title="조선 퇴마록에 온갖 능력 다나오네 생각해보니",
+            author="ㅇㅇ",
+            content_blocks=[ContentBlock(type="text", text="박신부랑 이현암 설정 이야기")],
+            comments=[],
+        )
+        ctx = ConversationContext(post_id=post.post_id, post_data=pipeline._post_to_dict(post), comments=[])
+        ctx.search_results = [{"title": "조선 퇴마록 - 문피아 웹소설", "url": url, "content": "작품 상세"}]
+        final_decision = {
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "review",
+            "context_sources": ["title", "body", "search"],
+            "anchor_type": "title_alias",
+        }
+        verification_result = {
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "grounding_check": {"anchor_found": "character_mention"},
+            "counter_arguments": [
+                {
+                    "issue": "character_title_collision",
+                    "severity": "major",
+                    "action": "nullify_title",
+                }
+            ],
+        }
+
+        decision = pipeline._record_resolved_public_title_gate_decision(
+            ctx,
+            title,
+            candidate_url=url,
+            final_decision=final_decision,
+            verification_result=verification_result,
+            source="serialized_public_identity",
+        )
+
+        self.assertEqual(decision["status"], "publish")
+        self.assertTrue(decision["publish_allowed"])
+        self.assertNotIn("character_title_collision", decision["reason_codes"])
+        self.assertEqual(final_decision["_promotion_gate_state"]["scope"]["scope_kind"], "current_work")
+
     def test_late_title_rescue_paths_share_semantic_no_work_gate(self):
         source_path = Path(__file__).resolve().parents[1] / "src" / "llm_batch" / "agentic_pipeline.py"
         source = source_path.read_text(encoding="utf-8")

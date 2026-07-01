@@ -1,5 +1,29 @@
 # Improvement Register
 
+## IMP-20260702-451 - Loop251 blocks 11663535 character-title collision public title drift
+
+- 상태: targeted canary GO / runtime GO / reason hygiene GO / semantic coverage GO but approval 아님 / convergence NO-GO / full375 previous NO-GO / full scan approval false / goal NOT_COMPLETE
+- 문제:
+  - Loop248에서 `11663535`의 `퇴마록` 계열 글이 `조선 퇴마록` public title로 publish됐다.
+  - verifier counter에는 `character_title_collision(major)`가 있었지만, resolved-public-title gate가 이를 scope conflict로 쓰지 못했다.
+- 조치:
+  - `src/llm_batch/agentic_pipeline.py`에서 후보 제목이 비이미지 본문에 직접 없고 `character_title_collision` counter가 있으면 shared work bridge 없이는 public publish하지 않도록 했다.
+  - `_post_discusses_work_as_work(...)`를 gate 확인에 재사용해 단일 work-bridge 술어 계약을 유지했다.
+  - `tests/test_title_lead_search_inferred_guard.py`에 negative/positive 계약 테스트를 추가했다.
+- 검증:
+  - Loop251 run `20260702_034658_596805`은 completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`.
+  - Final은 `candidate_ledger_status=promotion_blocked`, public title/url `null`, blocked candidate `퇴마록`, `publish_allowed=false`.
+  - runtime audit `GO`, reason hygiene hit_files `0`, semantic coverage `GO` but approval 아님.
+  - title-lead `176`, candidate-audit `107`, promotion trace/contract `55`, architecture gate/work-bridge `19`, py_compile PASS.
+- 결정:
+  - `11663535` 단건 public title drift는 현재 코드에서 publish되지 않는다.
+  - 단건 targeted canary 성공을 full scan approval로 쓰지 않는다.
+  - convergence는 queue `7 -> 7` 및 packet identity changed로 `NO-GO`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+- 다음 조치:
+  - same parent/representative packet 또는 full375 collateral gate에서 survival을 확인한다.
+  - 남은 residual은 동일 packet safe_resolved 단조 비감소 조건을 지키는 범위에서만 감소시킨다.
+
 ## IMP-20260702-450 - Loop250 blocks 11658668 image OCR public title leak
 
 - 상태: targeted canary GO / runtime GO / reason hygiene GO / semantic coverage REVIEW-LOCKED / convergence NO-GO / full375 previous NO-GO / full scan approval false / goal NOT_COMPLETE

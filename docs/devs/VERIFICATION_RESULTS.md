@@ -1,5 +1,58 @@
 # Verification Results
 
+## 2026-07-02 Loop251 11663535 character-title collision canonicalization hold verification
+
+- Scope: 동일 38-row parent packet을 재실행하지 않고 `11663535` P0D canonicalization drift를 resolved-public-title gate에서 차단한다.
+- Input:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop251_11663535_p0d_canonicalization_1.jsonl`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop251_11663535_p0d_canonicalization_1_manifest.json`
+- Runtime:
+  - run id `20260702_034658_596805`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop251_11663535_p0d_canonicalization_guard_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop251_11663535_p0d_canonicalization_guard_result_manifest.json`
+  - log `logs\expert_run_20260702_034658_596805.log`
+  - completed/flushed/pending/failed `1/1/0/0`, effective_parallel `1`, VLM/OCR `READY`, image_post_count `0`
+- Contract outcome:
+  - `candidate_ledger_status=promotion_blocked`
+  - public `novel_identity.official_title=null`, `heretic_url=null`
+  - blocked candidate `퇴마록`
+  - `title_resolution_state=author_new_work_context`, `title_resolution_allowed=false`, `work_resolution=unresolved`
+  - `promotion_decision.status=candidate_only`, `publish_allowed=false`
+- Runtime audit:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop251_11663535_p0d_canonicalization_guard_runtime_audit.md/json`
+  - runtime_contract `GO`
+- Reason hygiene:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop251_11663535_p0d_canonicalization_guard_reason_hygiene.json`
+  - hit_files `0`, clean_files `1`
+- Semantic coverage:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop251_11663535_p0d_canonicalization_guard_semantic_coverage.md/json`
+  - gate `GO`, issues `[]`
+  - coverage `GO`는 full semantic approval이 아니다.
+- Convergence:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop251_11663535_p0d_canonicalization_guard_goal_convergence.md/json`
+  - gate `NO-GO`
+  - actionable queue `7 -> 7`
+  - packet identity changed, safe delta 미평가
+- Code verification:
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_title_lead_search_inferred_guard.py tools\evaluate_goal_convergence.py tools\safe_loss_flip_rate_probe.py tools\evaluate_always_on_regression_gates.py tests\test_goal_convergence.py tests\test_safe_loss_flip_rate_probe.py tests\test_always_on_regression_gates.py tests\test_regression_safe_work_bridge_contract.py`: PASS
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard -v`: PASS, `176` tests
+  - `.venv312\Scripts\python.exe -m unittest tests.test_candidate_audit -v`: PASS, `107` tests
+  - `.venv312\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata tests.test_promotion_gate_contract -v`: PASS, `55` tests
+  - `.venv312\Scripts\python.exe -m unittest tests.test_goal_convergence tests.test_safe_loss_flip_rate_probe tests.test_always_on_regression_gates tests.test_regression_safe_work_bridge_contract -v`: PASS, `19` tests
+- Artifact:
+  - `docs\devs\loop_reports\LOOP_251_REPORT_20260702.md`
+- Gate:
+  - targeted canary: `GO_BLOCK_PUBLIC_TITLE`
+  - runtime: `GO`
+  - reason hygiene: `GO`
+  - semantic coverage: `GO` but approval 아님
+  - convergence: `NO-GO`
+  - parent replay: `NOT_RUN`
+  - full375 previous: `NO-GO`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+
 ## 2026-07-02 Loop250 11658668 resolved-public image scope guard verification
 
 - Scope: 동일 38-row parent packet을 재실행하지 않고 `11658668` image OCR 기반 public title publish 누수를 resolved-public-title gate에서 차단한다.

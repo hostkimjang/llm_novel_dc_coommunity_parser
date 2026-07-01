@@ -2,6 +2,37 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop251 11663535 canonicalization hold TODO
+
+- 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. Loop251은 `11663535`의 `조선 퇴마록` public-title drift를 resolved-public-title gate 계약으로 막고, runtime에서 `퇴마록` 후보를 `promotion_blocked`로 보존했다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.
+- Loop251 TODO:
+  - [x] Loop248 `11663535` drift 근거를 확인했다.
+    - current public title `조선 퇴마록`
+    - verifier counter `character_title_collision(major)`
+  - [x] resolved-public-title gate를 보강했다.
+    - 후보 제목이 비이미지 본문에 직접 없고 `character_title_collision(major)`가 있으면 shared work bridge 없이는 publish하지 않는다.
+  - [x] 단일 술어 계약을 유지했다.
+    - `_has_verified_contextual_alias_work_bridge(...)`는 `_post_discusses_work_as_work(...)` wrapper다.
+    - 이번 public gate도 `_post_discusses_work_as_work(...)`를 경유한다.
+  - [x] Loop251 patched run을 실행했다.
+    - run `20260702_034658_596805`
+    - completed/flushed/pending/failed `1/1/0/0`
+    - result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop251_11663535_p0d_canonicalization_guard_result.json`
+  - [x] 최종 계약을 확인했다.
+    - `candidate_ledger_status=promotion_blocked`
+    - public title/url `null`
+    - blocked candidate `퇴마록`
+    - `publish_allowed=false`
+  - [x] 검증을 완료했다.
+    - runtime audit `GO`
+    - reason hygiene hit_files `0`
+    - semantic coverage `GO` but approval 아님
+    - title-lead `176`, candidate-audit `107`, promotion trace/contract `55`, architecture `19`, py_compile PASS
+  - [x] 한국어 report를 남겼다.
+    - `docs/devs/loop_reports/LOOP_251_REPORT_20260702.md`
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+  - [ ] same parent/representative packet 또는 full375 collateral gate를 통과하기 전 approval을 갱신하지 않는다.
+
 ## 2026-07-02 regression-safe grounding Loop250 11658668 image scope guard TODO
 
 - 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. Loop250은 `11658668`의 image OCR 기반 resolved-public-title publish 누수를 `promotion_blocked`로 내렸다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.

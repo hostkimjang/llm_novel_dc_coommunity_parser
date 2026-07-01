@@ -32405,6 +32405,72 @@ OUTPUT JSON:
             if meta_primary_block and not has_structured_direct_image:
                 reason = str(meta_primary_reason or "meta_primary_subject").strip()
                 scope_block_flags.append(f"meta_primary_subject:{reason}")
+
+        def _has_major_character_title_collision() -> bool:
+            for container in (scope_fields, final, vf):
+                counter_args = container.get("counter_arguments") if isinstance(container, dict) else None
+                if not isinstance(counter_args, list):
+                    continue
+                for item in counter_args:
+                    if not isinstance(item, dict):
+                        continue
+                    severity = str(item.get("severity") or "").strip().lower()
+                    action = str(item.get("action") or "").strip().lower()
+                    issue_text = " ".join(
+                        str(item.get(key) or "")
+                        for key in ("issue", "reason", "explanation", "type", "code")
+                    ).lower()
+                    character_collision = bool(
+                        "character_title_collision" in issue_text
+                        or ("캐릭터" in issue_text and "제목" in issue_text and "충돌" in issue_text)
+                    )
+                    if character_collision and (
+                        severity in {"major", "critical"} or action == "nullify_title"
+                    ):
+                        return True
+            return False
+
+        grounding = vf.get("grounding_check") if isinstance(vf, dict) else {}
+        grounding_anchor = ""
+        if isinstance(grounding, dict):
+            grounding_anchor = str(grounding.get("anchor_found") or "").strip().lower()
+        alias_or_character_scope = bool(
+            anchor_type_norm in {"title_alias", "character"}
+            or grounding_anchor in {"character_mention", "character_title_link", "plot_mention"}
+        )
+        candidate_title_visible = False
+        try:
+            candidate_title_visible = self._title_mentioned_in_non_image_main_context(ctx, title)
+        except Exception:
+            candidate_title_visible = False
+        if (
+            alias_or_character_scope
+            and not candidate_title_visible
+            and _has_major_character_title_collision()
+        ):
+            shared_work_bridge = False
+            try:
+                shared_work_bridge = self._post_discusses_work_as_work(
+                    ctx,
+                    title,
+                    source="resolved_public_title_scope",
+                    final_decision=final,
+                    verification_result=vf,
+                    title_candidates=title_candidates,
+                ) or self._post_discusses_work_as_work(
+                    ctx,
+                    title,
+                    source="verified_contextual_alias_work_bridge",
+                    final_decision=final,
+                    verification_result=vf,
+                    title_candidates=title_candidates,
+                )
+            except Exception:
+                shared_work_bridge = False
+            if not shared_work_bridge:
+                scope_block_flags.append("character_title_collision")
+                scope_block_flags.append("missing_direct_candidate_title")
+
         scope_block_flags = list(dict.fromkeys(scope_block_flags))
         scope_kind = "context_only" if scope_block_flags else "current_work"
         scope_confidence = "medium" if scope_block_flags else ("high" if resolved_url else "medium")

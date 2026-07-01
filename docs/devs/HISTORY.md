@@ -1,5 +1,22 @@
 # Development History
 
+## 2026-07-02 - Loop251 blocks 11663535 character-title collision public title drift
+
+- 동일 38-row parent packet은 재실행하지 않고 `11663535` 단건 P0D canonicalization blocker만 좁혔다.
+- Loop248에서는 `11663535`가 `조선 퇴마록` public title로 publish되어 canonicalization drift 후보가 됐다.
+- `src/llm_batch/agentic_pipeline.py`에서 resolved-public-title gate가 `character_title_collision(major)`와 후보 제목 직접 언급 부재를 scope conflict로 반영하게 했다.
+- 단일 술어 계약은 유지했다. `_has_verified_contextual_alias_work_bridge(...)`는 `_post_discusses_work_as_work(..., source="verified_contextual_alias_work_bridge")` wrapper이고, 이번 gate도 shared predicate를 확인한다.
+- Loop251 run `20260702_034658_596805`은 completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`, image_post_count `0`이다.
+- Loop251 final은 `candidate_ledger_status=promotion_blocked`, public title/url `null`, blocked candidate `퇴마록`, `title_resolution_allowed=false`, `publish_allowed=false`다.
+- Verification: runtime audit `GO`, reason hygiene hit_files `0`, semantic coverage `GO` but approval 아님, title-lead `176` PASS, candidate-audit `107` PASS, promotion trace/contract `55` PASS, architecture gate/work-bridge `19` PASS, py_compile PASS.
+- Artifacts:
+  - `docs/devs/loop_reports/LOOP_251_REPORT_20260702.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop251_11663535_p0d_canonicalization_guard_result.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop251_11663535_p0d_canonicalization_guard_runtime_audit.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop251_11663535_p0d_canonicalization_guard_semantic_coverage.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop251_11663535_p0d_canonicalization_guard_goal_convergence.md`
+- Gate는 targeted canary `GO_BLOCK_PUBLIC_TITLE`, runtime `GO`, convergence `NO-GO(queue 7 -> 7, packet identity changed)`, parent replay `NOT_RUN`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 - Loop250 blocks 11658668 resolved-public image scope publish leak
 
 - 동일 38-row parent packet은 재실행하지 않고 `11658668` 단건 P0C blocker만 좁혔다.

@@ -6,6 +6,18 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop251 Addendum - 11663535 캐릭터-제목 충돌 canonicalization hold
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- Loop251은 `11663535`가 `조선 퇴마록` public title로 승격되는 P0D drift를 막기 위해 resolved-public-title gate를 보강했다.
+- 코드 변경: 후보 제목이 비이미지 본문에 직접 없고 `character_title_collision(major|critical)` 또는 `nullify_title` counter가 있으며 shared `_post_discusses_work_as_work(...)` bridge가 없으면 `character_title_collision` / `missing_direct_candidate_title` scope conflict로 내린다.
+- 단일 술어 계약: `_has_verified_contextual_alias_work_bridge(...)`는 `_post_discusses_work_as_work(..., source="verified_contextual_alias_work_bridge")` wrapper이고, 이번 public gate도 같은 shared predicate를 확인한다.
+- Run `20260702_034658_596805`은 completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`, image_post_count `0`이다.
+- Result는 `candidate_ledger_status=promotion_blocked`, public title/url `null`, blocked candidate `퇴마록`, `title_resolution_state=author_new_work_context`, `title_resolution_allowed=false`, `publish_allowed=false`다.
+- Artifacts: `docs/devs/loop_reports/LOOP_251_REPORT_20260702.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop251_11663535_p0d_canonicalization_guard_result.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop251_11663535_p0d_canonicalization_guard_runtime_audit.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop251_11663535_p0d_canonicalization_guard_semantic_coverage.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop251_11663535_p0d_canonicalization_guard_goal_convergence.md`.
+- Verification: reason hygiene hit_files `0`, semantic coverage `GO` but approval 아님, `tests.test_title_lead_search_inferred_guard` `176` PASS, `tests.test_candidate_audit` `107` PASS, promotion trace/contract `55` PASS, architecture gate/work-bridge `19` PASS, py_compile PASS.
+- Gate: targeted canary `GO_BLOCK_PUBLIC_TITLE`, runtime `GO`, convergence `NO-GO(queue 7 -> 7, packet identity changed)`, parent replay `NOT_RUN`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop250 Addendum - 11658668 이미지 기반 resolved-public-title scope 차단
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
@@ -19,6 +31,11 @@
 
 ## Current Evidence
 
+- Latest Loop251 11663535 character-title collision hold report: `docs/devs/loop_reports/LOOP_251_REPORT_20260702.md`
+- Latest Loop251 result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop251_11663535_p0d_canonicalization_guard_result.json`
+- Latest Loop251 runtime audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop251_11663535_p0d_canonicalization_guard_runtime_audit.md/json`
+- Latest Loop251 semantic coverage audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop251_11663535_p0d_canonicalization_guard_semantic_coverage.md/json`
+- Latest Loop251 convergence audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop251_11663535_p0d_canonicalization_guard_goal_convergence.md/json`
 - Latest Loop250 11658668 image scope guard report: `docs/devs/loop_reports/LOOP_250_REPORT_20260702.md`
 - Latest Loop250 patched result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop250_11658668_resolved_public_image_scope_guard_result.json`
 - Latest Loop250 runtime audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop250_11658668_resolved_public_image_scope_guard_runtime_audit.md/json`
