@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-02 - Loop259 attaches browser visual evidence for Loop258 image rows
+
+- 동일 38-row parent packet은 재실행하지 않고 Loop258 semantic coverage의 `browser_visual_or_direct_evidence_missing=5` blocker만 좁혔다.
+- 대상은 `11660277`, `11663544`, `11658637`, `11658668`, `11657046`이다.
+- `tools/capture_vlm_ocr_browser_review_cli.py` fallback Playwright capture 결과는 captured rows `5/5`, screenshot OK `5/5`, visual evidence grade `Strong=5`, article image gate passed `5/5`, blocked/error rows `0`이다.
+- Semantic coverage rerun은 browser visual required/available/missing `5/5/0`으로 개선됐고 gate는 `REVIEW`다. 남은 issue는 `11658637`의 `comment_author_match_unverified_resolution_review_only=1`이다.
+- Goal action queue는 total_actions `7`, approval blocker `p0_p1_high_risk_expansion`을 유지한다.
+- Goal convergence는 same-packet safe_resolved `3 -> 3`, safe_loss `[]`, monotonic `true`로 개선됐지만 actionable queue `7 -> 7`이라 `NO-GO`다.
+- Gate는 browser visual `GO`, semantic coverage `REVIEW`, convergence `NO-GO`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 - Loop258 blocks URL-null inferred serialized publication
 
 - 동일 38-row parent packet은 재실행하지 않고 Loop257/258 same 7-row representative packet으로 final publication contract만 확인했다.

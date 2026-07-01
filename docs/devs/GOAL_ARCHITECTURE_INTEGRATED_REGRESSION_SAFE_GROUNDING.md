@@ -6,6 +6,18 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop259 Addendum - Loop258 image-row browser visual evidence
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: Loop258 semantic coverage blocker였던 image row 5건의 `browser_visual_or_direct_evidence_missing`을 닫는다.
+- 대상 post_id: `11660277`, `11663544`, `11658637`, `11658668`, `11657046`.
+- Artifacts: `docs/devs/loop_reports/LOOP_259_REPORT_20260702.md`, target JSONL `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop259_loop258_browser_visual_targets.jsonl`, capture manifest `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop259_loop258_browser_visual/loop259_browser_visual_manifest.json`, semantic coverage audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop259_loop258_semantic_coverage_with_browser_audit.md/json`, action queue `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop259_loop258_goal_action_queue_after_browser.md/json`, convergence `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop259_loop258_after_browser_goal_convergence.md/json`.
+- Capture result: fallback Playwright browser visual capture로 captured rows `5/5`, screenshot OK `5/5`, visual evidence grade `Strong=5`, article image gate passed `5/5`, blocked/error rows `0`이다. Codex in-app Browser 직접 성공으로 표기하지 않는다.
+- Semantic coverage: browser visual required/available/missing `5/5/0`으로 browser visual blocker는 닫혔다. 단, `11658637`의 `comment_author_match_unverified_resolution_review_only`가 남아 gate는 `REVIEW`다.
+- Action queue: total_actions `7`, ready_now `6`, blocked_until_completed_source `1`, approval blocker `p0_p1_high_risk_expansion`.
+- Convergence: same-packet safe_resolved `3 -> 3`, safe_loss `[]`, monotonic `true`지만 actionable queue `7 -> 7`이라 gate `NO-GO`다.
+- Gate: browser visual `GO`, semantic coverage `REVIEW`, convergence `NO-GO`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop257-258 Addendum - URL-null inferred publish hold
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
@@ -76,6 +88,11 @@
 
 ## Current Evidence
 
+- Latest Loop259 browser visual evidence report: `docs/devs/loop_reports/LOOP_259_REPORT_20260702.md`
+- Latest Loop259 browser visual capture manifest: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop259_loop258_browser_visual/loop259_browser_visual_manifest.json`
+- Latest Loop259 semantic coverage with browser audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop259_loop258_semantic_coverage_with_browser_audit.md/json`
+- Latest Loop259 action queue after browser evidence: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop259_loop258_goal_action_queue_after_browser.md/json`
+- Latest Loop259 goal convergence audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop259_loop258_after_browser_goal_convergence.md/json`
 - Latest Loop258 URL-null inferred publish hold report: `docs/devs/loop_reports/LOOP_258_REPORT_20260702.md`
 - Latest Loop258 result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop258_p0_representative_7_after_urlless_inferred_publish_hold_result.json`
 - Latest Loop258 manifest: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop258_p0_representative_7_after_urlless_inferred_publish_hold_result_manifest.json`

@@ -1,5 +1,30 @@
 # Improvement Register
 
+## IMP-20260702-454 - Loop259 attaches browser visual evidence for Loop258 image rows
+
+- 상태: browser visual GO / semantic coverage REVIEW / convergence NO-GO / parent replay NOT_RUN / full375 previous NO-GO / full scan approval false / goal NOT_COMPLETE
+- 문제:
+  - Loop258 result는 runtime/reason hygiene는 통과했지만 image row 5건에 browser/direct visual artifact가 없어 semantic coverage가 `REVIEW-LOCKED`였다.
+  - browser visual 없이 image/VLM/OCR row를 approval evidence로 쓰면 이미지 로딩, placeholder, broken image, OCR 맥락을 확인하지 못한다.
+- 조치:
+  - Loop258 result에서 `11660277`, `11663544`, `11658637`, `11658668`, `11657046` target JSONL을 생성했다.
+  - `tools/capture_vlm_ocr_browser_review_cli.py`로 fallback Playwright browser visual capture를 실행했다.
+  - semantic coverage audit와 goal action queue, goal convergence를 재실행했다.
+- 검증:
+  - capture manifest: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop259_loop258_browser_visual\loop259_browser_visual_manifest.json`
+  - captured rows `5/5`, screenshot OK `5/5`, visual evidence grade `Strong=5`, article image gate passed `5/5`, blocked/error rows `0`.
+  - semantic coverage browser visual required/available/missing `5/5/0`, gate `REVIEW`.
+  - action queue total_actions `7`, approval blocker `p0_p1_high_risk_expansion`.
+  - convergence same-packet safe_resolved `3 -> 3`, safe_loss `[]`, monotonic `true`, but actionable queue `7 -> 7`.
+- 결정:
+  - Loop258 browser visual blocker는 닫혔다.
+  - fallback Playwright 산출물이므로 Codex in-app Browser 직접 성공으로 표기하지 않는다.
+  - semantic coverage `REVIEW`는 full semantic approval이 아니다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+- 다음 조치:
+  - `11658637` comment author match review-only 신호를 확인한다.
+  - action queue를 줄이는 다음 executable gate 또는 completed source 기반 `p0_p1_high_risk_expansion`으로 이동한다.
+
 ## IMP-20260702-453 - Loop258 blocks URL-null inferred serialized publication
 
 - 상태: targeted canary GO_BLOCK_URL_NULL_PUBLIC_TITLE / runtime GO / convergence NO-GO / parent replay NOT_RUN / full375 previous NO-GO / full scan approval false / goal NOT_COMPLETE

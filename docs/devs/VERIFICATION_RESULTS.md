@@ -1,5 +1,45 @@
 # Verification Results
 
+## 2026-07-02 Loop259 Loop258 browser visual evidence verification
+
+- Scope: Loop258 semantic coverage blocker `browser_visual_or_direct_evidence_missing=5`를 external browser artifact로 해소한다.
+- Target:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop259_loop258_browser_visual_targets.jsonl`
+  - post_ids `11660277`, `11663544`, `11658637`, `11658668`, `11657046`
+- Browser visual capture:
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop259_loop258_browser_visual\loop259_browser_visual_manifest.json`
+  - summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop259_loop258_browser_visual\loop259_browser_visual_summary_ko.md`
+  - browser surface `fallback_playwright_node`
+  - captured rows `5/5`
+  - screenshot OK `5/5`
+  - visual evidence grade `Strong=5`
+  - article image gate passed `5/5`
+  - blocked/error rows `0`
+- Semantic coverage:
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop259_loop258_semantic_coverage_with_browser_audit.md/json`
+  - gate `REVIEW`
+  - browser visual required/available/missing `5/5/0`
+  - remaining issue `comment_author_match_unverified_resolution_review_only=1` for `11658637`
+- Action queue:
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop259_loop258_goal_action_queue_after_browser.md/json`
+  - total_actions `7`
+  - approval blocker `p0_p1_high_risk_expansion`
+  - semantic coverage gate `REVIEW`
+- Goal convergence:
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop259_loop258_after_browser_goal_convergence.md/json`
+  - gate `NO-GO`
+  - actionable queue `7 -> 7`, decreased `false`
+  - same_packet `true`
+  - safe_resolved `3 -> 3`, monotonic `true`
+  - safe_loss_post_ids `[]`
+- Gate:
+  - browser visual gate: `GO`
+  - semantic coverage: `REVIEW`
+  - goal convergence: `NO-GO`
+  - semantic quality: `REVIEW-LOCKED`
+  - full scan approval: `false`
+  - full375 previous: `NO-GO`
+
 ## 2026-07-02 Loop258 URL-null inferred publish hold verification
 
 - Scope: Loop257에서 `11663535`가 `퇴마록`을 URL 없이 public publish한 final serialized identity inference 경로를 차단한다.

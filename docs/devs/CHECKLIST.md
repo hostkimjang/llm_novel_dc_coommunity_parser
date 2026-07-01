@@ -1,5 +1,37 @@
 # Development Checklist
 
+## 2026-07-02 Loop259 Loop258 browser visual evidence 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] Loop258 semantic coverage blocker였던 browser visual missing 5건을 target으로 추출했다.
+  - target `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop259_loop258_browser_visual_targets.jsonl`
+  - post_ids `11660277`, `11663544`, `11658637`, `11658668`, `11657046`
+- [x] browser visual fallback capture를 실행했다.
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop259_loop258_browser_visual\loop259_browser_visual_manifest.json`
+  - captured rows `5/5`
+  - visual evidence grade `Strong=5`
+  - screenshot OK `5/5`
+  - article image gate passed `5/5`
+  - blocked/error rows `0`
+- [x] semantic coverage를 browser artifact manifest와 함께 재실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop259_loop258_semantic_coverage_with_browser_audit.md`
+  - gate `REVIEW`
+  - browser visual required/available/missing `5/5/0`
+  - remaining issue `comment_author_match_unverified_resolution_review_only=1` for `11658637`
+- [x] action queue를 재생성했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop259_loop258_goal_action_queue_after_browser.md`
+  - total_actions `7`
+  - approval blocker `p0_p1_high_risk_expansion`
+- [x] goal convergence를 재평가했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop259_loop258_after_browser_goal_convergence.md`
+  - gate `NO-GO`
+  - actionable queue `7 -> 7`, decreased `false`
+  - same_packet `true`
+  - safe_resolved `3 -> 3`, monotonic `true`, safe_loss `[]`
+- [ ] `11658637` comment author match review-only 신호가 title resolution 필수 근거인지 확인한다.
+- [ ] actionable queue 감소 전까지 stop condition을 통과로 보지 않는다.
+- Gate: browser visual `GO`, semantic coverage `REVIEW`, convergence `NO-GO`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, full375 previous `NO-GO`.
+
 ## 2026-07-02 Loop258 URL-null inferred publish hold 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.
