@@ -1,5 +1,19 @@
 # Development Checklist
 
+## 2026-07-02 Loop244 11660237 publish/block trace-scope review 체크
+
+- [x] 동일 38-row parent packet을 재실행하지 않았다.
+- [x] `11660237` run01~run07 기존 결과를 trace/scope/state 기준으로 비교했다.
+- [x] run01~run05 blocked 계열을 확인했다: public title `null`, `promotion_blocked`, `scope_kind=context_only`, `publish_allowed=false`.
+- [x] run04/run05의 댓글 존재를 확인해 입력 댓글 누락이 아니라 final contract 해석 문제로 분리했다.
+- [x] run06/run07 publish 계열을 확인했다: `safe_resolved`, `scope_kind=current_work`, `publish_allowed=true`, `official_title=테라포밍`, URL `https://novelpia.com/novel/61947`.
+- [x] publish direct bridge sources 4종을 확인했다: `title_led_consumption_bridge`, `alias_surface`, `title_abbrev_mentioned`, `official_detail_url`.
+- [x] 진동 갈림점은 검색 title/url 존재가 아니라 final publish contract scope 판정임을 기록했다.
+- [x] 한국어 loop report를 남겼다.
+  - `docs/devs/loop_reports/LOOP_244_REPORT_20260702.md`
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- [ ] same-packet parent/representative result로 `tools/evaluate_goal_convergence.py`를 다시 실행하기 전까지 residual accounting과 approval은 갱신하지 않는다.
+
 ## 2026-07-02 Loop243 goal convergence preflight after Loop242 체크
 
 - [x] 동일 38-row parent packet을 재실행하지 않았다.
@@ -157,7 +171,8 @@
 - [x] hard-hold relaxation을 금지했다: `hard_hold_relaxation_allowed=false`.
 - [x] 375 collateral diff를 golden-16과 동급 상시 gate로 승격했다: `tools/evaluate_always_on_regression_gates.py`.
 - [x] Always-on gate 산출물을 생성했다: golden-16 `GO`, full375 collateral `NO-GO`, collateral regression candidates `183`.
-- [ ] `11660237`의 publish/block 진동 원인을 trace/scope/state 기준으로 축소한다.
+- [x] `11660237`의 publish/block 진동 원인을 trace/scope/state 기준으로 축소했다.
+  - Loop244: 갈림점은 title/url 존재가 아니라 final publish contract의 `scope=context_only` vs `scope=current_work` 판정이다.
 - [ ] 다음 parent/representative replay 전에 `tools/evaluate_goal_convergence.py`로 actionable queue 감소와 same-packet safe_resolved 단조 비감소를 먼저 확인한다.
 
 ## 2026-07-01 Loop237 parent replay after Loop236 URL-title guard 체크

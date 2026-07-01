@@ -1,5 +1,26 @@
 # Improvement Register
 
+## IMP-20260702-444 - Loop244 narrows 11660237 variance to final publish scope
+
+- 상태: evidence review only / runtime rerun NOT_RUN / convergence same-packet NOT_EVALUATED / full375 previous NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / goal NOT_COMPLETE
+- 문제:
+  - `11660237`은 safe-loss flip probe에서 `promotion_blocked`와 `safe_resolved`가 섞여 `nondeterminism_unresolved`로 남았다.
+  - 다음 replay 전에는 검색 결과 존재 여부, 댓글 누락, final scope 판정 중 어느 지점이 진동을 만드는지 좁혀야 한다.
+- 조치:
+  - run01~run07 기존 결과를 `publish_contract_trace`, `publish_ledger`, scope, reason code 기준으로 비교했다.
+  - run01~run05 blocked 계열과 run06~run07 publish 계열을 분리했다.
+  - run04/run05의 댓글 존재를 확인해 `body_comments_absent_or_empty`를 입력 누락이 아니라 final contract 해석 문제로 분리했다.
+- 검증:
+  - blocked 계열: public title `null`, `candidate_ledger_status=promotion_blocked`, `scope_kind=context_only`, `publish_allowed=false`.
+  - publish 계열: `candidate_ledger_status=safe_resolved`, `scope_kind=current_work`, `publish_allowed=true`, `official_title=테라포밍`, URL `https://novelpia.com/novel/61947`.
+  - publish direct bridge sources: `title_led_consumption_bridge`, `alias_surface`, `title_abbrev_mentioned`, `official_detail_url`.
+- 결정:
+  - `11660237` 진동의 갈림점은 검색 title/url 존재가 아니라 final publish contract의 `scope=context_only` vs `scope=current_work` 판정이다.
+  - same-packet convergence를 아직 재평가하지 않았으므로 residual accounting, semantic approval, full scan approval은 갱신하지 않는다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+- 다음 조치:
+  - same-packet parent/representative result를 넣어 `tools/evaluate_goal_convergence.py`를 다시 실행하거나, 실행 전 direct bridge 4종이 packet에서도 유지되는지 확인한다.
+
 ## IMP-20260702-443 - Loop243 convergence preflight keeps safe delta same-packet only
 
 - 상태: code-test gate GO / convergence preflight NO-GO / parent replay NOT_RUN / full375 previous NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / goal NOT_COMPLETE

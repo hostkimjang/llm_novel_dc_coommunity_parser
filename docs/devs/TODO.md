@@ -2,6 +2,29 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop244 11660237 publish/block trace-scope review
+
+- 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. Loop244는 `11660237` run01~run07의 기존 산출물을 `publish_contract_trace`, `publish_ledger`, scope, reason code 기준으로 비교한 evidence review다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.
+- Loop244 TODO:
+  - [x] run01~run05 blocked 계열을 확인했다.
+    - public title `null`
+    - `candidate_ledger_status=promotion_blocked`
+    - `scope_kind=context_only`
+    - `publish_allowed=false`
+  - [x] run04/run05에는 댓글이 존재했으므로 `body_comments_absent_or_empty`는 입력 누락이 아니라 final contract 해석 문제로 분리했다.
+  - [x] run06/run07 publish 계열을 확인했다.
+    - `candidate_ledger_status=safe_resolved`
+    - `scope_kind=current_work`
+    - `publish_allowed=true`
+    - `official_title=테라포밍`
+    - URL `https://novelpia.com/novel/61947`
+  - [x] publish direct bridge sources 4종을 확인했다: `title_led_consumption_bridge`, `alias_surface`, `title_abbrev_mentioned`, `official_detail_url`.
+  - [x] 진동 갈림점은 검색 title/url 존재 자체가 아니라 final publish contract의 `scope=context_only` vs `scope=current_work` 판정으로 축소했다.
+  - [x] 한국어 report를 남겼다.
+    - `docs/devs/loop_reports/LOOP_244_REPORT_20260702.md`
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+  - [ ] same-packet parent/representative result를 넣어 `tools/evaluate_goal_convergence.py`를 다시 실행하기 전까지 residual accounting과 approval은 갱신하지 않는다.
+
 ## 2026-07-02 regression-safe grounding Loop243 goal convergence preflight after Loop242
 
 - 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. Loop243은 Loop242 뒤 `tools/evaluate_goal_convergence.py` preflight를 실제 실행했고 gate는 `NO-GO`다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.
@@ -123,7 +146,8 @@
   - [x] golden-16/full375 always-on gate evaluator를 추가했다.
     - gate: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop238_always_on_golden16_full375_gate.md`
     - golden-16 `GO`, full375 collateral `NO-GO`, changed `223`, collateral regression candidates `183`.
-  - [ ] `11660237`의 nondeterministic publish/block 원인을 `PromotionDecision` scope/state trace 기준으로 축소한다.
+  - [x] `11660237`의 nondeterministic publish/block 원인을 `PromotionDecision` scope/state trace 기준으로 축소했다.
+    - Loop244: 갈림점은 title/url 존재가 아니라 final publish contract의 `scope=context_only` vs `scope=current_work` 판정이다.
   - [ ] 다음 replay 전에 `tools/evaluate_goal_convergence.py`에 previous/current queue summary와 동일 packet result를 넣어 `NO_DELTA` 여부를 먼저 판정한다.
 
 - 상태: parent/representative replay runtime GO / semantic `NO-GO / MIXED_MOVEMENT` / safe/public count drop / Data Analytics validate-render PASS / residual accounting no-delta / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`

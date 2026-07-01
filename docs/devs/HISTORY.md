@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-02 - Loop244 narrows 11660237 publish/block variance to final scope decision
+
+- 동일 38-row parent packet은 재실행하지 않고 `11660237` run01~run07 기존 결과를 evidence review로 비교했다.
+- run01~run05 blocked 계열은 public title `null`, `candidate_ledger_status=promotion_blocked`, `scope_kind=context_only`, `publish_allowed=false`다.
+- run04/run05에는 댓글이 존재했으므로 `body_comments_absent_or_empty`는 입력 누락이 아니라 final contract가 `볼만함`, `주인공`, `야스`를 current-work consumption bridge로 읽지 못한 해석 문제로 분리했다.
+- run06/run07 publish 계열은 `candidate_ledger_status=safe_resolved`, `scope_kind=current_work`, `publish_allowed=true`, `official_title=테라포밍`, URL `https://novelpia.com/novel/61947`다.
+- publish direct bridge sources는 `title_led_consumption_bridge`, `alias_surface`, `title_abbrev_mentioned`, `official_detail_url` 네 신호로 고정된다.
+- 결론: `11660237` 진동의 갈림점은 검색 title/url 존재가 아니라 final publish contract의 `scope=context_only` vs `scope=current_work` 판정이다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_244_REPORT_20260702.md`
+- Gate는 신규 runtime `NOT_RUN`, convergence same-packet `NOT_EVALUATED`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 - Loop243 runs convergence preflight and tightens packet-delta reporting
 
 - 동일 38-row parent packet은 재실행하지 않고 Loop242 뒤 stop-condition preflight를 실행했다.

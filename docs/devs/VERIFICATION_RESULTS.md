@@ -1,5 +1,33 @@
 # Verification Results
 
+## 2026-07-02 Loop244 11660237 publish/block trace-scope review verification
+
+- Scope: 동일 38-row parent packet을 재실행하지 않고, `11660237` run01~run07 기존 결과를 `publish_contract_trace`, `publish_ledger`, scope, reason code 기준으로 비교한다.
+- Evidence:
+  - run01: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop239_11660237_title_led_genre_bridge_run01_result.json`
+  - run02: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop239_11660237_title_led_genre_bridge_run02_result.json`
+  - run03: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop239_11660237_title_led_genre_bridge_run03_result.json`
+  - run04: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop239_11660237_title_led_genre_bridge_run04_result.json`
+  - run05: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop240_11660237_title_led_probe_run05_result.json`
+  - run06: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop240_11660237_title_led_probe_run06_result.json`
+  - run07: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop241_11660237_relation_exact_title_hold_run07_result.json`
+- Outcome:
+  - run01~run05: public title `null`, `candidate_ledger_status=promotion_blocked`, `scope_kind=context_only`, `publish_allowed=false`.
+  - run04/run05: 댓글이 존재하므로 입력 누락이 아니라 final contract의 current-work bridge 해석 문제다.
+  - run06/run07: `candidate_ledger_status=safe_resolved`, `scope_kind=current_work`, `publish_allowed=true`, `official_title=테라포밍`, URL `https://novelpia.com/novel/61947`.
+  - publish direct bridge sources: `title_led_consumption_bridge`, `alias_surface`, `title_abbrev_mentioned`, `official_detail_url`.
+  - 진동 갈림점: 검색 title/url 존재가 아니라 final publish contract의 `scope=context_only` vs `scope=current_work` 판정.
+- Artifacts:
+  - `docs\devs\loop_reports\LOOP_244_REPORT_20260702.md`
+- Gate:
+  - runtime rerun: `NOT_RUN`
+  - convergence same-packet: `NOT_EVALUATED`
+  - residual accounting: `UNCHANGED`
+  - full-panel collateral approval: previous full375 `NO-GO` remains
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+
 ## 2026-07-02 Loop243 goal convergence preflight after Loop242 verification
 
 - Scope: 동일 38-row parent packet을 재실행하지 않고, Loop242 뒤 `tools/evaluate_goal_convergence.py` preflight를 실행해 stop-condition 상태를 확인한다.
