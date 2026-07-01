@@ -1,5 +1,30 @@
 # Improvement Register
 
+## IMP-20260702-446 - Loop246 freezes architecture-gate evidence before further replay
+
+- 상태: code-test gate GO / focused runtime audit GO / semantic coverage REVIEW-LOCKED / full375 previous NO-GO / full scan approval false / goal NOT_COMPLETE
+- 문제:
+  - 사용자가 동일 38-row parent packet 반복 중단, 상위 `PromotionDecision`/`publish_contract_trace` 계약, safe-loss 반복 측정, 단일 술어 계약, full375 상시 게이트를 명시했다.
+  - Loop245 focused recovery만으로 다음 approval을 갱신하면 semantic coverage와 full375 collateral blocker를 건너뛸 위험이 있다.
+- 조치:
+  - parent packet을 재실행하지 않고 현재 HEAD `6aa6b89`에서 계약 테스트와 Loop246 audit artifacts를 재확인했다.
+  - Loop246 한국어 보고서를 작성해 Data Analytics식 정량 표로 gate 상태를 고정했다.
+  - root `TODO.md`는 존재하지 않으므로 생성하지 않았고, 활성 docs/checklist/history/verification/register/goal 문서를 갱신 대상으로 삼았다.
+- 검증:
+  - architecture gate/work-bridge tests 19개 PASS.
+  - publish contract convergence focused tests 2개 PASS.
+  - contextual alias bridge focused tests 2개 PASS.
+  - touched contract files `py_compile` PASS.
+  - Loop246 action queue: total `6`, ready `5`, blocked `1`.
+  - Loop246 semantic coverage: `REVIEW-LOCKED`, `11660237` browser visual/direct evidence missing.
+- 결정:
+  - `PromotionDecision`/`publish_contract_trace` 수렴, 단일 work-bridge 술어 경유, safe-loss flip-rate 판정, full375 always-on gate는 현재 HEAD에서 계약으로 확인됐다.
+  - 그러나 semantic approval과 full scan approval은 갱신하지 않는다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+- 다음 조치:
+  - `11660237` browser visual 또는 직접 시각 증거 artifact를 붙이고 semantic coverage를 재실행한다.
+  - 다음 approval 갱신 전 same parent/representative packet 또는 full375 collateral gate를 다시 통과한다.
+
 ## IMP-20260702-445 - Loop245 closes 11660237 relation-hold regression locally
 
 - 상태: focused runtime GO / targeted local convergence GO / parent replay NOT_RUN / full375 previous NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / goal NOT_COMPLETE

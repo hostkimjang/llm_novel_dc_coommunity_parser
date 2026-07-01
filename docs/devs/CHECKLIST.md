@@ -1,5 +1,37 @@
 # Development Checklist
 
+## 2026-07-02 Loop246 architecture gate 재검증 체크
+
+- [x] 동일 38-row parent packet을 재실행하지 않았다.
+- [x] 현재 HEAD와 롤백 기준을 확인했다.
+  - branch `goal/3202-slice-rank1-3`
+  - HEAD `6aa6b89 fix: normalize direct title relation holds`
+  - 시작 시 tracked worktree clean
+- [x] Loop238 architecture 계약을 현재 HEAD에서 재검증했다.
+  - `tools/evaluate_goal_convergence.py`: 회차 수가 아니라 `actionable queue 감소 + 동일 packet safe_resolved 단조 비감소`를 요구한다.
+  - `tools/safe_loss_flip_rate_probe.py`: flip 발생 시 `nondeterminism_unresolved`, `hard_hold_relaxation_allowed=false`.
+  - `tools/evaluate_always_on_regression_gates.py`: golden-16과 full375 collateral을 항상 함께 요구한다.
+- [x] 단일 술어 계약을 현재 코드에서 재확인했다.
+  - `_has_verified_contextual_alias_work_bridge(...)`는 `_post_discusses_work_as_work(..., source="verified_contextual_alias_work_bridge")`를 경유한다.
+- [x] PromotionDecision 수렴 계약을 focused tests로 재검증했다.
+  - stale blocked trace -> allowed decision convergence: PASS.
+  - stale publish trace -> blocked decision convergence: PASS.
+- [x] Loop246 run09 current-state 산출물을 확인했다.
+  - runtime audit `GO`
+  - reason hygiene `GO`
+  - action queue total `6`, ready `5`, blocked `1`
+  - semantic coverage `REVIEW-LOCKED`
+- [x] Focused 검증을 완료했다.
+  - architecture gate/work-bridge tests: PASS, 19 tests.
+  - publish contract convergence tests: PASS, 2 tests.
+  - contextual alias bridge focused tests: PASS, 2 tests.
+  - touched contract files `py_compile`: PASS.
+- [x] 한국어 loop report를 남겼다.
+  - `docs/devs/loop_reports/LOOP_246_REPORT_20260702.md`
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- [ ] `11660237` browser visual 또는 direct visual evidence artifact를 붙이기 전까지 semantic approval을 갱신하지 않는다.
+- [ ] 다음 approval 갱신 전 same parent/representative packet 또는 full375 collateral gate를 다시 통과한다.
+
 ## 2026-07-02 Loop245 11660237 relation-hold patch and convergence 체크
 
 - [x] 동일 38-row parent packet을 재실행하지 않았다.

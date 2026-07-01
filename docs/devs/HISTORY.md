@@ -1,5 +1,22 @@
 # Development History
 
+## 2026-07-02 - Loop246 revalidates architecture gates without rerunning the parent packet
+
+- 동일 38-row parent packet은 재실행하지 않고 현재 HEAD `6aa6b89`에서 architecture 계약을 재검증했다.
+- 정지조건은 `tools/evaluate_goal_convergence.py`와 `tests.test_goal_convergence` 기준으로 회차 수가 아니라 `actionable queue 감소 + 동일 packet safe_resolved 단조 비감소`를 요구한다.
+- `expert_main._enforce_publish_contract_trace_convergence`와 focused tests 2개는 stale blocked/publish trace가 현재 `PromotionDecision`으로 수렴함을 확인했다.
+- `_has_verified_contextual_alias_work_bridge(...)`는 `_post_discusses_work_as_work(..., source="verified_contextual_alias_work_bridge")` wrapper로 남아 있으며 focused contextual alias tests 2개를 PASS했다.
+- Loop238 safe-loss N=3 blind judge review는 계속 유효하다: `11660237` flip rate `0.3333333333333333`, `nondeterminism_unresolved`, `hard_hold_relaxation_allowed=false`.
+- Loop238 always-on gate도 계속 유효하다: golden `16/16` GO지만 full375 collateral은 changed `223`, regression `183`으로 `NO-GO`.
+- Loop246 run09 audit/state/action queue/semantic coverage를 확인했다. runtime audit과 reason hygiene는 `GO`지만 semantic coverage는 `11660237` browser visual/direct evidence missing 때문에 `REVIEW-LOCKED`다.
+- 검증은 architecture gate/work-bridge tests 19개, publish convergence 2개, contextual alias 2개, touched-file `py_compile`을 PASS했다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_246_REPORT_20260702.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop246_run09_goal_test_contract_audit.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop246_run09_goal_action_queue.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop246_run09_semantic_coverage_audit.md`
+- Gate는 runtime focused `GO`, semantic `REVIEW-LOCKED`, full375 previous `NO-GO`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 - Loop245 fixes 11660237 relation-hold regression and verifies same-packet recovery
 
 - 동일 38-row parent packet은 재실행하지 않고 `11660237` current-code representative run08과 patched run09를 비교했다.

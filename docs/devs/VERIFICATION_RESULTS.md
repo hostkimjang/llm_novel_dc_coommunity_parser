@@ -1,5 +1,37 @@
 # Verification Results
 
+## 2026-07-02 Loop246 architecture gate revalidation
+
+- Scope: 동일 38-row parent packet을 재실행하지 않고 현재 HEAD `6aa6b89`에서 Loop238 architecture 계약과 Loop245 run09 현재 상태를 재검증한다.
+- Code contracts:
+  - `tools/evaluate_goal_convergence.py`: `loop_count_based_stop=false`, `actionable queue 감소`, `동일 packet safe_resolved 단조 비감소`를 요구한다.
+  - `expert_main._enforce_publish_contract_trace_convergence(...)`: `promotion_decision`, `publish_contract_trace.gate_decision`, `publish_ledger.gate_decision`, `candidate_ledger`를 같은 decision payload로 수렴시킨다.
+  - `src\llm_batch\agentic_pipeline.py`: `_has_verified_contextual_alias_work_bridge(...)`는 `_post_discusses_work_as_work(..., source="verified_contextual_alias_work_bridge")` 경유 wrapper다.
+  - `tools/evaluate_always_on_regression_gates.py`: golden-16과 full375 collateral diff를 항상 함께 요구한다.
+- Existing quantitative evidence:
+  - safe-loss N=3 blind judge review: `11674712` stable, `11698880` stable, `11660237` flip rate `0.3333333333333333`, classification `nondeterminism_unresolved`, `hard_hold_relaxation_allowed=false`.
+  - always-on gate: golden `16/16` GO, full375 collateral shared `375`, changed `223`, collateral regression `183`, overall `NO-GO`.
+- Loop246 current-state evidence:
+  - runtime audit: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop246_run09_goal_test_contract_audit.md/json`, gate `GO`.
+  - reason hygiene: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop246_run09_reason_hygiene.json`, hit files `0`.
+  - action queue: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop246_run09_goal_action_queue.md/json`, total `6`, ready `5`, blocked `1`.
+  - semantic coverage: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop246_run09_semantic_coverage_audit.md/json`, gate `REVIEW-LOCKED`, blocker `browser_visual_or_direct_evidence_missing` for `11660237`.
+- Commands:
+  - `.venv312\Scripts\python.exe -m unittest tests.test_goal_convergence tests.test_safe_loss_flip_rate_probe tests.test_always_on_regression_gates tests.test_regression_safe_work_bridge_contract -v` -> PASS, 19 tests.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_publish_contract_trace_converges_stale_blocked_trace_to_allowed_decision tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_publish_contract_trace_converges_stale_publish_trace_to_blocked_decision -v` -> PASS, 2 tests.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_verified_contextual_alias_work_bridge_requires_post_specific_anchor tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_verified_contextual_alias_work_bridge_allows_relation_allow_without_extra_anchor -v` -> PASS, 2 tests.
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py expert_main.py tools\evaluate_goal_convergence.py tools\safe_loss_flip_rate_probe.py tools\evaluate_always_on_regression_gates.py tests\test_goal_convergence.py tests\test_safe_loss_flip_rate_probe.py tests\test_always_on_regression_gates.py tests\test_regression_safe_work_bridge_contract.py` -> PASS.
+- Artifacts:
+  - `docs\devs\loop_reports\LOOP_246_REPORT_20260702.md`
+- Gate:
+  - run_integrity: focused run09 audit `GO`
+  - targeted_canary: `GO_11660237_RESOLVED`, 단건 focused evidence
+  - parent replay: `NOT_RUN`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full-panel collateral approval: previous full375 `NO-GO`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+
 ## 2026-07-02 Loop245 11660237 relation-hold patch verification
 
 - Scope: 동일 38-row parent packet을 재실행하지 않고, `11660237` run08 safe loss 재발과 run09 patch 후 회복을 같은 packet convergence로 평가한다.
