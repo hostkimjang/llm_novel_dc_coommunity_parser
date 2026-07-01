@@ -4432,6 +4432,35 @@ OUTPUT JSON:
             and (bool(best_official_url) or converged_official_signal)
             and not generic_relation_only
         )
+        exact_title_direct_official_support = bool(
+            current_title
+            and not self._is_community_artifact_title(current_title)
+            and promotion == "hold"
+            and relation_type == "exact_title"
+            and target in {"specific_work", "mixed_or_uncertain"}
+            and post_direct_grounding
+            and decoder_grounded
+            and (
+                anchor_found in {
+                    "title_mention",
+                    "title_abbrev_mention",
+                    "body_abbrev_mention",
+                    "decoder_grounded_official",
+                    "llm_cross_check",
+                }
+                or title_abbrev_mentioned
+                or body_abbrev_mentioned
+                or matched_alias
+            )
+            and alias_in_post_count >= 1
+            and official_exact_title_count >= 1
+            and (
+                bool(best_official_url)
+                or converged_official_signal
+                or official_detail_count >= 1
+            )
+            and not generic_relation_only
+        )
 
         if generic_relation_only:
             relation_type = "genre_or_trope_label"
@@ -4443,7 +4472,20 @@ OUTPUT JSON:
                 or "후보 제목과 게시글의 연결이 무림/세력/역할 같은 일반 장르어 겹침뿐이라 특정 작품 승격을 차단함"
             )
 
-        if (
+        if exact_title_direct_official_support:
+            target = "specific_work"
+            promotion = "allow"
+            reason = (
+                reason
+                or "원문에 후보 제목 표면이 직접 있고 공식 상세 검색이 같은 제목으로 수렴하여 exact-title hold를 승격 허용으로 정규화함"
+            )
+            novel_id["official_novel_title"] = current_title
+            if "official_title" in novel_id:
+                novel_id["official_title"] = current_title
+            if best_official_url and not novel_id.get("heretic_url"):
+                novel_id["heretic_url"] = best_official_url
+            novel_id["confidence"] = novel_id.get("confidence") or "Medium"
+        elif (
             promotion in {"hold", "reject"}
             and relation_type == "thematic_overlap_only"
             and target in {"mixed_or_uncertain", "community_banter"}

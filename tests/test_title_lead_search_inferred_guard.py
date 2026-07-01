@@ -2473,6 +2473,114 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertIsNone(novel_id["heretic_url"])
         self.assertEqual(verification["counter_arguments"][-1]["action"], "nullify_title")
 
+    def test_relation_judge_exact_title_direct_official_support_is_not_hard_hold(self):
+        verifier = VerifierExpert(llm_client=DummyLLM())
+        title = "테라포밍"
+        url = "https://novelpia.com/novel/61947"
+        relation = {
+            "relation_type": "exact_title",
+            "discussion_target": "specific_work",
+            "promotion_decision": "hold",
+            "confidence": "medium",
+            "reason": "일반 명사 가능성 때문에 보류",
+            "key_evidence": ["게시글 제목 '테라포밍 볼만함?'"],
+            "evidence_summary": {
+                "official_detail_count": 1,
+                "explicit_alias_bridge_count": 0,
+            },
+            "search_support_summary": {
+                "official_exact_title_count": 1,
+                "alias_in_post_count": 1,
+                "best_official_url": url,
+                "converged_official_signal": True,
+                "explicit_alias_bridge_count": 0,
+            },
+            "post_direct_grounding": True,
+        }
+        verification = {
+            "is_relevant": True,
+            "is_novel_discussion": True,
+            "grounding_check": {
+                "decoder_grounded": True,
+                "anchor_found": "title_mention",
+                "anchor_text": title,
+                "title_abbrev_mentioned": True,
+                "matched_alias": title,
+            },
+            "counter_arguments": [],
+            "rejection_reason": None,
+        }
+        novel_id = {
+            "official_novel_title": title,
+            "official_title": title,
+            "heretic_url": url,
+            "confidence": "High",
+        }
+
+        verifier._apply_relation_judgment(relation, verification, novel_id)
+
+        self.assertTrue(verification["is_relevant"])
+        self.assertTrue(verification["is_novel_discussion"])
+        self.assertEqual(novel_id["official_novel_title"], title)
+        self.assertEqual(novel_id["official_title"], title)
+        self.assertEqual(novel_id["heretic_url"], url)
+        self.assertEqual(verification["relation_judgment"]["relation_type"], "exact_title")
+        self.assertEqual(verification["relation_judgment"]["discussion_target"], "specific_work")
+        self.assertEqual(verification["relation_judgment"]["promotion_decision"], "allow")
+        self.assertFalse(
+            any(arg.get("action") == "nullify_title" for arg in verification["counter_arguments"])
+        )
+
+    def test_relation_judge_exact_title_search_only_still_holds_candidate(self):
+        verifier = VerifierExpert(llm_client=DummyLLM())
+        title = "테라포밍"
+        url = "https://novelpia.com/novel/61947"
+        relation = {
+            "relation_type": "exact_title",
+            "discussion_target": "specific_work",
+            "promotion_decision": "hold",
+            "confidence": "medium",
+            "reason": "검색 결과에서만 제목이 확인됨",
+            "evidence_summary": {
+                "official_detail_count": 1,
+                "explicit_alias_bridge_count": 0,
+            },
+            "search_support_summary": {
+                "official_exact_title_count": 1,
+                "alias_in_post_count": 1,
+                "best_official_url": url,
+                "converged_official_signal": True,
+                "explicit_alias_bridge_count": 0,
+            },
+            "post_direct_grounding": False,
+        }
+        verification = {
+            "is_relevant": False,
+            "is_novel_discussion": False,
+            "grounding_check": {
+                "decoder_grounded": True,
+                "anchor_found": "search_only",
+                "anchor_text": "",
+            },
+            "counter_arguments": [],
+            "rejection_reason": "원문 직접 근거 없음",
+        }
+        novel_id = {
+            "official_novel_title": title,
+            "official_title": title,
+            "heretic_url": url,
+            "confidence": "Low",
+        }
+
+        verifier._apply_relation_judgment(relation, verification, novel_id)
+
+        self.assertFalse(verification["is_relevant"])
+        self.assertFalse(verification["is_novel_discussion"])
+        self.assertIsNone(novel_id["official_novel_title"])
+        self.assertIsNone(novel_id["official_title"])
+        self.assertIsNone(novel_id["heretic_url"])
+        self.assertEqual(verification["counter_arguments"][-1]["action"], "nullify_title")
+
     def test_relation_support_counts_community_alias_by_domain_without_page_type(self):
         verifier = VerifierExpert(llm_client=DummyLLM())
         summary = verifier._build_relation_search_support_summary(

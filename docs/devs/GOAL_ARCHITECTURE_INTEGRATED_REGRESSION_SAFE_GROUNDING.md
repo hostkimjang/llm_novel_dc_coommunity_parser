@@ -8,6 +8,12 @@
 
 ## Current Evidence
 
+- Latest Loop241 exact-title relation hold contract report: `docs/devs/loop_reports/LOOP_241_REPORT_20260702.md`
+- Latest Loop241 focused result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop241_11660237_relation_exact_title_hold_run07_result.json`
+- Latest Loop241 review artifact: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop241_11660237_relation_exact_title_hold_review.md/json`
+- Latest Loop240 title-led platform probe cap report: `docs/devs/loop_reports/LOOP_240_REPORT_20260702.md`
+- Latest Loop240 focused result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop240_11660237_title_led_probe_run06_result.json`
+- Latest Loop240 review artifact: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop240_11660237_title_led_platform_probe_cap_review.md/json`
 - Latest Loop238 architecture convergence / safe-loss flip probe report: `docs/devs/loop_reports/LOOP_238_REPORT_20260701.md`
 - Latest Loop238 safe-loss flip-rate review: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop238_safe_loss_flip_rate_n3_blind_judge_review.md/json`
 - Latest Loop238 always-on golden16/full375 gate: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop238_always_on_golden16_full375_gate.md/json`

@@ -2,6 +2,27 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop241 11660237 exact-title relation hold contract
+
+- 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. `11660237` 단건 run07은 runtime `GO`, targeted canary `GO_11660237_RESOLVED`다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.
+- Loop241 TODO:
+  - [x] `relation_judge exact_title + promotion_decision=hold` hard-hold 참고 신호를 Verifier 계약으로 정리했다.
+  - [x] 원문 직접 grounding, decoder grounding, title/body/alias anchor, `alias_in_post_count >= 1`, `official_exact_title_count >= 1`, 공식 상세 URL/수렴 신호가 함께 있으면 exact-title hold를 `allow`로 정규화한다.
+  - [x] 검색 결과에만 기대는 `search_only` exact-title hold는 계속 `nullify_title`되도록 negative contract를 유지했다.
+  - [x] `11660237` run07을 실행했다.
+    - run id `20260702_010819_484136`
+    - completed/flushed/pending/failed `1/1/0/0`
+    - VLM/OCR `READY`
+    - relation judge actual output `exact_title / allow`
+    - final `official_title=테라포밍`, URL `https://novelpia.com/novel/61947`
+  - [x] 한국어 report/review artifacts를 남겼다.
+    - `docs/devs/loop_reports/LOOP_241_REPORT_20260702.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop241_11660237_relation_exact_title_hold_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop241_11660237_relation_exact_title_hold_review.json`
+  - [x] Loop238 요구사항 재확인: 동일 parent packet 반복 중단, convergence evaluator, safe-loss flip-rate, 단일 술어 경유, full375 always-on gate는 이미 코드/문서에 반영돼 있다.
+  - [ ] `테라포밍 표지` fanart 후보와 포함어 URL alive-check 비용을 후보 필터/후처리 비용 문제로 분리한다.
+  - [ ] 다음 parent/representative replay 전에 `tools/evaluate_goal_convergence.py`로 actionable queue 감소와 same-packet safe_resolved 단조 비감소를 먼저 확인한다.
+
 ## 2026-07-02 regression-safe grounding Loop240 11660237 platform probe cap normalization
 
 - 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. `11660237` 단건 run06은 runtime `GO`, targeted canary `GO_11660237_RESOLVED`다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.
@@ -18,7 +39,7 @@
     - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop240_11660237_title_led_platform_probe_cap_review.md`
     - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop240_11660237_title_led_platform_probe_cap_review.json`
   - [x] Loop239의 `61947` 직접 미회수/cap 스킵 원인은 targeted scope에서 해소했다.
-  - [ ] `relation_judge`가 `exact_title`을 보면서도 `promotion_decision=hold`를 낸 hard-hold 참고 신호를 별도 계약으로 정리한다.
+  - [x] `relation_judge`가 `exact_title`을 보면서도 `promotion_decision=hold`를 낸 hard-hold 참고 신호를 Loop241 Verifier 계약으로 정리했다.
   - [ ] `테라포밍 표지` fanart 후보와 포함어 URL alive-check 비용을 후보 필터/후처리 비용 문제로 분리한다.
   - [ ] 다음 parent/representative replay 전에 `tools/evaluate_goal_convergence.py`로 actionable queue 감소와 same-packet safe_resolved 단조 비감소를 먼저 확인한다.
 

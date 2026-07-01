@@ -1,5 +1,36 @@
 # Verification Results
 
+## 2026-07-02 Loop241 11660237 exact-title relation hold verification
+
+- Scope: 동일 38-row parent packet을 재실행하지 않고, `11660237` 단건에서 exact-title direct official support가 relation hard-hold로 public title을 잃지 않는지 검증한다.
+- Code:
+  - `src/llm_batch/experts/verifier.py`: `_apply_relation_judgment(...)`에 `exact_title_direct_official_support` 경로를 추가했다.
+  - `tests/test_title_lead_search_inferred_guard.py`: exact-title direct official support 양성 계약과 search-only 음성 계약을 추가했다.
+- Runtime:
+  - run07 `20260702_010819_484136`: completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`.
+  - Result: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop241_11660237_relation_exact_title_hold_run07_result.json`
+  - Log: `logs\expert_run_20260702_010819_484136.log`
+- Outcome:
+  - run07 actual relation judge: `relation_type=exact_title`, `promotion_decision=allow`, `discussion_target=specific_work`.
+  - run07 final: `official_title=테라포밍`, URL `https://novelpia.com/novel/61947`, `title_resolution_state=resolved`, `title_resolution_allowed=true`, `discussion_type=review`.
+  - 새 단위 계약은 actual LLM이 `hold`를 반환하는 변형에서도 직접 원문/공식 상세 근거가 수렴하면 `nullify_title`하지 않도록 보장한다.
+- Commands:
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\experts\verifier.py tests\test_title_lead_search_inferred_guard.py` -> PASS.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_relation_judge_exact_title_direct_official_support_is_not_hard_hold tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_relation_judge_exact_title_search_only_still_holds_candidate tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_relation_judge_recovers_character_cluster_with_official_detail tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_relation_judge_keeps_weak_character_overlap_unresolved` -> PASS, 4 tests.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_relation_judge_preserves_short_alias_with_official_and_community_support tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_relation_judge_preserves_short_alias_with_official_wiki_alias_bridge tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_relation_alias_official_detail_lock_protects_verifier_title tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_verified_contextual_alias_work_bridge_unblocks_relation_hold tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_relation_hold_blocks_character_scene_official_promotion_without_alias_bridge tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_evaluation_marker_accepts_question_style_official_title tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_gate_can_replace_prior_context_only_decision` -> PASS, 7 tests.
+- Artifacts:
+  - `docs\devs\loop_reports\LOOP_241_REPORT_20260702.md`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop241_11660237_relation_exact_title_hold_review.md`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop241_11660237_relation_exact_title_hold_review.json`
+- Gate:
+  - run_integrity: `GO_FOCUSED_RUNTIME_1_1`
+  - targeted_canary: `GO_11660237_RESOLVED`
+  - parent replay: `NOT_RUN`
+  - full-panel collateral approval: previous full375 `NO-GO` remains
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+
 ## 2026-07-02 Loop240 11660237 title-led platform probe cap verification
 
 - Scope: 동일 38-row parent packet을 재실행하지 않고, `11660237` 단건에서 `테라포밍 노벨피아` platform query가 목적별 cap에 막히지 않는지 검증한다.

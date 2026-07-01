@@ -1,5 +1,30 @@
 # Improvement Register
 
+## IMP-20260702-441 - Loop241 prevents exact-title direct official support from becoming hard hold
+
+- 상태: focused runtime GO / code-test gate GO / targeted canary GO / parent replay NOT_RUN / full375 previous NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / goal NOT_COMPLETE
+- 문제:
+  - Loop240은 `11660237`을 targeted scope에서 복구했지만, relation judge가 `exact_title` 후보를 참고 신호로 보면서도 `promotion_decision=hold`를 줄 수 있는 hard-hold 계약이 별도로 정리되지 않았다.
+  - 이 경로가 Verifier에서 public title을 `null`로 내리면 downstream arbiter나 후처리 복구에 의존하게 된다.
+- 조치:
+  - `_apply_relation_judgment(...)`에 `exact_title_direct_official_support` 조건을 추가했다.
+  - 직접 원문 grounding, decoder grounding, title/body/alias anchor, post alias count, official exact title count, 공식 상세 URL/수렴 신호가 함께 있을 때만 `hold`를 `allow`로 정규화한다.
+  - search-only exact-title hold는 계속 `nullify_title`되도록 음성 계약을 추가했다.
+- 검증:
+  - run07 `20260702_010819_484136`: completed/flushed/pending/failed `1/1/0/0`, VLM/OCR READY.
+  - run07 actual relation judge: `exact_title / allow`.
+  - run07 final: `official_title=테라포밍`, URL `https://novelpia.com/novel/61947`, `title_resolution_state=resolved`.
+  - `py_compile`: PASS.
+  - exact-title relation hold 4 tests: PASS.
+  - relation/title-led 주변 7 tests: PASS.
+- 결정:
+  - Loop240의 exact-title hard-hold 참고 신호는 Verifier 계약으로 닫았다.
+  - 이 결과는 단건 targeted 회복이며 full-panel approval이 아니다.
+  - full375 collateral previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+- 다음 조치:
+  - `테라포밍 표지` fanart 후보와 포함어 URL alive-check 비용을 후보 필터/후처리 비용 문제로 분리한다.
+  - 다음 parent replay 전에 convergence evaluator를 먼저 실행한다.
+
 ## IMP-20260702-440 - Loop240 normalizes 11660237 title-led platform probe purpose cap
 
 - 상태: focused runtime GO / code-test gate GO / targeted canary GO / parent replay NOT_RUN / full375 previous NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / goal NOT_COMPLETE
@@ -22,7 +47,7 @@
   - 이 결과는 단건 targeted 회복이며 full-panel approval이 아니다.
   - full375 collateral previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
 - 다음 조치:
-  - `relation_judge`가 `exact_title`을 보면서도 `promotion_decision=hold`를 낸 hard-hold 참고 신호를 별도 계약으로 정리한다.
+  - `relation_judge`가 `exact_title`을 보면서도 `promotion_decision=hold`를 낸 hard-hold 참고 신호는 Loop241에서 Verifier 계약으로 정리했다.
   - `테라포밍 표지` fanart 후보와 다수 포함어 URL alive-check 비용을 후보 필터/후처리 비용 문제로 분리한다.
 
 ## IMP-20260702-439 - Loop239 keeps 11660237 hard-held after title-led search preservation

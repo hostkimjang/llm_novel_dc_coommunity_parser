@@ -1,5 +1,35 @@
 # Development Checklist
 
+## 2026-07-02 Loop241 11660237 exact-title relation hold contract 체크
+
+- [x] 동일 38-row parent packet을 재실행하지 않았다.
+- [x] Verifier relation judgment에 exact-title direct official support 계약을 추가했다.
+  - 원문 직접 grounding이 있어야 한다.
+  - decoder grounding과 title/body/alias anchor가 있어야 한다.
+  - `alias_in_post_count >= 1`, `official_exact_title_count >= 1`이어야 한다.
+  - 공식 상세 URL, 공식 수렴 신호, 또는 official detail count가 있어야 한다.
+- [x] `promotion_decision=hold`라도 위 조건을 만족하면 `allow`로 정규화하고 public title/URL을 보존한다.
+- [x] 검색 결과에만 기대는 exact-title hold는 계속 차단한다.
+- [x] focused tests를 확인했다.
+  - touched-file `py_compile`: PASS.
+  - relation exact-title hold 4 tests: PASS.
+  - relation/title-led 주변 7 tests: PASS.
+- [x] `11660237` run07을 실행했다.
+  - run id `20260702_010819_484136`
+  - completed/flushed/pending/failed `1/1/0/0`
+  - VLM/OCR `READY`
+  - actual relation judge `exact_title / allow`
+  - final `official_title=테라포밍`
+  - URL `https://novelpia.com/novel/61947`
+  - `title_resolution_state=resolved`, `title_resolution_allowed=true`
+- [x] 한국어 loop report/review artifacts를 남겼다.
+  - `docs/devs/loop_reports/LOOP_241_REPORT_20260702.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop241_11660237_relation_exact_title_hold_review.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop241_11660237_relation_exact_title_hold_review.json`
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- [ ] `테라포밍 표지` fanart 후보와 포함어 URL alive-check 비용을 후속 작업으로 분리한다.
+- [ ] 다음 parent/representative replay 전 `tools/evaluate_goal_convergence.py`를 실행한다.
+
 ## 2026-07-02 Loop240 11660237 platform probe cap normalization 체크
 
 - [x] 동일 38-row parent packet을 재실행하지 않았다.
@@ -27,7 +57,7 @@
   - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop240_11660237_title_led_platform_probe_cap_review.md`
   - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop240_11660237_title_led_platform_probe_cap_review.json`
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
-- [ ] `relation_judge exact_title + promotion_decision=hold` 참고 신호를 promotion gate 계약으로 정리한다.
+- [x] `relation_judge exact_title + promotion_decision=hold` 참고 신호를 Loop241 Verifier 계약으로 정리했다.
 - [ ] `테라포밍 표지` fanart 후보와 포함어 URL alive-check 비용을 후속 작업으로 분리한다.
 
 ## 2026-07-02 Loop239 11660237 title-led probe 체크
