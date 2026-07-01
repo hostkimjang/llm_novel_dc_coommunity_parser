@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop275 Addendum - publication contract convergence audit
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: architecture contract 수렴을 helper 내부 테스트에만 두지 않고 result artifact 단위 gate로 감사한다.
+- 코드 변경: `tools/audit_publication_contract_convergence.py`가 `PromotionDecision`, `publish_contract_trace.gate_decision`, `publish_ledger.gate_decision`, `candidate_ledger` mirror, serialized public identity를 비교한다. blocked decision이 public title/url을 노출하거나 allowed decision과 serialized title/url이 다르면 `NO-GO`다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_275_REPORT_20260702.md`, audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop275_publication_contract_convergence_audit.md/json`.
+- Evidence: Loop264 진행 중 flushed result `162`행 감사에서 gate `GO`, violation_row_count `0`이다.
+- Verification: `tests.test_publication_contract_convergence_audit` `3` tests OK, `tests.test_expert_main_comment_metadata` `36` tests OK, py_compile PASS.
+- Gate: publication contract convergence `GO` for audited flushed rows, completed source `PENDING`, current run integrity `IN_PROGRESS`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop274 Addendum - health audit frontier worker trace
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

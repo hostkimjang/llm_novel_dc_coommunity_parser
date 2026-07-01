@@ -1,5 +1,35 @@
 # Improvement Register
 
+## IMP-20260702-275 - publication contract convergence artifact audit
+
+- Status: Implemented / approval blocked
+- Loop: 275
+- Problem:
+  - `PromotionDecision`, `publish_contract_trace`, `publish_ledger` 수렴 helper와 단위 테스트는 있지만, 실제 result artifact에서 stale trace나 blocked public title leak가 남았는지 한 번에 gate하는 도구가 없었다.
+  - residual queue 감소 전에 architecture contract 위반을 먼저 드러내야 한다.
+- Change:
+  - `audit_publication_contract_convergence.py`를 추가했다.
+  - result rows의 decision/trace/ledger/candidate mirror/serialized public identity를 비교한다.
+  - stale publish trace leak, public title without contract, converged publish 계약 테스트를 추가했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_275_REPORT_20260702.md`
+  - audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop275_publication_contract_convergence_audit.md`
+- Result:
+  - row_count `162`
+  - gate `GO`
+  - violation_row_count `0`
+- Verification:
+  - `tests.test_publication_contract_convergence_audit` `3` tests OK
+  - `tests.test_expert_main_comment_metadata` `36` tests OK
+  - py_compile PASS
+- Gate:
+  - publication contract convergence `GO` for audited flushed rows
+  - completed source `PENDING`
+  - run integrity `IN_PROGRESS`
+  - search evidence `REVIEW`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-274 - health audit frontier worker trace
 
 - Status: Implemented / approval blocked

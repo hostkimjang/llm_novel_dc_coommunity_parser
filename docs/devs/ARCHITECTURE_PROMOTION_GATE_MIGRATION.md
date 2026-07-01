@@ -8,6 +8,13 @@ This note visualizes the current parser-improvement architecture and the additiv
 
 ## Source References
 
+## 2026-07-02 Loop275 Publication Contract Artifact Gate
+
+- `tools/audit_publication_contract_convergence.py` adds an artifact-level gate for `PromotionDecision`, `publish_contract_trace`, `publish_ledger`, and serialized public identity convergence.
+- Latest partial flushed result audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop275_publication_contract_convergence_audit.md/json`.
+- Result: row_count `162`, gate `GO`, violation_row_count `0`.
+- Interpretation: this clears publication-contract convergence for audited flushed rows only. It is not completed source, semantic approval, residual decrement, or full-scan approval.
+
 ## 2026-07-02 Loop239 11660237 Title-Led Probe Update
 
 - Loop239 did not rerun the same 38-row parent packet.

@@ -1,5 +1,14 @@
 # Development History
 
+## 2026-07-02 - Loop275 publication contract convergence audit 추가
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- `tools/audit_publication_contract_convergence.py`를 추가해 `PromotionDecision`, `publish_contract_trace`, `publish_ledger`, serialized public identity 수렴을 결과 파일 단위로 감사한다.
+- 실제 Loop264 진행 중 run의 flushed result `162`행에 감사를 실행했고 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop275_publication_contract_convergence_audit.md/json`이다.
+- audit gate는 `GO`, violation_row_count `0`이다.
+- 이 `GO`는 audited flushed rows의 contract convergence만 뜻하며 completed source나 semantic approval이 아니다.
+- Gate는 publication contract convergence `GO`, current run integrity `IN_PROGRESS`, completed source `PENDING`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop274 health audit frontier worker trace 추가
 
 - 동일 38-row parent packet은 재실행하지 않았다.

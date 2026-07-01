@@ -388,6 +388,8 @@ targeted 재실행 입력이나 review packet에서 이 메타가 빠지면 댓�
 
 `audit_expert_run_health.py`의 `search_evidence` gate를 먼저 확인한다. `GO`는 manifest direct search-health가 포함되고 실패/저하 blocker가 없다는 뜻이다. `SEPARATE_AUDIT_REQUIRED`는 Bridge-only/light health라 direct search-health 증거가 별도로 필요하다는 뜻이며, `REVIEW`는 row-level `search_health`나 worker log에서 search degraded/timeout이 관측됐다는 뜻이다. `search_evidence`가 `GO`가 아니면 completed source라도 full-scan approval 근거로 쓰지 않는다.
 
+`tools/audit_publication_contract_convergence.py`는 result rows의 `PromotionDecision`, `publish_contract_trace.gate_decision`, `publish_ledger.gate_decision`, `candidate_ledger` mirror, serialized public title/url이 같은 결론으로 수렴하는지 감사한다. 이 gate가 `NO-GO`이면 residual 감소나 approval을 진행하지 않는다. `GO`여도 이는 audited rows의 contract convergence만 뜻하며, source completion, search evidence, random baseline, full375 collateral gate를 대체하지 않는다.
+
 ### Automatic Audit vs Semantic Review
 
 자동 감사와 자연어 품질 리뷰는 분리한다.

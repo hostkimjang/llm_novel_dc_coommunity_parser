@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-02 Loop275 publication contract convergence 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] `audit_publication_contract_convergence.py`를 추가했다.
+- [x] `PromotionDecision`, `publish_contract_trace`, `publish_ledger`, serialized public identity 수렴을 결과 파일 단위로 감사하게 했다.
+- [x] public title without contract, stale publish trace leak, converged publish 계약 테스트를 추가했다.
+- [x] 실제 Loop264 진행 중 flushed result에 convergence audit를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop275_publication_contract_convergence_audit.md`
+  - row_count `162`
+  - gate `GO`
+  - violation_row_count `0`
+- [x] focused verification을 실행했다.
+  - `tests.test_publication_contract_convergence_audit`: PASS, `3` tests.
+  - `tests.test_expert_main_comment_metadata`: PASS, `36` tests.
+  - py_compile: PASS.
+- [ ] run 완료 후 final result 전체에 publication contract convergence audit를 다시 실행한다.
+- [ ] convergence audit `GO`를 completed source, semantic approval, residual decrement로 승격하지 않는다.
+- Gate: publication contract convergence `GO`, current run integrity `IN_PROGRESS`, completed source `PENDING`, search evidence `REVIEW`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop274 frontier worker trace 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

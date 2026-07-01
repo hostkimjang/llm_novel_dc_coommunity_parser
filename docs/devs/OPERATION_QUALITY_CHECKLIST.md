@@ -6,6 +6,19 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop275 publication contract convergence quality gate
+
+- 근거:
+  - [x] `audit_publication_contract_convergence.py`가 result row의 publication contract 수렴을 감사한다.
+  - [x] stale trace, missing contract, blocked public leak를 계약 테스트로 잡는다.
+  - [x] 실제 Loop264 진행 중 flushed result에서 audit를 실행했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_275_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] flushed result `162`행의 publication contract convergence는 `GO`, violation `0`이다.
+  - [x] 이 `GO`는 artifact-level contract gate이며 completed source나 semantic approval이 아니다.
+  - [x] run 완료 후 final result 전체에 같은 audit를 다시 실행한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop274 frontier worker trace quality gate
 
 - 근거:

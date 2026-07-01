@@ -68,6 +68,7 @@ tests/inputs/test01.jsonl
 !/tests/test_completed_source_candidate_audit.py
 !/tests/test_regression_safe_work_bridge_contract.py
 !/tests/test_audit_expert_run_health.py
+!/tests/test_publication_contract_convergence_audit.py
 /tmp*
 *.bak
 *.badbak
@@ -100,6 +101,7 @@ tests/inputs/test01.jsonl
 !/tools/run_agbrowse_llm_judge.py
 !/tools/build_judge_seed_registry.py
 !/tools/audit_expert_run_health.py
+!/tools/audit_publication_contract_convergence.py
 /qualitative_review
 /.playwright-mcp
 /server-poc

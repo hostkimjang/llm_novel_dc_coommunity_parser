@@ -1,5 +1,33 @@
 # Verification Results
 
+## 2026-07-02 Loop275 publication contract convergence audit
+
+- 범위: result rows에서 `PromotionDecision`, `publish_contract_trace`, `publish_ledger`, serialized public identity가 같은 publish/block 결론으로 수렴하는지 감사한다.
+- Code:
+  - `tools/audit_publication_contract_convergence.py`
+  - `tests/test_publication_contract_convergence_audit.py`
+  - `.gitignore`
+- Explicit convergence audit:
+  - command: `.\.venv312\Scripts\python.exe tools\audit_publication_contract_convergence.py --result out\expert_result_20260702_065632_479765.json --output-json out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop275_publication_contract_convergence_audit.json --output-md out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop275_publication_contract_convergence_audit.md`
+  - gate `GO`
+  - row_count `162`
+  - violation_row_count `0`
+  - violation_counts `{}`
+- Focused test:
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_publication_contract_convergence_audit -v` -> PASS, `3` tests.
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata -v` -> PASS, `36` tests.
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\audit_publication_contract_convergence.py tests\test_publication_contract_convergence_audit.py` -> PASS.
+- Gate:
+  - publication contract convergence: `GO` for audited flushed rows
+  - current run integrity: `IN_PROGRESS`
+  - completed source: `PENDING`
+  - search evidence: `REVIEW`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_275_REPORT_20260702.md`
+
 ## 2026-07-02 Loop274 frontier worker trace health audit
 
 - 범위: health audit에서 ordered flush frontier source post의 worker log 진행 단계를 `frontier_worker_trace`로 기록한다.
