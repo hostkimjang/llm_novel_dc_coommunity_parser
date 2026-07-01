@@ -5,6 +5,7 @@ from pathlib import Path
 
 from tools.audit_expert_run_health import (
     _build_flush_integrity,
+    _build_publication_contract_convergence_gate,
     _build_search_evidence_gate,
     _count_result_rows,
     _load_input_post_lookup,
@@ -378,6 +379,99 @@ class AuditExpertRunHealthTest(unittest.TestCase):
 
         self.assertEqual(trace["status"], "completed_in_worker_log")
         self.assertEqual(trace["event_counts"]["post_complete"], 1)
+
+    def test_publication_contract_convergence_gate_reports_go_for_converged_result(self):
+        decision = {
+            "status": "publish",
+            "publish_allowed": True,
+            "official_title": "테라포밍",
+            "official_url": "https://novel.munpia.com/416826",
+            "candidate_preserved": False,
+            "reason_codes": ["scope_current_work"],
+            "bypassed_gate": False,
+        }
+        trace = {
+            "pre_gate_candidate": {
+                "official_title": "테라포밍",
+                "official_url": "https://novel.munpia.com/416826",
+            },
+            "gate_decision": decision,
+            "post_gate_identity": {
+                "official_title": "테라포밍",
+                "official_url": "https://novel.munpia.com/416826",
+            },
+        }
+        publish_ledger = {
+            "candidate_preservation": trace["pre_gate_candidate"],
+            "public_publish": trace["post_gate_identity"],
+            "gate_decision": decision,
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "result.json"
+            path.write_text(
+                json.dumps(
+                    [
+                        {
+                            "post_id": 11660237,
+                            "analysis_result": {
+                                "identity": {
+                                    "novel_identity": {
+                                        "official_title": "테라포밍",
+                                        "heretic_url": "https://novel.munpia.com/416826",
+                                    },
+                                    "promotion_decision": decision,
+                                    "publish_contract_trace": trace,
+                                    "publish_ledger": publish_ledger,
+                                    "candidate_ledger": {
+                                        "promotion_decision": decision,
+                                        "publish_contract_trace": trace,
+                                        "publish_ledger": publish_ledger,
+                                    },
+                                }
+                            },
+                        }
+                    ],
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            gate = _build_publication_contract_convergence_gate(path)
+
+        self.assertEqual(gate["gate"], "GO")
+        self.assertTrue(gate["approval_ready"])
+        self.assertEqual(gate["summary"]["row_count"], 1)
+        self.assertEqual(gate["summary"]["violation_row_count"], 0)
+
+    def test_publication_contract_convergence_gate_blocks_public_title_without_decision(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "result.json"
+            path.write_text(
+                json.dumps(
+                    [
+                        {
+                            "post_id": 11660237,
+                            "analysis_result": {
+                                "identity": {
+                                    "novel_identity": {
+                                        "official_title": "테라포밍",
+                                        "heretic_url": "https://novel.munpia.com/416826",
+                                    }
+                                }
+                            },
+                        }
+                    ],
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            gate = _build_publication_contract_convergence_gate(path)
+
+        self.assertEqual(gate["gate"], "NO-GO")
+        self.assertFalse(gate["approval_ready"])
+        self.assertEqual(gate["summary"]["violation_row_count"], 1)
+        self.assertIn("publication_contract_convergence_not_go", gate["blockers"])
 
 
 if __name__ == "__main__":

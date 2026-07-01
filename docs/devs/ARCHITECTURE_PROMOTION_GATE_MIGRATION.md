@@ -8,6 +8,13 @@ This note visualizes the current parser-improvement architecture and the additiv
 
 ## Source References
 
+## 2026-07-02 Loop276 Integrated Health Audit Gate
+
+- `audit_expert_run_health.py` now includes `publication_contract_convergence` as a top-level gate.
+- Latest integrated health audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop276_health_audit_with_publication_contract_gate.json`.
+- Result: result_rows `164`, checkpoint_rows `208`, publication contract gate `GO`, violation_row_count `0`, but run integrity remains `IN_PROGRESS` and search evidence remains `REVIEW`.
+- Interpretation: architecture contract visibility is now part of completed-source health auditing, but approval is still blocked by incomplete source/search evidence gates.
+
 ## 2026-07-02 Loop275 Publication Contract Artifact Gate
 
 - `tools/audit_publication_contract_convergence.py` adds an artifact-level gate for `PromotionDecision`, `publish_contract_trace`, `publish_ledger`, and serialized public identity convergence.

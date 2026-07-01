@@ -3,11 +3,19 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from collections import Counter
 from datetime import datetime
 from pathlib import Path
 from statistics import mean
 from typing import Any, Dict, Iterable, List
+
+_REPO_ROOT_FOR_IMPORTS = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT_FOR_IMPORTS) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT_FOR_IMPORTS))
+
+from tools.audit_publication_contract_convergence import audit_rows as _audit_publication_contract_rows
+from tools.audit_publication_contract_convergence import load_rows as _load_publication_contract_rows
 
 
 def _repo_root() -> Path:
@@ -897,6 +905,54 @@ def _trace_frontier_worker_logs(
     }
 
 
+def _build_publication_contract_convergence_gate(result_json: Path) -> Dict[str, Any]:
+    if not result_json.exists():
+        return {
+            "gate": "MISSING",
+            "approval_ready": False,
+            "result_json": str(result_json),
+            "summary": {
+                "row_count": None,
+                "violation_row_count": None,
+                "violation_counts": {},
+            },
+            "violations": [],
+            "blockers": ["result_json_missing"],
+        }
+    try:
+        report = _audit_publication_contract_rows(_load_publication_contract_rows(result_json))
+    except Exception as exc:
+        return {
+            "gate": "NO-GO",
+            "approval_ready": False,
+            "result_json": str(result_json),
+            "summary": {
+                "row_count": None,
+                "violation_row_count": None,
+                "violation_counts": {},
+            },
+            "violations": [],
+            "blockers": ["publication_contract_audit_error"],
+            "error": str(exc)[:500],
+        }
+    blockers: List[str] = []
+    if report.get("gate") != "GO":
+        blockers.append("publication_contract_convergence_not_go")
+    summary = report.get("summary") if isinstance(report.get("summary"), dict) else {}
+    return {
+        "gate": report.get("gate"),
+        "approval_ready": report.get("gate") == "GO",
+        "result_json": str(result_json),
+        "summary": {
+            "row_count": summary.get("row_count"),
+            "violation_row_count": summary.get("violation_row_count"),
+            "violation_counts": summary.get("violation_counts") or {},
+        },
+        "violations": report.get("violations") or [],
+        "blockers": blockers,
+    }
+
+
 def _build_search_evidence_gate(
     *,
     manifest_data: Dict[str, Any],
@@ -1118,6 +1174,7 @@ def build_audit(
         rows=rows,
         log_audit=log_audit,
     )
+    publication_contract_convergence = _build_publication_contract_convergence_gate(result_json)
     slang_audit = _audit_slang(rows, repo=repo)
 
     return {
@@ -1144,6 +1201,7 @@ def build_audit(
         "flush_integrity": flush_integrity,
         "frontier_worker_trace": frontier_worker_trace,
         "search_evidence": search_evidence,
+        "publication_contract_convergence": publication_contract_convergence,
         "status_counts": dict(status_counts),
         "identity_state_counts": dict(identity_state_counts.most_common(30)),
         "discussion_type_counts_top": dict(discussion_counts.most_common(40)),
@@ -1227,6 +1285,11 @@ def main() -> None:
     )
     print(f"slang_db_bad_remaining={audit['slang']['slang_db']['sentence_or_exact_bad_remaining']}")
     print(f"search_evidence={audit['search_evidence']['gate']} blockers={audit['search_evidence']['blockers']}")
+    print(
+        "publication_contract_convergence="
+        f"{audit['publication_contract_convergence']['gate']} "
+        f"violations={audit['publication_contract_convergence']['summary']['violation_row_count']}"
+    )
     print(f"log_counts={audit['logs']['counts']}")
     print(f"headless={audit['logs']['headless_engine_counts']}")
 

@@ -6,6 +6,19 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop276 integrated health audit quality gate
+
+- 근거:
+  - [x] `audit_expert_run_health.py`가 `publication_contract_convergence`를 top-level gate로 기록한다.
+  - [x] health audit 한 번으로 run integrity, frontier trace, search evidence, publication contract convergence를 함께 본다.
+  - [x] 실제 Loop264 진행 중 run에서 통합 health audit를 실행했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_276_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] flushed result `164`행의 publication contract convergence는 `GO`, violation `0`이다.
+  - [x] 같은 audit에서 run integrity는 `IN_PROGRESS`, search evidence는 `REVIEW`라 approval blocker가 남아 있다.
+  - [x] run 완료 후 final health audit에서 세 gate를 다시 확인한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop275 publication contract convergence quality gate
 
 - 근거:

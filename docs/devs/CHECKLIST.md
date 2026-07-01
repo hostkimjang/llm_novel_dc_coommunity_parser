@@ -1,5 +1,30 @@
 # Development Checklist
 
+## 2026-07-02 Loop276 health audit publication contract gate 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] `audit_expert_run_health.py`에 `publication_contract_convergence` top-level gate를 추가했다.
+- [x] Loop275의 publication contract convergence audit 로직을 health audit에서 재사용하게 했다.
+- [x] 정상 수렴 result와 public title without decision result 계약 테스트를 추가했다.
+- [x] 실제 Loop264 진행 중 run에 통합 health audit를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop276_health_audit_with_publication_contract_gate.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `164`
+  - checkpoint_rows `208`
+  - pending_count_actual `44`
+  - frontier post `11714866`
+  - `frontier_worker_trace.status=in_progress_in_worker_log`
+  - worker `W0`, event_count `14`, last_event `arbiter_start`
+  - `publication_contract_convergence=GO`
+  - violation_row_count `0`
+- [x] focused verification을 실행했다.
+  - `tests.test_audit_expert_run_health + tests.test_publication_contract_convergence_audit`: PASS, `19` tests.
+  - py_compile: PASS.
+- [ ] run 완료 후 final health audit에서 `run_integrity_gate=GO`, `search_evidence=GO`, `publication_contract_convergence=GO`를 모두 확인한다.
+- [ ] `publication_contract_convergence=GO`를 completed source, semantic approval, residual decrement로 승격하지 않는다.
+- Gate: publication contract convergence `GO`, current run integrity `IN_PROGRESS`, completed source `PENDING`, search evidence `REVIEW`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop275 publication contract convergence 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

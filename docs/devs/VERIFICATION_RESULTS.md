@@ -1,5 +1,36 @@
 # Verification Results
 
+## 2026-07-02 Loop276 health audit publication contract gate integration
+
+- 범위: `audit_expert_run_health.py`가 publication contract convergence를 health audit top-level gate로 함께 기록한다.
+- Code:
+  - `tools/audit_expert_run_health.py`
+  - `tests/test_audit_expert_run_health.py`
+  - `tools/audit_publication_contract_convergence.py`
+- Explicit integrated health audit:
+  - command: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_065642_030743 --manifest out\expert_result_20260702_065632_479765_manifest.json --checkpoint out\expert_result_20260702_065632_479765_checkpoint.jsonl --result-json out\expert_result_20260702_065632_479765.json --pending-snapshot out\expert_result_20260702_065632_479765_pending_snapshot.json --input-jsonl tests\inputs\test01.jsonl --log-glob "logs\expert_run_20260702_065642_030743_W*.log" --output out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop276_health_audit_with_publication_contract_gate.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `164`, checkpoint_rows `208`, pending_count_actual `44`
+  - frontier post `11714866`, title `비교해보니 매크로 의심할만하네`, source_line `180`
+  - `frontier_worker_trace.status=in_progress_in_worker_log`, worker `W0`, last_event `arbiter_start`
+  - `search_evidence.gate=REVIEW`
+  - `publication_contract_convergence.gate=GO`
+  - publication violation_row_count `0`
+- Focused test:
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_audit_expert_run_health tests.test_publication_contract_convergence_audit -v` -> PASS, `19` tests.
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\audit_expert_run_health.py tools\audit_publication_contract_convergence.py tests\test_audit_expert_run_health.py tests\test_publication_contract_convergence_audit.py` -> PASS.
+- Gate:
+  - publication contract convergence: `GO` for audited flushed rows
+  - current run integrity: `IN_PROGRESS`
+  - completed source: `PENDING`
+  - search evidence: `REVIEW`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_276_REPORT_20260702.md`
+
 ## 2026-07-02 Loop275 publication contract convergence audit
 
 - 범위: result rows에서 `PromotionDecision`, `publish_contract_trace`, `publish_ledger`, serialized public identity가 같은 publish/block 결론으로 수렴하는지 감사한다.

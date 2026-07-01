@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-02 - Loop276 health audit publication contract gate 통합
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- `tools/audit_expert_run_health.py`에 `publication_contract_convergence` top-level gate를 추가했다.
+- 실제 Loop264 진행 중 run에 통합 health audit를 실행했고 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop276_health_audit_with_publication_contract_gate.json`이다.
+- audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows `164`, checkpoint_rows `208`, pending_count_actual `44`다.
+- frontier는 `global_idx=165`, post_id `11714866`, title `비교해보니 매크로 의심할만하네`, worker `W0`, last_event `arbiter_start`다.
+- `publication_contract_convergence=GO`, violation_row_count `0`이다.
+- Gate는 publication contract convergence `GO`, current run integrity `IN_PROGRESS`, completed source `PENDING`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop275 publication contract convergence audit 추가
 
 - 동일 38-row parent packet은 재실행하지 않았다.

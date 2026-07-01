@@ -390,6 +390,8 @@ targeted 재실행 입력이나 review packet에서 이 메타가 빠지면 댓�
 
 `tools/audit_publication_contract_convergence.py`는 result rows의 `PromotionDecision`, `publish_contract_trace.gate_decision`, `publish_ledger.gate_decision`, `candidate_ledger` mirror, serialized public title/url이 같은 결론으로 수렴하는지 감사한다. 이 gate가 `NO-GO`이면 residual 감소나 approval을 진행하지 않는다. `GO`여도 이는 audited rows의 contract convergence만 뜻하며, source completion, search evidence, random baseline, full375 collateral gate를 대체하지 않는다.
 
+`audit_expert_run_health.py`는 같은 publication contract convergence를 `publication_contract_convergence` top-level gate로 함께 기록한다. completed-source 후보를 볼 때는 `flush_integrity`, `search_evidence`, `publication_contract_convergence`가 모두 승인 가능한지 따로 읽어야 한다. 이 중 하나가 `IN_PROGRESS`, `REVIEW`, `NO-GO`, `MISSING`이면 full-scan approval 근거로 쓰지 않는다.
+
 ### Automatic Audit vs Semantic Review
 
 자동 감사와 자연어 품질 리뷰는 분리한다.

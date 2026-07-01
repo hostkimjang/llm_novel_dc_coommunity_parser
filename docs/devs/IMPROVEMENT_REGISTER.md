@@ -1,5 +1,37 @@
 # Improvement Register
 
+## IMP-20260702-276 - health audit publication contract gate integration
+
+- Status: Implemented / approval blocked
+- Loop: 276
+- Problem:
+  - Loop275의 publication contract convergence audit가 별도 도구라 completed-source health audit에서 자동으로 같이 보이지 않았다.
+  - source 후보 검토 시 run integrity/search/frontier/publication contract gate를 분리하되 한 audit 산출물에서 함께 확인해야 한다.
+- Change:
+  - `audit_expert_run_health.py`에 `publication_contract_convergence` top-level gate를 추가했다.
+  - `audit_publication_contract_convergence.py`의 audit logic을 재사용한다.
+  - 정상 수렴 result와 public-title-without-decision result 계약 테스트를 추가했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_276_REPORT_20260702.md`
+  - health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop276_health_audit_with_publication_contract_gate.json`
+- Result:
+  - `run_integrity_gate=IN_PROGRESS`
+  - result_rows `164`
+  - checkpoint_rows `208`
+  - pending_count_actual `44`
+  - `publication_contract_convergence=GO`
+  - violation_row_count `0`
+- Verification:
+  - `tests.test_audit_expert_run_health + tests.test_publication_contract_convergence_audit` `19` tests OK
+  - py_compile PASS
+- Gate:
+  - publication contract convergence `GO` for audited flushed rows
+  - completed source `PENDING`
+  - run integrity `IN_PROGRESS`
+  - search evidence `REVIEW`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-275 - publication contract convergence artifact audit
 
 - Status: Implemented / approval blocked
