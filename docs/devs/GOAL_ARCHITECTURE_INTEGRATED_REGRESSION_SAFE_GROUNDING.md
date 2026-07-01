@@ -6,6 +6,20 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop257-258 Addendum - URL-null inferred publish hold
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- Loop257 same 7-row packet run `20260702_052346_588912`은 runtime completed/flushed/pending/failed `7/7/0/0`, VLM/OCR `READY`, MCP health `2/2`였지만 semantic `NO-GO`다.
+- Loop257 실패: `11663535`가 public title `퇴마록`, URL `null`, `candidate_ledger_status=safe_resolved`로 publish됐다. 이 경로는 resolved-public-title gate가 아니라 `final_publication_decision_inferred_from_serialized_identity`가 URL 없는 serialized identity를 publish로 재해석한 final contract path다.
+- 코드 변경(Loop258 preflight): `expert_main._demote_inferred_urlless_publication_contract(...)`를 추가했다. `final_publication_decision_inferred_from_serialized_identity` + `official_url` 누락 + public title 존재 조건만 `candidate_only`, `publish_allowed=false`, `promotion_blocked`로 내린다.
+- Trace 수렴 변경: `expert_main._enforce_publish_contract_trace_convergence(...)`가 `post_gate_identity.title_resolution_allowed`, `title_resolution_state`, `work_resolution`, `candidate_ledger_status`를 최종 identity와 동기화한다.
+- Loop258 same 7-row packet run `20260702_053635_632644`은 runtime completed/flushed/pending/failed `7/7/0/0`, VLM/OCR `READY`, MCP health `2/2`다.
+- Loop258 결과: `11663535`는 `promotion_blocked`, public title/url `null`, `promotion_decision.status=candidate_only`, `publish_allowed=false`로 내려갔다. `11658668` hard-hold는 유지됐고 `11660277`, `11663544`, `11658637`은 정상 safe를 유지했다.
+- Data Analytics: MCP report artifact `Loop257-258 URL-null publish hold 검증`을 한국어로 validate/render 완료했다.
+- Artifacts: `docs/devs/loop_reports/LOOP_258_REPORT_20260702.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop258_p0_representative_7_after_urlless_inferred_publish_hold_result.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop258_p0_representative_7_goal_convergence.md/json`.
+- Verification: py_compile PASS, `tests.test_expert_main_comment_metadata` `36` PASS, focused final contract `4` PASS, convergence/safe-loss/always-on gate `17` PASS, title-lead guard `180` PASS, `git diff --check` PASS.
+- Gate: Loop258 targeted canary `GO_BLOCK_URL_NULL_PUBLIC_TITLE`, runtime `GO`, convergence `NO-GO(actionable queue 7 -> 7, safe_resolved 4 -> 3, safe_loss 11663535)`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop255 Result / Loop256 Preflight Addendum - final contract hard-hold convergence
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
@@ -61,6 +75,12 @@
 
 ## Current Evidence
 
+- Latest Loop258 URL-null inferred publish hold report: `docs/devs/loop_reports/LOOP_258_REPORT_20260702.md`
+- Latest Loop258 result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop258_p0_representative_7_after_urlless_inferred_publish_hold_result.json`
+- Latest Loop258 manifest: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop258_p0_representative_7_after_urlless_inferred_publish_hold_result_manifest.json`
+- Latest Loop258 convergence audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop258_p0_representative_7_goal_convergence.md/json`
+- Latest Loop257 failure evidence: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop257_p0_representative_7_after_final_contract_hard_hold_result.json`
+- Latest Loop257-258 Data Analytics report artifact: `Loop257-258 URL-null publish hold 검증`
 - Latest Loop251 11663535 character-title collision hold report: `docs/devs/loop_reports/LOOP_251_REPORT_20260702.md`
 - Latest Loop251 result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop251_11663535_p0d_canonicalization_guard_result.json`
 - Latest Loop251 runtime audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop251_11663535_p0d_canonicalization_guard_runtime_audit.md/json`

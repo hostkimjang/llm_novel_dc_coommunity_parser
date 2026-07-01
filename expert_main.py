@@ -208,6 +208,10 @@ def _enforce_publish_contract_trace_convergence(result_dict: Dict[str, Any]) -> 
     else:
         post_gate_identity["official_title"] = None
         post_gate_identity["official_url"] = None
+    post_gate_identity["title_resolution_allowed"] = identity.get("title_resolution_allowed")
+    post_gate_identity["title_resolution_state"] = identity.get("title_resolution_state")
+    post_gate_identity["work_resolution"] = identity.get("work_resolution")
+    post_gate_identity["candidate_ledger_status"] = identity.get("candidate_ledger_status")
     converged_trace["gate_decision"] = gate_decision
     converged_trace["post_gate_identity"] = post_gate_identity
     converged_trace["bypassed_gate"] = False
@@ -2743,12 +2747,121 @@ def _demote_unsafe_url_title_verified_publication_contract(
     return changed
 
 
+def _demote_inferred_urlless_publication_contract(result_dict: Dict[str, Any]) -> bool:
+    """Do not publish a title inferred only from serialized identity without an official URL."""
+    if not isinstance(result_dict, dict):
+        return False
+    identity = result_dict.get("identity")
+    if not isinstance(identity, dict):
+        return False
+    ledger = identity.get("candidate_ledger")
+    if not isinstance(ledger, dict):
+        ledger = {}
+    decision = identity.get("promotion_decision")
+    if not isinstance(decision, dict):
+        decision = ledger.get("promotion_decision")
+    if not isinstance(decision, dict) or decision.get("publish_allowed") is not True:
+        return False
+    reason_codes = [
+        str(code)
+        for code in (decision.get("reason_codes") or [])
+        if str(code).strip()
+    ]
+    if "final_publication_decision_inferred_from_serialized_identity" not in reason_codes:
+        return False
+    public_url = str(decision.get("official_url") or "").strip()
+    if public_url:
+        return False
+
+    novel = identity.get("novel_identity") if isinstance(identity.get("novel_identity"), dict) else {}
+    public_title = str(
+        decision.get("official_title")
+        or identity.get("official_title")
+        or identity.get("official_novel_title")
+        or novel.get("official_title")
+        or ""
+    ).strip()
+    if not public_title:
+        return False
+
+    changed = False
+    flag = "serialized_public_identity_missing_official_url"
+    scope_state = {
+        "scope_kind": "context_only",
+        "confidence": "medium",
+        "conflict_reason_codes": [flag],
+    }
+    for key, value in (
+        ("candidate_ledger_status", "promotion_blocked"),
+        ("title_resolution_allowed", False),
+        ("safe_resolved", False),
+        ("promotion_blocked", True),
+        ("blocked_official_title", public_title),
+        ("blocked_official_title_url", None),
+    ):
+        if identity.get(key) != value:
+            identity[key] = value
+            changed = True
+    if identity.get("title_resolution_state") == "resolved":
+        identity["title_resolution_state"] = "unresolved_matchable"
+        changed = True
+    if identity.get("work_resolution") == "resolved":
+        identity["work_resolution"] = "unresolved"
+        changed = True
+    if isinstance(novel, dict):
+        if novel.get("official_title") is not None:
+            novel["official_title"] = None
+            changed = True
+        if novel.get("heretic_url") is not None:
+            novel["heretic_url"] = None
+            changed = True
+        identity["novel_identity"] = novel
+
+    demoted_reason_codes = list(
+        dict.fromkeys(
+            [
+                *reason_codes,
+                flag,
+                "scope_context_only",
+                "scope_not_current_work",
+                "serialized_public_identity_scrubbed",
+            ]
+        )
+    )
+    demoted_decision = dict(decision)
+    demoted_decision["status"] = "candidate_only"
+    demoted_decision["publish_allowed"] = False
+    demoted_decision["official_title"] = None
+    demoted_decision["official_url"] = None
+    demoted_decision["candidate_preserved"] = True
+    demoted_decision["reason_codes"] = demoted_reason_codes
+    demoted_decision["bypassed_gate"] = False
+    demoted_decision["scope"] = scope_state
+    if identity.get("promotion_decision") != demoted_decision:
+        identity["promotion_decision"] = demoted_decision
+        changed = True
+
+    ledger["pipeline_official_title"] = public_title
+    ledger["blocked_official_title"] = public_title
+    ledger["blocked_official_title_url"] = None
+    ledger["candidate_ledger_status"] = "promotion_blocked"
+    ledger["title_resolution_allowed"] = False
+    ledger["promotion_decision"] = demoted_decision
+    gate_state_payload = {"scope": scope_state}
+    ledger["promotion_gate_state"] = gate_state_payload
+    identity["promotion_gate_state"] = gate_state_payload
+    identity["candidate_ledger"] = ledger
+    return changed
+
+
 def _sync_final_publication_ledger_contract(result_dict: Dict[str, Any], post_title: Optional[str] = None) -> bool:
     """Normalize blocked and allowed publication ledgers after candidate audit."""
     changed = _demote_unsafe_url_title_verified_publication_contract(result_dict, post_title=post_title)
     if _scrub_promotion_blocked_result_contract(result_dict, post_title=post_title):
         changed = True
     if _sync_allowed_publication_result_contract(result_dict):
+        changed = True
+    if _demote_inferred_urlless_publication_contract(result_dict):
         changed = True
     if _demote_platform_meta_image_title_publication_contract(result_dict, post_title=post_title):
         changed = True

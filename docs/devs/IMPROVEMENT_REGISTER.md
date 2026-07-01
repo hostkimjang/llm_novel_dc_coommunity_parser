@@ -1,5 +1,33 @@
 # Improvement Register
 
+## IMP-20260702-453 - Loop258 blocks URL-null inferred serialized publication
+
+- 상태: targeted canary GO_BLOCK_URL_NULL_PUBLIC_TITLE / runtime GO / convergence NO-GO / parent replay NOT_RUN / full375 previous NO-GO / full scan approval false / goal NOT_COMPLETE
+- 문제:
+  - Loop257 same 7-row packet에서 `11663535`가 `퇴마록`을 URL 없이 `safe_resolved` publish했다.
+  - 이 publish는 resolved-public-title gate가 아니라 final serialized identity의 `final_publication_decision_inferred_from_serialized_identity` 경로에서 만들어졌다.
+  - URL 없는 public title은 공식 상세 계약을 만족하지 못하므로 safe로 승인할 수 없다.
+- 조치:
+  - `expert_main._demote_inferred_urlless_publication_contract(...)`를 추가했다.
+  - `final_publication_decision_inferred_from_serialized_identity` + missing `official_url` + public title 조건만 `candidate_only`, `publish_allowed=false`, `promotion_blocked`로 내린다.
+  - `publish_contract_trace.post_gate_identity`가 최종 identity state/status와 함께 수렴하도록 보강했다.
+  - Data Analytics report artifact `Loop257-258 URL-null publish hold 검증`을 한국어로 검증/렌더링했다.
+- 검증:
+  - Loop257 run `20260702_052346_588912`: runtime `7/7/0/0`, VLM/OCR `READY`, MCP health `2/2`, semantic `NO-GO`.
+  - Loop258 run `20260702_053635_632644`: runtime `7/7/0/0`, VLM/OCR `READY`, MCP health `2/2`.
+  - `11663535`: Loop257 `safe_resolved` / title `퇴마록` / URL `null`에서 Loop258 `promotion_blocked` / public title-url `null`로 수렴.
+  - `11658668` hard-hold 유지, `11660277`, `11663544`, `11658637` 정상 safe 유지.
+  - py_compile PASS, expert-main metadata `36` PASS, focused final contract `4` PASS, convergence/safe-loss/always-on `17` PASS, title-lead guard `180` PASS, `git diff --check` PASS.
+- 결정:
+  - URL-null inferred publish 경로는 현재 코드에서 차단됐다.
+  - 그러나 goal convergence는 actionable queue `7 -> 7`, safe_resolved `4 -> 3`, safe_loss `11663535`로 `NO-GO`다.
+  - `11663535` safe loss는 잘못-safe 제거로 보이지만, 별도 evidence 분류 전에는 stop condition 통과나 approval 근거로 쓰지 않는다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+- 다음 조치:
+  - `11663535` safe loss를 정당한 wrong-safe correction으로 분류할 증거를 별도 산출물로 남긴다.
+  - 다음 packet 평가는 `actionable queue 감소`와 `동일 packet safe_resolved 단조 비감소`를 동시에 만족해야 한다.
+  - full375 collateral diff는 golden-16과 동급 always-on gate로 유지한다.
+
 ## IMP-20260702-452 - Loop256 confirms final contract hard-hold for platform-meta image title
 
 - 상태: targeted canary GO_BLOCK_PUBLIC_TITLE / runtime GO / parent replay NOT_RUN / full375 previous NO-GO / full scan approval false / goal NOT_COMPLETE

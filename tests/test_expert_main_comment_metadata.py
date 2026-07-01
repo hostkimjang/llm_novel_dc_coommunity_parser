@@ -2034,6 +2034,60 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertEqual(identity["candidate_ledger"]["promotion_decision"], trace["gate_decision"])
         self.assertEqual(identity["candidate_ledger"]["publish_ledger"], identity["publish_ledger"])
 
+    def test_inferred_serialized_publication_without_url_stays_candidate_only(self):
+        result = {
+            "identity": {
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "is_resolved_work_discussion": True,
+                "candidate_ledger_status": "safe_resolved",
+                "safe_resolved": True,
+                "anchor_type": "title_exact",
+                "context_sources": ["title", "body", "comments", "search"],
+                "novel_identity": {
+                    "official_title": "퇴마록",
+                    "heretic_url": None,
+                    "confidence": "High",
+                },
+                "candidate_ledger": {
+                    "candidate_preservation_sources": [
+                        {
+                            "official_title": "퇴마록",
+                            "source_tier": "mixed",
+                            "reference_role": "primary",
+                        }
+                    ],
+                },
+            }
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertFalse(identity["safe_resolved"])
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertEqual(identity["title_resolution_state"], "unresolved_matchable")
+        self.assertEqual(identity["work_resolution"], "unresolved")
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        decision = identity["promotion_decision"]
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertTrue(decision["candidate_preserved"])
+        self.assertIn(
+            "serialized_public_identity_missing_official_url",
+            decision["reason_codes"],
+        )
+        trace = identity["publish_contract_trace"]
+        self.assertFalse(trace["gate_decision"]["publish_allowed"])
+        self.assertIsNone(trace["post_gate_identity"]["official_title"])
+        self.assertFalse(trace["post_gate_identity"]["title_resolution_allowed"])
+        self.assertEqual(trace["post_gate_identity"]["candidate_ledger_status"], "promotion_blocked")
+        self.assertEqual(trace["pre_gate_candidate"]["official_title"], "퇴마록")
+        self.assertEqual(identity["candidate_ledger"]["promotion_decision"], decision)
+
     def test_publish_contract_trace_converges_stale_blocked_trace_to_allowed_decision(self):
         stale_blocked_decision = {
             "status": "candidate_only",

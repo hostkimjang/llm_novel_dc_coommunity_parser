@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-02 - Loop258 blocks URL-null inferred serialized publication
+
+- 동일 38-row parent packet은 재실행하지 않고 Loop257/258 same 7-row representative packet으로 final publication contract만 확인했다.
+- Loop257 run `20260702_052346_588912`은 runtime completed/flushed/pending/failed `7/7/0/0`, VLM/OCR `READY`, MCP health `2/2`였지만 `11663535`가 public title `퇴마록`, URL `null`, `safe_resolved`로 publish되어 semantic `NO-GO`였다.
+- 실패 경로는 resolved-public-title gate가 아니라 `final_publication_decision_inferred_from_serialized_identity`가 URL 없는 serialized public identity를 publish로 재해석한 final contract path였다.
+- `expert_main._demote_inferred_urlless_publication_contract(...)`를 추가해 `final_publication_decision_inferred_from_serialized_identity` + missing `official_url` + public title 조건만 `candidate_only` / `promotion_blocked`로 내리게 했다.
+- `publish_contract_trace.post_gate_identity`는 최종 identity의 `title_resolution_allowed`, `title_resolution_state`, `work_resolution`, `candidate_ledger_status`와 함께 수렴하도록 보강했다.
+- Loop258 run `20260702_053635_632644`은 runtime completed/flushed/pending/failed `7/7/0/0`, VLM/OCR `READY`, MCP health `2/2`다.
+- Loop258 final은 `11663535`를 `promotion_blocked`, public title/url `null`, `promotion_decision.status=candidate_only`, `publish_allowed=false`로 내렸다. `11658668` hard-hold는 유지됐고 `11660277`, `11663544`, `11658637`은 정상 safe를 유지했다.
+- Data Analytics report artifact `Loop257-258 URL-null publish hold 검증`을 검증/렌더링했고, 상태 분포 chart, 핵심 row 결과 table, goal convergence gate table을 포함했다.
+- Verification: py_compile PASS, `tests.test_expert_main_comment_metadata` `36` PASS, focused final contract `4` PASS, convergence/safe-loss/always-on gate `17` PASS, title-lead guard `180` PASS, `git diff --check` PASS.
+- Goal convergence는 `NO-GO`다. actionable queue `7 -> 7`, same-packet safe_resolved `4 -> 3`, safe_loss `11663535`, blockers `actionable_queue_not_decreased`와 `safe_resolved_not_monotonic`이다.
+- Gate는 Loop258 runtime `GO`, targeted canary `GO_BLOCK_URL_NULL_PUBLIC_TITLE`, convergence `NO-GO`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 - Loop256 confirms 11658668 final publication contract hard-hold
 
 - 동일 38-row parent packet은 재실행하지 않고 `11658668` 단건 final contract canary만 실행했다.

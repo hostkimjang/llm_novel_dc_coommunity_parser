@@ -1,5 +1,50 @@
 # Development Checklist
 
+## 2026-07-02 Loop258 URL-null inferred publish hold 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] Loop257 same 7-row representative packet으로 Loop256 뒤 상태를 확인했다.
+  - run id `20260702_052346_588912`
+  - completed/flushed/pending/failed `7/7/0/0`
+  - VLM/OCR `READY`, MCP health `2/2`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop257_p0_representative_7_after_final_contract_hard_hold_result.json`
+- [x] Loop257 semantic blocker를 분리했다.
+  - `11663535`: `safe_resolved`, public title `퇴마록`, URL `null`
+  - 경로: `final_publication_decision_inferred_from_serialized_identity`
+  - 판단: URL 없는 serialized public identity publish는 공식 상세 계약을 만족하지 못하므로 approval 아님
+- [x] URL-null inferred publish demotion을 구현했다.
+  - `expert_main._demote_inferred_urlless_publication_contract(...)`
+  - `final_publication_decision_inferred_from_serialized_identity` + `official_url` 누락 + public title 존재 조건만 `candidate_only`로 내린다.
+  - `publish_contract_trace.post_gate_identity`가 최종 state/status와 함께 수렴하도록 보강했다.
+- [x] Loop258 same 7-row packet을 실행했다.
+  - run id `20260702_053635_632644`
+  - completed/flushed/pending/failed `7/7/0/0`
+  - VLM/OCR `READY`, MCP health `2/2`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop258_p0_representative_7_after_urlless_inferred_publish_hold_result.json`
+- [x] Loop258 targeted 결과를 확인했다.
+  - `11663535`: `promotion_blocked`, public title/url `null`, `promotion_decision.status=candidate_only`, `publish_allowed=false`
+  - `11658668`: `promotion_blocked` hard-hold 유지
+  - `11660277`, `11663544`, `11658637`: 정상 `safe_resolved` 유지
+- [x] Goal convergence를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop258_p0_representative_7_goal_convergence.md`
+  - gate `NO-GO`
+  - actionable queue `7 -> 7`, decreased `false`
+  - same-packet safe_resolved `4 -> 3`, monotonic `false`
+  - safe_loss `11663535`
+- [x] Data Analytics report artifact를 한국어로 검증/렌더링했다.
+  - title `Loop257-258 URL-null publish hold 검증`
+  - 포함 표/차트: Loop257-258 상태 분포, 핵심 row 결과, goal convergence gate
+- [x] 검증을 완료했다.
+  - py_compile PASS
+  - `tests.test_expert_main_comment_metadata` `36` PASS
+  - focused final contract tests `4` PASS
+  - convergence/safe-loss/always-on gate tests `17` PASS
+  - title-lead guard tests `180` PASS
+  - `git diff --check` PASS, CRLF conversion warnings only
+- [ ] `11663535` safe loss가 정당한 wrong-safe 제거인지 별도 evidence로 분류한다.
+- [ ] actionable queue 감소와 same-packet safe_resolved 단조 비감소를 동시에 만족하기 전까지 approval을 갱신하지 않는다.
+- Gate: Loop258 runtime `GO`, targeted canary `GO_BLOCK_URL_NULL_PUBLIC_TITLE`, convergence `NO-GO`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, full375 previous `NO-GO`.
+
 ## 2026-07-02 Loop256 final contract hard-hold canary 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

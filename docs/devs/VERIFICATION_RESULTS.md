@@ -1,5 +1,58 @@
 # Verification Results
 
+## 2026-07-02 Loop258 URL-null inferred publish hold verification
+
+- Scope: Loop257에서 `11663535`가 `퇴마록`을 URL 없이 public publish한 final serialized identity inference 경로를 차단한다.
+- Loop257 runtime:
+  - run id `20260702_052346_588912`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop257_p0_representative_7_after_final_contract_hard_hold_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop257_p0_representative_7_after_final_contract_hard_hold_result_manifest.json`
+  - completed/flushed/pending/failed `7/7/0/0`, VLM/OCR `READY`, MCP health `2/2`
+- Loop257 semantic result:
+  - `11663535`: `candidate_ledger_status=safe_resolved`, public title `퇴마록`, URL `null`
+  - reason path includes `final_publication_decision_inferred_from_serialized_identity`
+  - verdict: runtime `GO` but semantic `NO-GO`
+- Patch:
+  - `expert_main._demote_inferred_urlless_publication_contract(...)` demotes URL-null inferred serialized publication to `candidate_only`.
+  - `expert_main._enforce_publish_contract_trace_convergence(...)` now syncs `post_gate_identity` state/status fields with final identity.
+- Loop258 runtime:
+  - run id `20260702_053635_632644`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop258_p0_representative_7_after_urlless_inferred_publish_hold_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop258_p0_representative_7_after_urlless_inferred_publish_hold_result_manifest.json`
+  - completed/flushed/pending/failed `7/7/0/0`, VLM/OCR `READY`, MCP health `2/2`
+- Loop258 contract outcome:
+  - `11663535`: `candidate_ledger_status=promotion_blocked`
+  - public `novel_identity.official_title=null`, `heretic_url=null`
+  - `promotion_decision.status=candidate_only`
+  - `promotion_decision.publish_allowed=false`
+  - `publish_contract_trace.post_gate_identity.title_resolution_allowed=false`
+  - `publish_contract_trace.post_gate_identity.candidate_ledger_status=promotion_blocked`
+- Goal convergence:
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop258_p0_representative_7_goal_convergence.md/json`
+  - gate `NO-GO`
+  - actionable queue `7 -> 7`, decreased `false`
+  - same-packet safe_resolved `4 -> 3`, monotonic `false`
+  - safe_loss_post_ids `["11663535"]`
+  - blockers `actionable_queue_not_decreased`, `safe_resolved_not_monotonic`
+- Data Analytics:
+  - MCP report artifact `Loop257-258 URL-null publish hold 검증` validated and rendered.
+  - Included datasets: `status_counts`, `key_rows`, `gate_summary`.
+- Verification:
+  - py_compile: PASS (`expert_main.py`, `tests\test_expert_main_comment_metadata.py`)
+  - focused final contract tests: `4` tests OK
+  - `tests.test_expert_main_comment_metadata`: `36` tests OK
+  - `tests.test_goal_convergence tests.test_safe_loss_flip_rate_probe tests.test_always_on_regression_gates`: `17` tests OK
+  - `tests.test_title_lead_search_inferred_guard`: `180` tests OK
+  - `git diff --check`: PASS, CRLF conversion warnings only
+- Gate:
+  - Loop258 runtime: `GO`
+  - targeted canary: `GO_BLOCK_URL_NULL_PUBLIC_TITLE`
+  - convergence: `NO-GO`
+  - semantic quality: `REVIEW-LOCKED`
+  - full scan approval: `false`
+  - full375 previous: `NO-GO`
+  - Note: `11663535` safe loss는 잘못-safe 제거로 보이지만 현재 goal stop condition상 별도 evidence 분류 전에는 approval 근거가 아니다.
+
 ## 2026-07-02 Loop256 final contract hard-hold verification
 
 - Scope: `11658668` platform-meta image hard-hold가 final serialized publication contract에서 다시 publish되지 않는지 확인한다.
