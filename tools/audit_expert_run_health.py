@@ -45,6 +45,7 @@ def _resolve_run_artifacts(
     checkpoint_path: str | None = None,
     result_json_path: str | None = None,
     pending_snapshot_path: str | None = None,
+    input_jsonl_path: str | None = None,
     log_glob: str | None = None,
 ) -> Dict[str, Any]:
     """Resolve launcher-output artifacts even when internal run_id differs."""
@@ -111,6 +112,10 @@ def _resolve_run_artifacts(
         pending = explicit_pending
         explicit_overrides.append("pending_snapshot")
 
+    input_jsonl = _resolve_cli_path(input_jsonl_path, repo=repo)
+    if input_jsonl is not None:
+        explicit_overrides.append("input_jsonl")
+
     explicit_log_glob = _resolve_cli_path(log_glob, repo=repo)
     if explicit_log_glob is not None:
         log_files = sorted(explicit_log_glob.parent.glob(explicit_log_glob.name))
@@ -135,6 +140,7 @@ def _resolve_run_artifacts(
         "checkpoint": checkpoint,
         "result_json": result_json,
         "pending": pending,
+        "input_jsonl": input_jsonl,
         "log_files": log_files,
     }
 
@@ -204,6 +210,100 @@ def _as_int(value: Any) -> int | None:
         return None
 
 
+def _post_id_key(value: Any) -> int | str | None:
+    if value in (None, ""):
+        return None
+    try:
+        return int(str(value).strip())
+    except (TypeError, ValueError):
+        return str(value).strip()
+
+
+def _load_input_post_lookup(path: Path | None) -> Dict[str, Any]:
+    if path is None:
+        return {
+            "path": None,
+            "exists": False,
+            "lookup_method": "not_provided",
+            "post_count": None,
+            "line_count": None,
+            "comment_row_count": None,
+            "load_error": "not_provided",
+            "_posts_by_global_idx": {},
+        }
+    if not path.exists():
+        return {
+            "path": str(path),
+            "exists": False,
+            "lookup_method": "expert_main_post_map_order_without_model_import",
+            "post_count": None,
+            "line_count": None,
+            "comment_row_count": None,
+            "load_error": "missing",
+            "_posts_by_global_idx": {},
+        }
+
+    post_map: Dict[int | str, Dict[str, Any]] = {}
+    first_line_by_post: Dict[int | str, int] = {}
+    line_count = 0
+    comment_row_count = 0
+    try:
+        with path.open("r", encoding="utf-8-sig", errors="ignore") as f:
+            for lineno, line in enumerate(f, 1):
+                if not line.strip():
+                    continue
+                line_count += 1
+                try:
+                    item = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if not isinstance(item, dict):
+                    continue
+                if "comment_id" in item:
+                    comment_row_count += 1
+                    continue
+                if "post_id" not in item:
+                    continue
+                pid = _post_id_key(item.get("post_id"))
+                if pid is None:
+                    continue
+                first_line_by_post.setdefault(pid, lineno)
+                post_map[pid] = item
+    except Exception as exc:
+        return {
+            "path": str(path),
+            "exists": True,
+            "lookup_method": "expert_main_post_map_order_without_model_import",
+            "post_count": None,
+            "line_count": line_count,
+            "comment_row_count": comment_row_count,
+            "load_error": f"{type(exc).__name__}: {exc}",
+            "_posts_by_global_idx": {},
+        }
+
+    posts_by_global_idx: Dict[int, Dict[str, Any]] = {}
+    for global_idx, (pid, data) in enumerate(post_map.items(), 1):
+        posts_by_global_idx[global_idx] = {
+            "global_idx": global_idx,
+            "post_id": pid,
+            "title": data.get("title"),
+            "url": data.get("url"),
+            "gallery_id": data.get("gallery_id"),
+            "source_line": first_line_by_post.get(pid),
+        }
+
+    return {
+        "path": str(path),
+        "exists": True,
+        "lookup_method": "expert_main_post_map_order_without_model_import",
+        "post_count": len(posts_by_global_idx),
+        "line_count": line_count,
+        "comment_row_count": comment_row_count,
+        "load_error": None,
+        "_posts_by_global_idx": posts_by_global_idx,
+    }
+
+
 def _summarize_pending_row(row: Dict[str, Any]) -> Dict[str, Any]:
     result = row.get("result") if isinstance(row.get("result"), dict) else {}
     return {
@@ -218,6 +318,7 @@ def _build_flush_frontier(
     manifest_data: Dict[str, Any],
     checkpoint_completed_indexes: List[int],
     pending_global_indexes: List[int],
+    input_post_lookup: Dict[int, Dict[str, Any]] | None = None,
 ) -> Dict[str, Any]:
     next_save_idx = _as_int(manifest_data.get("next_save_idx"))
     completed = sorted(set(checkpoint_completed_indexes))
@@ -253,6 +354,11 @@ def _build_flush_frontier(
         "next_save_idx": next_save_idx,
         "status": status,
         "reason": reason,
+        "source_post": (
+            (input_post_lookup or {}).get(next_save_idx)
+            if next_save_idx is not None
+            else None
+        ),
         "frontier_in_checkpoint_completed": frontier_in_checkpoint,
         "frontier_in_pending_snapshot": frontier_in_pending,
         "completed_index_min": completed[0] if completed else None,
@@ -278,6 +384,7 @@ def _build_flush_integrity(
     pending_samples: List[Dict[str, Any]],
     checkpoint_completed_indexes: List[int] | None = None,
     pending_global_indexes: List[int] | None = None,
+    input_post_lookup: Dict[int, Dict[str, Any]] | None = None,
 ) -> Dict[str, Any]:
     input_count = _as_int(manifest_data.get("input_post_count"))
     completed_count = _as_int(manifest_data.get("completed_count"))
@@ -344,6 +451,7 @@ def _build_flush_integrity(
         manifest_data=manifest_data,
         checkpoint_completed_indexes=checkpoint_completed_indexes or [],
         pending_global_indexes=pending_global_indexes or [],
+        input_post_lookup=input_post_lookup,
     )
     if result_rows is not None and flushed_count is not None and result_rows != flushed_count:
         blockers.append("result_rows_ne_flushed_count")
@@ -668,6 +776,7 @@ def build_audit(
     checkpoint_path: str | None = None,
     result_json_path: str | None = None,
     pending_snapshot_path: str | None = None,
+    input_jsonl_path: str | None = None,
     log_glob: str | None = None,
 ) -> Dict[str, Any]:
     artifacts = _resolve_run_artifacts(
@@ -678,12 +787,14 @@ def build_audit(
         checkpoint_path=checkpoint_path,
         result_json_path=result_json_path,
         pending_snapshot_path=pending_snapshot_path,
+        input_jsonl_path=input_jsonl_path,
         log_glob=log_glob,
     )
     checkpoint = artifacts["checkpoint"]
     result_json = artifacts["result_json"]
     manifest = artifacts["manifest"]
     pending = artifacts["pending"]
+    input_jsonl = artifacts["input_jsonl"]
     log_files = artifacts["log_files"]
 
     rows = list(_iter_checkpoint(checkpoint))
@@ -763,6 +874,8 @@ def build_audit(
 
     manifest_data = _load_json(manifest) if manifest.exists() else {}
     result_audit = _count_result_rows(result_json)
+    input_source = _load_input_post_lookup(input_jsonl)
+    input_post_lookup = input_source.pop("_posts_by_global_idx", {})
     flush_integrity = _build_flush_integrity(
         manifest_data=manifest_data if isinstance(manifest_data, dict) else {},
         status_counts=dict(status_counts),
@@ -771,6 +884,7 @@ def build_audit(
         pending_samples=pending_samples,
         checkpoint_completed_indexes=checkpoint_completed_indexes,
         pending_global_indexes=pending_global_indexes,
+        input_post_lookup=input_post_lookup,
     )
     log_audit = _audit_logs(log_files)
     slang_audit = _audit_slang(rows, repo=repo)
@@ -787,9 +901,11 @@ def build_audit(
             "checkpoint": str(checkpoint),
             "result_json": str(result_json),
             "pending_snapshot": str(pending),
+            "input_jsonl": str(input_jsonl) if input_jsonl is not None else None,
             "worker_log_count": len(log_files),
         },
         "manifest": manifest_data,
+        "input_source": input_source,
         "result_json": result_audit,
         "result_rows": result_audit["row_count"],
         "checkpoint_rows": len(rows),
@@ -838,6 +954,7 @@ def main() -> None:
     parser.add_argument("--checkpoint", help="Explicit checkpoint JSONL path for sampling or custom output locations.")
     parser.add_argument("--result-json", help="Explicit final result JSON path for sampling or custom output locations.")
     parser.add_argument("--pending-snapshot", help="Explicit pending snapshot path for sampling or custom output locations.")
+    parser.add_argument("--input-jsonl", help="Explicit source input JSONL path for frontier global_idx lookup.")
     parser.add_argument("--log-glob", help="Explicit worker log glob, e.g. logs/expert_run_<id>_W*.log")
     parser.add_argument("--output", help="Output JSON path. Defaults to out/run_audit_<run-id>.json")
     args = parser.parse_args()
@@ -851,6 +968,7 @@ def main() -> None:
         checkpoint_path=args.checkpoint,
         result_json_path=args.result_json,
         pending_snapshot_path=args.pending_snapshot,
+        input_jsonl_path=args.input_jsonl,
         log_glob=args.log_glob,
     )
     output = Path(args.output) if args.output else repo / "out" / f"run_audit_{args.run_id}.json"
@@ -864,6 +982,7 @@ def main() -> None:
         f"{audit['flush_integrity']['run_integrity_gate']}/"
         f"{audit['flush_integrity']['classification']}"
     )
+    print(f"frontier={audit['flush_integrity']['frontier']}")
     print(f"checkpoint_rows={audit['checkpoint_rows']} status_counts={audit['status_counts']}")
     print(f"reason_errors={audit['reason_error_count']}")
     print(

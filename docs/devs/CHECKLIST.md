@@ -1,5 +1,34 @@
 # Development Checklist
 
+## 2026-07-02 Loop271 frontier source lookup 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] `audit_expert_run_health.py`에 `--input-jsonl` 옵션을 추가했다.
+- [x] input JSONL comment row가 global_idx lookup 순서를 오염시키지 않는 계약 테스트를 추가했다.
+  - `tests\test_audit_expert_run_health.py`
+- [x] 실제 Loop264 진행 중 run에 frontier source audit를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop271_frontier_source_lookup_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `117`
+  - checkpoint_rows `135`
+  - pending_count_actual `18`
+  - frontier `next_save_idx=118`
+  - source post `11716449`
+  - source title `케문제는 ㄹㅇ 애증의 소설임`
+  - source line `133`
+- [x] 직후 manifest poll을 분리 확인했다.
+  - input/completed/flushed/pending/failed `104502/135/117/18/0`
+  - `large_run_complete=false`
+  - `partial_flush_gap=true`
+  - `ordered_flush_blocked=true`
+- [x] focused verification을 실행했다.
+  - `tests.test_audit_expert_run_health`: PASS, `9` tests.
+  - py_compile: PASS.
+- [ ] run 완료 후 `--input-jsonl` 포함 final health audit를 재실행한다.
+- [ ] frontier가 장시간 post_id `11716449`에 머물면 해당 worker log를 별도 감사한다.
+- Gate: frontier source lookup `PASS`, current run integrity `IN_PROGRESS`, completed source `PENDING`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop270 flush frontier diagnostics 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

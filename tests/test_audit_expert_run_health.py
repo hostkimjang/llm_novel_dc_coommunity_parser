@@ -3,7 +3,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.audit_expert_run_health import _build_flush_integrity, _count_result_rows, _resolve_run_artifacts
+from tools.audit_expert_run_health import (
+    _build_flush_integrity,
+    _count_result_rows,
+    _load_input_post_lookup,
+    _resolve_run_artifacts,
+)
 
 
 class AuditExpertRunHealthTest(unittest.TestCase):
@@ -127,6 +132,29 @@ class AuditExpertRunHealthTest(unittest.TestCase):
             self.assertEqual(_count_result_rows(missing_json)["exists"], False)
             self.assertEqual(_count_result_rows(missing_json)["load_error"], "missing")
 
+    def test_input_post_lookup_uses_post_map_order_and_ignores_comment_rows(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            input_path = Path(tmp) / "input.jsonl"
+            rows = [
+                {"post_id": 100, "title": "first", "url": "https://example.test/100"},
+                {"comment_id": "c1", "post_id": 100, "content": "comment"},
+                {"post_id": 200, "title": "second", "url": "https://example.test/200"},
+            ]
+            input_path.write_text(
+                "\n".join(json.dumps(row, ensure_ascii=False) for row in rows) + "\n",
+                encoding="utf-8",
+            )
+
+            lookup = _load_input_post_lookup(input_path)
+            posts_by_idx = lookup["_posts_by_global_idx"]
+
+            self.assertEqual(lookup["post_count"], 2)
+            self.assertEqual(lookup["comment_row_count"], 1)
+            self.assertEqual(posts_by_idx[1]["post_id"], 100)
+            self.assertEqual(posts_by_idx[1]["source_line"], 1)
+            self.assertEqual(posts_by_idx[2]["post_id"], 200)
+            self.assertEqual(posts_by_idx[2]["source_line"], 3)
+
     def test_flush_integrity_go_for_clean_completed_source(self):
         audit = _build_flush_integrity(
             manifest_data={
@@ -146,6 +174,7 @@ class AuditExpertRunHealthTest(unittest.TestCase):
             pending_samples=[],
             checkpoint_completed_indexes=[1, 2],
             pending_global_indexes=[],
+            input_post_lookup={2: {"global_idx": 2, "post_id": 200, "title": "second"}},
         )
 
         self.assertEqual(audit["run_integrity_gate"], "GO")
@@ -153,6 +182,7 @@ class AuditExpertRunHealthTest(unittest.TestCase):
         self.assertEqual(audit["blockers"], [])
         self.assertTrue(audit["completion_ready"])
         self.assertEqual(audit["frontier"]["status"], "ready_to_flush_or_flush_lag")
+        self.assertEqual(audit["frontier"]["source_post"]["post_id"], 200)
 
     def test_flush_integrity_in_progress_for_ordered_flush_gap(self):
         audit = _build_flush_integrity(
@@ -173,6 +203,7 @@ class AuditExpertRunHealthTest(unittest.TestCase):
             pending_samples=[{"global_idx": 5, "post_id": 123, "title": "held"}],
             checkpoint_completed_indexes=[1, 2, 3, 4, 6, 7],
             pending_global_indexes=[6, 7],
+            input_post_lookup={5: {"global_idx": 5, "post_id": 500, "title": "frontier"}},
         )
 
         self.assertEqual(audit["run_integrity_gate"], "IN_PROGRESS")
@@ -186,6 +217,7 @@ class AuditExpertRunHealthTest(unittest.TestCase):
         self.assertEqual(audit["frontier"]["status"], "in_flight_or_missing")
         self.assertEqual(audit["frontier"]["frontier_gap_global_idx"], 5)
         self.assertEqual(audit["frontier"]["first_pending_at_or_after_frontier"], 6)
+        self.assertEqual(audit["frontier"]["source_post"]["post_id"], 500)
 
     def test_flush_integrity_no_go_for_count_mismatch(self):
         audit = _build_flush_integrity(

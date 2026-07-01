@@ -6,6 +6,19 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop271 frontier source lookup quality gate
+
+- 근거:
+  - [x] `audit_expert_run_health.py`가 `--input-jsonl`로 frontier source post를 기록한다.
+  - [x] comment row를 제외한 expert_main post map order 기반 lookup을 사용한다.
+  - [x] 실제 Loop264 진행 중 run에서 frontier source audit를 실행했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_271_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] frontier post는 `11716449`, title `케문제는 ㄹㅇ 애증의 소설임`, source_line `133`이다.
+  - [x] `global_idx=118`과 raw `source_line=133`은 다르므로 혼동하지 않는다.
+  - [x] 최신 manifest `104502/135/117/18/0`, `large_run_complete=false`를 run integrity `IN_PROGRESS`로 둔다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop270 flush frontier diagnostics quality gate
 
 - 근거:

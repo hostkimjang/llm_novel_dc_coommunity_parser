@@ -1,5 +1,46 @@
 # Verification Results
 
+## 2026-07-02 Loop271 frontier source lookup
+
+- 범위: ordered flush frontier `global_idx`를 source input post로 해석해, 막힌 row의 post_id/title/url을 audit에 남긴다.
+- Code:
+  - `tools/audit_expert_run_health.py`
+  - `tests/test_audit_expert_run_health.py`
+- New CLI option:
+  - `--input-jsonl`
+- Explicit frontier source audit:
+  - command: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_065642_030743 --manifest out\expert_result_20260702_065632_479765_manifest.json --checkpoint out\expert_result_20260702_065632_479765_checkpoint.jsonl --result-json out\expert_result_20260702_065632_479765.json --pending-snapshot out\expert_result_20260702_065632_479765_pending_snapshot.json --input-jsonl tests\inputs\test01.jsonl --log-glob "logs\expert_run_20260702_065642_030743_W*.log" --output out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop271_frontier_source_lookup_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `117`, checkpoint_rows `135`, pending_count_actual `18`
+  - frontier `next_save_idx=118`, `status=in_flight_or_missing`, `frontier_gap_global_idx=118`
+  - source post `11716449`, title `케문제는 ㄹㅇ 애증의 소설임`, source_line `133`
+- Input source:
+  - lookup_method `expert_main_post_map_order_without_model_import`
+  - post_count `104502`
+  - line_count `472851`
+  - comment_row_count `368334`
+- Manifest poll after audit:
+  - input/completed/flushed/pending/failed `104502/135/117/18/0`
+  - `large_run_complete=false`
+  - `partial_flush_gap=true`
+  - `ordered_flush_blocked=true`
+  - MCP health ok/failure `36/0`
+  - caveat: `mcp_health_light_mode=true`, `mcp_health_include_search=false`
+- Focused test:
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_audit_expert_run_health -v` -> PASS, `9` tests.
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\audit_expert_run_health.py tests\test_audit_expert_run_health.py` -> PASS.
+- Gate:
+  - frontier source lookup: `PASS`
+  - current run integrity: `IN_PROGRESS`
+  - completed source: `PENDING`
+  - search-health direct probe: `SEPARATE_AUDIT_REQUIRED`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_271_REPORT_20260702.md`
+
 ## 2026-07-02 Loop270 flush frontier diagnostics
 
 - Scope: ordered flush gap이 있을 때 `next_save_idx` frontier가 checkpoint/pending/result 어느 쪽에 있는지 health audit에서 직접 보여준다.

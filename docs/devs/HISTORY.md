@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-02 - Loop271 health audit frontier source lookup 추가
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- `tools/audit_expert_run_health.py`에 `--input-jsonl`을 추가해 `flush_integrity.frontier.source_post`를 기록한다.
+- 실제 Loop264 진행 중 run에 frontier source audit를 실행했고 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop271_frontier_source_lookup_health_audit.json`이다.
+- audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows `117`, checkpoint_rows `135`, pending_count_actual `18`이다.
+- frontier source는 `global_idx=118`, post_id `11716449`, title `케문제는 ㄹㅇ 애증의 소설임`, source_line `133`이다.
+- 직후 manifest poll은 input/completed/flushed/pending/failed `104502/135/117/18/0`, `large_run_complete=false`, `ordered_flush_blocked=true`다.
+- Gate는 frontier source lookup `PASS`, current run integrity `IN_PROGRESS`, completed source `PENDING`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop270 adds flush frontier diagnostics to health audit
 
 - 동일 38-row parent packet은 재실행하지 않았다.

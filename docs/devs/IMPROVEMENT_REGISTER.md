@@ -1,5 +1,34 @@
 # Improvement Register
 
+## IMP-20260702-271 - health audit frontier source lookup
+
+- Status: Implemented / approval blocked
+- Loop: 271
+- Problem:
+  - `flush_integrity.frontier`가 `global_idx`만 보여주면 어떤 원본 post가 flush frontier인지 바로 추적하기 어렵다.
+  - raw JSONL line 번호와 expert_main `global_idx`는 comment row 때문에 다를 수 있다.
+- Change:
+  - `--input-jsonl` 옵션을 추가했다.
+  - input JSONL을 comment row 제외 post map 순서로 해석해 `frontier.source_post`를 기록한다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_271_REPORT_20260702.md`
+  - audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop271_frontier_source_lookup_health_audit.json`
+- Result:
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - frontier source post `11716449`
+  - frontier source title `케문제는 ㄹㅇ 애증의 소설임`
+  - source_line `133`
+  - latest manifest poll `104502/135/117/18/0`
+- Verification:
+  - `tests.test_audit_expert_run_health` `9` tests OK
+  - py_compile PASS
+- Gate:
+  - completed source `PENDING`
+  - run integrity `IN_PROGRESS`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-270 - health audit flush frontier diagnostics
 
 - Status: Implemented / approval blocked

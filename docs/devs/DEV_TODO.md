@@ -80,15 +80,16 @@
   - 수동 검증 참고: afterfix14에서 정책을 수동 수행하여 canary `20260428_233059_378617`과 risk discovery `20260429_002511_375830` 완료, audit/review packet 생성까지 확인
   - 검증 방법: afterfix 계열 200건/1,000건 샘플에서 dry-run 또는 실제 run 한 세트를 wrapper로 완료
 - [x] `audit_expert_run_health.py` sampling output 경로 옵션 추가
-  - 상태: implemented_loop270 / approval blocked
+  - 상태: implemented_loop271 / approval blocked
   - 문제: sampling output은 `out/sampling/<name>_checkpoint.jsonl`에 있는데 audit 도구는 기본 `out/expert_result_<run_id>_checkpoint.jsonl`만 찾아 수동 복사가 필요함.
   - 2026-07-02 Loop266 조치: `expert_result_*_manifest.json`의 `manifest.run_id` lookup으로 internal run id와 output prefix가 다른 진행 중 대형 run은 감사 가능해졌다. 단, 임의 sampling 경로를 `--checkpoint` 등으로 직접 지정하는 기능은 아직 남아 있다.
   - 2026-07-02 Loop267 조치: `--artifact-prefix`, `--manifest`, `--checkpoint`, `--pending-snapshot`, `--log-glob`를 추가해 custom/sampling artifact 경로를 직접 감사할 수 있게 했다.
   - 2026-07-02 Loop268 조치: `--result-json`과 `result_rows` 감사를 추가해 manifest/checkpoint/result/pending 정합성을 한 audit JSON에서 비교할 수 있게 했다.
   - 2026-07-02 Loop269 조치: `flush_integrity` classifier를 추가해 clean completion, ordered flush gap, artifact count mismatch를 `GO/IN_PROGRESS/NO-GO`로 분리한다.
   - 2026-07-02 Loop270 조치: `flush_integrity.frontier`를 추가해 `next_save_idx`가 checkpoint/pending에 있는지 또는 in-flight/missing인지 기록한다.
+  - 2026-07-02 Loop271 조치: `--input-jsonl`과 `flush_integrity.frontier.source_post`를 추가해 frontier `global_idx`의 원본 post_id/title/url/source_line을 기록한다.
   - 완료 기준: `--checkpoint`, `--result-json`, `--manifest`, `--pending-snapshot` 또는 output prefix 옵션으로 sampling 결과를 직접 감사.
-  - 검증: `tests.test_audit_expert_run_health` `8` tests OK, Loop264 진행 중 run flush frontier audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop270_flush_frontier_health_audit.json`.
+  - 검증: `tests.test_audit_expert_run_health` `9` tests OK, Loop264 진행 중 run frontier source audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop271_frontier_source_lookup_health_audit.json`.
 - [ ] 장시간 런 중 shard readiness 주기 snapshot
   - 상태: proposed
   - 관련 파일 후보: `expert_main.py`, `src/llm_batch/monitor/*`

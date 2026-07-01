@@ -160,7 +160,7 @@
 - explicit 36-shard validation mode는 shard `36/36` 자체가 필요한 경우에만 사용한다. 실행 전후 shard audit을 남기고, Docker lifecycle 의도를 명시한다.
 - 현재 관측 기준 Docker shard group은 `1..5`만 떠 있으므로, `--parallel 36`만으로 36 shard 처리량을 기대하지 않는다.
 - large rerun 후에는 manifest clean completion, `audit_expert_run_health.py`, `preflight_qualitative_large_scale_review.py`, random baseline `1000+`, P0/P1 high-risk expansion 순으로 검증한다.
-- sampling/custom output처럼 기본 `out\expert_result_<run_id>*` 위치가 아니면 `audit_expert_run_health.py --manifest <manifest> --checkpoint <checkpoint_jsonl> --result-json <result_json> --pending-snapshot <pending_json> --log-glob "<worker_log_glob>"`로 source artifact를 명시한다. audit JSON의 `artifact_resolution.explicit_overrides`, `result_rows`, `flush_integrity`, `flush_integrity.frontier`가 기록되어야 한다.
+- sampling/custom output처럼 기본 `out\expert_result_<run_id>*` 위치가 아니면 `audit_expert_run_health.py --manifest <manifest> --checkpoint <checkpoint_jsonl> --result-json <result_json> --pending-snapshot <pending_json> --input-jsonl <source_jsonl> --log-glob "<worker_log_glob>"`로 source artifact를 명시한다. audit JSON의 `artifact_resolution.explicit_overrides`, `result_rows`, `flush_integrity`, `flush_integrity.frontier`, `flush_integrity.frontier.source_post`가 기록되어야 한다.
 
 ## 2026-05-29 v161 goal/test run 확인
 
