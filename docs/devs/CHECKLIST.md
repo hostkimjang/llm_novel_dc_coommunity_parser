@@ -1,5 +1,36 @@
 # Development Checklist
 
+## 2026-07-02 Loop243 goal convergence preflight after Loop242 체크
+
+- [x] 동일 38-row parent packet을 재실행하지 않았다.
+- [x] `tools/evaluate_goal_convergence.py`가 packet identity 변경 시 safe loss/gain을 계산하지 않게 했다.
+- [x] `tests.test_goal_convergence`에 packet 변경 시 safe delta 미평가 계약을 추가했다.
+- [x] `.gitignore` 예외를 추가해 architecture gate 도구와 테스트가 Git 추적 대상이 되게 했다.
+  - `tools/evaluate_goal_convergence.py`
+  - `tools/safe_loss_flip_rate_probe.py`
+  - `tools/evaluate_always_on_regression_gates.py`
+  - `tests/test_goal_convergence.py`
+  - `tests/test_safe_loss_flip_rate_probe.py`
+  - `tests/test_always_on_regression_gates.py`
+- [x] Preflight 입력 queue를 구조화했다.
+  - previous queue `2`
+  - current queue `1`
+- [x] `tools/evaluate_goal_convergence.py` preflight를 실행했다.
+  - output: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop242_goal_convergence_preflight_after_artifact_guard.md/json`
+  - actionable queue `2 -> 1`, decreased `true`
+  - previous packet Loop237 parent `38` rows
+  - current packet Loop241 targeted `1` row
+  - gate `NO-GO`
+  - blocker `packet_identity_changed`
+  - safe delta 미평가: `safe_delta_evaluated=false`
+- [x] Focused tests를 확인했다.
+  - architecture gate tools `py_compile`: PASS.
+  - architecture gate tests: PASS, 17 tests.
+- [x] 한국어 loop report를 남겼다.
+  - `docs/devs/loop_reports/LOOP_243_REPORT_20260702.md`
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- [ ] same-packet parent/representative result를 넣어 다시 평가하기 전까지 residual accounting과 approval은 갱신하지 않는다.
+
 ## 2026-07-02 Loop242 11660237 fanart/cover artifact hint cost guard 체크
 
 - [x] 동일 38-row parent packet을 재실행하지 않았다.
@@ -16,7 +47,8 @@
 - [x] 한국어 loop report를 남겼다.
   - `docs/devs/loop_reports/LOOP_242_REPORT_20260702.md`
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
-- [ ] 다음 parent/representative replay 전 `tools/evaluate_goal_convergence.py`를 실행한다.
+- [x] 다음 parent/representative replay 전 `tools/evaluate_goal_convergence.py` preflight를 실행했다. Loop243 결과는 queue 감소 `true`지만 packet identity가 달라 `NO-GO`다.
+- [ ] same-packet parent/representative result를 넣어 다시 평가하기 전까지 residual accounting과 approval은 갱신하지 않는다.
 
 ## 2026-07-02 Loop241 11660237 exact-title relation hold contract 체크
 
@@ -46,7 +78,8 @@
   - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop241_11660237_relation_exact_title_hold_review.json`
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 - [x] `테라포밍 표지` fanart 후보와 포함어 URL alive-check 비용은 Loop242에서 후보 필터/후처리 계약으로 닫았다.
-- [ ] 다음 parent/representative replay 전 `tools/evaluate_goal_convergence.py`를 실행한다.
+- [x] 다음 parent/representative replay 전 `tools/evaluate_goal_convergence.py` preflight를 Loop243에서 실행했다. Gate는 `NO-GO(packet_identity_changed)`다.
+- [ ] same-packet parent/representative result를 넣어 다시 평가하기 전까지 residual accounting과 approval은 갱신하지 않는다.
 
 ## 2026-07-02 Loop240 11660237 platform probe cap normalization 체크
 

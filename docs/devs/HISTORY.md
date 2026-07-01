@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-02 - Loop243 runs convergence preflight and tightens packet-delta reporting
+
+- 동일 38-row parent packet은 재실행하지 않고 Loop242 뒤 stop-condition preflight를 실행했다.
+- `tools/evaluate_goal_convergence.py`는 packet identity가 다르면 `safe_loss_post_ids`와 `safe_gain_post_ids`를 계산하지 않고 `safe_delta_evaluated=false`로 기록한다.
+- `tests/test_goal_convergence.py`에 packet 변경 시 safe delta를 미평가하는 회귀 테스트를 추가했다.
+- `.gitignore` 예외를 추가해 convergence, safe-loss flip-rate, full375 always-on gate 도구와 테스트가 실제 Git 추적 대상이 되게 했다.
+- Preflight 입력은 Loop241 직후 queue `2`, Loop242 뒤 queue `1`로 구조화했다.
+- Preflight output은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop242_goal_convergence_preflight_after_artifact_guard.md/json`이다.
+- 결과는 actionable queue `2 -> 1` 감소 `true`지만, previous packet은 Loop237 parent `38` rows이고 current packet은 Loop241 targeted `1` row라 `packet_identity_changed`로 gate `NO-GO`다.
+- 검증은 architecture gate tools `py_compile`과 `tests.test_goal_convergence + tests.test_safe_loss_flip_rate_probe + tests.test_always_on_regression_gates -v` 17 tests를 PASS했다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_243_REPORT_20260702.md`
+- Gate는 `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 - Loop242 blocks fanart/cover artifact snippet expansion cost
 
 - 동일 38-row parent packet은 재실행하지 않고 `11660237`의 `테라포밍 표지` fanart/cover 후보 비용 경로만 좁혔다.

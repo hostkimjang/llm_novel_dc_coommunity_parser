@@ -2,6 +2,27 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop243 goal convergence preflight after Loop242
+
+- 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. Loop243은 Loop242 뒤 `tools/evaluate_goal_convergence.py` preflight를 실제 실행했고 gate는 `NO-GO`다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.
+- Loop243 TODO:
+  - [x] `tools/evaluate_goal_convergence.py`가 packet identity가 다를 때 safe loss/gain을 계산하지 않게 했다.
+  - [x] packet 변경 시 `safe_delta_evaluated=false`, `safe_loss_post_ids=[]`, `safe_gain_post_ids=[]`가 되도록 테스트를 추가했다.
+  - [x] `.gitignore` 예외를 추가해 `tools/evaluate_goal_convergence.py`, `tools/safe_loss_flip_rate_probe.py`, `tools/evaluate_always_on_regression_gates.py`와 해당 테스트 3개를 Git 추적 대상으로 만들었다.
+  - [x] Loop241 직후 queue `2`개와 Loop242 뒤 queue `1`개를 입력 artifact로 구조화했다.
+  - [x] convergence preflight를 실행했다.
+    - output: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop242_goal_convergence_preflight_after_artifact_guard.md`
+    - actionable queue `2 -> 1`, decreased `true`
+    - previous packet Loop237 parent `38` rows, current packet Loop241 targeted `1` row
+    - gate `NO-GO`, blocker `packet_identity_changed`
+    - safe delta 미평가: `safe_delta_evaluated=false`
+  - [x] architecture gate 도구 3개와 테스트 3개를 검증했다.
+    - `venv\Scripts\python.exe -m py_compile tools\evaluate_goal_convergence.py tools\safe_loss_flip_rate_probe.py tools\evaluate_always_on_regression_gates.py` -> PASS.
+    - `venv\Scripts\python.exe -m unittest tests.test_goal_convergence tests.test_safe_loss_flip_rate_probe tests.test_always_on_regression_gates -v` -> PASS, 17 tests.
+  - [x] 한국어 report를 남겼다.
+    - `docs/devs/loop_reports/LOOP_243_REPORT_20260702.md`
+  - [ ] same-packet parent/representative result를 넣어 다시 평가하기 전까지 residual accounting과 approval은 갱신하지 않는다.
+
 ## 2026-07-02 regression-safe grounding Loop242 11660237 fanart/cover artifact hint cost guard
 
 - 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. Loop242는 `테라포밍 표지` fanart/cover artifact 후보가 snippet alias, resolved title follow-up, fetch 후보로 승격되는 비용 경로만 코드 계약으로 닫았다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.
@@ -17,7 +38,8 @@
     - arbiter/known abbreviation 주변 2 tests -> PASS.
   - [x] 한국어 report를 남겼다.
     - `docs/devs/loop_reports/LOOP_242_REPORT_20260702.md`
-  - [ ] 다음 parent/representative replay 전에 `tools/evaluate_goal_convergence.py`로 actionable queue 감소와 same-packet safe_resolved 단조 비감소를 먼저 확인한다.
+  - [x] 다음 parent/representative replay 전 `tools/evaluate_goal_convergence.py` preflight를 실행했다. Loop243 결과는 queue 감소 `true`지만 packet identity가 달라 `NO-GO`다.
+  - [ ] same-packet parent/representative result를 넣어 다시 평가하기 전까지 residual accounting과 approval은 갱신하지 않는다.
 
 ## 2026-07-02 regression-safe grounding Loop241 11660237 exact-title relation hold contract
 
@@ -38,7 +60,8 @@
     - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop241_11660237_relation_exact_title_hold_review.json`
   - [x] Loop238 요구사항 재확인: 동일 parent packet 반복 중단, convergence evaluator, safe-loss flip-rate, 단일 술어 경유, full375 always-on gate는 이미 코드/문서에 반영돼 있다.
   - [x] `테라포밍 표지` fanart 후보와 포함어 URL alive-check 비용을 후보 필터/후처리 비용 문제로 분리했다. Loop242에서 snippet artifact expansion 비용 경로를 차단했다.
-  - [ ] 다음 parent/representative replay 전에 `tools/evaluate_goal_convergence.py`로 actionable queue 감소와 same-packet safe_resolved 단조 비감소를 먼저 확인한다.
+  - [x] 다음 parent/representative replay 전 `tools/evaluate_goal_convergence.py` preflight를 Loop243에서 실행했다. Gate는 `NO-GO(packet_identity_changed)`다.
+  - [ ] same-packet parent/representative result를 넣어 다시 평가하기 전까지 residual accounting과 approval은 갱신하지 않는다.
 
 ## 2026-07-02 regression-safe grounding Loop240 11660237 platform probe cap normalization
 
@@ -58,7 +81,8 @@
   - [x] Loop239의 `61947` 직접 미회수/cap 스킵 원인은 targeted scope에서 해소했다.
   - [x] `relation_judge`가 `exact_title`을 보면서도 `promotion_decision=hold`를 낸 hard-hold 참고 신호를 Loop241 Verifier 계약으로 정리했다.
   - [x] `테라포밍 표지` fanart 후보와 포함어 URL alive-check 비용을 후보 필터/후처리 비용 문제로 분리했다. Loop242에서 snippet artifact expansion 비용 경로를 차단했다.
-  - [ ] 다음 parent/representative replay 전에 `tools/evaluate_goal_convergence.py`로 actionable queue 감소와 same-packet safe_resolved 단조 비감소를 먼저 확인한다.
+  - [x] 다음 parent/representative replay 전 `tools/evaluate_goal_convergence.py` preflight를 Loop243에서 실행했다. Gate는 `NO-GO(packet_identity_changed)`다.
+  - [ ] same-packet parent/representative result를 넣어 다시 평가하기 전까지 residual accounting과 approval은 갱신하지 않는다.
 
 ## 2026-07-02 regression-safe grounding Loop239 11660237 title-led probe
 

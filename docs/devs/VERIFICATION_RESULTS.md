@@ -1,5 +1,33 @@
 # Verification Results
 
+## 2026-07-02 Loop243 goal convergence preflight after Loop242 verification
+
+- Scope: 동일 38-row parent packet을 재실행하지 않고, Loop242 뒤 `tools/evaluate_goal_convergence.py` preflight를 실행해 stop-condition 상태를 확인한다.
+- Code:
+  - `tools/evaluate_goal_convergence.py`: packet identity가 다르면 safe delta를 평가하지 않도록 `safe_delta_evaluated=false`, `safe_loss_post_ids=[]`, `safe_gain_post_ids=[]`를 출력한다.
+  - `tests/test_goal_convergence.py`: packet 변경 시 safe loss/gain을 보고하지 않는 계약 테스트를 추가했다.
+  - `.gitignore`: architecture gate 도구와 테스트 6개를 Git 추적 대상으로 올리도록 예외를 추가했다.
+- Commands:
+  - `venv\Scripts\python.exe -m py_compile tools\evaluate_goal_convergence.py tools\safe_loss_flip_rate_probe.py tools\evaluate_always_on_regression_gates.py` -> PASS.
+  - `venv\Scripts\python.exe -m unittest tests.test_goal_convergence tests.test_safe_loss_flip_rate_probe tests.test_always_on_regression_gates -v` -> PASS, 17 tests.
+  - `venv\Scripts\python.exe tools\evaluate_goal_convergence.py --previous-queue out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop242_goal_convergence_previous_queue.json --current-queue out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop242_goal_convergence_current_queue.json --previous-packet-result out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop237_parent_replay_after_loop236_url_title_direct_support_guard_result.json --current-packet-result out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop241_11660237_relation_exact_title_hold_run07_result.json --output-json out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop242_goal_convergence_preflight_after_artifact_guard.json --output-md out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop242_goal_convergence_preflight_after_artifact_guard.md` -> completed, gate `NO-GO`.
+- Outcome:
+  - actionable queue: previous `2`, current `1`, decreased `true`.
+  - packet: previous Loop237 parent `38` rows, current Loop241 targeted `1` row.
+  - blocker: `packet_identity_changed`.
+  - safe delta: `safe_delta_evaluated=false`, `safe_loss_post_ids=[]`, `safe_gain_post_ids=[]`.
+- Artifacts:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop242_goal_convergence_preflight_after_artifact_guard.md`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop242_goal_convergence_preflight_after_artifact_guard.json`
+  - `docs\devs\loop_reports\LOOP_243_REPORT_20260702.md`
+- Gate:
+  - convergence_preflight: `NO-GO`
+  - parent replay: `NOT_RUN`
+  - full-panel collateral approval: previous full375 `NO-GO` remains
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+
 ## 2026-07-02 Loop242 11660237 fanart/cover artifact hint cost guard verification
 
 - Scope: 동일 38-row parent packet을 재실행하지 않고, `테라포밍 표지` fanart/cover artifact 후보가 snippet alias, resolved-title follow-up query, URL fetch 후보로 승격되는 비용 경로를 차단한다.

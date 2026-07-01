@@ -62,6 +62,9 @@ tests/inputs/test01.jsonl
 !/tests/test_vlm_browser_review_cli.py
 !/tests/test_dashboard_standalone.py
 !/tests/test_judge_seed_registry.py
+!/tests/test_goal_convergence.py
+!/tests/test_safe_loss_flip_rate_probe.py
+!/tests/test_always_on_regression_gates.py
 /tmp*
 *.bak
 *.badbak
@@ -78,6 +81,9 @@ tests/inputs/test01.jsonl
 !/tools/scan_original_semantic_patterns.py
 !/tools/scan_reason_hygiene.py
 !/tools/audit_goal_test_run_contract.py
+!/tools/evaluate_goal_convergence.py
+!/tools/safe_loss_flip_rate_probe.py
+!/tools/evaluate_always_on_regression_gates.py
 !/tools/build_goal_current_state_map.py
 !/tools/build_goal_action_queue.py
 !/tools/build_semantic_coverage_audit.py

@@ -1,5 +1,27 @@
 # Improvement Register
 
+## IMP-20260702-443 - Loop243 convergence preflight keeps safe delta same-packet only
+
+- 상태: code-test gate GO / convergence preflight NO-GO / parent replay NOT_RUN / full375 previous NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / goal NOT_COMPLETE
+- 문제:
+  - Loop242 뒤 convergence preflight는 queue 감소를 확인할 수 있지만, 비교 packet이 Loop237 parent `38` rows와 Loop241 targeted `1` row로 다르다.
+  - 이 상황에서 safe loss/gain을 그대로 표시하면 packet identity blocker와 실제 safe delta를 혼동할 수 있다.
+- 조치:
+  - `tools/evaluate_goal_convergence.py`가 `same_packet=false`일 때 safe loss/gain을 계산하지 않고 `safe_delta_evaluated=false`로 기록하게 했다.
+  - `tests/test_goal_convergence.py`에 packet 변경 시 safe delta 미평가 계약을 추가했다.
+  - `.gitignore` 예외를 추가해 convergence, safe-loss flip-rate, full375 always-on gate 도구와 테스트가 문서-only가 아니라 실제 repo 계약으로 추적되게 했다.
+  - Loop242 뒤 preflight를 실제 실행했다.
+- 검증:
+  - architecture gate tools `py_compile`: PASS.
+  - architecture gate tests: PASS, 17 tests.
+  - preflight output: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop242_goal_convergence_preflight_after_artifact_guard.md/json`.
+- 결정:
+  - actionable queue는 `2 -> 1`로 감소했지만 same-packet 조건이 성립하지 않아 gate는 `NO-GO(packet_identity_changed)`다.
+  - residual accounting, semantic approval, full scan approval은 갱신하지 않는다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+- 다음 조치:
+  - same-packet parent/representative result를 넣어 다시 평가하거나, replay 전에 `11660237` trace/scope/state 진동 원인을 더 좁힌다.
+
 ## IMP-20260702-442 - Loop242 blocks snippet fanart/cover artifact title expansion cost
 
 - 상태: code-test gate GO / runtime canary NOT_RUN / parent replay NOT_RUN / full375 previous NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / goal NOT_COMPLETE
