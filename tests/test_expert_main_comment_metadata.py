@@ -2034,6 +2034,160 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertEqual(identity["candidate_ledger"]["promotion_decision"], trace["gate_decision"])
         self.assertEqual(identity["candidate_ledger"]["publish_ledger"], identity["publish_ledger"])
 
+    def test_publish_contract_trace_converges_stale_blocked_trace_to_allowed_decision(self):
+        stale_blocked_decision = {
+            "status": "candidate_only",
+            "publish_allowed": False,
+            "official_title": None,
+            "official_url": None,
+            "candidate_preserved": True,
+            "reason_codes": ["stale_trace"],
+            "bypassed_gate": False,
+        }
+        allowed_decision = {
+            "status": "publish",
+            "publish_allowed": True,
+            "official_title": "이 무림의 미친년은 나야",
+            "official_url": "https://novelpia.com/novel/217943?sid=main5",
+            "candidate_preserved": False,
+            "reason_codes": [
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "serialized_public_identity_published",
+            ],
+            "bypassed_gate": False,
+            "scope": {"scope_kind": "current_work", "confidence": "high"},
+        }
+        stale_trace = {
+            "pre_gate_candidate": {
+                "official_title": "이 무림의 미친년은 나야",
+                "official_url": "https://novelpia.com/novel/217943?sid=main5",
+                "source": "stale_trace",
+            },
+            "gate_decision": stale_blocked_decision,
+            "scope_state": {"scope_kind": "current_work", "confidence": "high"},
+            "post_gate_identity": {
+                "official_title": None,
+                "official_url": None,
+                "candidate_ledger_status": "promotion_blocked",
+            },
+            "reason_codes": ["stale_trace"],
+            "bypassed_gate": False,
+        }
+        result = {
+            "identity": {
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "candidate_ledger_status": "safe_resolved",
+                "promotion_decision": allowed_decision,
+                "novel_identity": {
+                    "official_title": "이 무림의 미친년은 나야",
+                    "heretic_url": "https://novelpia.com/novel/217943?sid=main5",
+                },
+                "publish_contract_trace": stale_trace,
+                "publish_ledger": {
+                    "candidate_preservation": stale_trace["pre_gate_candidate"],
+                    "public_publish": stale_trace["post_gate_identity"],
+                    "gate_decision": stale_blocked_decision,
+                },
+                "candidate_ledger": {
+                    "promotion_decision": allowed_decision,
+                    "publish_contract_trace": stale_trace,
+                },
+            }
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        trace = identity["publish_contract_trace"]
+        self.assertEqual(trace["gate_decision"], identity["promotion_decision"])
+        self.assertTrue(trace["gate_decision"]["publish_allowed"])
+        self.assertEqual(trace["post_gate_identity"]["official_title"], "이 무림의 미친년은 나야")
+        self.assertEqual(identity["publish_ledger"]["gate_decision"], identity["promotion_decision"])
+        self.assertEqual(identity["candidate_ledger"]["publish_contract_trace"], trace)
+        self.assertEqual(identity["candidate_ledger"]["publish_ledger"], identity["publish_ledger"])
+
+    def test_publish_contract_trace_converges_stale_publish_trace_to_blocked_decision(self):
+        stale_publish_decision = {
+            "status": "publish",
+            "publish_allowed": True,
+            "official_title": "테라포밍",
+            "official_url": "https://novel.munpia.com/416826",
+            "candidate_preserved": False,
+            "reason_codes": ["stale_publish"],
+            "bypassed_gate": False,
+        }
+        blocked_decision = {
+            "status": "candidate_only",
+            "publish_allowed": False,
+            "official_title": None,
+            "official_url": None,
+            "candidate_preserved": True,
+            "reason_codes": [
+                "row_discussion_missing",
+                "scope_context_only",
+                "scope_not_current_work",
+                "serialized_public_identity_scrubbed",
+            ],
+            "bypassed_gate": False,
+            "scope": {"scope_kind": "context_only", "confidence": "high"},
+        }
+        stale_trace = {
+            "pre_gate_candidate": {
+                "official_title": "테라포밍",
+                "official_url": "https://novel.munpia.com/416826",
+                "source": "stale_trace",
+            },
+            "gate_decision": stale_publish_decision,
+            "scope_state": {"scope_kind": "context_only", "confidence": "high"},
+            "post_gate_identity": {
+                "official_title": "테라포밍",
+                "official_url": "https://novel.munpia.com/416826",
+                "candidate_ledger_status": "safe_resolved",
+            },
+            "reason_codes": ["stale_publish"],
+            "bypassed_gate": False,
+        }
+        result = {
+            "identity": {
+                "title_resolution_allowed": False,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "none",
+                "candidate_ledger_status": "promotion_blocked",
+                "blocked_official_title": "테라포밍",
+                "blocked_official_title_url": "https://novel.munpia.com/416826",
+                "promotion_decision": blocked_decision,
+                "publish_contract_trace": stale_trace,
+                "publish_ledger": {
+                    "candidate_preservation": stale_trace["pre_gate_candidate"],
+                    "public_publish": stale_trace["post_gate_identity"],
+                    "gate_decision": stale_publish_decision,
+                },
+                "candidate_ledger": {
+                    "blocked_official_title": "테라포밍",
+                    "blocked_official_title_url": "https://novel.munpia.com/416826",
+                    "promotion_decision": blocked_decision,
+                    "publish_contract_trace": stale_trace,
+                },
+            }
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        trace = identity["publish_contract_trace"]
+        self.assertEqual(trace["gate_decision"], identity["promotion_decision"])
+        self.assertFalse(trace["gate_decision"]["publish_allowed"])
+        self.assertIsNone(trace["post_gate_identity"]["official_title"])
+        self.assertIsNone(trace["post_gate_identity"]["official_url"])
+        self.assertEqual(identity["publish_ledger"]["gate_decision"], identity["promotion_decision"])
+        self.assertEqual(identity["candidate_ledger"]["publish_contract_trace"], trace)
+        self.assertEqual(identity["candidate_ledger"]["publish_ledger"], identity["publish_ledger"])
+
     def test_promotion_blocked_trace_uses_candidate_ledger_sources(self):
         result = {
             "identity": {

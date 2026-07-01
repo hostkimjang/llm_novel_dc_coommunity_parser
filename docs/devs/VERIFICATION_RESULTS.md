@@ -1,5 +1,49 @@
 # Verification Results
 
+## 2026-07-01 Loop238 architecture convergence / safe-loss flip probe verification
+
+- Scope: 동일 38-row parent packet 반복을 멈추고, architecture convergence 계약, safe-loss flip-rate 측정, golden16/full375 always-on gate를 실코드와 테스트로 고정한다.
+- Code:
+  - `src/llm_batch/agentic_pipeline.py`: `_has_verified_contextual_alias_work_bridge`를 `_post_discusses_work_as_work(..., source="verified_contextual_alias_work_bridge")` 경유로 배선하고, 해당 source에서만 contextual alias evidence release를 허용했다.
+  - `expert_main.py`: `_enforce_publish_contract_trace_convergence(...)` 추가.
+  - `tools/evaluate_goal_convergence.py`: `actionable queue 감소 + 동일 packet safe_resolved 단조 비감소` stop condition evaluator 추가.
+  - `tools/safe_loss_flip_rate_probe.py`: safe-loss 반복 실행/분석 도구 추가.
+  - `tools/evaluate_always_on_regression_gates.py`: golden-16 + full375 collateral always-on gate 추가.
+- Runtime:
+  - safe-loss run01 `loop238_safe_loss_flip_probe_n5_result.json`: duplicate post_id input은 loader에서 effective 3-row로 접힘, completed `3/3`, VLM/OCR `READY`.
+  - safe-loss run02 `loop238_safe_loss_flip_probe_n3_run02_result.json`: completed `3/3`, VLM/OCR `READY`.
+  - safe-loss run03 `loop238_safe_loss_flip_probe_n3_run03_result.json`: completed `3/3`, VLM/OCR `READY`.
+- Outcome:
+  - `11674712`: N=3 stable `safe_resolved`, title `이 무림의 미친년은 나야`, flip rate `0.0`, blind judge match `true`.
+  - `11660237`: N=3 `promotion_blocked` 1회 / `safe_resolved` 2회, title `테라포밍`, flip rate `0.3333333333333333`, classification `nondeterminism_unresolved`.
+  - `11698880`: N=3 stable `safe_resolved`, title `가챠 중독자의 퓨전펑크 생활`, flip rate `0.0`, blind judge match `true`.
+  - Safe-loss gate: `NO-GO`, hard-hold relaxation `false`.
+  - Always-on gate: golden-16 `GO`, full375 collateral `NO-GO`, shared `375`, changed `223`, collateral regression candidates `183`.
+- Commands:
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_title_lead_search_inferred_guard.py` -> PASS.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard...relation_hold_blocks... ...verified_contextual_alias_work_bridge... -v` -> PASS, 4 tests.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard tests.test_expert_main_comment_metadata -v` -> PASS, 194 tests.
+  - `.venv312\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_comment_metadata.py` -> PASS.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata...publish_contract_trace_converges... -v` -> PASS, 4 tests.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_goal_convergence -v` -> PASS, 6 tests.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_safe_loss_flip_rate_probe -v` -> PASS, 6 tests.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_always_on_regression_gates -v` -> PASS, 4 tests.
+- Artifacts:
+  - `docs\devs\loop_reports\LOOP_238_REPORT_20260701.md`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop238_safe_loss_flip_probe_3rows.jsonl`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop238_safe_loss_flip_rate_n3_blind_judge_review.md`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop238_safe_loss_flip_rate_n3_blind_judge_review.json`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop238_safe_loss_blind_judge_native_web.json`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop238_always_on_golden16_full375_gate.md`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop238_always_on_golden16_full375_gate.json`
+- Gate:
+  - residual accounting: `NO_DELTA_ARCHITECTURE_CONTRACT_ONLY`
+  - safe-loss flip-rate: `NO-GO_NONDETERMINISM_UNRESOLVED_11660237`
+  - full-panel collateral approval: `NO-GO`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+
 ## 2026-07-01 Loop237 parent replay after Loop236 URL-title guard verification
 
 - Scope: Loop236 URL-title direct-source support guard가 focused canary를 넘어 parent/representative packet에서 생존하는지 확인한다.

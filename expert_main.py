@@ -164,6 +164,85 @@ def _apply_model_parallel_cap(requested_parallel: int, model_name: Optional[str]
     }
 
 
+def _enforce_publish_contract_trace_convergence(result_dict: Dict[str, Any]) -> bool:
+    """Make promotion_decision, publish_contract_trace, and publish_ledger agree."""
+    if not isinstance(result_dict, dict):
+        return False
+    identity = result_dict.get("identity")
+    if not isinstance(identity, dict):
+        return False
+    ledger = identity.get("candidate_ledger")
+    if not isinstance(ledger, dict):
+        ledger = {}
+
+    decision = identity.get("promotion_decision")
+    if not isinstance(decision, dict):
+        decision = ledger.get("promotion_decision")
+    trace = identity.get("publish_contract_trace")
+    if not isinstance(trace, dict):
+        trace = ledger.get("publish_contract_trace")
+    publish_ledger = identity.get("publish_ledger")
+    if not isinstance(publish_ledger, dict):
+        publish_ledger = ledger.get("publish_ledger")
+    if not isinstance(decision, dict) and isinstance(trace, dict):
+        trace_decision = trace.get("gate_decision")
+        if isinstance(trace_decision, dict):
+            decision = trace_decision
+    if not isinstance(decision, dict) or not isinstance(trace, dict):
+        return False
+
+    changed = False
+    gate_decision = dict(decision)
+    gate_decision["bypassed_gate"] = False
+    publish_allowed = gate_decision.get("publish_allowed") is True
+
+    converged_trace = dict(trace)
+    post_gate_identity = converged_trace.get("post_gate_identity")
+    if not isinstance(post_gate_identity, dict):
+        post_gate_identity = {}
+    else:
+        post_gate_identity = dict(post_gate_identity)
+    if publish_allowed:
+        post_gate_identity["official_title"] = gate_decision.get("official_title")
+        post_gate_identity["official_url"] = gate_decision.get("official_url")
+    else:
+        post_gate_identity["official_title"] = None
+        post_gate_identity["official_url"] = None
+    converged_trace["gate_decision"] = gate_decision
+    converged_trace["post_gate_identity"] = post_gate_identity
+    converged_trace["bypassed_gate"] = False
+    reason_codes = gate_decision.get("reason_codes")
+    if isinstance(reason_codes, list):
+        converged_trace["reason_codes"] = [str(code) for code in reason_codes if str(code).strip()]
+
+    converged_ledger = dict(publish_ledger) if isinstance(publish_ledger, dict) else {}
+    converged_ledger["candidate_preservation"] = converged_trace.get("pre_gate_candidate")
+    converged_ledger["public_publish"] = post_gate_identity
+    converged_ledger["gate_decision"] = gate_decision
+
+    if identity.get("promotion_decision") != gate_decision:
+        identity["promotion_decision"] = gate_decision
+        changed = True
+    if identity.get("publish_contract_trace") != converged_trace:
+        identity["publish_contract_trace"] = converged_trace
+        changed = True
+    if identity.get("publish_ledger") != converged_ledger:
+        identity["publish_ledger"] = converged_ledger
+        changed = True
+    if ledger.get("promotion_decision") != gate_decision:
+        ledger["promotion_decision"] = gate_decision
+        changed = True
+    if ledger.get("publish_contract_trace") != converged_trace:
+        ledger["publish_contract_trace"] = converged_trace
+        changed = True
+    if ledger.get("publish_ledger") != converged_ledger:
+        ledger["publish_ledger"] = converged_ledger
+        changed = True
+    if changed or ledger:
+        identity["candidate_ledger"] = ledger
+    return changed
+
+
 def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_title: Optional[str] = None) -> bool:
     """Keep serialized output consistent when candidate audit demotes a title."""
     if not isinstance(result_dict, dict):
@@ -2463,6 +2542,8 @@ def _sync_final_publication_ledger_contract(result_dict: Dict[str, Any], post_ti
     if _scrub_promotion_blocked_result_contract(result_dict, post_title=post_title):
         changed = True
     if _sync_allowed_publication_result_contract(result_dict):
+        changed = True
+    if _enforce_publish_contract_trace_convergence(result_dict):
         changed = True
     return changed
 

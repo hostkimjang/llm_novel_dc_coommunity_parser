@@ -8,6 +8,12 @@
 
 ## Current Evidence
 
+- Latest Loop238 architecture convergence / safe-loss flip probe report: `docs/devs/loop_reports/LOOP_238_REPORT_20260701.md`
+- Latest Loop238 safe-loss flip-rate review: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop238_safe_loss_flip_rate_n3_blind_judge_review.md/json`
+- Latest Loop238 always-on golden16/full375 gate: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop238_always_on_golden16_full375_gate.md/json`
+- Latest Loop238 stop-condition tool: `tools/evaluate_goal_convergence.py`
+- Latest Loop238 safe-loss probe tool: `tools/safe_loss_flip_rate_probe.py`
+- Latest Loop238 always-on gate tool: `tools/evaluate_always_on_regression_gates.py`
 - Latest Loop236 URL-title direct-source support guard report: `docs/devs/loop_reports/LOOP_236_REPORT_20260701.md`
 - Latest Loop236 URL-title direct-source support guard review artifact: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop236_url_title_direct_support_guard_review.md/json`
 - Latest Loop236 Data Analytics artifact: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop236_url_title_direct_support_guard_data_analytics_artifact.json`
@@ -836,10 +842,13 @@ Return to the Loop175 residual accounting only after:
 
 ## Stop Condition
 
-Do not mark this goal complete until both are true:
+이 goal은 회차 수, queue `0`, runtime `GO`, targeted canary `GO`, golden 단독 `GO`만으로 완료 처리하지 않는다. 완료 전에는 아래 조건이 모두 참이어야 한다.
 
-1. Architecture integration phase is implemented and verified enough to return to queue work.
-2. The original residual stop condition is satisfied: next queue empty, or every residual row is explicitly HOLD/human_review/INFO_MISSING/unresolved_matchable/quarantine/no_generalizable_fix_left with row-level rationale and required replay gates recorded.
+1. Architecture integration phase가 실코드와 계약 테스트로 구현되어 있고, `PromotionDecision`, `publish_contract_trace`, `publish_ledger`가 같은 publish/block 결론으로 수렴한다.
+2. `tools/evaluate_goal_convergence.py` 기준으로 previous/current queue 사이 `actionable queue`가 감소했고, 동일 packet에서 `safe_resolved`가 단조 비감소해야 한다. 둘 중 하나라도 실패하면 residual accounting은 `NO_DELTA`다.
+3. Safe-loss row는 반복 입력 probe로 flip rate를 측정한다. 진동 row는 safe-loss가 아니라 `nondeterminism_unresolved`이며, blind judge가 정답성을 확인하고 반복 결과가 안정적일 때만 hard-hold 완화를 검토한다.
+4. Golden-16과 full 375 collateral diff는 `tools/evaluate_always_on_regression_gates.py`로 항상 함께 gate한다. Golden 단독 통과는 approval이 아니며, collateral regression count가 0이 아니면 full-panel collateral approval은 `NO-GO`다.
+5. 원래 residual stop condition도 유지한다: next queue가 비었거나, 모든 residual row가 row-level rationale과 required replay gate와 함께 HOLD/human_review/INFO_MISSING/unresolved_matchable/quarantine/no_generalizable_fix_left로 명시 처리되어야 한다.
 
 ## Loop229 Current Addendum
 

@@ -1,5 +1,22 @@
 # Development History
 
+## 2026-07-01 - Loop238 architecture convergence gate and safe-loss flip probe
+
+- 동일 38-row parent packet 즉시 재실행을 중단하고, 다음 회차 진입 조건을 단순 회차 수가 아니라 `actionable queue 감소 + 동일 packet safe_resolved 단조 비감소`로 바꿨다.
+- `expert_main.py`에 `PromotionDecision`, `publish_contract_trace`, `publish_ledger`, `candidate_ledger` gate decision을 한 번 더 수렴시키는 `_enforce_publish_contract_trace_convergence` 계약을 추가했다.
+- `_has_verified_contextual_alias_work_bridge`는 단독 술어로 우회하지 않고 `_post_discusses_work_as_work(..., source="verified_contextual_alias_work_bridge")`를 경유하도록 배선했다. 이 source 경로에서만 contextual alias evidence를 release하므로 alias bridge 없는 relation-hold 후보는 계속 차단된다.
+- Safe-loss 후보 3건은 동일 입력 N=3 반복으로 측정했다. `11674712`, `11698880`은 안정 safe_resolved였고, `11660237`은 `safe_resolved` 2회 / `promotion_blocked` 1회로 flip rate `0.3333333333333333`이어서 safe loss가 아니라 `nondeterminism_unresolved`로 분류했다.
+- Blind judge의 독립 title/url 기대값은 `11674712`, `11660237`, `11698880` 모두 맞았지만, `11660237` 진동 때문에 promotion gate hard-hold 완화는 허용하지 않는다.
+- Golden-16과 full 375 collateral diff를 상시 조합 게이트로 승격했다. 현재 평가는 golden `16/16` PASS지만 full 375 collateral은 changed `223`, regression `183`으로 `NO-GO`다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_238_REPORT_20260701.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop238_safe_loss_flip_rate_n3_blind_judge_review.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop238_safe_loss_flip_rate_n3_blind_judge_review.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop238_always_on_golden16_full375_gate.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop238_always_on_golden16_full375_gate.json`
+- 검증은 `py_compile`, convergence/flip-rate/always-on gate unit tests, relation-hold 포함 contextual alias bridge focused tests, `tests.test_title_lead_search_inferred_guard + tests.test_expert_main_comment_metadata` 194 tests, publish-contract convergence focused tests를 PASS했다.
+- Gate는 `NO-GO`, `hard_hold_relaxation_allowed=false`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-01 - Loop237 parent replay after Loop236 URL-title guard
 
 - Loop236 URL-title direct-source support guard를 38-row parent/representative packet으로 재검증했다.

@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-01 Loop238 architecture convergence / safe-loss flip probe 체크
+
+- [x] 동일 38-row parent packet 재실행을 중단했다.
+- [x] 다음 회차 전 rollback checkpoint를 확보했다: `9181a61`, `6e761fb`.
+- [x] `_has_verified_contextual_alias_work_bridge`를 `_post_discusses_work_as_work(..., source="verified_contextual_alias_work_bridge")` 경유로 배선했다.
+- [x] Alias bridge 없는 relation-hold 후보는 새 경유 로직에서도 계속 차단되도록 확인했다.
+- [x] `PromotionDecision` / `publish_contract_trace` / `publish_ledger` 수렴 보정을 실코드로 추가했다.
+- [x] 새 정지조건 evaluator를 추가했다: `tools/evaluate_goal_convergence.py`.
+- [x] safe-loss 3건 반복 probe 도구를 추가했다: `tools/safe_loss_flip_rate_probe.py`.
+- [x] safe-loss N=3 반복 probe를 실행했다.
+  - `11674712`: stable `safe_resolved`, blind judge match `true`.
+  - `11660237`: flip rate `0.3333333333333333`, `nondeterminism_unresolved`.
+  - `11698880`: stable `safe_resolved`, blind judge match `true`.
+- [x] hard-hold relaxation을 금지했다: `hard_hold_relaxation_allowed=false`.
+- [x] 375 collateral diff를 golden-16과 동급 상시 gate로 승격했다: `tools/evaluate_always_on_regression_gates.py`.
+- [x] Always-on gate 산출물을 생성했다: golden-16 `GO`, full375 collateral `NO-GO`, collateral regression candidates `183`.
+- [ ] `11660237`의 publish/block 진동 원인을 trace/scope/state 기준으로 축소한다.
+- [ ] 다음 parent/representative replay 전에 `tools/evaluate_goal_convergence.py`로 actionable queue 감소와 same-packet safe_resolved 단조 비감소를 먼저 확인한다.
+
 ## 2026-07-01 Loop237 parent replay after Loop236 URL-title guard 체크
 
 - [x] Loop236 후속 parent/representative packet 38건을 재실행했다.

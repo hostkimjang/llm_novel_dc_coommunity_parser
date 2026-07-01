@@ -14749,6 +14749,20 @@ class AgenticPipeline:
         title: Optional[str],
         vf_result: Optional[Dict[str, Any]] = None,
     ) -> bool:
+        """Compatibility wrapper; verified alias release must pass the shared work predicate."""
+        return self._post_discusses_work_as_work(
+            ctx,
+            title,
+            source="verified_contextual_alias_work_bridge",
+            verification_result=vf_result,
+        )
+
+    def _has_verified_contextual_alias_work_bridge_evidence(
+        self,
+        ctx,
+        title: Optional[str],
+        vf_result: Optional[Dict[str, Any]] = None,
+    ) -> bool:
         """Allow a held alias only when search closes alias->title plus post-specific context."""
         title_raw = str(title or "").strip()
         title_norm = self._normalize_match_text(title_raw)
@@ -29623,6 +29637,14 @@ OUTPUT JSON:
             return False
         verification = verification_result if isinstance(verification_result, dict) else None
         final = final_decision if isinstance(final_decision, dict) else None
+        bridge_source = str(source or "").strip()
+
+        if bridge_source == "verified_contextual_alias_work_bridge":
+            return self._has_verified_contextual_alias_work_bridge_evidence(
+                ctx,
+                candidate,
+                verification,
+            )
 
         if self._has_strict_direct_work_anchor_for_no_work_rescue(
             ctx,
@@ -29631,7 +29653,6 @@ OUTPUT JSON:
         ):
             return True
 
-        bridge_source = str(source or "").strip()
         if (
             bridge_source
             in {

@@ -1,5 +1,35 @@
 # Improvement Register
 
+## IMP-20260701-438 - Loop238 replaces repeated parent reruns with convergence and flip-rate gates
+
+- 상태: architecture convergence code/test PASS / safe-loss flip probe N=3 completed / full 375 collateral always-on gate NO-GO / hard-hold relaxation false / semantic quality REVIEW-LOCKED / full scan approval false / goal NOT_COMPLETE
+- 문제:
+  - Loop237 뒤 같은 38-row parent packet을 반복하면 회차 수만 늘고, 상위 publish contract 수렴과 비결정성 분리가 되지 않는다.
+  - Safe-loss 후보 `11674712`, `11660237`, `11698880`은 단일 결과만 보면 정당 해소/회귀/진동을 구분할 수 없다.
+  - Golden-16은 PASS여도 full 375 collateral diff가 간헐 게이트면 collateral regression을 놓칠 수 있다.
+- 조치:
+  - `_enforce_publish_contract_trace_convergence`로 `PromotionDecision`, `publish_contract_trace`, `publish_ledger`, `candidate_ledger` gate decision 수렴 계약을 추가했다.
+  - `_has_verified_contextual_alias_work_bridge`를 `_post_discusses_work_as_work(..., source="verified_contextual_alias_work_bridge")` 경유 계약으로 정리했다. 해당 source에서만 contextual alias evidence release를 허용해 alias bridge 없는 relation-hold 후보는 계속 차단한다.
+  - `tools/evaluate_goal_convergence.py`로 stop condition을 `actionable queue 감소 + 동일 packet safe_resolved 단조 비감소`로 평가하게 했다.
+  - `tools/safe_loss_flip_rate_probe.py`로 동일 입력 반복 결과를 post_id별 outcome/flip rate/blind judge 기준으로 분류하게 했다.
+  - `tools/evaluate_always_on_regression_gates.py`로 golden-16과 full 375 collateral diff를 항상 함께 평가하게 했다.
+- 검증:
+  - Safe-loss probe N=3: `11674712` stable safe_resolved, `11698880` stable safe_resolved, `11660237` flip rate `0.3333333333333333`.
+  - Blind judge expected title/url match는 3건 모두 true였지만 `11660237` 진동으로 `hard_hold_relaxation_allowed=false`.
+  - Always-on gate: golden `16/16` PASS, full 375 collateral changed `223`, regression `183`, combined gate `NO-GO`.
+  - `py_compile`: PASS.
+  - `tests.test_goal_convergence`, `tests.test_safe_loss_flip_rate_probe`, `tests.test_always_on_regression_gates`: PASS.
+  - Relation-hold 차단 케이스를 포함한 contextual alias bridge focused tests와 publish-contract convergence focused tests: PASS.
+  - `tests.test_title_lead_search_inferred_guard + tests.test_expert_main_comment_metadata`: 194 tests PASS.
+- 결정:
+  - `11660237`은 safe loss가 아니라 `nondeterminism_unresolved`다.
+  - Golden-16 단독 PASS를 approval로 쓰지 않는다.
+  - Full 375 collateral regression이 0이 되기 전까지 full-panel approval은 불가하다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+- 다음 조치:
+  - `11660237` publish/block 진동 원인을 trace, scope, shared state, external search result 순서로 축소한다.
+  - 다음 replay 전에 `tools/evaluate_goal_convergence.py`를 먼저 돌려 actionable queue와 same-packet monotonic 조건을 확인한다.
+
 ## IMP-20260701-437 - Loop237 parent replay shows URL-title guard does not yet survive parent scope
 
 - 상태: parent runtime GO / semantic movement NO-GO / safe count drop / Data Analytics validate-render PASS / residual no-delta / semantic quality REVIEW-LOCKED / full scan approval false / goal NOT_COMPLETE

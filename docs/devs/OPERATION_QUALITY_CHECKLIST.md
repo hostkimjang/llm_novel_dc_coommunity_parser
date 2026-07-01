@@ -6,6 +6,27 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-01 Loop238 architecture convergence / flip-rate quality gate
+
+- 근거:
+  - [x] 동일 38-row parent packet 즉시 재실행을 중단하고 회차 수 기반 stop condition을 폐기했다.
+  - [x] `PromotionDecision`, `publish_contract_trace`, `publish_ledger`, `candidate_ledger` 수렴 계약을 코드와 단위 테스트로 추가했다.
+  - [x] `_has_verified_contextual_alias_work_bridge`가 `_post_discusses_work_as_work(..., source="verified_contextual_alias_work_bridge")` 계약을 경유하도록 배선했다.
+  - [x] Alias bridge 없는 relation-hold 후보는 새 경유 로직에서도 계속 차단되는지 확인했다.
+  - [x] Safe-loss 후보 `11674712`, `11660237`, `11698880`을 동일 입력 N=3 반복으로 측정했다.
+  - [x] `11660237`은 `safe_resolved` 2회 / `promotion_blocked` 1회로 진동해 `nondeterminism_unresolved`로 분류했다.
+  - [x] Blind judge 기대 title/url은 맞았지만, 진동 row가 있어 hard-hold relaxation을 허용하지 않았다.
+  - [x] Golden-16 + full 375 collateral diff 조합 게이트를 작성하고 산출물을 보존했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_238_REPORT_20260701.md`.
+- 품질 게이트:
+  - [x] 다음 회차 시작 전 `actionable queue 감소`와 동일 packet `safe_resolved` 단조 비감소를 동시에 요구한다.
+  - [x] Safe-loss row가 진동하면 safe loss가 아니라 비결정 미해소로 분류한다.
+  - [x] Blind judge 정답성만으로 hard-hold를 완화하지 않는다. 반복 안정성이 같이 필요하다.
+  - [x] Verified contextual alias release는 전용 source 경로에서만 허용한다.
+  - [x] Golden-16 PASS만으로 approval을 주장하지 않는다.
+  - [x] Full 375 collateral regression이 0이 아니면 full-panel gate는 `NO-GO`다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-01 Loop237 parent replay quality gate
 
 - 근거:

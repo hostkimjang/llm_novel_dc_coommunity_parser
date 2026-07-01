@@ -4,6 +4,25 @@
 
 ## 2026-07-01 regression-safe grounding Loop237 parent replay after Loop236 URL-title guard
 
+- 상태 업데이트: Loop238에서 동일 38-row parent packet 반복을 중단하고 architecture convergence / safe-loss flip-rate / always-on gate를 코드화했다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.
+- Loop238 TODO:
+  - [x] 다음 회차 전 워킹트리를 논리 단위로 커밋했다.
+    - code/tools checkpoint: `9181a61`
+    - docs/reports checkpoint: `6e761fb`
+  - [x] `_has_verified_contextual_alias_work_bridge`를 `_post_discusses_work_as_work(..., source="verified_contextual_alias_work_bridge")` 경유로 배선했다.
+  - [x] Alias bridge 없는 relation-hold 후보가 새 경유 로직으로 풀리지 않는지 회귀 테스트로 확인했다.
+  - [x] `promotion_decision`, `publish_contract_trace`, `publish_ledger` 수렴 보정과 계약 테스트를 추가했다.
+  - [x] stop condition evaluator를 추가했다: `tools/evaluate_goal_convergence.py`.
+  - [x] safe-loss flip-rate probe를 추가하고 N=3 반복을 실행했다.
+    - review: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop238_safe_loss_flip_rate_n3_blind_judge_review.md`
+    - `11660237` flip rate `0.3333333333333333`, classification `nondeterminism_unresolved`.
+    - hard-hold relaxation `false`.
+  - [x] golden-16/full375 always-on gate evaluator를 추가했다.
+    - gate: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop238_always_on_golden16_full375_gate.md`
+    - golden-16 `GO`, full375 collateral `NO-GO`, changed `223`, collateral regression candidates `183`.
+  - [ ] `11660237`의 nondeterministic publish/block 원인을 `PromotionDecision` scope/state trace 기준으로 축소한다.
+  - [ ] 다음 replay 전에 `tools/evaluate_goal_convergence.py`에 previous/current queue summary와 동일 packet result를 넣어 `NO_DELTA` 여부를 먼저 판정한다.
+
 - 상태: parent/representative replay runtime GO / semantic `NO-GO / MIXED_MOVEMENT` / safe/public count drop / Data Analytics validate-render PASS / residual accounting no-delta / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
 - TODO:
   - [x] Loop236 URL-title direct-source support guard를 parent/representative 38-row packet에서 재검증했다.

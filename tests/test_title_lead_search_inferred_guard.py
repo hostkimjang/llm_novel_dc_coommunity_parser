@@ -2836,6 +2836,14 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertTrue(
             pipeline._has_verified_contextual_alias_work_bridge(ctx, title, vf_result)
         )
+        self.assertTrue(
+            pipeline._post_discusses_work_as_work(
+                ctx,
+                title,
+                source="verified_contextual_alias_work_bridge",
+                verification_result=vf_result,
+            )
+        )
         self.assertFalse(
             pipeline._relation_hold_should_block_title_resolution(
                 ctx=ctx,
@@ -2890,6 +2898,14 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertFalse(
             pipeline._has_verified_contextual_alias_work_bridge(ctx, title, vf_result)
         )
+        self.assertFalse(
+            pipeline._post_discusses_work_as_work(
+                ctx,
+                title,
+                source="verified_contextual_alias_work_bridge",
+                verification_result=vf_result,
+            )
+        )
         self.assertTrue(
             pipeline._relation_hold_should_block_title_resolution(
                 ctx=ctx,
@@ -2941,6 +2957,14 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
 
         self.assertTrue(
             pipeline._has_verified_contextual_alias_work_bridge(ctx, title, vf_result)
+        )
+        self.assertTrue(
+            pipeline._post_discusses_work_as_work(
+                ctx,
+                title,
+                source="verified_contextual_alias_work_bridge",
+                verification_result=vf_result,
+            )
         )
 
     def test_contextual_alias_official_detail_lock_handles_author_plus_setting_bridge(self):
