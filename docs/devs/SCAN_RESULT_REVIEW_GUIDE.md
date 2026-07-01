@@ -386,6 +386,8 @@ targeted 재실행 입력이나 review packet에서 이 메타가 빠지면 댓�
 
 검색 결과가 약하거나 degraded인데 final decision이 강한 경우 quality risk로 표시한다. `unresolved`, `multi_work`, `adjacent`, `trope`, `author_talk` 경계 케이스는 정성 리뷰 대상으로 분류한다.
 
+`audit_expert_run_health.py`의 `search_evidence` gate를 먼저 확인한다. `GO`는 manifest direct search-health가 포함되고 실패/저하 blocker가 없다는 뜻이다. `SEPARATE_AUDIT_REQUIRED`는 Bridge-only/light health라 direct search-health 증거가 별도로 필요하다는 뜻이며, `REVIEW`는 row-level `search_health`나 worker log에서 search degraded/timeout이 관측됐다는 뜻이다. `search_evidence`가 `GO`가 아니면 completed source라도 full-scan approval 근거로 쓰지 않는다.
+
 ### Automatic Audit vs Semantic Review
 
 자동 감사와 자연어 품질 리뷰는 분리한다.

@@ -1,5 +1,42 @@
 # Verification Results
 
+## 2026-07-02 Loop272 search evidence gate
+
+- 범위: health audit에서 search-health direct probe, row-level `search_health`, worker log 검색 저하 신호를 `search_evidence` gate로 분리한다.
+- Code:
+  - `tools/audit_expert_run_health.py`
+  - `tests/test_audit_expert_run_health.py`
+- New audit field:
+  - `search_evidence`
+- Explicit search evidence audit:
+  - command: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_065642_030743 --manifest out\expert_result_20260702_065632_479765_manifest.json --checkpoint out\expert_result_20260702_065632_479765_checkpoint.jsonl --result-json out\expert_result_20260702_065632_479765.json --pending-snapshot out\expert_result_20260702_065632_479765_pending_snapshot.json --input-jsonl tests\inputs\test01.jsonl --log-glob "logs\expert_run_20260702_065642_030743_W*.log" --output out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop272_search_evidence_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `129`, checkpoint_rows `155`, pending_count_actual `26`
+  - `search_evidence.gate=REVIEW`
+  - blockers `manifest_search_health_not_included`, `manifest_light_health_only`, `search_degraded_observed`
+  - row search health rows `72`
+  - worker log search degraded `75`, upstream_zero `59`, timeout `0`
+- Manifest poll after audit:
+  - input/completed/flushed/pending/failed `104502/155/129/26/0`
+  - `large_run_complete=false`
+  - `partial_flush_gap=true`
+  - `ordered_flush_blocked=true`
+  - MCP health ok/failure `36/0`
+  - caveat: `mcp_health_light_mode=true`, `mcp_health_include_search=false`
+- Focused test:
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_audit_expert_run_health -v` -> PASS, `12` tests.
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\audit_expert_run_health.py tests\test_audit_expert_run_health.py` -> PASS.
+- Gate:
+  - search evidence gate: `REVIEW`
+  - current run integrity: `IN_PROGRESS`
+  - completed source: `PENDING`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_272_REPORT_20260702.md`
+
 ## 2026-07-02 Loop271 frontier source lookup
 
 - 범위: ordered flush frontier `global_idx`를 source input post로 해석해, 막힌 row의 post_id/title/url을 audit에 남긴다.

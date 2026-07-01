@@ -210,6 +210,18 @@ def _as_int(value: Any) -> int | None:
         return None
 
 
+def _as_bool(value: Any) -> bool | None:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {"true", "1", "yes", "y"}:
+            return True
+        if normalized in {"false", "0", "no", "n"}:
+            return False
+    return None
+
+
 def _post_id_key(value: Any) -> int | str | None:
     if value in (None, ""):
         return None
@@ -767,6 +779,101 @@ def _audit_logs(log_files: List[Path]) -> Dict[str, Any]:
     }
 
 
+def _build_search_evidence_gate(
+    *,
+    manifest_data: Dict[str, Any],
+    rows: List[Dict[str, Any]],
+    log_audit: Dict[str, Any],
+) -> Dict[str, Any]:
+    include_search = _as_bool(manifest_data.get("mcp_health_include_search"))
+    light_mode = _as_bool(manifest_data.get("mcp_health_light_mode"))
+    health_ok = _as_int(manifest_data.get("mcp_health_ok_count"))
+    health_failure = _as_int(manifest_data.get("mcp_health_failure_count")) or 0
+
+    row_status_counts: Counter[str] = Counter()
+    row_flag_counts: Counter[str] = Counter()
+    rows_with_search_health = 0
+    row_degraded_count = 0
+    row_upstream_zero_count = 0
+    row_query_total = 0
+    row_degraded_total = 0
+
+    for row in rows:
+        identity = _identity_from_row(row)
+        health = identity.get("search_health")
+        if isinstance(health, dict):
+            rows_with_search_health += 1
+            status = str(health.get("status") or "unknown").strip() or "unknown"
+            row_status_counts[status] += 1
+            queries = _as_int(health.get("queries_issued")) or 0
+            upstream_zero = _as_int(health.get("upstream_zero")) or 0
+            degraded = _as_int(health.get("degraded")) or 0
+            degraded_zero = _as_int(health.get("degraded_zero")) or 0
+            row_query_total += queries
+            row_degraded_total += degraded
+            if upstream_zero > 0:
+                row_upstream_zero_count += 1
+            if status.upper() == "SEARCH_DEGRADED" or degraded > 0 or degraded_zero > 0:
+                row_degraded_count += 1
+        for flag in identity.get("search_health_flags") or []:
+            row_flag_counts[str(flag)] += 1
+
+    log_counts = log_audit.get("counts") if isinstance(log_audit.get("counts"), dict) else {}
+    log_search_timeout = int(log_counts.get("search_timeout", 0) or 0)
+    log_search_degraded = int(log_counts.get("search_degraded_detected", 0) or 0)
+    log_upstream_zero = int(log_counts.get("search_upstream_zero", 0) or 0)
+    log_bridge_after_filter_zero = int(log_counts.get("search_bridge_after_filter_zero", 0) or 0)
+
+    blockers: List[str] = []
+    if include_search is not True:
+        blockers.append("manifest_search_health_not_included")
+    if light_mode is True:
+        blockers.append("manifest_light_health_only")
+    if health_failure > 0:
+        blockers.append("mcp_health_failure_count_gt_zero")
+    if log_search_timeout > 0:
+        blockers.append("search_timeout_observed")
+    if log_search_degraded > 0 or row_degraded_count > 0:
+        blockers.append("search_degraded_observed")
+
+    if health_failure > 0:
+        gate = "NO-GO"
+    elif log_search_timeout > 0 or log_search_degraded > 0 or row_degraded_count > 0:
+        gate = "REVIEW"
+    elif include_search is True:
+        gate = "GO"
+    else:
+        gate = "SEPARATE_AUDIT_REQUIRED"
+
+    return {
+        "gate": gate,
+        "approval_ready": gate == "GO",
+        "direct_probe_in_manifest": include_search is True,
+        "manifest": {
+            "mcp_health_include_search": include_search,
+            "mcp_health_light_mode": light_mode,
+            "mcp_health_ok_count": health_ok,
+            "mcp_health_failure_count": health_failure,
+        },
+        "row_search_health": {
+            "rows_with_search_health": rows_with_search_health,
+            "status_counts": dict(row_status_counts.most_common()),
+            "flag_counts": dict(row_flag_counts.most_common()),
+            "rows_with_upstream_zero": row_upstream_zero_count,
+            "rows_with_degraded": row_degraded_count,
+            "query_total": row_query_total,
+            "degraded_total": row_degraded_total,
+        },
+        "worker_log_search": {
+            "search_timeout": log_search_timeout,
+            "search_degraded_detected": log_search_degraded,
+            "search_upstream_zero": log_upstream_zero,
+            "search_bridge_after_filter_zero": log_bridge_after_filter_zero,
+        },
+        "blockers": blockers,
+    }
+
+
 def build_audit(
     run_id: str,
     *,
@@ -887,6 +994,11 @@ def build_audit(
         input_post_lookup=input_post_lookup,
     )
     log_audit = _audit_logs(log_files)
+    search_evidence = _build_search_evidence_gate(
+        manifest_data=manifest_data if isinstance(manifest_data, dict) else {},
+        rows=rows,
+        log_audit=log_audit,
+    )
     slang_audit = _audit_slang(rows, repo=repo)
 
     return {
@@ -911,6 +1023,7 @@ def build_audit(
         "checkpoint_rows": len(rows),
         "pending_count_actual": pending_count_actual,
         "flush_integrity": flush_integrity,
+        "search_evidence": search_evidence,
         "status_counts": dict(status_counts),
         "identity_state_counts": dict(identity_state_counts.most_common(30)),
         "discussion_type_counts_top": dict(discussion_counts.most_common(40)),
@@ -992,6 +1105,7 @@ def main() -> None:
         f"{audit['slang']['old_store_true_blocked_by_patch_count']}"
     )
     print(f"slang_db_bad_remaining={audit['slang']['slang_db']['sentence_or_exact_bad_remaining']}")
+    print(f"search_evidence={audit['search_evidence']['gate']} blockers={audit['search_evidence']['blockers']}")
     print(f"log_counts={audit['logs']['counts']}")
     print(f"headless={audit['logs']['headless_engine_counts']}")
 

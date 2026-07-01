@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop272 Addendum - health audit search evidence gate
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: completed-source 승격 전에 search-health direct probe 누락과 실제 search degraded 관측을 audit JSON에서 분리한다.
+- 코드 변경: `tools/audit_expert_run_health.py`에 `search_evidence` gate를 추가했다. manifest health mode, row-level `identity.search_health`, worker log search counters를 집계한다. `tests/test_audit_expert_run_health.py`에 light-health-only, direct health failure, degraded observation 계약을 추가했다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_272_REPORT_20260702.md`, search evidence audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop272_search_evidence_health_audit.json`.
+- Evidence: audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows `129`, checkpoint_rows `155`, pending_count_actual `26`이다. `search_evidence=REVIEW`, blockers `manifest_search_health_not_included`, `manifest_light_health_only`, `search_degraded_observed`다. row search health rows `72`, worker log search degraded `75`, upstream_zero `59`, timeout `0`이다.
+- Verification: `tests.test_audit_expert_run_health` `12` tests OK, py_compile PASS.
+- Gate: completed source `PENDING`, current run integrity `IN_PROGRESS`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop271 Addendum - health audit frontier source lookup
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

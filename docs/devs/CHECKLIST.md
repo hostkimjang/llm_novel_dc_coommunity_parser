@@ -1,5 +1,35 @@
 # Development Checklist
 
+## 2026-07-02 Loop272 search evidence gate 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] `audit_expert_run_health.py`에 `search_evidence` gate를 추가했다.
+- [x] light-health-only manifest가 approval-ready로 오인되지 않는 계약 테스트를 추가했다.
+- [x] direct search-health 실패가 `NO-GO`로 분리되는 계약 테스트를 추가했다.
+- [x] row/log 검색 저하 관측이 `REVIEW`로 분리되는 계약 테스트를 추가했다.
+- [x] 실제 Loop264 진행 중 run에 search evidence audit를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop272_search_evidence_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `129`
+  - checkpoint_rows `155`
+  - pending_count_actual `26`
+  - `search_evidence.gate=REVIEW`
+  - blockers `manifest_search_health_not_included`, `manifest_light_health_only`, `search_degraded_observed`
+  - row search health rows `72`
+  - worker log search degraded `75`, upstream_zero `59`, timeout `0`
+- [x] 직후 manifest poll을 분리 확인했다.
+  - input/completed/flushed/pending/failed `104502/155/129/26/0`
+  - `large_run_complete=false`
+  - `partial_flush_gap=true`
+  - `ordered_flush_blocked=true`
+- [x] focused verification을 실행했다.
+  - `tests.test_audit_expert_run_health`: PASS, `12` tests.
+  - py_compile: PASS.
+- [ ] run 완료 후 `search_evidence.gate`가 `GO`인지 확인한다.
+- [ ] `search_evidence`가 `REVIEW` 또는 `SEPARATE_AUDIT_REQUIRED`이면 direct search-health probe 또는 search error evidence review를 별도 산출물로 남긴다.
+- Gate: search evidence `REVIEW`, current run integrity `IN_PROGRESS`, completed source `PENDING`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop271 frontier source lookup 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

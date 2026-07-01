@@ -6,6 +6,19 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop272 search evidence quality gate
+
+- 근거:
+  - [x] `audit_expert_run_health.py`가 `search_evidence` gate를 기록한다.
+  - [x] manifest direct search-health, row-level `search_health`, worker log search counters를 분리한다.
+  - [x] 실제 Loop264 진행 중 run에서 search evidence audit를 실행했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_272_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] light-health-only manifest는 approval-ready가 아니다.
+  - [x] 현재 audit의 `search_evidence=REVIEW`를 completed-source approval blocker로 유지한다.
+  - [x] 최신 manifest `104502/155/129/26/0`, `large_run_complete=false`를 run integrity `IN_PROGRESS`로 둔다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop271 frontier source lookup quality gate
 
 - 근거:

@@ -1,5 +1,36 @@
 # Improvement Register
 
+## IMP-20260702-272 - health audit search evidence gate
+
+- Status: Implemented / approval blocked
+- Loop: 272
+- Problem:
+  - 진행 중 대형 run은 `mcp_health_include_search=false`, `mcp_health_light_mode=true`로 시작 health가 Bridge-only라 search-health direct proof가 아니다.
+  - worker log와 row-level `search_health`에 검색 저하가 있어도 health audit의 top-level gate에서 분리되지 않았다.
+- Change:
+  - `search_evidence` gate를 추가했다.
+  - manifest direct search-health, row-level `search_health`, worker log 검색 카운터를 함께 요약한다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_272_REPORT_20260702.md`
+  - audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop272_search_evidence_health_audit.json`
+- Result:
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - `search_evidence.gate=REVIEW`
+  - blockers `manifest_search_health_not_included`, `manifest_light_health_only`, `search_degraded_observed`
+  - row search health rows `72`
+  - worker log search degraded `75`, upstream_zero `59`, timeout `0`
+  - latest manifest poll `104502/155/129/26/0`
+- Verification:
+  - `tests.test_audit_expert_run_health` `12` tests OK
+  - py_compile PASS
+- Gate:
+  - completed source `PENDING`
+  - run integrity `IN_PROGRESS`
+  - search evidence `REVIEW`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-271 - health audit frontier source lookup
 
 - Status: Implemented / approval blocked

@@ -5,6 +5,7 @@ from pathlib import Path
 
 from tools.audit_expert_run_health import (
     _build_flush_integrity,
+    _build_search_evidence_gate,
     _count_result_rows,
     _load_input_post_lookup,
     _resolve_run_artifacts,
@@ -241,6 +242,75 @@ class AuditExpertRunHealthTest(unittest.TestCase):
         self.assertEqual(audit["classification"], "artifact_count_mismatch")
         self.assertIn("result_rows_ne_flushed_count", audit["blockers"])
         self.assertIn("pending_snapshot_rows_ne_manifest_pending", audit["blockers"])
+
+    def test_search_evidence_requires_separate_audit_for_light_health_only(self):
+        audit = _build_search_evidence_gate(
+            manifest_data={
+                "mcp_health_include_search": False,
+                "mcp_health_light_mode": True,
+                "mcp_health_ok_count": 36,
+                "mcp_health_failure_count": 0,
+            },
+            rows=[],
+            log_audit={"counts": {}},
+        )
+
+        self.assertEqual(audit["gate"], "SEPARATE_AUDIT_REQUIRED")
+        self.assertFalse(audit["approval_ready"])
+        self.assertFalse(audit["direct_probe_in_manifest"])
+        self.assertIn("manifest_search_health_not_included", audit["blockers"])
+        self.assertIn("manifest_light_health_only", audit["blockers"])
+
+    def test_search_evidence_no_go_for_manifest_health_failures(self):
+        audit = _build_search_evidence_gate(
+            manifest_data={
+                "mcp_health_include_search": True,
+                "mcp_health_light_mode": False,
+                "mcp_health_ok_count": 35,
+                "mcp_health_failure_count": 1,
+            },
+            rows=[],
+            log_audit={"counts": {}},
+        )
+
+        self.assertEqual(audit["gate"], "NO-GO")
+        self.assertIn("mcp_health_failure_count_gt_zero", audit["blockers"])
+
+    def test_search_evidence_reviews_row_or_log_degradation(self):
+        audit = _build_search_evidence_gate(
+            manifest_data={
+                "mcp_health_include_search": True,
+                "mcp_health_light_mode": False,
+                "mcp_health_ok_count": 36,
+                "mcp_health_failure_count": 0,
+            },
+            rows=[
+                {
+                    "result": {
+                        "analysis_result": {
+                            "identity": {
+                                "search_health": {
+                                    "queries_issued": 3,
+                                    "upstream_zero": 1,
+                                    "degraded": 1,
+                                    "degraded_zero": 1,
+                                    "status": "SEARCH_DEGRADED",
+                                },
+                                "search_health_flags": ["search_degraded_or_timeout"],
+                            }
+                        }
+                    }
+                }
+            ],
+            log_audit={"counts": {"search_timeout": 1, "search_degraded_detected": 1}},
+        )
+
+        self.assertEqual(audit["gate"], "REVIEW")
+        self.assertEqual(audit["row_search_health"]["rows_with_search_health"], 1)
+        self.assertEqual(audit["row_search_health"]["rows_with_degraded"], 1)
+        self.assertEqual(audit["worker_log_search"]["search_timeout"], 1)
+        self.assertIn("search_timeout_observed", audit["blockers"])
+        self.assertIn("search_degraded_observed", audit["blockers"])
 
 
 if __name__ == "__main__":

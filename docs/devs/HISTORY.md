@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-02 - Loop272 health audit search evidence gate 추가
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- `tools/audit_expert_run_health.py`에 `search_evidence` gate를 추가해 manifest direct search-health, row-level `search_health`, worker log 검색 저하 신호를 분리 기록한다.
+- 실제 Loop264 진행 중 run에 search evidence audit를 실행했고 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop272_search_evidence_health_audit.json`이다.
+- audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows `129`, checkpoint_rows `155`, pending_count_actual `26`이다.
+- `search_evidence`는 `REVIEW`이며 blockers는 `manifest_search_health_not_included`, `manifest_light_health_only`, `search_degraded_observed`다.
+- row search health rows `72`, worker log search degraded `75`, upstream_zero `59`, timeout `0`이다.
+- Gate는 search evidence `REVIEW`, current run integrity `IN_PROGRESS`, completed source `PENDING`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop271 health audit frontier source lookup 추가
 
 - 동일 38-row parent packet은 재실행하지 않았다.
