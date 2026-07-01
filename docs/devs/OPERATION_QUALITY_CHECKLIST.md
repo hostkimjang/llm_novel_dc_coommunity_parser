@@ -6,6 +6,24 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop248 P0 representative / reason hygiene quality gate
+
+- 근거:
+  - [x] 동일 38-row parent packet을 재실행하지 않았다.
+  - [x] Loop51 P0 collateral bucket 대표 7건으로 current-code 상태만 진단했다.
+  - [x] runtime은 completed/flushed/pending/failed `7/7/0/0`, VLM/OCR `READY`로 `GO`다.
+  - [x] 원본 reason hygiene failure를 보존했다: hit_files `1`, `llm_flip` hit_count `2`.
+  - [x] 공개 reason에 내부 `LLM(False)→최종(True)` marker가 남지 않도록 code/test를 보강했다.
+  - [x] sanitized preview reason hygiene scan은 hit_files `0`이다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_248_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] sanitized preview `GO`를 원본 Loop248 result approval로 쓰지 않는다.
+  - [x] Runtime `GO`와 reason hygiene `GO`를 semantic coverage approval로 합치지 않는다.
+  - [x] browser visual required/available/missing `5/0/5`이면 semantic coverage는 `REVIEW-LOCKED`다.
+  - [x] `11658668` platform meta / expert conflict publish는 별도 P0C blocker로 남긴다.
+  - [x] `11663535` canonicalization drift는 별도 P0D blocker로 남긴다.
+  - [x] Parent replay `NOT_RUN`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop247 browser visual coverage quality gate
 
 - 근거:

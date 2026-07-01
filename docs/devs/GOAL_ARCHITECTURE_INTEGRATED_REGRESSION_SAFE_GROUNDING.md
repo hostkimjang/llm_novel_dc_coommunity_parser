@@ -8,6 +8,14 @@
 
 ## Current Evidence
 
+- Latest Loop248 P0 representative replay / reason hygiene guard report: `docs/devs/loop_reports/LOOP_248_REPORT_20260702.md`
+- Latest Loop248 current result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop248_p0_representative_7_current_result.json`
+- Latest Loop248 review artifact: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop248_p0_representative_7_current_review.md/json`
+- Latest Loop248 original reason hygiene scan: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop248_p0_representative_7_reason_hygiene.json`
+- Latest Loop248 sanitized-preview reason hygiene scan: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop248_p0_representative_7_reason_hygiene_sanitized_preview.json`
+- Latest Loop247 browser visual coverage report: `docs/devs/loop_reports/LOOP_247_REPORT_20260702.md`
+- Latest Loop247 semantic coverage with browser artifact: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop247_run09_semantic_coverage_with_browser_audit.md/json`
+- Latest Loop246 architecture gate revalidation report: `docs/devs/loop_reports/LOOP_246_REPORT_20260702.md`
 - Latest Loop241 exact-title relation hold contract report: `docs/devs/loop_reports/LOOP_241_REPORT_20260702.md`
 - Latest Loop241 focused result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop241_11660237_relation_exact_title_hold_run07_result.json`
 - Latest Loop241 review artifact: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop241_11660237_relation_exact_title_hold_review.md/json`

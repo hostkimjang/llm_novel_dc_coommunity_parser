@@ -2,6 +2,40 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop248 P0 representative replay and reason hygiene TODO
+
+- 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. Loop248은 full375 P0 collateral bucket 대표 7건으로 current-code 상태를 진단했고, 원본 result의 reason hygiene 실패를 공개 reason sanitizer 코드로 보강했다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.
+- Loop248 TODO:
+  - [x] P0 대표 7건 input을 생성했다.
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop248_p0_representative_7.jsonl`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop248_p0_representative_7_manifest.json`
+  - [x] current-code run을 실행했다.
+    - run `20260702_023732_561254`
+    - completed/flushed/pending/failed `7/7/0/0`
+    - VLM/OCR `READY`, image_post_count `5`
+  - [x] P0 대표 outcome을 기록했다.
+    - expected 회복 `2`
+    - unexpected/wrong title 차단 `2`
+    - expected still missing `1`
+    - loop49 after 재현 `1`
+    - canonicalization other `1`
+  - [x] reason hygiene 원본 실패를 기록했다.
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop248_p0_representative_7_reason_hygiene.json`
+    - `FAIL`, hit_files `1`, llm_flip hit_count `2`
+  - [x] 공개 reason sanitizer를 보강했다.
+    - `src/llm_batch/agentic_pipeline.py`
+    - `tests/test_title_lead_search_inferred_guard.py`
+  - [x] focused 검증을 완료했다.
+    - `py_compile` PASS
+    - tracked sanitizer regression 1 test PASS
+    - sanitized preview reason hygiene hit_files `0`
+  - [x] 한국어 report를 남겼다.
+    - `docs/devs/loop_reports/LOOP_248_REPORT_20260702.md`
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+  - [ ] `11658668` platform meta / expert conflict publish 경로를 P0C blocker로 분리한다.
+  - [ ] `11663535` canonicalization drift를 P0D blocker로 분리한다.
+  - [ ] full375 previous `NO-GO`를 닫기 전까지 residual approval을 갱신하지 않는다.
+
 ## 2026-07-02 regression-safe grounding Loop245 11660237 relation-hold patch and convergence review
 
 - 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. Loop245는 current-code run08에서 재발한 `11660237` safe loss를 Verifier relation-hold 변형으로 좁히고, patch 후 run09 같은 입력에서 `safe_resolved` 회복을 확인했다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.

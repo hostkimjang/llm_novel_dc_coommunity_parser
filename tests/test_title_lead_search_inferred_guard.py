@@ -92,6 +92,28 @@ def mark_no_work_seed(ctx: ConversationContext) -> None:
 
 
 class TitleLeadSearchInferredGuardTest(unittest.TestCase):
+    def test_sanitize_reason_neutralizes_code_guard_flip_marker_for_relevant_result(self):
+        reason = (
+            "[판정 요약]\n"
+            "- 판정: 관련\n"
+            "- discussion_type: general\n"
+            "- 공식 제목: '전 버튜버가 하고 싶은데요'\n"
+            "[근거 스코어]\n"
+            "- title_resolution: +2 (공식 제목 근거 확인)\n"
+            "[코드가드 consistency: LLM(False)→최종(True)]"
+        )
+
+        sanitized = AgenticPipeline._sanitize_reason(
+            reason,
+            is_relevant=True,
+            discussion_type="general",
+            official_title="전 버튜버가 하고 싶은데요",
+        )
+
+        self.assertIn("전 버튜버가 하고 싶은데요", sanitized)
+        self.assertIn("[코드가드 consistency: 내부 정합성 가드 적용]", sanitized)
+        self.assertNotIn("LLM(False)→최종(True)", sanitized)
+
     def test_snippet_artifact_title_expansion_blocks_cover_alias_mapping(self):
         self.assertTrue(is_snippet_artifact_title_expansion("테라포밍", "테라포밍 표지"))
         self.assertTrue(is_snippet_artifact_title_expansion("테라포밍", "테라포밍 팬아트"))

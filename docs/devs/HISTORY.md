@@ -1,5 +1,20 @@
 # Development History
 
+## 2026-07-02 - Loop248 runs P0 representatives and patches public reason hygiene
+
+- 동일 38-row parent packet은 재실행하지 않고 Loop51 P0 collateral bucket 대표 7건만 current-code로 재현했다.
+- Run `20260702_023732_561254`은 completed/flushed/pending/failed `7/7/0/0`, effective_parallel `7`, VLM/OCR `READY`, image_post_count `5`로 runtime `GO`다.
+- P0 대표 outcome은 expected 회복 `2`, unexpected/wrong title 차단 `2`, expected still missing `1`, loop49 after 재현 `1`, canonicalization other `1`이다.
+- 원본 reason hygiene scan은 `11658668`의 공개 reason에 `LLM(False)→최종(True)`가 남아 `FAIL(hit_files=1, llm_flip=2)`이었다.
+- `src/llm_batch/agentic_pipeline.py`에서 override audit suffix를 공개용 중립 문구로 바꾸고 legacy flip marker sanitizer를 추가했다.
+- `tests/test_title_lead_search_inferred_guard.py`에 관련+제목확정 reason에서 flip marker가 공개되지 않는 regression test를 추가했다.
+- Verification: `py_compile` PASS, tracked sanitizer regression 1 test PASS, sanitized preview reason hygiene hit_files `0`.
+- Artifacts:
+  - `docs/devs/loop_reports/LOOP_248_REPORT_20260702.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop248_p0_representative_7_current_review.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop248_p0_representative_7_reason_hygiene_sanitized_preview.json`
+- Gate는 runtime `GO`, original reason hygiene `FAIL`, sanitized-preview reason hygiene `GO`, semantic coverage `REVIEW-LOCKED(browser visual 5/0/5)`, parent replay `NOT_RUN`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 - Loop247 attaches browser visual evidence for 11660237
 
 - 동일 38-row parent packet은 재실행하지 않고 Loop246의 `browser_visual_or_direct_evidence_missing` blocker만 좁혔다.

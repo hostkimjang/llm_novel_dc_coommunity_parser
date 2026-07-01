@@ -1,5 +1,40 @@
 # Development Checklist
 
+## 2026-07-02 Loop248 P0 대표 재현과 reason hygiene 보강 체크
+
+- [x] 동일 38-row parent packet을 재실행하지 않았다.
+- [x] Loop51 full375 P0 collateral bucket에서 대표 7건을 구성했다.
+  - input `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop248_p0_representative_7.jsonl`
+  - manifest `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop248_p0_representative_7_manifest.json`
+- [x] current-code P0 대표 run을 실행했다.
+  - run id `20260702_023732_561254`
+  - completed/flushed/pending/failed `7/7/0/0`
+  - effective_parallel `7`
+  - VLM/OCR `READY`, image_post_count `5`
+- [x] P0 대표 결과를 분류했다.
+  - expected 회복 `2`
+  - unexpected/wrong title 차단 `2`
+  - expected still missing `1`
+  - loop49 after 재현 `1`
+  - canonicalization other `1`
+- [x] 원본 reason hygiene 실패를 보존했다.
+  - artifact `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop248_p0_representative_7_reason_hygiene.json`
+  - `FAIL`, hit_files `1`, hit_type `llm_flip`, hit_count `2`
+- [x] 공개 reason의 내부 flip marker 노출을 코드로 막았다.
+  - `src/llm_batch/agentic_pipeline.py`
+  - override audit suffix는 `[코드가드 ...: 내부 정합성 가드 적용]`으로 기록한다.
+  - legacy `LLM(False)→최종(True)` marker는 `_sanitize_reason(...)` 최종 반환에서 중립화한다.
+- [x] focused 검증을 완료했다.
+  - `py_compile`: PASS
+  - tracked sanitizer regression 1 test PASS
+  - sanitized preview reason hygiene scan hit_files `0`
+- [x] 한국어 loop report를 남겼다.
+  - `docs/devs/loop_reports/LOOP_248_REPORT_20260702.md`
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- [ ] `11658668` platform meta / expert conflict publish 경로를 다음 P0C blocker로 분리한다.
+- [ ] `11663535` `퇴마록` 계열 canonicalization을 다음 P0D blocker로 분리한다.
+- [ ] browser visual required `5`건은 direct/browser artifact 없이는 semantic coverage approval로 세지 않는다.
+
 ## 2026-07-02 Loop247 11660237 browser visual evidence 체크
 
 - [x] 동일 38-row parent packet을 재실행하지 않았다.

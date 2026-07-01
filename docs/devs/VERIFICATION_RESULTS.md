@@ -1,5 +1,50 @@
 # Verification Results
 
+## 2026-07-02 Loop248 P0 representative replay and reason hygiene verification
+
+- Scope: 동일 38-row parent packet을 재실행하지 않고 Loop51 P0 collateral bucket 대표 7건을 current-code로 재현한 뒤, 공개 reason의 내부 flip marker 노출을 코드로 막는다.
+- Input:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop248_p0_representative_7.jsonl`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop248_p0_representative_7_manifest.json`
+- Runtime:
+  - run id `20260702_023732_561254`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop248_p0_representative_7_current_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop248_p0_representative_7_current_result_manifest.json`
+  - log `logs\expert_run_20260702_023732_561254.log`
+  - completed/flushed/pending/failed `7/7/0/0`, effective_parallel `7`, VLM/OCR `READY`, image_post_count `5`
+- Review:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop248_p0_representative_7_current_review.md/json`
+  - outcome: expected recovered `2`, blocked unexpected/wrong `2`, expected still missing `1`, loop49 after reproduced `1`, canonicalization other `1`
+- Runtime audit:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop248_p0_representative_7_goal_test_contract_audit.md/json`
+  - runtime_contract `GO`
+- Semantic coverage:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop248_p0_representative_7_semantic_coverage_audit.md/json`
+  - gate `REVIEW-LOCKED`
+  - browser_visual_required/available/missing `5/0/5`
+- Original reason hygiene:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop248_p0_representative_7_reason_hygiene.json`
+  - `FAIL`, hit_files `1`, hit_type `llm_flip`, hit_count `2`
+- Code verification:
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_title_lead_search_inferred_guard.py`: PASS
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_sanitize_reason_neutralizes_code_guard_flip_marker_for_relevant_result -v`: PASS, 1 test
+- Sanitized-preview verification:
+  - preview `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop248_p0_representative_7_current_result_sanitized_preview.json`
+  - scan `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop248_p0_representative_7_reason_hygiene_sanitized_preview.json`
+  - hit_files `0`, clean_files `1`
+- Artifact:
+  - `docs\devs\loop_reports\LOOP_248_REPORT_20260702.md`
+- Gate:
+  - runtime: `GO`
+  - original reason hygiene: `FAIL`
+  - sanitized-preview reason hygiene: `GO`
+  - semantic coverage: `REVIEW-LOCKED`
+  - parent replay: `NOT_RUN`
+  - full375 previous: `NO-GO`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+
 ## 2026-07-02 Loop247 11660237 browser visual verification
 
 - Scope: Loop245 run09 result의 `11660237` image row에 browser visual artifact를 연결해 Loop246 semantic coverage blocker를 해소한다. 동일 38-row parent packet은 재실행하지 않는다.

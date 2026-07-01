@@ -1,5 +1,32 @@
 # Improvement Register
 
+## IMP-20260702-448 - Loop248 neutralizes public reason flip markers after P0 representative replay
+
+- 상태: runtime GO / original reason hygiene FAIL / sanitized-preview reason hygiene GO / semantic coverage REVIEW-LOCKED / full375 previous NO-GO / full scan approval false / goal NOT_COMPLETE
+- 문제:
+  - full375 collateral `NO-GO`의 P0 bucket을 다음 코드 작업으로 줄이기 전에 현재 코드의 bucket별 상태가 필요했다.
+  - Loop248 원본 result에서 `11658668` 공개 reason에 내부 전환 표기 `LLM(False)→최종(True)`가 남아 reason hygiene가 실패했다.
+- 조치:
+  - Loop51 P0 collateral bucket에서 대표 7건을 구성해 current-code run `20260702_023732_561254`를 실행했다.
+  - `src/llm_batch/agentic_pipeline.py`에서 override audit suffix를 공개용 중립 문구로 변경했다.
+  - legacy flip marker가 `_sanitize_reason(...)`을 거치면 공개 reason에서 중립화되도록 `_neutralize_reason_code_guard_flip_markers(...)`를 추가했다.
+  - 관련+제목확정 result에서도 flip marker가 남지 않는 focused regression test를 추가했다.
+- 검증:
+  - runtime completed/flushed/pending/failed `7/7/0/0`, VLM/OCR `READY`.
+  - P0 대표 outcome: expected 회복 `2`, unexpected/wrong title 차단 `2`, expected still missing `1`, loop49 after 재현 `1`, canonicalization other `1`.
+  - original reason hygiene: `FAIL`, hit_files `1`, llm_flip hit_count `2`.
+  - `py_compile` PASS, tracked sanitizer regression 1 test PASS.
+  - sanitized preview reason hygiene: hit_files `0`, clean_files `1`.
+- 결정:
+  - 공개 reason hygiene 회귀는 새 코드 경로에서 막았다.
+  - 원본 Loop248 result 자체는 실패 증거로 남기며 approval 근거로 쓰지 않는다.
+  - `11658668` platform meta / expert conflict와 `11663535` canonicalization drift는 다음 P0 blocker로 남긴다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+- 다음 조치:
+  - `11658668` publish 경로를 platform-meta conflict gate로 분리한다.
+  - `11663535` `퇴마록` 계열 title variant/canonicalization을 분리한다.
+  - full375 previous `NO-GO`를 닫기 전까지 residual approval을 갱신하지 않는다.
+
 ## IMP-20260702-447 - Loop247 closes 11660237 browser visual coverage blocker
 
 - 상태: browser visual gate GO / semantic coverage gate GO / parent replay NOT_RUN / full375 previous NO-GO / full scan approval false / goal NOT_COMPLETE

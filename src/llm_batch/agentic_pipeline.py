@@ -10289,7 +10289,7 @@ class AgenticPipeline:
         # [Phase28] 코드레벨 오버라이드 정보를 reason에 부기
         if _override_audit and _llm_original_relevant != is_relevant:
             _guard_names = ", ".join(oa["guard"] for oa in _override_audit)
-            _audit_suffix = f"\n[코드가드 {_guard_names}: LLM({_llm_original_relevant})→최종({is_relevant})]"
+            _audit_suffix = f"\n[코드가드 {_guard_names}: 내부 정합성 가드 적용]"
             reason = (reason or "") + _audit_suffix
             if reason_lines is None:
                 reason_lines = []
@@ -20602,6 +20602,9 @@ class AgenticPipeline:
 
         import re
 
+        def _finalize_public_reason(base: str) -> str:
+            return AgenticPipeline._neutralize_reason_code_guard_flip_markers(base)
+
         # non-novel warning 라벨 통일 (예: manga_comics -> non_novel)
         reason = re.sub(r"\bmanga_comics\b", "non_novel", reason, flags=re.IGNORECASE)
         # 다국어 혼입/번역 잔여 표현의 최소 정규화
@@ -20708,23 +20711,29 @@ class AgenticPipeline:
         if is_relevant and mentions_false:
             _fixed_reason = AgenticPipeline._neutralize_relevant_negative_claims(reason)
             title_note = f"공식 제목='{official_title}'" if official_title else "공식 제목은 미확정"
-            return _append_consistency_note(
-                _fixed_reason,
-                f"최종 판정은 관련 포스트(discussion_type={dt}, {title_note})이며 원문 reason의 false 표기를 교정함.",
+            return _finalize_public_reason(
+                _append_consistency_note(
+                    _fixed_reason,
+                    f"최종 판정은 관련 포스트(discussion_type={dt}, {title_note})이며 원문 reason의 false 표기를 교정함.",
+                )
             )
         if (not is_relevant) and mentions_true:
             _fixed_reason = reason
             if AgenticPipeline._has_non_relevant_strong_positive_judgment(_fixed_reason):
                 _fixed_reason = AgenticPipeline._neutralize_non_relevant_positive_claims(_fixed_reason)
-            return _append_consistency_note(
-                _fixed_reason,
-                _non_relevant_consistency_note("true"),
+            return _finalize_public_reason(
+                _append_consistency_note(
+                    _fixed_reason,
+                    _non_relevant_consistency_note("true"),
+                )
             )
         if (not is_relevant) and AgenticPipeline._has_non_relevant_strong_positive_judgment(reason):
             _neutralized = AgenticPipeline._neutralize_non_relevant_positive_claims(reason)
-            return _append_consistency_note(
-                _neutralized,
-                _non_relevant_consistency_note("positive"),
+            return _finalize_public_reason(
+                _append_consistency_note(
+                    _neutralized,
+                    _non_relevant_consistency_note("positive"),
+                )
             )
 
         # 관련 판정인데 "작품 토론이 아니다" 류 표현이 섞이면 의미 충돌을 완화한다.
@@ -20817,11 +20826,13 @@ class AgenticPipeline:
             # 관련 판정이면서 제목 미정인데도 작품 확정 어조가 남아있으면
             # reason을 제목 미정 표준문구로 강제 정규화한다.
             if is_relevant and AgenticPipeline._has_title_assertion_while_unknown(reason):
-                return (
-                    f"관련 포스트로 판정되었으나 정식 제목은 미확정입니다. "
-                    f"discussion_type={dt}. "
-                    f"본문/댓글의 약칭·작가·캐릭터 단서로 작품 맥락은 확인되지만, "
-                    f"단일 공식 제목을 확정할 근거가 충분하지 않아 제목 지목을 보류합니다."
+                return _finalize_public_reason(
+                    (
+                        f"관련 포스트로 판정되었으나 정식 제목은 미확정입니다. "
+                        f"discussion_type={dt}. "
+                        f"본문/댓글의 약칭·작가·캐릭터 단서로 작품 맥락은 확인되지만, "
+                        f"단일 공식 제목을 확정할 근거가 충분하지 않아 제목 지목을 보류합니다."
+                    )
                 )
 
         # 최종 세이프가드: 비관련 판정인데 관련 확정 어조가 남아있으면 완화
@@ -20843,7 +20854,22 @@ class AgenticPipeline:
                 "최종 공식 제목은 미확정 상태로 유지하며, work-level 관련성만 인정합니다.",
             )
 
-        return reason
+        return _finalize_public_reason(reason)
+
+    @staticmethod
+    def _neutralize_reason_code_guard_flip_markers(reason: str) -> str:
+        """공개 reason에서 내부 LLM/final 전환 표기를 중립화한다."""
+        if not isinstance(reason, str) or not reason.strip():
+            return reason
+
+        import re
+
+        return re.sub(
+            r"\[코드가드\s+([^\]\n:]+):\s*LLM\((?:True|False)\)→최종\((?:True|False)\)\]",
+            r"[코드가드 \1: 내부 정합성 가드 적용]",
+            reason,
+            flags=re.IGNORECASE,
+        )
 
     def _build_reason_scoreboard_lines(
         self,
