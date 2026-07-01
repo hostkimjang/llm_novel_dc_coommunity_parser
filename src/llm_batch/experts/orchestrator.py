@@ -29,7 +29,11 @@ from ..rules import (
     is_novel_domain,
     is_non_novel_domain,
 )
-from .decoder import KNOWN_ABBREVIATIONS, abbreviation_match_score
+from .decoder import (
+    KNOWN_ABBREVIATIONS,
+    abbreviation_match_score,
+    is_snippet_artifact_title_expansion,
+)
 from .utils import _ts, set_worker_context, get_kiwi, KNOWN_TITLE_ABBREVIATIONS
 from ..search.content_trim import smart_trim_content, smart_trim_contents_parallel
 from ..candidate_audit import TITLE_LED_WORK_CONSUMPTION_RE
@@ -14946,7 +14950,9 @@ class Orchestrator:
             "- 검색/OCR로 정식 제목을 찾았더라도, 게시글 표면어가 그 작품의 '지속 약칭'인지 별도 판단하라.\n"
             "- 검색 후보가 공식 플랫폼에서 확인되지만 약칭 브리지가 약하면 identified_title은 null일 수 있다.\n"
             "- 이 경우 entity_role_hints에 role='work_alias', resolved_to='후보 제목', confidence='medium/low'를 남겨 후속 전문가가 hold 판단하게 하라.\n"
-            "- 반대로 커뮤니티 글제목/블로그 문서 제목/문장형 설명어는 identified_title로 쓰지 말고 role='community_meta' 또는 'unknown'으로 둬라."
+            "- 반대로 커뮤니티 글제목/블로그 문서 제목/문장형 설명어는 identified_title로 쓰지 말고 role='community_meta' 또는 'unknown'으로 둬라.\n"
+            "- 검색 결과 제목이 '작품명 표지', '작품명 팬아트', '작품명 커버', '작품명 일러스트'처럼 "
+            "이미지/팬아트/표지 산출물 페이지를 가리키면, 그것은 작품 정식 제목이나 약칭 매핑이 아니다."
         )
 
         user_msg = f"""## 게시글
@@ -15126,6 +15132,12 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     continue
                 # 줄임과 정식 제목이 동일하면 무의미
                 if abbr_clean == _re_post.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', full):
+                    continue
+                if is_snippet_artifact_title_expansion(abbr, full):
+                    print(
+                        f"[{_ts()}] {self.emoji} 📌 표지/fanart 줄임 제거: '{abbr}' → '{full}'",
+                        file=sys.stderr,
+                    )
                     continue
                 valid_abbrevs.append(am)
             result["abbreviation_mappings"] = valid_abbrevs
@@ -16846,6 +16858,21 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 from urllib.parse import urlparse
                 try:
                     domain = urlparse(url).hostname or ""
+                    parsed_url = urlparse(url)
+                    path_lower = (parsed_url.path or "").lower()
+                    is_artifact_platform_page = (
+                        "novelpia.com" in domain
+                        and any(tok in path_lower for tok in ("/fanart/", "/comic/", "/webtoon/"))
+                    )
+                    if is_artifact_platform_page:
+                        continue
+                    title_artifact_expansion = any(
+                        is_snippet_artifact_title_expansion(kt, title)
+                        for kt in (key_terms or [])
+                        if isinstance(kt, str)
+                    )
+                    if title_artifact_expansion:
+                        continue
                     # 나무위키최우(줄임/작가/장르 구조정보)
                     if "namu.wiki" in domain:
                         fetchable_urls.insert(0, url)  # 맨 앞에
@@ -16860,6 +16887,36 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 except Exception:
                     pass
         
+        _artifact_key_terms = [
+            kt for kt in (key_terms or [])
+            if isinstance(kt, str) and kt.strip()
+        ]
+        if _artifact_key_terms:
+            _before_titles = len(title_hints)
+            title_hints = [
+                th for th in title_hints
+                if not any(
+                    is_snippet_artifact_title_expansion(kt, th.get("title", ""))
+                    for kt in _artifact_key_terms
+                )
+            ]
+            _removed_titles = _before_titles - len(title_hints)
+            _before_abbrevs = len(abbreviation_hints)
+            abbreviation_hints = [
+                ah for ah in abbreviation_hints
+                if not is_snippet_artifact_title_expansion(
+                    ah.get("abbrev", ""),
+                    ah.get("full", ""),
+                )
+            ]
+            _removed_abbrevs = _before_abbrevs - len(abbreviation_hints)
+            if _removed_titles or _removed_abbrevs:
+                print(
+                    f"[_extract_hints] ⚠️ 표지/fanart 산출물 힌트 제거: "
+                    f"title={_removed_titles}, abbrev={_removed_abbrevs}",
+                    file=sys.stderr,
+                )
+
         # ── 교차 검증: title_hints에도 있는 이름이 author_hints에 들어간 경우 제거 ──
         # 예: "즉사무림 작가" 패턴에서 "즉사무림"을 작가로 잡았지만,
         #     실제로는 작품 약칭 → title_hints에도 있으면 author에서 제거
@@ -17660,6 +17717,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             return []
 
         alias_norms: set[str] = set()
+        alias_surfaces: List[str] = []
         for seq in (
             gk_entities.get("possible_titles") or [],
             key_terms or [],
@@ -17667,6 +17725,9 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             for raw in seq:
                 if not isinstance(raw, str):
                     continue
+                raw_surface = raw.strip()
+                if raw_surface:
+                    alias_surfaces.append(raw_surface)
                 norm = self._normalize_search_term(raw)
                 if len(norm) >= 2:
                     alias_norms.add(norm)
@@ -17710,6 +17771,8 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             title = self._normalize_title_candidate(raw_title)
             title_norm = self._normalize_hint_text(title)
             if len(title_norm) < 4:
+                return
+            if any(is_snippet_artifact_title_expansion(alias, title) for alias in alias_surfaces):
                 return
             if alias_norms and title_norm in alias_norms:
                 return

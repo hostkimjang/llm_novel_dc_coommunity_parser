@@ -1,5 +1,27 @@
 # Improvement Register
 
+## IMP-20260702-442 - Loop242 blocks snippet fanart/cover artifact title expansion cost
+
+- 상태: code-test gate GO / runtime canary NOT_RUN / parent replay NOT_RUN / full375 previous NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / goal NOT_COMPLETE
+- 문제:
+  - Loop240/241에서 최종 public title은 `테라포밍`으로 수렴했지만, `테라포밍 -> 테라포밍 표지`가 snippet abbreviation mapping과 resolved-title follow-up 후보로 들어올 수 있었다.
+  - 후단 guard가 public title 오교체를 막아도, fanart/cover 후보 검색과 URL fetch/page alive-check 비용은 이미 발생할 수 있다.
+- 조치:
+  - `is_snippet_artifact_title_expansion(...)` 공용 술어를 추가했다.
+  - Decoder, Orchestrator LLM snippet 후처리, 정규식 snippet hint 후처리, resolved-title follow-up query, fanart URL fetch 후보 수집이 이 술어를 경유하게 했다.
+  - LLM snippet prompt에 artifact page title을 정식 제목/약칭 매핑으로 쓰지 말라는 규칙을 추가했다.
+- 검증:
+  - `py_compile`: PASS.
+  - 신규 artifact guard 3 tests: PASS.
+  - relation exact-title 주변 3 tests: PASS.
+  - arbiter/known abbreviation 주변 2 tests: PASS.
+- 결정:
+  - `테라포밍 표지` fanart 후보 비용 경로는 후보 필터/후처리 계약으로 닫았다.
+  - 이는 runtime approval이나 full375 collateral approval이 아니다.
+  - full375 collateral previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+- 다음 조치:
+  - 다음 parent/representative replay 전에 `tools/evaluate_goal_convergence.py`로 actionable queue 감소와 same-packet safe_resolved 단조 비감소를 확인한다.
+
 ## IMP-20260702-441 - Loop241 prevents exact-title direct official support from becoming hard hold
 
 - 상태: focused runtime GO / code-test gate GO / targeted canary GO / parent replay NOT_RUN / full375 previous NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / goal NOT_COMPLETE

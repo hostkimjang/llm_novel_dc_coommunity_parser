@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-02 Loop242 11660237 fanart/cover artifact hint cost guard 체크
+
+- [x] 동일 38-row parent packet을 재실행하지 않았다.
+- [x] `is_snippet_artifact_title_expansion(...)` 공용 술어를 추가했다.
+  - 약칭이 그대로 prefix로 있고 suffix가 `표지`, `팬아트`, `커버`, `일러스트` 등 artifact 단어이면 작품 약칭 확장으로 보지 않는다.
+- [x] Decoder가 snippet artifact mapping을 `_resolved_mappings`에 넣지 않게 했다.
+- [x] Orchestrator가 같은 술어를 LLM snippet 후처리, 정규식 snippet hint 후처리, resolved-title follow-up query, fanart URL fetch 후보 수집에 적용한다.
+- [x] `테라포밍 표지 - 노벨피아` / `/fanart/` URL은 fetch/follow-up 비용 후보에서 제외된다.
+- [x] Focused tests를 확인했다.
+  - touched-file `py_compile`: PASS.
+  - 신규 artifact guard 3 tests: PASS.
+  - relation exact-title 주변 3 tests: PASS.
+  - arbiter/known abbreviation 주변 2 tests: PASS.
+- [x] 한국어 loop report를 남겼다.
+  - `docs/devs/loop_reports/LOOP_242_REPORT_20260702.md`
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- [ ] 다음 parent/representative replay 전 `tools/evaluate_goal_convergence.py`를 실행한다.
+
 ## 2026-07-02 Loop241 11660237 exact-title relation hold contract 체크
 
 - [x] 동일 38-row parent packet을 재실행하지 않았다.
@@ -27,7 +45,7 @@
   - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop241_11660237_relation_exact_title_hold_review.md`
   - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop241_11660237_relation_exact_title_hold_review.json`
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
-- [ ] `테라포밍 표지` fanart 후보와 포함어 URL alive-check 비용을 후속 작업으로 분리한다.
+- [x] `테라포밍 표지` fanart 후보와 포함어 URL alive-check 비용은 Loop242에서 후보 필터/후처리 계약으로 닫았다.
 - [ ] 다음 parent/representative replay 전 `tools/evaluate_goal_convergence.py`를 실행한다.
 
 ## 2026-07-02 Loop240 11660237 platform probe cap normalization 체크
@@ -58,7 +76,7 @@
   - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop240_11660237_title_led_platform_probe_cap_review.json`
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 - [x] `relation_judge exact_title + promotion_decision=hold` 참고 신호를 Loop241 Verifier 계약으로 정리했다.
-- [ ] `테라포밍 표지` fanart 후보와 포함어 URL alive-check 비용을 후속 작업으로 분리한다.
+- [x] `테라포밍 표지` fanart 후보와 포함어 URL alive-check 비용은 Loop242에서 후보 필터/후처리 계약으로 닫았다.
 
 ## 2026-07-02 Loop239 11660237 title-led probe 체크
 

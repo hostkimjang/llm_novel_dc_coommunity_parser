@@ -2,6 +2,23 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop242 11660237 fanart/cover artifact hint cost guard
+
+- 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. Loop242는 `테라포밍 표지` fanart/cover artifact 후보가 snippet alias, resolved title follow-up, fetch 후보로 승격되는 비용 경로만 코드 계약으로 닫았다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.
+- Loop242 TODO:
+  - [x] 공용 술어 `is_snippet_artifact_title_expansion(...)`을 추가했다.
+  - [x] Decoder snippet mapping 주입에서 `테라포밍 -> 테라포밍 표지` 같은 artifact 확장을 `_resolved_mappings`에 넣지 않게 했다.
+  - [x] Orchestrator LLM snippet 후처리, 정규식 snippet hint 후처리, resolved-title follow-up query, fanart URL fetch 후보 수집이 같은 술어를 경유하게 했다.
+  - [x] LLM snippet prompt에 표지/fanart/커버/일러스트 산출물 페이지 제목은 작품 정식 제목이나 약칭 매핑이 아니라고 명시했다.
+  - [x] focused tests를 확인했다.
+    - `venv\Scripts\python.exe -m py_compile src\llm_batch\experts\decoder.py src\llm_batch\experts\orchestrator.py` -> PASS.
+    - 신규 artifact guard 3 tests -> PASS.
+    - relation exact-title 주변 3 tests -> PASS.
+    - arbiter/known abbreviation 주변 2 tests -> PASS.
+  - [x] 한국어 report를 남겼다.
+    - `docs/devs/loop_reports/LOOP_242_REPORT_20260702.md`
+  - [ ] 다음 parent/representative replay 전에 `tools/evaluate_goal_convergence.py`로 actionable queue 감소와 same-packet safe_resolved 단조 비감소를 먼저 확인한다.
+
 ## 2026-07-02 regression-safe grounding Loop241 11660237 exact-title relation hold contract
 
 - 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. `11660237` 단건 run07은 runtime `GO`, targeted canary `GO_11660237_RESOLVED`다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.
@@ -20,7 +37,7 @@
     - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop241_11660237_relation_exact_title_hold_review.md`
     - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop241_11660237_relation_exact_title_hold_review.json`
   - [x] Loop238 요구사항 재확인: 동일 parent packet 반복 중단, convergence evaluator, safe-loss flip-rate, 단일 술어 경유, full375 always-on gate는 이미 코드/문서에 반영돼 있다.
-  - [ ] `테라포밍 표지` fanart 후보와 포함어 URL alive-check 비용을 후보 필터/후처리 비용 문제로 분리한다.
+  - [x] `테라포밍 표지` fanart 후보와 포함어 URL alive-check 비용을 후보 필터/후처리 비용 문제로 분리했다. Loop242에서 snippet artifact expansion 비용 경로를 차단했다.
   - [ ] 다음 parent/representative replay 전에 `tools/evaluate_goal_convergence.py`로 actionable queue 감소와 same-packet safe_resolved 단조 비감소를 먼저 확인한다.
 
 ## 2026-07-02 regression-safe grounding Loop240 11660237 platform probe cap normalization
@@ -40,7 +57,7 @@
     - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop240_11660237_title_led_platform_probe_cap_review.json`
   - [x] Loop239의 `61947` 직접 미회수/cap 스킵 원인은 targeted scope에서 해소했다.
   - [x] `relation_judge`가 `exact_title`을 보면서도 `promotion_decision=hold`를 낸 hard-hold 참고 신호를 Loop241 Verifier 계약으로 정리했다.
-  - [ ] `테라포밍 표지` fanart 후보와 포함어 URL alive-check 비용을 후보 필터/후처리 비용 문제로 분리한다.
+  - [x] `테라포밍 표지` fanart 후보와 포함어 URL alive-check 비용을 후보 필터/후처리 비용 문제로 분리했다. Loop242에서 snippet artifact expansion 비용 경로를 차단했다.
   - [ ] 다음 parent/representative replay 전에 `tools/evaluate_goal_convergence.py`로 actionable queue 감소와 same-packet safe_resolved 단조 비감소를 먼저 확인한다.
 
 ## 2026-07-02 regression-safe grounding Loop239 11660237 title-led probe

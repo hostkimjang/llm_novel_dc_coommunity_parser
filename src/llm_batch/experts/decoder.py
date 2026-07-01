@@ -516,6 +516,45 @@ def kiwi_nouns(kiwi_instance, text: str) -> list[str]:
         return []
 
 
+_SNIPPET_ARTIFACT_TITLE_SUFFIXES = tuple(
+    _normalize_alnum_kor_cached(term)
+    for term in (
+        "표지",
+        "커버",
+        "팬아트",
+        "fanart",
+        "cover",
+        "일러스트",
+        "삽화",
+        "이미지",
+        "그림",
+        "포스터",
+        "썸네일",
+        "짤",
+    )
+)
+
+
+def is_snippet_artifact_title_expansion(abbrev: Any, full: Any) -> bool:
+    """Reject snippet-only artifact page titles like `테라포밍` -> `테라포밍 표지`."""
+    abbr_norm = _normalize_alnum_kor_cached(str(abbrev or ""))
+    full_norm = _normalize_alnum_kor_cached(str(full or ""))
+    if len(abbr_norm) < 2 or len(full_norm) <= len(abbr_norm):
+        return False
+    if not full_norm.startswith(abbr_norm):
+        return False
+    suffix = full_norm[len(abbr_norm):]
+    if not suffix:
+        return False
+    if suffix in _SNIPPET_ARTIFACT_TITLE_SUFFIXES:
+        return True
+    return any(
+        suffix.startswith(marker) and len(suffix) <= len(marker) + 4
+        for marker in _SNIPPET_ARTIFACT_TITLE_SUFFIXES
+        if marker
+    )
+
+
 class DecoderExpert:
     """
     🔤 Decoder - Korean Slang Decoder
@@ -1106,6 +1145,13 @@ class DecoderExpert:
                     _a_norm = _re_reinterpret.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', abbrev).lower()
                     _f_norm = _re_reinterpret.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', full).lower()
                     if _a_norm == _f_norm:
+                        continue
+                    if is_snippet_artifact_title_expansion(abbrev, full):
+                        print(
+                            f"[{_ts()}][{self.emoji}] ⏭️ resolved_mapping 스킵(표지/fanart 산출물): "
+                            f"'{abbrev}' → '{full}' (source={str(ah.get('source', '') or 'unknown')})",
+                            file=sys.stderr,
+                        )
                         continue
                     # 핵심 필터: 약칭-정식제목 정합성이 매우 낮은 매핑은 주입 금지
                     # (예: 즉사무림 -> 즉사기 들고 게임 속으로)

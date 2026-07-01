@@ -1,5 +1,32 @@
 # Verification Results
 
+## 2026-07-02 Loop242 11660237 fanart/cover artifact hint cost guard verification
+
+- Scope: 동일 38-row parent packet을 재실행하지 않고, `테라포밍 표지` fanart/cover artifact 후보가 snippet alias, resolved-title follow-up query, URL fetch 후보로 승격되는 비용 경로를 차단한다.
+- Code:
+  - `src/llm_batch/experts/decoder.py`: `is_snippet_artifact_title_expansion(...)`를 추가하고 Decoder snippet mapping 주입 전에 artifact 확장을 제거한다.
+  - `src/llm_batch/experts/orchestrator.py`: 같은 술어를 LLM snippet 후처리, 정규식 snippet hint 후처리, resolved-title follow-up query, fanart URL fetch 후보 수집에 적용한다.
+  - `tests/test_title_lead_search_inferred_guard.py`: helper, Orchestrator, Decoder 계약 테스트 3개를 추가했다.
+- Commands:
+  - `venv\Scripts\python.exe -m py_compile src\llm_batch\experts\decoder.py src\llm_batch\experts\orchestrator.py` -> PASS.
+  - `venv\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_snippet_artifact_title_expansion_blocks_cover_alias_mapping tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_orchestrator_skips_fanart_title_followup_and_fetch_hint tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_decoder_does_not_persist_snippet_artifact_mapping` -> PASS, 3 tests.
+  - `venv\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_relation_aliases_include_snippet_abbreviation_mapping tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_relation_judge_exact_title_direct_official_support_is_not_hard_hold tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_relation_judge_exact_title_search_only_still_holds_candidate` -> PASS, 3 tests.
+  - `venv\Scripts\python.exe -m unittest tests.test_arbiter_curated_alias_guard.ArbiterCuratedAliasGuardTest.test_verifier_veto_allows_post_title_abbrev_with_hard_support tests.test_arbiter_curated_alias_guard.ArbiterCuratedAliasGuardTest.test_known_abbreviation_hint_without_official_detail_is_not_strong_support` -> PASS, 2 tests.
+- Outcome:
+  - `테라포밍 -> 테라포밍 표지`는 artifact expansion으로 분류된다.
+  - Orchestrator는 `테라포밍 표지 - 노벨피아` fanart URL을 fetchable URL로 올리지 않고, `테라포밍 표지` 공식검증 follow-up query도 만들지 않는다.
+  - Decoder는 같은 mapping을 `_resolved_mappings`에 보존하지 않는다.
+- Artifacts:
+  - `docs\devs\loop_reports\LOOP_242_REPORT_20260702.md`
+- Gate:
+  - code_contract: `GO`
+  - runtime canary: `NOT_RUN`
+  - parent replay: `NOT_RUN`
+  - full-panel collateral approval: previous full375 `NO-GO` remains
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+
 ## 2026-07-02 Loop241 11660237 exact-title relation hold verification
 
 - Scope: 동일 38-row parent packet을 재실행하지 않고, `11660237` 단건에서 exact-title direct official support가 relation hard-hold로 public title을 잃지 않는지 검증한다.

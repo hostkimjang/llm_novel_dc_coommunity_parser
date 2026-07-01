@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-02 - Loop242 blocks fanart/cover artifact snippet expansion cost
+
+- 동일 38-row parent packet은 재실행하지 않고 `11660237`의 `테라포밍 표지` fanart/cover 후보 비용 경로만 좁혔다.
+- `src/llm_batch/experts/decoder.py`에 `is_snippet_artifact_title_expansion(...)` 공용 술어를 추가했다.
+- Decoder는 `테라포밍 -> 테라포밍 표지` 같은 snippet artifact mapping을 `_resolved_mappings`에 넣지 않는다.
+- `src/llm_batch/experts/orchestrator.py`는 같은 술어를 LLM snippet 후처리, 정규식 snippet hint 후처리, resolved-title follow-up query, fanart URL fetch 후보 수집에 적용한다.
+- LLM snippet prompt에는 표지/fanart/커버/일러스트 산출물 페이지 제목을 정식 제목이나 약칭 매핑으로 쓰지 말라는 규칙을 추가했다.
+- 검증은 `venv\Scripts\python.exe` 기준 touched-file `py_compile`, 신규 artifact guard 3 tests, relation exact-title 주변 3 tests, arbiter/known abbreviation 주변 2 tests를 PASS했다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_242_REPORT_20260702.md`
+- Gate는 unit/code contract `GO`지만 runtime canary `NOT_RUN`, parent replay `NOT_RUN`, full375 collateral previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 - Loop241 normalizes exact-title direct official relation holds
 
 - 동일 38-row parent packet은 재실행하지 않고 `11660237` 단건 relation hold 계약만 좁혔다.

@@ -12,6 +12,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from llm_batch.agentic_pipeline import AgenticPipeline  # noqa: E402
 from llm_batch.batch_context import BatchContextMemory  # noqa: E402
 from llm_batch.candidate_audit import apply_weak_public_title_bridge_guard  # noqa: E402
+from llm_batch.experts.decoder import (  # noqa: E402
+    DecoderExpert,
+    is_snippet_artifact_title_expansion,
+)
 from llm_batch.experts.orchestrator import ConversationContext, ExpertType, Orchestrator  # noqa: E402
 from llm_batch.experts.verifier import VerifierExpert  # noqa: E402
 from llm_batch.models import (  # noqa: E402
@@ -27,6 +31,17 @@ from llm_batch.models import (  # noqa: E402
 
 class DummyLLM:
     pass
+
+
+class JSONLLM:
+    def __init__(self, payload):
+        self.payload = payload
+        self.max_tokens = 8192
+
+    def _stream_chat_http(self, **_kwargs):
+        import json
+
+        return json.dumps(self.payload, ensure_ascii=False)
 
 
 class DummyMCP:
@@ -77,6 +92,92 @@ def mark_no_work_seed(ctx: ConversationContext) -> None:
 
 
 class TitleLeadSearchInferredGuardTest(unittest.TestCase):
+    def test_snippet_artifact_title_expansion_blocks_cover_alias_mapping(self):
+        self.assertTrue(is_snippet_artifact_title_expansion("테라포밍", "테라포밍 표지"))
+        self.assertTrue(is_snippet_artifact_title_expansion("테라포밍", "테라포밍 팬아트"))
+        self.assertFalse(
+            is_snippet_artifact_title_expansion(
+                "기계공주",
+                "헌터갤러리의 국가권력급 기계공주",
+            )
+        )
+
+    def test_orchestrator_skips_fanart_title_followup_and_fetch_hint(self):
+        orchestrator = Orchestrator(experts={})
+        search_results = [
+            {
+                "title": "테라포밍 표지 - 노벨피아",
+                "url": "https://novelpia.com/fanart/all/view_816983/",
+                "content": "출처: https://novelpia.com/novel/61947",
+            }
+        ]
+
+        hints = orchestrator._extract_hints_from_snippets(search_results, ["테라포밍"])
+
+        self.assertEqual(hints["fetchable_urls"], [])
+        self.assertFalse(
+            any(h.get("full") == "테라포밍 표지" for h in hints["abbreviation_hints"])
+        )
+        followups = orchestrator._extract_resolved_title_followup_queries(
+            search_results,
+            ["테라포밍"],
+            {
+                "post_type": "work_discussion",
+                "detected_entities": {"possible_titles": ["테라포밍"]},
+            },
+            {
+                "title_hints": [
+                    {"title": "테라포밍 표지", "source": "llm_snippet"},
+                ],
+                "author_hints": [],
+                "abbreviation_hints": [
+                    {"abbrev": "테라포밍", "full": "테라포밍 표지", "source": "llm_snippet"},
+                ],
+            },
+            {"identified_title": "테라포밍 표지"},
+        )
+
+        self.assertEqual(followups, [])
+
+    def test_decoder_does_not_persist_snippet_artifact_mapping(self):
+        ctx = ConversationContext(
+            post_id=11660237,
+            post_data={"post_id": 11660237, "title": "테라포밍 얘기"},
+            comments=[],
+        )
+        ctx.snippet_hints = {
+            "abbreviation_hints": [
+                {
+                    "abbrev": "테라포밍",
+                    "full": "테라포밍 표지",
+                    "source": "llm_snippet",
+                }
+            ]
+        }
+        decoder = DecoderExpert(
+            JSONLLM(
+                {
+                    "decoded_terms": [],
+                    "overall_confidence": "none",
+                    "verification_search": [],
+                    "unresolved_terms": ["테라포밍"],
+                }
+            )
+        )
+
+        decoder.analyze(
+            {
+                "_post_id": 11660237,
+                "key_terms": ["테라포밍"],
+                "detected_entities": {"possible_titles": ["테라포밍"]},
+            },
+            [],
+            {},
+            ctx=ctx,
+        )
+
+        self.assertEqual(getattr(ctx, "_resolved_mappings", []), [])
+
     def test_recommendation_comment_answers_are_preserved_as_candidates(self):
         pipeline = build_pipeline()
         post = PostInput(
