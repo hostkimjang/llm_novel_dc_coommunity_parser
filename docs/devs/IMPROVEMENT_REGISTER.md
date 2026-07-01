@@ -1,5 +1,30 @@
 # Improvement Register
 
+## IMP-20260702-447 - Loop247 closes 11660237 browser visual coverage blocker
+
+- 상태: browser visual gate GO / semantic coverage gate GO / parent replay NOT_RUN / full375 previous NO-GO / full scan approval false / goal NOT_COMPLETE
+- 문제:
+  - Loop246 semantic coverage에서 `11660237` image row가 `browser_visual_or_direct_evidence_missing`으로 `REVIEW-LOCKED`였다.
+  - run09 자체는 VLM/OCR catalog와 fetch/chunk counter가 있었지만, 원문 브라우저 이미지 로딩과 screenshot linkage가 없었다.
+- 조치:
+  - `tools/build_browser_visual_targets_from_result.py`로 missing visual target 1건을 생성했다.
+  - `tools/capture_vlm_ocr_browser_review_cli.py`로 원문 페이지를 fallback Playwright에서 열고 screenshot, eval JSON, image loading counters를 저장했다.
+  - semantic coverage audit와 action queue를 external browser artifact manifest 기준으로 재실행했다.
+- 검증:
+  - capture: `visual_evidence_grade=Strong`, screenshot OK, article image loaded `1/1`, incomplete/placeholder/broken/lazy/data-original pending `0`.
+  - screenshot 직접 확인: 원문 제목, 본문 이미지, 본문 `주인공 멍창하다는 말 많던데`.
+  - semantic coverage rerun: gate `GO`, browser visual `1/1/0`, issues `[]`.
+  - browser target rerun: target_count `0`.
+  - action queue: semantic coverage gate `GO`, approval blocker `p0_p1_high_risk_expansion` 유지.
+- 결정:
+  - `11660237` browser visual coverage blocker는 닫혔다.
+  - fallback Playwright artifact이므로 Codex in-app Browser 직접 성공으로 과장하지 않는다.
+  - coverage `GO`는 full semantic approval이 아니다. parent replay와 full375 collateral은 아직 닫히지 않았다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+- 다음 조치:
+  - same parent/representative packet 또는 full375 collateral gate를 통과하기 전까지 approval을 갱신하지 않는다.
+  - completed source 확보 후 P0/P1 high-risk expansion을 진행한다.
+
 ## IMP-20260702-446 - Loop246 freezes architecture-gate evidence before further replay
 
 - 상태: code-test gate GO / focused runtime audit GO / semantic coverage REVIEW-LOCKED / full375 previous NO-GO / full scan approval false / goal NOT_COMPLETE

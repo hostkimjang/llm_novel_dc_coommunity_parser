@@ -1,5 +1,21 @@
 # Development History
 
+## 2026-07-02 - Loop247 attaches browser visual evidence for 11660237
+
+- 동일 38-row parent packet은 재실행하지 않고 Loop246의 `browser_visual_or_direct_evidence_missing` blocker만 좁혔다.
+- `tools/build_browser_visual_targets_from_result.py`로 `11660237` browser visual target 1건을 생성했다.
+- `tools/capture_vlm_ocr_browser_review_cli.py`로 원문 `https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11660237`을 fallback Playwright로 캡처했다.
+- 캡처 결과는 response `200`, page title `테라포밍 볼만함? - 장르소설 마이너 갤러리`, screenshot OK, `visual_evidence_grade=Strong`, article image loaded `1/1`, incomplete/placeholder/broken/lazy/data-original pending `0`이다.
+- screenshot 직접 확인 결과 원문 제목, 본문 이미지, 본문 `주인공 멍창하다는 말 많던데`가 보인다.
+- `tools/build_semantic_coverage_audit.py --browser-artifacts-manifest` 재실행 결과 coverage gate는 `GO`, browser visual required/available/missing `1/1/0`, issues `[]`다.
+- action queue 재생성 결과 semantic coverage gate는 `GO`지만 approval blocker `p0_p1_high_risk_expansion`은 유지된다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_247_REPORT_20260702.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop247_11660237_browser_visual/loop247_browser_visual_manifest.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop247_run09_semantic_coverage_with_browser_audit.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop247_run09_goal_action_queue_after_browser.md`
+- Gate는 browser visual/semantic coverage `GO`, parent replay `NOT_RUN`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 - Loop246 revalidates architecture gates without rerunning the parent packet
 
 - 동일 38-row parent packet은 재실행하지 않고 현재 HEAD `6aa6b89`에서 architecture 계약을 재검증했다.

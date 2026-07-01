@@ -1,5 +1,37 @@
 # Development Checklist
 
+## 2026-07-02 Loop247 11660237 browser visual evidence 체크
+
+- [x] 동일 38-row parent packet을 재실행하지 않았다.
+- [x] Loop246 blocker `browser_visual_or_direct_evidence_missing`의 대상이 `11660237` 1건임을 확인했다.
+- [x] browser visual target을 생성했다.
+  - target_count `1`
+  - source result `loop245_11660237_relation_hold_patch_run09_result.json`
+- [x] `11660237` 원문 브라우저 캡처를 수행했다.
+  - browser surface `fallback_playwright_node`
+  - screenshot OK `1`
+  - visual_evidence_grade `Strong`
+  - article_image_count/article_loaded_count `1/1`
+  - incomplete/placeholder/broken/lazy/data-original pending `0`
+- [x] screenshot을 직접 확인했다.
+  - 원문 제목 `테라포밍 볼만함?`
+  - 본문 이미지 표시
+  - 본문 `주인공 멍창하다는 말 많던데`
+- [x] semantic coverage를 external browser artifact manifest와 함께 재실행했다.
+  - gate `GO`
+  - browser_visual_required/available/missing `1/1/0`
+  - browser_visual_external_artifact_available `1`
+  - issues `[]`
+- [x] browser visual target 재생성 결과 target_count `0`을 확인했다.
+- [x] action queue를 semantic coverage `GO` 기준으로 갱신했다.
+  - total actions `7`
+  - semantic_coverage_gate `GO`
+  - approval blocker `p0_p1_high_risk_expansion` 유지
+- [x] 한국어 loop report를 남겼다.
+  - `docs/devs/loop_reports/LOOP_247_REPORT_20260702.md`
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- [ ] Same parent/representative packet 또는 full375 collateral gate를 통과하기 전까지 approval을 갱신하지 않는다.
+
 ## 2026-07-02 Loop246 architecture gate 재검증 체크
 
 - [x] 동일 38-row parent packet을 재실행하지 않았다.

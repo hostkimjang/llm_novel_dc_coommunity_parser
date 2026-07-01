@@ -6,6 +6,22 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop247 browser visual coverage quality gate
+
+- 근거:
+  - [x] `11660237` browser visual target 1건을 생성했다.
+  - [x] fallback Playwright browser artifact를 남겼고, in-app Browser 직접 성공으로 과장하지 않았다.
+  - [x] screenshot을 직접 확인했다.
+  - [x] article image loading counter가 통과했다: loaded/total `1/1`, pending/placeholder/broken `0`.
+  - [x] semantic coverage rerun이 `browser_visual_required/available/missing=1/1/0`, gate `GO`, issues `[]`를 기록했다.
+  - [x] action queue는 semantic coverage gate `GO`를 반영했지만 approval blocker `p0_p1_high_risk_expansion`을 유지했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_247_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] Browser visual coverage GO를 full semantic approval로 쓰지 않는다.
+  - [x] 이미지 catalog가 `promotion_eligible=false`, `title_role=unknown`이면 작품 title 직접 근거로 쓰지 않는다.
+  - [x] Fallback artifact는 fallback으로 표기하고 Codex in-app Browser 직접 성공으로 기록하지 않는다.
+  - [x] Parent replay `NOT_RUN`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-01 Loop238 architecture convergence / flip-rate quality gate
 
 - 근거:

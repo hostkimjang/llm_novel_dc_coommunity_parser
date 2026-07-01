@@ -1,5 +1,54 @@
 # Verification Results
 
+## 2026-07-02 Loop247 11660237 browser visual verification
+
+- Scope: Loop245 run09 result의 `11660237` image row에 browser visual artifact를 연결해 Loop246 semantic coverage blocker를 해소한다. 동일 38-row parent packet은 재실행하지 않는다.
+- Input:
+  - result: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop245_11660237_relation_hold_patch_run09_result.json`
+  - post URL: `https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11660237`
+  - image catalog: `title_role=unknown`, `promotion_eligible=false`, visual summary는 밈 이미지.
+- Browser visual target:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop247_11660237_browser_visual_targets.jsonl`
+  - target_count `1`
+- Capture artifacts:
+  - manifest: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop247_11660237_browser_visual\loop247_browser_visual_manifest.json`
+  - review JSONL: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop247_11660237_browser_visual\loop247_browser_visual_reviews.jsonl`
+  - screenshot: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop247_11660237_browser_visual\11660237.png`
+  - eval JSON: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop247_11660237_browser_visual\11660237.eval.json`
+  - summary: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop247_11660237_browser_visual\loop247_browser_visual_summary_ko.md`
+- Capture outcome:
+  - browser surface: `fallback_playwright_node`
+  - response status: `200`
+  - page title: `테라포밍 볼만함? - 장르소설 마이너 갤러리`
+  - screenshot_ok: `true`
+  - visual_evidence_grade: `Strong`
+  - article_image_count/article_loaded_count: `1/1`
+  - incomplete/placeholder/broken/lazy/data-original pending: `0/0/0/0/0`
+  - screenshot 직접 확인: 원문 제목, 본문 이미지, 본문 `주인공 멍창하다는 말 많던데`가 보인다.
+- Coverage rerun:
+  - output: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop247_run09_semantic_coverage_with_browser_audit.md/json`
+  - gate `GO`
+  - browser_visual_required/available/missing `1/1/0`
+  - browser_visual_external_artifact_available `1`
+  - issues `[]`
+- Target rerun with manifest:
+  - output: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop247_11660237_browser_visual_targets_after_manifest.md/json`
+  - target_count `0`
+- Action queue:
+  - output: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop247_run09_goal_action_queue_after_browser.md/json`
+  - semantic_coverage_gate `GO`
+  - approval_blockers `["p0_p1_high_risk_expansion"]`
+- Gate:
+  - browser visual gate: `GO`
+  - semantic coverage gate: `GO`, coverage sanity only
+  - parent replay: `NOT_RUN`
+  - full-panel collateral approval: previous full375 `NO-GO`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Artifact:
+  - `docs\devs\loop_reports\LOOP_247_REPORT_20260702.md`
+
 ## 2026-07-02 Loop246 architecture gate revalidation
 
 - Scope: 동일 38-row parent packet을 재실행하지 않고 현재 HEAD `6aa6b89`에서 Loop238 architecture 계약과 Loop245 run09 현재 상태를 재검증한다.
