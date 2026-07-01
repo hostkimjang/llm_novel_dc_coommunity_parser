@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop270 Addendum - health audit flush frontier diagnostics
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: ordered flush gap이 있을 때 `next_save_idx` frontier가 checkpoint/pending에 있는지, 아니면 아직 in-flight/missing인지 audit가 직접 보여주게 한다.
+- 코드 변경: `tools/audit_expert_run_health.py`의 `flush_integrity`에 `frontier`를 추가했다. `next_save_idx`, frontier status/reason, pending index 범위, completed index 범위를 기록한다. `tests/test_audit_expert_run_health.py`에 clean frontier와 ordered gap frontier 계약을 추가했다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_270_REPORT_20260702.md`, frontier audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop270_flush_frontier_health_audit.json`.
+- Evidence: audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows `90`, checkpoint_rows `128`, pending_count_actual `38`이다. frontier는 `next_save_idx=91`, `status=in_flight_or_missing`, `pending_index_min=93`, `pending_index_max=159`다. 직후 manifest poll은 input/completed/flushed/pending/failed `104502/128/90/38/0`, `large_run_complete=false`, `ordered_flush_blocked=true`.
+- Verification: `tests.test_audit_expert_run_health` `8` tests OK, py_compile PASS.
+- Gate: completed source `PENDING`, current run integrity `IN_PROGRESS`, search-health direct probe `SEPARATE_AUDIT_REQUIRED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop269 Addendum - health audit flush integrity classifier
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

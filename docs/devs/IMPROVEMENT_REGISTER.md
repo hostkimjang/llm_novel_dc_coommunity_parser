@@ -1,5 +1,34 @@
 # Improvement Register
 
+## IMP-20260702-270 - health audit flush frontier diagnostics
+
+- Status: Implemented / approval blocked
+- Loop: 270
+- Problem:
+  - `ordered_flush_gap_in_progress`만으로는 실제로 어떤 `global_idx`가 primary result flush를 막는지 바로 보이지 않았다.
+  - pending snapshot 첫 row가 frontier가 아닐 수 있어, 다음 감사자가 worker log를 추적하기 어렵다.
+- Change:
+  - `flush_integrity.frontier`를 추가했다.
+  - `next_save_idx`, frontier status/reason, checkpoint/pending 포함 여부, pending index 범위를 기록한다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_270_REPORT_20260702.md`
+  - audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop270_flush_frontier_health_audit.json`
+- Result:
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - frontier `next_save_idx=91`
+  - frontier status `in_flight_or_missing`
+  - pending_index_min/max `93/159`
+  - latest manifest poll `104502/128/90/38/0`
+- Verification:
+  - `tests.test_audit_expert_run_health` `8` tests OK
+  - py_compile PASS
+- Gate:
+  - completed source `PENDING`
+  - run integrity `IN_PROGRESS`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-269 - health audit flush integrity classifier
 
 - Status: Implemented / approval blocked

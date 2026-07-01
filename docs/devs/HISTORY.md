@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-02 - Loop270 adds flush frontier diagnostics to health audit
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- `tools/audit_expert_run_health.py`의 `flush_integrity`에 `frontier` 진단을 추가했다.
+- 실제 Loop264 진행 중 run에 frontier audit를 실행했고 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop270_flush_frontier_health_audit.json`이다.
+- audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows `90`, checkpoint_rows `128`, pending_count_actual `38`이다.
+- frontier는 `next_save_idx=91`, `status=in_flight_or_missing`, `frontier_gap_global_idx=91`, `pending_index_min=93`, `pending_index_max=159`다.
+- 직후 manifest poll은 input/completed/flushed/pending/failed `104502/128/90/38/0`, `large_run_complete=false`, `ordered_flush_blocked=true`다.
+- Gate는 flush frontier diagnostics `PASS`, current run integrity `IN_PROGRESS`, completed source `PENDING`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop269 adds flush integrity classifier to health audit
 
 - 동일 38-row parent packet은 재실행하지 않았다.

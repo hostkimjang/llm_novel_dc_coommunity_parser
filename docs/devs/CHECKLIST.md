@@ -1,5 +1,33 @@
 # Development Checklist
 
+## 2026-07-02 Loop270 flush frontier diagnostics 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] `audit_expert_run_health.py`의 `flush_integrity`에 `frontier` 진단을 추가했다.
+- [x] clean completion / ordered flush gap frontier 계약 테스트를 추가했다.
+  - `tests\test_audit_expert_run_health.py`
+- [x] 실제 Loop264 진행 중 run에 flush frontier audit를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop270_flush_frontier_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `90`
+  - checkpoint_rows `128`
+  - pending_count_actual `38`
+  - frontier `next_save_idx=91`
+  - frontier status `in_flight_or_missing`
+  - pending_index_min/max `93/159`
+- [x] 직후 manifest poll을 분리 확인했다.
+  - input/completed/flushed/pending/failed `104502/128/90/38/0`
+  - `large_run_complete=false`
+  - `partial_flush_gap=true`
+  - `ordered_flush_blocked=true`
+- [x] focused verification을 실행했다.
+  - `tests.test_audit_expert_run_health`: PASS, `8` tests.
+  - py_compile: PASS.
+- [ ] run 완료 후 frontier가 사라지고 `run_integrity_gate=GO`, `classification=clean_completed_source`인지 확인한다.
+- [ ] frontier가 장시간 같은 `global_idx`에 머물면 해당 post worker log를 별도 감사한다.
+- Gate: flush frontier diagnostics `PASS`, current run integrity `IN_PROGRESS`, completed source `PENDING`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop269 flush integrity classifier 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

@@ -138,17 +138,21 @@ class AuditExpertRunHealthTest(unittest.TestCase):
                 "large_run_complete": True,
                 "ordered_flush_blocked": False,
                 "partial_flush_gap": False,
+                "next_save_idx": 2,
             },
             status_counts={"completed": 2},
             result_audit={"row_count": 2},
             pending_count_actual=0,
             pending_samples=[],
+            checkpoint_completed_indexes=[1, 2],
+            pending_global_indexes=[],
         )
 
         self.assertEqual(audit["run_integrity_gate"], "GO")
         self.assertEqual(audit["classification"], "clean_completed_source")
         self.assertEqual(audit["blockers"], [])
         self.assertTrue(audit["completion_ready"])
+        self.assertEqual(audit["frontier"]["status"], "ready_to_flush_or_flush_lag")
 
     def test_flush_integrity_in_progress_for_ordered_flush_gap(self):
         audit = _build_flush_integrity(
@@ -161,11 +165,14 @@ class AuditExpertRunHealthTest(unittest.TestCase):
                 "large_run_complete": False,
                 "ordered_flush_blocked": True,
                 "partial_flush_gap": True,
+                "next_save_idx": 5,
             },
             status_counts={"completed": 6},
             result_audit={"row_count": 4},
             pending_count_actual=2,
             pending_samples=[{"global_idx": 5, "post_id": 123, "title": "held"}],
+            checkpoint_completed_indexes=[1, 2, 3, 4, 6, 7],
+            pending_global_indexes=[6, 7],
         )
 
         self.assertEqual(audit["run_integrity_gate"], "IN_PROGRESS")
@@ -176,6 +183,9 @@ class AuditExpertRunHealthTest(unittest.TestCase):
         self.assertIn("large_run_completion_not_proven", audit["blockers"])
         self.assertTrue(audit["consistency"]["result_rows_eq_flushed_count"])
         self.assertEqual(audit["pending_blocker_samples"][0]["post_id"], 123)
+        self.assertEqual(audit["frontier"]["status"], "in_flight_or_missing")
+        self.assertEqual(audit["frontier"]["frontier_gap_global_idx"], 5)
+        self.assertEqual(audit["frontier"]["first_pending_at_or_after_frontier"], 6)
 
     def test_flush_integrity_no_go_for_count_mismatch(self):
         audit = _build_flush_integrity(

@@ -213,6 +213,62 @@ def _summarize_pending_row(row: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def _build_flush_frontier(
+    *,
+    manifest_data: Dict[str, Any],
+    checkpoint_completed_indexes: List[int],
+    pending_global_indexes: List[int],
+) -> Dict[str, Any]:
+    next_save_idx = _as_int(manifest_data.get("next_save_idx"))
+    completed = sorted(set(checkpoint_completed_indexes))
+    pending = sorted(set(pending_global_indexes))
+
+    frontier_in_checkpoint = next_save_idx in completed if next_save_idx is not None else None
+    frontier_in_pending = next_save_idx in pending if next_save_idx is not None else None
+    first_pending_at_or_after = (
+        next((idx for idx in pending if idx >= next_save_idx), None)
+        if next_save_idx is not None
+        else None
+    )
+    first_completed_at_or_after = (
+        next((idx for idx in completed if idx >= next_save_idx), None)
+        if next_save_idx is not None
+        else None
+    )
+
+    if next_save_idx is None:
+        status = "unknown"
+        reason = "next_save_idx_missing"
+    elif frontier_in_checkpoint:
+        status = "ready_to_flush_or_flush_lag"
+        reason = "frontier_completed_in_checkpoint"
+    elif frontier_in_pending:
+        status = "pending_completed_not_flushed"
+        reason = "frontier_present_in_pending_snapshot"
+    else:
+        status = "in_flight_or_missing"
+        reason = "frontier_missing_from_checkpoint_and_pending"
+
+    return {
+        "next_save_idx": next_save_idx,
+        "status": status,
+        "reason": reason,
+        "frontier_in_checkpoint_completed": frontier_in_checkpoint,
+        "frontier_in_pending_snapshot": frontier_in_pending,
+        "completed_index_min": completed[0] if completed else None,
+        "completed_index_max": completed[-1] if completed else None,
+        "pending_index_min": pending[0] if pending else None,
+        "pending_index_max": pending[-1] if pending else None,
+        "first_pending_at_or_after_frontier": first_pending_at_or_after,
+        "first_completed_at_or_after_frontier": first_completed_at_or_after,
+        "frontier_gap_global_idx": (
+            next_save_idx
+            if next_save_idx is not None and not frontier_in_checkpoint and not frontier_in_pending
+            else None
+        ),
+    }
+
+
 def _build_flush_integrity(
     *,
     manifest_data: Dict[str, Any],
@@ -220,6 +276,8 @@ def _build_flush_integrity(
     result_audit: Dict[str, Any],
     pending_count_actual: int | None,
     pending_samples: List[Dict[str, Any]],
+    checkpoint_completed_indexes: List[int] | None = None,
+    pending_global_indexes: List[int] | None = None,
 ) -> Dict[str, Any]:
     input_count = _as_int(manifest_data.get("input_post_count"))
     completed_count = _as_int(manifest_data.get("completed_count"))
@@ -282,6 +340,11 @@ def _build_flush_integrity(
             and pending_count_actual == completed_minus_flushed
         ),
     }
+    frontier = _build_flush_frontier(
+        manifest_data=manifest_data,
+        checkpoint_completed_indexes=checkpoint_completed_indexes or [],
+        pending_global_indexes=pending_global_indexes or [],
+    )
     if result_rows is not None and flushed_count is not None and result_rows != flushed_count:
         blockers.append("result_rows_ne_flushed_count")
     if completed_count is not None and checkpoint_completed != completed_count:
@@ -366,6 +429,7 @@ def _build_flush_integrity(
             "completed_minus_flushed": completed_minus_flushed,
         },
         "consistency": consistency,
+        "frontier": frontier,
         "pending_blocker_samples": pending_samples,
     }
 
@@ -624,6 +688,11 @@ def build_audit(
 
     rows = list(_iter_checkpoint(checkpoint))
     status_counts = Counter(row.get("status") for row in rows)
+    checkpoint_completed_indexes = [
+        idx
+        for idx in (_as_int(row.get("global_idx")) for row in rows if row.get("status") == "completed")
+        if idx is not None
+    ]
     discussion_counts: Counter[str] = Counter()
     topicality_counts: Counter[str] = Counter()
     work_resolution_counts: Counter[str] = Counter()
@@ -674,6 +743,7 @@ def build_audit(
 
     pending_count_actual: int | None = None
     pending_samples: List[Dict[str, Any]] = []
+    pending_global_indexes: List[int] = []
     if pending.exists():
         payload = _load_json(pending)
         pending_items: List[Any] = []
@@ -686,6 +756,9 @@ def build_audit(
                     break
         pending_count_actual = len(pending_items)
         pending_rows = [row for row in pending_items if isinstance(row, dict)]
+        pending_global_indexes = [
+            idx for idx in (_as_int(row.get("global_idx")) for row in pending_rows) if idx is not None
+        ]
         pending_samples = [_summarize_pending_row(row) for row in pending_rows[:10]]
 
     manifest_data = _load_json(manifest) if manifest.exists() else {}
@@ -696,6 +769,8 @@ def build_audit(
         result_audit=result_audit,
         pending_count_actual=pending_count_actual,
         pending_samples=pending_samples,
+        checkpoint_completed_indexes=checkpoint_completed_indexes,
+        pending_global_indexes=pending_global_indexes,
     )
     log_audit = _audit_logs(log_files)
     slang_audit = _audit_slang(rows, repo=repo)

@@ -1,5 +1,41 @@
 # Verification Results
 
+## 2026-07-02 Loop270 flush frontier diagnostics
+
+- Scope: ordered flush gap이 있을 때 `next_save_idx` frontier가 checkpoint/pending/result 어느 쪽에 있는지 health audit에서 직접 보여준다.
+- Code:
+  - `tools/audit_expert_run_health.py`
+  - `tests/test_audit_expert_run_health.py`
+- New audit field:
+  - `flush_integrity.frontier`
+- Explicit frontier audit:
+  - command: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_065642_030743 --manifest out\expert_result_20260702_065632_479765_manifest.json --checkpoint out\expert_result_20260702_065632_479765_checkpoint.jsonl --result-json out\expert_result_20260702_065632_479765.json --pending-snapshot out\expert_result_20260702_065632_479765_pending_snapshot.json --log-glob "logs\expert_run_20260702_065642_030743_W*.log" --output out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop270_flush_frontier_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `90`, checkpoint_rows `128`, pending_count_actual `38`
+  - frontier `next_save_idx=91`, `status=in_flight_or_missing`, `frontier_gap_global_idx=91`
+  - pending_index_min/max `93/159`
+- Manifest poll after audit:
+  - input/completed/flushed/pending/failed `104502/128/90/38/0`
+  - `large_run_complete=false`
+  - `partial_flush_gap=true`
+  - `ordered_flush_blocked=true`
+  - MCP health ok/failure `36/0`
+  - caveat: `mcp_health_light_mode=true`, `mcp_health_include_search=false`
+- Focused test:
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_audit_expert_run_health -v` -> PASS, `8` tests.
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\audit_expert_run_health.py tests\test_audit_expert_run_health.py` -> PASS.
+- Gate:
+  - flush frontier diagnostics: `PASS`
+  - current run integrity: `IN_PROGRESS`
+  - completed source: `PENDING`
+  - search-health direct probe: `SEPARATE_AUDIT_REQUIRED`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_270_REPORT_20260702.md`
+
 ## 2026-07-02 Loop269 flush integrity classifier
 
 - Scope: `audit_expert_run_health.py`가 manifest/checkpoint/result/pending row count 정합성을 분류하고, clean completion과 ordered flush gap, artifact mismatch를 구분하게 한다.
