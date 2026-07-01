@@ -1,5 +1,25 @@
 # Development Checklist
 
+## 2026-07-02 Loop273 completed source 후보 search-health 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] `build_completed_source_candidate_audit.py`가 approval source candidate에 `search_health_ready=true`를 요구하도록 했다.
+- [x] clean VLM/OCR source 중 search-health 미준비 수를 별도 카운트로 출력하게 했다.
+- [x] direct search-health 없는 clean source가 approval candidate가 되지 않는 계약 테스트를 추가했다.
+- [x] 실제 `out` manifest 후보 감사를 재실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop273_completed_source_candidate_search_health_audit.md`
+  - manifest_count `733`
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `9`
+  - clean_vlm_ocr_search_health_not_ready_count `420`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+- [x] focused verification을 실행했다.
+  - `tests.test_completed_source_candidate_audit`: PASS, `3` tests.
+  - py_compile: PASS.
+- [ ] Loop264 대형 run 완료 후 completed source 후보 감사를 다시 실행한다.
+- Gate: completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop272 search evidence gate 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

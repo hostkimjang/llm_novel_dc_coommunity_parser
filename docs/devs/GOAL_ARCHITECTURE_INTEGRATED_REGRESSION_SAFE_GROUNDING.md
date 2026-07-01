@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop273 Addendum - completed source 후보 search-health requirement
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: completed source 후보 탐색에서 clean counts/VLM/OCR/random rows만으로 approval 후보가 열리지 않게 direct search-health evidence를 필수 조건으로 둔다.
+- 코드 변경: `tools/build_completed_source_candidate_audit.py`가 `search_health_ready`를 계산하고 approval source candidate 조건에 포함한다. `tests/test_completed_source_candidate_audit.py`에 direct search-health 없는 clean source 차단 계약을 추가했다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_273_REPORT_20260702.md`, candidate audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop273_completed_source_candidate_search_health_audit.md/json`.
+- Evidence: manifest `733`개 감사 결과 approval_source_candidate_count `0`, clean_vlm_ocr_source_count `429`, clean_vlm_ocr_random_shortfall_count `9`, clean_vlm_ocr_search_health_not_ready_count `420`, partial_vlm_ocr_population_ge_random_target_count `6`이다.
+- Verification: `tests.test_completed_source_candidate_audit` `3` tests OK, py_compile PASS.
+- Gate: completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop272 Addendum - health audit search evidence gate
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

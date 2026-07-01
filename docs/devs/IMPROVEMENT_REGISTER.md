@@ -1,5 +1,34 @@
 # Improvement Register
 
+## IMP-20260702-273 - completed source candidate search-health requirement
+
+- Status: Implemented / approval blocked
+- Loop: 273
+- Problem:
+  - completed source 후보 감사가 clean counts, VLM/OCR ready, random target rows만 보면 Bridge-only/light health run을 approval source 후보로 열 수 있다.
+  - Loop272에서 search evidence gate를 추가했으므로 후보 감사도 같은 direct search-health requirement를 공유해야 한다.
+- Change:
+  - `search_health_ready`를 계산한다.
+  - approval source candidate 조건에 `search_health_ready=true`를 추가한다.
+  - clean VLM/OCR source 중 search-health 미준비 수를 요약한다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_273_REPORT_20260702.md`
+  - audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop273_completed_source_candidate_search_health_audit.md`
+- Result:
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `9`
+  - clean_vlm_ocr_search_health_not_ready_count `420`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+- Verification:
+  - `tests.test_completed_source_candidate_audit` `3` tests OK
+  - py_compile PASS
+- Gate:
+  - completed source candidate `MISSING`
+  - candidate audit `REVIEW-LOCKED`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-272 - health audit search evidence gate
 
 - Status: Implemented / approval blocked

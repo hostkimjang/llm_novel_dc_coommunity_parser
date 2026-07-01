@@ -55,6 +55,9 @@ class CompletedSourceCandidateAuditTest(unittest.TestCase):
                     "failed_count": 0,
                     "large_run_complete": True,
                     "vlm_ocr_semantic_review_ready": True,
+                    "mcp_health_include_search": True,
+                    "mcp_health_light_mode": False,
+                    "mcp_health_failure_count": 0,
                 },
             )
             old_cwd = Path.cwd()
@@ -69,6 +72,7 @@ class CompletedSourceCandidateAuditTest(unittest.TestCase):
         self.assertEqual(report["gate"]["overall"], "REVIEW-LOCKED")
         self.assertEqual(report["summary"]["approval_source_candidate_count"], 0)
         self.assertEqual(report["summary"]["clean_vlm_ocr_random_shortfall_count"], 1)
+        self.assertEqual(report["summary"]["clean_vlm_ocr_search_health_not_ready_count"], 0)
         self.assertEqual(report["summary"]["partial_vlm_ocr_population_ge_random_target_count"], 1)
         self.assertIn("no_completed_vlm_ocr_source_with_random_target_rows", report["gate"]["blockers"])
 
@@ -90,6 +94,9 @@ class CompletedSourceCandidateAuditTest(unittest.TestCase):
                     "large_run_complete": True,
                     "vlm_enabled": True,
                     "ocr_enabled": True,
+                    "mcp_health_include_search": True,
+                    "mcp_health_light_mode": False,
+                    "mcp_health_failure_count": 0,
                 },
             )
             old_cwd = Path.cwd()
@@ -106,6 +113,50 @@ class CompletedSourceCandidateAuditTest(unittest.TestCase):
         self.assertEqual(report["gate"]["semantic_quality"], "REVIEW-LOCKED")
         self.assertEqual(report["summary"]["approval_source_candidate_count"], 1)
         self.assertEqual(report["approval_source_candidates"][0]["run_id"], "complete")
+        self.assertTrue(report["approval_source_candidates"][0]["search_health_ready"])
+
+    def test_clean_candidate_without_direct_search_health_is_blocked(self):
+        mod = load_module()
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            out = root / "out"
+            write_json(out / "complete.json", [{"post_id": 1}, {"post_id": 2}, {"post_id": 3}])
+            write_json(
+                out / "complete_manifest.json",
+                {
+                    "run_id": "complete-light-health",
+                    "input_post_count": 3,
+                    "completed_count": 3,
+                    "flushed_count": 3,
+                    "pending_count": 0,
+                    "failed_count": 0,
+                    "large_run_complete": True,
+                    "vlm_enabled": True,
+                    "ocr_enabled": True,
+                    "mcp_health_include_search": False,
+                    "mcp_health_light_mode": True,
+                    "mcp_health_failure_count": 0,
+                },
+            )
+            old_cwd = Path.cwd()
+            try:
+                import os
+
+                os.chdir(root)
+                report = mod.build_audit(out, random_target=3)
+            finally:
+                os.chdir(old_cwd)
+
+        self.assertEqual(report["gate"]["overall"], "REVIEW-LOCKED")
+        self.assertEqual(report["summary"]["approval_source_candidate_count"], 0)
+        self.assertEqual(report["summary"]["clean_vlm_ocr_search_health_not_ready_count"], 1)
+        self.assertEqual(report["summary"]["clean_vlm_ocr_search_health_blocked_count"], 1)
+        self.assertIn("clean_sources_exist_but_search_health_not_ready", report["gate"]["blockers"])
+        blocked = report["clean_vlm_ocr_search_health_blocked_candidates"][0]
+        self.assertEqual(report["clean_vlm_ocr_search_health_not_ready_candidates"][0]["run_id"], "complete-light-health")
+        self.assertFalse(blocked["search_health_ready"])
+        self.assertFalse(blocked["search_health_included"])
+        self.assertTrue(blocked["search_health_light_mode"])
 
 
 if __name__ == "__main__":

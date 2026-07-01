@@ -1,5 +1,33 @@
 # Verification Results
 
+## 2026-07-02 Loop273 completed source 후보 search-health requirement
+
+- 범위: completed source approval 후보 탐색에서 direct search-health evidence를 필수 조건으로 둔다.
+- Code:
+  - `tools/build_completed_source_candidate_audit.py`
+  - `tests/test_completed_source_candidate_audit.py`
+- Explicit candidate audit:
+  - command: `.\.venv312\Scripts\python.exe tools\build_completed_source_candidate_audit.py --manifest-root out --random-target 1000 --output-json out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop273_completed_source_candidate_search_health_audit.json --output-md out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop273_completed_source_candidate_search_health_audit.md`
+  - manifest_count `733`
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `9`
+  - clean_vlm_ocr_search_health_not_ready_count `420`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+  - largest_clean_vlm_ocr_available_rows `375`
+  - largest_partial_vlm_ocr_available_rows `3812`
+- Focused test:
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_completed_source_candidate_audit -v` -> PASS, `3` tests.
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\build_completed_source_candidate_audit.py tests\test_completed_source_candidate_audit.py` -> PASS.
+- Gate:
+  - completed source candidate: `MISSING`
+  - candidate audit: `REVIEW-LOCKED`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_273_REPORT_20260702.md`
+
 ## 2026-07-02 Loop272 search evidence gate
 
 - 범위: health audit에서 search-health direct probe, row-level `search_health`, worker log 검색 저하 신호를 `search_evidence` gate로 분리한다.

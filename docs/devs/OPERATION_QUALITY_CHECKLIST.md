@@ -6,6 +6,18 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop273 completed source 후보 quality gate
+
+- 근거:
+  - [x] completed source 후보 감사가 `search_health_ready=true`를 approval source candidate 조건으로 요구한다.
+  - [x] clean VLM/OCR source 중 direct search-health 미준비 수를 별도 카운트한다.
+  - [x] 실제 `out` manifest 후보 감사를 재실행했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_273_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] approval_source_candidate_count `0`을 유지한다.
+  - [x] clean_vlm_ocr_search_health_not_ready_count `420`을 approval blocker evidence로 남긴다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop272 search evidence quality gate
 
 - 근거:

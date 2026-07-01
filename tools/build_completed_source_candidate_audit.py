@@ -78,6 +78,14 @@ def summarize_manifest(manifest_path: Path, *, root: Path, random_target: int) -
         (_boolish(manifest.get("vlm_enabled")) and _boolish(manifest.get("ocr_enabled")))
         or _boolish(manifest.get("vlm_ocr_semantic_review_ready"))
     )
+    search_health_included = _boolish(manifest.get("mcp_health_include_search"))
+    search_health_light_mode = _boolish(manifest.get("mcp_health_light_mode"))
+    search_health_failure_count = _optional_int(manifest.get("mcp_health_failure_count"))
+    search_health_ready = bool(
+        search_health_included
+        and not search_health_light_mode
+        and (search_health_failure_count or 0) == 0
+    )
 
     clean_by_counts = bool(
         input_count is not None
@@ -91,7 +99,13 @@ def summarize_manifest(manifest_path: Path, *, root: Path, random_target: int) -
     if available_rows is None:
         available_rows = flushed_count if flushed_count is not None else completed_count
     random_feasible = bool(available_rows is not None and available_rows >= random_target)
-    approval_candidate = bool(clean_by_counts and vlm_ready and result_path.exists() and random_feasible)
+    approval_candidate = bool(
+        clean_by_counts
+        and vlm_ready
+        and search_health_ready
+        and result_path.exists()
+        and random_feasible
+    )
 
     partial_signals: list[str] = []
     if input_count is None:
@@ -108,6 +122,12 @@ def summarize_manifest(manifest_path: Path, *, root: Path, random_target: int) -
         partial_signals.append("flushed_count_lt_completed_count")
     if result_rows is None:
         partial_signals.append("result_rows_unknown_or_missing")
+    if not search_health_included:
+        partial_signals.append("search_health_not_included")
+    if search_health_light_mode:
+        partial_signals.append("search_health_light_mode")
+    if (search_health_failure_count or 0) > 0:
+        partial_signals.append("search_health_failure_count_gt_zero")
 
     return {
         "manifest_path": str(manifest_path.relative_to(root)),
@@ -124,6 +144,10 @@ def summarize_manifest(manifest_path: Path, *, root: Path, random_target: int) -
         "large_run_complete": large_run_complete,
         "clean_by_counts": clean_by_counts,
         "vlm_ocr_ready": vlm_ready,
+        "search_health_included": search_health_included,
+        "search_health_light_mode": search_health_light_mode,
+        "search_health_failure_count": search_health_failure_count,
+        "search_health_ready": search_health_ready,
         "random_target": random_target,
         "random_feasible": random_feasible,
         "approval_source_candidate": approval_candidate,
@@ -155,7 +179,25 @@ def build_audit(manifest_root: Path, *, random_target: int = 1000, max_candidate
     clean_shortfall = [
         item
         for item in candidates
-        if item["clean_by_counts"] and item["vlm_ocr_ready"] and not item["random_feasible"]
+        if item["clean_by_counts"]
+        and item["vlm_ocr_ready"]
+        and item["search_health_ready"]
+        and not item["random_feasible"]
+    ]
+    clean_search_health_blocked = [
+        item
+        for item in candidates
+        if item["clean_by_counts"]
+        and item["vlm_ocr_ready"]
+        and item["random_feasible"]
+        and not item["search_health_ready"]
+    ]
+    clean_search_health_not_ready = [
+        item
+        for item in candidates
+        if item["clean_by_counts"]
+        and item["vlm_ocr_ready"]
+        and not item["search_health_ready"]
     ]
     partial_population = [
         item
@@ -168,6 +210,8 @@ def build_audit(manifest_root: Path, *, random_target: int = 1000, max_candidate
 
     approval_candidates.sort(key=_sort_key, reverse=True)
     clean_shortfall.sort(key=_sort_key, reverse=True)
+    clean_search_health_blocked.sort(key=_sort_key, reverse=True)
+    clean_search_health_not_ready.sort(key=_sort_key, reverse=True)
     partial_population.sort(key=_sort_key, reverse=True)
     clean_any.sort(key=_sort_key, reverse=True)
 
@@ -179,6 +223,8 @@ def build_audit(manifest_root: Path, *, random_target: int = 1000, max_candidate
         blockers.append("largest_populations_are_partial_not_approval_sources")
     if clean_shortfall:
         blockers.append("clean_sources_exist_but_random_target_shortfall")
+    if clean_search_health_blocked:
+        blockers.append("clean_sources_exist_but_search_health_not_ready")
 
     return {
         "report_type": "completed_source_candidate_audit",
@@ -191,6 +237,8 @@ def build_audit(manifest_root: Path, *, random_target: int = 1000, max_candidate
             "approval_source_candidate_count": len(approval_candidates),
             "clean_vlm_ocr_source_count": len(clean_any),
             "clean_vlm_ocr_random_shortfall_count": len(clean_shortfall),
+            "clean_vlm_ocr_search_health_not_ready_count": len(clean_search_health_not_ready),
+            "clean_vlm_ocr_search_health_blocked_count": len(clean_search_health_blocked),
             "partial_vlm_ocr_population_ge_random_target_count": len(partial_population),
             "largest_clean_vlm_ocr_available_rows": (
                 clean_any[0].get("available_rows_for_random") if clean_any else None
@@ -217,6 +265,8 @@ def build_audit(manifest_root: Path, *, random_target: int = 1000, max_candidate
         },
         "approval_source_candidates": approval_candidates[:max_candidates],
         "clean_vlm_ocr_random_shortfall_candidates": clean_shortfall[:max_candidates],
+        "clean_vlm_ocr_search_health_not_ready_candidates": clean_search_health_not_ready[:max_candidates],
+        "clean_vlm_ocr_search_health_blocked_candidates": clean_search_health_blocked[:max_candidates],
         "partial_vlm_ocr_population_candidates": partial_population[:max_candidates],
     }
 
@@ -241,6 +291,8 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         f"- approval_source_candidate_count: `{summary['approval_source_candidate_count']}`",
         f"- clean_vlm_ocr_source_count: `{summary['clean_vlm_ocr_source_count']}`",
         f"- clean_vlm_ocr_random_shortfall_count: `{summary['clean_vlm_ocr_random_shortfall_count']}`",
+        f"- clean_vlm_ocr_search_health_not_ready_count: `{summary['clean_vlm_ocr_search_health_not_ready_count']}`",
+        f"- clean_vlm_ocr_search_health_blocked_count: `{summary['clean_vlm_ocr_search_health_blocked_count']}`",
         (
             "- partial_vlm_ocr_population_ge_random_target_count: "
             f"`{summary['partial_vlm_ocr_population_ge_random_target_count']}`"
@@ -261,9 +313,30 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
             lines.append(
                 f"- `{item['manifest_path']}`: available `{item['available_rows_for_random']}`, "
                 f"input/completed/pending/failed `{item['input_post_count']}/{item['completed_count']}/"
-                f"{item['pending_count']}/{item['failed_count']}`"
+                f"{item['pending_count']}/{item['failed_count']}`, "
+                f"search_health_ready `{item['search_health_ready']}`"
             )
     else:
+        lines.append("- 없음")
+    lines.extend(["", "## Clean VLM/OCR Sources Blocked By Search Health", ""])
+    for item in report["clean_vlm_ocr_search_health_blocked_candidates"][:10]:
+        lines.append(
+            f"- `{item['manifest_path']}`: available `{item['available_rows_for_random']}`, "
+            f"search_health_included `{item['search_health_included']}`, "
+            f"light_mode `{item['search_health_light_mode']}`, "
+            f"failure_count `{item['search_health_failure_count']}`"
+        )
+    if not report["clean_vlm_ocr_search_health_blocked_candidates"]:
+        lines.append("- 없음")
+    lines.extend(["", "## Clean VLM/OCR Sources Missing Search Health Evidence", ""])
+    for item in report["clean_vlm_ocr_search_health_not_ready_candidates"][:10]:
+        lines.append(
+            f"- `{item['manifest_path']}`: available `{item['available_rows_for_random']}`, "
+            f"search_health_included `{item['search_health_included']}`, "
+            f"light_mode `{item['search_health_light_mode']}`, "
+            f"failure_count `{item['search_health_failure_count']}`"
+        )
+    if not report["clean_vlm_ocr_search_health_not_ready_candidates"]:
         lines.append("- 없음")
     lines.extend(["", "## Clean VLM/OCR Sources With Random Shortfall", ""])
     for item in report["clean_vlm_ocr_random_shortfall_candidates"][:10]:
