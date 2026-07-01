@@ -1,5 +1,39 @@
 # Verification Results
 
+## 2026-07-02 Loop256 final contract hard-hold verification
+
+- Scope: `11658668` platform-meta image hard-hold가 final serialized publication contract에서 다시 publish되지 않는지 확인한다.
+- Runtime:
+  - run id `20260702_051036_309360`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop256_11658668_final_contract_platform_meta_hard_hold_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop256_11658668_final_contract_platform_meta_hard_hold_result_manifest.json`
+  - log `logs\expert_run_20260702_051036_309360.log`
+  - completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`, MCP health `1/1`
+- Contract outcome:
+  - `candidate_ledger_status=promotion_blocked`
+  - `novel_identity.official_title=null`
+  - `novel_identity.heretic_url=null`
+  - `promotion_decision.status=candidate_only`
+  - `promotion_decision.publish_allowed=false`
+  - `publish_contract_trace.gate_decision.publish_allowed=false`
+  - public reason includes final correction: promotion block guard withdrew the final official title wording.
+- Data Analytics:
+  - MCP report artifact `Loop256 아키텍처 수렴 검증` validated and rendered.
+  - Included datasets: `loop_status_counts`, `loop256_contract`, `safe_loss_flip`, `always_on_gate`.
+- Verification:
+  - py_compile: PASS (`expert_main.py`, `src\llm_batch\agentic_pipeline.py`, gate/probe tools)
+  - `tests.test_goal_convergence tests.test_safe_loss_flip_rate_probe tests.test_always_on_regression_gates`: `17` tests OK
+  - `tests.test_expert_main_comment_metadata`: `35` tests OK
+  - `tests.test_title_lead_search_inferred_guard`: `180` tests OK
+  - `git diff --check`: PASS, CRLF conversion warnings only
+- Gate:
+  - Loop256 runtime: `GO`
+  - targeted canary: `GO_BLOCK_PUBLIC_TITLE`
+  - semantic quality: `REVIEW-LOCKED`
+  - full scan approval: `false`
+  - full375 previous: `NO-GO`
+  - Note: 단건 canary 성공은 same-packet survival 또는 full scan approval이 아니다.
+
 ## 2026-07-02 Loop255 result / Loop256 preflight final contract hard-hold verification
 
 - Scope: Loop255 same 7-row packet에서 live hard-hold escape가 닫혔는지 확인하고, 남은 publish contract 수렴 구멍을 좁힌다.

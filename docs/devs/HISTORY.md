@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-02 - Loop256 confirms 11658668 final publication contract hard-hold
+
+- 동일 38-row parent packet은 재실행하지 않고 `11658668` 단건 final contract canary만 실행했다.
+- 다음 canary 전에 rollback 지점 commit `e282e3e`, `5fa4f5f`, `3bffd7e`를 확보했다.
+- Run `20260702_051036_309360`은 completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`, MCP health `1/1`이다.
+- Final은 `candidate_ledger_status=promotion_blocked`, public title/url `null`, `promotion_decision.status=candidate_only`, `publish_allowed=false`, `publish_contract_trace.gate_decision.publish_allowed=false`다.
+- Data Analytics report artifact `Loop256 아키텍처 수렴 검증`을 검증/렌더링했고, Loop254-256 상태 분포, safe-loss flip-rate, always-on gate를 포함했다.
+- Loop238 safe-loss probe 결론은 유지한다. `11660237`은 flip rate `0.3333333333333333`으로 `nondeterminism_unresolved`라 hard-hold 완화 불가다.
+- Gate는 targeted canary `GO_BLOCK_PUBLIC_TITLE`, runtime `GO`, parent replay `NOT_RUN`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 - Loop251 blocks 11663535 character-title collision public title drift
 
 - 동일 38-row parent packet은 재실행하지 않고 `11663535` 단건 P0D canonicalization blocker만 좁혔다.

@@ -1,5 +1,42 @@
 # Development Checklist
 
+## 2026-07-02 Loop256 final contract hard-hold canary 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] 다음 canary 전에 논리 단위 commit rollback 지점을 확보했다.
+  - `e282e3e` platform-meta image title promotion hold
+  - `5fa4f5f` live hard-hold escape 차단
+  - `3bffd7e` final publication contract 수렴
+- [x] Loop256 `11658668` 단건 canary를 실행했다.
+  - run id `20260702_051036_309360`
+  - completed/flushed/pending/failed `1/1/0/0`
+  - VLM/OCR `READY`, MCP health `1/1`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop256_11658668_final_contract_platform_meta_hard_hold_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop256_11658668_final_contract_platform_meta_hard_hold_result_manifest.json`
+- [x] final public contract demotion을 확인했다.
+  - `candidate_ledger_status=promotion_blocked`
+  - `novel_identity.official_title=null`, `heretic_url=null`
+  - `promotion_decision.status=candidate_only`, `publish_allowed=false`
+  - `publish_contract_trace.gate_decision.publish_allowed=false`
+- [x] Data Analytics report artifact를 한국어로 렌더링했다.
+  - title `Loop256 아키텍처 수렴 검증`
+  - 포함 표/차트: Loop254-256 상태 분포, Loop256 contract, safe-loss flip-rate, always-on gate
+- [x] Loop238 safe-loss 3건 반복 측정 결론을 재확인했다.
+  - `11674712`: stable `safe_resolved`, blind judge match `true`
+  - `11660237`: flip rate `0.3333333333333333`, `nondeterminism_unresolved`
+  - `11698880`: stable `safe_resolved`, blind judge match `true`
+- [x] full 375 collateral diff가 golden-16과 동급 always-on gate임을 유지했다.
+  - `tools/evaluate_always_on_regression_gates.py`
+  - 이전 평가: golden-16 `GO`, full375 `NO-GO`, collateral regression candidates `183`
+- [x] 현재 HEAD 검증을 재실행했다.
+  - py_compile PASS
+  - convergence/safe-loss/always-on gate tests `17` PASS
+  - final contract tests `35` PASS
+  - title-lead guard tests `180` PASS
+  - `git diff --check` PASS, CRLF conversion warnings only
+- [ ] same packet survival 및 full375 clean 전까지 semantic approval을 갱신하지 않는다.
+- Gate: Loop256 runtime `GO`, targeted canary `GO_BLOCK_PUBLIC_TITLE`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, full375 previous `NO-GO`.
+
 ## 2026-07-02 Loop255 result / Loop256 preflight final contract hard-hold 체크
 
 - [x] Loop255 runtime과 semantic 결과를 분리했다.

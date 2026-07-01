@@ -1,5 +1,27 @@
 # Improvement Register
 
+## IMP-20260702-452 - Loop256 confirms final contract hard-hold for platform-meta image title
+
+- 상태: targeted canary GO_BLOCK_PUBLIC_TITLE / runtime GO / parent replay NOT_RUN / full375 previous NO-GO / full scan approval false / goal NOT_COMPLETE
+- 문제:
+  - Loop255에서 `11658668`은 hard-hold evidence를 갖고도 final serialized publication contract가 `resolved_public_title`을 다시 publish했다.
+  - 이 문제는 gate 생성 시점만 막아서는 부족하고 최종 public contract 수렴 지점에서 다시 막아야 함을 보였다.
+- 조치:
+  - Loop256 단건 canary로 commit `3bffd7e`의 final contract demotion이 실제 런에서 유지되는지 확인했다.
+  - `PromotionDecision`, `publish_contract_trace.gate_decision`, `publish_ledger.gate_decision`이 blocked decision으로 수렴하는 계약 테스트와 런 결과를 함께 보존했다.
+  - Data Analytics report artifact `Loop256 아키텍처 수렴 검증`을 한국어로 렌더링했다.
+- 검증:
+  - Run `20260702_051036_309360`: completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`, MCP health `1/1`.
+  - `11658668`: `promotion_blocked`, public title/url `null`, `publish_allowed=false`.
+  - Loop238 safe-loss probe: `11660237` flip rate `0.3333333333333333`, `nondeterminism_unresolved`, hard-hold 완화 불가.
+- 결정:
+  - `11658668` final contract hard-hold는 단건 canary에서 확인됐다.
+  - same 38-row packet survival과 full 375 collateral clean 전까지 semantic approval을 갱신하지 않는다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+- 다음 조치:
+  - 다음 packet 평가는 `actionable queue 감소`와 `동일 packet safe_resolved 단조 비감소`를 동시에 만족하는지 `tools/evaluate_goal_convergence.py`로 확인한다.
+  - full375 collateral diff는 `tools/evaluate_always_on_regression_gates.py`로 golden-16과 함께 항상 평가한다.
+
 ## IMP-20260702-451 - Loop251 blocks 11663535 character-title collision public title drift
 
 - 상태: targeted canary GO / runtime GO / reason hygiene GO / semantic coverage GO but approval 아님 / convergence NO-GO / full375 previous NO-GO / full scan approval false / goal NOT_COMPLETE
