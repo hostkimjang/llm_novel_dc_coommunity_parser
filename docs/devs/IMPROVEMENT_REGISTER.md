@@ -1,5 +1,30 @@
 # Improvement Register
 
+## IMP-20260702-439 - Loop239 keeps 11660237 hard-held after title-led search preservation
+
+- 상태: focused runtime GO / code-test gate GO / targeted semantic NO-GO / hard-hold relaxation false / semantic quality REVIEW-LOCKED / full scan approval false / goal NOT_COMPLETE
+- 문제:
+  - `11660237`은 Loop238에서 `nondeterminism_unresolved`로 분류됐고, 단건 재실행마다 public title publish가 흔들릴 수 있다.
+  - title-led search preservation이 없으면 정답 상세 회수가 약하고, preservation만 추가하면 포함어 후보가 오답 publish 압력을 만들 수 있다.
+- 조치:
+  - title-led current-work gate가 기존 `candidate_only/context_only` gate를 갱신할 수 있게 했다.
+  - 공식 상세/current-work shared gate가 확인된 경우에만 generic genre bridge demotion을 면제했다.
+  - title-led work-consumption signal에서 `site:novelpia.com/novel "테라포밍"`과 platform query를 search budget/rerank에서 보존했다.
+- 검증:
+  - run04 `20260702_003226_807802`: completed/flushed/pending/failed `1/1/0/0`, VLM/OCR READY, MCP health ok/failure `1/0`.
+  - run04 final: `official_title=null`, `candidate_ledger_status=promotion_blocked`, `title_resolution_state=unresolved_matchable`, `title_resolution_allowed=false`.
+  - `tests.test_title_lead_search_inferred_guard`: 164 OK.
+  - `tests.test_candidate_audit + tests.test_promotion_gate_contract`: 128 OK.
+  - `py_compile`: PASS.
+  - Data Analytics artifact: validate/render PASS.
+- 결정:
+  - 검색 보존은 작동했지만 정답 상세 `61947` 회수가 아니라 포함어 후보 pressure를 만들었다.
+  - 최종 contract가 public title을 막은 것은 올바른 방어다.
+  - `11660237`은 계속 `nondeterminism_unresolved`; hard-hold relaxation은 금지한다.
+- 다음 조치:
+  - search provider가 exact title detail을 못 가져오는 원인과 목적별 cap이 platform probe를 스킵하는 조건을 분리한다.
+  - 정답 상세 직접 발견 없이 public publish를 완화하지 않는다.
+
 ## IMP-20260701-438 - Loop238 replaces repeated parent reruns with convergence and flip-rate gates
 
 - 상태: architecture convergence code/test PASS / safe-loss flip probe N=3 completed / full 375 collateral always-on gate NO-GO / hard-hold relaxation false / semantic quality REVIEW-LOCKED / full scan approval false / goal NOT_COMPLETE

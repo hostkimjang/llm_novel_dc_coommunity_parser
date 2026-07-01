@@ -2,6 +2,27 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop239 11660237 title-led probe
+
+- 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. `11660237` 단건 run04는 runtime `GO`지만 semantic `NO-GO`, residual accounting `NO_DELTA_TARGETED_CANARY_NO_GO`다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.
+- Loop239 TODO:
+  - [x] title-led current-work gate가 기존 `candidate_only/context_only` gate를 갱신할 수 있게 했다.
+  - [x] 공식 상세/current-work gate가 없는 generic genre bridge는 계속 차단되도록 했다.
+  - [x] title-led official detail probe를 search budget/rerank에서 보존했다.
+  - [x] `11660237` run04를 실행했다.
+    - run id `20260702_003226_807802`
+    - completed/flushed/pending/failed `1/1/0/0`
+    - VLM/OCR `READY`
+    - final `official_title=null`, `candidate_ledger_status=promotion_blocked`
+  - [x] Data Analytics artifact validate/render PASS.
+  - [x] 한국어 report/review artifacts를 남겼다.
+    - `docs/devs/loop_reports/LOOP_239_REPORT_20260702.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop239_11660237_title_led_probe_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop239_11660237_title_led_probe_data_analytics_artifact.json`
+  - [ ] `site:novelpia.com/novel "테라포밍"`이 `61947` 대신 포함어 후보를 반환하는 원인을 provider/cap/fetch 순서로 분리한다.
+  - [ ] 목적별 cap이 `테라포밍 노벨피아` platform probe를 너무 일찍 스킵하는지 negative/positive tests로 확인한다.
+  - [ ] 정답 상세 `61947`을 직접 발견하지 못하면 hard-hold relaxation을 계속 금지한다.
+
 ## 2026-07-01 regression-safe grounding Loop237 parent replay after Loop236 URL-title guard
 
 - 상태 업데이트: Loop238에서 동일 38-row parent packet 반복을 중단하고 architecture convergence / safe-loss flip-rate / always-on gate를 코드화했다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.

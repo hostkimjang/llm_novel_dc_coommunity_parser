@@ -5777,6 +5777,303 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertTrue(acceptance["title_led_consumption_bridge"])
         self.assertIn("title_led_consumption_bridge", acceptance["notes"])
 
+    def test_title_led_gate_can_replace_prior_context_only_decision(self):
+        pipeline = build_pipeline()
+        title = "테라포밍"
+        url = "https://novelpia.com/novel/61947"
+        post = PostInput(
+            post_id=11660237,
+            title="테라포밍 볼만함?",
+            author="ㅇㅇ",
+            content_blocks=[ContentBlock(type="text", text="주인공 멍창하다는 말 많던데")],
+            comments=["ㅇㅇ 야스 개꼴림 쥬지터짐"],
+        )
+        ctx = ConversationContext(post_id=post.post_id, post_data=pipeline._post_to_dict(post), comments=post.comments)
+        ctx.set_expert_output(
+            ExpertType.GATEKEEPER,
+            {
+                "post_type": "short_reaction",
+                "detected_entities": {
+                    "possible_titles": [title],
+                    "key_terms": ["볼만함"],
+                },
+            },
+        )
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "ask_question",
+                    "target_kind": "work",
+                    "primary_domain": "novel_literature",
+                    "title_novel_terms": [title],
+                }
+            },
+        )
+        ctx.search_results = [
+            {
+                "title": "웹소설로 꿈꾸는 세상! - 테라포밍 - 노벨피아",
+                "url": url,
+                "content": "테라포밍 PLUS 독점 연재중.",
+                "from_query": "테라포밍 노벨피아",
+            }
+        ]
+        ctx._last_promotion_gate_decision = {
+            "status": "candidate_only",
+            "publish_allowed": False,
+            "official_title": None,
+            "official_url": None,
+            "candidate_preserved": True,
+            "reason_codes": ["scope_context_only"],
+            "scope": {
+                "scope_kind": "context_only",
+                "direct_bridge_sources": ["official_detail_candidate"],
+            },
+        }
+        final_decision = {
+            "discussion_type": "general",
+            "work_resolution": "unresolved",
+            "title_resolution_state": "unresolved_matchable",
+        }
+        vf_result = {
+            "is_relevant": True,
+            "is_novel_discussion": True,
+            "novel_identity": {"evidence_type": "search_platform_url"},
+            "grounding_check": {
+                "anchor_found": "title_abbrev_mention",
+                "title_abbrev_mentioned": True,
+                "matched_alias": title,
+            },
+            "relation_judgment": {
+                "relation_type": "exact_title",
+                "discussion_target": "mixed_or_uncertain",
+                "promotion_decision": "hold",
+                "search_support_summary": {
+                    "official_exact_title_count": 1,
+                    "alias_in_post_count": 1,
+                    "best_official_url": url,
+                },
+            },
+        }
+        acceptance = pipeline._compute_title_acceptance(ctx, title, vf_result, heretic_url=url)
+
+        decision = pipeline._record_title_led_alias_public_title_gate_decision(
+            ctx,
+            title,
+            candidate_url=url,
+            final_decision=final_decision,
+            verification_result=vf_result,
+            title_candidates=[
+                DetectedTitle(
+                    official_title=title,
+                    heretic_url=url,
+                    confidence="High",
+                    alias_or_mention=title,
+                    source_tier="official_detail",
+                    page_type="novel_page",
+                )
+            ],
+            acceptance=acceptance,
+        )
+
+        self.assertTrue(decision["publish_allowed"])
+        self.assertEqual(ctx._last_promotion_gate_decision["official_title"], title)
+        self.assertEqual(ctx._last_promotion_gate_state["scope"]["scope_kind"], "current_work")
+        self.assertIn(
+            "title_led_consumption_bridge",
+            ctx._last_promotion_gate_state["scope"]["direct_bridge_sources"],
+        )
+        self.assertEqual(final_decision["_promotion_gate_decision"]["official_url"], url)
+
+    def test_title_led_evaluation_preserves_site_scoped_official_probe_under_recommendation_budget(self):
+        calls = []
+
+        def search_fn(query, purpose=""):
+            calls.append((query, purpose))
+            return []
+
+        orchestrator = Orchestrator(experts={}, search_fn=search_fn)
+        ctx = ConversationContext(
+            post_id=11660237,
+            post_data={
+                "title": "테라포밍 볼만함?",
+                "content_blocks": [{"type": "text", "text": "주인공 멍창하다는 말 많던데"}],
+            },
+            comments=["ㅇㅇ 야스 개꼴림 쥬지터짐"],
+        )
+        ctx.set_expert_output(
+            ExpertType.GATEKEEPER,
+            {
+                "post_type": "recommendation",
+                "context_clues": {"is_asking_recommendation": True},
+                "detected_entities": {"possible_titles": ["테라포밍"]},
+                "key_terms": ["볼만함"],
+            },
+        )
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "request_recommendation",
+                    "target_kind": "work",
+                    "primary_domain": "novel_literature",
+                    "title_novel_terms": ["테라포밍"],
+                }
+            },
+        )
+        requests = [
+            {"purpose": "official_title_verify", "priority": 0, "query": "테라포밍 웹소설"},
+            {"purpose": "title_search_community", "priority": 0, "query": "테라포밍 디시"},
+            {"purpose": "platform_title_search", "priority": 1, "query": "테라포밍 노벨피아"},
+        ]
+
+        self.assertTrue(orchestrator._has_title_led_work_consumption_search_signal(ctx))
+
+        with patch.dict(os.environ, {"PIPELINE_SEARCH_CONCURRENCY": "1"}):
+            orchestrator._execute_searches(requests, post_id=ctx.post_id, ctx=ctx)
+
+        self.assertEqual(ctx.search_budget_profile, "core_fast_resolve")
+        self.assertEqual(ctx.search_budget_limit, 6)
+        self.assertGreaterEqual(len(calls), 1)
+        self.assertEqual(
+            calls[0],
+            ('site:novelpia.com/novel "테라포밍"', "title_anchor_official_probe"),
+        )
+        self.assertEqual(calls[1], ("테라포밍 노벨피아", "platform_title_search"))
+
+    def test_title_led_current_work_gate_exempts_generic_genre_bridge_guard(self):
+        title = "테라포밍"
+        url = "https://novelpia.com/novel/61947"
+        identity = {
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "primary_subject_type": "work_discussion",
+            "anchor_type": "genre",
+            "anchor_strength": "low",
+            "context_sources": ["title", "body", "comments", "search", "image"],
+            "novel_identity": {
+                "official_title": title,
+                "heretic_url": url,
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": title,
+                "heretic_url": url,
+                "alias_or_mention": title,
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+                "reference_role": "primary",
+            },
+            "consistency_flags": [
+                "title_led_evaluation_official_candidate_rescued",
+                "title_led_consumption_bridge",
+            ],
+            "search_evidence_catalog": [
+                {
+                    "title": title,
+                    "url": url,
+                    "source_tier": "novel_platform",
+                    "purpose": "adaptive_abbreviation",
+                }
+            ],
+            "promotion_decision": {
+                "status": "publish",
+                "publish_allowed": True,
+                "official_title": title,
+                "official_url": url,
+                "reason_codes": [
+                    "official_title_exists",
+                    "row_discusses_work_as_work",
+                    "scope_current_work",
+                    "title_led_consumption_bridge",
+                    "official_detail_url",
+                ],
+                "scope": {
+                    "scope_kind": "current_work",
+                    "confidence": "high",
+                    "direct_bridge_sources": [
+                        "title_led_consumption_bridge",
+                        "alias_surface",
+                        "official_detail_url",
+                    ],
+                },
+            },
+            "promotion_gate_state": {
+                "candidate_title": title,
+                "candidate_url": url,
+                "official_title_exists": True,
+                "row_discusses_work_as_work": True,
+                "scope": {
+                    "scope_kind": "current_work",
+                    "confidence": "high",
+                    "direct_bridge_sources": [
+                        "title_led_consumption_bridge",
+                        "alias_surface",
+                        "official_detail_url",
+                    ],
+                },
+            },
+        }
+
+        self.assertEqual(
+            apply_weak_public_title_bridge_guard(identity, "테라포밍 볼만함?"),
+            [],
+        )
+        self.assertTrue(identity["title_resolution_allowed"])
+        self.assertEqual(identity["novel_identity"]["official_title"], title)
+
+    def test_title_led_generic_genre_bridge_requires_official_detail(self):
+        title = "테라포밍"
+        identity = {
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "primary_subject_type": "work_discussion",
+            "anchor_type": "genre",
+            "anchor_strength": "low",
+            "context_sources": ["title", "body", "search"],
+            "novel_identity": {
+                "official_title": title,
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": title,
+                "alias_or_mention": title,
+                "source_tier": "web",
+                "reference_role": "primary",
+            },
+            "consistency_flags": [
+                "title_led_evaluation_official_candidate_rescued",
+                "title_led_consumption_bridge",
+            ],
+            "promotion_decision": {
+                "status": "publish",
+                "publish_allowed": True,
+                "official_title": title,
+                "reason_codes": [
+                    "official_title_exists",
+                    "row_discusses_work_as_work",
+                    "scope_current_work",
+                    "title_led_consumption_bridge",
+                ],
+                "scope": {
+                    "scope_kind": "current_work",
+                    "confidence": "high",
+                    "direct_bridge_sources": ["title_led_consumption_bridge"],
+                },
+            },
+        }
+
+        self.assertEqual(
+            apply_weak_public_title_bridge_guard(identity, "테라포밍 볼만함?"),
+            ["generic_genre_surface_public_title_bridge"],
+        )
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+
     def test_title_led_evaluation_question_picks_official_detail_candidate(self):
         pipeline = build_pipeline()
         title = "테라포밍"

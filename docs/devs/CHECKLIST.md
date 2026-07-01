@@ -1,5 +1,35 @@
 # Development Checklist
 
+## 2026-07-02 Loop239 11660237 title-led probe 체크
+
+- [x] 동일 38-row parent packet을 재실행하지 않았다.
+- [x] `11660237` 단건 run04를 실행했다.
+  - run id `20260702_003226_807802`
+  - completed/flushed/pending/failed `1/1/0/0`
+  - VLM/OCR `READY`
+  - MCP health ok/failure `1/0`
+- [x] title-led 검색 보존이 실제 rerank에 반영됐는지 확인했다.
+  - `site:novelpia.com/novel "테라포밍"`이 최상단 query로 실행됨.
+  - `테라포밍 노벨피아`는 목적별 cap 영향으로 일부 단계에서 스킵됨.
+- [x] run04 최종 public publish가 차단됐는지 확인했다.
+  - `official_title=null`
+  - `candidate_ledger_status=promotion_blocked`
+  - `title_resolution_state=unresolved_matchable`
+  - `title_resolution_allowed=false`
+- [x] hard-hold relaxation을 계속 금지했다: `hard_hold_relaxation_allowed=false`.
+- [x] Focused tests를 확인했다.
+  - `py_compile` PASS.
+  - `tests.test_title_lead_search_inferred_guard`: 164 OK.
+  - `tests.test_candidate_audit + tests.test_promotion_gate_contract`: 128 OK.
+- [x] 한국어 loop report, review artifacts, Data Analytics artifact를 남겼다.
+  - `docs/devs/loop_reports/LOOP_239_REPORT_20260702.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop239_11660237_title_led_probe_review.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop239_11660237_title_led_probe_review.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop239_11660237_title_led_probe_data_analytics_artifact.json`
+- [x] Data Analytics artifact validate/render PASS.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- [ ] 다음 replay 전에 `11660237`의 정답 상세 `61947` 미회수 원인을 search provider 결과, 목적별 cap, exact-title detail fetch 순서로 분리한다.
+
 ## 2026-07-01 Loop238 architecture convergence / safe-loss flip probe 체크
 
 - [x] 동일 38-row parent packet 재실행을 중단했다.

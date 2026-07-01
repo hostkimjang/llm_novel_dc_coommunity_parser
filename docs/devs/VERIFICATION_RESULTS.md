@@ -1,5 +1,44 @@
 # Verification Results
 
+## 2026-07-02 Loop239 11660237 title-led probe verification
+
+- Scope: 동일 38-row parent packet을 재실행하지 않고, `11660237` 단건 title-led search/gate path만 검증한다.
+- Code:
+  - `src/llm_batch/agentic_pipeline.py`: 기존 gate가 `candidate_only/context_only`일 때 title-led current-work gate가 갱신할 수 있게 했다.
+  - `src/llm_batch/candidate_audit.py`: 공식 상세 URL과 current-work shared gate가 있는 title-led path만 generic genre bridge demotion을 면제한다.
+  - `src/llm_batch/experts/orchestrator.py`: title-led work-consumption signal에서 공식 상세 검색을 보존하고 rerank boost한다.
+  - `tests/test_title_lead_search_inferred_guard.py`: title-led gate overwrite, generic genre bridge exemption/negative, search preservation tests 추가.
+- Runtime:
+  - run04 `20260702_003226_807802`: completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`, MCP health ok/failure `1/0`.
+  - Result: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop239_11660237_title_led_genre_bridge_run04_result.json`
+  - Manifest: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop239_11660237_title_led_genre_bridge_run04_result_manifest.json`
+  - Log: `logs\expert_run_20260702_003226_807802.log`
+- Outcome:
+  - run04 final: `is_relevant=true`, `official_title=null`, `candidate_ledger_status=promotion_blocked`, `discussion_type=recommendation`, `title_resolution_state=unresolved_matchable`, `title_resolution_allowed=false`.
+  - run01-run04 모두 public `official_title=null`, `promotion_blocked`.
+  - Search preservation worked, but search results did not recover `https://novelpia.com/novel/61947`; wrong included-title candidates created publish pressure.
+  - Safe-loss classification remains `nondeterminism_unresolved`; hard-hold relaxation `false`.
+- Commands:
+  - `Invoke-RestMethod -Uri http://10.20.0.101:8000/v1/models` -> model `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4` 확인.
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\experts\orchestrator.py src\llm_batch\agentic_pipeline.py src\llm_batch\candidate_audit.py tests\test_title_lead_search_inferred_guard.py` -> PASS.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard -v` -> PASS, 164 tests.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_candidate_audit tests.test_promotion_gate_contract -v` -> PASS, 128 tests.
+  - `mcp__dataAnalyticsWidgets.validate_artifact` -> PASS.
+  - `mcp__dataAnalyticsWidgets.render_artifact` -> PASS.
+- Artifacts:
+  - `docs\devs\loop_reports\LOOP_239_REPORT_20260702.md`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop239_11660237_title_led_probe_review.md`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop239_11660237_title_led_probe_review.json`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop239_11660237_title_led_probe_data_analytics_artifact.json`
+- Gate:
+  - run_integrity: `GO_FOCUSED_RUNTIME_1_1`
+  - targeted_canary: `NO-GO_UNRESOLVED_MATCHABLE`
+  - residual accounting: `NO_DELTA_TARGETED_CANARY_NO_GO`
+  - full-panel collateral approval: previous full375 `NO-GO` remains
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+
 ## 2026-07-01 Loop238 architecture convergence / safe-loss flip probe verification
 
 - Scope: 동일 38-row parent packet 반복을 멈추고, architecture convergence 계약, safe-loss flip-rate 측정, golden16/full375 always-on gate를 실코드와 테스트로 고정한다.

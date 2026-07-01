@@ -14090,7 +14090,12 @@ class AgenticPipeline:
                 verification_result=verification_result if isinstance(verification_result, dict) else None,
             )
 
-        if official_title and not isinstance(getattr(ctx, "_last_promotion_gate_decision", None), dict):
+        _existing_gate_decision_for_title_led = getattr(ctx, "_last_promotion_gate_decision", None)
+        _existing_gate_already_publishes = bool(
+            isinstance(_existing_gate_decision_for_title_led, dict)
+            and _existing_gate_decision_for_title_led.get("publish_allowed") is True
+        )
+        if official_title and not _existing_gate_already_publishes:
             _title_led_gate_acceptance = getattr(ctx, "_title_acceptance", None)
             if not isinstance(_title_led_gate_acceptance, dict):
                 try:

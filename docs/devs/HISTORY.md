@@ -1,5 +1,22 @@
 # Development History
 
+## 2026-07-02 - Loop239 11660237 title-led probe remains hard-held
+
+- 동일 38-row parent packet은 재실행하지 않고 `11660237` 단건 title-led path만 재검증했다.
+- `src/llm_batch/agentic_pipeline.py`는 title-led current-work gate가 기존 `candidate_only/context_only` gate를 갱신할 수 있게 했다.
+- `src/llm_batch/candidate_audit.py`는 공식 상세 URL과 current-work shared gate가 있는 title-led path만 generic genre bridge demotion을 면제하게 했다.
+- `src/llm_batch/experts/orchestrator.py`는 title-led work-consumption search signal에서 공식 상세 검색을 보존하고 rerank boost한다.
+- run04 `20260702_003226_807802`은 completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`, MCP health ok/failure `1/0`로 runtime clean이다.
+- 의미 결과는 `NO-GO`: public `official_title=null`, `candidate_ledger_status=promotion_blocked`, `title_resolution_state=unresolved_matchable`, `title_resolution_allowed=false`.
+- 검색 보존은 작동했지만 정답 상세 `https://novelpia.com/novel/61947`이 아니라 포함어 후보들이 먼저 들어와 오답 publish 압력을 만들었다. 최종 contract가 publish를 막았으므로 `hard_hold_relaxation_allowed=false`다.
+- 검증은 `py_compile`, `tests.test_title_lead_search_inferred_guard` 164 tests, `tests.test_candidate_audit + tests.test_promotion_gate_contract` 128 tests, Data Analytics validate/render를 PASS했다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_239_REPORT_20260702.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop239_11660237_title_led_probe_review.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop239_11660237_title_led_probe_review.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop239_11660237_title_led_probe_data_analytics_artifact.json`
+- Gate는 `NO_DELTA_TARGETED_CANARY_NO_GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-01 - Loop238 architecture convergence gate and safe-loss flip probe
 
 - 동일 38-row parent packet 즉시 재실행을 중단하고, 다음 회차 진입 조건을 단순 회차 수가 아니라 `actionable queue 감소 + 동일 packet safe_resolved 단조 비감소`로 바꿨다.

@@ -2493,6 +2493,94 @@ def _title_surface_compatible(left: Any, right: Any) -> bool:
     return bool(len(shorter) >= 6 and shorter in longer)
 
 
+def _title_led_current_work_gate_exempts_generic_genre_bridge(
+    identity: Dict[str, Any],
+    post_title: Any,
+    title: Any,
+) -> bool:
+    title_text = _safe_str(title)
+    title_key = _compact_title(title_text)
+    post_key = _compact_title(post_title)
+    if not (
+        len(title_key) >= 4
+        and post_key
+        and (post_key.startswith(title_key) or title_key in post_key)
+    ):
+        return False
+    if not TITLE_LED_WORK_CONSUMPTION_RE.search(_safe_str(post_title)):
+        return False
+
+    flags = set(_safe_list(identity.get("consistency_flags")))
+    if "title_led_consumption_bridge" not in flags:
+        return False
+    hard_negative_flags = BATCH_ALIAS_CONFLICT_HOLD_FLAGS | {
+        "recommendation_context_only_no_work_anchor",
+        "recommendation_context_only_public_title_conflict",
+        "batch_memory_alias_rescue_blocked_nonwork_context",
+        "batch_memory_alias_rescue_blocked_genre_context",
+        "semantic_seed_no_work_context",
+    }
+    if flags & hard_negative_flags:
+        return False
+
+    primary = nested_dict(identity.get("primary_work"))
+    novel_identity = nested_dict(identity.get("novel_identity"))
+    primary_source_tier = _safe_str(primary.get("source_tier")).lower()
+    candidate_url = _official_detail_url(
+        novel_identity.get("heretic_url")
+        or identity.get("heretic_url")
+        or primary.get("heretic_url")
+        or primary.get("url")
+    )
+    if not (candidate_url and primary_source_tier in OFFICIAL_TITLE_SOURCE_TIERS):
+        return False
+
+    context_sources = {_safe_str(value).lower() for value in _safe_list(identity.get("context_sources"))}
+    has_search_context = bool(
+        "search" in context_sources
+        or _safe_dicts(identity.get("search_evidence_catalog"))
+        or _safe_dicts(nested_dict(identity.get("candidate_ledger")).get("search_evidence_catalog"))
+    )
+    if "title" not in context_sources or not has_search_context:
+        return False
+
+    discussion_type = _safe_str(identity.get("discussion_type")).lower()
+    if discussion_type not in CORE_DISCUSSION_TYPES:
+        return False
+    primary_subject_type = _safe_str(identity.get("primary_subject_type")).lower()
+    if primary_subject_type not in {"", "work_discussion", "specific_work", "single_work"}:
+        return False
+
+    decision = _promotion_gate_decision(identity)
+    gate_state = nested_dict(identity.get("promotion_gate_state"))
+    if not gate_state:
+        gate_state = nested_dict(nested_dict(identity.get("candidate_ledger")).get("promotion_gate_state"))
+    scope = nested_dict(decision.get("scope"))
+    if not scope:
+        scope = nested_dict(gate_state.get("scope"))
+    if _safe_str(scope.get("scope_kind")).lower() != "current_work":
+        return False
+
+    direct_sources = {_safe_str(value) for value in _safe_list(scope.get("direct_bridge_sources"))}
+    reason_codes = {_safe_str(code) for code in _safe_list(decision.get("reason_codes"))}
+    if "title_led_consumption_bridge" not in (direct_sources | reason_codes):
+        return False
+
+    if gate_state:
+        gate_title = _safe_str(gate_state.get("candidate_title"))
+        if gate_title and not _titles_match(gate_title, title_text):
+            return False
+        gate_url = _official_detail_url(gate_state.get("candidate_url"))
+        if gate_url and not _official_detail_urls_match(gate_url, candidate_url):
+            return False
+        if gate_state.get("official_title_exists") is False:
+            return False
+        if gate_state.get("row_discusses_work_as_work") is False:
+            return False
+
+    return True
+
+
 def _official_title_conflicts_with_promoted_image(identity: Dict[str, Any], title: str) -> bool:
     image_titles = _explicit_promoted_image_titles(identity)
     if not image_titles:
@@ -3293,6 +3381,8 @@ def apply_weak_public_title_bridge_guard(identity: Dict[str, Any], post_title: A
     if anchor_type == "genre" and (
         anchor_strength in {"", "low", "medium"} or _compact_title(title) in {_compact_title(v) for v in GENERIC_WORK_SURFACE_TITLES}
     ):
+        if _title_led_current_work_gate_exempts_generic_genre_bridge(identity, post_title, title):
+            return []
         return _demote_official_title_to_hold(
             identity,
             reason="generic_genre_surface_public_title_bridge",
