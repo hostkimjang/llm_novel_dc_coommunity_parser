@@ -1939,6 +1939,79 @@ class AgenticPipeline:
                 return True
         return False
 
+    def _platform_meta_image_title_requires_hold(
+        self,
+        ctx,
+        title: Optional[str],
+        *,
+        final_decision: Optional[Dict[str, Any]] = None,
+        verification_result: Optional[Dict[str, Any]] = None,
+    ) -> bool:
+        candidate = str(title or "").strip()
+        title_norm = self._normalize_match_text(candidate)
+        if not ctx or not title_norm:
+            return False
+
+        final = final_decision if isinstance(final_decision, dict) else {}
+        vf = verification_result if isinstance(verification_result, dict) else {}
+        flag_values: List[str] = []
+        for container in (final, vf):
+            for key in (
+                "consistency_flags",
+                "promotion_blocked_reasons",
+                "candidate_audit_lint",
+                "output_consistency_lint",
+            ):
+                values = container.get(key) if isinstance(container, dict) else None
+                if isinstance(values, list):
+                    flag_values.extend(str(item or "").strip() for item in values)
+        platform_meta = bool(
+            "platform_meta_multi_title_blocked" in flag_values
+            or self._looks_like_platform_meta_post(ctx)
+        )
+        if not platform_meta:
+            return False
+
+        if (
+            self._has_structured_direct_image_work_surface_evidence(ctx, candidate)
+            or self._has_image_primary_promotion_signal(ctx, candidate)
+            or self._has_strong_verified_character_work_links(ctx, candidate)
+            or self._has_compound_title_character_bridge(
+                ctx,
+                candidate,
+                vf_result=vf,
+            )
+        ):
+            return False
+
+        image_items: List[Dict[str, Any]] = []
+        post_data = getattr(ctx, "post_data", None) or {}
+        if isinstance(post_data, dict):
+            for key in ("image_enrichment", "image_evidence_catalog"):
+                values = post_data.get(key)
+                if isinstance(values, list):
+                    image_items.extend(item for item in values if isinstance(item, dict))
+        for container in (final, vf):
+            values = container.get("image_evidence_catalog") if isinstance(container, dict) else None
+            if isinstance(values, list):
+                image_items.extend(item for item in values if isinstance(item, dict))
+
+        for item in image_items:
+            if self._is_background_listing_vlm_item(item):
+                continue
+            if not (
+                self._normalize_match_text(item.get("explicit_work_title") or "") == title_norm
+                or title_norm in self._normalize_match_text(item.get("ocr_text") or "")
+            ):
+                continue
+            evidence_type = str(item.get("evidence_type") or "").strip().lower()
+            focus_role = str(item.get("focus_role") or "").strip().lower()
+            cover_work_anchor = bool(evidence_type == "cover_title" and focus_role == "work_anchor")
+            if item.get("promotion_eligible") is True or cover_work_anchor:
+                continue
+            return True
+        return False
+
     def _direct_image_item_title_matches_candidate(
         self,
         item: Dict[str, Any],
@@ -29732,6 +29805,14 @@ OUTPUT JSON:
         final = final_decision if isinstance(final_decision, dict) else None
         bridge_source = str(source or "").strip()
 
+        if self._platform_meta_image_title_requires_hold(
+            ctx,
+            candidate,
+            final_decision=final,
+            verification_result=verification,
+        ):
+            return False
+
         if bridge_source == "verified_contextual_alias_work_bridge":
             return self._has_verified_contextual_alias_work_bridge_evidence(
                 ctx,
@@ -32366,7 +32447,11 @@ OUTPUT JSON:
             or "image" in str(source or "").strip().lower()
             or "ocr" in str(source or "").strip().lower()
         )
-        if image_driven_scope and not self._title_mentioned_in_non_image_main_context(ctx, title):
+        try:
+            title_visible_in_non_image = self._title_mentioned_in_non_image_main_context(ctx, title)
+        except Exception:
+            title_visible_in_non_image = False
+        if image_driven_scope:
             image_items: List[Dict[str, Any]] = []
             for container in (scope_fields, final, vf):
                 catalog = container.get("image_evidence_catalog") if isinstance(container, dict) else None
@@ -32394,15 +32479,29 @@ OUTPUT JSON:
                 for item in matching_image_items
             )
             has_structured_direct_image = self._has_structured_direct_image_work_surface_evidence(ctx, title)
-            if matching_image_items and not (has_promotion_eligible_image or has_structured_direct_image):
+            platform_meta_scope_blocked = bool(
+                "platform_meta_multi_title_blocked" in merged_scope_flags
+                or self._looks_like_platform_meta_post(ctx)
+            )
+            if (
+                matching_image_items
+                and not (has_promotion_eligible_image or has_structured_direct_image)
+                and (not title_visible_in_non_image or platform_meta_scope_blocked)
+            ):
                 scope_block_flags.append("image_title_not_promotion_eligible")
+                if platform_meta_scope_blocked:
+                    scope_block_flags.append("platform_meta_multi_title_blocked")
 
             meta_primary_block, meta_primary_reason = self._should_block_title_promotion_for_meta_primary_subject(
                 ctx=ctx,
                 vf_result=vf,
                 final_decision=final,
             )
-            if meta_primary_block and not has_structured_direct_image:
+            if (
+                meta_primary_block
+                and not has_structured_direct_image
+                and (not title_visible_in_non_image or matching_image_items)
+            ):
                 reason = str(meta_primary_reason or "meta_primary_subject").strip()
                 scope_block_flags.append(f"meta_primary_subject:{reason}")
 
@@ -32438,14 +32537,9 @@ OUTPUT JSON:
             anchor_type_norm in {"title_alias", "character"}
             or grounding_anchor in {"character_mention", "character_title_link", "plot_mention"}
         )
-        candidate_title_visible = False
-        try:
-            candidate_title_visible = self._title_mentioned_in_non_image_main_context(ctx, title)
-        except Exception:
-            candidate_title_visible = False
         if (
             alias_or_character_scope
-            and not candidate_title_visible
+            and not title_visible_in_non_image
             and _has_major_character_title_collision()
         ):
             shared_work_bridge = False
@@ -32691,6 +32785,7 @@ OUTPUT JSON:
             *,
             row_discusses_work: bool,
             non_novel_block: bool = False,
+            platform_meta_image_hold: bool = False,
         ) -> ScopeState:
             resolution_state = str(_resolution_state() or "").strip().lower()
             work_resolution = str(_work_resolution() or "").strip().lower()
@@ -32719,6 +32814,9 @@ OUTPUT JSON:
             if non_novel_block:
                 scope_kind = "platform_meta_nonwork"
                 conflicts.append("non_novel_discourse")
+            elif platform_meta_image_hold:
+                scope_kind = "context_only"
+                conflicts.append("platform_meta_image_title_hard_hold")
             elif row_discusses_work:
                 scope_kind = "current_work"
                 direct_sources.append("row_discusses_work_as_work")
@@ -32769,6 +32867,7 @@ OUTPUT JSON:
             row_discusses_work: bool,
             strict_anchor: bool = False,
             non_novel_block: bool = False,
+            platform_meta_image_hold: bool = False,
         ) -> List[EvidenceRecord]:
             evidence: List[EvidenceRecord] = []
             if official_exists:
@@ -32837,6 +32936,15 @@ OUTPUT JSON:
                         reason_code="nonwork",
                     )
                 )
+            if platform_meta_image_hold:
+                evidence.append(
+                    EvidenceRecord(
+                        kind="negative_semantic_relation",
+                        strength="strong",
+                        supports_publish=False,
+                        reason_code="platform_meta_image_title_hard_hold",
+                    )
+                )
             return evidence
 
         candidate_url_for_gate = _candidate_url_from_context()
@@ -32890,6 +32998,12 @@ OUTPUT JSON:
             final_decision=final_decision if isinstance(final_decision, dict) else None,
             verification_result=verification_result if isinstance(verification_result, dict) else None,
         ):
+            platform_meta_image_hold = self._platform_meta_image_title_requires_hold(
+                ctx,
+                candidate,
+                final_decision=final_decision if isinstance(final_decision, dict) else None,
+                verification_result=verification_result if isinstance(verification_result, dict) else None,
+            )
             row_discusses_work = self._post_discusses_work_as_work(
                 ctx,
                 candidate,
@@ -32898,6 +33012,8 @@ OUTPUT JSON:
                 verification_result=verification_result if isinstance(verification_result, dict) else None,
                 title_candidates=title_candidates,
             )
+            if platform_meta_image_hold:
+                row_discusses_work = False
             official_exists_for_gate = _official_title_exists(candidate_url_for_gate)
             state = GroundingState(
                 post_id=getattr(ctx, "post_id", None),
@@ -32909,7 +33025,10 @@ OUTPUT JSON:
                 title_resolution_state=_resolution_state() or "context_only",
                 work_resolution=_work_resolution() or "unresolved",
                 discussion_type=_discussion_type(),
-                scope=_scope_state_for_gate(row_discusses_work=row_discusses_work),
+                scope=_scope_state_for_gate(
+                    row_discusses_work=row_discusses_work,
+                    platform_meta_image_hold=platform_meta_image_hold,
+                ),
             )
             decision = _store_gate_decision(
                 state,
@@ -32917,6 +33036,7 @@ OUTPUT JSON:
                     official_exists=official_exists_for_gate,
                     candidate_url=candidate_url_for_gate,
                     row_discusses_work=row_discusses_work,
+                    platform_meta_image_hold=platform_meta_image_hold,
                 ),
             )
             if bool(decision.get("publish_allowed")):
@@ -52125,6 +52245,8 @@ OUTPUT JSON:
         """Search-only alias support cannot override semantic no-work without a direct post/visual work anchor."""
         candidate = str(title or "").strip()
         if not ctx or not candidate:
+            return False
+        if self._platform_meta_image_title_requires_hold(ctx, candidate):
             return False
         return bool(
             self._title_surface_mentioned_in_post_main_context(ctx, candidate)

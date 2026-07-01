@@ -1,5 +1,27 @@
 # Development Checklist
 
+## 2026-07-02 Loop254 preflight platform-meta image hard-hold 체크
+
+- [x] Loop253 runtime 결과를 approval과 분리했다.
+  - run id `20260702_041616_811347`
+  - runtime `7/7/0/0`, VLM/OCR `READY`
+  - 실패: `11658668`이 `context_only` reason을 가진 채 `batch_memory_exact_alias_rescued`로 재publish
+  - collateral movement: `11663544` safe loss, `11663535` suspicious publish movement
+- [x] shared promotion predicate 우회 경로를 코드로 막았다.
+  - `src/llm_batch/rules.py`: platform feature `수정/삭제/내리/내려`
+  - `src/llm_batch/agentic_pipeline.py`: `_platform_meta_image_title_requires_hold(...)`
+  - `_post_discusses_work_as_work(...)`, `_has_direct_post_or_visual_work_anchor_for_no_work_search_rescue(...)`, `_can_promote_title_after_semantic_no_work(...)` 배선
+- [x] 단일 술어 계약을 tracked 테스트로 확인했다.
+  - `test_verified_contextual_alias_wrapper_uses_shared_work_predicate`
+- [x] preflight 검증을 완료했다.
+  - py_compile PASS
+  - `tests.test_title_lead_search_inferred_guard` `179` PASS
+  - `tests.test_expert_main_comment_metadata` `34` PASS
+  - `git diff --check` PASS
+- [ ] 커밋 후 same 7-row packet canary를 다시 실행한다.
+- [ ] Loop254 report/Data Analytics artifact/docs를 한국어로 작성한다.
+- Gate: preflight checkpoint only, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, full375 previous `NO-GO`.
+
 ## 2026-07-02 Loop251 11663535 character-title collision canonicalization hold 체크
 
 - [x] 동일 38-row parent packet을 재실행하지 않았다.

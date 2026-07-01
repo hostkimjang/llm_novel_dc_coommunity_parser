@@ -905,6 +905,179 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertIn("image_title_not_promotion_eligible", decision["reason_codes"])
         self.assertEqual(final_decision["_promotion_gate_state"]["scope"]["scope_kind"], "context_only")
 
+    def test_resolved_public_title_gate_keeps_platform_meta_image_hold_when_title_seen(self):
+        pipeline = build_pipeline()
+        title = "전 버튜버가 하고 싶은데요"
+        url = "https://novelpia.com/novel/275975"
+        post = PostInput(
+            post_id=11658668,
+            title="문피아에서는 수정하면 욕 처먹는거고",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="image", url="https://example.test/11658668.png"),
+                ContentBlock(type="text", text="여기서도 쿠사리 먹고 내리면 소신있는거고"),
+            ],
+            comments=[],
+        )
+        ctx = ConversationContext(post_id=11658668, post_data=pipeline._post_to_dict(post), comments=[])
+        image_item = {
+            "ocr_text": "ACTOR 아이, 탈의 주인공 전 버튜버가 하고 싶은데요",
+            "visual_summary": "노란색 배경의 캐릭터 일러스트",
+            "explicit_work_title": title,
+            "evidence_type": "cover_title",
+            "title_role": "unknown",
+            "promotion_eligible": False,
+            "work_cues": ["ACTOR", title, "아이, 탈의 주인공"],
+        }
+        ctx.post_data["image_enrichment"] = [image_item]
+        ctx.search_results = [
+            {
+                "title": title,
+                "url": url,
+                "content": "노벨피아 공식 작품 상세",
+            }
+        ]
+        final_decision = {
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "review",
+            "context_sources": ["title", "body", "search", "image"],
+            "anchor_type": "image",
+            "consistency_flags": ["platform_meta_multi_title_blocked"],
+            "image_evidence_catalog": [image_item],
+        }
+        old_visible = pipeline._title_mentioned_in_non_image_main_context
+        pipeline._title_mentioned_in_non_image_main_context = lambda *_args, **_kwargs: True
+        try:
+            decision = pipeline._record_resolved_public_title_gate_decision(
+                ctx,
+                title,
+                candidate_url=url,
+                final_decision=final_decision,
+                verification_result={
+                    "title_resolution_allowed": True,
+                    "title_resolution_state": "resolved",
+                    "work_resolution": "resolved",
+                },
+                source="serialized_public_identity",
+            )
+        finally:
+            pipeline._title_mentioned_in_non_image_main_context = old_visible
+
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn("image_title_not_promotion_eligible", decision["reason_codes"])
+        self.assertIn("platform_meta_multi_title_blocked", decision["reason_codes"])
+        self.assertEqual(final_decision["_promotion_gate_state"]["scope"]["scope_kind"], "context_only")
+
+    def test_batch_alias_semantic_no_work_respects_platform_meta_image_hold(self):
+        pipeline = build_pipeline()
+        title = "전 버튜버가 하고 싶은데요"
+        url = "https://novelpia.com/novel/275975"
+        post = PostInput(
+            post_id=11658668,
+            title="문피아에서는 수정하면 욕 처먹는거고",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="image", url="https://example.test/11658668.png"),
+                ContentBlock(type="text", text="여기서도 쿠사리 먹고 내리면 소신있는거고"),
+            ],
+            comments=[],
+        )
+        ctx = ConversationContext(post_id=11658668, post_data=pipeline._post_to_dict(post), comments=[])
+        image_item = {
+            "ocr_text": "ACTOR ...의 주인공 전 버튜버가 하고 싶은데요",
+            "visual_summary": "노란색 배경의 캐릭터 표지",
+            "explicit_work_title": title,
+            "evidence_type": "cover_title",
+            "title_role": "unknown",
+            "promotion_eligible": False,
+            "work_cues": [title, "ACTOR"],
+        }
+        ctx.post_data["image_enrichment"] = [image_item]
+        ctx.search_results = [
+            {
+                "title": title,
+                "url": url,
+                "content": "노벨피아 공식 작품 상세",
+            }
+        ]
+        final_decision = {
+            "title_resolution_allowed": False,
+            "title_resolution_state": "context_only",
+            "work_resolution": "unresolved",
+            "image_evidence_catalog": [image_item],
+        }
+
+        old_detail_urls = pipeline._official_detail_exact_title_urls_for_no_work_anchor
+        old_find_url = pipeline._find_title_matched_official_url
+        old_official_evidence = pipeline._has_official_title_evidence
+        pipeline._has_official_title_evidence = lambda *_args, **_kwargs: True
+        pipeline._official_detail_exact_title_urls_for_no_work_anchor = lambda *_args, **_kwargs: [url]
+        pipeline._find_title_matched_official_url = lambda *_args, **_kwargs: url
+        try:
+            allowed = pipeline._can_promote_title_after_semantic_no_work(
+                ctx,
+                title,
+                source="batch_memory_exact_alias_rescued",
+                final_decision=final_decision,
+                verification_result={},
+                title_candidates=[],
+            )
+        finally:
+            pipeline._has_official_title_evidence = old_official_evidence
+            pipeline._official_detail_exact_title_urls_for_no_work_anchor = old_detail_urls
+            pipeline._find_title_matched_official_url = old_find_url
+
+        self.assertFalse(allowed)
+        decision = final_decision["_promotion_gate_decision"]
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn("platform_meta_image_title_hard_hold", decision["reason_codes"])
+        self.assertIn("scope_context_only", decision["reason_codes"])
+        self.assertEqual(final_decision["_promotion_gate_state"]["scope"]["scope_kind"], "context_only")
+        self.assertFalse(
+            pipeline._post_discusses_work_as_work(
+                ctx,
+                title,
+                source="batch_memory_exact_alias_rescued",
+                final_decision=final_decision,
+                verification_result={},
+            )
+        )
+
+    def test_verified_contextual_alias_wrapper_uses_shared_work_predicate(self):
+        pipeline = build_pipeline()
+        ctx = ConversationContext(
+            post_id=11600000,
+            post_data={"post_id": 11600000, "title": "별칭 얘기"},
+            comments=[],
+        )
+        calls = {}
+        old_predicate = pipeline._post_discusses_work_as_work
+
+        def fake_predicate(*args, **kwargs):
+            calls["args"] = args
+            calls["kwargs"] = kwargs
+            return True
+
+        pipeline._post_discusses_work_as_work = fake_predicate
+        try:
+            self.assertTrue(
+                pipeline._has_verified_contextual_alias_work_bridge(
+                    ctx,
+                    "테스트 작품",
+                    {"relation_judgment": {"relation_type": "explicit_alias"}},
+                )
+            )
+        finally:
+            pipeline._post_discusses_work_as_work = old_predicate
+
+        self.assertEqual(calls["args"][1], "테스트 작품")
+        self.assertEqual(calls["kwargs"]["source"], "verified_contextual_alias_work_bridge")
+
     def test_resolved_public_title_scope_blocks_character_collision_alias_variant(self):
         pipeline = build_pipeline()
         title = "조선 퇴마록"

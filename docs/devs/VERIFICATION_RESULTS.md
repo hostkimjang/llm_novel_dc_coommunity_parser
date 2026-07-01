@@ -1,5 +1,25 @@
 # Verification Results
 
+## 2026-07-02 Loop254 preflight platform-meta image hard-hold verification
+
+- Scope: Loop253 실패 경로(`11658668` `batch_memory_exact_alias_rescued` + semantic no-work + non-promotable image title)를 다음 canary 전에 계약 테스트로 막는다.
+- Loop253 evidence:
+  - run id `20260702_041616_811347`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop253_p0_representative_7_after_platform_meta_hold_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop253_p0_representative_7_after_platform_meta_hold_result_manifest.json`
+  - runtime `7/7/0/0`, VLM/OCR `READY`
+  - failure: `11658668` public title `전 버튜버가 하고 싶은데요`, `publish_allowed=true`, `promotion_gate_state.source=batch_memory_exact_alias_rescued`, `title_resolution_state=context_only`, `work_resolution=unresolved`
+- Patch verification:
+  - py_compile: PASS
+  - `tests.test_title_lead_search_inferred_guard`: `179` tests OK
+  - `tests.test_expert_main_comment_metadata`: `34` tests OK
+  - `git diff --check`: PASS
+- Contract outcome expected for next canary:
+  - `11658668` should record `platform_meta_image_title_hard_hold`
+  - `publish_allowed=false`
+  - `scope_kind=context_only`
+- Gate: unit/preflight only. same-packet canary pending after checkpoint commit. full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop251 11663535 character-title collision canonicalization hold verification
 
 - Scope: 동일 38-row parent packet을 재실행하지 않고 `11663535` P0D canonicalization drift를 resolved-public-title gate에서 차단한다.

@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop254 Preflight Addendum - platform-meta image hard-hold contract
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop253 same 7-row packet은 runtime `GO`였지만 acceptance가 아니다.
+- Loop253 run `20260702_041616_811347`은 completed/flushed/pending/failed `7/7/0/0`, VLM/OCR `READY`였고, `11658668`이 `batch_memory_exact_alias_rescued` semantic no-work 경로로 다시 publish됐다. `promotion_gate_state.title_resolution_state=context_only`, `work_resolution=unresolved`, reason에는 `context_only`가 있었지만 `row_discusses_work_as_work=true` / `scope_current_work`로 publish되어 계약 우회가 확인됐다.
+- 코드 변경: platform-meta 원문(`수정/삭제/내리` 포함) + matching image evidence `promotion_eligible=false` + 구조화 direct image/character bridge 없음이면 `_platform_meta_image_title_requires_hold(...)`가 shared `_post_discusses_work_as_work(...)`와 no-work direct anchor rescue를 차단한다. `_can_promote_title_after_semantic_no_work(...)`는 이 경우 `platform_meta_image_title_hard_hold`와 `scope_context_only`를 기록한다.
+- 단일 술어 계약: `_has_verified_contextual_alias_work_bridge(...)`는 계속 `_post_discusses_work_as_work(..., source="verified_contextual_alias_work_bridge")` wrapper를 경유하며 tracked test로 확인했다.
+- Unit verification: py_compile PASS, `tests.test_title_lead_search_inferred_guard` `179` PASS, `tests.test_expert_main_comment_metadata` `34` PASS, `git diff --check` PASS.
+- Gate: preflight unit checkpoint only. Next same-packet canary는 커밋 뒤 실행한다. 동일 38-row parent packet은 재실행하지 않았다. full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop251 Addendum - 11663535 캐릭터-제목 충돌 canonicalization hold
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
