@@ -4339,6 +4339,7 @@ OUTPUT JSON:
         generic_relation_only = bool(relation.get("generic_relation_only"))
         grounding = verification.get("grounding_check") if isinstance(verification.get("grounding_check"), dict) else {}
         anchor_found = str(grounding.get("anchor_found") or "").strip().lower()
+        anchor_text = str(grounding.get("anchor_text") or "").strip()
         decoder_grounded = bool(grounding.get("decoder_grounded", True))
         title_abbrev_mentioned = bool(grounding.get("title_abbrev_mentioned"))
         body_abbrev_mentioned = bool(grounding.get("body_abbrev_mentioned"))
@@ -4356,6 +4357,19 @@ OUTPUT JSON:
             novel_id.get("official_novel_title")
             or novel_id.get("official_title")
             or str(relation.get("candidate_title") or "").strip()
+        )
+        current_title_norm = self._norm_text(current_title)
+        direct_title_surface_confirmed = bool(
+            current_title_norm
+            and any(
+                self._norm_text(surface) == current_title_norm
+                or (
+                    len(current_title_norm) >= 3
+                    and current_title_norm in self._norm_text(surface)
+                )
+                for surface in [matched_alias, anchor_text, *observed_aliases]
+                if str(surface or "").strip()
+            )
         )
         alias_grounding_confirmed = bool(
             alias_in_post_count >= 1
@@ -4436,10 +4450,11 @@ OUTPUT JSON:
             current_title
             and not self._is_community_artifact_title(current_title)
             and promotion == "hold"
-            and relation_type == "exact_title"
+            and relation_type in {"exact_title", "thematic_overlap_only"}
             and target in {"specific_work", "mixed_or_uncertain"}
             and post_direct_grounding
             and decoder_grounded
+            and direct_title_surface_confirmed
             and (
                 anchor_found in {
                     "title_mention",
@@ -4473,11 +4488,12 @@ OUTPUT JSON:
             )
 
         if exact_title_direct_official_support:
+            relation_type = "exact_title"
             target = "specific_work"
             promotion = "allow"
             reason = (
-                reason
-                or "원문에 후보 제목 표면이 직접 있고 공식 상세 검색이 같은 제목으로 수렴하여 exact-title hold를 승격 허용으로 정규화함"
+                "원문에 후보 제목 표면이 직접 있고 공식 상세 검색이 같은 제목으로 수렴하여 "
+                "relation hold를 exact-title allow로 정규화함"
             )
             novel_id["official_novel_title"] = current_title
             if "official_title" in novel_id:

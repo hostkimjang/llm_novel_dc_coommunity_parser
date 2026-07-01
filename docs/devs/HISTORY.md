@@ -1,5 +1,21 @@
 # Development History
 
+## 2026-07-02 - Loop245 fixes 11660237 relation-hold regression and verifies same-packet recovery
+
+- 동일 38-row parent packet은 재실행하지 않고 `11660237` current-code representative run08과 patched run09를 비교했다.
+- run08은 public title `null`, `candidate_ledger_status=promotion_blocked`, `scope_kind=context_only`, `publish_allowed=false`로 safe loss를 재발시켰다.
+- run07->run08 convergence는 actionable queue `1 -> 2`, safe_resolved `1 -> 0`, safe loss `11660237`로 `NO-GO`다.
+- `src/llm_batch/experts/verifier.py`는 direct title surface 확인을 추가하고, 원문 제목 표면과 공식 상세/정확 제목 검색 수렴이 있는 `exact_title` 또는 `thematic_overlap_only` hold 변형을 `exact_title / allow`로 정규화한다.
+- search-only hold와 직접 제목 표면이 없는 후보는 계속 차단한다.
+- run09 `20260702_020419_735405`은 completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`다.
+- run09 final은 `official_title=테라포밍`, URL `https://novelpia.com/novel/61947`, `candidate_ledger_status=safe_resolved`, `scope_kind=current_work`, `publish_allowed=true`다.
+- run08->run09 convergence는 actionable queue `2 -> 1`, safe_resolved `0 -> 1`, safe gain `11660237`로 targeted local `GO`다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_245_REPORT_20260702.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop245_11660237_same_packet_goal_convergence.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop245_11660237_relation_hold_patch_goal_convergence.md`
+- Gate는 focused targeted `GO_11660237_RESOLVED`지만 parent replay `NOT_RUN`, full375 collateral previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 - Loop244 narrows 11660237 publish/block variance to final scope decision
 
 - 동일 38-row parent packet은 재실행하지 않고 `11660237` run01~run07 기존 결과를 evidence review로 비교했다.

@@ -1,5 +1,46 @@
 # Development Checklist
 
+## 2026-07-02 Loop245 11660237 relation-hold patch and convergence 체크
+
+- [x] 동일 38-row parent packet을 재실행하지 않았다.
+- [x] run08 current-code representative 결과가 safe loss를 재발시켰는지 확인했다: public title `null`, `promotion_blocked`, `scope_kind=context_only`, `publish_allowed=false`.
+- [x] run07->run08 same-packet convergence를 실행했다.
+  - gate `NO-GO`
+  - queue `1 -> 2`
+  - safe_resolved `1 -> 0`
+  - safe loss `11660237`
+- [x] Verifier relation hold 정규화 계약을 보강했다.
+  - direct title surface가 후보 제목과 맞아야 한다.
+  - official exact-title/detail convergence가 있어야 한다.
+  - `exact_title` 또는 `thematic_overlap_only` hold 변형은 조건 충족 시 `allow`로 정규화한다.
+  - search-only hold는 계속 차단한다.
+- [x] run09 focused runtime을 실행했다.
+  - run id `20260702_020419_735405`
+  - completed/flushed/pending/failed `1/1/0/0`
+  - VLM/OCR `READY`
+  - final `official_title=테라포밍`
+  - URL `https://novelpia.com/novel/61947`
+  - `candidate_ledger_status=safe_resolved`, `scope_kind=current_work`, `publish_allowed=true`
+- [x] run08->run09 same-packet convergence를 실행했다.
+  - targeted local gate `GO`
+  - queue `2 -> 1`
+  - safe_resolved `0 -> 1`
+  - safe gain `11660237`
+- [x] 단일 술어 계약을 재확인했다.
+  - `_has_verified_contextual_alias_work_bridge(...)`는 `_post_discusses_work_as_work(..., source="verified_contextual_alias_work_bridge")`를 경유한다.
+- [x] full375 collateral diff always-on gate는 유지된다. 이번 회차에서는 재실행하지 않아 previous `NO-GO`가 유지된다.
+- [x] Focused tests를 확인했다.
+  - touched/context tools `py_compile`: PASS.
+  - convergence/safe-loss/full375 gate tests: PASS, 17 tests.
+  - relation/contextual alias focused 7 tests: PASS.
+  - publish contract trace convergence 2 tests: PASS.
+  - title-led 주변 5 tests: PASS.
+  - Arbiter abbreviation 2 tests: PASS.
+- [x] 한국어 loop report를 남겼다.
+  - `docs/devs/loop_reports/LOOP_245_REPORT_20260702.md`
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- [ ] 다음 approval 갱신 전 same parent/representative packet 또는 full375 collateral gate를 다시 통과한다.
+
 ## 2026-07-02 Loop244 11660237 publish/block trace-scope review 체크
 
 - [x] 동일 38-row parent packet을 재실행하지 않았다.

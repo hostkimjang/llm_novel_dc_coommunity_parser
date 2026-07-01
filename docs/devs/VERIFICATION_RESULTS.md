@@ -1,5 +1,43 @@
 # Verification Results
 
+## 2026-07-02 Loop245 11660237 relation-hold patch verification
+
+- Scope: 동일 38-row parent packet을 재실행하지 않고, `11660237` run08 safe loss 재발과 run09 patch 후 회복을 같은 packet convergence로 평가한다.
+- Code:
+  - `src\llm_batch\experts\verifier.py`: direct title surface 확인을 추가하고, 공식 상세/정확 제목 검색 수렴이 있는 `exact_title` 또는 `thematic_overlap_only` hold 변형을 `exact_title / allow`로 정규화한다.
+  - `tests\test_title_lead_search_inferred_guard.py`: `thematic_overlap_only + hold` 변형이 직접 제목 표면과 공식 상세 수렴을 가진 경우 title을 보존하는 테스트를 추가했다.
+- Runtime:
+  - run08 result: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop245_11660237_current_code_representative_run08_result.json`
+  - run09 result: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop245_11660237_relation_hold_patch_run09_result.json`
+  - run09 manifest: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop245_11660237_relation_hold_patch_run09_result_manifest.json`
+  - run09 log: `logs\expert_run_20260702_020419_735405.log`
+- Outcome:
+  - run08: public title `null`, `promotion_blocked`, `scope_kind=context_only`, `publish_allowed=false`.
+  - run09: `official_title=테라포밍`, URL `https://novelpia.com/novel/61947`, `safe_resolved`, `scope_kind=current_work`, `publish_allowed=true`.
+  - run09 direct bridge sources: `title_led_consumption_bridge`, `alias_surface`, `title_abbrev_mentioned`, `official_detail_url`.
+  - run09 runtime: completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`, MCP health ok/failure `1/0`.
+- Convergence:
+  - run07->run08: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop245_11660237_same_packet_goal_convergence.md/json`, gate `NO-GO`, queue `1 -> 2`, safe_resolved `1 -> 0`, safe loss `11660237`.
+  - run08->run09: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop245_11660237_relation_hold_patch_goal_convergence.md/json`, targeted local gate `GO`, queue `2 -> 1`, safe_resolved `0 -> 1`, safe gain `11660237`.
+- Commands:
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\experts\verifier.py src\llm_batch\agentic_pipeline.py expert_main.py tools\evaluate_goal_convergence.py tools\safe_loss_flip_rate_probe.py tools\evaluate_always_on_regression_gates.py tests\test_title_lead_search_inferred_guard.py tests\test_goal_convergence.py tests\test_safe_loss_flip_rate_probe.py tests\test_always_on_regression_gates.py tests\test_expert_main_comment_metadata.py` -> PASS.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_goal_convergence tests.test_safe_loss_flip_rate_probe tests.test_always_on_regression_gates -v` -> PASS, 17 tests.
+  - relation/contextual alias focused 7 tests -> PASS.
+  - publish contract trace convergence focused 2 tests -> PASS.
+  - title-led 주변 5 tests -> PASS.
+  - Arbiter abbreviation focused 2 tests -> PASS.
+- Artifacts:
+  - `docs\devs\loop_reports\LOOP_245_REPORT_20260702.md`
+- Gate:
+  - run_integrity: `GO_FOCUSED_RUNTIME_1_1`
+  - targeted_canary: `GO_11660237_RESOLVED`
+  - convergence_run08_to_run09: targeted local `GO`
+  - parent replay: `NOT_RUN`
+  - full-panel collateral approval: previous full375 `NO-GO` remains
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+
 ## 2026-07-02 Loop244 11660237 publish/block trace-scope review verification
 
 - Scope: 동일 38-row parent packet을 재실행하지 않고, `11660237` run01~run07 기존 결과를 `publish_contract_trace`, `publish_ledger`, scope, reason code 기준으로 비교한다.

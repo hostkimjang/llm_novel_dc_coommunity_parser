@@ -1,5 +1,27 @@
 # Improvement Register
 
+## IMP-20260702-445 - Loop245 closes 11660237 relation-hold regression locally
+
+- 상태: focused runtime GO / targeted local convergence GO / parent replay NOT_RUN / full375 previous NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / goal NOT_COMPLETE
+- 문제:
+  - current-code run08에서 `11660237`이 다시 `promotion_blocked`로 떨어졌다.
+  - run08은 같은 packet 기준 safe_resolved `1 -> 0`을 만들었고 actionable queue도 `1 -> 2`로 늘어 `NO-GO`다.
+- 조치:
+  - Verifier relation hold 정규화에 direct title surface 확인을 추가했다.
+  - 원문 제목 표면과 공식 상세/정확 제목 검색 수렴이 함께 있으면 `exact_title` 또는 `thematic_overlap_only` hold 변형을 `exact_title / allow`로 정규화한다.
+  - search-only hold와 직접 제목 표면이 없는 후보는 계속 차단한다.
+- 검증:
+  - run09 `20260702_020419_735405`: completed/flushed/pending/failed `1/1/0/0`, VLM/OCR READY.
+  - run09 final: `official_title=테라포밍`, URL `https://novelpia.com/novel/61947`, `candidate_ledger_status=safe_resolved`, `scope_kind=current_work`, `publish_allowed=true`.
+  - run08->run09 convergence: queue `2 -> 1`, safe_resolved `0 -> 1`, safe gain `11660237`, targeted local gate `GO`.
+  - `py_compile`, architecture gate tests 17개, relation/contextual alias focused 7개, publish contract convergence 2개, title-led 5개, Arbiter abbreviation 2개 PASS.
+- 결정:
+  - Loop245는 `11660237` relation-hold regression action을 국소적으로 닫았다.
+  - parent replay와 full375 collateral은 재실행하지 않았으므로 full goal approval은 아니다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+- 다음 조치:
+  - 다음 approval 갱신 전 same parent/representative packet 또는 full375 collateral gate를 통과해야 한다.
+
 ## IMP-20260702-444 - Loop244 narrows 11660237 variance to final publish scope
 
 - 상태: evidence review only / runtime rerun NOT_RUN / convergence same-packet NOT_EVALUATED / full375 previous NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / goal NOT_COMPLETE

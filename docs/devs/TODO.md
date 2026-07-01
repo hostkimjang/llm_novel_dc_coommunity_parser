@@ -2,6 +2,45 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop245 11660237 relation-hold patch and convergence review
+
+- 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. Loop245는 current-code run08에서 재발한 `11660237` safe loss를 Verifier relation-hold 변형으로 좁히고, patch 후 run09 같은 입력에서 `safe_resolved` 회복을 확인했다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.
+- Loop245 TODO:
+  - [x] run08 regression을 확인했다.
+    - public `official_title=null`
+    - `candidate_ledger_status=promotion_blocked`
+    - `scope_kind=context_only`
+    - `publish_allowed=false`
+  - [x] run07->run08 same-packet convergence를 실행했다.
+    - output: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop245_11660237_same_packet_goal_convergence.md/json`
+    - gate `NO-GO`
+    - actionable queue `1 -> 2`
+    - safe_resolved `1 -> 0`
+    - safe loss `11660237`
+  - [x] Verifier relation hold 정규화 계약을 보강했다.
+    - 원문 제목 표면이 후보 제목과 직접 맞아야 한다.
+    - 공식 상세/정확 제목 검색 수렴이 있어야 한다.
+    - `exact_title` 또는 `thematic_overlap_only` hold 변형을 `exact_title / allow`로 정규화한다.
+    - search-only hold와 직접 제목 표면이 없는 후보는 계속 차단한다.
+  - [x] run09를 실행했다.
+    - run id `20260702_020419_735405`
+    - completed/flushed/pending/failed `1/1/0/0`
+    - VLM/OCR `READY`
+    - final `official_title=테라포밍`, URL `https://novelpia.com/novel/61947`
+    - `candidate_ledger_status=safe_resolved`, `scope_kind=current_work`, `publish_allowed=true`
+  - [x] run08->run09 same-packet convergence를 실행했다.
+    - output: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop245_11660237_relation_hold_patch_goal_convergence.md/json`
+    - targeted local gate `GO`
+    - actionable queue `2 -> 1`
+    - safe_resolved `0 -> 1`
+    - safe gain `11660237`
+  - [x] 단일 술어 계약을 재확인했다: `_has_verified_contextual_alias_work_bridge(...)`는 `_post_discusses_work_as_work(..., source="verified_contextual_alias_work_bridge")`를 경유한다.
+  - [x] full375 collateral diff는 always-on gate로 유지된다. 이번 회차에서는 재실행하지 않아 previous `NO-GO`가 유지된다.
+  - [x] 한국어 report를 남겼다.
+    - `docs/devs/loop_reports/LOOP_245_REPORT_20260702.md`
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+  - [ ] 다음 approval 갱신 전 same parent/representative packet 또는 full375 collateral gate를 다시 통과한다.
+
 ## 2026-07-02 regression-safe grounding Loop244 11660237 publish/block trace-scope review
 
 - 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. Loop244는 `11660237` run01~run07의 기존 산출물을 `publish_contract_trace`, `publish_ledger`, scope, reason code 기준으로 비교한 evidence review다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.
