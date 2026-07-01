@@ -1,5 +1,35 @@
 # Development Checklist
 
+## 2026-07-02 Loop240 11660237 platform probe cap normalization 체크
+
+- [x] 동일 38-row parent packet을 재실행하지 않았다.
+- [x] 실행 직전 purpose 정규화 계약을 추가했다.
+  - `site:novelpia.com/novel "테라포밍"`: `title_anchor_official_probe` 유지.
+  - `테라포밍 노벨피아`: `platform_title_search`로 정규화.
+- [x] focused tests를 확인했다.
+  - touched-file `py_compile`: PASS.
+  - title-led normalizer/search preservation 2 tests: PASS.
+  - 주변 title-led 5 tests: PASS.
+- [x] `11660237` run06을 실행했다.
+  - run id `20260702_005502_923302`
+  - completed/flushed/pending/failed `1/1/0/0`
+  - VLM/OCR `READY`
+  - final `official_title=테라포밍`
+  - URL `https://novelpia.com/novel/61947`
+  - `title_resolution_state=resolved`, `title_resolution_allowed=true`
+- [x] 실제 로그에서 cap 스킵 해소를 확인했다.
+  - line 305: purpose 정규화 `normalized=1`
+  - line 347: `테라포밍 노벨피아`가 `platform_title_search`로 실행
+  - line 395: R01 `from_query: 테라포밍 노벨피아`
+  - line 2484: `Identified (with title): 1`
+- [x] 한국어 loop report/review artifacts를 남겼다.
+  - `docs/devs/loop_reports/LOOP_240_REPORT_20260702.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop240_11660237_title_led_platform_probe_cap_review.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop240_11660237_title_led_platform_probe_cap_review.json`
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- [ ] `relation_judge exact_title + promotion_decision=hold` 참고 신호를 promotion gate 계약으로 정리한다.
+- [ ] `테라포밍 표지` fanart 후보와 포함어 URL alive-check 비용을 후속 작업으로 분리한다.
+
 ## 2026-07-02 Loop239 11660237 title-led probe 체크
 
 - [x] 동일 38-row parent packet을 재실행하지 않았다.
@@ -28,7 +58,7 @@
   - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop239_11660237_title_led_probe_data_analytics_artifact.json`
 - [x] Data Analytics artifact validate/render PASS.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
-- [ ] 다음 replay 전에 `11660237`의 정답 상세 `61947` 미회수 원인을 search provider 결과, 목적별 cap, exact-title detail fetch 순서로 분리한다.
+- [x] 다음 replay 전에 `11660237`의 정답 상세 `61947` 미회수 원인을 search provider 결과, 목적별 cap, exact-title detail fetch 순서로 분리했다. Loop240에서 non-site platform query 정규화 후 `61947` 회수와 targeted title publish를 확인했다.
 
 ## 2026-07-01 Loop238 architecture convergence / safe-loss flip probe 체크
 

@@ -1,5 +1,20 @@
 # Development History
 
+## 2026-07-02 - Loop240 normalizes title-led platform probe cap path
+
+- 동일 38-row parent packet은 재실행하지 않고 `11660237` 단건 title-led platform probe cap 문제만 재검증했다.
+- `src/llm_batch/experts/orchestrator.py`는 동일 query 중복 보정에서 첫 항목만 수정하던 `break`를 제거하고, 실행 직전 `_normalize_title_led_platform_probe_purposes(...)`를 추가했다.
+- 새 계약은 `site:novelpia.com/novel "테라포밍"`을 `title_anchor_official_probe`로 보존하면서 `테라포밍 노벨피아` 같은 non-site Novelpia query만 `platform_title_search`로 정규화한다.
+- run06 `20260702_005502_923302`은 completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`다.
+- run06 로그는 purpose 정규화 `normalized=1`, `테라포밍 노벨피아` platform 실행, R01 `https://novelpia.com/novel/61947`, 최종 `Identified (with title): 1`을 확인했다.
+- 최종 결과는 `official_title=테라포밍`, URL `https://novelpia.com/novel/61947`, confidence `High`, `title_resolution_state=resolved`, `title_resolution_allowed=true`다.
+- 검증은 touched-file `py_compile`, title-led focused 2 tests, 주변 title-led 5 tests를 PASS했다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_240_REPORT_20260702.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop240_11660237_title_led_platform_probe_cap_review.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop240_11660237_title_led_platform_probe_cap_review.json`
+- Gate는 focused targeted `GO_11660237_RESOLVED`지만 parent replay `NOT_RUN`, full375 collateral previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 - Loop239 11660237 title-led probe remains hard-held
 
 - 동일 38-row parent packet은 재실행하지 않고 `11660237` 단건 title-led path만 재검증했다.

@@ -5923,6 +5923,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         )
         requests = [
             {"purpose": "official_title_verify", "priority": 0, "query": "테라포밍 웹소설"},
+            {"purpose": "title_anchor_official_probe", "priority": 0, "query": "테라포밍 노벨피아"},
             {"purpose": "title_search_community", "priority": 0, "query": "테라포밍 디시"},
             {"purpose": "platform_title_search", "priority": 1, "query": "테라포밍 노벨피아"},
         ]
@@ -5940,6 +5941,59 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             ('site:novelpia.com/novel "테라포밍"', "title_anchor_official_probe"),
         )
         self.assertEqual(calls[1], ("테라포밍 노벨피아", "platform_title_search"))
+        self.assertEqual(
+            [call for call in calls if call[0] == "테라포밍 노벨피아"],
+            [("테라포밍 노벨피아", "platform_title_search")],
+        )
+
+    def test_title_led_platform_probe_normalizer_routes_unscoped_novelpia_query_away_from_official_cap(self):
+        orchestrator = Orchestrator(experts={}, search_fn=lambda *_args, **_kwargs: [])
+        ctx = ConversationContext(
+            post_id=11660237,
+            post_data={
+                "title": "테라포밍 볼만함?",
+                "content_blocks": [{"type": "text", "text": "주인공 멍창하다는 말 많던데"}],
+            },
+            comments=["ㅇㅇ 야스 개꼴림 쥬지터짐"],
+        )
+        gatekeeper = {
+            "post_type": "recommendation",
+            "context_clues": {"is_asking_recommendation": True},
+            "detected_entities": {"possible_titles": ["테라포밍"]},
+        }
+        ctx.set_expert_output(ExpertType.GATEKEEPER, gatekeeper)
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "request_recommendation",
+                    "target_kind": "work",
+                    "primary_domain": "novel_literature",
+                    "title_novel_terms": ["테라포밍"],
+                }
+            },
+        )
+        requests = [
+            {
+                "purpose": "title_anchor_official_probe",
+                "priority": 0,
+                "query": 'site:novelpia.com/novel "테라포밍"',
+            },
+            {"purpose": "title_anchor_official_probe", "priority": 3, "query": "테라포밍 노벨피아"},
+        ]
+
+        normalized = orchestrator._normalize_title_led_platform_probe_purposes(
+            ctx,
+            requests,
+            gatekeeper_result=gatekeeper,
+            phase="test",
+        )
+
+        self.assertEqual(normalized[0]["purpose"], "title_anchor_official_probe")
+        self.assertEqual(normalized[0]["priority"], 0)
+        self.assertEqual(normalized[1]["purpose"], "platform_title_search")
+        self.assertEqual(normalized[1]["priority"], -1)
+        self.assertTrue(normalized[1]["_title_led_official_detail_probe"])
 
     def test_title_led_current_work_gate_exempts_generic_genre_bridge_guard(self):
         title = "테라포밍"

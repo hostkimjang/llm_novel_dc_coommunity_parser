@@ -1,5 +1,38 @@
 # Verification Results
 
+## 2026-07-02 Loop240 11660237 title-led platform probe cap verification
+
+- Scope: 동일 38-row parent packet을 재실행하지 않고, `11660237` 단건에서 `테라포밍 노벨피아` platform query가 목적별 cap에 막히지 않는지 검증한다.
+- Code:
+  - `src/llm_batch/experts/orchestrator.py`: title-led duplicate query 보정에서 첫 match 뒤 중단하지 않게 하고, `_normalize_title_led_platform_probe_purposes(...)`로 non-site Novelpia platform query를 `platform_title_search`로 정규화한다.
+  - `tests/test_title_lead_search_inferred_guard.py`: site-scoped official probe와 unscoped platform probe를 분리하는 계약 테스트를 추가했다.
+- Runtime:
+  - run06 `20260702_005502_923302`: completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`.
+  - Result: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop240_11660237_title_led_probe_run06_result.json`
+  - Log: `logs\expert_run_20260702_005502_923302.log`
+- Outcome:
+  - run06 final: `is_relevant=true`, `is_resolved_work_discussion=true`, `official_title=테라포밍`, URL `https://novelpia.com/novel/61947`, confidence `High`.
+  - `title_resolution_state=resolved`, `title_resolution_allowed=true`, `discussion_type=character_talk`.
+  - log line 305: purpose 정규화 `normalized=1`.
+  - log line 347: `테라포밍 노벨피아`가 `platform_title_search`로 실행.
+  - log line 2484: `Identified (with title): 1`.
+- Commands:
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\experts\orchestrator.py tests\test_title_lead_search_inferred_guard.py` -> PASS.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_platform_probe_normalizer_routes_unscoped_novelpia_query_away_from_official_cap tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_evaluation_preserves_site_scoped_official_probe_under_recommendation_budget` -> PASS, 2 tests.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_gate_can_replace_prior_context_only_decision tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_current_work_gate_exempts_generic_genre_bridge_guard tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_generic_genre_bridge_requires_official_detail tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_platform_probe_normalizer_routes_unscoped_novelpia_query_away_from_official_cap tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_evaluation_preserves_site_scoped_official_probe_under_recommendation_budget` -> PASS, 5 tests.
+- Artifacts:
+  - `docs\devs\loop_reports\LOOP_240_REPORT_20260702.md`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop240_11660237_title_led_platform_probe_cap_review.md`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop240_11660237_title_led_platform_probe_cap_review.json`
+- Gate:
+  - run_integrity: `GO_FOCUSED_RUNTIME_1_1`
+  - targeted_canary: `GO_11660237_RESOLVED`
+  - parent replay: `NOT_RUN`
+  - full-panel collateral approval: previous full375 `NO-GO` remains
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+
 ## 2026-07-02 Loop239 11660237 title-led probe verification
 
 - Scope: 동일 38-row parent packet을 재실행하지 않고, `11660237` 단건 title-led search/gate path만 검증한다.

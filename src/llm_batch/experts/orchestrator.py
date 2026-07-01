@@ -3268,7 +3268,6 @@ class Orchestrator:
                         req["priority"] = -1
                     req["_title_led_official_detail_probe"] = True
                     promoted_existing = True
-                    break
                 if promoted_existing or q_key in existing_queries:
                     existing_queries.add(q_key)
                     continue
@@ -3286,6 +3285,70 @@ class Orchestrator:
                 file=sys.stderr,
             )
             return injected + list(search_requests or [])
+        return search_requests
+
+    def _normalize_title_led_platform_probe_purposes(
+        self,
+        ctx: ConversationContext,
+        search_requests: List[Dict[str, Any]],
+        *,
+        gatekeeper_result: Optional[Dict[str, Any]] = None,
+        phase: str = "",
+    ) -> List[Dict[str, Any]]:
+        discourse_out = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
+        discourse = (discourse_out.get("discourse_analysis") or {}) if isinstance(discourse_out, dict) else {}
+        if not self._has_title_led_work_consumption_search_signal(
+            ctx,
+            gatekeeper_result=gatekeeper_result,
+            discourse_analysis=discourse if isinstance(discourse, dict) else None,
+        ):
+            return search_requests
+
+        title_norms = {
+            self._normalize_kor_token(term)
+            for term in self._collect_title_led_work_consumption_probe_terms(
+                ctx,
+                gatekeeper_result=gatekeeper_result,
+                discourse_analysis=discourse if isinstance(discourse, dict) else None,
+                limit=3,
+            )
+            if self._normalize_kor_token(term)
+        }
+        if not title_norms:
+            return search_requests
+
+        normalized_count = 0
+        for req in search_requests or []:
+            if not isinstance(req, dict):
+                continue
+            purpose_raw = str(req.get("purpose") or "").strip()
+            purpose_key = purpose_raw.lower().split(":", 1)[0].strip()
+            if purpose_key != "title_anchor_official_probe":
+                continue
+            query = str(req.get("query") or "").strip()
+            if not query:
+                continue
+            query_lc = query.lower()
+            if "site:" in query_lc:
+                continue
+            if not ("노벨피아" in query or "novelpia" in query_lc):
+                continue
+            query_norm = self._normalize_kor_token(query)
+            if not any(title_norm and title_norm in query_norm for title_norm in title_norms):
+                continue
+            req["purpose"] = "platform_title_search"
+            try:
+                req["priority"] = min(int(req.get("priority", 999)), -1)
+            except Exception:
+                req["priority"] = -1
+            req["_title_led_official_detail_probe"] = True
+            normalized_count += 1
+        if normalized_count:
+            print(
+                f"[{_ts()}] {self.emoji} 🔎 제목선두 평가 platform probe purpose 정규화"
+                f"({phase or 'search'}): normalized={normalized_count}",
+                file=sys.stderr,
+            )
         return search_requests
 
     def _has_title_lead_alias_discourse_preservation_signal(
@@ -22655,6 +22718,12 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     if ctx_ref
                     else None
                 ),
+                phase="execute_searches",
+            )
+            requests = self._normalize_title_led_platform_probe_purposes(
+                ctx_ref,
+                requests,
+                gatekeeper_result=_gatekeeper_for_execute,
                 phase="execute_searches",
             )
         if not requests:

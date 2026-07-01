@@ -1,5 +1,30 @@
 # Improvement Register
 
+## IMP-20260702-440 - Loop240 normalizes 11660237 title-led platform probe purpose cap
+
+- 상태: focused runtime GO / code-test gate GO / targeted canary GO / parent replay NOT_RUN / full375 previous NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / goal NOT_COMPLETE
+- 문제:
+  - Loop239는 `site:novelpia.com/novel "테라포밍"` 보존을 추가했지만, 실제 runtime에서 `테라포밍 노벨피아`가 `title_anchor_official_probe`로 남아 `cap=1`에 걸릴 수 있었다.
+  - 이 경우 정답 상세 `https://novelpia.com/novel/61947`을 provider variance에 기대게 되어 search recall과 promotion gate 판단이 분리되지 않았다.
+- 조치:
+  - `_inject_title_led_official_detail_search_requests(...)`가 동일 query 중복을 모두 보정하게 했다.
+  - `_normalize_title_led_platform_probe_purposes(...)`를 추가해 실행 직전 non-site Novelpia platform query를 `platform_title_search`로 정규화했다.
+  - site-scoped official detail query는 `title_anchor_official_probe`로 유지했다.
+- 검증:
+  - run06 `20260702_005502_923302`: completed/flushed/pending/failed `1/1/0/0`, VLM/OCR READY.
+  - run06 final: `official_title=테라포밍`, URL `https://novelpia.com/novel/61947`, confidence `High`, `title_resolution_state=resolved`.
+  - 로그 line 305/347/395/2484에서 purpose 정규화, platform query 실행, R01 `61947`, identified `1`을 확인했다.
+  - `py_compile`: PASS.
+  - title-led focused 2 tests: PASS.
+  - 주변 title-led 5 tests: PASS.
+- 결정:
+  - Loop239의 cap 스킵/정답 상세 미회수 targeted 원인은 해소했다.
+  - 이 결과는 단건 targeted 회복이며 full-panel approval이 아니다.
+  - full375 collateral previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+- 다음 조치:
+  - `relation_judge`가 `exact_title`을 보면서도 `promotion_decision=hold`를 낸 hard-hold 참고 신호를 별도 계약으로 정리한다.
+  - `테라포밍 표지` fanart 후보와 다수 포함어 URL alive-check 비용을 후보 필터/후처리 비용 문제로 분리한다.
+
 ## IMP-20260702-439 - Loop239 keeps 11660237 hard-held after title-led search preservation
 
 - 상태: focused runtime GO / code-test gate GO / targeted semantic NO-GO / hard-hold relaxation false / semantic quality REVIEW-LOCKED / full scan approval false / goal NOT_COMPLETE

@@ -2,6 +2,26 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop240 11660237 platform probe cap normalization
+
+- 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. `11660237` 단건 run06은 runtime `GO`, targeted canary `GO_11660237_RESOLVED`다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.
+- Loop240 TODO:
+  - [x] `테라포밍 노벨피아`가 `title_anchor_official_probe cap=1`에 막히던 경로를 실행 직전 purpose 정규화로 닫았다.
+  - [x] `site:novelpia.com/novel "테라포밍"`은 `title_anchor_official_probe`로 유지하고, non-site Novelpia platform query만 `platform_title_search`로 보냈다.
+  - [x] `11660237` run06을 실행했다.
+    - run id `20260702_005502_923302`
+    - completed/flushed/pending/failed `1/1/0/0`
+    - VLM/OCR `READY`
+    - final `official_title=테라포밍`, URL `https://novelpia.com/novel/61947`, confidence `High`
+  - [x] 한국어 report/review artifacts를 남겼다.
+    - `docs/devs/loop_reports/LOOP_240_REPORT_20260702.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop240_11660237_title_led_platform_probe_cap_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop240_11660237_title_led_platform_probe_cap_review.json`
+  - [x] Loop239의 `61947` 직접 미회수/cap 스킵 원인은 targeted scope에서 해소했다.
+  - [ ] `relation_judge`가 `exact_title`을 보면서도 `promotion_decision=hold`를 낸 hard-hold 참고 신호를 별도 계약으로 정리한다.
+  - [ ] `테라포밍 표지` fanart 후보와 포함어 URL alive-check 비용을 후보 필터/후처리 비용 문제로 분리한다.
+  - [ ] 다음 parent/representative replay 전에 `tools/evaluate_goal_convergence.py`로 actionable queue 감소와 same-packet safe_resolved 단조 비감소를 먼저 확인한다.
+
 ## 2026-07-02 regression-safe grounding Loop239 11660237 title-led probe
 
 - 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. `11660237` 단건 run04는 runtime `GO`지만 semantic `NO-GO`, residual accounting `NO_DELTA_TARGETED_CANARY_NO_GO`다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.
@@ -19,9 +39,9 @@
     - `docs/devs/loop_reports/LOOP_239_REPORT_20260702.md`
     - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop239_11660237_title_led_probe_review.md`
     - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop239_11660237_title_led_probe_data_analytics_artifact.json`
-  - [ ] `site:novelpia.com/novel "테라포밍"`이 `61947` 대신 포함어 후보를 반환하는 원인을 provider/cap/fetch 순서로 분리한다.
-  - [ ] 목적별 cap이 `테라포밍 노벨피아` platform probe를 너무 일찍 스킵하는지 negative/positive tests로 확인한다.
-  - [ ] 정답 상세 `61947`을 직접 발견하지 못하면 hard-hold relaxation을 계속 금지한다.
+  - [x] `site:novelpia.com/novel "테라포밍"`이 `61947` 대신 포함어 후보를 반환하는 원인을 provider/cap/fetch 순서로 분리했다. Loop240에서 non-site platform query가 `61947`을 R01로 회수했다.
+  - [x] 목적별 cap이 `테라포밍 노벨피아` platform probe를 너무 일찍 스킵하는지 negative/positive tests로 확인했다. Loop240에서 `platform_title_search` 정규화 계약을 추가했다.
+  - [x] 정답 상세 `61947`을 직접 발견한 뒤 targeted scope에서 title publish를 확인했다. 단, full375 collateral 미재실행 때문에 overall approval은 금지한다.
 
 ## 2026-07-01 regression-safe grounding Loop237 parent replay after Loop236 URL-title guard
 
