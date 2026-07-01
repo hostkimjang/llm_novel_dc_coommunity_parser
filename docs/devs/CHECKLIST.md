@@ -1,5 +1,39 @@
 # Development Checklist
 
+## 2026-07-02 Loop264 completed source runtime preflight / launch 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] full input runtime preflight를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop264_large_rerun_runtime_preflight.md`
+  - input `tests\inputs\test01.jsonl`
+  - input_count `104502`, raw rows `472851`, unique_post_count `104594`
+  - LLM model `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4`, readiness `GO`
+  - MCP TCP shard `36/36`, readiness `GO`
+  - rerun_execution `GO`
+- [x] completed-source attempt를 시작했다.
+  - PID `49924`
+  - output `out\expert_result_20260702_065632_479765.json`
+  - manifest `out\expert_result_20260702_065632_479765_manifest.json`
+  - expert log `logs\expert_run_20260702_065642_030743.log`
+  - launcher stderr `logs\expert_run_20260702_065632_479765_launcher.stderr.log`
+- [x] launch 옵션을 보존했다.
+  - `--parallel 36 --reuse-shards-only --no-dashboard --slang-db off --vlm on --ocr on --require-vlm-ocr-for-images`
+- [x] 초기 manifest를 확인했다.
+  - VLM/OCR ready `true`, image_post_count `55259`
+  - completed/flushed/pending/failed `0/0/0/0`
+  - health `36/36`
+  - caveat: `mcp_health_include_search=false`, `mcp_health_light_mode=true`
+- [x] 짧은 poll에서 실제 처리 시작을 확인했다.
+  - completed/flushed/pending/failed `6/0/6/0`
+  - `partial_flush_gap=true`, `large_run_complete=false`
+- [x] 문서 커밋 전 최신 poll을 확인했다.
+  - completed/flushed/pending/failed `19/0/19/0`
+  - `partial_flush_gap=true`, `ordered_flush_blocked=true`, `large_run_complete=false`
+- [ ] run 완료 후 manifest clean completion과 ordered flush gap을 확인한다.
+- [ ] run 완료 후 `preflight_qualitative_large_scale_review.py --fail-on-locked`를 실행한다.
+- [ ] run 완료 후 random baseline 1000+와 P0/P1 high-risk expansion을 build한다.
+- Gate: runtime preflight `GO`, launch `GO_STARTED`, completed source `PENDING`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop263 architecture contract tracking 감사 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

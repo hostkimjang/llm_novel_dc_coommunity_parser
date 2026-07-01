@@ -1,5 +1,50 @@
 # Verification Results
 
+## 2026-07-02 Loop264 completed source runtime preflight / launch
+
+- Scope: completed VLM/OCR-on source 확보를 위해 full input runtime preflight를 수행하고 대형 run을 시작한다.
+- Preflight:
+  - command: `.\.venv312\Scripts\python.exe tools\preflight_expert_rerun_runtime.py --input tests\inputs\test01.jsonl --manifest out\expert_result_20260612_174715_296791_manifest.json --expected-shards 36 --llm-endpoint http://10.20.0.101:8000/ --llm-model bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4 --output-json out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop264_large_rerun_runtime_preflight.json --output-md out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop264_large_rerun_runtime_preflight.md`
+  - result: `rerun_execution=GO`, LLM `GO`, MCP TCP `GO`, full shard `36/36`
+  - input_count `104502`, raw_input_row_count `472851`, unique_post_count `104594`
+- Launch:
+  - PID `49924`
+  - output `out\expert_result_20260702_065632_479765.json`
+  - manifest `out\expert_result_20260702_065632_479765_manifest.json`
+  - checkpoint `out\expert_result_20260702_065632_479765_checkpoint.jsonl`
+  - expert log `logs\expert_run_20260702_065642_030743.log`
+  - launcher stderr `logs\expert_run_20260702_065632_479765_launcher.stderr.log`
+- Initial manifest:
+  - requested/effective parallel `36/36`
+  - model `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4`
+  - VLM/OCR `true/true`
+  - `vlm_ocr_semantic_review_required_for_images=true`
+  - image_post_count `55259`
+  - `slang_db=off`
+  - MCP health `36/36`
+  - `mcp_auto_up_shards=false`, `mcp_auto_recreate_shards=false`
+  - `mcp_health_include_search=false`, `mcp_health_light_mode=true`
+  - completed/flushed/pending/failed `0/0/0/0`
+- Short poll:
+  - completed/flushed/pending/failed `6/0/6/0`
+  - `partial_flush_gap=true`
+  - `large_run_complete=false`
+- Latest poll before doc commit:
+  - completed/flushed/pending/failed `19/0/19/0`
+  - `partial_flush_gap=true`
+  - `ordered_flush_blocked=true`
+  - `large_run_complete=false`
+- Gate:
+  - runtime preflight: `GO`
+  - launch: `GO_STARTED`
+  - completed source: `PENDING`
+  - run integrity: `IN_PROGRESS`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_264_REPORT_20260702.md`
+
 ## 2026-07-02 Loop263 architecture contract tracking audit
 
 - Scope: 다음 runtime replay 전 사용자가 지정한 5개 아키텍처 계약이 현재 HEAD에서 코드/테스트/문서로 추적되는지 감사한다.

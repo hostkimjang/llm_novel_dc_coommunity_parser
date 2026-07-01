@@ -1,5 +1,37 @@
 # Improvement Register
 
+## IMP-20260702-264 - completed source 대형 재런 시작
+
+- Status: In progress / approval blocked
+- Loop: 264
+- Problem:
+  - Loop262 기준 approval source candidate가 `0`개라 random baseline 1000/P0-P1 expansion을 시작할 completed VLM/OCR-on source가 없었다.
+  - completed source blocker를 줄이려면 full input, LLM model, shard readiness, VLM/OCR 옵션을 확인한 뒤 새 대형 run을 시작해야 한다.
+- Change:
+  - `tools/preflight_expert_rerun_runtime.py`로 full input readiness를 확인했다.
+  - completed-source attempt를 background PID `49924`로 시작했다.
+- Evidence:
+  - preflight `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop264_large_rerun_runtime_preflight.md`
+  - launch output `out/expert_result_20260702_065632_479765.json`
+  - manifest `out/expert_result_20260702_065632_479765_manifest.json`
+  - log `logs/expert_run_20260702_065642_030743.log`
+  - report `docs/devs/loop_reports/LOOP_264_REPORT_20260702.md`
+- Result:
+  - preflight `rerun_execution=GO`
+  - LLM model `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4`
+  - MCP TCP shard `36/36`
+  - launch options: `--slang-db off --vlm on --ocr on --require-vlm-ocr-for-images`
+  - initial manifest completed/flushed/pending/failed `0/0/0/0`
+- Caveat:
+  - in-run health는 `mcp_health_include_search=false`, `mcp_health_light_mode=true`라 완료 후 search-health 또는 실제 search error evidence를 별도 audit해야 한다.
+- Gate:
+  - launch `GO_STARTED`
+  - completed source `PENDING`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+- Next:
+  - run 완료 후 manifest clean completion, checkpoint/result row count, flush gap, `preflight_qualitative_large_scale_review.py --fail-on-locked`, runtime audit, random baseline 1000+, P0/P1 expansion 순서로 확인한다.
+
 ## IMP-20260702-263 - architecture contract test 추적성 감사
 
 - Status: Implemented / approval blocked

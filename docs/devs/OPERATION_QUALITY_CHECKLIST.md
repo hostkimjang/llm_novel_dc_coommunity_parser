@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop264 completed source launch quality gate
+
+- 근거:
+  - [x] full input `tests\inputs\test01.jsonl`을 runtime preflight했다.
+  - [x] LLM endpoint가 `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4`를 반환함을 확인했다.
+  - [x] MCP TCP shard `36/36` open을 확인했다.
+  - [x] completed-source attempt를 `--reuse-shards-only`, `--slang-db off`, `--vlm on`, `--ocr on`, `--require-vlm-ocr-for-images`로 시작했다.
+  - [x] 초기 manifest에서 VLM/OCR ready, image_post_count `55259`, health `36/36`을 확인했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_264_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] launch `GO_STARTED`는 completed source나 semantic approval이 아니다.
+  - [x] initial completed/flushed/pending/failed `0/0/0/0` 상태에서는 random baseline/P0-P1 expansion을 시작하지 않는다.
+  - [x] `mcp_health_include_search=false`, `mcp_health_light_mode=true` caveat를 완료 후 runtime audit에서 다시 확인한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop262 completed source candidate quality gate
 
 - 근거:

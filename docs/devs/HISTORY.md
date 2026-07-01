@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-02 - Loop264 starts completed-source large rerun after runtime preflight
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- `tools/preflight_expert_rerun_runtime.py`로 full input `tests/inputs/test01.jsonl`을 확인했다.
+- Preflight 결과는 input_count `104502`, raw rows `472851`, unique_post_count `104594`, LLM model `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4`, MCP TCP shard `36/36`, `rerun_execution=GO`다.
+- completed-source attempt를 background PID `49924`로 시작했다.
+- 실행 옵션은 `--parallel 36 --reuse-shards-only --no-dashboard --slang-db off --vlm on --ocr on --require-vlm-ocr-for-images`다.
+- 초기 manifest는 VLM/OCR ready `true`, image_post_count `55259`, health `36/36`, completed/flushed/pending/failed `0/0/0/0`이다.
+- Caveat: in-run health는 `mcp_health_include_search=false`, `mcp_health_light_mode=true`라 완료 후 search-health 증거를 별도 audit해야 한다.
+- Gate는 runtime preflight `GO`, launch `GO_STARTED`, completed source `PENDING`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop263 tracks architecture contract tests before next replay
 
 - 동일 38-row parent packet은 재실행하지 않았다.
