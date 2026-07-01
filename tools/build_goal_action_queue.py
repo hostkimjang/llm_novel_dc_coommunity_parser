@@ -275,7 +275,9 @@ def build_action_queue(
 
     items: list[dict[str, Any]] = []
     partial_signals = original.get("partial_signals") or []
-    if partial_signals:
+    source_policy_missing = source_policy.get("path_present") is False
+    source_blocked_by_missing_or_partial = bool(partial_signals) or source_policy_missing
+    if source_blocked_by_missing_or_partial:
         items.append(
             _item(
                 action_id="obtain_completed_vlm_ocr_source",
@@ -288,6 +290,7 @@ def build_action_queue(
                 approval_blocker=True,
                 related_gate="original_source_approval",
                 evidence={
+                    "source_review_policy_path_present": source_policy.get("path_present"),
                     "counts": {
                         "input_post_count": original.get("input_post_count"),
                         "completed_count": original.get("completed_count"),
@@ -297,15 +300,21 @@ def build_action_queue(
                         "result_rows": original.get("result_rows"),
                     },
                     "partial_signals": partial_signals,
+                    "missing_source_policy_blocks_approval": source_policy_missing,
                 },
                 next_step=(
-                    "현재 원본은 approval source가 아니므로 completed VLM/OCR-on result/manifest/checkpoint를 "
-                    "확보한 뒤 같은 preflight를 다시 실행한다."
+                    "현재 상태맵에 completed source preflight가 없거나 원본이 partial이므로 "
+                    "completed VLM/OCR-on result/manifest/checkpoint를 확보한 뒤 같은 preflight를 다시 실행한다."
                 ),
             )
         )
 
-    if random_baseline.get("feasible") is False:
+    random_baseline_missing_or_infeasible = source_policy_missing or random_baseline.get("feasible") is False
+    if random_baseline_missing_or_infeasible:
+        baseline_evidence = dict(random_baseline) if isinstance(random_baseline, dict) else {}
+        baseline_evidence.setdefault("requested_sample_size", 1000)
+        baseline_evidence["source_review_policy_path_present"] = source_policy.get("path_present")
+        baseline_evidence["missing_source_policy_blocks_approval"] = source_policy_missing
         items.append(
             _item(
                 action_id="rerun_large_scale_preflight_on_completed_source",
@@ -317,9 +326,9 @@ def build_action_queue(
                 requires_completed_source=True,
                 approval_blocker=True,
                 related_gate="semantic_approval",
-                evidence=random_baseline,
+                evidence=baseline_evidence,
                 next_step=(
-                    "available rows가 random baseline 목표보다 작으므로 completed source 확보 후 "
+                    "completed source preflight가 없거나 available rows가 random baseline 목표보다 작으므로 completed source 확보 후 "
                     "`preflight_qualitative_large_scale_review.py --fail-on-locked`를 다시 실행한다."
                 ),
             )
@@ -336,9 +345,11 @@ def build_action_queue(
                 approval_blocker=True,
                 related_gate="semantic_approval",
                 evidence={
-                    "requested_sample_size": random_baseline.get("requested_sample_size"),
-                    "available_rows": random_baseline.get("available_rows"),
-                    "shortfall": random_baseline.get("shortfall"),
+                    "requested_sample_size": baseline_evidence.get("requested_sample_size"),
+                    "available_rows": baseline_evidence.get("available_rows"),
+                    "shortfall": baseline_evidence.get("shortfall"),
+                    "source_review_policy_path_present": source_policy.get("path_present"),
+                    "missing_source_policy_blocks_approval": source_policy_missing,
                 },
                 next_step=(
                     "completed source에서 row index/time/window/state 층화 random control 1000건 이상을 만들고 "

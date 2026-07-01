@@ -1,5 +1,25 @@
 # Improvement Register
 
+## IMP-20260702-456 - completed source preflight blocker 복원
+
+- Status: Implemented / approval blocked
+- Loop: 261
+- Problem:
+  - Loop260 queue는 current-source audit를 `done`으로 잘 분리했지만, state map의 `source_review_policy.path_present=false`를 별도 approval blocker로 다시 세지 않았다.
+  - 그 결과 작은 canary가 clean이면 completed source 확보, completed-source preflight, random baseline 1000 blocker가 숨고 `p0_p1_high_risk_expansion` 1개만 남는 것처럼 보였다.
+- Change:
+  - `tools/build_goal_action_queue.py`가 source preflight artifact missing을 partial source와 같은 approval blocker로 취급한다.
+  - source preflight가 없으면 `obtain_completed_vlm_ocr_source`, `rerun_large_scale_preflight_on_completed_source`, `expanded_random_baseline_1000`, `p0_p1_high_risk_expansion`을 모두 open으로 둔다.
+- Evidence:
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop261_loop258_goal_action_queue_source_preflight_required.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop261_loop258_source_preflight_goal_convergence.md`
+  - `docs/devs/loop_reports/LOOP_261_REPORT_20260702.md`
+- Gate:
+  - completed source preflight `MISSING`
+  - convergence `NO-GO`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-455 - Loop260 closes comment-author review-only signal and fixes current-source queue semantics
 
 - 상태: semantic coverage GO / convergence GO / p0_p1_high_risk_expansion BLOCKED_BY_PARTIAL_SOURCE / parent replay NOT_RUN / full375 previous NO-GO / full scan approval false / goal NOT_COMPLETE

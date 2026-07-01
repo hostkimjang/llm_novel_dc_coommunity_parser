@@ -6,6 +6,18 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop261 source preflight quality gate
+
+- 근거:
+  - [x] 작은 canary의 runtime/coverage `GO`가 completed source preflight를 대체하지 못하게 했다.
+  - [x] `source_review_policy.path_present=false`는 approval blocker다.
+  - [x] completed source 확보, completed-source preflight, random baseline 1000, P0/P1 high-risk expansion을 별도 blocker로 유지했다.
+  - [x] Loop261 queue output: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop261_loop258_goal_action_queue_source_preflight_required.md`.
+  - [x] Loop261 convergence output: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop261_loop258_source_preflight_goal_convergence.md`.
+- 품질 게이트:
+  - [x] convergence `NO-GO`, completed source preflight `MISSING`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
+  - [x] Loop260 local convergence `GO`를 full semantic approval로 쓰지 않는다.
+
 ## 2026-07-02 Loop260 comment-author review label / queue semantics quality gate
 
 - 근거:

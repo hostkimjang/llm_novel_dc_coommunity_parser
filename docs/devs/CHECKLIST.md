@@ -1,5 +1,25 @@
 # Development Checklist
 
+## 2026-07-02 Loop261 completed source preflight blocker 복원 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] `source_review_policy.path_present=false`가 approval blocker로 남도록 `tools\build_goal_action_queue.py`를 보정했다.
+  - 작은 canary가 clean이어도 completed source preflight artifact가 없으면 approval source가 아니다.
+- [x] source preflight 누락 시 P0 blocker 4개를 다시 open으로 세도록 했다.
+  - `obtain_completed_vlm_ocr_source`
+  - `rerun_large_scale_preflight_on_completed_source`
+  - `expanded_random_baseline_1000`
+  - `p0_p1_high_risk_expansion`
+- [x] Loop261 action queue를 재생성했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop261_loop258_goal_action_queue_source_preflight_required.md`
+  - total_actions `10`, ready_now `0`, done `6`, blocked_until_completed_source `4`
+- [x] Loop261 convergence를 재평가했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop261_loop258_source_preflight_goal_convergence.md`
+  - gate `NO-GO`, actionable queue `1 -> 4`, same_packet `true`, safe_resolved `3 -> 3`, safe_loss `[]`
+- [x] 검증: py_compile PASS, `tests.test_goal_action_queue + tests.test_goal_convergence` `17` tests OK.
+- [ ] completed VLM/OCR-on source 확보 전까지 Loop260 local convergence `GO`를 full semantic approval로 보지 않는다.
+- Gate: completed source preflight `MISSING`, convergence `NO-GO`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, full375 previous `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop260 comment author review label / queue semantics 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

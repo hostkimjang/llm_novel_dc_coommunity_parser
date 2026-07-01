@@ -6,6 +6,18 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop261 Addendum - completed source preflight blocker 복원
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: Loop260 queue가 `source_review_policy.path_present=false`를 완료 상태처럼 통과시켜 completed source 확보, completed-source preflight, random baseline 1000 blocker를 숨기지 않게 한다.
+- 코드 변경: `tools/build_goal_action_queue.py`는 completed source preflight artifact가 없으면 작은 canary가 clean이어도 `obtain_completed_vlm_ocr_source`, `rerun_large_scale_preflight_on_completed_source`, `expanded_random_baseline_1000`, `p0_p1_high_risk_expansion`을 approval blocker로 유지한다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_261_REPORT_20260702.md`, action queue `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop261_loop258_goal_action_queue_source_preflight_required.md/json`, convergence `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop261_loop258_source_preflight_goal_convergence.md/json`.
+- Evidence: state map의 `source_review_policy.path_present=false`. current small canary runtime/coverage가 clean이어도 completed source preflight가 아니며, random baseline 1000과 P0/P1 high-risk expansion을 approval evidence로 계산할 source가 없다.
+- Action queue: total_actions `10`, ready_now `0`, done `6`, blocked_until_completed_source `4`, approval blockers `4`.
+- Convergence: gate `NO-GO`, actionable queue `1 -> 4`, same packet `true`, safe_resolved `3 -> 3`, safe_loss `[]`.
+- Verification: py_compile PASS, `tests.test_goal_action_queue + tests.test_goal_convergence` `17` tests OK.
+- Gate: completed source preflight `MISSING`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop260 Addendum - comment-author review label and queue semantics
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

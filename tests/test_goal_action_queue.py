@@ -91,6 +91,53 @@ def sample_semantic_coverage_audit() -> dict:
     }
 
 
+def sample_clean_targeted_state_without_source_preflight() -> dict:
+    return {
+        "map_type": "goal_current_state_map",
+        "goal_result_path": "out/canary/targeted_result.json",
+        "original_run": {
+            "input_post_count": 1,
+            "completed_count": 1,
+            "flushed_count": 1,
+            "pending_count": 0,
+            "failed_count": 0,
+            "result_rows": 1,
+            "partial_signals": [],
+        },
+        "source_review_policy": {
+            "path_present": False,
+            "source_result_path": None,
+            "source_dataset_kind": None,
+            "source_integrity_classification": None,
+            "large_run_complete": None,
+            "random_baseline": {},
+            "gate": {},
+        },
+        "small_run_runtime_audit": {
+            "runtime_contract": "GO",
+            "requested_parallel": 1,
+            "effective_parallel": 1,
+            "log_evidence_present": True,
+            "semantic_approval": "not_evaluated_by_runtime_contract_audit",
+            "image_post_count": 1,
+            "vlm_ocr_semantic_review_ready": True,
+        },
+        "reason_hygiene_scan": {
+            "gate": "GO",
+            "files_scanned": 1,
+            "hit_files": 0,
+            "hit_type_counts": {},
+        },
+        "gates": {
+            "original_source_approval": "REVIEW",
+            "small_run_runtime_contract": "GO",
+            "latest_reason_hygiene": "GO",
+            "semantic_approval": "REVIEW-LOCKED",
+        },
+        "critical_blockers": [],
+    }
+
+
 def sample_process_snapshot_audit() -> dict:
     return {
         "gate": {"runtime_contract": "GO"},
@@ -203,6 +250,50 @@ class GoalActionQueueTest(unittest.TestCase):
         self.assertFalse(actions["small_run_runtime_audit_required"]["executable_now"])
         self.assertEqual(actions["small_run_runtime_audit_required"]["status"], "done")
         self.assertTrue(actions["vlm_ocr_browser_visual_gate"]["requires_browser_visual"])
+
+    def test_missing_completed_source_preflight_remains_approval_blocker(self):
+        mod = load_action_queue_module()
+        coverage = {
+            "gate": "GO",
+            "semantic_approval": {"status": "not_granted_by_semantic_coverage_audit"},
+            "coverage": {
+                "total_rows": 1,
+                "browser_visual_missing": 0,
+                "image_evidence_catalog_missing": 0,
+                "image_context_without_vlm_catalog": 0,
+            },
+            "issues": [],
+        }
+        queue = mod.build_action_queue(
+            sample_clean_targeted_state_without_source_preflight(),
+            semantic_coverage_audit=coverage,
+            process_snapshot_audit=sample_process_snapshot_audit(),
+        )
+        actions = {item["action_id"]: item for item in queue["actions"]}
+
+        self.assertEqual(queue["summary"]["done"], 6)
+        self.assertEqual(queue["summary"]["blocked_until_completed_source"], 4)
+        self.assertEqual(queue["summary"]["ready_now"], 0)
+        self.assertEqual(
+            queue["summary"]["approval_blockers"],
+            [
+                "obtain_completed_vlm_ocr_source",
+                "rerun_large_scale_preflight_on_completed_source",
+                "expanded_random_baseline_1000",
+                "p0_p1_high_risk_expansion",
+            ],
+        )
+        self.assertTrue(
+            actions["obtain_completed_vlm_ocr_source"]["evidence"][
+                "missing_source_policy_blocks_approval"
+            ]
+        )
+        self.assertTrue(
+            actions["rerun_large_scale_preflight_on_completed_source"]["evidence"][
+                "missing_source_policy_blocks_approval"
+            ]
+        )
+        self.assertFalse(actions["semantic_coverage_audit_required_for_new_source"]["executable_now"])
 
     def test_visual_gate_evidence_separates_unique_browser_missing_from_signal_sum(self):
         mod = load_action_queue_module()

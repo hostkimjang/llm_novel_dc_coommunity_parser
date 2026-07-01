@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-02 - Loop261 restores completed-source preflight blockers
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- `tools/build_goal_action_queue.py`가 `source_review_policy.path_present=false`를 완료 상태처럼 통과시키던 문제를 보정했다.
+- 작은 canary가 runtime/coverage `GO`여도 completed source preflight artifact가 없으면 approval source가 아니므로 아래 blocker를 다시 open으로 둔다: `obtain_completed_vlm_ocr_source`, `rerun_large_scale_preflight_on_completed_source`, `expanded_random_baseline_1000`, `p0_p1_high_risk_expansion`.
+- Loop261 action queue는 total_actions `10`, ready_now `0`, done `6`, blocked_until_completed_source `4`, approval blockers `4`개다.
+- Loop261 convergence는 actionable queue `1 -> 4`라 `NO-GO`다. 같은 packet safe_resolved는 `3 -> 3`, safe_loss `[]`로 유지됐다.
+- Verification: py_compile PASS, `tests.test_goal_action_queue + tests.test_goal_convergence` `17` tests OK.
+- Gate는 completed source preflight `MISSING`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop260 closes comment-author review-only issue and fixes queue semantics
 
 - 동일 38-row parent packet은 재실행하지 않았다.

@@ -1,5 +1,23 @@
 # Verification Results
 
+## 2026-07-02 Loop261 completed source preflight blocker 복원
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- 코드: `tools/build_goal_action_queue.py`
+  - `source_review_policy.path_present=false`이면 작은 canary가 clean이어도 completed source 확보, completed-source preflight, random baseline 1000, P0/P1 high-risk expansion을 approval blocker로 유지한다.
+- 산출물:
+  - queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop261_loop258_goal_action_queue_source_preflight_required.md`
+  - convergence `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop261_loop258_source_preflight_goal_convergence.md`
+  - report `docs\devs\loop_reports\LOOP_261_REPORT_20260702.md`
+- 결과:
+  - action queue total_actions `10`, ready_now `0`, done `6`, blocked_until_completed_source `4`
+  - approval blockers `obtain_completed_vlm_ocr_source`, `rerun_large_scale_preflight_on_completed_source`, `expanded_random_baseline_1000`, `p0_p1_high_risk_expansion`
+  - convergence gate `NO-GO`, actionable queue `1 -> 4`, safe_resolved `3 -> 3`, safe_loss `[]`
+- 검증:
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\build_goal_action_queue.py tests\test_goal_action_queue.py`: PASS
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_goal_action_queue tests.test_goal_convergence -v`: `17` tests OK
+- Gate: completed source preflight `MISSING`; random baseline 1000과 P0/P1 expansion은 completed source 전까지 blocked; `semantic_quality=REVIEW-LOCKED`; `full_scan_approval=false`; full375 previous `NO-GO`; goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop260 comment-author review label / queue semantics verification
 
 - Scope: Loop259 잔여 `11658637` comment author review-only issue를 packet label로 닫고, current-source audit 완료 상태를 action queue에서 `done`으로 분리한다.
