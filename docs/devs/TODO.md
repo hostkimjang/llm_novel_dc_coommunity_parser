@@ -2,6 +2,2587 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-01 regression-safe grounding Loop237 parent replay after Loop236 URL-title guard
+
+- 상태: parent/representative replay runtime GO / semantic `NO-GO / MIXED_MOVEMENT` / safe/public count drop / Data Analytics validate-render PASS / residual accounting no-delta / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Loop236 URL-title direct-source support guard를 parent/representative 38-row packet에서 재검증했다.
+    - run id `20260701_215903_177630`
+    - completed/flushed/pending/failed `38/38/0/0`
+    - VLM/OCR `READY`
+    - MCP health ok/failure `36/0`
+  - [x] Loop231 대비 count regression을 기록했다: `safe_resolved/public title 11->9`, `promotion_blocked 25->28`.
+  - [x] `11663540` parent survival 실패를 기록했다: focused canary 복구 후 parent replay에서는 `promotion_blocked`, public title `null`.
+  - [x] Loop231 대비 movement를 분리했다: safe gain `11668288`, safe loss `11660237`, `11674712`, `11698880`, non-safe state change `11700495`.
+  - [x] 한국어 report/review/Data Analytics artifacts를 남겼다.
+    - `docs/devs/loop_reports/LOOP_237_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop237_parent_replay_after_loop236_url_title_direct_support_guard_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop237_parent_replay_after_loop236_url_title_direct_support_guard_review.json`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop237_parent_replay_after_loop236_url_title_direct_support_guard_data_analytics_artifact.json`
+  - [x] Data Analytics artifact validate/render PASS를 확인했다.
+  - [x] Residual accounting unchanged: `NO_DELTA_PARENT_REPLAY_AFTER_LOOP236_MIXED_MOVEMENT`.
+  - [ ] `11663540` parent non-recovery의 OCR variant, character bridge, precision-seed review requirement를 분리해 다음 patch seed로 좁힌다.
+  - [ ] `11698880`, `11660237`, `11674712` safe-loss row의 source/native evidence와 `publish_contract_trace`를 비교한다.
+  - [ ] `11668288` safe gain은 raw lint flag가 있어 approval evidence로 쓰지 않는다.
+
+## 2026-07-01 regression-safe grounding Loop234 direct-image cover-title runtime canary
+
+- 후속 Loop236 상태: URL-title direct-source support guard 구현 / bad publish demotion preview PASS / patched focused canary PASS / Data Analytics validate-render PASS / residual accounting no-delta / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- Loop236 TODO:
+  - [x] `url_title_verified_official_detail` publish precondition을 직접 post/OCR/alias support 조건으로 좁혔다.
+  - [x] generic `official_detail_candidate_cue:주인공` + same-URL search title만으로 publish되는 wrong-work path를 재현했다.
+  - [x] 같은 bad result를 resync preview에서 `official_detail_url_missing_direct_source_support`로 `promotion_blocked` 처리했다.
+  - [x] patched canary run `20260701_214126_569050`을 완료했다: completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`.
+  - [x] patched canary public title `전 버튜버가 하고 싶은데요`, URL `https://novelpia.com/novel/275975`, `candidate_ledger_status=safe_resolved`를 확인했다.
+  - [x] focused tests 3개, `tests.test_expert_main_comment_metadata` 32 OK, `tests.test_promotion_gate_contract + tests.test_candidate_audit` 128 OK, `py_compile` PASS를 확인했다.
+  - [x] 한국어 report/review/Data Analytics artifacts를 남겼다.
+    - `docs/devs/loop_reports/LOOP_236_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop236_url_title_direct_support_guard_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop236_url_title_direct_support_guard_data_analytics_artifact.json`
+  - [x] Parent/representative packet에서 same guard를 Loop237로 재검증했다.
+  - [x] Loop237 parent replay 후에도 residual accounting은 `NO_DELTA_PARENT_REPLAY_AFTER_LOOP236_MIXED_MOVEMENT`로 유지한다.
+
+- 후속 Loop235 상태: focused runtime 재실행 완료 / public title 미복구 / URL-title mismatch 관찰 / Data Analytics validate-render PASS / residual accounting no-delta / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- Loop235 TODO:
+  - [x] `search_character_parenthetical_bridge`와 `direct_image_work_surface_bridge` 단위 계약을 추가했다.
+  - [x] focused tests 4개, `tests.test_expert_main_comment_metadata` 29 OK, `tests.test_promotion_gate_contract + tests.test_candidate_audit` 128 OK, `py_compile` PASS를 확인했다.
+  - [x] `loop235` 원 런 stuck 상태를 manifest-only incomplete artifact로 보존하고 중단했다.
+  - [x] `loop235b` run `20260701_210203_663393`을 완료했다: completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`.
+  - [x] 내부 expert title 확정과 serialized public title `null`을 분리 기록했다.
+  - [x] `https://novelpia.com/novel/311328` URL-title mismatch를 다음 architecture seed로 기록했다.
+  - [x] 한국어 report/review/Data Analytics artifacts를 남겼다.
+    - `docs/devs/loop_reports/LOOP_235_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop235_character_parenthetical_bridge_no_go_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop235_character_parenthetical_bridge_data_analytics_artifact.json`
+  - [ ] 다음 patch는 `URL-title verified official detail`을 shared `PromotionDecision` publish precondition으로 추가한다.
+  - [ ] URL mismatch candidate는 보존하되 public publish에서는 차단하는 negative control을 추가한다.
+  - [ ] Parent/representative replay 전까지 residual accounting을 줄이지 않는다.
+
+- 상태: focused runtime canary 2회 완료 / exact cover-title contract 추가 / 실제 public title 미복구 / Data Analytics validate-render PASS / residual accounting no-delta / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] `11663540` actual payload focused input을 생성했다.
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop234_11663540_direct_image_character_runtime_canary.jsonl`
+  - [x] 1차 focused runtime canary를 실행했다.
+    - run id `20260701_202952_860752`
+    - completed/flushed/pending/failed `1/1/0/0`
+    - VLM/OCR `READY`
+    - OCR title `전 버튜버가 하고 싶은데요`, official detail URL 존재.
+    - final public title `null`, `precision_seed_official_title_requires_review`, `serialized_public_identity_scrubbed`.
+  - [x] actual image evidence shape를 반영한 exact cover-title contract를 추가했다.
+    - `cover_title`, `work_surface`, `work_anchor` hard image surface.
+    - `direct_image_explicit_title_surface`와 `image_ocr_official_detail_title` reason.
+  - [x] 2차 focused runtime canary를 실행했다.
+    - run id `20260701_203559_843860`
+    - completed/flushed/pending/failed `1/1/0/0`
+    - VLM/OCR `READY`
+    - OCR variant `전 버두바가 하고 싶은데요`, `image_ocr_variant_not_title_in_post`.
+    - `주서연(전 버튜버가 하고 싶은데요)` bridge와 official detail URL은 잡혔지만 final public title은 `null`.
+  - [x] 검증을 기록했다.
+    - focused direct-image tests 3개 PASS.
+    - `tests.test_expert_main_comment_metadata`: 27 tests OK.
+    - `tests.test_promotion_gate_contract + tests.test_candidate_audit`: 128 tests OK.
+    - `py_compile`: PASS.
+    - Data Analytics validate/render PASS.
+  - [x] 한국어 report/review/Data Analytics artifacts를 남겼다.
+    - `docs/devs/loop_reports/LOOP_234_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop234_direct_image_cover_title_runtime_canary_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop234_direct_image_cover_title_runtime_canary_data_analytics_artifact.json`
+  - [x] Residual accounting unchanged: `NO_DELTA_TARGETED_CANARY_NO_GO`.
+  - [ ] 다음 patch는 `PromotionDecision`과 final serializer 사이의 공용 재평가 단계로 설계한다.
+  - [ ] OCR variant, secondary image title, character-page bridge를 후보 보존과 public publish 사이에서 분리하는 negative controls를 추가한다.
+  - [ ] Parent/representative replay 전까지 residual accounting을 줄이지 않는다.
+
+## 2026-07-01 regression-safe grounding Loop232 Loop231 safe-loss/variance source-native review
+
+- 상태: review-only / focus 5건 source-native 분해 완료 / Data Analytics validate-render PASS / residual accounting no-delta / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Loop231 focus 5건을 source/native와 prior review 기준으로 분해했다.
+    - `11661876`: `와인의 신`, recurrent overblock, next patch 후보.
+    - `11663540`: `전 버튜버가 하고 싶은데요`, OCR/character-title 보존 후보, negative controls 필요.
+    - `11695637`: old safe title `도네하지 마라` 복구 금지, `[림월드]변방계에서 회귀자로 살아남기` retarget open.
+    - `11660237`: parent에서는 `테라포밍` publish, targeted/parent variance replay 필요.
+    - `11706832`: `황제의 딸로 환생했다` 공식 page는 확인됐지만 Loop145 caveat 재개방으로 기록.
+  - [x] Native web official page 확인을 기록했다: `와인의 신`, `전 버튜버가 하고 싶은데요`, `테라포밍`, `황제의 딸로 환생했다`, `도네하지 마라`, `[림월드]변방계에서 회귀자로 살아남기`.
+  - [x] 한국어 report/review/Data Analytics artifacts를 남겼다.
+    - `docs/devs/loop_reports/LOOP_232_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop232_loop231_safe_loss_variance_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop232_loop231_safe_loss_variance_data_analytics_artifact.json`
+  - [x] Residual accounting unchanged: `NO_DELTA_SOURCE_NATIVE_VARIANCE_REVIEW_ONLY`.
+  - [ ] `11661876` recurring overblock patch를 shared `PromotionDecision`/`title_resolution_state`/`work_resolution` 수렴 테스트로 설계한다.
+  - [ ] `11663540` OCR/character-title path는 wrong-work negative controls와 함께 설계한다.
+  - [ ] `11695637`과 `11706832`은 복구 seed가 아니라 false-safe/caveat guard seed로 유지한다.
+
+## 2026-07-01 regression-safe grounding Loop233 direct-image character shared gate
+
+- 상태: focused code/test patch / `11663540` OCR-character contract 추가 / 신규 focused tests PASS / Data Analytics validate-render PASS / residual accounting no-delta / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] `expert_main.py` final publication ledger restore에 direct-image character surface 조건을 추가했다.
+  - [x] `11663540` 양성 path를 테스트했다: OCR/work-title `전 버튜버가 하고 싶은데요`, character `주서연`, official detail URL이 함께 있을 때 `safe_resolved`로 복구.
+  - [x] Wrong-work negative control을 테스트했다: OCR title이 candidate와 맞지 않는 `방구석 여신이 되었다`는 계속 `promotion_blocked`.
+  - [x] 검증을 기록했다.
+    - 신규 focused tests 2개 PASS
+    - `tests.test_expert_main_comment_metadata`: 26 tests OK
+    - `tests.test_promotion_gate_contract + tests.test_candidate_audit`: 128 tests OK
+    - `py_compile`: PASS
+    - Data Analytics validate/render PASS
+  - [x] 한국어 report/review/Data Analytics artifacts를 남겼다.
+    - `docs/devs/loop_reports/LOOP_233_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop233_direct_image_character_shared_gate_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop233_direct_image_character_shared_gate_data_analytics_artifact.json`
+  - [x] Residual accounting unchanged: `NO_DELTA_UNIT_CONTRACT_ONLY`.
+  - [x] Loop234에서 실제 `11663540` focused runtime canary를 실행했고, public title 미복구를 `NO-GO_PUBLIC_TITLE_NOT_RESTORED`로 기록했다.
+  - [ ] `11663540` focused runtime canary를 wrong-work controls와 함께 실행한다.
+  - [ ] Parent/representative replay 전까지 residual accounting을 줄이지 않는다.
+  - [ ] `11661876` recurrent overblock은 별도 parent-safe shared gate 대상으로 유지한다.
+
+## 2026-07-01 regression-safe grounding Loop228 Loop227 safe-loss source/native review
+
+- 상태: review-only / safe-loss 4건 source-native 검토 완료 / likely_overblock 3, false safe title retarget 1 / Data Analytics validate-render PASS / residual accounting no-delta / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Loop227 safe-loss 4건을 source/native evidence로 재검토했다.
+    - `11660237`: `테라포밍`, likely overblock, title-led evaluation bridge 후보.
+    - `11660257`: `암흑가 보스요? 제가요?`, likely overblock, title-led evaluation bridge 후보.
+    - `11695637`: Loop225 `도네하지 마라` 복구 금지, `[림월드]변방계에서 회귀자로 살아남기` retarget 후보.
+    - `11705231`: `탐식의 재림`, likely overblock, character/comment/native seed convergence 후보.
+  - [x] 공식 페이지 존재와 source/native row 정합성을 분리했다: official page exists `4/4`, Loop225 title correct `3/4`.
+  - [x] 한국어 report/review/Data Analytics artifacts를 남겼다.
+    - `docs/devs/loop_reports/LOOP_228_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop228_loop227_safe_loss_source_native_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop228_loop227_safe_loss_source_native_data_analytics_artifact.json`
+  - [x] Residual accounting unchanged: `NO_DELTA_SOURCE_NATIVE_SAFE_LOSS_REVIEW_ONLY`.
+  - [ ] `11660237`/`11660257` title-led evaluation bridge patch 후보와 negative control을 설계한다.
+  - [ ] `11705231` character/comment/native seed convergence 재발 방지 테스트를 설계한다.
+  - [ ] `11695637` retarget lane은 old safe title 복구와 분리한다.
+
+## 2026-07-01 regression-safe grounding Loop227 composite parent replay after Loop226
+
+- 상태: parent replay partial `37/38` + missing-row 단건 보강 `1/1` / composite `38/38` 분석 완료 / safe gain 4, safe loss 4 / semantic `NO-GO / MIXED_MOVEMENT` / Data Analytics artifact 준비 완료 / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Loop227 parent 원 런 `20260701_162837_314765`을 실행하고 checkpoint `37/38`을 확보했다.
+  - [x] 원 런이 `large_run_complete=false`, `flushed/pending=24/13` partial임을 승인 근거에서 분리했다.
+  - [x] 누락 `11698897`을 단건 재실행해 composite 38행 분석을 완성했다.
+  - [x] Safe gain 4건 기록: `11663521`, `11668288`, `11674712`, `11706832`.
+  - [x] Safe loss 4건 기록: `11660237`, `11660257`, `11695637`, `11705231`.
+  - [x] Residual accounting unchanged: `NO_DELTA_COMPOSITE_PARENT_REPLAY_MIXED_MOVEMENT`.
+  - [x] Safe loss 4건 source/native 검토를 Loop228에서 완료했으며 approval 근거로는 계속 쓰지 않는다.
+  - [ ] 다음 patch는 final scrub 복구보다 upstream authoritative promotion state convergence에 둔다.
+
+## 2026-07-01 regression-safe grounding Loop226 trace candidate priority
+
+- 상태: deterministic trace/ledger patch implemented / 신규 focused tests GO / promotion gate bundle GO / Data Analytics validate-render PASS / 새 parent replay NOT_RUN / residual accounting no-delta / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Loop225 safe-loss 3건의 `publish_contract_trace.pre_gate_candidate` 품질을 재확인했다.
+    - `11668288`: `가챠펑크` -> `가챠 중독자의 퓨전펑크 생활` / `https://novelpia.com/novel/387014`
+    - `11674712`: `호각임` -> `이 무림의 미친년은 나야` / `https://novelpia.com/novel/217943?sid=main5`
+    - `11706832`: `표절물인가` -> `황제분충`
+  - [x] `comment_surface`/`hold_without_promotion` 후보보다 더 강한 보존 후보를 trace candidate로 우선하는 contract를 추가했다.
+  - [x] publish gate는 열지 않았다: 세 행 모두 `promotion_blocked`, `publish_allowed=false`.
+  - [x] 검증을 기록했다.
+    - 신규 focused tests 2개 PASS
+    - `tests.test_expert_main_comment_metadata`: 23 tests OK
+    - `tests.test_promotion_gate_contract + tests.test_expert_main_comment_metadata`: 43 tests OK
+    - `py_compile` PASS
+    - Data Analytics validate/render PASS
+  - [x] 한국어 report/review/Data Analytics artifacts를 남겼다.
+    - `docs/devs/loop_reports/LOOP_226_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop226_trace_candidate_priority_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop226_trace_candidate_priority_data_analytics_artifact.json`
+  - [x] Residual accounting unchanged: `NO_DELTA_TRACE_LEDGER_ONLY`, next actionable `131`, P0/P1/P2 `0/61/70`.
+  - [ ] 다음 parent/representative replay에서 Loop225 safe-loss movement가 줄었는지 확인한다.
+  - [ ] `11674712` character bridge와 `11706832` alias caveat은 source/native 안정성 확인 전까지 approval 근거로 쓰지 않는다.
+
+## 2026-07-01 regression-safe grounding Loop224 parent replay after Loop223 patch checkpoint
+
+- 상태: Loop223b focused patch parent replay executed / runtime GO / VLM-OCR READY / Data Analytics validate-render PASS / `11705231` survived / `11661876` failed parent survival / `11698880` safe-loss recurred / residual accounting no-delta / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Run 38-row parent/representative replay after Loop223b.
+    - run id `20260701_141454_629022`
+    - result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop224_parent_replay_after_loop223_title_field_patch_result.json`
+    - completed/flushed/pending/failed `38/38/0/0`
+    - image_post_count `24`, VLM/OCR `READY`
+  - [x] Run runtime audit.
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop224_parent_replay_after_loop223_title_field_patch_runtime_audit.md`
+    - runtime contract `GO`, issues `[]`
+  - [x] Compare Loop182/Loop221/Loop224 parent status counts.
+    - Loop182 `safe_resolved=12,promotion_blocked=24,hold_without_candidates=1,output_consistency_lint=1`
+    - Loop221 `safe_resolved=9,promotion_blocked=27,hold_without_candidates=1,output_consistency_lint=1`
+    - Loop224 `safe_resolved=10,promotion_blocked=26,hold_without_candidates=1,output_consistency_lint=1`
+  - [x] Record changed Loop221 -> Loop224 rows: `11666713`, `11668288`, `11695637`, `11698880`, `11705231`.
+  - [x] Persist Korean report/review/Data Analytics artifacts.
+    - `docs/devs/loop_reports/LOOP_224_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop224_parent_replay_after_loop223_title_field_patch_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop224_parent_replay_after_loop223_title_field_patch_data_analytics_artifact.json`
+  - [x] Preserve no-delta accounting: `NO_DELTA_PARENT_REPLAY_MIXED_MOVEMENT`, next actionable `131`, P0/P1/P2 `0/61/70`.
+  - [ ] Decompose `11661876` architecture gap: `scope_current_work` and `row_discusses_work_as_work` exist, but `context_only/unresolved` still scrubs public publish.
+  - [ ] Decompose `11698880` regression against Loop157/158 stable-alias descriptor guard.
+  - [ ] Source/native review Loop224 movement rows before any residual decrement claim.
+  - [ ] Move next patch direction from final scrub restore to upstream authoritative promotion decision ledger / title-resolution state convergence.
+
+## 2026-07-01 보고서 한국어 지침 고정
+
+- 상태: 사용자 요청에 따라 보고서 작성 언어와 최소 의미 보존 규칙을 repo 지침에 재확인/보강했다.
+- TODO:
+  - [x] `AGENTS.md`의 한국어 보고 원칙 확인.
+  - [x] `docs/devs/GOAL_REGRESSION_SAFE_GROUNDING_LOOP.md`의 회차 보고서 계약 확인.
+  - [x] `docs/devs/SCAN_RESULT_REVIEW_GUIDE.md`, `docs/devs/QUALITATIVE_SEMANTIC_REVIEW_LOOP.md`, `docs/devs/OPERATION_QUALITY_CHECKLIST.md`에 보조 지침 보강.
+  - [x] 보고서는 한국어로 쓰고, 간략하되 의미/근거/산출물 경로/gate 상태를 생략하지 않는 규칙을 유지.
+
+## 2026-07-01 regression-safe grounding Loop223 publish-contract title-field patch checkpoint
+
+- 상태: Loop222 strong patch candidates implemented / Loop223b focused runtime GO / both target rows safe_resolved / Data Analytics validate-render PASS / full unittest PASS / residual accounting no-delta / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Patch and test `11661876` current_work/high final scrub overblock.
+  - [x] Patch and test `11705231` official title field separation.
+  - [x] Run Loop223 first canary and record partial fix.
+    - `11661876` remained `promotion_blocked`
+    - `11705231` recovered to `탐식의 재림`
+  - [x] Run Loop223b final-contract restore canary.
+    - run id `20260701_134929_838421`
+    - completed/flushed/pending/failed `2/2/0/0`
+    - `11661876` -> `와인의 신`, `https://novel.munpia.com/494781`
+    - `11705231` -> `탐식의 재림`, `https://page.kakao.com/content/50219568`
+  - [x] Persist Korean report/review/Data Analytics artifacts.
+    - `docs/devs/loop_reports/LOOP_223_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop223_publish_contract_title_field_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop223_publish_contract_title_field_data_analytics_artifact.json`
+  - [x] Run full unittest discover: `1335` tests OK.
+  - [x] Preserve no-delta accounting: next actionable `131`, P0/P1/P2 `0/61/70`.
+  - [ ] Rerun parent/representative packet before any residual decrement claim.
+  - [ ] Review `11661876` URL movement in parent scope before treating it as stable.
+
+## 2026-07-01 regression-safe grounding Loop222 safe-loss source/native review checkpoint
+
+- 상태: Loop221 safe-loss 6건 source/native review 완료 / no new canary / no production code change / Data Analytics validate/render PASS / residual accounting no-delta / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Review Loop221 safe-loss rows with source/native evidence.
+    - rows: `11658620`, `11660237`, `11661876`, `11668288`, `11695623`, `11705231`
+  - [x] Persist Korean report/review/Data Analytics artifacts.
+    - `docs/devs/loop_reports/LOOP_222_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop222_loop221_safe_loss_source_native_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop222_loop221_safe_loss_source_native_data_analytics_artifact.json`
+  - [x] Record verdict split: `likely_overblock=3`, `ambiguous_hold=2`, `title_field_bug=1`.
+  - [x] Mark `11661876` as the first focused publish-contract overblock patch candidate.
+  - [x] Mark `11705231` as the character/entity surface vs official-title field split patch candidate.
+  - [x] Preserve no-delta accounting: next actionable `131`, P0/P1/P2 `0/61/70`.
+  - [x] Patch and test `11661876` current_work/high final scrub overblock.
+  - [x] Patch and test `11705231` official title field separation.
+  - [ ] Review Loop221 safe-gain 3건 before any residual decrement claim.
+
+## 2026-07-01 regression-safe grounding Loop221 parent replay after direct alias probe checkpoint
+
+- 상태: Loop220 broader parent replay executed / runtime GO / Data Analytics validate/render PASS / direct alias target `11713222` recovered in parent scope / status count worsened from `safe_resolved=12` to `9` / residual accounting no-delta / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Run 38-row parent/representative replay after Loop220.
+    - run id `20260701_120437_234858`
+    - result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop221_parent_replay_after_direct_alias_probe_result.json`
+  - [x] Run runtime audit.
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop221_parent_replay_after_direct_alias_probe_runtime_audit.md`
+    - runtime contract `GO`, completed/flushed/pending/failed `38/38/0/0`
+  - [x] Compare against Loop182 parent baseline.
+    - Loop182 `safe_resolved=12,promotion_blocked=24,hold_without_candidates=1,output_consistency_lint=1`
+    - Loop221 `safe_resolved=9,promotion_blocked=27,hold_without_candidates=1,output_consistency_lint=1`
+  - [x] Confirm `11713222` parent recovery.
+    - `잘생기면 편해지는 인방 생활`, `https://novelpia.com/novel/384016`
+  - [x] Persist Korean report/review/Data Analytics artifacts.
+    - `docs/devs/loop_reports/LOOP_221_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop221_parent_replay_after_direct_alias_probe_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop221_parent_replay_after_direct_alias_probe_data_analytics_artifact.json`
+  - [x] Preserve no-delta accounting: next actionable `131`, P0/P1/P2 `0/61/70`.
+  - [ ] Review the 9 changed rows with source/native evidence.
+    - Safe-loss 6건은 Loop222에서 source/native review 완료; safe-gain 3건은 아직 별도 review 필요.
+  - [x] Decompose 6 safe-loss rows before any residual decrement claim.
+
+## 2026-07-01 regression-safe grounding Loop220 direct alias probe checkpoint
+
+- 상태: `11713222` direct body alias probe repair implemented / Loop220 runtime GO / full unittest GO / Data Analytics validate/render PASS / packet safe count improved to `3/5` / residual accounting no-delta until broader replay / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Add direct non-comment worklike alias probe collection in `orchestrator.py`.
+  - [x] Preserve direct alias official/community/author/abbreviation queries through semantic no-work pruning.
+  - [x] Boost direct alias queries and defer broad official-hit early stop while direct alias probes remain unprocessed.
+  - [x] Add focused regression test for `잘생인방` recovery and comment-only `잘생인편` exclusion.
+  - [x] Run verification: `py_compile` PASS, focused direct-alias PASS, title-lead inferred guard `157 OK`, focused contract bundle `39 OK`, candidate-audit `102 OK`, full unittest discover `1332 OK`.
+  - [x] Run Loop220 replay and audit: run id `20260701_114043_668022`, runtime `GO`, completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`.
+  - [x] Create Korean loop report and review artifacts.
+    - `docs/devs/loop_reports/LOOP_220_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop220_direct_alias_probe_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop220_direct_alias_probe_review.json`
+  - [x] Persist Data Analytics artifact.
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop220_direct_alias_probe_data_analytics_artifact.json`
+  - [x] Preserve no-delta accounting until broader replay: next actionable `131`, P0/P1/P2 `0/61/70`.
+  - [x] Run broader replay or parent/collateral packet before any residual decrement claim.
+    - Loop221 parent replay executed, but mixed movement makes the result no-delta and review-locked.
+  - [ ] Monitor precision for direct alias probes so generic aliases and comment-only previous-work candidates do not become public titles.
+
+## 2026-07-01 regression-safe grounding Loop219 shared gate unconfirmed-alias checkpoint
+
+- 상태: `11669928` shared gate unconfirmed-alias repair implemented / Loop219 runtime GO / full unittest GO / Data Analytics validate/render PASS / `11713222` and `11674712` packet regressions open / residual accounting no-delta / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Add shared current-work gate exemption for `unconfirmed_alias_official_detail_bridge` in `candidate_audit.py`.
+  - [x] Keep the exemption narrow: publish/current_work gate decision, official-detail URL support, title/URL match, no hard context-only/conflict flags.
+  - [x] Add focused tests for Loop218-like recovery and context-only non-exemption.
+  - [x] Run verification: `py_compile` PASS, focused candidate-audit `4 OK`, full candidate-audit `102 OK`, focused contract bundle `39 OK`, full unittest discover `1331 OK`.
+  - [x] Run Loop219 replay and audit: run id `20260701_110936_416066`, runtime `GO`, completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`.
+  - [x] Create Korean loop report and review artifacts.
+    - `docs/devs/loop_reports/LOOP_219_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop219_shared_gate_unconfirmed_alias_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop219_shared_gate_unconfirmed_alias_review.json`
+  - [x] Persist Data Analytics artifact.
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop219_shared_gate_unconfirmed_alias_data_analytics_artifact.json`
+  - [x] Preserve no-delta accounting: next actionable `131`, P0/P1/P2 `0/61/70`.
+  - [x] Review `11713222` previous-work/comment candidate recontamination.
+    - Loop220 recovered current-work title `잘생기면 편해지는 인방 생활`; broader replay remains open.
+  - [x] Review `11674712` character-bridge/J11-title-drift hold recurrence.
+    - Loop220 recovered `이 무림의 미친년은 나야`; broader replay remains open.
+
+## 2026-07-01 regression-safe grounding Loop218 character bridge scope trace checkpoint
+
+- 상태: `11674712` character bridge scope/URL recovery implemented / Loop218 runtime GO / full unittest GO / Data Analytics validate/render PASS / `11669928` packet regression open / residual accounting no-delta / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Recover official-detail URL from search evidence for blocked candidate trace.
+  - [x] Infer `current_work` scope only when official-detail search evidence and row context converge without hard context-only flags.
+  - [x] Add focused regression tests for recovered official URL/scope and no-official-detail scope-null preservation.
+  - [x] Run verification: `py_compile` PASS, focused new tests `2 OK`, focused contract bundle `39 OK`, character bridge focused tests `2 OK`, full unittest discover `1329 OK`, `git diff --check` PASS with CRLF warnings only.
+  - [x] Run Loop218 replay and audit: run id `20260701_104624_623831`, runtime `GO`, completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`.
+  - [x] Create Korean loop report and review artifacts.
+    - `docs/devs/loop_reports/LOOP_218_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop218_character_bridge_scope_trace_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop218_character_bridge_scope_trace_review.json`
+  - [x] Persist Data Analytics artifact.
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop218_character_bridge_scope_trace_data_analytics_artifact.json`
+  - [x] Preserve no-delta accounting: next actionable `131`, P0/P1/P2 `0/61/70`.
+  - [x] Review `11669928` current-work but candidate-only regression: `unconfirmed_alias_official_detail_bridge`.
+    - Loop219 fixed this immediate cause; packet closure remains blocked by `11713222` and `11674712`.
+
+## 2026-07-01 regression-safe grounding Loop214-217 exact-alias image/OCR context trace checkpoint
+
+- 상태: `11660257` exact-alias image/OCR context decomposition complete as trace/rationale / Loop217 runtime GO / final code tests GO / Data Analytics validate/render PASS / residual accounting no-delta / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Keep report-writing instruction in active repo guidance.
+    - 보고서는 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, 게이트 상태를 생략하지 않는다.
+  - [x] Add conservative blocked-candidate scope inference in `expert_main.py` final result-contract scrub.
+  - [x] Require nonpromotable image/OCR context before inferring `context_only` for blocked exact-alias candidates.
+  - [x] Propagate promotion-block/candidate-audit lint reasons into `publish_contract_trace` and gate decision reasons.
+  - [x] Add tests for image/OCR context-only trace and text-only alias non-inference.
+  - [x] Run verification: `py_compile` PASS, focused new tests `2 OK`, focused contract bundle `37 OK`, full unittest discover `1327 OK`, `git diff --check` PASS with CRLF warnings only.
+  - [x] Run Loop217 replay and audit: run id `20260701_102032_074772`, runtime `GO`, completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`.
+  - [x] Create Korean loop report and review artifacts.
+    - `docs/devs/loop_reports/LOOP_214_217_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop214_217_exact_alias_image_context_trace_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop214_217_exact_alias_image_context_trace_review.json`
+  - [x] Persist Data Analytics artifact.
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop214_217_exact_alias_image_context_trace_data_analytics_artifact.json`
+  - [x] Preserve no-delta accounting: next actionable `131`, P0/P1/P2 `0/61/70`.
+  - [ ] Review `11674712` scope null / character bridge variance before parent/collateral replay.
+
+## 2026-07-01 regression-safe grounding Loop193-213 scope-state, final-publication ledger, previous-work preservation, and title-led alias guard checkpoint
+
+- 상태: scope-state contract implemented / publish trace scope propagation implemented / acknowledged previous-work override scope gate implemented / batch-alias public-title scope gate implemented / direct OCR work-surface scope gate implemented / final-publication ledger packet contract GO / upstream resolved-public-title gate implemented / Loop205-208 packet variance review complete / Loop209-211 previous-work candidate preservation complete / Loop212-213 title-led alias guard repeat evidence complete / five-row packet replay runtime GO / packet semantic REVIEW-LOCKED / inferred publish decisions CLOSED_FOR_PACKET / residual accounting unchanged / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Persist report-writing instruction.
+    - Reports must be Korean, concise, and must not omit meaning, evidence, artifact paths, or gate status.
+  - [x] Confirm the pasted goal source still requires continuous loop execution until the documented stop condition.
+  - [x] Confirm current active goal is already architecture-integrated and not complete.
+  - [x] Reframe the next goal step around an explicit scope-state layer before `can_publish_title(...)`.
+  - [x] Update `docs/devs/GOAL_ARCHITECTURE_INTEGRATED_REGRESSION_SAFE_GROUNDING.md`.
+  - [x] Update `docs/devs/ARCHITECTURE_PROMOTION_GATE_MIGRATION.md`.
+  - [x] Update checklist/history/register/verification docs for the docs-only contract change.
+  - [x] Inventory first current scope writer: `_can_promote_title_after_semantic_no_work`.
+  - [x] Add `ScopeState` with categories: `current_work`, `previous_work`, `secondary_reference`, `author_new_work`, `image_ocr_derived_work`, `platform_meta_nonwork`, `context_only`, `unknown`.
+  - [x] Add focused contract tests for `11669928`, `11713222`, and `11695623` without post_id/title-specific production logic.
+  - [x] Feed scope kind/conflicts into `PromotionDecision.reason_codes` and `_promotion_gate_state` for semantic-no-work title promotion.
+  - [x] Run focused verification.
+    - `venv\Scripts\python.exe -m py_compile src\llm_batch\promotion_gate.py src\llm_batch\agentic_pipeline.py`: PASS
+    - `venv\Scripts\python.exe -m unittest tests.test_promotion_gate_contract -v`: PASS, `11 tests OK`
+  - [x] Render Data Analytics artifact `Loop193 Scope-State Contract Checkpoint`.
+  - [x] Create Loop193 report/review artifacts.
+    - `docs/devs/loop_reports/LOOP_193_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop193_scope_state_contract_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop193_scope_state_contract_review.json`
+  - [x] Propagate scope-state into publish-contract trace as Loop194.
+    - `publish_contract_trace.scope_state`
+    - `publish_contract_trace.gate_decision.scope`
+    - scope reason-code backfill
+  - [x] Run Loop194 focused verification.
+    - `venv\Scripts\python.exe -m py_compile expert_main.py src\llm_batch\promotion_gate.py src\llm_batch\agentic_pipeline.py`: PASS
+    - `venv\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata tests.test_promotion_gate_contract -v`: PASS, `23 tests OK`
+  - [x] Render Data Analytics artifact `Loop194 Publish Trace Scope Propagation Checkpoint`.
+  - [x] Create Loop194 report/review artifacts.
+    - `docs/devs/loop_reports/LOOP_194_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop194_publish_trace_scope_propagation_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop194_publish_trace_scope_propagation_review.json`
+  - [x] Wire acknowledged previous-work override path through shared scope gate as Loop195.
+    - extracted `_record_public_title_gate_decision(...)`
+    - `acknowledged_previous_work_comment_override` now records previous-work scope conflicts before public title replacement
+    - current-work alias vs previous-work alias conflict stays candidate-only
+  - [x] Run Loop195 verification.
+    - `venv\Scripts\python.exe -m py_compile expert_main.py src\llm_batch\promotion_gate.py src\llm_batch\agentic_pipeline.py`: PASS
+    - `venv\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata tests.test_promotion_gate_contract -v`: PASS, `24 tests OK`
+    - `venv\Scripts\python.exe -m unittest discover --start-directory tests`: PASS, `1309 tests OK`
+  - [x] Render Data Analytics artifact `Loop195 Acknowledged Previous-Work Scope Gate Checkpoint`.
+  - [x] Create Loop195 report/review artifacts.
+    - `docs/devs/loop_reports/LOOP_195_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop195_acknowledged_previous_work_scope_gate_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop195_acknowledged_previous_work_scope_gate_review.json`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop195_acknowledged_previous_work_scope_gate_data_analytics_artifact.json`
+  - [x] Wire batch-alias public-title publish path through shared scope gate as Loop196.
+    - added `_record_batch_alias_public_title_gate_decision(...)`
+    - remembered only batch-alias candidates that actually reach public identity output
+    - recorded `scope_kind=current_work` and `batch_alias_candidate_accepted` bridge evidence in the final candidate ledger
+  - [x] Run Loop196 verification.
+    - `venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_promotion_gate_contract.py tests\test_agentic_pipeline_rework.py`: PASS
+    - `venv\Scripts\python.exe -m unittest tests.test_promotion_gate_contract -v`: PASS, `13 tests OK`
+    - targeted batch-alias rework tests: PASS, `2 tests OK`
+    - combined promotion/rework bundle: PASS, `15 tests OK`
+    - `venv\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata tests.test_promotion_gate_contract -v`: PASS, `25 tests OK`
+    - `venv\Scripts\python.exe -m unittest tests.test_known_title_abbreviation_support tests.test_title_lead_search_inferred_guard -v`: PASS, `182 tests OK`
+    - `venv\Scripts\python.exe -m unittest discover --start-directory tests`: PASS, `1310 tests OK`
+  - [x] Render Data Analytics artifact `Loop196 Batch Alias Scope Gate Checkpoint`.
+  - [x] Create Loop196 report/review artifacts.
+    - `docs/devs/loop_reports/LOOP_196_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop196_batch_alias_scope_gate_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop196_batch_alias_scope_gate_review.json`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop196_batch_alias_scope_gate_data_analytics_artifact.json`
+  - [x] Wire direct OCR work-surface lock / stale canonical rescue bypass path through shared scope gate as Loop197.
+    - added `_record_direct_image_work_surface_gate_decision(...)`
+    - recorded `scope_kind=current_work` and `direct_image_work_surface_lock` bridge evidence in the final candidate ledger
+    - kept the direct OCR fixture's stale canonical rescue scan skipped
+  - [x] Run Loop197 verification.
+    - `venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_promotion_gate_contract.py tests\test_agentic_pipeline_rework.py`: PASS
+    - direct OCR contract: PASS, `1 test OK`
+    - direct OCR/canonical rescue bypass integration: PASS, `1 test OK`
+    - `venv\Scripts\python.exe -m unittest tests.test_promotion_gate_contract -v`: PASS, `14 tests OK`
+    - direct OCR focused bundle: PASS, `5 tests OK`
+    - rank OCR/lock suites: PASS, `30 tests OK`
+    - expert metadata + promotion bundle: PASS, `26 tests OK`
+    - `venv\Scripts\python.exe -m unittest discover --start-directory tests`: PASS, `1311 tests OK`
+  - [x] Render Data Analytics artifact `Loop197 Direct OCR Scope Gate Checkpoint`.
+  - [x] Create Loop197 report/review artifacts.
+    - `docs/devs/loop_reports/LOOP_197_REPORT_20260701.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop197_direct_ocr_scope_gate_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop197_direct_ocr_scope_gate_review.json`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop197_direct_ocr_scope_gate_data_analytics_artifact.json`
+  - [x] Rerun the prior five-row packet as the next runtime loop before any residual accounting decrement.
+    - Loop198 run id `20260701_055004_272309`: runtime `GO`, `5/5/0/0`, `safe_resolved=1`, `promotion_blocked=4`, public title count `1`, trace rows `4`.
+    - Loop198 gap: `11669928` safe-resolved as `탑의 성좌들이 날 애호한다` without `publish_contract_trace`.
+  - [x] Wire title-led alias public-title recorder as Loop199 after the trace-free safe-publication gap.
+    - added `_record_title_led_alias_public_title_gate_decision(...)`
+    - added `test_title_led_alias_public_title_records_current_scope_gate`
+  - [x] Run Loop199 verification.
+    - `venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_promotion_gate_contract.py`: PASS
+    - title-led contract: PASS, `1 test OK`
+    - promotion-gate suite: PASS, `15 tests OK`
+    - title-led acceptance test: PASS, `1 test OK`
+    - `venv\Scripts\python.exe -m unittest discover --start-directory tests`: PASS, `1312 tests OK`
+  - [x] Run Loop199 packet replay.
+    - run id `20260701_060336_094994`: runtime `GO`, `5/5/0/0`, `safe_resolved=1`, `promotion_blocked=4`, public title count `1`, trace rows `4`.
+  - [x] Render Data Analytics artifact `Loop199 Five-Row Packet Replay Review`.
+  - [x] Keep residual accounting unchanged after Loop198/199.
+  - [x] Unify final publication ledger before another acceptance replay.
+    - Added `_sync_final_publication_ledger_contract(...)` in `expert_main.py`.
+    - Loop202 trace coverage `5/5`; final ledger consistency `PASS`.
+    - Data Analytics artifact `Loop202 Final Publication Ledger Review` validate/render PASS.
+  - [x] Move inferred final-publication decisions upstream into explicit shared promotion-gate records.
+    - Added `_record_resolved_public_title_gate_decision(...)` in `src/llm_batch/agentic_pipeline.py`.
+    - Preserved `candidate_ledger.promotion_gate_state` and `promotion_gate_evidence` through `build_candidate_audit_fields(...)`.
+    - Loop204 has `inferred_publish_decision_count=0`, trace coverage `5/5`, and final-ledger consistency issues `0`.
+    - Data Analytics artifact `Loop204 Resolved Public Title Gate Review` validate/render PASS.
+  - [x] Review Loop203/204 packet variance before parent/collateral replay.
+    - Loop205-208 reviewed the packet movement and added targeted architecture hardening.
+    - Loop208 run id `20260701_080838_271200`: runtime `GO`, `5/5/0/0`, VLM/OCR `READY`, `safe_resolved=3`, `promotion_blocked=2`, public title count `3`, inferred publish decisions `0`.
+    - `11695623` remains candidate-only despite official-detail candidate preservation; `11674712` is restored through character-alias official-detail support; `11713222` remains review-locked.
+    - Review artifact: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop205_208_packet_variance_scope_block_review.md`.
+  - [x] Resolve the immediate `11713222` current-work versus previous-work candidate preservation gap.
+    - Loop211 run id `20260701_085524_956588`: runtime `GO`, `5/5/0/0`, VLM/OCR `READY`.
+    - `11713222` now publishes `잘생기면 편해지는 인방 생활`; previous-work `잘생기면 인생이 편하다` is preserved candidate-only with conflict evidence.
+    - Full unittest discover: PASS, `1324 tests OK`.
+    - Data Analytics artifact validate PASS; render output was truncated, so keep render status conservative.
+    - Review artifact: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop211_previous_work_candidate_preservation_review.md`.
+  - [x] Resolve the immediate `11669928` title-led unconfirmed-alias demotion cause.
+    - Added a narrow candidate-audit exemption for short title-led aliases with official evidence title/snippet support and consumption/status tokens.
+    - `py_compile` PASS; focused candidate-audit tests `3 tests OK`; `tests.test_candidate_audit` `100 tests OK`; title-led acceptance regression `1 test OK`.
+    - Loop212 run id `20260701_093147_646251`: runtime `GO`, `5/5/0/0`, VLM/OCR `READY`, `11669928` publishes.
+    - Loop213 run id `20260701_093833_697684`: runtime `GO`, `5/5/0/0`, VLM/OCR `READY`, `11669928` publishes again.
+    - Review artifact: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop212_213_title_led_unconfirmed_alias_bridge_review.md`.
+  - [ ] Rerun parent/collateral packets only after repeat stability is reviewed.
+  - [ ] Decompose remaining `11660257` exact-alias + image/OCR context hold before any residual decrement.
+
+## 2026-07-01 regression-safe grounding Loop191/192 publish-trace packet replay
+
+- 상태: Loop190 이후 packet replay 완료 / Loop191 runtime GO / Loop192 runtime GO / trace coverage GO / packet semantic NO-GO / residual accounting `NO_DELTA_PACKET_REPLAY_VARIANCE_ALL_BLOCKED` / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Run Loop191 on the prior five-row packet after Loop190 instrumentation.
+    - result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop191_after_publish_trace_packet_replay_result.json`
+    - manifest: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop191_after_publish_trace_packet_replay_result_manifest.json`
+    - runtime audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop191_after_publish_trace_packet_replay_runtime_audit.md`
+  - [x] Record Loop191 result: `safe_resolved=2`, `promotion_blocked=3`, public title count `2`, trace rows `3`.
+  - [x] Patch Loop191 trace gap where `11660257` candidate evidence did not populate `pre_gate_candidate`.
+  - [x] Add focused regression for candidate-ledger trace source fallback.
+  - [x] Run `py_compile` and focused unittest bundle, `12 tests OK`.
+  - [x] Run Loop192 after the trace-source fallback patch.
+    - result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop192_after_candidate_ledger_trace_source_fix_result.json`
+    - manifest: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop192_after_candidate_ledger_trace_source_fix_result_manifest.json`
+    - runtime audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop192_after_candidate_ledger_trace_source_fix_runtime_audit.md`
+    - review: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop192_after_candidate_ledger_trace_source_fix_review.md`
+    - report: `docs/devs/loop_reports/LOOP_191_192_REPORT_20260701.md`
+  - [x] Record Loop192 result: trace coverage `5/5`, pre-gate title rows `5/5`, but `safe_resolved=0`, `promotion_blocked=5`, public title count `0/5`.
+  - [x] Data Analytics artifact validate/render PASS.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal completion `ACTIVE / NOT_COMPLETE`.
+  - [x] Extract root-cause seeds for `11669928` and `11713222` safe-resolved to promotion-blocked movement.
+    - `11669928`: `unconfirmed_alias_official_detail_bridge` blocks public publish despite pre-gate `탑의 성좌들이 날 애호한다` / `https://novelpia.com/novel/377032`.
+    - `11713222`: gate decision includes `row_discussion_missing`, `context_only`, `official_detail_url`, `alias_bridge`; current-work and previous-work candidates both remain in the ledger.
+  - [ ] Fix or explicitly hold `11669928` after deciding whether title-lead exact alias + official/detail + discontinued/unavailable context can publish.
+  - [ ] Fix or explicitly hold `11713222` after resolving current-work versus previous-work alias scope.
+  - [ ] Review `11695623` candidate variance (`[림월드]...` vs `그래-맞아`) before accepting any packet-level fix.
+
+## 2026-07-01 regression-safe grounding Loop190 publish-contract trace unit checkpoint
+
+- 상태: Loop189 publish-contract gap에 대한 단위 계측 완료 / `GO_UNIT_ONLY` / packet replay `OPEN` / residual accounting `NO_DELTA_UNIT_INSTRUMENTATION_ONLY` / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Add `publish_contract_trace` to promotion-blocked serialized result scrub.
+  - [x] Persist `pre_gate_candidate`, `gate_decision`, `post_gate_identity`, `reason_codes`, and `bypassed_gate=false`.
+  - [x] Add `publish_ledger` to split candidate preservation from public publish.
+  - [x] Mirror publish trace and ledger inside `candidate_ledger`.
+  - [x] Add focused regression assertions in `tests/test_expert_main_comment_metadata.py`.
+  - [x] Run `venv\Scripts\python.exe -m py_compile expert_main.py`.
+  - [x] Run `venv\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata -v`.
+  - [x] Write review artifacts:
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop190_publish_contract_trace_unit_review.json`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop190_publish_contract_trace_unit_review.md`
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop190_publish_contract_trace_unit_data_analytics_artifact.json`
+    - `docs/devs/loop_reports/LOOP_190_REPORT_20260701.md`
+  - [x] Data Analytics artifact validation PASS.
+  - [x] Record render as `ATTEMPTED_OUTPUT_TRUNCATED` because the one render call response was truncated before confirmation.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal completion `ACTIVE / NOT_COMPLETE`.
+  - [x] Rerun prior five-row packet after Loop190 instrumentation.
+    - Loop191/192 completed; runtime `GO` but semantic packet `NO-GO`.
+  - [x] Use `publish_contract_trace` per `post_id` before any residual accounting decrement.
+    - Loop192 trace coverage is `5/5`; no residual accounting decrement.
+
+## 2026-07-01 regression-safe grounding Loop189 packet replay architecture gap
+
+- 상태: Loop188 title-led bridge packet replay 완료 / runtime `GO` / packet semantic `NO-GO` / residual accounting `NO_DELTA_PACKET_REPLAY_REGRESSED_TO_ALL_PROMOTION_BLOCKED` / publish-contract gap `OPEN` / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Rerun prior Loop184 five-row packet after Loop188 title-led bridge.
+    - result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop189_loop184_followup_after_title_led_bridge_result.json`
+    - manifest: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop189_loop184_followup_after_title_led_bridge_result_manifest.json`
+    - runtime audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop189_loop184_followup_after_title_led_bridge_runtime_audit.md`
+    - review: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop189_loop184_followup_after_title_led_bridge_review.md`
+    - report: `docs/devs/loop_reports/LOOP_189_REPORT_20260701.md`
+  - [x] Confirm manifest completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`, Bridge-only MCP health `2/2`.
+  - [x] Confirm runtime contract audit `GO`, issues `[]`.
+  - [x] Data Analytics artifact `Loop189 Packet Replay Architecture Gap Review` validate/render PASS.
+  - [x] Record packet semantic regression: `safe_resolved=0`, `promotion_blocked=5`, public title count `0/5`.
+  - [x] Preserve candidate evidence as candidate-only and do not claim public title promotion.
+  - [x] Keep residual accounting unchanged: full reviewed residual ledger `136`, quarantine/human_review `5`, next actionable `131`, P0/P1/P2 `0/61/70`.
+  - [x] Add explicit publish-contract trace fields: `pre_gate_candidate`, `gate_decision`, `post_gate_identity`, `reason_codes`, `bypassed_gate=false`.
+    - Loop190 completed the unit serialized-contract instrumentation; packet replay remains open.
+  - [x] Split candidate preservation ledger from public publish ledger in artifacts/tests.
+    - Loop190 added `publish_ledger` and focused assertions; packet replay artifact coverage remains open.
+  - [ ] Add scope-state representation before `can_publish_title(...)`: current-work, previous-work, secondary-reference, author-new-work, image/OCR-derived work, platform-meta/nonwork.
+  - [ ] Re-run packet-level deterministic replay after publish-contract instrumentation.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal completion `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-01 regression-safe grounding Loop187 nested gate scrub follow-up
+
+- 상태: Loop186 `11713222` nested serialization/ledger collision 단위 보정 완료 / runtime `GO` / residual accounting `NO_DELTA_NESTED_GATE_SCRUB_REVIEW_ONLY` / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Patch `expert_main.py` promotion-blocked result contract so nested `novel_identity` public title/URL is scrubbed when `promotion_decision.publish_allowed=false`.
+  - [x] Add regression test for gate-blocked nested public title scrub.
+  - [x] Run touched-file `py_compile`.
+  - [x] Run focused promotion-gate/result-contract unittest bundle.
+  - [x] Rerun Loop184 five-row packet after nested gate scrub patch.
+    - result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop187_loop186_followup_after_nested_gate_scrub_result.json`
+    - manifest: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop187_loop186_followup_after_nested_gate_scrub_result_manifest.json`
+    - runtime audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop187_loop186_followup_after_nested_gate_scrub_runtime_audit.md`
+    - review: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop187_loop186_followup_after_nested_gate_scrub_review.md`
+    - report: `docs/devs/loop_reports/LOOP_187_REPORT_20260701.md`
+  - [x] Confirm manifest completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`, Bridge-only MCP health `2/2`.
+  - [x] Confirm runtime contract audit `GO`, issues `[]`.
+  - [x] Data Analytics artifact `Loop187 Nested Gate Scrub Follow-up Review` validate/render PASS.
+  - [x] Record Loop187 ledger split `safe_resolved=2`, `promotion_blocked=3`.
+  - [x] Keep `11660257` candidate-hold as stable only for candidate preservation, not approval.
+  - [ ] Root-cause `11669928` new safe loss to deliberate-null / explicit-alias bridge review.
+  - [ ] Keep `11713222` as alias-precedence variance because Loop186 and Loop187 disagree.
+  - [ ] Keep `11695623` as VLM/OCR recommendation-context hold until source/native evidence resolves it.
+  - [x] Keep residual accounting unchanged: full reviewed residual ledger `136`, quarantine/human_review `5`, next actionable `131`, P0/P1/P2 `0/61/70`.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal completion `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-01 regression-safe grounding Loop186 collateral follow-up
+
+- 상태: Loop184 five-row packet 재실행 완료 / runtime `GO` / residual accounting `NO_DELTA_COLLATERAL_FOLLOWUP_REVIEW_ONLY` / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Rerun Loop184 five-row packet after Loop185 candidate-hold patch.
+    - result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop186_loop184_followup_after_candidate_hold_patch_result.json`
+    - manifest: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop186_loop184_followup_after_candidate_hold_patch_result_manifest.json`
+    - runtime audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop186_loop184_followup_after_candidate_hold_patch_runtime_audit.md`
+    - review: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop186_loop184_followup_after_candidate_hold_patch_review.md`
+    - report: `docs/devs/loop_reports/LOOP_186_REPORT_20260701.md`
+  - [x] Confirm manifest completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`, Bridge-only MCP health `2/2`.
+  - [x] Confirm runtime contract audit `GO`, issues `[]`.
+  - [x] Confirm `11660257` candidate-hold fix remains stable in packet scope.
+  - [x] Data Analytics artifact validate/render PASS.
+  - [x] Record Loop186 ledger movement: Loop184 `safe_resolved=4`, `promotion_blocked=1` -> Loop186 `safe_resolved=2`, `promotion_blocked=3`.
+  - [ ] Root-cause `11695623` safe loss to image/OCR and recommendation-context promotion block.
+  - [ ] Root-cause `11713222` status/title collision and alias-precedence label policy.
+  - [ ] Keep `11674712` as character-bridge variance/quarantine evidence until native character-source proof and parent stability are recorded.
+  - [x] Keep residual accounting unchanged: full reviewed residual ledger `136`, quarantine/human_review `5`, next actionable `131`, P0/P1/P2 `0/61/70`.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal completion `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-01 regression-safe grounding Loop185 exact-alias candidate hold
+
+- 상태: `11660257` candidate-preservation fix 완료 / runtime `GO` / residual accounting `NO_DELTA_TARGETED_SINGLE_ROW_ONLY` / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Root-cause Loop184 `11660257` generic/platform-title drift.
+  - [x] Skip platform/listing/structural titles during search-result official alias candidate recovery.
+  - [x] Preserve blocked `search_evidence_alias_inference` exact-alias candidates as `hold_without_promotion` candidate evidence.
+  - [x] Add tests for platform-title skip and blocked exact-alias hold preservation.
+  - [x] Run touched-file `py_compile`.
+  - [x] Run focused and affected unittest suites.
+  - [x] Run Loop185 one-row canary with VLM/OCR on and `--slang-db off`.
+    - result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop185_11660257_exact_alias_candidate_hold_result.json`
+    - manifest: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop185_11660257_exact_alias_candidate_hold_result_manifest.json`
+    - runtime audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop185_11660257_exact_alias_candidate_hold_runtime_audit.md`
+    - review: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop185_11660257_exact_alias_candidate_hold_review.md`
+    - report: `docs/devs/loop_reports/LOOP_185_REPORT_20260701.md`
+  - [x] Confirm candidate ledger preserves `암흑가 보스요? 제가요?` / `https://novelpia.com/novel/384111` with `promotion_policy=hold_without_promotion`.
+  - [x] Data Analytics artifact validate/render PASS.
+  - [x] Rerun Loop184 five-row packet before any residual accounting delta.
+    - Loop186 result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop186_loop184_followup_after_candidate_hold_patch_result.json`
+    - conclusion: candidate-hold stable for `11660257`, but packet movement remains no-delta.
+  - [ ] Keep `11713222` alias-precedence label review open.
+  - [ ] Keep `11674712` character-bridge variance/quarantine open.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal completion `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-01 regression-safe grounding Loop183 source/native movement review
+
+- 상태: Loop184 targeted follow-up 완료 / runtime `GO` / residual accounting `NO_DELTA_TARGETED_FOLLOWUP_ONLY` / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Review Loop182 safe gains `11669928`, `11695623` before accepting closure.
+  - [x] Review Loop182 safe losses `11660257`, `11674712`, `11713222` as conservative holds, recall regressions, or variance rows.
+  - [x] Create Loop183 review JSON/MD artifacts.
+  - [x] Data Analytics artifact validate/render PASS.
+  - [x] Create `docs/devs/loop_reports/LOOP_183_REPORT_20260701.md`.
+  - [x] Keep residual accounting unchanged: full reviewed residual ledger `136`, quarantine/human_review `5`, next actionable `131`, P0/P1/P2 `0/61/70`.
+  - [x] Build next targeted follow-up packet around `11660257`, `11695623`, and `11713222`.
+    - input: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop184_loop183_source_native_followup_5.jsonl`
+    - manifest: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop184_loop183_source_native_followup_5_manifest.json`
+  - [x] Keep `11669928` and `11674712` as variance-attention controls unless repeat/parent stability clears them.
+  - [x] Run Loop184 targeted follow-up with VLM/OCR on and `--slang-db off`.
+    - result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop184_loop183_source_native_followup_5_result.json`
+    - manifest: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop184_loop183_source_native_followup_5_result_manifest.json`
+    - runtime audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop184_loop183_source_native_followup_runtime_audit.md`
+    - review: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop184_loop183_source_native_followup_review.md`
+    - report: `docs/devs/loop_reports/LOOP_184_REPORT_20260701.md`
+  - [x] Record Loop184 ledger split `safe_resolved=4`, `promotion_blocked=1`, runtime `GO`, and Data Analytics validate/render PASS.
+  - [x] Repair `11660257` candidate-preservation path for exact-alias recall against generic/platform-title drift; keep broader replay/accounting open.
+  - [ ] Keep `11713222` open for direct-body current-work alias vs comment previous-work alias label/preference review.
+  - [ ] Keep `11674712` as character-bridge variance/quarantine evidence until native character-source proof and parent stability are recorded.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal completion `ACTIVE / NOT_COMPLETE`.
+
+## 2026-06-30 regression-safe grounding Loop180 residual queue return
+
+- 상태: Loop180 P1 `image_anchor_gate` canary 완료 / strict runtime audit `REVIEW` / semantic gate `REVIEW-LOCKED` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Create Loop180 9-row input and manifest for P1 `recall_loss_review / image_anchor_gate`.
+  - [x] Run `expert_main.py` with VLM/OCR on, `--reuse-shards-only`, `--slang-db off`, effective parallel `9`.
+  - [x] Confirm manifest completed/flushed/pending/failed `9/9/0/0`, `large_run_complete=true`.
+  - [x] Confirm VLM/OCR `READY`, image_post_count `9`.
+  - [x] Record row ledger split: `safe_resolved=5`, `promotion_blocked=4`, relevant `8`, identified `5`.
+  - [x] Run `tools/audit_goal_test_run_contract.py`.
+  - [x] Preserve strict runtime audit `REVIEW` because search health was included in the small run.
+  - [x] Create Loop180 review JSON/MD artifacts.
+  - [x] Data Analytics artifact validate/render PASS.
+  - [x] Create `docs/devs/loop_reports/LOOP_180_REPORT_20260630.md`.
+  - [x] Do not decrement residual accounting from Loop180 alone.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal completion `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-01 regression-safe grounding Loop181 Bridge-only rerun
+
+- 상태: Loop180 strict runtime caveat cleared to `GO` / semantic gate `REVIEW-LOCKED` / residual accounting `NO_DELTA_REVIEW_EVIDENCE_ONLY` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Rerun the same Loop180 9-row P1 `recall_loss_review / image_anchor_gate` input with Bridge-only small-run health.
+  - [x] Confirm manifest completed/flushed/pending/failed `9/9/0/0`, `large_run_complete=true`.
+  - [x] Confirm `mcp_health_include_search=false`, MCP health ok/checked `2/2`.
+  - [x] Confirm VLM/OCR `READY`, image_post_count `9`.
+  - [x] Run `tools/audit_goal_test_run_contract.py` and record `runtime_contract=GO`, issues `[]`.
+  - [x] Compare Loop181 against Loop180 row outcomes.
+  - [x] Record Loop181 row split: relevant `9`, identified `6`, `safe_resolved=6`, `promotion_blocked=3`.
+  - [x] Record semantic movement: `6/9` rows changed; search degraded counters `57 -> 67`.
+  - [x] Create Loop181 review JSON/MD artifacts.
+  - [x] Data Analytics artifact validate/render PASS.
+  - [x] Create `docs/devs/loop_reports/LOOP_181_REPORT_20260701.md`.
+  - [x] Do not decrement residual accounting from Loop181 alone.
+  - [x] Use parent/representative replay and source/native review before accepting new safe-resolved movement.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal completion `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-01 regression-safe grounding Loop182 architecture parent replay
+
+- 상태: Loop182 parent/representative replay runtime `GO` / semantic gate `REVIEW-LOCKED` / residual accounting `NO_DELTA_REVIEW_EVIDENCE_ONLY` / goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Rerun the 38-row Loop169 parent/representative packet after architecture integration.
+  - [x] Confirm manifest completed/flushed/pending/failed `38/38/0/0`, `large_run_complete=true`.
+  - [x] Confirm search-included MCP health ok/checked `36/36`.
+  - [x] Confirm VLM/OCR `READY`, image_post_count `24`.
+  - [x] Run `tools/audit_goal_test_run_contract.py` and record `runtime_contract=GO`, issues `[]`.
+  - [x] Compare Loop182 against Loop169 row outcomes.
+  - [x] Record Loop182 row split: relevant `26`, identified `12`, `safe_resolved=12`, `promotion_blocked=24`, `hold_without_candidates=1`, `output_consistency_lint=1`.
+  - [x] Record semantic movement: `22/38` rows changed; safe gain `2`, safe loss `3`; search degraded counters `166 -> 178`.
+  - [x] Create Loop182 review JSON/MD artifacts.
+  - [x] Data Analytics artifact validate/render PASS.
+  - [x] Create `docs/devs/loop_reports/LOOP_182_REPORT_20260701.md`.
+  - [x] Do not decrement residual accounting from Loop182 alone.
+  - [x] Source/native review Loop182 safe gains and safe losses before accepting any closure.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal completion `ACTIVE / NOT_COMPLETE`.
+
+## 2026-06-30 regression-safe grounding Loop176 broader unittest gate audit
+
+- 상태: Loop179에서 broader unittest 재실행 `PASS` / semantic gate `REVIEW-LOCKED` / goal completion `NOT_COMPLETE`
+- 관찰: 현재 Codex app goal status는 `paused`이며 `complete`가 아니다. repo 운영 계약상 완료 조건도 아직 충족되지 않았다.
+- TODO:
+  - [x] Run authoritative broader unittest sweep with `--start-directory tests`.
+  - [x] Record authoritative result: `1292` tests, `8` failures, `0` errors, exit code `1`.
+  - [x] Record first `-s tests` invocation as non-authoritative command-shape issue.
+  - [x] Create Loop176 review JSON/MD artifacts.
+  - [x] Data Analytics artifact validate/render PASS.
+  - [x] Create `docs/devs/loop_reports/LOOP_176_REPORT_20260630.md`.
+  - [x] Repair or explicitly disposition the 8 broader unittest failures.
+    - Loop179 broader sweep: `1299` tests, `0` failures, `0` errors, `OK`.
+  - [x] Re-run `.venv312\Scripts\python.exe -m unittest discover --start-directory tests`.
+  - [ ] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal completion `NOT_COMPLETE`.
+
+## 2026-06-30 architecture-integrated goal revision
+
+- 상태: goal 변경 완료 / shared promotion gate 1차 구현 및 Loop179 broader unittest `PASS` / semantic gate `REVIEW-LOCKED` / goal `NOT_COMPLETE`
+- TODO:
+  - [x] Create `docs/devs/GOAL_ARCHITECTURE_INTEGRATED_REGRESSION_SAFE_GROUNDING.md`.
+  - [x] Promote `GroundingState` / `EvidenceRecord` / `PromotionDecision` / `GateReport` / `can_publish_title(...)` from design aid into active goal scope.
+  - [x] Update `goal.md` and `docs/devs/GOAL_REGRESSION_SAFE_GROUNDING_LOOP.md` with the architecture-integrated objective.
+  - [x] Update `docs/devs/ARCHITECTURE_PROMOTION_GATE_MIGRATION.md` status to `PROMOTED_INTO_ACTIVE_GOAL`.
+  - [x] Inventory public-title and URL publish paths before implementation.
+  - [x] Define the shared promotion decision object and reason-code contract.
+  - [x] Wire the highest-risk 2-3 publish paths through the shared gate.
+  - [x] Add contract tests for `PromotionDecision.status`, `reason_codes`, `candidate_preserved`, and `bypassed_gate=false`.
+  - [x] Re-run focused/affected tests and then Loop176 broader unittest sweep.
+    - Loop179 authoritative result: `1299` tests, `0` failures, `0` errors.
+  - [x] Return to Loop175 residual accounting only after the architecture phase is verified or explicitly dispositioned.
+
+## 2026-06-30 promotion gate architecture visualization
+
+- 상태: 기존 구조와 추가 아이디어 구조 Mermaid 시각화 완료 / active goal 편입 / Loop179 1차 구현 및 broader unittest `PASS`
+- TODO:
+  - [x] Create `docs/devs/ARCHITECTURE_PROMOTION_GATE_MIGRATION.md`.
+  - [x] Visualize current distributed promotion/rescue architecture.
+  - [x] Visualize proposed additive `GroundingState` / `EvidenceRecord` / `PromotionDecision` / `GateReport` / `can_publish_title(...)` architecture.
+  - [x] Document migration plan and non-goals.
+  - [x] Link the new architecture visualization from `docs/devs/README.md`.
+  - [x] Promote the architecture design into the active goal via `GOAL_ARCHITECTURE_INTEGRATED_REGRESSION_SAFE_GROUNDING.md`.
+  - [x] Implement the shared promotion gate layer.
+  - [x] Wire the highest-risk public-title publish paths through the gate.
+  - [x] Add contract tests that assert `PromotionDecision.status`, `reason_codes`, `candidate_preserved`, and `bypassed_gate=false`.
+  - [ ] Return to the latest residual queue after migration; do not start a separate goal.
+
+## 2026-06-30 regression-safe grounding Loop175 11668288 expectation revalidation
+
+- 상태: `11668288` expectation 재검증 완료 / `VARIANCE_QUARANTINE_HUMAN_REVIEW` / semantic gate `REVIEW-LOCKED` / overall goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Revalidate `11668288` across 15 repeated result files.
+  - [x] Confirm repeat split: `safe_resolved=6`, `promotion_blocked_or_hold=9`.
+  - [x] Confirm latest Loop173/174 both remain `promotion_blocked / nonwork / title=null`.
+  - [x] Separate official title/page existence from row-level work-discussion evidence.
+  - [x] Create Loop175 review JSON/MD artifacts.
+  - [x] Data Analytics artifact validate/render PASS.
+  - [x] Residual accounting Data Analytics artifact validate/render PASS.
+  - [x] Create `docs/devs/loop_reports/LOOP_175_REPORT_20260630.md`.
+  - [x] Apply `VARIANCE_QUARANTINE_HUMAN_REVIEW` to the next queue/golden expectation accounting.
+    - residual map: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop175_current_residual_gate_map_after_11668288_revalidation.md/json`
+    - residual accounting artifact: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop175_residual_accounting_data_analytics_artifact.json`
+    - accounting action: `NO_DELTA_ALREADY_COUNTED` because Loop97 already counted `11668288` as quarantine/human_review.
+  - [x] Continue remaining movement dispositions from current file evidence.
+    - `11669928`, `11674712`, and `11658615` are already prior variance quarantine rows; no new queue decrement.
+    - `11706832` remains review attention with no approval delta.
+  - [x] Run affected-module or broader unittest sweep before stability language and record Loop176 `FAIL`.
+    - authoritative result: `1292` tests, `8` failures, `0` errors.
+  - [x] Repair Loop176 failures before stability language.
+    - Loop179 broader unittest: `1299` tests OK.
+  - [ ] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-06-30 regression-safe grounding Loop173-174 parent movement follow-up
+
+- 상태: Loop173/174 runtime `GO`; targeted `11668288` repeat `NO-GO`; semantic gate `REVIEW-LOCKED`; overall goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Run Loop173 movement/control follow-up input `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop173_parent_movement_followup_after_loop172_input.jsonl`.
+  - [x] Confirm Loop173 completed/flushed/pending/failed `9/9/0/0`.
+  - [x] Confirm Loop173 VLM/OCR `READY`, image_post_count `4`, MCP health `2/2/2`.
+  - [x] Run Loop173 runtime audit and record `GO`.
+  - [x] Record Loop173 ledger counts `safe_resolved=5`, `promotion_blocked=4`.
+  - [x] Confirm `11668288` lost again as `promotion_blocked / nonwork / title=null`.
+  - [x] Run Loop174 targeted repeat for `11668288`.
+  - [x] Confirm Loop174 completed/flushed/pending/failed `1/1/0/0`.
+  - [x] Confirm Loop174 keeps `11668288` at `promotion_blocked / nonwork / title=null`.
+  - [x] Do not adopt the experimental `non_novel(gaming,high)` alias-lock bypass.
+  - [x] Re-run focused compile/tests after removing the failed experiment.
+  - [x] Data Analytics artifact validate/render PASS.
+  - [x] Create Loop173-174 review/report artifacts.
+  - [x] Revalidate `11668288` as positive-control vs variance quarantine/HOLD/human_review.
+    - Loop175 disposition: `VARIANCE_QUARANTINE_HUMAN_REVIEW`.
+  - [x] Root-cause Decoder alias recognition vs Verifier/Arbiter nonwork rejection.
+    - official title existence is strong; row-level work-discussion evidence is `NOT_STABLE`.
+  - [x] Disposition `11669928`, `11674712`, `11706832`, and `11658615` before parent stability language.
+    - Loop175 residual map: prior variance quarantine no-delta for `11669928`/`11674712`/`11658615`; review attention/no approval delta for `11706832`.
+  - [x] Run affected-module or broader unittest sweep and record Loop176 `FAIL`.
+  - [x] Repair Loop176 failures before parent stability language.
+    - Loop179 broader unittest: `1299` tests OK.
+  - [ ] Rerun clean parent/representative scope only after generalizable fix or explicit HOLD disposition.
+  - [ ] Keep source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop170-172 Lubko guard
+
+- 상태: `11658620` targeted guard `GO`; Loop170/171/172 runtime `GO`; parent-prefix semantic gate `NO-GO / REVIEW-LOCKED`; overall goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Reproduce the Loop169 `11658620` risk in Loop170 prefix context.
+  - [x] Confirm Loop170 completed/flushed/pending/failed `4/4/0/0`.
+  - [x] Patch stable-alias weak-relation bridge exemption in `agentic_pipeline.py`.
+  - [x] Add focused stable-alias weak-relation regression test.
+  - [x] Run `py_compile`.
+  - [x] Run focused stable-alias unittest (`5 tests OK`).
+  - [x] Run Loop171 parent-prefix packet after Loop170.
+  - [x] Run Loop172 parent-prefix packet after the guard patch.
+  - [x] Confirm Loop172 completed/flushed/pending/failed `8/8/0/0`.
+  - [x] Confirm Loop172 keeps `11658620` at `promotion_blocked`.
+  - [x] Data Analytics artifact validate/render PASS.
+  - [x] Create Loop170-172 review/report artifacts.
+  - [x] Prepare Loop173 movement/control follow-up input `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop173_parent_movement_followup_after_loop172_input.jsonl`.
+  - [x] Run Loop173 movement/control follow-up input.
+  - [x] Record Loop173/174 as runtime `GO` but semantic `NO-GO / REVIEW-LOCKED`.
+  - [x] Root-cause or explicitly disposition `11674712`.
+  - [x] Root-cause or explicitly disposition `11669928`.
+  - [x] Re-disposition `11706832`.
+  - [x] Review `11658615` URL/source movement.
+    - Loop175 residual map keeps `11674712`/`11669928`/`11658615` as no-delta prior variance quarantine rows and `11706832` as review attention/no approval delta.
+  - [x] Run affected-module or broader unittest sweep before approval language and record Loop176 `FAIL`.
+  - [x] Repair Loop176 failures before approval language.
+    - Loop179 broader unittest: `1299` tests OK.
+  - [ ] Rerun clean parent/representative scope after movement fixes/dispositions.
+  - [ ] Keep source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop169 parent replay after Loop168
+
+- 상태: Loop169 parent replay runtime `GO`; target recovery `GO`; semantic gate `NO-GO / REVIEW-LOCKED`; overall goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Run clean parent/representative replay after Loop168.
+  - [x] Confirm Loop169 completed/flushed/pending/failed `38/38/0/0`.
+  - [x] Confirm VLM/OCR `READY`, image_post_count `24`, MCP health `36/36/36`.
+  - [x] Run strict runtime contract audit and record `GO`.
+  - [x] Confirm `11668288 -> 가챠 중독자의 퓨전펑크 생활`.
+  - [x] Confirm `11713222 -> 잘생기면 편해지는 인방 생활`.
+  - [x] Confirm `11698880` and `11660259` remained safe-resolved.
+  - [x] Record ledger counts and safe movement vs Loop162.
+  - [x] Data Analytics artifact validate/render PASS.
+  - [x] Create Loop169 review/report artifacts.
+  - [x] Root-cause or explicitly disposition `11658620` safe gain.
+  - [x] Root-cause or explicitly disposition `11674712` safe gain.
+  - [x] Root-cause or explicitly disposition `11669928` safe loss.
+  - [x] Re-disposition `11706832` caveated-demotion boundary reopened as safe-resolved.
+  - [x] Review `11658615` same-title URL/source movement.
+    - Loop170-172 covered `11658620`; Loop175 residual map covers the remaining movement rows without approval delta.
+  - [x] Run affected-module or broader unittest sweep before stability language and record Loop176 `FAIL`.
+  - [x] Repair Loop176 failures before stability language.
+    - Loop179 broader unittest: `1299` tests OK.
+  - [ ] Keep source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop162-168 goal completion recheck
+
+- 상태: Loop168 2-row parent mimic `GO`; clean parent replay `OPEN`; semantic gate `REVIEW-LOCKED`; overall goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Confirm user correction that the goal is not complete.
+  - [x] Review Loop162/165/166/167 as non-approval evidence.
+  - [x] Patch title-lead official-detail release flag preservation in `agentic_pipeline.py`.
+  - [x] Patch short alias platform/webnovel query preservation in `orchestrator.py`.
+  - [x] Patch short alias probe detection for alias plus official/platform/webnovel search requests.
+  - [x] Add/update regression tests in `tests/test_title_lead_search_inferred_guard.py`.
+  - [x] Run `py_compile`.
+  - [x] Run focused 5-test bundle.
+  - [x] Run Loop167 and record semantic `NO-GO`.
+  - [x] Run Loop168 `20260630_190202_307842`.
+  - [x] Confirm Loop168 completed/flushed/pending/failed `2/2/0/0`.
+  - [x] Confirm Loop168 resolves `11698880` and `11668288` to `가챠 중독자의 퓨전펑크 생활`.
+  - [x] Data Analytics artifact validate/render PASS.
+  - [x] Create Loop162-168 review and report artifacts.
+  - [x] Run clean parent/representative replay after Loop168 as Loop169.
+  - [x] Review `11706832` and `11713222` movement in Loop169 and keep semantic gate locked.
+  - [x] Run affected-module or broader unittest sweep before approval language and record Loop176 `FAIL`.
+  - [x] Repair Loop176 failures before approval language.
+    - Loop179 broader unittest: `1299` tests OK.
+  - [ ] Keep source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop161 11668288 visual title-alias probe
+
+- 상태: `11668288` targeted single-row recovery `GO`; parent stability `OPEN`; semantic gate `REVIEW-LOCKED`; overall goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Reproduce/review Loop158/159 `11668288` null/promotion_blocked loss vs Loop150.
+  - [x] Patch visual title-leading alias probe in `src/llm_batch/experts/orchestrator.py`.
+  - [x] Limit the bridge to image/VLM context, `title_as_body_continuation`, exact title-leading alias query/suggestion, and alias surface hit.
+  - [x] Let the non-novel early exit continue only for the narrow `short_alias_probe`.
+  - [x] Restore the title-leading alias as auto seed after semantic seed demotion.
+  - [x] Add positive and negative regression tests for visual title-leading aliases.
+  - [x] Confirm existing alias-only nonwork forced-upgrade guard still passes.
+  - [x] Run `py_compile`.
+  - [x] Run focused 4-test bundle.
+  - [x] Run Loop161 `20260630_165512_125247`.
+  - [x] Confirm Loop161 runtime completed/flushed/pending/failed `1/1/0/0`.
+  - [x] Confirm VLM/OCR `READY`, image_post_count `1`, MCP health `1/1/1`.
+  - [x] Confirm `11668288 -> 가챠 중독자의 퓨전펑크 생활` / `https://novelpia.com/novel/387014`.
+  - [x] Confirm `candidate_ledger_status=safe_resolved`, `title_resolution_allowed=true`, `title_resolution_state=resolved`, `work_resolution=resolved`.
+  - [x] Create Loop161 review artifact `loop161_11668288_visual_title_alias_probe_review.md/json`.
+  - [x] Data Analytics artifact `Loop161 11668288 Visual Title-Alias Probe Review` validate/render PASS.
+  - [x] Create Loop161 report `docs/devs/loop_reports/LOOP_161_REPORT_20260630.md`.
+  - [ ] Rerun parent/representative scope after Loop161.
+  - [ ] Review Loop158 `11706832` movement before acceptance.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop155 11660259 short alias reaction probe
+
+- 상태: `11660259` targeted single-row fix seed `GO`; parent stability `OPEN`; semantic gate `REVIEW-LOCKED`; overall goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Mark Loop153 as invalid evidence because Verifier hit `NameError: ctx is not defined`.
+  - [x] Patch Verifier relation judge `ctx` propagation.
+  - [x] Preserve explicit alias bridge support from snippet/context evidence.
+  - [x] Patch short worklike reaction alias search probe for `기계공주` + `말한대로`/`대가리똑딱`-style context.
+  - [x] Add regression tests for snippet abbreviation mapping, explicit alias phrase support, official wiki alias bridge, and 11660259-style reaction alias probing.
+  - [x] Run `py_compile`.
+  - [x] Run focused 4-test bundle.
+  - [x] Run broader 11-test relation/alias guard bundle.
+  - [x] Run Loop155 `20260630_143521_442264`.
+  - [x] Confirm Loop155 runtime completed/flushed/pending/failed `1/1/0/0`.
+  - [x] Confirm `primary_work=헌터갤러리의 국가권력급 기계공주` / `https://novelpia.com/novel/390228`.
+  - [x] Confirm `candidate_ledger_status=safe_resolved`, `title_resolution_allowed=true`, `title_resolution_state=resolved`, `work_resolution=resolved`.
+  - [x] Create Loop155 review artifact `loop155_11660259_short_alias_reaction_probe_review.md/json`.
+  - [x] Data Analytics artifact `Loop155 11660259 Short Alias Reaction Probe Review` validate/render PASS.
+  - [x] Create Loop155 report `docs/devs/loop_reports/LOOP_155_REPORT_20260630.md`.
+  - [x] Rerun representative/parent scope containing `11660259` as Loop156.
+  - [x] Parent-confirm `11660259` and `11713222` in Loop156.
+  - [x] Record Loop156 as runtime `GO`, target confirmation `GO`, semantic `NO-GO`.
+  - [x] Root-cause Loop156 `11698880` wrong-title switch risk and parent-confirm repair in Loop158.
+  - [x] Review Loop156/158 `11668288` loss vs Loop150 and recover targeted single-row seed in Loop161.
+  - [ ] Review Loop156/158 `11706832` gained/changed title.
+  - [ ] Rerun parent/representative scope after Loop161.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop156 parent replay after Loop155
+
+- 상태: parent replay runtime `GO`; `11660259`/`11713222` parent-confirmed; semantic gate `NO-GO / REVIEW-LOCKED`; overall goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Run Loop156 parent/representative replay from Loop134 source-enriched packet.
+  - [x] Confirm Loop156 run `20260630_144848_180512`.
+  - [x] Confirm completed/flushed/pending/failed `38/38/0/0`.
+  - [x] Confirm VLM/OCR semantic review `READY` and image_post_count `24`.
+  - [x] Confirm MCP health ok/required `36/36`.
+  - [x] Confirm `11660259 -> 헌터갤러리의 국가권력급 기계공주` / `https://novelpia.com/novel/390228`.
+  - [x] Confirm `11713222 -> 잘생기면 편해지는 인방 생활` / `https://novelpia.com/novel/384016`.
+  - [x] Record status counts `safe_resolved=9`, `promotion_blocked=26`, `hold_without_candidates=2`, `output_consistency_lint=1`.
+  - [x] Compare movement vs Loop142, Loop136, and Loop150.
+  - [x] Create Loop156 review artifact `loop156_parent_replay_after_loop155_alias_probe_review.md/json`.
+  - [x] Data Analytics artifact `Loop156 Parent Replay After Loop155 Alias Probe Review` validate/render PASS.
+  - [x] Create Loop156 report `docs/devs/loop_reports/LOOP_156_REPORT_20260630.md`.
+  - [x] Root-cause `11698880` changed-title risk (`가챠 중독자의 퓨전펑크 생활` -> `상남자 [독점]`) and parent-confirm repair in Loop158.
+  - [ ] Review `11706832` gained/changed title before acceptance.
+  - [x] Review `11668288` loss vs Loop150 and recover targeted single-row seed in Loop161.
+  - [ ] Rerun parent/representative scope after Loop161 before counting stability.
+  - [ ] Keep source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop152 11660259 current-code single repeat
+
+- 상태: `11660259` current-code single repeat `NO-GO_REPRODUCED`; semantic gate `REVIEW-LOCKED`; overall goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Compare `11660259` across Loop136, Loop142, Loop150.
+  - [x] Confirm Loop136/Loop142 primary work `헌터갤러리의 국가권력급 기계공주` / `https://novelpia.com/novel/390228`.
+  - [x] Confirm Loop150 lost the public title with `promotion_blocked` / `unresolved_matchable`.
+  - [x] Extract exact `11660259` row from Loop134 parent source-enriched packet.
+  - [x] Run Loop152 current-code single repeat.
+  - [x] Confirm Loop152 run `20260630_141044_962593`.
+  - [x] Confirm runtime completed/flushed/pending/failed `1/1/0/0`.
+  - [x] Confirm VLM/OCR semantic gate `READY` with `no_image_blocks`.
+  - [x] Confirm final public title/url `null`, `candidate_ledger_status=hold_without_candidates`, `title_resolution_allowed=false`.
+  - [x] Record root-cause signal: `relation_judge:thematic_overlap_only`, `memory_query_forced_upgrade_guard`, `title_surface_primary_relation_non_work_blocked`.
+  - [x] Create Loop152 review artifact `loop152_11660259_current_code_single_repeat_review.md/json`.
+  - [x] Data Analytics artifact `Loop152 11660259 Current-Code Single Repeat NO-GO Review` validate/render PASS.
+  - [x] Create Loop152 report `docs/devs/loop_reports/LOOP_152_REPORT_20260630.md`.
+  - [x] Root-cause/fix the weak alias bridge path so official detail plus explicit alias evidence can survive relation hold only in safe work-like cases.
+  - [x] Repeat `11660259` after the fix in Loop155.
+  - [x] Rerun representative/parent scope in Loop156 and confirm `11660259` recovery.
+  - [ ] Do not claim stability/approval until Loop156 collateral blockers are resolved.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop151 11713222 current-code single repeat
+
+- 상태: `11713222` current-code single repeat `GO`; parent stability still `OPEN`; semantic gate `REVIEW-LOCKED`
+- TODO:
+  - [x] Rerun exact `11713222` input after Loop150 parent-scope loss.
+  - [x] Confirm Loop151 run `20260630_135620_918136`.
+  - [x] Confirm runtime completed/flushed/pending/failed `1/1/0/0`.
+  - [x] Confirm VLM/OCR semantic gate `READY` with `no_image_blocks`.
+  - [x] Confirm primary work `잘생기면 편해지는 인방 생활` / `https://novelpia.com/novel/384016`.
+  - [x] Confirm `candidate_ledger_status=safe_resolved`, `title_resolution_allowed=true`, `title_resolution_state=resolved`.
+  - [x] Record that competing previous work `https://novelpia.com/novel/300042` did not steal public identity.
+  - [x] Create Loop151 review artifact `loop151_11713222_current_code_single_repeat_review.md/json`.
+  - [x] Data Analytics artifact `Loop151 11713222 Current-Code Repeat Diagnostic` validate/render PASS.
+  - [x] Create Loop151 report `docs/devs/loop_reports/LOOP_151_REPORT_20260630.md`.
+  - [ ] Treat `11713222` parent stability as open until representative/parent replay preserves the current official detail.
+  - [x] Review `11660259` title loss vs Loop142 and Loop136.
+  - [x] Track `11660259` as a current-code single-repeat `NO-GO_REPRODUCED` blocker after Loop152; Loop155 now closes the single-row repro seed only.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop150 parent replay after Loop149
+
+- 상태: Loop150 parent replay runtime `GO`; semantic gate `NO-GO / REVIEW-LOCKED`; overall goal `ACTIVE / NOT_COMPLETE`
+- TODO:
+  - [x] Wait for Loop150 process exit and clean manifest before runtime-complete claims.
+  - [x] Confirm Loop150 run `20260630_125822_273225`.
+  - [x] Confirm input `38`, completed/flushed/pending/failed `38/38/0/0`.
+  - [x] Confirm `large_run_complete=true`.
+  - [x] Confirm VLM/OCR semantic review readiness `READY` and image_post_count `24`.
+  - [x] Confirm requested/effective parallel `36/36` and MCP health ok/required `36/36`.
+  - [x] Create Loop150 review artifact `loop150_parent_replay_after_loop149_review.md/json`.
+  - [x] Compare Loop150 semantic movement against Loop142: `same=31`, `lost=5`, `gained=2`.
+  - [x] Compare Loop150 semantic movement against Loop136: `same=32`, `lost=4`, `gained=2`.
+  - [x] Data Analytics artifact `Loop150 Parent Replay Runtime GO Semantic NO-GO Review` validate/render PASS.
+  - [x] Create Loop150 report `docs/devs/loop_reports/LOOP_150_REPORT_20260630.md`.
+  - [x] Parent-confirm `11660257` stayed public-title blocked, but record it as movement/drift evidence only.
+  - [x] Parent-confirm `11669928` resolved and `11674712` held/null in this run.
+  - [ ] Root-cause `11713222` parent-scope loss after Loop148 targeted repair.
+  - [ ] Review `11660259` title loss vs Loop142 and Loop136.
+  - [ ] Re-check `11705231` loss vs Loop136 before claiming targeted repair stability.
+  - [ ] Introduce common `GroundingState`/`PromotionDecision`/`can_publish_title` layer or equivalent before continuing broad single-post guard accumulation.
+    - visualization/spec: `docs/devs/ARCHITECTURE_PROMOTION_GATE_MIGRATION.md`
+  - [ ] Add harness-level collateral compare/gate layer so queue closure cannot imply semantic approval.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop149 11660257 current-code repeat
+
+- 상태: `11660257` current-code single repeat blocked public title; parent semantic quality still `NO-GO / REVIEW-LOCKED`; overall goal still `NOT_COMPLETE`
+- TODO:
+  - [x] Confirm `11660257` was blocked in Loop107 but reopened in Loop142.
+  - [x] Run current-code single repeat with VLM/OCR on and `--require-vlm-ocr-for-images`.
+  - [x] Confirm Loop149 runtime completed/flushed/pending/failed `1/1/0/0`.
+  - [x] Confirm VLM/OCR semantic gate `READY`.
+  - [x] Confirm final public title/url `null`, `candidate_ledger_status=promotion_blocked`, `title_resolution_allowed=false`.
+  - [x] Preserve competing candidates only as candidate evidence.
+  - [x] Create Loop149 review artifact `loop149_11660257_current_code_repeat_review.md/json`.
+  - [x] Data Analytics artifact `Loop149 11660257 Current-Code Repeat Review` validate/render PASS.
+  - [x] Create Loop149 report `docs/devs/loop_reports/LOOP_149_REPORT_20260630.md`.
+  - [ ] Parent-confirm `11660257` with `11669928` and `11674712`.
+  - [x] Parent/representative packet reran as Loop150; runtime `GO`, semantic `NO-GO / REVIEW-LOCKED`.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop148 11713222 direct body alias previous-work guard
+
+- 상태: `11713222` previous/current work confusion repaired at targeted scope; parent semantic quality still `NO-GO / REVIEW-LOCKED`; overall goal still `NOT_COMPLETE`
+- TODO:
+  - [x] Reproduce failing baseline where `11713222` resolves to previous work `잘생기면 인생이 편하다`.
+  - [x] Confirm native/web evidence that `잘생인방` maps to `잘생기면 편해지는 인방 생활` / `https://novelpia.com/novel/384016`.
+  - [x] Add direct-current-alias conflict guard in `src\llm_batch\agentic_pipeline.py`.
+  - [x] Add verifier-detail lock for current title when body alias is directly grounded.
+  - [x] Block `multi_work` previous-work comment override when direct body alias points to the current work.
+  - [x] Add regression test `test_multi_work_previous_comment_keeps_direct_body_alias_primary`.
+  - [x] Run touched-file `py_compile`: PASS.
+  - [x] Run focused title-lead 5-test bundle: PASS.
+  - [x] Run Loop148 rerun2 single-row canary for `11713222`: completed/flushed/pending/failed `1/1/0/0`.
+  - [x] Confirm Loop148 rerun2 public title `잘생기면 편해지는 인방 생활`, URL `https://novelpia.com/novel/384016`.
+  - [x] Confirm previous work `잘생기면 인생이 편하다` is preserved only as mentioned/secondary candidate evidence.
+  - [x] Create Loop148 review artifact `loop148_11713222_direct_body_alias_previous_work_guard_review.md/json`.
+  - [x] Data Analytics artifact `Loop148 11713222 Direct Body Alias Previous Work Guard` validate/render PASS.
+  - [x] Create Loop148 report `docs/devs/loop_reports/LOOP_148_REPORT_20260630.md`.
+  - [x] Requeue/repeat `11660257` on current code in Loop149; single-row output stayed promotion-blocked.
+  - [ ] Parent-confirm `11660257` after Loop149.
+  - [ ] Parent-confirm plausible gained rows `11669928` and `11674712`.
+  - [ ] Rerun parent/representative packet after Loop143/Loop144 repairs, Loop145 disposition, Loop146 repair, Loop147 guard, Loop148 guard, and Loop149 repeat.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop147 11714903 wrong-relevance public-title guard
+
+- 상태: `11714903` wrong-relevance public-title serialization blocked at targeted scope; parent semantic quality still `NO-GO / REVIEW-LOCKED`; overall goal still `NOT_COMPLETE`
+- TODO:
+  - [x] Confirm active goal is not complete.
+  - [x] Review Loop142 gained-title rows `11669928`, `11674712`, `11660257`, `11713222`, `11714903`.
+  - [x] Classify `11714903` as wrong-relevance public-title leak from Loop142.
+  - [x] Add `apply_judge_seed_wrong_relevance_public_title_guard(...)` in `src\llm_batch\candidate_audit.py`.
+  - [x] Wire the guard in `expert_main.py` final postprocess.
+  - [x] Add regression test `test_wrong_relevance_seed_public_title_is_candidate_hold`.
+  - [x] Add reason-scrub regression test for `output_consistency_lint` HOLD rows.
+  - [x] Run touched-file `py_compile`: PASS.
+  - [x] Run focused wrong-relevance/reason-scrub bundle: PASS.
+  - [x] Run Loop147 single-row canary for `11714903`: completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`.
+  - [x] Confirm Loop147 public title/url `null`, `title_resolution_allowed=false`, `candidate_ledger_status=output_consistency_lint`, `work_resolution=none`.
+  - [x] Create Loop147 review artifact `loop147_11714903_wrong_relevance_public_title_guard_review.md/json`.
+  - [x] Data Analytics artifact `Loop147 11714903 Wrong Relevance Public Title Guard` validate/render PASS.
+  - [x] Create Loop147 report `docs/devs/loop_reports/LOOP_147_REPORT_20260630.md`.
+  - [x] Root-caused `11713222` previous/current work confusion; targeted repaired in Loop148.
+  - [x] Requeue/repeat `11660257` on current code in Loop149; single-row output stayed promotion-blocked.
+  - [ ] Parent-confirm `11660257` after Loop149.
+  - [ ] Parent-confirm plausible gained rows `11669928` and `11674712`.
+  - [x] Parent/representative packet reran as Loop150; runtime `GO`, semantic `NO-GO / REVIEW-LOCKED`.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop145 11706832 accepted caveated demotion
+
+- 상태: `11706832` explicitly dispositioned as accepted caveated demotion; parent semantic quality still `NO-GO / REVIEW-LOCKED`; overall goal still `NOT_COMPLETE`
+- TODO:
+  - [x] Re-read pasted goal contract and confirm the goal is active, not complete.
+  - [x] Recheck Loop142/Loop136 compare row for `11706832`.
+  - [x] Recheck Loop139 native/web review and local image evidence for `11706832`.
+  - [x] Confirm image `loop139_11706832_dc_image.jpg` is textless meme/fanart, not a title/platform anchor.
+  - [x] Confirm Loop139 official detail evidence `https://novelpia.com/novel/250464` / `황제의 딸로 환생했다` remains caveated by community-mediated alias bridge.
+  - [x] Classify Loop142 public-title null as `ACCEPTED_CAVEATED_DEMOTION_NOT_CODE_REPAIR`.
+  - [x] Keep candidate/URL evidence preserved but do not reopen public identity for this row.
+  - [x] Ask Council reviewers; all agreed with accepted caveated demotion over code repair.
+  - [x] Create Loop145 row review artifact `loop145_11706832_alias_caveat_disposition_review.md/json`.
+  - [x] Data Analytics artifact `Loop145 11706832 Accepted Caveated Demotion Review` validate/render PASS.
+  - [x] Create Loop145 report `docs/devs/loop_reports/LOOP_145_REPORT_20260630.md`.
+  - [x] Repair `11698897` candidate-preservation drift in Loop146: public title blocked, Rimworld candidate preserved, spurious `스페이스 오페라` pruned.
+  - [x] Review gained-title rows in Loop147; `11714903` targeted-blocked, `11713222` targeted repaired in Loop148, and `11660257` current-code single repeat blocked in Loop149.
+  - [ ] Rerun parent/representative packet after Loop143/Loop144 repairs, Loop145 disposition, Loop146 drift repair, and Loop147 guard.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop146 11698897 candidate-preservation repair
+
+- 상태: `11698897` candidate-preservation drift repaired at targeted scope; parent semantic quality still `NO-GO / REVIEW-LOCKED`; overall goal still `NOT_COMPLETE`
+- TODO:
+  - [x] Reproduce the drift with diagnostic Loop146 canary: public promotion stayed blocked but `스페이스 오페라` remained in candidate ledger.
+  - [x] Add rejected search-alias candidate pruning before candidate-preservation snapshot in `src\llm_batch\agentic_pipeline.py`.
+  - [x] Add regression test `test_rejected_search_alias_inference_candidate_is_pruned_from_hold_snapshot`.
+  - [x] Preserve existing cross-media title-body hold behavior.
+  - [x] Run `py_compile` for touched pipeline/test files: PASS.
+  - [x] Run focused title-lead/official-url guard bundle: PASS.
+  - [x] Run Loop146b single-row canary for `11698897`: `1/1`, pending `0`, failed `0`, VLM/OCR `READY`.
+  - [x] Confirm Loop146b public title `null`, `candidate_ledger_status=promotion_blocked`, `title_resolution_allowed=false`.
+  - [x] Confirm `[림월드]변방계에서 회귀자로 살아남기` / `https://novelpia.com/novel/382324` is preserved as candidate evidence.
+  - [x] Confirm `스페이스 오페라` is absent from `candidate_preservation_sources`.
+  - [x] Create Loop146 review artifact `loop146_11698897_candidate_preservation_repair_review.md/json`.
+  - [x] Data Analytics artifact `Loop146 11698897 Candidate Preservation Repair` validate/render PASS.
+  - [x] Create Loop146 report `docs/devs/loop_reports/LOOP_146_REPORT_20260630.md`.
+  - [x] Review gained-title rows in Loop147; `11714903` targeted-blocked, `11713222` targeted repaired in Loop148, and `11660257` current-code single repeat blocked in Loop149.
+  - [ ] Rerun parent/representative packet after Loop143/Loop144 repairs, Loop145 disposition, Loop146 drift repair, and Loop147 guard.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop143 11658615 targeted fix
+
+- 상태: `11658615` targeted repaired; parent semantic quality still `NO-GO / REVIEW-LOCKED`; overall goal still `NOT_COMPLETE`
+- TODO:
+  - [x] Root-cause Loop142 `11658615` loss as noisy direct image/OCR surface conflicting with verified official platform title.
+  - [x] Add narrow verified-alias official-detail lock exemption in `src\llm_batch\candidate_audit.py`.
+  - [x] Add regression test `test_verified_alias_detail_lock_exempts_noisy_image_surface_conflict`.
+  - [x] Run `py_compile` for touched files: PASS.
+  - [x] Run focused 4-test candidate-audit bundle: PASS.
+  - [x] Run Loop143 single-row canary for `11658615`: `1/1`, VLM/OCR `READY`.
+  - [x] Confirm Loop143 result `safe_resolved`, title `이거 럽코 빙의물인가요`, URL `https://novel.munpia.com/533816`.
+  - [x] Create Loop143 review artifact and report.
+  - [x] Data Analytics artifact `Loop143 11658615 Targeted Fix Review` validate/render PASS.
+  - [ ] Treat full `tests.test_candidate_audit` failure in `test_entity_mentions_do_not_pollute_resolved_titles` as separate open work.
+  - [x] Repair `11705231` at targeted scope in Loop144.
+  - [x] Explicitly disposition Loop142 remaining title loss `11706832` as Loop145 accepted caveated demotion.
+  - [x] Repair `11698897` candidate-preservation drift in Loop146.
+  - [ ] Review gained-title rows `11669928`, `11674712`, `11660257`, `11713222`, `11714903`.
+  - [ ] Rerun parent/representative packet after the targeted fix before any approval language.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop142 parent replay after Loop141 HOLD boundary
+
+- 상태: parent/representative replay runtime `GO`; semantic quality `NO-GO / REVIEW-LOCKED`; overall goal still `NOT_COMPLETE`
+- TODO:
+  - [x] Check vLLM model endpoint before run.
+  - [x] Save shard preflight audit `out\search_shard_audit_20260630_loop142_preflight.json` with `36/36` healthy shards.
+  - [x] Run Loop142 parent replay from `loop134_parent_representative_after_loop133_source_enriched_packet.jsonl`.
+  - [x] Confirm runtime result rows `38/38`, pending snapshot `0`, VLM/OCR `READY`, MCP health `36/36`, no shard auto-up/recreate.
+  - [x] Create runtime audit, compare, review artifacts for Loop142.
+  - [x] Data Analytics artifact `Loop142 Parent Replay Runtime GO Semantic NO-GO Review` validate/render PASS.
+  - [x] Confirm Loop141 target rows remain public-title null.
+  - [x] Record `11698897` candidate-preservation drift as open.
+  - [x] Record Loop139-confirmed title losses: `11658615`, `11706832`, `11705231`.
+  - [x] Record `11700470` demotion as expected after Loop137.
+  - [x] Repair `11658615` at targeted scope in Loop143.
+  - [x] Repair `11705231` at targeted scope in Loop144.
+  - [x] Explicitly disposition remaining parent-scope loss `11706832` as Loop145 accepted caveated demotion.
+  - [x] Repair `11698897` candidate-preservation drift in Loop146.
+  - [ ] Review gained-title rows `11669928`, `11674712`, `11660257`, `11713222`, `11714903`.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop141 current expected/recall HOLD boundary review
+
+- 상태: current expected/recall row-level rationale completed as explicit HOLD/control; no code patch; no `expert_main.py` rerun; overall goal still `NOT_COMPLETE`
+- TODO:
+  - [x] Recheck the three remaining current expected/recall rows after Loop140: `11663521`, `11694019`, `11698897`.
+  - [x] Inspect available local/downloaded images for `11663521` and `11698897`.
+  - [x] Record HTTP 403 for unavailable dccon helper images.
+  - [x] Classify `11663521` as `HOLD_BOUNDARY_CONFIRMED`.
+  - [x] Classify `11694019` as `HOLD_BOUNDARY_CONFIRMED`.
+  - [x] Classify `11698897` as `VARIANCE_HOLD_CONTROL_CONFIRMED`.
+  - [x] Reduce current expected/recall unrationalized open rows to `0`.
+  - [x] Create Loop141 review artifact and loop report.
+  - [x] Data Analytics artifact `Loop141 Current Expected Recall HOLD Boundary Review` validate/render PASS.
+  - [x] Run parent/representative semantic replay with current code and Loop137-Loop141 evidence boundary as Loop142.
+  - [x] Keep Loop142 semantic approval `NO-GO / REVIEW-LOCKED`.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop140 expected/recall disposition consolidation
+
+- 상태: audit-only consolidation completed; current expected/recall remaining list narrowed from six to three; no code patch; no `expert_main.py` rerun; overall goal still `NOT_COMPLETE`
+- TODO:
+  - [x] Re-read pasted goal contract and confirm goal remains active/not complete.
+  - [x] Recheck Loop92-93 stable P1A dispositions for `11695623`, `11700495`, and `11705261`.
+  - [x] Recheck Loop136 latest row state for the six current expected/recall rows.
+  - [x] Split out `11695623`, `11700495`, and `11705261` as explicit current HOLD/no-public dispositions rather than unresolved current expected/recall work.
+  - [x] Keep `11663521`, `11694019`, and `11698897` open for targeted review.
+  - [x] Create Loop140 review artifact and loop report.
+  - [x] Data Analytics artifact `Loop140 Remaining Expected Recall Disposition Consolidation` validate/render PASS.
+  - [x] Current expected/recall rows `11663521`, `11694019`, and `11698897` explicitly held with rationale in Loop141.
+  - [x] Included Loop137/Loop138/Loop139/Loop140/Loop141 evidence in Loop142 parent/representative replay; runtime `GO`, semantic `NO-GO / REVIEW-LOCKED`.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop139 Loop136 safe-resolved native/web review
+
+- 상태: remaining Loop136 `safe_resolved` native/web review completed with `11706832` alias caveat; no code patch; no `expert_main.py` rerun; overall goal still `NOT_COMPLETE`
+- TODO:
+  - [x] Review current official/platform page titles for `11698880`, `11658615`, `11660237`, `11660258`, `11660259`, `11706832`, `11705231`.
+  - [x] Download and inspect image evidence for `11698880`, `11658615`, `11660237`, `11706832`.
+  - [x] Confirm `11658615` image directly shows the work card title and author.
+  - [x] Separate meme/reaction-only images from title-bridge evidence.
+  - [x] Keep `11706832` as official-page-confirmed but alias-bridge caveated.
+  - [x] Create Loop139 review artifact and loop report.
+  - [x] Included Loop137/Loop138/Loop139/Loop140 evidence in Loop142 parent/representative replay; runtime `GO`, semantic `NO-GO / REVIEW-LOCKED`.
+  - [x] Split out `11695623`, `11700495`, and `11705261` as explicit current HOLD/no-public dispositions in Loop140.
+  - [x] Current expected/recall rows `11663521`, `11694019`, and `11698897` explicitly held with rationale in Loop141.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop138 11685994 image/native-web verification
+
+- 상태: `11685994` image/native-web exact-title verification completed as `INFO_MISSING_NATIVE_WEB_CONFIRMED / HOLD`; no code patch; no `expert_main.py` rerun; overall goal still `NOT_COMPLETE`
+- TODO:
+  - [x] Recheck Loop136 `11685994` latest row state: public title `null`, `promotion_blocked`, `title_resolution_allowed=false`.
+  - [x] Inspect local image and enlarged title crop.
+  - [x] Preserve cover title family `교황님 아 하세요 / 마왕들어가요`, author `아데라`, `장편소설` as candidate evidence only.
+  - [x] Reject wrong-work candidate pages `https://novelpia.com/novel/270445`, `https://novelpia.com/novel/383971`, and `https://page.kakao.com/content/56516207`.
+  - [x] Create Loop138 review artifact and loop report.
+  - [x] Confirm no safe code relaxation is justified by this row.
+  - [x] Included Loop137/Loop138/Loop139/Loop140 evidence in Loop142 parent/representative replay; runtime `GO`, semantic `NO-GO / REVIEW-LOCKED`.
+  - [x] Continue native/web review of remaining Loop136 safe-resolved rows; completed in Loop139 with `11706832` alias caveat.
+  - [x] Split out `11695623`, `11700495`, and `11705261` as explicit current HOLD/no-public dispositions in Loop140.
+  - [x] Current expected/recall rows `11663521`, `11694019`, and `11698897` explicitly held with rationale in Loop141.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop137 11700470 listing-description guard
+
+- 상태: Loop136 `11700470` description-title promotion root-caused and repaired to focused HOLD; runtime `GO`; semantic quality still `REVIEW-LOCKED`; overall goal still `NOT_COMPLETE`
+- TODO:
+  - [x] Review Loop136 `11700470` safe_resolved output against native/web evidence.
+  - [x] Confirm official page title `납치당했는데 미소녀가 되었다` differs from promoted description surface.
+  - [x] Add listing-description official-title promotion guard in `candidate_audit.py`.
+  - [x] Add regression test `test_listing_description_official_title_is_demoted_but_preserved`.
+  - [x] Run `py_compile`: PASS.
+  - [x] Run related 7-test unittest bundle: PASS.
+  - [x] Check vLLM model endpoint and 36 search shards before run.
+  - [x] Run Loop137 focused canary: `1/1/0/0`, VLM/OCR `READY`.
+  - [x] Run strict runtime audit: `GO`.
+  - [x] Confirm `11700470` public title `null`, `candidate_ledger_status=promotion_blocked`, `title_resolution_allowed=false`.
+  - [x] Create Loop137 review/compare artifacts and report.
+  - [x] Included this repair plus Loop138/Loop139/Loop140 evidence in Loop142 parent/representative replay; runtime `GO`, semantic `NO-GO / REVIEW-LOCKED`.
+  - [x] Continue native/web review of remaining Loop136 safe-resolved rows; completed in Loop139 with `11706832` alias caveat.
+  - [x] Verify `11685994` image/native-web exact-title evidence; Loop138 confirmed `INFO_MISSING_NATIVE_WEB / HOLD`.
+  - [x] Split out `11695623`, `11700495`, and `11705261` as explicit current HOLD/no-public dispositions in Loop140.
+  - [x] Current expected/recall rows `11663521`, `11694019`, and `11698897` explicitly held with rationale in Loop141.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop136 parent replay after Loop135 guard
+
+- 상태: Loop136 parent replay runtime `GO`; Loop135 `11694035` guard holds at parent scope; semantic quality still `NO-GO / REVIEW-LOCKED`; overall goal still `NOT_COMPLETE`
+- TODO:
+  - [x] Rerun Loop134 parent/representative packet after Loop135 patch.
+  - [x] Check vLLM model endpoint and 36 search shards before run.
+  - [x] Run Loop136 parent replay: `38/38/0/0`, VLM/OCR `READY`.
+  - [x] Run strict runtime audit: `GO`.
+  - [x] Confirm `11694035` public title remains `null` / `promotion_blocked` at parent scope.
+  - [x] Confirm `11705231 -> 탐식의 재림` still holds at parent scope.
+  - [x] Create Loop136 compare/review artifacts and loop report.
+  - [x] Review `11700470` against native/web title evidence; repaired to focused HOLD in Loop137.
+  - [x] Review remaining safe-resolved rows against native/web title evidence; completed in Loop139 with `11706832` alias caveat.
+  - [x] Verify `11685994` image/native-web exact-title evidence before code changes; Loop138 confirmed `INFO_MISSING_NATIVE_WEB / HOLD`.
+  - [x] Split out `11695623`, `11700495`, and `11705261` as explicit current HOLD/no-public dispositions in Loop140.
+  - [x] Current expected/recall rows `11663521`, `11694019`, and `11698897` explicitly held with rationale in Loop141.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop135 11694035 Phase2 HOLD guard
+
+- 상태: Loop135 targeted `11694035` guard PASS; parent/representative replay completed as Loop136 runtime `GO`; semantic gate still `NO-GO / REVIEW-LOCKED`; overall goal still `NOT_COMPLETE`
+- TODO:
+  - [x] Root-cause Loop134 golden negative violation `11694035 -> 아카데미 생존 갤러리`.
+  - [x] Add Phase2 `HOLD` / `re_search` precision-seed bypass block in `candidate_audit.py`.
+  - [x] Add regression test `test_phase2_hold_precision_seed_blocks_official_detail_bypass`.
+  - [x] Run `py_compile`: PASS.
+  - [x] Run related 6-test unittest bundle: PASS.
+  - [x] Attempt full `tests.test_candidate_audit`; record separate existing failure.
+  - [x] Check vLLM model endpoint and 36 search shards before run.
+  - [x] Run Loop135 focused canary: `1/1/0/0`, VLM/OCR `READY`.
+  - [x] Run strict runtime audit: `GO`.
+  - [x] Confirm `11694035` public title `null`, `candidate_ledger_status=promotion_blocked`, `phase2_hold_seed_requires_review`.
+  - [x] Create Loop135 review/compare artifacts and report.
+  - [x] Rerun parent/representative packet after Loop135 patch as Loop136.
+  - [ ] Review reopened/changed controls `11714903`, `11706832`, `11698880`, `11695623`, `11660257`.
+  - [ ] Resolve or explicitly HOLD remaining expected-work losses after Loop138-held `11685994`: `11663521`, `11694019`, `11700470`.
+  - [x] Verify `11685994` image/native-web exact-title evidence before code changes; Loop138 confirmed `INFO_MISSING_NATIVE_WEB / HOLD`.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop134 parent replay after source repair
+
+- 상태: Loop134 runtime `GO`; `11705231` parent-scope restored; parent/representative semantic gate still `NO-GO / REVIEW-LOCKED`; overall goal still `NOT_COMPLETE`
+- TODO:
+  - [x] Build Loop134 source-enriched parent packet from Loop104 38-row role mix.
+  - [x] Replace only `11705231` with row-level source-evidence input.
+  - [x] Check vLLM model endpoint and 36 search shards before run.
+  - [x] Run Loop134 parent/representative replay: `38/38/0/0`.
+  - [x] Run strict runtime audit: `GO`.
+  - [x] Confirm `11705231 -> 탐식의 재림` at parent scope.
+  - [x] Create role-aware review artifact and compare artifact.
+  - [x] Data Analytics artifact `Loop134 Parent Replay Quantitative Review` validate/render PASS.
+  - [x] Create Loop134 report and update docs/checklists.
+  - [x] Root-cause and targeted-repair golden negative violation `11694035 -> 아카데미 생존 갤러리` in Loop135.
+  - [ ] Review reopened/changed controls `11714903`, `11706832`, `11698880`, `11695623`, `11660257`.
+  - [ ] Resolve or explicitly HOLD remaining expected-work losses after Loop138-held `11685994`: `11663521`, `11694019`, `11700470`.
+  - [x] Verify `11685994` image/native-web exact-title evidence before code changes; Loop138 confirmed `INFO_MISSING_NATIVE_WEB / HOLD`.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop133 source-enriched focused repair
+
+- 상태: `11705231` targeted source-enriched blocker repaired; two canaries `GO` / `Identified=1`; overall goal still `NOT_COMPLETE`
+- TODO:
+  - [x] Preserve source evidence fields through JSONL input loading and `PostInput`.
+  - [x] Seed orchestrator initial search results from row-level source evidence.
+  - [x] Add narrow locked-official contextual-anchor precision bypass.
+  - [x] Run focused 13-test bundle: PASS.
+  - [x] Run `py_compile` for touched runtime modules: PASS.
+  - [x] Run first source-enriched canary: `1/1/0/0`, `Identified=1`, title `탐식의 재림`.
+  - [x] Run repeat source-enriched canary: `1/1/0/0`, `Identified=1`, title `탐식의 재림`.
+  - [x] Run runtime audits for both latest canaries: `GO`.
+  - [x] Update Loop133 report, checklist, history, verification docs.
+  - [x] Rerun parent/representative packet after Loop133 repair as Loop134 runtime `GO`.
+  - [ ] Achieve semantic `GO` on parent/representative replay after Loop133 repair.
+  - [ ] Rerun golden/collateral controls after Loop133 repair.
+  - [x] Verify `11685994` exact OCR title/author bridge with native web before code changes; Loop138 confirmed `INFO_MISSING_NATIVE_WEB / HOLD`.
+  - [ ] Keep `11663521`, `11694019`, `11700470` as HOLD boundaries unless stronger work-bridge evidence appears.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop131 parent replay runtime GO / semantic NO-GO
+
+- 상태: Loop104 38-row parent replay after Loop130 completed; runtime contract `GO`; semantic quality `NO-GO / REVIEW-LOCKED`; overall goal `NOT_COMPLETE`
+- TODO:
+  - [x] Run Loop131 parent/representative packet after Loop130 Faust guard.
+  - [x] Record Loop131 run `20260630_030549_717991`.
+  - [x] Confirm manifest completed/flushed/pending/failed `38/38/0/0`, `large_run_complete=true`, VLM/OCR `READY`, image_post_count `24`.
+  - [x] Record requested/effective parallel `36/36` and MCP health ok/required/after-filter `36/36/36`.
+  - [x] Run strict runtime audit `loop131_parent_representative_replay_runtime_audit.md/json`: `GO`.
+  - [x] Confirm `11706871 -> 파우스트 1` targeted closure holds at parent scope.
+  - [x] Create review artifact `loop131_parent_representative_replay_after_faust_guard_review.md/json`.
+  - [x] Create loop report `docs/devs/loop_reports/LOOP_131_REPORT_20260630.md`.
+  - [x] Data Analytics artifact `Loop131 Parent Replay Runtime GO Semantic NO-GO Review` validate/render PASS.
+  - [ ] Root-cause expected-work losses after later Loop138-held `11685994`: `11663521`, `11694019`, `11700470`; `11705231` has targeted Loop133 repair but still needs broader replay.
+  - [ ] Review Loop129-to-Loop131 public-title movement before collateral stability claim.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop132 completion challenge audit
+
+- 상태: user challenge accepted; runtime remains `GO`; semantic quality remains `NO-GO / REVIEW-LOCKED`; code patch `NOT_ADOPTED`; overall goal `NOT_COMPLETE`
+- TODO:
+  - [x] Re-read pasted goal contract before continuing.
+  - [x] Recheck Loop131 remaining expected-work losses against result JSON and existing test contracts.
+  - [x] Create review artifacts `loop132_completion_challenge_disposition_audit.md/json`.
+  - [x] Create loop report `docs/devs/loop_reports/LOOP_132_REPORT_20260630.md`.
+  - [x] Data Analytics artifact `Loop132 Completion Challenge Disposition Audit` validate/render PASS.
+  - [x] Record disposition counts: `HOLD_BOUNDARY=3`, `INFO_MISSING_NATIVE_WEB=1`, `NARROW_REPLAY_CANDIDATE=1`.
+  - [x] Confirm no safe broad code relaxation was adopted.
+  - [x] Build focused native-web/replay packet for `11705231`; targeted repaired in Loop133.
+  - [x] Verify `11685994` exact OCR title/author bridge with native web before code changes; Loop138 confirmed `INFO_MISSING_NATIVE_WEB / HOLD`.
+  - [ ] Keep `11663521`, `11694019`, `11700470` as HOLD boundaries unless stronger work-bridge evidence appears.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop130 Faust direct-rescue guard
+
+- 상태: targeted `11706871` closure PASS; runtime contract `GO`; parent/representative replay after patch `OPEN / NOT_RUN`; overall goal `NOT_COMPLETE`
+- TODO:
+  - [x] Root-cause Loop129 `11706871 -> 파우스트 1` direct image/OCR rescue bypass.
+  - [x] Add physical/classic-book image guard in `src/llm_batch/agentic_pipeline.py`.
+  - [x] Preserve physical book OCR as candidates while blocking structured direct-image, image-primary, and OCR-catalog official-title promotion evidence.
+  - [x] Add/extend regression coverage in `tests/test_title_lead_search_inferred_guard.py`.
+  - [x] Run `py_compile`: PASS.
+  - [x] Run 3 focused unittests: PASS.
+  - [x] Run Loop130 targeted canary `20260630_024726_142878`.
+  - [x] Confirm final public title `null`, `candidate_ledger_status=promotion_blocked`.
+  - [x] Run strict runtime audit `loop130_faust_direct_rescue_guard_runtime_audit.md/json`: `GO`.
+  - [x] Create review artifact `loop130_faust_direct_rescue_guard_review.md/json`.
+  - [x] Create loop report `docs/devs/loop_reports/LOOP_130_REPORT_20260630.md`.
+  - [x] Data Analytics artifact `Loop130 Faust Direct Rescue Guard Review` validate/render PASS.
+  - [x] Rerun Loop104 38-row parent/representative packet after this patch as Loop131.
+  - [ ] Root-cause expected-work losses after later Loop138-held `11685994`: `11663521`, `11694019`, `11700470`, `11705231`.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop129 parent replay runtime GO / semantic NO-GO
+
+- 상태: shard restore closed runtime blocker; Loop129 parent packet completed `38/38/0/0`; runtime contract `GO`; semantic quality `NO-GO / REVIEW-LOCKED`; overall goal `NOT_COMPLETE`
+- TODO:
+  - [x] Audit pre-restore shards: `16/36`, bad `17-36`.
+  - [x] Restore shards `17-36` with protected incremental `warp_shards.py up`.
+  - [x] Audit post-restore shards: `36/36`, bad `[]`.
+  - [x] Run Loop129 parent/representative packet.
+  - [x] Record Loop129 run `20260630_020121_110991`.
+  - [x] Confirm manifest completed/flushed/pending/failed `38/38/0/0`, `large_run_complete=true`, VLM/OCR `READY`, image_post_count `24`.
+  - [x] Record requested/effective parallel `36/36` and MCP health ok/required/after-filter `36/36/36`.
+  - [x] Run strict runtime audit `loop129_parent_representative_replay_runtime_audit.md/json`: `GO`.
+  - [x] Create review artifact `loop129_parent_representative_replay_after_shard_restore_review.md/json`.
+  - [x] Create loop report `docs/devs/loop_reports/LOOP_129_REPORT_20260630.md`.
+  - [x] Data Analytics artifact `Loop129 Parent Replay Runtime GO Semantic NO-GO Review` validate/render PASS.
+  - [x] Root-cause `11706871 -> 파우스트 1` and close it with Loop130 targeted canary.
+  - [ ] Root-cause expected-work losses after later Loop138-held `11685994`: `11698897`, `11663521`, `11694019`, `11700470`, `11705231`.
+  - [ ] Review Loop128-to-Loop129 public-title movement: gained `11698880`, `11669928`, `11661876`; lost `11663540`.
+  - [ ] Keep Loop103 suspended, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop128 parent/representative replay NO-GO
+
+- 상태: Loop128 parent packet completed `38/38/0/0`, but runtime contract `NO-GO`; semantic quality `NO-GO / REVIEW-LOCKED`; overall goal `NOT_COMPLETE`
+- TODO:
+  - [x] Run Loop104 anti-regression parent/representative packet after Loop123-127 targeted repair.
+  - [x] Record Loop128 run `20260630_010430_041790`.
+  - [x] Confirm manifest completed/flushed/pending/failed `38/38/0/0`, `large_run_complete=true`, VLM/OCR `READY`, image_post_count `24`.
+  - [x] Run runtime audit `loop128_parent_representative_replay_runtime_audit.md/json`.
+  - [x] Record strict runtime contract `NO-GO`: endpoint filter `16` < required `36`.
+  - [x] Record semantic NO-GO rows: golden positive losses `11698897`, `11663521`, `11685994`, `11694019`, `11700470`, `11705231`.
+  - [x] Record recent P0 HOLD/control public-title gain `11706871 -> 파우스트 1`.
+  - [x] Create review artifact `loop128_parent_representative_replay_after_loop127_review.md/json`.
+  - [x] Create loop report `docs/devs/loop_reports/LOOP_128_REPORT_20260630.md`.
+  - [x] Data Analytics artifact `Loop128 Parent Replay NO-GO Review` validate/render PASS.
+  - [ ] Restore or explicitly audit enough healthy endpoints for a clean parent replay.
+  - [ ] Rerun the 38-row parent/representative packet with runtime contract `GO`.
+  - [ ] Investigate Loop128 semantic problem rows before resuming Loop103 P1/P2.
+  - [ ] Keep parent/representative replay `OPEN`, source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-30 regression-safe grounding Loop123-127 public-title reopen repair
+
+- 상태: Loop123-126 repeated variance/reopen evidence / Loop127 targeted five-row public-title hold pass / semantic quality REVIEW-LOCKED / full scan approval false / overall goal NOT_COMPLETE
+- TODO:
+  - [x] Repeat Loop115 five-row packet as Loop123 after Loop122 official URL recall bypass.
+  - [x] Record Loop124 `NO-GO_REOPENED_11694019`.
+  - [x] Record Loop125 `NO-GO_REOPENED_11658620_11668288`.
+  - [x] Record Loop126 `NO-GO_REOPENED_11694019`.
+  - [x] Add alias-only official URL recall competing-candidate hold.
+  - [x] Add generic low-information batch alias blocking.
+  - [x] Add forced-upgrade relation-hold blocker.
+  - [x] Broaden author+plot composite precision demotion.
+  - [x] Add focused regression tests.
+  - [x] `py_compile` PASS.
+  - [x] Related unittest bundle PASS (`271` tests OK).
+  - [x] Loop127 run `20260630_004841_310108` completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`, identified `0`.
+  - [x] Create review artifact `loop123_127_public_title_reopen_repair_review.md/json`.
+  - [x] Create loop report `docs/devs/loop_reports/LOOP_123_127_REPORT_20260630.md`.
+  - [x] Data Analytics artifact `Loop123-127 Public Title Reopen Repair Review` validate/render PASS.
+  - [ ] Run parent/representative replay with recent HOLD controls and golden positive/negative controls.
+  - [ ] Keep Loop103 P1/P2 suspended until broader replay passes.
+  - [ ] Keep source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-29 regression-safe grounding Loop120-121 batch alias competing-hold guard
+
+- 상태: Loop120 repeat reopened `11698897` / batch alias competing-hold guard patch applied / Loop121 targeted reopen blocked / positive-control drift remains OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall goal NOT_COMPLETE
+- TODO:
+  - [x] Repeat Loop119 five-row packet as Loop120.
+  - [x] Record Loop120 `NO-GO_REOPENED_11698897`: `[림월드]변방계에서 회귀자로 살아남기` reopened through batch-memory alias rescue.
+  - [x] Root-cause `title_lead_alias_official_detail_release` rescue overriding competing-candidate hold flags.
+  - [x] Add competing-hold batch alias rescue block in `src/llm_batch/agentic_pipeline.py`.
+  - [x] Add candidate-audit demotion before official-detail/precision exemptions.
+  - [x] Add regression test for the `랫따싶` / `[림월드]...` competing-hold path.
+  - [x] `py_compile` PASS.
+  - [x] Affected unittest PASS (`248` tests OK).
+  - [x] Loop121 run `20260629_233340_435398` completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`, identified `0`.
+  - [x] Confirm `11698897` final public title `null`, `candidate_ledger_status=promotion_blocked`, with `batch_memory_alias_rescue_blocked_competing_hold`.
+  - [x] Create review artifact `loop120_121_batch_alias_competing_hold_review.md/json`.
+  - [x] Create loop report `docs/devs/loop_reports/LOOP_120_121_REPORT_20260629.md`.
+  - [x] Data Analytics artifact `Loop120-121 Batch Alias Competing-Hold Review` validate/render PASS.
+  - [ ] Investigate `11668288` positive/control drift from resolved to `null`/`promotion_blocked`.
+  - [ ] Run parent/representative replay with recent HOLD controls and golden positive/negative controls.
+  - [ ] Keep Loop103 P1/P2 suspended until broader replay passes without collateral movement.
+  - [ ] Keep source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-29 regression-safe grounding Loop116b-116d lubko prefix-context guard
+
+- 상태: 4-row prefix reproduces `11658620` unsafe public title / ambiguous alias guard patch applied / Loop116c+116d repeat HOLD / targeted repair evidence only / semantic quality REVIEW-LOCKED / full scan approval false
+- TODO:
+  - [x] Build Loop116b four-row prefix packet from original Loop108 rows.
+  - [x] Reproduce `11658620` unsafe public title in Loop116b run `20260629_215526_021681`.
+  - [x] Add ambiguous stable-alias bridge guard in `src/llm_batch/agentic_pipeline.py`.
+  - [x] Preserve known-title abbreviation update-question rescue through later semantic no-work gate.
+  - [x] Add focused ambiguous attached slang test.
+  - [x] Loop116c run `20260629_220351_554714` completed `4/4/0/0`, VLM/OCR `READY`, `11658620` HOLD.
+  - [x] Loop116d repeat `20260629_221301_518080` completed `4/4/0/0`, VLM/OCR `READY`, `11658620` HOLD.
+  - [x] `py_compile` PASS; `tests.test_candidate_audit` `83 OK`; `tests.test_known_title_abbreviation_support` `25 OK`; focused stable-alias correction integration OK.
+  - [x] Create review artifact `loop116b_116d_lubko_prefix_context_guard_review.md/json`.
+  - [x] Create loop report `docs/devs/loop_reports/LOOP_116B_116D_REPORT_20260629.md`.
+  - [x] Data Analytics artifact `Loop116b-116d Lubko Prefix Guard Review` validate/render PASS.
+  - [x] Run broader replay including all Loop114 public-title gain rows before resuming Loop103 P1/P2: Loop117 run `20260629_222704_833019`.
+  - [ ] Keep source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-29 regression-safe grounding Loop118-119 reopen guard replay
+
+- 상태: Loop117 reopened paths root-caused / Loop119 targeted replay holds target reopen rows / `11668288` positive-control resolved / semantic quality REVIEW-LOCKED / full scan approval false / overall goal NOT_COMPLETE
+- TODO:
+  - [x] Root-cause Loop117 recurrent public-title reopenings for `11666713`, `11694019`, and `11698897`.
+  - [x] Add sticky verifier re-promotion veto for search-absent/nullified exact-title paths.
+  - [x] Add cross-media title-body-only official URL recall hold.
+  - [x] Add high-strength weak-source exact-title bridge hold with medium registry/known-abbreviation exemption.
+  - [x] Loop118 run `20260629_225200_510563` completed `5/5/0/0`; `11694019` and `11698897` held, `11666713` still reopened.
+  - [x] Loop119 run `20260629_225904_808962` completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`, identified `1`.
+  - [x] Confirm Loop119 holds `11666713`, `11694019`, and `11698897` with final public title `null`.
+  - [x] Separate `11668288` as known positive/control resolution, not target regression closure.
+  - [x] `py_compile` PASS; affected unittest `247 OK`; `git diff --check` PASS with line-ending warnings only.
+  - [x] Create review artifact `loop118_119_reopen_guard_replay_review.md/json`.
+  - [x] Create loop report `docs/devs/loop_reports/LOOP_118_119_REPORT_20260629.md`.
+  - [x] Data Analytics artifact `Loop118-119 Reopen Guard Replay Review` validate/render PASS.
+  - [ ] Repeat Loop119 or run parent/representative lane with recent HOLD controls and golden positive/negative controls.
+  - [ ] Keep Loop103 P1/P2 suspended until broader replay passes without collateral movement.
+  - [ ] Keep source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-29 regression-safe grounding Loop117 public-title gain replay after guard
+
+- 상태: Loop117 runtime GO / 3 of 5 rows reopened public titles / broader replay NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / overall goal NOT_COMPLETE
+- TODO:
+  - [x] Rerun existing Loop115 five-row variance packet after Loop116b-116d guard.
+  - [x] Loop117 run `20260629_222704_833019` completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`, identified `3`.
+  - [x] Confirm `11658620` remained blocked with `candidate_ledger_status=promotion_blocked`.
+  - [x] Confirm recurrent public-title reopenings: `11666713`, `11694019`, `11698897`.
+  - [x] Create review artifact `loop117_public_title_gain_after_guard_replay_review.md/json`.
+  - [x] Create loop report `docs/devs/loop_reports/LOOP_117_REPORT_20260629.md`.
+  - [x] Data Analytics artifact `Loop117 Public Title Gain Replay` validate/render PASS.
+  - [x] Root-cause recurrent public-title reopenings for `11666713`, `11694019`, and `11698897` in Loop118-119 targeted repair.
+  - [ ] Keep Loop103 P1/P2 suspended until broader replay passes without collateral movement.
+
+## 2026-06-29 regression-safe grounding Loop115 goal completion recheck / variance repeat
+
+- 상태: Loop06 completion recheck confirms overall goal NOT_COMPLETE / source full completion OPEN / full-panel collateral approval NO-GO / Loop115 repeat runtime GO but variance quarantine / semantic quality REVIEW-LOCKED / full scan approval false
+- TODO:
+  - [x] Re-read pasted original goal contract and confirm Loop06 targeted closure is not full pasted-goal completion.
+  - [x] Run source/preflight, collateral/semantic, and docs/gate read-only subagent audits.
+  - [x] Build Loop115 focus packet from original Loop108 rows for `11658620`, `11666713`, `11668288`, `11694019`, `11698897`.
+  - [x] Loop115 run `20260629_212549_694367` completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`, identified `0`.
+  - [x] Create review artifact `loop115_goal_completion_recheck_variance_repeat_review.md/json`.
+  - [x] Data Analytics artifact `Loop115 Goal Completion Recheck` validate/render PASS.
+  - [x] Repair garbled title text in `loop111_114_platform_ocr_seo_replay_review.md`.
+  - [ ] Do not treat Loop115 all-HOLD repeat as approval; classify Loop114 gains as run-shape variance/quarantine.
+  - [ ] Root-cause why Loop114 broad replay opened titles that Loop115 repeat blocked.
+  - [ ] Keep Loop103 P1/P2 queue suspended until variance root-cause or quarantine rationale is durable.
+  - [ ] Keep source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-29 regression-safe grounding Loop116a lubko neighbor context probe
+
+- 상태: Loop116a runtime GO / `11658620` neighbor-context unsafe serialization NOT reproduced / root-cause narrowed but NOT_COMPLETE / semantic quality REVIEW-LOCKED / full scan approval false
+- TODO:
+  - [x] Build Loop116a two-row packet from original Loop108 rows: `11658615`, `11658620`.
+  - [x] Run Loop116a `20260629_214134_424194` with `--slang-db off`, VLM/OCR on, and image VLM/OCR required.
+  - [x] Confirm runtime completed/flushed/pending/failed `2/2/0/0`, VLM/OCR `READY`, identified `1`.
+  - [x] Confirm `11658615` still resolves to `이거 럽코 빙의물인가요` / `https://novel.munpia.com/533816`.
+  - [x] Confirm `11658620` preserves `primary_work=이거 럽코 빙의물인가요` but final public title remains `null`, `candidate_ledger_status=promotion_blocked`.
+  - [x] Create review artifact `loop116a_lubko_neighbor_context_probe_review.md/json`.
+  - [x] Create loop report `docs/devs/loop_reports/LOOP_116A_REPORT_20260629.md`.
+  - [x] Data Analytics artifact `Loop116a Lubko Neighbor Context Probe` validate/render PASS.
+  - [ ] Run wider prefix-context probe before code changes.
+  - [ ] Compare broad-run search evidence and stable alias ledger state if the wider prefix still does not reproduce Loop114.
+  - [ ] Keep Loop114 gains quarantined and the active goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-06-29 regression-safe grounding Loop111-114 platform/OCR SEO replay
+
+- 상태: platform/OCR SEO canonicalization patch focused PASS / Loop114 runtime GO but semantic NO-GO / new public-title gains 4 / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- TODO:
+  - [x] Add general platform SEO suffix/prefix and OCR `Lp코`/`럽 코` title-surface canonicalization.
+  - [x] Focused tests PASS and full `tests.test_candidate_audit` PASS (`83 tests OK`); `py_compile` PASS.
+  - [x] Loop111 focused `11658615` run `20260629_201405_077720` completed `1/1/0/0`, VLM/OCR `READY`.
+  - [x] Loop112 broad run `20260629_201737_073867` completed `19/19/0/0`, VLM/OCR `READY`, identified `5`, semantic `NO-GO`.
+  - [x] Loop113 focused run `20260629_204129_668787` completed `2/2/0/0`, VLM/OCR `READY`, canonicalized `11658615` and `11698897`.
+  - [x] Loop114 broad replay `20260629_204604_191020` completed `19/19/0/0`, VLM/OCR `READY`, identified `8`.
+  - [x] Review artifact `loop111_114_platform_ocr_seo_replay_review.md/json` 생성.
+  - [x] Data Analytics artifact `Loop111-114 Platform OCR SEO Replay Review` validate/render PASS.
+  - [ ] Do not treat Loop111/113 focused pass or Loop114 runtime GO as semantic approval.
+  - [ ] Root-cause new Loop114 public-title gains `11658620`, `11666713`, `11668288`, `11694019`.
+  - [ ] Recheck why `11698897` focused PASS did not remain safe in the Loop114 broad replay.
+  - [ ] Keep Loop103 P1/P2 queue suspended until a clean replay stabilizes.
+  - [ ] Keep source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-29 regression-safe grounding Loop106-107 scene/author guard clean replay
+
+- 상태: `11714903` focused fixed / Loop106 runtime GO but `11695637` reopened / scene-only author anchor guard added / Loop107 runtime GO / focused public-title rows `7/7` blocked / identified set unstable / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- TODO:
+  - [x] Add general hygiene alias/image conflict guard for `11714903` without post-id hardcoding.
+  - [x] Focused `11714903` canary run `20260629_170648_212786` completed `1/1/0/0`, VLM/OCR `READY`, public title blocked.
+  - [x] Clean Loop106 replay run `20260629_171206_948236` completed `38/38/0/0`, VLM/OCR `READY`.
+  - [x] Record Loop106 semantic `NO-GO`: `11714903` blocked, but `11695637` reopened as `도네하지 마라`.
+  - [x] Extend image scene-cue public-title bridge guard to scene-only `author` anchors.
+  - [x] Focused `11695637` canary run `20260629_175300_045051` completed `1/1/0/0`, VLM/OCR `READY`, public title blocked.
+  - [x] Focused guard tests PASS and `py_compile` PASS.
+  - [x] Clean Loop107 replay run `20260629_175738_653862` completed/flushed/pending/failed `38/38/0/0`, `large_run_complete=true`, VLM/OCR `READY`.
+  - [x] Loop107 focused public-title rows `7/7` blocked.
+  - [x] Review artifact `loop107_clean_loop104_replay_after_scene_author_guard_review.md/json` 생성.
+  - [x] Data Analytics artifact `Loop107 Clean Replay NO-GO Review` validate/render PASS.
+  - [ ] Do not treat Loop107 runtime GO or focused closure as semantic approval.
+  - [ ] Review Loop106 to Loop107 state changes `19` and identified count drop `12 -> 7`.
+  - [ ] Separate desired precision demotions from recall regressions before Loop103 queue resumes.
+  - [ ] Keep source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-29 regression-safe grounding Loop108-110 state-change repair
+
+- 상태: Loop107 state changes triaged / Loop108 19-row replay NO-GO / guard patch focused PASS / Loop110 broad replay confirms patch targets / remaining attention rows 5 / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- TODO:
+  - [x] Loop107 state-change triage artifact `loop107_state_change_triage.md/json` 생성.
+  - [x] Loop108 input `loop108_state_change_adjudication_packet.jsonl` 생성; original Loop104 rows only.
+  - [x] Loop108 run `20260629_185544_955672` completed/flushed/pending/failed `19/19/0/0`, VLM/OCR `READY`, identified `8`, semantic `NO-GO`.
+  - [x] Add candidate-audit guards for VLM/OCR conflict bypass, secondary-reference precision-downgrade rescue, and direct exact short official titles.
+  - [x] `py_compile` PASS and full `tests.test_candidate_audit` `80 OK`.
+  - [x] Loop109 focused run `20260629_192037_957246` completed `3/3/0/0`, VLM/OCR `READY`, focused pass `3/3`.
+  - [x] Loop110 broad replay `20260629_193104_492126` completed `19/19/0/0`, VLM/OCR `READY`, identified `5`.
+  - [x] Loop110 patch targets confirmed: `11660237 -> 테라포밍`, `11700470` HOLD, `11706832` HOLD.
+  - [x] Review artifacts `loop108_state_change_adjudication_review.md/json`, `loop109_targeted_guard_repair_3_review.md/json`, `loop110_state_change_post_patch_replay_review.md/json` 생성.
+  - [x] Loop report `docs/devs/loop_reports/LOOP_108_110_REPORT_20260629.md` 생성.
+  - [x] Data Analytics artifact `Loop108-110 상태 변화 보정 리뷰` validate/render PASS.
+  - [ ] Do not treat Loop109 focused pass or Loop110 target pass as goal completion.
+  - [ ] Separate remaining attention rows `11658615`, `11663540`, `11666713`, `11668288`, `11705231`.
+  - [ ] Keep Loop103 P1/P2 queue suspended until a clean replay stabilizes.
+  - [ ] Keep source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-29 regression-safe grounding Loop104 repair patch / reclassification
+
+- 상태: candidate-ledger extraction fixed / static NO-GO reclassified / focused canaries public title blocked / clean Loop104 replay runtime GO but semantic NO-GO / 11714903 reopened as `괴담 호텔 탈출기` / Loop105 repeat not run / Loop103 queue suspended / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- TODO:
+  - [x] Static repair artifact `loop104_repair_patch_static_reclassification.md/json` 생성.
+  - [x] Old NO-GO `9` 중 candidate-ledger extraction false positives `5` 제거.
+  - [x] True NO-GO remaining before clean replay `4`: `11660257`, `11714903`, `11694035`, `11713212`.
+  - [x] `tools/build_targeted_followup_remaining_queue.py`가 promotion-blocked `primary_work` 후보를 final title로 읽지 않도록 수정.
+  - [x] `src/llm_batch/agentic_pipeline.py`의 `final_decision` fallback과 verifier-counter generic setting/trope title promotion block 보강.
+  - [x] Focused unit tests and `py_compile` PASS.
+  - [x] Focused `11713212` canary run `20260629_152235_538688` completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`, public title `None` 확인.
+  - [x] Runtime audit `loop104_repair_11713212_single_runtime_audit.md/json` gate `TARGETED_GO_PUBLIC_TITLE_BLOCKED` 생성.
+  - [x] Focused `11694035` canary run `20260629_153923_967759` completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`, public title blocked 확인.
+  - [x] Runtime audit `loop104_repair_11694035_single_runtime_audit.md/json` and current status `loop104_repair_patch_current_status.md/json` 생성.
+  - [x] Focused `11660257` canary run `20260629_155128_226258` completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`, public title blocked/non-relevant HOLD 확인.
+  - [x] Runtime audit `loop104_repair_11660257_single_runtime_audit.md/json` 생성.
+  - [x] Focused `11714903` canary run `20260629_155831_556987` completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`, public title blocked/candidate HOLD 확인.
+  - [x] Runtime audit `loop104_repair_11714903_single_runtime_audit.md/json` 생성.
+  - [x] Remaining true promotion `11714903` classified as final serialized public-title blocked, with internal alias-conflict risk preserved for replay.
+  - [x] Data Analytics artifact `Loop104 Repair Patch Reclassification Review` validate/render PASS.
+  - [x] Clean 38-row replay run `20260629_161143_395663` completed/flushed/pending/failed `38/38/0/0`, VLM/OCR `READY`.
+  - [x] Runtime review artifact `loop105_clean_loop104_replay_after_repair_review.md/json` 생성.
+  - [x] Data Analytics artifact `Loop105 Clean Replay NO-GO Review` validate/render PASS.
+  - [x] Repeat confirmation result recorded: `11694035`, `11713212`, `11660257` stayed blocked; `11714903` reopened.
+  - [ ] Do not treat the `11713212` single canary as Loop104 approval.
+  - [ ] Do not treat the `11694035` single canary as Loop104 approval.
+  - [ ] Do not treat the `11660257` single canary as Loop104 approval.
+  - [ ] Do not treat the `11714903` single canary as Loop104 approval.
+  - [ ] Root-cause `11714903` clean-replay public-title reopening before any Loop105 repeat is used as approval evidence.
+  - [ ] Add or adjust a general alias-conflict / VLM-OCR-title-conflict guard without post_id/title-specific hardcoding.
+  - [ ] Rerun the 38-row replay after the guard, then run a repeat only if the clean replay is semantic GO/REVIEW acceptable.
+  - [ ] Keep source full completion `OPEN`, full-panel collateral approval `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-29 regression-safe grounding Loop104 anti-regression replay NO-GO
+
+- 상태: Loop104 primary replay partial / recovery completed / effective 38-row review available / anti-regression gate NO-GO / Loop103 queue suspended / source full completion OPEN / full-panel collateral approval NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- TODO:
+  - [x] Loop104 anti-regression replay packet `38` rows, image_post_count `24` 생성.
+  - [x] Primary Loop104 run `20260629_140125_587992` completed/flushed/pending/failed `36/34/2/0`, `large_run_complete=false` 확인.
+  - [x] Recovery input `3` rows 생성 and recovery run `20260629_144615_496378` completed/flushed/pending/failed `3/3/0/0` 확인.
+  - [x] Effective 38-row review artifacts `loop104_anti_regression_replay_no_go_review.md/json` and gate map 생성.
+  - [x] Data Analytics artifact `Loop104 Anti-Regression Replay NO-GO Review` validate/render PASS.
+  - [x] Loop103 next actionable total `131`, P0 `0`, P1 `61`, P2 `70`을 `SUSPENDED_UNTIL_ANTI_REGRESSION_REPAIR`로 전환.
+  - [ ] Do not continue isolated P1/P2 queue while Loop104 is NO-GO.
+  - [ ] Root-cause golden negative public-title hard fails `11694035`, `11713212`.
+  - [ ] Root-cause stable/HOLD public-title gains `11658615`, `11658620`, `11660257`, `11695623`, `11705261`, `11714903`, `11695637`.
+  - [ ] Review golden positive losses/mismatches before treating recall as stable.
+  - [ ] After fixes, rerun a clean Loop104 replay and then repeat Loop105.
+
+## 2026-06-29 regression-safe grounding Loop 102-103 P1 accept-collateral monitor review
+
+- 상태: Loop102/103 runtime PASS / P1 `accept_collateral_monitor=8` reviewed / stable resolved recovery `1` / stable no-public HOLD `6` / variance quarantine `1` / full reviewed residual ledger `136` / quarantine `5` / next actionable queue total `131`, P0 `0`, P1 `61`, P2 `70` / full-panel collateral approval NO-GO / source full completion OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- TODO:
+  - [x] Loop102 input `8` rows and manifest를 생성했다.
+  - [x] Loop102 completed/flushed/pending/failed `8/8/0/0`, VLM/OCR `READY`, identified `2/8`을 확인했다.
+  - [x] Loop103 repeat completed/flushed/pending/failed `8/8/0/0`, VLM/OCR `READY`, identified `1/8`을 확인했다.
+  - [x] Runtime audits for Loop102/103 both returned `GO`.
+  - [x] `11660258` stable resolved recovery를 확인했다.
+  - [x] `11658615`를 branded-title/null repeat variance로 quarantine/human_review 분리했다.
+  - [x] Data Analytics artifact `Loop102-103 P1 Accept-Collateral Monitor Review` validate/render PASS.
+  - [x] Review artifacts `loop102_103_p1_accept_collateral_monitor_repeatability_review.md/json`, residual map `loop103_current_residual_gate_map_after_p1_accept_collateral_monitor.md/json`, Loop102-103 report를 추가했다.
+  - [ ] Do not count stable no-public/HOLD rows as public title approval.
+  - [ ] Do not count Loop102-103 as full anti-regression approval.
+  - [ ] Before more single-post/code-fix work, build Loop104 or equivalent missing-control replay packet.
+    - include `11698880`, `11669928`, `11674712`, `11668288`, `11658615`.
+    - include Loop92-93 stable closed rows, recent P0 HOLD controls, and golden positive/negative controls.
+    - verify repeat stability, affected-module tests, and collateral movement before further residual reduction.
+  - [ ] Continue P1 `recall_loss_review=61` and P2 `safety_demote_review=70` only after the missing-control replay is recorded.
+
+## 2026-06-29 regression-safe grounding Loop 98-101 P1 descriptor guard review
+
+- 상태: Loop98-101 runtime PASS / descriptor wrong-title bug fixed for targeted path / row `11698880` -> `VARIANCE_QUARANTINE_HUMAN_REVIEW` / stable closure `0` / full reviewed residual ledger `143` / quarantine `4` / next actionable queue total `139`, P0 `0`, P1 `69`, P2 `70` / full-panel collateral approval NO-GO / source full completion OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- TODO:
+  - [x] Loop98/99로 `11698880` pre-fix 반복성을 확인했다.
+  - [x] Loop99에서 `상남자 [독점]` wrong public title 승격을 재현했다.
+  - [x] `agentic_pipeline.py`에 descriptor-only stable alias correction guard를 추가했다.
+  - [x] descriptor-negative / title-alias positive-control 테스트를 추가했다.
+  - [x] Loop100/101 post-fix 반복 실행을 완료했다.
+  - [x] Data Analytics artifact `Loop98-101 Stable Alias Descriptor Guard Review` validate/render PASS.
+  - [x] Review artifacts `loop98_101_p1_regression_control_stable_alias_descriptor_guard_review.md/json`, residual map `loop101_current_residual_gate_map_after_p1_regression_control_variance.md/json`, Loop98-101 report를 추가했다.
+  - [ ] Do not count Loop101 expected-title output as semantic approval because Loop100 remained null/adjacent.
+  - [x] Do not continue one-post picking as the immediate next step; Loop102-103 moved to an 8-row P1 repeatability lane.
+  - [ ] Loop102-103 did not fully cover fixed/quarantine/golden/control rows, so keep Loop104 missing-control replay open.
+
+## 2026-06-29 regression-safe grounding Loop 96-97 P1 search-correctness variance review
+
+- 상태: Loop96/97 runtime PASS / P1 search-correctness row `11668288` -> `VARIANCE_QUARANTINE_HUMAN_REVIEW` / stable closure `0` / full reviewed residual ledger `143` / quarantine `3` / next actionable queue total `140`, P0 `0`, P1 `70`, P2 `70` / full-panel collateral approval NO-GO / source full completion OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] Loop96 P1 search-correctness input `1` row and manifest를 생성했다.
+  - [x] Native web verification으로 `https://novelpia.com/novel/387014` -> `가챠 중독자의 퓨전펑크 생활`을 확인했다.
+  - [x] Loop96 completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`, identified `1/1`, `safe_resolved`를 확인했다.
+  - [x] Loop97 repeat completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`, identified `0/1`, `promotion_blocked`/`unresolved_matchable`를 확인했다.
+  - [x] `11668288`이 RESOLVED/HOLD로 갈리는 반복 variance를 확정했다.
+  - [x] `--slang-db off` run에서 production `slang_db/slang_db.json` write-back이 없음을 last modified time으로 확인했다.
+  - [x] Data Analytics artifact `Loop96-97 P1 Search-Correctness Variance Review` validate/render PASS.
+  - [x] Review artifacts `loop96_97_p1_recall_loss_search_correctness_repeatability_review.md/json`, residual map `loop97_current_residual_gate_map_after_p1_search_variance.md/json`, Loop96-97 report를 추가했다.
+- 남은 작업:
+  - [ ] `11668288`을 approval이나 stable closure로 승격하지 않는다.
+  - [ ] P1 `recall_loss_review=70`을 다음 actionable lane으로 계속 진행한다.
+  - [ ] P2 `safety_demote_review=70`을 open으로 유지한다.
+  - [ ] Full-panel collateral approval은 계속 `NO-GO`로 유지한다.
+  - [ ] Source full completion은 계속 `OPEN`으로 유지한다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 94-95 P1A variance repeatability review
+
+- 상태: Loop94/95 runtime PASS / P1A variance rows `2` -> `VARIANCE_QUARANTINE_HUMAN_REVIEW` / stable closure `0` / full reviewed residual ledger `143` / quarantine `2` / next actionable queue total `141`, P0 `0`, P1 `71`, P2 `70` / full-panel collateral approval NO-GO / source full completion OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] Loop94 P1A variance-open input `2` rows and manifest를 생성했다.
+  - [x] Model endpoint `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4`를 확인했다.
+  - [x] Loop94 completed/flushed/pending/failed `2/2/0/0`, image gate `NOT_APPLICABLE`, identified `0/2`를 확인했다.
+  - [x] Loop95 repeat completed/flushed/pending/failed `2/2/0/0`, image gate `NOT_APPLICABLE`, identified `1/2`를 확인했다.
+  - [x] Loop94/95 leak audit `0`을 확인했다.
+  - [x] `11669928` = HOLD/HOLD/RESOLVED, `11674712` = RESOLVED/HOLD/HOLD로 반복 variance를 확정했다.
+  - [x] Data Analytics artifact `Loop94-95 P1A Variance Repeatability Review` validate/render PASS.
+  - [x] Review artifacts `loop94_95_p1a_variance_repeatability_review.md/json`, residual map `loop95_current_residual_gate_map_after_p1a_variance.md/json`, Loop94-95 report를 추가했다.
+- 남은 작업:
+  - [ ] `11669928`, `11674712`를 approval이나 stable closure로 승격하지 않는다.
+  - [ ] P1 `recall_loss_review=71`을 다음 actionable lane으로 계속 진행한다.
+  - [ ] P2 `safety_demote_review=70`을 open으로 유지한다.
+  - [ ] Full-panel collateral approval은 계속 `NO-GO`로 유지한다.
+  - [ ] Source full completion은 계속 `OPEN`으로 유지한다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 92-93 P1A expected recall-improvement review
+
+- 상태: Loop92/93 runtime PASS / P1A expected recall improvement PARTIAL_REVIEWED_WITH_VARIANCE / stable closed `4`, variance open `2` / current residual total `143`, P0 `0`, P1 `73`, P2 `70` / full-panel collateral approval NO-GO / source full completion OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] Loop92 P1A input `6` rows and manifest를 생성했다.
+  - [x] Model endpoint `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4`를 확인했다.
+  - [x] Loop92 completed/flushed/pending/failed `6/6/0/0`, VLM/OCR `READY`, identified `1/6`을 확인했다.
+  - [x] Loop92에서 promotion-blocked public URL/primary-role contract leak `3` rows를 확인했다.
+  - [x] `expert_main.py` serialized promotion-blocked contract scrub을 public URL/nested URL/primary-role까지 확장했다.
+  - [x] Loop93 completed/flushed/pending/failed `6/6/0/0`, VLM/OCR `READY`, identified `1/6`을 확인했다.
+  - [x] Loop93 leak audit `promotion_blocked_public_url_or_primary_role_leaks=0`을 확인했다.
+  - [x] P1A stable HOLD/no-public/no-work rows `4` and variance-open rows `2`를 분리했다.
+  - [x] `py_compile` PASS, focused serialized contract tests PASS, `tests.test_expert_main_comment_metadata -v` `9 tests OK`.
+  - [x] Review artifacts `loop92_93_p1a_expected_recall_improvement_review.md/json`, residual map `loop93_current_residual_gate_map_after_p1a.md/json`, Loop92-93 report를 추가했다.
+  - [x] Data Analytics artifact `Loop92-93 P1A Expected Recall Improvement Review` validate/render PASS.
+- 남은 작업:
+  - [ ] `11669928`, `11674712` variance-open rows를 approval로 승격하지 않는다.
+  - [ ] Loop92-93 P1A targeted progress를 full-panel collateral approval로 승격하지 않는다.
+  - [ ] P1 recall-loss backlog `71` and P2 safety-demote backlog `70`을 계속 open으로 유지한다.
+  - [ ] Full-panel collateral approval은 계속 `NO-GO`로 유지한다.
+  - [ ] Source full completion은 계속 `OPEN`으로 유지한다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 88-91 P0A scope-decision HOLD output consistency
+
+- 상태: Loop88/90 failure evidence retained / Loop91 targeted safe HOLD for `11698871` / P0A scope-decision row TARGETED_SCOPE_DECISION_HOLD_CONSISTENT / public title approval NOT_APPROVED / current residual total `147`, P0 `0`, P1 `77`, P2 `70` / full-panel collateral approval NO-GO / source full completion OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] Loop88 input `loop88_p0a_scope_decision_11698871_1.jsonl` and manifest를 생성했다(row_count `1`, image_post_count `0`).
+  - [x] Loop88 targeted canary completed/flushed/pending/failed `1/1/0/0`을 확인하고 public URL/reason confirmation 누수를 failure evidence로 보존했다.
+  - [x] Precision-seed demotion이 top-level `identity.heretic_url`를 함께 clear하도록 수정했다.
+  - [x] Loop89 targeted canary completed/flushed/pending/failed `1/1/0/0`으로 URL cleanup path를 확인했다.
+  - [x] Loop90 targeted canary completed/flushed/pending/failed `1/1/0/0`을 확인하고 reason/analysis.notes confirmation 누수를 failure evidence로 보존했다.
+  - [x] Promotion-blocked serialized result contract scrub을 `expert_main.py`에 추가했다.
+  - [x] Loop91 targeted canary completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `NOT_APPLICABLE`, final public title/url `null`을 확인했다.
+  - [x] Loop91 `11698871`은 `work_resolution=unresolved`, `title_resolution_state=unresolved_matchable`, `title_resolution_allowed=false`, `candidate_ledger_status=promotion_blocked`, `candidate_count=7`로 candidate/HOLD만 보존한다.
+  - [x] `py_compile` PASS, focused URL cleanup PASS, focused serialized contract scrub PASS, `tests.test_candidate_audit -v` `74 tests OK`, `tests.test_expert_main_comment_metadata -v` `8 tests OK`.
+  - [x] Review artifacts `loop88_91_p0a_scope_decision_hold_review.md/json`, residual map `loop91_current_residual_gate_map_after_p0a.md/json`, Loop88-91 report를 추가했다.
+  - [x] Data Analytics artifact `Loop88-91 P0A Scope Decision HOLD Review` validate/render PASS.
+- 남은 작업:
+  - [ ] P0 `0` 또는 queue zero를 approval로 승격하지 않는다.
+  - [ ] `11698871` safe HOLD를 public title approval로 승격하지 않는다.
+  - [ ] Loop91 targeted closure를 full-panel collateral approval로 승격하지 않는다.
+  - [ ] Full-panel collateral approval은 계속 `NO-GO`로 유지한다.
+  - [ ] Source full completion은 계속 `OPEN`으로 유지한다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 84-87 P0E variant canonicalization guard
+
+- 상태: Loop85/86 failure evidence retained / Loop87 targeted safe HOLD for `11666713` / P0E wrong-title switch TARGETED_WRONG_TITLE_BLOCKED_SAFE_HOLD / canonical title recovery NOT_APPROVED / current residual total `148`, P0 `1` / full-panel collateral approval NO-GO / source full completion OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] Loop84 current-code P0E rerun completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`를 확인했다.
+  - [x] Loop85에서 first review-anchor patch가 `11666713`을 wrong title `21세기 헌터가된 무림인`으로 overpromotion하는 실패를 재현/보존했다.
+  - [x] Loop86에서 surface-match narrowing만으로는 plain title-body anchor 우회를 막지 못함을 재현했다.
+  - [x] Short work-style review official-url recall은 post-side surface containment가 있을 때만 허용하도록 guard를 추가했다.
+  - [x] Title-body work-review surface mismatch는 `official_url_recall_blocked_title_body_work_review_surface_mismatch`로 즉시 차단하도록 했다.
+  - [x] Loop87 focused canary completed/flushed/pending/failed `1/1/0/0`, final public title/url `null`, `title_resolution_allowed=false`를 확인했다.
+  - [x] `py_compile` PASS, focused P0E guard tests PASS, `tests.test_title_lead_search_inferred_guard -v` `133 tests OK`.
+  - [x] Review artifacts `loop84_87_p0e_variant_canonicalization_guard_review.md/json`, residual map `loop87_current_residual_gate_map_after_p0e.md/json`, Loop84-87 report를 추가했다.
+  - [x] Data Analytics artifact `Loop84-87 P0E Variant Canonicalization Guard Review` validate/render PASS.
+- 남은 작업:
+  - [ ] Loop87 safe HOLD를 canonical title approval로 승격하지 않는다.
+  - [ ] Loop87 targeted P0E closure를 full-panel collateral approval로 승격하지 않는다.
+  - [ ] Remaining P0 `1`: `11698871` P0A scope-decision HOLD.
+  - [ ] Full-panel collateral approval은 계속 `NO-GO`로 유지한다.
+  - [ ] Source full completion은 계속 `OPEN`으로 유지한다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 82-83 P0D title variant/canonicalization repair
+
+- 상태: Loop82 P0D targeted canary runtime PASS but `11706871` false public-title promotion / Loop83 focused guard PASS / P0D lane TARGETED_REPAIRED_OR_HELD_4_OF_4 / current residual total `149`, P0 `2` / full-panel collateral approval NO-GO / source full completion OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] Loop82 P0D input `4` rows and manifest를 생성했다.
+  - [x] Loop82 targeted canary completed/flushed/pending/failed `4/4/0/0`, VLM/OCR `READY`를 확인했다.
+  - [x] Loop82에서 `11706871`의 non-novel/literature OCR title `파우스트 1` false promotion을 재현했다.
+  - [x] Non-novel/literature discourse warning이 structured OCR/cover title acceptance와 late title promotion을 우회하지 못하도록 guard를 추가했다.
+  - [x] Loop83 focused canary completed/flushed/pending/failed `1/1/0/0`, final public title `null`, `title_resolution_allowed=false`, `candidate_ledger_status=promotion_blocked`를 확인했다.
+  - [x] `py_compile` PASS, focused new test PASS, OCR/reference guard tests PASS, `tests.test_title_lead_search_inferred_guard -v` `131 tests OK`.
+  - [x] Review artifacts `loop82_83_p0d_title_variant_canonicalization_review.md/json`, residual map `loop83_current_residual_gate_map_after_p0d.md/json`, Loop82-83 report를 추가했다.
+  - [x] Data Analytics artifact `Loop82-83 P0D Title Variant Canonicalization Review` validate/render PASS.
+- 남은 작업:
+  - [ ] Loop82-83 targeted P0D closure를 full-panel collateral approval로 승격하지 않는다.
+  - [ ] `11706871`의 polluted candidate ledger는 source-review caveat로 유지한다.
+  - [ ] Remaining P0 `2`: `11698871` P0A scope-decision HOLD, `11666713` P0E variant canonicalization follow-up.
+  - [ ] Full-panel collateral approval은 계속 `NO-GO`로 유지한다.
+  - [ ] Source full completion은 계속 `OPEN`으로 유지한다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 79-81 P0C unexpected public-title repair
+
+- 상태: Loop80 reproduced P0C false positives `2/3` / Loop81 targeted PASS public title `0/3` / P0C unexpected public-title lane TARGETED_REPAIRED_3_OF_3 / current residual total `153`, P0 `6` / full-panel collateral approval NO-GO / source full completion OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] Loop79 P0C input `3` rows and manifest를 생성했다.
+  - [x] Loop80 targeted canary completed/flushed/pending/failed `3/3/0/0`으로 `11658621`, `11718105` false-positive public title을 재현했다.
+  - [x] Title-body-only official URL recall이 Arbiter deliberate-null을 뒤집지 못하도록 guard를 추가했다.
+  - [x] `시리즈` 같은 platform/service alias가 official-alias rescue의 단일 작품 alias로 승격되지 않도록 guard를 추가했다.
+  - [x] `multi_work_title_cleared` 이후 secondary-reference/search official-alias rescue를 차단했다.
+  - [x] Loop81 targeted canary completed/flushed/pending/failed `3/3/0/0`, public title `0/3`을 확인했다.
+  - [x] `py_compile` PASS, `tests.test_title_lead_search_inferred_guard -v` `130 tests OK`, affected suites `115 tests OK`.
+  - [x] Review artifacts `loop79_81_p0c_unexpected_public_title_review.md/json`, residual map `loop81_current_residual_gate_map_after_p0c.md/json`, Loop79-81 report를 추가했다.
+  - [x] Data Analytics artifact `Loop79-81 P0C Unexpected Public Title Review` validate/render PASS.
+- 남은 작업:
+  - [ ] Loop81 targeted pass를 full-panel collateral approval로 승격하지 않는다.
+  - [ ] `11698871`은 P0A scope-decision HOLD로 유지한다.
+  - [ ] 다음 P0 lane은 P0D variant/canonicalization `4` rows 또는 P0E variant `11666713`에서 선택한다.
+  - [ ] Full-panel collateral approval은 계속 `NO-GO`로 유지한다.
+  - [ ] Source full completion은 계속 `OPEN`으로 유지한다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 76-78 P0A follow-up repair
+
+- 상태: Loop76 runtime PASS but risky overpromotion retained / Loop77 runtime PASS with public title `5/6` but `11697267` wrong URL / Loop78 focused URL guard PASS for `11697267` / P0A status PARTIAL_REPAIRED_WITH_SCOPE_HOLD / full-panel collateral approval NO-GO / source full completion OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] `엑칼뽑 -> 엑스칼리버 뽑습니다` known-title abbreviation을 추가했다.
+  - [x] Character/work-cue update question에서 known-title abbreviation recall이 작동하도록 anchor를 보강했다.
+  - [x] Curated alias resolution anchor recursion guard를 추가했다.
+  - [x] Same-URL official-detail canonicalization과 precision/weak-bridge bypass를 이어서 보강했다.
+  - [x] Same-frame wrong-core URL guard를 추가해 `아카데미 금태양 갤러리` URL이 `아카데미 생존 갤러리`를 지지하지 못하게 했다.
+  - [x] Loop76 targeted canary completed/flushed/pending/failed `6/6/0/0`을 확인하고 risky `11698871` overpromotion을 실패 증거로 보존했다.
+  - [x] Loop77 targeted canary completed/flushed/pending/failed `6/6/0/0`을 확인하고 public title `5/6`, safe accepted `4/6`, URL mismatch `1/6`을 기록했다.
+  - [x] Loop78 `11697267` focused canary completed/flushed/pending/failed `1/1/0/0`으로 `https://novelpia.com/novel/380218` 회복을 확인했다.
+  - [x] `py_compile` PASS 및 `tests.test_final_semantic_reread_gate tests.test_known_title_abbreviation_support tests.test_candidate_audit -v` `115 tests OK`.
+  - [x] Review artifacts `loop76_78_p0a_followup_repair.md/json` and Loop76-78 report를 추가했다.
+  - [x] Data Analytics artifact `Loop76-78 P0A Follow-up Repair` validate/render PASS.
+- 남은 작업:
+  - [ ] Loop78 single-row URL guard proof를 P0A lane completion이나 full approval로 승격하지 않는다.
+  - [ ] `11698871`은 character/cross-media alias context safe HOLD/scope-decision row로 유지한다.
+  - [ ] P0A status는 `PARTIAL_REPAIRED_WITH_SCOPE_HOLD`로 유지하고 full-panel collateral backlog와 분리한다.
+  - [ ] Full-panel collateral approval은 계속 `NO-GO`로 유지한다.
+  - [ ] Source full completion은 계속 `OPEN`으로 유지한다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 74-75 P0A expected restoration repair
+
+- 상태: Loop74 runtime PASS but weak-alias late demotion partial / Loop75 runtime PASS / P0A public expected restoration improved `0/6 -> 3/6` / remaining HOLD `3/6` / full-panel collateral approval NO-GO / source full completion OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] Loop73 P0A `0/6` no-go rows의 precision-seed demotion 경로를 진단했다.
+  - [x] Same-URL official-detail canonicalization을 precision guard 전에 적용해 짧은 alias surface를 공식 상세 canonical title로 보정했다.
+  - [x] Independent official-detail support가 있는 precision seed에 한해 `precision_seed_independent_official_detail_supported` bypass를 추가했다.
+  - [x] Identity consistency lint와 weak public-title bridge guard가 해당 bypass를 다시 demote하지 않도록 공유했다.
+  - [x] Focused precision/weak-bridge regression tests를 추가했다.
+  - [x] `py_compile` PASS 및 `tests.test_candidate_audit -v` `72 tests OK`.
+  - [x] Loop74 targeted canary completed/flushed/pending/failed `6/6/0/0`, VLM/OCR `READY`, public restored `1/6`.
+  - [x] Loop75 targeted canary completed/flushed/pending/failed `6/6/0/0`, VLM/OCR `READY`, public restored `3/6`.
+  - [x] Review artifacts `loop74_75_p0a_expected_restoration_repair.md/json` and Loop74/75 report를 추가했다.
+  - [x] Data Analytics artifact `Loop74-75 P0A Expected Restoration Repair` validate/render PASS.
+- 남은 작업:
+  - [ ] Loop75 `3/6`을 P0A lane completion이나 semantic approval로 승격하지 않는다.
+  - [ ] `11692444`는 `엑스칼리버 뽑습니다` official detail 미회복으로 계속 HOLD/open 유지한다.
+  - [ ] `11697267`은 `아카데미 생존 갤러리` official detail 미회복/degraded 상태로 계속 HOLD/open 유지한다.
+  - [ ] `11698871`은 character/cross-media context unsafe로 계속 HOLD/open 유지한다.
+  - [ ] Full-panel collateral approval은 계속 `NO-GO`로 유지한다.
+  - [ ] Source full completion은 계속 `OPEN`으로 유지한다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 73 residual map + P0A expected restoration canary
+
+- 상태: current residual map refreshed / remaining full-panel collateral backlog `161` / remaining P0 `14` / Loop73 P0A runtime PASS / semantic NO-GO expected restoration `0/6` public / candidate evidence preserved `5/6` / full-panel collateral approval NO-GO / source full completion OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] Loop62 residual map에 Loop63, Loop64, Loop68-72 closure evidence를 반영해 `loop73_current_residual_gate_map.md/json`을 추가했다.
+  - [x] P0B residual `4`, P0C slang `7`, P0E terminal rows `4`를 최신 residual count에서 제외했다.
+  - [x] Loop64 `11666713`은 `21세기 무림` vs `21세기 무림세가` canonicalization caution으로 별도 open 유지했다.
+  - [x] Remaining total `161`, remaining P0 `14`, P1 `77`, P2 `70`으로 갱신했다.
+  - [x] Loop73 P0A input `loop73_p0a_expected_restoration_6.jsonl`과 manifest를 생성했다.
+  - [x] Loop73 canary를 `--slang-db off --reuse-shards-only --parallel 6 --vlm on --ocr on --require-vlm-ocr-for-images`로 실행했다.
+  - [x] Runtime completed/flushed/pending/failed `6/6/0/0`, VLM/OCR `READY`, large run complete `true`.
+  - [x] Public expected restoration은 `0/6`; candidate/primary evidence preserved `5/6`; `11697267`은 expected not recovered.
+  - [x] Review artifacts `loop73_current_residual_gate_map.md/json`, `loop73_p0a_expected_restoration_canary.md/json`, Loop73 report를 추가했다.
+  - [x] Data Analytics artifacts `Loop73 Current Residual Gate Map` and `Loop73 P0A Expected Restoration Canary` validate/render PASS.
+- 남은 작업:
+  - [ ] Loop73 runtime PASS를 semantic approval로 승격하지 않는다.
+  - [ ] P0A expected restoration은 `OPEN`으로 유지하고, candidate-preserved-but-promotion-blocked 원인을 수리한다.
+  - [ ] `11697267` expected `아카데미 생존 갤러리` not recovered row를 별도 no-go로 추적한다.
+  - [ ] Remaining P0C unexpected, P0D canonicalization, P0E variant caution lanes도 계속 open으로 유지한다.
+  - [ ] Source full completion은 계속 `OPEN`으로 유지한다.
+  - [ ] Full-panel collateral approval은 계속 `NO-GO`로 유지한다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 68-72 P0B residual guard continuation
+
+- 상태: Loop68 `11671490` overpromotion reproduced NO-GO / Loop69 `11671490` targeted PASS / Loop70 `11695637` targeted PASS / Loop71 `11695639` partial URL gap / Loop72 `11695639` targeted PASS / Loop65 P0B residual rows TARGETED_REPAIRED / full-panel collateral approval NO-GO / source full completion OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] Loop68에서 `11671490` direct-image/reference recommendation context가 `게임이 자꾸 사람을 구원함`으로 과승격되는 NO-GO를 재현했다.
+  - [x] `candidate_audit`에 direct-image recommendation conflict와 recommendation-context-only public-title conflict hold guard를 추가했다.
+  - [x] Loop69에서 `11671490` final `official_title=null`, `title_resolution_allowed=false`, `candidate_ledger_status=promotion_blocked`를 확인했다.
+  - [x] `candidate_audit`에 image scene cue가 public-title bridge로 검증되지 않는 경우 hold하는 guard를 추가했다.
+  - [x] Loop70에서 `11695637` final `official_title=null`, `candidate_ledger_status=promotion_blocked`, flag `image_scene_cues_unverified_public_title_bridge`를 확인했다.
+  - [x] `agentic_pipeline`에 comment URL answer detail fetch/recovery와 validator-returned URL/candidate graph sync를 추가했다.
+  - [x] Loop71에서 `11695639` title recovery but URL gap을 partial로 남겼다.
+  - [x] Loop72에서 `11695639` final title `준우승 세 번 했더니 미소녀 됨`, URL `https://novelpia.com/novel/362860`, `primary_work.heretic_url` 보존을 확인했다.
+  - [x] Review artifact `loop68_72_p0b_residual_guard_review.md/json`과 Loop68/69/70/71/72 reports를 추가했다.
+  - [x] `py_compile` PASS, `tests.test_candidate_audit` `68 tests OK`, focused comment URL answer tests `6 tests OK`, `git diff --check` PASS(line-ending warnings only).
+  - [x] Data Analytics artifact `Loop 68-72 P0B Residual Guard Review` validate/render PASS.
+- 남은 작업:
+  - [ ] Loop65 P0B residual targeted repair를 full-panel collateral approval로 승격하지 않는다.
+  - [ ] Loop68 NO-GO와 Loop71 partial evidence를 historical failure/partial evidence로 유지한다.
+  - [ ] 다음 concrete lane은 full-panel collateral backlog의 남은 P0A/P0C/P0D/P0E 또는 source full-completion gate에서 선택한다.
+  - [ ] Source full completion은 계속 `OPEN`으로 유지한다.
+  - [ ] Full-panel collateral approval은 계속 `NO-GO`로 유지한다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 65-67 P0B residual guard review
+
+- 상태: Loop65 P0B residual targeted rerun semantic NO-GO / Loop66 generic label guard partial but late secondary rescue NO-GO / Loop67 `11706832` deliberate-null secondary rescue targeted PASS / P0B lane OPEN / full-panel collateral approval NO-GO / source full completion OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] Loop62 `P0B_expected_mismatch_public_title=4` rows를 `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop65_p0b_residual_expected_mismatch_4.jsonl`로 추출했다.
+  - [x] Loop65 targeted rerun을 `--slang-db off --reuse-shards-only --parallel 4 --vlm on --ocr on --require-vlm-ocr-for-images`로 실행했다.
+  - [x] Loop65 runtime은 run id `20260629_054459_633571`, `large_run_complete=true`, failed rows `0`, VLM/OCR `READY`.
+  - [x] Generic evidence-label lint를 추가하고 `웹소설` final-title demotion test를 추가했다.
+  - [x] Loop66 single-row canary를 실행해 generic label은 제거됐지만 late secondary-reference rescue가 남는 것을 확인했다.
+  - [x] `_title_deliberately_null` 이후 secondary-reference/search official-alias rescue를 차단했다.
+  - [x] Loop67 single-row canary에서 `11706832` final `official_title=null`, `title_resolution_state=adjacent`, `title_resolution_allowed=false`, `candidate_ledger_status=promotion_blocked`를 확인했다.
+  - [x] Review artifact `loop65_67_p0b_residual_guard_review.md/json`과 Loop65/66/67 reports를 추가했다.
+  - [x] Data Analytics artifact `Loop65-67 P0B Residual Guard Review` validate/render PASS.
+- 남은 작업:
+  - [ ] Loop65 `11671490`, `11695637`, `11695639`는 여전히 P0B lane open/no-go로 남긴다.
+  - [ ] Loop67 targeted pass를 P0B lane completion이나 full-panel collateral approval로 승격하지 않는다.
+  - [ ] 다음 concrete lane으로 남은 P0A restoration 또는 residual P0B row repair를 진행한다.
+  - [ ] Source full completion은 계속 `OPEN`으로 유지한다.
+  - [ ] Full-panel collateral approval은 계속 `NO-GO`로 유지한다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 64 P0E wrong title switch targeted rerun
+
+- 상태: P0E targeted lane TARGETED_REVIEWED_5_OF_5 / Loop49 wrong-after title reproduced 0 / recovered before 3 / variant caution 1 / demoted 1 / full-panel collateral approval NO-GO / source full completion OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] Loop51 `P0E_wrong_title_switch=5` rows를 `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop64_p0e_wrong_title_switch_5.jsonl`로 추출했다.
+  - [x] `expert_main.py` targeted rerun을 `--slang-db off --reuse-shards-only --parallel 5 --vlm on --ocr on --require-vlm-ocr-for-images`로 실행했다.
+  - [x] Runtime completed/flushed/pending/failed `5/5/0/0`, failed `0`, VLM/OCR `READY`.
+  - [x] Loop49 wrong-after title reproduced `0`.
+  - [x] Row outcomes: `RECOVERED_BEFORE_TITLE=3`, `RECOVERED_VARIANT_NEEDS_CANONICALIZATION_REVIEW=1`, `DEMOTED_TO_NULL=1`.
+  - [x] Review artifact `loop64_p0e_wrong_title_switch_targeted_rerun.md/json`과 Loop64 report를 추가했다.
+  - [x] Data Analytics artifact `Loop64 P0E Wrong Title Switch Targeted Rerun` validate/render PASS.
+- 남은 작업:
+  - [ ] `11666713` variant `21세기 무림` vs `21세기 무림세가`는 canonicalization caution으로 후속 확인한다.
+  - [ ] P0E targeted review를 full-panel collateral approval로 승격하지 않는다.
+  - [ ] 다음 concrete lane으로 `P0B_expected_mismatch_public_title=4` 또는 P0A restoration lanes를 진행한다.
+  - [ ] Source full completion은 계속 `OPEN`으로 유지한다.
+  - [ ] Full-panel collateral approval은 계속 `NO-GO`로 유지한다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 63 P0C slang pollution targeted rerun
+
+- 상태: P0C targeted lane TARGETED_REVIEWED_7_OF_7 / row-level demoted 4 and verified 3 / full-panel collateral approval NO-GO / source full completion OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] Loop51 `P0C_slang_pollution_public_title=7` rows를 `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop63_p0c_slang_pollution_7.jsonl`로 추출했다.
+  - [x] vLLM endpoint `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4`를 확인했다.
+  - [x] `expert_main.py` targeted rerun을 `--slang-db off --reuse-shards-only --parallel 7 --vlm on --ocr on --require-vlm-ocr-for-images`로 실행했다.
+  - [x] Runtime completed/flushed/pending/failed `7/7/0/0`, failed `0`, VLM/OCR `READY`.
+  - [x] Row outcomes: `DEMOTED_TO_NULL=4`, `VERIFIED_SAME_PUBLIC_TITLE=3`.
+  - [x] Review artifact `loop63_p0c_slang_pollution_targeted_rerun.md/json`과 Loop63 report를 추가했다.
+  - [x] Data Analytics artifact `Loop63 P0C Slang Pollution Targeted Rerun` validate/render PASS.
+- 남은 작업:
+  - [ ] P0C targeted lane closure를 full-panel collateral approval로 승격하지 않는다.
+  - [x] `P0E_wrong_title_switch=5`는 Loop64에서 targeted rerun/review를 진행했다.
+  - [ ] 다음 high-risk P0 lane으로 `P0B_expected_mismatch_public_title=4` 또는 P0A restoration lanes를 진행한다.
+  - [ ] Source full completion은 계속 `OPEN`으로 유지한다.
+  - [ ] Full-panel collateral approval은 계속 `NO-GO`로 유지한다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 62 full-panel collateral residual map
+
+- 상태: residual map only / P0C targeted lane later reviewed by Loop63 / full-panel collateral approval NO-GO / source full completion OPEN / Loop10 slang write-back review CLOSED_AS_REVIEW_ONLY_NO_WRITEBACK / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] Loop50 full-panel collateral packet `183` candidates를 재확인했다.
+  - [x] Loop53-58 targeted recovery가 실제로 닫은 rows는 `7`개임을 확인했다.
+  - [x] 남은 full-panel collateral backlog를 `176`으로 고정했다.
+  - [x] 남은 priority split을 `P0=29`, `P1=77`, `P2=70`으로 기록했다.
+  - [x] 남은 P0 bucket split을 기록했다: `P0A_expected_title_or_url_restoration=3`, `P0A_expected_title_restoration=3`, `P0B_expected_mismatch_public_title=4`, `P0C_slang_pollution_public_title=7`, `P0C_unexpected_public_title=3`, `P0D_title_variant_or_canonicalization=4`, `P0E_wrong_title_switch=5`.
+  - [x] Residual map artifacts `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop62_full_panel_residual_map.md/json`를 추가했다.
+  - [x] Loop report `docs/devs/loop_reports/LOOP_62_REPORT_20260629.md`를 추가했다.
+  - [x] JSON parse PASS.
+  - [x] Data Analytics artifact `Loop62 Full Panel Residual Map` validate PASS; render call은 실행됐으나 현재 컨텍스트에서 응답이 잘렸다.
+- 남은 작업:
+  - [ ] Loop62 residual map을 full-panel collateral approval로 승격하지 않는다.
+  - [x] `P0C_slang_pollution_public_title=7`은 Loop63에서 targeted rerun/review를 진행했다.
+  - [x] `P0E_wrong_title_switch=5`는 Loop64에서 targeted rerun/review를 진행했다.
+  - [ ] 다음 concrete lane으로 `P0B_expected_mismatch_public_title=4` 또는 P0A restoration lanes를 진행한다.
+  - [ ] Source full completion은 계속 `OPEN`으로 유지한다.
+  - [ ] Full-panel collateral approval은 계속 `NO-GO`로 유지한다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 61 slang write-back review
+
+- 상태: Loop 10 slang write-back review CLOSED_AS_REVIEW_ONLY_NO_WRITEBACK / production slang DB write-back NOT_APPROVED / source full completion OPEN / full-panel collateral approval NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] Loop10 result/manifest/compare/next-queue artifacts를 재감사했다.
+  - [x] Runtime completed/flushed/pending/failed `92/92/0/0`, compare `review=92`, targeted next queue `0`를 확인했다.
+  - [x] Input manifest policy `off/read-only canary; no production write-back`를 확인했다.
+  - [x] Slang signal split을 재계산했다: `store_true=29`, `store_false=31`, no `slang_insight=32`.
+  - [x] Store-true rows는 `decode_verified=false 0`, `resolved=27`, `unresolved_matchable=2`임을 확인했다.
+  - [x] Unresolved store-true rows `11700500`(`전1시`), `11710043`(`악엔`)을 별도 hold로 기록했다.
+  - [x] `19` unique store-true terms가 모두 `slang_db/slang_db.json`에 이미 존재하며, `6` terms가 multi-title/bucket임을 확인했다.
+  - [x] `slang_db/slang_db.json`은 git status에서 수정되지 않았다.
+  - [x] Data Analytics report `Loop61 Slang Writeback Review Gate` validate/render PASS.
+- 남은 작업:
+  - [ ] queue `0`을 slang DB approval 또는 semantic approval로 승격하지 않는다.
+  - [ ] source full completion은 계속 `OPEN`으로 유지한다.
+  - [ ] full-panel collateral approval은 `NO-GO`로 유지한다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 60 failed-row targeted rerun
+
+- 상태: failed row `11694057` targeted rerun PASS / source full completion OPEN / full-panel collateral approval NO-GO / Loop 10 slang write-back review CLOSED_AS_REVIEW_ONLY_NO_WRITEBACK_BY_LOOP61 / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] prior checkpoint/source evidence에서 `11694057` 원문 입력을 `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop59_failed_row_11694057.jsonl`로 재구성했다.
+  - [x] vLLM `/v1/models`에서 `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4` endpoint를 확인했다.
+  - [x] `expert_main.py` targeted canary를 `--slang-db off --reuse-shards-only --parallel 1 --vlm on --ocr on --require-vlm-ocr-for-images`로 실행했다.
+  - [x] Manifest `loop59_failed_row_11694057_result_manifest.json` runtime completed/flushed/pending/failed `1/1/0/0`, failed `0`.
+  - [x] Final row `11694057`은 `official_title=괴담에 휘말렸다`, `work_resolution=resolved`, `discussion_type=character_talk`.
+  - [x] Data Analytics report `Loop60 Failed Row Targeted Rerun Gate` validate/render PASS.
+- 남은 작업:
+  - [ ] source manifest input scope `104502`와 `large_run_complete=false` 때문에 source full completion은 계속 `OPEN`으로 유지한다.
+  - [ ] full-panel collateral approval은 `NO-GO`로 유지한다.
+  - [x] Loop 10 slang write-back review는 Loop61에서 `CLOSED_AS_REVIEW_ONLY_NO_WRITEBACK`으로 닫았다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 59 source integrity recovery
+
+- 상태: source checkpoint recovery PARTIAL_PROGRESS / pending flush gap recovered to separate artifact / failed row `11694057` CLOSED_BY_LOOP60_TARGETED_RERUN / source full completion OPEN / full-panel collateral approval NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] `out/expert_result_20260626_000008_928006_manifest.json` 기준 source counts를 재검산했다: input `104502`, final flushed `1933`, pending `13`, failed `1`, large_run_complete `false`.
+  - [x] checkpoint를 집계했다: completed `1945`, failed `1`.
+  - [x] `tools/recover_expert_run_from_checkpoint.py`로 recovered output `out/expert_result_20260626_000008_928006_recovered_from_checkpoint.json` rows `1945`와 recovery summary를 생성했다.
+  - [x] pending snapshot rows `13`은 recovered output에 포함됐다.
+  - [x] failed placeholder `11694057`는 recovered output에서 제외했다.
+  - [x] `src/llm_batch/llm/client.py`에 lone surrogate HTTP JSON transport guard를 추가했다.
+  - [x] `tests/test_llm_client_multimodal.py`에 surrogate replacement 및 sanitized HTTP body tests를 추가했다.
+  - [x] `py_compile` PASS, focused surrogate transport `2 tests OK`, `tests.test_llm_client_multimodal` `16 tests OK`.
+  - [x] Review packet `loop59_source_integrity_recovery.md/json` and Loop 59 report were added.
+  - [x] Data Analytics report `Loop59 Source Integrity Recovery Gate` was validate/render PASS.
+- 남은 작업:
+  - [x] original input/source row for `11694057`를 찾아 targeted rerun을 실행했다(Loop60).
+  - [ ] recovered checkpoint output을 full-source completion 또는 approval로 승격하지 않는다.
+  - [ ] full-panel collateral approval은 `NO-GO`로 유지한다.
+  - [ ] Loop 10 slang write-back review가 남아 있다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 58 direct expected surface over homonym fix
+
+- 상태: code hook implemented / unit verification PASS / `direct_expected_surface_over_homonym=2` targeted row-level GO in final and repeat canaries / Loop53 concrete expected-recovery targeted lanes `7_OF_7` closed / full-panel collateral approval NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] Loop53 `direct_expected_surface_over_homonym=2` input `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop58_direct_expected_surface_over_homonym_2.jsonl`로 targeted canary를 실행했다.
+  - [x] Final result `loop58_direct_expected_surface_over_homonym_2_after_sixth_patch_result.json`은 runtime completed/flushed/pending/failed `2/2/0/0`, VLM/OCR ready.
+  - [x] Repeat result `loop58_direct_expected_surface_over_homonym_2_after_sixth_patch_repeat_result.json`도 runtime completed/flushed/pending/failed `2/2/0/0`, VLM/OCR ready.
+  - [x] `11674703` final `official_title=도굴왕`, URL `null`, `candidate_ledger_status=safe_resolved`.
+  - [x] `11703657` final `official_title=야만인은 문명하면 안되냐`, URL `https://novelpia.com/novel/405310`, `candidate_ledger_status=safe_resolved`.
+  - [x] Direct comment URL answer preservation, weak surface/search title replacement, official-detail URL restoration, decoder-exact post-title surface preservation tests were added.
+  - [x] `py_compile` PASS, focused AgenticPipelineRework `11 tests OK`, focused title-lead `3 tests OK`, `tests.test_final_semantic_reread_gate` `18 tests OK`.
+  - [x] Review packet `loop58_direct_expected_surface_over_homonym_fix.md/json` and Loop 58 report were added.
+  - [x] Data Analytics report `Loop58 Direct URL Surface Homonym Gate` was validate/render PASS.
+- 남은 작업:
+  - [ ] Loop53 targeted lane closure를 full-panel collateral approval 또는 full-scan approval로 승격하지 않는다.
+  - [ ] full-panel collateral approval은 `NO-GO`로 유지한다.
+  - [ ] source full completion gap `13` pending + `1` failed를 닫는다.
+  - [ ] Loop 10 slang write-back review가 남아 있다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 57 primary expected candidate precedence fix
+
+- 상태: code hook implemented / unit verification PASS / `primary_expected_candidate_precedence=2` targeted row-level GO / `direct_expected_surface_over_homonym=2` OPEN / full-panel collateral approval NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] Loop53 `primary_expected_candidate_precedence=2` input `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop57_primary_expected_precedence_2.jsonl`로 VLM/OCR targeted canary를 실행했다.
+  - [x] Final result `loop57_primary_expected_precedence_2_after_second_patch_result.json`은 runtime completed/flushed/pending/failed `2/2/0/0`, VLM/OCR ready.
+  - [x] `11658637` final `official_title=재벌집 막내아들`, URL `https://novel.munpia.com/69583`, `candidate_ledger_status=safe_resolved`.
+  - [x] `11677913` final `official_title=이세계 검은 머리 외국인`, URL `https://novelpia.com/novel/1082`, `candidate_ledger_status=safe_resolved`.
+  - [x] Primary/reference-role precedence, direct OCR/work-cue official probe preservation, official-detail title canonicalization, verified-alias bridge guards, and author/volume wrapper blocking tests were added.
+  - [x] `py_compile` PASS, `tests.test_final_semantic_reread_gate` `18 tests OK`, `tests.test_candidate_audit` `64 tests OK`, `tests.test_title_lead_search_inferred_guard` `126 tests OK`.
+  - [x] Review packet `loop57_primary_expected_precedence_fix.md/json` and Loop 57 report were added.
+  - [x] Data Analytics report `Loop57 Primary Expected Candidate Precedence Fix` was validate/render PASS.
+- 남은 작업:
+  - [ ] `primary_expected_candidate_precedence=2` targeted recovery를 full-panel collateral approval 또는 full-scan approval로 승격하지 않는다.
+  - [ ] Loop53 `direct_expected_surface_over_homonym=2` lane은 아직 open이다.
+  - [ ] full-panel collateral approval은 `NO-GO`로 유지한다.
+  - [ ] source full completion gap `13` pending + `1` failed를 닫는다.
+  - [ ] Loop 10 slang write-back review가 남아 있다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-29 regression-safe grounding Loop 56 ratddasip visual alias catalog fix
+
+- 상태: code hook implemented / unit verification PASS / `11673086` targeted row-level GO / expected-source lane targeted 3_OF_3 recovered / broader Loop53 lanes OPEN / full-panel collateral approval NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] `11673086` 단일 input `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop56_ratddasip_11673086_1.jsonl`로 VLM/OCR targeted canary를 반복 실행했다.
+  - [x] Visual alias official-detail bridge를 `[림월드]...` bracket cue와 packet visual evidence가 같이 있을 때만 허용하도록 좁혔다.
+  - [x] Same-tag `#랫따싶` competitor보다 visual bracket alias candidate가 우선되도록 catalog scoring에 `visual_bracket_context` anchor를 추가했다.
+  - [x] Final result `loop56_ratddasip_11673086_after_catalog_fix_result.json`은 runtime completed/flushed/pending/failed `1/1/0/0`, VLM/OCR ready.
+  - [x] `11673086` final `official_title=변방계에서 회귀자로 살아남기`, URL `https://novelpia.com/novel/382324`, `candidate_ledger_status=safe_resolved`, `title_resolution_allowed=true`로 row-level `GO`.
+  - [x] `tests.test_title_lead_search_inferred_guard` `119 tests OK`, `tests.test_candidate_audit` `64 tests OK`, `tests.test_known_title_abbreviation_support` `20 tests OK`, `py_compile` PASS.
+  - [x] Review packet `loop56_ratddasip_visual_alias_catalog_fix.md/json`과 Loop 56 report를 추가했다.
+  - [x] Data Analytics report `Loop56 Ratddasip Visual Alias Catalog Fix`를 validate/render했다.
+- 남은 작업:
+  - [ ] `11673086` 회복을 full-panel collateral approval 또는 full-scan approval로 승격하지 않는다.
+  - [ ] Loop53 `primary_expected_candidate_precedence=2`, `direct_expected_surface_over_homonym=2` lanes는 아직 unchanged/open이다.
+  - [ ] full-panel collateral approval은 `NO-GO`로 유지한다.
+  - [ ] source full completion gap `13` pending + `1` failed를 닫는다.
+  - [ ] Loop 10 slang write-back review가 남아 있다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-28 regression-safe grounding Loop 55 expected-source remaining canary
+
+- 상태: VLM/OCR targeted canary PASS / `11671501` row-level GO / `11673086` promotion_blocked OPEN / expected-source lane PARTIAL_GO_2_OF_3 / broader Loop53 lanes OPEN / full-panel collateral approval NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] Loop53 `expected_source_recall_missing_or_demoted` 잔여 2건을 `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop55_expected_source_remaining_2.jsonl`로 실행했다.
+  - [x] `loop55_expected_source_remaining_2_result.json` runtime completed/flushed/pending/failed `2/2/0/0`, VLM/OCR ready, image posts `2`.
+  - [x] `11671501`은 final `official_title=판초우의의 마법사`, URL `https://novel.munpia.com/530500`, `candidate_ledger_status=safe_resolved`로 row-level `GO`.
+  - [x] `11673086`은 expected candidate `변방계에서 회귀자로 살아남기`, URL `https://novelpia.com/novel/382324`를 보존했지만 final public title은 `null`, `candidate_ledger_status=promotion_blocked`로 `OPEN`.
+  - [x] Review packet `loop55_expected_source_remaining_canary.md/json`과 Loop 55 report를 추가했다.
+  - [x] Data Analytics report `Loop55 Expected-Source Remaining Canary`를 validate/render했다.
+- 남은 작업:
+  - [ ] `11671501` 회복을 full-panel collateral approval 또는 full-scan approval로 승격하지 않는다.
+  - [ ] `11673086` `랫따싶` character/source bridge는 tag-only promotion 없이 계속 검토한다.
+  - [ ] Loop53 `primary_expected_candidate_precedence=2`, `direct_expected_surface_over_homonym=2` lanes는 아직 unchanged/open이다.
+  - [ ] full-panel collateral approval은 `NO-GO`로 유지한다.
+  - [ ] source full completion gap `13` pending + `1` failed를 닫는다.
+  - [ ] Loop 10 slang write-back review가 남아 있다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-28 regression-safe grounding Loop 54 alias-abbreviation recall fix
+
+- 상태: code hook implemented / unit verification PASS / targeted canary `11668324` recovered GO / follow-up Loop55 recovered `11671501` / `11673086` OPEN / broader Loop53 lane OPEN / full-panel collateral approval NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / overall goal ACTIVE NOT_COMPLETE
+- 완료:
+  - [x] `src/llm_batch/agentic_pipeline.py`에 compact alias abbreviation predicate를 추가했다.
+  - [x] `title_alias_platform_recall` 검색어 생성에서 `니생들이랑 -> 니생들`처럼 한국어 조사/연결어 stem을 먼저 시도한다.
+  - [x] alias-only official-detail result는 official title abbreviation 형태로 설명될 때만 promotion되도록 제한했다.
+  - [x] `src/llm_batch/experts/utils.py`의 `KNOWN_TITLE_ABBREVIATIONS`에 `니생들 -> 니들 생각 다 들린다`를 추가했다.
+  - [x] known-abbreviation official URL recall이 post title/body의 leftmost alias occurrence를 우선하도록 했다.
+  - [x] update-question/lifecycle anchor를 `언급`, `장갤픽`, 작품 출시/연재/완결/시간 계열로 좁혀 broad `작품` token 단독 승격을 피했다.
+  - [x] `랫따싶` tag-only collision negative test를 추가해 공유 tag만으로 promotion되지 않게 고정했다.
+  - [x] Data Analytics reports `Loop54 Alias-Abbreviation Recall Fix`, `Loop54 Alias-Abbreviation Canary Gate`, `Loop54b Known-Abbreviation Canary Recovery`를 validate/render했다.
+  - [x] Loop 54 report를 `docs/devs/loop_reports/LOOP_54_REPORT_20260628.md`에 추가했다.
+  - [x] 첫 `11668324` single-row targeted canary를 실행했다: runtime completed/flushed/pending/failed `1/1/0/0`, semantic `NO-GO`로 expected `니들 생각 다 들린다`, actual `괴담에 휘말렸다` via `김괴라리`를 기록했다.
+  - [x] follow-up fix 후 `loop54b_known_abbrev_11668324_result.json` targeted canary를 재실행했다: runtime completed/flushed/pending/failed `1/1/0/0`.
+  - [x] second canary row-level `GO`를 기록했다: final `official_title=니들 생각 다 들린다`, URL `https://novelpia.com/novel/384318`, alias `니생들`, `candidate_ledger_status=safe_resolved`, search health `SEARCH_DEGRADED`.
+- 남은 작업:
+  - [ ] `11668324` targeted canary 회복을 full-panel collateral approval 또는 full-scan approval로 승격하지 않는다.
+  - [x] `11671501` `판초법사 -> 판초우의의 마법사` materialization은 Loop55 targeted canary에서 row-level `GO`로 확인했다.
+  - [ ] `11673086` `랫따싶` character/source bridge는 tag-only promotion 없이 별도 검토한다.
+  - [ ] Loop53 `primary_expected_candidate_precedence=2`, `direct_expected_surface_over_homonym=2` lanes는 아직 unchanged/open이다.
+  - [ ] full-panel collateral approval은 `NO-GO`로 유지한다.
+  - [ ] source full completion gap `13` pending + `1` failed를 닫는다.
+  - [ ] Loop 10 slang write-back review가 남아 있다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-28 regression-safe grounding Loop 53 P0B concrete expected-recovery packet
+
+- 상태: code-review lane routing DONE / follow-up Loop54b recovered `11668324` / remaining packet rows OPEN / full-panel collateral approval NO-GO / semantic quality REVIEW-LOCKED / full scan approval false
+- 완료:
+  - [x] Loop52 `BLOCK_WRONG_AFTER_RECOVER_EXPECTED=7` rows를 code-review lane으로 분리했다.
+  - [x] Packet 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop53_p0b_concrete_expected_recovery_packet.md/json`.
+  - [x] Requeue 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop53_p0b_concrete_expected_recovery_requeue.md/json`.
+  - [x] Candidate input 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop53_p0b_concrete_expected_recovery_7.jsonl`, rows `7`, missing `0`.
+  - [x] Fix lane split 확인: `expected_source_recall_missing_or_demoted=3`, `primary_expected_candidate_precedence=2`, `direct_expected_surface_over_homonym=2`.
+  - [x] Data Analytics report `Loop53 P0B Concrete Expected-Recovery Packet`를 validate/render했다.
+  - [x] Loop 53 report를 `docs/devs/loop_reports/LOOP_53_REPORT_20260628.md`에 추가했다.
+- 남은 작업:
+  - [x] `expected_source_recall_missing_or_demoted=3` lane의 첫 code hook은 Loop54에서 `니생들`형 alias-abbreviation recall fix로 처리했다.
+  - [x] `11668324`는 Loop54b targeted canary에서 `니들 생각 다 들린다`로 회복됐다.
+  - [x] `11671501`은 Loop55 targeted canary에서 `판초우의의 마법사`로 회복됐다.
+  - [ ] `expected_source_recall_missing_or_demoted=3` lane의 잔여 `11673086` targeted follow-up은 아직 open이다.
+  - [ ] 잔여 `랫따싶` evidence path를 검토한다.
+  - [ ] `primary_expected_candidate_precedence=2` lane의 primary/reference_role 후보 우선순위와 final identity sync를 검토한다.
+  - [ ] `direct_expected_surface_over_homonym=2` lane의 direct post title/comment URL anchor가 homonym official-detail 후보를 차단하는지 검토한다.
+  - [ ] remaining Loop53 packet rows는 code fix 후 targeted canary/recompare를 실행하기 전까지 row-level resolution `OPEN`으로 유지한다.
+  - [ ] full-panel collateral approval은 `NO-GO`로 유지한다.
+  - [ ] source full completion gap `13` pending + `1` failed를 닫는다.
+  - [ ] Loop 10 slang write-back review가 남아 있다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-28 regression-safe grounding Loop 52 P0B expected-mismatch disposition
+
+- 상태: P0B disposition routing DONE / row-level resolution OPEN / full-panel collateral approval NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / overall full approval NOT_GRANTED
+- 완료:
+  - [x] Loop51 `P0B_expected_mismatch_public_title=11` rows를 네 가지 처분군으로 재분류했다.
+  - [x] Disposition 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop52_p0b_expected_mismatch_disposition.md/json`.
+  - [x] Requeue 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop52_p0b_expected_mismatch_requeue.md/json`.
+  - [x] Candidate input 확인: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop52_p0b_expected_mismatch_11.jsonl`, rows `11`, missing `0`.
+  - [x] Disposition split 확인: `BLOCK_WRONG_AFTER_RECOVER_EXPECTED=7`, `BLOCK_WRONG_AFTER_PRESERVE_HYPOTHESIS=2`, `SECONDARY_REFERENCE_HOLD=1`, `EXPECTED_URL_PRESERVED_TITLE_SURFACE_REPAIR=1`.
+  - [x] Data Analytics report `Loop52 P0B Expected-Mismatch Disposition`를 validate/render했다.
+  - [x] Loop 52 report를 `docs/devs/loop_reports/LOOP_52_REPORT_20260628.md`에 추가했다.
+- 남은 작업:
+  - [x] `BLOCK_WRONG_AFTER_RECOVER_EXPECTED=7` rows의 code-review lane routing은 Loop53에서 분리했다.
+  - [ ] Loop53 code fix/targeted canary 전까지 wrong after-title 차단과 expected title/source 회수 여부는 unresolved로 둔다.
+  - [ ] `BLOCK_WRONG_AFTER_PRESERVE_HYPOTHESIS=2` rows는 unresolved hypothesis로 보존하고 web/source 검증 전 forced recovery로 승격하지 않는다.
+  - [ ] `SECONDARY_REFERENCE_HOLD=1` row는 direct work bridge 확인 전까지 expected title recovery로 처리하지 않는다.
+  - [ ] Loop49 field consistency risk를 닫는다: `identity.official_title=null`인데 compare after surface가 resolved처럼 보이는 상태를 승인 근거로 쓰지 않는다.
+  - [ ] full-panel collateral approval은 `NO-GO`로 유지한다.
+  - [ ] source full completion gap `13` pending + `1` failed를 닫는다.
+  - [ ] Loop 10 slang write-back review가 남아 있다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-28 regression-safe grounding Loop 51 P0 collateral triage
+
+- 상태: P0 triage DONE / P0 row-level resolution OPEN / full-panel collateral approval NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / overall full approval NOT_GRANTED
+- 완료:
+  - [x] Loop50 P0 `36` rows를 triage bucket으로 분리했다.
+  - [x] Triage 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop51_p0_panel_collateral_triage.md/json`.
+  - [x] Requeue 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop51_p0_panel_collateral_requeue.md/json`.
+  - [x] Candidate input 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop51_p0_panel_collateral_36.jsonl`, rows `36`, missing `0`.
+  - [x] Data Analytics report `Loop51 P0 Panel Collateral Triage`를 validate/render했다.
+  - [x] Loop 51 report를 `docs/devs/loop_reports/LOOP_51_REPORT_20260628.md`에 추가했다.
+- 남은 작업:
+  - [x] `P0B_expected_mismatch_public_title=11`의 disposition routing은 Loop52에서 분리했다.
+  - [ ] Loop52 P0B row-level resolution/code fix는 아직 open이다.
+  - [ ] `P0E_wrong_title_switch=5`를 code/rule review 후보로 분리한다.
+  - [ ] `P0D_title_variant_or_canonicalization=4`는 canonical/source 확인 전까지 hard failure로 확정하지 않는다.
+  - [ ] full-panel collateral approval은 `NO-GO`로 유지한다.
+  - [ ] source full completion gap `13` pending + `1` failed를 닫는다.
+  - [ ] Loop 10 slang write-back review가 남아 있다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-28 regression-safe grounding Loop 50 panel collateral packet
+
+- 상태: Loop49 collateral candidates packetized / requeue surface DONE / P0 review OPEN / full-panel collateral approval NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / overall full approval NOT_GRANTED
+- 완료:
+  - [x] Loop49 collateral regression candidates `183`을 review packet으로 구조화했다.
+  - [x] Packet 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop50_panel_collateral_candidate_packet.md/json`.
+  - [x] Requeue 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop50_panel_collateral_requeue.md/json`.
+  - [x] Candidate input 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop50_panel_collateral_regression_candidates_183.jsonl`, rows `183`, missing `0`.
+  - [x] Data Analytics report `Loop50 Panel Collateral Candidate Packet`을 validate/render했다.
+  - [x] Loop 50 report를 `docs/devs/loop_reports/LOOP_50_REPORT_20260628.md`에 추가했다.
+- 남은 작업:
+  - [ ] P0 `36` rows를 row-level expected-answer/HOLD/code-fix/no-generalizable-fix로 분리한다.
+  - [ ] P1 `77`, P2 `70` rows도 approval 전 row-level rationale이 필요하다.
+  - [ ] full-panel collateral approval은 `NO-GO`로 유지한다.
+  - [ ] source full completion gap `13` pending + `1` failed를 닫는다.
+  - [ ] Loop 10 slang write-back review가 남아 있다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-28 regression-safe grounding Loop 49 panel replay review
+
+- 상태: panel replay runtime PASS / full-panel collateral approval NO-GO / source full completion OPEN / Loop 10 slang write-back review OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall full approval NOT_GRANTED
+- 완료:
+  - [x] Regression panel replay 완료: completed/flushed/pending/failed `375/375/0/0`, `large_run_complete=true`.
+  - [x] VLM/OCR semantic gate `READY`, image posts `241`, `slang_db=off`, requested/effective parallel `36/16`을 로그/manifest로 확인했다.
+  - [x] Result/manifest/log 확인: `loop49_regression_panel_replay_result.json`, `loop49_regression_panel_replay_result_manifest.json`, `loop49_regression_panel_replay_run_20260628.log`.
+  - [x] Full-panel collateral compare 생성: `loop49_regression_panel_replay_collateral_compare.md/json`.
+  - [x] Data Analytics report `Loop49 Regression Panel Replay Review`를 validate/render했다.
+  - [x] Loop 49 report를 `docs/devs/loop_reports/LOOP_49_REPORT_20260628.md`에 추가했다.
+- 남은 작업:
+  - [ ] Collateral regression candidates `183`을 review/requeue packet으로 분리한다.
+  - [ ] full-panel collateral approval은 `NO-GO`로 유지한다.
+  - [ ] source full completion gap `13` pending + `1` failed를 닫는다.
+  - [ ] Loop 10 slang write-back review가 남아 있다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-28 regression-safe grounding Loop 48 collateral candidate review
+
+- 상태: Loop47 collateral candidates row-level review DONE / code change NOT_RUN / full-panel collateral approval OPEN / source full completion OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall full approval NOT_GRANTED
+- 완료:
+  - [x] Loop47 collateral regression candidates `5`를 Loop47 golden audit expected-answer status와 대조했다.
+  - [x] Review artifact 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop48_collateral_candidate_review.md/json`.
+  - [x] Data Analytics report `Loop 48 Collateral Candidate Review`를 validate/render했다.
+  - [x] Loop 48 report를 `docs/devs/loop_reports/LOOP_48_REPORT_20260628.md`에 추가했다.
+- 남은 작업:
+  - [ ] panel replay가 남아 있다.
+  - [ ] source full completion이 남아 있다.
+  - [ ] Loop 10 slang write-back review가 남아 있다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-28 regression-safe grounding Loop 47 merged golden pass
+
+- 상태: Loop47 merged golden semantic gate PASS / golden runtime PASS / Loop48 collateral candidate review DONE / full-panel collateral approval OPEN / semantic quality REVIEW-LOCKED / full scan approval false / overall full approval NOT_GRANTED
+- 완료:
+  - [x] Loop45 failed rows `11663521`, `11663540`, `11700470` 전용 Loop46 input을 생성했다.
+  - [x] Loop46 targeted rerun 완료: `loop46_failed3_after_work_cue_fanfic_ocr_result.json`, completed/flushed/pending/failed `3/3/0/0`, VLM/OCR `READY`.
+  - [x] Loop47 merge 생성: `loop47_merged_loop45_loop46_golden_result.json`, `loop47_merged_loop45_loop46_golden_result_manifest.json`, `loop47_merged_loop45_loop46_sources.json`.
+  - [x] Loop47 golden audit 생성: `loop47_merged_loop45_loop46_golden_audit.md/json`, pass `16/16`, fail `0`, `canary_semantic_gate=PASS`.
+  - [x] Loop47 collateral compare 생성: `loop47_merged_loop45_loop46_golden_collateral_compare.md/json`, collateral regression candidates `5`.
+  - [x] broad affected suite `660 tests OK`.
+  - [x] Data Analytics report `Loop 47 Golden Gate Status`를 validate/render했다.
+  - [x] Loop 47 report를 `docs/devs/loop_reports/LOOP_47_REPORT_20260628.md`에 추가했다.
+- 남은 작업:
+  - [x] collateral regression candidates `5`를 별도 검토했다: `loop48_collateral_candidate_review.md/json`.
+  - [ ] panel replay, source full completion, Loop 10 slang write-back review가 남아 있다.
+  - [ ] golden semantic PASS를 full-scan approval로 승격하지 않는다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 유지.
+
+## 2026-06-28 regression-safe grounding Loop 17 locked-official character sentence-alias guard
+
+- 상태: targeted `11700470` prior wrong-title blocker PARTIAL / single-row canary PASS for blocking `도깨비가 되었다.` / golden runtime PASS / golden semantic NO-GO / collateral semantic NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / overall goal NOT_COMPLETE
+- 완료:
+  - [x] clean official detail evidence가 unresolved character sentence-like alias risk를 무조건 우회하지 못하도록 `src/llm_batch/agentic_pipeline.py`의 `_locked_official_candidate_has_unresolved_alias_risk(...)`를 보강했다.
+  - [x] `tests/test_agentic_pipeline_rework.py`에 `11700470`형 `밤도깨비 에이브` → `도깨비가 되었다.` 오승격 회귀 테스트를 추가했다.
+  - [x] focused/unit 재검증: targeted 3 tests `OK`, `tests.test_agentic_pipeline_rework` `451 tests OK`, title-lead guard `114 tests OK`, `py_compile` pass.
+  - [x] single-row canary 완료: `loop17_locked_official_character_sentence_alias_11700470_result.json`, completed/flushed/pending/failed `1/1/0/0`, exit `0`, VLM/OCR `READY`, public title `None`.
+  - [x] golden replay 완료: `loop17_locked_official_character_sentence_alias_golden_result.json`, completed/flushed/pending/failed `16/16/0/0`, exit `0`, VLM/OCR `READY`.
+  - [x] golden audit 생성: `loop17_locked_official_character_sentence_alias_golden_audit.md/json`, pass `10/16`, fail `6`, `canary_semantic_gate=NO-GO`.
+  - [x] collateral compare 생성: `loop17_locked_official_character_sentence_alias_golden_collateral_compare.md/json`, collateral regression candidates `6`.
+  - [x] Data Analytics artifact `Loop 17 Golden Gate Status`를 validate/render했다.
+  - [x] Loop 17 report 추가: `docs/devs/loop_reports/LOOP_17_REPORT_20260628.md`.
+- 남은 작업:
+  - [ ] `11700470`은 `도깨비가 되었다.`가 아니라 `바람과 별무리`로 여전히 wrong-title이다. expected `악당 얼굴의 B급 모험자` 회수를 위한 next blocker로 유지한다.
+  - [ ] `11713222`도 expected `잘생기면 인생이 편하다` 대신 `잘생기면 편해지는 인방 생활` wrong-title로 남았다.
+  - [ ] positive unresolved `11663521`, `11685994`, `11694019`, `11705231`을 recall/source-bridge 원인별로 재분리한다.
+  - [ ] panel replay, source full completion, Loop 10 slang write-back review가 남아 있어 overall goal은 완료 처리하지 않는다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
+## 2026-06-28 regression-safe grounding Loop 16 short-lead confirmed-alias guard
+
+- 상태: targeted `11705245` precision blocker CLOSED / golden runtime PASS / golden semantic NO-GO / collateral semantic NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / overall goal NOT_COMPLETE
+- 완료:
+  - [x] `confirmed_alias`/`explicit_alias_official_work_lock`가 official title의 짧은 leading stem alias만으로 weak public-title bridge guard를 우회하지 못하도록 `src/llm_batch/candidate_audit.py`를 보강했다.
+  - [x] `tests/test_candidate_audit.py`에 short-lead confirmed stem alias hold와 weak-alias confirmed stem alias hold 회귀 테스트를 추가했다.
+  - [x] focused/unit/full 재검증: `tests.test_candidate_audit` `64 tests OK`, title-lead guard `114 tests OK`, full unittest sweep `1165 tests OK`, `py_compile` pass.
+  - [x] single-row canary 완료: `loop16_short_lead_confirmed_alias_11705245_result.json`, completed/flushed/pending/failed `1/1/0/0`, exit `0`, VLM/OCR `READY`, public title `None`.
+  - [x] golden replay 완료: `loop16_short_lead_confirmed_alias_golden_result.json`, completed `16/16`, exit `0`, VLM/OCR `READY`.
+  - [x] golden audit 생성: `loop16_short_lead_confirmed_alias_golden_audit.md/json`, pass `11/16`, fail `5`, `canary_semantic_gate=NO-GO`.
+  - [x] collateral compare 생성: `loop16_short_lead_confirmed_alias_golden_collateral_compare.md/json`, collateral regression candidates `5`.
+  - [x] Data Analytics artifact `Loop 16 Golden Gate Status`를 validate/render했다.
+  - [x] Loop 16 report 추가: `docs/devs/loop_reports/LOOP_16_REPORT_20260628.md`.
+- 남은 작업:
+  - [x] `11700470` wrong title `도깨비가 되었다.`는 Loop 17 단일 canary에서 차단했다.
+  - [ ] Loop 17 golden 기준 `11700470`은 expected `악당 얼굴의 B급 모험자` 대신 `바람과 별무리` wrong-title로 남아 있다.
+  - [ ] positive failures `11663521`, `11685994`, `11694019`, `11700470`, `11705231`, `11713222`를 unresolved/wrong-title 원인별로 재분리한다.
+  - [ ] panel replay, source full completion, Loop 10 slang write-back review가 남아 있어 overall goal은 완료 처리하지 않는다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
+## 2026-06-28 regression-safe grounding Loop 15 known-title anchor guard
+
+- 상태: targeted `11694035` precision blocker CLOSED / golden runtime PASS / golden semantic NO-GO / collateral semantic NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / overall goal NOT_COMPLETE
+- 완료:
+  - [x] `KNOWN_TITLE_ABBREVIATIONS` prefix-only alias + official detail URL이 packet-local work cue/direct anchor 없이 public title hard-lock/rescue가 되지 않도록 `src/llm_batch/agentic_pipeline.py`를 보강했다.
+  - [x] `tests/test_known_title_abbreviation_support.py`에 `11694035`형 prefix-only known-title abbreviation regression test를 추가했다.
+  - [x] focused/unit/full sweep 재검증: known-title support `19 tests OK`, title-lead guard `114 tests OK`, agentic pipeline rework `450 tests OK`, full unittest sweep `1163 tests OK`, `py_compile` pass.
+  - [x] single-row canary 완료: `loop15_known_title_anchor_11694035_result.json`, completed/flushed/pending/failed `1/1/0/0`, exit `0`, VLM/OCR `READY`, public title `None`.
+  - [x] golden replay 완료: `loop15_known_title_anchor_golden_result.json`, completed `16/16`, exit `0`, VLM/OCR `READY`.
+  - [x] golden audit 생성: `loop15_known_title_anchor_golden_audit.md/json`, pass `10/16`, fail `6`, `canary_semantic_gate=NO-GO`.
+  - [x] collateral compare 생성: `loop15_known_title_anchor_golden_collateral_compare.md/json`, collateral regression candidates `5`.
+  - [x] Data Analytics artifact `Loop 15 Known-Title Anchor Gate`를 validate/render했다.
+  - [x] Loop 15 report 추가: `docs/devs/loop_reports/LOOP_15_REPORT_20260628.md`.
+- 남은 작업:
+  - [ ] `11705245` negative no-public-work unexpected title `하남자의 탑 공략법`을 다음 precision blocker로 분리한다.
+  - [ ] positive failures `11663521`, `11685994`, `11700470`, `11705231`, `11713222`를 unresolved/wrong-title 원인별로 재분리한다.
+  - [ ] Loop 15 golden replay는 recall-metadata 미세 보정 직전 시작된 run이므로, acceptance가 필요하면 current-code full golden replay를 다시 돌린다.
+  - [ ] panel replay, source full completion, Loop 10 slang write-back review가 남아 있어 overall goal은 완료 처리하지 않는다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
+## 2026-06-28 regression-safe grounding Loop 14 golden replay continuation
+
+- 상태: golden runtime `PASS` / golden semantic `NO-GO` / collateral semantic `NO-GO` / semantic quality REVIEW-LOCKED / full scan approval false / overall goal NOT_COMPLETE
+- 완료:
+  - [x] vLLM endpoint와 golden input/tool 존재를 확인한 뒤 `loop14_golden_after_fix_result.json` canary를 실행했다.
+  - [x] runtime 완료: completed/flushed/pending/failed `16/16/0/0`, exit `0`, VLM/OCR semantic gate `READY`, `large_run_complete=true`, `slang_db=off`.
+  - [x] golden audit 생성: `loop14_golden_after_fix_audit.md/json`, pass `10/16`, fail `6`, `canary_semantic_gate=NO-GO`.
+  - [x] collateral compare 생성: `loop14_golden_after_fix_collateral_compare.md/json`, regression candidates `6`.
+  - [x] Data Analytics artifact `Loop 14 Golden Gate Status`를 validate/render했다.
+- 남은 작업:
+  - [ ] `11694035` negative no-public-work 과승격(`아카데미 생존 갤러리`)을 막아야 한다.
+  - [ ] positive expected-work unresolved 5건(`#11663521`, `#11663540`, `#11685994`, `#11700470`, `#11713222`)을 원인별로 재분리한다.
+  - [ ] panel replay, source full completion, Loop 10 slang write-back review가 남아 있어 overall goal은 완료 처리하지 않는다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
+## 2026-06-28 regression-safe grounding Loop 13 completion recheck
+
+- 상태: goal tool `active` / corrected full unittest sweep `FAIL` / semantic quality REVIEW-LOCKED / full scan approval false / overall goal NOT_COMPLETE
+- 완료:
+  - [x] pasted goal 원문을 재확인했다. 정지 조건은 next queue 비움 또는 모든 잔여 row의 HOLD/human_review/INFO_MISSING/unresolved/quarantine/no_generalizable_fix_left row-level rationale다.
+  - [x] Codex goal tool 상태를 확인했다: objective `Loop 06 regression-safe grounding goal completion 재점검`, status `active`.
+  - [x] 기존 `unittest discover -s tests` 실패 로그를 회수했다: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop13_full_unittest_sweep_20260628.log`, `1093 tests`, `failures=9`, `errors=5`.
+  - [x] `-s tests`가 `expert_main.py --server-type/-s`와 충돌하는 import/discovery 오류를 분리했다.
+  - [x] import 충돌 관련 직접 테스트 로그를 남겼다: `loop13_expert_import_direct_73_20260628.log`, `73 tests OK`, exit `0`.
+  - [x] `agentic_pipeline_rework` 직접 재현 로그를 남겼다: `loop13_agentic_pipeline_rework_direct_20260628.log`, `450 tests`, `failures=9`, `errors=1`, exit `1`.
+  - [x] 긴 옵션 full sweep을 다시 실행했다: `loop13_full_unittest_sweep_long_options_20260628.log`, `1162 tests`, `failures=9`, `errors=1`, exit `1`.
+  - [x] Data Analytics artifact `Loop 13 Full-Sweep Gate Audit`를 validate하고 render를 호출했다.
+  - [x] Loop 13 gate report 추가: `docs/devs/loop_reports/LOOP_13_REPORT_20260628.md`.
+- 남은 작업:
+  - [ ] full unittest sweep gate는 `FAIL`이다. `tests.test_agentic_pipeline_rework` 실패 `9`건과 error `1`건을 수정/분리하기 전까지 goal 완료 금지.
+  - [ ] panel/golden/collateral replay를 아직 다시 돌리지 않았다.
+  - [ ] source full completion과 Loop 10 slang write-back review가 남아 있어 overall goal은 완료 처리하지 않는다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
+
+## 2026-06-28 regression-safe grounding Loop 14 full-sweep recovery
+
+- 상태: affected suite `PASS` / corrected full unittest sweep `PASS` / golden continuation은 위 항목 기준 runtime PASS + semantic NO-GO / semantic quality REVIEW-LOCKED / full scan approval false / overall goal NOT_COMPLETE
+- 완료:
+  - [x] Loop 13의 `tests.test_agentic_pipeline_rework` failure `9` + error `1`을 공통 결합면별로 수정했다.
+  - [x] `src/llm_batch/agentic_pipeline.py`에서 direct image work surface, batch alias/support cheer, stable alias, locked official rescue, derivative/non-novel filtering, direct full-title rescue, final semantic reread, relation hold release, final identity sync를 보강했다.
+  - [x] Loop 13 원 실패 10개 checks를 재실행해 모두 `OK`로 닫았다.
+  - [x] affected suite 재검증: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop14_agentic_pipeline_rework_after_fix_20260628.log`, `450 tests OK`, exit `0`.
+  - [x] corrected full sweep 재검증: `loop14_full_unittest_sweep_after_fix_20260628.log`, `1162 tests OK`, exit `0`.
+  - [x] `py_compile` pass: `src\llm_batch\agentic_pipeline.py`.
+  - [x] Data Analytics artifact `Loop 14 Regression-Safe Grounding Gate Update`를 validate/render했다.
+  - [x] Loop 14 report 추가: `docs/devs/loop_reports/LOOP_14_REPORT_20260628.md`.
+- 남은 작업:
+  - [ ] 이번 회차는 unittest gate recovery다. golden canary는 이후 continuation에서 runtime PASS였지만 semantic/collateral은 `NO-GO`이고, panel replay는 아직 open이다.
+  - [ ] source full completion과 Loop 10 slang write-back review가 남아 있어 overall goal은 완료 처리하지 않는다.
+  - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
+## 2026-06-28 regression-safe grounding Loop 12 author-angle residual closure
+
+- 상태: Loop 09 residual `11682791` targeted closure complete / compare `review=1` / targeted next queue `0` / semantic quality REVIEW-LOCKED / full scan approval false / overall goal NOT_COMPLETE
+- 완료:
+  - [x] `src/llm_batch/candidate_audit.py`에 author-prefixed angle surface canonicalization helper를 추가했다.
+  - [x] `expert_main.py` postprocess에서 official-title promotion guard 전에 canonicalization을 호출하도록 연결했다.
+  - [x] stale reason/reason_lines가 `피아조아 <시간을 달리는 소설가>`를 계속 말하지 않도록 reason 정합성 보정을 추가했다.
+  - [x] regression test 추가: `tests.test_candidate_audit.CandidateAuditTest.test_author_angle_search_surface_uses_matching_official_detail_candidate`.
+  - [x] focused verification 통과: py_compile pass, targeted unit pass, `tests.test_candidate_audit -v` `62 tests OK`.
+  - [x] single-row canary 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop12_author_angle_11682791_result.json`, run_id `20260628_025822_229151`, completed/flushed/pending/failed `1/1/0/0`.
+  - [x] compare/next queue 생성: `loop12_author_angle_11682791_compare.md`, `loop12_author_angle_11682791_next_queue.md`; targeted next queue rows `0`.
+  - [x] closure artifact 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop12_author_angle_11682791_closure.json`, status `TARGETED_RESIDUAL_CLOSED`.
+  - [x] Data Analytics artifact 검증/렌더 호출: `Loop 12 Author-Angle Residual Closure`.
+  - [x] Loop 12 report 추가: `docs/devs/loop_reports/LOOP_12_REPORT_20260628.md`.
+- 남은 작업:
+  - [ ] Loop 12 next queue `0`은 단일 residual closure일 뿐이다. `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
+  - [ ] panel/golden/collateral replay를 아직 다시 돌리지 않았다.
+  - [ ] full unittest sweep은 Loop 13 보정 실행 기준 `1162 tests`, `failures=9`, `errors=1`로 실패했다.
+  - [ ] source full completion과 Loop 10 slang write-back review가 남아 있어 overall goal은 완료 처리하지 않는다.
+
+## 2026-06-28 regression-safe grounding Loop 11 human-review boundary closure
+
+- 상태: Phase 2 `human_review_boundary=25` row-level closure documented / runnable canary not applicable / semantic quality REVIEW-LOCKED / full scan approval false / overall goal NOT_COMPLETE
+- 완료:
+  - [x] Phase 2 queue에서 `human_review_boundary=25`를 재확인했다. 모든 row는 `HOLD`, `boundary_needs_human`, `human_review`, `low`, `disagreement_type=none`이다.
+  - [x] closure artifact 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop11_human_review_boundary_25_closure.json`.
+  - [x] closure markdown 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop11_human_review_boundary_25_closure.md`.
+  - [x] closure manifest 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop11_human_review_boundary_25_closure_manifest.json`.
+  - [x] Data Analytics artifact 검증/렌더 호출: `Loop 11 Human Review Boundary Closure`.
+  - [x] Loop 11 Korean report 추가: `docs/devs/loop_reports/LOOP_11_REPORT_20260628.md`.
+- 남은 작업:
+  - [ ] `human_review_boundary=25` closure는 semantic approval이 아니다. `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
+  - [x] Loop 09 residual `11682791` source/page-title canonicalization은 Loop 12 targeted closure로 닫았다.
+  - [ ] panel/golden/collateral replay, full unittest sweep, source full completion gate가 남아 있어 overall goal은 완료 처리하지 않는다.
+
+## 2026-06-28 regression-safe grounding Loop 10 continuation
+
+- 상태: Phase 2 `slang_store_gate=92` targeted canary runtime complete / compare `review=92` / targeted next queue `0` / semantic quality REVIEW-LOCKED / full scan approval false / overall goal NOT_COMPLETE
+- 완료:
+  - [x] Loop 10 input 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop10_slang_store_gate_92.jsonl`, manifest rows `92`, missing post ids `[]`.
+  - [x] runtime canary 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop10_slang_store_gate_92_result.json`, completed/flushed/pending/failed `92/92/0/0`, `large_run_complete=true`, VLM/OCR `READY`.
+  - [x] requested/effective parallel `36/16`을 manifest 기준으로 확인했다. `reuse_shards_only` healthy endpoint filtering 때문에 실제 worker는 `16`이다.
+  - [x] compare 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/compare/loop10_slang_store_gate_92_compare.md`, movement `review=92`.
+  - [x] targeted next queue 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/compare/loop10_slang_store_gate_92_next_queue.md`, remaining rows `0`.
+  - [x] Data Analytics artifact 렌더링: `Loop 10 Slang Store Gate Validation`.
+  - [x] Loop 10 Korean report 추가: `docs/devs/loop_reports/LOOP_10_REPORT_20260628.md`.
+- 남은 작업:
+  - [ ] Loop 10 next queue `0`은 `slang_store_gate` runnable slice closure일 뿐이다. `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
+  - [ ] `store_in_slang_db=true` `29`건은 review signal이며, `--slang-db off` 실행이므로 생산 DB write-back 승인으로 쓰지 않는다.
+  - [ ] `human_review_boundary=25`는 runnable canary 대상이 아니라 explicit `HOLD`/`human_review` closure 후보로 문서화한다.
+  - [x] Loop 09 residual `11682791`은 Loop 12 targeted author-angle closure로 닫았다.
+  - [ ] panel/golden/collateral/replay/sweep, source-completion gate가 남아 있어 overall goal은 완료 처리하지 않는다.
+
+## 2026-06-26 regression-safe grounding Phase 1 / Phase 2 start
+
+- 상태: Phase 1 deterministic partial aggregate complete / Phase 2 initial queue created / FIX-0 baseline-panel-golden bootstrap complete / FIX-1 work-bridge unit+broad gate green / FIX-1b no-seed golden NO-GO / FIX-2 precision guard runtime green but semantic NO-GO / FIX-3 positive-recall/Kakao evidence runtime green but semantic NO-GO / native-web exhaustive judge blocker remains / semantic quality REVIEW-LOCKED / full scan approval false
+- 완료:
+  - [x] 최신 source/preflight 확인: `out/expert_result_20260626_000008_928006.json`, manifest `completed_count=1946`, `flushed_count=1933`, `pending_count=13`, `failed_count=1`, `large_run_complete=false`.
+  - [x] Phase 1 deterministic judge aggregate 실행: `out/full_post_judge_20260626_000008_928006_phase1`, processed/judged/missing `1933/1933/0`.
+  - [x] report/rows 생성: `out/full_post_judge_20260626_000008_928006_phase1/report/full_post_judge_report.md`, rows `p01`-`p07`.
+  - [x] analytics chart/table 생성: `out/full_post_judge_20260626_000008_928006_phase1/report/analytics/`.
+  - [x] Phase 2 initial queue 생성: `out/full_post_judge_20260626_000008_928006_phase1/phase2_initial_queue.json`, rows `251`.
+  - [x] Loop 01 Korean report 추가: `docs/devs/loop_reports/LOOP_01_REPORT_20260626.md`.
+  - [x] FIX-0 bootstrap tool 추가: `tools/bootstrap_regression_safe_grounding.py`, focused tests `2 tests OK`.
+  - [x] 동결 baseline 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/baseline/baseline_result.json`.
+  - [x] regression panel 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/panel/regression_panel.jsonl`, unique posts `375`, survey `136/136`, Phase 2 queue `251/251`, controls `9/9`.
+  - [x] golden set 생성: `out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl`, rows `16`, positive/negative `8/8`.
+  - [x] collateral baseline selfcheck 완료: shared `1933`, changed `0`, `collateral_regression_count=0`.
+  - [x] FIX-1 first-cut shared predicate 추가: `src/llm_batch/agentic_pipeline.py`의 `_post_discusses_work_as_work(...)`.
+  - [x] FIX-1 contract test 추가: `tests/test_regression_safe_work_bridge_contract.py`.
+  - [x] focused/rank verification 통과: contract+title-lead `77 tests OK`, rank1/2/3 `40 tests OK`, bootstrap+contract `4 tests OK`.
+  - [x] FIX-1 partial repair: memory-query blocked attr 보존, `allow_ocr_catalog` shim compatibility, locked official rescue final-state 보존, OCR conflict 문구를 focused tests로 닫았다.
+  - [x] FIX-1 broad affected suite green: `tests.test_agentic_pipeline_rework -v`, `440 tests OK`.
+  - [x] 추가 guard verification: decoder slang dictionary guard + work-bridge contract + title-lead `81 tests OK`, rank1/2/3 `40 tests OK`, bootstrap+contract `4 tests OK`, py_compile pass.
+  - [x] FIX-1 golden canary runtime 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/fix1_golden_result.json`, completed/pending/failed `16/0/0`, VLM/OCR `READY`, `slang_db=off`.
+  - [x] FIX-1 golden audit/collateral compare 생성: `canary/fix1_golden_audit.json`, `collateral/fix1_golden_collateral_compare.json`.
+  - [x] FIX-1b measurement correction: golden input에서 `_judge_seed` 제거, expected answers는 `golden_manifest.json`에만 보존.
+  - [x] no-seed golden canary 완료: `fix1b_golden_noseed_result.json`, completed/pending/failed `16/0/0`, VLM/OCR `READY`, `slang_db=off`, audit pass `8/16`.
+  - [x] precision guard 추가: `candidate_audit.apply_weak_public_title_bridge_guard(...)` + `expert_main.py` postprocess wiring.
+  - [x] FIX-2 precision guard canary 완료: `fix2_golden_precisionguard_result.json`, completed/pending/failed `16/0/0`, VLM/OCR `READY`, audit negative no-public-work `7/8`.
+  - [x] latest precision edge unit verification: `tests.test_candidate_audit` `56 tests OK`, surrounding grounding/title-lead `79 tests OK`, py_compile pass.
+  - [x] FIX-3 general guard 추가: official/search support 없는 weak `llm_only` direct image/OCR promoted title은 `ocr_explicit_title_unresolved` HOLD로 내린다.
+  - [x] FIX-3 Kakao evidence repair 추가: title-matched Kakao comment/notice tab URL은 source title이 같은 웹소설을 명명할 때만 sanitized evidence로 쓰고, clean official detail URL보다 낮은 rank로 둔다.
+  - [x] FIX-3 verification 완료: `tests.test_candidate_audit -v` `57 tests OK`, `tests.test_title_lead_search_inferred_guard -v` `75 tests OK`, bootstrap+contract `4 tests OK`, `tests.test_agentic_pipeline_rework` `441 tests OK`.
+  - [x] FIX-3 no-seed golden canary 완료: `fix3_golden_positive_recall_result.json`, completed/pending/failed `16/0/0`, VLM/OCR `READY`, `slang_db=off`, audit pass `8/16`.
+  - [x] FIX-3 Loop 03 Korean report 추가: `docs/devs/loop_reports/LOOP_03_REPORT_20260626.md`.
+- 남은 작업:
+  - [ ] native-web blind LLM judge runner/ingest를 복구하거나, deterministic aggregate를 별도 methodology로 명시해 accepted route를 분리한다.
+  - [ ] source gap `13` pending rows와 manifest `large_run_complete=false`를 full-source completion으로 닫기 전까지 full approval claim을 금지한다.
+  - [x] FIX-0 collateral/golden set을 고정한다: 기존 `136` survey errors와 Phase 2 high-severity wrong-work/source rows를 canary seed로 선정한다.
+  - [x] `tests.test_agentic_pipeline_rework -v` 기존 broad failures를 재현/분리/수정하고 `440 tests OK`로 닫았다.
+  - [ ] Seeded `fix1_golden_result`는 contaminated/superseded로 본다. 생산형 기준은 no-seed `fix1b`/`fix2` audit이다.
+  - [ ] FIX-1b no-seed golden canary는 semantic `NO-GO`: passed `8/16`, negative no-public-work `5/8`, positive expected-work resolved `3/8`.
+  - [ ] FIX-2 precision guard canary는 runtime green but semantic `NO-GO`: passed `7/16`, negative no-public-work `7/8`, positive expected-work resolved `0/8`.
+  - [ ] FIX-3 positive-recall/Kakao evidence canary는 runtime green but semantic `NO-GO`: passed `8/16`, negative no-public-work `7/8`, positive expected-work resolved `1/8`, collateral regression candidates `8`.
+  - [ ] latest edge guard (`없음`, `아카데미 되었다`)는 FIX-3 full golden canary에 포함됐지만 semantic approval 근거가 아니다.
+  - [ ] `panel/regression_panel_input.jsonl` full panel canary는 아직 실행하지 않았다. golden이 통과한 뒤 panel collateral compare로 확대한다.
+  - [ ] FIX-2/FIX-3 precision guard는 유지하되 accepted 처리 금지. positive recall/work-preservation 수리를 먼저 진행한다.
+  - [ ] 다음 repair 축: negative leak `11694035`, OCR typo canonicalization, alias collision (`잘생인방`/`잘생인편`), official detail convergence, cross-media/external expected work HOLD policy.
+  - [ ] 후속 reason/evidence mismatch 및 resolved-without-url lint를 final output stage에 추가한다.
+  - [ ] 후속 `slang_db` store/read-only guard를 분리하고 common-word pollution 후보를 저장 금지로 유지한다.
+  - [ ] 각 code fix 후 targeted canary, compare, docs/checklist/history sync를 같은 pass에서 수행한다.
+
+## 2026-06-24 completed779 Hermes Loop 17 fresh/residual/control closure
+
+- 상태: Loop 17 fresh/residual/control canaries complete / decoder NameError fixed / URL homonym compare closure implemented / latest hard queue `0` rows / semantic quality REVIEW-LOCKED / full scan approval false
+- 완료:
+  - [x] Loop 17 queue 생성: `out/completed779_improvement_goal_20260622/hermes_loop17_fresh_residual_control_queue.json`, rows `28`, text/url/comment `7`, image/OCR `21`, duplicate `0`.
+  - [x] text canary 완료: `out/completed779_improvement_goal_20260622/canary/hermes_loop17_fresh_residual_control_text_result.json`, completed/failed/pending `7/0/0`.
+  - [x] image/OCR canary 완료: `out/completed779_improvement_goal_20260622/canary/hermes_loop17_fresh_residual_control_image_ocr_result.json`, completed/failed/pending `21/0/0`, VLM/OCR `READY`.
+  - [x] initial compare에서 `11706871` decoder `NameError: _is_genre_물_pattern`와 `11703669` expected URL mismatch residual을 확인했다.
+  - [x] `src/llm_batch/experts/decoder.py` NameError 수정 및 `tests/test_decoder_resolved_mapping.py` regression 추가.
+  - [x] `11706871` post-fix image/OCR canary 완료: `out/completed779_improvement_goal_20260622/canary/hermes_loop17_fix1_decoder_genre_pattern_11706871_image_ocr_result.json`, completed/failed/pending `1/0/0`, NameError/Traceback 재발 없음.
+  - [x] `src/llm_batch/agentic_pipeline.py`에 author-context official URL ranking/freeze fallback ctx 전달을 보강했다.
+  - [x] `tools/compare_completed779_improvement.py`가 expected URL candidate 보존 + same-title official detail alternate URL을 terminal `resolved_expected_title_author_supported_alt_url`로 분류한다.
+  - [x] `11703669` post-fix text canary 완료: `out/completed779_improvement_goal_20260622/canary/hermes_loop17_fix2b_author_context_flag_11703669_text_result.json`, completed/failed/pending `1/0/0`.
+  - [x] latest combined compare 완료: `out/completed779_improvement_goal_20260622/compare/hermes_loop17_fix2b_author_context_flag_compare.json`, movement `blocked_or_candidate_preserved=6`, `candidate_or_human_review_preserved=9`, `candidate_preserved_with_benign_prune=4`, `resolved_expected_title=1`, `resolved_expected_title_author_supported_alt_url=1`, `url_lint_preserved=7`.
+  - [x] latest next queue `out/completed779_improvement_goal_20260622/hermes_loop17_fix2b_author_context_flag_next_queue.json` rows `0`.
+  - [x] `11694064` sentinel은 bad title로 회귀하지 않고 `판초우의의 마법사` candidate/URL을 보존했다.
+  - [x] verification: py_compile pass, focused suite with rank1/2/3 `131 tests OK`, additional surrounding suite `172 tests OK`.
+- 남은 작업:
+  - [ ] Loop 17 queue `0`은 targeted/fresh-residual-control closure다. `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
+  - [ ] 다음 loop가 필요하면 completed779 full approval이 아니라 fresh/residual/control/limitation pool을 다시 열어 진행한다.
+
 ## 2026-06-23 completed779 Loop 16 Claude post-review rank1-3 regression repair
 
 - 상태: blocker reproduced / fixed / rank1-3 permanently added to completed779 verification command / semantic quality REVIEW-LOCKED / full scan approval false
@@ -5331,3 +7912,316 @@
   - 가능하면 모델/툴 관점을 분산하되, 메인 Codex가 파일/로그/테스트/웹 근거를 재검증한다.
 - [ ] tag-heavy OCR/search query pruning과 official detail URL discovery를 다음 generalized loop 후보로 검토
   - `11716480`은 runtime quarantine이 아니라 URL/source hygiene residual control로 유지한다.
+
+## 2026-06-27 regression-safe grounding Loop 04 TODO
+
+- [x] FIX-3b bracket/post cue guard 구현 및 focused tests 추가
+  - `11698897` actual moved to `[림월드]변방계에서 회귀자로 살아남기`.
+  - tests: title-lead `76 OK`, candidate audit `58 OK`, rank3 lock anchor `12 OK`.
+- [x] FIX-3b golden canary 실행 및 audit/collateral 생성
+  - result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/fix3b_bracket_cue_golden_result.json`
+  - audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/fix3b_bracket_cue_golden_audit.json`
+  - collateral: `out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/fix3b_bracket_cue_golden_collateral_compare.json`
+- [x] Loop 04 report와 Data Analytics artifact 생성
+  - report: `docs/devs/loop_reports/LOOP_04_REPORT_20260627.md`
+  - artifact: `LOOP 04 Regression-Safe Grounding Audit`
+- [ ] Loop 05 priority blocker: `11661857` negative leak
+  - current actual: `아카데미 야겜에 빙의했다.`
+  - required direction: invented/community scenario should remain HOLD/null unless a direct work bridge exists.
+- [ ] Loop 05 relabel/HOLD review: `11694035`
+  - current FIX-3b actual is null, but subagent/web evidence suggests `아생갤` may legitimately refer to `아카데미 생존 갤러리`; do not globally block this alias.
+- [ ] Continue positive recall bridge queue
+  - `11694019`, `11700470`, `11685994`, `11663521`, `11713222`.
+  - Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, `slang_db=off`.
+## 2026-06-27 - Loop 05 follow-up queue
+
+- [ ] P0 `11661857`: block phonetic/invented dessert + title-form parody from verified-alias official detail promotion (`두쫀쿠` -> `두바이의 쫀득한 여초딩 재벌 9세`).
+- [ ] P1 `11663540`: resolve OCR explicit title `전 버튜버가 하고 싶은데요` without accepting `방구석 여신이 되었다`.
+- [ ] P1 `11663521`: add source-domain/known-IP bridge for 금서목록/초전자포.
+- [x] P1 `11685994`: bridge cover OCR title/author safely reviewed in Loop138; exact official/native-web bridge remains missing, so keep `INFO_MISSING_NATIVE_WEB / HOLD`.
+- [ ] P1 `11694019`: bridge `미츄리` + `혼후순결` to `이세계에서 사이비로 살아남기`.
+- [ ] P1 `11700470`: bridge OCR phrase/character evidence to `악당 얼굴의 B급 모험자`.
+- [ ] P1 `11705231`: prevent `탐식의 재림` from falling to `author_new_work_context`.
+- [ ] Review `11713222` native/current-title drift caveat despite FIX-7 audit pass.
+- [ ] Do not run panel/full scan until golden semantic and collateral gates are both green.
+
+## 2026-06-27 - Loop 06 FIX-8az follow-up queue
+
+- [x] Close Loop 05 P0 negative leak `11661857` without forcing a public title.
+  - FIX-8az audit: `11661857` is `expected_null_respected`.
+- [x] Recover `11694019` with a public-work detail lock.
+  - targeted source: `fix8av_loop06_search_consistency_11694019_11713222_result.json`
+  - final: `이세계에서 사이비로 살아남기`
+- [x] Recover `11705231` without `author_new_work_context` demotion.
+  - FIX-8az audit: expected `탐식의 재림`, actual `탐식의 재림`.
+- [x] Render Data Analytics report artifact.
+  - artifact: `LOOP 06 Regression-Safe Grounding Audit`
+- [x] Sync Loop 06 report/checklist/history/verification docs.
+  - report: `docs/devs/loop_reports/LOOP_06_REPORT_20260627.md`
+- [ ] HOLD `11663521` unless a safe external-IP/fanfic official bridge is verified.
+  - current audit: expected `어떤 마술의 금서목록 / 어떤 과학의 초전자포`, actual `None`.
+- [x] HOLD `11685994` after image/native-web verification; Loop138 could not identify a reliable exact official title URL, so keep public title `null`.
+  - current expected is a cover-family unknown title: `교황님(아파하세요) 계열 표지 작품(미상)`.
+- [ ] HOLD `11700470` until character/phrase evidence closes to a safe official/public detail.
+  - current audit: expected `악당 얼굴의 B급 모험자`, actual `None`.
+- [ ] Put `11713222` into golden-label review, not a forced code fix.
+  - direct alias/current-work evidence resolves `잘생인방` to `잘생기면 편해지는 인방 생활` / `https://novelpia.com/novel/384016`.
+  - frozen golden expected `잘생기면 인생이 편하다` appears to be related/previous work evidence.
+- [ ] Do not run panel/full scan until golden semantic and collateral gates are both green.
+  - current Loop 06 gate: golden `NO-GO`, collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-06-27 - Goal reopen / not-complete correction
+
+- [x] Correct the prior completion claim.
+  - Loop 06 was a targeted golden canary improvement, not full pasted-goal completion.
+- [x] Reopen active goal tracking.
+  - Reason: Phase 2 queue remains open and panel/full collateral/sweep gates are not closed.
+- [ ] Process Phase 2 initial queue from `out\full_post_judge_20260626_000008_928006_phase1\phase2_initial_queue.json`.
+  - rows `251`
+  - completed targeted runtime slices: `wrong_work_disambiguation=7`, `resolution_promotion_gate=102`, `image_anchor_gate=25`
+  - remaining unrun axes: `slang_store_gate=92`, `human_review_boundary=25`
+- [ ] Close latest-run source completeness caveat.
+  - current source run is partial: `large_run_complete=false`, `1933` flushed judged, `13` pending rerun, `1` failed.
+- [ ] Run Phase 3 canary with queue seed + Regression Panel + golden set.
+- [ ] Run full baseline∩canary collateral, not only golden shared-post collateral.
+- [ ] Run required affected-module tests plus full unittest sweep before any goal completion.
+
+## 2026-06-27 - Loop 07 wrong-work targeted canary TODO
+
+- [x] Build targeted input for Phase 2 `wrong_work_disambiguation` rows.
+  - input: `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop07_wrong_work_disambiguation_7.jsonl`
+  - rows `7`
+- [x] Run targeted canary with VLM/OCR required.
+  - result: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop07_wrong_work_disambiguation_7_result.json`
+  - completed/pending/failed `7/0/0`
+- [x] Run seed movement compare.
+  - compare: `out\regression_safe_grounding_20260626_000008_928006_loop01\compare\loop07_wrong_work_disambiguation_7_compare.md`
+  - movement `review=7`
+- [x] Render Data Analytics report artifact.
+  - artifact: `LOOP 07 Wrong-Work Targeted Canary`
+- [ ] Promote no public title from this slice without full panel/golden collateral.
+  - current result is precision-safe candidate preservation, not full semantic approval.
+- [x] Continue to Phase 2 `resolution_promotion_gate=102`.
+  - Loop 08 input/result/compare completed; movement `review=102`, targeted next queue `0`.
+
+## 2026-06-27 - Loop 08 resolution-promotion targeted canary TODO
+
+- [x] Build targeted input for Phase 2 `resolution_promotion_gate` rows.
+  - input: `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop08_resolution_promotion_gate_102.jsonl`
+  - rows `102`
+- [x] Run targeted canary with VLM/OCR required.
+  - result: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop08_resolution_promotion_gate_102_result.json`
+  - completed/pending/failed `102/0/0`
+  - effective parallel `16` after `reuse_shards_only` health filtering.
+- [x] Run seed movement compare.
+  - compare: `out\regression_safe_grounding_20260626_000008_928006_loop01\compare\loop08_resolution_promotion_gate_102_compare.md`
+  - movement `review=102`
+  - targeted next queue `0`
+- [x] Render Data Analytics report artifact.
+  - artifact: `Loop 08 Resolution Promotion Gate Review`
+- [ ] Do not treat Loop 08 targeted queue `0` as full approval.
+  - all compared rows are still `review`.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- [ ] Continue remaining Phase 2 axes.
+  - `slang_store_gate=92`
+  - `human_review_boundary=25`
+  - `image_anchor_gate=25` completed in Loop 09 with next queue `1`
+
+## 2026-06-28 - Loop 09 image-anchor targeted canary TODO
+
+- [x] Build targeted input for Phase 2 `image_anchor_gate` rows.
+  - input: `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop09_image_anchor_gate_25.jsonl`
+  - input manifest: `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop09_image_anchor_gate_25_manifest.json`
+  - rows `25`, structured image rows `25`, recommended action `re_judge=25`
+- [x] Run targeted canary with VLM/OCR required.
+  - result: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop09_image_anchor_gate_25_result.json`
+  - completed/flushed/pending/failed `25/25/0/0`
+  - manifest `large_run_complete=true`, `ordered_flush_blocked=false`, `partial_flush_gap=false`
+  - VLM/OCR semantic gate `READY`, `slang_db=off`
+- [x] Run seed movement compare.
+  - compare: `out\regression_safe_grounding_20260626_000008_928006_loop01\compare\loop09_image_anchor_gate_25_compare.md`
+  - movement `review=24`, `garbage_title_after=1`
+  - targeted next queue `1`
+- [x] Render Data Analytics validation artifact.
+  - artifact: `Loop 09 Image Anchor Gate Validation`
+- [ ] Do not treat Loop 09 targeted runtime `GO` as semantic approval.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`
+  - next queue row `11682791` remains `garbage_title_after`
+- [ ] Continue remaining Phase 2 axes.
+  - `slang_store_gate=92`
+  - `human_review_boundary=25`
+
+## 2026-06-27 - Goal session 019f0387 completion review follow-up
+
+- [x] Review Codex goal session `019f0387-24d0-7313-a6c0-66d09f04bb33` against the pasted objective and final `update_goal complete` call.
+  - report: `docs/devs/GOAL_SESSION_REVIEW_019f0387_20260627.md`
+  - 판정: `PARTIAL-COMPLETE / GOAL-COMPLETE-NO`
+- [ ] Do not treat thread `019f0387-24d0-7313-a6c0-66d09f04bb33` as full objective completion evidence.
+  - accepted interpretation: Loop 06 targeted checkpoint closed intentionally.
+  - rejected interpretation: pasted full goal completed.
+- [ ] Resume from Phase 1 action queue plus Loop 06 HOLD/label-review rows if the work continues.
+  - Phase 1 queue: `out/full_post_judge_20260626_000008_928006_phase1/phase2_initial_queue.json`
+  - Loop 06 HOLD/label-review: `11663521`, `11685994`, `11700470`, `11713222`
+- [ ] Before any future goal completion claim, re-check source completeness, golden semantic, collateral semantic, panel/full scan, and original stop condition.
+
+## 2026-06-30 - Loop 133 focused replay TODO
+
+- [x] Acknowledge user correction that current goal is not complete.
+- [x] Re-read pasted goal source and preserve the original stop condition.
+- [x] Patch and test stale precision guard / Kakao comment-tab canonicalization / deliberated relation-block bypass.
+- [x] Run focused replay after relation patch.
+  - result: `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop133_11705231_character_setting_kakao_focus_after_relation_patch_result.json`
+  - completed/flushed/pending/failed `1/1/0/0`
+  - Identified `0`
+- [x] Run runtime contract audit.
+  - audit: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop133_11705231_character_setting_after_relation_patch_runtime_audit.md`
+- [x] Render Data Analytics focused replay artifact.
+  - artifact: `Loop 133 Focused Replay Gate Review`
+- [ ] Build a true source-enriched `11705231` row where `탐식의 재림` official detail/search evidence is consumed by `expert_main.py`, not only stored in a manifest.
+- [ ] Re-run the source-enriched focused canary at least twice with `--slang-db off`.
+- [ ] Do not mark goal complete until panel/golden/collateral/replay/full-sweep gates are closed or residual rows have accepted HOLD/human_review/no_generalizable_fix rationale.
+
+## 2026-06-30 - Loop 157 stable-alias descriptor guard TODO
+
+- [x] Patch the Loop156 `11698880` wrong-title switch repro seed.
+  - guard: high/medium-fit descriptor + low/none-fit title + no best-match title blocks stable-alias replacement.
+- [x] Add focused regression coverage.
+  - `test_stable_alias_conflict_ignores_low_fit_title_when_descriptor_context_is_stronger`
+- [x] Run targeted canary for `11698880`.
+  - run id `20260630_154514_521625`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop157_11698880_stable_alias_descriptor_context_guard_result.json`
+- [x] Record review/report/Data Analytics artifacts.
+- [ ] Rerun the parent/representative packet after Loop157.
+- [ ] Compare parent replay against Loop156/Loop150/Loop142/Loop136, with special attention to `11706832` and `11668288`.
+- [ ] Run affected-module plus full unittest sweep.
+- [ ] Do not promote Loop157 single seed recovery to full approval.
+
+## 2026-06-30 - Loop 158 parent replay TODO
+
+- [x] Rerun the parent/representative packet after Loop157.
+  - run id `20260630_160219_354659`
+  - completed/flushed/pending/failed `38/38/0/0`
+  - VLM/OCR `READY`, effective parallel `36`, MCP health `36/36`
+- [x] Confirm parent-scope recovery for `11698880`.
+  - Loop158 title/url: `가챠 중독자의 퓨전펑크 생활` / `https://novelpia.com/novel/387014`
+- [x] Record review/report/Data Analytics artifacts.
+  - report `docs/devs/loop_reports/LOOP_158_REPORT_20260630.md`
+  - review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop158_parent_replay_after_loop157_stable_alias_descriptor_guard_review.md`
+  - Data Analytics `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop158_data_analytics_artifact.json`
+- [x] Triage `11668288` lost-vs-Loop150.
+  - Loop150 `가챠 중독자의 퓨전펑크 생활`
+  - Loop158 null / `promotion_blocked`
+  - Loop175 disposition `VARIANCE_QUARANTINE_HUMAN_REVIEW`
+- [ ] Triage `11706832` title movement under degraded search.
+  - Loop156 `황제폐하가 웹소설 작가임을 숨김`
+  - Loop158 `황제의 딸로 환생했다`
+- [ ] Build the next queue from Loop158 changed/gained/lost rows, separating justified recall improvements from regressions.
+- [ ] Run affected-module plus full unittest sweep before any approval claim.
+- [ ] Do not promote Loop158 runtime GO or `11698880` parent recovery to full approval.
+
+## 2026-07-01 - Loop 225 envelope title gate parent replay TODO
+
+- [x] Patch final publication ledger sync so inner `analysis_result` payload can receive the outer post title.
+  - `expert_main.py` now passes `post_title=post.title`.
+  - fallback source title lookup covers serialized payload metadata fields.
+- [x] Add regression coverage for inner analysis payload without top-level `title`.
+  - `test_inner_analysis_payload_uses_caller_post_title_for_shared_gate_restore`
+- [x] Run focused verification.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata`
+  - `21 tests OK`
+  - `.venv312\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_comment_metadata.py`
+- [x] Run Loop225 parent/representative replay.
+  - run id `20260701_151744_526664`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop225_parent_replay_after_envelope_title_gate_fix_result.json`
+  - completed/flushed/pending/failed `38/38/0/0`
+  - VLM/OCR `READY`
+- [x] Record review/report/Data Analytics artifacts.
+  - report `docs/devs/loop_reports/LOOP_225_REPORT_20260701.md`
+  - review `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop225_parent_replay_after_envelope_title_gate_fix_review.md`
+  - Data Analytics artifact `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop225_parent_replay_after_envelope_title_gate_fix_data_analytics_artifact.json`
+- [x] Confirm target row recovery evidence.
+  - deterministic replay: Loop224 actual payload + caller post title restores `11661876`
+  - Loop225 live parent replay: `11661876` -> `와인의 신`
+- [ ] Review Loop225 collateral safe-loss rows before any approval claim.
+  - `11668288`, `11674712`, `11706832`
+- [ ] Review Loop225 safe identity drift rows.
+  - `11658615`, `11695637`, `11705231`
+- [ ] Do not promote Loop225 runtime GO or `safe_resolved=12` count to semantic approval.
+  - keep `semantic_quality=REVIEW-LOCKED`
+  - keep `full_scan_approval=false`
+
+## 2026-07-01 - Loop 229 title-led evaluation bridge TODO
+
+- [x] Add a narrow title-led evaluation bridge for `볼만함` / `재밋네` style post-title markers.
+  - code surfaces: `src/llm_batch/candidate_audit.py`, `src/llm_batch/agentic_pipeline.py`
+- [x] Add focused regression coverage.
+  - candidate audit title-led marker tests passed.
+  - title-led inferred guard tests passed.
+  - promotion gate contract tests passed.
+- [x] Run the two-row Loop229 canary twice.
+  - run `20260701_180326_874711`
+  - run `20260701_181447_543860`
+  - both completed/flushed/pending/failed `2/2/0/0`
+  - VLM/OCR `READY`
+- [x] Record review/report/Data Analytics artifacts.
+  - report `docs/devs/loop_reports/LOOP_229_REPORT_20260701.md`
+  - review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop229_title_led_evaluation_bridge_review.md`
+  - Data Analytics artifact `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop229_title_led_evaluation_bridge_data_analytics_artifact.json`
+- [ ] Do not decrement residual accounting from Loop229.
+  - final public title count stayed `0/2`
+  - residual accounting `NO_DELTA_TITLE_LED_BRIDGE_CANARY_NO_GO`
+- [ ] Split title-led evaluation question routing from broad recommendation/non-novel force paths.
+- [ ] Align serializer/candidate audit scrub policy with upstream `scope_current_work` promotion decisions.
+- [ ] Add end-to-end final JSON serialization tests before any parent replay.
+
+## 2026-07-01 - Loop 230 title-led serializer/gate TODO
+
+- [x] Keep reports and reader-facing review artifacts in Korean.
+  - Applies to loop reports, review Markdown, Data Analytics artifact text, and future gate summaries.
+  - Keep enum/paths/commands/URLs in raw form when needed for audit.
+- [x] Patch serializer/candidate audit alignment for title-led alias + official detail + current-work scope.
+  - code surfaces: `src/llm_batch/candidate_audit.py`, `expert_main.py`
+- [x] Add end-to-end final JSON serialization coverage.
+  - `test_current_work_gate_title_led_alias_scope_exempts_weak_alias_scrub`
+  - `test_title_led_current_work_scope_restores_alias_candidate_publication`
+- [x] Run Loop230 two-row canary.
+  - run `20260701_183700_752963`
+  - completed/flushed/pending/failed `2/2/0/0`
+  - public title `1/2`
+  - VLM/OCR `READY`
+- [x] Record review/report/Data Analytics artifacts.
+  - report `docs/devs/loop_reports/LOOP_230_REPORT_20260701.md`
+  - review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop230_title_led_serializer_gate_review.md`
+  - Data Analytics artifact `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop230_title_led_serializer_gate_data_analytics_artifact.json`
+- [ ] Do not decrement residual accounting from Loop230 alone.
+  - residual accounting `NO_DELTA_TITLE_LED_SERIALIZER_CANARY_PARTIAL_RECOVERY_PARENT_REPLAY_REQUIRED`
+  - `11660237` stayed `promotion_blocked`
+- [ ] Run parent/representative packet replay before treating `11660257` as stable recovered evidence.
+- [ ] Compare `publish_contract_trace`, `publish_ledger`, `promotion_decision`, and serialized `novel_identity` across the parent replay.
+- [ ] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-01 - Loop 231 parent replay after Loop230 TODO
+
+- [x] Run parent/representative replay after Loop230.
+  - run `20260701_190002_650661`
+  - completed/flushed/pending/failed `38/38/0/0`
+  - VLM/OCR `READY`, MCP health `36/36`
+- [x] Confirm `11660257` parent survival.
+  - public title `암흑가 보스요? 제가요?`
+  - URL `https://novelpia.com/novel/384111`
+- [x] Compare against Loop225 clean parent baseline.
+  - Loop225 public title `12`, Loop231 public title `11`
+  - safe gain `2`, safe loss `3`, safe identity drift `2`
+- [x] Record Korean report/review/Data Analytics artifacts.
+  - report `docs/devs/loop_reports/LOOP_231_REPORT_20260701.md`
+  - review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop231_parent_replay_after_loop230_title_led_serializer_gate_review.md`
+  - Data Analytics artifact `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop231_parent_replay_after_loop230_title_led_serializer_gate_data_analytics_artifact.json`
+- [ ] Do not decrement residual accounting from Loop231.
+  - residual accounting `NO_DELTA_PARENT_REPLAY_AFTER_LOOP230_MIXED_MOVEMENT`
+  - parent semantic result `NO-GO / MIXED_MOVEMENT`
+- [ ] Decompose Loop231 safe-loss rows before any approval claim.
+  - `11661876`, `11663540`, `11695637`
+- [ ] Track `11660237` as targeted/parent variance.
+  - Loop230 targeted: `promotion_blocked/context_only`
+  - Loop231 parent: `safe_resolved/테라포밍`
+- [ ] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

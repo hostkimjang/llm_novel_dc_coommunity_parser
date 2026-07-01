@@ -1,0 +1,755 @@
+# Promotion Gate Architecture Migration
+
+Date: 2026-06-30
+
+Status: `PARTIALLY_IMPLEMENTED_AS_SHARED_LAYER / LOOP179_UNITTEST_GO / LOOP182_PARENT_RUNTIME_GO / LOOP184_TARGETED_RUNTIME_GO_NO_DELTA / LOOP185_EXACT_ALIAS_CANDIDATE_HOLD_GO_NO_DELTA / LOOP186_COLLATERAL_FOLLOWUP_GO_NO_DELTA / LOOP187_NESTED_SCRUB_GO_UNIT_ONLY_NO_DELTA / LOOP189_PACKET_SEMANTIC_NO_GO / LOOP190_PUBLISH_TRACE_GO_UNIT_ONLY / LOOP191_192_TRACE_COVERAGE_GO_PACKET_NO_GO / LOOP195_ACK_PREVIOUS_WORK_SCOPE_GATE_GO_UNIT_ONLY / LOOP196_BATCH_ALIAS_SCOPE_GATE_GO_UNIT_ONLY / LOOP197_DIRECT_OCR_SCOPE_GATE_GO_UNIT_ONLY / LOOP198_199_PACKET_RUNTIME_GO_SEMANTIC_NO_GO / LOOP200_202_FINAL_LEDGER_CONSISTENCY_GO / LOOP203_204_UPSTREAM_GATE_GO / LOOP205_208_PACKET_VARIANCE_REVIEW_GO_NO_DELTA / LOOP209_211_PREVIOUS_WORK_PRESERVED_GO_NO_DELTA / LOOP212_213_TITLE_LED_ALIAS_GUARD_GO_NO_DELTA / LOOP214_217_EXACT_ALIAS_IMAGE_CONTEXT_TRACE_GO_NO_DELTA / LOOP218_CHARACTER_BRIDGE_SCOPE_TRACE_GO_NO_DELTA / LOOP219_SHARED_GATE_UNCONFIRMED_ALIAS_GO_NO_DELTA / LOOP220_DIRECT_ALIAS_PROBE_GO_PACKET_POSITIVE_DELTA_REPLAY_REQUIRED / LOOP221_PARENT_REPLAY_RUNTIME_GO_SEMANTIC_REVIEW_LOCKED_NO_DELTA / LOOP222_SAFE_LOSS_SOURCE_NATIVE_REVIEW_NO_DELTA / LOOP223_FOCUSED_PATCH_GO_NO_DELTA / LOOP224_PARENT_REPLAY_RUNTIME_GO_SEMANTIC_NO_GO_NO_DELTA / LOOP225_ENVELOPE_TITLE_GATE_RUNTIME_GO_SEMANTIC_NO_GO_NO_DELTA / LOOP230_TITLE_LED_SERIALIZER_PARTIAL_GO / LOOP231_PARENT_RUNTIME_GO_SEMANTIC_NO_GO_NO_DELTA / LOOP232_SOURCE_NATIVE_VARIANCE_REVIEW_NO_DELTA / LOOP233_DIRECT_IMAGE_CHARACTER_GATE_GO_UNIT_ONLY_NO_DELTA / LOOP234_DIRECT_IMAGE_RUNTIME_GO_PUBLICATION_NO_GO_NO_DELTA / LOOP235_CHARACTER_PARENT_BRIDGE_RUNTIME_GO_PUBLICATION_NO_GO_URL_TITLE_CONTRACT_REQUIRED / LOOP236_URL_TITLE_DIRECT_SUPPORT_GUARD_TARGETED_GO_NO_DELTA / LOOP237_PARENT_RUNTIME_GO_SEMANTIC_NO_GO_NO_DELTA / GOAL_NOT_COMPLETE`
+
+This note visualizes the current parser-improvement architecture and the additive architecture now promoted into the active regression-safe grounding goal. The current contract is `docs/devs/GOAL_ARCHITECTURE_INTEGRATED_REGRESSION_SAFE_GROUNDING.md`: architecture integration comes before the next ordinary residual-queue reduction. The goal remains `NOT_COMPLETE`, with `semantic_quality=REVIEW-LOCKED`, source full completion `OPEN`, full-panel collateral approval `NO-GO`, and `full_scan_approval=false`.
+
+## Source References
+
+## 2026-07-01 Loop237 Parent Replay After Loop236 Update
+
+- Loop237 reran the 38-row parent/representative packet after Loop236.
+- Runtime is clean: run `20260701_215903_177630`, completed/flushed/pending/failed `38/38/0/0`, VLM/OCR `READY`, MCP health ok/failure `36/0`.
+- Parent semantic result is still `NO-GO / MIXED_MOVEMENT`: Loop231 safe/public counts `11->9`, promotion_blocked `25->28`.
+- `11663540` proves the architecture gap remains: focused canary restored `전 버튜버가 하고 싶은데요`, but parent replay held it as `promotion_blocked` with public title `null`.
+- Safe losses `11660237`, `11674712`, `11698880` require source/native and `publish_contract_trace` comparison before any approval claim.
+- Accounting remains `NO_DELTA_PARENT_REPLAY_AFTER_LOOP236_MIXED_MOVEMENT`; `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Artifacts: `docs/devs/loop_reports/LOOP_237_REPORT_20260701.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop237_parent_replay_after_loop236_url_title_direct_support_guard_review.md/json`.
+
+## 2026-07-01 Loop236 URL-Title Direct Support Guard Update
+
+- Loop236 implements the URL-title precondition exposed by Loop235.
+- Same-URL page title support is no longer sufficient for public publish; the candidate must also have direct post/OCR/alias support.
+- The original Loop236 canary exposed unsafe publish for `두 문명과의 충돌은, 그 누구도 예상하지 못하게 일어난다 (필력 구림)` / `https://novelpia.com/novel/427233`.
+- The new demotion contract converts that unsafe path to `promotion_blocked` with `official_detail_url_missing_direct_source_support`.
+- Loop236b patched canary completed `1/1/0/0`, VLM/OCR `READY`, and published `전 버튜버가 하고 싶은데요` / `https://novelpia.com/novel/275975`.
+- Accounting remains no-delta: parent replay is `NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Artifacts: `docs/devs/loop_reports/LOOP_236_REPORT_20260701.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop236_url_title_direct_support_guard_review.md/json`.
+
+## 2026-07-01 Loop235 Character-Parenthetical Bridge NO-GO Update
+
+- Loop235 extended the direct-image branch with `search_character_parenthetical_bridge` and `direct_image_work_surface_bridge`.
+- Runtime evidence is mixed but not approval: the first run was stopped as incomplete after tool-output pipe loss; Loop235b completed `1/1/0/0`, VLM/OCR `READY`.
+- Internal expert decision resolved `전 버튜버가 하고 싶은데요`, but serialized public identity stayed `null`.
+- The architecture gap is now sharper: title resolution state can be internally resolved while final publication contract remains candidate-only.
+- Loop235b also observed URL-title mismatch for `https://novelpia.com/novel/311328`, so the next architecture layer must require URL-title verified official detail before public publish.
+- Accounting remains `NO_DELTA_TARGETED_CANARY_NO_GO`; parent replay is `NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Artifacts: `docs/devs/loop_reports/LOOP_235_REPORT_20260701.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop235_character_parenthetical_bridge_no_go_review.md/json`.
+
+## 2026-07-01 Loop234 Direct-Image Cover-Title Runtime Canary Update
+
+- Loop234 ran the actual `11663540` focused payload twice after Loop233 exposed the direct-image branch.
+- Runtime integrity is clean: both runs completed `1/1/0/0`, VLM/OCR `READY`.
+- Public publication is still `NO-GO`: both runs serialized `official_title=null` and `candidate_ledger_status=promotion_blocked`.
+- The exact-cover unit contract is now represented by `test_direct_image_exact_cover_title_restores_precision_seed_hold`, but the actual runtime repeated with OCR variance: `전 버튜버가 하고 싶은데요` in run `20260701_202952_860752`, `전 버두바가 하고 싶은데요` in run `20260701_203559_843860`.
+- The key architecture gap is no longer simple title detection. Official detail URL, structured image work surface, and character-page bridge can exist while final serializer still applies `precision_seed_official_title_requires_review` and `serialized_public_identity_scrubbed`.
+- Next architecture step: converge candidate preservation, `scope_state`, `publish_contract_trace`, and serializer output through a shared `PromotionDecision` re-evaluation state before public title publication.
+- Accounting remains `NO_DELTA_TARGETED_CANARY_NO_GO`; parent replay is `NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Artifacts: `docs/devs/loop_reports/LOOP_234_REPORT_20260701.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop234_direct_image_cover_title_runtime_canary_review.md/json`.
+
+## 2026-07-01 Loop233 Direct-Image Character Shared Gate Update
+
+- Loop233 implements the first code/test patch from the Loop232 `11663540` branch.
+- The final publication ledger restore now recognizes a direct-image character path only when candidate title equals promotion-eligible OCR/work-title evidence and verified character bridge connects to the post-side surface.
+- Positive contract: `11663540` style `전 버튜버가 하고 싶은데요` + `주서연` + official detail URL restores to `safe_resolved`.
+- Negative contract: wrong-work candidate `방구석 여신이 되었다` remains `promotion_blocked` when OCR title does not match candidate.
+- Verification is unit/contract only: focused tests 2 PASS, `tests.test_expert_main_comment_metadata` 26 OK, `tests.test_promotion_gate_contract + tests.test_candidate_audit` 128 OK, `py_compile` PASS.
+- Accounting remains `NO_DELTA_UNIT_CONTRACT_ONLY`; targeted canary and parent replay are still `NOT_RUN`, with `semantic_quality=REVIEW-LOCKED` and `full_scan_approval=false`.
+- Artifacts: `docs/devs/loop_reports/LOOP_233_REPORT_20260701.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop233_direct_image_character_shared_gate_review.md/json`.
+
+## 2026-07-01 Loop232 Source/Native Variance Update
+
+- Loop232 did not run new code; it decomposed Loop231 focus rows before choosing the next architecture patch.
+- `11661876` and `11663540` are the next patch candidates, but both require shared `PromotionDecision` convergence and negative controls.
+- `11695637` is not an old-title recovery candidate; keep old `도네하지 마라` restore blocked and retarget lane open.
+- `11706832` is not a safe gain for accounting; it reopens the accepted caveated demotion from Loop145.
+- `11660237` remains a targeted/parent variance replay target despite official `테라포밍` page confirmation.
+- This reinforces the migration rule: official page existence, candidate preservation, and final public-title publish must remain separate states until the authoritative promotion ledger converges.
+- Artifacts: `docs/devs/loop_reports/LOOP_232_REPORT_20260701.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop232_loop231_safe_loss_variance_review.md/json`.
+
+## 2026-07-01 Loop231 Parent Replay After Loop230 Update
+
+- Loop231 reran the 38-row parent/representative packet after Loop230.
+- Runtime is clean: run `20260701_190002_650661`, completed/flushed/pending/failed `38/38/0/0`, VLM/OCR `READY`, MCP health `36/36`.
+- `11660257` survived as `암흑가 보스요? 제가요?`, so the title-led serializer/gate path has parent-scope positive evidence.
+- The parent semantic result is still `NO-GO / MIXED_MOVEMENT`: Loop225 public title `12` moved to Loop231 public title `11`; safe gain `2`, safe loss `3`, safe identity drift `2`.
+- `11660237` is targeted/parent variance because Loop230 held it as `context_only`, while Loop231 publishes `테라포밍`.
+- This keeps the migration focus on authoritative promotion-state convergence and safe-loss decomposition, not residual decrement.
+- Artifacts: `docs/devs/loop_reports/LOOP_231_REPORT_20260701.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop231_parent_replay_after_loop230_title_led_serializer_gate_review.md/json`.
+
+
+
+## 2026-07-01 Loop228 Safe-Loss Source/Native Update
+
+- Loop227 safe-loss 4건은 source/native 검토에서 `likely_overblock=3`, `false_safe_title_retarget_required=1`로 갈렸다.
+- `11660237`/`11660257`은 title-led evaluation bridge 후보이고, `11705231`은 character/comment/native seed convergence 재발 후보다.
+- `11695637`은 old safe title `도네하지 마라` 복구 금지다. source/native character cluster는 `[림월드]변방계에서 회귀자로 살아남기` retarget lane을 요구한다.
+- 이 결과는 architecture migration이 단순 publish restore가 아니라 authoritative promotion state와 retarget/false-safe 분리를 함께 가져야 함을 보여준다.
+- Artifacts: `docs/devs/loop_reports/LOOP_228_REPORT_20260701.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop228_loop227_safe_loss_source_native_review.md/json`.
+
+## 2026-07-01 Loop227 Composite Parent Replay Update
+
+- Parent 원 런은 `37/38` partial이므로 단독 runtime approval이 아니다.
+- Missing `11698897` 단건 보강으로 composite 38/38 분석은 가능해졌다.
+- Loop225 대비 safe gain 4건과 safe loss 4건이 상쇄되어 `NO_DELTA_COMPOSITE_PARENT_REPLAY_MIXED_MOVEMENT`다.
+- 이 결과는 final scrub trace 개선만으로 parent semantic movement를 닫을 수 없음을 재확인한다. 다음 architecture work는 upstream authoritative promotion state convergence에 둔다.
+- Artifacts: `docs/devs/loop_reports/LOOP_227_REPORT_20260701.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop227_composite_parent_replay_after_trace_candidate_priority_review.md/json`.
+- `docs/devs/GOAL_REGRESSION_SAFE_GROUNDING_LOOP.md`: active goal contract, work-bridge gate, collateral/golden gates.
+- `docs/devs/DETECTION_SURVEY_AND_ROOTCAUSE_20260626.md`: FIX-0/FIX-1/FIX-2~4 root-cause plan.
+- `docs/devs/IMPROVEMENT_REGISTER.md`: common `GroundingState` / `PromotionDecision` / `can_publish_title(...)` proposal.
+- `docs/devs/VERIFICATION_RESULTS.md`: existing `_post_discusses_work_as_work(...)` first-cut verification.
+- `docs/devs/TODO.md`: open item to introduce the common semantic layer before more broad single-post guard accumulation.
+- `docs/devs/loop_reports/LOOP_176_REPORT_20260630.md`: latest evidence that the broader unittest gate is now explicitly failing.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop176_broader_unittest_gate_audit.md`: concrete failure clusters that define the first architecture-integrated repair surface.
+- `docs/devs/loop_reports/LOOP_179_REPORT_20260630.md`: first shared promotion gate implementation and broader unittest recovery evidence.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop179_promotion_gate_architecture_review.md`: Loop179 implementation/review artifact.
+- `docs/devs/loop_reports/LOOP_180_REPORT_20260630.md`: first post-architecture residual queue canary.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop180_p1_recall_loss_image_anchor_gate_review.md`: Loop180 residual-return review artifact.
+- `docs/devs/loop_reports/LOOP_181_REPORT_20260701.md`: Bridge-only rerun of the Loop180 residual canary.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop181_p1_recall_loss_image_anchor_gate_bridge_health_review.md`: Loop181 runtime-GO / semantic-review artifact.
+- `docs/devs/loop_reports/LOOP_182_REPORT_20260701.md`: architecture-integrated parent/representative replay.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop182_parent_representative_after_architecture_review.md`: Loop182 runtime-GO / parent movement review artifact.
+- `docs/devs/loop_reports/LOOP_183_REPORT_20260701.md`: source/native review of Loop182 safe gains/losses.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop183_loop182_movement_source_native_review.md`: Loop183 movement review artifact.
+- `docs/devs/loop_reports/LOOP_184_REPORT_20260701.md`: targeted follow-up of Loop183 movement rows.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop184_loop183_source_native_followup_review.md`: Loop184 targeted runtime-GO / semantic-review artifact.
+- `docs/devs/loop_reports/LOOP_185_REPORT_20260701.md`: exact-alias candidate-hold repair for `11660257`.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop185_11660257_exact_alias_candidate_hold_review.md`: Loop185 candidate-preservation GO / no-delta artifact.
+- `docs/devs/loop_reports/LOOP_186_REPORT_20260701.md`: five-row follow-up after Loop185 candidate-hold patch.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop186_loop184_followup_after_candidate_hold_patch_review.md`: Loop186 runtime-GO / semantic-movement no-delta artifact.
+- `docs/devs/loop_reports/LOOP_187_REPORT_20260701.md`: nested promotion-gate scrub follow-up after Loop186 collision.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop187_loop186_followup_after_nested_gate_scrub_review.md`: Loop187 runtime-GO / nested scrub unit-GO / semantic-movement no-delta artifact.
+- `docs/devs/loop_reports/LOOP_189_REPORT_20260701.md`: packet replay after Loop188 title-led bridge, exposing publish-contract gap.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop189_loop184_followup_after_title_led_bridge_review.md`: Loop189 runtime-GO / packet semantic NO-GO / all-promotion-blocked artifact.
+- `docs/devs/loop_reports/LOOP_190_REPORT_20260701.md`: publish-contract trace unit checkpoint after Loop189.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop190_publish_contract_trace_unit_review.md`: Loop190 `GO_UNIT_ONLY` publish trace review artifact.
+- `docs/devs/loop_reports/LOOP_191_192_REPORT_20260701.md`: packet replay after publish trace instrumentation and candidate-ledger source fallback.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop192_after_candidate_ledger_trace_source_fix_review.md`: Loop191/192 runtime-GO / trace-coverage-GO / packet semantic NO-GO artifact.
+- `docs/devs/loop_reports/LOOP_193_REPORT_20260701.md`: first scope-state promotion gate contract checkpoint.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop193_scope_state_contract_review.md`: Loop193 `GO_UNIT_ONLY` scope-state contract artifact.
+- `docs/devs/loop_reports/LOOP_194_REPORT_20260701.md`: scope propagation from promotion gate state into publish-contract trace.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop194_publish_trace_scope_propagation_review.md`: Loop194 `GO_UNIT_ONLY` publish-trace scope propagation artifact.
+- `docs/devs/loop_reports/LOOP_195_REPORT_20260701.md`: acknowledged previous-work override path wired through the shared scope gate.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop195_acknowledged_previous_work_scope_gate_review.md`: Loop195 `GO_UNIT_ONLY` previous-work scope gate artifact.
+- `docs/devs/loop_reports/LOOP_196_REPORT_20260701.md`: batch-alias public-title path wired through the shared scope gate.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop196_batch_alias_scope_gate_review.md`: Loop196 `GO_UNIT_ONLY` batch-alias scope gate artifact.
+- `docs/devs/loop_reports/LOOP_197_REPORT_20260701.md`: direct OCR work-surface lock path wired through the shared scope gate.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop197_direct_ocr_scope_gate_review.md`: Loop197 `GO_UNIT_ONLY` direct OCR scope gate artifact.
+- `docs/devs/loop_reports/LOOP_198_199_REPORT_20260701.md`: five-row packet replay after Loop193-197 scope-gate wiring and Loop199 title-led gate recorder.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop199_title_led_gate_packet_replay_review.md`: Loop198/199 runtime-GO / packet semantic NO-GO / final-publication ledger gap artifact.
+- `docs/devs/loop_reports/LOOP_200_202_REPORT_20260701.md`: final-publication ledger unification checkpoint after Loop199.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop202_final_publication_ledger_review.md`: Loop202 runtime-GO / final-ledger consistency-GO / residual no-delta artifact.
+- `docs/devs/loop_reports/LOOP_203_204_REPORT_20260701.md`: upstream resolved public-title gate checkpoint.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop204_resolved_public_title_gate_review.md`: Loop204 runtime-GO / inferred decisions closed / packet variance open artifact.
+- `docs/devs/loop_reports/LOOP_205_208_REPORT_20260701.md`: packet variance scope-block review after Loop203/204.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop205_208_packet_variance_scope_block_review.md`: Loop205-208 runtime-GO / semantic review-lock / residual no-delta artifact.
+- `docs/devs/loop_reports/LOOP_209_211_REPORT_20260701.md`: previous-work candidate preservation after Loop205-208.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop211_previous_work_candidate_preservation_review.md`: Loop211 current-work public title preserved / previous-work candidate-only / residual no-delta artifact.
+- `docs/devs/loop_reports/LOOP_212_213_REPORT_20260701.md`: title-led unconfirmed-alias guard repeat evidence after Loop209-211.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop212_213_title_led_unconfirmed_alias_bridge_review.md`: Loop212/213 `11669928` repeat-publish / packet variance no-delta artifact.
+- `docs/devs/loop_reports/LOOP_214_217_REPORT_20260701.md`: exact-alias image/OCR context trace after Loop212-213.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop214_217_exact_alias_image_context_trace_review.md`: Loop214-217 `11660257` candidate-only reason trace / residual no-delta artifact.
+- `docs/devs/loop_reports/LOOP_218_REPORT_20260701.md`: character bridge scope trace after Loop214-217.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop218_character_bridge_scope_trace_review.md`: Loop218 `11674712` recovery plus `11669928` regression / residual no-delta artifact.
+- `docs/devs/loop_reports/LOOP_219_REPORT_20260701.md`: shared gate unconfirmed-alias follow-up after Loop218.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop219_shared_gate_unconfirmed_alias_review.md`: Loop219 `11669928` recovery plus `11713222`/`11674712` regression / residual no-delta artifact.
+- `docs/devs/loop_reports/LOOP_220_REPORT_20260701.md`: direct body alias probe follow-up after Loop219.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop220_direct_alias_probe_review.md`: Loop220 `11713222` and `11674712` recovery / packet-positive-delta but replay-required artifact.
+- `docs/devs/loop_reports/LOOP_221_REPORT_20260701.md`: parent replay after Loop220 direct alias probe.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop221_parent_replay_after_direct_alias_probe_review.md`: Loop221 parent runtime-GO / direct-alias target recovery / mixed movement no-delta artifact.
+- `docs/devs/loop_reports/LOOP_222_REPORT_20260701.md`: source/native review of Loop221 safe-loss rows.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop222_loop221_safe_loss_source_native_review.md`: Loop222 six-row safe-loss decomposition / no-delta artifact.
+- `docs/devs/loop_reports/LOOP_223_REPORT_20260701.md`: focused publish-contract/title-field patch for `11661876` and `11705231`.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop223_publish_contract_title_field_review.md`: Loop223 focused recovery / parent replay required artifact.
+- `docs/devs/loop_reports/LOOP_224_REPORT_20260701.md`: parent replay after Loop223 patch.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop224_parent_replay_after_loop223_title_field_patch_review.md`: Loop224 runtime-GO / semantic mixed movement / no-delta artifact.
+- `docs/devs/loop_reports/LOOP_225_REPORT_20260701.md`: envelope title gate fix parent replay after Loop224.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop225_parent_replay_after_envelope_title_gate_fix_review.md`: Loop225 runtime-GO / targeted deterministic recovery / semantic mixed movement / no-delta artifact.
+- `docs/devs/loop_reports/LOOP_226_REPORT_20260701.md`: safe-loss trace candidate priority after Loop225 mixed movement.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop226_trace_candidate_priority_review.md`: Loop226 deterministic trace-GO / publish still blocked / residual no-delta artifact.
+
+## Loop226 Safe-Loss Trace Candidate Priority Update
+
+Loop226는 Loop225 safe-loss rows의 trace 품질을 보강했다. final publication ledger sync가 `promotion_blocked` 행에서 `comment_surface`/`hold_without_promotion` 후보를 그대로 pre-gate candidate로 쓰지 않고, 더 강한 `candidate_preservation_sources`, `title_candidates`, `primary_work` 후보를 우선한다.
+
+Deterministic replay result: `11668288` trace candidate becomes `가챠 중독자의 퓨전펑크 생활` / `https://novelpia.com/novel/387014`; `11674712` becomes `이 무림의 미친년은 나야` / `https://novelpia.com/novel/217943?sid=main5`; `11706832` becomes `황제분충`. All three remain `promotion_blocked` with `publish_allowed=false`.
+
+This is a ledger observability and candidate-priority architecture step, not a recall/publish expansion. Current accounting is `NO_DELTA_TRACE_LEDGER_ONLY`; `semantic_quality=REVIEW-LOCKED`, source full completion `OPEN`, full-panel collateral approval `NO-GO`, and `full_scan_approval=false` remain unchanged.
+
+## Loop225 Envelope Title Gate Fix Update
+
+Loop225 closes one concrete architecture gap: final publication ledger sync now receives the caller post title when the analyzed payload is only the inner `analysis_result`. Deterministic replay of the Loop224 `11661876` payload plus caller post title restores the row to `safe_resolved`.
+
+Runtime is clean: run `20260701_151744_526664`, completed/flushed/pending/failed `38/38/0/0`, image_post_count `24`, VLM/OCR `READY`, MCP health `36/36`, and Data Analytics validate/render passed.
+
+The semantic result is still `NO-GO / MIXED_MOVEMENT`. Loop225 counts are `safe_resolved=12`, `promotion_blocked=24`, `hold_without_candidates=1`, `output_consistency_lint=1`, but Loop224 -> Loop225 changed rows are `21`. The target `11661876` recovers to `와인의 신`; however `11668288`, `11674712`, and `11706832` are safe-loss rows, while `11658615`, `11695637`, and `11705231` are safe identity drift rows.
+
+This confirms that envelope/payload state propagation belongs in the shared publication ledger architecture, but it also confirms that final serialization repair is not enough for approval. Upstream PromotionDecision/GateReport convergence remains required. Current accounting remains next actionable `131`, P0/P1/P2 `0/61/70`, with `semantic_quality=REVIEW-LOCKED` and `full_scan_approval=false`.
+
+## Loop224 Parent Replay After Loop223 Patch Update
+
+Loop224 ran the required parent replay for Loop223b. Runtime is clean: run `20260701_141454_629022`, completed/flushed/pending/failed `38/38/0/0`, image_post_count `24`, VLM/OCR `READY`, MCP health `36/36`, and runtime audit `GO` with issues `[]`. Data Analytics validate/render passed.
+
+The semantic result is `NO-GO / MIXED_MOVEMENT`. Loop224 counts are `safe_resolved=10`, `promotion_blocked=26`, `hold_without_candidates=1`, `output_consistency_lint=1`. `11705231` survives as `탐식의 재림`, but `11661876` fails parent survival and returns to `promotion_blocked`. `11698880` regresses from the stable `가챠 중독자의 퓨전펑크 생활` result to candidate-only under `platform_meta_nonwork`.
+
+This is the current architecture pressure point: final scrub restore is not enough when upstream `title_resolution_state`, `work_resolution`, `scope_state`, and `publish_contract_trace` disagree. The next architecture change should make an upstream authoritative promotion decision ledger the source of truth and make final serialization reflect that ledger. Current accounting remains next actionable `131`, P0/P1/P2 `0/61/70`, with `semantic_quality=REVIEW-LOCKED` and `full_scan_approval=false`.
+
+## Loop222 Loop221 Safe-Loss Source/Native Review Update
+
+Loop222 reviewed the six Loop221 safe-loss rows before accepting any residual decrement. It did not run a new canary and did not change production code. Official/native evidence exists for all six, but the row dispositions are not uniform: `likely_overblock=3`, `ambiguous_hold=2`, and `title_field_bug=1`.
+
+The architecture signals are strongest on `11661876` and `11705231`. `11661876` keeps current-work/high, work-discussion, and official detail evidence for `와인의 신`, so final publish-contract scrub is likely overblocking. `11705231` shows a field separation bug: character/entity surface `설지후` is being attached to the official `탐식의 재림` URL instead of preserving `탐식의 재림` as the official title.
+
+Treat Loop222 as source/native decomposition only. Current accounting remains next actionable `131`, P0/P1/P2 `0/61/70`, with `semantic_quality=REVIEW-LOCKED` and `full_scan_approval=false`.
+
+## Loop221 Parent Replay After Direct Alias Probe Update
+
+Loop221 ran the 38-row parent/representative packet after Loop220's direct alias search guard. Runtime is clean: completed/flushed/pending/failed `38/38/0/0`, effective/requested parallel `36/36`, image_post_count `24`, VLM/OCR required scope `READY`, and runtime audit `GO` with issues `[]`. Data Analytics validate/render also passed.
+
+The semantic result is mixed and remains locked. Loop182 `safe_resolved=12,promotion_blocked=24,hold_without_candidates=1,output_consistency_lint=1` moved to Loop221 `safe_resolved=9,promotion_blocked=27,hold_without_candidates=1,output_consistency_lint=1`. `11713222` recovered to `잘생기면 편해지는 인방 생활` / `https://novelpia.com/novel/384016`, and `11674712` recovered to `이 무림의 미친년은 나야`, but six previous safe rows moved to `promotion_blocked`.
+
+Treat Loop221 as parent replay executed, not approved. Current accounting remains next actionable `131`, P0/P1/P2 `0/61/70`, with `semantic_quality=REVIEW-LOCKED` and `full_scan_approval=false`.
+
+## Loop220 Direct Alias Probe Update
+
+Loop220 adds a search-side architecture guard for direct worklike aliases in non-comment post text. `orchestrator.py` now collects direct alias probe norms from Gatekeeper/discourse/search request context, keeps those official/community/author/abbreviation queries through semantic no-work pruning, boosts them in search rerank, and defers broad official-hit early stop while an unprocessed direct alias probe remains.
+
+Runtime is clean: completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`, Bridge-only MCP health `2/2`, and runtime audit `GO` with issues `[]`. Verification is also clean: `py_compile` PASS, focused direct-alias test PASS, title-lead inferred guard suite `157 OK`, expert metadata + promotion bundle `39 OK`, candidate-audit `102 OK`, full unittest discover `1332 OK`, and Data Analytics validate/render PASS.
+
+The semantic result is packet-positive but still replay-required. Loop219 `safe_resolved=1,promotion_blocked=4` improved to Loop220 `safe_resolved=3,promotion_blocked=2`: `11713222` recovered to `잘생기면 편해지는 인방 생활` with `https://novelpia.com/novel/384016`, `11674712` recovered to `이 무림의 미친년은 나야` with `https://novelpia.com/novel/217943?sid=main5`, and `11669928` stayed safe. Treat Loop220 as packet-local positive delta only. Current accounting remains next actionable `131`, P0/P1/P2 `0/61/70`, `semantic_quality=REVIEW-LOCKED`, and `full_scan_approval=false`.
+
+## Loop219 Shared Gate Unconfirmed-Alias Update
+
+Loop219 repairs the immediate `11669928` candidate-audit demotion exposed by Loop218. `candidate_audit.py` now exempts `unconfirmed_alias_official_detail_bridge` only when the shared promotion gate already recorded a publishable current-work decision with official-detail URL support, matching title/URL evidence, and no hard context-only or conflict flags.
+
+Runtime is clean: completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`, Bridge-only MCP health `2/2`, and runtime audit `GO` with issues `[]`. Verification is also clean: `py_compile` PASS, focused candidate-audit tests `4 OK`, full candidate-audit `102 OK`, expert metadata + promotion bundle `39 OK`, full unittest discover `1331 OK`, and Data Analytics validate/render PASS.
+
+The semantic result is still no-delta. `11669928` recovers to `safe_resolved` with `탑의 성좌들이 날 애호한다` and `https://novelpia.com/novel/377032`, but `11713222` and `11674712` move from `safe_resolved` to `promotion_blocked`. Treat Loop219 as shared-gate unconfirmed-alias evidence only. Current accounting remains next actionable `131`, P0/P1/P2 `0/61/70`, `semantic_quality=REVIEW-LOCKED`, and `full_scan_approval=false`.
+
+## Loop218 Character Bridge Scope Trace Update
+
+Loop218 repairs the immediate `11674712` trace gap exposed by Loop217. The serialized result-contract scrub now recovers official-detail URLs from `search_evidence_catalog` and can infer `scope=current_work` for blocked character-bridge candidates only when official-detail evidence and row context converge without hard context-only flags.
+
+Runtime is clean: completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`, Bridge-only MCP health `2/2`, and runtime audit `GO` with issues `[]`. Verification is also clean: `py_compile` PASS, focused new tests `2 OK`, expert metadata + promotion bundle `39 OK`, title-led character bridge focused tests `2 OK`, full unittest discover `1329 OK`, and `git diff --check` PASS with CRLF warnings only.
+
+The semantic result is still no-delta. `11674712` recovers to `safe_resolved` with `이 무림의 미친년은 나야` and `https://novelpia.com/novel/217943`, but `11669928` moves from `safe_resolved` to `promotion_blocked` under `unconfirmed_alias_official_detail_bridge`. Treat Loop218 as character-bridge trace evidence only. Current accounting remains next actionable `131`, P0/P1/P2 `0/61/70`, `semantic_quality=REVIEW-LOCKED`, and `full_scan_approval=false`.
+
+## Loop179 Implementation Update
+
+Loop179 promoted the design from documentation into the first shared layer:
+
+- `src/llm_batch/promotion_gate.py` now defines the shared `GroundingState`, `EvidenceRecord`, `PromotionDecision`, `GateReport`, and `can_publish_title(...)` contract.
+- Selected high-risk public-title publish paths in `src/llm_batch/agentic_pipeline.py` now route through the shared gate or preserve the gate decision on `final_decision`.
+- `src/llm_batch/candidate_audit.py` treats `promotion_decision.publish_allowed=false` as `promotion_blocked`, preserving candidate evidence without leaking into `safe_resolved`.
+- `tests/test_promotion_gate_contract.py` adds contract coverage for decision status, reason codes, candidate preservation, and `bypassed_gate=false`.
+- Loop179 authoritative broader unittest result: `1299` tests, `0` failures, `0` errors, `OK`.
+
+This update clears the architecture-phase unittest blocker only. The active goal remains `NOT_COMPLETE`, with `semantic_quality=REVIEW-LOCKED`, source full completion `OPEN`, full-panel collateral approval `NO-GO`, and `full_scan_approval=false`.
+
+## Loop180 Residual Return Update
+
+Loop180 applied the shared-gate architecture to the next residual P1 `image_anchor_gate` canary. Manifest completion is clean by counts (`9/9/0/0`, `large_run_complete=true`, VLM/OCR `READY`), but the strict runtime contract audit is `REVIEW` because search health was included in a small reuse-only run. The row ledger split is `safe_resolved=5` and `promotion_blocked=4`.
+
+This is useful architecture evidence: candidates can be preserved while public `official_title` promotion is blocked. It is not residual accounting closure. Current accounting remains full reviewed residual ledger `136`, quarantine/human_review `5`, next actionable `131`, P0/P1/P2 `0/61/70`.
+
+## Loop181 Bridge-Only Runtime Update
+
+Loop181 reran the same 9-row P1 `image_anchor_gate` canary with Bridge-only small-run health. This removes the Loop180 strict runtime caveat: manifest completion is `9/9/0/0`, `large_run_complete=true`, VLM/OCR `READY`, `mcp_health_include_search=false`, MCP health `2/2`, and runtime audit `GO` with issues `[]`.
+
+The semantic gate remains locked. Loop181 produced `safe_resolved=6`, `promotion_blocked=3`, but `6/9` rows moved versus Loop180 and degraded search counters increased `57 -> 67`. Treat Loop181 as runtime evidence only, not residual accounting closure. Current accounting remains full reviewed residual ledger `136`, quarantine/human_review `5`, next actionable `131`, P0/P1/P2 `0/61/70`.
+
+## Loop182 Parent Replay Update
+
+Loop182 applied the architecture-integrated code to the 38-row parent/representative packet used by Loop169. Runtime is clean: manifest completion `38/38/0/0`, `large_run_complete=true`, VLM/OCR `READY`, search-included MCP health `36/36`, and runtime audit `GO` with issues `[]`.
+
+The semantic gate remains locked. Loop182 produced `safe_resolved=12`, `promotion_blocked=24`, `hold_without_candidates=1`, `output_consistency_lint=1`. Versus Loop169, `22/38` rows moved, including `promotion_blocked -> safe_resolved` 2 rows and `safe_resolved -> promotion_blocked` 3 rows; degraded search counters increased `166 -> 178`. Treat Loop182 as architecture-integrated parent runtime evidence only, not residual accounting closure. Current accounting remains full reviewed residual ledger `136`, quarantine/human_review `5`, next actionable `131`, P0/P1/P2 `0/61/70`.
+
+## Loop183 Source/Native Review Update
+
+Loop183 reviewed the five Loop182 safe gain/loss movement rows before accepting any closure. It confirmed official/source existence and row-bridge shape for safe gains `11669928`, `11695623` and safe losses `11660257`, `11674712`, `11713222`.
+
+The result is still review-only:
+
+- `11660257`: likely recall regression where exact title alias `암흑가보스` lost to generic/platform-title drift.
+- `11713222`: direct-body current-work alias `잘생인방` competes with comment previous-work alias `잘생인편`.
+- `11695623`: new safe gain that should be repeated with VLM/OCR on before counting.
+- `11669928` and `11674712`: keep as variance-attention controls.
+
+Residual accounting remains unchanged: next actionable `131`, P0/P1/P2 `0/61/70`. Semantic quality remains `REVIEW-LOCKED`; full scan approval remains `false`.
+
+## Loop184 Targeted Follow-up Update
+
+Loop184 reran the five Loop183 follow-up rows with VLM/OCR on, `--slang-db off`, and Bridge-only small-run health. Runtime is clean: completed/flushed/pending/failed `5/5/0/0`, `large_run_complete=true`, VLM/OCR `READY`, MCP health `2/2`, and runtime audit `GO` with issues `[]`.
+
+The semantic gate remains locked. Loop184 produced `safe_resolved=4` and `promotion_blocked=1`, but `11660257` still fails exact-alias recall, `11713222` publishes the previous-work candidate while retaining the current-work candidate, and `11674712` remains a character-bridge variance row. Treat Loop184 as targeted evidence only, not residual accounting closure. Current accounting remains next actionable `131`, P0/P1/P2 `0/61/70`.
+
+## Loop185 Exact-Alias Candidate-Hold Update
+
+Loop185 patched the `11660257` failure mode without changing the public-promotion gate. The architecture now skips platform/listing/structural official alias candidates such as generic `노벨피아` surfaces and preserves blocked `search_evidence_alias_inference` candidates as hold-only candidate evidence.
+
+The targeted canary is clean: completed/flushed/pending/failed `1/1/0/0`, `large_run_complete=true`, VLM/OCR `READY`, Bridge-only MCP health `1/1`, and runtime audit `GO` with issues `[]`. The result keeps public `official_title=null` and `candidate_ledger_status=promotion_blocked`, while candidate preservation now records `암흑가 보스요? 제가요?` with `https://novelpia.com/novel/384111` and `promotion_policy=hold_without_promotion`.
+
+Treat Loop185 as candidate-preservation evidence only. It is not residual accounting closure, source full completion, full-panel collateral approval, or full-scan approval. Current accounting remains next actionable `131`, P0/P1/P2 `0/61/70`.
+
+## Loop186 Collateral Follow-up Update
+
+Loop186 reran the Loop184 five-row follow-up packet after the Loop185 patch. Runtime is clean: completed/flushed/pending/failed `5/5/0/0`, `large_run_complete=true`, VLM/OCR `READY`, Bridge-only MCP health `2/2`, and runtime audit `GO` with issues `[]`.
+
+The architecture result is mixed. `11660257` no longer preserves generic `노벨피아`; it keeps `암흑가 보스요? 제가요?` as a `hold_without_promotion` candidate with public title blocked. But the packet also moved from Loop184 `safe_resolved=4`, `promotion_blocked=1` to Loop186 `safe_resolved=2`, `promotion_blocked=3`. `11695623` becomes promotion-blocked under image/OCR and recommendation-context guards, and `11713222` retains a title value while reporting `candidate_ledger_status=promotion_blocked`.
+
+Treat Loop186 as collateral follow-up review only. It confirms the candidate-hold repair surface but does not reduce residual accounting or unlock parent/full-panel/full-scan approval. Current accounting remains next actionable `131`, P0/P1/P2 `0/61/70`.
+
+## Loop187 Nested Scrub Follow-up Update
+
+Loop187 repaired a serialization boundary exposed by Loop186. If `promotion_decision.publish_allowed=false` or the ledger marks the row `promotion_blocked`, nested `novel_identity` fields must not continue publishing `official_title` or public URL values. Focused verification passed via `py_compile` and a 10-test promotion-gate/result-contract bundle.
+
+The runtime follow-up is clean: completed/flushed/pending/failed `5/5/0/0`, `large_run_complete=true`, VLM/OCR `READY`, Bridge-only MCP health `2/2`, and runtime audit `GO` with issues `[]`.
+
+The semantic result is still mixed. `11660257` keeps candidate-hold stability, `11695623` stays blocked, `11713222` returns to safe-resolved instead of reproducing Loop186's collision, and `11669928` newly moves to promotion-blocked. Treat Loop187 as nested scrub unit evidence only. It does not reduce residual accounting or unlock parent/full-panel/full-scan approval. Current accounting remains next actionable `131`, P0/P1/P2 `0/61/70`.
+
+## Loop189 Publish-Contract Gap Update
+
+Loop188 recovered `11669928` with a targeted `title_led_consumption_bridge`, but Loop189 showed the single-row recovery does not survive packet replay. Loop189 reran the five-row Loop184 packet and runtime remained clean: completed/flushed/pending/failed `5/5/0/0`, `large_run_complete=true`, VLM/OCR `READY`, Bridge-only MCP health `2/2`, and runtime audit `GO` with issues `[]`.
+
+The semantic result is a hard packet `NO-GO`: `safe_resolved=0`, `promotion_blocked=5`, public title count `0`. The important observation is not just stricter promotion. Candidate evidence is still present in the packet rows, but final serialized public identity blocks all titles. For example, candidate fields preserve `탑의 성좌들이 날 애호한다`, `이 무림의 미친년은 나야`, `[림월드]변방계에서 회귀자로 살아남기`, and `잘생기면 편해지는 인방 생활`, while final public fields remain null.
+
+This adds a second architecture requirement on top of the existing shared promotion gate:
+
+- add a row-level publish trace: `pre_gate_candidate`, `gate_decision`, `post_gate_identity`, `reason_codes`, `bypassed_gate=false`
+- split candidate preservation ledger from public publish ledger in artifacts and tests
+- make scope explicit before `can_publish_title(...)`: current-work, previous-work, secondary-reference, author-new-work, image/OCR-derived work, and platform-meta/nonwork
+- require stable packet replay before residual accounting can decrement
+
+Treat Loop189 as architecture-gap evidence only. It does not reduce residual accounting or unlock source/full-panel/full-scan approval. Current accounting remains next actionable `131`, P0/P1/P2 `0/61/70`.
+
+## Loop190 Publish-Contract Trace Update
+
+Loop190 implements the first unit-level observability required by the Loop189 gap. `expert_main._scrub_promotion_blocked_result_contract` now records a `publish_contract_trace` when a serialized result is promotion-blocked:
+
+- `pre_gate_candidate`: candidate title/URL before publication is blocked
+- `gate_decision`: normalized gate decision with `publish_allowed=false`, `candidate_preserved`, reason codes, and `bypassed_gate=false`
+- `post_gate_identity`: public identity after the gate, with public title/URL null
+- `reason_codes`: includes `serialized_public_identity_scrubbed`
+
+It also writes `publish_ledger`, splitting `candidate_preservation` from `public_publish`, and mirrors both structures inside `candidate_ledger` for downstream artifact readers.
+
+Verification is unit-only: `py_compile` PASS and focused unittest PASS (`11 tests OK`). This does not close the Loop189 packet semantic gap. Packet replay remains required before residual accounting can change.
+
+## Loop191/192 Publish-Trace Packet Replay Update
+
+Loop191 performed the required packet replay after Loop190 instrumentation. Runtime stayed clean, but the result showed a trace-source gap: `11660257` had a preserved candidate in `candidate_ledger`, while `pre_gate_candidate` was empty.
+
+The follow-up patch makes the serialized result-contract scrub read candidate evidence from `candidate_ledger.candidate_preservation_sources` and string `title_candidates`. Focused verification now has `12 tests OK`.
+
+Loop192 reran the same five-row packet after the patch:
+
+- runtime: `GO`, completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`, Bridge-only MCP health `2/2`
+- trace coverage: `5/5`
+- pre-gate title rows: `5/5`
+- semantic packet: `safe_resolved=0`, `promotion_blocked=5`, public title count `0`
+
+This closes the immediate publish-trace observability gap, but it does not close the packet semantic gate. The architecture now has better diagnostic evidence for why candidates remain candidate-only, especially `11669928` and `11713222`, but residual accounting cannot move until a stable packet/parent/collateral replay is achieved.
+
+## 2026-07-01 Scope-State Delta
+
+The next architecture addition is an explicit scope-state layer before `can_publish_title(...)`. Loop189-192 show that the system can now preserve candidate evidence and trace public-publish blocking, but it still cannot consistently explain whether a candidate is the current work discussed by the row, a previous work mentioned in comments, a secondary reference, an author-new-work context, an image/OCR-derived candidate, or platform/nonwork metadata.
+
+This delta changes the next goal step:
+
+- Stop treating each blocked row as a new isolated rescue condition.
+- Classify candidate scope before public title publication.
+- Feed scope into `PromotionDecision.reason_codes` and `publish_contract_trace`.
+- Keep candidates preserved even when scope blocks public publication.
+- Require packet replay before any residual accounting decrement.
+
+Initial scope categories:
+
+- `current_work`: direct title/body/comment/OCR bridge says the row discusses this candidate as the work.
+- `previous_work`: candidate appears as acknowledged prior work, older work, or comment-side comparison.
+- `secondary_reference`: character, author, recommendation, or discourse reference that is not the row's main work.
+- `author_new_work`: evidence points to another/new work by the author rather than the row's target.
+- `image_ocr_derived_work`: candidate is primarily from image/OCR and needs explicit row bridge before publish.
+- `platform_meta_nonwork`: platform/listing/search UI title or structural metadata, not a work.
+- `context_only`: title exists but the row only contains generic reaction, availability, recommendation, or nonwork context.
+- `unknown`: insufficient scope evidence; default to candidate-only/HOLD.
+
+Loop193 should start with contract tests for this scope layer, using `11669928`, `11713222`, and `11695623` as generalized fixtures. Do not add post_id/title-specific production branches for those rows.
+
+## Loop193 Scope-State Contract Update
+
+Loop193 adds the first code-level scope contract:
+
+- `src/llm_batch/promotion_gate.py` defines `ScopeState` and the eight initial scope categories.
+- `can_publish_title(...)` now emits scope reason codes and blocks public publishing when an explicit non-current-work scope is present.
+- `src/llm_batch/agentic_pipeline.py` wires scope-state into `_can_promote_title_after_semantic_no_work`, preserving scope in `_promotion_gate_state`.
+- `tests/test_promotion_gate_contract.py` covers:
+  - `11669928` as unknown scope / candidate-only
+  - `11713222` current-work as publishable
+  - `11713222` previous-work as candidate-only
+  - `11695623` image/OCR-derived scope as candidate-only
+
+Verification: `py_compile` PASS for `promotion_gate.py` and `agentic_pipeline.py`; focused promotion gate contract suite PASS with `11 tests OK`; Data Analytics artifact validate/render PASS.
+
+This remains `GO_UNIT_ONLY`; packet replay and residual accounting movement are still open.
+
+## Loop194 Publish-Trace Scope Propagation Update
+
+Loop194 carries the scope-state contract through the serialized publish boundary:
+
+- `expert_main._scrub_promotion_blocked_result_contract` now reads `promotion_gate_state.scope` from `identity` or `candidate_ledger`.
+- `publish_contract_trace.scope_state` records the blocked candidate's explicit scope.
+- `publish_contract_trace.gate_decision.scope` mirrors the same scope payload.
+- `publish_contract_trace.reason_codes` is backfilled with scope codes when the upstream decision omitted them.
+- Focused result-contract tests now assert `scope_previous_work`, `scope_not_current_work`, and competing-current-work conflict preservation.
+
+Verification: `py_compile` PASS for `expert_main.py`, `promotion_gate.py`, and `agentic_pipeline.py`; focused combined suite PASS with `23 tests OK`; Data Analytics artifact validate/render PASS.
+
+This remains `GO_UNIT_ONLY`; the next acceptance gate is still a packet replay.
+
+## Loop195 Acknowledged Previous-Work Scope Gate Update
+
+Loop195 wires the first remaining high-risk public-title publish path into the shared scope-state gate:
+
+- `_record_public_title_gate_decision(...)` is now a reusable helper, not only a semantic-no-work nested function.
+- `acknowledged_previous_work_comment_override` records a `GroundingState` and `ScopeState` before it can replace the public title.
+- direct current-work alias versus comment previous-work alias conflicts now use `scope_kind=previous_work`.
+- when that gate returns `publish_allowed=false`, the override is cancelled and reason codes are preserved in `_title_null_block_reasons`.
+
+Verification: `py_compile` PASS, focused combined suite PASS with `24 tests OK`, broader unittest discover PASS with `1309 tests OK`, and Data Analytics validate/render PASS.
+
+This remains `GO_UNIT_ONLY`; batch alias rescue and direct OCR/canonical rescue publish paths still need scope-state wiring before the five-row packet replay can be treated as an acceptance gate.
+
+## Loop196 Batch Alias Scope Gate Update
+
+Loop196 wires the next high-risk public-title publish path into the shared scope-state gate:
+
+- `_record_batch_alias_public_title_gate_decision(...)` records a `GroundingState`, `ScopeState`, and `PromotionDecision` for batch-alias public-title output.
+- the pipeline remembers the last batch-alias candidate/hit only when a batch-alias branch actually produces public identity output.
+- the final identity phase records the gate after demotion and semantic reread logic has settled, so stale demoted candidates do not receive publish traces.
+- final candidate ledgers now preserve `promotion_gate_state.scope.scope_kind=current_work` and direct bridge sources such as `batch_alias_candidate_accepted`.
+
+Verification: `py_compile` PASS, promotion-gate focused suite PASS with `13 tests OK`, targeted batch-alias rework PASS with `2 tests OK`, combined promotion/rework PASS with `15 tests OK`, known-title/title-lead suites PASS with `182 tests OK`, broader unittest discover PASS with `1310 tests OK`, and Data Analytics validate/render PASS.
+
+This remains `GO_UNIT_ONLY`; the direct OCR work-surface lock / canonical rescue bypass path still needs scope-state wiring before the five-row packet replay can be treated as an acceptance gate.
+
+## Loop197 Direct OCR Scope Gate Update
+
+Loop197 wires the direct OCR work-surface lock path into the shared scope-state ledger:
+
+- `_record_direct_image_work_surface_gate_decision(...)` records a `GroundingState`, `ScopeState`, and `PromotionDecision` for `direct_image_work_surface_lock` output.
+- final candidate ledgers now preserve `promotion_gate_state.scope.scope_kind=current_work` and direct bridge sources such as `direct_image_work_surface_lock` and `ocr_catalog_official_title`.
+- the existing direct OCR/canonical rescue bypass fixture still skips stale canonical rescue scanning, but now leaves a reviewable publish decision with `bypassed_gate=false`.
+
+Verification: `py_compile` PASS, direct OCR contract PASS with `1 test OK`, direct OCR integration PASS with `1 test OK`, promotion-gate suite PASS with `14 tests OK`, direct OCR focused bundle PASS with `5 tests OK`, rank OCR/lock suites PASS with `30 tests OK`, expert metadata plus promotion suite PASS with `26 tests OK`, broader unittest discover PASS with `1311 tests OK`, and Data Analytics validate/render PASS.
+
+This remains `GO_UNIT_ONLY`; the next acceptance gate is the five-row packet replay. If that packet exposes a broader canonical rescue path that still bypasses scope-state accounting, stay in architecture mode before decrementing the queue.
+
+## Loop198/199 Packet Replay And Final-Publication Ledger Gap
+
+Loop198 ran the required five-row packet replay after the acknowledged previous-work, batch-alias, and direct OCR scope-gate wiring.
+
+- runtime: `GO`, completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`, Bridge-only MCP health `2/2`
+- packet counts: `safe_resolved=1`, `promotion_blocked=4`, public title count `1`, trace rows `4`
+- exposed gap: `11669928` safe-resolved as `탑의 성좌들이 날 애호한다` without `publish_contract_trace`
+
+Loop199 added `_record_title_led_alias_public_title_gate_decision(...)` and a focused title-led scope-gate contract, then reran the same packet.
+
+- verification: `py_compile` PASS, title-led contract PASS, promotion-gate suite PASS with `15 tests OK`, title-led acceptance test PASS, full unittest discover PASS with `1312 tests OK`
+- runtime: `GO`, completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`, Bridge-only MCP health `2/2`
+- packet counts: `safe_resolved=1`, `promotion_blocked=4`, public title count `1`, trace rows `4`
+- Data Analytics artifact: `Loop199 Five-Row Packet Replay Review`, validate/render PASS
+
+This is still packet semantic `NO-GO`. Loop199 shows the next architecture layer cannot be another isolated rescue condition. The final publication ledger must become authoritative:
+
+- `11669928`: `candidate_ledger.promotion_decision.status=publish`, but serialized public identity is blocked/null.
+- `11713222`: safe-resolved as `잘생기면 인생이 편하다` without `publish_contract_trace`, while competing `잘생기면 편해지는 인방 생활` evidence remains preserved.
+
+Next architecture requirement: unify `promotion_decision`, `publish_contract_trace.gate_decision`, `publish_ledger.public_publish`, and serialized `novel_identity` so they cannot disagree. No residual queue decrement is allowed until that unification is implemented and the packet/parent replay gates stabilize.
+
+## Loop200-202 Final-Publication Ledger Unification
+
+Loop200-202 added the final publication ledger sync layer around the serialized result contract.
+
+- `_sync_final_publication_ledger_contract(...)` now normalizes blocked and allowed publication outcomes before packet emission.
+- blocked outcomes with stale `status=publish` are rewritten to `candidate_only`, `publish_allowed=false`, and matching `publish_contract_trace`, `publish_ledger`, and `promotion_decision` records.
+- allowed serialized public titles now receive a matching final ledger trace when upstream gate records are absent, with `scope_state.scope_kind=current_work` inferred from the serialized public identity.
+- Loop202 runtime: `GO`, completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`, Bridge-only MCP health `2/2`.
+- Loop202 ledger coverage: trace rows `5/5`, final-ledger consistency `PASS`, missing public traces `0`, stale publish mismatches `0`, inferred publish decisions `2`.
+
+This closes the packet-level final publication ledger mismatch exposed by Loop198/199. It does not close the architecture goal. The two inferred publish decisions prove that some public-title choices are still being finalized too late in the pipeline. The next architecture move is to replace those inferred records with explicit shared promotion-gate decisions upstream, then rerun the packet plus parent/collateral replay before any residual queue decrement.
+
+## Loop203-204 Upstream Resolved Public-Title Gate
+
+Loop203-204 replaced serialization-time safe-publication inference with an upstream shared promotion-gate record.
+
+- `_record_resolved_public_title_gate_decision(...)` records `GroundingState`, `ScopeState(scope_kind=current_work)`, and `PromotionDecision(status=publish)` for already-resolved public titles that reach the final identity path.
+- `build_candidate_audit_fields(...)` now preserves existing `candidate_ledger.promotion_gate_state` and `candidate_ledger.promotion_gate_evidence` when it regenerates the ledger.
+- Loop204 runtime: `GO`, completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`, Bridge-only MCP health `2/2`.
+- Loop204 ledger coverage: trace rows `5/5`, final-ledger consistency issues `0`, inferred publish decisions `0`.
+
+This closes the packet-level upstream ledger source gap. It does not close semantic approval: Loop203 still showed repeat-run packet movement for `11695623`, `11713222`, and `11669928`. The next architecture move is packet-variance investigation before parent/collateral replay and any residual queue decrement.
+
+## Loop205-208 Packet Variance Scope-Block Review
+
+Loop205-208 performed that packet-variance investigation and added two small architecture hardenings:
+
+- stronger official-detail candidates are preserved as hold-only review evidence before weak comment-only blocked labels;
+- resolved public-title gate recording treats hard context-only / unresolved-worklike flags as `candidate_only` scope instead of public publish.
+
+Loop208 also filters `@...` comment mentions from title candidates and restores the character-alias official-detail path for `11674712` when official search and current-work context agree.
+
+- Loop208 runtime: `GO`, completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`, Bridge-only MCP health `2/2`.
+- Loop208 packet result: `safe_resolved=3`, `promotion_blocked=2`, public title count `3`, inferred publish decisions `0`.
+- Remaining review-lock: `11713222` publishes through previous-work/comment override flags while competing candidates remain.
+
+This is `GO_PACKET_VARIANCE_REVIEW_ONLY`. Residual accounting remains unchanged: next actionable `131`, P0/P1/P2 `0/61/70`. The next architecture step is to stabilize `11713222` current-work versus previous-work alias precedence before parent/collateral replay or residual decrement.
+
+## Loop209-211 Previous-Work Candidate Preservation
+
+Loop209-211 stabilizes the immediate `11713222` current-work versus previous-work collision:
+
+- current-work public title remains `잘생기면 편해지는 인방 생활` / `https://novelpia.com/novel/384016`;
+- previous-work `잘생기면 인생이 편하다` / `https://novelpia.com/novel/300042` is preserved as candidate-only evidence;
+- final-title correction no longer uses a verified-current-alias bypass to publish a conflicting previous-work comment candidate.
+
+Loop211 runtime is clean: completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`, Bridge-only MCP health `2/2`, runtime contract `GO`. Verification is also clean: previous-work focused tests `4 OK`, focused architecture bundle `38 OK`, broad architecture bundle `290 OK`, and full unittest discover `1324 OK`.
+
+This is `GO_PACKET_SCOPE_PRECEDENCE_ONLY`. It does not close residual accounting because packet variance remains: `11660257` and `11669928` moved between Loop210 and Loop211. Current accounting remains next actionable `131`, P0/P1/P2 `0/61/70`, with `semantic_quality=REVIEW-LOCKED` and `full_scan_approval=false`.
+
+## Loop212-213 Title-Led Unconfirmed-Alias Guard
+
+Loop212-213 closes one specific gap exposed by Loop210-211: `11669928` can have a title-led work-consumption bridge (`탑성좌애호`, `연중`, official evidence) but still be demoted later by `candidate_audit.py` as `unconfirmed_alias_official_detail_bridge`.
+
+The patch keeps the demotion guard, but exempts only the narrow combination of short title-led alias, title/search/body-or-comments context, work consumption/status token, and official evidence title/snippet support. Existing pollution cases still block.
+
+- Loop212 runtime: `GO`, completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`; `11669928` publishes, but `11713222` and `11674712` temporarily move to candidate-only.
+- Loop213 runtime: `GO`, completed/flushed/pending/failed `5/5/0/0`, VLM/OCR `READY`; `11669928`, `11713222`, and `11674712` publish.
+- Verification: `py_compile` PASS, focused candidate-audit tests `3 OK`, `tests.test_candidate_audit` `100 OK`, title-led acceptance test `1 OK`.
+
+This is `GO_TITLE_LED_ALIAS_GUARD_REPEAT_EVIDENCE_ONLY`. It does not close residual accounting because `11660257` remains candidate-only and Loop212 still showed packet movement. Current accounting remains next actionable `131`, P0/P1/P2 `0/61/70`, with `semantic_quality=REVIEW-LOCKED` and `full_scan_approval=false`.
+
+## Current Architecture
+
+The useful part of the current system is the runtime harness: `expert_main.py` already has manifest, checkpoint, pending/flush, shard lifecycle, VLM/OCR readiness, and restart evidence. That should be preserved.
+
+The weak part is title publication. Public title / URL decisions can be influenced by multiple rescue and postprocess paths. Focused fixes can pass a single row and still move another row during parent replay.
+
+```mermaid
+flowchart TD
+    A["Input post\n(title/body/comments/images/search)"] --> B["expert_main.py runtime harness\nmanifest/checkpoint/flush/shards"]
+    B --> C["Experts and enrichers\nDecoder / Verifier / Arbiter / Orchestrator / VLM-OCR"]
+    C --> D["agentic_pipeline.py\nalias rescue, weak bridge, batch rescue"]
+    C --> E["candidate_audit.py\ncandidate ledger, promotion/demotion guards"]
+    D --> F["expert_main.py postprocess\nserialized identity/public URL sync"]
+    E --> F
+    F --> G["Final public fields\nofficial_title / heretic_url / primary_work"]
+    G --> H["Compare/audit tools\nseed movement, residual queue"]
+
+    D -. "multiple local guards" .-> G
+    E -. "safe_resolved can publish" .-> G
+    F -. "late serialization can leak or scrub" .-> G
+```
+
+### Current Failure Shape
+
+```mermaid
+sequenceDiagram
+    participant Seed as Targeted seed
+    participant Guard as Local guard
+    participant Parent as Parent replay
+    participant Queue as Residual accounting
+
+    Seed->>Guard: Fix one row/path
+    Guard-->>Seed: Targeted result looks green
+    Seed->>Parent: Broader replay
+    Parent-->>Queue: Different row moves or prior HOLD reopens
+    Queue-->>Guard: Add another local guard
+```
+
+This is the whack-a-mole pattern recorded in the active goal. Loop175 is a compact semantic example: `11668288` has strong official-title existence, but row-level work discussion is unstable, so it must not be forced into a stable positive-control closure. Loop176 turns the architecture pressure into a test gate: `1292` broader unittests ran with `8` failures across acknowledged previous-work override, batch alias rescue, direct OCR lock, community headline collision, and candidate-audit lint clusters.
+
+## Proposed Additive Architecture
+
+The proposed change is not a rewrite. Keep the runtime harness. Add a small semantic/promotion layer that every public-title publishing path must use.
+
+```mermaid
+flowchart TD
+    A["Input post + existing expert evidence"] --> B["GroundingState"]
+    B --> C["ScopeState\ncurrent / previous / secondary / author-new / OCR / platform / context"]
+    C --> D["EvidenceRecord[]\nsource snippets, official detail, alias bridge,\nVLM/OCR, decoder anchors, nonwork signals"]
+    D --> E["can_publish_title(...)\nshared work-bridge / promotion gate"]
+    E --> F["PromotionDecision"]
+    F --> G{"publish_allowed?"}
+    G -- "yes" --> H["Publish official_title / URL\nwith reason_codes"]
+    G -- "no" --> I["Preserve candidate/HOLD/quarantine\nwithout public title"]
+    F --> J["GateReport\nruntime / targeted / semantic / full-scan separated"]
+    J --> K["golden + collateral + parent replay"]
+```
+
+### Intended Interfaces
+
+Names can change to match local style, but the shape should stay stable.
+
+```text
+GroundingState
+  post_id
+  source_title/body/comments
+  candidate_title/url
+  official_title_exists
+  row_discusses_work_as_work
+  nonwork_or_context_only_signals
+
+ScopeState
+  scope_kind: current_work | previous_work | secondary_reference | author_new_work | image_ocr_derived_work | platform_meta_nonwork | context_only | unknown
+  confidence: high | medium | low
+  direct_bridge_sources[]
+  competing_candidates[]
+  conflict_reason_codes[]
+
+EvidenceRecord
+  kind
+  strength
+  source_path_or_snippet
+  supports_publish
+  reason_code
+
+PromotionDecision
+  status: publish | hold | candidate_only | quarantine | reject
+  publish_allowed: bool
+  official_title
+  official_url
+  candidate_preserved: bool
+  reason_codes[]
+  bypassed_gate: bool
+
+GateReport
+  run_integrity
+  targeted_canary_status
+  semantic_quality
+  full_scan_approval
+  collateral_regression_count
+  golden_gate
+  next_actionable_queue
+```
+
+## Proposed Gate Placement
+
+```mermaid
+flowchart LR
+    A["agentic_pipeline rescue paths"] --> G["can_publish_title(...)"]
+    B["candidate_audit safe_resolved"] --> G
+    C["official detail / URL rescue"] --> G
+    D["batch alias rescue"] --> G
+    E["expert_main postprocess serialization"] --> G
+    F["primary_work promotion"] --> G
+
+    G --> H["PromotionDecision"]
+    H --> I["public title/url or candidate-only hold"]
+    H --> J["contract-testable reason_codes"]
+```
+
+The active goal already names the important entrypoints in `GOAL_REGRESSION_SAFE_GROUNDING_LOOP.md` section 7. Before implementation, refresh those symbols with `rg` because line numbers drift.
+
+## Test Shape Before And After
+
+Current tests often assert only the final public title shape. That misses why a row changed.
+
+```mermaid
+flowchart TD
+    A["Current test"] --> B["Run pipeline or helper"]
+    B --> C["Assert official_title == X or None"]
+    C --> D["Hard to know which gate allowed/blocked publication"]
+
+    E["Proposed test"] --> F["Build GroundingState/EvidenceRecord"]
+    F --> G["Call can_publish_title(...)"]
+    G --> H["Assert PromotionDecision.status"]
+    H --> I["Assert reason_codes, candidate_preserved,\npublish_allowed, bypassed_gate=false"]
+```
+
+Minimum contract scenarios for the first migration:
+
+- `11668288`: official title exists, but row-level work discussion is not stable; decision should be candidate/quarantine, not stable publish.
+- `11706832`: caveated alias boundary; direct work-bridge evidence must be required before publish.
+- `11658615`: URL/source-shape variance; do not let same-title movement imply approval.
+- `11669928` / `11674712`: prior variance quarantine rows; a later safe-resolved movement is evidence, not approval.
+- Golden negative controls such as `11694035`: public title publication must stay blocked unless direct work-bridge evidence is present.
+
+## Migration Plan
+
+1. Inventory public-title and URL publication paths.
+   - `agentic_pipeline.py`
+   - `candidate_audit.py`
+   - `expert_main.py` postprocess
+   - `arbiter.py`, `verifier.py`, `decoder.py`, `orchestrator.py`
+   - compare/audit scripts that turn movement into queue status
+
+2. Extend the shared objects with scope-state fields before broad residual fixes.
+
+3. Reuse `_post_discusses_work_as_work(...)` inside the scope-aware gate. Do not discard the first-cut work-bridge predicate.
+
+4. Add contract tests for scope classification and `bypassed_gate=false`.
+
+5. Wire only the highest-risk 2-3 publishing paths first.
+
+6. Run focused tests and affected-module tests.
+
+7. Run targeted canary, then parent/representative replay or frozen regression controls.
+
+8. Record `GateReport` style evidence in review JSON/MD, loop report, TODO/CHECKLIST/HISTORY/VERIFICATION_RESULTS/IMPROVEMENT_REGISTER.
+
+## Non-Goals
+
+- Do not replace `expert_main.py` runtime/checkpoint/shard machinery.
+- Do not add post_id/title-specific production rules.
+- Do not treat P0 `0`, queue `0`, or targeted green as semantic approval.
+- Do not mark the active goal complete after this migration alone.
+
+## Completion Signal For This Architecture-Integrated Phase
+
+The migration phase can be considered ready to return to the original residual queue only when:
+
+- at least one shared promotion gate exists,
+- the selected high-risk publish paths route through it,
+- contract tests prove `bypassed_gate=false` for representative rows,
+- focused and affected tests pass or failures are explicitly dispositioned,
+- Loop176 broader unittest failures are fixed or explicitly dispositioned,
+- targeted/parent replay evidence is recorded,
+- docs and checklists point back to the latest residual map.
+
+Then the active goal should resume from the latest residual accounting, not restart from scratch.
+
+## 2026-07-01 Loop229 Addendum - Title-Led Evaluation Bridge Gap
+
+Loop229 showed a remaining architecture gap after the shared promotion gate migration started.
+
+- `11660257` can now reach `PromotionDecision.scope.scope_kind=current_work` when a title-led evaluation marker and official detail candidate converge.
+- The same row still ends as `candidate_only` because `weak_alias_surface_public_title_bridge` and `serialized_public_identity_scrubbed` remain active.
+- `11660237` remains `context_only` because broad recommendation/non-novel force paths win before the title-led evaluation question can become a current-work scope candidate.
+
+Next migration rule:
+
+1. Treat title-led evaluation questions as a distinct scope route before broad recommendation/noise forcing.
+2. Make final serialization consume the upstream `PromotionDecision` as the single publish contract instead of re-litigating scope with stale weak-alias scrub flags.
+3. Add end-to-end tests that assert final JSON public identity, `publish_contract_trace`, and candidate ledger preservation together.
+
+Gate remains `NO_DELTA_TITLE_LED_BRIDGE_CANARY_NO_GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, and active goal `NOT_COMPLETE`.
+
+## 2026-07-01 Loop230 Addendum - Serializer/Gate Partial Recovery
+
+Loop230 partially closed the Loop229 gap.
+
+- `11660257` now reaches `PromotionDecision.status=publish`, `publish_allowed=true`, `scope_current_work`, and serialized public title `암흑가 보스요? 제가요?`.
+- `11660237` remains `candidate_only`, `scope_context_only`, and public title null.
+- The restored path is generalized around title-led consumption markers, alias compact keys, official detail evidence, and shared current-work scope. It is not a post_id/title-specific production rule.
+- The remaining risk is stability: `11660257` still shows intermediate low-specific/noise force logs before final reread and serializer restore. Parent/representative replay must prove this does not oscillate.
+
+Next migration rule:
+
+1. Keep final serialization, candidate audit, `PromotionDecision`, `publish_contract_trace`, and `publish_ledger` synchronized as one publication contract.
+2. Treat `public_title_count=1/2` as partial recovery only.
+3. Require parent/representative replay before residual decrement.
+4. Keep all reader-facing loop reports and Data Analytics artifacts in Korean, while preserving raw enum/path/command/URL evidence.
+
+Gate remains `NO_DELTA_TITLE_LED_SERIALIZER_CANARY_PARTIAL_RECOVERY_PARENT_REPLAY_REQUIRED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, and active goal `NOT_COMPLETE`.
