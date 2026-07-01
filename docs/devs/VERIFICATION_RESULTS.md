@@ -1,5 +1,43 @@
 # Verification Results
 
+## 2026-07-02 Loop265 architecture gate strict runtime revalidation
+
+- Scope: 사용자 지시 5개 항목을 현재 HEAD 기준으로 재검증하고 full375 collateral always-on gate의 runtime 증거 누락 통과를 차단한다.
+- Code:
+  - `tools/evaluate_always_on_regression_gates.py`
+  - `tests/test_always_on_regression_gates.py`
+- Strict full375 gate:
+  - command: `.\.venv312\Scripts\python.exe tools\evaluate_always_on_regression_gates.py --golden-audit out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop47_merged_loop45_loop46_golden_audit.json --collateral-compare out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop49_regression_panel_replay_collateral_compare.json --expected-golden-rows 16 --expected-collateral-shared-posts 375 --output-json out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop265_always_on_golden16_full375_strict_runtime_gate.json --output-md out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop265_always_on_golden16_full375_strict_runtime_gate.md`
+  - result: gate `NO-GO`, golden `GO`, collateral `NO-GO`
+  - full375 shared posts `375/375`, changed `223`, collateral_regression_count `183`
+- Safe-loss:
+  - source `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop238_safe_loss_flip_rate_n3_blind_judge_review.md`
+  - `11674712` stable blind judge confirmed
+  - `11660237` flip_rate `0.3333333333333333`, `nondeterminism_unresolved`
+  - `11698880` stable blind judge confirmed
+  - hard_hold_relaxation_allowed `false`
+- Data Analytics:
+  - validate_artifact `PASS`
+  - render_artifact `PASS`
+  - export package `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop265_architecture_gate_data_analytics_artifact_package`
+- Focused test:
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_always_on_regression_gates -v` -> PASS, `5` tests.
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_regression_safe_work_bridge_contract tests.test_goal_convergence tests.test_safe_loss_flip_rate_probe tests.test_always_on_regression_gates tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_publish_contract_trace_converges_stale_blocked_trace_to_allowed_decision tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_publish_contract_trace_converges_stale_publish_trace_to_blocked_decision -v` -> PASS, `22` tests.
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\evaluate_always_on_regression_gates.py tests\test_always_on_regression_gates.py tools\evaluate_goal_convergence.py tools\safe_loss_flip_rate_probe.py tests\test_regression_safe_work_bridge_contract.py tests\test_goal_convergence.py tests\test_safe_loss_flip_rate_probe.py expert_main.py src\llm_batch\agentic_pipeline.py` -> PASS.
+  - `git diff --check` -> PASS, CRLF warning only.
+- Loop264 run poll:
+  - PID `49924` alive.
+  - completed/flushed/pending/failed `32/0/32/0`
+  - `large_run_complete=false`
+- Gate:
+  - architecture contract: `PASS`
+  - full375 collateral: `NO-GO`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_265_REPORT_20260702.md`
+
 ## 2026-07-02 Loop264 completed source runtime preflight / launch
 
 - Scope: completed VLM/OCR-on source 확보를 위해 full input runtime preflight를 수행하고 대형 run을 시작한다.

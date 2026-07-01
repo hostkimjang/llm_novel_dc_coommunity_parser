@@ -1,5 +1,32 @@
 # Development Checklist
 
+## 2026-07-02 Loop265 architecture gate strict runtime 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] full375 collateral always-on gate를 강화했다.
+  - `runtime_completed_count`가 `expected_shared_posts`와 같아야 runtime_complete다.
+  - runtime count가 없으면 `collateral_runtime_counts_missing`로 `NO-GO`다.
+- [x] 계약 테스트를 추가했다.
+  - `tests\test_always_on_regression_gates.py`
+- [x] 강화된 gate 재평가를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop265_always_on_golden16_full375_strict_runtime_gate.md`
+  - golden-16 `GO`, full375 collateral `NO-GO`
+  - changed `223`, collateral_regression_count `183`
+- [x] Loop238 safe-loss N=3 결과를 재확인했다.
+  - `11674712`: stable blind judge confirmed
+  - `11660237`: flip_rate `0.3333333333333333`, `nondeterminism_unresolved`
+  - `11698880`: stable blind judge confirmed
+- [x] Data Analytics validate/render/export를 수행했다.
+  - package `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop265_architecture_gate_data_analytics_artifact_package`
+- [x] 최종 focused architecture suite와 py_compile을 커밋 전 재실행했다.
+  - focused suite: PASS, `22` tests.
+  - py_compile: PASS.
+  - `git diff --check`: PASS, CRLF warning only.
+- [x] Loop264 대형 run 최신 poll을 분리 확인했다.
+  - completed/flushed/pending/failed `32/0/32/0`
+  - `large_run_complete=false`
+- Gate: architecture contract `PASS`, full375 `NO-GO`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop264 completed source runtime preflight / launch 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

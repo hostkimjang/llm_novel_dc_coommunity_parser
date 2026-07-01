@@ -60,6 +60,18 @@ class AlwaysOnRegressionGatesTest(unittest.TestCase):
         self.assertEqual(report["collateral"]["gate"], "NO-GO")
         self.assertIn("collateral:collateral_regression_count_nonzero", report["blockers"])
 
+    def test_full_collateral_gate_requires_explicit_runtime_counts(self):
+        collateral = _collateral()
+        collateral.pop("runtime_completed_count")
+        collateral.pop("runtime_pending_count")
+        collateral.pop("runtime_failed_count")
+
+        report = evaluate_gates(golden=_golden(), collateral=collateral)
+
+        self.assertEqual(report["gate"], "NO-GO")
+        self.assertEqual(report["collateral"]["gate"], "NO-GO")
+        self.assertIn("collateral:collateral_runtime_counts_missing", report["blockers"])
+
     def test_golden_failure_blocks_even_when_collateral_clean(self):
         report = evaluate_gates(
             golden=_golden(passed_count=15, failed_count=1, canary_semantic_gate="NO-GO"),

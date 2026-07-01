@@ -1,5 +1,30 @@
 # Improvement Register
 
+## IMP-20260702-265 - full375 always-on gate runtime 증거 강화
+
+- Status: Implemented / approval blocked
+- Loop: 265
+- Problem:
+  - full375 collateral diff는 golden-16과 동급 상시 게이트여야 한다.
+  - 기존 aggregator는 `runtime_completed_count`가 없을 때도 runtime_complete로 볼 수 있어, runtime 증거 없는 compare가 통과할 여지가 있었다.
+- Change:
+  - `tools/evaluate_always_on_regression_gates.py`에서 `runtime_completed_count == expected_shared_posts`를 명시적으로 요구했다.
+  - runtime count 누락 시 blocker `collateral_runtime_counts_missing`를 기록한다.
+  - `tests/test_always_on_regression_gates.py`에 runtime count 누락 차단 테스트를 추가했다.
+- Evidence:
+  - strict gate `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop265_always_on_golden16_full375_strict_runtime_gate.md`
+  - report `docs/devs/loop_reports/LOOP_265_REPORT_20260702.md`
+  - Data Analytics package `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop265_architecture_gate_data_analytics_artifact_package`
+- Result:
+  - golden-16 `GO`
+  - full375 collateral `NO-GO`
+  - changed `223`
+  - collateral_regression_count `183`
+- Gate:
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+  - goal `ACTIVE / NOT_COMPLETE`
+
 ## IMP-20260702-264 - completed source 대형 재런 시작
 
 - Status: In progress / approval blocked

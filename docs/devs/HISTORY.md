@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-02 - Loop265 tightens full375 always-on gate runtime evidence
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- `tools/evaluate_always_on_regression_gates.py`에서 full375 collateral gate가 explicit runtime count를 요구하도록 강화했다.
+- runtime count가 없는 collateral compare는 `collateral_runtime_counts_missing` blocker로 `NO-GO`가 된다.
+- 새 계약 테스트를 `tests/test_always_on_regression_gates.py`에 추가했다.
+- 강화된 gate 재평가는 golden-16 `GO`, full375 collateral `NO-GO`, changed `223`, collateral_regression_count `183`이다.
+- Loop238 safe-loss N=3 결과는 `11660237` flip rate `0.3333333333333333`, `nondeterminism_unresolved`로 유지한다.
+- Data Analytics validate/render/export를 수행했고 package는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop265_architecture_gate_data_analytics_artifact_package`다.
+- Gate는 `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop264 starts completed-source large rerun after runtime preflight
 
 - 동일 38-row parent packet은 재실행하지 않았다.

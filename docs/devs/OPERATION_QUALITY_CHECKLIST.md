@@ -6,6 +6,19 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop265 strict always-on gate quality gate
+
+- 근거:
+  - [x] full375 collateral diff가 runtime count 없는 산출물로 통과하지 못하도록 코드를 강화했다.
+  - [x] `collateral_runtime_counts_missing` blocker 계약 테스트를 추가했다.
+  - [x] 강화된 gate로 기존 golden/full375 산출물을 재평가했다.
+  - [x] Data Analytics 표/차트 산출물을 validate/render/export했다.
+- 품질 게이트:
+  - [x] golden-16 `GO`만으로 approval을 갱신하지 않는다.
+  - [x] full375 collateral `NO-GO`와 regression candidates `183`을 유지한다.
+  - [x] `11660237` flip이 남아 있어 hard-hold 완화 금지를 유지한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop264 completed source launch quality gate
 
 - 근거:

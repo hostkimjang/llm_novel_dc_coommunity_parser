@@ -77,7 +77,7 @@ def collateral_gate(collateral: dict[str, Any], expected_shared_posts: int) -> d
     runtime_pending = _safe_int(collateral.get("runtime_pending_count"))
     runtime_failed = _safe_int(collateral.get("runtime_failed_count"))
     runtime_complete = (
-        runtime_completed in {None, expected_shared_posts}
+        runtime_completed == expected_shared_posts
         and (runtime_pending or 0) == 0
         and (runtime_failed or 0) == 0
     )
@@ -91,7 +91,9 @@ def collateral_gate(collateral: dict[str, Any], expected_shared_posts: int) -> d
         blockers.append("collateral_shared_post_count_mismatch")
     if (regression_count or 0) != 0:
         blockers.append("collateral_regression_count_nonzero")
-    if not runtime_complete:
+    if runtime_completed is None:
+        blockers.append("collateral_runtime_counts_missing")
+    elif not runtime_complete:
         blockers.append("collateral_runtime_not_complete")
     return {
         "gate": "GO" if passed else "NO-GO",
