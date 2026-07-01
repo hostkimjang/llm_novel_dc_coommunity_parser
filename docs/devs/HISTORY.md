@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-02 - Loop266 fixes in-progress large-run health audit resolution
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- `tools/audit_expert_run_health.py`가 internal run id `20260702_065642_030743`과 output prefix `20260702_065632_479765`가 다른 진행 중 run을 찾지 못하던 문제를 `manifest.run_id` lookup으로 보정했다.
+- 새 테스트 `tests/test_audit_expert_run_health.py`를 추가했고, `.gitignore` 예외에 tool/test를 등록했다.
+- 진행 중 health audit 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop266_inprogress_large_run_health_audit.json`이다.
+- audit snapshot은 checkpoint rows `59`, reason errors `0`, slang bad remaining `0`이며, 직후 manifest poll은 completed/flushed/pending/failed `60/3/57/0`, `large_run_complete=false`, `ordered_flush_blocked=true`다.
+- Data Analytics validate/render/export를 수행했고 package는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop266_large_run_health_data_analytics_artifact_package`다.
+- Gate는 health audit resolution `PASS`, completed source `PENDING`, run integrity `IN_PROGRESS`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop265 tightens full375 always-on gate runtime evidence
 
 - 동일 38-row parent packet은 재실행하지 않았다.

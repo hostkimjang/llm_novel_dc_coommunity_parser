@@ -1,0 +1,453 @@
+from __future__ import annotations
+
+import argparse
+import json
+import re
+from collections import Counter
+from datetime import datetime
+from pathlib import Path
+from statistics import mean
+from typing import Any, Dict, Iterable, List
+
+
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parents[1]
+
+
+def _load_json(path: Path) -> Any:
+    return json.loads(path.read_text(encoding="utf-8", errors="ignore"))
+
+
+def _artifact_prefix_from_manifest(manifest: Path) -> str:
+    name = manifest.name
+    prefix = "expert_result_"
+    suffix = "_manifest.json"
+    if name.startswith(prefix) and name.endswith(suffix):
+        return name[len(prefix) : -len(suffix)]
+    return ""
+
+
+def _resolve_run_artifacts(run_id: str, *, repo: Path) -> Dict[str, Any]:
+    """Resolve launcher-output artifacts even when internal run_id differs."""
+    out_dir = repo / "out"
+    logs_dir = repo / "logs"
+
+    direct_manifest = out_dir / f"expert_result_{run_id}_manifest.json"
+    artifact_prefix = run_id
+    manifest = direct_manifest
+    manifest_run_id = run_id
+    resolution = "direct_prefix"
+
+    if not manifest.exists():
+        for candidate in sorted(out_dir.glob("expert_result_*_manifest.json")):
+            try:
+                payload = _load_json(candidate)
+            except Exception:
+                continue
+            if not isinstance(payload, dict):
+                continue
+            if str(payload.get("run_id") or "").strip() != run_id:
+                continue
+            artifact_prefix = _artifact_prefix_from_manifest(candidate)
+            if not artifact_prefix:
+                continue
+            manifest = candidate
+            manifest_run_id = str(payload.get("run_id") or "")
+            resolution = "manifest_run_id_lookup"
+            break
+
+    checkpoint = out_dir / f"expert_result_{artifact_prefix}_checkpoint.jsonl"
+    pending = out_dir / f"expert_result_{artifact_prefix}_pending_snapshot.json"
+    log_files = sorted(logs_dir.glob(f"expert_run_{run_id}_W*.log"))
+    if artifact_prefix != run_id:
+        extra_logs = sorted(logs_dir.glob(f"expert_run_{artifact_prefix}_W*.log"))
+        seen = {path.resolve() for path in log_files}
+        log_files.extend(path for path in extra_logs if path.resolve() not in seen)
+
+    return {
+        "requested_run_id": run_id,
+        "manifest_run_id": manifest_run_id,
+        "artifact_prefix": artifact_prefix,
+        "resolution": resolution,
+        "manifest": manifest,
+        "checkpoint": checkpoint,
+        "pending": pending,
+        "log_files": log_files,
+    }
+
+
+def _iter_checkpoint(path: Path) -> Iterable[Dict[str, Any]]:
+    with path.open(encoding="utf-8", errors="ignore") as f:
+        for line in f:
+            if not line.strip():
+                continue
+            try:
+                row = json.loads(line)
+            except Exception:
+                continue
+            if isinstance(row, dict):
+                yield row
+
+
+def _identity_from_row(row: Dict[str, Any]) -> Dict[str, Any]:
+    result = row.get("result") or {}
+    analysis_result = result.get("analysis_result") or {}
+    identity = analysis_result.get("identity") or {}
+    return identity if isinstance(identity, dict) else {}
+
+
+def _result_from_row(row: Dict[str, Any]) -> Dict[str, Any]:
+    result = row.get("result") or {}
+    return result if isinstance(result, dict) else {}
+
+
+def _extract_int(pattern: str, text: str) -> int | None:
+    match = re.search(pattern, text)
+    if not match:
+        return None
+    try:
+        return int(match.group(1))
+    except Exception:
+        return None
+
+
+def _percent(part: int, whole: int) -> float:
+    if whole <= 0:
+        return 0.0
+    return round((part / whole) * 100.0, 2)
+
+
+def _audit_slang(
+    rows: List[Dict[str, Any]],
+    *,
+    repo: Path,
+) -> Dict[str, Any]:
+    import sys
+
+    sys.path.insert(0, str(repo / "src"))
+    from llm_batch.agentic_pipeline import AgenticPipeline  # noqa: WPS433
+    from llm_batch.slang_db import _is_exact_title_alias, _looks_sentence_like_term  # noqa: WPS433
+
+    pipe = object.__new__(AgenticPipeline)
+    slang_all: List[Dict[str, Any]] = []
+    old_store: List[Dict[str, Any]] = []
+    new_store: List[Dict[str, Any]] = []
+    blocked: List[Dict[str, Any]] = []
+
+    for row in rows:
+        identity = _identity_from_row(row)
+        slang = identity.get("slang_insight")
+        if not isinstance(slang, dict):
+            continue
+        novel_identity = identity.get("novel_identity")
+        if not isinstance(novel_identity, dict):
+            novel_identity = {}
+        result = _result_from_row(row)
+        contract = pipe._infer_slang_alias_contract(
+            official_title=novel_identity.get("official_title"),
+            vf_slang=slang,
+            entity_mentions=identity.get("entity_mentions") or [],
+            discussion_type=identity.get("discussion_type"),
+            topicality=identity.get("topicality"),
+            subtype=identity.get("subtype"),
+            work_resolution=identity.get("work_resolution"),
+        )
+        item = {
+            "post_id": row.get("post_id"),
+            "post_title": result.get("title"),
+            "detected_term": slang.get("detected_term"),
+            "decoded_term": slang.get("decoded_term"),
+            "old_store_in_slang_db": slang.get("store_in_slang_db"),
+            "old_store_reason": slang.get("store_reason"),
+            "old_alias_scope": slang.get("alias_scope"),
+            "new_store_in_slang_db": contract.get("store_in_slang_db"),
+            "new_store_reason": contract.get("store_reason"),
+            "new_alias_scope": contract.get("alias_scope"),
+            "new_canonical_work_alias": contract.get("canonical_work_alias"),
+            "official_title": novel_identity.get("official_title"),
+            "discussion_type": identity.get("discussion_type"),
+            "topicality": identity.get("topicality"),
+            "work_resolution": identity.get("work_resolution"),
+        }
+        slang_all.append(item)
+        if slang.get("store_in_slang_db") is True:
+            old_store.append(item)
+        if contract.get("store_in_slang_db") is True:
+            new_store.append(item)
+        if slang.get("store_in_slang_db") is True and contract.get("store_in_slang_db") is not True:
+            blocked.append(item)
+
+    slang_db_path = repo / "slang_db" / "slang_db.json"
+    db_bad: List[Dict[str, Any]] = []
+    db_term_count = 0
+    db_title_count = 0
+    if slang_db_path.exists():
+        data = _load_json(slang_db_path)
+        titles = data.get("titles") if isinstance(data, dict) else {}
+        if isinstance(titles, dict):
+            db_title_count = len(titles)
+            for title, entry in titles.items():
+                if not isinstance(entry, dict):
+                    continue
+                for slang_row in entry.get("slang") or []:
+                    if not isinstance(slang_row, dict):
+                        continue
+                    db_term_count += 1
+                    term = str(slang_row.get("term") or "")
+                    if _looks_sentence_like_term(term) or _is_exact_title_alias(term, str(title)):
+                        db_bad.append(
+                            {
+                                "title": title,
+                                "term": term,
+                                "sources": slang_row.get("sources"),
+                                "count": slang_row.get("count"),
+                            }
+                        )
+
+    return {
+        "slang_insight_count": len(slang_all),
+        "old_store_true_count": len(old_store),
+        "new_store_true_after_patch_count": len(new_store),
+        "old_store_true_blocked_by_patch_count": len(blocked),
+        "blocked_reason_counts": dict(Counter(x["new_store_reason"] for x in blocked).most_common()),
+        "blocked_samples": blocked[:80],
+        "kept_samples": new_store[:80],
+        "slang_db": {
+            "title_count": db_title_count,
+            "slang_term_count": db_term_count,
+            "sentence_or_exact_bad_remaining": len(db_bad),
+            "bad_remaining_samples": db_bad[:80],
+        },
+    }
+
+
+def _audit_logs(log_files: List[Path]) -> Dict[str, Any]:
+    counts: Counter[str] = Counter()
+    worker_counts: Dict[str, Counter[str]] = {}
+    headless_engines: Counter[str] = Counter()
+    processing_samples: List[str] = []
+    starts = 0
+    completes = 0
+
+    for path in log_files:
+        worker_match = re.search(r"_W(\d+)\.log$", path.name)
+        worker_key = f"W{worker_match.group(1)}" if worker_match else path.name
+        wc = worker_counts.setdefault(worker_key, Counter())
+        try:
+            f = path.open(encoding="utf-8", errors="ignore")
+        except Exception:
+            continue
+        with f:
+            for lineno, line in enumerate(f, 1):
+                if "Agentic Pipeline 시작" in line:
+                    starts += 1
+                    wc["post_start"] += 1
+                if "✅ Post " in line and "완료" in line:
+                    completes += 1
+                    wc["post_complete"] += 1
+                if "processing error" in line or "처리 오류:" in line or "Traceback" in line:
+                    counts["fatal_or_trace_line"] += 1
+                    wc["fatal_or_trace_line"] += 1
+                    if len(processing_samples) < 30:
+                        processing_samples.append(f"{path.name}:{lineno}:{line[:300]}")
+                if "Connection refused" in line or "WinError 10061" in line:
+                    counts["llm_connection_refused"] += 1
+                    wc["llm_connection_refused"] += 1
+                if "LLM snippet 분석 실패" in line and "NoneType" in line:
+                    counts["snippet_none_fallback"] += 1
+                    wc["snippet_none_fallback"] += 1
+                if "search results [upstream무결과]" in line:
+                    counts["search_upstream_zero"] += 1
+                    wc["search_upstream_zero"] += 1
+                if "search results [bridge필터후0]" in line:
+                    counts["search_bridge_after_filter_zero"] += 1
+                    wc["search_bridge_after_filter_zero"] += 1
+                if "검색 오류: timed out" in line:
+                    counts["search_timeout"] += 1
+                    wc["search_timeout"] += 1
+                if "검색 품질 저하 감지" in line:
+                    counts["search_degraded_detected"] += 1
+                    wc["search_degraded_detected"] += 1
+                if "headless_" in line:
+                    counts["headless_lines"] += 1
+                    wc["headless_lines"] += 1
+                    for match in re.finditer(r"\[(headless_[^\]]+)\]", line):
+                        headless_engines[match.group(1)] += 1
+                if "headless(" in line:
+                    counts["headless_meta_lines"] += 1
+                    wc["headless_meta_lines"] += 1
+                if "title_anchor_exact_probe" in line:
+                    counts["title_anchor_exact_probe_lines"] += 1
+                    wc["title_anchor_exact_probe_lines"] += 1
+
+    return {
+        "worker_log_count": len(log_files),
+        "post_start_count_in_worker_logs": starts,
+        "post_complete_count_in_worker_logs": completes,
+        "counts": dict(counts),
+        "worker_counts_top": {
+            key: dict(value.most_common())
+            for key, value in sorted(
+                worker_counts.items(),
+                key=lambda kv: (
+                    -kv[1].get("search_degraded_detected", 0),
+                    -kv[1].get("search_upstream_zero", 0),
+                    kv[0],
+                ),
+            )[:20]
+        },
+        "headless_engine_counts": dict(headless_engines.most_common()),
+        "processing_error_samples": processing_samples,
+    }
+
+
+def build_audit(run_id: str, *, repo: Path) -> Dict[str, Any]:
+    artifacts = _resolve_run_artifacts(run_id, repo=repo)
+    checkpoint = artifacts["checkpoint"]
+    manifest = artifacts["manifest"]
+    pending = artifacts["pending"]
+    log_files = artifacts["log_files"]
+
+    rows = list(_iter_checkpoint(checkpoint))
+    status_counts = Counter(row.get("status") for row in rows)
+    discussion_counts: Counter[str] = Counter()
+    topicality_counts: Counter[str] = Counter()
+    work_resolution_counts: Counter[str] = Counter()
+    identity_state_counts: Counter[str] = Counter()
+    confidence_counts: Counter[str] = Counter()
+    flag_counts: Counter[str] = Counter()
+    reason_errors: List[Dict[str, Any]] = []
+    executed_queries: List[int] = []
+    degraded_queries: List[int] = []
+
+    for row in rows:
+        result = _result_from_row(row)
+        identity = _identity_from_row(row)
+        reason = str(identity.get("reason") or "")
+        if any(
+            marker in reason
+            for marker in (
+                "처리 오류",
+                "Traceback",
+                "cannot access local variable",
+                "object has no attribute",
+                "not supported between instances",
+            )
+        ):
+            reason_errors.append(
+                {
+                    "post_id": row.get("post_id"),
+                    "title": result.get("title"),
+                    "reason": reason[:600],
+                }
+            )
+        discussion_counts[str(identity.get("discussion_type") or "")] += 1
+        topicality_counts[str(identity.get("topicality") or "")] += 1
+        work_resolution_counts[str(identity.get("work_resolution") or "")] += 1
+        identity_state_counts[str(identity.get("identity_state") or "")] += 1
+        novel_identity = identity.get("novel_identity")
+        if not isinstance(novel_identity, dict):
+            novel_identity = {}
+        confidence_counts[str(novel_identity.get("confidence") or "")] += 1
+        for flag in identity.get("consistency_flags") or []:
+            flag_counts[str(flag)] += 1
+        q_count = _extract_int(r"executed_queries:\s*(\d+)", reason)
+        if q_count is not None:
+            executed_queries.append(q_count)
+        d_count = _extract_int(r"degraded_queries:\s*(\d+)", reason)
+        if d_count is not None:
+            degraded_queries.append(d_count)
+
+    pending_count_actual: int | None = None
+    if pending.exists():
+        payload = _load_json(pending)
+        if isinstance(payload, list):
+            pending_count_actual = len(payload)
+        elif isinstance(payload, dict):
+            for key in ("pending", "items", "posts", "data"):
+                if isinstance(payload.get(key), list):
+                    pending_count_actual = len(payload[key])
+                    break
+
+    manifest_data = _load_json(manifest) if manifest.exists() else {}
+    log_audit = _audit_logs(log_files)
+    slang_audit = _audit_slang(rows, repo=repo)
+
+    return {
+        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "run_id": run_id,
+        "artifact_resolution": {
+            "resolution": artifacts["resolution"],
+            "artifact_prefix": artifacts["artifact_prefix"],
+            "manifest_run_id": artifacts["manifest_run_id"],
+            "manifest": str(manifest),
+            "checkpoint": str(checkpoint),
+            "pending_snapshot": str(pending),
+            "worker_log_count": len(log_files),
+        },
+        "manifest": manifest_data,
+        "checkpoint_rows": len(rows),
+        "pending_count_actual": pending_count_actual,
+        "status_counts": dict(status_counts),
+        "identity_state_counts": dict(identity_state_counts.most_common(30)),
+        "discussion_type_counts_top": dict(discussion_counts.most_common(40)),
+        "topicality_counts": dict(topicality_counts.most_common(20)),
+        "work_resolution_counts": dict(work_resolution_counts.most_common(20)),
+        "novel_confidence_counts": dict(confidence_counts.most_common(20)),
+        "consistency_flag_counts_top": dict(flag_counts.most_common(50)),
+        "reason_error_count": len(reason_errors),
+        "reason_error_samples": reason_errors[:30],
+        "query_stats": {
+            "parsed_count": len(executed_queries),
+            "avg_executed_queries": round(mean(executed_queries), 2) if executed_queries else None,
+            "p95_executed_queries": (
+                sorted(executed_queries)[int(len(executed_queries) * 0.95)]
+                if executed_queries
+                else None
+            ),
+            "max_executed_queries": max(executed_queries) if executed_queries else None,
+            "avg_degraded_queries": round(mean(degraded_queries), 2) if degraded_queries else None,
+            "max_degraded_queries": max(degraded_queries) if degraded_queries else None,
+        },
+        "slang": slang_audit,
+        "logs": log_audit,
+        "rates": {
+            "reason_error_rate_pct": _percent(len(reason_errors), len(rows)),
+            "resolved_title_rate_pct": _percent(identity_state_counts.get("resolved_title", 0), len(rows)),
+            "unresolved_title_rate_pct": _percent(identity_state_counts.get("unresolved_title", 0), len(rows)),
+            "headless_line_per_completed_pct": _percent(
+                int(log_audit["counts"].get("headless_lines", 0)),
+                max(1, len(rows)),
+            ),
+        },
+    }
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Audit expert run health: logs, search, processing errors, slang candidates.")
+    parser.add_argument("--run-id", required=True)
+    parser.add_argument("--output", help="Output JSON path. Defaults to out/run_audit_<run-id>.json")
+    args = parser.parse_args()
+
+    repo = _repo_root()
+    audit = build_audit(args.run_id, repo=repo)
+    output = Path(args.output) if args.output else repo / "out" / f"run_audit_{args.run_id}.json"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(audit, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    print(f"WROTE {output}")
+    print(f"checkpoint_rows={audit['checkpoint_rows']} status_counts={audit['status_counts']}")
+    print(f"reason_errors={audit['reason_error_count']}")
+    print(
+        "slang old/new/blocked="
+        f"{audit['slang']['old_store_true_count']}/"
+        f"{audit['slang']['new_store_true_after_patch_count']}/"
+        f"{audit['slang']['old_store_true_blocked_by_patch_count']}"
+    )
+    print(f"slang_db_bad_remaining={audit['slang']['slang_db']['sentence_or_exact_bad_remaining']}")
+    print(f"log_counts={audit['logs']['counts']}")
+    print(f"headless={audit['logs']['headless_engine_counts']}")
+
+
+if __name__ == "__main__":
+    main()

@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop266 Addendum - 진행 중 대형 run health 감사 보정
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: Loop264 completed-source 대형 run을 완료로 승격하지 않고, 진행 중 health audit가 internal run id와 output prefix 불일치를 해석하도록 한다.
+- 코드 변경: `tools/audit_expert_run_health.py`는 direct prefix manifest가 없으면 `out\expert_result_*_manifest.json`의 `manifest.run_id`를 스캔해 artifact prefix를 찾는다. `tests/test_audit_expert_run_health.py`와 `.gitignore` 예외를 추가했다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_266_REPORT_20260702.md`, health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop266_inprogress_large_run_health_audit.json`, Data Analytics package `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop266_large_run_health_data_analytics_artifact_package`.
+- Evidence: audit resolution `manifest_run_id_lookup`, checkpoint_rows `59`, reason_error_count `0`, slang bad remaining `0`. 직후 manifest poll은 completed/flushed/pending/failed `60/3/57/0`, `large_run_complete=false`, `ordered_flush_blocked=true`.
+- Verification: `tests.test_audit_expert_run_health` `2` tests OK, py_compile PASS, Data Analytics validate/render/export PASS.
+- Gate: completed source `PENDING`, run integrity `IN_PROGRESS`, search-health direct probe `SEPARATE_AUDIT_REQUIRED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop262 Addendum - completed source 후보 감사
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

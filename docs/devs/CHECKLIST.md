@@ -1,5 +1,36 @@
 # Development Checklist
 
+## 2026-07-02 Loop266 in-progress large-run health audit 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] `audit_expert_run_health.py`의 run id/output prefix 불일치 문제를 보정했다.
+  - internal run id `20260702_065642_030743`
+  - output artifact prefix `20260702_065632_479765`
+  - resolution `manifest_run_id_lookup`
+- [x] 계약 테스트를 추가했다.
+  - `tests\test_audit_expert_run_health.py`
+  - launcher prefix lookup
+  - direct prefix 우선
+- [x] 진행 중 health audit를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop266_inprogress_large_run_health_audit.json`
+  - checkpoint_rows `59`
+  - reason_error_count `0`
+  - slang old/new/blocked `8/8/0`
+  - slang_db bad remaining `0`
+- [x] 직후 manifest poll을 분리 확인했다.
+  - completed/flushed/pending/failed `60/3/57/0`
+  - `large_run_complete=false`
+  - `partial_flush_gap=true`
+  - `ordered_flush_blocked=true`
+- [x] Data Analytics validate/render/export를 수행했다.
+  - package `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop266_large_run_health_data_analytics_artifact_package`
+- [x] focused verification을 실행했다.
+  - `tests.test_audit_expert_run_health`: PASS, `2` tests.
+  - py_compile: PASS.
+- [ ] run 완료 후 manifest clean completion과 ordered flush gap을 확인한다.
+- [ ] run 완료 후 search-health direct probe 또는 search error evidence audit를 별도로 수행한다.
+- Gate: health audit resolution `PASS`, completed source `PENDING`, run integrity `IN_PROGRESS`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop265 architecture gate strict runtime 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

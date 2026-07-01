@@ -1,5 +1,47 @@
 # Verification Results
 
+## 2026-07-02 Loop266 in-progress large-run health audit
+
+- Scope: 진행 중인 Loop264 completed-source 대형 run을 완료로 승격하지 않고, health audit 도구가 internal run id와 output prefix 불일치를 처리하도록 보정한다.
+- Code:
+  - `tools/audit_expert_run_health.py`
+  - `tests/test_audit_expert_run_health.py`
+  - `.gitignore`
+- Artifact resolution:
+  - requested run id `20260702_065642_030743`
+  - artifact prefix `20260702_065632_479765`
+  - resolution `manifest_run_id_lookup`
+- Health audit:
+  - command: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_065642_030743 --output out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop266_inprogress_large_run_health_audit.json`
+  - result: checkpoint_rows `59`, status_counts `completed=59`, reason_error_count `0`
+  - slang old/new/blocked `8/8/0`, slang_db bad remaining `0`
+  - log counts include `search_upstream_zero=25`, `search_degraded_detected=24`, `snippet_none_fallback=1`
+- Manifest poll after audit:
+  - completed/flushed/pending/failed `60/3/57/0`
+  - `large_run_complete=false`
+  - `partial_flush_gap=true`
+  - `ordered_flush_blocked=true`
+  - VLM/OCR `true/true`, image_post_count `55259`
+  - MCP health ok/failure `36/0`
+  - caveat: `mcp_health_light_mode=true`, `mcp_health_include_search=false`
+- Data Analytics:
+  - validate_artifact `PASS`
+  - render_artifact `PASS`
+  - export package `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop266_large_run_health_data_analytics_artifact_package`
+- Focused test:
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_audit_expert_run_health -v` -> PASS, `2` tests.
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\audit_expert_run_health.py tests\test_audit_expert_run_health.py` -> PASS.
+- Gate:
+  - health audit artifact resolution: `PASS`
+  - completed source: `PENDING`
+  - run integrity: `IN_PROGRESS`
+  - search-health direct probe: `SEPARATE_AUDIT_REQUIRED`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_266_REPORT_20260702.md`
+
 ## 2026-07-02 Loop265 architecture gate strict runtime revalidation
 
 - Scope: 사용자 지시 5개 항목을 현재 HEAD 기준으로 재검증하고 full375 collateral always-on gate의 runtime 증거 누락 통과를 차단한다.
