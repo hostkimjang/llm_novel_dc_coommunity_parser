@@ -1972,18 +1972,6 @@ class AgenticPipeline:
         if not platform_meta:
             return False
 
-        if (
-            self._has_structured_direct_image_work_surface_evidence(ctx, candidate)
-            or self._has_image_primary_promotion_signal(ctx, candidate)
-            or self._has_strong_verified_character_work_links(ctx, candidate)
-            or self._has_compound_title_character_bridge(
-                ctx,
-                candidate,
-                vf_result=vf,
-            )
-        ):
-            return False
-
         image_items: List[Dict[str, Any]] = []
         post_data = getattr(ctx, "post_data", None) or {}
         if isinstance(post_data, dict):
@@ -1996,6 +1984,7 @@ class AgenticPipeline:
             if isinstance(values, list):
                 image_items.extend(item for item in values if isinstance(item, dict))
 
+        has_non_promotable_matching_image = False
         for item in image_items:
             if self._is_background_listing_vlm_item(item):
                 continue
@@ -2009,6 +1998,31 @@ class AgenticPipeline:
             cover_work_anchor = bool(evidence_type == "cover_title" and focus_role == "work_anchor")
             if item.get("promotion_eligible") is True or cover_work_anchor:
                 continue
+            has_non_promotable_matching_image = True
+            break
+
+        if (
+            self._has_structured_direct_image_work_surface_evidence(ctx, candidate)
+            or self._has_image_primary_promotion_signal(ctx, candidate)
+        ):
+            return False
+
+        if isinstance(post_data, dict):
+            for block in post_data.get("content_blocks", []) or []:
+                if not isinstance(block, dict):
+                    continue
+                block_type = str(block.get("type") or "").strip().lower()
+                if block_type not in {"ocr_text", "image_ocr", "image_summary", "vlm_summary"}:
+                    continue
+                block_text = " ".join(
+                    str(block.get(key) or "")
+                    for key in ("text", "ocr_text", "visual_summary")
+                )
+                if title_norm and title_norm in self._normalize_match_text(block_text):
+                    has_non_promotable_matching_image = True
+                    break
+
+        if has_non_promotable_matching_image:
             return True
         return False
 

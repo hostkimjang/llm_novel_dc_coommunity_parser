@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop254 Result / Loop255 Preflight Addendum - live hard-hold escape
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- Loop254 same 7-row packet run `20260702_043856_711141`은 runtime completed/flushed/pending/failed `7/7/0/0`, VLM/OCR `READY`, MCP health `2/2`로 완료됐지만 semantic gate는 실패다.
+- 실패: `11658668`이 계속 `safe_resolved`, public title `전 버튜버가 하고 싶은데요`, URL `https://novelpia.com/novel/275975`, `promotion_gate_state.source=batch_memory_exact_alias_rescued`, reason `context_only,scope_current_work,work_consumption_marker`로 publish됐다.
+- 개선된 점: `11663535`는 `promotion_blocked`, `scope_context_only`, `character_title_collision`으로 다시 hold됐다.
+- 남은 blocker: `11663544`는 계속 `promotion_blocked` safe-loss이며, `11658668`은 live에서 non-promotable image catalog가 있어도 character/search/direct-anchor류 positive bridge로 hard-hold를 우회했다.
+- 코드 변경(Loop255 preflight): `_platform_meta_image_title_requires_hold(...)`가 non-promotable matching image evidence를 먼저 판정하고, 이 경우 generic character/compound bridge로 빠져나가지 못하게 했다. 또한 image catalog가 아직 final에 주입되지 않은 OCR-only block에서도 platform-meta image title hard-hold를 적용한다.
+- Verification: focused hard-hold tests `4` PASS, py_compile PASS. broader tests와 next same-packet canary는 커밋 후 실행한다.
+- Gate: Loop254 runtime `GO` but semantic `NO-GO`. full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop254 Preflight Addendum - platform-meta image hard-hold contract
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop253 same 7-row packet은 runtime `GO`였지만 acceptance가 아니다.

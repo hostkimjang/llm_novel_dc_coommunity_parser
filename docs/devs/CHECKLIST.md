@@ -1,5 +1,29 @@
 # Development Checklist
 
+## 2026-07-02 Loop254 result / Loop255 preflight live hard-hold escape 체크
+
+- [x] Loop254 runtime과 semantic 결과를 분리했다.
+  - run id `20260702_043856_711141`
+  - runtime `7/7/0/0`, VLM/OCR `READY`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop254_p0_representative_7_after_platform_meta_image_hard_hold_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop254_p0_representative_7_after_platform_meta_image_hard_hold_result_manifest.json`
+- [x] Loop254 semantic 실패를 확인했다.
+  - `11658668`: `safe_resolved`, public title `전 버튜버가 하고 싶은데요`, `publish_allowed=true`
+  - reason: `context_only,scope_current_work,work_consumption_marker`
+  - source: `batch_memory_exact_alias_rescued`
+- [x] collateral 움직임을 분리했다.
+  - `11663535`: `promotion_blocked`, `character_title_collision`, `scope_context_only`
+  - `11663544`: `promotion_blocked` safe-loss 유지
+- [x] Loop255 preflight patch를 적용했다.
+  - non-promotable matching image evidence를 character/search bridge보다 먼저 hard-hold한다.
+  - image catalog 주입 전 OCR-only block도 platform-meta image title hard-hold로 본다.
+- [x] focused preflight 검증을 완료했다.
+  - py_compile PASS
+  - focused hard-hold tests `4` PASS
+- [ ] broader tests를 실행한다.
+- [ ] 커밋 후 Loop255 same 7-row packet canary를 실행한다.
+- Gate: Loop254 semantic `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, full375 previous `NO-GO`.
+
 ## 2026-07-02 Loop254 preflight platform-meta image hard-hold 체크
 
 - [x] Loop253 runtime 결과를 approval과 분리했다.

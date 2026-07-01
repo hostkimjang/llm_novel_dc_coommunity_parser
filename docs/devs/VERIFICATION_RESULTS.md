@@ -1,5 +1,31 @@
 # Verification Results
 
+## 2026-07-02 Loop254 result / Loop255 preflight live hard-hold escape verification
+
+- Scope: Loop254 same 7-row packet으로 platform-meta image hard-hold가 live path에서도 닫혔는지 확인한다.
+- Runtime:
+  - run id `20260702_043856_711141`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop254_p0_representative_7_after_platform_meta_image_hard_hold_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop254_p0_representative_7_after_platform_meta_image_hard_hold_result_manifest.json`
+  - log `logs\expert_run_20260702_043856_711141.log`
+  - completed/flushed/pending/failed `7/7/0/0`, VLM/OCR `READY`, MCP health `2/2`
+- Result:
+  - `11658668` failed: `candidate_ledger_status=safe_resolved`, public title `전 버튜버가 하고 싶은데요`, URL `https://novelpia.com/novel/275975`, `publish_allowed=true`
+  - `11658668` gate: `source=batch_memory_exact_alias_rescued`, `scope_kind=current_work`, reason `context_only,scope_current_work,work_consumption_marker`
+  - `11663535` recovered: `promotion_blocked`, `scope_context_only`, `character_title_collision`
+  - `11663544` remains safe-loss: `promotion_blocked`
+- Patch follow-up:
+  - `_platform_meta_image_title_requires_hold(...)` now checks non-promotable matching image evidence before character/compound bridge escape.
+  - OCR-only image text blocks also trigger platform-meta image title hard-hold when the image catalog is not yet attached.
+- Verification:
+  - py_compile: PASS
+  - focused hard-hold tests: `4` tests OK
+- Gate:
+  - Loop254 runtime: `GO`
+  - Loop254 semantic: `NO-GO`
+  - next same-packet canary: pending after checkpoint commit
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, full375 previous `NO-GO`
+
 ## 2026-07-02 Loop254 preflight platform-meta image hard-hold verification
 
 - Scope: Loop253 실패 경로(`11658668` `batch_memory_exact_alias_rescued` + semantic no-work + non-promotable image title)를 다음 canary 전에 계약 테스트로 막는다.

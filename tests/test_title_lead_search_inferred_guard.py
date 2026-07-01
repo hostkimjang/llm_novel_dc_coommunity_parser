@@ -866,6 +866,13 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             "work_cues": ["ACTOR", title, "아이, 탈의 주인공"],
         }
         ctx.post_data["image_enrichment"] = [image_item]
+        ctx.verified_character_work_links = [
+            {
+                "title": title,
+                "character": "주서연",
+                "url": url,
+            }
+        ]
         ctx.search_results = [
             {
                 "title": title,
@@ -1047,6 +1054,62 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
                 verification_result={},
             )
         )
+
+    def test_batch_alias_semantic_no_work_blocks_platform_meta_ocr_text_without_catalog(self):
+        pipeline = build_pipeline()
+        title = "전 버튜버가 하고 싶은데요"
+        url = "https://novelpia.com/novel/275975"
+        post = PostInput(
+            post_id=11658668,
+            title="문피아에서는 수정하면 욕 처먹는거고",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="image", url="https://example.test/11658668.png"),
+                ContentBlock(type="ocr_text", text="ACTOR ...의 주인공 전 버튜버가 하고 싶은데요"),
+                ContentBlock(type="text", text="여기서도 쿠사리 먹고 내리면 소신있는거고"),
+            ],
+            comments=[],
+        )
+        ctx = ConversationContext(post_id=11658668, post_data=pipeline._post_to_dict(post), comments=[])
+        ctx.search_results = [
+            {
+                "title": title,
+                "url": url,
+                "content": "노벨피아 공식 작품 상세",
+            }
+        ]
+        final_decision = {
+            "title_resolution_allowed": False,
+            "title_resolution_state": "context_only",
+            "work_resolution": "unresolved",
+        }
+
+        old_detail_urls = pipeline._official_detail_exact_title_urls_for_no_work_anchor
+        old_find_url = pipeline._find_title_matched_official_url
+        old_official_evidence = pipeline._has_official_title_evidence
+        pipeline._has_official_title_evidence = lambda *_args, **_kwargs: True
+        pipeline._official_detail_exact_title_urls_for_no_work_anchor = lambda *_args, **_kwargs: [url]
+        pipeline._find_title_matched_official_url = lambda *_args, **_kwargs: url
+        try:
+            allowed = pipeline._can_promote_title_after_semantic_no_work(
+                ctx,
+                title,
+                source="batch_memory_exact_alias_rescued",
+                final_decision=final_decision,
+                verification_result={},
+                title_candidates=[],
+            )
+        finally:
+            pipeline._has_official_title_evidence = old_official_evidence
+            pipeline._official_detail_exact_title_urls_for_no_work_anchor = old_detail_urls
+            pipeline._find_title_matched_official_url = old_find_url
+
+        self.assertFalse(allowed)
+        decision = final_decision["_promotion_gate_decision"]
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn("platform_meta_image_title_hard_hold", decision["reason_codes"])
+        self.assertIn("scope_context_only", decision["reason_codes"])
 
     def test_verified_contextual_alias_wrapper_uses_shared_work_predicate(self):
         pipeline = build_pipeline()
