@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-02 - Loop267 adds explicit artifact paths to health audit
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- `tools/audit_expert_run_health.py`에 `--artifact-prefix`, `--manifest`, `--checkpoint`, `--pending-snapshot`, `--log-glob` 옵션을 추가했다.
+- sampling/custom output 경로를 감사할 때 기본 `out\expert_result_<run_id>*` 위치에 묶이지 않도록 `artifact_resolution.explicit_overrides`를 기록한다.
+- 실제 Loop264 진행 중 run에 explicit path audit를 실행했고 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop267_explicit_path_health_audit.json`이다.
+- audit snapshot은 resolution `explicit_paths`, checkpoint_rows `88`, reason errors `0`, slang bad remaining `0`이다.
+- 직후 manifest poll은 completed/flushed/pending/failed `90/12/78/0`, `large_run_complete=false`, `ordered_flush_blocked=true`다.
+- Gate는 audit explicit path support `PASS`, completed source `PENDING`, run integrity `IN_PROGRESS`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop266 fixes in-progress large-run health audit resolution
 
 - 동일 38-row parent packet은 재실행하지 않았다.

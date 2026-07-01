@@ -27,18 +27,54 @@ def _artifact_prefix_from_manifest(manifest: Path) -> str:
     return ""
 
 
-def _resolve_run_artifacts(run_id: str, *, repo: Path) -> Dict[str, Any]:
+def _resolve_cli_path(value: str | None, *, repo: Path) -> Path | None:
+    if not value:
+        return None
+    path = Path(value)
+    if path.is_absolute():
+        return path
+    return repo / path
+
+
+def _resolve_run_artifacts(
+    run_id: str,
+    *,
+    repo: Path,
+    artifact_prefix: str | None = None,
+    manifest_path: str | None = None,
+    checkpoint_path: str | None = None,
+    pending_snapshot_path: str | None = None,
+    log_glob: str | None = None,
+) -> Dict[str, Any]:
     """Resolve launcher-output artifacts even when internal run_id differs."""
     out_dir = repo / "out"
     logs_dir = repo / "logs"
 
-    direct_manifest = out_dir / f"expert_result_{run_id}_manifest.json"
-    artifact_prefix = run_id
+    explicit_overrides: List[str] = []
+    explicit_manifest = _resolve_cli_path(manifest_path, repo=repo)
+    if artifact_prefix:
+        explicit_overrides.append("artifact_prefix")
+    resolved_prefix = str(artifact_prefix or run_id)
+    direct_manifest = out_dir / f"expert_result_{resolved_prefix}_manifest.json"
     manifest = direct_manifest
     manifest_run_id = run_id
     resolution = "direct_prefix"
 
-    if not manifest.exists():
+    if explicit_manifest is not None:
+        manifest = explicit_manifest
+        explicit_overrides.append("manifest")
+        inferred_prefix = _artifact_prefix_from_manifest(manifest)
+        if inferred_prefix and not artifact_prefix:
+            resolved_prefix = inferred_prefix
+        try:
+            payload = _load_json(manifest)
+            if isinstance(payload, dict):
+                manifest_run_id = str(payload.get("run_id") or run_id)
+        except Exception:
+            manifest_run_id = run_id
+        resolution = "explicit_paths"
+
+    if explicit_manifest is None and not manifest.exists():
         for candidate in sorted(out_dir.glob("expert_result_*_manifest.json")):
             try:
                 payload = _load_json(candidate)
@@ -48,27 +84,46 @@ def _resolve_run_artifacts(run_id: str, *, repo: Path) -> Dict[str, Any]:
                 continue
             if str(payload.get("run_id") or "").strip() != run_id:
                 continue
-            artifact_prefix = _artifact_prefix_from_manifest(candidate)
-            if not artifact_prefix:
+            resolved_prefix = _artifact_prefix_from_manifest(candidate)
+            if not resolved_prefix:
                 continue
             manifest = candidate
             manifest_run_id = str(payload.get("run_id") or "")
             resolution = "manifest_run_id_lookup"
             break
 
-    checkpoint = out_dir / f"expert_result_{artifact_prefix}_checkpoint.jsonl"
-    pending = out_dir / f"expert_result_{artifact_prefix}_pending_snapshot.json"
-    log_files = sorted(logs_dir.glob(f"expert_run_{run_id}_W*.log"))
-    if artifact_prefix != run_id:
-        extra_logs = sorted(logs_dir.glob(f"expert_run_{artifact_prefix}_W*.log"))
-        seen = {path.resolve() for path in log_files}
-        log_files.extend(path for path in extra_logs if path.resolve() not in seen)
+    checkpoint = out_dir / f"expert_result_{resolved_prefix}_checkpoint.jsonl"
+    explicit_checkpoint = _resolve_cli_path(checkpoint_path, repo=repo)
+    if explicit_checkpoint is not None:
+        checkpoint = explicit_checkpoint
+        explicit_overrides.append("checkpoint")
+
+    pending = out_dir / f"expert_result_{resolved_prefix}_pending_snapshot.json"
+    explicit_pending = _resolve_cli_path(pending_snapshot_path, repo=repo)
+    if explicit_pending is not None:
+        pending = explicit_pending
+        explicit_overrides.append("pending_snapshot")
+
+    explicit_log_glob = _resolve_cli_path(log_glob, repo=repo)
+    if explicit_log_glob is not None:
+        log_files = sorted(explicit_log_glob.parent.glob(explicit_log_glob.name))
+        explicit_overrides.append("log_glob")
+    else:
+        log_files = sorted(logs_dir.glob(f"expert_run_{run_id}_W*.log"))
+        if resolved_prefix != run_id:
+            extra_logs = sorted(logs_dir.glob(f"expert_run_{resolved_prefix}_W*.log"))
+            seen = {path.resolve() for path in log_files}
+            log_files.extend(path for path in extra_logs if path.resolve() not in seen)
+
+    if explicit_overrides:
+        resolution = "explicit_paths"
 
     return {
         "requested_run_id": run_id,
         "manifest_run_id": manifest_run_id,
-        "artifact_prefix": artifact_prefix,
+        "artifact_prefix": resolved_prefix,
         "resolution": resolution,
+        "explicit_overrides": explicit_overrides,
         "manifest": manifest,
         "checkpoint": checkpoint,
         "pending": pending,
@@ -301,8 +356,25 @@ def _audit_logs(log_files: List[Path]) -> Dict[str, Any]:
     }
 
 
-def build_audit(run_id: str, *, repo: Path) -> Dict[str, Any]:
-    artifacts = _resolve_run_artifacts(run_id, repo=repo)
+def build_audit(
+    run_id: str,
+    *,
+    repo: Path,
+    artifact_prefix: str | None = None,
+    manifest_path: str | None = None,
+    checkpoint_path: str | None = None,
+    pending_snapshot_path: str | None = None,
+    log_glob: str | None = None,
+) -> Dict[str, Any]:
+    artifacts = _resolve_run_artifacts(
+        run_id,
+        repo=repo,
+        artifact_prefix=artifact_prefix,
+        manifest_path=manifest_path,
+        checkpoint_path=checkpoint_path,
+        pending_snapshot_path=pending_snapshot_path,
+        log_glob=log_glob,
+    )
     checkpoint = artifacts["checkpoint"]
     manifest = artifacts["manifest"]
     pending = artifacts["pending"]
@@ -379,6 +451,7 @@ def build_audit(run_id: str, *, repo: Path) -> Dict[str, Any]:
         "artifact_resolution": {
             "resolution": artifacts["resolution"],
             "artifact_prefix": artifacts["artifact_prefix"],
+            "explicit_overrides": artifacts["explicit_overrides"],
             "manifest_run_id": artifacts["manifest_run_id"],
             "manifest": str(manifest),
             "checkpoint": str(checkpoint),
@@ -426,11 +499,24 @@ def build_audit(run_id: str, *, repo: Path) -> Dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Audit expert run health: logs, search, processing errors, slang candidates.")
     parser.add_argument("--run-id", required=True)
+    parser.add_argument("--artifact-prefix", help="Output artifact prefix when it differs from run id.")
+    parser.add_argument("--manifest", help="Explicit manifest path for sampling or custom output locations.")
+    parser.add_argument("--checkpoint", help="Explicit checkpoint JSONL path for sampling or custom output locations.")
+    parser.add_argument("--pending-snapshot", help="Explicit pending snapshot path for sampling or custom output locations.")
+    parser.add_argument("--log-glob", help="Explicit worker log glob, e.g. logs/expert_run_<id>_W*.log")
     parser.add_argument("--output", help="Output JSON path. Defaults to out/run_audit_<run-id>.json")
     args = parser.parse_args()
 
     repo = _repo_root()
-    audit = build_audit(args.run_id, repo=repo)
+    audit = build_audit(
+        args.run_id,
+        repo=repo,
+        artifact_prefix=args.artifact_prefix,
+        manifest_path=args.manifest,
+        checkpoint_path=args.checkpoint,
+        pending_snapshot_path=args.pending_snapshot,
+        log_glob=args.log_glob,
+    )
     output = Path(args.output) if args.output else repo / "out" / f"run_audit_{args.run_id}.json"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(audit, ensure_ascii=False, indent=2), encoding="utf-8")

@@ -6,6 +6,19 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop267 explicit path health audit quality gate
+
+- 근거:
+  - [x] `audit_expert_run_health.py`가 manifest/checkpoint/pending/log glob 경로를 직접 받도록 보강했다.
+  - [x] explicit path override가 `artifact_resolution.explicit_overrides`에 남도록 했다.
+  - [x] 실제 Loop264 진행 중 run에서 explicit path audit를 실행했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_267_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] explicit path audit `PASS`는 completed source approval이 아니다.
+  - [x] 최신 manifest `90/12/78/0`, `large_run_complete=false`를 run integrity `IN_PROGRESS`로 둔다.
+  - [x] `mcp_health_include_search=false`, `mcp_health_light_mode=true` caveat를 유지한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop265 strict always-on gate quality gate
 
 - 근거:

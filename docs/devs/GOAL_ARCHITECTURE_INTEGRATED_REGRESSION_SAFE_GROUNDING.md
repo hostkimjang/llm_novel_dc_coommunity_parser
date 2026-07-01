@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop267 Addendum - health audit explicit artifact path 지원
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: completed-source 대형 run 완료 후 또는 sampling/custom output 감사 때 기본 `out\expert_result_<run_id>*` 위치에 묶이지 않도록 health audit artifact path를 명시할 수 있게 한다.
+- 코드 변경: `tools/audit_expert_run_health.py`에 `--artifact-prefix`, `--manifest`, `--checkpoint`, `--pending-snapshot`, `--log-glob` 옵션을 추가하고, `artifact_resolution.explicit_overrides`를 기록한다. `tests/test_audit_expert_run_health.py`에 explicit path override 계약을 추가했다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_267_REPORT_20260702.md`, explicit path audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop267_explicit_path_health_audit.json`.
+- Evidence: explicit path audit resolution `explicit_paths`, checkpoint_rows `88`, reason_error_count `0`, slang bad remaining `0`. 직후 manifest poll은 completed/flushed/pending/failed `90/12/78/0`, `large_run_complete=false`, `ordered_flush_blocked=true`.
+- Verification: `tests.test_audit_expert_run_health` `4` tests OK, py_compile PASS.
+- Gate: completed source `PENDING`, run integrity `IN_PROGRESS`, search-health direct probe `SEPARATE_AUDIT_REQUIRED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop266 Addendum - 진행 중 대형 run health 감사 보정
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

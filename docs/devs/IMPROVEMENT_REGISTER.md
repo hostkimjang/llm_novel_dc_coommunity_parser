@@ -1,5 +1,27 @@
 # Improvement Register
 
+## IMP-20260702-267 - health audit explicit artifact path 지원
+
+- Status: Implemented / approval blocked
+- Loop: 267
+- Problem:
+  - `audit_expert_run_health.py`가 기본 `out\expert_result_<run_id>*` 위치에 묶이면 sampling/custom output이나 output prefix가 다른 run을 감사할 때 수동 복사나 추가 lookup이 필요했다.
+- Change:
+  - `--artifact-prefix`, `--manifest`, `--checkpoint`, `--pending-snapshot`, `--log-glob` 옵션을 추가했다.
+  - audit JSON에 `artifact_resolution.explicit_overrides`를 기록한다.
+  - explicit path override 계약 테스트를 추가했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_267_REPORT_20260702.md`
+  - audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop267_explicit_path_health_audit.json`
+- Verification:
+  - `tests.test_audit_expert_run_health` `4` tests OK
+  - py_compile PASS
+- Gate:
+  - completed source `PENDING`
+  - run integrity `IN_PROGRESS`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-265 - full375 always-on gate runtime 증거 강화
 
 - Status: Implemented / approval blocked

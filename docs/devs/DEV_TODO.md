@@ -79,12 +79,13 @@
   - 실패 정책: canary가 `completed=200/200`, `failed=0`, `pending=0`을 만족하지 못하면 risk discovery를 중단하고 failure summary를 생성
   - 수동 검증 참고: afterfix14에서 정책을 수동 수행하여 canary `20260428_233059_378617`과 risk discovery `20260429_002511_375830` 완료, audit/review packet 생성까지 확인
   - 검증 방법: afterfix 계열 200건/1,000건 샘플에서 dry-run 또는 실제 run 한 세트를 wrapper로 완료
-- [ ] `audit_expert_run_health.py` sampling output 경로 옵션 추가
-  - 상태: discovered_parallel36 / manifest_run_id_lookup_done
+- [x] `audit_expert_run_health.py` sampling output 경로 옵션 추가
+  - 상태: implemented_loop267 / approval blocked
   - 문제: sampling output은 `out/sampling/<name>_checkpoint.jsonl`에 있는데 audit 도구는 기본 `out/expert_result_<run_id>_checkpoint.jsonl`만 찾아 수동 복사가 필요함.
   - 2026-07-02 Loop266 조치: `expert_result_*_manifest.json`의 `manifest.run_id` lookup으로 internal run id와 output prefix가 다른 진행 중 대형 run은 감사 가능해졌다. 단, 임의 sampling 경로를 `--checkpoint` 등으로 직접 지정하는 기능은 아직 남아 있다.
+  - 2026-07-02 Loop267 조치: `--artifact-prefix`, `--manifest`, `--checkpoint`, `--pending-snapshot`, `--log-glob`를 추가해 custom/sampling artifact 경로를 직접 감사할 수 있게 했다.
   - 완료 기준: `--checkpoint`, `--result-json`, `--manifest`, `--pending-snapshot` 또는 output prefix 옵션으로 sampling 결과를 직접 감사.
-  - 검증 방법: `20260428_142042_238055` sampling checkpoint를 복사 없이 audit.
+  - 검증: `tests.test_audit_expert_run_health` `3` tests OK, Loop264 진행 중 run explicit path audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop267_explicit_path_health_audit.json`.
 - [ ] 장시간 런 중 shard readiness 주기 snapshot
   - 상태: proposed
   - 관련 파일 후보: `expert_main.py`, `src/llm_batch/monitor/*`
