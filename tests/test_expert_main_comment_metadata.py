@@ -2188,6 +2188,76 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertEqual(identity["candidate_ledger"]["publish_contract_trace"], trace)
         self.assertEqual(identity["candidate_ledger"]["publish_ledger"], identity["publish_ledger"])
 
+    def test_platform_meta_image_title_hard_hold_demotes_final_publication_contract(self):
+        result = {
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "is_resolved_work_discussion": True,
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "context_sources": ["title", "body", "search", "image"],
+                "anchor_type": "image",
+                "consistency_flags": [
+                    "platform_meta_multi_title_blocked",
+                    "direct_image_explicit_title_rescued",
+                ],
+                "novel_identity": {
+                    "official_title": "전 버튜버가 하고 싶은데요",
+                    "heretic_url": "https://novelpia.com/novel/275975",
+                },
+                "image_evidence_catalog": [
+                    {
+                        "ocr_text": "ACTOR 전 버튜버가 하고 싶은데요",
+                        "explicit_work_title": "전 버튜버가 하고 싶은데요",
+                        "evidence_type": "cover_title",
+                        "title_role": "unknown",
+                        "promotion_eligible": False,
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": "전 버튜버가 하고 싶은데요",
+                    "official_url": "https://novelpia.com/novel/275975",
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "resolved_public_title_scope",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {"scope_kind": "current_work"},
+                },
+                "candidate_ledger": {},
+            }
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            result,
+            post_title="문피아에서는 수정하면 욕 처먹는거고",
+        )
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertFalse(identity["safe_resolved"])
+        self.assertTrue(identity["promotion_blocked"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertIsNone(identity["novel_identity"]["heretic_url"])
+        decision = identity["promotion_decision"]
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertTrue(decision["candidate_preserved"])
+        self.assertIn("platform_meta_image_title_hard_hold", decision["reason_codes"])
+        self.assertEqual(decision["scope"]["scope_kind"], "context_only")
+        trace = identity["publish_contract_trace"]
+        self.assertFalse(trace["gate_decision"]["publish_allowed"])
+        self.assertIsNone(trace["post_gate_identity"]["official_title"])
+        self.assertEqual(identity["candidate_ledger"]["promotion_decision"], decision)
+
     def test_promotion_blocked_trace_uses_candidate_ledger_sources(self):
         result = {
             "identity": {

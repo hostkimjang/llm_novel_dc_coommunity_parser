@@ -1,5 +1,30 @@
 # Development Checklist
 
+## 2026-07-02 Loop255 result / Loop256 preflight final contract hard-hold 체크
+
+- [x] Loop255 runtime과 semantic 결과를 분리했다.
+  - run id `20260702_045200_516008`
+  - runtime `7/7/0/0`, VLM/OCR `READY`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop255_p0_representative_7_after_platform_meta_escape_hard_hold_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop255_p0_representative_7_after_platform_meta_escape_hard_hold_result_manifest.json`
+- [x] Loop255 semantic 실패를 확인했다.
+  - `11658668`: `safe_resolved`, `resolved_public_title`, public title `전 버튜버가 하고 싶은데요`
+  - 최종 identity에는 `platform_meta_multi_title_blocked`, image `promotion_eligible=false`가 있었지만 publish contract가 유지됨
+  - `11660277`: safe-loss
+  - `11663535`: URL 없는 `퇴마록` publish
+- [x] final publication contract 수렴 patch를 적용했다.
+  - `expert_main._sync_final_publication_ledger_contract(...)`
+  - final identity의 platform-meta non-promotable image title publish를 `candidate_only`로 demote
+  - `platform_meta_image_title_hard_hold`, `scope_context_only`, `serialized_public_identity_scrubbed` 기록
+- [x] Loop255 result preview를 확인했다.
+  - `11658668` preview: `promotion_blocked`, public title/url `null`
+- [x] 검증을 완료했다.
+  - py_compile PASS
+  - `tests.test_expert_main_comment_metadata` `35` PASS
+  - `tests.test_title_lead_search_inferred_guard` `180` PASS
+- [ ] 커밋 후 `11658668` 단건 canary로 final contract demotion을 확인한다.
+- Gate: Loop255 semantic `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, full375 previous `NO-GO`.
+
 ## 2026-07-02 Loop254 result / Loop255 preflight live hard-hold escape 체크
 
 - [x] Loop254 runtime과 semantic 결과를 분리했다.

@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop255 Result / Loop256 Preflight Addendum - final contract hard-hold convergence
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- Loop255 same 7-row packet run `20260702_045200_516008`은 runtime completed/flushed/pending/failed `7/7/0/0`, VLM/OCR `READY`, MCP health `2/2`로 완료됐지만 semantic `NO-GO`다.
+- 실패: `11658668`은 `resolved_public_title` source로 public title `전 버튜버가 하고 싶은데요`, URL `https://novelpia.com/novel/275975`를 publish했다. 최종 identity에는 `platform_meta_multi_title_blocked`, `promotion_eligible=false` image evidence가 있었지만 기존 `promotion_decision=publish`가 유지됐다.
+- 추가 흔들림: `11660277` safe-loss, `11663535` URL 없는 `퇴마록` publish가 발생했다. 따라서 same-packet safe_resolved 단조 비감소 조건은 실패다.
+- 코드 변경(Loop256 preflight): `expert_main._sync_final_publication_ledger_contract(...)`의 final publication 수렴 단계에 platform-meta image hard-hold demotion을 추가했다. 최종 identity에 `platform_meta_multi_title_blocked` + matching image `promotion_eligible=false`가 있으면 이미 만들어진 publish decision도 `candidate_only`, `scope_context_only`, `platform_meta_image_title_hard_hold`로 재수렴한다.
+- Verification: Loop255 result preview에 새 sync를 적용하면 `11658668`이 `promotion_blocked`, public title/url `null`, `platform_meta_image_title_hard_hold`로 내려간다. py_compile PASS, `tests.test_expert_main_comment_metadata` `35` PASS, `tests.test_title_lead_search_inferred_guard` `180` PASS.
+- Gate: Loop255 runtime `GO` but semantic `NO-GO`. full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop254 Result / Loop255 Preflight Addendum - live hard-hold escape
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

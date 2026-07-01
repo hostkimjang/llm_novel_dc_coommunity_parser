@@ -243,6 +243,213 @@ def _enforce_publish_contract_trace_convergence(result_dict: Dict[str, Any]) -> 
     return changed
 
 
+def _demote_platform_meta_image_title_publication_contract(
+    result_dict: Dict[str, Any],
+    post_title: Optional[str] = None,
+) -> bool:
+    """Demote platform-meta public titles backed only by non-promotable image OCR."""
+    if not isinstance(result_dict, dict):
+        return False
+    identity = result_dict.get("identity")
+    if not isinstance(identity, dict):
+        return False
+    ledger = identity.get("candidate_ledger")
+    if not isinstance(ledger, dict):
+        ledger = {}
+
+    def _title_key(value: Any) -> str:
+        return re.sub(r"[^0-9A-Za-z가-힣]+", "", str(value or "")).lower()
+
+    def _list_texts(*values: Any) -> List[str]:
+        out: List[str] = []
+        for value in values:
+            if isinstance(value, list):
+                out.extend(str(item or "").strip() for item in value if str(item or "").strip())
+            elif isinstance(value, str) and value.strip():
+                out.append(value.strip())
+        return out
+
+    novel = identity.get("novel_identity")
+    if not isinstance(novel, dict):
+        novel = {}
+    public_title = str(
+        identity.get("official_title")
+        or identity.get("official_novel_title")
+        or identity.get("resolved_title")
+        or novel.get("official_title")
+        or novel.get("official_novel_title")
+        or ""
+    ).strip()
+    if not public_title:
+        return False
+    public_title_key = _title_key(public_title)
+    if not public_title_key:
+        return False
+    public_url = str(
+        identity.get("heretic_url")
+        or identity.get("official_url")
+        or identity.get("resolved_url")
+        or novel.get("heretic_url")
+        or novel.get("official_url")
+        or ""
+    ).strip()
+
+    flags = _list_texts(
+        identity.get("consistency_flags"),
+        identity.get("promotion_blocked_reasons"),
+        identity.get("candidate_audit_lint"),
+        identity.get("output_consistency_lint"),
+        ledger.get("consistency_flags"),
+        ledger.get("promotion_blocked_reasons"),
+    )
+    platform_meta = "platform_meta_multi_title_blocked" in flags
+    if not platform_meta:
+        raw_post_title = str(post_title or result_dict.get("title") or identity.get("post_title") or "").strip()
+        norm_post_title = _title_key(raw_post_title)
+        platform_terms = ("문피아", "노벨피아", "노피아", "카카오페이지", "카카페", "시리즈")
+        feature_terms = ("수정", "삭제", "내리", "내려", "콘", "이모티콘", "스티커", "뱃지", "표지")
+        platform_meta = bool(
+            any(_title_key(term) in norm_post_title for term in platform_terms)
+            and any(_title_key(term) in norm_post_title for term in feature_terms)
+        )
+    if not platform_meta:
+        return False
+
+    image_items: List[Dict[str, Any]] = []
+    for container in (identity, ledger):
+        for key in ("image_evidence_catalog", "image_enrichment"):
+            values = container.get(key) if isinstance(container, dict) else None
+            if isinstance(values, list):
+                image_items.extend(item for item in values if isinstance(item, dict))
+
+    non_promotable_image = False
+    for item in image_items:
+        item_title_key = _title_key(item.get("explicit_work_title"))
+        ocr_key = _title_key(item.get("ocr_text"))
+        if item_title_key != public_title_key and public_title_key not in ocr_key:
+            continue
+        evidence_type = str(item.get("evidence_type") or "").strip().lower()
+        focus_role = str(item.get("focus_role") or "").strip().lower()
+        cover_work_anchor = bool(evidence_type == "cover_title" and focus_role == "work_anchor")
+        if item.get("promotion_eligible") is True or cover_work_anchor:
+            continue
+        non_promotable_image = True
+        break
+    if not non_promotable_image:
+        return False
+
+    changed = False
+    reason_code = "platform_meta_image_title_hard_hold"
+    reason_codes = []
+    decision = identity.get("promotion_decision")
+    if not isinstance(decision, dict):
+        decision = ledger.get("promotion_decision")
+    if isinstance(decision, dict) and isinstance(decision.get("reason_codes"), list):
+        reason_codes.extend(str(code) for code in decision.get("reason_codes") if str(code).strip())
+    reason_codes = list(dict.fromkeys([*reason_codes, reason_code, "scope_context_only", "serialized_public_identity_scrubbed"]))
+
+    demoted_decision = dict(decision) if isinstance(decision, dict) else {}
+    demoted_decision.update(
+        {
+            "status": "candidate_only",
+            "publish_allowed": False,
+            "official_title": None,
+            "official_url": None,
+            "candidate_preserved": True,
+            "reason_codes": reason_codes,
+            "bypassed_gate": False,
+            "scope": {
+                "scope_kind": "context_only",
+                "confidence": "high",
+                "conflict_reason_codes": [reason_code],
+            },
+        }
+    )
+
+    for key, value in (
+        ("candidate_ledger_status", "promotion_blocked"),
+        ("title_resolution_allowed", False),
+        ("is_resolved_work_discussion", False),
+        ("promotion_blocked", True),
+        ("safe_resolved", False),
+        ("blocked_official_title", public_title),
+        ("blocked_official_title_url", public_url or None),
+    ):
+        if identity.get(key) != value:
+            identity[key] = value
+            changed = True
+    if isinstance(novel, dict):
+        if novel.get("official_title") is not None:
+            novel["official_title"] = None
+            changed = True
+        if novel.get("heretic_url") is not None:
+            novel["heretic_url"] = None
+            changed = True
+        identity["novel_identity"] = novel
+
+    blocked_reasons = _list_texts(identity.get("promotion_blocked_reasons"))
+    if reason_code not in blocked_reasons:
+        blocked_reasons.append(reason_code)
+        identity["promotion_blocked_reasons"] = blocked_reasons
+        changed = True
+    if identity.get("promotion_decision") != demoted_decision:
+        identity["promotion_decision"] = demoted_decision
+        changed = True
+
+    trace = identity.get("publish_contract_trace")
+    if not isinstance(trace, dict):
+        trace = ledger.get("publish_contract_trace") if isinstance(ledger, dict) else {}
+    trace = dict(trace) if isinstance(trace, dict) else {}
+    pre_gate = trace.get("pre_gate_candidate")
+    if not isinstance(pre_gate, dict):
+        pre_gate = {
+            "official_title": public_title,
+            "official_url": public_url or None,
+            "source": "platform_meta_image_title_hard_hold",
+        }
+    trace.update(
+        {
+            "pre_gate_candidate": pre_gate,
+            "gate_decision": demoted_decision,
+            "scope_state": demoted_decision["scope"],
+            "post_gate_identity": {
+                "official_title": None,
+                "official_url": None,
+                "title_resolution_allowed": False,
+                "title_resolution_state": identity.get("title_resolution_state"),
+                "work_resolution": identity.get("work_resolution"),
+                "candidate_ledger_status": "promotion_blocked",
+            },
+            "reason_codes": reason_codes,
+            "bypassed_gate": False,
+        }
+    )
+    publish_ledger = {
+        "candidate_preservation": pre_gate,
+        "public_publish": trace["post_gate_identity"],
+        "gate_decision": demoted_decision,
+    }
+    if identity.get("publish_contract_trace") != trace:
+        identity["publish_contract_trace"] = trace
+        changed = True
+    if identity.get("publish_ledger") != publish_ledger:
+        identity["publish_ledger"] = publish_ledger
+        changed = True
+
+    ledger["pipeline_official_title"] = public_title
+    ledger["blocked_official_title"] = public_title
+    ledger["blocked_official_title_url"] = public_url or None
+    ledger["candidate_ledger_status"] = "promotion_blocked"
+    ledger["title_resolution_allowed"] = False
+    ledger["promotion_decision"] = demoted_decision
+    ledger["publish_contract_trace"] = trace
+    ledger["publish_ledger"] = publish_ledger
+    if identity.get("candidate_ledger") != ledger:
+        identity["candidate_ledger"] = ledger
+        changed = True
+    return changed
+
+
 def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_title: Optional[str] = None) -> bool:
     """Keep serialized output consistent when candidate audit demotes a title."""
     if not isinstance(result_dict, dict):
@@ -2542,6 +2749,8 @@ def _sync_final_publication_ledger_contract(result_dict: Dict[str, Any], post_ti
     if _scrub_promotion_blocked_result_contract(result_dict, post_title=post_title):
         changed = True
     if _sync_allowed_publication_result_contract(result_dict):
+        changed = True
+    if _demote_platform_meta_image_title_publication_contract(result_dict, post_title=post_title):
         changed = True
     if _enforce_publish_contract_trace_convergence(result_dict):
         changed = True

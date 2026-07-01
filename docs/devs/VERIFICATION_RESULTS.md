@@ -1,5 +1,33 @@
 # Verification Results
 
+## 2026-07-02 Loop255 result / Loop256 preflight final contract hard-hold verification
+
+- Scope: Loop255 same 7-row packet에서 live hard-hold escape가 닫혔는지 확인하고, 남은 publish contract 수렴 구멍을 좁힌다.
+- Runtime:
+  - run id `20260702_045200_516008`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop255_p0_representative_7_after_platform_meta_escape_hard_hold_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop255_p0_representative_7_after_platform_meta_escape_hard_hold_result_manifest.json`
+  - log `logs\expert_run_20260702_045200_516008.log`
+  - completed/flushed/pending/failed `7/7/0/0`, VLM/OCR `READY`, MCP health `2/2`
+- Result:
+  - `11658668` failed: `candidate_ledger_status=safe_resolved`, source `resolved_public_title`, public title `전 버튜버가 하고 싶은데요`, URL `https://novelpia.com/novel/275975`
+  - `11658668` final evidence: `platform_meta_multi_title_blocked`, `image_evidence_catalog[0].promotion_eligible=false`
+  - `11660277` regressed to `promotion_blocked`
+  - `11663535` regressed to `safe_resolved` with public title `퇴마록`, URL `null`
+- Patch follow-up:
+  - final publication ledger sync now demotes platform-meta image title publication when final identity has matching non-promotable image evidence.
+  - demoted decision records `platform_meta_image_title_hard_hold`, `scope_context_only`, `serialized_public_identity_scrubbed`.
+- Verification:
+  - Loop255 result preview: `11658668` becomes `promotion_blocked`, public title/url `null`
+  - py_compile: PASS
+  - `tests.test_expert_main_comment_metadata`: `35` tests OK
+  - `tests.test_title_lead_search_inferred_guard`: `180` tests OK
+- Gate:
+  - Loop255 runtime: `GO`
+  - Loop255 semantic: `NO-GO`
+  - next canary: `11658668` one-row pending after checkpoint commit
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, full375 previous `NO-GO`
+
 ## 2026-07-02 Loop254 result / Loop255 preflight live hard-hold escape verification
 
 - Scope: Loop254 same 7-row packet으로 platform-meta image hard-hold가 live path에서도 닫혔는지 확인한다.
