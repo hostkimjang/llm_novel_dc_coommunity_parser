@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-02 - Loop263 tracks architecture contract tests before next replay
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- Loop238에서 구현된 5개 아키텍처 지시가 현재 HEAD에 남아 있는지 감사했다.
+- `PromotionDecision` / `publish_contract_trace` 수렴은 `expert_main._enforce_publish_contract_trace_convergence(...)`와 focused tests로 유지된다.
+- 정지조건은 `tools/evaluate_goal_convergence.py`에서 `actionable queue 감소 + 동일 packet safe_resolved 단조 비감소`로 유지된다.
+- safe-loss 반복 측정은 `tools/safe_loss_flip_rate_probe.py`로 유지된다. 기존 Loop238 결론상 `11660237`은 flip rate `0.3333333333333333`의 `nondeterminism_unresolved`라 hard-hold 완화는 금지다.
+- full375 collateral diff는 `tools/evaluate_always_on_regression_gates.py`에서 golden-16과 함께 상시 gate로 유지된다.
+- `tests/test_regression_safe_work_bridge_contract.py`가 `.gitignore` 때문에 추적되지 않던 gap을 확인했고, `.gitignore` 예외를 추가했다.
+- Verification: py_compile PASS, focused architecture/stop-condition/safe-loss/full375 tests `19` OK.
+- Gate는 architecture contract tracking `GO`, runtime rerun `NOT_RUN`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop262 audits completed source candidates
 
 - 동일 38-row parent packet은 재실행하지 않았다.

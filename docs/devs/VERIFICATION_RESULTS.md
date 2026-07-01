@@ -1,5 +1,31 @@
 # Verification Results
 
+## 2026-07-02 Loop263 architecture contract tracking audit
+
+- Scope: 다음 runtime replay 전 사용자가 지정한 5개 아키텍처 계약이 현재 HEAD에서 코드/테스트/문서로 추적되는지 감사한다.
+- Runtime: 동일 38-row parent packet 재실행 없음, full375 rerun 없음.
+- 확인:
+  - `expert_main._enforce_publish_contract_trace_convergence(...)`: `promotion_decision`, `publish_contract_trace`, `publish_ledger`, `candidate_ledger` gate decision 수렴.
+  - `tools/evaluate_goal_convergence.py`: `loop_count_based_stop=false`, `actionable queue 감소`, `동일 packet safe_resolved 단조 비감소`.
+  - `tools/safe_loss_flip_rate_probe.py`: safe-loss 반복 outcome/flip rate/blind judge match 분류.
+  - `tools/evaluate_always_on_regression_gates.py`: golden-16과 full375 collateral diff 동시 요구.
+  - `src/llm_batch/agentic_pipeline.py`: `_has_verified_contextual_alias_work_bridge(...)`는 `_post_discusses_work_as_work(..., source="verified_contextual_alias_work_bridge")` 경유.
+- 수정:
+  - `.gitignore`에 `!/tests/test_regression_safe_work_bridge_contract.py`를 추가해 단일 work-bridge 계약 테스트가 커밋 대상에서 빠지지 않도록 했다.
+- 검증:
+  - `.\.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py expert_main.py tools\evaluate_goal_convergence.py tools\safe_loss_flip_rate_probe.py tools\evaluate_always_on_regression_gates.py tests\test_regression_safe_work_bridge_contract.py tests\test_goal_convergence.py tests\test_safe_loss_flip_rate_probe.py tests\test_always_on_regression_gates.py`: PASS
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_regression_safe_work_bridge_contract tests.test_goal_convergence tests.test_safe_loss_flip_rate_probe tests.test_always_on_regression_gates -v`: PASS, `19` tests OK
+- Gate:
+  - architecture contract tracking: `GO`
+  - runtime rerun: `NOT_RUN`
+  - safe-loss hard-hold relaxation: `false`
+  - full375 previous: `NO-GO`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_263_REPORT_20260702.md`
+
 ## 2026-07-02 Loop262 completed source 후보 감사
 
 - 동일 38-row parent packet은 재실행하지 않았다.

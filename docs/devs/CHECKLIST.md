@@ -1,5 +1,29 @@
 # Development Checklist
 
+## 2026-07-02 Loop263 architecture contract tracking 감사 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] `PromotionDecision` / `publish_contract_trace` 수렴 코드가 현재 HEAD에 남아 있음을 확인했다.
+  - `expert_main._enforce_publish_contract_trace_convergence(...)`
+  - `expert_main._sync_final_publication_ledger_contract(...)`
+- [x] 정지조건이 회차 수가 아니라 `actionable queue 감소 + 동일 packet safe_resolved 단조 비감소`임을 확인했다.
+  - `tools\evaluate_goal_convergence.py`
+  - 테스트 `tests\test_goal_convergence.py`
+- [x] safe-loss 반복/flip-rate 도구가 추적되고 있음을 확인했다.
+  - `tools\safe_loss_flip_rate_probe.py`
+  - 테스트 `tests\test_safe_loss_flip_rate_probe.py`
+  - 기존 Loop238 결론: `11660237` flip rate `0.3333333333333333`, `nondeterminism_unresolved`, hard-hold 완화 금지.
+- [x] full375 collateral diff always-on gate가 추적되고 있음을 확인했다.
+  - `tools\evaluate_always_on_regression_gates.py`
+  - 테스트 `tests\test_always_on_regression_gates.py`
+- [x] 단일 work-bridge 계약 테스트가 ignore되어 있던 gap을 닫았다.
+  - `.gitignore`에 `!/tests/test_regression_safe_work_bridge_contract.py` 추가.
+- [x] focused 검증을 통과했다.
+  - py_compile PASS
+  - `tests.test_regression_safe_work_bridge_contract + tests.test_goal_convergence + tests.test_safe_loss_flip_rate_probe + tests.test_always_on_regression_gates`: `19` tests OK
+- [x] runtime canary/full375 rerun 전 이 논리 단위를 커밋한다.
+- Gate: architecture contract tracking `GO`, runtime rerun `NOT_RUN`, full375 previous `NO-GO`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop262 completed source 후보 감사 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

@@ -1,5 +1,33 @@
 # Improvement Register
 
+## IMP-20260702-263 - architecture contract test 추적성 감사
+
+- Status: Implemented / approval blocked
+- Loop: 263
+- Problem:
+  - Loop238에서 사용자가 지정한 5개 아키텍처 지시는 코드와 일부 테스트로 구현됐지만, `tests/test_regression_safe_work_bridge_contract.py`가 `/tests/*` ignore 규칙 때문에 추적되지 않았다.
+  - 이 상태로 다음 replay를 진행하면 rollback checkpoint가 단일 work-bridge 우회 방지 계약 테스트를 포함하지 못할 수 있다.
+- Change:
+  - `.gitignore`에 `!/tests/test_regression_safe_work_bridge_contract.py` 예외를 추가했다.
+  - 현재 HEAD에서 `PromotionDecision` / `publish_contract_trace` 수렴, stop-condition evaluator, safe-loss flip-rate probe, full375 always-on gate, 단일 work-bridge wrapper 경유를 확인했다.
+- Evidence:
+  - `docs/devs/loop_reports/LOOP_263_REPORT_20260702.md`
+  - `tests/test_regression_safe_work_bridge_contract.py`
+- Verification:
+  - py_compile PASS
+  - focused architecture/stop-condition/safe-loss/full375 tests `19` OK
+- Gate:
+  - architecture contract tracking `GO`
+  - runtime rerun `NOT_RUN`
+  - full375 previous `NO-GO`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+- Decision:
+  - 동일 38-row parent packet은 계속 재실행하지 않는다.
+  - `11660237`은 기존 Loop238 기준 `nondeterminism_unresolved`로 유지하며 hard-hold 완화는 금지한다.
+  - full375 collateral diff는 golden-16과 동급 상시 gate로 유지한다.
+  - 다음 runtime replay 전 이 논리 단위를 커밋해 rollback 지점을 만든다.
+
 ## IMP-20260702-457 - completed source 후보 감사 도구
 
 - Status: Implemented / approval blocked

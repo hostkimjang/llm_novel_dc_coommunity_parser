@@ -66,6 +66,7 @@ tests/inputs/test01.jsonl
 !/tests/test_safe_loss_flip_rate_probe.py
 !/tests/test_always_on_regression_gates.py
 !/tests/test_completed_source_candidate_audit.py
+!/tests/test_regression_safe_work_bridge_contract.py
 /tmp*
 *.bak
 *.badbak
