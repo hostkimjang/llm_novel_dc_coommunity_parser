@@ -1081,17 +1081,44 @@ class Orchestrator:
             str(getattr(ctx, "search_budget_profile", "") or "") == "core_fast_resolve"
             and str(getattr(ctx, "search_stop_reason", "") or "") in {"official_hit", "core_fast_resolve_nonzero"}
         ):
+            direct_url_norms = {
+                ConversationContext._normalize_url_for_dedup(url)
+                for attr in (
+                    "comment_platform_urls",
+                    "self_comment_platform_urls",
+                    "self_resolution_platform_urls",
+                )
+                for url in (getattr(ctx, attr, None) or [])
+                if str(url or "").strip()
+            }
+            direct_detail = [
+                url
+                for url in trimmed
+                if ConversationContext._normalize_url_for_dedup(url) in direct_url_norms
+                and self._is_novel_platform_url(url)
+                and self._is_novel_detail_url(url)
+            ]
             official_detail = [
                 url
                 for url in trimmed
                 if self._is_novel_platform_url(url) and self._is_novel_detail_url(url)
             ]
-            limited = (official_detail or trimmed)[:2]
+            if direct_detail:
+                limited = list(
+                    dict.fromkeys(
+                        direct_detail
+                        + [url for url in official_detail if url not in direct_detail]
+                        + trimmed
+                    )
+                )[:2]
+            else:
+                limited = (official_detail or trimmed)[:2]
             if len(limited) < len(trimmed):
                 print(
                     f"[{_ts()}] {self.emoji} ✂️ core_fast_resolve fetch trim: "
                     f"{len(trimmed)}→{len(limited)} "
-                    f"(stop_reason={ctx.search_stop_reason}, official_detail={len(official_detail)})",
+                    f"(stop_reason={ctx.search_stop_reason}, "
+                    f"official_detail={len(official_detail)}, direct_detail={len(direct_detail)})",
                     file=sys.stderr,
                 )
             return limited
@@ -1408,6 +1435,12 @@ class Orchestrator:
             ctx,
             gatekeeper_result=gk if isinstance(gk, dict) else None,
         )
+        direct_worklike_alias_probe = bool(
+            self._collect_direct_worklike_alias_probe_norms(
+                ctx,
+                gatekeeper_result=gk if isinstance(gk, dict) else None,
+            )
+        )
         short_post_alias = bool(
             gk_clues.get("short_post_fast_path")
             and stable_alias_hint
@@ -1493,6 +1526,8 @@ class Orchestrator:
             return {"profile": "memory_query_lookup", "max_q": 4, "stop_after_official_hit": False}
         if work_alias_spoiler_context:
             return {"profile": "core_fast_resolve", "max_q": 5, "stop_after_official_hit": True}
+        if direct_worklike_alias_probe:
+            return {"profile": "core_fast_resolve", "max_q": 6, "stop_after_official_hit": False}
         if short_worklike_alias_probe and not recommendation_context:
             return {"profile": "short_alias_bridge", "max_q": 6, "stop_after_official_hit": False}
         if memes_or_banter_context and not strong_anchor:
@@ -2195,6 +2230,113 @@ class Orchestrator:
             return injected + list(search_requests or [])
         return search_requests
 
+    def _collect_image_work_cue_query_seeds(self, ctx: ConversationContext) -> List[str]:
+        """Build search seeds from VLM/OCR work cues that are not promotable titles."""
+        post_data = getattr(ctx, "post_data", None) or {}
+        image_items = [
+            item for item in (post_data.get("image_enrichment") or [])
+            if isinstance(item, dict)
+        ]
+        if not image_items:
+            return []
+
+        seeds: List[str] = []
+        seen: set[str] = set()
+        for item in image_items:
+            if bool(item.get("background_listing_only")):
+                continue
+            screen_type = str(item.get("screen_type") or "").strip().lower()
+            surface_type = str(item.get("surface_type") or "").strip().lower()
+            if screen_type == "platform_catalog_ui" or surface_type == "platform_catalog_ui":
+                continue
+            evidence_type = str(item.get("evidence_type") or "").strip().lower()
+            if evidence_type not in {"explicit_text", "cover_title"}:
+                continue
+            raw_candidates: List[str] = []
+            for key in ("explicit_work_title", "explicit_author_name"):
+                text = str(item.get(key) or "").strip()
+                if text:
+                    raw_candidates.append(text)
+            for cue in item.get("work_cues") or []:
+                text = str(cue or "").strip()
+                if text:
+                    raw_candidates.append(text)
+
+            for raw in raw_candidates:
+                cleaned = re.sub(r"[‘’'\"“”<>〈〉《》]+", "", raw)
+                cleaned = re.sub(r"\s+", " ", cleaned).strip()
+                if not cleaned:
+                    continue
+                tokens = [
+                    tok for tok in re.findall(r"[가-힣A-Za-z0-9]{2,20}", cleaned)
+                    if tok
+                ]
+                if len(tokens) < 2:
+                    continue
+                seed = " ".join(tokens[:4]).strip()
+                norm = self._normalize_kor_token(seed)
+                if len(norm) < 6 or norm in seen:
+                    continue
+                if self._is_low_specificity_search_seed(
+                    seed,
+                    discourse_warning=getattr(ctx, "discourse_warning", ""),
+                ):
+                    continue
+                if self._is_generic_topic_gap_term(seed):
+                    continue
+                seeds.append(seed)
+                seen.add(norm)
+        return seeds[:4]
+
+    def _inject_image_work_cue_search_requests(
+        self,
+        ctx: ConversationContext,
+        search_requests: List[Dict[str, Any]],
+    ) -> List[Dict[str, Any]]:
+        seeds = self._collect_image_work_cue_query_seeds(ctx)
+        if not seeds:
+            return search_requests
+
+        existing_queries = {
+            str(req.get("query", "")).strip().lower()
+            for req in (search_requests or [])
+            if isinstance(req, dict)
+        }
+        injected: List[Dict[str, Any]] = []
+        for seed in seeds[:3]:
+            tokens = [
+                tok for tok in re.findall(r"[가-힣A-Za-z0-9]{2,20}", seed)
+                if tok
+            ]
+            variants = [f"{seed} 웹소설", self._build_platform_context_query(seed, "노벨피아")]
+            if len(tokens) >= 2:
+                variants.append(f"\"{tokens[0]}\" \"{tokens[-1]}\" 웹소설")
+            if len(tokens) >= 3:
+                variants.append(f"\"{' '.join(tokens[:2])}\" \"{' '.join(tokens[2:4])}\" 웹소설")
+            for query in variants:
+                query = str(query or "").strip()
+                if not query:
+                    continue
+                q_key = query.lower()
+                if q_key in existing_queries:
+                    continue
+                injected.append(
+                    {
+                        "query": query,
+                        "purpose": "image_work_cue_search",
+                        "priority": 0,
+                    }
+                )
+                existing_queries.add(q_key)
+        if injected:
+            print(
+                f"[{_ts()}] {self.emoji} 🖼️ OCR 작품 단서 검색 보강: "
+                f"{[req['query'] for req in injected[:4]]}",
+                file=sys.stderr,
+            )
+            return injected + list(search_requests or [])
+        return search_requests
+
     def _has_stable_direct_seed(
         self,
         ctx: ConversationContext,
@@ -2712,6 +2854,75 @@ class Orchestrator:
                 break
         return out
 
+    def _collect_acknowledged_previous_work_alias_terms(
+        self,
+        ctx: ConversationContext,
+    ) -> set[str]:
+        comments = [
+            str(comment or "").strip()
+            for comment in (getattr(ctx, "comments", None) or [])[:12]
+            if str(comment or "").strip()
+        ]
+        if not comments or not any(("전작" in comment or "이전작" in comment) for comment in comments):
+            return set()
+
+        generic_terms = {
+            "소설", "웹소설", "작가", "정식", "제목", "작품", "작품명",
+            "리뷰", "후기", "결말", "뜻", "의미", "장르", "시리즈",
+            "문피아", "노벨피아", "스포",
+        }
+        generic_terms = {self._normalize_kor_token(t) for t in generic_terms}
+        previous_prompt_aliases: set[str] = set()
+        acknowledgement_aliases: set[str] = set()
+
+        def _comment_alias_tokens(comment: str) -> List[str]:
+            tokens: List[str] = []
+            for raw_token in re.findall(r"[0-9A-Za-z가-힣]{2,18}", str(comment or "")):
+                token = raw_token.strip()
+                for suffix in (
+                    "으로",
+                    "로",
+                    "도",
+                    "은",
+                    "는",
+                    "이",
+                    "가",
+                    "을",
+                    "를",
+                    "에",
+                    "와",
+                    "과",
+                    "임",
+                    "요",
+                    "냐",
+                    "네",
+                ):
+                    if token.endswith(suffix) and len(token) > len(suffix) + 1:
+                        token = token[: -len(suffix)]
+                        break
+                token_norm = self._normalize_kor_token(token)
+                if len(token_norm) < 2 or token_norm in generic_terms:
+                    continue
+                if token in {"전작", "이전작", "그렇", "그렇네", "그러네", "맞네", "맞음", "까먹", "까먹어버림"}:
+                    continue
+                tokens.append(token_norm)
+            return tokens
+
+        for comment in comments:
+            is_previous_prompt = "전작" in comment or "이전작" in comment
+            is_acknowledgement = bool(
+                re.search(r"(그렇네|그러네|맞네|맞음|아\s*맞|까먹|안\s*봐서|안봐서)", comment)
+            )
+            if not (is_previous_prompt or is_acknowledgement):
+                continue
+            for token_norm in _comment_alias_tokens(comment):
+                if is_previous_prompt:
+                    previous_prompt_aliases.add(token_norm)
+                if is_acknowledgement:
+                    acknowledgement_aliases.add(token_norm)
+
+        return previous_prompt_aliases & acknowledgement_aliases
+
     def _has_worklike_alias_preservation_signal(
         self,
         ctx: ConversationContext,
@@ -2816,6 +3027,20 @@ class Orchestrator:
             return False
         if title_body_consistency is False and marker_hits < 2:
             return False
+        if not model_work_signal:
+            acknowledged_alias_terms = self._collect_acknowledged_previous_work_alias_terms(ctx)
+            usable_norms = {
+                self._normalize_kor_token(term)
+                for term in usable_terms
+                if self._normalize_kor_token(term)
+            }
+            if (
+                acknowledged_alias_terms
+                and bool(acknowledged_alias_terms & usable_norms)
+                and marker_hits > 0
+                and discourse_domain in {"", "novel_literature"}
+            ):
+                return True
         return model_work_signal
 
     def _has_title_lead_alias_discourse_preservation_signal(
@@ -3168,6 +3393,22 @@ class Orchestrator:
         post_data = getattr(ctx, "post_data", None) or {}
         title_text = str(post_data.get("title") or "")
         if self._has_discourse_semantic_seed_demotion(ctx):
+            if self._has_short_worklike_alias_search_probe(
+                ctx,
+                gatekeeper_result=gk_out if isinstance(gk_out, dict) else None,
+            ):
+                title_stripped = re.sub(
+                    r"^(?:스포\)?|리뷰\)?|후기\)?|질문\)?|TS\)?|ts\)?|소신발언\)?)\s*",
+                    "",
+                    title_text,
+                ).strip()
+                match = re.match(r"([가-힣A-Za-z0-9]{4,12})", title_stripped)
+                if match:
+                    alias_raw = match.group(1).strip()
+                    alias = self._strip_trailing_korean_particle(alias_raw) or alias_raw
+                    alias_norm = self._normalize_search_term(alias)
+                    if alias_norm and len(alias_norm) >= 4:
+                        return [alias]
             batch_alias_terms = self._collect_stable_batch_title_lead_alias_terms(
                 ctx,
                 gatekeeper_result=gk_out if isinstance(gk_out, dict) else None,
@@ -3725,6 +3966,196 @@ class Orchestrator:
         )
         return marker_hits >= 2 or ("#" in joined and marker_hits >= 1)
 
+    def _collect_direct_worklike_alias_probe_norms(
+        self,
+        ctx: ConversationContext,
+        gatekeeper_result: Optional[Dict[str, Any]] = None,
+    ) -> set[str]:
+        """Collect non-comment worklike aliases that should outrank broad genre probes."""
+        post_data = getattr(ctx, "post_data", None) or {}
+        if not isinstance(post_data, dict):
+            return set()
+        post_title = str(post_data.get("title") or "").strip()
+        body_text = " ".join(
+            str(block.get("text") or "") if isinstance(block, dict) else str(block or "")
+            for block in (post_data.get("content_blocks") or [])
+        )
+        non_comment_text = f"{post_title} {body_text}".strip()
+        if not non_comment_text:
+            return set()
+
+        gk_out = gatekeeper_result or ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
+        if not isinstance(gk_out, dict):
+            gk_out = {}
+        clues = gk_out.get("context_clues") or {}
+        if not isinstance(clues, dict):
+            clues = {}
+        joined_text = str(clues.get("title_body_joined_text") or "").strip()
+        direct_norm = self._normalize_kor_token(f"{non_comment_text} {joined_text}")
+        if not direct_norm:
+            return set()
+
+        work_markers = (
+            "주인공",
+            "여주",
+            "남주",
+            "히로인",
+            "전개",
+            "서사",
+            "고백",
+            "하렘",
+            "현대하렘",
+            "인방",
+            "작가",
+            "연재",
+            "최신화",
+            "소설",
+            "웹소설",
+            "노벨피아",
+            "노피아",
+            "문피아",
+            "카카페",
+        )
+        marker_hit = any(self._normalize_kor_token(term) in direct_norm for term in work_markers)
+        gk_post_type = str(gk_out.get("post_type") or "").strip().lower()
+        if not marker_hit and gk_post_type not in {
+            "work_discussion",
+            "spoiler_discussion",
+            "review",
+            "ask_identify",
+            "character_talk",
+        }:
+            return set()
+
+        discourse_out = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
+        discourse = (
+            discourse_out.get("discourse_analysis") or {}
+            if isinstance(discourse_out, dict)
+            else {}
+        )
+        if not isinstance(discourse, dict):
+            discourse = {}
+        entities = gk_out.get("detected_entities") or {}
+        if not isinstance(entities, dict):
+            entities = {}
+
+        raw_terms: List[Any] = []
+        raw_terms.extend(entities.get("possible_titles") or [])
+        raw_terms.extend(entities.get("key_terms") or [])
+        raw_terms.extend(gk_out.get("key_terms") or [])
+        raw_terms.extend(discourse.get("title_novel_terms") or [])
+        raw_terms.extend(discourse.get("semantic_seed_review_context_terms") or [])
+        for req in gk_out.get("search_requests") or []:
+            if not isinstance(req, dict):
+                continue
+            raw_terms.extend(self._extract_query_tokens(str(req.get("query") or ""), keep_generic=False))
+        for sugg in discourse.get("search_suggestions") or []:
+            if not isinstance(sugg, dict):
+                continue
+            raw_terms.extend(self._extract_query_tokens(str(sugg.get("query") or ""), keep_generic=False))
+        trusted_title_norms = {
+            self._normalize_kor_token(term)
+            for term in (entities.get("possible_titles") or [])
+            if self._normalize_kor_token(term)
+        }
+
+        stop_norms = {
+            self._normalize_kor_token(term)
+            for term in (
+                "현대",
+                "하렘",
+                "하렘물",
+                "현대하렘",
+                "현대하렘물",
+                "판타지",
+                "현판",
+                "작가",
+                "주인공",
+                "여자",
+                "여주",
+                "히로인",
+                "전작",
+                "작품",
+                "소설",
+                "웹소설",
+                "노벨피아",
+                "문피아",
+                "카카페",
+                "리뷰",
+                "추천",
+            )
+        }
+        suffixes = (
+            "보는데",
+            "봤는데",
+            "보니까",
+            "보는중",
+            "보는",
+            "인데",
+            "이라서",
+            "라는",
+            "에서",
+            "으로",
+            "에게도",
+            "에게",
+            "에도",
+            "은",
+            "는",
+            "이",
+            "가",
+            "을",
+            "를",
+            "도",
+            "만",
+            "과",
+            "와",
+            "랑",
+            "의",
+            "에",
+        )
+
+        def _variants(raw: Any) -> List[str]:
+            text = str(raw or "").strip(" \"'“”‘’.,;:!?…")
+            if not text:
+                return []
+            vals = [text]
+            stripped = self._strip_trailing_korean_particle(text)
+            if stripped and stripped != text:
+                vals.append(stripped)
+            for suffix in suffixes:
+                if text.endswith(suffix) and len(text) > len(suffix) + 2:
+                    vals.append(text[: -len(suffix)])
+            out: List[str] = []
+            seen: set[str] = set()
+            for value in vals:
+                norm = self._normalize_kor_token(value)
+                if not norm or norm in seen:
+                    continue
+                seen.add(norm)
+                out.append(value)
+            return out
+
+        direct_alias_norms: set[str] = set()
+        for raw in raw_terms:
+            for value in _variants(raw):
+                norm = self._normalize_kor_token(value)
+                low_specific = self._is_low_specificity_search_seed(
+                    value,
+                    discourse_warning="direct_worklike_alias_probe",
+                )
+                generic_single = self._is_generic_single_token_anchor_term(value)
+                if (
+                    len(norm) < 4
+                    or norm in stop_norms
+                    or norm not in direct_norm
+                    or self._is_generic_topic_gap_term(value)
+                    or (generic_single and norm not in trusted_title_norms)
+                    or (low_specific and norm not in trusted_title_norms)
+                ):
+                    continue
+                direct_alias_norms.add(norm)
+        return direct_alias_norms
+
     def _has_short_worklike_alias_search_probe(
         self,
         ctx: ConversationContext,
@@ -3759,6 +4190,29 @@ class Orchestrator:
         comments_text = " ".join(str(comment or "") for comment in (getattr(ctx, "comments", None) or [])[:8])
         packet_text = f"{post_title} {body_text} {comments_text}"
         packet_norm = self._normalize_hint_text(packet_text)
+
+        gk_out = gatekeeper_result or ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
+        gk_entities = (gk_out.get("detected_entities") or {}) if isinstance(gk_out, dict) else {}
+        gk_clues = (gk_out.get("context_clues") or {}) if isinstance(gk_out, dict) else {}
+        if not isinstance(gk_entities, dict):
+            gk_entities = {}
+        if not isinstance(gk_clues, dict):
+            gk_clues = {}
+        gk_search_requests = (gk_out.get("search_requests") or []) if isinstance(gk_out, dict) else []
+
+        discourse_out = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
+        discourse = (discourse_out.get("discourse_analysis") or {}) if isinstance(discourse_out, dict) else {}
+        if not isinstance(discourse, dict):
+            discourse = {}
+        domain = str(
+            discourse.get("primary_domain")
+            or discourse.get("domain")
+            or discourse.get("topic_domain")
+            or ""
+        ).strip().lower()
+        intent = str(discourse.get("intent") or "").strip().lower()
+        target_kind = str(discourse.get("target_kind") or "").strip().lower()
+
         work_issue_terms = (
             "노피아",
             "노벨피아",
@@ -3780,20 +4234,29 @@ class Orchestrator:
             "설정",
             "전개",
         )
-        if not any(self._normalize_hint_text(term) in packet_norm for term in work_issue_terms):
-            return False
+        has_work_issue_term = any(self._normalize_hint_text(term) in packet_norm for term in work_issue_terms)
+        reaction_worklike_terms = (
+            "말한대로",
+            "대가리똑딱",
+            "목따",
+            "참수",
+            "사망",
+            "죽음",
+            "퇴장",
+            "리타이어",
+            "전개",
+            "결말",
+            "스포",
+        )
+        has_reaction_worklike_term = any(
+            self._normalize_hint_text(term) in packet_norm
+            for term in reaction_worklike_terms
+        )
 
-        gk_out = gatekeeper_result or ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
-        gk_entities = (gk_out.get("detected_entities") or {}) if isinstance(gk_out, dict) else {}
         possible_terms = []
-        if isinstance(gk_entities, dict):
-            possible_terms.extend(gk_entities.get("possible_titles") or [])
-            possible_terms.extend(gk_entities.get("key_terms") or [])
+        possible_terms.extend(gk_entities.get("possible_titles") or [])
+        possible_terms.extend(gk_entities.get("key_terms") or [])
 
-        discourse_out = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
-        discourse = (discourse_out.get("discourse_analysis") or {}) if isinstance(discourse_out, dict) else {}
-        if not isinstance(discourse, dict):
-            discourse = {}
         possible_terms.extend(discourse.get("title_novel_terms") or [])
         possible_terms.extend(discourse.get("semantic_seed_review_context_terms") or [])
         suggestions = discourse.get("search_suggestions") or []
@@ -3815,17 +4278,60 @@ class Orchestrator:
             for term in possible_terms
             if str(term or "").strip()
         )
-        domain = str(
-            discourse.get("primary_domain")
-            or discourse.get("domain")
-            or discourse.get("topic_domain")
-            or ""
-        ).strip().lower()
-        intent = str(discourse.get("intent") or "").strip().lower()
         title_alias_surface_hit = bool(alias_norm and alias_norm in self._normalize_hint_text(title_stripped))
+        exact_gatekeeper_title_query = any(
+            isinstance(req, dict)
+            and str(req.get("purpose") or "").strip().lower()
+            in {"alias_raw_probe", "title_search_community", "official_title_verify", "platform_title_search"}
+            and self._normalize_hint_text(req.get("query") or "") == alias_norm
+            for req in gk_search_requests
+        )
+        exact_discourse_title_query = any(
+            isinstance(item, dict)
+            and self._normalize_hint_text(item.get("query") or "") == alias_norm
+            for item in suggestions
+        )
+        work_issue_query_hit = any(
+            isinstance(req, dict)
+            and str(req.get("purpose") or "").split(":", 1)[0].strip().lower()
+            in {"title_search_community", "official_title_verify", "platform_title_search"}
+            and alias_norm
+            and alias_norm in self._normalize_hint_text(req.get("query") or "")
+            and any(
+                self._normalize_hint_text(term) in self._normalize_hint_text(req.get("query") or "")
+                for term in work_issue_terms
+            )
+            for req in gk_search_requests
+        ) or any(
+            isinstance(item, dict)
+            and alias_norm
+            and alias_norm in self._normalize_hint_text(item.get("query") or "")
+            and any(
+                self._normalize_hint_text(term) in self._normalize_hint_text(item.get("query") or "")
+                for term in work_issue_terms
+            )
+            for item in suggestions
+        )
+        visual_title_alias_probe = bool(
+            self._post_has_image_or_vlm_context(ctx)
+            and bool(gk_clues.get("title_as_body_continuation"))
+            and (exact_gatekeeper_title_query or exact_discourse_title_query or work_issue_query_hit)
+            and (term_hits or suggestion_hits or title_alias_surface_hit)
+        )
+        if not has_work_issue_term and not (
+            has_reaction_worklike_term
+            and domain in {"novel_literature", "webnovel", "fiction"}
+            and target_kind in {"work", "character", "plot", "unknown", ""}
+            and intent in {"express_opinion", "ask_question", "make_joke", "other", "discuss_work", ""}
+        ) and not visual_title_alias_probe:
+            return False
+
+        allowed_domains = {"", "novel_literature", "meta_platform", "platform", "community"}
+        if visual_title_alias_probe:
+            allowed_domains.add("gaming")
         return bool(
             (suggestion_hits or term_hits or title_alias_surface_hit)
-            and domain in {"", "novel_literature", "meta_platform", "platform", "community"}
+            and domain in allowed_domains
             and intent not in {"request_recommendation", "ask_recommendation", "memory_query", "find_title"}
         )
 
@@ -4310,6 +4816,10 @@ class Orchestrator:
             and is_non_novel_domain(primary_domain)
             and domain_conf in {"high", "very_high"}
         ):
+            short_alias_probe = self._has_short_worklike_alias_search_probe(
+                ctx,
+                gatekeeper_result=gatekeeper_result,
+            )
             _has_explicit_work_cue = bool(
                 has_title_terms
                 or has_specific_names
@@ -4317,6 +4827,8 @@ class Orchestrator:
                 or gk_post_type in {"work_discussion", "spoiler_discussion", "ask_identify"}
                 or is_assoc
             )
+            if short_alias_probe:
+                return False, ""
             if (
                 _has_explicit_work_cue
                 and self._has_ambiguous_work_signal(ctx, gatekeeper_result=gatekeeper_result)
@@ -4469,6 +4981,7 @@ class Orchestrator:
             "title_anchor_exact_probe",
             "title_anchor_official_probe",
             "image_partial_title_search",
+            "image_work_cue_search",
             "abbreviation_verification",
             "abbreviation_meaning_search",
             "abbreviation_fullname_search",
@@ -4522,6 +5035,10 @@ class Orchestrator:
             gatekeeper_result=gatekeeper_result,
         )
         allow_short_alias_probe = self._has_short_worklike_alias_search_probe(
+            ctx,
+            gatekeeper_result=gatekeeper_result,
+        )
+        direct_worklike_alias_norms = self._collect_direct_worklike_alias_probe_norms(
             ctx,
             gatekeeper_result=gatekeeper_result,
         )
@@ -4689,6 +5206,199 @@ class Orchestrator:
                 return True
             return _short_alias_official_query(query)
 
+        def _direct_worklike_alias_query(query: str, purpose: str) -> bool:
+            q_norm = self._normalize_kor_token(query)
+            if not (
+                direct_worklike_alias_norms
+                and q_norm
+                and any(alias_norm and alias_norm in q_norm for alias_norm in direct_worklike_alias_norms)
+            ):
+                return False
+            if purpose in {
+                "alias_raw_probe",
+                "title_search_community",
+                "community_site_probe",
+                "alias_bridge_search",
+                "official_title_verify",
+                "platform_title_search",
+                "title_anchor_exact_probe",
+                "title_anchor_official_probe",
+                "confident_title_platform_expansion",
+                "adaptive_abbreviation",
+                "abbreviation_fullname_search",
+                "abbreviation_meaning_search",
+                "author_verify",
+                "author_disambiguation",
+            }:
+                return True
+            return any(
+                self._normalize_kor_token(term) in q_norm
+                for term in (
+                    "웹소설",
+                    "소설",
+                    "노벨피아",
+                    "노피아",
+                    "novelpia",
+                    "문피아",
+                    "카카페",
+                    "series",
+                    "작가",
+                    "정식",
+                    "제목",
+                    "줄임",
+                    "뜻",
+                    "명칭",
+                )
+            )
+
+        contextual_bridge_stop_norms = {
+            self._normalize_hint_text(term)
+            for term in (
+                "작품",
+                "소설",
+                "웹소설",
+                "노벨피아",
+                "노피아",
+                "문피아",
+                "카카페",
+                "시리즈",
+                "친구",
+                "추천",
+                "문화",
+                "중세",
+                "고증",
+                "결혼",
+                "결혼인증",
+                "인증",
+                "순결",
+            )
+        }
+
+        def _contextual_alias_variants(raw: Any) -> List[str]:
+            text = str(raw or "").strip(" \"'“”‘’.,;:!?…")
+            if not text:
+                return []
+            values = [text]
+            for suffix in (
+                "에게도",
+                "에게",
+                "에서",
+                "으로",
+                "이라서",
+                "라는",
+                "인데",
+                "에도",
+                "은",
+                "는",
+                "이",
+                "가",
+                "을",
+                "를",
+                "도",
+                "만",
+                "과",
+                "와",
+                "랑",
+                "의",
+                "에",
+                "고",
+            ):
+                if text.endswith(suffix) and len(text) > len(suffix) + 2:
+                    values.append(text[: -len(suffix)])
+            out: List[str] = []
+            seen: set[str] = set()
+            for value in values:
+                norm = self._normalize_hint_text(value)
+                if not norm or norm in seen:
+                    continue
+                seen.add(norm)
+                out.append(value)
+            return out
+
+        contextual_alias_norms: List[str] = []
+        title_for_contextual_alias = str(
+            (post_data_for_comment_probe.get("title") if isinstance(post_data_for_comment_probe, dict) else "")
+            or ""
+        ).strip()
+        title_for_contextual_alias = re.sub(
+            r"^(?:스포\)?|리뷰\)?|후기\)?|질문\)?|TS\)?|ts\)?|소신발언\)?)\s*",
+            "",
+            title_for_contextual_alias,
+        ).strip()
+        for token in re.findall(r"[0-9A-Za-z가-힣]{2,20}", title_for_contextual_alias)[:3]:
+            alias_raw = self._strip_trailing_korean_particle(token) or token
+            alias_norm = self._normalize_hint_text(alias_raw)
+            if (
+                len(alias_norm) < 3
+                or alias_norm in contextual_bridge_stop_norms
+                or self._is_low_specificity_search_seed(
+                    alias_raw,
+                    discourse_warning="semantic_seed_contextual_alias_bridge",
+                )
+            ):
+                continue
+            contextual_alias_norms.append(alias_norm)
+            break
+
+        contextual_bridge_anchor_norms: set[str] = set()
+        contextual_anchor_sources: List[Any] = [post_text_for_comment_probe]
+        if isinstance(gatekeeper_result, dict):
+            gk_entities_for_contextual = gatekeeper_result.get("detected_entities") or {}
+            if isinstance(gk_entities_for_contextual, dict):
+                contextual_anchor_sources.extend(gk_entities_for_contextual.get("key_terms") or [])
+                contextual_anchor_sources.extend(gk_entities_for_contextual.get("possible_titles") or [])
+        discourse_out_for_contextual = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
+        discourse_for_contextual = (
+            discourse_out_for_contextual.get("discourse_analysis") or {}
+            if isinstance(discourse_out_for_contextual, dict)
+            else {}
+        )
+        if isinstance(discourse_for_contextual, dict):
+            contextual_anchor_sources.extend(discourse_for_contextual.get("semantic_seed_review_context_terms") or [])
+            contextual_anchor_sources.extend(discourse_for_contextual.get("title_novel_terms") or [])
+        for source in contextual_anchor_sources:
+            for token in re.findall(r"[0-9A-Za-z가-힣]+", str(source or "")):
+                for variant in _contextual_alias_variants(token):
+                    norm = self._normalize_hint_text(variant)
+                    if (
+                        len(norm) < 4
+                        or norm in contextual_bridge_stop_norms
+                        or norm in contextual_alias_norms
+                        or self._is_low_specificity_search_seed(
+                            variant,
+                            discourse_warning="semantic_seed_contextual_alias_bridge_anchor",
+                        )
+                    ):
+                        continue
+                    contextual_bridge_anchor_norms.add(norm)
+
+        def _contextual_alias_bridge_query(query: str, purpose: str) -> bool:
+            if purpose != "alias_bridge_search":
+                return False
+            q_norm = self._normalize_hint_text(query)
+            if not (q_norm and contextual_alias_norms and contextual_bridge_anchor_norms):
+                return False
+            platform_marker = any(
+                self._normalize_hint_text(term) in q_norm
+                for term in (
+                    "웹소설",
+                    "소설",
+                    "노벨피아",
+                    "노피아",
+                    "novelpia",
+                    "문피아",
+                    "카카페",
+                    "series",
+                    "작가",
+                )
+            )
+            if not platform_marker:
+                return False
+            return bool(
+                any(alias_norm and alias_norm in q_norm for alias_norm in contextual_alias_norms)
+                and any(anchor_norm and anchor_norm in q_norm for anchor_norm in contextual_bridge_anchor_norms)
+            )
+
         def _comment_title_official_query(query: str) -> bool:
             q_norm = self._normalize_hint_text(query)
             return bool(
@@ -4752,6 +5462,12 @@ class Orchestrator:
                 continue
             purpose = str(req.get("purpose") or "").strip().lower().split(":", 1)[0]
             query_text = str(req.get("query") or "")
+            if (
+                purpose in blocked_purposes
+                and self._is_direct_image_ocr_work_phrase_query(query_text, ctx=ctx)
+            ):
+                kept.append(req)
+                continue
             if allow_title_body_probe and (
                 purpose in title_body_probe_purposes
                 or _title_body_work_blurb_query(query_text)
@@ -4764,6 +5480,12 @@ class Orchestrator:
                 or _short_alias_bridge_query(query_text, purpose)
                 or _short_alias_official_query(query_text)
             ):
+                kept.append(req)
+                continue
+            if _direct_worklike_alias_query(query_text, purpose):
+                kept.append(req)
+                continue
+            if _contextual_alias_bridge_query(query_text, purpose):
                 kept.append(req)
                 continue
             if comment_title_norms and (
@@ -5505,6 +6227,79 @@ class Orchestrator:
                 continue
             return False
         return True
+
+    def _is_direct_image_ocr_work_phrase_query(
+        self,
+        query: Any,
+        *,
+        ctx: Optional[ConversationContext] = None,
+    ) -> bool:
+        """Keep official probes built from direct OCR/work-cue phrases.
+
+        Surface-expression cleanup is intentionally conservative, but a short
+        Korean title can be composed of 2-4 syllable tokens. If those tokens are
+        copied from VLM OCR/work_cues and the query is an official lookup, it is
+        not a free-floating expression query.
+        """
+        if ctx is None:
+            return False
+        raw = " ".join(str(query or "").split()).strip()
+        if not raw:
+            return False
+        q_norm = self._normalize_search_term(raw)
+        if not q_norm:
+            return False
+        official_probe_terms = {
+            self._normalize_search_term(term)
+            for term in (
+                "소설",
+                "웹소설",
+                "노벨피아",
+                "문피아",
+                "카카오페이지",
+                "네이버시리즈",
+                "시리즈",
+                "novelpia",
+                "site",
+            )
+        }
+        if not any(term and term in q_norm for term in official_probe_terms):
+            return False
+
+        query_tokens = []
+        for token in re.findall(r"[\u3131-\u314e\uac00-\ud7a3A-Za-z0-9]+", raw):
+            norm = self._normalize_search_term(token)
+            if not norm or norm in official_probe_terms or norm.isdigit():
+                continue
+            if len(norm) < 2:
+                continue
+            query_tokens.append(norm)
+        query_tokens = list(dict.fromkeys(query_tokens))
+        if len(query_tokens) < 2 or not any(len(tok) >= 4 for tok in query_tokens):
+            return False
+
+        post_data = getattr(ctx, "post_data", None) or {}
+        for item in (post_data.get("image_enrichment") or []):
+            if not isinstance(item, dict):
+                continue
+            title_role = str(item.get("title_role") or "").strip().lower()
+            screen_type = str(item.get("screen_type") or "").strip().lower()
+            surface_type = str(item.get("surface_type") or "").strip().lower()
+            if bool(item.get("background_listing_only")) or title_role == "background_listing":
+                continue
+            if screen_type in {"home", "search_results", "listing"} or surface_type == "background_listing":
+                continue
+            cue_texts = [
+                str(item.get("ocr_text") or ""),
+                " ".join(str(cue or "") for cue in (item.get("work_cues") or [])),
+            ]
+            cue_norm = self._normalize_search_term(" ".join(cue_texts))
+            if not cue_norm:
+                continue
+            hit_count = sum(1 for tok in query_tokens if tok in cue_norm)
+            if hit_count >= 2:
+                return True
+        return False
 
     def _has_work_alias_character_context_for_seed(
         self,
@@ -6893,6 +7688,34 @@ class Orchestrator:
             ctx,
             gatekeeper_result=gk if isinstance(gk, dict) else None,
         )
+        short_alias_platform_probe_norms: set[str] = set()
+        if self._has_short_worklike_alias_search_probe(
+            ctx,
+            gatekeeper_result=gk if isinstance(gk, dict) else None,
+        ):
+            post_data = getattr(ctx, "post_data", None) or {}
+            post_title = str(post_data.get("title") or post_data.get("normalized_title") or "").strip()
+            title_stripped = re.sub(
+                r"^(?:스포\)?|리뷰\)?|후기\)?|질문\)?|TS\)?|ts\)?|소신발언\)?)\s*",
+                "",
+                post_title,
+            ).strip()
+            first_token = re.match(r"([가-힣A-Za-z0-9]{4,12})", title_stripped)
+            if first_token:
+                alias_raw = first_token.group(1).strip()
+                for alias in (alias_raw, self._strip_trailing_korean_particle(alias_raw) or alias_raw):
+                    alias_norm = self._normalize_search_term(alias)
+                    if len(alias_norm) >= 4:
+                        short_alias_platform_probe_norms.add(alias_norm)
+            for alias in self._collect_stable_batch_title_lead_alias_terms(
+                ctx,
+                gatekeeper_result=gk if isinstance(gk, dict) else None,
+                limit=3,
+            ):
+                alias_norm = self._normalize_search_term(alias)
+                if len(alias_norm) >= 4:
+                    short_alias_platform_probe_norms.add(alias_norm)
+
         keep_purposes = {
             "ambiguous_meaning_track",
             "counter_evidence_genre_track",
@@ -6945,8 +7768,26 @@ class Orchestrator:
             ):
                 filtered.append(req)
                 continue
+            if short_alias_platform_probe_norms and purpose in {"official_title_verify", "platform_title_search"}:
+                query_lc = query.lower()
+                query_norm = self._normalize_search_term(query)
+                has_platform_marker = (
+                    "노벨피아" in query
+                    or "novelpia" in query_lc
+                    or "site:novelpia.com" in query_lc
+                    or "문피아" in query
+                    or "munpia" in query_lc
+                    or "site:munpia.com" in query_lc
+                    or "웹소설" in query
+                    or "series.naver" in query_lc
+                    or "page.kakao" in query_lc
+                )
+                if has_platform_marker and any(alias and alias in query_norm for alias in short_alias_platform_probe_norms):
+                    filtered.append(req)
+                    continue
             if (
                 purpose in prune_purposes
+                and not self._is_direct_image_ocr_work_phrase_query(query, ctx=ctx)
                 and self._is_surface_expression_non_title_query(
                     query,
                     ctx=ctx,
@@ -7610,6 +8451,68 @@ class Orchestrator:
             title_surface_anchor_terms.update(short_support_alias_terms)
             non_low_anchor_terms.update(short_support_alias_terms)
 
+        acknowledged_previous_alias_terms: set[str] = set()
+        comments = [
+            str(comment or "").strip()
+            for comment in (getattr(ctx, "comments", None) or [])[:12]
+            if str(comment or "").strip()
+        ]
+        if comments and any(("전작" in comment or "이전작" in comment) for comment in comments):
+            previous_prompt_aliases: set[str] = set()
+            acknowledgement_aliases: set[str] = set()
+
+            def _comment_alias_tokens(comment: str) -> List[str]:
+                tokens: List[str] = []
+                for raw_token in re.findall(r"[0-9A-Za-z가-힣]{2,18}", str(comment or "")):
+                    token = raw_token.strip()
+                    for suffix in (
+                        "으로",
+                        "로",
+                        "도",
+                        "은",
+                        "는",
+                        "이",
+                        "가",
+                        "을",
+                        "를",
+                        "에",
+                        "와",
+                        "과",
+                        "임",
+                        "요",
+                        "냐",
+                        "네",
+                    ):
+                        if token.endswith(suffix) and len(token) > len(suffix) + 1:
+                            token = token[: -len(suffix)]
+                            break
+                    token_norm = self._normalize_kor_token(token)
+                    if len(token_norm) < 2 or token_norm in generic_terms:
+                        continue
+                    if token in {"전작", "이전작", "그렇", "그렇네", "그러네", "맞네", "맞음", "까먹", "까먹어버림"}:
+                        continue
+                    tokens.append(token_norm)
+                return tokens
+
+            for comment in comments:
+                is_previous_prompt = "전작" in comment or "이전작" in comment
+                is_acknowledgement = bool(
+                    re.search(r"(그렇네|그러네|맞네|맞음|아\s*맞|까먹|안\s*봐서|안봐서)", comment)
+                )
+                if not (is_previous_prompt or is_acknowledgement):
+                    continue
+                for token_norm in _comment_alias_tokens(comment):
+                    if is_previous_prompt:
+                        previous_prompt_aliases.add(token_norm)
+                    if is_acknowledgement:
+                        acknowledgement_aliases.add(token_norm)
+
+            acknowledged_previous_alias_terms = previous_prompt_aliases & acknowledgement_aliases
+            if acknowledged_previous_alias_terms:
+                anchor_terms.update(acknowledged_previous_alias_terms)
+                non_low_anchor_terms.update(acknowledged_previous_alias_terms)
+                title_surface_anchor_terms.update(acknowledged_previous_alias_terms)
+
         if generic_context and not strong_anchor and anchor_terms and not non_low_anchor_terms:
             print(
                 f"[{_ts()}] {self.emoji} ⚡ verification_search 스킵: "
@@ -8142,6 +9045,170 @@ class Orchestrator:
             return True
 
         return False
+
+    @staticmethod
+    def _source_evidence_search_results_from_post_data(post_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Build initial search results from replay/source-evidence fields in input rows."""
+        if not isinstance(post_data, dict):
+            return []
+
+        results: List[Dict[str, Any]] = []
+        seen: set[Tuple[Any, ...]] = set()
+
+        def _items(value: Any) -> List[Any]:
+            if isinstance(value, list):
+                return value
+            if isinstance(value, tuple):
+                return list(value)
+            if isinstance(value, str) and value.strip():
+                return [value]
+            return []
+
+        def _first_text(*values: Any) -> str:
+            for value in values:
+                text = str(value or "").strip()
+                if text:
+                    return text
+            return ""
+
+        def _title_for_official_url(title: str, url: str) -> str:
+            if not title:
+                return ""
+            url_l = str(url or "").lower()
+            if "page.kakao.com" in url_l or "kakao.page" in url_l:
+                return f"{title} - 판타지 e북 - 카카오페이지"
+            if "series.naver.com" in url_l:
+                return f"{title} - 네이버 시리즈"
+            if "novelpia.com" in url_l:
+                return f"{title} - 노벨피아"
+            if "munpia.com" in url_l:
+                return f"{title} - 문피아"
+            return title
+
+        def _add_result(
+            raw: Any,
+            source_key: str,
+            *,
+            fallback_title: str = "",
+            fallback_url: str = "",
+            fallback_content: str = "",
+            fallback_query: str = "",
+        ) -> None:
+            if isinstance(raw, dict):
+                item = dict(raw)
+            elif isinstance(raw, str):
+                item = {"url": raw}
+            else:
+                return
+
+            url = _first_text(
+                item.get("url"),
+                item.get("source_url"),
+                item.get("official_url"),
+                item.get("detail_url"),
+                fallback_url,
+            )
+            title = _first_text(
+                item.get("title"),
+                item.get("source_title"),
+                item.get("official_title"),
+                item.get("work_title"),
+                fallback_title,
+            )
+            content = _first_text(
+                item.get("content"),
+                item.get("snippet"),
+                item.get("text"),
+                item.get("summary"),
+                fallback_content,
+            )
+            if not (url or title or content):
+                return
+
+            if title:
+                item["title"] = title
+            if url:
+                item["url"] = url
+            if content:
+                item["content"] = content
+                item.setdefault("snippet", content)
+            query = _first_text(item.get("query"), item.get("from_query"), fallback_query)
+            if query:
+                item.setdefault("query", query)
+                item.setdefault("from_query", query)
+            item.setdefault("purpose", "precomputed_source_evidence")
+            item.setdefault("source", source_key)
+            item.setdefault("rank", len(results) + 1)
+            item.setdefault("source_rank", len(results) + 1)
+            item["_seeded_from_post_data"] = source_key
+
+            url_norm = ConversationContext._normalize_url_for_dedup(url) if url else ""
+            if url_norm:
+                dedupe_key: Tuple[Any, ...] = ("url", url_norm)
+            else:
+                dedupe_key = (
+                    "text",
+                    re.sub(r"\s+", " ", title).strip().lower(),
+                    re.sub(r"\s+", " ", content).strip().lower()[:200],
+                )
+            if dedupe_key in seen:
+                return
+            seen.add(dedupe_key)
+            results.append(item)
+
+        for key in (
+            "search_results",
+            "source_search_results",
+            "precomputed_search_results",
+            "search_evidence_catalog",
+        ):
+            for raw_item in _items(post_data.get(key)):
+                _add_result(raw_item, key)
+
+        for container_key in ("native_web_seed", "source_evidence"):
+            container = post_data.get(container_key)
+            if not isinstance(container, dict):
+                continue
+            official_title = _first_text(
+                container.get("official_title"),
+                container.get("work_title"),
+                container.get("title"),
+            )
+            fallback_query = _first_text(container.get("query"), f'"{official_title}"' if official_title else "")
+            for nested_key in (
+                "search_results",
+                "source_search_results",
+                "precomputed_search_results",
+                "search_evidence_catalog",
+            ):
+                for raw_item in _items(container.get(nested_key)):
+                    _add_result(
+                        raw_item,
+                        f"{container_key}.{nested_key}",
+                        fallback_title=official_title,
+                        fallback_query=fallback_query,
+                    )
+            urls: List[Any] = []
+            for url_key in ("official_urls", "official_detail_urls", "detail_urls", "urls", "url"):
+                urls.extend(_items(container.get(url_key)))
+            for raw_url in urls:
+                url = str(raw_url or "").strip()
+                if not url:
+                    continue
+                title = _title_for_official_url(official_title, url)
+                content = (
+                    f"official_title={official_title}; official_url={url}"
+                    if official_title
+                    else f"official_url={url}"
+                )
+                _add_result(
+                    {"url": url, "title": title, "content": content},
+                    f"{container_key}.official_urls",
+                    fallback_title=official_title,
+                    fallback_query=fallback_query,
+                )
+
+        return results
     
     def process(
         self,
@@ -8161,6 +9228,14 @@ class Orchestrator:
             comments=comments,
             max_iterations=self.max_iterations,
         )
+        initial_search_results = self._source_evidence_search_results_from_post_data(post_data)
+        if initial_search_results:
+            added_initial = ctx.add_search_results(initial_search_results)
+            print(
+                f"[{_ts()}] {self.emoji} 📎 source-evidence search seed: "
+                f"{added_initial}/{len(initial_search_results)} results loaded from input row",
+                file=sys.stderr,
+            )
         self._active_ctx = ctx
         
         # 쓰레드로컬 워커 ID 설정 (_ts() 로그 prefix용)
@@ -8398,24 +9473,32 @@ class Orchestrator:
                     _ambiguous_work_signal = self._has_ambiguous_work_signal(
                         ctx, gatekeeper_result=gatekeeper_result
                     )
-                    if _ambiguous_work_signal:
+                    _short_alias_probe = self._has_short_worklike_alias_search_probe(
+                        ctx, gatekeeper_result=gatekeeper_result
+                    )
+                    if _ambiguous_work_signal or _short_alias_probe:
+                        _probe_reason = (
+                            "ambiguous_work_signal"
+                            if _ambiguous_work_signal
+                            else "short_alias_probe"
+                        )
                         print(
                             f"[{_ts()}] {self.emoji} ⚠️ Discourse={domain}({domain_conf}) "
-                            f"non_novel이지만 약한 작품 신호 감지 → 조기 종료 보류",
+                            f"non_novel이지만 약한 작품 신호 감지({_probe_reason}) → 조기 종료 보류",
                             file=sys.stderr
                         )
                         # Phase31: 원본 보존
                         ctx.original_gatekeeper_noise = True
                         ctx.original_gatekeeper_noise_reason = gatekeeper_result.get("noise_reason")
-                        ctx.noise_override_reason = f"non_novel_ambiguous_work({domain},{domain_conf})"
+                        ctx.noise_override_reason = f"non_novel_{_probe_reason}({domain},{domain_conf})"
                         gatekeeper_result["is_noise"] = False
                         gatekeeper_result["noise_reason"] = None
                         if gatekeeper_result.get("post_type") == "noise":
                             gatekeeper_result["post_type"] = "work_discussion"
                         ctx.set_expert_output(ExpertType.GATEKEEPER, gatekeeper_result)
-                        ctx.discourse_warning = f"non_novel({domain},{domain_conf}):ambiguous_work_signal"
+                        ctx.discourse_warning = f"non_novel({domain},{domain_conf}):{_probe_reason}"
                         ctx.uncertainty_sources.append(
-                            f"DiscourseAnalyzer: domain={domain}({domain_conf}) + ambiguous_work_signal"
+                            f"DiscourseAnalyzer: domain={domain}({domain_conf}) + {_probe_reason}"
                         )
                         discourse_override = True
                     else:
@@ -9206,6 +10289,7 @@ class Orchestrator:
                         })
 
         search_requests = self._inject_partial_work_surface_search_requests(ctx, search_requests)
+        search_requests = self._inject_image_work_cue_search_requests(ctx, search_requests)
         search_requests = self._inject_title_surface_anchor_search_requests(
             ctx,
             search_requests,
@@ -9399,6 +10483,24 @@ class Orchestrator:
                         (f"{base_terms} 노벨피아", "title_body_sanitized_platform_probe"),
                         (f"{base_terms} 웹소설", "title_body_sanitized_platform_probe"),
                     ]
+                    descriptor_terms: List[str] = []
+                    if "현대하렘" in joined_norm or "현대하렘물" in joined_norm:
+                        descriptor_terms.append("현대하렘")
+                    elif "하렘" in joined_norm:
+                        descriptor_terms.append("하렘")
+                    for titleish in titleish_terms[:2]:
+                        if not titleish:
+                            continue
+                        sanitized_queries.append(
+                            (f"{titleish} 웹소설 노벨피아", "title_body_sanitized_platform_probe")
+                        )
+                        if descriptor_terms:
+                            sanitized_queries.append(
+                                (
+                                    f"{titleish} {' '.join(descriptor_terms[:1])} 웹소설 노벨피아",
+                                    "title_body_sanitized_platform_probe",
+                                )
+                            )
                     if compact_anchor and compact_anchor != titleish_terms[0]:
                         # Some official search indexes surface abbreviated title-body anchors better
                         # with a compact two-syllable prefix than with the full noisy surface.
@@ -12541,10 +13643,13 @@ class Orchestrator:
             if not raw_query:
                 continue
             clean_query = self._sanitize_query_poison_text(raw_query)
-            if self._is_surface_expression_non_title_query(
-                clean_query,
-                ctx=ctx,
-                gatekeeper_result=gatekeeper_result,
+            if (
+                not self._is_direct_image_ocr_work_phrase_query(clean_query, ctx=ctx)
+                and self._is_surface_expression_non_title_query(
+                    clean_query,
+                    ctx=ctx,
+                    gatekeeper_result=gatekeeper_result,
+                )
             ):
                 dropped.append(raw_query)
                 continue
@@ -15854,6 +16959,8 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 "사건", "사고", "전투", "전쟁", "퀘스트", "던전", "마법",
                 "무공", "검술", "무술", "스킬", "능력", "기술", "설정",
                 "세계관", "회차", "에피소드",
+                "주인공", "남주", "여주", "남주인공", "여주인공",
+                "주연", "조연", "히로인", "캐릭터", "등장인물", "인물",
             }
             if anchor_norm in non_character_terms:
                 return False
@@ -17358,6 +18465,13 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             for st in suspected
             if isinstance(st, dict) and st.get("title")
         }
+        generic_character_anchor_norms = {
+            self._normalize_hint_text(t)
+            for t in (
+                "주인공", "남주", "여주", "남주인공", "여주인공",
+                "주연", "조연", "히로인", "캐릭터", "등장인물", "인물",
+            )
+        }
 
         for hint in title_hints:
             if not isinstance(hint, dict):
@@ -17369,6 +18483,8 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             title_norm = self._normalize_hint_text(title)
             char_norm = self._normalize_hint_text(char)
             if not title_norm or not char_norm or char_norm not in post_text_norm:
+                continue
+            if char_norm in generic_character_anchor_norms:
                 continue
             key = (char_norm, title_norm)
             if key not in existing_link_keys:
@@ -20016,6 +21132,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         _comment_platform_urls = list(dict.fromkeys(_comment_platform_urls))
         _self_comment_platform_urls = list(dict.fromkeys(_self_comment_platform_urls))
         _self_resolution_platform_urls = list(dict.fromkeys(_self_resolution_platform_urls))
+        ctx.comment_platform_urls = list(_comment_platform_urls)
         ctx.self_comment_platform_urls = list(_self_comment_platform_urls)
         ctx.self_resolution_platform_urls = list(_self_resolution_platform_urls)
         ctx.comment_self_supply_signal = bool(_self_comment_platform_urls)
@@ -21403,6 +22520,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         _title_body_compact_anchor_active = False
         _short_alias_bridge_active = False
         _short_alias_bridge_norms: set[str] = set()
+        _direct_worklike_alias_probe_norms: set[str] = set()
         if ctx_ref is not None:
             try:
                 _title_body_compact_anchor_active = (
@@ -21411,6 +22529,14 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 )
             except Exception:
                 _title_body_compact_anchor_active = False
+            try:
+                _gk_for_direct_alias = ctx_ref.get_expert_output(ExpertType.GATEKEEPER) or {}
+                _direct_worklike_alias_probe_norms = self._collect_direct_worklike_alias_probe_norms(
+                    ctx_ref,
+                    gatekeeper_result=_gk_for_direct_alias if isinstance(_gk_for_direct_alias, dict) else None,
+                )
+            except Exception:
+                _direct_worklike_alias_probe_norms = set()
             try:
                 _gk_for_alias_bridge = ctx_ref.get_expert_output(ExpertType.GATEKEEPER) or {}
                 _short_alias_bridge_active = self._has_short_worklike_alias_search_probe(
@@ -21541,6 +22667,9 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 score += 18.0
                 reasons.append("+title_body_probe")
                 q_lc = q_raw.lower()
+                if _anchor_terms_for_rerank and any(anchor and anchor in q_norm for anchor in _anchor_terms_for_rerank):
+                    score += 34.0
+                    reasons.append("+title_body_anchor")
                 _context_hits = 0
                 for _ctx_tok in ("ts", "환생", "회귀", "빙의", "인방", "배우", "노맨스", "재벌", "커뮤니티"):
                     if (_ctx_tok.isascii() and _ctx_tok in q_lc) or (
@@ -21562,6 +22691,36 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 elif '"' in q_raw and not _context_hits:
                     score -= 10.0
                     reasons.append("-broad_quoted_probe")
+            if _direct_worklike_alias_probe_norms:
+                _direct_alias_hit = any(
+                    alias_norm and alias_norm in q_norm
+                    for alias_norm in _direct_worklike_alias_probe_norms
+                )
+                if _direct_alias_hit:
+                    if p_key in {
+                        "official_title_verify",
+                        "platform_title_search",
+                        "title_search_community",
+                        "community_site_probe",
+                        "alias_raw_probe",
+                        "alias_bridge_search",
+                        "title_anchor_exact_probe",
+                        "title_anchor_official_probe",
+                    }:
+                        score += 88.0
+                        reasons.append("+direct_worklike_alias_probe")
+                    elif p_key in {
+                        "author_verify",
+                        "author_disambiguation",
+                        "adaptive_abbreviation",
+                        "abbreviation_fullname_search",
+                        "abbreviation_meaning_search",
+                    }:
+                        score += 60.0
+                        reasons.append("+direct_worklike_alias_identity")
+                elif p_key in {"title_anchor_official_probe", "title_anchor_exact_probe"}:
+                    score -= 26.0
+                    reasons.append("-broad_anchor_before_direct_alias")
             if p_key == "platform_issue_verify":
                 score += 14.0
                 reasons.append("+platform_issue_verify")
@@ -21768,6 +22927,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             "title_anchor_official_probe": 2,
             "title_body_sanitized_platform_probe": int(os.getenv("LLM_CAP_TITLE_BODY_SANITIZED_PLATFORM_PROBE", "3")),
             "image_partial_title_search": int(os.getenv("LLM_CAP_IMAGE_PARTIAL_TITLE_SEARCH", "4")),
+            "image_work_cue_search": int(os.getenv("LLM_CAP_IMAGE_WORK_CUE_SEARCH", "4")),
             "author_verify": int(os.getenv("LLM_CAP_AUTHOR_VERIFY", "3")),
             "character_verify": int(os.getenv("LLM_CAP_CHARACTER_VERIFY", "3")),
             "key_term_novel_search": int(os.getenv("LLM_CAP_KEY_TERM_NOVEL_SEARCH", "3")),
@@ -21820,6 +22980,10 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 "alias_raw_probe": min(_purpose_caps.get("alias_raw_probe", 3), 2),
                 "title_anchor_exact_probe": min(_purpose_caps.get("title_anchor_exact_probe", 2), 2),
                 "title_anchor_official_probe": min(_purpose_caps.get("title_anchor_official_probe", 2), 1),
+                "title_body_sanitized_platform_probe": max(
+                    _purpose_caps.get("title_body_sanitized_platform_probe", 3),
+                    5,
+                ),
                 "image_partial_title_search": min(_purpose_caps.get("image_partial_title_search", 4), 3),
                 "alias_bridge_search": min(_purpose_caps.get("alias_bridge_search", 4), 2),
                 "author_verify": min(_purpose_caps.get("author_verify", 3), 1),
@@ -21936,6 +23100,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 _anchor_terms_for_prune = set()
 
         seen_queries: set[str] = set()
+        processed_query_keys: set[str] = set()
         query_family_counts: Dict[str, int] = {}
         _zero_streak = 0
         _zero_total = 0
@@ -21999,6 +23164,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         def _is_specific_title_body_probe_query(query: str) -> bool:
             raw = str(query or "")
             raw_lc = raw.lower()
+            raw_norm = self._normalize_kor_token(raw)
             platform_hint = bool(
                 "site:novelpia.com" in raw_lc
                 or "novelpia" in raw_lc
@@ -22007,9 +23173,14 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             )
             core_hits = _title_body_probe_core_hit_count(raw)
             quoted_core = raw.count('"') >= 4 and core_hits >= 2
+            anchor_hit = bool(
+                _anchor_terms_for_rerank
+                and any(anchor and anchor in raw_norm for anchor in _anchor_terms_for_rerank)
+            )
             return bool(
                 _title_body_probe_context_hit_count(raw) >= 2
                 or (platform_hint and core_hits >= 2)
+                or (platform_hint and anchor_hit)
                 or quoted_core
             )
 
@@ -22024,6 +23195,45 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 if _purpose_key((_remaining or {}).get("purpose", "")) != "title_body_sanitized_platform_probe":
                     continue
                 if _is_specific_title_body_probe_query(_rq):
+                    return True
+            return False
+
+        def _is_direct_worklike_alias_probe_query(query: str, purpose_key: str) -> bool:
+            q_norm = self._normalize_kor_token(query)
+            return bool(
+                _direct_worklike_alias_probe_norms
+                and q_norm
+                and purpose_key
+                in {
+                    "official_title_verify",
+                    "platform_title_search",
+                    "title_search_community",
+                    "community_site_probe",
+                    "alias_raw_probe",
+                    "alias_bridge_search",
+                    "title_anchor_exact_probe",
+                    "title_anchor_official_probe",
+                    "author_verify",
+                    "author_disambiguation",
+                    "adaptive_abbreviation",
+                    "abbreviation_fullname_search",
+                    "abbreviation_meaning_search",
+                }
+                and any(alias_norm and alias_norm in q_norm for alias_norm in _direct_worklike_alias_probe_norms)
+            )
+
+        def _has_unprocessed_direct_worklike_alias_probe() -> bool:
+            for _, _, _, _remaining in sortable:
+                _rq = str((_remaining or {}).get("query", "")).strip()
+                if not _rq:
+                    continue
+                _rq_key = " ".join(_rq.replace('"', "").replace("'", "").split()).lower()
+                if _rq_key in processed_query_keys:
+                    continue
+                if _is_direct_worklike_alias_probe_query(
+                    _rq,
+                    _purpose_key((_remaining or {}).get("purpose", "")),
+                ):
                     return True
             return False
 
@@ -22148,6 +23358,9 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             _search_meta: Dict[str, Any],
         ) -> bool:
             nonlocal _zero_streak, _zero_total, _nonzero_total
+            _processed_q_key = " ".join(str(_query or "").replace('"', "").replace("'", "").split()).lower()
+            if _processed_q_key:
+                processed_query_keys.add(_processed_q_key)
 
             _meta_degraded = bool(_search_meta.get("degraded")) or bool(_search_meta.get("possible_throttle"))
             _meta_attempts = int(_search_meta.get("attempts") or 1)
@@ -22589,6 +23802,16 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 )
                 if _official_hit:
                     if (
+                        not _is_direct_worklike_alias_probe_query(_query, _purpose_key(_purpose))
+                        and _has_unprocessed_direct_worklike_alias_probe()
+                    ):
+                        print(
+                            f"[{_ts()}] ⚠️ 검색 조기 종료 보류: broad official_hit "
+                            f"query='{_query[:80]}' but direct alias probes remain",
+                            file=sys.stderr,
+                        )
+                        return False
+                    if (
                         _purpose_key(_purpose) == "title_body_sanitized_platform_probe"
                         and _title_body_probe_context_hit_count(_query) < 2
                         and _has_unseen_specific_title_body_probe()
@@ -22607,6 +23830,13 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     )
                     return True
             if _profile_name == "core_fast_resolve" and _nonzero_total >= 2:
+                if _has_unseen_specific_title_body_probe():
+                    print(
+                        f"[{_ts()}] ⚠️ 검색 조기 종료 보류: core_fast_resolve "
+                        f"nonzero={_nonzero_total} but specific title-body probes remain",
+                        file=sys.stderr,
+                    )
+                    return False
                 if ctx_ref is not None:
                     ctx_ref.search_stop_reason = "core_fast_resolve_nonzero"
                 print(

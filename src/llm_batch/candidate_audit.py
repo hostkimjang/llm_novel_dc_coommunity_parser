@@ -73,15 +73,42 @@ HOLD_STATES = {
     "technical_missing",
 }
 UNRESOLVED_WORK_STATES = {"unresolved", "multi_work"}
-GENERIC_NON_TITLE_SURFACES = {"광고", "공지"}
+GENERIC_NON_TITLE_SURFACES = {"광고", "공지", "없음", "미상", "불명"}
+GENERIC_WORK_SURFACE_TITLES = {
+    "용사파티",
+    "용사 파티",
+}
 PROMOTION_BLOCKING_OFFICIAL_TITLE_LINT_REASONS = {
     "official_title_looks_like_url_or_domain",
     "official_title_looks_like_generic_non_title_surface",
+    "official_title_looks_like_generic_evidence_label",
     "official_title_looks_like_search_snippet",
     "official_title_looks_like_breadcrumb",
+    "official_title_looks_like_listing_description",
 }
 WEAK_PRIMARY_SOURCE_TIERS = {"", "community", "llm_only", "search_only", "web"}
 OFFICIAL_TITLE_SOURCE_TIERS = {"official_detail", "novel_platform"}
+BATCH_ALIAS_COMPETING_HOLD_FLAGS = {
+    "official_url_recall_blocked_competing_candidate",
+    "multi_work_title_cleared",
+    "secondary_reference_official_alias_blocked_after_multi_work_title_cleared",
+}
+BATCH_ALIAS_CONFLICT_HOLD_FLAGS = BATCH_ALIAS_COMPETING_HOLD_FLAGS | {
+    "expert_conflict",
+    "budget_quarantine_candidate",
+}
+TITLE_LED_ALIAS_EXEMPT_FLAGS = {
+    "batch_memory_alias_rescue_cleared_stale_demotions",
+    "weak_public_title_bridge_batch_alias_exact_exempt",
+    "title_lead_alias_official_detail_release",
+}
+TITLE_LED_WORK_CONSUMPTION_RE = re.compile(
+    r"(이벤트|무료분|무료\s*분|기다무|무료화|유료화|봐야|볼까|보는중|보는\s*중|"
+    r"봤다|봤는데|봤음|보고옴|먹어볼|찍먹|달릴까|정주행|하차|연중|연재\s*중단|"
+    r"연재중단|휴재|완결|죽어버림|뒤져버림|아까움|아깝|볼\s*만(?:하|한|함|했)|"
+    r"재(?:밌|밋)(?:게\s*봤|네|다|음|냐|나|어|었|더라|긴|고|게)?|"
+    r"재(?:미있|미잇)(?:네|다|음|냐|나|어|었|더라|긴|고|게)?)"
+)
 OFFICIAL_DETAIL_URL_RE = re.compile(
     r"(?i)"
     r"(?:novelpia\.com/novel/\d+|book\.novelpia\.com/novel/\d+|"
@@ -582,6 +609,8 @@ def _clean_comment_surface_candidate(value: Any) -> str:
     tokens = _title_tokens(name)
     if len(tokens) > 4:
         return ""
+    if name.startswith("@"):
+        return ""
     if name in COMMENT_SURFACE_STOPWORDS or compact in {_compact_title(item) for item in COMMENT_SURFACE_STOPWORDS}:
         return ""
     if re.search(r"[ㅋㅎㅠㅜ]{2,}|[!?！？]", name):
@@ -836,6 +865,7 @@ def _clean_evidence_title(value: Any) -> str:
         " - 웹소설 - 카카오페이지",
         " - 카카오페이지",
         " - 웹소설 - 리디",
+        " - 판타지 e북",
         " - 판타지 웹소설",
         " - 리디",
         " - 노벨피아",
@@ -844,6 +874,127 @@ def _clean_evidence_title(value: Any) -> str:
         if suffix in title:
             title = title.split(suffix, 1)[0]
     return title.strip(" -")
+
+
+def _official_support_title_matches(expected: Any, observed: Any) -> bool:
+    return bool(
+        _titles_match(expected, observed)
+        or _titles_match(expected, _clean_evidence_title(observed))
+        or _title_surface_compatible(expected, observed)
+    )
+
+
+def _author_angle_inner_title(value: Any) -> str:
+    title = _safe_str(value)
+    if not title:
+        return ""
+    match = re.fullmatch(r"(.{1,40}?)\s*[<〈《]\s*(.{2,80}?)\s*[>〉》]\s*", title)
+    if not match:
+        return ""
+    prefix = match.group(1).strip()
+    inner = match.group(2).strip()
+    if not prefix or not inner:
+        return ""
+    if _looks_like_url_or_domain(prefix) or _looks_like_url_or_domain(inner):
+        return ""
+    if _compact_title(prefix) == _compact_title(inner):
+        return ""
+    return inner
+
+
+def _candidate_dicts_for_canonicalization(identity: Dict[str, Any]) -> List[Dict[str, Any]]:
+    items: List[Dict[str, Any]] = []
+    for field in (
+        "primary_work",
+        "title_candidates",
+        "mentioned_works",
+        "secondary_reference_works",
+        "candidate_preservation_sources",
+        "recommendation_candidates",
+    ):
+        value = identity.get(field)
+        if isinstance(value, dict):
+            items.append(value)
+        elif isinstance(value, list):
+            items.extend(_safe_dicts(value))
+    return items
+
+
+def apply_author_angle_official_detail_canonicalization(identity: Dict[str, Any]) -> List[str]:
+    """Prefer official detail title over author-prefixed search surfaces."""
+    if not isinstance(identity, dict):
+        return []
+
+    current_title = official_title(identity)
+    inner_title = _author_angle_inner_title(current_title)
+    if not inner_title:
+        return []
+
+    canonical: Optional[Dict[str, Any]] = None
+    for item in _candidate_dicts_for_canonicalization(identity):
+        item_title = candidate_name(item)
+        if not item_title or not _titles_match(inner_title, item_title):
+            continue
+        url = _official_detail_url(item.get("heretic_url") or item.get("url"))
+        source_tier = _safe_str(item.get("source_tier")).lower()
+        page_type = _safe_str(item.get("page_type")).lower()
+        if not url:
+            continue
+        if source_tier not in {"official_detail", "novel_platform", "mixed", "official_search"}:
+            continue
+        if page_type and page_type not in {"novel_page", "official_detail"}:
+            continue
+        canonical = item
+        break
+
+    if canonical is None:
+        return []
+
+    canonical_title = candidate_name(canonical)
+    canonical_url = _official_detail_url(canonical.get("heretic_url") or canonical.get("url"))
+    if not canonical_title or not canonical_url:
+        return []
+
+    novel_identity = nested_dict(identity.get("novel_identity"))
+    if novel_identity:
+        novel_identity["official_title"] = canonical_title
+        novel_identity["heretic_url"] = canonical_url
+        novel_identity["confidence"] = novel_identity.get("confidence") or canonical.get("confidence") or "High"
+        identity["novel_identity"] = novel_identity
+    identity["official_title"] = canonical_title
+    identity["official_novel_title"] = canonical_title
+    identity["resolved_title"] = canonical_title
+    identity["heretic_url"] = canonical_url
+
+    primary = dict(canonical)
+    primary["official_title"] = canonical_title
+    primary["heretic_url"] = canonical_url
+    primary["reference_role"] = "primary"
+    if not primary.get("confidence"):
+        primary["confidence"] = novel_identity.get("confidence") if novel_identity else "High"
+    if not primary.get("source_tier"):
+        primary["source_tier"] = "official_detail"
+    identity["primary_work"] = primary
+
+    reason = "author_angle_official_detail_canonicalized"
+    identity["author_angle_surface_title"] = current_title
+    reason_text = _safe_str(identity.get("reason"))
+    if reason_text and current_title in reason_text:
+        identity["reason"] = reason_text.replace(current_title, canonical_title)
+    reason_lines = _safe_list(identity.get("reason_lines"))
+    if reason_lines:
+        identity["reason_lines"] = [
+            line.replace(current_title, canonical_title) if isinstance(line, str) else line
+            for line in reason_lines
+        ]
+    _append_unique_list(identity, "output_consistency_lint", [reason])
+    flags = identity.get("consistency_flags")
+    if not isinstance(flags, list):
+        flags = []
+    if reason not in flags:
+        flags.append(reason)
+    identity["consistency_flags"] = flags
+    return [reason]
 
 
 def _title_from_official_evidence(evidence: Dict[str, Any]) -> str:
@@ -908,11 +1059,100 @@ def _official_title_looks_like_search_snippet(title: Any) -> bool:
     return marker_hits >= 2
 
 
+def _description_like_title_surface(title: Any) -> bool:
+    text = " ".join(_safe_str(title).split())
+    key = _compact_title(text)
+    if len(key) < 20:
+        return False
+    sentence_markers = ("…", "...", "?", "!", "[", "]", "되었다", "아니었다", "했더니", "아닌가")
+    marker_hits = sum(1 for marker in sentence_markers if marker in text)
+    if marker_hits >= 2:
+        return True
+    return len(_title_tokens(text)) >= 6 and any(marker in text for marker in ("다.", "요.", "했다", "한다"))
+
+
+def _direct_hard_title_surface(identity: Dict[str, Any], title: Any) -> bool:
+    title_key = _compact_title(title)
+    if len(title_key) < 6:
+        return False
+    for field in ("post_core_text", "post_side_text"):
+        if title_key in _compact_title(identity.get(field)):
+            return True
+    for item in _safe_dicts(identity.get("image_evidence_catalog")):
+        image_title = candidate_name(
+            {
+                "title": item.get("explicit_work_title")
+                or item.get("detected_title")
+                or item.get("work_title")
+            }
+        )
+        if not image_title or not _titles_match(title, image_title):
+            continue
+        role = _safe_str(item.get("title_role")).lower()
+        if item.get("promotion_eligible") is True or role in {"work_title", "title"}:
+            return True
+    return False
+
+
+def _official_title_looks_like_listing_description(identity: Dict[str, Any], title: Any) -> bool:
+    """Detect a platform listing synopsis accidentally promoted as a title.
+
+    Some platform listing/search pages put neighboring work descriptions in the
+    result snippet. If a long sentence-like surface appears as snippet text on
+    multiple *other* official-detail URLs, and the packet has no direct hard
+    title surface, treat it as review-only candidate evidence.
+    """
+    title_text = _safe_str(title)
+    title_key = _compact_title(title_text)
+    if not title_key or not _description_like_title_surface(title_text):
+        return False
+    if _direct_hard_title_surface(identity, title_text):
+        return False
+
+    novel_identity = nested_dict(identity.get("novel_identity"))
+    primary = nested_dict(identity.get("primary_work"))
+    current_url = _official_detail_url(
+        novel_identity.get("heretic_url")
+        or identity.get("heretic_url")
+        or primary.get("heretic_url")
+        or primary.get("url")
+    )
+    if not current_url:
+        return False
+
+    other_url_snippet_hits = 0
+    for evidence in _safe_dicts(identity.get("search_evidence_catalog")):
+        evidence_url = _official_detail_url(evidence.get("url"))
+        if not evidence_url or _official_detail_urls_match(current_url, evidence_url):
+            continue
+        evidence_title = candidate_name(evidence)
+        if evidence_title and _titles_match(title_text, evidence_title):
+            continue
+        blob = _compact_title(
+            " ".join(_safe_str(evidence.get(field)) for field in ("snippet", "content", "description"))
+        )
+        if title_key in blob:
+            other_url_snippet_hits += 1
+            if other_url_snippet_hits >= 2:
+                return True
+    return False
+
+
 def _official_title_looks_like_breadcrumb(title: Any) -> bool:
     lowered = _safe_str(title).lower()
     if not lowered:
         return False
     return any(marker in lowered for marker in ("namu.wiki", "›", " - 나무위키"))
+
+
+def _title_resolution_confirmed(identity: Dict[str, Any]) -> bool:
+    state = _safe_str(identity.get("title_resolution_state")).lower()
+    discussion_type = _safe_str(identity.get("discussion_type")).lower()
+    return bool(
+        identity.get("title_resolution_allowed") is not False
+        and state in {"resolved", "direct_resolved"}
+        and discussion_type in CORE_DISCUSSION_TYPES
+    )
 
 
 def _title_tokens(value: Any) -> List[str]:
@@ -936,6 +1176,43 @@ def _title_abbrev_forms(title: str) -> List[str]:
 
 
 _GENRE_SUFFIX_RE = re.compile(r"^(?:ts|역|남|여|순)?[가-힣a-z]{1,6}(?:물|판)$")
+_WEAK_ALIAS_PHRASE_RE = re.compile(
+    r"(?:정도로|같은|같은거|이런|저런|그런|뭐임|재밌냐|레전드임|현실)$"
+)
+WEAK_ALIAS_BRIDGE_TOKENS = {
+    "되었다",
+    "됐다",
+    "되는",
+    "되다",
+    "빙의",
+    "빙의했다",
+    "빙의함",
+    "환생",
+    "환생했다",
+    "회귀",
+    "회귀했다",
+    "한다",
+    "하는",
+    "하고",
+    "없는",
+    "있음",
+    "있습니다",
+    "있었다",
+    "있다는",
+    "있었음",
+    "좋네",
+    "좋다",
+    "재밌냐",
+    "같다",
+    "생각나게",
+    "요소",
+    "회차",
+    "회차를",
+    "본문",
+    "이미지",
+    "작품",
+    "게임적",
+}
 
 
 def _is_genre_descriptor_surface(title: Any) -> bool:
@@ -1035,7 +1312,7 @@ def official_url_recoverable(identity: Dict[str, Any]) -> Optional[Dict[str, Any
         url = _official_detail_url(evidence.get("url"))
         if not url:
             continue
-        title = _title_from_official_evidence(evidence)
+        title = _strip_platform_seo_title_suffix(_title_from_official_evidence(evidence))
         if not _usable_official_title_surface(title):
             continue
         candidates.append({"title": title, "url": url, "evidence": evidence, "source": "search_evidence"})
@@ -1046,7 +1323,61 @@ def official_url_recoverable(identity: Dict[str, Any]) -> Optional[Dict[str, Any
         if url and _usable_official_title_surface(title):
             candidates.append({"title": title, "url": url, "evidence": body_candidate, "source": "body_url"})
 
-    def _anchor_score(anchor: str, evidence: Dict[str, Any]) -> int:
+    alias_clue_keys = {
+        _compact_title(clue.get("alias") or clue.get("term"))
+        for clue in _safe_dicts(identity.get("alias_clues"))
+        if _compact_title(clue.get("alias") or clue.get("term"))
+    }
+    cue_texts: List[str] = [
+        _safe_str(identity.get("post_core_text")),
+        _safe_str(identity.get("post_side_text")),
+    ]
+    phrase_cue_texts: List[str] = []
+    for image_evidence in _safe_dicts(identity.get("image_evidence_catalog")):
+        cue_texts.append(_safe_str(image_evidence.get("ocr_text")))
+        cue_texts.append(_safe_str(image_evidence.get("visual_summary")))
+        for cue in _safe_list(image_evidence.get("work_cues")):
+            cue_text = _safe_str(cue)
+            cue_texts.append(cue_text)
+            phrase_cue_texts.append(cue_text)
+
+    cue_keys: set[str] = set()
+
+    def _add_cue_key(raw: Any) -> None:
+        text = _safe_str(raw)
+        key = _compact_title(text)
+        if len(key) < 3:
+            return
+        if key in LOW_INFORMATION_ALIAS_CLUES or key in TITLE_TOKEN_STOPWORDS or key in WEAK_ALIAS_BRIDGE_TOKENS:
+            return
+        cue_keys.add(key)
+
+    for cue_text in phrase_cue_texts:
+        _add_cue_key(cue_text)
+    for cue_text in cue_texts:
+        for token in _title_tokens(cue_text):
+            _add_cue_key(token)
+
+    def _cue_overlap_score(title: str, evidence: Dict[str, Any]) -> int:
+        if not cue_keys:
+            return 0
+        evidence_key = _compact_title(
+            " ".join(_safe_str(evidence.get(field)) for field in ("title", "snippet", "content", "description"))
+        )
+        title_key = _compact_title(title)
+        score = 0
+        for cue_key in sorted(cue_keys, key=len, reverse=True):
+            if cue_key not in evidence_key:
+                continue
+            if cue_key in alias_clue_keys:
+                score += 1
+                continue
+            score += 4
+            if cue_key and cue_key in title_key:
+                score += 4
+        return min(score, 24)
+
+    def _anchor_score(anchor: str, evidence: Dict[str, Any], title: str) -> int:
         if anchor == "ocr_explicit_title":
             score = 140
         elif anchor == "official_url_in_body":
@@ -1055,10 +1386,17 @@ def official_url_recoverable(identity: Dict[str, Any]) -> Optional[Dict[str, Any
             score = 130
         elif anchor.startswith("confirmed_alias:"):
             score = 120
+        elif anchor.startswith("bracket_alias:"):
+            score = 116
         elif anchor.startswith("title_abbrev_form:"):
             score = 105
+        elif anchor.startswith("official_page_alias_tag:"):
+            score = 98
+        elif anchor.startswith("title_unique_rare_token:"):
+            score = 96
         else:
             return 0
+        score += _cue_overlap_score(title, evidence)
         rank = evidence.get("rank")
         if isinstance(rank, int):
             score -= min(rank, 25)
@@ -1077,7 +1415,7 @@ def official_url_recoverable(identity: Dict[str, Any]) -> Optional[Dict[str, Any
                 anchor = "official_url_in_body"
             else:
                 continue
-        score = _anchor_score(anchor, candidate["evidence"])
+        score = _anchor_score(anchor, candidate["evidence"], candidate["title"])
         if score <= 0:
             continue
         matches.append(
@@ -1106,6 +1444,220 @@ def official_url_recoverable(identity: Dict[str, Any]) -> Optional[Dict[str, Any
         "matched_clue": best["matched_clue"],
         "confidence": best["confidence"],
     }
+
+
+def _official_detail_candidate_preservation_recoverable(identity: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Recover official-detail candidates for ledger display only.
+
+    This intentionally stays separate from ``official_url_recoverable`` because
+    image/work-cue overlap is enough to preserve a candidate for review, but it
+    is not enough to publish a public title.
+    """
+
+    if not isinstance(identity, dict) or official_title(identity):
+        return None
+    state = _safe_str(identity.get("title_resolution_state")).lower()
+    if state in {"context_only", "unresolvable_memory_query", "nonwork"}:
+        return None
+    work_resolution = _safe_str(identity.get("work_resolution")).lower()
+    if work_resolution and work_resolution not in {"none", "unresolved", "hold_unresolved", "hold", "multi_work"}:
+        return None
+
+    cue_keys: set[str] = set()
+
+    def add_cue(raw: Any) -> None:
+        key = _compact_title(raw)
+        if len(key) < 3:
+            return
+        if key in LOW_INFORMATION_ALIAS_CLUES or key in TITLE_TOKEN_STOPWORDS:
+            return
+        cue_keys.add(key)
+
+    for field in ("post_core_text", "post_side_text"):
+        for token in _title_tokens(identity.get(field)):
+            add_cue(token)
+    for image_evidence in _safe_dicts(identity.get("image_evidence_catalog")):
+        for cue in _safe_list(image_evidence.get("work_cues")):
+            add_cue(cue)
+        for token in _title_tokens(image_evidence.get("ocr_text")):
+            add_cue(token)
+        for token in _title_tokens(image_evidence.get("visual_summary")):
+            add_cue(token)
+    for clue in _safe_dicts(identity.get("alias_clues")):
+        add_cue(clue.get("alias") or clue.get("term"))
+
+    if not cue_keys:
+        return None
+
+    matches: List[Dict[str, Any]] = []
+    for evidence in _safe_dicts(identity.get("search_evidence_catalog")):
+        source_tier = _safe_str(evidence.get("source_tier")).lower()
+        if source_tier not in OFFICIAL_TITLE_SOURCE_TIERS:
+            continue
+        url = _official_detail_url(evidence.get("url"))
+        if not url:
+            continue
+        title = _strip_platform_seo_title_suffix(_title_from_official_evidence(evidence))
+        if not _usable_official_title_surface(title):
+            continue
+        evidence_blob = _compact_title(
+            " ".join(_safe_str(evidence.get(field)) for field in ("title", "snippet", "content", "description"))
+        )
+        matched_cues = [cue for cue in sorted(cue_keys, key=len, reverse=True) if cue in evidence_blob]
+        if not matched_cues:
+            continue
+        rank = evidence.get("rank")
+        rank_penalty = min(rank, 25) if isinstance(rank, int) else 0
+        score = max(len(cue) for cue in matched_cues) * 10 - rank_penalty
+        matches.append(
+            {
+                "score": score,
+                "official_title": title,
+                "heretic_url": url,
+                "source_tier": "official_detail",
+                "source": "search_evidence_candidate_preservation",
+                "matched_clue": "official_detail_candidate_cue:" + matched_cues[0],
+                "confidence": "Medium",
+            }
+        )
+
+    if not matches:
+        return None
+    matches.sort(key=lambda item: item["score"], reverse=True)
+    best = dict(matches[0])
+    best.pop("score", None)
+    return best
+
+
+def _candidate_source_matches_title(item: Any, title: str) -> bool:
+    if not isinstance(item, dict) or not title:
+        return False
+    return _titles_match(title, candidate_name(item))
+
+
+def _weak_comment_only_candidate(item: Any) -> bool:
+    if not isinstance(item, dict):
+        return False
+    if _candidate_item_url(item):
+        return False
+    source_tier = _safe_str(item.get("source_tier")).lower()
+    preservation_role = _safe_str(item.get("preservation_role")).lower()
+    promotion_policy = _safe_str(item.get("promotion_policy")).lower()
+    negative = {_safe_str(value).lower() for value in _safe_list(item.get("negative_evidence"))}
+    return bool(
+        source_tier in {"comment_surface", "community", "llm_only"}
+        and (
+            preservation_role in {"comment_surface_candidate", "recommendation_candidate"}
+            or promotion_policy == "hold_without_promotion"
+            or "comment_answer_preservation_only" in negative
+        )
+    )
+
+
+def _blocked_title_is_weak_comment_only(identity: Dict[str, Any], title: str) -> bool:
+    if not title or _safe_str(identity.get("blocked_official_title_url")):
+        return False
+    for field in (
+        "title_candidates",
+        "candidate_preservation_sources",
+        "comment_surface_title_candidates",
+        "recommendation_candidates",
+    ):
+        value = identity.get(field)
+        values = value if isinstance(value, list) else [value]
+        for item in values:
+            if isinstance(item, str):
+                if _titles_match(title, item):
+                    return True
+                continue
+            if _weak_comment_only_candidate(item) and _candidate_source_matches_title(item, title):
+                return True
+    return False
+
+
+def preserve_recoverable_official_detail_candidate(identity: Dict[str, Any]) -> List[str]:
+    """Keep official-detail recall evidence as candidate-only review material.
+
+    This does not publish the title. It only prevents weak comment-only surfaces
+    from becoming the representative blocked candidate when a recoverable
+    official-detail candidate is already present in search evidence.
+    """
+
+    recovered = official_url_recoverable(identity) or _official_detail_candidate_preservation_recoverable(identity)
+    if not recovered:
+        return []
+    title = _safe_str(recovered.get("official_title"))
+    url = _safe_str(recovered.get("heretic_url"))
+    if not title:
+        return []
+
+    changed: List[str] = []
+    title_candidates = identity.get("title_candidates")
+    if not isinstance(title_candidates, list):
+        title_candidates = []
+    has_title_candidate = any(
+        isinstance(item, dict)
+        and _candidate_source_matches_title(item, title)
+        and (not url or _official_detail_urls_match(url, item.get("heretic_url") or item.get("url")))
+        for item in title_candidates
+    )
+    if not has_title_candidate:
+        entry: Dict[str, Any] = {
+            "official_title": title,
+            "source_tier": "official_detail",
+            "reference_role": "candidate",
+            "preservation_role": "title_candidate",
+            "promotion_policy": "hold_without_promotion",
+            "matched_clue": recovered.get("matched_clue"),
+            "candidate_preservation_reason": "official_url_recall_candidate_preserved",
+        }
+        if url:
+            entry["heretic_url"] = url
+        if recovered.get("confidence"):
+            entry["confidence"] = recovered.get("confidence")
+        title_candidates.insert(0, entry)
+        identity["title_candidates"] = title_candidates
+        changed.append("official_url_recall_candidate_preserved")
+
+    sources = identity.get("candidate_preservation_sources")
+    if not isinstance(sources, list):
+        sources = []
+    has_source = any(
+        isinstance(item, dict)
+        and _candidate_source_matches_title(item, title)
+        and (not url or _official_detail_urls_match(url, item.get("heretic_url") or item.get("url")))
+        for item in sources
+    )
+    if not has_source:
+        source_entry: Dict[str, Any] = {
+            "official_title": title,
+            "source_tier": "official_detail",
+            "reference_role": "candidate",
+            "preservation_role": "title_candidate",
+            "promotion_policy": "hold_without_promotion",
+            "matched_clue": recovered.get("matched_clue"),
+            "candidate_preservation_reason": "official_url_recall_candidate_preserved",
+            "confidence": recovered.get("confidence") or "Medium",
+        }
+        if url:
+            source_entry["heretic_url"] = url
+        sources.insert(0, source_entry)
+        identity["candidate_preservation_sources"] = sources
+        changed.append("official_url_recall_candidate_source_preserved")
+
+    blocked_title = _safe_str(identity.get("blocked_official_title"))
+    if blocked_title and not _titles_match(blocked_title, title) and _blocked_title_is_weak_comment_only(identity, blocked_title):
+        identity["comment_surface_blocked_official_title"] = blocked_title
+        identity["blocked_official_title"] = title
+        if url:
+            identity["blocked_official_title_url"] = url
+        identity["blocked_official_title_confidence"] = recovered.get("confidence") or "Medium"
+        changed.append("blocked_candidate_representative_upgraded_to_official_detail")
+
+    if changed:
+        _append_unique_list(identity, "candidate_audit_lint", changed)
+        _append_unique_list(identity, "consistency_flags", changed)
+    return changed
 
 
 def _same_work_title(a: Any, b: Any) -> bool:
@@ -1137,12 +1689,38 @@ def _urls_match(expected: Any, observed: Any) -> bool:
     return bool(expected_text and observed_text and expected_text == observed_text)
 
 
+def _official_detail_urls_match(expected: Any, observed: Any) -> bool:
+    expected_detail = _official_detail_url(expected)
+    observed_detail = _official_detail_url(observed)
+    if expected_detail or observed_detail:
+        return bool(expected_detail and observed_detail and expected_detail == observed_detail)
+    return _urls_match(expected, observed)
+
+
 def official_search_supports_title(identity: Dict[str, Any], title: str) -> bool:
     for evidence in _safe_dicts(identity.get("search_evidence_catalog")):
         source_tier = _safe_str(evidence.get("source_tier")).lower()
         if source_tier not in OFFICIAL_TITLE_SOURCE_TIERS:
             continue
-        if _titles_match(title, evidence.get("title")):
+        if _official_support_title_matches(title, evidence.get("title")):
+            return True
+    return False
+
+
+def _official_evidence_mentions_title(identity: Dict[str, Any], title: str) -> bool:
+    title_key = _compact_title(title)
+    if not title_key or len(title_key) < 4:
+        return False
+    for evidence in _safe_dicts(identity.get("search_evidence_catalog")):
+        source_tier = _safe_str(evidence.get("source_tier")).lower()
+        if source_tier not in OFFICIAL_TITLE_SOURCE_TIERS:
+            continue
+        text = " ".join(
+            _safe_str(evidence.get(key))
+            for key in ("title", "snippet", "content")
+            if _safe_str(evidence.get(key))
+        )
+        if title_key in _compact_title(text):
             return True
     return False
 
@@ -1208,6 +1786,7 @@ def _retitle_candidate_dicts(
         "mentioned_works",
         "recommendation_candidates",
         "secondary_reference_works",
+        "candidate_preservation_sources",
     )
     for field in fields:
         value = identity.get(field)
@@ -1224,6 +1803,257 @@ def _retitle_candidate_dicts(
                     item["official_title"] = new_title
                 elif "title" in item:
                     item["title"] = new_title
+
+
+def _official_detail_support_dicts(identity: Dict[str, Any]) -> List[Dict[str, Any]]:
+    items: List[Dict[str, Any]] = []
+    seen: set[tuple[str, str, str]] = set()
+
+    def add_item(item: Dict[str, Any]) -> None:
+        title = candidate_name(item)
+        url = _official_detail_url(item.get("heretic_url") or item.get("url"))
+        source_tier = _safe_str(item.get("source_tier")).lower()
+        if not title or not url or source_tier not in OFFICIAL_TITLE_SOURCE_TIERS | {"mixed", "official_search"}:
+            return
+        page_type = _safe_str(item.get("page_type")).lower()
+        if page_type and not any(marker in page_type for marker in ("novel_page", "official_detail", "unknown")):
+            return
+        if not _usable_official_title_surface(title):
+            return
+        key = (_compact_title(title), url, source_tier)
+        if key in seen:
+            return
+        seen.add(key)
+        items.append(item)
+
+    for item in _candidate_dicts_for_canonicalization(identity):
+        add_item(item)
+    for evidence in _safe_dicts(identity.get("search_evidence_catalog")):
+        add_item(evidence)
+    for body_candidate in _safe_dicts(identity.get("body_official_detail_candidates")):
+        add_item(body_candidate)
+    return items
+
+
+def _apply_same_url_official_detail_canonicalization(identity: Dict[str, Any]) -> List[str]:
+    current_title = official_title(identity)
+    if not current_title:
+        return []
+    novel_identity = nested_dict(identity.get("novel_identity"))
+    primary = nested_dict(identity.get("primary_work"))
+    current_url = _official_detail_url(
+        novel_identity.get("heretic_url")
+        or identity.get("heretic_url")
+        or primary.get("heretic_url")
+        or primary.get("url")
+    )
+    if not current_url:
+        return []
+
+    current_key = _compact_title(current_title)
+    better: List[Dict[str, Any]] = []
+    for item in _official_detail_support_dicts(identity):
+        item_title = candidate_name(item)
+        item_url = _official_detail_url(item.get("heretic_url") or item.get("url"))
+        item_key = _compact_title(item_title)
+        if not item_title or not _urls_match(current_url, item_url):
+            continue
+        if item_key == current_key or len(item_key) <= len(current_key):
+            continue
+        if not (
+            _titles_match(current_title, item_title)
+            or (len(current_key) >= 6 and current_key in item_key)
+        ):
+            continue
+        better.append(item)
+    if not better:
+        return []
+
+    better.sort(key=lambda item: len(_compact_title(candidate_name(item))), reverse=True)
+    canonical = better[0]
+    canonical_title = candidate_name(canonical)
+    canonical_url = _official_detail_url(canonical.get("heretic_url") or canonical.get("url"))
+    if not canonical_title or not canonical_url:
+        return []
+
+    if novel_identity:
+        novel_identity["official_title"] = canonical_title
+        novel_identity["heretic_url"] = canonical_url
+        novel_identity["confidence"] = novel_identity.get("confidence") or canonical.get("confidence") or "High"
+        identity["novel_identity"] = novel_identity
+    for key in ("official_title", "official_novel_title", "resolved_title"):
+        if key in identity:
+            identity[key] = canonical_title
+    identity["heretic_url"] = canonical_url
+
+    _retitle_candidate_dicts(identity, current_title, canonical_title, canonical_url)
+    primary = nested_dict(identity.get("primary_work"))
+    if primary:
+        primary["official_title"] = canonical_title
+        primary["heretic_url"] = canonical_url
+        primary["reference_role"] = "primary"
+        if not primary.get("source_tier"):
+            primary["source_tier"] = "official_detail"
+        identity["primary_work"] = primary
+
+    reason = "same_url_official_detail_canonicalized"
+    identity["same_url_official_detail_surface_title"] = current_title
+    _append_unique_list(identity, "output_consistency_lint", [reason])
+    flags = identity.get("consistency_flags")
+    if not isinstance(flags, list):
+        flags = []
+    if reason not in flags:
+        flags.append(reason)
+    identity["consistency_flags"] = flags
+    return [reason]
+
+
+def _apply_same_url_official_page_title_over_alias_canonicalization(identity: Dict[str, Any]) -> List[str]:
+    current_title = official_title(identity)
+    if not current_title:
+        return []
+    novel_identity = nested_dict(identity.get("novel_identity"))
+    primary = nested_dict(identity.get("primary_work"))
+    current_url = _official_detail_url(
+        novel_identity.get("heretic_url")
+        or identity.get("heretic_url")
+        or primary.get("heretic_url")
+        or primary.get("url")
+    )
+    if not current_url:
+        return []
+
+    current_key = _compact_title(current_title)
+    alias_key = _compact_title(primary.get("alias_or_mention"))
+    if not current_key or alias_key != current_key:
+        return []
+
+    better: List[Dict[str, Any]] = []
+    for item in _official_detail_support_dicts(identity):
+        item_url = _official_detail_url(item.get("heretic_url") or item.get("url"))
+        if not _official_detail_urls_match(current_url, item_url):
+            continue
+        item_title = _strip_platform_seo_title_suffix(_title_from_official_evidence(item) or candidate_name(item))
+        item_key = _compact_title(item_title)
+        if not item_title or not item_key or item_key == current_key:
+            continue
+        if not _usable_official_title_surface(item_title):
+            continue
+        if _titles_match(current_title, item_title) or current_key in item_key:
+            continue
+        better.append(dict(item, official_title=item_title, heretic_url=item_url))
+    if not better:
+        return []
+
+    better.sort(key=lambda item: len(_compact_title(candidate_name(item))), reverse=True)
+    canonical = better[0]
+    canonical_title = candidate_name(canonical)
+    canonical_url = _official_detail_url(canonical.get("heretic_url") or canonical.get("url"))
+    if not canonical_title or not canonical_url:
+        return []
+
+    if novel_identity:
+        novel_identity["official_title"] = canonical_title
+        novel_identity["heretic_url"] = canonical_url
+        novel_identity["confidence"] = novel_identity.get("confidence") or canonical.get("confidence") or "High"
+        identity["novel_identity"] = novel_identity
+    for key in ("official_title", "official_novel_title", "resolved_title"):
+        if key in identity:
+            identity[key] = canonical_title
+    identity["heretic_url"] = canonical_url
+
+    _retitle_candidate_dicts(identity, current_title, canonical_title, canonical_url)
+    primary = nested_dict(identity.get("primary_work"))
+    if primary:
+        primary["official_title"] = canonical_title
+        primary["heretic_url"] = canonical_url
+        primary["reference_role"] = "primary"
+        if not primary.get("source_tier"):
+            primary["source_tier"] = "official_detail"
+        identity["primary_work"] = primary
+
+    reason = "same_url_official_page_title_over_alias_canonicalized"
+    identity["same_url_alias_surface_title"] = current_title
+    _append_unique_list(identity, "output_consistency_lint", [reason])
+    flags = identity.get("consistency_flags")
+    if not isinstance(flags, list):
+        flags = []
+    if reason not in flags:
+        flags.append(reason)
+    identity["consistency_flags"] = flags
+    return [reason]
+
+
+_PLATFORM_SEO_TITLE_SUFFIX_PATTERNS = (
+    re.compile(r"\s*[-–—]\s*문피아\s*웹소설(?:\s*[-–—]\s*Munpia)?\s*$", re.IGNORECASE),
+    re.compile(r"\s*[-–—]\s*웹소설\s*문피아(?:\s*[-–—]\s*Munpia)?\s*$", re.IGNORECASE),
+    re.compile(r"\s*[-–—]\s*네이버\s*시리즈\s*$", re.IGNORECASE),
+    re.compile(r"\s*[-–—]\s*카카오페이지\s*$", re.IGNORECASE),
+    re.compile(r"\s*[-–—]\s*노벨피아\s*$", re.IGNORECASE),
+)
+_PLATFORM_SEO_TITLE_PREFIX_PATTERNS = (
+    re.compile(r"^\s*웹소설로\s*꿈꾸는\s*세상!\s*[-–—]\s*", re.IGNORECASE),
+)
+
+
+def _normalize_common_title_surface_ocr(title: Any) -> str:
+    text = _safe_str(title)
+    if not text:
+        return ""
+    text = re.sub(r"(?i)(?<![a-z])l\s*p\s*코", "럽코", text)
+    text = re.sub(r"럽\s+코", "럽코", text)
+    return text.strip()
+
+
+def _strip_platform_seo_title_suffix(title: Any) -> str:
+    current = _normalize_common_title_surface_ocr(title)
+    if not current:
+        return ""
+    stripped = current
+    for pattern in _PLATFORM_SEO_TITLE_PREFIX_PATTERNS:
+        stripped = pattern.sub("", stripped).strip()
+    for pattern in _PLATFORM_SEO_TITLE_SUFFIX_PATTERNS:
+        stripped = pattern.sub("", stripped).strip()
+    return _normalize_common_title_surface_ocr(stripped)
+
+
+def _apply_platform_seo_title_suffix_canonicalization(identity: Dict[str, Any]) -> List[str]:
+    current_title = official_title(identity)
+    canonical_title = _strip_platform_seo_title_suffix(current_title)
+    if not current_title or not canonical_title or canonical_title == current_title:
+        return []
+    if not _usable_official_title_surface(canonical_title):
+        return []
+
+    novel_identity = nested_dict(identity.get("novel_identity"))
+    primary = nested_dict(identity.get("primary_work"))
+    current_url = _official_detail_url(
+        novel_identity.get("heretic_url")
+        or identity.get("heretic_url")
+        or primary.get("heretic_url")
+        or primary.get("url")
+    )
+    primary_source_tier = _safe_str(primary.get("source_tier")).lower()
+    if not current_url and primary_source_tier not in OFFICIAL_TITLE_SOURCE_TIERS | {"mixed", "official_search"}:
+        return []
+
+    if novel_identity:
+        novel_identity["official_title"] = canonical_title
+        identity["novel_identity"] = novel_identity
+    for key in ("official_title", "official_novel_title", "resolved_title"):
+        if key in identity:
+            identity[key] = canonical_title
+
+    _retitle_candidate_dicts(identity, current_title, canonical_title, current_url)
+    if primary:
+        primary["official_title"] = canonical_title
+        identity["primary_work"] = primary
+
+    reason = "platform_seo_title_suffix_canonicalized"
+    identity["platform_seo_title_surface_title"] = current_title
+    _append_unique_list(identity, "output_consistency_lint", [reason])
+    _append_unique_list(identity, "consistency_flags", [reason])
+    return [reason]
 
 
 def apply_judge_seed_title_hygiene_guard(
@@ -1294,7 +2124,7 @@ def apply_judge_seed_unverified_ocr_title_guard(
     if not blocked_title:
         return []
     novel_identity = nested_dict(identity.get("novel_identity"))
-    blocked_url = _safe_str(novel_identity.get("heretic_url"))
+    blocked_url = _safe_str(novel_identity.get("heretic_url") or identity.get("heretic_url"))
     if blocked_url or official_search_supports_title(identity, blocked_title):
         return []
 
@@ -1310,7 +2140,7 @@ def apply_judge_seed_unverified_ocr_title_guard(
             novel_identity["confidence"] = "None"
         identity["novel_identity"] = novel_identity
 
-    for key in ("official_title", "official_novel_title", "resolved_title"):
+    for key in ("official_title", "official_novel_title", "resolved_title", "heretic_url"):
         if key in identity:
             identity[key] = None
 
@@ -1416,14 +2246,18 @@ def official_title_lint_reasons(identity: Dict[str, Any]) -> List[str]:
         reasons.append("official_title_looks_like_url_or_domain")
     if title in GENERIC_NON_TITLE_SURFACES:
         reasons.append("official_title_looks_like_generic_non_title_surface")
+    if title in GENERIC_OFFICIAL_EVIDENCE_TITLES and not _looks_like_url_or_domain(title):
+        reasons.append("official_title_looks_like_generic_evidence_label")
     if _official_title_looks_like_search_snippet(title):
         reasons.append("official_title_looks_like_search_snippet")
+    if _official_title_looks_like_listing_description(identity, title):
+        reasons.append("official_title_looks_like_listing_description")
     if _official_title_looks_like_breadcrumb(title):
         reasons.append("official_title_looks_like_breadcrumb")
     if identity.get("title_resolution_allowed") is False:
         reasons.append("official_title_present_when_title_resolution_allowed_false")
     work_resolution = _safe_str(identity.get("work_resolution")).lower()
-    if work_resolution in {"none", "context_only", "nonwork", "unresolved"}:
+    if work_resolution in {"none", "context_only", "nonwork", "unresolved"} and not _title_resolution_confirmed(identity):
         reasons.append(f"official_title_present_with_work_resolution_{work_resolution}")
     state = _safe_str(identity.get("title_resolution_state")).lower()
     if state and state not in {"resolved", "direct_resolved"}:
@@ -1440,6 +2274,20 @@ def official_title_promotion_block_reasons(identity: Dict[str, Any]) -> List[str
         for reason in official_title_lint_reasons(identity)
         if reason in PROMOTION_BLOCKING_OFFICIAL_TITLE_LINT_REASONS
     ]
+
+
+def _promotion_gate_decision(identity: Dict[str, Any]) -> Dict[str, Any]:
+    if not isinstance(identity, dict):
+        return {}
+    decision = identity.get("promotion_decision")
+    if isinstance(decision, dict):
+        return decision
+    ledger = identity.get("candidate_ledger")
+    if isinstance(ledger, dict):
+        decision = ledger.get("promotion_decision")
+        if isinstance(decision, dict):
+            return decision
+    return {}
 
 
 def _append_unique_list(identity: Dict[str, Any], key: str, values: Iterable[str]) -> List[str]:
@@ -1512,6 +2360,1039 @@ def apply_official_title_promotion_guard(identity: Dict[str, Any]) -> List[str]:
     return reasons
 
 
+def _append_candidate_preservation_source(
+    identity: Dict[str, Any],
+    *,
+    title: str,
+    url: str = "",
+    confidence: str = "",
+    source_tier: str = "",
+    alias_or_mention: str = "",
+    reason: str = "",
+) -> None:
+    current = identity.get("candidate_preservation_sources")
+    if not isinstance(current, list):
+        current = []
+    title_key = _compact_title(title)
+    url_key = _safe_str(url)
+    for item in current:
+        if not isinstance(item, dict):
+            continue
+        if _compact_title(candidate_name(item)) == title_key and _safe_str(item.get("heretic_url")) == url_key:
+            return
+    entry: Dict[str, Any] = {
+        "official_title": title,
+        "confidence": confidence or "Medium",
+        "source_tier": source_tier or "official_detail",
+        "reference_role": "candidate",
+        "preservation_role": "title_candidate",
+        "promotion_policy": "hold_without_promotion",
+    }
+    if url:
+        entry["heretic_url"] = url
+    if alias_or_mention:
+        entry["alias_or_mention"] = alias_or_mention
+    if reason:
+        entry["negative_evidence"] = [reason]
+    current.append(entry)
+    identity["candidate_preservation_sources"] = current
+
+
+def _demote_official_title_to_hold(
+    identity: Dict[str, Any],
+    *,
+    reason: str,
+    state: str = "unresolved_matchable",
+) -> List[str]:
+    blocked_title = official_title(identity)
+    if not blocked_title:
+        return []
+
+    novel_identity = nested_dict(identity.get("novel_identity"))
+    blocked_url = _safe_str(novel_identity.get("heretic_url"))
+    blocked_confidence = _safe_str(novel_identity.get("confidence"))
+    primary = nested_dict(identity.get("primary_work"))
+    alias = _safe_str(primary.get("alias_or_mention"))
+    source_tier = _safe_str(primary.get("source_tier"))
+
+    _append_candidate_preservation_source(
+        identity,
+        title=blocked_title,
+        url=blocked_url,
+        confidence=blocked_confidence,
+        source_tier=source_tier,
+        alias_or_mention=alias,
+        reason=reason,
+    )
+
+    if novel_identity:
+        novel_identity["official_title"] = None
+        if "heretic_url" in novel_identity:
+            novel_identity["heretic_url"] = None
+        if "confidence" in novel_identity:
+            novel_identity["confidence"] = "None"
+        identity["novel_identity"] = novel_identity
+    for key in ("official_title", "official_novel_title", "resolved_title"):
+        if key in identity:
+            identity[key] = None
+
+    identity["blocked_official_title"] = blocked_title
+    if blocked_url:
+        identity["blocked_official_title_url"] = blocked_url
+    if blocked_confidence:
+        identity["blocked_official_title_confidence"] = blocked_confidence
+    _append_unique_list(identity, "promotion_blocked_reasons", [reason])
+    _append_unique_list(identity, "candidate_audit_lint", [reason])
+
+    if identity.get("work_resolution") == "resolved":
+        identity["work_resolution"] = "unresolved"
+    if identity.get("title_resolution_state") in {None, "", "resolved", "direct_resolved"}:
+        identity["title_resolution_state"] = state
+    identity["title_resolution_allowed"] = False
+    identity["is_resolved_work_discussion"] = False
+
+    reason_text = _safe_str(identity.get("reason"))
+    guard_note = f"Public title promotion held by weak bridge guard: {blocked_title} ({reason})"
+    if guard_note not in reason_text:
+        identity["reason"] = f"{reason_text}\n{guard_note}".strip() if reason_text else guard_note
+    return [reason]
+
+
+def _confirmed_alias_flags(identity: Dict[str, Any]) -> List[str]:
+    return [
+        _safe_str(flag)
+        for flag in _safe_list(identity.get("consistency_flags"))
+        if _safe_str(flag).startswith("confirmed_alias:")
+        or _safe_str(flag) == "verified_alias_official_detail_anchor"
+    ]
+
+
+def _explicit_promoted_image_titles(identity: Dict[str, Any]) -> List[str]:
+    titles: List[str] = []
+    for evidence in _safe_dicts(identity.get("image_evidence_catalog")):
+        if evidence.get("promotion_eligible") is not True:
+            continue
+        if _safe_str(evidence.get("title_role")).lower() != "work_title":
+            continue
+        title = _safe_str(evidence.get("explicit_work_title") or evidence.get("detected_title") or evidence.get("work_title"))
+        if title and title not in titles:
+            titles.append(title)
+    return titles
+
+
+def _title_surface_compatible(left: Any, right: Any) -> bool:
+    if _titles_match(left, right):
+        return True
+    left_key = _compact_title(_strip_platform_seo_title_suffix(left))
+    right_key = _compact_title(_strip_platform_seo_title_suffix(right))
+    if not left_key or not right_key:
+        return False
+    if left_key == right_key:
+        return True
+    shorter, longer = sorted((left_key, right_key), key=len)
+    return bool(len(shorter) >= 6 and shorter in longer)
+
+
+def _official_title_conflicts_with_promoted_image(identity: Dict[str, Any], title: str) -> bool:
+    image_titles = _explicit_promoted_image_titles(identity)
+    if not image_titles:
+        return False
+    if _verified_alias_detail_lock_exempts_promoted_image_conflict(identity, title, image_titles):
+        return False
+    return not any(_title_surface_compatible(image_title, title) for image_title in image_titles)
+
+
+def _verified_alias_detail_lock_exempts_promoted_image_conflict(
+    identity: Dict[str, Any],
+    title: str,
+    image_titles: List[str],
+) -> bool:
+    flags = {str(flag or "").strip() for flag in _safe_list(identity.get("consistency_flags"))}
+    if not (
+        "verified_alias_official_detail_anchor" in flags
+        and "explicit_alias_official_work_lock" in flags
+    ):
+        return False
+
+    aliases = [
+        flag.split(":", 1)[1].strip()
+        for flag in flags
+        if flag.startswith("confirmed_alias:") and flag.split(":", 1)[1].strip()
+    ]
+    if not aliases:
+        return False
+
+    image_keys = [_compact_title(image_title) for image_title in image_titles]
+    alias_hits_image_title = any(
+        alias_key and image_key and (alias_key in image_key or image_key in alias_key)
+        for alias in aliases
+        for alias_key in [_compact_title(alias)]
+        for image_key in image_keys
+    )
+    if not alias_hits_image_title:
+        return False
+
+    novel_identity = nested_dict(identity.get("novel_identity"))
+    primary = nested_dict(identity.get("primary_work"))
+    official_url = _official_detail_url(
+        novel_identity.get("heretic_url")
+        or identity.get("heretic_url")
+        or primary.get("heretic_url")
+        or primary.get("url")
+    )
+    if not official_url:
+        return False
+
+    if _official_support_title_matches(title, candidate_name(primary)):
+        return True
+    return official_search_supports_title(identity, title)
+
+
+def _unverified_promoted_image_title(identity: Dict[str, Any], title: str) -> bool:
+    """Direct OCR/VLM titles still need public support before safe resolution."""
+    image_titles = _explicit_promoted_image_titles(identity)
+    if not image_titles or not any(_title_surface_compatible(image_title, title) for image_title in image_titles):
+        return False
+
+    novel_identity = nested_dict(identity.get("novel_identity"))
+    primary = nested_dict(identity.get("primary_work"))
+    if _safe_str(novel_identity.get("heretic_url")):
+        return False
+    if official_search_supports_title(identity, title):
+        return False
+    if _safe_str(primary.get("source_tier")).lower() not in WEAK_PRIMARY_SOURCE_TIERS:
+        return False
+
+    anchor_type = _safe_str(identity.get("anchor_type")).lower()
+    flags = set(_safe_list(identity.get("consistency_flags")))
+    return bool(
+        anchor_type == "image"
+        or "direct_image_explicit_title_rescued" in flags
+        or "image_surface_title_unverified_without_official_evidence" in flags
+    )
+
+
+def _weak_alias_surface(alias: Any, title: Any) -> bool:
+    alias_text = _safe_str(alias)
+    alias_key = _compact_title(alias_text)
+    title_key = _compact_title(title)
+    if not alias_key:
+        return False
+    if alias_key in LOW_INFORMATION_ALIAS_CLUES or len(alias_key) <= 2:
+        return True
+    if _WEAK_ALIAS_PHRASE_RE.search(alias_text) or _WEAK_ALIAS_PHRASE_RE.search(alias_key):
+        return True
+    if title_key and alias_key in title_key and len(alias_key) < 6:
+        return True
+    if title_key and alias_key in title_key and len(alias_key) / max(1, len(title_key)) < 0.45:
+        return True
+    tokens = _title_tokens(alias_text)
+    if tokens and all(_compact_title(token) in LOW_INFORMATION_ALIAS_CLUES | WEAK_ALIAS_BRIDGE_TOKENS for token in tokens):
+        return True
+    return False
+
+
+def _confirmed_alias_exempts_weak_bridge(identity: Dict[str, Any], alias: Any, title: Any) -> bool:
+    if not _confirmed_alias_flags(identity):
+        return False
+    alias_key = _compact_title(alias)
+    title_key = _compact_title(title)
+    if (
+        alias_key
+        and title_key
+        and alias_key != title_key
+        and alias_key in title_key
+        and len(alias_key) <= 5
+        and len(alias_key) / max(1, len(title_key)) < 0.5
+    ):
+        return False
+    return True
+
+
+def _shared_current_work_gate_exempts_weak_alias_bridge(
+    identity: Dict[str, Any],
+    post_title: Any,
+    alias: Any,
+    title: Any,
+) -> bool:
+    alias_key = _compact_title(alias)
+    title_key = _compact_title(title)
+    post_key = _compact_title(post_title)
+    if not alias_key or not title_key:
+        return False
+    exact_title_surface = bool(
+        alias_key == title_key
+        and len(title_key) >= 4
+        and (post_key.startswith(title_key) or title_key in post_key)
+    )
+    title_led_alias_surface = bool(
+        TITLE_LED_WORK_CONSUMPTION_RE.search(_safe_str(post_title))
+        and 2 <= len(alias_key) <= 8
+        and alias_key in post_key
+        and alias_key != title_key
+        and alias_key not in LOW_INFORMATION_ALIAS_CLUES
+        and not _is_genre_descriptor_surface(alias)
+    )
+    if not (exact_title_surface or title_led_alias_surface):
+        return False
+
+    flags = set(_safe_list(identity.get("consistency_flags")))
+    if exact_title_surface and not (
+        "decoder_exact_post_title_surface_resolved" in flags
+        or _safe_str(identity.get("anchor_type")).lower() in {"title_exact", "full_title_surface"}
+    ):
+        return False
+    hard_negative_flags = BATCH_ALIAS_CONFLICT_HOLD_FLAGS | {
+        "recommendation_context_only_no_work_anchor",
+        "recommendation_context_only_public_title_conflict",
+        "batch_memory_alias_rescue_blocked_nonwork_context",
+        "batch_memory_alias_rescue_blocked_genre_context",
+        "semantic_seed_no_work_context",
+    }
+    if flags & hard_negative_flags:
+        return False
+
+    primary = nested_dict(identity.get("primary_work"))
+    novel_identity = nested_dict(identity.get("novel_identity"))
+    candidate_url = _official_detail_url(
+        novel_identity.get("heretic_url")
+        or identity.get("heretic_url")
+        or primary.get("heretic_url")
+        or primary.get("url")
+    )
+    if not candidate_url:
+        return False
+
+    context_sources = {_safe_str(value).lower() for value in _safe_list(identity.get("context_sources"))}
+    has_search_context = bool(
+        "search" in context_sources
+        or _safe_dicts(identity.get("search_evidence_catalog"))
+        or _safe_dicts(nested_dict(identity.get("candidate_ledger")).get("search_evidence_catalog"))
+    )
+    if "title" not in context_sources or not has_search_context:
+        return False
+    if not context_sources & {"body", "comments"} and not title_led_alias_surface:
+        return False
+    discussion_type = _safe_str(identity.get("discussion_type")).lower()
+    if discussion_type not in CORE_DISCUSSION_TYPES:
+        return False
+    primary_subject_type = _safe_str(identity.get("primary_subject_type")).lower()
+    if primary_subject_type not in {"", "work_discussion", "specific_work", "single_work"}:
+        return False
+
+    decision = _promotion_gate_decision(identity)
+    gate_state = nested_dict(identity.get("promotion_gate_state"))
+    if not gate_state:
+        gate_state = nested_dict(nested_dict(identity.get("candidate_ledger")).get("promotion_gate_state"))
+    scope = nested_dict(decision.get("scope"))
+    if not scope:
+        scope = nested_dict(gate_state.get("scope"))
+    if _safe_str(scope.get("scope_kind")).lower() != "current_work":
+        return False
+    if _safe_str(scope.get("confidence")).lower() not in {"", "high", "medium"}:
+        return False
+    direct_sources = {_safe_str(value) for value in _safe_list(scope.get("direct_bridge_sources"))}
+    if title_led_alias_surface and not (
+        direct_sources
+        & {
+            "title_led_consumption_bridge",
+            "resolved_public_title_scope",
+            "alias_surface",
+            "title",
+        }
+    ):
+        return False
+
+    if gate_state:
+        gate_title = _safe_str(gate_state.get("candidate_title"))
+        if gate_title and not _titles_match(gate_title, title):
+            return False
+        gate_url = _official_detail_url(gate_state.get("candidate_url"))
+        if gate_url and not _official_detail_urls_match(gate_url, candidate_url):
+            return False
+        if gate_state.get("official_title_exists") is False:
+            return False
+        if gate_state.get("row_discusses_work_as_work") is False:
+            return False
+
+    reason_codes = {_safe_str(code) for code in _safe_list(decision.get("reason_codes"))}
+    if decision and decision.get("publish_allowed") is False and "row_discusses_work_as_work" not in reason_codes:
+        return False
+    if title_led_alias_surface and not (
+        reason_codes
+        & {
+            "title_led_consumption_bridge",
+            "resolved_public_title_scope",
+            "scope_current_work",
+        }
+    ):
+        return False
+    if title_led_alias_surface and decision and decision.get("publish_allowed") is False:
+        clean_reason_codes = [
+            code
+            for code in _safe_list(decision.get("reason_codes"))
+            if code
+            not in {
+                "weak_alias_surface_public_title_bridge",
+                "serialized_public_identity_scrubbed",
+            }
+        ]
+        for code in (
+            "weak_public_title_bridge_shared_gate_exempt",
+            "title_led_consumption_bridge",
+            "serialized_public_identity_shared_gate_restored",
+        ):
+            if code not in clean_reason_codes:
+                clean_reason_codes.append(code)
+        direct_sources = list(_safe_list(scope.get("direct_bridge_sources")))
+        for source in ("title_led_consumption_bridge", "alias_surface", "official_detail_url"):
+            if source not in direct_sources:
+                direct_sources.append(source)
+        scope_payload = dict(scope)
+        scope_payload["scope_kind"] = "current_work"
+        scope_payload["direct_bridge_sources"] = direct_sources
+        restored_decision = dict(decision)
+        restored_decision.update(
+            {
+                "status": "publish",
+                "publish_allowed": True,
+                "official_title": title,
+                "official_url": candidate_url,
+                "candidate_preserved": False,
+                "reason_codes": clean_reason_codes,
+                "bypassed_gate": False,
+                "scope": scope_payload,
+            }
+        )
+        identity["promotion_decision"] = restored_decision
+        gate_state_payload = dict(gate_state) if gate_state else {}
+        gate_state_payload["candidate_title"] = title
+        gate_state_payload["candidate_url"] = candidate_url
+        gate_state_payload["official_title_exists"] = True
+        gate_state_payload["row_discusses_work_as_work"] = True
+        gate_state_payload["scope"] = scope_payload
+        identity["promotion_gate_state"] = gate_state_payload
+        ledger = nested_dict(identity.get("candidate_ledger"))
+        ledger["promotion_decision"] = restored_decision
+        ledger["promotion_gate_state"] = gate_state_payload
+        identity["candidate_ledger"] = ledger
+        flags_list = list(_safe_list(identity.get("consistency_flags")))
+        flags_list = [flag for flag in flags_list if flag != "weak_alias_surface_public_title_bridge"]
+        for flag in (
+            "weak_public_title_bridge_shared_gate_exempt",
+            "serialized_public_identity_shared_gate_restored",
+        ):
+            if flag not in flags_list:
+                flags_list.append(flag)
+        identity["consistency_flags"] = flags_list
+    return True
+
+
+def _title_led_consumption_exempts_unconfirmed_alias_bridge(
+    identity: Dict[str, Any],
+    post_title: Any,
+    alias: Any,
+    title: Any,
+) -> bool:
+    flags = set(_safe_list(identity.get("consistency_flags")))
+    if not flags & TITLE_LED_ALIAS_EXEMPT_FLAGS:
+        return False
+    if flags & BATCH_ALIAS_CONFLICT_HOLD_FLAGS:
+        return False
+
+    discussion_type = _safe_str(identity.get("discussion_type")).lower()
+    if discussion_type not in {"general", "review", "spoiler", "anticipation", "character_talk"}:
+        return False
+    primary_subject_type = _safe_str(identity.get("primary_subject_type")).lower()
+    if primary_subject_type not in {"", "work_discussion", "specific_work", "single_work"}:
+        return False
+
+    context_sources = {_safe_str(value).lower() for value in _safe_list(identity.get("context_sources"))}
+    if not {"title", "search"}.issubset(context_sources):
+        return False
+    post_title_text = _safe_str(post_title)
+    title_has_consumption_marker = bool(TITLE_LED_WORK_CONSUMPTION_RE.search(post_title_text))
+    if not context_sources & {"body", "comments"} and not title_has_consumption_marker:
+        return False
+
+    alias_key = _compact_title(alias)
+    post_key = _compact_title(post_title)
+    if not (2 <= len(alias_key) <= 8) or alias_key not in post_key:
+        return False
+    if alias_key in LOW_INFORMATION_ALIAS_CLUES or _is_genre_descriptor_surface(alias):
+        return False
+
+    context_text = " ".join(
+        text
+        for text in (
+            _safe_str(post_title),
+            _safe_str(identity.get("post_core_text")),
+            _safe_str(identity.get("post_side_text")),
+            " ".join(_safe_str(line) for line in _safe_list(identity.get("reason_lines"))),
+        )
+        if text
+    )
+    if not TITLE_LED_WORK_CONSUMPTION_RE.search(context_text):
+        return False
+
+    warning_text = _safe_str(identity.get("discourse_warning")).lower()
+    if any(token in warning_text for token in ("non_novel", "daily_life", "real_life", "meta_platform")):
+        return False
+    if any(_safe_str(flag).startswith("non_novel") for flag in flags):
+        return False
+
+    return official_search_supports_title(identity, title) or _official_evidence_mentions_title(identity, title)
+
+
+def _shared_current_work_gate_exempts_unconfirmed_alias_bridge(
+    identity: Dict[str, Any],
+    post_title: Any,
+    alias: Any,
+    title: Any,
+) -> bool:
+    decision = _promotion_gate_decision(identity)
+    if not decision or decision.get("publish_allowed") is not True:
+        return False
+    if _safe_str(decision.get("status")).lower() not in {"", "publish"}:
+        return False
+
+    candidate_title = _safe_str(decision.get("official_title") or title)
+    if not _titles_match(candidate_title, title):
+        return False
+    candidate_url = _official_detail_url(decision.get("official_url"))
+    primary = nested_dict(identity.get("primary_work"))
+    novel_identity = nested_dict(identity.get("novel_identity"))
+    candidate_url = candidate_url or _official_detail_url(
+        novel_identity.get("heretic_url") or primary.get("heretic_url")
+    )
+    if not candidate_url:
+        return False
+
+    flags = set(_safe_list(identity.get("consistency_flags")))
+    hard_negative_flags = BATCH_ALIAS_CONFLICT_HOLD_FLAGS | {
+        "recommendation_context_only_no_work_anchor",
+        "recommendation_context_only_public_title_conflict",
+        "batch_memory_alias_rescue_blocked_nonwork_context",
+        "batch_memory_alias_rescue_blocked_genre_context",
+        "unresolved_worklike_hold:alias_character_discussion",
+        "semantic_seed_no_work_context",
+    }
+    if flags & hard_negative_flags:
+        return False
+
+    context_sources = {_safe_str(value).lower() for value in _safe_list(identity.get("context_sources"))}
+    if not {"title", "search"}.issubset(context_sources):
+        return False
+    if not context_sources & {"body", "comments"}:
+        return False
+    discussion_type = _safe_str(identity.get("discussion_type")).lower()
+    if discussion_type not in {"general", "review", "spoiler", "anticipation", "character_talk"}:
+        return False
+    primary_subject_type = _safe_str(identity.get("primary_subject_type")).lower()
+    if primary_subject_type not in {"", "work_discussion", "specific_work", "single_work"}:
+        return False
+
+    alias_key = _compact_title(alias)
+    post_key = _compact_title(post_title)
+    if not (2 <= len(alias_key) <= 8) or alias_key not in post_key:
+        return False
+    if alias_key in LOW_INFORMATION_ALIAS_CLUES or _is_genre_descriptor_surface(alias):
+        return False
+
+    reason_codes = {_safe_str(code) for code in _safe_list(decision.get("reason_codes"))}
+    if "scope_current_work" not in reason_codes:
+        return False
+    if not (
+        reason_codes
+        & {
+            "batch_alias_public_title_bridge",
+            "title_led_consumption_bridge",
+            "resolved_public_title_scope",
+        }
+    ):
+        return False
+    if "official_detail_url" not in reason_codes:
+        return False
+
+    scope = nested_dict(decision.get("scope"))
+    gate_state = nested_dict(identity.get("promotion_gate_state"))
+    if not gate_state:
+        gate_state = nested_dict(nested_dict(identity.get("candidate_ledger")).get("promotion_gate_state"))
+    if not scope:
+        scope = nested_dict(gate_state.get("scope"))
+    if _safe_str(scope.get("scope_kind")).lower() != "current_work":
+        return False
+    direct_sources = {_safe_str(value) for value in _safe_list(scope.get("direct_bridge_sources"))}
+    if "official_detail_url" not in direct_sources:
+        return False
+    if not (
+        direct_sources
+        & {
+            "batch_alias_candidate_accepted",
+            "search_evidence_alias_inference",
+            "title_led_consumption_bridge",
+            "alias_surface",
+        }
+    ):
+        return False
+    if gate_state:
+        gate_title = _safe_str(gate_state.get("candidate_title"))
+        if gate_title and not _titles_match(gate_title, title):
+            return False
+        gate_url = _official_detail_url(gate_state.get("candidate_url"))
+        if gate_url and gate_url != candidate_url:
+            return False
+        if gate_state.get("official_title_exists") is False:
+            return False
+        if gate_state.get("row_discusses_work_as_work") is False:
+            return False
+
+    return True
+
+
+def _unconfirmed_alias_official_detail_bridge(identity: Dict[str, Any], post_title: Any, title: Any) -> bool:
+    """Detect an official detail hit attached to an alias that never binds to the title."""
+    primary = nested_dict(identity.get("primary_work"))
+    alias = _safe_str(primary.get("alias_or_mention"))
+    if not alias:
+        return False
+    if _confirmed_alias_flags(identity):
+        return False
+    if _title_surface_compatible(alias, title):
+        return False
+    if _title_surface_compatible(post_title, title):
+        return False
+    if any(_title_surface_compatible(image_title, title) for image_title in _explicit_promoted_image_titles(identity)):
+        return False
+
+    anchor_type = _safe_str(identity.get("anchor_type")).lower()
+    anchor_strength = _safe_str(identity.get("anchor_strength")).lower()
+    flags = set(_safe_list(identity.get("consistency_flags")))
+    if anchor_type != "title_alias":
+        return False
+    if anchor_strength not in {"", "low", "medium"} and "batch_memory_exact_alias_rescued" not in flags:
+        return False
+
+    novel_identity = nested_dict(identity.get("novel_identity"))
+    primary_source_tier = _safe_str(primary.get("source_tier")).lower()
+    has_official_detail = primary_source_tier in OFFICIAL_TITLE_SOURCE_TIERS or bool(
+        _official_detail_url(novel_identity.get("heretic_url") or primary.get("heretic_url"))
+    )
+    if not has_official_detail:
+        return False
+
+    context_sources = {_safe_str(value).lower() for value in _safe_list(identity.get("context_sources"))}
+    primary_subject_type = _safe_str(identity.get("primary_subject_type")).lower()
+    discussion_type = _safe_str(identity.get("discussion_type")).lower()
+    if (
+        discussion_type == "character_talk"
+        and primary_subject_type in {"", "work_discussion", "specific_work", "single_work"}
+        and "batch_memory_alias_rescue_cleared_stale_demotions" in flags
+        and "search" in context_sources
+        and bool(context_sources & {"title", "body", "comments"})
+        and official_search_supports_title(identity, title)
+    ):
+        return False
+
+    if _title_led_consumption_exempts_unconfirmed_alias_bridge(identity, post_title, alias, title):
+        return False
+    if _shared_current_work_gate_exempts_unconfirmed_alias_bridge(identity, post_title, alias, title):
+        return False
+
+    alias_key = _compact_title(alias)
+    title_key = _compact_title(title)
+    if not alias_key or not title_key:
+        return False
+    if alias_key in title_key or title_key in alias_key:
+        return False
+
+    return True
+
+
+def _post_title_short_lead_for_official(post_title: Any, title: Any) -> bool:
+    title_key = _compact_title(title)
+    if not title_key:
+        return False
+    text = _safe_str(post_title)
+    if not text:
+        return False
+    if title_key in _compact_title(text):
+        return False
+    lead = re.split(r"[\s<>\(\)\[\]\?!,\.…]+", text, maxsplit=1)[0]
+    lead_key = _compact_title(lead)
+    if not lead_key or len(lead_key) > 5:
+        return False
+    if lead_key in LOW_INFORMATION_ALIAS_CLUES:
+        return True
+    return bool(lead_key in title_key and lead_key != title_key and len(lead_key) / max(1, len(title_key)) < 0.5)
+
+
+def _weak_template_overlap_public_title_bridge(identity: Dict[str, Any], post_title: Any, title: Any) -> bool:
+    """Detect official-detail promotion supported only by generic title-template overlap."""
+    post_text = _safe_str(post_title)
+    title_text = _safe_str(title)
+    if not post_text or not title_text:
+        return False
+    if _title_surface_compatible(post_text, title_text):
+        return False
+
+    post_key = _compact_title(post_text)
+    title_key = _compact_title(title_text)
+    if not post_key or not title_key:
+        return False
+    if title_key in post_key:
+        return False
+
+    anchor_type = _safe_str(identity.get("anchor_type")).lower()
+    anchor_strength = _safe_str(identity.get("anchor_strength")).lower()
+    if anchor_type not in {"title_alias", "title_exact"}:
+        return False
+    if anchor_strength not in {"", "low", "medium"}:
+        return False
+    if _confirmed_alias_flags(identity):
+        return False
+    if any(_title_surface_compatible(image_title, title_text) for image_title in _explicit_promoted_image_titles(identity)):
+        return False
+
+    primary = nested_dict(identity.get("primary_work"))
+    novel_identity = nested_dict(identity.get("novel_identity"))
+    primary_source_tier = _safe_str(primary.get("source_tier")).lower()
+    has_official_detail = primary_source_tier in OFFICIAL_TITLE_SOURCE_TIERS or bool(
+        _official_detail_url(novel_identity.get("heretic_url") or primary.get("heretic_url"))
+    )
+    if not has_official_detail:
+        return False
+
+    post_tokens = {_compact_title(token) for token in _title_tokens(post_text) if _compact_title(token)}
+    title_tokens = {_compact_title(token) for token in _title_tokens(title_text) if _compact_title(token)}
+    if len(title_tokens) < 2 or not post_tokens:
+        return False
+
+    common = post_tokens & title_tokens
+    if not common:
+        return False
+
+    weak_keys = {
+        _compact_title(token)
+        for token in (LOW_INFORMATION_ALIAS_CLUES | WEAK_ALIAS_BRIDGE_TOKENS | TITLE_TOKEN_STOPWORDS)
+        if _compact_title(token)
+    }
+    distinctive_common = {
+        token
+        for token in common
+        if len(token) >= 4 and token not in weak_keys and not _is_genre_descriptor_surface(token)
+    }
+    if distinctive_common:
+        return False
+
+    return len(common) <= 2 or all(token in weak_keys or len(token) < 4 for token in common)
+
+
+def _image_scene_cue_terms(identity: Dict[str, Any]) -> List[str]:
+    terms: List[str] = []
+    for evidence in _safe_dicts(identity.get("image_evidence_catalog")):
+        if evidence.get("promotion_eligible") is True:
+            continue
+        cue_values = list(_safe_list(evidence.get("work_cues")))
+        ocr_text = _safe_str(evidence.get("ocr_text"))
+        if ocr_text:
+            cue_values.extend(re.findall(r"[가-힣A-Za-z0-9]{2,}", ocr_text))
+        for cue in cue_values:
+            for token in _title_tokens(cue):
+                key = _compact_title(token)
+                if len(key) < 2:
+                    continue
+                if key in LOW_INFORMATION_ALIAS_CLUES or key in TITLE_TOKEN_STOPWORDS:
+                    continue
+                if key not in terms:
+                    terms.append(key)
+    return terms
+
+
+def _official_evidence_text_for_title(identity: Dict[str, Any], title: Any) -> str:
+    title_text = _safe_str(title)
+    if not title_text:
+        return ""
+    texts: List[str] = []
+    for evidence in _safe_dicts(identity.get("search_evidence_catalog")):
+        source_tier = _safe_str(evidence.get("source_tier")).lower()
+        if source_tier not in OFFICIAL_TITLE_SOURCE_TIERS:
+            continue
+        evidence_title = _safe_str(evidence.get("title"))
+        if not _title_surface_compatible(evidence_title, title_text):
+            continue
+        texts.extend(
+            _safe_str(evidence.get(key))
+            for key in ("title", "snippet", "query")
+            if _safe_str(evidence.get(key))
+        )
+    return " ".join(texts)
+
+
+def _image_scene_cues_unverified_public_title_bridge(
+    identity: Dict[str, Any],
+    post_title: Any,
+    title: Any,
+) -> bool:
+    if _title_surface_compatible(post_title, title):
+        return False
+
+    cue_terms = _image_scene_cue_terms(identity)
+    if len(cue_terms) < 2:
+        return False
+
+    evidence_text = _official_evidence_text_for_title(identity, title)
+    if not evidence_text:
+        return False
+    evidence_key = _compact_title(evidence_text)
+    if any(cue in evidence_key for cue in cue_terms):
+        return False
+
+    primary = nested_dict(identity.get("primary_work"))
+    novel_identity = nested_dict(identity.get("novel_identity"))
+    primary_source_tier = _safe_str(primary.get("source_tier")).lower()
+    has_official_detail = primary_source_tier in OFFICIAL_TITLE_SOURCE_TIERS or bool(
+        _official_detail_url(novel_identity.get("heretic_url") or primary.get("heretic_url"))
+    )
+    return has_official_detail
+
+
+def apply_weak_public_title_bridge_guard(identity: Dict[str, Any], post_title: Any = "") -> List[str]:
+    """Hold public titles promoted through weak/generic surfaces only.
+
+    This is a production precision guard, not a judge-seed shortcut: it preserves
+    the demoted title as a candidate and only blocks public promotion when the
+    bridge is a low-information alias, a generic genre surface, or a promoted OCR
+    title explicitly points at a different work or recommendation-only image
+    reference.
+    """
+    if not isinstance(identity, dict):
+        return []
+    _apply_same_url_official_page_title_over_alias_canonicalization(identity)
+    _apply_same_url_official_detail_canonicalization(identity)
+    _apply_platform_seo_title_suffix_canonicalization(identity)
+    title = official_title(identity)
+    if not title:
+        return []
+    if identity.get("title_resolution_allowed") is False:
+        return []
+
+    anchor_type = _safe_str(identity.get("anchor_type")).lower()
+    anchor_strength = _safe_str(identity.get("anchor_strength")).lower()
+    primary = nested_dict(identity.get("primary_work"))
+    alias = _safe_str(primary.get("alias_or_mention"))
+    flags = set(_safe_list(identity.get("consistency_flags")))
+    batch_alias_competing_hold = bool(
+        "batch_memory_exact_alias_rescued" in flags
+        and (
+            flags & BATCH_ALIAS_COMPETING_HOLD_FLAGS
+            or {"expert_conflict", "budget_quarantine_candidate"}.issubset(flags)
+        )
+    )
+    novel_identity = nested_dict(identity.get("novel_identity"))
+    primary_source_tier = _safe_str(primary.get("source_tier")).lower()
+    if (
+        primary_source_tier in WEAK_PRIMARY_SOURCE_TIERS
+        and anchor_strength == "high"
+        and not _official_detail_url(novel_identity.get("heretic_url") or primary.get("heretic_url"))
+        and not official_search_supports_title(identity, title)
+        and not _confirmed_alias_flags(identity)
+        and not _explicit_promoted_image_titles(identity)
+        and not _safe_list(novel_identity.get("alias_resolution_sources"))
+    ):
+        return _demote_official_title_to_hold(
+            identity,
+            reason="weak_source_exact_title_without_official_support_public_title_bridge",
+        )
+
+    image_recommendation_conflict_flags = {
+        "vlm_ocr_title_conflict_with_final_title",
+        "ocr_title_conflict_with_stable_alias",
+        "image_surface_title_unverified_without_official_evidence",
+        "weak_image_title_canonical_rescue",
+    }
+    if (
+        "direct_image_reference_recommendation_hold" in flags
+        and flags & image_recommendation_conflict_flags
+        and not _confirmed_alias_flags(identity)
+    ):
+        return _demote_official_title_to_hold(
+            identity,
+            reason="direct_image_reference_recommendation_public_title_conflict",
+        )
+
+    if (
+        "recommendation_context_only_no_work_anchor" in flags
+        and flags & image_recommendation_conflict_flags
+        and _safe_str(identity.get("primary_subject_type")).lower() == "recommendation_request"
+        and not _confirmed_alias_flags(identity)
+    ):
+        return _demote_official_title_to_hold(
+            identity,
+            reason="recommendation_context_only_public_title_conflict",
+        )
+
+    if (
+        _safe_str(identity.get("primary_subject_type")).lower()
+        in {"cross_media", "cross_media_game", "game", "gaming"}
+        and "official_url_recall_gate_recovered" in flags
+        and "title_body_official_detail_anchor" in flags
+        and not _confirmed_alias_flags(identity)
+    ):
+        return _demote_official_title_to_hold(
+            identity,
+            reason="cross_media_title_body_official_detail_public_title_bridge",
+        )
+
+    secondary_reference_rescue_flags = {
+        "secondary_reference_official_alias_rescued",
+        "secondary_reference_official_alias_author_meta_override",
+    }
+    secondary_reference_hard_hold_flags = {
+        "title_precision_downgrade",
+        "primary_work_cleared_non_resolved",
+    }
+    if (
+        alias
+        and flags & secondary_reference_rescue_flags
+        and flags & secondary_reference_hard_hold_flags
+        and not _title_surface_compatible(alias, title)
+        and not _title_surface_compatible(post_title, title)
+    ):
+        return _demote_official_title_to_hold(
+            identity,
+            reason="secondary_reference_precision_downgrade_public_title_bridge",
+        )
+
+    if (
+        alias
+        and batch_alias_competing_hold
+        and not _title_surface_compatible(alias, title)
+        and not _title_surface_compatible(post_title, title)
+        and not any(_title_surface_compatible(image_title, title) for image_title in _explicit_promoted_image_titles(identity))
+    ):
+        return _demote_official_title_to_hold(
+            identity,
+            reason="batch_memory_alias_competing_hold_public_title_bridge",
+        )
+
+    if _official_title_conflicts_with_promoted_image(identity, title):
+        return _demote_official_title_to_hold(
+            identity,
+            reason="promoted_image_work_title_conflicts_with_public_title",
+            state="ocr_explicit_title_unresolved",
+        )
+
+    if _unverified_promoted_image_title(identity, title):
+        return _demote_official_title_to_hold(
+            identity,
+            reason="unverified_promoted_image_work_title_without_official_support",
+            state="ocr_explicit_title_unresolved",
+        )
+
+    if anchor_type == "genre" and (
+        anchor_strength in {"", "low", "medium"} or _compact_title(title) in {_compact_title(v) for v in GENERIC_WORK_SURFACE_TITLES}
+    ):
+        return _demote_official_title_to_hold(
+            identity,
+            reason="generic_genre_surface_public_title_bridge",
+        )
+
+    if alias and _weak_alias_surface(alias, title):
+        alias_key = _compact_title(alias)
+        title_key = _compact_title(title)
+        post_key = _compact_title(post_title)
+        if (
+            alias_key == title_key
+            and len(title_key) >= 4
+            and anchor_type == "title_exact"
+            and anchor_strength in {"high", "medium"}
+            and post_key.startswith(title_key)
+        ):
+            return []
+        if batch_alias_competing_hold:
+            return _demote_official_title_to_hold(
+                identity,
+                reason="batch_memory_alias_competing_hold_public_title_bridge",
+            )
+        if (
+            "precision_seed_independent_official_detail_supported" in flags
+            and _precision_seed_independent_official_support(identity, title)
+        ):
+            return []
+        if (
+            "same_url_official_detail_canonicalized" in flags
+            and _precision_seed_independent_official_support(identity, title)
+        ):
+            return []
+        if (
+            _confirmed_alias_exempts_weak_bridge(identity, alias, title)
+            and "batch_memory_exact_alias_rescued" not in flags
+        ):
+            return []
+        if _shared_current_work_gate_exempts_weak_alias_bridge(identity, post_title, alias, title):
+            return []
+        novel_identity = nested_dict(identity.get("novel_identity"))
+        primary_source_tier = _safe_str(primary.get("source_tier")).lower()
+        primary_locked = bool(primary.get("locked"))
+        has_official_detail = primary_source_tier in OFFICIAL_TITLE_SOURCE_TIERS and bool(
+            _official_detail_url(novel_identity.get("heretic_url") or primary.get("heretic_url"))
+        )
+        if (
+            "batch_memory_exact_alias_rescued" in flags
+            and primary_locked
+            and has_official_detail
+        ):
+            return []
+        return _demote_official_title_to_hold(
+            identity,
+            reason="weak_alias_surface_public_title_bridge",
+        )
+
+    if _unconfirmed_alias_official_detail_bridge(identity, post_title, title):
+        return _demote_official_title_to_hold(
+            identity,
+            reason="unconfirmed_alias_official_detail_bridge",
+        )
+
+    scene_only_bridge_anchor_types = {
+        "title_alias",
+        "author",
+        "character",
+        "character_mention",
+        "plot_mention",
+    }
+    if (
+        not alias
+        and anchor_type in scene_only_bridge_anchor_types
+        and anchor_strength in {"", "low", "medium"}
+        and not _confirmed_alias_flags(identity)
+        and _image_scene_cues_unverified_public_title_bridge(identity, post_title, title)
+    ):
+        return _demote_official_title_to_hold(
+            identity,
+            reason="image_scene_cues_unverified_public_title_bridge",
+        )
+
+    if (
+        not alias
+        and anchor_type in {"title_exact", "title_alias"}
+        and _post_title_short_lead_for_official(post_title, title)
+    ):
+        return _demote_official_title_to_hold(
+            identity,
+            reason="short_lead_surface_public_title_bridge",
+        )
+
+    if not alias and _weak_template_overlap_public_title_bridge(identity, post_title, title):
+        return _demote_official_title_to_hold(
+            identity,
+            reason="weak_template_surface_public_title_bridge",
+        )
+
+    return []
+
+
 def _precision_seed_weak_or_non_novel_title_reasons(identity: Dict[str, Any]) -> List[str]:
     title = official_title(identity)
     if not title:
@@ -1535,8 +3416,213 @@ def _precision_seed_weak_or_non_novel_title_reasons(identity: Dict[str, Any]) ->
         and not official_search_supports_title(identity, title)
     ):
         reasons.append("precision_seed_weak_source_title_without_official_support")
+    if _author_plot_composite_alias_bridge(identity):
+        reasons.append("precision_seed_author_plot_composite_requires_review")
 
     return reasons
+
+
+def _phase2_hold_seed_precision_reasons(judge_seed: Optional[Dict[str, Any]]) -> List[str]:
+    seed = nested_dict(judge_seed)
+    label = _safe_str(seed.get("phase2_resolution_label")).lower().replace("-", "_")
+    action = _safe_str(seed.get("phase2_recommended_action")).lower().replace("-", "_")
+    fix_axis = _safe_str(seed.get("phase2_fix_axis")).lower()
+    if label != "hold":
+        return []
+    if action not in {"re_search", "review", "hold"} and fix_axis != "resolution_promotion_gate":
+        return []
+    return ["phase2_hold_seed_requires_review"]
+
+
+def _author_plot_composite_alias_bridge(identity: Dict[str, Any]) -> bool:
+    slang = nested_dict(identity.get("slang_insight"))
+    if not slang:
+        return False
+    alias_scope = _safe_str(slang.get("alias_scope")).lower()
+    attached_type = _safe_str(slang.get("attached_entity_type")).lower()
+    store_reason = _safe_str(slang.get("store_reason")).lower()
+    attached_text = _safe_str(slang.get("attached_entity_text"))
+    return bool(
+        alias_scope == "work_plus_author"
+        and store_reason == "composite_alias"
+        and (
+            attached_type in {"", "author"}
+            or bool(attached_text)
+        )
+    )
+
+
+def _precision_seed_independent_official_support(identity: Dict[str, Any], title: Any) -> bool:
+    title_text = _safe_str(title)
+    if not title_text:
+        return False
+    novel_identity = nested_dict(identity.get("novel_identity"))
+    primary = nested_dict(identity.get("primary_work"))
+    official_url = _official_detail_url(
+        novel_identity.get("heretic_url")
+        or identity.get("heretic_url")
+        or primary.get("heretic_url")
+        or primary.get("url")
+    )
+    if not official_url:
+        return False
+
+    flags = {str(flag) for flag in _safe_list(identity.get("consistency_flags"))}
+    support_items = [
+        item
+        for item in _official_detail_support_dicts(identity)
+        if _official_detail_urls_match(official_url, item.get("heretic_url") or item.get("url"))
+        and _official_support_title_matches(title_text, candidate_name(item))
+    ]
+    context_sources = {_safe_str(value).lower() for value in _safe_list(identity.get("context_sources"))}
+    primary_subject_type = _safe_str(identity.get("primary_subject_type")).lower()
+    recoverable_stale_competition_flags = {
+        "multi_work_title_cleared",
+        "secondary_reference_official_alias_blocked_after_multi_work_title_cleared",
+    }
+    locked_official_base_support = bool(
+        "locked_official_candidate_rescued" in flags
+        and (
+            "weak_public_title_bridge_locked_official_exempt" in flags
+            or "weak_public_title_bridge_verified_alias_detail_exempt" in flags
+            or "explicit_alias_official_work_lock" in flags
+        )
+        and _safe_str(identity.get("discussion_type")).lower() in CORE_DISCUSSION_TYPES
+        and primary_subject_type in {"", "work_discussion", "specific_work", "single_work"}
+    )
+
+    locked_official_detail_support = False
+    if locked_official_base_support:
+        for item in support_items:
+            role = _safe_str(item.get("reference_role")).lower()
+            if item is primary or item.get("locked") is True or role in {"primary", "candidate", ""}:
+                locked_official_detail_support = True
+                break
+
+    locked_official_reread_support = bool(
+        locked_official_base_support
+        and (
+            "final_semantic_reread_accepted_resolution" in flags
+            or locked_official_detail_support
+        )
+    )
+    verified_alias_stale_reread_support = bool(
+        support_items
+        and flags & recoverable_stale_competition_flags
+        and "verified_alias_official_detail_anchor" in flags
+        and "final_semantic_reread_accepted_resolution" in flags
+        and any(flag.startswith("confirmed_alias:") for flag in flags)
+        and _safe_str(identity.get("discussion_type")).lower() in CORE_DISCUSSION_TYPES
+        and primary_subject_type
+        in {"", "work_discussion", "specific_work", "single_work", "multi_work_bundle"}
+        and "search" in context_sources
+        and bool(context_sources & {"title", "body", "comments"})
+    )
+    stale_reread_support = locked_official_reread_support or verified_alias_stale_reread_support
+
+    if identity.get("title_resolution_allowed") is False:
+        return False
+    work_resolution = _safe_str(identity.get("work_resolution")).lower()
+    if work_resolution not in {"resolved", "safe_resolved"} and not (
+        work_resolution in {"", "unresolved", "hold_unresolved"}
+        and stale_reread_support
+    ):
+        return False
+
+    hard_hold_flags = {
+        "title_precision_downgrade",
+        "primary_work_cleared_non_resolved",
+        "official_url_recall_blocked_relation_non_work_context",
+        "official_url_recall_blocked_hard_non_novel_context",
+        "official_url_recall_blocked_cross_media_title_body_hold",
+        "official_url_recall_blocked_competing_candidate",
+        "expert_conflict",
+        "multi_work_title_cleared",
+        "secondary_reference_official_alias_blocked_after_multi_work_title_cleared",
+        "budget_quarantine_candidate",
+        "title_hold",
+        "fanfic_derivative_title_unanchored_hold",
+        "multi_work_relation_hold_demoted",
+        "non_novel_media_title_demoted",
+        "vlm_ocr_title_conflict_with_final_title",
+        "ocr_title_conflict_with_stable_alias",
+        "image_surface_title_unverified_without_official_evidence",
+    }
+    if locked_official_reread_support and "locked_official_rescue_cleared_stale_demotions" in flags:
+        recoverable_stale_competition_flags.add("official_url_recall_blocked_competing_candidate")
+    hard_hold_hits = flags & hard_hold_flags
+    stale_competition_only = bool(
+        hard_hold_hits
+        and hard_hold_hits <= recoverable_stale_competition_flags
+        and stale_reread_support
+    )
+    if (
+        (hard_hold_hits and not stale_competition_only)
+        or any(str(flag).startswith("unresolved_worklike_hold:") for flag in flags)
+    ):
+        return False
+
+    if _author_plot_composite_alias_bridge(identity):
+        return False
+
+    if not support_items and not official_search_supports_title(identity, title_text):
+        return False
+
+    has_context = bool(context_sources & {"title", "body", "comments", "image", "search"})
+    if not has_context:
+        return False
+
+    anchor_type = _safe_str(identity.get("anchor_type")).lower()
+    anchor_strength = _safe_str(identity.get("anchor_strength")).lower()
+    has_direct_anchor = bool(
+        anchor_type in {"image", "title_exact", "title_alias", "ocr_explicit_title", "full_title_surface", "official_url"}
+        and anchor_strength in {"high", "medium"}
+    )
+    has_locked_contextual_anchor = bool(
+        locked_official_reread_support
+        and anchor_type in {"author", "character", "character_mention", "plot_mention", "title_alias"}
+        and anchor_strength in {"high", "medium"}
+        and "search" in context_sources
+        and bool(context_sources & {"title", "body", "comments"})
+    )
+    has_verified_alias_lock = bool(
+        any(flag.startswith("confirmed_alias:") for flag in flags)
+        and (
+            "verified_alias_official_detail_anchor" in flags
+            or "explicit_alias_official_work_lock" in flags
+        )
+    )
+    if primary_subject_type in {"cross_media", "cross_media_game", "game", "gaming"} and not has_verified_alias_lock:
+        return False
+
+    def alias_source_supported(item: Dict[str, Any]) -> bool:
+        alias = _safe_str(item.get("alias_or_mention") or item.get("matched_clue"))
+        alias_key = _compact_title(alias)
+        if len(alias_key) < 3:
+            return False
+        if alias_key in LOW_INFORMATION_ALIAS_CLUES or alias_key in TITLE_TOKEN_STOPWORDS:
+            return False
+        role = _safe_str(item.get("reference_role")).lower()
+        return role in {"primary", "mentioned", ""} and _safe_str(item.get("promotion_policy")).lower() != "hold_without_promotion"
+
+    has_official_alias_source = any(alias_source_supported(item) for item in support_items)
+    has_primary_official_detail = any(
+        _safe_str(item.get("reference_role")).lower() == "primary"
+        or item is primary
+        for item in support_items
+    )
+    has_locked_primary_official_detail = bool(
+        locked_official_reread_support
+        and (has_direct_anchor or has_locked_contextual_anchor)
+        and has_primary_official_detail
+        and support_items
+    )
+    return bool(
+        has_verified_alias_lock
+        or has_locked_primary_official_detail
+        or (has_direct_anchor and has_official_alias_source)
+        or (has_direct_anchor and has_primary_official_detail and official_search_supports_title(identity, title_text))
+    )
 
 
 def apply_judge_seed_precision_guard(
@@ -1558,16 +3644,34 @@ def apply_judge_seed_precision_guard(
     ):
         return []
 
+    _apply_same_url_official_detail_canonicalization(identity)
+    _apply_platform_seo_title_suffix_canonicalization(identity)
     blocked_title = official_title(identity)
     if not blocked_title:
         return []
+    phase2_hold_reasons = _phase2_hold_seed_precision_reasons(judge_seed)
+    if not phase2_hold_reasons and _precision_seed_independent_official_support(identity, blocked_title):
+        _append_unique_list(
+            identity,
+            "precision_seed_bypass_reasons",
+            ["precision_seed_independent_official_detail_supported"],
+        )
+        _append_unique_list(
+            identity,
+            "consistency_flags",
+            ["precision_seed_independent_official_detail_supported"],
+        )
+        return []
 
     reasons = _precision_seed_weak_or_non_novel_title_reasons(identity)
+    for reason in phase2_hold_reasons:
+        if reason not in reasons:
+            reasons.append(reason)
     if not reasons:
         reasons.append("precision_seed_official_title_requires_review")
 
     novel_identity = nested_dict(identity.get("novel_identity"))
-    blocked_url = _safe_str(novel_identity.get("heretic_url"))
+    blocked_url = _safe_str(novel_identity.get("heretic_url") or identity.get("heretic_url"))
     blocked_confidence = _safe_str(novel_identity.get("confidence"))
 
     if novel_identity:
@@ -1578,7 +3682,7 @@ def apply_judge_seed_precision_guard(
             novel_identity["confidence"] = "None"
         identity["novel_identity"] = novel_identity
 
-    for key in ("official_title", "official_novel_title", "resolved_title"):
+    for key in ("official_title", "official_novel_title", "resolved_title", "heretic_url"):
         if key in identity:
             identity[key] = None
 
@@ -1600,6 +3704,7 @@ def apply_judge_seed_precision_guard(
     guard_note = f"Precision seed weak/cross-media title promotion blocked: {blocked_title}"
     if guard_note not in reason_text:
         identity["reason"] = f"{reason_text}\n{guard_note}".strip() if reason_text else guard_note
+    _scrub_precision_seed_reason_lines(identity, blocked_title)
 
     return reasons
 
@@ -1673,6 +3778,91 @@ def apply_judge_seed_hygiene_expected_title_guard(
     _scrub_seed_conflict_reason_lines(identity, current_title, expected_title, "hygiene")
 
     return [reason]
+
+
+def apply_judge_seed_hygiene_alias_conflict_guard(
+    identity: Dict[str, Any],
+    judge_seed: Optional[Dict[str, Any]] = None,
+) -> List[str]:
+    """Demote hygiene-seed titles when image/OCR and stable-alias evidence disagree.
+
+    Hygiene seeds are review probes, not approval lanes. If a rerun still carries
+    both a final-title-vs-image conflict and a stable-alias conflict, leaving a
+    public title in place hides the contradiction as lint-only evidence.
+    """
+
+    if not isinstance(identity, dict):
+        return []
+    disagreement_type = _judge_disagreement_type(judge_seed)
+    if seed_group(disagreement_type, judge_seed) != "hygiene":
+        return []
+
+    title = official_title(identity)
+    if not title:
+        return []
+    if identity.get("title_resolution_allowed") is False:
+        return []
+
+    flags = {str(flag or "").strip() for flag in _safe_list(identity.get("consistency_flags"))}
+    has_image_title_conflict = bool(
+        "vlm_ocr_title_conflict_with_final_title" in flags
+        or "image_surface_title_unverified_without_official_evidence" in flags
+    )
+    has_stable_alias_conflict = bool(
+        "ocr_title_conflict_with_stable_alias" in flags
+        or "search_title_conflict_with_stable_alias" in flags
+        or "stable_batch_alias_conflict_corrected" in flags
+    )
+    if not (has_image_title_conflict and has_stable_alias_conflict):
+        return []
+
+    reason = f"judge_hygiene_seed_alias_image_conflict_{disagreement_type or 'unknown'}"
+    reasons = _demote_official_title_to_hold(identity, reason=reason)
+    if not reasons:
+        return []
+
+    _append_unique_list(identity, "output_consistency_lint", reasons)
+    _append_unique_list(identity, "consistency_flags", reasons)
+
+    reason_text = _safe_str(identity.get("reason"))
+    guard_note = (
+        "Hygiene seed kept conflicting alias/image evidence; public title held "
+        f"pending review: {title}"
+    )
+    if guard_note not in reason_text:
+        identity["reason"] = f"{reason_text}\n{guard_note}".strip() if reason_text else guard_note
+    return reasons
+
+
+def apply_judge_seed_wrong_relevance_public_title_guard(
+    identity: Dict[str, Any],
+    judge_seed: Optional[Dict[str, Any]] = None,
+) -> List[str]:
+    """Demote wrong-relevance probe titles to candidates instead of public titles."""
+
+    if not isinstance(identity, dict):
+        return []
+    disagreement_type = _judge_disagreement_type(judge_seed)
+    if disagreement_type != "wrong_relevance":
+        return []
+    group = seed_group(disagreement_type, judge_seed)
+    if group not in {"candidate", "hygiene"}:
+        return []
+
+    title = official_title(identity)
+    if not title:
+        return []
+    if identity.get("title_resolution_allowed") is False:
+        return []
+
+    reason = f"judge_{group}_seed_wrong_relevance_public_title_held"
+    reasons = _demote_official_title_to_hold(identity, reason=reason)
+    if not reasons:
+        return []
+
+    _append_unique_list(identity, "output_consistency_lint", reasons)
+    _append_unique_list(identity, "consistency_flags", reasons)
+    return reasons
 
 
 def _preserve_judge_expected_candidate(
@@ -1984,6 +4174,47 @@ def _scrub_trope_boundary_reason_lines(identity: Dict[str, Any], blocked_title: 
         identity["reason"] = "\n".join(str(line) for line in updated if str(line).strip())
 
 
+def _scrub_precision_seed_reason_lines(identity: Dict[str, Any], blocked_title: str) -> None:
+    raw_lines = _safe_list(identity.get("reason_lines"))
+    if not raw_lines:
+        reason_text = _safe_str(identity.get("reason"))
+        raw_lines = reason_text.splitlines() if reason_text else []
+    if not raw_lines or not blocked_title:
+        return
+
+    updated: List[Any] = []
+    correction_added = False
+    for line in raw_lines:
+        text = str(line)
+        stripped = text.strip()
+        replacement: Optional[str] = None
+        if stripped.startswith("- 공식 제목:"):
+            replacement = "- 공식 제목: 미확정 (precision seed HOLD; 후보로만 보존)"
+        elif "최종 공식 제목" in stripped and ("확정" in stripped or blocked_title in stripped):
+            replacement = "- 최종 공식 제목 확정 문구는 precision seed guard로 철회됨."
+        elif "heretic_url_platform" in stripped:
+            replacement = "- heretic_url_platform 점수는 precision seed guard로 철회됨."
+        elif blocked_title in stripped and "관련 작품 토론으로 판정" in stripped:
+            replacement = (
+                "- 작품/IP 후보 맥락은 보존하되, precision seed라 단일 공식 제목 "
+                "확정은 보류함."
+            )
+
+        if replacement:
+            if replacement not in updated:
+                updated.append(replacement)
+            correction_added = True
+        else:
+            updated.append(line)
+
+    note = "- public title promotion blocked: precision_seed -> candidate/HOLD"
+    if correction_added and note not in updated:
+        updated.append(note)
+    identity["reason_lines"] = updated
+    if correction_added:
+        identity["reason"] = "\n".join(str(line) for line in updated if str(line).strip())
+
+
 def _scrub_seed_conflict_reason_lines(
     identity: Dict[str, Any],
     blocked_title: str,
@@ -2061,11 +4292,15 @@ def identity_consistency_lint_reasons(
     title = official_title(identity)
     disagreement_type = _judge_disagreement_type(judge_seed)
     reasons: List[str] = []
-    if title and identity.get("is_resolved_work_discussion") is False:
+    if title and identity.get("is_resolved_work_discussion") is False and not _title_resolution_confirmed(identity):
         reasons.append("official_title_present_when_is_resolved_work_discussion_false")
     if title and identity.get("is_relevant") is False:
         reasons.append("official_title_present_when_is_relevant_false")
-    if seed_group(disagreement_type, judge_seed) == "precision" and title:
+    if (
+        seed_group(disagreement_type, judge_seed) == "precision"
+        and title
+        and not _precision_seed_independent_official_support(identity, title)
+    ):
         reasons.append(f"judge_precision_seed_{disagreement_type}")
     return reasons
 
@@ -2148,6 +4383,7 @@ def classify_candidate_audit(
     candidates = collect_candidate_titles(identity)
     disagreement_type = _judge_disagreement_type(judge_seed)
     group = seed_group(disagreement_type, judge_seed)
+    promotion_decision = _promotion_gate_decision(identity)
 
     if official_title_lint_reasons(identity):
         return "official_title_lint"
@@ -2155,6 +4391,8 @@ def classify_candidate_audit(
         return "identity_consistency_lint"
     if output_consistency_lint_reasons(identity, judge_seed) and group in {"hygiene", "candidate"}:
         return "output_consistency_lint"
+    if title and promotion_decision and promotion_decision.get("publish_allowed") is False:
+        return "promotion_blocked"
     if title:
         return "safe_resolved"
     if group == "hygiene" and disagreement_type == "title_noisy_ocr" and _unresolved_hold_signal(identity):
@@ -2248,7 +4486,21 @@ def build_candidate_audit_fields(
     identity: Dict[str, Any],
     judge_seed: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
+    existing_ledger = nested_dict(identity.get("candidate_ledger"))
     ledger = build_candidate_ledger(identity, judge_seed)
+    promotion_decision = _promotion_gate_decision(identity)
+    if promotion_decision:
+        ledger["promotion_decision"] = promotion_decision
+        gate_state = nested_dict(identity.get("promotion_gate_state"))
+        if not gate_state:
+            gate_state = nested_dict(existing_ledger.get("promotion_gate_state"))
+        if gate_state:
+            ledger["promotion_gate_state"] = gate_state
+        gate_evidence = identity.get("promotion_gate_evidence")
+        if not isinstance(gate_evidence, list):
+            gate_evidence = existing_ledger.get("promotion_gate_evidence")
+        if isinstance(gate_evidence, list):
+            ledger["promotion_gate_evidence"] = gate_evidence
     existing_official_lint = _safe_list(identity.get("official_title_lint"))
     official_lint = list(dict.fromkeys(existing_official_lint + official_title_lint_reasons(identity)))
     identity_lint = identity_consistency_lint_reasons(identity, judge_seed)
@@ -2286,6 +4538,7 @@ def apply_candidate_audit_fields(
 ) -> Dict[str, Any]:
     if not isinstance(identity, dict):
         return {}
+    preserve_recoverable_official_detail_candidate(identity)
     prune_noisy_llm_only_candidates(identity, judge_seed)
     fields = build_candidate_audit_fields(identity, judge_seed)
     identity.update(fields)

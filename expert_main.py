@@ -10,6 +10,7 @@ Agentic Pipeline (유기적 전문가 시스템) 원클릭 엔트리포인트.
 """
 
 import argparse
+from difflib import SequenceMatcher
 import json
 import os
 import re
@@ -161,6 +162,2309 @@ def _apply_model_parallel_cap(requested_parallel: int, model_name: Optional[str]
         "model_parallel_cap_applied": bool(model_max and capped != requested),
         "model_parallel_cap_model": str(model_name or ""),
     }
+
+
+def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_title: Optional[str] = None) -> bool:
+    """Keep serialized output consistent when candidate audit demotes a title."""
+    if not isinstance(result_dict, dict):
+        return False
+    identity = result_dict.get("identity")
+    if not isinstance(identity, dict):
+        return False
+
+    status = str(identity.get("candidate_ledger_status") or "")
+    title_allowed = identity.get("title_resolution_allowed")
+
+    ledger = identity.get("candidate_ledger")
+    if not isinstance(ledger, dict):
+        ledger = {}
+    promotion_decision = identity.get("promotion_decision")
+    if not isinstance(promotion_decision, dict):
+        promotion_decision = ledger.get("promotion_decision")
+    promotion_gate_state = identity.get("promotion_gate_state")
+    if not isinstance(promotion_gate_state, dict):
+        promotion_gate_state = ledger.get("promotion_gate_state")
+    promotion_gate_blocked = (
+        isinstance(promotion_decision, dict)
+        and promotion_decision.get("publish_allowed") is False
+    )
+
+    novel_identity = identity.get("novel_identity")
+    nested_title = ""
+    nested_url = ""
+    if isinstance(novel_identity, dict):
+        nested_title = str(
+            novel_identity.get("official_title")
+            or novel_identity.get("official_novel_title")
+            or novel_identity.get("resolved_title")
+            or ""
+        ).strip()
+        nested_url = str(
+            novel_identity.get("heretic_url")
+            or novel_identity.get("official_url")
+            or novel_identity.get("url")
+            or ""
+        ).strip()
+
+    def _candidate_title_url(item: Any) -> tuple[str, str]:
+        if isinstance(item, dict):
+            return (
+                str(
+                    item.get("official_title")
+                    or item.get("official_novel_title")
+                    or item.get("resolved_title")
+                    or item.get("title")
+                    or ""
+                ).strip(),
+                str(
+                    item.get("heretic_url")
+                    or item.get("official_url")
+                    or item.get("resolved_url")
+                    or item.get("url")
+                    or ""
+                ).strip(),
+            )
+        if isinstance(item, str):
+            return item.strip(), ""
+        return "", ""
+
+    def _title_key(title: Any) -> str:
+        return re.sub(r"[^0-9A-Za-z가-힣]+", "", str(title or "")).lower()
+
+    def _source_post_title() -> str:
+        for value in (
+            post_title,
+            result_dict.get("title"),
+            result_dict.get("post_title"),
+            result_dict.get("source_title"),
+            identity.get("post_title"),
+            identity.get("source_title"),
+            ledger.get("post_title"),
+            ledger.get("source_title"),
+        ):
+            value = str(value or "").strip()
+            if value:
+                return value
+        for container in (
+            result_dict.get("post_metadata"),
+            result_dict.get("source_metadata"),
+            result_dict.get("input_post"),
+            result_dict.get("post"),
+        ):
+            if not isinstance(container, dict):
+                continue
+            for key in ("title", "post_title", "source_title", "raw_title"):
+                value = str(container.get(key) or "").strip()
+                if value:
+                    return value
+        return ""
+
+    def _reviewable_conflict_candidate(item: Any) -> bool:
+        if not isinstance(item, dict):
+            return False
+        if str(item.get("heretic_url") or item.get("official_url") or item.get("url") or "").strip():
+            return True
+        source_tier = str(item.get("source_tier") or "").strip().lower()
+        if source_tier in {"official_detail", "mixed", "search_result", "official"}:
+            return True
+        page_type = str(item.get("page_type") or "").strip().lower()
+        return page_type in {"novel_page", "work_detail"}
+
+    def _competing_candidate_titles(public_title: str) -> List[str]:
+        public_key = _title_key(public_title)
+        if not public_key:
+            return []
+        competing: List[str] = []
+        seen = set()
+        for source_items in (
+            ledger.get("candidate_preservation_sources") or [],
+            identity.get("candidate_preservation_sources") or [],
+            ledger.get("title_candidates") or [],
+            identity.get("title_candidates") or [],
+        ):
+            if not isinstance(source_items, list):
+                continue
+            for item in source_items:
+                candidate_title, _candidate_url = _candidate_title_url(item)
+                candidate_key = _title_key(candidate_title)
+                if not candidate_key or candidate_key == public_key:
+                    continue
+                if isinstance(item, dict) and not _reviewable_conflict_candidate(item):
+                    continue
+                if not isinstance(item, dict):
+                    continue
+                if candidate_key in seen:
+                    continue
+                seen.add(candidate_key)
+                competing.append(candidate_title)
+        return competing
+
+    def _blocked_candidate_source_items() -> List[Any]:
+        items: List[Any] = []
+        for source_items in (
+            ledger.get("candidate_preservation_sources") or [],
+            identity.get("candidate_preservation_sources") or [],
+            ledger.get("title_candidates") or [],
+            identity.get("title_candidates") or [],
+        ):
+            if isinstance(source_items, list):
+                items.extend(source_items)
+        return items
+
+    def _source_lists_have_text(*values: Any) -> bool:
+        for value in values:
+            if isinstance(value, str) and value.strip():
+                return True
+            if isinstance(value, list):
+                for item in value:
+                    if isinstance(item, str) and item.strip():
+                        return True
+                    if isinstance(item, dict) and any(
+                        str(item.get(key) or "").strip()
+                        for key in ("text", "content", "body", "comment")
+                    ):
+                        return True
+        return False
+
+    def _official_detail_url(value: Any) -> str:
+        url = str(value or "").strip()
+        lowered = url.lower()
+        if not url:
+            return ""
+        if "novelpia.com/novel/" in lowered:
+            return url
+        if "series.naver.com/novel/detail.series" in lowered:
+            return url
+        if "page.kakao.com/content/" in lowered:
+            return url
+        if "novel.munpia.com/" in lowered:
+            return url
+        return ""
+
+    def _search_evidence_items() -> List[Dict[str, Any]]:
+        items: List[Dict[str, Any]] = []
+        for source in (identity, ledger):
+            if not isinstance(source, dict):
+                continue
+            for key in ("search_evidence_catalog", "search_results", "web_search_results"):
+                values = source.get(key)
+                if isinstance(values, list):
+                    items.extend(item for item in values if isinstance(item, dict))
+        return items
+
+    def _official_detail_url_from_search_evidence(candidate_title: str) -> str:
+        candidate_key = _title_key(candidate_title)
+        if not candidate_key:
+            return ""
+        for item in _search_evidence_items():
+            url = _official_detail_url(item.get("url"))
+            if not url:
+                continue
+            item_title = str(item.get("title") or item.get("official_title") or "").strip()
+            item_snippet = str(item.get("snippet") or item.get("content") or "").strip()
+            title_key = _title_key(item_title)
+            snippet_key = _title_key(item_snippet)
+            title_matches = bool(
+                title_key
+                and (
+                    title_key == candidate_key
+                    or candidate_key in title_key
+                    or title_key in candidate_key
+                )
+            )
+            snippet_matches = bool(candidate_key and candidate_key in snippet_key)
+            if title_matches or snippet_matches:
+                return url
+        return ""
+
+    def _remove_negative_evidence(item: Dict[str, Any], *codes: str) -> bool:
+        values = item.get("negative_evidence")
+        if not isinstance(values, list):
+            return False
+        remove_set = {str(code) for code in codes}
+        cleaned = [value for value in values if str(value) not in remove_set]
+        if cleaned == values:
+            return False
+        item["negative_evidence"] = cleaned or None
+        return True
+
+    def _repair_blocked_candidate_official_detail_url(candidate_title: str, candidate_url: str) -> bool:
+        if not candidate_title or not candidate_url:
+            return False
+        candidate_key = _title_key(candidate_title)
+        changed_local = False
+        containers: List[Any] = [
+            identity.get("title_candidates"),
+            identity.get("secondary_reference_works"),
+            identity.get("candidate_preservation_sources"),
+            ledger.get("title_candidates"),
+            ledger.get("candidate_preservation_sources"),
+        ]
+        analysis = result_dict.get("analysis")
+        if isinstance(analysis, dict):
+            containers.append(analysis.get("detected_titles"))
+        for values in containers:
+            if not isinstance(values, list):
+                continue
+            for item in values:
+                if not isinstance(item, dict):
+                    continue
+                item_title, item_url = _candidate_title_url(item)
+                if _title_key(item_title) != candidate_key:
+                    continue
+                if not item_url:
+                    item["heretic_url"] = candidate_url
+                    changed_local = True
+                source_tier = str(item.get("source_tier") or "").strip().lower()
+                if source_tier in {"", "community", "web", "search_result"}:
+                    item["source_tier"] = "official_detail"
+                    changed_local = True
+                if str(item.get("page_type") or "").strip().lower() not in {"novel_page", "work_detail"}:
+                    item["page_type"] = "novel_page"
+                    changed_local = True
+                if _remove_negative_evidence(
+                    item,
+                    "missing_official_url_for_official_detail",
+                    "url_is_community_post",
+                    "url_is_listing",
+                    "listing_only",
+                ):
+                    changed_local = True
+        return changed_local
+
+    def _candidate_alias_keys(candidate_title: str, candidate_url: str) -> List[str]:
+        candidate_key = _title_key(candidate_title)
+        candidate_url = str(candidate_url or "").strip()
+        aliases: List[str] = []
+        source_lists = (
+            [identity.get("primary_work")],
+            identity.get("title_candidates") or [],
+            identity.get("candidate_preservation_sources") or [],
+            ledger.get("title_candidates") or [],
+            ledger.get("candidate_preservation_sources") or [],
+        )
+        analysis = result_dict.get("analysis")
+        if isinstance(analysis, dict):
+            source_lists = (*source_lists, analysis.get("detected_titles") or [])
+        for source_items in source_lists:
+            if not isinstance(source_items, list):
+                continue
+            for item in source_items:
+                if not isinstance(item, dict):
+                    continue
+                item_title, item_url = _candidate_title_url(item)
+                item_key = _title_key(item_title)
+                if item_key and candidate_key and item_key != candidate_key:
+                    if not (candidate_url and item_url and item_url == candidate_url):
+                        continue
+                alias_text = str(
+                    item.get("alias_or_mention")
+                    or item.get("matched_alias")
+                    or item.get("anchor_text")
+                    or ""
+                ).strip()
+                alias_key = _title_key(alias_text)
+                if alias_key and alias_key not in aliases:
+                    aliases.append(alias_key)
+        return aliases
+
+    def _title_led_consumption_marker(text: str) -> bool:
+        return bool(
+            re.search(
+                r"(?:볼\s*만(?:하|한|함|했)|재(?:밌|밋|미있|미잇)[가-힣]*|재미(?:있|잇)[가-힣]*)",
+                str(text or ""),
+            )
+        )
+
+    def _candidate_trace_score(candidate_title: str, candidate_url: str, item: Any = None) -> int:
+        if not candidate_title:
+            return -10_000
+        score = 0
+        if _official_detail_url(candidate_url):
+            score += 80
+        if isinstance(item, dict):
+            source_tier = str(item.get("source_tier") or "").strip().lower()
+            if source_tier in {"official_detail", "novel_platform", "official"}:
+                score += 60
+            elif source_tier in {"search_result", "mixed"}:
+                score += 45
+            elif source_tier == "community":
+                score += 10
+            elif source_tier == "comment_surface":
+                score -= 70
+            page_type = str(item.get("page_type") or "").strip().lower()
+            if page_type in {"novel_page", "work_detail"}:
+                score += 30
+            reference_role = str(item.get("reference_role") or "").strip().lower()
+            if reference_role == "primary":
+                score += 25
+            elif reference_role in {"mentioned", "candidate"}:
+                score += 5
+            confidence = str(item.get("confidence") or "").strip().lower()
+            if confidence == "high":
+                score += 15
+            elif confidence == "medium":
+                score += 5
+            elif confidence == "low":
+                score -= 10
+            if str(item.get("promotion_policy") or "").strip().lower() == "hold_without_promotion":
+                score -= 20
+            negative_evidence = item.get("negative_evidence")
+            if isinstance(negative_evidence, list) and "missing_official_url_for_official_detail" in {
+                str(value) for value in negative_evidence
+            }:
+                score -= 10
+        return score
+
+    def _preferred_blocked_candidate_for_trace(current_title: str, current_url: str) -> tuple[str, str]:
+        current_title = str(current_title or "").strip()
+        current_url = str(current_url or "").strip()
+        current_key = _title_key(current_title)
+        current_score = _candidate_trace_score(current_title, current_url)
+        best_title = current_title
+        best_url = current_url
+        best_score = current_score
+        same_title_url_upgrade = False
+        source_lists = (
+            ledger.get("candidate_preservation_sources") or [],
+            identity.get("candidate_preservation_sources") or [],
+            ledger.get("title_candidates") or [],
+            identity.get("title_candidates") or [],
+            [identity.get("primary_work")],
+        )
+        for source_items in source_lists:
+            if not isinstance(source_items, list):
+                continue
+            for item in source_items:
+                candidate_title, candidate_url = _candidate_title_url(item)
+                candidate_key = _title_key(candidate_title)
+                if not candidate_key:
+                    continue
+                score = _candidate_trace_score(candidate_title, candidate_url, item)
+                if current_key and candidate_key == current_key:
+                    current_score = max(current_score, score)
+                    if candidate_url and not current_url:
+                        best_title, best_url, best_score = candidate_title, candidate_url, max(best_score, score)
+                        same_title_url_upgrade = True
+                    continue
+                if score > best_score:
+                    best_title, best_url, best_score = candidate_title, candidate_url, score
+        if same_title_url_upgrade:
+            return best_title, best_url
+        if best_score >= max(current_score + 10, 5):
+            return best_title, best_url
+        return current_title, current_url
+
+    def _infer_blocked_candidate_scope(candidate_title: str) -> Dict[str, Any]:
+        candidate_key = _title_key(candidate_title)
+        if not candidate_key:
+            return {}
+
+        contexts = {
+            str(value or "").strip().lower()
+            for source in (identity.get("context_sources"), ledger.get("context_sources"))
+            if isinstance(source, list)
+            for value in source
+            if str(value or "").strip()
+        }
+        flags = {
+            str(value or "").strip().lower()
+            for source in (identity.get("consistency_flags"), ledger.get("consistency_flags"))
+            if isinstance(source, list)
+            for value in source
+            if str(value or "").strip()
+        }
+        image_catalog = [
+            item
+            for source in (identity.get("image_evidence_catalog"), ledger.get("image_evidence_catalog"))
+            if isinstance(source, list)
+            for item in source
+            if isinstance(item, dict)
+        ]
+        image_count = result_dict.get("image_count")
+        has_image_context = bool(image_catalog) or "image" in contexts or bool(image_count)
+        promotion_eligible_images = [
+            item for item in image_catalog if item.get("promotion_eligible") is True
+        ]
+        image_title_anchor = False
+        for item in image_catalog:
+            role = str(item.get("title_role") or "").strip().lower()
+            evidence_type = str(item.get("evidence_type") or "").strip().lower()
+            if role in {"title", "cover_title", "explicit_title", "work_title"}:
+                image_title_anchor = True
+            if evidence_type in {"ocr_title", "explicit_title", "work_title"}:
+                image_title_anchor = True
+            if str(item.get("explicit_work_title") or item.get("official_title") or "").strip():
+                image_title_anchor = True
+        nonpromotable_image_context = bool(
+            has_image_context and not promotion_eligible_images and not image_title_anchor
+        )
+
+        source_items = _blocked_candidate_source_items()
+        has_official_candidate = False
+        has_hold_candidate = False
+        for item in source_items:
+            item_title, item_url = _candidate_title_url(item)
+            item_key = _title_key(item_title)
+            if item_key and item_key != candidate_key:
+                continue
+            if isinstance(item, dict):
+                source_tier = str(item.get("source_tier") or "").strip().lower()
+                if source_tier in {"official_detail", "novel_platform", "official", "search_result"} or item_url:
+                    has_official_candidate = True
+                if str(item.get("promotion_policy") or "").strip().lower() == "hold_without_promotion":
+                    has_hold_candidate = True
+            elif item_title:
+                has_hold_candidate = True
+
+        post_title_terms = [
+            _title_key(term)
+            for term in re.findall(r"[0-9A-Za-z가-힣]{2,}", str(result_dict.get("title") or ""))
+        ]
+        title_alias_bridge = any(
+            len(term) >= 4 and (term in candidate_key or candidate_key in term)
+            for term in post_title_terms
+        )
+        anchor_type = str(identity.get("anchor_type") or ledger.get("anchor_type") or "").strip().lower()
+        text_bridge_present = _source_lists_have_text(
+            result_dict.get("content"),
+            result_dict.get("comments"),
+            result_dict.get("comment_context_lines"),
+            result_dict.get("comment_dialogue_context_lines"),
+        )
+        nonwork_or_noise = bool(
+            str(identity.get("discussion_type") or "").strip().lower() in {"noise", "other"}
+            or str(identity.get("topicality") or "").strip().lower() in {"unrelated", "off_topic"}
+            or "batch_memory_alias_rescue_blocked_nonwork_context" in flags
+            or "batch_memory_alias_rescue_blocked_genre_context" in flags
+        )
+        lacks_direct_work_anchor = anchor_type in {"", "none", "unknown"}
+
+        if not (
+            (has_official_candidate or has_hold_candidate)
+            and (title_alias_bridge or "title" in contexts)
+            and nonpromotable_image_context
+        ):
+            return {}
+
+        direct_sources: List[str] = []
+        if title_alias_bridge:
+            direct_sources.append("post_title_alias")
+        if has_official_candidate:
+            direct_sources.append("official_detail_candidate")
+        if nonpromotable_image_context:
+            direct_sources.append("image_ocr_nonpromotable")
+        if not text_bridge_present:
+            direct_sources.append("no_body_or_comment_work_bridge")
+        if lacks_direct_work_anchor:
+            direct_sources.append("anchor_type_none")
+
+        conflict_codes: List[str] = [
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+        ]
+        if nonpromotable_image_context:
+            conflict_codes.append("image_ocr_without_title_anchor")
+        if nonwork_or_noise:
+            conflict_codes.append("nonwork_or_noise_context")
+        if not text_bridge_present:
+            conflict_codes.append("body_comments_absent_or_empty")
+
+        return {
+            "scope_kind": "context_only",
+            "confidence": "medium",
+            "direct_bridge_sources": list(dict.fromkeys(direct_sources)),
+            "conflict_reason_codes": list(dict.fromkeys(conflict_codes)),
+        }
+
+    def _infer_blocked_candidate_current_work_scope(candidate_title: str) -> Dict[str, Any]:
+        official_url = _official_detail_url_from_search_evidence(candidate_title)
+        if not official_url:
+            return {}
+        contexts = {
+            str(value or "").strip().lower()
+            for source in (identity.get("context_sources"), ledger.get("context_sources"))
+            if isinstance(source, list)
+            for value in source
+            if str(value or "").strip()
+        }
+        flags = {
+            str(value or "").strip().lower()
+            for source in (identity.get("consistency_flags"), ledger.get("consistency_flags"))
+            if isinstance(source, list)
+            for value in source
+            if str(value or "").strip()
+        }
+        hard_negative_flags = {
+            "recommendation_context_only_no_work_anchor",
+            "recommendation_context_only_public_title_conflict",
+            "batch_memory_alias_rescue_blocked_nonwork_context",
+            "batch_memory_alias_rescue_blocked_genre_context",
+            "unresolved_worklike_hold:alias_character_discussion",
+        }
+        if flags & hard_negative_flags:
+            return {}
+        if "search" not in contexts:
+            return {}
+        if not ({"title", "body", "comments"} & contexts):
+            return {}
+        anchor_type = str(identity.get("anchor_type") or ledger.get("anchor_type") or "").strip().lower()
+        direct_sources = ["search_evidence_catalog", "official_detail_url"]
+        for source_name in ("title", "body", "comments", "search"):
+            if source_name in contexts:
+                direct_sources.append(source_name)
+        if anchor_type:
+            direct_sources.append(f"anchor_type:{anchor_type}")
+        return {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": list(dict.fromkeys(direct_sources)),
+            "conflict_reason_codes": [
+                "blocked_candidate_scope_inferred_from_search_evidence",
+                "official_detail_url_recovered_from_search_evidence",
+                "character_bridge_variance_hold",
+            ],
+        }
+
+    public_title = str(
+        identity.get("official_title")
+        or identity.get("official_novel_title")
+        or identity.get("resolved_title")
+        or nested_title
+        or ""
+    ).strip()
+    public_url = str(
+        identity.get("heretic_url")
+        or identity.get("official_url")
+        or identity.get("resolved_url")
+        or nested_url
+        or ""
+    ).strip()
+    existing_trace = identity.get("publish_contract_trace")
+    if not isinstance(existing_trace, dict):
+        existing_trace = ledger.get("publish_contract_trace")
+    competing_public_candidates = _competing_candidate_titles(public_title)
+    untraced_public_conflict = bool(
+        public_title
+        and status == "safe_resolved"
+        and not isinstance(promotion_decision, dict)
+        and not isinstance(existing_trace, dict)
+        and competing_public_candidates
+    )
+    changed = False
+    if untraced_public_conflict:
+        status = "promotion_blocked"
+        if identity.get("candidate_ledger_status") != status:
+            identity["candidate_ledger_status"] = status
+            changed = True
+        promotion_decision = {
+            "status": "candidate_only",
+            "publish_allowed": False,
+            "official_title": None,
+            "official_url": None,
+            "candidate_preserved": True,
+            "reason_codes": [
+                "final_publication_missing_promotion_gate_decision",
+                "untraced_public_title_with_competing_candidate",
+                "scope_unknown",
+                "scope_not_current_work",
+            ],
+            "bypassed_gate": False,
+        }
+        promotion_gate_state = {
+            "scope": {
+                "scope_kind": "unknown",
+                "confidence": "low",
+                "competing_candidates": competing_public_candidates,
+                "conflict_reason_codes": [
+                    "final_publication_missing_promotion_gate_decision",
+                    "untraced_public_title_with_competing_candidate",
+                ],
+            }
+        }
+        ledger["promotion_decision"] = promotion_decision
+        ledger["promotion_gate_state"] = promotion_gate_state
+        identity["candidate_ledger"] = ledger
+        promotion_gate_blocked = True
+
+    if status != "promotion_blocked" and title_allowed is not False and not promotion_gate_blocked:
+        return False
+
+    blocked_title = str(
+        ledger.get("blocked_official_title")
+        or identity.get("blocked_official_title")
+        or identity.get("official_title")
+        or identity.get("official_novel_title")
+        or nested_title
+        or ""
+    ).strip()
+    blocked_url = str(
+        ledger.get("blocked_official_title_url")
+        or identity.get("blocked_official_title_url")
+        or identity.get("heretic_url")
+        or identity.get("official_url")
+        or nested_url
+        or ""
+    ).strip()
+
+    if not blocked_title:
+        candidate_sources = (
+            identity.get("title_candidates") or [],
+            ledger.get("candidate_preservation_sources") or [],
+            ledger.get("title_candidates") or [],
+        )
+        for source_items in candidate_sources:
+            for item in source_items:
+                candidate_title, candidate_url = _candidate_title_url(item)
+                if candidate_title:
+                    blocked_title = candidate_title
+                    if candidate_url:
+                        blocked_url = candidate_url
+                    break
+            if blocked_title:
+                break
+
+    preferred_title, preferred_url = _preferred_blocked_candidate_for_trace(blocked_title, blocked_url)
+    if preferred_title and (preferred_title != blocked_title or preferred_url != blocked_url):
+        blocked_title = preferred_title
+        blocked_url = preferred_url
+        changed = True
+
+    if not blocked_title:
+        primary_work = identity.get("primary_work")
+        if isinstance(primary_work, dict):
+            blocked_title = str(
+                primary_work.get("official_title")
+                or primary_work.get("title")
+                or ""
+            ).strip()
+            blocked_url = str(
+                primary_work.get("heretic_url")
+                or primary_work.get("url")
+                or blocked_url
+                or ""
+            ).strip()
+
+    if blocked_title and not blocked_url:
+        recovered_blocked_url = _official_detail_url_from_search_evidence(blocked_title)
+        if recovered_blocked_url:
+            blocked_url = recovered_blocked_url
+            changed = True
+    if blocked_title and blocked_url:
+        if _repair_blocked_candidate_official_detail_url(blocked_title, blocked_url):
+            changed = True
+
+    def _restore_blocked_candidate_when_shared_gate_allows(candidate_title: str, candidate_url: str) -> bool:
+        candidate_title = str(candidate_title or "").strip()
+        candidate_url = _official_detail_url(candidate_url)
+        if not candidate_title or not candidate_url:
+            return False
+
+        decision = promotion_decision if isinstance(promotion_decision, dict) else {}
+        gate_state = promotion_gate_state if isinstance(promotion_gate_state, dict) else {}
+        reason_codes = {
+            str(code or "").strip()
+            for code in decision.get("reason_codes", [])
+            if str(code or "").strip()
+        }
+        decision_scope = decision.get("scope") if isinstance(decision.get("scope"), dict) else {}
+        gate_scope = gate_state.get("scope") if isinstance(gate_state.get("scope"), dict) else {}
+        scope_kind = str(
+            decision_scope.get("scope_kind")
+            or gate_scope.get("scope_kind")
+            or ""
+        ).strip().lower()
+        scope_current_work = scope_kind == "current_work" or "scope_current_work" in reason_codes
+        row_discusses_work = bool(
+            gate_state.get("row_discusses_work_as_work") is True
+            or "row_discusses_work_as_work" in reason_codes
+        )
+        official_detail_evidence = bool(
+            _official_detail_url(candidate_url)
+            or gate_state.get("official_title_exists") is True
+            or "official_detail_url" in reason_codes
+        )
+
+        candidate_key = _title_key(candidate_title)
+        source_title = _source_post_title()
+        post_key = _title_key(source_title)
+        alias_keys = _candidate_alias_keys(candidate_title, candidate_url)
+        title_led_alias_surface = bool(
+            _title_led_consumption_marker(source_title)
+            and any(2 <= len(alias_key) <= 8 and alias_key in post_key for alias_key in alias_keys)
+        )
+        exact_title_surface = bool(
+            candidate_key and post_key and (post_key.startswith(candidate_key) or candidate_key in post_key)
+        )
+        flags = {
+            str(value or "").strip()
+            for source in (identity.get("consistency_flags"), ledger.get("consistency_flags"))
+            if isinstance(source, list)
+            for value in source
+            if str(value or "").strip()
+        }
+        contexts = {
+            str(value or "").strip().lower()
+            for source in (identity.get("context_sources"), ledger.get("context_sources"))
+            if isinstance(source, list)
+            for value in source
+            if str(value or "").strip()
+        }
+
+        def _iter_identity_ledger_dicts(key: str) -> List[Dict[str, Any]]:
+            items: List[Dict[str, Any]] = []
+            for source in (identity.get(key), ledger.get(key)):
+                if not isinstance(source, list):
+                    continue
+                for item in source:
+                    if isinstance(item, dict):
+                        items.append(item)
+            return items
+
+        def _matching_promoted_image_work_title() -> bool:
+            for item in _iter_identity_ledger_dicts("image_evidence_catalog"):
+                role = str(item.get("title_role") or "").strip().lower()
+                evidence_type = str(item.get("evidence_type") or "").strip().lower()
+                hard_image_surface = bool(
+                    item.get("promotion_eligible") is True
+                    or evidence_type == "cover_title"
+                    or str(item.get("focus_role") or "").strip().lower() == "work_anchor"
+                    or str(item.get("screen_type") or "").strip().lower() == "work_surface"
+                )
+                if not hard_image_surface:
+                    continue
+                if role not in {"title", "cover_title", "explicit_title", "work_title"} and evidence_type not in {
+                    "cover_title",
+                    "ocr_title",
+                    "explicit_title",
+                    "work_title",
+                }:
+                    continue
+                image_title = str(
+                    item.get("explicit_work_title")
+                    or item.get("detected_title")
+                    or item.get("work_title")
+                    or item.get("official_title")
+                    or ""
+                ).strip()
+                if image_title and _title_key(image_title) == candidate_key:
+                    return True
+            return False
+
+        def _source_text_key() -> str:
+            chunks: List[str] = [str(result_dict.get("title") or "")]
+            for key in ("content", "comments", "comment_context_lines", "comment_dialogue_context_lines"):
+                value = result_dict.get(key)
+                if isinstance(value, list):
+                    chunks.extend(str(item) for item in value if str(item).strip())
+                elif str(value or "").strip():
+                    chunks.append(str(value))
+            return _title_key(" ".join(chunks))
+
+        def _verified_character_bridge_to_candidate() -> bool:
+            source_key = _source_text_key()
+            for item in _iter_identity_ledger_dicts("verified_character_work_links"):
+                item_title = str(
+                    item.get("official_title") or item.get("title") or item.get("work_title") or ""
+                ).strip()
+                if _title_key(item_title) != candidate_key:
+                    continue
+                character_key = _title_key(item.get("character") or item.get("alias") or item.get("surface"))
+                if not character_key or character_key in source_key:
+                    return True
+            confirmed_alias_keys = [
+                _title_key(flag.split(":", 1)[1])
+                for flag in flags
+                if flag.startswith("confirmed_alias:") and ":" in flag
+            ]
+            return bool(
+                "verified_alias_official_detail_anchor" in flags
+                and confirmed_alias_keys
+                and any(alias_key and alias_key in source_key for alias_key in confirmed_alias_keys)
+            )
+
+        def _search_character_parenthetical_bridge_to_candidate() -> bool:
+            source_key = _source_text_key()
+            if not source_key:
+                return False
+            for item in _search_evidence_items():
+                title_text = str(item.get("title") or "").strip()
+                if not title_text:
+                    continue
+                source_tier = str(item.get("source_tier") or "").strip().lower()
+                domain = str(item.get("domain") or "").strip().lower()
+                url = str(item.get("url") or "").strip().lower()
+                if source_tier not in {"wiki", "knowledge"} and "namu.wiki" not in domain and "namu.wiki" not in url:
+                    continue
+                for match in re.finditer(r"([0-9A-Za-z가-힣]{2,8})\s*\(([^()]{3,80})\)", title_text):
+                    character_key = _title_key(match.group(1))
+                    parent_title_key = _title_key(match.group(2))
+                    if not character_key or not parent_title_key:
+                        continue
+                    if character_key not in source_key:
+                        continue
+                    if parent_title_key == character_key or character_key in parent_title_key:
+                        continue
+                    if parent_title_key == candidate_key:
+                        return True
+            return False
+
+        def _direct_image_work_surface_bridge_recorded() -> bool:
+            scope_sources = {
+                str(value or "").strip()
+                for raw_scope in (decision_scope, gate_scope)
+                for value in (
+                    raw_scope.get("direct_bridge_sources")
+                    if isinstance(raw_scope.get("direct_bridge_sources"), list)
+                    else []
+                )
+                if str(value or "").strip()
+            }
+            bridge_codes = {
+                "direct_image_work_surface_bridge",
+                "direct_image_work_surface_lock",
+                "structured_direct_image_work_surface",
+                "ocr_catalog_official_title",
+                "image_ocr_work_title",
+            }
+            return bool(
+                reason_codes & bridge_codes
+                or scope_sources & bridge_codes
+                or (
+                    "image" in contexts
+                    and "direct_image_explicit_title_rescued" in flags
+                    and official_detail_evidence
+                )
+            )
+
+        def _official_url_key(url: Any) -> str:
+            raw = _official_detail_url(url)
+            if not raw:
+                return ""
+            return re.sub(r"[?#].*$", "", raw.strip().rstrip("/").lower())
+
+        def _evidence_text_supports_candidate(text: Any) -> bool:
+            text_key = _title_key(text)
+            return bool(
+                text_key
+                and candidate_key
+                and (
+                    text_key == candidate_key
+                    or candidate_key in text_key
+                    or text_key in candidate_key
+                )
+            )
+
+        def _title_keys_are_near_match(left: Any, right: Any) -> bool:
+            left_key = _title_key(left)
+            right_key = _title_key(right)
+            if not left_key or not right_key:
+                return False
+            if left_key == right_key or left_key in right_key or right_key in left_key:
+                return True
+            if min(len(left_key), len(right_key)) < 8:
+                return False
+            if abs(len(left_key) - len(right_key)) > 2:
+                return False
+            return SequenceMatcher(None, left_key, right_key).ratio() >= 0.90
+
+        def _text_contains_near_candidate(text: Any) -> bool:
+            text_key = _title_key(text)
+            if not text_key or not candidate_key:
+                return False
+            if candidate_key in text_key:
+                return True
+            candidate_len = len(candidate_key)
+            if candidate_len < 8:
+                return False
+            for delta in (-2, -1, 0, 1, 2):
+                window_len = candidate_len + delta
+                if window_len < 8 or window_len > len(text_key):
+                    continue
+                for start in range(0, len(text_key) - window_len + 1):
+                    if _title_keys_are_near_match(text_key[start : start + window_len], candidate_key):
+                        return True
+            return False
+
+        def _source_text_values() -> List[str]:
+            chunks: List[str] = [str(result_dict.get("title") or "")]
+            for key in ("content", "comments", "comment_context_lines", "comment_dialogue_context_lines"):
+                value = result_dict.get(key)
+                if isinstance(value, list):
+                    chunks.extend(str(item) for item in value if str(item).strip())
+                elif str(value or "").strip():
+                    chunks.append(str(value))
+            return chunks
+
+        def _candidate_has_direct_source_support() -> bool:
+            source_values = _source_text_values()
+            source_key = _title_key(" ".join(source_values))
+            if any(_text_contains_near_candidate(value) for value in source_values):
+                return True
+            for alias_key in alias_keys:
+                if len(alias_key) >= 4 and alias_key in source_key:
+                    return True
+            for item in _iter_identity_ledger_dicts("image_evidence_catalog"):
+                for key in ("explicit_work_title", "detected_title", "work_title", "official_title"):
+                    if _title_keys_are_near_match(item.get(key), candidate_title):
+                        return True
+            candidate_url_key = _official_url_key(candidate_url)
+            for source_items in (
+                [identity.get("primary_work")],
+                identity.get("title_candidates") or [],
+                identity.get("candidate_preservation_sources") or [],
+                ledger.get("title_candidates") or [],
+                ledger.get("candidate_preservation_sources") or [],
+            ):
+                if not isinstance(source_items, list):
+                    continue
+                for item in source_items:
+                    if not isinstance(item, dict):
+                        continue
+                    item_title, item_url = _candidate_title_url(item)
+                    if _title_key(item_title) != candidate_key and (
+                        not candidate_url_key or _official_url_key(item_url) != candidate_url_key
+                    ):
+                        continue
+                    for key in ("alias_or_mention", "matched_alias", "anchor_text", "resolved_recall_anchor"):
+                        alias_text = str(item.get(key) or "").strip()
+                        alias_key = _title_key(alias_text)
+                        if len(alias_key) >= 4 and alias_key in source_key:
+                            return True
+            return False
+
+        def _candidate_url_title_mismatch_title() -> str:
+            candidate_url_key = _official_url_key(candidate_url)
+            if not candidate_key or not candidate_url_key:
+                return ""
+            mismatch_codes = {
+                "url_title_mismatch",
+                "official_detail_url_title_mismatch",
+                "official_detail_url_title_mismatch_cleared",
+                "official_detail_url_title_mismatch_publish_blocked",
+            }
+            for source_items in (
+                [identity.get("primary_work")],
+                identity.get("title_candidates") or [],
+                identity.get("candidate_preservation_sources") or [],
+                ledger.get("title_candidates") or [],
+                ledger.get("candidate_preservation_sources") or [],
+            ):
+                if not isinstance(source_items, list):
+                    continue
+                for item in source_items:
+                    if not isinstance(item, dict):
+                        continue
+                    item_title, item_url = _candidate_title_url(item)
+                    item_key = _title_key(item_title)
+                    item_url_key = _official_url_key(item_url)
+                    if item_url_key != candidate_url_key:
+                        continue
+                    if item_key and item_key != candidate_key:
+                        return item_title or item_url
+                    negative = {
+                        str(value or "").strip()
+                        for value in (item.get("negative_evidence") or [])
+                        if str(value or "").strip()
+                    }
+                    if negative & mismatch_codes:
+                        return item_title or item_url or "url_title_mismatch"
+            for item in _search_evidence_items():
+                item_url_key = _official_url_key(item.get("url"))
+                if item_url_key != candidate_url_key:
+                    continue
+                title_text = str(item.get("title") or item.get("official_title") or "").strip()
+                snippet_text = str(item.get("snippet") or item.get("content") or "").strip()
+                if _evidence_text_supports_candidate(title_text) or _evidence_text_supports_candidate(snippet_text):
+                    return ""
+                if _title_key(title_text):
+                    return title_text
+            return ""
+
+        def _candidate_url_title_has_positive_support() -> bool:
+            candidate_url_key = _official_url_key(candidate_url)
+            if not candidate_key or not candidate_url_key:
+                return False
+            for item in _search_evidence_items():
+                item_url_key = _official_url_key(item.get("url"))
+                if item_url_key != candidate_url_key:
+                    continue
+                if _evidence_text_supports_candidate(item.get("title")):
+                    return True
+                if _evidence_text_supports_candidate(item.get("snippet") or item.get("content")):
+                    return True
+            for source_items in (
+                [identity.get("primary_work")],
+                identity.get("title_candidates") or [],
+                identity.get("candidate_preservation_sources") or [],
+                ledger.get("title_candidates") or [],
+                ledger.get("candidate_preservation_sources") or [],
+            ):
+                if not isinstance(source_items, list):
+                    continue
+                for item in source_items:
+                    if not isinstance(item, dict):
+                        continue
+                    item_title, item_url = _candidate_title_url(item)
+                    if _official_url_key(item_url) != candidate_url_key:
+                        continue
+                    if _title_key(item_title) != candidate_key:
+                        continue
+                    negative = {
+                        str(value or "").strip()
+                        for value in (item.get("negative_evidence") or [])
+                        if str(value or "").strip()
+                    }
+                    if negative & {
+                        "url_title_mismatch",
+                        "official_detail_url_title_mismatch",
+                        "official_detail_url_title_mismatch_publish_blocked",
+                    }:
+                        continue
+                    source_tier = str(item.get("source_tier") or "").strip().lower()
+                    page_type = str(item.get("page_type") or "").strip().lower()
+                    if source_tier == "official_detail" and page_type in {"novel_page", "work_detail"}:
+                        return True
+            return False
+
+        def _mark_candidate_url_title_mismatch(mismatch_title: str) -> None:
+            nonlocal changed
+            flag = "official_detail_url_title_mismatch_publish_blocked"
+            for target in (identity, ledger):
+                current = [
+                    str(value)
+                    for value in (target.get("consistency_flags") or [])
+                    if str(value).strip()
+                ]
+                if flag not in current:
+                    current.append(flag)
+                    target["consistency_flags"] = current
+                    changed = True
+            candidate_url_key = _official_url_key(candidate_url)
+            for source_items in (
+                [identity.get("primary_work")],
+                identity.get("title_candidates") or [],
+                identity.get("candidate_preservation_sources") or [],
+                ledger.get("title_candidates") or [],
+                ledger.get("candidate_preservation_sources") or [],
+            ):
+                if not isinstance(source_items, list):
+                    continue
+                for item in source_items:
+                    if not isinstance(item, dict):
+                        continue
+                    item_title, item_url = _candidate_title_url(item)
+                    if _official_url_key(item_url) != candidate_url_key:
+                        continue
+                    if _title_key(item_title) != candidate_key:
+                        continue
+                    negative = [
+                        str(value)
+                        for value in (item.get("negative_evidence") or [])
+                        if str(value).strip()
+                    ]
+                    for code in ("url_title_mismatch", flag):
+                        if code not in negative:
+                            negative.append(code)
+                    if mismatch_title:
+                        item["url_title_mismatch_title"] = mismatch_title
+                    item["negative_evidence"] = negative
+                    changed = True
+
+        def _mark_candidate_missing_direct_source_support() -> None:
+            nonlocal changed
+            flag = "official_detail_url_missing_direct_source_support"
+            for target in (identity, ledger):
+                current = [
+                    str(value)
+                    for value in (target.get("consistency_flags") or [])
+                    if str(value).strip()
+                ]
+                if flag not in current:
+                    current.append(flag)
+                    target["consistency_flags"] = current
+                    changed = True
+            candidate_url_key = _official_url_key(candidate_url)
+            for source_items in (
+                [identity.get("primary_work")],
+                identity.get("title_candidates") or [],
+                identity.get("candidate_preservation_sources") or [],
+                ledger.get("title_candidates") or [],
+                ledger.get("candidate_preservation_sources") or [],
+            ):
+                if not isinstance(source_items, list):
+                    continue
+                for item in source_items:
+                    if not isinstance(item, dict):
+                        continue
+                    item_title, item_url = _candidate_title_url(item)
+                    if _title_key(item_title) != candidate_key and (
+                        not candidate_url_key or _official_url_key(item_url) != candidate_url_key
+                    ):
+                        continue
+                    negative = [
+                        str(value)
+                        for value in (item.get("negative_evidence") or [])
+                        if str(value).strip()
+                    ]
+                    if flag not in negative:
+                        negative.append(flag)
+                    item["negative_evidence"] = negative
+                    changed = True
+
+        direct_image_work_title_surface = bool(candidate_key and _matching_promoted_image_work_title())
+        direct_image_character_surface = bool(
+            candidate_key
+            and direct_image_work_title_surface
+            and _verified_character_bridge_to_candidate()
+        )
+        direct_image_explicit_title_surface = bool(
+            direct_image_work_title_surface
+            and "direct_image_explicit_title_rescued" in flags
+            and official_detail_evidence
+        )
+        search_character_parenthetical_surface = bool(
+            candidate_key
+            and _direct_image_work_surface_bridge_recorded()
+            and _search_character_parenthetical_bridge_to_candidate()
+        )
+        scope_sources = {
+            str(value or "").strip()
+            for raw_scope in (decision_scope, gate_scope)
+            for value in (
+                raw_scope.get("direct_bridge_sources")
+                if isinstance(raw_scope.get("direct_bridge_sources"), list)
+                else []
+            )
+            if str(value or "").strip()
+        }
+        url_title_mismatch_title = ""
+        if candidate_key and official_detail_evidence:
+            url_title_mismatch_title = _candidate_url_title_mismatch_title()
+            if url_title_mismatch_title:
+                _mark_candidate_url_title_mismatch(url_title_mismatch_title)
+        url_title_positive_support = _candidate_url_title_has_positive_support()
+        candidate_direct_source_support = _candidate_has_direct_source_support()
+        url_title_gate_context = bool(
+            (
+                "resolved_public_title_scope" in reason_codes
+                or "resolved_public_title_scope" in scope_sources
+            )
+            and (
+                gate_state.get("title_resolution_state") == "resolved"
+                or gate_state.get("work_resolution") == "resolved"
+                or "final_semantic_reread_accepted_resolution" in flags
+            )
+        )
+        if (
+            candidate_key
+            and official_detail_evidence
+            and not url_title_mismatch_title
+            and url_title_positive_support
+            and url_title_gate_context
+            and not candidate_direct_source_support
+        ):
+            _mark_candidate_missing_direct_source_support()
+        url_title_verified_official_detail_surface = bool(
+            candidate_key
+            and not url_title_mismatch_title
+            and official_detail_evidence
+            and url_title_positive_support
+            and candidate_direct_source_support
+            and url_title_gate_context
+        )
+
+        if not candidate_key or not post_key or not (
+            exact_title_surface
+            or title_led_alias_surface
+            or direct_image_character_surface
+            or direct_image_explicit_title_surface
+            or search_character_parenthetical_surface
+            or url_title_verified_official_detail_surface
+        ):
+            return False
+
+        has_search_context = bool(
+            "search" in contexts
+            or _search_evidence_items()
+            or "official_detail_url" in reason_codes
+            or gate_state.get("official_title_exists") is True
+        )
+        if "title" not in contexts or not has_search_context:
+            return False
+        if not contexts & {"body", "comments"} and not (
+            title_led_alias_surface
+            or direct_image_character_surface
+            or direct_image_explicit_title_surface
+            or search_character_parenthetical_surface
+            or url_title_verified_official_detail_surface
+        ):
+            return False
+
+        hard_negative_flags = {
+            "recommendation_context_only_no_work_anchor",
+            "recommendation_context_only_public_title_conflict",
+            "batch_memory_alias_rescue_blocked_nonwork_context",
+            "batch_memory_alias_rescue_blocked_genre_context",
+            "semantic_seed_no_work_context",
+            "unresolved_worklike_hold:alias_character_discussion",
+        }
+        if flags & hard_negative_flags:
+            return False
+        if not (
+            title_led_alias_surface
+            or direct_image_character_surface
+            or direct_image_explicit_title_surface
+            or search_character_parenthetical_surface
+            or url_title_verified_official_detail_surface
+        ) and not (
+            "decoder_exact_post_title_surface_resolved" in flags
+            or str(identity.get("anchor_type") or ledger.get("anchor_type") or "").strip().lower()
+            in {"title_exact", "full_title_surface"}
+        ):
+            return False
+
+        if not (scope_current_work and row_discusses_work and official_detail_evidence):
+            return False
+        if url_title_mismatch_title:
+            return False
+        if title_led_alias_surface and not (
+            "resolved_public_title_scope" in reason_codes
+            or "title_led_consumption_bridge" in reason_codes
+            or "title_led_consumption_bridge" in {
+                str(value)
+                for value in (
+                    decision_scope.get("direct_bridge_sources")
+                    if isinstance(decision_scope.get("direct_bridge_sources"), list)
+                    else []
+                )
+            }
+            or "title_led_consumption_bridge" in {
+                str(value)
+                for value in (
+                    gate_scope.get("direct_bridge_sources")
+                    if isinstance(gate_scope.get("direct_bridge_sources"), list)
+                    else []
+                )
+            }
+        ):
+            return False
+
+        scope_state = {
+            "scope_kind": "current_work",
+            "confidence": str(
+                decision_scope.get("confidence")
+                or gate_scope.get("confidence")
+                or "high"
+            ),
+            "direct_bridge_sources": list(
+                dict.fromkeys(
+                    [
+                        *(
+                            str(value)
+                            for value in (
+                                decision_scope.get("direct_bridge_sources")
+                                if isinstance(decision_scope.get("direct_bridge_sources"), list)
+                                else []
+                            )
+                            if str(value).strip()
+                        ),
+                        *(
+                            str(value)
+                            for value in (
+                                gate_scope.get("direct_bridge_sources")
+                                if isinstance(gate_scope.get("direct_bridge_sources"), list)
+                                else []
+                            )
+                            if str(value).strip()
+                        ),
+                        "row_discusses_work_as_work",
+                        "title",
+                        "search",
+                        *(
+                            [
+                                "image_ocr_work_title",
+                                "direct_image_explicit_title_rescued",
+                                "verified_character_work_link",
+                            ]
+                            if direct_image_character_surface or direct_image_explicit_title_surface
+                            else []
+                        ),
+                        *(
+                            [
+                                "direct_image_work_surface_bridge",
+                                "search_character_parenthetical_bridge",
+                            ]
+                            if search_character_parenthetical_surface
+                            else []
+                        ),
+                        *(
+                            ["image_ocr_official_detail_title"]
+                            if direct_image_explicit_title_surface and not direct_image_character_surface
+                            else []
+                        ),
+                        *(
+                            [
+                                "url_title_verified_official_detail",
+                                "final_semantic_reread_accepted_resolution",
+                            ]
+                            if url_title_verified_official_detail_surface
+                            else []
+                        ),
+                        *(source for source in ("body", "comments") if source in contexts),
+                    ]
+                )
+            ),
+        }
+        publish_reason_codes = [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "official_detail_url",
+            "serialized_public_identity_shared_gate_restored",
+        ]
+        if direct_image_character_surface or direct_image_explicit_title_surface:
+            publish_reason_codes.extend(
+                [
+                    "direct_image_explicit_title_rescued",
+                    "image_ocr_work_title",
+                ]
+            )
+        if direct_image_character_surface:
+            publish_reason_codes.append("verified_character_work_link")
+        elif direct_image_explicit_title_surface:
+            publish_reason_codes.append("image_ocr_official_detail_title")
+        if search_character_parenthetical_surface:
+            publish_reason_codes.extend(
+                [
+                    "direct_image_work_surface_bridge",
+                    "search_character_parenthetical_bridge",
+                ]
+            )
+        if url_title_verified_official_detail_surface:
+            publish_reason_codes.extend(
+                [
+                    "url_title_verified_official_detail",
+                    "final_semantic_reread_accepted_resolution",
+                ]
+            )
+        gate_decision = {
+            "status": "publish",
+            "publish_allowed": True,
+            "official_title": candidate_title,
+            "official_url": candidate_url,
+            "candidate_preserved": False,
+            "reason_codes": publish_reason_codes,
+            "bypassed_gate": False,
+            "scope": scope_state,
+        }
+        gate_state_payload = dict(gate_state) if isinstance(gate_state, dict) else {}
+        gate_state_payload.update(
+            {
+                "candidate_title": candidate_title,
+                "candidate_url": candidate_url,
+                "official_title_exists": True,
+                "row_discusses_work_as_work": True,
+                "scope": scope_state,
+            }
+        )
+
+        novel = identity.get("novel_identity")
+        if not isinstance(novel, dict):
+            novel = {}
+        novel["official_title"] = candidate_title
+        novel["heretic_url"] = candidate_url
+        novel["confidence"] = novel.get("confidence") if novel.get("confidence") not in {None, "", "None"} else "High"
+        identity["novel_identity"] = novel
+        identity["candidate_ledger_status"] = "safe_resolved"
+        identity["title_resolution_allowed"] = True
+        identity["title_resolution_state"] = "resolved"
+        identity["work_resolution"] = "resolved"
+        identity["is_resolved_work_discussion"] = True
+        identity["promotion_blocked"] = False
+        identity["safe_resolved"] = True
+        identity["promotion_decision"] = gate_decision
+        identity["promotion_gate_state"] = gate_state_payload
+        for key in ("blocked_official_title", "blocked_official_title_url", "promotion_blocked_reasons"):
+            if key in identity:
+                identity[key] = [] if key == "promotion_blocked_reasons" else None
+
+        cleaned_flags = [
+            str(value)
+            for value in (identity.get("consistency_flags") or [])
+            if str(value)
+            not in {
+                "weak_alias_surface_public_title_bridge",
+                "external_ip_unresolved_hold_blocked",
+                "external_ip_unresolved_final_blocked",
+            }
+        ]
+        for value in (
+            "weak_public_title_bridge_shared_gate_exempt",
+            "serialized_public_identity_shared_gate_restored",
+        ):
+            if value not in cleaned_flags:
+                cleaned_flags.append(value)
+        identity["consistency_flags"] = cleaned_flags
+
+        primary_work = identity.get("primary_work")
+        if not isinstance(primary_work, dict):
+            primary_work = {}
+        primary_work.update(
+            {
+                "official_title": candidate_title,
+                "heretic_url": candidate_url,
+                "confidence": primary_work.get("confidence") or "High",
+                "source_tier": primary_work.get("source_tier") or "official_detail",
+                "page_type": primary_work.get("page_type") or "novel_page",
+                "reference_role": "primary",
+            }
+        )
+        for key in ("promotion_policy", "blocked_by_candidate_audit"):
+            primary_work.pop(key, None)
+        _remove_negative_evidence(primary_work, "weak_alias_surface_public_title_bridge")
+        identity["primary_work"] = primary_work
+
+        for source_items in (
+            identity.get("title_candidates"),
+            identity.get("candidate_preservation_sources"),
+            ledger.get("title_candidates"),
+            ledger.get("candidate_preservation_sources"),
+        ):
+            if not isinstance(source_items, list):
+                continue
+            for item in source_items:
+                if not isinstance(item, dict):
+                    continue
+                item_title, item_url = _candidate_title_url(item)
+                if _title_key(item_title) != candidate_key and item_url != candidate_url:
+                    continue
+                item["official_title"] = candidate_title
+                item["heretic_url"] = candidate_url
+                item["source_tier"] = item.get("source_tier") or "official_detail"
+                item["page_type"] = item.get("page_type") or "novel_page"
+                item["reference_role"] = "primary"
+                item.pop("promotion_policy", None)
+                item.pop("blocked_by_candidate_audit", None)
+                _remove_negative_evidence(item, "weak_alias_surface_public_title_bridge")
+
+        ledger["pipeline_official_title"] = candidate_title
+        ledger["blocked_official_title"] = None
+        ledger["blocked_official_title_url"] = None
+        ledger["promotion_blocked_reasons"] = []
+        ledger["promotion_decision"] = gate_decision
+        ledger["promotion_gate_state"] = gate_state_payload
+        ledger["candidate_ledger_status"] = "safe_resolved"
+        ledger["title_resolution_allowed"] = True
+        ledger["title_resolution_state"] = "resolved"
+        ledger["work_resolution"] = "resolved"
+        ledger["is_resolved_work_discussion"] = True
+        identity["candidate_ledger"] = ledger
+
+        def _publish_lines(raw: Any) -> Optional[List[str]]:
+            if isinstance(raw, list):
+                lines = [str(line) for line in raw if str(line).strip()]
+            elif isinstance(raw, str) and raw.strip():
+                lines = raw.splitlines()
+            else:
+                return None
+            updated: List[str] = []
+            for line in lines:
+                stripped = line.strip()
+                if stripped.startswith("- 공식 제목:"):
+                    updated.append(f"- 공식 제목: '{candidate_title}'")
+                elif stripped.startswith("- 핵심 결론:") and "미확정" in stripped:
+                    updated.append(
+                        f"- 핵심 결론: 제목/본문/댓글/검색 근거와 shared promotion gate를 종합해 '{candidate_title}'로 확정했습니다."
+                    )
+                elif "미확정 유지" in stripped or "단일 공식 제목 확정은 위험" in stripped:
+                    updated.append(f"- 최종 공식 제목은 '{candidate_title}'로 확정됨.")
+                elif "public title promotion blocked" in stripped:
+                    continue
+                else:
+                    updated.append(line)
+            note = "- shared current_work promotion gate restored public title after weak-alias scrub."
+            if note not in updated:
+                updated.append(note)
+            return updated
+
+        published_reason = _publish_lines(identity.get("reason_lines") or identity.get("reason"))
+        if published_reason:
+            identity["reason_lines"] = published_reason
+            identity["reason"] = "\n".join(published_reason)
+
+        analysis = result_dict.get("analysis")
+        if isinstance(analysis, dict):
+            notes = str(analysis.get("notes") or "")
+            if notes:
+                analysis["notes"] = notes.replace("미확정", f"'{candidate_title}' 확정")
+            for item in analysis.get("detected_titles") or []:
+                if not isinstance(item, dict):
+                    continue
+                item_title, item_url = _candidate_title_url(item)
+                if _title_key(item_title) != candidate_key and item_url != candidate_url:
+                    continue
+                item["official_title"] = candidate_title
+                item["heretic_url"] = candidate_url
+                item["reference_role"] = "primary"
+                item.pop("promotion_policy", None)
+                item.pop("blocked_by_candidate_audit", None)
+                _remove_negative_evidence(item, "weak_alias_surface_public_title_bridge")
+            result_dict["analysis"] = analysis
+
+        _sync_allowed_publication_result_contract(result_dict)
+        return True
+
+    if _restore_blocked_candidate_when_shared_gate_allows(blocked_title, blocked_url):
+        return True
+
+    for key in ("official_title", "official_novel_title", "resolved_title"):
+        if identity.get(key):
+            if not blocked_title:
+                blocked_title = str(identity.get(key) or "").strip()
+            identity[key] = None
+            changed = True
+
+    for key in ("heretic_url", "official_url", "resolved_url"):
+        if identity.get(key):
+            identity[key] = None
+            changed = True
+
+    if isinstance(novel_identity, dict):
+        for key in ("official_title", "official_novel_title", "resolved_title"):
+            if novel_identity.get(key):
+                if not blocked_title:
+                    blocked_title = str(novel_identity.get(key) or "").strip()
+                novel_identity[key] = None
+                changed = True
+        for key in ("heretic_url", "official_url", "url"):
+            if novel_identity.get(key):
+                if not blocked_url:
+                    blocked_url = str(novel_identity.get(key) or "").strip()
+                novel_identity[key] = None
+                changed = True
+        if novel_identity.get("confidence") not in (None, "", "None"):
+            novel_identity["confidence"] = "None"
+            changed = True
+        identity["novel_identity"] = novel_identity
+
+    if blocked_title:
+        if identity.get("blocked_official_title") != blocked_title:
+            identity["blocked_official_title"] = blocked_title
+            changed = True
+        if ledger.get("blocked_official_title") != blocked_title:
+            ledger["blocked_official_title"] = blocked_title
+            changed = True
+    if blocked_url:
+        if identity.get("blocked_official_title_url") != blocked_url:
+            identity["blocked_official_title_url"] = blocked_url
+            changed = True
+        if ledger.get("blocked_official_title_url") != blocked_url:
+            ledger["blocked_official_title_url"] = blocked_url
+            changed = True
+    if ledger.get("pipeline_official_title"):
+        ledger["pipeline_official_title"] = None
+        changed = True
+    if identity.get("title_resolution_allowed") is not False:
+        identity["title_resolution_allowed"] = False
+        changed = True
+    if identity.get("work_resolution") == "resolved":
+        identity["work_resolution"] = "unresolved"
+        changed = True
+    if identity.get("title_resolution_state") in (None, "", "resolved", "direct_resolved"):
+        identity["title_resolution_state"] = "unresolved_matchable"
+        changed = True
+    if identity.get("is_resolved_work_discussion") is not False:
+        identity["is_resolved_work_discussion"] = False
+        changed = True
+    if ledger:
+        ledger["title_resolution_allowed"] = identity.get("title_resolution_allowed")
+        ledger["work_resolution"] = identity.get("work_resolution")
+        ledger["title_resolution_state"] = identity.get("title_resolution_state")
+        ledger["is_resolved_work_discussion"] = identity.get("is_resolved_work_discussion")
+        identity["candidate_ledger"] = ledger
+
+    primary_work = identity.get("primary_work")
+    if isinstance(primary_work, dict):
+        primary_title = str(primary_work.get("official_title") or primary_work.get("title") or "").strip()
+        primary_url = str(primary_work.get("heretic_url") or primary_work.get("url") or "").strip()
+        if primary_title or primary_url:
+            if primary_work.get("reference_role") == "primary":
+                primary_work["reference_role"] = "candidate"
+                changed = True
+            if primary_work.get("promotion_policy") != "hold_without_promotion":
+                primary_work["promotion_policy"] = "hold_without_promotion"
+                changed = True
+            if primary_work.get("blocked_by_candidate_audit") is not True:
+                primary_work["blocked_by_candidate_audit"] = True
+                changed = True
+            identity["primary_work"] = primary_work
+
+    def _scrub_lines(raw: Any) -> Optional[List[str]]:
+        if isinstance(raw, list):
+            lines = [str(line) for line in raw if str(line).strip()]
+        elif isinstance(raw, str) and raw.strip():
+            lines = raw.splitlines()
+        else:
+            return None
+
+        updated: List[str] = []
+        changed = False
+        for line in lines:
+            stripped = line.strip()
+            replacement: Optional[str] = None
+            if stripped.startswith("- 공식 제목:"):
+                replacement = "- 공식 제목: 미확정 (promotion blocked; 후보로만 보존)"
+            elif "최종 공식 제목" in stripped and ("확정" in stripped or (blocked_title and blocked_title in stripped)):
+                replacement = "- 최종 공식 제목 확정 문구는 promotion block guard로 철회됨."
+            elif "heretic_url_platform" in stripped:
+                replacement = "- heretic_url_platform 점수는 promotion block guard로 철회됨."
+            elif blocked_title and blocked_title in stripped and "관련 작품 토론으로 판정" in stripped:
+                replacement = "- 작품/IP 후보 맥락은 보존하되 단일 공식 제목 확정은 보류함."
+
+            if replacement:
+                if replacement not in updated:
+                    updated.append(replacement)
+                changed = True
+            else:
+                updated.append(line)
+
+        note = "- public title promotion blocked: serialized output kept candidate/HOLD"
+        if changed and note not in updated:
+            updated.append(note)
+        return updated if changed else None
+
+    scrubbed_reason = _scrub_lines(identity.get("reason_lines") or identity.get("reason"))
+    if scrubbed_reason:
+        identity["reason_lines"] = scrubbed_reason
+        identity["reason"] = "\n".join(scrubbed_reason)
+        changed = True
+
+    analysis = result_dict.get("analysis")
+    if isinstance(analysis, dict):
+        notes = str(analysis.get("notes") or "")
+        if notes and (
+            "최종 공식 제목" in notes
+            or "확정" in notes
+            or (blocked_title and blocked_title in notes)
+            or (blocked_url and blocked_url in notes)
+        ):
+            analysis["notes"] = (
+                "[정합성 교정] 최종 공식 제목은 미확정 상태입니다. "
+                "promotion-blocked 후보는 candidate_ledger/title_candidates에만 보존합니다."
+            )
+            changed = True
+        for item in analysis.get("detected_titles") or []:
+            if not isinstance(item, dict):
+                continue
+            item_title = str(item.get("official_title") or item.get("title") or "").strip()
+            item_url = str(item.get("heretic_url") or item.get("url") or "").strip()
+            if (blocked_title and item_title == blocked_title) or (blocked_url and item_url == blocked_url):
+                if item.get("reference_role") == "primary":
+                    item["reference_role"] = "candidate"
+                    changed = True
+                item["promotion_policy"] = "hold_without_promotion"
+                item["blocked_by_candidate_audit"] = True
+                changed = True
+        result_dict["analysis"] = analysis
+
+    trace_reason_codes: List[str] = []
+    gate_decision: Dict[str, Any]
+    if isinstance(promotion_decision, dict):
+        gate_decision = dict(promotion_decision)
+        raw_reason_codes = gate_decision.get("reason_codes")
+        if isinstance(raw_reason_codes, list):
+            trace_reason_codes.extend(str(code) for code in raw_reason_codes if str(code).strip())
+    else:
+        gate_decision = {}
+
+    for source in (ledger, identity):
+        if not isinstance(source, dict):
+            continue
+        for key in ("promotion_blocked_reasons", "candidate_audit_lint_reasons", "candidate_audit_lint"):
+            values = source.get(key)
+            if not isinstance(values, list):
+                continue
+            for value in values:
+                value_text = str(value or "").strip()
+                if value_text and value_text not in trace_reason_codes:
+                    trace_reason_codes.append(value_text)
+
+    def _scope_payload(raw: Any) -> Dict[str, Any]:
+        if not isinstance(raw, dict):
+            return {}
+        payload: Dict[str, Any] = {}
+        scope_kind = str(raw.get("scope_kind") or "").strip()
+        if scope_kind:
+            payload["scope_kind"] = scope_kind
+        confidence = str(raw.get("confidence") or "").strip()
+        if confidence:
+            payload["confidence"] = confidence
+        for key in ("direct_bridge_sources", "competing_candidates", "conflict_reason_codes"):
+            values = raw.get(key)
+            if isinstance(values, list):
+                clean = [str(value) for value in values if str(value).strip()]
+                if clean:
+                    payload[key] = clean
+        return payload
+
+    scope_state: Dict[str, Any] = {}
+    if isinstance(promotion_gate_state, dict):
+        scope_state = _scope_payload(promotion_gate_state.get("scope"))
+    if not scope_state:
+        scope_state = _scope_payload(gate_decision.get("scope"))
+    if scope_state:
+        scope_kind = str(scope_state.get("scope_kind") or "").strip()
+        if scope_kind:
+            scope_code = f"scope_{scope_kind}"
+            if scope_code not in trace_reason_codes:
+                trace_reason_codes.append(scope_code)
+            if scope_kind != "current_work" and "scope_not_current_work" not in trace_reason_codes:
+                trace_reason_codes.append("scope_not_current_work")
+        for code in scope_state.get("conflict_reason_codes") or []:
+            code_text = str(code or "").strip()
+            if code_text and code_text not in trace_reason_codes:
+                trace_reason_codes.append(code_text)
+    if not scope_state:
+        scope_state = _infer_blocked_candidate_scope(blocked_title)
+    if not scope_state:
+        scope_state = _infer_blocked_candidate_current_work_scope(blocked_title)
+    if scope_state:
+        scope_kind = str(scope_state.get("scope_kind") or "").strip()
+        if scope_kind:
+            scope_code = f"scope_{scope_kind}"
+            if scope_code not in trace_reason_codes:
+                trace_reason_codes.append(scope_code)
+            if scope_kind != "current_work" and "scope_not_current_work" not in trace_reason_codes:
+                trace_reason_codes.append("scope_not_current_work")
+        for code in scope_state.get("conflict_reason_codes") or []:
+            code_text = str(code or "").strip()
+            if code_text and code_text not in trace_reason_codes:
+                trace_reason_codes.append(code_text)
+    if not scope_state:
+        for code in trace_reason_codes:
+            code_text = str(code or "").strip()
+            if not code_text.startswith("scope_") or code_text == "scope_not_current_work":
+                continue
+            inferred_scope_kind = code_text[len("scope_") :]
+            if not inferred_scope_kind:
+                continue
+            scope_state = {
+                "scope_kind": inferred_scope_kind,
+                "confidence": "medium",
+                "conflict_reason_codes": ["scope_inferred_from_reason_codes"],
+            }
+            if "scope_inferred_from_reason_codes" not in trace_reason_codes:
+                trace_reason_codes.append("scope_inferred_from_reason_codes")
+            break
+
+    if not trace_reason_codes:
+        trace_reason_codes.append(str(status or "promotion_blocked_result_contract"))
+    if "serialized_public_identity_scrubbed" not in trace_reason_codes:
+        trace_reason_codes.append("serialized_public_identity_scrubbed")
+
+    if str(gate_decision.get("status") or "").strip().lower() == "publish":
+        gate_decision["status"] = "candidate_only"
+    gate_decision.setdefault("status", "candidate_only")
+    gate_decision["publish_allowed"] = False
+    gate_decision["official_title"] = None
+    gate_decision["official_url"] = None
+    gate_decision["candidate_preserved"] = bool(blocked_title or blocked_url)
+    gate_decision["reason_codes"] = trace_reason_codes
+    gate_decision["bypassed_gate"] = False
+    if scope_state:
+        gate_decision["scope"] = scope_state
+    if identity.get("promotion_decision") != gate_decision:
+        identity["promotion_decision"] = gate_decision
+        changed = True
+
+    publish_trace = {
+        "pre_gate_candidate": {
+            "official_title": blocked_title or None,
+            "official_url": blocked_url or None,
+            "source": "candidate_ledger_or_serialized_identity",
+        },
+        "gate_decision": gate_decision,
+        "scope_state": scope_state or None,
+        "post_gate_identity": {
+            "official_title": None,
+            "official_url": None,
+            "title_resolution_allowed": identity.get("title_resolution_allowed"),
+            "title_resolution_state": identity.get("title_resolution_state"),
+            "work_resolution": identity.get("work_resolution"),
+            "candidate_ledger_status": status or identity.get("candidate_ledger_status"),
+        },
+        "reason_codes": trace_reason_codes,
+        "bypassed_gate": False,
+    }
+    publish_ledger = {
+        "candidate_preservation": publish_trace["pre_gate_candidate"],
+        "public_publish": publish_trace["post_gate_identity"],
+        "gate_decision": gate_decision,
+    }
+    if identity.get("publish_contract_trace") != publish_trace:
+        identity["publish_contract_trace"] = publish_trace
+        changed = True
+    if identity.get("publish_ledger") != publish_ledger:
+        identity["publish_ledger"] = publish_ledger
+        changed = True
+    if isinstance(ledger, dict):
+        if ledger.get("promotion_decision") != gate_decision:
+            ledger["promotion_decision"] = gate_decision
+            changed = True
+        if scope_state:
+            gate_state_payload = dict(promotion_gate_state) if isinstance(promotion_gate_state, dict) else {}
+            gate_state_payload["scope"] = scope_state
+            if ledger.get("promotion_gate_state") != gate_state_payload:
+                ledger["promotion_gate_state"] = gate_state_payload
+                changed = True
+            if identity.get("promotion_gate_state") != gate_state_payload:
+                identity["promotion_gate_state"] = gate_state_payload
+                changed = True
+        if ledger.get("publish_contract_trace") != publish_trace:
+            ledger["publish_contract_trace"] = publish_trace
+            changed = True
+        if ledger.get("publish_ledger") != publish_ledger:
+            ledger["publish_ledger"] = publish_ledger
+            changed = True
+        identity["candidate_ledger"] = ledger
+
+    return changed
+
+
+def _sync_allowed_publication_result_contract(result_dict: Dict[str, Any]) -> bool:
+    """Record the final publish ledger for serialized public titles."""
+    if not isinstance(result_dict, dict):
+        return False
+    identity = result_dict.get("identity")
+    if not isinstance(identity, dict):
+        return False
+
+    ledger = identity.get("candidate_ledger")
+    if not isinstance(ledger, dict):
+        ledger = {}
+    novel_identity = identity.get("novel_identity")
+    nested_title = ""
+    nested_url = ""
+    if isinstance(novel_identity, dict):
+        nested_title = str(
+            novel_identity.get("official_title")
+            or novel_identity.get("official_novel_title")
+            or novel_identity.get("resolved_title")
+            or ""
+        ).strip()
+        nested_url = str(
+            novel_identity.get("heretic_url")
+            or novel_identity.get("official_url")
+            or novel_identity.get("url")
+            or ""
+        ).strip()
+
+    public_title = str(
+        identity.get("official_title")
+        or identity.get("official_novel_title")
+        or identity.get("resolved_title")
+        or nested_title
+        or ""
+    ).strip()
+    if not public_title:
+        return False
+    public_url = str(
+        identity.get("heretic_url")
+        or identity.get("official_url")
+        or identity.get("resolved_url")
+        or nested_url
+        or ""
+    ).strip()
+
+    decision = identity.get("promotion_decision")
+    if not isinstance(decision, dict):
+        decision = ledger.get("promotion_decision")
+    if isinstance(decision, dict) and decision.get("publish_allowed") is False:
+        return False
+
+    changed = False
+    trace_reason_codes: List[str] = []
+    inferred_decision = not isinstance(decision, dict)
+    gate_decision = dict(decision) if isinstance(decision, dict) else {}
+    raw_reason_codes = gate_decision.get("reason_codes")
+    if isinstance(raw_reason_codes, list):
+        trace_reason_codes.extend(str(code) for code in raw_reason_codes if str(code).strip())
+    if inferred_decision:
+        trace_reason_codes.append("final_publication_decision_inferred_from_serialized_identity")
+    if "serialized_public_identity_published" not in trace_reason_codes:
+        trace_reason_codes.append("serialized_public_identity_published")
+
+    def _scope_payload(raw: Any) -> Dict[str, Any]:
+        if not isinstance(raw, dict):
+            return {}
+        payload: Dict[str, Any] = {}
+        scope_kind = str(raw.get("scope_kind") or "").strip()
+        if scope_kind:
+            payload["scope_kind"] = scope_kind
+        confidence = str(raw.get("confidence") or "").strip()
+        if confidence:
+            payload["confidence"] = confidence
+        for key in ("direct_bridge_sources", "competing_candidates", "conflict_reason_codes"):
+            values = raw.get(key)
+            if isinstance(values, list):
+                clean = [str(value) for value in values if str(value).strip()]
+                if clean:
+                    payload[key] = clean
+        return payload
+
+    gate_state = identity.get("promotion_gate_state")
+    if not isinstance(gate_state, dict):
+        gate_state = ledger.get("promotion_gate_state")
+    scope_state: Dict[str, Any] = {}
+    if isinstance(gate_state, dict):
+        scope_state = _scope_payload(gate_state.get("scope"))
+    if not scope_state:
+        scope_state = _scope_payload(gate_decision.get("scope"))
+    if not scope_state:
+        bridge_sources = []
+        for value in identity.get("context_sources") or ledger.get("context_sources") or []:
+            value_text = str(value or "").strip()
+            if value_text:
+                bridge_sources.append(value_text)
+        anchor_type = str(identity.get("anchor_type") or ledger.get("anchor_type") or "").strip()
+        if anchor_type:
+            bridge_sources.append(f"anchor_type:{anchor_type}")
+        scope_state = {
+            "scope_kind": "current_work",
+            "confidence": "medium",
+            "direct_bridge_sources": list(dict.fromkeys(bridge_sources)),
+            "conflict_reason_codes": ["scope_inferred_from_final_publication"],
+        }
+    scope_kind = str(scope_state.get("scope_kind") or "").strip()
+    if scope_kind:
+        scope_code = f"scope_{scope_kind}"
+        if scope_code not in trace_reason_codes:
+            trace_reason_codes.append(scope_code)
+    for code in scope_state.get("conflict_reason_codes") or []:
+        code_text = str(code or "").strip()
+        if code_text and code_text not in trace_reason_codes:
+            trace_reason_codes.append(code_text)
+
+    gate_decision["status"] = "publish"
+    gate_decision["publish_allowed"] = True
+    gate_decision["official_title"] = public_title
+    gate_decision["official_url"] = public_url or None
+    gate_decision["candidate_preserved"] = False
+    gate_decision["reason_codes"] = trace_reason_codes
+    gate_decision["bypassed_gate"] = False
+    gate_decision["scope"] = scope_state
+
+    post_gate_identity = {
+        "official_title": public_title,
+        "official_url": public_url or None,
+        "title_resolution_allowed": identity.get("title_resolution_allowed"),
+        "title_resolution_state": identity.get("title_resolution_state"),
+        "work_resolution": identity.get("work_resolution"),
+        "candidate_ledger_status": identity.get("candidate_ledger_status"),
+    }
+    publish_trace = {
+        "pre_gate_candidate": {
+            "official_title": public_title,
+            "official_url": public_url or None,
+            "source": "serialized_public_identity",
+        },
+        "gate_decision": gate_decision,
+        "scope_state": scope_state,
+        "post_gate_identity": post_gate_identity,
+        "reason_codes": trace_reason_codes,
+        "bypassed_gate": False,
+    }
+    publish_ledger = {
+        "candidate_preservation": publish_trace["pre_gate_candidate"],
+        "public_publish": post_gate_identity,
+        "gate_decision": gate_decision,
+    }
+
+    if identity.get("promotion_decision") != gate_decision:
+        identity["promotion_decision"] = gate_decision
+        changed = True
+    if identity.get("publish_contract_trace") != publish_trace:
+        identity["publish_contract_trace"] = publish_trace
+        changed = True
+    if identity.get("publish_ledger") != publish_ledger:
+        identity["publish_ledger"] = publish_ledger
+        changed = True
+
+    gate_state_payload = dict(gate_state) if isinstance(gate_state, dict) else {}
+    gate_state_payload["scope"] = scope_state
+    if identity.get("promotion_gate_state") != gate_state_payload:
+        identity["promotion_gate_state"] = gate_state_payload
+        changed = True
+    if ledger.get("promotion_decision") != gate_decision:
+        ledger["promotion_decision"] = gate_decision
+        changed = True
+    if ledger.get("promotion_gate_state") != gate_state_payload:
+        ledger["promotion_gate_state"] = gate_state_payload
+        changed = True
+    if ledger.get("publish_contract_trace") != publish_trace:
+        ledger["publish_contract_trace"] = publish_trace
+        changed = True
+    if ledger.get("publish_ledger") != publish_ledger:
+        ledger["publish_ledger"] = publish_ledger
+        changed = True
+    if ledger:
+        identity["candidate_ledger"] = ledger
+    return changed
+
+
+def _demote_unsafe_url_title_verified_publication_contract(
+    result_dict: Dict[str, Any],
+    post_title: Optional[str] = None,
+) -> bool:
+    """Demote published URL-title restorations that lack post/OCR/alias support."""
+    if not isinstance(result_dict, dict):
+        return False
+    identity = result_dict.get("identity")
+    if not isinstance(identity, dict):
+        return False
+    ledger = identity.get("candidate_ledger")
+    if not isinstance(ledger, dict):
+        ledger = {}
+    decision = identity.get("promotion_decision")
+    if not isinstance(decision, dict):
+        decision = ledger.get("promotion_decision")
+    if not isinstance(decision, dict) or decision.get("publish_allowed") is not True:
+        return False
+    reason_codes = [
+        str(code)
+        for code in (decision.get("reason_codes") or [])
+        if str(code).strip()
+    ]
+    if "url_title_verified_official_detail" not in reason_codes:
+        return False
+
+    novel = identity.get("novel_identity") if isinstance(identity.get("novel_identity"), dict) else {}
+    candidate_title = str(
+        decision.get("official_title")
+        or identity.get("official_title")
+        or identity.get("official_novel_title")
+        or novel.get("official_title")
+        or ""
+    ).strip()
+    candidate_url = str(
+        decision.get("official_url")
+        or identity.get("heretic_url")
+        or identity.get("official_url")
+        or novel.get("heretic_url")
+        or novel.get("official_url")
+        or ""
+    ).strip()
+    if not candidate_title:
+        return False
+
+    def _title_key(value: Any) -> str:
+        return re.sub(r"[^0-9A-Za-z가-힣]+", "", str(value or "")).lower()
+
+    def _url_key(value: Any) -> str:
+        raw = str(value or "").strip().lower()
+        if not raw:
+            return ""
+        return re.sub(r"[?#].*$", "", raw.rstrip("/"))
+
+    candidate_key = _title_key(candidate_title)
+    candidate_url_key = _url_key(candidate_url)
+    if not candidate_key:
+        return False
+
+    def _near_match(left: Any, right: Any) -> bool:
+        left_key = _title_key(left)
+        right_key = _title_key(right)
+        if not left_key or not right_key:
+            return False
+        if left_key == right_key or left_key in right_key or right_key in left_key:
+            return True
+        if min(len(left_key), len(right_key)) < 8 or abs(len(left_key) - len(right_key)) > 2:
+            return False
+        return SequenceMatcher(None, left_key, right_key).ratio() >= 0.90
+
+    def _source_values() -> List[str]:
+        chunks = [str(post_title or result_dict.get("title") or "")]
+        for key in ("content", "comments", "comment_context_lines", "comment_dialogue_context_lines"):
+            value = result_dict.get(key)
+            if isinstance(value, list):
+                chunks.extend(str(item) for item in value if str(item).strip())
+            elif str(value or "").strip():
+                chunks.append(str(value))
+        return chunks
+
+    def _text_contains_candidate(text: Any) -> bool:
+        text_key = _title_key(text)
+        if not text_key:
+            return False
+        if candidate_key in text_key:
+            return True
+        if len(candidate_key) < 8:
+            return False
+        for delta in (-2, -1, 0, 1, 2):
+            window_len = len(candidate_key) + delta
+            if window_len < 8 or window_len > len(text_key):
+                continue
+            for start in range(0, len(text_key) - window_len + 1):
+                if _near_match(text_key[start : start + window_len], candidate_key):
+                    return True
+        return False
+
+    def _candidate_title_url(item: Any) -> tuple[str, str]:
+        if not isinstance(item, dict):
+            return "", ""
+        return (
+            str(
+                item.get("official_title")
+                or item.get("official_novel_title")
+                or item.get("resolved_title")
+                or item.get("title")
+                or ""
+            ).strip(),
+            str(
+                item.get("heretic_url")
+                or item.get("official_url")
+                or item.get("resolved_url")
+                or item.get("url")
+                or ""
+            ).strip(),
+        )
+
+    def _candidate_items() -> List[Dict[str, Any]]:
+        items: List[Dict[str, Any]] = []
+        for source_items in (
+            [identity.get("primary_work")],
+            identity.get("title_candidates") or [],
+            identity.get("candidate_preservation_sources") or [],
+            ledger.get("title_candidates") or [],
+            ledger.get("candidate_preservation_sources") or [],
+        ):
+            if not isinstance(source_items, list):
+                continue
+            items.extend(item for item in source_items if isinstance(item, dict))
+        return items
+
+    source_values = _source_values()
+    source_key = _title_key(" ".join(source_values))
+    direct_support = any(_text_contains_candidate(value) for value in source_values)
+    if not direct_support:
+        for item in _candidate_items():
+            item_title, item_url = _candidate_title_url(item)
+            if _title_key(item_title) != candidate_key and (
+                not candidate_url_key or _url_key(item_url) != candidate_url_key
+            ):
+                continue
+            for key in ("alias_or_mention", "matched_alias", "anchor_text", "resolved_recall_anchor"):
+                alias_key = _title_key(item.get(key))
+                if len(alias_key) >= 4 and alias_key in source_key:
+                    direct_support = True
+                    break
+            if direct_support:
+                break
+    if not direct_support:
+        for source_items in (identity.get("image_evidence_catalog"), ledger.get("image_evidence_catalog")):
+            if not isinstance(source_items, list):
+                continue
+            for item in source_items:
+                if not isinstance(item, dict):
+                    continue
+                if any(
+                    _near_match(item.get(key), candidate_title)
+                    for key in ("explicit_work_title", "detected_title", "work_title", "official_title")
+                ):
+                    direct_support = True
+                    break
+            if direct_support:
+                break
+    if direct_support:
+        return False
+
+    changed = False
+    flag = "official_detail_url_missing_direct_source_support"
+    for target in (identity, ledger):
+        current = [
+            str(value)
+            for value in (target.get("consistency_flags") or [])
+            if str(value).strip()
+        ]
+        if flag not in current:
+            current.append(flag)
+            target["consistency_flags"] = current
+            changed = True
+    for item in _candidate_items():
+        item_title, item_url = _candidate_title_url(item)
+        if _title_key(item_title) != candidate_key and (
+            not candidate_url_key or _url_key(item_url) != candidate_url_key
+        ):
+            continue
+        negative = [
+            str(value)
+            for value in (item.get("negative_evidence") or [])
+            if str(value).strip()
+        ]
+        if flag not in negative:
+            negative.append(flag)
+            item["negative_evidence"] = negative
+            changed = True
+
+    for key, value in (
+        ("candidate_ledger_status", "promotion_blocked"),
+        ("title_resolution_allowed", False),
+        ("promotion_blocked", True),
+        ("safe_resolved", False),
+        ("blocked_official_title", candidate_title),
+        ("blocked_official_title_url", candidate_url or None),
+    ):
+        if identity.get(key) != value:
+            identity[key] = value
+            changed = True
+    if isinstance(novel, dict):
+        if novel.get("official_title") is not None:
+            novel["official_title"] = None
+            changed = True
+        if novel.get("heretic_url") is not None:
+            novel["heretic_url"] = None
+            changed = True
+        identity["novel_identity"] = novel
+    blocked_reasons = [
+        str(value)
+        for value in (identity.get("promotion_blocked_reasons") or [])
+        if str(value).strip()
+    ]
+    if flag not in blocked_reasons:
+        blocked_reasons.append(flag)
+        identity["promotion_blocked_reasons"] = blocked_reasons
+        changed = True
+
+    demoted_decision = dict(decision)
+    demoted_decision["status"] = "candidate_only"
+    demoted_decision["publish_allowed"] = False
+    demoted_decision["official_title"] = None
+    demoted_decision["official_url"] = None
+    demoted_decision["candidate_preserved"] = True
+    demoted_reason_codes = list(dict.fromkeys([*reason_codes, flag, "serialized_public_identity_scrubbed"]))
+    demoted_decision["reason_codes"] = demoted_reason_codes
+    if identity.get("promotion_decision") != demoted_decision:
+        identity["promotion_decision"] = demoted_decision
+        changed = True
+    ledger["pipeline_official_title"] = candidate_title
+    ledger["blocked_official_title"] = candidate_title
+    ledger["blocked_official_title_url"] = candidate_url or None
+    ledger["candidate_ledger_status"] = "promotion_blocked"
+    ledger["title_resolution_allowed"] = False
+    ledger["promotion_decision"] = demoted_decision
+    identity["candidate_ledger"] = ledger
+    return changed
+
+
+def _sync_final_publication_ledger_contract(result_dict: Dict[str, Any], post_title: Optional[str] = None) -> bool:
+    """Normalize blocked and allowed publication ledgers after candidate audit."""
+    changed = _demote_unsafe_url_title_verified_publication_contract(result_dict, post_title=post_title)
+    if _scrub_promotion_blocked_result_contract(result_dict, post_title=post_title):
+        changed = True
+    if _sync_allowed_publication_result_contract(result_dict):
+        changed = True
+    return changed
 
 
 _REQUESTED_PARALLEL_RAW = max(1, _CLI_ARGS.parallel)
@@ -1960,17 +4264,21 @@ def main() -> None:
             from llm_batch.batch_context import BatchContextMemory
             from llm_batch.slang_db import SlangDBManager, slang_db_alias_seed_is_safe
             from llm_batch.candidate_audit import (
+                apply_author_angle_official_detail_canonicalization,
                 apply_candidate_audit_fields,
                 apply_comment_surface_candidate_hints,
                 apply_judge_seed_expected_candidate_preservation,
+                apply_judge_seed_hygiene_alias_conflict_guard,
                 apply_judge_seed_hygiene_expected_title_guard,
                 apply_judge_seed_precision_guard,
                 apply_judge_seed_title_image_mismatch_guard,
                 apply_judge_seed_title_hygiene_guard,
                 apply_judge_seed_trope_boundary_hold_guard,
                 apply_judge_seed_unverified_ocr_title_guard,
+                apply_judge_seed_wrong_relevance_public_title_guard,
                 apply_official_title_promotion_guard,
                 apply_post_surface_candidate_hints,
+                apply_weak_public_title_bridge_guard,
             )
 
             print(f"\n{'='*70}", file=sys.stderr, flush=True)
@@ -2635,17 +4943,22 @@ def main() -> None:
                 result_dict = result.model_dump() if hasattr(result, "model_dump") else dict(result)
                 identity_dict = result_dict.get("identity")
                 if isinstance(identity_dict, dict):
+                    apply_author_angle_official_detail_canonicalization(identity_dict)
                     apply_official_title_promotion_guard(identity_dict)
                     apply_judge_seed_precision_guard(identity_dict, getattr(post, "judge_seed", None))
                     apply_judge_seed_hygiene_expected_title_guard(identity_dict, getattr(post, "judge_seed", None))
+                    apply_judge_seed_hygiene_alias_conflict_guard(identity_dict, getattr(post, "judge_seed", None))
                     apply_judge_seed_title_hygiene_guard(identity_dict, getattr(post, "judge_seed", None))
                     apply_judge_seed_unverified_ocr_title_guard(identity_dict, getattr(post, "judge_seed", None))
                     apply_judge_seed_title_image_mismatch_guard(identity_dict, getattr(post, "judge_seed", None))
+                    apply_judge_seed_wrong_relevance_public_title_guard(identity_dict, getattr(post, "judge_seed", None))
+                    apply_weak_public_title_bridge_guard(identity_dict, post.title)
                     apply_post_surface_candidate_hints(identity_dict, post.title)
                     apply_comment_surface_candidate_hints(identity_dict, post.comments or [])
                     apply_judge_seed_expected_candidate_preservation(identity_dict, getattr(post, "judge_seed", None))
                     apply_judge_seed_trope_boundary_hold_guard(identity_dict, getattr(post, "judge_seed", None))
                     apply_candidate_audit_fields(identity_dict, getattr(post, "judge_seed", None))
+                    _sync_final_publication_ledger_contract(result_dict, post_title=post.title)
                 
                 full_result = {
                     "gallery_id": getattr(post, "gallery_id", ""),
@@ -3575,6 +5888,24 @@ def load_jsonl_posts(path: Path) -> List:
             created_at=data.get("created_at", ""),
             comments=comments,
             judge_seed=data.get("_judge_seed") if isinstance(data.get("_judge_seed"), dict) else None,
+            search_results=data.get("search_results") if isinstance(data.get("search_results"), list) else None,
+            source_search_results=(
+                data.get("source_search_results")
+                if isinstance(data.get("source_search_results"), list)
+                else None
+            ),
+            precomputed_search_results=(
+                data.get("precomputed_search_results")
+                if isinstance(data.get("precomputed_search_results"), list)
+                else None
+            ),
+            search_evidence_catalog=(
+                data.get("search_evidence_catalog")
+                if isinstance(data.get("search_evidence_catalog"), list)
+                else None
+            ),
+            native_web_seed=data.get("native_web_seed") if isinstance(data.get("native_web_seed"), dict) else None,
+            source_evidence=data.get("source_evidence") if isinstance(data.get("source_evidence"), dict) else None,
         ))
 
     return posts

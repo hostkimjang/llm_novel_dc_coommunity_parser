@@ -36,6 +36,13 @@
   .step-recall::after { content: attr(data-recall-count); position: absolute; top: -6px; right: -6px; background: #f59e0b; color: #000; font-size: 9px; font-weight: 700; min-width: 14px; height: 14px; border-radius: 7px; display: flex; align-items: center; justify-content: center; }
   tr.row-clickable { cursor: pointer; }
   tr.row-clickable:hover { background: rgba(51,65,85,.4); }
+  .expand-toggle-btn { display:block; width:100%; margin-top:4px; padding:4px 0; border:none; border-radius:6px; background:rgba(51,65,85,.35); color:#94a3b8; font-size:11px; cursor:pointer; transition:.15s; }
+  .expand-toggle-btn:hover { background:rgba(51,65,85,.6); color:#e2e8f0; }
+  /* 관련/노이즈 행 시각 구분 — 배지 색만으로는 스캔이 어렵다 */
+  tr.row-relevant { background: rgba(16,185,129,.05); box-shadow: inset 2px 0 0 rgba(16,185,129,.45); }
+  tr.row-relevant:hover { background: rgba(16,185,129,.12); }
+  tr.row-noise { opacity: .75; }
+  tr.row-noise:hover { opacity: 1; background: rgba(51,65,85,.4); }
   /* Modal */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.65); backdrop-filter: blur(4px); z-index: 900; display: flex; align-items: center; justify-content: center; }
   .modal-panel { background: #1e293b; border: 1px solid rgba(148,163,184,.2); border-radius: 16px; width: min(96vw, 80vw); max-width: 1500px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 60px rgba(0,0,0,.5); }
@@ -302,7 +309,16 @@
       <div id="live-results-panel" class="glass rounded-xl p-4">
         <div class="flex items-center justify-between mb-3 gap-3 flex-wrap">
           <h3 class="text-sm font-semibold text-slate-300">📋 처리 결과</h3>
-          <div class="flex items-center gap-2 text-xs">
+          <div class="flex items-center gap-2 text-xs flex-wrap">
+            <input id="live-search" type="search" placeholder="🔍 제목/작품/ID 검색"
+                   oninput="onLiveSearchInput()"
+                   class="px-2.5 py-1 rounded bg-slate-800 border border-slate-700 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 w-44">
+            <div class="flex rounded overflow-hidden border border-slate-700">
+              <button id="live-filter-all" onclick="setLiveFilter('all')" class="px-2 py-1 bg-blue-600 text-white">전체</button>
+              <button id="live-filter-relevant" onclick="setLiveFilter('relevant')" class="px-2 py-1 bg-slate-800 text-slate-300 hover:bg-slate-700">✅ 관련</button>
+              <button id="live-filter-noise" onclick="setLiveFilter('noise')" class="px-2 py-1 bg-slate-800 text-slate-300 hover:bg-slate-700">🗑 노이즈</button>
+            </div>
+            <span id="live-filter-badge" class="hidden px-2 py-1 rounded bg-amber-900/40 text-amber-300 border border-amber-700/40">⏸ 필터 중 — 실시간 갱신 일시정지</span>
             <button id="live-prev-btn" onclick="changeLivePage(-1)" class="px-2 py-1 rounded bg-slate-800 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed">이전</button>
             <span id="live-page-info" class="text-slate-400 min-w-[110px] text-center">0 / 0 · 0건</span>
             <button id="live-next-btn" onclick="changeLivePage(1)" class="px-2 py-1 rounded bg-slate-800 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed">다음</button>
@@ -503,11 +519,20 @@
 <div id="detail-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal()">
   <div class="modal-panel">
     <div class="modal-header">
-      <div>
-        <div id="modal-title" class="text-base font-bold"></div>
+      <div class="min-w-0">
+        <div id="modal-title" class="text-base font-bold truncate"></div>
         <div id="modal-subtitle" class="text-xs text-slate-400 mt-0.5"></div>
       </div>
-      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <div class="flex items-center gap-1 shrink-0">
+        <button id="modal-nav-prev" onclick="navModal(-1)" title="이전 포스트 (←)"
+                class="px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-sm">◀</button>
+        <span id="modal-nav-pos" class="text-xs text-slate-500 min-w-[52px] text-center"></span>
+        <button id="modal-nav-next" onclick="navModal(1)" title="다음 포스트 (→)"
+                class="px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-sm">▶</button>
+        <button onclick="copyModalJson(this)" title="이 포스트의 상세 데이터를 JSON으로 복사"
+                class="px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 text-sm ml-1">📋 JSON</button>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
     </div>
     <div class="modal-body" id="modal-body"></div>
   </div>
@@ -535,6 +560,36 @@
 </div>
 
 <script>
+// ─── Render Scheduler ───────────────────────────
+// SSE 이벤트(expert_phase 초당 수십 건, post_complete 초당 수 건)마다
+// 전체 재렌더하면 브라우저가 렉 걸린다. dirty 플래그로 모아 250ms에 1회만
+// 렌더하고, 탭이 백그라운드(document.hidden)면 복귀 시점까지 미룬다.
+const RENDER_COALESCE_MS = 250;
+const _renderPending = { workers: false, results: false, log: false };
+let _renderTimer = null;
+
+function scheduleRender(what) {
+  _renderPending[what] = true;
+  if (_renderTimer !== null) return;
+  _renderTimer = setTimeout(() => {
+    _renderTimer = null;
+    if (document.hidden) return;  // visibilitychange에서 flush
+    flushPendingRenders();
+  }, RENDER_COALESCE_MS);
+}
+
+function flushPendingRenders() {
+  // live 탭이 아닐 때는 dirty 유지하고 미룬다 — 탭 복귀(switchTab)에서 flush
+  if (currentTab !== 'live') return;
+  if (_renderPending.workers) { _renderPending.workers = false; renderWorkerCardsNow(); }
+  if (_renderPending.results) { _renderPending.results = false; renderLiveResultsNow(); }
+  if (_renderPending.log) { _renderPending.log = false; flushLogArea(); }
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) flushPendingRenders();
+});
+
 // ─── State ──────────────────────────────────────
 let sse = null;
 let currentTab = 'live';
@@ -543,8 +598,10 @@ const recallCounts = {};  // {expert: count} — 재호출 횟수 추적
 const flowLog = [];  // 파이프라인 실행 흐름 로그
 let sseReconnectAttempts = 0;
 let lastEventTime = Date.now();
-const MAX_LOG_LINES = 500;  // 로그 DOM 최대 줄수
-const LIVE_PAGE_SIZE = 500;
+let sseRestorePending = true;  // SSE (재)연결 후 첫 status에서 active_posts 강제 복원
+const MAX_LOG_LINES = 500;  // 메모리에 유지할 live 로그 최대 줄수
+const MAX_LOG_RENDER_CHARS = 80000;  // live 로그 DOM 표시 상한(대형 LLM 로그 layout 방지)
+const LIVE_PAGE_SIZE = 100;
 const HISTORY_PAGE_SIZE = 200;
 const SLANG_DB_PAGE_SIZE_DEFAULT = 100;
 const SLANG_DB_PAGE_SIZE_OPTIONS = [100, 250, 500, 1000];
@@ -552,6 +609,44 @@ let liveResultPage = [];
 let liveCurrentPage = 0;
 let liveTotalResults = 0;
 let livePageLoading = false;
+let _livePendingReloadPage = null;
+// 검색/필터 — 활성화되면 서버 측 필터 결과 스냅샷을 보여주고
+// 실시간 upsert/건수 증분을 일시정지한다 (배지로 안내)
+let liveSearchQuery = '';
+let liveRelevanceFilter = 'all';
+let _liveSearchDebounce = null;
+
+function liveFilterActive() {
+  return liveSearchQuery !== '' || liveRelevanceFilter !== 'all';
+}
+
+function onLiveSearchInput() {
+  clearTimeout(_liveSearchDebounce);
+  _liveSearchDebounce = setTimeout(() => {
+    liveSearchQuery = (document.getElementById('live-search').value || '').trim();
+    updateLiveFilterUI();
+    loadLiveResults(0);
+  }, 300);
+}
+
+function setLiveFilter(mode) {
+  liveRelevanceFilter = mode;
+  updateLiveFilterUI();
+  loadLiveResults(0);
+}
+
+function updateLiveFilterUI() {
+  const map = { all: 'live-filter-all', relevant: 'live-filter-relevant', noise: 'live-filter-noise' };
+  Object.entries(map).forEach(([mode, id]) => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.className = mode === liveRelevanceFilter
+      ? 'px-2 py-1 bg-blue-600 text-white'
+      : 'px-2 py-1 bg-slate-800 text-slate-300 hover:bg-slate-700';
+  });
+  const badge = document.getElementById('live-filter-badge');
+  if (badge) badge.classList.toggle('hidden', !liveFilterActive());
+}
 let historyFileName = '';
 let historyLogFileName = '';
 let historyPageData = [];
@@ -584,7 +679,12 @@ function _cacheSet(key, value) {
 function _cacheGet(key) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; } catch { return null; }
 }
+let _cacheSaveResultsLastTs = 0;
 function _cacheSaveResults() {
+  // localStorage 직렬화(최대 500행)는 비싸다 — post_complete마다 호출되므로 스로틀
+  const now = Date.now();
+  if (now - _cacheSaveResultsLastTs < 5000) return;
+  _cacheSaveResultsLastTs = now;
   _cacheSet(_CACHE_RESULTS_KEY, {
     items: liveResultPage.slice(0, LIVE_PAGE_SIZE),
     total: liveTotalResults,
@@ -990,6 +1090,7 @@ function switchTab(tab) {
   document.getElementById('tab-live').className = 'pb-2 text-sm font-medium ' + (tab === 'live' ? 'tab-active' : 'tab-idle');
   document.getElementById('tab-history').className = 'pb-2 text-sm font-medium ' + (tab === 'history' ? 'tab-active' : 'tab-idle');
   document.getElementById('tab-slang-db').className = 'pb-2 text-sm font-medium ' + (tab === 'slang-db' ? 'tab-active' : 'tab-idle');
+  if (tab === 'live') flushPendingRenders();  // 탭을 떠나 있는 동안 미룬 렌더 반영
   if (tab === 'history') loadHistoryList();
   if (tab === 'slang-db' && !slangDbLoaded) loadSlangDb(0);
 }
@@ -1149,12 +1250,18 @@ function setSlangDbPageSize(value) {
   }
 }
 
+let _lastPagerBtnKey = '';
 function updateLivePager() {
   const totalPages = liveTotalResults > 0 ? Math.ceil(liveTotalResults / LIVE_PAGE_SIZE) : 0;
   document.getElementById('live-page-info').textContent = `${totalPages ? liveCurrentPage + 1 : 0} / ${totalPages} · ${fmtNum(liveTotalResults)}건`;
   document.getElementById('live-prev-btn').disabled = liveCurrentPage <= 0;
   document.getElementById('live-next-btn').disabled = totalPages === 0 || liveCurrentPage >= totalPages - 1;
-  renderLivePageButtons(totalPages);
+  // 페이지 버튼 innerHTML 재생성은 페이지 구성이 바뀔 때만
+  const key = totalPages + ':' + liveCurrentPage;
+  if (key !== _lastPagerBtnKey) {
+    _lastPagerBtnKey = key;
+    renderLivePageButtons(totalPages);
+  }
 }
 
 function renderLivePageButtons(totalPages) {
@@ -1203,6 +1310,49 @@ function goToLivePage(page) {
 }
 
 function renderLiveResults() {
+  // post_complete마다 페이지(최대 100행) 전체를 innerHTML로 재생성하면
+  // 브라우저가 렉 걸린다 — 250ms 코얼레싱 + 증분 prepend
+  scheduleRender('results');
+}
+
+function buildLiveResultRowHtml(data, rowNum, withFade = false) {
+  const badge = topicalityMeta(data.topicality, data.is_relevant);
+  const conf = data.confidence || '-';
+  const confClass = confBadge(conf);
+  const structureText = compactStructureText(data);
+  const workTitle = pickDisplayWorkTitle(data);
+  const workText = compactWorkMetaText(data);
+  const tint = data.is_relevant ? ' row-relevant' : ' row-noise';
+  return `
+    <tr class="border-t border-slate-700/50${withFade ? ' fade-in' : ''} row-clickable${tint}" onclick="openLiveModal(${data.post_id})">
+      <td class="py-2 px-2 text-slate-400">${rowNum}</td>
+      <td class="py-2 px-2">${data.post_id || '-'}</td>
+      <td class="py-2 px-2 max-w-[260px] truncate" title="${escHtml(data.title || '')}">${escHtml((data.title || '').slice(0, 60))}</td>
+      <td class="py-2 px-2">
+        <div><span class="px-2 py-0.5 rounded text-xs ${badge.cls}">${escHtml(badge.label)}</span></div>
+        <div class="subtle-meta mt-1">${escHtml(data.discussion_type || '-')}</div>
+      </td>
+      <td class="py-2 px-2 max-w-[220px]">
+        <div class="subtle-meta" title="${escHtml(structureText)}">${escHtml(structureText)}</div>
+      </td>
+      <td class="py-2 px-2 max-w-[320px]">
+        <div class="truncate" title="${escHtml(workTitle)}">${escHtml(workTitle)}</div>
+        <div class="subtle-meta" title="${escHtml(workText)}">${escHtml(workText)}</div>
+      </td>
+      <td class="py-2 px-2"><span class="px-1.5 py-0.5 rounded text-xs ${confClass}">${conf}</span></td>
+      <td class="py-2 px-2 text-right text-slate-400">${data.elapsed ? data.elapsed.toFixed(1) + 's' : '-'}</td>
+    </tr>
+  `;
+}
+
+// 마지막 full 렌더 시점의 최상단 post_id — 증분 prepend 가능 여부 판정용
+let _lastRenderedTopPostId = null;
+
+function renderLiveResultsNow() {
+  // 신규 결과가 기존 렌더의 앞쪽에만 추가된 경우(라이브 page 0의 일반 케이스)
+  // 전체 재구성 대신 신규 행만 prepend — 페이지 전체 innerHTML 재생성(25-60ms long
+  // task + 전행 fade-in 재애니메이션)을 피한다. rowNum은 전체 건수 기준
+  // 절대 번호라 기존 행은 불변이므로 증분이 정확하다.
   const tbody = document.getElementById('results-body');
   const empty = document.getElementById('results-empty');
   empty.textContent = '아직 처리된 포스트가 없습니다';
@@ -1210,46 +1360,42 @@ function renderLiveResults() {
   if (!liveResultPage.length) {
     tbody.innerHTML = '';
     empty.classList.remove('hidden');
+    _lastRenderedTopPostId = null;
     updateLivePager();
     return;
   }
-
   empty.classList.add('hidden');
+
+  if (liveCurrentPage === 0 && _lastRenderedTopPostId != null && tbody.children.length > 0) {
+    const knownIdx = liveResultPage.findIndex(r => r.post_id === _lastRenderedTopPostId);
+    if (knownIdx === 0) { updateLivePager(); return; }  // 신규 없음
+    if (knownIdx > 0) {
+      const newItems = liveResultPage.slice(0, knownIdx);
+      const firstCell = tbody.firstElementChild ? tbody.firstElementChild.querySelector('td') : null;
+      const base = Number(firstCell ? firstCell.textContent : 0) || Math.max(liveTotalResults - newItems.length, 0);
+      // newItems[0]이 최신 — rowNum은 base+k(최신)..base+1(가장 오래된 신규)
+      const html = newItems.map((d, i) => buildLiveResultRowHtml(d, base + (newItems.length - i), true)).join('');
+      tbody.insertAdjacentHTML('afterbegin', html);
+      while (tbody.children.length > LIVE_PAGE_SIZE) tbody.lastElementChild.remove();
+      _lastRenderedTopPostId = liveResultPage[0].post_id;
+      updateLivePager();
+      return;
+    }
+    // knownIdx < 0: 페이지 교체/복원 — full rebuild로 폴백
+  }
+
   tbody.innerHTML = liveResultPage.map((data, idx) => {
-    const badge = topicalityMeta(data.topicality, data.is_relevant);
-    const conf = data.confidence || '-';
-    const confClass = confBadge(conf);
     const rowNum = liveTotalResults > 0
       ? Math.max(liveTotalResults - (liveCurrentPage * LIVE_PAGE_SIZE) - idx, 1)
       : idx + 1;
-    const structureText = compactStructureText(data);
-    const workTitle = pickDisplayWorkTitle(data);
-    const workText = compactWorkMetaText(data);
-    return `
-      <tr class="border-t border-slate-700/50 fade-in row-clickable" onclick="openLiveModal(${data.post_id})">
-        <td class="py-2 px-2 text-slate-400">${rowNum}</td>
-        <td class="py-2 px-2">${data.post_id || '-'}</td>
-        <td class="py-2 px-2 max-w-[260px] truncate" title="${escHtml(data.title || '')}">${escHtml((data.title || '').slice(0, 60))}</td>
-        <td class="py-2 px-2">
-          <div><span class="px-2 py-0.5 rounded text-xs ${badge.cls}">${escHtml(badge.label)}</span></div>
-          <div class="subtle-meta mt-1">${escHtml(data.discussion_type || '-')}</div>
-        </td>
-        <td class="py-2 px-2 max-w-[220px]">
-          <div class="subtle-meta" title="${escHtml(structureText)}">${escHtml(structureText)}</div>
-        </td>
-        <td class="py-2 px-2 max-w-[320px]">
-          <div class="truncate" title="${escHtml(workTitle)}">${escHtml(workTitle)}</div>
-          <div class="subtle-meta" title="${escHtml(workText)}">${escHtml(workText)}</div>
-        </td>
-        <td class="py-2 px-2"><span class="px-1.5 py-0.5 rounded text-xs ${confClass}">${conf}</span></td>
-        <td class="py-2 px-2 text-right text-slate-400">${data.elapsed ? data.elapsed.toFixed(1) + 's' : '-'}</td>
-      </tr>
-    `;
+    return buildLiveResultRowHtml(data, rowNum, false);
   }).join('');
+  _lastRenderedTopPostId = liveResultPage[0].post_id;
   updateLivePager();
 }
 
 function mergeLiveResults(items) {
+  if (liveFilterActive()) return;  // 필터 스냅샷 보호
   if (liveCurrentPage !== 0 || !Array.isArray(items) || items.length === 0) return;
   const merged = [];
   const seen = new Set();
@@ -1265,6 +1411,9 @@ function mergeLiveResults(items) {
 
 function upsertLiveResult(item) {
   if (!item) return;
+  // 필터/검색 중에는 스냅샷 유지 — 신규 결과가 필터 조건과 무관하게
+  // 끼어들면 혼란스럽다 (배지로 일시정지 안내, 해제 시 재조회)
+  if (liveFilterActive()) return;
   if (liveCurrentPage === 0) {
     liveResultPage = [item, ...liveResultPage.filter(row => row.post_id !== item.post_id)].slice(0, LIVE_PAGE_SIZE);
     renderLiveResults();
@@ -1275,11 +1424,20 @@ function upsertLiveResult(item) {
 }
 
 async function loadLiveResults(page = 0) {
-  if (livePageLoading) return;
+  if (livePageLoading) {
+    _livePendingReloadPage = Math.max(page, 0);
+    return;
+  }
   livePageLoading = true;
+  const requestPage = Math.max(page, 0);
+  const requestSearchQuery = liveSearchQuery;
+  const requestRelevanceFilter = liveRelevanceFilter;
   try {
-    const offset = Math.max(page, 0) * LIVE_PAGE_SIZE;
-    const res = await fetch(`/api/results?offset=${offset}&limit=${LIVE_PAGE_SIZE}&order=desc`);
+    const offset = requestPage * LIVE_PAGE_SIZE;
+    const params = new URLSearchParams({ offset, limit: LIVE_PAGE_SIZE, order: 'desc' });
+    if (requestSearchQuery) params.set('q', requestSearchQuery);
+    if (requestRelevanceFilter !== 'all') params.set('relevance', requestRelevanceFilter);
+    const res = await fetch(`/api/results?${params}`);
     const payload = await res.json();
 
     let nextItems = [];
@@ -1299,9 +1457,17 @@ async function loadLiveResults(page = 0) {
       throw new Error('unexpected /api/results payload');
     }
 
+    if (
+      requestSearchQuery !== liveSearchQuery
+      || requestRelevanceFilter !== liveRelevanceFilter
+      || (_livePendingReloadPage !== null && _livePendingReloadPage !== requestPage)
+    ) {
+      return;
+    }
+
     liveResultPage = nextItems;
     liveTotalResults = nextTotal;
-    liveCurrentPage = Math.max(page, 0);
+    liveCurrentPage = requestPage;
     liveInitialPageLoaded = true;
     livePendingRestoreItems = [];
     renderLiveResults();
@@ -1325,6 +1491,11 @@ async function loadLiveResults(page = 0) {
     }
   } finally {
     livePageLoading = false;
+    if (_livePendingReloadPage !== null) {
+      const nextPage = _livePendingReloadPage;
+      _livePendingReloadPage = null;
+      loadLiveResults(nextPage);
+    }
   }
 }
 
@@ -1551,6 +1722,9 @@ function connectSSE() {
   sse.onopen = () => {
     sseReconnectAttempts = 0;
     lastEventTime = Date.now();
+    // 재연결 직후 첫 status에서 active_posts를 1회 강제 복원 — 끊김 구간의
+    // 유령/누락 워커 카드를 정리한다 (이후 폴링은 복원 가드로 깜빡임 방지)
+    sseRestorePending = true;
     document.getElementById('conn-status').className = 'text-xs px-2 py-1 rounded-full bg-emerald-900 text-emerald-300';
     document.getElementById('conn-status').textContent = '● 연결됨';
   };
@@ -1569,6 +1743,17 @@ function connectSSE() {
       if (!results.length) return;
       if (!liveInitialPageLoaded) {
         livePendingRestoreItems = results;
+        return;
+      }
+      if (liveFilterActive()) return;  // 필터 스냅샷 보호: restore/gap 재조회도 일시정지
+      // 갭 감지: 재연결 restore(최신 50건)와 기존 page 0 행이 하나도 겹치지
+      // 않으면 단절 중 50건 초과 완료 의심 — merge 대신 전체 재조회로 치유
+      if (
+        liveCurrentPage === 0
+        && liveResultPage.length > 0
+        && !results.some(r => liveResultPage.some(row => row.post_id === r.post_id))
+      ) {
+        loadLiveResults(0);
         return;
       }
       mergeLiveResults(results);
@@ -1600,6 +1785,13 @@ setInterval(() => {
     connectSSE();
   }
 }, 30000);
+
+// 주기 status 폴링 (SSE는 연결 시 1회만 status를 보냄).
+// 백그라운드 탭은 스킵 — 복귀하면 다음 주기에 자연 갱신된다.
+setInterval(() => {
+  if (document.hidden) return;
+  fetch('/api/status').then(r => r.json()).then(updateStatus).catch(() => {});
+}, 5000);
 
 // ─── Event Handlers ─────────────────────────────
 function handleEvent(msg) {
@@ -1657,6 +1849,7 @@ function handleEvent(msg) {
           doneSteps: new Set(),
           recallCounts: {},
           flowLog: [],
+          startedAt: Date.now(),
         });
         renderWorkerCards();
       } else {
@@ -1705,7 +1898,13 @@ function handleEvent(msg) {
         renderWorkerCards();
       }
       upsertLiveResult(data);
-      fetch('/api/status').then(r=>r.json()).then(updateStatus);
+      // full status는 5s 주기 폴링으로 — post_complete마다 /api/status(수십 KB,
+      // active_posts 포함)를 치면 그 자체가 부하원이 된다. 건수만 로컬 증분.
+      // (필터 중에는 liveTotalResults가 필터된 건수라 증분하지 않는다)
+      if (!liveFilterActive()) {
+        liveTotalResults += 1;
+        updateLivePager();
+      }
       break;
     }
 
@@ -1804,10 +2003,17 @@ function updateStatus(s) {
     ? Math.round(s.search_hits / total_search * 100) + '%'
     : '-';
 
-  liveTotalResults = Number(s.done_count || 0);
-  updateLivePager();
+  // 단조 증가 클램프 — 폴링 응답은 스냅샷이라 그 사이 도착한 SSE post_complete
+  // 증분을 롤백해 건수가 역행 표시될 수 있다 (batch_start의 0 리셋은 별도 경로).
+  // 필터 중에는 liveTotalResults가 '필터된 건수'라 done_count로 덮지 않는다.
+  if (!liveFilterActive()) {
+    liveTotalResults = Math.max(liveTotalResults, Number(s.done_count || 0));
+    updateLivePager();
+  }
 
-  if (s.current_expert) {
+  // 순차 모드 전용 — 병렬 모드에서 호출하면 임의 워커의 expert가 순차
+  // 파이프라인 스트립에 누적되어 표시가 오도된다 (워커 카드가 담당)
+  if ((s.parallel_count || 1) <= 1 && s.current_expert) {
     updatePipeline(s.current_expert, s.current_expert_status);
   }
   if (s.current_post_id) {
@@ -1831,7 +2037,14 @@ function updateStatus(s) {
       }
       updateLogTabStyles();
     }
-    if (s.active_posts && typeof s.active_posts === 'object') {
+    // active_posts 복원은 SSE 라이브 추적이 없을 때만 (새로고침/재연결 직후).
+    // 라이브 추적 중에 5s 폴링이 통째로 덮어쓰면 expert_phase로 쌓은
+    // doneSteps/recallCounts가 매번 리셋되어 카드가 깜빡인다.
+    // 단, (재)연결 직후 첫 status는 무조건 1회 복원 — SSE 이벤트가 계속 흘러
+    // lastEventTime이 최신이어도 끊김 구간의 stale 카드를 정리해야 한다.
+    const sseTracking = !sseRestorePending && activeWorkers.size > 0 && (Date.now() - lastEventTime) < 15000;
+    if (!sseTracking && s.active_posts && typeof s.active_posts === 'object') {
+      sseRestorePending = false;
       activeWorkers.clear();
       for (const [pid, info] of Object.entries(s.active_posts)) {
         activeWorkers.set(Number(pid), {
@@ -1843,6 +2056,7 @@ function updateStatus(s) {
           doneSteps: new Set(),
           recallCounts: {},
           flowLog: info.flow_log || [],
+          startedAt: Date.now(),  // 복원 시점 근사 (정확한 시작 시각은 모름)
         });
       }
       renderWorkerCards();
@@ -1949,6 +2163,7 @@ function clearFlowLog() {
 
 const MINI_STEPS = ['fast_path','gatekeeper','discourse','search','decoder','verifier','critic','synthesizer','arbiter'];
 const MINI_LABELS = { fast_path:'FP', gatekeeper:'GK', discourse:'DC', search:'SR', decoder:'DE', verifier:'VR', critic:'CR', synthesizer:'SY', arbiter:'AR' };
+const _workerRenderSigs = new Map();
 
 function toggleParallelUI(isParallel) {
   const section = document.getElementById('parallel-section');
@@ -1961,8 +2176,17 @@ function toggleParallelUI(isParallel) {
 }
 
 function renderWorkerCards() {
+  // 32병렬 expert_phase가 초당 수십 건 — 즉시 렌더 대신 250ms 코얼레싱
+  scheduleRender('workers');
+}
+
+function renderWorkerCardsNow() {
   const container = document.getElementById('parallel-workers');
   if (!container) return;
+
+  if (activeWorkers.size > 0) {
+    container.querySelectorAll('[data-worker-empty="1"]').forEach(el => el.remove());
+  }
 
   // 기존 카드의 post_id 수집
   const existingCards = new Map();
@@ -1975,8 +2199,17 @@ function renderWorkerCards() {
   // 삭제: 더 이상 active가 아닌 카드 제거
   existingCards.forEach((el, pid) => {
     if (!activePostIds.has(pid)) {
-      el.style.animation = 'workerOut .2s ease forwards';
-      setTimeout(() => el.remove(), 200);
+      _workerRenderSigs.delete(pid);
+      if (el.dataset.removing !== '1') {
+        el.dataset.removing = '1';
+        el.style.animation = 'workerOut .2s ease forwards';
+        setTimeout(() => {
+          el.remove();
+          if (activeWorkers.size === 0 && !container.querySelector('.worker-card')) {
+            container.innerHTML = '<div data-worker-empty="1" class="text-xs text-slate-500 col-span-full text-center py-4">처리 중인 포스트 없음</div>';
+          }
+        }, 200);
+      }
     }
   });
 
@@ -1994,6 +2227,21 @@ function renderWorkerCards() {
     const colorIdx = wid % 8;
     const expertLabel = w.expert ? (STEP_LABELS[w.expert] || w.expert) : '대기';
     const isRunning = w.status === 'running';
+    const doneSig = MINI_STEPS.filter(s => w.doneSteps.has(s)).join(',');
+    const recallSig = MINI_STEPS.map(s => `${s}:${w.recallCounts[s] || 0}`).join('|');
+    const renderSig = [
+      wid,
+      w.title || '',
+      w.index || 0,
+      w.expert || '',
+      w.status || '',
+      doneSig,
+      recallSig,
+    ].join('\u001f');
+    if (_workerRenderSigs.get(postId) === renderSig && card.dataset.removing !== '1') {
+      return;
+    }
+    _workerRenderSigs.set(postId, renderSig);
 
     // 미니 파이프라인 스텝 렌더
     let stepsHtml = MINI_STEPS.map(s => {
@@ -2008,6 +2256,7 @@ function renderWorkerCards() {
     card.innerHTML = `
       <div class="flex items-center justify-between mb-2">
         <span class="worker-badge w${colorIdx}">W${wid}</span>
+        <span class="text-xs text-slate-500 worker-elapsed" data-started="${w.startedAt || ''}"></span>
         <span class="text-xs text-slate-400">#${postId}</span>
       </div>
       <div class="text-xs text-slate-300 truncate mb-2" title="${escHtml(w.title)}">${escHtml((w.title || '').slice(0,35))}</div>
@@ -2018,16 +2267,107 @@ function renderWorkerCards() {
 
   // 아무 워커도 없으면 안내 메시지
   if (activeWorkers.size === 0 && container.children.length === 0) {
-    container.innerHTML = '<div class="text-xs text-slate-500 col-span-full text-center py-4">처리 중인 포스트 없음</div>';
+    container.innerHTML = '<div data-worker-empty="1" class="text-xs text-slate-500 col-span-full text-center py-4">처리 중인 포스트 없음</div>';
   }
 }
 
 // ─── Modal ──────────────────────────────────────
 
+// 긴 본문/댓글/판정 사유 블록의 펼치기 토글
+let _expandableSeq = 0;
+function expandableBlock(innerHtml, opts = {}) {
+  const { maxHeight = 200, expandIf = true, blockClass = '' } = opts;
+  if (!expandIf) {
+    return `<div class="detail-block ${blockClass}">${innerHtml}</div>`;
+  }
+  const id = 'xb-' + (++_expandableSeq);
+  return `<div class="detail-block ${blockClass}" id="${id}" style="max-height:${maxHeight}px">${innerHtml}</div>` +
+    `<button class="expand-toggle-btn" onclick="toggleExpandBlock('${id}', this)">▼ 전체 펼치기</button>`;
+}
+
+function toggleExpandBlock(id, btn) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.dataset.expanded === '1') {
+    el.style.maxHeight = el.dataset.collapsedMax || '200px';
+    el.dataset.expanded = '0';
+    btn.textContent = '▼ 전체 펼치기';
+    el.scrollIntoView({ block: 'nearest' });
+  } else {
+    if (!el.dataset.collapsedMax) el.dataset.collapsedMax = el.style.maxHeight || '200px';
+    el.style.maxHeight = 'none';
+    el.dataset.expanded = '1';
+    btn.textContent = '▲ 접기';
+  }
+}
+
+// 모달 내 이전/다음 포스트 네비게이션 컨텍스트 (현재 페이지 목록 기준)
+let _modalNav = { ids: [], index: -1, mode: 'live' };
+let _modalCurrentData = null;
+
+function _setModalNav(list, postId, mode) {
+  const ids = (list || []).map(item => item.post_id).filter(id => id != null);
+  _modalNav = { ids, index: ids.indexOf(postId), mode };
+}
+
+function _updateModalNavButtons() {
+  const prev = document.getElementById('modal-nav-prev');
+  const next = document.getElementById('modal-nav-next');
+  const pos = document.getElementById('modal-nav-pos');
+  const { ids, index } = _modalNav;
+  const usable = index >= 0 && ids.length > 1;
+  if (prev) prev.disabled = !usable || index <= 0;
+  if (next) next.disabled = !usable || index >= ids.length - 1;
+  if (pos) pos.textContent = usable ? `${index + 1}/${ids.length}` : '';
+}
+
+function navModal(delta) {
+  const { ids, index, mode } = _modalNav;
+  const nextIndex = index + delta;
+  if (index < 0 || nextIndex < 0 || nextIndex >= ids.length) return;
+  const targetId = ids[nextIndex];
+  if (mode === 'history') openHistoryModal(targetId);
+  else openLiveModal(targetId);
+}
+
+async function copyModalJson(btn) {
+  if (!_modalCurrentData) return;
+  const { _detail_warning, ...payload } = _modalCurrentData;
+  const jsonText = JSON.stringify(payload, null, 2);
+  const orig = btn.textContent;
+  let copied = false;
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(jsonText);
+      copied = true;
+    }
+  } catch {}
+  if (!copied) {
+    const ta = document.createElement('textarea');
+    ta.value = jsonText;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    ta.style.top = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { copied = document.execCommand('copy'); } catch {}
+    document.body.removeChild(ta);
+  }
+  if (copied) {
+    btn.textContent = '✓ 복사됨';
+    setTimeout(() => { btn.textContent = orig; }, 1200);
+  } else {
+    btn.textContent = '복사 실패';
+    setTimeout(() => { btn.textContent = orig || '📋 JSON'; }, 1200);
+  }
+}
+
 function showModalLoading(title, subtitle = '') {
   document.getElementById('modal-title').textContent = title;
   document.getElementById('modal-subtitle').textContent = subtitle;
   document.getElementById('modal-body').innerHTML = '<div class="text-center text-slate-500 py-12">⏳ 상세 정보를 불러오는 중...</div>';
+  _updateModalNavButtons();
   document.getElementById('detail-modal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
@@ -2036,6 +2376,7 @@ async function openLiveModal(postId) {
   const summary = liveResultPage.find(item => item.post_id === postId);
   if (!summary) return;
 
+  _setModalNav(liveResultPage, postId, 'live');
   showModalLoading(`#${postId} — ${summary.title || '(제목 없음)'}`);
   try {
     const res = await fetch(`/api/results/${postId}`);
@@ -2070,6 +2411,7 @@ async function openHistoryModal(postId) {
   if (!historyFileName) return;
 
   const summary = historyPageData.find(item => item.post_id === postId);
+  _setModalNav(historyPageData, postId, 'history');
   showModalLoading(
     `#${postId} — ${summary?.title || '(제목 없음)'}`,
     historyFileName,
@@ -2087,7 +2429,9 @@ async function openHistoryModal(postId) {
 
 function showModal(d, mode) {
   const isHistory = mode === 'history';
-  
+  _modalCurrentData = d;
+  _updateModalNavButtons();
+
   // 헤더
   const titleText = d.title || '(제목 없음)';
   const postId = d.post_id || '-';
@@ -2170,16 +2514,22 @@ function showModal(d, mode) {
   if (contentLines && contentLines.length) {
     html += `<div class="detail-section">`;
     html += `<div class="detail-section-title">📄 게시글 내용 <span class="text-xs text-slate-500 font-normal">(${contentLines.length}줄)</span></div>`;
-    html += `<div class="detail-block">${contentLines.map(l => escHtml(typeof l === 'string' ? l : '')).join('\n')}</div>`;
+    html += expandableBlock(
+      contentLines.map(l => escHtml(typeof l === 'string' ? l : '')).join('\n'),
+      { expandIf: contentLines.length > 12 },
+    );
     html += `</div>`;
   }
-  
+
   // 댓글
   const comments = d.comments;
   if (comments && comments.length) {
     html += `<div class="detail-section">`;
     html += `<div class="detail-section-title">💬 댓글 <span class="text-xs text-slate-500 font-normal">(${comments.length}개)</span></div>`;
-    html += `<div class="detail-block">${comments.map(c => escHtml(typeof c === 'string' ? c : JSON.stringify(c))).join('\n')}</div>`;
+    html += expandableBlock(
+      comments.map(c => escHtml(typeof c === 'string' ? c : JSON.stringify(c))).join('\n'),
+      { expandIf: comments.length > 12 },
+    );
     html += `</div>`;
   }
   
@@ -2235,7 +2585,11 @@ function showModal(d, mode) {
   html += `<div class="detail-section">`;
   html += `<div class="detail-section-title">${reasonLabel}</div>`;
   if (reasonDisplay) {
-    html += `<div class="detail-block reason-block" style="max-height:300px">${renderReasonHtml(reasonDisplay)}</div>`;
+    html += expandableBlock(renderReasonHtml(reasonDisplay), {
+      maxHeight: 300,
+      blockClass: 'reason-block',
+      expandIf: reasonDisplay.length > 600 || reasonDisplay.split('\n').length > 12,
+    });
   } else {
     html += `<div class="detail-block text-slate-400">저장된 판정 사유가 없습니다. 현재 실행이 패치 이전 코드이거나 결과 저장 전에 열린 항목일 수 있습니다.</div>`;
   }
@@ -2270,7 +2624,7 @@ function showModal(d, mode) {
   const fl = d.flow_log;
   if (fl && fl.length) {
     html += `<div class="detail-section" style="border-top:1px solid rgba(71,85,105,.3); padding-top:16px;">`;
-    html += `<div class="detail-section-title">📌 실행 흐름 <span class="text-xs text-slate-500 font-normal">(${fl.length}단계)</span></div>`;
+    html += `<div class="detail-section-title">📌 실행 흐름 <span class="text-xs text-slate-500 font-normal">(${fl.length}단계${d.flow_dropped ? `, 앞 ${d.flow_dropped}단계 생략` : ''})</span></div>`;
     html += `<div class="flex flex-wrap items-center gap-1">`;
     fl.forEach((f, i) => {
       if (i > 0) {
@@ -2303,15 +2657,31 @@ function showModal(d, mode) {
 function closeModal() {
   document.getElementById('detail-modal').style.display = 'none';
   document.body.style.overflow = '';
+  _modalCurrentData = null;
+  _modalNav = { ids: [], index: -1, mode: 'live' };
 }
 
-// ESC로 닫기
+// ESC로 닫기 + ←/→로 이전/다음 포스트
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     if (document.getElementById('log-modal').style.display !== 'none') {
       closeLogModal();
     } else {
       closeModal();
+    }
+    return;
+  }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+    // 상세 모달이 열려 있고 로그 모달이 닫혀 있을 때만
+    const detailOpen = document.getElementById('detail-modal').style.display !== 'none'
+      && document.getElementById('detail-modal').style.display !== '';
+    const logOpen = document.getElementById('log-modal').style.display !== 'none'
+      && document.getElementById('log-modal').style.display !== '';
+    const target = e.target;
+    const tag = target && target.tagName ? String(target.tagName).toLowerCase() : '';
+    if (detailOpen && !logOpen && tag !== 'input' && tag !== 'textarea') {
+      e.preventDefault();
+      navModal(e.key === 'ArrowLeft' ? -1 : 1);
     }
   }
 });
@@ -2321,7 +2691,7 @@ document.addEventListener('keydown', (e) => {
 let _logRawLines = [];  // 원본 로그 라인 보관
 let _logFilters = { all: true, llm: true, search: true, json: true };
 
-async function openPostLog(postId) {
+async function openPostLog(postId, preferFile = false) {
   const body = document.getElementById('log-modal-body');
   const titleEl = document.getElementById('log-modal-title');
   const sourceEl = document.getElementById('log-modal-source');
@@ -2353,8 +2723,8 @@ async function openPostLog(postId) {
   }
 
   try {
-    const resp = await fetch(`/api/post_log/${postId}`);
-    
+    const resp = await fetch(`/api/post_log/${postId}${preferFile ? '?source=file' : ''}`);
+
     // 서버가 JSON이 아닌 HTML을 반환하는 경우 (구 버전 서버 등)
     const ct = resp.headers.get('content-type') || '';
     if (!ct.includes('application/json')) {
@@ -2388,7 +2758,13 @@ async function openPostLog(postId) {
     }
     
     _logRawLines = data.lines;
-    sourceEl.textContent = data.source === 'memory' ? '(인메모리)' : `(${data.source || '?'})`;
+    // 인메모리 로그는 post_start 이후 라인만 수집되어 앞뒤가 잘릴 수 있다 —
+    // 파일에서 전체 구간(배너~완료 요약)을 다시 불러오는 버튼 제공.
+    if (data.source === 'memory') {
+      sourceEl.innerHTML = `(인메모리 — 일부만 보일 수 있음) <button onclick="openPostLog(${postId}, true)" class="text-xs px-2 py-0.5 rounded bg-slate-700 hover:bg-slate-600 text-slate-200">📄 파일에서 전체 로그</button>`;
+    } else {
+      sourceEl.textContent = `(${data.source || '?'})`;
+    }
     // 로그를 localStorage에 캐시 (서버 종료 후에도 열람 가능)
     _cacheSavePostLog(postId, { source: data.source, lines: data.lines });
     renderLogLines();
@@ -2430,31 +2806,26 @@ function classifyLogLine(line) {
   return '';
 }
 
-function shouldShowLine(line) {
-  if (_logFilters.all) {
-    const cls = classifyLogLine(line);
-    if (cls === 'llm' && !_logFilters.llm) return false;
-    if (cls === 'search' && !_logFilters.search) return false;
-    if (cls === 'json' && !_logFilters.json) return false;
-  }
-  return true;
-}
-
 function renderLogLines() {
   const body = document.getElementById('log-modal-body');
   const countEl = document.getElementById('log-modal-count');
-  
-  const visibleLines = _logRawLines.filter(shouldShowLine);
-  countEl.textContent = `${visibleLines.length} / ${_logRawLines.length} 줄`;
-  
-  // 가상화: 대용량 로그를 위해 InnerHTML로 일괄 생성
-  const html = visibleLines.map(line => {
+
+  // classifyLogLine은 라인당 1회만 (필터+렌더에 재사용 — 대용량 로그 비용 절반)
+  const html = [];
+  let visibleCount = 0;
+  for (const line of _logRawLines) {
     const cls = classifyLogLine(line);
-    const cssClass = cls ? `log-${cls}` : '';
-    return `<div class="log-line ${cssClass}">${escHtml(line)}</div>`;
-  }).join('');
-  
-  body.innerHTML = html || '<div style="padding:20px;text-align:center;color:#64748b">필터에 맞는 로그가 없습니다.</div>';
+    if (_logFilters.all) {
+      if (cls === 'llm' && !_logFilters.llm) continue;
+      if (cls === 'search' && !_logFilters.search) continue;
+      if (cls === 'json' && !_logFilters.json) continue;
+    }
+    visibleCount++;
+    html.push(`<div class="log-line ${cls ? `log-${cls}` : ''}">${escHtml(line)}</div>`);
+  }
+  countEl.textContent = `${visibleCount} / ${_logRawLines.length} 줄`;
+
+  body.innerHTML = html.join('') || '<div style="padding:20px;text-align:center;color:#64748b">필터에 맞는 로그가 없습니다.</div>';
 }
 
 function toggleLogFilter(btn) {
@@ -2554,14 +2925,14 @@ function confBadge(conf) {
 function appendLog(line, workerId) {
   // workerId가 undefined면 -1 (전체)
   const wid = (workerId != null) ? workerId : -1;
-  
+
   // 전체 로그에 항상 저장
   let allLines = workerLogs.get(-1);
   allLines.push(line);
   if (allLines.length > MAX_LOG_LINES) {
     workerLogs.set(-1, allLines.slice(Math.floor(MAX_LOG_LINES * 0.2)));
   }
-  
+
   // 워커별 로그 저장 (wid >= 0인 경우)
   if (wid >= 0) {
     if (!workerLogs.has(wid)) {
@@ -2574,22 +2945,41 @@ function appendLog(line, workerId) {
       workerLogs.set(wid, wLines.slice(Math.floor(MAX_LOG_LINES * 0.2)));
     }
   }
-  
-  // 현재 보고 있는 탭과 매칭될 때만 DOM 업데이트
+
+  // DOM 갱신은 배치(250ms)로 — 라인마다 textContent 재구성(O(n²))하지 않는다.
+  // 배열이 진실이므로 flush 시점에 통째로 다시 그린다.
   if (currentLogWorker === -1 || currentLogWorker === wid) {
-    const area = document.getElementById('log-area');
-    const text = area.textContent;
-    const domLines = text.split('\n');
-    if (domLines.length > MAX_LOG_LINES) {
-      const cut = Math.floor(MAX_LOG_LINES * 0.2);
-      area.textContent = domLines.slice(cut).join('\n') + '\n' + line;
-    } else {
-      area.textContent += line + '\n';
-    }
-    if (document.getElementById('log-autoscroll').checked) {
-      area.scrollTop = area.scrollHeight;
-    }
+    scheduleRender('log');
   }
+}
+
+function flushLogArea() {
+  const area = document.getElementById('log-area');
+  if (!area) return;
+  if (livePanelVisibility && livePanelVisibility.logs === false) return;
+  const lines = workerLogs.get(currentLogWorker) || [];
+  const renderLines = tailLogLinesForRender(lines);
+  const omitted = Math.max(0, lines.length - renderLines.length);
+  area.textContent = (omitted > 0
+    ? [`… live 표시 한도 때문에 앞 ${omitted}줄은 생략됨`, ...renderLines]
+    : renderLines
+  ).join('\n');
+  const autoscroll = document.getElementById('log-autoscroll');
+  if (autoscroll && autoscroll.checked) {
+    area.scrollTop = area.scrollHeight;
+  }
+}
+
+function tailLogLinesForRender(lines) {
+  const tail = lines.slice(-MAX_LOG_LINES);
+  let totalChars = 0;
+  let start = tail.length;
+  for (let i = tail.length - 1; i >= 0; i--) {
+    totalChars += String(tail[i] ?? '').length + 1;
+    if (totalChars > MAX_LOG_RENDER_CHARS) break;
+    start = i;
+  }
+  return tail.slice(start);
 }
 
 const WORKER_TAB_COLORS = ['blue','purple','pink','amber','emerald','red','sky','lime'];
@@ -2629,14 +3019,7 @@ function initLogTabs() {
 function switchLogWorker(wid) {
   currentLogWorker = wid;
   updateLogTabStyles();
-  
-  // 해당 워커 로그로 영역 다시 그리기
-  const area = document.getElementById('log-area');
-  const lines = workerLogs.get(wid) || [];
-  area.textContent = lines.slice(-MAX_LOG_LINES).join('\n');
-  if (document.getElementById('log-autoscroll').checked) {
-    area.scrollTop = area.scrollHeight;
-  }
+  flushLogArea();
 }
 
 function updateLogTabStyles() {
@@ -2788,10 +3171,12 @@ function fmtNum(n) {
   return String(n);
 }
 
+const _ESC_RE = /[&<>"']/g;
+const _ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 function escHtml(s) {
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
+  // DOM 요소 생성 방식은 호출당 노드 생성 비용이 커서(행당 ~8회 × 500행)
+  // 정규식 치환으로 교체
+  return String(s ?? '').replace(_ESC_RE, c => _ESC_MAP[c]);
 }
 
 document.addEventListener('keydown', (e) => {
@@ -2807,6 +3192,13 @@ document.addEventListener('keydown', (e) => {
 
 setInterval(() => {
   document.getElementById('clock').textContent = new Date().toLocaleTimeString('ko-KR');
+  // 워커 카드 경과 시간 — 카드 재렌더(250ms 스로틀) 없이 1초마다 텍스트만 갱신
+  if (!document.hidden) {
+    document.querySelectorAll('.worker-elapsed').forEach(el => {
+      const started = Number(el.dataset.started);
+      if (started > 0) el.textContent = '⏱ ' + fmtTime((Date.now() - started) / 1000);
+    });
+  }
 }, 1000);
 
 // ─── Init ───────────────────────────────────────

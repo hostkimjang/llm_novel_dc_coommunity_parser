@@ -844,7 +844,11 @@ class DecoderExpert:
         
         # 🆕 Phase 11j: Gatekeeper 장르토론 감지 플래그 → Decoder 경고 주입
         # Discourse Warning이 없더라도, Gatekeeper가 장르 토론 패턴을 감지했으면 경고
-        _gk_ctx_clues = {}
+        _gk_ctx_clues = (
+            gatekeeper_result.get("context_clues") or {}
+            if isinstance(gatekeeper_result, dict)
+            else {}
+        )
         if ctx:
             try:
                 from ..models import ExpertType
@@ -1342,6 +1346,27 @@ class DecoderExpert:
             result = self._sanitize_decoded_term_payload(result)
             # 사전 항목 간 유사어 오인 치환 방지
             result = self._sanitize_cross_term_dictionary_inference(result, slang_dictionary)
+            if ctx is None and dict_matches and _gk_comment_secondary:
+                promoted_any = False
+                for term in result.get("decoded_terms", []) or []:
+                    if not isinstance(term, dict):
+                        continue
+                    original = str(term.get("original") or "").strip()
+                    title = dict_matches.get(original) or dict_matches.get(original.replace(" ", ""))
+                    if not title:
+                        continue
+                    best_match = term.get("best_match")
+                    if isinstance(best_match, dict) and str(best_match.get("title") or "").strip():
+                        continue
+                    term["best_match"] = {
+                        "title": title,
+                        "confidence": "high",
+                        "source": "slang_dictionary_no_context_comment_candidate_fallback",
+                    }
+                    term["resolution_note"] = "dictionary_alias_hint_promoted_for_no_context_comment_candidate"
+                    promoted_any = True
+                if promoted_any:
+                    result["overall_confidence"] = "high"
             
             # 🔥 decoded_terms 타입 안전 정제: LLM이 깨진 JSON을 반환하면
             # decoded_terms에 dict가 아닌 str 등이 섞일 수 있음 → 제거
@@ -6225,7 +6250,7 @@ class DecoderExpert:
 
             if "/목록" in str(full or "") or str(full or "").endswith("목록"):
                 return True
-            if _is_genre_물_pattern(str(abbrev or "")) or self._is_low_specificity_mapping_abbrev(abbrev, full_title=full):
+            if is_genre_물_pattern(str(abbrev or "")) or self._is_low_specificity_mapping_abbrev(abbrev, full_title=full):
                 return True
             if _ocr_text_rm and f"#{str(abbrev or '').strip()}" in _ocr_text_rm:
                 return True

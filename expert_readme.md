@@ -391,7 +391,8 @@ python expert_main.py
 # 입력 파일 지정
 python expert_main.py tests/inputs/sample.jsonl
 
-# 병렬 4워커
+# 병렬 상한 4
+# 실제 worker 수는 input 수/healthy endpoint 수에 따라 effective_parallel로 줄어들 수 있음
 python expert_main.py tests/inputs/sample.jsonl --parallel 4
 
 # 대시보드 비활성화
@@ -403,7 +404,9 @@ python expert_main.py --no-dashboard
 | 인자 | 타입 | 기본값 | 설명 |
 |------|------|--------|------|
 | `input` | positional | `tests/inputs/test01.jsonl` | 입력 JSONL 파일 경로 |
-| `--parallel`, `-p` | int | `1` | 병렬 처리 워커 수 |
+| `--parallel`, `-p` | int | `1` | 병렬 처리 worker 최대치. 실제 실행 worker 수는 `effective_parallel`로 manifest/run_meta에 기록됨 |
+
+`--parallel`은 고정 worker 수가 아니라 최대치입니다. Gemma 4 E4B/4B 계열은 운영 상한 `36`을 사용하되, 소규모 입력에서는 `effective_parallel <= input_post_count`로 줄어드는 것이 정상입니다. goal/test small run에서 Docker compose shard up/recreate는 기본 금지이며, shard lifecycle 자체를 검증할 때만 `--allow-goal-shard-lifecycle`과 auto-up/recreate 플래그를 함께 사용합니다. 이미지 포함 semantic regression은 `--vlm on --ocr on --require-vlm-ocr-for-images` 기준으로 실행합니다.
 | `--no-dashboard` | flag | — | 대시보드 비활성화 |
 
 ### LLM 모드
@@ -898,6 +901,8 @@ pipeline = AgenticPipeline(
 
 ### 병렬 실행
 
+주의: 이 절의 병렬은 `expert_main.py` 런타임 worker/shard 병렬도만 뜻한다. Codex `/goal`에서 사용자가 "여러 전문가", "subagent", "병렬 검토"를 말한 경우는 Codex `spawn_agent` 기반 전문가 분업이며, `docs/devs/SCAN_RESULT_REVIEW_GUIDE.md`와 `docs/devs/OPERATION_QUALITY_CHECKLIST.md`를 따른다.
+
 ```bash
 python expert_main.py tests/inputs/sample.jsonl --parallel 4
 ```
@@ -924,6 +929,40 @@ python expert_main.py tests/inputs/sample.jsonl --parallel 4
 - 줄바꿈 단위 버퍼링
 - `monitor.add_log(line, worker_id=wid)` 전송
 - `--no-dashboard` 플래그로 비활성화 가능
+
+### Standalone 대시보드 (expert_main과 독립 실행)
+
+내장 대시보드는 expert_main 프로세스의 데몬 스레드라 런이 끝나면 같이 죽는다.
+런 종료 후에도 결과를 계속 보거나, 여러 런에 걸쳐 대시보드를 유지하려면 별도 프로세스로 띄운다:
+
+```bash
+python tools/dashboard_server.py                 # 127.0.0.1:8080
+python tools/dashboard_server.py --port 8081     # 포트 변경
+```
+
+동작 방식:
+- **자동 양보**: expert_main이 시작 시 `GET /api/health` 핸드셰이크로 standalone 대시보드를
+  감지하면 내장 대시보드를 띄우지 않고 이벤트를 `POST /api/ingest`로 전달한다
+  (`[expert_main] 📊 외부 대시보드 감지 → 포워딩: ...` 로그 확인).
+- **실시간 + 과거 런**: 진행 중 런은 forwarder(배칭 0.5s, 큐 드롭형 — 파이프라인 절대 비블록)로
+  실시간 반영되고, 과거 런은 `/api/runs`(out/*.json, logs/*.log 파일 기반)로 조회.
+- **연속 런**: 다음 런의 `batch_start`가 상태를 리셋하므로 대시보드를 띄워둔 채 런을 반복해도 된다.
+- **장애 내성**: standalone이 죽어도 expert_main은 이벤트를 드롭하며 정상 완주하고,
+  재기동되면 자동 재연결 + 상태 스냅샷 리싱크(30s 주기)로 유실분을 치유한다.
+- **LLM resume**: standalone의 재개 버튼은 ingest 응답 piggyback으로 expert_main에 전달된다 (지연 ≤2.5s).
+
+관련 환경 변수:
+
+| 변수 | 기본값 | 설명 |
+|------|--------|------|
+| `DASHBOARD_PORT` | `8080` | 내장/standalone 공용 기본 포트 |
+| `DASHBOARD_URL` | `http://127.0.0.1:{DASHBOARD_PORT}` | expert_main의 외부 대시보드 감지 URL |
+| `EXPERT_DASHBOARD_FORWARD` | `1` | `0`이면 외부 감지/포워딩을 끄고 항상 내장 대시보드 사용 |
+| `DASHBOARD_INGEST_TOKEN` | (없음) | 설정 시 `/api/ingest`에 토큰 요구 — 비-루프백 바인드(`--host 0.0.0.0`) 시 권장 |
+
+주의: 같은 포트에 떠 있는 **다른 expert_main의 내장 대시보드**(health 응답 `standalone:false`)에는
+양보하지 않고 기존처럼 내장 대시보드를 다음 포트로 띄운다. standalone 서버는 포트 충돌 시
+포트 호핑 없이 즉시 실패한다(감지 URL 고정을 위해).
 
 ### Session Knowledge
 

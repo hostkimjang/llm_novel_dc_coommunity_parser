@@ -636,6 +636,24 @@ class LLMClient:
         except Exception:
             pass
 
+    @staticmethod
+    def _replace_lone_surrogates(value: Any) -> Any:
+        """Replace invalid UTF-16 surrogate codepoints before JSON transport."""
+        if isinstance(value, str):
+            if not any(0xD800 <= ord(ch) <= 0xDFFF for ch in value):
+                return value
+            return "".join("\ufffd" if 0xD800 <= ord(ch) <= 0xDFFF else ch for ch in value)
+        if isinstance(value, list):
+            return [LLMClient._replace_lone_surrogates(item) for item in value]
+        if isinstance(value, tuple):
+            return tuple(LLMClient._replace_lone_surrogates(item) for item in value)
+        if isinstance(value, dict):
+            return {
+                LLMClient._replace_lone_surrogates(key): LLMClient._replace_lone_surrogates(item)
+                for key, item in value.items()
+            }
+        return value
+
     def _dump_messages(self, tag: str, messages: List[Dict[str, Any]]) -> None:
         if not self.debug_dump_messages:
             return
@@ -721,6 +739,7 @@ class LLMClient:
         # body를 복사하여 stream 옵션 추가 (원본 수정 방지)
         stream_body = dict(body)
         stream_body["stream"] = True
+        stream_body = self._replace_lone_surrogates(stream_body)
         _start = _time.time()
         ts = self._timestamp()
         print(f"[{ts}][llm-stream] ▶ {tag} 토큰 생성 시작...", file=sys.stderr, flush=True)
@@ -1196,6 +1215,7 @@ class LLMClient:
         """
         # 전문가별 temperature 해석
         resolved_temp = self._resolve_expert_temperature(tag, temperature)
+        messages = self._replace_lone_surrogates(messages)
         
         # Local 백엔드 처리
         if self.backend == "local":
@@ -1225,6 +1245,7 @@ class LLMClient:
         body = {k: v for k, v in body.items() if v is not None}
         # 서빙 엔진별 파라미터 변환
         body = self._adapt_body_for_server(body)
+        body = self._replace_lone_surrogates(body)
         
         # 토큰 수 추정 및 로그 출력
         total_chars = sum(len(msg.get("content", "")) for msg in messages)
@@ -1271,7 +1292,7 @@ class LLMClient:
                 _start = _time.time()
                 ts = self._timestamp()
                 print(f"[{ts}][llm] nonstream fallback 시작...", file=sys.stderr, flush=True)
-                response = httpx.post(url, json=body, timeout=self.timeout_s)
+                response = httpx.post(url, json=self._replace_lone_surrogates(body), timeout=self.timeout_s)
                 response.raise_for_status()
                 data = response.json()
                 _elapsed = _time.time() - _start
@@ -1347,7 +1368,7 @@ class LLMClient:
             ts = self._timestamp()
             print(f"[{ts}][llm] ▶ {tag} 요청 시작...", file=sys.stderr, flush=True)
             
-            response = httpx.post(url, json=body, timeout=self.timeout_s)
+            response = httpx.post(url, json=self._replace_lone_surrogates(body), timeout=self.timeout_s)
             response.raise_for_status()
             data = response.json()
             

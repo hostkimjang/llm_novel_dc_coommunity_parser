@@ -873,9 +873,6 @@ class ArbiterExpert:
             )
             or "기억 회수" in relation_reason
         )
-        if not memory_query_context:
-            return False
-
         title = str(candidate_title or "").strip()
         if not title:
             novel_identity = verifier_result.get("novel_identity") or {}
@@ -913,6 +910,7 @@ class ArbiterExpert:
         post_direct_grounding = bool(relation.get("post_direct_grounding"))
         promotion = str(relation.get("promotion_decision") or "").strip().lower()
         relation_type = str(relation.get("relation_type") or "").strip().lower()
+        relation_target = str(relation.get("discussion_target") or "").strip().lower()
         bridge_quality = str(support_summary.get("bridge_quality") or "").strip().lower()
 
         counters = verifier_result.get("counter_arguments") or []
@@ -923,6 +921,45 @@ class ArbiterExpert:
             in {"reject", "nullify_title", "downgrade_confidence"}
             for counter in counters
         )
+
+        relation_reason_lower = relation_reason.lower()
+        nonwork_relation_context = bool(
+            relation_target in {
+                "community_banter",
+                "genre_general",
+                "platform_meta",
+                "mixed_or_uncertain",
+                "topic",
+                "off_topic",
+            }
+            or "community_banter" in relation_reason_lower
+            or "작품에 대한 논의가 아닌" in relation_reason
+            or "작품의 줄거리" in relation_reason
+            or "작품 고유" in relation_reason
+            or "커뮤니티 내의 농담" in relation_reason
+            or "유머/밈" in relation_reason
+            or "meme" in relation_reason_lower
+        )
+        hold_or_reject = promotion in {
+            "hold",
+            "reject",
+            "nullify",
+            "nullify_title",
+            "downgrade",
+            "keep_unresolved",
+        }
+        alias_only_nonwork_forced_upgrade = bool(
+            not memory_query_context
+            and hold_or_reject
+            and not post_direct_grounding
+            and not explicit_bridge_count
+            and not closed_bridge
+            and (nonwork_relation_context or has_downgrade_counter)
+        )
+        if alias_only_nonwork_forced_upgrade:
+            return True
+        if not memory_query_context:
+            return False
 
         weak_relation = bool(
             not post_direct_grounding
@@ -2189,6 +2226,17 @@ class ArbiterExpert:
                         "threshold": 1.0,
                         "allowed": False,
                         "reasons": ["+0.00:empty_title"],
+                    }
+                if self._curated_alias_lacks_contextual_work_anchor(
+                    ctx,
+                    _title,
+                    verifier_out=verifier_out_local,
+                ):
+                    return {
+                        "score": 0.0,
+                        "threshold": 1.0,
+                        "allowed": False,
+                        "reasons": ["-1.00:curated_alias_missing_contextual_work_anchor"],
                     }
 
                 _score = 0.0
@@ -3488,6 +3536,18 @@ class ArbiterExpert:
                         )
                         continue
                     _src = str(st.get("source_expert") or st.get("from") or "").lower()
+                    if self._curated_alias_lacks_contextual_work_anchor(
+                        ctx,
+                        _st_title,
+                        verifier_out=verifier_out,
+                    ):
+                        print(
+                            f"[{_ts()}][{self.emoji}] 🚫 suspected_titles 필터: "
+                            f"curated alias lacks contextual work anchor "
+                            f"(title='{_st_title}', src={_src})",
+                            file=sys.stderr,
+                        )
+                        continue
 
                     # 검색 표면 증거만으로 후보 승격하지 않도록,
                     # 본문 직앵커/디코더 정합/강한 title support 중 하나는 필수
@@ -3601,6 +3661,11 @@ class ArbiterExpert:
                     and preferred_title
                     and (not self._is_platform_branding_title(preferred_title))
                     and self._has_strong_title_support(ctx, preferred_title)
+                    and not self._curated_alias_lacks_contextual_work_anchor(
+                        ctx,
+                        preferred_title,
+                        verifier_out=verifier_out,
+                    )
                 ):
                     preferred_norm = _norm_title_local(preferred_title)
                     if all(
@@ -3922,6 +3987,27 @@ class ArbiterExpert:
                         file=sys.stderr,
                     )
                     decision[title_key] = None
+                    continue
+                if (
+                    arbiter_llm_title
+                    and self._curated_alias_lacks_contextual_work_anchor(
+                        ctx,
+                        arbiter_llm_title,
+                        verifier_out=verifier_out,
+                    )
+                ):
+                    print(
+                        f"[{_ts()}][{self.emoji}] 🚫 Arbiter 제목 차단: "
+                        f"curated alias lacks contextual work anchor "
+                        f"('{arbiter_llm_title}')",
+                        file=sys.stderr,
+                    )
+                    decision[title_key] = None
+                    _null_reasons = decision.get("_title_null_block_reasons")
+                    if not isinstance(_null_reasons, list):
+                        _null_reasons = []
+                    _null_reasons.append("curated_alias_missing_contextual_work_anchor")
+                    decision["_title_null_block_reasons"] = sorted(set(_null_reasons))
                     continue
                 if arbiter_llm_title and ctx.search_results:
                     corrected = self._correct_title_from_search(arbiter_llm_title, ctx.search_results)
@@ -6594,6 +6680,11 @@ class ArbiterExpert:
                 and (not _vf_skip_for_author_new_work2)
                 and (not _vf_skip_for_author_talk2)
                 and (not _vf_skip_for_genre_talk2)
+                and not self._curated_alias_lacks_contextual_work_anchor(
+                    ctx,
+                    _vf_title_lock2,
+                    verifier_out=verifier_out,
+                )
                 and (not decision.get("_meme_blocked"))  # Phase31: 밈 가드 차단 존중
             ):
                 _cur_title_lock2 = str(
@@ -6974,6 +7065,11 @@ class ArbiterExpert:
                     _vf_out_for_null,
                     _vf_title_for_null,
                 )
+                _curated_alias_null_upgrade_block = self._curated_alias_lacks_contextual_work_anchor(
+                    ctx,
+                    _vf_title_for_null,
+                    verifier_out=_vf_out_for_null,
+                )
                 if _memory_query_null_upgrade_block:
                     _null_block_reasons.append("memory_query_forced_upgrade_guard")
                     decision["_title_null_block_reasons"] = sorted(set(_null_block_reasons))
@@ -6982,6 +7078,54 @@ class ArbiterExpert:
                         f"[{_ts()}][{self.emoji}] 🛡️ memory-query null 우회 차단: "
                         f"verifier_title='{_vf_title_for_null or '-'}' "
                         "→ suspected title 복구 금지",
+                        file=sys.stderr,
+                    )
+                if _curated_alias_null_upgrade_block:
+                    _null_block_reasons.append("curated_alias_missing_contextual_work_anchor")
+                    decision["_title_null_block_reasons"] = sorted(set(_null_block_reasons))
+                    _has_strong_null_block = True
+                    _disc_semantic = (
+                        ((discourse_out.get("discourse_analysis") or {}).get("semantic_seed_review") or {})
+                        if isinstance(discourse_out, dict)
+                        else {}
+                    )
+                    _disc_intent = str(
+                        ((discourse_out.get("discourse_analysis") or {}).get("intent") or "")
+                        if isinstance(discourse_out, dict)
+                        else ""
+                    ).strip()
+                    _gate_post_type = str(
+                        (gatekeeper_out.get("post_type") or "")
+                        if isinstance(gatekeeper_out, dict)
+                        else ""
+                    ).strip()
+                    _has_semantic_work_context = (
+                        bool(_disc_semantic.get("is_specific_work_discussion"))
+                        or _disc_intent in {"discuss_work", "episode_discussion", "express_opinion"}
+                        or _gate_post_type in {"work_discussion", "novel_discussion"}
+                    )
+                    if decision.get("is_relevant") and not _has_semantic_work_context:
+                        decision["is_relevant"] = False
+                        decision["is_novel_discussion"] = False
+                        if str(decision.get("discussion_type") or "").strip() in {
+                            "review",
+                            "work_discussion",
+                            "general",
+                            "novel_discussion",
+                        }:
+                            decision["discussion_type"] = "noise"
+                        _old_notes = str(decision.get("notes") or "").strip()
+                        _guard_note = (
+                            "[curated_alias_context_guard] 등록 약칭 표면만 있고 독립 작품 앵커가 없어 "
+                            "저신뢰 차단/relevance를 내림"
+                        )
+                        decision["notes"] = f"{_guard_note}. {_old_notes}" if _old_notes else _guard_note
+                        if _gate_post_type == "community_banter" or _disc_intent == "community_banter":
+                            decision["_meme_blocked"] = True
+                    print(
+                        f"[{_ts()}][{self.emoji}] 🛡️ curated-alias null 우회 차단: "
+                        f"verifier_title='{_vf_title_for_null or '-'}' "
+                        "→ contextual work anchor 없음",
                         file=sys.stderr,
                     )
 
@@ -7896,11 +8040,41 @@ class ArbiterExpert:
             or intent in {"discuss_work", "express_opinion", "review_work", "ask_work_question"}
             or gk_type in {"work_discussion", "review", "spoiler_discussion", "character_talk"}
         )
-        has_entity_cue = bool(
-            gk_entities.get("possible_titles")
-            or gk_entities.get("possible_characters")
+        has_character_entity_cue = bool(
+            gk_entities.get("possible_characters")
         )
-        return bool(has_positive_semantic_cue and (has_episode_or_serial_cue or has_entity_cue))
+        has_concrete_work_cue = bool(
+            re.search(
+                r"\d+\s*(?:화|회차|호)\b|휴재|연재|스포|작가의\s*말|최신화|완결|"
+                r"주인공|히로인|남주|여주|작중|등장인물|캐릭터|빌런|마왕|능력|스킬|세계관|에피소드",
+                post_text,
+            )
+        )
+        return bool(has_positive_semantic_cue and (has_episode_or_serial_cue or has_character_entity_cue or has_concrete_work_cue))
+
+    def _curated_alias_lacks_contextual_work_anchor(
+        self,
+        ctx: "ConversationContext",
+        title: Optional[str],
+        *,
+        verifier_out: Optional[Dict[str, Any]] = None,
+    ) -> bool:
+        title_raw = str(title or "").strip()
+        if not title_raw:
+            return False
+        if not self._curated_alias_for_title_mentioned_in_post_main(ctx, title_raw):
+            return False
+        if self._title_directly_in_post(ctx, title_raw):
+            return False
+        if self._has_curated_alias_contextual_work_anchor(ctx, title_raw, verifier_out=verifier_out):
+            return False
+        title_norm = self._normalize_match_text(title_raw)
+        for entry in getattr(ctx, "verified_character_work_links", []) or []:
+            if not isinstance(entry, dict) or entry.get("_weak_match"):
+                continue
+            if self._normalize_match_text(entry.get("title")) == title_norm:
+                return False
+        return True
 
     def _has_curated_alias_guard_exception(
         self,
@@ -7923,7 +8097,10 @@ class ArbiterExpert:
                 return True
         if self._has_curated_alias_contextual_work_anchor(ctx, title_raw, verifier_out=verifier_out):
             return True
-        if self._has_non_character_anchor_support(title_raw, decoder_out=decoder_out, verifier_out=verifier_out):
+        if (
+            self._has_non_character_anchor_support(title_raw, decoder_out=decoder_out, verifier_out=verifier_out)
+            and not self._curated_alias_for_title_mentioned_in_post_main(ctx, title_raw)
+        ):
             return True
         return False
 

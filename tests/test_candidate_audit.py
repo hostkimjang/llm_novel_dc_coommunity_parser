@@ -4,17 +4,21 @@ import unittest
 from pathlib import Path
 
 from llm_batch.candidate_audit import (
+    apply_author_angle_official_detail_canonicalization,
     apply_candidate_audit_fields,
     apply_comment_surface_candidate_hints,
     apply_judge_seed_expected_candidate_preservation,
+    apply_judge_seed_hygiene_alias_conflict_guard,
     apply_judge_seed_hygiene_expected_title_guard,
     apply_judge_seed_precision_guard,
     apply_judge_seed_title_image_mismatch_guard,
     apply_judge_seed_title_hygiene_guard,
     apply_judge_seed_trope_boundary_hold_guard,
     apply_judge_seed_unverified_ocr_title_guard,
+    apply_judge_seed_wrong_relevance_public_title_guard,
     apply_official_title_promotion_guard,
     apply_post_surface_candidate_hints,
+    apply_weak_public_title_bridge_guard,
     build_candidate_audit_fields,
     official_url_recoverable,
 )
@@ -223,6 +227,45 @@ class CandidateAuditTest(unittest.TestCase):
         self.assertIsNotNone(recovered)
         self.assertEqual(recovered["matched_clue"], "confirmed_alias:담텔기")
 
+    def test_official_url_recall_prefers_bracket_post_cue_over_shared_alias_tag(self):
+        identity = {
+            "work_resolution": "unresolved",
+            "title_resolution_state": "unresolved_matchable",
+            "post_side_text": "랫따싶 림월드 요소 생각나게 하는거 좋네에...",
+            "post_core_text": "랫따싶 림월드 요소 생각나게 하는거 좋네에...",
+            "alias_clues": [{"alias": "랫따싶", "title": "쳇바퀴의 생쥐 사도가 되었다"}],
+            "image_evidence_catalog": [
+                {
+                    "ocr_text": "림월드 방어 건물 제작 스킬이 늘었으려나. 회차를 다시 시작하고 싶을 정도.",
+                    "visual_summary": "웹소설 본문 텍스트 화면. 게임 '림월드'의 요소를 묘사합니다.",
+                    "work_cues": ["림월드", "제작 스킬", "방어 건물"],
+                }
+            ],
+            "search_evidence_catalog": [
+                {
+                    "title": "쳇바퀴의 생쥐 사도가 되었다",
+                    "url": "https://novelpia.com/novel/406113",
+                    "source_tier": "official_detail",
+                    "snippet": "랫따싶. #판타지 #전생 #성장. 생쥐 미소녀로 전생했더니 쥐의 여신과 만났다.",
+                    "rank": 1,
+                },
+                {
+                    "title": "[림월드]변방계에서 회귀자로 살아남기",
+                    "url": "https://novelpia.com/novel/382324",
+                    "source_tier": "official_detail",
+                    "snippet": "단, 죽어서만. #패러디 #림월드 #랫따싶. 잡탕 종족모드가 적용된 변방계에 떨어졌다.",
+                    "rank": 2,
+                },
+            ],
+        }
+
+        recovered = official_url_recoverable(identity)
+
+        self.assertIsNotNone(recovered)
+        self.assertEqual(recovered["official_title"], "[림월드]변방계에서 회귀자로 살아남기")
+        self.assertEqual(recovered["heretic_url"], "https://novelpia.com/novel/382324")
+        self.assertEqual(recovered["matched_clue"], "bracket_alias:림월드")
+
     def test_under_resolved_seed_keeps_candidate_without_promoting_title(self):
         identity = {
             "is_novel_related": True,
@@ -272,10 +315,10 @@ class CandidateAuditTest(unittest.TestCase):
     def test_entity_mentions_do_not_pollute_resolved_titles(self):
         identity = {
             "is_novel_related": True,
-            "is_resolved_work_discussion": True,
+            "is_resolved_work_discussion": False,
             "title_resolution_allowed": True,
             "title_resolution_state": "resolved",
-            "work_resolution": "resolved",
+            "work_resolution": "unresolved",
             "discussion_type": "review",
             "novel_identity": {
                 "official_title": "가챠 중독자의 퓨전펑크 생활",
@@ -495,6 +538,76 @@ class CandidateAuditTest(unittest.TestCase):
         self.assertFalse(identity["title_resolution_allowed"])
         self.assertIn("official_title_looks_like_search_snippet", fields["official_title_lint"])
         self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+
+    def test_listing_description_official_title_is_demoted_but_preserved(self):
+        description_title = "괴한들에게 납치당했더니 여자아이가 되어버렸다. …이득 아닌가? [아니었다.]"
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "post_core_text": "어케 주인공 죄목이 납치담금세뇌테러불법투기셍태계교란희롱준강간",
+            "novel_identity": {
+                "official_title": description_title,
+                "heretic_url": "https://novelpia.com/novel/436108",
+                "confidence": "High",
+            },
+            "image_evidence_catalog": [
+                {
+                    "ocr_text": "B급 모험가 밤도깨비 에이브가 되어 있었다.",
+                    "title_role": "unknown",
+                    "promotion_eligible": False,
+                    "work_cues": ["밤도깨비 에이브"],
+                }
+            ],
+            "search_evidence_catalog": [
+                {
+                    "title": description_title,
+                    "url": "https://novelpia.com/novel/436108",
+                    "source_tier": "official_detail",
+                },
+                {
+                    "title": "명문가와 기업이 지배하는 퓨전펑크 도시 한양.",
+                    "url": "https://novelpia.com/novel/435653",
+                    "source_tier": "official_detail",
+                    "snippet": f"{description_title} 집으로 돌아오긴 했는데 이제 뭐하지?",
+                },
+                {
+                    "title": "집으로 돌아오긴 했는데 이제 뭐하지?",
+                    "url": "https://novelpia.com/novel/432172",
+                    "source_tier": "official_detail",
+                    "snippet": f"명문가와 기업이 지배하는 퓨전펑크 도시 한양. {description_title}",
+                },
+            ],
+            "title_candidates": [
+                {
+                    "official_title": description_title,
+                    "heretic_url": "https://novelpia.com/novel/436108",
+                    "source_tier": "official_detail",
+                }
+            ],
+            "consistency_flags": [],
+        }
+
+        blocked = apply_official_title_promotion_guard(identity)
+        fields = apply_candidate_audit_fields(
+            identity,
+            {"disagreement_type": "over_resolved"},
+        )
+
+        self.assertEqual(blocked, ["official_title_looks_like_listing_description"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertIsNone(identity["novel_identity"]["heretic_url"])
+        self.assertEqual(identity["blocked_official_title"], description_title)
+        self.assertEqual(identity["blocked_official_title_url"], "https://novelpia.com/novel/436108")
+        self.assertEqual(identity["title_resolution_state"], "unresolved_matchable")
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertIn("official_title_looks_like_listing_description", fields["official_title_lint"])
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+        self.assertFalse(fields["safe_resolved"])
 
     def test_breadcrumb_official_title_is_demoted_but_preserved(self):
         identity = {
@@ -796,6 +909,7 @@ class CandidateAuditTest(unittest.TestCase):
             "title_resolution_state": "resolved",
             "work_resolution": "resolved",
             "discussion_type": "review",
+            "heretic_url": "https://page.kakao.com/content/51726202",
             "novel_identity": {
                 "official_title": "인간 실격",
                 "heretic_url": "https://page.kakao.com/content/51726202",
@@ -827,9 +941,1052 @@ class CandidateAuditTest(unittest.TestCase):
         self.assertEqual(blocked, ["precision_seed_official_title_requires_review"])
         self.assertIsNone(identity["novel_identity"]["official_title"])
         self.assertIsNone(identity["novel_identity"]["heretic_url"])
+        self.assertIsNone(identity["heretic_url"])
         self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
         self.assertEqual(fields["candidate_ledger"]["blocked_official_title"], "인간 실격")
         self.assertEqual(fields["candidate_ledger"]["blocked_official_title_url"], "https://page.kakao.com/content/51726202")
+
+    def test_precision_seed_with_confirmed_alias_official_detail_is_not_demoted(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "anchor_type": "image",
+            "anchor_strength": "high",
+            "context_sources": ["title", "search", "image"],
+            "consistency_flags": [
+                "verified_alias_official_detail_anchor",
+                "confirmed_alias:아카메디",
+                "explicit_alias_official_work_lock",
+            ],
+            "novel_identity": {
+                "official_title": "아카메디 아카데미",
+                "heretic_url": "https://novelpia.com/novel/22299",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "아카메디 아카데미",
+                "heretic_url": "https://novelpia.com/novel/22299",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+                "reference_role": "primary",
+            },
+            "candidate_preservation_sources": [
+                {
+                    "official_title": "아카메디 아카데미",
+                    "heretic_url": "https://novelpia.com/novel/22299",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                    "reference_role": "primary",
+                }
+            ],
+        }
+
+        blocked = apply_judge_seed_precision_guard(
+            identity,
+            {"seed_bucket": "precision_identity_high", "disagreement_type": "garbage_title"},
+        )
+        fields = apply_candidate_audit_fields(
+            identity,
+            {"seed_bucket": "precision_identity_high", "disagreement_type": "garbage_title"},
+        )
+
+        self.assertEqual(blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "아카메디 아카데미")
+        self.assertIn("precision_seed_independent_official_detail_supported", identity["consistency_flags"])
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+        self.assertEqual(fields["identity_consistency_lint"], [])
+
+    def test_phase2_hold_precision_seed_blocks_official_detail_bypass(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "primary_subject_type": "work_discussion",
+            "anchor_type": "title_alias",
+            "anchor_strength": "medium",
+            "context_sources": ["title", "body", "comments", "search", "image"],
+            "consistency_flags": [
+                "verified_alias_official_detail_anchor",
+                "confirmed_alias:아생갤",
+                "explicit_alias_official_work_lock",
+                "weak_public_title_bridge_verified_alias_detail_exempt",
+            ],
+            "novel_identity": {
+                "official_title": "아카데미 생존 갤러리",
+                "heretic_url": "https://novelpia.com/novel/380218",
+                "confidence": "Medium",
+            },
+            "primary_work": {
+                "official_title": "아카데미 생존 갤러리",
+                "heretic_url": "https://novelpia.com/novel/380218",
+                "alias_or_mention": "아생갤",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+                "reference_role": "primary",
+            },
+            "candidate_preservation_sources": [
+                {
+                    "official_title": "아카데미 생존 갤러리",
+                    "heretic_url": "https://novelpia.com/novel/380218",
+                    "alias_or_mention": "아생갤",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                    "reference_role": "primary",
+                }
+            ],
+        }
+
+        blocked = apply_judge_seed_precision_guard(
+            identity,
+            {
+                "seed_group": "precision_identity_high",
+                "disagreement_type": "over_resolved",
+                "phase2_resolution_label": "HOLD",
+                "phase2_recommended_action": "re_search",
+                "phase2_fix_axis": "resolution_promotion_gate",
+            },
+        )
+        fields = apply_candidate_audit_fields(
+            identity,
+            {
+                "seed_group": "precision_identity_high",
+                "disagreement_type": "over_resolved",
+                "phase2_resolution_label": "HOLD",
+                "phase2_recommended_action": "re_search",
+                "phase2_fix_axis": "resolution_promotion_gate",
+            },
+        )
+
+        self.assertEqual(blocked, ["phase2_hold_seed_requires_review"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertNotIn(
+            "precision_seed_independent_official_detail_supported",
+            identity.get("consistency_flags", []),
+        )
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+        self.assertEqual(fields["candidate_ledger"]["blocked_official_title"], "아카데미 생존 갤러리")
+
+    def test_precision_seed_conflict_flags_do_not_bypass_on_official_detail(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "anchor_type": "title_alias",
+            "anchor_strength": "high",
+            "context_sources": ["title", "search", "image"],
+            "primary_subject_type": "multi_work_bundle",
+            "consistency_flags": [
+                "official_url_recall_gate_recovered",
+                "title_body_official_detail_anchor",
+                "vlm_ocr_title_conflict_with_final_title",
+                "ocr_title_conflict_with_stable_alias",
+            ],
+            "novel_identity": {
+                "official_title": "괴한들에게 납치당했더니 여자아이가 되어버렸다. …이득 아닌가? [아니었다.]",
+                "heretic_url": "https://novelpia.com/novel/436108",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "괴한들에게 납치당했더니 여자아이가 되어버렸다. …이득 아닌가? [아니었다.]",
+                "heretic_url": "https://novelpia.com/novel/436108",
+                "source_tier": "official_detail",
+                "reference_role": "primary",
+                "alias_or_mention": "납치 되어",
+            },
+            "candidate_preservation_sources": [
+                {
+                    "official_title": "괴한들에게 납치당했더니 여자아이가 되어버렸다. …이득 아닌가? [아니었다.]",
+                    "heretic_url": "https://novelpia.com/novel/436108",
+                    "source_tier": "official_detail",
+                    "reference_role": "primary",
+                    "alias_or_mention": "납치 되어",
+                }
+            ],
+        }
+
+        blocked = apply_judge_seed_precision_guard(
+            identity,
+            {"seed_bucket": "precision_identity_high", "disagreement_type": "over_resolved"},
+        )
+        fields = apply_candidate_audit_fields(
+            identity,
+            {"seed_bucket": "precision_identity_high", "disagreement_type": "over_resolved"},
+        )
+
+        self.assertEqual(blocked, ["precision_seed_official_title_requires_review"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+        self.assertIn(
+            "괴한들에게 납치당했더니 여자아이가 되어버렸다. …이득 아닌가? [아니었다.]",
+            fields["candidate_ledger"]["title_candidates"],
+        )
+
+    def test_precision_seed_locked_official_reread_bypasses_stale_multi_work_clear(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "meme",
+            "primary_subject_type": "work_discussion",
+            "anchor_type": "title_alias",
+            "anchor_strength": "high",
+            "context_sources": ["title", "body", "comments", "search"],
+            "consistency_flags": [
+                "multi_work_title_cleared",
+                "secondary_reference_official_alias_blocked_after_multi_work_title_cleared",
+                "locked_official_candidate_rescued",
+                "locked_official_rescue_cleared_stale_demotions",
+                "final_semantic_reread_reviewed",
+                "final_semantic_reread_accepted_resolution",
+                "weak_public_title_bridge_locked_official_exempt",
+            ],
+            "novel_identity": {
+                "official_title": "탐식의 재림",
+                "heretic_url": "https://ridibooks.com/books/2008016338?srsltid=test",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "탐식의 재림",
+                "heretic_url": "https://ridibooks.com/books/2008016338?srsltid=test",
+                "source_tier": "official_detail",
+                "reference_role": "primary",
+                "locked": True,
+            },
+            "candidate_preservation_sources": [
+                {
+                    "official_title": "탐식의 재림",
+                    "heretic_url": "https://ridibooks.com/books/2008016338?srsltid=test",
+                    "source_tier": "official_detail",
+                    "reference_role": "primary",
+                }
+            ],
+            "search_evidence_catalog": [
+                {
+                    "title": "탐식의 재림 - 웹소설 - 카카오페이지",
+                    "url": "https://page.kakao.com/content/50219568?tab_type=comment",
+                    "source_tier": "novel_platform",
+                    "purpose": "alias_bridge_search",
+                },
+                {
+                    "title": "탐식의 재림 - 판타지 e북",
+                    "url": "https://ridibooks.com/books/2008016338?srsltid=test",
+                    "source_tier": "novel_platform",
+                    "purpose": "adaptive_author",
+                },
+            ],
+        }
+
+        blocked = apply_judge_seed_precision_guard(
+            identity,
+            {"seed_bucket": "precision_wrong_work_control", "disagreement_type": "wrong_work"},
+        )
+        fields = apply_candidate_audit_fields(
+            identity,
+            {"seed_bucket": "precision_wrong_work_control", "disagreement_type": "wrong_work"},
+        )
+
+        self.assertEqual(blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "탐식의 재림")
+        self.assertEqual(identity["work_resolution"], "resolved")
+        self.assertIn("precision_seed_independent_official_detail_supported", identity["consistency_flags"])
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+
+    def test_precision_seed_verified_alias_reread_bypasses_stale_multi_work_clear(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "primary_subject_type": "multi_work_bundle",
+            "anchor_type": "title_alias",
+            "anchor_strength": "medium",
+            "context_sources": ["title", "body", "comments", "search"],
+            "consistency_flags": [
+                "multi_work_title_cleared",
+                "secondary_reference_official_alias_blocked_after_multi_work_title_cleared",
+                "official_url_recall_gate_recovered",
+                "confirmed_alias:설지후",
+                "verified_alias_official_detail_anchor",
+                "confirmed_alias:설지후 변화도 레전드",
+                "official_detail_url_repaired_from_search",
+                "final_semantic_reread_reviewed",
+                "final_semantic_reread_accepted_resolution",
+            ],
+            "novel_identity": {
+                "official_title": "탐식의 재림",
+                "heretic_url": "https://page.kakao.com/content/50219568",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "탐식의 재림",
+                "heretic_url": "https://page.kakao.com/content/50219568",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+                "reference_role": "candidate",
+                "alias_or_mention": "설지후",
+            },
+            "candidate_preservation_sources": [
+                {
+                    "official_title": "탐식의 재림",
+                    "heretic_url": "https://page.kakao.com/content/50219568",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                    "reference_role": "candidate",
+                    "alias_or_mention": "설지후",
+                }
+            ],
+            "search_evidence_catalog": [
+                {
+                    "title": "탐식의 재림 - 웹소설 - 카카오페이지",
+                    "url": "https://page.kakao.com/content/50219568",
+                    "source_tier": "novel_platform",
+                    "purpose": "official_detail",
+                }
+            ],
+        }
+
+        blocked = apply_judge_seed_precision_guard(
+            identity,
+            {"seed_bucket": "precision_identity_high", "disagreement_type": "over_resolved"},
+        )
+        fields = apply_candidate_audit_fields(
+            identity,
+            {"seed_bucket": "precision_identity_high", "disagreement_type": "over_resolved"},
+        )
+
+        self.assertEqual(blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "탐식의 재림")
+        self.assertEqual(identity["novel_identity"]["heretic_url"], "https://page.kakao.com/content/50219568")
+        self.assertEqual(identity["work_resolution"], "resolved")
+        self.assertIn("precision_seed_independent_official_detail_supported", identity["consistency_flags"])
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+
+    def test_precision_seed_locked_official_reread_uses_primary_detail_support_when_catalog_title_is_unreadable(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "primary_subject_type": "work_discussion",
+            "anchor_type": "title_alias",
+            "anchor_strength": "high",
+            "context_sources": ["title", "body", "comments", "search"],
+            "consistency_flags": [
+                "multi_work_title_cleared",
+                "secondary_reference_official_alias_blocked_after_multi_work_title_cleared",
+                "locked_official_candidate_rescued",
+                "locked_official_rescue_cleared_stale_demotions",
+                "final_semantic_reread_reviewed",
+                "final_semantic_reread_accepted_resolution",
+                "weak_public_title_bridge_locked_official_exempt",
+            ],
+            "novel_identity": {
+                "official_title": "탐식의 재림",
+                "heretic_url": "https://series.naver.com/novel/detail.series?productNo=2847498",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "탐식의 재림",
+                "heretic_url": "https://series.naver.com/novel/detail.series?productNo=2847498",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+                "content_status": "active",
+                "reference_role": "primary",
+                "locked": True,
+            },
+            "candidate_preservation_sources": [
+                {
+                    "official_title": "탐식의 재림",
+                    "heretic_url": "https://series.naver.com/novel/detail.series?productNo=2847498",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                    "content_status": "active",
+                    "reference_role": "primary",
+                }
+            ],
+            "search_evidence_catalog": [
+                {
+                    "title": "??? ?? - ??? ???",
+                    "url": "https://series.naver.com/novel/detail.series?productNo=2847498",
+                    "source_tier": "novel_platform",
+                    "purpose": "precomputed_source_evidence",
+                }
+            ],
+        }
+
+        blocked = apply_judge_seed_precision_guard(
+            identity,
+            {"seed_bucket": "precision_wrong_work_control", "disagreement_type": "wrong_work"},
+        )
+        fields = apply_candidate_audit_fields(
+            identity,
+            {"seed_bucket": "precision_wrong_work_control", "disagreement_type": "wrong_work"},
+        )
+
+        self.assertEqual(blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "탐식의 재림")
+        self.assertIn("precision_seed_independent_official_detail_supported", identity["consistency_flags"])
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+
+    def test_precision_seed_locked_official_context_anchor_bypasses_stale_competing_recall(self):
+        def make_identity(*, cleared_stale_demotions: bool):
+            flags = [
+                "multi_work_title_cleared",
+                "secondary_reference_official_alias_blocked_after_multi_work_title_cleared",
+                "official_url_recall_blocked_competing_candidate",
+                "locked_official_candidate_rescued",
+                "weak_public_title_bridge_locked_official_exempt",
+            ]
+            if cleared_stale_demotions:
+                flags.append("locked_official_rescue_cleared_stale_demotions")
+            return {
+                "is_relevant": True,
+                "is_novel_related": True,
+                "is_resolved_work_discussion": True,
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "discussion_type": "character_talk",
+                "primary_subject_type": "work_discussion",
+                "anchor_type": "author",
+                "anchor_strength": "medium",
+                "context_sources": ["title", "body", "comments", "search"],
+                "consistency_flags": flags,
+                "novel_identity": {
+                    "official_title": "탐식의 재림",
+                    "heretic_url": "https://page.kakao.com/content/50219568",
+                    "confidence": "High",
+                },
+                "primary_work": {
+                    "official_title": "탐식의 재림",
+                    "heretic_url": "https://page.kakao.com/content/50219568",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                    "reference_role": "primary",
+                    "locked": True,
+                },
+                "title_candidates": [
+                    {
+                        "official_title": "탐식의 재림",
+                        "heretic_url": "https://page.kakao.com/content/50219568",
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                        "reference_role": "primary",
+                        "locked": True,
+                    },
+                    {
+                        "title": "@ㅇㅇ",
+                        "source_tier": "comment_surface",
+                        "promotion_policy": "hold_without_promotion",
+                    },
+                ],
+                "search_evidence_catalog": [
+                    {
+                        "title": "탐식의 재림 - 웹소설 - 카카오페이지",
+                        "url": "https://page.kakao.com/content/50219568",
+                        "source_tier": "novel_platform",
+                        "purpose": "precomputed_source_evidence",
+                    }
+                ],
+            }
+
+        identity = make_identity(cleared_stale_demotions=True)
+        blocked = apply_judge_seed_precision_guard(
+            identity,
+            {"seed_bucket": "precision_wrong_work_control", "disagreement_type": "wrong_work"},
+        )
+        fields = apply_candidate_audit_fields(
+            identity,
+            {"seed_bucket": "precision_wrong_work_control", "disagreement_type": "wrong_work"},
+        )
+
+        self.assertEqual(blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "탐식의 재림")
+        self.assertIn("precision_seed_independent_official_detail_supported", identity["consistency_flags"])
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+
+        uncleared = make_identity(cleared_stale_demotions=False)
+        blocked = apply_judge_seed_precision_guard(
+            uncleared,
+            {"seed_bucket": "precision_wrong_work_control", "disagreement_type": "wrong_work"},
+        )
+
+        self.assertEqual(blocked, ["precision_seed_official_title_requires_review"])
+        self.assertIsNone(uncleared["novel_identity"]["official_title"])
+
+    def test_precision_seed_with_alias_source_and_title_anchor_is_not_demoted(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "anchor_type": "title_exact",
+            "anchor_strength": "high",
+            "context_sources": ["title", "search"],
+            "novel_identity": {
+                "official_title": "엑스칼리버 뽑습니다",
+                "heretic_url": "https://novelpia.com/novel/229672",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "엑스칼리버 뽑습니다",
+                "heretic_url": "https://novelpia.com/novel/229672",
+                "alias_or_mention": "엑칼뽑",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+                "reference_role": "primary",
+            },
+            "candidate_preservation_sources": [
+                {
+                    "official_title": "엑스칼리버 뽑습니다",
+                    "heretic_url": "https://novelpia.com/novel/229672",
+                    "alias_or_mention": "엑칼뽑",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                    "reference_role": "primary",
+                }
+            ],
+        }
+
+        blocked = apply_judge_seed_precision_guard(
+            identity,
+            {"seed_bucket": "precision_wrong_work_control", "disagreement_type": "wrong_work"},
+        )
+        fields = apply_candidate_audit_fields(
+            identity,
+            {"seed_bucket": "precision_wrong_work_control", "disagreement_type": "wrong_work"},
+        )
+
+        self.assertEqual(blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "엑스칼리버 뽑습니다")
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+        self.assertEqual(fields["identity_consistency_lint"], [])
+
+    def test_precision_seed_author_plot_composite_alias_is_demoted_to_candidate(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "anchor_type": "title_exact",
+            "anchor_strength": "high",
+            "context_sources": ["title", "body", "comments", "search"],
+            "novel_identity": {
+                "official_title": "이세계에서 사이비로 살아남기",
+                "heretic_url": "https://novelpia.com/novel/181771",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "이세계에서 사이비로 살아남기",
+                "heretic_url": "https://novelpia.com/novel/181771",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+                "reference_role": "primary",
+            },
+            "slang_insight": {
+                "detected_term": "미츄리",
+                "decoded_term": "이세계에서 사이비로 살아남기",
+                "alias_scope": "work_plus_author",
+                "attached_entity_text": "미츄리 혼후순결",
+                "attached_entity_type": "author",
+                "store_reason": "composite_alias",
+            },
+            "candidate_preservation_sources": [
+                {
+                    "official_title": "이세계에서 사이비로 살아남기",
+                    "heretic_url": "https://novelpia.com/novel/181771",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                    "reference_role": "primary",
+                }
+            ],
+        }
+
+        blocked = apply_judge_seed_precision_guard(
+            identity,
+            {"seed_bucket": "precision_wrong_work_control", "disagreement_type": "wrong_work"},
+        )
+        fields = apply_candidate_audit_fields(
+            identity,
+            {"seed_bucket": "precision_wrong_work_control", "disagreement_type": "wrong_work"},
+        )
+
+        self.assertEqual(blocked, ["precision_seed_author_plot_composite_requires_review"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+        self.assertIn(
+            "이세계에서 사이비로 살아남기",
+            fields["candidate_ledger"]["title_candidates"],
+        )
+
+    def test_precision_seed_contextual_author_plot_composite_without_type_is_demoted(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "primary_subject_type": "multi_work_bundle",
+            "anchor_type": "title_alias",
+            "anchor_strength": "high",
+            "context_sources": ["title", "body", "comments", "search"],
+            "consistency_flags": [
+                "relation_hold_unresolved_recovered",
+                "official_url_recall_gate_recovered",
+                "search_catalog_contextual_work:미츄리 혼후순결",
+                "search_catalog_contextual_work_recall_anchor",
+            ],
+            "novel_identity": {
+                "official_title": "이세계에서 사이비로 살아남기",
+                "heretic_url": "https://novelpia.com/novel/181771",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "이세계에서 사이비로 살아남기",
+                "heretic_url": "https://novelpia.com/novel/181771",
+                "alias_or_mention": "미츄리 혼후순결",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+                "reference_role": "primary",
+            },
+            "slang_insight": {
+                "detected_term": "미츄리",
+                "decoded_term": "이세계에서 사이비로 살아남기",
+                "alias_scope": "work_plus_author",
+                "attached_entity_text": "미츄리 혼후순결",
+                "attached_entity_type": None,
+                "store_reason": "composite_alias",
+            },
+            "candidate_preservation_sources": [
+                {
+                    "official_title": "이세계에서 사이비로 살아남기",
+                    "heretic_url": "https://novelpia.com/novel/181771",
+                    "alias_or_mention": "미츄리 혼후순결",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                    "reference_role": "primary",
+                }
+            ],
+        }
+
+        blocked = apply_judge_seed_precision_guard(
+            identity,
+            {"seed_bucket": "precision_wrong_work_control", "disagreement_type": "wrong_work"},
+        )
+        fields = apply_candidate_audit_fields(
+            identity,
+            {"seed_bucket": "precision_wrong_work_control", "disagreement_type": "wrong_work"},
+        )
+
+        self.assertEqual(blocked, ["precision_seed_author_plot_composite_requires_review"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+        self.assertIn(
+            "이세계에서 사이비로 살아남기",
+            fields["candidate_ledger"]["title_candidates"],
+        )
+
+    def test_precision_seed_same_url_official_detail_canonicalizes_before_bypass(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "review",
+            "anchor_type": "title_alias",
+            "anchor_strength": "medium",
+            "context_sources": ["title", "search", "image"],
+            "consistency_flags": [
+                "verified_alias_official_detail_anchor",
+                "confirmed_alias:기계공주",
+                "explicit_alias_official_work_lock",
+            ],
+            "novel_identity": {
+                "official_title": "헌터갤러리의 국가권력급",
+                "heretic_url": "https://novelpia.com/novel/390228",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "헌터갤러리의 국가권력급",
+                "heretic_url": "https://novelpia.com/novel/390228",
+                "alias_or_mention": "기계공주",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+                "reference_role": "primary",
+            },
+            "candidate_preservation_sources": [
+                {
+                    "official_title": "헌터갤러리의 국가권력급 기계공주",
+                    "heretic_url": "https://novelpia.com/novel/390228",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page|unknown",
+                    "reference_role": "mentioned",
+                }
+            ],
+        }
+
+        blocked = apply_judge_seed_precision_guard(
+            identity,
+            {"seed_bucket": "precision_identity_high", "disagreement_type": "garbage_title"},
+        )
+        fields = apply_candidate_audit_fields(
+            identity,
+            {"seed_bucket": "precision_identity_high", "disagreement_type": "garbage_title"},
+        )
+
+        self.assertEqual(blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "헌터갤러리의 국가권력급 기계공주")
+        self.assertIn("same_url_official_detail_canonicalized", identity["consistency_flags"])
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+        self.assertEqual(fields["identity_consistency_lint"], [])
+
+    def test_precision_seed_bypass_prevents_later_weak_alias_bridge_demote(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "anchor_type": "image",
+            "anchor_strength": "high",
+            "context_sources": ["title", "search", "image"],
+            "consistency_flags": [
+                "verified_alias_official_detail_anchor",
+                "confirmed_alias:기계공주",
+                "explicit_alias_official_work_lock",
+            ],
+            "novel_identity": {
+                "official_title": "헌터갤러리의 국가권력급 기계공주",
+                "heretic_url": "https://novelpia.com/novel/390228",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "헌터갤러리의 국가권력급 기계공주",
+                "heretic_url": "https://novelpia.com/novel/390228",
+                "alias_or_mention": "기계공주",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+                "reference_role": "primary",
+            },
+            "candidate_preservation_sources": [
+                {
+                    "official_title": "헌터갤러리의 국가권력급 기계공주",
+                    "heretic_url": "https://novelpia.com/novel/390228",
+                    "alias_or_mention": "기계공주",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                    "reference_role": "primary",
+                }
+            ],
+        }
+
+        precision_blocked = apply_judge_seed_precision_guard(
+            identity,
+            {"seed_bucket": "precision_identity_high", "disagreement_type": "garbage_title"},
+        )
+        weak_blocked = apply_weak_public_title_bridge_guard(identity, "기계공주 작가 여초딩임?")
+        fields = apply_candidate_audit_fields(
+            identity,
+            {"seed_bucket": "precision_identity_high", "disagreement_type": "garbage_title"},
+        )
+
+        self.assertEqual(precision_blocked, [])
+        self.assertEqual(weak_blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "헌터갤러리의 국가권력급 기계공주")
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+
+    def test_weak_alias_bridge_canonicalizes_same_url_before_demote(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "anchor_type": "title_alias",
+            "anchor_strength": "medium",
+            "context_sources": ["title", "search", "image"],
+            "consistency_flags": [
+                "verified_alias_official_detail_anchor",
+                "confirmed_alias:기계공주",
+                "official_url_recall_gate_recovered",
+            ],
+            "novel_identity": {
+                "official_title": "헌터갤러리의 국가권력급",
+                "heretic_url": "https://novelpia.com/novel/390228",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "헌터갤러리의 국가권력급",
+                "heretic_url": "https://novelpia.com/novel/390228",
+                "alias_or_mention": "기계공주",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+                "reference_role": "primary",
+            },
+            "title_candidates": [
+                {
+                    "official_title": "헌터갤러리의 국가권력급 기계공주",
+                    "heretic_url": "https://novelpia.com/novel/390228",
+                    "alias_or_mention": "기계공주",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                    "reference_role": "candidate",
+                }
+            ],
+        }
+
+        weak_blocked = apply_weak_public_title_bridge_guard(identity, "기계공주는 작가가 일러를 잘 뽑음")
+        fields = apply_candidate_audit_fields(
+            identity,
+            {"seed_bucket": "precision_identity_high", "disagreement_type": "garbage_title"},
+        )
+
+        self.assertEqual(weak_blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "헌터갤러리의 국가권력급 기계공주")
+        self.assertIn("same_url_official_detail_canonicalized", identity["consistency_flags"])
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+
+    def test_platform_seo_suffix_is_removed_from_official_detail_title(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "anchor_type": "image",
+            "anchor_strength": "high",
+            "context_sources": ["title", "search", "image"],
+            "consistency_flags": ["same_url_official_detail_canonicalized"],
+            "novel_identity": {
+                "official_title": "이거 럽코 빙의물인가요 - 문피아 웹소설",
+                "heretic_url": "https://novel.munpia.com/533816",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "이거 럽코 빙의물인가요 - 문피아 웹소설",
+                "heretic_url": "https://novel.munpia.com/533816",
+                "alias_or_mention": "이거 럽코 빙의물인가요",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+                "reference_role": "primary",
+            },
+            "title_candidates": [
+                {
+                    "official_title": "이거 럽코 빙의물인가요 - 문피아 웹소설",
+                    "heretic_url": "https://novel.munpia.com/533816",
+                    "alias_or_mention": "이거 럽코 빙의물인가요",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                    "reference_role": "primary",
+                }
+            ],
+        }
+
+        weak_blocked = apply_weak_public_title_bridge_guard(identity, "좆 됐 다 ! !")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(weak_blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "이거 럽코 빙의물인가요")
+        self.assertEqual(identity["primary_work"]["official_title"], "이거 럽코 빙의물인가요")
+        self.assertEqual(identity["title_candidates"][0]["official_title"], "이거 럽코 빙의물인가요")
+        self.assertIn("platform_seo_title_suffix_canonicalized", identity["consistency_flags"])
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+
+    def test_ocr_lpko_variant_does_not_conflict_with_same_official_detail_title(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "anchor_type": "image",
+            "anchor_strength": "high",
+            "context_sources": ["title", "search", "image"],
+            "consistency_flags": [
+                "same_url_official_detail_canonicalized",
+                "confirmed_alias:Lp코 빙의물",
+                "explicit_alias_official_work_lock",
+            ],
+            "novel_identity": {
+                "official_title": "이거 럽 코 빙의물인가요 - 웹소설 문피아",
+                "heretic_url": "https://novel.munpia.com/533816",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "이거 럽 코 빙의물인가요 - 웹소설 문피아",
+                "heretic_url": "https://novel.munpia.com/533816",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+                "reference_role": "primary",
+            },
+            "title_candidates": [
+                {
+                    "official_title": "이거 럽 코 빙의물인가요 - 웹소설 문피아",
+                    "heretic_url": "https://novel.munpia.com/533816",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                    "reference_role": "primary",
+                }
+            ],
+            "image_evidence_catalog": [
+                {
+                    "explicit_work_title": "이거 Lp코 빙의물인가요",
+                    "title_role": "work_title",
+                    "promotion_eligible": True,
+                }
+            ],
+        }
+
+        weak_blocked = apply_weak_public_title_bridge_guard(identity, "좆 됐 다 ! !")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(weak_blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "이거 럽코 빙의물인가요")
+        self.assertEqual(identity["primary_work"]["official_title"], "이거 럽코 빙의물인가요")
+        self.assertIn("platform_seo_title_suffix_canonicalized", identity["consistency_flags"])
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+
+    def test_platform_seo_prefix_is_removed_from_official_detail_title(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "anchor_type": "image",
+            "anchor_strength": "high",
+            "novel_identity": {
+                "official_title": "웹소설로 꿈꾸는 세상! - [림월드]변방계에서 회귀자로 살아남기",
+                "heretic_url": "https://novelpia.com/novel/382324",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "웹소설로 꿈꾸는 세상! - [림월드]변방계에서 회귀자로 살아남기",
+                "heretic_url": "https://novelpia.com/novel/382324",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+                "reference_role": "primary",
+            },
+            "title_candidates": [
+                {
+                    "official_title": "웹소설로 꿈꾸는 세상! - [림월드]변방계에서 회귀자로 살아남기",
+                    "heretic_url": "https://novelpia.com/novel/382324",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                    "reference_role": "primary",
+                }
+            ],
+        }
+
+        weak_blocked = apply_weak_public_title_bridge_guard(identity, "랫따싶 림월드 요소 생각나게 하는거 좋네에...")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(weak_blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "[림월드]변방계에서 회귀자로 살아남기")
+        self.assertEqual(identity["primary_work"]["official_title"], "[림월드]변방계에서 회귀자로 살아남기")
+        self.assertIn("platform_seo_title_suffix_canonicalized", identity["consistency_flags"])
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+
+    def test_precision_seed_bypass_respects_hard_non_novel_context(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "anchor_type": "title_alias",
+            "anchor_strength": "medium",
+            "context_sources": ["title", "body", "comments", "search"],
+            "consistency_flags": [
+                "official_url_recall_blocked_hard_non_novel_context",
+                "fanfic_derivative_title_unanchored_hold",
+                "verified_alias_official_detail_anchor",
+                "confirmed_alias:리제로",
+                "explicit_alias_official_work_lock",
+            ],
+            "novel_identity": {
+                "official_title": "(리제로)RE: 제로부터 다시 시작하는 이세계 생활",
+                "heretic_url": "https://novelpia.com/novel/53722",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "(리제로)RE: 제로부터 다시 시작하는 이세계 생활",
+                "heretic_url": "https://novelpia.com/novel/53722",
+                "alias_or_mention": "리제로",
+                "source_tier": "official_detail",
+                "reference_role": "primary",
+            },
+            "candidate_preservation_sources": [
+                {
+                    "official_title": "(리제로)RE: 제로부터 다시 시작하는 이세계 생활",
+                    "heretic_url": "https://novelpia.com/novel/53722",
+                    "alias_or_mention": "리제로",
+                    "source_tier": "official_detail",
+                    "reference_role": "primary",
+                }
+            ],
+        }
+
+        blocked = apply_judge_seed_precision_guard(
+            identity,
+            {"seed_bucket": "precision_identity_high", "disagreement_type": "garbage_title"},
+        )
+        fields = apply_candidate_audit_fields(
+            identity,
+            {"seed_bucket": "precision_identity_high", "disagreement_type": "garbage_title"},
+        )
+
+        self.assertIn("precision_seed_official_title_requires_review", blocked)
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
 
     def test_title_noisy_ocr_unresolved_candidate_is_hold_unresolved(self):
         identity = {
@@ -1044,6 +2201,23 @@ class CandidateAuditTest(unittest.TestCase):
         self.assertEqual(fields["candidate_ledger"]["candidate_count"], 4)
         self.assertFalse(fields["candidate_generation_miss"])
         self.assertIsNone(identity["novel_identity"])
+
+    def test_comment_surface_hint_ignores_user_mentions(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": False,
+            "title_resolution_allowed": False,
+            "title_resolution_state": "author_new_work_context",
+            "work_resolution": "none",
+            "discussion_type": "recommendation",
+            "novel_identity": None,
+        }
+
+        added = apply_comment_surface_candidate_hints(identity, ["@ㅇㅇ", "@reader 잘생인편 봤냐"])
+
+        self.assertEqual(added, [])
+        self.assertNotIn("comment_surface_title_candidates", identity)
 
     def test_recall_seed_expected_candidate_blocks_conflicting_final_title(self):
         identity = {
@@ -1538,6 +2712,146 @@ class CandidateAuditTest(unittest.TestCase):
         self.assertEqual(fields["candidate_ledger_status"], "output_consistency_lint")
         self.assertIn("judge_hygiene_seed_garbage_title", fields["output_consistency_lint"])
 
+    def test_hygiene_alias_image_conflict_blocks_public_title(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "novel_identity": {
+                "official_title": "괴담 호텔 탈출기",
+                "heretic_url": "https://novelpia.com/novel/102155",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "괴담 호텔 탈출기",
+                "heretic_url": "https://novelpia.com/novel/102155",
+                "confidence": "High",
+                "alias_or_mention": "괴담텔",
+                "source_tier": "official_detail",
+                "reference_role": "primary",
+            },
+            "consistency_flags": [
+                "vlm_ocr_title_conflict_with_final_title",
+                "ocr_title_conflict_with_stable_alias",
+            ],
+            "image_evidence_catalog": [
+                {
+                    "explicit_work_title": "狐神神社",
+                    "evidence_type": "explicit_text",
+                    "promotion_eligible": False,
+                }
+            ],
+        }
+        seed = {
+            "seed_group": "candidate_comment_multi",
+            "disagreement_type": "wrong_relevance",
+            "severity": "high",
+        }
+
+        blocked = apply_judge_seed_hygiene_alias_conflict_guard(identity, seed)
+        fields = apply_candidate_audit_fields(identity, seed)
+
+        self.assertEqual(blocked, ["judge_hygiene_seed_alias_image_conflict_wrong_relevance"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertIsNone(identity["novel_identity"]["heretic_url"])
+        self.assertEqual(identity["blocked_official_title"], "괴담 호텔 탈출기")
+        self.assertEqual(identity["blocked_official_title_url"], "https://novelpia.com/novel/102155")
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertEqual(identity["work_resolution"], "unresolved")
+        self.assertEqual(fields["candidate_ledger"]["judge_seed_group"], "hygiene")
+        self.assertEqual(fields["candidate_ledger_status"], "output_consistency_lint")
+        self.assertIn(
+            "judge_hygiene_seed_alias_image_conflict_wrong_relevance",
+            fields["output_consistency_lint"],
+        )
+
+    def test_hygiene_alias_guard_does_not_block_without_image_conflict(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "novel_identity": {
+                "official_title": "괴담 호텔 탈출기",
+                "heretic_url": "https://novelpia.com/novel/102155",
+                "confidence": "High",
+            },
+            "consistency_flags": ["ocr_title_conflict_with_stable_alias"],
+        }
+        seed = {
+            "seed_group": "candidate_comment_multi",
+            "disagreement_type": "wrong_relevance",
+        }
+
+        blocked = apply_judge_seed_hygiene_alias_conflict_guard(identity, seed)
+
+        self.assertEqual(blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "괴담 호텔 탈출기")
+        self.assertTrue(identity["title_resolution_allowed"])
+
+    def test_wrong_relevance_seed_public_title_is_candidate_hold(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "anchor_type": "none",
+            "anchor_strength": "none",
+            "primary_subject_type": "multi_work_bundle",
+            "consistency_flags": [
+                "official_url_recall_gate_recovered",
+                "search_catalog_contextual_work:온세상이 온세상 세상이",
+                "search_catalog_contextual_work_recall_anchor",
+                "confirmed_context:온세상이 온세상 세상이",
+            ],
+            "novel_identity": {
+                "official_title": "온 세상이 정신이상자다",
+                "heretic_url": "https://novelpia.com/novel/380804",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "온 세상이 정신이상자다",
+                "heretic_url": "https://novelpia.com/novel/380804",
+                "confidence": "High",
+                "alias_or_mention": "온세상이 온세상 세상이",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+                "reference_role": "primary",
+            },
+        }
+        seed = {
+            "seed_bucket": "candidate_comment_multi",
+            "disagreement_type": "wrong_relevance",
+            "severity": "high",
+        }
+
+        blocked = apply_judge_seed_wrong_relevance_public_title_guard(identity, seed)
+        fields = apply_candidate_audit_fields(identity, seed)
+
+        self.assertEqual(blocked, ["judge_candidate_seed_wrong_relevance_public_title_held"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertIsNone(identity["novel_identity"]["heretic_url"])
+        self.assertEqual(identity["blocked_official_title"], "온 세상이 정신이상자다")
+        self.assertEqual(identity["blocked_official_title_url"], "https://novelpia.com/novel/380804")
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertEqual(identity["work_resolution"], "unresolved")
+        self.assertIn("온 세상이 정신이상자다", fields["candidate_ledger"]["title_candidates"])
+        self.assertEqual(fields["candidate_ledger_status"], "output_consistency_lint")
+        self.assertIn(
+            "judge_candidate_seed_wrong_relevance_public_title_held",
+            fields["output_consistency_lint"],
+        )
+
     def test_source_url_hygiene_wrong_expected_title_is_demoted(self):
         identity = {
             "is_relevant": True,
@@ -1674,6 +2988,1743 @@ class CandidateAuditTest(unittest.TestCase):
         self.assertIsNone(identity["novel_identity"]["official_title"])
         self.assertEqual(identity["blocked_official_title"], "설정값 딸깍으로 판타지 시스템 정상화")
         self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+
+    def test_weak_alias_surface_public_title_bridge_is_held(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "anchor_type": "title_alias",
+            "anchor_strength": "high",
+            "novel_identity": {
+                "official_title": "수상할 정도로 돈이 많은 성주님 1권 미리보기",
+                "heretic_url": "https://ridibooks.com/books/3846015696/preview",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "수상할 정도로 돈이 많은 성주님 1권 미리보기",
+                "heretic_url": "https://ridibooks.com/books/3846015696/preview",
+                "confidence": "High",
+                "alias_or_mention": "수상할 정도로",
+                "source_tier": "official_detail",
+            },
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "수상할 정도로 고해상도의 부모 캐릭터 보면")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, ["weak_alias_surface_public_title_bridge"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(identity["blocked_official_title"], "수상할 정도로 돈이 많은 성주님 1권 미리보기")
+        self.assertEqual(identity["title_resolution_state"], "unresolved_matchable")
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+        self.assertIn("수상할 정도로 돈이 많은 성주님 1권 미리보기", fields["candidate_ledger"]["title_candidates"])
+
+    def test_generic_genre_surface_public_title_bridge_is_held(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "anchor_type": "genre",
+            "anchor_strength": "low",
+            "novel_identity": {
+                "official_title": "용사 파티",
+                "heretic_url": "https://novelpia.com/novel/78257",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "용사 파티",
+                "heretic_url": "https://novelpia.com/novel/78257",
+                "confidence": "High",
+                "source_tier": "official_detail",
+            },
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "용사파티 << 비겁한 소수정예 암살단임")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, ["generic_genre_surface_public_title_bridge"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+
+    def test_generic_noun_verb_alias_bridge_is_held(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "anchor_type": "title_alias",
+            "anchor_strength": "high",
+            "novel_identity": {
+                "official_title": "아카데미 특별전형 생도가 되었다",
+                "heretic_url": "https://novelpia.com/novel/251984",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "아카데미 특별전형 생도가 되었다",
+                "heretic_url": "https://novelpia.com/novel/251984",
+                "confidence": "High",
+                "alias_or_mention": "아카데미 되었다",
+                "source_tier": "official_detail",
+            },
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "로판속 아카데미 앞 두쫀쿠 가게 사장이 되었다")
+
+        self.assertEqual(blocked, ["weak_alias_surface_public_title_bridge"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(identity["blocked_official_title"], "아카데미 특별전형 생도가 되었다")
+
+    def test_template_overlap_official_detail_bridge_is_held_without_alias(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "meme",
+            "anchor_type": "title_alias",
+            "anchor_strength": "medium",
+            "consistency_flags": ["vlm_ocr_title_conflict_with_final_title"],
+            "novel_identity": {
+                "official_title": "아카데미 야겜에 빙의했다.",
+                "heretic_url": "https://novelpia.com/novel/1249",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "아카데미 야겜에 빙의했다.",
+                "heretic_url": "https://novelpia.com/novel/1249",
+                "confidence": "High",
+                "source_tier": "official_detail",
+                "locked": True,
+            },
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "로판속 아카데미 앞 두쫀쿠 가게 사장이 되었다")
+
+        self.assertEqual(blocked, ["weak_template_surface_public_title_bridge"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(identity["blocked_official_title"], "아카데미 야겜에 빙의했다.")
+        self.assertEqual(identity["title_resolution_state"], "unresolved_matchable")
+
+    def test_template_overlap_guard_keeps_direct_official_title_surface(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "anchor_type": "title_alias",
+            "anchor_strength": "medium",
+            "novel_identity": {
+                "official_title": "아카데미 야겜에 빙의했다.",
+                "heretic_url": "https://novelpia.com/novel/1249",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "아카데미 야겜에 빙의했다.",
+                "heretic_url": "https://novelpia.com/novel/1249",
+                "confidence": "High",
+                "source_tier": "official_detail",
+                "locked": True,
+            },
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "아카데미 야겜에 빙의했다 재밌냐")
+
+        self.assertEqual(blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "아카데미 야겜에 빙의했다.")
+
+    def test_unconfirmed_alias_official_detail_bridge_is_held(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "anchor_type": "title_alias",
+            "anchor_strength": "medium",
+            "consistency_flags": ["batch_memory_exact_alias_rescued"],
+            "novel_identity": {
+                "official_title": "스페이스 오페라",
+                "heretic_url": "https://novelpia.com/novel/181483",
+                "confidence": "Medium",
+            },
+            "primary_work": {
+                "official_title": "스페이스 오페라",
+                "heretic_url": "https://novelpia.com/novel/181483",
+                "confidence": "Medium",
+                "alias_or_mention": "림월드",
+                "source_tier": "official_detail",
+            },
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "랫따싶 림월드 요소 생각나게 하는거 좋네에")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, ["unconfirmed_alias_official_detail_bridge"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(identity["blocked_official_title"], "스페이스 오페라")
+        self.assertEqual(identity["title_resolution_state"], "unresolved_matchable")
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+        self.assertIn("스페이스 오페라", fields["candidate_ledger"]["title_candidates"])
+
+    def test_title_led_consumption_alias_exempts_unconfirmed_official_detail_bridge(self):
+        title = "탑의 성좌들이 날 애호한다"
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "primary_subject_type": "work_discussion",
+            "anchor_type": "title_alias",
+            "anchor_strength": "medium",
+            "context_sources": ["title", "body", "comments", "search"],
+            "consistency_flags": [
+                "relation_hold_unresolved_recovered",
+                "batch_memory_exact_alias_rescued",
+                "batch_memory_alias_rescue_cleared_stale_demotions",
+                "weak_public_title_bridge_batch_alias_exact_exempt",
+            ],
+            "novel_identity": {
+                "official_title": title,
+                "heretic_url": "https://novelpia.com/novel/377032",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": title,
+                "heretic_url": "https://novelpia.com/novel/377032",
+                "confidence": "High",
+                "alias_or_mention": "탑성좌애호",
+                "source_tier": "official_detail",
+                "locked": True,
+            },
+            "search_evidence_catalog": [
+                {
+                    "title": "플러스",
+                    "url": "https://novelpia.com/plus/all/date/5/?main_genre=",
+                    "source_tier": "novel_platform",
+                    "snippet": f"{title} PLUS 독점 연재중단 프리데이 1.74M.",
+                }
+            ],
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(
+            identity,
+            "탑성좌애호 노벨피아 이거 연중했었네",
+        )
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], title)
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+        self.assertNotIn("unconfirmed_alias_official_detail_bridge", identity.get("candidate_audit_lint", []))
+
+    def test_title_led_consumption_title_marker_exempts_empty_body_alias_bridge(self):
+        title = "암흑가 보스요? 제가요?"
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "primary_subject_type": "work_discussion",
+            "anchor_type": "title_alias",
+            "anchor_strength": "medium",
+            "context_sources": ["title", "search"],
+            "consistency_flags": [
+                "title_lead_alias_official_detail_release",
+                "weak_public_title_bridge_batch_alias_exact_exempt",
+            ],
+            "novel_identity": {
+                "official_title": title,
+                "heretic_url": "https://novelpia.com/novel/384111",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": title,
+                "heretic_url": "https://novelpia.com/novel/384111",
+                "confidence": "High",
+                "alias_or_mention": "암흑가보스",
+                "source_tier": "official_detail",
+            },
+            "search_evidence_catalog": [
+                {
+                    "title": f"{title} - 노벨피아",
+                    "url": "https://novelpia.com/novel/384111",
+                    "source_tier": "novel_platform",
+                    "snippet": f"{title} 작가명 손아픈사람.",
+                }
+            ],
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "암흑가보스<<이거 재밋네")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], title)
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+
+    def test_current_work_gate_title_led_alias_scope_exempts_weak_alias_scrub(self):
+        title = "암흑가 보스요? 제가요?"
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "primary_subject_type": "work_discussion",
+            "anchor_type": "none",
+            "anchor_strength": "medium",
+            "context_sources": ["title", "search", "image"],
+            "consistency_flags": [
+                "unresolved_worklike_hold:title_led_consumption",
+                "locked_official_candidate_rescued",
+                "weak_public_title_bridge_locked_official_exempt",
+                "same_url_official_detail_canonicalized",
+                "platform_seo_title_suffix_canonicalized",
+            ],
+            "novel_identity": {
+                "official_title": title,
+                "heretic_url": "https://novelpia.com/novel/384111",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": title,
+                "heretic_url": "https://novelpia.com/novel/384111",
+                "confidence": "High",
+                "alias_or_mention": "암흑가보스",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+                "locked": True,
+            },
+            "promotion_decision": {
+                "status": "candidate_only",
+                "publish_allowed": False,
+                "official_title": None,
+                "official_url": None,
+                "candidate_preserved": True,
+                "reason_codes": [
+                    "official_title_exists",
+                    "row_discusses_work_as_work",
+                    "scope_current_work",
+                    "resolved_public_title_scope",
+                    "official_detail_url",
+                    "weak_alias_surface_public_title_bridge",
+                    "serialized_public_identity_scrubbed",
+                ],
+                "bypassed_gate": False,
+                "scope": {
+                    "scope_kind": "current_work",
+                    "confidence": "high",
+                    "direct_bridge_sources": [
+                        "resolved_public_title_scope",
+                        "title",
+                        "image",
+                        "anchor_type:none",
+                        "official_detail_url",
+                        "title_led_consumption_bridge",
+                    ],
+                },
+            },
+            "promotion_gate_state": {
+                "post_id": 11660257,
+                "candidate_title": title,
+                "candidate_url": "https://novelpia.com/novel/384111",
+                "source": "resolved_public_title",
+                "official_title_exists": True,
+                "row_discusses_work_as_work": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "scope": {
+                    "scope_kind": "current_work",
+                    "confidence": "high",
+                    "direct_bridge_sources": [
+                        "resolved_public_title_scope",
+                        "title",
+                        "image",
+                        "anchor_type:none",
+                        "official_detail_url",
+                        "title_led_consumption_bridge",
+                    ],
+                },
+            },
+            "search_evidence_catalog": [
+                {
+                    "title": f"웹소설로 꿈꾸는 세상! - {title} - 노벨피아",
+                    "url": "https://novelpia.com/novel/384111",
+                    "source_tier": "novel_platform",
+                    "snippet": f"{title} 작가명 손아픈사람.",
+                }
+            ],
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "암흑가보스<<이거 재밋네")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], title)
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+
+    def test_title_led_consumption_empty_body_alias_without_marker_still_blocks(self):
+        title = "암흑가 보스요? 제가요?"
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "primary_subject_type": "work_discussion",
+            "anchor_type": "title_alias",
+            "anchor_strength": "medium",
+            "context_sources": ["title", "search"],
+            "consistency_flags": [
+                "title_lead_alias_official_detail_release",
+                "weak_public_title_bridge_batch_alias_exact_exempt",
+            ],
+            "novel_identity": {
+                "official_title": title,
+                "heretic_url": "https://novelpia.com/novel/384111",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": title,
+                "heretic_url": "https://novelpia.com/novel/384111",
+                "confidence": "High",
+                "alias_or_mention": "암보스",
+                "source_tier": "official_detail",
+            },
+            "search_evidence_catalog": [
+                {
+                    "title": f"{title} - 노벨피아",
+                    "url": "https://novelpia.com/novel/384111",
+                    "source_tier": "novel_platform",
+                    "snippet": f"{title} 작가명 손아픈사람.",
+                }
+            ],
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "암보스 정보좀")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, ["unconfirmed_alias_official_detail_bridge"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(identity["blocked_official_title"], title)
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+
+    def test_shared_current_work_gate_exempts_unconfirmed_official_detail_bridge_without_live_hit(self):
+        title = "탑의 성좌들이 날 애호한다"
+        url = "https://novelpia.com/novel/377032"
+        decision = {
+            "status": "publish",
+            "publish_allowed": True,
+            "official_title": title,
+            "official_url": url,
+            "candidate_preserved": False,
+            "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "batch_alias_public_title_bridge",
+                "official_detail_url",
+            ],
+            "bypassed_gate": False,
+            "scope": {
+                "scope_kind": "current_work",
+                "confidence": "high",
+                "direct_bridge_sources": [
+                    "batch_alias_candidate_accepted",
+                    "search_evidence_alias_inference",
+                    "alias_surface",
+                    "official_detail_url",
+                ],
+            },
+        }
+        gate_state = {
+            "post_id": 11669928,
+            "candidate_title": title,
+            "candidate_url": url,
+            "source": "search_evidence_alias_inference",
+            "official_title_exists": True,
+            "row_discusses_work_as_work": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "scope": decision["scope"],
+        }
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "primary_subject_type": "work_discussion",
+            "anchor_type": "title_alias",
+            "anchor_strength": "medium",
+            "context_sources": ["title", "body", "comments", "search"],
+            "consistency_flags": [
+                "relation_hold_unresolved_recovered",
+                "batch_memory_exact_alias_rescued",
+                "batch_memory_alias_rescue_cleared_stale_demotions",
+                "weak_public_title_bridge_batch_alias_exact_exempt",
+            ],
+            "novel_identity": {
+                "official_title": title,
+                "heretic_url": url,
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": title,
+                "heretic_url": url,
+                "confidence": "High",
+                "alias_or_mention": "탑성좌애호",
+                "source_tier": "official_detail",
+                "locked": True,
+            },
+            "promotion_decision": decision,
+            "promotion_gate_state": gate_state,
+            "search_evidence_catalog": [
+                {
+                    "title": "탑성좌애호 슬슬 방향성 다시 잡아야 한다고 봄",
+                    "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11205338",
+                    "source_tier": "community",
+                    "snippet": "탑성좌애호 주인공 이야기",
+                }
+            ],
+            "candidate_preservation_sources": [
+                {
+                    "official_title": title,
+                    "heretic_url": url,
+                    "confidence": "High",
+                    "alias_or_mention": "탑성좌애호",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                    "reference_role": "primary",
+                    "preservation_role": "title_candidate",
+                },
+                {
+                    "official_title": "슬프구나",
+                    "confidence": "Low",
+                    "source_tier": "comment_surface",
+                    "promotion_policy": "hold_without_promotion",
+                },
+            ],
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(
+            identity,
+            "탑성좌애호 노벨피아 이거 연중했었네",
+        )
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], title)
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+        self.assertNotIn("unconfirmed_alias_official_detail_bridge", identity.get("candidate_audit_lint", []))
+        self.assertEqual(fields["candidate_ledger"]["promotion_gate_state"], gate_state)
+
+    def test_context_only_shared_gate_does_not_exempt_unconfirmed_official_detail_bridge(self):
+        title = "스페이스 오페라"
+        url = "https://novelpia.com/novel/181483"
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "primary_subject_type": "work_discussion",
+            "anchor_type": "title_alias",
+            "anchor_strength": "medium",
+            "context_sources": ["title", "body", "comments", "search"],
+            "consistency_flags": ["batch_memory_exact_alias_rescued"],
+            "novel_identity": {
+                "official_title": title,
+                "heretic_url": url,
+                "confidence": "Medium",
+            },
+            "primary_work": {
+                "official_title": title,
+                "heretic_url": url,
+                "confidence": "Medium",
+                "alias_or_mention": "림월드",
+                "source_tier": "official_detail",
+            },
+            "promotion_decision": {
+                "status": "publish",
+                "publish_allowed": True,
+                "official_title": title,
+                "official_url": url,
+                "reason_codes": [
+                    "official_title_exists",
+                    "row_discusses_work_as_work",
+                    "scope_context_only",
+                    "official_detail_url",
+                ],
+                "scope": {
+                    "scope_kind": "context_only",
+                    "direct_bridge_sources": ["official_detail_url"],
+                },
+            },
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "랫따싶 림월드 요소 생각나게 하는거 좋네에")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, ["unconfirmed_alias_official_detail_bridge"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+
+    def test_character_alias_official_detail_support_exempts_unconfirmed_bridge_hold(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "primary_subject_type": "work_discussion",
+            "discussion_type": "character_talk",
+            "anchor_type": "title_alias",
+            "anchor_strength": "medium",
+            "context_sources": ["title", "body", "comments", "search"],
+            "consistency_flags": [
+                "batch_memory_exact_alias_rescued",
+                "batch_memory_alias_rescue_cleared_stale_demotions",
+                "weak_public_title_bridge_batch_alias_exact_exempt",
+                "fanfic_derivative_title_unanchored_hold",
+            ],
+            "novel_identity": {
+                "official_title": "이 무림의 미친년은 나야",
+                "heretic_url": "https://novelpia.com/novel/217943?sid=main5",
+                "confidence": "Medium",
+            },
+            "primary_work": {
+                "official_title": "이 무림의 미친년은 나야",
+                "heretic_url": "https://novelpia.com/novel/217943?sid=main5",
+                "confidence": "Medium",
+                "alias_or_mention": "서문청",
+                "source_tier": "official_detail",
+            },
+            "search_evidence_catalog": [
+                {
+                    "title": "이 무림의 미친년은 나야",
+                    "url": "https://novelpia.com/novel/217943?sid=main5",
+                    "source_tier": "novel_platform",
+                    "purpose": "title_anchor_official_probe",
+                    "rank": 1,
+                }
+            ],
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "서문청 무친년")
+
+        self.assertEqual(blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "이 무림의 미친년은 나야")
+
+    def test_recoverable_official_detail_candidate_preempts_comment_only_blocked_label(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": False,
+            "title_resolution_allowed": False,
+            "title_resolution_state": "ocr_explicit_title_unresolved",
+            "work_resolution": "none",
+            "anchor_type": "title_alias",
+            "anchor_strength": "high",
+            "blocked_official_title": "그래-맞아",
+            "candidate_preservation_sources": [
+                {
+                    "official_title": "그래-맞아",
+                    "alias_or_mention": "그래-맞아",
+                    "source_tier": "community",
+                    "reference_role": "candidate",
+                    "preservation_role": "recommendation_candidate",
+                    "promotion_policy": "hold_without_promotion",
+                    "negative_evidence": ["comment_answer_preservation_only"],
+                }
+            ],
+            "image_evidence_catalog": [
+                {
+                    "ocr_text": "림월드의 랫킨모드가 보인다",
+                    "visual_summary": "랫킨 캐릭터들이 있는 림월드 팬아트",
+                    "work_cues": ["림월드", "랫따싶"],
+                    "promotion_eligible": False,
+                }
+            ],
+            "search_evidence_catalog": [
+                {
+                    "title": "웹소설로 꿈꾸는 세상! - [림월드]변방계에서 회귀자로 살아남기 - 노벨피아",
+                    "url": "https://novelpia.com/novel/382324",
+                    "source_tier": "novel_platform",
+                    "snippet": "#패러디 #림월드 #랫따싶",
+                    "rank": 1,
+                }
+            ],
+        }
+
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(identity["blocked_official_title"], "[림월드]변방계에서 회귀자로 살아남기")
+        self.assertEqual(identity["blocked_official_title_url"], "https://novelpia.com/novel/382324")
+        self.assertEqual(identity["comment_surface_blocked_official_title"], "그래-맞아")
+        self.assertIn(
+            "blocked_candidate_representative_upgraded_to_official_detail",
+            identity["candidate_audit_lint"],
+        )
+        ledger = fields["candidate_ledger"]
+        self.assertEqual(ledger["blocked_official_title"], "[림월드]변방계에서 회귀자로 살아남기")
+        first_source = ledger["candidate_preservation_sources"][0]
+        self.assertEqual(first_source["official_title"], "[림월드]변방계에서 회귀자로 살아남기")
+        self.assertEqual(first_source["promotion_policy"], "hold_without_promotion")
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+
+    def test_batch_memory_alias_competing_hold_blocks_official_detail_exemption(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "primary_subject_type": "work_discussion",
+            "anchor_type": "title_alias",
+            "anchor_strength": "medium",
+            "context_sources": ["title", "body", "comments", "search", "image"],
+            "consistency_flags": [
+                "batch_memory_exact_alias_rescued",
+                "precision_seed_independent_official_detail_supported",
+                "official_url_recall_blocked_competing_candidate",
+                "expert_conflict",
+                "multi_work_title_cleared",
+                "secondary_reference_official_alias_blocked_after_multi_work_title_cleared",
+                "budget_quarantine_candidate",
+            ],
+            "novel_identity": {
+                "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+                "heretic_url": "https://novelpia.com/novel/382324",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+                "heretic_url": "https://novelpia.com/novel/382324",
+                "confidence": "High",
+                "alias_or_mention": "랫따싶",
+                "source_tier": "official_detail",
+                "reference_role": "primary",
+                "locked": True,
+            },
+            "title_candidates": [
+                {
+                    "official_title": "쳇바퀴의 생쥐 사도가 되었다",
+                    "source_tier": "official_detail",
+                    "promotion_policy": "hold_without_promotion",
+                },
+                {
+                    "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+                    "heretic_url": "https://novelpia.com/novel/382324",
+                    "source_tier": "official_detail",
+                },
+            ],
+            "search_evidence_catalog": [
+                {
+                    "title": "웹소설로 꿈꾸는 세상! - [림월드]변방계에서 회귀자로 살아남기",
+                    "url": "https://novelpia.com/novel/382324",
+                    "source_tier": "official_detail",
+                    "snippet": "#패러디 #림월드 #랫따싶",
+                }
+            ],
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "랫따싶 림월드 요소 생각나게 하는거 좋네에")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, ["batch_memory_alias_competing_hold_public_title_bridge"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertIsNone(identity["novel_identity"]["heretic_url"])
+        self.assertEqual(identity["blocked_official_title"], "[림월드]변방계에서 회귀자로 살아남기")
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertEqual(identity["title_resolution_state"], "unresolved_matchable")
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+        self.assertIn("쳇바퀴의 생쥐 사도가 되었다", fields["candidate_ledger"]["title_candidates"])
+        self.assertIn("[림월드]변방계에서 회귀자로 살아남기", fields["candidate_ledger"]["title_candidates"])
+
+    def test_direct_image_reference_recommendation_conflict_holds_public_title(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "anchor_type": "none",
+            "anchor_strength": "low",
+            "consistency_flags": [
+                "recommendation_context_only_no_work_anchor",
+                "direct_image_reference_recommendation_hold",
+                "official_url_recall_gate_recovered",
+                "title_body_official_detail_anchor",
+                "vlm_ocr_title_conflict_with_final_title",
+                "ocr_title_conflict_with_stable_alias",
+            ],
+            "novel_identity": {
+                "official_title": "[림월드]변방계 행성 하렘 생존기",
+                "heretic_url": "https://novelpia.com/novel/196996",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "[림월드]변방계 행성 하렘 생존기",
+                "heretic_url": "https://novelpia.com/novel/196996",
+                "confidence": "High",
+                "source_tier": "official_detail",
+            },
+            "title_candidates": [
+                {
+                    "official_title": "눈물을 마시는 새",
+                    "source_tier": "image_ocr",
+                    "promotion_policy": "hold_without_promotion",
+                },
+                {
+                    "official_title": "[림월드]변방계 행성 하렘 생존기",
+                    "heretic_url": "https://novelpia.com/novel/196996",
+                    "source_tier": "official_detail",
+                },
+            ],
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "눈마새나 추천할까")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, ["direct_image_reference_recommendation_public_title_conflict"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertIsNone(identity["novel_identity"]["heretic_url"])
+        self.assertEqual(identity["blocked_official_title"], "[림월드]변방계 행성 하렘 생존기")
+        self.assertEqual(identity["blocked_official_title_url"], "https://novelpia.com/novel/196996")
+        self.assertEqual(identity["work_resolution"], "unresolved")
+        self.assertEqual(identity["title_resolution_state"], "unresolved_matchable")
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+        self.assertIn("눈물을 마시는 새", fields["candidate_ledger"]["title_candidates"])
+        self.assertIn("[림월드]변방계 행성 하렘 생존기", fields["candidate_ledger"]["title_candidates"])
+        self.assertIn(
+            "direct_image_reference_recommendation_public_title_conflict",
+            fields["candidate_audit_lint"],
+        )
+
+    def test_recommendation_context_only_conflict_holds_late_recall_title(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "primary_subject_type": "recommendation_request",
+            "anchor_type": "title_alias",
+            "anchor_strength": "high",
+            "consistency_flags": [
+                "recommendation_context_only_no_work_anchor",
+                "notes_demoted_for_unresolved",
+                "official_url_recall_gate_recovered",
+                "title_body_search_result:게임 마땅히",
+                "title_body_official_detail_anchor",
+                "vlm_ocr_title_conflict_with_final_title",
+                "ocr_title_conflict_with_stable_alias",
+            ],
+            "novel_identity": {
+                "official_title": "게임이 자꾸 사람을 구원함",
+                "heretic_url": "https://novelpia.com/novel/429951",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "게임이 자꾸 사람을 구원함",
+                "heretic_url": "https://novelpia.com/novel/429951",
+                "confidence": "High",
+                "alias_or_mention": "게임 마땅히",
+                "source_tier": "official_detail",
+            },
+            "title_candidates": [
+                {"official_title": "RIMWORLD", "source_tier": "image_ocr"},
+                {"official_title": "눈물을 마시는 새", "source_tier": "image_ocr"},
+            ],
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "림월드 << 마땅히 장갤러라면 한번쯤은 해야만함")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, ["recommendation_context_only_public_title_conflict"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertIsNone(identity["novel_identity"]["heretic_url"])
+        self.assertEqual(identity["blocked_official_title"], "게임이 자꾸 사람을 구원함")
+        self.assertEqual(identity["blocked_official_title_url"], "https://novelpia.com/novel/429951")
+        self.assertEqual(identity["work_resolution"], "unresolved")
+        self.assertEqual(identity["title_resolution_state"], "unresolved_matchable")
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+        self.assertIn("RIMWORLD", fields["candidate_ledger"]["title_candidates"])
+        self.assertIn("눈물을 마시는 새", fields["candidate_ledger"]["title_candidates"])
+        self.assertIn("게임이 자꾸 사람을 구원함", fields["candidate_ledger"]["title_candidates"])
+
+    def test_cross_media_title_body_official_detail_recall_is_held(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "primary_subject_type": "cross_media",
+            "anchor_type": "title_alias",
+            "anchor_strength": "high",
+            "context_sources": ["title", "body", "comments", "search", "image"],
+            "consistency_flags": [
+                "notes_demoted_for_unresolved",
+                "official_url_recall_gate_recovered",
+                "title_body_search_result:림월드 랫따싶",
+                "title_body_official_detail_anchor",
+                "same_url_official_detail_canonicalized",
+                "platform_seo_title_suffix_canonicalized",
+                "precision_seed_independent_official_detail_supported",
+            ],
+            "novel_identity": {
+                "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+                "heretic_url": "https://novelpia.com/novel/382324",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+                "heretic_url": "https://novelpia.com/novel/382324",
+                "confidence": "High",
+                "alias_or_mention": "림월드 랫따싶",
+                "source_tier": "official_detail",
+                "reference_role": "primary",
+            },
+            "search_evidence_catalog": [
+                {
+                    "title": "웹소설로 꿈꾸는 세상! - [림월드]변방계에서 회귀자로 살아남기",
+                    "url": "https://novelpia.com/novel/382324",
+                    "source_tier": "official_detail",
+                    "snippet": "#패러디 #림월드 #랫따싶",
+                }
+            ],
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "랫따싶 림월드 요소 생각나게 하는거 좋네에")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, ["cross_media_title_body_official_detail_public_title_bridge"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(identity["blocked_official_title"], "[림월드]변방계에서 회귀자로 살아남기")
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+        self.assertIn("[림월드]변방계에서 회귀자로 살아남기", fields["candidate_ledger"]["title_candidates"])
+
+    def test_llm_only_exact_title_without_official_support_is_held(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "review_reaction",
+            "primary_subject_type": "work_discussion",
+            "anchor_type": "title_exact",
+            "anchor_strength": "high",
+            "context_sources": ["title", "body"],
+            "consistency_flags": [],
+            "novel_identity": {
+                "official_title": "21세기 무림",
+                "heretic_url": None,
+                "confidence": "Low",
+            },
+            "primary_work": {
+                "official_title": "21세기 무림",
+                "heretic_url": None,
+                "confidence": "High",
+                "alias_or_mention": "21세기 무림",
+                "source_tier": "llm_only",
+                "reference_role": "primary",
+            },
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "21세기 무림 이거 재미네 ㅋㅋㅋ")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, ["weak_source_exact_title_without_official_support_public_title_bridge"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(identity["blocked_official_title"], "21세기 무림")
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+        self.assertIn("21세기 무림", fields["candidate_ledger"]["title_candidates"])
+
+    def test_image_scene_cues_hold_unverified_homonym_public_title(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "anchor_type": "title_alias",
+            "anchor_strength": "medium",
+            "novel_identity": {
+                "official_title": "도네하지 마라",
+                "heretic_url": "https://novelpia.com/novel/74240",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "도네하지 마라",
+                "heretic_url": "https://novelpia.com/novel/74240",
+                "confidence": "High",
+                "source_tier": "official_detail",
+            },
+            "title_candidates": [
+                {
+                    "official_title": "알파카랑 눈싸움 하지마라",
+                    "source_tier": "post_surface",
+                    "promotion_policy": "hold_without_promotion",
+                }
+            ],
+            "image_evidence_catalog": [
+                {
+                    "ocr_text": (
+                        "그 사이에 낀 알파카가 나를 꼬라봤다. "
+                        "시트러스가 한숨을 내쉬었다. "
+                        "강시우 씨, 누누이 말하지만 알파카랑 눈싸움하지 마시라니까요."
+                    ),
+                    "visual_summary": "웹소설 본문 텍스트 스크린샷",
+                    "title_role": "unknown",
+                    "promotion_eligible": False,
+                    "work_cues": ["강시우", "시트러스", "알파카 관련 대사"],
+                }
+            ],
+            "search_evidence_catalog": [
+                {
+                    "title": "도네하지 마라",
+                    "url": "https://novelpia.com/novel/74240",
+                    "snippet": "너 그러다 아이돌 격투가 된다. 첫 화 무료보기.",
+                    "query": "하지마라 노벨피아",
+                    "source_tier": "novel_platform",
+                }
+            ],
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "알파카랑 눈싸움 하지마라")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, ["image_scene_cues_unverified_public_title_bridge"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertIsNone(identity["novel_identity"]["heretic_url"])
+        self.assertEqual(identity["blocked_official_title"], "도네하지 마라")
+        self.assertEqual(identity["blocked_official_title_url"], "https://novelpia.com/novel/74240")
+        self.assertEqual(identity["work_resolution"], "unresolved")
+        self.assertEqual(identity["title_resolution_state"], "unresolved_matchable")
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+        self.assertIn("알파카랑 눈싸움 하지마라", fields["candidate_ledger"]["title_candidates"])
+        self.assertIn("도네하지 마라", fields["candidate_ledger"]["title_candidates"])
+
+    def test_image_scene_cues_hold_author_anchor_without_cue_overlap(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "anchor_type": "author",
+            "anchor_strength": "medium",
+            "novel_identity": {
+                "official_title": "도네하지 마라",
+                "heretic_url": "https://novelpia.com/novel/74240",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "도네하지 마라",
+                "heretic_url": "https://novelpia.com/novel/74240",
+                "confidence": "High",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+            },
+            "image_evidence_catalog": [
+                {
+                    "ocr_text": (
+                        "그 사이에 끼인 알파카가 나를 꼬라봤다. "
+                        "시트러스가 한숨을 내쉬었다. "
+                        "강시우 씨, 누누이 말하지만 알파카랑 눈싸움하지 마시라니까요."
+                    ),
+                    "visual_summary": "웹소설 본문 텍스트 스크린샷",
+                    "evidence_type": "scene_inference_only",
+                    "title_role": "unknown",
+                    "promotion_eligible": False,
+                }
+            ],
+            "search_evidence_catalog": [
+                {
+                    "title": "도네하지 마라",
+                    "url": "https://novelpia.com/novel/74240",
+                    "snippet": "너 그러다 아이돌 격투가 된다. 첫 화 무료보기.",
+                    "query": "하지마라 노벨피아",
+                    "source_tier": "novel_platform",
+                }
+            ],
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "알파카랑 눈싸움 하지마라")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, ["image_scene_cues_unverified_public_title_bridge"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(identity["blocked_official_title"], "도네하지 마라")
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+
+    def test_none_surface_official_title_is_demoted(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "novel_identity": {
+                "official_title": "없음",
+                "heretic_url": "https://novelpia.com/novel/25974",
+                "confidence": "High",
+            },
+        }
+
+        blocked = apply_official_title_promotion_guard(identity)
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, ["official_title_looks_like_generic_non_title_surface"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(identity["blocked_official_title"], "없음")
+        self.assertIn("official_title_looks_like_generic_non_title_surface", fields["official_title_lint"])
+        self.assertFalse(fields["safe_resolved"])
+
+    def test_webnovel_generic_evidence_label_official_title_is_demoted(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "novel_identity": {
+                "official_title": "웹소설",
+                "heretic_url": "https://novelpia.com/novel/12345",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "웹소설",
+                "heretic_url": "https://novelpia.com/novel/12345",
+                "confidence": "High",
+                "source_tier": "official_detail",
+            },
+        }
+
+        blocked = apply_official_title_promotion_guard(identity)
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, ["official_title_looks_like_generic_evidence_label"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(identity["blocked_official_title"], "웹소설")
+        self.assertIn("official_title_looks_like_generic_evidence_label", fields["official_title_lint"])
+        self.assertFalse(fields["safe_resolved"])
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+
+    def test_author_angle_search_surface_uses_matching_official_detail_candidate(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "novel_identity": {
+                "official_title": "피아조아 <시간을 달리는 소설가>",
+                "heretic_url": None,
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "피아조아 <시간을 달리는 소설가>",
+                "confidence": "High",
+                "source_tier": "official_search",
+            },
+            "title_candidates": [
+                {
+                    "official_title": "피아조아 <시간을 달리는 소설가>",
+                    "confidence": "High",
+                    "source_tier": "official_search",
+                },
+                {
+                    "official_title": "시간을 달리는 소설가",
+                    "heretic_url": "https://novel.munpia.com/357213",
+                    "confidence": "High",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                },
+            ],
+            "reason": "공식 검색 결과 피아조아 <시간을 달리는 소설가>가 확인됨.",
+            "reason_lines": ["피아조아 <시간을 달리는 소설가>를 공식 제목으로 선택"],
+        }
+
+        canonicalized = apply_author_angle_official_detail_canonicalization(identity)
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(canonicalized, ["author_angle_official_detail_canonicalized"])
+        self.assertEqual(identity["novel_identity"]["official_title"], "시간을 달리는 소설가")
+        self.assertEqual(identity["novel_identity"]["heretic_url"], "https://novel.munpia.com/357213")
+        self.assertEqual(identity["primary_work"]["official_title"], "시간을 달리는 소설가")
+        self.assertEqual(identity["primary_work"]["heretic_url"], "https://novel.munpia.com/357213")
+        self.assertNotIn("피아조아 <시간을 달리는 소설가>", identity["reason"])
+        self.assertNotIn("피아조아 <시간을 달리는 소설가>", "\n".join(identity["reason_lines"]))
+        self.assertTrue(fields["safe_resolved"])
+
+    def test_short_lead_public_title_bridge_is_held_without_confirmed_alias(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "anchor_type": "title_exact",
+            "anchor_strength": "high",
+            "novel_identity": {
+                "official_title": "하남자의 탑 공략법",
+                "heretic_url": "https://series.naver.com/novel/detail.series?productNo=11508059",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "하남자의 탑 공략법",
+                "heretic_url": "https://series.naver.com/novel/detail.series?productNo=11508059",
+                "confidence": "High",
+                "source_tier": "official_detail",
+            },
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "하남자 재밌냐")
+
+        self.assertEqual(blocked, ["short_lead_surface_public_title_bridge"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(identity["blocked_official_title"], "하남자의 탑 공략법")
+
+    def test_short_lead_public_title_bridge_is_held_with_confirmed_stem_alias(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "anchor_type": "title_exact",
+            "anchor_strength": "high",
+            "consistency_flags": [
+                "confirmed_alias:하남자",
+                "verified_alias_official_detail_anchor",
+                "explicit_alias_official_work_lock",
+            ],
+            "novel_identity": {
+                "official_title": "하남자의 탑 공략법",
+                "heretic_url": "https://series.naver.com/novel/detail.series?productNo=11227324",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "하남자의 탑 공략법",
+                "heretic_url": "https://series.naver.com/novel/detail.series?productNo=11227324",
+                "confidence": "High",
+                "source_tier": "official_detail",
+            },
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "하남자 재밌냐")
+
+        self.assertEqual(blocked, ["short_lead_surface_public_title_bridge"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(identity["blocked_official_title"], "하남자의 탑 공략법")
+
+    def test_weak_alias_surface_is_held_with_confirmed_stem_alias(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "anchor_type": "title_alias",
+            "anchor_strength": "high",
+            "consistency_flags": [
+                "confirmed_alias:하남자",
+                "verified_alias_official_detail_anchor",
+                "explicit_alias_official_work_lock",
+            ],
+            "novel_identity": {
+                "official_title": "하남자의 탑 공략법",
+                "heretic_url": "https://series.naver.com/novel/detail.series?productNo=11227324",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "하남자의 탑 공략법",
+                "heretic_url": "https://series.naver.com/novel/detail.series?productNo=11227324",
+                "confidence": "High",
+                "alias_or_mention": "하남자",
+                "source_tier": "official_detail",
+            },
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "하남자 재밌냐")
+
+        self.assertEqual(blocked, ["weak_alias_surface_public_title_bridge"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(identity["blocked_official_title"], "하남자의 탑 공략법")
+
+    def test_direct_exact_short_official_title_is_not_weak_alias_held(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "anchor_type": "title_exact",
+            "anchor_strength": "high",
+            "novel_identity": {
+                "official_title": "테라포밍",
+                "heretic_url": "https://novelpia.com/novel/61947",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "테라포밍",
+                "heretic_url": "https://novelpia.com/novel/61947",
+                "confidence": "High",
+                "alias_or_mention": "테라포밍",
+                "source_tier": "official_detail",
+            },
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "테라포밍 볼만함?")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "테라포밍")
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+
+    def test_current_work_gate_exact_short_title_is_not_weak_alias_held(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "primary_subject_type": "work_discussion",
+            "anchor_type": "platform",
+            "anchor_strength": "medium",
+            "context_sources": ["title", "body", "comments", "search"],
+            "consistency_flags": [
+                "decoder_exact_post_title_surface_resolved",
+                "official_detail_url_repaired_from_search",
+            ],
+            "novel_identity": {
+                "official_title": "와인의 신",
+                "heretic_url": "https://series.naver.com/novel/detail.series?productNo=13342533",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "와인의 신",
+                "heretic_url": "https://series.naver.com/novel/detail.series?productNo=13342533",
+                "confidence": "High",
+                "alias_or_mention": "와인의 신",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+            },
+            "promotion_decision": {
+                "status": "publish",
+                "publish_allowed": True,
+                "official_title": "와인의 신",
+                "official_url": "https://series.naver.com/novel/detail.series?productNo=13342533",
+                "candidate_preserved": False,
+                "reason_codes": [
+                    "official_title_exists",
+                    "row_discusses_work_as_work",
+                    "scope_current_work",
+                    "official_detail_url",
+                ],
+                "bypassed_gate": False,
+                "scope": {
+                    "scope_kind": "current_work",
+                    "confidence": "high",
+                    "direct_bridge_sources": ["row_discusses_work_as_work"],
+                },
+            },
+            "promotion_gate_state": {
+                "post_id": 11661876,
+                "candidate_title": "와인의 신",
+                "candidate_url": "https://series.naver.com/novel/detail.series?productNo=13342533",
+                "source": "decoder_exact_post_title_surface_resolved",
+                "official_title_exists": True,
+                "row_discusses_work_as_work": True,
+                "scope": {
+                    "scope_kind": "current_work",
+                    "confidence": "high",
+                    "direct_bridge_sources": ["row_discusses_work_as_work"],
+                },
+            },
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "와인의신 재밌다")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "와인의 신")
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+
+    def test_same_url_official_page_title_replaces_character_alias_surface(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "primary_subject_type": "work_discussion",
+            "anchor_type": "title_alias",
+            "anchor_strength": "high",
+            "context_sources": ["title", "body", "comments", "search"],
+            "consistency_flags": [
+                "decoder_exact_post_title_surface_resolved",
+                "official_detail_url_repaired_from_search",
+            ],
+            "novel_identity": {
+                "official_title": "설지후",
+                "heretic_url": "https://page.kakao.com/content/50219568",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "설지후",
+                "heretic_url": "https://page.kakao.com/content/50219568",
+                "confidence": "High",
+                "alias_or_mention": "설지후",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+            },
+            "candidate_preservation_sources": [
+                {
+                    "official_title": "설지후",
+                    "heretic_url": "https://page.kakao.com/content/50219568",
+                    "confidence": "High",
+                    "alias_or_mention": "설지후",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                }
+            ],
+            "search_evidence_catalog": [
+                {
+                    "title": "탐식의 재림 - 웹소설 - 카카오페이지",
+                    "url": "https://page.kakao.com/content/50219568",
+                    "source_tier": "novel_platform",
+                    "purpose": "precomputed_source_evidence",
+                }
+            ],
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "장갤 설지후 변화도 레전드임")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "탐식의 재림")
+        self.assertEqual(identity["primary_work"]["official_title"], "탐식의 재림")
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+
+    def test_secondary_reference_precision_downgrade_rescue_is_held(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "anchor_type": "title_alias",
+            "anchor_strength": "high",
+            "primary_subject_type": "work_discussion",
+            "consistency_flags": [
+                "title_precision_downgrade",
+                "primary_work_cleared_non_resolved",
+                "secondary_reference_official_alias_rescued",
+                "secondary_reference_official_alias_author_meta_override",
+                "official_url_recall_gate_recovered",
+                "confirmed_alias:황제분충",
+            ],
+            "novel_identity": {
+                "official_title": "황제의 딸로 환생했다",
+                "heretic_url": "https://novelpia.com/novel/250464",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "황제의 딸로 환생했다",
+                "heretic_url": "https://novelpia.com/novel/250464",
+                "confidence": "High",
+                "alias_or_mention": "황제분충",
+                "source_tier": "official_detail",
+                "reference_role": "primary",
+            },
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "황제분충 ㄱㅊ함?")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, ["secondary_reference_precision_downgrade_public_title_bridge"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(identity["blocked_official_title"], "황제의 딸로 환생했다")
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertEqual(fields["candidate_ledger_status"], "promotion_blocked")
+
+    def test_promoted_image_work_title_conflict_holds_search_alias_title(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "anchor_type": "title_alias",
+            "anchor_strength": "high",
+            "consistency_flags": ["confirmed_alias:외신소환", "vlm_ocr_title_conflict_with_final_title"],
+            "novel_identity": {
+                "official_title": "무한을 이해한 나는 외신의 사제가 되었습니다",
+                "heretic_url": "https://novelpia.com/novel/270445",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "무한을 이해한 나는 외신의 사제가 되었습니다",
+                "heretic_url": "https://novelpia.com/novel/270445",
+                "confidence": "High",
+                "alias_or_mention": "외신소환",
+                "source_tier": "official_detail",
+            },
+            "image_evidence_catalog": [
+                {
+                    "explicit_work_title": "교황님 아하세요 마왕 들어 가요",
+                    "title_role": "work_title",
+                    "promotion_eligible": True,
+                }
+            ],
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "념글 시발 외신소환 주문 뭐임")
+
+        self.assertEqual(blocked, ["promoted_image_work_title_conflicts_with_public_title"])
+        self.assertEqual(identity["title_resolution_state"], "ocr_explicit_title_unresolved")
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+
+    def test_verified_alias_detail_lock_exempts_noisy_image_surface_conflict(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "primary_subject_type": "work_discussion",
+            "anchor_type": "image",
+            "anchor_strength": "high",
+            "consistency_flags": [
+                "direct_image_explicit_title_rescued",
+                "verified_alias_official_detail_anchor",
+                "confirmed_alias:Lp코",
+                "explicit_alias_official_work_lock",
+                "weak_public_title_bridge_verified_alias_detail_exempt",
+            ],
+            "novel_identity": {
+                "official_title": "이거 럽코 빙의물인가요",
+                "heretic_url": "https://novel.munpia.com/533816",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "이거 럽코 빙의물인가요",
+                "heretic_url": "https://novel.munpia.com/533816",
+                "confidence": "High",
+                "alias_or_mention": "이거 Lp코 丙의물인가요",
+                "source_tier": "official_detail",
+                "page_type": "novel_page",
+                "reference_role": "primary",
+            },
+            "image_evidence_catalog": [
+                {
+                    "explicit_work_title": "이거 Lp코 丙의물인가요",
+                    "title_role": "work_title",
+                    "promotion_eligible": True,
+                }
+            ],
+            "search_evidence_catalog": [
+                {
+                    "title": "이거 럽코 빙의물인가요 - 문피아 웹소설",
+                    "url": "https://novel.munpia.com/533816",
+                    "source_tier": "novel_platform",
+                }
+            ],
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "문피아가 밀어주나보네")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, [])
+        self.assertEqual(identity["novel_identity"]["official_title"], "이거 럽코 빙의물인가요")
+        self.assertEqual(fields["candidate_ledger_status"], "safe_resolved")
+        self.assertNotIn(
+            "promoted_image_work_title_conflicts_with_public_title",
+            fields["identity_consistency_lint"],
+        )
+
+    def test_unverified_promoted_image_title_is_held_without_official_support(self):
+        identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "anchor_type": "image",
+            "anchor_strength": "high",
+            "consistency_flags": ["direct_image_explicit_title_rescued"],
+            "novel_identity": {
+                "official_title": "전 버듀바가 하고 싶은데요",
+                "heretic_url": None,
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "전 버듀바가 하고 싶은데요",
+                "confidence": "High",
+                "source_tier": "llm_only",
+            },
+            "image_evidence_catalog": [
+                {
+                    "explicit_work_title": "전 버듀바가 하고 싶은데요",
+                    "title_role": "work_title",
+                    "promotion_eligible": True,
+                }
+            ],
+        }
+
+        blocked = apply_weak_public_title_bridge_guard(identity, "TS) 주서연 전차랑 줄다리기 하면 이길까?")
+        fields = apply_candidate_audit_fields(identity, None)
+
+        self.assertEqual(blocked, ["unverified_promoted_image_work_title_without_official_support"])
+        self.assertEqual(identity["title_resolution_state"], "ocr_explicit_title_unresolved")
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertIn("전 버듀바가 하고 싶은데요", fields["candidate_ledger"]["title_candidates"])
+        self.assertFalse(fields["safe_resolved"])
+
+    def test_confirmed_alias_and_compatible_image_title_are_preserved(self):
+        alias_identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "anchor_type": "title_alias",
+            "anchor_strength": "medium",
+            "consistency_flags": ["confirmed_alias:잘생인방", "verified_alias_official_detail_anchor"],
+            "novel_identity": {
+                "official_title": "잘생기면 인생이 편하다",
+                "heretic_url": "https://novelpia.com/novel/300042",
+                "confidence": "Medium",
+            },
+            "primary_work": {
+                "official_title": "잘생기면 인생이 편하다",
+                "heretic_url": "https://novelpia.com/novel/300042",
+                "confidence": "Medium",
+                "alias_or_mention": "잘생인방",
+                "source_tier": "official_detail",
+            },
+        }
+        image_identity = {
+            "is_relevant": True,
+            "is_novel_related": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "general",
+            "anchor_type": "title_alias",
+            "anchor_strength": "high",
+            "novel_identity": {
+                "official_title": "주서연(전 버튜버가 하고 싶은데요)",
+                "heretic_url": "https://novelpia.com/novel/275975",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": "주서연(전 버튜버가 하고 싶은데요)",
+                "heretic_url": "https://novelpia.com/novel/275975",
+                "confidence": "High",
+                "alias_or_mention": "전 버튜버가 하고 싶은데요",
+                "source_tier": "official_detail",
+            },
+            "image_evidence_catalog": [
+                {
+                    "explicit_work_title": "전 버튜버가 하고 싶은데요",
+                    "title_role": "work_title",
+                    "promotion_eligible": True,
+                }
+            ],
+        }
+
+        self.assertEqual(apply_weak_public_title_bridge_guard(alias_identity, "현대 하렘물은 진짜 잘쓰는 작가가 손에꼽네"), [])
+        self.assertEqual(apply_weak_public_title_bridge_guard(image_identity, "TS) 주서연 전차랑 줄다리기 하면 이길까?"), [])
+        self.assertEqual(alias_identity["novel_identity"]["official_title"], "잘생기면 인생이 편하다")
+        self.assertEqual(image_identity["novel_identity"]["official_title"], "주서연(전 버튜버가 하고 싶은데요)")
 
 
 class SourceEnrichedCanaryTest(unittest.TestCase):

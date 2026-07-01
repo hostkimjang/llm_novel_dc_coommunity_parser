@@ -2056,6 +2056,7 @@ class VerifierExpert:
                     decoder_result,
                     verification,
                     novel_id,
+                    ctx=ctx,
                 ):
                     relation = self._call_relation_judge(
                         post,
@@ -3519,9 +3520,20 @@ OUTPUT JSON:
         comments: List[str],
         decoder_result: Dict[str, Any],
         verification: Dict[str, Any],
+        ctx: Optional[Any] = None,
     ) -> List[str]:
         aliases: List[str] = []
         seen: set[str] = set()
+        post_title = str((post or {}).get("title") or "")
+        full_text = " ".join(
+            [post_title]
+            + [
+                str(block.get("text") or "")
+                for block in ((post or {}).get("content_blocks") or [])
+                if isinstance(block, dict)
+            ]
+            + [c for c in (comments or []) if isinstance(c, str)]
+        )
 
         def _push(raw: Any) -> None:
             alias = str(raw or "").strip()
@@ -3532,6 +3544,25 @@ OUTPUT JSON:
                 return
             seen.add(norm)
             aliases.append(alias)
+
+        def _push_surface_alias(raw: Any) -> None:
+            alias = str(raw or "").strip()
+            if not alias or not self._is_bootstrap_surface_alias(alias):
+                return
+            if not self._surface_in_text(full_text, alias):
+                return
+            _push(alias)
+
+        def _push_mapping_alias(mapping: Any) -> None:
+            if not isinstance(mapping, dict):
+                return
+            abbrev = mapping.get("abbrev") or mapping.get("alias") or mapping.get("term")
+            full = mapping.get("full") or mapping.get("title") or mapping.get("official_title")
+            if not abbrev or not full:
+                return
+            if self._norm_text(full) != self._norm_text(title):
+                return
+            _push_surface_alias(abbrev)
 
         grounding = (verification or {}).get("grounding_check") or {}
         _push(grounding.get("matched_alias"))
@@ -3549,16 +3580,26 @@ OUTPUT JSON:
                 continue
             _push(term.get("original"))
 
-        post_title = str((post or {}).get("title") or "")
-        full_text = " ".join(
-            [post_title]
-            + [
-                str(block.get("text") or "")
-                for block in ((post or {}).get("content_blocks") or [])
-                if isinstance(block, dict)
-            ]
-            + [c for c in (comments or []) if isinstance(c, str)]
-        )
+        slang_insight = (verification or {}).get("slang_insight") or {}
+        if isinstance(slang_insight, dict):
+            decoded = slang_insight.get("decoded_term") or slang_insight.get("official_title")
+            if self._norm_text(decoded) == self._norm_text(title):
+                _push_surface_alias(
+                    slang_insight.get("canonical_work_alias")
+                    or slang_insight.get("detected_term")
+                )
+
+        snippet_hints = getattr(ctx, "snippet_hints", None) if ctx is not None else None
+        if isinstance(snippet_hints, dict):
+            for key in ("abbreviation_hints", "abbreviation_mappings"):
+                for mapping in snippet_hints.get(key) or []:
+                    _push_mapping_alias(mapping)
+
+        ctx_abbrevs = getattr(ctx, "abbreviation_mappings", None) if ctx is not None else None
+        if isinstance(ctx_abbrevs, dict):
+            for abbrev, full in ctx_abbrevs.items():
+                _push_mapping_alias({"abbrev": abbrev, "full": full})
+
         for alias in list(aliases):
             if not self._surface_in_text(full_text, alias):
                 continue
@@ -4016,6 +4057,15 @@ OUTPUT JSON:
         if not alias_regex:
             return False
 
+        candidate_near_front = bool(re.search(re.escape(candidate), raw[:240], flags=re.IGNORECASE))
+        if candidate_near_front:
+            alias_phrase_patterns = [
+                rf"(?:약칭|줄임말|줄여서|통칭|별칭|약어)\s*(?:은|는|이|가|을|를|로|으로|:|=|-)?\s*(?:{alias_regex})",
+                rf"(?:{alias_regex})\s*(?:은|는|이|가)?\s*(?:약칭|줄임말|통칭|별칭|약어)",
+            ]
+            if any(re.search(pattern, raw, flags=re.IGNORECASE | re.DOTALL) for pattern in alias_phrase_patterns):
+                return True
+
         patterns = [
             rf"(?:{alias_regex}).{{0,20}}(?:{re.escape(candidate)}).{{0,20}}(?:{'|'.join(bridge_patterns)})",
             rf"(?:{alias_regex}).{{0,20}}(?:{'|'.join(bridge_patterns)}).{{0,30}}(?:{re.escape(candidate)})",
@@ -4055,6 +4105,7 @@ OUTPUT JSON:
         decoder_result: Dict[str, Any],
         verification: Dict[str, Any],
         novel_id: Dict[str, Any],
+        ctx: Optional[Any] = None,
     ) -> bool:
         title = str(
             (novel_id or {}).get("official_novel_title")
@@ -4085,6 +4136,7 @@ OUTPUT JSON:
             comments,
             decoder_result,
             verification,
+            ctx=ctx,
         )
         weak_anchor = anchor in {
             "none",
@@ -4133,6 +4185,7 @@ OUTPUT JSON:
             comments,
             decoder_result,
             verification,
+            ctx=ctx,
         )
         all_search = (ctx.search_results or []) + (verification_search or []) if ctx else (verification_search or [])
         evidence = self._select_relation_judge_search_results(
@@ -4477,7 +4530,22 @@ OUTPUT JSON:
                 or bool(best_official_url)
             )
         )
-        if official_platform_with_character_anchor:
+        official_platform_with_alias_bridge = bool(
+            current_title
+            and promotion == "hold"
+            and target == "specific_work"
+            and relation_type in {"explicit_alias", "work_specific_nickname"}
+            and explicit_bridge_count >= 1
+            and alias_in_post_count >= 1
+            and official_exact_title_count >= 1
+            and (
+                official_detail_count >= 1
+                or bool(best_official_url)
+                or converged_official_signal
+            )
+            and not generic_relation_only
+        )
+        if official_platform_with_character_anchor or official_platform_with_alias_bridge:
             novel_id["official_novel_title"] = current_title
             if "official_title" in novel_id:
                 novel_id["official_title"] = current_title
@@ -4633,6 +4701,7 @@ OUTPUT JSON:
                 comments or [],
                 decoder_result or {},
                 verification or {},
+                ctx=ctx,
             )
             for alias in surface_aliases:
                 if alias and alias not in alias_terms:

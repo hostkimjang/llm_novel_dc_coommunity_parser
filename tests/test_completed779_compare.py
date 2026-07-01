@@ -1362,6 +1362,131 @@ class Completed779CompareTest(unittest.TestCase):
                 "https://series.naver.com/novel/detail.series?productNo=14041321",
             )
 
+    def test_author_supported_alternate_official_url_is_terminal_when_expected_url_is_preserved(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            seed = root / "seed.jsonl"
+            after = root / "after.json"
+            expected_url = "https://series.naver.com/novel/detail.series?productNo=11651797"
+            alternate_url = "https://m.munpia.com/novel/detail/405699"
+            write_jsonl(
+                seed,
+                [
+                    {
+                        "post_id": 11703669,
+                        "seed_bucket": "recall_relevance_representative",
+                        "disagreement_type": "under_resolved",
+                        "independent_official_title": "세상에 나쁜 영애는 없다",
+                        "independent_url": expected_url,
+                    }
+                ],
+            )
+            after.write_text(
+                json.dumps(
+                    [
+                        {
+                            "post_id": 11703669,
+                            "analysis_result": {
+                                "identity": {
+                                    "novel_identity": {
+                                        "official_title": "세상에 나쁜 영애는 없다",
+                                        "heretic_url": alternate_url,
+                                    },
+                                    "title_resolution_state": "resolved",
+                                    "consistency_flags": [
+                                        "author_context_official_url_preferred"
+                                    ],
+                                    "title_candidates": [
+                                        {
+                                            "official_title": "세상에 나쁜 영애는 없다",
+                                            "heretic_url": expected_url,
+                                            "source_tier": "judge_seed_expected",
+                                        }
+                                    ],
+                                }
+                            },
+                        }
+                    ],
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            report = compare(seed, after, only_after_posts=True)
+            queue = build_reimprovement_queue(report, canary_kind="loop17_author_url")
+
+            self.assertEqual(
+                report["rows"][0]["movement_status"],
+                "resolved_expected_title_author_supported_alt_url",
+            )
+            self.assertEqual(queue["rows"], [])
+
+    def test_repaired_same_title_official_alt_url_is_terminal_when_expected_url_is_preserved(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            seed = root / "seed.jsonl"
+            after = root / "after.json"
+            expected_url = "https://series.naver.com/novel/detail.series?productNo=11651797"
+            alternate_url = "https://novel.munpia.com/405699"
+            write_jsonl(
+                seed,
+                [
+                    {
+                        "post_id": 11703669,
+                        "seed_bucket": "recall_relevance_representative",
+                        "disagreement_type": "under_resolved",
+                        "independent_official_title": "세상에 나쁜 영애는 없다",
+                        "independent_url": expected_url,
+                    }
+                ],
+            )
+            after.write_text(
+                json.dumps(
+                    [
+                        {
+                            "post_id": 11703669,
+                            "analysis_result": {
+                                "identity": {
+                                    "novel_identity": {
+                                        "official_title": "세상에 나쁜 영애는 없다",
+                                        "heretic_url": alternate_url,
+                                    },
+                                    "primary_work": {
+                                        "official_title": "세상에 나쁜 영애는 없다",
+                                        "heretic_url": alternate_url,
+                                        "source_tier": "official_detail",
+                                        "page_type": "novel_page",
+                                    },
+                                    "title_resolution_state": "resolved",
+                                    "consistency_flags": [
+                                        "official_detail_url_repaired_from_search"
+                                    ],
+                                    "title_candidates": [
+                                        {
+                                            "official_title": "세상에 나쁜 영애는 없다",
+                                            "heretic_url": expected_url,
+                                            "source_tier": "official_detail",
+                                            "page_type": "novel_page",
+                                        }
+                                    ],
+                                }
+                            },
+                        }
+                    ],
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            report = compare(seed, after, only_after_posts=True)
+            queue = build_reimprovement_queue(report, canary_kind="loop17_repaired_alt_url")
+
+            self.assertEqual(
+                report["rows"][0]["movement_status"],
+                "resolved_expected_title_author_supported_alt_url",
+            )
+            self.assertEqual(queue["rows"], [])
+
     def test_expected_null_row_with_unexpected_resolved_title_requeues(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

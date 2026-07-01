@@ -165,6 +165,9 @@ def analysis_identity(row: dict[str, Any] | None) -> dict[str, Any]:
     if not isinstance(candidate_count, int):
         candidate_count = len(candidate_titles)
     flat_lint_flags: list[str] = []
+    for flag in identity.get("consistency_flags") or []:
+        if flag:
+            flat_lint_flags.append(str(flag))
     for item in lint_flags:
         if not isinstance(item, dict):
             continue
@@ -399,6 +402,54 @@ def movement_status(seed: dict[str, Any], after_identity: dict[str, Any], after_
     expected_in_candidates = bool(expected and any(titles_match(expected, title) for title in candidate_titles))
     expected_url_in_candidates = bool(expected_url and expected_url in candidate_urls)
     expected_url_preserved = bool(expected_url and (after_url == expected_url or expected_url_in_candidates))
+    candidate_url_evidence = after_identity.get("candidate_url_evidence") or []
+
+    def official_same_title_alt_url_preserved() -> bool:
+        if not (after_url and expected):
+            return False
+        after_url_low = str(after_url).lower()
+        official_detail_shape = any(
+            marker in after_url_low
+            for marker in (
+                "novelpia.com/novel/",
+                "novel.munpia.com/",
+                "m.munpia.com/novel/detail",
+                "series.naver.com/novel/detail",
+                "page.kakao.com/content/",
+                "joara.com/book/",
+            )
+        )
+        if not official_detail_shape:
+            return False
+        for item in candidate_url_evidence:
+            if not isinstance(item, dict):
+                continue
+            if item.get("url") != after_url:
+                continue
+            if not titles_match(expected, item.get("title")):
+                continue
+            tier = str(item.get("source_tier") or "").lower()
+            page_type = str(item.get("page_type") or "").lower()
+            negatives = {str(value) for value in item.get("negative_evidence") or []}
+            if negatives & {"url_title_mismatch", "url_is_community_post", "url_is_listing", "listing_only"}:
+                continue
+            if tier in {"official_detail", "official_search", "mixed"} and page_type in {"", "novel_page", "official_detail"}:
+                return True
+        return False
+
+    author_supported_alt_url = bool(
+        after_url
+        and expected_url
+        and after_url != expected_url
+        and expected_url_in_candidates
+        and (
+            "author_context_official_url_preferred" in flat_lint_flags
+            or (
+                "official_detail_url_repaired_from_search" in flat_lint_flags
+                and official_same_title_alt_url_preserved()
+            )
+        )
+    )
     hold_without_candidates = candidate_ledger_status == "hold_without_candidates" and not candidate_count
     prune_fired = "llm_only_sentence_candidate_pruned" in flat_lint_flags
     blocked_primary_work = any("blocked_primary_work" in flag for flag in flat_lint_flags)
@@ -428,6 +479,8 @@ def movement_status(seed: dict[str, Any], after_identity: dict[str, Any], after_
             return "still_bad_pipeline_title"
         if expected and titles_match(expected, after_title):
             if expected_url and after_url != expected_url:
+                if author_supported_alt_url:
+                    return "resolved_expected_title_author_supported_alt_url"
                 return "title_match_url_still_mismatched"
             return "resolved_expected_title"
         if expected_in_candidates:
@@ -468,6 +521,8 @@ def movement_status(seed: dict[str, Any], after_identity: dict[str, Any], after_
             return "boundary_title_over_promoted"
         if expected and titles_match(expected, after_title):
             if expected_url and after_url != expected_url:
+                if author_supported_alt_url:
+                    return "resolved_expected_title_author_supported_alt_url"
                 return "title_match_url_still_mismatched"
             return "resolved_expected_title"
         if expected and after_title and not titles_match(expected, after_title):
@@ -609,7 +664,11 @@ REIMPROVEMENT_STATUSES = {
 
 def acceptance_status(row: dict[str, Any]) -> str:
     status = row.get("movement_status")
-    if status in {"resolved_expected_title", "resolved_expected_title_and_url"}:
+    if status in {
+        "resolved_expected_title",
+        "resolved_expected_title_and_url",
+        "resolved_expected_title_author_supported_alt_url",
+    }:
         return "resolved_correct"
     if status in {
         "blocked_or_candidate_preserved",

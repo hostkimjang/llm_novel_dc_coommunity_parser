@@ -25,6 +25,12 @@ class PostInput(BaseModel):
     page_no: Optional[int] = None
     comments: List[Any] = Field(default_factory=list)  # Staged pipeline용 comments
     judge_seed: Optional[Dict[str, Any]] = None
+    search_results: Optional[List[Dict[str, Any]]] = None
+    source_search_results: Optional[List[Dict[str, Any]]] = None
+    precomputed_search_results: Optional[List[Dict[str, Any]]] = None
+    search_evidence_catalog: Optional[List[Dict[str, Any]]] = None
+    native_web_seed: Optional[Dict[str, Any]] = None
+    source_evidence: Optional[Dict[str, Any]] = None
 
 
 class CommentInput(BaseModel):

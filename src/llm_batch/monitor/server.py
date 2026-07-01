@@ -16,7 +16,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from fastapi import FastAPI, Query
+from fastapi import Body, FastAPI, Query, Request
 from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -33,6 +33,20 @@ _LOG_DIR = _REPO_ROOT / "logs"
 _STATIC_DIR = Path(__file__).resolve().parent / "static"
 _SLANG_DB_PATH = _REPO_ROOT / "slang_db" / "slang_db.json"
 
+# 감지 핸드셰이크 마커 — expert_main이 같은 포트의 무관한 앱을 오인하지 않게 한다.
+_HEALTH_SERVICE_MARKER = "expert-pipeline-monitor"
+
+
+def _is_standalone_mode() -> bool:
+    """tools/dashboard_server.py 로 뜬 standalone 프로세스 여부."""
+    return os.environ.get("DASHBOARD_STANDALONE", "0").strip() == "1"
+
+
+# standalone 모드에서 웹 UI의 resume 요청을 expert_main forwarder에 전달하기 위한
+# piggyback 플래그 (ingest 응답에 실어 보낸다).
+_pending_resume_lock = threading.Lock()
+_pending_resume_requested = False
+
 # ─── REST API ──────────────────────────────────────────────
 
 
@@ -43,6 +57,85 @@ async def index():
     if html_file.exists():
         return HTMLResponse(html_file.read_text(encoding="utf-8"))
     return HTMLResponse("<h1>Dashboard index.html not found</h1>", status_code=404)
+
+
+@app.get("/api/health")
+async def api_health():
+    """감지/핸드셰이크용 식별 응답.
+
+    내장 대시보드도 같은 app이라 이 엔드포인트를 갖지만 standalone=False라서
+    expert_main의 양보 대상이 되지 않는다.
+    """
+    return JSONResponse({
+        "ok": True,
+        "service": _HEALTH_SERVICE_MARKER,
+        "standalone": _is_standalone_mode(),
+        "pid": os.getpid(),
+    })
+
+
+def _ingest_token_ok(request: Request) -> bool:
+    expected = os.environ.get("DASHBOARD_INGEST_TOKEN", "").strip()
+    if not expected:
+        return True
+    return request.headers.get("X-Ingest-Token", "") == expected
+
+
+@app.post("/api/ingest")
+def api_ingest(request: Request, payload: Dict[str, Any] = Body(...)):
+    """expert_main forwarder가 보내는 이벤트/로그/스냅샷 배치를 주입한다.
+
+    의도적으로 sync 핸들러(def) — FastAPI threadpool에서 실행되므로
+    monitor 주입 경로가 expert_main 워커 스레드의 emit과 동일한
+    (비-이벤트루프 스레드 → call_soon_threadsafe) 검증된 패턴을 탄다.
+    """
+    # 내장 모드 프로세스는 외부 ingest를 받지 않는다 — standalone이 죽은 사이
+    # 같은 포트를 다른 expert_main의 내장 대시보드가 차지했을 때 런 간
+    # 교차 주입(상태 오염)을 수신 측에서 차단한다.
+    if not _is_standalone_mode():
+        return JSONResponse(
+            {"ok": False, "error": "ingest is only accepted in standalone mode"},
+            status_code=403,
+        )
+    if not _ingest_token_ok(request):
+        return JSONResponse({"ok": False, "error": "invalid ingest token"}, status_code=403)
+
+    items = payload.get("items") or []
+    accepted = 0
+    for item in items:
+        try:
+            kind = item.get("kind")
+            if kind == "event":
+                monitor.ingest_event(
+                    str(item.get("type") or ""),
+                    item.get("data") or {},
+                    ts=item.get("ts"),
+                )
+                accepted += 1
+            elif kind == "log":
+                raw_worker_id = item.get("worker_id")
+                monitor.ingest_log(
+                    str(item.get("line") or ""),
+                    worker_id=-1 if raw_worker_id is None else int(raw_worker_id),
+                )
+                accepted += 1
+            elif kind == "status_snapshot":
+                monitor.load_status_snapshot(item.get("data") or {})
+                accepted += 1
+        except Exception:
+            continue
+
+    global _pending_resume_requested
+    with _pending_resume_lock:
+        resume_requested = _pending_resume_requested
+        _pending_resume_requested = False
+
+    return JSONResponse({
+        "ok": True,
+        "received": len(items),
+        "accepted": accepted,
+        "resume_requested": resume_requested,
+    })
 
 
 @app.get("/api/status")
@@ -56,6 +149,19 @@ async def api_llm_resume(
     source: str = Query("web_dashboard", pattern="^[a-z_]{1,32}$"),
 ):
     """대시보드에서 LLM suspend 상태를 재개합니다."""
+    # standalone 모드: suspend 컨트롤러는 expert_main 프로세스에 있으므로
+    # 직접 호출 대신 ingest 응답에 piggyback할 플래그만 세운다.
+    if _is_standalone_mode():
+        if not monitor.llm_suspended:
+            return JSONResponse(
+                {"ok": False, "error": "llm suspend 상태가 아닙니다.", "source": source},
+                status_code=409,
+            )
+        global _pending_resume_requested
+        with _pending_resume_lock:
+            _pending_resume_requested = True
+        return JSONResponse({"ok": True, "source": source, "forwarded": True})
+
     try:
         from llm_batch.llm.client import request_llm_server_resume
 
@@ -80,9 +186,13 @@ async def api_results(
     offset: int = Query(0, ge=0),
     limit: int = Query(200, ge=1, le=1000),
     order: str = Query("desc", pattern="^(asc|desc)$"),
+    q: str = Query("", max_length=200),
+    relevance: str = Query("all", pattern="^(all|relevant|noise)$"),
 ):
-    """현재 실행의 포스트별 결과 요약 (페이지 단위)"""
-    return JSONResponse(_build_live_results_payload(offset=offset, limit=limit, order=order))
+    """현재 실행의 포스트별 결과 요약 (페이지 단위 + 검색/필터)"""
+    return JSONResponse(
+        _build_live_results_payload(offset=offset, limit=limit, order=order, q=q, relevance=relevance)
+    )
 
 
 @app.get("/api/results/{post_id}")
@@ -391,8 +501,10 @@ def _build_live_results_payload(
     offset: int = 0,
     limit: int = 200,
     order: str = "desc",
+    q: str = "",
+    relevance: str = "all",
 ) -> Dict[str, Any]:
-    payload = monitor.get_results(offset=offset, limit=limit, order=order)
+    payload = monitor.get_results(offset=offset, limit=limit, order=order, q=q, relevance=relevance)
     items = payload.get("items") or []
 
     if not items or not any(_summary_needs_identity_enrichment(item) for item in items):
@@ -518,7 +630,7 @@ def _to_live_detail(item: Dict[str, Any], summary: Optional[Dict[str, Any]] = No
         "novel_identity": novel,
     }
     if summary:
-        for key in ("elapsed", "token_usage", "flow_log", "worker_id"):
+        for key in ("elapsed", "token_usage", "flow_log", "flow_dropped", "worker_id"):
             if key in summary and summary.get(key) is not None:
                 detail[key] = summary.get(key)
     return detail
@@ -660,6 +772,15 @@ def _extract_post_log_from_file(filepath: Path, post_id: int) -> Optional[List[s
     배너 시작 줄(===…) 부터 완료 마커 이후 구분선(===…)까지 추출합니다.
     """
     try:
+        # GB급 통합 로그를 통째로 read하면 메모리 스파이크(파일 크기의 2-3배)가
+        # 발생한다 — 상한 초과 파일은 건너뛴다 (워커별 로그가 1차 탐색 대상이라
+        # 대부분 거기서 찾는다). DASHBOARD_POST_LOG_MAX_FILE_MB로 조정 가능.
+        try:
+            max_mb = float(os.environ.get("DASHBOARD_POST_LOG_MAX_FILE_MB", "200"))
+        except Exception:
+            max_mb = 200.0
+        if max_mb > 0 and filepath.stat().st_size > max_mb * 1024 * 1024:
+            return None
         text = filepath.read_text(encoding="utf-8-sig")
     except Exception:
         return None
@@ -723,23 +844,32 @@ def _extract_post_log_from_file(filepath: Path, post_id: int) -> Optional[List[s
 
 
 @app.get("/api/post_log/{post_id}")
-async def api_post_log(post_id: int):
+def api_post_log(post_id: int, source: str = Query("auto", pattern="^(auto|file)$")):
     """특정 post_id의 처리 로그를 추출하여 반환합니다.
-    
+
+    의도적으로 sync 핸들러(def) — 로그 파일 추출이 대형 파일(수십 MB~GB)
+    전체 read라 async로 두면 uvicorn 이벤트 루프가 블로킹되어 SSE/상태 API가
+    전부 멈춘다. FastAPI threadpool에서 실행되면 루프는 계속 돈다.
+
     검색 순서:
-    1. 현재 실행 중인 배치의 로그 (인메모리)
+    1. 현재 실행 중인 배치의 로그 (인메모리) — source=file이면 건너뜀
     2. 워커별 로그 파일 (가장 최근 것부터)
     3. 통합 로그 파일 (가장 최근 것부터)
+
+    인메모리 로그는 post_start 이후 워커 라인만 수집되어 시작 배너 등
+    앞부분이 빠질 수 있다. 전체 구간이 필요하면 source=file로 호출하면
+    로그 파일에서 배너~완료 요약까지 추출해 반환한다.
     """
     try:
         # 1) 인메모리 (현재 실행 중인 배치)
-        in_memory = monitor.get_post_logs(post_id)
-        if in_memory:
-            return JSONResponse({
-                "post_id": post_id,
-                "source": "memory",
-                "lines": in_memory,
-            })
+        if source != "file":
+            in_memory = monitor.get_post_logs(post_id)
+            if in_memory:
+                return JSONResponse({
+                    "post_id": post_id,
+                    "source": "memory",
+                    "lines": in_memory,
+                })
 
         # 2) 워커별 로그 파일 탐색 (최신순)
         if _LOG_DIR.exists():
@@ -804,7 +934,9 @@ async def sse_stream():
             status = monitor.get_status()
             yield f"event: status\ndata: {json.dumps(status, ensure_ascii=False)}\n\n"
             # 현재까지의 결과도 전송 (재연결 시 누락 복구)
-            results = _build_live_results_payload(offset=0, limit=200, order="desc")
+            # limit 200이면 초기 페이로드가 ~240KB에 달해 접속/재연결마다 부담 —
+            # 50건이면 첫 화면 채우기에 충분하고 나머지는 /api/results 페이지로.
+            results = _build_live_results_payload(offset=0, limit=50, order="desc")
             if results["items"]:
                 yield f"event: restore\ndata: {json.dumps(results['items'], ensure_ascii=False, default=str)}\n\n"
 

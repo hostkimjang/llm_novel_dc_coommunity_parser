@@ -2,6 +2,8 @@
 
 디시인사이드 장르소설 갤러리 크롤링 데이터를 **유기적 전문가 시스템(Agentic Expert System)**으로 분석하여 웹소설을 식별하고 담론 메타데이터를 추출합니다.
 
+> 운영 상태 2026-07-01: 최신 Loop236은 URL-title 직접 지지 가드 focused proof다. Patched canary `20260701_214126_569050`은 `11663540`을 `전 버튜버가 하고 싶은데요` / `https://novelpia.com/novel/275975`로 복구했지만 parent replay는 아직 `NOT_RUN`이다. `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal은 `ACTIVE / NOT_COMPLETE`다.
+
 ---
 
 ## 📋 목차
@@ -41,7 +43,7 @@ pip install -e .
 docker compose up -d --build
 
 # 3) 전문가 파이프라인 실행
-#    --parallel 4이면 로컬 WARP shard 4개가 자동 구성됨
+#    --parallel은 최대 worker 상한입니다. 실제 worker 수는 manifest의 effective_parallel을 확인하세요.
 python expert_main.py tests/inputs/sample.jsonl --parallel 4
 ```
 
@@ -467,8 +469,8 @@ python expert_main.py
 # 입력 파일 지정
 python expert_main.py tests/inputs/sample.jsonl
 
-# 병렬 4워커
-# 로컬 자동 shard 모드에서는 WARP/SearchXNG/Crawl4AI/browser-search/MCP 4묶음 자동 구성
+# 병렬 상한 4
+# 실제 worker 수는 input 수/healthy endpoint 수에 따라 effective_parallel로 줄어들 수 있음
 python expert_main.py tests/inputs/sample.jsonl --parallel 4
 
 # 대시보드 비활성화
@@ -480,7 +482,7 @@ python expert_main.py --no-dashboard
 | 인자 | 타입 | 기본값 | 설명 |
 |------|------|--------|------|
 | `input` | positional | `tests/inputs/test01.jsonl` | 입력 JSONL 파일 경로 |
-| `--parallel`, `-p` | int | `1` | 병렬 처리 워커 수 |
+| `--parallel`, `-p` | int | `1` | 병렬 처리 worker 최대치. 실제 실행 worker 수는 `effective_parallel`로 manifest/run_meta에 기록됨 |
 | `--no-dashboard` | flag | — | 대시보드 비활성화 |
 
 ### LLM 모드
@@ -1072,13 +1074,18 @@ pipeline = AgenticPipeline(
 
 ### 병렬 실행
 
+주의: 이 절의 병렬은 `expert_main.py` 런타임 worker/shard 병렬도만 뜻한다. Codex `/goal`에서 사용자가 "여러 전문가", "subagent", "병렬 검토"를 말한 경우는 Codex `spawn_agent` 기반 전문가 분업이며, `docs/devs/SCAN_RESULT_REVIEW_GUIDE.md`와 `docs/devs/OPERATION_QUALITY_CHECKLIST.md`를 따른다.
+
 ```bash
 python expert_main.py tests/inputs/sample.jsonl --parallel 4
 ```
 
 **ThreadPoolExecutor** 기반 병렬 처리:
+- `--parallel`은 고정 worker 수가 아니라 최대치다. small input에서는 `effective_parallel=min(requested_parallel,input_post_count,healthy_endpoint_count)` 계열로 줄어드는 것이 정상이다.
+- Gemma 4 E4B/4B 계열 운영 상한은 `36`이다. `--parallel 36`은 36 worker 강제 실행이 아니라 최대치 지정이다.
 - 각 워커는 독립된 게시글 묶음을 처리
-- 로컬 자동 shard 모드에서는 `--parallel 4`에 맞춰 `mcp-bridge-1..4`가 `localhost:3333..3336`으로 자동 구성
+- 로컬 shard가 이미 healthy이면 재사용한다. goal/test small run에서 Docker compose up/recreate는 기본 금지이며, shard lifecycle 자체를 검증할 때만 `--allow-goal-shard-lifecycle`과 `--auto-up-shards` 또는 `--auto-recreate-shards`를 함께 사용한다.
+- 로컬 자동 shard 모드가 명시적으로 허용된 경우에만 필요한 `mcp-bridge-N` / WARP/SearchXNG/Crawl4AI/browser-search 묶음을 준비한다.
 - 각 shard는 `warp-N + searchxng-N + crawl4ai-N + browser-search-N + mcp-bridge-N` 번들
 - 한 워커의 `search()`/`fetch()`는 같은 MCP endpoint에 고정되어 같은 WARP egress를 사용
 - `_worker_tls` (thread-local storage)로 워커별 상태 관리
@@ -1092,6 +1099,8 @@ export MCP_ENDPOINTS="http://localhost:3333,http://localhost:3334"
 export MCP_ENDPOINT_STRATEGY=round_robin
 python expert_main.py tests/inputs/sample.jsonl --parallel 2 --no-auto-up-shards
 ```
+
+VLM/OCR semantic regression이나 이미지 포함 post 검증은 명령에 `--vlm on --ocr on --require-vlm-ocr-for-images`를 붙여, 이미지 row가 VLM/OCR 없이 조용히 통과하지 않게 한다.
 
 WARP 연결 상태 확인:
 
