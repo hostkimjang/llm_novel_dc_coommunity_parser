@@ -37,6 +37,12 @@
 - Data Analytics:
   - MCP report artifact `Loop257-258 URL-null publish hold 검증` validated and rendered.
   - Included datasets: `status_counts`, `key_rows`, `gate_summary`.
+- Auxiliary audits:
+  - runtime audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop258_p0_representative_7_runtime_audit.md/json`
+  - runtime contract `GO`, process snapshot `powershell_get_ciminstance`, stale process candidate count `0`
+  - semantic coverage audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop258_p0_representative_7_semantic_coverage_audit.md/json`
+  - semantic coverage `REVIEW-LOCKED`, browser visual required/available/missing `5/0/5`
+  - reason hygiene `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop258_p0_representative_7_reason_hygiene.json`, files scanned `1`, hit files `0`
 - Verification:
   - py_compile: PASS (`expert_main.py`, `tests\test_expert_main_comment_metadata.py`)
   - focused final contract tests: `4` tests OK
@@ -44,6 +50,9 @@
   - `tests.test_goal_convergence tests.test_safe_loss_flip_rate_probe tests.test_always_on_regression_gates`: `17` tests OK
   - `tests.test_title_lead_search_inferred_guard`: `180` tests OK
   - `git diff --check`: PASS, CRLF conversion warnings only
+  - runtime audit: `GO`
+  - reason hygiene: `GO`
+  - semantic coverage: `REVIEW-LOCKED(browser visual 5/0/5)`
 - Gate:
   - Loop258 runtime: `GO`
   - targeted canary: `GO_BLOCK_URL_NULL_PUBLIC_TITLE`

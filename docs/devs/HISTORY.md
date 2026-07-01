@@ -10,6 +10,7 @@
 - Loop258 run `20260702_053635_632644`은 runtime completed/flushed/pending/failed `7/7/0/0`, VLM/OCR `READY`, MCP health `2/2`다.
 - Loop258 final은 `11663535`를 `promotion_blocked`, public title/url `null`, `promotion_decision.status=candidate_only`, `publish_allowed=false`로 내렸다. `11658668` hard-hold는 유지됐고 `11660277`, `11663544`, `11658637`은 정상 safe를 유지했다.
 - Data Analytics report artifact `Loop257-258 URL-null publish hold 검증`을 검증/렌더링했고, 상태 분포 chart, 핵심 row 결과 table, goal convergence gate table을 포함했다.
+- Loop258 보조 audit를 추가로 실행했다. Runtime audit은 process snapshot 포함 `GO(stale process 0)`, reason hygiene는 hit files `0`으로 `GO`, semantic coverage는 browser visual required/available/missing `5/0/5`로 `REVIEW-LOCKED`다.
 - Verification: py_compile PASS, `tests.test_expert_main_comment_metadata` `36` PASS, focused final contract `4` PASS, convergence/safe-loss/always-on gate `17` PASS, title-lead guard `180` PASS, `git diff --check` PASS.
 - Goal convergence는 `NO-GO`다. actionable queue `7 -> 7`, same-packet safe_resolved `4 -> 3`, safe_loss `11663535`, blockers `actionable_queue_not_decreased`와 `safe_resolved_not_monotonic`이다.
 - Gate는 Loop258 runtime `GO`, targeted canary `GO_BLOCK_URL_NULL_PUBLIC_TITLE`, convergence `NO-GO`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.

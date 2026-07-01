@@ -18,7 +18,8 @@
 - Data Analytics: MCP report artifact `Loop257-258 URL-null publish hold 검증`을 한국어로 validate/render 완료했다.
 - Artifacts: `docs/devs/loop_reports/LOOP_258_REPORT_20260702.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop258_p0_representative_7_after_urlless_inferred_publish_hold_result.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop258_p0_representative_7_goal_convergence.md/json`.
 - Verification: py_compile PASS, `tests.test_expert_main_comment_metadata` `36` PASS, focused final contract `4` PASS, convergence/safe-loss/always-on gate `17` PASS, title-lead guard `180` PASS, `git diff --check` PASS.
-- Gate: Loop258 targeted canary `GO_BLOCK_URL_NULL_PUBLIC_TITLE`, runtime `GO`, convergence `NO-GO(actionable queue 7 -> 7, safe_resolved 4 -> 3, safe_loss 11663535)`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Auxiliary audits: runtime `GO(stale process 0)`, reason hygiene `GO(hit_files=0)`, semantic coverage `REVIEW-LOCKED(browser visual 5/0/5)`.
+- Gate: Loop258 targeted canary `GO_BLOCK_URL_NULL_PUBLIC_TITLE`, runtime `GO`, convergence `NO-GO(actionable queue 7 -> 7, safe_resolved 4 -> 3, safe_loss 11663535)`, semantic coverage `REVIEW-LOCKED`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
 
 ## 2026-07-02 Loop255 Result / Loop256 Preflight Addendum - final contract hard-hold convergence
 
@@ -79,6 +80,9 @@
 - Latest Loop258 result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop258_p0_representative_7_after_urlless_inferred_publish_hold_result.json`
 - Latest Loop258 manifest: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop258_p0_representative_7_after_urlless_inferred_publish_hold_result_manifest.json`
 - Latest Loop258 convergence audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop258_p0_representative_7_goal_convergence.md/json`
+- Latest Loop258 runtime audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop258_p0_representative_7_runtime_audit.md/json`
+- Latest Loop258 semantic coverage audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop258_p0_representative_7_semantic_coverage_audit.md/json`
+- Latest Loop258 reason hygiene: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop258_p0_representative_7_reason_hygiene.json`
 - Latest Loop257 failure evidence: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop257_p0_representative_7_after_final_contract_hard_hold_result.json`
 - Latest Loop257-258 Data Analytics report artifact: `Loop257-258 URL-null publish hold 검증`
 - Latest Loop251 11663535 character-title collision hold report: `docs/devs/loop_reports/LOOP_251_REPORT_20260702.md`

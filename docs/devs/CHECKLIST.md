@@ -41,9 +41,16 @@
   - convergence/safe-loss/always-on gate tests `17` PASS
   - title-lead guard tests `180` PASS
   - `git diff --check` PASS, CRLF conversion warnings only
+- [x] Loop258 보조 audit를 실행했다.
+  - runtime audit `GO`
+  - process snapshot source `powershell_get_ciminstance`, stale process candidate count `0`
+  - reason hygiene files scanned `1`, hit files `0`
+  - semantic coverage `REVIEW-LOCKED`
+  - browser visual required/available/missing `5/0/5`
 - [ ] `11663535` safe loss가 정당한 wrong-safe 제거인지 별도 evidence로 분류한다.
+- [ ] Loop258 image row 5건은 browser/direct visual artifact 없이는 semantic approval로 세지 않는다.
 - [ ] actionable queue 감소와 same-packet safe_resolved 단조 비감소를 동시에 만족하기 전까지 approval을 갱신하지 않는다.
-- Gate: Loop258 runtime `GO`, targeted canary `GO_BLOCK_URL_NULL_PUBLIC_TITLE`, convergence `NO-GO`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, full375 previous `NO-GO`.
+- Gate: Loop258 runtime `GO`, targeted canary `GO_BLOCK_URL_NULL_PUBLIC_TITLE`, reason hygiene `GO`, semantic coverage `REVIEW-LOCKED(browser visual 5/0/5)`, convergence `NO-GO`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, full375 previous `NO-GO`.
 
 ## 2026-07-02 Loop256 final contract hard-hold canary 체크
 

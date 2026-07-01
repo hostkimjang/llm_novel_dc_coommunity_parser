@@ -18,10 +18,12 @@
   - `11663535`: Loop257 `safe_resolved` / title `퇴마록` / URL `null`에서 Loop258 `promotion_blocked` / public title-url `null`로 수렴.
   - `11658668` hard-hold 유지, `11660277`, `11663544`, `11658637` 정상 safe 유지.
   - py_compile PASS, expert-main metadata `36` PASS, focused final contract `4` PASS, convergence/safe-loss/always-on `17` PASS, title-lead guard `180` PASS, `git diff --check` PASS.
+  - 보조 audit: runtime `GO` with stale process `0`, reason hygiene `GO(hit_files=0)`, semantic coverage `REVIEW-LOCKED(browser visual 5/0/5)`.
 - 결정:
   - URL-null inferred publish 경로는 현재 코드에서 차단됐다.
   - 그러나 goal convergence는 actionable queue `7 -> 7`, safe_resolved `4 -> 3`, safe_loss `11663535`로 `NO-GO`다.
   - `11663535` safe loss는 잘못-safe 제거로 보이지만, 별도 evidence 분류 전에는 stop condition 통과나 approval 근거로 쓰지 않는다.
+  - Loop258 image row 5건은 browser/direct visual artifact가 붙기 전 semantic approval 근거로 쓰지 않는다.
   - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
 - 다음 조치:
   - `11663535` safe loss를 정당한 wrong-safe correction으로 분류할 증거를 별도 산출물로 남긴다.
