@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop262 Addendum - completed source 후보 감사
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: completed source blocker를 실제 로컬 manifest 전체 기준으로 확인한다.
+- 코드 변경: `tools/build_completed_source_candidate_audit.py`를 추가해 `out/**/_manifest.json`을 clean completion, VLM/OCR ready, result rows, random target 기준으로 감사한다. 이 도구의 후보 판정은 approval이 아니라 completed-source preflight 후보 여부만 뜻한다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_262_REPORT_20260702.md`, candidate audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop262_completed_source_candidate_audit.md/json`, partial preflight `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop262_largest_partial_source_preflight.md/json`, clean shortfall preflight `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop262_largest_clean_shortfall_source_preflight.md/json`.
+- Evidence: manifest `732`개 중 approval source candidate는 `0`개다. clean VLM/OCR source `429`개는 모두 random target `1000` 미달이며 가장 큰 clean source는 `375` rows다. partial VLM/OCR population 중 가장 큰 source는 `3812` rows지만 input/completed/flushed/pending/failed `104502/3875/3812/63/1`이라 approval source가 아니다.
+- Preflight: largest partial source는 `REVIEW-LOCKED`; largest clean source는 run integrity `GO`지만 random shortfall `625`로 `REVIEW-LOCKED`.
+- Verification: py_compile PASS, `tests.test_completed_source_candidate_audit` `2` tests OK.
+- Gate: completed source candidate `MISSING`, completed-source preflight `REVIEW-LOCKED`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop261 Addendum - completed source preflight blocker 복원
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-02 - Loop262 audits completed source candidates
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- `tools/build_completed_source_candidate_audit.py`를 추가해 `out/**/_manifest.json`을 clean completion, VLM/OCR readiness, result rows, random target 기준으로 감사하게 했다.
+- 전체 `out` manifest `732`개를 스캔했다. approval source candidate는 `0`개다.
+- clean VLM/OCR source는 `429`개지만 모두 random target `1000` 미달이다. 가장 큰 clean source는 Loop49 full375 collateral replay로 available rows `375`, shortfall `625`다.
+- partial VLM/OCR population 중 random 1000 이상을 뽑을 수 있는 후보는 `6`개지만 모두 completion gap이 있다. 가장 큰 source는 `out/expert_result_20260612_174715_296791.json`이고 input/completed/flushed/pending/failed `104502/3875/3812/63/1`이다.
+- Preflight 확인:
+  - largest partial source: `REVIEW-LOCKED`, `large_run_completion_not_proven`, pending/failed/flush gap.
+  - largest clean shortfall source: run integrity `GO`지만 `random_baseline_target_not_feasible`.
+- Verification: py_compile PASS, `tests.test_completed_source_candidate_audit` `2` tests OK.
+- Gate는 completed source candidate `MISSING`, completed-source preflight `REVIEW-LOCKED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop261 restores completed-source preflight blockers
 
 - 동일 38-row parent packet은 재실행하지 않았다.

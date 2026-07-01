@@ -1,5 +1,32 @@
 # Verification Results
 
+## 2026-07-02 Loop262 completed source 후보 감사
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- 코드: `tools\build_completed_source_candidate_audit.py`
+  - clean completion, VLM/OCR ready, result rows, random target 충족 여부를 분리해 completed source preflight 후보를 찾는다.
+  - 후보가 있어도 semantic approval이 아니라 preflight 대상 후보만 뜻한다.
+- 산출물:
+  - candidate audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop262_completed_source_candidate_audit.md`
+  - largest partial preflight `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop262_largest_partial_source_preflight.md`
+  - largest clean shortfall preflight `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop262_largest_clean_shortfall_source_preflight.md`
+  - report `docs\devs\loop_reports\LOOP_262_REPORT_20260702.md`
+- 결과:
+  - manifest_count `732`, parsed `732`
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `429`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+  - largest clean available rows `375`
+  - largest partial available rows `3812`
+- Preflight:
+  - largest partial `out\expert_result_20260612_174715_296791.json`: `104502/3875/3812/63/1`, gate `REVIEW-LOCKED`
+  - largest clean shortfall Loop49 full375: `375/375/375/0/0`, random shortfall `625`, gate `REVIEW-LOCKED`
+- 검증:
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\build_completed_source_candidate_audit.py tests\test_completed_source_candidate_audit.py`: PASS
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_completed_source_candidate_audit -v`: `2` tests OK
+- Gate: completed VLM/OCR-on source candidate `MISSING`; completed-source preflight `REVIEW-LOCKED`; random baseline 1000과 P0/P1 expansion은 completed source 전까지 blocked; `semantic_quality=REVIEW-LOCKED`; `full_scan_approval=false`; goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop261 completed source preflight blocker 복원
 
 - 동일 38-row parent packet은 재실행하지 않았다.

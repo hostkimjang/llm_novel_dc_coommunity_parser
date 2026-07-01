@@ -1,5 +1,30 @@
 # Development Checklist
 
+## 2026-07-02 Loop262 completed source 후보 감사 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] completed source 후보 감사 도구를 추가했다.
+  - `tools\build_completed_source_candidate_audit.py`
+  - 테스트 `tests\test_completed_source_candidate_audit.py`
+- [x] 전체 `out` manifest `732`개를 스캔했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop262_completed_source_candidate_audit.md`
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `429`
+  - largest_clean_vlm_ocr_available_rows `375`
+  - largest_partial_vlm_ocr_available_rows `3812`
+- [x] 가장 큰 partial source를 preflight했다.
+  - source `out\expert_result_20260612_174715_296791.json`
+  - input/completed/flushed/pending/failed `104502/3875/3812/63/1`
+  - gate `REVIEW-LOCKED`
+- [x] 가장 큰 clean shortfall source를 preflight했다.
+  - source `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop49_regression_panel_replay_result.json`
+  - input/completed/flushed/pending/failed `375/375/375/0/0`
+  - random shortfall `625`, gate `REVIEW-LOCKED`
+- [x] 검증: py_compile PASS, `tests.test_completed_source_candidate_audit` `2` tests OK.
+- [ ] completed VLM/OCR-on source 후보가 생기기 전까지 random baseline 1000/P0-P1 expansion을 approval evidence로 쓰지 않는다.
+- Gate: completed source candidate `MISSING`, completed-source preflight `REVIEW-LOCKED`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop261 completed source preflight blocker 복원 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

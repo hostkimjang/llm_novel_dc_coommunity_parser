@@ -1,5 +1,30 @@
 # Improvement Register
 
+## IMP-20260702-457 - completed source 후보 감사 도구
+
+- Status: Implemented / approval blocked
+- Loop: 262
+- Problem:
+  - Loop261은 completed source blocker를 복원했지만, 로컬 `out` 산출물 중 실제 completed VLM/OCR-on source 후보가 있는지 자동으로 재확인하는 재사용 도구가 없었다.
+- Change:
+  - `tools/build_completed_source_candidate_audit.py`를 추가했다.
+  - manifest 전체를 clean completion, VLM/OCR ready, result rows, random target 기준으로 분류한다.
+  - candidate audit는 approval이 아니라 completed-source preflight 후보 탐색만 수행한다.
+- Evidence:
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop262_completed_source_candidate_audit.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop262_largest_partial_source_preflight.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop262_largest_clean_shortfall_source_preflight.md`
+  - `docs/devs/loop_reports/LOOP_262_REPORT_20260702.md`
+- Result:
+  - approval_source_candidate_count `0`
+  - largest clean VLM/OCR source available rows `375`
+  - largest partial VLM/OCR source available rows `3812`, but input/completed/flushed/pending/failed `104502/3875/3812/63/1`
+- Gate:
+  - completed source candidate `MISSING`
+  - completed-source preflight `REVIEW-LOCKED`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-456 - completed source preflight blocker 복원
 
 - Status: Implemented / approval blocked
