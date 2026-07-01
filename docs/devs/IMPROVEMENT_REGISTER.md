@@ -1,5 +1,33 @@
 # Improvement Register
 
+## IMP-20260702-268 - health audit result JSON row count 지원
+
+- Status: Implemented / approval blocked
+- Loop: 268
+- Problem:
+  - Loop267 explicit path audit는 manifest/checkpoint/pending/log 경로를 직접 받을 수 있었지만 result JSON row count를 audit 산출물에 같이 남기지 못했다.
+  - completed-source 판정에는 `result_rows`, manifest `flushed_count/completed_count`, checkpoint rows, pending snapshot rows를 같이 봐야 한다.
+- Change:
+  - `--result-json` 옵션을 추가했다.
+  - audit JSON에 `result_json`과 `result_rows`를 기록한다.
+  - list, dict.rows, missing path row count 계약 테스트를 추가했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_268_REPORT_20260702.md`
+  - audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop268_explicit_result_health_audit.json`
+- Result:
+  - result_rows `12`
+  - checkpoint_rows `95`
+  - pending_count_actual `83`
+  - manifest input/completed/flushed/pending/failed `104502/95/12/83/0`
+- Verification:
+  - `tests.test_audit_expert_run_health` `5` tests OK
+  - py_compile PASS
+- Gate:
+  - completed source `PENDING`
+  - run integrity `IN_PROGRESS`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-267 - health audit explicit artifact path 지원
 
 - Status: Implemented / approval blocked

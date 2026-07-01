@@ -1,5 +1,36 @@
 # Development Checklist
 
+## 2026-07-02 Loop268 result JSON row count health audit 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] `audit_expert_run_health.py`에 `--result-json` 옵션을 추가했다.
+- [x] audit JSON에 `result_json` 세부 정보와 `result_rows`를 기록하게 했다.
+- [x] explicit path 계약 테스트에 `result_json` override를 추가했다.
+  - `tests\test_audit_expert_run_health.py`
+- [x] result JSON shape별 row count 테스트를 추가했다.
+  - list
+  - dict.rows
+  - missing path
+- [x] 실제 Loop264 진행 중 run에 explicit result audit를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop268_explicit_result_health_audit.json`
+  - explicit_overrides `manifest`, `checkpoint`, `result_json`, `pending_snapshot`, `log_glob`
+  - result_rows `12`
+  - checkpoint_rows `95`
+  - pending_count_actual `83`
+  - reason_error_count `0`
+- [x] 직후 manifest poll을 분리 확인했다.
+  - input/completed/flushed/pending/failed `104502/95/12/83/0`
+  - `large_run_complete=false`
+  - `partial_flush_gap=true`
+  - `ordered_flush_blocked=true`
+- [x] focused verification을 실행했다.
+  - `tests.test_audit_expert_run_health`: PASS, `5` tests.
+  - py_compile: PASS.
+- [ ] run 완료 후 explicit path 옵션으로 final health audit를 재실행한다.
+- [ ] run 완료 후 `result_rows == flushed_count == completed_count == input_post_count`, `pending_count=0`, `large_run_complete=true`를 확인한다.
+- [ ] run 완료 후 search-health direct probe 또는 search error evidence audit를 별도로 수행한다.
+- Gate: result row count audit `PASS`, completed source `PENDING`, run integrity `IN_PROGRESS`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop267 explicit artifact path health audit 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

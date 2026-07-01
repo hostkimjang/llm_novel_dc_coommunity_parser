@@ -43,6 +43,7 @@ def _resolve_run_artifacts(
     artifact_prefix: str | None = None,
     manifest_path: str | None = None,
     checkpoint_path: str | None = None,
+    result_json_path: str | None = None,
     pending_snapshot_path: str | None = None,
     log_glob: str | None = None,
 ) -> Dict[str, Any]:
@@ -98,6 +99,12 @@ def _resolve_run_artifacts(
         checkpoint = explicit_checkpoint
         explicit_overrides.append("checkpoint")
 
+    result_json = out_dir / f"expert_result_{resolved_prefix}.json"
+    explicit_result_json = _resolve_cli_path(result_json_path, repo=repo)
+    if explicit_result_json is not None:
+        result_json = explicit_result_json
+        explicit_overrides.append("result_json")
+
     pending = out_dir / f"expert_result_{resolved_prefix}_pending_snapshot.json"
     explicit_pending = _resolve_cli_path(pending_snapshot_path, repo=repo)
     if explicit_pending is not None:
@@ -126,8 +133,63 @@ def _resolve_run_artifacts(
         "explicit_overrides": explicit_overrides,
         "manifest": manifest,
         "checkpoint": checkpoint,
+        "result_json": result_json,
         "pending": pending,
         "log_files": log_files,
+    }
+
+
+def _count_result_rows(path: Path) -> Dict[str, Any]:
+    if not path.exists():
+        return {
+            "path": str(path),
+            "exists": False,
+            "shape": "missing",
+            "row_count": None,
+            "load_error": "missing",
+        }
+    try:
+        payload = _load_json(path)
+    except Exception as exc:
+        return {
+            "path": str(path),
+            "exists": True,
+            "shape": "unreadable",
+            "row_count": None,
+            "load_error": f"{type(exc).__name__}: {exc}",
+        }
+    if isinstance(payload, list):
+        return {
+            "path": str(path),
+            "exists": True,
+            "shape": "list",
+            "row_count": len(payload),
+            "load_error": None,
+        }
+    if isinstance(payload, dict):
+        for key in ("results", "rows", "data", "items"):
+            value = payload.get(key)
+            if isinstance(value, list):
+                return {
+                    "path": str(path),
+                    "exists": True,
+                    "shape": f"dict.{key}",
+                    "row_count": len(value),
+                    "load_error": None,
+                }
+        return {
+            "path": str(path),
+            "exists": True,
+            "shape": "dict",
+            "row_count": None,
+            "load_error": "no_supported_row_list",
+        }
+    return {
+        "path": str(path),
+        "exists": True,
+        "shape": type(payload).__name__,
+        "row_count": None,
+        "load_error": "unsupported_json_shape",
     }
 
 
@@ -363,6 +425,7 @@ def build_audit(
     artifact_prefix: str | None = None,
     manifest_path: str | None = None,
     checkpoint_path: str | None = None,
+    result_json_path: str | None = None,
     pending_snapshot_path: str | None = None,
     log_glob: str | None = None,
 ) -> Dict[str, Any]:
@@ -372,10 +435,12 @@ def build_audit(
         artifact_prefix=artifact_prefix,
         manifest_path=manifest_path,
         checkpoint_path=checkpoint_path,
+        result_json_path=result_json_path,
         pending_snapshot_path=pending_snapshot_path,
         log_glob=log_glob,
     )
     checkpoint = artifacts["checkpoint"]
+    result_json = artifacts["result_json"]
     manifest = artifacts["manifest"]
     pending = artifacts["pending"]
     log_files = artifacts["log_files"]
@@ -442,6 +507,7 @@ def build_audit(
                     break
 
     manifest_data = _load_json(manifest) if manifest.exists() else {}
+    result_audit = _count_result_rows(result_json)
     log_audit = _audit_logs(log_files)
     slang_audit = _audit_slang(rows, repo=repo)
 
@@ -455,10 +521,13 @@ def build_audit(
             "manifest_run_id": artifacts["manifest_run_id"],
             "manifest": str(manifest),
             "checkpoint": str(checkpoint),
+            "result_json": str(result_json),
             "pending_snapshot": str(pending),
             "worker_log_count": len(log_files),
         },
         "manifest": manifest_data,
+        "result_json": result_audit,
+        "result_rows": result_audit["row_count"],
         "checkpoint_rows": len(rows),
         "pending_count_actual": pending_count_actual,
         "status_counts": dict(status_counts),
@@ -502,6 +571,7 @@ def main() -> None:
     parser.add_argument("--artifact-prefix", help="Output artifact prefix when it differs from run id.")
     parser.add_argument("--manifest", help="Explicit manifest path for sampling or custom output locations.")
     parser.add_argument("--checkpoint", help="Explicit checkpoint JSONL path for sampling or custom output locations.")
+    parser.add_argument("--result-json", help="Explicit final result JSON path for sampling or custom output locations.")
     parser.add_argument("--pending-snapshot", help="Explicit pending snapshot path for sampling or custom output locations.")
     parser.add_argument("--log-glob", help="Explicit worker log glob, e.g. logs/expert_run_<id>_W*.log")
     parser.add_argument("--output", help="Output JSON path. Defaults to out/run_audit_<run-id>.json")
@@ -514,6 +584,7 @@ def main() -> None:
         artifact_prefix=args.artifact_prefix,
         manifest_path=args.manifest,
         checkpoint_path=args.checkpoint,
+        result_json_path=args.result_json,
         pending_snapshot_path=args.pending_snapshot,
         log_glob=args.log_glob,
     )
@@ -522,6 +593,7 @@ def main() -> None:
     output.write_text(json.dumps(audit, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(f"WROTE {output}")
+    print(f"result_rows={audit['result_rows']} result_shape={audit['result_json']['shape']}")
     print(f"checkpoint_rows={audit['checkpoint_rows']} status_counts={audit['status_counts']}")
     print(f"reason_errors={audit['reason_error_count']}")
     print(

@@ -6,6 +6,19 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop268 result JSON health audit quality gate
+
+- 근거:
+  - [x] `audit_expert_run_health.py`가 result JSON 경로를 직접 받도록 보강했다.
+  - [x] result row count가 `result_rows`와 `result_json`에 남도록 했다.
+  - [x] 실제 Loop264 진행 중 run에서 explicit result audit를 실행했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_268_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] result_rows `12`와 flushed_count `12`는 현재 primary result JSON이 ordered flushed prefix임을 뜻한다.
+  - [x] checkpoint_rows `95`, pending_count_actual `83`은 completed source 완료가 아니라 ordered flush gap 진행 중 증거로 둔다.
+  - [x] 최신 manifest `104502/95/12/83/0`, `large_run_complete=false`를 run integrity `IN_PROGRESS`로 둔다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop267 explicit path health audit quality gate
 
 - 근거:

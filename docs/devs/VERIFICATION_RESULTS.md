@@ -1,5 +1,40 @@
 # Verification Results
 
+## 2026-07-02 Loop268 result JSON row count health audit
+
+- Scope: `audit_expert_run_health.py`가 sampling/custom output 또는 진행 중 대형 run에서 result JSON row count를 checkpoint/manifest/pending 감사와 같이 기록하게 한다.
+- Code:
+  - `tools/audit_expert_run_health.py`
+  - `tests/test_audit_expert_run_health.py`
+- New CLI option:
+  - `--result-json`
+- Explicit result audit:
+  - command: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_065642_030743 --manifest out\expert_result_20260702_065632_479765_manifest.json --checkpoint out\expert_result_20260702_065632_479765_checkpoint.jsonl --result-json out\expert_result_20260702_065632_479765.json --pending-snapshot out\expert_result_20260702_065632_479765_pending_snapshot.json --log-glob "logs\expert_run_20260702_065642_030743_W*.log" --output out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop268_explicit_result_health_audit.json`
+  - result: resolution `explicit_paths`, explicit_overrides `manifest/checkpoint/result_json/pending_snapshot/log_glob`
+  - result_rows `12`, result_shape `list`
+  - checkpoint_rows `95`, status_counts `completed=95`, pending_count_actual `83`, reason_error_count `0`
+  - slang old/new/blocked `10/10/0`, slang_db bad remaining `0`
+- Manifest poll after audit:
+  - input/completed/flushed/pending/failed `104502/95/12/83/0`
+  - `large_run_complete=false`
+  - `partial_flush_gap=true`
+  - `ordered_flush_blocked=true`
+  - MCP health ok/failure `36/0`
+  - caveat: `mcp_health_light_mode=true`, `mcp_health_include_search=false`
+- Focused test:
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_audit_expert_run_health -v` -> PASS, `5` tests.
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\audit_expert_run_health.py tests\test_audit_expert_run_health.py` -> PASS.
+- Gate:
+  - audit result JSON row count: `PASS`
+  - completed source: `PENDING`
+  - run integrity: `IN_PROGRESS`
+  - search-health direct probe: `SEPARATE_AUDIT_REQUIRED`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_268_REPORT_20260702.md`
+
 ## 2026-07-02 Loop267 explicit artifact path health audit
 
 - Scope: `audit_expert_run_health.py`가 sampling/custom output 경로를 직접 감사할 수 있도록 명시 artifact path 옵션을 추가한다.

@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-02 - Loop268 adds result JSON row count to health audit
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- `tools/audit_expert_run_health.py`에 `--result-json` 옵션과 result row count 감사를 추가했다.
+- audit JSON은 이제 `artifact_resolution.result_json`, `result_json`, `result_rows`를 기록한다.
+- 실제 Loop264 진행 중 run에 explicit result audit를 실행했고 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop268_explicit_result_health_audit.json`이다.
+- audit snapshot은 result_rows `12`, checkpoint_rows `95`, pending_count_actual `83`, reason errors `0`, slang bad remaining `0`이다.
+- 직후 manifest poll은 input/completed/flushed/pending/failed `104502/95/12/83/0`, `large_run_complete=false`, `ordered_flush_blocked=true`다.
+- Gate는 result row count audit `PASS`, completed source `PENDING`, run integrity `IN_PROGRESS`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop267 adds explicit artifact paths to health audit
 
 - 동일 38-row parent packet은 재실행하지 않았다.

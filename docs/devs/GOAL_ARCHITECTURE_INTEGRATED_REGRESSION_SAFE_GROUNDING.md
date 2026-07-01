@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop268 Addendum - health audit result JSON row count 지원
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: completed-source 대형 run 완료 후 `manifest/checkpoint/result/pending` 정합성을 한 audit에서 비교할 수 있게 `result_rows`를 기록한다.
+- 코드 변경: `tools/audit_expert_run_health.py`에 `--result-json` 옵션과 `_count_result_rows`를 추가했다. audit JSON은 `artifact_resolution.result_json`, `result_json`, `result_rows`를 기록한다. `tests/test_audit_expert_run_health.py`에 result override와 shape별 row count 계약을 추가했다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_268_REPORT_20260702.md`, explicit result audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop268_explicit_result_health_audit.json`.
+- Evidence: result_rows `12`, checkpoint_rows `95`, pending_count_actual `83`. 직후 manifest poll은 input/completed/flushed/pending/failed `104502/95/12/83/0`, `large_run_complete=false`, `ordered_flush_blocked=true`.
+- Verification: `tests.test_audit_expert_run_health` `5` tests OK, py_compile PASS.
+- Gate: completed source `PENDING`, run integrity `IN_PROGRESS`, search-health direct probe `SEPARATE_AUDIT_REQUIRED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop267 Addendum - health audit explicit artifact path 지원
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
