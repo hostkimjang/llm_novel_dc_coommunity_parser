@@ -18738,6 +18738,11 @@ class AgenticPipeline:
         _vf_is_novel_discussion_final = (verification_result or {}).get("is_novel_discussion")
         _vf_non_novel_mismatch_final = self._has_verifier_non_novel_mismatch(verification_result)
         _vf_relation_final = (verification_result or {}).get("relation_judgment") or {}
+        if not isinstance(_vf_relation_final, dict):
+            _vf_relation_final = {}
+        _vf_relation_type_final = str(
+            _vf_relation_final.get("relation_type") or ""
+        ).strip().lower()
         _vf_relation_target_final = str(
             _vf_relation_final.get("discussion_target") or "mixed_or_uncertain"
         ).strip().lower()
@@ -18777,6 +18782,25 @@ class AgenticPipeline:
             official_title
             and self._has_structured_direct_image_work_surface_evidence(ctx, official_title)
             and self._has_ocr_catalog_official_title_evidence(ctx, official_title)
+        )
+        _meta_primary_block_final, _meta_primary_reason_final = (
+            self._should_block_title_promotion_for_meta_primary_subject(
+                ctx=ctx,
+                vf_result=verification_result if isinstance(verification_result, dict) else {},
+                final_decision=final_decision if isinstance(final_decision, dict) else {},
+            )
+        )
+        _meta_primary_reason_final = str(_meta_primary_reason_final or "").strip().lower()
+        _platform_meta_relation_context_final = bool(
+            self._looks_like_platform_meta_post(ctx)
+            or (
+                _meta_primary_block_final
+                and (
+                    _meta_primary_reason_final == "platform_release_meta"
+                    or _meta_primary_reason_final == "gatekeeper:meta_platform"
+                    or _meta_primary_reason_final == "discourse:discuss_platform"
+                )
+            )
         )
 
         def _has_direct_memory_query_resolution_edge(_title: str) -> bool:
@@ -18911,6 +18935,44 @@ class AgenticPipeline:
                 return True
             if self._has_generic_concept_question_title_mismatch(ctx, _title_str):
                 return True
+            if (
+                _platform_meta_relation_context_final
+                and _vf_relation_promotion_final in {"reject", "block", "deny", "nullify"}
+                and (
+                    _vf_relation_type_final
+                    in {
+                        "thematic_overlap_only",
+                        "platform_or_category",
+                        "community_slang_or_meta",
+                    }
+                    or _vf_relation_target_final
+                    in {
+                        "",
+                        "mixed_or_uncertain",
+                        "platform_meta",
+                        "community_banter",
+                        "genre_general",
+                    }
+                )
+            ):
+                _deliberated_release = self._has_deliberated_character_setting_work_convergence(
+                    ctx,
+                    _title_str,
+                    vf_result=verification_result if isinstance(verification_result, dict) else {},
+                )
+                if not (_rescue_dict.get("verified_char_links") or _deliberated_release):
+                    try:
+                        setattr(ctx, "_platform_meta_relation_reject_canonical_rescue_blocked", True)
+                    except Exception:
+                        pass
+                    if isinstance(final_decision, dict):
+                        _reasons = final_decision.setdefault("_title_null_block_reasons", [])
+                        if (
+                            isinstance(_reasons, list)
+                            and "platform_meta_relation_reject_canonical_rescue_blocked" not in _reasons
+                        ):
+                            _reasons.append("platform_meta_relation_reject_canonical_rescue_blocked")
+                    return True
             _bucket_score_local = int(_rescue_dict.get("bucket_score") or 0)
             _strong_body_grounding = bool(
                 self._title_mentioned_in_post_main_context(ctx, _title_str)
@@ -32268,6 +32330,14 @@ OUTPUT JSON:
         if not official_exists:
             return {}
 
+        context_sources = final.get("context_sources")
+        if not isinstance(context_sources, list):
+            context_sources = scope_fields.get("context_sources")
+        if not isinstance(context_sources, list):
+            context_sources = []
+        anchor_type = str(final.get("anchor_type") or scope_fields.get("anchor_type") or "").strip()
+        anchor_type_norm = anchor_type.lower()
+
         merged_scope_flags = _merged_text_list(
             "consistency_flags",
             "promotion_blocked_reasons",
@@ -32289,21 +32359,63 @@ OUTPUT JSON:
                 "external_ip_unresolved_final_blocked",
             } or flag.startswith("unresolved_worklike_hold:"):
                 scope_block_flags.append(flag)
+
+        image_driven_scope = bool(
+            anchor_type_norm == "image"
+            or any(str(value or "").strip().lower() == "image" for value in context_sources)
+            or "image" in str(source or "").strip().lower()
+            or "ocr" in str(source or "").strip().lower()
+        )
+        if image_driven_scope and not self._title_mentioned_in_non_image_main_context(ctx, title):
+            image_items: List[Dict[str, Any]] = []
+            for container in (scope_fields, final, vf):
+                catalog = container.get("image_evidence_catalog") if isinstance(container, dict) else None
+                if isinstance(catalog, list):
+                    image_items.extend(item for item in catalog if isinstance(item, dict))
+            post_data = getattr(ctx, "post_data", None) or {}
+            if isinstance(post_data, dict):
+                for key in ("image_enrichment", "image_evidence_catalog"):
+                    catalog = post_data.get(key)
+                    if isinstance(catalog, list):
+                        image_items.extend(item for item in catalog if isinstance(item, dict))
+
+            matching_image_items = [
+                item
+                for item in image_items
+                if self._normalize_match_text(item.get("explicit_work_title") or "") == title_norm
+                or self._normalize_match_text(item.get("ocr_text") or "").find(title_norm) >= 0
+            ]
+            has_promotion_eligible_image = any(
+                item.get("promotion_eligible") is True
+                or (
+                    str(item.get("evidence_type") or "").strip().lower() == "cover_title"
+                    and str(item.get("focus_role") or "").strip().lower() == "work_anchor"
+                )
+                for item in matching_image_items
+            )
+            has_structured_direct_image = self._has_structured_direct_image_work_surface_evidence(ctx, title)
+            if matching_image_items and not (has_promotion_eligible_image or has_structured_direct_image):
+                scope_block_flags.append("image_title_not_promotion_eligible")
+
+            meta_primary_block, meta_primary_reason = self._should_block_title_promotion_for_meta_primary_subject(
+                ctx=ctx,
+                vf_result=vf,
+                final_decision=final,
+            )
+            if meta_primary_block and not has_structured_direct_image:
+                reason = str(meta_primary_reason or "meta_primary_subject").strip()
+                scope_block_flags.append(f"meta_primary_subject:{reason}")
         scope_block_flags = list(dict.fromkeys(scope_block_flags))
         scope_kind = "context_only" if scope_block_flags else "current_work"
         scope_confidence = "medium" if scope_block_flags else ("high" if resolved_url else "medium")
         row_discusses_gate_work = bool(row_discusses_work and not scope_block_flags)
 
         direct_sources: List[str] = ["resolved_public_title_scope"]
-        context_sources = final.get("context_sources")
-        if not isinstance(context_sources, list):
-            context_sources = scope_fields.get("context_sources")
         if isinstance(context_sources, list):
             for value in context_sources:
                 value_text = str(value or "").strip()
                 if value_text and value_text not in direct_sources:
                     direct_sources.append(value_text)
-        anchor_type = str(final.get("anchor_type") or scope_fields.get("anchor_type") or "").strip()
         if anchor_type:
             direct_sources.append(f"anchor_type:{anchor_type}")
         if resolved_url:

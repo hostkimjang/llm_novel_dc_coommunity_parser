@@ -6,6 +6,25 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop250 11658668 image scope guard quality gate
+
+- 근거:
+  - [x] 동일 38-row parent packet을 재실행하지 않았다.
+  - [x] Loop249 pre-patch 실패를 보존했다: `safe_resolved`, `publish_allowed=true`, `scope_kind=current_work`.
+  - [x] image catalog `promotion_eligible=false`를 resolved-public-title scope conflict로 반영했다.
+  - [x] Loop250 patched run은 completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`로 runtime `GO`다.
+  - [x] 최종 serialized output은 public title/url `null`, `candidate_ledger_status=promotion_blocked`, `publish_allowed=false`다.
+  - [x] `publish_contract_trace`가 blocked decision으로 수렴했다.
+  - [x] reason hygiene hit_files `0`.
+  - [x] title-lead suite `174` tests PASS, architecture gate/work-bridge `19` tests PASS, py_compile PASS.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_250_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] targeted canary `GO`를 full scan approval로 쓰지 않는다.
+  - [x] runtime `GO`와 reason hygiene `GO`를 semantic coverage approval로 합치지 않는다.
+  - [x] browser visual required/available/missing `1/0/1`이면 semantic coverage는 `REVIEW-LOCKED`다.
+  - [x] convergence `NO-GO(queue 7 -> 7, packet identity changed)`를 approval blocker로 유지한다.
+  - [x] Parent replay `NOT_RUN`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop248 P0 representative / reason hygiene quality gate
 
 - 근거:

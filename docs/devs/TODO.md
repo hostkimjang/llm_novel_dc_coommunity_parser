@@ -2,6 +2,40 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop250 11658668 image scope guard TODO
+
+- 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. Loop250은 `11658668`의 image OCR 기반 resolved-public-title publish 누수를 `promotion_blocked`로 내렸다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.
+- Loop250 TODO:
+  - [x] Loop249 pre-patch 실패를 보존했다.
+    - run `20260702_031854_134932`
+    - final `candidate_ledger_status=safe_resolved`, `publish_allowed=true`, `scope_kind=current_work`
+  - [x] resolved-public-title gate를 보강했다.
+    - matching image catalog가 `promotion_eligible=false`이고 non-image 본문 title 언급이 없으면 `image_title_not_promotion_eligible`로 public publish를 막는다.
+    - platform meta + relation reject canonical rescue도 차단한다.
+  - [x] Loop250 patched run을 실행했다.
+    - run `20260702_033005_272211`
+    - completed/flushed/pending/failed `1/1/0/0`
+    - VLM/OCR `READY`
+    - result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop250_11658668_resolved_public_image_scope_guard_result.json`
+  - [x] 최종 계약을 확인했다.
+    - `candidate_ledger_status=promotion_blocked`
+    - public title/url `null`
+    - blocked candidate `전 버튜버가 하고 싶은데요`
+    - `publish_allowed=false`
+    - `publish_contract_trace` blocked 수렴
+  - [x] 검증을 완료했다.
+    - runtime audit `GO`
+    - reason hygiene hit_files `0`
+    - title-lead suite `174` PASS
+    - architecture gate/work-bridge `19` PASS
+    - py_compile PASS
+  - [x] 한국어 report를 남겼다.
+    - `docs/devs/loop_reports/LOOP_250_REPORT_20260702.md`
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+  - [ ] `11658668` browser visual/direct visual artifact를 붙이기 전 semantic coverage approval로 세지 않는다.
+  - [ ] same parent/representative packet 또는 full375 collateral gate를 통과하기 전 approval을 갱신하지 않는다.
+  - [ ] `11663535` canonicalization drift를 P0D blocker로 분리한다.
+
 ## 2026-07-02 regression-safe grounding Loop248 P0 representative replay and reason hygiene TODO
 
 - 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. Loop248은 full375 P0 collateral bucket 대표 7건으로 current-code 상태를 진단했고, 원본 result의 reason hygiene 실패를 공개 reason sanitizer 코드로 보강했다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.
@@ -32,7 +66,7 @@
   - [x] 한국어 report를 남겼다.
     - `docs/devs/loop_reports/LOOP_248_REPORT_20260702.md`
   - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
-  - [ ] `11658668` platform meta / expert conflict publish 경로를 P0C blocker로 분리한다.
+  - [x] `11658668` platform meta / expert conflict publish 경로를 Loop250 P0C blocker로 분리하고 단건 publish 누수를 차단했다.
   - [ ] `11663535` canonicalization drift를 P0D blocker로 분리한다.
   - [ ] full375 previous `NO-GO`를 닫기 전까지 residual approval을 갱신하지 않는다.
 

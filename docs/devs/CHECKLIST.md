@@ -1,5 +1,42 @@
 # Development Checklist
 
+## 2026-07-02 Loop250 11658668 resolved-public image scope guard 체크
+
+- [x] 동일 38-row parent packet을 재실행하지 않았다.
+- [x] Loop249 pre-patch 단건 실패를 보존했다.
+  - run id `20260702_031854_134932`
+  - `candidate_ledger_status=safe_resolved`
+  - `publish_allowed=true`
+  - `scope_kind=current_work`
+- [x] resolved-public-title gate의 image/ocr scope conflict를 보강했다.
+  - `src/llm_batch/agentic_pipeline.py`
+  - non-image 본문에 title이 없고 matching image catalog가 `promotion_eligible=false`이면 `image_title_not_promotion_eligible`로 scope를 `context_only`로 내린다.
+  - platform meta + relation reject canonical rescue도 title 재승격을 막는다.
+- [x] Loop250 patched run을 실행했다.
+  - run id `20260702_033005_272211`
+  - completed/flushed/pending/failed `1/1/0/0`
+  - VLM/OCR `READY`, image_post_count `1`
+  - result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop250_11658668_resolved_public_image_scope_guard_result.json`
+- [x] `11658668` public title 누수를 차단했다.
+  - `candidate_ledger_status=promotion_blocked`
+  - public title/url `null`
+  - blocked candidate `전 버튜버가 하고 싶은데요`
+  - `publish_allowed=false`
+  - `publish_contract_trace.gate_decision.status=candidate_only`
+  - `scope_kind=context_only`
+- [x] 검증을 완료했다.
+  - runtime audit `GO`
+  - reason hygiene hit_files `0`
+  - `tests.test_title_lead_search_inferred_guard` `174` tests PASS
+  - architecture gate/work-bridge `19` tests PASS
+  - py_compile PASS
+- [x] 한국어 loop report를 남겼다.
+  - `docs/devs/loop_reports/LOOP_250_REPORT_20260702.md`
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- [ ] `11658668` browser visual/direct visual artifact가 없으면 semantic coverage approval로 세지 않는다.
+- [ ] Same parent/representative packet 또는 full375 collateral gate를 통과하기 전까지 approval을 갱신하지 않는다.
+- [ ] `11663535` `퇴마록` 계열 canonicalization을 다음 P0D blocker로 분리한다.
+
 ## 2026-07-02 Loop248 P0 대표 재현과 reason hygiene 보강 체크
 
 - [x] 동일 38-row parent packet을 재실행하지 않았다.
@@ -31,7 +68,7 @@
 - [x] 한국어 loop report를 남겼다.
   - `docs/devs/loop_reports/LOOP_248_REPORT_20260702.md`
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
-- [ ] `11658668` platform meta / expert conflict publish 경로를 다음 P0C blocker로 분리한다.
+- [x] `11658668` platform meta / expert conflict publish 경로를 Loop250 P0C blocker로 분리하고 단건 publish 누수를 차단했다.
 - [ ] `11663535` `퇴마록` 계열 canonicalization을 다음 P0D blocker로 분리한다.
 - [ ] browser visual required `5`건은 direct/browser artifact 없이는 semantic coverage approval로 세지 않는다.
 

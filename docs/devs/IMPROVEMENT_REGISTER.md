@@ -1,5 +1,35 @@
 # Improvement Register
 
+## IMP-20260702-450 - Loop250 blocks 11658668 image OCR public title leak
+
+- 상태: targeted canary GO / runtime GO / reason hygiene GO / semantic coverage REVIEW-LOCKED / convergence NO-GO / full375 previous NO-GO / full scan approval false / goal NOT_COMPLETE
+- 문제:
+  - Loop248에서 `11658668`이 platform meta / expert conflict가 있는데도 `전 버튜버가 하고 싶은데요`를 public title로 publish했다.
+  - Loop249 pre-patch 단건 재실행도 `safe_resolved`, `publish_allowed=true`, `scope_kind=current_work`로 같은 누수를 재현했다.
+  - resolved-public-title gate가 image context source와 공식 URL을 보면서 image catalog의 `promotion_eligible=false`, `title_role=unknown` 신호를 scope conflict로 반영하지 않았다.
+- 조치:
+  - `src/llm_batch/agentic_pipeline.py`에 platform meta + relation reject canonical rescue 차단을 추가했다.
+  - resolved-public-title gate에 image/ocr scope conflict 전파를 추가했다.
+  - non-image 본문에 title이 없고 matching image catalog가 `promotion_eligible=false`이면 `image_title_not_promotion_eligible`로 public title을 후보 보존 상태로 내린다.
+  - regression tests 2개를 추가했다.
+- 검증:
+  - Loop250 run `20260702_033005_272211`은 completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`.
+  - Final은 `candidate_ledger_status=promotion_blocked`, public title/url `null`, blocked candidate `전 버튜버가 하고 싶은데요`, `publish_allowed=false`, `publish_contract_trace` blocked 수렴.
+  - runtime audit `GO`, reason hygiene hit_files `0`.
+  - `tests.test_title_lead_search_inferred_guard` `174` PASS.
+  - architecture gate/work-bridge `19` PASS.
+  - py_compile PASS.
+- 결정:
+  - `11658668` 단건 public title 누수는 차단됐다.
+  - 단건 targeted canary 성공을 goal completion이나 full scan approval로 쓰지 않는다.
+  - semantic coverage는 browser visual missing `1/0/1`로 `REVIEW-LOCKED`다.
+  - convergence는 queue `7 -> 7` 및 packet identity changed로 `NO-GO`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+- 다음 조치:
+  - `11658668` browser visual/direct visual artifact를 붙이기 전 semantic approval로 세지 않는다.
+  - same parent/representative packet 또는 full375 collateral gate에서 survival을 확인한다.
+  - `11663535` canonicalization drift를 P0D blocker로 분리한다.
+
 ## IMP-20260702-448 - Loop248 neutralizes public reason flip markers after P0 representative replay
 
 - 상태: runtime GO / original reason hygiene FAIL / sanitized-preview reason hygiene GO / semantic coverage REVIEW-LOCKED / full375 previous NO-GO / full scan approval false / goal NOT_COMPLETE

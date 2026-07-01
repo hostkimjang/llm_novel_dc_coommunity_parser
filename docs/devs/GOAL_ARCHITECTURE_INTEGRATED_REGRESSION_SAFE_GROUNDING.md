@@ -6,8 +6,24 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop250 Addendum - 11658668 이미지 기반 resolved-public-title scope 차단
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- Loop249 pre-patch run `20260702_031854_134932`은 `11658668`을 `safe_resolved`, `publish_allowed=true`, `scope_kind=current_work`로 계속 publish해 실패 증거가 됐다.
+- Loop250 patch는 `src/llm_batch/agentic_pipeline.py`의 resolved-public-title gate에 image/ocr scope conflict를 추가했다. 비이미지 본문에 title이 없고 matching image catalog가 `promotion_eligible=false`이면 `image_title_not_promotion_eligible`로 public title을 후보 보존 상태로 내린다.
+- Patched run `20260702_033005_272211`은 completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`다.
+- Loop250 result는 `candidate_ledger_status=promotion_blocked`, public title/url `null`, blocked candidate `전 버튜버가 하고 싶은데요`, `publish_allowed=false`, `publish_contract_trace.gate_decision.status=candidate_only`, `scope_kind=context_only`다.
+- Artifacts: `docs/devs/loop_reports/LOOP_250_REPORT_20260702.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop250_11658668_resolved_public_image_scope_guard_result.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop250_11658668_resolved_public_image_scope_guard_runtime_audit.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop250_11658668_resolved_public_image_scope_guard_semantic_coverage.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop250_11658668_resolved_public_image_scope_guard_goal_convergence.md`.
+- Verification: reason hygiene hit_files `0`, `tests.test_title_lead_search_inferred_guard` `174` PASS, architecture gate/work-bridge `19` PASS, py_compile PASS.
+- Gate: targeted canary `GO`, runtime `GO`, semantic coverage `REVIEW-LOCKED(browser visual 1/0/1)`, convergence `NO-GO(queue 7 -> 7, packet identity changed)`, parent replay `NOT_RUN`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## Current Evidence
 
+- Latest Loop250 11658668 image scope guard report: `docs/devs/loop_reports/LOOP_250_REPORT_20260702.md`
+- Latest Loop250 patched result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop250_11658668_resolved_public_image_scope_guard_result.json`
+- Latest Loop250 runtime audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop250_11658668_resolved_public_image_scope_guard_runtime_audit.md/json`
+- Latest Loop250 semantic coverage audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop250_11658668_resolved_public_image_scope_guard_semantic_coverage.md/json`
+- Latest Loop250 convergence audit: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop250_11658668_resolved_public_image_scope_guard_goal_convergence.md/json`
 - Latest Loop248 P0 representative replay / reason hygiene guard report: `docs/devs/loop_reports/LOOP_248_REPORT_20260702.md`
 - Latest Loop248 current result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop248_p0_representative_7_current_result.json`
 - Latest Loop248 review artifact: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop248_p0_representative_7_current_review.md/json`

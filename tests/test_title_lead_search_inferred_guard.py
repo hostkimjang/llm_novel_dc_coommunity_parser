@@ -745,6 +745,166 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             )
         )
 
+    def test_platform_meta_relation_reject_blocks_strongest_canonical_rescue(self):
+        pipeline = build_pipeline()
+        title = "전 버튜버가 하고 싶은데요"
+        url = "https://novelpia.com/novel/275975"
+        post = PostInput(
+            post_id=11658668,
+            title="문피아에서는 수정하면 욕 처먹는거고",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="image", url="https://example.test/11658668.png"),
+                ContentBlock(type="text", text="여기서도 쿠사리 먹고 표지 내리면 소신있는거고"),
+            ],
+            comments=[],
+        )
+        ctx = ConversationContext(post_id=11658668, post_data=pipeline._post_to_dict(post), comments=[])
+        ctx.post_data["image_enrichment"] = [
+            {
+                "ocr_text": "ACTOR 아이, 탈의 주인공 전 버튜버가 하고 싶은데요",
+                "visual_summary": "노란색 배경의 캐릭터 일러스트",
+                "explicit_work_title": title,
+                "evidence_type": "cover_title",
+                "title_role": "unknown",
+                "promotion_eligible": False,
+                "work_cues": ["ACTOR", title, "아이, 탈의 주인공"],
+            }
+        ]
+
+        verification_result = {
+            "is_relevant": False,
+            "relation_judgment": {
+                "relation_type": "thematic_overlap_only",
+                "discussion_target": "specific_work",
+                "promotion_decision": "reject",
+            },
+            "grounding_check": {"anchor_found": "title_mention"},
+            "counter_arguments": [
+                {"severity": "critical", "reason": "본문이 플랫폼 메타 토론임"}
+            ],
+        }
+        final_decision = {"_title_null_block_reasons": []}
+        self.assertEqual(
+            pipeline._should_block_title_promotion_for_meta_primary_subject(
+                ctx=ctx,
+                vf_result=verification_result,
+                final_decision=final_decision,
+            ),
+            (True, "platform_release_meta"),
+        )
+
+        old_select = pipeline._select_best_canonical_rescue_candidate
+        old_acceptance = pipeline._compute_title_acceptance
+        old_url = pipeline._find_title_matched_official_url
+        pipeline._select_best_canonical_rescue_candidate = lambda **_kwargs: {
+            "title": title,
+            "score": 24,
+            "rescue": {
+                "strong": True,
+                "official_ev": True,
+                "canonical_convergence": True,
+                "alias_support": True,
+                "bucket_score": 4,
+                "search_hits": 14,
+            },
+        }
+        pipeline._compute_title_acceptance = lambda *_args, **_kwargs: {
+            "decision": "accept",
+            "strong_body_grounding": True,
+        }
+        pipeline._find_title_matched_official_url = lambda *_args, **_kwargs: url
+
+        try:
+            fixed = pipeline._validate_final_identity_state(
+                ctx=ctx,
+                is_relevant=False,
+                discussion_type="general",
+                official_title=None,
+                heretic_url=None,
+                confidence="None",
+                verification_result=verification_result,
+                final_decision=final_decision,
+                vf_anchor="title_mention",
+                has_episode_ref=False,
+                title_candidates=[],
+            )
+        finally:
+            pipeline._select_best_canonical_rescue_candidate = old_select
+            pipeline._compute_title_acceptance = old_acceptance
+            pipeline._find_title_matched_official_url = old_url
+
+        self.assertEqual(fixed, (False, "noise", None, None, "None"))
+        self.assertTrue(getattr(ctx, "_platform_meta_relation_reject_canonical_rescue_blocked", False))
+        self.assertIn(
+            "platform_meta_relation_reject_canonical_rescue_blocked",
+            final_decision["_title_null_block_reasons"],
+        )
+
+    def test_resolved_public_title_gate_blocks_image_ineligible_platform_meta_scope(self):
+        pipeline = build_pipeline()
+        title = "전 버튜버가 하고 싶은데요"
+        url = "https://novelpia.com/novel/275975"
+        post = PostInput(
+            post_id=11658668,
+            title="문피아에서는 수정하면 욕 처먹는거고",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="image", url="https://example.test/11658668.png"),
+                ContentBlock(type="text", text="여기서도 쿠사리 먹고 내리면 소신있는거고"),
+            ],
+            comments=[],
+        )
+        ctx = ConversationContext(post_id=11658668, post_data=pipeline._post_to_dict(post), comments=[])
+        image_item = {
+            "ocr_text": "ACTOR 아이, 탈의 주인공 전 버튜버가 하고 싶은데요",
+            "visual_summary": "노란색 배경의 캐릭터 일러스트",
+            "explicit_work_title": title,
+            "evidence_type": "cover_title",
+            "title_role": "unknown",
+            "promotion_eligible": False,
+            "work_cues": ["ACTOR", title, "아이, 탈의 주인공"],
+        }
+        ctx.post_data["image_enrichment"] = [image_item]
+        ctx.search_results = [
+            {
+                "title": title,
+                "url": url,
+                "content": "노벨피아 공식 작품 상세",
+            }
+        ]
+        final_decision = {
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "review",
+            "context_sources": ["title", "body", "search", "image"],
+            "anchor_type": "image",
+            "image_evidence_catalog": [image_item],
+        }
+
+        decision = pipeline._record_resolved_public_title_gate_decision(
+            ctx,
+            title,
+            candidate_url=url,
+            final_decision=final_decision,
+            verification_result={
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+            },
+            source="serialized_public_identity",
+        )
+
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertTrue(decision["candidate_preserved"])
+        self.assertIn("scope_context_only", decision["reason_codes"])
+        self.assertIn("scope_not_current_work", decision["reason_codes"])
+        self.assertIn("image_title_not_promotion_eligible", decision["reason_codes"])
+        self.assertEqual(final_decision["_promotion_gate_state"]["scope"]["scope_kind"], "context_only")
+
     def test_late_title_rescue_paths_share_semantic_no_work_gate(self):
         source_path = Path(__file__).resolve().parents[1] / "src" / "llm_batch" / "agentic_pipeline.py"
         source = source_path.read_text(encoding="utf-8")

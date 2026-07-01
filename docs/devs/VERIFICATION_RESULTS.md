@@ -1,5 +1,62 @@
 # Verification Results
 
+## 2026-07-02 Loop250 11658668 resolved-public image scope guard verification
+
+- Scope: 동일 38-row parent packet을 재실행하지 않고 `11658668` image OCR 기반 public title publish 누수를 resolved-public-title gate에서 차단한다.
+- Input:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop249_11658668_platform_meta_relation_reject_1.jsonl`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop249_11658668_platform_meta_relation_reject_1_manifest.json`
+- Pre-patch evidence:
+  - run id `20260702_031854_134932`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop249_11658668_platform_meta_relation_reject_result.json`
+  - final `candidate_ledger_status=safe_resolved`, `publish_allowed=true`, `scope_kind=current_work`
+- Patched runtime:
+  - run id `20260702_033005_272211`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop250_11658668_resolved_public_image_scope_guard_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop250_11658668_resolved_public_image_scope_guard_result_manifest.json`
+  - log `logs\expert_run_20260702_033005_272211.log`
+  - completed/flushed/pending/failed `1/1/0/0`, effective_parallel `1`, VLM/OCR `READY`, image_post_count `1`
+- Contract outcome:
+  - `candidate_ledger_status=promotion_blocked`
+  - public `novel_identity.official_title=null`, `heretic_url=null`
+  - blocked candidate `전 버튜버가 하고 싶은데요`, URL `https://novelpia.com/novel/275975`
+  - `title_resolution_state=unresolved_matchable`, `title_resolution_allowed=false`, `work_resolution=unresolved`
+  - `promotion_decision.status=candidate_only`, `publish_allowed=false`, `candidate_preserved=true`
+  - `publish_contract_trace.post_gate_identity.official_title=null`
+- Runtime audit:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop250_11658668_resolved_public_image_scope_guard_runtime_audit.md/json`
+  - runtime_contract `GO`
+- Reason hygiene:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop250_11658668_resolved_public_image_scope_guard_reason_hygiene.json`
+  - hit_files `0`, clean_files `1`
+- Semantic coverage:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop250_11658668_resolved_public_image_scope_guard_semantic_coverage.md/json`
+  - gate `REVIEW-LOCKED`
+  - browser_visual_required/available/missing `1/0/1`
+- Convergence:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop250_11658668_resolved_public_image_scope_guard_goal_convergence.md/json`
+  - gate `NO-GO`
+  - actionable queue `7 -> 7`
+  - packet identity changed, safe delta 미평가
+- Code verification:
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_title_lead_search_inferred_guard.py`: PASS
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard -v`: PASS, `174` tests
+  - `.venv312\Scripts\python.exe -m unittest tests.test_goal_convergence tests.test_safe_loss_flip_rate_probe tests.test_always_on_regression_gates tests.test_regression_safe_work_bridge_contract -v`: PASS, `19` tests
+  - architecture py_compile bundle: PASS
+- Artifact:
+  - `docs\devs\loop_reports\LOOP_250_REPORT_20260702.md`
+- Gate:
+  - targeted canary: `GO`
+  - runtime: `GO`
+  - reason hygiene: `GO`
+  - semantic coverage: `REVIEW-LOCKED`
+  - convergence: `NO-GO`
+  - parent replay: `NOT_RUN`
+  - full375 previous: `NO-GO`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+
 ## 2026-07-02 Loop248 P0 representative replay and reason hygiene verification
 
 - Scope: 동일 38-row parent packet을 재실행하지 않고 Loop51 P0 collateral bucket 대표 7건을 current-code로 재현한 뒤, 공개 reason의 내부 flip marker 노출을 코드로 막는다.

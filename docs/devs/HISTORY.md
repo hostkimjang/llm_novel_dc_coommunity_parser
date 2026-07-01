@@ -1,5 +1,21 @@
 # Development History
 
+## 2026-07-02 - Loop250 blocks 11658668 resolved-public image scope publish leak
+
+- 동일 38-row parent packet은 재실행하지 않고 `11658668` 단건 P0C blocker만 좁혔다.
+- Loop249 pre-patch run `20260702_031854_134932`은 `candidate_ledger_status=safe_resolved`, `publish_allowed=true`, `scope_kind=current_work`로 실패 증거가 됐다.
+- `src/llm_batch/agentic_pipeline.py`에서 platform meta + relation reject canonical rescue를 차단하고, resolved-public-title gate가 image/ocr 기반 scope에서 `promotion_eligible=false` image catalog를 `context_only` conflict로 반영하게 했다.
+- Loop250 patched run `20260702_033005_272211`은 completed/flushed/pending/failed `1/1/0/0`, VLM/OCR `READY`다.
+- Loop250 final은 `candidate_ledger_status=promotion_blocked`, public title/url `null`, blocked candidate `전 버튜버가 하고 싶은데요`, `publish_allowed=false`, `publish_contract_trace` blocked 수렴이다.
+- Verification: runtime audit `GO`, reason hygiene hit_files `0`, `tests.test_title_lead_search_inferred_guard` `174` PASS, architecture gate/work-bridge `19` PASS, py_compile PASS.
+- Artifacts:
+  - `docs/devs/loop_reports/LOOP_250_REPORT_20260702.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop250_11658668_resolved_public_image_scope_guard_result.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop250_11658668_resolved_public_image_scope_guard_runtime_audit.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop250_11658668_resolved_public_image_scope_guard_semantic_coverage.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop250_11658668_resolved_public_image_scope_guard_goal_convergence.md`
+- Gate는 targeted canary `GO`, runtime `GO`, semantic coverage `REVIEW-LOCKED(browser visual 1/0/1)`, convergence `NO-GO(queue 7 -> 7, packet identity changed)`, parent replay `NOT_RUN`, full375 previous `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 - Loop248 runs P0 representatives and patches public reason hygiene
 
 - 동일 38-row parent packet은 재실행하지 않고 Loop51 P0 collateral bucket 대표 7건만 current-code로 재현했다.
