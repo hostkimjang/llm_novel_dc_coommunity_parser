@@ -1,0 +1,67 @@
+{
+  "report_type": "loop333_collateral_gate_accounting_state",
+  "generated_at": "2026-07-03T04:36:48",
+  "head": "d73a151c_base_plus_worktree",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "artifacts": {
+    "gate_json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop333_always_on_collateral183_adjusted_gate.json",
+    "gate_md": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop333_always_on_collateral183_adjusted_gate.md",
+    "golden_gate_input": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop333_current_golden18_incomplete_gate_input.json",
+    "collateral_compare": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\collateral\\loop49_regression_panel_replay_collateral_compare.json",
+    "collateral_review_summary": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop332_collateral183_combined_source_native_queue.json"
+  },
+  "gate": {
+    "overall": "NO-GO",
+    "golden": "NO-GO",
+    "collateral": "NO-GO",
+    "search_recovery": "P0 / OPEN"
+  },
+  "collateral_accounting": {
+    "raw_collateral_regression_count": 183,
+    "review_exclusion_candidate_rows": 57,
+    "review_adjustment_applied": true,
+    "review_adjusted_regression_count": 126,
+    "review_gate": "REVIEW-LOCKED",
+    "reviewed_rows": 183,
+    "validation_issue_count": 0,
+    "label_counts": {
+      "HOLD": 31,
+      "REPROCESS": 95,
+      "ACCEPT": 57
+    },
+    "blockers": [
+      "collateral_review_adjusted_regression_count_nonzero"
+    ]
+  },
+  "golden_status": {
+    "gate": "NO-GO",
+    "expected_rows": 18,
+    "row_count": 18,
+    "passed_count": null,
+    "failed_count": null,
+    "canary_semantic_gate": "NOT_AUDITED_CURRENT_HEAD",
+    "runtime_complete": false,
+    "blockers": [
+      "golden_expected_answer_failures",
+      "golden_semantic_gate_not_pass",
+      "golden_runtime_not_complete"
+    ]
+  },
+  "blockers": [
+    "golden:golden_expected_answer_failures",
+    "golden:golden_semantic_gate_not_pass",
+    "golden:golden_runtime_not_complete",
+    "collateral:collateral_review_adjusted_regression_count_nonzero"
+  ],
+  "verification": {
+    "py_compile": "PASS tools/evaluate_always_on_regression_gates.py tests/test_always_on_regression_gates.py",
+    "targeted_unit": "PASS tests.test_always_on_regression_gates 8 tests"
+  },
+  "next_actions": [
+    "Split review_adjusted_regression_count=126 into REPROCESS=95 and HOLD=31 action queues.",
+    "Keep golden18 current HEAD GO closed until 18/18 runtime and expected-answer audit complete.",
+    "Keep search recovery P0 open and promotion_blocked as search-blind conditional until degraded search is bounded or recovered."
+  ]
+}

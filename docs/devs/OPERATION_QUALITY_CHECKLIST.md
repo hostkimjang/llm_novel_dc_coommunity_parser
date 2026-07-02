@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-03 Loop333 collateral gate accounting quality gate
+
+- 근거:
+  - [x] Loop332 clean review summary `183/183`, validation issue `0`을 확인했다.
+  - [x] `exclude_from_regression_count_after_gate_wiring=57`만 raw collateral regression count에서 차감했다.
+  - [x] adjusted collateral regression count `126`을 gate report에 남겼다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_333_REPORT_20260703.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop333_collateral_gate_accounting_20260703.json`.
+- 품질 게이트:
+  - [x] raw `183`을 숨기지 않고 adjusted `126`과 함께 기록한다.
+  - [x] dirty/partial review summary는 count 차감에 쓰지 않는다.
+  - [x] adjusted residual `126`이 남으면 collateral gate는 `NO-GO`다.
+  - [x] current HEAD golden18 expected-answer audit 미완료를 old golden GO로 대체하지 않는다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop322 safe-loss alias contract quality gate
 
 - 근거:

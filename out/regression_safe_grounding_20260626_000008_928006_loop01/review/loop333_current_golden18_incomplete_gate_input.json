@@ -1,0 +1,23 @@
+{
+  "report_type": "current_golden18_incomplete_gate_input",
+  "generated_at": "2026-07-03T04:35:44",
+  "row_count": 18,
+  "passed_count": null,
+  "failed_count": null,
+  "canary_semantic_gate": "NOT_AUDITED_CURRENT_HEAD",
+  "runtime": {
+    "run_id": "20260703_032149_034356",
+    "manifest_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_golden18_current_head_c033dd97_search_nonlight_result_manifest.json",
+    "input_post_count": 18,
+    "completed_count": 4,
+    "pending_count": 14,
+    "manifest_pending_count": 0,
+    "failed_count": 0,
+    "large_run_complete": false,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false
+  },
+  "gate_note": "current HEAD golden18 replay is not complete and has no expected-answer audit yet; old golden GO must not be substituted.",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false
+}

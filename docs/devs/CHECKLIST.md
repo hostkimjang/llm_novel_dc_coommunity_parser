@@ -1,5 +1,29 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop333 collateral gate accounting 체크
+
+- [x] Loop332 source-native summary를 상시 collateral gate accounting에 배선했다.
+  - raw collateral regression count `183`
+  - review exclusion candidates `57`
+  - adjusted collateral regression count `126`
+  - review adjustment applied `true`
+- [x] clean review summary 조건을 코드 계약으로 고정했다.
+  - gate `REVIEW-LOCKED`
+  - validation issue `0`
+  - `reviewed_rows=batch_review_rows`
+  - `unreviewed_batch_rows=0`
+  - raw regression count와 review batch count 일치
+- [x] dirty/partial review summary는 regression count 차감에 쓰지 않도록 테스트했다.
+- [x] Loop333 always-on gate report를 생성했다.
+  - JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop333_always_on_collateral183_adjusted_gate.json`
+  - Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop333_always_on_collateral183_adjusted_gate.md`
+- [x] 검증을 실행했다.
+  - py_compile PASS
+  - `tests.test_always_on_regression_gates` PASS, `8` tests
+- [ ] adjusted residual `126`을 `REPROCESS=95`, `HOLD=31` action queue로 분해한다.
+- [ ] golden18 current HEAD `18/18` runtime 및 expected-answer audit 완료 전 old golden GO를 대체하지 않는다.
+- Gate: always-on `NO-GO`, golden `NO-GO`, collateral `NO-GO / adjusted_regression_count=126`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop332 collateral183 combined action queue 체크
 
 - [x] 코드 변경 없는 대형 run 대기 흐름을 active `collateral183` triage로 전환했다.
@@ -20,7 +44,7 @@
 - [x] 계약 테스트를 갱신했다.
   - `tests.test_summarize_collateral_review_verdicts` PASS, `6` tests
   - collateral/goal/gate 관련 bundle PASS, `25` tests
-- [ ] `exclude_from_regression_count_after_gate_wiring=57`을 gate accounting에 배선하기 전 regression count에서 차감하지 않는다.
+- [x] `exclude_from_regression_count_after_gate_wiring=57`은 Loop333에서 gate accounting에 배선했고, adjusted residual `126`이 남는다.
 - [ ] `REPROCESS=95`와 `HOLD=31`은 각각 targeted repair/runtime replay, policy/native review 큐로 분해한다.
 - Gate: collateral source-native queue `REVIEW-LOCKED / COMPLETE_183_OF_183 / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 

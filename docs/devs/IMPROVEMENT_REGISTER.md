@@ -1,5 +1,36 @@
 # Improvement Register
 
+## IMP-20260703-333 - collateral gate accounting adjustment
+
+- Status: Gate accounting wired / residual still open / approval not open
+- Loop: 333
+- Problem:
+  - Loop332 produced `ACCEPT=57` exclusion candidates, but the always-on collateral gate still only saw raw `collateral_regression_count=183`.
+  - Exclusion candidates needed a clean review-summary contract before any regression count subtraction.
+- Change:
+  - Added `--collateral-review-summary` to `tools/evaluate_always_on_regression_gates.py`.
+  - The gate now applies exclusions only when review gate is `REVIEW-LOCKED`, validation issue count is `0`, reviewed rows cover the batch, unreviewed rows are `0`, and review batch rows match raw regression count.
+  - Added adjusted collateral regression count and review adjustment details to JSON/Markdown output.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_333_REPORT_20260703.md`
+  - state `docs/devs/loop333_collateral_gate_accounting_20260703.json`
+  - gate `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop333_always_on_collateral183_adjusted_gate.json`
+- Result:
+  - Raw collateral regression count `183`.
+  - Exclusion candidates applied `57`.
+  - Review-adjusted collateral regression count `126`.
+  - Gate remains `NO-GO`.
+- Verification:
+  - py_compile PASS.
+  - `tests.test_always_on_regression_gates` PASS, `8` tests.
+- Gate:
+  - always-on `NO-GO`
+  - golden `NO-GO`
+  - collateral `NO-GO / adjusted_regression_count=126`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260703-332 - collateral183 combined action queue
 
 - Status: Source-native queue complete / repair queue open / approval not open

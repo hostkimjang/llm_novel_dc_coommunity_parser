@@ -1,0 +1,105 @@
+{
+  "report_type": "always_on_regression_gates",
+  "generated_at": "2026-07-03T04:36:26",
+  "gate": "NO-GO",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "policy": {
+    "golden_expected_rows": 18,
+    "full_375_collateral_required": true,
+    "golden_pass_alone_is_not_approval": true,
+    "collateral_runtime_pass_alone_is_not_approval": true,
+    "collateral_source_native_exclusion_requires_clean_review_summary": true
+  },
+  "golden": {
+    "gate": "NO-GO",
+    "expected_rows": 18,
+    "row_count": 18,
+    "passed_count": null,
+    "failed_count": null,
+    "canary_semantic_gate": "NOT_AUDITED_CURRENT_HEAD",
+    "runtime_complete": false,
+    "blockers": [
+      "golden_expected_answer_failures",
+      "golden_semantic_gate_not_pass",
+      "golden_runtime_not_complete"
+    ]
+  },
+  "collateral": {
+    "gate": "NO-GO",
+    "expected_shared_posts": 375,
+    "shared_post_count": 375,
+    "changed_post_count": 223,
+    "collateral_regression_count": 183,
+    "review_adjusted_regression_count": 126,
+    "review_adjustment": {
+      "provided": true,
+      "applied": true,
+      "review_id": "loop332_collateral183_combined_source_native_queue",
+      "review_gate": "REVIEW-LOCKED",
+      "batch_review_rows": 183,
+      "reviewed_rows": 183,
+      "unreviewed_batch_rows": 0,
+      "validation_issue_count": 0,
+      "exclusion_candidate_rows": 57,
+      "label_counts": {
+        "HOLD": 31,
+        "REPROCESS": 95,
+        "ACCEPT": 57
+      },
+      "action_counts": {
+        "canonical_title_policy_review": 2,
+        "repair_after_wrong_work": 5,
+        "exclude_from_regression_count_after_gate_wiring": 57,
+        "repair_unsafe_promotion": 14,
+        "repair_safe_loss": 76,
+        "native_image_or_source_review_required": 14,
+        "native_web_or_source_review_required": 3,
+        "title_variant_canonicalization_required": 5,
+        "preserve_hold_boundary": 1,
+        "native_image_or_character_bridge_review_required": 2,
+        "canonical_title_variant_policy_required": 1,
+        "native_image_or_media_boundary_review_required": 1,
+        "character_bridge_contract_required": 1,
+        "multi_candidate_recommendation_review_required": 1,
+        "native_web_or_url_review_required": 3,
+        "native_web_or_scope_review_required": 1,
+        "publish_contract_trace_or_variance_review_required": 1,
+        "url_canonicalization_review_required": 4,
+        "native_image_or_url_review_required": 1,
+        "character_bridge_contract_or_runtime_replay_required": 1,
+        "native_web_or_alternative_title_review_required": 1,
+        "known_alias_runtime_replay_required": 6,
+        "wrong_before_alternative_title_review_required": 7,
+        "incidental_comment_overresolve_excluded": 1,
+        "wrong_before_alternative_current_work_review_required": 1,
+        "title_field_split_contract_required": 1,
+        "native_image_or_canonical_review_required": 2,
+        "multi_work_or_benchmark_context_policy_required": 1,
+        "adaptation_or_webtoon_context_replay_required": 1,
+        "comment_title_or_image_review_required": 1,
+        "native_image_or_scope_review_required": 1,
+        "wrong_before_author_new_work_review_required": 1,
+        "source_evidence_missing_title_question_excluded": 1,
+        "negated_recommendation_excluded": 1,
+        "comparison_context_policy_required": 1,
+        "author_work_context_replay_required": 1,
+        "author_new_work_context_excluded": 1,
+        "native_image_or_ocr_title_review_required": 1,
+        "generic_trope_overresolve_excluded": 1
+      },
+      "review_adjusted_regression_count": 126,
+      "blockers": []
+    },
+    "runtime_complete": true,
+    "blockers": [
+      "collateral_review_adjusted_regression_count_nonzero"
+    ]
+  },
+  "blockers": [
+    "golden:golden_expected_answer_failures",
+    "golden:golden_semantic_gate_not_pass",
+    "golden:golden_runtime_not_complete",
+    "collateral:collateral_review_adjusted_regression_count_nonzero"
+  ]
+}

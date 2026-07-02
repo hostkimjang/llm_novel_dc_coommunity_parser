@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop333 Addendum - collateral gate accounting
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop333은 approval 회차가 아니라 Loop332 source-native summary를 상시 375 collateral gate accounting에 배선한 회차다.
+- 목적: `ACCEPT=57`을 chat/report 수준의 제외 후보로 남기지 않고, clean review summary 조건을 통과할 때만 raw collateral regression count에서 차감한다.
+- Evidence: report `docs/devs/loop_reports/LOOP_333_REPORT_20260703.md`, state `docs/devs/loop333_collateral_gate_accounting_20260703.json`, gate `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop333_always_on_collateral183_adjusted_gate.json`.
+- Result: raw `collateral_regression_count=183`, exclusion candidates `57`, review adjustment applied `true`, adjusted collateral regression count `126`.
+- 코드 변경: `tools/evaluate_always_on_regression_gates.py`에 `--collateral-review-summary`를 추가하고, dirty/partial review summary 차감 금지 및 adjusted residual blocker를 계약화했다.
+- Verification: py_compile PASS, `tests.test_always_on_regression_gates` `8` tests PASS.
+- Gate: always-on `NO-GO`, golden `NO-GO / NOT_AUDITED_CURRENT_HEAD`, collateral `NO-GO / adjusted_regression_count=126`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop332 Addendum - collateral183 combined action queue
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop332는 approval 회차가 아니라 코드 변경 없는 대형 run 대기 흐름을 `collateral183` active triage로 전환한 회차다.

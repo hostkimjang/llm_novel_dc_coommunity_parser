@@ -69,7 +69,86 @@ def golden_gate(golden: dict[str, Any], expected_rows: int) -> dict[str, Any]:
     }
 
 
-def collateral_gate(collateral: dict[str, Any], expected_shared_posts: int) -> dict[str, Any]:
+def _collateral_review_adjustment(
+    *,
+    collateral_review: dict[str, Any] | None,
+    raw_regression_count: int | None,
+) -> dict[str, Any]:
+    if not collateral_review:
+        return {
+            "provided": False,
+            "applied": False,
+            "exclusion_candidate_rows": 0,
+            "review_adjusted_regression_count": raw_regression_count,
+            "blockers": [],
+        }
+
+    summary = collateral_review.get("summary") if isinstance(collateral_review.get("summary"), dict) else {}
+    transition = (
+        summary.get("queue_transition")
+        if isinstance(summary.get("queue_transition"), dict)
+        else {}
+    )
+    action_counts = summary.get("action_counts") if isinstance(summary.get("action_counts"), dict) else {}
+    review_gate = str(collateral_review.get("gate") or "").strip()
+    batch_review_rows = _safe_int(summary.get("batch_review_rows"))
+    reviewed_rows = _safe_int(summary.get("reviewed_rows"))
+    unreviewed_batch_rows = _safe_int(summary.get("unreviewed_batch_rows"))
+    validation_issue_count = _safe_int(summary.get("validation_issue_count"))
+    exclusion_candidate_rows = _safe_int(transition.get("exclusion_candidate_rows"))
+    if exclusion_candidate_rows is None:
+        exclusion_candidate_rows = _safe_int(
+            action_counts.get("exclude_from_regression_count_after_gate_wiring")
+        )
+    if exclusion_candidate_rows is None:
+        exclusion_candidate_rows = 0
+
+    blockers: list[str] = []
+    if review_gate != "REVIEW-LOCKED":
+        blockers.append("collateral_review_gate_not_review_locked")
+    if validation_issue_count != 0:
+        blockers.append("collateral_review_validation_issues_nonzero")
+    if batch_review_rows is None or reviewed_rows is None:
+        blockers.append("collateral_review_counts_missing")
+    elif reviewed_rows != batch_review_rows:
+        blockers.append("collateral_review_not_fully_reviewed")
+    if (unreviewed_batch_rows or 0) != 0:
+        blockers.append("collateral_review_unreviewed_rows_nonzero")
+    if raw_regression_count is None:
+        blockers.append("collateral_raw_regression_count_missing")
+    elif batch_review_rows != raw_regression_count:
+        blockers.append("collateral_review_batch_count_mismatch")
+    if raw_regression_count is not None and exclusion_candidate_rows > raw_regression_count:
+        blockers.append("collateral_review_exclusion_exceeds_regression_count")
+
+    applied = not blockers
+    adjusted = (
+        max(raw_regression_count - exclusion_candidate_rows, 0)
+        if applied and raw_regression_count is not None
+        else raw_regression_count
+    )
+    return {
+        "provided": True,
+        "applied": applied,
+        "review_id": collateral_review.get("review_id"),
+        "review_gate": review_gate,
+        "batch_review_rows": batch_review_rows,
+        "reviewed_rows": reviewed_rows,
+        "unreviewed_batch_rows": unreviewed_batch_rows,
+        "validation_issue_count": validation_issue_count,
+        "exclusion_candidate_rows": exclusion_candidate_rows,
+        "label_counts": summary.get("label_counts") or {},
+        "action_counts": action_counts,
+        "review_adjusted_regression_count": adjusted,
+        "blockers": blockers,
+    }
+
+
+def collateral_gate(
+    collateral: dict[str, Any],
+    expected_shared_posts: int,
+    collateral_review: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     shared = _safe_int(collateral.get("shared_post_count"))
     changed = _safe_int(collateral.get("changed_post_count"))
     regression_count = _safe_int(collateral.get("collateral_regression_count"))
@@ -81,16 +160,27 @@ def collateral_gate(collateral: dict[str, Any], expected_shared_posts: int) -> d
         and (runtime_pending or 0) == 0
         and (runtime_failed or 0) == 0
     )
+    review_adjustment = _collateral_review_adjustment(
+        collateral_review=collateral_review,
+        raw_regression_count=regression_count,
+    )
+    adjusted_regression_count = review_adjustment.get("review_adjusted_regression_count")
     passed = (
         shared == expected_shared_posts
-        and (regression_count or 0) == 0
+        and (adjusted_regression_count or 0) == 0
+        and not review_adjustment.get("blockers")
         and runtime_complete
     )
     blockers: list[str] = []
     if shared != expected_shared_posts:
         blockers.append("collateral_shared_post_count_mismatch")
-    if (regression_count or 0) != 0:
-        blockers.append("collateral_regression_count_nonzero")
+    blockers.extend(review_adjustment.get("blockers") or [])
+    if (adjusted_regression_count or 0) != 0:
+        blockers.append(
+            "collateral_review_adjusted_regression_count_nonzero"
+            if review_adjustment.get("applied")
+            else "collateral_regression_count_nonzero"
+        )
     if runtime_completed is None:
         blockers.append("collateral_runtime_counts_missing")
     elif not runtime_complete:
@@ -101,6 +191,8 @@ def collateral_gate(collateral: dict[str, Any], expected_shared_posts: int) -> d
         "shared_post_count": shared,
         "changed_post_count": changed,
         "collateral_regression_count": regression_count,
+        "review_adjusted_regression_count": adjusted_regression_count,
+        "review_adjustment": review_adjustment,
         "runtime_complete": runtime_complete,
         "blockers": blockers,
     }
@@ -110,11 +202,16 @@ def evaluate_gates(
     *,
     golden: dict[str, Any],
     collateral: dict[str, Any],
+    collateral_review: dict[str, Any] | None = None,
     expected_golden_rows: int = 18,
     expected_collateral_shared_posts: int = 375,
 ) -> dict[str, Any]:
     golden_result = golden_gate(golden, expected_golden_rows)
-    collateral_result = collateral_gate(collateral, expected_collateral_shared_posts)
+    collateral_result = collateral_gate(
+        collateral,
+        expected_collateral_shared_posts,
+        collateral_review=collateral_review,
+    )
     gate = "GO" if golden_result["gate"] == "GO" and collateral_result["gate"] == "GO" else "NO-GO"
     return {
         "report_type": "always_on_regression_gates",
@@ -127,6 +224,7 @@ def evaluate_gates(
             "full_375_collateral_required": True,
             "golden_pass_alone_is_not_approval": True,
             "collateral_runtime_pass_alone_is_not_approval": True,
+            "collateral_source_native_exclusion_requires_clean_review_summary": True,
         },
         "golden": golden_result,
         "collateral": collateral_result,
@@ -138,23 +236,26 @@ def evaluate_gates(
 
 
 def write_markdown(report: dict[str, Any], path: Path) -> None:
+    def display(value: Any) -> str:
+        return "null" if value is None else str(value)
+
     lines = [
-        "# Always-on regression gates",
+        "# 상시 회귀 게이트",
         "",
         f"- gate: `{report['gate']}`",
         f"- semantic_quality: `{report['semantic_quality']}`",
         f"- full_scan_approval: `{str(report['full_scan_approval']).lower()}`",
         f"- 정책: golden-{report['golden']['expected_rows']}과 full 375 collateral diff를 항상 함께 요구한다.",
         "",
-        "## Golden",
+        "## Golden 게이트",
         "",
         f"- gate: `{report['golden']['gate']}`",
         f"- rows: `{report['golden']['row_count']}/{report['golden']['expected_rows']}`",
-        f"- passed: `{report['golden']['passed_count']}`",
-        f"- failed: `{report['golden']['failed_count']}`",
+        f"- passed: `{display(report['golden']['passed_count'])}`",
+        f"- failed: `{display(report['golden']['failed_count'])}`",
         f"- runtime_complete: `{report['golden']['runtime_complete']}`",
         "",
-        "## Collateral",
+        "## Collateral 게이트",
         "",
         f"- gate: `{report['collateral']['gate']}`",
         (
@@ -162,10 +263,22 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
             f"`{report['collateral']['shared_post_count']}/{report['collateral']['expected_shared_posts']}`"
         ),
         f"- changed posts: `{report['collateral']['changed_post_count']}`",
-        f"- collateral_regression_count: `{report['collateral']['collateral_regression_count']}`",
+        f"- raw collateral_regression_count: `{report['collateral']['collateral_regression_count']}`",
+        (
+            "- review exclusion candidates: "
+            f"`{report['collateral']['review_adjustment'].get('exclusion_candidate_rows')}`"
+        ),
+        (
+            "- review adjustment applied: "
+            f"`{report['collateral']['review_adjustment'].get('applied')}`"
+        ),
+        (
+            "- review_adjusted_regression_count: "
+            f"`{report['collateral']['review_adjusted_regression_count']}`"
+        ),
         f"- runtime_complete: `{report['collateral']['runtime_complete']}`",
         "",
-        "## Blockers",
+        "## 차단 항목",
         "",
     ]
     if report["blockers"]:
@@ -181,6 +294,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Evaluate golden plus full 375 collateral as always-on gates.")
     parser.add_argument("--golden-audit", required=True, type=Path)
     parser.add_argument("--collateral-compare", required=True, type=Path)
+    parser.add_argument("--collateral-review-summary", type=Path, default=None)
     parser.add_argument("--expected-golden-rows", type=int, default=18)
     parser.add_argument("--expected-collateral-shared-posts", type=int, default=375)
     parser.add_argument("--output-json", required=True, type=Path)
@@ -194,6 +308,11 @@ def main() -> int:
     report = evaluate_gates(
         golden=load_json(args.golden_audit),
         collateral=load_json(args.collateral_compare),
+        collateral_review=(
+            load_json(args.collateral_review_summary)
+            if args.collateral_review_summary
+            else None
+        ),
         expected_golden_rows=args.expected_golden_rows,
         expected_collateral_shared_posts=args.expected_collateral_shared_posts,
     )

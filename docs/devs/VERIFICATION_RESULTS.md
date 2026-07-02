@@ -1,5 +1,24 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop333 collateral gate accounting
+
+- 범위: Loop332 `collateral183` source-native summary를 상시 375 collateral gate accounting에 연결해 raw regression count와 adjusted regression count를 분리한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_333_REPORT_20260703.md`
+  - state `docs\devs\loop333_collateral_gate_accounting_20260703.json`
+  - gate JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop333_always_on_collateral183_adjusted_gate.json`
+  - gate Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop333_always_on_collateral183_adjusted_gate.md`
+  - golden incomplete input `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop333_current_golden18_incomplete_gate_input.json`
+- Evidence:
+  - raw `collateral_regression_count=183`.
+  - Loop332 clean review summary 조건을 만족해 `exclude_from_regression_count_after_gate_wiring=57`만 차감했다.
+  - adjusted collateral regression count는 `126`이다.
+  - current HEAD golden18은 `NOT_AUDITED_CURRENT_HEAD`, runtime complete `false`라 old golden GO를 대체하지 않는다.
+- Verification:
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\evaluate_always_on_regression_gates.py tests\test_always_on_regression_gates.py` PASS
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_always_on_regression_gates -v` PASS, `8` tests
+- Gate: always-on `NO-GO`, golden `NO-GO`, collateral `NO-GO / review_adjusted_regression_count=126`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop332 collateral183 combined action queue
 
 - 범위: 대형 runtime 완료 대기 대신 `collateral183` P0 source-native verdict 전체를 한 summary로 합산해 현재 action queue를 확정한다.

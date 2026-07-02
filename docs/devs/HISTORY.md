@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop333 collateral gate accounting
+
+- Loop332 source-native summary를 `tools/evaluate_always_on_regression_gates.py`의 collateral gate accounting에 배선했다.
+- 새 `--collateral-review-summary` 입력은 clean review summary일 때만 exclusion candidate를 차감한다.
+- raw collateral regression count `183`에서 검증된 exclusion candidate `57`만 차감했고, adjusted collateral regression count는 `126`으로 남았다.
+- dirty/partial review summary는 차감하지 않는 계약과 all-excluded case의 collateral gate opening 계약을 테스트로 추가했다.
+- Loop333 gate report는 always-on `NO-GO`, golden `NO-GO`, collateral `NO-GO / adjusted=126`이다.
+- Report는 `docs/devs/loop_reports/LOOP_333_REPORT_20260703.md`, state는 `docs/devs/loop333_collateral_gate_accounting_20260703.json`이다.
+- 검증은 py_compile PASS, `tests.test_always_on_regression_gates` `8` tests PASS다.
+- Gate는 search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop332 collateral183 combined action queue
 
 - 코드 변경 없는 대형 run 대기 흐름을 active `collateral183` triage로 전환했다.
