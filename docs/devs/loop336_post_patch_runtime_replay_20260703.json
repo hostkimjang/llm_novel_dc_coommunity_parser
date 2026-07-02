@@ -1,0 +1,96 @@
+{
+  "loop": 336,
+  "date": "2026-07-03",
+  "head": "f232f31a",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "approval": {
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall": "NOT_APPROVAL"
+  },
+  "target": {
+    "post_id": 11705250,
+    "title": "심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네",
+    "expected_official_title": "심해의 마법사",
+    "expected_url": "https://m.munpia.com/novel/detail/483667"
+  },
+  "run": {
+    "run_id": "20260703_051443_582943",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop330_override_audit_11705250_current_head_c033dd97_input.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop336_override_11705250_post_patch_f232f31a_search_nonlight_result.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop336_override_11705250_post_patch_f232f31a_search_nonlight_result_checkpoint.jsonl",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop336_override_11705250_post_patch_f232f31a_search_nonlight_result_manifest.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop336_override_11705250_post_patch_f232f31a_search_nonlight_health_audit.json",
+    "stderr_log": "logs/loop336_override_11705250_post_patch_f232f31a_search_nonlight_stderr.log",
+    "counts": {
+      "input": 1,
+      "completed": 1,
+      "flushed": 1,
+      "pending": 0,
+      "failed": 0
+    },
+    "session_exit_code": 1,
+    "session_exit_code_interpretation": "result/checkpoint/manifest were written and log has processing complete; keep as runtime wrapper caveat, not approval"
+  },
+  "row_result": {
+    "is_relevant": true,
+    "is_resolved_work_discussion": true,
+    "title_resolution_state": "resolved",
+    "discussion_type": "review",
+    "official_title": "심해의 마법사",
+    "heretic_url": "https://m.munpia.com/novel/detail/483667",
+    "confidence": "High",
+    "candidate_ledger_status": "safe_resolved",
+    "promotion_blocked": false,
+    "publication_contract_convergence": "GO"
+  },
+  "search": {
+    "status": "SEARCH_DEGRADED",
+    "gate": "REVIEW",
+    "blockers": [
+      "search_degraded_observed"
+    ],
+    "queries": 15,
+    "degraded_queries": 15,
+    "upstream_zero": 10,
+    "retried": 9,
+    "worker_log_counts": {
+      "search_degraded_detected": 9,
+      "search_upstream_zero": 5,
+      "search_bridge_after_filter_zero": 4
+    }
+  },
+  "code_change": {
+    "file": "expert_main.py",
+    "summary": "Sequential mode manifests now include completed_subset fields, partial_flush_gap, ordered_flush_blocked, and large_run_complete like parallel mode.",
+    "current_artifact_caveat": "Loop336 manifest was produced before this patch and lacks large_run_complete even though counts are 1/1/0/0."
+  },
+  "background_snapshot": {
+    "full375": "375/39/26/13/0",
+    "bounded1200_completed_source": "1200/59/46/13/0",
+    "golden18": "18/8/7/1/0",
+    "safe_loss_n5": "completed_manifests=5, zero_count_manifest=1, planned=15"
+  },
+  "verification": [
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m py_compile expert_main.py tools\\audit_expert_run_health.py tests\\test_audit_expert_run_health.py",
+      "result": "PASS"
+    },
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_audit_expert_run_health -v",
+      "result": "PASS",
+      "tests": 16
+    }
+  ],
+  "gates": {
+    "row_replay": "GO_ROW_PUBLIC_CONTRACT",
+    "publication_contract_convergence": "GO",
+    "search_evidence": "REVIEW / search_degraded_observed",
+    "sequential_manifest_contract": "PATCHED_FOR_NEXT_RUN / CURRENT_ARTIFACT_HAS_FIELD_CAVEAT",
+    "full375_bounded_golden_n5": "IN_PROGRESS_OR_PARTIAL / NOT_APPROVAL",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  }
+}

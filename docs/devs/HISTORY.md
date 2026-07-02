@@ -1,5 +1,17 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop336 post-patch runtime replay and sequential manifest contract
+
+- Loop335 패치 뒤 `11705250 / 심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네`를 search 포함 non-light 단건으로 재실행했다.
+- run `20260703_051443_582943`는 result/checkpoint/manifest counts `1/1/0/0`를 남겼고, public identity는 `심해의 마법사`, URL `https://m.munpia.com/novel/detail/483667`, `safe_resolved`, `promotion_blocked=false`로 복구됐다.
+- health audit은 `publication_contract_convergence=GO`, violation `0`을 기록했지만, search evidence는 `REVIEW`이고 blocker는 `search_degraded_observed`다.
+- row search health는 `SEARCH_DEGRADED`, queries `15`, degraded `15`, upstream zero `10`, retried `9`다.
+- `expert_main.py` 순차 모드 manifest writer가 `large_run_complete`, `partial_flush_gap`, `ordered_flush_blocked`, `completed_subset_*`를 쓰지 않는 누락을 보정했다.
+- 현재 Loop336 artifact는 패치 전 순차 manifest라 `large_run_complete` 필드 caveat가 남는다. 이 결과는 row-level public contract 복구 evidence이지 full approval 근거가 아니다.
+- Report는 `docs/devs/loop_reports/LOOP_336_REPORT_20260703.md`, state는 `docs/devs/loop336_post_patch_runtime_replay_20260703.json`이다.
+- 검증은 py_compile PASS, `tests.test_audit_expert_run_health` `16` tests PASS다.
+- Gate는 row replay `GO_ROW_PUBLIC_CONTRACT`, publication convergence `GO`, search evidence `REVIEW`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop335 consumption title-lead alias repair for 11705250
 
 - Loop334에서 `REPROCESS_FALSE_NEGATIVE`로 판정한 `11705250 / 심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네`의 직접 원인을 수리했다.

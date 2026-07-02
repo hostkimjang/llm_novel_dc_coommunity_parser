@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop336 Addendum - 11705250 post-patch runtime replay and sequential manifest contract
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop336은 approval 회차가 아니라 Loop335 패치의 단건 runtime replay와 순차 manifest 계약 보정 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_336_REPORT_20260703.md`, state `docs/devs/loop336_post_patch_runtime_replay_20260703.json`, result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop336_override_11705250_post_patch_f232f31a_search_nonlight_result.json`, audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop336_override_11705250_post_patch_f232f31a_search_nonlight_health_audit.json`.
+- Result: `11705250`은 `official_title=심해의 마법사`, `heretic_url=https://m.munpia.com/novel/detail/483667`, `candidate_ledger_status=safe_resolved`, `promotion_blocked=false`로 복구됐다. `publication_contract_convergence=GO`, violation `0`이다.
+- Caveat: search health는 `SEARCH_DEGRADED`, audit `search_evidence=REVIEW`, blocker `search_degraded_observed`다. 따라서 row replay가 좋아져도 full approval은 열지 않는다.
+- 코드 변경: `expert_main.py` 순차 모드 manifest에 `large_run_complete`, `partial_flush_gap`, `ordered_flush_blocked`, `completed_subset_*` 필드를 추가했다. 현재 Loop336 artifact는 패치 전 manifest라 completion field caveat가 남는다.
+- Verification: py_compile PASS, `tests.test_audit_expert_run_health` `16` tests PASS.
+- Gate: row replay `GO_ROW_PUBLIC_CONTRACT`, publication convergence `GO`, search evidence `REVIEW`, full375/bounded/golden/N5 `IN_PROGRESS_OR_PARTIAL / NOT_APPROVAL`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop335 Addendum - consumption title-lead alias repair
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop335는 approval 회차가 아니라 Loop334 `11705250` false negative를 코드 계약으로 수리한 회차다.

@@ -4,13 +4,21 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop336 `11705250` post-patch replay follow-up
+  - 상태: row_public_contract_recovered / publication_convergence_go / search_degraded_review / approval_not_open
+  - 결과: run `20260703_051443_582943`에서 `official_title=심해의 마법사`, `heretic_url=https://m.munpia.com/novel/detail/483667`, `safe_resolved`, `promotion_blocked=false`로 복구됐다.
+  - caveat: `SEARCH_DEGRADED`, queries `15`, degraded `15`, upstream zero `10`, audit blocker `search_degraded_observed`.
+  - manifest 보정: `expert_main.py` 순차 모드 manifest에 `large_run_complete`, `partial_flush_gap`, `ordered_flush_blocked`, `completed_subset_*` 필드를 추가했다. 현재 Loop336 artifact는 패치 전 manifest라 completion field caveat 유지.
+  - 산출물: `docs/devs/loop_reports/LOOP_336_REPORT_20260703.md`, `docs/devs/loop336_post_patch_runtime_replay_20260703.json`.
+  - 완료 기준: search degraded 복구, 다음 순차 단건 manifest completion fields 확인, full375/bounded/golden/N5 완료 감사.
+
 - [ ] Loop335 `11705250` consumption title-lead alias repair follow-up
-  - 상태: code_contract_go_unit_and_broader_title_lead / post_patch_runtime_not_run / approval_not_open
+  - 상태: code_contract_go_unit_and_broader_title_lead / post_patch_runtime_recovered_loop336 / approval_not_open
   - 발견: `심해법사 묵혀둔거...`의 첫 토큰 약칭이 title-lead alias 추출에서 빠져 `심해의 마법사`가 false negative로 demote됐다.
   - 적용: consumption cue가 붙은 제목 첫 토큰을 title-lead alias로 보존하고, semantic no-work 기본 차단은 유지한 채 verified batch alias release context만 열었다.
   - 검증: py_compile PASS, targeted test PASS, work-bridge contract `3` tests PASS, title-lead suite `185` tests PASS.
   - 산출물: `docs/devs/loop_reports/LOOP_335_REPORT_20260703.md`, `docs/devs/loop335_consumption_title_lead_alias_repair_20260703.json`.
-  - 완료 기준: 새 HEAD에서 `11705250` search 포함 non-light 단건 replay를 완료하고, search degraded 복구 여부와 public contract를 분리해 판정한다.
+  - 완료 기준: Loop336에서 row public contract는 복구됐지만 search degraded가 남았으므로, search recovery와 broader gates가 닫힐 때까지 approval로 쓰지 않는다.
 
 - [ ] Loop332 collateral183 combined action queue follow-up
   - 상태: source_native_queue_complete_183_of_183 / gate_accounting_wired_loop333 / repair_queue_open / approval_not_open

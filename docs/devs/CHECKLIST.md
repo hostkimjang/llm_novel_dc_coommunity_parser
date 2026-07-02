@@ -1,5 +1,30 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop336 post-patch runtime replay / manifest contract 체크
+
+- [x] Loop335 패치 뒤 `11705250`을 search 포함 non-light 단건으로 재실행했다.
+  - run `20260703_051443_582943`
+  - result/checkpoint/manifest counts `1/1/0/0`
+  - public identity `official_title=심해의 마법사`, `heretic_url=https://m.munpia.com/novel/detail/483667`
+  - `candidate_ledger_status=safe_resolved`, `promotion_blocked=false`
+- [x] publication contract convergence를 감사했다.
+  - audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop336_override_11705250_post_patch_f232f31a_search_nonlight_health_audit.json`
+  - `publication_contract_convergence=GO`, violations `0`
+- [x] search degraded caveat을 분리했다.
+  - row search health `SEARCH_DEGRADED`
+  - audit `search_evidence=REVIEW`, blocker `search_degraded_observed`
+  - queries `15`, degraded `15`, upstream zero `10`, retried `9`
+- [x] 순차 모드 manifest 계약 누락을 보정했다.
+  - code `expert_main.py`
+  - 순차 모드 manifest에 `large_run_complete`, `partial_flush_gap`, `ordered_flush_blocked`, `completed_subset_*` 필드를 추가
+  - Loop336 현재 artifact는 패치 전 manifest라 `large_run_complete` 필드 caveat 유지
+- [x] 검증을 실행했다.
+  - py_compile PASS
+  - `tests.test_audit_expert_run_health` PASS, `16` tests
+- [ ] search degraded 100% 복구 전 `11705250` replay를 full approval 근거로 쓰지 않는다.
+- [ ] 다음 순차 단건 replay에서 `large_run_complete=true`, `partial_flush_gap=false`, `ordered_flush_blocked=false` manifest를 확인한다.
+- Gate: row replay `GO_ROW_PUBLIC_CONTRACT`, publication convergence `GO`, search evidence `REVIEW`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop335 consumption title-lead alias repair 체크
 
 - [x] Loop334 `11705250` false negative의 직접 원인을 코드 경로로 좁혔다.
@@ -18,9 +43,11 @@
   - targeted test PASS
   - `tests.test_regression_safe_work_bridge_contract` PASS, `3` tests
   - `tests.test_title_lead_search_inferred_guard` PASS, `185` tests
-- [ ] 새 HEAD에서 `11705250` post-patch search 포함 non-light runtime replay를 실행한다.
+- [x] 새 HEAD에서 `11705250` post-patch search 포함 non-light runtime replay를 실행했다.
+  - Loop336 result: `official_title=심해의 마법사`, `heretic_url=https://m.munpia.com/novel/detail/483667`
+  - caveat: `SEARCH_DEGRADED`, manifest completion field 누락 artifact
 - [ ] search degraded 100% 복구 전 promotion gate hard-hold를 완화하지 않는다.
-- Gate: row repair contract `GO_UNIT_AND_BROADER_TITLE_LEAD`, post-patch runtime replay `NOT_RUN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: row repair contract `GO_UNIT_AND_BROADER_TITLE_LEAD`, post-patch runtime replay `GO_ROW_PUBLIC_CONTRACT / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-03 Loop334 override audit 11705250 체크
 

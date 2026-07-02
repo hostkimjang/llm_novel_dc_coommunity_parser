@@ -6,6 +6,22 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-03 Loop336 post-patch runtime replay quality gate
+
+- 근거:
+  - [x] `11705250` post-patch search non-light 단건 replay를 완료했다.
+  - [x] result/checkpoint/manifest counts `1/1/0/0`을 확인했다.
+  - [x] public identity `심해의 마법사`, URL `https://m.munpia.com/novel/detail/483667` 복구를 확인했다.
+  - [x] `publication_contract_convergence=GO`, violation `0`을 확인했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_336_REPORT_20260703.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop336_post_patch_runtime_replay_20260703.json`.
+- 품질 게이트:
+  - [x] `SEARCH_DEGRADED` row를 approval 근거로 쓰지 않는다.
+  - [x] result/checkpoint clean count와 full approval을 혼동하지 않는다.
+  - [x] 순차 manifest completion field 누락을 코드로 보정했지만, 현재 artifact caveat는 유지한다.
+  - [x] full375/bounded/golden/N5 partial snapshot을 approval 근거로 쓰지 않는다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-03 Loop335 consumption title-lead alias repair quality gate
 
 - 근거:
