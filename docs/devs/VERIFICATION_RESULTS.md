@@ -1,5 +1,22 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop326 current HEAD runtime dispatch
+
+- 범위: Loop325 커밋 `1095d447` 기준으로 safe-loss N5, full375, bounded1200 completed-source, golden18을 새 output 경로에 발주한다.
+- Artifacts:
+  - state `docs\devs\loop326_current_head_runtime_dispatch_20260703.json`
+  - report `docs\devs\loop_reports\LOOP_326_REPORT_20260703.md`
+  - N5 plan `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop326_safe_loss_independent_n5_run_plan.json`
+  - full375 manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop326_full375_current_head1095d447_search_nonlight_result_manifest.json`
+  - bounded manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop326_completed_source_bounded1200_current_head1095d447_search_nonlight_result_manifest.json`
+  - golden18 manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop326_golden18_current_head1095d447_search_nonlight_result_manifest.json`
+- Verification:
+  - full375 launch health `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `12/12` OK
+  - bounded1200 launch health `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `12/12` OK
+  - golden18 launch health `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `2/2` OK
+  - N5 plan `15` runs, missing post ids `[]`, first marker 생성
+- Gate: launch health `GO_SEARCH_NONLIGHT_INITIAL`, runtime completion `IN_PROGRESS`, approval `NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop325 curated alias work-cue contract
 
 - 범위: Loop324 `11708443` 회귀 원인을 Pipeline/Arbiter cue 불일치로 좁히고, 같은 helper를 경유하는 계약 테스트를 추가한다.

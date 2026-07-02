@@ -2,6 +2,20 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop326 TODO
+
+- 상태 업데이트: Loop325 커밋 `1095d447` 이후 current HEAD runtime을 background로 재발주했다. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop326 TODO:
+  - [x] safe-loss N5 `15` planned run을 새 plan으로 생성했다.
+  - [x] full375 replay를 search 포함 non-light로 발주했다.
+  - [x] bounded1200 completed-source run을 search 포함 non-light로 발주했다.
+  - [x] golden18 replay를 search 포함 non-light로 발주했다.
+  - [x] 초기 health는 full375/bounded `12/12`, golden18 `2/2`, N5 marker 생성까지 확인했다.
+  - [ ] N5 `15/15` 완료 후 flip rate를 분석한다.
+  - [ ] golden18 완료 후 6/28 golden GO를 current HEAD 기준으로 대체 가능한지 판단한다.
+  - [ ] full375/bounded1200 완료 전 approval 문구를 쓰지 않는다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop325 TODO
 
 - 상태 업데이트: Loop324 `11708443` 회귀를 공통 작품 담론 cue 계약으로 좁혀 수리했다. Goal은 `ACTIVE / NOT_COMPLETE`.

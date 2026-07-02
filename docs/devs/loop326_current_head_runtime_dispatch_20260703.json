@@ -1,0 +1,86 @@
+{
+  "loop": 326,
+  "date": "2026-07-03",
+  "head": "1095d447",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "summary": "Loop325 계약 패치 커밋 후 104k run 완료를 기다리지 않고 current HEAD 기준 safe-loss N5, golden18, full375, completed-source bounded1200을 새 output 경로로 background 발주했다.",
+  "checkpoint_commit": {
+    "hash": "1095d447",
+    "subject": "fix: align curated alias work cues",
+    "purpose": "다음 runtime replay 전 rollback 지점"
+  },
+  "stale_process_handling": {
+    "stale_groups": [
+      "loop314_safe_loss_independent_n5",
+      "loop314_full375_current_head_search_nonlight",
+      "loop314_completed_source_bounded1200_search_nonlight",
+      "loop314_golden18_current_head_search_nonlight"
+    ],
+    "policy": "Loop314 outputs are reference-only and stale relative to HEAD 1095d447."
+  },
+  "launched": [
+    {
+      "name": "loop326_safe_loss_independent_n5",
+      "pid": 73076,
+      "planned_runs": 15,
+      "manifest": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop326_safe_loss_independent_n5_run_plan.json",
+      "work_dir": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop326_safe_loss_independent_n5_plan",
+      "log_dir": "logs\\loop326_safe_loss_independent_n5_plan",
+      "first_marker": "logs\\loop326_safe_loss_independent_n5_plan\\loop326_safe_loss_current_head_11674712_r01_result.marker.log",
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "gate": "RUNNING_BACKGROUND / NOT_ANALYZED"
+    },
+    {
+      "name": "loop326_full375_current_head1095d447_search_nonlight",
+      "pid": 106428,
+      "run_id": "20260703_013148_286926",
+      "input_rows": 375,
+      "output": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop326_full375_current_head1095d447_search_nonlight_result.json",
+      "manifest": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop326_full375_current_head1095d447_search_nonlight_result_manifest.json",
+      "log": "logs\\loop326_full375_current_head1095d447_search_nonlight_stderr.log",
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_ok_count": 12,
+      "gate": "IN_PROGRESS / NOT_APPROVAL"
+    },
+    {
+      "name": "loop326_completed_source_bounded1200_current_head1095d447_search_nonlight",
+      "pid": 34796,
+      "run_id": "20260703_013148_352379",
+      "input_rows": 1200,
+      "output": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop326_completed_source_bounded1200_current_head1095d447_search_nonlight_result.json",
+      "manifest": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop326_completed_source_bounded1200_current_head1095d447_search_nonlight_result_manifest.json",
+      "log": "logs\\loop326_completed_source_bounded1200_current_head1095d447_search_nonlight_stderr.log",
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_ok_count": 12,
+      "gate": "IN_PROGRESS / NOT_APPROVAL"
+    },
+    {
+      "name": "loop326_golden18_current_head1095d447_search_nonlight",
+      "pid": 124704,
+      "run_id": "20260703_013148_298463",
+      "input_rows": 18,
+      "output": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop326_golden18_current_head1095d447_search_nonlight_result.json",
+      "manifest": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop326_golden18_current_head1095d447_search_nonlight_result_manifest.json",
+      "log": "logs\\loop326_golden18_current_head1095d447_search_nonlight_stderr.log",
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_ok_count": 2,
+      "gate": "APPROVAL_NOT_OPEN"
+    }
+  ],
+  "gates": {
+    "launch_health": "GO_SEARCH_NONLIGHT_INITIAL",
+    "safe_loss_flip": "RUNNING_BACKGROUND / NOT_ANALYZED",
+    "golden18": "APPROVAL_NOT_OPEN",
+    "full375": "IN_PROGRESS / NOT_APPROVAL",
+    "bounded1200": "IN_PROGRESS / NOT_APPROVAL",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

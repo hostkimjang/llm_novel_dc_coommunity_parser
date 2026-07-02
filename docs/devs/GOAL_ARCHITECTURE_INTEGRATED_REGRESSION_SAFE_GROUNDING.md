@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop326 Addendum - current HEAD runtime dispatch
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop326은 Loop325 커밋 `1095d447` 이후 safe-loss N5, full375, bounded1200 completed-source, golden18을 current HEAD 기준 새 output 경로로 background 발주한 회차다.
+- 목적: 104k run 완료를 기다리지 않고 search 포함 non-light bounded evidence와 full375/golden/N5 증거를 새 HEAD로 갱신한다.
+- Evidence: report `docs/devs/loop_reports/LOOP_326_REPORT_20260703.md`, state `docs/devs/loop326_current_head_runtime_dispatch_20260703.json`.
+- Launch: N5 PID `73076`, full375 PID `106428`, bounded1200 PID `34796`, golden18 PID `124704`.
+- Verification: full375/bounded launch health `12/12` OK, golden18 `2/2` OK, N5 first marker 생성.
+- Gate: launch health `GO_SEARCH_NONLIGHT_INITIAL`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, golden18 `APPROVAL_NOT_OPEN`, safe-loss N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop325 Addendum - curated alias work-cue contract
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop325는 approval이 아니라 Loop324 `11708443 / 괴담출근` 회귀의 Pipeline/Arbiter cue 불일치를 공통 helper로 수렴시킨 unit/broader contract 회차다.

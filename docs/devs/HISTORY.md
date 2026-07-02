@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop326 current HEAD runtime dispatch
+
+- Loop325 계약 패치 커밋 `1095d447` 뒤 current HEAD runtime을 새 output 경로로 발주했다.
+- safe-loss N5는 PID `73076`, planned runs `15`, first marker 생성 상태다.
+- full375는 PID `106428`, run `20260703_013148_286926`, search non-light `12/12` OK로 시작했다.
+- bounded1200 completed-source는 PID `34796`, run `20260703_013148_352379`, search non-light `12/12` OK로 시작했다.
+- golden18은 PID `124704`, run `20260703_013148_298463`, search non-light `2/2` OK로 시작했다.
+- Report는 `docs/devs/loop_reports/LOOP_326_REPORT_20260703.md`, state는 `docs/devs/loop326_current_head_runtime_dispatch_20260703.json`이다.
+- Gate는 launch health `GO_SEARCH_NONLIGHT_INITIAL`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, golden18 `APPROVAL_NOT_OPEN`, safe-loss N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop325 curated alias work-cue contract
 
 - Loop324 `11708443 / 괴담출근` 회귀를 Pipeline bridge와 Arbiter curated-alias null guard의 작품 담론 cue 불일치로 분해했다.

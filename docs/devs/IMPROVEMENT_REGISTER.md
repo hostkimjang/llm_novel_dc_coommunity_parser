@@ -1,5 +1,32 @@
 # Improvement Register
 
+## IMP-20260703-326 - current HEAD runtime dispatch after Loop325
+
+- Status: Dispatched / background / approval not open
+- Loop: 326
+- Problem:
+  - Loop325에서 curated alias work-cue 계약을 고쳤으므로 Loop314 runtime outputs는 current HEAD `1095d447` 증거가 아니다.
+  - 104k run 완료를 기다리면 search 포함 bounded evidence와 safe-loss flip 갱신이 계속 지연된다.
+- Change:
+  - safe-loss N5, full375, bounded1200 completed-source, golden18을 새 output 경로로 발주했다.
+  - 초기 health에서 full375/bounded는 search non-light `12/12` OK, golden18은 `2/2` OK를 확인했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_326_REPORT_20260703.md`
+  - state `docs/devs/loop326_current_head_runtime_dispatch_20260703.json`
+  - N5 plan `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop326_safe_loss_independent_n5_run_plan.json`
+  - manifests `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop326_*_manifest.json`
+- Result:
+  - safe-loss N5 PID `73076`, planned `15`
+  - full375 PID `106428`, run `20260703_013148_286926`
+  - bounded1200 PID `34796`, run `20260703_013148_352379`
+  - golden18 PID `124704`, run `20260703_013148_298463`
+- Gate:
+  - launch health `GO_SEARCH_NONLIGHT_INITIAL`
+  - runtime `IN_PROGRESS / NOT_APPROVAL`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260703-324 - Loop322 alias non-light replay NO-GO
 
 - Status: Implemented / runtime complete / semantic no-go

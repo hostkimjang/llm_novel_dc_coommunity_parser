@@ -61,8 +61,9 @@
 - [ ] Search degraded P0 복구 및 current HEAD 증거 완료
   - 상태: P0_OPEN / runtime_partially_recovered / approval_not_open
   - 발견: Loop303에서 `3333/3334` health와 MCP bridge `36`은 복구됐지만 full375/bounded1200 runtime audit에 `search_degraded_observed`가 남았다.
+  - 2026-07-03 Loop326 갱신: current HEAD `1095d447` 기준 full375, bounded1200 completed-source, golden18, safe-loss N5를 새 output 경로로 발주했다. 초기 health는 full375/bounded `12/12` search non-light OK, golden18 `2/2` search non-light OK다.
   - 영향: `promotion_blocked`는 계속 `search-blind conditional`로만 해석하고 hard-hold 완화 금지.
-  - 산출물: `docs/devs/loop_reports/LOOP_303_REPORT_20260702.md`, `docs/devs/loop303_current_head_runtime_recovery_20260702.json`
+  - 산출물: `docs/devs/loop_reports/LOOP_303_REPORT_20260702.md`, `docs/devs/loop303_current_head_runtime_recovery_20260702.json`, `docs/devs/loop_reports/LOOP_326_REPORT_20260703.md`, `docs/devs/loop326_current_head_runtime_dispatch_20260703.json`
   - 완료 기준: N5 `15/15` flip probe 결과, full375 completed replay, bounded `1000~1500` completed-source non-light run이 모두 완료되고 search degraded가 0 또는 검토 가능한 수준으로 회복됨.
 - [ ] Search shard/Docker runtime 복구 후 current HEAD 증거 갱신
   - 상태: P0_OPEN / local_docker_service_blocker

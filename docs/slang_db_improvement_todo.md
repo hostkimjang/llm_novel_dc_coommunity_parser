@@ -1,5 +1,13 @@
 # Slang DB Improvement TODO
 
+## 2026-07-03 Loop326 current HEAD runtime dispatch / slang caveat
+
+- [x] Loop325 commit `1095d447` 기준으로 safe-loss N5, full375, bounded1200, golden18을 새 output 경로에 발주했다.
+- [x] full375/bounded1200/golden18 초기 health는 search 포함 non-light다.
+- [ ] 완료 전 slang/alias 품질 승인으로 세지 않는다.
+- [ ] N5 `15/15`와 golden18 완료 전 hard-hold 완화 또는 6/28 golden GO 대체 판단을 하지 않는다.
+- Gate: slang DB write-back 아님, launch health `GO_SEARCH_NONLIGHT_INITIAL`, runtime `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop325 curated alias work-cue contract / slang caveat
 
 - [x] Loop324 `11708443 / 괴담출근` 회귀를 slang DB write-back 문제가 아니라 Pipeline/Arbiter 작품 담론 cue 불일치로 분리했다.

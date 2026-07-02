@@ -1,5 +1,23 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop326 current HEAD runtime dispatch 체크
+
+- [x] Loop325 계약 패치 후 rollback 체크포인트를 만들었다.
+  - commit `1095d447 fix: align curated alias work cues`
+- [x] 104k run 완료를 기다리지 않고 current HEAD runtime을 새 output 경로로 발주했다.
+  - safe-loss N5 PID `73076`, planned `15`
+  - full375 PID `106428`, run `20260703_013148_286926`, input `375`
+  - bounded1200 completed-source PID `34796`, run `20260703_013148_352379`, input `1200`
+  - golden18 PID `124704`, run `20260703_013148_298463`, input `18`
+- [x] 초기 health를 확인했다.
+  - full375 `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `12/12` OK
+  - bounded1200 `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `12/12` OK
+  - golden18 `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `2/2` OK
+  - N5 first marker 생성
+- [ ] 완료 전 approval 문구를 쓰지 않는다.
+- [ ] Loop314 계열 output은 `1095d447` 이전 stale evidence로 유지한다.
+- Gate: launch health `GO_SEARCH_NONLIGHT_INITIAL`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, golden18 `APPROVAL_NOT_OPEN`, safe-loss N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop325 curated alias work-cue contract 체크
 
 - [x] Loop324 `11708443` 회귀 원인을 Pipeline bridge와 Arbiter curated-alias null guard의 작품 담론 cue 불일치로 분리했다.
