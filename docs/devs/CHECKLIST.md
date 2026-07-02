@@ -1,5 +1,33 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop328 known-abbreviation exact-title guard 체크
+
+- [x] Loop327 patch 후 `11668283` targeted runtime replay를 search 포함 non-light로 실행했다.
+  - run `20260703_020949_643836`
+  - completed/flushed/pending/failed `1/1/0/0`
+  - `mcp_health_include_search=true`, `mcp_health_light_mode=false`, health `1/1` OK
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop328_override_audit_11668283_after_aff592e1_result.json`
+- [x] runtime 결과의 의미를 분리했다.
+  - LLM/Jury/Judge는 `게임 마인드의 중세 현대인`으로 수렴했다.
+  - public output은 `official_title=null`, `title_resolution_state=unresolved_matchable`, `title_resolution_allowed=false`였다.
+  - 차단 이유는 `weak_source_exact_title_without_official_support_public_title_bridge`다.
+- [x] public serializer guard를 좁게 수리했다.
+  - `known_abbreviation_title_guard:*` current-work scope
+  - exact title surface
+  - `row_discusses_work_as_work`
+  - `scope_current_work`
+  - `work_consumption_marker`
+  - title/body/search context가 모두 있을 때만 weak-source guard를 면제한다.
+- [x] 검증을 완료했다.
+  - py_compile PASS
+  - 새 focused guard tests `2/2` PASS
+  - 기존 title-led guard controls `2/2` PASS
+  - known-title/arbiter/work-bridge bundle `33/33` PASS
+  - `git diff --check` PASS, LF/CRLF warning only
+- [ ] guard patch 후 `11668283` runtime replay 전까지 residual closure로 세지 않는다.
+- [ ] Loop326 background 런 완료 전 approval 문구를 쓰지 않는다.
+- Gate: runtime replay `PRE_PATCH_REPRODUCED_OVERBLOCK / NOT_APPROVAL`, code contract `GO_UNIT`, post-patch runtime replay `NOT_RUN_AFTER_GUARD_PATCH`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop327 override audit alias repair 체크
 
 - [x] 코드 변경 없는 대형 run 대기 대신 `OVERRIDE AUDIT(LLM=False->final=True)` 확장 행을 source-native로 검토했다.

@@ -106,6 +106,7 @@ TITLE_LED_WORK_CONSUMPTION_RE = re.compile(
     r"(이벤트|무료분|무료\s*분|기다무|무료화|유료화|봐야|볼까|보는중|보는\s*중|"
     r"봤다|봤는데|봤음|보고옴|먹어볼|찍먹|달릴까|정주행|하차|연중|연재\s*중단|"
     r"연재중단|휴재|완결|죽어버림|뒤져버림|아까움|아깝|볼\s*만(?:하|한|함|했)|"
+    r"좋(?:았|네|다|음|구나|아)|"
     r"재(?:밌|밋)(?:게\s*봤|네|다|음|냐|나|어|었|더라|긴|고|게)?|"
     r"재(?:미있|미잇)(?:네|다|음|냐|나|어|었|더라|긴|고|게)?)"
 )
@@ -3245,6 +3246,95 @@ def _image_scene_cues_unverified_public_title_bridge(
     return has_official_detail
 
 
+def _known_abbreviation_exact_title_exempts_weak_source_bridge(
+    identity: Dict[str, Any],
+    post_title: Any,
+    title: Any,
+) -> bool:
+    title_text = _safe_str(title)
+    title_key = _compact_title(title_text)
+    post_key = _compact_title(post_title)
+    if not (
+        len(title_key) >= 6
+        and post_key
+        and (post_key.startswith(title_key) or title_key in post_key)
+    ):
+        return False
+    if _is_genre_descriptor_surface(title_text):
+        return False
+
+    flags = set(_safe_list(identity.get("consistency_flags")))
+    hard_negative_flags = BATCH_ALIAS_CONFLICT_HOLD_FLAGS | {
+        "recommendation_context_only_no_work_anchor",
+        "recommendation_context_only_public_title_conflict",
+        "batch_memory_alias_rescue_blocked_nonwork_context",
+        "batch_memory_alias_rescue_blocked_genre_context",
+        "semantic_seed_no_work_context",
+    }
+    if flags & hard_negative_flags:
+        return False
+
+    discussion_type = _safe_str(identity.get("discussion_type")).lower()
+    if discussion_type not in CORE_DISCUSSION_TYPES:
+        return False
+    primary_subject_type = _safe_str(identity.get("primary_subject_type")).lower()
+    if primary_subject_type not in {"", "work_discussion", "specific_work", "single_work"}:
+        return False
+
+    context_sources = {_safe_str(value).lower() for value in _safe_list(identity.get("context_sources"))}
+    if "title" not in context_sources or not context_sources & {"body", "comments"}:
+        return False
+    has_search_context = bool(
+        "search" in context_sources
+        or _safe_dicts(identity.get("search_evidence_catalog"))
+        or _safe_dicts(nested_dict(identity.get("candidate_ledger")).get("search_evidence_catalog"))
+    )
+    if not has_search_context:
+        return False
+
+    decision = _promotion_gate_decision(identity)
+    gate_state = nested_dict(identity.get("promotion_gate_state"))
+    if not gate_state:
+        gate_state = nested_dict(nested_dict(identity.get("candidate_ledger")).get("promotion_gate_state"))
+    gate_source = _safe_str(gate_state.get("source")).lower()
+    if not gate_source.startswith("known_abbreviation_title_guard"):
+        return False
+
+    gate_title = _safe_str(gate_state.get("candidate_title"))
+    if gate_title and not _titles_match(gate_title, title_text):
+        return False
+    if gate_state.get("row_discusses_work_as_work") is False:
+        return False
+
+    scope = nested_dict(decision.get("scope")) or nested_dict(gate_state.get("scope"))
+    if _safe_str(scope.get("scope_kind")).lower() != "current_work":
+        return False
+    if _safe_str(scope.get("confidence")).lower() not in {"", "high", "medium"}:
+        return False
+
+    reason_codes = {_safe_str(code) for code in _safe_list(decision.get("reason_codes"))}
+    direct_sources = {_safe_str(value) for value in _safe_list(scope.get("direct_bridge_sources"))}
+    if "scope_current_work" not in reason_codes:
+        return False
+    if not ("row_discusses_work_as_work" in reason_codes or "row_discusses_work_as_work" in direct_sources):
+        return False
+    if "alias_bridge" not in reason_codes and "title_led_consumption_bridge" not in reason_codes:
+        return False
+    if not (
+        "work_consumption_marker" in reason_codes
+        or "title_led_consumption_bridge" in reason_codes
+        or TITLE_LED_WORK_CONSUMPTION_RE.search(_safe_str(post_title))
+    ):
+        return False
+
+    _append_unique_list(
+        identity,
+        "consistency_flags",
+        ["known_abbreviation_exact_title_public_title_bridge"],
+    )
+    return True
+
+
 def apply_weak_public_title_bridge_guard(identity: Dict[str, Any], post_title: Any = "") -> List[str]:
     """Hold public titles promoted through weak/generic surfaces only.
 
@@ -3288,6 +3378,8 @@ def apply_weak_public_title_bridge_guard(identity: Dict[str, Any], post_title: A
         and not _explicit_promoted_image_titles(identity)
         and not _safe_list(novel_identity.get("alias_resolution_sources"))
     ):
+        if _known_abbreviation_exact_title_exempts_weak_source_bridge(identity, post_title, title):
+            return []
         return _demote_official_title_to_hold(
             identity,
             reason="weak_source_exact_title_without_official_support_public_title_bridge",

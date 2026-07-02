@@ -7119,6 +7119,134 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertFalse(identity["title_resolution_allowed"])
         self.assertIsNone(identity["novel_identity"]["official_title"])
 
+    def test_known_abbreviation_exact_title_consumption_exempts_weak_source_guard(self):
+        title = "게임 마인드의 중세 현대인"
+        identity = {
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "primary_subject_type": "work_discussion",
+            "anchor_type": "title_exact",
+            "anchor_strength": "high",
+            "context_sources": ["title", "body", "search"],
+            "novel_identity": {
+                "official_title": title,
+                "heretic_url": "https://ssn.so/series/204335/",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": title,
+                "heretic_url": "https://ssn.so/series/204335/",
+                "alias_or_mention": "중세 현대인",
+                "source_tier": "llm_only",
+                "page_type": "novel_page",
+                "reference_role": "primary",
+            },
+            "promotion_decision": {
+                "status": "candidate_only",
+                "publish_allowed": False,
+                "official_title": None,
+                "reason_codes": [
+                    "row_discusses_work_as_work",
+                    "context_only",
+                    "scope_current_work",
+                    "work_consumption_marker",
+                    "alias_bridge",
+                    "serialized_public_identity_scrubbed",
+                ],
+                "scope": {
+                    "scope_kind": "current_work",
+                    "confidence": "high",
+                    "direct_bridge_sources": ["row_discusses_work_as_work"],
+                },
+            },
+            "promotion_gate_state": {
+                "candidate_title": title,
+                "candidate_url": "",
+                "source": "known_abbreviation_title_guard:decoder_best_match",
+                "official_title_exists": False,
+                "row_discusses_work_as_work": True,
+                "scope": {
+                    "scope_kind": "current_work",
+                    "confidence": "high",
+                    "direct_bridge_sources": ["row_discusses_work_as_work"],
+                },
+            },
+        }
+
+        self.assertEqual(
+            apply_weak_public_title_bridge_guard(identity, "게임 마인드의 중세 현대인 좋았다..."),
+            [],
+        )
+        self.assertTrue(identity["title_resolution_allowed"])
+        self.assertEqual(identity["novel_identity"]["official_title"], title)
+        self.assertIn(
+            "known_abbreviation_exact_title_public_title_bridge",
+            identity["consistency_flags"],
+        )
+
+    def test_known_abbreviation_exact_title_requires_work_consumption_marker(self):
+        title = "게임 마인드의 중세 현대인"
+        identity = {
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "primary_subject_type": "work_discussion",
+            "anchor_type": "title_exact",
+            "anchor_strength": "high",
+            "context_sources": ["title", "body", "search"],
+            "novel_identity": {
+                "official_title": title,
+                "heretic_url": "https://ssn.so/series/204335/",
+                "confidence": "High",
+            },
+            "primary_work": {
+                "official_title": title,
+                "heretic_url": "https://ssn.so/series/204335/",
+                "alias_or_mention": "중세 현대인",
+                "source_tier": "llm_only",
+                "page_type": "novel_page",
+                "reference_role": "primary",
+            },
+            "promotion_decision": {
+                "status": "candidate_only",
+                "publish_allowed": False,
+                "official_title": None,
+                "reason_codes": [
+                    "row_discusses_work_as_work",
+                    "scope_current_work",
+                    "alias_bridge",
+                    "serialized_public_identity_scrubbed",
+                ],
+                "scope": {
+                    "scope_kind": "current_work",
+                    "confidence": "high",
+                    "direct_bridge_sources": ["row_discusses_work_as_work"],
+                },
+            },
+            "promotion_gate_state": {
+                "candidate_title": title,
+                "candidate_url": "",
+                "source": "known_abbreviation_title_guard:decoder_best_match",
+                "official_title_exists": False,
+                "row_discusses_work_as_work": True,
+                "scope": {
+                    "scope_kind": "current_work",
+                    "confidence": "high",
+                    "direct_bridge_sources": ["row_discusses_work_as_work"],
+                },
+            },
+        }
+
+        self.assertEqual(
+            apply_weak_public_title_bridge_guard(identity, "게임 마인드의 중세 현대인이라는 말이 웃김"),
+            ["weak_source_exact_title_without_official_support_public_title_bridge"],
+        )
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+
     def test_title_led_evaluation_question_picks_official_detail_candidate(self):
         pipeline = build_pipeline()
         title = "테라포밍"

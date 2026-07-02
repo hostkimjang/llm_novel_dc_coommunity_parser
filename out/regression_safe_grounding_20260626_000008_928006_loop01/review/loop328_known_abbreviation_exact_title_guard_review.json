@@ -1,0 +1,33 @@
+{
+  "loop": 328,
+  "review_type": "known_abbreviation_exact_title_public_guard",
+  "language": "ko",
+  "post_id": 11668283,
+  "expected_title": "게임 마인드의 중세 현대인",
+  "runtime_replay": {
+    "run_id": "20260703_020949_643836",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop328_override_audit_11668283_after_aff592e1_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop328_override_audit_11668283_after_aff592e1_result_manifest.json",
+    "completed_flushed_pending_failed": "1/1/0/0",
+    "search_nonlight": true
+  },
+  "observed_failure": {
+    "is_relevant": true,
+    "public_title": null,
+    "blocked_title": "게임 마인드의 중세 현대인",
+    "blocked_reason": "weak_source_exact_title_without_official_support_public_title_bridge",
+    "title_resolution_state": "unresolved_matchable"
+  },
+  "repair": {
+    "code": "src/llm_batch/candidate_audit.py",
+    "tests": "tests/test_title_lead_search_inferred_guard.py",
+    "contract": "known_abbreviation_title_guard current-work scope + exact title surface + work consumption marker only"
+  },
+  "gate": {
+    "runtime_replay": "PRE_PATCH_REPRODUCED_OVERBLOCK / NOT_APPROVAL",
+    "code_contract": "GO_UNIT",
+    "post_patch_runtime_replay": "NOT_RUN_AFTER_GUARD_PATCH",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  }
+}

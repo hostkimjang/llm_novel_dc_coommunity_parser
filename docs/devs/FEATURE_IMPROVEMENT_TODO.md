@@ -4,6 +4,14 @@
 
 ## Curated alias publication convergence
 
+- [ ] Loop328 known-abbreviation exact-title public guard follow-up
+  - 상태: code_contract_go_unit / runtime_reproduced_overblock / post_patch_runtime_not_run / approval_not_open
+  - 발견: `11668283` non-light replay는 정답 제목 후보를 회복했지만 final public title은 `weak_source_exact_title_without_official_support_public_title_bridge`로 차단됐다.
+  - 적용: `known_abbreviation_title_guard:*` current-work scope, exact title surface, `row_discusses_work_as_work`, `scope_current_work`, `work_consumption_marker`, title/body/search context가 모두 있을 때만 weak-source guard를 면제한다.
+  - 보호: exact title surface라도 작품 소비 marker가 없으면 계속 hold한다.
+  - 산출물: `docs/devs/loop_reports/LOOP_328_REPORT_20260703.md`, `docs/devs/loop328_known_abbreviation_exact_title_guard_20260703.json`
+  - 완료 기준: guard patch 후 `11668283` targeted runtime replay, Loop326 full375/bounded/golden18 완료, collateral compare에서 순회귀 0 확인. search degraded가 남으면 approval 금지.
+
 - [ ] Loop327 middle-age-modern alias repair follow-up
   - 상태: row_contract_go_unit_repair / runtime_not_run_after_patch / approval_not_open
   - 발견: `11668283 / 게임 마인드의 중세 현대인 좋았다...`는 최신 light run에서 `off_topic / context_only / official_title=null`로 떨어졌지만, 과거 독립 run은 official detail URL이 붙은 resolved work로 판정했다.

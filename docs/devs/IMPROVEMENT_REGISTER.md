@@ -1,5 +1,35 @@
 # Improvement Register
 
+## IMP-20260703-328 - known-abbreviation exact-title public guard repair
+
+- Status: Implemented / unit contract / post-patch runtime not run
+- Loop: 328
+- Problem:
+  - `11668283 / 게임 마인드의 중세 현대인 좋았다...` post-patch runtime replay에서 LLM/Jury/Judge가 정답 제목으로 수렴했다.
+  - final public output은 `official_title=null`, `title_resolution_state=unresolved_matchable`로 남았다.
+  - blocker는 `weak_source_exact_title_without_official_support_public_title_bridge`였다.
+- Change:
+  - `TITLE_LED_WORK_CONSUMPTION_RE`에 `좋았다` 계열 cue를 동기화했다.
+  - `known_abbreviation_title_guard:*` current-work scope + exact title surface + work consumption marker + row work discussion 조건에서만 weak-source guard를 면제했다.
+  - consumption marker가 없는 exact-title 표면은 계속 hold하는 negative 계약을 추가했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_328_REPORT_20260703.md`
+  - state `docs/devs/loop328_known_abbreviation_exact_title_guard_20260703.json`
+  - review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop328_known_abbreviation_exact_title_guard_review.*`
+  - runtime result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop328_override_audit_11668283_after_aff592e1_result.json`
+- Result:
+  - py_compile PASS
+  - focused guard `2/2` PASS
+  - existing title-led controls `2/2` PASS
+  - related bundle `33/33` PASS
+- Gate:
+  - code contract `GO_UNIT`
+  - runtime replay `PRE_PATCH_REPRODUCED_OVERBLOCK / NOT_APPROVAL`
+  - post-patch runtime replay `NOT_RUN_AFTER_GUARD_PATCH`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260703-327 - override audit middle-age-modern alias repair
 
 - Status: Implemented / unit repair / runtime replay not run

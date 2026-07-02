@@ -1,5 +1,28 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop328 known-abbreviation exact-title public guard repair
+
+- 범위: Loop327 patch 후 `11668283` runtime replay에서 드러난 public serializer weak-source overblock을 좁게 수리한다.
+- Artifacts:
+  - state `docs\devs\loop328_known_abbreviation_exact_title_guard_20260703.json`
+  - report `docs\devs\loop_reports\LOOP_328_REPORT_20260703.md`
+  - review JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop328_known_abbreviation_exact_title_guard_review.json`
+  - review Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop328_known_abbreviation_exact_title_guard_review.md`
+  - runtime result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop328_override_audit_11668283_after_aff592e1_result.json`
+  - runtime log `logs\expert_run_20260703_020949_643836.log`
+- Evidence:
+  - runtime integrity `1/1/0/0`, search 포함 non-light, health `1/1` OK.
+  - final public title `null`, blocked title `게임 마인드의 중세 현대인`.
+  - blocker `weak_source_exact_title_without_official_support_public_title_bridge`.
+  - LLM/Jury/Judge는 정답 제목으로 수렴했으나 official detail URL 부재와 search degraded caveat가 남았다.
+- Verification:
+  - py_compile PASS: `src\llm_batch\candidate_audit.py`, `tests\test_title_lead_search_inferred_guard.py`
+  - focused guard tests PASS, `2/2`
+  - existing title-led guard controls PASS, `2/2`
+  - `tests.test_known_title_abbreviation_safe_loss_contract tests.test_arbiter_curated_alias_guard tests.test_regression_safe_work_bridge_contract -v` PASS, `33` tests
+  - `git diff --check` PASS, LF/CRLF warning only
+- Gate: code contract `GO_UNIT`, runtime replay `PRE_PATCH_REPRODUCED_OVERBLOCK / NOT_APPROVAL`, post-patch runtime replay `NOT_RUN_AFTER_GUARD_PATCH`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop327 override audit middle-age-modern alias repair
 
 - 범위: `OVERRIDE AUDIT(LLM=False->final=True)` 확장 중 `11668283` source-native false negative를 확인하고 shared curated alias gate를 보강한다.

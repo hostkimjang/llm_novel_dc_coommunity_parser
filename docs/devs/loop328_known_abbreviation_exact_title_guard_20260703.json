@@ -1,0 +1,65 @@
+{
+  "loop": 328,
+  "date": "2026-07-03",
+  "status": "unit_repair_after_runtime_replay",
+  "goal": "ACTIVE / NOT_COMPLETE",
+  "target": {
+    "post_id": 11668283,
+    "title": "게임 마인드의 중세 현대인 좋았다...",
+    "expected_title": "게임 마인드의 중세 현대인"
+  },
+  "runtime_replay_before_patch": {
+    "run_id": "20260703_020949_643836",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop328_override_audit_11668283_after_aff592e1_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop328_override_audit_11668283_after_aff592e1_result_manifest.json",
+    "log": "logs/expert_run_20260703_020949_643836.log",
+    "input_post_count": 1,
+    "completed_flushed_pending_failed": "1/1/0/0",
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "outcome": {
+      "is_relevant": true,
+      "public_official_title": null,
+      "blocked_official_title": "게임 마인드의 중세 현대인",
+      "title_resolution_state": "unresolved_matchable",
+      "title_resolution_allowed": false,
+      "candidate_negative_evidence": [
+        "weak_source_exact_title_without_official_support_public_title_bridge"
+      ]
+    },
+    "meaning": "LLM/Jury/Judge는 정답 제목으로 수렴했지만 public serializer weak-source guard가 official detail URL 부재를 이유로 제목 publish를 막았다."
+  },
+  "code_change": {
+    "files": [
+      "src/llm_batch/candidate_audit.py",
+      "tests/test_title_lead_search_inferred_guard.py"
+    ],
+    "summary": [
+      "TITLE_LED_WORK_CONSUMPTION_RE에 좋았다 계열 cue를 추가했다.",
+      "known_abbreviation_title_guard가 만든 current-work scope에서 exact title surface와 work consumption marker가 함께 있을 때 weak-source guard 예외를 허용했다.",
+      "같은 exact title surface라도 work consumption marker가 없으면 기존 weak-source hold를 유지하는 negative 계약을 추가했다."
+    ]
+  },
+  "verification": [
+    "py_compile PASS: src/llm_batch/candidate_audit.py, tests/test_title_lead_search_inferred_guard.py",
+    "new focused guard tests PASS: 2/2",
+    "existing title-led guard controls PASS: 2/2",
+    "known-title/arbiter/work-bridge bundle PASS: 33/33",
+    "git diff --check PASS (LF->CRLF warnings only)"
+  ],
+  "background_status": {
+    "loop326_full375": "run 20260703_013148_286926, 16/13/3/0, search non-light, PRE_LOOP327_328_CODE / NOT_APPROVAL",
+    "loop326_bounded1200": "run 20260703_013148_352379, 23/8/15/0, search non-light, PRE_LOOP327_328_CODE / NOT_APPROVAL",
+    "loop326_golden18": "run 20260703_013148_298463, 5/5/0/0, search non-light, PRE_LOOP327_328_CODE / APPROVAL_NOT_OPEN",
+    "loop326_safe_loss_n5": "11674712 r01 and 11660237 r01 completed; 11698880 r01 started; PRE_LOOP327_328_CODE / NOT_ANALYZED"
+  },
+  "gate": {
+    "runtime_replay": "PRE_PATCH_REPRODUCED_OVERBLOCK / NOT_APPROVAL",
+    "code_contract": "GO_UNIT",
+    "post_patch_runtime_replay": "NOT_RUN_AFTER_GUARD_PATCH",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  }
+}

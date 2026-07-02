@@ -1,5 +1,13 @@
 # Slang DB Improvement TODO
 
+## 2026-07-03 Loop328 exact-title guard / slang caveat
+
+- [x] `11668283 / 게임 마인드의 중세 현대인 좋았다...` non-light replay에서 `게임 마인드` slang insight는 생성됐지만 public title은 weak-source guard로 hold된 것을 확인했다.
+- [x] 이번 수리는 slang DB write-back이 아니라 `candidate_audit.py` public title guard 계약이다.
+- [x] `known_abbreviation_title_guard:*` current-work scope + exact title surface + work consumption marker 조건만 weak-source guard를 면제한다.
+- [ ] guard patch 후 runtime replay 전까지 slang/alias 품질 승인으로 세지 않는다.
+- Gate: slang DB write-back 아님, code contract `GO_UNIT`, runtime replay `PRE_PATCH_REPRODUCED_OVERBLOCK / NOT_APPROVAL`, post-patch runtime `NOT_RUN_AFTER_GUARD_PATCH`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop326 current HEAD runtime dispatch / slang caveat
 
 - [x] Loop325 commit `1095d447` 기준으로 safe-loss N5, full375, bounded1200, golden18을 새 output 경로에 발주했다.

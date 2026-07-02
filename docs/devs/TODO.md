@@ -2,6 +2,21 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop328 TODO
+
+- 상태 업데이트: Loop327 patch 후 `11668283` runtime replay는 정답 제목 후보를 회복했지만 public serializer가 weak-source guard로 title publish를 막았다. Guard patch는 unit contract로 수리했으나 post-patch runtime은 아직 실행하지 않았다. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop328 TODO:
+  - [x] `11668283` targeted replay를 search 포함 non-light로 완료했다.
+    - run `20260703_020949_643836`
+    - completed/flushed/pending/failed `1/1/0/0`
+    - public result `official_title=null`, `blocked_official_title=게임 마인드의 중세 현대인`
+  - [x] `weak_source_exact_title_without_official_support_public_title_bridge` overblock을 원인으로 분리했다.
+  - [x] `known_abbreviation_title_guard:*` + exact title surface + work consumption marker + current-work scope일 때만 weak-source guard를 면제하는 계약을 추가했다.
+  - [x] focused guard `2/2`, 기존 title-led controls `2/2`, related known-title/arbiter/work-bridge bundle `33/33`, py_compile PASS.
+  - [ ] guard patch 후 `11668283` targeted runtime replay를 다시 실행한다.
+  - [ ] Loop326 full375/bounded/golden18/N5 완료 전 approval 문구를 쓰지 않는다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop327 TODO
 
 - 상태 업데이트: `OVERRIDE AUDIT(LLM=False->final=True)` 확장에서 `11668283` source-native false negative를 확인하고 unit-level alias repair를 적용했다. Goal은 `ACTIVE / NOT_COMPLETE`.

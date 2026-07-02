@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop328 Addendum - known-abbreviation exact-title public guard repair
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop328은 approval이 아니라 Loop327 patch 후 runtime replay에서 재현된 public serializer overblock을 unit-level guard contract로 수리한 회차다.
+- 목적: exact title 감상글이 known-abbreviation current-work scope로 수렴했는데도 official detail URL 부재만으로 public title이 지워지는 병목을 좁게 해소한다.
+- Evidence: report `docs/devs/loop_reports/LOOP_328_REPORT_20260703.md`, state `docs/devs/loop328_known_abbreviation_exact_title_guard_20260703.json`, review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop328_known_abbreviation_exact_title_guard_review.json`.
+- Runtime: run `20260703_020949_643836`, `1/1/0/0`, search non-light. 결과는 `is_relevant=true`, blocked title `게임 마인드의 중세 현대인`, public title `null`.
+- 코드 변경: `candidate_audit.py`에서 `known_abbreviation_title_guard:*` current-work scope + exact title surface + work consumption marker + row work discussion 조건일 때만 weak-source guard를 면제하고, `좋았다` cue를 title-led consumption regex에 동기화했다.
+- Verification: py_compile PASS, focused guard `2/2` PASS, existing title-led controls `2/2` PASS, related known-title/arbiter/work-bridge bundle `33/33` PASS.
+- Gate: code contract `GO_UNIT`, runtime replay `PRE_PATCH_REPRODUCED_OVERBLOCK / NOT_APPROVAL`, post-patch runtime replay `NOT_RUN_AFTER_GUARD_PATCH`, Loop326 background `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop327 Addendum - override audit middle-age-modern alias repair
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop327은 approval이 아니라 `OVERRIDE AUDIT(LLM=False->final=True)` 확장 중 `11668283` false negative를 찾아 unit-level alias repair로 전환한 회차다.
