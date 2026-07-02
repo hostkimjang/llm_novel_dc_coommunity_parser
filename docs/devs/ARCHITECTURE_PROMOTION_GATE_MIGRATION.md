@@ -8,6 +8,14 @@ This note visualizes the current parser-improvement architecture and the additiv
 
 ## Source References
 
+## 2026-07-02 Loop306 Safe-loss Source-native Next Slice Review
+
+- Loop306은 promotion gate migration의 residual accounting 보조 회차다. code path를 새로 열지 않고, Loop301 `safe_loss_resolved_to_null=147`의 source-native 판정 범위를 `15/147`에서 `29/147`로 넓혔다.
+- 누적 결과는 `REPROCESS=23`, `ACCEPT=4`, `HOLD=2`, unreviewed `118`, validation issue `0`이다.
+- `REPROCESS`는 shared gate/runtime replay 전까지 residual closure가 아니며, `ACCEPT`는 collateral gate wiring 전까지 regression count 제외 후보일 뿐이다.
+- Artifacts: `docs/devs/loop_reports/LOOP_306_REPORT_20260702.md`, `docs/devs/loop306_safe_loss_source_native_verdicts_cumulative_29.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop306_safe_loss_source_native_review.*`.
+- Gate는 source-native review `REVIEW-LOCKED / PARTIAL`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 Loop305 Safe-loss Alias Targeted Replay Handoff
 
 - Loop305는 Loop304의 unit-only alias repair를 실제 panel 입력 replay로 넘긴 회차다.

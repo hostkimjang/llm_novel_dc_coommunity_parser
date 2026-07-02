@@ -4,6 +4,13 @@
 
 ## Safe-loss alias repair
 
+- [ ] Loop301 `safe_loss_resolved_to_null=147` source-native review completion
+  - 상태: partial_review_29_of_147 / review_locked / approval_not_open
+  - 발견: Loop306에서 14건을 추가 판정해 누적 `29/147`, unreviewed `118`이 됐다.
+  - 현재 counts: `REPROCESS=23`, `ACCEPT=4`, `HOLD=2`, validation issues `0`.
+  - 산출물: `docs/devs/loop_reports/LOOP_306_REPORT_20260702.md`, `docs/devs/loop306_safe_loss_source_native_review_20260702.json`, `docs/devs/loop306_safe_loss_source_native_verdicts_cumulative_29.json`
+  - 완료 기준: 남은 `118` source-native/blind review, `repair_safe_loss` shared gate wiring, targeted runtime replay, collateral compare, full375/bounded gate 재평가.
+
 - [ ] Loop301 `repair_safe_loss=14` targeted replay
   - 상태: code_contract_go_unit / runtime_in_progress_not_approval / approval_not_open
   - 발견: Loop304에서 source-native alias seed 일부를 known-abbreviation work-cue 계약으로 전환했다.

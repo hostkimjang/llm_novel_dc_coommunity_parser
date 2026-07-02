@@ -1,5 +1,28 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop306 safe-loss source-native next slice review
+
+- 범위: Loop301 `safe_loss_resolved_to_null=147` 중 미검토분 14건을 추가 source-native review로 판정하고 누적 summary를 생성한다.
+- Artifacts:
+  - verdicts `docs\devs\loop306_safe_loss_source_native_verdicts_cumulative_29.json`
+  - summary JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop306_safe_loss_source_native_review.json`
+  - summary Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop306_safe_loss_source_native_review.md`
+  - report `docs\devs\loop_reports\LOOP_306_REPORT_20260702.md`
+- Verification:
+  - `tools\summarize_collateral_review_verdicts.py` -> gate `REVIEW-LOCKED`
+  - batch rows `147`
+  - reviewed rows `29`
+  - unreviewed rows `118`
+  - validation issues `0`
+- Counts:
+  - labels `REPROCESS=23`, `ACCEPT=4`, `HOLD=2`
+  - actions `repair_safe_loss=23`, `exclude_from_regression_count_after_gate_wiring=4`, `native_image_or_source_review_required=2`
+- Loop306 delta:
+  - `REPROCESS=9`: `11658620`, `11660264`, `11660273`, `11661881`, `11663514`, `11663547`, `11666741`, `11668288`, `11668300`
+  - `ACCEPT=3`: `11666700`, `11668278`, `11668305`
+  - `HOLD=2`: `11658615`, `11660254`
+- Gate: source-native review `REVIEW-LOCKED / PARTIAL`, runtime replay `NOT_RUNTIME_VERIFIED`, search recovery `P0 / OPEN`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop305 safe-loss alias targeted replay handoff
 
 - 범위: Loop304 known-alias safe-loss repair seed를 실제 panel 입력으로 replay하고, 완료 전 gate를 분리한다.

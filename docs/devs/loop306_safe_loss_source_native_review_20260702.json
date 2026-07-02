@@ -1,0 +1,57 @@
+{
+  "report_type": "loop306_safe_loss_source_native_review",
+  "generated_at": "2026-07-02T18:45:00+09:00",
+  "goal_status": "ACTIVE_NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json",
+  "verdicts": "docs/devs/loop306_safe_loss_source_native_verdicts_cumulative_29.json",
+  "summary_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop306_safe_loss_source_native_review.json",
+  "summary_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop306_safe_loss_source_native_review.md",
+  "counts": {
+    "batch_review_rows": 147,
+    "reviewed_rows": 29,
+    "unreviewed_batch_rows": 118,
+    "validation_issue_count": 0,
+    "label_counts": {
+      "ACCEPT": 4,
+      "REPROCESS": 23,
+      "HOLD": 2
+    },
+    "action_counts": {
+      "repair_safe_loss": 23,
+      "exclude_from_regression_count_after_gate_wiring": 4,
+      "native_image_or_source_review_required": 2
+    }
+  },
+  "loop306_delta": {
+    "reviewed_rows": 14,
+    "reprocess_post_ids": [
+      "11658620",
+      "11660264",
+      "11660273",
+      "11661881",
+      "11663514",
+      "11663547",
+      "11666741",
+      "11668288",
+      "11668300"
+    ],
+    "accept_post_ids": [
+      "11666700",
+      "11668278",
+      "11668305"
+    ],
+    "hold_post_ids": [
+      "11658615",
+      "11660254"
+    ]
+  },
+  "gates": {
+    "source_native_review": "REVIEW_LOCKED_PARTIAL",
+    "runtime_replay": "NOT_RUNTIME_VERIFIED",
+    "search_recovery": "P0_OPEN",
+    "full375_bounded": "IN_PROGRESS_NOT_APPROVAL",
+    "goal": "ACTIVE_NOT_COMPLETE"
+  }
+}

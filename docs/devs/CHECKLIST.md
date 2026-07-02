@@ -1,5 +1,20 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop306 safe-loss source-native next slice 체크
+
+- [x] Loop301 `safe_loss_resolved_to_null=147` 미검토분에서 14건을 추가 판정했다.
+- [x] 누적 verdict 파일을 생성했다.
+  - `docs\devs\loop306_safe_loss_source_native_verdicts_cumulative_29.json`
+- [x] summary를 생성했다.
+  - JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop306_safe_loss_source_native_review.json`
+  - Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop306_safe_loss_source_native_review.md`
+- [x] validation issues `0`을 확인했다.
+- [x] 누적 reviewed/unreviewed `29/118`을 기록했다.
+- [x] 누적 labels `REPROCESS=23`, `ACCEPT=4`, `HOLD=2`를 기록했다.
+- [ ] `repair_safe_loss=23`은 shared gate/runtime replay 전까지 residual 감소로 세지 않는다.
+- [ ] `HOLD=2`는 이미지/native 확인 전까지 닫지 않는다.
+- Gate: source-native review `REVIEW-LOCKED / PARTIAL`, runtime replay `NOT_RUNTIME_VERIFIED`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop305 safe-loss alias targeted replay 체크
 
 - [x] Loop304 alias 계약을 실제 panel 입력에서 targeted replay 입력으로 만들었다.

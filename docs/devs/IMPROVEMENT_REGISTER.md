@@ -1,5 +1,33 @@
 # Improvement Register
 
+## IMP-20260702-306 - safe-loss source-native next slice review
+
+- Status: Implemented / partial review locked
+- Loop: 306
+- Problem:
+  - Loop301 safe-loss bucket은 `147`건 중 `15`건만 판정되어 남은 `132`건이 action queue에 남아 있었다.
+  - Loop305 replay가 진행 중인 동안 대형 run 대기만 반복하지 않으려면 source-native queue를 계속 줄여야 했다.
+- Change:
+  - 미검토분 14건을 추가 source-native verdict로 작성했다.
+  - 기존 15건과 합쳐 누적 verdict `29/147`과 summary JSON/MD를 생성했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_306_REPORT_20260702.md`
+  - state `docs/devs/loop306_safe_loss_source_native_review_20260702.json`
+  - verdicts `docs/devs/loop306_safe_loss_source_native_verdicts_cumulative_29.json`
+  - summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop306_safe_loss_source_native_review.*`
+- Result:
+  - reviewed `29/147`
+  - unreviewed `118`
+  - validation issues `0`
+  - labels `REPROCESS=23`, `ACCEPT=4`, `HOLD=2`
+  - actions `repair_safe_loss=23`, `exclude_from_regression_count_after_gate_wiring=4`, `native_image_or_source_review_required=2`
+- Gate:
+  - source-native review `REVIEW-LOCKED / PARTIAL`
+  - runtime replay `NOT_RUNTIME_VERIFIED`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-305 - safe-loss alias targeted replay handoff
 
 - Status: In progress / not approval

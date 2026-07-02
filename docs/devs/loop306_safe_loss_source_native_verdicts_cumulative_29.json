@@ -1,0 +1,486 @@
+{
+  "review_id": "loop306_safe_loss_source_native_verdicts_cumulative_29",
+  "scope": "Loop301 safe_loss_resolved_to_null cumulative source-native verdicts after Loop306 next slice (29/147)",
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "rows": [
+    {
+      "post_id": 11660232,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_wrong_before_title",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "제목은 `괴담텔 이번 전개`를 주제로 두고 `괴담동`은 비교 대상으로 언급한다. 후보 `괴담 동아리`를 현재 논의 작품으로 확정하면 current-work와 adjacent-work가 뒤섞이므로 HOLD가 더 맞다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660232"
+      ]
+    },
+    {
+      "post_id": 11660237,
+      "selected_option_id": "C1",
+      "selected_title": "테라포밍",
+      "selected_url": "https://novelpia.com/novel/61947",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "게시글 제목이 `테라포밍 볼만함?`으로 작품명을 직접 묻고, 후보 URL도 공식 작품 `테라포밍`에 대응한다. after null은 정당한 safe title을 잃은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660237",
+        "https://novelpia.com/novel/61947"
+      ]
+    },
+    {
+      "post_id": 11660257,
+      "selected_option_id": "C1",
+      "selected_title": "암흑가 보스요? 제가요?",
+      "selected_url": "https://novelpia.com/novel/384111",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `암흑가보스<<이거 재밋네`는 후보 작품의 안정 축약 표면이다. 공식 URL에서도 후보 제목이 확인되므로 after null은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660257",
+        "https://novelpia.com/novel/384111"
+      ]
+    },
+    {
+      "post_id": 11660258,
+      "selected_option_id": "C1",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_url": "https://novelpia.com/novel/102155",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `괴담텔 아리야...`는 `괴담 호텔 탈출기`의 장갤 약칭과 등장인물 맥락이다. 후보 URL의 공식 제목도 `괴담 호텔 탈출기`로 확인된다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660258",
+        "https://novelpia.com/novel/102155"
+      ]
+    },
+    {
+      "post_id": 11660259,
+      "selected_option_id": "C1",
+      "selected_title": "헌터갤러리의 국가권력급 기계공주",
+      "selected_url": "https://novelpia.com/novel/390228",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목의 `기계공주`와 본문 전개 언급이 후보 작품을 직접 가리킨다. 공식 URL의 제목도 `헌터갤러리의 국가권력급 기계공주`다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660259",
+        "https://novelpia.com/novel/390228"
+      ]
+    },
+    {
+      "post_id": 11660265,
+      "selected_option_id": "C1",
+      "selected_title": "헌터갤러리의 국가권력급 기계공주",
+      "selected_url": "https://novelpia.com/novel/390228",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `기계공주 전생 이브...`와 본문 `오필리아` 맥락은 후보 작품의 내부 인물/전개를 직접 다룬다. after의 author-new-work context demotion은 과도하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660265",
+        "https://novelpia.com/novel/390228"
+      ]
+    },
+    {
+      "post_id": 11661876,
+      "selected_option_id": "C1",
+      "selected_title": "와인의 신",
+      "selected_url": "https://novel.munpia.com/494781",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `와인의신 재밌다`와 댓글의 `문피아에서 봤다`가 후보 `와인의 신`을 직접 지지한다. after null은 작품명 직접 언급을 잃은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11661876"
+      ]
+    },
+    {
+      "post_id": 11666731,
+      "selected_option_id": "C1",
+      "selected_title": "약먹는 천재마법사",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `약먹마 요즘 좀 애매함`은 후보 작품의 통용 약칭을 직접 사용한다. 후보 URL은 없지만 원문 surface가 충분하므로 null demotion은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11666731"
+      ]
+    },
+    {
+      "post_id": 11669943,
+      "selected_option_id": "C1",
+      "selected_title": "즉사기 들고 무림에 떨어지다",
+      "selected_url": "https://novel.munpia.com/528383",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `즉사무림 최신편`과 본문 `무협미식` 맥락은 후보 작품을 직접 다룬다. after의 author-new-work context demotion은 현재 작품 언급을 과소평가했다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11669943"
+      ]
+    },
+    {
+      "post_id": 11671500,
+      "selected_option_id": "C1",
+      "selected_title": "악당도 살고 싶다",
+      "selected_url": "https://page.kakao.com/content/56807841?tab_type=about",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `악살싶에서는`은 후보 작품의 약칭이고, 댓글도 해당 작품의 말투/강의씬 맥락을 이어간다. after null은 직접 alias를 잃은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11671500"
+      ]
+    },
+    {
+      "post_id": 11671517,
+      "selected_option_id": "C1",
+      "selected_title": "헌터갤러리의 국가권력급 기계공주 마이너 ...",
+      "selected_url": "https://novelpia.com/novel/390228",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_variant",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `기계공주 작가...`와 댓글의 작가/전작 맥락은 후보 URL의 작품을 직접 다룬다. before title 문자열은 truncation variant지만 URL과 작품 표면은 정당하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11671517",
+        "https://novelpia.com/novel/390228"
+      ]
+    },
+    {
+      "post_id": 11676310,
+      "selected_option_id": "C1",
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "selected_url": "https://novel.munpia.com/477135",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `마도줍 시리즈 왔구나`는 후보 작품의 축약 표면이다. 후속 문맥도 구매/연재 소비 맥락이라 null demotion은 과도하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11676310"
+      ]
+    },
+    {
+      "post_id": 11684372,
+      "selected_option_id": "C1",
+      "selected_title": "밀리언 클래스",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `밀리언클래스 공지보고`가 후보 작품명을 직접 붙여 쓴다. 본문/댓글도 공지와 대학원생 휴재 사유 맥락이라 작품 공지에 대한 반응으로 읽는 것이 자연스럽다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11684372"
+      ]
+    },
+    {
+      "post_id": 11685987,
+      "selected_option_id": "C1",
+      "selected_title": "괴담 동아리",
+      "selected_url": "https://page.kakao.com/content/54701995",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `괴담동 뭔데`는 후보 작품의 안정 약칭을 직접 사용한다. after의 OCR unresolved는 제목 표면을 잃은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11685987"
+      ]
+    },
+    {
+      "post_id": 11689292,
+      "selected_option_id": "C1",
+      "selected_title": "최악의 파트너",
+      "selected_url": "https://novelpia.com/novel/40854",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목이 `최악의 파트너 표지`를 직접 말하고, 본문도 표지/그림작가/패러디 작품 댓글로 이어진다. 후보 작품을 null로 내리는 것은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11689292"
+      ]
+    },
+    {
+      "post_id": 11658615,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "source_text_insufficient_image_or_native_required",
+      "evidence_grade": "Missing",
+      "action": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "?? `? ? ? ! !`? ?? `???? on`???? ?? `?? ?? ??????`? ?? ???? ??? ?? ??? ??. ??? 1?? ?? native/image ?? ??? safe-loss repair? ?? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11658615"
+      ]
+    },
+    {
+      "post_id": 11658620,
+      "selected_option_id": "C1",
+      "selected_title": "?? ?? ??????",
+      "selected_url": "https://novel.munpia.com/533816",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? `????`? ?? ?? ????, ??? ??/?? ?? ??? ?? ?? ?? ?? ??? ?? ?? ?? ??? ????. after null? ??? ?? ??? ?? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11658620",
+        "https://novel.munpia.com/533816"
+      ]
+    },
+    {
+      "post_id": 11660254,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "source_text_insufficient_image_or_native_required",
+      "evidence_grade": "Missing",
+      "action": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "??? `??? ?????`? AI ??/??? ??? ???, ?????? ?? `??? ??? ??? ??`? ?? ???? ??? ??? ??. ???/?? ?? ? repair ??? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660254"
+      ]
+    },
+    {
+      "post_id": 11660264,
+      "selected_option_id": "C1",
+      "selected_title": "?? ???? ??? ??? ? ? ???",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? `???`? ?? ??? ?? ???? ???, ???/??? ??/??? ??? ?? ??? ?? ?? ?? ??? ???. ?? URL? batch? ???? Medium?? ????? after null? safe-loss repair ??? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660264"
+      ]
+    },
+    {
+      "post_id": 11660273,
+      "selected_option_id": "C1",
+      "selected_title": "???? ?? ???? ??",
+      "selected_url": "https://novelpia.com/novel/414963",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? `??? ??? ?? ?? ???`?? ?? ??? ?? ?? ??? ??? ?? ????. after null? source-native safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660273",
+        "https://novelpia.com/novel/414963"
+      ]
+    },
+    {
+      "post_id": 11661881,
+      "selected_option_id": "C1",
+      "selected_title": "??? ?? ???",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? `????`? ?? ?? ???? ??/??? `???`, `???? ?`? ?? ?? ???? ????. URL? ??? source-native repair ??? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11661881"
+      ]
+    },
+    {
+      "post_id": 11663514,
+      "selected_option_id": "C1",
+      "selected_title": "?? ?? ??",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "?? ? ?? `https://novel.munpia.com/486006` ?? ?? URL? ??, ??? ?? ?? ??? ???? ????. URL ?? ??? ???? after null? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11663514",
+        "https://novel.munpia.com/486006"
+      ]
+    },
+    {
+      "post_id": 11663547,
+      "selected_option_id": "C1",
+      "selected_title": "?????? ????? ????",
+      "selected_url": "https://novelpia.com/novel/390228",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? `???? ???`? ?? ??? ??? ??? ???/?? ???? ??? ???. ?? ?? URL? ?? after null? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11663547",
+        "https://novelpia.com/novel/390228"
+      ]
+    },
+    {
+      "post_id": 11666700,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_wrong_before_title",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "?? ?? ??? `????? ??? ???`?? ?? `???? ? ???`? ???? ?? ???? ????. C1? ???? adjacent ??? current work? ????? after hold? ? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11666700"
+      ]
+    },
+    {
+      "post_id": 11666741,
+      "selected_option_id": "C1",
+      "selected_title": "?? ?? ?????",
+      "selected_url": "https://novel.munpia.com/254718",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? ??? `???` ??/???/??? ?? ???. ?? ?? `?? ?? ?????`? ?? ????, after null? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11666741",
+        "https://novel.munpia.com/254718"
+      ]
+    },
+    {
+      "post_id": 11668278,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_wrong_before_title",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "??? ?? ?? `???` ?? ?????. ?? ???? `???`? ?? current-work? ???? ?? ???/?? false positive??? after null? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11668278"
+      ]
+    },
+    {
+      "post_id": 11668288,
+      "selected_option_id": "C1",
+      "selected_title": "?? ???? ???? ??",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? `????`? ?? ?? ????, ?? ?????? ?? ?? ?? ???? ???. URL? ??? source-native repair ??? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11668288"
+      ]
+    },
+    {
+      "post_id": 11668300,
+      "selected_option_id": "C1",
+      "selected_title": "??? ?? ?? ? ??",
+      "selected_url": "https://series.naver.com/novel/detail.series?productNo=8050192",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? `???`? ?? ?? ???? `????`, `?????`?? ?? ?? ??? ?? ????. after null? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11668300",
+        "https://series.naver.com/novel/detail.series?productNo=8050192"
+      ]
+    },
+    {
+      "post_id": 11668305,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_wrong_before_title",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "??? ?? ?? ???? ?? ????? ??/???/?? ??? ???. ?? `Fate/stay night`? ?? ??? ???? ???? false positive? after null? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11668305"
+      ]
+    }
+  ]
+}

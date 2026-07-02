@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop306 safe-loss source-native next slice review
+
+- Loop301 `safe_loss_resolved_to_null=147` 미검토분 중 14건을 추가 source-native review로 판정했다.
+- 누적 verdict는 `docs/devs/loop306_safe_loss_source_native_verdicts_cumulative_29.json`이다.
+- Summary는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop306_safe_loss_source_native_review.json`와 `.md`에 있다.
+- 누적 결과는 reviewed `29/147`, unreviewed `118`, validation issues `0`이다.
+- 누적 label counts는 `REPROCESS=23`, `ACCEPT=4`, `HOLD=2`다.
+- Loop306 delta는 `REPROCESS=9`, `ACCEPT=3`, `HOLD=2`다.
+- 이 회차는 action queue 분해이며 runtime replay나 full approval이 아니다.
+- Gate는 source-native review `REVIEW-LOCKED / PARTIAL`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop305 safe-loss alias targeted replay handoff
 
 - Loop304 known-alias 계약을 실제 panel 입력에서 검증하기 위해 11-row targeted replay 입력을 만들었다.

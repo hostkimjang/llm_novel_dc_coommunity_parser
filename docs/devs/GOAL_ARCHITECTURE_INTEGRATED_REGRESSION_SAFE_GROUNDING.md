@@ -6,6 +6,14 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop306 Addendum - safe-loss source-native next slice review
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop306은 approval이 아니라 Loop301 safe-loss residual source-native review 범위를 넓힌 회차다.
+- 목적: Loop305/background run 대기 중에도 `safe_loss_resolved_to_null=147` queue를 source-native로 계속 분해한다.
+- Evidence: verdicts `docs/devs/loop306_safe_loss_source_native_verdicts_cumulative_29.json`, summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop306_safe_loss_source_native_review.json`, report `docs/devs/loop_reports/LOOP_306_REPORT_20260702.md`.
+- Result: reviewed `29/147`, unreviewed `118`, validation issues `0`, labels `REPROCESS=23`, `ACCEPT=4`, `HOLD=2`.
+- Gate: source-native review `REVIEW-LOCKED / PARTIAL`, runtime replay `NOT_RUNTIME_VERIFIED`, search recovery `P0 / OPEN`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop305 Addendum - safe-loss alias targeted replay handoff
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop305는 approval이 아니라 Loop304 alias repair의 runtime replay를 시작한 회차다.
