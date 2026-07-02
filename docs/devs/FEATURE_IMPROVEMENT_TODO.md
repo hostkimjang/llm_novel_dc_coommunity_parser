@@ -4,6 +4,14 @@
 
 ## Safe-loss alias repair
 
+- [ ] Loop307 safe-loss alias contract expansion follow-up
+  - 상태: code_contract_go_unit / flip_no_go / approval_not_open
+  - 발견: `11660237`은 N5에서 안정 정답으로 회복됐지만 `11674712`, `11698880`은 flip_rate `0.4`로 비결정 미해소다.
+  - 적용 alias: `럽코빙의`, `빚세구`, `마줍`, `여신애호`, `별품소`
+  - 보류 alias: `가챠펑크`, `즉사기`
+  - 산출물: `docs/devs/loop_reports/LOOP_307_REPORT_20260702.md`, `docs/devs/loop307_safe_loss_alias_contract_expansion_20260702.json`
+  - 완료 기준: patch 이후 targeted runtime replay, `11674712/11698880` flip 원인 분해, full375/bounded search non-light 완료 및 search degraded 해소.
+
 - [ ] Loop301 `safe_loss_resolved_to_null=147` source-native review completion
   - 상태: partial_review_29_of_147 / review_locked / approval_not_open
   - 발견: Loop306에서 14건을 추가 판정해 누적 `29/147`, unreviewed `118`이 됐다.

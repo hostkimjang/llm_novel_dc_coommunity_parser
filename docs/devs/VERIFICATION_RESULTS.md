@@ -1,5 +1,33 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop307 safe-loss alias contract expansion
+
+- 범위: Loop306 source-native alias 후보 중 registry 단독 release가 가능한 항목을 shared 계약으로 올리고, N5 flip/full375/bounded 상태를 current HEAD 기준으로 갱신한다.
+- Code:
+  - `src\llm_batch\experts\utils.py`: `럽코빙의`, `빚세구`, `마줍`, `여신애호`, `별품소` 추가.
+  - `src\llm_batch\agentic_pipeline.py`: known-title abbreviation work cue에 `연중`, `웹툰`, `결말`, `보러간`, `전생`, `주인공`, `이세계`, `정체`, `설정` 추가.
+  - `tests\test_known_title_abbreviation_safe_loss_contract.py`: positive alias release와 `가챠펑크`/`즉사기` search-dependent negative control 추가.
+- Artifacts:
+  - state `docs\devs\loop307_safe_loss_alias_contract_expansion_20260702.json`
+  - report `docs\devs\loop_reports\LOOP_307_REPORT_20260702.md`
+  - flip JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop307_safe_loss_flip_rate_n5_current_head_review.json`
+  - full375 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop307_full375_search_nonlight_current_health_audit.json`
+  - bounded1200 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop307_bounded1200_search_nonlight_current_health_audit.json`
+- Verification:
+  - `py_compile` touched files -> PASS.
+  - focused unittest `tests.test_known_title_abbreviation_safe_loss_contract` -> PASS, `3` tests.
+  - related bundle -> PASS, `237` tests.
+  - Data Analytics artifact `Loop307 safe-loss alias contract report` validate/render PASS.
+- N5:
+  - gate `NO-GO`, repeats `5`, hard-hold relaxation `false`
+  - `11674712` flip_rate `0.4`, `nondeterminism_unresolved`
+  - `11660237` flip_rate `0.0`, `stable_blind_judge_confirmed`
+  - `11698880` flip_rate `0.4`, `nondeterminism_unresolved`
+- Background:
+  - full375 checkpoint/result `118/105`, `IN_PROGRESS`, search gate `REVIEW`, blocker `search_degraded_observed`
+  - bounded1200 checkpoint/result `172/167`, `IN_PROGRESS`, search gate `REVIEW`, blocker `search_degraded_observed`
+- Gate: code contract `GO_UNIT`, targeted runtime `NOT_RERUN_AFTER_PATCH`, safe-loss flip `NO-GO`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop306 safe-loss source-native next slice review
 
 - 범위: Loop301 `safe_loss_resolved_to_null=147` 중 미검토분 14건을 추가 source-native review로 판정하고 누적 summary를 생성한다.

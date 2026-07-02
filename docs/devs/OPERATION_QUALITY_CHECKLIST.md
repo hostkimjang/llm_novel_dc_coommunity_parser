@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop307 safe-loss alias contract quality gate
+
+- 근거:
+  - [x] Loop307 report 기록 완료: `docs/devs/loop_reports/LOOP_307_REPORT_20260702.md`.
+  - [x] state JSON 기록 완료: `docs/devs/loop307_safe_loss_alias_contract_expansion_20260702.json`.
+  - [x] N5 flip-rate current HEAD 분석을 새로 생성했다.
+  - [x] full375/bounded1200 최신 health audit를 새로 생성했다.
+  - [x] Data Analytics validate/render PASS를 기록했다.
+- 품질 게이트:
+  - [x] `가챠펑크`와 `즉사기`는 search-blind registry release 대상에서 제외했다.
+  - [x] N5 flip `NO-GO`이므로 hard-hold 완화를 허용하지 않는다.
+  - [x] full375/bounded1200은 `IN_PROGRESS`라 approval 근거로 쓰지 않는다.
+  - [x] `search_degraded_observed`가 남아 `promotion_blocked`는 계속 `search-blind conditional`로 해석한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop306 safe-loss source-native next slice quality gate
 
 - 근거:

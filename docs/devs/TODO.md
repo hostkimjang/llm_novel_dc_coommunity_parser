@@ -2,6 +2,18 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop307 TODO
+
+- 상태 업데이트: Loop307은 code contract `GO_UNIT`이지만 N5 flip은 `NO-GO`다. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop307 TODO:
+  - [x] `럽코빙의`, `빚세구`, `마줍`, `여신애호`, `별품소` shared alias 계약을 추가했다.
+  - [x] `가챠펑크`, `즉사기` registry 단독 release를 보류하는 negative control을 추가했다.
+  - [x] current HEAD N5 flip-rate를 새로 분석했다.
+  - [x] full375/bounded1200 최신 health audit를 생성했다.
+  - [ ] `11674712`, `11698880` flip 원인을 publish/block trace와 search-blind 조건으로 분해한다.
+  - [ ] Loop307 patch 이후 targeted runtime replay를 완료하기 전까지 residual closure로 세지 않는다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 regression-safe grounding Loop303 runtime recovery TODO
 
 - 상태 업데이트: search shard runtime은 복구됐지만 full approval은 열리지 않았다. `3333/3334` health OK, MCP bridge `36`; N5는 first row LLM 장기화로 foreground 중단. Goal은 `ACTIVE / NOT_COMPLETE`.

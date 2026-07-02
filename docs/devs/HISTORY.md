@@ -1,5 +1,17 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop307 safe-loss alias contract expansion
+
+- Loop306 source-native review에서 일반화 가능한 alias `럽코빙의`, `빚세구`, `마줍`, `여신애호`, `별품소`를 shared known-title abbreviation 계약에 추가했다.
+- 작품 문맥 cue는 `연중`, `웹툰`, `결말`, `보러간`, `전생`, `주인공`, `이세계`, `정체`, `설정`으로 보강했다.
+- `가챠펑크`와 `즉사기`는 search/detail evidence 또는 다중작 충돌 위험 때문에 registry 단독 release에서 제외했다.
+- N5 flip-rate 최신 분석은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop307_safe_loss_flip_rate_n5_current_head_review.json`이다.
+- N5 결과는 `NO-GO`: `11674712` flip_rate `0.4`, `11660237` stable blind judge confirmed, `11698880` flip_rate `0.4`.
+- 최신 background audit은 full375 `118/105`, bounded1200 `172/167`이며 둘 다 `IN_PROGRESS`, blocker `search_degraded_observed`다.
+- 검증은 py_compile PASS, focused `3` tests PASS, related bundle `237` tests PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_307_REPORT_20260702.md`, state는 `docs/devs/loop307_safe_loss_alias_contract_expansion_20260702.json`이다.
+- Gate는 code contract `GO_UNIT`, safe-loss flip `NO-GO`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop306 safe-loss source-native next slice review
 
 - Loop301 `safe_loss_resolved_to_null=147` 미검토분 중 14건을 추가 source-native review로 판정했다.

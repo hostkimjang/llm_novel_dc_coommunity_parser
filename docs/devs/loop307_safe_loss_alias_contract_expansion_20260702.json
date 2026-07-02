@@ -1,0 +1,109 @@
+{
+  "loop": 307,
+  "date": "2026-07-02",
+  "status": "GO_UNIT_ONLY_REVIEW_LOCKED",
+  "summary": {
+    "change": "Loop306 source-native safe-loss 후보 일부를 shared known-title abbreviation 계약으로 확장했다.",
+    "added_aliases": [
+      "럽코빙의",
+      "빚세구",
+      "마줍",
+      "여신애호",
+      "별품소"
+    ],
+    "deferred_aliases": [
+      {
+        "alias": "가챠펑크",
+        "reason": "search/detail evidence 의존 및 nonwork hold 계약 존재"
+      },
+      {
+        "alias": "즉사기",
+        "reason": "무림/게임 속으로 다중작 충돌 위험"
+      }
+    ],
+    "work_cue_expansion": [
+      "연중",
+      "웹툰",
+      "결말",
+      "보러간",
+      "전생",
+      "주인공",
+      "이세계",
+      "정체",
+      "설정"
+    ]
+  },
+  "flip_probe": {
+    "artifact_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop307_safe_loss_flip_rate_n5_current_head_review.json",
+    "artifact_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop307_safe_loss_flip_rate_n5_current_head_review.md",
+    "repeats": 5,
+    "gate": "NO-GO",
+    "hard_hold_relaxation_allowed": false,
+    "rows": [
+      {
+        "post_id": "11674712",
+        "flip_rate": 0.4,
+        "classification": "nondeterminism_unresolved"
+      },
+      {
+        "post_id": "11660237",
+        "flip_rate": 0.0,
+        "classification": "stable_blind_judge_confirmed"
+      },
+      {
+        "post_id": "11698880",
+        "flip_rate": 0.4,
+        "classification": "nondeterminism_unresolved"
+      }
+    ]
+  },
+  "background_runs": {
+    "full375": {
+      "audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop307_full375_search_nonlight_current_health_audit.json",
+      "input": 375,
+      "checkpoint_rows": 118,
+      "result_rows": 105,
+      "status": "IN_PROGRESS",
+      "search_gate": "REVIEW",
+      "blocker": "search_degraded_observed"
+    },
+    "bounded1200": {
+      "audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop307_bounded1200_search_nonlight_current_health_audit.json",
+      "input": 1200,
+      "checkpoint_rows": 172,
+      "result_rows": 167,
+      "status": "IN_PROGRESS",
+      "search_gate": "REVIEW",
+      "blocker": "search_degraded_observed"
+    }
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "focused_unittest": {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_known_title_abbreviation_safe_loss_contract -v",
+      "result": "PASS",
+      "tests": 3
+    },
+    "related_bundle": {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_known_title_abbreviation_safe_loss_contract tests.test_arbiter_curated_alias_guard tests.test_title_lead_search_inferred_guard tests.test_promotion_gate_contract tests.test_regression_safe_work_bridge_contract tests.test_goal_convergence tests.test_always_on_regression_gates -v",
+      "result": "PASS",
+      "tests": 237
+    },
+    "data_analytics": {
+      "validated": true,
+      "rendered": true,
+      "title": "Loop307 safe-loss alias contract report"
+    }
+  },
+  "gates": {
+    "code_contract": "GO_UNIT",
+    "targeted_runtime": "NOT_RERUN_AFTER_PATCH",
+    "safe_loss_flip": "NO-GO",
+    "full375": "IN_PROGRESS_NOT_APPROVAL",
+    "bounded1200": "IN_PROGRESS_NOT_APPROVAL",
+    "search_recovery": "P0_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE_NOT_COMPLETE"
+  }
+}

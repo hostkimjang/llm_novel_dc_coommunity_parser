@@ -1,5 +1,35 @@
 # Improvement Register
 
+## IMP-20260702-307 - safe-loss alias contract expansion
+
+- Status: Implemented / unit contract only / review locked
+- Loop: 307
+- Problem:
+  - Loop306에서 source-native로 확인된 safe-loss alias 후보가 추가됐지만, 대형 run 대기만으로는 actionable queue가 줄지 않았다.
+  - 동시에 `가챠펑크`, `즉사기`처럼 search-blind registry 승격이 wrong-work를 만들 수 있는 표면도 있었다.
+- Change:
+  - `KNOWN_TITLE_ABBREVIATIONS`에 `럽코빙의`, `빚세구`, `마줍`, `여신애호`, `별품소`를 추가했다.
+  - Known-title abbreviation work cue를 `연중`, `웹툰`, `결말`, `보러간`, `전생`, `주인공`, `이세계`, `정체`, `설정`으로 보강했다.
+  - `가챠펑크`와 `즉사기`는 registry 단독 release negative control로 보류했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_307_REPORT_20260702.md`
+  - state `docs/devs/loop307_safe_loss_alias_contract_expansion_20260702.json`
+  - flip review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop307_safe_loss_flip_rate_n5_current_head_review.json`
+  - full375 audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop307_full375_search_nonlight_current_health_audit.json`
+  - bounded1200 audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop307_bounded1200_search_nonlight_current_health_audit.json`
+- Result:
+  - py_compile PASS
+  - focused tests `3` PASS
+  - related bundle `237` PASS
+  - N5 gate `NO-GO`: `11674712` and `11698880` flip_rate `0.4`, `11660237` stable blind judge confirmed.
+- Gate:
+  - code contract `GO_UNIT`
+  - safe-loss flip `NO-GO`
+  - full375/bounded `IN_PROGRESS / NOT_APPROVAL`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-306 - safe-loss source-native next slice review
 
 - Status: Implemented / partial review locked

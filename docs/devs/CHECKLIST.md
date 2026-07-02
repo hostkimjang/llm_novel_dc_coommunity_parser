@@ -1,5 +1,28 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop307 safe-loss alias contract expansion 체크
+
+- [x] Loop306 source-native verdict 중 registry 단독 승격이 가능한 alias를 선별했다.
+  - 추가 alias `럽코빙의`, `빚세구`, `마줍`, `여신애호`, `별품소`
+  - 보류 alias `가챠펑크`, `즉사기`
+- [x] `_known_title_abbreviation_update_question_anchor(...)`의 작품 문맥 cue를 보강했다.
+  - `연중`, `웹툰`, `결말`, `보러간`, `전생`, `주인공`, `이세계`, `정체`, `설정`
+- [x] search-dependent/ambiguous alias가 registry 단독으로 release되지 않는 negative control을 추가했다.
+- [x] N5 flip-rate를 최신 current HEAD 반복 결과로 다시 분석했다.
+  - artifact `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop307_safe_loss_flip_rate_n5_current_head_review.json`
+  - `11674712` flip_rate `0.4`, `11660237` flip_rate `0.0`, `11698880` flip_rate `0.4`
+  - gate `NO-GO`, `hard_hold_relaxation_allowed=false`
+- [x] full375/bounded1200 최신 background health audit를 남겼다.
+  - full375 `checkpoint/result=118/105`, `IN_PROGRESS`, blocker `search_degraded_observed`
+  - bounded1200 `checkpoint/result=172/167`, `IN_PROGRESS`, blocker `search_degraded_observed`
+- [x] Data Analytics artifact validate/render PASS.
+- [x] 검증을 완료했다.
+  - `py_compile`: PASS
+  - focused unittest: PASS, `3` tests
+  - related bundle: PASS, `237` tests
+- [ ] Loop307은 patch 이후 targeted runtime replay를 아직 완료하지 않았으므로 residual closure로 세지 않는다.
+- Gate: code contract `GO_UNIT`, safe-loss flip `NO-GO`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop306 safe-loss source-native next slice 체크
 
 - [x] Loop301 `safe_loss_resolved_to_null=147` 미검토분에서 14건을 추가 판정했다.

@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop307 Addendum - safe-loss alias contract expansion
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop307은 approval이 아니라 Loop306 safe-loss alias 후보 일부를 unit-level shared contract로 올린 회차다.
+- 목적: 대형 run 대기 대신 source-native alias loss를 계약 테스트로 줄이되, search-blind wrong-work 위험 표면은 보류한다.
+- 코드 변경: `KNOWN_TITLE_ABBREVIATIONS`에 `럽코빙의`, `빚세구`, `마줍`, `여신애호`, `별품소`를 추가하고, known-abbreviation work cue를 `연중`, `웹툰`, `결말`, `보러간`, `전생`, `주인공`, `이세계`, `정체`, `설정`으로 보강했다.
+- Evidence: report `docs/devs/loop_reports/LOOP_307_REPORT_20260702.md`, state `docs/devs/loop307_safe_loss_alias_contract_expansion_20260702.json`, flip review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop307_safe_loss_flip_rate_n5_current_head_review.json`.
+- N5: `11674712` flip_rate `0.4`, `11660237` stable blind judge confirmed, `11698880` flip_rate `0.4`; gate `NO-GO`, hard-hold relaxation `false`.
+- Background: full375 `118/105`, bounded1200 `172/167`, 둘 다 `IN_PROGRESS / NOT_APPROVAL`, blocker `search_degraded_observed`.
+- Gate: code contract `GO_UNIT`, targeted runtime `NOT_RERUN_AFTER_PATCH`, safe-loss flip `NO-GO`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop306 Addendum - safe-loss source-native next slice review
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop306은 approval이 아니라 Loop301 safe-loss residual source-native review 범위를 넓힌 회차다.
