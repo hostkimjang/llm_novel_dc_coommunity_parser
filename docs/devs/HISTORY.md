@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop322 safe-loss alias shared contract
+
+- Loop321 `repair_safe_loss=76` 중 7건을 shared known-title abbreviation 계약으로 올렸다.
+- 추가 alias는 `괴담출근`, `절꺾않`, `무마`, `아카엄창`, `성좌안무서움`, `빌환`, `지구온라인`이다.
+- known-title abbreviation work cue에 `표절`, `보러감`을 추가했다.
+- `주전무`는 실제 packet에서 plot cue는 강하지만 shared cue 폭을 더 넓혀야 해 이번 registry 승격에서 보류했다.
+- 검증은 py_compile PASS, safe-loss contract `4` PASS, related alias/arbiter/title-lead bundle `230` PASS, always-on/convergence `12` PASS다.
+- 실제 Loop321 packet helper check는 선택 7건 allowed, held `주전무=false`다.
+- Report는 `docs/devs/loop_reports/LOOP_322_REPORT_20260702.md`, state는 `docs/devs/loop322_safe_loss_alias_contract_20260702.json`이다.
+- Gate는 contract `GO_UNIT_CONTRACT_ONLY`, runtime replay `NOT_RUN`, residual closure `NOT_COUNTED`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop321 safe-loss source-native queue closure
 
 - Loop301 `safe_loss_resolved_to_null=147` batch에서 Loop320 이후 남은 28건을 source-native로 판정했다.

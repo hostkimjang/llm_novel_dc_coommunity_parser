@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop322 Addendum - safe-loss alias shared contract
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop322는 approval이 아니라 Loop321 `repair_safe_loss=76` 중 직접 별칭+작품 소비 cue 7건을 shared promotion gate/known-title abbreviation 계약으로 올린 unit contract 회차다.
+- 목적: ordinary residual reduction 전에 shared gate architecture로 반복 safe-loss 표면을 줄인다.
+- 코드 변경: `KNOWN_TITLE_ABBREVIATIONS`에 `괴담출근`, `절꺾않`, `무마`, `아카엄창`, `성좌안무서움`, `빌환`, `지구온라인`을 추가하고, work cue에 `표절`, `보러감`을 추가했다.
+- 보류: `주전무`는 실제 packet cue가 강하지만 shared cue 폭을 더 넓혀야 하므로 이번 registry 승격에서 제외했다.
+- Evidence: report `docs/devs/loop_reports/LOOP_322_REPORT_20260702.md`, state `docs/devs/loop322_safe_loss_alias_contract_20260702.json`, summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop322_safe_loss_alias_contract_review.json`.
+- Verification: py_compile PASS, safe-loss contract `4` PASS, related alias/arbiter/title-lead bundle `230` PASS, always-on/convergence `12` PASS, actual packet helper check selected `7` allowed and held `주전무=false`.
+- Background: Loop314 N5 `4/15`, full375 `36/32/4/0`, bounded1200 `56/52/4/0`, golden18 `14/14/0/0`; 모두 Loop322 코드 이전 background라 approval 근거가 아니다.
+- Gate: contract `GO_UNIT_CONTRACT_ONLY`, runtime replay `NOT_RUN`, residual closure `NOT_COUNTED`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop321 Addendum - safe-loss source-native queue closure
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop321은 approval이 아니라 Loop301 `safe_loss_resolved_to_null` residual queue를 `119/147`에서 `147/147`로 닫은 source-native review 회차다.

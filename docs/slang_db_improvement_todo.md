@@ -1,5 +1,16 @@
 # Slang DB Improvement TODO
 
+## 2026-07-02 Loop322 safe-loss alias contract / slang caveat
+
+- [x] Loop321 `repair_safe_loss=76` 중 7건을 shared `KNOWN_TITLE_ABBREVIATIONS` unit contract로 올렸다.
+  - added `괴담출근`, `절꺾않`, `무마`, `아카엄창`, `성좌안무서움`, `빌환`, `지구온라인`
+  - work cue added `표절`, `보러감`
+- [x] `주전무`는 shared cue 폭 확장 위험 때문에 이번 slang/alias registry 승격에서 보류했다.
+- [x] negated recommendation control `기계공주는 ㄴㄴ`는 registry hit가 있어도 release하지 않는 계약을 유지했다.
+- [ ] Loop322 alias 7건은 targeted runtime replay 전까지 residual closure로 세지 않는다.
+- [ ] N5 result JSON `15/15` 완료 후 slang/alias 안정성 caveat를 새 flip 분석으로 갱신한다. 현재 Loop314 `4/15`.
+- Gate: slang DB write-back 아님, code/unit contract `GO_UNIT_CONTRACT_ONLY`, runtime replay `NOT_RUN`, source-native review `REVIEW-LOCKED / COMPLETE_SOURCE_NATIVE_QUEUE`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop321 safe-loss source-native / slang caveat
 
 - [x] `safe_loss_resolved_to_null` source-native review가 `147/147`까지 완료됐다.

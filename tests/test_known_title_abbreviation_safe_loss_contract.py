@@ -80,6 +80,41 @@ class KnownTitleAbbreviationSafeLossContractTest(unittest.TestCase):
                 "전지적 독자 시점",
                 "웹소설 원작 장면을 영화가 어떻게 각색할지 얘기",
             ),
+            (
+                "괴담출근정도는 돼야 독창성 운운할수 있는거다",
+                "괴담에 떨어져도 출근을 해야 하는구나",
+                "모든 괴담물 = 괴담출근의 표절작",
+            ),
+            (
+                "절꺾않 웹툰 존나 잘뽑히긴했노 ㅋㅋㅋㅋㅋ",
+                "절대 꺾이지 않을거야!",
+                "스토리 치트키에 그림 치트키 합해져서 재밌는 웹툰화 얘기",
+            ),
+            (
+                "무마 웹툰 보는데",
+                "무한의 마법사",
+                "시로네 장면과 웹툰 각색 얘기",
+            ),
+            (
+                "아카엄창 엄마랑 섹스함?",
+                "아카데미 패드립 면역",
+                "하면 보러감",
+            ),
+            (
+                "성좌안무서움 이거 도시락 사장은 정체 뭐임?",
+                "나만 성좌들이 안 무서움",
+                "외신한테 도시락 팔고 그러는 설정 얘기",
+            ),
+            (
+                "빌환 표지변경됨",
+                "빌어먹을 환생",
+                "시엘 세냐 아니스티나 매르 표지 구성 얘기",
+            ),
+            (
+                "지구온라인 재밌다며 장붕아",
+                "지구온라인에서 쌀먹합니다",
+                "주인공 보고 외모찬양 주접독백 쓰는 장면 얘기",
+            ),
         ]
 
         for title, expected, body in cases:
@@ -90,6 +125,21 @@ class KnownTitleAbbreviationSafeLossContractTest(unittest.TestCase):
 
                 self.assertTrue(allowed)
                 self.assertEqual(ctx._known_title_abbreviation_official_detail_anchor_title, expected)
+
+    def test_loop321_negated_recommendation_does_not_release_even_with_registered_alias(self):
+        ctx = self._ctx(
+            post_id=11714892,
+            title="재밌는 소설 없나",
+            body="기계공주는 ㄴㄴ ts는 안 봄",
+            intent="recommendation_request",
+        )
+
+        allowed = self.pipeline._known_title_abbreviation_update_question_anchor(
+            ctx,
+            "헌터갤러리의 국가권력급 기계공주",
+        )
+
+        self.assertFalse(allowed)
 
     def test_comparison_only_adjacent_alias_does_not_release_known_title_abbreviation(self):
         ctx = self._ctx(

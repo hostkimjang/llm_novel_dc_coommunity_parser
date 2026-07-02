@@ -1,5 +1,26 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop322 safe-loss alias shared contract
+
+- 범위: Loop321 `repair_safe_loss=76` 중 직접 별칭+작품 소비 cue가 함께 있는 7건을 shared `KNOWN_TITLE_ABBREVIATIONS` 계약으로 올린다.
+- Artifacts:
+  - state `docs\devs\loop322_safe_loss_alias_contract_20260702.json`
+  - report `docs\devs\loop_reports\LOOP_322_REPORT_20260702.md`
+  - summary JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop322_safe_loss_alias_contract_review.json`
+  - summary Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop322_safe_loss_alias_contract_review.md`
+- Verification:
+  - py_compile PASS: `src\llm_batch\agentic_pipeline.py`, `src\llm_batch\experts\utils.py`, `tests\test_known_title_abbreviation_safe_loss_contract.py`
+  - `tests.test_known_title_abbreviation_safe_loss_contract -v` PASS, `4` tests
+  - `tests.test_known_title_abbreviation_support tests.test_arbiter_curated_alias_guard tests.test_title_lead_search_inferred_guard -v` PASS, `230` tests
+  - `tests.test_always_on_regression_gates tests.test_goal_convergence -v` PASS, `12` tests
+  - actual Loop321 source packet helper check: selected `7` aliases allowed, held `주전무=false`
+- Background snapshot:
+  - N5 `4/15`, `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`
+  - full375 `36/32/4/0`, `IN_PROGRESS / NOT_APPROVAL / PRE_LOOP322_CODE`
+  - bounded1200 `56/52/4/0`, `IN_PROGRESS / NOT_APPROVAL / PRE_LOOP322_CODE`
+  - golden18 `14/14/0/0`, `APPROVAL_NOT_OPEN / NOT_APPROVAL / PRE_LOOP322_CODE`
+- Gate: contract `GO_UNIT_CONTRACT_ONLY`, runtime replay `NOT_RUN`, residual closure `NOT_COUNTED`, source-native review `REVIEW-LOCKED / COMPLETE_SOURCE_NATIVE_QUEUE`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop321 safe-loss source-native queue closure
 
 - 범위: Loop301 `safe_loss_resolved_to_null=147` 중 Loop320 이후 남은 28건을 source-native review로 판정한다.

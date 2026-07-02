@@ -1,0 +1,137 @@
+{
+  "loop": 322,
+  "date": "2026-07-02",
+  "generated_at": "2026-07-02T22:50:31",
+  "base_head": "cf68852371b34ebc9610c1cfaf1b32dfc0a336fe",
+  "scope": "safe-loss known-title abbreviation shared contract expansion",
+  "code_changes": [
+    "src/llm_batch/experts/utils.py: KNOWN_TITLE_ABBREVIATIONS에 Loop321 direct alias 7개 추가",
+    "src/llm_batch/agentic_pipeline.py: work cue에 표절, 보러감 패턴 추가",
+    "tests/test_known_title_abbreviation_safe_loss_contract.py: Loop321 positive/negative contract 추가"
+  ],
+  "selected_aliases": [
+    {
+      "post_id": 11708443,
+      "alias": "괴담출근",
+      "title": "괴담에 떨어져도 출근을 해야 하는구나",
+      "source_cue": "표절/괴담물 직접 비교"
+    },
+    {
+      "post_id": 11708470,
+      "alias": "절꺾않",
+      "title": "절대 꺾이지 않을거야!",
+      "source_cue": "웹툰/스토리/재밌음"
+    },
+    {
+      "post_id": 11710021,
+      "alias": "무마",
+      "title": "무한의 마법사",
+      "source_cue": "웹툰/시로네 캐릭터 맥락"
+    },
+    {
+      "post_id": 11710052,
+      "alias": "아카엄창",
+      "title": "아카데미 패드립 면역",
+      "source_cue": "보러감 조건부 작품 소비"
+    },
+    {
+      "post_id": 11713220,
+      "alias": "성좌안무서움",
+      "title": "나만 성좌들이 안 무서움",
+      "source_cue": "정체/설정 질문"
+    },
+    {
+      "post_id": 11718099,
+      "alias": "빌환",
+      "title": "빌어먹을 환생",
+      "source_cue": "표지 변경/캐릭터 cluster"
+    },
+    {
+      "post_id": 11718110,
+      "alias": "지구온라인",
+      "title": "지구온라인에서 쌀먹합니다",
+      "source_cue": "재밌다며/주인공 묘사"
+    }
+  ],
+  "held_aliases": [
+    {
+      "post_id": 11710020,
+      "alias": "주전무",
+      "title": "주무시기 전에 무엇을 하셨나요?",
+      "reason": "실제 packet은 plot cue가 있으나 현재 shared cue 폭을 넓혀야 하므로 이번 registry 승격에서 보류"
+    }
+  ],
+  "repair_safe_loss_total": 76,
+  "unit_contract_covered_rows": 7,
+  "unit_contract_covered_post_ids": [
+    11708443,
+    11708470,
+    11710021,
+    11710052,
+    11713220,
+    11718099,
+    11718110
+  ],
+  "not_residual_closed_reason": "shared unit contract만 통과했고 targeted runtime replay, collateral compare, full375/bounded/golden18 approval이 아직 없다.",
+  "verification": [
+    ".venv312/Scripts/python.exe -m py_compile src/llm_batch/agentic_pipeline.py src/llm_batch/experts/utils.py tests/test_known_title_abbreviation_safe_loss_contract.py -> PASS",
+    ".venv312/Scripts/python.exe -m unittest tests.test_known_title_abbreviation_safe_loss_contract -v -> PASS, 4 tests",
+    ".venv312/Scripts/python.exe -m unittest tests.test_known_title_abbreviation_support tests.test_arbiter_curated_alias_guard tests.test_title_lead_search_inferred_guard -v -> PASS, 230 tests",
+    ".venv312/Scripts/python.exe -m unittest tests.test_always_on_regression_gates tests.test_goal_convergence -v -> PASS, 12 tests",
+    "actual Loop321 source packet helper check -> 7 selected aliases allowed, held 주전무 remains blocked"
+  ],
+  "background_snapshot": {
+    "safe_loss_n5": {
+      "result_json": 4,
+      "planned": 15,
+      "status": "RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD"
+    },
+    "full375": {
+      "run_id": "20260702_204042_346798",
+      "completed": 36,
+      "flushed": 32,
+      "pending": 4,
+      "failed": 0,
+      "status": "IN_PROGRESS / NOT_APPROVAL / PRE_LOOP322_CODE"
+    },
+    "bounded1200": {
+      "run_id": "20260702_204042_443948",
+      "completed": 56,
+      "flushed": 52,
+      "pending": 4,
+      "failed": 0,
+      "status": "IN_PROGRESS / NOT_APPROVAL / PRE_LOOP322_CODE"
+    },
+    "golden18": {
+      "run_id": "20260702_204042_371537",
+      "completed": 14,
+      "flushed": 14,
+      "pending": 0,
+      "failed": 0,
+      "status": "APPROVAL_NOT_OPEN / NOT_APPROVAL / PRE_LOOP322_CODE"
+    }
+  },
+  "gates": {
+    "contract": "GO_UNIT_CONTRACT_ONLY",
+    "runtime_replay": "NOT_RUN",
+    "residual_closure": "NOT_COUNTED",
+    "source_native_review": "REVIEW-LOCKED / COMPLETE_SOURCE_NATIVE_QUEUE",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_322_REPORT_20260702.md",
+    "state": "docs/devs/loop322_safe_loss_alias_contract_20260702.json",
+    "summary_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop322_safe_loss_alias_contract_review.json",
+    "summary_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop322_safe_loss_alias_contract_review.md"
+  },
+  "next_required": [
+    "Loop322 alias 7건 targeted runtime replay를 current commit 기준으로 실행한다.",
+    "repair_safe_loss=76 중 remaining shared-contract 후보를 alias/title-variant/url-canonicalization/native-review로 분리한다.",
+    "ACCEPT=42 regression count exclusion wiring과 HOLD=29 native image/OCR/source review를 별도 queue로 유지한다.",
+    "N5 15/15 완료 후 flip rate를 현 HEAD 기준으로 다시 분석한다."
+  ]
+}

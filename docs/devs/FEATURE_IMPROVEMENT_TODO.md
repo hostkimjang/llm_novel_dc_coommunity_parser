@@ -30,11 +30,12 @@
   - 완료 기준: patch 이후 targeted runtime replay, `11674712/11698880` flip 원인 분해, full375/bounded search non-light 완료 및 search degraded 해소.
 
 - [ ] Loop301 `safe_loss_resolved_to_null=147` source-native follow-up
-  - 상태: complete_source_native_review_147_of_147 / review_locked / approval_not_open
+  - 상태: complete_source_native_review_147_of_147 / alias_unit_contract_7 / review_locked / approval_not_open
   - 발견: Loop321까지 누적 `147/147`, unreviewed `0`이 됐다. 단 source-native queue closure는 approval이 아니다.
   - 현재 counts: `REPROCESS=76`, `ACCEPT=42`, `HOLD=29`, validation issues `0`.
-  - 산출물: `docs/devs/loop_reports/LOOP_321_REPORT_20260702.md`, `docs/devs/loop321_safe_loss_source_native_review_20260702.json`, `docs/devs/loop321_safe_loss_source_native_verdicts_cumulative_147.json`
-  - 완료 기준: `repair_safe_loss=76` shared gate wiring, targeted runtime replay, `ACCEPT=42` regression count exclusion wiring, `HOLD=29` native review, collateral compare, full375/bounded gate 재평가.
+  - Loop322 적용: `괴담출근`, `절꺾않`, `무마`, `아카엄창`, `성좌안무서움`, `빌환`, `지구온라인` 7건은 shared alias unit contract로 올렸다. `주전무`는 보류했다.
+  - 산출물: `docs/devs/loop_reports/LOOP_321_REPORT_20260702.md`, `docs/devs/loop_reports/LOOP_322_REPORT_20260702.md`, `docs/devs/loop321_safe_loss_source_native_review_20260702.json`, `docs/devs/loop322_safe_loss_alias_contract_20260702.json`
+  - 완료 기준: Loop322 alias 7건 targeted runtime replay, 남은 `repair_safe_loss=76` shared gate wiring, `ACCEPT=42` regression count exclusion wiring, `HOLD=29` native review, collateral compare, full375/bounded gate 재평가.
 
 - [ ] Loop301 `repair_safe_loss=14` targeted replay
   - 상태: code_contract_go_unit / runtime_in_progress_not_approval / approval_not_open

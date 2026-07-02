@@ -1,0 +1,33 @@
+{
+  "report_type": "loop322_safe_loss_alias_contract_review",
+  "state": "docs/devs/loop322_safe_loss_alias_contract_20260702.json",
+  "report": "docs/devs/loop_reports/LOOP_322_REPORT_20260702.md",
+  "selected_alias_count": 7,
+  "selected_aliases": [
+    "괴담출근",
+    "절꺾않",
+    "무마",
+    "아카엄창",
+    "성좌안무서움",
+    "빌환",
+    "지구온라인"
+  ],
+  "held_aliases": [
+    "주전무"
+  ],
+  "verification": {
+    "py_compile": "PASS",
+    "safe_loss_contract_tests": "PASS / 4",
+    "related_alias_arbiter_title_lead_tests": "PASS / 230",
+    "always_on_and_convergence_tests": "PASS / 12",
+    "actual_packet_helper_check": "7 allowed, 주전무 blocked"
+  },
+  "gates": {
+    "contract": "GO_UNIT_CONTRACT_ONLY",
+    "runtime_replay": "NOT_RUN",
+    "residual_closure": "NOT_COUNTED",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

@@ -1,5 +1,25 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop322 safe-loss alias shared contract 체크
+
+- [x] Loop321 `repair_safe_loss=76` 중 직접 별칭+작품 소비 cue가 있는 7건을 shared `KNOWN_TITLE_ABBREVIATIONS`로 올렸다.
+  - aliases `괴담출근`, `절꺾않`, `무마`, `아카엄창`, `성좌안무서움`, `빌환`, `지구온라인`
+  - work cue 보강 `표절`, `보러감`
+- [x] `주전무`는 이번 registry 승격에서 보류했다.
+- [x] 검증을 완료했다.
+  - py_compile PASS
+  - safe-loss contract `4` PASS
+  - related alias/arbiter/title-lead bundle `230` PASS
+  - always-on/convergence `12` PASS
+  - 실제 Loop321 packet helper check `7` allowed, held `주전무=false`
+- [x] 산출물을 기록했다.
+  - state `docs\devs\loop322_safe_loss_alias_contract_20260702.json`
+  - report `docs\devs\loop_reports\LOOP_322_REPORT_20260702.md`
+  - summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop322_safe_loss_alias_contract_review.json`
+- [ ] Loop322 alias 7건 targeted runtime replay 전까지 residual closure로 세지 않는다.
+- [ ] full375/bounded/golden18/N5는 Loop322 코드 이전 background snapshot이므로 approval 근거로 쓰지 않는다.
+- Gate: contract `GO_UNIT_CONTRACT_ONLY`, runtime replay `NOT_RUN`, residual closure `NOT_COUNTED`, source-native review `REVIEW-LOCKED / COMPLETE_SOURCE_NATIVE_QUEUE`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop321 safe-loss source-native queue closure 체크
 
 - [x] Loop301 `safe_loss_resolved_to_null` 남은 28건을 source-native/blind 기준으로 판정했다.

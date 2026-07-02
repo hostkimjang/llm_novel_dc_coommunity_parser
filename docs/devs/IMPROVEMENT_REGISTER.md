@@ -1,5 +1,35 @@
 # Improvement Register
 
+## IMP-20260702-322 - safe-loss alias shared contract
+
+- Status: Implemented / unit contract only / review locked
+- Loop: 322
+- Problem:
+  - Loop321으로 source-native review는 `147/147` 완료됐지만 `repair_safe_loss=76`은 shared gate/runtime replay 전까지 닫힌 queue가 아니다.
+  - 직접 별칭 repair 후보 일부는 기존 shared registry에 없어 after null로 떨어질 수 있다.
+- Change:
+  - `KNOWN_TITLE_ABBREVIATIONS`에 `괴담출근`, `절꺾않`, `무마`, `아카엄창`, `성좌안무서움`, `빌환`, `지구온라인`을 추가했다.
+  - known-title abbreviation work cue에 `표절`, `보러감`을 추가했다.
+  - Loop321 source packet 기반 positive/negative contract를 추가했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_322_REPORT_20260702.md`
+  - state `docs/devs/loop322_safe_loss_alias_contract_20260702.json`
+  - summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop322_safe_loss_alias_contract_review.*`
+- Result:
+  - unit contract covered rows `7`
+  - held alias `주전무`
+  - py_compile PASS
+  - safe-loss contract `4` PASS
+  - related alias/arbiter/title-lead bundle `230` PASS
+  - always-on/convergence `12` PASS
+- Gate:
+  - contract `GO_UNIT_CONTRACT_ONLY`
+  - runtime replay `NOT_RUN`
+  - residual closure `NOT_COUNTED`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-321 - safe-loss source-native queue closure
 
 - Status: Implemented / source-native queue complete / review locked

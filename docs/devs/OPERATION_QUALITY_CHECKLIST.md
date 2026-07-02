@@ -6,6 +6,20 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop322 safe-loss alias contract quality gate
+
+- 근거:
+  - [x] Loop321 source-native repair 후보 중 직접 별칭+작품 소비 cue 7건만 shared registry에 추가했다.
+  - [x] `주전무`는 cue 폭 확장 위험 때문에 보류했다.
+  - [x] 실제 Loop321 packet helper check에서 선택 7건은 allowed, 보류 1건은 blocked였다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_322_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] unit-level registry contract를 runtime replay나 full approval로 쓰지 않는다.
+  - [x] registry alias는 `registry_anchor_only`/Medium 계약을 유지하며 hard evidence 없이 High로 올리지 않는다.
+  - [x] recommendation/negated row는 release하지 않는 계약을 유지한다.
+  - [x] Loop314 background progress는 Loop322 코드 이전 evidence라 approval 근거로 쓰지 않는다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop321 safe-loss source-native quality gate
 
 - 근거:

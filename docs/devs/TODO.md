@@ -2,6 +2,21 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop322 TODO
+
+- 상태 업데이트: Loop321 `repair_safe_loss=76` 중 7건을 shared alias unit contract로 올렸다. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop322 TODO:
+  - [x] shared `KNOWN_TITLE_ABBREVIATIONS`에 `괴담출근`, `절꺾않`, `무마`, `아카엄창`, `성좌안무서움`, `빌환`, `지구온라인`을 추가했다.
+  - [x] known-title abbreviation work cue에 `표절`, `보러감`을 추가했다.
+  - [x] `주전무`는 cue 폭이 더 필요해 이번 승격에서 보류했다.
+  - [x] unit/related gate 검증을 실행했다.
+    - safe-loss contract `4` PASS
+    - related alias/arbiter/title-lead bundle `230` PASS
+    - always-on/convergence `12` PASS
+  - [ ] Loop322 alias 7건 targeted runtime replay를 current commit 기준으로 실행한다.
+  - [ ] `repair_safe_loss=76` remaining 후보를 alias/title-variant/url-canonicalization/native-review로 계속 분리한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 regression-safe grounding Loop321 TODO
 
 - 상태 업데이트: `safe_loss_resolved_to_null` source-native review가 `147/147`까지 완료됐다. Goal은 `ACTIVE / NOT_COMPLETE`.
