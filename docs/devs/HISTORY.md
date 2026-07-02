@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop331 current HEAD partial runtime NO-GO refresh
+
+- 현 HEAD `c033dd97` 부분 런을 Loop331 감사 시점 audit로 다시 갱신했다.
+- post-patch `11668283`은 completed/flushed/pending/failed `1/1/0/0`로 완료됐지만 `official_title=null`, `blocked_official_title=중세`, `candidate_ledger_status=promotion_blocked`, `title_resolution_state=adjacent`, `SEARCH_DEGRADED`로 끝났다. Loop328 guard patch runtime 수렴은 `NO-GO`다.
+- full375는 `6/1/5/0` of `375`, bounded1200 completed-source는 `14/6/8/0` of `1200`, golden18은 `2/2/0/0` of `18`이며 모두 `search_degraded_observed`로 approval 근거가 아니다.
+- safe-loss N5 partial은 observed `1/15`이고 `11674712` r01만 완료됐다. blind judge expected match가 false/incomplete라 hard-hold 완화는 계속 금지다.
+- override audit `11705250`은 result JSON이 아직 없고 `search_degraded_detected=12`, `search_upstream_zero=4`가 남았다.
+- Report는 `docs/devs/loop_reports/LOOP_331_REPORT_20260703.md`, state는 `docs/devs/loop331_current_head_partial_runtime_no_go_20260703.json`이다.
+- Gate는 targeted `11668283` `NO-GO`, large/background runs `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop330 current HEAD health and override audit transition
 
 - Loop329 current HEAD background run을 최신 health로 다시 감사했다.

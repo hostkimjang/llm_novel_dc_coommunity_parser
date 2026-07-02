@@ -1,5 +1,27 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop331 current HEAD partial runtime NO-GO refresh
+
+- 범위: 현 HEAD `c033dd97`에서 post-patch `11668283`, full375, bounded1200 completed-source, golden18, safe-loss N5, override audit `11705250`의 최신 산출물을 다시 검증한다.
+- Artifacts:
+  - state `docs\devs\loop331_current_head_partial_runtime_no_go_20260703.json`
+  - report `docs\devs\loop_reports\LOOP_331_REPORT_20260703.md`
+  - post-patch health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop331_post_patch_11668283_current_head_c033dd97_health_audit.json`
+  - full375 health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop331_full375_current_head_c033dd97_health_audit.json`
+  - bounded1200 health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop331_bounded1200_current_head_c033dd97_health_audit.json`
+  - golden18 health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop331_golden18_current_head_c033dd97_health_audit.json`
+  - override health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop331_override_11705250_current_head_c033dd97_health_audit.json`
+  - safe-loss partial review `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop331_safe_loss_flip_rate_n5_current_head_partial_review.json`
+- Evidence:
+  - post-patch `11668283` result는 `1/1/0/0` 완료지만 `official_title=null`, `blocked_official_title=중세`, `promotion_blocked`, `title_resolution_state=adjacent`, search degraded `15/15`다.
+  - full375 `6/1/5/0`, bounded1200 `14/6/8/0`, golden18 `2/2/0/0`; 모두 완료 전이며 `search_degraded_observed`다.
+  - safe-loss N5는 `1/15`만 관측됐다. `11674712` r01은 `promotion_blocked`이고 blind judge expected match false/incomplete다.
+  - `11705250`은 result JSON missing, log `search_degraded_detected=12`, `search_upstream_zero=4`, `search_bridge_after_filter_zero=8`이다.
+- Verification:
+  - publication contract convergence audit는 현재 flushed result 범위에서 violations `0`이지만 partial artifact라 approval-ready가 아니다.
+  - Data Analytics validation은 `Needs revision`: current HEAD/search non-light source는 맞지만 completed grain이 아니다.
+- Gate: post-patch `11668283` targeted canary `NO-GO`, full375/bounded/golden/N5/override `IN_PROGRESS_OR_RUNNING_BACKGROUND / NOT_APPROVAL`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop330 current HEAD health and override audit transition
 
 - 범위: Loop329 current HEAD background health를 최신 감사하고, old light `OVERRIDE AUDIT(LLM=False->final=True)` 후보 하나를 current HEAD non-light 단건으로 재검증 발주한다.

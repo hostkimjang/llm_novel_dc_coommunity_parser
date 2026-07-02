@@ -1,5 +1,30 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop331 current HEAD 부분 런 NO-GO 체크
+
+- [x] post-patch `11668283` result를 분석했다.
+  - completed/flushed/pending/failed `1/1/0/0`
+  - `official_title=null`, `candidate_ledger_status=promotion_blocked`, `title_resolution_state=adjacent`
+  - `blocked_official_title=중세`
+  - search degraded `15/15` queries
+  - 판정: Loop328 guard patch runtime 수렴 실패, `search-blind conditional`
+- [x] full375/bounded1200/golden18 health audit를 Loop331 감사 시점 checkpoint로 갱신했다.
+  - full375 `6/1/5/0` of `375`
+  - bounded1200 completed-source `14/6/8/0` of `1200`
+  - golden18 `2/2/0/0` of `18`
+  - 모두 `search_degraded_observed`, `IN_PROGRESS / NOT_APPROVAL`
+- [x] safe-loss N5 partial review를 생성했다.
+  - observed `1/15`
+  - `11674712` r01만 완료, blind judge expected match false/incomplete
+  - hard-hold relaxation `false`
+- [x] override `11705250`은 result missing, log search degraded 상태로 background 유지한다.
+  - `0/0/0/0`
+  - `search_degraded_detected=12`, `search_upstream_zero=4`
+- [ ] N5 `15/15` 완료 전 flip rate를 stale 값에서 current HEAD 값으로 대체하지 않는다.
+- [ ] golden18 `18/18` 완료 전 2026-06-28 golden GO를 대체하지 않는다.
+- [ ] 다음 active loop는 collateral183 triage 또는 override blind judge 검증으로 전환한다.
+- Gate: targeted `11668283` `NO-GO`, background runs `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop330 current HEAD health / override audit 전환 체크
 
 - [x] Loop329 background run health를 최신 audit로 갱신했다.

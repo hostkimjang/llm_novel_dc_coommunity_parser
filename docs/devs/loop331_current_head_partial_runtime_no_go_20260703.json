@@ -1,0 +1,92 @@
+{
+  "loop": 331,
+  "date": "2026-07-03",
+  "head": "c033dd97",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "loop_gate": "NO-GO_APPROVAL / ACTIONABLE_REQUEUE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "code_changes": [],
+  "data_analytics_validation": {
+    "assessment": "Needs revision",
+    "reason": "current HEAD 증거는 search 포함 non-light로 재발주됐지만 full375, bounded1200, golden18, safe-loss N5, override audit가 모두 완료 전이며 search_degraded_observed가 남아 있다.",
+    "stale_evidence_replacement": {
+      "flip_0_333": "not_replaced_by_current_head_complete_n5",
+      "golden_20260628_go": "not_replaced_by_current_head_golden18"
+    }
+  },
+  "runtime_snapshots": {
+    "post_patch_11668283": {
+      "run_id": "20260703_032149_031285",
+      "completed_flushed_pending_failed": "1/1/0/0",
+      "result": "promotion_blocked",
+      "official_title": null,
+      "blocked_official_title": "중세",
+      "title_resolution_state": "adjacent",
+      "search_health": "SEARCH_DEGRADED",
+      "interpretation": "Loop328 guard patch runtime convergence failed; promotion_blocked is search-blind conditional, not approval."
+    },
+    "full375": {
+      "run_id": "20260703_032149_057915",
+      "input": 375,
+      "completed": 6,
+      "flushed": 1,
+      "pending": 5,
+      "large_run_complete": false,
+      "search_gate": "REVIEW / search_degraded_observed"
+    },
+    "bounded1200_completed_source": {
+      "run_id": "20260703_032149_102775",
+      "input": 1200,
+      "completed": 14,
+      "flushed": 6,
+      "pending": 8,
+      "large_run_complete": false,
+      "search_gate": "REVIEW / search_degraded_observed"
+    },
+    "golden18": {
+      "run_id": "20260703_032149_034356",
+      "input": 18,
+      "completed": 2,
+      "flushed": 2,
+      "pending": 0,
+      "large_run_complete": false,
+      "search_gate": "REVIEW / search_degraded_observed",
+      "approval_replacement": "NOT_OPEN"
+    },
+    "safe_loss_n5": {
+      "planned": 15,
+      "observed_result_rows": 1,
+      "completed_post_ids": ["11674712"],
+      "gate": "REVIEW",
+      "hard_hold_relaxation_allowed": false,
+      "note": "11674712 r01 is promotion_blocked and blind-judge mismatch/incomplete; 11660237 and 11698880 have no current result yet."
+    },
+    "override_11705250": {
+      "run_id": "20260703_034549_939485",
+      "completed_flushed_pending_failed": "0/0/0/0",
+      "result_json": "missing",
+      "frontier_trace": "in_progress_in_worker_log",
+      "log_counts": {
+        "search_degraded_detected": 12,
+        "search_upstream_zero": 4,
+        "search_bridge_after_filter_zero": 8
+      }
+    }
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_331_REPORT_20260703.md",
+    "post_patch_11668283_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop331_post_patch_11668283_current_head_c033dd97_health_audit.json",
+    "full375_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop331_full375_current_head_c033dd97_health_audit.json",
+    "bounded1200_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop331_bounded1200_current_head_c033dd97_health_audit.json",
+    "golden18_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop331_golden18_current_head_c033dd97_health_audit.json",
+    "override_11705250_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop331_override_11705250_current_head_c033dd97_health_audit.json",
+    "safe_loss_partial_review": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop331_safe_loss_flip_rate_n5_current_head_partial_review.json"
+  },
+  "next_actions": [
+    "Do not relax promotion hard-hold before current HEAD N5 has 15/15 completed results and blind-judge expected matches.",
+    "Keep full375, bounded1200, golden18, and 11705250 as background monitoring until completion.",
+    "Force the next active loop into collateral183 triage or OVERRIDE AUDIT blind/source-native validation instead of repeating the same 38-row parent packet.",
+    "Treat promotion_blocked under search degraded as search-blind conditional."
+  ]
+}

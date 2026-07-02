@@ -2,6 +2,15 @@
 
 검색 품질, slang DB 회수율, 대시보드/운영 UX처럼 사용자 체감 품질에 가까운 개선 항목을 관리한다.
 
+## Current HEAD evidence refresh
+
+- [ ] Loop331 partial runtime NO-GO follow-up
+  - 상태: evidence_refreshed / approval_no_go / background_monitoring
+  - 발견: post-patch `11668283`은 current HEAD search non-light에서 완료됐지만 `official_title=null`, `blocked_official_title=중세`, `promotion_blocked`, `title_resolution_state=adjacent`, `SEARCH_DEGRADED`로 수렴 실패했다.
+  - 대형 런: full375 `6/1/5/0`, bounded1200 `14/6/8/0`, golden18 `2/2/0/0`, safe-loss N5 `1/15`, override `11705250` `0/0/0/0`.
+  - 산출물: `docs/devs/loop_reports/LOOP_331_REPORT_20260703.md`, `docs/devs/loop331_current_head_partial_runtime_no_go_20260703.json`.
+  - 완료 기준: search degraded 복구, N5 `15/15`, golden18 `18/18`, full375/bounded 완료 감사, `11705250` blind/source-native verdict 비교. 완료 전 `promotion_blocked`는 `search-blind conditional`로 태깅한다.
+
 ## Curated alias publication convergence
 
 - [ ] Loop328 known-abbreviation exact-title public guard follow-up

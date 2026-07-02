@@ -6,6 +6,14 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop331 Addendum - current HEAD partial runtime NO-GO refresh
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop331은 approval 회차가 아니라 현 HEAD `c033dd97` background/targeted 산출물을 감사 시점 스냅샷으로 다시 확인해 stale flip/golden 증거를 대체할 수 없음을 확정한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_331_REPORT_20260703.md`, state `docs/devs/loop331_current_head_partial_runtime_no_go_20260703.json`, health audits `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop331_*_health_audit.json`, N5 partial review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop331_safe_loss_flip_rate_n5_current_head_partial_review.json`.
+- Runtime snapshot: post-patch `11668283`은 `1/1/0/0` 완료됐지만 `official_title=null`, `candidate_ledger_status=promotion_blocked`, `title_resolution_state=adjacent`, `SEARCH_DEGRADED`라 Loop328 guard patch runtime 수렴 실패다. full375 `6/1/5/0`, bounded1200 `14/6/8/0`, golden18 `2/2/0/0`, safe-loss N5 `1/15`, override `11705250` `0/0/0/0`은 모두 approval 근거가 아니다.
+- Data Analytics validation: current HEAD evidence는 search 포함 non-light이지만 grain이 partial checkpoint라 `Needs revision`이다. 2026-06-28 golden GO와 stale flip rate는 current HEAD 완료 증거로 대체되지 않았다.
+- Gate: post-patch `11668283` targeted canary `NO-GO`, full375/bounded/golden/N5/override `IN_PROGRESS_OR_RUNNING_BACKGROUND / NOT_APPROVAL`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop330 Addendum - current HEAD health and override audit transition
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop330은 approval이 아니라 Loop329 current HEAD background run을 최신 health로 감사하고, 대형 런 대기 흐름을 `OVERRIDE AUDIT(LLM=False->final=True)` 단건 current HEAD non-light 검증으로 전환한 회차다.

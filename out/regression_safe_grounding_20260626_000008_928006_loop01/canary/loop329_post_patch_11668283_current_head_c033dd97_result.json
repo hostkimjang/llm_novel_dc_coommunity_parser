@@ -1,0 +1,682 @@
+[
+  {
+    "gallery_id": "genrenovel",
+    "post_id": 11668283,
+    "title": "게임 마인드의 중세 현대인 좋았다...",
+    "post_author": "럼앤후레쉬",
+    "author": "럼앤후레쉬",
+    "ip": null,
+    "author_ip": null,
+    "post_ip": null,
+    "created_at": "2026-01-17 02:08:47",
+    "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11668283",
+    "content": [
+      "오라 각성자의 참담한 희생을 기도하라",
+      "- dc official App"
+    ],
+    "content_blocks": [
+      {
+        "type": "text",
+        "text": "오라 각성자의 참담한 희생을 기도하라"
+      },
+      {
+        "type": "text",
+        "text": "- dc official App"
+      }
+    ],
+    "image_urls": [],
+    "image_count": 0,
+    "comments": [],
+    "comment_metadata": [],
+    "comment_context_lines": [],
+    "comment_dialogue_context_lines": [],
+    "analysis_result": {
+      "post_id": 11668283,
+      "identity": {
+        "is_relevant": false,
+        "is_novel_related": true,
+        "is_resolved_work_discussion": false,
+        "title_resolution_state": "adjacent",
+        "title_resolution_allowed": false,
+        "novel_identity": null,
+        "discussion_type": "community_banter",
+        "evidence": null,
+        "slang_insight": null,
+        "inference": null,
+        "title_candidates": null,
+        "primary_work": null,
+        "mentioned_works": null,
+        "future_watch_target": null,
+        "comparison_target": null,
+        "recommendation_candidates": null,
+        "primary_subject_type": "community_banter",
+        "primary_subject_text": "메인 화제는 작품 IP 주변의 팬덤 메타(드라마화 상상, 캐스팅 놀이, 축제성 반응)입니다.",
+        "secondary_reference_works": [
+          {
+            "official_title": "중세",
+            "heretic_url": null,
+            "confidence": "Medium",
+            "alias_or_mention": null,
+            "source_tier": "community",
+            "page_type": null,
+            "content_status": null,
+            "locked": false,
+            "resolved_recall_anchor": null,
+            "negative_evidence": null,
+            "reference_role": "mentioned"
+          }
+        ],
+        "entity_mentions": [
+          {
+            "text": "중세",
+            "entity_type": "work",
+            "canonical_value": "중세",
+            "confidence": "Medium",
+            "source": "title_candidates",
+            "role": "mentioned"
+          },
+          {
+            "text": "오라 각성자",
+            "entity_type": "character",
+            "canonical_value": null,
+            "confidence": "Medium",
+            "source": "gatekeeper",
+            "role": "character_focus"
+          },
+          {
+            "text": "고도환",
+            "entity_type": "other",
+            "canonical_value": null,
+            "confidence": "Medium",
+            "source": "fetch",
+            "role": "candidate"
+          },
+          {
+            "text": "시영",
+            "entity_type": "other",
+            "canonical_value": null,
+            "confidence": "Medium",
+            "source": "fetch",
+            "role": "candidate"
+          },
+          {
+            "text": "과자",
+            "entity_type": "other",
+            "canonical_value": null,
+            "confidence": "Medium",
+            "source": "fetch",
+            "role": "candidate"
+          },
+          {
+            "text": "마리오",
+            "entity_type": "other",
+            "canonical_value": null,
+            "confidence": "Medium",
+            "source": "fetch",
+            "role": "candidate"
+          }
+        ],
+        "topicality": "adjacent_relevant",
+        "relevance_scope": "adjacent",
+        "subtype": "fandom_meta",
+        "work_resolution": "none",
+        "anchor_type": "none",
+        "anchor_strength": "none",
+        "context_sources": [
+          "title",
+          "body",
+          "search"
+        ],
+        "consistency_flags": [
+          "absent_grounding_unresolved_hold_blocked",
+          "notes_demoted_for_unresolved"
+        ],
+        "search_evidence_catalog": [
+          {
+            "eid": "E001",
+            "rank": 1,
+            "source_rank": 1,
+            "title": "중세 - 나무위키",
+            "url": "https://namu.wiki/w/%EC%A4%91%EC%84%B8",
+            "domain": "namu.wiki",
+            "snippet": "중세 - 나무위키 [본문] # 중세 최근 수정 시각: 2026-04-16 09:52:04 86 편집 편집 IP 우회 수단(프록시 서버, VPN, Tor 등)이나 IDC 대역 IP로 접속하셨습니다. (#10605217) (VPN이나 iCloud의 비공개 릴레이를 사용 중인 경우 나타날 수 있습니다.) 잘못된 IDC 대역 차단이라고 생각하시는 경우 **게시판**에 문의하시길 바랍니다. 닫기 토론역사 분류 * 중세 본 문서는 유럽의 중세를 다룹니다. 해당 시기의 세계사 시대구분에 대한 내용은 고전후 시대 문서를 참고하십시오. **인류사의 시대 구분** --- [ 펼치기 · 접기 ] | **선사 시대** --- 석기 시대 (구석기 시대 | 중석기 시대 | 신석기 시대) | 동기 시대 | 청동기 시대 | 철기 시대 **역사 시대** 전근대 | 근...",
+            "query": "중세현대인 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "wiki"
+          },
+          {
+            "eid": "E002",
+            "rank": 2,
+            "source_rank": 2,
+            "title": "중세",
+            "url": "https://namu.wiki/w/%EC%A4%91%EC%84%B8/%EA%B3%BC%ED%95%99%20%EA%B8%B0%EC%88%A0",
+            "domain": "namu.wiki",
+            "snippet": "중세 [본문] 최근 변경최근 토론 특수 기능 # 중세/과학 기술 최근 수정 시각: 2026-05-28 02:19:41 4 편집토론역사 분류 * 중세 * 기술 상위 문서: 중세 1. 개요2. 민간 기술 2.1. 농업2.2. 건축 및 토목2.3. 예술2.4. 시계2.5. 기계 공학2.6. 제철2.7. 수차2.8. 항해2.9. 인쇄·용지 및 문서2.10. 과학 및 학술 지식2.11. 의복2.12. 기타 3. 군사 기술 3.1. 갑옷3.2. 방패3.3. 냉병기 3.3.1. 도검류3.3.2. 창과 폴암3.3.3. 타격무기3.3.4. 기병3.3.5. 투석기3.3.6. 투사 무기 3.4. 화약 무기3.5. 방어 시설3.6. 군사 제도 ## 1. 개요[]( 중세에 들어서면서 유럽은 다른 문명권보다 빠르게 각종 기술들을 재발견하거나 발명하기 시작했다....",
+            "query": "중세현대인 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "wiki"
+          },
+          {
+            "eid": "E003",
+            "rank": 3,
+            "source_rank": 3,
+            "title": "무료 온라인 게임 - 즉시 플레이 | PLIX.GG",
+            "url": "https://plix.gg/ko",
+            "domain": "plix.gg",
+            "snippet": "18시간 전 · 59000개 이상의 무료 온라인 게임을 즐기세요 — 다운로드, 로그인, 대기 시간 없음. 매일 새로운 게임 업데이트. 모바일, 태블릿, PC에서 즉시 플레이! ️",
+            "query": "게임 마인드의 중세 현대인 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "web"
+          },
+          {
+            "eid": "E004",
+            "rank": 4,
+            "source_rank": 4,
+            "title": "Poki - 최고의 무료 온라인 게임 - 지금 플레이",
+            "url": "https://poki.homes/ko",
+            "domain": "poki.homes",
+            "snippet": "공룡 게임 Poki에서 최고의 무료 온라인 게임 Poki에서 최고의 무료 온라인 게임을 즐기세요! 다운로드나 로그인 없이 수백 개의 엄선된 게임을 플레이할 수 있습니다. 학교, 집, 이동 중 어디서든 즉시 즐길 수 …",
+            "query": "게임 마인드의 중세 현대인 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "web"
+          },
+          {
+            "eid": "E005",
+            "rank": 5,
+            "source_rank": 5,
+            "title": "무료 온라인 게임 - Game Bean Play | 지금 플레이!",
+            "url": "https://gamebeanplay.com/ko",
+            "domain": "gamebeanplay.com",
+            "snippet": "무료 온라인 게임 브라우저에서 즐기는 최고의 무료 게임! 2048, 테트리스, 레이싱, 퍼즐 등. 다운로드 없이 모바일에서도 쾌적하게 플레이하세요.",
+            "query": "게임 마인드의 중세 현대인 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "web"
+          },
+          {
+            "eid": "E006",
+            "rank": 6,
+            "source_rank": 6,
+            "title": "CrazyGames | 무료 온라인 게임 포털 | 지금 바로 플레이!",
+            "url": "https://www.crazygames.com/kr",
+            "domain": "www.crazygames.com",
+            "snippet": "CrazyGames의 주요 카테고리인 클리커 게임, 운전 게임, 슈팅 게임 은 모든 페이지 상단에 있으며, 자동차 게임, Minecraft, Fireboy and Watergirl, 2인용 게임, 공포, 마작과 같은 다양한 하위 카테고리도 있어 …",
+            "query": "게임 마인드의 중세 현대인 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "web"
+          },
+          {
+            "eid": "E007",
+            "rank": 7,
+            "source_rank": 7,
+            "title": "무료 온라인 게임 플레이 | MSN 게임",
+            "url": "https://www.msn.com/ko-kr/play",
+            "domain": "www.msn.com",
+            "snippet": "Water Sort Quest : Mission Tetra Twist Screw Puzzle: Nut and Bolt Block Blaster Puzzle Block Puzzle Ocean Wood Blocks HEX Pop Jewels Master Sudoku Blocks Tile Connect Deluxe Wood Block …",
+            "query": "게임 마인드의 중세 현대인 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "web"
+          },
+          {
+            "eid": "E008",
+            "rank": 8,
+            "source_rank": 8,
+            "title": "미니게임 ️ CrazyGames에서 무료로 플레이 하세요!",
+            "url": "https://www.crazygames.com/kr/t/mini",
+            "domain": "www.crazygames.com",
+            "snippet": "빠르고 재미있고 자유로운 미니게임! 미니게임은 역설적이게도 짧으면서도 끝이 없을 수 있습니다. 죽기 전까지 최대한 오래 플레이하면 높은 점수를 얻을 수 있습니다. 원할 때마다 게임을 시작하고 종료할 수 …",
+            "query": "게임 마인드의 중세 현대인 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "web"
+          },
+          {
+            "eid": "E009",
+            "rank": 9,
+            "source_rank": 9,
+            "title": "무료 온라인 게임 - Y8.com 에서 플레이하기",
+            "url": "https://ko.y8.com/",
+            "domain": "ko.y8.com",
+            "snippet": "Y8 Games는 HTML5, WebGL, 멀티플레이어 게임, 프로필 공유가 가능한 드레스업 게임, 보존된 플래시 아카이브 등 방대한 브라우저 기반 게임 컬렉션을 제공하는 글로벌 온라인 게임 플랫폼입니다.",
+            "query": "게임 마인드의 중세 현대인 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "web"
+          },
+          {
+            "eid": "E010",
+            "rank": 10,
+            "source_rank": 10,
+            "title": "와플래시 게임 아카이브 - 플래시게임 | 와플래시 게임 아카이브",
+            "url": "http://vidkidz.tistory.com/",
+            "domain": "vidkidz.tistory.com",
+            "snippet": "와플래시 게임 아카이브는 단순한 아카이빙을 넘어 어도비 플래시를 대체하는 HTML5 웹브라우저 플래시 플레이어인 와플래시를 직접 개발하면서 플래시게임 및 애니메이션 콘텐츠를 모바일을 포함한 모든 …",
+            "query": "게임 마인드의 중세 현대인 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "web"
+          },
+          {
+            "eid": "E011",
+            "rank": 11,
+            "source_rank": 11,
+            "title": "중세",
+            "url": "https://easywiki.co/medieval",
+            "domain": "easywiki.co",
+            "snippet": "중세",
+            "query": "중세현대인 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "web"
+          },
+          {
+            "eid": "E012",
+            "rank": 12,
+            "source_rank": 12,
+            "title": "고대 중세 근대 현대 시대 구분 기준, 한 번에 끝내기 : 네이버 ...",
+            "url": "https://blog.naver.com/ink2777/224269298504",
+            "domain": "blog.naver.com",
+            "snippet": "고대 중세 근대 현대 시대 구분 기준, 한 번에 끝내기 : 네이버 ...",
+            "query": "중세현대인 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "web"
+          },
+          {
+            "eid": "E013",
+            "rank": 13,
+            "source_rank": 13,
+            "title": "중세가 시작되는 시기와 끝나는 시기는 몇년도 인가요? : 지식iN",
+            "url": "https://kin.naver.com/qna/detail.naver?d1id=11&dirId=111002&docId=472136025",
+            "domain": "kin.naver.com",
+            "snippet": "중세가 시작되는 시기와 끝나는 시기는 몇년도 인가요? : 지식iN",
+            "query": "중세현대인 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "web"
+          },
+          {
+            "eid": "E014",
+            "rank": 14,
+            "source_rank": 14,
+            "title": "중세 문화의 특징",
+            "url": "https://contents.history.go.kr/mobile/ta/view.do?levelId=ta_h32_0040_0030_0030_0010",
+            "domain": "contents.history.go.kr",
+            "snippet": "중세 문화의 특징",
+            "query": "중세현대인 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "web"
+          },
+          {
+            "eid": "E015",
+            "rank": 15,
+            "source_rank": 15,
+            "title": "중세 시대의 역사와 문화: 중세의 삶과 유산",
+            "url": "https://at0101.tistory.com/entry/%EC%A4%91%EC%84%B8-%EC%8B%9C%EB%8C%80%EC%9D%98-%EC%97%AD%EC%82%AC%EC%99%80-%EB%AC%B8%ED%99%94-%EC%A4%91%EC%84%B8%EC%9D%98-%EC%82%B6%EA%B3%BC-%EC%9C%A0%EC%82%B0",
+            "domain": "at0101.tistory.com",
+            "snippet": "중세 시대의 역사와 문화: 중세의 삶과 유산",
+            "query": "중세현대인 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "web"
+          },
+          {
+            "eid": "E016",
+            "rank": 16,
+            "source_rank": 16,
+            "title": "서양의 중세 시대, 1000년을 지배한 봉건의 시대를 알아보다",
+            "url": "https://mystory0315.tistory.com/entry/%EC%84%9C%EC%96%91%EC%9D%98-%EC%A4%91%EC%84%B8%EC%8B%9C%EB%8C%80-1000%EB%85%84%EC%9D%84-%EC%A7%80%EB%B0%B0%ED%95%9C-%EB%B4%89%EA%B1%B4%EC%9D%98-%EC%8B%9C%EB%8C%80%EB%A5%BC-%EC%95%8C%EC%95%84%EB%B3%B4%EB%8B%A4",
+            "domain": "mystory0315.tistory.com",
+            "snippet": "서양의 중세 시대, 1000년을 지배한 봉건의 시대를 알아보다",
+            "query": "중세현대인 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "web"
+          }
+        ],
+        "search_health": {
+          "queries_issued": 15,
+          "upstream_zero": 5,
+          "degraded": 15,
+          "degraded_zero": 5,
+          "accepted": 80,
+          "raw": 145,
+          "filtered": 5,
+          "retried": 10,
+          "cache_hits": 7,
+          "status": "SEARCH_DEGRADED"
+        },
+        "image_evidence_catalog": null,
+        "vlm_enabled": null,
+        "ocr_enabled": null,
+        "vlm_enrichment_used": null,
+        "image_fetch_count": null,
+        "image_fetch_success": null,
+        "vlm_chunks_sent": null,
+        "vlm_total_bytes": null,
+        "image_enrichment_limitations": null,
+        "candidate_preservation_sources": [
+          {
+            "official_title": "중세",
+            "confidence": "Medium",
+            "source_tier": "community",
+            "reference_role": "mentioned",
+            "preservation_role": "title_candidate"
+          },
+          {
+            "official_title": "중세",
+            "confidence": "Medium",
+            "source_tier": "community",
+            "reference_role": "mentioned",
+            "preservation_role": "mentioned_work"
+          },
+          {
+            "official_title": "중세",
+            "confidence": "Medium",
+            "source_tier": "community",
+            "reference_role": "mentioned",
+            "preservation_role": "secondary_reference"
+          }
+        ],
+        "candidate_ledger": {
+          "pipeline_official_title": null,
+          "blocked_official_title": "중세",
+          "blocked_official_title_url": null,
+          "promotion_blocked_reasons": [],
+          "title_candidates": [
+            "중세",
+            "오라 각성자"
+          ],
+          "candidate_count": 2,
+          "candidate_preservation_sources": [
+            {
+              "official_title": "중세",
+              "confidence": "Medium",
+              "source_tier": "community",
+              "reference_role": "mentioned",
+              "preservation_role": "title_candidate"
+            },
+            {
+              "official_title": "중세",
+              "confidence": "Medium",
+              "source_tier": "community",
+              "reference_role": "mentioned",
+              "preservation_role": "mentioned_work"
+            },
+            {
+              "official_title": "중세",
+              "confidence": "Medium",
+              "source_tier": "community",
+              "reference_role": "mentioned",
+              "preservation_role": "secondary_reference"
+            }
+          ],
+          "title_resolution_state": "adjacent",
+          "title_resolution_allowed": false,
+          "work_resolution": "none",
+          "discussion_type": "community_banter",
+          "topicality": "adjacent_relevant",
+          "is_relevant": false,
+          "is_novel_related": true,
+          "is_resolved_work_discussion": false,
+          "anchor_type": "none",
+          "anchor_strength": "none",
+          "context_sources": [
+            "title",
+            "body",
+            "search"
+          ],
+          "has_evidence_catalog": true,
+          "judge_seed_bucket": null,
+          "judge_seed_group": "unseeded",
+          "judge_disagreement_type": null,
+          "judge_expected_title": null,
+          "judge_expected_url": null,
+          "official_title_lint_reasons": [],
+          "identity_consistency_lint_reasons": [],
+          "output_consistency_lint_reasons": [],
+          "candidate_audit_lint_reasons": [],
+          "promotion_decision": {
+            "status": "candidate_only",
+            "publish_allowed": false,
+            "official_title": null,
+            "official_url": null,
+            "candidate_preserved": true,
+            "reason_codes": [
+              "promotion_blocked",
+              "serialized_public_identity_scrubbed"
+            ],
+            "bypassed_gate": false
+          },
+          "publish_contract_trace": {
+            "pre_gate_candidate": {
+              "official_title": "중세",
+              "official_url": null,
+              "source": "candidate_ledger_or_serialized_identity"
+            },
+            "gate_decision": {
+              "status": "candidate_only",
+              "publish_allowed": false,
+              "official_title": null,
+              "official_url": null,
+              "candidate_preserved": true,
+              "reason_codes": [
+                "promotion_blocked",
+                "serialized_public_identity_scrubbed"
+              ],
+              "bypassed_gate": false
+            },
+            "scope_state": null,
+            "post_gate_identity": {
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": false,
+              "title_resolution_state": "adjacent",
+              "work_resolution": "none",
+              "candidate_ledger_status": "promotion_blocked"
+            },
+            "reason_codes": [
+              "promotion_blocked",
+              "serialized_public_identity_scrubbed"
+            ],
+            "bypassed_gate": false
+          },
+          "publish_ledger": {
+            "candidate_preservation": {
+              "official_title": "중세",
+              "official_url": null,
+              "source": "candidate_ledger_or_serialized_identity"
+            },
+            "public_publish": {
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": false,
+              "title_resolution_state": "adjacent",
+              "work_resolution": "none",
+              "candidate_ledger_status": "promotion_blocked"
+            },
+            "gate_decision": {
+              "status": "candidate_only",
+              "publish_allowed": false,
+              "official_title": null,
+              "official_url": null,
+              "candidate_preserved": true,
+              "reason_codes": [
+                "promotion_blocked",
+                "serialized_public_identity_scrubbed"
+              ],
+              "bypassed_gate": false
+            }
+          }
+        },
+        "candidate_ledger_status": "promotion_blocked",
+        "candidate_generation_miss": false,
+        "promotion_blocked": true,
+        "hold_unresolved": false,
+        "hold_without_candidates": false,
+        "safe_resolved": false,
+        "official_title_lint": [],
+        "identity_consistency_lint": [],
+        "output_consistency_lint": [],
+        "reason": "[판정 요약] - 판정: 주변 관련 - discussion_type: community_banter - 공식 제목: 미확정 - work_resolution: none - 핵심 결론: 작품 본편 줄거리보다 드라마화 상상, 가상 캐스팅, 팬덤 축제성 반응 같은 주변 메타 담론에 가깝습니다. - 검색 요약: 실행 15건 (유효 10건 / 무결과 5건), 누적 결과 16건 [엔진경고 15건, 결과유지 10건, 저하-무결과 5건] [보정집계: 실행 10건 (유효 10건 / 무결과 0건)] [재시도 쿼리 10건, 추가시도 40회] [캐시히트 7건] [원문 해석] - 제목: 게임 마인드의 중세 현대인 좋았다... - 본문 요약: 오라 각성자의 참담한 희생을 기도하라 / - dc official App - 메인 해석 축: 메인 화제는 작품 IP 주변의 팬덤 메타(드라마화 상상, 캐스팅 놀이, 축제성 반응)입니다. - 부차 참조 작품: 중세 [근거 요약] - subtype: fandom_meta (팬덤 메타) - grounding_anchor: none - anchor_focus: 팬덤 메타/가상 캐스팅/드라마화 상상 [최종 종합] - 작품 본편 토론보다 팬덤/IP 주변 메타가 중심이어서 단일 작품 제목 확정은 보류합니다. [정합성 교정]\n- 최종 분류는 adjacent_relevant이며, 작품 주변 맥락은 인정하되 단일 공식 제목은 미확정으로 유지합니다.\n[근거 스코어]\n- total: -3\n- grounding_anchor: -2 (약한 앵커(none))\n- decoder_confidence: -2 (none)\n- decision_alignment: +1 (is_relevant=false, dt=community_banter)\n- executed_queries: 9 (단일 집계 소스)\n- effective_executed_queries: 10 (degraded+무결과 제외 보정치)\n- degraded_queries: 15 (degraded_nonzero=10, degraded_zero=5, retried=10)\n- planned_unique_queries: 38 (참고치, 최종 집계는 executed_queries)\n- evidence_diversity: 0\n[범위 분리]\n- is_novel_related=true\n- is_resolved_work_discussion=false\n- title_resolution_state=adjacent\n- title_resolution_allowed=false",
+        "reason_lines": [
+          "[판정 요약] - 판정: 주변 관련 - discussion_type: community_banter - 공식 제목: 미확정 - work_resolution: none - 핵심 결론: 작품 본편 줄거리보다 드라마화 상상, 가상 캐스팅, 팬덤 축제성 반응 같은 주변 메타 담론에 가깝습니다. - 검색 요약: 실행 15건 (유효 10건 / 무결과 5건), 누적 결과 16건 [엔진경고 15건, 결과유지 10건, 저하-무결과 5건] [보정집계: 실행 10건 (유효 10건 / 무결과 0건)] [재시도 쿼리 10건, 추가시도 40회] [캐시히트 7건] [원문 해석] - 제목: 게임 마인드의 중세 현대인 좋았다... - 본문 요약: 오라 각성자의 참담한 희생을 기도하라 / - dc official App - 메인 해석 축: 메인 화제는 작품 IP 주변의 팬덤 메타(드라마화 상상, 캐스팅 놀이, 축제성 반응)입니다. - 부차 참조 작품: 중세 [근거 요약] - subtype: fandom_meta (팬덤 메타) - grounding_anchor: none - anchor_focus: 팬덤 메타/가상 캐스팅/드라마화 상상 [최종 종합] - 작품 본편 토론보다 팬덤/IP 주변 메타가 중심이어서 단일 작품 제목 확정은 보류합니다. [정합성 교정]",
+          "- 최종 분류는 adjacent_relevant이며, 작품 주변 맥락은 인정하되 단일 공식 제목은 미확정으로 유지합니다.",
+          "[근거 스코어]",
+          "- total: -3",
+          "- grounding_anchor: -2 (약한 앵커(none))",
+          "- decoder_confidence: -2 (none)",
+          "- decision_alignment: +1 (is_relevant=false, dt=community_banter)",
+          "- executed_queries: 9 (단일 집계 소스)",
+          "- effective_executed_queries: 10 (degraded+무결과 제외 보정치)",
+          "- degraded_queries: 15 (degraded_nonzero=10, degraded_zero=5, retried=10)",
+          "- planned_unique_queries: 38 (참고치, 최종 집계는 executed_queries)",
+          "- evidence_diversity: 0",
+          "[범위 분리]",
+          "- is_novel_related=true",
+          "- is_resolved_work_discussion=false",
+          "- title_resolution_state=adjacent",
+          "- title_resolution_allowed=false"
+        ],
+        "system_state": "clean",
+        "identity_state": "adjacent_relevant",
+        "candidate_audit_lint": [],
+        "blocked_official_title": "중세",
+        "promotion_decision": {
+          "status": "candidate_only",
+          "publish_allowed": false,
+          "official_title": null,
+          "official_url": null,
+          "candidate_preserved": true,
+          "reason_codes": [
+            "promotion_blocked",
+            "serialized_public_identity_scrubbed"
+          ],
+          "bypassed_gate": false
+        },
+        "publish_contract_trace": {
+          "pre_gate_candidate": {
+            "official_title": "중세",
+            "official_url": null,
+            "source": "candidate_ledger_or_serialized_identity"
+          },
+          "gate_decision": {
+            "status": "candidate_only",
+            "publish_allowed": false,
+            "official_title": null,
+            "official_url": null,
+            "candidate_preserved": true,
+            "reason_codes": [
+              "promotion_blocked",
+              "serialized_public_identity_scrubbed"
+            ],
+            "bypassed_gate": false
+          },
+          "scope_state": null,
+          "post_gate_identity": {
+            "official_title": null,
+            "official_url": null,
+            "title_resolution_allowed": false,
+            "title_resolution_state": "adjacent",
+            "work_resolution": "none",
+            "candidate_ledger_status": "promotion_blocked"
+          },
+          "reason_codes": [
+            "promotion_blocked",
+            "serialized_public_identity_scrubbed"
+          ],
+          "bypassed_gate": false
+        },
+        "publish_ledger": {
+          "candidate_preservation": {
+            "official_title": "중세",
+            "official_url": null,
+            "source": "candidate_ledger_or_serialized_identity"
+          },
+          "public_publish": {
+            "official_title": null,
+            "official_url": null,
+            "title_resolution_allowed": false,
+            "title_resolution_state": "adjacent",
+            "work_resolution": "none",
+            "candidate_ledger_status": "promotion_blocked"
+          },
+          "gate_decision": {
+            "status": "candidate_only",
+            "publish_allowed": false,
+            "official_title": null,
+            "official_url": null,
+            "candidate_preserved": true,
+            "reason_codes": [
+              "promotion_blocked",
+              "serialized_public_identity_scrubbed"
+            ],
+            "bypassed_gate": false
+          }
+        }
+      },
+      "analysis": {
+        "detected_titles": [],
+        "micro_tags": [
+          "중세",
+          "현대인",
+          "오라 각성자"
+        ],
+        "sentiment_profile": {
+          "pacing": "Unknown",
+          "drift_risk": "Unknown",
+          "sentiment": "Neutral"
+        },
+        "is_nsfw": false,
+        "user_segment": null,
+        "notes": "[정합성 교정] 최종 공식 제목은 미확정 상태입니다. promotion-blocked 후보는 candidate_ledger/title_candidates에만 보존합니다."
+      }
+    },
+    "run_meta": {
+      "run_id": "20260703_032149_031285",
+      "model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+      "llm_mode": "remote",
+      "llm_endpoint": "http://10.20.0.101:8000",
+      "prompt_version": "2026-03-30-semantic-contract-v1",
+      "config_hash": "aa4cf2f7d971",
+      "requested_parallel_raw": 1,
+      "requested_parallel": 1,
+      "effective_parallel": 1,
+      "parallel_policy": "effective_parallel=min(min(requested_parallel_raw,model_parallel_max),input_post_count)",
+      "model_parallel_max": 36,
+      "model_parallel_cap_applied": false,
+      "model_parallel_cap_model": "bg-digitalservices/Gemma-4-E4B-it-NVFP4",
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_required_ok_count": 1,
+      "mcp_health_checked_endpoint_count": 1,
+      "mcp_health_probe_batch_size": 1,
+      "mcp_health_probe_stopped_after_required_ok": false,
+      "mcp_health_workers": 1,
+      "mcp_health_attempts": 1,
+      "mcp_health_timeout_sec": 10.0,
+      "mcp_health_search_max_latency_ms": 8000.0,
+      "mcp_health_search_min_results": 1,
+      "mcp_health_ok_count": 1,
+      "mcp_health_failure_count": 0,
+      "search_health": {
+        "queries_issued": 15,
+        "upstream_zero": 5,
+        "degraded": 15,
+        "degraded_zero": 5,
+        "accepted": 80,
+        "raw": 145,
+        "filtered": 5,
+        "retried": 10,
+        "cache_hits": 7,
+        "status": "SEARCH_DEGRADED"
+      },
+      "mcp_healthy_endpoint_filter": false,
+      "mcp_healthy_endpoint_filter_reason": "reuse_shards_only",
+      "mcp_healthy_endpoint_filter_autogen": true,
+      "mcp_healthy_autogen_endpoint_filter": false,
+      "mcp_healthy_autogen_endpoint_filter_reason": "reuse_shards_only",
+      "mcp_reuse_shards_only_health_filtered": false,
+      "mcp_goal_run_health_filtered": false,
+      "mcp_requested_endpoint_count_before_health_filter": 1,
+      "mcp_healthy_endpoint_count": 1,
+      "mcp_endpoint_count_after_health_filter": 1,
+      "mcp_parallel_before_health_filter": 1,
+      "mcp_parallel_after_health_filter": 1,
+      "worker_id": 0,
+      "worker_log_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\logs\\expert_run_20260703_032149_031285.log",
+      "main_log_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\logs\\expert_run_20260703_032149_031285.log"
+    }
+  }
+]

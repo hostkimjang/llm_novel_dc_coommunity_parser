@@ -1,5 +1,17 @@
 # Slang DB Improvement TODO
 
+## 2026-07-03 Loop331 current HEAD partial runtime / slang caveat
+
+- [x] post-patch `11668283` current HEAD result를 분석했다.
+  - `official_title=null`, `blocked_official_title=중세`, `promotion_blocked`, `title_resolution_state=adjacent`
+  - `SEARCH_DEGRADED`, degraded `15/15` queries
+- [x] safe-loss N5 partial review를 생성했다.
+  - observed `1/15`
+  - `11674712` r01 only, blind judge expected match false/incomplete
+- [ ] N5 `15/15` 완료 전 slang/alias hard-hold 완화를 하지 않는다.
+- [ ] golden18 `18/18` 완료 전 2026-06-28 golden GO를 current HEAD 증거로 대체하지 않는다.
+- Gate: slang DB write-back 아님, targeted `11668283` `NO-GO`, N5 `REVIEW / PARTIAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop328 exact-title guard / slang caveat
 
 - [x] `11668283 / 게임 마인드의 중세 현대인 좋았다...` non-light replay에서 `게임 마인드` slang insight는 생성됐지만 public title은 weak-source guard로 hold된 것을 확인했다.

@@ -1,5 +1,32 @@
 # Improvement Register
 
+## IMP-20260703-331 - current HEAD partial runtime NO-GO refresh
+
+- Status: Evidence refreshed / approval NO-GO / background monitoring
+- Loop: 331
+- Problem:
+  - Loop329/330 launch evidence was stale for decision-making because post-patch `11668283` had completed after the report, and large/background runs advanced.
+  - The user explicitly required stale flip and golden evidence not to stand in for current HEAD completed evidence.
+- Change:
+  - Analyzed post-patch `11668283` current HEAD result.
+  - Regenerated health audits for full375, bounded1200, golden18, and override `11705250`.
+  - Generated a partial safe-loss N5 report from the currently completed result set.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_331_REPORT_20260703.md`
+  - state `docs/devs/loop331_current_head_partial_runtime_no_go_20260703.json`
+  - health audits `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop331_*_health_audit.json`
+  - N5 partial `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop331_safe_loss_flip_rate_n5_current_head_partial_review.json`
+- Result:
+  - `11668283` is now analyzed as runtime `NO-GO`: `official_title=null`, `blocked_official_title=중세`, `promotion_blocked`, `title_resolution_state=adjacent`, `SEARCH_DEGRADED`.
+  - full375 `6/1/5/0`, bounded1200 `14/6/8/0`, golden18 `2/2/0/0`, N5 `1/15`, and override `11705250` `0/0/0/0` are not approval evidence.
+  - Hard-hold relaxation remains closed.
+- Gate:
+  - targeted `11668283` `NO-GO`
+  - large/background runs `IN_PROGRESS / NOT_APPROVAL`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260703-330 - current HEAD health and override audit transition
 
 - Status: Dispatched / background / approval not open
