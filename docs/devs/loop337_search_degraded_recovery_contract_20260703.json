@@ -1,0 +1,76 @@
+{
+  "loop": 337,
+  "date": "2026-07-03",
+  "title": "search degraded recovery contract",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "approval": {
+    "is_approval": false,
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  },
+  "scope": {
+    "type": "code_contract_and_audit_contract",
+    "runtime_replay_after_patch": "NOT_RUN",
+    "live_container_apply_status": "NOT_APPLIED_TO_RUNNING_CONTAINERS"
+  },
+  "root_cause_evidence": {
+    "loop336_log": "logs/loop336_override_11705250_post_patch_f232f31a_search_nonlight_stderr.log",
+    "loop336_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop336_override_11705250_post_patch_f232f31a_search_nonlight_health_audit.json",
+    "observed_patterns": [
+      "raw_total=0 upstream zero",
+      "raw_total>=10 with no_hangul/token_mismatch bridge filter collapse",
+      "readyz ok while provider quality degraded"
+    ],
+    "docker_mounts": "[]",
+    "container_marker_present": false
+  },
+  "changed_files": [
+    ".gitignore",
+    "src/llm_batch/mcp_bridge/server.py",
+    "src/llm_batch/agentic_pipeline.py",
+    "src/llm_batch/experts/orchestrator.py",
+    "tools/audit_expert_run_health.py",
+    "tests/test_mcp_bridge_direct_search.py",
+    "tests/test_search_recovery_contract.py",
+    "docs/devs/loop_reports/LOOP_337_REPORT_20260703.md",
+    "docs/devs/loop337_search_degraded_recovery_contract_20260703.json"
+  ],
+  "contract_changes": [
+    "bridge filter collapse triggers direct fallback reason low_bridge_after_filter or foreign_noise_dominant",
+    "bridge emits fallback_recovered and degraded_recovered metadata",
+    "pipeline carries direct_search metadata into cache and search health",
+    "ConversationContext records recovered and unrecovered degraded counters",
+    "audit_expert_run_health blocks unrecovered degraded instead of all recovered degraded warnings"
+  ],
+  "verification": [
+    {
+      "command": ".\\venv\\Scripts\\python.exe -m py_compile .\\src\\llm_batch\\mcp_bridge\\server.py .\\src\\llm_batch\\agentic_pipeline.py .\\src\\llm_batch\\experts\\orchestrator.py .\\tools\\audit_expert_run_health.py .\\tests\\test_mcp_bridge_direct_search.py .\\tests\\test_search_recovery_contract.py",
+      "result": "PASS"
+    },
+    {
+      "command": "$env:PYTHONPATH='src'; .\\venv\\Scripts\\python.exe -m unittest tests.test_mcp_bridge_direct_search tests.test_search_recovery_contract",
+      "result": "PASS",
+      "tests": 10
+    },
+    {
+      "command": "$env:PYTHONPATH='src'; .\\venv\\Scripts\\python.exe -m unittest tests.test_audit_expert_run_health",
+      "result": "PASS",
+      "tests": 16
+    }
+  ],
+  "gates": {
+    "code_contract": "GO_UNIT",
+    "live_shard": "NOT_APPLIED_TO_RUNNING_CONTAINERS",
+    "search_recovery": "P0 / PARTIAL_CODE_ONLY / OPEN",
+    "runtime_replay": "NOT_RUN_AFTER_REBUILD",
+    "approval": "NOT_APPROVAL",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next_required_actions": [
+    "rebuild or recreate MCP bridge/browser-search shard image before runtime replay",
+    "rerun a small search non-light canary and require unrecovered_degraded=0",
+    "only after search recovery, reassess search-blind conditional promotion blockers"
+  ]
+}

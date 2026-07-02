@@ -73,6 +73,8 @@ tests/inputs/test01.jsonl
 !/tests/test_triage_collateral_regressions.py
 !/tests/test_build_collateral_triage_review_batch.py
 !/tests/test_summarize_collateral_review_verdicts.py
+!/tests/test_mcp_bridge_direct_search.py
+!/tests/test_search_recovery_contract.py
 /tmp*
 *.bak
 *.badbak

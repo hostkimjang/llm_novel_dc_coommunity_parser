@@ -596,6 +596,13 @@ class AgenticPipeline:
             "headless_reason": "",
             "headless_count": 0,
             "headless_blocked": False,
+            "fallback_recovered": False,
+            "degraded_recovered": False,
+            "direct_search_used": False,
+            "direct_search_reason": "",
+            "direct_search_count": 0,
+            "direct_search_providers": [],
+            "direct_search_errors": [],
         }
         with self._search_cache_lock:
             self._last_search_meta = dict(search_meta)
@@ -638,6 +645,13 @@ class AgenticPipeline:
                     "headless_reason": cached_meta.get("headless_reason") or "",
                     "headless_count": int(cached_meta.get("headless_count") or 0),
                     "headless_blocked": bool(cached_meta.get("headless_blocked")),
+                    "fallback_recovered": bool(cached_meta.get("fallback_recovered")),
+                    "degraded_recovered": bool(cached_meta.get("degraded_recovered")),
+                    "direct_search_used": bool(cached_meta.get("direct_search_used")),
+                    "direct_search_reason": cached_meta.get("direct_search_reason") or "",
+                    "direct_search_count": int(cached_meta.get("direct_search_count") or 0),
+                    "direct_search_providers": list(cached_meta.get("direct_search_providers") or []),
+                    "direct_search_errors": list(cached_meta.get("direct_search_errors") or []),
                 }
             )
             with self._search_cache_lock:
@@ -686,6 +700,13 @@ class AgenticPipeline:
                         "headless_reason": raw.get("headless_reason") or "",
                         "headless_count": int(raw.get("headless_count") or 0),
                         "headless_blocked": bool(raw.get("headless_blocked")),
+                        "fallback_recovered": bool(raw.get("fallback_recovered")),
+                        "degraded_recovered": bool(raw.get("degraded_recovered")),
+                        "direct_search_used": bool(raw.get("direct_search_used")),
+                        "direct_search_reason": raw.get("direct_search_reason") or "",
+                        "direct_search_count": int(raw.get("direct_search_count") or 0),
+                        "direct_search_providers": list(raw.get("direct_search_providers") or []),
+                        "direct_search_errors": list(raw.get("direct_search_errors") or []),
                     }
                 )
                 _current_consecutive = None
@@ -14583,10 +14604,21 @@ class AgenticPipeline:
             "filtered": _count("filtered_total"),
             "retried": _count("retried_total"),
             "cache_hits": _count("cache_hit_total"),
+            "fallback_recovered": _count("fallback_recovered_total"),
+            "degraded_recovered": _count("degraded_recovered_total"),
+            "unrecovered_degraded": _count("unrecovered_degraded_total"),
+            "headless_used": _count("headless_used_total"),
+            "direct_search_used": _count("direct_search_used_total"),
+            "direct_search_results": _count("direct_search_result_total"),
         }
         if not any(health.values()):
             return None
-        health["status"] = "SEARCH_DEGRADED" if health["degraded_zero"] > 0 else "ok"
+        if health["unrecovered_degraded"] > 0 or health["degraded_zero"] > health["degraded_recovered"]:
+            health["status"] = "SEARCH_DEGRADED"
+        elif health["degraded_recovered"] > 0:
+            health["status"] = "SEARCH_DEGRADED_RECOVERED"
+        else:
+            health["status"] = "ok"
         return health
 
     def _build_image_evidence_catalog(self, ctx) -> Optional[List[Dict[str, Any]]]:

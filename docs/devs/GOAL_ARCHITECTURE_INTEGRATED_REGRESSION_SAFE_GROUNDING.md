@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop337 Addendum - search degraded recovery contract
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop337은 approval 회차가 아니라 search degraded 복구를 recovered/unrecovered 계약으로 분리한 코드 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_337_REPORT_20260703.md`, state `docs/devs/loop337_search_degraded_recovery_contract_20260703.json`, Loop336 audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop336_override_11705250_post_patch_f232f31a_search_nonlight_health_audit.json`.
+- Result: bridge filter collapse(`raw_total>=10` 후 `no_hangul`/`token_mismatch` 전량 탈락)를 direct fallback 사유로 올리고, `fallback_recovered`, `degraded_recovered`, `unrecovered_degraded`를 public health/audit에 노출한다.
+- Caveat: 현재 실행 중인 bridge 컨테이너는 repo bind mount가 아니며 이번 코드가 live shard에 적용되지 않았다. 따라서 runtime replay는 `NOT_RUN_AFTER_REBUILD`이고 approval 근거가 아니다.
+- Verification: py_compile PASS, recovery/direct tests `10` PASS, health audit tests `16` PASS.
+- Gate: code contract `GO_UNIT`, live shard `NOT_APPLIED_TO_RUNNING_CONTAINERS`, search recovery `P0 / PARTIAL_CODE_ONLY / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop336 Addendum - 11705250 post-patch runtime replay and sequential manifest contract
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop336은 approval 회차가 아니라 Loop335 패치의 단건 runtime replay와 순차 manifest 계약 보정 회차다.

@@ -201,6 +201,11 @@ class ConversationContext:
             "retried_total": 0,
             "retry_attempts_total": 0,
             "cache_hit_total": 0,
+            "fallback_recovered_total": 0,
+            "degraded_recovered_total": 0,
+            "unrecovered_degraded_total": 0,
+            "direct_search_used_total": 0,
+            "direct_search_result_total": 0,
         }
     )
     
@@ -265,6 +270,13 @@ class ConversationContext:
         headless_reason: str = "",
         headless_count: int = 0,
         headless_blocked: bool = False,
+        fallback_recovered: bool = False,
+        degraded_recovered: bool = False,
+        direct_search_used: bool = False,
+        direct_search_reason: str = "",
+        direct_search_count: int = 0,
+        direct_search_providers: Optional[List[str]] = None,
+        direct_search_errors: Optional[List[str]] = None,
     ) -> None:
         """쿼리 단위 검색 결과/품질 집계.
 
@@ -323,6 +335,11 @@ class ConversationContext:
                 "retried_total": 0,
                 "retry_attempts_total": 0,
                 "cache_hit_total": 0,
+                "fallback_recovered_total": 0,
+                "degraded_recovered_total": 0,
+                "unrecovered_degraded_total": 0,
+                "direct_search_used_total": 0,
+                "direct_search_result_total": 0,
             }
             self.search_query_stats = stats
 
@@ -356,10 +373,56 @@ class ConversationContext:
                 h_reasons = {}
                 stats["headless_reasons"] = h_reasons
             h_reasons[h_reason] = int(h_reasons.get(h_reason, 0) or 0) + 1
+        if direct_search_used:
+            stats["direct_search_used_total"] = int(stats.get("direct_search_used_total", 0) or 0) + 1
+            try:
+                stats["direct_search_result_total"] = (
+                    int(stats.get("direct_search_result_total", 0) or 0)
+                    + max(0, int(direct_search_count or 0))
+                )
+            except Exception:
+                stats["direct_search_result_total"] = int(stats.get("direct_search_result_total", 0) or 0)
+            d_reason = str(direct_search_reason or "").strip() or "unknown"
+            d_reasons = stats.get("direct_search_reasons")
+            if not isinstance(d_reasons, dict):
+                d_reasons = {}
+                stats["direct_search_reasons"] = d_reasons
+            d_reasons[d_reason] = int(d_reasons.get(d_reason, 0) or 0) + 1
+            providers = [
+                str(provider).strip()
+                for provider in (direct_search_providers or [])
+                if str(provider).strip()
+            ]
+            if providers:
+                d_providers = stats.get("direct_search_providers")
+                if not isinstance(d_providers, dict):
+                    d_providers = {}
+                    stats["direct_search_providers"] = d_providers
+                for provider in providers:
+                    d_providers[provider] = int(d_providers.get(provider, 0) or 0) + 1
+            if direct_search_errors:
+                stats["direct_search_error_total"] = (
+                    int(stats.get("direct_search_error_total", 0) or 0)
+                    + len([err for err in direct_search_errors if str(err).strip()])
+                )
+        fallback_recovered = bool(
+            fallback_recovered
+            or (headless_used and int(headless_count or 0) > 0)
+            or (direct_search_used and int(direct_search_count or 0) > 0)
+        )
+        degraded_recovered = bool(degraded_recovered or (degraded and fallback_recovered and rc > 0))
+        if fallback_recovered:
+            stats["fallback_recovered_total"] = int(stats.get("fallback_recovered_total", 0) or 0) + 1
+        if degraded_recovered:
+            stats["degraded_recovered_total"] = int(stats.get("degraded_recovered_total", 0) or 0) + 1
         if degraded:
             stats["degraded_total"] = int(stats.get("degraded_total", 0) or 0) + 1
             if rc <= 0:
                 stats["degraded_zero"] = int(stats.get("degraded_zero", 0) or 0) + 1
+                if not degraded_recovered:
+                    stats["unrecovered_degraded_total"] = (
+                        int(stats.get("unrecovered_degraded_total", 0) or 0) + 1
+                    )
             else:
                 stats["degraded_nonzero"] = int(stats.get("degraded_nonzero", 0) or 0) + 1
 
@@ -23810,6 +23873,24 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             except Exception:
                 _meta_headless_count = 0
             _meta_headless_blocked = bool(_search_meta.get("headless_blocked"))
+            _meta_fallback_recovered = bool(_search_meta.get("fallback_recovered"))
+            _meta_degraded_recovered = bool(_search_meta.get("degraded_recovered"))
+            _meta_direct_used = bool(_search_meta.get("direct_search_used"))
+            _meta_direct_reason = str(_search_meta.get("direct_search_reason") or "").strip()
+            try:
+                _meta_direct_count = int(_search_meta.get("direct_search_count") or 0)
+            except Exception:
+                _meta_direct_count = 0
+            _meta_direct_providers = [
+                str(provider).strip()
+                for provider in (_search_meta.get("direct_search_providers") or [])
+                if str(provider).strip()
+            ]
+            _meta_direct_errors = [
+                str(err).strip()
+                for err in (_search_meta.get("direct_search_errors") or [])
+                if str(err).strip()
+            ]
 
             _bridge_reason_info = ""
             if _meta_lang_filter_reasons:
@@ -23845,6 +23926,18 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 if _meta_headless_blocked:
                     _headless_parts.append("blocked=True")
                 _headless_info = f", headless({' '.join(_headless_parts)})"
+            _direct_info = ""
+            if _meta_direct_used or _meta_direct_reason or _meta_direct_errors:
+                _direct_parts = []
+                if _meta_direct_reason:
+                    _direct_parts.append(f"reason={_meta_direct_reason}")
+                _direct_parts.append(f"count={_meta_direct_count}")
+                if _meta_direct_providers:
+                    _direct_parts.append(f"providers={','.join(_meta_direct_providers[:3])}")
+                if _meta_direct_errors:
+                    _direct_parts.append(f"errors={len(_meta_direct_errors)}")
+                _direct_info = f", direct({' '.join(_direct_parts)})"
+            _recovered_info = ", fallback_recovered" if _meta_fallback_recovered else ""
 
             _HARD_BLOCK_DOMAINS = [
                 "huggingface.co", "github.com", "scribd.com",
@@ -24047,7 +24140,8 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 print(
                     f"[{_ts()}] search results [bridge응답/신규없음]: {_reason} | {_base_info}"
                     f"{bridge_filter_info}{hard_filter_info}{short_alias_filter_info}, 중복 {_dup_removed}개"
-                    f"{self_ref_info}{retry_info}{degraded_info}{_bridge_request_info}{_headless_info}{_dup_sample_info}",
+                    f"{self_ref_info}{retry_info}{degraded_info}{_bridge_request_info}"
+                    f"{_headless_info}{_direct_info}{_recovered_info}{_dup_sample_info}",
                     file=sys.stderr,
                 )
             elif _new_count <= 0 and _accepted_count == 0:
@@ -24061,7 +24155,8 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     _reason = "검색엔진 raw 결과 자체가 0건"
                 print(
                     f"[{_ts()}] search results [{_state}]: {_reason} | {_base_info}"
-                    f"{bridge_filter_info}{retry_info}{degraded_info}{_bridge_request_info}{_headless_info}",
+                    f"{bridge_filter_info}{retry_info}{degraded_info}{_bridge_request_info}"
+                    f"{_headless_info}{_direct_info}{_recovered_info}",
                     file=sys.stderr,
                 )
             else:
@@ -24069,7 +24164,8 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 print(
                     f"[{_ts()}] search results [신규추가]: {_reason} | {_base_info}"
                     f"{bridge_filter_info}{hard_filter_info}{short_alias_filter_info}{soft_info}{dup_info}{self_ref_info}"
-                    f"{retry_info}{degraded_info}{_bridge_request_info}{_headless_info}",
+                    f"{retry_info}{degraded_info}{_bridge_request_info}"
+                    f"{_headless_info}{_direct_info}{_recovered_info}",
                     file=sys.stderr,
                 )
             _raw_preview_toggle = os.getenv("PIPELINE_LOG_RAW_SEARCH_PREVIEW", "1").strip().lower()
@@ -24155,6 +24251,13 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         headless_reason=_meta_headless_reason,
                         headless_count=_meta_headless_count,
                         headless_blocked=_meta_headless_blocked,
+                        fallback_recovered=_meta_fallback_recovered,
+                        degraded_recovered=_meta_degraded_recovered,
+                        direct_search_used=_meta_direct_used,
+                        direct_search_reason=_meta_direct_reason,
+                        direct_search_count=_meta_direct_count,
+                        direct_search_providers=_meta_direct_providers,
+                        direct_search_errors=_meta_direct_errors,
                     )
                 except Exception:
                     pass

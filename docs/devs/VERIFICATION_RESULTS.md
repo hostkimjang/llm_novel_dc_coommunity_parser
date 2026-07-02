@@ -1,5 +1,22 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop337 search degraded recovery contract
+
+- 범위: Loop336에서 `SEARCH_DEGRADED`로 남은 검색 병목을 recovered/unrecovered 계약으로 분리한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_337_REPORT_20260703.md`
+  - state `docs\devs\loop337_search_degraded_recovery_contract_20260703.json`
+  - code `src\llm_batch\mcp_bridge\server.py`, `src\llm_batch\agentic_pipeline.py`, `src\llm_batch\experts\orchestrator.py`, `tools\audit_expert_run_health.py`
+- Evidence:
+  - Loop336 로그는 upstream zero와 bridge filter collapse를 동시에 보였다.
+  - readyz는 ok였으므로 liveness 실패가 아니라 provider 품질/필터 붕괴 문제다.
+  - 실행 중인 `warp-shards-mcp-bridge-*`는 repo bind mount가 아니며 현재 컨테이너에는 이번 코드가 없다.
+- Verification:
+  - `.\venv\Scripts\python.exe -m py_compile ...` PASS
+  - `$env:PYTHONPATH='src'; .\venv\Scripts\python.exe -m unittest tests.test_mcp_bridge_direct_search tests.test_search_recovery_contract` PASS, `10` tests
+  - `$env:PYTHONPATH='src'; .\venv\Scripts\python.exe -m unittest tests.test_audit_expert_run_health` PASS, `16` tests
+- Gate: code contract `GO_UNIT`, live shard `NOT_APPLIED_TO_RUNNING_CONTAINERS`, runtime replay `NOT_RUN_AFTER_REBUILD`, search recovery `P0 / PARTIAL_CODE_ONLY / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop335 consumption title-lead alias repair
 
 - 범위: Loop334에서 `REPROCESS_FALSE_NEGATIVE`로 판정한 `11705250`의 title-lead alias 추출 누락을 코드 계약으로 수리한다.

@@ -876,14 +876,32 @@ def _direct_search_fallback_reason(
     degraded: bool,
     possible_throttle: bool,
     num_results: int,
+    raw_items: Optional[List[Dict[str, Any]]] = None,
+    filtered_out_items: Optional[List[Dict[str, Any]]] = None,
+    filter_reason_counts: Optional[Dict[str, int]] = None,
 ) -> str:
     if not _env_bool("MCP_DIRECT_SEARCH_FALLBACK", True):
         return ""
     accepted_count = len(filtered_items or [])
+    raw_count = len(raw_items or [])
+    reason_counts = filter_reason_counts or {}
+    mismatch_count = sum(
+        int(reason_counts.get(key, 0) or 0)
+        for key in ("token_mismatch", "no_hangul", "blacklisted_host", "cjk_dominant")
+    )
+    noise_ratio = _foreign_noise_ratio(list(filtered_out_items or []) + list(raw_items or []))
     if accepted_count == 0:
+        if raw_count >= 8 and mismatch_count >= max(4, raw_count // 2):
+            return "low_bridge_after_filter"
+        if raw_count >= 8 and noise_ratio >= 0.65:
+            return "foreign_noise_dominant"
         return "empty_results"
     if (degraded or possible_throttle) and accepted_count < min(3, max(1, num_results // 3)):
         return "degraded_low_accepted"
+    if raw_count >= 8 and accepted_count <= 2 and mismatch_count >= max(4, raw_count // 2):
+        return "low_bridge_after_filter"
+    if raw_count >= 8 and noise_ratio >= 0.65 and accepted_count < num_results:
+        return "foreign_noise_dominant"
     return ""
 
 
@@ -1510,6 +1528,9 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
 
     direct_reason = _direct_search_fallback_reason(
         filtered_items=filtered_items,
+        raw_items=raw_items,
+        filtered_out_items=filtered_out_items,
+        filter_reason_counts=filter_reason_counts,
         degraded=degraded,
         possible_throttle=possible_throttle,
         num_results=num_results,
@@ -1547,6 +1568,8 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
                 "engine": item.get("engine"),
             }
         )
+    fallback_recovered = bool((headless_used and headless_count > 0) or (direct_search_used and direct_search_count > 0))
+    degraded_recovered = bool((degraded or possible_throttle) and fallback_recovered and results)
     return {
         "query": request.query,
         "results": results,
@@ -1573,6 +1596,8 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
         "headless_count": headless_count,
         "headless_blocked": headless_blocked,
         "headless_error": headless_error,
+        "fallback_recovered": fallback_recovered,
+        "degraded_recovered": degraded_recovered,
         "direct_search_used": direct_search_used,
         "direct_search_reason": direct_search_reason,
         "direct_search_count": direct_search_count,

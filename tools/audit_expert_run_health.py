@@ -1006,6 +1006,8 @@ def _build_search_evidence_gate(
     row_upstream_zero_count = 0
     row_query_total = 0
     row_degraded_total = 0
+    row_recovered_degraded_total = 0
+    row_unrecovered_degraded_total = 0
 
     for row in rows:
         identity = _identity_from_row(row)
@@ -1018,11 +1020,17 @@ def _build_search_evidence_gate(
             upstream_zero = _as_int(health.get("upstream_zero")) or 0
             degraded = _as_int(health.get("degraded")) or 0
             degraded_zero = _as_int(health.get("degraded_zero")) or 0
+            degraded_recovered = _as_int(health.get("degraded_recovered")) or 0
+            unrecovered_degraded = _as_int(health.get("unrecovered_degraded")) or 0
             row_query_total += queries
             row_degraded_total += degraded
+            row_recovered_degraded_total += degraded_recovered
+            row_unrecovered_degraded_total += unrecovered_degraded
             if upstream_zero > 0:
                 row_upstream_zero_count += 1
-            if status.upper() == "SEARCH_DEGRADED" or degraded > 0 or degraded_zero > 0:
+            if status.upper() == "SEARCH_DEGRADED" or unrecovered_degraded > 0 or (
+                degraded_zero > 0 and degraded_recovered <= 0
+            ):
                 row_degraded_count += 1
         for flag in identity.get("search_health_flags") or []:
             row_flag_counts[str(flag)] += 1
@@ -1042,12 +1050,16 @@ def _build_search_evidence_gate(
         blockers.append("mcp_health_failure_count_gt_zero")
     if log_search_timeout > 0:
         blockers.append("search_timeout_observed")
-    if log_search_degraded > 0 or row_degraded_count > 0:
+    if row_degraded_count > 0:
+        blockers.append("search_degraded_observed")
+    elif log_search_degraded > 0 and rows_with_search_health == 0:
         blockers.append("search_degraded_observed")
 
     if health_failure > 0:
         gate = "NO-GO"
-    elif log_search_timeout > 0 or log_search_degraded > 0 or row_degraded_count > 0:
+    elif log_search_timeout > 0 or row_degraded_count > 0:
+        gate = "REVIEW"
+    elif log_search_degraded > 0 and rows_with_search_health == 0:
         gate = "REVIEW"
     elif include_search is True:
         gate = "GO"
@@ -1072,6 +1084,8 @@ def _build_search_evidence_gate(
             "rows_with_degraded": row_degraded_count,
             "query_total": row_query_total,
             "degraded_total": row_degraded_total,
+            "degraded_recovered_total": row_recovered_degraded_total,
+            "unrecovered_degraded_total": row_unrecovered_degraded_total,
         },
         "worker_log_search": {
             "search_timeout": log_search_timeout,

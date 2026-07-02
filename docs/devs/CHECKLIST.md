@@ -1,5 +1,23 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop337 search degraded recovery contract 체크
+
+- [x] Loop336 search degraded 원인을 liveness와 provider 품질로 분리했다.
+  - readyz는 ok였지만 로그는 `raw_total=0` upstream zero와 `raw_total>=10` bridge filter collapse를 동시에 보였다.
+  - 실행 중인 bridge 컨테이너는 repo bind mount가 아니며 `Mounts=[]`라 패치가 live shard에 자동 반영되지 않는다.
+- [x] recovered/unrecovered search 계약을 코드에 추가했다.
+  - `mcp_bridge/server.py`: `low_bridge_after_filter`/`foreign_noise_dominant` direct fallback 사유와 `fallback_recovered`, `degraded_recovered` 메타.
+  - `agentic_pipeline.py`: `SEARCH_DEGRADED_RECOVERED` public health status.
+  - `experts/orchestrator.py`: `fallback_recovered_total`, `degraded_recovered_total`, `unrecovered_degraded_total`, `direct_search_*` stats/log.
+  - `audit_expert_run_health.py`: recovered degraded와 unrecovered degraded gate 분리.
+- [x] 검증을 실행했다.
+  - py_compile PASS
+  - `tests.test_mcp_bridge_direct_search + tests.test_search_recovery_contract` PASS, `10` tests
+  - `tests.test_audit_expert_run_health` PASS, `16` tests
+- [ ] bridge image rebuild/recreate 전에는 이번 코드를 runtime approval 근거로 쓰지 않는다.
+- [ ] rebuild 후 small search non-light canary에서 `unrecovered_degraded=0`을 확인한다.
+- Gate: code contract `GO_UNIT`, live shard `NOT_APPLIED_TO_RUNNING_CONTAINERS`, runtime replay `NOT_RUN_AFTER_REBUILD`, search recovery `P0 / PARTIAL_CODE_ONLY / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop336 post-patch runtime replay / manifest contract 체크
 
 - [x] Loop335 패치 뒤 `11705250`을 search 포함 non-light 단건으로 재실행했다.
