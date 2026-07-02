@@ -1,5 +1,17 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop302 current HEAD refresh blocker
+
+- 현 HEAD `e991a687`에서 safe-loss flip probe `N>=5`, full375 replay, completed-source bounded non-light run을 갱신하려 했다.
+- N5 독립 실행 plan은 생성됐다. planned runs `15`, repeat counts `11674712=5`, `11660237=5`, `11698880=5`, missing post ids `[]`다.
+- 실제 실행은 search shard 연결 거부로 result JSON `0`개에서 중단됐다. 로그는 `logs/loop302_safe_loss_independent_n5_plan/*.stderr.log`다.
+- `127.0.0.1:3333`, `127.0.0.1:3334` 모두 health 연결 불가이고 Docker API는 `desktop-linux`/`default` context 모두 Internal Server Error다.
+- `com.docker.service`는 `Stopped`이며 `Start-Service`도 실패했다.
+- Golden18 편입과 추적 상태는 확인했다. `11660237`, `11698880` extra golden manifest와 `golden_manifest.json`, `golden_set.jsonl`, bootstrap/probe/audit 도구는 git 추적 중이다.
+- 기존 Loop288 background snapshot은 full375 `375/83/80/3/0`, bounded1200 `1200/128/125/3/0`, golden18 `18/18/18/0/0`이지만 현 HEAD 승인 증거로 쓰지 않는다.
+- Report는 `docs/devs/loop_reports/LOOP_302_REPORT_20260702.md`다.
+- Gate는 run integrity `NO-GO_RUNTIME_BLOCKED`, search recovery `P0 / OPEN / LOCAL_DOCKER_SERVICE_BLOCKER`, safe-loss flip `NOT_REFRESHED_CURRENT_HEAD`, full375 `NOT_REFRESHED_CURRENT_HEAD`, bounded completed-source `NOT_LAUNCHED_CURRENT_HEAD`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop301 safe-loss seed source-native verdict
 
 - Loop300 이후 다음 action queue를 `safe_loss_resolved_to_null=147`로 전환했다.

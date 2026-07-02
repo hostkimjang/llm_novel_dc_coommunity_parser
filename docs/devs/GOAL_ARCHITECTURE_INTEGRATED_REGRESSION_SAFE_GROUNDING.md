@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop302 Addendum - current HEAD refresh blocked by search runtime
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop302는 approval이 아니라 stale 증거 갱신 시도가 search shard runtime blocker에 막혔음을 기록한 회차다.
+- 목적: 현 HEAD `e991a687`에서 safe-loss N5, full375 replay, completed-source bounded non-light run을 갱신한다.
+- 코드 변경: 없음.
+- Artifacts: report `docs/devs/loop_reports/LOOP_302_REPORT_20260702.md`, blocker artifact `docs/devs/loop302_current_head_refresh_blocker_20260702.json`, N5 plan `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop302_safe_loss_independent_n5_run_plan.json`, logs `logs/loop302_safe_loss_independent_n5_plan/*.stderr.log`.
+- Evidence: N5 planned runs `15`, missing post ids `[]`, result JSON `0`; `127.0.0.1:3333/3334` 연결 불가; Docker `desktop-linux/default` context 모두 API Internal Server Error; `com.docker.service=Stopped`, `Start-Service` 실패.
+- Tracking: `11660237`, `11698880` extra golden row와 golden18 산출물 및 bootstrap/probe/audit 도구는 git 추적 중이다.
+- Gate: run integrity `NO-GO_RUNTIME_BLOCKED`, safe-loss flip `NOT_REFRESHED_CURRENT_HEAD`, full375 `NOT_REFRESHED_CURRENT_HEAD`, bounded completed-source `NOT_LAUNCHED_CURRENT_HEAD`, search recovery `P0 / OPEN / LOCAL_DOCKER_SERVICE_BLOCKER`, promotion blocked interpretation `search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop301 Addendum - safe-loss seed source-native verdict
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop301은 approval이 아니라 다음 action queue를 `safe_loss_resolved_to_null=147`로 전환하고 seed `15/147`을 source-native verdict로 분해한 산출물이다.

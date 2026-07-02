@@ -1,5 +1,36 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop302 current HEAD refresh blocker
+
+- 범위: 현 HEAD `e991a687`에서 safe-loss flip probe `N>=5`, full375 replay, completed-source bounded non-light run을 새로 갱신한다.
+- Model endpoint:
+  - `http://10.20.0.101:8000/v1/models` OK
+  - model `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4`
+- N5 run plan:
+  - command: `.\.venv312\Scripts\python.exe tools\safe_loss_flip_rate_probe.py build-run-plan --source-input ...loop238_safe_loss_flip_probe_3rows.jsonl --post-ids 11674712,11660237,11698880 --repeats 5 --minimum-repeats 5 --work-dir ...loop302_safe_loss_independent_n5_plan --run-prefix loop302_safe_loss_current_head --manifest ...loop302_safe_loss_independent_n5_run_plan.json --python .\.venv312\Scripts\python.exe --expert-main expert_main.py --parallel 1 --expert-arg=--server-type --expert-arg=vllm --expert-arg=--llm-endpoint --expert-arg=http://10.20.0.101:8000 --expert-arg=--reuse-shards-only --expert-arg=--no-dashboard --expert-arg=--slang-db --expert-arg=off --expert-arg=--vlm --expert-arg=on --expert-arg=--ocr --expert-arg=on --expert-arg=--require-vlm-ocr-for-images`
+  - result: planned runs `15`, missing post ids `[]`, repeat counts `5/5/5`, dedupe guard `one_post_per_process`
+- N5 execution:
+  - processes started `15`
+  - result JSON files `0`
+  - stderr logs `logs\loop302_safe_loss_independent_n5_plan\*.stderr.log`
+  - blocker `검색 서버 미연결 - 파이프라인 중단`
+- Search/Docker blocker:
+  - `http://127.0.0.1:3333/health` 연결 불가
+  - `http://127.0.0.1:3334/health` 연결 불가
+  - `docker version` on `desktop-linux` and `default`: Docker API Internal Server Error
+  - `com.docker.service=Stopped`
+  - `Start-Service com.docker.service` failed
+- Tracking verification:
+  - git-tracked: `tools/safe_loss_flip_rate_probe.py`, `tools/bootstrap_regression_safe_grounding.py`, `tools/audit_regression_safe_golden.py`
+  - git-tracked: `docs/devs/regression_safe_extra_golden_rows_20260702.json`
+  - git-tracked: `out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json`, `golden_set.jsonl`
+- Reference-only background snapshot:
+  - full375 `375/83/80/3/0`, `large_run_complete=false`
+  - bounded1200 `1200/128/125/3/0`, `large_run_complete=false`
+  - golden18 `18/18/18/0/0`, `large_run_complete=true`, `mcp_health_light_mode=true`
+  - 이 snapshot은 Loop288 계열 background 산출물이므로 현 HEAD 승인 증거가 아니다.
+- Gate: run integrity `NO-GO_RUNTIME_BLOCKED`, safe-loss flip `NOT_REFRESHED_CURRENT_HEAD`, full375 replay `NOT_REFRESHED_CURRENT_HEAD`, bounded non-light completed-source `NOT_LAUNCHED_CURRENT_HEAD`, search recovery `P0 / OPEN / LOCAL_DOCKER_SERVICE_BLOCKER`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop301 safe-loss seed source-native verdict
 
 - 범위: Loop300 이후 다음 action queue를 `safe_loss_resolved_to_null=147`로 전환하고, seed `15/147`을 source-native로 판정한다.

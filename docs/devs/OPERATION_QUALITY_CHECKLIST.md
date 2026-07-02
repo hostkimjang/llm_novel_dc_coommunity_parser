@@ -6,6 +6,22 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop302 current HEAD refresh quality gate
+
+- 근거:
+  - [x] 현 HEAD `e991a687`를 기록했다.
+  - [x] N5 독립 실행 plan `15`개를 만들었다.
+  - [x] 실행 결과 JSON이 `0`개임을 확인했다.
+  - [x] search shard `3333/3334` 연결 실패와 Docker API/Internal Service blocker를 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_302_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] result JSON이 없으므로 stale flip rate를 갱신했다고 쓰지 않는다.
+  - [x] Loop288 background snapshot을 현 HEAD approval 근거로 재사용하지 않는다.
+  - [x] golden18 추적 확인은 approval이 아니라 입력/게이트 준비 상태로만 본다.
+  - [x] 검색 복구 전 `promotion_blocked`는 `search-blind conditional`로만 해석한다.
+  - [x] 코드 변경 없음 3연속이면 대형 run 대기 대신 collateral183 triage 또는 OVERRIDE AUDIT blind judge 검증으로 강제 전환한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop301 safe-loss seed quality gate
 
 - 근거:

@@ -4,6 +4,12 @@
 
 ## 검색 품질
 
+- [ ] Search shard/Docker runtime 복구 후 current HEAD 증거 갱신
+  - 상태: P0_OPEN / local_docker_service_blocker
+  - 발견: Loop302에서 `127.0.0.1:3333/3334` health 연결 실패, Docker API Internal Server Error, `com.docker.service=Stopped`가 확인됐다.
+  - 영향: safe-loss N5, full375 replay, completed-source bounded non-light run을 현 HEAD에서 갱신하지 못한다.
+  - 산출물: `docs/devs/loop_reports/LOOP_302_REPORT_20260702.md`, `docs/devs/loop302_current_head_refresh_blocker_20260702.json`
+  - 완료 기준: healthy MCP shard 확보 후 Loop302 N5 plan 재실행, full375 search-including replay, completed-source bounded `1000~1500` non-light run이 result JSON/manifest를 생성하고 search degraded가 0 또는 검토 가능한 수준으로 회복됨.
 - [ ] 개선 전후 자동 비교 리뷰 문서 생성
   - 상태: first_manual_comparison_done / mandatory_200_1000_policy_added / automation_tool_next
   - 문제: 품질 개선을 구현해도 baseline/improved run 비교와 전문가 리뷰 패킷 생성이 사람이 기억해야 하는 절차로 남아 누락될 수 있음.

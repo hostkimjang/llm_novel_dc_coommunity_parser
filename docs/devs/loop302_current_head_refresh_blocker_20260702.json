@@ -1,0 +1,72 @@
+{
+  "loop": 302,
+  "date": "2026-07-02",
+  "scope": "current_head_flip_probe_full375_bounded_nonlight_refresh",
+  "head": "e991a687",
+  "status": "BLOCKED_BY_SEARCH_SHARD_RUNTIME",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "requested_work": {
+    "flip_probe": {
+      "post_ids": [11674712, 11660237, 11698880],
+      "minimum_repeats": 5,
+      "dedupe_guard": "one_post_per_process"
+    },
+    "full375_replay": "current HEAD search-including full375 replay",
+    "bounded_completed_source": "current HEAD search-including non-light 1000-1500 completed-source run",
+    "golden_tracking": "11660237 and 11698880 included in golden18; golden/bootstrap files tracked by git",
+    "fallback_policy": "After three consecutive no-code/background-only turns, move large runs to background monitoring and force collateral183 triage or OVERRIDE AUDIT blind judge validation."
+  },
+  "attempted_artifacts": {
+    "n5_run_plan": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop302_safe_loss_independent_n5_run_plan.json",
+    "n5_plan_work_dir": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop302_safe_loss_independent_n5_plan",
+    "n5_logs": "logs/loop302_safe_loss_independent_n5_plan/*.stderr.log",
+    "n5_result_json_count": 0
+  },
+  "observations": {
+    "model_endpoint": {
+      "url": "http://10.20.0.101:8000/v1/models",
+      "status": "OK",
+      "model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4"
+    },
+    "mcp_shards": {
+      "http://127.0.0.1:3333": "connection refused",
+      "http://127.0.0.1:3334": "connection refused"
+    },
+    "docker": {
+      "desktop_linux_context": "Internal Server Error for docker API /version and /containers/json",
+      "default_context": "Internal Server Error for docker API /version and /containers/json",
+      "service": "com.docker.service stopped",
+      "start_service_attempt": "failed: Cannot open com.docker.service service on computer '.'"
+    },
+    "n5_execution": {
+      "planned_runs": 15,
+      "processes_started": 15,
+      "result_json_files": 0,
+      "blocker_message": "검색 서버 미연결 - 파이프라인 중단"
+    },
+    "previous_background_snapshot_reference_only": {
+      "full375": "input/completed/flushed/pending/failed=375/83/80/3/0, large_run_complete=false",
+      "bounded1200": "1200/128/125/3/0, large_run_complete=false",
+      "golden18": "18/18/18/0/0, large_run_complete=true, small-run light_mode=true"
+    }
+  },
+  "gate": {
+    "run_integrity": "NO-GO_RUNTIME_BLOCKED",
+    "targeted_canary_status": "BLOCKED_NO_RESULT_JSON",
+    "safe_loss_flip_probe": "NOT_REFRESHED_CURRENT_HEAD",
+    "full375_replay": "NOT_REFRESHED_CURRENT_HEAD",
+    "bounded_nonlight_completed_source": "NOT_LAUNCHED_CURRENT_HEAD",
+    "search_recovery": "P0_OPEN_LOCAL_DOCKER_SERVICE_BLOCKER",
+    "promotion_blocked_interpretation": "search-blind conditional until search recovery",
+    "golden18_tracking": "CONFIRMED_TRACKED_PREEXISTING",
+    "overall": "ACTIVE_NOT_COMPLETE"
+  },
+  "next_actions": [
+    "Restore Docker Desktop service or provide healthy MCP_ENDPOINTS.",
+    "Rerun Loop302 N5 independent plan and analyze with blind judge.",
+    "Rerun current HEAD full375 search-including replay.",
+    "Launch current HEAD completed-source bounded 1000-1500 non-light run only after shard health passes.",
+    "If runtime remains blocked, force next loop to collateral183 triage or OVERRIDE AUDIT blind judge validation instead of another no-code wait."
+  ]
+}

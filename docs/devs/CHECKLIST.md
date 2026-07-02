@@ -1,5 +1,29 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop302 current HEAD refresh blocker 체크
+
+- [x] 현 HEAD `e991a687`를 확인했다.
+- [x] safe-loss N5 독립 실행 plan을 생성했다.
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop302_safe_loss_independent_n5_run_plan.json`
+  - planned runs `15`
+  - repeat_count_by_post `11674712=5`, `11660237=5`, `11698880=5`
+  - missing_post_ids `[]`
+- [x] N5 실제 실행을 시도했으나 result JSON `0`으로 중단됨을 확인했다.
+  - logs `logs\loop302_safe_loss_independent_n5_plan\*.stderr.log`
+  - blocker `http://127.0.0.1:3333` 연결 거부, `검색 서버 미연결 - 파이프라인 중단`
+- [x] search/Docker runtime blocker를 확인했다.
+  - `127.0.0.1:3333`, `127.0.0.1:3334` health 연결 불가
+  - Docker `desktop-linux`/`default` context 모두 API Internal Server Error
+  - `com.docker.service=Stopped`, `Start-Service` 실패
+- [x] golden18 편입 및 추적 상태를 확인했다.
+  - `11660237`, `11698880`은 `docs\devs\regression_safe_extra_golden_rows_20260702.json`에 있고 golden18 산출물이 git 추적 중이다.
+  - `tools\safe_loss_flip_rate_probe.py`, `tools\bootstrap_regression_safe_grounding.py`, `tools\audit_regression_safe_golden.py`도 git 추적 중이다.
+- [ ] Docker/shard 복구 후 같은 N5 plan을 재실행한다.
+- [ ] current HEAD full375 search-including replay를 새로 실행한다.
+- [ ] current HEAD completed-source bounded `1000~1500` non-light run을 새로 발주한다.
+- [ ] 코드 변경 없음/대형 run 대기만 3연속이면 대형 run은 background 감시로 내리고 collateral183 triage 또는 OVERRIDE AUDIT blind judge 검증으로 강제 전환한다.
+- Gate: run integrity `NO-GO_RUNTIME_BLOCKED`, search recovery `P0 / OPEN / LOCAL_DOCKER_SERVICE_BLOCKER`, safe-loss flip `NOT_REFRESHED_CURRENT_HEAD`, full375 `NOT_REFRESHED_CURRENT_HEAD`, bounded completed-source `NOT_LAUNCHED_CURRENT_HEAD`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop301 safe-loss seed source-native verdict 체크
 
 - [x] Loop300 이후 다음 action queue를 `safe_loss_resolved_to_null=147`로 전환했다.

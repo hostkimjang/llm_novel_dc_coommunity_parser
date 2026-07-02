@@ -2,6 +2,26 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop302 search runtime TODO
+
+- 상태 업데이트: 현 HEAD `e991a687`에서 N5/full375/bounded non-light 갱신을 시도했으나 search shard/Docker runtime blocker로 result JSON이 생성되지 않았다. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop302 TODO:
+  - [x] N5 독립 실행 plan을 생성했다.
+    - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop302_safe_loss_independent_n5_run_plan.json`
+    - planned runs `15`, repeat count `5/5/5`, missing `[]`
+  - [x] 현재 blocker를 기록했다.
+    - logs `logs/loop302_safe_loss_independent_n5_plan/*.stderr.log`
+    - Docker API Internal Server Error
+    - `com.docker.service=Stopped`
+  - [x] 한국어 report를 남겼다.
+    - `docs/devs/loop_reports/LOOP_302_REPORT_20260702.md`
+  - [ ] Docker Desktop service 또는 healthy `MCP_ENDPOINTS`를 복구한다.
+  - [ ] 같은 N5 plan을 재실행하고 flip rate를 새로 산출한다.
+  - [ ] current HEAD full375 search-including replay를 새로 실행한다.
+  - [ ] current HEAD completed-source bounded `1000~1500` non-light run을 새로 발주한다.
+  - [ ] 코드 변경 없음/대형 run 대기만 3연속이면 collateral183 triage 또는 OVERRIDE AUDIT blind judge 검증으로 강제 전환한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 regression-safe grounding Loop251 11663535 canonicalization hold TODO
 
 - 상태 업데이트: 동일 38-row parent packet은 재실행하지 않았다. Loop251은 `11663535`의 `조선 퇴마록` public-title drift를 resolved-public-title gate 계약으로 막고, runtime에서 `퇴마록` 후보를 `promotion_blocked`로 보존했다. Goal은 여전히 `ACTIVE / NOT_COMPLETE`.

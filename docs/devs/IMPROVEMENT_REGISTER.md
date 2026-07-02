@@ -1,5 +1,33 @@
 # Improvement Register
 
+## IMP-20260702-302 - current HEAD evidence refresh blocked by search runtime
+
+- Status: Blocked / runtime prerequisite open
+- Loop: 302
+- Problem:
+  - 사용자는 stale flip evidence와 stale golden/full375 증거를 현 HEAD 기준으로 갱신하라고 지시했다.
+  - 현재 로컬 search shard와 Docker service가 깨져 search 포함 재실행이 result JSON을 만들지 못했다.
+- Change:
+  - 코드 변경 없음.
+  - Loop302 N5 독립 실행 plan을 생성하고, 실행 blocker를 별도 tracked artifact로 기록했다.
+  - search degraded 100% 복구를 계속 P0로 유지하고, 복구 전 `promotion_blocked`는 `search-blind conditional`로만 태깅하도록 문서화했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_302_REPORT_20260702.md`
+  - blocker artifact `docs/devs/loop302_current_head_refresh_blocker_20260702.json`
+  - N5 plan `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop302_safe_loss_independent_n5_run_plan.json`
+  - logs `logs/loop302_safe_loss_independent_n5_plan/*.stderr.log`
+- Result:
+  - N5 planned runs `15`
+  - result JSON `0`
+  - full375 current HEAD replay `NOT_REFRESHED`
+  - bounded current HEAD completed-source non-light `NOT_LAUNCHED`
+  - Docker service `Stopped`
+- Gate:
+  - run integrity `NO-GO_RUNTIME_BLOCKED`
+  - search recovery `P0 / OPEN / LOCAL_DOCKER_SERVICE_BLOCKER`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-301 - safe-loss seed source-native verdict
 
 - Status: Implemented / partial review locked
