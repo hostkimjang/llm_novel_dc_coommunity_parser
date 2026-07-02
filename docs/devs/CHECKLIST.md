@@ -1,5 +1,29 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop317 safe-loss source-native next slice 체크
+
+- [x] Loop314 대형 런을 완료 대기하지 않고 background 감시로 유지했다.
+  - N5 PID `111032`, result JSON `1/15`
+  - full375 PID `75828`, completed/flushed/pending/failed `9/3/6/0`
+  - bounded1200 PID `9908`, completed/flushed/pending/failed `15/6/9/0`
+  - golden18 PID `43208`, completed/flushed/pending/failed `5/5/0/0`
+- [x] Loop301 `safe_loss_resolved_to_null` 미검토분에서 15건을 추가 판정했다.
+  - delta labels `REPROCESS=7`, `ACCEPT=6`, `HOLD=2`
+  - delta actions `repair_safe_loss=7`, `exclude_from_regression_count_after_gate_wiring=6`
+- [x] 누적 verdict와 summary를 생성했다.
+  - cumulative `89/147`, unreviewed `58`
+  - cumulative labels `REPROCESS=48`, `ACCEPT=21`, `HOLD=20`
+  - validation issues `0`
+- [x] 산출물을 기록했다.
+  - delta `docs\devs\loop317_safe_loss_source_native_verdicts_delta_15.json`
+  - cumulative `docs\devs\loop317_safe_loss_source_native_verdicts_cumulative_89.json`
+  - state `docs\devs\loop317_safe_loss_source_native_review_20260702.json`
+  - report `docs\devs\loop_reports\LOOP_317_REPORT_20260702.md`
+- [ ] `repair_safe_loss=48`은 shared gate 또는 targeted runtime replay 전까지 residual closure로 세지 않는다.
+- [ ] `HOLD=20`은 native image/web/source/canonical policy 확인 전까지 닫지 않는다.
+- [ ] 남은 `58` row를 계속 source-native/blind judge로 줄인다.
+- Gate: source-native review `REVIEW-LOCKED / PARTIAL`, runtime replay `NOT_RUNTIME_VERIFIED`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, golden18 `APPROVAL_NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop316 safe-loss source-native next slice 체크
 
 - [x] Loop314 대형 런을 완료 대기하지 않고 background 감시로 유지했다.

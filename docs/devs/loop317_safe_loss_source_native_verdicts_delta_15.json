@@ -1,0 +1,258 @@
+{
+  "review_id": "loop317_safe_loss_source_native_verdicts_delta_15",
+  "scope": "Loop301 safe_loss_resolved_to_null next source-native verdict slice after Loop316 (15 rows)",
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "rows": [
+    {
+      "post_id": 11692436,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "hold_character_bridge_or_native_image_required",
+      "evidence_grade": "Medium",
+      "action": [
+        "native_image_or_character_bridge_review_required"
+      ],
+      "rationale_ko": "원문 텍스트는 `류서란(perfect)`와 댓글 `류서란(old girl)`만 제공한다. `perfect` 표면은 후보 `퍼펙트 메이지`와 닿지만, 로컬 테스트/문서에서 `류서란` bridge가 확인되지 않았고 이미지도 있다. 단일 캐릭터/설정 bridge 과잉 승격을 막기 위해 repair로 세지 않고 HOLD한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11692436"
+      ]
+    },
+    {
+      "post_id": 11692444,
+      "selected_option_id": "C1",
+      "selected_title": "엑스칼리버 뽑습니다",
+      "selected_url": "https://novelpia.com/novel/381767",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `엑칼뽑`은 후보 작품의 직접 약칭이고 댓글 `그 소설에 캐빨 빼면 남는게 있나`도 동일 작품 소비 맥락이다. after null은 안정 alias를 잃은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11692444",
+        "https://novelpia.com/novel/381767"
+      ]
+    },
+    {
+      "post_id": 11694019,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_wrong_before_title_plot_element",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문은 `미츄리`와 `혼후순결` 설정/플롯을 말하지만, 기존 before `혼후 순결` 카카오 로맨스 단행본을 직접 지지하지 않는다. 기존 survey도 이 행을 `이세계에서 사이비로 살아남기`의 plot element 오귀속 사례로 기록하므로 after null/HOLD가 더 안전하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11694019",
+        "docs/devs/detection_survey_20260626_errors.json#post_id=11694019",
+        "tests/test_title_lead_search_inferred_guard.py#post_id=11694019"
+      ]
+    },
+    {
+      "post_id": 11694030,
+      "selected_option_id": "C1",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_url": "https://novelpia.com/novel/102155",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias_and_character_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `괴담텔`은 후보 작품 약칭이고 본문/댓글의 `한가인`, `대레프`, `경력직` 맥락이 작품 내부 인물/설정을 직접 지지한다. after null은 safe title 손실이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11694030",
+        "https://novelpia.com/novel/102155"
+      ]
+    },
+    {
+      "post_id": 11694041,
+      "selected_option_id": "C1",
+      "selected_title": "격투 소설 엑스트라가 타격 천재임",
+      "selected_url": "https://novelpia.com/novel/427330",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `격투천재`는 후보 작품의 핵심 title alias이고 본문/댓글도 격투 감성, 천박함, 유사 장르 비교를 논한다. after null은 작품 약칭을 잃은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11694041",
+        "https://novelpia.com/novel/427330"
+      ]
+    },
+    {
+      "post_id": 11694044,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_comparison_work_overreach",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "글의 주된 제목은 `즉사무림 유료화`이고 `판초우의`는 본문에서 비교 대상으로 나온다. 비교 작품을 current public title로 승격한 before는 과잉 귀속이므로 after null/HOLD가 더 안전하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11694044"
+      ]
+    },
+    {
+      "post_id": 11694047,
+      "selected_option_id": "C1",
+      "selected_title": "판초우의의 마법사",
+      "selected_url": "https://novel.munpia.com/530500",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `판초법사`는 후보 작품의 직접 약칭이고 본문도 팬아트/도로헤도로 감성 등 작품 소비 맥락을 말한다. after null은 안정 title alias 손실이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11694047",
+        "https://novel.munpia.com/530500"
+      ]
+    },
+    {
+      "post_id": 11694049,
+      "selected_option_id": "C1",
+      "selected_title": "아카데미 생존 갤러리",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias_and_character_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `아생갤`은 후보 작품 약칭이고 본문은 `아레스`, `엘리`, 기억 맥락을 직접 논한다. 후보 URL은 없지만 before title 자체는 source-native로 맞으므로 after null은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11694049"
+      ]
+    },
+    {
+      "post_id": 11694063,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_wrong_before_title_character_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문은 `아레스`, `엘리시아`, `엘리` 관계를 말하며 직전 `아생갤` 계열 맥락과 이어진다. before `빙의한 신의 아이, 엘리시아`는 이름 부분일치에 기대는 wrong-work 가능성이 높아 after null/HOLD를 선호한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11694063"
+      ]
+    },
+    {
+      "post_id": 11694068,
+      "selected_option_id": "C1",
+      "selected_title": "트와일라잇",
+      "selected_url": "https://ridibooks.com/books/593000441",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_public_title_discussion",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목과 댓글 모두 `트와일라잇`의 출판, 번역, 뱀파이어 소설 맥락을 직접 논한다. 이는 일반 단어가 아니라 작품 discussion이므로 after null은 public title 손실이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11694068",
+        "https://ridibooks.com/books/593000441"
+      ]
+    },
+    {
+      "post_id": 11695596,
+      "selected_option_id": "C1",
+      "selected_title": "여신이 나만 애호함",
+      "selected_url": "https://novelpia.com/novel/346855",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias_and_character_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `여신애호`는 후보 작품의 직접 약칭이고 본문/댓글의 `조이노이`, `방주`, `3개의 세계`가 작품 내부 맥락을 지지한다. after null은 강한 작품 bridge를 잃은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11695596",
+        "https://novelpia.com/novel/346855"
+      ]
+    },
+    {
+      "post_id": 11695599,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "hold_native_image_or_source_required",
+      "evidence_grade": "Medium",
+      "action": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "텍스트는 `봐라`, `ㅈㅈㅐ밌다`, 댓글 `틀내나는데/실제로는 아님`뿐이고 이미지가 있다. 후보 `창관전생`을 텍스트만으로 확정할 수 없으므로 이미지 또는 원소스 확인 전 repair로 세지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11695599"
+      ]
+    },
+    {
+      "post_id": 11695609,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_meme_or_generic_furry_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문은 `랫따싶`, 퍼리/동물귀 여부를 묻고 댓글은 `림버스`, `림월드 밈`으로 정정한다. 후보 `쳇바퀴의 생쥐 사도가 되었다`를 직접 지지하는 title/URL/작품 맥락이 없으므로 after null이 더 안전하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11695609"
+      ]
+    },
+    {
+      "post_id": 11697239,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_non_work_or_image_context",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "텍스트는 신청/등록 후 받은 물건을 말하고 이미지가 핵심이다. 후보 `조혈모세포 기증 궁금해요`는 작품 discussion이라기보다 OCR/이미지 주제 오귀속 가능성이 높아 after null/HOLD를 선호한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11697239"
+      ]
+    },
+    {
+      "post_id": 11697242,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_generic_franchise_or_parody_overreach",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "제목은 `유희왕 패러디 특`이고 본문/댓글은 패러디 독자층과 카드 밈을 일반적으로 말한다. 후보 `유희왕`을 특정 public novel work로 확정하기에는 franchise/generic overreach이므로 after null/HOLD가 더 안전하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11697242"
+      ]
+    }
+  ]
+}

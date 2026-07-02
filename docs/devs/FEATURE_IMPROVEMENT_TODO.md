@@ -22,11 +22,11 @@
   - 완료 기준: patch 이후 targeted runtime replay, `11674712/11698880` flip 원인 분해, full375/bounded search non-light 완료 및 search degraded 해소.
 
 - [ ] Loop301 `safe_loss_resolved_to_null=147` source-native review completion
-  - 상태: partial_review_74_of_147 / review_locked / approval_not_open
-  - 발견: Loop316까지 누적 `74/147`, unreviewed `73`이 됐다.
-  - 현재 counts: `REPROCESS=41`, `ACCEPT=15`, `HOLD=18`, validation issues `0`.
-  - 산출물: `docs/devs/loop_reports/LOOP_316_REPORT_20260702.md`, `docs/devs/loop316_safe_loss_source_native_review_20260702.json`, `docs/devs/loop316_safe_loss_source_native_verdicts_cumulative_74.json`
-  - 완료 기준: 남은 `73` source-native/blind review, `repair_safe_loss=41` shared gate wiring, targeted runtime replay, collateral compare, full375/bounded gate 재평가.
+  - 상태: partial_review_89_of_147 / review_locked / approval_not_open
+  - 발견: Loop317까지 누적 `89/147`, unreviewed `58`이 됐다.
+  - 현재 counts: `REPROCESS=48`, `ACCEPT=21`, `HOLD=20`, validation issues `0`.
+  - 산출물: `docs/devs/loop_reports/LOOP_317_REPORT_20260702.md`, `docs/devs/loop317_safe_loss_source_native_review_20260702.json`, `docs/devs/loop317_safe_loss_source_native_verdicts_cumulative_89.json`
+  - 완료 기준: 남은 `58` source-native/blind review, `repair_safe_loss=48` shared gate wiring, targeted runtime replay, collateral compare, full375/bounded gate 재평가.
 
 - [ ] Loop301 `repair_safe_loss=14` targeted replay
   - 상태: code_contract_go_unit / runtime_in_progress_not_approval / approval_not_open

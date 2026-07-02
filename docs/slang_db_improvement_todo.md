@@ -1,5 +1,17 @@
 # Slang DB Improvement TODO
 
+## 2026-07-02 Loop317 safe-loss source-native / slang caveat
+
+- [x] `safe_loss_resolved_to_null` source-native review가 `89/147`까지 진행됐다.
+  - delta `REPROCESS=7`, `ACCEPT=6`, `HOLD=2`
+  - cumulative `REPROCESS=48`, `ACCEPT=21`, `HOLD=20`
+- [x] `엑칼뽑`, `괴담텔`, `격투천재`, `판초법사`, `아생갤`, `여신애호` 등 직접 약칭 row는 repair 후보로 분리했다.
+- [x] `류서란(perfect)`는 로컬 character bridge 근거가 없어 slang/alias registry repair가 아니라 HOLD로 유지했다.
+- [x] `혼후순결` plot element, `유희왕` generic franchise row는 alias/slang repair로 세지 않았다.
+- [ ] `repair_safe_loss=48` 중 slang/alias registry로 일반화 가능한 항목만 shared gate/runtime replay 후보로 올린다.
+- [ ] N5 result JSON `15/15` 완료 후 slang/alias 안정성 caveat를 새 flip 분석으로 갱신한다. 현재 Loop314 `1/15`.
+- Gate: slang DB write-back 아님, source-native review `REVIEW-LOCKED / PARTIAL`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop316 safe-loss source-native / slang caveat
 
 - [x] `safe_loss_resolved_to_null` source-native review가 `74/147`까지 진행됐다.
