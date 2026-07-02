@@ -1,4 +1,24 @@
-# Verification Results
+﻿# Verification Results
+
+## 2026-07-02 Loop291 wrong-work title flip source-native 검토
+
+- 범위: Loop290 `wrong_work_title_flip` 10행을 source-native/blind 판정으로 라벨링하고, 결과를 수리 큐로 고정한다.
+- Verdict summary:
+  - command: `python tools\summarize_collateral_review_verdicts.py --batch ...loop290_collateral183_p0_review_batch.json --verdicts docs\devs\loop291_wrong_work_title_flip_source_native_verdicts.json --output-json ...loop291_wrong_work_title_flip_source_native_review.json --output-md ...loop291_wrong_work_title_flip_source_native_review.md`
+  - reviewed rows `10`
+  - validation issues `0`
+  - label counts `REPROCESS=5`, `ACCEPT=3`, `HOLD=2`
+  - action counts `repair_after_wrong_work=5`, `canonical_title_policy_review=2`, `exclude_from_regression_count_after_gate_wiring=3`
+- Background snapshot:
+  - full375 manifest: `input/completed/flushed/pending/failed=375/12/3/9/0`, `include_search=true`, `light_mode=false`, `large_run_complete=false`
+  - bounded1200 manifest: `1200/24/8/16/0`, `include_search=true`, `light_mode=false`, `large_run_complete=false`
+  - golden18 manifest: `18/4/2/2/0`, `include_search=true`, `light_mode=true`, `large_run_complete=false`
+- Code/test verification:
+  - `python -m py_compile tools\summarize_collateral_review_verdicts.py tools\build_collateral_triage_review_batch.py` PASS
+  - `python -m unittest tests.test_summarize_collateral_review_verdicts tests.test_build_collateral_triage_review_batch -v` PASS, `4 tests`
+  - `python -m unittest tests.test_summarize_collateral_review_verdicts tests.test_build_collateral_triage_review_batch tests.test_triage_collateral_regressions tests.test_goal_action_queue tests.test_always_on_regression_gates -v` PASS, `20 tests`
+  - Data Analytics `validate_artifact` PASS, `render_artifact` PASS
+- Gate: source-native review `REVIEW-LOCKED`, search recovery `P0 / OPEN`, background runs `RUNNING_BACKGROUND`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-02 Loop290 collateral183 P0 blind/source-native 검토 배치
 

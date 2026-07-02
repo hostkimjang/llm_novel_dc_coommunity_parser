@@ -1,0 +1,168 @@
+{
+  "review_id": "loop291_wrong_work_title_flip_source_native_verdicts",
+  "loop": 291,
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop290_collateral183_p0_review_batch.json",
+  "scope": "Loop290 wrong_work_title_flip 10 rows",
+  "review_policy": "source-native review only; no full collateral approval; native web/search evidence is supporting evidence, not semantic approval",
+  "rows": [
+    {
+      "post_id": 11663535,
+      "selected_option_id": "C1",
+      "selected_title": "퇴마록",
+      "selected_url": "https://page.kakao.com/content/66470141",
+      "review_label": "HOLD",
+      "source_native_verdict": "canonical_variant_before_preferred",
+      "evidence_grade": "Medium",
+      "action": ["canonical_title_policy_review"],
+      "rationale_ko": "원문은 박신부, 이현암, 승희 등 시리즈 전반의 인물/설정을 말하므로 `퇴마록`이 더 안전한 공개 제목이다. `퇴마록 : 국내편`은 같은 시리즈의 part/volume 표기로 보이며 wrong-work라기보다 canonicalization 충돌이다.",
+      "evidence_refs": [
+        "https://page.kakao.com/content/66470141",
+        "https://product.kyobobook.co.kr/detail/S000216026103",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop290_collateral183_p0_review_batch.json#post_id=11663535"
+      ]
+    },
+    {
+      "post_id": 11666713,
+      "selected_option_id": "C1",
+      "selected_title": "21세기 무림세가",
+      "selected_url": "https://page.kakao.com/content/49668687",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_after_wrong",
+      "evidence_grade": "Strong",
+      "action": ["repair_after_wrong_work"],
+      "rationale_ko": "원문 제목의 `21세기 무림` 표면과 무협스럽다는 감상은 `21세기 무림세가` 쪽을 직접 지지한다. `21세기 헌터가된 무림인`은 official page가 있어도 원문에 헌터/해당 제목 앵커가 없다.",
+      "evidence_refs": [
+        "https://page.kakao.com/content/49668687",
+        "https://series.naver.com/novel/detail.series?productNo=1894278",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop290_collateral183_p0_review_batch.json#post_id=11666713"
+      ]
+    },
+    {
+      "post_id": 11682791,
+      "selected_option_id": "C1",
+      "selected_title": "시간을 달리는 소설가",
+      "selected_url": "https://novel.munpia.com/357213",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_correct_author_title_contamination_removed",
+      "evidence_grade": "Strong",
+      "action": ["exclude_from_regression_count_after_gate_wiring"],
+      "rationale_ko": "`피아조아 <시간을 달리는 소설가>`는 작가명과 제목이 섞인 표시이고, 공식 작품명은 `시간을 달리는 소설가`다. after 쪽이 canonical title로 정리했다.",
+      "evidence_refs": [
+        "https://novel.munpia.com/357213",
+        "https://series.naver.com/novel/detail.series?productNo=10109980",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop290_collateral183_p0_review_batch.json#post_id=11682791"
+      ]
+    },
+    {
+      "post_id": 11698890,
+      "selected_option_id": "C2",
+      "selected_title": "댓글창의 천재 마법사",
+      "selected_url": "https://novelpia.com/novel/370230",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_after_wrong",
+      "evidence_grade": "Strong",
+      "action": ["repair_after_wrong_work"],
+      "rationale_ko": "원문 title의 `댓천마`는 `댓글창의 천재 마법사` 약칭으로 읽히고, 본문 인물 `한별`, `더블오`, `데미갓`도 해당 작품 glossary/검색 근거와 결속된다. after의 `다크판타지 속 데미갓이 되었다`는 본문 단어 `데미갓`에 끌린 wrong-work다.",
+      "evidence_refs": [
+        "https://novelpia.com/novel/370230",
+        "https://www.novellist.co/novels/genius-wizard-of-the-comment-section/glossary",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop290_collateral183_p0_review_batch.json#post_id=11698890"
+      ]
+    },
+    {
+      "post_id": 11700500,
+      "selected_option_id": "C2",
+      "selected_title": "전지적 1인칭 시점",
+      "selected_url": "https://novelpia.com/novel/49942",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_after_wrong",
+      "evidence_grade": "Strong",
+      "action": ["repair_after_wrong_work"],
+      "rationale_ko": "원문 title의 `전1시`와 본문 `셰이` 맥락은 `전지적 1인칭 시점` 쪽이다. after의 `사상 최강의 길드마스터`는 원문 직접 앵커가 없는 인접/오귀결이다.",
+      "evidence_refs": [
+        "https://novelpia.com/novel/49942",
+        "https://series.naver.com/novel/detail.series?productNo=4451360",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop290_collateral183_p0_review_batch.json#post_id=11700500"
+      ]
+    },
+    {
+      "post_id": 11705252,
+      "selected_option_id": "C2",
+      "selected_title": "탐식의 재림",
+      "selected_url": "https://page.kakao.com/content/50219568",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_after_wrong",
+      "evidence_grade": "Strong",
+      "action": ["repair_after_wrong_work"],
+      "rationale_ko": "원문에 `탐재 주인공 설지후`가 직접 나오므로 `탐식의 재림`이 source-native 정답이다. after의 `순수한 분노의 결정`은 원문 제목의 일반 표현 `순수한 질문`에 끌린 제목 오귀결이다.",
+      "evidence_refs": [
+        "https://page.kakao.com/content/50219568",
+        "https://novelpia.com/novel/41876",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop290_collateral183_p0_review_batch.json#post_id=11705252"
+      ]
+    },
+    {
+      "post_id": 11706871,
+      "selected_option_id": "C1",
+      "selected_title": "파우스트",
+      "selected_url": "https://ridibooks.com/books/1242000797",
+      "review_label": "HOLD",
+      "source_native_verdict": "canonical_variant_before_preferred",
+      "evidence_grade": "Medium",
+      "action": ["canonical_title_policy_review"],
+      "rationale_ko": "원문은 고전 `파우스트` 전체 결말/독후감 맥락이다. `파우스트 1`은 권차/분책 표기 가능성이 있어 wrong-work라기보다 canonical title variant 충돌로 본다.",
+      "evidence_refs": [
+        "https://ridibooks.com/books/1242000797",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop290_collateral183_p0_review_batch.json#post_id=11706871"
+      ]
+    },
+    {
+      "post_id": 11710049,
+      "selected_option_id": "C1",
+      "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "selected_url": "https://novelpia.com/novel/382324",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_url_same_work_canonicalized",
+      "evidence_grade": "Strong",
+      "action": ["exclude_from_regression_count_after_gate_wiring"],
+      "rationale_ko": "원문은 `랫따싶` 태그/풀네임 요청이고, 공식 페이지는 `[림월드]변방계에서 회귀자로 살아남기` 및 `#랫따싶`을 함께 확인시킨다. 전후 title은 같은 작품의 bracket 포함 여부/URL 보존 차이로 보고 after의 official URL 보존은 악화가 아니다.",
+      "evidence_refs": [
+        "https://novelpia.com/novel/382324",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop290_collateral183_p0_review_batch.json#post_id=11710049"
+      ]
+    },
+    {
+      "post_id": 11714903,
+      "selected_option_id": "C1",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_url": "https://novelpia.com/novel/102155",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_correct_before_wrong",
+      "evidence_grade": "Strong",
+      "action": ["exclude_from_regression_count_after_gate_wiring"],
+      "rationale_ko": "원문은 `괴담텔`, `아리`, `가인`, `심판자` 맥락이라 `괴담 호텔 탈출기`가 정답이다. before의 `온 세상이 정신이상자다`는 원문 표현 `온 세상이 버튜버`에 끌린 별도 작품 오귀결이다.",
+      "evidence_refs": [
+        "https://novelpia.com/novel/102155",
+        "https://novelpia.com/novel/380804",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop290_collateral183_p0_review_batch.json#post_id=11714903"
+      ]
+    },
+    {
+      "post_id": 11716448,
+      "selected_option_id": "C1",
+      "selected_title": "아카데미 생존 갤러리",
+      "selected_url": "https://novelpia.com/novel/380218",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_after_wrong",
+      "evidence_grade": "Strong",
+      "action": ["repair_after_wrong_work"],
+      "rationale_ko": "원문 title의 `아생갤`과 인물 `아레스`, `엘리`, `라나`는 `아카데미 생존 갤러리`에 결속된다. after의 `인간실격 히로인들에게 집착당할 예정입니다`는 괴이/히로인 일반어에 끌린 wrong-work다.",
+      "evidence_refs": [
+        "https://novelpia.com/novel/380218",
+        "https://www.novellist.co/novels/academy-survival-gallery/glossary",
+        "https://novelpia.com/novel/424663",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop290_collateral183_p0_review_batch.json#post_id=11716448"
+      ]
+    }
+  ]
+}

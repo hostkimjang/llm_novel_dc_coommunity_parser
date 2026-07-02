@@ -1,10 +1,19 @@
-# GOAL: Architecture-Integrated Regression-Safe Grounding Loop
+﻿# GOAL: Architecture-Integrated Regression-Safe Grounding Loop
 
 ## Purpose
 
 현재 개선 하네스 goal은 완료가 아니다. Loop176 기준 broader unittest gate가 `FAIL`이며, 전문가 협업 결과 현재 구조는 단건 guard 누적으로는 한계가 있다고 판단했다. 따라서 다음 goal은 기존 residual queue를 버리는 것이 아니라, 먼저 공통 title-promotion 아키텍처를 추가한 뒤 Loop176 실패와 residual queue로 복귀하는 architecture-integrated goal로 변경한다.
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
+
+## 2026-07-02 Loop291 Addendum - wrong-work title flip source-native 검토
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop291은 approval이 아니라 Loop290 `wrong_work_title_flip` 10행의 source-native 라벨 산출물이다.
+- 목적: 코드 변경 없는 대형 run 대기를 멈추고, collateral183 P0 중 wrong-work title flip부터 blind/source-native 판정으로 actionable queue를 줄인다.
+- 코드 변경: `tools/summarize_collateral_review_verdicts.py`와 `tests/test_summarize_collateral_review_verdicts.py`를 추가하고, `.gitignore` 추적 예외를 갱신했다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_291_REPORT_20260702.md`, verdicts `docs/devs/loop291_wrong_work_title_flip_source_native_verdicts.json`, summary JSON/MD `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop291_wrong_work_title_flip_source_native_review.*`, Data Analytics MCP report `Loop291 wrong-work title flip 검토`.
+- Evidence: reviewed rows `10`, validation issues `0`, label counts `REPROCESS=5`, `ACCEPT=3`, `HOLD=2`. report-time background snapshot은 full375 `375/12/3/9/0`, bounded1200 `1200/24/8/16/0`, golden18 `18/4/2/2/0`, 모두 `large_run_complete=false`.
+- Gate: source-native review `REVIEW-LOCKED`, action queue `repair_after_wrong_work=5`, `canonical_title_policy_review=2`, `exclude_from_regression_count_after_gate_wiring=3`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
 
 ## 2026-07-02 Loop290 Addendum - collateral183 P0 blind/source-native 검토 배치
 

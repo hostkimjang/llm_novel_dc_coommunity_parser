@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop291 wrong-work title flip review quality gate
+
+- 근거:
+  - [x] Loop290 `wrong_work_title_flip` 10행을 source-native verdict로 판정했다.
+  - [x] `REPROCESS=5`, `ACCEPT=3`, `HOLD=2`, validation issues `0`을 파일로 남겼다.
+  - [x] Data Analytics MCP report를 한국어로 작성하고 validate/render했다.
+  - [x] background full375/bounded/golden18 런을 완료 전 approval 근거로 쓰지 않았다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_291_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] Loop291 source-native label은 approval 산출물이 아니라 수리 큐다.
+  - [x] `REPROCESS` 5건은 targeted guard/runtime follow-up 전까지 닫지 않는다.
+  - [x] `HOLD` 2건은 wrong-work로 강제 계산하지 않고 canonical title variant 정책으로 분리한다.
+  - [x] 검색 degraded 복구 전 `promotion_blocked`는 `search-blind conditional`로만 해석한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop290 collateral183 P0 review batch quality gate
 
 - 근거:

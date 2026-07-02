@@ -1,5 +1,38 @@
 # Improvement Register
 
+## IMP-20260702-291 - wrong-work title flip source-native 라벨링
+
+- Status: Implemented / approval blocked
+- Loop: 291
+- Problem:
+  - Loop290은 `wrong_work_title_flip=10`을 배치로 만들었지만, 어떤 행이 수리 대상인지와 어떤 행이 canonical variant인지 분리되지 않았다.
+  - 대형 background run을 기다리기만 하면 collateral183 actionable queue 감소가 일어나지 않는다.
+- Change:
+  - `tools/summarize_collateral_review_verdicts.py`를 추가해 review batch와 verdict manifest를 결합하고 label/action/verdict counts를 생성한다.
+  - `tests/test_summarize_collateral_review_verdicts.py`로 selected option 검증과 invalid option `NO-GO` 계약을 고정한다.
+  - `docs/devs/loop291_wrong_work_title_flip_source_native_verdicts.json`에 10행 source-native 판정을 기록했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_291_REPORT_20260702.md`
+  - verdicts `docs/devs/loop291_wrong_work_title_flip_source_native_verdicts.json`
+  - summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop291_wrong_work_title_flip_source_native_review.*`
+- Result:
+  - reviewed rows `10`
+  - validation issues `0`
+  - `REPROCESS=5`
+  - `ACCEPT=3`
+  - `HOLD=2`
+- Verification:
+  - py_compile PASS
+  - focused tests `4` OK
+  - related gate suite `20` OK
+  - Data Analytics validate/render PASS
+- Gate:
+  - source-native review `REVIEW-LOCKED`
+  - full collateral approval `NOT_OPEN`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-290 - collateral183 P0 blind/source-native 검토 배치
 
 - Status: Implemented / approval blocked

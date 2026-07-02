@@ -1,4 +1,26 @@
-# Development Checklist
+﻿# Development Checklist
+
+## 2026-07-02 Loop291 wrong-work title flip source-native 검토 체크
+
+- [x] Loop290 `wrong_work_title_flip` 10행을 source-native verdict manifest로 판정했다.
+  - verdicts `docs\devs\loop291_wrong_work_title_flip_source_native_verdicts.json`
+  - summary JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop291_wrong_work_title_flip_source_native_review.json`
+  - summary Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop291_wrong_work_title_flip_source_native_review.md`
+- [x] label counts를 확인했다.
+  - `REPROCESS=5`
+  - `ACCEPT=3`
+  - `HOLD=2`
+  - validation issues `0`
+- [x] Data Analytics MCP report를 validate/render했다.
+  - title `Loop291 wrong-work title flip 검토`
+- [x] background 런을 approval 근거로 쓰지 않고 최신 manifest snapshot만 기록했다.
+  - full375 `375/12/3/9/0`, `large_run_complete=false`
+  - bounded1200 `1200/24/8/16/0`, `large_run_complete=false`
+  - golden18 `18/4/2/2/0`, `large_run_complete=false`, `light_mode=true`
+- [ ] `repair_after_wrong_work` 5건을 targeted guard/runtime follow-up으로 줄인다.
+- [ ] canonical title variant `HOLD` 2건의 정책 결정을 별도 배선한다.
+- [ ] `ACCEPT` 3건은 gate 배선 전까지 regression count 제외로 세지 않는다.
+- Gate: source-native review `REVIEW-LOCKED`, full collateral approval `NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-02 Loop290 collateral183 P0 blind/source-native 검토 배치 체크
 

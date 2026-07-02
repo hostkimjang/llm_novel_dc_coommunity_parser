@@ -1,4 +1,16 @@
-# Development History
+﻿# Development History
+
+## 2026-07-02 - Loop291 wrong-work title flip source-native 검토
+
+- Loop290 collateral183 P0 배치 중 `wrong_work_title_flip` 10행을 source-native/blind 방식으로 판정했다.
+- Verdict manifest는 `docs/devs/loop291_wrong_work_title_flip_source_native_verdicts.json`이고, summary 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop291_wrong_work_title_flip_source_native_review.json` / `.md`다.
+- 판정 결과는 reviewed rows `10`, validation issues `0`, `REPROCESS=5`, `ACCEPT=3`, `HOLD=2`다.
+- `REPROCESS` 5건은 `11666713`, `11698890`, `11700500`, `11705252`, `11716448`이며 `repair_after_wrong_work` 대상이다.
+- `ACCEPT` 3건은 `11682791`, `11710049`, `11714903`이며 gate 배선 뒤 regression count 제외 후보로만 둔다.
+- `HOLD` 2건은 `11663535`, `11706871`이며 canonical title variant 정책 판단이 필요하다.
+- Report는 `docs/devs/loop_reports/LOOP_291_REPORT_20260702.md`이고, Data Analytics MCP report `Loop291 wrong-work title flip 검토`는 validate/render PASS다.
+- Background snapshot은 full375 `375/12/3/9/0`, bounded1200 `1200/24/8/16/0`, golden18 `18/4/2/2/0`, 모두 `large_run_complete=false`다.
+- Gate는 source-native review `REVIEW-LOCKED`, full collateral approval `NOT_OPEN`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
 
 ## 2026-07-02 - Loop290 collateral183 P0 blind/source-native 검토 배치
 
