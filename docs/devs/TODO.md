@@ -2,6 +2,20 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop327 TODO
+
+- 상태 업데이트: `OVERRIDE AUDIT(LLM=False->final=True)` 확장에서 `11668283` source-native false negative를 확인하고 unit-level alias repair를 적용했다. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop327 TODO:
+  - [x] 최신 light source와 과거 resolved source를 대조했다.
+    - 최신 `20260702_065642_030743`: `off_topic / context_only / official_title=null`
+    - 과거 `20260423_170321_250907`: `게임 마인드의 중세 현대인`, official detail URL resolved
+  - [x] partial current canary로 Gatekeeper/Discourse는 work/review, semantic seed guard는 generic-drop임을 확인했다.
+  - [x] `중세 현대인` 계열 alias와 `좋았다` 계열 감상 cue를 shared curated alias gate에 추가했다.
+  - [x] focused unit `9` PASS, related bundle `62` PASS, py_compile PASS.
+  - [ ] patch 후 `11668283` targeted runtime replay를 실행한다.
+  - [ ] Loop326 full375/bounded/golden18/N5 완료 전 approval 문구를 쓰지 않는다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop326 TODO
 
 - 상태 업데이트: Loop325 커밋 `1095d447` 이후 current HEAD runtime을 background로 재발주했다. Goal은 `ACTIVE / NOT_COMPLETE`.

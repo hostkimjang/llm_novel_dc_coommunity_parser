@@ -1,5 +1,24 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop327 override audit middle-age-modern alias repair
+
+- 범위: `OVERRIDE AUDIT(LLM=False->final=True)` 확장 중 `11668283` source-native false negative를 확인하고 shared curated alias gate를 보강한다.
+- Artifacts:
+  - state `docs\devs\loop327_override_audit_middle_age_modern_alias_20260703.json`
+  - report `docs\devs\loop_reports\LOOP_327_REPORT_20260703.md`
+  - review JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop327_override_audit_middle_age_modern_alias_review.json`
+  - review Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop327_override_audit_middle_age_modern_alias_review.md`
+  - partial canary log `logs\expert_run_20260703_014314_718737.log`
+- Evidence:
+  - current light `20260702_065642_030743`: `off_topic / context_only / official_title=null`, search `SEARCH_DEGRADED`, light health.
+  - prior independent `20260423_170321_250907`: `official_title=게임 마인드의 중세 현대인`, URL `https://page.kakao.com/content/63760170?tab_type=about`.
+  - partial current canary: startup `include_search=true`, `light_mode=false`, Gatekeeper `work_discussion`, Discourse `review`, semantic seed guard generic-drop. 결과 JSON 전 중단했으므로 approval 증거가 아니다.
+- Verification:
+  - py_compile PASS: `src\llm_batch\experts\utils.py`, `src\llm_batch\agentic_pipeline.py`, `tests\test_known_title_abbreviation_safe_loss_contract.py`
+  - `tests.test_known_title_abbreviation_safe_loss_contract -v` PASS, `9` tests
+  - `tests.test_known_title_abbreviation_support tests.test_arbiter_curated_alias_guard tests.test_regression_safe_work_bridge_contract tests.test_known_title_abbreviation_safe_loss_contract -v` PASS, `62` tests
+- Gate: row contract `GO_UNIT_REPAIR`, runtime replay `NOT_RUN_AFTER_PATCH`, Loop326 background `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop326 current HEAD runtime dispatch
 
 - 범위: Loop325 커밋 `1095d447` 기준으로 safe-loss N5, full375, bounded1200 completed-source, golden18을 새 output 경로에 발주한다.

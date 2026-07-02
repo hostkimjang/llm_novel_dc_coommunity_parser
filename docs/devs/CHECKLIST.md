@@ -1,5 +1,26 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop327 override audit alias repair 체크
+
+- [x] 코드 변경 없는 대형 run 대기 대신 `OVERRIDE AUDIT(LLM=False->final=True)` 확장 행을 source-native로 검토했다.
+  - 대상 `11668283 / 게임 마인드의 중세 현대인 좋았다...`
+  - 최신 light source `out\expert_result_20260702_065632_479765_checkpoint.jsonl`
+  - 과거 resolved source `out\expert_result_20260423_170321_250907_checkpoint.jsonl`
+- [x] 최신 light 결과의 false negative를 확인했다.
+  - current light: `off_topic / context_only / official_title=null`
+  - prior independent: `게임 마인드의 중세 현대인`, URL `https://page.kakao.com/content/63760170?tab_type=about`
+  - partial current canary: health `include_search=true`, `light_mode=false`, Gatekeeper `work_discussion`, Discourse `review`, semantic seed guard generic-drop
+- [x] shared alias/work bridge를 보강했다.
+  - `중세현대인`, `중세 현대인`, `게임마인드중세`, `게임마인드 중세 현대인` 추가
+  - curated alias cue에 `좋았/좋네/좋다/좋음/좋구나/좋아` 계열 추가
+- [x] 검증을 완료했다.
+  - py_compile PASS
+  - focused unit `9` PASS
+  - related bundle `62` PASS
+- [ ] patch 후 targeted runtime replay 전까지 residual closure로 세지 않는다.
+- [ ] Loop326 background 런 완료 전 approval 문구를 쓰지 않는다.
+- Gate: row contract `GO_UNIT_REPAIR`, runtime replay `NOT_RUN_AFTER_PATCH`, Loop326 background `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop326 current HEAD runtime dispatch 체크
 
 - [x] Loop325 계약 패치 후 rollback 체크포인트를 만들었다.

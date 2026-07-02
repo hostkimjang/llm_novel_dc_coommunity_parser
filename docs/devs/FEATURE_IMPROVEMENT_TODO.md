@@ -4,6 +4,14 @@
 
 ## Curated alias publication convergence
 
+- [ ] Loop327 middle-age-modern alias repair follow-up
+  - 상태: row_contract_go_unit_repair / runtime_not_run_after_patch / approval_not_open
+  - 발견: `11668283 / 게임 마인드의 중세 현대인 좋았다...`는 최신 light run에서 `off_topic / context_only / official_title=null`로 떨어졌지만, 과거 독립 run은 official detail URL이 붙은 resolved work로 판정했다.
+  - 적용: `중세현대인`, `중세 현대인`, `게임마인드중세`, `게임마인드 중세 현대인`을 curated alias로 추가하고, `좋았다` 계열 감상 cue를 shared alias gate에 추가했다.
+  - 보호: 단순 `중세 현대인` 단어 언급만 있고 작품 소비 cue가 없는 행은 release하지 않는다.
+  - 산출물: `docs/devs/loop_reports/LOOP_327_REPORT_20260703.md`, `docs/devs/loop327_override_audit_middle_age_modern_alias_20260703.json`
+  - 완료 기준: patch 후 `11668283` targeted runtime replay, Loop326 full375/bounded/golden18 완료, collateral compare에서 순회귀 0 확인. search degraded가 남으면 approval 금지.
+
 - [ ] Loop325 curated alias work-cue contract follow-up
   - 상태: code_contract_go_unit_and_broader_214 / runtime_not_run_current_patch / approval_not_open
   - 발견: Loop324에서 `11708443 / 괴담출근`은 verifier/relation 단계의 작품 근거가 있었지만 Arbiter curated-alias null guard가 작품 담론 cue를 보지 못해 `promotion_blocked`로 회귀했다.

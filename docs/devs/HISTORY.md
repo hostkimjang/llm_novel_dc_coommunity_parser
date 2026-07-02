@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop327 override audit middle-age-modern alias repair
+
+- `OVERRIDE AUDIT(LLM=False->final=True)` 확장 중 `11668283 / 게임 마인드의 중세 현대인 좋았다...`를 source-native false negative로 판정했다.
+- 최신 light run `20260702_065642_030743`는 이 row를 `off_topic / context_only / official_title=null`로 내렸고, `batch_memory_alias_rescue_blocked_nonwork_context`, `batch_memory_alias_rescue_blocked_semantic_seed`가 붙었다.
+- 과거 독립 run `20260423_170321_250907`는 같은 post_id를 `게임 마인드의 중세 현대인`, URL `https://page.kakao.com/content/63760170?tab_type=about`로 resolved 처리했다.
+- partial current canary는 health `include_search=true`, `light_mode=false`, `1/1 OK`였고 Gatekeeper/Discourse는 work/review로 봤지만 semantic seed guard가 `중세 현대인`을 일반어로 drop했다.
+- `KNOWN_TITLE_ABBREVIATIONS`에 `중세현대인`, `중세 현대인`, `게임마인드중세`, `게임마인드 중세 현대인`을 추가하고, curated alias gate의 작품 소비 cue에 `좋았다` 계열을 추가했다.
+- 검증은 py_compile PASS, focused unit `9` PASS, related bundle `62` PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_327_REPORT_20260703.md`, state는 `docs/devs/loop327_override_audit_middle_age_modern_alias_20260703.json`이다.
+- Gate는 row contract `GO_UNIT_REPAIR`, runtime replay `NOT_RUN_AFTER_PATCH`, Loop326 background `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop326 current HEAD runtime dispatch
 
 - Loop325 계약 패치 커밋 `1095d447` 뒤 current HEAD runtime을 새 output 경로로 발주했다.

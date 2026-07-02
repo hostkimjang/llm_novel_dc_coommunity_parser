@@ -1,0 +1,83 @@
+{
+  "loop": 327,
+  "date": "2026-07-03",
+  "scope": "OVERRIDE AUDIT LLM=False->final=True expansion plus source-native alias repair",
+  "base_head": "88eb101b",
+  "target_post_id": 11668283,
+  "target_title": "게임 마인드의 중세 현대인 좋았다...",
+  "source_run": {
+    "current_light_run_id": "20260702_065642_030743",
+    "current_light_checkpoint": "out/expert_result_20260702_065632_479765_checkpoint.jsonl",
+    "prior_resolved_run_id": "20260423_170321_250907",
+    "prior_resolved_checkpoint": "out/expert_result_20260423_170321_250907_checkpoint.jsonl"
+  },
+  "artifacts": {
+    "review_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop327_override_audit_middle_age_modern_alias_review.json",
+    "review_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop327_override_audit_middle_age_modern_alias_review.md",
+    "input_jsonl": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop327_override_audit_11668283_input.jsonl",
+    "partial_canary_log": "logs/expert_run_20260703_014314_718737.log",
+    "report": "docs/devs/loop_reports/LOOP_327_REPORT_20260703.md"
+  },
+  "observed_current_light": {
+    "is_relevant": false,
+    "is_novel_related": true,
+    "is_resolved_work_discussion": false,
+    "discussion_type": "off_topic",
+    "work_resolution": "none",
+    "title_resolution_state": "context_only",
+    "title_resolution_allowed": false,
+    "official_title": null,
+    "official_url": null,
+    "consistency_flags": [
+      "absent_grounding_unresolved_hold_blocked",
+      "notes_demoted_for_unresolved",
+      "batch_memory_alias_rescue_blocked_nonwork_context",
+      "batch_memory_alias_rescue_blocked_semantic_seed",
+      "llm_only_sentence_candidate_pruned"
+    ],
+    "search_health_status": "SEARCH_DEGRADED",
+    "mcp_health_include_search": false,
+    "mcp_health_light_mode": true
+  },
+  "prior_independent_resolved": {
+    "is_relevant": true,
+    "discussion_type": "character_talk",
+    "work_resolution": "resolved",
+    "official_title": "게임 마인드의 중세 현대인",
+    "official_url": "https://page.kakao.com/content/63760170?tab_type=about",
+    "primary_work_source_tier": "official_detail"
+  },
+  "partial_current_canary": {
+    "status": "STOPPED_AFTER_EVIDENCE",
+    "health": "mcp_health_include_search=true, mcp_health_light_mode=false, 1/1 OK",
+    "gatekeeper": "work_discussion",
+    "discourse": "novel_literature / review",
+    "semantic_seed_guard": "specific_work_denied, title terms dropped as generic",
+    "search_result_quality": "degraded/noisy game-site results",
+    "approval_use": "not approval evidence"
+  },
+  "change": {
+    "aliases_added": {
+      "중세현대인": "게임 마인드의 중세 현대인",
+      "중세 현대인": "게임 마인드의 중세 현대인",
+      "게임마인드중세": "게임 마인드의 중세 현대인",
+      "게임마인드 중세 현대인": "게임 마인드의 중세 현대인"
+    },
+    "work_cue_added": "curated alias gate now accepts positive review cue 좋았/좋네/좋다/좋음/좋구나/좋아"
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "focused_unit": "tests.test_known_title_abbreviation_safe_loss_contract PASS, 9 tests",
+    "related_bundle": "tests.test_known_title_abbreviation_support tests.test_arbiter_curated_alias_guard tests.test_regression_safe_work_bridge_contract tests.test_known_title_abbreviation_safe_loss_contract PASS, 62 tests"
+  },
+  "gates": {
+    "override_audit": "REPAIR_IDENTIFIED_AND_UNIT_FIXED",
+    "runtime_replay_current_patch": "NOT_RUN_AFTER_PATCH",
+    "loop326_background": "IN_PROGRESS / NOT_APPROVAL",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

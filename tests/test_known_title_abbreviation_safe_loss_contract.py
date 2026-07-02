@@ -81,6 +81,11 @@ class KnownTitleAbbreviationSafeLossContractTest(unittest.TestCase):
                 "웹소설 원작 장면을 영화가 어떻게 각색할지 얘기",
             ),
             (
+                "게임 마인드의 중세 현대인 좋았다...",
+                "게임 마인드의 중세 현대인",
+                "오라 각성자의 참담한 희생을 기도하라",
+            ),
+            (
                 "괴담출근정도는 돼야 독창성 운운할수 있는거다",
                 "괴담에 떨어져도 출근을 해야 하는구나",
                 "모든 괴담물 = 괴담출근의 표절작",
@@ -149,6 +154,20 @@ class KnownTitleAbbreviationSafeLossContractTest(unittest.TestCase):
         )
 
         allowed = self.pipeline._known_title_abbreviation_update_question_anchor(ctx, "괴담 동아리")
+
+        self.assertFalse(allowed)
+
+    def test_middle_age_modern_alias_without_work_consumption_cue_does_not_release(self):
+        ctx = self._ctx(
+            post_id=11668283,
+            title="중세 현대인이라는 말이 웃김",
+            body="그냥 단어 얘기",
+        )
+
+        allowed = self.pipeline._known_title_abbreviation_update_question_anchor(
+            ctx,
+            "게임 마인드의 중세 현대인",
+        )
 
         self.assertFalse(allowed)
 

@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop327 Addendum - override audit middle-age-modern alias repair
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop327은 approval이 아니라 `OVERRIDE AUDIT(LLM=False->final=True)` 확장 중 `11668283` false negative를 찾아 unit-level alias repair로 전환한 회차다.
+- 목적: 코드 변경 없는 대형 run 대기 대신 override audit/source-native 검증으로 actionable queue를 줄인다.
+- Evidence: report `docs/devs/loop_reports/LOOP_327_REPORT_20260703.md`, state `docs/devs/loop327_override_audit_middle_age_modern_alias_20260703.json`, review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop327_override_audit_middle_age_modern_alias_review.json`.
+- 판정: 최신 light run은 `off_topic / context_only / official_title=null`, 과거 독립 run은 `게임 마인드의 중세 현대인` official detail URL resolved다.
+- 코드 변경: `중세현대인`, `중세 현대인`, `게임마인드중세`, `게임마인드 중세 현대인` alias와 `좋았다` 계열 curated alias work cue를 추가했다.
+- Verification: py_compile PASS, focused unit `9` PASS, related bundle `62` PASS.
+- Gate: row contract `GO_UNIT_REPAIR`, runtime replay `NOT_RUN_AFTER_PATCH`, Loop326 background `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop326 Addendum - current HEAD runtime dispatch
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop326은 Loop325 커밋 `1095d447` 이후 safe-loss N5, full375, bounded1200 completed-source, golden18을 current HEAD 기준 새 output 경로로 background 발주한 회차다.

@@ -1,5 +1,33 @@
 # Improvement Register
 
+## IMP-20260703-327 - override audit middle-age-modern alias repair
+
+- Status: Implemented / unit repair / runtime replay not run
+- Loop: 327
+- Problem:
+  - `11668283 / 게임 마인드의 중세 현대인 좋았다...`가 최신 104k light run에서 `off_topic / context_only / official_title=null`로 떨어졌다.
+  - 과거 독립 run은 같은 post_id를 `게임 마인드의 중세 현대인` official detail URL로 resolved 처리했다.
+  - partial current canary에서도 Gatekeeper/Discourse는 work/review로 봤지만 semantic seed guard가 `중세 현대인`을 일반어로 drop했다.
+- Change:
+  - `중세현대인`, `중세 현대인`, `게임마인드중세`, `게임마인드 중세 현대인`을 `KNOWN_TITLE_ABBREVIATIONS`에 추가했다.
+  - curated alias work cue에 `좋았다` 계열 감상 표현을 추가했다.
+  - 단어만 있는 negative control을 추가했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_327_REPORT_20260703.md`
+  - state `docs/devs/loop327_override_audit_middle_age_modern_alias_20260703.json`
+  - review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop327_override_audit_middle_age_modern_alias_review.*`
+  - partial canary log `logs/expert_run_20260703_014314_718737.log`
+- Result:
+  - py_compile PASS
+  - focused unit `9` PASS
+  - related bundle `62` PASS
+- Gate:
+  - row contract `GO_UNIT_REPAIR`
+  - runtime replay `NOT_RUN_AFTER_PATCH`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260703-326 - current HEAD runtime dispatch after Loop325
 
 - Status: Dispatched / background / approval not open
