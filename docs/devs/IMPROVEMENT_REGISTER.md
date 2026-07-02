@@ -1,5 +1,38 @@
 # Improvement Register
 
+## IMP-20260702-316 - safe-loss source-native next slice
+
+- Status: Implemented / partial review locked
+- Loop: 316
+- Problem:
+  - Loop312 이후 `safe_loss_resolved_to_null=147` 중 미검토 `88`건이 남아 있었다.
+  - Loop314 large runs는 partial/background 상태라 approval 근거로 쓸 수 없다.
+- Change:
+  - 미검토분 15건을 추가 source-native verdict로 작성했다.
+  - 기존 59건과 합쳐 누적 verdict `74/147`과 summary JSON/MD를 생성했다.
+  - direct alias/title repair, wrong-before-title, adjacent/cross-media, native evidence required row를 분리했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_316_REPORT_20260702.md`
+  - state `docs/devs/loop316_safe_loss_source_native_review_20260702.json`
+  - delta verdicts `docs/devs/loop316_safe_loss_source_native_verdicts_delta_15.json`
+  - cumulative verdicts `docs/devs/loop316_safe_loss_source_native_verdicts_cumulative_74.json`
+  - summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop316_safe_loss_source_native_review.*`
+- Result:
+  - delta labels `REPROCESS=7`, `ACCEPT=6`, `HOLD=2`
+  - cumulative reviewed `74/147`
+  - unreviewed `73`
+  - validation issues `0`
+  - cumulative labels `REPROCESS=41`, `ACCEPT=15`, `HOLD=18`
+- Gate:
+  - source-native review `REVIEW-LOCKED / PARTIAL`
+  - runtime replay `NOT_RUNTIME_VERIFIED`
+  - safe-loss N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`
+  - full375/bounded `IN_PROGRESS / NOT_APPROVAL`
+  - golden18 `APPROVAL_NOT_OPEN`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-315 - character-setting bridge shared contract
 
 - Status: Implemented / unit contract only / review locked

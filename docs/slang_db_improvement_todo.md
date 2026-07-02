@@ -1,5 +1,16 @@
 # Slang DB Improvement TODO
 
+## 2026-07-02 Loop316 safe-loss source-native / slang caveat
+
+- [x] `safe_loss_resolved_to_null` source-native review가 `74/147`까지 진행됐다.
+  - delta `REPROCESS=7`, `ACCEPT=6`, `HOLD=2`
+  - cumulative `REPROCESS=41`, `ACCEPT=15`, `HOLD=18`
+- [x] `21세기무림`, `갤질의사`, `아생갤`, `판초법사`, `김괴라리`, `전툴루` 등 직접 약칭 row는 repair 후보로 분리했다.
+- [x] `마도줍 -> 소설 속 엑스트라`, 댓글 조롱 예시 `전독시`, cross-media `블아`는 slang/alias registry repair로 세지 않았다.
+- [ ] `repair_safe_loss=41` 중 slang/alias registry로 일반화 가능한 항목만 shared gate/runtime replay 후보로 올린다.
+- [ ] N5 result JSON `15/15` 완료 후 slang/alias 안정성 caveat를 새 flip 분석으로 갱신한다.
+- Gate: slang DB write-back 아님, source-native review `REVIEW-LOCKED / PARTIAL`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop314 current-HEAD runtime / slang caveat
 
 - [x] Loop313 이후 이전 N5/full375/bounded/golden18 증거를 stale 또는 mixed evidence로 분리했다.

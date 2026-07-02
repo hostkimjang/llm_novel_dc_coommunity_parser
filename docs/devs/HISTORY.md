@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop316 safe-loss source-native next slice
+
+- Loop314 full375/bounded1200/golden18/N5는 완료 대기하지 않고 background 감시로 유지했다.
+- Loop301 `safe_loss_resolved_to_null=147` batch에서 Loop312 이후 다음 15건을 source-native로 추가 판정했다.
+- Delta 결과는 `REPROCESS=7`, `ACCEPT=6`, `HOLD=2`, validation issues `0`이다.
+- 누적 결과는 reviewed `74/147`, unreviewed `73`, labels `REPROCESS=41`, `ACCEPT=15`, `HOLD=18`이다.
+- `마도줍 -> 소설 속 엑스트라`, `전독시` 댓글 조롱 예시, `블아` cross-media game 맥락 등은 after null preferred로 분리했다.
+- Report는 `docs/devs/loop_reports/LOOP_316_REPORT_20260702.md`, state는 `docs/devs/loop316_safe_loss_source_native_review_20260702.json`이다.
+- Gate는 source-native review `REVIEW-LOCKED / PARTIAL`, runtime replay `NOT_RUNTIME_VERIFIED`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop315 character-setting bridge contract
 
 - Loop314 full375/bounded1200/golden18/N5는 완료 대기 대신 background 감시로 내렸다.

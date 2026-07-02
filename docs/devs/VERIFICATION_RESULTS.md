@@ -1,5 +1,29 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop316 safe-loss source-native 다음 slice
+
+- 범위: Loop301 `safe_loss_resolved_to_null=147` 중 Loop312 이후 미검토분 15건을 추가 source-native review로 판정한다.
+- Artifacts:
+  - delta verdicts `docs\devs\loop316_safe_loss_source_native_verdicts_delta_15.json`
+  - cumulative verdicts `docs\devs\loop316_safe_loss_source_native_verdicts_cumulative_74.json`
+  - state `docs\devs\loop316_safe_loss_source_native_review_20260702.json`
+  - summary JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop316_safe_loss_source_native_review.json`
+  - summary Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop316_safe_loss_source_native_review.md`
+  - report `docs\devs\loop_reports\LOOP_316_REPORT_20260702.md`
+- Verification:
+  - `tools\summarize_collateral_review_verdicts.py` -> gate `REVIEW-LOCKED`
+  - batch rows `147`
+  - reviewed rows `74`
+  - unreviewed rows `73`
+  - validation issues `0`
+- Delta counts:
+  - labels `REPROCESS=7`, `ACCEPT=6`, `HOLD=2`
+  - actions `repair_safe_loss=7`, `exclude_from_regression_count_after_gate_wiring=6`
+- Cumulative counts:
+  - labels `REPROCESS=41`, `ACCEPT=15`, `HOLD=18`
+  - actions `repair_safe_loss=41`, `exclude_from_regression_count_after_gate_wiring=15`
+- Gate: source-native review `REVIEW-LOCKED / PARTIAL`, runtime replay `NOT_RUNTIME_VERIFIED`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, golden18 `APPROVAL_NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop315 character-setting bridge contract
 
 - 범위: Loop312 `11669933`의 `회귀수선전` character-setting bridge 후보를 shared work bridge 계약 테스트로 고정한다.

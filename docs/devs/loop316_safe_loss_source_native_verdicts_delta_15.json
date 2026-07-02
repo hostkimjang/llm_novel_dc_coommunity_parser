@@ -1,0 +1,257 @@
+{
+  "review_id": "loop316_safe_loss_source_native_verdicts_delta_15",
+  "scope": "Loop301 safe_loss_resolved_to_null next source-native verdict slice after Loop312 (15 rows)",
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "rows": [
+    {
+      "post_id": 11674694,
+      "selected_option_id": "C1",
+      "selected_title": "21세기 무림세가",
+      "selected_url": "https://page.kakao.com/content/49668687",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목의 `21세기무림`과 본문 `21세기무림은 천화일로의 정신적 후계작`이 후보 작품을 직접 지지한다. 댓글도 노벨피아 무협/선작/설정 호불호로 이어져 after null은 safe title 손실이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11674694",
+        "https://page.kakao.com/content/49668687"
+      ]
+    },
+    {
+      "post_id": 11676309,
+      "selected_option_id": "C1",
+      "selected_title": "갤질하는 천재 의사",
+      "selected_url": "https://novelpia.com/novel/372180",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `갤질의사 정실일러 예고`는 후보 작품의 안정 약칭과 일러스트 공지 맥락을 직접 담고, 댓글도 히로인/캐릭터 논의로 이어진다. after null은 작품 표면을 잃은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11676309",
+        "https://novelpia.com/novel/372180"
+      ]
+    },
+    {
+      "post_id": 11676314,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_wrong_before_title",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문은 `마도줍` 완결/연중과 `무절살` 비교를 말한다. 후보 `소설 속 엑스트라`를 직접 지지하는 표면이 없으므로 after null이 더 안전하며, 이 행은 safe-loss repair로 세지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11676314"
+      ]
+    },
+    {
+      "post_id": 11676326,
+      "selected_option_id": "C1",
+      "selected_title": "아카데미 생존 갤러리",
+      "selected_url": "https://novelpia.com/novel/390001",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `아생갤`과 본문 `갤러리물`, `엘리`, `괴이` 논의가 후보 작품을 직접 지지한다. after null은 안정 alias와 작품 내부 맥락을 잃은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11676326",
+        "https://novelpia.com/novel/390001"
+      ]
+    },
+    {
+      "post_id": 11676331,
+      "selected_option_id": "C1",
+      "selected_title": "판초우의의 마법사",
+      "selected_url": "https://novel.munpia.com/530500",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목의 `판초법사`는 후보 작품 약칭이고 본문/댓글은 작품 내 신앙 설정을 직접 토론한다. after null은 작품 설정 토론을 잃은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11676331",
+        "https://novel.munpia.com/530500"
+      ]
+    },
+    {
+      "post_id": 11677915,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_context_only_comment_taunt",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원글은 리뷰 반응 일반론이고 `전독시`는 댓글의 조롱 예시로만 등장한다. 후보를 current-work public title로 확정하면 댓글 예시를 본문 주제로 과승격하므로 after null이 더 안전하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11677915"
+      ]
+    },
+    {
+      "post_id": 11677924,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_native_evidence_required",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "원문은 `남캐일러` 선호와 갑옷 이미지 반응만 보인다. 후보 `고결에 오만이 깃들 때`를 직접 지지하는 텍스트 표면이나 URL이 없어 이미지/native evidence 확인 전에는 safe-loss repair로 세지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11677924"
+      ]
+    },
+    {
+      "post_id": 11681159,
+      "selected_option_id": "C1",
+      "selected_title": "괴담에 휘말렸다",
+      "selected_url": "https://novelpia.com/novel/363195",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `김괴라리`와 본문 `상태창`, `회귀`, 댓글 `스팡달`, `고르고리오`가 후보 작품의 내부 전개/인물 맥락을 직접 지지한다. after null은 안정 alias와 작품 설정 논의를 잃은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11681159",
+        "https://novelpia.com/novel/363195"
+      ]
+    },
+    {
+      "post_id": 11681172,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_adjacent_media_comparison",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "제목은 `기계공주맛 나는 만화`로, 후보 작품 자체보다 유사한 맛/비교 대상을 말한다. 본문과 댓글이 비어 있어 current-work public title 확정은 과하므로 after null을 선호한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11681172"
+      ]
+    },
+    {
+      "post_id": 11681178,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_wrong_before_title",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문은 보일러를 끄고 나가면 강아지가 익는다는 일상/밈 문장뿐이다. 후보 `재벌가 차녀의 2회차 걸그룹`을 지지하는 작품 표면이 없어 before public title은 wrong-work로 본다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11681178"
+      ]
+    },
+    {
+      "post_id": 11682749,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_wrong_before_title",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "본문과 댓글은 TS 주인공 템플릿의 기원을 `묵향`으로 설명한다. 후보 `주인공인데 주인공이 아님`은 원문 표면과 맞지 않아 after null이 더 안전하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11682749"
+      ]
+    },
+    {
+      "post_id": 11682767,
+      "selected_option_id": "C1",
+      "selected_title": "묵향",
+      "selected_url": "https://mm.munpia.com/?menu=novel&action=view&id=51088&entry_id=776982",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목이 `묵향`을 직접 말하고 본문/댓글도 태허무령심법, 천마구령심법, 아르티어스, 드래곤 하트 등 해당 작품 전개를 논한다. after null은 직접 작품 논의를 잃은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11682767",
+        "https://mm.munpia.com/?menu=novel&action=view&id=51088&entry_id=776982"
+      ]
+    },
+    {
+      "post_id": 11685994,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "source_text_insufficient_native_required",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_web_or_source_review_required"
+      ],
+      "rationale_ko": "원문은 `념글`의 외신소환 주문을 묻는 짧은 반응이고 후보 제목을 직접 말하지 않는다. 후보 `무한을 이해한 나는 외신의 사제가 되었습니다`는 source-native 텍스트만으로는 약해 native/source 확인 전 repair로 세지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11685994"
+      ]
+    },
+    {
+      "post_id": 11689282,
+      "selected_option_id": "C1",
+      "selected_title": "전생하고 보니 크툴루",
+      "selected_url": "https://novel.munpia.com/199081",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `전툴루 엔딩`은 후보 작품의 안정 약칭이고 본문/댓글은 엔딩과 후반부 완성도를 직접 평가한다. after null은 작품 alias를 잃은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11689282",
+        "https://novel.munpia.com/199081"
+      ]
+    },
+    {
+      "post_id": 11690841,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_cross_media_non_novel",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문은 `블아` 캐릭터 칸나/노나메/TS녀 선호를 말하는 게임·미디어 맥락이다. 후보 `블루 아카이브`를 parser의 safe public novel work로 확정하면 cross-media overreach가 되므로 after null이 더 안전하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11690841"
+      ]
+    }
+  ]
+}
