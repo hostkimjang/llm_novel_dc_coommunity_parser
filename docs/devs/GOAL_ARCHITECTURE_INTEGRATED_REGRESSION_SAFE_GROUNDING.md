@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop289 Addendum - background 감시와 collateral183 triage 전환
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop288 background 런은 완료되지 않았으므로 approval 근거로 쓰지 않고, 대형/장기 run은 background monitoring으로 내렸다.
+- 목적: 완료 대기 교착을 피하고 기존 full375 collateral diff의 `183` regression row를 P0 triage해 다음 source-native/blind judge 작업 큐를 만든다.
+- 코드 변경: `tools/triage_collateral_regressions.py`를 추가해 collateral compare row를 `safe_loss_resolved_to_null`, `unsafe_promotion_from_hold`, `wrong_work_title_flip` 등으로 분류한다. 테스트 `tests/test_triage_collateral_regressions.py`와 `.gitignore` 추적 예외를 추가했다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_289_REPORT_20260702.md`, full375 audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop289_full375_search_nonlight_inprogress_health_audit.json`, bounded1200 audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop289_bounded1200_search_nonlight_inprogress_health_audit.json`, golden18 audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop289_golden18_search_included_inprogress_health_audit.json`, collateral triage `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop289_collateral183_regression_triage.json`, Data Analytics artifact `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop289_background_collateral183_data_analytics_artifact.json`.
+- Evidence: full375 search non-light run은 `input=375`, `completed=0`, `flushed=0`, result/checkpoint missing이라 `NO-GO/artifact_count_mismatch`다. bounded1200은 `completed=4`, `flushed=0`, `pending=4`, `search_degraded_observed` blocker가 있다. golden18은 `completed/flushed=1/1`, `light_mode=True`라 old golden GO를 대체하지 못한다. collateral183 triage는 changed `223`, regression `183`, P0 `183`: `safe_loss_resolved_to_null=147`, `unsafe_promotion_from_hold=26`, `wrong_work_title_flip=10`.
+- Gate: background runs `IN_PROGRESS`, collateral183 triage `NO-GO`, search degraded recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop288 Addendum - safe-loss N5, golden18, search 포함 런 발주
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았고, safe-loss 반복과 상위 gate 산출물 갱신으로 전환했다.

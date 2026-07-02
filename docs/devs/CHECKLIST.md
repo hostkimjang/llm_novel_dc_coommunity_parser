@@ -1,5 +1,28 @@
 # Development Checklist
 
+## 2026-07-02 Loop289 background 감시 / collateral183 triage 체크
+
+- [x] Loop288 background 런 3개를 완료 산출물이 아니라 in-progress health로 재감사했다.
+  - full375 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop289_full375_search_nonlight_inprogress_health_audit.json`
+  - bounded1200 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop289_bounded1200_search_nonlight_inprogress_health_audit.json`
+  - golden18 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop289_golden18_search_included_inprogress_health_audit.json`
+- [x] full375는 `completed=0`, `flushed=0`, result/checkpoint missing이라 approval 근거로 쓰지 않는다.
+- [x] bounded1200은 `completed=4`, `flushed=0`, `pending=4`, `search_degraded_observed`라 search degraded P0 blocker를 유지한다.
+- [x] golden18은 `completed/flushed=1/1`, `light_mode=True`라 old golden GO를 대체하지 않는다.
+- [x] collateral183 regression triage를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop289_collateral183_regression_triage.json`
+  - changed rows `223`
+  - regression rows `183`
+  - P0 rows `183`
+  - `safe_loss_resolved_to_null=147`
+  - `unsafe_promotion_from_hold=26`
+  - `wrong_work_title_flip=10`
+- [x] Data Analytics artifact를 validate/render했다.
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop289_background_collateral183_data_analytics_artifact.json`
+- [ ] P0 collateral bucket별 blind judge/source-native review batch를 구성한다.
+- [ ] background full375/bounded/golden18 완료 후 재감사한다.
+- Gate: background runs `IN_PROGRESS`, collateral183 triage `NO-GO`, search recovery `P0 / OPEN`, full collateral approval `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop288 safe-loss N5 / golden18 / search 포함 런 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

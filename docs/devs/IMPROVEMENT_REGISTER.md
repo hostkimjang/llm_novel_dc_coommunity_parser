@@ -1,5 +1,36 @@
 # Improvement Register
 
+## IMP-20260702-289 - collateral183 regression triage
+
+- Status: Implemented / approval blocked
+- Loop: 289
+- Problem:
+  - full375 collateral diff의 `183` regression row가 하나의 숫자로만 남아 있어 다음 blind judge/source-native review 우선순위가 불명확했다.
+  - background full375/bounded/golden18 런이 장기 실행 중일 때 완료 대기와 semantic approval을 혼동할 위험이 있었다.
+- Change:
+  - `tools/triage_collateral_regressions.py`를 추가해 collateral compare row를 P0/P1/P2와 triage bucket으로 분류한다.
+  - `tests/test_triage_collateral_regressions.py`로 null_to_resolved, resolved_to_null, resolved_to_different_title 분류 계약을 고정했다.
+  - Loop289에서 background 런은 in-progress health audit로만 기록하고, collateral183 triage로 루프를 전환했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_289_REPORT_20260702.md`
+  - triage `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop289_collateral183_regression_triage.json`
+  - health audits `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop289_*_health_audit.json`
+- Result:
+  - changed rows `223`
+  - regression rows `183`
+  - P0 rows `183`
+  - `safe_loss_resolved_to_null=147`
+  - `unsafe_promotion_from_hold=26`
+  - `wrong_work_title_flip=10`
+- Verification:
+  - py_compile PASS
+  - triage/action queue/always-on tests `16` OK
+- Gate:
+  - collateral183 triage `NO-GO`
+  - background runs `IN_PROGRESS`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-288 - safe-loss N5와 golden18 상시 gate 갱신
 
 - Status: Implemented / approval blocked

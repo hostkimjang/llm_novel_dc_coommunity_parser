@@ -6,6 +6,20 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop289 background / collateral183 quality gate
+
+- 근거:
+  - [x] background 런 3개를 현재 manifest/checkpoint/result/log 기준으로 재감사했다.
+  - [x] bounded1200의 `search_degraded_observed`를 P0 blocker로 기록했다.
+  - [x] full375/golden18 미완료 상태를 old GO나 approval 근거로 쓰지 않았다.
+  - [x] collateral183 regression row를 P0 bucket으로 분류했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_289_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] background run 완료 전 full375 collateral approval을 열지 않는다.
+  - [x] collateral triage는 우선순위 산출물이며 approval 산출물이 아니다.
+  - [x] P0 bucket은 blind judge 또는 source-native review 없이는 닫지 않는다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop288 safe-loss / search recovery quality gate
 
 - 근거:

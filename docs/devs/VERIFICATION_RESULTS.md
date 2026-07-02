@@ -1,5 +1,23 @@
 # Verification Results
 
+## 2026-07-02 Loop289 background health / collateral183 triage
+
+- 범위: Loop288 background 런 3개를 in-progress health로 재감사하고, 기존 full375 collateral diff의 `183` regression row를 triage한다.
+- Background health audits:
+  - full375 command: `python tools/audit_expert_run_health.py --run-id 20260702_124015_346913 --manifest ...loop288_full375_current_head_search_nonlight_result_manifest.json --checkpoint ...checkpoint.jsonl --result-json ...result.json --pending-snapshot ...pending_snapshot.json --input-jsonl ...regression_panel_input.jsonl --log-glob "logs\expert_run_20260702_124015_346913_W*.log" --output ...loop289_full375_search_nonlight_inprogress_health_audit.json`
+  - full375 result: `NO-GO/artifact_count_mismatch`, result missing, checkpoint `0`, `include_search=true`, `light_mode=false`
+  - bounded1200 result: `NO-GO/artifact_count_mismatch`, `completed=4`, `flushed=0`, `pending=4`, `search_degraded_observed`
+  - golden18 result: `IN_PROGRESS`, result_rows `1`, `completed/flushed=1/1`, `include_search=true`, `light_mode=true`
+- Collateral triage:
+  - command: `.\.venv312\Scripts\python.exe tools\triage_collateral_regressions.py --compare out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop49_regression_panel_replay_collateral_compare.json --output-json out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop289_collateral183_regression_triage.json --output-md out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop289_collateral183_regression_triage.md --sample-limit 10`
+  - result: gate `NO-GO`, changed `223`, regression `183`, P0 `183`
+  - buckets: `safe_loss_resolved_to_null=147`, `unsafe_promotion_from_hold=26`, `wrong_work_title_flip=10`
+- Code/test verification:
+  - `python -m py_compile tools\triage_collateral_regressions.py tools\build_goal_action_queue.py` PASS
+  - `python -m unittest tests.test_triage_collateral_regressions tests.test_goal_action_queue tests.test_always_on_regression_gates -v` PASS, `16 tests`
+  - Data Analytics `validate_artifact` PASS, `render_artifact` PASS
+- Gate: background runs `IN_PROGRESS`, collateral183 `NO-GO`, search recovery `P0 / OPEN`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop288 safe-loss N5 / golden18 / search 포함 런 발주
 
 - 범위: current HEAD safe-loss 반복 probe, golden 18 편입, completed-source 후보 감사, search 포함 background 런 발주, 관련 도구 계약 테스트.

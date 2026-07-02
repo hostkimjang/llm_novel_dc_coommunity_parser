@@ -70,6 +70,7 @@ tests/inputs/test01.jsonl
 !/tests/test_audit_expert_run_health.py
 !/tests/test_publication_contract_convergence_audit.py
 !/tests/test_regression_safe_grounding_bootstrap.py
+!/tests/test_triage_collateral_regressions.py
 /tmp*
 *.bak
 *.badbak
@@ -92,6 +93,7 @@ tests/inputs/test01.jsonl
 !/tools/build_completed_source_candidate_audit.py
 !/tools/bootstrap_regression_safe_grounding.py
 !/tools/audit_regression_safe_golden.py
+!/tools/triage_collateral_regressions.py
 !/tools/build_goal_current_state_map.py
 !/tools/build_goal_action_queue.py
 !/tools/build_semantic_coverage_audit.py

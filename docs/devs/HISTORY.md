@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-02 - Loop289 background 감시와 collateral183 triage
+
+- Loop288 background 런은 완료되지 않아 approval 근거로 쓰지 않았다.
+- full375 search non-light run은 manifest 기준 `input=375`, `completed=0`, `flushed=0`, `include_search=true`, `light_mode=false`지만 result/checkpoint가 없어 `NO-GO/artifact_count_mismatch`다.
+- bounded1200 search non-light run은 `completed=4`, `flushed=0`, `pending=4`이며 health audit에서 `search_degraded_observed`가 확인됐다.
+- golden18은 `completed/flushed=1/1`, `light_mode=true`라 old golden GO를 대체하지 못한다.
+- 기존 full375 collateral compare `out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop49_regression_panel_replay_collateral_compare.json`의 `183` regression row를 triage했다.
+- triage 결과는 P0 `183`: `safe_loss_resolved_to_null=147`, `unsafe_promotion_from_hold=26`, `wrong_work_title_flip=10`이다.
+- Report는 `docs/devs/loop_reports/LOOP_289_REPORT_20260702.md`, Data Analytics artifact는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop289_background_collateral183_data_analytics_artifact.json`이다.
+- Gate는 background runs `IN_PROGRESS`, collateral183 triage `NO-GO`, search recovery `P0 / OPEN`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop288 safe-loss N5, golden18, search 포함 런 발주
 
 - 동일 38-row parent packet은 재실행하지 않았다.
