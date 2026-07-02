@@ -1,5 +1,33 @@
 # Improvement Register
 
+## IMP-20260702-305 - safe-loss alias targeted replay handoff
+
+- Status: In progress / not approval
+- Loop: 305
+- Problem:
+  - Loop304는 code/unit contract만 닫았고, 실제 panel 입력 replay가 없었다.
+  - 대형 full375/bounded 완료를 기다리는 동안 actionable queue 감소 증거와 runtime blocker를 분리해야 했다.
+- Change:
+  - Loop304 positive alias seed 7건, comparison-only negative control 1건, safe-loss core control 3건을 11-row targeted replay 입력으로 만들었다.
+  - search shard audit `ok=12/12`와 vLLM model endpoint를 확인했다.
+  - replay를 PID `16380`, run id `20260702_181813_388157`로 시작했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_305_REPORT_20260702.md`
+  - state `docs/devs/loop305_safe_loss_alias_targeted_replay_20260702.json`
+  - input manifest `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop305_safe_loss_alias_contract_targeted_input_manifest.json`
+  - health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop305_safe_loss_alias_targeted_replay_inprogress_health_audit.json`
+- Result:
+  - replay `IN_PROGRESS`
+  - completed/flushed/failed `0/0/0`
+  - VLM/OCR `ON`
+  - health blockers `manifest_search_health_not_included`, `manifest_light_health_only`
+- Gate:
+  - targeted runtime `IN_PROGRESS / NOT_APPROVAL`
+  - search recovery `P0 / OPEN`
+  - full375/bounded `IN_PROGRESS / NOT_APPROVAL`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-304 - safe-loss known-alias contract repair
 
 - Status: Implemented / unit contract only

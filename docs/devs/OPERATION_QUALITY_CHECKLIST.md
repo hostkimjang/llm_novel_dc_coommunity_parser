@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop305 safe-loss alias targeted replay quality gate
+
+- 근거:
+  - [x] Loop304 alias seed를 `11`행 targeted replay 입력으로 만들었다.
+  - [x] search shard audit `ok=12/12`를 남겼다.
+  - [x] replay run id `20260702_181813_388157`와 PID `16380`을 기록했다.
+  - [x] in-progress health audit을 남겼다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_305_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] completed `0`이므로 replay 성공이나 queue 감소로 쓰지 않는다.
+  - [x] small-run health가 `include_search=false`, `light_mode=true`이므로 search recovery approval 증거로 쓰지 않는다.
+  - [x] Loop305 control 3건을 N5 flip-rate 갱신으로 계산하지 않는다.
+  - [x] full375/bounded 완료 전 approval 근거로 쓰지 않는다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop303 runtime recovery quality gate
 
 - 근거:

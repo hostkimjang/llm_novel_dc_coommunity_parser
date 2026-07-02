@@ -1,5 +1,18 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop305 safe-loss alias targeted replay handoff
+
+- Loop304 known-alias 계약을 실제 panel 입력에서 검증하기 위해 11-row targeted replay 입력을 만들었다.
+- 입력은 `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop305_safe_loss_alias_contract_targeted_input.jsonl`이고, 입력 manifest는 `loop305_safe_loss_alias_contract_targeted_input_manifest.json`이다.
+- 대상은 Loop304 positive alias 7건, comparison-only negative control `11660232`, safe-loss core control `11660237/11698880/11674712`다.
+- 실행 전 search shard audit `out/search_shard_audit_20260702_181756.json`은 `ok=12/12`다.
+- vLLM model은 `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4`로 확인했다.
+- replay는 PID `16380`, run id `20260702_181813_388157`로 시작했다.
+- 현재 manifest는 `input=11`, `completed=0`, `flushed=0`, `failed=0`이다. `11660257`, `11666731`은 VLM chunk result 이후 LLM 단계에 있다.
+- Small-run reuse-only health라 `mcp_health_include_search=false`, `mcp_health_light_mode=true`다. 따라서 search recovery approval 증거가 아니다.
+- Health audit은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop305_safe_loss_alias_targeted_replay_inprogress_health_audit.json`이다.
+- Gate는 targeted runtime `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop304 safe-loss known-alias contract repair
 
 - Loop301 `repair_safe_loss=14` 중 source-native로 확인된 직접 alias seed 일부를 shared known-abbreviation work-cue 계약으로 전환했다.
@@ -8,7 +21,7 @@
 - 비교/adjacent negative control로 `괴담텔 ... 괴담동이 살짝 생각나네`가 `괴담 동아리`로 release되지 않도록 계약 테스트를 추가했다.
 - Report는 `docs/devs/loop_reports/LOOP_304_REPORT_20260702.md`, state는 `docs/devs/loop304_safe_loss_alias_contract_repair_20260702.json`이다.
 - 검증은 py_compile PASS, focused `2` tests PASS, related bundle `217` tests PASS, `git diff --check` PASS다.
-- Gate는 code contract `GO_UNIT`, targeted runtime `NOT_RUN`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+- Gate는 code contract `GO_UNIT`, targeted runtime `IN_PROGRESS / NOT_APPROVAL`(Loop305 발주), search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
 
 ## 2026-07-02 - Loop303 runtime recovery and background handoff
 

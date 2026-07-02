@@ -1,0 +1,71 @@
+{
+  "report_type": "loop305_safe_loss_alias_targeted_replay",
+  "generated_at": "2026-07-02T18:25:00+09:00",
+  "head": "95b20242",
+  "goal_status": "ACTIVE_NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "purpose": "Run a small targeted replay for Loop304 known-alias safe-loss repair seeds and core safe-loss controls.",
+    "approval_claim": false,
+    "runtime_replay": "IN_PROGRESS_NOT_APPROVAL",
+    "search_recovery": "P0_OPEN"
+  },
+  "input": {
+    "jsonl": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop305_safe_loss_alias_contract_targeted_input.jsonl",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop305_safe_loss_alias_contract_targeted_input_manifest.json",
+    "row_count": 11,
+    "post_ids": [
+      "11660257",
+      "11666731",
+      "11669943",
+      "11671500",
+      "11676310",
+      "11684372",
+      "11685987",
+      "11660232",
+      "11660237",
+      "11698880",
+      "11674712"
+    ],
+    "bom": false
+  },
+  "runtime": {
+    "pid": 16380,
+    "run_id": "20260702_181813_388157",
+    "result_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop305_safe_loss_alias_contract_targeted_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop305_safe_loss_alias_contract_targeted_result_manifest.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop305_safe_loss_alias_targeted_replay_inprogress_health_audit.json",
+    "input_post_count": 11,
+    "completed_count": 0,
+    "flushed_count": 0,
+    "pending_count": 0,
+    "failed_count": 0,
+    "mcp_health_include_search": false,
+    "mcp_health_light_mode": true,
+    "vlm_enabled": true,
+    "ocr_enabled": true,
+    "search_health_blockers": [
+      "manifest_search_health_not_included",
+      "manifest_light_health_only"
+    ]
+  },
+  "background_snapshot": {
+    "full375_completed": 108,
+    "full375_flushed": 102,
+    "full375_pending": 6,
+    "bounded1200_completed": 159,
+    "bounded1200_flushed": 154,
+    "bounded1200_pending": 5,
+    "approval": false
+  },
+  "gates": {
+    "targeted_runtime_replay": "IN_PROGRESS_NOT_APPROVAL",
+    "code_contract": "GO_UNIT",
+    "safe_loss_flip_probe": "NOT_REFRESHED_CURRENT_HEAD",
+    "full375_bounded_completed_source": "IN_PROGRESS_NOT_APPROVAL",
+    "search_recovery": "P0_OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "goal": "ACTIVE_NOT_COMPLETE"
+  }
+}

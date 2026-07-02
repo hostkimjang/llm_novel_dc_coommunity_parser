@@ -8,6 +8,15 @@ This note visualizes the current parser-improvement architecture and the additiv
 
 ## Source References
 
+## 2026-07-02 Loop305 Safe-loss Alias Targeted Replay Handoff
+
+- Loop305는 Loop304의 unit-only alias repair를 실제 panel 입력 replay로 넘긴 회차다.
+- 입력은 `11`행이며 positive alias seed `7`, comparison-only negative `1`, safe-loss core control `3`으로 구성했다.
+- Replay run id는 `20260702_181813_388157`, PID는 `16380`이다.
+- 현재 결과는 `completed=0`, `flushed=0`, `failed=0`이라 runtime success나 queue 감소로 세지 않는다.
+- Small-run health가 `include_search=false`, `light_mode=true`이므로 search recovery approval 증거가 아니다.
+- Gate는 targeted runtime `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 Loop304 Safe-loss Known-Alias Contract Repair
 
 - Loop304는 Loop301 `repair_safe_loss=14` 중 일부를 shared known-abbreviation work-cue 계약으로 전환한 `GO_UNIT` 회차다.
@@ -15,7 +24,7 @@ This note visualizes the current parser-improvement architecture and the additiv
 - release cue는 직접 작품 소비/평가/작가/공지/표지 표면으로 제한했다. registry 자체는 public publish 권한이 아니며, 기존 `_known_title_abbreviation_update_question_anchor(...)`와 promotion gate를 통과해야 한다.
 - Negative control: `괴담텔 ... 괴담동이 살짝 생각나네`는 adjacent 비교라 `괴담 동아리`로 release되지 않는다.
 - Verification: py_compile PASS, focused `2` tests PASS, related bundle `217` tests PASS, `git diff --check` PASS.
-- Runtime replay는 아직 수행하지 않았다. full375/bounded는 background `IN_PROGRESS / NOT_APPROVAL`, search recovery는 `P0 / OPEN`, goal은 `ACTIVE / NOT_COMPLETE`다.
+- Runtime replay는 Loop305에서 발주했지만 아직 `IN_PROGRESS / NOT_APPROVAL`이다. full375/bounded는 background `IN_PROGRESS / NOT_APPROVAL`, search recovery는 `P0 / OPEN`, goal은 `ACTIVE / NOT_COMPLETE`다.
 - Artifacts: `docs/devs/loop_reports/LOOP_304_REPORT_20260702.md`, `docs/devs/loop304_safe_loss_alias_contract_repair_20260702.json`.
 
 ## 2026-07-02 Loop296 Safe-loss N5 Independent Run Wrapper

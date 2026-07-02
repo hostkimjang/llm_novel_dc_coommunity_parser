@@ -1,5 +1,27 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop305 safe-loss alias targeted replay 체크
+
+- [x] Loop304 alias 계약을 실제 panel 입력에서 targeted replay 입력으로 만들었다.
+  - input `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop305_safe_loss_alias_contract_targeted_input.jsonl`
+  - rows `11`, BOM 없음
+  - post ids `11660257/11666731/11669943/11671500/11676310/11684372/11685987/11660232/11660237/11698880/11674712`
+- [x] 실행 전 search shard audit를 남겼다.
+  - `out\search_shard_audit_20260702_181756.json`, `ok=12/12`
+- [x] vLLM model endpoint를 확인했다.
+  - `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4`
+- [x] targeted replay를 시작했다.
+  - PID `16380`
+  - run id `20260702_181813_388157`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop305_safe_loss_alias_contract_targeted_result_manifest.json`
+- [x] in-progress health audit를 남겼다.
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop305_safe_loss_alias_targeted_replay_inprogress_health_audit.json`
+  - 현재 `completed=0`, `flushed=0`, `failed=0`
+  - blockers `manifest_search_health_not_included`, `manifest_light_health_only`
+- [ ] Loop305 replay 완료 후 result/checkpoint/manifest/log를 재감사한다.
+- [ ] Loop305 결과를 N5 flip-rate 갱신으로 계산하지 않는다. N5는 one-post-per-process plan 완료 후 별도 분석한다.
+- Gate: targeted runtime `IN_PROGRESS / NOT_APPROVAL`, code contract `GO_UNIT`, safe-loss flip `NOT_REFRESHED_CURRENT_HEAD`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop304 safe-loss known-alias contract repair 체크
 
 - [x] Loop301 `repair_safe_loss=14` 중 source-native alias seed 일부를 shared known-abbreviation 계약으로 전환했다.
@@ -12,9 +34,9 @@
   - related bundle: PASS, `217` tests
   - `py_compile`: PASS
   - `git diff --check`: PASS
-- [ ] Loop301 seed alias rows를 targeted runtime replay로 재확인한다.
+- [x] Loop301 seed alias rows targeted runtime replay를 발주했다. Loop305 기준 아직 `IN_PROGRESS / NOT_APPROVAL`이다.
 - [ ] `repair_safe_loss=14`는 runtime replay와 collateral compare 전까지 queue 감소로 세지 않는다.
-- Gate: code contract `GO_UNIT`, targeted runtime `NOT_RUN`, safe-loss flip `NOT_REFRESHED_CURRENT_HEAD`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: code contract `GO_UNIT`, targeted runtime `IN_PROGRESS / NOT_APPROVAL`, safe-loss flip `NOT_REFRESHED_CURRENT_HEAD`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-02 Loop303 runtime recovery / background handoff 체크
 

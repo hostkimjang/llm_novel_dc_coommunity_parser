@@ -5,11 +5,12 @@
 ## Safe-loss alias repair
 
 - [ ] Loop301 `repair_safe_loss=14` targeted replay
-  - 상태: code_contract_go_unit / runtime_not_run / approval_not_open
+  - 상태: code_contract_go_unit / runtime_in_progress_not_approval / approval_not_open
   - 발견: Loop304에서 source-native alias seed 일부를 known-abbreviation work-cue 계약으로 전환했다.
   - 적용 alias: `암흑가보스/암보스`, `기계공주`, `약먹마`, `악살싶`, `마도줍`, `괴담동`, `즉사무림`, `밀리언클래스`
   - 보호: `괴담텔 ... 괴담동이 살짝 생각나네` comparison-only negative는 release하지 않음.
-  - 산출물: `docs/devs/loop_reports/LOOP_304_REPORT_20260702.md`, `docs/devs/loop304_safe_loss_alias_contract_repair_20260702.json`
+  - 산출물: `docs/devs/loop_reports/LOOP_304_REPORT_20260702.md`, `docs/devs/loop_reports/LOOP_305_REPORT_20260702.md`, `docs/devs/loop304_safe_loss_alias_contract_repair_20260702.json`, `docs/devs/loop305_safe_loss_alias_targeted_replay_20260702.json`
+  - 현재 replay: run id `20260702_181813_388157`, completed `0/11`, small-run health `include_search=false`, `light_mode=true`라 approval 근거 아님.
   - 완료 기준: Loop301 seed alias rows targeted runtime replay, collateral compare, always-on golden18/full375 gate 재평가. search degraded가 남으면 approval 금지.
 
 ## 검색 품질

@@ -1,5 +1,32 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop305 safe-loss alias targeted replay handoff
+
+- 범위: Loop304 known-alias safe-loss repair seed를 실제 panel 입력으로 replay하고, 완료 전 gate를 분리한다.
+- Input:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop305_safe_loss_alias_contract_targeted_input.jsonl`
+  - rows `11`, BOM 없음
+  - post ids `11660257`, `11666731`, `11669943`, `11671500`, `11676310`, `11684372`, `11685987`, `11660232`, `11660237`, `11698880`, `11674712`
+- Preflight:
+  - search shard audit `out\search_shard_audit_20260702_181756.json` -> `ok=12/12`
+  - vLLM model `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4`
+- Runtime:
+  - PID `16380`
+  - run id `20260702_181813_388157`
+  - result manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop305_safe_loss_alias_contract_targeted_result_manifest.json`
+  - in-progress health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop305_safe_loss_alias_targeted_replay_inprogress_health_audit.json`
+- Current snapshot:
+  - manifest `input_post_count=11`, `completed_count=0`, `flushed_count=0`, `pending_count=0`, `failed_count=0`
+  - `vlm_enabled=true`, `ocr_enabled=true`
+  - `mcp_health_include_search=false`, `mcp_health_light_mode=true`
+  - health blockers `manifest_search_health_not_included`, `manifest_light_health_only`
+  - `11660257`, `11666731`은 VLM chunk result 이후 LLM 단계 진행 중
+- Background snapshot:
+  - full375 `completed=108`, `flushed=102`, `pending=6`, `failed=0`
+  - bounded1200 `completed=159`, `flushed=154`, `pending=5`, `failed=0`
+  - 모두 `IN_PROGRESS / NOT_APPROVAL`
+- Gate: targeted runtime `IN_PROGRESS / NOT_APPROVAL`, code contract `GO_UNIT`, safe-loss flip `NOT_REFRESHED_CURRENT_HEAD`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop304 safe-loss known-alias contract repair
 
 - 범위: Loop301 `repair_safe_loss=14` 중 source-native로 확인된 직접 alias seed 일부를 shared known-abbreviation work-cue 계약으로 전환한다.
@@ -17,7 +44,7 @@
   - bounded1200 manifest `completed=147`, `pending=16`
   - 104k manifest `completed=1058`, `pending=94`
   - 모두 approval 아님. search gate는 `REVIEW`.
-- Gate: code contract `GO_UNIT`, targeted runtime `NOT_RUN`, safe-loss flip `NOT_REFRESHED_CURRENT_HEAD`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: code contract `GO_UNIT`, targeted runtime `IN_PROGRESS / NOT_APPROVAL`(Loop305 발주), safe-loss flip `NOT_REFRESHED_CURRENT_HEAD`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-02 Loop303 runtime recovery / background handoff
 
