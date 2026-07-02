@@ -1,0 +1,24 @@
+{
+  "review_type": "current_head_runtime_dispatch",
+  "loop": 329,
+  "date": "2026-07-03",
+  "head": "c033dd97",
+  "summary": "현 HEAD 기준 runtime 증거를 새 경로로 재발주했다. launch health는 search 포함 non-light로 통과했지만 결과 row가 아직 없으므로 approval은 열지 않는다.",
+  "launch_health": {
+    "post_patch_single": "1/1 OK, search=true, light=false",
+    "full375": "12/12 OK, search=true, light=false",
+    "bounded1200": "12/12 OK, search=true, light=false",
+    "golden18": "2/2 OK, search=true, light=false",
+    "safe_loss_n5": "first marker created"
+  },
+  "gate": {
+    "launch_health": "GO_SEARCH_NONLIGHT_INITIAL",
+    "runtime_completion": "IN_PROGRESS",
+    "approval": "NOT_OPEN",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

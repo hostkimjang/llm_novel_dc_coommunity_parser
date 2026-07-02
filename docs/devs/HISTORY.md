@@ -1,5 +1,17 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop329 current HEAD c033dd97 runtime dispatch
+
+- Loop328 guard patch 커밋 `c033dd97` 이후 현 HEAD runtime 증거를 새 경로로 분리했다.
+- stale Loop314/Loop326 root PID `111032`, `75828`, `9908`, `43208`, `106428`, `34796`, `124704`, `73076`을 중단했다. 기존 산출물은 참고용 `reference-only / NOT_APPROVAL`이다.
+- post-patch `11668283` single은 PID `75828`, run `20260703_032149_031285`, search non-light `1/1` OK로 시작했다.
+- full375는 PID `3232`, run `20260703_032149_057915`, search non-light `12/12` OK로 시작했다.
+- bounded1200 completed-source는 PID `119924`, run `20260703_032149_102775`, search non-light `12/12` OK로 시작했다.
+- golden18은 PID `95980`, run `20260703_032149_034356`, search non-light `2/2` OK로 시작했다.
+- safe-loss N5는 PID `107596`, planned runs `15`, first marker 생성 상태다.
+- Report는 `docs/devs/loop_reports/LOOP_329_REPORT_20260703.md`, state는 `docs/devs/loop329_current_head_c033dd97_runtime_dispatch_20260703.json`이다.
+- Gate는 launch health `GO_SEARCH_NONLIGHT_INITIAL`, post-patch single/N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, golden18 `APPROVAL_NOT_OPEN`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop328 known-abbreviation exact-title public guard repair
 
 - Loop327 patch 후 `11668283 / 게임 마인드의 중세 현대인 좋았다...`를 search 포함 non-light로 targeted replay했다.

@@ -1,5 +1,33 @@
 # Improvement Register
 
+## IMP-20260703-329 - current HEAD c033dd97 runtime dispatch
+
+- Status: Dispatched / background / approval not open
+- Loop: 329
+- Problem:
+  - Loop328 guard patch 커밋 후 Loop314/Loop326 runtime outputs는 현 HEAD `c033dd97` approval 증거가 아니다.
+  - post-patch `11668283` single replay와 safe-loss N5/full375/bounded1200/golden18 증거를 새로 분리해야 한다.
+- Change:
+  - stale Loop314/Loop326 root PID를 중단하고 기존 산출물을 reference-only로 태깅했다.
+  - post-patch single, safe-loss N5, full375, bounded1200 completed-source, golden18을 새 output 경로로 발주했다.
+  - 초기 health에서 post-patch single `1/1`, full375/bounded `12/12`, golden18 `2/2`, 모두 search non-light를 확인했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_329_REPORT_20260703.md`
+  - state `docs/devs/loop329_current_head_c033dd97_runtime_dispatch_20260703.json`
+  - review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop329_current_head_c033dd97_runtime_dispatch_review.*`
+  - manifests `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop329_*_manifest.json`
+- Result:
+  - runtime groups are running in background.
+  - result rows are not yet analyzed, so approval remains closed.
+- Gate:
+  - launch health `GO_SEARCH_NONLIGHT_INITIAL`
+  - post-patch single/N5 `RUNNING_BACKGROUND / NOT_ANALYZED`
+  - full375/bounded `IN_PROGRESS / NOT_APPROVAL`
+  - golden18 `APPROVAL_NOT_OPEN`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260703-328 - known-abbreviation exact-title public guard repair
 
 - Status: Implemented / unit contract / post-patch runtime not run

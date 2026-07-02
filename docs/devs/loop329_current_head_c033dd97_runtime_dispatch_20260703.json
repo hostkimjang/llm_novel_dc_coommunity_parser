@@ -1,0 +1,105 @@
+{
+  "loop": 329,
+  "date": "2026-07-03",
+  "head": "c033dd97",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "summary": "Loop328 guard patch 커밋 뒤 stale Loop314/326 background 프로세스를 중단하고, 현 HEAD c033dd97 기준 post-patch single replay, safe-loss N5, golden18, full375, completed-source bounded1200을 새 output 경로로 background 발주했다.",
+  "checkpoint_commit": {
+    "hash": "c033dd97",
+    "subject": "fix: allow known exact-title weak source guard",
+    "purpose": "Loop329 runtime replay 전 rollback 지점"
+  },
+  "stale_process_handling": {
+    "stopped_root_pids": [111032, 75828, 9908, 43208, 106428, 34796, 124704, 73076],
+    "policy": "Loop314/Loop326 outputs are reference-only and stale relative to HEAD c033dd97. They must not be used as approval evidence."
+  },
+  "launched": [
+    {
+      "name": "loop329_post_patch_11668283_current_head_c033dd97_search_nonlight",
+      "pid": 75828,
+      "run_id": "20260703_032149_031285",
+      "input_rows": 1,
+      "output": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_post_patch_11668283_current_head_c033dd97_result.json",
+      "manifest": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_post_patch_11668283_current_head_c033dd97_result_manifest.json",
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_ok_count": 1,
+      "mcp_health_required_ok_count": 1,
+      "completed_flushed_pending_failed_at_report": "0/0/0/0",
+      "gate": "RUNNING_BACKGROUND / NOT_ANALYZED"
+    },
+    {
+      "name": "loop329_full375_current_head_c033dd97_search_nonlight",
+      "pid": 3232,
+      "run_id": "20260703_032149_057915",
+      "input_rows": 375,
+      "output": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_full375_current_head_c033dd97_search_nonlight_result.json",
+      "manifest": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_full375_current_head_c033dd97_search_nonlight_result_manifest.json",
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_ok_count": 12,
+      "mcp_health_required_ok_count": 12,
+      "completed_flushed_pending_failed_at_report": "0/0/0/0",
+      "gate": "IN_PROGRESS / NOT_APPROVAL"
+    },
+    {
+      "name": "loop329_completed_source_bounded1200_current_head_c033dd97_search_nonlight",
+      "pid": 119924,
+      "run_id": "20260703_032149_102775",
+      "input_rows": 1200,
+      "output": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_completed_source_bounded1200_current_head_c033dd97_search_nonlight_result.json",
+      "manifest": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_completed_source_bounded1200_current_head_c033dd97_search_nonlight_result_manifest.json",
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_ok_count": 12,
+      "mcp_health_required_ok_count": 12,
+      "completed_flushed_pending_failed_at_report": "0/0/0/0",
+      "gate": "IN_PROGRESS / NOT_APPROVAL"
+    },
+    {
+      "name": "loop329_golden18_current_head_c033dd97_search_nonlight",
+      "pid": 95980,
+      "run_id": "20260703_032149_034356",
+      "input_rows": 18,
+      "output": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_golden18_current_head_c033dd97_search_nonlight_result.json",
+      "manifest": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_golden18_current_head_c033dd97_search_nonlight_result_manifest.json",
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_ok_count": 2,
+      "mcp_health_required_ok_count": 2,
+      "completed_flushed_pending_failed_at_report": "0/0/0/0",
+      "gate": "APPROVAL_NOT_OPEN"
+    },
+    {
+      "name": "loop329_safe_loss_independent_n5_current_head_c033dd97",
+      "pid": 107596,
+      "planned_runs": 15,
+      "manifest": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop329_safe_loss_independent_n5_run_plan.json",
+      "work_dir": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_safe_loss_independent_n5_plan",
+      "log_dir": "logs\\loop329_safe_loss_independent_n5_plan",
+      "first_marker": "logs\\loop329_safe_loss_independent_n5_plan\\loop329_safe_loss_current_head_c033dd97_11674712_r01_result.marker.log",
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "gate": "RUNNING_BACKGROUND / NOT_ANALYZED"
+    }
+  ],
+  "gates": {
+    "launch_health": "GO_SEARCH_NONLIGHT_INITIAL",
+    "post_patch_single_replay": "RUNNING_BACKGROUND / NOT_ANALYZED",
+    "safe_loss_flip": "RUNNING_BACKGROUND / NOT_ANALYZED",
+    "golden18": "APPROVAL_NOT_OPEN",
+    "full375": "IN_PROGRESS / NOT_APPROVAL",
+    "bounded1200": "IN_PROGRESS / NOT_APPROVAL",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next_actions": [
+    "post-patch 11668283 single replay가 완료되면 Loop328 guard patch의 runtime 효과를 별도 판정한다.",
+    "safe-loss N5가 15/15가 되면 blind judge 기준 flip rate를 분석한다.",
+    "golden18 완료 후 6/28 golden GO 대체 여부를 current HEAD 18행 기준으로만 판단한다.",
+    "full375/bounded1200 완료 전 approval 문구를 쓰지 않는다."
+  ]
+}

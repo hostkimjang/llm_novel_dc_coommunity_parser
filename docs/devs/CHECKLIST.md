@@ -1,5 +1,29 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop329 current HEAD c033dd97 runtime dispatch 체크
+
+- [x] Loop328 guard patch 커밋 뒤 rollback 지점을 확인했다.
+  - commit `c033dd97 fix: allow known exact-title weak source guard`
+- [x] stale Loop314/Loop326 background 프로세스를 중단했다.
+  - stopped root PID `111032`, `75828`, `9908`, `43208`, `106428`, `34796`, `124704`, `73076`
+  - 기존 산출물은 `reference-only / NOT_APPROVAL`
+- [x] 현 HEAD `c033dd97` 기준 새 output 경로로 runtime을 발주했다.
+  - post-patch `11668283` single PID `75828`, run `20260703_032149_031285`, input `1`
+  - full375 PID `3232`, run `20260703_032149_057915`, input `375`
+  - bounded1200 completed-source PID `119924`, run `20260703_032149_102775`, input `1200`
+  - golden18 PID `95980`, run `20260703_032149_034356`, input `18`
+  - safe-loss N5 PID `107596`, planned `15`
+- [x] 초기 health를 확인했다.
+  - post-patch single `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `1/1` OK
+  - full375 `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `12/12` OK
+  - bounded1200 `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `12/12` OK
+  - golden18 `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `2/2` OK
+  - N5 first marker 생성
+- [ ] post-patch `11668283` single replay 완료 전 Loop328 runtime 수렴을 주장하지 않는다.
+- [ ] N5 `15/15` 완료 전 flip rate를 갱신하지 않는다.
+- [ ] full375/bounded/golden18 완료 전 approval 문구를 쓰지 않는다.
+- Gate: launch health `GO_SEARCH_NONLIGHT_INITIAL`, post-patch single/N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, golden18 `APPROVAL_NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop328 known-abbreviation exact-title guard 체크
 
 - [x] Loop327 patch 후 `11668283` targeted runtime replay를 search 포함 non-light로 실행했다.

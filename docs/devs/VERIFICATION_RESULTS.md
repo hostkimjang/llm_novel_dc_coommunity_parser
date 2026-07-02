@@ -1,5 +1,26 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop329 current HEAD c033dd97 runtime dispatch
+
+- 범위: Loop328 guard patch 커밋 `c033dd97` 기준으로 post-patch single replay, safe-loss N5, full375, bounded1200 completed-source, golden18을 새 output 경로에 발주한다.
+- Artifacts:
+  - state `docs\devs\loop329_current_head_c033dd97_runtime_dispatch_20260703.json`
+  - report `docs\devs\loop_reports\LOOP_329_REPORT_20260703.md`
+  - review JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop329_current_head_c033dd97_runtime_dispatch_review.json`
+  - review Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop329_current_head_c033dd97_runtime_dispatch_review.md`
+  - N5 plan `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop329_safe_loss_independent_n5_run_plan.json`
+  - post-patch single manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop329_post_patch_11668283_current_head_c033dd97_result_manifest.json`
+  - full375 manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop329_full375_current_head_c033dd97_search_nonlight_result_manifest.json`
+  - bounded manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop329_completed_source_bounded1200_current_head_c033dd97_search_nonlight_result_manifest.json`
+  - golden18 manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop329_golden18_current_head_c033dd97_search_nonlight_result_manifest.json`
+- Verification:
+  - post-patch single launch health `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `1/1` OK
+  - full375 launch health `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `12/12` OK
+  - bounded1200 launch health `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `12/12` OK
+  - golden18 launch health `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `2/2` OK
+  - N5 plan `15` runs, missing post ids `[]`, first marker 생성
+- Gate: launch health `GO_SEARCH_NONLIGHT_INITIAL`, runtime completion `IN_PROGRESS`, approval `NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop328 known-abbreviation exact-title public guard repair
 
 - 범위: Loop327 patch 후 `11668283` runtime replay에서 드러난 public serializer weak-source overblock을 좁게 수리한다.

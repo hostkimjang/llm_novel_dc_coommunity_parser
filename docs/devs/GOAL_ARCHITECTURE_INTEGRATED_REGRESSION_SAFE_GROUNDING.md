@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop329 Addendum - current HEAD c033dd97 runtime dispatch
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop329는 approval이 아니라 Loop328 guard patch 커밋 뒤 runtime 증거를 현 HEAD `c033dd97` 경로로 재발주한 회차다.
+- 목적: stale Loop314/Loop326 증거를 끊고, post-patch `11668283` single replay, safe-loss N5, full375, bounded1200 completed-source, golden18을 search 포함 non-light로 다시 시작한다.
+- Evidence: report `docs/devs/loop_reports/LOOP_329_REPORT_20260703.md`, state `docs/devs/loop329_current_head_c033dd97_runtime_dispatch_20260703.json`, review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop329_current_head_c033dd97_runtime_dispatch_review.json`.
+- Stale handling: Loop314/Loop326 root PID `111032`, `75828`, `9908`, `43208`, `106428`, `34796`, `124704`, `73076`은 중단했고 기존 산출물은 `reference-only / NOT_APPROVAL`이다.
+- Launch: post-patch single PID `75828`, full375 PID `3232`, bounded1200 PID `119924`, golden18 PID `95980`, safe-loss N5 PID `107596`.
+- Verification: post-patch single `1/1`, full375/bounded `12/12`, golden18 `2/2` launch health OK, N5 first marker 생성. 모두 `mcp_health_include_search=true`, `mcp_health_light_mode=false`다.
+- Gate: launch health `GO_SEARCH_NONLIGHT_INITIAL`, post-patch single/N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, golden18 `APPROVAL_NOT_OPEN`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop328 Addendum - known-abbreviation exact-title public guard repair
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop328은 approval이 아니라 Loop327 patch 후 runtime replay에서 재현된 public serializer overblock을 unit-level guard contract로 수리한 회차다.
