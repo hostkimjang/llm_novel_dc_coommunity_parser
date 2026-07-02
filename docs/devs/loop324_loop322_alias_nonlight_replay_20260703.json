@@ -1,0 +1,140 @@
+{
+  "loop": 324,
+  "date": "2026-07-03",
+  "generated_at": "2026-07-03T01:03:51+09:00",
+  "base_head": "8c4ec326",
+  "scope": "Loop322 alias 7 targeted replay with search-included non-light health",
+  "code_checkpoint": {
+    "commit": "8c4ec326",
+    "subject": "fix: route safe-loss alias bridge through promotion gate",
+    "meaning": "Loop323에서 registry-only alias 계약이 2/7 safe_resolved에 그쳐, known-title abbreviation work bridge를 shared _post_discusses_work_as_work 경유로 묶고 MCP_HEALTH_LIGHT_MODE=0 override를 추가했다."
+  },
+  "runtime": {
+    "run_id": "20260702_235904_452705",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop323_loop322_alias_targeted_input.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop324_loop322_alias_targeted_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop324_loop322_alias_targeted_nonlight_result_manifest.json",
+    "review_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop324_loop322_alias_targeted_nonlight_review.json",
+    "review_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop324_loop322_alias_targeted_nonlight_review.md",
+    "completed": 7,
+    "flushed": 7,
+    "pending": 0,
+    "failed": 0,
+    "large_run_complete": true,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "vlm_ocr_ready": true,
+    "total_time_sec": 3531.6
+  },
+  "comparison": {
+    "loop323": {
+      "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop323_loop322_alias_targeted_result.json",
+      "mcp_health_light_mode": true,
+      "safe_resolved": 2,
+      "note": "Loop323은 targeted replay였지만 light health caveat가 있어 non-light approval evidence가 아니었다."
+    },
+    "loop324": {
+      "safe_resolved": 2,
+      "promotion_blocked": 5,
+      "expected_match": 3,
+      "search_degraded_rows": 5,
+      "movement_counts": {
+        "regressed_from_safe_resolved": 1,
+        "improved_to_safe_resolved": 1,
+        "same": 4,
+        "changed": 1
+      }
+    }
+  },
+  "row_results": [
+    {
+      "post_id": 11708443,
+      "alias": "괴담출근",
+      "expected_title": "괴담에 떨어져도 출근을 해야 하는구나",
+      "loop324_status": "promotion_blocked",
+      "loop324_state": "ocr_explicit_title_unresolved",
+      "movement": "regressed_from_safe_resolved",
+      "search_degraded": 8
+    },
+    {
+      "post_id": 11708470,
+      "alias": "절꺾않",
+      "expected_title": "절대 꺾이지 않을거야!",
+      "loop324_status": "safe_resolved",
+      "loop324_state": "resolved",
+      "movement": "improved_to_safe_resolved",
+      "search_degraded": null
+    },
+    {
+      "post_id": 11710021,
+      "alias": "무마",
+      "expected_title": null,
+      "loop324_status": "promotion_blocked",
+      "loop324_state": "adjacent",
+      "movement": "same",
+      "search_degraded": null
+    },
+    {
+      "post_id": 11710052,
+      "alias": "아카엄창",
+      "expected_title": "아카데미 패드립 면역",
+      "loop324_status": "safe_resolved",
+      "loop324_state": "resolved",
+      "movement": "same",
+      "search_degraded": 10
+    },
+    {
+      "post_id": 11713220,
+      "alias": "성좌안무서움",
+      "expected_title": "나만 성좌들이 안 무서움",
+      "loop324_status": "promotion_blocked",
+      "loop324_state": "ocr_explicit_title_unresolved",
+      "movement": "same",
+      "search_degraded": 12
+    },
+    {
+      "post_id": 11718099,
+      "alias": "빌환",
+      "expected_title": "빌어먹을 환생",
+      "loop324_status": "promotion_blocked",
+      "loop324_state": "ocr_explicit_title_unresolved",
+      "movement": "changed",
+      "search_degraded": 9
+    },
+    {
+      "post_id": 11718110,
+      "alias": "지구온라인",
+      "expected_title": "지구온라인에서 쌀먹합니다",
+      "loop324_status": "promotion_blocked",
+      "loop324_state": "unresolved_matchable",
+      "movement": "same",
+      "search_degraded": 9
+    }
+  ],
+  "verification": [
+    ".venv312/Scripts/python.exe -m unittest tests.test_expert_main_input_loader.ExpertMainInputLoaderTest.test_small_goal_run_health_defaults_to_readyz_only tests.test_expert_main_input_loader.ExpertMainInputLoaderTest.test_health_light_mode_env_can_force_full_probe_for_small_goal_run tests.test_expert_main_input_loader.ExpertMainInputLoaderTest.test_large_validation_keeps_search_health_default_when_not_auto_managed -v -> PASS",
+    ".venv312/Scripts/python.exe -m unittest tests.test_known_title_abbreviation_safe_loss_contract -v -> PASS, 7 tests",
+    ".venv312/Scripts/python.exe -m py_compile expert_main.py src/llm_batch/agentic_pipeline.py tests/test_expert_main_input_loader.py tests/test_known_title_abbreviation_safe_loss_contract.py -> PASS",
+    "pre-commit broader affected suites already passed before checkpoint: regression_safe_work_bridge/known_title_abbreviation_support/arbiter_curated_alias/title_lead_search_inferred/always_on/convergence"
+  ],
+  "background_runs": {
+    "loop314_full375": "RUNNING_BACKGROUND / STALE_PRE_8c4ec326 / NOT_APPROVAL",
+    "loop314_bounded1200": "RUNNING_BACKGROUND / STALE_PRE_8c4ec326 / NOT_APPROVAL",
+    "loop314_n5": "RUNNING_BACKGROUND / STALE_PRE_8c4ec326 / NOT_ANALYZED"
+  },
+  "gates": {
+    "run_integrity": "GO_RUNTIME_COMPLETE_NONLIGHT",
+    "targeted_canary": "NO-GO / 2 safe_resolved of 7",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "search_recovery": "P0 / OPEN / degraded observed",
+    "promotion_blocked_interpretation": "search-blind conditional until degraded recovery",
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next_required": [
+    "search degraded 100% 복구를 P0로 유지한다.",
+    "Loop324 회귀/미해결 행은 residual closure가 아니라 follow-up queue로 유지한다.",
+    "대형 Loop314 full375/bounded/N5는 background 감시로만 두고, 완료돼도 pre-8c4ec326 stale evidence로 태깅한다.",
+    "다음 targeted replay는 parallel=2-3으로 낮춰 tail latency와 debate timeout을 줄인다."
+  ]
+}

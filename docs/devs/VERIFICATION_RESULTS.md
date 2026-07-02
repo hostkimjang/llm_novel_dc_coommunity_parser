@@ -1,5 +1,28 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop324 Loop322 alias non-light replay
+
+- 범위: Loop322 alias 7건을 `8c4ec326` 기준 search 포함 non-light runtime으로 재실행한다.
+- Artifacts:
+  - state `docs\devs\loop324_loop322_alias_nonlight_replay_20260703.json`
+  - report `docs\devs\loop_reports\LOOP_324_REPORT_20260703.md`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop324_loop322_alias_targeted_nonlight_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop324_loop322_alias_targeted_nonlight_result_manifest.json`
+  - review JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop324_loop322_alias_targeted_nonlight_review.json`
+  - review Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop324_loop322_alias_targeted_nonlight_review.md`
+- Verification:
+  - health `mcp_health_include_search=true`, `mcp_health_light_mode=false`
+  - runtime completed/flushed/pending/failed `7/7/0/0`
+  - VLM/OCR semantic gate `READY`
+  - unit tests: expert health override 3 tests PASS, known-title abbreviation safe-loss contract 7 tests PASS, py_compile PASS
+- Result:
+  - `safe_resolved=2/7`
+  - `promotion_blocked=5/7`
+  - `expected_match=3/7`
+  - `search_degraded_rows=5/7`
+  - movement `regressed_from_safe_resolved=1`, `improved_to_safe_resolved=1`, `same=4`, `changed=1`
+- Gate: run integrity `GO_RUNTIME_COMPLETE_NONLIGHT`, targeted canary `NO-GO`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop322 safe-loss alias shared contract
 
 - 범위: Loop321 `repair_safe_loss=76` 중 직접 별칭+작품 소비 cue가 함께 있는 7건을 shared `KNOWN_TITLE_ABBREVIATIONS` 계약으로 올린다.

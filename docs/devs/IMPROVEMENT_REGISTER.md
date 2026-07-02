@@ -1,5 +1,33 @@
 # Improvement Register
 
+## IMP-20260703-324 - Loop322 alias non-light replay NO-GO
+
+- Status: Implemented / runtime complete / semantic no-go
+- Loop: 324
+- Problem:
+  - Loop323 targeted replay는 `mcp_health_light_mode=true`라 search 포함 approval evidence가 아니었다.
+  - Loop322 alias registry/unit contract만으로는 동일 packet safe-resolved 단조 비감소를 증명하지 못했다.
+- Change:
+  - `MCP_HEALTH_LIGHT_MODE=0` override를 추가해 small targeted run도 non-light health로 검증 가능하게 했다.
+  - known-title abbreviation work bridge를 shared `_post_discusses_work_as_work` 경유로 배선했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_324_REPORT_20260703.md`
+  - state `docs/devs/loop324_loop322_alias_nonlight_replay_20260703.json`
+  - result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop324_loop322_alias_targeted_nonlight_result.json`
+  - review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop324_loop322_alias_targeted_nonlight_review.*`
+- Result:
+  - runtime `7/7/0/0`, `mcp_health_include_search=true`, `mcp_health_light_mode=false`
+  - `safe_resolved=2/7`, `promotion_blocked=5/7`
+  - `11708470` improved to safe-resolved
+  - `11708443` regressed from safe-resolved to promotion-blocked
+  - search degraded rows `5/7`
+- Gate:
+  - run integrity `GO_RUNTIME_COMPLETE_NONLIGHT`
+  - targeted canary `NO-GO`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-322 - safe-loss alias shared contract
 
 - Status: Implemented / unit contract only / review locked

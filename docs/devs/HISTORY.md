@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop324 Loop322 alias non-light replay
+
+- 코드 체크포인트 `8c4ec326`에서 known-title abbreviation work bridge를 shared `_post_discusses_work_as_work` 경유로 배선하고 `MCP_HEALTH_LIGHT_MODE=0` override를 추가했다.
+- Loop322 alias 7건을 search 포함 non-light health로 재실행했다.
+- run `20260702_235904_452705`는 completed/flushed/pending/failed `7/7/0/0`, `mcp_health_include_search=true`, `mcp_health_light_mode=false`, VLM/OCR `READY`다.
+- 결과는 `safe_resolved=2/7`, `promotion_blocked=5/7`, expected match `3/7`, search degraded 관측 `5/7`이다.
+- `절꺾않`은 `safe_resolved`로 개선됐지만 `괴담출근`은 safe-resolved에서 promotion-blocked로 회귀했다.
+- `빌환`, `지구온라인`, `성좌안무서움`은 아직 publication 수렴이 아니므로 residual closure로 세지 않는다.
+- Report는 `docs/devs/loop_reports/LOOP_324_REPORT_20260703.md`, state는 `docs/devs/loop324_loop322_alias_nonlight_replay_20260703.json`이다.
+- Gate는 run integrity `GO_RUNTIME_COMPLETE_NONLIGHT`, targeted canary `NO-GO`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop322 safe-loss alias shared contract
 
 - Loop321 `repair_safe_loss=76` 중 7건을 shared known-title abbreviation 계약으로 올렸다.

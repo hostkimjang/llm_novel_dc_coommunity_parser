@@ -1,5 +1,29 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop324 Loop322 alias non-light replay 체크
+
+- [x] 코드 체크포인트 `8c4ec326`을 만들었다.
+  - known-title abbreviation work bridge를 shared `_post_discusses_work_as_work` 경유로 배선했다.
+  - `MCP_HEALTH_LIGHT_MODE=0` override를 추가해 작은 targeted run도 non-light health로 검증 가능하게 했다.
+- [x] Loop322 alias 7건 targeted replay를 search 포함 non-light로 실행했다.
+  - run `20260702_235904_452705`
+  - completed/flushed/pending/failed `7/7/0/0`
+  - `mcp_health_include_search=true`, `mcp_health_light_mode=false`
+  - VLM/OCR `READY`
+- [x] Loop323 대비 전이표를 만들었다.
+  - review JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop324_loop322_alias_targeted_nonlight_review.json`
+  - review Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop324_loop322_alias_targeted_nonlight_review.md`
+- [x] repo-visible 산출물을 기록했다.
+  - state `docs\devs\loop324_loop322_alias_nonlight_replay_20260703.json`
+  - report `docs\devs\loop_reports\LOOP_324_REPORT_20260703.md`
+- [ ] semantic GO로 세지 않는다.
+  - Loop324 `safe_resolved=2/7`, `promotion_blocked=5/7`
+  - `괴담출근`은 Loop323 safe-resolved에서 Loop324 promotion_blocked로 회귀했다.
+  - `빌환`, `지구온라인`, `성좌안무서움`은 아직 publication 수렴이 아니다.
+- [ ] search degraded 100% 복구를 P0로 유지한다.
+- [ ] Loop314 full375/bounded1200/N5는 background 감시만 유지하고, 완료돼도 `8c4ec326` 이전 stale evidence로 태깅한다.
+- Gate: run integrity `GO_RUNTIME_COMPLETE_NONLIGHT`, targeted canary `NO-GO`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop322 safe-loss alias shared contract 체크
 
 - [x] Loop321 `repair_safe_loss=76` 중 직접 별칭+작품 소비 cue가 있는 7건을 shared `KNOWN_TITLE_ABBREVIATIONS`로 올렸다.

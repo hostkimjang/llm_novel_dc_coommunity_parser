@@ -267,6 +267,17 @@
   - 현재 확인: `20260427_121338_563339`, `20260427_143145_922090`에서는 같은 post가 정상 처리되어 재발하지 않음.
   - 완료 기준: 오래된 partial/failed result 파일을 볼 때 false failed인지 최신 rerun에서 회수됐는지 자동 표시하는 audit 리포트 생성
 
+## 2026-07-03 Loop324 alias replay 후속
+
+- [ ] Loop324 targeted canary `NO-GO` 후속 처리
+  - 상태: runtime_complete_semantic_no_go
+  - 근거: run `20260702_235904_452705`, `7/7/0/0`, non-light search health.
+  - 집계: `safe_resolved=2/7`, `promotion_blocked=5/7`, search degraded rows `5/7`.
+  - 개선: `11708470 절꺾않 -> 절대 꺾이지 않을거야!`.
+  - 회귀: `11708443 괴담출근` safe-resolved에서 promotion-blocked로 하락.
+  - 남은 작업: `11708443`, `11718099`, `11718110` publish trace와 final serializer 불일치 검토, `11713220` OCR 문장형 title-role 분리.
+  - 완료 기준: 동일 packet safe_resolved 단조 비감소와 actionable queue 감소가 같이 관측되고, search degraded가 P0에서 해소됨.
+
 ## LLM / 전문가 정성 리뷰
 
 - [ ] LLM 프롬프트/후처리 규칙 일반화 원칙 적용

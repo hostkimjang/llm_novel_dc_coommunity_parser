@@ -2,6 +2,24 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop324 TODO
+
+- 상태 업데이트: Loop322 alias 7건을 `8c4ec326` 기준 search 포함 non-light로 재실행했다. Runtime은 완료됐지만 semantic은 `NO-GO`다.
+- Loop324 TODO:
+  - [x] `MCP_HEALTH_LIGHT_MODE=0` override를 코드/테스트로 추가했다.
+  - [x] Loop324 targeted replay를 완료했다.
+    - run `20260702_235904_452705`
+    - completed/flushed/pending/failed `7/7/0/0`
+    - health `include_search=true`, `light_mode=false`
+  - [x] Loop323 대비 전이표를 생성했다.
+    - `safe_resolved=2/7`, `promotion_blocked=5/7`
+    - 개선 `11708470`, 회귀 `11708443`
+  - [ ] `11708443`, `11718099`, `11718110`은 publish trace와 final serializer 불일치 후보로 재검토한다.
+  - [ ] `11713220`은 OCR 문장형 title-role과 약칭 official detail URL 우선순위 분리로 이동한다.
+  - [ ] search degraded 100% 복구를 P0로 유지한다.
+  - [ ] Loop314 full375/bounded1200/N5는 background 감시만 유지하고 stale evidence로 태깅한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 regression-safe grounding Loop322 TODO
 
 - 상태 업데이트: Loop321 `repair_safe_loss=76` 중 7건을 shared alias unit contract로 올렸다. Goal은 `ACTIVE / NOT_COMPLETE`.

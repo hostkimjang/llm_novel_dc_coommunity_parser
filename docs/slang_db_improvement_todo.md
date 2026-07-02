@@ -1,5 +1,21 @@
 # Slang DB Improvement TODO
 
+## 2026-07-03 Loop324 non-light alias replay / slang caveat
+
+- [x] Loop322 alias 7건을 `8c4ec326` 기준 search 포함 non-light로 재실행했다.
+  - run `20260702_235904_452705`
+  - completed/flushed/pending/failed `7/7/0/0`
+  - `mcp_health_include_search=true`, `mcp_health_light_mode=false`
+- [x] Loop323 light caveat를 대체할 non-light targeted evidence를 만들었다.
+  - 산출물 `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop324_loop322_alias_targeted_nonlight_review.json`
+  - summary `safe_resolved=2/7`, `promotion_blocked=5/7`, search degraded rows `5/7`
+- [x] `절꺾않`은 safe-resolved로 개선됐다.
+- [ ] Loop324는 slang/alias 품질 승인 근거가 아니다.
+  - `괴담출근`은 Loop323 safe-resolved에서 Loop324 promotion_blocked로 회귀했다.
+  - `빌환`, `지구온라인`, `성좌안무서움`은 아직 publication 수렴이 아니다.
+- [ ] Loop314 N5/full375/bounded1200은 background 감시만 유지한다. 완료돼도 `8c4ec326` 이전 stale evidence로 태깅한다.
+- Gate: slang DB write-back 아님, targeted replay `NO-GO`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop322 safe-loss alias contract / slang caveat
 
 - [x] Loop321 `repair_safe_loss=76` 중 7건을 shared `KNOWN_TITLE_ABBREVIATIONS` unit contract로 올렸다.

@@ -1503,3 +1503,17 @@ Loop231 keeps this goal active. It proves Loop230's `11660257` recovery can surv
 - residual accounting: `NO_DELTA_PARENT_REPLAY_AFTER_LOOP230_MIXED_MOVEMENT`
 
 The next architecture step is safe-loss decomposition and promotion-state convergence, not residual decrement. Keep `source_full_completion=OPEN`, `full_panel_collateral_approval=NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, and goal `ACTIVE / NOT_COMPLETE`.
+
+## Loop324 Current Addendum
+
+Loop324 keeps this goal active. It fixed the health-contract gap and proved the targeted replay can run with search-included non-light health, but it did not satisfy the stop condition.
+
+- code checkpoint: `8c4ec326 fix: route safe-loss alias bridge through promotion gate`
+- run `20260702_235904_452705`: completed/flushed/pending/failed `7/7/0/0`, `mcp_health_include_search=true`, `mcp_health_light_mode=false`, VLM/OCR `READY`
+- comparison: Loop324 `safe_resolved=2/7`, `promotion_blocked=5/7`, expected match `3/7`, search degraded rows `5/7`
+- movement: `절꺾않` improved to safe_resolved, but `괴담출근` regressed from safe_resolved to promotion_blocked
+- `빌환`, `지구온라인`, `성좌안무서움` remain unresolved/promotion-blocked; this is not residual closure
+- Loop314 full375/bounded1200/N5 remain background monitoring only and are stale relative to `8c4ec326`
+- artifacts: `docs/devs/loop_reports/LOOP_324_REPORT_20260703.md`, `docs/devs/loop324_loop322_alias_nonlight_replay_20260703.json`
+
+Gate remains: `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, search recovery `P0 / OPEN`, targeted canary `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
