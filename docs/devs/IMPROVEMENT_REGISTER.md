@@ -1,5 +1,32 @@
 # Improvement Register
 
+## IMP-20260703-339 - current HEAD runtime dispatch for stale evidence refresh
+
+- 상태: background 런 발주 완료 / 결과 미완료 / approval 미개방
+- Loop: 339
+- 문제:
+  - 기존 flip/golden evidence가 현 HEAD `77bdbe48` 기준으로 stale 상태였다.
+  - Search degraded recovery가 여전히 `P0 / OPEN`이라 promotion unblock 증거는 search 포함 non-light health 조건에서 다시 수집해야 한다.
+- 변경:
+  - `mcp-bridge-13..25`를 build/recreate했다.
+  - full375, completed-source bounded1200, golden18, safe-loss N5 background 런을 발주했다.
+  - 최초 bounded/golden 발주는 expert log run-id를 공유해 증거에서 제외했다.
+- 근거:
+  - report `docs/devs/loop_reports/LOOP_339_REPORT_20260703.md`
+  - state `docs/devs/loop339_current_head_runtime_dispatch_20260703.json`
+  - N5 plan `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop339_safe_loss_independent_n5_run_plan.json`
+- 결과:
+  - launch/preflight는 `GO`다.
+  - runtime result는 아직 완료 전이다. 보고 시점 full375 `1/1/0/0`, bounded1200 r2 `4/0/4/0`, golden18 r2 `1/1/0/0`, safe-loss N5 `0/15`다.
+  - bounded1200 r2는 `partial_flush_gap=true`, `ordered_flush_blocked=true`라 approval 근거가 아니다.
+  - Golden set은 `18` rows이며 `11660237`, `11698880`을 포함한다.
+- Gate:
+  - active runs `IN_PROGRESS / NOT_APPROVAL`
+  - search recovery `P0 / OPEN`
+  - `promotion_blocked=search-blind conditional`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260703-335 - consumption title-lead alias repair
 
 - Status: Code contract repaired / runtime replay not run / approval not open

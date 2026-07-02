@@ -1,5 +1,18 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop339 current HEAD runtime dispatch
+
+- 현 HEAD `77bdbe48`에서 stale safe-loss flip evidence와 stale 2026-06-28 golden evidence를 갱신하기 위해 search 포함 non-light background 런을 재발주했다.
+- `mcp-bridge-13..25`를 build/recreate했고 ports `3345..3357` health는 OK다.
+- full375는 PID `131976`, run `20260703_071219_478271`로 발주했다.
+- completed-source bounded1200 최초 발주는 golden과 expert log run-id가 충돌해 제외했고, r2 PID `49024`, run `20260703_071356_731873`만 증거 대상으로 추적한다.
+- golden18 최초 발주도 같은 이유로 제외했고, r2 PID `130412`, run `20260703_071359_476753`만 증거 대상으로 추적한다.
+- safe-loss N5는 PID `134636`, plan `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop339_safe_loss_independent_n5_run_plan.json`으로 발주했다. `11674712`, `11660237`, `11698880` 각 5회 반복이다.
+- 작성 시점 manifest/checkpoint는 full375 `1/1/0/0`, bounded1200 r2 `4/0/4/0`, golden18 r2 `1/1/0/0`, safe-loss N5 result `0/15`라 모두 `IN_PROGRESS / NOT_APPROVAL`이다. Bounded는 ordered flush 대기라 approval 근거가 아니다.
+- golden set은 `16 -> 18`이며 `11660237`, `11698880`이 포함되어 있다. 단, current HEAD golden18 완료와 audit 전까지 golden approval은 열리지 않는다.
+- Report는 `docs/devs/loop_reports/LOOP_339_REPORT_20260703.md`, state는 `docs/devs/loop339_current_head_runtime_dispatch_20260703.json`이다.
+- Gate는 search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop336 post-patch runtime replay and sequential manifest contract
 
 - Loop335 패치 뒤 `11705250 / 심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네`를 search 포함 non-light 단건으로 재실행했다.

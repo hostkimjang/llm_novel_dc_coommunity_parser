@@ -1,5 +1,45 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop339 current HEAD runtime dispatch 체크
+
+- [x] 현 HEAD를 확인했다.
+  - HEAD `77bdbe48`
+  - branch `goal/3202-slice-rank1-3`
+- [x] current HEAD runtime용 bridge shard를 준비했다.
+  - `mcp-bridge-13..25` build/recreate
+  - ports `3345..3357`
+  - health OK, `include_search=true`, `light_mode=false`
+- [x] full375를 background로 발주했다.
+  - PID `131976`
+  - run `20260703_071219_478271`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop339_full375_current_head_77bdbe48_search_nonlight_result.json`
+  - 작성 시점 manifest `completed/flushed/pending/failed=1/1/0/0`, result present
+- [x] completed-source bounded1200을 background로 발주했다.
+  - 최초 발주는 golden과 expert log run-id가 충돌해 제외.
+  - r2 PID `49024`
+  - r2 run `20260703_071356_731873`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop339r2_completed_source_bounded1200_current_head_77bdbe48_search_nonlight_result.json`
+  - 작성 시점 manifest `4/0/4/0`, result absent, `partial_flush_gap=true`, `ordered_flush_blocked=true`
+- [x] golden18을 background로 발주했다.
+  - 최초 발주는 bounded와 expert log run-id가 충돌해 제외.
+  - r2 PID `130412`
+  - r2 run `20260703_071359_476753`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop339r2_golden18_current_head_77bdbe48_search_nonlight_result.json`
+  - 작성 시점 manifest `1/1/0/0`, result present
+- [x] safe-loss N5 plan을 작성하고 runner를 background로 발주했다.
+  - PID `134636`
+  - plan `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop339_safe_loss_independent_n5_run_plan.json`
+  - target rows `11674712`, `11660237`, `11698880`
+  - repeats `5/5/5`, planned rows `15`
+  - 작성 시점 result `0/15`
+- [x] golden/bootstrap 추적 상태를 확인했다.
+  - golden set `16 -> 18`
+  - `11660237`, `11698880` 포함
+  - golden files와 bootstrap/helper tools는 git 추적 대상
+- [ ] Loop339 런 완료와 audit 전에는 approval 문구를 쓰지 않는다.
+- [ ] search degraded 100% recovery, 특히 `unrecovered_degraded=0`을 확인한다.
+- [x] Keep `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop338 live shard search recovery canary 체크
 
 - [x] Loop337 코드를 live shard 1에 적용했다.

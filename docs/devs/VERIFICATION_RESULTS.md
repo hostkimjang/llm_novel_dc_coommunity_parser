@@ -1,5 +1,29 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop339 current HEAD runtime dispatch
+
+- 범위: 현 HEAD `77bdbe48`에서 stale safe-loss flip evidence와 stale golden evidence를 갱신하기 위해 search 포함 non-light background 런을 발주한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_339_REPORT_20260703.md`
+  - state `docs\devs\loop339_current_head_runtime_dispatch_20260703.json`
+  - full375 manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop339_full375_current_head_77bdbe48_search_nonlight_result_manifest.json`
+  - bounded1200 r2 manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop339r2_completed_source_bounded1200_current_head_77bdbe48_search_nonlight_result_manifest.json`
+  - golden18 r2 manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop339r2_golden18_current_head_77bdbe48_search_nonlight_result_manifest.json`
+  - safe-loss N5 plan `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop339_safe_loss_independent_n5_run_plan.json`
+- Evidence:
+  - `mcp-bridge-13..25` rebuilt/recreated; ports `3345..3357` health OK with `include_search=true`, `light_mode=false`.
+  - full375 PID `131976`, run `20260703_071219_478271`.
+  - completed-source bounded1200 r2 PID `49024`, run `20260703_071356_731873`.
+  - golden18 r2 PID `130412`, run `20260703_071359_476753`.
+  - safe-loss N5 PID `134636`, planned rows `15`, repeats `5/5/5` for `11674712`, `11660237`, `11698880`.
+  - 최초 bounded/golden 발주는 expert log run-id 충돌로 제외했다.
+- Snapshot:
+  - full375 manifest `completed/flushed/pending/failed=1/1/0/0`, result present, `large_run_complete=false`.
+  - bounded1200 r2 manifest `4/0/4/0`, result absent, `partial_flush_gap=true`, `ordered_flush_blocked=true`.
+  - golden18 r2 manifest `1/1/0/0`, result present, `large_run_complete=false`.
+  - safe-loss N5 completed result `0/15`.
+- Gate: launch/preflight `GO`, completion `IN_PROGRESS`, approval `NOT_APPROVAL`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop338 live shard search recovery canary
 
 - 범위: Loop337 recovery 계약을 실제 shard 1 `mcp-bridge` 이미지에 적용한 뒤 `11705250` search 포함 non-light 단건 replay를 실행한다.

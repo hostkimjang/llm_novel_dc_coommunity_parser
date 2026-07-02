@@ -1,0 +1,126 @@
+{
+  "loop": 339,
+  "date": "2026-07-03",
+  "head": "77bdbe48",
+  "branch": "goal/3202-slice-rank1-3",
+  "status": "ACTIVE / NOT_COMPLETE",
+  "purpose": "현 HEAD에서 stale flip/golden evidence를 갱신하기 위해 search 포함 non-light full375, completed-source bounded1200, golden18, safe-loss N5를 background로 재발주한다.",
+  "important_boundary": {
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "promotion_blocked_tag": "search-blind conditional",
+    "search_recovery_gate": "P0 / OPEN",
+    "approval_statement": "발주는 승인 근거가 아니며, full375/bounded/golden/N5 완료와 search unrecovered_degraded=0 확인 전까지 approval은 닫혀 있다."
+  },
+  "current_head_runtime_dispatch": {
+    "mcp_bridges": {
+      "rebuilt_and_recreated": [
+        "mcp-bridge-13",
+        "mcp-bridge-14",
+        "mcp-bridge-15",
+        "mcp-bridge-16",
+        "mcp-bridge-17",
+        "mcp-bridge-18",
+        "mcp-bridge-19",
+        "mcp-bridge-20",
+        "mcp-bridge-21",
+        "mcp-bridge-22",
+        "mcp-bridge-23",
+        "mcp-bridge-24",
+        "mcp-bridge-25"
+      ],
+      "ports": "3345-3357",
+      "container_code_probe": "warp-shards-mcp-bridge-13-1 contains fallback_recovered under /app/src/llm_batch/mcp_bridge/server.py",
+      "health": "OK, include_search=true, light_mode=false"
+    },
+    "aborted_runs": [
+      {
+        "name": "loop339_completed_source_bounded1200_current_head_77bdbe48_search_nonlight",
+        "pid": 126256,
+        "reason": "bounded와 golden 최초 발주가 같은 expert log run-id를 공유해 로그가 혼합될 수 있으므로 증거에서 제외했다."
+      },
+      {
+        "name": "loop339_golden18_current_head_77bdbe48_search_nonlight",
+        "pid": 72320,
+        "reason": "bounded와 golden 최초 발주가 같은 expert log run-id를 공유해 로그가 혼합될 수 있으므로 증거에서 제외했다."
+      }
+    ],
+    "active_background_runs": [
+      {
+        "name": "full375_current_head",
+        "pid": 131976,
+        "run_id": "20260703_071219_478271",
+        "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/panel/regression_panel_input.jsonl",
+        "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop339_full375_current_head_77bdbe48_search_nonlight_result.json",
+        "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop339_full375_current_head_77bdbe48_search_nonlight_result_manifest.json",
+        "log": "logs/loop339_full375_current_head_77bdbe48_search_nonlight_combined.log",
+        "endpoints": "http://127.0.0.1:3351-3354",
+        "snapshot": "alive=true, completed=1, flushed=1, pending=0, failed=0, large_run_complete=false, result_exists=true"
+      },
+      {
+        "name": "completed_source_bounded1200_current_head_r2",
+        "pid": 49024,
+        "run_id": "20260703_071356_731873",
+        "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop288_completed_source_bounded1200_input.jsonl",
+        "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop339r2_completed_source_bounded1200_current_head_77bdbe48_search_nonlight_result.json",
+        "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop339r2_completed_source_bounded1200_current_head_77bdbe48_search_nonlight_result_manifest.json",
+        "log": "logs/loop339r2_completed_source_bounded1200_current_head_77bdbe48_search_nonlight_combined.log",
+        "endpoints": "http://127.0.0.1:3345-3350",
+        "snapshot": "alive=true, completed=4, flushed=0, pending=4, failed=0, large_run_complete=false, partial_flush_gap=true, ordered_flush_blocked=true, result_exists=false"
+      },
+      {
+        "name": "golden18_current_head_r2",
+        "pid": 130412,
+        "run_id": "20260703_071359_476753",
+        "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl",
+        "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop339r2_golden18_current_head_77bdbe48_search_nonlight_result.json",
+        "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop339r2_golden18_current_head_77bdbe48_search_nonlight_result_manifest.json",
+        "log": "logs/loop339r2_golden18_current_head_77bdbe48_search_nonlight_combined.log",
+        "endpoints": "http://127.0.0.1:3355-3356",
+        "snapshot": "alive=true, completed=1, flushed=1, pending=0, failed=0, large_run_complete=false, result_exists=true"
+      },
+      {
+        "name": "safe_loss_independent_n5_current_head",
+        "pid": 134636,
+        "plan": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop339_safe_loss_independent_n5_run_plan.json",
+        "work_dir": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop339_safe_loss_independent_n5_plan",
+        "log_dir": "logs/loop339_safe_loss_independent_n5_plan",
+        "endpoints": "http://127.0.0.1:3357",
+        "planned_rows": 15,
+        "repeat_count_by_post_id": {
+          "11674712": 5,
+          "11660237": 5,
+          "11698880": 5
+        },
+        "snapshot": "alive=true, completed_result_json=0/15"
+      }
+    ]
+  },
+  "golden_and_bootstrap_tracking": {
+    "golden_rows": 18,
+    "included_new_rows": [
+      "11660237",
+      "11698880"
+    ],
+    "tracked_paths": [
+      "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl",
+      "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json",
+      "tools/bootstrap_regression_safe_grounding.py",
+      "tools/build_golden_regression_set.py",
+      "tools/run_independent_plan.py",
+      "tools/build_completed_source_candidate_audit.py",
+      "tools/build_goal_action_queue.py"
+    ]
+  },
+  "stale_evidence_policy": {
+    "old_loop329_c033dd97_runs": "background/reference-only; current HEAD approval evidence로 쓰지 않는다.",
+    "stale_flip_rate_0_333": "Loop339 N5 완료 전까지 갱신 전 증거로만 취급한다.",
+    "stale_2026_06_28_golden_go": "Loop339 golden18 완료와 audit 전까지 승인 근거가 아니다."
+  },
+  "next_gate": [
+    "Loop339 active background run completion을 감시한다.",
+    "search_degraded 100% recovery, 특히 unrecovered_degraded=0을 확인한다.",
+    "N5 flip probe가 진동하면 safe loss가 아니라 nondeterminism_unresolved로 유지한다.",
+    "코드 변경 없는 대기 회차가 반복되면 large run은 background 유지, active loop는 collateral183 repair queue 또는 OVERRIDE AUDIT blind judge로 전환한다."
+  ]
+}

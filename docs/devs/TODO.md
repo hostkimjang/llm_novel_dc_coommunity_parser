@@ -2,6 +2,30 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop339 TODO
+
+- 상태 업데이트: 현 HEAD `77bdbe48`에서 full375, completed-source bounded1200, golden18, safe-loss N5를 search 포함 non-light background로 재발주했다. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop339 TODO:
+  - [x] stale `c033dd97`/old golden evidence와 current HEAD evidence를 분리했다.
+  - [x] `mcp-bridge-13..25`를 build/recreate하고 search 포함 health를 확인했다.
+  - [x] full375를 발주했다.
+    - PID `131976`, run `20260703_071219_478271`
+  - [x] completed-source bounded1200을 r2로 재발주했다.
+    - 최초 발주는 expert log run-id 충돌로 제외.
+    - r2 PID `49024`, run `20260703_071356_731873`
+  - [x] golden18을 r2로 재발주했다.
+    - 최초 발주는 expert log run-id 충돌로 제외.
+    - r2 PID `130412`, run `20260703_071359_476753`
+  - [x] safe-loss N5 plan을 작성하고 runner를 발주했다.
+    - PID `134636`
+    - plan `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop339_safe_loss_independent_n5_run_plan.json`
+    - `11674712`, `11660237`, `11698880` each `N=5`
+  - [x] golden set `16 -> 18`, `11660237`/`11698880` 포함 상태와 git 추적 상태를 확인했다.
+  - [ ] full375/bounded1200/golden18/N5 완료 후 current HEAD audit를 작성한다.
+  - [ ] `unrecovered_degraded=0` 전에는 search recovery를 닫지 않는다.
+  - [ ] N5 진동 row는 safe loss가 아니라 `nondeterminism_unresolved`로 유지한다.
+  - [x] Keep `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop335 TODO
 
 - 상태 업데이트: Loop334 `11705250` false negative의 직접 원인이던 consumption title-lead alias 추출 누락을 코드 계약으로 수리했다. Goal은 `ACTIVE / NOT_COMPLETE`.

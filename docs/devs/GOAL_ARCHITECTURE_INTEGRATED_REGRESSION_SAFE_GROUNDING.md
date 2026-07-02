@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop339 Addendum - current HEAD runtime dispatch
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop339는 approval 회차가 아니라 현 HEAD `77bdbe48`에서 stale flip/golden 증거를 갱신하기 위한 background runtime 재발주 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_339_REPORT_20260703.md`, state `docs/devs/loop339_current_head_runtime_dispatch_20260703.json`.
+- Runtime: `mcp-bridge-13..25`를 build/recreate했고 ports `3345..3357` health는 search 포함 non-light 조건에서 OK다. Active runs는 full375 PID `131976` run `20260703_071219_478271`, bounded1200 r2 PID `49024` run `20260703_071356_731873`, golden18 r2 PID `130412` run `20260703_071359_476753`, safe-loss N5 PID `134636`이다.
+- Caveat: 최초 bounded/golden 발주는 expert log run-id 충돌로 증거에서 제외했다. 작성 시점 manifest/checkpoint는 full375 `1/1/0/0`, bounded1200 r2 `4/0/4/0`, golden18 r2 `1/1/0/0`, safe-loss N5 `0/15`다. Bounded는 ordered flush 대기라 approval 근거가 아니다.
+- Golden: golden set은 `16 -> 18`이고 `11660237`, `11698880`을 포함한다. 단, current HEAD golden18 완료와 audit 전까지 golden approval은 열리지 않는다.
+- Gate: all runs `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop338 Addendum - live shard search recovery canary
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop338은 approval 회차가 아니라 Loop337 search recovery 코드를 live shard에 적용하고 단건 runtime canary로 검증한 회차다.
