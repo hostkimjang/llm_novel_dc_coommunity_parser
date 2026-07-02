@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop319 OVERRIDE AUDIT quality gate
+
+- 근거:
+  - [x] `11708445` completed row를 result/checkpoint에서 확인했다.
+  - [x] worker log의 `LLM=False -> final=True` 이벤트를 final result contract와 분리했다.
+  - [x] public title/url이 `null/null`이고 `candidate_only / promotion_blocked`로 수렴했음을 확인했다.
+  - [x] blind verdict `ACCEPT / candidate_only_block_is_correct`를 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_319_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] 내부 override event를 public publish approval로 쓰지 않는다.
+  - [x] 104k background light run을 full-scan approval 근거로 쓰지 않는다.
+  - [x] search degraded가 남은 row는 `search-blind conditional`로 태깅한다.
+  - [x] reason hygiene forbidden marker hit `0`을 확인했다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop318 safe-loss source-native quality gate
 
 - 근거:

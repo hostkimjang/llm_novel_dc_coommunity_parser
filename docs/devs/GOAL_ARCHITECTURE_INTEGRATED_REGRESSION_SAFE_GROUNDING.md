@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop319 Addendum - OVERRIDE AUDIT 11708445
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop319는 approval이 아니라 `OVERRIDE AUDIT(LLM=False->final=True)` 행의 public publish 누출 여부를 확인한 row-level 계약 검증 회차다.
+- 목적: 코드 변경 없는 대형 run 감시/문서 회차가 반복되면 ordinary residual reduction만 계속하지 않고, override audit flip row를 blind/source-native로 확인한다.
+- Evidence: review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop319_override_audit_11708445_review.json`, state `docs/devs/loop319_override_audit_11708445_20260702.json`, report `docs/devs/loop_reports/LOOP_319_REPORT_20260702.md`.
+- Result: `11708445`는 final public contract에서 `official_title=null`, `official_url=null`, `candidate_ledger_status=promotion_blocked`, `promotion_decision.status=candidate_only`, `publish_allowed=false`, `candidate_preserved=true`, `bypassed_gate=false`로 수렴했다. Blind verdict는 `ACCEPT / candidate_only_block_is_correct`다.
+- Background: Loop314 N5 `2/15`, full375 `21/17/4/0`, bounded1200 `30/19/11/0`, golden18 `8/7/1/0`; 모두 approval 근거가 아니다.
+- Gate: override audit `GO_ROW_CONTRACT_ONLY`, runtime source `BACKGROUND_LIGHT_RUN_NOT_APPROVAL`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop318 Addendum - safe-loss source-native next slice
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop318은 approval이 아니라 Loop301 `safe_loss_resolved_to_null` residual queue를 `89/147`에서 `104/147`로 넓힌 source-native review 회차다.

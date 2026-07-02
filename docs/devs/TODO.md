@@ -2,6 +2,19 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop319 TODO
+
+- 상태 업데이트: `OVERRIDE AUDIT(LLM=False->final=True)` frontier row `11708445`를 blind/source-native로 검증했다. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop319 TODO:
+  - [x] 104k background light run result에서 `11708445` completed row를 확인했다.
+  - [x] 최종 public contract가 `candidate_only / promotion_blocked / publish_allowed=false`임을 확인했다.
+  - [x] Blind verdict `ACCEPT / candidate_only_block_is_correct`를 기록했다.
+  - [x] reason hygiene forbidden marker hit `0`을 확인했다.
+  - [ ] `11708445`는 code repair queue로 올리지 않는다.
+  - [ ] Search degraded가 남아 있으므로 이 row를 approval 근거로 쓰지 않는다.
+  - [ ] N5 result JSON `15/15` 완료 후 current HEAD flip rate를 갱신한다. 현재 Loop314 result JSON `2/15`.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 regression-safe grounding Loop318 TODO
 
 - 상태 업데이트: `safe_loss_resolved_to_null` source-native review가 `104/147`까지 진행됐다. Goal은 `ACTIVE / NOT_COMPLETE`.
@@ -15,7 +28,7 @@
   - [ ] `repair_safe_loss=53` 중 일반화 가능한 alias/title/character bridge를 shared gate 또는 targeted runtime replay로 전환한다.
   - [ ] `HOLD=23`은 native image/web/source/scope/publish-trace 확인 전까지 닫지 않는다.
   - [ ] 남은 미검토 `43` row를 계속 source-native/blind judge로 줄인다.
-  - [ ] N5 result JSON `15/15` 완료 후 current HEAD flip rate를 갱신한다. 현재 Loop314 result JSON `1/15`.
+  - [ ] N5 result JSON `15/15` 완료 후 current HEAD flip rate를 갱신한다. 현재 Loop314 result JSON `2/15`.
   - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-02 regression-safe grounding Loop317 TODO

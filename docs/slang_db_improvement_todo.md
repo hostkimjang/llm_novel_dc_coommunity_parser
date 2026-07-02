@@ -9,7 +9,7 @@
 - [x] `버거피아` 이벤트, Re:Zero 캐릭터 페이지, `타락` generic 추천어, `스페이스 오페라` wrong-title은 slang/alias registry repair로 세지 않았다.
 - [x] `11698880`은 `가챠펑크` bridge가 있어도 known variance/secondary comparison control이라 registry write-back이나 hard-hold 완화 근거로 쓰지 않는다.
 - [ ] `repair_safe_loss=53` 중 slang/alias registry로 일반화 가능한 항목만 shared gate/runtime replay 후보로 올린다.
-- [ ] N5 result JSON `15/15` 완료 후 slang/alias 안정성 caveat를 새 flip 분석으로 갱신한다. 현재 Loop314 `1/15`.
+- [ ] N5 result JSON `15/15` 완료 후 slang/alias 안정성 caveat를 새 flip 분석으로 갱신한다. 현재 Loop314 `2/15`.
 - Gate: slang DB write-back 아님, source-native review `REVIEW-LOCKED / PARTIAL`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
 
 ## 2026-07-02 Loop317 safe-loss source-native / slang caveat
@@ -21,7 +21,7 @@
 - [x] `류서란(perfect)`는 로컬 character bridge 근거가 없어 slang/alias registry repair가 아니라 HOLD로 유지했다.
 - [x] `혼후순결` plot element, `유희왕` generic franchise row는 alias/slang repair로 세지 않았다.
 - [ ] `repair_safe_loss=48` 중 slang/alias registry로 일반화 가능한 항목만 shared gate/runtime replay 후보로 올린다.
-- [ ] N5 result JSON `15/15` 완료 후 slang/alias 안정성 caveat를 새 flip 분석으로 갱신한다. 현재 Loop314 `1/15`.
+- [ ] N5 result JSON `15/15` 완료 후 slang/alias 안정성 caveat를 새 flip 분석으로 갱신한다. 현재 Loop314 `2/15`.
 - Gate: slang DB write-back 아님, source-native review `REVIEW-LOCKED / PARTIAL`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
 
 ## 2026-07-02 Loop316 safe-loss source-native / slang caveat
@@ -41,7 +41,7 @@
 - [x] 현 HEAD `64864278` 기준 N5/golden18/full375/bounded1200을 새 경로로 발주했다.
 - [x] golden18은 계속 rows `18`이고 `11660237`, `11698880`을 포함한다.
 - [x] 새 full375/bounded/golden18/N5 first manifest는 `mcp_health_include_search=true`, `mcp_health_light_mode=false`다.
-- [ ] N5 result JSON `15/15` 완료 후 slang/alias 안정성 caveat를 새 flip 분석으로 갱신한다. 현재 Loop314 `0/15`.
+- [ ] N5 result JSON `15/15` 완료 후 slang/alias 안정성 caveat를 새 flip 분석으로 갱신한다. 현재 Loop314 `2/15`.
 - [ ] golden18 완료 후 6/28 golden GO를 현 HEAD 18행 기준으로 대체 가능한지 다시 판단한다.
 - Gate: slang DB write-back 아님, N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`, golden18 approval `NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
 
@@ -52,7 +52,7 @@
 - [x] `전독시 영화 나왔었지` 같은 adaptation 논의를 work-cue로 인정했다.
 - [x] `악신총애`는 동음 후보 위험 때문에 slang/alias registry 추가를 보류했다.
 - [x] `회귀수선전`은 Loop315에서 character-setting bridge 계약 테스트로 고정했다. slang/alias registry write-back은 하지 않는다.
-- [ ] N5 result JSON `15/15` 완료 후 slang/alias 안정성 caveat를 새 flip 분석으로 갱신한다. 현재 `1/15`.
+- [ ] N5 result JSON `15/15` 완료 후 slang/alias 안정성 caveat를 새 flip 분석으로 갱신한다. 현재 Loop314 `2/15`.
 - Gate: slang DB write-back 아님, code/unit contract `GO_UNIT`, runtime replay `NOT_RUN`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
 
 ## 2026-07-02 Loop312 safe-loss source-native / slang caveat

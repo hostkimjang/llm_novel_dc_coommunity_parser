@@ -1,0 +1,52 @@
+{
+  "loop": 319,
+  "date": "2026-07-02",
+  "head": "491fc6cc",
+  "scope": "OVERRIDE AUDIT LLM=False->final=True released-row blind/source-native verification",
+  "target_post_id": 11708445,
+  "target_title": "퉁구스1캇햄 작품 하나도 안 봤는데",
+  "source_run": "20260702_065642_030743",
+  "artifacts": {
+    "review_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop319_override_audit_11708445_review.json",
+    "review_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop319_override_audit_11708445_review.md",
+    "result_json": "out/expert_result_20260702_065632_479765.json",
+    "checkpoint": "out/expert_result_20260702_065632_479765_checkpoint.jsonl",
+    "worker_log": "logs/expert_run_20260702_065642_030743_W24.log",
+    "report": "docs/devs/loop_reports/LOOP_319_REPORT_20260702.md"
+  },
+  "verdict": {
+    "label": "ACCEPT",
+    "source_native_verdict": "candidate_only_block_is_correct",
+    "evidence_grade": "Medium",
+    "rationale_ko": "작가/닉네임성 대상에 대한 메타 품평과 댓글의 부차 작품 추천이 섞인 행이라 `제냥꾼`을 public title로 publish하지 않고 후보만 보존한 것이 정당하다."
+  },
+  "observed_public_contract": {
+    "official_title": null,
+    "official_url": null,
+    "candidate_ledger_status": "promotion_blocked",
+    "safe_resolved": false,
+    "promotion_decision_status": "candidate_only",
+    "publish_allowed": false,
+    "candidate_preserved": true,
+    "bypassed_gate": false
+  },
+  "reason_hygiene": {
+    "forbidden_marker_hits": 0,
+    "gate": "GO_ROW_HYGIENE_ONLY"
+  },
+  "loop314_background_snapshot": {
+    "safe_loss_n5": "2/15",
+    "full375_completed_flushed_pending_failed": "21/17/4/0",
+    "bounded1200_completed_flushed_pending_failed": "30/19/11/0",
+    "golden18_completed_flushed_pending_failed": "8/7/1/0"
+  },
+  "gates": {
+    "override_audit": "GO_ROW_CONTRACT_ONLY",
+    "runtime_source": "BACKGROUND_LIGHT_RUN_NOT_APPROVAL",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

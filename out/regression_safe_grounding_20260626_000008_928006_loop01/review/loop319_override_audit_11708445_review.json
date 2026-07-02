@@ -1,0 +1,147 @@
+{
+  "report_type": "override_audit_blind_judge_review",
+  "loop": 319,
+  "date": "2026-07-02",
+  "current_head": "491fc6cc",
+  "scope": "OVERRIDE AUDIT LLM=False->final=True released-row blind/source-native verification",
+  "target_post_id": 11708445,
+  "target_title": "퉁구스1캇햄 작품 하나도 안 봤는데",
+  "source_run": {
+    "run_id": "20260702_065642_030743",
+    "result_json": "out/expert_result_20260702_065632_479765.json",
+    "checkpoint": "out/expert_result_20260702_065632_479765_checkpoint.jsonl",
+    "manifest": "out/expert_result_20260702_065632_479765_manifest.json",
+    "worker_log": "logs/expert_run_20260702_065642_030743_W24.log",
+    "note": "104k background light run evidence; not a current full-scan approval source"
+  },
+  "input_source": {
+    "title": "퉁구스1캇햄 작품 하나도 안 봤는데",
+    "content": [
+      "념글 ㄹㅇ 대호감인데?",
+      "직업에 자부심을 가지고 떳떳한 인생을 살아왔다는 게 글에서 보이네",
+      "이런 게 진짜 씹상남자지(penis아님)",
+      "어디 쥐새끼마냥 '이근 븝즉으르 은 글르그든여?'",
+      "이런 애랑은 걍 차원이 다르네 ㅇㅇ;"
+    ],
+    "comments": [
+      "제냥꾼 함 무바라 호불호 갈리긴하는데 취향 맞으면 그만한게 없다",
+      "ㅇㅋㅇㅋ ㅋㅋ"
+    ]
+  },
+  "observed_result": {
+    "is_relevant": false,
+    "is_novel_related": true,
+    "is_resolved_work_discussion": false,
+    "discussion_type": "author_talk",
+    "work_resolution": "none",
+    "title_resolution_state": "author_new_work_context",
+    "title_resolution_allowed": false,
+    "candidate_ledger_status": "promotion_blocked",
+    "safe_resolved": false,
+    "promotion_blocked": true,
+    "blocked_official_title": "제냥꾼",
+    "candidate_audit_lint": [
+      "llm_only_sentence_candidate_pruned"
+    ],
+    "promotion_decision": {
+      "status": "candidate_only",
+      "publish_allowed": false,
+      "official_title": null,
+      "official_url": null,
+      "candidate_preserved": true,
+      "reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "bypassed_gate": false
+    },
+    "publish_contract_trace": {
+      "pre_gate_candidate": {
+        "official_title": "제냥꾼",
+        "official_url": null,
+        "source": "candidate_ledger_or_serialized_identity"
+      },
+      "post_gate_identity": {
+        "official_title": null,
+        "official_url": null,
+        "title_resolution_allowed": false,
+        "title_resolution_state": "author_new_work_context",
+        "work_resolution": "none",
+        "candidate_ledger_status": "promotion_blocked"
+      },
+      "bypassed_gate": false
+    },
+    "search_health": {
+      "queries_issued": 10,
+      "degraded": 10,
+      "degraded_zero": 5,
+      "status": "SEARCH_DEGRADED"
+    }
+  },
+  "blind_verdict": {
+    "label": "ACCEPT",
+    "source_native_verdict": "candidate_only_block_is_correct",
+    "evidence_grade": "Medium",
+    "rationale_ko": "원문은 작품을 읽은 감상보다 `퉁구스1캇햄`이라는 작가/닉네임성 대상에 대한 메타 품평이고, 댓글의 `제냥꾼`은 추천성 부차 참조다. 따라서 단일 공식 작품 제목을 public publish하지 않고 `제냥꾼` 후보만 보존한 `candidate_only / promotion_blocked` 수렴이 정당하다.",
+    "action": [
+      "no_code_change_required_for_11708445",
+      "keep_candidate_only_public_identity_null",
+      "do_not_count_as_safe_resolved",
+      "search_degraded_followup_required"
+    ]
+  },
+  "reason_hygiene": {
+    "forbidden_marker_hits": {
+      "LLM(False)": false,
+      "LLM=False": false,
+      "최종(True)": false,
+      "seed 후보(": false,
+      "작품 seed 제외": false,
+      "최종 판정은 관련 포스트": false
+    },
+    "gate": "GO_ROW_HYGIENE_ONLY"
+  },
+  "loop314_background_snapshot": {
+    "interpretation": "partial background progress only; not approval evidence",
+    "safe_loss_n5": {
+      "pid": 111032,
+      "process": "running",
+      "result_json_count": "2/15",
+      "gate": "RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD"
+    },
+    "full375": {
+      "pid": 75828,
+      "completed_flushed_pending_failed": "21/17/4/0",
+      "include_search": true,
+      "light_mode": false,
+      "gate": "IN_PROGRESS / NOT_APPROVAL"
+    },
+    "bounded_completed_source": {
+      "pid": 9908,
+      "completed_flushed_pending_failed": "30/19/11/0",
+      "include_search": true,
+      "light_mode": false,
+      "gate": "IN_PROGRESS / NOT_APPROVAL"
+    },
+    "golden18": {
+      "pid": 43208,
+      "completed_flushed_pending_failed": "8/7/1/0",
+      "include_search": true,
+      "light_mode": false,
+      "gate": "APPROVAL_NOT_OPEN"
+    }
+  },
+  "gates": {
+    "override_audit": "GO_ROW_CONTRACT_ONLY",
+    "runtime_source": "BACKGROUND_LIGHT_RUN_NOT_APPROVAL",
+    "safe_loss_n5": "RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD",
+    "full375": "IN_PROGRESS / NOT_APPROVAL",
+    "bounded_completed_source": "IN_PROGRESS / NOT_APPROVAL",
+    "golden18": "APPROVAL_NOT_OPEN",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

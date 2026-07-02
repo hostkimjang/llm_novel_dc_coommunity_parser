@@ -1,5 +1,36 @@
 # Improvement Register
 
+## IMP-20260702-319 - OVERRIDE AUDIT 11708445 blind/source-native
+
+- Status: Implemented / row contract only / review locked
+- Loop: 319
+- Problem:
+  - Loop287에서 `11708445`가 `OVERRIDE AUDIT post_id=11708445: LLM=False -> final=True` frontier로 남아 있었고, 이후 실제 result row에서 public title로 과승격됐는지 확인이 필요했다.
+  - 코드 변경 없는 대형 run 감시/문서 회차가 반복되어 ordinary residual reduction 대신 override audit 행 검증으로 전환해야 했다.
+- Change:
+  - `11708445` completed row를 result/checkpoint에서 직접 확인했다.
+  - final public contract와 candidate ledger/publish trace를 blind/source-native로 판정했다.
+  - reason hygiene forbidden marker 검출 여부를 확인했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_319_REPORT_20260702.md`
+  - state `docs/devs/loop319_override_audit_11708445_20260702.json`
+  - review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop319_override_audit_11708445_review.json`
+  - source result `out/expert_result_20260702_065632_479765.json`
+- Result:
+  - verdict `ACCEPT / candidate_only_block_is_correct`
+  - public title/url `null/null`
+  - `candidate_ledger_status=promotion_blocked`
+  - `promotion_decision.status=candidate_only`
+  - `publish_allowed=false`
+  - `bypassed_gate=false`
+  - reason hygiene forbidden marker hit `0`
+- Gate:
+  - override audit `GO_ROW_CONTRACT_ONLY`
+  - runtime source `BACKGROUND_LIGHT_RUN_NOT_APPROVAL`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-318 - safe-loss source-native next slice
 
 - Status: Implemented / partial review locked

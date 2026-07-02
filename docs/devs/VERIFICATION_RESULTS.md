@@ -1,5 +1,29 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop319 OVERRIDE AUDIT 11708445 blind/source-native
+
+- 범위: `OVERRIDE AUDIT post_id=11708445: LLM=False -> final=True` 이벤트가 public title publish로 누출됐는지 result row 기준으로 검증한다.
+- Artifacts:
+  - review JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop319_override_audit_11708445_review.json`
+  - review Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop319_override_audit_11708445_review.md`
+  - state `docs\devs\loop319_override_audit_11708445_20260702.json`
+  - report `docs\devs\loop_reports\LOOP_319_REPORT_20260702.md`
+- Verification:
+  - result row 직접 추출: `post_id=11708445`
+  - checkpoint 직접 확인: `global_idx=355`, `post_id=11708445`, `status=completed`
+  - final public contract: `official_title=null`, `official_url=null`, `candidate_ledger_status=promotion_blocked`, `publish_allowed=false`, `bypassed_gate=false`
+  - reason hygiene forbidden marker hit `0`
+- Blind verdict:
+  - label `ACCEPT`
+  - source-native verdict `candidate_only_block_is_correct`
+  - evidence grade `Medium`
+- Background snapshot:
+  - N5 `2/15`, `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`
+  - full375 `21/17/4/0`, `IN_PROGRESS / NOT_APPROVAL`
+  - bounded1200 `30/19/11/0`, `IN_PROGRESS / NOT_APPROVAL`
+  - golden18 `8/7/1/0`, `APPROVAL_NOT_OPEN`
+- Gate: override audit `GO_ROW_CONTRACT_ONLY`, runtime source `BACKGROUND_LIGHT_RUN_NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop318 safe-loss source-native 다음 slice
 
 - 범위: Loop301 `safe_loss_resolved_to_null=147` 중 Loop317 이후 미검토분 15건을 추가 source-native review로 판정한다.

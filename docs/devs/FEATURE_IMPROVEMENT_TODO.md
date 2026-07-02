@@ -2,6 +2,14 @@
 
 검색 품질, slang DB 회수율, 대시보드/운영 UX처럼 사용자 체감 품질에 가까운 개선 항목을 관리한다.
 
+## Override audit follow-up
+
+- [ ] `LLM=False->final=True` override audit blind judge expansion
+  - 상태: Loop319 single_row_checked / row_contract_go / approval_not_open
+  - 발견: `11708445`는 worker log에 override event가 있었지만 최종 public contract는 `candidate_only / promotion_blocked / publish_allowed=false`로 수렴했다.
+  - 산출물: `docs/devs/loop_reports/LOOP_319_REPORT_20260702.md`, `docs/devs/loop319_override_audit_11708445_20260702.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop319_override_audit_11708445_review.json`
+  - 완료 기준: current HEAD non-light completed-source에서 override audit flip rows를 추출하고, public title publish 누출 여부를 blind/source-native로 확장 판정한다. search degraded가 남으면 approval 금지.
+
 ## Collateral unsafe-promotion repair
 
 - [ ] Loop308 `unsafe_promotion_from_hold` repair queue

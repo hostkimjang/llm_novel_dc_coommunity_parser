@@ -1,5 +1,30 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop319 OVERRIDE AUDIT 11708445 체크
+
+- [x] 코드 변경 없는 대형 run 감시/문서 회차 반복 조건에 따라 `OVERRIDE AUDIT(LLM=False->final=True)` 행 검증으로 전환했다.
+- [x] `11708445`가 source run `20260702_065642_030743` result JSON과 checkpoint에 flush됐는지 확인했다.
+  - result `out\expert_result_20260702_065632_479765.json`
+  - checkpoint `global_idx=355`, `status=completed`
+  - worker log `logs\expert_run_20260702_065642_030743_W24.log`
+- [x] final public contract를 확인했다.
+  - `official_title=null`, `official_url=null`
+  - `candidate_ledger_status=promotion_blocked`
+  - `promotion_decision.status=candidate_only`
+  - `publish_allowed=false`, `candidate_preserved=true`, `bypassed_gate=false`
+- [x] Blind/source-native verdict를 작성했다.
+  - label `ACCEPT`
+  - verdict `candidate_only_block_is_correct`
+  - action `no_code_change_required_for_11708445`
+- [x] reason hygiene forbidden marker hit `0`을 확인했다.
+- [x] 산출물을 기록했다.
+  - review `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop319_override_audit_11708445_review.json`
+  - report `docs\devs\loop_reports\LOOP_319_REPORT_20260702.md`
+  - state `docs\devs\loop319_override_audit_11708445_20260702.json`
+- [ ] Loop314 N5 `15/15` 완료 전 flip rate를 갱신하지 않는다. 현재 `2/15`.
+- [ ] full375/bounded/golden18 완료 전 approval 문구를 쓰지 않는다.
+- Gate: override audit `GO_ROW_CONTRACT_ONLY`, runtime source `BACKGROUND_LIGHT_RUN_NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop318 safe-loss source-native next slice 체크
 
 - [x] Loop314 대형 런을 완료 대기하지 않고 background 감시로 유지했다.

@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop319 OVERRIDE AUDIT 11708445 blind/source-native
+
+- 코드 변경 없는 대형 run 감시/문서 회차가 반복되어 `OVERRIDE AUDIT(LLM=False->final=True)` 행 검증으로 전환했다.
+- 대상은 `11708445` `퉁구스1캇햄 작품 하나도 안 봤는데`다.
+- source run `20260702_065642_030743` result에서 해당 row가 completed로 flush된 것을 확인했다.
+- 최종 public contract는 `official_title=null`, `official_url=null`, `candidate_ledger_status=promotion_blocked`, `promotion_decision.status=candidate_only`, `publish_allowed=false`, `candidate_preserved=true`, `bypassed_gate=false`다.
+- Blind/source-native 판정은 `ACCEPT / candidate_only_block_is_correct`다. `제냥꾼`은 후보 보존 대상이지 이 row의 public title publish 대상이 아니다.
+- Reason hygiene forbidden marker hit는 `0`이다.
+- Report는 `docs/devs/loop_reports/LOOP_319_REPORT_20260702.md`, state는 `docs/devs/loop319_override_audit_11708445_20260702.json`이다.
+- Gate는 override audit `GO_ROW_CONTRACT_ONLY`, runtime source `BACKGROUND_LIGHT_RUN_NOT_APPROVAL`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop318 safe-loss source-native next slice
 
 - Loop314 full375/bounded1200/golden18/N5는 완료 대기하지 않고 background 감시로 유지했다.
