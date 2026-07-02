@@ -1,5 +1,15 @@
 # Slang DB Improvement TODO
 
+## 2026-07-02 Loop313 safe-loss alias contract / slang caveat
+
+- [x] `악살싶` canonical title을 `악당은 살고 싶다`로 정정했다.
+- [x] `전독시` -> `전지적 독자 시점`을 known-title abbreviation에 추가했다.
+- [x] `전독시 영화 나왔었지` 같은 adaptation 논의를 work-cue로 인정했다.
+- [x] `악신총애`는 동음 후보 위험 때문에 slang/alias registry 추가를 보류했다.
+- [ ] `회귀수선전`은 character-setting bridge 계약 후보로 별도 검토한다.
+- [ ] N5 result JSON `15/15` 완료 후 slang/alias 안정성 caveat를 새 flip 분석으로 갱신한다. 현재 `1/15`.
+- Gate: slang DB write-back 아님, code/unit contract `GO_UNIT`, runtime replay `NOT_RUN`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop312 safe-loss source-native / slang caveat
 
 - [x] `safe_loss_resolved_to_null` source-native review가 `59/147`까지 진행됐다.

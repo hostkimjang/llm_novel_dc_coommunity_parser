@@ -1,0 +1,77 @@
+{
+  "loop": 313,
+  "date": "2026-07-02",
+  "status": "GO_UNIT_RUNTIME_NOT_RUN_REVIEW_LOCKED",
+  "goal_status": "ACTIVE_NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "source": {
+    "loop312_report": "docs/devs/loop_reports/LOOP_312_REPORT_20260702.md",
+    "loop312_delta": "docs/devs/loop312_safe_loss_source_native_verdicts_delta_15.json",
+    "loop312_cumulative": "docs/devs/loop312_safe_loss_source_native_verdicts_cumulative_59.json"
+  },
+  "changes": [
+    {
+      "path": "src/llm_batch/experts/utils.py",
+      "change": "KNOWN_TITLE_ABBREVIATIONS['악살싶'] canonical title을 '악당은 살고 싶다'로 정정했다."
+    },
+    {
+      "path": "src/llm_batch/experts/utils.py",
+      "change": "KNOWN_TITLE_ABBREVIATIONS에 '전독시' -> '전지적 독자 시점'을 추가했다."
+    },
+    {
+      "path": "src/llm_batch/agentic_pipeline.py",
+      "change": "curated known-title abbreviation work-cue에 영화/극장판/실사화/애니화/드라마화/원작/각색 맥락을 추가했다."
+    },
+    {
+      "path": "tests/test_known_title_abbreviation_safe_loss_contract.py",
+      "change": "Loop312 11669921/11673091 계약을 focused alias safe-loss test에 추가했다."
+    }
+  ],
+  "deferred": [
+    {
+      "alias": "악신총애",
+      "reason": "과거 survey가 동음 후보 4개 위험을 기록했으므로 전역 registry에 바로 추가하지 않았다. native/source 또는 character-specific bridge 계약이 필요하다."
+    },
+    {
+      "title": "회귀수선전",
+      "reason": "중경계/서휼/해방상제 character-setting bridge는 단순 alias registry가 아니라 별도 shared character bridge 계약 후보로 남겼다."
+    }
+  ],
+  "verification": [
+    {
+      "command": ".venv312\\Scripts\\python.exe -m py_compile src\\llm_batch\\agentic_pipeline.py src\\llm_batch\\experts\\utils.py tests\\test_known_title_abbreviation_safe_loss_contract.py",
+      "result": "PASS"
+    },
+    {
+      "command": ".venv312\\Scripts\\python.exe -m unittest tests.test_known_title_abbreviation_safe_loss_contract -v",
+      "result": "PASS, 3 tests"
+    },
+    {
+      "command": ".venv312\\Scripts\\python.exe -m unittest tests.test_regression_safe_work_bridge_contract tests.test_promotion_gate_contract -v",
+      "result": "PASS, 23 tests"
+    },
+    {
+      "command": ".venv312\\Scripts\\python.exe -m unittest tests.test_known_title_abbreviation_safe_loss_contract tests.test_known_title_abbreviation_support tests.test_arbiter_curated_alias_guard tests.test_title_lead_search_inferred_guard tests.test_promotion_gate_contract tests.test_regression_safe_work_bridge_contract tests.test_goal_convergence tests.test_always_on_regression_gates -v",
+      "result": "PASS, 266 tests"
+    },
+    {
+      "check": "Data Analytics artifact validate/render",
+      "result": "PASS, MCP report surface rendered"
+    }
+  ],
+  "runtime": {
+    "targeted_replay": "NOT_RUN",
+    "safe_loss_n5_result_json": "1/15",
+    "safe_loss_n5_status": "RUNNING_BACKGROUND_NOT_ANALYZED",
+    "full375_bounded_status": "IN_PROGRESS_NOT_APPROVAL",
+    "search_recovery": "P0_OPEN"
+  },
+  "gate": {
+    "unit_contract": "GO",
+    "runtime_replay": "NOT_RUN",
+    "n5_flip_rate": "NOT_ANALYZED",
+    "full_scan_approval": false,
+    "overall": "ACTIVE_NOT_COMPLETE"
+  }
+}

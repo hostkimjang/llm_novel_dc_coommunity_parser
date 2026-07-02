@@ -1,5 +1,27 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop313 safe-loss alias contract repair 체크
+
+- [x] Loop312 `repair_safe_loss=34` 중 일반화 가능한 alias 계약만 선별했다.
+  - `악살싶` canonical title 정정
+  - `전독시` known-title abbreviation 추가
+  - `악신총애`는 동음 후보 위험 때문에 보류
+- [x] shared work-cue를 보강했다.
+  - adaptation cue `영화/극장판/실사화/애니화/드라마화/원작/각색`
+  - curated alias가 제목/본문에 직접 있을 때만 work anchor로 작동
+- [x] 검증을 실행했다.
+  - py_compile PASS
+  - focused alias `3` PASS
+  - promotion/work-bridge `23` PASS
+  - related bundle `266` PASS
+  - Data Analytics validate/render PASS
+- [x] 산출물을 기록했다.
+  - state `docs\devs\loop313_safe_loss_alias_contract_repair_20260702.json`
+  - report `docs\devs\loop_reports\LOOP_313_REPORT_20260702.md`
+- [ ] targeted runtime replay 전까지 Loop313을 residual closure로 세지 않는다.
+- [ ] N5 result JSON `15/15` 완료 전 flip rate를 갱신하지 않는다. 현재 `1/15`.
+- Gate: code/unit contract `GO_UNIT`, runtime replay `NOT_RUN`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop312 safe-loss source-native next slice 체크
 
 - [x] Loop310 이후 남은 `safe_loss_resolved_to_null` 미검토분에서 15건을 추가 판정했다.

@@ -1,5 +1,29 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop313 safe-loss alias contract repair
+
+- 범위: Loop312 `repair_safe_loss=34` 중 일반화 가능한 alias/title contract 일부를 shared known-title abbreviation gate로 전환한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_313_REPORT_20260702.md`
+  - state `docs\devs\loop313_safe_loss_alias_contract_repair_20260702.json`
+  - code `src\llm_batch\experts\utils.py`
+  - code `src\llm_batch\agentic_pipeline.py`
+  - tests `tests\test_known_title_abbreviation_safe_loss_contract.py`
+- Changes:
+  - `악살싶` canonical title `악당도 살고 싶다` -> `악당은 살고 싶다`
+  - `전독시` -> `전지적 독자 시점` known-title abbreviation 추가
+  - adaptation work-cue `영화/극장판/실사화/애니화/드라마화/원작/각색` 추가
+- Verification:
+  - `py_compile` -> PASS
+  - `tests.test_known_title_abbreviation_safe_loss_contract -v` -> PASS, `3` tests
+  - `tests.test_regression_safe_work_bridge_contract tests.test_promotion_gate_contract -v` -> PASS, `23` tests
+  - related bundle -> PASS, `266` tests
+  - Data Analytics artifact validate/render -> PASS
+- Deferred:
+  - `악신총애`는 동음 후보 위험 때문에 registry 추가 보류
+  - `회귀수선전`은 character-setting bridge 계약 후보로 보류
+- Gate: code/unit contract `GO_UNIT`, runtime replay `NOT_RUN`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED` result `1/15`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop312 safe-loss source-native 다음 slice
 
 - 범위: Loop301 `safe_loss_resolved_to_null=147` 중 Loop310 이후 미검토분 15건을 추가 source-native review로 판정한다.

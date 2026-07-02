@@ -1,5 +1,38 @@
 # Improvement Register
 
+## IMP-20260702-313 - safe-loss alias contract repair
+
+- Status: Implemented / unit gate only / review locked
+- Loop: 313
+- Problem:
+  - Loop312에서 `악살싶`, `전독시`가 정당 safe-loss repair 후보로 분리됐지만 shared registry/gate 계약에는 최신 근거가 반영되지 않았다.
+  - `악살싶`의 registry canonical title은 `악당도 살고 싶다`로 남아 있어 source-native 근거의 `악당은 살고 싶다`와 어긋났다.
+  - `전독시 영화 나왔었지`는 작품 adaptation 논의지만 기존 work-cue가 영화/원작/각색 맥락을 충분히 인정하지 않았다.
+- Change:
+  - `악살싶` canonical title을 `악당은 살고 싶다`로 정정했다.
+  - `전독시 -> 전지적 독자 시점`을 `KNOWN_TITLE_ABBREVIATIONS`에 추가했다.
+  - curated alias work-cue에 adaptation cue를 추가했다.
+  - `악신총애`와 `회귀수선전`은 각각 disambiguation/character bridge 후속으로 보류했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_313_REPORT_20260702.md`
+  - state `docs/devs/loop313_safe_loss_alias_contract_repair_20260702.json`
+  - code `src/llm_batch/experts/utils.py`
+  - code `src/llm_batch/agentic_pipeline.py`
+  - tests `tests/test_known_title_abbreviation_safe_loss_contract.py`
+- Result:
+  - py_compile PASS
+  - focused alias `3` PASS
+  - promotion/work-bridge `23` PASS
+  - related bundle `266` PASS
+  - Data Analytics validate/render PASS
+- Gate:
+  - code/unit contract `GO_UNIT`
+  - runtime replay `NOT_RUN`
+  - safe-loss N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, result `1/15`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-312 - safe-loss source-native next slice review
 
 - Status: Implemented / partial review locked

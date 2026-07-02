@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop313 safe-loss alias contract quality gate
+
+- 근거:
+  - [x] `악살싶` canonical title을 shared registry에서 정정했다.
+  - [x] `전독시` stable alias를 known-title abbreviation gate에 추가했다.
+  - [x] adaptation cue를 work-cue에 추가했다.
+  - [x] 동음 후보 위험이 있는 `악신총애`는 registry 추가를 보류했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_313_REPORT_20260702.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop313_safe_loss_alias_contract_repair_20260702.json`.
+- 품질 게이트:
+  - [x] registry 자체를 public publish 권한으로 쓰지 않고 shared work-cue/promotion gate 입력으로만 둔다.
+  - [x] unit-only 결과를 runtime replay나 full approval로 쓰지 않는다.
+  - [x] N5 result `1/15` 상태를 flip-rate 갱신으로 쓰지 않는다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop312 safe-loss source-native quality gate
 
 - 근거:

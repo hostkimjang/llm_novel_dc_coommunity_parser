@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop313 safe-loss alias contract repair
+
+- Loop312 `repair_safe_loss=34` 중 일반화 가능한 alias 계약 일부를 코드로 전환했다.
+- `KNOWN_TITLE_ABBREVIATIONS`에서 `악살싶` canonical title을 `악당은 살고 싶다`로 정정하고 `전독시 -> 전지적 독자 시점`을 추가했다.
+- curated known-title abbreviation work-cue에 `영화/극장판/실사화/애니화/드라마화/원작/각색`을 추가해 adaptation 논의를 작품 논의로 인정했다.
+- `악신총애`는 동음 후보 위험 때문에 전역 registry 추가를 보류했고, `회귀수선전`은 character-setting bridge 계약 후보로 남겼다.
+- 검증은 py_compile PASS, focused alias `3` PASS, promotion/work-bridge `23` PASS, related bundle `266` PASS, Data Analytics validate/render PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_313_REPORT_20260702.md`, state는 `docs/devs/loop313_safe_loss_alias_contract_repair_20260702.json`이다.
+- Gate는 code/unit contract `GO_UNIT`, runtime replay `NOT_RUN`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED` result `1/15`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop312 safe-loss source-native 다음 slice
 
 - Loop310 이후 남은 `safe_loss_resolved_to_null` 미검토분에서 15건을 추가 source-native review로 판정했다.
