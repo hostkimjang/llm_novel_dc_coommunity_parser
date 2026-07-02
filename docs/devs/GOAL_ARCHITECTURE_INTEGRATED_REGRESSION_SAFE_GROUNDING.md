@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop340 Addendum - collateral183 residual action queue
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop340은 approval 회차가 아니라 Loop332/333 collateral183 residual `126`을 실행 가능한 post_id/action group 큐로 분해한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_340_REPORT_20260703.md`, state `docs/devs/loop340_collateral183_residual_action_queue_20260703.json`, queue `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop340_collateral183_residual_action_queue.json`.
+- Result: source rows `183`, residual `126`, `REPROCESS=95`, `HOLD=31`, action groups `30`, validation issues `0`.
+- 주요 group: `repair_safe_loss=76`, `repair_unsafe_promotion=14`, `native_image_or_source_review_required=14`, `known_alias_runtime_replay_required=6`, `repair_after_wrong_work=5`.
+- Runtime caveat: Loop339 background는 full375 `1/1/0/0`, bounded1200 r2 `6/0/6/0`, golden18 r2 `1/1/0/0`, safe-loss N5 `0/15`로 모두 `IN_PROGRESS / NOT_APPROVAL`이다.
+- Verification: py_compile PASS, `tests.test_split_collateral_action_queue` `2` tests PASS, queue generation `--fail-on-validation-issue` PASS.
+- Gate: queue split `GO`, collateral `NO-GO / residual_action_queue_rows=126`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop339 Addendum - current HEAD runtime dispatch
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop339는 approval 회차가 아니라 현 HEAD `77bdbe48`에서 stale flip/golden 증거를 갱신하기 위한 background runtime 재발주 회차다.

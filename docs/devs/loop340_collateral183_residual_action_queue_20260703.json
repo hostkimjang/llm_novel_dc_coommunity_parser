@@ -1,0 +1,70 @@
+{
+  "loop": 340,
+  "date": "2026-07-03",
+  "head": "c8260e95",
+  "status": "ACTIVE / NOT_COMPLETE",
+  "purpose": "Loop339 대형 런 완료를 기다리지 않고 collateral183 residual 126건을 post_id/action group 단위 실행 큐로 분해한다.",
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_340_REPORT_20260703.md",
+    "state": "docs/devs/loop340_collateral183_residual_action_queue_20260703.json",
+    "queue_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop340_collateral183_residual_action_queue.json",
+    "queue_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop340_collateral183_residual_action_queue.md",
+    "tool": "tools/split_collateral_action_queue.py",
+    "test": "tests/test_split_collateral_action_queue.py"
+  },
+  "source": {
+    "combined_review": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop332_collateral183_combined_source_native_queue.json",
+    "always_on_gate": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop333_always_on_collateral183_adjusted_gate.json",
+    "source_review_id": "loop332_collateral183_combined_source_native_queue",
+    "source_gate": "REVIEW-LOCKED"
+  },
+  "queue_summary": {
+    "source_rows": 183,
+    "residual_action_queue_rows": 126,
+    "label_counts": {
+      "REPROCESS": 95,
+      "HOLD": 31
+    },
+    "bucket_counts": {
+      "safe_loss_resolved_to_null": 105,
+      "unsafe_promotion_from_hold": 14,
+      "wrong_work_title_flip": 7
+    },
+    "action_group_count": 30,
+    "validation_issue_count": 0,
+    "largest_action_groups": {
+      "repair_safe_loss": 76,
+      "repair_unsafe_promotion": 14,
+      "native_image_or_source_review_required": 14,
+      "known_alias_runtime_replay_required": 6,
+      "repair_after_wrong_work": 5,
+      "title_variant_canonicalization_required": 5,
+      "url_canonicalization_review_required": 4
+    }
+  },
+  "loop339_background_snapshot": {
+    "full375": "alive, completed/flushed/pending/failed=1/1/0/0, large_run_complete=false",
+    "bounded1200_r2": "alive, completed/flushed/pending/failed=6/0/6/0, partial_flush_gap=true, ordered_flush_blocked=true",
+    "golden18_r2": "alive, completed/flushed/pending/failed=1/1/0/0, large_run_complete=false",
+    "safe_loss_n5": "alive, completed result=0/15"
+  },
+  "verification": {
+    "py_compile": "PASS: tools/split_collateral_action_queue.py tests/test_split_collateral_action_queue.py",
+    "unit_tests": "PASS: tests.test_split_collateral_action_queue, 2 tests",
+    "queue_generation": "PASS: --fail-on-validation-issue, validation_issue_count=0"
+  },
+  "gate": {
+    "queue_split": "GO",
+    "collateral_gate": "NO-GO / residual_action_queue_rows=126",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next_actions": [
+    "P0 repair_safe_loss 76건 중 일반화 가능한 alias/work-bridge 계약을 작은 묶음으로 선택한다.",
+    "HOLD 31건은 native image/web/source 또는 policy review 큐로 유지한다.",
+    "Loop339 background 런 완료 후 current HEAD golden/N5/full375/bounded audit를 별도로 수행한다."
+  ]
+}

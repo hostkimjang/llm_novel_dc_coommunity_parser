@@ -1,5 +1,38 @@
 # Improvement Register
 
+## IMP-20260703-340 - collateral183 residual action queue split
+
+- 상태: residual queue split 완료 / approval 미개방
+- Loop: 340
+- 문제:
+  - Loop333 always-on gate는 adjusted collateral residual `126`을 남겼지만, 다음 실행자가 바로 쓸 post_id/action group 큐가 별도 artifact로 고정되지 않았다.
+  - Loop339 대형 런은 아직 background 진행 중이므로 완료 대기만 반복하면 active progress가 없다.
+- 변경:
+  - `tools/split_collateral_action_queue.py`를 추가해 combined collateral review rows에서 `REPROCESS`/`HOLD` residual만 추출한다.
+  - `tests/test_split_collateral_action_queue.py`를 추가해 residual count와 source transition count mismatch를 검증한다.
+  - Loop340 queue JSON/MD를 생성했다.
+- 근거:
+  - report `docs/devs/loop_reports/LOOP_340_REPORT_20260703.md`
+  - state `docs/devs/loop340_collateral183_residual_action_queue_20260703.json`
+  - queue `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop340_collateral183_residual_action_queue.json`
+- 결과:
+  - residual action queue rows `126`
+  - labels `REPROCESS=95`, `HOLD=31`
+  - action groups `30`
+  - validation issues `0`
+  - largest groups: `repair_safe_loss=76`, `repair_unsafe_promotion=14`, `native_image_or_source_review_required=14`, `known_alias_runtime_replay_required=6`, `repair_after_wrong_work=5`
+- 검증:
+  - py_compile PASS.
+  - `tests.test_split_collateral_action_queue` PASS, `2` tests.
+  - queue generation `--fail-on-validation-issue` PASS.
+- Gate:
+  - queue split `GO`
+  - collateral `NO-GO / residual_action_queue_rows=126`
+  - search recovery `P0 / OPEN`
+  - `promotion_blocked=search-blind conditional`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260703-339 - current HEAD runtime dispatch for stale evidence refresh
 
 - 상태: background 런 발주 완료 / 결과 미완료 / approval 미개방

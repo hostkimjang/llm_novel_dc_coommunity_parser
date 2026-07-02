@@ -1,0 +1,255 @@
+from __future__ import annotations
+
+import argparse
+import json
+from collections import Counter, defaultdict
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+
+RESIDUAL_LABELS = {"REPROCESS", "HOLD"}
+REPAIR_PREFIXES = ("repair_",)
+REVIEW_ACTION_MARKERS = (
+    "_review_required",
+    "_replay_required",
+    "_policy_required",
+    "_contract_required",
+    "_canonicalization_required",
+)
+
+
+def load_json(path: Path) -> dict[str, Any]:
+    payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"Expected JSON object: {path}")
+    return payload
+
+
+def normalize_actions(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, list):
+        return [str(item) for item in value if str(item)]
+    return [str(value)]
+
+
+def _counter_to_dict(counter: Counter[str]) -> dict[str, int]:
+    return {key: counter[key] for key in sorted(counter)}
+
+
+def _priority_for_group(action: str, labels: Counter[str]) -> str:
+    if labels.get("REPROCESS") and action.startswith(REPAIR_PREFIXES):
+        return "P0"
+    if labels.get("REPROCESS"):
+        return "P1"
+    return "P2"
+
+
+def _owner_mode_for_group(action: str, labels: Counter[str]) -> str:
+    if action.startswith(REPAIR_PREFIXES):
+        return "CODE_OR_RUNTIME_REPAIR"
+    if labels.get("HOLD"):
+        return "POLICY_OR_NATIVE_REVIEW"
+    return "RUNTIME_REPLAY_OR_REVIEW"
+
+
+def build_residual_queue(
+    combined_review: dict[str, Any],
+    *,
+    generated_at: str | None = None,
+    queue_id: str = "collateral183_residual_action_queue",
+) -> dict[str, Any]:
+    rows = combined_review.get("rows") or []
+    if not isinstance(rows, list):
+        raise ValueError("combined_review.rows must be a list")
+
+    residual_rows: list[dict[str, Any]] = []
+    label_counts: Counter[str] = Counter()
+    bucket_counts: Counter[str] = Counter()
+    action_counts: Counter[str] = Counter()
+    groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
+
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        label = str(row.get("review_label") or "").strip().upper()
+        if label not in RESIDUAL_LABELS:
+            continue
+        actions = normalize_actions(row.get("action"))
+        if not actions:
+            actions = ["manual_review_required"]
+        bucket = str(row.get("triage_bucket") or "unknown")
+        entry = {
+            "post_id": row.get("post_id"),
+            "triage_bucket": bucket,
+            "review_label": label,
+            "source_native_verdict": row.get("source_native_verdict"),
+            "selected_title": row.get("selected_title"),
+            "selected_option_id": row.get("selected_option_id"),
+            "evidence_grade": row.get("evidence_grade"),
+            "actions": actions,
+            "rationale_ko": row.get("rationale_ko"),
+            "evidence_refs": row.get("evidence_refs") or [],
+            "source_review_id": row.get("source_review_id"),
+        }
+        residual_rows.append(entry)
+        label_counts[label] += 1
+        bucket_counts[bucket] += 1
+        for action in actions:
+            action_counts[action] += 1
+            groups[action].append(entry)
+
+    action_groups: list[dict[str, Any]] = []
+    for action in sorted(groups):
+        group_rows = groups[action]
+        group_label_counts = Counter(str(item["review_label"]) for item in group_rows)
+        group_bucket_counts = Counter(str(item["triage_bucket"]) for item in group_rows)
+        action_groups.append(
+            {
+                "action": action,
+                "priority": _priority_for_group(action, group_label_counts),
+                "owner_mode": _owner_mode_for_group(action, group_label_counts),
+                "row_count": len(group_rows),
+                "label_counts": _counter_to_dict(group_label_counts),
+                "bucket_counts": _counter_to_dict(group_bucket_counts),
+                "post_ids": [item["post_id"] for item in group_rows],
+                "sample_rows": group_rows[:8],
+            }
+        )
+
+    transition = (combined_review.get("summary") or {}).get("queue_transition") or {}
+    expected_residual = transition.get("residual_action_queue_rows")
+    expected_reprocess = transition.get("repair_required_rows")
+    expected_hold = transition.get("policy_or_native_review_required_rows")
+    validation_issues: list[dict[str, Any]] = []
+    if expected_residual is not None and int(expected_residual) != len(residual_rows):
+        validation_issues.append(
+            {
+                "code": "residual_action_queue_count_mismatch",
+                "expected": expected_residual,
+                "actual": len(residual_rows),
+            }
+        )
+    if expected_reprocess is not None and int(expected_reprocess) != label_counts.get("REPROCESS", 0):
+        validation_issues.append(
+            {
+                "code": "reprocess_count_mismatch",
+                "expected": expected_reprocess,
+                "actual": label_counts.get("REPROCESS", 0),
+            }
+        )
+    if expected_hold is not None and int(expected_hold) != label_counts.get("HOLD", 0):
+        validation_issues.append(
+            {
+                "code": "hold_count_mismatch",
+                "expected": expected_hold,
+                "actual": label_counts.get("HOLD", 0),
+            }
+        )
+
+    return {
+        "report_type": "collateral_residual_action_queue",
+        "queue_id": queue_id,
+        "generated_at": generated_at or datetime.now().replace(microsecond=0).isoformat(),
+        "source_review_id": combined_review.get("review_id"),
+        "source_gate": combined_review.get("gate"),
+        "semantic_quality": "REVIEW-LOCKED",
+        "full_scan_approval": False,
+        "gate": "NO-GO" if validation_issues else "REVIEW-LOCKED",
+        "summary": {
+            "source_rows": len(rows),
+            "residual_action_queue_rows": len(residual_rows),
+            "label_counts": _counter_to_dict(label_counts),
+            "bucket_counts": _counter_to_dict(bucket_counts),
+            "action_counts": _counter_to_dict(action_counts),
+            "action_group_count": len(action_groups),
+            "expected_from_source_transition": {
+                "residual_action_queue_rows": expected_residual,
+                "repair_required_rows": expected_reprocess,
+                "policy_or_native_review_required_rows": expected_hold,
+            },
+            "validation_issue_count": len(validation_issues),
+        },
+        "validation_issues": validation_issues,
+        "action_groups": action_groups,
+        "rows": residual_rows,
+        "approval_boundary": {
+            "launch_or_queue_split_is_not_approval": True,
+            "search_recovery_required_before_promotion_unblock": True,
+            "promotion_blocked_tag_until_search_recovery": "search-blind conditional",
+        },
+    }
+
+
+def write_markdown(queue: dict[str, Any], path: Path) -> None:
+    summary = queue["summary"]
+    lines = [
+        "# Loop340 collateral183 residual action queue",
+        "",
+        "## 요약",
+        "",
+        f"- source_review_id: `{queue.get('source_review_id')}`",
+        f"- gate: `{queue.get('gate')}`",
+        f"- source_rows: `{summary.get('source_rows')}`",
+        f"- residual_action_queue_rows: `{summary.get('residual_action_queue_rows')}`",
+        f"- label_counts: `{summary.get('label_counts')}`",
+        f"- action_group_count: `{summary.get('action_group_count')}`",
+        f"- validation_issue_count: `{summary.get('validation_issue_count')}`",
+        "- approval: `false`",
+        "- semantic_quality: `REVIEW-LOCKED`",
+        "",
+        "## 승인 경계",
+        "",
+        "- 이 큐 분해는 residual action queue를 실행 가능하게 만든 산출물이며 approval이 아니다.",
+        "- search recovery가 `unrecovered_degraded=0`으로 닫히기 전까지 `promotion_blocked`는 `search-blind conditional`이다.",
+        "- `REPROCESS`는 코드/계약/runtime replay 후보이고, `HOLD`는 native image/web/source 또는 policy review 후보다.",
+        "",
+        "## Action groups",
+        "",
+    ]
+    for group in queue.get("action_groups") or []:
+        sample = ", ".join(str(post_id) for post_id in group.get("post_ids", [])[:12])
+        lines.extend(
+            [
+                f"### {group.get('priority')} {group.get('action')}",
+                "",
+                f"- row_count: `{group.get('row_count')}`",
+                f"- owner_mode: `{group.get('owner_mode')}`",
+                f"- label_counts: `{group.get('label_counts')}`",
+                f"- bucket_counts: `{group.get('bucket_counts')}`",
+                f"- sample_post_ids: `{sample}`",
+                "",
+            ]
+        )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Split a combined collateral source-native review into residual action groups."
+    )
+    parser.add_argument("--combined-review", required=True, type=Path)
+    parser.add_argument("--queue-id", default="collateral183_residual_action_queue")
+    parser.add_argument("--output-json", required=True, type=Path)
+    parser.add_argument("--output-md", required=True, type=Path)
+    parser.add_argument("--fail-on-validation-issue", action="store_true")
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    queue = build_residual_queue(load_json(args.combined_review), queue_id=args.queue_id)
+    args.output_json.parent.mkdir(parents=True, exist_ok=True)
+    args.output_json.write_text(json.dumps(queue, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    write_markdown(queue, args.output_md)
+    if args.fail_on_validation_issue and queue["summary"]["validation_issue_count"]:
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

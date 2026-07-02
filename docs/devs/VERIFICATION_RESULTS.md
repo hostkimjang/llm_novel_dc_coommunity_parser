@@ -1,5 +1,34 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop340 collateral183 residual action queue
+
+- 범위: Loop332/333 collateral183 adjusted residual `126`을 post_id/action group 단위 실행 큐로 분해한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_340_REPORT_20260703.md`
+  - state `docs\devs\loop340_collateral183_residual_action_queue_20260703.json`
+  - queue JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop340_collateral183_residual_action_queue.json`
+  - queue Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop340_collateral183_residual_action_queue.md`
+  - tool `tools\split_collateral_action_queue.py`
+  - test `tests\test_split_collateral_action_queue.py`
+- Evidence:
+  - source review `loop332_collateral183_combined_source_native_queue`
+  - source rows `183`
+  - residual action queue rows `126`
+  - `REPROCESS=95`, `HOLD=31`
+  - action groups `30`
+  - validation issues `0`
+- Main groups:
+  - `repair_safe_loss=76`
+  - `repair_unsafe_promotion=14`
+  - `native_image_or_source_review_required=14`
+  - `known_alias_runtime_replay_required=6`
+  - `repair_after_wrong_work=5`
+- Verification:
+  - py_compile PASS
+  - `tests.test_split_collateral_action_queue` PASS, `2` tests
+  - queue generation `--fail-on-validation-issue` PASS
+- Gate: queue split `GO`, collateral `NO-GO / residual_action_queue_rows=126`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop339 current HEAD runtime dispatch
 
 - 범위: 현 HEAD `77bdbe48`에서 stale safe-loss flip evidence와 stale golden evidence를 갱신하기 위해 search 포함 non-light background 런을 발주한다.

@@ -2,6 +2,20 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop340 TODO
+
+- 상태 업데이트: Loop339 대형 런을 background로 유지하고, Loop332/333 collateral183 adjusted residual `126`을 post_id/action group 큐로 분해했다. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop340 TODO:
+  - [x] `tools/split_collateral_action_queue.py`를 추가했다.
+  - [x] `tests/test_split_collateral_action_queue.py`를 추가했다.
+  - [x] Loop332 combined review에서 residual queue를 생성했다.
+    - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop340_collateral183_residual_action_queue.json`
+    - residual `126`, `REPROCESS=95`, `HOLD=31`, action groups `30`, validation issues `0`
+  - [x] py_compile, targeted unittest `2` tests, queue generation `--fail-on-validation-issue` PASS를 확인했다.
+  - [ ] `repair_safe_loss=76` 중 일반화 가능한 alias/work-bridge 계약 묶음을 다음 코드 작업으로 선택한다.
+  - [ ] `HOLD=31`은 native image/web/source 또는 policy review 전까지 approval 경로로 올리지 않는다.
+  - [x] Keep `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop339 TODO
 
 - 상태 업데이트: 현 HEAD `77bdbe48`에서 full375, completed-source bounded1200, golden18, safe-loss N5를 search 포함 non-light background로 재발주했다. Goal은 `ACTIVE / NOT_COMPLETE`.

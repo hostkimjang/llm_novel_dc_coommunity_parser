@@ -10,6 +10,8 @@
   - summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop332_collateral183_combined_source_native_queue.json`
   - report `docs\devs\loop_reports\LOOP_332_REPORT_20260703.md`
 - [ ] `REPROCESS=95` 중 slang/alias registry로 일반화 가능한 항목만 별도 runtime replay 후보로 올린다.
+  - Loop340에서 residual action queue 분해는 완료했다: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop340_collateral183_residual_action_queue.json`
+  - `repair_safe_loss=76`, `known_alias_runtime_replay_required=6`은 다음 후보 선별 입력이다.
 - [ ] `ACCEPT=57`은 gate accounting 배선 전 regression count에서 차감하지 않는다.
 - Gate: slang DB write-back 아님, collateral queue `REVIEW-LOCKED / COMPLETE_183_OF_183 / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 

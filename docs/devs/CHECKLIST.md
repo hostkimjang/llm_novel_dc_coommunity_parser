@@ -1,5 +1,29 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop340 collateral183 residual action queue 체크
+
+- [x] Loop339 대형 런을 기다리는 대신 collateral183 residual split으로 전환했다.
+- [x] `tools/split_collateral_action_queue.py`를 추가했다.
+- [x] `tests/test_split_collateral_action_queue.py`를 추가했다.
+- [x] Loop332 combined source-native review에서 residual queue를 생성했다.
+  - queue JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop340_collateral183_residual_action_queue.json`
+  - queue Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop340_collateral183_residual_action_queue.md`
+  - residual `126`, labels `REPROCESS=95`, `HOLD=31`
+  - action groups `30`, validation issues `0`
+- [x] 주요 action group을 확인했다.
+  - `repair_safe_loss=76`
+  - `repair_unsafe_promotion=14`
+  - `native_image_or_source_review_required=14`
+  - `known_alias_runtime_replay_required=6`
+  - `repair_after_wrong_work=5`
+- [x] 검증을 실행했다.
+  - py_compile PASS
+  - `tests.test_split_collateral_action_queue` PASS, `2` tests
+  - queue generation `--fail-on-validation-issue` PASS
+- [ ] `repair_safe_loss=76` 중 일반화 가능한 alias/work-bridge 계약 묶음을 다음 코드 작업으로 선택한다.
+- [ ] `HOLD=31`은 native image/web/source 또는 policy review 전까지 approval 경로로 올리지 않는다.
+- Gate: queue split `GO`, collateral `NO-GO / residual_action_queue_rows=126`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop339 current HEAD runtime dispatch 체크
 
 - [x] 현 HEAD를 확인했다.
@@ -184,7 +208,9 @@
 - [x] 검증을 실행했다.
   - py_compile PASS
   - `tests.test_always_on_regression_gates` PASS, `8` tests
-- [ ] adjusted residual `126`을 `REPROCESS=95`, `HOLD=31` action queue로 분해한다.
+- [x] adjusted residual `126`을 `REPROCESS=95`, `HOLD=31` action queue로 분해했다.
+  - Loop340 queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop340_collateral183_residual_action_queue.json`
+  - action groups `30`, validation issues `0`
 - [ ] golden18 current HEAD `18/18` runtime 및 expected-answer audit 완료 전 old golden GO를 대체하지 않는다.
 - Gate: always-on `NO-GO`, golden `NO-GO`, collateral `NO-GO / adjusted_regression_count=126`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
@@ -209,7 +235,9 @@
   - `tests.test_summarize_collateral_review_verdicts` PASS, `6` tests
   - collateral/goal/gate 관련 bundle PASS, `25` tests
 - [x] `exclude_from_regression_count_after_gate_wiring=57`은 Loop333에서 gate accounting에 배선했고, adjusted residual `126`이 남는다.
-- [ ] `REPROCESS=95`와 `HOLD=31`은 각각 targeted repair/runtime replay, policy/native review 큐로 분해한다.
+- [x] `REPROCESS=95`와 `HOLD=31`은 각각 targeted repair/runtime replay, policy/native review 큐로 분해했다.
+  - Loop340 queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop340_collateral183_residual_action_queue.json`
+  - 다음 미해결: `repair_safe_loss=76` 중 일반화 가능한 alias/work-bridge 계약 묶음 선택.
 - Gate: collateral source-native queue `REVIEW-LOCKED / COMPLETE_183_OF_183 / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-03 Loop331 current HEAD 부분 런 NO-GO 체크
