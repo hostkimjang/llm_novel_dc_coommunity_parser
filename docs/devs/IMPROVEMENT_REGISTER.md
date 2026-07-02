@@ -1,5 +1,36 @@
 # Improvement Register
 
+## IMP-20260702-308 - collateral unsafe-promotion source-native triage completion
+
+- Status: Implemented / triage complete / code repair pending / review locked
+- Loop: 308
+- Problem:
+  - Loop298에서 collateral183 P0 `unsafe_promotion_from_hold` bucket은 `15/26`까지만 source-native 판정되어 있었다.
+  - 대형 full375/bounded run은 아직 `IN_PROGRESS`이고 search degraded가 남아 approval source로 쓸 수 없다.
+- Change:
+  - 미검토 11건을 추가 판정해 unsafe-promotion bucket을 `26/26`으로 닫았다.
+  - 직접 이미지 evidence와 웹/기존 survey/architecture 근거를 함께 사용해 정당 승격과 오귀결을 분리했다.
+  - full375/bounded background health를 Loop308 이름으로 새로 갱신했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_308_REPORT_20260702.md`
+  - verdicts `docs/devs/loop308_unsafe_promotion_from_hold_source_native_verdicts.json`
+  - summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop308_unsafe_promotion_from_hold_source_native_review.json`
+  - full375 audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop308_full375_search_nonlight_current_health_audit.json`
+  - bounded1200 audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop308_bounded1200_search_nonlight_current_health_audit.json`
+  - image manifest `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop308_unsafe_promotion_images/manifest.json`
+- Result:
+  - reviewed `26/26`
+  - validation issues `0`
+  - labels `REPROCESS=14`, `ACCEPT=12`
+  - Data Analytics validate/render PASS
+- Gate:
+  - collateral unsafe-promotion triage `REVIEW-LOCKED`
+  - `repair_unsafe_promotion=14` remains open
+  - full375/bounded `IN_PROGRESS / NOT_APPROVAL`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-307 - safe-loss alias contract expansion
 
 - Status: Implemented / unit contract only / review locked

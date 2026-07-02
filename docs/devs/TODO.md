@@ -2,6 +2,21 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop308 TODO
+
+- 상태 업데이트: collateral183 P0 `unsafe_promotion_from_hold` bucket은 source-native 판정 `26/26` 완료지만 approval은 열리지 않았다. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop308 TODO:
+  - [x] full375/bounded1200 background health audit를 갱신했다.
+    - full375 checkpoint/result `120/105`
+    - bounded1200 checkpoint/result `180/167`
+    - blockers `search_timeout_observed`, `search_degraded_observed`
+  - [x] Loop298 미검토 11건을 추가 판정해 consolidated verdict `26/26`을 만들었다.
+  - [x] summary validation issues `0`을 확인했다.
+  - [x] Data Analytics artifact validate/render PASS를 확인했다.
+  - [ ] `REPROCESS=14`를 shared promotion gate 코드 작업 queue로 전환한다.
+  - [ ] `ACCEPT=12`는 gate wiring 전까지 approval 근거로 쓰지 않는다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 regression-safe grounding Loop307 TODO
 
 - 상태 업데이트: Loop307은 code contract `GO_UNIT`이지만 N5 flip은 `NO-GO`다. Goal은 `ACTIVE / NOT_COMPLETE`.

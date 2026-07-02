@@ -1,0 +1,75 @@
+{
+  "loop": 308,
+  "date": "2026-07-02",
+  "status": "TRIAGE_COMPLETE_REPAIR_OPEN_REVIEW_LOCKED",
+  "scope": "collateral183 P0 unsafe_promotion_from_hold",
+  "summary": {
+    "change": "Loop298에서 15/26까지만 판정된 unsafe-promotion bucket을 source-native 기준으로 26/26까지 완료했다.",
+    "code_changed": false,
+    "reviewed_rows": 26,
+    "unreviewed_rows": 0,
+    "validation_issues": 0,
+    "label_counts": {
+      "ACCEPT": 12,
+      "REPROCESS": 14
+    },
+    "source_native_verdict_counts": {
+      "after_correct_source_native": 12,
+      "after_wrong_hold_preferred": 14
+    }
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_308_REPORT_20260702.md",
+    "verdicts": "docs/devs/loop308_unsafe_promotion_from_hold_source_native_verdicts.json",
+    "summary_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop308_unsafe_promotion_from_hold_source_native_review.json",
+    "summary_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop308_unsafe_promotion_from_hold_source_native_review.md",
+    "image_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop308_unsafe_promotion_images/manifest.json",
+    "full375_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop308_full375_search_nonlight_current_health_audit.json",
+    "bounded1200_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop308_bounded1200_search_nonlight_current_health_audit.json"
+  },
+  "background_runs": {
+    "full375": {
+      "input_rows": 375,
+      "checkpoint_rows": 120,
+      "result_rows": 105,
+      "status": "IN_PROGRESS",
+      "search_gate": "REVIEW",
+      "blockers": [
+        "search_timeout_observed",
+        "search_degraded_observed"
+      ]
+    },
+    "bounded1200": {
+      "input_rows": 1200,
+      "checkpoint_rows": 180,
+      "result_rows": 167,
+      "status": "IN_PROGRESS",
+      "search_gate": "REVIEW",
+      "blockers": [
+        "search_timeout_observed",
+        "search_degraded_observed"
+      ]
+    }
+  },
+  "data_analytics": {
+    "title": "Loop308 collateral unsafe-promotion triage report",
+    "validated": true,
+    "rendered": true
+  },
+  "gates": {
+    "collateral_unsafe_promotion_triage": "REVIEW_LOCKED_TRIAGE_COMPLETE",
+    "repair_unsafe_promotion": 14,
+    "full375": "IN_PROGRESS_NOT_APPROVAL",
+    "bounded1200": "IN_PROGRESS_NOT_APPROVAL",
+    "search_recovery": "P0_OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE_NOT_COMPLETE"
+  },
+  "next_actions": [
+    "repair_unsafe_promotion=14를 shared promotion gate 코드 작업 queue로 전환한다.",
+    "ACCEPT=12는 gate wiring 전까지 full collateral approval 근거로 쓰지 않는다.",
+    "full375/bounded1200은 search degraded가 해소되기 전까지 background 감시로만 둔다."
+  ]
+}

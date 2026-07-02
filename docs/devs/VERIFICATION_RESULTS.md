@@ -1,5 +1,32 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop308 collateral unsafe-promotion triage
+
+- 범위: collateral183 P0 `unsafe_promotion_from_hold` bucket을 대형 run 대기 없이 source-native 기준으로 26/26 판정하고 background health를 갱신한다.
+- Artifacts:
+  - verdicts `docs\devs\loop308_unsafe_promotion_from_hold_source_native_verdicts.json`
+  - summary JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop308_unsafe_promotion_from_hold_source_native_review.json`
+  - summary Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop308_unsafe_promotion_from_hold_source_native_review.md`
+  - report `docs\devs\loop_reports\LOOP_308_REPORT_20260702.md`
+  - image evidence manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop308_unsafe_promotion_images\manifest.json`
+  - full375 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop308_full375_search_nonlight_current_health_audit.json`
+  - bounded1200 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop308_bounded1200_search_nonlight_current_health_audit.json`
+- Verification:
+  - `tools\summarize_collateral_review_verdicts.py` -> gate `REVIEW-LOCKED`
+  - batch rows `26`
+  - reviewed rows `26`
+  - unreviewed rows `0`
+  - validation issues `0`
+  - Data Analytics artifact `Loop308 collateral unsafe-promotion triage report` validate/render PASS
+- Counts:
+  - labels `REPROCESS=14`, `ACCEPT=12`
+  - source-native verdicts `after_wrong_hold_preferred=14`, `after_correct_source_native=12`
+  - actions `repair_unsafe_promotion=14`, `exclude_from_regression_count_after_gate_wiring=12`
+- Background:
+  - full375 checkpoint/result `120/105`, `IN_PROGRESS`, search gate `REVIEW`, blockers `search_timeout_observed`, `search_degraded_observed`
+  - bounded1200 checkpoint/result `180/167`, `IN_PROGRESS`, search gate `REVIEW`, blockers `search_timeout_observed`, `search_degraded_observed`
+- Gate: collateral unsafe-promotion triage `REVIEW-LOCKED`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop307 safe-loss alias contract expansion
 
 - 범위: Loop306 source-native alias 후보 중 registry 단독 release가 가능한 항목을 shared 계약으로 올리고, N5 flip/full375/bounded 상태를 current HEAD 기준으로 갱신한다.

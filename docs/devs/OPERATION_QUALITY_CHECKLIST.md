@@ -4715,3 +4715,12 @@
 - [ ] `11660237`처럼 flip_rate가 있는 row는 stable blind judge evidence 없이 hard-hold를 완화하지 않는다.
 - [ ] completed behind rows가 늘어도 `flushed_count/result_rows`와 `next_save_idx` frontier를 우선 확인한다.
 - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.
+
+## 2026-07-02 추가 운영 체크 - Loop 308 collateral triage boundary
+
+- [ ] collateral bucket source-native triage가 `26/26` 완료돼도 `REPROCESS`가 남으면 full collateral approval을 열지 않는다.
+- [ ] `ACCEPT` verdict는 regression count 재분류 후보일 뿐, gate wiring과 replay 전에는 approval evidence가 아니다.
+- [ ] `REPROCESS` verdict는 shared promotion gate repair queue로 옮기고, row별 rationale을 보존한다.
+- [ ] 대형 run이 `IN_PROGRESS`이고 search blockers가 있으면 health 증가분을 completed-source approval로 쓰지 않는다.
+- [ ] `promotion_blocked`는 search 복구 전까지 `search-blind conditional`로 태깅한다.
+- [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.

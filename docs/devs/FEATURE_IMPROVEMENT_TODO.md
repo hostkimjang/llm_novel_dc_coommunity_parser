@@ -2,6 +2,15 @@
 
 검색 품질, slang DB 회수율, 대시보드/운영 UX처럼 사용자 체감 품질에 가까운 개선 항목을 관리한다.
 
+## Collateral unsafe-promotion repair
+
+- [ ] Loop308 `unsafe_promotion_from_hold` repair queue
+  - 상태: source_native_triage_complete_26_of_26 / repair_required_14 / approval_not_open
+  - 발견: Loop308에서 collateral183 P0 unsafe-promotion bucket을 전수 판정했고 `ACCEPT=12`, `REPROCESS=14`, validation issues `0`으로 분리했다.
+  - 산출물: `docs/devs/loop_reports/LOOP_308_REPORT_20260702.md`, `docs/devs/loop308_unsafe_promotion_from_hold_source_native_verdicts.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop308_unsafe_promotion_from_hold_source_native_review.json`
+  - 우선 repair 후보: `11658637`, `11668324`, `11673086`, `11677913`, `11695637`, `11718105`
+  - 완료 기준: `repair_unsafe_promotion=14`를 shared promotion gate/runtime 계약으로 줄이고, targeted replay와 collateral compare에서 순회귀 0을 확인한다. search degraded가 남으면 approval 금지.
+
 ## Safe-loss alias repair
 
 - [ ] Loop307 safe-loss alias contract expansion follow-up

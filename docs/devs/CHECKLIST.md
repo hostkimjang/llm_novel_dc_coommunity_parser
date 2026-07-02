@@ -1,5 +1,24 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop308 collateral unsafe-promotion triage 체크
+
+- [x] 대형 full375/bounded run을 approval 대기 경로로 쓰지 않고 background health만 갱신했다.
+  - full375 checkpoint/result `120/105`, `IN_PROGRESS`
+  - bounded1200 checkpoint/result `180/167`, `IN_PROGRESS`
+  - blockers `search_timeout_observed`, `search_degraded_observed`
+- [x] Loop298 `unsafe_promotion_from_hold` bucket의 미검토 11건을 추가 판정해 `26/26`으로 닫았다.
+- [x] Consolidated verdict를 작성했다.
+  - `docs\devs\loop308_unsafe_promotion_from_hold_source_native_verdicts.json`
+- [x] summary를 생성하고 validation issue `0`을 확인했다.
+  - JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop308_unsafe_promotion_from_hold_source_native_review.json`
+  - Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop308_unsafe_promotion_from_hold_source_native_review.md`
+- [x] Data Analytics artifact `Loop308 collateral unsafe-promotion triage report` validate/render PASS.
+- [x] 직접 이미지 증거를 내려받아 판정에 반영했다.
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop308_unsafe_promotion_images\manifest.json`
+- [ ] `REPROCESS=14`는 shared promotion gate 코드 작업 전까지 residual 감소로 세지 않는다.
+- [ ] `ACCEPT=12`도 gate wiring 전까지 full collateral approval 근거가 아니다.
+- Gate: collateral unsafe-promotion triage `REVIEW-LOCKED`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop307 safe-loss alias contract expansion 체크
 
 - [x] Loop306 source-native verdict 중 registry 단독 승격이 가능한 alias를 선별했다.

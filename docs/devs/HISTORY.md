@@ -1,5 +1,17 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop308 collateral unsafe-promotion triage
+
+- 대형 full375/bounded run을 approval 경로로 기다리지 않고 background health만 갱신했다.
+- 최신 health는 full375 checkpoint/result `120/105`, bounded1200 `180/167`이며 둘 다 `IN_PROGRESS`, blockers `search_timeout_observed`, `search_degraded_observed`다.
+- Loop298 `unsafe_promotion_from_hold` 26건을 source-native 기준으로 전수 판정했다.
+- Verdict는 `docs/devs/loop308_unsafe_promotion_from_hold_source_native_verdicts.json`이다.
+- Summary는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop308_unsafe_promotion_from_hold_source_native_review.json`와 `.md`에 있다.
+- 결과는 reviewed `26/26`, validation issues `0`, `ACCEPT=12`, `REPROCESS=14`다.
+- Data Analytics artifact `Loop308 collateral unsafe-promotion triage report` validate/render PASS.
+- Report는 `docs/devs/loop_reports/LOOP_308_REPORT_20260702.md`다.
+- Gate는 collateral unsafe-promotion triage `REVIEW-LOCKED`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop307 safe-loss alias contract expansion
 
 - Loop306 source-native review에서 일반화 가능한 alias `럽코빙의`, `빚세구`, `마줍`, `여신애호`, `별품소`를 shared known-title abbreviation 계약에 추가했다.
