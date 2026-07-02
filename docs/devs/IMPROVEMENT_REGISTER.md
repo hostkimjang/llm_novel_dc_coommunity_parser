@@ -1,5 +1,36 @@
 # Improvement Register
 
+## IMP-20260702-293 - promotion-blocked final scope ordering 계약 보강
+
+- Status: Implemented / runtime approval blocked
+- Loop: 293
+- Problem:
+  - Loop293 targeted replay에서 `11716448`은 `아카데미 생존 갤러리` 공식 후보/URL과 본문·댓글 설정 토론을 보존했지만, final publication trace가 `context_only`를 먼저 추론해 `scope_not_current_work`와 `body_comments_absent_or_empty`를 남겼다.
+  - Loop294 safe-loss flip probe는 같은 process 입력에서 post_id de-dupe가 발생해 `N>=5` 반복 측정이 아니라 3 unique row 시도가 되었다.
+- Change:
+  - `expert_main.py`에서 blocked candidate scope fallback 순서를 `current_work` 먼저, 그 다음 `context_only` 이미지 보류로 바꿨다.
+  - `current_work` scope 추론에는 `discussion_type in {noise, other}`와 `topicality in {unrelated, off_topic}` hard negative를 추가했다.
+  - `tests/test_expert_main_comment_metadata.py`에 `11716448`형 search-verified alias + nonpromotable image context 계약 테스트를 추가했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_293_REPORT_20260702.md`
+  - review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop293_295_publication_scope_contract_review.json`
+  - Data Analytics summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop293_295_publication_scope_data_analytics_artifact.json`
+- Result:
+  - code contract `GO_UNIT`
+  - Loop293 runtime `REVIEW_LOCKED_SEARCH_DEGRADED`
+  - Loop294 flip probe `INVALID_ABORTED_DUPLICATE_POST_ID_COLLAPSE`
+  - Loop295 smoke `ABORTED_INCOMPLETE_SEARCH_DEGRADED_NO_RUNTIME_VERDICT`
+- Verification:
+  - py_compile PASS
+  - `tests.test_expert_main_comment_metadata` 37 OK
+  - `tests.test_title_lead_search_inferred_guard` 180 OK
+  - Data Analytics validate/render PASS
+- Gate:
+  - search recovery `P0 / OPEN`
+  - full collateral approval `NOT_OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-292 - known-alias guard와 character-setting recall 계약 보강
 
 - Status: Implemented / runtime replay held

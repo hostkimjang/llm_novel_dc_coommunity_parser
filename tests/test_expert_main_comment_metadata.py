@@ -1727,6 +1727,86 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertIsNone(repaired_source["negative_evidence"])
         self.assertFalse(trace["gate_decision"]["publish_allowed"])
 
+    def test_blocked_search_verified_alias_prefers_current_scope_over_image_context_hold(self):
+        result = {
+            "post_id": 11716448,
+            "title": "아생갤 걍 히로인들 다 괴이 아니냐",
+            "content": [
+                "아레스랑 연 있었다고 엘리가 인간 확정이라기엔",
+                "괴이 확정인 라나도 홍차 마시고 아레스랑 연 있었다는 거 나왔었는데",
+            ],
+            "comments": ["다 인간에서 변질된거일수도"],
+            "image_count": 1,
+            "identity": {
+                "title_resolution_allowed": False,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "unresolved",
+                "is_resolved_work_discussion": False,
+                "discussion_type": "character_talk",
+                "topicality": "core_relevant",
+                "candidate_ledger_status": "promotion_blocked",
+                "blocked_official_title": "아카데미 생존 갤러리",
+                "blocked_official_title_url": "https://novelpia.com/novel/380218",
+                "anchor_type": "title_alias",
+                "context_sources": ["title", "body", "comments", "search", "image"],
+                "candidate_audit_lint": ["llm_only_sentence_candidate_pruned"],
+                "search_evidence_catalog": [
+                    {
+                        "title": "아카데미 생존 갤러리",
+                        "url": "https://novelpia.com/novel/380218",
+                        "domain": "novelpia.com",
+                        "snippet": "작품 공식 상세 페이지",
+                        "purpose": "title_anchor_official_probe",
+                        "source_tier": "novel_platform",
+                    }
+                ],
+                "image_evidence_catalog": [
+                    {
+                        "ocr_text": "ㄹㅇ인가요",
+                        "evidence_type": "character_visual_only",
+                        "title_role": "unknown",
+                        "promotion_eligible": False,
+                    }
+                ],
+                "candidate_ledger": {
+                    "blocked_official_title": "아카데미 생존 갤러리",
+                    "blocked_official_title_url": "https://novelpia.com/novel/380218",
+                    "anchor_type": "title_alias",
+                    "context_sources": ["title", "body", "comments", "search", "image"],
+                    "candidate_audit_lint_reasons": [
+                        "llm_only_sentence_candidate_pruned"
+                    ],
+                    "candidate_preservation_sources": [
+                        {
+                            "official_title": "아카데미 생존 갤러리",
+                            "heretic_url": "https://novelpia.com/novel/380218",
+                            "source_tier": "official_detail",
+                            "page_type": "novel_page",
+                            "reference_role": "candidate",
+                            "promotion_policy": "hold_without_promotion",
+                        }
+                    ],
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        trace = identity["publish_contract_trace"]
+        self.assertEqual(trace["scope_state"]["scope_kind"], "current_work")
+        self.assertEqual(trace["gate_decision"]["scope"]["scope_kind"], "current_work")
+        self.assertIn("scope_current_work", trace["reason_codes"])
+        self.assertNotIn("scope_not_current_work", trace["reason_codes"])
+        self.assertIn(
+            "official_detail_url_recovered_from_search_evidence",
+            trace["reason_codes"],
+        )
+        self.assertIn("character_bridge_variance_hold", trace["reason_codes"])
+        self.assertNotIn("body_comments_absent_or_empty", trace["reason_codes"])
+        self.assertFalse(trace["gate_decision"]["publish_allowed"])
+
     def test_blocked_character_bridge_without_official_detail_keeps_scope_null(self):
         result = {
             "identity": {

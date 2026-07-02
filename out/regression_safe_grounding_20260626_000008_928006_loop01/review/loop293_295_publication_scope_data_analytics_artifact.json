@@ -1,0 +1,42 @@
+{
+  "surface": "report",
+  "validated": true,
+  "rendered": true,
+  "title": "Loop293-295 publication scope 계약 점검",
+  "generated_at": "2026-07-02T15:12:00+09:00",
+  "sources": [
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop293_known_alias_guard_2_result_manifest.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop293_known_alias_guard_2_result_checkpoint.jsonl",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop294_safe_loss_flip_probe_n5_current_head_result_manifest.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop295_known_alias_guard_2_after_scope_order_result_manifest.json"
+  ],
+  "summary": {
+    "validate_artifact": "PASS",
+    "render_artifact": "PASS",
+    "gate_counts": {
+      "GO_UNIT": 2,
+      "REVIEW_LOCKED": 3,
+      "INVALID_ABORTED": 2,
+      "BACKGROUND_RUNNING": 3
+    },
+    "loop293": {
+      "input": 2,
+      "completed": 2,
+      "flushed": 2,
+      "search_status": "SEARCH_DEGRADED",
+      "gate": "REVIEW_LOCKED"
+    },
+    "loop294": {
+      "input": 3,
+      "completed": 0,
+      "gate": "INVALID_ABORTED_DUPLICATE_POST_ID_COLLAPSE"
+    },
+    "loop295": {
+      "input": 2,
+      "completed": 0,
+      "gate": "ABORTED_INCOMPLETE_SEARCH_DEGRADED_NO_RUNTIME_VERDICT"
+    },
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  }
+}

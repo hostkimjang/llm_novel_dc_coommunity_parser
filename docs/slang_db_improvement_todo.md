@@ -1,5 +1,17 @@
 # Slang DB Improvement TODO
 
+## 2026-07-02 Loop293 alias runtime / scope-order 후속
+
+- [x] Loop293에서 `댓천마 -> 댓글창의 천재 마법사` registry 보강의 targeted runtime을 확인했다.
+  - `11698890`은 public title resolved, `candidate_ledger_status=safe_resolved`, `scope=current_work`.
+  - 단, `SEARCH_DEGRADED`라 alias 품질 승인이나 full approval 근거는 아니다.
+- [x] `아생갤`은 alias 자체보다 final publication scope-order 문제가 더 컸음을 분리했다.
+  - `11716448`은 `아카데미 생존 갤러리` 후보/URL이 보존됐지만 pre-patch runtime trace는 `context_only`.
+  - `expert_main.py`에서 `current_work` scope를 먼저 평가하도록 계약을 보강했다.
+- [ ] search degraded 복구 후 `아생갤` scope-order smoke를 다시 실행한다.
+- [ ] 진짜 `N>=5` flip probe wrapper를 만든 뒤 slang/alias 안정성 판단을 갱신한다.
+- Gate: slang DB write-back 아님, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop292 source-native strong alias code-registry 보강
 
 - [x] Loop291 `REPROCESS` 근거 중 source-native strong alias를 production write-back 없이 code registry에만 반영했다.

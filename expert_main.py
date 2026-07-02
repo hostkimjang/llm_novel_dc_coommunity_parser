@@ -994,6 +994,10 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
         }
         if flags & hard_negative_flags:
             return {}
+        if str(identity.get("discussion_type") or "").strip().lower() in {"noise", "other"}:
+            return {}
+        if str(identity.get("topicality") or "").strip().lower() in {"unrelated", "off_topic"}:
+            return {}
         if "search" not in contexts:
             return {}
         if not ({"title", "body", "comments"} & contexts):
@@ -2216,9 +2220,9 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
             if code_text and code_text not in trace_reason_codes:
                 trace_reason_codes.append(code_text)
     if not scope_state:
-        scope_state = _infer_blocked_candidate_scope(blocked_title)
-    if not scope_state:
         scope_state = _infer_blocked_candidate_current_work_scope(blocked_title)
+    if not scope_state:
+        scope_state = _infer_blocked_candidate_scope(blocked_title)
     if scope_state:
         scope_kind = str(scope_state.get("scope_kind") or "").strip()
         if scope_kind:

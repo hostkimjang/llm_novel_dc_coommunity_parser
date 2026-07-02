@@ -1,5 +1,39 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop293 publication scope 계약 점검 체크
+
+- [x] Loop293 post-patch known-alias targeted replay를 완료했다.
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop293_known_alias_guard_2_result_manifest.json`
+  - input/completed/flushed/failed `2/2/2/0`
+  - `11698890`: `댓글창의 천재 마법사` targeted resolved, `candidate_ledger_status=safe_resolved`, `scope=current_work`
+  - `11716448`: `아카데미 생존 갤러리` 후보/URL 보존, public title null, pre-patch `scope=context_only`
+  - 두 행 모두 `SEARCH_DEGRADED`라 approval 근거가 아니며 `search-blind conditional`로만 본다.
+- [x] Loop294 safe-loss flip probe 시도를 무효 중단으로 기록했다.
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop294_safe_loss_flip_probe_n5_current_head_result_manifest.json`
+  - intended `N>=5` 반복 입력이 `input_post_count=3`으로 collapse되어 flip rate 갱신 근거가 아니다.
+- [x] publication scope 계약을 코드로 보강했다.
+  - `expert_main.py`: `current_work` scope를 `context_only` 이미지 보류보다 먼저 평가.
+  - noise/off-topic hard negative는 `current_work` scope 생성에서 제외.
+  - `tests\test_expert_main_comment_metadata.py`: `11716448`형 search-verified alias + nonpromotable image context 회귀 테스트 추가.
+- [x] Loop295 smoke를 중단 상태로 기록했다.
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop295_known_alias_guard_2_after_scope_order_result_manifest.json`
+  - input/completed/flushed `2/0/0`
+  - search degraded와 장시간 fallback/LLM 경로 때문에 runtime verdict 없음.
+- [x] Data Analytics artifact를 validate/render했다.
+  - summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop293_295_publication_scope_data_analytics_artifact.json`
+- [x] 보고서와 review artifact를 작성했다.
+  - report `docs\devs\loop_reports\LOOP_293_REPORT_20260702.md`
+  - review JSON/MD `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop293_295_publication_scope_contract_review.*`
+- [x] 검증했다.
+  - `py_compile expert_main.py` PASS
+  - `tests.test_expert_main_comment_metadata` 37 tests PASS
+  - `tests.test_title_lead_search_inferred_guard` 180 tests PASS
+  - `git diff --check` PASS, LF/CRLF 경고만 있음
+- [ ] 진짜 `N>=5` flip probe wrapper를 만든다. 동일 process 입력은 post_id de-dupe로 반복 측정이 무효화된다.
+- [ ] search degraded 복구 후 `11716448` scope-order smoke를 다시 실행한다.
+- [ ] background full375/bounded1200/golden18 완료 후 collateral/golden gate를 재평가한다.
+- Gate: code contract `GO_UNIT`, Loop293 runtime `REVIEW_LOCKED_SEARCH_DEGRADED`, Loop294 `INVALID_ABORTED`, Loop295 `ABORTED_INCOMPLETE`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop292 known-alias guard 계약 보강 체크
 
 - [x] Loop291 `repair_after_wrong_work=5` 중 known-alias 실패 경로를 코드 계약으로 보강했다.

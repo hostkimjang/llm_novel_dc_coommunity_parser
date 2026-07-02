@@ -1,0 +1,147 @@
+{
+  "loop": "293-295",
+  "generated_at": "2026-07-02T15:12:00+09:00",
+  "title": "Loop293-295 publication scope contract review",
+  "summary": {
+    "code_change": "promotion_blocked final publication trace now evaluates current_work scope before context_only image-context fallback, while preserving noise/off-topic hard negatives.",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal_status": "ACTIVE_NOT_COMPLETE",
+    "search_recovery_gate": "P0_OPEN",
+    "hard_hold_relaxation_allowed": false
+  },
+  "runtime_evidence": {
+    "loop293_known_alias_targeted": {
+      "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop293_known_alias_guard_2_result_manifest.json",
+      "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop293_known_alias_guard_2_result_checkpoint.jsonl",
+      "run_id": "20260702_135956_066198",
+      "input_post_count": 2,
+      "completed_count": 2,
+      "flushed_count": 2,
+      "failed_count": 0,
+      "large_run_complete": true,
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": true,
+      "gate": "RUNTIME_REVIEW_LOCKED_SEARCH_DEGRADED",
+      "rows": [
+        {
+          "post_id": 11698890,
+          "public_title": "댓글창의 천재 마법사",
+          "public_url": "https://novelpia.com/novel/370230",
+          "candidate_ledger_status": "safe_resolved",
+          "scope_kind": "current_work",
+          "search_status": "SEARCH_DEGRADED",
+          "gate_note": "targeted resolved but search-blind conditional"
+        },
+        {
+          "post_id": 11716448,
+          "public_title": null,
+          "public_url": null,
+          "blocked_official_title": "아카데미 생존 갤러리",
+          "blocked_official_title_url": "https://novelpia.com/novel/380218",
+          "candidate_ledger_status": "promotion_blocked",
+          "scope_kind": "context_only",
+          "search_status": "SEARCH_DEGRADED",
+          "gate_note": "pre-patch runtime exposed final scope ordering issue"
+        }
+      ]
+    },
+    "loop294_safe_loss_flip_probe": {
+      "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop294_safe_loss_flip_probe_n5_current_head_result_manifest.json",
+      "run_id": "20260702_144237_880295",
+      "input_post_count": 3,
+      "completed_count": 0,
+      "flushed_count": 0,
+      "gate": "INVALID_ABORTED_DUPLICATE_POST_ID_COLLAPSE",
+      "reason": "The intended N>=5 flip probe input was deduplicated by expert_main to 3 unique post_ids, so it cannot update flip rate evidence."
+    },
+    "loop295_scope_order_smoke": {
+      "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop295_known_alias_guard_2_after_scope_order_result_manifest.json",
+      "run_id": "20260702_145615_202223",
+      "input_post_count": 2,
+      "completed_count": 0,
+      "flushed_count": 0,
+      "gate": "ABORTED_INCOMPLETE_SEARCH_DEGRADED_NO_RUNTIME_VERDICT",
+      "reason": "The smoke replay was stopped after long degraded search and LLM fallback path; it produced no checkpoint rows."
+    },
+    "loop288_background_snapshot": [
+      {
+        "run": "full375",
+        "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop288_full375_current_head_search_nonlight_result_manifest.json",
+        "input": 375,
+        "completed": 45,
+        "flushed": 36,
+        "pending": 9,
+        "failed": 0,
+        "large_run_complete": false,
+        "light_mode": false
+      },
+      {
+        "run": "bounded1200",
+        "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop288_completed_source_bounded1200_search_nonlight_result_manifest.json",
+        "input": 1200,
+        "completed": 73,
+        "flushed": 40,
+        "pending": 33,
+        "failed": 0,
+        "large_run_complete": false,
+        "light_mode": false
+      },
+      {
+        "run": "golden18",
+        "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop288_golden18_current_head_search_nonlight_result_manifest.json",
+        "input": 18,
+        "completed": 13,
+        "flushed": 12,
+        "pending": 1,
+        "failed": 0,
+        "large_run_complete": false,
+        "light_mode": true
+      }
+    ]
+  },
+  "code_contract": {
+    "files": [
+      "expert_main.py",
+      "tests/test_expert_main_comment_metadata.py"
+    ],
+    "unit_gate": "GO",
+    "focused_tests": [
+      {
+        "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_expert_main_comment_metadata -v",
+        "result": "PASS",
+        "tests": 37
+      },
+      {
+        "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard -v",
+        "result": "PASS",
+        "tests": 180
+      },
+      {
+        "command": ".\\.venv312\\Scripts\\python.exe -m py_compile expert_main.py",
+        "result": "PASS"
+      },
+      {
+        "command": "git diff --check",
+        "result": "PASS_WITH_LF_CRLF_WARNINGS_ONLY"
+      }
+    ]
+  },
+  "data_analytics": {
+    "validate_artifact": "PASS",
+    "render_artifact": "PASS",
+    "repo_summary": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop293_295_publication_scope_data_analytics_artifact.json"
+  },
+  "gate_decision": {
+    "run_integrity": "TARGETED_LOOP293_COMPLETE_LOOP294_INVALID_LOOP295_ABORTED_BACKGROUND_RUNNING",
+    "targeted_canary_status": "REVIEW_LOCKED",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "loop_gate": "REVIEW"
+  },
+  "next_actions": [
+    "Implement a real N>=5 flip probe wrapper that launches independent executions or disables post_id de-duplication for probe-only mode.",
+    "Keep full375, bounded1200, and golden18 as background evidence until large_run_complete=true.",
+    "Re-run the 11716448 scope-order smoke only after search degraded recovery or a bounded non-degraded search source is available."
+  ]
+}
