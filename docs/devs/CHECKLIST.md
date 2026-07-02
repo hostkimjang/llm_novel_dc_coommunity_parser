@@ -1,5 +1,24 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop341 known alias safe-loss contract seed 체크
+
+- [x] Loop340 `known_alias_runtime_replay_required=6`을 검토했다.
+- [x] 일반화 가능한 2건만 code contract seed로 선택했다.
+  - `11703624`: `판초법사` -> `판초우의의 마법사`
+  - `11705251`: `창월야` -> `월야환담 창월야`
+- [x] `src/llm_batch/experts/utils.py`에 alias와 work cue를 추가했다.
+- [x] `tests/test_known_title_abbreviation_safe_loss_contract.py`에 재현 계약을 추가했다.
+- [x] 보류 4건을 runtime/search/policy 대상으로 남겼다.
+  - `11705230`, `11706827`, `11708443`, `11714907`
+- [x] 검증을 실행했다.
+  - py_compile PASS
+  - safe-loss contract `9` tests PASS
+  - abbreviation support `29` tests PASS
+  - arbiter curated alias guard `21` tests PASS
+- [ ] post-patch targeted runtime replay 전까지 residual `126` 감소로 계산하지 않는다.
+- [ ] Loop339 background는 dispatch HEAD `77bdbe48` 기준이라 이번 patch approval 근거로 쓰지 않는다.
+- Gate: code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, collateral `NO-GO / residual_action_queue_rows=126`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop340 collateral183 residual action queue 체크
 
 - [x] Loop339 대형 런을 기다리는 대신 collateral183 residual split으로 전환했다.
@@ -20,7 +39,8 @@
   - py_compile PASS
   - `tests.test_split_collateral_action_queue` PASS, `2` tests
   - queue generation `--fail-on-validation-issue` PASS
-- [ ] `repair_safe_loss=76` 중 일반화 가능한 alias/work-bridge 계약 묶음을 다음 코드 작업으로 선택한다.
+- [x] `repair_safe_loss=76` 중 일반화 가능한 alias/work-bridge 계약 묶음을 다음 코드 작업으로 선택했다.
+  - Loop341에서 `known_alias_runtime_replay_required=6` 중 2건만 code contract seed로 반영했다.
 - [ ] `HOLD=31`은 native image/web/source 또는 policy review 전까지 approval 경로로 올리지 않는다.
 - Gate: queue split `GO`, collateral `NO-GO / residual_action_queue_rows=126`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 

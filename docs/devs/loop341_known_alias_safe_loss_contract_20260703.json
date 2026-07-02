@@ -1,0 +1,88 @@
+{
+  "loop": 341,
+  "date": "2026-07-03",
+  "base_head": "70b39183",
+  "status": "ACTIVE / NOT_COMPLETE",
+  "purpose": "Loop340 known_alias_runtime_replay_required 6건 중 shared alias/work-cue 계약으로 일반화 가능한 2건만 코드 seed로 반영한다.",
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_341_REPORT_20260703.md",
+    "state": "docs/devs/loop341_known_alias_safe_loss_contract_20260703.json",
+    "source_queue": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop340_collateral183_residual_action_queue.json"
+  },
+  "source": {
+    "loop": 340,
+    "action_group": "known_alias_runtime_replay_required",
+    "source_rows": 6,
+    "post_ids": [11703624, 11705230, 11705251, 11706827, 11708443, 11714907]
+  },
+  "implemented_rows": [
+    {
+      "post_id": 11703624,
+      "alias": "판초법사",
+      "official_title": "판초우의의 마법사",
+      "work_cues": ["경찰력", "정보통제", "게이트"],
+      "reason": "직접 별칭과 작품 내부 정보통제 문맥이 함께 있어 registry alias와 work-cue 계약으로 일반화 가능하다."
+    },
+    {
+      "post_id": 11705251,
+      "alias": "창월야",
+      "official_title": "월야환담 창월야",
+      "work_cues": ["강한", "서열", "파워밸런스"],
+      "reason": "subtitle alias와 캐릭터 강함/서열 문맥이 함께 있어 registry alias와 work-cue 계약으로 일반화 가능하다."
+    }
+  ],
+  "deferred_rows": [
+    {"post_id": 11705230, "reason": "월야환담 exact/series title 성격이라 registry alias 추가보다 runtime/policy replay가 먼저다."},
+    {"post_id": 11706827, "reason": "기계공주는 이미 registry에 있어 runtime replay 대상이다."},
+    {"post_id": 11708443, "reason": "괴담출근은 이미 registry에 있어 runtime replay 대상이다."},
+    {"post_id": 11714907, "reason": "아생갤은 이미 registry에 있어 runtime/search recovery 대상이다."}
+  ],
+  "code_changes": {
+    "src/llm_batch/experts/utils.py": [
+      "KNOWN_TITLE_ABBREVIATIONS: 판초법사 -> 판초우의의 마법사",
+      "KNOWN_TITLE_ABBREVIATIONS: 창월야 -> 월야환담 창월야",
+      "curated alias work cue: 게이트, 정보통제, 경찰력, 파워밸런스, 서열, 강한, 강함, 강캐, 약캐"
+    ],
+    "tests/test_known_title_abbreviation_safe_loss_contract.py": [
+      "Loop301 direct alias release contract에 판초법사/창월야 재현 케이스 추가"
+    ]
+  },
+  "observed_loop339_background": {
+    "dispatch_head": "77bdbe48",
+    "current_repo_base_head": "70b39183",
+    "approval_use": "NOT_APPROVAL_FOR_THIS_PATCH",
+    "processes": {
+      "full375": "alive pid=131976",
+      "bounded1200_r2": "alive pid=49024",
+      "golden18_r2": "alive pid=130412",
+      "safe_loss_n5": "alive pid=134636"
+    },
+    "snapshot": {
+      "full375": "completed/flushed/pending/failed=1/1/0/0, large_run_complete=false",
+      "bounded1200_r2": "completed/flushed/pending/failed=6/0/6/0, partial_flush_gap=true, ordered_flush_blocked=true",
+      "golden18_r2": "completed/flushed/pending/failed=1/1/0/0, large_run_complete=false",
+      "safe_loss_n5": "completed result json=1/15, 11674712 r01 done, 11660237 r01 running"
+    }
+  },
+  "verification": {
+    "py_compile": "PASS: src/llm_batch/experts/utils.py tests/test_known_title_abbreviation_safe_loss_contract.py",
+    "safe_loss_contract": "PASS: tests.test_known_title_abbreviation_safe_loss_contract, 9 tests",
+    "abbreviation_support": "PASS: tests.test_known_title_abbreviation_support, 29 tests",
+    "arbiter_curated_alias_guard": "PASS: tests.test_arbiter_curated_alias_guard, 21 tests"
+  },
+  "gate": {
+    "code_contract": "GO_UNIT",
+    "runtime_replay": "NOT_RUN_AFTER_PATCH",
+    "collateral_gate": "NO-GO / residual_action_queue_rows=126",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next_actions": [
+    "2 implemented rows에 대해 targeted runtime replay를 실행해 residual 감소 여부를 확인한다.",
+    "deferred 4 rows는 runtime/search recovery 또는 policy review로 처리한다.",
+    "Loop339 large/background runs는 완료 전 approval 근거로 쓰지 않는다."
+  ]
+}

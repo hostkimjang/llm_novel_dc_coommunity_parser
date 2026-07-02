@@ -1,5 +1,16 @@
 # Slang DB Improvement TODO
 
+## 2026-07-03 Loop341 known alias seed / slang caveat
+
+- [x] Loop340 `known_alias_runtime_replay_required=6` 중 slang/alias registry로 일반화 가능한 2건만 반영했다.
+  - `판초법사 -> 판초우의의 마법사`
+  - `창월야 -> 월야환담 창월야`
+- [x] 이번 변경은 slang DB write-back이 아니라 shared `KNOWN_TITLE_ABBREVIATIONS`와 work-cue code contract다.
+- [x] 검증은 py_compile PASS, safe-loss contract `9`, abbreviation support `29`, arbiter curated alias guard `21` PASS다.
+- [ ] targeted runtime replay 전까지 slang/alias 품질 승인 또는 residual closure로 세지 않는다.
+- [ ] `11705230`, `11706827`, `11708443`, `11714907`은 runtime/search recovery 또는 policy review로 유지한다.
+- Gate: slang DB write-back 아님, code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, collateral `NO-GO / residual_action_queue_rows=126`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop332 collateral183 queue / slang caveat
 
 - [x] `collateral183` source-native verdict 전체를 합산해 safe-loss/alias 관련 잔여 큐를 다시 고정했다.
@@ -9,9 +20,9 @@
 - [x] 이번 회차는 slang DB write-back이 아니라 gate accounting/repair queue 산출물이다.
   - summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop332_collateral183_combined_source_native_queue.json`
   - report `docs\devs\loop_reports\LOOP_332_REPORT_20260703.md`
-- [ ] `REPROCESS=95` 중 slang/alias registry로 일반화 가능한 항목만 별도 runtime replay 후보로 올린다.
+- [x] `REPROCESS=95` 중 slang/alias registry로 일반화 가능한 일부를 별도 후보로 올렸다.
   - Loop340에서 residual action queue 분해는 완료했다: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop340_collateral183_residual_action_queue.json`
-  - `repair_safe_loss=76`, `known_alias_runtime_replay_required=6`은 다음 후보 선별 입력이다.
+  - Loop341에서 `known_alias_runtime_replay_required=6` 중 2건만 code contract seed로 반영했다.
 - [ ] `ACCEPT=57`은 gate accounting 배선 전 regression count에서 차감하지 않는다.
 - Gate: slang DB write-back 아님, collateral queue `REVIEW-LOCKED / COMPLETE_183_OF_183 / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 

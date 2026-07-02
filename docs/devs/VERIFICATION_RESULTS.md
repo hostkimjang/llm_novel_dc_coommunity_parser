@@ -1,5 +1,24 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop341 known alias safe-loss contract seed
+
+- 범위: Loop340 `known_alias_runtime_replay_required=6` 중 일반화 가능한 2건을 shared alias/work-cue 계약으로 고정한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_341_REPORT_20260703.md`
+  - state `docs\devs\loop341_known_alias_safe_loss_contract_20260703.json`
+  - source queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop340_collateral183_residual_action_queue.json`
+- Evidence:
+  - implemented `11703624`: `판초법사` -> `판초우의의 마법사`
+  - implemented `11705251`: `창월야` -> `월야환담 창월야`
+  - deferred `11705230`, `11706827`, `11708443`, `11714907`
+  - Loop339 background latest observed: full375 `1/1/0/0`, bounded1200 r2 `6/0/6/0`, golden18 r2 `1/1/0/0`, safe-loss N5 `1/15`; dispatch HEAD `77bdbe48`라 이번 patch approval 근거가 아니다.
+- Verification:
+  - py_compile PASS
+  - `tests.test_known_title_abbreviation_safe_loss_contract` PASS, `9` tests
+  - `tests.test_known_title_abbreviation_support` PASS, `29` tests
+  - `tests.test_arbiter_curated_alias_guard` PASS, `21` tests
+- Gate: code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, collateral `NO-GO / residual_action_queue_rows=126`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop340 collateral183 residual action queue
 
 - 범위: Loop332/333 collateral183 adjusted residual `126`을 post_id/action group 단위 실행 큐로 분해한다.

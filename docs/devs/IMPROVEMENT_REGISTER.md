@@ -1,5 +1,38 @@
 # Improvement Register
 
+## IMP-20260703-341 - known alias safe-loss contract seed
+
+- 상태: code contract seed 완료 / runtime replay 미실행 / approval 미개방
+- Loop: 341
+- 문제:
+  - Loop340 `known_alias_runtime_replay_required=6`은 모두 runtime replay 후보지만, 일부는 shared alias/work-cue 계약으로 일반화할 수 있었다.
+  - 대형 background 완료를 기다리기만 하면 actionable queue 감소가 없다.
+- 변경:
+  - `src/llm_batch/experts/utils.py`에 `판초법사`, `창월야` alias를 추가했다.
+  - curated alias work discussion cue에 정보통제/경찰력/서열/강함 계열 cue를 추가했다.
+  - `tests/test_known_title_abbreviation_safe_loss_contract.py`에 두 재현 계약을 추가했다.
+- 근거:
+  - report `docs/devs/loop_reports/LOOP_341_REPORT_20260703.md`
+  - state `docs/devs/loop341_known_alias_safe_loss_contract_20260703.json`
+  - source queue `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop340_collateral183_residual_action_queue.json`
+- 결과:
+  - implemented rows `2`: `11703624`, `11705251`
+  - deferred rows `4`: `11705230`, `11706827`, `11708443`, `11714907`
+  - residual action queue는 runtime replay 전까지 `126`으로 유지한다.
+- 검증:
+  - py_compile PASS.
+  - `tests.test_known_title_abbreviation_safe_loss_contract` PASS, `9` tests.
+  - `tests.test_known_title_abbreviation_support` PASS, `29` tests.
+  - `tests.test_arbiter_curated_alias_guard` PASS, `21` tests.
+- Gate:
+  - code contract `GO_UNIT`
+  - runtime replay `NOT_RUN_AFTER_PATCH`
+  - collateral `NO-GO / residual_action_queue_rows=126`
+  - search recovery `P0 / OPEN`
+  - `promotion_blocked=search-blind conditional`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260703-340 - collateral183 residual action queue split
 
 - 상태: residual queue split 완료 / approval 미개방

@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop341 Addendum - known alias safe-loss contract seed
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop341은 approval 회차가 아니라 Loop340 `known_alias_runtime_replay_required=6` 중 2건만 shared alias/work-cue 계약으로 올린 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_341_REPORT_20260703.md`, state `docs/devs/loop341_known_alias_safe_loss_contract_20260703.json`, source queue `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop340_collateral183_residual_action_queue.json`.
+- 코드 변경: `판초법사 -> 판초우의의 마법사`, `창월야 -> 월야환담 창월야`를 `KNOWN_TITLE_ABBREVIATIONS`에 추가했고, `게이트/정보통제/경찰력/파워밸런스/서열/강한/강함/강캐/약캐`를 curated alias work cue에 추가했다.
+- 보류: `11705230`, `11706827`, `11708443`, `11714907`은 registry 중복 또는 exact/policy/search-recovery 성격이라 runtime replay 또는 policy review로 남긴다.
+- Runtime caveat: Loop339 background는 `77bdbe48` dispatch 증거라 현재 base `70b39183` 이후 패치의 승인 근거가 아니다. 최신 관찰은 full375 `1/1/0/0`, bounded1200 r2 `6/0/6/0`, golden18 r2 `1/1/0/0`, safe-loss N5 `1/15`다.
+- Verification: py_compile PASS, safe-loss contract `9` PASS, abbreviation support `29` PASS, arbiter curated alias guard `21` PASS.
+- Gate: code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, collateral `NO-GO / residual_action_queue_rows=126`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop340 Addendum - collateral183 residual action queue
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop340은 approval 회차가 아니라 Loop332/333 collateral183 residual `126`을 실행 가능한 post_id/action group 큐로 분해한 회차다.

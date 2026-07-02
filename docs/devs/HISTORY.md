@@ -1,5 +1,17 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop341 known alias safe-loss contract seed
+
+- Loop340 `known_alias_runtime_replay_required=6`에서 일반화 가능한 2건만 코드 계약으로 올렸다.
+- `src/llm_batch/experts/utils.py`에 `판초법사 -> 판초우의의 마법사`, `창월야 -> 월야환담 창월야`를 추가했다.
+- curated alias work cue에 `게이트`, `정보통제`, `경찰력`, `파워밸런스`, `서열`, `강한`, `강함`, `강캐`, `약캐`를 추가했다.
+- `tests/test_known_title_abbreviation_safe_loss_contract.py`에 두 재현 계약을 추가했다.
+- `11705230`, `11706827`, `11708443`, `11714907`은 registry 중복 또는 exact/policy/search 성격이라 runtime replay/policy review로 남겼다.
+- Loop339 background latest observed는 full375 `1/1/0/0`, bounded1200 r2 `6/0/6/0`, golden18 r2 `1/1/0/0`, safe-loss N5 `1/15`다. 다만 dispatch HEAD `77bdbe48` 증거라 이번 patch approval 근거가 아니다.
+- 검증은 py_compile PASS, safe-loss contract `9` PASS, abbreviation support `29` PASS, arbiter curated alias guard `21` PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_341_REPORT_20260703.md`, state는 `docs/devs/loop341_known_alias_safe_loss_contract_20260703.json`이다.
+- Gate는 code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, collateral `NO-GO / residual_action_queue_rows=126`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop340 collateral183 residual action queue
 
 - Loop339 대형 런 완료 대기만 반복하지 않도록 Loop332/333 collateral183 adjusted residual `126`을 action group 큐로 분해했다.
