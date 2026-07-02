@@ -183,6 +183,14 @@ class SynthesizerExpert:
         self.name = "Synthesizer"
         self.emoji = "🔬"
 
+    @staticmethod
+    def _hidden_reference_dicts(hidden: Any) -> List[Dict[str, Any]]:
+        if isinstance(hidden, dict):
+            return [hidden]
+        if not isinstance(hidden, list):
+            return []
+        return [item for item in hidden if isinstance(item, dict)]
+
     def _call_llm(self, user_prompt: str) -> Optional[Dict[str, Any]]:
         """LLM 호출 + JSON 파싱"""
         response_text = ""
@@ -400,13 +408,13 @@ class SynthesizerExpert:
             file=sys.stderr,
         )
 
-        hidden = result.get("hidden_references", [])
-        if hidden:
+        hidden_refs = self._hidden_reference_dicts(result.get("hidden_references", []))
+        if hidden_refs:
             print(
-                f"[{_ts()}][{self.emoji}]   숨은 참조 {len(hidden)}개 발견:",
+                f"[{_ts()}][{self.emoji}]   숨은 참조 {len(hidden_refs)}개 발견:",
                 file=sys.stderr,
             )
-            for h in hidden[:3]:
+            for h in hidden_refs[:3]:
                 print(
                     f"[{_ts()}][{self.emoji}]     - [{h.get('reference_type', '?')}] "
                     f"\"{h.get('text', '')}\" → {h.get('matched_to', '?')}",
@@ -638,10 +646,12 @@ class SynthesizerExpert:
             )
 
         # 숨은 참조
-        hidden = synth_result.get("hidden_references", [])
-        if hidden:
-            parts.append(f"🔎 숨은 참조 {len(hidden)}개:")
-            for h in hidden[:3]:
+        hidden_refs = SynthesizerExpert._hidden_reference_dicts(
+            synth_result.get("hidden_references", [])
+        )
+        if hidden_refs:
+            parts.append(f"🔎 숨은 참조 {len(hidden_refs)}개:")
+            for h in hidden_refs[:3]:
                 ref_type = h.get("reference_type", "?")
                 text = h.get("text", "")
                 matched = h.get("matched_to", "?")

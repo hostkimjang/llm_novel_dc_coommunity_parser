@@ -1,5 +1,30 @@
 # Development Checklist
 
+## 2026-07-02 Loop278 live run health audit / Synthesizer hidden reference guard 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] Loop264 대형 run 최신 health audit를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop278_latest_live_run_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `203`
+  - checkpoint_rows `250`
+  - pending_count_actual `47`
+  - frontier post `11713200`
+  - `frontier_worker_trace.status=in_progress_in_worker_log`
+  - worker `W19`, last_event `synthesizer_start`
+  - `search_evidence=REVIEW`
+  - `publication_contract_convergence=GO`
+  - violation_row_count `0`
+- [x] `logs\expert_run_20260702_065642_030743_W27.log:6042`의 Synthesizer `hidden_references` non-dict 로깅 예외를 확인했다.
+- [x] `src\llm_batch\experts\synthesizer.py`가 dict hidden reference만 로그/Arbiter 요약에 쓰도록 방어했다.
+- [x] focused verification을 실행했다.
+  - `tests.test_synthesizer_hidden_references`: PASS, `2` tests.
+  - py_compile: PASS.
+- [ ] run 완료 후 final health audit에서 `run_integrity_gate=GO`, `search_evidence=GO`, `publication_contract_convergence=GO`를 모두 확인한다.
+- [ ] runtime hygiene `PASS`를 completed source나 semantic approval로 승격하지 않는다.
+- Gate: runtime hygiene patch `PASS`, current run integrity `IN_PROGRESS`, completed source `PENDING`, search evidence `REVIEW`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop277 completed source 후보 publication contract gate 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

@@ -1,5 +1,38 @@
 # Improvement Register
 
+## IMP-20260702-278 - Synthesizer hidden reference logging guard
+
+- Status: Implemented / approval blocked
+- Loop: 278
+- Problem:
+  - Live worker log `logs\expert_run_20260702_065642_030743_W27.log:6042`에서 Synthesizer가 `hidden_references`의 non-dict item을 dict로 가정해 `'int' object has no attribute 'get'` 예외를 냈다.
+  - Orchestrator가 다음 단계로 진행했지만 health audit의 `fatal_or_trace_line` 신호로 남아 장기 run hygiene를 낮춘다.
+- Change:
+  - `SynthesizerExpert._hidden_reference_dicts(...)`를 추가했다.
+  - `analyze()` 로그와 `summarize_for_arbiter()`가 dict hidden reference만 사용하게 했다.
+  - non-dict item은 결론 신호로 쓰지 않고 무시한다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_278_REPORT_20260702.md`
+  - health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop278_latest_live_run_health_audit.json`
+  - runtime log `logs\expert_run_20260702_065642_030743_W27.log:6042`
+- Result:
+  - runtime hygiene patch `PASS`
+  - latest audit `run_integrity_gate=IN_PROGRESS`
+  - result_rows `203`
+  - checkpoint_rows `250`
+  - pending_count_actual `47`
+  - `search_evidence=REVIEW`
+  - `publication_contract_convergence=GO`
+- Verification:
+  - `tests.test_synthesizer_hidden_references` `2` tests OK
+  - py_compile PASS
+- Gate:
+  - completed source `PENDING`
+  - run integrity `IN_PROGRESS`
+  - search evidence `REVIEW`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-277 - completed source candidate publication contract requirement
 
 - Status: Implemented / approval blocked

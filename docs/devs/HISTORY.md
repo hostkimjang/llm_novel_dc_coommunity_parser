@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-02 - Loop278 live run health audit와 Synthesizer hidden reference guard
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- Loop264 대형 run 최신 health audit를 실행했고 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop278_latest_live_run_health_audit.json`이다.
+- audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows `203`, checkpoint_rows `250`, pending_count_actual `47`이다.
+- frontier는 `global_idx=204`, post_id `11713200`, title `후회프듀 셍피루상 걍 쉬운 남잔듯`, worker `W19`, last_event `synthesizer_start`다.
+- `search_evidence=REVIEW`, `publication_contract_convergence=GO`, violation_row_count `0`이다.
+- worker log `logs/expert_run_20260702_065642_030743_W27.log:6042`에서 Synthesizer `hidden_references` non-dict item 로깅 예외를 확인했고, `src/llm_batch/experts/synthesizer.py`에서 dict 항목만 로깅/요약하도록 방어했다.
+- Gate는 runtime hygiene patch `PASS`, current run integrity `IN_PROGRESS`, completed source `PENDING`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop277 completed source 후보 publication contract gate 추가
 
 - 동일 38-row parent packet은 재실행하지 않았다.

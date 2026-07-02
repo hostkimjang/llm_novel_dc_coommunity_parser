@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop278 Addendum - live run health audit and Synthesizer hidden reference guard
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: Loop264 대형 run의 최신 run health/frontier/search/publication gate를 감사하고, worker log에서 관측된 Synthesizer hidden reference 로깅 예외를 방어한다.
+- 코드 변경: `src/llm_batch/experts/synthesizer.py`가 `hidden_references` 중 dict 항목만 로그와 Arbiter 요약에 사용한다. non-dict item은 결론 신호로 승격하지 않고 무시한다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_278_REPORT_20260702.md`, health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop278_latest_live_run_health_audit.json`.
+- Evidence: audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows `203`, checkpoint_rows `250`, pending_count_actual `47`이다. frontier는 post_id `11713200`, worker `W19`, last_event `synthesizer_start`다. `search_evidence=REVIEW`, `publication_contract_convergence=GO`, violation_row_count `0`이다.
+- Verification: `tests.test_synthesizer_hidden_references` `2` tests OK, py_compile PASS.
+- Gate: runtime hygiene patch `PASS`, completed source `PENDING`, current run integrity `IN_PROGRESS`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop277 Addendum - completed source 후보 publication contract gate
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

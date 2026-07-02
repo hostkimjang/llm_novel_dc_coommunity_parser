@@ -1,5 +1,37 @@
 # Verification Results
 
+## 2026-07-02 Loop278 live run health audit and Synthesizer hidden reference guard
+
+- 범위: Loop264 대형 run 최신 health audit를 남기고, Synthesizer `hidden_references`에 non-dict item이 섞일 때 로깅/Arbiter 요약이 실패하지 않게 한다.
+- Code:
+  - `src/llm_batch/experts/synthesizer.py`
+  - `tests/test_synthesizer_hidden_references.py`
+- Explicit health audit:
+  - command: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_065642_030743 --manifest out\expert_result_20260702_065632_479765_manifest.json --checkpoint out\expert_result_20260702_065632_479765_checkpoint.jsonl --result-json out\expert_result_20260702_065632_479765.json --pending-snapshot out\expert_result_20260702_065632_479765_pending_snapshot.json --input-jsonl tests\inputs\test01.jsonl --log-glob "logs\expert_run_20260702_065642_030743_W*.log" --output out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop278_latest_live_run_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `203`, checkpoint_rows `250`, pending_count_actual `47`
+  - frontier post `11713200`, title `후회프듀 셍피루상 걍 쉬운 남잔듯`, source_line `219`
+  - `frontier_worker_trace.status=in_progress_in_worker_log`, worker `W19`, last_event `synthesizer_start`
+  - `search_evidence.gate=REVIEW`
+  - `publication_contract_convergence.gate=GO`
+  - publication violation_row_count `0`
+  - log evidence `logs\expert_run_20260702_065642_030743_W27.log:6042`
+- Focused test:
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_synthesizer_hidden_references -v` -> PASS, `2` tests.
+  - `.\.venv312\Scripts\python.exe -m py_compile src\llm_batch\experts\synthesizer.py tests\test_synthesizer_hidden_references.py` -> PASS.
+- Gate:
+  - runtime hygiene patch: `PASS`
+  - current run integrity: `IN_PROGRESS`
+  - completed source: `PENDING`
+  - search evidence: `REVIEW`
+  - publication contract convergence: `GO` for audited flushed rows
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_278_REPORT_20260702.md`
+
 ## 2026-07-02 Loop277 completed source 후보 publication contract gate
 
 - 범위: completed source approval 후보 탐색에서 publication contract convergence `GO`를 필수 조건으로 둔다.

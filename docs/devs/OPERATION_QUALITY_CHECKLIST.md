@@ -6,6 +6,19 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop278 live run health / Synthesizer hidden reference quality gate
+
+- 근거:
+  - [x] Loop264 대형 run의 최신 health audit를 실행했다.
+  - [x] ordered flush frontier와 worker trace를 같은 audit에 남겼다.
+  - [x] Synthesizer `hidden_references` non-dict item 로깅 예외를 재현 가능한 로그 근거로 확인했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_278_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] health audit는 `IN_PROGRESS/ordered_flush_gap_in_progress`이며 completed source가 아니다.
+  - [x] `publication_contract_convergence=GO`는 flushed rows contract 수렴만 뜻한다.
+  - [x] Synthesizer hidden reference guard는 runtime hygiene patch이며 semantic approval 근거가 아니다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop277 completed source 후보 publication contract quality gate
 
 - 근거:
