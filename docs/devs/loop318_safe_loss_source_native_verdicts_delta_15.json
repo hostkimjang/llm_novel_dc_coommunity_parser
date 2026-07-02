@@ -1,0 +1,274 @@
+{
+  "review_id": "loop318_safe_loss_source_native_verdicts_delta_15",
+  "scope": "Loop301 safe_loss_resolved_to_null next source-native verdict slice after Loop317 (15 rows)",
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "rows": [
+    {
+      "post_id": 11697249,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_platform_event_not_work",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 `버거피아 합석`과 댓글은 노벨피아 오프라인/플랫폼 이벤트 합석 맥락이다. 기존 survey도 동명 웹소설 없음과 이벤트 오매칭을 기록했으므로 before `버거피아`를 public work로 복구하지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11697249",
+        "docs/devs/detection_survey_20260626_errors.json#post_id=11697249"
+      ]
+    },
+    {
+      "post_id": 11697256,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "hold_multi_candidate_recommendation_thread",
+      "evidence_grade": "Medium",
+      "action": [
+        "multi_candidate_recommendation_review_required"
+      ],
+      "rationale_ko": "원문은 TS 장르 추천 요청이고 댓글에 `황제의 딸로 환생했습니다`, `꼬시러 왔습니다` 등 여러 추천 후보가 나온다. 후보 C1은 댓글에 직접 있지만 단일 public title로 확정하면 다중 추천 thread overreach가 되므로 HOLD한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11697256",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11697256"
+      ]
+    },
+    {
+      "post_id": 11697267,
+      "selected_option_id": "C1",
+      "selected_title": "아카데미 생존 갤러리",
+      "selected_url": "https://novelpia.com/novel/390001",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias_and_character_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "native_web_or_url_review_required"
+      ],
+      "rationale_ko": "제목 `아생갤`은 후보 작품 약칭이고 본문은 `라나 정체`라는 작품 내부 캐릭터/설정 반전을 직접 말한다. title은 source-native로 맞지만, 기존 native-web 메모의 URL mismatch caveat 때문에 URL은 별도 확인 대상으로 남긴다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11697267",
+        "https://novelpia.com/novel/390001",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11697267"
+      ]
+    },
+    {
+      "post_id": 11698859,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_unverified_exact_title_or_character_phrase",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 `귤부인 대롱대롱`은 캐릭터/상태 묘사처럼 보이고 before는 URL 없이 같은 문구를 작품 제목으로 승격했다. 기존 survey도 검색 근거 0건의 exact-title 과대 resolved로 기록했으므로 after null/HOLD를 선호한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11698859",
+        "docs/devs/detection_survey_20260626_errors.json#post_id=11698859"
+      ]
+    },
+    {
+      "post_id": 11698865,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_character_subpage_wrong_work",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문은 `리제로`, `스바루`, 6장/7장 전개를 말하지만 before는 `나츠키 스바루/작중 행적/5~8장` 같은 위키성 캐릭터 하위 문서다. 작품 토론 후보는 `Re: 제로부터 시작하는 이세계 생활` 쪽이며 before C2는 wrong-work라 after null을 선호한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11698865",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11698865"
+      ]
+    },
+    {
+      "post_id": 11698870,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "hold_classic_literature_scope_review_required",
+      "evidence_grade": "Medium",
+      "action": [
+        "native_web_or_scope_review_required"
+      ],
+      "rationale_ko": "원문은 `인간실격` 고전문학/작가 자살 맥락을 말해 title surface 자체는 강하지만, 후보는 URL이 없고 기존 native-web 메모도 classic-literature scope HOLD로 분리했다. parser public-work scope 정책 확인 전 repair로 세지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11698870",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11698870"
+      ]
+    },
+    {
+      "post_id": 11698871,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_character_page_wrong_work",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문은 `리제로` 하렘/에밀리아/렘 전개 토론이다. before는 작품이 아니라 `렘(Re: 제로부터 시작하는 이세계 생활)` 캐릭터 페이지이므로 safe title 복구 대상이 아니라 wrong-work/retarget 후보로 분리한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11698871",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11698871"
+      ]
+    },
+    {
+      "post_id": 11698880,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "hold_known_variance_secondary_comparison_work",
+      "evidence_grade": "Medium",
+      "action": [
+        "publish_contract_trace_or_variance_review_required"
+      ],
+      "rationale_ko": "제목의 주 대상은 `아생갤`이고 본문 `가챠펑크 세드릭도 그렇고`는 강한 secondary comparison work 근거다. 이 행은 N5 flip/variance control로 이미 남아 있으므로 before C1을 단순 safe-loss repair로 세지 않고 publish/block trace와 primary-vs-secondary scope를 별도 검증한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11698880",
+        "docs/devs/loop_reports/LOOP_288_REPORT_20260702.md#post_id=11698880",
+        "docs/devs/loop_reports/LOOP_98_101_REPORT_20260629.md#post_id=11698880"
+      ]
+    },
+    {
+      "post_id": 11698895,
+      "selected_option_id": "C1",
+      "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_alias_and_rimworld_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "native_web_or_url_review_required"
+      ],
+      "rationale_ko": "제목 `랫따싶`과 본문 `림월드` 플레이 재점화 맥락은 기존 테스트/문서에서 `[림월드]변방계에서 회귀자로 살아남기` 후보군의 직접 alias/context로 다뤄진다. URL은 없지만 before title 자체는 source-native로 맞아 after null은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11698895",
+        "tests/test_candidate_audit.py#랫따싶",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11698895"
+      ]
+    },
+    {
+      "post_id": 11698897,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_wrong_before_title_expected_candidate_preserved_elsewhere",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문은 `랫따싶`과 `림월드 요소`를 말하므로 expected candidate는 `[림월드]변방계에서 회귀자로 살아남기` 계열이다. before `스페이스 오페라`는 wrong title이며, 기존 docs도 `스페이스 오페라` 제외와 candidate preservation을 따로 기록한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11698897",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11698897",
+        "tests/test_title_lead_search_inferred_guard.py#post_id=11698897"
+      ]
+    },
+    {
+      "post_id": 11698904,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_generic_trope_recommendation_overreach",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문은 `타락한 TS녀`, `마법소녀 타락시키는 소설 추천`이라는 트로프 추천요청이고 특정 작품명/URL/후보 앵커가 없다. before `타락`은 일반어/generic title overreach라 after null을 선호한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11698904",
+        "docs/devs/detection_survey_20260626_errors.json#post_id=11698904"
+      ]
+    },
+    {
+      "post_id": 11700470,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_generic_or_wrong_before_title",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 텍스트는 주인공 죄목 나열과 댓글 `교수형`뿐이고 이미지가 있다. 기존 expected-work 이력은 다른 후보를 가리키며 before `가스라이팅`을 직접 지지하는 title/URL/작품 앵커가 없으므로 after null/HOLD를 선호한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11700470",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11700470"
+      ]
+    },
+    {
+      "post_id": 11700483,
+      "selected_option_id": "C1",
+      "selected_title": "니들 생각 다 들린다",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias_and_character_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "native_web_or_url_review_required"
+      ],
+      "rationale_ko": "제목 `니생들`은 `니들 생각 다 들린다`의 curated abbreviation이고 댓글 `누리`, `대 누 리`도 작품 내부 캐릭터/이모티콘 맥락이다. URL은 빠졌지만 title 자체는 source-native로 맞으므로 after null은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11700483",
+        "src/llm_batch/experts/utils.py#니생들",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11700483"
+      ]
+    },
+    {
+      "post_id": 11702044,
+      "selected_option_id": "C1",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_url": "https://novelpia.com/novel/102155",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias_and_internal_setting",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `괴담텔`은 후보 작품 약칭이고 본문/댓글은 `천국편`, `305호`, `QnA`, 떡밥 등 작품 내부 전개를 직접 토론한다. after null은 안정 작품 discussion을 잃은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11702044",
+        "https://novelpia.com/novel/102155"
+      ]
+    },
+    {
+      "post_id": 11702085,
+      "selected_option_id": "C1",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_url": "https://novelpia.com/novel/102155?p_id=novelsup6_5",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_character_setting_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "url_canonicalization_review_required"
+      ],
+      "rationale_ko": "원문은 `알레프`, `아리`, 호텔파티, 부처/흑송이 여사님 등 `괴담 호텔 탈출기` 내부 인물/설정 토론이다. 후보 title은 source-native로 맞고, URL의 tracking query는 별도 canonicalization 대상으로 남긴다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11702085",
+        "https://novelpia.com/novel/102155?p_id=novelsup6_5"
+      ]
+    }
+  ]
+}

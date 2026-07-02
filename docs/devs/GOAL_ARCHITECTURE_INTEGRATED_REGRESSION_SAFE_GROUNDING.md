@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop318 Addendum - safe-loss source-native next slice
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop318은 approval이 아니라 Loop301 `safe_loss_resolved_to_null` residual queue를 `89/147`에서 `104/147`로 넓힌 source-native review 회차다.
+- 목적: Loop314 background run 완료를 기다리지 않고, 남은 safe-loss residual을 source-native/blind 방식으로 계속 분해한다.
+- Evidence: delta `docs/devs/loop318_safe_loss_source_native_verdicts_delta_15.json`, cumulative `docs/devs/loop318_safe_loss_source_native_verdicts_cumulative_104.json`, summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop318_safe_loss_source_native_review.json`, report `docs/devs/loop_reports/LOOP_318_REPORT_20260702.md`.
+- Result: delta `REPROCESS=5`, `ACCEPT=7`, `HOLD=3`; cumulative reviewed `104/147`, unreviewed `43`, validation issues `0`, cumulative labels `REPROCESS=53`, `ACCEPT=28`, `HOLD=23`.
+- Background: Loop314 N5 `1/15`, full375 `11/3/8/0`, bounded1200 `22/6/16/0`, golden18 `5/5/0/0`; 모두 approval 근거가 아니다.
+- Gate: source-native review `REVIEW-LOCKED / PARTIAL`, runtime replay `NOT_RUNTIME_VERIFIED`, Loop314 full375/bounded `IN_PROGRESS / NOT_APPROVAL`, golden18 `APPROVAL_NOT_OPEN`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop317 Addendum - safe-loss source-native next slice
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop317은 approval이 아니라 Loop301 `safe_loss_resolved_to_null` residual queue를 `74/147`에서 `89/147`로 넓힌 source-native review 회차다.

@@ -1,0 +1,125 @@
+{
+  "loop": 318,
+  "date": "2026-07-02",
+  "head": "9a982d67",
+  "scope": "safe_loss_resolved_to_null source-native next slice",
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json",
+  "delta_verdicts": "docs/devs/loop318_safe_loss_source_native_verdicts_delta_15.json",
+  "cumulative_verdicts": "docs/devs/loop318_safe_loss_source_native_verdicts_cumulative_104.json",
+  "summary_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop318_safe_loss_source_native_review.json",
+  "summary_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop318_safe_loss_source_native_review.md",
+  "delta": {
+    "reviewed_rows": 15,
+    "labels": {
+      "REPROCESS": 5,
+      "ACCEPT": 7,
+      "HOLD": 3
+    },
+    "actions": {
+      "repair_safe_loss": 5,
+      "exclude_from_regression_count_after_gate_wiring": 7,
+      "native_web_or_url_review_required": 3,
+      "multi_candidate_recommendation_review_required": 1,
+      "native_web_or_scope_review_required": 1,
+      "publish_contract_trace_or_variance_review_required": 1,
+      "url_canonicalization_review_required": 1
+    },
+    "repair_examples": [
+      11697267,
+      11698895,
+      11700483,
+      11702044,
+      11702085
+    ],
+    "accept_examples": [
+      11697249,
+      11698859,
+      11698865,
+      11698871,
+      11698897,
+      11698904,
+      11700470
+    ],
+    "hold_examples": [
+      11697256,
+      11698870,
+      11698880
+    ]
+  },
+  "cumulative": {
+    "reviewed_rows": 104,
+    "batch_rows": 147,
+    "unreviewed_rows": 43,
+    "validation_issues": 0,
+    "labels": {
+      "REPROCESS": 53,
+      "ACCEPT": 28,
+      "HOLD": 23
+    },
+    "actions": {
+      "repair_safe_loss": 53,
+      "exclude_from_regression_count_after_gate_wiring": 28,
+      "native_image_or_source_review_required": 12,
+      "native_web_or_source_review_required": 3,
+      "native_web_or_url_review_required": 3,
+      "title_variant_canonicalization_required": 3,
+      "native_image_or_character_bridge_review_required": 2,
+      "preserve_hold_boundary": 1,
+      "canonical_title_variant_policy_required": 1,
+      "native_image_or_media_boundary_review_required": 1,
+      "character_bridge_contract_required": 1,
+      "multi_candidate_recommendation_review_required": 1,
+      "native_web_or_scope_review_required": 1,
+      "publish_contract_trace_or_variance_review_required": 1,
+      "url_canonicalization_review_required": 1
+    }
+  },
+  "loop314_background_snapshot": {
+    "interpretation": "partial background progress only; not approval evidence",
+    "safe_loss_n5": {
+      "pid": 111032,
+      "process": "running",
+      "result_json_count": "1/15",
+      "gate": "RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD"
+    },
+    "full375": {
+      "pid": 75828,
+      "run_id": "20260702_204042_346798",
+      "completed_flushed_pending_failed": "11/3/8/0",
+      "ordered_flush_blocked": true,
+      "include_search": true,
+      "light_mode": false,
+      "gate": "IN_PROGRESS / NOT_APPROVAL"
+    },
+    "bounded_completed_source": {
+      "pid": 9908,
+      "run_id": "20260702_204042_443948",
+      "completed_flushed_pending_failed": "22/6/16/0",
+      "ordered_flush_blocked": true,
+      "include_search": true,
+      "light_mode": false,
+      "gate": "IN_PROGRESS / NOT_APPROVAL"
+    },
+    "golden18": {
+      "pid": 43208,
+      "run_id": "20260702_204042_371537",
+      "completed_flushed_pending_failed": "5/5/0/0",
+      "include_search": true,
+      "light_mode": false,
+      "gate": "APPROVAL_NOT_OPEN"
+    }
+  },
+  "gates": {
+    "source_native_review": "REVIEW-LOCKED / PARTIAL",
+    "runtime_replay": "NOT_RUNTIME_VERIFIED",
+    "safe_loss_n5": "RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD",
+    "full375": "IN_PROGRESS / NOT_APPROVAL",
+    "bounded_completed_source": "IN_PROGRESS / NOT_APPROVAL",
+    "golden18": "APPROVAL_NOT_OPEN",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

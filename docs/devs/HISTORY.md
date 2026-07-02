@@ -1,5 +1,17 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop318 safe-loss source-native next slice
+
+- Loop314 full375/bounded1200/golden18/N5는 완료 대기하지 않고 background 감시로 유지했다.
+- Loop301 `safe_loss_resolved_to_null=147` batch에서 Loop317 이후 다음 15건을 source-native로 추가 판정했다.
+- Delta 결과는 `REPROCESS=5`, `ACCEPT=7`, `HOLD=3`, validation issues `0`이다.
+- 누적 결과는 reviewed `104/147`, unreviewed `43`, labels `REPROCESS=53`, `ACCEPT=28`, `HOLD=23`이다.
+- `아생갤`, `랫따싶`, `니생들`, `괴담텔` 계열은 repair 후보로 분리했다.
+- `버거피아` 이벤트, `귤부인 대롱대롱` unverified exact-title, Re:Zero 캐릭터 페이지, `타락` generic 추천어, `스페이스 오페라` wrong-title은 after null/HOLD preferred로 분리했다.
+- `11698880`은 known variance control이라 repair로 세지 않고 publish/block trace와 primary-vs-secondary scope 검증으로 HOLD했다.
+- Report는 `docs/devs/loop_reports/LOOP_318_REPORT_20260702.md`, state는 `docs/devs/loop318_safe_loss_source_native_review_20260702.json`이다.
+- Gate는 source-native review `REVIEW-LOCKED / PARTIAL`, runtime replay `NOT_RUNTIME_VERIFIED`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop317 safe-loss source-native next slice
 
 - Loop314 full375/bounded1200/golden18/N5는 완료 대기하지 않고 background 감시로 유지했다.

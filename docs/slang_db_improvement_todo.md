@@ -1,5 +1,17 @@
 # Slang DB Improvement TODO
 
+## 2026-07-02 Loop318 safe-loss source-native / slang caveat
+
+- [x] `safe_loss_resolved_to_null` source-native review가 `104/147`까지 진행됐다.
+  - delta `REPROCESS=5`, `ACCEPT=7`, `HOLD=3`
+  - cumulative `REPROCESS=53`, `ACCEPT=28`, `HOLD=23`
+- [x] `아생갤`, `랫따싶`, `니생들`, `괴담텔` 직접 약칭/작품 내부 맥락 row는 repair 후보로 분리했다.
+- [x] `버거피아` 이벤트, Re:Zero 캐릭터 페이지, `타락` generic 추천어, `스페이스 오페라` wrong-title은 slang/alias registry repair로 세지 않았다.
+- [x] `11698880`은 `가챠펑크` bridge가 있어도 known variance/secondary comparison control이라 registry write-back이나 hard-hold 완화 근거로 쓰지 않는다.
+- [ ] `repair_safe_loss=53` 중 slang/alias registry로 일반화 가능한 항목만 shared gate/runtime replay 후보로 올린다.
+- [ ] N5 result JSON `15/15` 완료 후 slang/alias 안정성 caveat를 새 flip 분석으로 갱신한다. 현재 Loop314 `1/15`.
+- Gate: slang DB write-back 아님, source-native review `REVIEW-LOCKED / PARTIAL`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop317 safe-loss source-native / slang caveat
 
 - [x] `safe_loss_resolved_to_null` source-native review가 `89/147`까지 진행됐다.
