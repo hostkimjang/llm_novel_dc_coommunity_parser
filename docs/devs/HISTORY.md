@@ -1,5 +1,33 @@
 # Development History
 
+## 2026-07-02 - Loop287 11708456 release와 후속 frontier 감사
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- `11708456`은 W20에서 완료되어 result JSON에 들어왔고 ordered flush가 result_rows `343`에서 `354`까지 전진했다.
+- `11708456`은 public title 회수가 아니라 candidate-only hard-hold로 닫혔다. `퉁구스카` 후보는 보존됐지만 public title/url은 `null`, `promotion_decision.status=candidate_only`, `publish_allowed=false`, `candidate_ledger_status=promotion_blocked`, `title_resolution_state=multi_work`, `work_resolution=multi_work`, `bypassed_gate=false`다.
+- Loop287 health audit 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop287_frontier_after_11708456_completion_health_audit.json`이다.
+- health audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows/checkpoint_rows/pending_count_actual `354/400/46`이다.
+- 새 frontier는 post_id `11708445`, title `퉁구스1캇햄 작품 하나도 안 봤는데`, worker `W24`, observed_elapsed_seconds `3121.812`이다.
+- post-audit live poll은 input/completed/flushed/pending/failed `104502/407/366/41/0`, `next_save_idx=367`까지 전진했지만 별도 audit 전까지 approval 근거로 세지 않는다.
+- completed source 후보 감사 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop287_completed_source_candidate_audit.md/json`이다.
+- 후보 감사 summary는 approval_source_candidate_count `0`, clean_vlm_ocr_source_count `429`, clean_vlm_ocr_random_shortfall_count `9`, clean_vlm_ocr_search_health_not_ready_count `420`, clean_vlm_ocr_publication_contract_not_ready_count `0`, partial_vlm_ocr_population_ge_random_target_count `6`이다.
+- Data Analytics artifact `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop287_frontier_release_data_analytics_artifact.json`는 validate/render PASS다.
+- Gate는 live run health `IN_PROGRESS`, released frontier `11708456 / candidate_only / promotion_blocked / multi_work`, current frontier `11708445 / W24 in progress`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, full375 collateral approval `NOT_OPEN / blocked_until_completed_source`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
+## 2026-07-02 - Loop286 11710018 release와 새 Arbiter 병목 감사
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- `11710018`은 W25에서 완료되어 result JSON에 들어왔고 ordered flush가 result_rows `317`에서 `343`까지 전진했다.
+- `11710018`은 public title 회수가 아니라 candidate-only hard-hold로 닫혔다. `Fate/stay night` 후보는 보존됐지만 public title/url은 `null`, `promotion_decision.status=candidate_only`, `publish_allowed=false`, `candidate_ledger_status=promotion_blocked`, `bypassed_gate=false`다.
+- Loop286 health audit 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop286_frontier_after_11710018_completion_health_audit.json`이다.
+- health audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows/checkpoint_rows/pending_count_actual `343/375/32`이다.
+- 새 frontier는 post_id `11708456`, title `황당한데 싱숑이랑 퉁구스카랑 같은 말 하는거 아님.`, worker `W20`, observed_elapsed_seconds `2277.595`이다.
+- W20 log는 author talk와 작품 title publish 경계를 가르는 Arbiter stream이 진행 중임을 보여준다.
+- completed source 후보 감사 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop286_completed_source_candidate_audit.md/json`이다.
+- 후보 감사 summary는 approval_source_candidate_count `0`, clean_vlm_ocr_source_count `429`, clean_vlm_ocr_random_shortfall_count `9`, clean_vlm_ocr_search_health_not_ready_count `420`, clean_vlm_ocr_publication_contract_not_ready_count `0`, partial_vlm_ocr_population_ge_random_target_count `6`이다.
+- Data Analytics artifact `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop286_frontier_release_data_analytics_artifact.json`는 validate/render PASS다.
+- Gate는 live run health `IN_PROGRESS`, released frontier `11710018 / candidate_only / promotion_blocked`, current frontier `11708456 / W20 Arbiter stream in progress`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, full375 collateral approval `NOT_OPEN / blocked_until_completed_source`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop285 frontier 11710018 reason_review 감사
 
 - 동일 38-row parent packet은 재실행하지 않았다.

@@ -1,5 +1,99 @@
 # Development Checklist
 
+## 2026-07-02 Loop287 11708456 release / 후속 frontier 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] `11708456`이 W20에서 완료되어 result JSON에 들어왔음을 확인했다.
+  - W20 completion `10:20:58.483`
+  - result_rows `343 -> 354`
+  - public `official_title=null`, `official_url=null`
+  - `promotion_decision.status=candidate_only`
+  - `publish_allowed=false`
+  - `candidate_ledger_status=promotion_blocked`
+  - `title_resolution_state=multi_work`
+  - `work_resolution=multi_work`
+  - `bypassed_gate=false`
+- [x] Loop287 live health audit를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop287_frontier_after_11708456_completion_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `354`
+  - checkpoint_rows `400`
+  - pending_count_actual `46`
+  - frontier post `11708445`
+  - worker `W24`
+  - observed_elapsed_seconds `3121.812`
+  - `search_evidence=REVIEW`
+  - `publication_contract_convergence=GO`
+- [x] post-audit manifest poll을 확인했다.
+  - input/completed/flushed/pending/failed `104502/407/366/41/0`
+  - `next_save_idx=367`
+  - `large_run_complete=false`
+  - `ordered_flush_blocked=true`
+  - 별도 Loop288 감사 전까지 approval 근거로 세지 않는다.
+- [x] completed source 후보 감사를 재실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop287_completed_source_candidate_audit.md`
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `9`
+  - clean_vlm_ocr_search_health_not_ready_count `420`
+  - clean_vlm_ocr_publication_contract_not_ready_count `0`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+- [x] Data Analytics artifact를 validate/render했다.
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop287_frontier_release_data_analytics_artifact.json`
+- [ ] 최신 `next_save_idx=367` 기준으로 다음 health audit에서 frontier를 새로 고정한다.
+- [ ] `11708445`와 이후 release row가 public work title로 과승격되지 않았는지 result row에서 확인한다.
+- [ ] completed source 후보가 생기기 전까지 random baseline/P0-P1 expansion/full375 collateral approval을 열지 않는다.
+- Gate: live run health `IN_PROGRESS`, released frontier `11708456 / candidate_only / promotion_blocked / multi_work`, current frontier `11708445 / W24 in progress`, post-audit live poll `SEPARATE_AUDIT_REQUIRED`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-02 Loop286 11710018 release / 새 Arbiter 병목 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] `11710018`이 W25에서 완료되어 result JSON에 들어왔음을 확인했다.
+  - W25 completion `10:13:49.446`
+  - result_rows `317 -> 343`
+  - public `official_title=null`, `official_url=null`
+  - `promotion_decision.status=candidate_only`
+  - `publish_allowed=false`
+  - `candidate_ledger_status=promotion_blocked`
+  - `bypassed_gate=false`
+- [x] Loop286 live health audit를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop286_frontier_after_11710018_completion_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `343`
+  - checkpoint_rows `375`
+  - pending_count_actual `32`
+  - frontier post `11708456`
+  - worker `W20`
+  - observed_elapsed_seconds `2277.595`
+  - `search_evidence=REVIEW`
+  - `publication_contract_convergence=GO`
+- [x] post-audit manifest poll을 확인했다.
+  - input/completed/flushed/pending/failed `104502/378/343/35/0`
+  - `large_run_complete=false`
+  - `ordered_flush_blocked=true`
+  - `11708456_in_result=false`
+- [x] frontier W20 log를 확인했다.
+  - Verifier: 작가 `싱숑`, `퉁구스카` 행보에 대한 author talk로 해석
+  - Synthesizer: `is_about_work=False`, confidence `High`
+  - hidden references: `싱숑`, `퉁구스카`, `파르나르`
+  - Arbiter stream 시작, post-audit poll 기준 result row 없음
+- [x] completed source 후보 감사를 재실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop286_completed_source_candidate_audit.md`
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `9`
+  - clean_vlm_ocr_search_health_not_ready_count `420`
+  - clean_vlm_ocr_publication_contract_not_ready_count `0`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+- [x] Data Analytics artifact를 validate/render했다.
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop286_frontier_release_data_analytics_artifact.json`
+- [ ] frontier `11708456` 완료 후 ordered flush가 풀리는지 다음 health audit에서 확인한다.
+- [ ] author talk가 public work title로 과승격되지 않았는지 result row에서 확인한다.
+- [ ] completed source 후보가 생기기 전까지 random baseline/P0-P1 expansion/full375 collateral approval을 열지 않는다.
+- Gate: live run health `IN_PROGRESS`, released frontier `11710018 / candidate_only / promotion_blocked`, current frontier `11708456 / W20 Arbiter stream in progress`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop285 frontier 11710018 reason_review / writeback 미해소 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

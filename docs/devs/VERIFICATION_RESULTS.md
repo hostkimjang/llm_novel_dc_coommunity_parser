@@ -1,5 +1,128 @@
 # Verification Results
 
+## 2026-07-02 Loop287 frontier release and completed source candidate recheck
+
+- 범위: `11708456` frontier release, 새 ordered flush frontier, completed source approval 후보 존재 여부를 재확인한다.
+- Code:
+  - 코드 변경 없음.
+- Explicit health audit:
+  - command: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_065642_030743 --manifest out\expert_result_20260702_065632_479765_manifest.json --checkpoint out\expert_result_20260702_065632_479765_checkpoint.jsonl --result-json out\expert_result_20260702_065632_479765.json --pending-snapshot out\expert_result_20260702_065632_479765_pending_snapshot.json --input-jsonl tests\inputs\test01.jsonl --log-glob "logs\expert_run_20260702_065642_030743_W*.log" --output out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop287_frontier_after_11708456_completion_health_audit.json`
+  - generated_at `2026-07-02T10:25:22`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `354`, checkpoint_rows `400`, pending_count_actual `46`
+  - frontier post `11708445`, title `퉁구스1캇햄 작품 하나도 안 봤는데`, source_line `370`
+  - `frontier_worker_trace.status=in_progress_in_worker_log`, worker `W24`, event_count `12`
+  - observed_elapsed_seconds `3121.812`
+  - `search_evidence.gate=REVIEW`
+  - `publication_contract_convergence.gate=GO`
+  - publication violation_row_count `0`
+- Post-audit manifest poll:
+  - input/completed/flushed/pending/failed `104502/407/366/41/0`
+  - `next_save_idx=367`
+  - `large_run_complete=false`
+  - `ordered_flush_blocked=true`
+  - 별도 Loop288 audit 전까지 approval 근거로 세지 않는다.
+- Released frontier review:
+  - `11708456`: W20 `10:20:58.483` post 완료
+  - public `official_title=null`, `official_url=null`
+  - `promotion_decision.status=candidate_only`
+  - `publish_allowed=false`
+  - `candidate_ledger_status=promotion_blocked`
+  - `title_resolution_state=multi_work`
+  - `work_resolution=multi_work`
+  - `blocked_official_title=퉁구스카`
+  - `bypassed_gate=false`
+- Completed source candidate audit:
+  - command: `.\.venv312\Scripts\python.exe tools\build_completed_source_candidate_audit.py --manifest-root out --random-target 1000 --output-json out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop287_completed_source_candidate_audit.json --output-md out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop287_completed_source_candidate_audit.md`
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `9`
+  - clean_vlm_ocr_search_health_not_ready_count `420`
+  - clean_vlm_ocr_publication_contract_not_ready_count `0`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+- Data Analytics:
+  - `validate_artifact`: PASS
+  - `render_artifact`: PASS
+  - artifact: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop287_frontier_release_data_analytics_artifact.json`
+- Gate:
+  - live run health: `IN_PROGRESS`
+  - released frontier: `11708456 / candidate_only / promotion_blocked / multi_work`
+  - current frontier status: `11708445 / W24 in progress`
+  - completed source candidate: `MISSING`
+  - candidate audit: `REVIEW-LOCKED`
+  - search evidence: `REVIEW`
+  - publication contract convergence: `GO` for audited flushed rows
+  - full375 collateral approval: `NOT_OPEN / blocked_until_completed_source`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_287_REPORT_20260702.md`
+
+## 2026-07-02 Loop286 frontier release and completed source candidate recheck
+
+- 범위: `11710018` frontier release, 새 ordered flush frontier, completed source approval 후보 존재 여부를 재확인한다.
+- Code:
+  - 코드 변경 없음.
+- Explicit health audit:
+  - command: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_065642_030743 --manifest out\expert_result_20260702_065632_479765_manifest.json --checkpoint out\expert_result_20260702_065632_479765_checkpoint.jsonl --result-json out\expert_result_20260702_065632_479765.json --pending-snapshot out\expert_result_20260702_065632_479765_pending_snapshot.json --input-jsonl tests\inputs\test01.jsonl --log-glob "logs\expert_run_20260702_065642_030743_W*.log" --output out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop286_frontier_after_11710018_completion_health_audit.json`
+  - generated_at `2026-07-02T10:15:03`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `343`, checkpoint_rows `375`, pending_count_actual `32`
+  - frontier post `11708456`, title `황당한데 싱숑이랑 퉁구스카랑 같은 말 하는거 아님.`, source_line `359`
+  - `frontier_worker_trace.status=in_progress_in_worker_log`, worker `W20`, event_count `10`
+  - observed_elapsed_seconds `2277.595`
+  - `search_evidence.gate=REVIEW`
+  - `publication_contract_convergence.gate=GO`
+  - publication violation_row_count `0`
+- Post-audit manifest poll:
+  - input/completed/flushed/pending/failed `104502/378/343/35/0`
+  - `large_run_complete=false`
+  - `ordered_flush_blocked=true`
+  - `11708456_in_result=false`
+- Released frontier review:
+  - `11710018`: W25 `10:13:49.446` post 완료
+  - public `official_title=null`, `official_url=null`
+  - `promotion_decision.status=candidate_only`
+  - `publish_allowed=false`
+  - `candidate_ledger_status=promotion_blocked`
+  - `blocked_official_title=Fate/stay night`
+  - `bypassed_gate=false`
+- Current frontier log review:
+  - `logs\expert_run_20260702_065642_030743_W20.log`
+  - `10:02:28.816`: Verifier 완료, author talk로 해석
+  - `10:15:49.565`: Synthesizer 완료, `is_about_work=False`, confidence `High`
+  - `10:15:49.938`: Arbiter 최종 판정 시작
+  - `10:16:24.744`: Arbiter TTFT 관측, post-audit poll 기준 result row 없음
+- Completed source candidate audit:
+  - command: `.\.venv312\Scripts\python.exe tools\build_completed_source_candidate_audit.py --manifest-root out --random-target 1000 --output-json out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop286_completed_source_candidate_audit.json --output-md out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop286_completed_source_candidate_audit.md`
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `9`
+  - clean_vlm_ocr_search_health_not_ready_count `420`
+  - clean_vlm_ocr_publication_contract_not_ready_count `0`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+- Data Analytics:
+  - `validate_artifact`: PASS
+  - `render_artifact`: PASS
+  - artifact: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop286_frontier_release_data_analytics_artifact.json`
+- Gate:
+  - live run health: `IN_PROGRESS`
+  - released frontier: `11710018 / candidate_only / promotion_blocked`
+  - current frontier status: `11708456 / W20 Arbiter stream in progress`
+  - completed source candidate: `MISSING`
+  - candidate audit: `REVIEW-LOCKED`
+  - search evidence: `REVIEW`
+  - publication contract convergence: `GO` for audited flushed rows
+  - full375 collateral approval: `NOT_OPEN / blocked_until_completed_source`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_286_REPORT_20260702.md`
+
 ## 2026-07-02 Loop285 frontier 11710018 reason_review and completed source candidate recheck
 
 - 범위: Loop284부터 계속된 frontier `11710018`의 진행 상태, ordered flush writeback, completed source approval 후보 존재 여부를 재확인한다.

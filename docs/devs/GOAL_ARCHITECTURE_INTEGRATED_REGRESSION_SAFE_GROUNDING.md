@@ -6,6 +6,24 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop287 Addendum - 11708456 candidate-only release and next frontier
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: `11708456` release가 public publish인지 candidate-only 보존인지 확인하고, 다음 ordered flush frontier를 식별한다.
+- 코드 변경: 없음.
+- Artifacts: report `docs/devs/loop_reports/LOOP_287_REPORT_20260702.md`, health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop287_frontier_after_11708456_completion_health_audit.json`, candidate audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop287_completed_source_candidate_audit.md/json`, Data Analytics artifact `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop287_frontier_release_data_analytics_artifact.json`.
+- Evidence: `11708456`은 W20에서 완료되어 result JSON에 들어왔고 result_rows가 `343 -> 354`로 전진했다. public title/url은 `null`이며 `promotion_decision.status=candidate_only`, `publish_allowed=false`, `candidate_ledger_status=promotion_blocked`, `title_resolution_state=multi_work`, `work_resolution=multi_work`, `bypassed_gate=false`다. Loop287 audit은 result_rows `354`, checkpoint_rows `400`, pending_count_actual `46`, frontier post `11708445`, worker `W24`, observed_elapsed_seconds `3121.812`다. post-audit manifest poll은 input/completed/flushed/pending/failed `104502/407/366/41/0`, `next_save_idx=367`, `large_run_complete=false`, `ordered_flush_blocked=true`이나 별도 감사 전까지 Loop287 approval 근거로 쓰지 않는다. completed source 후보 감사는 approval_source_candidate_count `0`이다.
+- Gate: live run health `IN_PROGRESS`, released frontier `11708456 / candidate_only / promotion_blocked / multi_work`, current frontier `11708445 / W24 in progress`, post-audit live poll `SEPARATE_AUDIT_REQUIRED`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, full375 collateral approval `NOT_OPEN / blocked_until_completed_source`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-07-02 Loop286 Addendum - frontier release and new Arbiter blocker
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: `11710018` release가 hard-hold 완화인지 candidate-only 보존인지 확인하고, 새 ordered flush frontier를 식별한다.
+- 코드 변경: 없음.
+- Artifacts: report `docs/devs/loop_reports/LOOP_286_REPORT_20260702.md`, health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop286_frontier_after_11710018_completion_health_audit.json`, candidate audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop286_completed_source_candidate_audit.md/json`, Data Analytics artifact `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop286_frontier_release_data_analytics_artifact.json`.
+- Evidence: `11710018`은 W25에서 완료되어 result JSON에 들어왔고 result_rows가 `317 -> 343`으로 전진했다. public title/url은 `null`이며 `promotion_decision.status=candidate_only`, `publish_allowed=false`, `candidate_ledger_status=promotion_blocked`, `bypassed_gate=false`다. Loop286 audit은 result_rows `343`, checkpoint_rows `375`, pending_count_actual `32`, frontier post `11708456`, worker `W20`, observed_elapsed_seconds `2277.595`다. W20 log는 Synthesizer가 author talk로 수렴하고 Arbiter stream을 시작한 상태를 기록한다. post-audit manifest poll은 input/completed/flushed/pending/failed `104502/378/343/35/0`, `large_run_complete=false`, `ordered_flush_blocked=true`다. completed source 후보 감사는 approval_source_candidate_count `0`이다.
+- Gate: live run health `IN_PROGRESS`, released frontier `11710018 / candidate_only / promotion_blocked`, current frontier `11708456 / W20 Arbiter stream in progress`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, full375 collateral approval `NOT_OPEN / blocked_until_completed_source`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop285 Addendum - frontier 11710018 reason_review audit
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

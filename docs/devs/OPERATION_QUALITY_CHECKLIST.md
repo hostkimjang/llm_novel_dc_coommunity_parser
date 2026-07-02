@@ -6,6 +6,37 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop287 frontier release quality gate
+
+- 근거:
+  - [x] Loop264 대형 run의 최신 health audit를 실행했다.
+  - [x] completed source 후보 감사를 재실행했다.
+  - [x] `11708456` result JSON contract가 candidate-only/promotion_blocked/multi_work임을 확인했다.
+  - [x] W24 log에서 새 frontier `11708445`이 진행 중임을 확인했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_287_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] `11708456` release를 hard-hold 완화나 public approval로 해석하지 않는다.
+  - [x] live run은 `IN_PROGRESS/ordered_flush_gap_in_progress`이며 completed source가 아니다.
+  - [x] post-audit live poll `next_save_idx=367`은 별도 audit 전까지 approval 근거로 세지 않는다.
+  - [x] `publication_contract_convergence=GO`는 flushed `354` rows contract 수렴만 뜻한다.
+  - [x] completed source 후보가 없으므로 random baseline/P0-P1 expansion/full375 collateral approval을 열지 않는다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
+## 2026-07-02 Loop286 frontier release quality gate
+
+- 근거:
+  - [x] Loop264 대형 run의 최신 health audit를 실행했다.
+  - [x] completed source 후보 감사를 재실행했다.
+  - [x] `11710018` result JSON contract가 candidate-only/promotion_blocked임을 확인했다.
+  - [x] W20 log에서 새 frontier `11708456`이 Arbiter stream 진행 중임을 확인했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_286_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] `11710018` release를 hard-hold 완화나 public approval로 해석하지 않는다.
+  - [x] live run은 `IN_PROGRESS/ordered_flush_gap_in_progress`이며 completed source가 아니다.
+  - [x] `publication_contract_convergence=GO`는 flushed `343` rows contract 수렴만 뜻한다.
+  - [x] completed source 후보가 없으므로 random baseline/P0-P1 expansion/full375 collateral approval을 열지 않는다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop285 frontier reason_review quality gate
 
 - 근거:
