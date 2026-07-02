@@ -1,5 +1,29 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop320 safe-loss source-native next slice 체크
+
+- [x] Loop314 대형 런을 완료 대기하지 않고 background 감시로 유지했다.
+  - N5 result JSON `3/15`
+  - full375 completed/flushed/pending/failed `24/19/5/0`
+  - bounded1200 completed/flushed/pending/failed `39/19/20/0`
+  - golden18 completed/flushed/pending/failed `9/7/2/0`
+- [x] Loop301 `safe_loss_resolved_to_null` 미검토분에서 15건을 추가 판정했다.
+  - delta labels `REPROCESS=8`, `ACCEPT=5`, `HOLD=2`
+  - delta actions `repair_safe_loss=8`, `exclude_from_regression_count_after_gate_wiring=5`
+- [x] 누적 verdict와 summary를 생성했다.
+  - cumulative `119/147`, unreviewed `28`
+  - cumulative labels `REPROCESS=61`, `ACCEPT=33`, `HOLD=25`
+  - validation issues `0`
+- [x] 산출물을 기록했다.
+  - delta `docs\devs\loop320_safe_loss_source_native_verdicts_delta_15.json`
+  - cumulative `docs\devs\loop320_safe_loss_source_native_verdicts_cumulative_119.json`
+  - state `docs\devs\loop320_safe_loss_source_native_review_20260702.json`
+  - report `docs\devs\loop_reports\LOOP_320_REPORT_20260702.md`
+- [ ] `repair_safe_loss=61`은 shared gate 또는 targeted runtime replay 전까지 residual closure로 세지 않는다.
+- [ ] `HOLD=25`는 native image/web/source/canonical policy 확인 전까지 닫지 않는다.
+- [ ] 남은 `28` row를 계속 source-native/blind judge로 줄인다.
+- Gate: source-native review `REVIEW-LOCKED / PARTIAL`, runtime replay `NOT_RUNTIME_VERIFIED`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, golden18 `APPROVAL_NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop319 OVERRIDE AUDIT 11708445 체크
 
 - [x] 코드 변경 없는 대형 run 감시/문서 회차 반복 조건에 따라 `OVERRIDE AUDIT(LLM=False->final=True)` 행 검증으로 전환했다.
@@ -21,7 +45,7 @@
   - review `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop319_override_audit_11708445_review.json`
   - report `docs\devs\loop_reports\LOOP_319_REPORT_20260702.md`
   - state `docs\devs\loop319_override_audit_11708445_20260702.json`
-- [ ] Loop314 N5 `15/15` 완료 전 flip rate를 갱신하지 않는다. 현재 `2/15`.
+- [ ] Loop314 N5 `15/15` 완료 전 flip rate를 갱신하지 않는다. 현재 `3/15`.
 - [ ] full375/bounded/golden18 완료 전 approval 문구를 쓰지 않는다.
 - Gate: override audit `GO_ROW_CONTRACT_ONLY`, runtime source `BACKGROUND_LIGHT_RUN_NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
@@ -162,7 +186,7 @@
   - state `docs\devs\loop313_safe_loss_alias_contract_repair_20260702.json`
   - report `docs\devs\loop_reports\LOOP_313_REPORT_20260702.md`
 - [ ] targeted runtime replay 전까지 Loop313을 residual closure로 세지 않는다.
-- [ ] N5 result JSON `15/15` 완료 전 flip rate를 갱신하지 않는다. 현재 `1/15`.
+- [ ] N5 result JSON `15/15` 완료 전 flip rate를 갱신하지 않는다. 현재 `3/15`.
 - Gate: code/unit contract `GO_UNIT`, runtime replay `NOT_RUN`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-02 Loop312 safe-loss source-native next slice 체크

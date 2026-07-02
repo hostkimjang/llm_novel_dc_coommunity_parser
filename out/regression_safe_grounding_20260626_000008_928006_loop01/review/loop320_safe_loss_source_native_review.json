@@ -1,0 +1,385 @@
+{
+  "review_id": "loop320_safe_loss_source_native_review",
+  "reviewed_rows": 119,
+  "batch_rows": 147,
+  "unreviewed_rows": 28,
+  "validation_issues": [],
+  "delta_labels": {
+    "ACCEPT": 5,
+    "HOLD": 2,
+    "REPROCESS": 8
+  },
+  "cumulative_labels": {
+    "ACCEPT": 33,
+    "HOLD": 25,
+    "REPROCESS": 61
+  },
+  "delta_actions": {
+    "character_bridge_contract_or_runtime_replay_required": 1,
+    "exclude_from_regression_count_after_gate_wiring": 5,
+    "incidental_comment_overresolve_excluded": 1,
+    "known_alias_runtime_replay_required": 4,
+    "native_image_or_canonical_review_required": 1,
+    "native_image_or_url_review_required": 1,
+    "native_web_or_alternative_title_review_required": 1,
+    "repair_safe_loss": 8,
+    "title_field_split_contract_required": 1,
+    "title_variant_canonicalization_required": 1,
+    "wrong_before_alternative_current_work_review_required": 1,
+    "wrong_before_alternative_title_review_required": 3
+  },
+  "cumulative_actions": {
+    "canonical_title_variant_policy_required": 1,
+    "character_bridge_contract_or_runtime_replay_required": 1,
+    "character_bridge_contract_required": 1,
+    "exclude_from_regression_count_after_gate_wiring": 33,
+    "incidental_comment_overresolve_excluded": 1,
+    "known_alias_runtime_replay_required": 4,
+    "multi_candidate_recommendation_review_required": 1,
+    "native_image_or_canonical_review_required": 1,
+    "native_image_or_character_bridge_review_required": 2,
+    "native_image_or_media_boundary_review_required": 1,
+    "native_image_or_source_review_required": 12,
+    "native_image_or_url_review_required": 1,
+    "native_web_or_alternative_title_review_required": 1,
+    "native_web_or_scope_review_required": 1,
+    "native_web_or_source_review_required": 3,
+    "native_web_or_url_review_required": 3,
+    "preserve_hold_boundary": 1,
+    "publish_contract_trace_or_variance_review_required": 1,
+    "repair_safe_loss": 61,
+    "title_field_split_contract_required": 1,
+    "title_variant_canonicalization_required": 4,
+    "url_canonicalization_review_required": 1,
+    "wrong_before_alternative_current_work_review_required": 1,
+    "wrong_before_alternative_title_review_required": 3
+  },
+  "delta_rows": [
+    {
+      "post_id": 11702086,
+      "selected_option_id": "C1",
+      "selected_title": "6? ?? ???? ???",
+      "selected_url": "https://series.naver.com/novel/detail.series?productNo=9630849",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_ocr_explicit_title_variant_requires_image_url_replay",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss",
+        "native_image_or_url_review_required"
+      ],
+      "rationale_ko": "?? `6???)`? OCR/??? `6? ?? ???? ???`? ?? ?? ??? ????. ?? image_count=2?? after? `ocr_explicit_title_unresolved`? ?????? native image/OCR ?? ?? URL replay ??? full approval? ?? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11702086",
+        "docs/devs/detection_survey_20260626_errors.json#post_id=11702086"
+      ],
+      "triage_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11702090,
+      "selected_option_id": "C1",
+      "selected_title": "?? ?? ???",
+      "selected_url": "https://novelpia.com/novel/102155",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_character_setting_bridge_hotel",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "character_bridge_contract_or_runtime_replay_required"
+      ],
+      "rationale_ko": "?? `???`, `??`, `???`, `???`? `?? ?? ???`? ???/?? bridge? ???. after? ??/?? ??? ???? public title? ????? repair ??? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11702090",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11702090"
+      ],
+      "triage_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11702094,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "hold_doubleo_vs_comment_window_title_disambiguation_required",
+      "evidence_grade": "Medium",
+      "action": [
+        "native_web_or_alternative_title_review_required"
+      ],
+      "rationale_ko": "???? `??? ??`? ?? ???? ?? survey? `??? -> ???? ?? ???` ??? ????. C1 `#???`? ?? ???? ?? ??/??? ??? ?? ? ?? HOLD??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11702094",
+        "docs/devs/detection_survey_20260626_errors.json#post_id=11702094"
+      ],
+      "triage_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11703624,
+      "selected_option_id": "C1",
+      "selected_title": "????? ???",
+      "selected_url": "https://novel.munpia.com/530500",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_direct_alias_panchobeopsa",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "known_alias_runtime_replay_required"
+      ],
+      "rationale_ko": "??? ?? `????`? `????? ???` ?? ???? ??? ?? ??? ???/???? ?? ????. after promotion_blocked? safe title loss? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11703624",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11703624"
+      ],
+      "triage_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11703631,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_wrong_before_7_picaresque_boundary",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "wrong_before_alternative_title_review_required"
+      ],
+      "rationale_ko": "?? `????`, `?????`, `??` ??? ?? survey?? C1 `?? ???` wrong-work? `7?? ?????` ?? ??? ????. C1? safe title? ???? ?? after null/HOLD? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11703631",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11703631"
+      ],
+      "triage_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11703640,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_incidental_comment_work_mention",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "incidental_comment_overresolve_excluded"
+      ],
+      "rationale_ko": "??? `????` ??/??? ??? ????? `????`? ??? ??? ????? ??? ?? ????. C1? ???? ?? public work? ???? incidental comment overresolve? after null? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11703640",
+        "docs/devs/detection_survey_20260626_errors.json#post_id=11703640"
+      ],
+      "triage_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11703658,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_wrong_before_africa_title",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "wrong_before_alternative_title_review_required"
+      ],
+      "rationale_ko": "?? ??? `???? ???? ???`?? ??? ?? survey? ?? ??? ?? ??? ????. C1 `???? ? ???? ??? .`? wrong-work? safe title ?? ??? ???, ?? ??/URL ??? ?? ?? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11703658",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11703658"
+      ],
+      "triage_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11703674,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_prior_work_not_current_work",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "wrong_before_alternative_current_work_review_required"
+      ],
+      "rationale_ko": "?? ?? ??? `???? ???/?????`?? `???`? ?? ??? ?? ??? ????. C1 `?? ? ???? ???`? public title? ???? prior-work wrong-work? after null? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11703674",
+        "docs/devs/detection_survey_20260626_errors.json#post_id=11703674",
+        "docs/slang_db_improvement_todo.md#pollution_risk_11703674"
+      ],
+      "triage_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11705230,
+      "selected_option_id": "C1",
+      "selected_title": "????",
+      "selected_url": "https://ridibooks.com/books/3685002646",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_direct_series_title_wolyahwandam",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "known_alias_runtime_replay_required"
+      ],
+      "rationale_ko": "??? ??? `????`? ?? ???, ??? ?? ??? ?????/?? ??? ?? ??? ???. after? series/title ??? ??? ?? public title? ?? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11705230",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop50_panel_collateral_requeue.md#post_id=11705230"
+      ],
+      "triage_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11705231,
+      "selected_option_id": "C1",
+      "selected_title": "??? ??",
+      "selected_url": "https://series.naver.com/novel/detail.series?productNo=2847498",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_wrong_but_source_native_correct_title_field_split_required",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "title_field_split_contract_required"
+      ],
+      "rationale_ko": "??? `???`, `???`, `???`, ?? `??`?? `??? ??` character/work bridge? ???. C2? wrong-work?? C1 URL? ?? Loop223/228 ??? `??? ??` title-field split ??? ?? ?????? repair ??? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11705231",
+        "docs/devs/loop_reports/LOOP_223_REPORT_20260701.md#11705231",
+        "docs/devs/loop_reports/LOOP_228_REPORT_20260701.md#11705231"
+      ],
+      "triage_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11705251,
+      "selected_option_id": "C1",
+      "selected_title": "???? ???",
+      "selected_url": "https://ridibooks.com/books/3685002646",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_direct_subtitle_and_character_cluster",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "known_alias_runtime_replay_required"
+      ],
+      "rationale_ko": "?? `???`? ?? `???`, `??`, `??`, `???`, `???`? `???? ???` ?? ??/??? cluster?. after null? source-native safe loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11705251",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop50_panel_collateral_requeue.md#post_id=11705251"
+      ],
+      "triage_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11705269,
+      "selected_option_id": "C1",
+      "selected_title": "????",
+      "selected_url": "https://ridibooks.com/books/3685014315",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_series_title_but_volume_canonicalization_required",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss",
+        "title_variant_canonicalization_required"
+      ],
+      "rationale_ko": "??? `???? ??`?? ?? `?????`?? ?? ???? ?? character/series ????. ?? after ??? `???? : ???`? ??? URL/?? canonical ??? ?? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11705269",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop50_panel_collateral_requeue.md#post_id=11705269"
+      ],
+      "triage_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11706827,
+      "selected_option_id": "C1",
+      "selected_title": "?????? ????? ????",
+      "selected_url": "https://novelpia.com/novel/390228",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_direct_alias_gigongju",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "known_alias_runtime_replay_required"
+      ],
+      "rationale_ko": "??? `????`? ?? `???? ??? ???`? ?? ?? ????. ?? ??? `???? -> ?????? ????? ????` ???? ?????? after promotion_blocked? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11706827",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11706827"
+      ],
+      "triage_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11706842,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_wrong_before_homograph_dae_madae",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "wrong_before_alternative_title_review_required"
+      ],
+      "rationale_ko": "?? `???`? ?? survey?? `?????? ?? ?? ????? ???` ? ?? ??? ????, C1 `??? ?? ? ???`? ??/???? wrong-work?. C1 safe title ?? ??? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11706842",
+        "docs/devs/detection_survey_20260626_errors.json#post_id=11706842"
+      ],
+      "triage_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11706844,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "hold_ocr_title_author_vs_current_munpia_title_requires_reverify",
+      "evidence_grade": "Medium",
+      "action": [
+        "native_image_or_canonical_review_required"
+      ],
+      "rationale_ko": "??? `?? ??? ??`?? after ??? `? ?? ?? ???`, `??? ???`, `??` ?? ?? ??. ?? survey? OCR title/author clue? ?? ??? title ??? ???? ?????? HOLD??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11706844",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11706844"
+      ],
+      "triage_bucket": "safe_loss_resolved_to_null"
+    }
+  ],
+  "gates": {
+    "source_native_review": "REVIEW-LOCKED / PARTIAL",
+    "runtime_replay": "NOT_RUNTIME_VERIFIED",
+    "safe_loss_n5": "RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD",
+    "full375": "IN_PROGRESS / NOT_APPROVAL",
+    "bounded_completed_source": "IN_PROGRESS / NOT_APPROVAL",
+    "golden18": "APPROVAL_NOT_OPEN",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "background_snapshot": {
+    "interpretation": "partial background progress only; not approval evidence",
+    "safe_loss_n5": {
+      "result_json_count": "3/15",
+      "gate": "RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD"
+    },
+    "full375": {
+      "completed_flushed_pending_failed": "24/19/5/0",
+      "ordered_flush_blocked": true,
+      "include_search": true,
+      "light_mode": false,
+      "gate": "IN_PROGRESS / NOT_APPROVAL"
+    },
+    "bounded_completed_source": {
+      "completed_flushed_pending_failed": "39/19/20/0",
+      "ordered_flush_blocked": true,
+      "include_search": true,
+      "light_mode": false,
+      "gate": "IN_PROGRESS / NOT_APPROVAL"
+    },
+    "golden18": {
+      "completed_flushed_pending_failed": "9/7/2/0",
+      "ordered_flush_blocked": true,
+      "include_search": true,
+      "light_mode": false,
+      "gate": "APPROVAL_NOT_OPEN"
+    }
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "loop": 320,
+  "date": "2026-07-02",
+  "head": "52cd6dc6",
+  "scope": "safe_loss_resolved_to_null source-native next slice",
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json",
+  "delta_verdicts": "docs/devs/loop320_safe_loss_source_native_verdicts_delta_15.json",
+  "cumulative_verdicts": "docs/devs/loop320_safe_loss_source_native_verdicts_cumulative_119.json",
+  "summary_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop320_safe_loss_source_native_review.json",
+  "summary_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop320_safe_loss_source_native_review.md",
+  "delta": {
+    "reviewed_rows": 15,
+    "labels": {
+      "ACCEPT": 5,
+      "HOLD": 2,
+      "REPROCESS": 8
+    },
+    "actions": {
+      "character_bridge_contract_or_runtime_replay_required": 1,
+      "exclude_from_regression_count_after_gate_wiring": 5,
+      "incidental_comment_overresolve_excluded": 1,
+      "known_alias_runtime_replay_required": 4,
+      "native_image_or_canonical_review_required": 1,
+      "native_image_or_url_review_required": 1,
+      "native_web_or_alternative_title_review_required": 1,
+      "repair_safe_loss": 8,
+      "title_field_split_contract_required": 1,
+      "title_variant_canonicalization_required": 1,
+      "wrong_before_alternative_current_work_review_required": 1,
+      "wrong_before_alternative_title_review_required": 3
+    },
+    "repair_examples": [
+      11702086,
+      11702090,
+      11703624,
+      11705230,
+      11705231,
+      11705251,
+      11705269,
+      11706827
+    ],
+    "accept_examples": [
+      11703631,
+      11703640,
+      11703658,
+      11703674,
+      11706842
+    ],
+    "hold_examples": [
+      11702094,
+      11706844
+    ]
+  },
+  "cumulative": {
+    "reviewed_rows": 119,
+    "batch_rows": 147,
+    "unreviewed_rows": 28,
+    "validation_issues": 0,
+    "labels": {
+      "ACCEPT": 33,
+      "HOLD": 25,
+      "REPROCESS": 61
+    },
+    "actions": {
+      "canonical_title_variant_policy_required": 1,
+      "character_bridge_contract_or_runtime_replay_required": 1,
+      "character_bridge_contract_required": 1,
+      "exclude_from_regression_count_after_gate_wiring": 33,
+      "incidental_comment_overresolve_excluded": 1,
+      "known_alias_runtime_replay_required": 4,
+      "multi_candidate_recommendation_review_required": 1,
+      "native_image_or_canonical_review_required": 1,
+      "native_image_or_character_bridge_review_required": 2,
+      "native_image_or_media_boundary_review_required": 1,
+      "native_image_or_source_review_required": 12,
+      "native_image_or_url_review_required": 1,
+      "native_web_or_alternative_title_review_required": 1,
+      "native_web_or_scope_review_required": 1,
+      "native_web_or_source_review_required": 3,
+      "native_web_or_url_review_required": 3,
+      "preserve_hold_boundary": 1,
+      "publish_contract_trace_or_variance_review_required": 1,
+      "repair_safe_loss": 61,
+      "title_field_split_contract_required": 1,
+      "title_variant_canonicalization_required": 4,
+      "url_canonicalization_review_required": 1,
+      "wrong_before_alternative_current_work_review_required": 1,
+      "wrong_before_alternative_title_review_required": 3
+    }
+  },
+  "loop314_background_snapshot": {
+    "interpretation": "partial background progress only; not approval evidence",
+    "safe_loss_n5": {
+      "result_json_count": "3/15",
+      "gate": "RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD"
+    },
+    "full375": {
+      "completed_flushed_pending_failed": "24/19/5/0",
+      "ordered_flush_blocked": true,
+      "include_search": true,
+      "light_mode": false,
+      "gate": "IN_PROGRESS / NOT_APPROVAL"
+    },
+    "bounded_completed_source": {
+      "completed_flushed_pending_failed": "39/19/20/0",
+      "ordered_flush_blocked": true,
+      "include_search": true,
+      "light_mode": false,
+      "gate": "IN_PROGRESS / NOT_APPROVAL"
+    },
+    "golden18": {
+      "completed_flushed_pending_failed": "9/7/2/0",
+      "ordered_flush_blocked": true,
+      "include_search": true,
+      "light_mode": false,
+      "gate": "APPROVAL_NOT_OPEN"
+    }
+  },
+  "gates": {
+    "source_native_review": "REVIEW-LOCKED / PARTIAL",
+    "runtime_replay": "NOT_RUNTIME_VERIFIED",
+    "safe_loss_n5": "RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD",
+    "full375": "IN_PROGRESS / NOT_APPROVAL",
+    "bounded_completed_source": "IN_PROGRESS / NOT_APPROVAL",
+    "golden18": "APPROVAL_NOT_OPEN",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

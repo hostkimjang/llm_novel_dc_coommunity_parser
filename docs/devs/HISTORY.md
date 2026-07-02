@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop320 safe-loss source-native next slice
+
+- Loop314 full375/bounded1200/golden18/N5는 완료 대기하지 않고 background 감시로 유지했다.
+- Loop301 `safe_loss_resolved_to_null=147` batch에서 Loop318 이후 다음 15건을 source-native로 추가 판정했다.
+- Delta 결과는 `REPROCESS=8`, `ACCEPT=5`, `HOLD=2`, validation issues `0`이다.
+- 누적 결과는 reviewed `119/147`, unreviewed `28`, labels `REPROCESS=61`, `ACCEPT=33`, `HOLD=25`이다.
+- `6★ 가챠 캐릭터가 되었다`, `괴담 호텔 탈출기`, `판초우의의 마법사`, `월야환담`, `탐식의 재림`, `월야환담 창월야`, `기계공주` 계열은 repair 후보로 분리했다.
+- `나의 악당들`, `아프리카 의 독재자가 되었다 .`, `게임 속 도굴꾼이 되었다`, `삼국지 마대 가 되었다`는 wrong-before 또는 prior-work/동음 후보라 safe-loss 복구 대상에서 제외했다.
+- Report는 `docs/devs/loop_reports/LOOP_320_REPORT_20260702.md`, state는 `docs/devs/loop320_safe_loss_source_native_review_20260702.json`이다.
+- Gate는 source-native review `REVIEW-LOCKED / PARTIAL`, runtime replay `NOT_RUNTIME_VERIFIED`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop319 OVERRIDE AUDIT 11708445 blind/source-native
 
 - 코드 변경 없는 대형 run 감시/문서 회차가 반복되어 `OVERRIDE AUDIT(LLM=False->final=True)` 행 검증으로 전환했다.
