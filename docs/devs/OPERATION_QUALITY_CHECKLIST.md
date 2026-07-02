@@ -6,6 +6,20 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop290 collateral183 P0 review batch quality gate
+
+- 근거:
+  - [x] background full375/bounded/golden18 런을 완료 전 approval 근거로 쓰지 않았다.
+  - [x] collateral183 P0 전체 `183`행을 blind/source-native 검토 배치로 생성했다.
+  - [x] source/baseline/after row 누락이 `0/0/0`임을 확인했다.
+  - [x] judge-facing 입력에서 전후 비교와 `reason_lines`를 제외했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_290_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] review batch는 정답 라벨 입력이지 approval 산출물이 아니다.
+  - [x] native web 확인 전 `needs_native_web_check=true`를 유지한다.
+  - [x] 검색 degraded 복구 전 `promotion_blocked`는 `search-blind conditional`로만 해석한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop289 background / collateral183 quality gate
 
 - 근거:

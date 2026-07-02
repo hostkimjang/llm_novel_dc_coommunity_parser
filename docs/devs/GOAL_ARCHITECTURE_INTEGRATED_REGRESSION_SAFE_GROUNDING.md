@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop290 Addendum - collateral183 P0 blind/source-native 검토 배치
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 대형 background 런은 완료 전이므로 approval 근거로 쓰지 않는다.
+- 목적: 코드 변경 없는 대기 루프를 끊고 Loop289 collateral183 P0 전체를 blind/source-native 검토 가능한 입력으로 고정한다.
+- 코드 변경: `tools/build_collateral_triage_review_batch.py`와 `tests/test_build_collateral_triage_review_batch.py`를 추가하고, `.gitignore` 추적 예외를 갱신했다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_290_REPORT_20260702.md`, batch JSON `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop290_collateral183_p0_review_batch.json`, JSONL `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop290_collateral183_p0_review_batch.jsonl`, Markdown `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop290_collateral183_p0_review_batch.md`, Data Analytics summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop290_collateral183_p0_review_batch_data_analytics_artifact.json`.
+- Evidence: selected review rows `183`, missing source/baseline/after `0/0/0`, bucket `wrong_work_title_flip=10`, `unsafe_promotion_from_hold=26`, `safe_loss_resolved_to_null=147`. Loop290 문서화 시점 background snapshot은 full375 `375/3/1/2/0`, bounded1200 `1200/7/0/7/0`, golden18 `18/1/1/0/0`, 모두 `large_run_complete=false`.
+- Gate: review batch `REVIEW-LOCKED`, background runs `RUNNING_BACKGROUND`, search degraded recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop289 Addendum - background 감시와 collateral183 triage 전환
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop288 background 런은 완료되지 않았으므로 approval 근거로 쓰지 않고, 대형/장기 run은 background monitoring으로 내렸다.

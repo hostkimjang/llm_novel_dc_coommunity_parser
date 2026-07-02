@@ -1,5 +1,24 @@
 # Verification Results
 
+## 2026-07-02 Loop290 collateral183 P0 blind/source-native 검토 배치
+
+- 범위: Loop289 collateral183 P0 triage 전체를 blind/source-native review batch로 고정하고, background 런은 완료 전 감시 상태로 유지한다.
+- Background snapshot:
+  - full375 manifest: `input/completed/flushed/pending/failed=375/3/1/2/0`, `include_search=true`, `light_mode=false`, `large_run_complete=false`
+  - bounded1200 manifest: `1200/7/0/7/0`, `include_search=true`, `light_mode=false`, `large_run_complete=false`
+  - golden18 manifest: `18/1/1/0/0`, `include_search=true`, `light_mode=true`, `large_run_complete=false`
+- Review batch:
+  - command: `python tools\build_collateral_triage_review_batch.py --triage ...loop289_collateral183_regression_triage.json --panel-input ...regression_panel_input.jsonl --baseline-result ...baseline_result.json --after-result ...loop49_regression_panel_replay_result.json --output-json ...loop290_collateral183_p0_review_batch.json --output-jsonl ...loop290_collateral183_p0_review_batch.jsonl --output-md ...loop290_collateral183_p0_review_batch.md`
+  - selected review rows `183`
+  - missing source/baseline/after `0/0/0`
+  - bucket counts `wrong_work_title_flip=10`, `unsafe_promotion_from_hold=26`, `safe_loss_resolved_to_null=147`
+  - `rg -n "reason_lines" ...loop290_collateral183_p0_review_batch.*` match 없음
+- Code/test verification:
+  - `python -m py_compile tools\build_collateral_triage_review_batch.py` PASS
+  - `python -m unittest tests.test_build_collateral_triage_review_batch -v` PASS, `2 tests`
+  - Data Analytics `validate_artifact` PASS, `render_artifact` PASS
+- Gate: review batch `REVIEW-LOCKED`, search recovery `P0 / OPEN`, background runs `RUNNING_BACKGROUND`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop289 background health / collateral183 triage
 
 - 범위: Loop288 background 런 3개를 in-progress health로 재감사하고, 기존 full375 collateral diff의 `183` regression row를 triage한다.

@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-02 - Loop290 collateral183 P0 blind/source-native 검토 배치
+
+- Loop288 background 런은 완료 전이라 approval 근거로 쓰지 않았다.
+- Loop290 문서화 시점 manifest snapshot은 full375 `375/3/1/2/0`, bounded1200 `1200/7/0/7/0`, golden18 `18/1/1/0/0`이며 모두 `large_run_complete=false`다.
+- `tools/build_collateral_triage_review_batch.py`를 추가해 Loop289 triage, panel input, baseline result, after result를 post_id 기준으로 결합했다.
+- judge-facing 입력은 `source_native_packet`, `blind_judge_options`, `blind_judge_hold_option`로 제한하고, 전후 비교용 `comparison_private_not_for_blind_judge`를 분리했다.
+- review batch는 P0 전체 `183`행, missing source/baseline/after `0/0/0`이다.
+- bucket은 `wrong_work_title_flip=10`, `unsafe_promotion_from_hold=26`, `safe_loss_resolved_to_null=147`이다.
+- Report는 `docs/devs/loop_reports/LOOP_290_REPORT_20260702.md`, batch는 `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop290_collateral183_p0_review_batch.*`이다.
+- Data Analytics artifact validate/render는 PASS다.
+- Gate는 review batch `REVIEW-LOCKED`, background runs `RUNNING_BACKGROUND`, search recovery `P0 / OPEN`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop289 background 감시와 collateral183 triage
 
 - Loop288 background 런은 완료되지 않아 approval 근거로 쓰지 않았다.

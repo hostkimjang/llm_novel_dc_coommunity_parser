@@ -71,6 +71,7 @@ tests/inputs/test01.jsonl
 !/tests/test_publication_contract_convergence_audit.py
 !/tests/test_regression_safe_grounding_bootstrap.py
 !/tests/test_triage_collateral_regressions.py
+!/tests/test_build_collateral_triage_review_batch.py
 /tmp*
 *.bak
 *.badbak
@@ -107,6 +108,7 @@ tests/inputs/test01.jsonl
 !/tools/build_judge_seed_registry.py
 !/tools/audit_expert_run_health.py
 !/tools/audit_publication_contract_convergence.py
+!/tools/build_collateral_triage_review_batch.py
 /qualitative_review
 /.playwright-mcp
 /server-poc

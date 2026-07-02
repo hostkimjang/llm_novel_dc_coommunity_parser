@@ -1,5 +1,27 @@
 # Development Checklist
 
+## 2026-07-02 Loop290 collateral183 P0 blind/source-native 검토 배치 체크
+
+- [x] Loop288 background 런을 완료 대기하지 않고 background 감시 상태로 유지했다.
+  - full375 문서화 시점 manifest `375/3/1/2/0`, `large_run_complete=false`
+  - bounded1200 문서화 시점 manifest `1200/7/0/7/0`, `large_run_complete=false`
+  - golden18 문서화 시점 manifest `18/1/1/0/0`, `large_run_complete=false`, `light_mode=true`
+- [x] collateral183 P0 전체를 blind/source-native review batch로 고정했다.
+  - JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop290_collateral183_p0_review_batch.json`
+  - JSONL `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop290_collateral183_p0_review_batch.jsonl`
+  - Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop290_collateral183_p0_review_batch.md`
+  - selected rows `183`, missing source/baseline/after `0/0/0`
+- [x] bucket counts를 확인했다.
+  - `wrong_work_title_flip=10`
+  - `unsafe_promotion_from_hold=26`
+  - `safe_loss_resolved_to_null=147`
+- [x] blind judge 입력에서 전후 비교와 `reason_lines`를 제외했다.
+- [x] Data Analytics artifact를 validate/render했다.
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop290_collateral183_p0_review_batch_data_analytics_artifact.json`
+- [ ] P0 batch에 blind/source-native label을 채우고, label별 정당 해소/비결정/오귀결을 분리한다.
+- [ ] background full375/bounded/golden18 완료 후 재감사한다.
+- Gate: review batch `REVIEW-LOCKED`, background runs `RUNNING_BACKGROUND`, search recovery `P0 / OPEN`, full collateral approval `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop289 background 감시 / collateral183 triage 체크
 
 - [x] Loop288 background 런 3개를 완료 산출물이 아니라 in-progress health로 재감사했다.
@@ -19,7 +41,7 @@
   - `wrong_work_title_flip=10`
 - [x] Data Analytics artifact를 validate/render했다.
   - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop289_background_collateral183_data_analytics_artifact.json`
-- [ ] P0 collateral bucket별 blind judge/source-native review batch를 구성한다.
+- [x] P0 collateral bucket별 blind judge/source-native review batch를 구성했다. Loop290 산출물 참조.
 - [ ] background full375/bounded/golden18 완료 후 재감사한다.
 - Gate: background runs `IN_PROGRESS`, collateral183 triage `NO-GO`, search recovery `P0 / OPEN`, full collateral approval `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 

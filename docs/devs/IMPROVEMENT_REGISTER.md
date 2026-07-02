@@ -1,5 +1,36 @@
 # Improvement Register
 
+## IMP-20260702-290 - collateral183 P0 blind/source-native 검토 배치
+
+- Status: Implemented / approval blocked
+- Loop: 290
+- Problem:
+  - Loop289 triage는 P0 `183`행을 bucket으로 나눴지만, blind judge/source-native 검토에 바로 넣을 수 있는 원문+후보 패킷은 없었다.
+  - 대형 background 런을 기다리는 동안 코드 변경 없는 대기가 반복되면 approval 교착이 길어진다.
+- Change:
+  - `tools/build_collateral_triage_review_batch.py`를 추가해 triage, panel input, baseline result, after result를 결합한다.
+  - blind judge 입력과 전후 diff 검수 정보를 분리한다.
+  - `tests/test_build_collateral_triage_review_batch.py`로 deterministic selection과 `reason_lines` 비노출 계약을 고정한다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_290_REPORT_20260702.md`
+  - batch JSON/JSONL/MD `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop290_collateral183_p0_review_batch.*`
+- Result:
+  - selected review rows `183`
+  - missing source/baseline/after `0/0/0`
+  - `wrong_work_title_flip=10`
+  - `unsafe_promotion_from_hold=26`
+  - `safe_loss_resolved_to_null=147`
+- Verification:
+  - py_compile PASS
+  - focused tests `2` OK
+  - Data Analytics validate/render PASS
+- Gate:
+  - review batch `REVIEW-LOCKED`
+  - search recovery `P0 / OPEN`
+  - background runs `RUNNING_BACKGROUND`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-289 - collateral183 regression triage
 
 - Status: Implemented / approval blocked
