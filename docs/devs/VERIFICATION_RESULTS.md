@@ -1,5 +1,28 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop309 백그라운드 전환 및 큐 정합성
+
+- 범위: current HEAD 증거를 재정렬하고, 대형 run을 approval 대기 경로가 아닌 background 감시로 유지하며, Loop308 `repair_unsafe_promotion=14` 중복 queue 표기를 정정한다.
+- Artifacts:
+  - state `docs\devs\loop309_background_handoff_20260702.json`
+  - report `docs\devs\loop_reports\LOOP_309_REPORT_20260702.md`
+  - full375 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop309_full375_search_nonlight_current_health_audit.json`
+  - bounded1200 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop309_bounded1200_search_nonlight_current_health_audit.json`
+- Verification:
+  - `tools\audit_expert_run_health.py` full375 explicit-path audit -> PASS
+  - `tools\audit_expert_run_health.py` bounded1200 explicit-path audit -> PASS
+  - 생산 코드 변경 없음. 새 unit test는 실행하지 않음.
+- Background:
+  - full375 checkpoint/result `129/105`, pending `24`, flush `IN_PROGRESS/ordered_flush_gap_in_progress`
+  - bounded1200 checkpoint/result `190/177`, pending `13`, flush `IN_PROGRESS/ordered_flush_gap_in_progress`
+  - 둘 다 search blockers `search_timeout_observed`, `search_degraded_observed`
+  - publication contract convergence `GO`는 flushed result subset 한정
+- Queue reconciliation:
+  - Loop300 current contract replay `26/26` match
+  - `REPROCESS=14 -> promotion_blocked=14/14`
+  - Loop308 `repair_unsafe_promotion=14`는 새 코드 queue로 중복 등재하지 않음
+- Gate: background full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, unsafe promotion repair queue `CLOSED_BY_LOOP300_CONTRACT_REPLAY / NOT_APPROVAL`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop308 collateral unsafe-promotion triage
 
 - 범위: collateral183 P0 `unsafe_promotion_from_hold` bucket을 대형 run 대기 없이 source-native 기준으로 26/26 판정하고 background health를 갱신한다.

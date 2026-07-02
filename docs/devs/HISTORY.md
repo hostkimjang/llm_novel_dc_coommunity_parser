@@ -1,5 +1,17 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop309 백그라운드 전환 및 큐 정합성
+
+- current HEAD 기준 background health를 다시 갱신했다.
+- full375는 run `20260702_124015_346913`, checkpoint/result `129/105`, pending `24`, `IN_PROGRESS/ordered_flush_gap_in_progress`다.
+- bounded1200 completed-source는 run `20260702_124015_423917`, checkpoint/result `190/177`, pending `13`, `IN_PROGRESS/ordered_flush_gap_in_progress`다.
+- 두 run 모두 search 포함 non-light이지만 blockers `search_timeout_observed`, `search_degraded_observed`가 남아 approval 근거가 아니다.
+- Loop308의 `repair_unsafe_promotion=14` 중복 queue 표기를 정정했다. Loop300 current contract replay가 이미 `26/26` match와 `REPROCESS=14 -> promotion_blocked=14/14`를 기록했으므로 새 코드 queue로 다시 세지 않는다.
+- N5 flip 근거는 Loop307 산출물을 유지한다. `11674712`와 `11698880`은 flip_rate `0.4`, `11660237`은 stable blind judge confirmed이며 gate는 `NO-GO`다.
+- 다음 actionable queue는 Loop306 기준 `safe_loss_resolved_to_null` reviewed/unreviewed `29/118`, `repair_safe_loss=23`이다. 대형 run 대기만 반복되면 `OVERRIDE AUDIT(LLM=False->final=True)` blind judge 검증으로 전환한다.
+- Report는 `docs/devs/loop_reports/LOOP_309_REPORT_20260702.md`, state는 `docs/devs/loop309_background_handoff_20260702.json`이다.
+- Gate는 background full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop308 collateral unsafe-promotion triage
 
 - 대형 full375/bounded run을 approval 경로로 기다리지 않고 background health만 갱신했다.

@@ -1,5 +1,29 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop309 background handoff / queue reconciliation 체크
+
+- [x] full375/bounded1200 background health를 최신 manifest/checkpoint/result/log 기준으로 다시 감사했다.
+  - full375 checkpoint/result `129/105`, pending `24`
+  - bounded1200 checkpoint/result `190/177`, pending `13`
+  - 둘 다 `IN_PROGRESS/ordered_flush_gap_in_progress`
+  - blockers `search_timeout_observed`, `search_degraded_observed`
+- [x] Loop308 `repair_unsafe_promotion=14` 중복 queue 표기를 정정했다.
+  - Loop300 current contract replay `26/26` match
+  - `REPROCESS=14` -> `promotion_blocked=14/14`
+  - 새 코드 queue로 재등재하지 않음
+- [x] N5 flip 근거를 current-code 기준으로 재확인했다.
+  - artifact `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop307_safe_loss_flip_rate_n5_current_head_review.json`
+  - `11674712` flip_rate `0.4`, `11660237` flip_rate `0.0`, `11698880` flip_rate `0.4`
+  - gate `NO-GO`, hard-hold relaxation `false`
+- [x] 대형 run은 approval 대기 경로가 아니라 background 감시로 유지하고, 다음 actionable queue를 재지정했다.
+  - Loop306 기준 `safe_loss_resolved_to_null` reviewed/unreviewed `29/118`
+  - `repair_safe_loss=23`
+  - 대형 run 대기만 반복되면 `OVERRIDE AUDIT(LLM=False->final=True)` blind judge 검증으로 전환
+- [x] Loop309 report/state를 작성했다.
+  - report `docs\devs\loop_reports\LOOP_309_REPORT_20260702.md`
+  - state `docs\devs\loop309_background_handoff_20260702.json`
+- Gate: background full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop308 collateral unsafe-promotion triage 체크
 
 - [x] 대형 full375/bounded run을 approval 대기 경로로 쓰지 않고 background health만 갱신했다.
@@ -15,8 +39,8 @@
 - [x] Data Analytics artifact `Loop308 collateral unsafe-promotion triage report` validate/render PASS.
 - [x] 직접 이미지 증거를 내려받아 판정에 반영했다.
   - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop308_unsafe_promotion_images\manifest.json`
-- [ ] `REPROCESS=14`는 shared promotion gate 코드 작업 전까지 residual 감소로 세지 않는다.
-- [ ] `ACCEPT=12`도 gate wiring 전까지 full collateral approval 근거가 아니다.
+- [x] `REPROCESS=14`는 Loop309에서 중복 코드 queue가 아님을 정정했다. Loop300 current contract replay 기준 `14/14 promotion_blocked`로 이미 수렴했지만 residual 감소나 approval은 아니다.
+- [x] `ACCEPT=12`도 full collateral approval 근거로 쓰지 않는다. Search degraded와 background run incomplete가 남아 있다.
 - Gate: collateral unsafe-promotion triage `REVIEW-LOCKED`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-02 Loop307 safe-loss alias contract expansion 체크

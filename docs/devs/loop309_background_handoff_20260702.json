@@ -1,0 +1,75 @@
+{
+  "loop": 309,
+  "date": "2026-07-02",
+  "goal_status": "ACTIVE_NOT_COMPLETE",
+  "scope": "current_head_evidence_reconciliation_and_background_handoff",
+  "production_code_changed": false,
+  "summary": {
+    "unsafe_promotion_repair_queue_status": "closed_by_existing_loop300_contract_replay",
+    "unsafe_promotion_reprocess_rows": 14,
+    "unsafe_promotion_contract_replay_match": "26/26",
+    "unsafe_promotion_reprocess_to_promotion_blocked": "14/14",
+    "safe_loss_next_queue": "safe_loss_resolved_to_null",
+    "safe_loss_reviewed": 29,
+    "safe_loss_unreviewed": 118,
+    "safe_loss_repair_queue": 23,
+    "promotion_blocked_interpretation": "search-blind conditional"
+  },
+  "safe_loss_flip_probe": {
+    "artifact": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop307_safe_loss_flip_rate_n5_current_head_review.json",
+    "repeats": 5,
+    "gate": "NO-GO",
+    "hard_hold_relaxation_allowed": false,
+    "rows": {
+      "11674712": {
+        "flip_rate": 0.4,
+        "classification": "nondeterminism_unresolved"
+      },
+      "11660237": {
+        "flip_rate": 0.0,
+        "classification": "stable_blind_judge_confirmed"
+      },
+      "11698880": {
+        "flip_rate": 0.4,
+        "classification": "nondeterminism_unresolved"
+      }
+    }
+  },
+  "background_health": {
+    "full375": {
+      "run_id": "20260702_124015_346913",
+      "artifact": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop309_full375_search_nonlight_current_health_audit.json",
+      "input_post_count": 375,
+      "checkpoint_rows": 129,
+      "result_rows": 105,
+      "pending_count": 24,
+      "flush_integrity": "IN_PROGRESS/ordered_flush_gap_in_progress",
+      "search_blockers": [
+        "search_timeout_observed",
+        "search_degraded_observed"
+      ],
+      "publication_contract_convergence": "GO_FLUSHED_ROWS_ONLY"
+    },
+    "bounded1200_completed_source": {
+      "run_id": "20260702_124015_423917",
+      "artifact": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop309_bounded1200_search_nonlight_current_health_audit.json",
+      "input_post_count": 1200,
+      "checkpoint_rows": 190,
+      "result_rows": 177,
+      "pending_count": 13,
+      "flush_integrity": "IN_PROGRESS/ordered_flush_gap_in_progress",
+      "search_blockers": [
+        "search_timeout_observed",
+        "search_degraded_observed"
+      ],
+      "publication_contract_convergence": "GO_FLUSHED_ROWS_ONLY"
+    }
+  },
+  "gate": {
+    "background_runs": "IN_PROGRESS_NOT_APPROVAL",
+    "search_recovery": "P0_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE_NOT_COMPLETE"
+  }
+}

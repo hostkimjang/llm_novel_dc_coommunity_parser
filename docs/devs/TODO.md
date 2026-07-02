@@ -2,6 +2,23 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop309 TODO
+
+- 상태 업데이트: Loop308 `repair_unsafe_promotion=14`는 Loop300 current contract replay로 이미 `14/14 promotion_blocked` 수렴이 확인되어 새 코드 queue가 아니다. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop309 TODO:
+  - [x] full375/bounded1200 background health audit를 갱신했다.
+    - full375 checkpoint/result `129/105`, pending `24`
+    - bounded1200 checkpoint/result `190/177`, pending `13`
+    - blockers `search_timeout_observed`, `search_degraded_observed`
+  - [x] Loop308/Loop300 queue 표기 충돌을 정정했다.
+    - Loop300 replay `26/26` match
+    - `REPROCESS=14 -> promotion_blocked=14/14`
+  - [x] 대형 run을 approval 대기 경로가 아니라 background 감시로 유지했다.
+  - [ ] Loop306 기준 `safe_loss_resolved_to_null` 남은 `118` row를 계속 source-native/blind judge로 줄인다.
+  - [ ] `repair_safe_loss=23` 중 일반화 가능한 alias/bridge만 shared gate/runtime replay 후보로 올린다.
+  - [ ] 대형 run 대기만 반복되면 `OVERRIDE AUDIT(LLM=False->final=True)` blind judge 검증으로 전환한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 regression-safe grounding Loop308 TODO
 
 - 상태 업데이트: collateral183 P0 `unsafe_promotion_from_hold` bucket은 source-native 판정 `26/26` 완료지만 approval은 열리지 않았다. Goal은 `ACTIVE / NOT_COMPLETE`.
@@ -13,8 +30,8 @@
   - [x] Loop298 미검토 11건을 추가 판정해 consolidated verdict `26/26`을 만들었다.
   - [x] summary validation issues `0`을 확인했다.
   - [x] Data Analytics artifact validate/render PASS를 확인했다.
-  - [ ] `REPROCESS=14`를 shared promotion gate 코드 작업 queue로 전환한다.
-  - [ ] `ACCEPT=12`는 gate wiring 전까지 approval 근거로 쓰지 않는다.
+  - [x] `REPROCESS=14`는 Loop309에서 중복 queue가 아님을 정정했다. Loop300 current contract replay 기준 `14/14 promotion_blocked`로 이미 수렴했다.
+  - [x] `ACCEPT=12`는 full approval 근거로 쓰지 않는다. Search degraded와 background run incomplete가 남아 있다.
   - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-02 regression-safe grounding Loop307 TODO
