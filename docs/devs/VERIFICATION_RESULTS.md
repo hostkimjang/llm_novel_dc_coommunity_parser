@@ -1,5 +1,41 @@
 # Verification Results
 
+## 2026-07-02 Loop280 live health and completed source candidate recheck
+
+- 범위: Loop264 대형 run 최신 health와 completed source approval 후보 존재 여부를 재확인한다.
+- Code:
+  - 코드 변경 없음.
+- Explicit health audit:
+  - command: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_065642_030743 --manifest out\expert_result_20260702_065632_479765_manifest.json --checkpoint out\expert_result_20260702_065632_479765_checkpoint.jsonl --result-json out\expert_result_20260702_065632_479765.json --pending-snapshot out\expert_result_20260702_065632_479765_pending_snapshot.json --input-jsonl tests\inputs\test01.jsonl --log-glob "logs\expert_run_20260702_065642_030743_W*.log" --output out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop280_latest_live_run_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `249`, checkpoint_rows `287`, pending_count_actual `38`
+  - frontier post `11711600`, title `망카데미가 유독 힘숨이 심한거 같다`, source_line `265`
+  - `frontier_worker_trace.status=in_progress_in_worker_log`, worker `W33`, event_count `11`
+  - observed_elapsed_seconds `1259.899`
+  - `search_evidence.gate=REVIEW`
+  - `publication_contract_convergence.gate=GO`
+  - publication row_count `249`, violation_row_count `0`
+- Completed source candidate audit:
+  - command: `.\.venv312\Scripts\python.exe tools\build_completed_source_candidate_audit.py --manifest-root out --random-target 1000 --output-json out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop280_completed_source_candidate_audit.json --output-md out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop280_completed_source_candidate_audit.md`
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `9`
+  - clean_vlm_ocr_search_health_not_ready_count `420`
+  - clean_vlm_ocr_publication_contract_not_ready_count `0`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+- Gate:
+  - live run health: `IN_PROGRESS`
+  - completed source candidate: `MISSING`
+  - candidate audit: `REVIEW-LOCKED`
+  - search evidence: `REVIEW`
+  - publication contract convergence: `GO` for audited flushed rows
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_280_REPORT_20260702.md`
+
 ## 2026-07-02 Loop279 frontier timing health audit
 
 - 범위: live run health audit의 `frontier_worker_trace`가 frontier worker/event뿐 아니라 관측 elapsed time을 기록한다.

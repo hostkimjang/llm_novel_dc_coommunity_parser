@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-02 - Loop280 live health와 completed source 후보 재감사
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- Loop279 이후 live run이 `next_save_idx=250`, result_rows `249`까지 전진했음을 확인했다.
+- Loop280 health audit 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop280_latest_live_run_health_audit.json`이다.
+- health audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows `249`, checkpoint_rows `287`, pending_count_actual `38`이다.
+- frontier는 post_id `11711600`, title `망카데미가 유독 힘숨이 심한거 같다`, worker `W33`, observed_elapsed_seconds `1259.899`, last_event `arbiter_start`다.
+- completed source 후보 감사 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop280_completed_source_candidate_audit.md/json`이다.
+- 후보 감사 summary는 approval_source_candidate_count `0`, clean_vlm_ocr_source_count `429`, clean_vlm_ocr_random_shortfall_count `9`, clean_vlm_ocr_search_health_not_ready_count `420`, clean_vlm_ocr_publication_contract_not_ready_count `0`, partial_vlm_ocr_population_ge_random_target_count `6`이다.
+- Gate는 live run health `IN_PROGRESS`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop279 frontier timing health audit 추가
 
 - 동일 38-row parent packet은 재실행하지 않았다.

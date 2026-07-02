@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop280 Addendum - live health and completed source candidate recheck
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: Loop279 이후 live run 진행 상태와 completed source approval 후보 존재 여부를 같은 라운드에서 재확인한다.
+- 코드 변경: 없음.
+- Artifacts: report `docs/devs/loop_reports/LOOP_280_REPORT_20260702.md`, health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop280_latest_live_run_health_audit.json`, candidate audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop280_completed_source_candidate_audit.md/json`.
+- Evidence: live run은 result_rows `249`, checkpoint_rows `287`, pending_count_actual `38`, frontier post_id `11711600`, worker `W33`, observed_elapsed_seconds `1259.899`다. `publication_contract_convergence=GO`, `search_evidence=REVIEW`다. completed source 후보 감사는 approval_source_candidate_count `0`이다.
+- Gate: live run health `IN_PROGRESS`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop279 Addendum - frontier timing health audit
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
