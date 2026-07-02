@@ -1,5 +1,17 @@
 # Slang DB Improvement TODO
 
+## 2026-07-02 Loop321 safe-loss source-native / slang caveat
+
+- [x] `safe_loss_resolved_to_null` source-native review가 `147/147`까지 완료됐다.
+  - delta `REPROCESS=15`, `ACCEPT=9`, `HOLD=4`
+  - cumulative `REPROCESS=76`, `ACCEPT=42`, `HOLD=29`
+- [x] `괴담출근`, `절꺾않`, `주전무`, `무마`, `아카엄창`, `아생갤`, `고능아`, `마녀도시`, `빌환`, `지구온라인` 등 직접 약칭 row는 repair 후보로 분리했다.
+- [x] `이불사`, `랫따싶`, `기계공주`, `컵라면`, `시스템 딸깍`은 wrong-before/부정 추천/작가 표면/generic trope라 slang/alias registry repair로 세지 않았다.
+- [x] 이미지/OCR/source 확인이 필요한 `따옴표`, `유어 네임`, `전생마왕`, `포티햄` 계열은 HOLD로 유지했다.
+- [ ] `repair_safe_loss=76` 중 slang/alias registry로 일반화 가능한 항목만 shared gate/runtime replay 후보로 올린다.
+- [ ] N5 result JSON `15/15` 완료 후 slang/alias 안정성 caveat를 새 flip 분석으로 갱신한다. 현재 Loop314 `3/15`.
+- Gate: slang DB write-back 아님, source-native review `REVIEW-LOCKED / COMPLETE_SOURCE_NATIVE_QUEUE`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop320 safe-loss source-native / slang caveat
 
 - [x] `safe_loss_resolved_to_null` source-native review가 `119/147`까지 진행됐다.

@@ -2,6 +2,23 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop321 TODO
+
+- 상태 업데이트: `safe_loss_resolved_to_null` source-native review가 `147/147`까지 완료됐다. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop321 TODO:
+  - [x] 남은 28건을 추가 판정했다.
+    - delta `REPROCESS=15`, `ACCEPT=9`, `HOLD=4`
+    - 초기 메모의 `16/8/4` 총계는 원문 packet 재확인 후 `15/9/4`로 정정했다.
+  - [x] cumulative summary를 생성했다.
+    - reviewed/unreviewed `147/0`
+    - validation issues `0`
+    - cumulative `REPROCESS=76`, `ACCEPT=42`, `HOLD=29`
+  - [ ] `repair_safe_loss=76` 중 일반화 가능한 alias/title/character bridge를 shared gate 또는 targeted runtime replay로 전환한다.
+  - [ ] `ACCEPT=42`는 regression count exclusion gate wiring 전까지 approval에서 제외한다.
+  - [ ] `HOLD=29`는 native image/OCR/source/scope 확인 전까지 닫지 않는다.
+  - [ ] N5 result JSON `15/15` 완료 후 current HEAD flip rate를 갱신한다. 현재 Loop314 result JSON `3/15`.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 regression-safe grounding Loop320 TODO
 
 - 상태 업데이트: `safe_loss_resolved_to_null` source-native review가 `119/147`까지 진행됐다. Goal은 `ACTIVE / NOT_COMPLETE`.

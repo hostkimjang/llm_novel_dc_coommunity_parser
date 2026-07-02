@@ -1,5 +1,25 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop321 safe-loss source-native queue closure 체크
+
+- [x] Loop301 `safe_loss_resolved_to_null` 남은 28건을 source-native/blind 기준으로 판정했다.
+  - delta labels `REPROCESS=15`, `ACCEPT=9`, `HOLD=4`
+  - 초기 메모의 `16/8/4` 총계는 원문 packet 재확인 후 `15/9/4`로 정정했다.
+- [x] 누적 verdict와 summary를 생성했다.
+  - cumulative `147/147`, unreviewed `0`
+  - cumulative labels `REPROCESS=76`, `ACCEPT=42`, `HOLD=29`
+  - validation issues `0`
+- [x] 산출물을 기록했다.
+  - delta `docs\devs\loop321_safe_loss_source_native_verdicts_delta_28.json`
+  - cumulative `docs\devs\loop321_safe_loss_source_native_verdicts_cumulative_147.json`
+  - state `docs\devs\loop321_safe_loss_source_native_review_20260702.json`
+  - report `docs\devs\loop_reports\LOOP_321_REPORT_20260702.md`
+- [ ] `repair_safe_loss=76`은 shared gate 또는 targeted runtime replay 전까지 residual closure로 세지 않는다.
+- [ ] `ACCEPT=42`는 regression count exclusion gate wiring 전까지 approval에서 제외한다.
+- [ ] `HOLD=29`는 native image/OCR/source/scope 확인 전까지 닫지 않는다.
+- [ ] N5 result JSON `15/15` 완료 후 current HEAD flip rate를 갱신한다. 현재 Loop314 result JSON `3/15`.
+- Gate: source-native review `REVIEW-LOCKED / COMPLETE_SOURCE_NATIVE_QUEUE`, runtime replay `NOT_RUNTIME_VERIFIED`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, golden18 `APPROVAL_NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop320 safe-loss source-native next slice 체크
 
 - [x] Loop314 대형 런을 완료 대기하지 않고 background 감시로 유지했다.

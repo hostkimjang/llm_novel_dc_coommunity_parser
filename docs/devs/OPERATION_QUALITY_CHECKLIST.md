@@ -6,6 +6,22 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop321 safe-loss source-native quality gate
+
+- 근거:
+  - [x] Loop321 delta verdict `28`건을 작성했다.
+  - [x] 누적 verdict `147/147`과 unreviewed `0`을 기록했다.
+  - [x] validation issue `0`인 summary JSON/MD를 생성했다.
+  - [x] delta labels `REPROCESS=15`, `ACCEPT=9`, `HOLD=4`를 분리했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_321_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] source-native queue closure를 full collateral approval로 쓰지 않는다.
+  - [x] `repair_safe_loss=76`은 shared gate/runtime replay 전까지 queue closure가 아니다.
+  - [x] `ACCEPT=42`는 collateral gate wiring 전까지 regression count 제외 후보일 뿐이다.
+  - [x] `HOLD=29`는 native image/OCR/source/scope 확인 전까지 닫지 않는다.
+  - [x] Loop314 partial progress를 approval 근거로 쓰지 않는다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop320 safe-loss source-native quality gate
 
 - 근거:

@@ -1,0 +1,550 @@
+{
+  "review_id": "loop321_safe_loss_source_native_verdicts_delta_28",
+  "generated_at": "2026-07-02T22:38:14",
+  "head": "8a182c71908fa9f241311a6b77b4eff7298fa799",
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "reviewed_rows": 28,
+  "labels": {
+    "ACCEPT": 9,
+    "HOLD": 4,
+    "REPROCESS": 15
+  },
+  "actions": {
+    "adaptation_or_webtoon_context_replay_required": 1,
+    "author_new_work_context_excluded": 1,
+    "author_work_context_replay_required": 1,
+    "comment_title_or_image_review_required": 1,
+    "comparison_context_policy_required": 1,
+    "exclude_from_regression_count_after_gate_wiring": 9,
+    "generic_trope_overresolve_excluded": 1,
+    "known_alias_runtime_replay_required": 2,
+    "multi_work_or_benchmark_context_policy_required": 1,
+    "native_image_or_canonical_review_required": 1,
+    "native_image_or_ocr_title_review_required": 1,
+    "native_image_or_scope_review_required": 1,
+    "native_image_or_source_review_required": 2,
+    "negated_recommendation_excluded": 1,
+    "repair_safe_loss": 15,
+    "source_evidence_missing_title_question_excluded": 1,
+    "title_variant_canonicalization_required": 1,
+    "url_canonicalization_review_required": 3,
+    "wrong_before_alternative_title_review_required": 4,
+    "wrong_before_author_new_work_review_required": 1
+  },
+  "count_note_ko": "?? ?? ??? 16/8/4 ??? ??, ?? packet ??? ?? ?? ?? ??? REPROCESS=15, ACCEPT=9, HOLD=4? ????.",
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11706867,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "after_hold_needs_native_image_or_source",
+      "evidence_grade": "NeedsImage",
+      "action": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "??? ?? ?? ??? 2?? ?????? C1 `???`? ?? ??? ???? ???. ??/????? C1? ???? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11706867"
+      ],
+      "post_title_snapshot": "요즘 장갤 따옴표 수준.jpg"
+    },
+    {
+      "post_id": 11708432,
+      "selected_option_id": "C1",
+      "selected_title": "전지적 독자 시점",
+      "selected_url": "https://novel.munpia.com/104753",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_but_benchmark_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "multi_work_or_benchmark_context_policy_required"
+      ],
+      "rationale_ko": "??? `???`? `??? ?? ??`? ?? ???? ??? ???/?? ????. ?? ??/benchmark ????? shared gate?? ?? ??? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11708432",
+        "https://novel.munpia.com/104753"
+      ],
+      "post_title_snapshot": "전독시급 정도는 되야 독창성 운운할수있는거지 뭔ㅋㅋ"
+    },
+    {
+      "post_id": 11708443,
+      "selected_option_id": "C1",
+      "selected_title": "괴담에 떨어져도 출근을 해야 하는구나",
+      "selected_url": "https://page.kakao.com/content/65171279",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_known_alias",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "known_alias_runtime_replay_required"
+      ],
+      "rationale_ko": "`????`? C1 `??? ???? ??? ?? ????`? ?? ???? ??/?? ??? ?? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11708443",
+        "https://page.kakao.com/content/65171279"
+      ],
+      "post_title_snapshot": "괴담출근정도는 돼야 독창성 운운할수 있는거다"
+    },
+    {
+      "post_id": 11708447,
+      "selected_option_id": "C1",
+      "selected_title": "잠룡회귀",
+      "selected_url": "https://ridibooks.com/books/425439440",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_direct_title",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? `???? ???????`?? C1 ???? ?? ???. after null? ?? ??? ?? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11708447",
+        "https://ridibooks.com/books/425439440"
+      ],
+      "post_title_snapshot": "아못참겠다 잠룡회귀 하렘임순애임?"
+    },
+    {
+      "post_id": 11708453,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_null_preferred_wrong_before_alternative_work",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "wrong_before_alternative_title_review_required"
+      ],
+      "rationale_ko": "`???`? `???` ?? ???? C1 `?????? ?? ?????`? ??? ?? ?? ??? ???. after null? wrong-before?? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11708453"
+      ],
+      "post_title_snapshot": "미츄리가 이불사 쓸 때 했던 모방이 딱 모범적임"
+    },
+    {
+      "post_id": 11708470,
+      "selected_option_id": "C1",
+      "selected_title": "절대 꺾이지 않을거야!",
+      "selected_url": "https://novelpia.com/novel/338557",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_adaptation_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "adaptation_or_webtoon_context_replay_required"
+      ],
+      "rationale_ko": "`??? ??`? C1 `?? ??? ????!`? ??? ??? ??? ?? ????. ??/adaptation ?? ??? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11708470",
+        "https://novelpia.com/novel/338557"
+      ],
+      "post_title_snapshot": "절꺾않 웹툰 존나 잘뽑히긴했노 ㅋㅋㅋㅋㅋ"
+    },
+    {
+      "post_id": 11708478,
+      "selected_option_id": "C1",
+      "selected_title": "사연 있는 악역으로 착각 당한다",
+      "selected_url": "https://novelpia.com/novel/396159",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_comment_title_with_image_context",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss",
+        "comment_title_or_image_review_required"
+      ],
+      "rationale_ko": "??? ?? ??? ??? ??? C1 `?? ?? ???? ?? ???`? ????. ?? ??/??? ?? ???? ????? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11708478",
+        "https://novelpia.com/novel/396159"
+      ],
+      "post_title_snapshot": "사와요드릴머리영애등장 ㄷㄷ"
+    },
+    {
+      "post_id": 11710020,
+      "selected_option_id": "C1",
+      "selected_title": "주무시기 전에 무엇을 하셨나요?",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_alias_without_url",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "url_canonicalization_review_required"
+      ],
+      "rationale_ko": "`???`? C1 `???? ?? ??? ?????` ???? ?? ????. URL? ?? ?? canonicalization ??? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11710020"
+      ],
+      "post_title_snapshot": "TS) 주전무) 좆같이 굴어서 좆같이 굴기로 한건가"
+    },
+    {
+      "post_id": 11710021,
+      "selected_option_id": "C1",
+      "selected_title": "무한의 마법사",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_alias_without_url",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "url_canonicalization_review_required"
+      ],
+      "rationale_ko": "`?? ??`? `???` ??? C1 `??? ???`? ?? ????. URL ?? ??? replay?? ???? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11710021"
+      ],
+      "post_title_snapshot": "무마 웹툰 보는데"
+    },
+    {
+      "post_id": 11710036,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_null_preferred_wrong_before_alternative_work",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "wrong_before_alternative_title_review_required"
+      ],
+      "rationale_ko": "??? `????? ???? ????`/`???` ??? ??? C1? `???? ?? ??? ???`?? wrong-before?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11710036"
+      ],
+      "post_title_snapshot": "5시간 뒤면 랫따싶이 올까요?"
+    },
+    {
+      "post_id": 11710047,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_null_preferred_wrong_before_alternative_work",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "wrong_before_alternative_title_review_required"
+      ],
+      "rationale_ko": "??? ?? ?? ??? ????? C1 `?? ? ???? ??? ???`? ?? ?? `???? ? ???? ??? ???`? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11710047"
+      ],
+      "post_title_snapshot": "이거 뭔가뭔가임"
+    },
+    {
+      "post_id": 11710052,
+      "selected_option_id": "C1",
+      "selected_title": "아카데미 패드립 면역",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_alias_without_url",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "url_canonicalization_review_required"
+      ],
+      "rationale_ko": "`????` ??? C1 `???? ??? ??`? ??/?? ????. URL ?? C1??? canonical replay? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11710052"
+      ],
+      "post_title_snapshot": "아카엄창 엄마랑 섹스함?"
+    },
+    {
+      "post_id": 11711632,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "after_hold_needs_native_image_or_scope_review",
+      "evidence_grade": "NeedsImage",
+      "action": [
+        "native_image_or_scope_review_required"
+      ],
+      "rationale_ko": "??? `?? ????`? ??? 2???? C1 `?? ??(YOUR NAME)`? ??/?? ???? ???? ???. ???/OCR? scope ?? ? ?? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11711632"
+      ],
+      "post_title_snapshot": "의외로 10년된 것"
+    },
+    {
+      "post_id": 11713220,
+      "selected_option_id": "C1",
+      "selected_title": "나만 성좌들이 안 무서움",
+      "selected_url": "https://novelpia.com/novel/383627",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_direct_alias",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "`??????`? C1 `?? ???? ? ???`? ?? ???? ??? ?? ??? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11713220",
+        "https://novelpia.com/novel/383627"
+      ],
+      "post_title_snapshot": "성좌안무서움 이거 도시락 사장은 정체 뭐임?"
+    },
+    {
+      "post_id": 11713222,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_null_preferred_wrong_before_author_new_work",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "wrong_before_author_new_work_review_required"
+      ],
+      "rationale_ko": "??/??? `????`/`????` ??? ??? C1 `???? ??? ???`? ?? ?? ??? ???? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11713222"
+      ],
+      "post_title_snapshot": "현대 하렘물은 진짜 잘쓰는 작가가 손에꼽네"
+    },
+    {
+      "post_id": 11714885,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_null_preferred_source_missing_answer_title",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "source_evidence_missing_title_question_excluded"
+      ],
+      "rationale_ko": "??? ?? ??? ?????? ??? `??` ??? ?? ? ??? ??. source-native ????? C1? ?? ???? ??/?? ??? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11714885"
+      ],
+      "post_title_snapshot": "자식들로 몸 갈아타는 부모 ㅁㅊ"
+    },
+    {
+      "post_id": 11714887,
+      "selected_option_id": "C1",
+      "selected_title": "도굴왕 1 |",
+      "selected_url": "https://page.kakao.com/content/53190884",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_title_variant_adaptation",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "title_variant_canonicalization_required"
+      ],
+      "rationale_ko": "`??? PV`? YouTube ?? ??? C1 `???` ?? ????. `??? 1 |` ?? title variant ???? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11714887",
+        "https://page.kakao.com/content/53190884"
+      ],
+      "post_title_snapshot": "도굴왕 pv 츄라이 츄라이"
+    },
+    {
+      "post_id": 11714891,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "after_hold_needs_native_image_or_source",
+      "evidence_grade": "NeedsImage",
+      "action": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "??/???? ???? ?? ??? 1?? ?? ???. C1 `????? ???? ????` ??? ???/OCR ?? ? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11714891"
+      ],
+      "post_title_snapshot": "클릭 잘못했는데 화나네"
+    },
+    {
+      "post_id": 11714892,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_null_preferred_negated_recommendation",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "negated_recommendation_excluded"
+      ],
+      "rationale_ko": "??? `????? ??`, `ts? ? ?`?? C1 `?????? ????? ????`? ????? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11714892"
+      ],
+      "post_title_snapshot": "뭔가 요새 재밌는 소설 없나 좀 신박한 소재로"
+    },
+    {
+      "post_id": 11714907,
+      "selected_option_id": "C1",
+      "selected_title": "아카데미 생존 갤러리",
+      "selected_url": "https://novelpia.com/novel/380218",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_known_alias",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "known_alias_runtime_replay_required"
+      ],
+      "rationale_ko": "`???`? ??/?? ??? C1 `???? ?? ???`? ?? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11714907",
+        "https://novelpia.com/novel/380218"
+      ],
+      "post_title_snapshot": "아생갤 작가가 라나 견제 들어가네"
+    },
+    {
+      "post_id": 11716475,
+      "selected_option_id": "C1",
+      "selected_title": "지력 99 고능아인 척하기",
+      "selected_url": "https://novelpia.com/novel/308293",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_comparison_context",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss",
+        "comparison_context_policy_required"
+      ],
+      "rationale_ko": "`???`? C1 `?? 99 ???? ???`? ????? `????/????`? ?? ???? comparison ??? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11716475",
+        "https://novelpia.com/novel/308293"
+      ],
+      "post_title_snapshot": "고능아는 일편독심 망카데미같은건가?"
+    },
+    {
+      "post_id": 11716480,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "after_hold_needs_native_image_or_canonical_review",
+      "evidence_grade": "NeedsImage",
+      "action": [
+        "native_image_or_canonical_review_required"
+      ],
+      "rationale_ko": "?? `???`? ??? 2???? C1 `??? ??? ?? ?? ?? ???`? ?? ??? ??? ? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11716480"
+      ],
+      "post_title_snapshot": "아오 포티햄"
+    },
+    {
+      "post_id": 11716498,
+      "selected_option_id": "C1",
+      "selected_title": "마녀의 도시",
+      "selected_url": "https://novelpia.com/novel/23",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_author_work_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "author_work_context_replay_required"
+      ],
+      "rationale_ko": "`???? ??`? C1 `??? ??`? ??/?? ??? ??? ?? ?? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11716498",
+        "https://novelpia.com/novel/23"
+      ],
+      "post_title_snapshot": "마녀도시 작가 이민갔다옴?"
+    },
+    {
+      "post_id": 11718057,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_null_preferred_author_new_work_context",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "author_new_work_context_excluded"
+      ],
+      "rationale_ko": "`???`? ????? ??/??? ?? ?? ?? ???? ???, ??? ? ???/??? ??? ???. C1 `???` ??? ??? ??? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11718057"
+      ],
+      "post_title_snapshot": "컵라면 이ㅅㄲ 또 딸을 주을려는거냐"
+    },
+    {
+      "post_id": 11718097,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_null_preferred_wrong_before_alternative_work",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "wrong_before_alternative_title_review_required"
+      ],
+      "rationale_ko": "`???`, `???`, `???`, `???` ??? C1 `????? ??? ??? ???`?? ?? ???? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11718097"
+      ],
+      "post_title_snapshot": "망겜힐은 오행복 박태양이 빌런이였어야돼"
+    },
+    {
+      "post_id": 11718099,
+      "selected_option_id": "C1",
+      "selected_title": "빌어먹을 환생",
+      "selected_url": "https://novel.munpia.com/222360",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_direct_alias_image_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "native_image_or_ocr_title_review_required"
+      ],
+      "rationale_ko": "`?? ?????`? ??/??/?????/?? ??? ??? C1 `???? ??`? ?? ????. ?? ???/OCR ?? replay? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11718099",
+        "https://novel.munpia.com/222360"
+      ],
+      "post_title_snapshot": "빌환 표지변경됨"
+    },
+    {
+      "post_id": 11718110,
+      "selected_option_id": "C1",
+      "selected_title": "지구온라인에서 쌀먹합니다",
+      "selected_url": "https://novelpia.com/novel/395678",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_direct_title",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "`????? ????`? C1 `??????? ?????`? ?? ???? ?? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11718110",
+        "https://novelpia.com/novel/395678"
+      ],
+      "post_title_snapshot": "지구온라인 재밌다며 장붕아"
+    },
+    {
+      "post_id": 11718114,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_null_preferred_generic_trope_overresolve",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "generic_trope_overresolve_excluded"
+      ],
+      "rationale_ko": "`??? ??`? ?? ??? ???? C1 `??? ???? ??? ??? ???`? ?? ??? ???? ??? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11718114"
+      ],
+      "post_title_snapshot": "시스템 딸깍하는 설정 ㄹㅇ 별로임"
+    }
+  ]
+}

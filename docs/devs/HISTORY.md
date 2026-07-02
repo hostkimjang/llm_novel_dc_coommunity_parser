@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop321 safe-loss source-native queue closure
+
+- Loop301 `safe_loss_resolved_to_null=147` batch에서 Loop320 이후 남은 28건을 source-native로 판정했다.
+- Delta 결과는 `REPROCESS=15`, `ACCEPT=9`, `HOLD=4`, validation issues `0`이다.
+- 누적 결과는 reviewed `147/147`, unreviewed `0`, labels `REPROCESS=76`, `ACCEPT=42`, `HOLD=29`이다.
+- 초기 작업 메모의 `16/8/4` 총계는 원문 packet 재확인 후 `15/9/4`로 정정했다.
+- `전독시`, `괴담출근`, `잠룡회귀`, `절꺾않`, `주전무`, `무마`, `아카엄창`, `도굴왕`, `아생갤`, `고능아`, `마녀도시`, `빌환`, `지구온라인` 계열은 repair 후보로 분리했다.
+- `이불사` wrong-before, `랫따싶` 대체작, `기계공주` 부정 추천, `컵라면` 작가/신작 표면, `시스템 딸깍` generic trope는 after null/HOLD preferred로 분리했다.
+- Report는 `docs/devs/loop_reports/LOOP_321_REPORT_20260702.md`, state는 `docs/devs/loop321_safe_loss_source_native_review_20260702.json`이다.
+- Gate는 source-native review `REVIEW-LOCKED / COMPLETE_SOURCE_NATIVE_QUEUE`, runtime replay `NOT_RUNTIME_VERIFIED`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop320 safe-loss source-native next slice
 
 - Loop314 full375/bounded1200/golden18/N5는 완료 대기하지 않고 background 감시로 유지했다.

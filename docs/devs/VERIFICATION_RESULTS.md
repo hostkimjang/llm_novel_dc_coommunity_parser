@@ -1,5 +1,36 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop321 safe-loss source-native queue closure
+
+- 범위: Loop301 `safe_loss_resolved_to_null=147` 중 Loop320 이후 남은 28건을 source-native review로 판정한다.
+- Artifacts:
+  - delta verdicts `docs\devs\loop321_safe_loss_source_native_verdicts_delta_28.json`
+  - cumulative verdicts `docs\devs\loop321_safe_loss_source_native_verdicts_cumulative_147.json`
+  - state `docs\devs\loop321_safe_loss_source_native_review_20260702.json`
+  - summary JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop321_safe_loss_source_native_review.json`
+  - summary Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop321_safe_loss_source_native_review.md`
+  - report `docs\devs\loop_reports\LOOP_321_REPORT_20260702.md`
+- Verification:
+  - `python -m json.tool` PASS: delta, cumulative, state, summary JSON
+  - batch rows `147`
+  - reviewed rows `147`
+  - unreviewed rows `0`
+  - validation issues `0`
+- Delta labels:
+  - `REPROCESS=15`
+  - `ACCEPT=9`
+  - `HOLD=4`
+- Cumulative labels:
+  - `REPROCESS=76`
+  - `ACCEPT=42`
+  - `HOLD=29`
+- Background snapshot:
+  - N5 `3/15`, `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`
+  - full375 `30/23/7/0`, `IN_PROGRESS / NOT_APPROVAL`
+  - bounded1200 `43/35/8/0`, `IN_PROGRESS / NOT_APPROVAL`
+  - golden18 `11/7/4/0`, `APPROVAL_NOT_OPEN`
+- Gate: source-native review `REVIEW-LOCKED / COMPLETE_SOURCE_NATIVE_QUEUE`, runtime replay `NOT_RUNTIME_VERIFIED`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop320 safe-loss source-native 다음 slice
 
 - 범위: Loop301 `safe_loss_resolved_to_null=147` 중 Loop318 이후 미검토분 15건을 추가 source-native review로 판정한다.

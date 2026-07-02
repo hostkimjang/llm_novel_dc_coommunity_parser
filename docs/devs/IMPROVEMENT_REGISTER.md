@@ -1,5 +1,38 @@
 # Improvement Register
 
+## IMP-20260702-321 - safe-loss source-native queue closure
+
+- Status: Implemented / source-native queue complete / review locked
+- Loop: 321
+- Problem:
+  - Loop320 이후 `safe_loss_resolved_to_null=147` 중 미검토 `28`건이 남아 있었다.
+  - Loop314 large runs는 partial/background 상태라 approval 근거로 쓸 수 없다.
+- Change:
+  - 남은 28건을 source-native verdict로 작성했다.
+  - 기존 119건과 합쳐 누적 verdict `147/147`과 summary JSON/MD를 생성했다.
+  - direct alias/title repair, wrong-before-title, negated recommendation, author/new-work overresolve, native image/OCR HOLD row를 분리했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_321_REPORT_20260702.md`
+  - state `docs/devs/loop321_safe_loss_source_native_review_20260702.json`
+  - delta verdicts `docs/devs/loop321_safe_loss_source_native_verdicts_delta_28.json`
+  - cumulative verdicts `docs/devs/loop321_safe_loss_source_native_verdicts_cumulative_147.json`
+  - summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop321_safe_loss_source_native_review.*`
+- Result:
+  - delta labels `REPROCESS=15`, `ACCEPT=9`, `HOLD=4`
+  - cumulative reviewed `147/147`
+  - unreviewed `0`
+  - validation issues `0`
+  - cumulative labels `REPROCESS=76`, `ACCEPT=42`, `HOLD=29`
+- Gate:
+  - source-native review `REVIEW-LOCKED / COMPLETE_SOURCE_NATIVE_QUEUE`
+  - runtime replay `NOT_RUNTIME_VERIFIED`
+  - safe-loss N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`
+  - full375/bounded `IN_PROGRESS / NOT_APPROVAL`
+  - golden18 `APPROVAL_NOT_OPEN`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-320 - safe-loss source-native next slice
 
 - Status: Implemented / partial review locked

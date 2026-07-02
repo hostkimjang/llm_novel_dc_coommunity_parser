@@ -1,0 +1,151 @@
+{
+  "loop": 321,
+  "date": "2026-07-02",
+  "generated_at": "2026-07-02T22:38:14",
+  "head": "8a182c71908fa9f241311a6b77b4eff7298fa799",
+  "scope": "safe_loss_resolved_to_null source-native queue closure",
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json",
+  "delta_verdicts": "docs/devs/loop321_safe_loss_source_native_verdicts_delta_28.json",
+  "cumulative_verdicts": "docs/devs/loop321_safe_loss_source_native_verdicts_cumulative_147.json",
+  "summary_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop321_safe_loss_source_native_review.json",
+  "summary_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop321_safe_loss_source_native_review.md",
+  "delta": {
+    "reviewed_rows": 28,
+    "labels": {
+      "ACCEPT": 9,
+      "HOLD": 4,
+      "REPROCESS": 15
+    },
+    "actions": {
+      "adaptation_or_webtoon_context_replay_required": 1,
+      "author_new_work_context_excluded": 1,
+      "author_work_context_replay_required": 1,
+      "comment_title_or_image_review_required": 1,
+      "comparison_context_policy_required": 1,
+      "exclude_from_regression_count_after_gate_wiring": 9,
+      "generic_trope_overresolve_excluded": 1,
+      "known_alias_runtime_replay_required": 2,
+      "multi_work_or_benchmark_context_policy_required": 1,
+      "native_image_or_canonical_review_required": 1,
+      "native_image_or_ocr_title_review_required": 1,
+      "native_image_or_scope_review_required": 1,
+      "native_image_or_source_review_required": 2,
+      "negated_recommendation_excluded": 1,
+      "repair_safe_loss": 15,
+      "source_evidence_missing_title_question_excluded": 1,
+      "title_variant_canonicalization_required": 1,
+      "url_canonicalization_review_required": 3,
+      "wrong_before_alternative_title_review_required": 4,
+      "wrong_before_author_new_work_review_required": 1
+    }
+  },
+  "cumulative": {
+    "reviewed_rows": 147,
+    "batch_rows": 147,
+    "unreviewed_rows": 0,
+    "labels": {
+      "ACCEPT": 42,
+      "HOLD": 29,
+      "REPROCESS": 76
+    },
+    "actions": {
+      "adaptation_or_webtoon_context_replay_required": 1,
+      "author_new_work_context_excluded": 1,
+      "author_work_context_replay_required": 1,
+      "canonical_title_variant_policy_required": 1,
+      "character_bridge_contract_or_runtime_replay_required": 1,
+      "character_bridge_contract_required": 1,
+      "comment_title_or_image_review_required": 1,
+      "comparison_context_policy_required": 1,
+      "exclude_from_regression_count_after_gate_wiring": 42,
+      "generic_trope_overresolve_excluded": 1,
+      "incidental_comment_overresolve_excluded": 1,
+      "known_alias_runtime_replay_required": 6,
+      "multi_candidate_recommendation_review_required": 1,
+      "multi_work_or_benchmark_context_policy_required": 1,
+      "native_image_or_canonical_review_required": 2,
+      "native_image_or_character_bridge_review_required": 2,
+      "native_image_or_media_boundary_review_required": 1,
+      "native_image_or_ocr_title_review_required": 1,
+      "native_image_or_scope_review_required": 1,
+      "native_image_or_source_review_required": 14,
+      "native_image_or_url_review_required": 1,
+      "native_web_or_alternative_title_review_required": 1,
+      "native_web_or_scope_review_required": 1,
+      "native_web_or_source_review_required": 3,
+      "native_web_or_url_review_required": 3,
+      "negated_recommendation_excluded": 1,
+      "preserve_hold_boundary": 1,
+      "publish_contract_trace_or_variance_review_required": 1,
+      "repair_safe_loss": 76,
+      "source_evidence_missing_title_question_excluded": 1,
+      "title_field_split_contract_required": 1,
+      "title_variant_canonicalization_required": 5,
+      "url_canonicalization_review_required": 4,
+      "wrong_before_alternative_current_work_review_required": 1,
+      "wrong_before_alternative_title_review_required": 7,
+      "wrong_before_author_new_work_review_required": 1
+    }
+  },
+  "count_note_ko": "?? ?? ??? 16/8/4 ??? ??, ?? packet ??? ?? ?? ?? ??? REPROCESS=15, ACCEPT=9, HOLD=4? ????.",
+  "background_runs": {
+    "n5_flip_probe": {
+      "planned": 15,
+      "result_json": 3,
+      "status": "RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD",
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop314_safe_loss_independent_n5_run_plan.json"
+    },
+    "full375": {
+      "run_id": "20260702_204042_346798",
+      "completed": 30,
+      "flushed": 23,
+      "pending": 7,
+      "failed": 0,
+      "status": "IN_PROGRESS / NOT_APPROVAL",
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop314_full375_current_head_search_nonlight_result_manifest.json"
+    },
+    "bounded1200_completed_source_search_nonlight": {
+      "run_id": "20260702_204042_443948",
+      "completed": 43,
+      "flushed": 35,
+      "pending": 8,
+      "failed": 0,
+      "status": "IN_PROGRESS / NOT_APPROVAL",
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop314_completed_source_bounded1200_search_nonlight_result_manifest.json"
+    },
+    "golden18": {
+      "run_id": "20260702_204042_371537",
+      "completed": 11,
+      "flushed": 7,
+      "pending": 4,
+      "failed": 0,
+      "status": "APPROVAL_NOT_OPEN / NOT_APPROVAL",
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop314_golden18_current_head_search_nonlight_result_manifest.json"
+    }
+  },
+  "gates": {
+    "source_native_review": "REVIEW-LOCKED / COMPLETE_SOURCE_NATIVE_QUEUE",
+    "runtime_replay": "NOT_RUNTIME_VERIFIED",
+    "safe_loss_n5": "RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD",
+    "full375": "IN_PROGRESS / NOT_APPROVAL",
+    "bounded1200": "IN_PROGRESS / NOT_APPROVAL",
+    "golden18": "APPROVAL_NOT_OPEN / NOT_APPROVAL",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "validation": {
+    "issues": [],
+    "duplicate_post_ids": false,
+    "batch_coverage_complete": true
+  },
+  "next_required": [
+    "repair_safe_loss ?? 76?? shared gate ?? targeted runtime replay? ???.",
+    "ACCEPT ?? 42?? regression count exclusion gate wiring ??? approval?? ????.",
+    "HOLD ?? 29?? native image/OCR/source ?? ??? ???? ???.",
+    "Loop314 N5? 15/15 ???? flip rate? ? HEAD ???? ?? ????.",
+    "search degraded 100% ?? ? promotion_blocked? search-blind conditional? ????."
+  ]
+}
