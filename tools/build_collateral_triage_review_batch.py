@@ -219,12 +219,19 @@ def _selection_key(row: dict[str, Any]) -> tuple[int, int]:
     return (BUCKET_ORDER.get(bucket, 99), post_id)
 
 
-def _p0_rows(triage_report: dict[str, Any], *, per_bucket_limit: int = 0) -> list[dict[str, Any]]:
+def _p0_rows(
+    triage_report: dict[str, Any],
+    *,
+    per_bucket_limit: int = 0,
+    buckets: set[str] | None = None,
+) -> list[dict[str, Any]]:
     rows = [
         row
         for row in triage_report.get("rows", [])
         if isinstance(row, dict) and row.get("is_regression") is True and row.get("priority") == "P0"
     ]
+    if buckets:
+        rows = [row for row in rows if str(row.get("triage_bucket") or "") in buckets]
     rows.sort(key=_selection_key)
     if per_bucket_limit <= 0:
         return rows
@@ -246,9 +253,10 @@ def build_review_batch(
     baseline_rows: dict[int, dict[str, Any]],
     after_rows: dict[int, dict[str, Any]],
     per_bucket_limit: int = 0,
+    buckets: set[str] | None = None,
     generated_at: str | None = None,
 ) -> dict[str, Any]:
-    selected = _p0_rows(triage_report, per_bucket_limit=per_bucket_limit)
+    selected = _p0_rows(triage_report, per_bucket_limit=per_bucket_limit, buckets=buckets)
     review_rows: list[dict[str, Any]] = []
     missing = Counter()
     for triage in selected:
@@ -311,6 +319,7 @@ def build_review_batch(
             "missing_baseline_result_rows": missing.get("baseline", 0),
             "missing_after_result_rows": missing.get("after", 0),
             "per_bucket_limit": per_bucket_limit,
+            "bucket_filter": sorted(buckets or []),
         },
         "instructions_ko": [
             "blind judge 입력에는 source_native_packet과 blind_judge_options만 제공한다.",
@@ -325,7 +334,7 @@ def build_review_batch(
 def write_markdown(path: Path, report: dict[str, Any], *, inputs: dict[str, Path]) -> None:
     summary = report["summary"]
     lines = [
-        "# Loop290 collateral183 P0 blind/source-native 검토 배치",
+        "# Collateral P0 blind/source-native 검토 배치",
         "",
         f"- gate: `{report['gate']}`",
         f"- semantic_quality: `{report['semantic_quality']}`",
@@ -401,6 +410,12 @@ def parse_args() -> argparse.Namespace:
         default=0,
         help="0 keeps every P0 row; positive values keep this many rows per bucket.",
     )
+    parser.add_argument(
+        "--bucket",
+        action="append",
+        default=[],
+        help="Restrict the batch to one triage_bucket. Repeat to include multiple buckets.",
+    )
     return parser.parse_args()
 
 
@@ -412,6 +427,7 @@ def main() -> None:
         baseline_rows=_result_rows_by_post_id(load_json(args.baseline_result)),
         after_rows=_result_rows_by_post_id(load_json(args.after_result)),
         per_bucket_limit=args.per_bucket_limit,
+        buckets={bucket for bucket in args.bucket if bucket},
     )
     inputs = {
         "triage": args.triage,

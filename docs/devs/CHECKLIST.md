@@ -1,5 +1,29 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop298 unsafe promotion partial source-native review 체크
+
+- [x] `unsafe_promotion_from_hold=26`을 독립 review batch로 분리했다.
+  - JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop298_unsafe_promotion_from_hold_review_batch.json`
+  - JSONL `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop298_unsafe_promotion_from_hold_review_batch.jsonl`
+  - Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop298_unsafe_promotion_from_hold_review_batch.md`
+  - selected rows `26`, missing source/baseline/after `0/0/0`
+- [x] source-native partial verdict를 작성했다.
+  - verdicts `docs\devs\loop298_unsafe_promotion_from_hold_source_native_verdicts.json`
+  - summary JSON/MD `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop298_unsafe_promotion_from_hold_source_native_review.*`
+  - reviewed `15/26`, unreviewed `11`
+  - validation issues `0`
+  - `REPROCESS=8`, `ACCEPT=7`
+  - `repair_unsafe_promotion=8`, `exclude_from_regression_count_after_gate_wiring=7`
+- [x] 도구 계약을 보강했다.
+  - `build_collateral_triage_review_batch.py --bucket`
+  - `summarize_collateral_review_verdicts.py` bucket-agnostic summary 및 partial coverage
+- [x] focused 검증을 통과했다.
+  - py_compile PASS
+  - `tests.test_build_collateral_triage_review_batch tests.test_summarize_collateral_review_verdicts` 7 tests PASS
+- [ ] unreviewed `11`건은 native web/image 확인 뒤 라벨링한다.
+- [ ] `repair_unsafe_promotion=8`을 shared promotion gate targeted contract로 전환한다.
+- Gate: unsafe promotion partial review `REVIEW-LOCKED`, full collateral approval `NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop297 background health audit 체크
 
 - [x] background run 3개를 최신 manifest/checkpoint/result/log 기준으로 재감사했다.

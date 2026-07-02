@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop298 unsafe promotion partial source-native review
+
+- `tools/build_collateral_triage_review_batch.py`에 `--bucket` 필터를 추가해 collateral183 P0 중 특정 bucket만 독립 검토 배치로 만들 수 있게 했다.
+- `tools/summarize_collateral_review_verdicts.py`를 `wrong_work_title_flip` 전용에서 bucket-agnostic summary로 일반화했고, partial review coverage를 `batch_review_rows/reviewed_rows/unreviewed_batch_rows`로 기록한다.
+- `unsafe_promotion_from_hold=26` 전용 batch를 생성했다. 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop298_unsafe_promotion_from_hold_review_batch.*`이고 missing source/baseline/after는 `0/0/0`이다.
+- Partial verdict manifest는 `docs/devs/loop298_unsafe_promotion_from_hold_source_native_verdicts.json`이다.
+- Verdict summary는 reviewed `15/26`, unreviewed `11`, validation issues `0`, `REPROCESS=8`, `ACCEPT=7`이다.
+- Action counts는 `repair_unsafe_promotion=8`, `exclude_from_regression_count_after_gate_wiring=7`이다.
+- Report는 `docs/devs/loop_reports/LOOP_298_REPORT_20260702.md`다.
+- Gate는 unsafe promotion partial review `REVIEW-LOCKED`, search recovery `P0 / OPEN`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop297 background health audit
 
 - Loop288에서 발주한 full375, bounded1200 completed-source, golden18 background run을 최신 manifest/checkpoint/result/log 기준으로 재감사했다.

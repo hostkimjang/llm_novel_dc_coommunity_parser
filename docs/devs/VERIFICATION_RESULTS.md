@@ -1,5 +1,22 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop298 unsafe promotion partial source-native review
+
+- 범위: collateral183 P0 중 `unsafe_promotion_from_hold=26`을 독립 batch로 떼고, source-native로 강하게 판정 가능한 일부 row를 라벨링한다.
+- Batch build:
+  - command: `.\.venv312\Scripts\python.exe tools\build_collateral_triage_review_batch.py --triage ...loop289_collateral183_regression_triage.json --panel-input ...regression_panel_input.jsonl --baseline-result ...baseline_result.json --after-result ...loop49_regression_panel_replay_result.json --bucket unsafe_promotion_from_hold --output-json ...loop298_unsafe_promotion_from_hold_review_batch.json --output-jsonl ...loop298_unsafe_promotion_from_hold_review_batch.jsonl --output-md ...loop298_unsafe_promotion_from_hold_review_batch.md`
+  - result: selected review rows `26`, counts by bucket `unsafe_promotion_from_hold=26`, missing source/baseline/after `0/0/0`
+- Verdict summary:
+  - command: `.\.venv312\Scripts\python.exe tools\summarize_collateral_review_verdicts.py --batch ...loop298_unsafe_promotion_from_hold_review_batch.json --verdicts docs\devs\loop298_unsafe_promotion_from_hold_source_native_verdicts.json --output-json ...loop298_unsafe_promotion_from_hold_source_native_review.json --output-md ...loop298_unsafe_promotion_from_hold_source_native_review.md`
+  - batch/reviewed/unreviewed `26/15/11`
+  - validation issues `0`
+  - label counts `REPROCESS=8`, `ACCEPT=7`
+  - action counts `repair_unsafe_promotion=8`, `exclude_from_regression_count_after_gate_wiring=7`
+- Code/test verification:
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\build_collateral_triage_review_batch.py tools\summarize_collateral_review_verdicts.py tests\test_build_collateral_triage_review_batch.py tests\test_summarize_collateral_review_verdicts.py` PASS
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_build_collateral_triage_review_batch tests.test_summarize_collateral_review_verdicts -v` PASS, `7 tests`
+- Gate: unsafe promotion partial review `REVIEW-LOCKED`, search recovery `P0 / OPEN`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop297 background health audit
 
 - 범위: Loop288에서 발주한 full375, bounded1200 completed-source, golden18 background run을 완료 산출물이 아니라 최신 health checkpoint로 재감사한다.

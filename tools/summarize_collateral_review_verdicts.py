@@ -103,22 +103,27 @@ def build_summary(*, batch: dict[str, Any], verdicts: dict[str, Any], generated_
         )
     label_counts = Counter(_string(row.get("review_label")) for row in out_rows)
     verdict_counts = Counter(_string(row.get("source_native_verdict")) for row in out_rows)
+    bucket_counts = Counter(_string(row.get("triage_bucket")) for row in out_rows)
     action_counts: Counter[str] = Counter()
     for row in out_rows:
         for action in row.get("action") or []:
             action_counts[_string(action)] += 1
     gate = "NO-GO" if validation_issues else "REVIEW-LOCKED"
     return {
-        "report_type": "collateral_wrong_work_title_flip_source_native_review",
+        "report_type": "collateral_source_native_review",
         "review_id": verdicts.get("review_id"),
+        "scope": verdicts.get("scope"),
         "generated_at": generated_at or datetime.now().replace(microsecond=0).isoformat(),
         "source_batch": verdicts.get("source_batch"),
         "gate": gate,
         "semantic_quality": "REVIEW-LOCKED",
         "full_scan_approval": False,
         "summary": {
+            "batch_review_rows": len(indexed),
             "reviewed_rows": len(out_rows),
+            "unreviewed_batch_rows": max(len(indexed) - len(out_rows), 0),
             "validation_issue_count": len(validation_issues),
+            "counts_by_bucket": dict(bucket_counts),
             "label_counts": dict(label_counts),
             "source_native_verdict_counts": dict(verdict_counts),
             "action_counts": dict(action_counts),
@@ -127,7 +132,7 @@ def build_summary(*, batch: dict[str, Any], verdicts: dict[str, Any], generated_
         "rows": out_rows,
         "next_actions": [
             "REPROCESS rows require targeted guard/runtime follow-up before collateral approval.",
-            "HOLD rows are canonical/variant collisions and need a publication-title policy decision.",
+            "HOLD rows require native-web or policy review before they can reduce the actionable queue.",
             "ACCEPT rows can be excluded from regression-counting only after the summary is wired into the collateral gate.",
             "Keep semantic_quality=REVIEW-LOCKED and full_scan_approval=false.",
         ],
@@ -136,18 +141,30 @@ def build_summary(*, batch: dict[str, Any], verdicts: dict[str, Any], generated_
 
 def write_markdown(path: Path, summary: dict[str, Any]) -> None:
     counts = summary["summary"]
+    title = summary.get("scope") or summary.get("review_id") or "collateral source-native 검토"
     lines = [
-        "# Loop291 wrong-work title flip source-native 검토",
+        f"# {title}",
         "",
         f"- gate: `{summary['gate']}`",
         f"- semantic_quality: `{summary['semantic_quality']}`",
         f"- full_scan_approval: `{str(summary['full_scan_approval']).lower()}`",
+        f"- batch review rows: `{counts['batch_review_rows']}`",
         f"- reviewed rows: `{counts['reviewed_rows']}`",
+        f"- unreviewed batch rows: `{counts['unreviewed_batch_rows']}`",
         f"- validation issues: `{counts['validation_issue_count']}`",
         "",
-        "## Label counts",
+        "## Bucket counts",
         "",
     ]
+    for bucket, count in sorted(counts["counts_by_bucket"].items()):
+        lines.append(f"- `{bucket}`: `{count}`")
+    lines.extend(
+        [
+            "",
+        "## Label counts",
+        "",
+        ]
+    )
     for label, count in sorted(counts["label_counts"].items()):
         lines.append(f"- `{label}`: `{count}`")
     lines.extend(["", "## Source-native verdict counts", ""])
@@ -167,8 +184,8 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
             "",
             "## Gate 해석",
             "",
-            "이 검토는 `wrong_work_title_flip` 10행의 source-native 라벨 산출물이다. "
-            "REPROCESS/HOLD가 남아 있으므로 full collateral approval은 열리지 않는다.",
+            "이 검토는 collateral P0 bucket의 source-native 라벨 산출물이다. "
+            "REPROCESS/HOLD 또는 validation issue가 남아 있으면 full collateral approval은 열리지 않는다.",
             "",
         ]
     )

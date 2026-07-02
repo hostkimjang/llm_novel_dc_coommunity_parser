@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop298 Addendum - unsafe promotion partial source-native review
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop298은 approval이 아니라 collateral183 P0의 `unsafe_promotion_from_hold=26`을 부분 source-native verdict로 분해한 action queue 산출물이다.
+- 목적: 코드 변경 없는 background 감시를 반복하지 않고, `unsafe_promotion_from_hold` bucket을 독립 배치로 떼어 `repair_unsafe_promotion`과 gate 배선 후보를 분리한다.
+- 코드 변경: `tools/build_collateral_triage_review_batch.py --bucket` 추가, `tools/summarize_collateral_review_verdicts.py` bucket-agnostic summary 및 partial coverage 추가.
+- Artifacts: report `docs/devs/loop_reports/LOOP_298_REPORT_20260702.md`, verdicts `docs/devs/loop298_unsafe_promotion_from_hold_source_native_verdicts.json`, batch `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop298_unsafe_promotion_from_hold_review_batch.*`, summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop298_unsafe_promotion_from_hold_source_native_review.*`.
+- Evidence: batch selected `26`, missing source/baseline/after `0/0/0`; partial verdict reviewed `15/26`, unreviewed `11`, validation issues `0`, `REPROCESS=8`, `ACCEPT=7`, actions `repair_unsafe_promotion=8`, `exclude_from_regression_count_after_gate_wiring=7`.
+- Gate: unsafe promotion partial review `REVIEW-LOCKED`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop297 Addendum - background health audit
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop297은 approval이 아니라 Loop288 background run 3개의 최신 health checkpoint다.

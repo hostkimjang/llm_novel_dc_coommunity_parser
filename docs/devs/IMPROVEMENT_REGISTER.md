@@ -1,5 +1,42 @@
 # Improvement Register
 
+## IMP-20260702-298 - unsafe promotion partial source-native review
+
+- Status: Implemented / partial review locked
+- Loop: 298
+- Problem:
+  - Loop290 collateral183 batch는 P0 전체 `183`행을 만들었지만, `unsafe_promotion_from_hold=26`만 따로 검토하고 요약하는 도구 경로가 없었다.
+  - `summarize_collateral_review_verdicts.py`가 `wrong_work_title_flip` 문구와 report type에 묶여 있어 다른 P0 bucket 검토 결과를 같은 계약으로 요약하기 어려웠다.
+- Change:
+  - `tools/build_collateral_triage_review_batch.py`에 `--bucket` 필터를 추가했다.
+  - `tools/summarize_collateral_review_verdicts.py`를 bucket-agnostic `collateral_source_native_review`로 일반화했다.
+  - summary에 `batch_review_rows`, `reviewed_rows`, `unreviewed_batch_rows`, `counts_by_bucket`를 추가했다.
+  - `unsafe_promotion_from_hold=26` 전용 batch와 `15/26` partial verdict를 생성했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_298_REPORT_20260702.md`
+  - verdicts `docs/devs/loop298_unsafe_promotion_from_hold_source_native_verdicts.json`
+  - batch `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop298_unsafe_promotion_from_hold_review_batch.*`
+  - summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop298_unsafe_promotion_from_hold_source_native_review.*`
+- Result:
+  - batch selected `26`
+  - missing source/baseline/after `0/0/0`
+  - reviewed `15`
+  - unreviewed `11`
+  - validation issues `0`
+  - `REPROCESS=8`
+  - `ACCEPT=7`
+  - `repair_unsafe_promotion=8`
+  - `exclude_from_regression_count_after_gate_wiring=7`
+- Verification:
+  - py_compile PASS
+  - focused unittest `7` OK
+- Gate:
+  - unsafe promotion partial review `REVIEW-LOCKED`
+  - search recovery `P0 / OPEN`
+  - full collateral approval `NOT_OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-297 - background health audit gate checkpoint
 
 - Status: Documented / approval blocked

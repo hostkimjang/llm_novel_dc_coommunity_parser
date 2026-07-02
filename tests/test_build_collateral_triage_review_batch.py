@@ -94,6 +94,26 @@ class BuildCollateralTriageReviewBatchTest(unittest.TestCase):
         self.assertEqual([row["post_id"] for row in report["review_rows"]], [17, 18, 19])
         self.assertEqual(report["summary"]["selected_review_rows"], 3)
 
+    def test_bucket_filter_selects_only_requested_bucket(self):
+        report = build_review_batch(
+            triage_report={
+                "rows": [
+                    _triage_row(20, "safe_loss_resolved_to_null", "resolved_to_null", "A", None),
+                    _triage_row(18, "unsafe_promotion_from_hold", "null_to_resolved", None, "C"),
+                    _triage_row(17, "wrong_work_title_flip", "resolved_to_different_title", "D", "E"),
+                ]
+            },
+            panel_rows={post_id: {"post_id": post_id, "title": f"post {post_id}"} for post_id in (17, 18, 20)},
+            baseline_rows={},
+            after_rows={},
+            buckets={"unsafe_promotion_from_hold"},
+            generated_at="2026-07-02T00:00:00",
+        )
+
+        self.assertEqual([row["post_id"] for row in report["review_rows"]], [18])
+        self.assertEqual(report["summary"]["counts_by_bucket"], {"unsafe_promotion_from_hold": 1})
+        self.assertEqual(report["summary"]["bucket_filter"], ["unsafe_promotion_from_hold"])
+
 
 if __name__ == "__main__":
     unittest.main()

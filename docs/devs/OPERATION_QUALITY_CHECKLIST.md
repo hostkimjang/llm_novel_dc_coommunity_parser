@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop298 unsafe promotion review quality gate
+
+- 근거:
+  - [x] `unsafe_promotion_from_hold=26`을 독립 batch로 분리했다.
+  - [x] `15/26` source-native partial verdict를 작성했다.
+  - [x] validation issues `0`, `REPROCESS=8`, `ACCEPT=7`, unreviewed `11`을 기록했다.
+  - [x] 도구가 bucket filter와 partial coverage를 기록하도록 보강됐다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_298_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] partial verdict는 action queue 분해이며 full collateral approval이 아니다.
+  - [x] `ACCEPT=7`은 gate 배선 전까지 regression count 제외 근거로만 둔다.
+  - [x] `REPROCESS=8`은 targeted guard/runtime follow-up 전까지 닫지 않는다.
+  - [x] unreviewed `11`은 native web/image 확인 없이 닫지 않는다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop297 background health quality gate
 
 - 근거:
