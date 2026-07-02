@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop285 Addendum - frontier 11710018 reason_review audit
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: Loop284부터 계속된 frontier `11710018`이 죽은 작업인지, reason_review 이후에도 writeback 전 병목인지 확인한다.
+- 코드 변경: 없음.
+- Artifacts: report `docs/devs/loop_reports/LOOP_285_REPORT_20260702.md`, health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop285_frontier_11710018_health_audit.json`, candidate audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop285_completed_source_candidate_audit.md/json`, Data Analytics artifact `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop285_frontier_11710018_data_analytics_artifact.json`.
+- Evidence: Loop285 health audit은 result_rows `317`, checkpoint_rows `371`, pending_count_actual `54`, `next_save_idx=318`, frontier post `11710018`, worker `W25`, observed_elapsed_seconds `1964.767`이다. W25 log는 `reason_review`가 `10:03:40.366`에 완료됐고 `10:05:00.213`에 `Fate/stay night` candidate_url이 page title 불일치로 제거됐음을 보여준다. post-render manifest poll은 input/completed/flushed/pending/failed `104502/374/317/57/0`, `large_run_complete=false`, `ordered_flush_blocked=true`, `11710018_in_result=false`다. `publication_contract_convergence=GO(row_count=317, violation_row_count=0)`, `search_evidence=REVIEW`다. completed source 후보 감사는 approval_source_candidate_count `0`이다.
+- Safe-loss evidence: Loop238 N=3 blind judge probe를 유지한다. `11674712`와 `11698880`은 stable blind judge confirmed, `11660237`은 flip_rate `0.3333333333333333`, `nondeterminism_unresolved`라 hard-hold 완화 금지다.
+- Gate: live run health `IN_PROGRESS`, frontier status `IN_PROGRESS_IN_WORKER_LOG / reason_review_completed_but_no_result_row`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, full375 collateral approval `NOT_OPEN / blocked_until_completed_source`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop284 Addendum - frontier chain release and new contract blocker
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

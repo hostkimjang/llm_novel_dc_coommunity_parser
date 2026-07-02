@@ -1,5 +1,66 @@
 # Verification Results
 
+## 2026-07-02 Loop285 frontier 11710018 reason_review and completed source candidate recheck
+
+- 범위: Loop284부터 계속된 frontier `11710018`의 진행 상태, ordered flush writeback, completed source approval 후보 존재 여부를 재확인한다.
+- Code:
+  - 코드 변경 없음.
+- Explicit health audit:
+  - command: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_065642_030743 --manifest out\expert_result_20260702_065632_479765_manifest.json --checkpoint out\expert_result_20260702_065632_479765_checkpoint.jsonl --result-json out\expert_result_20260702_065632_479765.json --pending-snapshot out\expert_result_20260702_065632_479765_pending_snapshot.json --input-jsonl tests\inputs\test01.jsonl --log-glob "logs\expert_run_20260702_065642_030743_W*.log" --output out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop285_frontier_11710018_health_audit.json`
+  - generated_at `2026-07-02T10:03:17`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `317`, checkpoint_rows `371`, pending_count_actual `54`
+  - frontier post `11710018`, title `그것은 *단순한 깡계*가 아닌 오랜 따`, source_line `333`
+  - `frontier_worker_trace.status=in_progress_in_worker_log`, worker `W25`, event_count `17`
+  - observed_elapsed_seconds `1964.767`
+  - `search_evidence.gate=REVIEW`
+  - `publication_contract_convergence.gate=GO`
+  - publication row_count `317`, violation_row_count `0`
+- Post-render manifest poll:
+  - input/completed/flushed/pending/failed `104502/374/317/57/0`
+  - `large_run_complete=false`
+  - `ordered_flush_blocked=true`
+  - `11710018_in_result=false`
+- Frontier log review:
+  - `logs\expert_run_20260702_065642_030743_W25.log`
+  - `09:13:50.575`: VLM/OCR direct OCR/title 없음, character visual only
+  - `09:49:48.476`: Jury Panel `0/3` relevant, 다수결 비관련
+  - `09:54:19.307`: Deliberation completed, final non-relevant high confidence, official_title null
+  - `10:02:25.661`: strongest canonical rescue `Fate/stay night` 차단
+  - `10:03:40.366`: reason_review 완료
+  - `10:05:00.213`: `Fate/stay night` candidate_url title/url 불일치로 제거
+- Completed source candidate audit:
+  - command: `.\.venv312\Scripts\python.exe tools\build_completed_source_candidate_audit.py --manifest-root out --random-target 1000 --output-json out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop285_completed_source_candidate_audit.json --output-md out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop285_completed_source_candidate_audit.md`
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `9`
+  - clean_vlm_ocr_search_health_not_ready_count `420`
+  - clean_vlm_ocr_publication_contract_not_ready_count `0`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+- Safe-loss flip-rate evidence:
+  - source: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop238_safe_loss_flip_rate_n3_blind_judge_review.md/json`
+  - `11674712`: flip_rate `0.0`, stable blind judge confirmed
+  - `11660237`: flip_rate `0.3333333333333333`, `nondeterminism_unresolved`, hard-hold relaxation disallowed
+  - `11698880`: flip_rate `0.0`, stable blind judge confirmed
+- Data Analytics:
+  - `validate_artifact`: PASS
+  - `render_artifact`: PASS
+  - artifact: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop285_frontier_11710018_data_analytics_artifact.json`
+- Gate:
+  - live run health: `IN_PROGRESS`
+  - frontier status: `IN_PROGRESS_IN_WORKER_LOG / reason_review_completed_but_no_result_row`
+  - completed source candidate: `MISSING`
+  - candidate audit: `REVIEW-LOCKED`
+  - search evidence: `REVIEW`
+  - publication contract convergence: `GO` for audited flushed rows
+  - full375 collateral approval: `NOT_OPEN / blocked_until_completed_source`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_285_REPORT_20260702.md`
+
 ## 2026-07-02 Loop284 frontier chain release and completed source candidate recheck
 
 - 범위: Loop283/284 frontier 해소 이후 새 ordered flush frontier와 completed source approval 후보 존재 여부를 재확인한다.

@@ -6,6 +6,20 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop285 frontier reason_review quality gate
+
+- 근거:
+  - [x] Loop264 대형 run의 최신 health audit를 실행했다.
+  - [x] completed source 후보 감사를 재실행했다.
+  - [x] W25 log에서 `11710018`의 reason_review 완료와 candidate URL 제거를 확인했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_285_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] live run은 `IN_PROGRESS/ordered_flush_gap_in_progress`이며 completed source가 아니다.
+  - [x] `11710018`은 result JSON에 없고, 뒤쪽 completed rows 증가는 approval 근거가 아니다.
+  - [x] `publication_contract_convergence=GO`는 flushed `317` rows contract 수렴만 뜻한다.
+  - [x] completed source 후보가 없으므로 random baseline/P0-P1 expansion/full375 collateral approval을 열지 않는다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop280 live health / completed source candidate quality gate
 
 - 근거:

@@ -1,5 +1,47 @@
 # Development Checklist
 
+## 2026-07-02 Loop285 frontier 11710018 reason_review / writeback 미해소 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] Loop285 live health audit를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop285_frontier_11710018_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `317`
+  - checkpoint_rows `371`
+  - pending_count_actual `54`
+  - frontier post `11710018`
+  - worker `W25`
+  - observed_elapsed_seconds `1964.767`
+  - `search_evidence=REVIEW`
+  - `publication_contract_convergence=GO`
+- [x] post-render manifest poll을 확인했다.
+  - input/completed/flushed/pending/failed `104502/374/317/57/0`
+  - `large_run_complete=false`
+  - `ordered_flush_blocked=true`
+  - `11710018_in_result=false`
+- [x] frontier W25 log를 확인했다.
+  - VLM/OCR: direct OCR/title 없음, character visual only
+  - Arbiter/Jury: title `None`, Jury relevant `0`, irrelevant `3`
+  - Deliberation: final non-relevant high confidence, official_title null
+  - reason_review: `10:03:40.366` 완료
+  - candidate URL: `10:05:00.213` title/url 불일치로 제거
+- [x] completed source 후보 감사를 재실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop285_completed_source_candidate_audit.md`
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `9`
+  - clean_vlm_ocr_search_health_not_ready_count `420`
+  - clean_vlm_ocr_publication_contract_not_ready_count `0`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+- [x] Data Analytics artifact를 validate/render했다.
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop285_frontier_11710018_data_analytics_artifact.json`
+- [ ] frontier `11710018` 완료 후 ordered flush가 풀리는지 다음 health audit에서 확인한다.
+- [ ] reason_review 이후 writeback이 계속 지연되면 W25 finalization path와 checkpoint/result writeback 경로를 점검한다.
+- [ ] run 완료 후 final health audit에서 `run_integrity_gate=GO`, `search_evidence=GO`, `publication_contract_convergence=GO`를 모두 확인한다.
+- [ ] completed source 후보가 생기기 전까지 random baseline/P0-P1 expansion/full375 collateral approval을 열지 않는다.
+- Gate: live run health `IN_PROGRESS`, frontier `IN_PROGRESS_IN_WORKER_LOG / reason_review_completed_but_no_result_row`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop284 frontier chain release / 새 계약 병목 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

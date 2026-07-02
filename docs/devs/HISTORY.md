@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-02 - Loop285 frontier 11710018 reason_review 감사
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- Loop285 health audit 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop285_frontier_11710018_health_audit.json`이다.
+- health audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows/checkpoint_rows/pending_count_actual `317/371/54`이다.
+- frontier는 post_id `11710018`, title `그것은 *단순한 깡계*가 아닌 오랜 따`, worker `W25`, observed_elapsed_seconds `1964.767`이다.
+- W25 log는 `Fate/stay night` 내부 키워드와 게시 목적 noise 판단이 충돌한 뒤 `reason_review`를 완료했고, candidate URL 불일치 제거까지 수행했음을 보여준다.
+- post-render manifest poll은 input/completed/flushed/pending/failed `104502/374/317/57/0`, `large_run_complete=false`, `ordered_flush_blocked=true`, `11710018_in_result=false`다.
+- completed source 후보 감사 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop285_completed_source_candidate_audit.md/json`이다.
+- 후보 감사 summary는 approval_source_candidate_count `0`, clean_vlm_ocr_source_count `429`, clean_vlm_ocr_random_shortfall_count `9`, clean_vlm_ocr_search_health_not_ready_count `420`, clean_vlm_ocr_publication_contract_not_ready_count `0`, partial_vlm_ocr_population_ge_random_target_count `6`이다.
+- Data Analytics artifact `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop285_frontier_11710018_data_analytics_artifact.json`는 validate/render PASS다.
+- Gate는 live run health `IN_PROGRESS`, frontier status `IN_PROGRESS_IN_WORKER_LOG / reason_review_completed_but_no_result_row`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, full375 collateral approval `NOT_OPEN / blocked_until_completed_source`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop284 frontier 연쇄 해소와 새 계약 병목 감사
 
 - 동일 38-row parent packet은 재실행하지 않았다.
