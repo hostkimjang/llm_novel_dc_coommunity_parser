@@ -2,6 +2,19 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop303 runtime recovery TODO
+
+- 상태 업데이트: search shard runtime은 복구됐지만 full approval은 열리지 않았다. `3333/3334` health OK, MCP bridge `36`; N5는 first row LLM 장기화로 foreground 중단. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop303 TODO:
+  - [x] Docker/Desktop 복구 후 search health를 확인했다.
+  - [x] full375/bounded1200 completed-source search non-light run을 background 감시로 내렸다.
+  - [x] 104k light/search-not-included run은 approval 근거가 아님을 기록했다.
+  - [x] Loop301 `safe_loss_resolved_to_null=147` queue로 강제 전환했다.
+  - [ ] N5 결과 JSON `15/15`를 만들고 flip rate를 current HEAD로 갱신한다.
+  - [ ] full375/bounded1200 완료 전 approval 문구를 쓰지 않는다.
+  - [ ] 남은 safe-loss `132`와 `repair_safe_loss=14`를 계속 줄인다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 regression-safe grounding Loop302 search runtime TODO
 
 - 상태 업데이트: 현 HEAD `e991a687`에서 N5/full375/bounded non-light 갱신을 시도했으나 search shard/Docker runtime blocker로 result JSON이 생성되지 않았다. Goal은 `ACTIVE / NOT_COMPLETE`.

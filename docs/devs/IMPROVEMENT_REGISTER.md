@@ -1,5 +1,33 @@
 # Improvement Register
 
+## IMP-20260702-303 - runtime recovery and background handoff
+
+- Status: In progress / review locked
+- Loop: 303
+- Problem:
+  - Loop302 blocker 이후 search runtime은 복구가 필요했고, N5/full375/bounded/104k를 approval과 분리해 재분류해야 했다.
+- Change:
+  - Docker Desktop 재기동 후 `3333/3334` health OK와 MCP bridge `36`을 확인했다.
+  - N5 first row는 search official hit 이후 LLM `decoder` 장기화로 foreground 중단했다.
+  - full375/bounded1200은 search non-light background 감시, 104k는 light/search-not-included background only로 분리했다.
+  - Loop301 `safe_loss_resolved_to_null=147` queue로 강제 전환했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_303_REPORT_20260702.md`
+  - state `docs/devs/loop303_current_head_runtime_recovery_20260702.json`
+  - audits `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop303_*_health_audit.json`
+- Result:
+  - search runtime `PARTIAL_RECOVERED`
+  - N5 flip rate `NOT_REFRESHED`
+  - full375 result/checkpoint `95/101`
+  - bounded1200 result/checkpoint `131/147`
+  - 104k result/checkpoint `964/1058`
+  - safe-loss queue remaining `132`
+- Gate:
+  - search degraded recovery `P0 / OPEN`
+  - full375/bounded `IN_PROGRESS / NOT_APPROVAL`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-302 - current HEAD evidence refresh blocked by search runtime
 
 - Status: Blocked / runtime prerequisite open

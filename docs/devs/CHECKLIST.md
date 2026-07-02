@@ -1,5 +1,29 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop303 runtime recovery / background handoff 체크
+
+- [x] Docker Desktop 재기동 후 search shard runtime을 재확인했다.
+  - `3333/3334` health `status=ok`, `headless_search_enabled=true`
+  - MCP bridge container count `36`
+- [x] Loop302 N5 plan을 재시도했다.
+  - log `logs\loop303_safe_loss_independent_n5_rerun\01_11674712_r01.stderr.log`
+  - search official hit는 확인됐지만 첫 row가 LLM `decoder` 단계에서 장기화되어 foreground 중단
+  - current HEAD flip rate는 아직 갱신되지 않음
+- [x] full375와 bounded1200 completed-source run을 background 감시로 내렸다.
+  - full375 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop303_full375_search_nonlight_current_health_audit.json`
+  - bounded1200 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop303_bounded1200_search_nonlight_current_health_audit.json`
+  - 둘 다 search 포함 non-light이나 `IN_PROGRESS`, blocker `search_degraded_observed`
+- [x] 104k run은 approval 대기 대상이 아님을 재확인했다.
+  - audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop303_104k_background_light_current_health_audit.json`
+  - blockers `manifest_search_health_not_included`, `manifest_light_health_only`, `search_timeout_observed`, `search_degraded_observed`
+- [x] golden18 및 bootstrap/probe/audit 도구 git 추적 상태를 재확인했다.
+  - golden rows `18`, extra rows `11660237`, `11698880`
+- [x] 코드 변경 없는 대형 run 대기 대신 Loop301 `safe_loss_resolved_to_null` queue로 강제 전환했다.
+  - seed reviewed `15/147`, `REPROCESS=14`, `ACCEPT=1`, unreviewed `132`
+- [ ] N5 `15/15` 결과 JSON 생성 후 flip rate를 다시 분석한다.
+- [ ] full375/bounded1200 완료 후에만 approval 후보로 재평가한다.
+- Gate: search runtime `PARTIAL_RECOVERED`, search degraded `P0 / OPEN`, safe-loss flip `NOT_REFRESHED_CURRENT_HEAD`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop302 current HEAD refresh blocker 체크
 
 - [x] 현 HEAD `e991a687`를 확인했다.

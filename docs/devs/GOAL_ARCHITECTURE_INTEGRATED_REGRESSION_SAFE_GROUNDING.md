@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop303 Addendum - runtime recovery and background handoff
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop303은 approval이 아니라 Loop302 runtime blocker를 복구하고 장기 run을 background 감시로 내린 회차다.
+- 목적: search shard 복구 여부를 확인하고, N5/full375/bounded/104k를 approval과 분리한 뒤 safe-loss queue로 강제 전환한다.
+- 코드 변경: 없음.
+- Artifacts: report `docs/devs/loop_reports/LOOP_303_REPORT_20260702.md`, state JSON `docs/devs/loop303_current_head_runtime_recovery_20260702.json`, health audits `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop303_*_health_audit.json`.
+- Evidence: `3333/3334` health `status=ok`, `headless_search_enabled=true`, MCP bridge container `36`; N5 first row는 official search hit 후 LLM `decoder` 장기화로 foreground 중단; full375 `95/101`, bounded1200 `131/147`, 104k `964/1058` 모두 완료 전이다.
+- Forced transition: Loop301 safe-loss queue reviewed/unreviewed `15/132`, `REPROCESS=14`, `ACCEPT=1`; 다음 action은 `repair_safe_loss=14`와 남은 `132` blind/source-native 검토다.
+- Gate: search runtime `PARTIAL_RECOVERED`, search degraded `P0 / OPEN`, safe-loss flip `NOT_REFRESHED_CURRENT_HEAD`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, promotion blocked interpretation `search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop302 Addendum - current HEAD refresh blocked by search runtime
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop302는 approval이 아니라 stale 증거 갱신 시도가 search shard runtime blocker에 막혔음을 기록한 회차다.

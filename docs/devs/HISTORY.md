@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop303 runtime recovery and background handoff
+
+- Docker Desktop 재기동 뒤 search shard runtime이 복구됐다. `3333/3334` health는 `status=ok`, `headless_search_enabled=true`이고 MCP bridge container는 `36`개다.
+- Loop302 N5 plan을 재시도했으나 첫 row가 search official hit 이후 LLM `decoder` 단계에서 장기화되어 foreground 실행을 중단했다. current HEAD flip rate는 아직 갱신되지 않았다.
+- full375와 bounded1200 completed-source run은 search 포함 non-light background 감시 대상으로 유지한다. 두 run 모두 `IN_PROGRESS`이며 blocker `search_degraded_observed`가 남아 approval 근거가 아니다.
+- 104k run은 light/search-not-included run으로 확인되어 승인 교착 해소 근거로 쓰지 않는다.
+- Golden18 상태는 `golden_rows=18`, 추가 row `11660237`, `11698880`이며 golden 산출물과 bootstrap/probe/audit 도구는 git 추적 중이다.
+- 코드 변경 없는 대형 run 대기 대신 Loop301 `safe_loss_resolved_to_null=147` queue로 강제 전환했다. 현재 seed verdict는 `15/147`, `REPROCESS=14`, `ACCEPT=1`, 미검토 `132`다.
+- Report는 `docs/devs/loop_reports/LOOP_303_REPORT_20260702.md`다.
+- Gate는 search runtime `PARTIAL_RECOVERED`, search degraded `P0 / OPEN`, safe-loss flip `NOT_REFRESHED_CURRENT_HEAD`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop302 current HEAD refresh blocker
 
 - 현 HEAD `e991a687`에서 safe-loss flip probe `N>=5`, full375 replay, completed-source bounded non-light run을 갱신하려 했다.

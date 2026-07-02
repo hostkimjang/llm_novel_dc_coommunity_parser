@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop303 runtime recovery quality gate
+
+- 근거:
+  - [x] search health `3333/3334` OK와 MCP bridge `36`을 기록했다.
+  - [x] N5 first row가 search를 통과했지만 LLM 장기화로 result JSON이 없음을 기록했다.
+  - [x] full375/bounded1200 audit을 새로 남겼다.
+  - [x] 104k는 light/search-not-included라 approval 근거가 아님을 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_303_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] search runtime 복구와 search degraded 복구를 분리한다.
+  - [x] N5 flip rate를 갱신했다고 쓰지 않는다.
+  - [x] full375/bounded1200 완료 전 approval 근거로 쓰지 않는다.
+  - [x] `promotion_blocked`는 계속 `search-blind conditional`로 태깅한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop302 current HEAD refresh quality gate
 
 - 근거:

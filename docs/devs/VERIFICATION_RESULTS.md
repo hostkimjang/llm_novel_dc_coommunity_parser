@@ -1,5 +1,33 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop303 runtime recovery / background handoff
+
+- 범위: Loop302 search runtime blocker 복구 후 N5/full375/bounded1200/104k 상태를 current HEAD에서 재점검하고 대형 run을 background 감시로 내린다.
+- Search runtime:
+  - `http://127.0.0.1:3333/health` -> `status=ok`, `headless_search_enabled=true`
+  - `http://127.0.0.1:3334/health` -> `status=ok`, `headless_search_enabled=true`
+  - MCP bridge containers `36`
+- N5 rerun:
+  - plan `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop302_safe_loss_independent_n5_run_plan.json`
+  - log `logs\loop303_safe_loss_independent_n5_rerun\01_11674712_r01.stderr.log`
+  - search는 official hit까지 진행됐지만 first row가 `decoder` 단계에서 장기화되어 foreground 중단
+  - result JSON `0`, current HEAD flip rate `NOT_REFRESHED`
+- Background audits:
+  - full375 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop303_full375_search_nonlight_current_health_audit.json`
+    - result/checkpoint `95/101`, `IN_PROGRESS/ordered_flush_gap_in_progress`, blocker `search_degraded_observed`
+  - bounded1200 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop303_bounded1200_search_nonlight_current_health_audit.json`
+    - result/checkpoint `131/147`, `IN_PROGRESS/ordered_flush_gap_in_progress`, blocker `search_degraded_observed`
+  - 104k audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop303_104k_background_light_current_health_audit.json`
+    - result/checkpoint `964/1058`, blockers `manifest_search_health_not_included`, `manifest_light_health_only`, `search_timeout_observed`, `search_degraded_observed`
+- Golden tracking:
+  - `golden_manifest.json` reports `golden_rows=18`
+  - `11660237`, `11698880` are present in `golden_set.jsonl`
+  - golden 산출물과 bootstrap/probe/audit 도구는 git 추적 중
+- Forced transition:
+  - Loop301 safe-loss queue 기준 reviewed/unreviewed `15/132`, `REPROCESS=14`, `ACCEPT=1`
+  - 다음 actionable queue는 `repair_safe_loss=14`와 남은 `132` blind/source-native 검토다.
+- Gate: search runtime `PARTIAL_RECOVERED`, search degraded `P0 / OPEN`, N5 `NOT_REFRESHED_CURRENT_HEAD`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, promotion blocked interpretation `search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop302 current HEAD refresh blocker
 
 - 범위: 현 HEAD `e991a687`에서 safe-loss flip probe `N>=5`, full375 replay, completed-source bounded non-light run을 새로 갱신한다.

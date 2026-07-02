@@ -1,0 +1,112 @@
+{
+  "review_id": "loop303_current_head_runtime_recovery",
+  "generated_at": "2026-07-02T17:49:31.4125766+09:00",
+  "goal_status": "ACTIVE_NOT_COMPLETE",
+  "head": "e382cb14",
+  "search_runtime": {
+    "docker_recovery_attempted": true,
+    "docker_recovery_result": "server_api_recovered_after_docker_desktop_restart",
+    "health_3333": {
+      "status": "ok",
+      "bridge": true,
+      "headless_search_enabled": true
+    },
+    "health_3334": {
+      "status": "ok",
+      "bridge": true,
+      "headless_search_enabled": true
+    },
+    "mcp_bridge_container_count": 36,
+    "search_degraded_recovery_gate": "P0_OPEN"
+  },
+  "n5_flip_probe": {
+    "plan": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop302_safe_loss_independent_n5_run_plan.json",
+    "planned_runs": 15,
+    "repeat_count_by_post": {
+      "11674712": 5,
+      "11660237": 5,
+      "11698880": 5
+    },
+    "rerun_log_dir": "logs/loop303_safe_loss_independent_n5_rerun",
+    "foreground_status": "STOPPED",
+    "stop_reason": "first single-row run reached search and decoder but was too slow for foreground; decoder TTFT 165.63s and no result JSON before stop",
+    "current_head_flip_rate_refreshed": false,
+    "hard_hold_relaxation_allowed": false
+  },
+  "background_runs": {
+    "full375": {
+      "audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop303_full375_search_nonlight_current_health_audit.json",
+      "input_post_count": 375,
+      "result_rows": 95,
+      "checkpoint_rows": 101,
+      "health_include_search": true,
+      "light_mode": false,
+      "status": "IN_PROGRESS",
+      "blockers": [
+        "search_degraded_observed"
+      ]
+    },
+    "bounded1200_completed_source": {
+      "audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop303_bounded1200_search_nonlight_current_health_audit.json",
+      "input_post_count": 1200,
+      "result_rows": 131,
+      "checkpoint_rows": 147,
+      "health_include_search": true,
+      "light_mode": false,
+      "status": "IN_PROGRESS",
+      "blockers": [
+        "search_degraded_observed"
+      ]
+    },
+    "full104k": {
+      "audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop303_104k_background_light_current_health_audit.json",
+      "input_post_count": 104502,
+      "result_rows": 964,
+      "checkpoint_rows": 1058,
+      "health_include_search": false,
+      "light_mode": true,
+      "status": "BACKGROUND_ONLY_NOT_APPROVAL",
+      "blockers": [
+        "manifest_search_health_not_included",
+        "manifest_light_health_only",
+        "search_timeout_observed",
+        "search_degraded_observed"
+      ]
+    }
+  },
+  "golden_tracking": {
+    "golden_rows": 18,
+    "extra_rows": [
+      11660237,
+      11698880
+    ],
+    "git_tracked": [
+      "docs/devs/regression_safe_extra_golden_rows_20260702.json",
+      "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json",
+      "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl",
+      "tools/bootstrap_regression_safe_grounding.py",
+      "tools/audit_regression_safe_golden.py",
+      "tools/safe_loss_flip_rate_probe.py",
+      "tests/test_regression_safe_grounding_bootstrap.py"
+    ]
+  },
+  "forced_transition": {
+    "reason": "no completed current-head N5/full375/bounded approval evidence; large runs are background monitored",
+    "target_queue": "safe_loss_resolved_to_null",
+    "source_review": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_seed_source_native_review.json",
+    "batch_rows": 147,
+    "reviewed_rows": 15,
+    "unreviewed_rows": 132,
+    "repair_safe_loss": 14
+  },
+  "gates": {
+    "search_runtime_recovery": "PARTIAL_RECOVERED",
+    "search_degraded_recovery": "P0_OPEN",
+    "safe_loss_flip_n5": "NOT_REFRESHED_CURRENT_HEAD",
+    "full375_replay": "IN_PROGRESS_NOT_APPROVAL",
+    "bounded_completed_source_nonlight": "IN_PROGRESS_NOT_APPROVAL",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  }
+}
