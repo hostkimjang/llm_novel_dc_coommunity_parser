@@ -1,5 +1,32 @@
 # Development History
 
+## 2026-07-02 - Loop283 frontier 해소 후 새 ordered flush 병목 감사
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- Loop282 frontier `11710058`은 완료되어 flushed/result_rows가 `279`에서 `288`로 전진했다.
+- Loop283 health audit 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop283_frontier_release_health_audit.json`이다.
+- health audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows/checkpoint_rows/pending_count_actual `288/328/40`이다.
+- 새 frontier는 post_id `11710049`, title `장갤 이 괘씸한 새끼들`, worker `W34`, observed_elapsed_seconds `1912.109`, audit last_event `arbiter_start`다.
+- post-audit manifest poll은 input/completed/flushed/pending/failed `104502/336/288/48/0`, `large_run_complete=false`, `ordered_flush_blocked=true`다.
+- W34 log 추가 확인 결과, VLM/OCR 직접 작품 후보 `[림월드]변방계에서 회귀자로 살아남기`와 community-meta 반론이 충돌해 Jury/Debate path가 길어지고 있었다.
+- completed source 후보 감사 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop283_completed_source_candidate_audit.md/json`이다.
+- 후보 감사 summary는 approval_source_candidate_count `0`, clean_vlm_ocr_source_count `429`, clean_vlm_ocr_random_shortfall_count `9`, clean_vlm_ocr_search_health_not_ready_count `420`, clean_vlm_ocr_publication_contract_not_ready_count `0`, partial_vlm_ocr_population_ge_random_target_count `6`이다.
+- Data Analytics artifact `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop283_frontier_release_data_analytics_artifact.json`는 validate/render PASS다.
+- Gate는 live run health `IN_PROGRESS`, frontier status `IN_PROGRESS_IN_WORKER_LOG`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, full375 collateral approval `NOT_OPEN / blocked_until_completed_source`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
+## 2026-07-02 - Loop282 live frontier 병목과 completed source 후보 재감사
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- 진행 중인 completed-source 후보 런 `20260702_065642_030743`은 audit 시점에 completed `320`까지 전진했지만 flushed/result_rows는 `279`, `next_save_idx=280`에서 멈췄다.
+- Loop282 health audit 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop282_latest_live_run_health_audit.json`이다.
+- health audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, input/completed/flushed/pending/failed `104502/320/279/41/0`이다.
+- frontier는 post_id `11710058`, title `판초법사 너무 재밌어서 묵혀야겠음`, worker `W1`, observed_elapsed_seconds `1506.524`, audit last_event `arbiter_start`다.
+- W1 log 추가 확인 결과, frontier는 `recommendation_guard` 이후 Jury Panel과 Debate에 들어갔고 `09:31:27.980` 기준 `debate_skeptic`이 진행 중이었다.
+- completed source 후보 감사 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop282_completed_source_candidate_audit.md/json`이다.
+- 후보 감사 summary는 approval_source_candidate_count `0`, clean_vlm_ocr_source_count `429`, clean_vlm_ocr_random_shortfall_count `9`, clean_vlm_ocr_search_health_not_ready_count `420`, clean_vlm_ocr_publication_contract_not_ready_count `0`, partial_vlm_ocr_population_ge_random_target_count `6`이다.
+- Data Analytics artifact `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop282_live_frontier_data_analytics_artifact.json`는 validate/render PASS다.
+- Gate는 live run health `IN_PROGRESS`, frontier status `IN_PROGRESS_IN_WORKER_LOG`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop281 live health와 completed source 후보 재감사
 
 - 동일 38-row parent packet은 재실행하지 않았다.

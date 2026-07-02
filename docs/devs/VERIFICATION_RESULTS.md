@@ -1,5 +1,110 @@
 # Verification Results
 
+## 2026-07-02 Loop283 frontier release follow-up and completed source candidate recheck
+
+- 범위: Loop282 frontier release 이후 새 ordered flush frontier와 completed source approval 후보 존재 여부를 재확인한다.
+- Code:
+  - 코드 변경 없음.
+- Explicit health audit:
+  - command: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_065642_030743 --manifest out\expert_result_20260702_065632_479765_manifest.json --checkpoint out\expert_result_20260702_065632_479765_checkpoint.jsonl --result-json out\expert_result_20260702_065632_479765.json --pending-snapshot out\expert_result_20260702_065632_479765_pending_snapshot.json --input-jsonl tests\inputs\test01.jsonl --log-glob "logs\expert_run_20260702_065642_030743_W*.log" --output out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop283_frontier_release_health_audit.json`
+  - generated_at `2026-07-02T09:36:49`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `288`, checkpoint_rows `328`, pending_count_actual `40`
+  - frontier post `11710049`, title `장갤 이 괘씸한 새끼들`, source_line `304`
+  - `frontier_worker_trace.status=in_progress_in_worker_log`, worker `W34`, event_count `15`
+  - observed_elapsed_seconds `1912.109`
+  - first timed event `09:02:11.965|W34`, audit last timed event `09:34:04.074|W34`
+  - `search_evidence.gate=REVIEW`
+  - `publication_contract_convergence.gate=GO`
+  - publication row_count `288`, violation_row_count `0`
+- Post-audit manifest poll:
+  - input/completed/flushed/pending/failed `104502/336/288/48/0`
+  - `large_run_complete=false`
+  - `ordered_flush_blocked=true`
+- Frontier log review:
+  - `logs\expert_run_20260702_065642_030743_W34.log`
+  - `09:03:31.346`: VLM/OCR direct title `[림월드]변방계에서 회귀자로 살아남기`, author `데스와처녀`, `66회차`
+  - `09:35:21.557`: Arbiter 기본 결과 title `[림월드]변방계에서 회귀자로 살아남기`, confidence `Max`
+  - `09:37:05.716`: Jury Panel `3/3` relevant
+  - `09:38:11.544`: Debate Advocate same title 제안
+  - `09:39:36.791`: Debate Skeptic community-meta 반론 완료
+  - `09:39:52.175`: Debate Judge stream 시작, flush는 아직 blocked
+- Completed source candidate audit:
+  - command: `.\.venv312\Scripts\python.exe tools\build_completed_source_candidate_audit.py --manifest-root out --random-target 1000 --output-json out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop283_completed_source_candidate_audit.json --output-md out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop283_completed_source_candidate_audit.md`
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `9`
+  - clean_vlm_ocr_search_health_not_ready_count `420`
+  - clean_vlm_ocr_publication_contract_not_ready_count `0`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+- Data Analytics:
+  - `validate_artifact`: PASS
+  - `render_artifact`: PASS
+  - artifact: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop283_frontier_release_data_analytics_artifact.json`
+- Gate:
+  - live run health: `IN_PROGRESS`
+  - frontier status: `IN_PROGRESS_IN_WORKER_LOG`
+  - completed source candidate: `MISSING`
+  - candidate audit: `REVIEW-LOCKED`
+  - search evidence: `REVIEW`
+  - publication contract convergence: `GO` for audited flushed rows
+  - full375 collateral approval: `NOT_OPEN / blocked_until_completed_source`
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_283_REPORT_20260702.md`
+
+## 2026-07-02 Loop282 live frontier and completed source candidate recheck
+
+- 범위: Loop264 대형 run 최신 health, ordered flush frontier 병목, completed source approval 후보 존재 여부를 재확인한다.
+- Code:
+  - 코드 변경 없음.
+- Explicit health audit:
+  - command: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_065642_030743 --manifest out\expert_result_20260702_065632_479765_manifest.json --checkpoint out\expert_result_20260702_065632_479765_checkpoint.jsonl --result-json out\expert_result_20260702_065632_479765.json --pending-snapshot out\expert_result_20260702_065632_479765_pending_snapshot.json --input-jsonl tests\inputs\test01.jsonl --log-glob "logs\expert_run_20260702_065642_030743_W*.log" --output out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop282_latest_live_run_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `279`, checkpoint_rows `320`, pending_count_actual `41`
+  - frontier post `11710058`, title `판초법사 너무 재밌어서 묵혀야겠음`, source_line `295`
+  - `frontier_worker_trace.status=in_progress_in_worker_log`, worker `W1`, event_count `15`
+  - observed_elapsed_seconds `1506.524`
+  - first timed event `08:59:25.248|W1`, audit last timed event `09:24:31.772|W1`
+  - `search_evidence.gate=REVIEW`
+  - `publication_contract_convergence.gate=GO`
+  - publication row_count `279`, violation_row_count `0`
+- Frontier log review:
+  - `logs\expert_run_20260702_065642_030743_W1.log`
+  - `09:12:25.669`: snippet analyzer `판초우의의 마법사`, author `하드폭발`
+  - `09:17:25.660`: Munpia/Naver Series page fetch
+  - `09:27:02.666`: recommendation guard로 public title null 유지
+  - `09:28:56.450`: Jury Panel `3/3` irrelevant
+  - `09:31:27.980`: `debate_skeptic` stream ongoing
+- Completed source candidate audit:
+  - command: `.\.venv312\Scripts\python.exe tools\build_completed_source_candidate_audit.py --manifest-root out --random-target 1000 --output-json out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop282_completed_source_candidate_audit.json --output-md out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop282_completed_source_candidate_audit.md`
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `9`
+  - clean_vlm_ocr_search_health_not_ready_count `420`
+  - clean_vlm_ocr_publication_contract_not_ready_count `0`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+- Data Analytics:
+  - `validate_artifact`: PASS
+  - `render_artifact`: PASS
+  - artifact: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop282_live_frontier_data_analytics_artifact.json`
+- Gate:
+  - live run health: `IN_PROGRESS`
+  - frontier status: `IN_PROGRESS_IN_WORKER_LOG`
+  - completed source candidate: `MISSING`
+  - candidate audit: `REVIEW-LOCKED`
+  - search evidence: `REVIEW`
+  - publication contract convergence: `GO` for audited flushed rows
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_282_REPORT_20260702.md`
+
 ## 2026-07-02 Loop281 live health and completed source candidate recheck
 
 - 범위: Loop264 대형 run 최신 health와 completed source approval 후보 존재 여부를 재확인한다.

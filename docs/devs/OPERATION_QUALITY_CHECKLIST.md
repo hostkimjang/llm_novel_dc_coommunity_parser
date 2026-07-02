@@ -4438,3 +4438,20 @@
 - [ ] `publication_contract_convergence=GO`는 flushed row contract 수렴만 뜻한다. search evidence `REVIEW`, `large_run_complete=false`, completed-source candidate `0`이면 semantic approval로 세지 않는다.
 - [ ] completed source 후보가 생기기 전까지 random baseline 1000, P0/P1 high-risk expansion, full375 collateral approval을 열지 않는다.
 - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.
+
+## 2026-07-02 추가 운영 체크 - Loop 282 ordered flush frontier 병목
+
+- [ ] `completed_count`가 증가해도 `flushed_count/result_rows`가 증가하지 않으면 `next_save_idx` frontier를 먼저 확인한다.
+- [ ] frontier가 checkpoint와 pending snapshot 양쪽에 없으면 worker log lifecycle을 확인해 in-flight, stuck, failed-missing을 분리한다.
+- [ ] work evidence와 recommendation guard가 충돌해 Jury/Debate로 길어지는 row는 runtime failure로 단정하지 않는다.
+- [ ] 장기 심의 row가 flush를 막는 동안 뒤쪽 completed rows를 completed source approval 근거로 쓰지 않는다.
+- [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.
+
+## 2026-07-02 추가 운영 체크 - Loop 283 frontier release 후속
+
+- [ ] 이전 frontier가 풀렸더라도 새 `next_save_idx` frontier가 생기면 completed source로 보지 않는다.
+- [ ] `completed_count`가 계속 증가하고 `flushed_count`가 고정되면 behind completed rows를 approval source로 쓰지 않는다.
+- [ ] 이미지/OCR direct title과 community-meta 해석이 충돌해 Jury/Debate로 길어지는 row는 worker log 단계와 manifest frontier를 함께 기록한다.
+- [ ] completed source 후보 감사는 `approval_source_candidate_count=0`이면 full375 collateral approval을 열지 않는다.
+- [ ] `publication_contract_convergence=GO`는 flushed row contract 수렴만 뜻하며, search evidence `REVIEW` 또는 completed-source candidate `MISSING`을 덮지 않는다.
+- [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.

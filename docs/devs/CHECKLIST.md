@@ -1,5 +1,81 @@
 # Development Checklist
 
+## 2026-07-02 Loop283 frontier release / 새 ordered flush 병목 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] Loop282 frontier `11710058` 완료 후 ordered flush가 `279 -> 288`로 풀렸음을 확인했다.
+- [x] Loop283 live health audit를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop283_frontier_release_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `288`
+  - checkpoint_rows `328`
+  - pending_count_actual `40`
+  - frontier post `11710049`
+  - worker `W34`
+  - observed_elapsed_seconds `1912.109`
+  - `search_evidence=REVIEW`
+  - `publication_contract_convergence=GO`
+- [x] post-audit manifest poll을 확인했다.
+  - input/completed/flushed/pending/failed `104502/336/288/48/0`
+  - `large_run_complete=false`
+  - `ordered_flush_blocked=true`
+- [x] frontier W34 log를 확인했다.
+  - VLM/OCR direct title: `[림월드]변방계에서 회귀자로 살아남기`
+  - Jury Panel: `3/3` relevant
+  - Debate Advocate: same title 제안
+  - Debate Skeptic: community-meta 해석으로 강한 반론
+  - Debate Judge stream 시작, 하지만 flush 미해소
+- [x] completed source 후보 감사를 재실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop283_completed_source_candidate_audit.md`
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `9`
+  - clean_vlm_ocr_search_health_not_ready_count `420`
+  - clean_vlm_ocr_publication_contract_not_ready_count `0`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+- [x] Data Analytics artifact를 validate/render했다.
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop283_frontier_release_data_analytics_artifact.json`
+- [ ] frontier `11710049` 완료 후 ordered flush가 풀리는지 다음 health audit에서 확인한다.
+- [ ] run 완료 후 final health audit에서 `run_integrity_gate=GO`, `search_evidence=GO`, `publication_contract_convergence=GO`를 모두 확인한다.
+- [ ] completed source 후보가 생기기 전까지 random baseline/P0-P1 expansion/full375 collateral approval을 열지 않는다.
+- Gate: live run health `IN_PROGRESS`, frontier `IN_PROGRESS_IN_WORKER_LOG`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-02 Loop282 live frontier / completed source 후보 재감사 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] Loop282 live health audit를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop282_latest_live_run_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `279`
+  - checkpoint_rows `320`
+  - pending_count_actual `41`
+  - frontier post `11710058`
+  - worker `W1`
+  - observed_elapsed_seconds `1506.524`
+  - `search_evidence=REVIEW`
+  - `publication_contract_convergence=GO`
+- [x] frontier W1 log를 확인했다.
+  - snippet analyzer: `판초우의의 마법사`
+  - recommendation guard: public title null 유지
+  - Jury Panel: `3/3` irrelevant
+  - Debate: advocate 완료, skeptic 진행 중
+- [x] completed source 후보 감사를 재실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop282_completed_source_candidate_audit.md`
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `9`
+  - clean_vlm_ocr_search_health_not_ready_count `420`
+  - clean_vlm_ocr_publication_contract_not_ready_count `0`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+- [x] Data Analytics artifact를 validate/render했다.
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop282_live_frontier_data_analytics_artifact.json`
+- [x] frontier `11710058` 완료 후 ordered flush가 `279 -> 288`로 풀리는 것을 Loop283 health audit에서 확인했다.
+- [ ] run 완료 후 final health audit에서 `run_integrity_gate=GO`, `search_evidence=GO`, `publication_contract_convergence=GO`를 모두 확인한다.
+- [ ] completed source 후보가 생기기 전까지 random baseline/P0-P1 expansion/full approval을 열지 않는다.
+- Gate: live run health `IN_PROGRESS`, frontier `IN_PROGRESS_IN_WORKER_LOG`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop281 live health / completed source 후보 재감사 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.
