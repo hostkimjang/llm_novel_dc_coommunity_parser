@@ -4,6 +4,14 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop332 collateral183 combined action queue follow-up
+  - 상태: source_native_queue_complete_183_of_183 / repair_queue_open / approval_not_open
+  - 발견: `collateral183` P0 verdict가 `wrong_work_title_flip=10`, `unsafe_promotion_from_hold=26`, `safe_loss_resolved_to_null=147`로 나뉘어 있었고, gate accounting이 바로 쓸 수 있는 합산 queue가 없었다.
+  - 적용: `tools/summarize_collateral_review_verdicts.py`에 다중 `--verdicts` 입력과 `queue_transition`, `queue_by_bucket` summary를 추가했다.
+  - 현재 counts: `ACCEPT=57`, `REPROCESS=95`, `HOLD=31`, validation issues `0`, 잔여 action queue `126`.
+  - 산출물: `docs/devs/loop_reports/LOOP_332_REPORT_20260703.md`, `docs/devs/loop332_collateral183_combined_queue_20260703.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop332_collateral183_combined_source_native_queue.json`.
+  - 완료 기준: `exclude_from_regression_count_after_gate_wiring=57` gate accounting 배선, `REPROCESS=95` targeted repair/runtime replay 분해, `HOLD=31` policy/native review 처리, full375/bounded/golden/search gate 재평가.
+
 - [ ] Loop331 partial runtime NO-GO follow-up
   - 상태: evidence_refreshed / approval_no_go / background_monitoring
   - 발견: post-patch `11668283`은 current HEAD search non-light에서 완료됐지만 `official_title=null`, `blocked_official_title=중세`, `promotion_blocked`, `title_resolution_state=adjacent`, `SEARCH_DEGRADED`로 수렴 실패했다.

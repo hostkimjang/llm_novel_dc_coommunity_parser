@@ -1,5 +1,29 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop332 collateral183 combined action queue 체크
+
+- [x] 코드 변경 없는 대형 run 대기 흐름을 active `collateral183` triage로 전환했다.
+  - full375/bounded/golden/N5/override는 background 감시 유지
+  - approval 근거로 사용하지 않음
+- [x] `loop291`, `loop300`, `loop321` source-native verdict를 `loop290` 원본 batch 기준으로 합산했다.
+  - source-native reviewed `183/183`
+  - validation issues `0`
+  - gate `REVIEW-LOCKED`
+- [x] action queue 전환을 산출했다.
+  - `ACCEPT=57`, `REPROCESS=95`, `HOLD=31`
+  - regression count 제외 후보 `57`
+  - 잔여 action queue `126`
+  - 버킷별 잔여: safe-loss `105`, unsafe-promotion `14`, wrong-work `7`
+- [x] `tools/summarize_collateral_review_verdicts.py`를 다중 verdict 입력과 queue transition summary로 확장했다.
+  - duplicate `post_id` verdict는 `NO-GO` validation issue로 막음
+  - Markdown report의 action queue 섹션을 한국어로 기록
+- [x] 계약 테스트를 갱신했다.
+  - `tests.test_summarize_collateral_review_verdicts` PASS, `6` tests
+  - collateral/goal/gate 관련 bundle PASS, `25` tests
+- [ ] `exclude_from_regression_count_after_gate_wiring=57`을 gate accounting에 배선하기 전 regression count에서 차감하지 않는다.
+- [ ] `REPROCESS=95`와 `HOLD=31`은 각각 targeted repair/runtime replay, policy/native review 큐로 분해한다.
+- Gate: collateral source-native queue `REVIEW-LOCKED / COMPLETE_183_OF_183 / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop331 current HEAD 부분 런 NO-GO 체크
 
 - [x] post-patch `11668283` result를 분석했다.
@@ -22,7 +46,8 @@
   - `search_degraded_detected=12`, `search_upstream_zero=4`
 - [ ] N5 `15/15` 완료 전 flip rate를 stale 값에서 current HEAD 값으로 대체하지 않는다.
 - [ ] golden18 `18/18` 완료 전 2026-06-28 golden GO를 대체하지 않는다.
-- [ ] 다음 active loop는 collateral183 triage 또는 override blind judge 검증으로 전환한다.
+- [x] 다음 active loop는 Loop332에서 collateral183 triage로 전환했다.
+  - combined queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop332_collateral183_combined_source_native_queue.json`
 - Gate: targeted `11668283` `NO-GO`, background runs `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-03 Loop330 current HEAD health / override audit 전환 체크

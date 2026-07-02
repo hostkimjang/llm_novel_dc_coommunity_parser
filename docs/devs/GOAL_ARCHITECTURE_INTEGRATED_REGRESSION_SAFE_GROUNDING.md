@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop332 Addendum - collateral183 combined action queue
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop332는 approval 회차가 아니라 코드 변경 없는 대형 run 대기 흐름을 `collateral183` active triage로 전환한 회차다.
+- 목적: `loop291`, `loop300`, `loop321`에 흩어진 source-native verdict를 `loop290` 원본 batch 기준으로 합산해 gate accounting과 repair queue가 사용할 현재 action queue를 만든다.
+- Evidence: report `docs/devs/loop_reports/LOOP_332_REPORT_20260703.md`, state `docs/devs/loop332_collateral183_combined_queue_20260703.json`, combined summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop332_collateral183_combined_source_native_queue.json`.
+- Result: `183/183` reviewed, validation issues `0`, `ACCEPT=57`, `REPROCESS=95`, `HOLD=31`, regression count 제외 후보 `57`, 잔여 action queue `126`.
+- 코드 변경: `tools/summarize_collateral_review_verdicts.py`가 다중 `--verdicts` 입력, `queue_transition`, `queue_by_bucket`, duplicate verdict `NO-GO`를 지원한다.
+- Verification: py_compile PASS, `tests.test_summarize_collateral_review_verdicts` `6` tests PASS, collateral/goal/gate 관련 bundle `25` tests PASS.
+- Runtime snapshot: full375 `12/6/6/0`, bounded1200 `20/7/13/0`, golden18 `3/3/0/0`, override `11705250` `0/0/0/0`; 모두 approval 근거가 아니다.
+- Gate: collateral source-native queue `REVIEW-LOCKED / COMPLETE_183_OF_183 / NOT_APPROVAL`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop331 Addendum - current HEAD partial runtime NO-GO refresh
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop331은 approval 회차가 아니라 현 HEAD `c033dd97` background/targeted 산출물을 감사 시점 스냅샷으로 다시 확인해 stale flip/golden 증거를 대체할 수 없음을 확정한 회차다.

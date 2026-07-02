@@ -1,5 +1,18 @@
 # Slang DB Improvement TODO
 
+## 2026-07-03 Loop332 collateral183 queue / slang caveat
+
+- [x] `collateral183` source-native verdict 전체를 합산해 safe-loss/alias 관련 잔여 큐를 다시 고정했다.
+  - 전체 `183/183`, validation issues `0`
+  - safe-loss bucket `147`: `ACCEPT=42`, `REPROCESS=76`, `HOLD=29`
+  - 전체 action queue: `ACCEPT=57`, `REPROCESS=95`, `HOLD=31`
+- [x] 이번 회차는 slang DB write-back이 아니라 gate accounting/repair queue 산출물이다.
+  - summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop332_collateral183_combined_source_native_queue.json`
+  - report `docs\devs\loop_reports\LOOP_332_REPORT_20260703.md`
+- [ ] `REPROCESS=95` 중 slang/alias registry로 일반화 가능한 항목만 별도 runtime replay 후보로 올린다.
+- [ ] `ACCEPT=57`은 gate accounting 배선 전 regression count에서 차감하지 않는다.
+- Gate: slang DB write-back 아님, collateral queue `REVIEW-LOCKED / COMPLETE_183_OF_183 / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop331 current HEAD partial runtime / slang caveat
 
 - [x] post-patch `11668283` current HEAD result를 분석했다.

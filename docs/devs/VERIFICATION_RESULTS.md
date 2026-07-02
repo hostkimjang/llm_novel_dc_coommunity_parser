@@ -1,5 +1,25 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop332 collateral183 combined action queue
+
+- 범위: 대형 runtime 완료 대기 대신 `collateral183` P0 source-native verdict 전체를 한 summary로 합산해 현재 action queue를 확정한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_332_REPORT_20260703.md`
+  - state `docs\devs\loop332_collateral183_combined_queue_20260703.json`
+  - combined summary JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop332_collateral183_combined_source_native_queue.json`
+  - combined summary Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop332_collateral183_combined_source_native_queue.md`
+- Evidence:
+  - `loop291` wrong-work 10건, `loop300` unsafe-promotion 26건, `loop321` safe-loss 147건을 `loop290` 원본 batch 기준으로 합산했다.
+  - `batch_review_rows=183`, `reviewed_rows=183`, `unreviewed_batch_rows=0`, `validation_issue_count=0`.
+  - label counts는 `ACCEPT=57`, `REPROCESS=95`, `HOLD=31`이다.
+  - action queue 전환은 regression count 제외 후보 `57`, REPROCESS 수리 큐 `95`, HOLD 정책/native 추가 검토 큐 `31`, 잔여 action queue `126`이다.
+- Verification:
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\summarize_collateral_review_verdicts.py tests\test_summarize_collateral_review_verdicts.py` PASS
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_summarize_collateral_review_verdicts -v` PASS, `6` tests
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_build_collateral_triage_review_batch tests.test_summarize_collateral_review_verdicts tests.test_triage_collateral_regressions tests.test_goal_action_queue tests.test_always_on_regression_gates -v` PASS, `25` tests
+- Background runtime snapshot: full375 `12/6/6/0`, bounded1200 completed-source `20/7/13/0`, golden18 `3/3/0/0`, override `11705250` `0/0/0/0`. 모두 approval 근거가 아니다.
+- Gate: collateral source-native queue `REVIEW-LOCKED / COMPLETE_183_OF_183 / NOT_APPROVAL`, background runs `IN_PROGRESS_OR_RUNNING_BACKGROUND / NOT_APPROVAL`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop331 current HEAD partial runtime NO-GO refresh
 
 - 범위: 현 HEAD `c033dd97`에서 post-patch `11668283`, full375, bounded1200 completed-source, golden18, safe-loss N5, override audit `11705250`의 최신 산출물을 다시 검증한다.

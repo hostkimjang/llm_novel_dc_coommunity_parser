@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop332 collateral183 combined action queue
+
+- 코드 변경 없는 대형 run 대기 흐름을 active `collateral183` triage로 전환했다.
+- `tools/summarize_collateral_review_verdicts.py`를 다중 verdict 입력으로 확장하고, `queue_transition`, `queue_by_bucket`, `source_verdicts`를 summary에 기록하도록 했다.
+- duplicate `post_id` verdict는 `NO-GO` validation issue로 막는 계약을 추가했다.
+- `loop291` wrong-work 10건, `loop300` unsafe-promotion 26건, `loop321` safe-loss 147건을 `loop290` 원본 batch 기준으로 합산했다.
+- 결과는 `183/183` reviewed, validation issues `0`, `ACCEPT=57`, `REPROCESS=95`, `HOLD=31`, 잔여 action queue `126`이다.
+- Report는 `docs/devs/loop_reports/LOOP_332_REPORT_20260703.md`, state는 `docs/devs/loop332_collateral183_combined_queue_20260703.json`이다.
+- 검증은 py_compile PASS, `tests.test_summarize_collateral_review_verdicts` `6` tests PASS, collateral/goal/gate 관련 bundle `25` tests PASS다.
+- Gate는 collateral source-native queue `REVIEW-LOCKED / COMPLETE_183_OF_183 / NOT_APPROVAL`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop331 current HEAD partial runtime NO-GO refresh
 
 - 현 HEAD `c033dd97` 부분 런을 Loop331 감사 시점 audit로 다시 갱신했다.

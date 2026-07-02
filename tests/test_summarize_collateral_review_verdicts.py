@@ -1,6 +1,6 @@
 import unittest
 
-from tools.summarize_collateral_review_verdicts import build_summary
+from tools.summarize_collateral_review_verdicts import build_combined_summary, build_summary
 
 
 class SummarizeCollateralReviewVerdictsTest(unittest.TestCase):
@@ -115,6 +115,8 @@ class SummarizeCollateralReviewVerdictsTest(unittest.TestCase):
         self.assertEqual(summary["summary"]["batch_review_rows"], 2)
         self.assertEqual(summary["summary"]["reviewed_rows"], 1)
         self.assertEqual(summary["summary"]["unreviewed_batch_rows"], 1)
+        self.assertEqual(summary["summary"]["queue_transition"]["original_p0_rows"], 2)
+        self.assertEqual(summary["summary"]["queue_transition"]["residual_action_queue_rows"], 2)
 
     def test_invalid_selected_option_keeps_no_go(self):
         batch = {
@@ -145,6 +147,117 @@ class SummarizeCollateralReviewVerdictsTest(unittest.TestCase):
         self.assertEqual(summary["gate"], "NO-GO")
         self.assertEqual(summary["summary"]["validation_issue_count"], 1)
         self.assertEqual(summary["validation_issues"][0]["issues"], ["selected_option_id_not_in_batch_options"])
+
+    def test_combined_verdicts_report_residual_action_queue(self):
+        batch = {
+            "review_rows": [
+                {
+                    "post_id": 1,
+                    "triage_bucket": "wrong_work_title_flip",
+                    "collateral_status": "resolved_to_different_title",
+                    "blind_judge_options": [{"option_id": "C1"}],
+                    "source_native_packet": {},
+                    "comparison_private_not_for_blind_judge": {},
+                },
+                {
+                    "post_id": 2,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "collateral_status": "resolved_to_null",
+                    "blind_judge_options": [{"option_id": "C1"}],
+                    "source_native_packet": {},
+                    "comparison_private_not_for_blind_judge": {},
+                },
+            ]
+        }
+        verdicts_list = [
+            {
+                "review_id": "wrong_work",
+                "rows": [
+                    {
+                        "post_id": 1,
+                        "selected_option_id": "C1",
+                        "review_label": "REPROCESS",
+                        "source_native_verdict": "before_correct_after_wrong",
+                        "action": ["repair_after_wrong_work"],
+                        "evidence_refs": ["unit://source"],
+                    }
+                ],
+            },
+            {
+                "review_id": "safe_loss",
+                "rows": [
+                    {
+                        "post_id": 2,
+                        "selected_option_id": "HOLD",
+                        "review_label": "ACCEPT",
+                        "source_native_verdict": "after_hold_preferred_wrong_before_title",
+                        "action": ["exclude_from_regression_count_after_gate_wiring"],
+                        "evidence_refs": ["unit://source"],
+                    }
+                ],
+            },
+        ]
+
+        summary = build_combined_summary(
+            batch=batch,
+            verdicts_list=verdicts_list,
+            generated_at="2026-07-03T00:00:00",
+            review_id="combined",
+            scope="combined collateral review",
+            source_batch="unit_batch.json",
+        )
+
+        transition = summary["summary"]["queue_transition"]
+        self.assertEqual(summary["gate"], "REVIEW-LOCKED")
+        self.assertEqual(summary["summary"]["batch_review_rows"], 2)
+        self.assertEqual(summary["summary"]["reviewed_rows"], 2)
+        self.assertEqual(transition["exclusion_candidate_rows"], 1)
+        self.assertEqual(transition["repair_required_rows"], 1)
+        self.assertEqual(transition["residual_action_queue_rows"], 1)
+        self.assertEqual(summary["summary"]["queue_by_bucket"]["safe_loss_resolved_to_null"]["residual_action_queue_rows"], 0)
+
+    def test_duplicate_post_id_in_combined_verdicts_keeps_no_go(self):
+        batch = {
+            "review_rows": [
+                {
+                    "post_id": 1,
+                    "blind_judge_options": [{"option_id": "C1"}],
+                    "source_native_packet": {},
+                    "comparison_private_not_for_blind_judge": {},
+                }
+            ]
+        }
+        verdicts_list = [
+            {
+                "review_id": "first",
+                "rows": [
+                    {
+                        "post_id": 1,
+                        "selected_option_id": "C1",
+                        "review_label": "ACCEPT",
+                        "source_native_verdict": "after_correct",
+                        "evidence_refs": ["unit://source"],
+                    }
+                ],
+            },
+            {
+                "review_id": "second",
+                "rows": [
+                    {
+                        "post_id": 1,
+                        "selected_option_id": "C1",
+                        "review_label": "ACCEPT",
+                        "source_native_verdict": "after_correct",
+                        "evidence_refs": ["unit://source"],
+                    }
+                ],
+            },
+        ]
+
+        summary = build_combined_summary(batch=batch, verdicts_list=verdicts_list)
+
+        self.assertEqual(summary["gate"], "NO-GO")
+        self.assertEqual(summary["validation_issues"][0]["issues"], ["duplicate_verdict_post_id"])
 
 
 if __name__ == "__main__":

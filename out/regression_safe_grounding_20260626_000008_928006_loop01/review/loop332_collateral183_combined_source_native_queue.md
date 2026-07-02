@@ -1,0 +1,495 @@
+# Loop332 collateral183 combined source-native action queue
+
+- gate: `REVIEW-LOCKED`
+- semantic_quality: `REVIEW-LOCKED`
+- full_scan_approval: `false`
+- batch review rows: `183`
+- reviewed rows: `183`
+- unreviewed batch rows: `0`
+- validation issues: `0`
+
+## 버킷 집계
+
+- `safe_loss_resolved_to_null`: `147`
+- `unsafe_promotion_from_hold`: `26`
+- `wrong_work_title_flip`: `10`
+
+## 라벨 집계
+
+- `ACCEPT`: `57`
+- `HOLD`: `31`
+- `REPROCESS`: `95`
+
+## Action queue 전환
+
+- 원 P0 행: `183`
+- source-native 검토 완료: `183`
+- gate wiring 뒤 regression count 제외 후보: `57`
+- REPROCESS 수리 큐: `95`
+- HOLD 정책/native 추가 검토 큐: `31`
+- 잔여 action queue: `126`
+- full collateral approval open: `false`
+
+## 버킷별 action queue
+
+- `safe_loss_resolved_to_null` rows=`147` exclude_candidates=`42` residual=`105`
+- `unsafe_promotion_from_hold` rows=`26` exclude_candidates=`12` residual=`14`
+- `wrong_work_title_flip` rows=`10` exclude_candidates=`3` residual=`7`
+
+## Source-native verdict 집계
+
+- `after_correct_author_title_contamination_removed`: `1`
+- `after_correct_before_wrong`: `1`
+- `after_correct_source_native`: `12`
+- `after_hold_needs_native_image_or_canonical_review`: `1`
+- `after_hold_needs_native_image_or_scope_review`: `1`
+- `after_hold_needs_native_image_or_source`: `2`
+- `after_hold_preferred_adjacent_media_comparison`: `1`
+- `after_hold_preferred_character_page_wrong_work`: `1`
+- `after_hold_preferred_character_subpage_wrong_work`: `1`
+- `after_hold_preferred_comparison_work_overreach`: `1`
+- `after_hold_preferred_context_only_comment_taunt`: `1`
+- `after_hold_preferred_cross_media_non_novel`: `1`
+- `after_hold_preferred_generic_franchise_or_parody_overreach`: `1`
+- `after_hold_preferred_generic_or_wrong_before_title`: `1`
+- `after_hold_preferred_generic_trope_recommendation_overreach`: `1`
+- `after_hold_preferred_incidental_comment_work_mention`: `1`
+- `after_hold_preferred_meme_or_generic_furry_context`: `1`
+- `after_hold_preferred_multi_work_single_title_overreach`: `2`
+- `after_hold_preferred_non_work_or_image_context`: `1`
+- `after_hold_preferred_platform_event_not_work`: `1`
+- `after_hold_preferred_prior_work_not_current_work`: `1`
+- `after_hold_preferred_unverified_exact_title_or_character_phrase`: `1`
+- `after_hold_preferred_wrong_before_7_picaresque_boundary`: `1`
+- `after_hold_preferred_wrong_before_africa_title`: `1`
+- `after_hold_preferred_wrong_before_homograph_dae_madae`: `1`
+- `after_hold_preferred_wrong_before_title`: `10`
+- `after_hold_preferred_wrong_before_title_character_context`: `1`
+- `after_hold_preferred_wrong_before_title_expected_candidate_preserved_elsewhere`: `1`
+- `after_hold_preferred_wrong_before_title_plot_element`: `1`
+- `after_null_preferred_author_new_work_context`: `1`
+- `after_null_preferred_generic_trope_overresolve`: `1`
+- `after_null_preferred_negated_recommendation`: `1`
+- `after_null_preferred_source_missing_answer_title`: `1`
+- `after_null_preferred_wrong_before_alternative_work`: `4`
+- `after_null_preferred_wrong_before_author_new_work`: `1`
+- `after_url_same_work_canonicalized`: `1`
+- `after_wrong_hold_preferred`: `14`
+- `before_correct_adaptation_context`: `1`
+- `before_correct_after_wrong`: `5`
+- `before_correct_alias_without_url`: `3`
+- `before_correct_author_work_context`: `1`
+- `before_correct_but_benchmark_context`: `1`
+- `before_correct_character_setting_bridge_hotel`: `1`
+- `before_correct_comment_title_with_image_context`: `1`
+- `before_correct_comparison_context`: `1`
+- `before_correct_direct_alias`: `1`
+- `before_correct_direct_alias_gigongju`: `1`
+- `before_correct_direct_alias_image_context`: `1`
+- `before_correct_direct_alias_panchobeopsa`: `1`
+- `before_correct_direct_series_title_wolyahwandam`: `1`
+- `before_correct_direct_subtitle_and_character_cluster`: `1`
+- `before_correct_direct_title`: `2`
+- `before_correct_known_alias`: `2`
+- `before_correct_ocr_explicit_title_variant_requires_image_url_replay`: `1`
+- `before_correct_series_title_but_volume_canonicalization_required`: `1`
+- `before_correct_source_native`: `26`
+- `before_correct_source_native_alias_and_rimworld_context`: `1`
+- `before_correct_source_native_character_bridge`: `1`
+- `before_correct_source_native_character_setting_context`: `1`
+- `before_correct_source_native_public_title_discussion`: `1`
+- `before_correct_source_native_title_alias`: `13`
+- `before_correct_source_native_title_alias_and_character_context`: `5`
+- `before_correct_source_native_title_alias_and_internal_setting`: `1`
+- `before_correct_source_native_title_variant`: `4`
+- `before_correct_title_variant_adaptation`: `1`
+- `before_wrong_but_source_native_correct_title_field_split_required`: `1`
+- `canonical_title_variant_policy_required`: `1`
+- `canonical_variant_before_preferred`: `2`
+- `character_bridge_or_image_review_required`: `1`
+- `hold_boundary_confirmed_not_safe_loss`: `1`
+- `hold_character_bridge_or_native_image_required`: `1`
+- `hold_classic_literature_scope_review_required`: `1`
+- `hold_doubleo_vs_comment_window_title_disambiguation_required`: `1`
+- `hold_known_variance_secondary_comparison_work`: `1`
+- `hold_multi_candidate_recommendation_thread`: `1`
+- `hold_native_image_or_source_required`: `1`
+- `hold_ocr_title_author_vs_current_munpia_title_requires_reverify`: `1`
+- `image_or_media_boundary_review_required`: `1`
+- `image_or_native_evidence_required`: `7`
+- `native_web_title_alias_review_required`: `1`
+- `source_text_insufficient_image_or_native_required`: `2`
+- `source_text_insufficient_native_required`: `4`
+
+## 행별 판정
+
+- `11663535` `HOLD` `canonical_variant_before_preferred` selected=`퇴마록` action=`canonical_title_policy_review`
+  - 근거: 원문은 박신부, 이현암, 승희 등 시리즈 전반의 인물/설정을 말하므로 `퇴마록`이 더 안전한 공개 제목이다. `퇴마록 : 국내편`은 같은 시리즈의 part/volume 표기로 보이며 wrong-work라기보다 canonicalization 충돌이다.
+- `11666713` `REPROCESS` `before_correct_after_wrong` selected=`21세기 무림세가` action=`repair_after_wrong_work`
+  - 근거: 원문 제목의 `21세기 무림` 표면과 무협스럽다는 감상은 `21세기 무림세가` 쪽을 직접 지지한다. `21세기 헌터가된 무림인`은 official page가 있어도 원문에 헌터/해당 제목 앵커가 없다.
+- `11682791` `ACCEPT` `after_correct_author_title_contamination_removed` selected=`시간을 달리는 소설가` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: `피아조아 <시간을 달리는 소설가>`는 작가명과 제목이 섞인 표시이고, 공식 작품명은 `시간을 달리는 소설가`다. after 쪽이 canonical title로 정리했다.
+- `11698890` `REPROCESS` `before_correct_after_wrong` selected=`댓글창의 천재 마법사` action=`repair_after_wrong_work`
+  - 근거: 원문 title의 `댓천마`는 `댓글창의 천재 마법사` 약칭으로 읽히고, 본문 인물 `한별`, `더블오`, `데미갓`도 해당 작품 glossary/검색 근거와 결속된다. after의 `다크판타지 속 데미갓이 되었다`는 본문 단어 `데미갓`에 끌린 wrong-work다.
+- `11700500` `REPROCESS` `before_correct_after_wrong` selected=`전지적 1인칭 시점` action=`repair_after_wrong_work`
+  - 근거: 원문 title의 `전1시`와 본문 `셰이` 맥락은 `전지적 1인칭 시점` 쪽이다. after의 `사상 최강의 길드마스터`는 원문 직접 앵커가 없는 인접/오귀결이다.
+- `11705252` `REPROCESS` `before_correct_after_wrong` selected=`탐식의 재림` action=`repair_after_wrong_work`
+  - 근거: 원문에 `탐재 주인공 설지후`가 직접 나오므로 `탐식의 재림`이 source-native 정답이다. after의 `순수한 분노의 결정`은 원문 제목의 일반 표현 `순수한 질문`에 끌린 제목 오귀결이다.
+- `11706871` `HOLD` `canonical_variant_before_preferred` selected=`파우스트` action=`canonical_title_policy_review`
+  - 근거: 원문은 고전 `파우스트` 전체 결말/독후감 맥락이다. `파우스트 1`은 권차/분책 표기 가능성이 있어 wrong-work라기보다 canonical title variant 충돌로 본다.
+- `11710049` `ACCEPT` `after_url_same_work_canonicalized` selected=`[림월드]변방계에서 회귀자로 살아남기` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 `랫따싶` 태그/풀네임 요청이고, 공식 페이지는 `[림월드]변방계에서 회귀자로 살아남기` 및 `#랫따싶`을 함께 확인시킨다. 전후 title은 같은 작품의 bracket 포함 여부/URL 보존 차이로 보고 after의 official URL 보존은 악화가 아니다.
+- `11714903` `ACCEPT` `after_correct_before_wrong` selected=`괴담 호텔 탈출기` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 `괴담텔`, `아리`, `가인`, `심판자` 맥락이라 `괴담 호텔 탈출기`가 정답이다. before의 `온 세상이 정신이상자다`는 원문 표현 `온 세상이 버튜버`에 끌린 별도 작품 오귀결이다.
+- `11716448` `REPROCESS` `before_correct_after_wrong` selected=`아카데미 생존 갤러리` action=`repair_after_wrong_work`
+  - 근거: 원문 title의 `아생갤`과 인물 `아레스`, `엘리`, `라나`는 `아카데미 생존 갤러리`에 결속된다. after의 `인간실격 히로인들에게 집착당할 예정입니다`는 괴이/히로인 일반어에 끌린 wrong-work다.
+- `11657046` `REPROCESS` `after_wrong_hold_preferred` selected=`None` action=`repair_unsafe_promotion`
+  - 근거: 원문은 마블/슈퍼맨/배트맨/스파이더맨 같은 슈퍼히어로 일반 담론이다. 후보 `[블루아카이브] 키보토스 속 슈퍼히어로가 되었다`를 직접 지지하는 작품명, 약칭, 인물, URL 앵커가 없다.
+- `11658621` `REPROCESS` `after_wrong_hold_preferred` selected=`None` action=`repair_unsafe_promotion`
+  - 근거: 원문은 실제 이름을 못 쓰는 문제와 편결 도전 여부를 말한다. 후보 `무능한게 아니라 전설이였다고?`의 직접 title surface나 작품 고유 앵커가 없다.
+- `11658668` `REPROCESS` `after_wrong_hold_preferred` selected=`None` action=`repair_unsafe_promotion`
+  - 근거: 원문은 문피아 수정/내림을 둘러싼 운영·작가 태도 이야기다. 후보 `전 버튜버가 하고 싶은데요`를 작품으로 특정할 직접 표면이나 URL 근거가 없다.
+- `11669928` `ACCEPT` `after_correct_source_native` selected=`탑의 성좌들이 날 애호한다` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목 `탑성좌애호`는 후보 `탑의 성좌들이 날 애호한다`의 압축 표면이고, 본문도 노벨피아 연중 여부를 말한다. after 승격은 source-native 정답으로 볼 수 있다.
+- `11671490` `REPROCESS` `after_wrong_hold_preferred` selected=`None` action=`repair_unsafe_promotion`
+  - 근거: 원문은 림월드 게임과 특정 작가가 그 게임을 즐긴다는 커뮤니티 농담이다. 후보 `게임이 자꾸 사람을 구원함`을 현재 글의 논의 작품으로 확정할 직접 작품 앵커가 없다.
+- `11671501` `ACCEPT` `after_correct_source_native` selected=`판타지 초인 법사` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목의 `판초법사`는 `판타지 초인 법사` 약칭으로 읽히고, 본문·댓글도 게이트가 막 열린 시점과 국군/정부 반응 같은 작품 전개를 직접 논한다.
+- `11674703` `REPROCESS` `after_wrong_hold_preferred` selected=`None` action=`repair_unsafe_promotion`
+  - 근거: 원문 제목과 본문은 `도굴왕` 애니화 난이도와 전투씬 비중을 직접 말한다. 후보 `신의 의지가 깃든 물건`은 원문 후보 목록에 없고, source-native 정답 후보도 아니다.
+- `11687618` `ACCEPT` `after_correct_source_native` selected=`아카데미 생존 갤러리` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목의 `아생갤`과 본문 인물 `라나`, `엘리`, `클레어`, `아레스`가 후보 `아카데미 생존 갤러리`에 결속된다.
+- `11690874` `REPROCESS` `after_wrong_hold_preferred` selected=`None` action=`repair_unsafe_promotion`
+  - 근거: 원문 제목의 `전검`은 후보 `내 인생이 끝장날 때까지`가 아니라 별도 약칭으로 보인다. after 후보는 문장 일부 `끝장날 때까지`에 끌린 오귀결이므로 hold가 맞다.
+- `11695623` `ACCEPT` `after_correct_source_native` selected=`[림월드]변방계에서 회귀자로 살아남기` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목의 `랫따싶`과 본문/댓글의 작품 내 인물·반응 맥락이 후보 `[림월드]변방계에서 회귀자로 살아남기`를 지지한다.
+- `11695639` `ACCEPT` `after_correct_source_native` selected=`TS 당 해서 인방 을 해봅니다.` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목과 댓글 `제목이`, `https://novelpia.com/novel/362860`이 후보 URL을 직접 지지한다.
+- `11697231` `ACCEPT` `after_correct_source_native` selected=`아카데미 생존 갤러리` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목이 `아생갤`을 직접 언급하고, 본문도 작품의 현실쪽 위기 설정을 해석한다. 후보 `아카데미 생존 갤러리` 승격은 source-native 정답이다.
+- `11700495` `ACCEPT` `after_correct_source_native` selected=`이 무림의 미친년은 나야` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목의 `서문청`은 후보 작품의 직접 인물 앵커로 보이며, 후보 `이 무림의 미친년은 나야`와 결속된다. 다만 search degraded 복구 전에는 full approval로 승격하지 않는다.
+- `11703657` `REPROCESS` `after_wrong_hold_preferred` selected=`None` action=`repair_unsafe_promotion`
+  - 근거: 원문과 댓글은 다른 노벨피아 URL `https://novelpia.com/novel/405310`을 직접 제시한다. batch 후보 C1/C2는 이 URL과 맞지 않으므로 현재 후보 승격은 안전하지 않고 hold/re-judge가 필요하다.
+- `11706832` `REPROCESS` `after_wrong_hold_preferred` selected=`None` action=`repair_unsafe_promotion`
+  - 근거: 원문은 `황제분충`이 문피아/노피아 작품인지 묻고 댓글도 `노피아`라고 답한다. 후보 `엄마가 계약결혼 했다`는 카카오페이지 URL이며 source-native 맥락과 맞지 않는다.
+- `11658637` `REPROCESS` `after_wrong_hold_preferred` selected=`None` action=`repair_unsafe_promotion`
+  - 근거: 원문은 `재막아`, 영기, 윤기, 진양철을 통해 `재벌집 막내아들` 계열을 말하지만, 후보 `일본 재벌집 막내아들`의 `일본` 특정 title surface나 URL 앵커는 source-native로 확인되지 않는다. after 승격은 같은 계열/인물 신호를 과확장한 것으로 보고 hold/re-judge가 필요하다.
+- `11660238` `ACCEPT` `after_correct_source_native` selected=`무림마조` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목의 `림조`와 본문 `한서진`, `청월`, 200화 맥락이 후보 `무림마조`의 작품/등장인물 신호와 결속된다. 공식 URL도 동일 title을 지지하므로 source-native 정당 해소로 본다.
+- `11668324` `ACCEPT` `after_correct_source_native` selected=`괴담에 휘말렸다` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목의 `김괴라리`는 `괴담에 휘말렸다`와 작가 김갈비뼈를 묶어 부르는 장갤 약칭으로 확인된다. `니생들`과 함께 언급된 다중 비교 맥락은 있지만, 후보 C1은 source-native로 정당한 작품 후보이므로 after 승격은 정당 해소로 분리한다.
+- `11673086` `REPROCESS` `after_wrong_hold_preferred` selected=`None` action=`repair_unsafe_promotion`
+  - 근거: 원문은 `랫따싶`, 칸시, 시트러스, 피갈을 직접 말하므로 `[림월드]변방계에서 회귀자로 살아남기` 쪽 신호다. after 후보 `어느날 자고 일어났더니 포켓몬스터 게임 속 주인공의 라이벌 캐릭터가 되어 있었다`는 source-native 맥락과 맞지 않는다.
+- `11674712` `ACCEPT` `after_correct_source_native` selected=`이 무림의 미친년은 나야` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목의 `서문청`, `주서연` 비교와 댓글의 내공/호각 대화가 후보 `이 무림의 미친년은 나야`에 결속된다. 이 행은 Loop288에서 진동 이력이 있으므로 full approval이 아니라 source-native 정당 해소 후보로만 둔다.
+- `11677913` `REPROCESS` `after_wrong_hold_preferred` selected=`None` action=`repair_unsafe_promotion`
+  - 근거: 원문은 남캐 일러스트와 `캇트` 반응을 말하지만, 후보 `이세계 검은머리 똥양인`을 직접 지지하는 작품명/URL 앵커가 없다. 이미지 의존 가능성이 있으므로 native image 확인 전까지 hold가 맞다.
+- `11685985` `REPROCESS` `after_wrong_hold_preferred` selected=`None` action=`repair_unsafe_promotion`
+  - 근거: 원문은 고양이/홍어 수인 농담과 이미지 반응에 가깝고, 후보 `공작의 반려 수인 이 되었습니다`를 작품으로 확정할 직접 title surface나 공식 URL 앵커가 없다. `수인` 일반어 기반 승격으로 보고 hold/re-judge가 필요하다.
+- `11685995` `ACCEPT` `after_correct_source_native` selected=`림월드 변방계에서 회귀자로 살아남기` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 댓글에서 post author가 `랫따싶`이라고 직접 답하고, 이어 `가챠펑크맛`은 비교/맛 설명으로 보인다. 공식 페이지도 `랫따싶` 태그와 `[림월드]변방계에서 회귀자로 살아남기` 제목을 지지하므로 after title은 source-native 정당 해소로 볼 수 있다. 다만 after URL이 비어 있어 full approval 근거는 아니다.
+- `11695637` `REPROCESS` `after_wrong_hold_preferred` selected=`None` action=`repair_unsafe_promotion`
+  - 근거: 원문은 `알파카랑 눈싸움 하지마라`와 본문 `헙`뿐이며, 후보 `도네하지 마라`를 직접 지지하는 작품명/캐릭터/URL 앵커가 없다. `하지마라` 문장 표면만으로 public title을 확정한 과승격으로 본다.
+- `11705261` `ACCEPT` `after_correct_source_native` selected=`이세계 TRPG 게임마스터` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목의 `이티알`은 `이세계 TRPG 게임마스터` 축약으로 읽히고, `루루`, 댓글의 `로데우스`도 같은 작품 토론 맥락을 보강한다. 공식 URL도 동일 title을 지지하므로 source-native 정당 해소다.
+- `11718105` `REPROCESS` `after_wrong_hold_preferred` selected=`None` action=`repair_unsafe_promotion`
+  - 근거: 원문은 시리즈 출시 대기와 작가/작품군 화제이며 댓글도 `트럭커`, `몰락`, `망배우`를 함께 묻는다. 후보 `미쳐버린 판타지에서 사제로 살아남기`를 단일 현재 작품으로 확정할 직접 title surface가 없어 hold/re-judge가 맞다.
+- `11660232` `ACCEPT` `after_hold_preferred_wrong_before_title` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 제목은 `괴담텔 이번 전개`를 주제로 두고 `괴담동`은 비교 대상으로 언급한다. 후보 `괴담 동아리`를 현재 논의 작품으로 확정하면 current-work와 adjacent-work가 뒤섞이므로 HOLD가 더 맞다.
+- `11660237` `REPROCESS` `before_correct_source_native` selected=`테라포밍` action=`repair_safe_loss`
+  - 근거: 게시글 제목이 `테라포밍 볼만함?`으로 작품명을 직접 묻고, 후보 URL도 공식 작품 `테라포밍`에 대응한다. after null은 정당한 safe title을 잃은 회귀다.
+- `11660257` `REPROCESS` `before_correct_source_native` selected=`암흑가 보스요? 제가요?` action=`repair_safe_loss`
+  - 근거: 제목 `암흑가보스<<이거 재밋네`는 후보 작품의 안정 축약 표면이다. 공식 URL에서도 후보 제목이 확인되므로 after null은 safe-loss다.
+- `11660258` `REPROCESS` `before_correct_source_native` selected=`괴담 호텔 탈출기` action=`repair_safe_loss`
+  - 근거: 제목 `괴담텔 아리야...`는 `괴담 호텔 탈출기`의 장갤 약칭과 등장인물 맥락이다. 후보 URL의 공식 제목도 `괴담 호텔 탈출기`로 확인된다.
+- `11660259` `REPROCESS` `before_correct_source_native` selected=`헌터갤러리의 국가권력급 기계공주` action=`repair_safe_loss`
+  - 근거: 제목의 `기계공주`와 본문 전개 언급이 후보 작품을 직접 가리킨다. 공식 URL의 제목도 `헌터갤러리의 국가권력급 기계공주`다.
+- `11660265` `REPROCESS` `before_correct_source_native` selected=`헌터갤러리의 국가권력급 기계공주` action=`repair_safe_loss`
+  - 근거: 제목 `기계공주 전생 이브...`와 본문 `오필리아` 맥락은 후보 작품의 내부 인물/전개를 직접 다룬다. after의 author-new-work context demotion은 과도하다.
+- `11661876` `REPROCESS` `before_correct_source_native` selected=`와인의 신` action=`repair_safe_loss`
+  - 근거: 제목 `와인의신 재밌다`와 댓글의 `문피아에서 봤다`가 후보 `와인의 신`을 직접 지지한다. after null은 작품명 직접 언급을 잃은 회귀다.
+- `11666731` `REPROCESS` `before_correct_source_native` selected=`약먹는 천재마법사` action=`repair_safe_loss`
+  - 근거: 제목 `약먹마 요즘 좀 애매함`은 후보 작품의 통용 약칭을 직접 사용한다. 후보 URL은 없지만 원문 surface가 충분하므로 null demotion은 safe-loss다.
+- `11669943` `REPROCESS` `before_correct_source_native` selected=`즉사기 들고 무림에 떨어지다` action=`repair_safe_loss`
+  - 근거: 제목 `즉사무림 최신편`과 본문 `무협미식` 맥락은 후보 작품을 직접 다룬다. after의 author-new-work context demotion은 현재 작품 언급을 과소평가했다.
+- `11671500` `REPROCESS` `before_correct_source_native` selected=`악당도 살고 싶다` action=`repair_safe_loss`
+  - 근거: 제목 `악살싶에서는`은 후보 작품의 약칭이고, 댓글도 해당 작품의 말투/강의씬 맥락을 이어간다. after null은 직접 alias를 잃은 회귀다.
+- `11671517` `REPROCESS` `before_correct_source_native_title_variant` selected=`헌터갤러리의 국가권력급 기계공주 마이너 ...` action=`repair_safe_loss`
+  - 근거: 제목 `기계공주 작가...`와 댓글의 작가/전작 맥락은 후보 URL의 작품을 직접 다룬다. before title 문자열은 truncation variant지만 URL과 작품 표면은 정당하다.
+- `11676310` `REPROCESS` `before_correct_source_native` selected=`마도서를 줍다 마법사가 되다` action=`repair_safe_loss`
+  - 근거: 제목 `마도줍 시리즈 왔구나`는 후보 작품의 축약 표면이다. 후속 문맥도 구매/연재 소비 맥락이라 null demotion은 과도하다.
+- `11684372` `REPROCESS` `before_correct_source_native` selected=`밀리언 클래스` action=`repair_safe_loss`
+  - 근거: 제목 `밀리언클래스 공지보고`가 후보 작품명을 직접 붙여 쓴다. 본문/댓글도 공지와 대학원생 휴재 사유 맥락이라 작품 공지에 대한 반응으로 읽는 것이 자연스럽다.
+- `11685987` `REPROCESS` `before_correct_source_native` selected=`괴담 동아리` action=`repair_safe_loss`
+  - 근거: 제목 `괴담동 뭔데`는 후보 작품의 안정 약칭을 직접 사용한다. after의 OCR unresolved는 제목 표면을 잃은 safe-loss다.
+- `11689292` `REPROCESS` `before_correct_source_native` selected=`최악의 파트너` action=`repair_safe_loss`
+  - 근거: 제목이 `최악의 파트너 표지`를 직접 말하고, 본문도 표지/그림작가/패러디 작품 댓글로 이어진다. 후보 작품을 null로 내리는 것은 회귀다.
+- `11658615` `HOLD` `source_text_insufficient_image_or_native_required` selected=`None` action=`native_image_or_source_review_required`
+  - 근거: ?? `? ? ? ! !`? ?? `???? on`???? ?? `?? ?? ??????`? ?? ???? ??? ?? ??? ??. ??? 1?? ?? native/image ?? ??? safe-loss repair? ?? ???.
+- `11658620` `REPROCESS` `before_correct_source_native` selected=`?? ?? ??????` action=`repair_safe_loss`
+  - 근거: ??? `????`? ?? ?? ????, ??? ??/?? ?? ??? ?? ?? ?? ?? ??? ?? ?? ?? ??? ????. after null? ??? ?? ??? ?? safe-loss?.
+- `11660254` `HOLD` `source_text_insufficient_image_or_native_required` selected=`None` action=`native_image_or_source_review_required`
+  - 근거: ??? `??? ?????`? AI ??/??? ??? ???, ?????? ?? `??? ??? ??? ??`? ?? ???? ??? ??? ??. ???/?? ?? ? repair ??? ???.
+- `11660264` `REPROCESS` `before_correct_source_native` selected=`?? ???? ??? ??? ? ? ???` action=`repair_safe_loss`
+  - 근거: ??? `???`? ?? ??? ?? ???? ???, ???/??? ??/??? ??? ?? ??? ?? ?? ?? ??? ???. ?? URL? batch? ???? Medium?? ????? after null? safe-loss repair ??? ??.
+- `11660273` `REPROCESS` `before_correct_source_native` selected=`???? ?? ???? ??` action=`repair_safe_loss`
+  - 근거: ??? `??? ??? ?? ?? ???`?? ?? ??? ?? ?? ??? ??? ?? ????. after null? source-native safe-loss?.
+- `11661881` `REPROCESS` `before_correct_source_native` selected=`??? ?? ???` action=`repair_safe_loss`
+  - 근거: ??? `????`? ?? ?? ???? ??/??? `???`, `???? ?`? ?? ?? ???? ????. URL? ??? source-native repair ??? ????.
+- `11663514` `REPROCESS` `before_correct_source_native` selected=`?? ?? ??` action=`repair_safe_loss`
+  - 근거: ?? ? ?? `https://novel.munpia.com/486006` ?? ?? URL? ??, ??? ?? ?? ??? ???? ????. URL ?? ??? ???? after null? safe-loss?.
+- `11663547` `REPROCESS` `before_correct_source_native` selected=`?????? ????? ????` action=`repair_safe_loss`
+  - 근거: ??? `???? ???`? ?? ??? ??? ??? ???/?? ???? ??? ???. ?? ?? URL? ?? after null? safe-loss?.
+- `11666700` `ACCEPT` `after_hold_preferred_wrong_before_title` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: ?? ?? ??? `????? ??? ???`?? ?? `???? ? ???`? ???? ?? ???? ????. C1? ???? adjacent ??? current work? ????? after hold? ? ??.
+- `11666741` `REPROCESS` `before_correct_source_native` selected=`?? ?? ?????` action=`repair_safe_loss`
+  - 근거: ??? ??? `???` ??/???/??? ?? ???. ?? ?? `?? ?? ?????`? ?? ????, after null? safe-loss?.
+- `11668278` `ACCEPT` `after_hold_preferred_wrong_before_title` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: ??? ?? ?? `???` ?? ?????. ?? ???? `???`? ?? current-work? ???? ?? ???/?? false positive??? after null? ??.
+- `11668288` `REPROCESS` `before_correct_source_native` selected=`?? ???? ???? ??` action=`repair_safe_loss`
+  - 근거: ??? `????`? ?? ?? ????, ?? ?????? ?? ?? ?? ???? ???. URL? ??? source-native repair ??? ????.
+- `11668300` `REPROCESS` `before_correct_source_native` selected=`??? ?? ?? ? ??` action=`repair_safe_loss`
+  - 근거: ??? `???`? ?? ?? ???? `????`, `?????`?? ?? ?? ??? ?? ????. after null? safe-loss?.
+- `11668305` `ACCEPT` `after_hold_preferred_wrong_before_title` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: ??? ?? ?? ???? ?? ????? ??/???/?? ??? ???. ?? `Fate/stay night`? ?? ??? ???? ???? false positive? after null? ??.
+- `11660262` `HOLD` `source_text_insufficient_native_required` selected=`None` action=`native_web_or_source_review_required`
+  - 근거: ??? `??? ??`? AI ??? ???? ?? `???, ? ??? ? ? ????`?? ???? ?? ???? ???. ??/?? ?? ?? ?? before title? ?? safe-loss? ?? author-new-work ??? ?? ? ?? HOLD? ??.
+- `11660271` `REPROCESS` `before_correct_source_native` selected=`??? ???` action=`repair_safe_loss`
+  - 근거: ??? `??? ???`? ?? ???? ??? ?? ??? ?? ????. after null? ?? ?? ??? ?? safe-loss?.
+- `11660277` `REPROCESS` `before_correct_source_native_title_variant` selected=`???? ????` action=`repair_safe_loss, title_variant_canonicalization_required`
+  - 근거: ?? `??? ????`? ?? Loop259/Loop76 ??? `???? ????` ??? ????. before ???? `? ???` ??? ?? ?? ????? clean title canonicalization? ?????, after null ??? safe-loss?.
+- `11661856` `HOLD` `image_or_native_evidence_required` selected=`None` action=`native_image_or_source_review_required`
+  - 근거: ???? `???`? ?? ????? ?? `??? ?! ?! ? ?Kill???!`? ?? ???? ???. ??? 1? ?? ??? repair_safe_loss? ?? ???.
+- `11661863` `HOLD` `image_or_native_evidence_required` selected=`None` action=`native_image_or_source_review_required`
+  - 근거: ?? `?? ?? ??? ?????`? ?????? ?? `???? ??? ?????`? ??? ? ??. ??? 2?? ???/?? ??? ????.
+- `11663521` `HOLD` `hold_boundary_confirmed_not_safe_loss` selected=`None` action=`preserve_hold_boundary`
+  - 근거: ?? Loop141?? ???? ?? ???/??? bridge? ?? character/meme art? ????, `[????] ????? ???` ??? ???? promotion-safe? ???? ????. safe-loss repair? ??? HOLD ?? ???.
+- `11663540` `ACCEPT` `after_hold_preferred_wrong_before_title` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: ??? `???` ???/??? bridge ??? ????? before ?? `??? ??? ???`? ?? wrong-work negative control??. ? safe-loss bucket??? after null? before wrong title?? ????.
+- `11663544` `REPROCESS` `before_correct_source_native_title_variant` selected=`?????? ????? ????` action=`repair_safe_loss, title_variant_canonicalization_required`
+  - 근거: ??? `????`? ??/??? ?? ??? ?? URL? ?? ????. before title? truncation variant?? ?? ??? ????? after null? safe-loss?.
+- `11663554` `HOLD` `character_bridge_or_image_review_required` selected=`None` action=`native_image_or_character_bridge_review_required`
+  - 근거: ??? `???` ??? ???? before ??? `??? ( ? ???? ?? ???? )`?? ???? ???? ?? composite title??. ???/character bridge ?? ?? clean public title? ?? ???.
+- `11663557` `REPROCESS` `before_correct_source_native` selected=`???` action=`repair_safe_loss`
+  - 근거: ??? ??? `???` ??/??? ??? ?? ???. URL? ??? ?? ?? ??? ???? after null? safe-loss?.
+- `11665099` `HOLD` `image_or_native_evidence_required` selected=`None` action=`native_image_or_source_review_required`
+  - 근거: `??? ??`? ?? ??/205? ??? ???? ???? ?? ????? ??/?? ???? ?????? ???? ???. ??? 2? ?? ? safe-loss repair? ?? ???.
+- `11665110` `HOLD` `native_web_title_alias_review_required` selected=`None` action=`native_web_or_source_review_required`
+  - 근거: ??? `??????`? ?? ??? before ??? `???? ???? ???`? ??? ???. ? ??? ??/?? ?? ?? ??? repair? accept? ?? ???.
+- `11665124` `HOLD` `canonical_title_variant_policy_required` selected=`None` action=`canonical_title_variant_policy_required`
+  - 근거: ??? `??`? ?? ?? ??? ?? ???? before ?? `???(????)`? ???? faction/entity? ?? composite title??. clean `????` ?? ??? ?? canonical policy? ????.
+- `11666699` `ACCEPT` `after_hold_preferred_wrong_before_title` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: ??? `???? ??`? ???? before ?? `???? ???`? ?? ???? ???. ?? ??/??? ?????? public title? ?????? after hold? ? ????.
+- `11666725` `HOLD` `image_or_native_evidence_required` selected=`None` action=`native_image_or_source_review_required`
+  - 근거: ??? ??? `??`, `??`?? ??? ???? ?? `???? 11? ??? ??? ??`? ???/?? ?? ?? ??? ?? ???? ???.
+- `11668325` `HOLD` `image_or_media_boundary_review_required` selected=`None` action=`native_image_or_media_boundary_review_required`
+  - 근거: 본문은 `마파두부`와 이미지 지시가 핵심이고 댓글에 `페이트스테이나이트` 언급이 있지만, 이미지/매체 경계 확인 없이 `Fate/stay night`를 parser의 safe public work로 확정하기에는 약하다.
+- `11669908` `HOLD` `source_text_insufficient_native_required` selected=`None` action=`native_image_or_source_review_required`
+  - 근거: 글은 이과 마법 설정 일반론이고 댓글은 `마카물리`, `노나메` 등 다른 표면을 말한다. 후보 `아카데미에서 살아남기 (완)`을 직접 지지하는 원문 표면이 약해 native/source 확인 전에는 safe-loss로 세지 않는다.
+- `11669913` `REPROCESS` `before_correct_source_native` selected=`하룬` action=`repair_safe_loss`
+  - 근거: 제목이 `하룬`을 직접 말하고 본문도 수학/이과 마법 평가로 해당 작품 논의를 이어간다. after null은 직접 작품 표면을 잃은 safe-loss다.
+- `11669921` `REPROCESS` `before_correct_source_native_title_alias` selected=`악당은 살고 싶다` action=`repair_safe_loss`
+  - 근거: `악살싶`은 `악당은 살고 싶다`의 안정 약칭이고, 제목/본문이 유료분과 전개 평가를 직접 말한다. after null은 정당한 safe title 손실이다.
+- `11669924` `HOLD` `image_or_native_evidence_required` selected=`None` action=`native_image_or_source_review_required`
+  - 근거: 원문 텍스트는 `루리드래곤`, `사일런트위치`와 설정 비교를 말하지만 후보 `용인족의 아카데미 생존기`를 직접 지지하지 않는다. 이미지/OCR 또는 native source 확인 전에는 before safe title을 정답으로 확정하지 않는다.
+- `11669929` `REPROCESS` `before_correct_source_native_title_variant` selected=`기계공주` action=`repair_safe_loss, title_variant_canonicalization_required`
+  - 근거: 제목의 `기계공주 재밌네`와 본문 주인공 평가가 작품 소비 맥락을 직접 형성한다. canonical full title 정리는 필요하지만 after null은 safe-loss다.
+- `11669933` `REPROCESS` `before_correct_source_native_character_bridge` selected=`회귀수선전` action=`repair_safe_loss, character_bridge_contract_required`
+  - 근거: `중경계`, `서휼`, `해방상제`가 같은 작품 설정/인물 맥락을 이룬다. character bridge 계약으로 보강해야 하지만 before 후보 `회귀수선전` 손실은 repair 후보로 본다.
+- `11671512` `HOLD` `image_or_native_evidence_required` selected=`None` action=`native_image_or_source_review_required`
+  - 근거: 텍스트는 패러디와 `유카리` 히로인 여부를 말하지만 후보 `삼시세끼, 심아식당`을 직접 지지하는 제목/URL 표면은 없다. 첨부 이미지 또는 native source 확인 전에는 safe-loss로 세지 않는다.
+- `11671514` `REPROCESS` `before_correct_source_native_title_alias` selected=`악신에게 총애받는 자` action=`repair_safe_loss`
+  - 근거: 제목 `악신총애)`는 후보 작품의 안정 약칭이고, 본문과 댓글이 하진우/세라 등 작품 내부 맥락을 이어간다. after null은 정당한 title recall 손실이다.
+- `11673077` `ACCEPT` `after_hold_preferred_multi_work_single_title_overreach` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 `즉사무림`, `판초우의`, `빛세구`를 함께 비교하는 multi-work 감상이다. 후보 `판초우의의 마법사` 하나로 public title을 고정하면 다중작 맥락을 잃으므로 after hold가 더 안전하다.
+- `11673080` `HOLD` `source_text_insufficient_native_required` selected=`None` action=`native_image_or_source_review_required`
+  - 근거: 텍스트는 의사물 일반 감상과 의료소송 장면을 말하지만 `갤질하는 천재 의사` 제목 표면은 직접 보이지 않는다. 첨부 이미지나 native source 확인 전에는 before title을 정답으로 확정하지 않는다.
+- `11673091` `REPROCESS` `before_correct_source_native_title_alias` selected=`전지적 독자 시점` action=`repair_safe_loss`
+  - 근거: `전독시`는 `전지적 독자 시점`의 안정 약칭이고 제목/본문이 영화화 맥락을 직접 말한다. after `hold_without_candidates`는 직접 작품 표면을 잃은 회귀다.
+- `11673096` `ACCEPT` `after_hold_preferred_wrong_before_title` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 책장에서 꺼낸 `삼국지/연의` 고전·이미지 맥락에 가깝고, 후보의 Novelpia `삼국지` URL을 직접 지지하지 않는다. before safe_resolved는 broad-title 오귀결 위험이 커서 after hold가 더 안전하다.
+- `11673102` `ACCEPT` `after_hold_preferred_multi_work_single_title_overreach` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 본문은 `무림마조`, `갤질의사`, `존잘인방`, `폰무림` 등 랭킹의 여러 작품을 나열한다. 후보 `갤질하는 천재 의사` 하나로 확정하면 multi-work 랭킹 감상을 단일 작품으로 오독한다.
+- `11673109` `REPROCESS` `before_correct_source_native_title_alias` selected=`헌터갤러리의 국가권력급 기계공주` action=`repair_safe_loss`
+  - 근거: 제목의 `기계공주`와 본문 `오필리아`, 주인공 설정 논의가 후보 작품을 직접 지지한다. 공식 URL도 있으므로 after null은 safe title 손실이다.
+- `11674694` `REPROCESS` `before_correct_source_native_title_alias` selected=`21세기 무림세가` action=`repair_safe_loss`
+  - 근거: 제목의 `21세기무림`과 본문 `21세기무림은 천화일로의 정신적 후계작`이 후보 작품을 직접 지지한다. 댓글도 노벨피아 무협/선작/설정 호불호로 이어져 after null은 safe title 손실이다.
+- `11676309` `REPROCESS` `before_correct_source_native_title_alias` selected=`갤질하는 천재 의사` action=`repair_safe_loss`
+  - 근거: 제목 `갤질의사 정실일러 예고`는 후보 작품의 안정 약칭과 일러스트 공지 맥락을 직접 담고, 댓글도 히로인/캐릭터 논의로 이어진다. after null은 작품 표면을 잃은 회귀다.
+- `11676314` `ACCEPT` `after_hold_preferred_wrong_before_title` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 `마도줍` 완결/연중과 `무절살` 비교를 말한다. 후보 `소설 속 엑스트라`를 직접 지지하는 표면이 없으므로 after null이 더 안전하며, 이 행은 safe-loss repair로 세지 않는다.
+- `11676326` `REPROCESS` `before_correct_source_native_title_alias` selected=`아카데미 생존 갤러리` action=`repair_safe_loss`
+  - 근거: 제목 `아생갤`과 본문 `갤러리물`, `엘리`, `괴이` 논의가 후보 작품을 직접 지지한다. after null은 안정 alias와 작품 내부 맥락을 잃은 safe-loss다.
+- `11676331` `REPROCESS` `before_correct_source_native_title_alias` selected=`판초우의의 마법사` action=`repair_safe_loss`
+  - 근거: 제목의 `판초법사`는 후보 작품 약칭이고 본문/댓글은 작품 내 신앙 설정을 직접 토론한다. after null은 작품 설정 토론을 잃은 회귀다.
+- `11677915` `ACCEPT` `after_hold_preferred_context_only_comment_taunt` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원글은 리뷰 반응 일반론이고 `전독시`는 댓글의 조롱 예시로만 등장한다. 후보를 current-work public title로 확정하면 댓글 예시를 본문 주제로 과승격하므로 after null이 더 안전하다.
+- `11677924` `HOLD` `image_or_native_evidence_required` selected=`None` action=`native_image_or_source_review_required`
+  - 근거: 원문은 `남캐일러` 선호와 갑옷 이미지 반응만 보인다. 후보 `고결에 오만이 깃들 때`를 직접 지지하는 텍스트 표면이나 URL이 없어 이미지/native evidence 확인 전에는 safe-loss repair로 세지 않는다.
+- `11681159` `REPROCESS` `before_correct_source_native_title_alias` selected=`괴담에 휘말렸다` action=`repair_safe_loss`
+  - 근거: 제목 `김괴라리`와 본문 `상태창`, `회귀`, 댓글 `스팡달`, `고르고리오`가 후보 작품의 내부 전개/인물 맥락을 직접 지지한다. after null은 안정 alias와 작품 설정 논의를 잃은 회귀다.
+- `11681172` `ACCEPT` `after_hold_preferred_adjacent_media_comparison` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 제목은 `기계공주맛 나는 만화`로, 후보 작품 자체보다 유사한 맛/비교 대상을 말한다. 본문과 댓글이 비어 있어 current-work public title 확정은 과하므로 after null을 선호한다.
+- `11681178` `ACCEPT` `after_hold_preferred_wrong_before_title` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 보일러를 끄고 나가면 강아지가 익는다는 일상/밈 문장뿐이다. 후보 `재벌가 차녀의 2회차 걸그룹`을 지지하는 작품 표면이 없어 before public title은 wrong-work로 본다.
+- `11682749` `ACCEPT` `after_hold_preferred_wrong_before_title` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 본문과 댓글은 TS 주인공 템플릿의 기원을 `묵향`으로 설명한다. 후보 `주인공인데 주인공이 아님`은 원문 표면과 맞지 않아 after null이 더 안전하다.
+- `11682767` `REPROCESS` `before_correct_source_native` selected=`묵향` action=`repair_safe_loss`
+  - 근거: 제목이 `묵향`을 직접 말하고 본문/댓글도 태허무령심법, 천마구령심법, 아르티어스, 드래곤 하트 등 해당 작품 전개를 논한다. after null은 직접 작품 논의를 잃은 safe-loss다.
+- `11685994` `HOLD` `source_text_insufficient_native_required` selected=`None` action=`native_web_or_source_review_required`
+  - 근거: 원문은 `념글`의 외신소환 주문을 묻는 짧은 반응이고 후보 제목을 직접 말하지 않는다. 후보 `무한을 이해한 나는 외신의 사제가 되었습니다`는 source-native 텍스트만으로는 약해 native/source 확인 전 repair로 세지 않는다.
+- `11689282` `REPROCESS` `before_correct_source_native_title_alias` selected=`전생하고 보니 크툴루` action=`repair_safe_loss`
+  - 근거: 제목 `전툴루 엔딩`은 후보 작품의 안정 약칭이고 본문/댓글은 엔딩과 후반부 완성도를 직접 평가한다. after null은 작품 alias를 잃은 safe-loss다.
+- `11690841` `ACCEPT` `after_hold_preferred_cross_media_non_novel` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 `블아` 캐릭터 칸나/노나메/TS녀 선호를 말하는 게임·미디어 맥락이다. 후보 `블루 아카이브`를 parser의 safe public novel work로 확정하면 cross-media overreach가 되므로 after null이 더 안전하다.
+- `11692436` `HOLD` `hold_character_bridge_or_native_image_required` selected=`None` action=`native_image_or_character_bridge_review_required`
+  - 근거: 원문 텍스트는 `류서란(perfect)`와 댓글 `류서란(old girl)`만 제공한다. `perfect` 표면은 후보 `퍼펙트 메이지`와 닿지만, 로컬 테스트/문서에서 `류서란` bridge가 확인되지 않았고 이미지도 있다. 단일 캐릭터/설정 bridge 과잉 승격을 막기 위해 repair로 세지 않고 HOLD한다.
+- `11692444` `REPROCESS` `before_correct_source_native_title_alias` selected=`엑스칼리버 뽑습니다` action=`repair_safe_loss`
+  - 근거: 제목 `엑칼뽑`은 후보 작품의 직접 약칭이고 댓글 `그 소설에 캐빨 빼면 남는게 있나`도 동일 작품 소비 맥락이다. after null은 안정 alias를 잃은 safe-loss다.
+- `11694019` `ACCEPT` `after_hold_preferred_wrong_before_title_plot_element` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 `미츄리`와 `혼후순결` 설정/플롯을 말하지만, 기존 before `혼후 순결` 카카오 로맨스 단행본을 직접 지지하지 않는다. 기존 survey도 이 행을 `이세계에서 사이비로 살아남기`의 plot element 오귀속 사례로 기록하므로 after null/HOLD가 더 안전하다.
+- `11694030` `REPROCESS` `before_correct_source_native_title_alias_and_character_context` selected=`괴담 호텔 탈출기` action=`repair_safe_loss`
+  - 근거: 제목 `괴담텔`은 후보 작품 약칭이고 본문/댓글의 `한가인`, `대레프`, `경력직` 맥락이 작품 내부 인물/설정을 직접 지지한다. after null은 safe title 손실이다.
+- `11694041` `REPROCESS` `before_correct_source_native_title_alias` selected=`격투 소설 엑스트라가 타격 천재임` action=`repair_safe_loss`
+  - 근거: 제목 `격투천재`는 후보 작품의 핵심 title alias이고 본문/댓글도 격투 감성, 천박함, 유사 장르 비교를 논한다. after null은 작품 약칭을 잃은 회귀다.
+- `11694044` `ACCEPT` `after_hold_preferred_comparison_work_overreach` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 글의 주된 제목은 `즉사무림 유료화`이고 `판초우의`는 본문에서 비교 대상으로 나온다. 비교 작품을 current public title로 승격한 before는 과잉 귀속이므로 after null/HOLD가 더 안전하다.
+- `11694047` `REPROCESS` `before_correct_source_native_title_alias` selected=`판초우의의 마법사` action=`repair_safe_loss`
+  - 근거: 제목 `판초법사`는 후보 작품의 직접 약칭이고 본문도 팬아트/도로헤도로 감성 등 작품 소비 맥락을 말한다. after null은 안정 title alias 손실이다.
+- `11694049` `REPROCESS` `before_correct_source_native_title_alias_and_character_context` selected=`아카데미 생존 갤러리` action=`repair_safe_loss`
+  - 근거: 제목 `아생갤`은 후보 작품 약칭이고 본문은 `아레스`, `엘리`, 기억 맥락을 직접 논한다. 후보 URL은 없지만 before title 자체는 source-native로 맞으므로 after null은 safe-loss다.
+- `11694063` `ACCEPT` `after_hold_preferred_wrong_before_title_character_context` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 `아레스`, `엘리시아`, `엘리` 관계를 말하며 직전 `아생갤` 계열 맥락과 이어진다. before `빙의한 신의 아이, 엘리시아`는 이름 부분일치에 기대는 wrong-work 가능성이 높아 after null/HOLD를 선호한다.
+- `11694068` `REPROCESS` `before_correct_source_native_public_title_discussion` selected=`트와일라잇` action=`repair_safe_loss`
+  - 근거: 제목과 댓글 모두 `트와일라잇`의 출판, 번역, 뱀파이어 소설 맥락을 직접 논한다. 이는 일반 단어가 아니라 작품 discussion이므로 after null은 public title 손실이다.
+- `11695596` `REPROCESS` `before_correct_source_native_title_alias_and_character_context` selected=`여신이 나만 애호함` action=`repair_safe_loss`
+  - 근거: 제목 `여신애호`는 후보 작품의 직접 약칭이고 본문/댓글의 `조이노이`, `방주`, `3개의 세계`가 작품 내부 맥락을 지지한다. after null은 강한 작품 bridge를 잃은 safe-loss다.
+- `11695599` `HOLD` `hold_native_image_or_source_required` selected=`None` action=`native_image_or_source_review_required`
+  - 근거: 텍스트는 `봐라`, `ㅈㅈㅐ밌다`, 댓글 `틀내나는데/실제로는 아님`뿐이고 이미지가 있다. 후보 `창관전생`을 텍스트만으로 확정할 수 없으므로 이미지 또는 원소스 확인 전 repair로 세지 않는다.
+- `11695609` `ACCEPT` `after_hold_preferred_meme_or_generic_furry_context` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 `랫따싶`, 퍼리/동물귀 여부를 묻고 댓글은 `림버스`, `림월드 밈`으로 정정한다. 후보 `쳇바퀴의 생쥐 사도가 되었다`를 직접 지지하는 title/URL/작품 맥락이 없으므로 after null이 더 안전하다.
+- `11697239` `ACCEPT` `after_hold_preferred_non_work_or_image_context` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 텍스트는 신청/등록 후 받은 물건을 말하고 이미지가 핵심이다. 후보 `조혈모세포 기증 궁금해요`는 작품 discussion이라기보다 OCR/이미지 주제 오귀속 가능성이 높아 after null/HOLD를 선호한다.
+- `11697242` `ACCEPT` `after_hold_preferred_generic_franchise_or_parody_overreach` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 제목은 `유희왕 패러디 특`이고 본문/댓글은 패러디 독자층과 카드 밈을 일반적으로 말한다. 후보 `유희왕`을 특정 public novel work로 확정하기에는 franchise/generic overreach이므로 after null/HOLD가 더 안전하다.
+- `11697249` `ACCEPT` `after_hold_preferred_platform_event_not_work` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 `버거피아 합석`과 댓글은 노벨피아 오프라인/플랫폼 이벤트 합석 맥락이다. 기존 survey도 동명 웹소설 없음과 이벤트 오매칭을 기록했으므로 before `버거피아`를 public work로 복구하지 않는다.
+- `11697256` `HOLD` `hold_multi_candidate_recommendation_thread` selected=`None` action=`multi_candidate_recommendation_review_required`
+  - 근거: 원문은 TS 장르 추천 요청이고 댓글에 `황제의 딸로 환생했습니다`, `꼬시러 왔습니다` 등 여러 추천 후보가 나온다. 후보 C1은 댓글에 직접 있지만 단일 public title로 확정하면 다중 추천 thread overreach가 되므로 HOLD한다.
+- `11697267` `REPROCESS` `before_correct_source_native_title_alias_and_character_context` selected=`아카데미 생존 갤러리` action=`repair_safe_loss, native_web_or_url_review_required`
+  - 근거: 제목 `아생갤`은 후보 작품 약칭이고 본문은 `라나 정체`라는 작품 내부 캐릭터/설정 반전을 직접 말한다. title은 source-native로 맞지만, 기존 native-web 메모의 URL mismatch caveat 때문에 URL은 별도 확인 대상으로 남긴다.
+- `11698859` `ACCEPT` `after_hold_preferred_unverified_exact_title_or_character_phrase` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 `귤부인 대롱대롱`은 캐릭터/상태 묘사처럼 보이고 before는 URL 없이 같은 문구를 작품 제목으로 승격했다. 기존 survey도 검색 근거 0건의 exact-title 과대 resolved로 기록했으므로 after null/HOLD를 선호한다.
+- `11698865` `ACCEPT` `after_hold_preferred_character_subpage_wrong_work` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 `리제로`, `스바루`, 6장/7장 전개를 말하지만 before는 `나츠키 스바루/작중 행적/5~8장` 같은 위키성 캐릭터 하위 문서다. 작품 토론 후보는 `Re: 제로부터 시작하는 이세계 생활` 쪽이며 before C2는 wrong-work라 after null을 선호한다.
+- `11698870` `HOLD` `hold_classic_literature_scope_review_required` selected=`None` action=`native_web_or_scope_review_required`
+  - 근거: 원문은 `인간실격` 고전문학/작가 자살 맥락을 말해 title surface 자체는 강하지만, 후보는 URL이 없고 기존 native-web 메모도 classic-literature scope HOLD로 분리했다. parser public-work scope 정책 확인 전 repair로 세지 않는다.
+- `11698871` `ACCEPT` `after_hold_preferred_character_page_wrong_work` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 `리제로` 하렘/에밀리아/렘 전개 토론이다. before는 작품이 아니라 `렘(Re: 제로부터 시작하는 이세계 생활)` 캐릭터 페이지이므로 safe title 복구 대상이 아니라 wrong-work/retarget 후보로 분리한다.
+- `11698880` `HOLD` `hold_known_variance_secondary_comparison_work` selected=`None` action=`publish_contract_trace_or_variance_review_required`
+  - 근거: 제목의 주 대상은 `아생갤`이고 본문 `가챠펑크 세드릭도 그렇고`는 강한 secondary comparison work 근거다. 이 행은 N5 flip/variance control로 이미 남아 있으므로 before C1을 단순 safe-loss repair로 세지 않고 publish/block trace와 primary-vs-secondary scope를 별도 검증한다.
+- `11698895` `REPROCESS` `before_correct_source_native_alias_and_rimworld_context` selected=`[림월드]변방계에서 회귀자로 살아남기` action=`repair_safe_loss, native_web_or_url_review_required`
+  - 근거: 제목 `랫따싶`과 본문 `림월드` 플레이 재점화 맥락은 기존 테스트/문서에서 `[림월드]변방계에서 회귀자로 살아남기` 후보군의 직접 alias/context로 다뤄진다. URL은 없지만 before title 자체는 source-native로 맞아 after null은 safe-loss다.
+- `11698897` `ACCEPT` `after_hold_preferred_wrong_before_title_expected_candidate_preserved_elsewhere` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 `랫따싶`과 `림월드 요소`를 말하므로 expected candidate는 `[림월드]변방계에서 회귀자로 살아남기` 계열이다. before `스페이스 오페라`는 wrong title이며, 기존 docs도 `스페이스 오페라` 제외와 candidate preservation을 따로 기록한다.
+- `11698904` `ACCEPT` `after_hold_preferred_generic_trope_recommendation_overreach` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 `타락한 TS녀`, `마법소녀 타락시키는 소설 추천`이라는 트로프 추천요청이고 특정 작품명/URL/후보 앵커가 없다. before `타락`은 일반어/generic title overreach라 after null을 선호한다.
+- `11700470` `ACCEPT` `after_hold_preferred_generic_or_wrong_before_title` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 텍스트는 주인공 죄목 나열과 댓글 `교수형`뿐이고 이미지가 있다. 기존 expected-work 이력은 다른 후보를 가리키며 before `가스라이팅`을 직접 지지하는 title/URL/작품 앵커가 없으므로 after null/HOLD를 선호한다.
+- `11700483` `REPROCESS` `before_correct_source_native_title_alias_and_character_context` selected=`니들 생각 다 들린다` action=`repair_safe_loss, native_web_or_url_review_required`
+  - 근거: 제목 `니생들`은 `니들 생각 다 들린다`의 curated abbreviation이고 댓글 `누리`, `대 누 리`도 작품 내부 캐릭터/이모티콘 맥락이다. URL은 빠졌지만 title 자체는 source-native로 맞으므로 after null은 safe-loss다.
+- `11702044` `REPROCESS` `before_correct_source_native_title_alias_and_internal_setting` selected=`괴담 호텔 탈출기` action=`repair_safe_loss`
+  - 근거: 제목 `괴담텔`은 후보 작품 약칭이고 본문/댓글은 `천국편`, `305호`, `QnA`, 떡밥 등 작품 내부 전개를 직접 토론한다. after null은 안정 작품 discussion을 잃은 safe-loss다.
+- `11702085` `REPROCESS` `before_correct_source_native_character_setting_context` selected=`괴담 호텔 탈출기` action=`repair_safe_loss, url_canonicalization_review_required`
+  - 근거: 원문은 `알레프`, `아리`, 호텔파티, 부처/흑송이 여사님 등 `괴담 호텔 탈출기` 내부 인물/설정 토론이다. 후보 title은 source-native로 맞고, URL의 tracking query는 별도 canonicalization 대상으로 남긴다.
+- `11702086` `REPROCESS` `before_correct_ocr_explicit_title_variant_requires_image_url_replay` selected=`6? ?? ???? ???` action=`repair_safe_loss, native_image_or_url_review_required`
+  - 근거: ?? `6???)`? OCR/??? `6? ?? ???? ???`? ?? ?? ??? ????. ?? image_count=2?? after? `ocr_explicit_title_unresolved`? ?????? native image/OCR ?? ?? URL replay ??? full approval? ?? ???.
+- `11702090` `REPROCESS` `before_correct_character_setting_bridge_hotel` selected=`?? ?? ???` action=`repair_safe_loss, character_bridge_contract_or_runtime_replay_required`
+  - 근거: ?? `???`, `??`, `???`, `???`? `?? ?? ???`? ???/?? bridge? ???. after? ??/?? ??? ???? public title? ????? repair ??? ??.
+- `11702094` `HOLD` `hold_doubleo_vs_comment_window_title_disambiguation_required` selected=`None` action=`native_web_or_alternative_title_review_required`
+  - 근거: ???? `??? ??`? ?? ???? ?? survey? `??? -> ???? ?? ???` ??? ????. C1 `#???`? ?? ???? ?? ??/??? ??? ?? ? ?? HOLD??.
+- `11703624` `REPROCESS` `before_correct_direct_alias_panchobeopsa` selected=`????? ???` action=`repair_safe_loss, known_alias_runtime_replay_required`
+  - 근거: ??? ?? `????`? `????? ???` ?? ???? ??? ?? ??? ???/???? ?? ????. after promotion_blocked? safe title loss? ??.
+- `11703631` `ACCEPT` `after_hold_preferred_wrong_before_7_picaresque_boundary` selected=`None` action=`exclude_from_regression_count_after_gate_wiring, wrong_before_alternative_title_review_required`
+  - 근거: ?? `????`, `?????`, `??` ??? ?? survey?? C1 `?? ???` wrong-work? `7?? ?????` ?? ??? ????. C1? safe title? ???? ?? after null/HOLD? ????.
+- `11703640` `ACCEPT` `after_hold_preferred_incidental_comment_work_mention` selected=`None` action=`exclude_from_regression_count_after_gate_wiring, incidental_comment_overresolve_excluded`
+  - 근거: ??? `????` ??/??? ??? ????? `????`? ??? ??? ????? ??? ?? ????. C1? ???? ?? public work? ???? incidental comment overresolve? after null? ????.
+- `11703658` `ACCEPT` `after_hold_preferred_wrong_before_africa_title` selected=`None` action=`exclude_from_regression_count_after_gate_wiring, wrong_before_alternative_title_review_required`
+  - 근거: ?? ??? `???? ???? ???`?? ??? ?? survey? ?? ??? ?? ??? ????. C1 `???? ? ???? ??? .`? wrong-work? safe title ?? ??? ???, ?? ??/URL ??? ?? ?? ??.
+- `11703674` `ACCEPT` `after_hold_preferred_prior_work_not_current_work` selected=`None` action=`exclude_from_regression_count_after_gate_wiring, wrong_before_alternative_current_work_review_required`
+  - 근거: ?? ?? ??? `???? ???/?????`?? `???`? ?? ??? ?? ??? ????. C1 `?? ? ???? ???`? public title? ???? prior-work wrong-work? after null? ????.
+- `11705230` `REPROCESS` `before_correct_direct_series_title_wolyahwandam` selected=`????` action=`repair_safe_loss, known_alias_runtime_replay_required`
+  - 근거: ??? ??? `????`? ?? ???, ??? ?? ??? ?????/?? ??? ?? ??? ???. after? series/title ??? ??? ?? public title? ?? safe-loss?.
+- `11705231` `REPROCESS` `before_wrong_but_source_native_correct_title_field_split_required` selected=`??? ??` action=`repair_safe_loss, title_field_split_contract_required`
+  - 근거: ??? `???`, `???`, `???`, ?? `??`?? `??? ??` character/work bridge? ???. C2? wrong-work?? C1 URL? ?? Loop223/228 ??? `??? ??` title-field split ??? ?? ?????? repair ??? ??.
+- `11705251` `REPROCESS` `before_correct_direct_subtitle_and_character_cluster` selected=`???? ???` action=`repair_safe_loss, known_alias_runtime_replay_required`
+  - 근거: ?? `???`? ?? `???`, `??`, `??`, `???`, `???`? `???? ???` ?? ??/??? cluster?. after null? source-native safe loss?.
+- `11705269` `REPROCESS` `before_correct_series_title_but_volume_canonicalization_required` selected=`????` action=`repair_safe_loss, title_variant_canonicalization_required`
+  - 근거: ??? `???? ??`?? ?? `?????`?? ?? ???? ?? character/series ????. ?? after ??? `???? : ???`? ??? URL/?? canonical ??? ?? ????.
+- `11706827` `REPROCESS` `before_correct_direct_alias_gigongju` selected=`?????? ????? ????` action=`repair_safe_loss, known_alias_runtime_replay_required`
+  - 근거: ??? `????`? ?? `???? ??? ???`? ?? ?? ????. ?? ??? `???? -> ?????? ????? ????` ???? ?????? after promotion_blocked? safe-loss?.
+- `11706842` `ACCEPT` `after_hold_preferred_wrong_before_homograph_dae_madae` selected=`None` action=`exclude_from_regression_count_after_gate_wiring, wrong_before_alternative_title_review_required`
+  - 근거: ?? `???`? ?? survey?? `?????? ?? ?? ????? ???` ? ?? ??? ????, C1 `??? ?? ? ???`? ??/???? wrong-work?. C1 safe title ?? ??? ???.
+- `11706844` `HOLD` `hold_ocr_title_author_vs_current_munpia_title_requires_reverify` selected=`None` action=`native_image_or_canonical_review_required`
+  - 근거: ??? `?? ??? ??`?? after ??? `? ?? ?? ???`, `??? ???`, `??` ?? ?? ??. ?? survey? OCR title/author clue? ?? ??? title ??? ???? ?????? HOLD??.
+- `11706867` `HOLD` `after_hold_needs_native_image_or_source` selected=`None` action=`native_image_or_source_review_required`
+  - 근거: ??? ?? ?? ??? 2?? ?????? C1 `???`? ?? ??? ???? ???. ??/????? C1? ???? ???.
+- `11708432` `REPROCESS` `before_correct_but_benchmark_context` selected=`전지적 독자 시점` action=`repair_safe_loss, multi_work_or_benchmark_context_policy_required`
+  - 근거: ??? `???`? `??? ?? ??`? ?? ???? ??? ???/?? ????. ?? ??/benchmark ????? shared gate?? ?? ??? ????.
+- `11708443` `REPROCESS` `before_correct_known_alias` selected=`괴담에 떨어져도 출근을 해야 하는구나` action=`repair_safe_loss, known_alias_runtime_replay_required`
+  - 근거: `????`? C1 `??? ???? ??? ?? ????`? ?? ???? ??/?? ??? ?? ????.
+- `11708447` `REPROCESS` `before_correct_direct_title` selected=`잠룡회귀` action=`repair_safe_loss`
+  - 근거: ??? `???? ???????`?? C1 ???? ?? ???. after null? ?? ??? ?? safe-loss?.
+- `11708453` `ACCEPT` `after_null_preferred_wrong_before_alternative_work` selected=`None` action=`exclude_from_regression_count_after_gate_wiring, wrong_before_alternative_title_review_required`
+  - 근거: `???`? `???` ?? ???? C1 `?????? ?? ?????`? ??? ?? ?? ??? ???. after null? wrong-before?? ????.
+- `11708470` `REPROCESS` `before_correct_adaptation_context` selected=`절대 꺾이지 않을거야!` action=`repair_safe_loss, adaptation_or_webtoon_context_replay_required`
+  - 근거: `??? ??`? C1 `?? ??? ????!`? ??? ??? ??? ?? ????. ??/adaptation ?? ??? ????.
+- `11708478` `REPROCESS` `before_correct_comment_title_with_image_context` selected=`사연 있는 악역으로 착각 당한다` action=`repair_safe_loss, comment_title_or_image_review_required`
+  - 근거: ??? ?? ??? ??? ??? C1 `?? ?? ???? ?? ???`? ????. ?? ??/??? ?? ???? ????? ??.
+- `11710020` `REPROCESS` `before_correct_alias_without_url` selected=`주무시기 전에 무엇을 하셨나요?` action=`repair_safe_loss, url_canonicalization_review_required`
+  - 근거: `???`? C1 `???? ?? ??? ?????` ???? ?? ????. URL? ?? ?? canonicalization ??? ????.
+- `11710021` `REPROCESS` `before_correct_alias_without_url` selected=`무한의 마법사` action=`repair_safe_loss, url_canonicalization_review_required`
+  - 근거: `?? ??`? `???` ??? C1 `??? ???`? ?? ????. URL ?? ??? replay?? ???? ??.
+- `11710036` `ACCEPT` `after_null_preferred_wrong_before_alternative_work` selected=`None` action=`exclude_from_regression_count_after_gate_wiring, wrong_before_alternative_title_review_required`
+  - 근거: ??? `????? ???? ????`/`???` ??? ??? C1? `???? ?? ??? ???`?? wrong-before?.
+- `11710047` `ACCEPT` `after_null_preferred_wrong_before_alternative_work` selected=`None` action=`exclude_from_regression_count_after_gate_wiring, wrong_before_alternative_title_review_required`
+  - 근거: ??? ?? ?? ??? ????? C1 `?? ? ???? ??? ???`? ?? ?? `???? ? ???? ??? ???`? ????.
+- `11710052` `REPROCESS` `before_correct_alias_without_url` selected=`아카데미 패드립 면역` action=`repair_safe_loss, url_canonicalization_review_required`
+  - 근거: `????` ??? C1 `???? ??? ??`? ??/?? ????. URL ?? C1??? canonical replay? ????.
+- `11711632` `HOLD` `after_hold_needs_native_image_or_scope_review` selected=`None` action=`native_image_or_scope_review_required`
+  - 근거: ??? `?? ????`? ??? 2???? C1 `?? ??(YOUR NAME)`? ??/?? ???? ???? ???. ???/OCR? scope ?? ? ?? ???.
+- `11713220` `REPROCESS` `before_correct_direct_alias` selected=`나만 성좌들이 안 무서움` action=`repair_safe_loss`
+  - 근거: `??????`? C1 `?? ???? ? ???`? ?? ???? ??? ?? ??? ???.
+- `11713222` `ACCEPT` `after_null_preferred_wrong_before_author_new_work` selected=`None` action=`exclude_from_regression_count_after_gate_wiring, wrong_before_author_new_work_review_required`
+  - 근거: ??/??? `????`/`????` ??? ??? C1 `???? ??? ???`? ?? ?? ??? ???? ???.
+- `11714885` `ACCEPT` `after_null_preferred_source_missing_answer_title` selected=`None` action=`exclude_from_regression_count_after_gate_wiring, source_evidence_missing_title_question_excluded`
+  - 근거: ??? ?? ??? ?????? ??? `??` ??? ?? ? ??? ??. source-native ????? C1? ?? ???? ??/?? ??? ??.
+- `11714887` `REPROCESS` `before_correct_title_variant_adaptation` selected=`도굴왕 1 |` action=`repair_safe_loss, title_variant_canonicalization_required`
+  - 근거: `??? PV`? YouTube ?? ??? C1 `???` ?? ????. `??? 1 |` ?? title variant ???? ????.
+- `11714891` `HOLD` `after_hold_needs_native_image_or_source` selected=`None` action=`native_image_or_source_review_required`
+  - 근거: ??/???? ???? ?? ??? 1?? ?? ???. C1 `????? ???? ????` ??? ???/OCR ?? ? ????.
+- `11714892` `ACCEPT` `after_null_preferred_negated_recommendation` selected=`None` action=`exclude_from_regression_count_after_gate_wiring, negated_recommendation_excluded`
+  - 근거: ??? `????? ??`, `ts? ? ?`?? C1 `?????? ????? ????`? ????? ????.
+- `11714907` `REPROCESS` `before_correct_known_alias` selected=`아카데미 생존 갤러리` action=`repair_safe_loss, known_alias_runtime_replay_required`
+  - 근거: `???`? ??/?? ??? C1 `???? ?? ???`? ?? ????.
+- `11716475` `REPROCESS` `before_correct_comparison_context` selected=`지력 99 고능아인 척하기` action=`repair_safe_loss, comparison_context_policy_required`
+  - 근거: `???`? C1 `?? 99 ???? ???`? ????? `????/????`? ?? ???? comparison ??? ????.
+- `11716480` `HOLD` `after_hold_needs_native_image_or_canonical_review` selected=`None` action=`native_image_or_canonical_review_required`
+  - 근거: ?? `???`? ??? 2???? C1 `??? ??? ?? ?? ?? ???`? ?? ??? ??? ? ??.
+- `11716498` `REPROCESS` `before_correct_author_work_context` selected=`마녀의 도시` action=`repair_safe_loss, author_work_context_replay_required`
+  - 근거: `???? ??`? C1 `??? ??`? ??/?? ??? ??? ?? ?? ????.
+- `11718057` `ACCEPT` `after_null_preferred_author_new_work_context` selected=`None` action=`exclude_from_regression_count_after_gate_wiring, author_new_work_context_excluded`
+  - 근거: `???`? ????? ??/??? ?? ?? ?? ???? ???, ??? ? ???/??? ??? ???. C1 `???` ??? ??? ??? ??.
+- `11718097` `ACCEPT` `after_null_preferred_wrong_before_alternative_work` selected=`None` action=`exclude_from_regression_count_after_gate_wiring, wrong_before_alternative_title_review_required`
+  - 근거: `???`, `???`, `???`, `???` ??? C1 `????? ??? ??? ???`?? ?? ???? ????.
+- `11718099` `REPROCESS` `before_correct_direct_alias_image_context` selected=`빌어먹을 환생` action=`repair_safe_loss, native_image_or_ocr_title_review_required`
+  - 근거: `?? ?????`? ??/??/?????/?? ??? ??? C1 `???? ??`? ?? ????. ?? ???/OCR ?? replay? ????.
+- `11718110` `REPROCESS` `before_correct_direct_title` selected=`지구온라인에서 쌀먹합니다` action=`repair_safe_loss`
+  - 근거: `????? ????`? C1 `??????? ?????`? ?? ???? ?? ????.
+- `11718114` `ACCEPT` `after_null_preferred_generic_trope_overresolve` selected=`None` action=`exclude_from_regression_count_after_gate_wiring, generic_trope_overresolve_excluded`
+  - 근거: `??? ??`? ?? ??? ???? C1 `??? ???? ??? ??? ???`? ?? ??? ???? ??? ??.
+
+## Gate 해석
+
+이 검토는 collateral P0 bucket의 source-native 라벨 산출물이다. REPROCESS/HOLD 또는 validation issue가 남아 있으면 full collateral approval은 열리지 않는다.

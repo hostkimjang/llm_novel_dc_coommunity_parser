@@ -1,5 +1,34 @@
 # Improvement Register
 
+## IMP-20260703-332 - collateral183 combined action queue
+
+- Status: Source-native queue complete / repair queue open / approval not open
+- Loop: 332
+- Problem:
+  - `collateral183` P0 review evidence was split across wrong-work, unsafe-promotion, and safe-loss verdict files.
+  - The active loop needed an actionable queue reduction artifact instead of another code-change-free wait on large background runs.
+- Change:
+  - Extended `tools/summarize_collateral_review_verdicts.py` to accept multiple `--verdicts` inputs.
+  - Added `queue_transition`, `queue_by_bucket`, and `source_verdicts` summary fields.
+  - Added duplicate `post_id` verdict validation as a `NO-GO` guard.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_332_REPORT_20260703.md`
+  - state `docs/devs/loop332_collateral183_combined_queue_20260703.json`
+  - summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop332_collateral183_combined_source_native_queue.json`
+- Result:
+  - Combined `183/183` source-native rows with validation issues `0`.
+  - Label counts are `ACCEPT=57`, `REPROCESS=95`, `HOLD=31`.
+  - Residual action queue is `126`: safe-loss `105`, unsafe-promotion `14`, wrong-work `7`.
+- Verification:
+  - py_compile PASS.
+  - `tests.test_summarize_collateral_review_verdicts` PASS, `6` tests.
+  - collateral/goal/gate related bundle PASS, `25` tests.
+- Gate:
+  - collateral queue `REVIEW-LOCKED / COMPLETE_183_OF_183 / NOT_APPROVAL`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260703-331 - current HEAD partial runtime NO-GO refresh
 
 - Status: Evidence refreshed / approval NO-GO / background monitoring
