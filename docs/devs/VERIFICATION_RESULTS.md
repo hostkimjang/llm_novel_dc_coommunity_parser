@@ -1,5 +1,30 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop300 unsafe promotion full source-native verdict and gate wiring
+
+- 범위: Loop298 `unsafe_promotion_from_hold=26` 전체를 source-native verdict로 닫고 current HEAD shared publication contract가 verdict와 같은 방향으로 수렴하는지 확인한다.
+- Verdict summary:
+  - verdicts: `docs\devs\loop300_unsafe_promotion_from_hold_full_source_native_verdicts.json`
+  - summary: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop300_unsafe_promotion_from_hold_full_source_native_review.*`
+  - batch/reviewed/unreviewed `26/26/0`
+  - validation issues `0`
+  - label counts `REPROCESS=14`, `ACCEPT=12`
+  - action counts `repair_unsafe_promotion=14`, `exclude_from_regression_count_after_gate_wiring=12`
+- Row-level replay:
+  - replay: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop300_unsafe_promotion_full_verdict_current_contract_replay.json`
+  - rows/match/mismatch `26/26/0`
+  - `REPROCESS->promotion_blocked match=True`: `14`
+  - `ACCEPT->safe_resolved match=True`: `12`
+- Code/test verification:
+  - `.\.venv312\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_comment_metadata.py` PASS
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata` PASS, `46 tests`
+  - related bundle `tests.test_promotion_gate_contract tests.test_publication_contract_convergence_audit tests.test_regression_safe_work_bridge_contract tests.test_candidate_audit tests.test_summarize_collateral_review_verdicts` PASS, `137 tests`
+- Latest background snapshot:
+  - full375 `375/69/51/18/0`, `large_run_complete=false`
+  - bounded1200 `1200/109/96/13/0`, `large_run_complete=false`
+  - golden18 `18/17/12/5/0`, `large_run_complete=false`, `mcp_health_light_mode=true`
+- Gate: unsafe promotion full verdict `REVIEW-LOCKED`, contract replay `GO_UNIT_AND_LEGACY_REPLAY_EVIDENCE`, full collateral approval `NOT_OPEN`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop299 unsafe promotion shared contract repair
 
 - 범위: Loop298 `repair_unsafe_promotion=8`을 current HEAD shared publication contract로 전환하고, legacy Loop49 row에 재적용해 오승격이 public publish로 남지 않는지 확인한다.

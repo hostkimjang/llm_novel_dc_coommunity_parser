@@ -2325,6 +2325,336 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         )
         self.assertTrue(identity["promotion_decision"]["publish_allowed"])
 
+    def test_inferred_serialized_publication_uses_post_title_alias_support(self):
+        result = {
+            "identity": {
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "is_resolved_work_discussion": True,
+                "candidate_ledger_status": "safe_resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "anchor_type": "title_alias",
+                "context_sources": ["title", "image", "search"],
+                "novel_identity": {
+                    "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+                    "heretic_url": "https://novelpia.com/novel/382324",
+                    "confidence": "High",
+                },
+                "title_candidates": [
+                    {
+                        "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+                        "heretic_url": "https://novelpia.com/novel/382324",
+                        "alias_or_mention": "림월드 랫따싶에서",
+                        "source_tier": "official_detail",
+                    }
+                ],
+                "reason_lines": [
+                    "- grounding_anchor: none",
+                    "- title_in_post: false",
+                    "- image_ocr_title_evidence: false",
+                    "- official_title_evidence: true",
+                    "- evidence_bucket: post_spans=0, search_snippets=0, official_urls=1",
+                ],
+                "candidate_ledger": {},
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            result,
+            post_title="랫따싶에서 따먹고싶다는애들이",
+        )
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertEqual(
+            identity["novel_identity"]["official_title"],
+            "[림월드]변방계에서 회귀자로 살아남기",
+        )
+        self.assertTrue(identity["promotion_decision"]["publish_allowed"])
+
+    def test_inferred_urlless_publication_keeps_verified_pure_alias_support(self):
+        result = {
+            "identity": {
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "is_resolved_work_discussion": True,
+                "candidate_ledger_status": "safe_resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "anchor_type": "title_exact",
+                "context_sources": ["title", "body", "comments", "search"],
+                "novel_identity": {
+                    "official_title": "판타지 초인 법사",
+                    "heretic_url": None,
+                    "confidence": "High",
+                },
+                "slang_insight": {
+                    "detected_term": "판초법사",
+                    "decoded_term": "판타지 초인 법사",
+                    "decode_verified": True,
+                    "alias_scope": "pure_work_alias",
+                    "store_reason": "pure_work_alias",
+                },
+                "title_candidates": [
+                    {
+                        "official_title": "판타지 초인 법사",
+                        "heretic_url": None,
+                        "alias_or_mention": "판초법사",
+                        "source_tier": "llm_only",
+                    }
+                ],
+                "reason_lines": [
+                    "- grounding_anchor: title_mention",
+                    "- title_in_post: true",
+                    "- image_ocr_title_evidence: false",
+                    "- official_title_evidence: false",
+                    "- evidence_bucket: post_spans=2, search_snippets=0, official_urls=0",
+                ],
+                "candidate_ledger": {},
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            result,
+            post_title="판초법사 막 게이트열린 시점아님?",
+        )
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertEqual(identity["novel_identity"]["official_title"], "판타지 초인 법사")
+        self.assertTrue(identity["promotion_decision"]["publish_allowed"])
+        self.assertNotIn(
+            "serialized_public_identity_missing_official_url",
+            identity["promotion_decision"]["reason_codes"],
+        )
+
+    def test_pure_slang_alias_without_source_surface_does_not_support_publication(self):
+        result = {
+            "identity": {
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "is_resolved_work_discussion": True,
+                "candidate_ledger_status": "safe_resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "anchor_type": "title_alias",
+                "context_sources": ["search"],
+                "novel_identity": {
+                    "official_title": "판타지 초인 법사",
+                    "heretic_url": None,
+                    "confidence": "High",
+                },
+                "slang_insight": {
+                    "detected_term": "판초법사",
+                    "decoded_term": "판타지 초인 법사",
+                    "decode_verified": True,
+                    "alias_scope": "pure_work_alias",
+                    "store_reason": "pure_work_alias",
+                },
+                "title_candidates": [
+                    {
+                        "official_title": "판타지 초인 법사",
+                        "heretic_url": None,
+                        "source_tier": "llm_only",
+                    }
+                ],
+                "reason_lines": [
+                    "- grounding_anchor: none",
+                    "- title_in_post: false",
+                    "- image_ocr_title_evidence: false",
+                    "- official_title_evidence: false",
+                    "- evidence_bucket: post_spans=0, search_snippets=0, official_urls=0",
+                ],
+                "candidate_ledger": {},
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            result,
+            post_title="요즘 법사물 뭐 봄?",
+        )
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertFalse(identity["promotion_decision"]["publish_allowed"])
+        self.assertIn(
+            "inferred_publication_missing_direct_source_support",
+            identity["promotion_decision"]["reason_codes"],
+        )
+
+    def test_sentence_like_slang_alias_overreach_stays_candidate_only(self):
+        result = {
+            "identity": {
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "is_resolved_work_discussion": True,
+                "candidate_ledger_status": "safe_resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "anchor_type": "title_alias",
+                "context_sources": ["title", "image", "search"],
+                "novel_identity": {
+                    "official_title": "도네하지 마라",
+                    "heretic_url": "https://novelpia.com/novel/74240",
+                    "confidence": "High",
+                },
+                "slang_insight": {
+                    "detected_term": "알파카랑 눈싸움 하지마라",
+                    "decoded_term": "도네하지 마라",
+                    "decode_verified": True,
+                    "alias_scope": "work_plus_meme",
+                    "attached_entity_type": "meme",
+                    "store_reason": "sentence_like_alias_surface",
+                },
+                "title_candidates": [
+                    {
+                        "official_title": "도네하지 마라",
+                        "heretic_url": "https://novelpia.com/novel/74240",
+                        "source_tier": "official_detail",
+                    }
+                ],
+                "reason_lines": [
+                    "- grounding_anchor: character_mention",
+                    "- title_in_post: false",
+                    "- image_ocr_title_evidence: false",
+                    "- official_title_evidence: true",
+                    "- evidence_bucket: post_spans=1, search_snippets=4, official_urls=1",
+                ],
+                "candidate_ledger": {},
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            result,
+            post_title="알파카랑 눈싸움 하지마라",
+        )
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertFalse(identity["safe_resolved"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        decision = identity["promotion_decision"]
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn("inferred_publication_sentence_like_alias_overreach", decision["reason_codes"])
+
+    def test_sentence_like_character_pair_with_candidate_alias_support_keeps_publish(self):
+        result = {
+            "identity": {
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "is_resolved_work_discussion": True,
+                "candidate_ledger_status": "safe_resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "anchor_type": "title_alias",
+                "context_sources": ["title", "comments", "search"],
+                "novel_identity": {
+                    "official_title": "이 무림의 미친년은 나야",
+                    "heretic_url": "https://novelpia.com/novel/217943",
+                    "confidence": "High",
+                },
+                "slang_insight": {
+                    "detected_term": "서문청이랑 주서연",
+                    "decoded_term": "이 무림의 미친년은 나야",
+                    "decode_verified": True,
+                    "alias_scope": "work_plus_character",
+                    "attached_entity_type": "character",
+                    "store_reason": "sentence_like_alias_surface",
+                },
+                "title_candidates": [
+                    {
+                        "official_title": "이 무림의 미친년은 나야",
+                        "heretic_url": "https://novelpia.com/novel/217943",
+                        "alias_or_mention": "서문청이랑 주서연",
+                        "source_tier": "official_detail",
+                    }
+                ],
+                "reason_lines": [
+                    "- grounding_anchor: character_mention",
+                    "- title_in_post: false",
+                    "- image_ocr_title_evidence: false",
+                    "- official_title_evidence: true",
+                    "- evidence_bucket: post_spans=1, search_snippets=6, official_urls=1",
+                ],
+                "candidate_ledger": {},
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            result,
+            post_title="서문청이랑 주서연이 싸우면 누가 이김?",
+        )
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertEqual(identity["novel_identity"]["official_title"], "이 무림의 미친년은 나야")
+        self.assertTrue(identity["promotion_decision"]["publish_allowed"])
+
+    def test_generic_pronoun_alias_does_not_count_as_direct_source_support(self):
+        result = {
+            "identity": {
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "is_resolved_work_discussion": True,
+                "candidate_ledger_status": "safe_resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "anchor_type": "title_alias",
+                "context_sources": ["title", "image", "search"],
+                "novel_identity": {
+                    "official_title": "미쳐버린 판타지에서 사제로 살아남기",
+                    "heretic_url": "https://novelpia.com/novel/115063",
+                    "confidence": "High",
+                },
+                "title_candidates": [
+                    {
+                        "official_title": "미쳐버린 판타지에서 사제로 살아남기",
+                        "heretic_url": "https://novelpia.com/novel/115063",
+                        "alias_or_mention": "이새끼들",
+                        "source_tier": "official_detail",
+                    }
+                ],
+                "reason_lines": [
+                    "- grounding_anchor: none",
+                    "- title_in_post: false",
+                    "- image_ocr_title_evidence: false",
+                    "- official_title_evidence: true",
+                    "- evidence_bucket: post_spans=0, search_snippets=0, official_urls=1",
+                    "- 유의사항: `시리즈`는 플랫폼 명칭이고 본문은 여러 작품의 업데이트 상태에 대한 잡담임.",
+                ],
+                "candidate_ledger": {},
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            result,
+            post_title="시리즈 기다리는 중인데 이새끼들 언제옴..",
+        )
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertFalse(identity["promotion_decision"]["publish_allowed"])
+        self.assertIn(
+            "inferred_publication_missing_direct_source_support",
+            identity["promotion_decision"]["reason_codes"],
+        )
+
     def test_publish_contract_trace_converges_stale_blocked_trace_to_allowed_decision(self):
         stale_blocked_decision = {
             "status": "candidate_only",

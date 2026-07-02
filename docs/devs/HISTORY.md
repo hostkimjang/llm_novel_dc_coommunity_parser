@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop300 unsafe promotion full source-native verdict and gate wiring
+
+- Loop298 `unsafe_promotion_from_hold=26` 전체를 source-native verdict로 닫았다.
+- Verdict 결과는 reviewed `26/26`, validation issues `0`, `REPROCESS=14`, `ACCEPT=12`다.
+- `expert_main.py`는 publication 후보의 직접 title/url/source/alias 지지 여부를 공통 helper로 평가한다.
+- URL 없는 inferred publication도 순수 작품 alias가 원문 title/source에서 직접 지지되면 보존하고, sentence-like/meme/pronoun alias overreach는 `promotion_blocked`로 막는다.
+- 전체 official title 토큰을 entity mention으로 쪼개 약한 단어가 source support가 되는 경로를 차단했다.
+- Current contract replay는 `26/26` match다. `REPROCESS` 14건은 `promotion_blocked`, `ACCEPT` 12건은 `safe_resolved`로 수렴했다.
+- Report는 `docs/devs/loop_reports/LOOP_300_REPORT_20260702.md`다.
+- Gate는 unsafe promotion full verdict `REVIEW-LOCKED`, contract replay `GO_UNIT_AND_LEGACY_REPLAY_EVIDENCE`, search recovery `P0 / OPEN`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop299 unsafe promotion shared contract repair
 
 - Loop298 `repair_unsafe_promotion=8`을 current HEAD shared publication contract로 전환했다.

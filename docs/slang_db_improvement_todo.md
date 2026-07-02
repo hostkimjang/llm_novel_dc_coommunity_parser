@@ -1,5 +1,17 @@
 # Slang DB Improvement TODO
 
+## 2026-07-02 Loop300 publication alias support caveat
+
+- [x] `unsafe_promotion_from_hold=26` 전체 source-native verdict를 닫았다.
+  - `REPROCESS=14`, `ACCEPT=12`, validation issues `0`
+  - summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop300_unsafe_promotion_from_hold_full_source_native_review.*`
+- [x] slang/alias support는 source 직접 지지 여부와 분리했다.
+  - 순수 작품 alias가 원문 title/source에서 직접 지지되면 URL이 없어도 보존한다.
+  - sentence-like/meme/pronoun alias는 direct source support로 세지 않는다.
+  - official title 전체 토큰이 약한 단어 support로 새는 경로를 막았다.
+- [ ] golden18 완료 후 alias/slang 안정성 caveat를 다시 갱신한다.
+- Gate: slang DB write-back 아님, golden18 approval `NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop297 background health / alias gate caveat
 
 - [x] golden18 search-included replay가 아직 alias/slang 품질 승인 근거가 아님을 확인했다.

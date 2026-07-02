@@ -1,5 +1,41 @@
 # Improvement Register
 
+## IMP-20260702-300 - unsafe promotion full verdict and direct-source support contract
+
+- Status: Implemented / full source-native verdict and legacy replay verified
+- Loop: 300
+- Problem:
+  - Loop298은 `unsafe_promotion_from_hold=26` 중 `15/26`만 라벨링했고, remaining `11`이 action queue에 남아 있었다.
+  - Loop299의 직접 source support 판단은 순수 작품 alias 보존과 sentence-like alias 과승격 차단을 더 선명하게 분리할 필요가 있었다.
+- Change:
+  - `unsafe_promotion_from_hold=26` 전체 verdict를 `docs/devs/loop300_unsafe_promotion_from_hold_full_source_native_verdicts.json`로 고정했다.
+  - `expert_main.py`에 publication 후보 title/url/source/alias support helper를 추가했다.
+  - verified pure-work alias는 URL이 없어도 보존한다.
+  - sentence-like/meme/pronoun alias overreach는 direct source support로 세지 않는다.
+  - official title token leak를 entity mention support로 세지 않도록 조정했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_300_REPORT_20260702.md`
+  - summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop300_unsafe_promotion_from_hold_full_source_native_review.*`
+  - replay `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop300_unsafe_promotion_full_verdict_current_contract_replay.json`
+- Result:
+  - reviewed `26/26`
+  - validation issues `0`
+  - `REPROCESS=14`
+  - `ACCEPT=12`
+  - replay match `26/26`
+  - mismatch `0`
+- Verification:
+  - py_compile PASS
+  - metadata unittest `46` OK
+  - related bundle `137` OK
+- Gate:
+  - unsafe promotion full verdict `REVIEW-LOCKED`
+  - contract replay `GO_UNIT_AND_LEGACY_REPLAY_EVIDENCE`
+  - search recovery `P0 / OPEN`
+  - full collateral approval `NOT_OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-299 - unsafe promotion inferred publication contract repair
 
 - Status: Implemented / unit and legacy replay verified

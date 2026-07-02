@@ -2751,7 +2751,188 @@ def _demote_unsafe_url_title_verified_publication_contract(
     return changed
 
 
-def _demote_inferred_publication_with_critical_counterevidence(result_dict: Dict[str, Any]) -> bool:
+_PUBLICATION_GENERIC_ALIAS_KEYS = {
+    "게임",
+    "겜",
+    "다른",
+    "마땅히",
+    "작품",
+    "소설",
+    "웹소설",
+    "애니",
+    "애니화",
+    "새끼들",
+    "이새끼들",
+    "시리즈",
+}
+
+
+def _publication_title_key(value: Any) -> str:
+    return re.sub(r"[^0-9A-Za-z가-힣]+", "", str(value or "")).lower()
+
+
+def _publication_url_key(value: Any) -> str:
+    raw = str(value or "").strip().lower()
+    if not raw:
+        return ""
+    return re.sub(r"[?#].*$", "", raw.rstrip("/"))
+
+
+def _publication_near_title_match(left: Any, right: Any) -> bool:
+    left_key = _publication_title_key(left)
+    right_key = _publication_title_key(right)
+    if not left_key or not right_key:
+        return False
+    if left_key == right_key or left_key in right_key or right_key in left_key:
+        return True
+    if min(len(left_key), len(right_key)) < 8 or abs(len(left_key) - len(right_key)) > 2:
+        return False
+    return SequenceMatcher(None, left_key, right_key).ratio() >= 0.90
+
+
+def _publication_candidate_items(identity: Dict[str, Any], ledger: Dict[str, Any]) -> List[Dict[str, Any]]:
+    items: List[Dict[str, Any]] = []
+    for source_items in (
+        [identity.get("primary_work")],
+        identity.get("title_candidates") or [],
+        identity.get("candidate_preservation_sources") or [],
+        ledger.get("title_candidates") or [],
+        ledger.get("candidate_preservation_sources") or [],
+    ):
+        if not isinstance(source_items, list):
+            continue
+        items.extend(item for item in source_items if isinstance(item, dict))
+    return items
+
+
+def _publication_candidate_title_url(item: Any) -> tuple[str, str]:
+    if not isinstance(item, dict):
+        return "", ""
+    return (
+        str(
+            item.get("official_title")
+            or item.get("official_novel_title")
+            or item.get("resolved_title")
+            or item.get("title")
+            or ""
+        ).strip(),
+        str(
+            item.get("heretic_url")
+            or item.get("official_url")
+            or item.get("resolved_url")
+            or item.get("url")
+            or ""
+        ).strip(),
+    )
+
+
+def _publication_candidate_matches(item: Any, candidate_title: Any, candidate_url: Any) -> bool:
+    item_title, item_url = _publication_candidate_title_url(item)
+    item_title_key = _publication_title_key(item_title)
+    candidate_title_key = _publication_title_key(candidate_title)
+    if item_title_key and candidate_title_key and item_title_key == candidate_title_key:
+        return True
+    candidate_url_key = _publication_url_key(candidate_url)
+    return bool(candidate_url_key and _publication_url_key(item_url) == candidate_url_key)
+
+
+def _publication_source_key(result_dict: Dict[str, Any], post_title: Optional[str] = None) -> str:
+    chunks = [str(post_title or result_dict.get("title") or "")]
+    for key in ("content", "comments", "comment_context_lines", "comment_dialogue_context_lines"):
+        value = result_dict.get(key)
+        if isinstance(value, list):
+            chunks.extend(str(item) for item in value if str(item).strip())
+        elif str(value or "").strip():
+            chunks.append(str(value))
+    return _publication_title_key(" ".join(chunks))
+
+
+def _publication_alias_in_source(alias: Any, source_key: str) -> bool:
+    alias_key = _publication_title_key(alias)
+    if len(alias_key) >= 4 and alias_key not in _PUBLICATION_GENERIC_ALIAS_KEYS and alias_key in source_key:
+        return True
+    for token in re.findall(r"[0-9A-Za-z가-힣]{3,}", str(alias or "")):
+        token_key = _publication_title_key(token)
+        if len(token_key) >= 3 and token_key not in _PUBLICATION_GENERIC_ALIAS_KEYS and token_key in source_key:
+            return True
+    return False
+
+
+def _publication_slang_is_sentence_like(slang: Any) -> bool:
+    if not isinstance(slang, dict):
+        return False
+    return (
+        str(slang.get("store_reason") or "") == "sentence_like_alias_surface"
+        or str(slang.get("alias_scope") or "") in {"work_plus_meme", "sentence_like_alias"}
+        or str(slang.get("attached_entity_type") or "") == "meme"
+    )
+
+
+def _publication_slang_supports_candidate(slang: Any, candidate_title: Any, source_key: str) -> bool:
+    if not isinstance(slang, dict) or _publication_slang_is_sentence_like(slang):
+        return False
+    if slang.get("decode_verified") is False:
+        return False
+    if not any(
+        _publication_alias_in_source(slang.get(key), source_key)
+        for key in ("detected_term", "canonical_work_alias", "canonical_value")
+    ):
+        return False
+    for key in ("decoded_term", "canonical_work_alias", "canonical_value", "official_title"):
+        if _publication_near_title_match(slang.get(key), candidate_title):
+            return True
+    return False
+
+
+def _publication_has_direct_source_support(
+    result_dict: Dict[str, Any],
+    identity: Dict[str, Any],
+    ledger: Dict[str, Any],
+    candidate_title: Any,
+    candidate_url: Any = "",
+    *,
+    post_title: Optional[str] = None,
+) -> bool:
+    source_key = _publication_source_key(result_dict, post_title=post_title)
+    if not source_key and not isinstance(identity.get("slang_insight"), dict):
+        return False
+    for item in _publication_candidate_items(identity, ledger):
+        if not _publication_candidate_matches(item, candidate_title, candidate_url):
+            continue
+        for key in ("alias_or_mention", "matched_alias", "anchor_text", "resolved_recall_anchor"):
+            if source_key and _publication_alias_in_source(item.get(key), source_key):
+                return True
+    slang = identity.get("slang_insight")
+    if _publication_slang_supports_candidate(slang, candidate_title, source_key):
+        return True
+    for item in identity.get("entity_mentions") or []:
+        if not isinstance(item, dict) or _publication_slang_is_sentence_like(slang):
+            continue
+        if str(item.get("entity_type") or "") not in {"work", "slang"}:
+            continue
+        if not _publication_near_title_match(item.get("canonical_value"), candidate_title):
+            continue
+        entity_text_key = _publication_title_key(item.get("text"))
+        if (
+            source_key
+            and len(entity_text_key) >= 4
+            and entity_text_key not in _PUBLICATION_GENERIC_ALIAS_KEYS
+            and entity_text_key in source_key
+        ):
+            return True
+    return False
+
+
+def _publication_sentence_like_alias_overreach(identity: Dict[str, Any], candidate_title: Any) -> bool:
+    slang = identity.get("slang_insight")
+    if not isinstance(slang, dict) or not _publication_slang_is_sentence_like(slang):
+        return False
+    if not _publication_near_title_match(slang.get("decoded_term"), candidate_title):
+        return False
+    return not _publication_near_title_match(slang.get("detected_term"), candidate_title)
+
+
+def _demote_inferred_publication_with_critical_counterevidence(result_dict: Dict[str, Any], post_title: Optional[str] = None) -> bool:
     """Do not let inferred publication override weak or contradicted source-native support."""
     if not isinstance(result_dict, dict):
         return False
@@ -2802,67 +2983,6 @@ def _demote_inferred_publication_with_critical_counterevidence(result_dict: Dict
         )
     )
 
-    def _title_key(value: Any) -> str:
-        return re.sub(r"[^0-9A-Za-z가-힣]+", "", str(value or "")).lower()
-
-    def _source_key() -> str:
-        chunks = [str(result_dict.get("title") or "")]
-        for key in ("content", "comments", "comment_context_lines", "comment_dialogue_context_lines"):
-            value = result_dict.get(key)
-            if isinstance(value, list):
-                chunks.extend(str(item) for item in value if str(item).strip())
-            elif str(value or "").strip():
-                chunks.append(str(value))
-        return _title_key(" ".join(chunks))
-
-    def _candidate_items() -> List[Dict[str, Any]]:
-        items: List[Dict[str, Any]] = []
-        for source_items in (
-            [identity.get("primary_work")],
-            identity.get("title_candidates") or [],
-            identity.get("candidate_preservation_sources") or [],
-            ledger.get("title_candidates") or [],
-            ledger.get("candidate_preservation_sources") or [],
-        ):
-            if not isinstance(source_items, list):
-                continue
-            items.extend(item for item in source_items if isinstance(item, dict))
-        return items
-
-    def _has_direct_alias_source_support() -> bool:
-        source_key = _source_key()
-        if not source_key:
-            return False
-        generic_alias_keys = {
-            "게임",
-            "겜",
-            "다른",
-            "마땅히",
-            "작품",
-            "소설",
-            "웹소설",
-            "애니",
-            "애니화",
-        }
-        for item in _candidate_items():
-            for key in ("alias_or_mention", "matched_alias", "anchor_text", "resolved_recall_anchor"):
-                raw_alias = str(item.get(key) or "").strip()
-                if not raw_alias:
-                    continue
-                alias_key = _title_key(raw_alias)
-                if len(alias_key) >= 4 and alias_key not in generic_alias_keys and alias_key in source_key:
-                    return True
-                for token in re.findall(r"[0-9A-Za-z가-힣]{3,}", raw_alias):
-                    token_key = _title_key(token)
-                    if len(token_key) >= 3 and token_key not in generic_alias_keys and token_key in source_key:
-                        return True
-        return False
-
-    has_alias_source_support = _has_direct_alias_source_support()
-    has_weak_counterevidence = weak_inferred_without_post_span and not has_alias_source_support
-    if not (has_critical_counterevidence or has_weak_counterevidence):
-        return False
-
     novel = identity.get("novel_identity") if isinstance(identity.get("novel_identity"), dict) else {}
     candidate_title = str(
         decision.get("official_title")
@@ -2882,12 +3002,33 @@ def _demote_inferred_publication_with_critical_counterevidence(result_dict: Dict
     if not candidate_title:
         return False
 
-    changed = False
-    flag = (
-        "inferred_publication_critical_counterevidence"
-        if has_critical_counterevidence
-        else "inferred_publication_missing_direct_source_support"
+    has_alias_source_support = _publication_has_direct_source_support(
+        result_dict,
+        identity,
+        ledger,
+        candidate_title,
+        candidate_url,
+        post_title=post_title,
     )
+    has_sentence_like_alias_overreach = bool(
+        _publication_sentence_like_alias_overreach(identity, candidate_title)
+        and "title_in_post: false" in reason_text
+        and "image_ocr_title_evidence: false" in reason_text
+        and not has_alias_source_support
+    )
+    has_weak_counterevidence = (
+        weak_inferred_without_post_span and not has_alias_source_support
+    ) or has_sentence_like_alias_overreach
+    if not (has_critical_counterevidence or has_weak_counterevidence):
+        return False
+
+    changed = False
+    if has_critical_counterevidence:
+        flag = "inferred_publication_critical_counterevidence"
+    elif has_sentence_like_alias_overreach:
+        flag = "inferred_publication_sentence_like_alias_overreach"
+    else:
+        flag = "inferred_publication_missing_direct_source_support"
     scope_state = {
         "scope_kind": "context_only",
         "confidence": "high",
@@ -2995,7 +3136,7 @@ def _demote_inferred_publication_with_critical_counterevidence(result_dict: Dict
     return changed
 
 
-def _demote_inferred_urlless_publication_contract(result_dict: Dict[str, Any]) -> bool:
+def _demote_inferred_urlless_publication_contract(result_dict: Dict[str, Any], post_title: Optional[str] = None) -> bool:
     """Do not publish a title inferred only from serialized identity without an official URL."""
     if not isinstance(result_dict, dict):
         return False
@@ -3030,6 +3171,15 @@ def _demote_inferred_urlless_publication_contract(result_dict: Dict[str, Any]) -
         or ""
     ).strip()
     if not public_title:
+        return False
+    if _publication_has_direct_source_support(
+        result_dict,
+        identity,
+        ledger,
+        public_title,
+        public_url,
+        post_title=post_title,
+    ):
         return False
 
     changed = False
@@ -3109,11 +3259,11 @@ def _sync_final_publication_ledger_contract(result_dict: Dict[str, Any], post_ti
         changed = True
     if _sync_allowed_publication_result_contract(result_dict):
         changed = True
-    if _demote_inferred_publication_with_critical_counterevidence(result_dict):
+    if _demote_inferred_publication_with_critical_counterevidence(result_dict, post_title=post_title):
         changed = True
         if _scrub_promotion_blocked_result_contract(result_dict, post_title=post_title):
             changed = True
-    if _demote_inferred_urlless_publication_contract(result_dict):
+    if _demote_inferred_urlless_publication_contract(result_dict, post_title=post_title):
         changed = True
     if _demote_platform_meta_image_title_publication_contract(result_dict, post_title=post_title):
         changed = True

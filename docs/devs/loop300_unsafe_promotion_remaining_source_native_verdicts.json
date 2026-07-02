@@ -1,0 +1,170 @@
+{
+  "review_id": "loop300_unsafe_promotion_remaining_source_native_verdicts",
+  "loop": 300,
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop298_unsafe_promotion_from_hold_review_batch.json",
+  "scope": "Loop300 unsafe_promotion_from_hold remaining source-native verdicts (11/26)",
+  "review_policy": "source-native remaining review only; native web/image checks remain required for image-dependent or ambiguous rows; no full collateral approval",
+  "rows": [
+    {
+      "post_id": 11658637,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "after_wrong_hold_preferred",
+      "evidence_grade": "Medium",
+      "action": ["repair_unsafe_promotion"],
+      "rationale_ko": "원문은 `재막아`, 영기, 윤기, 진양철을 통해 `재벌집 막내아들` 계열을 말하지만, 후보 `일본 재벌집 막내아들`의 `일본` 특정 title surface나 URL 앵커는 source-native로 확인되지 않는다. after 승격은 같은 계열/인물 신호를 과확장한 것으로 보고 hold/re-judge가 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop298_unsafe_promotion_from_hold_review_batch.json#post_id=11658637"
+      ]
+    },
+    {
+      "post_id": 11660238,
+      "selected_option_id": "C1",
+      "selected_title": "무림마조",
+      "selected_url": "https://novelpia.com/novel/347096",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_correct_source_native",
+      "evidence_grade": "Strong",
+      "action": ["exclude_from_regression_count_after_gate_wiring"],
+      "rationale_ko": "원문 제목의 `림조`와 본문 `한서진`, `청월`, 200화 맥락이 후보 `무림마조`의 작품/등장인물 신호와 결속된다. 공식 URL도 동일 title을 지지하므로 source-native 정당 해소로 본다.",
+      "evidence_refs": [
+        "https://novelpia.com/novel/347096",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop298_unsafe_promotion_from_hold_review_batch.json#post_id=11660238"
+      ]
+    },
+    {
+      "post_id": 11668324,
+      "selected_option_id": "C1",
+      "selected_title": "괴담에 휘말렸다",
+      "selected_url": "https://novelpia.com/novel/363195",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_correct_source_native",
+      "evidence_grade": "Strong",
+      "action": ["exclude_from_regression_count_after_gate_wiring"],
+      "rationale_ko": "원문 제목의 `김괴라리`는 `괴담에 휘말렸다`와 작가 김갈비뼈를 묶어 부르는 장갤 약칭으로 확인된다. `니생들`과 함께 언급된 다중 비교 맥락은 있지만, 후보 C1은 source-native로 정당한 작품 후보이므로 after 승격은 정당 해소로 분리한다.",
+      "evidence_refs": [
+        "https://novelpia.com/novel/363195",
+        "https://m.dcinside.com/board/genrenovel/10977550",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop298_unsafe_promotion_from_hold_review_batch.json#post_id=11668324"
+      ]
+    },
+    {
+      "post_id": 11673086,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "after_wrong_hold_preferred",
+      "evidence_grade": "Strong",
+      "action": ["repair_unsafe_promotion"],
+      "rationale_ko": "원문은 `랫따싶`, 칸시, 시트러스, 피갈을 직접 말하므로 `[림월드]변방계에서 회귀자로 살아남기` 쪽 신호다. after 후보 `어느날 자고 일어났더니 포켓몬스터 게임 속 주인공의 라이벌 캐릭터가 되어 있었다`는 source-native 맥락과 맞지 않는다.",
+      "evidence_refs": [
+        "https://novelpia.com/novel/382324",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop298_unsafe_promotion_from_hold_review_batch.json#post_id=11673086"
+      ]
+    },
+    {
+      "post_id": 11674712,
+      "selected_option_id": "C1",
+      "selected_title": "이 무림의 미친년은 나야",
+      "selected_url": "https://novelpia.com/novel/217943",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_correct_source_native",
+      "evidence_grade": "Strong",
+      "action": ["exclude_from_regression_count_after_gate_wiring"],
+      "rationale_ko": "원문 제목의 `서문청`, `주서연` 비교와 댓글의 내공/호각 대화가 후보 `이 무림의 미친년은 나야`에 결속된다. 이 행은 Loop288에서 진동 이력이 있으므로 full approval이 아니라 source-native 정당 해소 후보로만 둔다.",
+      "evidence_refs": [
+        "https://novelpia.com/novel/217943",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop298_unsafe_promotion_from_hold_review_batch.json#post_id=11674712"
+      ]
+    },
+    {
+      "post_id": 11677913,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "after_wrong_hold_preferred",
+      "evidence_grade": "Medium",
+      "action": ["repair_unsafe_promotion"],
+      "rationale_ko": "원문은 남캐 일러스트와 `캇트` 반응을 말하지만, 후보 `이세계 검은머리 똥양인`을 직접 지지하는 작품명/URL 앵커가 없다. 이미지 의존 가능성이 있으므로 native image 확인 전까지 hold가 맞다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop298_unsafe_promotion_from_hold_review_batch.json#post_id=11677913"
+      ]
+    },
+    {
+      "post_id": 11685985,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "after_wrong_hold_preferred",
+      "evidence_grade": "Medium",
+      "action": ["repair_unsafe_promotion"],
+      "rationale_ko": "원문은 고양이/홍어 수인 농담과 이미지 반응에 가깝고, 후보 `공작의 반려 수인 이 되었습니다`를 작품으로 확정할 직접 title surface나 공식 URL 앵커가 없다. `수인` 일반어 기반 승격으로 보고 hold/re-judge가 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop298_unsafe_promotion_from_hold_review_batch.json#post_id=11685985"
+      ]
+    },
+    {
+      "post_id": 11685995,
+      "selected_option_id": "C1",
+      "selected_title": "림월드 변방계에서 회귀자로 살아남기",
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_correct_source_native",
+      "evidence_grade": "Medium",
+      "action": ["exclude_from_regression_count_after_gate_wiring"],
+      "rationale_ko": "댓글에서 post author가 `랫따싶`이라고 직접 답하고, 이어 `가챠펑크맛`은 비교/맛 설명으로 보인다. 공식 페이지도 `랫따싶` 태그와 `[림월드]변방계에서 회귀자로 살아남기` 제목을 지지하므로 after title은 source-native 정당 해소로 볼 수 있다. 다만 after URL이 비어 있어 full approval 근거는 아니다.",
+      "evidence_refs": [
+        "https://novelpia.com/novel/382324",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop298_unsafe_promotion_from_hold_review_batch.json#post_id=11685995"
+      ]
+    },
+    {
+      "post_id": 11695637,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "after_wrong_hold_preferred",
+      "evidence_grade": "Medium",
+      "action": ["repair_unsafe_promotion"],
+      "rationale_ko": "원문은 `알파카랑 눈싸움 하지마라`와 본문 `헙`뿐이며, 후보 `도네하지 마라`를 직접 지지하는 작품명/캐릭터/URL 앵커가 없다. `하지마라` 문장 표면만으로 public title을 확정한 과승격으로 본다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop298_unsafe_promotion_from_hold_review_batch.json#post_id=11695637"
+      ]
+    },
+    {
+      "post_id": 11705261,
+      "selected_option_id": "C1",
+      "selected_title": "이세계 TRPG 게임마스터",
+      "selected_url": "https://novelpia.com/novel/242412",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_correct_source_native",
+      "evidence_grade": "Strong",
+      "action": ["exclude_from_regression_count_after_gate_wiring"],
+      "rationale_ko": "원문 제목의 `이티알`은 `이세계 TRPG 게임마스터` 축약으로 읽히고, `루루`, 댓글의 `로데우스`도 같은 작품 토론 맥락을 보강한다. 공식 URL도 동일 title을 지지하므로 source-native 정당 해소다.",
+      "evidence_refs": [
+        "https://novelpia.com/novel/242412",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop298_unsafe_promotion_from_hold_review_batch.json#post_id=11705261"
+      ]
+    },
+    {
+      "post_id": 11718105,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "after_wrong_hold_preferred",
+      "evidence_grade": "Strong",
+      "action": ["repair_unsafe_promotion"],
+      "rationale_ko": "원문은 시리즈 출시 대기와 작가/작품군 화제이며 댓글도 `트럭커`, `몰락`, `망배우`를 함께 묻는다. 후보 `미쳐버린 판타지에서 사제로 살아남기`를 단일 현재 작품으로 확정할 직접 title surface가 없어 hold/re-judge가 맞다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop298_unsafe_promotion_from_hold_review_batch.json#post_id=11718105"
+      ]
+    }
+  ]
+}

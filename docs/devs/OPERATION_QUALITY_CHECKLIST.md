@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop300 unsafe promotion full verdict quality gate
+
+- 근거:
+  - [x] `unsafe_promotion_from_hold=26` 전체를 source-native verdict로 닫았다.
+  - [x] validation issues `0`, `REPROCESS=14`, `ACCEPT=12`, unreviewed `0`을 기록했다.
+  - [x] current HEAD replay에서 match/mismatch `26/0`을 확인했다.
+  - [x] related bundle 137 tests PASS를 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_300_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] Loop300은 action queue 수렴과 unit/legacy replay evidence이지 full collateral approval이 아니다.
+  - [x] `ACCEPT=12`는 current gate 배선에서 `safe_resolved`로 수렴하지만 search 복구 전 full approval 근거로 쓰지 않는다.
+  - [x] `REPROCESS=14`는 targeted guard/runtime follow-up 전까지 full collateral count에서 닫지 않는다.
+  - [x] search degraded 복구 전 `promotion_blocked`는 `search-blind conditional`로만 해석한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop299 unsafe promotion contract quality gate
 
 - 근거:

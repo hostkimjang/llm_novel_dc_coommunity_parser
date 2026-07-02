@@ -1,5 +1,32 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop300 unsafe promotion full source-native verdict / gate wiring 체크
+
+- [x] `unsafe_promotion_from_hold=26` 전체를 source-native verdict로 닫았다.
+  - verdicts `docs\devs\loop300_unsafe_promotion_from_hold_full_source_native_verdicts.json`
+  - summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop300_unsafe_promotion_from_hold_full_source_native_review.*`
+  - reviewed/unreviewed `26/0`, validation issues `0`
+  - `REPROCESS=14`, `ACCEPT=12`
+- [x] current HEAD shared publication contract replay를 수행했다.
+  - replay `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop300_unsafe_promotion_full_verdict_current_contract_replay.json`
+  - match/mismatch `26/0`
+  - `REPROCESS->promotion_blocked=14/14`
+  - `ACCEPT->safe_resolved=12/12`
+- [x] `expert_main.py`의 inferred publication 직접 source support 계약을 보강했다.
+  - verified pure-work alias는 URL이 없어도 보존.
+  - sentence-like/meme/pronoun alias overreach는 `promotion_blocked`.
+  - full official title token leak는 entity mention support로 세지 않음.
+- [x] focused/related 검증을 통과했다.
+  - py_compile PASS
+  - metadata unittest `46 tests` PASS
+  - related bundle `137 tests` PASS
+- [x] 최신 background snapshot을 확인했다.
+  - full375 `375/69/51/18/0`, `large_run_complete=false`
+  - bounded1200 `1200/109/96/13/0`, `large_run_complete=false`
+  - golden18 `18/17/12/5/0`, `large_run_complete=false`, `mcp_health_light_mode=true`
+- [ ] 다음 action queue는 `safe_loss_resolved_to_null=147` 또는 `OVERRIDE AUDIT(LLM=False->final=True)` blind judge 검증으로 전환한다.
+- Gate: unsafe promotion full verdict `REVIEW-LOCKED`, contract replay `GO_UNIT_AND_LEGACY_REPLAY_EVIDENCE`, full collateral approval `NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop299 unsafe promotion shared contract repair 체크
 
 - [x] Loop298 `repair_unsafe_promotion=8`을 current HEAD shared publication contract로 재현했다.

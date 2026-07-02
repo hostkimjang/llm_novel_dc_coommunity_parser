@@ -1,0 +1,551 @@
+{
+  "review_id": "loop300_unsafe_promotion_full_verdict_current_contract_replay",
+  "source_verdicts": "docs/devs/loop300_unsafe_promotion_from_hold_full_source_native_verdicts.json",
+  "source_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop49_regression_panel_replay_result.json",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "rows": 26,
+    "match_count": 26,
+    "mismatch_count": 0,
+    "counts": {
+      "REPROCESS->promotion_blocked match=True": 14,
+      "ACCEPT->safe_resolved match=True": 12
+    },
+    "mismatch_post_ids": []
+  },
+  "rows": [
+    {
+      "post_id": 11657046,
+      "label": "REPROCESS",
+      "expected_status": "promotion_blocked",
+      "actual_status": "promotion_blocked",
+      "match": true,
+      "changed": true,
+      "official_title": null,
+      "url": null,
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "publish_allowed": false,
+      "reason_codes": [
+        "final_publication_missing_promotion_gate_decision",
+        "untraced_public_title_with_competing_candidate",
+        "scope_unknown",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ]
+    },
+    {
+      "post_id": 11658621,
+      "label": "REPROCESS",
+      "expected_status": "promotion_blocked",
+      "actual_status": "promotion_blocked",
+      "match": true,
+      "changed": true,
+      "official_title": null,
+      "url": null,
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "publish_allowed": false,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication",
+        "inferred_publication_critical_counterevidence",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ]
+    },
+    {
+      "post_id": 11658637,
+      "label": "REPROCESS",
+      "expected_status": "promotion_blocked",
+      "actual_status": "promotion_blocked",
+      "match": true,
+      "changed": true,
+      "official_title": null,
+      "url": null,
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "publish_allowed": false,
+      "reason_codes": [
+        "final_publication_missing_promotion_gate_decision",
+        "untraced_public_title_with_competing_candidate",
+        "scope_unknown",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ]
+    },
+    {
+      "post_id": 11658668,
+      "label": "REPROCESS",
+      "expected_status": "promotion_blocked",
+      "actual_status": "promotion_blocked",
+      "match": true,
+      "changed": true,
+      "official_title": null,
+      "url": null,
+      "title_resolution_state": "resolved",
+      "work_resolution": "resolved",
+      "publish_allowed": false,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication",
+        "platform_meta_image_title_hard_hold",
+        "scope_context_only",
+        "serialized_public_identity_scrubbed"
+      ]
+    },
+    {
+      "post_id": 11660238,
+      "label": "ACCEPT",
+      "expected_status": "safe_resolved",
+      "actual_status": "safe_resolved",
+      "match": true,
+      "changed": true,
+      "official_title": "무림마조",
+      "url": "https://novelpia.com/novel/347096",
+      "title_resolution_state": "resolved",
+      "work_resolution": "resolved",
+      "publish_allowed": true,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication"
+      ]
+    },
+    {
+      "post_id": 11668324,
+      "label": "ACCEPT",
+      "expected_status": "safe_resolved",
+      "actual_status": "safe_resolved",
+      "match": true,
+      "changed": true,
+      "official_title": "괴담에 휘말렸다",
+      "url": "https://novelpia.com/novel/363195",
+      "title_resolution_state": "resolved",
+      "work_resolution": "resolved",
+      "publish_allowed": true,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication"
+      ]
+    },
+    {
+      "post_id": 11669928,
+      "label": "ACCEPT",
+      "expected_status": "safe_resolved",
+      "actual_status": "safe_resolved",
+      "match": true,
+      "changed": true,
+      "official_title": "탑의 성좌들이 날 애호한다",
+      "url": "https://novelpia.com/novel/377032",
+      "title_resolution_state": "resolved",
+      "work_resolution": "resolved",
+      "publish_allowed": true,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication"
+      ]
+    },
+    {
+      "post_id": 11671490,
+      "label": "REPROCESS",
+      "expected_status": "promotion_blocked",
+      "actual_status": "promotion_blocked",
+      "match": true,
+      "changed": true,
+      "official_title": null,
+      "url": null,
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "publish_allowed": false,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication",
+        "inferred_publication_missing_direct_source_support",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ]
+    },
+    {
+      "post_id": 11671501,
+      "label": "ACCEPT",
+      "expected_status": "safe_resolved",
+      "actual_status": "safe_resolved",
+      "match": true,
+      "changed": true,
+      "official_title": "판타지 초인 법사",
+      "url": null,
+      "title_resolution_state": "resolved",
+      "work_resolution": "resolved",
+      "publish_allowed": true,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication"
+      ]
+    },
+    {
+      "post_id": 11673086,
+      "label": "REPROCESS",
+      "expected_status": "promotion_blocked",
+      "actual_status": "promotion_blocked",
+      "match": true,
+      "changed": true,
+      "official_title": null,
+      "url": null,
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "publish_allowed": false,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication",
+        "inferred_publication_missing_direct_source_support",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ]
+    },
+    {
+      "post_id": 11674703,
+      "label": "REPROCESS",
+      "expected_status": "promotion_blocked",
+      "actual_status": "promotion_blocked",
+      "match": true,
+      "changed": true,
+      "official_title": null,
+      "url": null,
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "publish_allowed": false,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication",
+        "inferred_publication_missing_direct_source_support",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ]
+    },
+    {
+      "post_id": 11674712,
+      "label": "ACCEPT",
+      "expected_status": "safe_resolved",
+      "actual_status": "safe_resolved",
+      "match": true,
+      "changed": true,
+      "official_title": "이 무림의 미친년은 나야",
+      "url": "https://novelpia.com/novel/217943",
+      "title_resolution_state": "resolved",
+      "work_resolution": "resolved",
+      "publish_allowed": true,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication"
+      ]
+    },
+    {
+      "post_id": 11677913,
+      "label": "REPROCESS",
+      "expected_status": "promotion_blocked",
+      "actual_status": "promotion_blocked",
+      "match": true,
+      "changed": true,
+      "official_title": null,
+      "url": null,
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "publish_allowed": false,
+      "reason_codes": [
+        "final_publication_missing_promotion_gate_decision",
+        "untraced_public_title_with_competing_candidate",
+        "scope_unknown",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ]
+    },
+    {
+      "post_id": 11685985,
+      "label": "REPROCESS",
+      "expected_status": "promotion_blocked",
+      "actual_status": "promotion_blocked",
+      "match": true,
+      "changed": true,
+      "official_title": null,
+      "url": null,
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "publish_allowed": false,
+      "reason_codes": [
+        "final_publication_missing_promotion_gate_decision",
+        "untraced_public_title_with_competing_candidate",
+        "scope_unknown",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ]
+    },
+    {
+      "post_id": 11685995,
+      "label": "ACCEPT",
+      "expected_status": "safe_resolved",
+      "actual_status": "safe_resolved",
+      "match": true,
+      "changed": true,
+      "official_title": "림월드 변방계에서 회귀자로 살아남기",
+      "url": null,
+      "title_resolution_state": "resolved",
+      "work_resolution": "resolved",
+      "publish_allowed": true,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication"
+      ]
+    },
+    {
+      "post_id": 11687618,
+      "label": "ACCEPT",
+      "expected_status": "safe_resolved",
+      "actual_status": "safe_resolved",
+      "match": true,
+      "changed": true,
+      "official_title": "아카데미 생존 갤러리",
+      "url": "https://novelpia.com/novel/380218",
+      "title_resolution_state": "resolved",
+      "work_resolution": "resolved",
+      "publish_allowed": true,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication"
+      ]
+    },
+    {
+      "post_id": 11690874,
+      "label": "REPROCESS",
+      "expected_status": "promotion_blocked",
+      "actual_status": "promotion_blocked",
+      "match": true,
+      "changed": true,
+      "official_title": null,
+      "url": null,
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "publish_allowed": false,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication",
+        "inferred_publication_missing_direct_source_support",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ]
+    },
+    {
+      "post_id": 11695623,
+      "label": "ACCEPT",
+      "expected_status": "safe_resolved",
+      "actual_status": "safe_resolved",
+      "match": true,
+      "changed": true,
+      "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "url": "https://novelpia.com/novel/382324",
+      "title_resolution_state": "resolved",
+      "work_resolution": "resolved",
+      "publish_allowed": true,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication"
+      ]
+    },
+    {
+      "post_id": 11695637,
+      "label": "REPROCESS",
+      "expected_status": "promotion_blocked",
+      "actual_status": "promotion_blocked",
+      "match": true,
+      "changed": true,
+      "official_title": null,
+      "url": null,
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "publish_allowed": false,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication",
+        "inferred_publication_sentence_like_alias_overreach",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ]
+    },
+    {
+      "post_id": 11695639,
+      "label": "ACCEPT",
+      "expected_status": "safe_resolved",
+      "actual_status": "safe_resolved",
+      "match": true,
+      "changed": true,
+      "official_title": "TS 당 해서 인방 을 해봅니다.",
+      "url": "https://novelpia.com/novel/362860",
+      "title_resolution_state": "resolved",
+      "work_resolution": "resolved",
+      "publish_allowed": true,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication"
+      ]
+    },
+    {
+      "post_id": 11697231,
+      "label": "ACCEPT",
+      "expected_status": "safe_resolved",
+      "actual_status": "safe_resolved",
+      "match": true,
+      "changed": true,
+      "official_title": "아카데미 생존 갤러리",
+      "url": "https://novelpia.com/novel/380218",
+      "title_resolution_state": "resolved",
+      "work_resolution": "resolved",
+      "publish_allowed": true,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication"
+      ]
+    },
+    {
+      "post_id": 11700495,
+      "label": "ACCEPT",
+      "expected_status": "safe_resolved",
+      "actual_status": "safe_resolved",
+      "match": true,
+      "changed": true,
+      "official_title": "이 무림의 미친년은 나야",
+      "url": "https://novelpia.com/novel/217943?sid=main5",
+      "title_resolution_state": "resolved",
+      "work_resolution": "resolved",
+      "publish_allowed": true,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication"
+      ]
+    },
+    {
+      "post_id": 11703657,
+      "label": "REPROCESS",
+      "expected_status": "promotion_blocked",
+      "actual_status": "promotion_blocked",
+      "match": true,
+      "changed": true,
+      "official_title": null,
+      "url": null,
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "publish_allowed": false,
+      "reason_codes": [
+        "final_publication_missing_promotion_gate_decision",
+        "untraced_public_title_with_competing_candidate",
+        "scope_unknown",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ]
+    },
+    {
+      "post_id": 11705261,
+      "label": "ACCEPT",
+      "expected_status": "safe_resolved",
+      "actual_status": "safe_resolved",
+      "match": true,
+      "changed": true,
+      "official_title": "이세계 TRPG 게임마스터",
+      "url": "https://novelpia.com/novel/242412",
+      "title_resolution_state": "resolved",
+      "work_resolution": "resolved",
+      "publish_allowed": true,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication"
+      ]
+    },
+    {
+      "post_id": 11706832,
+      "label": "REPROCESS",
+      "expected_status": "promotion_blocked",
+      "actual_status": "promotion_blocked",
+      "match": true,
+      "changed": true,
+      "official_title": null,
+      "url": null,
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "publish_allowed": false,
+      "reason_codes": [
+        "final_publication_missing_promotion_gate_decision",
+        "untraced_public_title_with_competing_candidate",
+        "scope_unknown",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ]
+    },
+    {
+      "post_id": 11718105,
+      "label": "REPROCESS",
+      "expected_status": "promotion_blocked",
+      "actual_status": "promotion_blocked",
+      "match": true,
+      "changed": true,
+      "official_title": null,
+      "url": null,
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "publish_allowed": false,
+      "reason_codes": [
+        "final_publication_decision_inferred_from_serialized_identity",
+        "serialized_public_identity_published",
+        "scope_current_work",
+        "scope_inferred_from_final_publication",
+        "inferred_publication_missing_direct_source_support",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ]
+    }
+  ]
+}

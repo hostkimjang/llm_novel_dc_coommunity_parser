@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop300 Addendum - unsafe promotion full source-native verdict and gate wiring
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop300은 approval이 아니라 Loop298 `unsafe_promotion_from_hold=26` 전체를 source-native verdict와 current contract replay로 수렴시킨 action queue 산출물이다.
+- 목적: 남은 unreviewed `11`건을 닫고, `REPROCESS`는 `promotion_blocked`, `ACCEPT`는 `safe_resolved`로 수렴하는지 current HEAD에서 확인한다.
+- 코드 변경: `expert_main.py`에 publication 후보의 직접 title/url/source/alias support helper를 추가했다. Verified pure-work alias는 URL이 없어도 보존하고, sentence-like/meme/pronoun alias overreach와 official-title token leak는 promotion support로 세지 않는다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_300_REPORT_20260702.md`, verdicts `docs/devs/loop300_unsafe_promotion_from_hold_full_source_native_verdicts.json`, summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop300_unsafe_promotion_from_hold_full_source_native_review.*`, replay `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop300_unsafe_promotion_full_verdict_current_contract_replay.json`.
+- Evidence: reviewed/unreviewed `26/0`, validation issues `0`, `REPROCESS=14`, `ACCEPT=12`; contract replay rows/match/mismatch `26/26/0`, `REPROCESS->promotion_blocked=14`, `ACCEPT->safe_resolved=12`.
+- Verification: py_compile PASS, metadata unittest `46 tests` PASS, related bundle `137 tests` PASS.
+- Background snapshot: full375 `375/69/51/18/0`, bounded1200 `1200/109/96/13/0`, golden18 `18/17/12/5/0`, 모두 `large_run_complete=false`.
+- Gate: unsafe promotion full verdict `REVIEW-LOCKED`, contract replay `GO_UNIT_AND_LEGACY_REPLAY_EVIDENCE`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop299 Addendum - unsafe promotion shared contract repair
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop299는 approval이 아니라 Loop298 `repair_unsafe_promotion=8`을 shared publication contract로 실코드화한 계약 수리다.
