@@ -1,5 +1,32 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop311 current HEAD runtime refresh dispatch 체크
+
+- [x] search shard live health를 재확인했다.
+  - `127.0.0.1:3333/api/health` HTTP 200
+  - `127.0.0.1:3334/api/health` HTTP 200
+- [x] safe-loss N5 plan을 background runner로 발주했다.
+  - plan `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop302_safe_loss_independent_n5_run_plan.json`
+  - planned runs `15`
+  - PID `90532`
+  - logs `logs\loop311_safe_loss_independent_n5_plan\`
+  - report 시점 result JSON `0/15`
+- [x] golden18 추적 상태를 재확인했다.
+  - `golden_manifest.json` rows `18`
+  - `golden_set.jsonl` rows `18`
+  - `11660237`, `11698880` 포함
+- [x] ignored bootstrap 보조 도구를 git 추적으로 전환한다.
+  - `tools\build_golden_regression_set.py`
+  - `tools\compare_against_golden.py`
+- [x] full375/bounded1200 live health를 갱신했다.
+  - full375 checkpoint/result `135/105`, pending `30`
+  - bounded1200 checkpoint/result `205/188`, pending `17`
+  - 둘 다 `IN_PROGRESS/ordered_flush_gap_in_progress`
+  - blockers `search_timeout_observed`, `search_degraded_observed`
+- [ ] N5 result JSON `15/15` 완료 후 flip rate를 분석한다.
+- [ ] full375/bounded1200 완료 전 approval 문구를 쓰지 않는다.
+- Gate: N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, golden18 `TRACKED / APPROVAL_NOT_OPEN`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop310 safe-loss source-native next slice 체크
 
 - [x] Loop306 이후 남은 `safe_loss_resolved_to_null` 미검토분에서 15건을 추가 판정했다.

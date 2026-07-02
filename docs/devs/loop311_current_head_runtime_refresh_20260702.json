@@ -1,0 +1,69 @@
+{
+  "loop": 311,
+  "date": "2026-07-02",
+  "scope": "current HEAD runtime refresh dispatch",
+  "safe_loss_n5": {
+    "plan": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop302_safe_loss_independent_n5_run_plan.json",
+    "planned_runs": 15,
+    "repeat_count_by_post": {
+      "11674712": 5,
+      "11660237": 5,
+      "11698880": 5
+    },
+    "background_pid": 90532,
+    "log_dir": "logs/loop311_safe_loss_independent_n5_plan",
+    "result_json_count_at_report": 0,
+    "status": "RUNNING_BACKGROUND_NOT_ANALYZED"
+  },
+  "golden18": {
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json",
+    "jsonl": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl",
+    "row_count": 18,
+    "included_post_ids": [
+      11660237,
+      11698880
+    ],
+    "approval_status": "APPROVAL_NOT_OPEN"
+  },
+  "background_runs": {
+    "full375": {
+      "run_id": "20260702_124015_346913",
+      "audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop311_full375_search_nonlight_current_health_audit.json",
+      "checkpoint_rows": 135,
+      "result_rows": 105,
+      "pending_rows": 30,
+      "flush": "IN_PROGRESS/ordered_flush_gap_in_progress",
+      "search_blockers": [
+        "search_timeout_observed",
+        "search_degraded_observed"
+      ]
+    },
+    "bounded1200_completed_source": {
+      "run_id": "20260702_124015_423917",
+      "audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop311_bounded1200_search_nonlight_current_health_audit.json",
+      "checkpoint_rows": 205,
+      "result_rows": 188,
+      "pending_rows": 17,
+      "flush": "IN_PROGRESS/ordered_flush_gap_in_progress",
+      "search_blockers": [
+        "search_timeout_observed",
+        "search_degraded_observed"
+      ]
+    }
+  },
+  "tracked_tools_to_add": [
+    "tools/build_golden_regression_set.py",
+    "tools/compare_against_golden.py"
+  ],
+  "gates": {
+    "safe_loss_n5": "RUNNING_BACKGROUND / NOT_ANALYZED",
+    "full375": "IN_PROGRESS / NOT_APPROVAL",
+    "bounded_completed_source": "IN_PROGRESS / NOT_APPROVAL",
+    "golden18": "TRACKED / APPROVAL_NOT_OPEN",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

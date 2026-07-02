@@ -1,5 +1,18 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop311 current HEAD runtime refresh dispatch
+
+- search shard `/api/health`를 live로 다시 확인했다. `127.0.0.1:3333`, `127.0.0.1:3334` 모두 HTTP 200이다.
+- safe-loss N5 plan `15`건을 hidden background runner로 발주했다. PID는 `90532`, 로그는 `logs/loop311_safe_loss_independent_n5_plan/`에 남는다.
+- report 시점 N5 result JSON은 `0/15`라 flip rate는 아직 갱신되지 않았다.
+- golden18은 `18`행이며 `11660237`, `11698880`을 포함한다. 두 행은 `safe_loss_blind_judge_expected_work` / `safe_loss_flip_probe`로 남아 있다.
+- full375는 run `20260702_124015_346913`, checkpoint/result `135/105`, pending `30`, `IN_PROGRESS/ordered_flush_gap_in_progress`다.
+- bounded1200 completed-source는 run `20260702_124015_423917`, checkpoint/result `205/188`, pending `17`, `IN_PROGRESS/ordered_flush_gap_in_progress`다.
+- 두 run 모두 search 포함 non-light이지만 blockers `search_timeout_observed`, `search_degraded_observed`가 남아 approval 근거가 아니다.
+- `tools/build_golden_regression_set.py`, `tools/compare_against_golden.py`를 git 추적으로 전환한다.
+- Report는 `docs/devs/loop_reports/LOOP_311_REPORT_20260702.md`, state는 `docs/devs/loop311_current_head_runtime_refresh_20260702.json`이다.
+- Gate는 N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, golden18 `TRACKED / APPROVAL_NOT_OPEN`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop310 safe-loss source-native 다음 slice
 
 - Loop306 이후 남은 `safe_loss_resolved_to_null` 미검토분에서 15건을 추가 source-native review로 판정했다.

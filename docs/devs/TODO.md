@@ -2,6 +2,24 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop311 TODO
+
+- 상태 업데이트: search shard health는 회복됐고 N5 plan은 background로 발주됐다. 그러나 result JSON은 아직 `0/15`라 flip rate는 갱신되지 않았다. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop311 TODO:
+  - [x] `3333/3334` `/api/health` HTTP 200을 확인했다.
+  - [x] safe-loss N5 `15`개 독립 반복 plan을 background runner로 발주했다.
+    - PID `90532`
+    - logs `logs\loop311_safe_loss_independent_n5_plan\`
+  - [x] golden18에 `11660237`, `11698880`이 포함되어 있음을 확인했다.
+  - [x] `tools\build_golden_regression_set.py`, `tools\compare_against_golden.py`를 git 추적으로 전환한다.
+  - [x] full375/bounded1200 health audit를 갱신했다.
+    - full375 checkpoint/result `135/105`, pending `30`
+    - bounded1200 checkpoint/result `205/188`, pending `17`
+  - [ ] N5 result JSON `15/15` 완료 후 `safe_loss_flip_rate_probe.py analyze`를 실행한다.
+  - [ ] full375/bounded1200 완료 전 approval 후보로 재평가하지 않는다.
+  - [ ] search degraded 100% 복구 전 `promotion_blocked`는 `search-blind conditional`로만 해석한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 regression-safe grounding Loop310 TODO
 
 - 상태 업데이트: `safe_loss_resolved_to_null` source-native review가 `44/147`까지 진행됐다. Goal은 `ACTIVE / NOT_COMPLETE`.

@@ -1,5 +1,33 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop311 current HEAD runtime refresh dispatch
+
+- 범위: current HEAD 기준 stale runtime 증거를 갱신하기 위해 N5 safe-loss plan을 재발주하고 full375/bounded1200 health를 live audit한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_311_REPORT_20260702.md`
+  - state `docs\devs\loop311_current_head_runtime_refresh_20260702.json`
+  - N5 plan `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop302_safe_loss_independent_n5_run_plan.json`
+  - N5 logs `logs\loop311_safe_loss_independent_n5_plan\`
+  - full375 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop311_full375_search_nonlight_current_health_audit.json`
+  - bounded1200 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop311_bounded1200_search_nonlight_current_health_audit.json`
+- Verification:
+  - search health `127.0.0.1:3333/api/health` HTTP 200
+  - search health `127.0.0.1:3334/api/health` HTTP 200
+  - `py_compile tools\build_golden_regression_set.py tools\compare_against_golden.py` PASS
+  - `tools\audit_expert_run_health.py` full375 explicit-path audit PASS
+  - `tools\audit_expert_run_health.py` bounded1200 explicit-path audit PASS
+- Golden:
+  - `golden_manifest.json` rows `18`
+  - `golden_set.jsonl` rows `18`
+  - included rows `11660237`, `11698880`
+- Runtime:
+  - N5 background PID `90532`, result JSON `0/15` at report time
+  - full375 checkpoint/result `135/105`, pending `30`
+  - bounded1200 checkpoint/result `205/188`, pending `17`
+  - both flush `IN_PROGRESS/ordered_flush_gap_in_progress`
+  - blockers `search_timeout_observed`, `search_degraded_observed`
+- Gate: safe-loss N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, golden18 `TRACKED / APPROVAL_NOT_OPEN`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop310 safe-loss source-native 다음 slice
 
 - 범위: Loop301 `safe_loss_resolved_to_null=147` 중 Loop306 이후 미검토분 15건을 추가 source-native review로 판정한다.

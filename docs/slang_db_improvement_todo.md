@@ -1,5 +1,20 @@
 # Slang DB Improvement TODO
 
+## 2026-07-02 Loop311 runtime refresh / slang caveat
+
+- [x] search shard `/api/health`는 `3333/3334` 모두 HTTP 200으로 재확인했다.
+- [x] N5 safe-loss plan은 background runner PID `90532`로 발주했다.
+  - report 시점 result JSON `0/15`
+  - 완료 전 flip rate 갱신이나 hard-hold 완화 근거로 쓰지 않는다.
+- [x] golden18은 rows `18`이고 `11660237`, `11698880`을 포함한다.
+  - tracked 상태지만 golden approval은 `NOT_OPEN`
+- [x] full375/bounded1200은 search 포함 non-light이나 아직 approval 근거가 아니다.
+  - full375 checkpoint/result `135/105`, pending `30`
+  - bounded1200 checkpoint/result `205/188`, pending `17`
+  - blockers `search_timeout_observed`, `search_degraded_observed`
+- [ ] N5 result JSON `15/15` 완료 후 slang/alias 안정성 caveat를 새 flip 분석으로 갱신한다.
+- Gate: slang DB write-back 아님, N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, golden18 approval `NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop300 publication alias support caveat
 
 - [x] `unsafe_promotion_from_hold=26` 전체 source-native verdict를 닫았다.

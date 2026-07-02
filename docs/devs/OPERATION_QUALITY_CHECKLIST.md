@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop311 current HEAD runtime refresh quality gate
+
+- 근거:
+  - [x] search shard `/api/health`를 live로 확인했다.
+  - [x] N5 plan을 background runner로 발주했다.
+  - [x] golden18 row count와 `11660237/11698880` 포함을 확인했다.
+  - [x] full375/bounded1200 health audit를 Loop311 이름으로 생성했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_311_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] N5 result `0/15` 상태를 flip-rate 갱신으로 쓰지 않는다.
+  - [x] full375/bounded1200 partial progress를 approval 근거로 쓰지 않는다.
+  - [x] search degraded/timeout blocker가 남으면 `promotion_blocked`는 `search-blind conditional`로만 해석한다.
+  - [x] golden18 tracked 상태를 golden approval로 쓰지 않는다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop310 safe-loss source-native quality gate
 
 - 근거:

@@ -1,5 +1,37 @@
 # Improvement Register
 
+## IMP-20260702-311 - current HEAD runtime refresh dispatch
+
+- Status: Dispatched / background running / review locked
+- Loop: 311
+- Problem:
+  - Loop302는 search shard runtime blocker로 current HEAD N5/full375/bounded refresh를 완료하지 못했다.
+  - Loop307 이후 N5 수치가 있었지만, 사용자는 현 HEAD 기준 재실행과 golden/bootstrap 추적 전환을 요구했다.
+- Change:
+  - `3333/3334` search shard health를 live 확인했다.
+  - 기존 N5 independent plan `15`건을 hidden background runner로 재발주했다.
+  - full375/bounded1200 live health audit를 Loop311 이름으로 새로 생성했다.
+  - ignored 상태였던 `tools/build_golden_regression_set.py`, `tools/compare_against_golden.py`를 git 추적 대상으로 올린다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_311_REPORT_20260702.md`
+  - state `docs/devs/loop311_current_head_runtime_refresh_20260702.json`
+  - N5 logs `logs/loop311_safe_loss_independent_n5_plan/`
+  - full375 audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop311_full375_search_nonlight_current_health_audit.json`
+  - bounded1200 audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop311_bounded1200_search_nonlight_current_health_audit.json`
+- Result:
+  - N5 result JSON `0/15` at report time
+  - full375 checkpoint/result `135/105`, pending `30`
+  - bounded1200 checkpoint/result `205/188`, pending `17`
+  - golden18 row count `18`, includes `11660237`, `11698880`
+- Gate:
+  - safe-loss N5 `RUNNING_BACKGROUND / NOT_ANALYZED`
+  - full375/bounded `IN_PROGRESS / NOT_APPROVAL`
+  - golden18 `TRACKED / APPROVAL_NOT_OPEN`
+  - search recovery `P0 / OPEN`
+  - promotion blocked interpretation `search-blind conditional`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-310 - safe-loss source-native next slice review
 
 - Status: Implemented / partial review locked
