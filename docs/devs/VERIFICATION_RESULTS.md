@@ -1,5 +1,26 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop314 current-HEAD runtime dispatch
+
+- 범위: Loop313 이후 stale/mixed background 증거를 current HEAD `64864278` 경로로 재발주한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_314_REPORT_20260702.md`
+  - state `docs\devs\loop314_current_head_runtime_dispatch_20260702.json`
+  - runner `tools\run_independent_plan.py`
+  - N5 plan `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop314_safe_loss_independent_n5_run_plan.json`
+  - initial audits `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop314_*_initial_health_audit.json`
+- Verification:
+  - `py_compile tools\run_independent_plan.py tools\safe_loss_flip_rate_probe.py` -> PASS
+  - Data Analytics `validate_artifact` -> PASS
+  - Data Analytics `render_artifact` -> PASS
+  - full375/bounded/golden18/N5 first manifest `mcp_health_include_search=true`, `mcp_health_light_mode=false`
+- Runtime snapshot:
+  - N5 `0/15`, PID `111032`
+  - full375 `0/375`, PID `75828`
+  - bounded1200 `1/1200`, PID `9908`
+  - golden18 `0/18`, PID `43208`
+- Gate: N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`, golden18 `APPROVAL_NOT_OPEN`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop313 safe-loss alias contract repair
 
 - 범위: Loop312 `repair_safe_loss=34` 중 일반화 가능한 alias/title contract 일부를 shared known-title abbreviation gate로 전환한다.

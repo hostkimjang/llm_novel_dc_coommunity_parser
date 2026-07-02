@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop314 current-HEAD dispatch quality gate
+
+- 근거:
+  - [x] Loop288/Loop302 background 프로세스가 Loop313 이전 코드로 시작됐음을 stale/mixed evidence로 분리했다.
+  - [x] 현 HEAD `64864278` 기준 N5/full375/bounded/golden18을 새 경로로 발주했다.
+  - [x] N5 runner 도구 `tools/run_independent_plan.py`를 추가하고 py_compile를 통과했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_314_REPORT_20260702.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop314_current_head_runtime_dispatch_20260702.json`.
+- 품질 게이트:
+  - [x] 기존 partial run을 current HEAD approval로 쓰지 않는다.
+  - [x] 새 partial run도 완료 전 approval로 쓰지 않는다.
+  - [x] N5 `0/15` 상태를 flip-rate 갱신으로 쓰지 않는다.
+  - [x] golden18 완료 전 6/28 golden GO를 대체하지 않는다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop313 safe-loss alias contract quality gate
 
 - 근거:

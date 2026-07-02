@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop314 Addendum - current-HEAD runtime dispatch
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop314는 approval이 아니라 Loop313 이후 stale/mixed runtime 증거를 current HEAD 경로로 다시 분리한 회차다.
+- 목적: Loop288/Loop302 프로세스가 Loop313 이전 코드로 시작됐으므로 current HEAD `64864278` 증거로 오해하지 않게 중단하고 새 background run을 발주한다.
+- 코드 변경: `tools/run_independent_plan.py`를 추가했다. `safe_loss_flip_rate_probe.py build-run-plan` 출력 plan을 안정적으로 순차 실행하고 marker/combined 로그를 남긴다.
+- Evidence: report `docs/devs/loop_reports/LOOP_314_REPORT_20260702.md`, state `docs/devs/loop314_current_head_runtime_dispatch_20260702.json`, N5 plan `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop314_safe_loss_independent_n5_run_plan.json`.
+- Background: N5 PID `111032` result `0/15`, full375 PID `75828` run `20260702_204042_346798`, bounded1200 PID `9908` run `20260702_204042_443948`, golden18 PID `43208` run `20260702_204042_371537`.
+- Health: full375/bounded/golden18/N5 first manifest 모두 `mcp_health_include_search=true`, `mcp_health_light_mode=false`다.
+- Gate: safe-loss flip `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`, golden18 `APPROVAL_NOT_OPEN`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop307 Addendum - safe-loss alias contract expansion
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop307은 approval이 아니라 Loop306 safe-loss alias 후보 일부를 unit-level shared contract로 올린 회차다.

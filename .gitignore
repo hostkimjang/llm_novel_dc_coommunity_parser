@@ -91,6 +91,7 @@ tests/inputs/test01.jsonl
 !/tools/audit_goal_test_run_contract.py
 !/tools/evaluate_goal_convergence.py
 !/tools/safe_loss_flip_rate_probe.py
+!/tools/run_independent_plan.py
 !/tools/evaluate_always_on_regression_gates.py
 !/tools/build_completed_source_candidate_audit.py
 !/tools/bootstrap_regression_safe_grounding.py

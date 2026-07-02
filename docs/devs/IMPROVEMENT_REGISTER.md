@@ -1,5 +1,33 @@
 # Improvement Register
 
+## IMP-20260702-314 - current-HEAD runtime dispatch and plan runner
+
+- Status: Dispatched / background running / review locked
+- Loop: 314
+- Problem:
+  - Loop313 이후 기존 Loop288/Loop302 background 프로세스가 현 HEAD `64864278` 증거가 아니게 됐다.
+  - N5 plan을 inline PowerShell로 실행하면 quoting 오류로 runner가 즉시 종료될 수 있었다.
+- Change:
+  - 기존 stale/mixed full375, bounded1200, N5 프로세스를 중단했다.
+  - Loop314 full375, bounded1200, golden18, N5를 새 경로로 발주했다.
+  - `tools/run_independent_plan.py`를 추가해 JSON plan을 순차 실행하고 marker/combined 로그를 남긴다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_314_REPORT_20260702.md`
+  - state `docs/devs/loop314_current_head_runtime_dispatch_20260702.json`
+  - runner `tools/run_independent_plan.py`
+  - N5 plan `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop314_safe_loss_independent_n5_run_plan.json`
+- Result:
+  - py_compile PASS
+  - Data Analytics validate/render PASS
+  - full375/bounded/golden18/N5 first manifest 모두 `include_search=true`, `light_mode=false`
+- Gate:
+  - safe-loss N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`
+  - golden18 `APPROVAL_NOT_OPEN`
+  - full375/bounded `IN_PROGRESS / NOT_APPROVAL`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-313 - safe-loss alias contract repair
 
 - Status: Implemented / unit gate only / review locked

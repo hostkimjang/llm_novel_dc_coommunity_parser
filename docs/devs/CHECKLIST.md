@@ -1,5 +1,28 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop314 current-HEAD runtime dispatch 체크
+
+- [x] Loop313 이후 이전 Loop288/Loop302 프로세스를 stale/mixed evidence로 분리했다.
+  - 기존 full375/bounded/N5 프로세스는 현 HEAD `64864278` 증거가 아니므로 중단
+  - 기존 partial output은 참고용이며 approval 근거 아님
+- [x] 현 HEAD 런을 새 경로로 발주했다.
+  - N5 PID `111032`, plan `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop314_safe_loss_independent_n5_run_plan.json`
+  - full375 PID `75828`, run `20260702_204042_346798`
+  - bounded1200 PID `9908`, run `20260702_204042_443948`
+  - golden18 PID `43208`, run `20260702_204042_371537`
+- [x] search 포함 non-light manifest를 확인했다.
+  - full375/bounded `include_search=true`, `light_mode=false`, `12/12`
+  - golden18/N5 first manifest `include_search=true`, `light_mode=false`, `2/2`
+- [x] N5 runner 안정화를 위해 `tools\run_independent_plan.py`를 추가했다.
+- [x] Data Analytics validate/render PASS.
+- [x] 산출물을 기록했다.
+  - report `docs\devs\loop_reports\LOOP_314_REPORT_20260702.md`
+  - state `docs\devs\loop314_current_head_runtime_dispatch_20260702.json`
+- [ ] N5 result JSON `15/15` 완료 전 flip rate를 갱신하지 않는다. 현재 `0/15`.
+- [ ] golden18 완료 전 6/28 golden GO를 대체하지 않는다.
+- [ ] full375/bounded1200 완료 전 approval 문구를 쓰지 않는다.
+- Gate: N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`, golden18 `APPROVAL_NOT_OPEN`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop313 safe-loss alias contract repair 체크
 
 - [x] Loop312 `repair_safe_loss=34` 중 일반화 가능한 alias 계약만 선별했다.

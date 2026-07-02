@@ -1,0 +1,89 @@
+{
+  "loop": 314,
+  "date": "2026-07-02",
+  "head": "64864278",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "summary": "Loop313 이후 이전 Loop288/Loop302 background 프로세스가 현 HEAD 증거가 아니게 되어 중단하고, Loop314 경로로 N5, golden18, full375, bounded1200을 새로 발주했다.",
+  "stale_process_handling": {
+    "stopped_reason": "Loop288/Loop302 processes were started before HEAD 64864278 and would create stale or mixed evidence.",
+    "stopped_process_groups": [
+      "loop288_full375_current_head_search_nonlight",
+      "loop288_completed_source_bounded1200_search_nonlight",
+      "loop302_safe_loss_independent_n5_plan"
+    ],
+    "old_outputs_policy": "reference_only_not_current_head_approval"
+  },
+  "launched": [
+    {
+      "name": "loop314_safe_loss_independent_n5",
+      "pid": 111032,
+      "planned_runs": 15,
+      "result_json_count_at_report": 0,
+      "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop314_safe_loss_independent_n5_run_plan.json",
+      "result_dir": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop314_safe_loss_independent_n5_plan/results",
+      "log_dir": "logs/loop314_safe_loss_independent_n5_plan",
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "gate": "RUNNING_BACKGROUND / NOT_ANALYZED"
+    },
+    {
+      "name": "loop314_full375_current_head_search_nonlight",
+      "pid": 75828,
+      "run_id": "20260702_204042_346798",
+      "input_rows": 375,
+      "completed_at_report": 0,
+      "output": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop314_full375_current_head_search_nonlight_result.json",
+      "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop314_full375_current_head_search_nonlight_result_manifest.json",
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_ok_count": 12,
+      "gate": "IN_PROGRESS / NOT_APPROVAL"
+    },
+    {
+      "name": "loop314_completed_source_bounded1200_search_nonlight",
+      "pid": 9908,
+      "run_id": "20260702_204042_443948",
+      "input_rows": 1200,
+      "completed_at_report": 1,
+      "output": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop314_completed_source_bounded1200_search_nonlight_result.json",
+      "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop314_completed_source_bounded1200_search_nonlight_result_manifest.json",
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_ok_count": 12,
+      "gate": "IN_PROGRESS / NOT_APPROVAL"
+    },
+    {
+      "name": "loop314_golden18_current_head_search_nonlight",
+      "pid": 43208,
+      "run_id": "20260702_204042_371537",
+      "input_rows": 18,
+      "completed_at_report": 0,
+      "output": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop314_golden18_current_head_search_nonlight_result.json",
+      "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop314_golden18_current_head_search_nonlight_result_manifest.json",
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_ok_count": 2,
+      "gate": "APPROVAL_NOT_OPEN"
+    }
+  ],
+  "tooling_change": {
+    "added": "tools/run_independent_plan.py",
+    "reason": "Run independent JSON plans sequentially without fragile inline PowerShell quoting."
+  },
+  "data_analytics": {
+    "artifact_title": "Loop314 Current-HEAD Runtime Dispatch",
+    "validate_artifact": "PASS",
+    "render_artifact": "PASS"
+  },
+  "gates": {
+    "safe_loss_flip": "RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD",
+    "golden18": "APPROVAL_NOT_OPEN",
+    "full375": "IN_PROGRESS / NOT_APPROVAL",
+    "bounded1200": "IN_PROGRESS / NOT_APPROVAL",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

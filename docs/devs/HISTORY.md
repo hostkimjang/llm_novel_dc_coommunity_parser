@@ -1,5 +1,18 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop314 current-HEAD runtime dispatch
+
+- Loop313 이후 기존 Loop288/Loop302 background 프로세스가 현 HEAD `64864278` 증거가 아니게 되어 stale/mixed evidence로 분리하고 중단했다.
+- 새 Loop314 경로로 N5, golden18, full375, completed-source bounded1200을 발주했다.
+- N5는 PID `111032`, planned runs `15`, report 시점 result JSON `0/15`다.
+- full375는 PID `75828`, run `20260702_204042_346798`, input `375`, completed `0`이다.
+- bounded1200은 PID `9908`, run `20260702_204042_443948`, input `1200`, completed `1`이다.
+- golden18은 PID `43208`, run `20260702_204042_371537`, input `18`, completed `0`이다.
+- 모든 새 런은 `mcp_health_include_search=true`, `mcp_health_light_mode=false`로 시작했다.
+- `tools/run_independent_plan.py`를 추가해 N5 plan runner를 안정화했다.
+- Report는 `docs/devs/loop_reports/LOOP_314_REPORT_20260702.md`, state는 `docs/devs/loop314_current_head_runtime_dispatch_20260702.json`이다.
+- Gate는 N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`, golden18 `APPROVAL_NOT_OPEN`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop313 safe-loss alias contract repair
 
 - Loop312 `repair_safe_loss=34` 중 일반화 가능한 alias 계약 일부를 코드로 전환했다.

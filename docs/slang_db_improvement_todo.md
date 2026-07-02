@@ -1,5 +1,15 @@
 # Slang DB Improvement TODO
 
+## 2026-07-02 Loop314 current-HEAD runtime / slang caveat
+
+- [x] Loop313 이후 이전 N5/full375/bounded/golden18 증거를 stale 또는 mixed evidence로 분리했다.
+- [x] 현 HEAD `64864278` 기준 N5/golden18/full375/bounded1200을 새 경로로 발주했다.
+- [x] golden18은 계속 rows `18`이고 `11660237`, `11698880`을 포함한다.
+- [x] 새 full375/bounded/golden18/N5 first manifest는 `mcp_health_include_search=true`, `mcp_health_light_mode=false`다.
+- [ ] N5 result JSON `15/15` 완료 후 slang/alias 안정성 caveat를 새 flip 분석으로 갱신한다. 현재 Loop314 `0/15`.
+- [ ] golden18 완료 후 6/28 golden GO를 현 HEAD 18행 기준으로 대체 가능한지 다시 판단한다.
+- Gate: slang DB write-back 아님, N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`, golden18 approval `NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop313 safe-loss alias contract / slang caveat
 
 - [x] `악살싶` canonical title을 `악당은 살고 싶다`로 정정했다.
