@@ -18,6 +18,14 @@ class RegressionSafeWorkBridgeContractTest(unittest.TestCase):
         self.assertIn("_can_promote_title_after_semantic_no_work", batch_alias_source)
         self.assertIn("_can_promote_title_after_semantic_no_work", safe_single_source)
 
+    def test_shared_work_bridge_owns_alias_and_character_setting_contracts(self):
+        shared_source = inspect.getsource(AgenticPipeline._post_discusses_work_as_work)
+        alias_source = inspect.getsource(AgenticPipeline._has_verified_contextual_alias_work_bridge)
+
+        self.assertIn("_has_deliberated_character_setting_work_convergence", shared_source)
+        self.assertIn("source=\"verified_contextual_alias_work_bridge\"", alias_source)
+        self.assertIn("_post_discusses_work_as_work", alias_source)
+
 
 if __name__ == "__main__":
     unittest.main()

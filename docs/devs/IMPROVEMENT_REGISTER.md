@@ -1,5 +1,35 @@
 # Improvement Register
 
+## IMP-20260702-315 - character-setting bridge shared contract
+
+- Status: Implemented / unit contract only / review locked
+- Loop: 315
+- Problem:
+  - Loop312에서 `11669933`의 `회귀수선전` safe-loss repair가 확인됐지만, 단순 alias registry로 풀면 wrong-work release 위험이 있다.
+  - Loop314 대형 런은 아직 partial 상태라 approval 근거로 쓸 수 없다.
+- Change:
+  - `11669933` 원문 character/setting cluster를 `_has_deliberated_character_setting_work_convergence(...)`와 shared `_post_discusses_work_as_work(...)` 계약 테스트로 고정했다.
+  - 충돌 hidden work cluster 음성 control을 추가했다.
+  - shared work bridge가 character-setting bridge와 verified alias wrapper를 계속 소유하는 소스 계약 테스트를 추가했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_315_REPORT_20260702.md`
+  - state `docs/devs/loop315_character_setting_bridge_contract_20260702.json`
+  - source verdict `docs/devs/loop312_safe_loss_source_native_verdicts_delta_15.json#post_id=11669933`
+  - tests `tests/test_title_lead_search_inferred_guard.py`
+  - tests `tests/test_regression_safe_work_bridge_contract.py`
+- Result:
+  - py_compile PASS
+  - targeted `3` PASS
+  - related promotion/work-bridge bundle `32` PASS
+- Gate:
+  - character bridge `GO_UNIT_CONTRACT_ONLY`
+  - targeted runtime replay `NOT_RUN`
+  - residual closure `NOT_COUNTED`
+  - safe-loss N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-314 - current-HEAD runtime dispatch and plan runner
 
 - Status: Dispatched / background running / review locked

@@ -2,6 +2,20 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop315 TODO
+
+- 상태 업데이트: `11669933`의 `회귀수선전` character-setting bridge 후보를 shared work bridge 계약 테스트로 고정했다. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop315 TODO:
+  - [x] Loop314 대형 런을 background 감시로 내리고 approval 대기 흐름을 중단했다.
+  - [x] `중경계/서휼/해방상제` positive bridge test를 추가했다.
+  - [x] 충돌 hidden work cluster negative control을 추가했다.
+  - [x] `_post_discusses_work_as_work(...)`가 character-setting bridge와 verified alias wrapper를 계속 소유하는 계약 테스트를 추가했다.
+  - [x] py_compile, targeted `3`, related `32` tests PASS를 기록했다.
+  - [ ] targeted runtime replay 전까지 Loop315를 residual closure로 세지 않는다.
+  - [ ] N5 result JSON `15/15` 완료 후 current HEAD flip rate를 갱신한다.
+  - [ ] golden18 완료 전 golden approval을 열지 않는다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 regression-safe grounding Loop313 TODO
 
 - 상태 업데이트: Loop312 `repair_safe_loss=34` 중 `악살싶` canonical title과 `전독시` stable alias를 shared known-title abbreviation 계약으로 전환했다. Goal은 `ACTIVE / NOT_COMPLETE`.
@@ -12,7 +26,7 @@
   - [x] `악신총애`는 동음 후보 위험 때문에 registry 추가를 보류했다.
   - [x] focused/related tests `266` PASS와 Data Analytics validate/render PASS를 기록했다.
   - [ ] Loop313은 `GO_UNIT`이므로 targeted runtime replay 전까지 residual closure로 세지 않는다.
-  - [ ] `회귀수선전` character-setting bridge는 별도 shared bridge 계약 후보로 검토한다.
+  - [x] `회귀수선전` character-setting bridge는 Loop315에서 shared bridge 계약 테스트로 고정했다.
   - [ ] N5 result JSON `15/15` 완료 후 current HEAD flip rate를 갱신한다. 현재는 `1/15`.
   - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 

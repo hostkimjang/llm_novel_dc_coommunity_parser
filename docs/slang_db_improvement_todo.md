@@ -16,7 +16,7 @@
 - [x] `전독시` -> `전지적 독자 시점`을 known-title abbreviation에 추가했다.
 - [x] `전독시 영화 나왔었지` 같은 adaptation 논의를 work-cue로 인정했다.
 - [x] `악신총애`는 동음 후보 위험 때문에 slang/alias registry 추가를 보류했다.
-- [ ] `회귀수선전`은 character-setting bridge 계약 후보로 별도 검토한다.
+- [x] `회귀수선전`은 Loop315에서 character-setting bridge 계약 테스트로 고정했다. slang/alias registry write-back은 하지 않는다.
 - [ ] N5 result JSON `15/15` 완료 후 slang/alias 안정성 caveat를 새 flip 분석으로 갱신한다. 현재 `1/15`.
 - Gate: slang DB write-back 아님, code/unit contract `GO_UNIT`, runtime replay `NOT_RUN`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
 

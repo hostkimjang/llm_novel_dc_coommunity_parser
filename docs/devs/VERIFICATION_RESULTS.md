@@ -1,5 +1,28 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop315 character-setting bridge contract
+
+- 범위: Loop312 `11669933`의 `회귀수선전` character-setting bridge 후보를 shared work bridge 계약 테스트로 고정한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_315_REPORT_20260702.md`
+  - state `docs\devs\loop315_character_setting_bridge_contract_20260702.json`
+  - tests `tests\test_title_lead_search_inferred_guard.py`
+  - tests `tests\test_regression_safe_work_bridge_contract.py`
+- Evidence:
+  - source-native verdict `docs\devs\loop312_safe_loss_source_native_verdicts_delta_15.json#post_id=11669933`
+  - source row `out\expert_result_20260501_010427_282685_checkpoint.jsonl#post_id=11669933`
+  - bridge terms `중경계`, `서휼`, `해방상제`
+- Verification:
+  - `py_compile src\llm_batch\agentic_pipeline.py tests\test_title_lead_search_inferred_guard.py tests\test_regression_safe_work_bridge_contract.py` -> PASS
+  - targeted character/source-contract tests `3` -> PASS
+  - related promotion/work-bridge bundle `32` -> PASS
+- Runtime snapshot:
+  - full375 Loop314 partial `3/1/2/0`, `NOT_APPROVAL`
+  - bounded1200 Loop314 partial `4/0/4/0`, `NOT_APPROVAL`
+  - golden18 Loop314 partial `1/1/0/0`, `APPROVAL_NOT_OPEN`
+  - N5 Loop314 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`
+- Gate: character bridge `GO_UNIT_CONTRACT_ONLY`, runtime replay `NOT_RUN`, residual closure `NOT_COUNTED`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop314 current-HEAD runtime dispatch
 
 - 범위: Loop313 이후 stale/mixed background 증거를 current HEAD `64864278` 경로로 재발주한다.
@@ -42,7 +65,7 @@
   - Data Analytics artifact validate/render -> PASS
 - Deferred:
   - `악신총애`는 동음 후보 위험 때문에 registry 추가 보류
-  - `회귀수선전`은 character-setting bridge 계약 후보로 보류
+  - `회귀수선전`은 Loop313 시점에 보류했고 Loop315에서 character-setting bridge 계약 테스트로 고정
 - Gate: code/unit contract `GO_UNIT`, runtime replay `NOT_RUN`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED` result `1/15`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-02 Loop312 safe-loss source-native 다음 slice

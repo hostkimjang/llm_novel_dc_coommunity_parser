@@ -2163,6 +2163,187 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertIn("deliberated_character_setting_convergence", acceptance["notes"])
         self.assertEqual(pipeline._correct_title_final(title, ctx), title)
 
+    def test_hoegwi_suseonjeon_character_setting_convergence_uses_shared_work_bridge(self):
+        pipeline = build_pipeline()
+        title = "회귀수선전"
+        post = PostInput(
+            post_id=11669933,
+            title="중경계에서 첨 만난게 해방상제임?",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="text", text="서휼 따라가서 지하에서 버티는 시합하다가 만난거"),
+            ],
+            comments=["그거 미래의 주인공", "ㅇㅇ"],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=post.comments,
+        )
+        ctx.search_results = [
+            {
+                "title": "회귀수선전/등장인물/수계 - 나무위키",
+                "url": "https://namu.wiki/w/%ED%9A%8C%EA%B7%80%EC%88%98%EC%84%A0%EC%A0%84/%EB%93%B1%EC%9E%A5%EC%9D%B8%EB%AC%BC/%EC%88%98%EA%B3%84",
+                "content": "회귀수선전 등장인물 문서. 서휼, 해방상제, 중경계 관련 설정.",
+            },
+            {
+                "title": "회귀수선전 - 나무위키",
+                "url": "https://namu.wiki/w/%ED%9A%8C%EA%B7%80%EC%88%98%EC%84%A0%EC%A0%84",
+                "content": "한국의 선협 웹소설 회귀수선전. 중경계와 해방상제 설정이 언급된다.",
+            },
+        ]
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "primary_domain": "novel_literature",
+                    "intent": "discuss_work",
+                    "target_kind": "work",
+                }
+            },
+        )
+        ctx.set_expert_output(
+            ExpertType.SYNTHESIZER,
+            {
+                "confidence_assessment": {
+                    "is_about_identified_work": True,
+                    "confidence": "Max",
+                },
+                "hidden_references": [
+                    {
+                        "reference_type": "character_setting",
+                        "matched_to": "회귀수선전 - 서휼/해방상제/중경계",
+                    }
+                ],
+            },
+        )
+        final_decision = {
+            "official_novel_title": title,
+            "official_title": title,
+            "suspected_titles": [{"title": title, "confidence": "High"}],
+            "_deliberation": {
+                "jury_votes": {"relevant": 3, "irrelevant": 0},
+                "final_reasoning": "중경계, 서휼, 해방상제 설정은 회귀수선전 인물/세계관으로 수렴한다.",
+            },
+        }
+        vf_result = {
+            "is_relevant": False,
+            "grounding_check": {
+                "anchor_found": "setting_mention",
+                "anchor_text": "중경계, 서휼, 해방상제",
+            },
+            "relation_judgment": {
+                "relation_type": "setting_work_link",
+                "discussion_target": "specific_work",
+                "promotion_decision": "hold",
+            },
+        }
+
+        self.assertTrue(
+            pipeline._has_deliberated_character_setting_work_convergence(
+                ctx,
+                title,
+                vf_result=vf_result,
+                final_decision=final_decision,
+            )
+        )
+        self.assertTrue(
+            pipeline._post_discusses_work_as_work(
+                ctx,
+                title,
+                final_decision=final_decision,
+                verification_result=vf_result,
+            )
+        )
+
+    def test_character_setting_convergence_rejects_conflicting_hidden_work_cluster(self):
+        pipeline = build_pipeline()
+        title = "회귀수선전"
+        post = PostInput(
+            post_id=11669933,
+            title="중경계에서 첨 만난게 해방상제임?",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="text", text="서휼 따라가서 지하에서 버티는 시합하다가 만난거"),
+            ],
+            comments=["그거 미래의 주인공"],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=post.comments,
+        )
+        ctx.search_results = [
+            {
+                "title": "회귀수선전 - 나무위키",
+                "url": "https://namu.wiki/w/%ED%9A%8C%EA%B7%80%EC%88%98%EC%84%A0%EC%A0%84",
+                "content": "회귀수선전 작품 소개.",
+            },
+            {
+                "title": "회귀수선전/등장인물",
+                "url": "https://namu.wiki/w/example",
+                "content": "작품 등장인물 소개.",
+            },
+        ]
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "primary_domain": "novel_literature",
+                    "intent": "discuss_work",
+                    "target_kind": "work",
+                }
+            },
+        )
+        ctx.set_expert_output(
+            ExpertType.SYNTHESIZER,
+            {
+                "confidence_assessment": {
+                    "is_about_identified_work": True,
+                    "confidence": "Max",
+                },
+                "hidden_references": [
+                    {
+                        "reference_type": "character_setting",
+                        "matched_to": "삼천세계 - 중경계/해방상제",
+                    }
+                ],
+            },
+        )
+        final_decision = {
+            "official_novel_title": title,
+            "official_title": title,
+            "_deliberation": {
+                "jury_votes": {"relevant": 3, "irrelevant": 0},
+                "final_reasoning": "회귀수선전으로 수렴한다.",
+            },
+        }
+        vf_result = {
+            "grounding_check": {"anchor_found": "setting_mention"},
+            "relation_judgment": {
+                "relation_type": "setting_work_link",
+                "discussion_target": "specific_work",
+                "promotion_decision": "hold",
+            },
+        }
+
+        self.assertFalse(
+            pipeline._has_deliberated_character_setting_work_convergence(
+                ctx,
+                title,
+                vf_result=vf_result,
+                final_decision=final_decision,
+            )
+        )
+        self.assertFalse(
+            pipeline._post_discusses_work_as_work(
+                ctx,
+                title,
+                final_decision=final_decision,
+                verification_result=vf_result,
+            )
+        )
+
     def test_contextual_alias_official_lock_allows_comment_abbrev_and_short_names(self):
         pipeline = build_pipeline()
         title = "탐식의 재림"

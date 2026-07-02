@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop315 character-setting bridge contract
+
+- Loop314 full375/bounded1200/golden18/N5는 완료 대기 대신 background 감시로 내렸다.
+- Loop312 source-native verdict의 `11669933` 후보를 shared character-setting bridge 계약으로 전환했다.
+- 원문은 `중경계에서 첨 만난게 해방상제임?`, 본문 `서휼 따라가서 지하에서 버티는 시합하다가 만난거`, 댓글 `그거 미래의 주인공`이다.
+- `회귀수선전`은 단순 alias registry가 아니라 `중경계/서휼/해방상제` character-setting convergence로만 release되도록 positive/negative 계약 테스트를 추가했다.
+- `_post_discusses_work_as_work(...)`가 character-setting bridge와 verified alias wrapper를 계속 소유하는 소스 계약 테스트를 추가했다.
+- 검증은 py_compile PASS, targeted `3` PASS, related promotion/work-bridge bundle `32` PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_315_REPORT_20260702.md`, state는 `docs/devs/loop315_character_setting_bridge_contract_20260702.json`이다.
+- Gate는 character bridge `GO_UNIT_CONTRACT_ONLY`, runtime replay `NOT_RUN`, residual closure `NOT_COUNTED`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop314 current-HEAD runtime dispatch
 
 - Loop313 이후 기존 Loop288/Loop302 background 프로세스가 현 HEAD `64864278` 증거가 아니게 되어 stale/mixed evidence로 분리하고 중단했다.
@@ -18,7 +29,7 @@
 - Loop312 `repair_safe_loss=34` 중 일반화 가능한 alias 계약 일부를 코드로 전환했다.
 - `KNOWN_TITLE_ABBREVIATIONS`에서 `악살싶` canonical title을 `악당은 살고 싶다`로 정정하고 `전독시 -> 전지적 독자 시점`을 추가했다.
 - curated known-title abbreviation work-cue에 `영화/극장판/실사화/애니화/드라마화/원작/각색`을 추가해 adaptation 논의를 작품 논의로 인정했다.
-- `악신총애`는 동음 후보 위험 때문에 전역 registry 추가를 보류했고, `회귀수선전`은 character-setting bridge 계약 후보로 남겼다.
+- `악신총애`는 동음 후보 위험 때문에 전역 registry 추가를 보류했고, `회귀수선전`은 당시 character-setting bridge 계약 후보로 남긴 뒤 Loop315에서 shared bridge 계약 테스트로 고정했다.
 - 검증은 py_compile PASS, focused alias `3` PASS, promotion/work-bridge `23` PASS, related bundle `266` PASS, Data Analytics validate/render PASS다.
 - Report는 `docs/devs/loop_reports/LOOP_313_REPORT_20260702.md`, state는 `docs/devs/loop313_safe_loss_alias_contract_repair_20260702.json`이다.
 - Gate는 code/unit contract `GO_UNIT`, runtime replay `NOT_RUN`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED` result `1/15`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.

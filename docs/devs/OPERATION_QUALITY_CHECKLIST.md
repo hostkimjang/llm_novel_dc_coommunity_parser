@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop315 character-setting bridge quality gate
+
+- 근거:
+  - [x] Loop312 `11669933` source-native verdict를 확인했다.
+  - [x] `중경계/서휼/해방상제` cluster를 `회귀수선전` character-setting bridge로만 release하도록 positive test를 추가했다.
+  - [x] 충돌 hidden work cluster 음성 control을 추가했다.
+  - [x] shared work bridge ownership contract를 추가했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_315_REPORT_20260702.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop315_character_setting_bridge_contract_20260702.json`.
+- 품질 게이트:
+  - [x] unit contract를 runtime replay 또는 full approval로 쓰지 않는다.
+  - [x] Loop314 partial background progress를 approval 근거로 쓰지 않는다.
+  - [x] `회귀수선전`을 전역 alias registry release로 풀지 않는다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop314 current-HEAD dispatch quality gate
 
 - 근거:

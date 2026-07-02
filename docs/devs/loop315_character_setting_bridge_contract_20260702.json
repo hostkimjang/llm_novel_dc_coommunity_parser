@@ -1,0 +1,110 @@
+{
+  "loop": 315,
+  "date": "2026-07-02",
+  "base_head": "11607212",
+  "status": "GO_UNIT_CONTRACT_ONLY",
+  "goal_status": "ACTIVE_NOT_COMPLETE",
+  "summary_ko": "Loop314 대형 런은 background 감시로 내리고, Loop312의 11669933 회귀수선전 character-setting bridge 후보를 shared work bridge 계약 테스트로 고정했다.",
+  "source_native_evidence": {
+    "post_id": 11669933,
+    "selected_title": "회귀수선전",
+    "action": [
+      "repair_safe_loss",
+      "character_bridge_contract_required"
+    ],
+    "verdict_path": "docs/devs/loop312_safe_loss_source_native_verdicts_delta_15.json#post_id=11669933",
+    "source_path": "out/expert_result_20260501_010427_282685_checkpoint.jsonl#post_id=11669933",
+    "source_summary": {
+      "title": "중경계에서 첨 만난게 해방상제임?",
+      "body": "서휼 따라가서 지하에서 버티는 시합하다가 만난거",
+      "comments": [
+        "그거 미래의 주인공",
+        "ㅇㅇ"
+      ],
+      "bridge_terms": [
+        "중경계",
+        "서휼",
+        "해방상제"
+      ]
+    }
+  },
+  "code_contract": {
+    "shared_predicate": "AgenticPipeline._post_discusses_work_as_work",
+    "character_setting_predicate": "AgenticPipeline._has_deliberated_character_setting_work_convergence",
+    "verified_alias_wrapper": "AgenticPipeline._has_verified_contextual_alias_work_bridge",
+    "source_changes": [
+      "tests/test_title_lead_search_inferred_guard.py",
+      "tests/test_regression_safe_work_bridge_contract.py"
+    ],
+    "runtime_code_changed": false
+  },
+  "verification": [
+    {
+      "command": ".venv312\\Scripts\\python.exe -m py_compile src\\llm_batch\\agentic_pipeline.py tests\\test_title_lead_search_inferred_guard.py tests\\test_regression_safe_work_bridge_contract.py",
+      "status": "PASS"
+    },
+    {
+      "command": ".venv312\\Scripts\\python.exe -m unittest targeted 3 tests -v",
+      "status": "PASS",
+      "tests": 3
+    },
+    {
+      "command": ".venv312\\Scripts\\python.exe -m unittest regression_safe_work_bridge + promotion_gate + related character/alias tests -v",
+      "status": "PASS",
+      "tests": 32
+    }
+  ],
+  "loop314_background_snapshot": {
+    "full375": {
+      "pid": 75828,
+      "run_id": "20260702_204042_346798",
+      "completed": 3,
+      "flushed": 1,
+      "pending": 2,
+      "failed": 0,
+      "include_search": true,
+      "light": false,
+      "gate": "NOT_APPROVAL"
+    },
+    "bounded1200_completed_source": {
+      "pid": 9908,
+      "run_id": "20260702_204042_443948",
+      "completed": 4,
+      "flushed": 0,
+      "pending": 4,
+      "failed": 0,
+      "include_search": true,
+      "light": false,
+      "gate": "NOT_APPROVAL"
+    },
+    "golden18": {
+      "pid": 43208,
+      "run_id": "20260702_204042_371537",
+      "completed": 1,
+      "flushed": 1,
+      "pending": 0,
+      "failed": 0,
+      "include_search": true,
+      "light": false,
+      "gate": "APPROVAL_NOT_OPEN"
+    },
+    "safe_loss_n5": {
+      "pid": 111032,
+      "gate": "RUNNING_BACKGROUND_NOT_ANALYZED_CURRENT_HEAD"
+    }
+  },
+  "gates": {
+    "targeted_runtime_replay": "NOT_RUN",
+    "residual_closure": "NOT_COUNTED",
+    "safe_loss_flip": "RUNNING_BACKGROUND_NOT_ANALYZED_CURRENT_HEAD",
+    "search_recovery": "P0_OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE_NOT_COMPLETE"
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_315_REPORT_20260702.md",
+    "state": "docs/devs/loop315_character_setting_bridge_contract_20260702.json"
+  }
+}

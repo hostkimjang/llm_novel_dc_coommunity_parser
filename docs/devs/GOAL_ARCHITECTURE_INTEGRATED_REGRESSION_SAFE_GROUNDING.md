@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop315 Addendum - character-setting bridge contract
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop315는 approval이 아니라 Loop312 `11669933`의 `회귀수선전` 후보를 shared work bridge 계약으로 고정한 `GO_UNIT_CONTRACT_ONLY` 회차다.
+- 목적: 대형 run 완료 대기를 background 감시로 내리고, `중경계/서휼/해방상제`처럼 작품 설정/인물 cluster로 수렴하는 safe-loss를 단순 alias registry가 아니라 character-setting bridge로만 release하게 한다.
+- 코드 변경: runtime code는 바꾸지 않았다. 기존 `_post_discusses_work_as_work(...)`가 `_has_deliberated_character_setting_work_convergence(...)`를 경유하는 배선을 positive/negative/소스 계약 테스트로 고정했다.
+- Evidence: report `docs/devs/loop_reports/LOOP_315_REPORT_20260702.md`, state `docs/devs/loop315_character_setting_bridge_contract_20260702.json`, verdict `docs/devs/loop312_safe_loss_source_native_verdicts_delta_15.json#post_id=11669933`.
+- Verification: py_compile PASS, targeted `3` PASS, related promotion/work-bridge bundle `32` PASS.
+- Background: Loop314 full375 `3/1/2/0`, bounded1200 `4/0/4/0`, golden18 `1/1/0/0`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`; 모두 approval 근거가 아니다.
+- Gate: character bridge `GO_UNIT_CONTRACT_ONLY`, runtime replay `NOT_RUN`, residual closure `NOT_COUNTED`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop314 Addendum - current-HEAD runtime dispatch
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop314는 approval이 아니라 Loop313 이후 stale/mixed runtime 증거를 current HEAD 경로로 다시 분리한 회차다.

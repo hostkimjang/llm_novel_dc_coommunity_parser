@@ -1,5 +1,32 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop315 character-setting bridge contract 체크
+
+- [x] Loop314 대형 런을 완료 대기 경로가 아니라 background 감시로 유지했다.
+  - full375 PID `75828`, completed/flushed/pending/failed `3/1/2/0`
+  - bounded1200 PID `9908`, completed/flushed/pending/failed `4/0/4/0`
+  - golden18 PID `43208`, completed/flushed/pending/failed `1/1/0/0`
+  - N5 PID `111032`, `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD`
+- [x] Loop312 `11669933` source-native verdict를 shared character-setting bridge 계약으로 전환했다.
+  - selected title `회귀수선전`
+  - bridge terms `중경계`, `서휼`, `해방상제`
+  - verdict `repair_safe_loss + character_bridge_contract_required`
+- [x] 계약 테스트를 추가했다.
+  - positive: `회귀수선전` character-setting convergence가 `_post_discusses_work_as_work(...)`를 통과
+  - negative: hidden work cluster가 충돌하면 통과하지 않음
+  - source contract: shared work bridge가 character-setting bridge와 verified alias wrapper를 계속 소유
+- [x] 검증을 실행했다.
+  - py_compile PASS
+  - targeted `3` PASS
+  - related promotion/work-bridge bundle `32` PASS
+- [x] 산출물을 기록했다.
+  - report `docs\devs\loop_reports\LOOP_315_REPORT_20260702.md`
+  - state `docs\devs\loop315_character_setting_bridge_contract_20260702.json`
+- [ ] targeted runtime replay 전까지 Loop315를 residual closure로 세지 않는다.
+- [ ] N5 result JSON `15/15` 완료 전 current HEAD flip rate를 갱신하지 않는다.
+- [ ] golden18 완료 전 golden approval을 열지 않는다.
+- Gate: character bridge `GO_UNIT_CONTRACT_ONLY`, runtime replay `NOT_RUN`, background runs `NOT_APPROVAL`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop314 current-HEAD runtime dispatch 체크
 
 - [x] Loop313 이후 이전 Loop288/Loop302 프로세스를 stale/mixed evidence로 분리했다.
