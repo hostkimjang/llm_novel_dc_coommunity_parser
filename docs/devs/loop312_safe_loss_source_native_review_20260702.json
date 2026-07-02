@@ -1,0 +1,58 @@
+{
+  "loop": 312,
+  "date": "2026-07-02",
+  "scope": "safe_loss_resolved_to_null source-native next slice",
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json",
+  "delta_verdicts": "docs/devs/loop312_safe_loss_source_native_verdicts_delta_15.json",
+  "cumulative_verdicts": "docs/devs/loop312_safe_loss_source_native_verdicts_cumulative_59.json",
+  "delta": {
+    "reviewed_rows": 15,
+    "labels": {
+      "HOLD": 5,
+      "REPROCESS": 7,
+      "ACCEPT": 3
+    },
+    "actions": {
+      "native_image_or_media_boundary_review_required": 1,
+      "native_image_or_source_review_required": 4,
+      "repair_safe_loss": 7,
+      "title_variant_canonicalization_required": 1,
+      "character_bridge_contract_required": 1,
+      "exclude_from_regression_count_after_gate_wiring": 3
+    }
+  },
+  "cumulative": {
+    "reviewed_rows": 59,
+    "batch_rows": 147,
+    "unreviewed_rows": 88,
+    "labels": {
+      "ACCEPT": 9,
+      "REPROCESS": 34,
+      "HOLD": 16
+    },
+    "actions": {
+      "exclude_from_regression_count_after_gate_wiring": 9,
+      "repair_safe_loss": 34,
+      "native_image_or_source_review_required": 10,
+      "native_web_or_source_review_required": 2,
+      "title_variant_canonicalization_required": 3,
+      "preserve_hold_boundary": 1,
+      "native_image_or_character_bridge_review_required": 1,
+      "canonical_title_variant_policy_required": 1,
+      "native_image_or_media_boundary_review_required": 1,
+      "character_bridge_contract_required": 1
+    }
+  },
+  "gates": {
+    "source_native_review": "REVIEW-LOCKED / PARTIAL",
+    "runtime_replay": "NOT_RUNTIME_VERIFIED",
+    "safe_loss_n5": "RUNNING_BACKGROUND / NOT_ANALYZED",
+    "full375": "IN_PROGRESS / NOT_APPROVAL",
+    "bounded_completed_source": "IN_PROGRESS / NOT_APPROVAL",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

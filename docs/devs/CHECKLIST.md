@@ -1,5 +1,26 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop312 safe-loss source-native next slice 체크
+
+- [x] Loop310 이후 남은 `safe_loss_resolved_to_null` 미검토분에서 15건을 추가 판정했다.
+  - delta labels `REPROCESS=7`, `ACCEPT=3`, `HOLD=5`
+  - delta actions `repair_safe_loss=7`, `exclude_from_regression_count_after_gate_wiring=3`
+- [x] 누적 verdict와 summary를 생성했다.
+  - cumulative `59/147`, unreviewed `88`
+  - cumulative labels `REPROCESS=34`, `ACCEPT=9`, `HOLD=16`
+  - validation issues `0`
+- [x] 대형/N5 background 대기를 approval로 쓰지 않고 residual queue를 실제로 줄였다.
+  - N5 result JSON `0/15`, `RUNNING_BACKGROUND / NOT_ANALYZED`
+  - full375/bounded `IN_PROGRESS / NOT_APPROVAL`
+- [x] 산출물을 기록했다.
+  - delta `docs\devs\loop312_safe_loss_source_native_verdicts_delta_15.json`
+  - cumulative `docs\devs\loop312_safe_loss_source_native_verdicts_cumulative_59.json`
+  - state `docs\devs\loop312_safe_loss_source_native_review_20260702.json`
+  - report `docs\devs\loop_reports\LOOP_312_REPORT_20260702.md`
+- [ ] `repair_safe_loss=34`는 shared gate 또는 targeted runtime replay 전까지 residual closure로 세지 않는다.
+- [ ] `HOLD=16`은 native image/web/source/canonical policy 확인 전까지 닫지 않는다.
+- Gate: source-native review `REVIEW-LOCKED / PARTIAL`, runtime replay `NOT_RUNTIME_VERIFIED`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop311 current HEAD runtime refresh dispatch 체크
 
 - [x] search shard live health를 재확인했다.

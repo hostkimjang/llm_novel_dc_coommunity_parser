@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop312 safe-loss source-native 다음 slice
+
+- Loop310 이후 남은 `safe_loss_resolved_to_null` 미검토분에서 15건을 추가 source-native review로 판정했다.
+- Delta 결과는 `REPROCESS=7`, `ACCEPT=3`, `HOLD=5`다.
+- 누적 결과는 reviewed `59/147`, unreviewed `88`, validation issues `0`이다.
+- 누적 labels는 `REPROCESS=34`, `ACCEPT=9`, `HOLD=16`이다.
+- N5 background runner는 result JSON `0/15` 상태라 flip rate 갱신 근거가 아니다.
+- full375/bounded1200은 계속 `IN_PROGRESS / NOT_APPROVAL`이며 search degraded/timeout blocker가 남아 있다.
+- Report는 `docs/devs/loop_reports/LOOP_312_REPORT_20260702.md`, state는 `docs/devs/loop312_safe_loss_source_native_review_20260702.json`이다.
+- Gate는 source-native review `REVIEW-LOCKED / PARTIAL`, runtime replay `NOT_RUNTIME_VERIFIED`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop311 current HEAD runtime refresh dispatch
 
 - search shard `/api/health`를 live로 다시 확인했다. `127.0.0.1:3333`, `127.0.0.1:3334` 모두 HTTP 200이다.

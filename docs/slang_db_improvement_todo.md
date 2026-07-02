@@ -1,5 +1,16 @@
 # Slang DB Improvement TODO
 
+## 2026-07-02 Loop312 safe-loss source-native / slang caveat
+
+- [x] `safe_loss_resolved_to_null` source-native review가 `59/147`까지 진행됐다.
+  - delta `REPROCESS=7`, `ACCEPT=3`, `HOLD=5`
+  - cumulative `REPROCESS=34`, `ACCEPT=9`, `HOLD=16`
+- [x] `악살싶`, `전독시`, `기계공주`, `악신총애` 등 직접 약칭 row는 repair 후보로 분리했다.
+- [x] multi-work row는 단일 slang/alias public title로 승격하지 않고 `ACCEPT`/after-hold preferred로 분리했다.
+- [ ] `repair_safe_loss=34` 중 slang/alias registry로 일반화 가능한 항목만 shared gate/runtime replay 후보로 올린다.
+- [ ] N5 result JSON `15/15` 완료 후 slang/alias 안정성 caveat를 새 flip 분석으로 갱신한다.
+- Gate: slang DB write-back 아님, N5 `RUNNING_BACKGROUND / NOT_ANALYZED`, source-native review `REVIEW-LOCKED / PARTIAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop311 runtime refresh / slang caveat
 
 - [x] search shard `/api/health`는 `3333/3334` 모두 HTTP 200으로 재확인했다.

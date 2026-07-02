@@ -2,6 +2,22 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-02 regression-safe grounding Loop312 TODO
+
+- 상태 업데이트: `safe_loss_resolved_to_null` source-native review가 `59/147`까지 진행됐다. N5는 아직 `0/15`라 flip rate 갱신 근거가 아니다. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop312 TODO:
+  - [x] 다음 15건을 추가 판정했다.
+    - delta `REPROCESS=7`, `ACCEPT=3`, `HOLD=5`
+  - [x] cumulative summary를 생성했다.
+    - reviewed/unreviewed `59/88`
+    - validation issues `0`
+    - cumulative `REPROCESS=34`, `ACCEPT=9`, `HOLD=16`
+  - [ ] `repair_safe_loss=34` 중 일반화 가능한 alias/title/character bridge를 shared gate 또는 targeted runtime replay로 전환한다.
+  - [ ] `HOLD=16`은 native image/web/source/canonical policy 확인 전까지 닫지 않는다.
+  - [ ] 남은 미검토 `88` row를 계속 source-native/blind judge로 줄인다.
+  - [ ] N5 result JSON `15/15` 완료 후 current HEAD flip rate를 갱신한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 regression-safe grounding Loop311 TODO
 
 - 상태 업데이트: search shard health는 회복됐고 N5 plan은 background로 발주됐다. 그러나 result JSON은 아직 `0/15`라 flip rate는 갱신되지 않았다. Goal은 `ACTIVE / NOT_COMPLETE`.
