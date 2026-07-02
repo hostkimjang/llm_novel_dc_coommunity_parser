@@ -1,5 +1,17 @@
 # Slang DB Improvement TODO
 
+## 2026-07-02 Loop297 background health / alias gate caveat
+
+- [x] golden18 search-included replay가 아직 alias/slang 품질 승인 근거가 아님을 확인했다.
+  - manifest snapshot `18/16/12/4/0`
+  - `large_run_complete=false`
+  - `mcp_health_light_mode=true`
+  - blockers `manifest_light_health_only`, `search_degraded_observed`
+- [x] `11660237`, `11698880` golden 편입은 유지하되, replay 완료 전 6/28 golden GO를 대체하지 않는다.
+- [x] search degraded 복구 전 `promotion_blocked`는 `search-blind conditional`로만 해석한다.
+- [ ] golden18 완료 후 alias/slang 안정성 caveat를 다시 갱신한다.
+- Gate: slang DB write-back 아님, golden18 approval `NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop296 safe-loss N5 wrapper / alias 안정성 후속
 
 - [x] 진짜 `N>=5` flip probe wrapper를 만들었다.

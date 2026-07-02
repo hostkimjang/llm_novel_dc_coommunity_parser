@@ -1,5 +1,29 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop297 background health audit 체크
+
+- [x] background run 3개를 최신 manifest/checkpoint/result/log 기준으로 재감사했다.
+  - full375 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop297_full375_search_nonlight_current_health_audit.json`
+  - bounded1200 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop297_bounded1200_search_nonlight_current_health_audit.json`
+  - golden18 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop297_golden18_search_included_current_health_audit.json`
+- [x] latest manifest snapshot을 확인했다.
+  - full375 `375/53/51/2/0`, `large_run_complete=false`
+  - bounded1200 `1200/88/77/11/0`, `large_run_complete=false`
+  - golden18 `18/16/12/4/0`, `large_run_complete=false`, `mcp_health_light_mode=true`
+- [x] search degraded P0가 아직 닫히지 않았음을 확인했다.
+  - full375 blocker `search_degraded_observed`
+  - bounded1200 blocker `search_degraded_observed`
+  - golden18 blockers `manifest_light_health_only`, `search_degraded_observed`
+- [x] `publication_contract_convergence=GO`를 approval 근거로 오해하지 않도록 범위를 분리했다.
+  - 현재 flushed/result rows의 contract 위반 `0`만 의미한다.
+  - semantic approval, hard-hold relaxation, full scan approval을 열지 않는다.
+- [x] 보고서 작성 완료.
+  - `docs\devs\loop_reports\LOOP_297_REPORT_20260702.md`
+- [ ] full375 완료 후 전수 375 collateral diff를 상시 gate로 재평가한다.
+- [ ] bounded1200 완료 후 completed-source approval 후보를 다시 감사한다.
+- [ ] golden18 완료 후 golden gate를 다시 평가한다.
+- Gate: background runs `IN_PROGRESS`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, full collateral approval `NOT_OPEN`, golden18 approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop296 safe-loss N5 독립 실행 wrapper 체크
 
 - [x] Loop294 invalid 원인을 도구 계약으로 막았다.

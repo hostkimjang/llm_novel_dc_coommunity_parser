@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop297 background health quality gate
+
+- 근거:
+  - [x] full375, bounded1200, golden18 background run을 완료 전 approval 근거로 쓰지 않고 health audit로만 기록했다.
+  - [x] latest manifest snapshot을 남겼다: full375 `375/53/51/2/0`, bounded1200 `1200/88/77/11/0`, golden18 `18/16/12/4/0`.
+  - [x] 세 audit 모두 `IN_PROGRESS/ordered_flush_gap_in_progress`임을 확인했다.
+  - [x] search degraded blocker가 계속 열려 있음을 확인했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_297_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] `publication_contract_convergence=GO`는 현재 flushed rows의 구조 계약만 뜻한다.
+  - [x] full375 완료 전 collateral approval을 열지 않는다.
+  - [x] golden18 완료 전 6/28 golden GO를 대체하지 않는다.
+  - [x] search degraded 복구 전 `promotion_blocked`는 `search-blind conditional`로만 해석한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop291 wrong-work title flip review quality gate
 
 - 근거:

@@ -1,5 +1,26 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop297 background health audit
+
+- 범위: Loop288에서 발주한 full375, bounded1200 completed-source, golden18 background run을 완료 산출물이 아니라 최신 health checkpoint로 재감사한다.
+- Audit commands:
+  - full375: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_124015_346913 --manifest ...loop288_full375_current_head_search_nonlight_result_manifest.json --checkpoint ...checkpoint.jsonl --result-json ...result.json --pending-snapshot ...pending_snapshot.json --input-jsonl ...regression_panel_input.jsonl --log-glob "logs\expert_run_20260702_124015_346913_W*.log" --output ...loop297_full375_search_nonlight_current_health_audit.json`
+  - bounded1200: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_124015_423917 --manifest ...loop288_completed_source_bounded1200_search_nonlight_result_manifest.json --checkpoint ...checkpoint.jsonl --result-json ...result.json --pending-snapshot ...pending_snapshot.json --input-jsonl ...loop288_completed_source_bounded1200_input.jsonl --log-glob "logs\expert_run_20260702_124015_423917_W*.log" --output ...loop297_bounded1200_search_nonlight_current_health_audit.json`
+  - golden18: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_124110_857651 --manifest ...loop288_golden18_current_head_search_nonlight_result_manifest.json --checkpoint ...checkpoint.jsonl --result-json ...result.json --pending-snapshot ...pending_snapshot.json --input-jsonl ...golden_set.jsonl --log-glob "logs\expert_run_20260702_124110_857651_W*.log" --output ...loop297_golden18_search_included_current_health_audit.json`
+- Latest manifest snapshot:
+  - full375 `input/completed/flushed/pending/failed=375/53/51/2/0`, `include_search=true`, `light_mode=false`, `large_run_complete=false`
+  - bounded1200 `1200/88/77/11/0`, `include_search=true`, `light_mode=false`, `large_run_complete=false`
+  - golden18 `18/16/12/4/0`, `include_search=true`, `light_mode=true`, `large_run_complete=false`
+- Health audit result:
+  - full375: `IN_PROGRESS/ordered_flush_gap_in_progress`, frontier `11700470`, search blocker `search_degraded_observed`, `publication_contract_convergence=GO`, violations `0`
+  - bounded1200: `IN_PROGRESS/ordered_flush_gap_in_progress`, frontier `11607130`, search blocker `search_degraded_observed`, `publication_contract_convergence=GO`, violations `0`
+  - golden18: `IN_PROGRESS/ordered_flush_gap_in_progress`, frontier `11700470`, blockers `manifest_light_health_only`, `search_degraded_observed`, `publication_contract_convergence=GO`, violations `0`
+- Validation assessment:
+  - full375/golden/bounded approval: `Needs revision / NOT_OPEN`
+  - search recovery: `P0 / OPEN`
+  - `publication_contract_convergence=GO`는 현재 flushed rows의 구조 계약만 뜻한다.
+- Gate: background runs `IN_PROGRESS`, completed-source approval `NOT_OPEN`, golden18 approval `NOT_OPEN`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop296 safe-loss N5 독립 실행 wrapper
 
 - 범위: Loop294 invalid 원인인 같은 process `post_id` de-dupe를 피하도록 safe-loss N5 probe 실행 계획을 독립 단일행 run으로 고정한다.

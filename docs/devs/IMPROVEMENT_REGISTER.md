@@ -1,5 +1,35 @@
 # Improvement Register
 
+## IMP-20260702-297 - background health audit gate checkpoint
+
+- Status: Documented / approval blocked
+- Loop: 297
+- Problem:
+  - full375, bounded1200, golden18 background run이 진행 중이라 중간 `publication_contract_convergence=GO`나 일부 flushed rows를 approval로 오해할 위험이 있다.
+  - search degraded 복구가 끝나지 않은 상태에서 `promotion_blocked`를 확정 의미로 읽으면 hard-hold 완화 판단이 잘못된다.
+- Change:
+  - 코드 변경 없음.
+  - `tools/audit_expert_run_health.py`로 세 background run을 최신 manifest/checkpoint/result/log 기준으로 재감사했다.
+  - 보고서와 checklist에 `IN_PROGRESS`, `search_degraded_observed`, `manifest_light_health_only` caveat를 고정했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_297_REPORT_20260702.md`
+  - audits `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop297_full375_search_nonlight_current_health_audit.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop297_bounded1200_search_nonlight_current_health_audit.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop297_golden18_search_included_current_health_audit.json`
+- Result:
+  - full375 `375/53/51/2/0`
+  - bounded1200 `1200/88/77/11/0`
+  - golden18 `18/16/12/4/0`
+  - all `large_run_complete=false`
+- Verification:
+  - health audit commands PASS
+  - doc sync updated
+- Gate:
+  - background runs `IN_PROGRESS`
+  - search recovery `P0 / OPEN`
+  - full collateral approval `NOT_OPEN`
+  - golden18 approval `NOT_OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-296 - safe-loss N5 독립 실행 wrapper
 
 - Status: Implemented / execution plan ready

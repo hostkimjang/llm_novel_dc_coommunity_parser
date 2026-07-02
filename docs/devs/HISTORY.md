@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop297 background health audit
+
+- Loop288에서 발주한 full375, bounded1200 completed-source, golden18 background run을 최신 manifest/checkpoint/result/log 기준으로 재감사했다.
+- latest manifest snapshot은 full375 `375/53/51/2/0`, bounded1200 `1200/88/77/11/0`, golden18 `18/16/12/4/0`이며 모두 `large_run_complete=false`다.
+- full375 audit은 `IN_PROGRESS/ordered_flush_gap_in_progress`, frontier `11700470`, blocker `search_degraded_observed`, `publication_contract_convergence=GO`, violation `0`이다.
+- bounded1200 audit은 `IN_PROGRESS/ordered_flush_gap_in_progress`, frontier `11607130`, blocker `search_degraded_observed`, `publication_contract_convergence=GO`, violation `0`이다.
+- golden18 audit은 `IN_PROGRESS/ordered_flush_gap_in_progress`, frontier `11700470`, blockers `manifest_light_health_only`, `search_degraded_observed`, `publication_contract_convergence=GO`, violation `0`이다.
+- Report는 `docs/devs/loop_reports/LOOP_297_REPORT_20260702.md`다.
+- Gate는 background runs `IN_PROGRESS`, search recovery `P0 / OPEN`, full collateral approval `NOT_OPEN`, golden18 approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop296 safe-loss N5 독립 실행 wrapper
 
 - Loop294의 `N>=5` 반복 입력은 같은 process에서 `post_id` de-dupe되어 `input_post_count=3`으로 접혔으므로 flip rate 갱신 증거가 아니었다.

@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop297 Addendum - background health audit
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop297은 approval이 아니라 Loop288 background run 3개의 최신 health checkpoint다.
+- 목적: full375, bounded1200 completed-source, golden18을 완료 전 approval 근거로 오해하지 않도록 manifest/checkpoint/result/log 증거를 갱신한다.
+- 코드 변경: 없음.
+- Artifacts: report `docs/devs/loop_reports/LOOP_297_REPORT_20260702.md`, audits `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop297_full375_search_nonlight_current_health_audit.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop297_bounded1200_search_nonlight_current_health_audit.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop297_golden18_search_included_current_health_audit.json`.
+- Evidence: latest manifest snapshot은 full375 `375/53/51/2/0`, bounded1200 `1200/88/77/11/0`, golden18 `18/16/12/4/0`, 모두 `large_run_complete=false`다. 세 audit 모두 `IN_PROGRESS/ordered_flush_gap_in_progress`이며 search blocker를 기록했다. full375/bounded는 `search_degraded_observed`, golden18은 `manifest_light_health_only`와 `search_degraded_observed`다.
+- Gate: background runs `IN_PROGRESS`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, full collateral approval `NOT_OPEN`, golden18 approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop296 Addendum - safe-loss N5 독립 실행 wrapper
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop296은 새 approval이 아니라 Loop294 invalid 반복 측정 경로를 막는 실행계획 계약이다.
