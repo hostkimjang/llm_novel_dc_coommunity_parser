@@ -1,5 +1,33 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop338 live shard search recovery canary 체크
+
+- [x] Loop337 코드를 live shard 1에 적용했다.
+  - `docker compose build mcp-bridge-1`
+  - `docker compose up -d --force-recreate --no-deps mcp-bridge-1`
+  - container `warp-shards-mcp-bridge-1-1`, endpoint `http://127.0.0.1:3333`
+  - 컨테이너 내부 `/app/src/llm_batch`에서 `fallback_recovered` 코드 확인.
+- [x] direct search probe에서 recovery 메타를 확인했다.
+  - `direct_search_used=true`
+  - `fallback_recovered=true`
+  - `degraded_recovered=true`
+  - `direct_search_reason=low_bridge_after_filter`
+- [x] `11705250` search 포함 non-light 단건 canary를 실행했다.
+  - run `20260703_061749_804510`
+  - result/checkpoint/manifest counts `1/1/1/0/0`
+  - manifest `large_run_complete=true`, `partial_flush_gap=false`, `ordered_flush_blocked=false`
+  - public identity `official_title=심해의 마법사`, `heretic_url=https://m.munpia.com/novel/detail/483667`
+  - `candidate_ledger_status=safe_resolved`, publish `allowed=true`
+- [x] publication contract convergence를 감사했다.
+  - audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop338_override_11705250_search_recovery_live_shard1_health_audit.json`
+  - `publication_contract_convergence=GO`, violations `0`
+- [ ] search degraded 100% 복구는 아직 열려 있다.
+  - row search health `SEARCH_DEGRADED`
+  - queries `22`, degraded `22`, upstream zero `14`, retried `20`
+  - fallback/degraded recovered `6/6`, unrecovered degraded `13`
+  - audit `search_evidence=REVIEW`, blocker `search_degraded_observed`
+- Gate: live shard apply `GO`, row public contract `GO_ROW_PUBLIC_CONTRACT`, publication convergence `GO`, search recovery `P0 / PARTIAL_RUNTIME_GO / UNRECOVERED_DEGRADED_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop337 search degraded recovery contract 체크
 
 - [x] Loop336 search degraded 원인을 liveness와 provider 품질로 분리했다.
@@ -14,9 +42,11 @@
   - py_compile PASS
   - `tests.test_mcp_bridge_direct_search + tests.test_search_recovery_contract` PASS, `10` tests
   - `tests.test_audit_expert_run_health` PASS, `16` tests
-- [ ] bridge image rebuild/recreate 전에는 이번 코드를 runtime approval 근거로 쓰지 않는다.
-- [ ] rebuild 후 small search non-light canary에서 `unrecovered_degraded=0`을 확인한다.
-- Gate: code contract `GO_UNIT`, live shard `NOT_APPLIED_TO_RUNNING_CONTAINERS`, runtime replay `NOT_RUN_AFTER_REBUILD`, search recovery `P0 / PARTIAL_CODE_ONLY / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- [x] bridge image rebuild/recreate 전에는 이번 코드를 runtime approval 근거로 쓰지 않는다.
+- [x] rebuild 후 small search non-light canary를 실행했다.
+  - Loop338에서 live shard apply와 row public contract는 `GO`.
+  - 단, `unrecovered_degraded=13`이라 search 100% recovery는 `NO-GO / OPEN`.
+- Gate: code contract `GO_UNIT`, live shard `APPLIED_IN_LOOP338`, runtime replay `GO_ROW_PUBLIC_CONTRACT / NOT_APPROVAL`, search recovery `P0 / PARTIAL_RUNTIME_GO / UNRECOVERED_DEGRADED_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-03 Loop336 post-patch runtime replay / manifest contract 체크
 

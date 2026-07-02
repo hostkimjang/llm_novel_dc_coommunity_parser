@@ -6,6 +6,14 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop338 Addendum - live shard search recovery canary
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop338은 approval 회차가 아니라 Loop337 search recovery 코드를 live shard에 적용하고 단건 runtime canary로 검증한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_338_REPORT_20260703.md`, state `docs/devs/loop338_search_recovery_live_shard1_replay_20260703.json`, result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop338_override_11705250_search_recovery_live_shard1_result.json`, audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop338_override_11705250_search_recovery_live_shard1_health_audit.json`.
+- Result: shard 1 `mcp-bridge` 재빌드/재생성 후 direct probe에서 `fallback_recovered=true`, `degraded_recovered=true`를 확인했다. `11705250` run `20260703_061749_804510`은 `1/1/1/0/0`, `large_run_complete=true`, public identity `심해의 마법사`, URL `https://m.munpia.com/novel/detail/483667`, `candidate_ledger_status=safe_resolved`, publication convergence `GO`다.
+- Caveat: row search health는 `SEARCH_DEGRADED`이고 `unrecovered_degraded=13`이다. Search 100% recovery는 아직 실패/미해소이며, promotion 완화나 full approval 근거로 쓰지 않는다.
+- Gate: live shard apply `GO`, row public contract `GO_ROW_PUBLIC_CONTRACT`, publication convergence `GO`, search recovery `P0 / PARTIAL_RUNTIME_GO / UNRECOVERED_DEGRADED_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop337 Addendum - search degraded recovery contract
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop337은 approval 회차가 아니라 search degraded 복구를 recovered/unrecovered 계약으로 분리한 코드 회차다.

@@ -1,0 +1,94 @@
+{
+  "loop": 338,
+  "date": "2026-07-03",
+  "head": "0b757867",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "approval": {
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall": "NOT_APPROVAL"
+  },
+  "live_shard": {
+    "endpoint": "http://127.0.0.1:3333",
+    "container": "warp-shards-mcp-bridge-1-1",
+    "code_applied": true,
+    "container_grep": "fallback_recovered present under /app/src/llm_batch",
+    "readyz": {
+      "status": "ok",
+      "searxng": true,
+      "headless_search": true
+    }
+  },
+  "target": {
+    "post_id": 11705250,
+    "title": "심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네",
+    "expected_official_title": "심해의 마법사",
+    "expected_url": "https://m.munpia.com/novel/detail/483667"
+  },
+  "run": {
+    "run_id": "20260703_061749_804510",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop330_override_audit_11705250_current_head_c033dd97_input.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop338_override_11705250_search_recovery_live_shard1_result.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop338_override_11705250_search_recovery_live_shard1_result_checkpoint.jsonl",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop338_override_11705250_search_recovery_live_shard1_result_manifest.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop338_override_11705250_search_recovery_live_shard1_health_audit.json",
+    "stderr_log": "logs/loop338_override_11705250_search_recovery_live_shard1_stderr.log",
+    "counts": {
+      "input": 1,
+      "completed": 1,
+      "flushed": 1,
+      "pending": 0,
+      "failed": 0
+    },
+    "large_run_complete": true,
+    "partial_flush_gap": false,
+    "ordered_flush_blocked": false,
+    "exit_code": 0
+  },
+  "row_result": {
+    "is_relevant": true,
+    "is_resolved_work_discussion": true,
+    "title_resolution_state": "resolved",
+    "discussion_type": "review",
+    "official_title": "심해의 마법사",
+    "heretic_url": "https://m.munpia.com/novel/detail/483667",
+    "confidence": "High",
+    "candidate_ledger_status": "safe_resolved",
+    "publish_status": "publish",
+    "publish_allowed": true,
+    "publication_contract_convergence": "GO"
+  },
+  "search": {
+    "direct_probe": {
+      "direct_search_used": true,
+      "fallback_recovered": true,
+      "degraded_recovered": true,
+      "direct_search_reason": "low_bridge_after_filter"
+    },
+    "row_status": "SEARCH_DEGRADED",
+    "queries": 22,
+    "degraded_queries": 22,
+    "upstream_zero": 14,
+    "retried": 20,
+    "fallback_recovered": 6,
+    "degraded_recovered": 6,
+    "unrecovered_degraded": 13,
+    "direct_search_used": 21,
+    "direct_search_results": 54,
+    "audit_gate": "REVIEW",
+    "blockers": [
+      "search_degraded_observed"
+    ]
+  },
+  "gates": {
+    "live_shard_apply": "GO",
+    "row_public_contract": "GO_ROW_PUBLIC_CONTRACT",
+    "publication_contract_convergence": "GO",
+    "search_recovery": "P0 / PARTIAL_RUNTIME_GO / UNRECOVERED_DEGRADED_OPEN",
+    "search_evidence": "REVIEW / search_degraded_observed",
+    "full375_bounded_golden_n5": "NOT_REFRESHED_IN_LOOP338 / NOT_APPROVAL",
+    "promotion_blocked_interpretation_before_full_search_recovery": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  }
+}

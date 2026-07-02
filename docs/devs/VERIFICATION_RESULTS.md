@@ -1,5 +1,27 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop338 live shard search recovery canary
+
+- 범위: Loop337 recovery 계약을 실제 shard 1 `mcp-bridge` 이미지에 적용한 뒤 `11705250` search 포함 non-light 단건 replay를 실행한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_338_REPORT_20260703.md`
+  - state `docs\devs\loop338_search_recovery_live_shard1_replay_20260703.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop338_override_11705250_search_recovery_live_shard1_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop338_override_11705250_search_recovery_live_shard1_result_manifest.json`
+  - audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop338_override_11705250_search_recovery_live_shard1_health_audit.json`
+  - log `logs\loop338_override_11705250_search_recovery_live_shard1_stderr.log`
+- Evidence:
+  - container `warp-shards-mcp-bridge-1-1` recreated and now contains `fallback_recovered` code under `/app/src/llm_batch`.
+  - direct `/mcp/search` probe returned `direct_search_used=true`, `fallback_recovered=true`, `degraded_recovered=true`, reason `low_bridge_after_filter`.
+  - run `20260703_061749_804510` completed with result/checkpoint/manifest `1/1/1/0/0`, `large_run_complete=true`.
+  - public identity is `심해의 마법사`, URL `https://m.munpia.com/novel/detail/483667`, confidence `High`, `candidate_ledger_status=safe_resolved`.
+  - publication contract convergence is `GO`, violations `0`.
+- Search caveat:
+  - row search health remains `SEARCH_DEGRADED`.
+  - queries `22`, degraded `22`, upstream zero `14`, retried `20`, fallback/degraded recovered `6/6`, unrecovered degraded `13`.
+  - audit search gate is `REVIEW`, blocker `search_degraded_observed`.
+- Gate: live shard apply `GO`, row public contract `GO_ROW_PUBLIC_CONTRACT`, publication convergence `GO`, search recovery `P0 / PARTIAL_RUNTIME_GO / UNRECOVERED_DEGRADED_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop337 search degraded recovery contract
 
 - 범위: Loop336에서 `SEARCH_DEGRADED`로 남은 검색 병목을 recovered/unrecovered 계약으로 분리한다.
