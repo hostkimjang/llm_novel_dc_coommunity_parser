@@ -1,5 +1,24 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop335 consumption title-lead alias repair
+
+- 범위: Loop334에서 `REPROCESS_FALSE_NEGATIVE`로 판정한 `11705250`의 title-lead alias 추출 누락을 코드 계약으로 수리한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_335_REPORT_20260703.md`
+  - state `docs\devs\loop335_consumption_title_lead_alias_repair_20260703.json`
+  - code `src\llm_batch\agentic_pipeline.py`
+  - test `tests\test_title_lead_search_inferred_guard.py`
+- Evidence:
+  - pre-patch current HEAD result는 `1/1/0/0` 완료였지만 `is_relevant=false`, `work_resolution=none`, `official_title=null`, `SEARCH_DEGRADED`였다.
+  - 독립 정답은 `심해법사 -> 심해의 마법사`, official URL `https://m.munpia.com/novel/detail/483667`이다.
+  - 새 계약은 `심해법사 묵혀둔거...` 같은 소비형 제목 첫 토큰을 title-lead alias로 보존한다.
+- Verification:
+  - `.\.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_title_lead_search_inferred_guard.py` PASS
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_consumption_title_lead_alias_release_survives_semantic_no_work -v` PASS
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_regression_safe_work_bridge_contract -v` PASS, `3` tests
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard -v` PASS, `185` tests
+- Gate: code contract `GO_UNIT_AND_BROADER_TITLE_LEAD`, post-patch runtime replay `NOT_RUN`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop334 override audit 11705250 current HEAD review
 
 - 범위: Loop330에서 발주한 `11705250` current HEAD non-light result를 old light contract, prior native web judge, live web 확인으로 비교한다.

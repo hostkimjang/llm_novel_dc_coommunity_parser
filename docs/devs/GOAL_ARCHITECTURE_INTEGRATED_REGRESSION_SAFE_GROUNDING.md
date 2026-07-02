@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop335 Addendum - consumption title-lead alias repair
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop335는 approval 회차가 아니라 Loop334 `11705250` false negative를 코드 계약으로 수리한 회차다.
+- 목적: `심해법사 묵혀둔거...`처럼 제목 첫 토큰 약칭 뒤에 작품 소비 cue가 오는 경우를 title-lead alias로 보존해 semantic no-work release context가 정당하게 열리게 한다.
+- Evidence: report `docs/devs/loop_reports/LOOP_335_REPORT_20260703.md`, state `docs/devs/loop335_consumption_title_lead_alias_repair_20260703.json`, code `src/llm_batch/agentic_pipeline.py`, test `tests/test_title_lead_search_inferred_guard.py`.
+- Result: `11705250` 재현 계약, work-bridge contract, title-lead broader suite가 모두 PASS했다. 그러나 post-patch runtime replay는 아직 `NOT_RUN`이다.
+- Verification: py_compile PASS, targeted test PASS, `tests.test_regression_safe_work_bridge_contract` `3` tests PASS, `tests.test_title_lead_search_inferred_guard` `185` tests PASS.
+- Gate: code contract `GO_UNIT_AND_BROADER_TITLE_LEAD`, runtime replay `NOT_RUN`, search recovery `P0 / OPEN`, large/background runs `IN_PROGRESS_OR_PARTIAL / NOT_APPROVAL`, golden18 `APPROVAL_NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop334 Addendum - override audit 11705250 false negative
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop334는 approval 회차가 아니라 Loop330에서 발주한 `11705250` current HEAD non-light 결과를 blind/source-native로 판정한 회차다.

@@ -8552,6 +8552,77 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             )
         )
 
+    def test_consumption_title_lead_alias_release_survives_semantic_no_work(self):
+        pipeline = build_pipeline()
+        title = "심해의 마법사"
+        url = "https://m.munpia.com/novel/detail/483667"
+        post = PostInput(
+            post_id=11705250,
+            title="심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네",
+            author="ㅇㅇ",
+            content_blocks=[ContentBlock(type="text", text="권 단위로 몰아봐야 맛있는 소설")],
+            comments=["그거 실 쓰는애 죽이는거 까지 보고 좀 루즈해져서 묵혔는데 뒤에도 괜찮음?"],
+        )
+        ctx = ConversationContext(post_id=post.post_id, post_data=pipeline._post_to_dict(post), comments=post.comments)
+        mark_no_work_seed(ctx)
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "share_opinion",
+                    "target_kind": "work",
+                    "primary_domain": "novel_literature",
+                    "semantic_seed_review": {"is_specific_work_discussion": False},
+                    "warnings": ["semantic_seed_review_specific_work_denied"],
+                }
+            },
+        )
+        ctx.search_results = [
+            {
+                "title": f"{title} - 문피아 웹소설",
+                "url": url,
+                "content": "문피아 작품 페이지. 작가 상한김밥. 판타지 마법 전생 정통.",
+                "snippet": "심해법사 웹소설 작품 페이지.",
+                "query": "심해법사 문피아",
+            },
+            {
+                "title": f"{title} - 나무위키",
+                "url": "https://namu.wiki/w/%EC%8B%AC%ED%95%B4%EC%9D%98%20%EB%A7%88%EB%B2%95%EC%82%AC",
+                "content": "문피아 웹소설. 작가는 상한김밥. 약칭 심해법사.",
+                "snippet": "심해법사 약칭 설명.",
+                "query": "심해법사",
+            },
+        ]
+
+        self.assertIn("심해법사", pipeline._extract_post_title_lead_alias_terms(ctx))
+        self.assertFalse(pipeline._has_title_lead_alias_search_work_support(ctx, title))
+        self.assertTrue(
+            pipeline._has_title_lead_alias_search_work_support(
+                ctx,
+                title,
+                allow_semantic_no_work=True,
+            )
+        )
+        self.assertTrue(pipeline._has_batch_alias_verified_no_work_release_context(ctx, title))
+        self.assertTrue(
+            pipeline._can_promote_title_after_semantic_no_work(
+                ctx,
+                title,
+                source="batch_memory_exact_alias_rescued",
+                verification_result={
+                    "is_relevant": True,
+                    "is_novel_discussion": True,
+                    "novel_identity": {"official_title": title, "heretic_url": url},
+                    "grounding_check": {
+                        "anchor_found": "title_mention",
+                        "anchor_text": "심해법사",
+                        "matched_alias": "심해법사",
+                        "matched_title": title,
+                    },
+                },
+            )
+        )
+
     def test_visual_title_lead_alias_probe_rejects_game_context_query(self):
         orchestrator = Orchestrator(experts={})
         ctx = ConversationContext(

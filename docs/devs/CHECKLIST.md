@@ -1,5 +1,27 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop335 consumption title-lead alias repair 체크
+
+- [x] Loop334 `11705250` false negative의 직접 원인을 코드 경로로 좁혔다.
+  - 원인: 제목 첫 토큰 `심해법사`가 `묵혀둔거/간만에/보니까` 소비 cue 앞 약칭인데 title-lead alias로 추출되지 않음
+  - 기대 정답: `심해의 마법사`
+  - official URL: `https://m.munpia.com/novel/detail/483667`
+- [x] consumption title-lead alias 추출을 구현했다.
+  - code `src\llm_batch\agentic_pipeline.py`
+  - generic role/topic/low-information filter는 유지
+- [x] `11705250` 재현 계약 테스트를 추가했다.
+  - test `tests\test_title_lead_search_inferred_guard.py`
+  - semantic no-work 기본 support는 false 유지
+  - `allow_semantic_no_work=True`와 batch alias release context는 true 확인
+- [x] 검증을 실행했다.
+  - py_compile PASS
+  - targeted test PASS
+  - `tests.test_regression_safe_work_bridge_contract` PASS, `3` tests
+  - `tests.test_title_lead_search_inferred_guard` PASS, `185` tests
+- [ ] 새 HEAD에서 `11705250` post-patch search 포함 non-light runtime replay를 실행한다.
+- [ ] search degraded 100% 복구 전 promotion gate hard-hold를 완화하지 않는다.
+- Gate: row repair contract `GO_UNIT_AND_BROADER_TITLE_LEAD`, post-patch runtime replay `NOT_RUN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop334 override audit 11705250 체크
 
 - [x] Loop330 current HEAD non-light 단건 result 생성을 확인했다.

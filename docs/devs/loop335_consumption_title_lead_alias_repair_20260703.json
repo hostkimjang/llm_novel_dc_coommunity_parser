@@ -1,0 +1,73 @@
+{
+  "loop": 335,
+  "date": "2026-07-03",
+  "scope": "11705250 consumption title-lead alias false-negative repair",
+  "workspace_base_head": "93d15334",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "summary": {
+    "row": 11705250,
+    "source_verdict": "REPROCESS_FALSE_NEGATIVE",
+    "code_contract": "GO_UNIT_AND_BROADER_TITLE_LEAD",
+    "runtime_replay_after_patch": "NOT_RUN",
+    "approval": "NOT_OPEN",
+    "search_recovery": "P0 / OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  },
+  "problem": {
+    "title": "심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네",
+    "expected_official_title": "심해의 마법사",
+    "expected_official_url": "https://m.munpia.com/novel/detail/483667",
+    "failure_mode": "게시글 제목 첫 토큰 '심해법사'가 작품 소비 cue 뒤에 붙은 약칭인데 title-lead alias 추출에서 빠져 semantic no-work release context가 열리지 않았다.",
+    "pre_patch_runtime_result": "current HEAD non-light result 1/1/0/0, is_relevant=false, work_resolution=none, official_title=null, SEARCH_DEGRADED"
+  },
+  "change": {
+    "code": "src/llm_batch/agentic_pipeline.py",
+    "test": "tests/test_title_lead_search_inferred_guard.py",
+    "details": [
+      "제목 첫 토큰 뒤에 묵힘, 간만에, 다시, 정주행, 재탕, 읽기, 보기, 하차, 리뷰, 후기, 감상, 맛있음, 재밌음 cue가 오는 경우를 consumption title-lead alias 후보로 본다.",
+      "기존 generic role/topic/low-information alias filter를 그대로 적용해 단순 일반어 확장을 막는다.",
+      "11705250 재현 계약은 기본 semantic no-work support가 false인 상태에서 allow_semantic_no_work 경로와 batch alias release context가 true로 열리는지 검증한다."
+    ]
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "targeted_test": "tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_consumption_title_lead_alias_release_survives_semantic_no_work PASS",
+    "work_bridge_contract": "tests.test_regression_safe_work_bridge_contract PASS, 3 tests",
+    "title_lead_suite": "tests.test_title_lead_search_inferred_guard PASS, 185 tests",
+    "interpretation": "코드 계약은 통과했지만 post-patch runtime replay와 full375/bounded/golden/N5 완료 증거가 없으므로 approval은 열지 않는다."
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_335_REPORT_20260703.md",
+    "state": "docs/devs/loop335_consumption_title_lead_alias_repair_20260703.json",
+    "previous_review": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop334_override_audit_11705250_current_head_blind_source_review.json",
+    "previous_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop330_override_audit_11705250_current_head_c033dd97_search_nonlight_result.json"
+  },
+  "background_runtime_snapshot": {
+    "as_of": "2026-07-03 05:07 KST",
+    "full375": "27/21/6/0 of 375",
+    "bounded1200_completed_source": "46/35/11/0 of 1200",
+    "golden18": "6/5/1/0 of 18",
+    "safe_loss_n5": "4 completed flushed results observed, 1 zero-count manifest observed, planned 15",
+    "interpretation": "background monitoring only; not approval evidence"
+  },
+  "gates": {
+    "row_repair_contract": "GO_UNIT_AND_BROADER_TITLE_LEAD",
+    "post_patch_runtime_replay": "NOT_RUN",
+    "override_audit_11705250": "REPROCESS_FALSE_NEGATIVE_REPAIRED_BY_CODE_CONTRACT_ONLY",
+    "search_recovery": "P0 / OPEN",
+    "large_background_runs": "IN_PROGRESS_OR_PARTIAL / NOT_APPROVAL",
+    "safe_loss_flip": "RUNNING_BACKGROUND / NOT_ANALYZED_FULL_N5",
+    "golden18_approval": "APPROVAL_NOT_OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional until search degradation is recovered",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next_actions": [
+    "11705250 post-patch search 포함 non-light 단건 runtime replay를 새 HEAD에서 실행한다.",
+    "search degraded가 남으면 replay가 좋아져도 promotion_blocked/null demotion은 search-blind conditional로만 해석한다.",
+    "full375, bounded1200, golden18, safe-loss N5 완료 전 approval 문구를 쓰지 않는다.",
+    "collateral residual 126과 override audit false-negative queue를 계속 분리해 추적한다."
+  ]
+}

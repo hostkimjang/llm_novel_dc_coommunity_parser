@@ -4,6 +4,14 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop335 `11705250` consumption title-lead alias repair follow-up
+  - 상태: code_contract_go_unit_and_broader_title_lead / post_patch_runtime_not_run / approval_not_open
+  - 발견: `심해법사 묵혀둔거...`의 첫 토큰 약칭이 title-lead alias 추출에서 빠져 `심해의 마법사`가 false negative로 demote됐다.
+  - 적용: consumption cue가 붙은 제목 첫 토큰을 title-lead alias로 보존하고, semantic no-work 기본 차단은 유지한 채 verified batch alias release context만 열었다.
+  - 검증: py_compile PASS, targeted test PASS, work-bridge contract `3` tests PASS, title-lead suite `185` tests PASS.
+  - 산출물: `docs/devs/loop_reports/LOOP_335_REPORT_20260703.md`, `docs/devs/loop335_consumption_title_lead_alias_repair_20260703.json`.
+  - 완료 기준: 새 HEAD에서 `11705250` search 포함 non-light 단건 replay를 완료하고, search degraded 복구 여부와 public contract를 분리해 판정한다.
+
 - [ ] Loop332 collateral183 combined action queue follow-up
   - 상태: source_native_queue_complete_183_of_183 / gate_accounting_wired_loop333 / repair_queue_open / approval_not_open
   - 발견: `collateral183` P0 verdict가 `wrong_work_title_flip=10`, `unsafe_promotion_from_hold=26`, `safe_loss_resolved_to_null=147`로 나뉘어 있었고, gate accounting이 바로 쓸 수 있는 합산 queue가 없었다.
@@ -19,7 +27,8 @@
   - 최신 대형 런 snapshot: full375 `25/21/4/0`, bounded1200 `37/34/3/0`, golden18 `5/5/0/0`, safe-loss N5 first-repeat `3`개, override `11705250` `1/1/0/0`.
   - 산출물: `docs/devs/loop_reports/LOOP_331_REPORT_20260703.md`, `docs/devs/loop331_current_head_partial_runtime_no_go_20260703.json`.
   - Loop334: `11705250` blind/source-native verdict는 `REPROCESS_FALSE_NEGATIVE / public leak 없음 / SEARCH_DEGRADED`로 닫았다.
-  - 완료 기준: search degraded 복구, N5 `15/15`, golden18 `18/18`, full375/bounded 완료 감사, `11705250` relation overblock targeted repair. 완료 전 `promotion_blocked`와 null demotion은 `search-blind conditional`로 태깅한다.
+  - Loop335: `11705250` relation/title-lead overblock은 code contract로 수리했지만 post-patch runtime replay는 아직 `NOT_RUN`이다.
+  - 완료 기준: search degraded 복구, N5 `15/15`, golden18 `18/18`, full375/bounded 완료 감사, `11705250` post-patch replay. 완료 전 `promotion_blocked`와 null demotion은 `search-blind conditional`로 태깅한다.
 
 ## Curated alias publication convergence
 
@@ -54,7 +63,8 @@
   - 발견: `11708445`는 worker log에 override event가 있었지만 최종 public contract는 `candidate_only / promotion_blocked / publish_allowed=false`로 수렴했다. Loop327은 `11668283` false negative를 unit repair로 전환했다.
   - Loop330: old light `20260702_065642_030743`에서 후보 `93`건, 기존 검토 제외 미검토 후보 `91`건을 추출했고 `11705250`을 current HEAD non-light 단건 PID `93016`, run `20260703_034549_939485`로 발주했다. 검색 단계에서 `search_degraded_detected=6`, `search_upstream_zero=2`가 관측되어 approval은 계속 금지다.
   - Loop334: `11705250` current HEAD result는 `1/1/0/0` 완료됐지만 `is_relevant=false`, `work_resolution=none`, `official_title=null`로 떨어졌다. 독립 정답은 `심해의 마법사`라 `REPROCESS_FALSE_NEGATIVE`다. Public title/url leak은 없다.
-  - 산출물: `docs/devs/loop_reports/LOOP_319_REPORT_20260702.md`, `docs/devs/loop319_override_audit_11708445_20260702.json`, `docs/devs/loop_reports/LOOP_327_REPORT_20260703.md`, `docs/devs/loop_reports/LOOP_330_REPORT_20260703.md`, `docs/devs/loop_reports/LOOP_334_REPORT_20260703.md`, `docs/devs/loop334_override_audit_11705250_current_head_20260703.json`
+  - Loop335: `11705250`의 title-lead alias extraction gap은 코드 계약으로 수리했지만 runtime replay는 아직 없다.
+  - 산출물: `docs/devs/loop_reports/LOOP_319_REPORT_20260702.md`, `docs/devs/loop319_override_audit_11708445_20260702.json`, `docs/devs/loop_reports/LOOP_327_REPORT_20260703.md`, `docs/devs/loop_reports/LOOP_330_REPORT_20260703.md`, `docs/devs/loop_reports/LOOP_334_REPORT_20260703.md`, `docs/devs/loop_reports/LOOP_335_REPORT_20260703.md`, `docs/devs/loop334_override_audit_11705250_current_head_20260703.json`, `docs/devs/loop335_consumption_title_lead_alias_repair_20260703.json`
   - 완료 기준: current HEAD non-light completed-source에서 override audit flip rows를 계속 추출하고, public title publish 누출 여부와 false negative 여부를 분리해 blind/source-native로 확장 판정한다. search degraded가 남으면 approval 금지.
 
 ## Collateral unsafe-promotion repair

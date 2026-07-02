@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-03 Loop335 consumption title-lead alias repair quality gate
+
+- 근거:
+  - [x] `11705250` false negative의 직접 원인을 title-lead alias 추출 누락으로 분리했다.
+  - [x] 코드 변경 경로를 `src/llm_batch/agentic_pipeline.py`로 제한했다.
+  - [x] 재현 테스트를 `tests/test_title_lead_search_inferred_guard.py`에 추가했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_335_REPORT_20260703.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop335_consumption_title_lead_alias_repair_20260703.json`.
+- 품질 게이트:
+  - [x] semantic no-work 기본 차단을 그대로 유지한다.
+  - [x] verified batch alias release context가 있을 때만 release 가능성을 연다.
+  - [x] unit/broader test PASS를 runtime approval로 쓰지 않는다.
+  - [x] post-patch runtime replay `NOT_RUN`, search recovery `P0 / OPEN`을 명시한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-03 Loop334 override audit quality gate
 
 - 근거:

@@ -1,5 +1,35 @@
 # Improvement Register
 
+## IMP-20260703-335 - consumption title-lead alias repair
+
+- Status: Code contract repaired / runtime replay not run / approval not open
+- Loop: 335
+- Problem:
+  - Loop334 found `11705250` was a source-native false negative.
+  - The row title starts with `심해법사`, but the alias was followed by consumption cues and was not preserved by title-lead alias extraction.
+- Change:
+  - Added consumption title-lead alias extraction in `src/llm_batch/agentic_pipeline.py`.
+  - Added a reproduction contract in `tests/test_title_lead_search_inferred_guard.py`.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_335_REPORT_20260703.md`
+  - state `docs/devs/loop335_consumption_title_lead_alias_repair_20260703.json`
+  - previous review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop334_override_audit_11705250_current_head_blind_source_review.json`
+- Result:
+  - `심해법사` is now extracted as a title-lead alias for the reproduction row.
+  - semantic no-work default support remains blocked.
+  - `allow_semantic_no_work=True` and batch alias release context now pass for the verified official title `심해의 마법사`.
+- Verification:
+  - py_compile PASS.
+  - targeted reproduction PASS.
+  - work bridge contract PASS, `3` tests.
+  - title-lead suite PASS, `185` tests.
+- Gate:
+  - code contract `GO_UNIT_AND_BROADER_TITLE_LEAD`
+  - post-patch runtime replay `NOT_RUN`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260703-334 - override audit 11705250 false negative
 
 - Status: Row reviewed / false negative found / approval not open

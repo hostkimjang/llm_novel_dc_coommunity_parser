@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop335 consumption title-lead alias repair for 11705250
+
+- Loop334에서 `REPROCESS_FALSE_NEGATIVE`로 판정한 `11705250 / 심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네`의 직접 원인을 수리했다.
+- 원인은 제목 첫 토큰 `심해법사`가 작품 소비 cue 앞 약칭인데 `_extract_post_title_lead_alias_terms`가 이 alias를 보존하지 못한 점이다.
+- `src/llm_batch/agentic_pipeline.py`에 consumption title-lead alias 추출 경로를 추가했다.
+- `tests/test_title_lead_search_inferred_guard.py`에 `11705250` 재현 계약을 추가했다.
+- 검증은 py_compile PASS, targeted test PASS, `tests.test_regression_safe_work_bridge_contract` `3` tests PASS, `tests.test_title_lead_search_inferred_guard` `185` tests PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_335_REPORT_20260703.md`, state는 `docs/devs/loop335_consumption_title_lead_alias_repair_20260703.json`이다.
+- Gate는 code contract `GO_UNIT_AND_BROADER_TITLE_LEAD`, post-patch runtime replay `NOT_RUN`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop334 override audit 11705250 current HEAD review
 
 - Loop330에서 발주한 `11705250 / 심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네` current HEAD non-light 단건 result가 완료됐다.

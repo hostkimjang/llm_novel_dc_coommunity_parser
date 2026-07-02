@@ -49614,6 +49614,28 @@ OUTPUT JSON:
                 if len(out) >= limit:
                     return out
 
+        consumption_lead_match = re.match(
+            r"^\s*([가-힣A-Za-z0-9]{3,16})\s+"
+            r"(?:묵혀|묵힌|묵혀둔|몰아|간만에|오랜만에|다시|정주행|재탕|"
+            r"읽|읽고|읽는|봤|보고|보니|보니까|보는데|하차|리뷰|후기|감상|맛있|재밌)",
+            title_without_prefix,
+            flags=re.IGNORECASE,
+        )
+        if consumption_lead_match:
+            consumption_alias = consumption_lead_match.group(1).strip()
+            consumption_norm = self._normalize_match_text(consumption_alias)
+            if (
+                consumption_norm
+                and consumption_norm not in seen
+                and not self._is_generic_role_or_species_surface_title(consumption_alias)
+                and not self._is_generic_topic_title(consumption_alias)
+                and not self._is_low_information_alias_surface(consumption_alias)
+            ):
+                seen.add(consumption_norm)
+                out.append(consumption_alias)
+                if len(out) >= limit:
+                    return out
+
         stop_pattern = re.compile(
             r"(?:조금|많이|너무|진짜|완전|개|좀|약간|유치|재밌|재미|노잼|별로|좋|싫|"
             r"심하|저능|후기|리뷰|감상|어떰|봤|보고|보니|읽|읽고|하차|추천|비추|"
