@@ -31,9 +31,10 @@
 ## Override audit follow-up
 
 - [ ] `LLM=False->final=True` override audit blind judge expansion
-  - 상태: Loop319 single_row_checked / row_contract_go / approval_not_open
-  - 발견: `11708445`는 worker log에 override event가 있었지만 최종 public contract는 `candidate_only / promotion_blocked / publish_allowed=false`로 수렴했다.
-  - 산출물: `docs/devs/loop_reports/LOOP_319_REPORT_20260702.md`, `docs/devs/loop319_override_audit_11708445_20260702.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop319_override_audit_11708445_review.json`
+  - 상태: Loop319 single_row_checked / Loop327 false_negative_unit_repaired / Loop330 current_head_nonlight_single_running / approval_not_open
+  - 발견: `11708445`는 worker log에 override event가 있었지만 최종 public contract는 `candidate_only / promotion_blocked / publish_allowed=false`로 수렴했다. Loop327은 `11668283` false negative를 unit repair로 전환했다.
+  - Loop330: old light `20260702_065642_030743`에서 후보 `93`건, 기존 검토 제외 미검토 후보 `91`건을 추출했고 `11705250`을 current HEAD non-light 단건 PID `93016`, run `20260703_034549_939485`로 발주했다. 검색 단계에서 `search_degraded_detected=6`, `search_upstream_zero=2`가 관측되어 approval은 계속 금지다.
+  - 산출물: `docs/devs/loop_reports/LOOP_319_REPORT_20260702.md`, `docs/devs/loop319_override_audit_11708445_20260702.json`, `docs/devs/loop_reports/LOOP_327_REPORT_20260703.md`, `docs/devs/loop_reports/LOOP_330_REPORT_20260703.md`, `docs/devs/loop330_current_head_health_override_audit_20260703.json`
   - 완료 기준: current HEAD non-light completed-source에서 override audit flip rows를 추출하고, public title publish 누출 여부를 blind/source-native로 확장 판정한다. search degraded가 남으면 approval 금지.
 
 ## Collateral unsafe-promotion repair

@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop330 Addendum - current HEAD health and override audit transition
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop330은 approval이 아니라 Loop329 current HEAD background run을 최신 health로 감사하고, 대형 런 대기 흐름을 `OVERRIDE AUDIT(LLM=False->final=True)` 단건 current HEAD non-light 검증으로 전환한 회차다.
+- 목적: full375/bounded/golden/N5 완료를 기다리며 같은 상태만 반복하지 않고, old light run의 override 후보를 current HEAD non-light 입력으로 재검증할 수 있게 한다.
+- Evidence: report `docs/devs/loop_reports/LOOP_330_REPORT_20260703.md`, state `docs/devs/loop330_current_head_health_override_audit_20260703.json`, health audits `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop330_*_health_audit.json`.
+- Runtime snapshot: post-patch `11668283` `0/0/0/0`, full375 `3/1/2/0`, bounded1200 `7/2/5/0`, golden18 `1/1/0/0`, safe-loss N5 first run `0/0/0/0`; 모두 완료 전이라 approval 근거가 아니다.
+- Override audit: old light `20260702_065642_030743`에서 `LLM=False -> final=True` 후보 `93`건, 미검토 checkpoint 후보 `91`건을 확인했고, `11705250 / 심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네`를 current HEAD non-light 단건 PID `93016`, run `20260703_034549_939485`로 발주했다.
+- Verification: `11705250` launch health는 `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `1/1` OK이고, Loop329 계열의 PowerShell `utf-8` launch warning은 이번 wrapper에서 재발하지 않았다. 다만 검색 단계에서 `search_degraded_detected=6`, `search_upstream_zero=2`가 관측됐다.
+- Gate: Loop329 runtime `IN_PROGRESS / NOT_APPROVAL`, override audit `11705250` `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD / SEARCH_DEGRADED_OBSERVED`, safe-loss flip `RUNNING_BACKGROUND / NOT_ANALYZED`, golden18 `APPROVAL_NOT_OPEN`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop329 Addendum - current HEAD c033dd97 runtime dispatch
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop329는 approval이 아니라 Loop328 guard patch 커밋 뒤 runtime 증거를 현 HEAD `c033dd97` 경로로 재발주한 회차다.

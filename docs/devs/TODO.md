@@ -2,6 +2,25 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop330 TODO
+
+- 상태 업데이트: Loop329 current HEAD background run은 계속 `IN_PROGRESS / NOT_APPROVAL`이고, 대형 run 완료 대기만 반복하지 않도록 `OVERRIDE AUDIT(LLM=False->final=True)` 후보 `11705250`을 current HEAD non-light 단건으로 발주했다. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop330 TODO:
+  - [x] Loop329 health audit를 현재 시점으로 갱신했다.
+    - post-patch `11668283` `0/0/0/0`, search degraded 관측
+    - full375 `3/1/2/0`, bounded1200 `7/2/5/0`, golden18 `1/1/0/0`
+  - [x] old light run의 override 후보를 추출했다.
+    - `LLM=False -> final=True` log 후보 `93`
+    - 기존 검토 `11708445`, `11668283` 제외 미검토 후보 `91`
+  - [x] `11705250` current HEAD non-light 단건 run을 발주했다.
+    - PID `93016`, run `20260703_034549_939485`
+    - `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `1/1` OK
+    - 검색 단계 `search_degraded_detected=6`, `search_upstream_zero=2`
+  - [ ] `11705250` result JSON 생성 후 blind/source-native verdict와 public contract를 비교한다.
+  - [ ] post-patch `11668283`, full375/bounded/golden18 완료 전 approval 문구를 쓰지 않는다.
+  - [ ] N5 `15/15` 완료 전 flip rate와 hard-hold 완화 여부를 갱신하지 않는다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop329 TODO
 
 - 상태 업데이트: Loop328 guard patch 커밋 `c033dd97` 기준으로 stale background를 중단하고 post-patch single, safe-loss N5, golden18, full375, bounded1200 completed-source를 새 output 경로로 발주했다. Goal은 `ACTIVE / NOT_COMPLETE`.

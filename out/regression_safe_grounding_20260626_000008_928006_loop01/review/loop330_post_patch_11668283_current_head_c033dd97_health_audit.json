@@ -1,0 +1,439 @@
+{
+  "generated_at": "2026-07-03T03:48:07",
+  "run_id": "20260703_032149_031285",
+  "artifact_resolution": {
+    "resolution": "explicit_paths",
+    "artifact_prefix": "20260703_032149_031285",
+    "explicit_overrides": [
+      "manifest",
+      "checkpoint",
+      "result_json",
+      "pending_snapshot",
+      "input_jsonl",
+      "log_glob"
+    ],
+    "manifest_run_id": "20260703_032149_031285",
+    "manifest": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_post_patch_11668283_current_head_c033dd97_result_manifest.json",
+    "checkpoint": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_post_patch_11668283_current_head_c033dd97_result_checkpoint.jsonl",
+    "result_json": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_post_patch_11668283_current_head_c033dd97_result.json",
+    "pending_snapshot": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_post_patch_11668283_current_head_c033dd97_result_pending_snapshot.json",
+    "input_jsonl": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\inputs\\loop327_override_audit_11668283_input.jsonl",
+    "worker_log_count": 1
+  },
+  "manifest": {
+    "run_id": "20260703_032149_031285",
+    "output_file": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_post_patch_11668283_current_head_c033dd97_result.json",
+    "checkpoint_jsonl": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_post_patch_11668283_current_head_c033dd97_result_checkpoint.jsonl",
+    "pending_snapshot": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_post_patch_11668283_current_head_c033dd97_result_pending_snapshot.json",
+    "requested_parallel_raw": 1,
+    "requested_parallel": 1,
+    "effective_parallel": 1,
+    "parallel_count": 1,
+    "parallel_policy": "effective_parallel=min(min(requested_parallel_raw,model_parallel_max),input_post_count)",
+    "model_parallel_max": 36,
+    "model_parallel_cap_applied": false,
+    "model_parallel_cap_model": "bg-digitalservices/Gemma-4-E4B-it-NVFP4",
+    "llm_model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+    "llm_endpoint": "http://10.20.0.101:8000",
+    "input_post_count": 1,
+    "vlm_enabled": true,
+    "ocr_enabled": true,
+    "image_post_count": 0,
+    "image_post_sample_post_ids": [],
+    "image_posts_present": false,
+    "vlm_ocr_semantic_review_ready": true,
+    "vlm_ocr_semantic_review_skip_reasons": [
+      "no_image_blocks"
+    ],
+    "vlm_ocr_semantic_review_skip_reason": "no_image_blocks",
+    "vlm_ocr_semantic_review_required_for_images": true,
+    "vlm_ocr_semantic_review_blocker": false,
+    "vlm_ocr_semantic_review_blocker_code": "",
+    "vlm_ocr_semantic_review_blocker_action": "",
+    "vlm_ocr_semantic_review_warning": "",
+    "mcp_auto_up_shards": false,
+    "mcp_auto_recreate_shards": false,
+    "mcp_auto_scale_up_missing_shards": false,
+    "mcp_local_shard_management_enabled": false,
+    "mcp_local_shard_status_audit": false,
+    "mcp_local_shard_status_audit_requested": false,
+    "mcp_local_shard_status_audit_allowed": false,
+    "mcp_shard_lifecycle_policy": "docker_up_recreate_opt_in+missing_shard_scale_up_default_on",
+    "mcp_allow_goal_shard_lifecycle": false,
+    "mcp_command_shard_lifecycle_allowed": false,
+    "mcp_interactive_codex_run": true,
+    "mcp_env_shard_lifecycle_requested": false,
+    "mcp_env_shard_lifecycle_global_opt_in": false,
+    "mcp_env_shard_lifecycle_allowed": false,
+    "mcp_env_shard_lifecycle_blocked_by_context": false,
+    "mcp_shard_lifecycle_block_threshold": 0,
+    "mcp_run_post_count_for_lifecycle": 1,
+    "mcp_small_targeted_run": false,
+    "mcp_small_run_shard_lifecycle_blocked": false,
+    "mcp_endpoints": "http://127.0.0.1:3333",
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_required_ok_count": 1,
+    "mcp_health_checked_endpoint_count": 1,
+    "mcp_health_probe_batch_size": 1,
+    "mcp_health_probe_stopped_after_required_ok": false,
+    "mcp_health_workers": 1,
+    "mcp_health_attempts": 1,
+    "mcp_health_timeout_sec": 10.0,
+    "mcp_health_search_max_latency_ms": 8000.0,
+    "mcp_health_search_min_results": 1,
+    "mcp_health_ok_count": 1,
+    "mcp_health_failure_count": 0,
+    "mcp_missing_shard_scale_up_allowed": false,
+    "mcp_missing_shard_scale_up_triggered": false,
+    "mcp_missing_shard_scale_up_shards": "",
+    "mcp_missing_shard_scale_up_recovered_endpoints": 0,
+    "mcp_missing_shard_scale_up_error": "",
+    "mcp_healthy_endpoint_filter": false,
+    "mcp_healthy_endpoint_filter_reason": "reuse_shards_only",
+    "mcp_healthy_endpoint_filter_autogen": true,
+    "mcp_healthy_autogen_endpoint_filter": false,
+    "mcp_healthy_autogen_endpoint_filter_reason": "reuse_shards_only",
+    "mcp_reuse_shards_only_health_filtered": false,
+    "mcp_goal_run_health_filtered": false,
+    "mcp_requested_endpoint_count_before_health_filter": 1,
+    "mcp_healthy_endpoint_count": 1,
+    "mcp_endpoint_count_after_health_filter": 1,
+    "mcp_parallel_before_health_filter": 1,
+    "mcp_parallel_after_health_filter": 1,
+    "completed_count": 0,
+    "flushed_count": 0,
+    "pending_count": 0,
+    "failed_count": 0,
+    "next_save_idx": 1
+  },
+  "input_source": {
+    "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\inputs\\loop327_override_audit_11668283_input.jsonl",
+    "exists": true,
+    "lookup_method": "expert_main_post_map_order_without_model_import",
+    "post_count": 1,
+    "line_count": 1,
+    "comment_row_count": 0,
+    "load_error": null
+  },
+  "result_json": {
+    "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_post_patch_11668283_current_head_c033dd97_result.json",
+    "exists": false,
+    "shape": "missing",
+    "row_count": null,
+    "load_error": "missing"
+  },
+  "result_rows": null,
+  "checkpoint_rows": 0,
+  "pending_count_actual": 0,
+  "flush_integrity": {
+    "run_integrity_gate": "NO-GO",
+    "classification": "artifact_count_mismatch",
+    "completion_ready": false,
+    "approval_ready": false,
+    "blockers": [
+      "result_rows_missing",
+      "completed_count_lt_input_post_count",
+      "large_run_completion_not_proven"
+    ],
+    "counts": {
+      "manifest_input_post_count": 1,
+      "manifest_completed_count": 0,
+      "manifest_flushed_count": 0,
+      "manifest_pending_count": 0,
+      "manifest_failed_count": 0,
+      "checkpoint_completed_count": 0,
+      "checkpoint_failed_count": 0,
+      "result_rows": null,
+      "pending_snapshot_rows": 0,
+      "completed_minus_flushed": 0
+    },
+    "consistency": {
+      "result_rows_eq_flushed_count": false,
+      "checkpoint_completed_eq_manifest_completed": true,
+      "checkpoint_failed_eq_manifest_failed": true,
+      "pending_snapshot_rows_eq_manifest_pending": true,
+      "pending_snapshot_rows_eq_completed_minus_flushed": true
+    },
+    "frontier": {
+      "next_save_idx": 1,
+      "status": "in_flight_or_missing",
+      "reason": "frontier_missing_from_checkpoint_and_pending",
+      "source_post": {
+        "global_idx": 1,
+        "post_id": 11668283,
+        "title": "게임 마인드의 중세 현대인 좋았다...",
+        "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11668283",
+        "gallery_id": "genrenovel",
+        "source_line": 1
+      },
+      "frontier_in_checkpoint_completed": false,
+      "frontier_in_pending_snapshot": false,
+      "completed_index_min": null,
+      "completed_index_max": null,
+      "pending_index_min": null,
+      "pending_index_max": null,
+      "first_pending_at_or_after_frontier": null,
+      "first_completed_at_or_after_frontier": null,
+      "frontier_gap_global_idx": 1
+    },
+    "pending_blocker_samples": []
+  },
+  "frontier_worker_trace": {
+    "target": {
+      "global_idx": 1,
+      "post_id": 11668283,
+      "title": "게임 마인드의 중세 현대인 좋았다...",
+      "source_line": 1
+    },
+    "status": "in_progress_in_worker_log",
+    "event_count": 12,
+    "omitted_event_count": 0,
+    "event_counts": {
+      "mention": 5,
+      "expert_start": 2,
+      "post_header": 1,
+      "pipeline_start": 1,
+      "orchestrator_start": 1,
+      "verifier_start": 1,
+      "arbiter_start": 1
+    },
+    "workers": {
+      "loop329_post_patch_11668283_current_head_c033dd97_stderr.log": 12
+    },
+    "first_event": {
+      "file": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+      "line": 17,
+      "worker": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+      "event": "mention",
+      "text": "[expert_main] 결과 저장: out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_post_patch_11668283_current_head_c033dd97_result.json"
+    },
+    "last_event": {
+      "file": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+      "line": 1936,
+      "worker": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+      "event": "arbiter_start",
+      "text": "[03:43:57.589][⚖️] Arbiter 최종 판정 시작: post_id=11668283",
+      "time": "03:43:57.589",
+      "time_seconds": 13437.589
+    },
+    "first_timed_event": {
+      "file": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+      "line": 57,
+      "worker": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+      "event": "pipeline_start",
+      "text": "[03:21:57.014] 🚀 Agentic Pipeline start: Post 11668283 - 게임 마인드의 중세 현대인 좋았다......",
+      "time": "03:21:57.014",
+      "time_seconds": 12117.014
+    },
+    "last_timed_event": {
+      "file": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+      "line": 1936,
+      "worker": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+      "event": "arbiter_start",
+      "text": "[03:43:57.589][⚖️] Arbiter 최종 판정 시작: post_id=11668283",
+      "time": "03:43:57.589",
+      "time_seconds": 13437.589
+    },
+    "observed_elapsed_seconds": 1320.575,
+    "events": [
+      {
+        "file": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "line": 17,
+        "worker": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "event": "mention",
+        "text": "[expert_main] 결과 저장: out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_post_patch_11668283_current_head_c033dd97_result.json"
+      },
+      {
+        "file": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "line": 19,
+        "worker": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "event": "mention",
+        "text": "[expert_main] 입력: out\\regression_safe_grounding_20260626_000008_928006_loop01\\inputs\\loop327_override_audit_11668283_input.jsonl"
+      },
+      {
+        "file": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "line": 25,
+        "worker": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "event": "mention",
+        "text": "📂 입력: out\\regression_safe_grounding_20260626_000008_928006_loop01\\inputs\\loop327_override_audit_11668283_input.jsonl (1개 포스트)"
+      },
+      {
+        "file": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "line": 43,
+        "worker": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "event": "post_header",
+        "text": "📌 Post ID: 11668283"
+      },
+      {
+        "file": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "line": 46,
+        "worker": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "event": "mention",
+        "text": "🔗 URL: https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11668283"
+      },
+      {
+        "file": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "line": 57,
+        "worker": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "event": "pipeline_start",
+        "text": "[03:21:57.014] 🚀 Agentic Pipeline start: Post 11668283 - 게임 마인드의 중세 현대인 좋았다......",
+        "time": "03:21:57.014",
+        "time_seconds": 12117.014
+      },
+      {
+        "file": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "line": 60,
+        "worker": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "event": "orchestrator_start",
+        "text": "[03:21:57.014] 🎯 Orchestrator 시작: post_id=11668283",
+        "time": "03:21:57.014",
+        "time_seconds": 12117.014
+      },
+      {
+        "file": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "line": 61,
+        "worker": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "event": "expert_start",
+        "text": "[03:21:57.435][🎭] Gatekeeper 분석 시작: post_id=11668283",
+        "time": "03:21:57.435",
+        "time_seconds": 12117.435
+      },
+      {
+        "file": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "line": 196,
+        "worker": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "event": "expert_start",
+        "text": "[03:23:54.332][📖] DiscourseAnalyzer 분석 시작: post_id=11668283",
+        "time": "03:23:54.332",
+        "time_seconds": 12234.332
+      },
+      {
+        "file": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "line": 578,
+        "worker": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "event": "mention",
+        "text": "[03:28:54.495][🎯] 📋 자기참조 필터: post_id='11668283'",
+        "time": "03:28:54.495",
+        "time_seconds": 12534.495
+      },
+      {
+        "file": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "line": 1764,
+        "worker": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "event": "verifier_start",
+        "text": "[03:40:45.469][🔍] Verifier 검증 시작: post_id=11668283",
+        "time": "03:40:45.469",
+        "time_seconds": 13245.469
+      },
+      {
+        "file": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "line": 1936,
+        "worker": "loop329_post_patch_11668283_current_head_c033dd97_stderr.log",
+        "event": "arbiter_start",
+        "text": "[03:43:57.589][⚖️] Arbiter 최종 판정 시작: post_id=11668283",
+        "time": "03:43:57.589",
+        "time_seconds": 13437.589
+      }
+    ]
+  },
+  "search_evidence": {
+    "gate": "REVIEW",
+    "approval_ready": false,
+    "direct_probe_in_manifest": true,
+    "manifest": {
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_ok_count": 1,
+      "mcp_health_failure_count": 0
+    },
+    "row_search_health": {
+      "rows_with_search_health": 0,
+      "status_counts": {},
+      "flag_counts": {},
+      "rows_with_upstream_zero": 0,
+      "rows_with_degraded": 0,
+      "query_total": 0,
+      "degraded_total": 0
+    },
+    "worker_log_search": {
+      "search_timeout": 0,
+      "search_degraded_detected": 7,
+      "search_upstream_zero": 5,
+      "search_bridge_after_filter_zero": 0
+    },
+    "blockers": [
+      "search_degraded_observed"
+    ]
+  },
+  "publication_contract_convergence": {
+    "gate": "MISSING",
+    "approval_ready": false,
+    "result_json": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop329_post_patch_11668283_current_head_c033dd97_result.json",
+    "summary": {
+      "row_count": null,
+      "violation_row_count": null,
+      "violation_counts": {}
+    },
+    "violations": [],
+    "blockers": [
+      "result_json_missing"
+    ]
+  },
+  "status_counts": {},
+  "identity_state_counts": {},
+  "discussion_type_counts_top": {},
+  "topicality_counts": {},
+  "work_resolution_counts": {},
+  "novel_confidence_counts": {},
+  "consistency_flag_counts_top": {},
+  "reason_error_count": 0,
+  "reason_error_samples": [],
+  "query_stats": {
+    "parsed_count": 0,
+    "avg_executed_queries": null,
+    "p95_executed_queries": null,
+    "max_executed_queries": null,
+    "avg_degraded_queries": null,
+    "max_degraded_queries": null
+  },
+  "slang": {
+    "slang_insight_count": 0,
+    "old_store_true_count": 0,
+    "new_store_true_after_patch_count": 0,
+    "old_store_true_blocked_by_patch_count": 0,
+    "blocked_reason_counts": {},
+    "blocked_samples": [],
+    "kept_samples": [],
+    "slang_db": {
+      "title_count": 544,
+      "slang_term_count": 351,
+      "sentence_or_exact_bad_remaining": 0,
+      "bad_remaining_samples": []
+    }
+  },
+  "logs": {
+    "worker_log_count": 1,
+    "post_start_count_in_worker_logs": 1,
+    "post_complete_count_in_worker_logs": 0,
+    "counts": {
+      "search_degraded_detected": 7,
+      "search_upstream_zero": 5
+    },
+    "worker_counts_top": {
+      "loop329_post_patch_11668283_current_head_c033dd97_stderr.log": {
+        "search_degraded_detected": 7,
+        "search_upstream_zero": 5,
+        "post_start": 1
+      }
+    },
+    "headless_engine_counts": {},
+    "processing_error_samples": []
+  },
+  "rates": {
+    "reason_error_rate_pct": 0.0,
+    "resolved_title_rate_pct": 0.0,
+    "unresolved_title_rate_pct": 0.0,
+    "headless_line_per_completed_pct": 0.0
+  }
+}

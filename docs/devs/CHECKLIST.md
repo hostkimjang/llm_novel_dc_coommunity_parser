@@ -1,5 +1,27 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop330 current HEAD health / override audit 전환 체크
+
+- [x] Loop329 background run health를 최신 audit로 갱신했다.
+  - post-patch `11668283` `0/0/0/0`, search degraded 관측
+  - full375 `3/1/2/0`
+  - bounded1200 completed-source `7/2/5/0`
+  - golden18 `1/1/0/0`
+  - safe-loss N5 first run `0/0/0/0`
+- [x] old light run `20260702_065642_030743`의 `OVERRIDE AUDIT(LLM=False->final=True)` 후보를 추출했다.
+  - log 후보 `93`
+  - 이미 검토한 `11708445`, `11668283` 제외 checkpoint-matched 미검토 후보 `91`
+- [x] current HEAD non-light 단건 override audit를 발주했다.
+  - 대상 `11705250 / 심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네`
+  - PID `93016`, run `20260703_034549_939485`
+  - health `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `1/1` OK
+  - 검색 단계 `search_degraded_detected=6`, `search_upstream_zero=2`
+  - Loop329 launch wrapper의 `utf-8` PowerShell 경고는 재발하지 않음
+- [ ] `11705250` result JSON 생성 후 old light contract와 current HEAD public contract를 blind/source-native로 비교한다.
+- [ ] post-patch `11668283`, full375, bounded1200, golden18 완료 전 approval 문구를 쓰지 않는다.
+- [ ] safe-loss N5 `15/15` 완료 전 flip rate를 갱신하지 않는다.
+- Gate: Loop329 runtime `IN_PROGRESS / NOT_APPROVAL`, override audit `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD / SEARCH_DEGRADED_OBSERVED`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop329 current HEAD c033dd97 runtime dispatch 체크
 
 - [x] Loop328 guard patch 커밋 뒤 rollback 지점을 확인했다.

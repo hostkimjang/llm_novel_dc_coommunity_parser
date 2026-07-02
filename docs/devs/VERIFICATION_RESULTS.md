@@ -1,5 +1,29 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop330 current HEAD health and override audit transition
+
+- 범위: Loop329 current HEAD background health를 최신 감사하고, old light `OVERRIDE AUDIT(LLM=False->final=True)` 후보 하나를 current HEAD non-light 단건으로 재검증 발주한다.
+- Artifacts:
+  - state `docs\devs\loop330_current_head_health_override_audit_20260703.json`
+  - report `docs\devs\loop_reports\LOOP_330_REPORT_20260703.md`
+  - override input `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop330_override_audit_11705250_current_head_c033dd97_input.jsonl`
+  - override manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop330_override_audit_11705250_current_head_c033dd97_search_nonlight_result_manifest.json`
+  - override health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop330_override_audit_11705250_current_head_c033dd97_health_audit.json`
+  - Loop329 health audits `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop330_*_current_head_c033dd97_health_audit.json`
+- Evidence:
+  - post-patch `11668283`: `0/0/0/0`, `search_degraded_detected=7`, `search_upstream_zero=5`.
+  - full375: `3/1/2/0`, `IN_PROGRESS / NOT_APPROVAL`.
+  - bounded1200 completed-source: `7/2/5/0`, `IN_PROGRESS / NOT_APPROVAL`.
+  - golden18: `1/1/0/0`, `APPROVAL_NOT_OPEN`.
+  - safe-loss N5 first run: `0/0/0/0`, `RUNNING_BACKGROUND / NOT_ANALYZED`.
+  - override candidates: old light log 후보 `93`, 기존 검토 제외 미검토 checkpoint 후보 `91`.
+  - selected override row: `11705250`, old light public contract는 `candidate_only / publish_allowed=false / post_gate_official_title=null`.
+- Verification:
+  - `11705250` current HEAD non-light launch health `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `1/1` OK.
+  - 검색 단계에서 `search_degraded_detected=6`, `search_upstream_zero=2`, `search_bridge_after_filter_zero=4`가 관측됐다.
+  - PowerShell `PYTHONIOENCODING='utf-8'` quoting을 수정해 새 launch stderr에는 Loop329 계열 `utf-8` warning이 없다.
+- Gate: Loop329 runtime `IN_PROGRESS / NOT_APPROVAL`, override audit `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD / SEARCH_DEGRADED_OBSERVED`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop329 current HEAD c033dd97 runtime dispatch
 
 - 범위: Loop328 guard patch 커밋 `c033dd97` 기준으로 post-patch single replay, safe-loss N5, full375, bounded1200 completed-source, golden18을 새 output 경로에 발주한다.

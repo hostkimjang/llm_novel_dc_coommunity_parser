@@ -1,5 +1,32 @@
 # Improvement Register
 
+## IMP-20260703-330 - current HEAD health and override audit transition
+
+- Status: Dispatched / background / approval not open
+- Loop: 330
+- Problem:
+  - Loop329 current HEAD full375/bounded/golden/N5/post-patch single are still incomplete, so waiting on them alone does not reduce an actionable queue.
+  - Old light run has many `OVERRIDE AUDIT(LLM=False->final=True)` rows that need current HEAD non-light validation before being trusted.
+- Change:
+  - Regenerated Loop329 health audits at the current checkpoint.
+  - Extracted old light override candidates: `93` log events, `91` unreviewed checkpoint-matched candidates after excluding `11708445` and `11668283`.
+  - Launched current HEAD non-light single-row audit for `11705250 / 심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네`.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_330_REPORT_20260703.md`
+  - state `docs/devs/loop330_current_head_health_override_audit_20260703.json`
+  - override input `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop330_override_audit_11705250_current_head_c033dd97_input.jsonl`
+  - health audits `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop330_*_health_audit.json`
+- Result:
+  - `11705250` launch health is search included non-light `1/1` OK.
+  - Search degraded is still observed in-run: `search_degraded_detected=6`, `search_upstream_zero=2`.
+  - Result JSON is not yet present, so the row is not adjudicated.
+- Gate:
+  - Loop329 runtime `IN_PROGRESS / NOT_APPROVAL`
+  - override audit `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD / SEARCH_DEGRADED_OBSERVED`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260703-329 - current HEAD c033dd97 runtime dispatch
 
 - Status: Dispatched / background / approval not open

@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop330 current HEAD health and override audit transition
+
+- Loop329 current HEAD background run을 최신 health로 다시 감사했다.
+- post-patch `11668283`은 `0/0/0/0`이고 `search_degraded_detected=7`, `search_upstream_zero=5`가 남아 search recovery는 계속 `P0 / OPEN`이다.
+- full375는 `3/1/2/0`, bounded1200 completed-source는 `7/2/5/0`, golden18은 `1/1/0/0`, safe-loss N5 first run은 `0/0/0/0`이다. 모두 완료 전이므로 approval 근거가 아니다.
+- old light run `20260702_065642_030743`에서 `OVERRIDE AUDIT(LLM=False->final=True)` 후보 `93`건을 찾았고, 이미 검토한 `11708445`, `11668283` 제외 checkpoint-matched 미검토 후보 `91`건을 확인했다.
+- `11705250 / 심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네`를 current HEAD non-light override audit 단건으로 발주했다. PID는 `93016`, run은 `20260703_034549_939485`, health는 search 포함 non-light `1/1` OK다. 다만 검색 단계에서 `search_degraded_detected=6`, `search_upstream_zero=2`가 관측됐다.
+- Report는 `docs/devs/loop_reports/LOOP_330_REPORT_20260703.md`, state는 `docs/devs/loop330_current_head_health_override_audit_20260703.json`이다.
+- Gate는 Loop329 runtime `IN_PROGRESS / NOT_APPROVAL`, override audit `11705250` `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD / SEARCH_DEGRADED_OBSERVED`, safe-loss flip `RUNNING_BACKGROUND / NOT_ANALYZED`, golden18 `APPROVAL_NOT_OPEN`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop329 current HEAD c033dd97 runtime dispatch
 
 - Loop328 guard patch 커밋 `c033dd97` 이후 현 HEAD runtime 증거를 새 경로로 분리했다.
