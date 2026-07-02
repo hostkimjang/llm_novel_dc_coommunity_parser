@@ -1,5 +1,21 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop304 safe-loss known-alias contract repair 체크
+
+- [x] Loop301 `repair_safe_loss=14` 중 source-native alias seed 일부를 shared known-abbreviation 계약으로 전환했다.
+  - aliases `암흑가보스/암보스`, `기계공주`, `약먹마`, `악살싶`, `마도줍`, `괴담동`, `즉사무림`, `밀리언클래스`
+  - work-cue `최신편`, `작가`, `공지`, `표지`, `읽`, `봤`, `보는`, `볼만`, `재밌`, `재밋`, `재미`, `호평`, `애매`
+- [x] 비교/adjacent negative control을 추가했다.
+  - `괴담텔 ... 괴담동이 살짝 생각나네`는 `괴담 동아리`로 release하지 않음
+- [x] 관련 계약 테스트를 통과했다.
+  - `tests.test_known_title_abbreviation_safe_loss_contract`: PASS, `2` tests
+  - related bundle: PASS, `217` tests
+  - `py_compile`: PASS
+  - `git diff --check`: PASS
+- [ ] Loop301 seed alias rows를 targeted runtime replay로 재확인한다.
+- [ ] `repair_safe_loss=14`는 runtime replay와 collateral compare 전까지 queue 감소로 세지 않는다.
+- Gate: code contract `GO_UNIT`, targeted runtime `NOT_RUN`, safe-loss flip `NOT_REFRESHED_CURRENT_HEAD`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop303 runtime recovery / background handoff 체크
 
 - [x] Docker Desktop 재기동 후 search shard runtime을 재확인했다.

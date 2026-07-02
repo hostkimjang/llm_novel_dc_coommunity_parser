@@ -1,5 +1,31 @@
 # Improvement Register
 
+## IMP-20260702-304 - safe-loss known-alias contract repair
+
+- Status: Implemented / unit contract only
+- Loop: 304
+- Problem:
+  - Loop301 `repair_safe_loss=14`에는 제목/본문의 직접 alias surface가 source-native로 정당한데 after가 null/promotion_blocked로 내려간 반복 패턴이 있다.
+  - 대형 run을 기다리는 것만으로는 actionable queue가 줄지 않으므로 alias loss를 shared contract로 고정해야 했다.
+- Change:
+  - `KNOWN_TITLE_ABBREVIATIONS`에 Loop301 seed alias 일부를 추가했다.
+  - Known-abbreviation release cue에 직접 작품 소비/평가/작가/공지/표지 표면을 추가했다.
+  - Comparison-only adjacent alias negative control을 테스트로 잠갔다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_304_REPORT_20260702.md`
+  - state `docs/devs/loop304_safe_loss_alias_contract_repair_20260702.json`
+  - test `tests/test_known_title_abbreviation_safe_loss_contract.py`
+- Result:
+  - focused tests `2` PASS
+  - related bundle `217` PASS
+  - targeted runtime replay `NOT_RUN`
+- Gate:
+  - code contract `GO_UNIT`
+  - search recovery `P0 / OPEN`
+  - full375/bounded `IN_PROGRESS / NOT_APPROVAL`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-303 - runtime recovery and background handoff
 
 - Status: In progress / review locked

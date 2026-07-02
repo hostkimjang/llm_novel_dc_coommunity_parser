@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop304 Addendum - safe-loss known-alias contract repair
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop304는 approval이 아니라 Loop301 `repair_safe_loss=14` 중 일부 alias seed를 shared known-abbreviation work-cue 계약으로 전환한 회차다.
+- 목적: 코드 변경 없는 대형 run 대기 대신 safe-loss queue의 반복 alias loss를 실코드+계약 테스트로 줄인다.
+- 코드 변경: `KNOWN_TITLE_ABBREVIATIONS`에 source-native strong alias를 추가하고, `_known_title_abbreviation_update_question_anchor(...)`의 직접 작품 소비/평가 cue를 보강했다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_304_REPORT_20260702.md`, state JSON `docs/devs/loop304_safe_loss_alias_contract_repair_20260702.json`, test `tests/test_known_title_abbreviation_safe_loss_contract.py`.
+- Evidence: positive alias release 7건과 comparison-only negative control 1건을 계약화했다. Related bundle은 `217` tests PASS다.
+- Runtime: targeted replay는 아직 `NOT_RUN`; full375/bounded는 background `IN_PROGRESS / NOT_APPROVAL`; search recovery는 `P0 / OPEN`.
+- Gate: code contract `GO_UNIT`, safe-loss flip `NOT_REFRESHED_CURRENT_HEAD`, promotion blocked interpretation `search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop303 Addendum - runtime recovery and background handoff
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop303은 approval이 아니라 Loop302 runtime blocker를 복구하고 장기 run을 background 감시로 내린 회차다.

@@ -1,0 +1,71 @@
+{
+  "report_type": "loop304_safe_loss_alias_contract_repair",
+  "generated_at": "2026-07-02T18:06:30+09:00",
+  "goal_status": "ACTIVE_NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "purpose": "Convert part of Loop301 repair_safe_loss source-native alias evidence into a shared known-abbreviation work-cue contract.",
+    "approval_claim": false,
+    "runtime_replay": "NOT_RUN",
+    "search_recovery": "P0_OPEN"
+  },
+  "code_changes": [
+    {
+      "path": "src/llm_batch/experts/utils.py",
+      "change": "Added source-native known title abbreviations for Loop301 safe-loss repair seeds."
+    },
+    {
+      "path": "src/llm_batch/agentic_pipeline.py",
+      "change": "Expanded known-title abbreviation work-cue terms for direct review/reading/author/notice/cover surfaces."
+    },
+    {
+      "path": "tests/test_known_title_abbreviation_safe_loss_contract.py",
+      "change": "Added positive Loop301 alias-release contracts and a comparison-only negative control."
+    }
+  ],
+  "alias_contracts": {
+    "positive_aliases": [
+      "암흑가보스",
+      "기계공주",
+      "약먹마",
+      "악살싶",
+      "마도줍",
+      "즉사무림",
+      "밀리언클래스"
+    ],
+    "negative_control": "괴담텔 current-work comparison with 괴담동 adjacent alias remains blocked"
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "focused_unittest": {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_known_title_abbreviation_safe_loss_contract -v",
+      "result": "PASS",
+      "tests": 2
+    },
+    "related_unittest": {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_known_title_abbreviation_safe_loss_contract tests.test_title_lead_search_inferred_guard tests.test_promotion_gate_contract tests.test_regression_safe_work_bridge_contract tests.test_goal_convergence tests.test_always_on_regression_gates -v",
+      "result": "PASS",
+      "tests": 217
+    },
+    "git_diff_check": "PASS"
+  },
+  "background_runtime_snapshot": {
+    "full375_completed": 101,
+    "full375_pending": 6,
+    "bounded1200_completed": 147,
+    "bounded1200_pending": 16,
+    "background104k_completed": 1058,
+    "background104k_pending": 94,
+    "approval": false,
+    "search_gate": "REVIEW"
+  },
+  "gates": {
+    "code_contract": "GO_UNIT",
+    "targeted_runtime_replay": "NOT_RUN",
+    "safe_loss_flip_probe": "NOT_REFRESHED_CURRENT_HEAD",
+    "full375_bounded_completed_source": "IN_PROGRESS_NOT_APPROVAL",
+    "search_recovery": "P0_OPEN",
+    "goal": "ACTIVE_NOT_COMPLETE"
+  }
+}

@@ -1,5 +1,24 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop304 safe-loss known-alias contract repair
+
+- 범위: Loop301 `repair_safe_loss=14` 중 source-native로 확인된 직접 alias seed 일부를 shared known-abbreviation work-cue 계약으로 전환한다.
+- Code:
+  - `src\llm_batch\experts\utils.py`: `KNOWN_TITLE_ABBREVIATIONS`에 `암흑가보스/암보스`, `기계공주`, `약먹마`, `악살싶`, `마도줍`, `괴담동`, `즉사무림`, `밀리언클래스` 추가.
+  - `src\llm_batch\agentic_pipeline.py`: known-title abbreviation release cue에 `최신편`, `작가`, `공지`, `표지`, `읽`, `봤`, `보는`, `볼만`, `재밌`, `재밋`, `재미`, `호평`, `애매` 추가.
+  - `tests\test_known_title_abbreviation_safe_loss_contract.py`: positive alias release와 comparison-only negative control 추가.
+- Verification:
+  - `.\.venv312\Scripts\python.exe -m py_compile src\llm_batch\experts\utils.py src\llm_batch\agentic_pipeline.py tests\test_known_title_abbreviation_safe_loss_contract.py` -> PASS.
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_known_title_abbreviation_safe_loss_contract -v` -> PASS, `2` tests.
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_known_title_abbreviation_safe_loss_contract tests.test_title_lead_search_inferred_guard tests.test_promotion_gate_contract tests.test_regression_safe_work_bridge_contract tests.test_goal_convergence tests.test_always_on_regression_gates -v` -> PASS, `217` tests.
+  - `git diff --check` -> PASS.
+- Runtime snapshot:
+  - full375 manifest `completed=101`, `pending=6`
+  - bounded1200 manifest `completed=147`, `pending=16`
+  - 104k manifest `completed=1058`, `pending=94`
+  - 모두 approval 아님. search gate는 `REVIEW`.
+- Gate: code contract `GO_UNIT`, targeted runtime `NOT_RUN`, safe-loss flip `NOT_REFRESHED_CURRENT_HEAD`, full375/bounded `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop303 runtime recovery / background handoff
 
 - 범위: Loop302 search runtime blocker 복구 후 N5/full375/bounded1200/104k 상태를 current HEAD에서 재점검하고 대형 run을 background 감시로 내린다.

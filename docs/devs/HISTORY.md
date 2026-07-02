@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop304 safe-loss known-alias contract repair
+
+- Loop301 `repair_safe_loss=14` 중 source-native로 확인된 직접 alias seed 일부를 shared known-abbreviation work-cue 계약으로 전환했다.
+- `KNOWN_TITLE_ABBREVIATIONS`에 `암흑가보스/암보스`, `기계공주`, `약먹마`, `악살싶`, `마도줍`, `괴담동`, `즉사무림`, `밀리언클래스`를 추가했다.
+- `_known_title_abbreviation_update_question_anchor(...)`는 `최신편`, `작가`, `공지`, `표지`, `읽`, `봤`, `보는`, `볼만`, `재밌`, `재밋`, `재미`, `호평`, `애매` 같은 직접 작품 소비/평가 cue를 본다.
+- 비교/adjacent negative control로 `괴담텔 ... 괴담동이 살짝 생각나네`가 `괴담 동아리`로 release되지 않도록 계약 테스트를 추가했다.
+- Report는 `docs/devs/loop_reports/LOOP_304_REPORT_20260702.md`, state는 `docs/devs/loop304_safe_loss_alias_contract_repair_20260702.json`이다.
+- 검증은 py_compile PASS, focused `2` tests PASS, related bundle `217` tests PASS, `git diff --check` PASS다.
+- Gate는 code contract `GO_UNIT`, targeted runtime `NOT_RUN`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop303 runtime recovery and background handoff
 
 - Docker Desktop 재기동 뒤 search shard runtime이 복구됐다. `3333/3334` health는 `status=ok`, `headless_search_enabled=true`이고 MCP bridge container는 `36`개다.
