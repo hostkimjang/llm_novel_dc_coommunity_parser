@@ -1,5 +1,22 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop296 safe-loss N5 독립 실행 wrapper
+
+- 범위: Loop294 invalid 원인인 같은 process `post_id` de-dupe를 피하도록 safe-loss N5 probe 실행 계획을 독립 단일행 run으로 고정한다.
+- Plan build:
+  - command: `.\.venv312\Scripts\python.exe tools\safe_loss_flip_rate_probe.py build-run-plan --source-input out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop238_safe_loss_flip_probe_3rows.jsonl --post-ids 11674712,11660237,11698880 --repeats 5 --work-dir out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop296_safe_loss_independent_n5_plan --run-prefix loop296_safe_loss_current_head --manifest out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop296_safe_loss_independent_n5_run_plan.json --python .\.venv312\Scripts\python.exe --expert-main expert_main.py --parallel 1 --expert-arg=--no-dashboard --expert-arg=--reuse-shards-only`
+  - result: `planned_run_count=15`, `expected_run_count=15`, `minimum_repeats_contract_met=true`, missing post_ids `[]`
+  - repeat counts: `11674712=5`, `11660237=5`, `11698880=5`
+  - dedupe guard: `one_post_per_process`
+- Background snapshot:
+  - full375 manifest: `input/completed/flushed/pending/failed=375/49/41/8/0`, `include_search=true`, `light_mode=false`, `large_run_complete=false`
+  - bounded1200 manifest: `1200/78/69/9/0`, `include_search=true`, `light_mode=false`, `large_run_complete=false`
+  - golden18 manifest: `18/14/12/2/0`, `include_search=true`, `light_mode=true`, `large_run_complete=false`
+- Code/test verification:
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\safe_loss_flip_rate_probe.py tests\test_safe_loss_flip_rate_probe.py` PASS
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_safe_loss_flip_rate_probe -v` PASS, `8 tests`
+- Gate: wrapper `GO_UNIT`, Loop296 execution `PLAN_READY_NOT_EXECUTED`, current N5 evidence Loop288 `NO-GO`, search recovery `P0 / OPEN`, background runs `RUNNING_BACKGROUND`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop291 wrong-work title flip source-native 검토
 
 - 범위: Loop290 `wrong_work_title_flip` 10행을 source-native/blind 판정으로 라벨링하고, 결과를 수리 큐로 고정한다.

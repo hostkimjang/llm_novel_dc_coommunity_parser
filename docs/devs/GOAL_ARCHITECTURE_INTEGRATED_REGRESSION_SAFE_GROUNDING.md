@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop296 Addendum - safe-loss N5 독립 실행 wrapper
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop296은 새 approval이 아니라 Loop294 invalid 반복 측정 경로를 막는 실행계획 계약이다.
+- 목적: 같은 process에 중복 `post_id`를 넣으면 `input_post_count=3`으로 collapse되므로, safe-loss N5 반복을 `one_post_per_process` 구조로 강제한다.
+- 코드 변경: `tools/safe_loss_flip_rate_probe.py`에 `build-run-plan` subcommand를 추가하고, `tests/test_safe_loss_flip_rate_probe.py`에 15개 독립 실행 계획 계약을 추가했다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_296_REPORT_20260702.md`, plan manifest `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop296_safe_loss_independent_n5_run_plan.json`.
+- Evidence: plan은 planned runs `15`, repeat_count_by_post `11674712=5`, `11660237=5`, `11698880=5`, missing post_ids `[]`, `minimum_repeats_contract_met=true`다. 각 단일행 입력은 원본 row만 담고 `_flip_probe` metadata를 넣지 않는다.
+- Current N5 evidence: 실제 current HEAD N5 결과는 Loop288을 유지한다. gate는 `NO-GO`; `11674712`와 `11698880`은 flip_rate `0.4`, `11660237`은 stable blind judge confirmed다.
+- Background snapshot: full375 `375/49/41/8/0`, bounded1200 `1200/78/69/9/0`, golden18 `18/14/12/2/0`, 모두 `large_run_complete=false`.
+- Gate: wrapper `GO_UNIT`, Loop296 execution `PLAN_READY_NOT_EXECUTED`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop291 Addendum - wrong-work title flip source-native 검토
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop291은 approval이 아니라 Loop290 `wrong_work_title_flip` 10행의 source-native 라벨 산출물이다.

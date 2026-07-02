@@ -1,5 +1,30 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop296 safe-loss N5 독립 실행 wrapper 체크
+
+- [x] Loop294 invalid 원인을 도구 계약으로 막았다.
+  - 같은 process 중복 입력은 `post_id` de-dupe로 `input_post_count=3`에 접힌다.
+  - 새 경로는 반복마다 단일행 JSONL과 독립 `expert_main.py` 실행 계획을 만든다.
+- [x] `tools\safe_loss_flip_rate_probe.py`에 `build-run-plan` subcommand를 추가했다.
+  - dedupe guard `one_post_per_process`
+  - 입력 표면 계약: 원본 row 1개만 쓰고 `_flip_probe` metadata를 넣지 않음.
+  - aggregation 계약: 15개 per-repeat result JSON을 기존 `analyze`에 모두 전달.
+- [x] Loop296 N5 plan을 생성했다.
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop296_safe_loss_independent_n5_run_plan.json`
+  - planned runs `15`
+  - repeat_count_by_post `11674712=5`, `11660237=5`, `11698880=5`
+  - missing_post_ids `[]`
+- [x] focused 검증을 통과했다.
+  - `py_compile tools\safe_loss_flip_rate_probe.py tests\test_safe_loss_flip_rate_probe.py` PASS
+  - `tests.test_safe_loss_flip_rate_probe` 8 tests PASS
+- [x] background 런 최신 snapshot을 확인했다.
+  - full375 `375/49/41/8/0`, `large_run_complete=false`
+  - bounded1200 `1200/78/69/9/0`, `large_run_complete=false`
+  - golden18 `18/14/12/2/0`, `large_run_complete=false`
+- [ ] Loop296 15개 단일행 run은 필요 시 별도 발주한다. 현재는 Loop288 N5 실제 증거가 있으므로 추가 LLM 부하는 보류한다.
+- [ ] background full375/bounded1200/golden18 완료 후 collateral/golden gate를 재평가한다.
+- Gate: wrapper `GO_UNIT`, Loop296 execution `PLAN_READY_NOT_EXECUTED`, current N5 evidence Loop288 `NO-GO`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop293 publication scope 계약 점검 체크
 
 - [x] Loop293 post-patch known-alias targeted replay를 완료했다.
@@ -29,7 +54,7 @@
   - `tests.test_expert_main_comment_metadata` 37 tests PASS
   - `tests.test_title_lead_search_inferred_guard` 180 tests PASS
   - `git diff --check` PASS, LF/CRLF 경고만 있음
-- [ ] 진짜 `N>=5` flip probe wrapper를 만든다. 동일 process 입력은 post_id de-dupe로 반복 측정이 무효화된다.
+- [x] 진짜 `N>=5` flip probe wrapper를 만들었다. 동일 process 입력은 post_id de-dupe로 반복 측정이 무효화되므로 Loop296부터 `one_post_per_process` plan을 쓴다.
 - [ ] search degraded 복구 후 `11716448` scope-order smoke를 다시 실행한다.
 - [ ] background full375/bounded1200/golden18 완료 후 collateral/golden gate를 재평가한다.
 - Gate: code contract `GO_UNIT`, Loop293 runtime `REVIEW_LOCKED_SEARCH_DEGRADED`, Loop294 `INVALID_ABORTED`, Loop295 `ABORTED_INCOMPLETE`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

@@ -1,5 +1,17 @@
 # Slang DB Improvement TODO
 
+## 2026-07-02 Loop296 safe-loss N5 wrapper / alias 안정성 후속
+
+- [x] 진짜 `N>=5` flip probe wrapper를 만들었다.
+  - `tools\safe_loss_flip_rate_probe.py build-run-plan`
+  - plan manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop296_safe_loss_independent_n5_run_plan.json`
+  - repeat_count_by_post `11674712=5`, `11660237=5`, `11698880=5`
+- [x] slang/alias 판단에는 Loop288 실제 N5 증거를 유지한다.
+  - `11660237` stable blind judge confirmed
+  - `11674712`, `11698880` flip_rate `0.4`, `nondeterminism_unresolved`
+- [ ] Loop296 15개 단일행 run을 실제 발주하면 alias 안정성 판단을 새 결과로 다시 갱신한다.
+- Gate: slang DB write-back 아님, wrapper `GO_UNIT`, safe-loss current evidence `NO-GO`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop293 alias runtime / scope-order 후속
 
 - [x] Loop293에서 `댓천마 -> 댓글창의 천재 마법사` registry 보강의 targeted runtime을 확인했다.
@@ -9,7 +21,7 @@
   - `11716448`은 `아카데미 생존 갤러리` 후보/URL이 보존됐지만 pre-patch runtime trace는 `context_only`.
   - `expert_main.py`에서 `current_work` scope를 먼저 평가하도록 계약을 보강했다.
 - [ ] search degraded 복구 후 `아생갤` scope-order smoke를 다시 실행한다.
-- [ ] 진짜 `N>=5` flip probe wrapper를 만든 뒤 slang/alias 안정성 판단을 갱신한다.
+- [x] 진짜 `N>=5` flip probe wrapper를 만들었다. 현재 slang/alias 안정성 판단은 Loop288 N5 실제 결과 기준으로 유지한다.
 - Gate: slang DB write-back 아님, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
 
 ## 2026-07-02 Loop292 source-native strong alias code-registry 보강

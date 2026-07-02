@@ -5,6 +5,7 @@ from pathlib import Path
 
 from tools.safe_loss_flip_rate_probe import (
     analyze_flip_rate,
+    build_independent_run_plan,
     build_probe_input,
     load_rows,
     write_probe_input,
@@ -115,6 +116,60 @@ class SafeLossFlipRateProbeTest(unittest.TestCase):
 
             self.assertEqual(len(lines), 2)
             self.assertEqual(json.loads(lines[0])["post_id"], 1)
+
+    def test_independent_run_plan_preserves_n5_repeats_as_single_post_runs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            work_dir = Path(tmp) / "probe_runs"
+            manifest, input_writes = build_independent_run_plan(
+                source_rows=[
+                    _input_row(11674712),
+                    _input_row(11660237),
+                    _input_row(11698880),
+                ],
+                post_ids=["11674712", "11660237", "11698880"],
+                repeats=5,
+                work_dir=work_dir,
+                run_prefix="loop296_safe_loss_current_head",
+                python_executable="python",
+                expert_main=Path("expert_main.py"),
+                parallel=1,
+                expert_args=["--no-dashboard", "--reuse-shards-only"],
+            )
+
+        self.assertTrue(manifest["minimum_repeats_contract_met"])
+        self.assertEqual(manifest["expected_run_count"], 15)
+        self.assertEqual(manifest["planned_run_count"], 15)
+        self.assertEqual(manifest["repeat_count_by_post"]["11674712"], 5)
+        self.assertEqual(manifest["repeat_count_by_post"]["11660237"], 5)
+        self.assertEqual(manifest["repeat_count_by_post"]["11698880"], 5)
+        self.assertEqual(len(input_writes), 15)
+        self.assertEqual(len({str(path) for path, _row in input_writes}), 15)
+        self.assertEqual(len({run["output_json"] for run in manifest["planned_runs"]}), 15)
+        for input_path, row in input_writes:
+            self.assertEqual(input_path.suffix, ".jsonl")
+            self.assertNotIn("_flip_probe", row)
+        for run in manifest["planned_runs"]:
+            argv = run["command_argv"]
+            self.assertIn("--input", argv)
+            self.assertIn("--output", argv)
+            self.assertIn("--no-dashboard", argv)
+            self.assertIn("--reuse-shards-only", argv)
+            self.assertEqual(argv[argv.index("--parallel") + 1], "1")
+
+    def test_independent_run_plan_flags_repeats_below_contract(self):
+        manifest, _input_writes = build_independent_run_plan(
+            source_rows=[_input_row(11660237)],
+            post_ids=["11660237"],
+            repeats=3,
+            work_dir=Path("runs"),
+            run_prefix="below_min",
+            python_executable="python",
+            expert_main=Path("expert_main.py"),
+            minimum_repeats=5,
+        )
+
+        self.assertFalse(manifest["minimum_repeats_contract_met"])
+        self.assertEqual(manifest["repeat_count_by_post"]["11660237"], 3)
 
 
 if __name__ == "__main__":

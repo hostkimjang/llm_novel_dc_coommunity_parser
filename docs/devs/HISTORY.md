@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop296 safe-loss N5 독립 실행 wrapper
+
+- Loop294의 `N>=5` 반복 입력은 같은 process에서 `post_id` de-dupe되어 `input_post_count=3`으로 접혔으므로 flip rate 갱신 증거가 아니었다.
+- `tools/safe_loss_flip_rate_probe.py`에 `build-run-plan` subcommand를 추가해 반복마다 단일행 JSONL과 독립 `expert_main.py` command를 만들게 했다.
+- Loop296 plan manifest는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop296_safe_loss_independent_n5_run_plan.json`이다.
+- Plan 결과는 planned runs `15`, repeat_count_by_post `11674712=5`, `11660237=5`, `11698880=5`, missing post_ids `[]`, `minimum_repeats_contract_met=true`다.
+- 기존 current HEAD 실제 N5 증거는 Loop288을 유지한다. gate는 `NO-GO`; `11674712`와 `11698880`은 flip_rate `0.4`, `11660237`은 stable blind judge confirmed다.
+- Background snapshot은 full375 `375/49/41/8/0`, bounded1200 `1200/78/69/9/0`, golden18 `18/14/12/2/0`이며 모두 `large_run_complete=false`다.
+- Report는 `docs/devs/loop_reports/LOOP_296_REPORT_20260702.md`다.
+- Gate는 wrapper `GO_UNIT`, Loop296 execution `PLAN_READY_NOT_EXECUTED`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop291 wrong-work title flip source-native 검토
 
 - Loop290 collateral183 P0 배치 중 `wrong_work_title_flip` 10행을 source-native/blind 방식으로 판정했다.

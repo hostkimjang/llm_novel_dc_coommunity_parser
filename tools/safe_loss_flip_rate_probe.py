@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
+import sys
 from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -122,6 +124,103 @@ def write_probe_input(rows: list[dict[str, Any]], path: Path) -> None:
         encoding="utf-8",
         newline="\n",
     )
+
+
+def build_independent_run_plan(
+    *,
+    source_rows: list[dict[str, Any]],
+    post_ids: list[str],
+    repeats: int,
+    work_dir: Path,
+    run_prefix: str,
+    python_executable: str,
+    expert_main: Path,
+    parallel: int = 1,
+    expert_args: list[str] | None = None,
+    minimum_repeats: int = 5,
+) -> tuple[dict[str, Any], list[tuple[Path, dict[str, Any]]]]:
+    by_id: dict[str, dict[str, Any]] = {}
+    for row in source_rows:
+        pid = post_id_key(row.get("post_id"))
+        if pid and pid not in by_id:
+            by_id[pid] = row
+
+    missing = [pid for pid in post_ids if pid not in by_id]
+    safe_prefix = "".join(ch if ch.isalnum() or ch in {"-", "_"} else "_" for ch in run_prefix).strip("_")
+    if not safe_prefix:
+        safe_prefix = "safe_loss_flip_probe"
+    expert_args = list(expert_args or [])
+    input_dir = work_dir / "inputs"
+    result_dir = work_dir / "results"
+    planned_runs: list[dict[str, Any]] = []
+    input_writes: list[tuple[Path, dict[str, Any]]] = []
+
+    for attempt in range(1, max(1, repeats) + 1):
+        for pid in post_ids:
+            row = by_id.get(pid)
+            if row is None:
+                continue
+            stem = f"{safe_prefix}_{pid}_r{attempt:02d}"
+            input_path = input_dir / f"{stem}.jsonl"
+            output_path = result_dir / f"{stem}_result.json"
+            argv = [
+                python_executable,
+                str(expert_main),
+                "--input",
+                str(input_path),
+                "--output",
+                str(output_path),
+                "--parallel",
+                str(max(1, parallel)),
+                *expert_args,
+            ]
+            planned_runs.append(
+                {
+                    "post_id": pid,
+                    "repeat_index": attempt,
+                    "input_jsonl": str(input_path),
+                    "output_json": str(output_path),
+                    "checkpoint_jsonl": str(output_path.with_name(output_path.stem + "_checkpoint.jsonl")),
+                    "manifest_json": str(output_path.with_name(output_path.stem + "_manifest.json")),
+                    "command_argv": argv,
+                    "command_line": subprocess.list2cmdline(argv),
+                }
+            )
+            input_writes.append((input_path, dict(row)))
+
+    repeat_counts = Counter(str(run["post_id"]) for run in planned_runs)
+    result_paths = [str(run["output_json"]) for run in planned_runs]
+    analyze_argv = [
+        python_executable,
+        str(Path(__file__)),
+        "analyze",
+    ]
+    for path in result_paths:
+        analyze_argv.extend(["--result", path])
+    analyze_argv.extend(["--post-ids", ",".join(post_ids), "--repeats", str(max(1, repeats))])
+
+    manifest = {
+        "manifest_type": "safe_loss_flip_rate_probe_independent_run_plan",
+        "generated_at": datetime.now().replace(microsecond=0).isoformat(),
+        "source_input": "",
+        "work_dir": str(work_dir),
+        "run_prefix": safe_prefix,
+        "post_ids": post_ids,
+        "repeats": max(1, repeats),
+        "minimum_repeats": max(1, minimum_repeats),
+        "minimum_repeats_contract_met": max(1, repeats) >= max(1, minimum_repeats),
+        "expected_run_count": len(post_ids) * max(1, repeats),
+        "planned_run_count": len(planned_runs),
+        "missing_post_ids": missing,
+        "repeat_count_by_post": {pid: repeat_counts.get(pid, 0) for pid in post_ids},
+        "dedupe_guard": "one_post_per_process",
+        "input_surface_contract": "Each generated JSONL contains exactly one copied source row and no _flip_probe metadata.",
+        "aggregation_contract": "Analyze all per-repeat result JSON files together with the same post_ids and repeats value.",
+        "planned_runs": planned_runs,
+        "analyze_command_argv": analyze_argv,
+        "analyze_command_line": subprocess.list2cmdline(analyze_argv),
+    }
+    return manifest, input_writes
 
 
 def load_blind_judge(path: Path | None) -> dict[str, dict[str, Any]]:
@@ -262,7 +361,7 @@ def analyze_flip_rate(
 
 def write_markdown(report: dict[str, Any], path: Path) -> None:
     lines = [
-        "# Safe-loss flip-rate probe",
+        "# Safe-loss flip-rate probe 보고",
         "",
         f"- gate: `{report['gate']}`",
         f"- repeats: `{report['repeats']}`",
@@ -279,7 +378,7 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         f"- flipped_post_ids: `{report['summary']['flipped_post_ids']}`",
         f"- blind_judge_missing_post_ids: `{report['summary']['blind_judge_missing_post_ids']}`",
         "",
-        "## Rows",
+        "## 행별 결과",
         "",
     ]
     for row in report["rows"]:
@@ -317,6 +416,24 @@ def parse_args() -> argparse.Namespace:
     build.add_argument("--output-jsonl", required=True, type=Path)
     build.add_argument("--manifest", required=True, type=Path)
 
+    plan = sub.add_parser("build-run-plan")
+    plan.add_argument("--source-input", required=True, type=Path)
+    plan.add_argument("--post-ids", default=",".join(DEFAULT_SAFE_LOSS_POST_IDS))
+    plan.add_argument("--repeats", type=int, default=5)
+    plan.add_argument("--minimum-repeats", type=int, default=5)
+    plan.add_argument("--work-dir", required=True, type=Path)
+    plan.add_argument("--run-prefix", required=True)
+    plan.add_argument("--manifest", required=True, type=Path)
+    plan.add_argument("--python", default=sys.executable)
+    plan.add_argument("--expert-main", default=Path("expert_main.py"), type=Path)
+    plan.add_argument("--parallel", type=int, default=1)
+    plan.add_argument(
+        "--expert-arg",
+        action="append",
+        default=[],
+        help="Additional argument passed through to each expert_main invocation. Repeat for multiple args.",
+    )
+
     analyze = sub.add_parser("analyze")
     analyze.add_argument("--result", required=True, type=Path, action="append")
     analyze.add_argument("--post-ids", default=",".join(DEFAULT_SAFE_LOSS_POST_IDS))
@@ -352,6 +469,30 @@ def main() -> int:
         write_json(args.manifest, manifest)
         print(json.dumps(manifest, ensure_ascii=False, indent=2))
         return 1 if missing else 0
+
+    if args.command == "build-run-plan":
+        manifest, input_writes = build_independent_run_plan(
+            source_rows=load_jsonl(args.source_input),
+            post_ids=post_ids,
+            repeats=max(1, int(args.repeats)),
+            work_dir=args.work_dir,
+            run_prefix=args.run_prefix,
+            python_executable=str(args.python),
+            expert_main=args.expert_main,
+            parallel=max(1, int(args.parallel)),
+            expert_args=list(args.expert_arg or []),
+            minimum_repeats=max(1, int(args.minimum_repeats)),
+        )
+        manifest["source_input"] = str(args.source_input)
+        for input_path, row in input_writes:
+            write_probe_input([row], input_path)
+        write_json(args.manifest, manifest)
+        print(json.dumps(manifest, ensure_ascii=False, indent=2))
+        if manifest["missing_post_ids"]:
+            return 1
+        if not manifest["minimum_repeats_contract_met"]:
+            return 2
+        return 0
 
     report = analyze_flip_rate(
         result_rows=[

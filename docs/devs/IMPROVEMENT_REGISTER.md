@@ -1,5 +1,36 @@
 # Improvement Register
 
+## IMP-20260702-296 - safe-loss N5 독립 실행 wrapper
+
+- Status: Implemented / execution plan ready
+- Loop: 296
+- Problem:
+  - Loop294는 `N>=5` 반복 입력을 한 process에 넣어 `post_id` de-dupe로 `input_post_count=3`에 접혔다.
+  - 이 경로는 flip rate 갱신 증거가 아니므로 이후 반복 측정에서 다시 쓰면 안 된다.
+- Change:
+  - `tools/safe_loss_flip_rate_probe.py`에 `build-run-plan` subcommand를 추가했다.
+  - 각 반복을 단일행 JSONL과 독립 `expert_main.py` command로 분리한다.
+  - 입력 row에는 `_flip_probe` metadata를 넣지 않아 모델 입력 표면을 유지한다.
+  - `tests/test_safe_loss_flip_rate_probe.py`에 `3 x 5 = 15` 계획, per-post repeat count, command argv, min-repeat 계약을 추가했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_296_REPORT_20260702.md`
+  - plan manifest `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop296_safe_loss_independent_n5_run_plan.json`
+  - Loop288 N5 review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop288_safe_loss_current_head_n5_review.json`
+- Result:
+  - wrapper contract `GO_UNIT`
+  - planned runs `15`
+  - repeat_count_by_post `5/5/5`
+  - Loop296 execution `PLAN_READY_NOT_EXECUTED`
+- Verification:
+  - py_compile PASS
+  - `tests.test_safe_loss_flip_rate_probe` 8 OK
+- Gate:
+  - current N5 evidence remains Loop288 `NO-GO`
+  - search recovery `P0 / OPEN`
+  - full collateral approval `NOT_OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-293 - promotion-blocked final scope ordering 계약 보강
 
 - Status: Implemented / runtime approval blocked
