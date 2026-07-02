@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop334 Addendum - override audit 11705250 false negative
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop334는 approval 회차가 아니라 Loop330에서 발주한 `11705250` current HEAD non-light 결과를 blind/source-native로 판정한 회차다.
+- 목적: `OVERRIDE AUDIT(LLM=False->final=True)` row를 public publish leak 여부와 false negative 여부로 분리해, 대형 run 대기 대신 actionable queue를 줄인다.
+- Evidence: report `docs/devs/loop_reports/LOOP_334_REPORT_20260703.md`, state `docs/devs/loop334_override_audit_11705250_current_head_20260703.json`, review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop334_override_audit_11705250_current_head_blind_source_review.json`.
+- Result: current HEAD result는 `1/1/0/0` 완료됐지만 `is_relevant=false`, `work_resolution=none`, `official_title=null`, `SEARCH_DEGRADED`다. 독립 정답은 `심해의 마법사`이므로 row verdict는 `REPROCESS_FALSE_NEGATIVE`다.
+- 공개 계약: old light와 current HEAD 모두 public title/url leak은 없다. 따라서 publication leak gate는 `GO_NO_LEAK`지만 row semantic gate는 `NO-GO`다.
+- Gate: override audit `NO-GO / REPROCESS_FALSE_NEGATIVE / SEARCH_DEGRADED`, search recovery `P0 / OPEN`, large/background runs `IN_PROGRESS_OR_PARTIAL / NOT_APPROVAL`, golden18 `APPROVAL_NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop333 Addendum - collateral gate accounting
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop333은 approval 회차가 아니라 Loop332 source-native summary를 상시 375 collateral gate accounting에 배선한 회차다.

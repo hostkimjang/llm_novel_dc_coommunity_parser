@@ -1,0 +1,130 @@
+{
+  "loop": 334,
+  "date": "2026-07-03",
+  "scope": "override audit 11705250 current HEAD non-light blind/source-native review",
+  "workspace_head": "20715e02",
+  "runtime_code_head": "c033dd97",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "summary": {
+    "row_verdict": "REPROCESS_FALSE_NEGATIVE",
+    "publication_leak": false,
+    "approval": "NOT_OPEN",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  },
+  "row": {
+    "post_id": 11705250,
+    "title": "심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네",
+    "body": "권 단위로 몰아봐야 맛있는 소설",
+    "comment": "그거 실 쓰는애 죽이는거 까지 보고 좀 루즈해져서 묵혔는데 뒤에도 괜찮음?"
+  },
+  "old_light_contract": {
+    "source_run": "20260702_065642_030743",
+    "event": "OVERRIDE AUDIT post_id=11705250: LLM=False -> final=True",
+    "safe_resolved": true,
+    "promotion_decision_status": "candidate_only",
+    "publish_allowed": false,
+    "post_gate_official_title": null,
+    "blocked_official_title": "실눈의 혈마법사",
+    "interpretation": "internal override event did not publish a public official title"
+  },
+  "current_head_nonlight_contract": {
+    "run_id": "20260703_034549_939485",
+    "completed_flushed_pending_failed": "1/1/0/0",
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "search_health": {
+      "queries_issued": 22,
+      "upstream_zero": 17,
+      "degraded": 22,
+      "degraded_zero": 17,
+      "accepted": 30,
+      "raw": 214,
+      "filtered": 19,
+      "retried": 22,
+      "cache_hits": 1,
+      "status": "SEARCH_DEGRADED"
+    },
+    "identity": {
+      "is_relevant": false,
+      "is_novel_related": true,
+      "is_resolved_work_discussion": false,
+      "title_resolution_state": "unresolved_matchable",
+      "title_resolution_allowed": false,
+      "novel_identity": null,
+      "discussion_type": "noise",
+      "work_resolution": "none",
+      "anchor_type": "none",
+      "anchor_strength": "low",
+      "public_official_title": null,
+      "public_url": null,
+      "consistency_flags": [
+        "notes_demoted_for_unresolved",
+        "official_url_recall_blocked_relation_non_work_context",
+        "primary_work_cleared_non_resolved",
+        "batch_memory_alias_rescue_blocked_nonwork_context",
+        "batch_memory_alias_rescue_blocked_deliberate_null",
+        "title_surface_primary_relation_non_work_blocked",
+        "multi_work_relation_hold_demoted",
+        "local_candidate_hold_preserved"
+      ]
+    }
+  },
+  "blind_source_native_expected": {
+    "is_novel_related": true,
+    "work_resolution": "resolved",
+    "official_title": "심해의 마법사",
+    "url": "https://m.munpia.com/novel/detail/483667",
+    "alias_or_mention": "심해법사",
+    "reason": "게시글 제목의 약칭, 본문 '권 단위로 몰아봐야 맛있는 소설', 댓글의 뒤 회차 문의가 모두 특정 작품 소비 맥락이다."
+  },
+  "independent_evidence": {
+    "prior_native_web_judge": {
+      "path": "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts/verdict_089.json",
+      "resolution_label": "ACCEPT",
+      "independent_official_title": "심해의 마법사",
+      "independent_url": "https://m.munpia.com/novel/detail/483667",
+      "search_evidence_grade": "Strong"
+    },
+    "live_web_verification": {
+      "official_url": "https://m.munpia.com/novel/detail/483667",
+      "observed_title": "심해의 마법사",
+      "observed_author": "상한김밥",
+      "observed_platform": "문피아"
+    }
+  },
+  "background_runtime_snapshot": {
+    "full375": "25/21/4/0 of 375",
+    "bounded1200_completed_source": "37/34/3/0 of 1200",
+    "golden18": "5/5/0/0 of 18",
+    "safe_loss_n5": "3 first-repeat results complete, 15/15 not complete",
+    "interpretation": "background monitoring only; not approval evidence"
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_334_REPORT_20260703.md",
+    "state": "docs/devs/loop334_override_audit_11705250_current_head_20260703.json",
+    "review_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop334_override_audit_11705250_current_head_blind_source_review.json",
+    "review_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop334_override_audit_11705250_current_head_blind_source_review.md",
+    "current_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop330_override_audit_11705250_current_head_c033dd97_search_nonlight_result.json",
+    "current_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop330_override_audit_11705250_current_head_c033dd97_search_nonlight_result_manifest.json"
+  },
+  "gates": {
+    "override_audit_11705250": "NO-GO / REPROCESS_FALSE_NEGATIVE / SEARCH_DEGRADED",
+    "publication_leak_gate": "GO_NO_LEAK",
+    "search_recovery": "P0 / OPEN",
+    "large_background_runs": "IN_PROGRESS_OR_PARTIAL / NOT_APPROVAL",
+    "safe_loss_flip": "RUNNING_BACKGROUND / NOT_ANALYZED_FULL_N5",
+    "golden18_approval": "APPROVAL_NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next_actions": [
+    "11705250은 relation_non_work_context overblock false negative로 REPROCESS 큐에 편입한다.",
+    "search degraded가 100% 복구되기 전 promotion_blocked와 null demotion은 search-blind conditional로 태깅한다.",
+    "full375, bounded1200, golden18, safe-loss N5는 완료 전 approval 근거로 쓰지 않는다.",
+    "override audit expansion은 publication leak 여부와 false negative 여부를 분리해 계속 검증한다."
+  ]
+}

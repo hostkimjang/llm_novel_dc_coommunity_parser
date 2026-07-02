@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop334 override audit 11705250 current HEAD review
+
+- Loop330에서 발주한 `11705250 / 심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네` current HEAD non-light 단건 result가 완료됐다.
+- 결과는 completed/flushed/pending/failed `1/1/0/0`이지만 `is_relevant=false`, `work_resolution=none`, `official_title=null`, `SEARCH_DEGRADED`다.
+- old light `20260702_065642_030743`는 내부 `LLM=False -> final=True` 이벤트가 있었지만 public contract는 `candidate_only / publish_allowed=false / official_title=null`이었다.
+- prior native web judge와 live web 확인은 `심해법사`가 문피아 공식 작품 `심해의 마법사`로 해소되는 것을 지지한다.
+- Loop334 판정은 `REPROCESS_FALSE_NEGATIVE`다. 공개 title/url 누출은 없지만 relation work-context overblock과 search degraded가 결합된 false negative다.
+- Report는 `docs/devs/loop_reports/LOOP_334_REPORT_20260703.md`, state는 `docs/devs/loop334_override_audit_11705250_current_head_20260703.json`이다.
+- Gate는 override audit `NO-GO / REPROCESS_FALSE_NEGATIVE / SEARCH_DEGRADED`, publication leak `GO_NO_LEAK`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop333 collateral gate accounting
 
 - Loop332 source-native summary를 `tools/evaluate_always_on_regression_gates.py`의 collateral gate accounting에 배선했다.

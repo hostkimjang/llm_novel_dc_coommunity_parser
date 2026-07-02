@@ -1,5 +1,32 @@
 # Improvement Register
 
+## IMP-20260703-334 - override audit 11705250 false negative
+
+- Status: Row reviewed / false negative found / approval not open
+- Loop: 334
+- Problem:
+  - Loop330 launched current HEAD non-light audit for `11705250`, but the result was not analyzed yet.
+  - The row needed separation between public publish leakage and semantic false negative.
+- Change:
+  - Compared old light public contract, current HEAD non-light result, prior native web judge, and live web verification.
+  - Recorded a row-level review artifact for `11705250`.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_334_REPORT_20260703.md`
+  - state `docs/devs/loop334_override_audit_11705250_current_head_20260703.json`
+  - review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop334_override_audit_11705250_current_head_blind_source_review.json`
+  - current result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop330_override_audit_11705250_current_head_c033dd97_search_nonlight_result.json`
+- Result:
+  - Current HEAD result completed `1/1/0/0`.
+  - It incorrectly demoted the row to `is_relevant=false`, `work_resolution=none`, `official_title=null`.
+  - Independent expected title is `심해의 마법사`.
+  - Public title/url leak is absent, but the row is `REPROCESS_FALSE_NEGATIVE`.
+- Gate:
+  - override audit `NO-GO / REPROCESS_FALSE_NEGATIVE / SEARCH_DEGRADED`
+  - publication leak `GO_NO_LEAK`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260703-333 - collateral gate accounting adjustment
 
 - Status: Gate accounting wired / residual still open / approval not open

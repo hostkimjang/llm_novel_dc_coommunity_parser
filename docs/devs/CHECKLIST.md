@@ -1,5 +1,32 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop334 override audit 11705250 체크
+
+- [x] Loop330 current HEAD non-light 단건 result 생성을 확인했다.
+  - run `20260703_034549_939485`
+  - completed/flushed/pending/failed `1/1/0/0`
+  - search health `SEARCH_DEGRADED`, queries `22`, degraded `22`, upstream zero `17`
+- [x] old light contract와 current HEAD public contract를 분리했다.
+  - old light event `LLM=False -> final=True`
+  - old light public contract `candidate_only / publish_allowed=false / official_title=null`
+  - current HEAD public contract `is_relevant=false / work_resolution=none / official_title=null`
+- [x] blind/source-native expected answer를 확정했다.
+  - expected official title `심해의 마법사`
+  - official URL `https://m.munpia.com/novel/detail/483667`
+  - 이전 native web judge `verdict_089` ACCEPT와 live web 확인이 일치
+- [x] row verdict를 기록했다.
+  - `REPROCESS_FALSE_NEGATIVE`
+  - public title/url leak 없음
+  - relation work-context overblock + search degraded 수리 후보
+- [x] 산출물을 생성했다.
+  - state `docs\devs\loop334_override_audit_11705250_current_head_20260703.json`
+  - report `docs\devs\loop_reports\LOOP_334_REPORT_20260703.md`
+  - review JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop334_override_audit_11705250_current_head_blind_source_review.json`
+  - review Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop334_override_audit_11705250_current_head_blind_source_review.md`
+- [ ] `11705250` relation work-context overblock을 targeted repair queue에 편입한다.
+- [ ] search degraded 100% 복구 전 promotion gate hard-hold를 완화하지 않는다.
+- Gate: override audit `NO-GO / REPROCESS_FALSE_NEGATIVE / SEARCH_DEGRADED`, publication leak `GO_NO_LEAK`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop333 collateral gate accounting 체크
 
 - [x] Loop332 source-native summary를 상시 collateral gate accounting에 배선했다.
@@ -91,7 +118,10 @@
   - health `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `1/1` OK
   - 검색 단계 `search_degraded_detected=6`, `search_upstream_zero=2`
   - Loop329 launch wrapper의 `utf-8` PowerShell 경고는 재발하지 않음
-- [ ] `11705250` result JSON 생성 후 old light contract와 current HEAD public contract를 blind/source-native로 비교한다.
+- [x] `11705250` result JSON 생성 후 old light contract와 current HEAD public contract를 blind/source-native로 비교했다.
+  - Loop334 판정 `REPROCESS_FALSE_NEGATIVE`
+  - public title/url leak 없음
+  - search degraded 조건부 NO-GO
 - [ ] post-patch `11668283`, full375, bounded1200, golden18 완료 전 approval 문구를 쓰지 않는다.
 - [ ] safe-loss N5 `15/15` 완료 전 flip rate를 갱신하지 않는다.
 - Gate: Loop329 runtime `IN_PROGRESS / NOT_APPROVAL`, override audit `RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_HEAD / SEARCH_DEGRADED_OBSERVED`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

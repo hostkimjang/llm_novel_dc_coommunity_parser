@@ -79,9 +79,9 @@
   "mcp_endpoint_count_after_health_filter": 1,
   "mcp_parallel_before_health_filter": 1,
   "mcp_parallel_after_health_filter": 1,
-  "completed_count": 0,
-  "flushed_count": 0,
+  "completed_count": 1,
+  "flushed_count": 1,
   "pending_count": 0,
   "failed_count": 0,
-  "next_save_idx": 1
+  "next_save_idx": 2
 }

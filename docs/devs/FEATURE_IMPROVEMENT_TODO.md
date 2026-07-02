@@ -16,9 +16,10 @@
 - [ ] Loop331 partial runtime NO-GO follow-up
   - 상태: evidence_refreshed / approval_no_go / background_monitoring
   - 발견: post-patch `11668283`은 current HEAD search non-light에서 완료됐지만 `official_title=null`, `blocked_official_title=중세`, `promotion_blocked`, `title_resolution_state=adjacent`, `SEARCH_DEGRADED`로 수렴 실패했다.
-  - 대형 런: full375 `6/1/5/0`, bounded1200 `14/6/8/0`, golden18 `2/2/0/0`, safe-loss N5 `1/15`, override `11705250` `0/0/0/0`.
+  - 최신 대형 런 snapshot: full375 `25/21/4/0`, bounded1200 `37/34/3/0`, golden18 `5/5/0/0`, safe-loss N5 first-repeat `3`개, override `11705250` `1/1/0/0`.
   - 산출물: `docs/devs/loop_reports/LOOP_331_REPORT_20260703.md`, `docs/devs/loop331_current_head_partial_runtime_no_go_20260703.json`.
-  - 완료 기준: search degraded 복구, N5 `15/15`, golden18 `18/18`, full375/bounded 완료 감사, `11705250` blind/source-native verdict 비교. 완료 전 `promotion_blocked`는 `search-blind conditional`로 태깅한다.
+  - Loop334: `11705250` blind/source-native verdict는 `REPROCESS_FALSE_NEGATIVE / public leak 없음 / SEARCH_DEGRADED`로 닫았다.
+  - 완료 기준: search degraded 복구, N5 `15/15`, golden18 `18/18`, full375/bounded 완료 감사, `11705250` relation overblock targeted repair. 완료 전 `promotion_blocked`와 null demotion은 `search-blind conditional`로 태깅한다.
 
 ## Curated alias publication convergence
 
@@ -49,11 +50,12 @@
 ## Override audit follow-up
 
 - [ ] `LLM=False->final=True` override audit blind judge expansion
-  - 상태: Loop319 single_row_checked / Loop327 false_negative_unit_repaired / Loop330 current_head_nonlight_single_running / approval_not_open
+  - 상태: Loop319 single_row_checked / Loop327 false_negative_unit_repaired / Loop334 current_head_false_negative_found / approval_not_open
   - 발견: `11708445`는 worker log에 override event가 있었지만 최종 public contract는 `candidate_only / promotion_blocked / publish_allowed=false`로 수렴했다. Loop327은 `11668283` false negative를 unit repair로 전환했다.
   - Loop330: old light `20260702_065642_030743`에서 후보 `93`건, 기존 검토 제외 미검토 후보 `91`건을 추출했고 `11705250`을 current HEAD non-light 단건 PID `93016`, run `20260703_034549_939485`로 발주했다. 검색 단계에서 `search_degraded_detected=6`, `search_upstream_zero=2`가 관측되어 approval은 계속 금지다.
-  - 산출물: `docs/devs/loop_reports/LOOP_319_REPORT_20260702.md`, `docs/devs/loop319_override_audit_11708445_20260702.json`, `docs/devs/loop_reports/LOOP_327_REPORT_20260703.md`, `docs/devs/loop_reports/LOOP_330_REPORT_20260703.md`, `docs/devs/loop330_current_head_health_override_audit_20260703.json`
-  - 완료 기준: current HEAD non-light completed-source에서 override audit flip rows를 추출하고, public title publish 누출 여부를 blind/source-native로 확장 판정한다. search degraded가 남으면 approval 금지.
+  - Loop334: `11705250` current HEAD result는 `1/1/0/0` 완료됐지만 `is_relevant=false`, `work_resolution=none`, `official_title=null`로 떨어졌다. 독립 정답은 `심해의 마법사`라 `REPROCESS_FALSE_NEGATIVE`다. Public title/url leak은 없다.
+  - 산출물: `docs/devs/loop_reports/LOOP_319_REPORT_20260702.md`, `docs/devs/loop319_override_audit_11708445_20260702.json`, `docs/devs/loop_reports/LOOP_327_REPORT_20260703.md`, `docs/devs/loop_reports/LOOP_330_REPORT_20260703.md`, `docs/devs/loop_reports/LOOP_334_REPORT_20260703.md`, `docs/devs/loop334_override_audit_11705250_current_head_20260703.json`
+  - 완료 기준: current HEAD non-light completed-source에서 override audit flip rows를 계속 추출하고, public title publish 누출 여부와 false negative 여부를 분리해 blind/source-native로 확장 판정한다. search degraded가 남으면 approval 금지.
 
 ## Collateral unsafe-promotion repair
 

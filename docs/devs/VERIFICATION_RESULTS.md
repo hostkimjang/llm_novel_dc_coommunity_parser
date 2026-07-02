@@ -1,5 +1,24 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop334 override audit 11705250 current HEAD review
+
+- 범위: Loop330에서 발주한 `11705250` current HEAD non-light result를 old light contract, prior native web judge, live web 확인으로 비교한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_334_REPORT_20260703.md`
+  - state `docs\devs\loop334_override_audit_11705250_current_head_20260703.json`
+  - review JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop334_override_audit_11705250_current_head_blind_source_review.json`
+  - review Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop334_override_audit_11705250_current_head_blind_source_review.md`
+  - current result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop330_override_audit_11705250_current_head_c033dd97_search_nonlight_result.json`
+- Evidence:
+  - current HEAD result는 `1/1/0/0` 완료됐지만 `is_relevant=false`, `work_resolution=none`, `official_title=null`이다.
+  - search health는 `SEARCH_DEGRADED`, queries `22`, degraded `22`, upstream zero `17`이다.
+  - old light event는 `LLM=False -> final=True`였지만 public contract는 `candidate_only / publish_allowed=false / official_title=null`이라 publish leak은 없다.
+  - prior native web judge와 live web 확인은 `심해법사 -> 심해의 마법사`, official URL `https://m.munpia.com/novel/detail/483667`을 지지한다.
+- Verification:
+  - JSON parse PASS: Loop334 state/review/current manifest/current result.
+  - Markdown/report 한국어 기록 확인.
+- Gate: row `NO-GO / REPROCESS_FALSE_NEGATIVE / SEARCH_DEGRADED`, publication leak `GO_NO_LEAK`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop333 collateral gate accounting
 
 - 범위: Loop332 `collateral183` source-native summary를 상시 375 collateral gate accounting에 연결해 raw regression count와 adjusted regression count를 분리한다.

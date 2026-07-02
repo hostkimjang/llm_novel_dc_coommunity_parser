@@ -1,0 +1,643 @@
+[
+  {
+    "gallery_id": "genrenovel",
+    "post_id": 11705250,
+    "title": "심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네",
+    "post_author": "ㅇㅇ",
+    "author": "ㅇㅇ",
+    "ip": null,
+    "author_ip": null,
+    "post_ip": null,
+    "created_at": "2026-01-25 20:40:11",
+    "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11705250",
+    "content": [
+      "권 단위로 몰아봐야 맛있는 소설"
+    ],
+    "content_blocks": [
+      {
+        "type": "text",
+        "text": "권 단위로 몰아봐야 맛있는 소설"
+      }
+    ],
+    "image_urls": [],
+    "image_count": 0,
+    "comments": [
+      "그거 실 쓰는애 죽이는거 까지 보고 좀 루즈해져서 묵혔는데 뒤에도 괜찮음?"
+    ],
+    "comment_metadata": [
+      {
+        "index": 0,
+        "comment_id": "40429986",
+        "gallery_id": "genrenovel",
+        "author": "talmogoif",
+        "ip": null,
+        "speaker": "user1",
+        "created_at": "01.25 20:44:23",
+        "reply_to_comment_id": null,
+        "reply_level": 0,
+        "is_post_author": false,
+        "post_author_match_unverified": false
+      }
+    ],
+    "comment_context_lines": [
+      "#1 speaker=user1 author=talmogoif comment_id=40429986"
+    ],
+    "comment_dialogue_context_lines": [
+      "#1 speaker=user1 author=talmogoif comment_id=40429986 text=그거 실 쓰는애 죽이는거 까지 보고 좀 루즈해져서 묵혔는데 뒤에도 괜찮음?"
+    ],
+    "analysis_result": {
+      "post_id": 11705250,
+      "identity": {
+        "is_relevant": false,
+        "is_novel_related": true,
+        "is_resolved_work_discussion": false,
+        "title_resolution_state": "unresolved_matchable",
+        "title_resolution_allowed": false,
+        "novel_identity": null,
+        "discussion_type": "noise",
+        "evidence": null,
+        "slang_insight": null,
+        "inference": null,
+        "title_candidates": null,
+        "primary_work": null,
+        "mentioned_works": null,
+        "future_watch_target": null,
+        "comparison_target": null,
+        "recommendation_candidates": null,
+        "primary_subject_type": "community_or_context",
+        "primary_subject_text": "relation judge가 작품-비작품 연결을 hold했고 단일 공식 제목도 확정되지 않아 작품 관련 단서는 보존하되 관련 판정은 비관련으로 내립니다.",
+        "secondary_reference_works": [],
+        "entity_mentions": [
+          {
+            "text": "상한김밥",
+            "entity_type": "author",
+            "canonical_value": null,
+            "confidence": "High",
+            "source": "verifier",
+            "role": "author_focus"
+          }
+        ],
+        "topicality": "unrelated",
+        "relevance_scope": "off_topic",
+        "subtype": "other_quarantine",
+        "work_resolution": "none",
+        "anchor_type": "none",
+        "anchor_strength": "low",
+        "context_sources": [
+          "title",
+          "body",
+          "comments",
+          "search"
+        ],
+        "consistency_flags": [
+          "notes_demoted_for_unresolved",
+          "official_url_recall_blocked_relation_non_work_context",
+          "primary_work_cleared_non_resolved",
+          "batch_memory_alias_rescue_blocked_nonwork_context",
+          "batch_memory_alias_rescue_blocked_deliberate_null",
+          "title_surface_primary_relation_non_work_blocked",
+          "multi_work_relation_hold_demoted",
+          "local_candidate_hold_preserved"
+        ],
+        "search_evidence_catalog": [
+          {
+            "eid": "E001",
+            "rank": 1,
+            "source_rank": 1,
+            "title": "심해",
+            "url": "https://namu.wiki/w/%EC%8B%AC%ED%95%B4",
+            "domain": "namu.wiki",
+            "snippet": "심해",
+            "query": "심해법사 웹소설 노벨피아",
+            "purpose": "abbreviation_verification",
+            "source_tier": "wiki"
+          },
+          {
+            "eid": "E002",
+            "rank": 2,
+            "source_rank": 2,
+            "title": "심해어",
+            "url": "https://namu.wiki/w/%EC%8B%AC%ED%95%B4%EC%96%B4",
+            "domain": "namu.wiki",
+            "snippet": "심해어",
+            "query": "심해법사 웹소설 노벨피아",
+            "purpose": "abbreviation_verification",
+            "source_tier": "wiki"
+          },
+          {
+            "eid": "E003",
+            "rank": 3,
+            "source_rank": 3,
+            "title": "인간이 밝혀내지 못한 가장 끔찍한 심해 생물 25종 - 라이브인컴",
+            "url": "https://gagoo.tistory.com/60",
+            "domain": "gagoo.tistory.com",
+            "snippet": "인간이 밝혀내지 못한 가장 끔찍한 심해 생물 25종 - 라이브인컴",
+            "query": "심해법사 웹소설 노벨피아",
+            "purpose": "abbreviation_verification",
+            "source_tier": "web"
+          },
+          {
+            "eid": "E004",
+            "rank": 4,
+            "source_rank": 4,
+            "title": "심해 - 위키원",
+            "url": "https://wiki1.kr/index.php/%EC%8B%AC%ED%95%B4",
+            "domain": "wiki1.kr",
+            "snippet": "심해 - 위키원",
+            "query": "심해법사 웹소설 노벨피아",
+            "purpose": "abbreviation_verification",
+            "source_tier": "web"
+          },
+          {
+            "eid": "E005",
+            "rank": 5,
+            "source_rank": 5,
+            "title": "심해어 종류 총정리! 바닷속 깊은 곳엔 어떤 생물이 살고 있을까?",
+            "url": "https://m.blog.naver.com/fira_sea/223875600247",
+            "domain": "m.blog.naver.com",
+            "snippet": "심해어 종류 총정리! 바닷속 깊은 곳엔 어떤 생물이 살고 있을까?",
+            "query": "심해법사 웹소설 노벨피아",
+            "purpose": "abbreviation_verification",
+            "source_tier": "web"
+          },
+          {
+            "eid": "E006",
+            "rank": 6,
+            "source_rank": 6,
+            "title": "미지의 세계, 심해에 대해서 알아보아요! : 네이버 블로그",
+            "url": "https://m.blog.naver.com/kosm5000/223212081559",
+            "domain": "m.blog.naver.com",
+            "snippet": "미지의 세계, 심해에 대해서 알아보아요! : 네이버 블로그",
+            "query": "심해법사 웹소설 노벨피아",
+            "purpose": "abbreviation_verification",
+            "source_tier": "web"
+          },
+          {
+            "eid": "E007",
+            "rank": 7,
+            "source_rank": 7,
+            "title": "심해의 마법소녀",
+            "url": "https://novelpia.com/novel/397755",
+            "domain": "novelpia.com",
+            "snippet": "자유연재작품 - 바다는 인류의 요람. 그리고, 마법소녀의 요람이기도 했다.",
+            "query": "심해법사묵혀둔거간 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "novel_platform"
+          },
+          {
+            "eid": "E008",
+            "rank": 8,
+            "source_rank": 8,
+            "title": "심해의 마법사 - 문피아 웹소설",
+            "url": "https://m.munpia.com/novel/detail/483667",
+            "domain": "m.munpia.com",
+            "snippet": "심해의 마법사. 상한김밥 - 이 세상이 바닷속이라는 것은 오직 나만이 알고 있다. 유료 〉 판타지. #판타지 #마법 #전생 #정통. 조회수: 4,278,333 | 선호작: 31,828 ...",
+            "query": "심해법사묵혀둔거간 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "novel_platform"
+          },
+          {
+            "eid": "E009",
+            "rank": 9,
+            "source_rank": 9,
+            "title": "신작 - 노벨피아 - 웹소설로 꿈꾸는 세상! - 플러스",
+            "url": "https://novelpia.com/plus/entry/date?main_genre=",
+            "domain": "novelpia.com",
+            "snippet": "15 로판 속 인형술사가 되었다 · 15 인벤토리는 신이다 · 15 다크판타지 속 성녀를 약탈했다 · 15 무림 속 둥지 짓는 해룡 · 15 야겜 속 엑스트라가 되었다 · 15 어반판타지에 ...",
+            "query": "심해법사묵혀둔거간 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "novel_platform"
+          },
+          {
+            "eid": "E010",
+            "rank": 10,
+            "source_rank": 10,
+            "title": "패러디 - 노벨피아 - 웹소설로 꿈꾸는 세상! - 자유연재",
+            "url": "https://novelpia.com/freestory/all/vote/1/all?main_genre=11",
+            "domain": "novelpia.com",
+            "snippet": "[전독시] 전독시에서 편하게 살고싶다 자유 지름작가 2.43M 410 243.0K #패러디 #판타지 #현대 #하렘 #전독시 #지름작 #독자중혁TS #다중 #키리오스TS #중후반먼치킨.",
+            "query": "심해법사묵혀둔거간 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "novel_platform"
+          },
+          {
+            "eid": "E011",
+            "rank": 11,
+            "source_rank": 11,
+            "title": "심해의 마법사 - 나무위키",
+            "url": "https://namu.wiki/w/%EC%8B%AC%ED%95%B4%EC%9D%98%20%EB%A7%88%EB%B2%95%EC%82%AC",
+            "domain": "namu.wiki",
+            "snippet": "2026. 6. 17. ... 한국의 정통 판타지·환생 웹소설. 작가는 상한김밥. 약칭은 '심해법사'다.",
+            "query": "심해법사묵혀둔거간 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "wiki"
+          },
+          {
+            "eid": "E012",
+            "rank": 12,
+            "source_rank": 12,
+            "title": "문피아 심해의 마법사 <<< 이거 봐라 - 장르소설 채널 - 아카라이브",
+            "url": "https://arca.live/b/novelchannel/138145536",
+            "domain": "arca.live",
+            "snippet": "묵혀묵혀. 펼쳐보기▽. 구한말. 유저 그라바타 이미지. 2025-05-29 15:47:50. ㄹㅇ ... 노벨피아 얘넨 경로의존성이라는걸 모름? [1]. 점장님이공인한개허접쟈코에임KF ...",
+            "query": "심해법사묵혀둔거간 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "community"
+          }
+        ],
+        "search_health": {
+          "queries_issued": 22,
+          "upstream_zero": 17,
+          "degraded": 22,
+          "degraded_zero": 17,
+          "accepted": 30,
+          "raw": 214,
+          "filtered": 19,
+          "retried": 22,
+          "cache_hits": 1,
+          "status": "SEARCH_DEGRADED"
+        },
+        "image_evidence_catalog": null,
+        "vlm_enabled": null,
+        "ocr_enabled": null,
+        "vlm_enrichment_used": null,
+        "image_fetch_count": null,
+        "image_fetch_success": null,
+        "vlm_chunks_sent": null,
+        "vlm_total_bytes": null,
+        "image_enrichment_limitations": null,
+        "candidate_preservation_sources": [
+          {
+            "official_title": "심해법사",
+            "confidence": "Low",
+            "alias_or_mention": "심해법사",
+            "source_tier": "community",
+            "negative_evidence": [
+              "short_alias_hold_without_promotion"
+            ],
+            "reference_role": "candidate",
+            "preservation_role": "recommendation_candidate",
+            "local_preservation_type": "short_or_compound_alias_hold",
+            "promotion_policy": "hold_without_promotion"
+          },
+          {
+            "official_title": "심해의 마법사",
+            "heretic_url": "https://m.munpia.com/novel/detail/483667",
+            "confidence": "Medium",
+            "alias_or_mention": "심해법사",
+            "source_tier": "official_detail",
+            "negative_evidence": [
+              "batch_alias_nonwork_context_hold_without_promotion"
+            ],
+            "reference_role": "candidate",
+            "preservation_role": "recommendation_candidate",
+            "local_preservation_type": "blocked_batch_alias_hold",
+            "promotion_policy": "hold_without_promotion",
+            "page_type": "novel_page"
+          }
+        ],
+        "candidate_ledger": {
+          "pipeline_official_title": null,
+          "blocked_official_title": "심해의 마법사",
+          "blocked_official_title_url": "https://m.munpia.com/novel/detail/483667",
+          "promotion_blocked_reasons": [],
+          "title_candidates": [
+            "심해법사",
+            "심해의 마법사"
+          ],
+          "candidate_count": 2,
+          "candidate_preservation_sources": [
+            {
+              "official_title": "심해법사",
+              "confidence": "Low",
+              "alias_or_mention": "심해법사",
+              "source_tier": "community",
+              "negative_evidence": [
+                "short_alias_hold_without_promotion"
+              ],
+              "reference_role": "candidate",
+              "preservation_role": "recommendation_candidate",
+              "local_preservation_type": "short_or_compound_alias_hold",
+              "promotion_policy": "hold_without_promotion"
+            },
+            {
+              "official_title": "심해의 마법사",
+              "heretic_url": "https://m.munpia.com/novel/detail/483667",
+              "confidence": "Medium",
+              "alias_or_mention": "심해법사",
+              "source_tier": "official_detail",
+              "negative_evidence": [
+                "batch_alias_nonwork_context_hold_without_promotion"
+              ],
+              "reference_role": "candidate",
+              "preservation_role": "recommendation_candidate",
+              "local_preservation_type": "blocked_batch_alias_hold",
+              "promotion_policy": "hold_without_promotion",
+              "page_type": "novel_page"
+            }
+          ],
+          "title_resolution_state": "unresolved_matchable",
+          "title_resolution_allowed": false,
+          "work_resolution": "none",
+          "discussion_type": "noise",
+          "topicality": "unrelated",
+          "is_relevant": false,
+          "is_novel_related": true,
+          "is_resolved_work_discussion": false,
+          "anchor_type": "none",
+          "anchor_strength": "low",
+          "context_sources": [
+            "title",
+            "body",
+            "comments",
+            "search"
+          ],
+          "has_evidence_catalog": true,
+          "judge_seed_bucket": null,
+          "judge_seed_group": "unseeded",
+          "judge_disagreement_type": null,
+          "judge_expected_title": null,
+          "judge_expected_url": null,
+          "official_title_lint_reasons": [],
+          "identity_consistency_lint_reasons": [],
+          "output_consistency_lint_reasons": [],
+          "candidate_audit_lint_reasons": [],
+          "promotion_decision": {
+            "status": "candidate_only",
+            "publish_allowed": false,
+            "official_title": null,
+            "official_url": null,
+            "candidate_preserved": true,
+            "reason_codes": [
+              "promotion_blocked",
+              "serialized_public_identity_scrubbed"
+            ],
+            "bypassed_gate": false
+          },
+          "publish_contract_trace": {
+            "pre_gate_candidate": {
+              "official_title": "심해의 마법사",
+              "official_url": "https://m.munpia.com/novel/detail/483667",
+              "source": "candidate_ledger_or_serialized_identity"
+            },
+            "gate_decision": {
+              "status": "candidate_only",
+              "publish_allowed": false,
+              "official_title": null,
+              "official_url": null,
+              "candidate_preserved": true,
+              "reason_codes": [
+                "promotion_blocked",
+                "serialized_public_identity_scrubbed"
+              ],
+              "bypassed_gate": false
+            },
+            "scope_state": null,
+            "post_gate_identity": {
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": false,
+              "title_resolution_state": "unresolved_matchable",
+              "work_resolution": "none",
+              "candidate_ledger_status": "promotion_blocked"
+            },
+            "reason_codes": [
+              "promotion_blocked",
+              "serialized_public_identity_scrubbed"
+            ],
+            "bypassed_gate": false
+          },
+          "publish_ledger": {
+            "candidate_preservation": {
+              "official_title": "심해의 마법사",
+              "official_url": "https://m.munpia.com/novel/detail/483667",
+              "source": "candidate_ledger_or_serialized_identity"
+            },
+            "public_publish": {
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": false,
+              "title_resolution_state": "unresolved_matchable",
+              "work_resolution": "none",
+              "candidate_ledger_status": "promotion_blocked"
+            },
+            "gate_decision": {
+              "status": "candidate_only",
+              "publish_allowed": false,
+              "official_title": null,
+              "official_url": null,
+              "candidate_preserved": true,
+              "reason_codes": [
+                "promotion_blocked",
+                "serialized_public_identity_scrubbed"
+              ],
+              "bypassed_gate": false
+            }
+          }
+        },
+        "candidate_ledger_status": "promotion_blocked",
+        "candidate_generation_miss": false,
+        "promotion_blocked": true,
+        "hold_unresolved": false,
+        "hold_without_candidates": false,
+        "safe_resolved": false,
+        "official_title_lint": [],
+        "identity_consistency_lint": [],
+        "output_consistency_lint": [],
+        "reason": "[판정 요약]\n- 판정: 비관련\n- discussion_type: noise\n- 공식 제목: 미확정 (promotion blocked; 후보로만 보존)\n- 핵심 결론: 작품 명칭의 형태소 불일치 및 주제적 유사성만 존재함\n- 검색 요약: 실행 22건 (유효 5건 / 무결과 17건), 누적 결과 12건 [엔진경고 22건, 결과유지 5건, 저하-무결과 17건] [보정집계: 실행 5건 (유효 5건 / 무결과 0건)] [재시도 쿼리 22건, 추가시도 85회] [캐시히트 1건] [원문 해석]\n- 제목: 심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네\n- 본문 요약: 권 단위로 몰아봐야 맛있는 소설\n- 댓글 힌트: 그거 실 쓰는애 죽이는거 까지 보고 좀 루즈해져서 묵혔는데 뒤에도 괜찮음?\n- 표현 오타/축약 패턴(범용)은 packet-local 원문 재검토 신호이며, 특정 정상형/작품 seed로 확정하지 않음\n- 해석 주제: 특정 작품으로 단정하기 어려움 근거가 부족한 일반 잡담/불만 [전문가별 판단]\n- Gatekeeper: post_type=short_reaction, confidence=medium\n- Discourse: domain=novel_literature, intent=discuss_work\n- Decoder: confidence=none\n- Verifier: 게시글의 핵심 키워드인 '심해법사'는 후보 작품인 '심해의 마법소녀'와 형태소상 유사성(심해, 법사/마법)은 있으나, 이를 직접적으로 지칭한다는 명시적인 브릿지(예: '심해법사=심해의 마법소녀')가 존재하지 않습니다. 또한 '심해법사'라는 단어는 장르적 표현이나 캐릭터 유형을 나타내는 일반 명사로 해석될 여지가 크며, 검색 결과에서도 해당 용어가 특정 작품의 약칭으로 사용된다는 근거를 찾을 수 없습니다. 따라서 정식 제목으로 승격하기에는 근거가 불충분합니다.\n- Arbiter: discussion_type=noise, unanimous=False [근거 요약]\n1. [0.82] Verifier.counter_arguments[2]: relation_judge:thematic_overlap_only\n2. [0.76] Verifier.counter_arguments[1]: 제목 '심해법사'와 정식 명칭 '심해의 마법사' 간의 형태소 불일치 [LLM 검토]\n- confidence: High\n- note: 제목의 형태소 불일치 근거와 주제적 유사성만을 언급한 후보를 결합하여 노이즈 판정 사유를 구체화함.\n- merged: 제목 '심해법사'와 정식 명칭인 '심해의 마법사' 간의 형태소 불일치가 존재하며, 단순히 주제적인 유사성(thematic overlap)만 있을 뿐 특정 작품으로 단정할 수 없는 노이즈 데이터입니다. [최종 종합]\n- 제목 '심해법사'와 정식 명칭인 '심해의 마법사' 간의 형태소 불일치가 존재하며, 단순히 주제적인 유사성(thematic overlap)만 있을 뿐 특정 작품으로 단정할 수 없는 노이즈 데이터입니다. [정합성 교정]\n- 비관련 근거 검토 confidence: High\n- 검토 메모: 제목의 형태소 불일치 근거와 주제적 유사성만을 언급한 후보를 결합하여 노이즈 판정 사유를 구체화함.\n- 최종 판정은 비관련 포스트(discussion_type=noise)이며 원문 reason의 작품 확정 결론을 완화함.\n[근거 스코어]\n- total: +3\n- evidence_type: +2 (search_platform_url)\n- decoder_confidence: -2 (none)\n- grounding_anchor: +1 (제목 앵커)\n- discourse_intent: +1 (discuss_work)\n- decision_alignment: +1 (is_relevant=false, dt=noise)\n- executed_queries: 11 (단일 집계 소스)\n- effective_executed_queries: 5 (degraded+무결과 제외 보정치)\n- degraded_queries: 22 (degraded_nonzero=5, degraded_zero=17, retried=22)\n- planned_unique_queries: 34 (참고치, 최종 집계는 executed_queries)\n- evidence_diversity: 0\n[범위 분리]\n- is_novel_related=true\n- is_resolved_work_discussion=false\n- title_resolution_state=unresolved_matchable\n- title_resolution_allowed=false\n- public title promotion blocked: serialized output kept candidate/HOLD",
+        "reason_lines": [
+          "[판정 요약]",
+          "- 판정: 비관련",
+          "- discussion_type: noise",
+          "- 공식 제목: 미확정 (promotion blocked; 후보로만 보존)",
+          "- 핵심 결론: 작품 명칭의 형태소 불일치 및 주제적 유사성만 존재함",
+          "- 검색 요약: 실행 22건 (유효 5건 / 무결과 17건), 누적 결과 12건 [엔진경고 22건, 결과유지 5건, 저하-무결과 17건] [보정집계: 실행 5건 (유효 5건 / 무결과 0건)] [재시도 쿼리 22건, 추가시도 85회] [캐시히트 1건] [원문 해석]",
+          "- 제목: 심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네",
+          "- 본문 요약: 권 단위로 몰아봐야 맛있는 소설",
+          "- 댓글 힌트: 그거 실 쓰는애 죽이는거 까지 보고 좀 루즈해져서 묵혔는데 뒤에도 괜찮음?",
+          "- 표현 오타/축약 패턴(범용)은 packet-local 원문 재검토 신호이며, 특정 정상형/작품 seed로 확정하지 않음",
+          "- 해석 주제: 특정 작품으로 단정하기 어려움 근거가 부족한 일반 잡담/불만 [전문가별 판단]",
+          "- Gatekeeper: post_type=short_reaction, confidence=medium",
+          "- Discourse: domain=novel_literature, intent=discuss_work",
+          "- Decoder: confidence=none",
+          "- Verifier: 게시글의 핵심 키워드인 '심해법사'는 후보 작품인 '심해의 마법소녀'와 형태소상 유사성(심해, 법사/마법)은 있으나, 이를 직접적으로 지칭한다는 명시적인 브릿지(예: '심해법사=심해의 마법소녀')가 존재하지 않습니다. 또한 '심해법사'라는 단어는 장르적 표현이나 캐릭터 유형을 나타내는 일반 명사로 해석될 여지가 크며, 검색 결과에서도 해당 용어가 특정 작품의 약칭으로 사용된다는 근거를 찾을 수 없습니다. 따라서 정식 제목으로 승격하기에는 근거가 불충분합니다.",
+          "- Arbiter: discussion_type=noise, unanimous=False [근거 요약]",
+          "1. [0.82] Verifier.counter_arguments[2]: relation_judge:thematic_overlap_only",
+          "2. [0.76] Verifier.counter_arguments[1]: 제목 '심해법사'와 정식 명칭 '심해의 마법사' 간의 형태소 불일치 [LLM 검토]",
+          "- confidence: High",
+          "- note: 제목의 형태소 불일치 근거와 주제적 유사성만을 언급한 후보를 결합하여 노이즈 판정 사유를 구체화함.",
+          "- merged: 제목 '심해법사'와 정식 명칭인 '심해의 마법사' 간의 형태소 불일치가 존재하며, 단순히 주제적인 유사성(thematic overlap)만 있을 뿐 특정 작품으로 단정할 수 없는 노이즈 데이터입니다. [최종 종합]",
+          "- 제목 '심해법사'와 정식 명칭인 '심해의 마법사' 간의 형태소 불일치가 존재하며, 단순히 주제적인 유사성(thematic overlap)만 있을 뿐 특정 작품으로 단정할 수 없는 노이즈 데이터입니다. [정합성 교정]",
+          "- 비관련 근거 검토 confidence: High",
+          "- 검토 메모: 제목의 형태소 불일치 근거와 주제적 유사성만을 언급한 후보를 결합하여 노이즈 판정 사유를 구체화함.",
+          "- 최종 판정은 비관련 포스트(discussion_type=noise)이며 원문 reason의 작품 확정 결론을 완화함.",
+          "[근거 스코어]",
+          "- total: +3",
+          "- evidence_type: +2 (search_platform_url)",
+          "- decoder_confidence: -2 (none)",
+          "- grounding_anchor: +1 (제목 앵커)",
+          "- discourse_intent: +1 (discuss_work)",
+          "- decision_alignment: +1 (is_relevant=false, dt=noise)",
+          "- executed_queries: 11 (단일 집계 소스)",
+          "- effective_executed_queries: 5 (degraded+무결과 제외 보정치)",
+          "- degraded_queries: 22 (degraded_nonzero=5, degraded_zero=17, retried=22)",
+          "- planned_unique_queries: 34 (참고치, 최종 집계는 executed_queries)",
+          "- evidence_diversity: 0",
+          "[범위 분리]",
+          "- is_novel_related=true",
+          "- is_resolved_work_discussion=false",
+          "- title_resolution_state=unresolved_matchable",
+          "- title_resolution_allowed=false",
+          "- public title promotion blocked: serialized output kept candidate/HOLD"
+        ],
+        "system_state": "clean",
+        "identity_state": "non_relevant",
+        "candidate_audit_lint": [],
+        "blocked_official_title": "심해의 마법사",
+        "blocked_official_title_url": "https://m.munpia.com/novel/detail/483667",
+        "promotion_decision": {
+          "status": "candidate_only",
+          "publish_allowed": false,
+          "official_title": null,
+          "official_url": null,
+          "candidate_preserved": true,
+          "reason_codes": [
+            "promotion_blocked",
+            "serialized_public_identity_scrubbed"
+          ],
+          "bypassed_gate": false
+        },
+        "publish_contract_trace": {
+          "pre_gate_candidate": {
+            "official_title": "심해의 마법사",
+            "official_url": "https://m.munpia.com/novel/detail/483667",
+            "source": "candidate_ledger_or_serialized_identity"
+          },
+          "gate_decision": {
+            "status": "candidate_only",
+            "publish_allowed": false,
+            "official_title": null,
+            "official_url": null,
+            "candidate_preserved": true,
+            "reason_codes": [
+              "promotion_blocked",
+              "serialized_public_identity_scrubbed"
+            ],
+            "bypassed_gate": false
+          },
+          "scope_state": null,
+          "post_gate_identity": {
+            "official_title": null,
+            "official_url": null,
+            "title_resolution_allowed": false,
+            "title_resolution_state": "unresolved_matchable",
+            "work_resolution": "none",
+            "candidate_ledger_status": "promotion_blocked"
+          },
+          "reason_codes": [
+            "promotion_blocked",
+            "serialized_public_identity_scrubbed"
+          ],
+          "bypassed_gate": false
+        },
+        "publish_ledger": {
+          "candidate_preservation": {
+            "official_title": "심해의 마법사",
+            "official_url": "https://m.munpia.com/novel/detail/483667",
+            "source": "candidate_ledger_or_serialized_identity"
+          },
+          "public_publish": {
+            "official_title": null,
+            "official_url": null,
+            "title_resolution_allowed": false,
+            "title_resolution_state": "unresolved_matchable",
+            "work_resolution": "none",
+            "candidate_ledger_status": "promotion_blocked"
+          },
+          "gate_decision": {
+            "status": "candidate_only",
+            "publish_allowed": false,
+            "official_title": null,
+            "official_url": null,
+            "candidate_preserved": true,
+            "reason_codes": [
+              "promotion_blocked",
+              "serialized_public_identity_scrubbed"
+            ],
+            "bypassed_gate": false
+          }
+        }
+      },
+      "analysis": {
+        "detected_titles": [],
+        "micro_tags": [
+          "몰아보기",
+          "감상"
+        ],
+        "sentiment_profile": {
+          "pacing": "Unknown",
+          "drift_risk": "Unknown",
+          "sentiment": "Positive"
+        },
+        "is_nsfw": false,
+        "user_segment": null,
+        "notes": "[정합성 교정] 최종 공식 제목은 미확정 상태입니다. promotion-blocked 후보는 candidate_ledger/title_candidates에만 보존합니다."
+      }
+    },
+    "run_meta": {
+      "run_id": "20260703_034549_939485",
+      "model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+      "llm_mode": "remote",
+      "llm_endpoint": "http://10.20.0.101:8000",
+      "prompt_version": "2026-03-30-semantic-contract-v1",
+      "config_hash": "c007553ee751",
+      "requested_parallel_raw": 1,
+      "requested_parallel": 1,
+      "effective_parallel": 1,
+      "parallel_policy": "effective_parallel=min(min(requested_parallel_raw,model_parallel_max),input_post_count)",
+      "model_parallel_max": 36,
+      "model_parallel_cap_applied": false,
+      "model_parallel_cap_model": "bg-digitalservices/Gemma-4-E4B-it-NVFP4",
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_required_ok_count": 1,
+      "mcp_health_checked_endpoint_count": 1,
+      "mcp_health_probe_batch_size": 1,
+      "mcp_health_probe_stopped_after_required_ok": false,
+      "mcp_health_workers": 1,
+      "mcp_health_attempts": 1,
+      "mcp_health_timeout_sec": 8.0,
+      "mcp_health_search_max_latency_ms": 8000.0,
+      "mcp_health_search_min_results": 1,
+      "mcp_health_ok_count": 1,
+      "mcp_health_failure_count": 0,
+      "search_health": {
+        "queries_issued": 22,
+        "upstream_zero": 17,
+        "degraded": 22,
+        "degraded_zero": 17,
+        "accepted": 30,
+        "raw": 214,
+        "filtered": 19,
+        "retried": 22,
+        "cache_hits": 1,
+        "status": "SEARCH_DEGRADED"
+      },
+      "mcp_healthy_endpoint_filter": false,
+      "mcp_healthy_endpoint_filter_reason": "goal_run_lifecycle_blocked",
+      "mcp_healthy_endpoint_filter_autogen": true,
+      "mcp_healthy_autogen_endpoint_filter": false,
+      "mcp_healthy_autogen_endpoint_filter_reason": "goal_run_lifecycle_blocked",
+      "mcp_reuse_shards_only_health_filtered": false,
+      "mcp_goal_run_health_filtered": false,
+      "mcp_requested_endpoint_count_before_health_filter": 1,
+      "mcp_healthy_endpoint_count": 1,
+      "mcp_endpoint_count_after_health_filter": 1,
+      "mcp_parallel_before_health_filter": 1,
+      "mcp_parallel_after_health_filter": 1,
+      "worker_id": 0,
+      "worker_log_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\logs\\expert_run_20260703_034549_939485.log",
+      "main_log_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\logs\\expert_run_20260703_034549_939485.log"
+    }
+  }
+]

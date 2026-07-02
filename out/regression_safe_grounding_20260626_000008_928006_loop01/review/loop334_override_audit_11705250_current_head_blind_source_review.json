@@ -1,0 +1,69 @@
+{
+  "loop": 334,
+  "date": "2026-07-03",
+  "review_type": "override_audit_blind_source_native",
+  "post_id": 11705250,
+  "title": "심해법사 묵혀둔거 간만에 보니까 ㄹㅇ 맛있네",
+  "verdict": "REPROCESS_FALSE_NEGATIVE",
+  "publication_leak": false,
+  "expected": {
+    "is_novel_related": true,
+    "work_resolution": "resolved",
+    "official_title": "심해의 마법사",
+    "url": "https://m.munpia.com/novel/detail/483667",
+    "source_grade": "official_detail_plus_prior_native_web_judge"
+  },
+  "current_head_observed": {
+    "run_id": "20260703_034549_939485",
+    "completed_flushed_pending_failed": "1/1/0/0",
+    "is_relevant": false,
+    "is_novel_related": true,
+    "title_resolution_state": "unresolved_matchable",
+    "title_resolution_allowed": false,
+    "work_resolution": "none",
+    "discussion_type": "noise",
+    "official_title": null,
+    "url": null,
+    "search_status": "SEARCH_DEGRADED"
+  },
+  "search_health": {
+    "queries_issued": 22,
+    "upstream_zero": 17,
+    "degraded": 22,
+    "degraded_zero": 17,
+    "accepted": 30,
+    "raw": 214,
+    "filtered": 19,
+    "retried": 22,
+    "cache_hits": 1,
+    "status": "SEARCH_DEGRADED"
+  },
+  "evidence": [
+    {
+      "type": "post_source",
+      "summary": "제목 약칭, 본문 몰아보기, 댓글 뒤 회차 문의가 특정 작품 소비 맥락을 이룬다."
+    },
+    {
+      "type": "prior_native_web_judge",
+      "path": "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts/verdict_089.json",
+      "resolution_label": "ACCEPT",
+      "official_title": "심해의 마법사",
+      "url": "https://m.munpia.com/novel/detail/483667"
+    },
+    {
+      "type": "live_web",
+      "url": "https://m.munpia.com/novel/detail/483667",
+      "observed_title": "심해의 마법사",
+      "observed_author": "상한김밥"
+    }
+  ],
+  "gate": {
+    "row": "NO-GO / REPROCESS_FALSE_NEGATIVE / SEARCH_DEGRADED",
+    "publication_leak": "GO_NO_LEAK",
+    "search_recovery": "P0 / OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "action": "REPROCESS relation_non_work_context overblock; keep promotion hard-hold until search degradation is fixed and replayed."
+}

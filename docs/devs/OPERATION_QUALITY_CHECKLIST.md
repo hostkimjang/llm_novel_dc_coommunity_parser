@@ -6,6 +6,20 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-03 Loop334 override audit quality gate
+
+- 근거:
+  - [x] `11705250` current HEAD result 완료 `1/1/0/0`을 확인했다.
+  - [x] old light internal override event와 public contract를 분리했다.
+  - [x] prior native web judge와 live web 확인으로 expected `심해의 마법사`를 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_334_REPORT_20260703.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop334_override_audit_11705250_current_head_20260703.json`.
+- 품질 게이트:
+  - [x] public title/url leak 없음과 semantic false negative를 혼동하지 않는다.
+  - [x] `SEARCH_DEGRADED` row를 approval 근거로 쓰지 않는다.
+  - [x] search recovery 전 promotion gate hard-hold를 완화하지 않는다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-03 Loop333 collateral gate accounting quality gate
 
 - 근거:
