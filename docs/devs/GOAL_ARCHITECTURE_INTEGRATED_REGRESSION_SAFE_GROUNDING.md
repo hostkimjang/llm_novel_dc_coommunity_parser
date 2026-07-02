@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop301 Addendum - safe-loss seed source-native verdict
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop301은 approval이 아니라 다음 action queue를 `safe_loss_resolved_to_null=147`로 전환하고 seed `15/147`을 source-native verdict로 분해한 산출물이다.
+- 목적: 코드 변경 없는 background 대기 대신 safe-loss bucket에서 직접 repair 후보와 regression-count 제외 후보를 분리한다.
+- 코드 변경: 없음.
+- Artifacts: report `docs/devs/loop_reports/LOOP_301_REPORT_20260702.md`, verdicts `docs/devs/loop301_safe_loss_seed_source_native_verdicts.json`, batch `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.*`, summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_seed_source_native_review.*`.
+- Evidence: batch selected `147`, missing source/baseline/after `0/0/0`; seed verdict reviewed/unreviewed `15/132`, validation issues `0`, `REPROCESS=14`, `ACCEPT=1`, actions `repair_safe_loss=14`, `exclude_from_regression_count_after_gate_wiring=1`.
+- Gate: safe-loss seed verdict `REVIEW-LOCKED`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop300 Addendum - unsafe promotion full source-native verdict and gate wiring
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop300은 approval이 아니라 Loop298 `unsafe_promotion_from_hold=26` 전체를 source-native verdict와 current contract replay로 수렴시킨 action queue 산출물이다.

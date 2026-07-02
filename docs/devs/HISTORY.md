@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop301 safe-loss seed source-native verdict
+
+- Loop300 이후 다음 action queue를 `safe_loss_resolved_to_null=147`로 전환했다.
+- Safe-loss 전용 review batch를 생성했다. selected rows는 `147`, missing source/baseline/after는 `0/0/0`이다.
+- Seed verdict `15/147`을 작성했다. validation issues `0`, `REPROCESS=14`, `ACCEPT=1`, unreviewed `132`다.
+- `REPROCESS=14`는 직접 title/alias surface가 before safe title을 지지하지만 after가 null/promotion_blocked로 내린 safe-loss repair 후보로 분리했다.
+- `ACCEPT=1`은 before title이 비교 대상 작품을 current work로 잘못 잡은 행이라 gate 배선 뒤 regression count 제외 후보로 둔다.
+- Report는 `docs/devs/loop_reports/LOOP_301_REPORT_20260702.md`다.
+- Gate는 safe-loss seed verdict `REVIEW-LOCKED`, search recovery `P0 / OPEN`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop300 unsafe promotion full source-native verdict and gate wiring
 
 - Loop298 `unsafe_promotion_from_hold=26` 전체를 source-native verdict로 닫았다.

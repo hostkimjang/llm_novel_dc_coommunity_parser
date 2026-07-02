@@ -1,5 +1,26 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop301 safe-loss seed source-native verdict
+
+- 범위: Loop300 이후 다음 action queue를 `safe_loss_resolved_to_null=147`로 전환하고, seed `15/147`을 source-native로 판정한다.
+- Batch build:
+  - command: `.\.venv312\Scripts\python.exe tools\build_collateral_triage_review_batch.py --triage ...loop289_collateral183_regression_triage.json --panel-input ...regression_panel_input.jsonl --baseline-result ...baseline_result.json --after-result ...loop49_regression_panel_replay_result.json --bucket safe_loss_resolved_to_null --output-json ...loop301_safe_loss_resolved_to_null_review_batch.json --output-jsonl ...loop301_safe_loss_resolved_to_null_review_batch.jsonl --output-md ...loop301_safe_loss_resolved_to_null_review_batch.md`
+  - selected rows `147`
+  - missing source/baseline/after `0/0/0`
+- Verdict summary:
+  - verdicts `docs\devs\loop301_safe_loss_seed_source_native_verdicts.json`
+  - summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop301_safe_loss_seed_source_native_review.*`
+  - batch/reviewed/unreviewed `147/15/132`
+  - validation issues `0`
+  - label counts `REPROCESS=14`, `ACCEPT=1`
+  - action counts `repair_safe_loss=14`, `exclude_from_regression_count_after_gate_wiring=1`
+- Native web spot check:
+  - `https://novelpia.com/novel/61947` -> `테라포밍`
+  - `https://novelpia.com/novel/384111` -> `암흑가 보스요? 제가요?`
+  - `https://novelpia.com/novel/390228` -> `헌터갤러리의 국가권력급 기계공주`
+  - `https://novelpia.com/novel/102155` -> `괴담 호텔 탈출기`
+- Gate: safe-loss seed verdict `REVIEW-LOCKED`, full collateral approval `NOT_OPEN`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop300 unsafe promotion full source-native verdict and gate wiring
 
 - 범위: Loop298 `unsafe_promotion_from_hold=26` 전체를 source-native verdict로 닫고 current HEAD shared publication contract가 verdict와 같은 방향으로 수렴하는지 확인한다.

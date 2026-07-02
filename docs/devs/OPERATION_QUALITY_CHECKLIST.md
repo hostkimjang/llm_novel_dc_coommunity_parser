@@ -6,6 +6,20 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop301 safe-loss seed quality gate
+
+- 근거:
+  - [x] `safe_loss_resolved_to_null=147` 전용 batch를 생성했다.
+  - [x] selected rows `147`, missing source/baseline/after `0/0/0`을 기록했다.
+  - [x] seed verdict `15/147`, validation issues `0`, `REPROCESS=14`, `ACCEPT=1`, unreviewed `132`를 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_301_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] Loop301은 partial source-native verdict이지 full collateral approval이 아니다.
+  - [x] `REPROCESS=14`는 targeted guard/runtime follow-up 전까지 닫지 않는다.
+  - [x] `ACCEPT=1`은 gate 배선 뒤 regression count 제외 후보로만 둔다.
+  - [x] search degraded 복구 전 `promotion_blocked`는 `search-blind conditional`로만 해석한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop300 unsafe promotion full verdict quality gate
 
 - 근거:

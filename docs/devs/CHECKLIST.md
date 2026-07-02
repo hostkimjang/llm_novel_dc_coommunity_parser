@@ -1,5 +1,25 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop301 safe-loss seed source-native verdict 체크
+
+- [x] Loop300 이후 다음 action queue를 `safe_loss_resolved_to_null=147`로 전환했다.
+- [x] safe-loss 전용 review batch를 생성했다.
+  - JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop301_safe_loss_resolved_to_null_review_batch.json`
+  - JSONL `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop301_safe_loss_resolved_to_null_review_batch.jsonl`
+  - Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop301_safe_loss_resolved_to_null_review_batch.md`
+  - selected rows `147`, missing source/baseline/after `0/0/0`
+- [x] seed source-native verdict `15/147`을 작성했다.
+  - verdicts `docs\devs\loop301_safe_loss_seed_source_native_verdicts.json`
+  - summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop301_safe_loss_seed_source_native_review.*`
+  - validation issues `0`
+  - `REPROCESS=14`, `ACCEPT=1`, unreviewed `132`
+  - actions `repair_safe_loss=14`, `exclude_from_regression_count_after_gate_wiring=1`
+- [x] native web spot check를 일부 수행했다.
+  - `테라포밍`, `암흑가 보스요? 제가요?`, `헌터갤러리의 국가권력급 기계공주`, `괴담 호텔 탈출기`
+- [ ] `repair_safe_loss=14`를 shared promotion gate 계약 수리로 전환한다.
+- [ ] 남은 `132` safe-loss row를 group/alias 단위로 계속 blind judge한다.
+- Gate: safe-loss seed verdict `REVIEW-LOCKED`, full collateral approval `NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop300 unsafe promotion full source-native verdict / gate wiring 체크
 
 - [x] `unsafe_promotion_from_hold=26` 전체를 source-native verdict로 닫았다.
@@ -24,7 +44,7 @@
   - full375 `375/69/51/18/0`, `large_run_complete=false`
   - bounded1200 `1200/109/96/13/0`, `large_run_complete=false`
   - golden18 `18/17/12/5/0`, `large_run_complete=false`, `mcp_health_light_mode=true`
-- [ ] 다음 action queue는 `safe_loss_resolved_to_null=147` 또는 `OVERRIDE AUDIT(LLM=False->final=True)` blind judge 검증으로 전환한다.
+- [x] 다음 action queue는 Loop301에서 `safe_loss_resolved_to_null=147`로 전환했다.
 - Gate: unsafe promotion full verdict `REVIEW-LOCKED`, contract replay `GO_UNIT_AND_LEGACY_REPLAY_EVIDENCE`, full collateral approval `NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-02 Loop299 unsafe promotion shared contract repair 체크
@@ -44,7 +64,7 @@
   - full375 `375/62/51/11/0`, `large_run_complete=false`
   - bounded1200 `1200/94/77/17/0`, `large_run_complete=false`
   - golden18 `18/17/12/5/0`, `large_run_complete=false`, `mcp_health_light_mode=true`
-- [ ] unreviewed `unsafe_promotion_from_hold` 11건은 native web/image 확인 뒤 라벨링한다.
+- [x] unreviewed `unsafe_promotion_from_hold` 11건은 Loop300에서 native web/source 확인 뒤 라벨링했다.
 - Gate: unsafe promotion contract `GO_UNIT_AND_LEGACY_REPLAY_EVIDENCE`, full collateral approval `NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-02 Loop298 unsafe promotion partial source-native review 체크
@@ -67,7 +87,7 @@
 - [x] focused 검증을 통과했다.
   - py_compile PASS
   - `tests.test_build_collateral_triage_review_batch tests.test_summarize_collateral_review_verdicts` 7 tests PASS
-- [ ] unreviewed `11`건은 native web/image 확인 뒤 라벨링한다.
+- [x] unreviewed `11`건은 Loop300에서 native web/source 확인 뒤 라벨링했다.
 - [x] `repair_unsafe_promotion=8`을 shared promotion gate targeted contract로 전환했다. Loop299 legacy replay 기준 8/8 `promotion_blocked`를 확인했다.
 - Gate: unsafe promotion partial review `REVIEW-LOCKED`, full collateral approval `NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 

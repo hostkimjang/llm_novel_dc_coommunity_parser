@@ -1,5 +1,35 @@
 # Improvement Register
 
+## IMP-20260702-301 - safe-loss seed source-native verdict
+
+- Status: Implemented / partial review locked
+- Loop: 301
+- Problem:
+  - Loop300 이후 다음 action queue가 아직 `safe_loss_resolved_to_null=147` 또는 override audit으로 전환되지 않았다.
+  - Safe-loss 147은 raw row 단위로 크고 image/native-web 확인이 섞여 있어 seed verdict와 repair queue 분리가 필요했다.
+- Change:
+  - `safe_loss_resolved_to_null=147` 전용 review batch를 생성했다.
+  - Seed source-native verdict `15/147`을 `docs/devs/loop301_safe_loss_seed_source_native_verdicts.json`로 기록했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_301_REPORT_20260702.md`
+  - batch `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.*`
+  - summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_seed_source_native_review.*`
+- Result:
+  - batch selected `147`
+  - missing source/baseline/after `0/0/0`
+  - reviewed `15`
+  - unreviewed `132`
+  - validation issues `0`
+  - `REPROCESS=14`
+  - `ACCEPT=1`
+  - `repair_safe_loss=14`
+- Gate:
+  - safe-loss seed verdict `REVIEW-LOCKED`
+  - search recovery `P0 / OPEN`
+  - full collateral approval `NOT_OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-300 - unsafe promotion full verdict and direct-source support contract
 
 - Status: Implemented / full source-native verdict and legacy replay verified
