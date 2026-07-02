@@ -1,5 +1,23 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop325 curated alias work-cue contract
+
+- 범위: Loop324 `11708443` 회귀 원인을 Pipeline/Arbiter cue 불일치로 좁히고, 같은 helper를 경유하는 계약 테스트를 추가한다.
+- Artifacts:
+  - state `docs\devs\loop325_curated_alias_work_cue_contract_20260703.json`
+  - report `docs\devs\loop_reports\LOOP_325_REPORT_20260703.md`
+  - source review `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop324_loop322_alias_targeted_nonlight_review.json`
+- Verification:
+  - `tests.test_known_title_abbreviation_safe_loss_contract -v` PASS, `8` tests
+  - `tests.test_arbiter_curated_alias_guard -v` PASS, `21` tests
+  - py_compile PASS: `src\llm_batch\experts\utils.py`, `src\llm_batch\experts\arbiter.py`, `src\llm_batch\agentic_pipeline.py`, related tests
+  - `tests.test_regression_safe_work_bridge_contract tests.test_known_title_abbreviation_support tests.test_title_lead_search_inferred_guard -v` PASS, `214` tests
+- Result:
+  - `11708443` style originality/SCP cue now reaches `_post_discusses_work_as_work`.
+  - `11718099` style cover-change cue now counts as curated-alias contextual work anchor.
+  - comparison-only adjacent alias negative remains blocked.
+- Gate: code contract `GO_UNIT_AND_BROADER_214`, runtime replay `NOT_RUN_CURRENT_PATCH`, targeted canary `LOOP324_NO-GO`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop324 Loop322 alias non-light replay
 
 - 범위: Loop322 alias 7건을 `8c4ec326` 기준 search 포함 non-light runtime으로 재실행한다.

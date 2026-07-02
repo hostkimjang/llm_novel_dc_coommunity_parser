@@ -20,6 +20,7 @@ from .utils import (
     _norm_domain_text,
     _detect_domain_groups,
     _has_domain_conflict_for_mapping,
+    _has_curated_alias_work_discussion_cue,
     KNOWN_TITLE_ABBREVIATIONS,
 )
 from ..prompts.expert_prompts import LF_ARBITER, PLATFORM_ABBREVIATION_MAP
@@ -8049,6 +8050,7 @@ class ArbiterExpert:
                 r"주인공|히로인|남주|여주|작중|등장인물|캐릭터|빌런|마왕|능력|스킬|세계관|에피소드",
                 post_text,
             )
+            or _has_curated_alias_work_discussion_cue(post_text)
         )
         return bool(has_positive_semantic_cue and (has_episode_or_serial_cue or has_character_entity_cue or has_concrete_work_cue))
 

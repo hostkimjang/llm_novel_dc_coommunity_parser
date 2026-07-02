@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop325 curated alias work-cue contract
+
+- Loop324 `11708443 / 괴담출근` 회귀를 Pipeline bridge와 Arbiter curated-alias null guard의 작품 담론 cue 불일치로 분해했다.
+- `_has_curated_alias_work_discussion_cue`를 추가해 `독창성`, `SCP`, `영감`, `표지변경` 같은 작품 담론 cue를 Pipeline/Arbiter가 같은 술어로 보게 했다.
+- `11708443` 독창성/SCP positive 계약과 `11718099` 표지변경 Arbiter null-guard 계약을 추가했다.
+- comparison-only negative가 풀리지 않도록 cue 폭을 좁혔고, `괴담텔 ... 괴담동` control은 계속 blocked다.
+- 검증은 known-title abbreviation safe-loss contract `8` PASS, Arbiter curated alias guard `21` PASS, py_compile PASS, related work-bridge/title-lead bundle `214` PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_325_REPORT_20260703.md`, state는 `docs/devs/loop325_curated_alias_work_cue_contract_20260703.json`이다.
+- Gate는 code contract `GO_UNIT_AND_BROADER_214`, runtime replay `NOT_RUN_CURRENT_PATCH`, targeted canary `LOOP324_NO-GO`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop324 Loop322 alias non-light replay
 
 - 코드 체크포인트 `8c4ec326`에서 known-title abbreviation work bridge를 shared `_post_discusses_work_as_work` 경유로 배선하고 `MCP_HEALTH_LIGHT_MODE=0` override를 추가했다.

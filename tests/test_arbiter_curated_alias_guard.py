@@ -242,6 +242,86 @@ class ArbiterCuratedAliasGuardTest(unittest.TestCase):
         self.assertTrue(arbiter._has_curated_alias_contextual_work_anchor(ctx, "Alpha Novel"))
         self.assertTrue(arbiter._has_curated_alias_guard_exception(ctx, "Alpha Novel"))
 
+    def test_loop324_originality_cue_prevents_curated_alias_null_overblock(self):
+        arbiter_module.KNOWN_TITLE_ABBREVIATIONS = {
+            "괴담출근": "괴담에 떨어져도 출근을 해야 하는구나"
+        }
+        arbiter = _arbiter()
+        title = "괴담에 떨어져도 출근을 해야 하는구나"
+        ctx = ConversationContext(
+            post_id=11708443,
+            post_data={
+                "post_id": 11708443,
+                "title": "괴담출근정도는 돼야 독창성 운운할수 있는거다",
+                "content_blocks": [
+                    {
+                        "type": "ocr_text",
+                        "text": "괴담출근이 SCP 재단에 영감을 받아 만들어진 작품인지 묻는 이미지 캡처",
+                    }
+                ],
+            },
+            comments=[],
+        )
+        ctx.set_expert_output(
+            ExpertType.GATEKEEPER,
+            {
+                "post_type": "work_discussion",
+                "detected_entities": {"possible_titles": ["괴담출근"]},
+                "context_clues": {},
+            },
+        )
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "discuss_work",
+                    "title_novel_terms": ["괴담출근"],
+                    "semantic_seed_review": {"is_specific_work_discussion": True},
+                }
+            },
+        )
+
+        self.assertTrue(arbiter._curated_alias_for_title_mentioned_in_post_main(ctx, title))
+        self.assertTrue(arbiter._has_curated_alias_contextual_work_anchor(ctx, title))
+        self.assertFalse(arbiter._curated_alias_lacks_contextual_work_anchor(ctx, title))
+        self.assertTrue(arbiter._has_curated_alias_guard_exception(ctx, title))
+
+    def test_loop324_cover_change_cue_prevents_curated_alias_null_overblock(self):
+        arbiter_module.KNOWN_TITLE_ABBREVIATIONS = {"빌환": "빌어먹을 환생"}
+        arbiter = _arbiter()
+        title = "빌어먹을 환생"
+        ctx = ConversationContext(
+            post_id=11718099,
+            post_data={
+                "post_id": 11718099,
+                "title": "빌환 표지변경됨",
+                "content_blocks": [],
+            },
+            comments=[],
+        )
+        ctx.set_expert_output(
+            ExpertType.GATEKEEPER,
+            {
+                "post_type": "work_discussion",
+                "detected_entities": {"possible_titles": ["빌환"]},
+                "context_clues": {},
+            },
+        )
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "discuss_work",
+                    "title_novel_terms": ["빌환"],
+                    "semantic_seed_review": {"is_specific_work_discussion": True},
+                }
+            },
+        )
+
+        self.assertTrue(arbiter._curated_alias_for_title_mentioned_in_post_main(ctx, title))
+        self.assertTrue(arbiter._has_curated_alias_contextual_work_anchor(ctx, title))
+        self.assertFalse(arbiter._curated_alias_lacks_contextual_work_anchor(ctx, title))
+
     def test_deliberation_rebuild_prompt_uses_discourse_output_for_alias_hint(self):
         arbiter = _arbiter()
         deliberation = DeliberationOrchestrator(arbiter, arbiter.llm)

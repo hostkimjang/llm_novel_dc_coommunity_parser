@@ -1,5 +1,22 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop325 curated alias work-cue contract 체크
+
+- [x] Loop324 `11708443` 회귀 원인을 Pipeline bridge와 Arbiter curated-alias null guard의 작품 담론 cue 불일치로 분리했다.
+  - source report `docs\devs\loop_reports\LOOP_324_REPORT_20260703.md`
+  - source review `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop324_loop322_alias_targeted_nonlight_review.json`
+- [x] 공통 helper `_has_curated_alias_work_discussion_cue`를 추가하고 Pipeline/Arbiter 양쪽에서 사용하도록 배선했다.
+- [x] `괴담출근` 독창성/SCP cue와 `빌환` 표지변경 cue 계약 테스트를 추가했다.
+- [x] `괴담텔 ... 괴담동` 인접 비교 음성 control이 계속 blocked임을 확인했다.
+- [x] 검증을 완료했다.
+  - known-title abbreviation safe-loss contract `8` PASS
+  - Arbiter curated alias guard `21` PASS
+  - py_compile PASS
+  - related work-bridge/title-lead bundle `214` PASS
+- [ ] current patch runtime replay 전까지 residual closure로 세지 않는다.
+- [ ] search degraded 100% 복구 전 `promotion_blocked`는 계속 `search-blind conditional`로만 해석한다.
+- Gate: code contract `GO_UNIT_AND_BROADER_214`, runtime replay `NOT_RUN_CURRENT_PATCH`, targeted canary `LOOP324_NO-GO`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop324 Loop322 alias non-light replay 체크
 
 - [x] 코드 체크포인트 `8c4ec326`을 만들었다.

@@ -2,6 +2,19 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop325 TODO
+
+- 상태 업데이트: Loop324 `11708443` 회귀를 공통 작품 담론 cue 계약으로 좁혀 수리했다. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop325 TODO:
+  - [x] Pipeline bridge와 Arbiter curated-alias null guard의 cue 불일치를 확인했다.
+  - [x] `_has_curated_alias_work_discussion_cue`를 공통 helper로 추가했다.
+  - [x] known-title abbreviation bridge와 Arbiter contextual work anchor가 같은 helper를 경유하게 했다.
+  - [x] `11708443` 독창성/SCP cue, `11718099` 표지변경 cue 계약 테스트를 추가했다.
+  - [x] comparison-only negative가 풀리지 않도록 cue 폭을 좁히고 `214` related tests까지 통과했다.
+  - [ ] current patch 기준 Loop322 alias packet targeted replay를 다시 실행한다.
+  - [ ] replay 전까지 Loop324 `NO-GO`와 search P0를 유지한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop324 TODO
 
 - 상태 업데이트: Loop322 alias 7건을 `8c4ec326` 기준 search 포함 non-light로 재실행했다. Runtime은 완료됐지만 semantic은 `NO-GO`다.

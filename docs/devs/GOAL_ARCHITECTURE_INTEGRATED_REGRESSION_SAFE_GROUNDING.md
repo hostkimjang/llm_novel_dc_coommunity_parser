@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop325 Addendum - curated alias work-cue contract
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop325는 approval이 아니라 Loop324 `11708443 / 괴담출근` 회귀의 Pipeline/Arbiter cue 불일치를 공통 helper로 수렴시킨 unit/broader contract 회차다.
+- 목적: ordinary residual reduction 전에 curated alias promotion gate가 같은 작품 담론 cue를 보도록 한다.
+- 코드 변경: `_has_curated_alias_work_discussion_cue`를 추가하고 known-title abbreviation bridge와 Arbiter contextual work anchor가 함께 쓰도록 배선했다.
+- Evidence: report `docs/devs/loop_reports/LOOP_325_REPORT_20260703.md`, state `docs/devs/loop325_curated_alias_work_cue_contract_20260703.json`, source review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop324_loop322_alias_targeted_nonlight_review.json`.
+- Verification: known-title abbreviation safe-loss contract `8` PASS, Arbiter curated alias guard `21` PASS, py_compile PASS, related work-bridge/title-lead bundle `214` PASS.
+- 보호: `괴담텔 ... 괴담동` comparison-only negative는 계속 blocked다.
+- Gate: code contract `GO_UNIT_AND_BROADER_214`, runtime replay `NOT_RUN_CURRENT_PATCH`, targeted canary `LOOP324_NO-GO`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop322 Addendum - safe-loss alias shared contract
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop322는 approval이 아니라 Loop321 `repair_safe_loss=76` 중 직접 별칭+작품 소비 cue 7건을 shared promotion gate/known-title abbreviation 계약으로 올린 unit contract 회차다.

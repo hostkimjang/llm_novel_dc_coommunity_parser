@@ -54,6 +54,17 @@ _DEFAULT_ARRAY_MAX = 15
 
 _HAN_CHAR_RE = re.compile(r"[\u4E00-\u9FFF]")
 _WS_MULTI_RE = re.compile(r"\s{2,}")
+_CURATED_ALIAS_WORK_DISCUSSION_CUE_RE = re.compile(
+    r"\d+\s*(?:화|회차|호)\b|휴재|연재|스포|작가의\s*말|최신화|완결|"
+    r"주인공|히로인|남주|여주|작중|등장인물|캐릭터|빌런|마왕|능력|스킬|세계관|에피소드|"
+    r"작가|표지|웹툰|원작|각색|스토리|설정|정체|표절|독창성|오리지널리티|영감|공포물|괴담물|결말",
+    flags=re.IGNORECASE,
+)
+
+
+def _has_curated_alias_work_discussion_cue(text: Any) -> bool:
+    """Return True when a curated alias surface is near concrete work-discussion cues."""
+    return bool(_CURATED_ALIAS_WORK_DISCUSSION_CUE_RE.search(str(text or "")))
 
 
 def _sanitize_non_korean_text(

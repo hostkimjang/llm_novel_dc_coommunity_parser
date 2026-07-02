@@ -1,5 +1,15 @@
 # Slang DB Improvement TODO
 
+## 2026-07-03 Loop325 curated alias work-cue contract / slang caveat
+
+- [x] Loop324 `11708443 / 괴담출근` 회귀를 slang DB write-back 문제가 아니라 Pipeline/Arbiter 작품 담론 cue 불일치로 분리했다.
+- [x] `_has_curated_alias_work_discussion_cue`를 추가해 curated alias 주변의 작품 담론 cue를 shared helper로 본다.
+- [x] `괴담출근` 독창성/SCP cue와 `빌환` 표지변경 cue는 계약 테스트로 고정했다.
+- [x] `괴담텔 ... 괴담동` comparison-only 음성 control은 계속 blocked다.
+- [ ] Loop325는 slang/alias 품질 승인 근거가 아니다. current patch runtime replay 전까지 residual closure로 세지 않는다.
+- [ ] search degraded 복구 전 `promotion_blocked`는 계속 `search-blind conditional`로 해석한다.
+- Gate: slang DB write-back 아님, code contract `GO_UNIT_AND_BROADER_214`, runtime replay `NOT_RUN_CURRENT_PATCH`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop324 non-light alias replay / slang caveat
 
 - [x] Loop322 alias 7건을 `8c4ec326` 기준 search 포함 non-light로 재실행했다.

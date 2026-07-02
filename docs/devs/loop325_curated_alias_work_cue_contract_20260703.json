@@ -1,0 +1,92 @@
+{
+  "report_type": "loop325_curated_alias_work_cue_contract",
+  "date": "2026-07-03",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "source_issue": {
+    "source_loop": "Loop324",
+    "source_report": "docs\\devs\\loop_reports\\LOOP_324_REPORT_20260703.md",
+    "source_review": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop324_loop322_alias_targeted_nonlight_review.json",
+    "problem": "11708443 was safe_resolved in Loop323 but became promotion_blocked in Loop324 because the pipeline bridge and Arbiter curated-alias null guard did not share the same work-discussion cue contract.",
+    "affected_rows": [
+      {
+        "post_id": "11708443",
+        "alias": "괴담출근",
+        "expected_title": "괴담에 떨어져도 출근을 해야 하는구나",
+        "loop324_state": "promotion_blocked / ocr_explicit_title_unresolved",
+        "contract_cue": "독창성 / SCP / 영감"
+      },
+      {
+        "post_id": "11718099",
+        "alias": "빌환",
+        "expected_title": "빌어먹을 환생",
+        "loop324_state": "promotion_blocked / ocr_explicit_title_unresolved",
+        "contract_cue": "표지변경"
+      }
+    ]
+  },
+  "code_changes": [
+    {
+      "file": "src\\llm_batch\\experts\\utils.py",
+      "change": "Added shared _has_curated_alias_work_discussion_cue helper for concrete work-discussion cues near curated aliases."
+    },
+    {
+      "file": "src\\llm_batch\\agentic_pipeline.py",
+      "change": "Routed known-title abbreviation bridge cue evaluation through _has_curated_alias_work_discussion_cue."
+    },
+    {
+      "file": "src\\llm_batch\\experts\\arbiter.py",
+      "change": "Routed curated alias contextual work anchor through _has_curated_alias_work_discussion_cue."
+    },
+    {
+      "file": "tests\\test_known_title_abbreviation_safe_loss_contract.py",
+      "change": "Added 11708443-style originality/SCP positive bridge contract."
+    },
+    {
+      "file": "tests\\test_arbiter_curated_alias_guard.py",
+      "change": "Added 11708443 originality and 11718099 cover-change Arbiter null-guard contracts."
+    }
+  ],
+  "negative_controls_preserved": [
+    "comparison-only adjacent alias remains blocked: 괴담텔 ... 괴담동",
+    "known alias semantic-no-work gate remains blocked",
+    "prefix-only curated alias without contextual work anchor remains blocked"
+  ],
+  "verification": [
+    {
+      "command": ".venv312\\Scripts\\python.exe -m unittest tests.test_known_title_abbreviation_safe_loss_contract -v",
+      "status": "PASS",
+      "tests": 8
+    },
+    {
+      "command": ".venv312\\Scripts\\python.exe -m unittest tests.test_arbiter_curated_alias_guard -v",
+      "status": "PASS",
+      "tests": 21
+    },
+    {
+      "command": ".venv312\\Scripts\\python.exe -m py_compile src\\llm_batch\\experts\\utils.py src\\llm_batch\\experts\\arbiter.py src\\llm_batch\\agentic_pipeline.py tests\\test_known_title_abbreviation_safe_loss_contract.py tests\\test_arbiter_curated_alias_guard.py",
+      "status": "PASS"
+    },
+    {
+      "command": ".venv312\\Scripts\\python.exe -m unittest tests.test_regression_safe_work_bridge_contract tests.test_known_title_abbreviation_support tests.test_title_lead_search_inferred_guard -v",
+      "status": "PASS",
+      "tests": 214
+    }
+  ],
+  "runtime_state": {
+    "current_patch_runtime_replay": "NOT_RUN_CURRENT_PATCH",
+    "loop324_targeted_canary": "NO-GO",
+    "loop314_full375_background": "IN_PROGRESS / STALE_RELATIVE_TO_CURRENT_PATCH / NOT_APPROVAL",
+    "loop314_bounded1200_background": "IN_PROGRESS / STALE_RELATIVE_TO_CURRENT_PATCH / NOT_APPROVAL",
+    "loop314_n5_background": "RUNNING_BACKGROUND / NOT_ANALYZED_CURRENT_PATCH"
+  },
+  "gate": {
+    "code_contract": "GO_UNIT_AND_BROADER_214",
+    "runtime_replay": "NOT_RUN_CURRENT_PATCH",
+    "targeted_canary": "LOOP324_NO-GO",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

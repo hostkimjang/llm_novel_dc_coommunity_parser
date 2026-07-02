@@ -2,6 +2,16 @@
 
 검색 품질, slang DB 회수율, 대시보드/운영 UX처럼 사용자 체감 품질에 가까운 개선 항목을 관리한다.
 
+## Curated alias publication convergence
+
+- [ ] Loop325 curated alias work-cue contract follow-up
+  - 상태: code_contract_go_unit_and_broader_214 / runtime_not_run_current_patch / approval_not_open
+  - 발견: Loop324에서 `11708443 / 괴담출근`은 verifier/relation 단계의 작품 근거가 있었지만 Arbiter curated-alias null guard가 작품 담론 cue를 보지 못해 `promotion_blocked`로 회귀했다.
+  - 적용: `_has_curated_alias_work_discussion_cue`를 `utils`에 추가하고 Pipeline known-title abbreviation bridge와 Arbiter contextual work anchor가 함께 사용하게 했다.
+  - 보호: `괴담텔 ... 괴담동` 인접 비교 음성 control은 계속 blocked다.
+  - 산출물: `docs/devs/loop_reports/LOOP_325_REPORT_20260703.md`, `docs/devs/loop325_curated_alias_work_cue_contract_20260703.json`
+  - 완료 기준: current patch 기준 Loop322 alias packet targeted replay, full375/bounded current-head replay, collateral compare에서 순회귀 0 확인. search degraded가 남으면 approval 금지.
+
 ## Override audit follow-up
 
 - [ ] `LLM=False->final=True` override audit blind judge expansion

@@ -66,6 +66,7 @@ from .promotion_gate import EvidenceRecord, GroundingState, ScopeState, can_publ
 from .experts.utils import (
     _ts, set_worker_context,
     _norm_domain_text, _detect_domain_groups, _has_domain_conflict_for_mapping,
+    _has_curated_alias_work_discussion_cue,
     KNOWN_TITLE_ABBREVIATIONS,
     _DOMAIN_SIGNAL_GROUPS,
 )
@@ -16398,6 +16399,7 @@ class AgenticPipeline:
                 cue_text,
                 flags=re.IGNORECASE,
             )
+            or _has_curated_alias_work_discussion_cue(cue_text)
             or character_anchor
             or character_surface_anchor
             or character_setting_theory_anchor

@@ -218,6 +218,34 @@ class KnownTitleAbbreviationSafeLossContractTest(unittest.TestCase):
             )
         )
 
+    def test_loop324_originality_title_cue_releases_known_title_abbreviation_bridge(self):
+        ctx = self._ctx(
+            post_id=11708443,
+            title="괴담출근정도는 돼야 독창성 운운할수 있는거다",
+            body="",
+        )
+        ctx.post_data["content_blocks"].append(
+            {
+                "type": "ocr_text",
+                "text": "괴담출근이 SCP 재단에 영감을 받아 만들어진 작품인지 묻는 이미지 캡처",
+            }
+        )
+
+        self.assertTrue(
+            self.pipeline._known_title_abbreviation_post_work_bridge(
+                ctx,
+                "괴담에 떨어져도 출근을 해야 하는구나",
+                "괴담출근",
+            )
+        )
+        self.assertTrue(
+            self.pipeline._post_discusses_work_as_work(
+                ctx,
+                "괴담에 떨어져도 출근을 해야 하는구나",
+                source="official_url_recall_gate",
+            )
+        )
+
     def test_known_alias_semantic_no_work_gate_can_publish_with_official_detail(self):
         title = "지구온라인에서 쌀먹합니다"
         url = "https://novelpia.com/novel/395678"
