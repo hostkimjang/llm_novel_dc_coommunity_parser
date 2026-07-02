@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop288 safe-loss / search recovery quality gate
+
+- 근거:
+  - [x] current HEAD safe-loss N5 결과를 파일로 남겼다.
+  - [x] blind judge 기준과 반복 outcome을 분리해 기록했다.
+  - [x] golden set `16 -> 18` 갱신과 추가 행 근거 manifest를 남겼다.
+  - [x] full375와 bounded1200 search 포함 non-light 런을 background로 발주했다.
+  - [x] Data Analytics artifact validate/render를 통과했다.
+- 품질 게이트:
+  - [x] `11674712`, `11698880` 진동을 safe loss로 승인하지 않는다.
+  - [x] `11660237` stable 확인은 hard-hold 완화 전체 승인이 아니라 golden 편입 근거로만 쓴다.
+  - [x] 검색 degraded 복구 전 `promotion_blocked`는 `search-blind conditional`로만 해석한다.
+  - [x] full375/bounded/golden18 background 완료 전 full collateral approval을 열지 않는다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop287 frontier release quality gate
 
 - 근거:

@@ -1,5 +1,34 @@
 # Improvement Register
 
+## IMP-20260702-288 - safe-loss N5와 golden18 상시 gate 갱신
+
+- Status: Implemented / approval blocked
+- Loop: 288
+- Problem:
+  - Loop238의 flip `0.3333333333333333` 증거와 6/28 golden GO가 stale 상태였다.
+  - `11660237`, `11698880` 같은 safe-loss/진동 행이 golden 상시 gate에 포함되지 않아 같은 오판이 반복될 수 있었다.
+  - 검색 degraded 복구가 P0로 분리되지 않아 `promotion_blocked`를 approval 근거처럼 해석할 위험이 있었다.
+- Change:
+  - safe-loss probe를 current HEAD에서 `N=5`로 재실행하고 결과를 `NO-GO`로 갱신했다.
+  - bootstrap이 extra golden rows manifest를 받아 golden input/manifest에 재현 가능하게 편입하도록 확장했다.
+  - golden 기대 row 수를 `18`로 전환하고, bootstrap/golden audit 도구와 golden 산출물을 git 추적 대상으로 열었다.
+  - action queue에 search degraded P0와 `search-blind conditional` 태그를 추가했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_288_REPORT_20260702.md`
+  - N5 review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop288_safe_loss_current_head_n5_review.json`
+  - golden manifest `out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json`
+  - background launches `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop288_background_launches.json`
+- Verification:
+  - py_compile PASS
+  - regression-safe bootstrap/safe-loss/always-on/goal convergence tests `26` OK
+  - goal action queue tests `10` OK
+- Gate:
+  - safe-loss `NO-GO`
+  - full375/bounded completed-source/golden18 `RUNNING_BACKGROUND`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-279 - frontier worker trace timing
 
 - Status: Implemented / approval blocked

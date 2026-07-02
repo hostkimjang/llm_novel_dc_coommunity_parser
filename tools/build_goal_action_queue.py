@@ -378,10 +378,13 @@ def build_action_queue(
                     "slang_db_noise_or_alias_pollution",
                     "VLM_OCR_involved",
                     "worker_or_shard_degraded_window",
-                ]
+                ],
+                "p0_required_buckets": ["search_degraded_or_timeout"],
+                "promotion_blocked_interpretation_before_search_recovery": "search-blind conditional",
             },
             next_step=(
-                "completed source에서 P0/P1 bucket별 최소 200건 또는 bucket 전수를 뽑아 "
+                "검색 degraded 복구를 P0로 먼저 확인하고, 복구 전 promotion_blocked는 search-blind conditional로 태깅한다. "
+                "그 다음 completed source에서 P0/P1 bucket별 최소 200건 또는 bucket 전수를 뽑아 "
                 "ACCEPT/HOLD/REPROCESS/REJECT/INFO_MISSING으로 라벨링한다."
             ),
         )

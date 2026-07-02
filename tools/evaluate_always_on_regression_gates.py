@@ -110,7 +110,7 @@ def evaluate_gates(
     *,
     golden: dict[str, Any],
     collateral: dict[str, Any],
-    expected_golden_rows: int = 16,
+    expected_golden_rows: int = 18,
     expected_collateral_shared_posts: int = 375,
 ) -> dict[str, Any]:
     golden_result = golden_gate(golden, expected_golden_rows)
@@ -123,7 +123,7 @@ def evaluate_gates(
         "semantic_quality": "REVIEW-LOCKED",
         "full_scan_approval": False,
         "policy": {
-            "golden_16_required": True,
+            "golden_expected_rows": expected_golden_rows,
             "full_375_collateral_required": True,
             "golden_pass_alone_is_not_approval": True,
             "collateral_runtime_pass_alone_is_not_approval": True,
@@ -144,7 +144,7 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         f"- gate: `{report['gate']}`",
         f"- semantic_quality: `{report['semantic_quality']}`",
         f"- full_scan_approval: `{str(report['full_scan_approval']).lower()}`",
-        "- 정책: golden-16과 full 375 collateral diff를 항상 함께 요구한다.",
+        f"- 정책: golden-{report['golden']['expected_rows']}과 full 375 collateral diff를 항상 함께 요구한다.",
         "",
         "## Golden",
         "",
@@ -178,10 +178,10 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Evaluate golden-16 plus full 375 collateral as always-on gates.")
+    parser = argparse.ArgumentParser(description="Evaluate golden plus full 375 collateral as always-on gates.")
     parser.add_argument("--golden-audit", required=True, type=Path)
     parser.add_argument("--collateral-compare", required=True, type=Path)
-    parser.add_argument("--expected-golden-rows", type=int, default=16)
+    parser.add_argument("--expected-golden-rows", type=int, default=18)
     parser.add_argument("--expected-collateral-shared-posts", type=int, default=375)
     parser.add_argument("--output-json", required=True, type=Path)
     parser.add_argument("--output-md", required=True, type=Path)

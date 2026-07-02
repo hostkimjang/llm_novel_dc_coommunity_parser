@@ -1,5 +1,52 @@
 # Development Checklist
 
+## 2026-07-02 Loop288 safe-loss N5 / golden18 / search 포함 런 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] current HEAD safe-loss flip probe를 `N=5`로 갱신했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop288_safe_loss_current_head_n5_review.json`
+  - gate `NO-GO`
+  - `hard_hold_relaxation_allowed=false`
+  - flipped post_ids `11674712`, `11698880`
+  - `11660237` stable blind judge confirmed `테라포밍`
+  - `11698880`은 오답 `아카데미 생존 갤러리`와 정답 title `promotion_blocked`가 진동한다.
+- [x] golden set을 `16 -> 18`로 갱신했다.
+  - extra rows manifest `docs\devs\regression_safe_extra_golden_rows_20260702.json`
+  - golden manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\golden\golden_manifest.json`
+  - 추가 행 `11660237`, `11698880`
+- [x] golden/bootstrap 추적 예외를 갱신했다.
+  - `tools\bootstrap_regression_safe_grounding.py`
+  - `tools\audit_regression_safe_golden.py`
+  - `tests\test_regression_safe_grounding_bootstrap.py`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\golden\golden_manifest.json`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\golden\golden_set.jsonl`
+- [x] completed-source 후보 감사를 재실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop288_completed_source_candidate_audit_current.json`
+  - approval_source_candidate_count `0`
+  - largest clean VLM/OCR source `375`
+  - largest partial VLM/OCR population `3812`
+- [x] full375 replay를 search 포함 non-light 조건으로 백그라운드 발주했다.
+  - PID `45436`
+  - input rows `375`
+  - `include_search=True`, `light_mode=False`, shard `12/12 OK`
+- [x] bounded completed-source run을 search 포함 non-light 조건으로 백그라운드 발주했다.
+  - PID `110660`
+  - input rows `1200`
+  - source `out\expert_result_20260612_174715_296791.json`의 completed/flushed row `3812`에서 sample seed `20260702`
+  - `include_search=True`, `light_mode=False`, shard `12/12 OK`
+- [x] golden18 replay를 search 포함으로 백그라운드 발주했다.
+  - PID `83216`
+  - input rows `18`
+  - small-run 정책상 `light_mode=True`
+- [x] Data Analytics artifact를 validate/render했다.
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop288_safe_loss_search_runs_data_analytics_artifact.json`
+- [x] search degraded 복구를 P0로 태깅했다.
+  - 복구 전 `promotion_blocked` 해석은 `search-blind conditional`
+- [ ] full375 replay 완료 후 collateral compare와 always-on gate를 `expected_golden_rows=18`, `expected_collateral_shared_posts=375`로 다시 평가한다.
+- [ ] bounded1200 완료 후 `audit_expert_run_health.py`와 completed-source candidate audit를 다시 실행한다.
+- [ ] golden18 replay 완료 후 golden audit를 실행하고 old golden GO를 current HEAD 18행 기준으로 교체한다.
+- Gate: safe-loss `NO-GO`, full375 `RUNNING_BACKGROUND`, bounded completed-source `RUNNING_BACKGROUND`, golden18 `RUNNING_BACKGROUND`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop287 11708456 release / 후속 frontier 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

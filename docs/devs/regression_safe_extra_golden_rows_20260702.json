@@ -1,0 +1,30 @@
+{
+  "rows": [
+    {
+      "post_id": 11660237,
+      "golden_role": "safe_loss_blind_judge_expected_work",
+      "failure_class": "safe_loss_flip_probe",
+      "disagreement_type": "nondeterminism_probe_candidate",
+      "severity": "high",
+      "expected_title_or_hypothesis": "테라포밍",
+      "expected_no_public_title": false,
+      "expected_url": "https://novelpia.com/novel/61947",
+      "expected_status": "safe_resolved",
+      "source": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop238_safe_loss_blind_judge_native_web.json",
+      "note": "safe-loss 반복 probe 대상이다. blind judge 기준 정답은 노벨피아 '테라포밍'이며, 반복 결과가 흔들리면 safe loss가 아니라 비결정 미해소로 본다."
+    },
+    {
+      "post_id": 11698880,
+      "golden_role": "safe_loss_blind_judge_expected_work",
+      "failure_class": "safe_loss_flip_probe",
+      "disagreement_type": "wrong_work_or_nondeterminism_probe",
+      "severity": "high",
+      "expected_title_or_hypothesis": "가챠 중독자의 퓨전펑크 생활",
+      "expected_no_public_title": false,
+      "expected_url": "https://novelpia.com/novel/387014",
+      "expected_status": "safe_resolved",
+      "source": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop238_safe_loss_blind_judge_native_web.json",
+      "note": "safe-loss 반복 probe에서 '아카데미 생존 갤러리' 오귀결과 hold가 섞인 행이다. blind judge 기준 정답은 노벨피아 '가챠 중독자의 퓨전펑크 생활'이며 golden 상시 게이트에 포함한다."
+    }
+  ]
+}

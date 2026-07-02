@@ -1,5 +1,32 @@
 # Verification Results
 
+## 2026-07-02 Loop288 safe-loss N5 / golden18 / search 포함 런 발주
+
+- 범위: current HEAD safe-loss 반복 probe, golden 18 편입, completed-source 후보 감사, search 포함 background 런 발주, 관련 도구 계약 테스트.
+- Flip probe:
+  - command: `.\.venv312\Scripts\python.exe tools\safe_loss_flip_rate_probe.py analyze --result ...run01_result.json --result ...run02_result.json --result ...run03_result.json --result ...run04_result.json --result ...run05_result.json --post-ids 11674712,11660237,11698880 --repeats 5 --blind-judge out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop238_safe_loss_blind_judge_native_web.json --output-json out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop288_safe_loss_current_head_n5_review.json --output-md out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop288_safe_loss_current_head_n5_review.md`
+  - result: gate `NO-GO`, hard-hold relaxation `false`
+  - `11674712`: flip_rate `0.4`, `nondeterminism_unresolved`
+  - `11660237`: flip_rate `0.0`, `stable_blind_judge_confirmed`
+  - `11698880`: flip_rate `0.4`, `nondeterminism_unresolved`
+- Bootstrap/golden:
+  - command: `.\.venv312\Scripts\python.exe tools\bootstrap_regression_safe_grounding.py --result out\expert_result_20260626_000008_928006.json --phase1-root out\full_post_judge_20260626_000008_928006_phase1 --survey-errors docs\devs\detection_survey_20260626_errors.json --out-dir out\regression_safe_grounding_20260626_000008_928006_loop01 --accept-sample-size 40 --golden-per-bucket 8 --extra-golden-rows docs\devs\regression_safe_extra_golden_rows_20260702.json`
+  - result: golden_rows `18`, extra_golden_rows_included `2`, missing `[]`, duplicate `[]`
+- Completed-source candidate audit:
+  - command: `.\.venv312\Scripts\python.exe tools\build_completed_source_candidate_audit.py --manifest-root out --random-target 1000 --max-candidates 10 --output-json out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop288_completed_source_candidate_audit_current.json --output-md out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop288_completed_source_candidate_audit_current.md`
+  - result: approval_source_candidate_count `0`, largest_clean_vlm_ocr_available_rows `375`, largest_partial_vlm_ocr_available_rows `3812`
+- Background launch verification:
+  - full375 PID `45436`: `include_search=True`, `light_mode=False`, shard `12/12 OK`
+  - bounded1200 PID `110660`: `include_search=True`, `light_mode=False`, shard `12/12 OK`
+  - golden18 PID `83216`: `include_search=True`, `light_mode=True`, shard `2/2 OK`
+  - launch manifest: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop288_background_launches.json`
+- Code/test verification:
+  - `python -m py_compile tools\bootstrap_regression_safe_grounding.py tools\audit_regression_safe_golden.py tools\safe_loss_flip_rate_probe.py tools\evaluate_always_on_regression_gates.py` PASS
+  - `python -m unittest tests.test_regression_safe_grounding_bootstrap tests.test_safe_loss_flip_rate_probe tests.test_always_on_regression_gates tests.test_goal_convergence -v` PASS, `26 tests`
+  - `python -m unittest tests.test_goal_action_queue -v` PASS, `10 tests`
+  - Data Analytics `validate_artifact` PASS, `render_artifact` PASS
+- Gate: safe-loss `NO-GO`, full375/bounded/golden18 `RUNNING_BACKGROUND`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional` until recovery, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop287 frontier release and completed source candidate recheck
 
 - 범위: `11708456` frontier release, 새 ordered flush frontier, completed source approval 후보 존재 여부를 재확인한다.

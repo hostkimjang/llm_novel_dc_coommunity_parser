@@ -5,12 +5,12 @@ from tools.evaluate_always_on_regression_gates import evaluate_gates
 
 def _golden(**overrides):
     payload = {
-        "row_count": 16,
-        "passed_count": 16,
+        "row_count": 18,
+        "passed_count": 18,
         "failed_count": 0,
         "canary_semantic_gate": "PASS",
         "runtime": {
-            "completed_count": 16,
+            "completed_count": 18,
             "pending_count": 0,
             "failed_count": 0,
         },

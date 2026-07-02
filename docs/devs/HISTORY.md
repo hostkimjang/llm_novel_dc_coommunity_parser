@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-02 - Loop288 safe-loss N5, golden18, search 포함 런 발주
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- current HEAD safe-loss flip probe를 `N=5`로 갱신했다. 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop288_safe_loss_current_head_n5_review.json`이다.
+- 결과는 `NO-GO`, `hard_hold_relaxation_allowed=false`다. `11660237`은 `5/5` stable blind judge confirmed로 `테라포밍 / https://novelpia.com/novel/61947`에 수렴했다.
+- `11674712`와 `11698880`은 flip_rate `0.4`, `nondeterminism_unresolved`다. `11698880`은 오답 `아카데미 생존 갤러리`와 정답 title의 `promotion_blocked`가 반복 간 갈라졌다.
+- golden set은 `16 -> 18`로 갱신했다. 추가 행 manifest는 `docs/devs/regression_safe_extra_golden_rows_20260702.json`이고, 갱신 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json` / `golden_set.jsonl`이다.
+- full375 replay PID `45436`과 bounded1200 completed-source run PID `110660`은 `include_search=True`, `light_mode=False`, shard `12/12 OK`로 시작했다. golden18 replay PID `83216`은 search 포함이나 small-run 정책상 `light_mode=True`다.
+- Search degraded 복구는 P0로 승격했고, 복구 전 `promotion_blocked`는 `search-blind conditional`로 태깅한다.
+- Report는 `docs/devs/loop_reports/LOOP_288_REPORT_20260702.md`, Data Analytics artifact는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop288_safe_loss_search_runs_data_analytics_artifact.json`이다.
+- Gate는 safe-loss `NO-GO`, background runs `RUNNING_BACKGROUND`, completed-source approval candidate `0`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop287 11708456 release와 후속 frontier 감사
 
 - 동일 38-row parent packet은 재실행하지 않았다.

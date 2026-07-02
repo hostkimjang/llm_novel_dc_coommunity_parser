@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop288 Addendum - safe-loss N5, golden18, search 포함 런 발주
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았고, safe-loss 반복과 상위 gate 산출물 갱신으로 전환했다.
+- 목적: stale 증거인 Loop238 flip `0.3333333333333333`과 6/28 golden GO를 current HEAD 기준으로 갱신하고, 검색 포함 bounded completed-source run을 발주해 approval 교착을 푼다.
+- 코드 변경: `tools/bootstrap_regression_safe_grounding.py`는 extra golden rows manifest를 받아 golden input/manifest에 편입한다. `tools/evaluate_always_on_regression_gates.py` 기본 golden 기대치를 `18`로 전환했다. `tools/build_goal_action_queue.py`는 search degraded 복구를 P0로 태깅하고, 복구 전 `promotion_blocked`를 `search-blind conditional`로 해석한다. `.gitignore`는 bootstrap/golden audit 도구, bootstrap 테스트, golden 산출물 추적 예외를 추가했다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_288_REPORT_20260702.md`, N5 review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop288_safe_loss_current_head_n5_review.json`, extra golden rows `docs/devs/regression_safe_extra_golden_rows_20260702.json`, golden18 manifest/input `out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json` / `golden_set.jsonl`, launches `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop288_background_launches.json`, Data Analytics artifact `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop288_safe_loss_search_runs_data_analytics_artifact.json`.
+- Evidence: safe-loss N5 gate는 `NO-GO`다. `11660237`은 `5/5` stable blind judge confirmed `테라포밍 / https://novelpia.com/novel/61947`이고, `11674712`와 `11698880`은 flip_rate `0.4`, `nondeterminism_unresolved`다. `11698880`은 `3/5` 오답 `아카데미 생존 갤러리`, `2/5` 정답 title `promotion_blocked`로 갈라졌다. golden set은 `16 -> 18`, 추가 행 `11660237/11698880`, role `safe_loss_blind_judge_expected_work`다.
+- Background: full375 replay PID `45436`, bounded1200 completed-source run PID `110660`은 모두 `include_search=True`, `light_mode=False`, shard `12/12 OK`로 시작했다. golden18 replay PID `83216`은 search 포함이나 small-run 정책상 `light_mode=True`다.
+- Gate: safe-loss `NO-GO`, hard-hold relaxation `false`, full375 replay `RUNNING_BACKGROUND`, bounded completed-source run `RUNNING_BACKGROUND`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, completed-source approval candidate `0`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop287 Addendum - 11708456 candidate-only release and next frontier
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

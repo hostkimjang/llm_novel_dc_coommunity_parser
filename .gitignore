@@ -69,6 +69,7 @@ tests/inputs/test01.jsonl
 !/tests/test_regression_safe_work_bridge_contract.py
 !/tests/test_audit_expert_run_health.py
 !/tests/test_publication_contract_convergence_audit.py
+!/tests/test_regression_safe_grounding_bootstrap.py
 /tmp*
 *.bak
 *.badbak
@@ -89,6 +90,8 @@ tests/inputs/test01.jsonl
 !/tools/safe_loss_flip_rate_probe.py
 !/tools/evaluate_always_on_regression_gates.py
 !/tools/build_completed_source_candidate_audit.py
+!/tools/bootstrap_regression_safe_grounding.py
+!/tools/audit_regression_safe_golden.py
 !/tools/build_goal_current_state_map.py
 !/tools/build_goal_action_queue.py
 !/tools/build_semantic_coverage_audit.py
@@ -106,3 +109,16 @@ tests/inputs/test01.jsonl
 /.playwright-mcp
 /server-poc
 /.playwright-cli
+
+!/out/
+!/out/regression_safe_grounding_20260626_000008_928006_loop01/
+/out/*
+!/out/regression_safe_grounding_20260626_000008_928006_loop01/
+!/out/regression_safe_grounding_20260626_000008_928006_loop01/golden/
+/out/regression_safe_grounding_20260626_000008_928006_loop01/*
+!/out/regression_safe_grounding_20260626_000008_928006_loop01/golden/
+!/out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json
+!/out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl
+/out/regression_safe_grounding_20260626_000008_928006_loop01/golden/*
+!/out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json
+!/out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl
