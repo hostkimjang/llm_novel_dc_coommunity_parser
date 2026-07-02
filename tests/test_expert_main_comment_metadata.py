@@ -2168,6 +2168,163 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertEqual(trace["pre_gate_candidate"]["official_title"], "퇴마록")
         self.assertEqual(identity["candidate_ledger"]["promotion_decision"], decision)
 
+    def test_inferred_serialized_publication_with_critical_counterevidence_stays_candidate_only(self):
+        result = {
+            "identity": {
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "is_resolved_work_discussion": True,
+                "candidate_ledger_status": "safe_resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "anchor_type": "title_alias",
+                "context_sources": ["title", "body", "comments", "search", "image"],
+                "novel_identity": {
+                    "official_title": "[블루아카이브] 키보토스 속 슈퍼히어로가 되었다",
+                    "heretic_url": "https://novelpia.com/novel/268940",
+                    "confidence": "High",
+                },
+                "reason_lines": [
+                    "- grounding_anchor: none",
+                    "- title_in_post: false",
+                    "- image_ocr_title_evidence: false",
+                    "- official_title_evidence: true",
+                    "- 유의사항: 본문의 키워드(마블, 슈퍼맨, 배트맨)는 특정 웹소설을 지칭하는 것이 아니라 대중문화 일반 명사임",
+                    "- 검증 반론(참고): 본문 내용이 웹소설이 아닌 영화/애니메이션/대중문화 IP에 관한 것임(critical) | relation_judge:thematic_overlap_only(critical)",
+                    "- 제목/본문 앵커와 검색 근거를 종합하여 '[블루아카이브] 키보토스 속 슈퍼히어로가 되었다' 관련 작품 토론으로 판정했습니다.",
+                ],
+                "candidate_ledger": {
+                    "candidate_preservation_sources": [
+                        {
+                            "official_title": "[블루아카이브] 키보토스 속 슈퍼히어로가 되었다",
+                            "heretic_url": "https://novelpia.com/novel/268940",
+                            "source_tier": "official_detail",
+                            "page_type": "novel_page",
+                            "reference_role": "primary",
+                        }
+                    ],
+                },
+            }
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertFalse(identity["safe_resolved"])
+        self.assertTrue(identity["promotion_blocked"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        decision = identity["promotion_decision"]
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn("inferred_publication_critical_counterevidence", decision["reason_codes"])
+        self.assertIn("scope_not_current_work", decision["reason_codes"])
+        trace = identity["publish_contract_trace"]
+        self.assertFalse(trace["gate_decision"]["publish_allowed"])
+        self.assertIsNone(trace["post_gate_identity"]["official_title"])
+        self.assertEqual(identity["candidate_ledger"]["promotion_decision"], decision)
+
+    def test_inferred_serialized_publication_without_direct_source_support_stays_candidate_only(self):
+        result = {
+            "title": "도굴왕은 애니화 난이도 다른거 보단 괜찮을거 같은데",
+            "content": ["다른 웹툰이랑 다르게 전투씬의 비중이 크지 않아서"],
+            "comments": [],
+            "identity": {
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "is_resolved_work_discussion": True,
+                "candidate_ledger_status": "safe_resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "anchor_type": "title_alias",
+                "context_sources": ["title", "body", "search"],
+                "novel_identity": {
+                    "official_title": "신의 의지가 깃든 물건",
+                    "heretic_url": "https://novelpia.com/novel/436971",
+                    "confidence": "High",
+                },
+                "primary_work": {
+                    "official_title": "신의 의지가 깃든 물건",
+                    "heretic_url": "https://novelpia.com/novel/436971",
+                    "alias_or_mention": "다른",
+                    "source_tier": "official_detail",
+                },
+                "reason_lines": [
+                    "- grounding_anchor: title_mention",
+                    "- evidence_type: search_platform_url",
+                    "- title_in_post: false",
+                    "- image_ocr_title_evidence: false",
+                    "- official_title_evidence: true",
+                    "- evidence_bucket: post_spans=0, search_snippets=0, official_urls=1",
+                    "- 제목/본문 앵커와 검색 근거를 종합하여 '신의 의지가 깃든 물건' 관련 작품 토론으로 판정했습니다.",
+                ],
+                "candidate_ledger": {},
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        decision = identity["promotion_decision"]
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn("inferred_publication_missing_direct_source_support", decision["reason_codes"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+
+    def test_inferred_serialized_publication_keeps_direct_alias_source_support(self):
+        result = {
+            "title": "랫따싶에서 따먹고싶다는애들이",
+            "content": ["피갈 얘기"],
+            "comments": [],
+            "identity": {
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "is_resolved_work_discussion": True,
+                "candidate_ledger_status": "safe_resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "anchor_type": "title_alias",
+                "context_sources": ["title", "body", "search"],
+                "novel_identity": {
+                    "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+                    "heretic_url": "https://novelpia.com/novel/382324",
+                    "confidence": "High",
+                },
+                "primary_work": {
+                    "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+                    "heretic_url": "https://novelpia.com/novel/382324",
+                    "alias_or_mention": "림월드 랫따싶에서",
+                    "source_tier": "official_detail",
+                },
+                "reason_lines": [
+                    "- grounding_anchor: none",
+                    "- title_in_post: false",
+                    "- image_ocr_title_evidence: false",
+                    "- official_title_evidence: true",
+                    "- evidence_bucket: post_spans=0, search_snippets=0, official_urls=1",
+                    "- 제목/본문 앵커와 검색 근거를 종합하여 '[림월드]변방계에서 회귀자로 살아남기' 관련 작품 토론으로 판정했습니다.",
+                ],
+                "candidate_ledger": {},
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertEqual(
+            identity["novel_identity"]["official_title"],
+            "[림월드]변방계에서 회귀자로 살아남기",
+        )
+        self.assertTrue(identity["promotion_decision"]["publish_allowed"])
+
     def test_publish_contract_trace_converges_stale_blocked_trace_to_allowed_decision(self):
         stale_blocked_decision = {
             "status": "candidate_only",

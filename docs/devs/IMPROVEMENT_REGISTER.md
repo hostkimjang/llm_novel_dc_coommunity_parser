@@ -1,5 +1,36 @@
 # Improvement Register
 
+## IMP-20260702-299 - unsafe promotion inferred publication contract repair
+
+- Status: Implemented / unit and legacy replay verified
+- Loop: 299
+- Problem:
+  - Loop298 source-native review에서 `unsafe_promotion_from_hold` 중 `REPROCESS=8`이 확인됐다.
+  - 일부 legacy row는 shared gate trace 없이 serialized public identity만으로 `publish_allowed=true`가 추정되어 wrong public title이 남을 수 있었다.
+- Change:
+  - `expert_main.py`에 inferred publication demotion 계약을 추가했다.
+  - Critical counterevidence가 있으면 `inferred_publication_critical_counterevidence`로 demote한다.
+  - `post_spans=0`, `title_in_post=false`, `image_ocr_title_evidence=false`이고 직접 alias/source support가 없으면 `inferred_publication_missing_direct_source_support`로 demote한다.
+  - Direct alias source support가 있는 row는 보존한다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_299_REPORT_20260702.md`
+  - REPROCESS replay rows `11657046`, `11658621`, `11658668`, `11671490`, `11674703`, `11690874`, `11703657`, `11706832`
+  - positive controls `11674712`, `11695623`, `11669928`
+- Result:
+  - REPROCESS replay rows `8/8` -> `promotion_blocked`
+  - positive controls `3/3` -> `safe_resolved`
+  - full375/bounded1200/golden18 remain incomplete
+- Verification:
+  - py_compile PASS
+  - focused unittest 5 OK
+  - related bundle 173 OK
+- Gate:
+  - unsafe promotion contract `GO_UNIT_AND_LEGACY_REPLAY_EVIDENCE`
+  - search recovery `P0 / OPEN`
+  - full collateral approval `NOT_OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-298 - unsafe promotion partial source-native review
 
 - Status: Implemented / partial review locked

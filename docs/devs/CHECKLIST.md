@@ -1,5 +1,25 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop299 unsafe promotion shared contract repair 체크
+
+- [x] Loop298 `repair_unsafe_promotion=8`을 current HEAD shared publication contract로 재현했다.
+  - `11657046`, `11658621`, `11658668`, `11671490`, `11674703`, `11690874`, `11703657`, `11706832` 모두 `promotion_blocked`.
+  - positive controls `11674712`, `11695623`, `11669928`은 `safe_resolved` 유지.
+- [x] `expert_main.py`에 inferred publication demotion 계약을 추가했다.
+  - critical counterevidence: `inferred_publication_critical_counterevidence`
+  - no direct source support: `inferred_publication_missing_direct_source_support`
+  - direct alias source support는 demote하지 않음.
+- [x] focused/related 검증을 통과했다.
+  - py_compile PASS
+  - focused unittest 5 tests PASS
+  - related bundle 173 tests PASS
+- [x] 최신 background snapshot을 확인했다.
+  - full375 `375/62/51/11/0`, `large_run_complete=false`
+  - bounded1200 `1200/94/77/17/0`, `large_run_complete=false`
+  - golden18 `18/17/12/5/0`, `large_run_complete=false`, `mcp_health_light_mode=true`
+- [ ] unreviewed `unsafe_promotion_from_hold` 11건은 native web/image 확인 뒤 라벨링한다.
+- Gate: unsafe promotion contract `GO_UNIT_AND_LEGACY_REPLAY_EVIDENCE`, full collateral approval `NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop298 unsafe promotion partial source-native review 체크
 
 - [x] `unsafe_promotion_from_hold=26`을 독립 review batch로 분리했다.
@@ -21,7 +41,7 @@
   - py_compile PASS
   - `tests.test_build_collateral_triage_review_batch tests.test_summarize_collateral_review_verdicts` 7 tests PASS
 - [ ] unreviewed `11`건은 native web/image 확인 뒤 라벨링한다.
-- [ ] `repair_unsafe_promotion=8`을 shared promotion gate targeted contract로 전환한다.
+- [x] `repair_unsafe_promotion=8`을 shared promotion gate targeted contract로 전환했다. Loop299 legacy replay 기준 8/8 `promotion_blocked`를 확인했다.
 - Gate: unsafe promotion partial review `REVIEW-LOCKED`, full collateral approval `NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-02 Loop297 background health audit 체크

@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop299 Addendum - unsafe promotion shared contract repair
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop299는 approval이 아니라 Loop298 `repair_unsafe_promotion=8`을 shared publication contract로 실코드화한 계약 수리다.
+- 목적: `unsafe_promotion_from_hold` 오승격이 후단 serialized public identity 추정만으로 `safe_resolved`에 남지 않게 한다.
+- 코드 변경: `expert_main.py`에 inferred publication demotion 계약을 추가했다. Critical counterevidence는 `inferred_publication_critical_counterevidence`, 직접 source support 부재는 `inferred_publication_missing_direct_source_support`로 기록한다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_299_REPORT_20260702.md`.
+- Evidence: Loop298 REPROCESS 8건 `11657046`, `11658621`, `11658668`, `11671490`, `11674703`, `11690874`, `11703657`, `11706832`은 legacy replay에서 모두 `promotion_blocked`; positive controls `11674712`, `11695623`, `11669928`은 `safe_resolved` 유지.
+- Verification: py_compile PASS, focused unittest 5건 PASS, related bundle 173 tests PASS.
+- Background snapshot: full375 `375/62/51/11/0`, bounded1200 `1200/94/77/17/0`, golden18 `18/17/12/5/0`, 모두 `large_run_complete=false`.
+- Gate: unsafe promotion contract `GO_UNIT_AND_LEGACY_REPLAY_EVIDENCE`, search recovery `P0 / OPEN`, promotion blocked interpretation `search-blind conditional`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop298 Addendum - unsafe promotion partial source-native review
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop298은 approval이 아니라 collateral183 P0의 `unsafe_promotion_from_hold=26`을 부분 source-native verdict로 분해한 action queue 산출물이다.

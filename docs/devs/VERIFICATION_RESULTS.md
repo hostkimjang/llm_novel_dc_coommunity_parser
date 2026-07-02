@@ -1,5 +1,21 @@
 ﻿# Verification Results
 
+## 2026-07-02 Loop299 unsafe promotion shared contract repair
+
+- 범위: Loop298 `repair_unsafe_promotion=8`을 current HEAD shared publication contract로 전환하고, legacy Loop49 row에 재적용해 오승격이 public publish로 남지 않는지 확인한다.
+- Code/test verification:
+  - `.\.venv312\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_comment_metadata.py` PASS
+  - focused unittest 5건 PASS
+  - related bundle `tests.test_expert_main_comment_metadata tests.test_promotion_gate_contract tests.test_publication_contract_convergence_audit tests.test_regression_safe_work_bridge_contract tests.test_candidate_audit -v` PASS, `173 tests`
+- Row-level replay:
+  - `11657046`, `11658621`, `11658668`, `11671490`, `11674703`, `11690874`, `11703657`, `11706832`: current HEAD contract 적용 후 모두 `promotion_blocked`, `publish_allowed=false`
+  - positive controls `11674712`, `11695623`, `11669928`: `safe_resolved`, `publish_allowed=true` 유지
+- Latest background snapshot:
+  - full375 `375/62/51/11/0`, `large_run_complete=false`
+  - bounded1200 `1200/94/77/17/0`, `large_run_complete=false`
+  - golden18 `18/17/12/5/0`, `large_run_complete=false`, `mcp_health_light_mode=true`
+- Gate: unsafe promotion contract `GO_UNIT_AND_LEGACY_REPLAY_EVIDENCE`, full collateral approval `NOT_OPEN`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop298 unsafe promotion partial source-native review
 
 - 범위: collateral183 P0 중 `unsafe_promotion_from_hold=26`을 독립 batch로 떼고, source-native로 강하게 판정 가능한 일부 row를 라벨링한다.

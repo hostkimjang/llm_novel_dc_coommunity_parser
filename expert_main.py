@@ -2751,6 +2751,250 @@ def _demote_unsafe_url_title_verified_publication_contract(
     return changed
 
 
+def _demote_inferred_publication_with_critical_counterevidence(result_dict: Dict[str, Any]) -> bool:
+    """Do not let inferred publication override weak or contradicted source-native support."""
+    if not isinstance(result_dict, dict):
+        return False
+    identity = result_dict.get("identity")
+    if not isinstance(identity, dict):
+        return False
+    ledger = identity.get("candidate_ledger")
+    if not isinstance(ledger, dict):
+        ledger = {}
+    decision = identity.get("promotion_decision")
+    if not isinstance(decision, dict):
+        decision = ledger.get("promotion_decision")
+    if not isinstance(decision, dict) or decision.get("publish_allowed") is not True:
+        return False
+    reason_codes = [
+        str(code)
+        for code in (decision.get("reason_codes") or [])
+        if str(code).strip()
+    ]
+    if "final_publication_decision_inferred_from_serialized_identity" not in reason_codes:
+        return False
+
+    reason_chunks: List[str] = []
+    raw_lines = identity.get("reason_lines")
+    if isinstance(raw_lines, list):
+        reason_chunks.extend(str(line) for line in raw_lines if str(line).strip())
+    elif str(raw_lines or "").strip():
+        reason_chunks.append(str(raw_lines))
+    if str(identity.get("reason") or "").strip():
+        reason_chunks.append(str(identity.get("reason")))
+    reason_text = "\n".join(reason_chunks).lower()
+    critical_markers = (
+        "thematic_overlap_only(critical)",
+        "본문 내용이 웹소설이 아닌",
+        "특정 웹소설을 지칭하는 것이 아니라",
+        "작품 고유 정보 전무(critical)",
+        "본문에 작품 고유 정보 전무(critical)",
+        "정식 소설 제목을 특정할 수 있는 플랫폼 url이 발견되지 않음(critical)",
+    )
+    has_critical_counterevidence = any(marker in reason_text for marker in critical_markers)
+    weak_inferred_without_post_span = bool(
+        "title_in_post: false" in reason_text
+        and "image_ocr_title_evidence: false" in reason_text
+        and "post_spans=0" in reason_text
+        and (
+            "grounding_anchor: none" in reason_text
+            or "grounding_anchor: title_mention" in reason_text
+        )
+    )
+
+    def _title_key(value: Any) -> str:
+        return re.sub(r"[^0-9A-Za-z가-힣]+", "", str(value or "")).lower()
+
+    def _source_key() -> str:
+        chunks = [str(result_dict.get("title") or "")]
+        for key in ("content", "comments", "comment_context_lines", "comment_dialogue_context_lines"):
+            value = result_dict.get(key)
+            if isinstance(value, list):
+                chunks.extend(str(item) for item in value if str(item).strip())
+            elif str(value or "").strip():
+                chunks.append(str(value))
+        return _title_key(" ".join(chunks))
+
+    def _candidate_items() -> List[Dict[str, Any]]:
+        items: List[Dict[str, Any]] = []
+        for source_items in (
+            [identity.get("primary_work")],
+            identity.get("title_candidates") or [],
+            identity.get("candidate_preservation_sources") or [],
+            ledger.get("title_candidates") or [],
+            ledger.get("candidate_preservation_sources") or [],
+        ):
+            if not isinstance(source_items, list):
+                continue
+            items.extend(item for item in source_items if isinstance(item, dict))
+        return items
+
+    def _has_direct_alias_source_support() -> bool:
+        source_key = _source_key()
+        if not source_key:
+            return False
+        generic_alias_keys = {
+            "게임",
+            "겜",
+            "다른",
+            "마땅히",
+            "작품",
+            "소설",
+            "웹소설",
+            "애니",
+            "애니화",
+        }
+        for item in _candidate_items():
+            for key in ("alias_or_mention", "matched_alias", "anchor_text", "resolved_recall_anchor"):
+                raw_alias = str(item.get(key) or "").strip()
+                if not raw_alias:
+                    continue
+                alias_key = _title_key(raw_alias)
+                if len(alias_key) >= 4 and alias_key not in generic_alias_keys and alias_key in source_key:
+                    return True
+                for token in re.findall(r"[0-9A-Za-z가-힣]{3,}", raw_alias):
+                    token_key = _title_key(token)
+                    if len(token_key) >= 3 and token_key not in generic_alias_keys and token_key in source_key:
+                        return True
+        return False
+
+    has_alias_source_support = _has_direct_alias_source_support()
+    has_weak_counterevidence = weak_inferred_without_post_span and not has_alias_source_support
+    if not (has_critical_counterevidence or has_weak_counterevidence):
+        return False
+
+    novel = identity.get("novel_identity") if isinstance(identity.get("novel_identity"), dict) else {}
+    candidate_title = str(
+        decision.get("official_title")
+        or identity.get("official_title")
+        or identity.get("official_novel_title")
+        or novel.get("official_title")
+        or ""
+    ).strip()
+    candidate_url = str(
+        decision.get("official_url")
+        or identity.get("heretic_url")
+        or identity.get("official_url")
+        or novel.get("heretic_url")
+        or novel.get("official_url")
+        or ""
+    ).strip()
+    if not candidate_title:
+        return False
+
+    changed = False
+    flag = (
+        "inferred_publication_critical_counterevidence"
+        if has_critical_counterevidence
+        else "inferred_publication_missing_direct_source_support"
+    )
+    scope_state = {
+        "scope_kind": "context_only",
+        "confidence": "high",
+        "conflict_reason_codes": [flag],
+    }
+    for key, value in (
+        ("candidate_ledger_status", "promotion_blocked"),
+        ("title_resolution_allowed", False),
+        ("safe_resolved", False),
+        ("promotion_blocked", True),
+        ("is_resolved_work_discussion", False),
+        ("blocked_official_title", candidate_title),
+        ("blocked_official_title_url", candidate_url or None),
+    ):
+        if identity.get(key) != value:
+            identity[key] = value
+            changed = True
+    if identity.get("title_resolution_state") == "resolved":
+        identity["title_resolution_state"] = "unresolved_matchable"
+        changed = True
+    if identity.get("work_resolution") == "resolved":
+        identity["work_resolution"] = "unresolved"
+        changed = True
+    if isinstance(novel, dict):
+        if novel.get("official_title") is not None:
+            novel["official_title"] = None
+            changed = True
+        if novel.get("heretic_url") is not None:
+            novel["heretic_url"] = None
+            changed = True
+        identity["novel_identity"] = novel
+
+    blocked_reasons = [
+        str(value)
+        for value in (identity.get("promotion_blocked_reasons") or [])
+        if str(value).strip()
+    ]
+    if flag not in blocked_reasons:
+        blocked_reasons.append(flag)
+        identity["promotion_blocked_reasons"] = blocked_reasons
+        changed = True
+
+    demoted_decision = dict(decision)
+    demoted_decision["status"] = "candidate_only"
+    demoted_decision["publish_allowed"] = False
+    demoted_decision["official_title"] = None
+    demoted_decision["official_url"] = None
+    demoted_decision["candidate_preserved"] = True
+    demoted_decision["reason_codes"] = list(
+        dict.fromkeys(
+            [
+                *reason_codes,
+                flag,
+                "scope_context_only",
+                "scope_not_current_work",
+                "serialized_public_identity_scrubbed",
+            ]
+        )
+    )
+    demoted_decision["bypassed_gate"] = False
+    demoted_decision["scope"] = scope_state
+    if identity.get("promotion_decision") != demoted_decision:
+        identity["promotion_decision"] = demoted_decision
+        changed = True
+
+    ledger["pipeline_official_title"] = candidate_title
+    ledger["blocked_official_title"] = candidate_title
+    ledger["blocked_official_title_url"] = candidate_url or None
+    ledger["candidate_ledger_status"] = "promotion_blocked"
+    ledger["title_resolution_allowed"] = False
+    ledger["promotion_decision"] = demoted_decision
+    gate_state_payload = {"scope": scope_state}
+    ledger["promotion_gate_state"] = gate_state_payload
+    identity["promotion_gate_state"] = gate_state_payload
+    identity["candidate_ledger"] = ledger
+
+    for trace_container in (identity, ledger):
+        trace = trace_container.get("publish_contract_trace")
+        if not isinstance(trace, dict):
+            continue
+        updated_trace = dict(trace)
+        updated_trace["gate_decision"] = demoted_decision
+        updated_trace["scope_state"] = scope_state
+        updated_trace["reason_codes"] = demoted_decision["reason_codes"]
+        post_gate_identity = updated_trace.get("post_gate_identity")
+        if not isinstance(post_gate_identity, dict):
+            post_gate_identity = {}
+        else:
+            post_gate_identity = dict(post_gate_identity)
+        post_gate_identity.update(
+            {
+                "official_title": None,
+                "official_url": None,
+                "title_resolution_allowed": identity.get("title_resolution_allowed"),
+                "title_resolution_state": identity.get("title_resolution_state"),
+                "work_resolution": identity.get("work_resolution"),
+                "candidate_ledger_status": identity.get("candidate_ledger_status"),
+            }
+        )
+        updated_trace["post_gate_identity"] = post_gate_identity
+        if trace_container.get("publish_contract_trace") != updated_trace:
+            trace_container["publish_contract_trace"] = updated_trace
+            changed = True
+
+    return changed
+
+
 def _demote_inferred_urlless_publication_contract(result_dict: Dict[str, Any]) -> bool:
     """Do not publish a title inferred only from serialized identity without an official URL."""
     if not isinstance(result_dict, dict):
@@ -2865,6 +3109,10 @@ def _sync_final_publication_ledger_contract(result_dict: Dict[str, Any], post_ti
         changed = True
     if _sync_allowed_publication_result_contract(result_dict):
         changed = True
+    if _demote_inferred_publication_with_critical_counterevidence(result_dict):
+        changed = True
+        if _scrub_promotion_blocked_result_contract(result_dict, post_title=post_title):
+            changed = True
     if _demote_inferred_urlless_publication_contract(result_dict):
         changed = True
     if _demote_platform_meta_image_title_publication_contract(result_dict, post_title=post_title):

@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop299 unsafe promotion shared contract repair
+
+- Loop298 `repair_unsafe_promotion=8`을 current HEAD shared publication contract로 전환했다.
+- `expert_main.py`는 inferred serialized publication이 critical counterevidence 또는 no direct source support를 가진 경우 public publish를 허용하지 않고 `promotion_blocked`로 demote한다.
+- 새 reason code는 `inferred_publication_critical_counterevidence`와 `inferred_publication_missing_direct_source_support`다.
+- Direct alias source support positive control은 보존했다. `랫따싶`처럼 후보 alias가 원문에 직접 있는 row는 demote하지 않는다.
+- Legacy row replay 결과 `11657046`, `11658621`, `11658668`, `11671490`, `11674703`, `11690874`, `11703657`, `11706832`은 모두 `promotion_blocked`다.
+- Positive controls `11674712`, `11695623`, `11669928`은 `safe_resolved`를 유지했다.
+- Report는 `docs/devs/loop_reports/LOOP_299_REPORT_20260702.md`다.
+- Gate는 unsafe promotion contract `GO_UNIT_AND_LEGACY_REPLAY_EVIDENCE`, search recovery `P0 / OPEN`, full collateral approval `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop298 unsafe promotion partial source-native review
 
 - `tools/build_collateral_triage_review_batch.py`에 `--bucket` 필터를 추가해 collateral183 P0 중 특정 bucket만 독립 검토 배치로 만들 수 있게 했다.
