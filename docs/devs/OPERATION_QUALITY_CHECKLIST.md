@@ -4430,3 +4430,11 @@
 - [ ] `11660237` `promotion_blocked`는 source/native evidence 없이 강제 publish하지 않는다.
 - [ ] 중간 noise/community-banter force 로그와 final publish 결론이 충돌하는 row는 parent replay에서 `publish_contract_trace`, `publish_ledger`, `promotion_decision`, serialized `novel_identity`를 함께 비교한다.
 - [ ] `NO_DELTA_TITLE_LED_SERIALIZER_CANARY_PARTIAL_RECOVERY_PARENT_REPLAY_REQUIRED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.
+
+## 2026-07-02 추가 운영 체크 - Loop 281 long-running live process caveat
+
+- [ ] 장기 실행 중 코드 패치를 한 경우, 이미 시작된 worker process에는 패치가 적용되지 않았음을 health/report에 명시한다.
+- [ ] pre-patch worker trace가 남은 live run은 `failed=0`으로 계속 전진해도 completed-source approval 후보로 승격하지 않는다.
+- [ ] `publication_contract_convergence=GO`는 flushed row contract 수렴만 뜻한다. search evidence `REVIEW`, `large_run_complete=false`, completed-source candidate `0`이면 semantic approval로 세지 않는다.
+- [ ] completed source 후보가 생기기 전까지 random baseline 1000, P0/P1 high-risk expansion, full375 collateral approval을 열지 않는다.
+- [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.

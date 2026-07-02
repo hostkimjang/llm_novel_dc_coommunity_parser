@@ -1,5 +1,49 @@
 # Verification Results
 
+## 2026-07-02 Loop281 live health and completed source candidate recheck
+
+- 범위: Loop264 대형 run 최신 health와 completed source approval 후보 존재 여부를 재확인한다.
+- Code:
+  - 코드 변경 없음.
+- Explicit health audit:
+  - command: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_065642_030743 --manifest out\expert_result_20260702_065632_479765_manifest.json --checkpoint out\expert_result_20260702_065632_479765_checkpoint.jsonl --result-json out\expert_result_20260702_065632_479765.json --pending-snapshot out\expert_result_20260702_065632_479765_pending_snapshot.json --input-jsonl tests\inputs\test01.jsonl --log-glob "logs\expert_run_20260702_065642_030743_W*.log" --output out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop281_latest_live_run_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `279`, checkpoint_rows `299`, pending_count_actual `20`
+  - frontier post `11710058`, title `판초법사 너무 재밌어서 묵혀야겠음`, source_line `295`
+  - `frontier_worker_trace.status=in_progress_in_worker_log`, worker `W1`, event_count `13`
+  - observed_elapsed_seconds `1315.752`
+  - first timed event `08:59:25.248|W1`, last timed event `09:21:21.000|W1`
+  - `search_evidence.gate=REVIEW`
+  - `publication_contract_convergence.gate=GO`
+  - publication row_count `279`, violation_row_count `0`
+- Completed source candidate audit:
+  - command: `.\.venv312\Scripts\python.exe tools\build_completed_source_candidate_audit.py --manifest-root out --random-target 1000 --output-json out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop281_completed_source_candidate_audit.json --output-md out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop281_completed_source_candidate_audit.md`
+  - approval_source_candidate_count `0`
+  - clean_vlm_ocr_source_count `429`
+  - clean_vlm_ocr_random_shortfall_count `9`
+  - clean_vlm_ocr_search_health_not_ready_count `420`
+  - clean_vlm_ocr_publication_contract_not_ready_count `0`
+  - partial_vlm_ocr_population_ge_random_target_count `6`
+- Data Analytics:
+  - `validate_artifact`: PASS
+  - `render_artifact`: PASS
+  - artifact: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop281_live_health_data_analytics_artifact.json`
+- Log caveat:
+  - `logs\expert_run_20260702_065642_030743_W27.log:6042`의 Synthesizer trace는 Loop278 patch 전 시작된 장기 프로세스 흔적으로 유지한다.
+  - 현재 run은 `failed=0`으로 전진 중이나 이 trace가 있는 source는 approval 후보로 보지 않는다.
+- Gate:
+  - live run health: `IN_PROGRESS`
+  - completed source candidate: `MISSING`
+  - candidate audit: `REVIEW-LOCKED`
+  - search evidence: `REVIEW`
+  - publication contract convergence: `GO` for audited flushed rows
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_281_REPORT_20260702.md`
+
 ## 2026-07-02 Loop280 live health and completed source candidate recheck
 
 - 범위: Loop264 대형 run 최신 health와 completed source approval 후보 존재 여부를 재확인한다.

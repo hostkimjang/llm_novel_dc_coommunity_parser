@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop281 Addendum - live health and completed source candidate recheck
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: 진행 중인 completed-source 후보 런의 ordered flush 진행, search evidence, publication contract convergence, completed source 후보 존재 여부를 재확인한다.
+- 코드 변경: 없음.
+- Artifacts: report `docs/devs/loop_reports/LOOP_281_REPORT_20260702.md`, health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop281_latest_live_run_health_audit.json`, candidate audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop281_completed_source_candidate_audit.md/json`, Data Analytics artifact `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop281_live_health_data_analytics_artifact.json`.
+- Evidence: audit 시점 live run은 result_rows `279`, checkpoint_rows `299`, pending_count_actual `20`, frontier post_id `11710058`, worker `W1`, observed_elapsed_seconds `1315.752`다. `publication_contract_convergence=GO(row_count=279, violation_row_count=0)`, `search_evidence=REVIEW`다. completed source 후보 감사는 approval_source_candidate_count `0`이다.
+- Caveat: W27 Synthesizer trace는 Loop278 patch 전 시작된 장기 프로세스 흔적으로 유지한다. `failed=0`으로 전진 중이어도 completed-source approval 후보로 승격하지 않는다.
+- Gate: live run health `IN_PROGRESS`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop280 Addendum - live health and completed source candidate recheck
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

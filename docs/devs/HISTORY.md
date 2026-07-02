@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-02 - Loop281 live health와 completed source 후보 재감사
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- 진행 중인 completed-source 후보 런 `20260702_065642_030743`이 audit 시점 기준 `next_save_idx=280`, result_rows `279`까지 전진했음을 확인했다.
+- Loop281 health audit 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop281_latest_live_run_health_audit.json`이다.
+- health audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, input/completed/flushed/pending/failed `104502/299/279/20/0`이다.
+- frontier는 post_id `11710058`, title `판초법사 너무 재밌어서 묵혀야겠음`, worker `W1`, observed_elapsed_seconds `1315.752`, last_event `verifier_start`다.
+- completed source 후보 감사 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop281_completed_source_candidate_audit.md/json`이다.
+- 후보 감사 summary는 approval_source_candidate_count `0`, clean_vlm_ocr_source_count `429`, clean_vlm_ocr_random_shortfall_count `9`, clean_vlm_ocr_search_health_not_ready_count `420`, clean_vlm_ocr_publication_contract_not_ready_count `0`, partial_vlm_ocr_population_ge_random_target_count `6`이다.
+- Data Analytics artifact `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop281_live_health_data_analytics_artifact.json`는 validate/render PASS다.
+- W27 Synthesizer trace는 Loop278 patch 전 시작된 장기 프로세스 흔적으로 caveat 유지하며, 다음 새 런에서 guard 적용을 다시 확인한다.
+- Gate는 live run health `IN_PROGRESS`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop280 live health와 completed source 후보 재감사
 
 - 동일 38-row parent packet은 재실행하지 않았다.
