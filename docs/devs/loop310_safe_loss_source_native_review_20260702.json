@@ -1,0 +1,41 @@
+{
+  "loop": 310,
+  "date": "2026-07-02",
+  "goal_status": "ACTIVE_NOT_COMPLETE",
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json",
+  "previous_reviewed": 29,
+  "delta_reviewed": 15,
+  "cumulative_reviewed": 44,
+  "batch_rows": 147,
+  "cumulative_unreviewed": 103,
+  "delta_label_counts": {
+    "HOLD": 9,
+    "REPROCESS": 4,
+    "ACCEPT": 2
+  },
+  "delta_action_counts": {
+    "native_web_or_source_review_required": 2,
+    "repair_safe_loss": 4,
+    "title_variant_canonicalization_required": 2,
+    "native_image_or_source_review_required": 4,
+    "preserve_hold_boundary": 1,
+    "exclude_from_regression_count_after_gate_wiring": 2,
+    "native_image_or_character_bridge_review_required": 1,
+    "canonical_title_variant_policy_required": 1
+  },
+  "gate": {
+    "source_native_review": "REVIEW-LOCKED_PARTIAL",
+    "runtime_replay": "NOT_RUNTIME_VERIFIED",
+    "search_recovery": "P0_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE_NOT_COMPLETE"
+  },
+  "artifacts": {
+    "delta_verdicts": "docs/devs/loop310_safe_loss_source_native_verdicts_delta_15.json",
+    "cumulative_verdicts": "docs/devs/loop310_safe_loss_source_native_verdicts_cumulative_44.json",
+    "summary_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop310_safe_loss_source_native_review.json",
+    "summary_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop310_safe_loss_source_native_review.md",
+    "report": "docs/devs/loop_reports/LOOP_310_REPORT_20260702.md"
+  }
+}

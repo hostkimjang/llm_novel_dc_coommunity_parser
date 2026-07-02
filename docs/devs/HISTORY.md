@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-02 - Loop310 safe-loss source-native 다음 slice
+
+- Loop306 이후 남은 `safe_loss_resolved_to_null` 미검토분에서 15건을 추가 source-native review로 판정했다.
+- Delta 결과는 `REPROCESS=4`, `ACCEPT=2`, `HOLD=9`다.
+- 누적 결과는 reviewed `44/147`, unreviewed `103`, validation issues `0`이다.
+- 누적 labels는 `REPROCESS=27`, `ACCEPT=6`, `HOLD=11`이다.
+- `11663521`은 기존 Loop141 hold boundary를 유지했고, `11663540`은 before wrong title `방구석 여신이 되었다` 기준 safe-loss가 아니라 after hold preferred로 분리했다.
+- Report는 `docs/devs/loop_reports/LOOP_310_REPORT_20260702.md`, state는 `docs/devs/loop310_safe_loss_source_native_review_20260702.json`이다.
+- Gate는 source-native review `REVIEW-LOCKED / PARTIAL`, runtime replay `NOT_RUNTIME_VERIFIED`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop309 백그라운드 전환 및 큐 정합성
 
 - current HEAD 기준 background health를 다시 갱신했다.

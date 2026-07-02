@@ -1,5 +1,26 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop310 safe-loss source-native next slice 체크
+
+- [x] Loop306 이후 남은 `safe_loss_resolved_to_null` 미검토분에서 15건을 추가 판정했다.
+  - delta labels `REPROCESS=4`, `ACCEPT=2`, `HOLD=9`
+  - delta actions `repair_safe_loss=4`, `exclude_from_regression_count_after_gate_wiring=2`
+- [x] 누적 verdict와 summary를 생성했다.
+  - cumulative `44/147`, unreviewed `103`
+  - cumulative labels `REPROCESS=27`, `ACCEPT=6`, `HOLD=11`
+  - validation issues `0`
+- [x] 기존 boundary를 보존했다.
+  - `11663521`은 Loop141 hold boundary를 유지했다.
+  - `11663540`은 before wrong title `방구석 여신이 되었다` 기준 safe-loss가 아니라 after hold preferred로 분리했다.
+- [x] 산출물을 기록했다.
+  - delta `docs\devs\loop310_safe_loss_source_native_verdicts_delta_15.json`
+  - cumulative `docs\devs\loop310_safe_loss_source_native_verdicts_cumulative_44.json`
+  - state `docs\devs\loop310_safe_loss_source_native_review_20260702.json`
+  - report `docs\devs\loop_reports\LOOP_310_REPORT_20260702.md`
+- [ ] `repair_safe_loss=27`은 shared gate 또는 targeted runtime replay 전까지 residual closure로 세지 않는다.
+- [ ] `HOLD=11`은 native image/web/canonical policy 확인 전까지 닫지 않는다.
+- Gate: source-native review `REVIEW-LOCKED / PARTIAL`, runtime replay `NOT_RUNTIME_VERIFIED`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop309 background handoff / queue reconciliation 체크
 
 - [x] full375/bounded1200 background health를 최신 manifest/checkpoint/result/log 기준으로 다시 감사했다.

@@ -1,5 +1,35 @@
 # Improvement Register
 
+## IMP-20260702-310 - safe-loss source-native next slice review
+
+- Status: Implemented / partial review locked
+- Loop: 310
+- Problem:
+  - Loop306 이후 `safe_loss_resolved_to_null=147` 중 미검토 `118`건이 남아 있었다.
+  - 대형 full375/bounded run은 background `IN_PROGRESS`라 approval source로 쓸 수 없다.
+- Change:
+  - 미검토분 15건을 추가 source-native verdict로 작성했다.
+  - 기존 29건과 합쳐 누적 verdict `44/147`과 summary JSON/MD를 생성했다.
+  - 기존 hold boundary와 wrong-before-title row를 safe-loss repair로 과계상하지 않도록 분리했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_310_REPORT_20260702.md`
+  - state `docs/devs/loop310_safe_loss_source_native_review_20260702.json`
+  - delta verdicts `docs/devs/loop310_safe_loss_source_native_verdicts_delta_15.json`
+  - cumulative verdicts `docs/devs/loop310_safe_loss_source_native_verdicts_cumulative_44.json`
+  - summary `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop310_safe_loss_source_native_review.*`
+- Result:
+  - delta labels `REPROCESS=4`, `ACCEPT=2`, `HOLD=9`
+  - cumulative reviewed `44/147`
+  - unreviewed `103`
+  - validation issues `0`
+  - cumulative labels `REPROCESS=27`, `ACCEPT=6`, `HOLD=11`
+- Gate:
+  - source-native review `REVIEW-LOCKED / PARTIAL`
+  - runtime replay `NOT_RUNTIME_VERIFIED`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-308 - collateral unsafe-promotion source-native triage completion
 
 - Status: Implemented / triage complete / code repair pending / review locked

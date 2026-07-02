@@ -1,0 +1,258 @@
+{
+  "review_id": "loop310_safe_loss_source_native_verdicts_delta_15",
+  "scope": "Loop310 safe_loss_resolved_to_null next source-native slice (15 rows)",
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "rows": [
+    {
+      "post_id": 11660262,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "source_text_insufficient_native_required",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_web_or_source_review_required"
+      ],
+      "rationale_ko": "??? `??? ??`? AI ??? ???? ?? `???, ? ??? ? ? ????`?? ???? ?? ???? ???. ??/?? ?? ?? ?? before title? ?? safe-loss? ?? author-new-work ??? ?? ? ?? HOLD? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660262"
+      ]
+    },
+    {
+      "post_id": 11660271,
+      "selected_option_id": "C1",
+      "selected_title": "??? ???",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? `??? ???`? ?? ???? ??? ?? ??? ?? ????. after null? ?? ?? ??? ?? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660271"
+      ]
+    },
+    {
+      "post_id": 11660277,
+      "selected_option_id": "C1",
+      "selected_title": "???? ????",
+      "selected_url": "https://novelpia.com/novel/22299",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_variant",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss",
+        "title_variant_canonicalization_required"
+      ],
+      "rationale_ko": "?? `??? ????`? ?? Loop259/Loop76 ??? `???? ????` ??? ????. before ???? `? ???` ??? ?? ?? ????? clean title canonicalization? ?????, after null ??? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660277",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11660277",
+        "docs/devs/CHECKLIST.md#post_id=11660277"
+      ]
+    },
+    {
+      "post_id": 11661856,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_native_evidence_required",
+      "evidence_grade": "Missing",
+      "action": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "???? `???`? ?? ????? ?? `??? ?! ?! ? ?Kill???!`? ?? ???? ???. ??? 1? ?? ??? repair_safe_loss? ?? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11661856"
+      ]
+    },
+    {
+      "post_id": 11661863,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_native_evidence_required",
+      "evidence_grade": "Missing",
+      "action": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "?? `?? ?? ??? ?????`? ?????? ?? `???? ??? ?????`? ??? ? ??. ??? 2?? ???/?? ??? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11661863"
+      ]
+    },
+    {
+      "post_id": 11663521,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "hold_boundary_confirmed_not_safe_loss",
+      "evidence_grade": "Medium",
+      "action": [
+        "preserve_hold_boundary"
+      ],
+      "rationale_ko": "?? Loop141?? ???? ?? ???/??? bridge? ?? character/meme art? ????, `[????] ????? ???` ??? ???? promotion-safe? ???? ????. safe-loss repair? ??? HOLD ?? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11663521",
+        "docs/devs/VERIFICATION_RESULTS.md#Loop141-post_id=11663521"
+      ]
+    },
+    {
+      "post_id": 11663540,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_wrong_before_title",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "??? `???` ???/??? bridge ??? ????? before ?? `??? ??? ???`? ?? wrong-work negative control??. ? safe-loss bucket??? after null? before wrong title?? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11663540",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11663540"
+      ]
+    },
+    {
+      "post_id": 11663544,
+      "selected_option_id": "C1",
+      "selected_title": "?????? ????? ????",
+      "selected_url": "https://novelpia.com/novel/390228",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_variant",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss",
+        "title_variant_canonicalization_required"
+      ],
+      "rationale_ko": "??? `????`? ??/??? ?? ??? ?? URL? ?? ????. before title? truncation variant?? ?? ??? ????? after null? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11663544",
+        "https://novelpia.com/novel/390228",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11663544"
+      ]
+    },
+    {
+      "post_id": 11663554,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "character_bridge_or_image_review_required",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_image_or_character_bridge_review_required"
+      ],
+      "rationale_ko": "??? `???` ??? ???? before ??? `??? ( ? ???? ?? ???? )`?? ???? ???? ?? composite title??. ???/character bridge ?? ?? clean public title? ?? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11663554"
+      ]
+    },
+    {
+      "post_id": 11663557,
+      "selected_option_id": "C1",
+      "selected_title": "???",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? ??? `???` ??/??? ??? ?? ???. URL? ??? ?? ?? ??? ???? after null? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11663557"
+      ]
+    },
+    {
+      "post_id": 11665099,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_native_evidence_required",
+      "evidence_grade": "Missing",
+      "action": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "`??? ??`? ?? ??/205? ??? ???? ???? ?? ????? ??/?? ???? ?????? ???? ???. ??? 2? ?? ? safe-loss repair? ?? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11665099"
+      ]
+    },
+    {
+      "post_id": 11665110,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "native_web_title_alias_review_required",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_web_or_source_review_required"
+      ],
+      "rationale_ko": "??? `??????`? ?? ??? before ??? `???? ???? ???`? ??? ???. ? ??? ??/?? ?? ?? ??? repair? accept? ?? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11665110"
+      ]
+    },
+    {
+      "post_id": 11665124,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "canonical_title_variant_policy_required",
+      "evidence_grade": "Medium",
+      "action": [
+        "canonical_title_variant_policy_required"
+      ],
+      "rationale_ko": "??? `??`? ?? ?? ??? ?? ???? before ?? `???(????)`? ???? faction/entity? ?? composite title??. clean `????` ?? ??? ?? canonical policy? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11665124"
+      ]
+    },
+    {
+      "post_id": 11666699,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_hold_preferred_wrong_before_title",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "??? `???? ??`? ???? before ?? `???? ???`? ?? ???? ???. ?? ??/??? ?????? public title? ?????? after hold? ? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11666699"
+      ]
+    },
+    {
+      "post_id": 11666725,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_native_evidence_required",
+      "evidence_grade": "Missing",
+      "action": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "??? ??? `??`, `??`?? ??? ???? ?? `???? 11? ??? ??? ??`? ???/?? ?? ?? ??? ?? ???? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11666725"
+      ]
+    }
+  ]
+}
