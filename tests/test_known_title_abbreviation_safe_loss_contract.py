@@ -176,6 +176,114 @@ class KnownTitleAbbreviationSafeLossContractTest(unittest.TestCase):
 
                 self.assertFalse(allowed)
 
+    def test_known_alias_work_bridge_routes_through_shared_predicate_under_webtoon_discourse(self):
+        ctx = self._ctx(
+            post_id=11708470,
+            title="절꺾않 웹툰 존나 잘뽑히긴했노 ㅋㅋㅋㅋㅋ",
+            body="스토리 치트키에 그림 치트키 합해져서 재밌는 웹툰화 얘기",
+            comments=["소설은 어떰", "소설 개재밌음 ㅇㅇ 취향맞으면"],
+        )
+        ctx.discourse_warning = "non_novel(manga_comics,high)"
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "discuss_work",
+                    "target_kind": "work",
+                    "primary_domain": "manga_comics",
+                    "secondary_domains": ["novel_literature"],
+                }
+            },
+        )
+
+        self.assertTrue(
+            self.pipeline._known_title_abbreviation_post_work_bridge(
+                ctx,
+                "절대 꺾이지 않을거야!",
+                "절꺾않",
+            )
+        )
+        self.assertTrue(
+            self.pipeline._post_discusses_work_as_work(
+                ctx,
+                "절대 꺾이지 않을거야!",
+                source="official_url_recall_gate",
+            )
+        )
+        self.assertTrue(
+            self.pipeline._has_specific_work_non_novel_media_exemption(
+                ctx,
+                "절대 꺾이지 않을거야!",
+                {},
+            )
+        )
+
+    def test_known_alias_semantic_no_work_gate_can_publish_with_official_detail(self):
+        title = "지구온라인에서 쌀먹합니다"
+        url = "https://novelpia.com/novel/395678"
+        ctx = self._ctx(
+            post_id=11718110,
+            title="지구온라인 재밌다며 장붕아",
+            body="주인공 보고 외모찬양 주접독백 쓰는 장면 얘기",
+            comments=["그걸 믿음?"],
+        )
+        ctx.search_results = [
+            {
+                "title": title,
+                "url": url,
+                "content": "노벨피아 웹소설 작품 상세",
+            }
+        ]
+        final_decision = {
+            "title_resolution_allowed": False,
+            "title_resolution_state": "unresolved_matchable",
+            "work_resolution": "unresolved",
+            "discussion_type": "general",
+        }
+
+        old_official = self.pipeline._has_official_title_evidence
+        old_detail_urls = self.pipeline._official_detail_exact_title_urls_for_no_work_anchor
+        old_find_url = self.pipeline._find_title_matched_official_url
+        self.pipeline._has_official_title_evidence = lambda *_args, **_kwargs: True
+        self.pipeline._official_detail_exact_title_urls_for_no_work_anchor = lambda *_args, **_kwargs: [url]
+        self.pipeline._find_title_matched_official_url = lambda *_args, **_kwargs: url
+        try:
+            allowed = self.pipeline._can_promote_title_after_semantic_no_work(
+                ctx,
+                title,
+                source="title_surface_primary_candidate_rescued",
+                final_decision=final_decision,
+                verification_result={},
+                title_candidates=[],
+            )
+        finally:
+            self.pipeline._has_official_title_evidence = old_official
+            self.pipeline._official_detail_exact_title_urls_for_no_work_anchor = old_detail_urls
+            self.pipeline._find_title_matched_official_url = old_find_url
+
+        self.assertTrue(allowed)
+        decision = final_decision["_promotion_gate_decision"]
+        self.assertEqual(decision["status"], "publish")
+        self.assertTrue(decision["publish_allowed"])
+        self.assertIn("row_discusses_work_as_work", decision["reason_codes"])
+        self.assertEqual(final_decision["_promotion_gate_state"]["scope"]["scope_kind"], "current_work")
+
+    def test_known_alias_release_meta_does_not_force_platform_meta_block(self):
+        ctx = self._ctx(
+            post_id=11718099,
+            title="빌환 표지변경됨",
+            body="시엘 세냐 아니스티나 매르 표지 구성 얘기",
+        )
+
+        blocked, reason = self.pipeline._should_block_title_promotion_for_meta_primary_subject(
+            ctx=ctx,
+            vf_result={},
+            final_decision={},
+        )
+
+        self.assertFalse(blocked)
+        self.assertEqual(reason, "")
+
 
 if __name__ == "__main__":
     unittest.main()

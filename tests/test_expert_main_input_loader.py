@@ -1088,6 +1088,38 @@ class ExpertMainInputLoaderTest(unittest.TestCase):
                 self.assertTrue(_mcp_goal_run_light_health_mode())
                 self.assertFalse(_default_mcp_health_include_search())
 
+    def test_health_light_mode_env_can_force_full_probe_for_small_goal_run(self):
+        args = Namespace(
+            auto_up_shards=False,
+            no_auto_up_shards=False,
+            auto_recreate_shards=False,
+            no_auto_recreate_shards=False,
+            reuse_shards_only=False,
+            allow_goal_shard_lifecycle=False,
+        )
+        env = {
+            "MCP_ENDPOINTS_AUTOGEN": "0",
+            "MCP_GOAL_RUN_SHARD_LIFECYCLE_THRESHOLD": "36",
+            "MCP_HEALTH_LIGHT_MODE": "0",
+        }
+        keys = [
+            "MCP_HEALTH_INCLUDE_SEARCH",
+            "MCP_HEALTH_LIGHT_MODE",
+            "MCP_ENDPOINTS_AUTOGEN",
+            "MCP_GOAL_RUN_SHARD_LIFECYCLE_THRESHOLD",
+        ]
+        with patch.dict(os.environ, {key: "" for key in keys}, clear=False):
+            for key in keys:
+                os.environ.pop(key, None)
+            os.environ.update(env)
+            with (
+                patch.object(expert_main_module, "_CLI_ARGS", args),
+                patch.object(expert_main_module, "_PARALLEL", 2),
+                patch.object(expert_main_module, "_INPUT_POST_COUNT", 2),
+            ):
+                self.assertFalse(_mcp_goal_run_light_health_mode())
+                self.assertTrue(_default_mcp_health_include_search())
+
     def test_large_validation_keeps_search_health_default_when_not_auto_managed(self):
         args = Namespace(
             auto_up_shards=False,

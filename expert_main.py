@@ -3788,6 +3788,9 @@ def _healthy_autogen_endpoint_filter_reason() -> Optional[str]:
 
 def _mcp_goal_run_light_health_mode() -> bool:
     """Use cheaper startup health checks for goal/test reuse paths."""
+    explicit = os.getenv("MCP_HEALTH_LIGHT_MODE")
+    if explicit is not None and explicit.strip():
+        return _env_bool_runtime("MCP_HEALTH_LIGHT_MODE", True)
     return bool(getattr(_CLI_ARGS, "reuse_shards_only", False) or _small_run_shard_lifecycle_blocked())
 
 

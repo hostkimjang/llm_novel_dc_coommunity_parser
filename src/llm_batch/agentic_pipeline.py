@@ -16291,9 +16291,24 @@ class AgenticPipeline:
             or discourse.get("topic_domain")
             or ""
         ).strip().lower()
+        cue_text = f"{main_text} {' '.join(str(c or '') for c in (getattr(ctx, 'comments', None) or []))}"
+        secondary_domains = {
+            str(item or "").strip().lower()
+            for item in (discourse.get("secondary_domains") or [])
+            if str(item or "").strip()
+        }
+        cross_media_novel_work_anchor = bool(
+            domain in {"manga_comics", "webtoon", "comic", "comics", "manhwa"}
+            and (
+                "novel_literature" in secondary_domains
+                or "webnovel" in secondary_domains
+                or re.search(r"(원작|소설|웹소설|스토리|웹툰화|각색)", cue_text, flags=re.IGNORECASE)
+            )
+        )
         warning = str(getattr(ctx, "discourse_warning", "") or "").strip().lower()
         warning_hard_non_novel = bool(
             "non_novel(" in warning
+            and not cross_media_novel_work_anchor
             and not any(
                 marker in warning
                 for marker in ("meta_platform", "platform", "community", "novel_literature")
@@ -16305,7 +16320,6 @@ class AgenticPipeline:
         ):
             return False
 
-        cue_text = f"{main_text} {' '.join(str(c or '') for c in (getattr(ctx, 'comments', None) or []))}"
         if self._has_recommendation_request_signal(cue_text) or self._has_recommendation_seeking_surface_signal(cue_text):
             return False
         character_terms: List[str] = []
@@ -16397,6 +16411,28 @@ class AgenticPipeline:
         except Exception:
             pass
         return True
+
+    def _known_title_abbreviation_post_work_bridge(
+        self,
+        ctx: "ConversationContext",
+        title: Optional[str],
+        alias_text: Optional[str] = None,
+    ) -> bool:
+        """Shared post-local work bridge for curated title abbreviations."""
+        if not ctx or not str(title or "").strip():
+            return False
+        return self._known_title_abbreviation_update_question_anchor(ctx, title, alias_text)
+
+    def _has_any_known_title_abbreviation_post_work_bridge(
+        self,
+        ctx: "ConversationContext",
+    ) -> bool:
+        if not ctx:
+            return False
+        for alias, known_title in (KNOWN_TITLE_ABBREVIATIONS or {}).items():
+            if self._known_title_abbreviation_post_work_bridge(ctx, known_title, alias):
+                return True
+        return False
 
     def _known_title_abbreviation_official_url_recall_promotion(
         self,
@@ -29858,6 +29894,9 @@ OUTPUT JSON:
         ):
             return True
 
+        if self._known_title_abbreviation_post_work_bridge(ctx, candidate):
+            return True
+
         if (
             bridge_source
             in {
@@ -32441,6 +32480,9 @@ OUTPUT JSON:
             official_exists = bool(resolved_url)
         if not official_exists:
             return {}
+        known_abbreviation_work_bridge = self._known_title_abbreviation_post_work_bridge(ctx, title)
+        if known_abbreviation_work_bridge and row_discusses_work is not True:
+            row_discusses_work = True
 
         context_sources = final.get("context_sources")
         if not isinstance(context_sources, list):
@@ -32458,6 +32500,17 @@ OUTPUT JSON:
         )
         scope_block_flags: List[str] = []
         for flag in merged_scope_flags:
+            if known_abbreviation_work_bridge and official_exists and (
+                flag in {
+                    "character_bridge_variance_hold",
+                    "weak_source_exact_title_without_official_support_public_title_bridge",
+                    "exact_alias_candidate_preserved_without_work_discussion",
+                    "body_comments_absent_or_empty",
+                }
+                or flag.startswith("unresolved_worklike_hold:short_style_review")
+                or flag.startswith("unresolved_worklike_hold:character_bridge_variance_hold")
+            ):
+                continue
             title_led_hold_exempt = bool(
                 flag == "unresolved_worklike_hold:title_led_consumption"
                 and official_exists
@@ -32530,6 +32583,7 @@ OUTPUT JSON:
             )
             if (
                 meta_primary_block
+                and not (known_abbreviation_work_bridge and official_exists)
                 and not has_structured_direct_image
                 and (not title_visible_in_non_image or matching_image_items)
             ):
@@ -44700,6 +44754,8 @@ OUTPUT JSON:
 
         has_platform_meta = self._has_platform_meta_signal(merged_text)
         has_release_meta = self._has_release_meta_signal(merged_text)
+        if (has_platform_meta or has_release_meta) and self._has_any_known_title_abbreviation_post_work_bridge(ctx):
+            return False, ""
         gatekeeper_out = ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
         discourse_out = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
         discourse_analysis = discourse_out.get("discourse_analysis") or {}
@@ -59652,6 +59708,8 @@ OUTPUT JSON:
             and self._has_explicit_webnovel_context(ctx)
             and not self._has_explicit_non_novel_discussion_disclaimer(ctx)
         ):
+            return True
+        if self._known_title_abbreviation_post_work_bridge(ctx, title_text):
             return True
         if (
             self._has_explicit_webnovel_work_evidence_for_title(ctx, title_text)
