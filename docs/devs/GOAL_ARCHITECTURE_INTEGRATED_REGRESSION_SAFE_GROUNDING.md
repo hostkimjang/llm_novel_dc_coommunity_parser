@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop284 Addendum - frontier chain release and new contract blocker
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: Loop283 frontier 해소 이후 ordered flush가 얼마나 전진했고 어디서 다시 막혔는지 확인한다.
+- 코드 변경: 없음.
+- Artifacts: report `docs/devs/loop_reports/LOOP_284_REPORT_20260702.md`, health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop284_frontier_release_health_audit.json`, candidate audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop284_completed_source_candidate_audit.md/json`, Data Analytics artifact `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop284_frontier_release_data_analytics_artifact.json`.
+- Evidence: Loop283 frontier `11710049`와 Loop284 early frontier `11710036`은 result JSON에서 `[림월드]변방계에서 회귀자로 살아남기`, `candidate_ledger_status=safe_resolved`로 완료됐다. latest audit은 result_rows `317`, checkpoint_rows `361`, pending_count_actual `44`, frontier post_id `11710018`, worker `W25`, observed_elapsed_seconds `1964.767`다. post-audit manifest poll은 input/completed/flushed/pending/failed `104502/368/317/51/0`, `large_run_complete=false`, `ordered_flush_blocked=true`다. W25 log는 `Fate/stay night` 내부 키워드와 제목-본문 불일치/텍스트 복사 오류 해석이 충돌해 Jury/Debate path가 길어지는 상태를 기록한다. `publication_contract_convergence=GO(row_count=317, violation_row_count=0)`, `search_evidence=REVIEW`다. completed source 후보 감사는 approval_source_candidate_count `0`이다.
+- Safe-loss evidence: Loop238 N=3 blind judge probe를 유지한다. `11674712`와 `11698880`은 stable blind judge confirmed, `11660237`은 flip_rate `0.3333333333333333`, `nondeterminism_unresolved`라 hard-hold 완화 금지다.
+- Gate: live run health `IN_PROGRESS`, frontier status `IN_PROGRESS_IN_WORKER_LOG`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, full375 collateral approval `NOT_OPEN / blocked_until_completed_source`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop283 Addendum - frontier release follow-up and new ordered flush blocker
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

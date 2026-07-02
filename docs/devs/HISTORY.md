@@ -1,5 +1,21 @@
 # Development History
 
+## 2026-07-02 - Loop284 frontier 연쇄 해소와 새 계약 병목 감사
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- Loop283 frontier `11710049`와 Loop284 early frontier `11710036`은 완료되어 flushed/result_rows가 `288`에서 `317`로 전진했다.
+- Loop284 health audit 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop284_frontier_release_health_audit.json`이다.
+- health audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows/checkpoint_rows/pending_count_actual `317/361/44`이다.
+- 새 frontier는 post_id `11710018`, title `그것은 *단순한 깡계*가 아닌 오랜 따`, worker `W25`, observed_elapsed_seconds `1964.767`, audit last_event `arbiter_start`다.
+- post-audit manifest poll은 input/completed/flushed/pending/failed `104502/368/317/51/0`, `large_run_complete=false`, `ordered_flush_blocked=true`다.
+- W18/W34 result 확인 결과 `11710036`과 `11710049`는 `[림월드]변방계에서 회귀자로 살아남기`, `candidate_ledger_status=safe_resolved`로 완료됐다.
+- W25 log는 `Fate/stay night` 내부 키워드와 제목-본문 불일치/텍스트 복사 오류 해석이 충돌해 Jury/Debate path가 길어지고 있음을 보여준다.
+- completed source 후보 감사 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop284_completed_source_candidate_audit.md/json`이다.
+- 후보 감사 summary는 approval_source_candidate_count `0`, clean_vlm_ocr_source_count `429`, clean_vlm_ocr_random_shortfall_count `9`, clean_vlm_ocr_search_health_not_ready_count `420`, clean_vlm_ocr_publication_contract_not_ready_count `0`, partial_vlm_ocr_population_ge_random_target_count `6`이다.
+- Data Analytics artifact `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop284_frontier_release_data_analytics_artifact.json`는 validate/render PASS다.
+- Loop238 safe-loss N=3 probe는 `11660237` flip_rate `0.3333333333333333`, `nondeterminism_unresolved`, hard-hold 완화 금지 결론을 유지한다.
+- Gate는 live run health `IN_PROGRESS`, frontier status `IN_PROGRESS_IN_WORKER_LOG`, completed source candidate `MISSING`, candidate audit `REVIEW-LOCKED`, search evidence `REVIEW`, full375 collateral approval `NOT_OPEN / blocked_until_completed_source`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop283 frontier 해소 후 새 ordered flush 병목 감사
 
 - 동일 38-row parent packet은 재실행하지 않았다.

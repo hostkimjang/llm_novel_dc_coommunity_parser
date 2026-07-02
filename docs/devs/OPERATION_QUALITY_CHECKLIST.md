@@ -4455,3 +4455,12 @@
 - [ ] completed source 후보 감사는 `approval_source_candidate_count=0`이면 full375 collateral approval을 열지 않는다.
 - [ ] `publication_contract_convergence=GO`는 flushed row contract 수렴만 뜻하며, search evidence `REVIEW` 또는 completed-source candidate `MISSING`을 덮지 않는다.
 - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.
+
+## 2026-07-02 추가 운영 체크 - Loop 284 frontier chain release 경계
+
+- [ ] released frontier가 safe_resolved로 완료되어도, 새 `next_save_idx` frontier가 있으면 completed-source approval 후보로 보지 않는다.
+- [ ] same-packet safe_resolved 단조 비감소는 후퇴 증거 없음만 의미한다. completed-source, search evidence, full375 collateral gate를 대체하지 않는다.
+- [ ] `Fate/stay night`처럼 작품 내부 키워드가 강해도 제목-본문 불일치/텍스트 복사 오류가 실제 담론이면 `_post_discusses_work_as_work`와 promotion hard-hold를 우회하지 않는다.
+- [ ] `11660237`처럼 flip_rate가 있는 row는 stable blind judge evidence 없이 hard-hold를 완화하지 않는다.
+- [ ] completed behind rows가 늘어도 `flushed_count/result_rows`와 `next_save_idx` frontier를 우선 확인한다.
+- [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.
