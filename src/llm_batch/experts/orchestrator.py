@@ -3890,11 +3890,15 @@ class Orchestrator:
             raw = str(term or "").strip()
             if not raw:
                 return True
+            raw_norm = self._normalize_kor_token(raw)
+            for mapping in (KNOWN_ABBREVIATIONS or {}, KNOWN_TITLE_ABBREVIATIONS or {}):
+                if raw_norm and any(self._normalize_kor_token(alias) == raw_norm for alias in mapping.keys()):
+                    return False
             if self._is_generic_topic_gap_term(raw):
                 return True
             if self._is_low_specificity_search_seed(raw):
                 return True
-            norm = self._normalize_kor_token(raw)
+            norm = raw_norm
             if not norm:
                 return True
             # 장르/역할어 합성 약칭은 짧은 길이에서도 작품 약칭보다 일반론일 가능성이 높다.

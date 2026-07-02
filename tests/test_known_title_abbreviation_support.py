@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 import llm_batch.agentic_pipeline as agentic_pipeline_module  # noqa: E402
 from llm_batch.agentic_pipeline import AgenticPipeline  # noqa: E402
-from llm_batch.experts.orchestrator import ConversationContext, ExpertType  # noqa: E402
+from llm_batch.experts.orchestrator import ConversationContext, ExpertType, Orchestrator  # noqa: E402
 from llm_batch.models import DetectedTitle  # noqa: E402
 
 
@@ -767,6 +767,120 @@ class KnownTitleAbbreviationSupportTest(unittest.TestCase):
             self.assertEqual(recover_mock.call_args.kwargs["title"], "아카데미 생존 갤러리")
         finally:
             agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = original_registry
+
+    def test_known_title_abbreviation_recall_allows_character_setting_theory_anchor(self):
+        pipeline = _build_pipeline()
+        original_registry = agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS
+        try:
+            agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = {"아생갤": "아카데미 생존 갤러리"}
+            ctx = ConversationContext(
+                post_id=11716448,
+                post_data={
+                    "post_id": 11716448,
+                    "title": "아생갤 걍 히로인들 다 괴이 아니냐",
+                    "normalized_title": "아생갤 걍 히로인들 다 괴이 아니냐",
+                    "content_blocks": [
+                        {"type": "text", "text": "아레스랑 연 있었다고 엘리가 인간 확정이라기엔"},
+                        {"type": "text", "text": "괴이 확정인 라나도 홍차 마시고 아레스랑 연 있었다는 거 나왔었는데"},
+                        {"type": "text", "text": "걍 히로인들 다 인간이었다가 괴이화된거 아녀??"},
+                    ],
+                },
+                comments=[
+                    "발상의 전환으로 라나가 인간일수도 있다고 봐보죠",
+                    "다 인간에서 변질된거일수도",
+                ],
+            )
+            ctx.set_expert_output(
+                ExpertType.GATEKEEPER,
+                {
+                    "post_type": "work_discussion",
+                    "detected_entities": {"possible_titles": ["아생갤"], "possible_characters": []},
+                    "context_clues": {},
+                },
+            )
+            ctx.set_expert_output(
+                ExpertType.DISCOURSE,
+                {
+                    "discourse_analysis": {
+                        "primary_domain": "novel_literature",
+                        "intent": "discuss_work",
+                        "semantic_seed_review": {"is_specific_work_discussion": True},
+                    }
+                },
+            )
+
+            extended_identity = {
+                "is_relevant": True,
+                "work_resolution": "unresolved",
+                "title_resolution_state": "unresolved_matchable",
+                "discussion_type": "general",
+                "consistency_flags": [],
+            }
+
+            with patch.object(
+                pipeline,
+                "_recover_corrected_title_official_url",
+                return_value="https://novelpia.com/novel/380218",
+            ) as recover_mock:
+                recovered_identity, recovered_candidates, primary_work, promotion = (
+                    pipeline._apply_official_url_recall_promotion(
+                        ctx=ctx,
+                        extended_identity=extended_identity,
+                        title_candidates=[],
+                        primary_work=None,
+                        verification_result={"is_relevant": True, "novel_identity": {}},
+                        final_decision={"discussion_type": "character_talk"},
+                    )
+                )
+
+            self.assertIsNotNone(promotion)
+            self.assertEqual(recovered_identity["official_title"], "아카데미 생존 갤러리")
+            self.assertEqual(recovered_identity["heretic_url"], "https://novelpia.com/novel/380218")
+            self.assertIsNotNone(primary_work)
+            self.assertEqual(primary_work.official_title, "아카데미 생존 갤러리")
+            self.assertEqual(recovered_candidates[0].alias_or_mention, "아생갤")
+            self.assertIn("known_title_abbreviation_official_detail_anchor", recovered_identity["consistency_flags"])
+            self.assertIn("confirmed_alias:아생갤", recovered_identity["consistency_flags"])
+            self.assertEqual(recover_mock.call_args.kwargs["title"], "아카데미 생존 갤러리")
+        finally:
+            agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = original_registry
+
+    def test_low_specific_gate_preserves_known_title_abbreviation(self):
+        orchestrator = Orchestrator(experts={}, search_fn=None, fetch_fn=None)
+        ctx = ConversationContext(
+            post_id=11698890,
+            post_data={
+                "post_id": 11698890,
+                "title": "댓천마 왜 얼공 안하냐",
+                "content_blocks": [
+                    {"type": "text", "text": "더블오인 거 밝히고 데미갓이 날아왔다가 한별이 얼굴보고 놀라는 장면"},
+                ],
+            },
+            comments=[],
+        )
+        gatekeeper = {
+            "is_noise": False,
+            "post_type": "work_discussion",
+            "detected_entities": {
+                "possible_titles": ["댓천마"],
+                "possible_characters": ["한별"],
+                "possible_authors": [],
+            },
+            "key_terms": ["얼공", "데미갓", "카디언 킴"],
+            "context_clues": {
+                "title_as_body_continuation": True,
+                "has_specific_names": True,
+            },
+            "search_requests": [
+                {"query": "댓천마 웹소설", "purpose": "official_title_verify", "priority": 1},
+            ],
+        }
+
+        guarded = orchestrator._apply_gatekeeper_low_specific_guard(ctx, dict(gatekeeper))
+
+        self.assertFalse(guarded.get("is_noise"))
+        self.assertEqual(guarded.get("post_type"), "work_discussion")
+        self.assertEqual(guarded.get("search_requests"), gatekeeper["search_requests"])
 
     def test_known_title_abbreviation_recall_allows_character_appeal_anchor(self):
         pipeline = _build_pipeline()

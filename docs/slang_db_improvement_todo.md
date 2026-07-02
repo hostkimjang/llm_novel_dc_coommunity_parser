@@ -1,5 +1,16 @@
 # Slang DB Improvement TODO
 
+## 2026-07-02 Loop292 source-native strong alias code-registry 보강
+
+- [x] Loop291 `REPROCESS` 근거 중 source-native strong alias를 production write-back 없이 code registry에만 반영했다.
+  - `댓천마 -> 댓글창의 천재 마법사`
+  - `전1시 -> 전지적 1인칭 시점`
+  - `탐재 -> 탐식의 재림`
+- [x] 이 반영은 `slang_db/slang_db.json` write-back이 아니다. `KNOWN_TITLE_ABBREVIATIONS`가 low-specific guard의 search 제거를 막고, public publish는 work-cue / official URL recall / promotion gate가 별도로 결정한다.
+- [x] `아생갤`은 이미 registry에 있었고, Loop292에서는 `히로인/괴이/인간/정체/설정` 내부 토론을 work-cue로 인정하는 계약만 추가했다.
+- [ ] post-patch 5-row runtime replay 후 alias registry 보강이 wrong-work 오귀결 없이 `repair_after_wrong_work`를 줄이는지 확인한다.
+- Gate: slang DB 품질 승인 아님, full collateral approval `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-06-28 regression-safe grounding Phase 2 slang-store gate
 
 - [x] Phase 2 `slang_store_gate=92` 대상 입력을 `loop10_slang_store_gate_92.jsonl`로 생성했다.

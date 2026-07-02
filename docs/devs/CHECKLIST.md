@@ -1,5 +1,32 @@
 ﻿# Development Checklist
 
+## 2026-07-02 Loop292 known-alias guard 계약 보강 체크
+
+- [x] Loop291 `repair_after_wrong_work=5` 중 known-alias 실패 경로를 코드 계약으로 보강했다.
+  - `11698890`: `댓천마`가 Gatekeeper continuation-fragment guard에서 `community_banter`로 잘리는 경로 차단.
+  - `11716448`: `아생갤`의 `히로인/괴이/인간/정체/설정` 내부 설정 토론을 known-abbreviation recall work-cue로 인정.
+- [x] source-native strong alias를 shared registry에 추가했다.
+  - `댓천마 -> 댓글창의 천재 마법사`
+  - `전1시 -> 전지적 1인칭 시점`
+  - `탐재 -> 탐식의 재림`
+- [x] 후보 보존과 public publish를 분리했다.
+  - registry alias는 low-specific guard의 search 제거를 막는 근거다.
+  - public title은 기존 work-cue / promotion gate / official URL recall을 통과해야만 publish된다.
+- [x] pre-fix targeted 5-row 시도를 approval 근거로 쓰지 않도록 기록했다.
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop292_wrong_work_title_flip_5_current_head_result_manifest.json`
+  - input/completed/flushed/pending/failed `5/0/0/0/0`
+  - search health `include_search=true`, `light_mode=true`, `ok=2`, `failure=0`
+  - `logs\expert_run_20260702_134054_422068_W1.log:177`에서 `11698890` low-specific demotion 확인
+- [x] review JSON/보고서를 작성했다.
+  - JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop292_known_alias_guard_contract_review.json`
+  - report `docs\devs\loop_reports\LOOP_292_REPORT_20260702.md`
+- [x] 검증했다.
+  - `py_compile` PASS
+  - focused unittest `3` tests PASS
+- [ ] post-patch 5-row runtime replay를 다시 실행해 `repair_after_wrong_work=5` 공식 감소 여부를 판정한다.
+- [ ] `11666713`의 `21세기 무림`/`21세기 무림세가` canonical variant는 Loop64/Loop84-87 계약과 충돌하지 않게 별도 확인한다.
+- Gate: known-alias guard contract `GO_UNIT`, post-patch runtime `NOT_RUN`, queue decrement `HELD_UNTIL_RUNTIME_REPLAY`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop291 wrong-work title flip source-native 검토 체크
 
 - [x] Loop290 `wrong_work_title_flip` 10행을 source-native verdict manifest로 판정했다.

@@ -1,5 +1,35 @@
 # Improvement Register
 
+## IMP-20260702-292 - known-alias guard와 character-setting recall 계약 보강
+
+- Status: Implemented / runtime replay held
+- Loop: 292
+- Problem:
+  - Loop291 `REPROCESS` 행 중 `11698890`은 `댓천마`가 source-native strong alias인데 Gatekeeper continuation-fragment guard가 search 전에 `community_banter`로 내렸다.
+  - `11716448`은 `아생갤` alias와 `히로인/괴이/인간/라나` 설정 토론이 있는데 known-abbreviation recall work-cue가 부족해 정당 해소가 안정적이지 않았다.
+- Change:
+  - `KNOWN_TITLE_ABBREVIATIONS`에 `댓천마`, `전1시`, `탐재` strong alias를 추가했다.
+  - Gatekeeper low-specific guard가 shared known alias를 제목 파편으로 취급하지 않게 했다.
+  - known-abbreviation recall이 curated alias와 내부 character/setting theory surface가 결속될 때 work-cue를 인정하도록 했다.
+  - `tests/test_known_title_abbreviation_support.py`에 low-specific guard 보존과 `아생갤` 설정 토론 recall 계약을 추가했다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_292_REPORT_20260702.md`
+  - review JSON `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop292_known_alias_guard_contract_review.json`
+  - pre-fix log `logs/expert_run_20260702_134054_422068_W1.log:177`
+- Result:
+  - unit contract `GO`
+  - post-patch 5-row runtime `NOT_RUN`
+  - `repair_after_wrong_work` queue decrement `HELD_UNTIL_RUNTIME_REPLAY`
+- Verification:
+  - py_compile PASS
+  - focused unittest `3` OK
+- Gate:
+  - known-alias guard contract `GO_UNIT`
+  - search recovery `P0 / OPEN`
+  - full collateral approval `NOT_OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-291 - wrong-work title flip source-native 라벨링
 
 - Status: Implemented / approval blocked

@@ -16354,6 +16354,20 @@ class AgenticPipeline:
                 flags=re.IGNORECASE,
             )
         )
+        character_setting_theory_anchor = bool(
+            re.search(
+                r"(히로인|정실|등장인물|캐릭터|주인공).{0,24}"
+                r"(?:괴이|인간|타락|변질|정체|확정|반전|설정|아니냐)",
+                cue_text,
+                flags=re.IGNORECASE,
+            )
+            or re.search(
+                r"(?:괴이|인간|타락|변질|정체|확정|반전|설정).{0,24}"
+                r"(히로인|정실|등장인물|캐릭터|주인공)",
+                cue_text,
+                flags=re.IGNORECASE,
+            )
+        )
         work_cue = bool(
             re.search(
                 r"(오늘|내일|새벽|오냐|오나|언제|몇\s*시|연재|연참|휴재|지각|최신화|회차|몇\s*화|"
@@ -16370,6 +16384,7 @@ class AgenticPipeline:
             )
             or character_anchor
             or character_surface_anchor
+            or character_setting_theory_anchor
         )
         if not work_cue:
             return False

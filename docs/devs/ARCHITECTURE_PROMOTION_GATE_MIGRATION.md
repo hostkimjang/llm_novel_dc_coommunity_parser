@@ -8,6 +8,15 @@ This note visualizes the current parser-improvement architecture and the additiv
 
 ## Source References
 
+## 2026-07-02 Loop292 Known-Alias Guard Before Promotion Gate
+
+- Loop292는 shared `PromotionDecision` 이후 단계가 아니라, 그 전에 Gatekeeper low-specific guard가 source-native alias search를 지우는 문제를 보강했다.
+- `댓천마`, `전1시`, `탐재`는 `KNOWN_TITLE_ABBREVIATIONS`에 추가했지만, registry 자체는 public publish 권한이 아니다. public title은 기존 known-abbreviation work-cue, official URL recall, promotion gate를 통과해야 한다.
+- `11698890` pre-fix 로그는 `Gatekeeper continuation-fragment guard`가 `댓천마`/`한별`을 `noise/community_banter`로 내리는 경로를 보여줬다. 이 경로는 search 전에 source-native 후보를 잃게 만든다.
+- `11716448`은 `아생갤` alias와 `히로인/괴이/인간/라나` 내부 설정 토론이 결속될 때 known-abbreviation recall work-cue를 통과하도록 계약 테스트를 추가했다.
+- Unit contract는 `GO`지만 post-patch 5-row runtime replay는 아직 `NOT_RUN`이다. 따라서 `repair_after_wrong_work` queue 감소와 full collateral approval은 계속 보류한다.
+- Artifacts: `docs/devs/loop_reports/LOOP_292_REPORT_20260702.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop292_known_alias_guard_contract_review.json`.
+
 ## 2026-07-02 Loop277 Completed Source Candidate Publication Contract Requirement
 
 - `build_completed_source_candidate_audit.py` now requires `publication_contract_convergence_gate=GO` before a source can become an approval source candidate.

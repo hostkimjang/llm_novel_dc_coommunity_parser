@@ -1,0 +1,75 @@
+{
+  "loop": 292,
+  "date": "2026-07-02",
+  "status": "CODE_CONTRACT_GO_RUNTIME_REPLAY_HELD",
+  "goal_state": "ACTIVE_NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "scope": {
+    "source_queue": "Loop291 repair_after_wrong_work",
+    "source_rows": [
+      11666713,
+      11698890,
+      11700500,
+      11705252,
+      11716448
+    ],
+    "changed_failure_modes": [
+      {
+        "post_id": 11698890,
+        "failure": "Gatekeeper continuation-fragment guard demoted known work alias before search",
+        "contract": "known title abbreviations are not low-specific fragments for this guard",
+        "expected_title": "댓글창의 천재 마법사",
+        "expected_url": "https://novelpia.com/novel/370230"
+      },
+      {
+        "post_id": 11716448,
+        "failure": "known-abbreviation recall missed internal character/setting theory cue",
+        "contract": "curated alias plus character/setting theory surface can satisfy work-cue",
+        "expected_title": "아카데미 생존 갤러리",
+        "expected_url": "https://novelpia.com/novel/380218"
+      }
+    ]
+  },
+  "code_changes": [
+    "src/llm_batch/experts/utils.py: add source-native strong aliases 댓천마, 전1시, 탐재 to KNOWN_TITLE_ABBREVIATIONS",
+    "src/llm_batch/experts/orchestrator.py: do not treat KNOWN_ABBREVIATIONS/KNOWN_TITLE_ABBREVIATIONS aliases as low-specific fragments in Gatekeeper low-specific guard",
+    "src/llm_batch/agentic_pipeline.py: allow known-abbreviation recall work-cue for character/setting theory surfaces such as 히로인/괴이/인간/정체/설정",
+    "tests/test_known_title_abbreviation_support.py: add contracts for known alias low-specific preservation and 아생갤 character-setting theory recall"
+  ],
+  "runtime_probe": {
+    "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop292_wrong_work_title_flip_5_current_head_result_manifest.json",
+    "status": "INTERRUPTED_PRE_FIX_EVIDENCE_ONLY",
+    "input_post_count": 5,
+    "completed_count": 0,
+    "flushed_count": 0,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": true,
+    "mcp_health_ok_count": 2,
+    "mcp_health_failure_count": 0,
+    "approval_use": false,
+    "observed_log_evidence": [
+      "logs/expert_run_20260702_134054_422068_W1.log:177 Gatekeeper continuation-fragment guard demoted 11698890",
+      "logs/expert_run_20260702_134054_422068_W1.log:341 search degraded observed for 댓글창의 천재 마법사"
+    ]
+  },
+  "verification": [
+    {
+      "command": ".venv312\\Scripts\\python.exe -m py_compile src\\llm_batch\\agentic_pipeline.py src\\llm_batch\\experts\\orchestrator.py src\\llm_batch\\experts\\utils.py tests\\test_known_title_abbreviation_support.py",
+      "result": "PASS"
+    },
+    {
+      "command": ".venv312\\Scripts\\python.exe -m unittest tests.test_known_title_abbreviation_support.KnownTitleAbbreviationSupportTest.test_low_specific_gate_preserves_known_title_abbreviation tests.test_known_title_abbreviation_support.KnownTitleAbbreviationSupportTest.test_known_title_abbreviation_recall_allows_character_setting_theory_anchor tests.test_known_title_abbreviation_support.KnownTitleAbbreviationSupportTest.test_bare_known_title_abbreviation_surface_does_not_promote_without_work_anchor -v",
+      "result": "PASS",
+      "test_count": 3
+    }
+  ],
+  "gate": {
+    "known_alias_guard_contract": "GO_UNIT",
+    "post_patch_5_row_runtime": "NOT_RUN",
+    "repair_after_wrong_work_queue_decrement": "HELD_UNTIL_RUNTIME_REPLAY",
+    "search_recovery": "P0_OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "full_collateral_approval": "NOT_OPEN"
+  }
+}
