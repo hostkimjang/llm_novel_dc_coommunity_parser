@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-02 Loop279 Addendum - frontier timing health audit
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.
+- 목적: ordered flush frontier가 진행 중인지 장시간 정체인지 판단할 수 있도록 health audit에 worker log timestamp 기반 elapsed time을 추가한다.
+- 코드 변경: `tools/audit_expert_run_health.py`가 frontier worker log timestamp를 파싱해 `first_timed_event`, `last_timed_event`, `observed_elapsed_seconds`를 기록한다. CLI 출력에도 elapsed를 표시한다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_279_REPORT_20260702.md`, health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop279_latest_live_run_health_audit.json`.
+- Evidence: Loop278 이후 live run은 `next_save_idx=204`에서 `219`로 전진했다. audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows `218`, checkpoint_rows `280`, pending_count_actual `62`다. frontier post_id `11713185`, worker `W25`, observed_elapsed_seconds `1271.708`이다.
+- Verification: `tests.test_audit_expert_run_health` `16` tests OK, py_compile PASS.
+- Gate: frontier timing audit `PASS`, completed source `PENDING`, current run integrity `IN_PROGRESS`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-02 Loop278 Addendum - live run health audit and Synthesizer hidden reference guard
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 동일 38-row parent packet은 재실행하지 않았다.

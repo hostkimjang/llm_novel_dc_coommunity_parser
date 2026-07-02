@@ -1,5 +1,38 @@
 # Verification Results
 
+## 2026-07-02 Loop279 frontier timing health audit
+
+- 범위: live run health audit의 `frontier_worker_trace`가 frontier worker/event뿐 아니라 관측 elapsed time을 기록한다.
+- Code:
+  - `tools/audit_expert_run_health.py`
+  - `tests/test_audit_expert_run_health.py`
+- Explicit health audit:
+  - command: `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260702_065642_030743 --manifest out\expert_result_20260702_065632_479765_manifest.json --checkpoint out\expert_result_20260702_065632_479765_checkpoint.jsonl --result-json out\expert_result_20260702_065632_479765.json --pending-snapshot out\expert_result_20260702_065632_479765_pending_snapshot.json --input-jsonl tests\inputs\test01.jsonl --log-glob "logs\expert_run_20260702_065642_030743_W*.log" --output out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop279_latest_live_run_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `218`, checkpoint_rows `280`, pending_count_actual `62`
+  - frontier post `11713185`, title `스토리 담당자가 노피아하는게 틀림없어`, source_line `234`
+  - `frontier_worker_trace.status=in_progress_in_worker_log`, worker `W25`, event_count `16`
+  - observed_elapsed_seconds `1271.708`
+  - first timed event `08:34:11.515|W25`, last timed event `08:55:23.223|W25`
+  - `search_evidence.gate=REVIEW`
+  - `publication_contract_convergence.gate=GO`
+  - publication violation_row_count `0`
+- Focused test:
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_audit_expert_run_health -v` -> PASS, `16` tests.
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\audit_expert_run_health.py tests\test_audit_expert_run_health.py` -> PASS.
+- Gate:
+  - frontier timing audit: `PASS`
+  - current run integrity: `IN_PROGRESS`
+  - completed source: `PENDING`
+  - search evidence: `REVIEW`
+  - publication contract convergence: `GO` for audited flushed rows
+  - semantic_quality: `REVIEW-LOCKED`
+  - full_scan_approval: `false`
+  - overall goal: `ACTIVE / NOT_COMPLETE`
+- Report:
+  - `docs/devs/loop_reports/LOOP_279_REPORT_20260702.md`
+
 ## 2026-07-02 Loop278 live run health audit and Synthesizer hidden reference guard
 
 - 범위: Loop264 대형 run 최신 health audit를 남기고, Synthesizer `hidden_references`에 non-dict item이 섞일 때 로깅/Arbiter 요약이 실패하지 않게 한다.

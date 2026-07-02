@@ -349,6 +349,9 @@ class AuditExpertRunHealthTest(unittest.TestCase):
         self.assertEqual(trace["event_counts"]["pipeline_start"], 1)
         self.assertEqual(trace["event_counts"]["arbiter_start"], 1)
         self.assertEqual(trace["workers"], {"W10": 5})
+        self.assertEqual(trace["first_timed_event"]["time"], "07:44:59.020|W10")
+        self.assertEqual(trace["last_timed_event"]["time"], "08:09:53.734|W10")
+        self.assertAlmostEqual(trace["observed_elapsed_seconds"], 1494.714)
 
     def test_frontier_worker_trace_detects_completed_frontier(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -379,6 +382,7 @@ class AuditExpertRunHealthTest(unittest.TestCase):
 
         self.assertEqual(trace["status"], "completed_in_worker_log")
         self.assertEqual(trace["event_counts"]["post_complete"], 1)
+        self.assertEqual(trace["observed_elapsed_seconds"], 60.0)
 
     def test_publication_contract_convergence_gate_reports_go_for_converged_result(self):
         decision = {

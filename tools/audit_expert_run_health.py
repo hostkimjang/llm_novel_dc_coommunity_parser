@@ -823,6 +823,27 @@ def _classify_worker_trace_event(line: str, *, post_id: str, global_idx: int | N
     return "mention"
 
 
+def _parse_log_time_seconds(line: str) -> tuple[str, float] | tuple[None, None]:
+    match = re.search(r"\[(\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,6}))?(?:\|[^\]]+)?\]", line)
+    if not match:
+        return None, None
+    hour = int(match.group(1))
+    minute = int(match.group(2))
+    second = int(match.group(3))
+    fraction = match.group(4) or "0"
+    seconds = hour * 3600 + minute * 60 + second + int(fraction.ljust(6, "0")) / 1_000_000
+    return match.group(0).strip("[]"), seconds
+
+
+def _elapsed_seconds(first: float | None, last: float | None) -> float | None:
+    if first is None or last is None:
+        return None
+    elapsed = last - first
+    if elapsed < 0:
+        elapsed += 24 * 3600
+    return round(elapsed, 3)
+
+
 def _trace_frontier_worker_logs(
     log_files: List[Path],
     frontier: Dict[str, Any],
@@ -874,6 +895,10 @@ def _trace_frontier_worker_logs(
                     "event": event_type,
                     "text": line.strip()[:500],
                 }
+                time_text, time_seconds = _parse_log_time_seconds(line)
+                if time_text is not None:
+                    event["time"] = time_text
+                    event["time_seconds"] = time_seconds
                 if len(events) < max_events:
                     events.append(event)
                 else:
@@ -886,6 +911,10 @@ def _trace_frontier_worker_logs(
         status = "error_observed"
     elif events:
         status = "in_progress_in_worker_log"
+
+    timed_events = [event for event in events if event.get("time_seconds") is not None]
+    first_timed = timed_events[0] if timed_events else None
+    last_timed = timed_events[-1] if timed_events else None
 
     return {
         "target": {
@@ -901,6 +930,12 @@ def _trace_frontier_worker_logs(
         "workers": dict(workers.most_common()),
         "first_event": events[0] if events else None,
         "last_event": events[-1] if events else None,
+        "first_timed_event": first_timed,
+        "last_timed_event": last_timed,
+        "observed_elapsed_seconds": _elapsed_seconds(
+            first_timed.get("time_seconds") if first_timed else None,
+            last_timed.get("time_seconds") if last_timed else None,
+        ),
         "events": events,
     }
 
@@ -1274,7 +1309,11 @@ def main() -> None:
         f"{audit['flush_integrity']['classification']}"
     )
     print(f"frontier={audit['flush_integrity']['frontier']}")
-    print(f"frontier_worker_trace={audit['frontier_worker_trace']['status']} events={audit['frontier_worker_trace']['event_count']}")
+    print(
+        f"frontier_worker_trace={audit['frontier_worker_trace']['status']} "
+        f"events={audit['frontier_worker_trace']['event_count']} "
+        f"observed_elapsed_seconds={audit['frontier_worker_trace'].get('observed_elapsed_seconds')}"
+    )
     print(f"checkpoint_rows={audit['checkpoint_rows']} status_counts={audit['status_counts']}")
     print(f"reason_errors={audit['reason_error_count']}")
     print(

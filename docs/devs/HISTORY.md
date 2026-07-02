@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-02 - Loop279 frontier timing health audit 추가
+
+- 동일 38-row parent packet은 재실행하지 않았다.
+- Loop278 이후 live run이 `next_save_idx=204`에서 `219`로 전진했음을 확인했다.
+- `tools/audit_expert_run_health.py`의 `frontier_worker_trace`에 `first_timed_event`, `last_timed_event`, `observed_elapsed_seconds`를 추가했다.
+- Loop279 health audit 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop279_latest_live_run_health_audit.json`이다.
+- audit snapshot은 `IN_PROGRESS/ordered_flush_gap_in_progress`, result_rows `218`, checkpoint_rows `280`, pending_count_actual `62`다.
+- frontier는 `global_idx=219`, post_id `11713185`, title `스토리 담당자가 노피아하는게 틀림없어`, worker `W25`, observed_elapsed_seconds `1271.708`이다.
+- `search_evidence=REVIEW`, `publication_contract_convergence=GO`, violation_row_count `0`이다.
+- Gate는 frontier timing audit `PASS`, current run integrity `IN_PROGRESS`, completed source `PENDING`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-02 - Loop278 live run health audit와 Synthesizer hidden reference guard
 
 - 동일 38-row parent packet은 재실행하지 않았다.

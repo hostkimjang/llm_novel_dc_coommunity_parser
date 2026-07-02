@@ -1,5 +1,38 @@
 # Improvement Register
 
+## IMP-20260702-279 - frontier worker trace timing
+
+- Status: Implemented / approval blocked
+- Loop: 279
+- Problem:
+  - `frontier_worker_trace`는 worker와 마지막 이벤트를 보여주지만, 해당 frontier가 몇 초 동안 관측됐는지 숫자로 남기지 않았다.
+  - 장시간 대형 run에서 진행 중과 정체 상태를 매번 사람이 worker log timestamp로 계산해야 했다.
+- Change:
+  - `audit_expert_run_health.py`가 worker log timestamp를 파싱한다.
+  - `frontier_worker_trace`에 `first_timed_event`, `last_timed_event`, `observed_elapsed_seconds`를 추가했다.
+  - CLI 출력에 observed elapsed를 표시한다.
+- Evidence:
+  - report `docs/devs/loop_reports/LOOP_279_REPORT_20260702.md`
+  - health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop279_latest_live_run_health_audit.json`
+- Result:
+  - `next_save_idx=219`
+  - frontier post `11713185`
+  - worker `W25`
+  - observed_elapsed_seconds `1271.708`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `search_evidence=REVIEW`
+  - `publication_contract_convergence=GO`
+- Verification:
+  - `tests.test_audit_expert_run_health` `16` tests OK
+  - py_compile PASS
+- Gate:
+  - frontier timing audit `PASS`
+  - completed source `PENDING`
+  - run integrity `IN_PROGRESS`
+  - search evidence `REVIEW`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260702-278 - Synthesizer hidden reference logging guard
 
 - Status: Implemented / approval blocked

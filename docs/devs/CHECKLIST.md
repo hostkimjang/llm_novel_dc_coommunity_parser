@@ -1,5 +1,30 @@
 # Development Checklist
 
+## 2026-07-02 Loop279 frontier timing health audit 체크
+
+- [x] 동일 38-row parent packet을 다시 돌리지 않았다.
+- [x] Loop278 이후 live run이 `next_save_idx=204`에서 `219`로 전진했음을 확인했다.
+- [x] `audit_expert_run_health.py`가 frontier worker log timestamp를 파싱하게 했다.
+- [x] `frontier_worker_trace`에 `first_timed_event`, `last_timed_event`, `observed_elapsed_seconds`를 추가했다.
+- [x] Loop279 health audit를 실행했다.
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop279_latest_live_run_health_audit.json`
+  - `run_integrity_gate=IN_PROGRESS`
+  - `classification=ordered_flush_gap_in_progress`
+  - result_rows `218`
+  - checkpoint_rows `280`
+  - pending_count_actual `62`
+  - frontier post `11713185`
+  - worker `W25`
+  - observed_elapsed_seconds `1271.708`
+  - `search_evidence=REVIEW`
+  - `publication_contract_convergence=GO`
+- [x] focused verification을 실행했다.
+  - `tests.test_audit_expert_run_health`: PASS, `16` tests.
+  - py_compile: PASS.
+- [ ] run 완료 후 final health audit에서 `run_integrity_gate=GO`, `search_evidence=GO`, `publication_contract_convergence=GO`를 모두 확인한다.
+- [ ] frontier timing `PASS`를 completed source나 semantic approval로 승격하지 않는다.
+- Gate: frontier timing audit `PASS`, current run integrity `IN_PROGRESS`, completed source `PENDING`, search evidence `REVIEW`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-02 Loop278 live run health audit / Synthesizer hidden reference guard 체크
 
 - [x] 동일 38-row parent packet을 다시 돌리지 않았다.

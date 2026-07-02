@@ -106,8 +106,9 @@
   - 2026-07-02 Loop272 조치: `search_evidence` gate를 추가해 manifest direct search-health, row-level `search_health`, worker log 검색 저하 신호를 `GO/REVIEW/SEPARATE_AUDIT_REQUIRED/NO-GO`로 분리한다.
   - 2026-07-02 Loop274 조치: `frontier_worker_trace`를 추가해 ordered flush frontier source post의 worker log lifecycle event와 last_event를 기록한다.
   - 2026-07-02 Loop276 조치: `publication_contract_convergence` gate를 추가해 `PromotionDecision`/trace/ledger/serialized identity 수렴을 health audit에서 같이 기록한다.
+  - 2026-07-02 Loop279 조치: `frontier_worker_trace`에 `first_timed_event`, `last_timed_event`, `observed_elapsed_seconds`를 추가해 frontier 관측 시간을 기록한다.
   - 완료 기준: `--checkpoint`, `--result-json`, `--manifest`, `--pending-snapshot` 또는 output prefix 옵션으로 sampling 결과를 직접 감사.
-  - 검증: `tests.test_audit_expert_run_health + tests.test_publication_contract_convergence_audit` `19` tests OK, Loop276 통합 health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop276_health_audit_with_publication_contract_gate.json`.
+  - 검증: `tests.test_audit_expert_run_health` `16` tests OK, Loop279 health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop279_latest_live_run_health_audit.json`.
 - [ ] 장시간 런 중 shard readiness 주기 snapshot
   - 상태: proposed
   - 관련 파일 후보: `expert_main.py`, `src/llm_batch/monitor/*`

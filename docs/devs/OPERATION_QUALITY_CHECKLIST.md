@@ -6,6 +6,19 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-02 Loop279 frontier timing health quality gate
+
+- 근거:
+  - [x] Loop264 대형 run의 최신 health audit를 실행했다.
+  - [x] frontier worker trace가 worker/event뿐 아니라 elapsed time을 기록한다.
+  - [x] Loop278 이후 `next_save_idx=204 -> 219` 전진을 확인했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_279_REPORT_20260702.md`.
+- 품질 게이트:
+  - [x] health audit는 `IN_PROGRESS/ordered_flush_gap_in_progress`이며 completed source가 아니다.
+  - [x] observed elapsed는 frontier 판단 보조 지표이며 approval 근거가 아니다.
+  - [x] `publication_contract_convergence=GO`는 flushed rows contract 수렴만 뜻한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-02 Loop278 live run health / Synthesizer hidden reference quality gate
 
 - 근거:
