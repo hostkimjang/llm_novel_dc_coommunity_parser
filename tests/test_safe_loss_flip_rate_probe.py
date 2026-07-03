@@ -158,6 +158,10 @@ class SafeLossFlipRateProbeTest(unittest.TestCase):
             self.assertEqual(argv[argv.index("--llm-suspend-on-anomaly") + 1], "off")
             self.assertIn("--llm-suspend-threshold", argv)
             self.assertEqual(argv[argv.index("--llm-suspend-threshold") + 1], "0")
+            self.assertIn("--llm-stream-first-token-timeout", argv)
+            self.assertEqual(argv[argv.index("--llm-stream-first-token-timeout") + 1], "45")
+            self.assertIn("--llm-stream-idle-timeout", argv)
+            self.assertEqual(argv[argv.index("--llm-stream-idle-timeout") + 1], "45")
             self.assertEqual(argv[argv.index("--parallel") + 1], "1")
         self.assertEqual(
             manifest["noninteractive_watchdog_contract"],

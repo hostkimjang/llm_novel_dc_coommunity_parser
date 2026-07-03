@@ -2,6 +2,20 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop362 TODO
+
+- 상태 업데이트: 최신 지시에 따라 신규 대형 런을 동결하고 레거시 `expert_main.py` 프로세스를 정지했다. Loop361 golden18 단일 실증은 input `18`, completed/flushed/pending/failed `0/0/0/0`, checkpoint `0`이라 Loop360 우회가 row 생산을 증명하지 못했다.
+- Loop362 TODO:
+  - [x] Loop361 golden18 manifest/log/checkpoint를 확인했다.
+  - [x] 남아 있던 레거시 `expert_main.py` 런을 정지하고 잔여 프로세스 `0`을 확인했다.
+  - [x] `11708445` OVERRIDE AUDIT는 Loop319 blind/source-native `ACCEPT / candidate_only_block_is_correct`로 재확인했다.
+  - [x] collateral105를 `reclassified 74 / runtime-verified 4 / residual 105`로 재회계했다.
+  - [x] survey 136-error anchor에서 `wrong_work_among_aliases=27`, `recall_miss=49`를 확인했다.
+  - [x] stream timeout CLI/helper 계약을 추가했다.
+  - [x] py_compile PASS 및 focused unittest `11` tests PASS를 확인했다.
+  - [ ] golden18 `18/18` 실증 전까지 full375/bounded/N5 신규 발주와 approval/hard-hold 완화를 금지한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop360 TODO
 
 - 상태 업데이트: Loop359 background run은 search launch health가 아니라 LLM watchdog pause에서 멈췄다. full375/bounded/golden18/safe-loss first는 모두 completion `0/0/0/0`이므로 stale evidence를 대체하지 않는다.

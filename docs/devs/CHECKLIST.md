@@ -1,5 +1,23 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop362 runtime stall guard CLI 체크
+
+- [x] 신규 대형 런 발주를 동결하고 레거시 `expert_main.py` 프로세스를 정지했다.
+- [x] Loop361 golden18 단일 실증 실패를 확인했다.
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop361_golden18_current_head_3fb529bf_search_nonlight_result_manifest.json`
+  - input/completed/flushed/pending/failed `18/0/0/0/0`
+  - checkpoint lines `0`
+  - log `logs\expert_run_20260703_172023_831170.log`
+- [x] `11708445` OVERRIDE AUDIT는 Loop319 blind/source-native `ACCEPT / candidate_only_block_is_correct`로 확인했다.
+- [x] collateral current lane을 `reclassified 74 / runtime-verified 4 / residual 105`로 분리했다.
+- [x] survey anchor는 `docs\devs\detection_survey_20260626_errors.json` 기준 `136` errors, `wrong_work_among_aliases=27`, `recall_miss=49`로 확인했다.
+- [x] stream timeout CLI/helper 계약을 추가했다.
+- [x] 검증:
+  - `py_compile` PASS
+  - `tests.test_safe_loss_flip_rate_probe + tests.test_run_independent_plan + tests.test_llm_client_stream_timeout` PASS, `11` tests
+- [ ] golden18 `18/18` 실증 전까지 full375/bounded/N5 신규 발주와 approval/hard-hold 완화를 금지한다.
+- Gate: new large runs `FROZEN`, golden18 proof `NO-GO / 0 of 18`, runtime production `NO-GO / checkpoint 0`, collateral active lane `REVIEW-LOCKED / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop360 background watchdog hardening 체크
 
 - [x] Loop359 background 런이 검색 launch health 실패가 아니라 LLM watchdog pause에서 멈춘 것을 확인했다.

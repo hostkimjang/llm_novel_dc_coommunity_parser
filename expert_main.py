@@ -74,6 +74,18 @@ def _build_arg_parser(*, add_help: bool) -> argparse.ArgumentParser:
         default=None,
         help="LLM 서버 이상 응답 누적 시 일시중지 임계값 (0=비활성)",
     )
+    parser.add_argument(
+        "--llm-stream-first-token-timeout",
+        type=float,
+        default=None,
+        help="스트리밍 첫 토큰 대기 제한(초). 0 이하이면 비활성",
+    )
+    parser.add_argument(
+        "--llm-stream-idle-timeout",
+        type=float,
+        default=None,
+        help="스트리밍 청크 간 idle 대기 제한(초). 0 이하이면 비활성",
+    )
     parser.add_argument("--slang-db", choices=["on", "off"], default=None, help="중앙 slang DB 검토용 저장 사용 여부")
     parser.add_argument("--slang-db-path", default=None, help="중앙 slang DB JSON 경로")
     parser.add_argument("--slang-db-flush-posts", type=int, default=None, help="slang DB flush post 간격")
@@ -4878,6 +4890,10 @@ def main() -> None:
             else os.getenv("LLM_SUSPEND_FAILURE_THRESHOLD", "3")
         ),
     )
+    if _CLI_ARGS.llm_stream_first_token_timeout is not None:
+        _set_env("LLM_STREAM_FIRST_TOKEN_TIMEOUT_SECONDS", str(_CLI_ARGS.llm_stream_first_token_timeout))
+    if _CLI_ARGS.llm_stream_idle_timeout is not None:
+        _set_env("LLM_STREAM_IDLE_TIMEOUT_SECONDS", str(_CLI_ARGS.llm_stream_idle_timeout))
     _set_env(
         "LLM_VLM_FETCH_TIMEOUT",
         str(_CLI_ARGS.vlm_fetch_timeout if _CLI_ARGS.vlm_fetch_timeout is not None else os.getenv("LLM_VLM_FETCH_TIMEOUT", "12")),
@@ -6170,6 +6186,14 @@ def main() -> None:
                     "model_parallel_cap_model": _PARALLEL_POLICY_MODEL,
                     "llm_model": os.getenv("LLM_MODEL", ""),
                     "llm_endpoint": os.getenv("LLM_ENDPOINT", ""),
+                    "llm_stream_first_token_timeout_seconds": os.getenv(
+                        "LLM_STREAM_FIRST_TOKEN_TIMEOUT_SECONDS",
+                        "",
+                    ),
+                    "llm_stream_idle_timeout_seconds": os.getenv(
+                        "LLM_STREAM_IDLE_TIMEOUT_SECONDS",
+                        "",
+                    ),
                     "input_post_count": len(posts),
                     "vlm_enabled": vlm_enabled,
                     "ocr_enabled": ocr_enabled,

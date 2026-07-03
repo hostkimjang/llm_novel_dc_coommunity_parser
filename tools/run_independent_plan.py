@@ -63,6 +63,8 @@ def run_plan(
     env.setdefault("PYTHONIOENCODING", "utf-8")
     env.setdefault("LLM_SUSPEND_ON_SERVER_ANOMALY", "0")
     env.setdefault("LLM_SUSPEND_FAILURE_THRESHOLD", "0")
+    env.setdefault("LLM_STREAM_FIRST_TOKEN_TIMEOUT_SECONDS", "45")
+    env.setdefault("LLM_STREAM_IDLE_TIMEOUT_SECONDS", "45")
 
     completed = 0
     skipped = 0

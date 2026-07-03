@@ -1,0 +1,101 @@
+{
+  "loop": 362,
+  "date": "2026-07-03",
+  "scope": "runtime stall guard CLI plus latest instruction realignment",
+  "head_before_change": "3fb529bf",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "large_run_policy": "FROZEN",
+  "loop361_golden18_proof": {
+    "result": "NO-GO",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop361_golden18_current_head_3fb529bf_search_nonlight_result_manifest.json",
+    "log": "logs/expert_run_20260703_172023_831170.log",
+    "input_post_count": 18,
+    "completed_count": 0,
+    "flushed_count": 0,
+    "pending_count": 0,
+    "failed_count": 0,
+    "checkpoint_lines": 0,
+    "interpretation": "Loop360 watchdog-off did not prove row production."
+  },
+  "process_freeze": {
+    "legacy_expert_main_processes_stopped": true,
+    "remaining_expert_main_processes": 0
+  },
+  "override_audit_11708445": {
+    "evidence": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop319_override_audit_11708445_review.json",
+    "verdict": "ACCEPT / candidate_only_block_is_correct",
+    "public_contract": {
+      "official_title": null,
+      "official_url": null,
+      "promotion_decision_status": "candidate_only",
+      "publish_allowed": false,
+      "candidate_preserved": true,
+      "bypassed_gate": false
+    },
+    "action": [
+      "do_not_count_as_safe_resolved",
+      "search_degraded_followup_required"
+    ]
+  },
+  "collateral105_accounting": {
+    "original_collateral_rows": 183,
+    "reclassified_rows": 74,
+    "runtime_verified_rows": 4,
+    "residual_action_queue_rows": 105,
+    "reclassified_components": {
+      "loop333_adjusted_exclusion": 57,
+      "loop348_variance_quarantine": 1,
+      "loop349_canonical_variant_quarantine": 2,
+      "loop352_unsafe_promotion_contract_exclusion": 14
+    },
+    "runtime_verified_post_ids": [
+      11703624,
+      11705251,
+      11705230,
+      11708470
+    ]
+  },
+  "survey_anchor": {
+    "source": "docs/devs/detection_survey_20260626_errors.json",
+    "errors": 136,
+    "wrong_work_among_aliases": 27,
+    "recall_miss": 49
+  },
+  "code_change": {
+    "files": [
+      "expert_main.py",
+      "tools/safe_loss_flip_rate_probe.py",
+      "tools/run_independent_plan.py",
+      "tests/test_safe_loss_flip_rate_probe.py",
+      "tests/test_run_independent_plan.py"
+    ],
+    "contracts": [
+      "expert_main exposes stream first-token and idle timeout CLI",
+      "parallel manifest records stream timeout settings",
+      "background safe-loss plans inject 45s stream timeout guards",
+      "independent plan runner defaults to 45s stream timeout guards"
+    ]
+  },
+  "verification": [
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m py_compile expert_main.py tools\\safe_loss_flip_rate_probe.py tools\\run_independent_plan.py tests\\test_safe_loss_flip_rate_probe.py tests\\test_run_independent_plan.py",
+      "result": "PASS"
+    },
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_safe_loss_flip_rate_probe tests.test_run_independent_plan tests.test_llm_client_stream_timeout -v",
+      "result": "PASS",
+      "tests": 11
+    }
+  ],
+  "gates": {
+    "new_large_runs": "FROZEN",
+    "golden18_proof": "NO-GO / 0 of 18",
+    "runtime_production": "NO-GO / checkpoint 0",
+    "collateral_active_lane": "REVIEW-LOCKED / residual_action_queue_rows=105",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

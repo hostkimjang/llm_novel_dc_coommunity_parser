@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260703-362 - runtime stall guard CLI and freeze realignment
+
+| Item | Status | Evidence | Next action |
+| --- | --- | --- | --- |
+| New large runs | Frozen | Legacy `expert_main.py` processes stopped; remaining process check `0` | Do not dispatch full375/bounded/N5 before golden18 row production is proven |
+| Loop361 golden18 proof | NO-GO | manifest `18/0/0/0/0`, checkpoint `0`, log `logs/expert_run_20260703_172023_831170.log` | Fix/verify runtime production with single golden18 only |
+| Stream stall guard exposure | Fixed in CLI/helper contract | `expert_main.py` CLI + manifest fields, safe-loss plan args `45/45`, runner env `45/45` | Use only after explicit single-run verification point |
+| OVERRIDE AUDIT 11708445 | Closed row contract / not safe_resolved | Loop319 `ACCEPT / candidate_only_block_is_correct`, public title null | Keep candidate-only; search degraded follow-up remains |
+| Collateral105 accounting | Reframed | `reclassified 74 / runtime-verified 4 / residual 105` | Report by evidence axis, not queue accounting only |
+| Survey anchor | Rebased | survey `136`, wrong_work `27`, recall_miss `49` | Use survey post_id anchors instead of Loop290 self-batch as primary triage seed |
+| Verification | PASS | py_compile, focused unittest `11` tests | No approval until golden18 `18/18` and search recovery evidence |
+
+Gate: new large runs `FROZEN`, golden18 proof `NO-GO / 0 of 18`, runtime production `NO-GO / checkpoint 0`, collateral active lane `REVIEW-LOCKED / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260703-360 - background watchdog hardening
 
 | Item | Status | Evidence | Next action |

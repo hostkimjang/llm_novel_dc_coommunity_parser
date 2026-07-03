@@ -133,6 +133,10 @@ def _with_noninteractive_watchdog_args(args: list[str]) -> list[str]:
         out.extend(["--llm-suspend-on-anomaly", "off"])
     if "--llm-suspend-threshold" not in out:
         out.extend(["--llm-suspend-threshold", "0"])
+    if "--llm-stream-first-token-timeout" not in out:
+        out.extend(["--llm-stream-first-token-timeout", "45"])
+    if "--llm-stream-idle-timeout" not in out:
+        out.extend(["--llm-stream-idle-timeout", "45"])
     return out
 
 

@@ -17,7 +17,9 @@ class RunIndependentPlanTest(unittest.TestCase):
                 "import os,pathlib;"
                 f"pathlib.Path({str(env_path)!r}).write_text("
                 "os.environ.get('LLM_SUSPEND_ON_SERVER_ANOMALY','')+'|'+"
-                "os.environ.get('LLM_SUSPEND_FAILURE_THRESHOLD',''),encoding='utf-8')"
+                "os.environ.get('LLM_SUSPEND_FAILURE_THRESHOLD','')+'|'+"
+                "os.environ.get('LLM_STREAM_FIRST_TOKEN_TIMEOUT_SECONDS','')+'|'+"
+                "os.environ.get('LLM_STREAM_IDLE_TIMEOUT_SECONDS',''),encoding='utf-8')"
             )
             plan_path.write_text(
                 json.dumps(
@@ -44,7 +46,7 @@ class RunIndependentPlanTest(unittest.TestCase):
             )
 
             self.assertEqual(rc, 0)
-            self.assertEqual(env_path.read_text(encoding="utf-8"), "0|0")
+            self.assertEqual(env_path.read_text(encoding="utf-8"), "0|0|45|45")
 
 
 if __name__ == "__main__":

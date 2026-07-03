@@ -1,5 +1,31 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop362 runtime stall guard CLI and freeze realignment
+
+- 범위: 최신 지시에 맞춰 신규 대형 런을 동결하고, Loop361 golden18 row 생산 실패를 증거화한 뒤 stream timeout guard를 CLI/helper 계약으로 노출한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_362_REPORT_20260703.md`
+  - state `docs\devs\loop362_runtime_stall_guard_cli_20260703.json`
+  - golden18 manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop361_golden18_current_head_3fb529bf_search_nonlight_result_manifest.json`
+  - golden18 log `logs\expert_run_20260703_172023_831170.log`
+  - override audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop319_override_audit_11708445_review.json`
+- Runtime evidence:
+  - golden18 input/completed/flushed/pending/failed `18/0/0/0/0`
+  - checkpoint lines `0`
+  - Loop360 watchdog-off does not yet prove row production.
+- Accounting evidence:
+  - collateral current lane: `reclassified 74 / runtime-verified 4 / residual 105`
+  - survey source `docs\devs\detection_survey_20260626_errors.json`: errors `136`, `wrong_work_among_aliases=27`, `recall_miss=49`
+  - `11708445`: `ACCEPT / candidate_only_block_is_correct`, `official_title=null`, `publish_allowed=false`
+- Fix evidence:
+  - `expert_main.py`: stream first-token/idle timeout CLI and manifest fields.
+  - `tools\safe_loss_flip_rate_probe.py`: background command injects `--llm-stream-first-token-timeout 45 --llm-stream-idle-timeout 45`.
+  - `tools\run_independent_plan.py`: subprocess env defaults include `LLM_STREAM_FIRST_TOKEN_TIMEOUT_SECONDS=45`, `LLM_STREAM_IDLE_TIMEOUT_SECONDS=45`.
+- Verification commands:
+  - `.\.venv312\Scripts\python.exe -m py_compile expert_main.py tools\safe_loss_flip_rate_probe.py tools\run_independent_plan.py tests\test_safe_loss_flip_rate_probe.py tests\test_run_independent_plan.py` PASS.
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_safe_loss_flip_rate_probe tests.test_run_independent_plan tests.test_llm_client_stream_timeout -v` PASS, `11` tests.
+- Gate: new large runs `FROZEN`, golden18 proof `NO-GO / 0 of 18`, runtime production `NO-GO / checkpoint 0`, collateral active lane `REVIEW-LOCKED / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop360 background watchdog hardening
 
 - 범위: Loop359 background dispatch가 completion 없이 멈춘 원인을 확인하고, N5/background 독립 실행이 다시 interactive LLM watchdog prompt에서 멈추지 않도록 도구 계약을 보강한다.

@@ -1,5 +1,17 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop362 runtime stall guard CLI and freeze realignment
+
+- 최신 지시에 따라 신규 대형 런 발주를 동결하고 남아 있던 레거시 `expert_main.py` 프로세스를 정지했다. 재확인 결과 잔여 `expert_main.py` 프로세스는 `0`이다.
+- Loop361 golden18 단일 실증은 manifest input/completed/flushed/pending/failed `18/0/0/0/0`, checkpoint lines `0`으로 실패했다. Log `logs/expert_run_20260703_172023_831170.log`에는 `11684371`, `11694035`의 VLM/LLM `ReadTimeout`과 Gatekeeper stream 대기가 남아 있다.
+- `expert_main.py`는 `--llm-stream-first-token-timeout`, `--llm-stream-idle-timeout` CLI를 받고 parallel manifest에 해당 값을 기록한다.
+- `tools/safe_loss_flip_rate_probe.py`와 `tools/run_independent_plan.py`는 background probe/runner 기본 stream timeout guard를 `45/45`로 설정한다.
+- `11708445` OVERRIDE AUDIT는 Loop319 blind/source-native `ACCEPT / candidate_only_block_is_correct`로 재확인했다. Public contract는 `candidate_only`, `official_title=null`, `publish_allowed=false`다.
+- collateral current lane은 `reclassified 74 / runtime-verified 4 / residual 105`로 분리했다. Survey anchor는 `docs/devs/detection_survey_20260626_errors.json` 기준 `136` errors, `wrong_work_among_aliases=27`, `recall_miss=49`다.
+- 검증은 `py_compile` PASS, focused unittest `11` tests PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_362_REPORT_20260703.md`, state는 `docs/devs/loop362_runtime_stall_guard_cli_20260703.json`이다.
+- Gate는 new large runs `FROZEN`, golden18 proof `NO-GO / 0 of 18`, runtime production `NO-GO / checkpoint 0`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop360 background watchdog hardening
 
 - Loop359 background 런을 재점검해 full375, bounded1200, golden18, safe-loss first가 모두 result/checkpoint `0/0/0/0`이고 approval 근거가 아님을 확인했다.
