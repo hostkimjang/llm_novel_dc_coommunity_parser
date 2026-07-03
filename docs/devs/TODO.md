@@ -2,6 +2,23 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-04 regression-safe grounding Loop379-382 TODO
+
+- 상태 업데이트: `11698880` wrong publish `아카데미 생존 갤러리`는 body-verified competition gate로 차단됐고, 현 워킹트리 golden18 non-light runtime은 `18/18` 완료했다. 그러나 expected-answer는 `NO-GO / 16 of 18`, golden shared collateral은 `NO-GO / 7 regressions`라 approval은 열지 않는다.
+- Loop379-382 TODO:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] `batch_memory`/`known_title_abbreviation` rescue가 body-verified character-work competition을 우회하지 못하게 했다.
+  - [x] `11698880` 단건 run `20260704_033149_190416`을 완료했다: public title/url `null/null`, `promotion_blocked`.
+  - [x] golden18 run `20260704_033413_208076`을 완료했다: input/completed/flushed/pending/failed `18/18/18/0/0`.
+  - [x] health audit `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / violations 0`을 확인했다.
+  - [x] expected-answer audit `NO-GO / 16 of 18`을 생성했다.
+  - [x] 실패 2건을 고정했다: `11663521`, `11663540`.
+  - [ ] `11698880`은 expected evidence preserved unresolved/pass일 뿐 safe-resolved가 아니므로 hard-hold 완화 근거로 쓰지 않는다.
+  - [ ] 다음 loop는 `11663521`, `11663540` 또는 search recovery P0를 줄인다.
+  - [ ] full375 collateral gate는 아직 열지 않는다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop378 TODO
 
 - 상태 업데이트: Loop377 golden18 실패 `11698880`에서 Verifier `matched_alias=가챠펑크`가 현재 후보 `아카데미 생존 갤러리`의 alias bridge evidence로 재사용되는 경로를 코드 계약으로 막았다. 신규 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

@@ -2730,6 +2730,233 @@ def _sync_allowed_publication_result_contract(result_dict: Dict[str, Any]) -> bo
         or ""
     ).strip()
 
+    def _title_key(value: Any) -> str:
+        return re.sub(r"[^0-9A-Za-z가-힣]+", "", str(value or "")).lower()
+
+    def _url_key(value: Any) -> str:
+        raw = str(value or "").strip().lower()
+        if not raw:
+            return ""
+        return re.sub(r"[?#].*$", "", raw.rstrip("/"))
+
+    def _official_detail_url(value: Any) -> str:
+        url = str(value or "").strip()
+        lowered = url.lower()
+        if not url:
+            return ""
+        if "novelpia.com/novel/" in lowered:
+            return url
+        if "series.naver.com/novel/detail.series" in lowered:
+            return url
+        if "page.kakao.com/content/" in lowered:
+            return url
+        if "novel.munpia.com/" in lowered:
+            return url
+        return ""
+
+    def _candidate_title_url(item: Any) -> tuple[str, str]:
+        if isinstance(item, dict):
+            return (
+                str(
+                    item.get("official_title")
+                    or item.get("official_novel_title")
+                    or item.get("resolved_title")
+                    or item.get("title")
+                    or ""
+                ).strip(),
+                str(
+                    item.get("heretic_url")
+                    or item.get("official_url")
+                    or item.get("resolved_url")
+                    or item.get("url")
+                    or ""
+                ).strip(),
+            )
+        if isinstance(item, str):
+            return item.strip(), ""
+        return "", ""
+
+    def _candidate_items() -> List[Dict[str, Any]]:
+        items: List[Dict[str, Any]] = []
+        for source in (identity, ledger):
+            if not isinstance(source, dict):
+                continue
+            primary_work = source.get("primary_work")
+            if isinstance(primary_work, dict):
+                items.append(primary_work)
+            for key in (
+                "title_candidates",
+                "candidate_preservation_sources",
+                "mentioned_works",
+                "secondary_reference_works",
+            ):
+                values = source.get(key)
+                if isinstance(values, list):
+                    items.extend(item for item in values if isinstance(item, dict))
+        analysis = result_dict.get("analysis")
+        if isinstance(analysis, dict):
+            values = analysis.get("detected_titles")
+            if isinstance(values, list):
+                items.extend(item for item in values if isinstance(item, dict))
+        return items
+
+    def _search_evidence_items() -> List[Dict[str, Any]]:
+        items: List[Dict[str, Any]] = []
+        for source in (identity, ledger):
+            if not isinstance(source, dict):
+                continue
+            for key in ("search_evidence_catalog", "search_results", "web_search_results"):
+                values = source.get(key)
+                if isinstance(values, list):
+                    items.extend(item for item in values if isinstance(item, dict))
+        return items
+
+    def _source_text_key() -> str:
+        chunks: List[str] = []
+
+        def _append(value: Any) -> None:
+            if isinstance(value, str):
+                if value.strip():
+                    chunks.append(value)
+                return
+            if isinstance(value, list):
+                for item in value:
+                    _append(item)
+                return
+            if isinstance(value, dict):
+                for key in ("title", "text", "content", "body", "comment", "raw_text"):
+                    text = str(value.get(key) or "").strip()
+                    if text:
+                        chunks.append(text)
+
+        for value in (
+            result_dict.get("title"),
+            result_dict.get("post_title"),
+            result_dict.get("source_title"),
+            result_dict.get("content"),
+            result_dict.get("comments"),
+            identity.get("post_title"),
+            identity.get("source_title"),
+            identity.get("reason_lines"),
+            identity.get("reason"),
+        ):
+            _append(value)
+        return _title_key(" ".join(chunks))
+
+    def _candidate_alias_keys(candidate_title: str, candidate_url: str) -> List[str]:
+        candidate_key = _title_key(candidate_title)
+        candidate_url_key = _url_key(candidate_url)
+        aliases: List[str] = []
+        for item in _candidate_items():
+            item_title, item_url = _candidate_title_url(item)
+            item_key = _title_key(item_title)
+            item_url_key = _url_key(item_url)
+            if item_key != candidate_key and (
+                not candidate_url_key or item_url_key != candidate_url_key
+            ):
+                continue
+            for key in ("alias_or_mention", "alias", "surface", "matched_alias", "known_alias"):
+                alias_key = _title_key(item.get(key))
+                if alias_key and alias_key != candidate_key:
+                    aliases.append(alias_key)
+        return list(dict.fromkeys(aliases))
+
+    def _matching_candidate_item(candidate_title: str, candidate_url: str) -> Optional[Dict[str, Any]]:
+        candidate_key = _title_key(candidate_title)
+        candidate_url_key = _url_key(candidate_url)
+        if not candidate_key:
+            return None
+        for item in _candidate_items():
+            item_title, item_url = _candidate_title_url(item)
+            item_key = _title_key(item_title)
+            item_url_key = _url_key(item_url)
+            if item_key == candidate_key or (
+                candidate_url_key and item_url_key == candidate_url_key
+            ):
+                return item
+        return None
+
+    def _candidate_has_official_detail_support(candidate_title: str, candidate_url: str) -> bool:
+        candidate_key = _title_key(candidate_title)
+        candidate_url_key = _url_key(candidate_url)
+        if not candidate_key:
+            return False
+        if _official_detail_url(candidate_url):
+            return True
+        for item in _candidate_items():
+            item_title, item_url = _candidate_title_url(item)
+            item_key = _title_key(item_title)
+            item_url_key = _url_key(item_url)
+            if item_key != candidate_key and (
+                not candidate_url_key or item_url_key != candidate_url_key
+            ):
+                continue
+            source_tier = str(item.get("source_tier") or "").strip().lower()
+            page_type = str(item.get("page_type") or "").strip().lower()
+            if source_tier in {"official_detail", "novel_platform", "official"}:
+                return True
+            if page_type in {"novel_page", "work_detail"}:
+                return True
+            if _official_detail_url(item_url):
+                return True
+        for item in _search_evidence_items():
+            item_title = str(item.get("title") or item.get("official_title") or "").strip()
+            item_url = str(item.get("url") or item.get("official_url") or "").strip()
+            item_key = _title_key(item_title)
+            item_url_key = _url_key(item_url)
+            if item_key == candidate_key or (
+                candidate_url_key and item_url_key == candidate_url_key
+            ):
+                return bool(_official_detail_url(item_url) or item.get("source_tier"))
+        return False
+
+    def _candidate_has_direct_source_support(candidate_title: str, candidate_url: str) -> bool:
+        candidate_key = _title_key(candidate_title)
+        source_key = _source_text_key()
+        if candidate_key and candidate_key in source_key:
+            return True
+        alias_keys = _candidate_alias_keys(candidate_title, candidate_url)
+        if any(alias_key and alias_key in source_key for alias_key in alias_keys):
+            return True
+        candidate_url_key = _url_key(candidate_url)
+        for item in _search_evidence_items():
+            haystack = _title_key(
+                " ".join(
+                    str(item.get(key) or "")
+                    for key in ("title", "snippet", "content", "query")
+                )
+            )
+            item_url_key = _url_key(item.get("url") or item.get("official_url"))
+            if candidate_key and candidate_key in haystack:
+                return True
+            if candidate_url_key and item_url_key == candidate_url_key:
+                return True
+            if any(alias_key and alias_key in haystack for alias_key in alias_keys):
+                return True
+        return False
+
+    def _candidate_has_search_title_support(candidate_title: str, candidate_url: str) -> bool:
+        candidate_key = _title_key(candidate_title)
+        candidate_url_key = _url_key(candidate_url)
+        alias_keys = _candidate_alias_keys(candidate_title, candidate_url)
+        if not candidate_key:
+            return False
+        for item in _search_evidence_items():
+            haystack = _title_key(
+                " ".join(
+                    str(item.get(key) or "")
+                    for key in ("title", "snippet", "content", "query")
+                )
+            )
+            item_url_key = _url_key(item.get("url") or item.get("official_url"))
+            if candidate_key and candidate_key in haystack:
+                return True
+            if candidate_url_key and item_url_key == candidate_url_key:
+                return True
+            if any(alias_key and alias_key in haystack for alias_key in alias_keys):
+                return True
+        return False
+
     decision = identity.get("promotion_decision")
     if not isinstance(decision, dict):
         decision = ledger.get("promotion_decision")
@@ -2737,6 +2964,7 @@ def _sync_allowed_publication_result_contract(result_dict: Dict[str, Any]) -> bo
         return False
 
     changed = False
+    publication_source = "serialized_public_identity"
     trace_reason_codes: List[str] = []
     inferred_decision = not isinstance(decision, dict)
     gate_decision = dict(decision) if isinstance(decision, dict) else {}
@@ -2799,6 +3027,248 @@ def _sync_allowed_publication_result_contract(result_dict: Dict[str, Any]) -> bo
         if code_text and code_text not in trace_reason_codes:
             trace_reason_codes.append(code_text)
 
+    def _gate_candidate_publication_override() -> Optional[Dict[str, Any]]:
+        if not isinstance(gate_state, dict):
+            return None
+        if identity.get("candidate_ledger_status") != "safe_resolved":
+            return None
+        if identity.get("title_resolution_allowed") is not True:
+            return None
+        gate_title = str(gate_state.get("candidate_title") or "").strip()
+        gate_url = str(gate_state.get("candidate_url") or "").strip()
+        gate_key = _title_key(gate_title)
+        public_key = _title_key(public_title)
+        if not gate_title or not gate_key or not public_key or gate_key == public_key:
+            return None
+        scope_kind = str(scope_state.get("scope_kind") or "").strip().lower()
+        reason_codes = {str(code or "").strip() for code in trace_reason_codes if str(code or "").strip()}
+        scope_current_work = scope_kind == "current_work" or "scope_current_work" in reason_codes
+        if not scope_current_work:
+            return None
+        if gate_state.get("row_discusses_work_as_work") is not True and "row_discusses_work_as_work" not in reason_codes:
+            return None
+        if gate_state.get("official_title_exists") is not True and "official_title_exists" not in reason_codes:
+            return None
+        flags = {
+            str(value or "").strip()
+            for source in (identity.get("consistency_flags"), ledger.get("consistency_flags"))
+            if isinstance(source, list)
+            for value in source
+            if str(value or "").strip()
+        }
+        hard_negative_flags = {
+            "recommendation_context_only_no_work_anchor",
+            "recommendation_context_only_public_title_conflict",
+            "batch_memory_alias_rescue_blocked_nonwork_context",
+            "batch_memory_alias_rescue_blocked_genre_context",
+            "semantic_seed_no_work_context",
+            "unresolved_worklike_hold:alias_character_discussion",
+            "inferred_publication_sentence_like_alias_overreach",
+        }
+        if flags & hard_negative_flags:
+            return None
+        if not _candidate_has_official_detail_support(gate_title, gate_url):
+            return None
+        if not _candidate_has_direct_source_support(gate_title, gate_url):
+            return None
+        source_item = _matching_candidate_item(gate_title, gate_url) or {}
+        source_url = str(
+            source_item.get("heretic_url")
+            or source_item.get("official_url")
+            or source_item.get("resolved_url")
+            or source_item.get("url")
+            or ""
+        ).strip()
+        return {
+            "official_title": gate_title,
+            "official_url": gate_url or source_url,
+            "source_item": source_item,
+        }
+
+    gate_candidate_override = _gate_candidate_publication_override()
+    if gate_candidate_override:
+        public_title = gate_candidate_override["official_title"]
+        public_url = gate_candidate_override["official_url"] or public_url
+        publication_source = "shared_promotion_gate_candidate"
+        for code in (
+            "serialized_public_identity_shared_gate_restored",
+            "serialized_public_identity_gate_candidate_reconciled",
+        ):
+            if code not in trace_reason_codes:
+                trace_reason_codes.append(code)
+        source_item = gate_candidate_override.get("source_item")
+        if not isinstance(source_item, dict):
+            source_item = {}
+        if not isinstance(novel_identity, dict):
+            novel_identity = {}
+        if novel_identity.get("official_title") != public_title:
+            novel_identity["official_title"] = public_title
+            changed = True
+        if novel_identity.get("heretic_url") != (public_url or None):
+            novel_identity["heretic_url"] = public_url or None
+            changed = True
+        if novel_identity.get("confidence") in {None, "", "None"}:
+            novel_identity["confidence"] = source_item.get("confidence") or "High"
+            changed = True
+        identity["novel_identity"] = novel_identity
+
+        primary_work = dict(source_item)
+        primary_work.update(
+            {
+                "official_title": public_title,
+                "heretic_url": public_url or None,
+                "confidence": primary_work.get("confidence") or "High",
+                "source_tier": primary_work.get("source_tier") or "official_detail",
+                "page_type": primary_work.get("page_type") or "novel_page",
+                "reference_role": "primary",
+            }
+        )
+        if identity.get("primary_work") != primary_work:
+            identity["primary_work"] = primary_work
+            changed = True
+        flags = [
+            str(value)
+            for value in (identity.get("consistency_flags") or [])
+            if str(value).strip()
+        ]
+        for code in (
+            "serialized_public_identity_shared_gate_restored",
+            "serialized_public_identity_gate_candidate_reconciled",
+        ):
+            if code not in flags:
+                flags.append(code)
+        if identity.get("consistency_flags") != flags:
+            identity["consistency_flags"] = flags
+            changed = True
+        for item in _candidate_items():
+            item_title, item_url = _candidate_title_url(item)
+            if _title_key(item_title) == _title_key(public_title) or (
+                public_url and _url_key(item_url) == _url_key(public_url)
+            ):
+                item["reference_role"] = "primary"
+
+    def _body_verified_competing_candidate_override() -> Optional[Dict[str, Any]]:
+        flags = {
+            str(value or "").strip()
+            for source in (identity.get("consistency_flags"), ledger.get("consistency_flags"))
+            if isinstance(source, list)
+            for value in source
+            if str(value or "").strip()
+        }
+        body_competition_flags = {
+            "official_url_recall_blocked_body_verified_character_work_competes",
+            "body_verified_character_work_competes_with_title_led_alias",
+            "batch_memory_alias_rescue_blocked_body_verified_competition",
+        }
+        if not (flags & body_competition_flags):
+            return None
+        public_key = _title_key(public_title)
+        if not public_key:
+            return None
+        best_item: Optional[Dict[str, Any]] = None
+        best_score = -1
+        for item in _candidate_items():
+            item_title, item_url = _candidate_title_url(item)
+            item_key = _title_key(item_title)
+            if not item_key or item_key == public_key:
+                continue
+            if not _candidate_has_direct_source_support(item_title, item_url):
+                continue
+            if not _candidate_has_search_title_support(item_title, item_url):
+                continue
+            negative_evidence = {
+                str(value or "").strip()
+                for value in (item.get("negative_evidence") or [])
+                if str(value or "").strip()
+            }
+            if "body_verified_character_work_competes_with_title_led_alias" in negative_evidence:
+                continue
+            score = 0
+            reference_role = str(item.get("reference_role") or "").strip().lower()
+            preservation_role = str(item.get("preservation_role") or "").strip().lower()
+            if reference_role in {"primary", "mentioned"}:
+                score += 2
+            if preservation_role in {"mentioned_work", "comparison_target", "secondary_reference"}:
+                score += 3
+            if _official_detail_url(item_url):
+                score += 2
+            if score > best_score:
+                best_item = item
+                best_score = score
+        if not isinstance(best_item, dict):
+            return None
+        candidate_title, candidate_url = _candidate_title_url(best_item)
+        return {
+            "official_title": candidate_title,
+            "official_url": _official_detail_url(candidate_url) or None,
+            "source_item": best_item,
+        }
+
+    if not gate_candidate_override:
+        body_candidate_override = _body_verified_competing_candidate_override()
+        if body_candidate_override:
+            public_title = body_candidate_override["official_title"]
+            public_url = body_candidate_override["official_url"] or ""
+            publication_source = "body_verified_character_work_competition"
+            for code in (
+                "serialized_public_identity_shared_gate_restored",
+                "serialized_public_identity_body_verified_competition_reconciled",
+                "official_url_withheld_by_title_mismatch",
+            ):
+                if code not in trace_reason_codes:
+                    trace_reason_codes.append(code)
+            source_item = body_candidate_override.get("source_item")
+            if not isinstance(source_item, dict):
+                source_item = {}
+            if not isinstance(novel_identity, dict):
+                novel_identity = {}
+            if novel_identity.get("official_title") != public_title:
+                novel_identity["official_title"] = public_title
+                changed = True
+            if novel_identity.get("heretic_url") != (public_url or None):
+                novel_identity["heretic_url"] = public_url or None
+                changed = True
+            if novel_identity.get("confidence") in {None, "", "None"}:
+                novel_identity["confidence"] = source_item.get("confidence") or "High"
+                changed = True
+            identity["novel_identity"] = novel_identity
+
+            primary_work = dict(source_item)
+            primary_work.update(
+                {
+                    "official_title": public_title,
+                    "heretic_url": public_url or None,
+                    "confidence": primary_work.get("confidence") or "High",
+                    "source_tier": primary_work.get("source_tier") or "mixed",
+                    "reference_role": "primary",
+                }
+            )
+            if not public_url:
+                primary_work.pop("page_type", None)
+            if identity.get("primary_work") != primary_work:
+                identity["primary_work"] = primary_work
+                changed = True
+            flags = [
+                str(value)
+                for value in (identity.get("consistency_flags") or [])
+                if str(value).strip()
+            ]
+            for code in (
+                "serialized_public_identity_shared_gate_restored",
+                "serialized_public_identity_body_verified_competition_reconciled",
+            ):
+                if code not in flags:
+                    flags.append(code)
+            if identity.get("consistency_flags") != flags:
+                identity["consistency_flags"] = flags
+                changed = True
+            for item in _candidate_items():
+                item_title, item_url = _candidate_title_url(item)
+                if _title_key(item_title) == _title_key(public_title) or (
+                    public_url and _url_key(item_url) == _url_key(public_url)
+                ):
+                    item["reference_role"] = "primary"
+
     gate_decision["status"] = "publish"
     gate_decision["publish_allowed"] = True
     gate_decision["official_title"] = public_title
@@ -2820,7 +3290,7 @@ def _sync_allowed_publication_result_contract(result_dict: Dict[str, Any]) -> bo
         "pre_gate_candidate": {
             "official_title": public_title,
             "official_url": public_url or None,
-            "source": "serialized_public_identity",
+            "source": publication_source,
         },
         "gate_decision": gate_decision,
         "scope_state": scope_state,

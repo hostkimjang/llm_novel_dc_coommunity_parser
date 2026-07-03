@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260704-379-382 - 11698880 body-verified competition runtime proof
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5 미발주 | 동결 유지 |
+| parent packet replay | 중단 | 동일 38-row replay 없음 | 반복 금지 |
+| `11698880` wrong publish | 차단 | Loop382 actual `null`, previous wrong `아카데미 생존 갤러리` 제거 | safe-resolved로 과장 금지 |
+| golden18 runtime | GO / 18 of 18 | run `20260704_033413_208076`, manifest `18/18/18/0/0` | runtime proof로만 사용 |
+| golden expected-answer | NO-GO / 16 of 18 | 실패 `11663521`, `11663540` | 두 행 source-native/blind judge |
+| golden collateral | NO-GO / 7 | shared collateral regression 후보 `7` | full375 실행 전 approval 금지 |
+| search recovery | P0 / partial | row audit `GO`, log upstream zero `26` | degraded 100% 복구 증거 별도 필요 |
+| 문서 동기화 | 완료 | Loop379-382 report/state와 운영 문서 갱신 | 다음 loop는 실패 2건 또는 search P0 축소 |
+
+Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, runtime proof `GO / 18 of 18`, golden expected-answer `NO-GO / 16 of 18`, golden shared collateral `NO-GO / 7 regressions`, full375 collateral `NOT_OPEN`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260704-378 - 11698880 title-led alias 경쟁 후보 계약
 
 | 항목 | 상태 | 근거 | 다음 조치 |

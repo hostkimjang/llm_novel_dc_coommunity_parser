@@ -1,5 +1,20 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop379-382 11698880 body-verified competition and golden18 runtime proof
+
+- 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop379/380 단건 runtime에서 `11698880` middle evidence가 `가챠 중독자의 퓨전펑크 생활`을 잡은 뒤, late `batch_memory`/known-title abbreviation rescue가 public identity를 `아카데미 생존 갤러리`로 덮는 실패를 재현했다.
+- `src/llm_batch/agentic_pipeline.py`는 `batch_memory`, `batch_memory:alias_affix_stripped`, `known_title_abbreviation` rescue도 body-verified character-work competition을 만나면 context-only gate로 막는다.
+- `expert_main.py`는 final publication contract가 body-verified competing candidate로 수렴할 수 있게 했고, official URL title mismatch가 있으면 URL을 보류한다.
+- Loop381 단건 run `20260704_033149_190416`은 `11698880`을 `1/1` 완료했다. Final public title/url은 `null/null`, `candidate_ledger_status=promotion_blocked`, `publish_allowed=false`라 wrong publish는 차단됐지만 expected safe-resolved는 아니다.
+- Loop382 golden18 run `20260704_033413_208076`은 input/completed/flushed/pending/failed `18/18/18/0/0`, result/checkpoint rows `18/18`, VLM/OCR `READY`, total time `1672.2s`로 완료됐다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, search evidence `GO`, publication contract convergence `GO`, violations `0`을 기록했다. 단 로그에는 `search_upstream_zero=26`, `search_bridge_after_filter_zero=1`이 있어 전체 search recovery 완료로 보지 않는다.
+- Expected-answer audit는 `NO-GO / 16 of 18`이다. 실패는 `11663521` actual `성기사는 버생을 산다`, `11663540` actual `전 버디가 하고 싶은데요`다.
+- `11698880`은 expected evidence preserved unresolved로 pass 처리됐지만 public title이 `null`이라 hard-hold 완화 근거가 아니다. `11660237`은 `테라포밍`으로 통과했다.
+- Golden shared collateral compare는 regression 후보 `7`건이다. full375 collateral gate는 열지 않았다.
+- Report는 `docs/devs/loop_reports/LOOP_379_382_REPORT_20260704.md`, state는 `docs/devs/loop379_382_body_competition_runtime_20260704.json`이다.
+- Gate는 new large runs `FROZEN`, same parent packet replay `STOPPED`, runtime proof `GO / 18 of 18`, expected-answer `NO-GO / 16 of 18`, golden shared collateral `NO-GO / 7 regressions`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop378 11698880 title-led alias competition gate
 
 - 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

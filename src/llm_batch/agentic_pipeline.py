@@ -11766,6 +11766,9 @@ class AgenticPipeline:
                 return False
             source = str(hit.get("source") or "").strip()
             if source not in {
+                "batch_memory",
+                "batch_memory:alias_affix_stripped",
+                "known_title_abbreviation",
                 "title_lead_alias_official_detail_release",
                 "search_evidence_alias_inference",
                 "secondary_reference_official_detail",
@@ -11781,10 +11784,29 @@ class AgenticPipeline:
             flags = {str(flag) for flag in (extended_identity.get("consistency_flags") or [])}
             competing_hold_flags = {
                 "official_url_recall_blocked_competing_candidate",
+                "official_url_recall_blocked_body_verified_character_work_competes",
+                "body_verified_character_work_competes_with_title_led_alias",
                 "multi_work_title_cleared",
                 "secondary_reference_official_alias_blocked_after_multi_work_title_cleared",
             }
             if flags & competing_hold_flags:
+                return True
+            alias_text = str(
+                hit.get("alias")
+                or getattr(candidate, "alias_or_mention", "")
+                or hit.get("surface")
+                or ""
+            ).strip()
+            competing_verified_body_titles, current_candidate_has_body_surface = (
+                self._body_verified_character_work_competition(
+                    ctx,
+                    candidate_title,
+                    title_candidates=title_candidates,
+                    current_alias=alias_text,
+                    include_comments=True,
+                )
+            )
+            if competing_verified_body_titles and not current_candidate_has_body_surface:
                 return True
             return {"expert_conflict", "budget_quarantine_candidate"}.issubset(flags)
 
@@ -11798,6 +11820,7 @@ class AgenticPipeline:
             for flag in (
                 "batch_memory_alias_rescue_blocked_competing_hold",
                 "batch_memory_alias_rescue_blocked_after_official_recall_competition",
+                "batch_memory_alias_rescue_blocked_body_verified_competition",
             ):
                 if flag not in flags:
                     flags.append(flag)
@@ -32462,6 +32485,73 @@ OUTPUT JSON:
             direct_sources.append("alias_surface")
         if candidate_url:
             direct_sources.append("official_detail_url")
+
+        body_verified_competition_flags = set()
+        for container in (final_decision, verification_result):
+            if not isinstance(container, dict):
+                continue
+            body_verified_competition_flags.update(
+                str(flag)
+                for flag in (container.get("consistency_flags") or [])
+                if str(flag).strip()
+            )
+            body_verified_competition_flags.update(
+                str(code)
+                for code in (container.get("reason_codes") or [])
+                if str(code).strip()
+            )
+        body_verified_competition = bool(
+            {
+                "official_url_recall_blocked_body_verified_character_work_competes",
+                "body_verified_character_work_competes_with_title_led_alias",
+                "batch_memory_alias_rescue_blocked_body_verified_competition",
+            }
+            & body_verified_competition_flags
+        )
+        blocked_competing_candidates: List[str] = []
+        if isinstance(final_decision, dict):
+            blocked_competing_candidates = [
+                str(value)
+                for value in (final_decision.get("blocked_official_title_competing_candidates") or [])
+                if str(value).strip()
+            ]
+        if body_verified_competition:
+            conflict_reason_codes = ["body_verified_character_work_competes_with_title_led_alias"]
+            if blocked_competing_candidates:
+                conflict_reason_codes.append("competing_body_verified_work_candidate")
+            state = GroundingState(
+                post_id=getattr(ctx, "post_id", None),
+                candidate_title=candidate_title,
+                candidate_url=candidate_url,
+                source=hit_source or source or "batch_alias_public_title",
+                official_title_exists=bool(candidate_url),
+                row_discusses_work_as_work=False,
+                title_resolution_state="context_only",
+                work_resolution="unresolved",
+                discussion_type="general",
+                scope=ScopeState(
+                    scope_kind="context_only",
+                    confidence="high",
+                    direct_bridge_sources=direct_sources,
+                    competing_candidates=blocked_competing_candidates,
+                    conflict_reason_codes=conflict_reason_codes,
+                ),
+            )
+            evidence = [
+                EvidenceRecord(
+                    kind="batch_alias_bridge",
+                    strength="medium",
+                    source_path_or_snippet=alias_text or hit_source,
+                    supports_publish=False,
+                    reason_code="batch_alias_public_title_bridge_blocked_by_body_verified_competition",
+                )
+            ]
+            return self._record_public_title_gate_decision(
+                ctx,
+                state,
+                evidence,
+                final_decision=final_decision,
+            )
 
         discussion_type = ""
         work_resolution = "resolved"

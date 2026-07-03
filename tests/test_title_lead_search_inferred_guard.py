@@ -7074,6 +7074,58 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         ]
         self.assertNotIn("가챠펑크", alias_sources)
 
+    def test_batch_alias_gate_blocks_body_verified_character_work_competition(self):
+        pipeline = build_pipeline()
+        body_title = "가챠 중독자의 퓨전펑크 생활"
+        title_led_title = "아카데미 생존 갤러리"
+        title_led_url = "https://novelpia.com/novel/390001"
+        ctx = ConversationContext(
+            post_id=11698880,
+            post_data={
+                "post_id": 11698880,
+                "title": "아생갤 개 존나게 재밌군 ㅇㅇ",
+                "content_blocks": [
+                    {"type": "text", "text": "가챠펑크 세드릭도 그렇고"},
+                    {"type": "text", "text": "시원시원한 상남자라서 너무 좋구나"},
+                ],
+            },
+            comments=[],
+        )
+        final_decision = {
+            "consistency_flags": [
+                "official_url_recall_blocked_body_verified_character_work_competes",
+                "body_verified_character_work_competes_with_title_led_alias",
+            ],
+            "blocked_official_title_competing_candidates": [body_title],
+        }
+        candidate = DetectedTitle(
+            official_title=title_led_title,
+            heretic_url=title_led_url,
+            confidence="High",
+            alias_or_mention="아생갤",
+            source_tier="official_detail",
+            page_type="novel_page",
+        )
+
+        decision = pipeline._record_batch_alias_public_title_gate_decision(
+            ctx,
+            candidate,
+            {"alias": "아생갤", "source": "known_title_abbreviation"},
+            final_decision=final_decision,
+            verification_result={},
+        )
+
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        state = ctx._last_promotion_gate_state
+        self.assertFalse(state["row_discusses_work_as_work"])
+        self.assertEqual(state["scope"]["scope_kind"], "context_only")
+        self.assertEqual(state["scope"]["competing_candidates"], [body_title])
+        self.assertIn(
+            "body_verified_character_work_competes_with_title_led_alias",
+            state["scope"]["conflict_reason_codes"],
+        )
+
     def test_title_led_evaluation_preserves_site_scoped_official_probe_under_recommendation_budget(self):
         calls = []
 

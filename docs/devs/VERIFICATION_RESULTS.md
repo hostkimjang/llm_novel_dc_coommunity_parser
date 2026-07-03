@@ -1,5 +1,49 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop379-382 11698880 body-verified competition and current worktree golden18
+
+- 범위: Loop379/380 `11698880` wrong publish를 body-verified competition 계약으로 차단하고, 현 워킹트리에서 golden18 non-light runtime `18/18`을 재증명한다. 신규 full375/bounded/N5 대형 런과 동일 parent packet replay는 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_379_382_REPORT_20260704.md`
+  - state `docs\devs\loop379_382_body_competition_runtime_20260704.json`
+  - Loop381 result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop381_11698880_body_competition_contract_worktree_search_nonlight_result.json`
+  - Loop381 health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop381_11698880_runtime_health_audit.json`
+  - Loop382 result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop382_golden18_body_competition_contract_worktree_search_nonlight_result.json`
+  - Loop382 manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop382_golden18_body_competition_contract_worktree_search_nonlight_result_manifest.json`
+  - Loop382 health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop382_golden18_runtime_health_audit.json`
+  - Loop382 expected audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop382_golden18_body_competition_contract_worktree_search_nonlight_audit.json`
+  - Loop382 collateral `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop382_golden18_body_competition_contract_worktree_collateral.json`
+- Targeted runtime evidence:
+  - run `20260704_033149_190416`
+  - `11698880` result/checkpoint `1/1`
+  - final public title/url `null/null`
+  - `candidate_ledger_status=promotion_blocked`, `publish_allowed=false`
+  - health audit `flush_integrity=GO`, search evidence `GO`, publication contract `GO / violations 0`
+- Golden18 runtime evidence:
+  - run `20260704_033413_208076`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - result/checkpoint rows `18/18`
+  - VLM/OCR `READY`
+  - total time `1672.2s`, avg `92.9s/post`
+  - search requests `176`, cache hits `41`, actual search `135`
+- Health evidence:
+  - flush integrity `GO / clean_completed_source`
+  - search evidence `GO`
+  - publication contract convergence `GO`, violations `0`
+  - reason errors `0`
+  - log counters `search_upstream_zero=26`, `search_bridge_after_filter_zero=1`; search recovery remains P0 because this is not full degraded-zero proof.
+- Semantic evidence:
+  - expected-answer audit `NO-GO / 16 of 18`
+  - failed rows:
+    - `11663521`: expected `어떤 마술의 금서목록 / 어떤 과학의 초전자포`, actual `성기사는 버생을 산다`
+    - `11663540`: expected `전 버튜버가 하고 싶은데요`, actual `전 버디가 하고 싶은데요`
+  - `11698880`: expected `가챠 중독자의 퓨전펑크 생활`, actual `null`, status `expected_work_evidence_preserved_unresolved`, pass but not safe-resolved.
+  - `11660237`: expected/actual `테라포밍`, pass.
+- Collateral evidence:
+  - golden shared collateral regression candidates `7`
+  - full375 collateral gate remains `NOT_OPEN`
+- Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, runtime proof `GO / 18 of 18`, search evidence `GO / non-light row audit`, expected-answer `NO-GO / 16 of 18`, golden shared collateral `NO-GO / 7 regressions`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop378 11698880 title-led alias competition gate
 
 - 범위: Loop377 golden18 실패 `11698880`에서 현재 title-led 후보와 본문 검증 후보의 alias evidence가 섞이는 경로를 코드 계약으로 차단한다. 신규 대형 런과 동일 parent packet replay는 발주하지 않는다.

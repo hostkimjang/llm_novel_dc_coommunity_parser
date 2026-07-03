@@ -3331,6 +3331,305 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
             correct_title,
         )
 
+    def test_allowed_publication_reconciles_serialized_identity_to_shared_gate_candidate(self):
+        correct_title = "가챠 중독자의 퓨전펑크 생활"
+        correct_url = "https://novelpia.com/novel/387014"
+        wrong_title = "아카데미 생존 갤러리"
+        wrong_url = "https://novelpia.com/novel/380218"
+        correct_candidate = {
+            "official_title": correct_title,
+            "heretic_url": correct_url,
+            "confidence": "High",
+            "alias_or_mention": "가챠펑크",
+            "source_tier": "official_detail",
+            "page_type": "novel_page",
+            "reference_role": "mentioned",
+            "preservation_role": "mentioned_work",
+        }
+        wrong_candidate = {
+            "official_title": wrong_title,
+            "heretic_url": wrong_url,
+            "confidence": "High",
+            "alias_or_mention": "아생갤",
+            "source_tier": "official_detail",
+            "page_type": "novel_page",
+            "reference_role": "primary",
+            "preservation_role": "title_candidate",
+        }
+        result = {
+            "post_id": 11698880,
+            "title": "아생갤 개 존나게 재밌군 ㅇㅇ",
+            "content": [
+                "가챠펑크 세드릭도 그렇고",
+                "시원시원한 상남자라서 너무 좋구나",
+            ],
+            "comments": [],
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "discussion_type": "general",
+                "topicality": "core_relevant",
+                "context_sources": ["title", "body", "search", "image"],
+                "consistency_flags": [
+                    "title_led_evaluation_official_candidate_rescued",
+                    "title_led_consumption_bridge",
+                ],
+                "novel_identity": {
+                    "official_title": wrong_title,
+                    "heretic_url": wrong_url,
+                    "confidence": "High",
+                },
+                "primary_work": dict(wrong_candidate),
+                "title_candidates": [dict(correct_candidate), dict(wrong_candidate)],
+                "candidate_preservation_sources": [dict(correct_candidate), dict(wrong_candidate)],
+                "search_evidence_catalog": [
+                    {
+                        "title": correct_title,
+                        "url": correct_url,
+                        "snippet": "가챠펑크 세드릭 관련 공식 작품",
+                        "query": "가챠펑크 웹소설",
+                        "source_tier": "novel_platform",
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": wrong_title,
+                    "official_url": wrong_url,
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "serialized_public_identity_published",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": ["row_discusses_work_as_work"],
+                    },
+                },
+                "promotion_gate_state": {
+                    "candidate_title": correct_title,
+                    "candidate_url": correct_url,
+                    "source": "known_abbreviation_title_guard:lsa_mapping",
+                    "official_title_exists": True,
+                    "row_discusses_work_as_work": True,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": ["row_discusses_work_as_work"],
+                    },
+                },
+                "candidate_ledger": {
+                    "candidate_ledger_status": "safe_resolved",
+                    "title_resolution_allowed": True,
+                    "title_resolution_state": "resolved",
+                    "work_resolution": "resolved",
+                    "title_candidates": [correct_title],
+                    "candidate_preservation_sources": [
+                        dict(correct_candidate),
+                        dict(wrong_candidate),
+                    ],
+                    "search_evidence_catalog": [
+                        {
+                            "title": correct_title,
+                            "url": correct_url,
+                            "snippet": "가챠펑크 세드릭 관련 공식 작품",
+                            "query": "가챠펑크 웹소설",
+                            "source_tier": "novel_platform",
+                        }
+                    ],
+                    "promotion_gate_state": {
+                        "candidate_title": correct_title,
+                        "candidate_url": correct_url,
+                        "source": "known_abbreviation_title_guard:lsa_mapping",
+                        "official_title_exists": True,
+                        "row_discusses_work_as_work": True,
+                        "scope": {
+                            "scope_kind": "current_work",
+                            "confidence": "high",
+                            "direct_bridge_sources": ["row_discusses_work_as_work"],
+                        },
+                    },
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["novel_identity"]["official_title"], correct_title)
+        self.assertEqual(identity["novel_identity"]["heretic_url"], correct_url)
+        self.assertEqual(identity["primary_work"]["official_title"], correct_title)
+        decision = identity["promotion_decision"]
+        self.assertTrue(decision["publish_allowed"])
+        self.assertEqual(decision["official_title"], correct_title)
+        self.assertEqual(decision["official_url"], correct_url)
+        self.assertIn(
+            "serialized_public_identity_gate_candidate_reconciled",
+            decision["reason_codes"],
+        )
+        trace = identity["publish_contract_trace"]
+        self.assertEqual(trace["pre_gate_candidate"]["official_title"], correct_title)
+        self.assertEqual(trace["pre_gate_candidate"]["source"], "shared_promotion_gate_candidate")
+        self.assertEqual(trace["post_gate_identity"]["official_title"], correct_title)
+        self.assertEqual(
+            identity["candidate_ledger"]["promotion_gate_state"]["candidate_title"],
+            correct_title,
+        )
+
+    def test_allowed_publication_reconciles_body_verified_competition_after_gate_overwrite(self):
+        correct_title = "가챠 중독자의 퓨전펑크 생활"
+        wrong_title = "아카데미 생존 갤러리"
+        wrong_url = "https://novelpia.com/novel/390001"
+        correct_candidate = {
+            "official_title": correct_title,
+            "heretic_url": "https://namu.wiki/w/가챠 중독자의 퓨전펑크 생활",
+            "confidence": "High",
+            "alias_or_mention": "가챠펑크",
+            "source_tier": "llm_only",
+            "reference_role": "mentioned",
+            "preservation_role": "mentioned_work",
+        }
+        wrong_candidate = {
+            "official_title": wrong_title,
+            "heretic_url": wrong_url,
+            "confidence": "High",
+            "alias_or_mention": "아생갤",
+            "source_tier": "official_detail",
+            "page_type": "novel_page",
+            "reference_role": "primary",
+        }
+        result = {
+            "post_id": 11698880,
+            "title": "아생갤 개 존나게 재밌군 ㅇㅇ",
+            "content": ["가챠펑크 세드릭도 그렇고", "시원시원한 상남자라서 너무 좋구나"],
+            "comments": [],
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "context_sources": ["title", "body", "search", "image"],
+                "consistency_flags": [
+                    "official_url_recall_blocked_body_verified_character_work_competes",
+                    "body_verified_character_work_competes_with_title_led_alias",
+                    "batch_memory_exact_alias_rescued",
+                ],
+                "novel_identity": {
+                    "official_title": wrong_title,
+                    "heretic_url": wrong_url,
+                    "confidence": "High",
+                },
+                "primary_work": dict(wrong_candidate),
+                "title_candidates": [dict(wrong_candidate), dict(correct_candidate)],
+                "candidate_preservation_sources": [dict(wrong_candidate), dict(correct_candidate)],
+                "search_evidence_catalog": [
+                    {
+                        "title": correct_title,
+                        "url": "https://namu.wiki/w/가챠 중독자의 퓨전펑크 생활",
+                        "snippet": "세드릭 몬트라벤은 가챠 중독자의 퓨전펑크 생활의 주인공",
+                        "query": "가챠펑크 세드릭",
+                        "source_tier": "wiki",
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": wrong_title,
+                    "official_url": wrong_url,
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "batch_alias_public_title_bridge",
+                        "official_detail_url",
+                        "serialized_public_identity_published",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "batch_alias_candidate_accepted",
+                            "known_title_abbreviation",
+                            "alias_surface",
+                            "official_detail_url",
+                        ],
+                    },
+                },
+                "promotion_gate_state": {
+                    "candidate_title": wrong_title,
+                    "candidate_url": wrong_url,
+                    "source": "known_title_abbreviation",
+                    "official_title_exists": True,
+                    "row_discusses_work_as_work": True,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "batch_alias_candidate_accepted",
+                            "known_title_abbreviation",
+                            "alias_surface",
+                            "official_detail_url",
+                        ],
+                    },
+                },
+                "candidate_ledger": {
+                    "candidate_preservation_sources": [
+                        dict(wrong_candidate),
+                        dict(correct_candidate),
+                    ],
+                    "promotion_gate_state": {
+                        "candidate_title": wrong_title,
+                        "candidate_url": wrong_url,
+                        "source": "known_title_abbreviation",
+                        "official_title_exists": True,
+                        "row_discusses_work_as_work": True,
+                        "scope": {
+                            "scope_kind": "current_work",
+                            "confidence": "high",
+                            "direct_bridge_sources": [
+                                "batch_alias_candidate_accepted",
+                                "known_title_abbreviation",
+                                "alias_surface",
+                                "official_detail_url",
+                            ],
+                        },
+                    },
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["novel_identity"]["official_title"], correct_title)
+        self.assertIsNone(identity["novel_identity"]["heretic_url"])
+        self.assertEqual(identity["primary_work"]["official_title"], correct_title)
+        self.assertTrue(identity["promotion_decision"]["publish_allowed"])
+        self.assertEqual(identity["promotion_decision"]["official_title"], correct_title)
+        self.assertIsNone(identity["promotion_decision"]["official_url"])
+        self.assertIn(
+            "serialized_public_identity_body_verified_competition_reconciled",
+            identity["promotion_decision"]["reason_codes"],
+        )
+        self.assertEqual(
+            identity["publish_contract_trace"]["pre_gate_candidate"]["source"],
+            "body_verified_character_work_competition",
+        )
+
     def test_publish_contract_trace_converges_stale_publish_trace_to_blocked_decision(self):
         stale_publish_decision = {
             "status": "publish",

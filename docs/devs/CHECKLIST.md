@@ -1,5 +1,41 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop379-382 11698880 body-verified competition + golden18 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Loop379/380 `11698880` wrong publish 재현을 확인했다.
+  - middle evidence: `가챠펑크/세드릭 -> 가챠 중독자의 퓨전펑크 생활`
+  - late overwrite: `batch_memory`/`known_title_abbreviation -> 아카데미 생존 갤러리`
+- [x] body-verified character-work competition을 `batch_memory`, `batch_memory:alias_affix_stripped`, `known_title_abbreviation` rescue에도 적용했다.
+- [x] `11698880` 단건 non-light runtime을 실행했다.
+  - run `20260704_033149_190416`
+  - result/checkpoint `1/1`
+  - public title/url `null/null`
+  - `candidate_ledger_status=promotion_blocked`
+  - health/search/publication contract `GO`
+- [x] 현 워킹트리 golden18 non-light runtime을 실행했다.
+  - run `20260704_033413_208076`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint/result rows `18/18`
+  - VLM/OCR `READY`
+  - total time `1672.2s`
+- [x] runtime health audit를 생성했다.
+  - flush integrity `GO / clean_completed_source`
+  - search evidence `GO`
+  - publication contract convergence `GO`, violations `0`
+  - log counters `search_upstream_zero=26`, `search_bridge_after_filter_zero=1`
+- [x] expected-answer audit를 생성했다.
+  - `NO-GO / 16 of 18`
+  - failed rows `11663521`, `11663540`
+  - `11698880`은 expected evidence preserved unresolved/pass이나 public title `null`
+  - `11660237`은 `테라포밍`으로 통과
+- [x] golden shared collateral compare를 생성했다: regression candidates `7`.
+- [ ] `11698880`은 safe-resolved가 아니므로 hard-hold 완화 근거로 쓰지 않는다.
+- [ ] `11663521`, `11663540`을 다음 row-level blind/source-native 검증 대상으로 유지한다.
+- [ ] full375 collateral approval은 `NOT_OPEN`으로 유지한다.
+- Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, golden18 runtime proof `GO / 18 of 18`, expected-answer `NO-GO / 16 of 18`, golden shared collateral `NO-GO / 7 regressions`, full375 collateral `NOT_OPEN`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop378 11698880 title-led alias competition gate 체크
 
 - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
