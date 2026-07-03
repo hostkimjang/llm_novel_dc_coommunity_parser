@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop343 Addendum - post-patch verified alias runtime replay
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop343은 approval 회차가 아니라 Loop342 패치가 실제 runtime output에 반영되는지 확인한 post-patch targeted replay 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_343_REPORT_20260703.md`, state `docs/devs/loop343_post_patch_alias_runtime_replay_20260703.json`, result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop343_known_alias_seed_post_patch_9daf715f_search_nonlight_result.json`, manifest `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop343_known_alias_seed_post_patch_9daf715f_search_nonlight_result_manifest.json`, convergence `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop343_goal_convergence_after_runtime_replay.json`.
+- Runtime: run `20260703_093839_730466`, HEAD `9daf715f`, completed/flushed/pending/failed `2/2/0/0`, `large_run_complete=true`, `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `vlm_ocr_semantic_review_ready=true`.
+- Result: 동일 packet 기준 `safe_resolved 0/2 -> 2/2`, `promotion_blocked 2 -> 0`, safe loss `0`. `11703624`는 `판초우의의 마법사`와 Munpia URL로 safe_resolved, `11705251`은 `월야환담 창월야` title-only safe_resolved다.
+- Stop condition: evaluator는 actionable queue `126 -> 124`, `same_packet=true`, `safe_resolved_monotonic_nondecrease=true`, gate `GO`를 기록했다. 이 GO는 targeted packet 한정이며 전체 goal 정지가 아니다.
+- Gate: targeted runtime completion `GO`, targeted packet convergence `GO`, collateral `NO-GO / residual_action_queue_rows=124`, golden18/full375 `NOT_RERUN_AFTER_PATCH`, search recovery `P0 / OPEN / SEARCH_DEGRADED observed`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop342 Addendum - verified alias title-only publication gate
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop342는 approval 회차가 아니라 Loop341 alias seed 2건의 targeted runtime replay와 그 결과에서 확인된 verified alias title-only 복구 계약을 추가한 회차다.

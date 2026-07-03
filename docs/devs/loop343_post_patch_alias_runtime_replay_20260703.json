@@ -1,0 +1,85 @@
+{
+  "loop": 343,
+  "date": "2026-07-03",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "runtime_head": "9daf715f",
+  "runtime_run_id": "20260703_093839_730466",
+  "runtime_artifacts": {
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop342_known_alias_seed_targeted_input.jsonl",
+    "health_preflight": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop343_mcp3333_health_preflight.json",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop343_known_alias_seed_post_patch_9daf715f_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop343_known_alias_seed_post_patch_9daf715f_search_nonlight_result_manifest.json",
+    "log": "logs/expert_run_20260703_093839_730466.log",
+    "convergence_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop343_goal_convergence_after_runtime_replay.json",
+    "convergence_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop343_goal_convergence_after_runtime_replay.md"
+  },
+  "runtime_manifest": {
+    "completed_count": 2,
+    "flushed_count": 2,
+    "pending_count": 0,
+    "failed_count": 0,
+    "large_run_complete": true,
+    "partial_flush_gap": false,
+    "ordered_flush_blocked": false,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_count": 1,
+    "vlm_ocr_semantic_review_ready": true,
+    "image_post_count": 1
+  },
+  "rows": [
+    {
+      "post_id": 11703624,
+      "alias": "판초법사",
+      "expected_work": "판초우의의 마법사",
+      "runtime_public_status": "safe_resolved",
+      "runtime_safe_resolved": true,
+      "runtime_official_title": "판초우의의 마법사",
+      "runtime_official_url": "https://novel.munpia.com/530500",
+      "publish_allowed": true,
+      "search_status": "SEARCH_DEGRADED",
+      "decision": "TARGETED_PACKET_SAFE_GAIN_SEARCH_BLIND_CONDITIONAL"
+    },
+    {
+      "post_id": 11705251,
+      "alias": "창월야",
+      "expected_work": "월야환담 창월야",
+      "runtime_public_status": "safe_resolved",
+      "runtime_safe_resolved": true,
+      "runtime_official_title": "월야환담 창월야",
+      "runtime_official_url": null,
+      "publish_allowed": true,
+      "search_status": "SEARCH_DEGRADED",
+      "decision": "TITLE_ONLY_SAFE_RESOLVED_URL_WITHHELD"
+    }
+  ],
+  "convergence": {
+    "gate": "GO",
+    "previous_actionable_queue": 126,
+    "current_actionable_queue": 124,
+    "same_packet": true,
+    "previous_safe_resolved": 0,
+    "current_safe_resolved": 2,
+    "safe_resolved_monotonic_nondecrease": true,
+    "safe_gain_post_ids": [
+      11703624,
+      11705251
+    ],
+    "safe_loss_post_ids": []
+  },
+  "verification": [
+    "Loop343 runtime replay PASS: completed/flushed/pending/failed 2/2/0/0",
+    "tools/evaluate_goal_convergence.py PASS: gate GO for targeted packet stop condition"
+  ],
+  "gates": {
+    "targeted_runtime_completion": "GO",
+    "targeted_packet_convergence": "GO / queue 126 -> 124 / safe_resolved 0 -> 2",
+    "collateral_gate": "NO-GO / residual_action_queue_rows=124",
+    "golden18_full375": "NOT_RERUN_AFTER_PATCH",
+    "search_recovery": "P0 / OPEN / SEARCH_DEGRADED observed",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

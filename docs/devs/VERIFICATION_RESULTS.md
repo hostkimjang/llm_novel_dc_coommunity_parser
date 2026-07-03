@@ -1,5 +1,24 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop343 post-patch verified alias runtime replay
+
+- 범위: Loop342 패치 후 alias seed 2건이 실제 runtime public contract에서 safe_resolved로 flush되는지 확인한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_343_REPORT_20260703.md`
+  - state `docs\devs\loop343_post_patch_alias_runtime_replay_20260703.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop343_known_alias_seed_post_patch_9daf715f_search_nonlight_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop343_known_alias_seed_post_patch_9daf715f_search_nonlight_result_manifest.json`
+  - convergence `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop343_goal_convergence_after_runtime_replay.json`
+- Evidence:
+  - run `20260703_093839_730466`, HEAD `9daf715f`, completed/flushed/pending/failed `2/2/0/0`, search 포함 non-light, VLM/OCR ready.
+  - Loop342 대비 동일 packet `promotion_blocked 2 -> 0`, `safe_resolved 0 -> 2`, safe loss `0`.
+  - `11703624`는 `판초우의의 마법사`, URL `https://novel.munpia.com/530500`으로 safe_resolved다.
+  - `11705251`은 `월야환담 창월야` title-only safe_resolved이고 URL은 `null`로 보류한다.
+- Verification:
+  - Loop343 runtime replay PASS, manifest `2/2/0/0`.
+  - `tools/evaluate_goal_convergence.py` PASS, actionable queue `126 -> 124`, same packet `true`, safe monotonic `true`, gate `GO`.
+- Gate: targeted runtime completion `GO`, targeted packet convergence `GO`, collateral `NO-GO / residual_action_queue_rows=124`, golden18/full375 `NOT_RERUN_AFTER_PATCH`, search recovery `P0 / OPEN / SEARCH_DEGRADED observed`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop342 verified alias title-only publication gate
 
 - 범위: Loop341 alias seed 2건을 search 포함 non-light targeted replay로 확인하고, verified alias가 URL title mismatch 때문에 막힐 때 title-only 공개로 복구하는 계약을 추가한다.

@@ -1,5 +1,38 @@
 # Improvement Register
 
+## IMP-20260703-343 - post-patch verified alias runtime replay
+
+- 상태: targeted packet runtime 수렴 / residual 2건 감소 / approval 미개방
+- Loop: 343
+- 문제:
+  - Loop342는 `11705251` 복구가 postprocess preview였고, actual runtime output에서 flush되는지 확인되지 않았다.
+  - 이전 회차 수 기반 반복이 아니라 actionable queue 감소와 같은 packet safe_resolved 단조성을 증거로 남겨야 했다.
+- 변경:
+  - 코드 변경 없음. 현 HEAD `9daf715f`에서 Loop342 alias seed 2건을 search 포함 non-light로 재실행했다.
+  - `loop343_previous_queue_state.json`, `loop343_current_queue_state.json`를 만들고 `tools/evaluate_goal_convergence.py`로 stop-condition을 평가했다.
+- 근거:
+  - report `docs/devs/loop_reports/LOOP_343_REPORT_20260703.md`
+  - state `docs/devs/loop343_post_patch_alias_runtime_replay_20260703.json`
+  - result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop343_known_alias_seed_post_patch_9daf715f_search_nonlight_result.json`
+  - convergence `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop343_goal_convergence_after_runtime_replay.json`
+- 결과:
+  - same packet `11703624`, `11705251`
+  - `promotion_blocked 2 -> 0`
+  - `safe_resolved 0 -> 2`
+  - actionable queue `126 -> 124`
+  - safe loss `0`
+- 검증:
+  - Loop343 runtime replay PASS, manifest `2/2/0/0`.
+  - convergence evaluator PASS, gate `GO`.
+- Gate:
+  - targeted runtime completion `GO`
+  - targeted packet convergence `GO`
+  - collateral `NO-GO / residual_action_queue_rows=124`
+  - search recovery `P0 / OPEN / SEARCH_DEGRADED observed`
+  - `promotion_blocked=search-blind conditional`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260703-342 - verified alias title-only publication gate
 
 - 상태: targeted runtime 완료 / title-only contract 추가 / approval 미개방

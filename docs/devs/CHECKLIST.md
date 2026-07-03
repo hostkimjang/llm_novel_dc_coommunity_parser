@@ -1,5 +1,25 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop343 post-patch verified alias runtime replay 체크
+
+- [x] 현 HEAD `9daf715f`에서 Loop342 alias seed 2건을 재실행했다.
+  - run `20260703_093839_730466`
+  - manifest completed/flushed/pending/failed `2/2/0/0`
+  - search 포함 non-light, VLM/OCR ready
+- [x] 실제 runtime public contract가 패치 후 상태로 flush되는지 확인했다.
+  - `11703624`: `판초우의의 마법사`, Munpia URL, `safe_resolved`
+  - `11705251`: `월야환담 창월야`, URL `null`, title-only `safe_resolved`
+- [x] stop-condition evaluator를 실행했다.
+  - actionable queue `126 -> 124`
+  - same packet `true`
+  - safe_resolved `0/2 -> 2/2`
+  - safe loss `0`
+  - gate `GO`
+- [x] Loop342의 post-patch runtime replay pending을 닫고 residual 감소를 `124`로 갱신했다.
+- [ ] search degraded 100% 복구 전까지 promotion 완화를 일반화하지 않는다.
+- [ ] golden18/full375/current bounded audit 전까지 full approval 문구를 쓰지 않는다.
+- Gate: targeted packet convergence `GO`, collateral `NO-GO / residual_action_queue_rows=124`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop342 verified alias title-only publication gate 체크
 
 - [x] Loop341 alias seed 2건을 targeted input으로 고정했다.
@@ -23,8 +43,8 @@
   - title-led guard `185` tests PASS
   - promotion/candidate audit bundle `128` tests PASS
   - work-bridge/convergence/flip-rate/always-on bundle `26` tests PASS
-- [ ] post-patch runtime replay 전까지 `11705251` 복구를 residual 감소로 계산하지 않는다.
-- [ ] `11703624`는 blind/source judge 전까지 hard-hold를 완화하지 않는다.
+- [x] Loop343 post-patch runtime replay에서 `11705251` 복구를 실제 runtime output으로 확인했다.
+- [x] Loop343 post-patch runtime replay에서 `11703624`도 official detail anchor 기반 safe_resolved로 확인했다.
 - Gate: targeted runtime completion `GO`, targeted contract preview `PARTIAL_GO`, collateral `NO-GO / residual_action_queue_rows=126`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-03 Loop341 known alias safe-loss contract seed 체크

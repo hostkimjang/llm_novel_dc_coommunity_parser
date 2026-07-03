@@ -2,6 +2,20 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop343 TODO
+
+- 상태 업데이트: Loop342 패치 후 actual runtime replay에서 alias seed 2건이 모두 safe_resolved로 flush됐다. Goal은 `ACTIVE / NOT_COMPLETE`이고 residual actionable queue는 `124`다.
+- Loop343 TODO:
+  - [x] 현 HEAD `9daf715f`에서 post-patch targeted runtime replay를 실행했다.
+  - [x] manifest `2/2/0/0`, search 포함 non-light, VLM/OCR ready를 확인했다.
+  - [x] `11703624`를 `판초우의의 마법사` safe_resolved로 확인했다.
+  - [x] `11705251`을 `월야환담 창월야` title-only safe_resolved로 확인했다.
+  - [x] convergence evaluator에서 queue `126 -> 124`, safe_resolved `0/2 -> 2/2`, safe loss `0`, gate `GO`를 확인했다.
+  - [ ] 다음 회차는 residual `124`에서 새 일반화 가능 묶음 또는 blind/source audit 묶음을 선택한다.
+  - [ ] search degraded 100% 복구 전까지 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [ ] golden18/full375/current bounded audit 전까지 approval 문구를 쓰지 않는다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop342 TODO
 
 - 상태 업데이트: Loop341 alias seed 2건 targeted replay는 완료됐지만 런 당시 public contract는 모두 `promotion_blocked`였고, 패치 후 preview에서 `11705251`만 title-only safe_resolved로 복구된다. Goal은 `ACTIVE / NOT_COMPLETE`.
@@ -11,9 +25,9 @@
   - [x] `11705251` verified alias title-only restore gate를 구현했다.
   - [x] `11703624` generic/adjacent negative contract를 고정했다.
   - [x] py_compile, focused `4`, comment metadata `48`, known abbreviation `38`, title-led guard `185`, promotion/candidate audit `128`, work-bridge/convergence/flip-rate/always-on `26` PASS를 확인했다.
-  - [ ] post-patch runtime replay 전까지 `11705251`을 residual 감소로 계산하지 않는다.
+  - [x] Loop343 post-patch runtime replay에서 `11705251` residual 감소를 확인했다.
   - [ ] search degraded 100% 복구 전까지 `promotion_blocked=search-blind conditional`을 유지한다.
-  - [ ] `11703624`는 blind/source judge로 작품 약칭성이 확정되기 전까지 hard-hold 완화 금지.
+  - [x] Loop343 post-patch runtime replay에서 `11703624`도 official detail anchor 기반 safe_resolved로 확인했다.
   - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-03 regression-safe grounding Loop341 TODO
