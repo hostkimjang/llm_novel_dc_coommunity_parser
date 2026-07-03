@@ -1,5 +1,27 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop349 canonical variant HOLD quarantine
+
+- 범위: Loop348 current residual `122`에서 canonical variant 정책 HOLD 2건(`11663535`, `11706871`)을 code repair queue에서 분리하고 current residual 기준을 `120`으로 갱신한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_349_REPORT_20260703.md`
+  - state `docs\devs\loop349_canonical_variant_quarantine_20260703.json`
+  - queue JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop349_current_residual_action_queue_after_canonical_variant_quarantine.json`
+  - queue Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop349_current_residual_action_queue_after_canonical_variant_quarantine.md`
+- Evidence:
+  - Loop291은 `11663535`, `11706871`을 `HOLD / canonical_variant_before_preferred`로 분리했다.
+  - Loop82-83은 `11663535` final title/url `null`, `promotion_blocked`와 `11706871` final title/url `null`, `promotion_blocked`를 기록했다.
+  - Loop251은 `11663535` `퇴마록` 계열 drift를 `character_title_collision` 근거로 public publish 차단했다.
+- Queue verification:
+  - `split_collateral_action_queue.py --exclude-post-ids 11663535,11706871 --fail-on-validation-issue` PASS.
+  - residual action queue `122 -> 120`.
+  - label counts `REPROCESS=92`, `HOLD=28`.
+  - wrong-work title flip residual `7 -> 5`.
+  - validation issue `0`.
+- Background observation:
+  - safe-loss N5 first manifest `0/0/0/0`, full375 `0/0/0/0`, bounded1200 `1/0/1/0`, golden18 `0/0/0/0`; 모두 approval 근거가 아니다.
+- Gate: canonical variant quarantine `GO_QUEUE_DELTA_NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=120`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop348 current HEAD forced non-light dispatch / variance quarantine
 
 - 범위: 현 HEAD `462ec714`에서 stale safe-loss flip, 2026-06-28 golden GO, full375/bounded 증거를 forced non-light background 런으로 갱신 준비하고, 대형 런 대기 대신 11698880을 variance quarantine으로 분리한다.

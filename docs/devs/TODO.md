@@ -2,6 +2,20 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop349 TODO
+
+- 상태 업데이트: Loop348 current residual `122` 중 `canonical_title_policy_review` HOLD 2건을 canonical variant quarantine으로 분리했다. Residual actionable queue는 `120`이다.
+- Loop349 TODO:
+  - [x] `11663535`, `11706871`의 기존 P0D/source-native 근거를 재확인했다.
+    - `11663535`: Loop82-83/Loop251에서 public title/url `null`, `promotion_blocked`, `publish_allowed=false`
+    - `11706871`: Loop83에서 `파우스트 1` 승격을 final title/url `null`, `promotion_blocked`로 차단
+  - [x] 두 행을 code repair가 아니라 canonical variant policy quarantine으로 분리했다.
+  - [x] queue를 `122 -> 120`으로 재생성하고 validation issue `0`을 확인했다.
+  - [ ] residual `120`에서 다음 active lane은 `repair_safe_loss=73`, `repair_unsafe_promotion=14`, `repair_after_wrong_work=5` 중 search 상태와 독립적으로 줄일 수 있는 묶음부터 진행한다.
+  - [ ] N5/golden18/full375/bounded1200 완료 전 stale flip/golden/full375 근거를 대체하지 않는다.
+  - [ ] search degraded 100% 복구 전까지 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop348 TODO
 
 - 상태 업데이트: 현 HEAD `462ec714`에서 forced non-light N5/full375/bounded1200/golden18을 background로 재발주했다. `11698880`은 safe-loss repair가 아니라 primary/secondary scope variance라서 `variance_quarantine`으로 분리했고 residual actionable queue는 `122`다.
@@ -16,7 +30,7 @@
   - [ ] N5 `15/15` 결과가 생기면 flip-rate를 blind judge expected와 함께 다시 분석한다.
   - [ ] golden18 `18/18` 완료와 expected-answer audit 전 2026-06-28 golden GO를 대체하지 않는다.
   - [ ] full375/bounded1200 completion과 search degraded audit 전 approval 문구를 쓰지 않는다.
-  - [ ] 다음 active lane은 residual `122`에서 native/source triage 또는 `OVERRIDE AUDIT(LLM=False -> final=True)` blind judge로 진행한다.
+  - [x] 다음 active lane은 residual `122`에서 canonical variant HOLD 2건을 격리하는 Loop349로 진행했다.
 
 ## 2026-07-03 regression-safe grounding Loop347 TODO
 

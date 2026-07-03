@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop349 canonical variant HOLD quarantine
+
+- Loop348 current residual `122`에서 `canonical_title_policy_review` HOLD 2건(`11663535`, `11706871`)을 기존 source-native/runtime 근거로 재확인했다.
+- 두 행은 wrong-work code repair가 아니라 `퇴마록`/`퇴마록 : 국내편`, `파우스트`/`파우스트 1` canonical variant 정책 HOLD다.
+- Loop82-83은 두 행의 public title 승격을 `promotion_blocked`로 막았고, Loop251은 `11663535` `퇴마록` 계열 publish drift를 `character_title_collision` 근거로 막았다.
+- 새 queue artifact는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop349_current_residual_action_queue_after_canonical_variant_quarantine.json` 및 `.md`다.
+- Current residual queue는 `122 -> 120`, label counts `REPROCESS=92`, `HOLD=28`, validation issue `0`이다.
+- Report는 `docs/devs/loop_reports/LOOP_349_REPORT_20260703.md`, state는 `docs/devs/loop349_canonical_variant_quarantine_20260703.json`이다.
+- Gate는 canonical variant quarantine `GO_QUEUE_DELTA_NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=120`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop348 current HEAD forced non-light dispatch and variance quarantine
 
 - 현 HEAD `462ec714`에서 safe-loss N5, full375, bounded1200 completed-source, golden18을 forced non-light background로 재발주했다.

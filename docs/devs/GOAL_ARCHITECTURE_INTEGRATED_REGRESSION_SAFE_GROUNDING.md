@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop349 Addendum - canonical variant HOLD quarantine
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop349는 approval 회차가 아니라 Loop348 current residual `122` 중 canonical variant 정책 HOLD 2건을 active code repair queue에서 분리한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_349_REPORT_20260703.md`, state `docs/devs/loop349_canonical_variant_quarantine_20260703.json`, queue `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop349_current_residual_action_queue_after_canonical_variant_quarantine.json`.
+- Row decision: `11663535`는 Loop82-83/Loop251 근거상 public title/url `null`, `promotion_blocked`, `publish_allowed=false`로 유지하고 `퇴마록` 계열 canonical variant quarantine으로 둔다. `11706871`은 Loop83에서 `파우스트 1` 승격이 차단됐으므로 `파우스트`/`파우스트 1` canonical variant quarantine으로 둔다.
+- Queue transition: residual action queue `122 -> 120`, `REPROCESS=92`, `HOLD=28`, wrong-work title flip residual `7 -> 5`, validation issue `0`.
+- Background caveat: Loop348 forced non-light N5/full375/bounded1200/golden18은 계속 running background이며 completion/approval 근거가 아니다.
+- Gate: canonical variant quarantine `GO_QUEUE_DELTA_NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=120`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop347 Addendum - remaining known-alias contract plus VLM stall
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop347은 approval 회차가 아니라 남은 `known_alias_runtime_replay_required=3` 재실행 시도와 code contract 보강 회차다.

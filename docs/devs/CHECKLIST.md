@@ -1,5 +1,26 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop349 canonical variant HOLD quarantine 체크
+
+- [x] Loop348 current residual `122`에서 `canonical_title_policy_review` HOLD 2건을 선정했다.
+  - `11663535`
+  - `11706871`
+- [x] 기존 근거를 재확인했다.
+  - Loop291: 두 행은 wrong-work repair가 아니라 canonical title variant 정책 HOLD
+  - Loop82-83: 두 행 모두 public title 승격 차단, `promotion_blocked`
+  - Loop251: `11663535` `퇴마록` 계열 drift는 `character_title_collision`으로 차단
+- [x] queue artifact를 생성했다.
+  - JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop349_current_residual_action_queue_after_canonical_variant_quarantine.json`
+  - Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop349_current_residual_action_queue_after_canonical_variant_quarantine.md`
+- [x] current residual count를 확인했다.
+  - source residual `122`
+  - excluded rows `2`
+  - current residual `120`
+  - labels `REPROCESS=92`, `HOLD=28`
+  - validation issue `0`
+- [ ] residual `120` 중 다음 code/runtime lane을 선택한다.
+- Gate: canonical variant quarantine `GO_QUEUE_DELTA_NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=120`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop348 current HEAD forced non-light dispatch / variance quarantine 체크
 
 - [x] 현 HEAD `462ec714`에서 stale flip/golden/full375 증거 갱신용 forced non-light 런을 새 prefix로 발주했다.
