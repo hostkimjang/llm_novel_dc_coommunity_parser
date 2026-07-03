@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop355 wrong-work alias contract follow-up
+  - 상태: contract_go_unit_only / runtime_not_run_after_patch / residual_queue_105 / search_recovery_p0_open
+  - 적용: `11698890`, `11700500`, `11705252`를 alias+work-cue+official detail recall 계약으로 보강했다.
+  - 산출물: `docs/devs/loop_reports/LOOP_355_REPORT_20260703.md`, `docs/devs/loop355_wrong_work_alias_contract_20260703.json`.
+  - 완료 기준: Loop350 LLM/VLM stall 원인을 분리한 뒤 post-patch non-light replay로 5행 packet 또는 row-level runtime closure를 확인한다. 그 전까지 residual `105`, approval not open 유지.
+
 - [ ] Loop354 current residual forced action lane follow-up
   - 상태: residual_queue_105 / forced_action_lane_not_approval / search_recovery_p0_open
   - 적용: 대형 forced non-light N5/full375/bounded1200/golden18은 background 감시로 두고 current residual `105`를 action group으로 재정렬했다.

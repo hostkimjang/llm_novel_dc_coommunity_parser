@@ -1,5 +1,12 @@
 # Slang DB Improvement TODO
 
+## 2026-07-03 Loop355 wrong-work alias contract caveat
+
+- [x] `댓천마`, `전1시`, `탐재`는 slang DB write-back이 아니라 `KNOWN_TITLE_ABBREVIATIONS` 기반 work bridge 계약으로만 다뤘다.
+- [x] registry 단독 승격이 아니라 작품 내부 cue + official detail recall 조건을 테스트했다.
+- [ ] post-patch runtime replay 전까지 alias/slang 품질 승인 또는 residual closure로 세지 않는다.
+- Gate: slang DB write-back 아님, contract `GO_UNIT_CONTRACT_ONLY`, runtime closure `NOT_RUN_AFTER_PATCH`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop354 current residual alias/runtime caveat
 
 - [x] current residual action lane에서 alias/runtime 관련 잔여를 다시 확인했다.

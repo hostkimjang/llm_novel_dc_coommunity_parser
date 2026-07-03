@@ -2,6 +2,17 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop355 TODO
+
+- 상태 업데이트: `repair_after_wrong_work=5` 중 `11698890`, `11700500`, `11705252` 3행을 known-title-abbreviation work bridge 계약으로 보강했다. Runtime closure는 아직 없고 residual action queue는 `105` 유지다.
+- Loop355 TODO:
+  - [x] `댓천마 -> 댓글창의 천재 마법사`, `전1시 -> 전지적 1인칭 시점`, `탐재 -> 탐식의 재림`이 registry 단독이 아니라 작품 내부 cue + official detail recall gate를 통과하는 계약을 추가했다.
+  - [x] curated alias work cue에 `장면`, `전개`, `최강자`, `강자라인`을 일반 cue로 추가했다.
+  - [x] 관련 unittest `63`개 PASS를 확인했다.
+  - [ ] Loop350 LLM/VLM stall 원인 분리 전 동일 5행 runtime replay를 무작정 반복하지 않는다.
+  - [ ] post-patch runtime replay 전까지 queue delta, approval, hard-hold 완화를 선언하지 않는다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop354 TODO
 
 - 상태 업데이트: 대형 forced non-light 런은 background 감시로 유지하고, active loop를 current residual `105` action lane으로 강제 전환했다. Approval 회차가 아니다.

@@ -1,0 +1,114 @@
+{
+  "loop": 355,
+  "date": "2026-07-03",
+  "scope": "repair_after_wrong_work known-title-abbreviation contract reinforcement",
+  "workspace_head": "6bf14904",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "summary": {
+    "approval": "NOT_OPEN",
+    "residual_action_queue_rows": 105,
+    "labels": {
+      "REPROCESS": 77,
+      "HOLD": 28
+    },
+    "buckets": {
+      "safe_loss_resolved_to_null": 100,
+      "wrong_work_title_flip": 5
+    },
+    "contract_rows_added": 3,
+    "runtime_rows_closed": 0,
+    "queue_delta": 0,
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  },
+  "rows": [
+    {
+      "post_id": 11698890,
+      "alias": "댓천마",
+      "expected_title": "댓글창의 천재 마법사",
+      "contract": "known_title_abbreviation + internal scene/character cue + official detail recall",
+      "wrong_after_title": "다크판타지 속 데미갓이 되었다"
+    },
+    {
+      "post_id": 11700500,
+      "alias": "전1시",
+      "expected_title": "전지적 1인칭 시점",
+      "contract": "known_title_abbreviation + power-scaling/character cue + official detail recall",
+      "wrong_after_title": "사상 최강의 길드마스터"
+    },
+    {
+      "post_id": 11705252,
+      "alias": "탐재",
+      "expected_title": "탐식의 재림",
+      "contract": "known_title_abbreviation + protagonist cue + official detail recall",
+      "wrong_after_title": "순수한 분노의 결정"
+    }
+  ],
+  "code_changes": [
+    {
+      "path": "src/llm_batch/experts/utils.py",
+      "change": "curated alias work-discussion cue에 장면/전개/최강자/강자라인을 추가했다."
+    },
+    {
+      "path": "tests/test_known_title_abbreviation_support.py",
+      "change": "repair_after_wrong_work 3행을 post_id hardcode 없이 alias+work-cue+official-url recall 계약으로 고정했다."
+    }
+  ],
+  "verification": {
+    "unit_tests": [
+      "python -m unittest tests.test_known_title_abbreviation_support -v",
+      "python -m unittest tests.test_regression_safe_work_bridge_contract tests.test_arbiter_curated_alias_guard -v",
+      "python -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_body_work_review_anchor_allows_deliberate_no_work_recall tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_body_work_review_anchor_blocks_inserted_wrong_title tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_deliberated_character_setting_convergence_reads_final_decision_jury tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_deliberated_character_setting_convergence_bypasses_community_banter_relation_block tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_discuss_genre_anchor_accepts_verified_public_work_detail_lock -v",
+      "python -m unittest tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_known_title_abbreviation_blocks_neighbor_url_replacement tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_known_abbreviation_direct_promotion_respects_semantic_seed_no_work -v"
+    ],
+    "test_count": 63,
+    "result": "PASS"
+  },
+  "background_runs": {
+    "safe_loss_n5": {
+      "pid": 137688,
+      "status": "alive",
+      "gate": "RUNNING_BACKGROUND / NOT_ANALYZED_FULL_N5"
+    },
+    "full375": {
+      "pid": 16352,
+      "status": "alive",
+      "latest_observed_result_rows": 5,
+      "large_run_complete": false,
+      "gate": "IN_PROGRESS_OR_PARTIAL / NOT_APPROVAL"
+    },
+    "bounded1200_completed_source": {
+      "pid": 40088,
+      "status": "alive",
+      "latest_observed_completed_rows": 9,
+      "latest_observed_result_rows": 7,
+      "large_run_complete": false,
+      "gate": "IN_PROGRESS_OR_PARTIAL / NOT_APPROVAL"
+    },
+    "golden18": {
+      "pid": 138056,
+      "status": "alive",
+      "latest_observed_result_rows": 2,
+      "large_run_complete": false,
+      "gate": "APPROVAL_NOT_OPEN"
+    }
+  },
+  "gates": {
+    "contract": "GO_UNIT_CONTRACT_ONLY",
+    "runtime_closure": "NOT_RUN_AFTER_PATCH",
+    "queue_delta": "NO_DELTA",
+    "collateral": "NO-GO / residual_action_queue_rows=105",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next_actions": [
+    "repair_after_wrong_work=5는 runtime replay 재시도 전 LLM/VLM stall root cause를 분리한다.",
+    "11666713/11716448은 기존 계약과 새 계약 범위를 합산해 5행 packet replay 설계를 갱신한다.",
+    "N5 15/15, golden18 18/18, full375/bounded completion 전 approval 또는 hard-hold 완화 문구를 쓰지 않는다."
+  ]
+}

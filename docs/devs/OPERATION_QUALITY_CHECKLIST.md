@@ -6,6 +6,19 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-03 Loop355 wrong-work alias contract quality gate
+
+- 근거:
+  - [x] `11698890`, `11700500`, `11705252`의 known-title-abbreviation work bridge 계약을 추가했다.
+  - [x] 관련 unittest `63`개 PASS를 확인했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_355_REPORT_20260703.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop355_wrong_work_alias_contract_20260703.json`.
+- 품질 게이트:
+  - [x] registry-only positive promotion으로 기록하지 않는다.
+  - [x] runtime replay 전 residual closure를 선언하지 않는다.
+  - [x] search recovery 전 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-03 Loop354 current residual forced action lane quality gate
 
 - 근거:

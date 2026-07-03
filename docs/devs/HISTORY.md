@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop355 wrong-work alias contract reinforcement
+
+- `repair_after_wrong_work=5` 중 `11698890`, `11700500`, `11705252` 3행을 shared known-title-abbreviation work bridge 계약으로 보강했다.
+- `src/llm_batch/experts/utils.py`의 curated alias work cue에 `장면`, `전개`, `최강자`, `강자라인`을 추가했다. 이는 alias가 글 안에 있고 작품 논의 신호가 있을 때만 쓰는 일반 cue이며 post_id hardcode가 아니다.
+- `tests/test_known_title_abbreviation_support.py`에 `댓천마`, `전1시`, `탐재`가 각각 `댓글창의 천재 마법사`, `전지적 1인칭 시점`, `탐식의 재림`으로 official detail recall을 통과하는 계약을 추가했다.
+- 검증은 related unittest `63`개 PASS다.
+- Runtime replay는 아직 재시도하지 않았으므로 residual action queue는 `105`, queue delta `0`이다.
+- Report는 `docs/devs/loop_reports/LOOP_355_REPORT_20260703.md`, state는 `docs/devs/loop355_wrong_work_alias_contract_20260703.json`이다.
+- Gate는 contract `GO_UNIT_CONTRACT_ONLY`, runtime closure `NOT_RUN_AFTER_PATCH`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop354 current residual forced action lane
 
 - 대형 forced non-light N5/full375/bounded1200/golden18 런은 계속 background 감시로 두고, active loop를 current residual `105` action lane으로 강제 전환했다.

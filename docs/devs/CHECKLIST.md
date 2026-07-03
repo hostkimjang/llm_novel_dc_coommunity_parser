@@ -1,5 +1,21 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop355 wrong-work alias contract 체크
+
+- [x] `repair_after_wrong_work=5` 중 빈 계약면 3건을 확인했다.
+  - `11698890` / `댓천마` / `댓글창의 천재 마법사`
+  - `11700500` / `전1시` / `전지적 1인칭 시점`
+  - `11705252` / `탐재` / `탐식의 재림`
+- [x] production code는 post_id/title hardcode가 아니라 curated alias work-discussion cue만 보강했다.
+  - `장면`
+  - `전개`
+  - `최강자`
+  - `강자라인`
+- [x] 새 계약 테스트가 `known_title_abbreviation_official_detail_anchor`와 `confirmed_alias:*` flag를 확인한다.
+- [x] 관련 unittest `63`개 PASS를 확인했다.
+- [ ] post-patch runtime replay 전까지 residual `105`를 줄였다고 기록하지 않는다.
+- Gate: contract `GO_UNIT_CONTRACT_ONLY`, runtime closure `NOT_RUN_AFTER_PATCH`, queue delta `NO_DELTA`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop354 current residual forced action lane 체크
 
 - [x] Loop353 residual `105`를 입력으로 action lane을 재생성했다.

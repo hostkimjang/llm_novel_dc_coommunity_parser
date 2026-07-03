@@ -1,5 +1,28 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop355 wrong-work alias contract reinforcement
+
+- 범위: `repair_after_wrong_work=5` 중 `11698890`, `11700500`, `11705252`의 known-title-abbreviation work bridge 계약을 보강한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_355_REPORT_20260703.md`
+  - state `docs\devs\loop355_wrong_work_alias_contract_20260703.json`
+  - code `src\llm_batch\experts\utils.py`
+  - tests `tests\test_known_title_abbreviation_support.py`
+- Contract evidence:
+  - `11698890`: `댓천마` + `한별/더블오/데미갓/장면` cue가 `댓글창의 천재 마법사` official detail recall을 통과한다.
+  - `11700500`: `전1시` + `셰이/지선/최강자라인` cue가 `전지적 1인칭 시점` official detail recall을 통과한다.
+  - `11705252`: `탐재` + `주인공 설지후` cue가 `탐식의 재림` official detail recall을 통과한다.
+- Verification commands:
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_known_title_abbreviation_support -v` PASS (`30` tests).
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_regression_safe_work_bridge_contract tests.test_arbiter_curated_alias_guard -v` PASS (`26` tests).
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard... -v` PASS (`5` selected tests).
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework... -v` PASS (`2` selected tests).
+- Queue verification:
+  - residual action queue remains `105`.
+  - runtime closure `0`.
+  - queue delta `0`.
+- Gate: contract `GO_UNIT_CONTRACT_ONLY`, runtime closure `NOT_RUN_AFTER_PATCH`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop354 current residual forced action lane
 
 - 범위: Loop353 residual `105`를 다시 action group으로 정렬하고, 대형 런 감시는 background로 유지한다.

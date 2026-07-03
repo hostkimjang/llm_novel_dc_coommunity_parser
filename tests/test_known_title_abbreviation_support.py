@@ -845,6 +845,143 @@ class KnownTitleAbbreviationSupportTest(unittest.TestCase):
         finally:
             agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = original_registry
 
+    def test_known_title_abbreviation_recall_covers_wrong_work_flip_repairs(self):
+        pipeline = _build_pipeline()
+        original_registry = agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS
+        rows = [
+            {
+                "post_id": 11698890,
+                "alias": "댓천마",
+                "title": "댓글창의 천재 마법사",
+                "url": "https://novelpia.com/novel/370230",
+                "post_title": "댓천마 왜 얼공 안하냐",
+                "body": [
+                    "단상 위에 발판 밟고 올라가서 에헴 하니 기자들이 아니 저 어린애는 뭐지? 한국은 장난하는 건가?",
+                    "갑자기 모래사장에서 고래 부술만큼 존나 큰 손 나와서 땅 찍고 주목. 이라고 읊조림과 동시에 더블오인 거 밝히고",
+                    "그거듣고 데미갓 개빡쳐서 날아왔다가 한별이 얼굴보고 카디언 킴 찾는 장면",
+                ],
+                "characters": ["한별", "더블오", "데미갓"],
+            },
+            {
+                "post_id": 11700500,
+                "alias": "전1시",
+                "title": "전지적 1인칭 시점",
+                "url": "https://novelpia.com/novel/49942",
+                "post_title": "전1시 지잔든 지선이 최강자라인 바로 밑이라더니",
+                "body": [
+                    "성검대 최강도 개같이 썰어버릴정도구나",
+                    "근데 개좆밥시절 셰이가 뭘 할수 있죠?",
+                ],
+                "characters": ["셰이", "지선"],
+            },
+            {
+                "post_id": 11705252,
+                "alias": "탐재",
+                "title": "탐식의 재림",
+                "url": "https://page.kakao.com/content/50219568",
+                "post_title": "ㄹㅇ존나 순수한 질문",
+                "body": [
+                    "(대충 탐재 주인공 설지후의 쓰레기력에 감탄하는 댓글들)",
+                    "그 아래에 상황을 잘 모르는 순수한 개장빙이가 댓글을 다는데",
+                ],
+                "characters": ["설지후"],
+            },
+        ]
+        registry = {row["alias"]: row["title"] for row in rows}
+
+        def recover(_ctx, *, title, **_kwargs):
+            for row in rows:
+                if row["title"] == title:
+                    return row["url"]
+            return None
+
+        try:
+            agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = registry
+            with patch.object(
+                pipeline,
+                "_recover_corrected_title_official_url",
+                side_effect=recover,
+            ) as recover_mock:
+                for row in rows:
+                    with self.subTest(post_id=row["post_id"]):
+                        ctx = ConversationContext(
+                            post_id=row["post_id"],
+                            post_data={
+                                "post_id": row["post_id"],
+                                "title": row["post_title"],
+                                "normalized_title": row["post_title"],
+                                "content_blocks": [
+                                    {"type": "text", "text": text} for text in row["body"]
+                                ],
+                            },
+                            comments=[],
+                        )
+                        ctx.set_expert_output(
+                            ExpertType.GATEKEEPER,
+                            {
+                                "post_type": "work_discussion",
+                                "detected_entities": {
+                                    "possible_titles": [row["alias"]],
+                                    "possible_characters": row["characters"],
+                                },
+                                "context_clues": {},
+                            },
+                        )
+                        ctx.set_expert_output(
+                            ExpertType.DISCOURSE,
+                            {
+                                "discourse_analysis": {
+                                    "primary_domain": "novel_literature",
+                                    "intent": "discuss_work",
+                                    "semantic_seed_review": {"is_specific_work_discussion": True},
+                                }
+                            },
+                        )
+
+                        self.assertTrue(
+                            pipeline._has_curated_alias_contextual_work_anchor(ctx, row["title"])
+                        )
+                        self.assertTrue(
+                            pipeline._known_title_abbreviation_context_locks_title(ctx, row["title"])
+                        )
+
+                        recovered_identity, recovered_candidates, primary_work, promotion = (
+                            pipeline._apply_official_url_recall_promotion(
+                                ctx=ctx,
+                                extended_identity={
+                                    "is_relevant": True,
+                                    "work_resolution": "unresolved",
+                                    "title_resolution_state": "unresolved_matchable",
+                                    "discussion_type": "general",
+                                    "consistency_flags": [],
+                                },
+                                title_candidates=[],
+                                primary_work=None,
+                                verification_result={"is_relevant": True, "novel_identity": {}},
+                                final_decision={"discussion_type": "character_talk"},
+                            )
+                        )
+
+                        self.assertIsNotNone(promotion)
+                        self.assertEqual(recovered_identity["official_title"], row["title"])
+                        self.assertEqual(recovered_identity["heretic_url"], row["url"])
+                        self.assertEqual(recovered_identity["work_resolution"], "resolved")
+                        self.assertIsNotNone(primary_work)
+                        self.assertEqual(primary_work.official_title, row["title"])
+                        self.assertEqual(recovered_candidates[0].alias_or_mention, row["alias"])
+                        self.assertIn(
+                            "known_title_abbreviation_official_detail_anchor",
+                            recovered_identity["consistency_flags"],
+                        )
+                        self.assertIn(
+                            f"confirmed_alias:{row['alias']}",
+                            recovered_identity["consistency_flags"],
+                        )
+            recovered_titles = [call.kwargs["title"] for call in recover_mock.call_args_list]
+            self.assertEqual(recovered_titles, [row["title"] for row in rows])
+        finally:
+            agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = original_registry
+
     def test_low_specific_gate_preserves_known_title_abbreviation(self):
         orchestrator = Orchestrator(experts={}, search_fn=None, fetch_fn=None)
         ctx = ConversationContext(

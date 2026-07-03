@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop355 Addendum - wrong-work alias contract reinforcement
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop355는 approval 회차가 아니라 `repair_after_wrong_work=5` 중 `11698890`, `11700500`, `11705252` 3행의 known-title-abbreviation work bridge 계약을 보강한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_355_REPORT_20260703.md`, state `docs/devs/loop355_wrong_work_alias_contract_20260703.json`, code `src/llm_batch/experts/utils.py`, tests `tests/test_known_title_abbreviation_support.py`.
+- Contract: `댓천마`, `전1시`, `탐재`는 registry 단독 publish 권한이 아니라 글 안의 작품 내부 cue와 official detail recall이 함께 있을 때만 승격된다.
+- Verification: related unittest `63`개 PASS.
+- Queue: residual action queue `105`, queue delta `0`, runtime closure `0`.
+- Gate: contract `GO_UNIT_CONTRACT_ONLY`, runtime closure `NOT_RUN_AFTER_PATCH`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop354 Addendum - current residual forced action lane
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop354는 approval 회차가 아니라 대형 forced non-light 런을 background 감시로 유지하고 active loop를 current residual `105` action lane으로 강제 전환한 회차다.
