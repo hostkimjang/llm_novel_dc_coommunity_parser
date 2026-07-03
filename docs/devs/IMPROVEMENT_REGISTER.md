@@ -1,5 +1,22 @@
 # Improvement Register
 
+## IMP-20260703-373 - current HEAD golden18 runtime stall and OVERRIDE AUDIT
+
+| Item | Status | Evidence | Next action |
+| --- | --- | --- | --- |
+| New large runs | Frozen | No full375/bounded/N5 dispatch this loop | Keep frozen |
+| Golden18 runtime proof | NO-GO / 13 of 18 | run `20260703_231311_880368`, manifest `18/13/12/1/0` | Do not replay same failed run; fix stall contract first |
+| Frontier stall | OPEN | `11700470`, `ordered_flush_gap_in_progress`, last event `Arbiter 최종 판정 시작`, whitespace stream | Diagnose arbiter/stream whitespace stall |
+| Publication contract | GO | convergence `GO`, violations `0` | Preserve while fixing runtime stall |
+| Expected-answer | NO-GO / partial 10 of 18 | missing_after_row `6`, wrong/unexpected titles remain | Use only as partial evidence |
+| OVERRIDE AUDIT 11708445 | GO_ROW_CONTRACT_ONLY | `ACCEPT / candidate_only_block_is_correct`, public identity null | Keep closed; do not defer again |
+| Collateral reporting | Split axis | `reclassified 74 / runtime-verified 4` | Avoid queue-count progress claims |
+| Survey anchor | Rebased | `136 errors / wrong_work 27 / recall_miss 49` | Use survey post_id anchors for triage |
+| R1 cue list | Forbidden | No hardcoded cue expansion this loop | Converge via general predicates |
+| Documentation sync | Done | Loop373 report/state plus TODO/CHECKLIST/VERIFICATION/HISTORY updated | Next loop must reduce stall or semantic blocker |
+
+Gate: new large runs `FROZEN`, golden18 runtime proof `NO-GO / 13 of 18`, same failed run replay `STOPPED`, override audit `GO_ROW_CONTRACT_ONLY`, expected-answer `NO-GO / partial 10 of 18`, full375 collateral `NOT_OPEN`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260703-372 - 11663521 title-only URL support and audit manifest paths
 
 | Item | Status | Evidence | Next action |

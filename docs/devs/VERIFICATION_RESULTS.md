@@ -1,5 +1,41 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop373 current HEAD golden18 runtime stall
+
+- 범위: current HEAD `e523989f`에서 신규 대형 런 없이 golden18 단일 런으로 runtime row 생산성을 검증하고, runtime이 필요 없는 `11708445` OVERRIDE AUDIT를 source-native로 강제 고정한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_373_REPORT_20260703.md`
+  - state `docs\devs\loop373_golden18_runtime_stall_20260703.json`
+  - result JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop373_golden18_current_head_e523989f_runtime_proof_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop373_golden18_current_head_e523989f_runtime_proof_result_manifest.json`
+  - checkpoint `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop373_golden18_current_head_e523989f_runtime_proof_result_checkpoint.jsonl`
+  - pending snapshot `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop373_golden18_current_head_e523989f_runtime_proof_result_pending_snapshot.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop373_golden18_runtime_stall_health_audit.json`
+  - expected audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop373_golden18_current_head_e523989f_runtime_proof_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop373_golden18_current_head_e523989f_partial_collateral.json`
+  - override audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop373_override_audit_11708445_current_blind_source_native.json`
+- Runtime evidence:
+  - run `20260703_231311_880368`
+  - input/completed/flushed/pending/failed `18/13/12/1/0`
+  - result/checkpoint rows `12/13`
+  - `large_run_complete=false`, `ordered_flush_blocked=true`, `partial_flush_gap=true`
+  - frontier `11700470`, last traced event `Arbiter 최종 판정 시작`
+  - 공백 stream 지속 후 수동 중단했으며 동일 run replay는 중단한다.
+- Health evidence:
+  - flush integrity `IN_PROGRESS / ordered_flush_gap_in_progress`
+  - publication contract convergence `GO`, violations `0`
+  - search evidence `GO`, blocker `manifest_light_health_only`
+- Semantic evidence:
+  - expected-answer partial audit `NO-GO / 10 of 18`
+  - `11663521` remains wrong publish `성기사는 버생을 산다`
+  - `11668307` unexpected resolved title `빚을 져서라도 세상은 구해야 할 거 아니야 [독점]`
+  - `11700470` and later rows are missing_after_row because the run did not complete.
+  - `11694019` preserved expected-work evidence but final public title is still `null`; this is unresolved preservation, not expected-title resolution.
+- Override audit:
+  - `11708445` verdict `ACCEPT / candidate_only_block_is_correct`
+  - public identity `official_title=null`, `official_url=null`, `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`
+- Gate: new large runs `FROZEN`, golden18 runtime proof `NO-GO / 13 of 18`, same failed run replay `STOPPED`, override audit `GO_ROW_CONTRACT_ONLY`, expected-answer `NO-GO / partial 10 of 18`, full375 collateral `NOT_OPEN`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop372 11663521 title-only URL support
 
 - 범위: Loop371 실패 `11663521` 단건으로 URL 없는 title-only official-detail 후보가 public publish를 복구하는 경로를 차단한다. 신규 full375/bounded/N5 대형 런은 발주하지 않는다.

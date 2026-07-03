@@ -1,0 +1,39 @@
+{
+  "loop": 373,
+  "date": "2026-07-03",
+  "head": "e523989f",
+  "scope": "11708445 OVERRIDE AUDIT forced current-loop blind/source-native verification",
+  "target_post_id": 11708445,
+  "target_title": "퉁구스1캇햄 작품 하나도 안 봤는데",
+  "execution_mode": "runtime_not_required_source_native_audit",
+  "artifacts": {
+    "review_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop373_override_audit_11708445_current_blind_source_native.json",
+    "review_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop373_override_audit_11708445_current_blind_source_native.md",
+    "source_result_json": "out/expert_result_20260702_065632_479765.json",
+    "prior_loop319_review_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop319_override_audit_11708445_review.json"
+  },
+  "verdict": {
+    "label": "ACCEPT",
+    "source_native_verdict": "candidate_only_block_is_correct",
+    "evidence_grade": "Medium",
+    "rationale_ko": "본문 중심은 작품 감상이 아니라 작가/닉네임성 대상 메타 품평이다. 댓글의 `제냥꾼`은 후보 보존 대상이지만 public title로 승격할 근거는 부족하다."
+  },
+  "observed_public_identity": {
+    "official_title": null,
+    "official_url": null,
+    "candidate_ledger_status": "promotion_blocked",
+    "safe_resolved": false,
+    "publish_allowed": false,
+    "bypassed_gate": false
+  },
+  "gates": {
+    "override_audit": "GO_ROW_CONTRACT_ONLY",
+    "runtime_required": false,
+    "large_runs": "FROZEN",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

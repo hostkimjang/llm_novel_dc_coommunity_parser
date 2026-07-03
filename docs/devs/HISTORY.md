@@ -1,5 +1,17 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop373 current HEAD golden18 runtime stall and OVERRIDE AUDIT
+
+- 신규 full375/bounded/N5 대형 런은 발주하지 않았고, current HEAD `e523989f`에서 golden18 단일 런만 실행했다.
+- Run `20260703_231311_880368`은 input/completed/flushed/pending/failed `18/13/12/1/0`, result rows `12`, checkpoint completed rows `13`, `large_run_complete=false`로 끝났다.
+- Frontier는 `11700470`이며 worker trace는 `Arbiter 최종 판정 시작` 이후 의미 있는 완료 산출물로 수렴하지 못했다. 공백 stream이 지속되어 프로세스를 수동 중단했다.
+- Health audit는 `flush_integrity=IN_PROGRESS / ordered_flush_gap_in_progress`, publication contract convergence `GO`, violations `0`, search evidence `GO / manifest_light_health_only`를 기록했다.
+- Expected-answer partial audit는 `NO-GO / 10 of 18`이다. `11663521`은 여전히 wrong publish이고, `11700470` 이후 6행은 missing_after_row다.
+- `11708445` OVERRIDE AUDIT는 이번 loop에서 source-native로 다시 실행했고 `ACCEPT / candidate_only_block_is_correct`로 고정했다. Public identity는 `official_title=null`, `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`다.
+- collateral 105는 `reclassified 74 / runtime-verified 4` 축으로 분리 유지했고, survey anchor는 `136 errors / wrong_work 27 / recall_miss 49`로 유지했다.
+- Report는 `docs/devs/loop_reports/LOOP_373_REPORT_20260703.md`, state는 `docs/devs/loop373_golden18_runtime_stall_20260703.json`, health audit는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop373_golden18_runtime_stall_health_audit.json`이다.
+- Gate는 new large runs `FROZEN`, golden18 runtime proof `NO-GO / 13 of 18`, same failed run replay `STOPPED`, override audit `GO_ROW_CONTRACT_ONLY`, expected-answer `NO-GO / partial 10 of 18`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop372 11663521 title-only URL support
 
 - 신규 full375/bounded/N5 대형 런은 발주하지 않았고, Loop371 실패 `11663521` 단건만 실행했다.

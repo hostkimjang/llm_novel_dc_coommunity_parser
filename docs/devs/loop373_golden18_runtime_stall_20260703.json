@@ -1,0 +1,90 @@
+{
+  "loop": 373,
+  "date": "2026-07-03",
+  "head": "e523989f",
+  "scope": "current HEAD golden18 runtime proof attempt plus forced 11708445 OVERRIDE AUDIT",
+  "large_runs": "FROZEN",
+  "same_failed_run_replay": "STOPPED",
+  "run": {
+    "run_id": "20260703_231311_880368",
+    "input_count": 18,
+    "completed_count": 13,
+    "flushed_count": 12,
+    "pending_count": 1,
+    "failed_count": 0,
+    "result_rows": 12,
+    "checkpoint_completed_rows": 13,
+    "large_run_complete": false,
+    "ordered_flush_blocked": true,
+    "partial_flush_gap": true,
+    "frontier_post_id": 11700470,
+    "frontier_title": "어케 주인공 죄목이",
+    "intervention": "manual_stop_after_whitespace_stream_stall"
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_373_REPORT_20260703.md",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop373_golden18_current_head_e523989f_runtime_proof_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop373_golden18_current_head_e523989f_runtime_proof_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop373_golden18_current_head_e523989f_runtime_proof_result_checkpoint.jsonl",
+    "pending_snapshot": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop373_golden18_current_head_e523989f_runtime_proof_result_pending_snapshot.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop373_golden18_runtime_stall_health_audit.json",
+    "expected_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop373_golden18_current_head_e523989f_runtime_proof_audit.json",
+    "expected_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop373_golden18_current_head_e523989f_runtime_proof_audit.md",
+    "collateral_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop373_golden18_current_head_e523989f_partial_collateral.json",
+    "collateral_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop373_golden18_current_head_e523989f_partial_collateral.md",
+    "override_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop373_override_audit_11708445_current_blind_source_native.json",
+    "override_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop373_override_audit_11708445_current_blind_source_native.md"
+  },
+  "health_audit": {
+    "flush_integrity_gate": "IN_PROGRESS",
+    "flush_integrity_classification": "ordered_flush_gap_in_progress",
+    "frontier_worker_trace": "in_progress_in_worker_log",
+    "frontier_observed_elapsed_seconds": 216.546,
+    "search_evidence_gate": "GO",
+    "search_blockers": [
+      "manifest_light_health_only"
+    ],
+    "publication_contract_convergence": "GO",
+    "publication_contract_violation_count": 0
+  },
+  "expected_answer_audit": {
+    "canary_semantic_gate": "NO-GO",
+    "passed_count": 10,
+    "failed_count": 8,
+    "status_counts": {
+      "expected_null_respected": 6,
+      "expected_title_resolved": 2,
+      "wrong_or_unexpected_title": 1,
+      "unexpected_resolved_title": 1,
+      "expected_hypothesis_resolved_by_direct_image": 1,
+      "expected_work_evidence_preserved_unresolved": 1,
+      "missing_after_row": 6
+    }
+  },
+  "override_audit_11708445": {
+    "verdict": "ACCEPT / candidate_only_block_is_correct",
+    "official_title": null,
+    "official_url": null,
+    "candidate_ledger_status": "promotion_blocked",
+    "safe_resolved": false,
+    "publish_allowed": false
+  },
+  "collateral_reporting": {
+    "collateral105_axis": "reclassified 74 / runtime-verified 4",
+    "survey_anchor": "136 errors / wrong_work 27 / recall_miss 49",
+    "r1_hardcoded_cue_expansion": "FORBIDDEN"
+  },
+  "gate": {
+    "new_large_runs": "FROZEN",
+    "golden18_runtime_proof": "NO-GO / 13 of 18",
+    "same_failed_run_replay": "STOPPED",
+    "override_audit": "GO_ROW_CONTRACT_ONLY",
+    "expected_answer": "NO-GO / partial 10 of 18",
+    "full375_collateral": "NOT_OPEN",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

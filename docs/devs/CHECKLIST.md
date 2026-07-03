@@ -1,5 +1,37 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop373 current HEAD golden18 runtime stall 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] current HEAD `e523989f`에서 golden18 단일 런만 실행했다.
+  - run `20260703_231311_880368`
+  - input/completed/flushed/pending/failed `18/13/12/1/0`
+  - result/checkpoint rows `12/13`
+  - `large_run_complete=false`
+- [x] 런이 `18/18`로 완주하지 못했음을 확인하고 같은 failed run 재발주를 중단했다.
+- [x] frontier blocker를 확인했다.
+  - `global_idx=13`
+  - `post_id=11700470`
+  - title `어케 주인공 죄목이`
+  - worker trace last event `Arbiter 최종 판정 시작`
+  - 이후 공백 stream이 지속되어 수동 중단
+- [x] health audit를 생성했다.
+  - `flush_integrity=IN_PROGRESS / ordered_flush_gap_in_progress`
+  - publication contract convergence `GO`, violations `0`
+  - search evidence `GO`, blocker `manifest_light_health_only`
+- [x] expected-answer partial audit를 생성했다.
+  - canary semantic gate `NO-GO`
+  - pass/fail `10/18`
+  - missing_after_row `6`
+- [x] `11708445` OVERRIDE AUDIT를 이번 loop에서 source-native로 다시 실행해 산출물로 고정했다.
+  - verdict `ACCEPT / candidate_only_block_is_correct`
+  - public identity `null`, `promotion_blocked`, `safe_resolved=false`
+- [x] collateral 105를 큐 단일 회계가 아니라 `reclassified 74 / runtime-verified 4` 축으로 분리 유지했다.
+- [x] survey anchor는 `136 errors / wrong_work 27 / recall_miss 49`로 유지했다.
+- [ ] golden18 `18/18` proof가 없으므로 이 결과를 runtime approval, semantic approval, hard-hold 완화 근거로 쓰지 않는다.
+- [ ] 같은 failed run 반복 대신 공백 stream/arbiter stall 원인을 코드 또는 런타임 계약으로 먼저 줄인다.
+- Gate: new large runs `FROZEN`, golden18 runtime proof `NO-GO / 13 of 18`, same failed run replay `STOPPED`, override audit `GO_ROW_CONTRACT_ONLY`, expected-answer `NO-GO / partial 10 of 18`, collateral compare `NO-GO / partial shared 12`, full375 collateral `NOT_OPEN`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop372 11663521 title-only URL support 체크
 
 - [x] 신규 full375/bounded/N5 대형 런 발주를 계속 동결했다.

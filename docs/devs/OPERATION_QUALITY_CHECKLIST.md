@@ -6,6 +6,26 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-03 Loop373 current HEAD golden18 stall quality gate
+
+- 근거:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았음을 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_373_REPORT_20260703.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop373_golden18_runtime_stall_20260703.json`.
+  - [x] Runtime partial manifest `18/13/12/1/0`과 `large_run_complete=false`를 기록했다.
+  - [x] Health audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop373_golden18_runtime_stall_health_audit.json`.
+  - [x] Expected-answer/collateral Markdown을 한국어로 정리했다.
+  - [x] `11708445` OVERRIDE AUDIT 신규 산출물 기록 완료.
+- 품질 게이트:
+  - [x] `13/18` partial production과 `18/18` proof를 분리한다.
+  - [x] frontier `11700470` stall을 semantic approval로 해석하지 않는다.
+  - [x] 같은 failed run 재발주를 중단한다.
+  - [x] collateral 105는 `reclassified 74 / runtime-verified 4` 축으로 분리한다.
+  - [x] survey anchor `136 errors / wrong_work 27 / recall_miss 49`를 유지한다.
+  - [x] R1 하드코딩 cue 리스트 확장을 하지 않는다.
+  - [x] search recovery 전 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-03 Loop372 11663521 title-only URL support quality gate
 
 - 근거:

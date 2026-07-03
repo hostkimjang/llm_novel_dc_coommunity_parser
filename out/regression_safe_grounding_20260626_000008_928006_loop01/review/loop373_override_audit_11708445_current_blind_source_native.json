@@ -1,0 +1,89 @@
+{
+  "report_type": "override_audit_blind_source_native_review",
+  "loop": 373,
+  "date": "2026-07-03",
+  "current_head": "e523989f",
+  "scope": "OVERRIDE AUDIT LLM=False->final=True released-row current-loop blind/source-native verification",
+  "target_post_id": 11708445,
+  "target_title": "퉁구스1캇햄 작품 하나도 안 봤는데",
+  "execution_mode": "runtime_not_required_source_native_audit",
+  "source_artifacts": {
+    "prior_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop319_override_audit_11708445_review.json",
+    "prior_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop319_override_audit_11708445_review.md",
+    "source_result_json": "out/expert_result_20260702_065632_479765.json",
+    "source_checkpoint": "out/expert_result_20260702_065632_479765_checkpoint.jsonl",
+    "source_manifest": "out/expert_result_20260702_065632_479765_manifest.json",
+    "source_worker_log": "logs/expert_run_20260702_065642_030743_W24.log"
+  },
+  "input_source": {
+    "title": "퉁구스1캇햄 작품 하나도 안 봤는데",
+    "content": [
+      "념글 ㄹㅇ 대호감인데?",
+      "직업에 자부심을 가지고 떳떳한 인생을 살아왔다는 게 글에서 보이네",
+      "이런 게 진짜 씹상남자지(penis아님)",
+      "어디 쥐새끼마냥 '이근 븝즉으르 은 글르그든여?'",
+      "이런 애랑은 걍 차원이 다르네 ㅇㅇ;"
+    ],
+    "comments": [
+      "제냥꾼 함 무바라 호불호 갈리긴하는데 취향 맞으면 그만한게 없다",
+      "ㅇㅋㅇㅋ ㅋㅋ"
+    ]
+  },
+  "observed_public_identity": {
+    "official_title": null,
+    "official_url": null,
+    "is_relevant": false,
+    "is_novel_related": true,
+    "is_resolved_work_discussion": false,
+    "discussion_type": "author_talk",
+    "topicality": "adjacent_relevant",
+    "title_resolution_state": "author_new_work_context",
+    "candidate_ledger_status": "promotion_blocked",
+    "safe_resolved": false,
+    "consistency_flags": [
+      "forced_adjacent_author_meta_context",
+      "notes_demoted_for_unresolved",
+      "batch_memory_alias_rescue_blocked_by_author_meta",
+      "llm_only_sentence_candidate_pruned"
+    ]
+  },
+  "candidate_preservation": {
+    "candidate_title": "제냥꾼",
+    "candidate_source_tier": "llm_only",
+    "candidate_role": "mentioned",
+    "candidate_ledger_status": "promotion_blocked",
+    "publish_allowed": false,
+    "bypassed_gate": false,
+    "reason_codes": [
+      "llm_only_sentence_candidate_pruned",
+      "serialized_public_identity_scrubbed"
+    ]
+  },
+  "blind_verdict": {
+    "label": "ACCEPT",
+    "source_native_verdict": "candidate_only_block_is_correct",
+    "evidence_grade": "Medium",
+    "rationale_ko": "원문 중심은 특정 작품의 줄거리, 캐릭터, 회차, 설정 감상이 아니라 작가/닉네임성 대상에 대한 메타 품평이다. 댓글의 `제냥꾼`은 추천성 부차 참조로 후보 보존은 가능하지만, 단일 공식 작품 제목으로 public publish할 근거는 부족하다. 따라서 final public identity를 null로 scrub하고 `candidate_only / promotion_blocked`에 둔 처리는 정당하다.",
+    "actions": [
+      "no_code_change_required_for_11708445",
+      "keep_candidate_only_public_identity_null",
+      "do_not_count_as_safe_resolved",
+      "do_not_treat_LLM_false_final_true_as_public_publish",
+      "search_degraded_followup_required_before_approval"
+    ]
+  },
+  "forced_execution_note": "이번 loop에서 원문과 result row를 다시 읽어 blind/source-native 판정을 새 산출물로 고정했다. runtime replay가 필요 없는 OVERRIDE AUDIT lane이며, Loop319 재언급만으로 이연 처리하지 않는다.",
+  "gates": {
+    "override_audit": "GO_ROW_CONTRACT_ONLY",
+    "runtime_required": false,
+    "large_runs": "FROZEN",
+    "queue_accounting": "STOPPED_AS_PRIMARY_PROGRESS_METRIC",
+    "collateral_axis_required": "reclassified_74 / runtime_verified_4",
+    "survey_anchor_required": "detection_survey_20260626_errors:136_errors / wrong_work_27 / recall_miss_49",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

@@ -1,0 +1,621 @@
+{
+  "generated_at": "2026-07-03T23:45:51",
+  "run_id": "20260703_231311_880368",
+  "artifact_resolution": {
+    "resolution": "explicit_paths",
+    "artifact_prefix": "loop373_golden18_current_head_e523989f_runtime_proof_result",
+    "explicit_overrides": [
+      "artifact_prefix",
+      "manifest",
+      "checkpoint",
+      "result_json",
+      "pending_snapshot",
+      "input_jsonl",
+      "log_glob"
+    ],
+    "manifest_run_id": "20260703_231311_880368",
+    "manifest": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop373_golden18_current_head_e523989f_runtime_proof_result_manifest.json",
+    "checkpoint": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop373_golden18_current_head_e523989f_runtime_proof_result_checkpoint.jsonl",
+    "result_json": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop373_golden18_current_head_e523989f_runtime_proof_result.json",
+    "pending_snapshot": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop373_golden18_current_head_e523989f_runtime_proof_result_pending_snapshot.json",
+    "input_jsonl": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\golden\\golden_set.jsonl",
+    "worker_log_count": 2
+  },
+  "manifest": {
+    "run_id": "20260703_231311_880368",
+    "output_file": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop373_golden18_current_head_e523989f_runtime_proof_result.json",
+    "checkpoint_jsonl": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop373_golden18_current_head_e523989f_runtime_proof_result_checkpoint.jsonl",
+    "pending_snapshot": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop373_golden18_current_head_e523989f_runtime_proof_result_pending_snapshot.json",
+    "completed_subset_json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop373_golden18_current_head_e523989f_runtime_proof_result_completed_subset.json",
+    "completed_subset_manifest": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop373_golden18_current_head_e523989f_runtime_proof_result_completed_subset_manifest.json",
+    "completed_subset_written": true,
+    "completed_subset_count": 13,
+    "completed_subset_reason": "shutdown_pending_flush_gap",
+    "requested_parallel_raw": 2,
+    "requested_parallel": 2,
+    "effective_parallel": 2,
+    "parallel_count": 2,
+    "parallel_policy": "effective_parallel=min(requested_parallel,input_post_count)",
+    "model_parallel_max": null,
+    "model_parallel_cap_applied": false,
+    "model_parallel_cap_model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+    "llm_model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+    "llm_endpoint": "http://10.20.0.101:8000",
+    "llm_stream_first_token_timeout_seconds": "45.0",
+    "llm_stream_idle_timeout_seconds": "45.0",
+    "input_post_count": 18,
+    "vlm_enabled": true,
+    "ocr_enabled": true,
+    "image_post_count": 14,
+    "image_post_sample_post_ids": [
+      11684371,
+      11694035,
+      11698897,
+      11705245,
+      11661857,
+      11663521,
+      11663540,
+      11668307,
+      11669930,
+      11685994
+    ],
+    "image_posts_present": true,
+    "vlm_ocr_semantic_review_ready": true,
+    "vlm_ocr_semantic_review_skip_reasons": [],
+    "vlm_ocr_semantic_review_skip_reason": "",
+    "vlm_ocr_semantic_review_required_for_images": true,
+    "vlm_ocr_semantic_review_blocker": false,
+    "vlm_ocr_semantic_review_blocker_code": "",
+    "vlm_ocr_semantic_review_blocker_action": "",
+    "vlm_ocr_semantic_review_warning": "",
+    "mcp_auto_up_shards": false,
+    "mcp_auto_recreate_shards": false,
+    "mcp_auto_scale_up_missing_shards": false,
+    "mcp_local_shard_management_enabled": false,
+    "mcp_local_shard_status_audit": false,
+    "mcp_local_shard_status_audit_requested": false,
+    "mcp_local_shard_status_audit_allowed": false,
+    "mcp_shard_lifecycle_policy": "docker_up_recreate_opt_in+missing_shard_scale_up_default_on",
+    "mcp_allow_goal_shard_lifecycle": false,
+    "mcp_command_shard_lifecycle_allowed": false,
+    "mcp_interactive_codex_run": true,
+    "mcp_env_shard_lifecycle_requested": false,
+    "mcp_env_shard_lifecycle_global_opt_in": false,
+    "mcp_env_shard_lifecycle_allowed": false,
+    "mcp_env_shard_lifecycle_blocked_by_context": false,
+    "mcp_shard_lifecycle_block_threshold": 36,
+    "mcp_run_post_count_for_lifecycle": 18,
+    "mcp_small_targeted_run": true,
+    "mcp_small_run_shard_lifecycle_blocked": true,
+    "mcp_endpoints": "http://127.0.0.1:3333,http://127.0.0.1:3334",
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": true,
+    "mcp_health_required_ok_count": 2,
+    "mcp_health_checked_endpoint_count": 2,
+    "mcp_health_probe_batch_size": 2,
+    "mcp_health_probe_stopped_after_required_ok": false,
+    "mcp_health_workers": 2,
+    "mcp_health_attempts": 1,
+    "mcp_health_timeout_sec": 8.0,
+    "mcp_health_search_max_latency_ms": 8000.0,
+    "mcp_health_search_min_results": 1,
+    "mcp_health_ok_count": 2,
+    "mcp_health_failure_count": 0,
+    "mcp_missing_shard_scale_up_allowed": false,
+    "mcp_missing_shard_scale_up_triggered": false,
+    "mcp_missing_shard_scale_up_shards": "",
+    "mcp_missing_shard_scale_up_recovered_endpoints": 0,
+    "mcp_missing_shard_scale_up_error": "",
+    "mcp_healthy_endpoint_filter": false,
+    "mcp_healthy_endpoint_filter_reason": "reuse_shards_only",
+    "mcp_healthy_endpoint_filter_autogen": true,
+    "mcp_healthy_autogen_endpoint_filter": false,
+    "mcp_healthy_autogen_endpoint_filter_reason": "reuse_shards_only",
+    "mcp_reuse_shards_only_health_filtered": false,
+    "mcp_goal_run_health_filtered": false,
+    "mcp_requested_endpoint_count_before_health_filter": 2,
+    "mcp_healthy_endpoint_count": 2,
+    "mcp_endpoint_count_after_health_filter": 2,
+    "mcp_parallel_before_health_filter": 2,
+    "mcp_parallel_after_health_filter": 2,
+    "completed_count": 13,
+    "flushed_count": 12,
+    "pending_count": 1,
+    "failed_count": 0,
+    "next_save_idx": 13,
+    "partial_flush_gap": true,
+    "ordered_flush_blocked": true,
+    "large_run_complete": false
+  },
+  "input_source": {
+    "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\golden\\golden_set.jsonl",
+    "exists": true,
+    "lookup_method": "expert_main_post_map_order_without_model_import",
+    "post_count": 18,
+    "line_count": 18,
+    "comment_row_count": 0,
+    "load_error": null
+  },
+  "result_json": {
+    "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop373_golden18_current_head_e523989f_runtime_proof_result.json",
+    "exists": true,
+    "shape": "list",
+    "row_count": 12,
+    "load_error": null
+  },
+  "result_rows": 12,
+  "checkpoint_rows": 13,
+  "pending_count_actual": 1,
+  "flush_integrity": {
+    "run_integrity_gate": "IN_PROGRESS",
+    "classification": "ordered_flush_gap_in_progress",
+    "completion_ready": false,
+    "approval_ready": false,
+    "blockers": [
+      "completed_count_lt_input_post_count",
+      "pending_count_gt_zero",
+      "flushed_count_lt_completed_count",
+      "result_rows_lt_completed_count",
+      "large_run_completion_not_proven",
+      "ordered_flush_blocked",
+      "partial_flush_gap"
+    ],
+    "counts": {
+      "manifest_input_post_count": 18,
+      "manifest_completed_count": 13,
+      "manifest_flushed_count": 12,
+      "manifest_pending_count": 1,
+      "manifest_failed_count": 0,
+      "checkpoint_completed_count": 13,
+      "checkpoint_failed_count": 0,
+      "result_rows": 12,
+      "pending_snapshot_rows": 1,
+      "completed_minus_flushed": 1
+    },
+    "consistency": {
+      "result_rows_eq_flushed_count": true,
+      "checkpoint_completed_eq_manifest_completed": true,
+      "checkpoint_failed_eq_manifest_failed": true,
+      "pending_snapshot_rows_eq_manifest_pending": true,
+      "pending_snapshot_rows_eq_completed_minus_flushed": true
+    },
+    "frontier": {
+      "next_save_idx": 13,
+      "status": "in_flight_or_missing",
+      "reason": "frontier_missing_from_checkpoint_and_pending",
+      "source_post": {
+        "global_idx": 13,
+        "post_id": 11700470,
+        "title": "어케 주인공 죄목이",
+        "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11700470",
+        "gallery_id": "genrenovel",
+        "source_line": 13
+      },
+      "frontier_in_checkpoint_completed": false,
+      "frontier_in_pending_snapshot": false,
+      "completed_index_min": 1,
+      "completed_index_max": 14,
+      "pending_index_min": 14,
+      "pending_index_max": 14,
+      "first_pending_at_or_after_frontier": 14,
+      "first_completed_at_or_after_frontier": 14,
+      "frontier_gap_global_idx": 13
+    },
+    "pending_blocker_samples": [
+      {
+        "global_idx": 14,
+        "post_id": 11705231,
+        "title": "장갤 설지후 변화도 레전드임"
+      }
+    ]
+  },
+  "frontier_worker_trace": {
+    "target": {
+      "global_idx": 13,
+      "post_id": 11700470,
+      "title": "어케 주인공 죄목이",
+      "source_line": 13
+    },
+    "status": "in_progress_in_worker_log",
+    "event_count": 15,
+    "omitted_event_count": 0,
+    "event_counts": {
+      "mention": 2,
+      "expert_start": 2,
+      "global_start": 1,
+      "post_header": 1,
+      "pipeline_start": 1,
+      "vlm_chunk_request": 1,
+      "vlm_chunk_result": 1,
+      "vlm_merged_evidence": 1,
+      "vlm_image_enrichment": 1,
+      "orchestrator_start": 1,
+      "verifier_start": 1,
+      "synthesizer_start": 1,
+      "arbiter_start": 1
+    },
+    "workers": {
+      "W1": 15
+    },
+    "first_event": {
+      "file": "expert_run_20260703_231311_880368_W1.log",
+      "line": 11923,
+      "worker": "W1",
+      "event": "global_start",
+      "text": "🤖 [W1][13/18] Agentic Pipeline 시작"
+    },
+    "last_event": {
+      "file": "expert_run_20260703_231311_880368_W1.log",
+      "line": 14967,
+      "worker": "W1",
+      "event": "arbiter_start",
+      "text": "[23:39:44.269|W1][⚖️] Arbiter 최종 판정 시작: post_id=11700470",
+      "time": "23:39:44.269|W1",
+      "time_seconds": 85184.269
+    },
+    "first_timed_event": {
+      "file": "expert_run_20260703_231311_880368_W1.log",
+      "line": 11939,
+      "worker": "W1",
+      "event": "pipeline_start",
+      "text": "[23:36:07.723|W1] 🚀 Agentic Pipeline start: Post 11700470 - 어케 주인공 죄목이...",
+      "time": "23:36:07.723|W1",
+      "time_seconds": 84967.723
+    },
+    "last_timed_event": {
+      "file": "expert_run_20260703_231311_880368_W1.log",
+      "line": 14967,
+      "worker": "W1",
+      "event": "arbiter_start",
+      "text": "[23:39:44.269|W1][⚖️] Arbiter 최종 판정 시작: post_id=11700470",
+      "time": "23:39:44.269|W1",
+      "time_seconds": 85184.269
+    },
+    "observed_elapsed_seconds": 216.546,
+    "events": [
+      {
+        "file": "expert_run_20260703_231311_880368_W1.log",
+        "line": 11923,
+        "worker": "W1",
+        "event": "global_start",
+        "text": "🤖 [W1][13/18] Agentic Pipeline 시작"
+      },
+      {
+        "file": "expert_run_20260703_231311_880368_W1.log",
+        "line": 11925,
+        "worker": "W1",
+        "event": "post_header",
+        "text": "📌 Post ID: 11700470"
+      },
+      {
+        "file": "expert_run_20260703_231311_880368_W1.log",
+        "line": 11928,
+        "worker": "W1",
+        "event": "mention",
+        "text": "🔗 URL: https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11700470"
+      },
+      {
+        "file": "expert_run_20260703_231311_880368_W1.log",
+        "line": 11939,
+        "worker": "W1",
+        "event": "pipeline_start",
+        "text": "[23:36:07.723|W1] 🚀 Agentic Pipeline start: Post 11700470 - 어케 주인공 죄목이...",
+        "time": "23:36:07.723|W1",
+        "time_seconds": 84967.723
+      },
+      {
+        "file": "expert_run_20260703_231311_880368_W1.log",
+        "line": 11941,
+        "worker": "W1",
+        "event": "vlm_chunk_request",
+        "text": "[23:36:08.676|W1] 🖼️ VLM chunk request: post_id=11700470 chunk=1/1, images=1, bytes=11931",
+        "time": "23:36:08.676|W1",
+        "time_seconds": 84968.676
+      },
+      {
+        "file": "expert_run_20260703_231311_880368_W1.log",
+        "line": 11942,
+        "worker": "W1",
+        "event": "vlm_chunk_result",
+        "text": "[23:36:15.125|W1] 🖼️ VLM chunk result: post_id=11700470 chunk=1/1, images=1, summary=웹소설의 한 장면을 캡처한 것으로 보이며, 주인공이 'B급 모험가 밤도깨비 에이브'라는 인물이 되었다는 서술이 명시되어 있음.",
+        "time": "23:36:15.125|W1",
+        "time_seconds": 84975.125
+      },
+      {
+        "file": "expert_run_20260703_231311_880368_W1.log",
+        "line": 11948,
+        "worker": "W1",
+        "event": "vlm_merged_evidence",
+        "text": "[23:36:15.276|W1] 🖼️ VLM merged evidence: post_id=11700470 images=1, summary=이미지에서 작품 단서 추출: B급 모험가 밤도깨비 에이브, 엘프 방생, 세뇌, 가스라이팅",
+        "time": "23:36:15.276|W1",
+        "time_seconds": 84975.276
+      },
+      {
+        "file": "expert_run_20260703_231311_880368_W1.log",
+        "line": 11950,
+        "worker": "W1",
+        "event": "vlm_image_enrichment",
+        "text": "[23:36:15.336|W1] 🖼️ VLM image enrichment: post_id=11700470 fetch=1/1, chunks=1, total_bytes=11931",
+        "time": "23:36:15.336|W1",
+        "time_seconds": 84975.336
+      },
+      {
+        "file": "expert_run_20260703_231311_880368_W1.log",
+        "line": 11952,
+        "worker": "W1",
+        "event": "orchestrator_start",
+        "text": "[23:36:15.367|W1] 🎯 Orchestrator 시작: post_id=11700470",
+        "time": "23:36:15.367|W1",
+        "time_seconds": 84975.367
+      },
+      {
+        "file": "expert_run_20260703_231311_880368_W1.log",
+        "line": 11953,
+        "worker": "W1",
+        "event": "expert_start",
+        "text": "[23:36:15.429|W1][🎭] Gatekeeper 분석 시작: post_id=11700470",
+        "time": "23:36:15.429|W1",
+        "time_seconds": 84975.429
+      },
+      {
+        "file": "expert_run_20260703_231311_880368_W1.log",
+        "line": 12109,
+        "worker": "W1",
+        "event": "expert_start",
+        "text": "[23:36:27.442|W1][📖] DiscourseAnalyzer 분석 시작: post_id=11700470",
+        "time": "23:36:27.442|W1",
+        "time_seconds": 84987.442
+      },
+      {
+        "file": "expert_run_20260703_231311_880368_W1.log",
+        "line": 12313,
+        "worker": "W1",
+        "event": "mention",
+        "text": "[23:36:38.731][🎯] 📋 자기참조 필터: post_id='11700470'",
+        "time": "23:36:38.731",
+        "time_seconds": 84998.731
+      },
+      {
+        "file": "expert_run_20260703_231311_880368_W1.log",
+        "line": 14674,
+        "worker": "W1",
+        "event": "verifier_start",
+        "text": "[23:39:10.086|W1][🔍] Verifier 검증 시작: post_id=11700470",
+        "time": "23:39:10.086|W1",
+        "time_seconds": 85150.086
+      },
+      {
+        "file": "expert_run_20260703_231311_880368_W1.log",
+        "line": 14843,
+        "worker": "W1",
+        "event": "synthesizer_start",
+        "text": "[23:39:31.824|W1][🔬] Synthesizer 증거 기반 재해석 시작: post_id=11700470",
+        "time": "23:39:31.824|W1",
+        "time_seconds": 85171.824
+      },
+      {
+        "file": "expert_run_20260703_231311_880368_W1.log",
+        "line": 14967,
+        "worker": "W1",
+        "event": "arbiter_start",
+        "text": "[23:39:44.269|W1][⚖️] Arbiter 최종 판정 시작: post_id=11700470",
+        "time": "23:39:44.269|W1",
+        "time_seconds": 85184.269
+      }
+    ]
+  },
+  "search_evidence": {
+    "gate": "GO",
+    "approval_ready": true,
+    "direct_probe_in_manifest": true,
+    "manifest": {
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": true,
+      "mcp_health_ok_count": 2,
+      "mcp_health_failure_count": 0
+    },
+    "row_search_health": {
+      "rows_with_search_health": 11,
+      "status_counts": {
+        "ok": 10,
+        "SEARCH_DEGRADED_RECOVERED": 1
+      },
+      "flag_counts": {},
+      "rows_with_upstream_zero": 6,
+      "rows_with_degraded": 0,
+      "query_total": 96,
+      "degraded_total": 2,
+      "degraded_recovered_total": 2,
+      "unrecovered_degraded_total": 0
+    },
+    "worker_log_search": {
+      "search_timeout": 0,
+      "search_degraded_detected": 0,
+      "search_upstream_zero": 17,
+      "search_bridge_after_filter_zero": 1
+    },
+    "blockers": [
+      "manifest_light_health_only"
+    ]
+  },
+  "publication_contract_convergence": {
+    "gate": "GO",
+    "approval_ready": true,
+    "result_json": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop373_golden18_current_head_e523989f_runtime_proof_result.json",
+    "summary": {
+      "row_count": 12,
+      "violation_row_count": 0,
+      "violation_counts": {}
+    },
+    "violations": [],
+    "blockers": []
+  },
+  "status_counts": {
+    "completed": 13
+  },
+  "identity_state_counts": {
+    "resolved_title": 7,
+    "non_relevant": 2,
+    "unresolved_title": 2,
+    "adjacent_relevant": 2
+  },
+  "discussion_type_counts_top": {
+    "character_talk": 5,
+    "trope_discussion": 3,
+    "review": 2,
+    "general": 2,
+    "noise": 1
+  },
+  "topicality_counts": {
+    "core_relevant": 9,
+    "unrelated": 2,
+    "adjacent_relevant": 2
+  },
+  "work_resolution_counts": {
+    "resolved": 6,
+    "none": 4,
+    "unresolved": 3
+  },
+  "novel_confidence_counts": {
+    "": 6,
+    "High": 5,
+    "Medium": 1,
+    "None": 1
+  },
+  "consistency_flag_counts_top": {
+    "notes_demoted_for_unresolved": 5,
+    "llm_only_sentence_candidate_pruned": 5,
+    "official_url_recall_gate_recovered": 3,
+    "verified_alias_official_detail_anchor": 3,
+    "explicit_alias_official_work_lock": 3,
+    "local_candidate_hold_preserved": 2,
+    "weak_public_title_bridge_verified_alias_detail_exempt": 2,
+    "genre_trope_context_only_no_work_anchor": 2,
+    "context_only_no_work_anchor": 2,
+    "final_semantic_reread_reviewed": 2,
+    "locked_official_candidate_rescued": 2,
+    "locked_official_rescue_cleared_stale_demotions": 2,
+    "weak_public_title_bridge_locked_official_exempt": 2,
+    "batch_memory_alias_rescue_blocked_nonwork_context": 1,
+    "batch_memory_alias_rescue_blocked_genre_context": 1,
+    "official_url_recall_blocked_no_work_title_body_only": 1,
+    "official_url_recall_blocked_semantic_no_work_context": 1,
+    "fanfic_derivative_title_unanchored_hold": 1,
+    "confirmed_alias:랫따싶": 1,
+    "post_alias_official_detail_bridge_anchor": 1,
+    "short_lead_surface_public_title_bridge": 1,
+    "multi_work_guard_canonical_rescue_skipped": 1,
+    "official_url_recall_blocked_relation_non_work_context": 1,
+    "search_catalog_contextual_work:시스터즈 이미지": 1,
+    "search_catalog_contextual_work_recall_anchor": 1,
+    "confirmed_context:시스터즈 이미지": 1,
+    "official_detail_url_missing_direct_source_support": 1,
+    "verified_alias_title_only_publication": 1,
+    "serialized_public_identity_shared_gate_restored": 1,
+    "image_ocr_variant_not_title_in_post": 1,
+    "multi_work_explicit_alias_official_lock": 1,
+    "confirmed_alias:주서연": 1,
+    "recommendation_context_only_no_work_anchor": 1,
+    "title_body_search_result:용사파티 용사": 1,
+    "title_body_official_detail_anchor": 1,
+    "final_semantic_reread_rejected_resolution": 1,
+    "internal_work_signal_unresolved_recovered": 1,
+    "author_anchor_title_author_mismatch_cleared": 1,
+    "official_url_recall_blocked_competing_candidate": 1,
+    "confirmed_alias:빛세구": 1,
+    "same_url_official_detail_canonicalized": 1,
+    "adjacent_title_cleared": 1,
+    "direct_image_explicit_title_rescued": 1,
+    "direct_image_suspect_preserved": 1,
+    "direct_image_work_surface_lock": 1,
+    "batch_memory_alias_rescue_blocked_by_author_meta": 1,
+    "weak_public_title_bridge_direct_image_work_surface_exempt": 1,
+    "multi_work_title_cleared": 1,
+    "secondary_reference_official_alias_blocked_after_multi_work_title_cleared": 1,
+    "final_semantic_reread_accepted_resolution": 1
+  },
+  "reason_error_count": 0,
+  "reason_error_samples": [],
+  "query_stats": {
+    "parsed_count": 9,
+    "avg_executed_queries": 7.56,
+    "p95_executed_queries": 13,
+    "max_executed_queries": 13,
+    "avg_degraded_queries": 2,
+    "max_degraded_queries": 2
+  },
+  "slang": {
+    "slang_insight_count": 5,
+    "old_store_true_count": 1,
+    "new_store_true_after_patch_count": 0,
+    "old_store_true_blocked_by_patch_count": 1,
+    "blocked_reason_counts": {
+      "unclear_canonical_alias": 1
+    },
+    "blocked_samples": [
+      {
+        "post_id": 11698897,
+        "post_title": "랫따싶 림월드 요소 생각나게 하는거 좋네에...",
+        "detected_term": "랫따싶",
+        "decoded_term": "[림월드]변방계에서 회귀자로 살아남기",
+        "old_store_in_slang_db": true,
+        "old_store_reason": "pure_work_alias",
+        "old_alias_scope": "pure_work_alias",
+        "new_store_in_slang_db": false,
+        "new_store_reason": "unclear_canonical_alias",
+        "new_alias_scope": "pure_work_alias",
+        "new_canonical_work_alias": null,
+        "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+        "discussion_type": "review",
+        "topicality": "core_relevant",
+        "work_resolution": "resolved"
+      }
+    ],
+    "kept_samples": [],
+    "slang_db": {
+      "title_count": 544,
+      "slang_term_count": 351,
+      "sentence_or_exact_bad_remaining": 0,
+      "bad_remaining_samples": []
+    }
+  },
+  "logs": {
+    "worker_log_count": 2,
+    "post_start_count_in_worker_logs": 15,
+    "post_complete_count_in_worker_logs": 13,
+    "counts": {
+      "search_upstream_zero": 17,
+      "headless_meta_lines": 24,
+      "title_anchor_exact_probe_lines": 5,
+      "headless_lines": 6,
+      "search_bridge_after_filter_zero": 1
+    },
+    "worker_counts_top": {
+      "W1": {
+        "search_upstream_zero": 10,
+        "headless_meta_lines": 7,
+        "post_start": 6,
+        "headless_lines": 6,
+        "post_complete": 5,
+        "search_bridge_after_filter_zero": 1
+      },
+      "W0": {
+        "headless_meta_lines": 17,
+        "post_start": 9,
+        "post_complete": 8,
+        "search_upstream_zero": 7,
+        "title_anchor_exact_probe_lines": 5
+      }
+    },
+    "headless_engine_counts": {
+      "headless_naver_playwright": 6
+    },
+    "processing_error_samples": []
+  },
+  "rates": {
+    "reason_error_rate_pct": 0.0,
+    "resolved_title_rate_pct": 53.85,
+    "unresolved_title_rate_pct": 15.38,
+    "headless_line_per_completed_pct": 46.15
+  }
+}

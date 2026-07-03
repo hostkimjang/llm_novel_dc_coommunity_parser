@@ -2,6 +2,21 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop373 TODO
+
+- 상태 업데이트: current HEAD `e523989f`에서 golden18 단일 런만 실행했지만 `11700470` frontier에서 공백 stream/arbiter stall이 발생해 `18/18` 완주에 실패했다. 신규 대형 런은 계속 동결했고, 같은 failed run 반복은 중단한다.
+- Loop373 TODO:
+  - [x] golden18 단일 런 `20260703_231311_880368`을 실행했다.
+  - [x] partial runtime `18/13/12/1/0`, result/checkpoint `12/13`, `large_run_complete=false`를 확인했다.
+  - [x] `11700470` frontier와 `ordered_flush_gap_in_progress` health audit를 생성했다.
+  - [x] expected-answer partial audit `NO-GO / 10 of 18`을 생성했다.
+  - [x] `11708445` OVERRIDE AUDIT를 source-native로 새 산출물 고정했다.
+  - [x] collateral reporting을 `reclassified 74 / runtime-verified 4` 축으로 유지했다.
+  - [x] survey anchor를 `136 errors / wrong_work 27 / recall_miss 49`로 유지했다.
+  - [ ] 다음 loop는 failed run 재발주가 아니라 `11700470` arbiter/whitespace stream stall 원인이나 `11694019` context-only hold 수렴을 코드/계약으로 줄여야 한다.
+  - [ ] R1 하드코딩 cue 리스트 확장은 금지한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop372 TODO
 
 - 상태 업데이트: 신규 대형 런은 계속 동결했고, `11663521` 단건으로 URL 없는 title-only official-detail 후보가 `성기사는 버생을 산다`로 public publish되는 경로를 막았다. Runtime은 `1/1`, health audit는 `GO / clean_completed_source`다.
