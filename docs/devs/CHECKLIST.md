@@ -1,5 +1,19 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop370 search degraded-zero 반복 억제 체크
+
+- [x] 신규 대형 런과 동일 parent packet 재실행을 계속 동결했다.
+- [x] 검색 degraded 0건을 정상 `_search_cache`에 저장하지 않는 기존 poison 방지 정책을 유지했다.
+- [x] 별도 in-process suppression map을 추가해 같은 degraded-zero 쿼리의 즉시 MCP 재호출을 TTL 안에서 억제했다.
+- [x] suppression hit를 cache hit로 세지 않고 `suppressed_degraded_zero=true`, `degraded_zero_suppressed_total`로 별도 노출했다.
+- [x] 검색 health/reason/search aggregation summary에 suppressed 수를 표시했다.
+- [x] 검증:
+  - `py_compile` PASS
+  - `tests.test_search_degraded_zero_suppression + tests.test_search_recovery_contract` PASS, `5` tests
+  - `git diff --check` PASS
+- [ ] runtime replay 전까지 search recovery 완료, semantic approval, full scan approval, hard-hold 완화를 선언하지 않는다.
+- Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, code contract `GO_UNIT`, runtime replay `NOT_RUN_THIS_LOOP`, search recovery `PARTIAL_CONTRACT / P0_OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop367-369 11698880 title-led/body verified 체크
 
 - [x] 신규 대형 런과 동일 38-row parent packet 재실행을 계속 동결했다.

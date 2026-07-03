@@ -6,6 +6,20 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-03 Loop370 search degraded-zero suppression quality gate
+
+- 근거:
+  - [x] 신규 대형 런과 동일 parent packet replay가 없음을 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_370_REPORT_20260703.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop370_search_degraded_zero_suppression_20260703.json`.
+  - [x] focused unittest `5` tests PASS와 `git diff --check` PASS를 기록했다.
+- 품질 게이트:
+  - [x] degraded-zero suppression을 정상 search cache hit로 세지 않는다.
+  - [x] `degraded_zero_suppressed_total`을 검색 성공이나 hard-hold 완화 근거로 쓰지 않는다.
+  - [x] runtime replay 전 search recovery 완료를 선언하지 않는다.
+  - [x] search recovery 전 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-03 Loop360 background watchdog hardening quality gate
 
 - 근거:

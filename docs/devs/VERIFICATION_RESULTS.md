@@ -1,5 +1,23 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop370 search degraded-zero retry suppression
+
+- 범위: 신규 대형 런과 동일 parent packet 재실행을 계속 동결하고, search degraded P0 중 반복 degraded-zero 쿼리 재호출만 코드 계약으로 줄였다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_370_REPORT_20260703.md`
+  - state `docs\devs\loop370_search_degraded_zero_suppression_20260703.json`
+  - test `tests\test_search_degraded_zero_suppression.py`
+- Code verification:
+  - `py_compile` PASS
+  - `tests.test_search_degraded_zero_suppression + tests.test_search_recovery_contract` PASS, `5` tests
+  - `git diff --check` PASS
+- Judgment:
+  - degraded 0건은 정상 search cache에 저장하지 않는다.
+  - 같은 degraded-zero query/purpose는 짧은 TTL 안에서 MCP 재호출만 억제한다.
+  - suppressed hit는 `degraded_zero_suppressed_total`로 보이지만 cache hit나 검색 성공으로 세지 않는다.
+  - runtime replay는 없으므로 search recovery 완료 증거가 아니다.
+- Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, code contract `GO_UNIT`, runtime replay `NOT_RUN_THIS_LOOP`, search recovery `PARTIAL_CONTRACT / P0_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop367-369 11698880 title-led/body verified 충돌 감사
 
 - 범위: 신규 대형 런과 동일 38-row parent packet 재실행을 계속 동결하고, Loop366 실패 행 `11698880` 단건만 title-led alias와 본문 검증 작품 충돌 경로로 추적했다.

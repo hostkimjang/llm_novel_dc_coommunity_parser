@@ -1,0 +1,55 @@
+{
+  "loop": 370,
+  "date": "2026-07-03",
+  "title": "search degraded-zero retry suppression contract",
+  "head_before_change": "96ed8429",
+  "scope": {
+    "new_large_runs": "FROZEN",
+    "same_parent_packet_replay": "STOPPED",
+    "runtime_replay": "NOT_RUN_THIS_LOOP",
+    "r1_hardcoded_cue_expansion": false
+  },
+  "changes": [
+    {
+      "file": "src/llm_batch/agentic_pipeline.py",
+      "summary": "Added a separate in-process degraded-zero suppression map with TTL, without storing degraded zero results in the normal search cache."
+    },
+    {
+      "file": "src/llm_batch/experts/orchestrator.py",
+      "summary": "Added degraded_zero_suppressed_total so suppressed degraded-zero outcomes stay visible and are not counted as cache hits."
+    },
+    {
+      "file": "src/llm_batch/experts/utils.py",
+      "summary": "Exposed suppressed degraded-zero counts in search aggregation summaries."
+    },
+    {
+      "file": "tests/test_search_degraded_zero_suppression.py",
+      "summary": "Added unit contracts for suppression hit, TTL disable, and separate stats accounting."
+    }
+  ],
+  "verification": {
+    "py_compile": "PASS",
+    "unittest": {
+      "status": "PASS",
+      "tests": 5,
+      "modules": [
+        "tests.test_search_degraded_zero_suppression",
+        "tests.test_search_recovery_contract"
+      ]
+    },
+    "git_diff_check": "PASS"
+  },
+  "gate": {
+    "code_contract": "GO_UNIT",
+    "search_recovery": "PARTIAL_CONTRACT / P0_OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "notes": [
+    "Suppression hit avoids repeated upstream MCP search for the same degraded-zero query inside the TTL.",
+    "Suppressed outcomes remain degraded-zero for gate interpretation and are not search success evidence.",
+    "No large run, full375, bounded completed-source run, or same 38-row parent packet replay was dispatched."
+  ]
+}

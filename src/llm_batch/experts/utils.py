@@ -576,6 +576,7 @@ def build_search_aggregation_summary(
 
     degraded_q = _safe_int(stats.get("degraded_total"))
     degraded_zero_q = _safe_int(stats.get("degraded_zero"))
+    degraded_zero_suppressed_q = _safe_int(stats.get("degraded_zero_suppressed_total"))
     retried_q = _safe_int(stats.get("retried_total"))
     retry_attempts_q = _safe_int(stats.get("retry_attempts_total"))
     cache_hits_q = _safe_int(stats.get("cache_hit_total"))
@@ -640,7 +641,8 @@ def build_search_aggregation_summary(
             f"zero={effective_zero_q} (degraded_zero 제외)"
         )
     lines.append(
-        f"- infra: degraded={degraded_q} (zero={degraded_zero_q}), retried={retried_q}, "
+        f"- infra: degraded={degraded_q} (zero={degraded_zero_q}, "
+        f"suppressed={degraded_zero_suppressed_q}), retried={retried_q}, "
         f"retry_attempts={retry_attempts_q}, cache_hits={cache_hits_q}"
     )
     lines.append(

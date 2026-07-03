@@ -2,6 +2,19 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop370 TODO
+
+- 상태 업데이트: 신규 대형 런과 동일 parent packet 재실행은 계속 동결했고, search degraded 0건 반복 호출만 코드 계약으로 줄였다. Runtime replay는 아직 없으므로 search recovery는 계속 `P0 / OPEN`이다.
+- Loop370 TODO:
+  - [x] degraded-zero 결과를 정상 `_search_cache`에 저장하지 않는 기존 정책을 유지했다.
+  - [x] 별도 TTL suppression map으로 동일 query/purpose degraded-zero MCP 재호출을 억제했다.
+  - [x] `suppressed_degraded_zero` 메타와 `degraded_zero_suppressed_total` 통계를 추가했다.
+  - [x] 검색 health/reason/search aggregation summary에 suppressed 수를 노출했다.
+  - [x] py_compile PASS, focused unittest `5` tests PASS, `git diff --check` PASS를 확인했다.
+  - [ ] 다음 검증은 대형 run이 아니라 search degraded가 드러난 소수 targeted row 또는 golden18 단일 재검증으로 제한한다.
+  - [ ] suppressed 수를 검색 성공이나 hard-hold 완화 근거로 해석하지 않는다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop367-369 TODO
 
 - 상태 업데이트: 신규 대형 런과 동일 parent packet 재실행은 계속 동결했다. `11698880` 단건에서 본문 검증 작품 충돌 술어와 stale publish gate 재수렴을 보강했지만, Loop369 runtime은 다시 `아카데미 생존 갤러리` wrong publish로 끝났다.

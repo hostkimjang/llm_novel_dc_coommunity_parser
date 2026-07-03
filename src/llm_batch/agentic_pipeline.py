@@ -197,6 +197,8 @@ class AgenticPipeline:
         self._search_cache_misses = 0
         self._last_search_meta: Dict[str, Any] = {}
         self._consecutive_degraded: int = 0  # 연속 검색 저하 카운터 (적응적 백오프용)
+        self._search_degraded_zero_suppression: Dict[str, Dict[str, Any]] = {}
+        self._search_degraded_zero_suppression_hits = 0
         self._search_cache_lock = threading.Lock()
 
         # Orchestrator
@@ -570,6 +572,16 @@ class AgenticPipeline:
         results, _ = self._search_with_meta(query, purpose)
         return results
 
+    @staticmethod
+    def _search_degraded_zero_suppression_ttl_seconds() -> float:
+        """Return the short in-process suppression TTL for repeated degraded-zero probes."""
+        raw = os.getenv("PIPELINE_SEARCH_DEGRADED_ZERO_SUPPRESS_TTL_SECONDS", "180")
+        try:
+            ttl = float(raw)
+        except Exception:
+            ttl = 180.0
+        return max(0.0, min(ttl, 3600.0))
+
     def _search_with_meta(self, query: str, purpose: str = "") -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
         """Run MCP search with in-memory query cache and return bridge metadata."""
         purpose_key = str(purpose or "").strip().lower()
@@ -603,18 +615,40 @@ class AgenticPipeline:
             "direct_search_count": 0,
             "direct_search_providers": [],
             "direct_search_errors": [],
+            "suppressed_degraded_zero": False,
         }
+        suppression_ttl = self._search_degraded_zero_suppression_ttl_seconds()
+        now_monotonic = time.monotonic()
+        suppressed_entry: Optional[Dict[str, Any]] = None
+        suppression_hit_count = 0
         with self._search_cache_lock:
             self._last_search_meta = dict(search_meta)
+            if suppression_ttl <= 0:
+                self._search_degraded_zero_suppression.clear()
+            elif self._search_degraded_zero_suppression:
+                expired_keys = [
+                    key
+                    for key, entry in self._search_degraded_zero_suppression.items()
+                    if now_monotonic >= float(entry.get("expires_at") or 0.0)
+                ]
+                for key in expired_keys:
+                    self._search_degraded_zero_suppression.pop(key, None)
             cached = self._search_cache.get(cache_key)
             if cached is not None:
                 self._search_cache_hits += 1
                 hit_count = self._search_cache_hits
                 miss_count = self._search_cache_misses
             else:
-                self._search_cache_misses += 1
-                hit_count = self._search_cache_hits
-                miss_count = self._search_cache_misses
+                suppressed_entry = self._search_degraded_zero_suppression.get(cache_key)
+                if suppressed_entry is not None:
+                    self._search_degraded_zero_suppression_hits += 1
+                    suppression_hit_count = self._search_degraded_zero_suppression_hits
+                    hit_count = self._search_cache_hits
+                    miss_count = self._search_cache_misses
+                else:
+                    self._search_cache_misses += 1
+                    hit_count = self._search_cache_hits
+                    miss_count = self._search_cache_misses
 
         if cached is not None:
             if isinstance(cached, dict):
@@ -661,6 +695,53 @@ class AgenticPipeline:
                   f"(hit {hit_count}/{hit_count + miss_count})",
                   file=sys.stderr)
             return cached_results, dict(search_meta)
+
+        if suppressed_entry is not None:
+            previous_meta = (
+                suppressed_entry.get("meta", {})
+                if isinstance(suppressed_entry.get("meta"), dict)
+                else {}
+            )
+            search_meta.update(
+                {
+                    "from_cache": False,
+                    "degraded": True,
+                    "possible_throttle": bool(previous_meta.get("possible_throttle", True)),
+                    "attempts": 1,
+                    "retry_count": 0,
+                    "total": 0,
+                    "raw_total": 0,
+                    "lang_filtered": 0,
+                    "filtered_preview": list(previous_meta.get("filtered_preview") or []),
+                    "lang_filter_reasons": dict(previous_meta.get("lang_filter_reasons") or {}),
+                    "requested_language": previous_meta.get("requested_language") or "",
+                    "request_accept_language": previous_meta.get("request_accept_language") or "",
+                    "provider_url": previous_meta.get("provider_url") or "",
+                    "engines": previous_meta.get("engines") or "",
+                    "headless_used": False,
+                    "headless_reason": "",
+                    "headless_count": 0,
+                    "headless_blocked": False,
+                    "fallback_recovered": False,
+                    "degraded_recovered": False,
+                    "direct_search_used": False,
+                    "direct_search_reason": "",
+                    "direct_search_count": 0,
+                    "direct_search_providers": [],
+                    "direct_search_errors": [],
+                    "suppressed_degraded_zero": True,
+                    "suppressed_original_attempts": int(previous_meta.get("attempts") or 1),
+                    "suppressed_original_retry_count": int(previous_meta.get("retry_count") or 0),
+                }
+            )
+            with self._search_cache_lock:
+                self._last_search_meta = dict(search_meta)
+            print(
+                f"[{_ts()}] 🛑 검색 degraded-zero 재시도 억제: '{query}' "
+                f"(suppressed_hit {suppression_hit_count})",
+                file=sys.stderr,
+            )
+            return [], dict(search_meta)
         
         # 연속 degraded 시 적응적 백오프: 엔진 복구 시간 확보
         with self._search_cache_lock:
@@ -762,10 +843,25 @@ class AgenticPipeline:
                     and int(search_meta.get("lang_filtered") or 0) == 0
                 )
             )
+            _suppress_degraded_zero_ok = (
+                suppression_ttl > 0
+                and not compacted
+                and (bool(search_meta.get("degraded")) or bool(search_meta.get("possible_throttle")))
+                and int(search_meta.get("raw_total") or 0) == 0
+                and int(search_meta.get("lang_filtered") or 0) == 0
+                and int(search_meta.get("headless_count") or 0) == 0
+                and int(search_meta.get("direct_search_count") or 0) == 0
+            )
             with self._search_cache_lock:
                 if _cache_zero_ok:
                     self._search_cache[cache_key] = {
                         "results": compacted,
+                        "meta": dict(search_meta),
+                    }
+                    self._search_degraded_zero_suppression.pop(cache_key, None)
+                elif _suppress_degraded_zero_ok:
+                    self._search_degraded_zero_suppression[cache_key] = {
+                        "expires_at": time.monotonic() + suppression_ttl,
                         "meta": dict(search_meta),
                     }
                 self._last_search_meta = dict(search_meta)
@@ -774,7 +870,8 @@ class AgenticPipeline:
                     f"[{_ts()}] 🧹 빈결과 캐시 생략: query='{query}', "
                     f"raw_total={search_meta.get('raw_total')}, "
                     f"lang_filtered={search_meta.get('lang_filtered')}, "
-                    f"degraded={search_meta.get('degraded')}",
+                    f"degraded={search_meta.get('degraded')}, "
+                    f"suppressed_next={_suppress_degraded_zero_ok}",
                     file=sys.stderr,
                 )
             return compacted, dict(search_meta)
@@ -14628,6 +14725,7 @@ class AgenticPipeline:
             "filtered": _count("filtered_total"),
             "retried": _count("retried_total"),
             "cache_hits": _count("cache_hit_total"),
+            "degraded_zero_suppressed": _count("degraded_zero_suppressed_total"),
             "fallback_recovered": _count("fallback_recovered_total"),
             "degraded_recovered": _count("degraded_recovered_total"),
             "unrecovered_degraded": _count("unrecovered_degraded_total"),
@@ -21405,6 +21503,7 @@ class AgenticPipeline:
         _degraded_total = int(stats.get("degraded_total", 0) or 0)
         _degraded_nonzero = int(stats.get("degraded_nonzero", 0) or 0)
         _degraded_zero = int(stats.get("degraded_zero", 0) or 0)
+        _degraded_zero_suppressed = int(stats.get("degraded_zero_suppressed_total", 0) or 0)
         _retried_total = int(stats.get("retried_total", 0) or 0)
         if _effective_exec > 0 and _effective_exec != len(executed_queries):
             lines.append(
@@ -21414,7 +21513,8 @@ class AgenticPipeline:
         if _degraded_total > 0:
             lines.append(
                 f"- degraded_queries: {_degraded_total} "
-                f"(degraded_nonzero={_degraded_nonzero}, degraded_zero={_degraded_zero}, retried={_retried_total})"
+                f"(degraded_nonzero={_degraded_nonzero}, degraded_zero={_degraded_zero}, "
+                f"suppressed={_degraded_zero_suppressed}, retried={_retried_total})"
             )
         if planned_queries and len(planned_queries) != len(executed_queries):
             lines.append(
@@ -22973,6 +23073,7 @@ OUTPUT JSON:
         degraded_q = int(stats.get("degraded_total", 0) or 0)
         degraded_nonzero_q = int(stats.get("degraded_nonzero", 0) or 0)
         degraded_zero_q = int(stats.get("degraded_zero", 0) or 0)
+        degraded_zero_suppressed_q = int(stats.get("degraded_zero_suppressed_total", 0) or 0)
         retried_q = int(stats.get("retried_total", 0) or 0)
         retry_attempts_q = int(stats.get("retry_attempts_total", 0) or 0)
         cache_hits_q = int(stats.get("cache_hit_total", 0) or 0)
@@ -22991,6 +23092,8 @@ OUTPUT JSON:
                     summary += f", 결과유지 {degraded_nonzero_q}건"
                 if degraded_zero_q > 0:
                     summary += f", 저하-무결과 {degraded_zero_q}건"
+                if degraded_zero_suppressed_q > 0:
+                    summary += f", 재시도억제 {degraded_zero_suppressed_q}건"
                 summary += "]"
             if effective_total_q > 0 and effective_total_q != total_q:
                 summary += (

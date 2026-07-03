@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop370 search degraded-zero retry suppression
+
+- 신규 대형 런과 동일 parent packet replay는 계속 동결했다.
+- Loop369에서 보인 반복 degraded-zero 검색 재호출 문제를 줄이기 위해 `AgenticPipeline`에 별도 TTL suppression map을 추가했다. 기본 TTL은 `180`초이고 `PIPELINE_SEARCH_DEGRADED_ZERO_SUPPRESS_TTL_SECONDS=0`이면 비활성화된다.
+- degraded 0건은 기존처럼 정상 `_search_cache`에 저장하지 않는다. Suppression hit도 cache hit로 세지 않고 `suppressed_degraded_zero=true`, `degraded_zero_suppressed_total`로 별도 기록한다.
+- 검색 health, reason summary, expert search aggregation summary는 suppressed 수를 노출한다.
+- 검증은 `py_compile` PASS, `tests.test_search_degraded_zero_suppression + tests.test_search_recovery_contract` `5` tests PASS, `git diff --check` PASS다.
+- Runtime replay는 이 loop에서 실행하지 않았으므로 search recovery는 `PARTIAL_CONTRACT / P0_OPEN`이다.
+- Report는 `docs/devs/loop_reports/LOOP_370_REPORT_20260703.md`, state는 `docs/devs/loop370_search_degraded_zero_suppression_20260703.json`이다.
+- Gate는 new large runs `FROZEN`, same parent packet replay `STOPPED`, code contract `GO_UNIT`, runtime replay `NOT_RUN_THIS_LOOP`, search recovery `PARTIAL_CONTRACT / P0_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop366 current HEAD golden18 rerun after Loop365
 
 - 신규 대형 런은 발주하지 않았고, 현 HEAD `5fd0ec99`에서 golden18 단일 런만 search 포함 non-light 조건으로 재실행했다.

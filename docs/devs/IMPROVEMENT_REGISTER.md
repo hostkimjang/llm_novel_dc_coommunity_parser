@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260703-370 - search degraded-zero retry suppression contract
+
+| Item | Status | Evidence | Next action |
+| --- | --- | --- | --- |
+| New large runs | Frozen | No full375/bounded/N5 dispatch this loop | Keep frozen until targeted blockers need runtime proof |
+| Same parent packet replay | Stopped | No 38-row parent packet rerun | Use targeted row or golden18 single only when needed |
+| Degraded-zero normal cache | Preserved as no-cache | degraded 0건은 `_search_cache`에 저장하지 않음 | Avoid cross-post negative-cache poison |
+| Degraded-zero suppression | GO_UNIT | TTL suppression map, default `180s`, env `PIPELINE_SEARCH_DEGRADED_ZERO_SUPPRESS_TTL_SECONDS` | Measure in next targeted runtime before calling recovery complete |
+| Search stats | Visible / not approval | `degraded_zero_suppressed_total`, public health `degraded_zero_suppressed` | Do not count suppression as search success |
+| Verification | PASS | py_compile, focused unittest `5`, `git diff --check` | Broaden only if runtime replay exposes regression |
+| Search recovery | Partial contract / P0 open | No runtime replay this loop | Keep `promotion_blocked=search-blind conditional` |
+| Documentation sync | Done | Loop370 report/state plus TODO/CHECKLIST/VERIFICATION/HISTORY updated | Next loop must produce runtime evidence or shrink residual queue |
+
+Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, code contract `GO_UNIT`, runtime replay `NOT_RUN_THIS_LOOP`, search recovery `PARTIAL_CONTRACT / P0_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260703-366 - current HEAD golden18 rerun after expected correction
 
 | Item | Status | Evidence | Next action |

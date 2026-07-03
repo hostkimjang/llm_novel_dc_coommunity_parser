@@ -201,6 +201,7 @@ class ConversationContext:
             "retried_total": 0,
             "retry_attempts_total": 0,
             "cache_hit_total": 0,
+            "degraded_zero_suppressed_total": 0,
             "fallback_recovered_total": 0,
             "degraded_recovered_total": 0,
             "unrecovered_degraded_total": 0,
@@ -272,6 +273,7 @@ class ConversationContext:
         headless_blocked: bool = False,
         fallback_recovered: bool = False,
         degraded_recovered: bool = False,
+        degraded_zero_suppressed: bool = False,
         direct_search_used: bool = False,
         direct_search_reason: str = "",
         direct_search_count: int = 0,
@@ -335,6 +337,7 @@ class ConversationContext:
                 "retried_total": 0,
                 "retry_attempts_total": 0,
                 "cache_hit_total": 0,
+                "degraded_zero_suppressed_total": 0,
                 "fallback_recovered_total": 0,
                 "degraded_recovered_total": 0,
                 "unrecovered_degraded_total": 0,
@@ -359,6 +362,10 @@ class ConversationContext:
         stats["retry_attempts_total"] = int(stats.get("retry_attempts_total", 0) or 0) + max(0, atmp - 1)
         if from_cache:
             stats["cache_hit_total"] = int(stats.get("cache_hit_total", 0) or 0) + 1
+        if degraded_zero_suppressed:
+            stats["degraded_zero_suppressed_total"] = (
+                int(stats.get("degraded_zero_suppressed_total", 0) or 0) + 1
+            )
         if headless_used:
             stats["headless_used_total"] = int(stats.get("headless_used_total", 0) or 0) + 1
             try:
@@ -24253,6 +24260,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         headless_blocked=_meta_headless_blocked,
                         fallback_recovered=_meta_fallback_recovered,
                         degraded_recovered=_meta_degraded_recovered,
+                        degraded_zero_suppressed=bool(_search_meta.get("suppressed_degraded_zero")),
                         direct_search_used=_meta_direct_used,
                         direct_search_reason=_meta_direct_reason,
                         direct_search_count=_meta_direct_count,
