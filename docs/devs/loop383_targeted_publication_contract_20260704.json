@@ -1,0 +1,60 @@
+{
+  "loop": 383,
+  "date": "2026-07-04",
+  "scope": "targeted_dry_publication_contract_after_loop382",
+  "language": "ko",
+  "new_large_runs": "FROZEN",
+  "same_parent_packet_replay": "STOPPED",
+  "runtime_replay_after_patch": "NOT_RUN_AFTER_PATCH",
+  "code_contract": "GO_UNIT",
+  "targeted_dry_proof": {
+    "status": "GO_DRY",
+    "rows": 2,
+    "source_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop382_golden18_body_competition_contract_worktree_search_nonlight_result.json",
+    "source_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop382_golden18_body_competition_contract_worktree_search_nonlight_audit.json",
+    "json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop383_current_patch_loop382_targeted_postprocess_dry_audit.json",
+    "markdown": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop383_current_patch_loop382_targeted_postprocess_dry_audit.md"
+  },
+  "golden_expected_answer": {
+    "before_loop382": "NO-GO / 16 of 18",
+    "projected_after_targeted_dry": "NO-GO / 17 of 18",
+    "remaining_failed_post_ids_minimal_projection": [11663521],
+    "projection_caveat": "dry postprocess only; current-code golden18 runtime not rerun"
+  },
+  "rows": [
+    {
+      "post_id": 11663521,
+      "before_official_title": "성기사는 버생을 산다",
+      "after_official_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "publish_allowed": false,
+      "status": "wrong_publish_blocked_positive_unresolved",
+      "source_native_verdict": "본문 토우마/시스터즈/갱생펀치 맥락은 어떤 마술의 금서목록 또는 어떤 과학의 초전자포 계열 논의다. 기존 public title은 wrong publish이며, 패치 후 차단되지만 positive expected는 아직 미해소다."
+    },
+    {
+      "post_id": 11663540,
+      "before_official_title": "전 버디가 하고 싶은데요",
+      "after_official_title": "전 버튜버가 하고 싶은데요",
+      "after_candidate_ledger_status": "safe_resolved",
+      "publish_allowed": true,
+      "status": "expected_title_resolved_by_ocr_search_canonicalization",
+      "source_native_verdict": "공식 NovelPia 및 웹 근거가 주서연, 플라나리아햄버거, 전 버튜버가 하고 싶은데요를 지지하므로 OCR 오독을 canonical title로 보정한다."
+    }
+  ],
+  "collateral": {
+    "golden_shared_collateral": "NO-GO / inherited 7 regressions",
+    "full375_collateral": "NOT_OPEN",
+    "active_lane_reporting": "reclassified 74 / runtime-verified 4",
+    "queue_count_progress_claim": false
+  },
+  "override_audit_11708445": {
+    "status": "ACCEPT / candidate_only_block_is_correct",
+    "source_loop": 319,
+    "deferred": false
+  },
+  "search_recovery": "P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN",
+  "promotion_blocked": "search-blind conditional",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "overall_goal": "ACTIVE / NOT_COMPLETE"
+}

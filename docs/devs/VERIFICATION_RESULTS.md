@@ -1,5 +1,38 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop383 targeted dry publication contract
+
+- 범위: Loop382 golden18 실패 2건(`11663521`, `11663540`)을 새 runtime 없이 현재 후처리 계약으로만 dry 재평가한다. 신규 full375/bounded/N5/golden18 대형 런과 동일 parent packet replay는 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_383_REPORT_20260704.md`
+  - state `docs\devs\loop383_targeted_publication_contract_20260704.json`
+  - dry audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop383_current_patch_loop382_targeted_postprocess_dry_audit.json`
+  - dry audit markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop383_current_patch_loop382_targeted_postprocess_dry_audit.md`
+  - source Loop382 result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop382_golden18_body_competition_contract_worktree_search_nonlight_result.json`
+  - source Loop382 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop382_golden18_body_competition_contract_worktree_search_nonlight_audit.json`
+- Code evidence:
+  - title-only official/detail 후보는 `official_detail_url_missing_direct_source_support` 음성 근거가 있으면 직접 source support 없이 public publish로 복구되지 않는다.
+  - direct image/OCR title은 검색 공식 제목 및 캐릭터 괄호 bridge와 맞을 때 canonical title로 수렴한다.
+- Row evidence:
+  - `11663521`: `성기사는 버생을 산다 -> null`, `promotion_blocked`, wrong publish 차단. Expected positive title은 아직 unresolved.
+  - `11663540`: `전 버디가 하고 싶은데요 -> 전 버튜버가 하고 싶은데요`, OCR/search canonicalization.
+- Verification commands:
+  - `.venv312\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_title_only_missing_direct_source_negative_demotes_restored_publish tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_title_only_official_detail_without_url_does_not_restore tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_short_generic_blocked_alias_does_not_restore_title_only -v` -> PASS, `3` tests.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_direct_image_ocr_publish_canonicalizes_from_search_snippet_bridge tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_direct_image_character_parenthetical_bridge_restores_ocr_variant_hold tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_direct_image_ocr_variant_without_parenthetical_bridge_stays_blocked -v` -> PASS, `3` tests.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata tests.test_promotion_gate_contract -v` -> PASS, `78` tests.
+  - `.venv312\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_comment_metadata.py` -> PASS.
+  - `git diff --check` -> PASS, CRLF warning only.
+- Semantic evidence:
+  - Loop382 before expected-answer `NO-GO / 16 of 18`
+  - targeted dry projection `NO-GO / 17 of 18`
+  - remaining minimal failure `11663521`
+  - current-code runtime replay `NOT_RUN_AFTER_PATCH`
+- Collateral evidence:
+  - golden shared collateral inherited `NO-GO / 7 regressions`
+  - full375 collateral `NOT_OPEN`
+  - collateral active lane is reported as `reclassified 74 / runtime-verified 4`, not queue-count progress.
+- Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, code contract `GO_UNIT`, targeted dry proof `GO_DRY / 2 rows`, runtime replay `NOT_RUN_AFTER_PATCH`, expected-answer `NO-GO / projected 17 of 18`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop379-382 11698880 body-verified competition and current worktree golden18
 
 - 범위: Loop379/380 `11698880` wrong publish를 body-verified competition 계약으로 차단하고, 현 워킹트리에서 golden18 non-light runtime `18/18`을 재증명한다. 신규 full375/bounded/N5 대형 런과 동일 parent packet replay는 발주하지 않는다.

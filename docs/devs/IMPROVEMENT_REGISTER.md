@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260704-383 - targeted dry publication contract
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/golden18 미발주 | 동결 유지 |
+| parent packet replay | 중단 | 동일 38-row replay 없음 | 반복 금지 |
+| title-only missing direct source | GO_UNIT | `official_detail_url_missing_direct_source_support` 후보는 직접 source support 없으면 publish 복구 차단 | runtime 전 카운트 개선 금지 |
+| direct image/OCR canonicalization | GO_UNIT | 검색 공식 제목 및 캐릭터 괄호 bridge로 `전 버튜버가 하고 싶은데요` 보정 | golden18 rerun 전 dry projection으로만 보관 |
+| `11663521` | wrong publish blocked / unresolved | `성기사는 버생을 산다 -> null`, expected positive는 미해소 | source-native/search 또는 일반 술어로 줄이기 |
+| `11663540` | projected pass | `전 버디가 하고 싶은데요 -> 전 버튜버가 하고 싶은데요` | runtime replay에서 재검증 필요 |
+| expected-answer | NO-GO / projected 17 of 18 | targeted dry audit, remaining `11663521` | approval로 세지 않음 |
+| collateral | NOT_OPEN | golden shared inherited `7`, full375 미실행 | full375 전수 gate 별도 필요 |
+| 문서 동기화 | 완료 | Loop383 report/state와 운영 문서 갱신 | 다음 loop는 runtime 또는 `11663521` positive 미해소 감소 |
+
+Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, code contract `GO_UNIT`, targeted dry proof `GO_DRY / 2 rows`, runtime replay `NOT_RUN_AFTER_PATCH`, golden expected-answer `NO-GO / projected 17 of 18`, golden shared collateral `NO-GO / inherited 7 regressions`, full375 collateral `NOT_OPEN`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260704-379-382 - 11698880 body-verified competition runtime proof
 
 | 항목 | 상태 | 근거 | 다음 조치 |

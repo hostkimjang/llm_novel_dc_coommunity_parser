@@ -1,5 +1,32 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop383 targeted dry publication contract 체크
+
+- [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] 저장된 Loop382 실패 2건에 현재 후처리 계약만 적용하는 dry audit을 생성했다.
+  - source result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop382_golden18_body_competition_contract_worktree_search_nonlight_result.json`
+  - audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop383_current_patch_loop382_targeted_postprocess_dry_audit.json`
+- [x] `11663521`은 wrong publish를 차단했다.
+  - before `성기사는 버생을 산다`
+  - after `null`
+  - status `promotion_blocked`
+  - positive expected `어떤 마술의 금서목록 / 어떤 과학의 초전자포`는 아직 미해소
+- [x] `11663540`은 OCR/search canonicalization을 적용했다.
+  - before `전 버디가 하고 싶은데요`
+  - after `전 버튜버가 하고 싶은데요`
+  - status `safe_resolved`
+- [x] 검증:
+  - focused missing-direct-source tests `3` PASS
+  - focused direct-image/OCR canonicalization tests `3` PASS
+  - `tests.test_expert_main_comment_metadata` + `tests.test_promotion_gate_contract` `78` PASS
+  - `py_compile` PASS
+  - `git diff --check` PASS, CRLF warning only
+- [ ] current-code golden18 runtime replay는 아직 하지 않았으므로 projected `17/18`을 approval로 세지 않는다.
+- [ ] `11663521`은 다음 source-native/search 또는 일반 술어 대상이다.
+- [ ] full375 collateral approval은 `NOT_OPEN`으로 유지한다.
+- Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, code contract `GO_UNIT`, targeted dry proof `GO_DRY / 2 rows`, runtime replay `NOT_RUN_AFTER_PATCH`, golden expected-answer `NO-GO / projected 17 of 18`, golden shared collateral `NO-GO / inherited 7 regressions`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop379-382 11698880 body-verified competition + golden18 체크
 
 - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.

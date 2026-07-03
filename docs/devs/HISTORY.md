@@ -1,5 +1,18 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop383 targeted dry publication contract
+
+- 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop382 golden18 expected-answer 실패 2건(`11663521`, `11663540`)에 현재 후처리 계약만 dry 적용했다.
+- `expert_main.py`는 `official_detail_url_missing_direct_source_support` 음성 근거가 붙은 title-only official/detail 후보가 직접 source support 없이 public publish로 복구되는 경로를 차단한다.
+- `expert_main.py`는 direct image/OCR 기반 URL 없는 public title이 검색 결과의 공식 제목 및 캐릭터 괄호 bridge와 맞으면 정식 제목으로 canonicalize한다.
+- `11663521`은 actual `성기사는 버생을 산다` wrong publish를 `null / promotion_blocked / publish_allowed=false`로 내렸지만, expected `어떤 마술의 금서목록 / 어떤 과학의 초전자포`는 아직 안전하게 publish하지 못한다.
+- `11663540`은 actual `전 버디가 하고 싶은데요`를 공식/웹 근거 `전 버튜버가 하고 싶은데요`로 보정한다.
+- Targeted dry audit는 projected expected-answer `NO-GO / 17 of 18`, remaining minimal failure `11663521`을 기록했다.
+- 검증은 focused missing-direct-source 3 PASS, focused OCR canonicalization 3 PASS, broader 78 PASS, `py_compile` PASS, `git diff --check` PASS(CRLF warning only)다.
+- Report는 `docs/devs/loop_reports/LOOP_383_REPORT_20260704.md`, state는 `docs/devs/loop383_targeted_publication_contract_20260704.json`이다.
+- Gate는 new large runs `FROZEN`, same parent packet replay `STOPPED`, code contract `GO_UNIT`, targeted dry proof `GO_DRY / 2 rows`, runtime replay `NOT_RUN_AFTER_PATCH`, golden expected-answer `NO-GO / projected 17 of 18`, golden shared collateral `NO-GO / inherited 7 regressions`, full375 collateral `NOT_OPEN`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop379-382 11698880 body-verified competition and golden18 runtime proof
 
 - 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

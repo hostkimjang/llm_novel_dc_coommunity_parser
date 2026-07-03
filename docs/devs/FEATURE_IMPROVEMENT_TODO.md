@@ -4,11 +4,11 @@
 
 ## Current HEAD evidence refresh
 
-- [ ] Loop382 remaining golden expected/search follow-up
-  - 상태: current worktree golden18 runtime `GO 18/18` / expected-answer `NO-GO 16/18` / search recovery `P0_PARTIAL_RUNTIME_GO` / approval not open
-  - 적용: `11698880` wrong publish `아카데미 생존 갤러리`는 body-verified competition gate로 차단됐고, 현 run actual은 `null`이다. `11660237`은 `테라포밍`으로 통과했다.
-  - 산출물: `docs/devs/loop_reports/LOOP_379_382_REPORT_20260704.md`, `docs/devs/loop379_382_body_competition_runtime_20260704.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop382_golden18_body_competition_contract_worktree_search_nonlight_audit.json`.
-  - 완료 기준: 남은 실패 `11663521`, `11663540`을 source-native/blind judge 또는 일반 술어 코드 계약으로 줄이고, search degraded 100% 복구 또는 full375 collateral 전수 gate 전까지 approval과 hard-hold 완화를 열지 않는다.
+- [ ] Loop383 remaining golden expected/search follow-up
+  - 상태: current worktree golden18 runtime은 Loop382 기준 `GO 18/18` / Loop383 targeted dry projection `NO-GO 17/18` / runtime after patch `NOT_RUN` / search recovery `P0_PARTIAL_RUNTIME_GO` / approval not open
+  - 적용: `11663521` wrong publish `성기사는 버생을 산다`는 dry postprocess에서 `null / promotion_blocked`로 차단됐지만 positive expected는 unresolved다. `11663540` OCR 오독 `전 버디가 하고 싶은데요`는 `전 버튜버가 하고 싶은데요`로 canonicalize된다.
+  - 산출물: `docs/devs/loop_reports/LOOP_383_REPORT_20260704.md`, `docs/devs/loop383_targeted_publication_contract_20260704.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop383_current_patch_loop382_targeted_postprocess_dry_audit.json`.
+  - 완료 기준: `11663521` positive expected 미해소를 source-native/search 또는 일반 술어로 줄이고, current-code golden18 runtime replay 또는 search degraded 100% 복구 및 full375 collateral 전수 gate 전까지 approval과 hard-hold 완화를 열지 않는다.
 
 - [ ] Loop365 remaining golden expected/search follow-up
   - 상태: `11713222` source-native expected correction 완료 / golden expected `NO-GO 14/18` / search recovery `P0_OPEN` / approval not open

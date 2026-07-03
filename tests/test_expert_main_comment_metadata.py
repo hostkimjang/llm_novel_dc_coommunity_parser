@@ -823,6 +823,85 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertIn("direct_image_work_surface_bridge", trace["scope_state"]["direct_bridge_sources"])
         self.assertIn("search_character_parenthetical_bridge", trace["scope_state"]["direct_bridge_sources"])
 
+    def test_direct_image_ocr_publish_canonicalizes_from_search_snippet_bridge(self):
+        result = {
+            "post_id": 11663540,
+            "title": "TS) 주서연 전차랑 줄다리기 하면 이길까?",
+            "content": ["내가 봤을땐 이 고릴라년이 가볍게 이길것 같은데"],
+            "comments": ["전차 주제에 주서연이랑 비비려하네"],
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "safe_resolved": True,
+                "context_sources": ["title", "body", "comments", "image", "search"],
+                "consistency_flags": [
+                    "platform_meta_multi_title_blocked",
+                    "direct_image_explicit_title_rescued",
+                ],
+                "novel_identity": {
+                    "official_title": "전 버디가 하고 싶은데요",
+                    "heretic_url": None,
+                    "confidence": "High",
+                },
+                "image_evidence_catalog": [
+                    {
+                        "promotion_eligible": True,
+                        "title_role": "work_title",
+                        "evidence_type": "cover_title",
+                        "explicit_work_title": "전 버디가 하고 싶은데요",
+                    }
+                ],
+                "search_evidence_catalog": [
+                    {
+                        "title": "괴력녀 - 나무위키",
+                        "url": "https://namu.wiki/w/example",
+                        "domain": "namu.wiki",
+                        "source_tier": "wiki",
+                        "snippet": "전 버튜버가 하고 싶은데요 - 주서연. 철완 버디 - 버디 시폰 알티라.",
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": "전 버디가 하고 싶은데요",
+                    "official_url": None,
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "direct_image_work_surface_bridge",
+                        "ocr_catalog_official_title",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "direct_image_work_surface_lock",
+                            "structured_direct_image_work_surface",
+                            "ocr_catalog_official_title",
+                        ],
+                    },
+                },
+                "candidate_ledger": {},
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["novel_identity"]["official_title"], "전 버튜버가 하고 싶은데요")
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        decision = identity["promotion_decision"]
+        self.assertTrue(decision["publish_allowed"])
+        self.assertEqual(decision["official_title"], "전 버튜버가 하고 싶은데요")
+        self.assertIn("direct_image_ocr_search_canonicalized", decision["reason_codes"])
+        self.assertIn("search_character_parenthetical_bridge", decision["reason_codes"])
+
     def test_direct_image_ocr_variant_without_parenthetical_bridge_stays_blocked(self):
         result = {
             "post_id": 11663540,
@@ -2863,6 +2942,102 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         decision = identity["promotion_decision"]
         self.assertFalse(decision["publish_allowed"])
         self.assertNotIn("verified_alias_title_only_publication", decision["reason_codes"])
+
+    def test_title_only_missing_direct_source_negative_demotes_restored_publish(self):
+        result = {
+            "title": "TS) 시스터즈 퍼스트 정신머리 고치려면",
+            "content": ["고쳐질때까지 토우마가 갱생펀치 갈기면 되지 않을까?"],
+            "comments": [],
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "is_resolved_work_discussion": True,
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "anchor_type": "title_alias",
+                "context_sources": ["title", "body", "search", "image"],
+                "consistency_flags": [
+                    "official_detail_url_missing_direct_source_support",
+                    "verified_alias_title_only_publication",
+                    "serialized_public_identity_shared_gate_restored",
+                ],
+                "novel_identity": {
+                    "official_title": "성기사는 버생을 산다",
+                    "heretic_url": None,
+                    "confidence": "High",
+                },
+                "candidate_preservation_sources": [
+                    {
+                        "official_title": "성기사는 버생을 산다",
+                        "heretic_url": None,
+                        "confidence": "High",
+                        "alias_or_mention": "시스터즈 이미지",
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                        "reference_role": "primary",
+                        "negative_evidence": [
+                            "official_detail_url_missing_direct_source_support"
+                        ],
+                    },
+                    {
+                        "official_title": "어떤 마술의 금서목록",
+                        "heretic_url": "https://namu.wiki/w/example",
+                        "confidence": "High",
+                        "source_tier": "wiki",
+                        "reference_role": "candidate",
+                    },
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": "성기사는 버생을 산다",
+                    "official_url": None,
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "verified_alias_title_only_publication",
+                        "serialized_public_identity_shared_gate_restored",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {"scope_kind": "current_work"},
+                },
+                "candidate_ledger": {
+                    "candidate_preservation_sources": [
+                        {
+                            "official_title": "성기사는 버생을 산다",
+                            "heretic_url": None,
+                            "confidence": "High",
+                            "alias_or_mention": "시스터즈 이미지",
+                            "source_tier": "official_detail",
+                            "page_type": "novel_page",
+                            "reference_role": "primary",
+                            "negative_evidence": [
+                                "official_detail_url_missing_direct_source_support"
+                            ],
+                        }
+                    ]
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertFalse(identity["safe_resolved"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        decision = identity["promotion_decision"]
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn(
+            "official_detail_url_missing_direct_source_support",
+            decision["reason_codes"],
+        )
+        self.assertEqual(decision["status"], "candidate_only")
 
     def test_short_generic_blocked_alias_does_not_restore_title_only(self):
         result = {

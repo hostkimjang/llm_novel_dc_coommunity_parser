@@ -3085,6 +3085,182 @@ def _sync_allowed_publication_result_contract(result_dict: Dict[str, Any]) -> bo
             "source_item": source_item,
         }
 
+    def _raw_source_text_key() -> str:
+        chunks: List[str] = []
+
+        def _append(value: Any) -> None:
+            if isinstance(value, str):
+                if value.strip():
+                    chunks.append(value)
+                return
+            if isinstance(value, list):
+                for item in value:
+                    _append(item)
+                return
+            if isinstance(value, dict):
+                for key in ("title", "text", "content", "body", "comment", "raw_text"):
+                    text = str(value.get(key) or "").strip()
+                    if text:
+                        chunks.append(text)
+
+        for value in (
+            result_dict.get("title"),
+            result_dict.get("post_title"),
+            result_dict.get("source_title"),
+            result_dict.get("content"),
+            result_dict.get("comments"),
+            result_dict.get("comment_context_lines"),
+            result_dict.get("comment_dialogue_context_lines"),
+            identity.get("post_title"),
+            identity.get("source_title"),
+        ):
+            _append(value)
+        return _title_key(" ".join(chunks))
+
+    def _direct_image_ocr_search_canonicalization() -> Optional[Dict[str, Any]]:
+        public_key = _title_key(public_title)
+        if not public_key or len(public_key) < 8:
+            return None
+        if public_url:
+            return None
+        scope_sources = {
+            str(value or "").strip()
+            for value in (scope_state.get("direct_bridge_sources") or [])
+            if str(value or "").strip()
+        }
+        reason_codes = {str(code or "").strip() for code in trace_reason_codes if str(code or "").strip()}
+        direct_image_codes = {
+            "direct_image_work_surface_bridge",
+            "direct_image_work_surface_lock",
+            "structured_direct_image_work_surface",
+            "ocr_catalog_official_title",
+            "image_ocr_work_title",
+        }
+        if not (scope_sources & direct_image_codes or reason_codes & direct_image_codes):
+            return None
+        source_key = _raw_source_text_key()
+        if not source_key:
+            return None
+
+        def _trusted_search_item(item: Dict[str, Any]) -> bool:
+            source_tier = str(item.get("source_tier") or "").strip().lower()
+            domain = str(item.get("domain") or "").strip().lower()
+            url = str(item.get("url") or item.get("official_url") or "").strip().lower()
+            if source_tier in {"official_detail", "novel_platform", "official", "wiki", "knowledge"}:
+                return True
+            return any(host in domain or host in url for host in ("novelpia.com", "namu.wiki"))
+
+        def _variant_overlap(candidate_title: str) -> bool:
+            candidate_key = _title_key(candidate_title)
+            if not candidate_key or candidate_key == public_key or len(candidate_key) < 8:
+                return False
+            ratio = SequenceMatcher(None, public_key, candidate_key).ratio()
+            longest = SequenceMatcher(None, public_key, candidate_key).find_longest_match(
+                0, len(public_key), 0, len(candidate_key)
+            ).size
+            return bool(ratio >= 0.78 and longest >= 5)
+
+        def _candidate_from_official_title(item: Dict[str, Any]) -> Optional[tuple[str, str, int]]:
+            title_text = str(item.get("title") or item.get("official_title") or "").strip()
+            if not title_text or not _variant_overlap(title_text):
+                return None
+            url = str(item.get("url") or item.get("official_url") or "").strip()
+            score = 10
+            if _official_detail_url(url):
+                score += 20
+            source_tier = str(item.get("source_tier") or "").strip().lower()
+            if source_tier in {"official_detail", "novel_platform", "official"}:
+                score += 10
+            return title_text, url, score
+
+        def _candidate_from_character_bridge(text: str, item_url: str) -> List[tuple[str, str, int]]:
+            out: List[tuple[str, str, int]] = []
+            for match in re.finditer(r"([0-9A-Za-z가-힣]{2,12})\s*\(([^()]{4,80})\)", text):
+                character_key = _title_key(match.group(1))
+                title_text = match.group(2).strip()
+                if character_key and character_key in source_key and _variant_overlap(title_text):
+                    out.append((title_text, item_url, 25))
+            for match in re.finditer(r"([0-9A-Za-z가-힣][^.\n]{3,80}?)\s*[-–—:]\s*([0-9A-Za-z가-힣]{2,12})", text):
+                title_text = match.group(1).strip()
+                character_key = _title_key(match.group(2))
+                if character_key and character_key in source_key and _variant_overlap(title_text):
+                    out.append((title_text, item_url, 20))
+            return out
+
+        best: Optional[Dict[str, Any]] = None
+        best_score = -1
+        for item in _search_evidence_items():
+            if not _trusted_search_item(item):
+                continue
+            item_url = str(item.get("url") or item.get("official_url") or "").strip()
+            candidates: List[tuple[str, str, int]] = []
+            official_candidate = _candidate_from_official_title(item)
+            if official_candidate:
+                candidates.append(official_candidate)
+            for key in ("title", "snippet", "content"):
+                text = str(item.get(key) or "").strip()
+                if text:
+                    candidates.extend(_candidate_from_character_bridge(text, item_url))
+            for title_text, url, score in candidates:
+                if score > best_score:
+                    best = {
+                        "official_title": title_text,
+                        "official_url": _official_detail_url(url) or None,
+                        "source_item": item,
+                    }
+                    best_score = score
+        return best
+
+    canonicalized_ocr_title = _direct_image_ocr_search_canonicalization()
+    if canonicalized_ocr_title:
+        public_title = canonicalized_ocr_title["official_title"]
+        public_url = canonicalized_ocr_title["official_url"] or public_url
+        publication_source = "direct_image_ocr_search_canonicalization"
+        for code in (
+            "direct_image_ocr_search_canonicalized",
+            "search_character_parenthetical_bridge",
+        ):
+            if code not in trace_reason_codes:
+                trace_reason_codes.append(code)
+        source_item = canonicalized_ocr_title.get("source_item")
+        if not isinstance(source_item, dict):
+            source_item = {}
+        if not isinstance(novel_identity, dict):
+            novel_identity = {}
+        if novel_identity.get("official_title") != public_title:
+            novel_identity["official_title"] = public_title
+            changed = True
+        if novel_identity.get("heretic_url") != (public_url or None):
+            novel_identity["heretic_url"] = public_url or None
+            changed = True
+        if novel_identity.get("confidence") in {None, "", "None"}:
+            novel_identity["confidence"] = "High"
+            changed = True
+        identity["novel_identity"] = novel_identity
+        primary_work = dict(source_item)
+        primary_work.update(
+            {
+                "official_title": public_title,
+                "heretic_url": public_url or None,
+                "confidence": primary_work.get("confidence") or "High",
+                "source_tier": primary_work.get("source_tier") or "search_result",
+                "reference_role": "primary",
+            }
+        )
+        if identity.get("primary_work") != primary_work:
+            identity["primary_work"] = primary_work
+            changed = True
+        flags = [
+            str(value)
+            for value in (identity.get("consistency_flags") or [])
+            if str(value).strip()
+        ]
+        if "direct_image_ocr_search_canonicalized" not in flags:
+            flags.append("direct_image_ocr_search_canonicalized")
+        if identity.get("consistency_flags") != flags:
+            identity["consistency_flags"] = flags
+            changed = True
+
     gate_candidate_override = _gate_candidate_publication_override()
     if gate_candidate_override:
         public_title = gate_candidate_override["official_title"]
@@ -3492,6 +3668,21 @@ def _demote_unsafe_url_title_verified_publication_contract(
             "work_detail",
         }
 
+    missing_direct_source_code = "official_detail_url_missing_direct_source_support"
+
+    def _candidate_has_missing_direct_source_blocker() -> bool:
+        if missing_direct_source_code in reason_codes:
+            return True
+        for item in _candidate_items():
+            item_title, item_url = _candidate_title_url(item)
+            if _title_key(item_title) != candidate_key and (
+                not candidate_url_key or _url_key(item_url) != candidate_url_key
+            ):
+                continue
+            if missing_direct_source_code in _item_negative_evidence(item):
+                return True
+        return False
+
     def _same_url_mismatch_title() -> str:
         if not candidate_url_key:
             return ""
@@ -3549,7 +3740,12 @@ def _demote_unsafe_url_title_verified_publication_contract(
     has_same_url_title_mismatch = bool(
         url_title_mismatch_title and not _same_url_has_public_title_support()
     )
-    if not has_url_title_verified_reason and not has_same_url_title_mismatch:
+    has_missing_direct_source_blocker = _candidate_has_missing_direct_source_blocker()
+    if (
+        not has_url_title_verified_reason
+        and not has_same_url_title_mismatch
+        and not has_missing_direct_source_blocker
+    ):
         return False
 
     source_values = _source_values()

@@ -1,5 +1,14 @@
 # Slang DB Improvement TODO
 
+## 2026-07-04 Loop383 targeted dry publication contract slang 주의사항
+
+- [x] 이번 회차는 slang DB write-back이 아니라 저장된 Loop382 실패 2건의 targeted dry publication contract 보정이다.
+- [x] R1 하드코딩 cue 리스트 확장은 하지 않았다.
+- [x] `11663540`은 `전 버디가 하고 싶은데요` OCR 오독을 search/OCR bridge로 `전 버튜버가 하고 싶은데요`에 수렴한 것이며 alias/slang 승격 근거가 아니다.
+- [x] `11663521`은 wrong publish 차단만 됐고 positive expected는 아직 unresolved다.
+- [ ] current-code runtime replay, search degraded 복구, full375 collateral gate 전까지 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, targeted dry proof `GO_DRY / 2 rows`, runtime replay `NOT_RUN_AFTER_PATCH`, golden expected-answer `NO-GO / projected 17 of 18`, golden shared collateral `NO-GO / inherited 7 regressions`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop375 11668307 expected 교정 slang 주의사항
 
 - [x] 이번 회차는 slang DB write-back이 아니라 `11668307` golden expected 교정이다.
