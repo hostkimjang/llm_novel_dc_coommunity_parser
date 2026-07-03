@@ -1,5 +1,42 @@
 # Improvement Register
 
+## IMP-20260703-342 - verified alias title-only publication gate
+
+- 상태: targeted runtime 완료 / title-only contract 추가 / approval 미개방
+- Loop: 342
+- 문제:
+  - Loop341 alias seed replay에서 `창월야`는 expert chain이 `월야환담 창월야`로 수렴했지만, official URL title mismatch 때문에 final public contract가 `promotion_blocked`로 남았다.
+  - URL mismatch가 있을 때 URL까지 공개하는 것은 위험하지만, source/title/body/comments가 모두 작품 토론을 지지하는 verified alias의 official title까지 scrub하는 것은 safe-loss다.
+- 변경:
+  - `expert_main.py`에 verified alias title-only restore gate를 추가했다.
+  - public URL은 `null`로 보류하고 official title만 publish하도록 `promotion_decision`, `promotion_gate_state`, `publish_contract_trace`를 수렴시킨다.
+  - `tests/test_expert_main_comment_metadata.py`에 `창월야` positive 계약과 `판초` generic negative 계약을 추가했다.
+- 근거:
+  - report `docs/devs/loop_reports/LOOP_342_REPORT_20260703.md`
+  - state `docs/devs/loop342_verified_alias_title_only_publication_20260703.json`
+  - result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop342r2_known_alias_seed_targeted_current_head_71e27ce0_search_nonlight_result.json`
+  - manifest `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop342r2_known_alias_seed_targeted_current_head_71e27ce0_search_nonlight_result_manifest.json`
+- 결과:
+  - `11705251`은 패치 후 preview에서 title-only `safe_resolved`로 복구된다.
+  - `11703624`는 generic/adjacent evidence 때문에 hold 유지다.
+  - runtime output 자체는 패치 전 run 결과라 residual `126` 감소로 계산하지 않는다.
+- 검증:
+  - py_compile PASS.
+  - focused title-only/publication `4` tests PASS.
+  - comment metadata `48` tests PASS.
+  - known abbreviation bundle `38` tests PASS.
+  - title-led guard `185` tests PASS.
+  - promotion/candidate audit bundle `128` tests PASS.
+  - work-bridge/convergence/flip-rate/always-on bundle `26` tests PASS.
+- Gate:
+  - targeted runtime completion `GO`
+  - targeted contract preview `PARTIAL_GO`
+  - collateral `NO-GO / residual_action_queue_rows=126`
+  - search recovery `P0 / OPEN / SEARCH_DEGRADED observed`
+  - `promotion_blocked=search-blind conditional`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260703-341 - known alias safe-loss contract seed
 
 - 상태: code contract seed 완료 / runtime replay 미실행 / approval 미개방

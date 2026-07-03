@@ -1,5 +1,18 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop342 verified alias title-only publication gate
+
+- Loop341 alias seed 2건(`11703624`, `11705251`)을 search 포함 non-light targeted replay로 확인했다.
+- run `20260703_075717_945280`은 manifest completed/flushed/pending/failed `2/2/0/0`, `large_run_complete=true`, `mcp_health_include_search=true`, `mcp_health_light_mode=false`, VLM/OCR ready다.
+- 런 당시 두 행 모두 public `promotion_blocked`였고, approval 근거로 쓰지 않는다.
+- `expert_main.py`에 verified alias title-only 복구 경로를 추가했다. official URL title mismatch가 있으면 URL은 공개하지 않고 title만 공개한다.
+- `11705251`은 패치 후 preview에서 `official_title=월야환담 창월야`, `official_url=null`, `safe_resolved=true`, publish `true`로 복구된다.
+- `11703624`는 generic/adjacent evidence 때문에 `promotion_blocked`와 `safe_resolved=false`를 유지한다.
+- `tests/test_expert_main_comment_metadata.py`에 positive/negative 계약 테스트를 추가했다.
+- 검증은 py_compile PASS, focused title-only/publication `4` PASS, comment metadata `48` PASS, known abbreviation bundle `38` PASS, title-led guard `185` PASS, promotion/candidate audit `128` PASS, work-bridge/convergence/flip-rate/always-on bundle `26` PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_342_REPORT_20260703.md`, state는 `docs/devs/loop342_verified_alias_title_only_publication_20260703.json`이다.
+- Gate는 targeted runtime completion `GO`, targeted contract preview `PARTIAL_GO`, collateral `NO-GO / residual_action_queue_rows=126`, golden18/full375 `NOT_RERUN_AFTER_PATCH`, search recovery `P0 / OPEN / SEARCH_DEGRADED observed`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop341 known alias safe-loss contract seed
 
 - Loop340 `known_alias_runtime_replay_required=6`에서 일반화 가능한 2건만 코드 계약으로 올렸다.

@@ -1,5 +1,32 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop342 verified alias title-only publication gate 체크
+
+- [x] Loop341 alias seed 2건을 targeted input으로 고정했다.
+  - `11703624`: `판초법사`
+  - `11705251`: `창월야`
+- [x] search 포함 non-light 조건을 확인했다.
+  - MCP health `mcp_health_include_search=true`, `mcp_health_light_mode=false`
+  - run `20260703_075717_945280`
+  - manifest completed/flushed/pending/failed `2/2/0/0`
+- [x] runtime 결과와 패치 후 preview를 분리했다.
+  - 런 당시 두 행 모두 public `promotion_blocked`
+  - 패치 후 preview에서 `11705251`만 title-only `safe_resolved`
+  - `11703624`는 계속 hold
+- [x] `expert_main.py`에 verified alias title-only restore gate를 추가했다.
+- [x] positive/negative 계약 테스트를 추가했다.
+- [x] 검증을 실행했다.
+  - py_compile PASS
+  - focused title-only/publication `4` tests PASS
+  - comment metadata `48` tests PASS
+  - known abbreviation bundle `38` tests PASS
+  - title-led guard `185` tests PASS
+  - promotion/candidate audit bundle `128` tests PASS
+  - work-bridge/convergence/flip-rate/always-on bundle `26` tests PASS
+- [ ] post-patch runtime replay 전까지 `11705251` 복구를 residual 감소로 계산하지 않는다.
+- [ ] `11703624`는 blind/source judge 전까지 hard-hold를 완화하지 않는다.
+- Gate: targeted runtime completion `GO`, targeted contract preview `PARTIAL_GO`, collateral `NO-GO / residual_action_queue_rows=126`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop341 known alias safe-loss contract seed 체크
 
 - [x] Loop340 `known_alias_runtime_replay_required=6`을 검토했다.

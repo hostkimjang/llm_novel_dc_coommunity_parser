@@ -1,5 +1,27 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop342 verified alias title-only publication gate
+
+- 범위: Loop341 alias seed 2건을 search 포함 non-light targeted replay로 확인하고, verified alias가 URL title mismatch 때문에 막힐 때 title-only 공개로 복구하는 계약을 추가한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_342_REPORT_20260703.md`
+  - state `docs\devs\loop342_verified_alias_title_only_publication_20260703.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop342r2_known_alias_seed_targeted_current_head_71e27ce0_search_nonlight_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop342r2_known_alias_seed_targeted_current_head_71e27ce0_search_nonlight_result_manifest.json`
+- Evidence:
+  - run `20260703_075717_945280`, completed/flushed/pending/failed `2/2/0/0`, search 포함 non-light, VLM/OCR ready.
+  - `11703624`는 패치 후에도 `promotion_blocked`, `safe_resolved=false`다.
+  - `11705251`은 패치 후 contract sync preview에서 `official_title=월야환담 창월야`, `official_url=null`, `safe_resolved=true`, publish `true`다.
+- Verification:
+  - py_compile PASS
+  - focused title-only/publication tests PASS, `4` tests
+  - `tests.test_expert_main_comment_metadata` PASS, `48` tests
+  - known abbreviation bundle PASS, `38` tests
+  - `tests.test_title_lead_search_inferred_guard` PASS, `185` tests
+  - promotion gate/candidate audit bundle PASS, `128` tests
+  - work-bridge/convergence/flip-rate/always-on bundle PASS, `26` tests
+- Gate: targeted runtime completion `GO`, targeted contract preview `PARTIAL_GO`, collateral `NO-GO / residual_action_queue_rows=126`, golden18/full375 `NOT_RERUN_AFTER_PATCH`, search recovery `P0 / OPEN / SEARCH_DEGRADED observed`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop341 known alias safe-loss contract seed
 
 - 범위: Loop340 `known_alias_runtime_replay_required=6` 중 일반화 가능한 2건을 shared alias/work-cue 계약으로 고정한다.

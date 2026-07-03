@@ -2433,6 +2433,151 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
             identity["promotion_decision"]["reason_codes"],
         )
 
+    def test_blocked_verified_alias_title_only_restores_without_mismatched_url(self):
+        result = {
+            "title": "창월야 기준 한세건보다 강한 진마 몇 안되네",
+            "content": ["유다 팬텀 아르곤 아낙스 정돈가"],
+            "comments": ["와 한세건 아르곤 이런거 얼마만에 듣는 이름들이지"],
+            "identity": {
+                "candidate_ledger_status": "promotion_blocked",
+                "title_resolution_allowed": False,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "unresolved",
+                "is_resolved_work_discussion": False,
+                "safe_resolved": False,
+                "promotion_blocked": True,
+                "blocked_official_title": "월야환담 창월야",
+                "blocked_official_title_url": "https://page.kakao.com/content/46563867",
+                "anchor_type": "title_exact",
+                "context_sources": ["title", "body", "comments", "search", "image"],
+                "consistency_flags": [
+                    "weak_alias_surface_public_title_bridge",
+                    "official_detail_url_title_mismatch_publish_blocked",
+                ],
+                "novel_identity": {
+                    "official_title": None,
+                    "heretic_url": None,
+                    "confidence": "High",
+                },
+                "title_candidates": [
+                    {
+                        "official_title": "월야환담 창월야",
+                        "heretic_url": "https://page.kakao.com/content/46563867",
+                        "confidence": "High",
+                        "alias_or_mention": "창월야",
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                        "negative_evidence": [
+                            "weak_alias_surface_public_title_bridge",
+                            "url_title_mismatch",
+                        ],
+                    }
+                ],
+                "search_evidence_catalog": [
+                    {
+                        "title": "월야환담 창월야 - 나무위키",
+                        "url": "https://namu.wiki/w/%EC%9B%94%EC%95%BC%ED%99%98%EB%8B%B4%20%EC%B0%BD%EC%9B%94%EC%95%BC",
+                        "source_tier": "wiki",
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "candidate_only",
+                    "publish_allowed": False,
+                    "official_title": None,
+                    "official_url": None,
+                    "candidate_preserved": True,
+                    "reason_codes": [
+                        "scope_context_only",
+                        "serialized_public_identity_scrubbed",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {"scope_kind": "context_only"},
+                },
+                "candidate_ledger": {},
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            result,
+            post_title="창월야 기준 한세건보다 강한 진마 몇 안되네",
+        )
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertTrue(identity["safe_resolved"])
+        self.assertEqual(identity["novel_identity"]["official_title"], "월야환담 창월야")
+        self.assertIsNone(identity["novel_identity"]["heretic_url"])
+        decision = identity["promotion_decision"]
+        self.assertTrue(decision["publish_allowed"])
+        self.assertEqual(decision["official_title"], "월야환담 창월야")
+        self.assertIsNone(decision["official_url"])
+        self.assertIn("verified_alias_title_only_publication", decision["reason_codes"])
+        self.assertIn("official_url_withheld_by_title_mismatch", decision["reason_codes"])
+        self.assertNotIn("weak_alias_surface_public_title_bridge", identity["consistency_flags"])
+        trace = identity["publish_contract_trace"]
+        self.assertEqual(trace["gate_decision"], decision)
+        self.assertEqual(trace["post_gate_identity"]["official_title"], "월야환담 창월야")
+        self.assertIsNone(trace["post_gate_identity"]["official_url"])
+
+    def test_short_generic_blocked_alias_does_not_restore_title_only(self):
+        result = {
+            "title": "판초법사 경찰력 사용하면서도 1달 이상 정보통제가 가능함?",
+            "content": ["전국 경찰력 다 동원하는데 소문이 안날수가 있나?"],
+            "comments": [],
+            "identity": {
+                "candidate_ledger_status": "promotion_blocked",
+                "title_resolution_allowed": False,
+                "title_resolution_state": "adjacent",
+                "work_resolution": "none",
+                "is_resolved_work_discussion": False,
+                "safe_resolved": False,
+                "promotion_blocked": True,
+                "blocked_official_title": "판초",
+                "anchor_type": "none",
+                "context_sources": ["title", "body", "search"],
+                "novel_identity": {
+                    "official_title": None,
+                    "heretic_url": None,
+                },
+                "title_candidates": [
+                    {
+                        "official_title": "판초",
+                        "alias_or_mention": "판초",
+                        "source_tier": "wiki",
+                        "negative_evidence": ["weak_alias_surface_public_title_bridge"],
+                    }
+                ],
+                "search_evidence_catalog": [
+                    {
+                        "title": "판초",
+                        "url": "https://namu.wiki/w/%ED%8C%90%EC%B4%88",
+                        "source_tier": "wiki",
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "candidate_only",
+                    "publish_allowed": False,
+                    "official_title": None,
+                    "official_url": None,
+                    "candidate_preserved": True,
+                    "reason_codes": ["serialized_public_identity_scrubbed"],
+                    "bypassed_gate": False,
+                },
+                "candidate_ledger": {},
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertFalse(identity["safe_resolved"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertFalse(identity["promotion_decision"]["publish_allowed"])
+        self.assertIn("serialized_public_identity_scrubbed", identity["promotion_decision"]["reason_codes"])
+
     def test_pure_slang_alias_without_source_surface_does_not_support_publication(self):
         result = {
             "identity": {

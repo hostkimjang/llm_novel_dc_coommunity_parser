@@ -1,0 +1,84 @@
+{
+  "loop": 342,
+  "date": "2026-07-03",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "runtime_head": "71e27ce0",
+  "runtime_run_id": "20260703_075717_945280",
+  "runtime_artifacts": {
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop342_known_alias_seed_targeted_input.jsonl",
+    "input_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop342_known_alias_seed_targeted_input_manifest.json",
+    "health_preflight": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop342_mcp3333_health_preflight.json",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop342r2_known_alias_seed_targeted_current_head_71e27ce0_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop342r2_known_alias_seed_targeted_current_head_71e27ce0_search_nonlight_result_manifest.json",
+    "log": "logs/expert_run_20260703_075717_945280.log"
+  },
+  "runtime_manifest": {
+    "completed_count": 2,
+    "flushed_count": 2,
+    "pending_count": 0,
+    "failed_count": 0,
+    "large_run_complete": true,
+    "partial_flush_gap": false,
+    "ordered_flush_blocked": false,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_count": 1,
+    "vlm_ocr_semantic_review_ready": true,
+    "image_post_count": 1
+  },
+  "rows": [
+    {
+      "post_id": 11703624,
+      "alias": "판초법사",
+      "expected_work": "판초우의의 마법사",
+      "runtime_public_status": "promotion_blocked",
+      "runtime_safe_resolved": false,
+      "postprocess_preview_status": "promotion_blocked",
+      "postprocess_preview_safe_resolved": false,
+      "decision": "HOLD",
+      "reason": "generic or adjacent 판초 evidence and verifier hard negative remain unresolved"
+    },
+    {
+      "post_id": 11705251,
+      "alias": "창월야",
+      "expected_work": "월야환담 창월야",
+      "runtime_public_status": "promotion_blocked",
+      "runtime_safe_resolved": false,
+      "postprocess_preview_status": "safe_resolved",
+      "postprocess_preview_safe_resolved": true,
+      "postprocess_preview_official_title": "월야환담 창월야",
+      "postprocess_preview_official_url": null,
+      "decision": "TITLE_ONLY_RESTORE_AFTER_PATCH",
+      "reason_codes": [
+        "verified_alias_title_only_publication",
+        "official_url_withheld_by_title_mismatch",
+        "serialized_public_identity_shared_gate_restored",
+        "serialized_public_identity_published"
+      ]
+    }
+  ],
+  "code_changes": [
+    "expert_main.py::_scrub_promotion_blocked_result_contract verified alias title-only restore",
+    "tests/test_expert_main_comment_metadata.py title-only positive and generic negative contracts"
+  ],
+  "verification": [
+    "py_compile PASS",
+    "focused title-only/publication tests 4 PASS",
+    "tests.test_expert_main_comment_metadata 48 PASS",
+    "known title abbreviation bundle 38 PASS",
+    "tests.test_title_lead_search_inferred_guard 185 PASS",
+    "promotion gate and candidate audit bundle 128 PASS",
+    "work bridge, convergence, flip-rate, always-on gate bundle 26 PASS"
+  ],
+  "gates": {
+    "targeted_runtime_completion": "GO",
+    "targeted_contract_preview": "PARTIAL_GO",
+    "collateral_gate": "NO-GO / residual_action_queue_rows=126",
+    "golden18_full375": "NOT_RERUN_AFTER_PATCH",
+    "search_recovery": "P0 / OPEN / SEARCH_DEGRADED observed",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

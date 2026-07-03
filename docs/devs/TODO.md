@@ -2,6 +2,20 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop342 TODO
+
+- 상태 업데이트: Loop341 alias seed 2건 targeted replay는 완료됐지만 런 당시 public contract는 모두 `promotion_blocked`였고, 패치 후 preview에서 `11705251`만 title-only safe_resolved로 복구된다. Goal은 `ACTIVE / NOT_COMPLETE`.
+- Loop342 TODO:
+  - [x] `11703624`, `11705251` targeted input을 실행했다.
+  - [x] search 포함 non-light 조건과 manifest `2/2/0/0`을 확인했다.
+  - [x] `11705251` verified alias title-only restore gate를 구현했다.
+  - [x] `11703624` generic/adjacent negative contract를 고정했다.
+  - [x] py_compile, focused `4`, comment metadata `48`, known abbreviation `38`, title-led guard `185`, promotion/candidate audit `128`, work-bridge/convergence/flip-rate/always-on `26` PASS를 확인했다.
+  - [ ] post-patch runtime replay 전까지 `11705251`을 residual 감소로 계산하지 않는다.
+  - [ ] search degraded 100% 복구 전까지 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [ ] `11703624`는 blind/source judge로 작품 약칭성이 확정되기 전까지 hard-hold 완화 금지.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop341 TODO
 
 - 상태 업데이트: Loop340 `known_alias_runtime_replay_required=6` 중 2건을 shared alias/work-cue code contract로 반영했다. Goal은 `ACTIVE / NOT_COMPLETE`.

@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop342 Addendum - verified alias title-only publication gate
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop342는 approval 회차가 아니라 Loop341 alias seed 2건의 targeted runtime replay와 그 결과에서 확인된 verified alias title-only 복구 계약을 추가한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_342_REPORT_20260703.md`, state `docs/devs/loop342_verified_alias_title_only_publication_20260703.json`, result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop342r2_known_alias_seed_targeted_current_head_71e27ce0_search_nonlight_result.json`, manifest `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop342r2_known_alias_seed_targeted_current_head_71e27ce0_search_nonlight_result_manifest.json`.
+- Runtime: run `20260703_075717_945280`, completed/flushed/pending/failed `2/2/0/0`, `large_run_complete=true`, `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `vlm_ocr_semantic_review_ready=true`.
+- Result: 런 당시 `11703624`, `11705251` 모두 public `promotion_blocked`였으나, 패치 후 contract sync preview에서 `11705251`만 `official_title=월야환담 창월야`, `official_url=null`, `safe_resolved=true`, publish `true`로 복구된다. `11703624`는 generic/adjacent 판정으로 hold 유지다.
+- Code: URL title mismatch가 있는 verified alias는 official URL을 공개하지 않고 title-only로 publish할 수 있게 했다. hard negative flag, source support, context source 조건을 만족하지 않으면 계속 차단한다.
+- Verification: py_compile PASS, focused title-only/publication `4` PASS, comment metadata `48` PASS, known abbreviation bundle `38` PASS, title-led guard `185` PASS, promotion/candidate audit `128` PASS, work-bridge/convergence/flip-rate/always-on bundle `26` PASS.
+- Gate: targeted runtime completion `GO`, targeted contract preview `PARTIAL_GO`, collateral `NO-GO / residual_action_queue_rows=126`, golden18/full375 `NOT_RERUN_AFTER_PATCH`, search recovery `P0 / OPEN / SEARCH_DEGRADED observed`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop341 Addendum - known alias safe-loss contract seed
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop341은 approval 회차가 아니라 Loop340 `known_alias_runtime_replay_required=6` 중 2건만 shared alias/work-cue 계약으로 올린 회차다.
