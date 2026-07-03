@@ -1189,6 +1189,24 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
                 return True
         return False
 
+    def _has_distinct_alias_bridge_for_title_only(candidate_title: str) -> bool:
+        candidate_key = _title_key(candidate_title)
+        if not candidate_key:
+            return False
+        for item in _blocked_candidate_source_items():
+            if not isinstance(item, dict):
+                continue
+            item_title, _ = _candidate_title_url(item)
+            if _title_key(item_title) != candidate_key:
+                continue
+            alias_key = _title_key(item.get("alias_or_mention") or item.get("alias") or item.get("surface"))
+            if alias_key and alias_key != candidate_key:
+                return True
+            for field in ("resolved_recall_anchor", "known_abbreviation", "known_alias", "curated_alias"):
+                if item.get(field) is True:
+                    return True
+        return False
+
     def _restore_blocked_verified_alias_title_only(candidate_title: str, candidate_url: str) -> bool:
         candidate_title = str(candidate_title or "").strip()
         candidate_url = _official_detail_url(candidate_url)
@@ -1231,6 +1249,8 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
         if str(identity.get("topicality") or "").strip().lower() in {"unrelated", "off_topic"}:
             return False
         if _publication_sentence_like_alias_overreach(identity, candidate_title):
+            return False
+        if not _has_distinct_alias_bridge_for_title_only(candidate_title):
             return False
         if not _publication_has_direct_source_support(
             result_dict,

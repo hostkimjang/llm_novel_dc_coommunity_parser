@@ -2,6 +2,22 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop364 TODO
+
+- 상태 업데이트: 신규 대형 런은 동결했고 Loop363 golden18 실패 중 wrong-publish 3건만 targeted replay했다. Runtime은 `3/3/3/0/0`로 완주했지만 `11713222`는 여전히 expected-answer 충돌이라 approval이 아니다.
+- Loop364 TODO:
+  - [x] R1 하드코딩 cue 리스트 확장 없이 shared promotion gate 일반 술어를 보강했다.
+  - [x] `direct_competing_work_surface`와 `image_scope_missing_candidate_surface` 계약 테스트를 추가했다.
+  - [x] URL 없는 verified-alias title-only 복구에 distinct alias bridge 요구를 추가했다.
+  - [x] Search shard `3343/3344` preflight를 확인했다: `2/2 OK`.
+  - [x] wrong-publish 3-row targeted replay를 완료했다: run `20260703_190831_536951`, completed/flushed/pending/failed `3/3/0/0`.
+  - [x] Runtime health audit를 생성했다: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop364_wrong_publish_3_runtime_health_audit.json`.
+  - [x] `11694019`, `11700470`은 public title `null`, `promotion_blocked`, `publish_allowed=false`로 wrong publish 차단을 확인했다.
+  - [ ] `11713222`는 direct alias runtime publish와 golden expected가 충돌하므로 blind/source-native judge로 정답성을 확정한다.
+  - [x] `11708445` OVERRIDE AUDIT는 Loop319 `ACCEPT / candidate_only_block_is_correct` 완료 항목으로 재고정했다.
+  - [ ] Search degraded `unrecovered_degraded_total=6`을 닫기 전 semantic approval, full scan approval, hard-hold 완화를 금지한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop363 TODO
 
 - 상태 업데이트: 신규 대형 런은 계속 동결했고, 현 HEAD `b7b85936`에서 golden18 단일 실행만 수행했다. Runtime은 completed/flushed/pending/failed `18/18/0/0`로 완주했지만 expected-answer audit은 `NO-GO / 13 of 18`이다.

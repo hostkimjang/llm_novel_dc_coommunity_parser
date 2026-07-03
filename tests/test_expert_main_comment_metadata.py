@@ -2520,6 +2520,80 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertEqual(trace["post_gate_identity"]["official_title"], "월야환담 창월야")
         self.assertIsNone(trace["post_gate_identity"]["official_url"])
 
+    def test_exact_surface_title_only_without_distinct_alias_bridge_does_not_restore(self):
+        result = {
+            "title": "미츄리 혼후순결에서 하인들에게도 멸시당한게 고증에 맞는거였구나",
+            "content": ["아내가 혼후순결 요구해서 섹스 안하니까 집안 하인들도 멸시함"],
+            "comments": ["이세계에서 사이비로 살아남기 얘기임"],
+            "identity": {
+                "candidate_ledger_status": "promotion_blocked",
+                "title_resolution_allowed": False,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "unresolved",
+                "is_resolved_work_discussion": False,
+                "safe_resolved": False,
+                "promotion_blocked": True,
+                "blocked_official_title": "혼후순결",
+                "anchor_type": "title_exact",
+                "context_sources": ["title", "body", "comments", "search"],
+                "discussion_type": "character_talk",
+                "novel_identity": {
+                    "official_title": None,
+                    "heretic_url": None,
+                    "confidence": "High",
+                },
+                "title_candidates": [
+                    {
+                        "official_title": "혼후순결",
+                        "alias_or_mention": "혼후순결",
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                    }
+                ],
+                "candidate_preservation_sources": [
+                    {
+                        "official_title": "혼후순결",
+                        "alias_or_mention": "혼후순결",
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                    }
+                ],
+                "search_evidence_catalog": [
+                    {
+                        "title": "혼후순결 - 카카오페이지",
+                        "url": "https://page.kakao.com/content/12345678",
+                        "source_tier": "official_detail",
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "candidate_only",
+                    "publish_allowed": False,
+                    "official_title": None,
+                    "official_url": None,
+                    "candidate_preserved": True,
+                    "reason_codes": [
+                        "scope_context_only",
+                        "official_url_withheld_by_title_mismatch",
+                        "serialized_public_identity_scrubbed",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {"scope_kind": "context_only"},
+                },
+                "candidate_ledger": {},
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertFalse(identity["safe_resolved"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        decision = identity["promotion_decision"]
+        self.assertFalse(decision["publish_allowed"])
+        self.assertNotIn("verified_alias_title_only_publication", decision["reason_codes"])
+
     def test_short_generic_blocked_alias_does_not_restore_title_only(self):
         result = {
             "title": "판초법사 경찰력 사용하면서도 1달 이상 정보통제가 가능함?",

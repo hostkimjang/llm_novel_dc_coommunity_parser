@@ -1,5 +1,14 @@
 # Slang DB Improvement TODO
 
+## 2026-07-03 Loop364 shared gate / slang caveat
+
+- [x] 이번 회차는 slang DB write-back이 아니라 shared promotion gate wrong-publish 보정이다.
+- [x] R1 하드코딩 cue 리스트 확장은 하지 않았다.
+- [x] `11694019`, `11700470`은 public title `null`로 wrong publish 차단을 확인했다.
+- [x] `11713222`는 `잘생인방` 직접 표면 때문에 runtime publish가 유지되어, slang/alias 추가가 아니라 blind/source-native judge 대상이다.
+- [ ] search degraded `unrecovered_degraded_total=6`과 `11713222` 충돌을 닫기 전 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, code contract `GO_UNIT`, targeted runtime `GO / 3 of 3`, wrong-publish closure `PARTIAL_GO / 2 of 3`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop363 golden18 runtime proof caveat
 
 - [x] 이번 회차는 slang DB write-back이 아니라 golden18 runtime production proof다.

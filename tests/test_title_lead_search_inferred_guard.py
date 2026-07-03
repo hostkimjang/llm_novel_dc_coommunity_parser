@@ -1264,6 +1264,122 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertNotIn("character_title_collision", decision["reason_codes"])
         self.assertEqual(final_decision["_promotion_gate_state"]["scope"]["scope_kind"], "current_work")
 
+    def test_resolved_public_title_scope_blocks_direct_competing_official_surface(self):
+        pipeline = build_pipeline()
+        post = PostInput(
+            post_id=11713222,
+            title="현대 하렘물은 진짜 잘쓰는 작가가 손에꼽네",
+            author="ㅇㅇ",
+            content_blocks=[ContentBlock(type="text", text="판타지만 쓰던 작가라서 그런가")],
+            comments=["그렇네 잘생인편 안봐서 까먹어버림"],
+        )
+        ctx = ConversationContext(post_id=post.post_id, post_data=pipeline._post_to_dict(post), comments=post.comments)
+        final_decision = {
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "review",
+            "context_sources": ["title", "body", "comments", "search"],
+            "anchor_type": "title_exact",
+        }
+        title_candidates = [
+            DetectedTitle(
+                official_title="잘생기면 편해지는 인방 생활",
+                heretic_url="https://novelpia.com/novel/384016",
+                confidence="High",
+                alias_or_mention="잘생인방",
+                source_tier="official_detail",
+                page_type="novel_page",
+                reference_role="primary",
+            ),
+            DetectedTitle(
+                official_title="잘생기면 인생이 편하다",
+                heretic_url="https://novelpia.com/novel/300042",
+                confidence="High",
+                alias_or_mention="잘생인편",
+                source_tier="official_detail",
+                page_type="novel_page",
+                reference_role="candidate",
+            ),
+        ]
+
+        decision = pipeline._record_resolved_public_title_gate_decision(
+            ctx,
+            "잘생기면 편해지는 인방 생활",
+            candidate_url="https://novelpia.com/novel/384016",
+            final_decision=final_decision,
+            verification_result={
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+            },
+            title_candidates=title_candidates,
+            source="serialized_public_identity",
+        )
+
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn("scope_context_only", decision["reason_codes"])
+        self.assertIn("direct_competing_work_surface", decision["reason_codes"])
+        scope = final_decision["_promotion_gate_state"]["scope"]
+        self.assertEqual(scope["scope_kind"], "context_only")
+        self.assertIn("잘생기면 인생이 편하다", scope["competing_candidates"])
+
+    def test_resolved_public_title_scope_blocks_image_search_only_candidate_without_surface(self):
+        pipeline = build_pipeline()
+        post = PostInput(
+            post_id=11700470,
+            title="어케 주인공 죄목이",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="image", url="https://example.invalid/panel.png"),
+                ContentBlock(type="text", text="교수형 가스라이팅 같은 죄목만 보임"),
+            ],
+            comments=[],
+        )
+        ctx = ConversationContext(post_id=post.post_id, post_data=pipeline._post_to_dict(post), comments=[])
+        final_decision = {
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "context_sources": ["title", "body", "search", "image"],
+            "anchor_type": "title_alias",
+        }
+
+        decision = pipeline._record_resolved_public_title_gate_decision(
+            ctx,
+            "세계 최강 미소녀에게 납치당했습니다",
+            candidate_url="https://novelpia.com/novel/201411",
+            final_decision=final_decision,
+            verification_result={
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "grounding_check": {"anchor_found": "plot_mention"},
+            },
+            title_candidates=[
+                DetectedTitle(
+                    official_title="세계 최강 미소녀에게 납치당했습니다",
+                    heretic_url="https://novelpia.com/novel/201411",
+                    confidence="High",
+                    alias_or_mention="납치 미소녀",
+                    source_tier="official_detail",
+                    page_type="novel_page",
+                    reference_role="primary",
+                )
+            ],
+            source="serialized_public_identity",
+        )
+
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn("scope_context_only", decision["reason_codes"])
+        self.assertIn("image_scope_missing_candidate_surface", decision["reason_codes"])
+        self.assertEqual(final_decision["_promotion_gate_state"]["scope"]["scope_kind"], "context_only")
+
     def test_late_title_rescue_paths_share_semantic_no_work_gate(self):
         source_path = Path(__file__).resolve().parents[1] / "src" / "llm_batch" / "agentic_pipeline.py"
         source = source_path.read_text(encoding="utf-8")

@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260703-364 - shared promotion gate wrong-publish repair
+
+| Item | Status | Evidence | Next action |
+| --- | --- | --- | --- |
+| New large runs | Frozen | No full375/bounded/N5 dispatch this loop | Keep frozen until targeted blockers shrink and search recovery is proven |
+| Shared gate contract | GO_UNIT | direct competing official surface and image/search-only missing surface tests PASS | Keep as general predicate; do not add R1 hardcoded cue list |
+| Title-only restore | Hardened | exact surface without distinct alias bridge stays `promotion_blocked` | Preserve verified distinct alias positives |
+| Targeted runtime | GO | run `20260703_190831_536951`, `3/3/3/0/0`, checkpoint `3` | Use as small runtime production proof only |
+| Wrong-publish closure | PARTIAL_GO / 2 of 3 | `11694019`, `11700470` blocked; `11713222` still publish | Blind/source-native judge `11713222` before further code suppression |
+| Search evidence | REVIEW / P0 open | unrecovered degraded total `6`, all 3 rows `SEARCH_DEGRADED` | Recover degraded search before promotion hard-hold relaxation |
+| OVERRIDE AUDIT 11708445 | Closed row contract | Loop319 `ACCEPT / candidate_only_block_is_correct` | Do not keep deferring this row |
+| Documentation sync | Done | Loop364 report/state plus TODO/CHECKLIST/HISTORY/VERIFICATION updated | Next loop must reduce residual conflict or run blind judge |
+
+Gate: new large runs `FROZEN`, code contract `GO_UNIT`, targeted runtime `GO / 3 of 3`, wrong-publish targeted closure `PARTIAL_GO / 2 of 3`, collateral active lane `REVIEW-LOCKED / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260703-363 - golden18 runtime proof and semantic NO-GO split
 
 | Item | Status | Evidence | Next action |

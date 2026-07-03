@@ -32638,6 +32638,42 @@ OUTPUT JSON:
             title_visible_in_non_image = self._title_mentioned_in_non_image_main_context(ctx, title)
         except Exception:
             title_visible_in_non_image = False
+        try:
+            non_image_text_norm_with_comments = self._normalize_match_text(
+                self._collect_non_image_post_text(ctx, include_comments=True)
+            )
+        except Exception:
+            non_image_text_norm_with_comments = ""
+
+        def _candidate_direct_surface_mentioned(cand: DetectedTitle) -> bool:
+            if not isinstance(cand, DetectedTitle):
+                return False
+            try:
+                if self._title_candidate_mentioned(ctx, cand, include_comments=True):
+                    return True
+            except Exception:
+                pass
+            if not non_image_text_norm_with_comments:
+                return False
+            for surface in (
+                getattr(cand, "official_title", None),
+                getattr(cand, "alias_or_mention", None),
+            ):
+                surface_norm = self._normalize_match_text(str(surface or "").strip())
+                if len(surface_norm) >= 3 and surface_norm in non_image_text_norm_with_comments:
+                    return True
+            return False
+
+        current_candidate_direct_surface = bool(title_visible_in_non_image)
+        for cand in title_candidates or []:
+            if not isinstance(cand, DetectedTitle):
+                continue
+            cand_title = str(getattr(cand, "official_title", "") or "").strip()
+            if not cand_title or self._normalize_match_text(cand_title) != title_norm:
+                continue
+            if _candidate_direct_surface_mentioned(cand):
+                current_candidate_direct_surface = True
+                break
         if image_driven_scope:
             image_items: List[Dict[str, Any]] = []
             for container in (scope_fields, final, vf):
@@ -32678,6 +32714,12 @@ OUTPUT JSON:
                 scope_block_flags.append("image_title_not_promotion_eligible")
                 if platform_meta_scope_blocked:
                     scope_block_flags.append("platform_meta_multi_title_blocked")
+            if (
+                not matching_image_items
+                and not has_structured_direct_image
+                and not current_candidate_direct_surface
+            ):
+                scope_block_flags.append("image_scope_missing_candidate_surface")
 
             meta_primary_block, meta_primary_reason = self._should_block_title_promotion_for_meta_primary_subject(
                 ctx=ctx,
@@ -32771,6 +32813,7 @@ OUTPUT JSON:
 
         competing: List[str] = []
         direct_body_competing_titles: List[str] = []
+        direct_surface_competing_titles: List[str] = []
         ack_previous_flags = [
             flag for flag in merged_scope_flags if flag.startswith("acknowledged_previous_work_comment")
         ]
@@ -32801,12 +32844,6 @@ OUTPUT JSON:
                 continue
             if cand_title not in competing:
                 competing.append(cand_title)
-            if not ack_previous_flags or not main_text_norm:
-                continue
-            cand_alias = str(getattr(cand, "alias_or_mention", "") or "").strip()
-            cand_alias_norm = self._normalize_match_text(cand_alias)
-            if not cand_alias_norm or cand_alias_norm in ack_alias_norms:
-                continue
             cand_url = str(getattr(cand, "heretic_url", "") or "").strip()
             source_tier = str(getattr(cand, "source_tier", "") or "").strip().lower()
             has_official_detail = bool(cand_url and self._is_novel_detail_url(cand_url)) or source_tier in {
@@ -32815,12 +32852,26 @@ OUTPUT JSON:
                 "official_platform",
                 "official_search",
             }
+            if has_official_detail:
+                competing_direct_surface = _candidate_direct_surface_mentioned(cand)
+                if competing_direct_surface and cand_title not in direct_surface_competing_titles:
+                    direct_surface_competing_titles.append(cand_title)
+            if not ack_previous_flags or not main_text_norm:
+                continue
+            cand_alias = str(getattr(cand, "alias_or_mention", "") or "").strip()
+            cand_alias_norm = self._normalize_match_text(cand_alias)
+            if not cand_alias_norm or cand_alias_norm in ack_alias_norms:
+                continue
             if not has_official_detail:
                 continue
             if cand_alias_norm not in main_text_norm:
                 continue
             if cand_title not in direct_body_competing_titles:
                 direct_body_competing_titles.append(cand_title)
+
+        if direct_surface_competing_titles and not current_candidate_direct_surface:
+            if "direct_competing_work_surface" not in scope_block_flags:
+                scope_block_flags.append("direct_competing_work_surface")
 
         if (
             ack_previous_flags
@@ -32835,6 +32886,13 @@ OUTPUT JSON:
             for source_name in ("comment_previous_work_alias", "direct_body_competing_official_detail"):
                 if source_name not in direct_sources:
                     direct_sources.append(source_name)
+
+        scope_block_flags = list(dict.fromkeys(scope_block_flags))
+        if scope_block_flags:
+            if scope_kind == "current_work":
+                scope_kind = "context_only"
+            scope_confidence = "medium"
+            row_discusses_gate_work = False
 
         state = GroundingState(
             post_id=getattr(ctx, "post_id", None),

@@ -1,5 +1,29 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop364 shared promotion gate wrong-publish 체크
+
+- [x] 신규 대형 런 발주는 계속 동결했다.
+- [x] shared promotion gate 보강은 R1 cue 리스트 확장이 아니라 일반 술어로 구현했다.
+  - direct competing official surface: `direct_competing_work_surface`
+  - image/search-only candidate without surface: `image_scope_missing_candidate_surface`
+- [x] verified alias title-only 복구는 distinct alias bridge가 있을 때만 허용하도록 보강했다.
+- [x] 검증:
+  - `py_compile` PASS
+  - focused title gate `4` tests PASS
+  - focused title-only restore `3` tests PASS
+  - `tests.test_expert_main_comment_metadata` `49` tests PASS
+  - title gate/work bridge/convergence bundle `193` tests PASS
+- [x] targeted runtime replay를 완료했다.
+  - run `20260703_190831_536951`
+  - input/completed/flushed/pending/failed `3/3/3/0/0`
+  - result `out\expert_result_20260703_190831_536951.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop364_wrong_publish_3_runtime_health_audit.json`
+- [x] `11694019`, `11700470` wrong publish 차단을 확인했다.
+- [ ] `11713222`는 `잘생인방` 직접 표면 때문에 runtime publish가 유지되어 blind/source-native 정답성 재검증이 필요하다.
+- [x] `11708445` OVERRIDE AUDIT는 Loop319 완료 산출물로 재고정했다.
+- [ ] search degraded `unrecovered_degraded_total=6`과 `11713222` 잔여 충돌을 닫기 전 semantic approval, full scan approval, hard-hold 완화를 금지한다.
+- Gate: new large runs `FROZEN`, code contract `GO_UNIT`, targeted runtime `GO / 3 of 3`, wrong-publish closure `PARTIAL_GO / 2 of 3`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop363 golden18 runtime proof 체크
 
 - [x] 신규 대형 런 발주는 계속 동결했다.

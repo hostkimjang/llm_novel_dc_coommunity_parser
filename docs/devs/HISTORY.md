@@ -1,5 +1,20 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop364 shared promotion gate wrong-publish repair
+
+- 신규 대형 런 발주는 계속 동결하고, Loop363 golden18 expected-answer 실패 중 wrong-publish 3건만 targeted repair/replay 대상으로 삼았다.
+- `src/llm_batch/agentic_pipeline.py`는 resolved public title gate에서 직접 경쟁 official 후보 표면과 image/search-only 후보 표면 부재를 일반 술어로 차단한다. R1 cue 리스트 확장은 하지 않았다.
+- `expert_main.py`는 URL 없는 verified-alias title-only 복구에 distinct alias/known alias/resolved recall bridge를 요구한다.
+- 검증은 `py_compile` PASS, focused title gate 4 PASS, focused title-only restore 3 PASS, `tests.test_expert_main_comment_metadata` 49 PASS, title gate/work bridge/convergence bundle 193 PASS다.
+- Targeted replay run `20260703_190831_536951`은 input/completed/flushed/pending/failed `3/3/3/0/0`, checkpoint `3`, result rows `3`으로 완료됐다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, publication contract convergence `GO`, violations `0`을 기록했다.
+- `11694019`, `11700470`은 public title `null`, `promotion_blocked`, `publish_allowed=false`로 wrong publish 차단을 확인했다.
+- `11713222`는 `official_title=잘생기면 편해지는 인방 생활`, `safe_resolved=true`, `publish_allowed=true`로 남아 golden expected와 충돌한다. 원문 `잘생인방` 직접 표면이 있으므로 blind/source-native judge로 정답성을 먼저 확정한다.
+- Search evidence는 `REVIEW / search_degraded_observed`, unrecovered degraded total `6`이다.
+- `11708445` OVERRIDE AUDIT는 Loop319 blind/source-native `ACCEPT / candidate_only_block_is_correct` 완료 산출물로 재고정했다.
+- Report는 `docs/devs/loop_reports/LOOP_364_REPORT_20260703.md`, state는 `docs/devs/loop364_shared_promotion_gate_wrong_publish_20260703.json`, health audit는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop364_wrong_publish_3_runtime_health_audit.json`이다.
+- Gate는 new large runs `FROZEN`, code contract `GO_UNIT`, targeted runtime `GO / 3 of 3`, wrong-publish closure `PARTIAL_GO / 2 of 3`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop363 golden18 runtime proof and semantic NO-GO
 
 - 신규 대형 런 발주는 계속 동결하고, 현 HEAD `b7b85936`에서 golden18 단일 실행만 수행했다.

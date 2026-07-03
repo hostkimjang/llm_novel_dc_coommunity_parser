@@ -1,5 +1,40 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop364 shared promotion gate wrong-publish repair
+
+- 범위: Loop363 golden18 expected-answer 실패 중 wrong-publish 3건을 shared promotion gate 일반 술어로 보정하고 targeted runtime replay로 row 생산을 확인한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_364_REPORT_20260703.md`
+  - state `docs\devs\loop364_shared_promotion_gate_wrong_publish_20260703.json`
+  - search shard audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop364_search_shard_audit_3343_3344_before_wrong_publish3.json`
+  - input `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop364_wrong_publish_3_current_head_input.jsonl`
+  - result JSON `out\expert_result_20260703_190831_536951.json`
+  - manifest `out\expert_result_20260703_190831_536951_manifest.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop364_wrong_publish_3_runtime_health_audit.json`
+- Runtime evidence:
+  - run `20260703_190831_536951`
+  - input/completed/flushed/pending/failed `3/3/3/0/0`
+  - checkpoint lines `3`
+  - result rows `3`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`
+- Health evidence:
+  - preflight search shard health `2/2 OK`
+  - `flush_integrity=GO / clean_completed_source`
+  - publication contract convergence `GO`, violations `0`
+  - search evidence `REVIEW / search_degraded_observed`
+  - row search status `SEARCH_DEGRADED=3`, unrecovered degraded total `6`
+- Code verification:
+  - `py_compile` PASS
+  - focused title gate `4` tests PASS
+  - focused title-only restore `3` tests PASS
+  - `tests.test_expert_main_comment_metadata` `49` tests PASS
+  - title gate/work bridge/convergence bundle `193` tests PASS
+- Semantic evidence:
+  - `11694019`: wrong publish blocked, public title `null`, `promotion_blocked`, `publish_allowed=false`
+  - `11700470`: wrong publish blocked, public title `null`, `promotion_blocked`, `publish_allowed=false`
+  - `11713222`: still publishes `잘생기면 편해지는 인방 생활`; blind/source-native judge required before further repair or golden expected update
+- Gate: new large runs `FROZEN`, code contract `GO_UNIT`, targeted runtime `GO / 3 of 3`, wrong-publish closure `PARTIAL_GO / 2 of 3`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop363 golden18 runtime proof and semantic NO-GO
 
 - 범위: 신규 대형 런 발주를 동결한 상태에서, Loop362 stream timeout guard가 실제 row를 생산하는지 golden18 단일 완주로 실증한다.
