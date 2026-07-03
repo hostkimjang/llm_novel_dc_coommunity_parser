@@ -4,6 +4,13 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop354 current residual forced action lane follow-up
+  - 상태: residual_queue_105 / forced_action_lane_not_approval / search_recovery_p0_open
+  - 적용: 대형 forced non-light N5/full375/bounded1200/golden18은 background 감시로 두고 current residual `105`를 action group으로 재정렬했다.
+  - 현재 큐: residual `105`, `REPROCESS=77`, `HOLD=28`, `repair_safe_loss=72`, `repair_after_wrong_work=5`, `known_alias_runtime_replay_required=3`, `native_image_or_source_review_required=14`.
+  - 산출물: `docs/devs/loop_reports/LOOP_354_REPORT_20260703.md`, `docs/devs/loop354_current_residual_forced_action_lane_20260703.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop354_current_residual_forced_action_lane.json`.
+  - 완료 기준: `repair_after_wrong_work=5` 또는 `known_alias_runtime_replay_required=3`에서 blind/source-native/runtime evidence로 추가 queue 감소를 만든다. N5/golden/full375/bounded 완료 전 approval과 hard-hold 완화는 금지한다.
+
 - [ ] Loop353 11708470 non-light row closure follow-up
   - 상태: residual_queue_105 / row_closure_not_approval / search_recovery_p0_open
   - 적용: Loop324 non-light runtime에서 clean recovery가 확인된 `11708470`만 Loop352 residual `106`에서 제외했다.

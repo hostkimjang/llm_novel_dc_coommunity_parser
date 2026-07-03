@@ -2,6 +2,18 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop354 TODO
+
+- 상태 업데이트: 대형 forced non-light 런은 background 감시로 유지하고, active loop를 current residual `105` action lane으로 강제 전환했다. Approval 회차가 아니다.
+- Loop354 TODO:
+  - [x] Loop353 current residual queue를 입력으로 `loop354_current_residual_forced_action_lane` artifact를 생성했다.
+  - [x] residual `105`, `REPROCESS=77`, `HOLD=28`, `safe_loss_resolved_to_null=100`, `wrong_work_title_flip=5`, validation issue `0`을 확인했다.
+  - [x] background PIDs `137688`, `16352`, `40088`, `138056`가 alive임을 확인했다.
+  - [x] forced non-light partial snapshot은 approval 근거가 아니며 stale flip/golden/full375 증거를 대체하지 않는다고 기록했다.
+  - [ ] 다음 실행 lane은 `repair_after_wrong_work=5` source-native/stall-root-cause review 또는 `known_alias_runtime_replay_required=3` contract/runtime replay로 진행한다.
+  - [ ] N5 `15/15`, golden18 `18/18`, full375/bounded completion 전 approval과 hard-hold 완화는 금지한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop353 TODO
 
 - 상태 업데이트: Loop352 residual `106`에서 Loop324 non-light runtime으로 clean row recovery가 확인된 `11708470` 1건만 제외했다. Residual actionable queue는 `105`다.

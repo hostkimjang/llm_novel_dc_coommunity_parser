@@ -1,0 +1,118 @@
+{
+  "loop": 354,
+  "date": "2026-07-03",
+  "scope": "current residual forced action lane after large-run background demotion",
+  "workspace_head": "8ac4f924",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "summary": {
+    "approval": "NOT_OPEN",
+    "residual_action_queue_rows": 105,
+    "labels": {
+      "REPROCESS": 77,
+      "HOLD": 28
+    },
+    "buckets": {
+      "safe_loss_resolved_to_null": 100,
+      "wrong_work_title_flip": 5
+    },
+    "validation_issue_count": 0,
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_354_REPORT_20260703.md",
+    "state": "docs/devs/loop354_current_residual_forced_action_lane_20260703.json",
+    "input_queue": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop353_current_residual_action_queue_after_11708470_nonlight_runtime_closure.json",
+    "output_queue_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop354_current_residual_forced_action_lane.json",
+    "output_queue_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop354_current_residual_forced_action_lane.md"
+  },
+  "action_lanes": {
+    "repair_after_wrong_work": {
+      "row_count": 5,
+      "post_ids": [
+        11666713,
+        11698890,
+        11700500,
+        11705252,
+        11716448
+      ],
+      "status": "P0 / source-native or stall-root-cause review required"
+    },
+    "known_alias_runtime_replay_required": {
+      "row_count": 3,
+      "post_ids": [
+        11706827,
+        11708443,
+        11714907
+      ],
+      "status": "P1 / runtime replay or contract verification required"
+    },
+    "repair_safe_loss": {
+      "row_count": 72,
+      "status": "P0 / close only with search-clean runtime or contract evidence"
+    },
+    "native_image_or_source_review_required": {
+      "row_count": 14,
+      "status": "HOLD / native review before approval path"
+    }
+  },
+  "background_runs": {
+    "safe_loss_n5": {
+      "pid": 137688,
+      "status": "alive",
+      "gate": "RUNNING_BACKGROUND / NOT_ANALYZED_FULL_N5"
+    },
+    "full375": {
+      "pid": 16352,
+      "status": "alive",
+      "checkpoint_rows": 4,
+      "result_rows": 4,
+      "pending_snapshot_rows": 0,
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "gate": "IN_PROGRESS_OR_PARTIAL / NOT_APPROVAL"
+    },
+    "bounded1200_completed_source": {
+      "pid": 40088,
+      "status": "alive",
+      "checkpoint_rows": 8,
+      "result_rows": 7,
+      "pending_snapshot_rows": 1,
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "gate": "IN_PROGRESS_OR_PARTIAL / NOT_APPROVAL"
+    },
+    "golden18": {
+      "pid": 138056,
+      "status": "alive",
+      "checkpoint_rows": 1,
+      "result_rows": 1,
+      "pending_snapshot_rows": 0,
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "gate": "APPROVAL_NOT_OPEN"
+    }
+  },
+  "verification": {
+    "queue_generation": "PASS: split_collateral_action_queue.py --fail-on-validation-issue, validation_issue_count=0",
+    "background_pid_check": "PASS: 137688, 16352, 40088, 138056 alive",
+    "runtime_pipeline_diff_since_forced_dispatch": "docs/gitignore/search-probe tracking only; not approval evidence"
+  },
+  "gates": {
+    "forced_action_lane": "GO_QUEUE_RESHAPE_NOT_APPROVAL",
+    "collateral": "NO-GO / residual_action_queue_rows=105",
+    "large_background_runs": "IN_PROGRESS_OR_PARTIAL / NOT_APPROVAL",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next_actions": [
+    "repair_after_wrong_work=5는 stalled replay를 즉시 반복하지 말고 source-native blind review 또는 stall root cause 분리부터 진행한다.",
+    "known_alias_runtime_replay_required=3은 unit contract와 current runtime flush 여부를 분리해 재검증한다.",
+    "N5 15/15, golden18 18/18, full375/bounded completion 전 approval 또는 hard-hold 완화 문구를 쓰지 않는다."
+  ]
+}

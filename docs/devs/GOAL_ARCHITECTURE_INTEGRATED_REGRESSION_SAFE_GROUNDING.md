@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop354 Addendum - current residual forced action lane
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop354는 approval 회차가 아니라 대형 forced non-light 런을 background 감시로 유지하고 active loop를 current residual `105` action lane으로 강제 전환한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_354_REPORT_20260703.md`, state `docs/devs/loop354_current_residual_forced_action_lane_20260703.json`, queue `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop354_current_residual_forced_action_lane.json`.
+- Queue: residual action queue `105`, `REPROCESS=77`, `HOLD=28`, `safe_loss_resolved_to_null=100`, `wrong_work_title_flip=5`, validation issue `0`.
+- Background: N5/full375/bounded1200/golden18 PIDs는 alive지만 full375 checkpoint `4`, bounded checkpoint `8`, golden18 checkpoint `1` 수준이라 approval 근거가 아니다.
+- Forced lanes: 다음 active 후보는 `repair_after_wrong_work=5` source-native/stall-root-cause review 또는 `known_alias_runtime_replay_required=3` contract/runtime replay다.
+- Gate: forced action lane `GO_QUEUE_RESHAPE_NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=105`, large runs `IN_PROGRESS_OR_PARTIAL / NOT_APPROVAL`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop353 Addendum - 11708470 non-light row closure
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop353은 approval 회차가 아니라 Loop352 residual `106`에서 Loop324 non-light runtime으로 clean row recovery가 확인된 `11708470` 1건을 제외한 회차다.

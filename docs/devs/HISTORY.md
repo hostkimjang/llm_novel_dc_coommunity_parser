@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop354 current residual forced action lane
+
+- 대형 forced non-light N5/full375/bounded1200/golden18 런은 계속 background 감시로 두고, active loop를 current residual `105` action lane으로 강제 전환했다.
+- 새 action lane artifact는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop354_current_residual_forced_action_lane.json` 및 `.md`다.
+- Current residual queue는 `105`, label counts `REPROCESS=77`, `HOLD=28`, bucket counts `safe_loss_resolved_to_null=100`, `wrong_work_title_flip=5`, validation issue `0`이다.
+- 다음 실행 후보는 `repair_after_wrong_work=5` (`11666713`, `11698890`, `11700500`, `11705252`, `11716448`) 또는 `known_alias_runtime_replay_required=3` (`11706827`, `11708443`, `11714907`)로 좁혔다.
+- Background snapshot은 N5 PID `137688` alive, full375 checkpoint `4`, bounded1200 checkpoint `8`, golden18 checkpoint `1`이며 모두 approval 근거가 아니다.
+- Report는 `docs/devs/loop_reports/LOOP_354_REPORT_20260703.md`, state는 `docs/devs/loop354_current_residual_forced_action_lane_20260703.json`이다.
+- Gate는 forced action lane `GO_QUEUE_RESHAPE_NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop353 11708470 non-light row closure
 
 - Loop352 residual `106`에서 Loop324 non-light runtime으로 clean recovery가 확인된 `11708470`만 row-level closure로 제외했다.

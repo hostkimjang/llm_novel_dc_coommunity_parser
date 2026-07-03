@@ -1,5 +1,16 @@
 # Slang DB Improvement TODO
 
+## 2026-07-03 Loop354 current residual alias/runtime caveat
+
+- [x] current residual action lane에서 alias/runtime 관련 잔여를 다시 확인했다.
+  - residual `105`, `REPROCESS=77`, `HOLD=28`
+  - `known_alias_runtime_replay_required=3`: `11706827`, `11708443`, `11714907`
+  - `repair_safe_loss=72`, `repair_after_wrong_work=5`
+- [x] forced non-light N5/full375/bounded1200/golden18은 alive/partial snapshot일 뿐 slang/alias 품질 승인 근거가 아니다.
+- [ ] `known_alias_runtime_replay_required=3`은 unit contract와 current runtime flush를 분리해 재검증한다.
+- [ ] N5 `15/15`, golden18 `18/18`, full375/bounded completion 전 hard-hold 완화 또는 2026-06-28 golden GO 대체 판단을 하지 않는다.
+- Gate: slang DB write-back 아님, forced action lane `GO_QUEUE_RESHAPE_NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop347 known alias contract / runtime caveat
 
 - [x] `11706827`, `11714907`은 slang DB write-back이 아니라 shared curated-alias work cue 계약으로만 보강했다.
