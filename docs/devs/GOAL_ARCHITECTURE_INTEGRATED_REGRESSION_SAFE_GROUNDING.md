@@ -6,6 +6,14 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop347 Addendum - remaining known-alias contract plus VLM stall
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop347은 approval 회차가 아니라 남은 `known_alias_runtime_replay_required=3` 재실행 시도와 code contract 보강 회차다.
+- Runtime evidence: run `20260703_131039_800703`, input `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop347_known_alias_remaining3_targeted_input.jsonl`, manifest completed/flushed/pending/failed `0/0/0/0`, search health `2/2 OK`, VLM chunk 이후 stall로 중단.
+- Code evidence: `11706827 / 기계공주 / 일상물`, `11714907 / 아생갤 / 작가·정실·라나`를 shared curated-alias work cue 계약으로 고정했다. `11708443`은 기존 Loop324/325 계약이 남아 있으나 이번 runtime에서 flush되지 않았다.
+- 검증: py_compile PASS, safe-loss contract `11` tests PASS, shared work bridge focused `7` tests PASS, arbiter focused `6` tests PASS, `git diff --check` PASS.
+- Gate: runtime replay `ABORTED_VLM_STALL / NOT_APPROVAL`, code contract `GO_UNIT_CONTRACT_ONLY`, residual queue `NO_DELTA / remains 123`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop343 Addendum - post-patch verified alias runtime replay
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop343은 approval 회차가 아니라 Loop342 패치가 실제 runtime output에 반영되는지 확인한 post-patch targeted replay 회차다.

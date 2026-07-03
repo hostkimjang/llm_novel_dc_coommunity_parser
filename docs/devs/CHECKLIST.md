@@ -1,5 +1,39 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop347 remaining known-alias contract/stall 체크
+
+- [x] Loop346 기준 남은 `known_alias_runtime_replay_required=3` 입력을 구성했다.
+  - 대상: `11706827`, `11708443`, `11714907`
+  - 제외: `11705230`
+- [x] search 포함 non-light health를 확인했다.
+  - health `ok=2/2`
+  - artifact `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop347_known_alias_remaining3_mcp3375_3376_health.json`
+- [x] targeted runtime replay를 시도했다.
+  - run `20260703_131039_800703`
+  - manifest `0/0/0/0`
+  - W0/W1 VLM chunk request 이후 결과 없음
+- [x] runtime replay를 approval 증거에서 제외했다.
+  - 상태 `ABORTED_VLM_STALL / NOT_APPROVAL`
+  - residual `123` 유지
+- [x] 일반화 가능한 code contract를 추가했다.
+  - `11706827` `기계공주` 일상물 cue
+  - `11714907` `아생갤` 작가/정실/라나 cue
+  - Pipeline contextual anchor가 shared curated-alias cue helper를 경유
+- [x] 추천 요청 hard-hold 음성 계약을 유지했다.
+  - `11714892` negated recommendation test PASS
+- [x] 검증을 완료했다.
+  - py_compile PASS
+  - focused Loop347+negative `5` tests PASS
+  - safe-loss contract file `11` tests PASS
+  - shared work bridge focused `7` tests PASS
+  - arbiter focused `6` tests PASS
+  - `git diff --check` PASS
+- [ ] Loop347 code contract만으로 residual closure를 선언하지 않는다.
+  - runtime replay가 VLM stall로 flush되지 않음
+  - `known_alias_runtime_replay_required=3` 유지
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`
+
 ## 2026-07-03 Loop346 current residual queue rebase 체크
 
 - [x] Loop340 residual queue `126`에서 Loop343/344로 닫힌 post_id를 제외하는 도구 계약을 추가했다.

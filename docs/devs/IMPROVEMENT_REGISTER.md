@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260703-347 - remaining known-alias contract/stall
+
+| Item | Status | Evidence | Next action |
+| --- | --- | --- | --- |
+| Remaining known-alias runtime replay | Aborted / not approval | run `20260703_131039_800703`, search health `2/2 OK`, manifest `0/0/0/0`, VLM chunk 이후 stall | VLM stall 원인 분리 후 같은 3건을 runtime flush 가능한 조건으로 재시도 |
+| `11706827` 기계공주 일상물 cue | Unit contract improved | Pipeline/Arbiter positive tests PASS | Runtime replay required before residual closure |
+| `11714907` 아생갤 character-relation cue | Unit contract improved | Pipeline/Arbiter positive tests PASS | Runtime replay required before residual closure |
+| `11708443` 괴담출근 | Existing contract retained | Loop324/325 contract exists; Loop347 runtime did not flush | Runtime/search/policy queue에 유지 |
+| Recommendation hard-hold | Preserved | `11714892` negated recommendation test PASS | Keep explicit recommendation/memory query blockers |
+| Loop345 bounded1200 | Background only | manifest snapshot `5/0/5/0`, `large_run_complete=false` | Continue background monitoring; do not use as approval |
+| Goal completion | Still open | residual queue `123`, code contract only | Keep goal `ACTIVE / NOT_COMPLETE` |
+
+Gate: runtime replay `ABORTED_VLM_STALL / NOT_APPROVAL`, code contract `GO_UNIT_CONTRACT_ONLY`, residual accounting `NO_DELTA`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260703-346 - current residual queue rebase
 
 - 상태: current queue contract 추가 / residual 123 재기준화 / approval 미개방

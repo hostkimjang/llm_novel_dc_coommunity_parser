@@ -1,5 +1,14 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop347 remaining known-alias contract and VLM stall
+
+- Loop346 current residual `123`에서 남은 `known_alias_runtime_replay_required=3` (`11706827`, `11708443`, `11714907`)을 search 포함 non-light로 재실행했다.
+- Run `20260703_131039_800703`은 search health `2/2 OK`였지만 VLM chunk request 이후 completed/flushed/pending/failed `0/0/0/0`이라 `ABORTED_VLM_STALL / NOT_APPROVAL`로 기록했다.
+- 코드 계약으로 `11706827 / 기계공주 / 일상물`, `11714907 / 아생갤 / 작가·정실·라나`를 shared curated-alias work cue 경로에 추가했다. `11708443`은 기존 Loop324/325 계약이 유지되지만 이번 runtime flush 증거는 없다.
+- 검증: py_compile PASS, focused Loop347+negative `5` tests PASS, safe-loss contract `11` tests PASS, shared work bridge focused `7` tests PASS, arbiter focused `6` tests PASS, `git diff --check` PASS.
+- Residual queue는 `123` 그대로다. Report는 `docs/devs/loop_reports/LOOP_347_REPORT_20260703.md`, state는 `docs/devs/loop347_known_alias_remaining3_contract_and_stall_20260703.json`이다.
+- Gate remains: search recovery `P0 / OPEN`, promotion blocked `search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 - Loop346 current residual queue rebase
 
 - `tools/split_collateral_action_queue.py`에 `--exclude-post-ids`를 추가해 닫힌 residual row를 current queue에서 제외할 수 있게 했다.

@@ -1,5 +1,37 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop347 remaining known-alias contract/stall
+
+- 범위: current residual `123` 중 남은 `known_alias_runtime_replay_required=3`을 search 포함 non-light로 재실행하고, runtime이 막히면 코드 계약으로 일반화 가능한 cue만 고정한다.
+- 산출물:
+  - report `docs\devs\loop_reports\LOOP_347_REPORT_20260703.md`
+  - state `docs\devs\loop347_known_alias_remaining3_contract_and_stall_20260703.json`
+  - input `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop347_known_alias_remaining3_targeted_input.jsonl`
+  - health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop347_known_alias_remaining3_mcp3375_3376_health.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop347_known_alias_remaining3_current_head_3eae3079_search_nonlight_result_manifest.json`
+  - log `logs\expert_run_20260703_131039_800703.log`
+- Runtime evidence:
+  - run `20260703_131039_800703`
+  - search health `2/2 OK`
+  - VLM/OCR ready, image posts `3`
+  - completed/flushed/pending/failed `0/0/0/0`
+  - W0 `11706827`, W1 `11708443` VLM chunk request 이후 결과 없음
+- Code verification:
+  - py_compile PASS
+  - focused Loop347+recommendation negative `5` tests PASS
+  - `tests.test_known_title_abbreviation_safe_loss_contract` `11` tests PASS
+  - shared work bridge focused `7` tests PASS
+  - arbiter focused `6` tests PASS
+  - `git diff --check` PASS
+- Gate:
+  - runtime replay `ABORTED_VLM_STALL / NOT_APPROVAL`
+  - code contract `GO_UNIT_CONTRACT_ONLY`
+  - residual queue `NO_DELTA / remains 123`
+  - search recovery `P0 / OPEN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+  - goal `ACTIVE / NOT_COMPLETE`
+
 ## 2026-07-03 Loop346 current residual queue rebase
 
 - 범위: Loop343/344에서 닫힌 alias 3건을 current residual queue에서 재현 가능하게 제외하고, 이후 작업 기준을 `126`이 아닌 `123`으로 고정한다.

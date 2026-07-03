@@ -2,6 +2,23 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop347 TODO
+
+- 상태 업데이트: 남은 `known_alias_runtime_replay_required=3`을 search 포함 non-light로 재실행했지만 VLM chunk 이후 결과가 없어 runtime replay는 `ABORTED_VLM_STALL / NOT_APPROVAL`이다. 코드 계약은 `11706827`과 `11714907`의 shared curated-alias work cue를 보강했다. Goal은 `ACTIVE / NOT_COMPLETE`, residual actionable queue는 `123` 유지다.
+- Loop347 TODO:
+  - [x] 3건 입력을 구성했다.
+    - `11706827`, `11708443`, `11714907`
+  - [x] search 포함 non-light health를 확인했다.
+    - `ok=2/2`
+  - [x] VLM stall을 approval 근거에서 제외했다.
+    - run `20260703_131039_800703`
+    - manifest `0/0/0/0`
+  - [x] `기계공주` 일상물 cue와 `아생갤` character-relation cue 계약을 추가했다.
+  - [x] 추천 요청 hard-hold 음성 계약을 유지했다.
+  - [ ] 같은 3건은 runtime flush 재시도 전까지 residual closure로 세지 않는다.
+  - [ ] Loop345 bounded1200은 background 감시로 유지하고 completion/search degraded audit 전 approval로 세지 않는다.
+  - [ ] 다음 전환 후보는 VLM stall 분리, collateral residual triage, 또는 OVERRIDE AUDIT blind judge다.
+
 ## 2026-07-03 regression-safe grounding Loop343 TODO
 
 - 상태 업데이트: Loop342 패치 후 actual runtime replay에서 alias seed 2건이 모두 safe_resolved로 flush됐다. Goal은 `ACTIVE / NOT_COMPLETE`이고 residual actionable queue는 `124`다.

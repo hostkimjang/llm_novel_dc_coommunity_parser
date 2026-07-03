@@ -16353,8 +16353,32 @@ class AgenticPipeline:
         ):
             return False
 
-        if self._has_recommendation_request_signal(cue_text) or self._has_recommendation_seeking_surface_signal(cue_text):
-            return False
+        recommendation_request = self._has_recommendation_request_signal(cue_text)
+        recommendation_surface = self._has_recommendation_seeking_surface_signal(cue_text)
+        recommendation_intent = str(discourse.get("intent") or "").strip().lower() in {
+            "request_recommendation",
+            "ask_recommendation",
+            "recommendation",
+            "recommendation_request",
+        }
+        if recommendation_request or recommendation_surface or recommendation_intent:
+            title_text = str(post_data.get("title") or post_data.get("normalized_title") or "")
+            alias_title_work_cue = bool(
+                matched_alias
+                and self._curated_alias_surface_in_text(title_text, matched_alias)
+                and _has_curated_alias_work_discussion_cue(title_text)
+            )
+            explicit_recommendation_query = bool(
+                recommendation_request
+                or recommendation_intent
+                or re.search(
+                    r"추천\s*(?:좀|해줘|받|작|글)?|(?:같은|비슷한)\s*(?:거|작품|소설)|"
+                    r"(?:없냐|없나|없습니까|찾(?:고|는)\s*있)|뭐\s*볼까|(?:볼|읽을)\s*만",
+                    cue_text,
+                )
+            )
+            if not (alias_title_work_cue and not explicit_recommendation_query):
+                return False
         character_terms: List[str] = []
         try:
             gk_out = ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
@@ -25121,6 +25145,7 @@ OUTPUT JSON:
                 packet_text,
                 flags=re.IGNORECASE,
             )
+            or _has_curated_alias_work_discussion_cue(packet_text)
         )
         if not has_packet_work_cue:
             try:

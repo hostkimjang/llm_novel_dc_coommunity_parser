@@ -4,6 +4,15 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop347 remaining known-alias contract/stall follow-up
+  - 상태: runtime_aborted_vlm_stall / code_contract_go_unit / approval_not_open
+  - 대상: residual `known_alias_runtime_replay_required=3` (`11706827`, `11708443`, `11714907`).
+  - runtime: run `20260703_131039_800703`, search health `2/2 OK`, manifest `0/0/0/0`, VLM chunk 이후 결과 없음.
+  - 적용: `기계공주` 일상물 cue와 `아생갤` 작가/정실 character-relation cue를 shared curated-alias work cue 계약으로 고정했다.
+  - 보호: 추천 요청/탐색 hard-hold는 유지하며 `11714892` negated recommendation 계약을 PASS로 확인했다.
+  - 산출물: `docs/devs/loop_reports/LOOP_347_REPORT_20260703.md`, `docs/devs/loop347_known_alias_remaining3_contract_and_stall_20260703.json`.
+  - 완료 기준: VLM stall 원인을 분리하고 같은 3건이 runtime에서 flush되어 safe_resolved 단조 비감소와 actionable queue 감소를 만족해야 한다. 그 전까지 residual `123`, search recovery `P0 / OPEN`, approval not open 유지.
+
 - [ ] Loop346 current residual queue follow-up
   - 상태: current_queue_rebased_123 / validation_issue_0 / approval_not_open
   - 적용: `tools/split_collateral_action_queue.py --exclude-post-ids`로 Loop343/344에서 닫힌 `11703624`, `11705230`, `11705251`을 제외했다.

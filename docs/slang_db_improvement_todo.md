@@ -1,5 +1,15 @@
 # Slang DB Improvement TODO
 
+## 2026-07-03 Loop347 known alias contract / runtime caveat
+
+- [x] `11706827`, `11714907`은 slang DB write-back이 아니라 shared curated-alias work cue 계약으로만 보강했다.
+  - `기계공주 -> 헌터갤러리의 국가권력급 기계공주`: 제목의 `일상물` 작품 톤 cue.
+  - `아생갤 -> 아카데미 생존 갤러리`: 작가/정실/라나 character-relation cue.
+- [x] `11708443`은 기존 Loop324/325 계약이 있으나 Loop347 runtime flush 증거는 없다.
+- [x] Loop347 runtime replay는 search health `2/2 OK` 후 VLM chunk에서 멈췄고 manifest `0/0/0/0`이라 approval 근거가 아니다.
+- [ ] `11706827`, `11708443`, `11714907`은 runtime/search recovery 또는 policy review로 계속 유지한다.
+- Gate: slang DB write-back 아님, code contract `GO_UNIT_CONTRACT_ONLY`, runtime replay `ABORTED_VLM_STALL`, residual `123`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop341 known alias seed / slang caveat
 
 - [x] Loop340 `known_alias_runtime_replay_required=6` 중 slang/alias registry로 일반화 가능한 2건만 반영했다.

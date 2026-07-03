@@ -1,0 +1,63 @@
+{
+  "loop": 347,
+  "date": "2026-07-03",
+  "status": "GO_UNIT_CONTRACT_ONLY_RUNTIME_ABORTED",
+  "meaning": "남은 known_alias_runtime_replay_required 3건을 search 포함 non-light로 재실행했지만 VLM chunk 이후 결과가 없어 런은 승인 근거가 아니다. 대신 기계공주/아생갤 source-native 작품 cue를 shared curated-alias contract로 고정했다.",
+  "head": "3eae3079",
+  "runtime_replay": {
+    "run_id": "20260703_131039_800703",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop347_known_alias_remaining3_targeted_input.jsonl",
+    "target_post_ids": [11706827, 11708443, 11714907],
+    "excluded_post_ids": [11705230],
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop347_known_alias_remaining3_current_head_3eae3079_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop347_known_alias_remaining3_current_head_3eae3079_search_nonlight_result_manifest.json",
+    "log": "logs/expert_run_20260703_131039_800703.log",
+    "search_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop347_known_alias_remaining3_mcp3375_3376_health.json",
+    "mcp_health_ok_count": 2,
+    "mcp_health_checked_endpoint_count": 2,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "completed_flushed_pending_failed": "0/0/0/0",
+    "abort_reason": "VLM chunk request 이후 결과 행이 생성되지 않아 중단",
+    "approval_evidence": false
+  },
+  "code_contract": {
+    "changed_files": [
+      "src/llm_batch/experts/utils.py",
+      "src/llm_batch/agentic_pipeline.py",
+      "tests/test_known_title_abbreviation_safe_loss_contract.py",
+      "tests/test_arbiter_curated_alias_guard.py"
+    ],
+    "post_ids_contract_covered": [11706827, 11714907],
+    "already_existing_contract_context": [11708443],
+    "generalized_cues": ["일상물", "힐링물", "캐빨", "정실"],
+    "shared_predicate": "_has_curated_alias_work_discussion_cue",
+    "single_work_bridge_contract": "_has_verified_contextual_alias_work_bridge remains routed through _post_discusses_work_as_work"
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "focused_loop347_and_negative": "PASS / 5 tests",
+    "safe_loss_contract_file": "PASS / 11 tests",
+    "work_bridge_contract_and_support_focused": "PASS / 7 tests",
+    "arbiter_focused": "PASS / 6 tests",
+    "git_diff_check": "PASS"
+  },
+  "background": {
+    "loop345_run_id": "20260703_125052_015965",
+    "loop345_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop345_completed_source_bounded1200_current_head_4f1a488e_search_budget_mcp3369_3376_search_nonlight_result_manifest.json",
+    "loop345_completed_flushed_pending_failed": "5/0/5/0",
+    "loop345_large_run_complete": false,
+    "loop345_approval_evidence": false
+  },
+  "gate": {
+    "runtime_replay": "ABORTED_VLM_STALL / NOT_APPROVAL",
+    "code_contract": "GO_UNIT_CONTRACT_ONLY",
+    "residual_queue": "NO_DELTA / remains 123",
+    "known_alias_runtime_replay_required": 3,
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

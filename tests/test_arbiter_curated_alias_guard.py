@@ -322,6 +322,97 @@ class ArbiterCuratedAliasGuardTest(unittest.TestCase):
         self.assertTrue(arbiter._has_curated_alias_contextual_work_anchor(ctx, title))
         self.assertFalse(arbiter._curated_alias_lacks_contextual_work_anchor(ctx, title))
 
+    def test_loop347_slice_of_life_cue_prevents_gigongju_null_overblock(self):
+        arbiter_module.KNOWN_TITLE_ABBREVIATIONS = {
+            "기계공주": "헌터갤러리의 국가권력급 기계공주"
+        }
+        arbiter = _arbiter()
+        title = "헌터갤러리의 국가권력급 기계공주"
+        ctx = ConversationContext(
+            post_id=11706827,
+            post_data={
+                "post_id": 11706827,
+                "title": "기계공주는 그냥 계속 일상물로 있으면 좋겠음",
+                "content_blocks": [
+                    {
+                        "type": "text",
+                        "text": (
+                            "현실에서 좆같은 일들 겪고 고민만 존나 쌓이고 그러니까 "
+                            "소설에선 그냥 어린이 프로처럼 대충 해결함 대충 행복해짐 같은 게 보고 싶어"
+                        ),
+                    }
+                ],
+            },
+            comments=[
+                "딱 기계공주 최우선 후보군이네",
+                "행복을 돌려줄게 장붕아.",
+            ],
+        )
+        ctx.set_expert_output(
+            ExpertType.GATEKEEPER,
+            {
+                "post_type": "work_discussion",
+                "detected_entities": {"possible_titles": ["기계공주"]},
+                "context_clues": {},
+            },
+        )
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "discuss_work",
+                    "title_novel_terms": ["기계공주"],
+                    "semantic_seed_review": {"is_specific_work_discussion": True},
+                }
+            },
+        )
+
+        self.assertTrue(arbiter._curated_alias_for_title_mentioned_in_post_main(ctx, title))
+        self.assertTrue(arbiter._has_curated_alias_contextual_work_anchor(ctx, title))
+        self.assertFalse(arbiter._curated_alias_lacks_contextual_work_anchor(ctx, title))
+
+    def test_loop347_character_relation_cue_prevents_asaenggal_null_overblock(self):
+        arbiter_module.KNOWN_TITLE_ABBREVIATIONS = {"아생갤": "아카데미 생존 갤러리"}
+        arbiter = _arbiter()
+        title = "아카데미 생존 갤러리"
+        ctx = ConversationContext(
+            post_id=11714907,
+            post_data={
+                "post_id": 11714907,
+                "title": "아생갤 작가가 라나 견제 들어가네",
+                "content_blocks": [
+                    {"type": "text", "text": "극악무도한 엘리단..."},
+                    {"type": "text", "text": "그래도 정실은 라나인것이야"},
+                ],
+            },
+            comments=["견제가 아니라 이미 괴이잖아  - dc App"],
+        )
+        ctx.set_expert_output(
+            ExpertType.GATEKEEPER,
+            {
+                "post_type": "work_discussion",
+                "detected_entities": {
+                    "possible_titles": ["아생갤"],
+                    "possible_characters": ["라나"],
+                },
+                "context_clues": {},
+            },
+        )
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "discuss_work",
+                    "title_novel_terms": ["아생갤"],
+                    "semantic_seed_review": {"is_specific_work_discussion": True},
+                }
+            },
+        )
+
+        self.assertTrue(arbiter._curated_alias_for_title_mentioned_in_post_main(ctx, title))
+        self.assertTrue(arbiter._has_curated_alias_contextual_work_anchor(ctx, title))
+        self.assertFalse(arbiter._curated_alias_lacks_contextual_work_anchor(ctx, title))
+
     def test_deliberation_rebuild_prompt_uses_discourse_output_for_alias_hint(self):
         arbiter = _arbiter()
         deliberation = DeliberationOrchestrator(arbiter, arbiter.llm)
