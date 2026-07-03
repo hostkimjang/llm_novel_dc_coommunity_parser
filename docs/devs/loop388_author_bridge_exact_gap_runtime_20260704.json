@@ -1,0 +1,101 @@
+{
+  "loop": 388,
+  "date": "2026-07-04",
+  "status": "row_level_runtime_semantic_go",
+  "goal_state": "ACTIVE_NOT_COMPLETE",
+  "approval_state": {
+    "semantic_quality": "REVIEW_LOCKED",
+    "full_scan_approval": false,
+    "broader_search_recovery": "P0_search_blind_conditional",
+    "full375_collateral": "NOT_OPEN"
+  },
+  "scope": {
+    "large_runs_frozen": true,
+    "same_38_row_parent_packet_replay": "stopped",
+    "bounded_1000_1500_non_light_run": "not_dispatched",
+    "full375_replay": "not_run",
+    "flip_probe_n_ge_5": "not_run",
+    "golden18_full_completion": "not_run",
+    "post_id": "11694019"
+  },
+  "runtime_evidence": {
+    "loop387": {
+      "result_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop387_11694019_author_bridge_d59a3d19_search_nonlight_result.json",
+      "audit_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop387_11694019_author_bridge_d59a3d19_search_nonlight_audit.json",
+      "log_path": "logs/expert_run_20260704_055943_415747.log",
+      "input_completed_flushed_pending_failed": "1/1/1/0/0",
+      "search_health": {
+        "queries_issued": 8,
+        "degraded": 0,
+        "unrecovered_degraded": 0,
+        "status": "ok"
+      },
+      "row_result": {
+        "candidate_ledger_status": "promotion_blocked",
+        "safe_resolved": false,
+        "official_title": null,
+        "blocked_title": "혼후순결",
+        "blocked_url": "https://page.kakao.com/content/60742024",
+        "title_resolution_state": "unresolved_matchable",
+        "title_resolution_allowed": false
+      }
+    },
+    "loop388": {
+      "result_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop388_11694019_author_bridge_exact_gap_search_nonlight_result.json",
+      "audit_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop388_11694019_author_bridge_exact_gap_search_nonlight_audit.json",
+      "log_path": "logs/expert_run_20260704_061022_136460.log",
+      "input_completed_flushed_pending_failed": "1/1/1/0/0",
+      "duration_seconds": 221.8,
+      "search_health": {
+        "queries_issued": 8,
+        "degraded": 0,
+        "unrecovered_degraded": 0,
+        "status": "ok"
+      },
+      "row_result": {
+        "candidate_ledger_status": "safe_resolved",
+        "safe_resolved": true,
+        "promotion_blocked": false,
+        "official_title": "이세계에서 사이비로 살아남기",
+        "official_url": "https://novelpia.com/novel/181771",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "is_novel_related": true,
+        "is_resolved_work_discussion": true,
+        "promotion_decision_status": "publish",
+        "publish_allowed": true,
+        "bypassed_gate": false,
+        "publish_contract_gate_status": "publish"
+      },
+      "log_markers": [
+        "AdaptiveChain round 1: 2 보충 쿼리 (no_official_url)",
+        "purpose=adaptive_author_bridge_official_url",
+        "https://novelpia.com/novel/181771",
+        "rescue: locked official candidate official_title='이세계에서 사이비로 살아남기', url='https://novelpia.com/novel/181771'"
+      ]
+    }
+  },
+  "code_change": {
+    "files": [
+      "src/llm_batch/experts/orchestrator.py",
+      "tests/test_search_recovery_contract.py"
+    ],
+    "summary": "author_bridge title hint마다 official platform detail URL의 page title exact match를 확인해, 다른 작품의 공식 상세 URL이 있어도 대상 제목의 no_official_url gap이 닫히지 않도록 했다.",
+    "r1_hardcoded_cue_expansion": false
+  },
+  "verification": {
+    "unit_tests": [
+      ".venv312\\Scripts\\python.exe -m unittest tests.test_search_recovery_contract",
+      ".venv312\\Scripts\\python.exe -m unittest tests.test_search_recovery_contract tests.test_search_degraded_zero_suppression tests.test_mcp_bridge_direct_search tests.test_audit_expert_run_health"
+    ],
+    "py_compile": ".venv312\\Scripts\\python.exe -m py_compile src\\llm_batch\\experts\\orchestrator.py tests\\test_search_recovery_contract.py",
+    "diff_check": "git diff --check"
+  },
+  "open_items": [
+    "OVERRIDE AUDIT 11708445 blind judge 검증",
+    "golden18 단일 완주 18/18",
+    "full375 collateral diff 상시 게이트 승격",
+    "broader search degraded 100% 복구 확인",
+    "safe-loss 11674712/11660237/11698880 N>=5 flip probe"
+  ]
+}

@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260704-388 - author_bridge exact official detail runtime closure
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/golden18 미발주 | 동결 유지 |
+| parent packet replay | 중단 | 동일 38-row replay 없음 | 반복 금지 |
+| Loop387 runtime 생산 | GO | 단건 `1/1/1/0/0`, search health `queries=8/degraded=0/unrecovered=0` | semantic 미해소 원인만 사용 |
+| exact official detail gap | GO_UNIT | author_bridge 제목별 official detail title exact match 검사 | 일반 술어 유지, R1 cue 확장 금지 |
+| Loop388 row recovery | GO_ROW | `이세계에서 사이비로 살아남기`, `https://novelpia.com/novel/181771`, `safe_resolved` | golden18/full375 전 approval 금지 |
+| 테스트 | PASS | search recovery `5`, search 관련 묶음 `34`, `py_compile`, diff check | 다음 loop 전 커밋 |
+| 문서 동기화 | 완료 | Loop388 report/state와 운영 문서 갱신 | `11708445` 또는 golden18/full375 gate 별도 |
+
+Gate: runtime production `GO / 1 of 1`, row-level search/semantic recovery `GO`, broader search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260704-386 - author_bridge search recovery contract
 
 | 항목 | 상태 | 근거 | 다음 조치 |

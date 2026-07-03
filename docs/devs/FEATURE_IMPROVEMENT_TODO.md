@@ -4,11 +4,17 @@
 
 ## Current HEAD evidence refresh
 
-- [ ] Loop386 author_bridge search recovery follow-up
-  - 상태: code contract `GO_UNIT` / runtime replay `NOT_RUN_AFTER_PATCH` / search recovery `P0_CODE_CONTRACT_IMPROVED_RUNTIME_UNRECOVERED_STILL_OPEN` / approval not open
+- [x] Loop388 author_bridge exact official detail runtime closure
+  - 상태: row-level runtime `GO 1/1` / row-level semantic `GO` / broader search recovery `P0_SEARCH_BLIND_CONDITIONAL` / full375 `NOT_OPEN` / approval not open
+  - 적용: author_bridge title hint마다 official detail URL의 page title exact match를 검사한다. 다른 작품의 official detail URL이 있어도 대상 제목의 exact official detail이 없으면 `no_official_url` gap을 유지한다.
+  - 산출물: `docs/devs/loop_reports/LOOP_388_REPORT_20260704.md`, `docs/devs/loop388_author_bridge_exact_gap_runtime_20260704.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop388_11694019_author_bridge_exact_gap_search_nonlight_result.json`.
+  - 완료 기준: `11694019` 단건 runtime에서 `official_title=이세계에서 사이비로 살아남기`, `official_url=https://novelpia.com/novel/181771`, `candidate_ledger_status=safe_resolved`, `queries=8/degraded=0/unrecovered=0`을 확인했다. 이 완료는 단건 회복이며 full375/golden18/bounded/N>=5를 대체하지 않는다.
+
+- [x] Loop386 author_bridge search recovery follow-up
+  - 상태: code contract `GO_UNIT` / Loop388 runtime row closure `GO` / broader search recovery `P0_SEARCH_BLIND_CONDITIONAL` / approval not open
   - 적용: `11694019`에서 author_bridge가 `미츄리` + `이세계에서 사이비로 살아남기`를 잡으면 broad site query보다 먼저 `미츄리 이세계에서 사이비로 살아남기` 공식 detail probe를 실행한다.
   - 산출물: `docs/devs/loop_reports/LOOP_386_REPORT_20260704.md`, `docs/devs/loop386_author_bridge_search_recovery_20260704.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop386_11694019_official_gap_probe.json`.
-  - 완료 기준: `11694019` 단건 또는 golden18 runtime에서 `unrecovered_degraded_total` 감소와 candidate evidence 개선을 확인한다. Runtime 전까지 Loop385 `unrecovered=3`, semantic `NO-GO`, full375 `NOT_OPEN`을 유지한다.
+  - 완료 기준: Loop388 단건 runtime으로 candidate evidence 개선을 확인했다. 단 broader search recovery, full375 collateral, golden18 전체, N>=5 flip probe는 아직 별도 open이다.
 
 - [ ] Loop385 runtime proof / locked candidate follow-up
   - 상태: golden18 runtime `GO 18/18` / runtime expected `NO-GO 15/18` / projection expected `NO-GO 16/18` / golden shared collateral projection `NO-GO 4` / search recovery `P0_UNRECOVERED_DEGRADED_OPEN` / approval not open

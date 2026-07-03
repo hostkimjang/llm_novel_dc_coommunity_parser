@@ -1,5 +1,38 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop388 author_bridge exact official detail runtime closure 체크
+
+- [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Loop387로 같은 단건 입력이 실제 row를 산출하는지 먼저 확인했다.
+  - result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop387_11694019_author_bridge_d59a3d19_search_nonlight_result.json`
+  - audit `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop387_11694019_author_bridge_d59a3d19_search_nonlight_audit.json`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+- [x] Loop387의 미해소 원인을 확인했다.
+  - search health는 `queries=8/degraded=0/unrecovered=0`였지만 author_bridge exact official detail gap이 닫혀 보충 검색이 실행되지 않았다.
+  - 결과는 `candidate_ledger_status=promotion_blocked`, `blocked_title=혼후순결`, `official_title=null`이었다.
+- [x] author_bridge 제목별 exact official detail 검사를 구현했다.
+  - `src/llm_batch/experts/orchestrator.py`
+  - R1 하드코딩 cue 리스트 확장은 없다.
+- [x] Loop388 same input runtime을 실행했다.
+  - result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop388_11694019_author_bridge_exact_gap_search_nonlight_result.json`
+  - audit `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop388_11694019_author_bridge_exact_gap_search_nonlight_audit.json`
+  - log `logs/expert_run_20260704_061022_136460.log`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+- [x] Loop388 row-level semantic recovery를 확인했다.
+  - `official_title=이세계에서 사이비로 살아남기`
+  - `official_url=https://novelpia.com/novel/181771`
+  - `candidate_ledger_status=safe_resolved`
+  - `promotion_decision.status=publish`, `bypassed_gate=false`
+- [x] 검증:
+  - `tests.test_search_recovery_contract` `5` PASS
+  - search 관련 묶음 `34` PASS
+  - `py_compile` PASS
+  - `git diff --check` PASS, CRLF warning only
+- [ ] Loop388은 단건 증거이므로 full375 collateral, golden18 전체, bounded run, N>=5 flip probe를 대체하지 않는다.
+- [ ] `11708445` OVERRIDE AUDIT blind judge 재검증은 아직 실행하지 않았다.
+- Gate: runtime production `GO / 1 of 1`, row-level search/semantic `GO`, broader search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop386 author_bridge search recovery contract 체크
 
 - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.

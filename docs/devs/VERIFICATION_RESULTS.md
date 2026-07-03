@@ -1,5 +1,39 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop388 author_bridge exact official detail runtime closure
+
+- 범위: `11694019` author_bridge recovery를 단건 completed-source runtime으로 검증한다. 신규 full375/bounded/N5/golden18 대형 런과 동일 parent packet replay는 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_388_REPORT_20260704.md`
+  - state `docs\devs\loop388_author_bridge_exact_gap_runtime_20260704.json`
+  - Loop387 result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop387_11694019_author_bridge_d59a3d19_search_nonlight_result.json`
+  - Loop387 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop387_11694019_author_bridge_d59a3d19_search_nonlight_audit.json`
+  - Loop388 result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop388_11694019_author_bridge_exact_gap_search_nonlight_result.json`
+  - Loop388 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop388_11694019_author_bridge_exact_gap_search_nonlight_audit.json`
+  - Loop388 log `logs\expert_run_20260704_061022_136460.log`
+- Runtime evidence:
+  - Loop387 input/completed/flushed/pending/failed `1/1/1/0/0`, row 생산 `GO`, semantic 미해소.
+  - Loop388 input/completed/flushed/pending/failed `1/1/1/0/0`, row 생산 `GO`, semantic row recovery `GO`.
+  - Loop388 audit는 `flush_integrity=GO`, `search_evidence=GO`, `publication_contract_convergence=GO`, violations `0`.
+- Code evidence:
+  - `_identify_evidence_gaps`가 author_bridge title hint별 exact official detail title match를 확인한다.
+  - 다른 official detail URL이 있어도 대상 author_bridge 제목과 exact match가 없으면 `no_official_url` gap을 유지한다.
+  - R1 hardcoded cue 리스트 확장은 없다.
+- Row evidence:
+  - before Loop387: `candidate_ledger_status=promotion_blocked`, `blocked_title=혼후순결`, `official_title=null`.
+  - after Loop388: `candidate_ledger_status=safe_resolved`, `official_title=이세계에서 사이비로 살아남기`, `official_url=https://novelpia.com/novel/181771`, `publish_allowed=true`, `bypassed_gate=false`.
+- Search evidence:
+  - Loop388 `queries_issued=8`, `degraded=0`, `unrecovered_degraded=0`, status `ok`.
+  - Log marker: `AdaptiveChain round 1: 2 보충 쿼리 (no_official_url)`.
+  - Log marker: `purpose=adaptive_author_bridge_official_url`.
+  - Log marker: `rescue: locked official candidate official_title='이세계에서 사이비로 살아남기', url='https://novelpia.com/novel/181771'`.
+- Verification commands:
+  - `.venv312\Scripts\python.exe -m unittest tests.test_search_recovery_contract` -> PASS, `5` tests.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_search_recovery_contract tests.test_search_degraded_zero_suppression tests.test_mcp_bridge_direct_search tests.test_audit_expert_run_health` -> PASS, `34` tests.
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\experts\orchestrator.py tests\test_search_recovery_contract.py` -> PASS.
+  - `git diff --check` -> PASS, CRLF warning only.
+- Gate: runtime production `GO / 1 of 1`, row-level semantic/search recovery `GO`, broader search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop386 author_bridge search recovery contract
 
 - 범위: `11694019`의 author_bridge search recovery를 코드 계약으로 보강한다. 신규 full375/bounded/N5/golden18 대형 런과 동일 parent packet replay는 발주하지 않는다.

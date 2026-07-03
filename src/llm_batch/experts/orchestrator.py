@@ -19563,8 +19563,19 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 has_official_url = True
             if "namu.wiki" in sr_url:
                 has_wiki_url = True
+
+        author_bridge_official_gaps = self._author_bridge_titles_without_exact_official_detail(
+            ctx,
+            snippet_hints,
+        )
+        for bridge_title in author_bridge_official_gaps[:2]:
+            gaps.append({
+                "type": "no_official_url",
+                "term": bridge_title,
+                "description": f"'{bridge_title}'의 author_bridge 공식 detail 미확정",
+            })
         
-        if not has_official_url:
+        if not has_official_url and best_title not in author_bridge_official_gaps:
             gaps.append({
                 "type": "no_official_url",
                 "term": best_title,
@@ -19607,6 +19618,76 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             })
         
         return gaps
+
+    def _author_bridge_titles_without_exact_official_detail(
+        self,
+        ctx: ConversationContext,
+        snippet_hints: Dict[str, Any],
+    ) -> List[str]:
+        """Return author_bridge titles whose exact official detail is still missing."""
+        if not isinstance(snippet_hints, dict):
+            return []
+
+        bridge_titles: List[str] = []
+        seen_norms: set[str] = set()
+        for hint in (snippet_hints.get("title_hints") or []):
+            if not isinstance(hint, dict):
+                continue
+            source = str(hint.get("source") or "")
+            if source != "author_bridge" and not hint.get("author_anchor"):
+                continue
+            title = self._normalize_title_candidate(hint.get("title"))
+            title_norm = self._normalize_hint_text(title)
+            if not title or len(title_norm) < 4 or title_norm in seen_norms:
+                continue
+            if self._is_generic_topic_gap_term(title):
+                continue
+            seen_norms.add(title_norm)
+            bridge_titles.append(title)
+
+        if not bridge_titles:
+            return []
+
+        def _text_matches_title(text: Any, title_norm: str) -> bool:
+            text_norm = self._normalize_hint_text(text)
+            return bool(title_norm and text_norm and title_norm in text_norm)
+
+        def _item_matches_title(item: Dict[str, Any], title_norm: str) -> bool:
+            if not isinstance(item, dict):
+                return False
+            url = str(item.get("url") or "").strip()
+            if not (
+                self._is_novel_platform_url(url)
+                and self._is_novel_detail_url(url)
+            ):
+                return False
+            for key in (
+                "title",
+                "content",
+                "novel_title",
+                "official_title",
+                "page_title",
+                "fetched_title",
+            ):
+                if _text_matches_title(item.get(key), title_norm):
+                    return True
+            return False
+
+        official_items: List[Dict[str, Any]] = []
+        for item in (getattr(ctx, "search_results", None) or []):
+            if isinstance(item, dict):
+                official_items.append(item)
+        for item in (getattr(ctx, "fetched_page_info", None) or []):
+            if isinstance(item, dict):
+                official_items.append(item)
+
+        missing: List[str] = []
+        for title in bridge_titles:
+            title_norm = self._normalize_hint_text(title)
+            if any(_item_matches_title(item, title_norm) for item in official_items):
+                continue
+            missing.append(title)
+        return missing
 
     def _community_chain_fetch(
         self,

@@ -44,6 +44,71 @@ class SearchRecoveryContractTest(unittest.TestCase):
             ],
         )
 
+    def test_author_bridge_title_keeps_gap_when_only_wrong_official_details_exist(self):
+        orchestrator = Orchestrator.__new__(Orchestrator)
+        ctx = ConversationContext(post_id=11694019, post_data={}, comments=[])
+        ctx.search_results = [
+            {
+                "title": "혼후순결 - 웹소설",
+                "url": "https://page.kakao.com/content/60742024",
+                "content": "혼후순결 카카오페이지",
+            },
+            {
+                "title": "감옥학원에서 나만 힐링할거다",
+                "url": "https://novelpia.com/novel/75754",
+                "content": "작가 미츄리",
+            },
+        ]
+        hints = {
+            "title_hints": [
+                {
+                    "title": "이세계에서 사이비로 살아남기",
+                    "source": "author_bridge",
+                    "author_anchor": "미츄리",
+                }
+            ],
+            "author_hints": [{"name": "미츄리", "source": "author_bridge"}],
+        }
+
+        gaps = orchestrator._identify_evidence_gaps(ctx, hints, ["미츄리", "혼후순결"])
+
+        self.assertIn(
+            {
+                "type": "no_official_url",
+                "term": "이세계에서 사이비로 살아남기",
+                "description": "'이세계에서 사이비로 살아남기'의 author_bridge 공식 detail 미확정",
+            },
+            gaps,
+        )
+
+    def test_author_bridge_title_gap_closes_with_exact_official_detail(self):
+        orchestrator = Orchestrator.__new__(Orchestrator)
+        ctx = ConversationContext(post_id=11694019, post_data={}, comments=[])
+        ctx.search_results = [
+            {
+                "title": "이세계에서 사이비로 살아남기 - 노벨피아",
+                "url": "https://novelpia.com/novel/181771",
+                "content": "작가 미츄리",
+            }
+        ]
+        hints = {
+            "title_hints": [
+                {
+                    "title": "이세계에서 사이비로 살아남기",
+                    "source": "author_bridge",
+                    "author_anchor": "미츄리",
+                }
+            ],
+            "author_hints": [{"name": "미츄리", "source": "author_bridge"}],
+        }
+
+        gaps = orchestrator._identify_evidence_gaps(ctx, hints, ["미츄리", "혼후순결"])
+
+        self.assertNotIn(
+            "'이세계에서 사이비로 살아남기'의 author_bridge 공식 detail 미확정",
+            [gap.get("description") for gap in gaps],
+        )
+
     def test_context_records_degraded_fallback_recovery(self):
         ctx = ConversationContext(post_id=1, post_data={}, comments=[])
 

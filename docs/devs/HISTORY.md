@@ -1,5 +1,19 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop388 author_bridge exact official detail runtime closure
+
+- 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop387로 `11694019` 단건 search 포함 non-light runtime이 실제 row를 내는지 먼저 확인했다.
+- Loop387은 input/completed/flushed/pending/failed `1/1/1/0/0`, search health `queries=8/degraded=0/unrecovered=0`, audit `flush_integrity=GO`, `search_evidence=GO`, `publication_contract_convergence=GO`였지만 author_bridge 보충 검색은 실행되지 않았다.
+- 원인은 다른 official detail URL이 이미 존재하면 `no_official_url` gap이 닫혀, author_bridge 제목 `이세계에서 사이비로 살아남기`의 exact official detail이 없는 상태를 놓치는 구조였다.
+- `src/llm_batch/experts/orchestrator.py`는 author_bridge title hint마다 official platform detail URL의 page title exact match를 확인하고, 없으면 `no_official_url` gap을 유지한다.
+- R1 하드코딩 cue 리스트 확장은 하지 않았다.
+- Loop388 같은 입력 재실행에서 `AdaptiveChain`은 `adaptive_author_bridge_official_url` 보충 쿼리를 실행했고 `https://novelpia.com/novel/181771`을 fetch했다.
+- Loop388 결과는 `official_title=이세계에서 사이비로 살아남기`, `official_url=https://novelpia.com/novel/181771`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`, `bypassed_gate=false`다.
+- 검증은 search recovery contract `5` PASS, search 관련 묶음 `34` PASS, `py_compile` PASS, `git diff --check` PASS(CRLF warning only)다.
+- Report는 `docs/devs/loop_reports/LOOP_388_REPORT_20260704.md`, state는 `docs/devs/loop388_author_bridge_exact_gap_runtime_20260704.json`이다.
+- Gate는 runtime production `GO / 1 of 1`, row-level semantic/search recovery `GO`, broader search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop386 author_bridge search recovery contract
 
 - 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
