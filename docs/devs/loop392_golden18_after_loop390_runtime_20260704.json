@@ -1,0 +1,118 @@
+{
+  "loop": 392,
+  "date": "2026-07-04",
+  "head": "e3e71b16",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "scope": "Loop390 이후 current HEAD golden18 search-non-light runtime proof",
+  "new_large_runs": "FROZEN",
+  "same_parent_packet_replay": "STOPPED",
+  "runtime": {
+    "run_id": "20260704_073804_410494",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop392_golden18_after_loop390_e3e71b16_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop392_golden18_after_loop390_e3e71b16_search_nonlight_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop392_golden18_after_loop390_e3e71b16_search_nonlight_result_checkpoint.jsonl",
+    "counts": {
+      "input": 18,
+      "completed": 18,
+      "flushed": 18,
+      "pending": 0,
+      "failed": 0
+    },
+    "large_run_complete": true,
+    "vlm_ocr_semantic_review_ready": true,
+    "health_preflight": {
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_ok_count": 2,
+      "mcp_health_failure_count": 0
+    }
+  },
+  "audits": {
+    "health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop392_golden18_after_loop390_runtime_health_audit.json",
+    "expected_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop392_golden18_after_loop390_e3e71b16_search_nonlight_audit.json",
+    "expected_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop392_golden18_after_loop390_e3e71b16_search_nonlight_audit.md",
+    "collateral_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop392_golden18_after_loop390_e3e71b16_search_nonlight_collateral.json",
+    "collateral_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop392_golden18_after_loop390_e3e71b16_search_nonlight_collateral.md"
+  },
+  "health_audit": {
+    "flush_integrity": "GO / clean_completed_source",
+    "search_evidence": "GO",
+    "publication_contract_convergence": "GO",
+    "publication_violations": 0,
+    "reason_errors": 0,
+    "row_search_status_counts": {
+      "ok": 8,
+      "SEARCH_DEGRADED_RECOVERED": 8
+    },
+    "rows_with_degraded": 0,
+    "unrecovered_degraded_total": 0,
+    "query_total": 128,
+    "slang_old_store_true": 2,
+    "slang_new_store_true_after_patch": 1,
+    "slang_old_store_true_blocked_by_patch": 1
+  },
+  "expected_audit": {
+    "canary_semantic_gate": "NO-GO",
+    "passed_count": 15,
+    "failed_count": 3,
+    "status_counts": {
+      "expected_null_respected": 7,
+      "expected_title_resolved": 6,
+      "positive_work_unresolved": 1,
+      "expected_work_evidence_preserved_unresolved": 1,
+      "expected_hypothesis_preserved_unresolved": 1,
+      "wrong_or_unexpected_title": 2
+    },
+    "failed_rows": [
+      {
+        "post_id": 11663521,
+        "expected": "어떤 마술의 금서목록 / 어떤 과학의 초전자포",
+        "actual": null,
+        "status": "positive_work_unresolved"
+      },
+      {
+        "post_id": 11700470,
+        "expected": "악당 얼굴의 B급 모험자",
+        "actual": "세계 최강 미소녀에게 납치당했습니다",
+        "status": "wrong_or_unexpected_title"
+      },
+      {
+        "post_id": 11698880,
+        "expected": "가챠 중독자의 퓨전펑크 생활",
+        "actual": "아카데미 생존 갤러리",
+        "status": "wrong_or_unexpected_title"
+      }
+    ]
+  },
+  "collateral": {
+    "scope": "golden_canary_shared_posts_only",
+    "shared_posts": 18,
+    "changed_posts": 17,
+    "collateral_regression_candidates": 5,
+    "full375_collateral": "NOT_OPEN",
+    "active_lane": "reclassified 74 / runtime-verified 4"
+  },
+  "safe_loss_rows": {
+    "11660237": {
+      "expected": "테라포밍",
+      "actual": "테라포밍",
+      "status": "expected_title_resolved"
+    },
+    "11698880": {
+      "expected": "가챠 중독자의 퓨전펑크 생활",
+      "actual_loop391": "candidate_only / promotion_blocked",
+      "actual_loop392": "아카데미 생존 갤러리",
+      "status": "wrong_or_unexpected_title",
+      "interpretation": "hard-hold 완화 근거가 아니라 비결정/배치맥락 미해소 근거"
+    }
+  },
+  "gates": {
+    "runtime_production": "GO / 18 of 18",
+    "search_recovery": "GO_GOLDEN18_ONLY / FULL375_NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "promotion_blocked": "search-blind conditional",
+    "overall": "ACTIVE / NOT_COMPLETE"
+  }
+}

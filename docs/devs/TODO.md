@@ -9479,3 +9479,17 @@
   - Loop230 targeted: `promotion_blocked/context_only`
   - Loop231 parent: `safe_resolved/테라포밍`
 - [ ] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+## 2026-07-04 regression-safe grounding Loop392 TODO
+
+- 상태 업데이트: current HEAD `e3e71b16`에서 golden18 search 포함 non-light runtime이 `18/18/18/0/0`으로 완주했다. Runtime 생산성은 `GO`지만 expected-answer는 `NO-GO / 15 of 18`이다.
+- Loop392 TODO:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] Loop391 `11698880` 단건 runtime `1/1`으로 runtime 생산성을 선확인했다.
+  - [x] Loop392 golden18 단일 runtime을 search 포함 non-light 조건으로 실행했다.
+  - [x] health audit에서 `flush_integrity=GO`, `search_evidence=GO`, publication contract `GO / violations 0`을 확인했다.
+  - [x] expected audit에서 실패 `11663521`, `11700470`, `11698880`을 확인했다.
+  - [ ] `11698880`은 단건 HOLD와 mixed wrong publish가 갈리므로 hard-hold 완화하지 않는다.
+  - [ ] `11700470`은 blind/source-native 검증으로 expected 교정 가능성을 먼저 확인한다.
+  - [ ] full375 collateral gate는 아직 열지 않는다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.

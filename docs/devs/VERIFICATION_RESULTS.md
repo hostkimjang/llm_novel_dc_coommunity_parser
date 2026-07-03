@@ -21632,3 +21632,33 @@ The broader unittest result proves the code checkpoint did not break the current
 - overall goal: `ACTIVE / NOT_COMPLETE`
 
 The broader unittest result proves the code checkpoint did not break the current test suite. It does not prove packet stability, collateral safety, semantic quality approval, or full-scan approval.
+## 2026-07-04 Loop391-392 runtime production proof after Loop390
+
+- 범위: current HEAD `e3e71b16`에서 Loop390 이후 runtime 생산성이 실제 row를 내는지 확인한다. 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 실행하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_391_392_REPORT_20260704.md`
+  - state `docs\devs\loop392_golden18_after_loop390_runtime_20260704.json`
+  - Loop391 result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop391_11698880_after_loop390_e3e71b16_search_nonlight_result.json`
+  - Loop392 result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop392_golden18_after_loop390_e3e71b16_search_nonlight_result.json`
+  - Loop392 health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop392_golden18_after_loop390_runtime_health_audit.json`
+  - Loop392 expected audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop392_golden18_after_loop390_e3e71b16_search_nonlight_audit.json`
+- Runtime evidence:
+  - Loop391 manifest: input/completed/flushed/pending/failed `1/1/1/0/0`.
+  - Loop392 manifest: input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, pending snapshot rows `0`.
+  - Loop392 preflight: `mcp_health_include_search=true`, `mcp_health_light_mode=false`, endpoints `3333/3334`, ok/failure `2/0`.
+- Health audit:
+  - `flush_integrity=GO / clean_completed_source`
+  - `search_evidence=GO`, blockers `[]`
+  - row search status `ok=8`, `SEARCH_DEGRADED_RECOVERED=8`
+  - rows degraded `0`, unrecovered degraded total `0`, query total `128`
+  - `publication_contract_convergence=GO`, violations `0`
+  - reason errors `0`
+- Expected audit:
+  - canary semantic gate `NO-GO`
+  - passed/failed `15/3`
+  - failed rows: `11663521` unresolved, `11700470` wrong `세계 최강 미소녀에게 납치당했습니다`, `11698880` wrong `아카데미 생존 갤러리`
+  - `11660237` expected `테라포밍` resolved
+- Collateral:
+  - golden shared posts `18`, changed `17`, regression candidates `5`
+  - full375 collateral `NOT_OPEN`
+- Gate: runtime production `GO / 18 of 18`, search `GO_GOLDEN18_ONLY / FULL375_NOT_OPEN`, semantic `REVIEW-LOCKED`, full-scan approval `false`, goal `ACTIVE / NOT_COMPLETE`.

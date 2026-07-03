@@ -10592,3 +10592,16 @@
   - residual accounting `NO_DELTA_TITLE_LED_SERIALIZER_CANARY_PARTIAL_RECOVERY_PARENT_REPLAY_REQUIRED`
 - [ ] Parent/representative replay is required before stable recovery claims.
 - [ ] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+## 2026-07-04 Loop391-392 runtime production proof 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Loop391 `11698880` 단건 runtime을 실행했다: run `20260704_073050_032179`, manifest `1/1/1/0/0`, public title `null`, state `multi_work`, `promotion_blocked`.
+- [x] Loop392 current HEAD `e3e71b16` golden18 search 포함 non-light runtime을 실행했다: run `20260704_073804_410494`, manifest `18/18/18/0/0`, result/checkpoint rows `18/18`, VLM/OCR `READY`.
+- [x] Loop392 health audit: `flush_integrity=GO`, `search_evidence=GO`, `publication_contract_convergence=GO / violations 0`, rows degraded `0`, unrecovered degraded `0`.
+- [x] Loop392 expected-answer audit: `NO-GO / 15 of 18`; 실패 `11663521`, `11700470`, `11698880`.
+- [x] `11660237`은 `테라포밍`으로 통과했다.
+- [x] `11698880`은 Loop391 HOLD와 Loop392 wrong publish가 갈려 hard-hold 완화 근거가 아님을 기록했다.
+- [ ] full375 collateral gate는 아직 열지 않는다.
+- [ ] `11700470`은 blind/source-native 검증으로 expected 교정 필요 여부를 먼저 확인한다.
+- Gate: runtime production `GO / 18 of 18`, search `GO_GOLDEN18_ONLY / FULL375_NOT_OPEN`, expected-answer `NO-GO / 15 of 18`, golden shared collateral `NO-GO / 5`, collateral active lane `reclassified 74 / runtime-verified 4`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

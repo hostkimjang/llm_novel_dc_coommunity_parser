@@ -1862,3 +1862,13 @@ Loop324 keeps this goal active. It fixed the health-contract gap and proved the 
 - artifacts: `docs/devs/loop_reports/LOOP_324_REPORT_20260703.md`, `docs/devs/loop324_loop322_alias_nonlight_replay_20260703.json`
 
 Gate remains: `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, search recovery `P0 / OPEN`, targeted canary `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+## 2026-07-04 Loop391-392 Addendum - runtime production proof after Loop390
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop392는 approval 회차가 아니라 Loop390 이후 current HEAD `e3e71b16`에서 runtime production을 golden18 단일 런으로 재실증한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_391_392_REPORT_20260704.md`, state `docs/devs/loop392_golden18_after_loop390_runtime_20260704.json`, result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop392_golden18_after_loop390_e3e71b16_search_nonlight_result.json`, health `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop392_golden18_after_loop390_runtime_health_audit.json`.
+- Runtime: input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, VLM/OCR `READY`, `large_run_complete=true`.
+- Search: non-light preflight `mcp_health_include_search=true`, `mcp_health_light_mode=false`, endpoint ok/failure `2/0`; health audit `search_evidence=GO`, unrecovered degraded `0`.
+- Semantic: expected-answer `NO-GO / 15 of 18`; 실패 `11663521`, `11700470`, `11698880`.
+- Safe-loss: `11660237`은 `테라포밍` 통과, `11698880`은 Loop391 HOLD와 Loop392 wrong publish가 갈려 hard-hold 완화 금지.
+- Collateral: golden shared regression candidates `5`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`.
+- Gate: runtime production `GO / 18 of 18`, search `GO_GOLDEN18_ONLY / FULL375_NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, overall `ACTIVE / NOT_COMPLETE`.

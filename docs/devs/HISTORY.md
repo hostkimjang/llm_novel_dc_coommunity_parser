@@ -10279,3 +10279,14 @@
   - Loop231 parent: `safe_resolved`, `테라포밍`
 - Data Analytics validation/render passed for `Loop231 Loop230 후속 Parent Replay 검토`.
 - Gate remains: run integrity `GO`, parent semantic `NO-GO / MIXED_MOVEMENT`, residual accounting `NO_DELTA_PARENT_REPLAY_AFTER_LOOP230_MIXED_MOVEMENT`, goal `ACTIVE / NOT_COMPLETE`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+## 2026-07-04 - Loop391-392 runtime production proof after Loop390
+
+- P0 런타임 비생산 확인을 위해 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 계속 동결했다.
+- Loop391은 `11698880` 단건을 current HEAD `e3e71b16`에서 실행했고 run `20260704_073050_032179`는 `1/1/1/0/0`으로 완료됐다. 결과는 `multi_work`, `promotion_blocked`, public title `null`이며 expected `가챠 중독자의 퓨전펑크 생활` safe-resolved는 아니다.
+- Loop392는 golden18 단일 search 포함 non-light runtime을 실행했다. Run `20260704_073804_410494`는 input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, VLM/OCR `READY`, `large_run_complete=true`다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, `search_evidence=GO`, publication contract convergence `GO`, violations `0`을 기록했다. Row search는 `ok=8`, `SEARCH_DEGRADED_RECOVERED=8`, rows degraded `0`, unrecovered degraded `0`, query total `128`이다.
+- Expected-answer audit는 `NO-GO / 15 of 18`이다. 실패는 `11663521` unresolved, `11700470` wrong `세계 최강 미소녀에게 납치당했습니다`, `11698880` wrong `아카데미 생존 갤러리`다.
+- `11660237`은 `테라포밍`으로 통과했다. `11698880`은 Loop391 단건 HOLD와 Loop392 mixed wrong publish가 갈려 hard-hold 완화 근거가 아니다.
+- Golden shared collateral compare는 changed `17`, regression candidates `5`다. Full375 collateral은 `NOT_OPEN`이다.
+- Report는 `docs/devs/loop_reports/LOOP_391_392_REPORT_20260704.md`, state는 `docs/devs/loop392_golden18_after_loop390_runtime_20260704.json`이다.
+- Gate는 runtime production `GO / 18 of 18`, search `GO_GOLDEN18_ONLY / FULL375_NOT_OPEN`, expected-answer `NO-GO / 15 of 18`, collateral active lane `reclassified 74 / runtime-verified 4`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.

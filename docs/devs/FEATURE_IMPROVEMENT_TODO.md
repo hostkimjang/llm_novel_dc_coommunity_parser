@@ -585,3 +585,8 @@
 - [ ] shard audit 요약 대시보드 표시
   - 상태: proposed
   - 완료 기준: `ok_count/count`, bad shard 목록, `/healthz`/`/readyz`/SearchXNG UI 상태, Docker exited/OOM/dead 여부 표시
+- [ ] Loop392 runtime proof after Loop390
+  - 상태: golden18 runtime `GO 18/18` / search `GO_GOLDEN18_ONLY` / expected-answer `NO-GO 15/18` / golden shared collateral `NO-GO 5` / full375 `NOT_OPEN` / approval not open
+  - 적용: current HEAD `e3e71b16`에서 Loop390 후 golden18 단일 search non-light runtime을 완료했다. watchdog/stall 우회는 row를 실제로 내지만 semantic gate는 닫혀 있다.
+  - 산출물: `docs/devs/loop_reports/LOOP_391_392_REPORT_20260704.md`, `docs/devs/loop392_golden18_after_loop390_runtime_20260704.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop392_golden18_after_loop390_e3e71b16_search_nonlight_result.json`.
+  - 완료 기준: `11698880` mixed wrong publish, `11700470` expected 충돌, `11663521` positive unresolved를 R1 hardcoded cue 없이 줄이고 full375 collateral gate를 별도 증명하기 전까지 approval과 hard-hold 완화를 열지 않는다.

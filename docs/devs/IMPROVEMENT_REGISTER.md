@@ -16551,3 +16551,18 @@ Gate: `GO_UNIT_ONLY`, targeted canary `NOT_RUN`, residual accounting `NO_DELTA_U
 Gate: runtime `GO`, targeted canary `PARTIAL-GO`, targeted semantic `REVIEW`, overall goal `ACTIVE / NOT_COMPLETE`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
 
 Gate: parent runtime `GO`, targeted deterministic replay `GO`, parent semantic `NO-GO`, residual accounting `NO_DELTA_PARENT_REPLAY_MIXED_MOVEMENT`, overall goal `ACTIVE / NOT_COMPLETE`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+## IMP-20260704-392 - runtime production proof after Loop390
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5 미발주 | 동결 유지 |
+| parent packet replay | 중단 | 동일 38-row replay 없음 | 반복 금지 |
+| Loop391 단건 | GO_RUNTIME_ONLY | `11698880` `1/1/1/0/0`, public title `null`, `promotion_blocked` | 단건 HOLD를 approval로 세지 않음 |
+| Loop392 golden18 runtime | GO / 18 of 18 | run `20260704_073804_410494`, manifest `18/18/18/0/0` | runtime production 근거로만 사용 |
+| search evidence | GO_GOLDEN18_ONLY | unrecovered degraded `0`, blockers `[]` | full375 미개방 caveat 유지 |
+| expected-answer | NO-GO / 15 of 18 | 실패 `11663521`, `11700470`, `11698880` | 실패 행 triage |
+| `11660237` | PASS | actual `테라포밍` | N>=5 flip probe 대체 아님 |
+| `11698880` | FAIL / nondeterminism signal | Loop391 HOLD, Loop392 wrong `아카데미 생존 갤러리` | hard-hold 완화 금지 |
+| golden shared collateral | NO-GO / 5 | changed `17`, regression candidates `5` | full375 열기 전 approval 금지 |
+
+Gate: runtime production `GO / 18 of 18`, search `GO_GOLDEN18_ONLY / FULL375_NOT_OPEN`, expected-answer `NO-GO / 15 of 18`, collateral active lane `reclassified 74 / runtime-verified 4`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.

@@ -657,3 +657,11 @@
 - 2026-04-26 감사 기준 `slang_insight=1817`, 저장 후보는 보정 전 `546`에서 보정 후 `532`로 줄었다.
 - 현재 `slang_db/slang_db.json`은 `titles=340`, `family_aliases=1`, 문장형/작품명 동일 alias 오염 `0`으로 확인됐다.
 - 차단된 14건은 모두 `unclear_canonical_alias`이며, 일부는 실제 약칭으로 보이는 표본이라 검색 안정화 후 재검토가 필요하다.
+## 2026-07-04 Loop392 golden18 runtime slang 주의사항
+
+- [x] 이번 회차는 slang DB write-back이 아니라 Loop390 이후 current HEAD golden18 runtime production proof다.
+- [x] Loop392는 `slang-db off`, VLM/OCR on, search 포함 non-light 조건에서 `18/18/18/0/0`으로 완주했다.
+- [x] Health audit는 search evidence `GO`, unrecovered degraded `0`이지만 full375 collateral은 아직 `NOT_OPEN`이다.
+- [ ] Expected-answer `NO-GO / 15 of 18`이므로 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- [ ] `11698880`은 Loop391 단건 HOLD와 Loop392 mixed wrong publish가 갈려 safe-loss 완화 근거가 아니다.
+- Gate: slang DB write-back 아님, golden18 runtime `GO / 18 of 18`, search `GO_GOLDEN18_ONLY / FULL375_NOT_OPEN`, expected-answer `NO-GO / 15 of 18`, golden shared collateral `NO-GO / 5`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
