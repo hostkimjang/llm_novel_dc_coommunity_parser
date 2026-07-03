@@ -6,6 +6,19 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-03 Loop356 current HEAD background dispatch quality gate
+
+- 근거:
+  - [x] 현 HEAD `4ebe824b`에서 N5/full375/bounded1200/golden18을 새 prefix로 background 발주했다.
+  - [x] shard audit `35/44` OK와 bad shard `1`, `37-44` 제외를 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_356_REPORT_20260703.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop356_current_head_background_dispatch_20260703.json`.
+- 품질 게이트:
+  - [x] 발주와 approval을 분리한다.
+  - [x] N5/golden18/full375/bounded completion 전 stale evidence replacement를 선언하지 않는다.
+  - [x] search recovery 전 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-03 Loop355 wrong-work alias contract quality gate
 
 - 근거:

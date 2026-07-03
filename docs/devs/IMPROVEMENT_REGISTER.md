@@ -1,5 +1,17 @@
 # Improvement Register
 
+## IMP-20260703-356 - current HEAD background dispatch
+
+| Item | Status | Evidence | Next action |
+| --- | --- | --- | --- |
+| Safe-loss N5 | Running background / not analyzed | PID `120600`, first manifest `20260703_153459_689254`, health `1/0`, planned `15` | Wait for `15/15`, then run flip-rate analyze with blind judge |
+| full375 | Running background / not approval | PID `67072`, run `20260703_153340_038764`, health `3/0`, input `375` | Wait for `375/375`, then collateral diff |
+| bounded completed-source | Running background / not approval | PID `140096`, run `20260703_153419_850261`, health `6/0`, input `1200` | Audit completion and search degraded counters |
+| golden18 | Running background / approval not open | PID `113216`, run `20260703_153440_182245`, health `2/0`, input `18` | Wait for `18/18`, then expected-answer audit |
+| Search recovery | P0 open | shard audit `35/44`, bad `1`, `37-44` | Prove `unrecovered_degraded=0` before hard-hold relaxation |
+
+Gate: dispatch `GO_CURRENT_HEAD_BACKGROUND_DISPATCH`, runtime completion `IN_PROGRESS / NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260703-347 - remaining known-alias contract/stall
 
 | Item | Status | Evidence | Next action |

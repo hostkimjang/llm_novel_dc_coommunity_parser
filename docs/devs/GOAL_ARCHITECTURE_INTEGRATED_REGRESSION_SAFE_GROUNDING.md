@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop356 Addendum - current HEAD background dispatch
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop356은 approval 회차가 아니라 Loop355 이후 현 HEAD `4ebe824b`에서 stale flip/golden/full375/bounded 증거를 갱신할 background run을 새 prefix로 발주한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_356_REPORT_20260703.md`, state `docs/devs/loop356_current_head_background_dispatch_20260703.json`, shard audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop356_search_shard_audit_44_before_current_head_dispatch.json`.
+- Dispatch: safe-loss N5 PID `120600`, full375 PID `67072`, bounded1200 PID `140096`, golden18 PID `113216`.
+- Health: shard audit `35/44` OK, bad shard `1`, `37-44`; 새 런 manifest는 모두 `mcp_health_include_search=true`, `mcp_health_light_mode=false`.
+- Boundary: N5 `15/15`, golden18 `18/18`, full375 `375/375`, bounded completion 전에는 stale flip `0.333`, 2026-06-28 golden `GO`, 과거 full375 증거를 대체하지 않는다.
+- Gate: dispatch `GO_CURRENT_HEAD_BACKGROUND_DISPATCH`, runtime completion `IN_PROGRESS / NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop355 Addendum - wrong-work alias contract reinforcement
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop355는 approval 회차가 아니라 `repair_after_wrong_work=5` 중 `11698890`, `11700500`, `11705252` 3행의 known-title-abbreviation work bridge 계약을 보강한 회차다.

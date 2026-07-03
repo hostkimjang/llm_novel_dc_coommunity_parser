@@ -2,6 +2,18 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop356 TODO
+
+- 상태 업데이트: 현 HEAD `4ebe824b`에서 stale flip/golden/full375 증거 갱신용 N5/full375/bounded1200/golden18을 search 포함 non-light background로 재발주했다. 발주는 승인 근거가 아니며 residual action queue는 `105` 유지다.
+- Loop356 TODO:
+  - [x] search shard audit `35/44` OK를 기록하고 bad shard `1`, `37-44`를 새 발주에서 제외했다.
+  - [x] safe-loss N5 plan이 `3 post_id x 5 repeats = 15`와 minimum repeats 계약을 만족함을 확인했다.
+  - [x] full375, bounded1200 completed-source, golden18을 current HEAD prefix로 background 발주했다.
+  - [x] golden18 `18`행과 `11660237`, `11698880` 편입, golden/bootstrap/flip probe 도구 git 추적 상태를 확인했다.
+  - [ ] N5 `15/15`, golden18 `18/18`, full375 `375/375`, bounded completion 전 stale flip/golden/full375 근거를 대체했다고 쓰지 않는다.
+  - [ ] active loop는 collateral183 residual triage 또는 `OVERRIDE AUDIT(LLM=False -> final=True)` blind judge 검증으로 전환한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop355 TODO
 
 - 상태 업데이트: `repair_after_wrong_work=5` 중 `11698890`, `11700500`, `11705252` 3행을 known-title-abbreviation work bridge 계약으로 보강했다. Runtime closure는 아직 없고 residual action queue는 `105` 유지다.

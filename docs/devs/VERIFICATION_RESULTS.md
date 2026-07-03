@@ -1,5 +1,26 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop356 current HEAD background dispatch
+
+- 범위: Loop355 이후 현 HEAD `4ebe824b`에서 stale flip/golden/full375/bounded 증거 갱신용 background run을 search 포함 non-light 조건으로 발주한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_356_REPORT_20260703.md`
+  - state `docs\devs\loop356_current_head_background_dispatch_20260703.json`
+  - shard audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop356_search_shard_audit_44_before_current_head_dispatch.json`
+  - N5 plan `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop356_current_head_safe_loss_independent_n5_run_plan.json`
+- Dispatch verification:
+  - shard audit `35/44` OK, bad shard `1`, `37-44`.
+  - safe-loss N5 PID `120600`, first manifest health `1/0`, planned results `15`.
+  - full375 PID `67072`, manifest health `3/0`, input `375`.
+  - bounded1200 PID `140096`, manifest health `6/0`, input `1200`.
+  - golden18 PID `113216`, manifest health `2/0`, input `18`.
+  - all current HEAD manifests have `mcp_health_include_search=true` and `mcp_health_light_mode=false`.
+- Tracking verification:
+  - `golden_set.jsonl` row count `18`.
+  - `11660237`, `11698880` are included in golden18.
+  - golden files, `tools\bootstrap_regression_safe_grounding.py`, and `tools\safe_loss_flip_rate_probe.py` are git tracked.
+- Gate: dispatch `GO_CURRENT_HEAD_BACKGROUND_DISPATCH`, runtime completion `IN_PROGRESS / NOT_APPROVAL`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED_FULL_N5`, golden18 `RUNNING_BACKGROUND / APPROVAL_NOT_OPEN`, full375/bounded `RUNNING_BACKGROUND / NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop355 wrong-work alias contract reinforcement
 
 - 범위: `repair_after_wrong_work=5` 중 `11698890`, `11700500`, `11705252`의 known-title-abbreviation work bridge 계약을 보강한다.

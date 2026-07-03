@@ -1,5 +1,12 @@
 # Slang DB Improvement TODO
 
+## 2026-07-03 Loop356 current HEAD evidence refresh caveat
+
+- [x] 이번 회차는 slang DB write-back이 아니라 current HEAD runtime evidence refresh 발주다.
+- [x] N5/golden18/full375/bounded1200 모두 `slang-db off`와 search 포함 non-light 조건으로 발주했다.
+- [ ] N5 `15/15`, golden18 `18/18`, full375/bounded completion 전 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, dispatch `GO_CURRENT_HEAD_BACKGROUND_DISPATCH`, runtime completion `IN_PROGRESS / NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop355 wrong-work alias contract caveat
 
 - [x] `댓천마`, `전1시`, `탐재`는 slang DB write-back이 아니라 `KNOWN_TITLE_ABBREVIATIONS` 기반 work bridge 계약으로만 다뤘다.

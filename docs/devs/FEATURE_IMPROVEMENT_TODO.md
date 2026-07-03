@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop356 current HEAD background dispatch follow-up
+  - 상태: current_head_4ebe824b / background_launched / approval_not_open / search_recovery_p0_open
+  - 적용: safe-loss N5, full375, bounded1200 completed-source, golden18을 search 포함 non-light로 새 발주했다.
+  - 산출물: `docs/devs/loop_reports/LOOP_356_REPORT_20260703.md`, `docs/devs/loop356_current_head_background_dispatch_20260703.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop356_search_shard_audit_44_before_current_head_dispatch.json`.
+  - 완료 기준: N5 `15/15`와 analyze, golden18 `18/18` audit, full375 `375/375` collateral diff, bounded completion/search degraded audit를 모두 확인한다. 완료 전 stale flip/golden/full375 대체와 hard-hold 완화는 금지한다.
+
 - [ ] Loop355 wrong-work alias contract follow-up
   - 상태: contract_go_unit_only / runtime_not_run_after_patch / residual_queue_105 / search_recovery_p0_open
   - 적용: `11698890`, `11700500`, `11705252`를 alias+work-cue+official detail recall 계약으로 보강했다.

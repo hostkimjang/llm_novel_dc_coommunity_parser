@@ -1,5 +1,21 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop356 current HEAD background dispatch 체크
+
+- [x] 현 HEAD `4ebe824b`에서 stale evidence refresh 발주를 새 prefix로 분리했다.
+- [x] shard audit를 먼저 실행했다.
+  - artifact `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop356_search_shard_audit_44_before_current_head_dispatch.json`
+  - OK `35/44`
+  - bad shard `1`, `37-44`
+- [x] current HEAD background run을 발주했다.
+  - safe-loss N5 PID `120600`, first run `20260703_153459_689254`, health `1/0`
+  - full375 PID `67072`, run `20260703_153340_038764`, health `3/0`
+  - bounded1200 PID `140096`, run `20260703_153419_850261`, health `6/0`
+  - golden18 PID `113216`, run `20260703_153440_182245`, health `2/0`
+- [x] 모든 current HEAD 발주는 `mcp_health_include_search=true`, `mcp_health_light_mode=false`다.
+- [ ] 완료 전 approval, stale flip/golden/full375 대체, hard-hold 완화를 선언하지 않는다.
+- Gate: dispatch `GO_CURRENT_HEAD_BACKGROUND_DISPATCH`, runtime completion `IN_PROGRESS / NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop355 wrong-work alias contract 체크
 
 - [x] `repair_after_wrong_work=5` 중 빈 계약면 3건을 확인했다.
