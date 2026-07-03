@@ -1,0 +1,86 @@
+{
+  "loop": 385,
+  "date": "2026-07-04",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "language": "ko",
+  "runtime_run": {
+    "run_id": "20260704_045605_759573",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop385_golden18_after_loop384_8edf29ae_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop385_golden18_after_loop384_8edf29ae_search_nonlight_result_manifest.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop385_golden18_after_loop384_runtime_health_audit.json",
+    "input_post_count": 18,
+    "completed_count": 18,
+    "flushed_count": 18,
+    "pending_count": 0,
+    "failed_count": 0,
+    "large_run_complete": true,
+    "search_mode": "non_light",
+    "mcp_health_ok_count": 2,
+    "mcp_health_failure_count": 0,
+    "mcp_health_checked_endpoint_count": 2,
+    "flush_integrity": "GO_clean_completed_source",
+    "publication_contract": "GO_violations_0",
+    "search_evidence": "REVIEW_search_degraded_observed",
+    "unrecovered_degraded_total": 3
+  },
+  "runtime_audit": {
+    "audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop385_golden18_after_loop384_8edf29ae_search_nonlight_audit.json",
+    "collateral": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop385_golden18_after_loop384_8edf29ae_search_nonlight_collateral.json",
+    "canary_semantic_gate": "NO-GO",
+    "passed_count": 15,
+    "failed_count": 3,
+    "failed_post_ids": [11668307, 11700470, 11698880],
+    "collateral_regression_count": 5
+  },
+  "code_patch": {
+    "files": [
+      "expert_main.py",
+      "tests/test_expert_main_comment_metadata.py"
+    ],
+    "summary": "locked official-detail candidate with direct source and search support blocks or repairs URL-less title-only gate overwrite",
+    "r1_hardcoded_cue_expansion": false
+  },
+  "postprocess_projection": {
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop385_current_patch_postprocess_resync_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop385_current_patch_postprocess_resync_result_manifest.json",
+    "audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop385_current_patch_postprocess_resync_audit.json",
+    "collateral": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop385_current_patch_postprocess_resync_collateral.json",
+    "runtime_replay_after_patch": "NOT_RUN_POSTPROCESS_ONLY",
+    "canary_semantic_gate": "NO-GO",
+    "passed_count": 16,
+    "failed_count": 2,
+    "failed_post_ids": [11668307, 11700470],
+    "collateral_regression_count": 4,
+    "recovered_post_ids": [11698880]
+  },
+  "key_rows": {
+    "11660237": "runtime_pass_terraforming",
+    "11698880": "runtime_wrong_publish_projection_pass_locked_candidate",
+    "11668307": "promotion_blocked_unresolved_no_hardcoded_alias",
+    "11700470": "promotion_blocked_ocr_explicit_title_unresolved"
+  },
+  "gates": {
+    "new_large_runs": "FROZEN",
+    "same_parent_packet_replay": "STOPPED",
+    "runtime_production": "GO_18_of_18",
+    "runtime_semantic": "NO-GO_15_of_18",
+    "postprocess_projection_semantic": "NO-GO_16_of_18",
+    "golden_shared_collateral_runtime": "NO-GO_5",
+    "golden_shared_collateral_projection": "NO-GO_4",
+    "full375_collateral": "NOT_OPEN",
+    "search_recovery": "P0_PARTIAL_RUNTIME_GO_UNRECOVERED_DEGRADED_OPEN",
+    "collateral_active_lane": "reclassified_74_runtime_verified_4",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE_NOT_COMPLETE"
+  },
+  "verification": {
+    "unittest": {
+      "command": ".venv312/Scripts/python.exe -m unittest tests.test_expert_main_comment_metadata tests.test_promotion_gate_contract tests.test_regression_safe_work_bridge_contract",
+      "result": "PASS",
+      "tests": 83
+    }
+  }
+}

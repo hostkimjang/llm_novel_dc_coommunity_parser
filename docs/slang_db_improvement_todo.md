@@ -1,5 +1,15 @@
 # Slang DB Improvement TODO
 
+## 2026-07-04 Loop385 runtime proof / locked candidate slang 주의사항
+
+- [x] 이번 회차는 slang DB write-back이 아니라 current-code golden18 runtime proof와 publication contract 보정이다.
+- [x] `--slang-db off` 조건으로 실행했다.
+- [x] R1 하드코딩 cue 리스트 확장은 하지 않았다.
+- [x] `11698880`의 `가챠펑크/세드릭 -> 가챠 중독자의 퓨전펑크 생활` 회복은 locked official-detail 후보와 본문/검색 support 계약이며 alias/slang registry 추가가 아니다.
+- [x] `11660237`은 `테라포밍`으로 runtime pass지만 단일 런만으로 hard-hold 완화를 선언하지 않는다.
+- [ ] `11668307`, `11700470`, search degraded, full375 collateral을 닫기 전 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, golden18 runtime `GO / 18 of 18`, runtime expected-answer `NO-GO / 15 of 18`, projection expected-answer `NO-GO / 16 of 18`, golden shared collateral projection `NO-GO / 4`, search recovery `P0 / PARTIAL_RUNTIME_GO / UNRECOVERED_DEGRADED_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop384 postprocess-only golden pass slang 주의사항
 
 - [x] 이번 회차는 slang DB write-back이 아니라 current-code postprocess contract resync다.

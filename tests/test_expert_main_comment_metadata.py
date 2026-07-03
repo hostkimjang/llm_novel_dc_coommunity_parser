@@ -3867,6 +3867,148 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
             "body_verified_character_work_competition",
         )
 
+    def test_locked_public_candidate_blocks_title_only_gate_candidate_override(self):
+        correct_title = "가챠 중독자의 퓨전펑크 생활"
+        correct_url = "https://novelpia.com/novel/387014"
+        wrong_title = "아카데미 생존 갤러리"
+        correct_candidate = {
+            "official_title": correct_title,
+            "heretic_url": correct_url,
+            "confidence": "High",
+            "alias_or_mention": "가챠펑크",
+            "source_tier": "official_detail",
+            "page_type": "novel_page",
+            "reference_role": "primary",
+            "locked": True,
+        }
+        wrong_candidate = {
+            "official_title": wrong_title,
+            "heretic_url": None,
+            "confidence": "High",
+            "alias_or_mention": "아생갤",
+            "source_tier": "official_detail",
+            "page_type": "novel_page",
+            "reference_role": "primary",
+        }
+        result = {
+            "title": "아생갤 개 존나게 재밌군 ㅇㅇ",
+            "content": ["가챠펑크 세드릭도 그렇고 시원시원한 상남자라서 좋구나"],
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "novel_identity": {
+                    "official_title": wrong_title,
+                    "heretic_url": None,
+                    "confidence": "High",
+                },
+                "search_evidence_catalog": [
+                    {
+                        "title": "세드릭 몬트라벤 - 나무위키",
+                        "snippet": "가챠 중독자의 퓨전펑크 생활의 주인공",
+                        "url": "https://namu.wiki/w/세드릭 몬트라벤",
+                        "source_tier": "wiki",
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": wrong_title,
+                    "official_url": None,
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "verified_alias_title_only_publication",
+                        "official_url_withheld_by_title_mismatch",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "verified_alias_title_only_publication",
+                            "post_title_alias",
+                            "title",
+                            "search",
+                            "body",
+                        ],
+                    },
+                },
+                "promotion_gate_state": {
+                    "candidate_title": wrong_title,
+                    "candidate_url": None,
+                    "official_title_exists": True,
+                    "row_discusses_work_as_work": True,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "verified_alias_title_only_publication",
+                            "post_title_alias",
+                            "title",
+                            "search",
+                            "body",
+                        ],
+                        "conflict_reason_codes": [
+                            "official_url_withheld_by_title_mismatch",
+                            "verified_alias_title_only_publication",
+                        ],
+                    },
+                },
+                "candidate_ledger": {
+                    "candidate_preservation_sources": [
+                        dict(correct_candidate),
+                        dict(wrong_candidate),
+                    ],
+                    "promotion_gate_state": {
+                        "candidate_title": wrong_title,
+                        "candidate_url": None,
+                        "official_title_exists": True,
+                        "row_discusses_work_as_work": True,
+                        "scope": {
+                            "scope_kind": "current_work",
+                            "confidence": "high",
+                            "direct_bridge_sources": [
+                                "verified_alias_title_only_publication",
+                                "post_title_alias",
+                                "title",
+                                "search",
+                                "body",
+                            ],
+                            "conflict_reason_codes": [
+                                "official_url_withheld_by_title_mismatch",
+                                "verified_alias_title_only_publication",
+                            ],
+                        },
+                    },
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            result,
+            post_title="아생갤 개 존나게 재밌군 ㅇㅇ",
+        )
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["novel_identity"]["official_title"], correct_title)
+        self.assertEqual(identity["promotion_decision"]["official_title"], correct_title)
+        self.assertEqual(identity["promotion_decision"]["official_url"], correct_url)
+        self.assertIn(
+            "serialized_public_identity_gate_candidate_blocked_by_locked_public_candidate",
+            identity["promotion_decision"]["reason_codes"],
+        )
+        self.assertEqual(
+            identity["publish_contract_trace"]["pre_gate_candidate"]["source"],
+            "locked_competing_public_candidate",
+        )
+
     def test_publish_contract_trace_converges_stale_publish_trace_to_blocked_decision(self):
         stale_publish_decision = {
             "status": "publish",

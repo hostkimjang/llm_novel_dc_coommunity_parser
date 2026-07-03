@@ -2,6 +2,24 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-04 regression-safe grounding Loop385 TODO
+
+- 상태 업데이트: current-code golden18 runtime replay `20260704_045605_759573`는 `18/18/18/0/0`으로 완주했다. Health는 `GO / clean_completed_source`, publication contract는 `GO / violations 0`이지만 search evidence는 `REVIEW / search_degraded_observed`이고 expected-answer는 runtime 원본 `NO-GO / 15 of 18`, postprocess projection `NO-GO / 16 of 18`이다.
+- Loop385 TODO:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] Loop384 postprocess-only 한계를 current-code golden18 runtime으로 갱신했다.
+  - [x] `11698880`의 URL 없는 title-only overwrite를 locked official-detail 후보로 되돌리는 publication contract를 추가했다.
+  - [x] runtime 원본 audit `NO-GO / 15 of 18`과 projection audit `NO-GO / 16 of 18`을 분리 기록했다.
+  - [x] `11660237`은 `테라포밍`, `11698880` projection은 `가챠 중독자의 퓨전펑크 생활`로 통과함을 확인했다.
+  - [x] `11668307`, `11700470`은 hardcoded cue/alias 없이 unresolved로 남긴다.
+  - [x] promotion/work-bridge contract tests `83` PASS.
+  - [ ] Projection은 `runtime_replay_after_patch=NOT_RUN_POSTPROCESS_ONLY`이므로 approval 또는 hard-hold 완화 근거로 세지 않는다.
+  - [ ] golden shared collateral projection `NO-GO / 4`와 full375 collateral `NOT_OPEN`을 닫기 전 approval을 열지 않는다.
+  - [ ] Search degraded 100% 복구 전 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [x] Collateral 105는 queue-count 회차가 아니라 `reclassified 74 / runtime-verified 4` 축으로 유지한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop384 TODO
 
 - 상태 업데이트: Loop382 golden18 완료 결과를 current-code postprocess로 다시 동기화했다. Official postprocess audit는 `PASS / 18 of 18`이지만 runtime replay는 `NOT_RUN_POSTPROCESS_ONLY`이고 golden shared collateral은 `NO-GO / 6 regression candidates`다.

@@ -3083,6 +3083,41 @@ def _sync_allowed_publication_result_contract(
             or source_item.get("url")
             or ""
         ).strip()
+        current_item = _matching_candidate_item(public_title, public_url) or {}
+        current_url = str(
+            current_item.get("heretic_url")
+            or current_item.get("official_url")
+            or current_item.get("resolved_url")
+            or current_item.get("url")
+            or public_url
+            or ""
+        ).strip()
+        current_has_official_url = bool(
+            _official_detail_url(public_url) or _official_detail_url(current_url)
+        )
+        gate_has_official_url = bool(
+            _official_detail_url(gate_url) or _official_detail_url(source_url)
+        )
+        title_only_gate_conflict = bool(
+            "verified_alias_title_only_publication" in reason_codes
+            or "official_url_withheld_by_title_mismatch" in reason_codes
+            or not gate_has_official_url
+        )
+        current_has_source_support = bool(
+            _candidate_has_direct_source_support(public_title, current_url)
+            or _candidate_has_search_title_support(public_title, current_url)
+        )
+        if (
+            gate_key != public_key
+            and title_only_gate_conflict
+            and current_has_official_url
+            and current_has_source_support
+            and (bool(current_item.get("locked")) or not gate_has_official_url)
+        ):
+            code = "serialized_public_identity_gate_candidate_blocked_by_locked_public_candidate"
+            if code not in trace_reason_codes:
+                trace_reason_codes.append(code)
+            return None
         return {
             "official_title": gate_title,
             "official_url": gate_url or source_url,
@@ -3262,6 +3297,110 @@ def _sync_allowed_publication_result_contract(
         ]
         if "direct_image_ocr_search_canonicalized" not in flags:
             flags.append("direct_image_ocr_search_canonicalized")
+        if identity.get("consistency_flags") != flags:
+            identity["consistency_flags"] = flags
+            changed = True
+
+    def _locked_competing_public_candidate_override() -> Optional[Dict[str, Any]]:
+        public_key = _title_key(public_title)
+        if not public_key:
+            return None
+        reason_codes = {
+            str(code or "").strip()
+            for code in trace_reason_codes
+            if str(code or "").strip()
+        }
+        if _official_detail_url(public_url) and "official_url_withheld_by_title_mismatch" not in reason_codes:
+            return None
+        best_item: Optional[Dict[str, Any]] = None
+        best_score = -1
+        for item in _candidate_items():
+            item_title, item_url = _candidate_title_url(item)
+            item_key = _title_key(item_title)
+            if not item_key or item_key == public_key:
+                continue
+            if not bool(item.get("locked")):
+                continue
+            official_url = _official_detail_url(item_url)
+            if not official_url:
+                continue
+            if not _candidate_has_direct_source_support(item_title, item_url):
+                continue
+            if not _candidate_has_search_title_support(item_title, item_url):
+                continue
+            score = 10
+            if str(item.get("reference_role") or "").strip().lower() == "primary":
+                score += 3
+            if str(item.get("source_tier") or "").strip().lower() in {
+                "official_detail",
+                "novel_platform",
+                "official",
+            }:
+                score += 2
+            if score > best_score:
+                best_item = item
+                best_score = score
+        if not isinstance(best_item, dict):
+            return None
+        candidate_title, candidate_url = _candidate_title_url(best_item)
+        return {
+            "official_title": candidate_title,
+            "official_url": _official_detail_url(candidate_url) or None,
+            "source_item": best_item,
+        }
+
+    locked_candidate_override = _locked_competing_public_candidate_override()
+    if locked_candidate_override:
+        public_title = locked_candidate_override["official_title"]
+        public_url = locked_candidate_override["official_url"] or public_url
+        publication_source = "locked_competing_public_candidate"
+        for code in (
+            "serialized_public_identity_locked_candidate_reconciled",
+            "serialized_public_identity_gate_candidate_blocked_by_locked_public_candidate",
+        ):
+            if code not in trace_reason_codes:
+                trace_reason_codes.append(code)
+        source_item = locked_candidate_override.get("source_item")
+        if not isinstance(source_item, dict):
+            source_item = {}
+        if not isinstance(novel_identity, dict):
+            novel_identity = {}
+        if novel_identity.get("official_title") != public_title:
+            novel_identity["official_title"] = public_title
+            changed = True
+        if novel_identity.get("heretic_url") != (public_url or None):
+            novel_identity["heretic_url"] = public_url or None
+            changed = True
+        if novel_identity.get("confidence") in {None, "", "None"}:
+            novel_identity["confidence"] = source_item.get("confidence") or "High"
+            changed = True
+        identity["novel_identity"] = novel_identity
+
+        primary_work = dict(source_item)
+        primary_work.update(
+            {
+                "official_title": public_title,
+                "heretic_url": public_url or None,
+                "confidence": primary_work.get("confidence") or "High",
+                "source_tier": primary_work.get("source_tier") or "official_detail",
+                "page_type": primary_work.get("page_type") or "novel_page",
+                "reference_role": "primary",
+            }
+        )
+        if identity.get("primary_work") != primary_work:
+            identity["primary_work"] = primary_work
+            changed = True
+        flags = [
+            str(value)
+            for value in (identity.get("consistency_flags") or [])
+            if str(value).strip()
+        ]
+        for code in (
+            "serialized_public_identity_locked_candidate_reconciled",
+            "serialized_public_identity_gate_candidate_blocked_by_locked_public_candidate",
+        ):
+            if code not in flags:
+                flags.append(code)
         if identity.get("consistency_flags") != flags:
             identity["consistency_flags"] = flags
             changed = True

@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260704-385 - golden18 runtime after Loop384
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5 미발주 | 동결 유지 |
+| parent packet replay | 중단 | 동일 38-row replay 없음 | 반복 금지 |
+| golden18 runtime | GO / 18 of 18 | run `20260704_045605_759573`, manifest `18/18/18/0/0` | runtime production 근거로만 사용 |
+| search recovery | P0 / partial | health audit `search_degraded_observed`, unrecovered degraded `3` | `unrecovered=0` 별도 증명 필요 |
+| runtime expected-answer | NO-GO / 15 of 18 | 실패 `11668307`, `11700470`, `11698880` | semantic approval 금지 |
+| locked candidate publication contract | GO_UNIT | `11698880` projection이 `가챠 중독자의 퓨전펑크 생활`로 회복 | runtime replay 전 approval 금지 |
+| projection expected-answer | NO-GO / 16 of 18 | 실패 `11668307`, `11700470` | 두 행을 hardcoded cue 없이 축소 |
+| collateral | NO-GO / 4 projection | golden shared collateral projection regression 후보 `4` | full375 전수 gate 별도 필요 |
+| 문서 동기화 | 완료 | Loop385 report/state와 운영 문서 갱신 | 다음 loop는 `11668307`/`11700470` 또는 search P0 |
+
+Gate: runtime production `GO / 18 of 18`, runtime semantic `NO-GO / 15 of 18`, projection semantic `NO-GO / 16 of 18`, projection runtime replay `NOT_RUN_POSTPROCESS_ONLY`, full375 collateral `NOT_OPEN`, search recovery `P0 / PARTIAL_RUNTIME_GO / UNRECOVERED_DEGRADED_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260704-384 - current-code postprocess contract resync
 
 | 항목 | 상태 | 근거 | 다음 조치 |

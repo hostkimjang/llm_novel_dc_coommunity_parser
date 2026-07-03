@@ -1,5 +1,30 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop385 golden18 runtime after Loop384 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] current-code golden18 runtime replay를 완료했다.
+  - run `20260704_045605_759573`
+  - result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop385_golden18_after_loop384_8edf29ae_search_nonlight_result.json`
+  - manifest `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop385_golden18_after_loop384_8edf29ae_search_nonlight_result_manifest.json`
+  - health `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop385_golden18_after_loop384_runtime_health_audit.json`
+- [x] Runtime manifest `18/18/18/0/0`, `large_run_complete=true`를 기록했다.
+- [x] Runtime audit 원본은 `NO-GO / 15 of 18`로 기록했다.
+- [x] Locked candidate publication contract patch를 적용했다.
+  - `11698880`: runtime 원본 `아카데미 생존 갤러리` wrong publish
+  - projection `가챠 중독자의 퓨전펑크 생활`, `https://novelpia.com/novel/387014`
+- [x] Projection audit를 생성했다.
+  - result `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop385_current_patch_postprocess_resync_result.json`
+  - audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop385_current_patch_postprocess_resync_audit.json`
+  - collateral `out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop385_current_patch_postprocess_resync_collateral.json`
+- [x] 검증:
+  - `tests.test_expert_main_comment_metadata` + `tests.test_promotion_gate_contract` + `tests.test_regression_safe_work_bridge_contract` `83` PASS
+- [ ] projection은 runtime replay after patch가 아니므로 approval로 세지 않는다.
+- [ ] 남은 실패 `11668307`, `11700470`을 hardcoded cue/alias 없이 줄인다.
+- [ ] search degraded `unrecovered=0` 전까지 `promotion_blocked=search-blind conditional`을 유지한다.
+- Gate: runtime production `GO / 18 of 18`, runtime semantic `NO-GO / 15 of 18`, projection semantic `NO-GO / 16 of 18`, golden shared collateral projection `NO-GO / 4`, full375 collateral `NOT_OPEN`, search recovery `P0 / PARTIAL_RUNTIME_GO / UNRECOVERED_DEGRADED_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop384 current-code postprocess contract resync 체크
 
 - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.

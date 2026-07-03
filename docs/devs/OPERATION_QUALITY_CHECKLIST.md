@@ -6,6 +6,25 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-04 Loop385 runtime/projection 품질 게이트
+
+- 근거:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았음을 기록했다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았음을 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_385_REPORT_20260704.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop385_golden18_runtime_after_loop384_20260704.json`.
+  - [x] Runtime health audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop385_golden18_after_loop384_runtime_health_audit.json`.
+  - [x] Runtime expected/collateral audit 기록 완료.
+  - [x] Postprocess projection expected/collateral audit 기록 완료.
+- 품질 게이트:
+  - [x] runtime production `GO / 18 of 18`와 runtime semantic `NO-GO / 15 of 18`를 분리한다.
+  - [x] projection `NO-GO / 16 of 18`을 runtime approval로 해석하지 않는다.
+  - [x] `11698880` projection pass를 hard-hold 완화 근거로 과장하지 않는다.
+  - [x] `11668307`, `11700470` unresolved를 R1 hardcoded cue 확장으로 닫지 않는다.
+  - [x] search degraded `unrecovered=3`이 남아 있음을 기록하고 search recovery를 P0로 유지한다.
+  - [x] golden shared collateral `4` regressions를 full375 collateral approval과 분리한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-04 Loop384 postprocess-only golden pass 품질 게이트
 
 - 근거:

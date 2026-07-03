@@ -1,5 +1,21 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop385 golden18 runtime after Loop384
+
+- 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop384 postprocess-only 한계를 닫기 위해 current-code golden18 단일 runtime replay를 search 포함 non-light로 실행했다.
+- Run `20260704_045605_759573`은 input/completed/flushed/pending/failed `18/18/18/0/0`, VLM/OCR `READY`, `large_run_complete=true`로 완료됐다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, publication contract convergence `GO`, violations `0`을 기록했다.
+- Search evidence는 `REVIEW / search_degraded_observed`, unrecovered degraded total `3`이라 search recovery는 계속 P0다.
+- Runtime 원본 expected-answer audit는 `NO-GO / 15 of 18`이다. 실패는 `11668307`, `11700470`, `11698880`이다.
+- `expert_main.py`는 locked official-detail 후보가 본문/검색 직접 support를 가지면 URL 없는 title-only gate 후보가 public identity를 덮지 못하게 했고, 이미 wrong public으로 덮인 결과도 locked 경쟁 후보로 재수렴하게 했다.
+- Postprocess projection은 `11698880`을 `가챠 중독자의 퓨전펑크 생활`로 회복해 expected-answer `NO-GO / 16 of 18`, golden shared collateral `NO-GO / 4`로 개선했다.
+- Projection은 runtime replay after patch가 아니므로 approval 또는 hard-hold 완화 근거가 아니다.
+- `11668307`, `11700470`은 hardcoded cue/alias 없이 unresolved로 유지한다.
+- 검증은 `tests.test_expert_main_comment_metadata` + `tests.test_promotion_gate_contract` + `tests.test_regression_safe_work_bridge_contract` `83` PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_385_REPORT_20260704.md`, state는 `docs/devs/loop385_golden18_runtime_after_loop384_20260704.json`이다.
+- Gate는 runtime production `GO / 18 of 18`, runtime semantic `NO-GO / 15 of 18`, projection semantic `NO-GO / 16 of 18`, golden shared collateral projection `NO-GO / 4`, full375 collateral `NOT_OPEN`, search recovery `P0 / PARTIAL_RUNTIME_GO / UNRECOVERED_DEGRADED_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop384 current-code postprocess contract resync
 
 - 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

@@ -1,5 +1,41 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop385 golden18 runtime after Loop384
+
+- 범위: Loop384의 postprocess-only 증거를 current-code golden18 runtime replay로 갱신하고, `11698880` title-only overwrite를 locked candidate publication contract로 차단한다. 신규 full375/bounded/N5 대형 런과 동일 parent packet replay는 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_385_REPORT_20260704.md`
+  - state `docs\devs\loop385_golden18_runtime_after_loop384_20260704.json`
+  - runtime result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop385_golden18_after_loop384_8edf29ae_search_nonlight_result.json`
+  - runtime manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop385_golden18_after_loop384_8edf29ae_search_nonlight_result_manifest.json`
+  - runtime health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop385_golden18_after_loop384_runtime_health_audit.json`
+  - runtime audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop385_golden18_after_loop384_8edf29ae_search_nonlight_audit.json`
+  - runtime collateral `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop385_golden18_after_loop384_8edf29ae_search_nonlight_collateral.json`
+  - projection result `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop385_current_patch_postprocess_resync_result.json`
+  - projection audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop385_current_patch_postprocess_resync_audit.json`
+  - projection collateral `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop385_current_patch_postprocess_resync_collateral.json`
+- Runtime evidence:
+  - run `20260704_045605_759573`
+  - manifest input/completed/flushed/pending/failed `18/18/18/0/0`
+  - health `flush_integrity=GO / clean_completed_source`
+  - publication contract convergence `GO / violations 0`
+  - search evidence `REVIEW / search_degraded_observed`, unrecovered degraded total `3`
+- Code evidence:
+  - locked official-detail 후보가 direct source support와 search title support를 가질 때 URL 없는 title-only gate 후보가 public identity를 덮지 못한다.
+  - 이미 wrong public으로 덮인 `11698880`도 locked 경쟁 후보 `가챠 중독자의 퓨전펑크 생활`로 projection에서 재수렴한다.
+  - R1 hardcoded cue 리스트 확장은 없다.
+- Row evidence:
+  - `11660237`: `테라포밍` pass.
+  - `11698880`: runtime 원본 `아카데미 생존 갤러리` fail, projection `가챠 중독자의 퓨전펑크 생활` pass.
+  - `11668307`: `promotion_blocked`, expected `빚을 져서라도 세상은 구해야 할 거 아니야` unresolved.
+  - `11700470`: `promotion_blocked`, expected `악당 얼굴의 B급 모험자` unresolved.
+- Verification commands:
+  - `.venv312\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata tests.test_promotion_gate_contract tests.test_regression_safe_work_bridge_contract` -> PASS, `83` tests.
+  - `tools\audit_expert_run_health.py` on Loop385 runtime -> `flush_integrity=GO`, publication contract `GO`.
+  - `tools\audit_regression_safe_golden.py` on Loop385 runtime -> `NO-GO / 15 of 18`, collateral `NO-GO / 5`.
+  - `tools\audit_regression_safe_golden.py` on Loop385 projection -> `NO-GO / 16 of 18`, collateral `NO-GO / 4`.
+- Gate: runtime production `GO / 18 of 18`, runtime semantic `NO-GO / 15 of 18`, projection semantic `NO-GO / 16 of 18`, projection runtime replay `NOT_RUN_POSTPROCESS_ONLY`, full375 collateral `NOT_OPEN`, search recovery `P0 / PARTIAL_RUNTIME_GO / UNRECOVERED_DEGRADED_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop384 current-code postprocess contract resync
 
 - 범위: Loop382 golden18 완료 결과를 current-code publication contract 후처리로 다시 동기화한다. 신규 full375/bounded/N5/golden18 대형 런과 동일 parent packet replay는 발주하지 않는다.
