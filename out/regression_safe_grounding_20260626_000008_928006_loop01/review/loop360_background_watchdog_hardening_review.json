@@ -1,0 +1,35 @@
+{
+  "review_type": "loop360_background_watchdog_hardening_review",
+  "generated_at": "2026-07-03",
+  "verdict": "STALLED_LLM_WATCHDOG / NOT_APPROVAL",
+  "evidence": {
+    "safe_loss_watchdog_log": "logs/loop359_current_head_safe_loss_independent_n5_plan/loop359_safe_loss_current_head_6741ff80_search_nonlight_11674712_r01_result.combined.log",
+    "full375_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop359_full375_current_head_6741ff80_search_nonlight_result_manifest.json",
+    "bounded1200_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop359_completed_source_bounded1200_current_head_6741ff80_search_nonlight_result_manifest.json",
+    "golden18_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop359_golden18_current_head_6741ff80_search_nonlight_result_manifest.json",
+    "safe_loss_first_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop359_current_head_safe_loss_independent_n5_plan/results/loop359_safe_loss_current_head_6741ff80_search_nonlight_11674712_r01_result_manifest.json"
+  },
+  "manifest_counts": {
+    "full375": "375/0/0/0/0",
+    "bounded1200": "1200/0/0/0/0",
+    "golden18": "18/0/0/0/0",
+    "safe_loss_first": "1/0/0/0/0"
+  },
+  "code_contract": {
+    "safe_loss_flip_rate_probe": "generated command argv disables llm suspend prompt",
+    "run_independent_plan": "subprocess environment defaults disable llm suspend prompt"
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "focused_unittest": "PASS / 9 tests"
+  },
+  "gate": {
+    "runtime_completion": "NO_COMPLETION / NOT_APPROVAL",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "collateral_active_lane": "REVIEW-LOCKED / residual_action_queue_rows=105",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

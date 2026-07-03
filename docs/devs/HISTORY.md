@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop360 background watchdog hardening
+
+- Loop359 background 런을 재점검해 full375, bounded1200, golden18, safe-loss first가 모두 result/checkpoint `0/0/0/0`이고 approval 근거가 아님을 확인했다.
+- Safe-loss first combined log는 LLM streaming timeout 누적 뒤 `llm-watchdog`가 터미널 `y` 또는 웹 대시보드 재개를 기다리는 상태를 남겼다. 따라서 stalled 원인은 search launch health가 아니라 background interactive pause다.
+- `tools/safe_loss_flip_rate_probe.py`는 독립 probe command에 `--llm-suspend-on-anomaly off --llm-suspend-threshold 0`를 자동 포함하고, plan manifest에 `noninteractive_watchdog_contract`를 기록한다.
+- `tools/run_independent_plan.py`는 subprocess 환경 기본값으로 `LLM_SUSPEND_ON_SERVER_ANOMALY=0`, `LLM_SUSPEND_FAILURE_THRESHOLD=0`를 넣고 stdout pipe를 명시적으로 닫는다.
+- `tests/test_safe_loss_flip_rate_probe.py`와 새 `tests/test_run_independent_plan.py`가 command/env 계약을 검증한다.
+- 검증은 `py_compile` PASS, focused unittest `9` tests PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_360_REPORT_20260703.md`, state는 `docs/devs/loop360_background_watchdog_hardening_20260703.json`, review artifact는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop360_background_watchdog_hardening_review.json`이다.
+- Gate는 background runtime `STALLED_LLM_WATCHDOG / NOT_APPROVAL`, N5 `NOT_ANALYZED_FULL_N5`, full375/bounded/golden `NO_COMPLETION / NOT_APPROVAL`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop359 current HEAD background redispatch
 
 - Loop358 이후 현 HEAD `6741ff80`에서 stale flip/golden/full375 증거를 갱신하기 위한 background 런을 새 prefix로 재발주했다.

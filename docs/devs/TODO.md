@@ -2,6 +2,20 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop360 TODO
+
+- 상태 업데이트: Loop359 background run은 search launch health가 아니라 LLM watchdog pause에서 멈췄다. full375/bounded/golden18/safe-loss first는 모두 completion `0/0/0/0`이므로 stale evidence를 대체하지 않는다.
+- Loop360 TODO:
+  - [x] Loop359 full375, bounded1200, golden18, safe-loss first manifest count를 재확인했다.
+  - [x] safe-loss first log에서 `llm-watchdog` 터미널/웹 대시보드 재개 대기 문구를 확인했다.
+  - [x] `tools/safe_loss_flip_rate_probe.py` generated command에 `--llm-suspend-on-anomaly off --llm-suspend-threshold 0` 기본 삽입 계약을 추가했다.
+  - [x] `tools/run_independent_plan.py` runner env 기본값에 `LLM_SUSPEND_ON_SERVER_ANOMALY=0`, `LLM_SUSPEND_FAILURE_THRESHOLD=0`를 추가했다.
+  - [x] focused tests `9`개와 py_compile PASS를 확인했다.
+  - [ ] N5 plan을 재실행할 때는 새 plan을 재생성하거나 기존 plan command를 watchdog-off 계약으로 갱신한다.
+  - [ ] Loop359 stalled background를 approval, hard-hold 완화, stale flip/golden/full375 대체 근거로 쓰지 않는다.
+  - [ ] 다음 active lane은 collateral105 triage 또는 `OVERRIDE AUDIT(LLM=False -> final=True)` blind/source-native 검증으로 진행한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop358 TODO
 
 - 상태 업데이트: `11666713` 단건 non-light replay로 Loop350 stall을 분리했다. Search health는 `GO`였지만 Gatekeeper LLM stream first-token stall로 result/checkpoint가 없으므로 residual action queue는 `105` 유지다.

@@ -126,6 +126,16 @@ def write_probe_input(rows: list[dict[str, Any]], path: Path) -> None:
     )
 
 
+def _with_noninteractive_watchdog_args(args: list[str]) -> list[str]:
+    """Keep background probe processes from waiting for terminal/web resume."""
+    out = list(args)
+    if "--llm-suspend-on-anomaly" not in out:
+        out.extend(["--llm-suspend-on-anomaly", "off"])
+    if "--llm-suspend-threshold" not in out:
+        out.extend(["--llm-suspend-threshold", "0"])
+    return out
+
+
 def build_independent_run_plan(
     *,
     source_rows: list[dict[str, Any]],
@@ -149,7 +159,7 @@ def build_independent_run_plan(
     safe_prefix = "".join(ch if ch.isalnum() or ch in {"-", "_"} else "_" for ch in run_prefix).strip("_")
     if not safe_prefix:
         safe_prefix = "safe_loss_flip_probe"
-    expert_args = list(expert_args or [])
+    expert_args = _with_noninteractive_watchdog_args(list(expert_args or []))
     input_dir = work_dir / "inputs"
     result_dir = work_dir / "results"
     planned_runs: list[dict[str, Any]] = []
@@ -214,6 +224,7 @@ def build_independent_run_plan(
         "missing_post_ids": missing,
         "repeat_count_by_post": {pid: repeat_counts.get(pid, 0) for pid in post_ids},
         "dedupe_guard": "one_post_per_process",
+        "noninteractive_watchdog_contract": "background_probe_commands_disable_llm_suspend_prompt",
         "input_surface_contract": "Each generated JSONL contains exactly one copied source row and no _flip_probe metadata.",
         "aggregation_contract": "Analyze all per-repeat result JSON files together with the same post_ids and repeats value.",
         "planned_runs": planned_runs,

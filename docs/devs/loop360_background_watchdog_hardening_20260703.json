@@ -1,0 +1,94 @@
+{
+  "loop": 360,
+  "date": "2026-07-03",
+  "scope": "background watchdog hardening after Loop359 stalled dispatch",
+  "base_head": "821c3553",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "summary": {
+    "loop359_background_status": "STALLED_LLM_WATCHDOG / NOT_APPROVAL",
+    "root_cause": "LLM streaming ReadTimeout accumulated to llm-watchdog prompt in background processes",
+    "not_search_launch_failure": true,
+    "residual_action_queue_rows": 105,
+    "queue_delta": 0
+  },
+  "evidence": {
+    "full375_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop359_full375_current_head_6741ff80_search_nonlight_result_manifest.json",
+    "bounded1200_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop359_completed_source_bounded1200_current_head_6741ff80_search_nonlight_result_manifest.json",
+    "golden18_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop359_golden18_current_head_6741ff80_search_nonlight_result_manifest.json",
+    "safe_loss_first_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop359_current_head_safe_loss_independent_n5_plan/results/loop359_safe_loss_current_head_6741ff80_search_nonlight_11674712_r01_result_manifest.json",
+    "safe_loss_watchdog_log": "logs/loop359_current_head_safe_loss_independent_n5_plan/loop359_safe_loss_current_head_6741ff80_search_nonlight_11674712_r01_result.combined.log",
+    "review_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop360_background_watchdog_hardening_review.json",
+    "review_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop360_background_watchdog_hardening_review.md",
+    "report": "docs/devs/loop_reports/LOOP_360_REPORT_20260703.md"
+  },
+  "manifest_snapshot": {
+    "full375": {
+      "input_post_count": 375,
+      "completed_count": 0,
+      "flushed_count": 0,
+      "pending_count": 0,
+      "failed_count": 0,
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false
+    },
+    "bounded1200": {
+      "input_post_count": 1200,
+      "completed_count": 0,
+      "flushed_count": 0,
+      "pending_count": 0,
+      "failed_count": 0,
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false
+    },
+    "golden18": {
+      "input_post_count": 18,
+      "completed_count": 0,
+      "flushed_count": 0,
+      "pending_count": 0,
+      "failed_count": 0,
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false
+    },
+    "safe_loss_first": {
+      "input_post_count": 1,
+      "completed_count": 0,
+      "flushed_count": 0,
+      "pending_count": 0,
+      "failed_count": 0,
+      "large_run_complete": false,
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false
+    }
+  },
+  "changes": [
+    "tools/safe_loss_flip_rate_probe.py: generated independent probe commands now include --llm-suspend-on-anomaly off and --llm-suspend-threshold 0 unless already specified",
+    "tools/safe_loss_flip_rate_probe.py: plan manifest records noninteractive_watchdog_contract",
+    "tools/run_independent_plan.py: runner subprocess env defaults LLM_SUSPEND_ON_SERVER_ANOMALY=0 and LLM_SUSPEND_FAILURE_THRESHOLD=0",
+    "tools/run_independent_plan.py: stdout pipe is closed after child process completion",
+    "tests/test_safe_loss_flip_rate_probe.py and tests/test_run_independent_plan.py cover the command/env contracts"
+  ],
+  "verification": {
+    "py_compile": "PASS",
+    "focused_unittest": "PASS / 9 tests",
+    "commands": [
+      "python -m py_compile tools\\safe_loss_flip_rate_probe.py tools\\run_independent_plan.py tests\\test_safe_loss_flip_rate_probe.py tests\\test_run_independent_plan.py",
+      "python -m unittest tests.test_safe_loss_flip_rate_probe tests.test_run_independent_plan -v"
+    ]
+  },
+  "gate": {
+    "background_runtime": "STALLED_LLM_WATCHDOG / NOT_APPROVAL",
+    "safe_loss_n5": "NOT_ANALYZED_FULL_N5",
+    "full375_bounded_golden": "NO_COMPLETION / NOT_APPROVAL",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "collateral_active_lane": "REVIEW-LOCKED / residual_action_queue_rows=105",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next": [
+    "Regenerate or patch future N5 plan before rerun so command argv carries watchdog-off flags",
+    "Do not wait for Loop359 stalled large runs as approval evidence",
+    "Continue active loop via collateral105 triage or OVERRIDE AUDIT blind/source-native verification"
+  ]
+}

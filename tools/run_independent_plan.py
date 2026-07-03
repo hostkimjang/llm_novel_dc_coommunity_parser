@@ -61,6 +61,8 @@ def run_plan(
     env = os.environ.copy()
     env.update(env_updates)
     env.setdefault("PYTHONIOENCODING", "utf-8")
+    env.setdefault("LLM_SUSPEND_ON_SERVER_ANOMALY", "0")
+    env.setdefault("LLM_SUSPEND_FAILURE_THRESHOLD", "0")
 
     completed = 0
     skipped = 0
@@ -102,10 +104,13 @@ def run_plan(
                 errors="replace",
             )
             assert proc.stdout is not None
-            for line in proc.stdout:
-                log_file.write(line)
-                log_file.flush()
-            rc = proc.wait()
+            try:
+                for line in proc.stdout:
+                    log_file.write(line)
+                    log_file.flush()
+                rc = proc.wait()
+            finally:
+                proc.stdout.close()
         exists = bool(output_path and output_path.exists())
         _write_line(marker, f"END {datetime.now().isoformat()} exit={rc} exists={exists}")
         if rc != 0:

@@ -1,5 +1,28 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop360 background watchdog hardening
+
+- 범위: Loop359 background dispatch가 completion 없이 멈춘 원인을 확인하고, N5/background 독립 실행이 다시 interactive LLM watchdog prompt에서 멈추지 않도록 도구 계약을 보강한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_360_REPORT_20260703.md`
+  - state `docs\devs\loop360_background_watchdog_hardening_20260703.json`
+  - review JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop360_background_watchdog_hardening_review.json`
+  - review Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop360_background_watchdog_hardening_review.md`
+- Runtime evidence:
+  - full375 manifest: input/completed/flushed/pending/failed `375/0/0/0/0`, `mcp_health_include_search=true`, `mcp_health_light_mode=false`.
+  - bounded1200 manifest: `1200/0/0/0/0`, `mcp_health_include_search=true`, `mcp_health_light_mode=false`.
+  - golden18 manifest: `18/0/0/0/0`, `mcp_health_include_search=true`, `mcp_health_light_mode=false`.
+  - safe-loss first manifest: `1/0/0/0/0`, `large_run_complete=false`, `mcp_health_include_search=true`, `mcp_health_light_mode=false`.
+  - safe-loss first combined log: repeated `ReadTimeout` 뒤 `llm-watchdog`가 터미널 `y` 또는 웹 대시보드 재개를 요구했다.
+- Fix evidence:
+  - `tools\safe_loss_flip_rate_probe.py`: generated independent run command에 `--llm-suspend-on-anomaly off --llm-suspend-threshold 0`를 기본 포함한다.
+  - `tools\run_independent_plan.py`: subprocess env 기본값으로 `LLM_SUSPEND_ON_SERVER_ANOMALY=0`, `LLM_SUSPEND_FAILURE_THRESHOLD=0`를 넣는다.
+  - `tools\run_independent_plan.py`: child stdout pipe를 닫아 ResourceWarning을 제거했다.
+- Verification commands:
+  - `python -m py_compile tools\safe_loss_flip_rate_probe.py tools\run_independent_plan.py tests\test_safe_loss_flip_rate_probe.py tests\test_run_independent_plan.py` PASS.
+  - `python -m unittest tests.test_safe_loss_flip_rate_probe tests.test_run_independent_plan -v` PASS, `9` tests.
+- Gate: background runtime `STALLED_LLM_WATCHDOG / NOT_APPROVAL`, N5 `NOT_ANALYZED_FULL_N5`, full375/bounded/golden `NO_COMPLETION / NOT_APPROVAL`, collateral active lane `REVIEW-LOCKED / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop359 current HEAD background redispatch
 
 - 범위: Loop358 이후 현 HEAD `6741ff80`에서 stale flip/golden/full375/bounded 증거 갱신용 background run을 search 포함 non-light 조건으로 재발주한다.

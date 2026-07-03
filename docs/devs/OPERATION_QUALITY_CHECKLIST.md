@@ -6,6 +6,22 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-03 Loop360 background watchdog hardening quality gate
+
+- 근거:
+  - [x] Loop359 background 런이 `0/0/0/0` completion 상태임을 manifest로 재확인했다.
+  - [x] safe-loss first combined log에서 `llm-watchdog` 사용자 재개 대기 상태를 확인했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_360_REPORT_20260703.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop360_background_watchdog_hardening_20260703.json`.
+  - [x] Review artifact 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop360_background_watchdog_hardening_review.json`.
+  - [x] focused unittest `9` tests PASS를 기록했다.
+- 품질 게이트:
+  - [x] background launch health와 runtime completion을 분리한다.
+  - [x] watchdog pause를 search recovery 또는 semantic failure로 오분류하지 않는다.
+  - [x] result/checkpoint `0`인 런을 stale evidence replacement나 approval 근거로 쓰지 않는다.
+  - [x] search recovery 전 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-03 Loop359 current HEAD background dispatch quality gate
 
 - 근거:

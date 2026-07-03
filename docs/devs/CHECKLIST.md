@@ -1,5 +1,22 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop360 background watchdog hardening 체크
+
+- [x] Loop359 background 런이 검색 launch health 실패가 아니라 LLM watchdog pause에서 멈춘 것을 확인했다.
+  - full375 manifest `375/0/0/0/0`
+  - bounded1200 manifest `1200/0/0/0/0`
+  - golden18 manifest `18/0/0/0/0`
+  - safe-loss first manifest `1/0/0/0/0`
+- [x] safe-loss first combined log에서 `llm-watchdog` 사용자 재개 대기 문구를 확인했다.
+  - `logs\loop359_current_head_safe_loss_independent_n5_plan\loop359_safe_loss_current_head_6741ff80_search_nonlight_11674712_r01_result.combined.log`
+- [x] N5 독립 plan command가 interactive watchdog을 끄도록 `tools\safe_loss_flip_rate_probe.py`를 보강했다.
+- [x] 오래된 plan도 runner 경유 시 watchdog prompt가 꺼지도록 `tools\run_independent_plan.py` 기본 env를 보강했다.
+- [x] 검증:
+  - `py_compile` PASS
+  - `tests.test_safe_loss_flip_rate_probe + tests.test_run_independent_plan` PASS, `9` tests
+- [ ] Loop359 stalled background를 stale flip/golden/full375 대체 또는 hard-hold 완화 근거로 쓰지 않는다.
+- Gate: background runtime `STALLED_LLM_WATCHDOG / NOT_APPROVAL`, N5 `NOT_ANALYZED_FULL_N5`, full375/bounded/golden `NO_COMPLETION / NOT_APPROVAL`, collateral active lane `REVIEW-LOCKED / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop359 current HEAD background dispatch 체크
 
 - [x] 현 HEAD `6741ff80`에서 stale evidence refresh를 새 prefix로 재발주했다.

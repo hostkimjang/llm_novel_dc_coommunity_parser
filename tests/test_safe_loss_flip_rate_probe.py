@@ -154,7 +154,15 @@ class SafeLossFlipRateProbeTest(unittest.TestCase):
             self.assertIn("--output", argv)
             self.assertIn("--no-dashboard", argv)
             self.assertIn("--reuse-shards-only", argv)
+            self.assertIn("--llm-suspend-on-anomaly", argv)
+            self.assertEqual(argv[argv.index("--llm-suspend-on-anomaly") + 1], "off")
+            self.assertIn("--llm-suspend-threshold", argv)
+            self.assertEqual(argv[argv.index("--llm-suspend-threshold") + 1], "0")
             self.assertEqual(argv[argv.index("--parallel") + 1], "1")
+        self.assertEqual(
+            manifest["noninteractive_watchdog_contract"],
+            "background_probe_commands_disable_llm_suspend_prompt",
+        )
 
     def test_independent_run_plan_flags_repeats_below_contract(self):
         manifest, _input_writes = build_independent_run_plan(

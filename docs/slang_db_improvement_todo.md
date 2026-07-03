@@ -1,5 +1,13 @@
 # Slang DB Improvement TODO
 
+## 2026-07-03 Loop360 background watchdog caveat
+
+- [x] 이번 회차는 slang DB write-back이 아니라 background watchdog hardening이다.
+- [x] Loop359 completion `0/0/0/0`과 LLM watchdog pause를 분리 기록했다.
+- [x] N5/runner watchdog-off 계약은 alias/slang 승격 판단을 바꾸지 않는다.
+- [ ] N5 `15/15`, golden18 `18/18`, full375/bounded completion 전 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, background runtime `STALLED_LLM_WATCHDOG / NOT_APPROVAL`, collateral active lane `REVIEW-LOCKED / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop359 current HEAD evidence refresh caveat
 
 - [x] 이번 회차는 slang DB write-back이 아니라 current HEAD runtime evidence refresh 재발주다.

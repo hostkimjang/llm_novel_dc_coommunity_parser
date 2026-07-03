@@ -1,5 +1,17 @@
 # Improvement Register
 
+## IMP-20260703-360 - background watchdog hardening
+
+| Item | Status | Evidence | Next action |
+| --- | --- | --- | --- |
+| Loop359 background runtime | Stalled / not approval | full375 `375/0/0/0/0`, bounded `1200/0/0/0/0`, golden18 `18/0/0/0/0`, safe-loss first `1/0/0/0/0` | Do not wait as approval evidence; rerun only with noninteractive watchdog contract |
+| Safe-loss first root cause | LLM watchdog pause | combined log contains terminal/web dashboard resume prompt after repeated ReadTimeout | Treat as runtime harness blocker, not search recovery evidence |
+| N5 command contract | Fixed | `tools/safe_loss_flip_rate_probe.py` injects `--llm-suspend-on-anomaly off --llm-suspend-threshold 0` | Regenerate/patche future plans before N5 rerun |
+| Plan runner contract | Fixed | `tools/run_independent_plan.py` sets suspend-off env defaults | Use runner for independent background probes |
+| Verification | PASS | py_compile, focused unittest `9` tests | Broaden only if dispatch wrapper is generalized |
+
+Gate: background runtime `STALLED_LLM_WATCHDOG / NOT_APPROVAL`, N5 `NOT_ANALYZED_FULL_N5`, full375/bounded/golden `NO_COMPLETION / NOT_APPROVAL`, collateral active lane `REVIEW-LOCKED / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260703-359 - current HEAD background redispatch
 
 | Item | Status | Evidence | Next action |
