@@ -1,5 +1,27 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop353 11708470 non-light row closure
+
+- 범위: Loop352 residual `106`에서 Loop324 non-light runtime으로 clean row recovery가 확인된 `11708470`만 제외한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_353_REPORT_20260703.md`
+  - state `docs\devs\loop353_11708470_nonlight_row_closure_20260703.json`
+  - input queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop352_current_residual_action_queue_after_unsafe_promotion_contract_exclusion.json`
+  - output queue JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop353_current_residual_action_queue_after_11708470_nonlight_runtime_closure.json`
+  - output queue Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop353_current_residual_action_queue_after_11708470_nonlight_runtime_closure.md`
+  - runtime review `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop324_loop322_alias_targeted_nonlight_review.json`
+- Runtime evidence:
+  - Loop324 completed/flushed/pending/failed `7/7/0/0`.
+  - `mcp_health_include_search=true`, `mcp_health_light_mode=false`, health `2/0`.
+  - `11708470`: Loop323 `promotion_blocked`, Loop324 `safe_resolved`, title `절대 꺾이지 않을거야!`, search degraded `null`.
+- Queue verification:
+  - residual action queue `106 -> 105`.
+  - `REPROCESS=78 -> 77`.
+  - `HOLD=28`.
+  - `repair_safe_loss=73 -> 72`.
+  - validation issue `0`.
+- Gate: row closure `GO_ROW_NONLIGHT_RUNTIME_NOT_APPROVAL`, packet semantic `NO-GO / Loop324 safe_resolved=2/7`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop352 unsafe-promotion contract exclusion
 
 - 범위: Loop349 residual `120`에서 이미 current contract로 `promotion_blocked` 수렴한 `repair_unsafe_promotion=14`를 중복 action queue에서 제외한다.

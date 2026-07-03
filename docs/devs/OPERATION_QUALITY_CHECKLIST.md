@@ -6,6 +6,20 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-03 Loop353 11708470 non-light row closure quality gate
+
+- 근거:
+  - [x] Loop324 runtime health `7/7/0/0`, search 포함 non-light를 확인했다.
+  - [x] `11708470` row가 expected title로 `safe_resolved`됐고 search degraded가 없음을 확인했다.
+  - [x] `split_collateral_action_queue.py --fail-on-validation-issue`로 queue를 재생성했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_353_REPORT_20260703.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop353_11708470_nonlight_row_closure_20260703.json`.
+- 품질 게이트:
+  - [x] Loop324 packet 전체 `NO-GO`와 row-level closure를 분리한다.
+  - [x] residual `106 -> 105`와 validation issue `0`을 기록한다.
+  - [x] search recovery 전 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-03 Loop352 unsafe-promotion contract exclusion quality gate
 
 - 근거:

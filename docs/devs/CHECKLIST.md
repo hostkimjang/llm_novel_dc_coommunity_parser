@@ -1,5 +1,30 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop353 11708470 non-light row closure 체크
+
+- [x] Loop352 residual `106`에서 row-level closure 후보 `11708470`을 선정했다.
+- [x] Loop324 non-light runtime 근거를 확인했다.
+  - completed/flushed/pending/failed `7/7/0/0`
+  - `mcp_health_include_search=true`
+  - `mcp_health_light_mode=false`
+  - health `2/0`
+- [x] `11708470` row 결과를 확인했다.
+  - `절꺾않 -> 절대 꺾이지 않을거야!`
+  - Loop323 `promotion_blocked`
+  - Loop324 `safe_resolved`
+  - search degraded `null`
+- [x] queue artifact를 생성했다.
+  - JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop353_current_residual_action_queue_after_11708470_nonlight_runtime_closure.json`
+  - Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop353_current_residual_action_queue_after_11708470_nonlight_runtime_closure.md`
+- [x] current residual count를 확인했다.
+  - residual action queue `106 -> 105`
+  - `REPROCESS=78 -> 77`
+  - `HOLD=28`
+  - `repair_safe_loss=73 -> 72`
+  - validation issue `0`
+- [ ] Loop324 packet 전체는 `NO-GO`이므로 `11708443`, `11718099`, `11718110`은 닫지 않는다.
+- Gate: row closure `GO_ROW_NONLIGHT_RUNTIME_NOT_APPROVAL`, packet semantic `NO-GO`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop352 unsafe-promotion contract exclusion 체크
 
 - [x] Loop351 이후 active lane을 대형 run 대기가 아니라 residual queue 감소로 전환했다.

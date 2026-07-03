@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop353 11708470 non-light row closure
+
+- Loop352 residual `106`에서 Loop324 non-light runtime으로 clean recovery가 확인된 `11708470`만 row-level closure로 제외했다.
+- Loop324 runtime은 completed/flushed/pending/failed `7/7/0/0`, `mcp_health_include_search=true`, `mcp_health_light_mode=false`, health `2/0`이다.
+- `11708470`은 `절꺾않 -> 절대 꺾이지 않을거야!`로 `promotion_blocked -> safe_resolved` 이동했고 search degraded가 없었다.
+- 새 queue artifact는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop353_current_residual_action_queue_after_11708470_nonlight_runtime_closure.json` 및 `.md`다.
+- Current residual queue는 `106 -> 105`, label counts `REPROCESS=77`, `HOLD=28`, validation issue `0`이다.
+- Loop324 packet 전체는 `safe_resolved=2/7`이라 `NO-GO`이며 approval이 아니다.
+- Report는 `docs/devs/loop_reports/LOOP_353_REPORT_20260703.md`, state는 `docs/devs/loop353_11708470_nonlight_row_closure_20260703.json`이다.
+- Gate는 row closure `GO_ROW_NONLIGHT_RUNTIME_NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop352 unsafe-promotion contract exclusion
 
 - Loop351 이후 대형 run을 기다리지 않고 Loop349 current residual queue에서 작은 queue delta를 만들었다.

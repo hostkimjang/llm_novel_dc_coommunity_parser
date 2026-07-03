@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop353 Addendum - 11708470 non-light row closure
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop353은 approval 회차가 아니라 Loop352 residual `106`에서 Loop324 non-light runtime으로 clean row recovery가 확인된 `11708470` 1건을 제외한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_353_REPORT_20260703.md`, state `docs/devs/loop353_11708470_nonlight_row_closure_20260703.json`, queue `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop353_current_residual_action_queue_after_11708470_nonlight_runtime_closure.json`.
+- Runtime basis: Loop324 runtime은 completed/flushed/pending/failed `7/7/0/0`, `mcp_health_include_search=true`, `mcp_health_light_mode=false`, health `2/0`이다.
+- Row decision: `11708470`은 `절꺾않 -> 절대 꺾이지 않을거야!`, Loop323 `promotion_blocked`에서 Loop324 `safe_resolved`로 이동했고 search degraded가 없었다.
+- Queue transition: residual action queue `106 -> 105`, `REPROCESS=78 -> 77`, `HOLD=28`, `repair_safe_loss=73 -> 72`, validation issue `0`.
+- Gate: row closure `GO_ROW_NONLIGHT_RUNTIME_NOT_APPROVAL`, packet semantic `NO-GO / Loop324 safe_resolved=2/7`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop352 Addendum - unsafe-promotion contract exclusion
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop352는 approval 회차가 아니라 Loop349 residual `120`에서 이미 현 publication contract로 hold 수렴한 `repair_unsafe_promotion=14`를 중복 queue에서 제외한 회차다.

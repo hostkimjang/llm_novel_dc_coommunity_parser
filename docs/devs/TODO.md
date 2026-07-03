@@ -2,6 +2,18 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop353 TODO
+
+- 상태 업데이트: Loop352 residual `106`에서 Loop324 non-light runtime으로 clean row recovery가 확인된 `11708470` 1건만 제외했다. Residual actionable queue는 `105`다.
+- Loop353 TODO:
+  - [x] Loop324 runtime health `7/7/0/0`, `mcp_health_include_search=true`, `mcp_health_light_mode=false`를 확인했다.
+  - [x] `11708470`이 `promotion_blocked -> safe_resolved`, title `절대 꺾이지 않을거야!`, search degraded `null`임을 확인했다.
+  - [x] `split_collateral_action_queue.py --fail-on-validation-issue`가 validation issue `0`으로 통과했다.
+  - [x] queue delta `106 -> 105`, `REPROCESS=78 -> 77`, `HOLD=28`, `repair_safe_loss=73 -> 72`를 기록했다.
+  - [ ] Loop324 packet 전체는 `NO-GO`이므로 `11708443`, `11718099`, `11718110`은 제외하지 않는다.
+  - [ ] 다음 small loop는 `repair_safe_loss=72` 중 search degraded 없는 row-level runtime/contract 근거만 선택한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop352 TODO
 
 - 상태 업데이트: Loop349 residual `120`에서 Loop300/309 current contract replay로 이미 `14/14 promotion_blocked` 수렴이 확인된 `repair_unsafe_promotion=14`를 중복 repair queue에서 제외했다. Residual actionable queue는 `106`이다.

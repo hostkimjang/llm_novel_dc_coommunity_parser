@@ -1,0 +1,67 @@
+{
+  "loop": 353,
+  "date": "2026-07-03",
+  "report": "docs/devs/loop_reports/LOOP_353_REPORT_20260703.md",
+  "state": "ACTIVE_NOT_COMPLETE",
+  "approval": false,
+  "input_queue": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop352_current_residual_action_queue_after_unsafe_promotion_contract_exclusion.json",
+  "output_queue_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop353_current_residual_action_queue_after_11708470_nonlight_runtime_closure.json",
+  "output_queue_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop353_current_residual_action_queue_after_11708470_nonlight_runtime_closure.md",
+  "runtime_review": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop324_loop322_alias_targeted_nonlight_review.json",
+  "closed_post_ids": [
+    11708470
+  ],
+  "row_evidence": {
+    "post_id": 11708470,
+    "alias": "절꺾않",
+    "expected_title": "절대 꺾이지 않을거야!",
+    "loop323_status": "promotion_blocked",
+    "loop324_status": "safe_resolved",
+    "loop324_state": "resolved",
+    "loop324_title": "절대 꺾이지 않을거야!",
+    "loop324_search_status": null,
+    "loop324_search_degraded": null,
+    "movement": "improved_to_safe_resolved"
+  },
+  "runtime_health": {
+    "completed_count": 7,
+    "flushed_count": 7,
+    "pending_count": 0,
+    "failed_count": 0,
+    "large_run_complete": true,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_count": 2,
+    "mcp_health_failure_count": 0
+  },
+  "queue_transition": {
+    "residual_action_queue_rows_before": 106,
+    "residual_action_queue_rows_after": 105,
+    "reprocess_before": 78,
+    "reprocess_after": 77,
+    "hold_before": 28,
+    "hold_after": 28,
+    "safe_loss_resolved_to_null_before": 101,
+    "safe_loss_resolved_to_null_after": 100,
+    "repair_safe_loss_before": 73,
+    "repair_safe_loss_after": 72,
+    "adaptation_or_webtoon_context_replay_required_before": 1,
+    "adaptation_or_webtoon_context_replay_required_after": 0,
+    "validation_issue_count": 0
+  },
+  "gate": {
+    "row_closure": "GO_ROW_NONLIGHT_RUNTIME_NOT_APPROVAL",
+    "packet_semantic": "NO-GO / Loop324 safe_resolved=2/7",
+    "collateral": "NO-GO / residual_action_queue_rows=105",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next": [
+    "repair_safe_loss=72 small evidence-backed row closures",
+    "Do not close Loop324 degraded rows 11708443, 11718099, 11718110",
+    "Keep background N5/full375/bounded/golden18 as not approval until complete"
+  ]
+}

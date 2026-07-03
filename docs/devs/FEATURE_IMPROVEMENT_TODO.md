@@ -4,12 +4,19 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop353 11708470 non-light row closure follow-up
+  - 상태: residual_queue_105 / row_closure_not_approval / search_recovery_p0_open
+  - 적용: Loop324 non-light runtime에서 clean recovery가 확인된 `11708470`만 Loop352 residual `106`에서 제외했다.
+  - 현재 큐: residual `105`, `REPROCESS=77`, `HOLD=28`, `repair_safe_loss=72`, `repair_after_wrong_work=5`, `known_alias_runtime_replay_required=3`, `native_image_or_source_review_required=14`.
+  - 산출물: `docs/devs/loop_reports/LOOP_353_REPORT_20260703.md`, `docs/devs/loop353_11708470_nonlight_row_closure_20260703.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop353_current_residual_action_queue_after_11708470_nonlight_runtime_closure.json`.
+  - 완료 기준: Loop324 packet `NO-GO` 행은 제외하지 않는다. 다음 small loop도 search degraded 없는 row-level runtime/contract 근거만 사용한다.
+
 - [ ] Loop352 unsafe-promotion contract exclusion follow-up
   - 상태: residual_queue_106 / queue_delta_not_approval / search_recovery_p0_open
   - 적용: Loop349 current residual `120`에서 Loop300/309 contract replay로 이미 `promotion_blocked=14/14` 수렴한 `repair_unsafe_promotion=14`를 제외했다.
-  - 현재 큐: residual `106`, `REPROCESS=78`, `HOLD=28`, `repair_safe_loss=73`, `repair_after_wrong_work=5`, `known_alias_runtime_replay_required=3`, `native_image_or_source_review_required=14`.
+  - 현재 큐: Loop353 이후 residual `105`, `REPROCESS=77`, `HOLD=28`, `repair_safe_loss=72`, `repair_after_wrong_work=5`, `known_alias_runtime_replay_required=3`, `native_image_or_source_review_required=14`.
   - 산출물: `docs/devs/loop_reports/LOOP_352_REPORT_20260703.md`, `docs/devs/loop352_unsafe_promotion_contract_exclusion_20260703.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop352_current_residual_action_queue_after_unsafe_promotion_contract_exclusion.json`.
-  - 완료 기준: 다음 small loop에서 `repair_safe_loss=73` 또는 `OVERRIDE AUDIT(LLM=False -> final=True)` blind/source-native 검증으로 추가 queue 감소를 만든다. search degraded 복구 전 approval과 hard-hold 완화는 금지한다.
+  - 완료 기준: 다음 small loop에서 `repair_safe_loss=72` 또는 `OVERRIDE AUDIT(LLM=False -> final=True)` blind/source-native 검증으로 추가 queue 감소를 만든다. search degraded 복구 전 approval과 hard-hold 완화는 금지한다.
 
 - [ ] Loop351 stale evidence/background audit follow-up
   - 상태: stale_evidence_refresh_incomplete / search_recovery_p0_open / approval_not_open
