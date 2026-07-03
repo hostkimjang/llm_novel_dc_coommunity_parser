@@ -1,5 +1,26 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop384 current-code postprocess contract resync 체크
+
+- [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Loop382 golden18 완료 결과를 current-code postprocess로 다시 동기화했다.
+  - result `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop384_current_patch_loop382_analysis_postprocess_resync_result.json`
+  - manifest `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop384_current_patch_loop382_analysis_postprocess_resync_result_manifest.json`
+  - audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop384_current_patch_loop382_analysis_postprocess_resync_audit.json`
+- [x] `runtime_replay_after_patch=NOT_RUN_POSTPROCESS_ONLY`를 기록했다.
+- [x] `11663540`은 runtime-like payload에서 `post_title` bridge를 통해 `전 버튜버가 하고 싶은데요`로 수렴한다.
+- [x] `11663521`은 public title `null`, `promotion_blocked`, `expected_work_evidence_preserved_unresolved`로 통과한다. Positive title forced publish는 하지 않는다.
+- [x] 검증:
+  - focused OCR canonicalization tests `3` PASS
+  - `tests.test_expert_main_comment_metadata` + `tests.test_promotion_gate_contract` `79` PASS
+  - `py_compile` PASS
+  - `git diff --check` PASS, CRLF warning only
+- [ ] current-code golden18 runtime replay는 아직 하지 않았으므로 `PASS / 18 of 18`을 runtime approval로 세지 않는다.
+- [ ] golden shared collateral `NO-GO / 6 regression candidates`와 full375 collateral `NOT_OPEN`을 유지한다.
+- [ ] search degraded 100% 복구 전 `promotion_blocked=search-blind conditional`을 유지한다.
+- Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, code contract `GO_UNIT`, postprocess golden audit `PASS / 18 of 18`, runtime replay `NOT_RUN_POSTPROCESS_ONLY`, golden shared collateral `NO-GO / 6 regressions`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop383 targeted dry publication contract 체크
 
 - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.

@@ -1,5 +1,19 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop384 current-code postprocess contract resync
+
+- 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop382 golden18 완료 결과를 current-code postprocess로 다시 동기화했다.
+- `expert_main.py`는 runtime 직렬화 경로에서 누락될 수 있는 원문 제목을 `_sync_allowed_publication_result_contract(..., post_title=post_title)`로 전달한다.
+- `11663540`은 runtime-like payload에서도 post title의 `주서연` bridge를 보고 `전 버디가 하고 싶은데요`를 `전 버튜버가 하고 싶은데요`로 canonicalize한다.
+- Official golden audit는 `PASS / 18 of 18`, failed `0`을 기록했다.
+- `11663521`은 `expected_work_evidence_preserved_unresolved`로 통과하지만 public title은 `null`, `candidate_ledger_status=promotion_blocked`다. 이는 forced publish가 아니다.
+- Golden shared collateral compare는 regression 후보 `6`건이라 full375 collateral approval은 열지 않는다.
+- Current-code runtime replay는 `NOT_RUN_POSTPROCESS_ONLY`라 runtime proof로 세지 않는다.
+- 검증은 focused OCR 3 PASS, broader 79 PASS, `py_compile` PASS, `git diff --check` PASS(CRLF warning only)다.
+- Report는 `docs/devs/loop_reports/LOOP_384_REPORT_20260704.md`, state는 `docs/devs/loop384_postprocess_golden_pass_20260704.json`이다.
+- Gate는 new large runs `FROZEN`, same parent packet replay `STOPPED`, code contract `GO_UNIT`, postprocess golden audit `PASS / 18 of 18`, runtime replay `NOT_RUN_POSTPROCESS_ONLY`, golden shared collateral `NO-GO / 6 regressions`, full375 collateral `NOT_OPEN`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop383 targeted dry publication contract
 
 - 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

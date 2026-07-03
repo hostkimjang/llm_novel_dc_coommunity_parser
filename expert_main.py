@@ -2685,7 +2685,10 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
     return changed
 
 
-def _sync_allowed_publication_result_contract(result_dict: Dict[str, Any]) -> bool:
+def _sync_allowed_publication_result_contract(
+    result_dict: Dict[str, Any],
+    post_title: Optional[str] = None,
+) -> bool:
     """Record the final publish ledger for serialized public titles."""
     if not isinstance(result_dict, dict):
         return False
@@ -2830,6 +2833,7 @@ def _sync_allowed_publication_result_contract(result_dict: Dict[str, Any]) -> bo
                         chunks.append(text)
 
         for value in (
+            post_title,
             result_dict.get("title"),
             result_dict.get("post_title"),
             result_dict.get("source_title"),
@@ -3104,6 +3108,7 @@ def _sync_allowed_publication_result_contract(result_dict: Dict[str, Any]) -> bo
                         chunks.append(text)
 
         for value in (
+            post_title,
             result_dict.get("title"),
             result_dict.get("post_title"),
             result_dict.get("source_title"),
@@ -4413,7 +4418,7 @@ def _sync_final_publication_ledger_contract(result_dict: Dict[str, Any], post_ti
     changed = _demote_unsafe_url_title_verified_publication_contract(result_dict, post_title=post_title)
     if _scrub_promotion_blocked_result_contract(result_dict, post_title=post_title):
         changed = True
-    if _sync_allowed_publication_result_contract(result_dict):
+    if _sync_allowed_publication_result_contract(result_dict, post_title=post_title):
         changed = True
     if _demote_inferred_publication_with_critical_counterevidence(result_dict, post_title=post_title):
         changed = True

@@ -2,6 +2,24 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-04 regression-safe grounding Loop384 TODO
+
+- 상태 업데이트: Loop382 golden18 완료 결과를 current-code postprocess로 다시 동기화했다. Official postprocess audit는 `PASS / 18 of 18`이지만 runtime replay는 `NOT_RUN_POSTPROCESS_ONLY`이고 golden shared collateral은 `NO-GO / 6 regression candidates`다.
+- Loop384 TODO:
+  - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] `_sync_allowed_publication_result_contract`가 runtime caller `post_title`을 받아 OCR/search canonicalization source text에 포함하게 했다.
+  - [x] runtime-like payload에서 `11663540`의 `주서연` 제목 bridge가 `전 버튜버가 하고 싶은데요` canonical title로 수렴함을 테스트했다.
+  - [x] official golden postprocess audit `PASS / 18 of 18`을 생성했다.
+  - [x] `11663521`은 `expected_work_evidence_preserved_unresolved`로 통과하되 public title `null`을 유지한다고 기록했다.
+  - [x] focused OCR 3 tests, broader 79 tests, `py_compile`, `git diff --check`를 통과했다.
+  - [ ] current-code runtime replay는 `NOT_RUN_POSTPROCESS_ONLY`이므로 runtime approval로 세지 않는다.
+  - [ ] golden shared collateral `6` regressions와 full375 collateral `NOT_OPEN`을 닫기 전 approval을 열지 않는다.
+  - [ ] Search degraded 100% 복구 전 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [x] Collateral 105는 queue-count 회차가 아니라 `reclassified 74 / runtime-verified 4` 축으로 유지한다.
+  - [x] OVERRIDE AUDIT `11708445`는 Loop319 `ACCEPT / candidate_only_block_is_correct` 완료 상태로 유지한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop383 TODO
 
 - 상태 업데이트: 새 runtime은 발주하지 않고 Loop382 실패 2건에 현재 후처리 계약만 dry 적용했다. Projected expected-answer는 `NO-GO / 17 of 18`이며, 남은 최소 실패는 `11663521`이다.

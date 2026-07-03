@@ -6,6 +6,23 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-04 Loop384 postprocess-only golden pass 품질 게이트
+
+- 근거:
+  - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았음을 기록했다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았음을 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_384_REPORT_20260704.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop384_postprocess_golden_pass_20260704.json`.
+  - [x] Official audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop384_current_patch_loop382_analysis_postprocess_resync_audit.json`.
+  - [x] Manifest의 `runtime_replay_after_patch=NOT_RUN_POSTPROCESS_ONLY`를 기록했다.
+- 품질 게이트:
+  - [x] postprocess expected-answer `PASS / 18 of 18`와 runtime approval을 분리한다.
+  - [x] golden shared collateral `6` regressions를 full375 collateral approval과 분리한다.
+  - [x] `11663521` evidence-preserved unresolved 통과를 forced publish로 해석하지 않는다.
+  - [x] `11698880` public title `null`을 hard-hold 완화 근거로 쓰지 않는다.
+  - [x] search recovery 전 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-04 Loop375 11668307 expected 교정 품질 게이트
 
 - 근거:

@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop384 postprocess-only golden pass follow-up
+  - 상태: current-code postprocess golden audit `PASS 18/18` / runtime replay after patch `NOT_RUN_POSTPROCESS_ONLY` / golden shared collateral `NO-GO 6` / search recovery `P0_PARTIAL_RUNTIME_GO` / approval not open
+  - 적용: `_sync_allowed_publication_result_contract(..., post_title=post_title)` 배선으로 runtime-like payload의 `11663540` OCR 오독이 `전 버튜버가 하고 싶은데요`로 수렴한다. `11663521`은 public title `null`을 유지한 evidence-preserved unresolved 통과다.
+  - 산출물: `docs/devs/loop_reports/LOOP_384_REPORT_20260704.md`, `docs/devs/loop384_postprocess_golden_pass_20260704.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop384_current_patch_loop382_analysis_postprocess_resync_audit.json`.
+  - 완료 기준: current-code golden18 runtime replay 또는 search degraded 100% 복구와 full375 collateral 전수 gate가 별도로 닫히기 전까지 approval과 hard-hold 완화를 열지 않는다.
+
 - [ ] Loop383 remaining golden expected/search follow-up
   - 상태: current worktree golden18 runtime은 Loop382 기준 `GO 18/18` / Loop383 targeted dry projection `NO-GO 17/18` / runtime after patch `NOT_RUN` / search recovery `P0_PARTIAL_RUNTIME_GO` / approval not open
   - 적용: `11663521` wrong publish `성기사는 버생을 산다`는 dry postprocess에서 `null / promotion_blocked`로 차단됐지만 positive expected는 unresolved다. `11663540` OCR 오독 `전 버디가 하고 싶은데요`는 `전 버튜버가 하고 싶은데요`로 canonicalize된다.

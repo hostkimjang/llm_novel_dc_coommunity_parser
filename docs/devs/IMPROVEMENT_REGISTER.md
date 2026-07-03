@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260704-384 - current-code postprocess contract resync
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/golden18 미발주 | 동결 유지 |
+| parent packet replay | 중단 | 동일 38-row replay 없음 | 반복 금지 |
+| runtime post title bridge | GO_UNIT | `_sync_allowed_publication_result_contract(..., post_title=post_title)` 배선 | runtime replay 전 approval 금지 |
+| `11663540` OCR canonicalization | postprocess pass | runtime-like payload에서 `전 버튜버가 하고 싶은데요` 수렴 | full runtime replay에서 재확인 필요 |
+| `11663521` | evidence preserved unresolved | public title `null`, `promotion_blocked`; forced publish 아님 | source-native/search 또는 일반 술어로만 승격 판단 |
+| expected-answer postprocess | PASS / 18 of 18 | official Loop384 audit | postprocess-only caveat 유지 |
+| collateral | NO-GO / 6 | golden shared collateral regression 후보 `6` | full375 전수 gate 별도 필요 |
+| 문서 동기화 | 완료 | Loop384 report/state와 운영 문서 갱신 | 다음 loop는 runtime replay 또는 collateral/search blocker 감소 |
+
+Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, code contract `GO_UNIT`, postprocess golden audit `PASS / 18 of 18`, runtime replay `NOT_RUN_POSTPROCESS_ONLY`, golden shared collateral `NO-GO / 6 regressions`, full375 collateral `NOT_OPEN`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260704-383 - targeted dry publication contract
 
 | 항목 | 상태 | 근거 | 다음 조치 |

@@ -1,0 +1,77 @@
+{
+  "loop": 384,
+  "date": "2026-07-04",
+  "scope": "current_code_postprocess_resync_on_loop382_golden18_result",
+  "new_large_runs": "FROZEN",
+  "same_parent_packet_replay": "STOPPED",
+  "runtime_replay_after_patch": "NOT_RUN_POSTPROCESS_ONLY",
+  "source_runtime": {
+    "loop": 382,
+    "run_id": "20260704_033413_208076",
+    "input_post_count": 18,
+    "completed_count": 18,
+    "flushed_count": 18,
+    "pending_count": 0,
+    "failed_count": 0,
+    "search_mode": "non-light",
+    "vlm_ocr_semantic_review_ready": true
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_384_REPORT_20260704.md",
+    "postprocess_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop384_current_patch_loop382_analysis_postprocess_resync_result.json",
+    "postprocess_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop384_current_patch_loop382_analysis_postprocess_resync_result_manifest.json",
+    "golden_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop384_current_patch_loop382_analysis_postprocess_resync_audit.json",
+    "golden_audit_markdown": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop384_current_patch_loop382_analysis_postprocess_resync_audit.md",
+    "golden_collateral": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop384_current_patch_loop382_analysis_postprocess_resync_collateral.json",
+    "golden_collateral_markdown": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop384_current_patch_loop382_analysis_postprocess_resync_collateral.md"
+  },
+  "code_changes": [
+    "expert_main.py: _sync_allowed_publication_result_contract accepts post_title",
+    "expert_main.py: final publication contract passes caller post_title into allowed-publication sync",
+    "tests/test_expert_main_comment_metadata.py: runtime-like OCR canonicalization test added"
+  ],
+  "golden_expected_answer": {
+    "canary_semantic_gate": "PASS",
+    "passed_count": 18,
+    "failed_count": 0,
+    "status_counts": {
+      "expected_null_respected": 7,
+      "expected_title_resolved": 5,
+      "expected_work_evidence_preserved_unresolved": 4,
+      "expected_hypothesis_resolved_by_direct_image": 1,
+      "positive_image_boundary_preserved_unresolved": 1
+    }
+  },
+  "row_notes": {
+    "11663521": "expected_work_evidence_preserved_unresolved; public title null; wrong publish blocked but positive title not forced",
+    "11663540": "expected_title_resolved; OCR variant canonicalized to 전 버튜버가 하고 싶은데요",
+    "11660237": "expected_title_resolved; 테라포밍",
+    "11698880": "expected_work_evidence_preserved_unresolved; public title null; not hard-hold relaxation evidence"
+  },
+  "collateral": {
+    "scope": "golden_canary_shared_posts_only",
+    "shared_posts": 18,
+    "changed_posts": 17,
+    "regression_candidates": 6,
+    "full375_collateral": "NOT_OPEN"
+  },
+  "verification": {
+    "focused_ocr_tests": "PASS / 3",
+    "broader_tests": "PASS / 79",
+    "py_compile": "PASS",
+    "git_diff_check": "PASS / CRLF warning only"
+  },
+  "gates": {
+    "code_contract": "GO_UNIT",
+    "postprocess_golden_audit": "PASS / 18 of 18",
+    "runtime_replay_after_patch": "NOT_RUN_POSTPROCESS_ONLY",
+    "golden_shared_collateral": "NO-GO / 6 regression candidates",
+    "full375_collateral": "NOT_OPEN",
+    "collateral_active_lane": "reclassified 74 / runtime-verified 4",
+    "search_recovery": "P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

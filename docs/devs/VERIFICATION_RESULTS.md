@@ -1,5 +1,41 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop384 current-code postprocess contract resync
+
+- 범위: Loop382 golden18 완료 결과를 current-code publication contract 후처리로 다시 동기화한다. 신규 full375/bounded/N5/golden18 대형 런과 동일 parent packet replay는 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_384_REPORT_20260704.md`
+  - state `docs\devs\loop384_postprocess_golden_pass_20260704.json`
+  - postprocess result `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop384_current_patch_loop382_analysis_postprocess_resync_result.json`
+  - postprocess manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop384_current_patch_loop382_analysis_postprocess_resync_result_manifest.json`
+  - official audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop384_current_patch_loop382_analysis_postprocess_resync_audit.json`
+  - official audit markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop384_current_patch_loop382_analysis_postprocess_resync_audit.md`
+  - golden collateral `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop384_current_patch_loop382_analysis_postprocess_resync_collateral.json`
+- Code evidence:
+  - `_sync_allowed_publication_result_contract`가 `post_title`을 받는다.
+  - `_sync_final_publication_ledger_contract`가 runtime caller `post_title`을 allowed-publication sync로 전달한다.
+  - runtime-like payload에서도 `11663540` 제목의 `주서연` bridge가 OCR canonicalization에 쓰인다.
+- Row evidence:
+  - `11663521`: `expected_work_evidence_preserved_unresolved`, actual `null`, `promotion_blocked`; positive title forced publish 아님.
+  - `11663540`: `expected_title_resolved`, actual `전 버튜버가 하고 싶은데요`.
+  - `11660237`: `테라포밍` pass.
+  - `11698880`: evidence-preserved unresolved pass이나 public title `null`; hard-hold 완화 근거 아님.
+- Verification commands:
+  - `.venv312\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_direct_image_ocr_publish_canonicalizes_from_search_snippet_bridge tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_direct_image_ocr_publish_uses_runtime_post_title_bridge_argument tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_direct_image_ocr_variant_without_parenthetical_bridge_stays_blocked -v` -> PASS, `3` tests.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata tests.test_promotion_gate_contract -v` -> PASS, `79` tests.
+  - `.venv312\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_comment_metadata.py` -> PASS.
+  - `git diff --check` -> PASS, CRLF warning only.
+- Semantic evidence:
+  - official postprocess audit `canary_semantic_gate=PASS`
+  - passed `18/18`, failed `0/18`
+  - status counts: `expected_null_respected=7`, `expected_title_resolved=5`, `expected_work_evidence_preserved_unresolved=4`, `expected_hypothesis_resolved_by_direct_image=1`, `positive_image_boundary_preserved_unresolved=1`
+  - current-code runtime replay `NOT_RUN_POSTPROCESS_ONLY`
+- Collateral evidence:
+  - golden shared collateral regression candidates `6`
+  - full375 collateral `NOT_OPEN`
+  - collateral active lane is reported as `reclassified 74 / runtime-verified 4`, not queue-count progress.
+- Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, code contract `GO_UNIT`, postprocess golden audit `PASS / 18 of 18`, runtime replay `NOT_RUN_POSTPROCESS_ONLY`, golden shared collateral `NO-GO / 6 regressions`, full375 collateral `NOT_OPEN`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop383 targeted dry publication contract
 
 - 범위: Loop382 golden18 실패 2건(`11663521`, `11663540`)을 새 runtime 없이 현재 후처리 계약으로만 dry 재평가한다. 신규 full375/bounded/N5/golden18 대형 런과 동일 parent packet replay는 발주하지 않는다.

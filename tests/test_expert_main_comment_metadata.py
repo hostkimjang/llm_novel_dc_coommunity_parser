@@ -902,6 +902,68 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertIn("direct_image_ocr_search_canonicalized", decision["reason_codes"])
         self.assertIn("search_character_parenthetical_bridge", decision["reason_codes"])
 
+    def test_direct_image_ocr_publish_uses_runtime_post_title_bridge_argument(self):
+        result = {
+            "post_id": 11663540,
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "safe_resolved": True,
+                "context_sources": ["title", "image", "search"],
+                "novel_identity": {
+                    "official_title": "전 버디가 하고 싶은데요",
+                    "heretic_url": None,
+                    "confidence": "High",
+                },
+                "search_evidence_catalog": [
+                    {
+                        "title": "괴력녀 - 나무위키",
+                        "url": "https://namu.wiki/w/example",
+                        "domain": "namu.wiki",
+                        "source_tier": "wiki",
+                        "snippet": "전 버튜버가 하고 싶은데요 - 주서연.",
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": "전 버디가 하고 싶은데요",
+                    "official_url": None,
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "direct_image_work_surface_bridge",
+                        "ocr_catalog_official_title",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "direct_image_work_surface_lock",
+                            "structured_direct_image_work_surface",
+                            "ocr_catalog_official_title",
+                        ],
+                    },
+                },
+                "candidate_ledger": {},
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            result,
+            post_title="TS) 주서연 전차랑 줄다리기 하면 이길까?",
+        )
+
+        self.assertTrue(changed)
+        decision = result["identity"]["promotion_decision"]
+        self.assertEqual(decision["official_title"], "전 버튜버가 하고 싶은데요")
+        self.assertIn("direct_image_ocr_search_canonicalized", decision["reason_codes"])
+
     def test_direct_image_ocr_variant_without_parenthetical_bridge_stays_blocked(self):
         result = {
             "post_id": 11663540,

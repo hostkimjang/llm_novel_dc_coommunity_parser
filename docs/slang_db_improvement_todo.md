@@ -1,5 +1,14 @@
 # Slang DB Improvement TODO
 
+## 2026-07-04 Loop384 postprocess-only golden pass slang 주의사항
+
+- [x] 이번 회차는 slang DB write-back이 아니라 current-code postprocess contract resync다.
+- [x] R1 하드코딩 cue 리스트 확장은 하지 않았다.
+- [x] `11663540`의 `전 버튜버가 하고 싶은데요` 수렴은 runtime caller `post_title` bridge와 search/OCR canonicalization 결과이며 alias/slang 승격 근거가 아니다.
+- [x] `11663521`은 public title `null`인 evidence-preserved unresolved 통과이므로 slang/alias hard-hold 완화 근거가 아니다.
+- [ ] current-code runtime replay, search degraded 복구, full375 collateral gate 전까지 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, postprocess golden audit `PASS / 18 of 18`, runtime replay `NOT_RUN_POSTPROCESS_ONLY`, golden shared collateral `NO-GO / 6 regressions`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop383 targeted dry publication contract slang 주의사항
 
 - [x] 이번 회차는 slang DB write-back이 아니라 저장된 Loop382 실패 2건의 targeted dry publication contract 보정이다.
