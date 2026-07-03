@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop365 remaining golden expected/search follow-up
+  - 상태: `11713222` source-native expected correction 완료 / golden expected `NO-GO 14/18` / search recovery `P0_OPEN` / approval not open
+  - 적용: 본문 `잘생인방`을 current work `잘생기면 편해지는 인방 생활`로, 댓글 `잘생인편`을 previous/mentioned work `잘생기면 인생이 편하다`로 판정해 `golden_manifest.json` expected를 교정했다.
+  - 산출물: `docs/devs/loop_reports/LOOP_365_REPORT_20260703.md`, `docs/devs/loop365_11713222_blind_source_native_20260703.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop365_11713222_blind_source_native_review.json`.
+  - 완료 기준: 남은 실패 `11698897`, `11694019`, `11700470`, `11698880`을 일반 술어/계약 또는 source-native 판정으로 좁히고, search degraded 복구 전 hard-hold 완화와 approval을 열지 않는다.
+
 - [ ] Loop358 LLM stream stall guard follow-up
   - 상태: runtime_aborted_llm_stream_stall / search_go_single_probe / residual_queue_105 / approval_not_open
   - 적용: `11666713` image-free 단건 replay에서 Gatekeeper first-token stall을 분리하고, stream first-token/idle timeout guard를 추가했다.

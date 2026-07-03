@@ -1,5 +1,27 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop365 11713222 blind/source-native expected correction
+
+- 범위: Loop364 잔여 충돌 `11713222`를 source-native로 판정하고, 코드 억제 대신 frozen golden expected를 교정한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_365_REPORT_20260703.md`
+  - state `docs\devs\loop365_11713222_blind_source_native_20260703.json`
+  - review `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop365_11713222_blind_source_native_review.json`
+  - golden manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\golden\golden_manifest.json`
+  - post-correction audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop365_golden18_loop363_result_after_11713222_blind_correction_audit.json`
+  - post-correction collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop365_golden18_loop363_result_after_11713222_blind_correction_collateral_compare.json`
+- Source-native evidence:
+  - 본문 직접 표면 `잘생인방`은 current work `잘생기면 편해지는 인방 생활`
+  - 댓글 `잘생인편`은 `전작도 ...`, `안봐서 ...` 문맥상 previous/mentioned work `잘생기면 인생이 편하다`
+  - Loop364 runtime row는 `official_title=잘생기면 편해지는 인방 생활`, `candidate_ledger_status=safe_resolved`, `publish_allowed=true`
+- Audit evidence:
+  - 기존 Loop363 result를 재사용했다. 신규 대형 런은 없다.
+  - expected-answer pass `13/18 -> 14/18`
+  - failed rows `5 -> 4`: `11698897`, `11694019`, `11700470`, `11698880`
+  - `canary_semantic_gate=NO-GO`
+  - collateral regression count `7`
+- Gate: new large runs `FROZEN`, golden18 runtime `GO / reused Loop363 18 of 18`, golden expected-answer `NO-GO / 14 of 18`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop364 shared promotion gate wrong-publish repair
 
 - 범위: Loop363 golden18 expected-answer 실패 중 wrong-publish 3건을 shared promotion gate 일반 술어로 보정하고 targeted runtime replay로 row 생산을 확인한다.

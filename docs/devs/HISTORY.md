@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop365 11713222 blind/source-native expected correction
+
+- 신규 대형 런은 발주하지 않았고, Loop364 잔여 충돌 `11713222`만 blind/source-native로 재판정했다.
+- 원문 본문 직접 표면 `잘생인방`은 현재 작품 `잘생기면 편해지는 인방 생활`을 가리킨다. 댓글 `잘생인편`은 `전작도 ...`, `안봐서 까먹어버림` 문맥상 이전 작품 `잘생기면 인생이 편하다` mentioned-work 후보다.
+- 결론은 Loop364 runtime publish `잘생기면 편해지는 인방 생활`이 정당하다는 것이다. 코드 변경이나 R1 cue 리스트 확장 없이 golden expected label drift를 교정했다.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json`의 `11713222` expected를 `잘생기면 편해지는 인방 생활`, URL `https://novelpia.com/novel/384016`로 갱신했다.
+- 기존 Loop363 golden18 결과를 재감사해 expected-answer pass가 `13/18 -> 14/18`, fail이 `5/18 -> 4/18`로 바뀌었다. 남은 실패는 `11698897`, `11694019`, `11700470`, `11698880`이다.
+- `11708445` OVERRIDE AUDIT는 Loop319 `ACCEPT / candidate_only_block_is_correct` 완료 상태로 유지한다.
+- Report는 `docs/devs/loop_reports/LOOP_365_REPORT_20260703.md`, state는 `docs/devs/loop365_11713222_blind_source_native_20260703.json`, review는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop365_11713222_blind_source_native_review.json`이다.
+- Gate는 new large runs `FROZEN`, golden expected-answer `NO-GO / 14 of 18`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop364 shared promotion gate wrong-publish repair
 
 - 신규 대형 런 발주는 계속 동결하고, Loop363 golden18 expected-answer 실패 중 wrong-publish 3건만 targeted repair/replay 대상으로 삼았다.

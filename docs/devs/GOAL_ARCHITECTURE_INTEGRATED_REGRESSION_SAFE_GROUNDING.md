@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop365 Addendum - 11713222 blind/source-native expected correction
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop365는 approval 회차가 아니라 Loop364 잔여 충돌 `11713222`를 source-native로 판정하고 golden expected label drift를 교정한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_365_REPORT_20260703.md`, state `docs/devs/loop365_11713222_blind_source_native_20260703.json`, review `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop365_11713222_blind_source_native_review.json`.
+- Verdict: 본문 직접 표면 `잘생인방`은 현재 작품 `잘생기면 편해지는 인방 생활`이고, 댓글 `잘생인편`은 전작/mentioned-work `잘생기면 인생이 편하다`다. Loop364 runtime publish는 정당하다.
+- Action: 코드 변경 없음. R1 hardcoded cue 리스트 확장 없음. `golden_manifest.json`의 `11713222` expected를 `잘생기면 편해지는 인방 생활`, URL `https://novelpia.com/novel/384016`로 교정했다.
+- Audit: 기존 Loop363 golden18 result 재감사 결과 expected-answer pass `13/18 -> 14/18`, fail `5/18 -> 4/18`, `canary_semantic_gate=NO-GO`다. 남은 실패는 `11698897`, `11694019`, `11700470`, `11698880`이다.
+- Boundary: `11708445` OVERRIDE AUDIT는 Loop319 `ACCEPT / candidate_only_block_is_correct` 완료 산출물로 유지한다.
+- Gate: golden18 runtime `GO / reused Loop363 18 of 18`, golden expected-answer `NO-GO / 14 of 18`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop358 Addendum - LLM stream stall guard
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop358은 approval 회차가 아니라 `repair_after_wrong_work=5` 중 `11666713` 단건으로 Loop350 stall 원인을 분리하고 stream timeout guard를 추가한 회차다.

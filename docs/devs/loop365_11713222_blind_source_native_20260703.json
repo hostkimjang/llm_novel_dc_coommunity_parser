@@ -1,0 +1,77 @@
+{
+  "loop": 365,
+  "date": "2026-07-03",
+  "scope": "11713222 blind/source-native review and golden expected correction",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "new_large_runs": "FROZEN",
+  "code_change": false,
+  "target_post_id": 11713222,
+  "source_row": {
+    "title": "현대 하렘물은 진짜 잘쓰는 작가가 손에꼽네",
+    "body_surface": "잘생인방보는데 그냥 주인공이 여자를 오나홀로밖에 안보는거같음",
+    "comment_surfaces": [
+      "판타지만 쓰던 작가라서 그런가",
+      "전작도 잘생인편으로 현대하렘아님? - dc App",
+      "@ㅇㅇ 그렇네 잘생인편 안봐서 까먹어버림"
+    ]
+  },
+  "source_native_verdict": {
+    "status": "ACCEPT",
+    "classification": "current_work_publish_is_correct",
+    "public_title": "잘생기면 편해지는 인방 생활",
+    "public_url": "https://novelpia.com/novel/384016",
+    "mentioned_previous_work": "잘생기면 인생이 편하다",
+    "mentioned_previous_work_url": "https://novelpia.com/novel/300042",
+    "reason": "본문 직접 표면 '잘생인방'은 현재 작품이며, 댓글 '잘생인편'은 전작/mentioned-work 문맥이다. 기존 golden expected는 이전 작품을 public expected로 둔 label drift였다."
+  },
+  "runtime_evidence": {
+    "loop364_run_id": "20260703_190831_536951",
+    "loop364_result": "out/expert_result_20260703_190831_536951.json",
+    "loop364_manifest": "out/expert_result_20260703_190831_536951_manifest.json",
+    "candidate_ledger_status": "safe_resolved",
+    "promotion_decision_status": "publish",
+    "publish_allowed": true,
+    "search_status": "SEARCH_DEGRADED"
+  },
+  "golden_manifest_update": {
+    "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json",
+    "post_id": 11713222,
+    "previous_expected_title_or_hypothesis": "잘생기면 인생이 편하다",
+    "new_expected_title_or_hypothesis": "잘생기면 편해지는 인방 생활",
+    "new_expected_url": "https://novelpia.com/novel/384016"
+  },
+  "post_correction_audit": {
+    "audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop365_golden18_loop363_result_after_11713222_blind_correction_audit.json",
+    "audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop365_golden18_loop363_result_after_11713222_blind_correction_audit.md",
+    "collateral_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop365_golden18_loop363_result_after_11713222_blind_correction_collateral_compare.json",
+    "collateral_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop365_golden18_loop363_result_after_11713222_blind_correction_collateral_compare.md",
+    "canary_semantic_gate": "NO-GO",
+    "passed_count_before": 13,
+    "failed_count_before": 5,
+    "passed_count_after": 14,
+    "failed_count_after": 4,
+    "remaining_failed_post_ids": [
+      11698897,
+      11694019,
+      11700470,
+      11698880
+    ],
+    "collateral_regression_count_after": 7
+  },
+  "override_audit_11708445": {
+    "status": "ALREADY_CLOSED",
+    "loop": 319,
+    "verdict": "ACCEPT / candidate_only_block_is_correct",
+    "state": "docs/devs/loop319_override_audit_11708445_20260702.json",
+    "review": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop319_override_audit_11708445_review.json"
+  },
+  "gate": {
+    "golden18_runtime": "GO / reused Loop363 18 of 18",
+    "golden_expected_answer": "NO-GO / 14 of 18",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

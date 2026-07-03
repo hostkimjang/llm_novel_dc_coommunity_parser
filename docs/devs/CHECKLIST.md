@@ -1,5 +1,24 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop365 11713222 blind/source-native 체크
+
+- [x] 신규 대형 런 발주를 계속 동결했다.
+- [x] `11713222` 원문을 source-native로 재판정했다.
+  - 본문 `잘생인방`은 현재 작품 `잘생기면 편해지는 인방 생활`
+  - 댓글 `잘생인편`은 전작/mentioned-work `잘생기면 인생이 편하다`
+- [x] Loop364 runtime publish `잘생기면 편해지는 인방 생활`을 정당 해소로 판정했다.
+- [x] 코드 변경 없이 golden expected를 교정했다.
+  - previous expected `잘생기면 인생이 편하다`
+  - new expected `잘생기면 편해지는 인방 생활`
+  - expected URL `https://novelpia.com/novel/384016`
+- [x] 기존 Loop363 golden18 결과 재감사를 수행했다.
+  - pass `13/18 -> 14/18`
+  - fail `5/18 -> 4/18`
+  - remaining failed `11698897`, `11694019`, `11700470`, `11698880`
+- [x] `11708445` OVERRIDE AUDIT는 Loop319 완료 산출물로 재고정했다.
+- [ ] search degraded와 golden expected-answer 실패 4건을 닫기 전 semantic approval, full scan approval, hard-hold 완화를 금지한다.
+- Gate: new large runs `FROZEN`, golden18 runtime `GO / reused Loop363 18 of 18`, golden expected-answer `NO-GO / 14 of 18`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop364 shared promotion gate wrong-publish 체크
 
 - [x] 신규 대형 런 발주는 계속 동결했다.
@@ -19,9 +38,9 @@
   - result `out\expert_result_20260703_190831_536951.json`
   - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop364_wrong_publish_3_runtime_health_audit.json`
 - [x] `11694019`, `11700470` wrong publish 차단을 확인했다.
-- [ ] `11713222`는 `잘생인방` 직접 표면 때문에 runtime publish가 유지되어 blind/source-native 정답성 재검증이 필요하다.
+- [x] `11713222`는 Loop365 blind/source-native 판정으로 runtime publish가 정당하다고 확인했고, golden expected를 교정했다.
 - [x] `11708445` OVERRIDE AUDIT는 Loop319 완료 산출물로 재고정했다.
-- [ ] search degraded `unrecovered_degraded_total=6`과 `11713222` 잔여 충돌을 닫기 전 semantic approval, full scan approval, hard-hold 완화를 금지한다.
+- [ ] search degraded와 남은 golden expected-answer 실패 4건을 닫기 전 semantic approval, full scan approval, hard-hold 완화를 금지한다.
 - Gate: new large runs `FROZEN`, code contract `GO_UNIT`, targeted runtime `GO / 3 of 3`, wrong-publish closure `PARTIAL_GO / 2 of 3`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-03 Loop363 golden18 runtime proof 체크

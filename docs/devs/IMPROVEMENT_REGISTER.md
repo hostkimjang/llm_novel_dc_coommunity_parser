@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260703-365 - 11713222 blind/source-native expected correction
+
+| Item | Status | Evidence | Next action |
+| --- | --- | --- | --- |
+| New large runs | Frozen | No full375/bounded/N5 dispatch this loop | Keep frozen until remaining blockers need bounded runtime |
+| `11713222` verdict | ACCEPT / current publish correct | body `잘생인방` maps to `잘생기면 편해지는 인방 생활`; comment `잘생인편` is previous-work mention | Do not suppress this publish path |
+| Golden expected | Corrected | `golden_manifest.json` expected `잘생기면 인생이 편하다 -> 잘생기면 편해지는 인방 생활` | Treat as label drift, not code regression |
+| Post-correction audit | NO-GO but improved | expected-answer `13/18 -> 14/18`, fail `5 -> 4` | Work remaining failed rows `11698897`, `11694019`, `11700470`, `11698880` |
+| Search evidence | REVIEW / P0 open | runtime row still `SEARCH_DEGRADED` | Recover degraded search before promotion hard-hold relaxation |
+| OVERRIDE AUDIT 11708445 | Closed row contract | Loop319 `ACCEPT / candidate_only_block_is_correct` | Do not keep deferring this row |
+| Documentation sync | Done | Loop365 report/state plus TODO/CHECKLIST/HISTORY/VERIFICATION updated | Next loop must reduce remaining failures or search blocker |
+
+Gate: new large runs `FROZEN`, golden18 runtime `GO / reused Loop363 18 of 18`, golden expected-answer `NO-GO / 14 of 18`, collateral active lane `REVIEW-LOCKED / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260703-364 - shared promotion gate wrong-publish repair
 
 | Item | Status | Evidence | Next action |

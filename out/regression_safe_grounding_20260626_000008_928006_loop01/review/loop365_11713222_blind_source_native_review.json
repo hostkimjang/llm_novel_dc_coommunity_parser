@@ -1,0 +1,43 @@
+{
+  "loop": 365,
+  "target_post_id": 11713222,
+  "scope": "blind/source-native verdict for direct current alias versus previous-work comment alias",
+  "source_text": {
+    "title": "현대 하렘물은 진짜 잘쓰는 작가가 손에꼽네",
+    "content": [
+      "잘생인방보는데 그냥 주인공이 여자를 오나홀로밖에 안보는거같음",
+      "뭐 사랑도없고 고백부터 여러여자볼거니 이해해줘식이니까 개아찔하네",
+      "- dc official App"
+    ],
+    "comments": [
+      "판타지만 쓰던 작가라서 그런가",
+      "전작도 잘생인편으로 현대하렘아님? - dc App",
+      "@ㅇㅇ 그렇네 잘생인편 안봐서 까먹어버림"
+    ]
+  },
+  "verdict": "ACCEPT / current_work_publish_is_correct",
+  "current_work": {
+    "alias": "잘생인방",
+    "official_title": "잘생기면 편해지는 인방 생활",
+    "url": "https://novelpia.com/novel/384016",
+    "role": "primary"
+  },
+  "mentioned_previous_work": {
+    "alias": "잘생인편",
+    "official_title": "잘생기면 인생이 편하다",
+    "url": "https://novelpia.com/novel/300042",
+    "role": "mentioned_previous_work"
+  },
+  "decision": {
+    "code_change_required": false,
+    "golden_expected_correction_required": true,
+    "previous_expected_title": "잘생기면 인생이 편하다",
+    "corrected_expected_title": "잘생기면 편해지는 인방 생활",
+    "approval_unlocked": false
+  },
+  "gate": {
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "search_recovery": "P0 / OPEN"
+  }
+}

@@ -276,8 +276,9 @@
       "failure_class": "generic_phrase_substring",
       "disagreement_type": "over_resolved",
       "severity": "high",
-      "expected_title_or_hypothesis": "잘생기면 인생이 편하다",
+      "expected_title_or_hypothesis": "잘생기면 편해지는 인방 생활",
       "expected_no_public_title": false,
+      "expected_url": "https://novelpia.com/novel/384016",
       "baseline_identity": {
         "official_title": "하렘으로 장르를 착각함",
         "heretic_url": "https://novelpia.com/novel/386322",
@@ -286,7 +287,7 @@
         "candidate_ledger_status": "safe_resolved",
         "candidate_count": 1
       },
-      "note": "본문은 '현대 하렘물' 장르 일반 잡담이고 실제 언급 작품은 '잘생인방'/'잘생인편'(잘생기면 인생이 편하다, 댓글로 확인)임. 장르어 '하렘물'이 제목 부분문자열과 우연히 겹쳐 '하렘으로 장르를 착각함'으로 과대해소됨. 맥락 결속 실패."
+      "note": "Loop365 blind/source-native 재검증으로 expected를 교정했다. 본문 직접 표면 '잘생인방'은 현재 작품 '잘생기면 편해지는 인방 생활'을 가리키고, 댓글의 '잘생인편'은 '전작도 ...' / '안봐서 까먹어버림' 문맥상 이전 작품 '잘생기면 인생이 편하다' mentioned-work 후보로 보존해야 한다. 원래 문제는 장르어 '하렘물'이 제목 부분문자열과 우연히 겹쳐 '하렘으로 장르를 착각함'으로 과대해소된 generic_phrase_substring 오매칭이다."
     },
     {
       "post_id": 11660237,
