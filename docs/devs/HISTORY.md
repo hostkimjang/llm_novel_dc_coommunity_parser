@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop359 current HEAD background redispatch
+
+- Loop358 이후 현 HEAD `6741ff80`에서 stale flip/golden/full375 증거를 갱신하기 위한 background 런을 새 prefix로 재발주했다.
+- Search shard audit는 `35/44` OK였고 bad shard `1`, `37-44`는 새 발주에서 제외했다.
+- 새 background run은 safe-loss N5 first run `20260703_164155_344655`, full375 run `20260703_164155_263580`, bounded1200 completed-source run `20260703_164155_325390`, golden18 run `20260703_164155_242470`이다.
+- 초기 manifest는 모두 search 포함 non-light 조건이다. full375 health `4/0`, bounded health `4/0`, golden18 health `3/0`, N5 first health `1/0`이다.
+- `golden_set.jsonl`은 `18`행이며 `11660237`, `11698880`을 포함한다. golden files와 bootstrap/flip probe 도구는 git 추적 중이다.
+- 대형 런은 background 감시로 내리고 active loop는 `loop359_current_residual_background_separated_action_lane`으로 분리했다. residual action queue는 `105`, `REPROCESS=77`, `HOLD=28`, validation issue `0`이다.
+- Report는 `docs/devs/loop_reports/LOOP_359_REPORT_20260703.md`, state는 `docs/devs/loop359_current_head_background_dispatch_20260703.json`이다.
+- Gate는 dispatch `GO_CURRENT_HEAD_BACKGROUND_DISPATCH`, runtime completion `IN_PROGRESS / NOT_APPROVAL`, collateral active lane `REVIEW-LOCKED / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop358 LLM stream stall guard
 
 - `repair_after_wrong_work=5` 중 `11666713` image-free 단건을 현 HEAD `11bc1f20`에서 search 포함 non-light로 실행해 Loop350 stall을 분리했다.

@@ -1,5 +1,32 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop359 current HEAD background redispatch
+
+- 범위: Loop358 이후 현 HEAD `6741ff80`에서 stale flip/golden/full375/bounded 증거 갱신용 background run을 search 포함 non-light 조건으로 재발주한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_359_REPORT_20260703.md`
+  - state `docs\devs\loop359_current_head_background_dispatch_20260703.json`
+  - shard audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop359_search_shard_audit_44_before_current_head_dispatch.json`
+  - N5 plan `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop359_current_head_safe_loss_independent_n5_run_plan.json`
+  - collateral lane `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop359_current_residual_background_separated_action_lane.json`
+- Dispatch verification:
+  - shard audit `35/44` OK, bad shard `1`, `37-44`.
+  - safe-loss N5 first manifest health `1/0`, planned results `15`.
+  - full375 manifest health `4/0`, input `375`.
+  - bounded1200 manifest health `4/0`, input `1200`, completed-source input policy confirmed.
+  - golden18 manifest health `3/0`, input `18`.
+  - all current HEAD manifests have `mcp_health_include_search=true` and `mcp_health_light_mode=false`.
+- Tracking verification:
+  - `golden_set.jsonl` row count `18`.
+  - `11660237`, `11698880` are included in golden18.
+  - golden files, `tools\bootstrap_regression_safe_grounding.py`, and `tools\safe_loss_flip_rate_probe.py` are git tracked.
+- Active lane verification:
+  - residual action queue `105`.
+  - labels `REPROCESS=77`, `HOLD=28`.
+  - validation issue `0`.
+  - source is latest `loop354_current_residual_forced_action_lane`, not stale original collateral183 queue.
+- Gate: dispatch `GO_CURRENT_HEAD_BACKGROUND_DISPATCH`, runtime completion `IN_PROGRESS / NOT_APPROVAL`, N5 `RUNNING_BACKGROUND / NOT_ANALYZED_FULL_N5`, golden18 `RUNNING_BACKGROUND / APPROVAL_NOT_OPEN`, full375/bounded `RUNNING_BACKGROUND / NOT_APPROVAL`, collateral active lane `REVIEW-LOCKED / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop358 LLM stream stall guard
 
 - 범위: `repair_after_wrong_work=5` 중 `11666713` image-free 단건 replay로 Loop350 runtime stall을 분리하고, LLM stream first-token/idle timeout guard를 추가한다.

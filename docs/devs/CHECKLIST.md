@@ -1,5 +1,24 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop359 current HEAD background dispatch 체크
+
+- [x] 현 HEAD `6741ff80`에서 stale evidence refresh를 새 prefix로 재발주했다.
+- [x] shard audit를 먼저 실행했다.
+  - artifact `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop359_search_shard_audit_44_before_current_head_dispatch.json`
+  - OK `35/44`
+  - bad shard `1`, `37-44`
+- [x] current HEAD background run을 발주했다.
+  - safe-loss N5 first run `20260703_164155_344655`, health `1/0`
+  - full375 run `20260703_164155_263580`, health `4/0`
+  - bounded1200 completed-source run `20260703_164155_325390`, health `4/0`
+  - golden18 run `20260703_164155_242470`, health `3/0`
+- [x] 모든 current HEAD 발주는 `mcp_health_include_search=true`, `mcp_health_light_mode=false`다.
+- [x] active loop를 대형 run 대기가 아니라 collateral residual lane으로 분리했다.
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop359_current_residual_background_separated_action_lane.json`
+  - residual `105`, `REPROCESS=77`, `HOLD=28`, validation issue `0`
+- [ ] 완료 전 approval, stale flip/golden/full375 대체, hard-hold 완화를 선언하지 않는다.
+- Gate: dispatch `GO_CURRENT_HEAD_BACKGROUND_DISPATCH`, runtime completion `IN_PROGRESS / NOT_APPROVAL`, collateral active lane `REVIEW-LOCKED / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop358 LLM stream stall guard 체크
 
 - [x] `11666713` 단건 non-light replay를 현 HEAD `11bc1f20`에서 실행했다.

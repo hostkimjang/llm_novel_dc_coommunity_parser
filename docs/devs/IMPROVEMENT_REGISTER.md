@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260703-359 - current HEAD background redispatch
+
+| Item | Status | Evidence | Next action |
+| --- | --- | --- | --- |
+| Safe-loss N5 | Running background / not analyzed | first run `20260703_164155_344655`, health `1/0`, planned `15` | Wait for `15/15`, then flip-rate analyze with blind judge |
+| full375 | Running background / not approval | run `20260703_164155_263580`, health `4/0`, input `375` | Wait for `375/375`, then collateral diff |
+| bounded completed-source | Running background / not approval | run `20260703_164155_325390`, health `4/0`, input `1200`, completed-source input policy confirmed | Audit completion and search degraded counters |
+| golden18 | Running background / approval not open | run `20260703_164155_242470`, health `3/0`, input `18` | Wait for `18/18`, then expected-answer audit |
+| Active lane | Collateral residual lane / not approval | `loop359_current_residual_background_separated_action_lane`, residual `105`, validation issue `0` | Continue collateral105 action groups or OVERRIDE AUDIT blind/source-native review |
+| Search recovery | P0 open | shard audit `35/44`, bad `1`, `37-44` | Prove `unrecovered_degraded=0` before hard-hold relaxation |
+
+Gate: dispatch `GO_CURRENT_HEAD_BACKGROUND_DISPATCH`, runtime completion `IN_PROGRESS / NOT_APPROVAL`, collateral active lane `REVIEW-LOCKED / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260703-358 - LLM stream stall guard
 
 | Item | Status | Evidence | Next action |

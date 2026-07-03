@@ -1,0 +1,146 @@
+{
+  "loop": 359,
+  "date": "2026-07-03",
+  "scope": "current HEAD stale-evidence refresh dispatch after Loop358",
+  "head": "6741ff80",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "summary": {
+    "approval": "NOT_OPEN",
+    "residual_action_queue_rows": 105,
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "runtime_rows_closed": 0,
+    "queue_delta": 0
+  },
+  "preflight": {
+    "search_shard_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop359_search_shard_audit_44_before_current_head_dispatch.json",
+    "ok_count": 35,
+    "count": 44,
+    "bad_shards": [1, 37, 38, 39, 40, 41, 42, 43, 44],
+    "used_bad_shard": false
+  },
+  "tracking": {
+    "golden_rows": 18,
+    "safe_loss_rows_in_golden": [11660237, 11698880],
+    "tracked_paths": [
+      "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl",
+      "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json",
+      "tools/bootstrap_regression_safe_grounding.py",
+      "tools/safe_loss_flip_rate_probe.py"
+    ]
+  },
+  "dispatch": {
+    "common_contract": {
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "slang_db": "off",
+      "vlm": true,
+      "ocr": true,
+      "require_vlm_ocr_for_images": true,
+      "llm_endpoint": "http://10.20.0.101:8000",
+      "llm_model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+      "llm_stream_first_token_timeout_seconds": 90,
+      "llm_stream_idle_timeout_seconds": 90
+    },
+    "runs": [
+      {
+        "name": "safe_loss_n5",
+        "observed_process_ids": [136928, 140468, 85160, 41256],
+        "plan": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop359_current_head_safe_loss_independent_n5_run_plan.json",
+        "work_dir": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop359_current_head_safe_loss_independent_n5_plan",
+        "log_dir": "logs/loop359_current_head_safe_loss_independent_n5_plan",
+        "first_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop359_current_head_safe_loss_independent_n5_plan/results/loop359_safe_loss_current_head_6741ff80_search_nonlight_11674712_r01_result_manifest.json",
+        "first_run_id": "20260703_164155_344655",
+        "input_post_count": 1,
+        "expected_result_count": 15,
+        "observed_result_count_at_report": 0,
+        "health_ok_failure": "1/0",
+        "endpoints": "http://127.0.0.1:3337",
+        "gate": "RUNNING_BACKGROUND / NOT_ANALYZED_FULL_N5"
+      },
+      {
+        "name": "full375",
+        "observed_process_ids": [138792, 136772],
+        "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/panel/regression_panel_input.jsonl",
+        "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop359_full375_current_head_6741ff80_search_nonlight_result.json",
+        "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop359_full375_current_head_6741ff80_search_nonlight_result_manifest.json",
+        "log": "logs/loop359_full375_current_head_6741ff80_search_nonlight.err.log",
+        "run_id": "20260703_164155_263580",
+        "input_post_count": 375,
+        "completed_flushed_pending_failed_at_report": "0/0/0/0",
+        "health_ok_failure": "4/0",
+        "endpoints": "http://127.0.0.1:3358,http://127.0.0.1:3359,http://127.0.0.1:3360,http://127.0.0.1:3361",
+        "gate": "RUNNING_BACKGROUND / NOT_APPROVAL"
+      },
+      {
+        "name": "completed_source_bounded1200",
+        "observed_process_ids": [114976, 133056],
+        "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop288_completed_source_bounded1200_input.jsonl",
+        "input_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop288_completed_source_bounded1200_input.jsonl.manifest.json",
+        "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop359_completed_source_bounded1200_current_head_6741ff80_search_nonlight_result.json",
+        "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop359_completed_source_bounded1200_current_head_6741ff80_search_nonlight_result_manifest.json",
+        "log": "logs/loop359_completed_source_bounded1200_current_head_6741ff80_search_nonlight.err.log",
+        "run_id": "20260703_164155_325390",
+        "input_post_count": 1200,
+        "input_policy": "completed flushed source rows only; analysis_result/run_meta/pipe/reason stripped; no judge seed",
+        "completed_flushed_pending_failed_at_report": "0/0/0/0",
+        "health_ok_failure": "4/0",
+        "endpoints": "http://127.0.0.1:3362,http://127.0.0.1:3363,http://127.0.0.1:3364,http://127.0.0.1:3365",
+        "gate": "RUNNING_BACKGROUND / NOT_APPROVAL"
+      },
+      {
+        "name": "golden18",
+        "observed_process_ids": [130468, 137916],
+        "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl",
+        "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop359_golden18_current_head_6741ff80_search_nonlight_result.json",
+        "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop359_golden18_current_head_6741ff80_search_nonlight_result_manifest.json",
+        "log": "logs/loop359_golden18_current_head_6741ff80_search_nonlight.err.log",
+        "run_id": "20260703_164155_242470",
+        "input_post_count": 18,
+        "completed_flushed_pending_failed_at_report": "0/0/0/0",
+        "health_ok_failure": "3/0",
+        "endpoints": "http://127.0.0.1:3366,http://127.0.0.1:3367,http://127.0.0.1:3368",
+        "gate": "RUNNING_BACKGROUND / APPROVAL_NOT_OPEN"
+      }
+    ]
+  },
+  "active_lane": {
+    "mode": "collateral residual lane, not large-run wait",
+    "source": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop354_current_residual_forced_action_lane.json",
+    "json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop359_current_residual_background_separated_action_lane.json",
+    "markdown": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop359_current_residual_background_separated_action_lane.md",
+    "residual_action_queue_rows": 105,
+    "label_counts": {"HOLD": 28, "REPROCESS": 77},
+    "bucket_counts": {"safe_loss_resolved_to_null": 100, "wrong_work_title_flip": 5},
+    "validation_issue_count": 0,
+    "approval": false
+  },
+  "stale_evidence_policy": {
+    "flip_rate_0_333": "Loop359 N5 15/15 completion and analyze step 전까지 갱신 전 증거다.",
+    "golden_go_2026_06_28": "Loop359 golden18 18/18 runtime and expected-answer audit 전까지 승인 근거가 아니다.",
+    "full375": "Loop359 full375 375/375 completion and collateral diff 전까지 stale full375 증거를 대체하지 않는다.",
+    "bounded_completed_source": "Loop359 bounded1200은 104k 런을 기다리지 않기 위한 current HEAD 발주지만 완료 전 approval 근거가 아니다."
+  },
+  "gate": {
+    "dispatch": "GO_CURRENT_HEAD_BACKGROUND_DISPATCH",
+    "runtime_completion": "IN_PROGRESS / NOT_APPROVAL",
+    "safe_loss_flip": "RUNNING_BACKGROUND / NOT_ANALYZED_FULL_N5",
+    "golden18": "RUNNING_BACKGROUND / APPROVAL_NOT_OPEN",
+    "full375": "RUNNING_BACKGROUND / NOT_APPROVAL",
+    "bounded1200": "RUNNING_BACKGROUND / NOT_APPROVAL",
+    "collateral_active_lane": "REVIEW-LOCKED / residual_action_queue_rows=105",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next": [
+    "대형 런은 background 감시로 유지한다.",
+    "N5 15/15, golden18 18/18, full375 375/375, bounded completion 전 stale 증거를 대체하지 않는다.",
+    "active loop는 collateral105 action group 또는 OVERRIDE AUDIT(LLM=False -> final=True) blind/source-native 검증으로 전환한다.",
+    "search degraded 100% 복구, 특히 unrecovered_degraded=0 확인 전 promotion hard-hold 완화는 금지한다."
+  ]
+}
