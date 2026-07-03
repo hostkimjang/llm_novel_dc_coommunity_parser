@@ -1,5 +1,44 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop366 current HEAD golden18 rerun
+
+- 범위: Loop364 코드 보강과 Loop365 expected 교정 뒤, 현 HEAD `5fd0ec99`에서 golden18 단일 런을 search 포함 non-light 조건으로 재실행한다. 신규 full375/bounded/N5 대형 런은 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_366_REPORT_20260703.md`
+  - state `docs\devs\loop366_golden18_current_head_after_loop365_20260703.json`
+  - result JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop366_golden18_current_head_5fd0ec99_search_nonlight_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop366_golden18_current_head_5fd0ec99_search_nonlight_result_manifest.json`
+  - checkpoint `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop366_golden18_current_head_5fd0ec99_search_nonlight_result_checkpoint.jsonl`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop366_golden18_current_head_runtime_health_audit.json`
+  - expected-answer audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop366_golden18_current_head_5fd0ec99_search_nonlight_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop366_golden18_current_head_5fd0ec99_search_nonlight_collateral_compare.json`
+- Runtime evidence:
+  - run `20260703_194927_961030`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint lines `18`
+  - result rows `18`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`, `partial_flush_gap=false`
+  - VLM/OCR `READY`
+  - search preflight endpoints `3343/3344`, `2/2 OK`, non-light
+- Health evidence:
+  - publication contract convergence `GO`, violations `0`
+  - flush integrity `NO-GO / artifact_count_mismatch` because pending snapshot rows are missing even though manifest/checkpoint/result all show 18 completed rows
+  - search evidence `REVIEW / search_degraded_observed`
+  - row search statuses `SEARCH_DEGRADED=11`, `SEARCH_DEGRADED_RECOVERED=3`, `ok=2`
+  - unrecovered degraded total `28`
+- Semantic evidence:
+  - expected-answer audit pass `11/18`, fail `7/18`
+  - fail rows: `11694035`, `11698897`, `11661857`, `11694019`, `11700470`, `11705231`, `11698880`
+  - `11713222` passed as `잘생기면 편해지는 인방 생활`
+  - `11660237` passed as `테라포밍`, but this is not enough to relax hard-hold
+  - `canary_semantic_gate=NO-GO`
+- Collateral evidence:
+  - scope `golden_canary_shared_posts_only`
+  - changed posts `17`
+  - collateral regression candidates `9`
+  - full375 collateral gate was not run this loop and remains `NOT_OPEN`
+- Gate: new large runs `FROZEN`, runtime production `GO / 18 of 18`, health audit `REVIEW / pending_snapshot_missing_caveat`, golden expected-answer `NO-GO / 11 of 18`, golden shared collateral `NO-GO / 9 regressions`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop365 11713222 blind/source-native expected correction
 
 - 범위: Loop364 잔여 충돌 `11713222`를 source-native로 판정하고, 코드 억제 대신 frozen golden expected를 교정한다.

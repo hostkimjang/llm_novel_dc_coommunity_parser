@@ -1,0 +1,105 @@
+{
+  "loop": 366,
+  "date": "2026-07-03",
+  "head": "5fd0ec99",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "new_large_runs": "FROZEN",
+  "scope": "golden18 current HEAD rerun after Loop364 code repair and Loop365 expected correction",
+  "run": {
+    "run_id": "20260703_194927_961030",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop366_golden18_current_head_5fd0ec99_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop366_golden18_current_head_5fd0ec99_search_nonlight_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop366_golden18_current_head_5fd0ec99_search_nonlight_result_checkpoint.jsonl",
+    "log": "logs/expert_run_20260703_194927_961030.log",
+    "worker_logs": [
+      "logs/expert_run_20260703_194927_961030_W0.log",
+      "logs/expert_run_20260703_194927_961030_W1.log"
+    ],
+    "input_post_count": 18,
+    "completed_count": 18,
+    "flushed_count": 18,
+    "pending_count": 0,
+    "failed_count": 0,
+    "checkpoint_lines": 18,
+    "result_rows": 18,
+    "large_run_complete": true,
+    "ordered_flush_blocked": false,
+    "partial_flush_gap": false,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_count": 2,
+    "mcp_health_failure_count": 0,
+    "vlm_ocr_semantic_review_ready": true
+  },
+  "health_audit": {
+    "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop366_golden18_current_head_runtime_health_audit.json",
+    "flush_integrity": "NO-GO / artifact_count_mismatch",
+    "flush_integrity_note": "manifest, checkpoint, and result all show 18 completed rows; audit classified NO-GO because pending snapshot rows were missing",
+    "publication_contract_convergence": "GO",
+    "publication_contract_violations": 0,
+    "search_evidence": "REVIEW / search_degraded_observed",
+    "row_search_status_counts": {
+      "SEARCH_DEGRADED": 11,
+      "SEARCH_DEGRADED_RECOVERED": 3,
+      "ok": 2
+    },
+    "unrecovered_degraded_total": 28
+  },
+  "golden_audit": {
+    "audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop366_golden18_current_head_5fd0ec99_search_nonlight_audit.json",
+    "audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop366_golden18_current_head_5fd0ec99_search_nonlight_audit.md",
+    "canary_semantic_gate": "NO-GO",
+    "passed_count": 11,
+    "failed_count": 7,
+    "status_counts": {
+      "expected_null_respected": 6,
+      "unexpected_resolved_title": 2,
+      "wrong_or_unexpected_title": 3,
+      "expected_work_evidence_preserved_unresolved": 1,
+      "expected_title_resolved": 3,
+      "expected_hypothesis_preserved_unresolved": 1,
+      "positive_work_unresolved": 2
+    },
+    "failed_rows": [
+      {"post_id": 11694035, "golden_role": "negative_no_public_work", "status": "unexpected_resolved_title", "expected": null, "actual": "아카데미 생존 갤러리"},
+      {"post_id": 11698897, "golden_role": "positive_expected_work", "status": "wrong_or_unexpected_title", "expected": "[림월드]변방계에서 회귀자로 살아남기", "actual": "쳇바퀴의 생쥐 사도가 되었다"},
+      {"post_id": 11661857, "golden_role": "negative_no_public_work", "status": "unexpected_resolved_title", "expected": null, "actual": "로판 속 아카데미 천재교수"},
+      {"post_id": 11694019, "golden_role": "positive_expected_work", "status": "positive_work_unresolved", "expected": "이세계에서 사이비로 살아남기", "actual": null},
+      {"post_id": 11700470, "golden_role": "positive_expected_work", "status": "positive_work_unresolved", "expected": "악당 얼굴의 B급 모험자", "actual": null},
+      {"post_id": 11705231, "golden_role": "positive_expected_work", "status": "wrong_or_unexpected_title", "expected": "탐식의 재림", "actual": "설지후"},
+      {"post_id": 11698880, "golden_role": "safe_loss_blind_judge_expected_work", "status": "wrong_or_unexpected_title", "expected": "가챠 중독자의 퓨전펑크 생활", "actual": "아카데미 생존 갤러리"}
+    ],
+    "passed_notable_rows": [
+      {"post_id": 11713222, "actual": "잘생기면 편해지는 인방 생활", "note": "Loop365 expected correction survived current HEAD rerun"},
+      {"post_id": 11660237, "actual": "테라포밍", "note": "single-run pass only; not hard-hold relaxation proof"}
+    ]
+  },
+  "collateral_compare": {
+    "scope": "golden_canary_shared_posts_only",
+    "json": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop366_golden18_current_head_5fd0ec99_search_nonlight_collateral_compare.json",
+    "md": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop366_golden18_current_head_5fd0ec99_search_nonlight_collateral_compare.md",
+    "changed_post_count": 17,
+    "collateral_regression_count": 9,
+    "regression_post_ids": [11661857, 11663521, 11685994, 11694019, 11694035, 11698880, 11698897, 11700470, 11705231]
+  },
+  "gates": {
+    "runtime_production": "GO / 18 of 18",
+    "health_audit": "REVIEW / pending_snapshot_missing_caveat",
+    "publication_contract_convergence": "GO / violations 0",
+    "golden_expected_answer": "NO-GO / 11 of 18",
+    "golden_shared_collateral": "NO-GO / regression candidates 9",
+    "full375_collateral": "NOT_RUN_THIS_LOOP / NOT_OPEN",
+    "search_recovery": "P0 / OPEN / search_degraded_observed",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next_actions": [
+    "Do not dispatch a new large run from this evidence alone.",
+    "Triage the 7 golden failures through shared predicates and source-native review.",
+    "Prioritize 11698880 final promotion decision versus serialized identity divergence.",
+    "Keep search degraded recovery as P0 before promotion hard-hold relaxation."
+  ]
+}

@@ -1,5 +1,18 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop366 current HEAD golden18 rerun after Loop365
+
+- 신규 대형 런은 발주하지 않았고, 현 HEAD `5fd0ec99`에서 golden18 단일 런만 search 포함 non-light 조건으로 재실행했다.
+- Run `20260703_194927_961030`은 input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint lines `18`, result rows `18`, VLM/OCR `READY`, search preflight `2/2 OK`로 완료됐다.
+- Health audit는 publication contract convergence `GO`, violations `0`을 기록했다. 다만 pending snapshot 부재 때문에 `flush_integrity=NO-GO / artifact_count_mismatch`로 분류되어 health gate는 `REVIEW`로 둔다.
+- Search evidence는 `REVIEW / search_degraded_observed`, unrecovered degraded total `28`이다.
+- Expected-answer audit는 pass `11/18`, fail `7/18`, `canary_semantic_gate=NO-GO`다.
+- 실패 행은 `11694035`, `11698897`, `11661857`, `11694019`, `11700470`, `11705231`, `11698880`이다.
+- `11713222`는 Loop365 교정 expected `잘생기면 편해지는 인방 생활`로 통과했고, `11660237`은 `테라포밍`으로 통과했다. 이 단일 통과만으로 hard-hold 완화를 열지는 않는다.
+- Golden shared collateral compare는 regression 후보 `9`건이다. 이는 full375 collateral gate가 아니며, regression count가 `0`이 아니므로 full-panel collateral approval은 `NO-GO`다.
+- Report는 `docs/devs/loop_reports/LOOP_366_REPORT_20260703.md`, state는 `docs/devs/loop366_golden18_current_head_after_loop365_20260703.json`, health audit는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop366_golden18_current_head_runtime_health_audit.json`이다.
+- Gate는 new large runs `FROZEN`, runtime production `GO / 18 of 18`, golden expected-answer `NO-GO / 11 of 18`, golden shared collateral `NO-GO / 9 regressions`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop365 11713222 blind/source-native expected correction
 
 - 신규 대형 런은 발주하지 않았고, Loop364 잔여 충돌 `11713222`만 blind/source-native로 재판정했다.

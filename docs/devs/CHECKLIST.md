@@ -1,5 +1,31 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop366 current HEAD golden18 체크
+
+- [x] 신규 대형 런 발주를 계속 동결했다.
+- [x] 현 HEAD `5fd0ec99`에서 golden18 단일 런만 search 포함 non-light로 재실행했다.
+- [x] 런타임 생산을 확인했다.
+  - run `20260703_194927_961030`
+  - completed/flushed/pending/failed `18/18/0/0`
+  - checkpoint lines `18`
+  - result rows `18`
+  - VLM/OCR `READY`
+  - search preflight `3343/3344 2/2 OK`
+- [x] health audit를 생성했다.
+  - publication contract convergence `GO`, violations `0`
+  - flush integrity `NO-GO / artifact_count_mismatch` because pending snapshot missing
+  - search evidence `REVIEW / search_degraded_observed`
+  - unrecovered degraded total `28`
+- [x] expected-answer audit를 생성했다.
+  - pass `11/18`
+  - fail `7/18`: `11694035`, `11698897`, `11661857`, `11694019`, `11700470`, `11705231`, `11698880`
+  - `canary_semantic_gate=NO-GO`
+- [x] `11713222`는 Loop365 교정 expected로 통과했음을 확인했다.
+- [x] `11660237`은 `테라포밍`으로 통과했지만 hard-hold 완화 근거로 승격하지 않았다.
+- [x] golden shared collateral compare에서 regression 후보 `9`건을 확인했다.
+- [ ] 실패 7건과 search degraded를 닫기 전 semantic approval, full scan approval, hard-hold 완화를 금지한다.
+- Gate: new large runs `FROZEN`, runtime production `GO / 18 of 18`, golden expected-answer `NO-GO / 11 of 18`, golden shared collateral `NO-GO / 9 regressions`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop365 11713222 blind/source-native 체크
 
 - [x] 신규 대형 런 발주를 계속 동결했다.

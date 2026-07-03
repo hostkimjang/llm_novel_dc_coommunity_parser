@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop366 Addendum - current HEAD golden18 rerun
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop366은 approval 회차가 아니라 Loop364/365 이후 current HEAD `5fd0ec99`의 golden18 runtime/semantic 증거를 갱신한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_366_REPORT_20260703.md`, state `docs/devs/loop366_golden18_current_head_after_loop365_20260703.json`, health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop366_golden18_current_head_runtime_health_audit.json`.
+- Runtime: run `20260703_194927_961030`, input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint `18`, result rows `18`, VLM/OCR `READY`, search preflight `2/2 OK`.
+- Health: publication contract convergence `GO`, violations `0`; pending snapshot 부재로 `flush_integrity=NO-GO / artifact_count_mismatch`; search evidence `REVIEW / search_degraded_observed`, unrecovered degraded total `28`.
+- Audit: expected-answer pass `11/18`, fail `7/18`, `canary_semantic_gate=NO-GO`. 실패는 `11694035`, `11698897`, `11661857`, `11694019`, `11700470`, `11705231`, `11698880`.
+- Boundary: `11713222` expected correction은 통과했고 `11660237`은 `테라포밍`으로 통과했지만, 단일 런으로 hard-hold 완화를 열지 않는다. Golden shared collateral regression 후보 `9`건이라 full-panel collateral approval은 `NO-GO`다.
+- Gate: runtime production `GO / 18 of 18`, golden expected-answer `NO-GO / 11 of 18`, golden shared collateral `NO-GO / 9 regressions`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop365 Addendum - 11713222 blind/source-native expected correction
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop365는 approval 회차가 아니라 Loop364 잔여 충돌 `11713222`를 source-native로 판정하고 golden expected label drift를 교정한 회차다.

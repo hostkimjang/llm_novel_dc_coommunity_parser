@@ -2,6 +2,23 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop366 TODO
+
+- 상태 업데이트: 신규 대형 런은 계속 동결했고, 현 HEAD `5fd0ec99`에서 golden18 단일 런만 재실행했다. Runtime은 `18/18`로 완주했지만 expected-answer audit은 `NO-GO / 11 of 18`이다.
+- Loop366 TODO:
+  - [x] golden18 단일 런을 search 포함 non-light로 완료했다.
+  - [x] manifest/checkpoint/result 기준 row 생산 `18/18`을 확인했다.
+  - [x] publication contract convergence `GO`, violations `0`을 확인했다.
+  - [x] health audit의 pending snapshot caveat를 `REVIEW`로 기록했다.
+  - [x] expected-answer fail `7`건을 기록했다: `11694035`, `11698897`, `11661857`, `11694019`, `11700470`, `11705231`, `11698880`.
+  - [x] `11713222` expected correction은 current HEAD rerun에서도 유지됐다.
+  - [x] `11660237` single-run pass를 hard-hold 완화 근거로 승격하지 않았다.
+  - [ ] `11698880`은 로그상 정답 앵커와 최종 public title이 갈라지므로 final promotion decision / serialized identity 수렴을 우선 감사한다.
+  - [ ] `11694035`, `11661857` negative-row unexpected title publish를 일반 술어로 좁힌다.
+  - [ ] `11694019`, `11700470`은 wrong publish 차단 성공과 positive unresolved 실패를 분리해 recall bridge 후보로 둔다.
+  - [ ] Search degraded 복구 전 semantic approval, full scan approval, hard-hold 완화를 금지한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop365 TODO
 
 - 상태 업데이트: 신규 대형 런은 계속 동결했고 `11713222` blind/source-native 판정으로 frozen golden expected를 교정했다. Runtime publish `잘생기면 편해지는 인방 생활`은 정당 해소이며, 댓글의 `잘생인편`은 전작 mentioned-work다.

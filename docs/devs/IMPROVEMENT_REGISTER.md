@@ -1,5 +1,22 @@
 # Improvement Register
 
+## IMP-20260703-366 - current HEAD golden18 rerun after expected correction
+
+| Item | Status | Evidence | Next action |
+| --- | --- | --- | --- |
+| New large runs | Frozen | No full375/bounded/N5 dispatch this loop | Keep frozen until targeted blockers require bounded runtime |
+| Runtime production | GO / 18 of 18 | run `20260703_194927_961030`, manifest/checkpoint/result `18/18/18` | Use as row-production proof, not semantic approval |
+| Health audit | REVIEW | pending snapshot missing caused `flush_integrity=NO-GO / artifact_count_mismatch` despite manifest/checkpoint/result agreement | Keep health caveat visible in gate summaries |
+| Publication contract | GO | convergence `GO`, violations `0` | Preserve contract while repairing semantic failures |
+| Search evidence | REVIEW / P0 open | `search_degraded_observed`, unrecovered degraded total `28` | Prove recovery before hard-hold relaxation |
+| Golden expected-answer | NO-GO | pass `11/18`, fail `7/18` | Triage failed rows through shared predicates/source-native review |
+| Golden shared collateral | NO-GO | regression candidates `9` | Do not claim full-panel collateral approval |
+| `11713222` correction | Survived | current rerun resolves `잘생기면 편해지는 인방 생활` | Keep expected correction |
+| `11660237` safe-loss row | Single-run pass | current rerun resolves `테라포밍` | Do not relax hard-hold without repeated/blind stability |
+| Documentation sync | Done | Loop366 report/state plus TODO/CHECKLIST/HISTORY/VERIFICATION updated | Next loop must reduce failures or search blocker |
+
+Gate: new large runs `FROZEN`, runtime production `GO / 18 of 18`, golden expected-answer `NO-GO / 11 of 18`, golden shared collateral `NO-GO / 9 regressions`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260703-365 - 11713222 blind/source-native expected correction
 
 | Item | Status | Evidence | Next action |

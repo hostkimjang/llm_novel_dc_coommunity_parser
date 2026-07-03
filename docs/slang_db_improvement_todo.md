@@ -1,5 +1,15 @@
 # Slang DB Improvement TODO
 
+## 2026-07-03 Loop366 golden18 rerun slang caveat
+
+- [x] 이번 회차는 slang DB write-back이 아니라 current HEAD golden18 runtime/semantic 증거 갱신이다.
+- [x] `--slang-db off` 조건으로 실행했다.
+- [x] `11713222` expected correction은 current rerun에서도 유지됐다.
+- [x] `11660237`은 `테라포밍`으로 통과했지만, 단일 런 결과만으로 alias/slang hard-hold 완화를 선언하지 않는다.
+- [x] `11698880`은 로그상 `가챠 중독자의 퓨전펑크 생활` 앵커를 보았지만 최종 public title은 `아카데미 생존 갤러리`라 실패로 남았다.
+- [ ] search degraded와 golden expected-answer 실패 7건을 닫기 전 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, golden18 runtime `GO / 18 of 18`, golden expected-answer `NO-GO / 11 of 18`, golden shared collateral `NO-GO / 9 regressions`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop365 source-native expected correction caveat
 
 - [x] 이번 회차는 slang DB write-back이 아니라 `11713222` frozen golden expected 교정이다.
