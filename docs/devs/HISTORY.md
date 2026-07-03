@@ -1,5 +1,14 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop350 repair_after_wrong_work runtime stall
+
+- Loop349 residual `120`에서 `repair_after_wrong_work=5`를 current HEAD `44de6d74` search 포함 non-light targeted replay로 발주했다.
+- Run `20260703_140627_312360`, PID `12064`, input `5`, requested/effective parallel `4/4`, VLM/OCR ready, health `4/0`, `mcp_health_light_mode=false`였다.
+- 그러나 W0은 gatekeeper LLM stream 시작 후, W1/W2/W3은 VLM chunk request 후 로그가 갱신되지 않았고 manifest도 `0/0/0/0`이라 stall로 중단했다.
+- Loop350은 approval이 아니며 residual closure도 아니다. Current residual queue는 `120`, `repair_after_wrong_work=5`, `REPROCESS=92`, `HOLD=28`로 유지한다.
+- Report는 `docs/devs/loop_reports/LOOP_350_REPORT_20260703.md`, state는 `docs/devs/loop350_repair_after_wrong_work_runtime_stall_20260703.json`이다.
+- Gate는 runtime health `GO_SEARCH_NONLIGHT_HEALTH`, targeted completion `ABORTED_RUNTIME_STALL / NOT_APPROVAL`, queue delta `NO_DELTA`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop349 canonical variant HOLD quarantine
 
 - Loop348 current residual `122`에서 `canonical_title_policy_review` HOLD 2건(`11663535`, `11706871`)을 기존 source-native/runtime 근거로 재확인했다.

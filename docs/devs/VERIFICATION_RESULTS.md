@@ -1,5 +1,32 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop350 repair_after_wrong_work runtime stall
+
+- 범위: residual `120` 중 `repair_after_wrong_work=5`를 current HEAD `44de6d74` search 포함 non-light runtime으로 확인한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_350_REPORT_20260703.md`
+  - state `docs\devs\loop350_repair_after_wrong_work_runtime_stall_20260703.json`
+  - input `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop350_repair_after_wrong_work_5_current_head.jsonl`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop350_repair_after_wrong_work_5_current_head_44de6d74_search_nonlight_result_manifest.json`
+  - stderr `logs\loop350_repair_after_wrong_work_5_current_head_44de6d74_search_nonlight_stderr.log`
+- Runtime evidence:
+  - run `20260703_140627_312360`, PID `12064`
+  - input rows `5`, image posts `4`
+  - requested/effective parallel `4/4`
+  - `mcp_health_include_search=true`, `mcp_health_light_mode=false`
+  - health `4/0`
+  - VLM/OCR ready
+- Stall evidence:
+  - completed/flushed/pending/failed `0/0/0/0`
+  - W0 gatekeeper LLM stream start 이후 로그 갱신 없음
+  - W1/W2/W3 VLM chunk request 이후 로그 갱신 없음
+  - PID stopped after stall confirmation
+- Queue verification:
+  - residual action queue remains `120`.
+  - `repair_after_wrong_work` remains `5`.
+  - label counts remain `REPROCESS=92`, `HOLD=28`.
+- Gate: runtime health `GO_SEARCH_NONLIGHT_HEALTH`, targeted completion `ABORTED_RUNTIME_STALL / NOT_APPROVAL`, queue delta `NO_DELTA`, collateral `NO-GO / residual_action_queue_rows=120`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop349 canonical variant HOLD quarantine
 
 - 범위: Loop348 current residual `122`에서 canonical variant 정책 HOLD 2건(`11663535`, `11706871`)을 code repair queue에서 분리하고 current residual 기준을 `120`으로 갱신한다.

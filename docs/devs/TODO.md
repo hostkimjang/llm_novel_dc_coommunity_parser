@@ -2,6 +2,24 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop350 TODO
+
+- 상태 업데이트: `repair_after_wrong_work=5` targeted runtime replay를 current HEAD `44de6d74`에서 search 포함 non-light로 발주했지만 초기 LLM/VLM stall로 중단했다. Residual actionable queue는 `120` 유지다.
+- Loop350 TODO:
+  - [x] 5건 입력을 구성했다.
+    - `11666713`, `11698890`, `11700500`, `11705252`, `11716448`
+  - [x] search 포함 non-light health를 확인했다.
+    - `mcp_health_include_search=true`
+    - `mcp_health_light_mode=false`
+    - health `4/0`
+  - [x] runtime stall을 approval 근거에서 제외했다.
+    - run `20260703_140627_312360`
+    - manifest `0/0/0/0`
+    - PID `12064` stopped
+  - [ ] 같은 5건을 즉시 반복하지 말고 LLM/VLM 초기 stall 원인을 먼저 분리한다.
+  - [ ] 다음 active lane은 `repair_unsafe_promotion=14`, `repair_safe_loss=73`, 또는 `OVERRIDE AUDIT(LLM=False -> final=True)` blind judge 검증으로 전환한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop349 TODO
 
 - 상태 업데이트: Loop348 current residual `122` 중 `canonical_title_policy_review` HOLD 2건을 canonical variant quarantine으로 분리했다. Residual actionable queue는 `120`이다.
@@ -11,7 +29,7 @@
     - `11706871`: Loop83에서 `파우스트 1` 승격을 final title/url `null`, `promotion_blocked`로 차단
   - [x] 두 행을 code repair가 아니라 canonical variant policy quarantine으로 분리했다.
   - [x] queue를 `122 -> 120`으로 재생성하고 validation issue `0`을 확인했다.
-  - [ ] residual `120`에서 다음 active lane은 `repair_safe_loss=73`, `repair_unsafe_promotion=14`, `repair_after_wrong_work=5` 중 search 상태와 독립적으로 줄일 수 있는 묶음부터 진행한다.
+  - [x] residual `120`에서 다음 active lane으로 `repair_after_wrong_work=5` runtime replay를 시도했다. Loop350에서 stall로 중단했고 residual 감소는 없다.
   - [ ] N5/golden18/full375/bounded1200 완료 전 stale flip/golden/full375 근거를 대체하지 않는다.
   - [ ] search degraded 100% 복구 전까지 `promotion_blocked=search-blind conditional`을 유지한다.
   - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.

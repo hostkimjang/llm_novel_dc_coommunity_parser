@@ -1,5 +1,29 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop350 repair_after_wrong_work runtime stall 체크
+
+- [x] Loop349 current residual `120`에서 `repair_after_wrong_work=5` 입력을 구성했다.
+  - `11666713`
+  - `11698890`
+  - `11700500`
+  - `11705252`
+  - `11716448`
+- [x] 현 HEAD `44de6d74`에서 search 포함 non-light targeted replay를 발주했다.
+  - run `20260703_140627_312360`
+  - PID `12064`
+  - endpoints `3334..3337`
+  - `mcp_health_include_search=true`, `mcp_health_light_mode=false`, health `4/0`
+- [x] runtime stall을 확인하고 중단했다.
+  - W0 gatekeeper LLM stream start 이후 로그 갱신 없음
+  - W1/W2/W3 VLM chunk request 이후 로그 갱신 없음
+  - manifest completed/flushed/pending/failed `0/0/0/0`
+- [x] residual closure를 선언하지 않았다.
+  - residual action queue `120`
+  - `repair_after_wrong_work=5`
+  - `REPROCESS=92`, `HOLD=28`
+- [ ] 같은 5건 재시도 전 LLM/VLM 초기 stall 원인을 분리한다.
+- Gate: runtime health `GO_SEARCH_NONLIGHT_HEALTH`, targeted completion `ABORTED_RUNTIME_STALL / NOT_APPROVAL`, queue delta `NO_DELTA`, collateral `NO-GO / residual_action_queue_rows=120`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop349 canonical variant HOLD quarantine 체크
 
 - [x] Loop348 current residual `122`에서 `canonical_title_policy_review` HOLD 2건을 선정했다.

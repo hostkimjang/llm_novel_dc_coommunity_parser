@@ -1,0 +1,71 @@
+{
+  "loop": 350,
+  "date": "2026-07-03",
+  "title": "repair_after_wrong_work targeted runtime stall",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "head_at_dispatch": "44de6d74",
+  "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop350_repair_after_wrong_work_5_current_head.jsonl",
+  "input_source": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop64_p0e_wrong_title_switch_5.jsonl",
+  "output": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop350_repair_after_wrong_work_5_current_head_44de6d74_search_nonlight_result.json",
+  "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop350_repair_after_wrong_work_5_current_head_44de6d74_search_nonlight_result_manifest.json",
+  "run_id": "20260703_140627_312360",
+  "pid": 12064,
+  "pid_stopped_after_stall": true,
+  "post_ids": [
+    11666713,
+    11698890,
+    11700500,
+    11705252,
+    11716448
+  ],
+  "runtime": {
+    "input_post_count": 5,
+    "completed_count": 0,
+    "flushed_count": 0,
+    "pending_count": 0,
+    "failed_count": 0,
+    "requested_parallel": 4,
+    "effective_parallel": 4,
+    "image_post_count": 4,
+    "vlm_enabled": true,
+    "ocr_enabled": true,
+    "vlm_ocr_semantic_review_ready": true,
+    "mcp_endpoints": "http://127.0.0.1:3334,http://127.0.0.1:3335,http://127.0.0.1:3336,http://127.0.0.1:3337",
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_count": 4,
+    "mcp_health_failure_count": 0,
+    "stall_evidence": [
+      "W0 gatekeeper llm-stream start 이후 로그 갱신 없음",
+      "W1/W2/W3 VLM chunk request 이후 로그 갱신 없음",
+      "manifest completed/flushed/pending/failed 0/0/0/0"
+    ]
+  },
+  "queue_transition": {
+    "before_residual_action_queue_rows": 120,
+    "after_residual_action_queue_rows": 120,
+    "repair_after_wrong_work_before": 5,
+    "repair_after_wrong_work_after": 5,
+    "label_counts_after": {
+      "REPROCESS": 92,
+      "HOLD": 28
+    },
+    "validation_issue_count": 0
+  },
+  "existing_contract_evidence": [
+    "Loop292 added 댓천마, 전1시, 탐재 to KNOWN_TITLE_ABBREVIATIONS.",
+    "Loop292/347 connected 아생갤 work-cue handling to shared curated alias paths.",
+    "Existing tests cover 11666713 correct 21세기 무림세가 recall and wrong 21세기 헌터가된 무림인 block."
+  ],
+  "gate": {
+    "runtime_dispatch_health": "GO_SEARCH_NONLIGHT_HEALTH",
+    "targeted_runtime_completion": "ABORTED_RUNTIME_STALL / NOT_APPROVAL",
+    "queue_delta": "NO_DELTA / residual_action_queue_rows=120",
+    "collateral": "NO-GO",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}
