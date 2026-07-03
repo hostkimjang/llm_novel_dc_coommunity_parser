@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop390 verified-alias competition contract
+
+- 신규 full375/bounded/N5/golden18 runtime과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop389 실패 `11698880`은 `가챠펑크` competing candidate가 보존됐지만 URL 없는 `llm_only` 후보라 기존 body competition override를 통과하지 못했고, `아생갤` title-led gate가 `아카데미 생존 갤러리` publish를 유지했다.
+- `expert_main.py`는 title-led alias public 후보가 verified alias/work-lock을 가진 competing preserved work와 충돌하면 final publication ledger를 competing work로 재수렴한다.
+- R1 hardcoded cue 리스트 확장은 없다. alias가 원문 source에 직접 있고 `confirmed_alias:*` 또는 explicit alias/work-lock flag가 있어야 한다.
+- 저장된 Loop389 `11698880` 결과 직접 재동기화는 `가챠 중독자의 퓨전펑크 생활`, URL `null`, source `verified_alias_work_competition`, `changed=true`로 수렴했다.
+- 검증은 `.venv312` py_compile PASS, focused expert tests `4` PASS, publication/comment metadata bundle `62` PASS, title-led guard focused `3` PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_390_REPORT_20260704.md`, state는 `docs/devs/loop390_verified_alias_competition_contract_20260704.json`이다.
+- Gate는 code contract `GO_UNIT`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, expected-answer `NO-GO / inherited 15 of 18`, search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop389 golden18 runtime after Loop388
 
 - 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

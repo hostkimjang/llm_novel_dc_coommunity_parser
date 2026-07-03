@@ -1,5 +1,28 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop390 verified-alias competition contract
+
+- 범위: Loop389 `11698880` wrong publish를 runtime 재발주 없이 final publication ledger code contract와 저장 결과 직접 재동기화로 검증한다. 신규 full375/bounded/N5/golden18 runtime과 동일 parent packet replay는 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_390_REPORT_20260704.md`
+  - state `docs\devs\loop390_verified_alias_competition_contract_20260704.json`
+  - source result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop389_golden18_after_loop388_6349197e_search_nonlight_result.json`
+- Code evidence:
+  - `expert_main.py`는 title-led alias public 후보가 verified alias/work-lock을 가진 competing preserved work와 충돌하면 final publication ledger를 competing work로 재수렴한다.
+  - `tests/test_expert_main_comment_metadata.py`는 Loop389 `11698880` 형태 회귀 테스트를 추가했다.
+  - R1 hardcoded cue 리스트 확장은 없다.
+- Direct resync evidence:
+  - before: `official_title=아카데미 생존 갤러리`, `official_url=https://novelpia.com/novel/380218`
+  - after: `official_title=가챠 중독자의 퓨전펑크 생활`, `official_url=null`
+  - publication source: `verified_alias_work_competition`
+  - changed: `true`
+- Verification commands:
+  - `& .\.venv312\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_comment_metadata.py` -> PASS
+  - `& .\.venv312\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_title_led_publication_reconciles_verified_alias_competing_work tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_allowed_publication_reconciles_body_verified_competition_after_gate_overwrite tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_allowed_publication_reconciles_serialized_identity_to_shared_gate_candidate tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_verified_alias_detail_replaces_stale_wrong_alias_blocked_gate` -> PASS, `4` tests
+  - `& .\.venv312\Scripts\python.exe -m unittest tests.test_publication_contract_convergence_audit tests.test_expert_main_comment_metadata` -> PASS, `62` tests
+  - `& .\.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_gate_blocks_mismatched_verifier_alias_when_body_verified_work_competes tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_batch_alias_gate_blocks_body_verified_character_work_competition tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_lead_alias_official_detail_release_survives_semantic_no_work` -> PASS, `3` tests
+- Gate: code contract `GO_UNIT`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, expected-answer `NO-GO / inherited 15 of 18`, search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop389 golden18 runtime after Loop388
 
 - 범위: Loop388 단건 회복 뒤 현 HEAD `6349197e`의 golden18 runtime 생산성과 expected-answer 상태를 갱신한다. 신규 full375/bounded/N5 대형 런과 동일 parent packet replay는 발주하지 않는다.

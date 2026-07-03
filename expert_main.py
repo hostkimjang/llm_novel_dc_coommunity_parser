@@ -3480,21 +3480,101 @@ def _sync_allowed_publication_result_contract(
             "body_verified_character_work_competes_with_title_led_alias",
             "batch_memory_alias_rescue_blocked_body_verified_competition",
         }
-        if not (flags & body_competition_flags):
-            return None
         public_key = _title_key(public_title)
         if not public_key:
             return None
+
+        reason_code_set = {
+            str(code or "").strip()
+            for code in trace_reason_codes
+            if str(code or "").strip()
+        }
+        scope_sources = {
+            str(value or "").strip()
+            for value in (scope_state.get("direct_bridge_sources") or [])
+            if str(value or "").strip()
+        }
+        gate_source = ""
+        if isinstance(gate_state, dict):
+            gate_source = str(gate_state.get("source") or "").strip()
+        title_led_publication = bool(
+            gate_source == "title_led_alias_public_title"
+            or "title_led_consumption_bridge" in reason_code_set
+            or "title_led_consumption_bridge" in scope_sources
+            or "title_abbrev_mentioned" in scope_sources
+        )
+        confirmed_alias_keys = {
+            _title_key(flag.split(":", 1)[1])
+            for flag in flags
+            if flag.startswith("confirmed_alias:") and ":" in flag
+        }
+        explicit_alias_lock_flags = {
+            "multi_work_explicit_alias_official_lock",
+            "verified_alias_official_detail_anchor",
+            "explicit_alias_official_work_lock",
+        }
+        source_key = _source_text_key()
+
+        def _candidate_has_verified_alias_work_bridge(
+            item: Dict[str, Any],
+            item_title: str,
+            item_url: str,
+        ) -> bool:
+            if not title_led_publication:
+                return False
+            reference_role = str(item.get("reference_role") or "").strip().lower()
+            preservation_role = str(item.get("preservation_role") or "").strip().lower()
+            role_supports_competing_work = bool(
+                reference_role in {"primary", "mentioned"}
+                or preservation_role in {
+                    "mentioned_work",
+                    "comparison_target",
+                    "secondary_reference",
+                }
+            )
+            if not role_supports_competing_work:
+                return False
+            alias_keys = [
+                alias_key
+                for alias_key in _candidate_alias_keys(item_title, item_url)
+                if len(alias_key) >= 2
+            ]
+            if not alias_keys:
+                return False
+            if not any(alias_key in source_key for alias_key in alias_keys):
+                return False
+            confirmed_alias_support = any(
+                alias_key in confirmed_alias_keys for alias_key in alias_keys
+            )
+            return bool(confirmed_alias_support or flags & explicit_alias_lock_flags)
+
+        body_competition_present = bool(flags & body_competition_flags)
+        if not body_competition_present and not title_led_publication:
+            return None
+
         best_item: Optional[Dict[str, Any]] = None
         best_score = -1
+        best_source = "body_verified_character_work_competition"
+        best_reason_codes: List[str] = []
         for item in _candidate_items():
             item_title, item_url = _candidate_title_url(item)
             item_key = _title_key(item_title)
             if not item_key or item_key == public_key:
                 continue
+            verified_alias_bridge = _candidate_has_verified_alias_work_bridge(
+                item,
+                item_title,
+                item_url,
+            )
+            if not body_competition_present and not verified_alias_bridge:
+                continue
             if not _candidate_has_direct_source_support(item_title, item_url):
                 continue
-            if not _candidate_has_search_title_support(item_title, item_url):
+            if (
+                body_competition_present
+                and not verified_alias_bridge
+                and not _candidate_has_search_title_support(item_title, item_url)
+            ):
                 continue
             negative_evidence = {
                 str(value or "").strip()
@@ -3512,9 +3592,20 @@ def _sync_allowed_publication_result_contract(
                 score += 3
             if _official_detail_url(item_url):
                 score += 2
+            if verified_alias_bridge:
+                score += 4
             if score > best_score:
                 best_item = item
                 best_score = score
+                if verified_alias_bridge:
+                    best_source = "verified_alias_work_competition"
+                    best_reason_codes = [
+                        "serialized_public_identity_verified_alias_competition_reconciled",
+                        "title_led_publication_blocked_by_verified_alias_competition",
+                    ]
+                else:
+                    best_source = "body_verified_character_work_competition"
+                    best_reason_codes = []
         if not isinstance(best_item, dict):
             return None
         candidate_title, candidate_url = _candidate_title_url(best_item)
@@ -3522,6 +3613,8 @@ def _sync_allowed_publication_result_contract(
             "official_title": candidate_title,
             "official_url": _official_detail_url(candidate_url) or None,
             "source_item": best_item,
+            "publication_source": best_source,
+            "reason_codes": best_reason_codes,
         }
 
     if not gate_candidate_override:
@@ -3529,11 +3622,19 @@ def _sync_allowed_publication_result_contract(
         if body_candidate_override:
             public_title = body_candidate_override["official_title"]
             public_url = body_candidate_override["official_url"] or ""
-            publication_source = "body_verified_character_work_competition"
+            publication_source = (
+                body_candidate_override.get("publication_source")
+                or "body_verified_character_work_competition"
+            )
             for code in (
                 "serialized_public_identity_shared_gate_restored",
                 "serialized_public_identity_body_verified_competition_reconciled",
                 "official_url_withheld_by_title_mismatch",
+                *(
+                    str(value)
+                    for value in (body_candidate_override.get("reason_codes") or [])
+                    if str(value).strip()
+                ),
             ):
                 if code not in trace_reason_codes:
                     trace_reason_codes.append(code)

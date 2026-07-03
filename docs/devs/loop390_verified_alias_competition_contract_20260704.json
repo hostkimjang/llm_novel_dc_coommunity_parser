@@ -1,0 +1,75 @@
+{
+  "loop": 390,
+  "date": "2026-07-04",
+  "title": "11698880 verified-alias competition contract",
+  "goal_status": "ACTIVE_NOT_COMPLETE",
+  "summary": "Loop389 11698880 wrong publish 경로를 final publication ledger 계약에서 일반 verified-alias competing-work reconciliation으로 보강했다.",
+  "large_runs": {
+    "full375": "FROZEN",
+    "bounded_1000_1500": "FROZEN",
+    "safe_loss_n5": "FROZEN",
+    "golden18_runtime": "NOT_RUN_AFTER_PATCH",
+    "same_38_row_parent_packet": "STOPPED"
+  },
+  "source_evidence": {
+    "loop389_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop389_golden18_after_loop388_6349197e_search_nonlight_result.json",
+    "loop389_expected_gate": "NO-GO / 15 of 18",
+    "loop389_search_evidence": "REVIEW / search_degraded_observed",
+    "target_post_id": 11698880,
+    "before_title": "아카데미 생존 갤러리",
+    "expected_title": "가챠 중독자의 퓨전펑크 생활"
+  },
+  "code_changes": [
+    {
+      "path": "expert_main.py",
+      "change": "title-led alias public 후보가 verified alias/work-lock을 가진 competing preserved work와 충돌하면 final publication ledger를 competing work로 재수렴한다."
+    },
+    {
+      "path": "tests/test_expert_main_comment_metadata.py",
+      "change": "Loop389 11698880 형태의 verified-alias competing-work 회귀 테스트를 추가했다."
+    }
+  ],
+  "direct_resync_projection": {
+    "post_id": 11698880,
+    "changed": true,
+    "official_title": "가챠 중독자의 퓨전펑크 생활",
+    "official_url": null,
+    "publication_source": "verified_alias_work_competition",
+    "reason_codes_added": [
+      "serialized_public_identity_verified_alias_competition_reconciled",
+      "title_led_publication_blocked_by_verified_alias_competition"
+    ],
+    "runtime_replay_after_patch": "NOT_RUN_AFTER_PATCH"
+  },
+  "verification": [
+    {
+      "command": "& .\\.venv312\\Scripts\\python.exe -m py_compile expert_main.py tests\\test_expert_main_comment_metadata.py",
+      "status": "PASS"
+    },
+    {
+      "command": "& .\\.venv312\\Scripts\\python.exe -m unittest tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_title_led_publication_reconciles_verified_alias_competing_work tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_allowed_publication_reconciles_body_verified_competition_after_gate_overwrite tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_allowed_publication_reconciles_serialized_identity_to_shared_gate_candidate tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_verified_alias_detail_replaces_stale_wrong_alias_blocked_gate",
+      "status": "PASS",
+      "tests": 4
+    },
+    {
+      "command": "& .\\.venv312\\Scripts\\python.exe -m unittest tests.test_publication_contract_convergence_audit tests.test_expert_main_comment_metadata",
+      "status": "PASS",
+      "tests": 62
+    },
+    {
+      "command": "& .\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_gate_blocks_mismatched_verifier_alias_when_body_verified_work_competes tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_batch_alias_gate_blocks_body_verified_character_work_competition tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_lead_alias_official_detail_release_survives_semantic_no_work",
+      "status": "PASS",
+      "tests": 3
+    }
+  ],
+  "gates": {
+    "code_contract": "GO_UNIT",
+    "runtime_replay_after_patch": "NOT_RUN_AFTER_PATCH",
+    "expected_answer": "NO-GO / inherited 15 of 18",
+    "search_recovery": "P0 / SEARCH_BLIND_CONDITIONAL",
+    "full375_collateral": "NOT_OPEN",
+    "collateral_active_lane": "reclassified 74 / runtime-verified 4",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  }
+}

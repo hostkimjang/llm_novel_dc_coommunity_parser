@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-04 Loop390 Addendum - verified-alias competition contract
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop390은 approval 회차가 아니라 Loop389 `11698880` wrong publish를 final publication ledger code contract로 줄인 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_390_REPORT_20260704.md`, state `docs/devs/loop390_verified_alias_competition_contract_20260704.json`, source result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop389_golden18_after_loop388_6349197e_search_nonlight_result.json`.
+- Root cause: `가챠펑크` competing candidate는 보존됐지만 URL 없는 `llm_only` 후보라 기존 body competition override를 통과하지 못했고, `아생갤` title-led gate가 `아카데미 생존 갤러리` publish를 유지했다.
+- Fix: `expert_main.py` final publication ledger는 title-led alias public 후보가 `confirmed_alias:*` 또는 explicit alias/work-lock을 가진 competing preserved work와 충돌하면 competing work로 재수렴한다. R1 hardcoded cue 리스트 확장은 없다.
+- Direct resync: 저장된 Loop389 `11698880` 결과에 새 계약을 적용하면 `official_title=가챠 중독자의 퓨전펑크 생활`, `official_url=null`, `publication_source=verified_alias_work_competition`, `changed=true`다.
+- Verification: py_compile PASS, focused expert tests `4` PASS, publication/comment metadata bundle `62` PASS, title-led guard focused `3` PASS.
+- Gate: code contract `GO_UNIT`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, expected-answer `NO-GO / inherited 15 of 18`, search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-04 Loop389 Addendum - golden18 runtime after Loop388
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop389는 approval 회차가 아니라 Loop388 뒤 current HEAD golden18 runtime 생산성과 semantic 상태를 갱신한 회차다.

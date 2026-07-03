@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop390 verified-alias competition contract follow-up
+  - 상태: code contract `GO_UNIT` / direct resync `GO_DRY` / runtime replay after patch `NOT_RUN_AFTER_PATCH` / expected-answer inherited `NO-GO 15/18` / search recovery `P0_SEARCH_BLIND_CONDITIONAL` / full375 `NOT_OPEN` / approval not open
+  - 적용: `11698880`의 title-led `아생갤 -> 아카데미 생존 갤러리` publish가 competing verified alias work `가챠펑크 -> 가챠 중독자의 퓨전펑크 생활`을 덮지 못하도록 final publication ledger 계약을 보강했다.
+  - 산출물: `docs/devs/loop_reports/LOOP_390_REPORT_20260704.md`, `docs/devs/loop390_verified_alias_competition_contract_20260704.json`, `expert_main.py`, `tests/test_expert_main_comment_metadata.py`.
+  - 완료 기준: current-code runtime에서 `11698880`이 실제 row로 `가챠 중독자의 퓨전펑크 생활` 또는 안전한 candidate-only로 수렴하고, search degraded와 full375 collateral gate가 별도로 닫히기 전까지 approval과 hard-hold 완화를 열지 않는다.
+
 - [ ] Loop389 golden18 runtime after Loop388
   - 상태: golden18 runtime `GO 18/18` / expected-answer `NO-GO 15/18` / search evidence `REVIEW_search_degraded_observed` / golden shared collateral `NO-GO 3` / full375 `NOT_OPEN` / approval not open
   - 적용: 신규 대형 런 없이 현 HEAD `6349197e`의 golden18 단일 search non-light runtime을 완료했다. watchdog/stall 우회는 실제 row를 내는 것으로 실증됐지만 semantic gate는 닫히지 않았다.

@@ -1,5 +1,34 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop390 verified-alias competition contract 체크
+
+- [x] 신규 full375/bounded/N5/golden18 runtime을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Loop389 `11698880` wrong publish 원인을 코드 경로로 확인했다.
+  - expected `가챠 중독자의 퓨전펑크 생활`
+  - actual `아카데미 생존 갤러리`
+  - competing candidate는 `가챠펑크`, `source_tier=llm_only`, URL 없음
+  - title-led gate는 `row_discusses_work_as_work=true`로 wrong public title publish
+- [x] `expert_main.py`에 verified-alias competing-work final publication 계약을 추가했다.
+  - R1 hardcoded cue 리스트 확장 없음
+  - `confirmed_alias:*` 또는 explicit alias/work-lock과 source text alias support를 요구
+  - title-led alias public 후보와 competing preserved work가 충돌할 때만 재수렴
+- [x] `tests/test_expert_main_comment_metadata.py`에 Loop389 형태 회귀 테스트를 추가했다.
+- [x] 저장된 Loop389 `11698880` 결과에 새 계약을 직접 적용했다.
+  - before `아카데미 생존 갤러리`
+  - after `가챠 중독자의 퓨전펑크 생활`
+  - URL `null`
+  - publication source `verified_alias_work_competition`
+- [x] 검증:
+  - `.venv312` py_compile PASS
+  - focused expert tests `4` PASS
+  - publication/comment metadata bundle `62` PASS
+  - title-led guard focused `3` PASS
+- [ ] Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`이므로 semantic approval로 세지 않는다.
+- [ ] Search degraded `unrecovered=0` 전까지 `promotion_blocked=search-blind conditional`을 유지한다.
+- [ ] full375 collateral approval은 `NOT_OPEN`으로 유지한다.
+- Gate: code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, expected-answer `NO-GO / inherited 15 of 18`, search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, full375 `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop389 golden18 runtime after Loop388 체크
 
 - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.

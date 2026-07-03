@@ -3867,6 +3867,162 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
             "body_verified_character_work_competition",
         )
 
+    def test_title_led_publication_reconciles_verified_alias_competing_work(self):
+        correct_title = "가챠 중독자의 퓨전펑크 생활"
+        wrong_title = "아카데미 생존 갤러리"
+        wrong_url = "https://novelpia.com/novel/380218"
+        correct_candidate = {
+            "official_title": correct_title,
+            "heretic_url": None,
+            "confidence": "High",
+            "alias_or_mention": "가챠펑크",
+            "source_tier": "llm_only",
+            "reference_role": "mentioned",
+            "preservation_role": "mentioned_work",
+        }
+        wrong_candidate = {
+            "official_title": wrong_title,
+            "heretic_url": wrong_url,
+            "confidence": "High",
+            "alias_or_mention": "아생갤",
+            "source_tier": "official_detail",
+            "page_type": "novel_page",
+            "reference_role": "primary",
+            "preservation_role": "title_candidate",
+        }
+        result = {
+            "post_id": 11698880,
+            "title": "아생갤 개 존나게 재밌군 ㅇㅇ",
+            "content": [
+                "가챠펑크 세드릭도 그렇고",
+                "일본 씹찐따 주인공 처럼",
+                "시원시원한 상남자라서 너무 좋구나",
+            ],
+            "comments": [],
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "discussion_type": "character_talk",
+                "context_sources": ["title", "body", "search", "image"],
+                "consistency_flags": [
+                    "multi_work_explicit_alias_official_lock",
+                    "verified_alias_official_detail_anchor",
+                    "confirmed_alias:가챠펑크",
+                    "explicit_alias_official_work_lock",
+                    "weak_public_title_bridge_verified_alias_detail_exempt",
+                ],
+                "novel_identity": {
+                    "official_title": wrong_title,
+                    "heretic_url": wrong_url,
+                    "confidence": "High",
+                },
+                "primary_work": dict(wrong_candidate),
+                "title_candidates": [dict(wrong_candidate), dict(correct_candidate)],
+                "candidate_preservation_sources": [
+                    dict(wrong_candidate),
+                    dict(correct_candidate),
+                ],
+                "search_evidence_catalog": [
+                    {
+                        "title": "팬아트 : 팬아트",
+                        "url": "https://novelpia.com/fanart/34/7",
+                        "domain": "novelpia.com",
+                        "snippet": "가챠펑크-정장 세드릭 관련 팬아트",
+                        "query": "아생갤 가챠펑크 세드릭",
+                        "source_tier": "novel_platform",
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": wrong_title,
+                    "official_url": wrong_url,
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "title_led_consumption_bridge",
+                        "title_acceptance_accept",
+                        "alias_bridge",
+                        "official_detail_url",
+                        "serialized_public_identity_published",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "title_led_consumption_bridge",
+                            "alias_surface",
+                            "title_abbrev_mentioned",
+                            "official_detail_url",
+                        ],
+                    },
+                },
+                "promotion_gate_state": {
+                    "post_id": 11698880,
+                    "candidate_title": wrong_title,
+                    "candidate_url": wrong_url,
+                    "source": "title_led_alias_public_title",
+                    "official_title_exists": True,
+                    "row_discusses_work_as_work": True,
+                    "title_resolution_state": "resolved",
+                    "work_resolution": "resolved",
+                    "discussion_type": "character_talk",
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "title_led_consumption_bridge",
+                            "alias_surface",
+                            "title_abbrev_mentioned",
+                            "official_detail_url",
+                        ],
+                    },
+                },
+                "candidate_ledger": {
+                    "candidate_preservation_sources": [
+                        dict(wrong_candidate),
+                        dict(correct_candidate),
+                    ],
+                    "consistency_flags": [
+                        "multi_work_explicit_alias_official_lock",
+                        "verified_alias_official_detail_anchor",
+                        "confirmed_alias:가챠펑크",
+                        "explicit_alias_official_work_lock",
+                    ],
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["novel_identity"]["official_title"], correct_title)
+        self.assertIsNone(identity["novel_identity"]["heretic_url"])
+        self.assertEqual(identity["primary_work"]["official_title"], correct_title)
+        self.assertTrue(identity["promotion_decision"]["publish_allowed"])
+        self.assertEqual(identity["promotion_decision"]["official_title"], correct_title)
+        self.assertIsNone(identity["promotion_decision"]["official_url"])
+        self.assertIn(
+            "serialized_public_identity_verified_alias_competition_reconciled",
+            identity["promotion_decision"]["reason_codes"],
+        )
+        self.assertIn(
+            "title_led_publication_blocked_by_verified_alias_competition",
+            identity["promotion_decision"]["reason_codes"],
+        )
+        self.assertEqual(
+            identity["publish_contract_trace"]["pre_gate_candidate"]["source"],
+            "verified_alias_work_competition",
+        )
+
     def test_locked_public_candidate_blocks_title_only_gate_candidate_override(self):
         correct_title = "가챠 중독자의 퓨전펑크 생활"
         correct_url = "https://novelpia.com/novel/387014"

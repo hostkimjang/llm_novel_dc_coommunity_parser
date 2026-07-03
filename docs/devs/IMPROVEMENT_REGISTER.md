@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260704-390 - verified-alias competition contract
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/golden18 runtime 미발주 | 동결 유지 |
+| parent packet replay | 중단 | 동일 38-row replay 없음 | 반복 금지 |
+| `11698880` 원인 | 확인 | `가챠펑크` competing candidate가 URL 없는 `llm_only`라 기존 override 미통과 | runtime replay 전 approval 금지 |
+| verified-alias competition 계약 | GO_UNIT | `expert_main.py` final ledger 재수렴 추가 | current-code runtime에서 실제 row 확인 필요 |
+| direct resync | GO_DRY | Loop389 저장 결과가 `가챠 중독자의 퓨전펑크 생활`, URL `null`로 교정 | dry/projection 한계 유지 |
+| 테스트 | PASS | py_compile, focused `4`, bundle `62`, title-led `3` | 다음 loop 전 커밋 |
+| 문서 동기화 | 완료 | Loop390 report/state와 운영 문서 갱신 | search/full375 gate 별도 |
+
+Gate: code contract `GO_UNIT`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, expected-answer `NO-GO / inherited 15 of 18`, search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260704-389 - golden18 runtime after Loop388
 
 | 항목 | 상태 | 근거 | 다음 조치 |
