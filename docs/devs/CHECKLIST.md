@@ -1,5 +1,27 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop346 current residual queue rebase 체크
+
+- [x] Loop340 residual queue `126`에서 Loop343/344로 닫힌 post_id를 제외하는 도구 계약을 추가했다.
+  - `--exclude-post-ids`
+  - excluded `11703624`, `11705230`, `11705251`
+- [x] 이미 생성된 queue JSON의 `rows[].actions`도 재입력할 수 있게 했다.
+- [x] current residual queue artifact를 생성했다.
+  - JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop346_current_residual_action_queue_after_loop343_344_closure.json`
+  - Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop346_current_residual_action_queue_after_loop343_344_closure.md`
+- [x] current residual count를 확인했다.
+  - source residual `126`
+  - excluded rows `3`
+  - current residual `123`
+  - labels `REPROCESS=92`, `HOLD=31`
+  - validation issue `0`
+- [x] 검증을 실행했다.
+  - py_compile PASS
+  - `tests.test_split_collateral_action_queue` PASS, `3` tests
+  - queue generation `--fail-on-validation-issue` PASS
+- [ ] current residual `123`의 다음 active lane은 `repair_safe_loss=73`, `repair_unsafe_promotion=14`, `native_image_or_source_review_required=14`, `known_alias_runtime_replay_required=3` 중 search 상태와 독립적으로 줄일 수 있는 항목부터 진행한다.
+- Gate: current residual queue rebase `GO_CONTRACT_AND_ARTIFACT`, collateral `NO-GO / residual_action_queue_rows=123`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop345 bounded completed-source dispatch 체크
 
 - [x] 현 HEAD `4f1a488e`에서 bounded completed-source `1200`건을 새 output 경로로 발주했다.

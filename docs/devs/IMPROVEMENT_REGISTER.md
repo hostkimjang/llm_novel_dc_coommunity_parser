@@ -1,5 +1,37 @@
 # Improvement Register
 
+## IMP-20260703-346 - current residual queue rebase
+
+- 상태: current queue contract 추가 / residual 123 재기준화 / approval 미개방
+- Loop: 346
+- 문제:
+  - Loop340 residual queue artifact는 원본 `126` 기준이라, Loop343/344에서 닫힌 3건을 다음 작업 기준에서 재현 가능하게 제외하는 방법이 없었다.
+  - 후속 agent가 stale `126`을 다시 기준으로 삼으면 동일 alias lane을 반복할 수 있다.
+- 변경:
+  - `tools/split_collateral_action_queue.py`에 `--exclude-post-ids`를 추가했다.
+  - generated queue의 `actions` 필드도 다시 읽도록 보강했다.
+  - 제외 post_id와 제외 label count를 summary/Markdown에 기록한다.
+- 근거:
+  - report `docs/devs/loop_reports/LOOP_346_REPORT_20260703.md`
+  - state `docs/devs/loop346_current_residual_queue_rebase_20260703.json`
+  - queue `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop346_current_residual_action_queue_after_loop343_344_closure.json`
+- 결과:
+  - excluded `11703624`, `11705230`, `11705251`
+  - current residual `123`
+  - labels `REPROCESS=92`, `HOLD=31`
+  - validation issue `0`
+- 검증:
+  - py_compile PASS.
+  - `tests.test_split_collateral_action_queue` PASS, `3` tests.
+  - queue generation `--fail-on-validation-issue` PASS.
+- Gate:
+  - current residual queue rebase `GO_CONTRACT_AND_ARTIFACT`
+  - collateral `NO-GO / residual_action_queue_rows=123`
+  - search recovery `P0 / OPEN`
+  - `promotion_blocked=search-blind conditional`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260703-345 - bounded completed-source dispatch on patched search budget
 
 - 상태: bounded background 발주 / search P0 evidence pending / approval 미개방

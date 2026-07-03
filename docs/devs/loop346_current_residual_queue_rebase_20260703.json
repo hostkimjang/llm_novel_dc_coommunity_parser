@@ -1,0 +1,70 @@
+{
+  "loop": 346,
+  "date": "2026-07-03",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "head": "d52c4df3",
+  "scope": "current residual queue rebase after Loop343 and Loop344 closures",
+  "code_changes": [
+    "tools/split_collateral_action_queue.py supports --exclude-post-ids",
+    "tools/split_collateral_action_queue.py can read generated queue rows that use actions instead of action",
+    "tests/test_split_collateral_action_queue.py covers excluding a closed post_id from an existing queue"
+  ],
+  "source_queue": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop340_collateral183_residual_action_queue.json",
+  "runtime_artifacts": {
+    "current_queue_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop346_current_residual_action_queue_after_loop343_344_closure.json",
+    "current_queue_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop346_current_residual_action_queue_after_loop343_344_closure.md"
+  },
+  "closed_post_ids_excluded": [
+    11703624,
+    11705230,
+    11705251
+  ],
+  "current_residual": {
+    "source_residual_action_queue_rows": 126,
+    "excluded_residual_action_queue_rows": 3,
+    "residual_action_queue_rows": 123,
+    "label_counts": {
+      "REPROCESS": 92,
+      "HOLD": 31
+    },
+    "bucket_counts": {
+      "safe_loss_resolved_to_null": 102,
+      "unsafe_promotion_from_hold": 14,
+      "wrong_work_title_flip": 7
+    },
+    "action_counts": {
+      "repair_safe_loss": 73,
+      "repair_unsafe_promotion": 14,
+      "native_image_or_source_review_required": 14,
+      "repair_after_wrong_work": 5,
+      "title_variant_canonicalization_required": 5,
+      "known_alias_runtime_replay_required": 3
+    },
+    "validation_issue_count": 0
+  },
+  "loop345_background_snapshot": {
+    "run_id": "20260703_125052_015965",
+    "completed_count": 4,
+    "flushed_count": 0,
+    "pending_count": 4,
+    "failed_count": 0,
+    "ordered_flush_blocked": true,
+    "partial_flush_gap": true,
+    "large_run_complete": false
+  },
+  "verification": [
+    "py_compile PASS for tools/split_collateral_action_queue.py and tests/test_split_collateral_action_queue.py",
+    "unittest PASS: tests.test_split_collateral_action_queue, 3 tests",
+    "queue generation PASS with --fail-on-validation-issue"
+  ],
+  "gates": {
+    "current_residual_queue_rebase": "GO_CONTRACT_AND_ARTIFACT",
+    "collateral_gate": "NO-GO / residual_action_queue_rows=123",
+    "bounded_completion": "IN_PROGRESS / NOT_APPROVAL",
+    "search_recovery": "P0 / OPEN / bounded evidence pending",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

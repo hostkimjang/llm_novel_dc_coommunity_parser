@@ -1,5 +1,26 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop346 current residual queue rebase
+
+- 범위: Loop343/344에서 닫힌 alias 3건을 current residual queue에서 재현 가능하게 제외하고, 이후 작업 기준을 `126`이 아닌 `123`으로 고정한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_346_REPORT_20260703.md`
+  - state `docs\devs\loop346_current_residual_queue_rebase_20260703.json`
+  - queue JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop346_current_residual_action_queue_after_loop343_344_closure.json`
+  - queue Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop346_current_residual_action_queue_after_loop343_344_closure.md`
+- Evidence:
+  - source residual `126`
+  - closed post ids excluded `11703624`, `11705230`, `11705251`
+  - current residual `123`
+  - label counts `REPROCESS=92`, `HOLD=31`
+  - validation issue `0`
+  - Loop345 background snapshot `4/0/4/0`, `IN_PROGRESS / NOT_APPROVAL`
+- Verification:
+  - py_compile PASS: `tools\split_collateral_action_queue.py`, `tests\test_split_collateral_action_queue.py`
+  - unittest PASS: `tests.test_split_collateral_action_queue`, `3` tests
+  - queue generation PASS with `--fail-on-validation-issue`
+- Gate: current residual queue rebase `GO_CONTRACT_AND_ARTIFACT`, collateral `NO-GO / residual_action_queue_rows=123`, bounded completion `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN / bounded evidence pending`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop345 bounded completed-source dispatch
 
 - 범위: Loop344 search budget 패치 후 current HEAD `4f1a488e`에서 completed-source bounded `1200`건을 search 포함 non-light 조건으로 발주한다.

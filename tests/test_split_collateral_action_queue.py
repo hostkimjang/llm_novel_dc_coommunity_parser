@@ -99,6 +99,57 @@ class SplitCollateralActionQueueTest(unittest.TestCase):
             },
         )
 
+    def test_can_exclude_closed_post_ids_from_existing_queue(self) -> None:
+        existing_queue = {
+            "queue_id": "unit_queue",
+            "gate": "REVIEW-LOCKED",
+            "summary": {
+                "residual_action_queue_rows": 3,
+                "label_counts": {"HOLD": 1, "REPROCESS": 2},
+            },
+            "rows": [
+                {
+                    "post_id": 10,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "review_label": "REPROCESS",
+                    "actions": ["repair_safe_loss", "known_alias_runtime_replay_required"],
+                    "source_native_verdict": "before_correct_known_alias",
+                },
+                {
+                    "post_id": 11,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "review_label": "REPROCESS",
+                    "actions": ["repair_safe_loss"],
+                    "source_native_verdict": "before_correct_source_native",
+                },
+                {
+                    "post_id": 12,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "review_label": "HOLD",
+                    "actions": ["native_image_or_source_review_required"],
+                    "source_native_verdict": "image_or_native_evidence_required",
+                },
+            ],
+        }
+
+        queue = build_residual_queue(
+            existing_queue,
+            generated_at="2026-07-03T00:00:00",
+            exclude_post_ids={10},
+        )
+
+        self.assertEqual(queue["gate"], "REVIEW-LOCKED")
+        self.assertEqual(queue["summary"]["residual_action_queue_rows"], 2)
+        self.assertEqual(queue["summary"]["label_counts"], {"HOLD": 1, "REPROCESS": 1})
+        self.assertEqual(queue["summary"]["closed_post_ids_excluded"], [10])
+        self.assertEqual(queue["summary"]["excluded_label_counts"], {"REPROCESS": 1})
+        self.assertEqual(queue["summary"]["validation_issue_count"], 0)
+        self.assertEqual([row["post_id"] for row in queue["rows"]], [11, 12])
+        repair_safe_loss = next(
+            group for group in queue["action_groups"] if group["action"] == "repair_safe_loss"
+        )
+        self.assertEqual(repair_safe_loss["post_ids"], [11])
+
 
 if __name__ == "__main__":
     unittest.main()

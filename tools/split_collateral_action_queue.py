@@ -61,29 +61,49 @@ def build_residual_queue(
     *,
     generated_at: str | None = None,
     queue_id: str = "collateral183_residual_action_queue",
+    exclude_post_ids: set[int] | None = None,
 ) -> dict[str, Any]:
     rows = combined_review.get("rows") or []
     if not isinstance(rows, list):
         raise ValueError("combined_review.rows must be a list")
 
+    exclude_post_ids = exclude_post_ids or set()
     residual_rows: list[dict[str, Any]] = []
     label_counts: Counter[str] = Counter()
     bucket_counts: Counter[str] = Counter()
     action_counts: Counter[str] = Counter()
+    excluded_label_counts: Counter[str] = Counter()
     groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    excluded_rows: list[dict[str, Any]] = []
 
     for row in rows:
         if not isinstance(row, dict):
             continue
+        raw_post_id = row.get("post_id")
+        try:
+            post_id = int(raw_post_id)
+        except (TypeError, ValueError):
+            post_id = raw_post_id
         label = str(row.get("review_label") or "").strip().upper()
         if label not in RESIDUAL_LABELS:
             continue
-        actions = normalize_actions(row.get("action"))
+        if isinstance(post_id, int) and post_id in exclude_post_ids:
+            excluded_label_counts[label] += 1
+            excluded_rows.append(
+                {
+                    "post_id": post_id,
+                    "review_label": label,
+                    "triage_bucket": row.get("triage_bucket"),
+                    "source_native_verdict": row.get("source_native_verdict"),
+                }
+            )
+            continue
+        actions = normalize_actions(row.get("action") if row.get("action") is not None else row.get("actions"))
         if not actions:
             actions = ["manual_review_required"]
         bucket = str(row.get("triage_bucket") or "unknown")
         entry = {
-            "post_id": row.get("post_id"),
+            "post_id": raw_post_id,
             "triage_bucket": bucket,
             "review_label": label,
             "source_native_verdict": row.get("source_native_verdict"),
@@ -120,10 +140,22 @@ def build_residual_queue(
             }
         )
 
-    transition = (combined_review.get("summary") or {}).get("queue_transition") or {}
-    expected_residual = transition.get("residual_action_queue_rows")
-    expected_reprocess = transition.get("repair_required_rows")
-    expected_hold = transition.get("policy_or_native_review_required_rows")
+    summary = combined_review.get("summary") or {}
+    transition = summary.get("queue_transition") or {}
+    source_expected_residual = transition.get("residual_action_queue_rows", summary.get("residual_action_queue_rows"))
+    source_label_counts = summary.get("label_counts") or {}
+    source_expected_reprocess = transition.get("repair_required_rows", source_label_counts.get("REPROCESS"))
+    source_expected_hold = transition.get("policy_or_native_review_required_rows", source_label_counts.get("HOLD"))
+
+    def _adjust_expected(value: Any, label: str | None = None) -> int | None:
+        if value is None:
+            return None
+        excluded_count = len(excluded_rows) if label is None else excluded_label_counts.get(label, 0)
+        return int(value) - excluded_count
+
+    expected_residual = _adjust_expected(source_expected_residual)
+    expected_reprocess = _adjust_expected(source_expected_reprocess, "REPROCESS")
+    expected_hold = _adjust_expected(source_expected_hold, "HOLD")
     validation_issues: list[dict[str, Any]] = []
     if expected_residual is not None and int(expected_residual) != len(residual_rows):
         validation_issues.append(
@@ -154,7 +186,11 @@ def build_residual_queue(
         "report_type": "collateral_residual_action_queue",
         "queue_id": queue_id,
         "generated_at": generated_at or datetime.now().replace(microsecond=0).isoformat(),
-        "source_review_id": combined_review.get("review_id"),
+        "source_review_id": (
+            combined_review.get("review_id")
+            or combined_review.get("source_review_id")
+            or combined_review.get("queue_id")
+        ),
         "source_gate": combined_review.get("gate"),
         "semantic_quality": "REVIEW-LOCKED",
         "full_scan_approval": False,
@@ -170,10 +206,17 @@ def build_residual_queue(
                 "residual_action_queue_rows": expected_residual,
                 "repair_required_rows": expected_reprocess,
                 "policy_or_native_review_required_rows": expected_hold,
+                "source_residual_action_queue_rows": source_expected_residual,
+                "source_repair_required_rows": source_expected_reprocess,
+                "source_policy_or_native_review_required_rows": source_expected_hold,
             },
+            "closed_post_ids_excluded": sorted(exclude_post_ids),
+            "excluded_residual_action_queue_rows": len(excluded_rows),
+            "excluded_label_counts": _counter_to_dict(excluded_label_counts),
             "validation_issue_count": len(validation_issues),
         },
         "validation_issues": validation_issues,
+        "excluded_rows": excluded_rows,
         "action_groups": action_groups,
         "rows": residual_rows,
         "approval_boundary": {
@@ -187,7 +230,7 @@ def build_residual_queue(
 def write_markdown(queue: dict[str, Any], path: Path) -> None:
     summary = queue["summary"]
     lines = [
-        "# Loop340 collateral183 residual action queue",
+        f"# {queue.get('queue_id')}",
         "",
         "## 요약",
         "",
@@ -196,6 +239,8 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
         f"- source_rows: `{summary.get('source_rows')}`",
         f"- residual_action_queue_rows: `{summary.get('residual_action_queue_rows')}`",
         f"- label_counts: `{summary.get('label_counts')}`",
+        f"- closed_post_ids_excluded: `{summary.get('closed_post_ids_excluded')}`",
+        f"- excluded_residual_action_queue_rows: `{summary.get('excluded_residual_action_queue_rows')}`",
         f"- action_group_count: `{summary.get('action_group_count')}`",
         f"- validation_issue_count: `{summary.get('validation_issue_count')}`",
         "- approval: `false`",
@@ -234,6 +279,11 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--combined-review", required=True, type=Path)
     parser.add_argument("--queue-id", default="collateral183_residual_action_queue")
+    parser.add_argument(
+        "--exclude-post-ids",
+        default="",
+        help="쉼표로 구분한 post_id 목록. 이미 닫힌 residual row를 current queue에서 제외한다.",
+    )
     parser.add_argument("--output-json", required=True, type=Path)
     parser.add_argument("--output-md", required=True, type=Path)
     parser.add_argument("--fail-on-validation-issue", action="store_true")
@@ -242,7 +292,16 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    queue = build_residual_queue(load_json(args.combined_review), queue_id=args.queue_id)
+    exclude_post_ids = {
+        int(item.strip())
+        for item in str(args.exclude_post_ids or "").split(",")
+        if item.strip()
+    }
+    queue = build_residual_queue(
+        load_json(args.combined_review),
+        queue_id=args.queue_id,
+        exclude_post_ids=exclude_post_ids,
+    )
     args.output_json.parent.mkdir(parents=True, exist_ok=True)
     args.output_json.write_text(json.dumps(queue, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     write_markdown(queue, args.output_md)

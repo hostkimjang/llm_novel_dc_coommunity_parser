@@ -4,6 +4,13 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop346 current residual queue follow-up
+  - 상태: current_queue_rebased_123 / validation_issue_0 / approval_not_open
+  - 적용: `tools/split_collateral_action_queue.py --exclude-post-ids`로 Loop343/344에서 닫힌 `11703624`, `11705230`, `11705251`을 제외했다.
+  - 현재 큐: residual `123`, `REPROCESS=92`, `HOLD=31`, `repair_safe_loss=73`, `repair_unsafe_promotion=14`, `native_image_or_source_review_required=14`, `known_alias_runtime_replay_required=3`.
+  - 산출물: `docs/devs/loop_reports/LOOP_346_REPORT_20260703.md`, `docs/devs/loop346_current_residual_queue_rebase_20260703.json`.
+  - 완료 기준: current residual 123에서 search 상태와 독립적인 source-native/policy/contract lane을 계속 줄이고, bounded completion audit와 search degraded 복구를 별도로 닫는다.
+
 - [ ] Loop345 bounded1200 search-budget follow-up
   - 상태: launched_background / current_head_4f1a488e / search_non_light / approval_not_open
   - 발주: run `20260703_125052_015965`, PID `135528`, completed-source bounded `1200`건, image posts `700`, parallel `6`.

@@ -1,5 +1,17 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop346 current residual queue rebase
+
+- `tools/split_collateral_action_queue.py`에 `--exclude-post-ids`를 추가해 닫힌 residual row를 current queue에서 제외할 수 있게 했다.
+- generated queue JSON의 `rows[].actions`도 재입력할 수 있도록 보강했다.
+- Loop343/344에서 닫힌 `11703624`, `11705230`, `11705251`을 제외해 current residual queue를 `126 -> 123`으로 재기준화했다.
+- 새 queue artifact는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop346_current_residual_action_queue_after_loop343_344_closure.json` 및 `.md`다.
+- Current labels는 `REPROCESS=92`, `HOLD=31`, validation issue `0`이다.
+- 검증은 py_compile PASS, `tests.test_split_collateral_action_queue` `3` tests PASS, queue generation PASS다.
+- Loop345 bounded1200은 관찰 시점 `4/0/4/0`으로 계속 background이며 approval 근거가 아니다.
+- Report는 `docs/devs/loop_reports/LOOP_346_REPORT_20260703.md`, state는 `docs/devs/loop346_current_residual_queue_rebase_20260703.json`이다.
+- Gate는 current residual queue rebase `GO_CONTRACT_AND_ARTIFACT`, collateral `NO-GO / residual_action_queue_rows=123`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop345 bounded completed-source dispatch on patched search budget
 
 - 현 HEAD `4f1a488e`에서 completed-source bounded `1200`건을 search 포함 non-light background run으로 발주했다.
