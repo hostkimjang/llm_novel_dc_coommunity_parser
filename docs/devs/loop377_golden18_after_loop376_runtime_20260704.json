@@ -1,0 +1,86 @@
+{
+  "loop": 377,
+  "date": "2026-07-04",
+  "head": "a4ea17c3",
+  "summary": "Loop376 이후 신규 대형 런 없이 11705245 단건 runtime과 golden18 단일 non-light 런으로 row 생산성을 확인했다. Runtime/search/publication contract는 GO이나 expected-answer와 collateral은 NO-GO다.",
+  "large_runs": {
+    "full375": "FROZEN",
+    "bounded_completed_source": "FROZEN",
+    "safe_loss_n5": "FROZEN",
+    "same_parent_packet_replay": "STOPPED"
+  },
+  "targeted_11705245": {
+    "run_id": "20260704_013515_565357",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop377_11705245_same_url_mismatch_runtime_result.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop377_11705245_same_url_mismatch_runtime_health_audit.json",
+    "runtime": "GO / 1 of 1",
+    "search_evidence": "GO",
+    "publication_contract": "GO / violations 0",
+    "public_title": null,
+    "public_url": null,
+    "candidate_ledger_status": "promotion_blocked",
+    "publish_allowed": false
+  },
+  "golden18": {
+    "run_id": "20260704_014232_863623",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop377_golden18_after_loop376_a4ea17c3_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop377_golden18_after_loop376_a4ea17c3_search_nonlight_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop377_golden18_after_loop376_a4ea17c3_search_nonlight_result_checkpoint.jsonl",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop377_golden18_after_loop376_runtime_health_audit.json",
+    "expected_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop377_golden18_after_loop376_a4ea17c3_search_nonlight_audit.json",
+    "collateral": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop377_golden18_after_loop376_a4ea17c3_collateral.json",
+    "input_completed_flushed_pending_failed": "18/18/18/0/0",
+    "large_run_complete": true,
+    "ordered_flush_blocked": false,
+    "partial_flush_gap": false,
+    "runtime_proof": "GO / 18 of 18",
+    "search_evidence": "GO / non-light / degraded 0",
+    "publication_contract": "GO / violations 0",
+    "expected_answer": "NO-GO / 15 of 18",
+    "expected_failures": [
+      {
+        "post_id": 11663521,
+        "expected": "어떤 마술의 금서목록 / 어떤 과학의 초전자포",
+        "actual": "구원자의 퍼스트 레이디",
+        "status": "wrong_or_unexpected_title"
+      },
+      {
+        "post_id": 11668307,
+        "expected": "빚을 져서라도 세상은 구해야 할 거 아니야",
+        "actual": null,
+        "status": "positive_work_unresolved"
+      },
+      {
+        "post_id": 11698880,
+        "expected": "가챠 중독자의 퓨전펑크 생활",
+        "actual": "아카데미 생존 갤러리",
+        "status": "wrong_or_unexpected_title"
+      }
+    ],
+    "collateral_regression_candidates": 7,
+    "collateral_regression_post_ids": [
+      11663521,
+      11668307,
+      11685994,
+      11694019,
+      11698880,
+      11698897,
+      11700470
+    ]
+  },
+  "gates": {
+    "new_large_runs": "FROZEN",
+    "golden18_runtime_proof": "GO / 18 of 18",
+    "health_audit": "GO / clean_completed_source",
+    "search_evidence": "GO / non-light / degraded 0",
+    "publication_contract": "GO / violations 0",
+    "golden_expected_answer": "NO-GO / 15 of 18",
+    "golden_shared_collateral": "NO-GO / 7 regressions",
+    "full375_collateral": "NOT_OPEN",
+    "search_recovery": "P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN",
+    "promotion": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "label": "loop377_11705245_same_url_mismatch_runtime_input",
+  "source_result": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop374_golden18_signal_idle_de0eec1d_worktree_result.json",
+  "output_jsonl": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\inputs\\loop377_11705245_same_url_mismatch_runtime_input.jsonl",
+  "post_count": 1,
+  "post_ids": [
+    11705245
+  ],
+  "title": "하남자 재밌냐",
+  "image_count": 1,
+  "comment_count": 1,
+  "purpose": "Loop376 same URL-title mismatch contract runtime replay input for 11705245"
+}

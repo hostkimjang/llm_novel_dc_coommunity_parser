@@ -1,5 +1,20 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop377 golden18 after Loop376 non-light runtime proof
+
+- 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- `11705245` 단건 runtime run `20260704_013515_565357`으로 Loop376 same URL-title mismatch 계약을 먼저 확인했다.
+- 단건 result는 public title/url `null/null`, `candidate_ledger_status=promotion_blocked`, `publish_allowed=false`, health `GO`, search evidence `GO`, publication contract `GO / violations 0`이다.
+- Golden18 run `20260704_014232_863623`은 input/completed/flushed/pending/failed `18/18/18/0/0`, result/checkpoint rows `18/18`, `large_run_complete=true`, VLM/OCR `READY`로 완료됐다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, search evidence `GO / non-light`, row search degraded `0`, publication contract convergence `GO`, violations `0`을 기록했다.
+- `11700470`은 긴 frontier 병목을 만들었지만 같은 run 안에서 완료되어 ordered flush가 `18/18`로 풀렸다. 동일 failed run 재발주는 하지 않았다.
+- Expected-answer audit는 `NO-GO / 15 of 18`이다. 실패는 `11663521`, `11668307`, `11698880`이다.
+- `11705245`는 expected null을 지켰고, `11700470`은 unresolved 보존으로 통과했으며, `11660237`은 `테라포밍`으로 통과했다.
+- `11698880`은 expected `가챠 중독자의 퓨전펑크 생활` 대비 actual `아카데미 생존 갤러리`라 hard-hold 완화 근거가 아니다.
+- Golden shared collateral compare는 regression 후보 `7`건이다. full375 collateral gate는 열지 않았다.
+- Report는 `docs/devs/loop_reports/LOOP_377_REPORT_20260704.md`, state는 `docs/devs/loop377_golden18_after_loop376_runtime_20260704.json`, health audit는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop377_golden18_after_loop376_runtime_health_audit.json`이다.
+- Gate는 new large runs `FROZEN`, runtime proof `GO / 18 of 18`, search evidence `GO / non-light / degraded 0`, expected-answer `NO-GO / 15 of 18`, golden shared collateral `NO-GO / 7 regressions`, full375 collateral `NOT_OPEN`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop376 11705245 same URL-title mismatch contract
 
 - 신규 full375/bounded/N5 대형 런은 발주하지 않았다.

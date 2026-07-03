@@ -2,6 +2,24 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-04 regression-safe grounding Loop377 TODO
+
+- 상태 업데이트: Loop376 이후 `11705245` 단건 runtime과 golden18 단일 non-light 런을 완료했다. Runtime/search/publication contract는 `GO`지만 expected-answer는 `NO-GO / 15 of 18`, golden shared collateral은 `NO-GO / 7 regressions`다.
+- Loop377 TODO:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+  - [x] `11705245` 단건 runtime `20260704_013515_565357`로 Loop376 same URL-title mismatch 계약을 확인했다.
+  - [x] `11705245` public title/url `null/null`, `promotion_blocked`, `publish_allowed=false`를 확인했다.
+  - [x] golden18 non-light run `20260704_014232_863623`을 완료했다.
+  - [x] runtime manifest `18/18/18/0/0`, `large_run_complete=true`, `ordered_flush_blocked=false`를 확인했다.
+  - [x] health audit `GO / clean_completed_source`, search evidence `GO / degraded 0`, publication contract `GO / violations 0`을 확인했다.
+  - [x] expected-answer audit `NO-GO / 15 of 18`을 생성했다.
+  - [x] 실패 3건을 고정했다: `11663521`, `11668307`, `11698880`.
+  - [x] golden shared collateral regression candidates `7`을 생성했다.
+  - [ ] `11698880`은 여전히 wrong title이므로 hard-hold 완화 근거로 쓰지 않는다.
+  - [ ] 다음 loop는 대형 run이 아니라 `11663521`, `11668307`, `11698880` 중 하나를 일반 술어/검증으로 줄인다.
+  - [ ] full375 collateral gate는 아직 열지 않는다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop376 TODO
 
 - 상태 업데이트: `11705245`의 Loop374 wrong publish `하남 남자` / `https://novelpia.com/novel/302245`를 같은 URL 공식 detail 제목 충돌로 차단하는 일반 계약을 추가했다. 기존 Loop374 행 postprocess preview는 public title `null`, `promotion_blocked`, `publish_allowed=false`로 내려간다.

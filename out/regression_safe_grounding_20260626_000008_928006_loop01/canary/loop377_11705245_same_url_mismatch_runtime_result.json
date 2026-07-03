@@ -1,0 +1,831 @@
+[
+  {
+    "gallery_id": "genrenovel",
+    "post_id": 11705245,
+    "title": "하남자 재밌냐",
+    "post_author": "ㅇㅇ",
+    "author": "ㅇㅇ",
+    "ip": null,
+    "author_ip": null,
+    "post_ip": null,
+    "created_at": "2026-01-25 20:39:42",
+    "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11705245",
+    "content": [
+      "주인공 첨부터쌤?",
+      "- dc official App"
+    ],
+    "content_blocks": [
+      {
+        "type": "image",
+        "url": "https://dcimg3.dcinside.co.kr/viewimage.php?id=2ab8de34e0dc37b06bb3&no=29bcc427b69d39b37ab0ccaf17dd6b6f62b51b91c5c0132c185fd1ce90bf34c54fa37fc67701de1d558d2c546e5d4dc3010c48986059ee94f387b6e3430543"
+      },
+      {
+        "type": "text",
+        "text": "주인공 첨부터쌤?"
+      },
+      {
+        "type": "text",
+        "text": "- dc official App"
+      }
+    ],
+    "image_urls": [
+      "https://dcimg3.dcinside.co.kr/viewimage.php?id=2ab8de34e0dc37b06bb3&no=29bcc427b69d39b37ab0ccaf17dd6b6f62b51b91c5c0132c185fd1ce90bf34c54fa37fc67701de1d558d2c546e5d4dc3010c48986059ee94f387b6e3430543"
+    ],
+    "image_count": 1,
+    "comments": [
+      "ㄴㄴ  - dc App"
+    ],
+    "comment_metadata": [
+      {
+        "index": 0,
+        "comment_id": "40429908",
+        "gallery_id": "genrenovel",
+        "author": "검마",
+        "ip": null,
+        "speaker": "user1",
+        "created_at": "01.25 20:40:16",
+        "reply_to_comment_id": null,
+        "reply_level": 0,
+        "is_post_author": false,
+        "post_author_match_unverified": false
+      }
+    ],
+    "comment_context_lines": [
+      "#1 speaker=user1 author=검마 comment_id=40429908"
+    ],
+    "comment_dialogue_context_lines": [
+      "#1 speaker=user1 author=검마 comment_id=40429908 text=ㄴㄴ - dc App"
+    ],
+    "analysis_result": {
+      "post_id": 11705245,
+      "identity": {
+        "is_relevant": false,
+        "is_novel_related": true,
+        "is_resolved_work_discussion": false,
+        "title_resolution_state": "context_only",
+        "title_resolution_allowed": false,
+        "novel_identity": null,
+        "discussion_type": "community_banter",
+        "evidence": null,
+        "slang_insight": null,
+        "inference": null,
+        "title_candidates": [
+          {
+            "title": "하남자",
+            "source_tier": "post_title_surface",
+            "reference_role": "candidate",
+            "preservation_role": "title_candidate",
+            "heretic_url": "https://novel.munpia.com/400210",
+            "page_type": "novel_page"
+          }
+        ],
+        "primary_work": null,
+        "mentioned_works": null,
+        "future_watch_target": null,
+        "comparison_target": null,
+        "recommendation_candidates": null,
+        "primary_subject_type": "community_or_context",
+        "primary_subject_text": "제목 '하남자 재밌냐'와 본문 '주인공 첨부터쌤?'은 특정 작품을 지칭하는 고유 명사나 약칭이 아닌, 일반적인 성향(하남자)에 대한 질문입니다. 검색 결과에 유사 제목이 다수 존재하며, 후보 작품의 핵심 식별어(예: 딸깍충 등)가 전혀 언급되지 않아 일반 명사/장르적 표현으로 판단됩니다.",
+        "secondary_reference_works": [],
+        "entity_mentions": [
+          {
+            "text": "주인공",
+            "entity_type": "character",
+            "canonical_value": null,
+            "confidence": "None",
+            "source": "decoder",
+            "role": "character_focus"
+          },
+          {
+            "text": "심심한꽃게탕",
+            "entity_type": "author",
+            "canonical_value": null,
+            "confidence": "High",
+            "source": "verifier",
+            "role": "author_focus"
+          }
+        ],
+        "topicality": "unrelated",
+        "relevance_scope": "off_topic",
+        "subtype": "pure_meme",
+        "work_resolution": "none",
+        "anchor_type": "none",
+        "anchor_strength": "low",
+        "context_sources": [
+          "title",
+          "body",
+          "comments",
+          "search",
+          "image"
+        ],
+        "consistency_flags": [
+          "external_ip_relation_hold_blocked",
+          "external_ip_unresolved_final_blocked",
+          "secondary_reference_official_alias_rescued",
+          "secondary_reference_official_alias_author_meta_override",
+          "official_url_recall_gate_recovered",
+          "confirmed_alias:하남자",
+          "final_semantic_reread_reviewed",
+          "final_semantic_reread_rejected_resolution"
+        ],
+        "search_evidence_catalog": [
+          {
+            "eid": "E001",
+            "rank": 1,
+            "source_rank": 1,
+            "title": "하남자의 탑 공략법 - 문피아 웹소설",
+            "url": "https://novel.munpia.com/400210",
+            "domain": "novel.munpia.com",
+            "snippet": "꾸찌꾸찌 - 보신주의, 안전 제일주의, 하남자 소시민이 탑을 올라갑니다.[본문] 퀵바 * * * * 연재작 * 완결작 * 설정 * 새글순 * 작가순 * 작품명순 * 새작품순 * 전체 * ㄱ * ㄴ * ㄷ * ㄹ * ㅁ * ㅂ * ㅅ * ㅇ * ㅈ * ㅊ * ㅋ * ㅌ * ㅍ * ㅎ * A ~ Z 모든장르 펼침 검색 * 1 * 2 * 3 * 4 * 5 * 6 * 끝쪽 * A우레우스 마신전기 새글 상세정보 * 독 지옮 알테라 온라인 새글 상세정보 * 독 곤이작가 이순신, 한신이 되다 새글 상세정보 * 독 하루선 환생 탈영병 차도진 새글 상세정보 * 독 범내골둥이 1996 설계자의 귀환 새글 상세정보 * 독 남청후 스켈레톤이 뼈를 잘 바꿈 새글 상세정보 * 독 망아장 석기시대에 철 제련소를 세웠더니 고고학자가 집착한다 새글 상세정보 * 독 임...",
+            "query": "하남자 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "novel_platform"
+          },
+          {
+            "eid": "E002",
+            "rank": 2,
+            "source_rank": 2,
+            "title": "노벨피아",
+            "url": "https://novelpia.com/novel/302245",
+            "domain": "novelpia.com",
+            "snippet": "노벨피아 novelpia.com›novel 노벨피아 - 웹소설로 꿈꾸는 세상! - 하남자는 딸깍충이 되고 싶다 플러스작품 - 방구석 하남자의 인생 역전 성공기.[본문] 페이지로딩 닫기 보유재화 코인 골드코인 0 코인 기타 재화 멤버십코인 0 코인 웹툰코인 0 코인 북캐시 0 캐시 마일리지 0 마일리지 멤버십코인이란? * 멤버십 코인은 플러스 멤버십 혜택으로 제공되는 기간 한정 재화로, 웹툰과 북스에서 사용할 수 있습니다. * 기간 중 이용 시 우선 소진되며 유효기간이 지나면 소멸됩니다. * 멤버십 코인의 유효기간은 한 달입니다. 웹툰코인이란? * 웹툰에서 회차를 소장할 수 있는 재화입니다. * 웹툰 코인의 유효기간은 한 달입니다. 북캐시란? * 북스에서 웹소설을 구매(대여, 소장) 할 수 있는 재화입니다. * 코인으로 북스 상품을 구매할...",
+            "query": "site:novelpia.com/novel \"하남자\"",
+            "purpose": "title_anchor_official_probe",
+            "source_tier": "novel_platform"
+          },
+          {
+            "eid": "E003",
+            "rank": 3,
+            "source_rank": 3,
+            "title": "노벨피아",
+            "url": "https://novelpia.com/novel/330662",
+            "domain": "novelpia.com",
+            "snippet": "노벨피아 novelpia.com›novel 노벨피아 - 웹소설로 꿈꾸는 세상! - 하남자의 괴담 공략법 자유연재작품 - 하남자 중의 하남자인 내가 괴담을 공략해야 한다고? 그런데 괴담 별거 없는데?",
+            "query": "site:novelpia.com/novel \"하남자\"",
+            "purpose": "title_anchor_official_probe",
+            "source_tier": "novel_platform"
+          },
+          {
+            "eid": "E004",
+            "rank": 4,
+            "source_rank": 4,
+            "title": "노벨피아",
+            "url": "https://novelpia.com/novel/307055",
+            "domain": "novelpia.com",
+            "snippet": "노벨피아 novelpia.com›novel 노벨피아 - 웹소설로 꿈꾸는 세상! - 상남자 미만 출항 금지 : 하남자는 뒤진다 (제목이랑 표지로 어그로는 끌었지만 꽤나 진지한) 소중한 사람을 찾기위해, 엄청난 보물을 손에 넣기위해, 혹은 부와 명예를 쌓기위해 목숨을 내걸고 죽음의 바다로 가기 위한 세일러들의 모험을 다룬 이야기",
+            "query": "site:novelpia.com/novel \"하남자\"",
+            "purpose": "title_anchor_official_probe",
+            "source_tier": "novel_platform"
+          },
+          {
+            "eid": "E005",
+            "rank": 5,
+            "source_rank": 5,
+            "title": "노벨피아",
+            "url": "https://novelpia.com/novel/289897",
+            "domain": "novelpia.com",
+            "snippet": "노벨피아 novelpia.com›novel 노벨피아 - 웹소설로 꿈꾸는 세상! - FFF급 하남자 헌텨 주식회사 메타크래프트 대표 유정석 사업자등록번호 210-81-79781 통신판매업 제2022-서울구로-2494호 [확인] 주소 서울특별시 구로구 디지털로31길 12,(구로동, TP타워) 9층",
+            "query": "site:novelpia.com/novel \"하남자\"",
+            "purpose": "title_anchor_official_probe",
+            "source_tier": "novel_platform"
+          },
+          {
+            "eid": "E006",
+            "rank": 6,
+            "source_rank": 6,
+            "title": "하남자 매니저가 로또 1등을 숨김",
+            "url": "https://novelpia.com/novel/315683",
+            "domain": "novelpia.com",
+            "snippet": "자유연재작품 -",
+            "query": "하남자 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "novel_platform"
+          },
+          {
+            "eid": "E007",
+            "rank": 7,
+            "source_rank": 7,
+            "title": "노벨피아에서. 하남자 캐릭 어떰? - 웹소설 연재 채널 - 아카라이브",
+            "url": "https://arca.live/b/webfiction/175414418?p=1",
+            "domain": "arca.live",
+            "snippet": "노벨피아에서. 하남자 캐릭 어떰? 수주팔봉. 추천 0 비추천 0 댓글 3 조회수 80 작성일 2026-06-30 02:30:39. https://arca.live/b/webfiction/175414418. 별로임?",
+            "query": "하남자 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "community"
+          },
+          {
+            "eid": "E008",
+            "rank": 8,
+            "source_rank": 8,
+            "title": "남녀역전 세계의 여대에 입학한 남자로 살아가는 법",
+            "url": "https://novelpia.com/novel/1388",
+            "domain": "novelpia.com",
+            "snippet": "전산오류 전형으로 들어온 한국여대. 그런데 첫 개강일에 세계가 바뀌었다. +더보기. 첫 화 무료보기. [ 남녀역전 세계의 여대에 ...",
+            "query": "하남자 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "novel_platform"
+          },
+          {
+            "eid": "E009",
+            "rank": 9,
+            "source_rank": 9,
+            "title": "이 세계는 남자한테 너무 가혹하다.",
+            "url": "https://novelpia.com/novel/30902",
+            "domain": "novelpia.com",
+            "snippet": "플러스작품 - 이 세계에서 남자의 운명은 둘 중에 하나다. 언제든지 교체될 수 있는 사회의 톱니바퀴가 되거나··· 트로피가 되거나. +본 작품에 등장하는 인물은 모두 ...",
+            "query": "하남자 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "novel_platform"
+          },
+          {
+            "eid": "E010",
+            "rank": 10,
+            "source_rank": 10,
+            "title": "[동방][남녀역전] 인간마을의 '그 남자'",
+            "url": "https://novelpia.com/novel/106337",
+            "domain": "novelpia.com",
+            "snippet": "자유연재작품 - 환상향의 인간마을에는 터부시되는 한 남자가 있다.",
+            "query": "하남자 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "novel_platform"
+          },
+          {
+            "eid": "E011",
+            "rank": 11,
+            "source_rank": 11,
+            "title": "노벨피아",
+            "url": "https://novelpia.com/top100/complete/weekly/view/all/plus",
+            "domain": "novelpia.com",
+            "snippet": "노벨피아 novelpia.com›top100 완결 - 노벨피아 다크 판타지에서도 쌀은 먹고 살아야지? · 미츄리 · 플러스 완결 독점 ; 절대 엘드미아 에가를 건드리지 마라 · Muinarbiv · 플러스 완결 독점",
+            "query": "하남자 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "novel_platform"
+          },
+          {
+            "eid": "E012",
+            "rank": 12,
+            "source_rank": 12,
+            "title": "블라이스",
+            "url": "https://blog.naver.com/blicenovel/223558158095",
+            "domain": "blog.naver.com",
+            "snippet": "블라이스 blog.naver.com›blicenovel [판타지 웹소설 추천] 8월 3주차 카카오페이지 네이버시리즈 노벨피아 문피아 블라이스 무협, 판타지 인기작 순위 2024.08.24.1위 하남자의 탑 공략법 - 꾸찌꾸찌 2위 화산 귀환 - 비가 3위 절대회귀 - 장영훈 4위 악당들의 후원자가 되었다 - 봄한방울 5위 게임 속 바바리안으로 살아남기 - 정윤강 6위 전지적... 구소재 노벨피아 TOP 10 1위 천하제일인의 소꿉친구 - 우비람 2위 이 무림의 미친년은 나야 - 정통무협조와요 3위 로판 속 만화 그리는 엑스트라 - 자몽펀치 4위 창작물 속으로 - 제울 5위...",
+            "query": "하남자 노벨피아",
+            "purpose": "platform_title_search",
+            "source_tier": "web"
+          }
+        ],
+        "search_health": {
+          "queries_issued": 10,
+          "upstream_zero": 0,
+          "degraded": 0,
+          "degraded_zero": 0,
+          "accepted": 60,
+          "raw": 145,
+          "filtered": 0,
+          "retried": 5,
+          "cache_hits": 8,
+          "degraded_zero_suppressed": 0,
+          "fallback_recovered": 10,
+          "degraded_recovered": 0,
+          "unrecovered_degraded": 0,
+          "headless_used": 10,
+          "direct_search_used": 0,
+          "direct_search_results": 0,
+          "status": "ok"
+        },
+        "image_evidence_catalog": [
+          {
+            "eid": "IMG001",
+            "rank": 1,
+            "source_url": "https://dcimg3.dcinside.co.kr/viewimage.php?id=2abde34e0dc37b06bb3&no=29bcc427b69d39b37ab0ccaf17dd6b6f62b51b91c5c0132c185fd1ce90bf34c54fa37fc67701de1d558d2c546e5d4dc3010c48986059ee94f387b6e3430543",
+            "block_index": 0,
+            "visual_summary": "검은색 숏컷 헤어스타일을 가진 여성 캐릭터가 입에 하트 모양의 초콜릿 또는 사탕을 물고 있는 일러스트입니다. 캐릭터는 나른하거나 몽환적인 표정을 짓고 있습니다.",
+            "evidence_type": "character_visual_only",
+            "title_role": "unknown",
+            "promotion_eligible": false
+          }
+        ],
+        "vlm_enabled": true,
+        "ocr_enabled": true,
+        "vlm_enrichment_used": true,
+        "image_fetch_count": 1,
+        "image_fetch_success": 1,
+        "vlm_chunks_sent": 1,
+        "vlm_total_bytes": 820818,
+        "image_enrichment_limitations": [
+          "vlm_ocr_retry_no_text",
+          "이미지 내에 명시적인 텍스트(작품명, 작가명 등)가 존재하지 않아 작품을 특정할 수 없습니다.",
+          "단순 캐릭터 일러스트이므로 작품 정보 추출이 불가능합니다."
+        ],
+        "candidate_preservation_sources": [
+          {
+            "official_title": "하남자",
+            "confidence": "Medium",
+            "source_tier": "post_title_surface",
+            "reference_role": "candidate",
+            "preservation_role": "title_candidate",
+            "heretic_url": "https://novel.munpia.com/400210",
+            "page_type": "novel_page"
+          }
+        ],
+        "candidate_ledger": {
+          "pipeline_official_title": null,
+          "blocked_official_title": "하남자",
+          "blocked_official_title_url": "https://novel.munpia.com/400210",
+          "promotion_blocked_reasons": [],
+          "title_candidates": [
+            "하남자"
+          ],
+          "candidate_count": 1,
+          "candidate_preservation_sources": [
+            {
+              "official_title": "하남자",
+              "confidence": "Medium",
+              "source_tier": "post_title_surface",
+              "reference_role": "candidate",
+              "preservation_role": "title_candidate",
+              "heretic_url": "https://novel.munpia.com/400210",
+              "page_type": "novel_page"
+            }
+          ],
+          "title_resolution_state": "context_only",
+          "title_resolution_allowed": false,
+          "work_resolution": "none",
+          "discussion_type": "community_banter",
+          "topicality": "unrelated",
+          "is_relevant": false,
+          "is_novel_related": true,
+          "is_resolved_work_discussion": false,
+          "anchor_type": "none",
+          "anchor_strength": "low",
+          "context_sources": [
+            "title",
+            "body",
+            "comments",
+            "search",
+            "image"
+          ],
+          "has_evidence_catalog": true,
+          "judge_seed_bucket": null,
+          "judge_seed_group": "unseeded",
+          "judge_disagreement_type": null,
+          "judge_expected_title": null,
+          "judge_expected_url": null,
+          "promotion_decision": {
+            "status": "candidate_only",
+            "publish_allowed": false,
+            "official_title": null,
+            "official_url": null,
+            "candidate_preserved": true,
+            "reason_codes": [
+              "official_title_exists",
+              "row_discusses_work_as_work",
+              "context_only",
+              "scope_current_work",
+              "official_detail_url",
+              "work_consumption_marker",
+              "alias_bridge",
+              "serialized_public_identity_scrubbed"
+            ],
+            "bypassed_gate": false,
+            "scope": {
+              "scope_kind": "current_work",
+              "confidence": "high",
+              "direct_bridge_sources": [
+                "row_discusses_work_as_work"
+              ]
+            }
+          },
+          "promotion_gate_state": {
+            "post_id": 11705245,
+            "candidate_title": "하남 남자",
+            "candidate_url": "https://novelpia.com/novel/315683",
+            "source": "known_abbreviation_title_guard:decoder_best_match",
+            "official_title_exists": true,
+            "row_discusses_work_as_work": true,
+            "title_resolution_state": "context_only",
+            "work_resolution": "unresolved",
+            "discussion_type": "",
+            "prior_variance_quarantine": false,
+            "same_title_source_movement": false,
+            "caveated_alias_boundary": false,
+            "scope": {
+              "scope_kind": "current_work",
+              "confidence": "high",
+              "direct_bridge_sources": [
+                "row_discusses_work_as_work"
+              ]
+            }
+          },
+          "promotion_gate_evidence": [
+            {
+              "kind": "official_detail_url",
+              "strength": "strong",
+              "source_path_or_snippet": "https://novelpia.com/novel/315683",
+              "supports_publish": false,
+              "reason_code": "official_detail_url"
+            },
+            {
+              "kind": "work_bridge",
+              "strength": "medium",
+              "source_path_or_snippet": "",
+              "supports_publish": true,
+              "reason_code": "work_consumption_marker"
+            },
+            {
+              "kind": "alias_bridge",
+              "strength": "medium",
+              "source_path_or_snippet": "",
+              "supports_publish": true,
+              "reason_code": "alias_bridge"
+            }
+          ],
+          "official_title_lint_reasons": [],
+          "identity_consistency_lint_reasons": [],
+          "output_consistency_lint_reasons": [],
+          "candidate_audit_lint_reasons": [],
+          "publish_contract_trace": {
+            "pre_gate_candidate": {
+              "official_title": "하남자",
+              "official_url": "https://novel.munpia.com/400210",
+              "source": "candidate_ledger_or_serialized_identity"
+            },
+            "gate_decision": {
+              "status": "candidate_only",
+              "publish_allowed": false,
+              "official_title": null,
+              "official_url": null,
+              "candidate_preserved": true,
+              "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "context_only",
+                "scope_current_work",
+                "official_detail_url",
+                "work_consumption_marker",
+                "alias_bridge",
+                "serialized_public_identity_scrubbed"
+              ],
+              "bypassed_gate": false,
+              "scope": {
+                "scope_kind": "current_work",
+                "confidence": "high",
+                "direct_bridge_sources": [
+                  "row_discusses_work_as_work"
+                ]
+              }
+            },
+            "scope_state": {
+              "scope_kind": "current_work",
+              "confidence": "high",
+              "direct_bridge_sources": [
+                "row_discusses_work_as_work"
+              ]
+            },
+            "post_gate_identity": {
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": false,
+              "title_resolution_state": "context_only",
+              "work_resolution": "none",
+              "candidate_ledger_status": "promotion_blocked"
+            },
+            "reason_codes": [
+              "official_title_exists",
+              "row_discusses_work_as_work",
+              "context_only",
+              "scope_current_work",
+              "official_detail_url",
+              "work_consumption_marker",
+              "alias_bridge",
+              "serialized_public_identity_scrubbed"
+            ],
+            "bypassed_gate": false
+          },
+          "publish_ledger": {
+            "candidate_preservation": {
+              "official_title": "하남자",
+              "official_url": "https://novel.munpia.com/400210",
+              "source": "candidate_ledger_or_serialized_identity"
+            },
+            "public_publish": {
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": false,
+              "title_resolution_state": "context_only",
+              "work_resolution": "none",
+              "candidate_ledger_status": "promotion_blocked"
+            },
+            "gate_decision": {
+              "status": "candidate_only",
+              "publish_allowed": false,
+              "official_title": null,
+              "official_url": null,
+              "candidate_preserved": true,
+              "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "context_only",
+                "scope_current_work",
+                "official_detail_url",
+                "work_consumption_marker",
+                "alias_bridge",
+                "serialized_public_identity_scrubbed"
+              ],
+              "bypassed_gate": false,
+              "scope": {
+                "scope_kind": "current_work",
+                "confidence": "high",
+                "direct_bridge_sources": [
+                  "row_discusses_work_as_work"
+                ]
+              }
+            }
+          }
+        },
+        "candidate_ledger_status": "promotion_blocked",
+        "candidate_generation_miss": false,
+        "promotion_blocked": true,
+        "hold_unresolved": false,
+        "hold_without_candidates": false,
+        "safe_resolved": false,
+        "official_title_lint": [],
+        "identity_consistency_lint": [],
+        "output_consistency_lint": [],
+        "reason": "[판정 요약]\n- 판정: 비관련\n- discussion_type: community_banter\n- 공식 제목: 미확정 (promotion blocked; 후보로만 보존)\n- 핵심 결론: 제목 '하남자'와 정식 제목 '하남자는 딸깍충이 되고 싶다' 불일치\n- 검색 요약: 실행 10건 (유효 10건 / 무결과 0건), 누적 결과 12건 [재시도 쿼리 5건, 추가시도 5회] [캐시히트 8건]\n[원문 해석]\n- 제목: 하남자 재밌냐\n- 본문 요약: [이미지 첨부] / 주인공 첨부터쌤? / - dc official App\n- 댓글 힌트: ㄴㄴ - dc App\n- 표현 오타/축약 패턴(범용)은 packet-local 원문 재검토 신호이며, 특정 정상형/작품 seed로 확정하지 않음\n- 해석 주제: 커뮤니티 은어/밈 중심 잡담\n[전문가별 판단]\n- Gatekeeper: post_type=work_discussion, confidence=medium\n- Discourse: domain=novel_literature, intent=ask_question\n- Decoder: title=하남 남자, confidence=medium\n- Arbiter: discussion_type=community_banter, unanimous=False\n[근거 요약]\n1. [0.76] Verifier.counter_arguments[1]: 제목 '하남자'와 정식 제목 '하남자는 딸깍충이 되고 싶다' 불일치\n2. [0.76] Verifier.counter_arguments[2]: relation_judge:work_specific_nickname\n[LLM 검토]\n- confidence: High\n- note: 제목의 불일치(ID 1)와 작품 고유 명칭 관련성(ID 2)을 결합하여, 특정 작품을 주제로 한 커뮤니티 내 담소임을 명확히 함.\n[최종 종합]\n- 제목 '하남자'와 정식 제목 '하남자는 딸깍충이 되고 싶다' 불일치 | relation_judge:work_specific_nickname\n[정합성 교정]\n- 비관련 근거 검토 confidence: High\n- 검토 메모: 제목의 불일치(ID 1)와 작품 고유 명칭 관련성(ID 2)을 결합하여, 특정 작품을 주제로 한 커뮤니티 내 담소임을 명확히 함.\n이미지는 캐릭터/장면 보조 정보만 제공했으며 OCR/표지 제목 근거는 확인되지 않았습니다.\n[근거 스코어]\n- total: +4\n- evidence_type: +2 (search_platform_url)\n- grounding_anchor: +1 (제목 앵커)\n- decision_alignment: +1 (is_relevant=false, dt=community_banter)\n- executed_queries: 2 (단일 집계 소스)\n- effective_executed_queries: 10 (degraded+무결과 제외 보정치)\n- planned_unique_queries: 26 (참고치, 최종 집계는 executed_queries)\n- evidence_diversity: 0\n[범위 분리]\n- is_novel_related=true\n- is_resolved_work_discussion=false\n- title_resolution_state=context_only\n- title_resolution_allowed=false\n- public title promotion blocked: serialized output kept candidate/HOLD",
+        "reason_lines": [
+          "[판정 요약]",
+          "- 판정: 비관련",
+          "- discussion_type: community_banter",
+          "- 공식 제목: 미확정 (promotion blocked; 후보로만 보존)",
+          "- 핵심 결론: 제목 '하남자'와 정식 제목 '하남자는 딸깍충이 되고 싶다' 불일치",
+          "- 검색 요약: 실행 10건 (유효 10건 / 무결과 0건), 누적 결과 12건 [재시도 쿼리 5건, 추가시도 5회] [캐시히트 8건]",
+          "[원문 해석]",
+          "- 제목: 하남자 재밌냐",
+          "- 본문 요약: [이미지 첨부] / 주인공 첨부터쌤? / - dc official App",
+          "- 댓글 힌트: ㄴㄴ - dc App",
+          "- 표현 오타/축약 패턴(범용)은 packet-local 원문 재검토 신호이며, 특정 정상형/작품 seed로 확정하지 않음",
+          "- 해석 주제: 커뮤니티 은어/밈 중심 잡담",
+          "[전문가별 판단]",
+          "- Gatekeeper: post_type=work_discussion, confidence=medium",
+          "- Discourse: domain=novel_literature, intent=ask_question",
+          "- Decoder: title=하남 남자, confidence=medium",
+          "- Arbiter: discussion_type=community_banter, unanimous=False",
+          "[근거 요약]",
+          "1. [0.76] Verifier.counter_arguments[1]: 제목 '하남자'와 정식 제목 '하남자는 딸깍충이 되고 싶다' 불일치",
+          "2. [0.76] Verifier.counter_arguments[2]: relation_judge:work_specific_nickname",
+          "[LLM 검토]",
+          "- confidence: High",
+          "- note: 제목의 불일치(ID 1)와 작품 고유 명칭 관련성(ID 2)을 결합하여, 특정 작품을 주제로 한 커뮤니티 내 담소임을 명확히 함.",
+          "[최종 종합]",
+          "- 제목 '하남자'와 정식 제목 '하남자는 딸깍충이 되고 싶다' 불일치 | relation_judge:work_specific_nickname",
+          "[정합성 교정]",
+          "- 비관련 근거 검토 confidence: High",
+          "- 검토 메모: 제목의 불일치(ID 1)와 작품 고유 명칭 관련성(ID 2)을 결합하여, 특정 작품을 주제로 한 커뮤니티 내 담소임을 명확히 함.",
+          "이미지는 캐릭터/장면 보조 정보만 제공했으며 OCR/표지 제목 근거는 확인되지 않았습니다.",
+          "[근거 스코어]",
+          "- total: +4",
+          "- evidence_type: +2 (search_platform_url)",
+          "- grounding_anchor: +1 (제목 앵커)",
+          "- decision_alignment: +1 (is_relevant=false, dt=community_banter)",
+          "- executed_queries: 2 (단일 집계 소스)",
+          "- effective_executed_queries: 10 (degraded+무결과 제외 보정치)",
+          "- planned_unique_queries: 26 (참고치, 최종 집계는 executed_queries)",
+          "- evidence_diversity: 0",
+          "[범위 분리]",
+          "- is_novel_related=true",
+          "- is_resolved_work_discussion=false",
+          "- title_resolution_state=context_only",
+          "- title_resolution_allowed=false",
+          "- public title promotion blocked: serialized output kept candidate/HOLD"
+        ],
+        "system_state": "clean",
+        "identity_state": "non_relevant",
+        "candidate_audit_lint": [],
+        "blocked_official_title": "하남자",
+        "blocked_official_title_url": "https://novel.munpia.com/400210",
+        "promotion_decision": {
+          "status": "candidate_only",
+          "publish_allowed": false,
+          "official_title": null,
+          "official_url": null,
+          "candidate_preserved": true,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "context_only",
+            "scope_current_work",
+            "official_detail_url",
+            "work_consumption_marker",
+            "alias_bridge",
+            "serialized_public_identity_scrubbed"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "row_discusses_work_as_work"
+            ]
+          }
+        },
+        "publish_contract_trace": {
+          "pre_gate_candidate": {
+            "official_title": "하남자",
+            "official_url": "https://novel.munpia.com/400210",
+            "source": "candidate_ledger_or_serialized_identity"
+          },
+          "gate_decision": {
+            "status": "candidate_only",
+            "publish_allowed": false,
+            "official_title": null,
+            "official_url": null,
+            "candidate_preserved": true,
+            "reason_codes": [
+              "official_title_exists",
+              "row_discusses_work_as_work",
+              "context_only",
+              "scope_current_work",
+              "official_detail_url",
+              "work_consumption_marker",
+              "alias_bridge",
+              "serialized_public_identity_scrubbed"
+            ],
+            "bypassed_gate": false,
+            "scope": {
+              "scope_kind": "current_work",
+              "confidence": "high",
+              "direct_bridge_sources": [
+                "row_discusses_work_as_work"
+              ]
+            }
+          },
+          "scope_state": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "row_discusses_work_as_work"
+            ]
+          },
+          "post_gate_identity": {
+            "official_title": null,
+            "official_url": null,
+            "title_resolution_allowed": false,
+            "title_resolution_state": "context_only",
+            "work_resolution": "none",
+            "candidate_ledger_status": "promotion_blocked"
+          },
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "context_only",
+            "scope_current_work",
+            "official_detail_url",
+            "work_consumption_marker",
+            "alias_bridge",
+            "serialized_public_identity_scrubbed"
+          ],
+          "bypassed_gate": false
+        },
+        "publish_ledger": {
+          "candidate_preservation": {
+            "official_title": "하남자",
+            "official_url": "https://novel.munpia.com/400210",
+            "source": "candidate_ledger_or_serialized_identity"
+          },
+          "public_publish": {
+            "official_title": null,
+            "official_url": null,
+            "title_resolution_allowed": false,
+            "title_resolution_state": "context_only",
+            "work_resolution": "none",
+            "candidate_ledger_status": "promotion_blocked"
+          },
+          "gate_decision": {
+            "status": "candidate_only",
+            "publish_allowed": false,
+            "official_title": null,
+            "official_url": null,
+            "candidate_preserved": true,
+            "reason_codes": [
+              "official_title_exists",
+              "row_discusses_work_as_work",
+              "context_only",
+              "scope_current_work",
+              "official_detail_url",
+              "work_consumption_marker",
+              "alias_bridge",
+              "serialized_public_identity_scrubbed"
+            ],
+            "bypassed_gate": false,
+            "scope": {
+              "scope_kind": "current_work",
+              "confidence": "high",
+              "direct_bridge_sources": [
+                "row_discusses_work_as_work"
+              ]
+            }
+          }
+        },
+        "promotion_gate_state": {
+          "post_id": 11705245,
+          "candidate_title": "하남 남자",
+          "candidate_url": "https://novelpia.com/novel/315683",
+          "source": "known_abbreviation_title_guard:decoder_best_match",
+          "official_title_exists": true,
+          "row_discusses_work_as_work": true,
+          "title_resolution_state": "context_only",
+          "work_resolution": "unresolved",
+          "discussion_type": "",
+          "prior_variance_quarantine": false,
+          "same_title_source_movement": false,
+          "caveated_alias_boundary": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "row_discusses_work_as_work"
+            ]
+          }
+        }
+      },
+      "analysis": {
+        "detected_titles": [],
+        "micro_tags": [
+          "주인공",
+          "성격/능력"
+        ],
+        "sentiment_profile": {
+          "pacing": "Unknown",
+          "drift_risk": "Unknown",
+          "sentiment": "Neutral"
+        },
+        "is_nsfw": false,
+        "user_segment": null,
+        "notes": "[정합성 교정] 최종 공식 제목은 미확정 상태입니다. promotion-blocked 후보는 candidate_ledger/title_candidates에만 보존합니다."
+      }
+    },
+    "run_meta": {
+      "run_id": "20260704_013515_565357",
+      "model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+      "llm_mode": "remote",
+      "llm_endpoint": "http://10.20.0.101:8000/",
+      "prompt_version": "2026-03-30-semantic-contract-v1",
+      "config_hash": "45e249413b86",
+      "requested_parallel_raw": 1,
+      "requested_parallel": 1,
+      "effective_parallel": 1,
+      "parallel_policy": "effective_parallel=min(requested_parallel,input_post_count)",
+      "model_parallel_max": null,
+      "model_parallel_cap_applied": false,
+      "model_parallel_cap_model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_required_ok_count": 1,
+      "mcp_health_checked_endpoint_count": 8,
+      "mcp_health_probe_batch_size": 8,
+      "mcp_health_probe_stopped_after_required_ok": false,
+      "mcp_health_workers": 4,
+      "mcp_health_attempts": 1,
+      "mcp_health_timeout_sec": 12.0,
+      "mcp_health_search_max_latency_ms": 8000.0,
+      "mcp_health_search_min_results": 1,
+      "mcp_health_ok_count": 8,
+      "mcp_health_failure_count": 0,
+      "search_health": {
+        "queries_issued": 10,
+        "upstream_zero": 0,
+        "degraded": 0,
+        "degraded_zero": 0,
+        "accepted": 60,
+        "raw": 145,
+        "filtered": 0,
+        "retried": 5,
+        "cache_hits": 8,
+        "degraded_zero_suppressed": 0,
+        "fallback_recovered": 10,
+        "degraded_recovered": 0,
+        "unrecovered_degraded": 0,
+        "headless_used": 10,
+        "direct_search_used": 0,
+        "direct_search_results": 0,
+        "status": "ok"
+      },
+      "mcp_healthy_endpoint_filter": false,
+      "mcp_healthy_endpoint_filter_reason": "reuse_shards_only",
+      "mcp_healthy_endpoint_filter_autogen": false,
+      "mcp_healthy_autogen_endpoint_filter": false,
+      "mcp_healthy_autogen_endpoint_filter_reason": "reuse_shards_only",
+      "mcp_reuse_shards_only_health_filtered": false,
+      "mcp_goal_run_health_filtered": false,
+      "mcp_requested_endpoint_count_before_health_filter": 8,
+      "mcp_healthy_endpoint_count": 8,
+      "mcp_endpoint_count_after_health_filter": 8,
+      "mcp_parallel_before_health_filter": 1,
+      "mcp_parallel_after_health_filter": 1,
+      "worker_id": 0,
+      "worker_log_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\logs\\expert_run_20260704_013515_565357.log",
+      "main_log_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\logs\\expert_run_20260704_013515_565357.log"
+    }
+  }
+]

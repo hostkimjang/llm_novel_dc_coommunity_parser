@@ -1,5 +1,37 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop377 Loop376 후 golden18 non-light runtime proof 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] `11705245` 단건 runtime으로 Loop376 계약을 확인했다.
+  - run `20260704_013515_565357`
+  - result/checkpoint `1/1`
+  - public title/url `null/null`
+  - `candidate_ledger_status=promotion_blocked`
+  - publication contract `GO / violations 0`
+- [x] golden18 단일 non-light 런을 완료했다.
+  - run `20260704_014232_863623`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - `large_run_complete=true`
+  - `ordered_flush_blocked=false`
+  - VLM/OCR `READY`
+- [x] runtime health audit를 생성했다.
+  - flush integrity `GO / clean_completed_source`
+  - search evidence `GO`
+  - row search health `ok=16`, degraded `0`
+  - publication contract convergence `GO`, violations `0`
+- [x] expected-answer audit를 생성했다.
+  - `NO-GO / 15 of 18`
+  - failed rows `11663521`, `11668307`, `11698880`
+  - `11705245` expected null 유지
+  - `11700470` image boundary unresolved 보존
+  - `11660237` expected `테라포밍` 통과
+- [x] golden shared collateral compare를 생성했다: regression candidates `7`.
+- [ ] `11698880` wrong title이 남아 있으므로 hard-hold 완화 금지.
+- [ ] full375 collateral approval은 `NOT_OPEN`으로 유지.
+- Gate: new large runs `FROZEN`, golden18 runtime proof `GO / 18 of 18`, search evidence `GO / non-light / degraded 0`, expected-answer `NO-GO / 15 of 18`, golden shared collateral `NO-GO / 7 regressions`, full375 collateral `NOT_OPEN`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop376 11705245 same URL-title mismatch 체크
 
 - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.

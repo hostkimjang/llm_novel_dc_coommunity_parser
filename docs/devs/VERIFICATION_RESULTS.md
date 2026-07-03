@@ -1,5 +1,50 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop377 golden18 after Loop376 non-light runtime proof
+
+- 범위: Loop376 이후 신규 대형 런 없이 `11705245` 단건 runtime과 golden18 단일 non-light 런으로 runtime production, search evidence, publication contract, expected-answer를 분리 검증한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_377_REPORT_20260704.md`
+  - state `docs\devs\loop377_golden18_after_loop376_runtime_20260704.json`
+  - targeted result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop377_11705245_same_url_mismatch_runtime_result.json`
+  - targeted health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop377_11705245_same_url_mismatch_runtime_health_audit.json`
+  - golden result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop377_golden18_after_loop376_a4ea17c3_search_nonlight_result.json`
+  - golden manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop377_golden18_after_loop376_a4ea17c3_search_nonlight_result_manifest.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop377_golden18_after_loop376_runtime_health_audit.json`
+  - expected audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop377_golden18_after_loop376_a4ea17c3_search_nonlight_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop377_golden18_after_loop376_a4ea17c3_collateral.json`
+- Targeted evidence:
+  - run `20260704_013515_565357`
+  - `11705245` final public title/url `null/null`
+  - `candidate_ledger_status=promotion_blocked`, `publish_allowed=false`
+  - flush integrity `GO`, search evidence `GO`, publication contract `GO / violations 0`
+- Runtime evidence:
+  - run `20260704_014232_863623`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - result/checkpoint rows `18/18`
+  - total time `3012.4s`, avg `167.4s/post`
+  - `large_run_complete=true`
+  - VLM/OCR `READY`
+- Health evidence:
+  - flush integrity `GO / clean_completed_source`
+  - search evidence `GO / non-light`
+  - row search health `ok=16`, degraded `0`, query total `140`
+  - publication contract convergence `GO`, violations `0`
+  - reason errors `0`
+- Semantic evidence:
+  - expected-answer audit `NO-GO / 15 of 18`
+  - failed rows:
+    - `11663521`: expected `어떤 마술의 금서목록 / 어떤 과학의 초전자포`, actual `구원자의 퍼스트 레이디`
+    - `11668307`: expected `빚을 져서라도 세상은 구해야 할 거 아니야`, actual `null`
+    - `11698880`: expected `가챠 중독자의 퓨전펑크 생활`, actual `아카데미 생존 갤러리`
+  - `11660237` resolved `테라포밍`
+  - `11705245` expected null 유지
+  - `11700470` public title `null`로 image boundary unresolved 보존
+- Collateral evidence:
+  - golden shared collateral regression candidates `7`
+  - full375 collateral gate remains `NOT_OPEN`
+- Gate: new large runs `FROZEN`, runtime proof `GO / 18 of 18`, search evidence `GO / non-light / degraded 0`, expected-answer `NO-GO / 15 of 18`, golden shared collateral `NO-GO / 7 regressions`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop376 11705245 same URL-title mismatch contract
 
 - 범위: Loop374 expected-answer 실패 `11705245`의 wrong publish를 같은 official URL-title mismatch 계약으로 차단하고, 기존 Loop374 행 postprocess preview로 확인한다.
