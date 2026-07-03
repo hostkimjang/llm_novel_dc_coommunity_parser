@@ -1,0 +1,115 @@
+{
+  "loop": 348,
+  "date": "2026-07-03",
+  "head": "462ec714",
+  "status": "ACTIVE / NOT_COMPLETE",
+  "summary": "현 HEAD에서 stale flip/golden/full375 증거를 대체하기 위한 forced non-light background 런을 발주하고, 11698880을 코드 수리 큐가 아닌 variance_quarantine으로 분리해 residual action queue를 123에서 122로 낮췄다.",
+  "incorrect_light_mode_launches": {
+    "stopped": true,
+    "reason": "초기 발주에서 MCP_HEALTH_LIGHT_MODE 대신 MCP_LIGHT_HEALTH를 사용해 manifest가 light_mode=true로 생성됐으므로 approval evidence에서 제외하고 중단했다.",
+    "stopped_root_pids": [47756, 97372, 109640, 122748]
+  },
+  "forced_nonlight_dispatch": {
+    "common_contract": {
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "slang_db": "off",
+      "vlm": true,
+      "ocr": true,
+      "require_vlm_ocr_for_images": true,
+      "llm_endpoint": "http://10.20.0.101:8000",
+      "llm_model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4"
+    },
+    "search_shard_audit": {
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop348_search_shard_audit_36_before_current_head_dispatch.json",
+      "ok_count": 35,
+      "count": 36,
+      "bad_shards": [1],
+      "used_bad_shard": false
+    },
+    "runs": [
+      {
+        "name": "safe_loss_n5",
+        "pid": 137688,
+        "plan": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop348_search_nonlight_safe_loss_independent_n5_run_plan.json",
+        "work_dir": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop348_search_nonlight_safe_loss_independent_n5_plan",
+        "first_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop348_search_nonlight_safe_loss_independent_n5_plan/results/loop348_safe_loss_current_head_462ec714_search_nonlight_11674712_r01_result_manifest.json",
+        "run_id": "20260703_134313_340607",
+        "input_post_count": 1,
+        "health_ok_failure": "1/0",
+        "planned_result_count": 15,
+        "observed_result_count_at_report": 0
+      },
+      {
+        "name": "full375",
+        "pid": 16352,
+        "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop348_forced_nonlight_full375_current_head_462ec714_result_manifest.json",
+        "run_id": "20260703_134313_519774",
+        "input_post_count": 375,
+        "health_ok_failure": "4/0",
+        "completed_flushed_pending_failed_at_report": "0/0/0/0"
+      },
+      {
+        "name": "completed_source_bounded1200",
+        "pid": 40088,
+        "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop348_forced_nonlight_completed_source_bounded1200_current_head_462ec714_result_manifest.json",
+        "run_id": "20260703_134313_682776",
+        "input_post_count": 1200,
+        "health_ok_failure": "6/0",
+        "completed_flushed_pending_failed_at_report": "0/0/0/0"
+      },
+      {
+        "name": "golden18",
+        "pid": 138056,
+        "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop348_forced_nonlight_golden18_current_head_462ec714_result_manifest.json",
+        "run_id": "20260703_134313_600449",
+        "input_post_count": 18,
+        "health_ok_failure": "2/0",
+        "completed_flushed_pending_failed_at_report": "0/0/0/0"
+      }
+    ]
+  },
+  "variance_quarantine": {
+    "post_id": 11698880,
+    "decision": "variance_quarantine / no immediate code repair",
+    "reason": "제목의 주 대상은 아생갤이고 가챠펑크 언급은 secondary comparison work다. 과거에는 가챠 중독자의 퓨전펑크 생활로 recover된 적도 있고 상남자 오승격 회귀도 있었으므로, N5 완료 전에는 safe-loss repair나 hard-hold 완화 근거가 아니다.",
+    "evidence": [
+      "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop346_current_residual_action_queue_after_loop343_344_closure.json#post_id=11698880",
+      "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop139_loop136_safe_resolved_native_web_review.md#post_id=11698880",
+      "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop157_11698880_stable_alias_descriptor_context_guard_review.md",
+      "docs/devs/loop_reports/LOOP_98_101_REPORT_20260629.md#post_id=11698880"
+    ],
+    "residual_queue_after_quarantine": {
+      "json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop348_current_residual_action_queue_after_11698880_variance_quarantine.json",
+      "markdown": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop348_current_residual_action_queue_after_11698880_variance_quarantine.md",
+      "before": 123,
+      "after": 122,
+      "validation_issue_count": 0,
+      "label_counts": {
+        "REPROCESS": 92,
+        "HOLD": 30
+      }
+    }
+  },
+  "gate": {
+    "dispatch": "GO_FORCED_NONLIGHT_BACKGROUND",
+    "runtime_completion": "IN_PROGRESS / NOT_APPROVAL",
+    "safe_loss_flip": "RUNNING_BACKGROUND / NOT_ANALYZED",
+    "golden18": "RUNNING_BACKGROUND / APPROVAL_NOT_OPEN",
+    "full375": "RUNNING_BACKGROUND / NOT_APPROVAL",
+    "bounded1200": "RUNNING_BACKGROUND / NOT_APPROVAL",
+    "variance_quarantine": "QUEUE_DELTA_123_TO_122 / NOT_APPROVAL",
+    "collateral": "NO-GO / residual_action_queue_rows=122",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next": [
+    "대형 런은 background 감시로 유지한다.",
+    "N5 15/15와 golden18 18/18 완료 전 stale flip/golden 근거를 대체하지 않는다.",
+    "다음 active lane은 residual 122에서 native/source triage 또는 OVERRIDE AUDIT blind judge로 진행한다.",
+    "search degraded 100% 복구 전 promotion_blocked hard-hold 완화는 금지한다."
+  ]
+}

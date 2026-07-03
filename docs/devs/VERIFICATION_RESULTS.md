@@ -1,5 +1,27 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop348 current HEAD forced non-light dispatch / variance quarantine
+
+- 범위: 현 HEAD `462ec714`에서 stale safe-loss flip, 2026-06-28 golden GO, full375/bounded 증거를 forced non-light background 런으로 갱신 준비하고, 대형 런 대기 대신 11698880을 variance quarantine으로 분리한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_348_REPORT_20260703.md`
+  - state `docs\devs\loop348_current_head_forced_nonlight_dispatch_and_variance_quarantine_20260703.json`
+  - shard audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop348_search_shard_audit_36_before_current_head_dispatch.json`
+  - N5 plan `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop348_search_nonlight_safe_loss_independent_n5_run_plan.json`
+  - queue JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop348_current_residual_action_queue_after_11698880_variance_quarantine.json`
+- Runtime evidence:
+  - forced non-light manifests all have `mcp_health_include_search=true`, `mcp_health_light_mode=false`.
+  - N5 first manifest run `20260703_134313_340607`, health `1/0`, result `0/15` at report time.
+  - full375 run `20260703_134313_519774`, health `4/0`, initial `0/0/0/0`.
+  - bounded1200 run `20260703_134313_682776`, health `6/0`, initial `0/0/0/0`.
+  - golden18 run `20260703_134313_600449`, health `2/0`, initial `0/0/0/0`.
+- Queue verification:
+  - `split_collateral_action_queue.py --exclude-post-ids 11698880` PASS.
+  - residual action queue `123 -> 122`.
+  - label counts `REPROCESS=92`, `HOLD=30`.
+  - validation issue `0`.
+- Gate: dispatch `GO_FORCED_NONLIGHT_BACKGROUND`, runtime completion `IN_PROGRESS / NOT_APPROVAL`, safe-loss flip `RUNNING_BACKGROUND / NOT_ANALYZED`, golden18 `RUNNING_BACKGROUND / APPROVAL_NOT_OPEN`, collateral `NO-GO / residual_action_queue_rows=122`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop347 remaining known-alias contract/stall
 
 - 범위: current residual `123` 중 남은 `known_alias_runtime_replay_required=3`을 search 포함 non-light로 재실행하고, runtime이 막히면 코드 계약으로 일반화 가능한 cue만 고정한다.

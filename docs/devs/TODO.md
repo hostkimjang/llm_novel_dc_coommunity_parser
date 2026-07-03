@@ -2,6 +2,22 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop348 TODO
+
+- 상태 업데이트: 현 HEAD `462ec714`에서 forced non-light N5/full375/bounded1200/golden18을 background로 재발주했다. `11698880`은 safe-loss repair가 아니라 primary/secondary scope variance라서 `variance_quarantine`으로 분리했고 residual actionable queue는 `122`다.
+- Loop348 TODO:
+  - [x] 잘못된 light-mode 발주를 중단했다.
+  - [x] forced non-light manifest를 확인했다.
+    - N5 first `include_search=true`, `light_mode=false`
+    - full375/bounded/golden18도 `light_mode=false`
+  - [x] completed-source bounded `1200`건을 현 HEAD에서 새로 발주했다.
+  - [x] full375 replay와 golden18 replay도 현 HEAD에서 새로 발주했다.
+  - [x] `11698880`을 `variance_quarantine`으로 분리해 queue `123 -> 122`를 검증했다.
+  - [ ] N5 `15/15` 결과가 생기면 flip-rate를 blind judge expected와 함께 다시 분석한다.
+  - [ ] golden18 `18/18` 완료와 expected-answer audit 전 2026-06-28 golden GO를 대체하지 않는다.
+  - [ ] full375/bounded1200 completion과 search degraded audit 전 approval 문구를 쓰지 않는다.
+  - [ ] 다음 active lane은 residual `122`에서 native/source triage 또는 `OVERRIDE AUDIT(LLM=False -> final=True)` blind judge로 진행한다.
+
 ## 2026-07-03 regression-safe grounding Loop347 TODO
 
 - 상태 업데이트: 남은 `known_alias_runtime_replay_required=3`을 search 포함 non-light로 재실행했지만 VLM chunk 이후 결과가 없어 runtime replay는 `ABORTED_VLM_STALL / NOT_APPROVAL`이다. 코드 계약은 `11706827`과 `11714907`의 shared curated-alias work cue를 보강했다. Goal은 `ACTIVE / NOT_COMPLETE`, residual actionable queue는 `123` 유지다.

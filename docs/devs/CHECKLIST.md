@@ -1,5 +1,26 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop348 current HEAD forced non-light dispatch / variance quarantine 체크
+
+- [x] 현 HEAD `462ec714`에서 stale flip/golden/full375 증거 갱신용 forced non-light 런을 새 prefix로 발주했다.
+  - safe-loss N5 PID `137688`, plan `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop348_search_nonlight_safe_loss_independent_n5_run_plan.json`
+  - full375 PID `16352`, run `20260703_134313_519774`
+  - bounded1200 completed-source PID `40088`, run `20260703_134313_682776`
+  - golden18 PID `138056`, run `20260703_134313_600449`
+- [x] 초기 light-mode 오발주를 중단하고 approval evidence에서 제외했다.
+  - 원인: `MCP_HEALTH_LIGHT_MODE=0` 대신 잘못된 env를 사용
+  - 중단 root PID `47756`, `97372`, `109640`, `122748`
+- [x] forced non-light manifest 조건을 확인했다.
+  - `mcp_health_include_search=true`
+  - `mcp_health_light_mode=false`
+  - full375 health `4/0`, bounded health `6/0`, golden18 health `2/0`, N5 first health `1/0`
+- [x] 11698880을 code repair queue가 아니라 `variance_quarantine`으로 분리했다.
+  - 근거: primary title은 `아생갤`, `가챠펑크`는 secondary comparison work
+  - queue JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop348_current_residual_action_queue_after_11698880_variance_quarantine.json`
+  - residual action queue `123 -> 122`, validation issue `0`
+- [ ] N5 `15/15`, golden18 `18/18`, full375/bounded completion 전 stale flip/golden/full375 근거를 대체했다고 쓰지 않는다.
+- Gate: dispatch `GO_FORCED_NONLIGHT_BACKGROUND`, completion `IN_PROGRESS / NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=122`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop347 remaining known-alias contract/stall 체크
 
 - [x] Loop346 기준 남은 `known_alias_runtime_replay_required=3` 입력을 구성했다.

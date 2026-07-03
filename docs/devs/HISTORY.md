@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop348 current HEAD forced non-light dispatch and variance quarantine
+
+- 현 HEAD `462ec714`에서 safe-loss N5, full375, bounded1200 completed-source, golden18을 forced non-light background로 재발주했다.
+- 초기 발주는 `light_mode=true`로 생성되어 중단했고, 새 발주는 `MCP_HEALTH_LIGHT_MODE=0`을 명시해 `mcp_health_include_search=true`, `mcp_health_light_mode=false`를 manifest에 남겼다.
+- forced non-light run은 N5 PID `137688`, full375 PID `16352`, bounded1200 PID `40088`, golden18 PID `138056`이다.
+- `11698880`은 primary `아생갤` 글 안의 secondary comparison work `가챠펑크`라서 safe-loss repair나 hard-hold 완화 근거로 쓰지 않고 `variance_quarantine`으로 분리했다.
+- Current residual queue는 `123 -> 122`, label counts `REPROCESS=92`, `HOLD=30`, validation issue `0`이다.
+- Report는 `docs/devs/loop_reports/LOOP_348_REPORT_20260703.md`, state는 `docs/devs/loop348_current_head_forced_nonlight_dispatch_and_variance_quarantine_20260703.json`이다.
+- Gate는 dispatch `GO_FORCED_NONLIGHT_BACKGROUND`, runtime completion `IN_PROGRESS / NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=122`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop347 remaining known-alias contract and VLM stall
 
 - Loop346 current residual `123`에서 남은 `known_alias_runtime_replay_required=3` (`11706827`, `11708443`, `11714907`)을 search 포함 non-light로 재실행했다.
