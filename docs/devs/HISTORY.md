@@ -1,5 +1,19 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop374 signal-idle golden18 runtime proof
+
+- 신규 full375/bounded/N5 대형 런은 발주하지 않았다.
+- `src/llm_batch/llm/client.py`는 공백-only content/reasoning을 first token/progress로 세지 않고, 의미 token 기준 signal idle timeout을 적용한다. 완성 JSON 이후 공백-only stream은 완성 JSON을 보존하고 조기 종료한다.
+- `expert_main.py`는 `LLM_STREAM_SIGNAL_IDLE_TIMEOUT_SECONDS`를 config log와 manifest에 기록한다.
+- 검증은 py_compile PASS, `tests.test_llm_client_stream_timeout` `5` tests PASS다.
+- Golden18 단일 run `20260704_000518_177628`은 input/completed/flushed/pending/failed `18/18/18/0/0`, result/checkpoint rows `18/18`, VLM/OCR `READY`, total time `2613.9s`로 완료됐다.
+- Loop373 frontier `11700470`은 verifier에서 `stream signal idle timeout after 45.01s`가 1회 발생한 뒤 retry로 진행했고, `832.1s` 후 row를 완료했다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, publication contract convergence `GO`, violations `0`, reason errors `0`을 기록했다. Search evidence는 manifest search 미포함 light preflight라 `SEPARATE_AUDIT_REQUIRED`다.
+- Expected-answer audit는 `NO-GO / 13 of 18`이다. 실패는 `11698897`, `11705245`, `11663521`, `11668307`, `11700470`이다.
+- Golden shared collateral compare는 regression 후보 `8`건이다. full375 collateral gate는 열지 않았다.
+- Report는 `docs/devs/loop_reports/LOOP_374_REPORT_20260704.md`, state는 `docs/devs/loop374_golden18_signal_idle_runtime_20260704.json`, health audit는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop374_golden18_signal_idle_runtime_health_audit.json`이다.
+- Gate는 new large runs `FROZEN`, runtime production `GO / 18 of 18`, expected-answer `NO-GO / 13 of 18`, golden shared collateral `NO-GO / 8 regressions`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop373 current HEAD golden18 runtime stall and OVERRIDE AUDIT
 
 - 신규 full375/bounded/N5 대형 런은 발주하지 않았고, current HEAD `e523989f`에서 golden18 단일 런만 실행했다.

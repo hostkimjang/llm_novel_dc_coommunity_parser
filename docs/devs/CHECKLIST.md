@@ -1,5 +1,30 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop374 signal-idle golden18 runtime proof 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 공백/무의미 stream stall 방어를 코드로 보강했다.
+  - `src/llm_batch/llm/client.py`: 의미 있는 content/reasoning signal 기준 idle timeout 추가
+  - `expert_main.py`: `LLM_STREAM_SIGNAL_IDLE_TIMEOUT_SECONDS`를 manifest/config log에 기록
+  - `tests/test_llm_client_stream_timeout.py`: 공백 content, signal idle, JSON 보존 회귀 테스트 추가
+- [x] 검증:
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\llm\client.py expert_main.py tests\test_llm_client_stream_timeout.py` PASS
+  - `.venv312\Scripts\python.exe -m unittest tests.test_llm_client_stream_timeout -v` PASS, `5` tests
+- [x] golden18 단일 post-patch 런을 완료했다.
+  - run `20260704_000518_177628`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - `large_run_complete=true`
+  - VLM/OCR `READY`
+- [x] Loop373 frontier `11700470`이 완료됨을 확인했다.
+  - signal-idle timeout 1회: `verifier stream signal idle timeout after 45.01s`
+  - row 완료: `Post 11700470 완료 (832.1s, 4 iterations)`
+- [x] health audit를 생성했다: flush `GO / clean_completed_source`, publication convergence `GO`, violations `0`.
+- [x] expected-answer audit를 생성했다: `NO-GO / 13 of 18`, failed rows `11698897`, `11705245`, `11663521`, `11668307`, `11700470`.
+- [x] golden shared collateral compare를 생성했다: changed `17`, regression candidates `8`.
+- [ ] 이 결과를 search recovery, semantic approval, full scan approval, hard-hold 완화 근거로 쓰지 않는다.
+- [ ] 다음 loop는 대형 run이 아니라 search recovery P0 또는 expected-answer 실패 5건 중 일반 술어/검증 경로를 줄인다.
+- Gate: new large runs `FROZEN`, golden18 runtime proof `GO / 18 of 18`, expected-answer `NO-GO / 13 of 18`, golden shared collateral `NO-GO / 8 regressions`, full375 collateral `NOT_OPEN`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop373 current HEAD golden18 runtime stall 체크
 
 - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.

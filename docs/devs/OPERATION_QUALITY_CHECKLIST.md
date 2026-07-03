@@ -6,6 +6,24 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-04 Loop374 signal-idle golden18 품질 게이트
+
+- 근거:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았음을 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_374_REPORT_20260704.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop374_golden18_signal_idle_runtime_20260704.json`.
+  - [x] Runtime manifest `18/18/18/0/0`, `large_run_complete=true`를 기록했다.
+  - [x] Health audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop374_golden18_signal_idle_runtime_health_audit.json`.
+  - [x] Expected-answer/collateral Markdown을 한국어로 정리했다.
+  - [x] `11700470` signal-idle retry와 row completion을 같은 보고서에 기록했다.
+- 품질 게이트:
+  - [x] runtime production `GO / 18 of 18`와 semantic approval을 분리한다.
+  - [x] search health 미포함 light preflight를 search recovery로 해석하지 않는다.
+  - [x] `11698880` public title `null`을 hard-hold 완화 근거로 쓰지 않는다.
+  - [x] golden shared collateral `8` regressions를 full375 collateral approval과 분리한다.
+  - [x] search recovery 전 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-03 Loop373 current HEAD golden18 stall quality gate
 
 - 근거:

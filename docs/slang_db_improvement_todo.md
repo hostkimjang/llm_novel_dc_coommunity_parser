@@ -1,5 +1,14 @@
 # Slang DB Improvement TODO
 
+## 2026-07-04 Loop374 signal-idle golden18 slang 주의사항
+
+- [x] 이번 회차는 slang DB write-back이 아니라 runtime stall guard와 golden18 runtime proof다.
+- [x] `--slang-db off` 조건으로 실행했다.
+- [x] `11660237`은 `테라포밍`으로 resolved/pass지만 단일 런 결과만으로 hard-hold 완화를 선언하지 않는다.
+- [x] `11698880`은 `가챠 중독자의 퓨전펑크 생활` evidence preserved unresolved/pass지만 public title은 `null`이다.
+- [ ] search recovery와 expected-answer 실패 5건을 닫기 전 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, golden18 runtime `GO / 18 of 18`, golden expected-answer `NO-GO / 13 of 18`, golden shared collateral `NO-GO / 8 regressions`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop366 golden18 rerun slang caveat
 
 - [x] 이번 회차는 slang DB write-back이 아니라 current HEAD golden18 runtime/semantic 증거 갱신이다.

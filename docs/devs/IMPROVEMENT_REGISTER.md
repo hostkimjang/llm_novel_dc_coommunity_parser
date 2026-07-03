@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260704-374 - signal-idle 런타임 증명과 golden18 완주
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5를 발주하지 않음 | 동결 유지 |
+| stream signal-idle guard | GO_UNIT | 공백 content는 TTFT를 만족하지 않음, signal idle은 retry 유도, 완성 JSON은 보존 | 이후 큰 런에서 관찰 유지 |
+| manifest 계약 | GO_UNIT | `llm_stream_signal_idle_timeout_seconds=45` 기록 | 감사 가능 상태 유지 |
+| golden18 런타임 생산 | GO / 18 of 18 | run `20260704_000518_177628`, manifest `18/18/18/0/0` | 런타임 증명으로만 사용 |
+| Loop373 경계행 `11700470` | 런타임 닫힘 / semantic 열림 | signal-idle retry 관찰, row `832.1s` 완료, 최종 public title `null` | recall/title resolution 별도 수정 |
+| health audit | 런타임 GO / search 분리 | `clean_completed_source`, publication convergence `GO`, search `SEPARATE_AUDIT_REQUIRED` | promotion 완화 전 search 전용 복구 gate 실행 |
+| expected-answer | NO-GO / 13 of 18 | 실패 행 `11698897`, `11705245`, `11663521`, `11668307`, `11700470` | queue-count 회전이 아니라 실패 행 직접 처리 |
+| golden shared collateral | NO-GO / 8 | shared-post collateral만 비교, full375 아님 | full375는 명시 실행 후에만 gate 승격 |
+| 문서 동기화 | 완료 | Loop374 report/state와 TODO/CHECKLIST/VERIFICATION/HISTORY 갱신 | 다음 loop는 semantic/search blocker 감소 필요 |
+
+Gate: new large runs `FROZEN`, golden18 runtime proof `GO / 18 of 18`, expected-answer `NO-GO / 13 of 18`, golden shared collateral `NO-GO / 8 regressions`, full375 collateral `NOT_OPEN`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260703-373 - current HEAD golden18 runtime stall and OVERRIDE AUDIT
 
 | Item | Status | Evidence | Next action |

@@ -755,6 +755,9 @@ class LLMClient:
         sse_event_count = 0
         content_chunk_count = 0
         reasoning_chunk_count = 0
+        whitespace_content_chunk_count = 0
+        signal_chunk_count = 0
+        last_signal_at: Optional[float] = None
         
         # ── 반복 루프 다계층 방어 ──
         loop_detected = False
@@ -808,11 +811,15 @@ class LLMClient:
 
         _STREAM_FIRST_TOKEN_TIMEOUT_S = _stream_timeout_env("LLM_STREAM_FIRST_TOKEN_TIMEOUT_SECONDS")
         _STREAM_IDLE_TIMEOUT_S = _stream_timeout_env("LLM_STREAM_IDLE_TIMEOUT_SECONDS")
+        _STREAM_SIGNAL_IDLE_TIMEOUT_S = _stream_timeout_env("LLM_STREAM_SIGNAL_IDLE_TIMEOUT_SECONDS")
+        if _STREAM_SIGNAL_IDLE_TIMEOUT_S is None:
+            _STREAM_SIGNAL_IDLE_TIMEOUT_S = _STREAM_IDLE_TIMEOUT_S
         _stream_read_timeout_candidates = [
             value
             for value in (
                 _STREAM_FIRST_TOKEN_TIMEOUT_S,
                 _STREAM_IDLE_TIMEOUT_S,
+                _STREAM_SIGNAL_IDLE_TIMEOUT_S,
             )
             if value is not None
         ]
@@ -820,6 +827,20 @@ class LLMClient:
         if _stream_read_timeout_candidates:
             _stream_read_timeout_s = min([self.timeout_s, *_stream_read_timeout_candidates])
             _stream_timeout = httpx.Timeout(self.timeout_s, read=_stream_read_timeout_s)
+
+        def _record_stream_signal(kind: str, now: float) -> None:
+            nonlocal first_token_at, last_signal_at, signal_chunk_count
+            signal_chunk_count += 1
+            last_signal_at = now
+            if first_token_at is None:
+                first_token_at = now
+                ts_ttft = self._timestamp()
+                print(
+                    f"[{ts_ttft}][llm-stream] ⏱️ {tag} TTFT={first_token_at - _start:.2f}s "
+                    f"({kind} first signal, events={sse_event_count})",
+                    file=sys.stderr,
+                    flush=True,
+                )
         
         try:
             # httpx streaming with iter_text() for better SSE handling
@@ -832,6 +853,33 @@ class LLMClient:
                     if loop_detected:
                         break
                     _chunk_now = _time.time()
+                    if (
+                        last_signal_at is not None
+                        and _STREAM_SIGNAL_IDLE_TIMEOUT_S is not None
+                        and (_chunk_now - last_signal_at) >= _STREAM_SIGNAL_IDLE_TIMEOUT_S
+                    ):
+                        _signal_gap = _chunk_now - last_signal_at
+                        if _json_complete_pos >= 0:
+                            ts_signal = self._timestamp()
+                            print(
+                                f"\n[{ts_signal}][llm-stream] ⚠️ {tag} JSON 완성 후 의미 토큰 공백 "
+                                f"{_signal_gap:.2f}s 감지, 완성 JSON 보존 후 조기 종료 "
+                                f"(limit={_STREAM_SIGNAL_IDLE_TIMEOUT_S:.2f}s, "
+                                f"events={sse_event_count}, content_chunks={content_chunk_count}, "
+                                f"whitespace_content_chunks={whitespace_content_chunk_count}, "
+                                f"signals={signal_chunk_count})",
+                                file=sys.stderr,
+                                flush=True,
+                            )
+                            loop_detected = True
+                            break
+                        raise httpx.ReadTimeout(
+                            f"{tag} stream signal idle timeout after {_signal_gap:.2f}s "
+                            f"(limit={_STREAM_SIGNAL_IDLE_TIMEOUT_S:.2f}s, "
+                            f"events={sse_event_count}, content_chunks={content_chunk_count}, "
+                            f"whitespace_content_chunks={whitespace_content_chunk_count}, "
+                            f"signals={signal_chunk_count})"
+                        )
                     if last_chunk_at is not None:
                         _gap = _chunk_now - last_chunk_at
                         if _gap >= _STREAM_GAP_WARN_S:
@@ -898,15 +946,8 @@ class LLMClient:
                                     reasoning = delta.get("reasoning_content", "")
                                     if reasoning:
                                         reasoning_chunk_count += 1
-                                        if first_token_at is None:
-                                            first_token_at = _time.time()
-                                            ts_ttft = self._timestamp()
-                                            print(
-                                                f"[{ts_ttft}][llm-stream] ⏱️ {tag} TTFT={first_token_at - _start:.2f}s "
-                                                f"(reasoning first chunk, events={sse_event_count})",
-                                                file=sys.stderr,
-                                                flush=True,
-                                            )
+                                        if reasoning.strip():
+                                            _record_stream_signal("reasoning", _chunk_now)
                                         # reasoning은 출력만 하고 acc에는 추가하지 않음 (최종 JSON에 포함 안됨)
                                         token_count += 1
                                         if not quiet:
@@ -917,15 +958,10 @@ class LLMClient:
                                         _json_was_complete = _json_complete_pos >= 0
                                         _acc_len_before_piece = sum(len(s) for s in acc)
                                         content_chunk_count += 1
-                                        if first_token_at is None:
-                                            first_token_at = _time.time()
-                                            ts_ttft = self._timestamp()
-                                            print(
-                                                f"[{ts_ttft}][llm-stream] ⏱️ {tag} TTFT={first_token_at - _start:.2f}s "
-                                                f"(content first chunk, events={sse_event_count})",
-                                                file=sys.stderr,
-                                                flush=True,
-                                            )
+                                        if piece.strip():
+                                            _record_stream_signal("content", _chunk_now)
+                                        else:
+                                            whitespace_content_chunk_count += 1
                                         acc.append(piece)
                                         token_count += 1
                                         if not quiet:

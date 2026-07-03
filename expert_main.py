@@ -4960,6 +4960,14 @@ def main() -> None:
         _set_env("LLM_STREAM_FIRST_TOKEN_TIMEOUT_SECONDS", str(_CLI_ARGS.llm_stream_first_token_timeout))
     if _CLI_ARGS.llm_stream_idle_timeout is not None:
         _set_env("LLM_STREAM_IDLE_TIMEOUT_SECONDS", str(_CLI_ARGS.llm_stream_idle_timeout))
+    if (
+        not os.getenv("LLM_STREAM_SIGNAL_IDLE_TIMEOUT_SECONDS")
+        and os.getenv("LLM_STREAM_IDLE_TIMEOUT_SECONDS")
+    ):
+        _set_env(
+            "LLM_STREAM_SIGNAL_IDLE_TIMEOUT_SECONDS",
+            os.getenv("LLM_STREAM_IDLE_TIMEOUT_SECONDS", ""),
+        )
     _set_env(
         "LLM_VLM_FETCH_TIMEOUT",
         str(_CLI_ARGS.vlm_fetch_timeout if _CLI_ARGS.vlm_fetch_timeout is not None else os.getenv("LLM_VLM_FETCH_TIMEOUT", "12")),
@@ -5085,6 +5093,16 @@ def main() -> None:
         "[config] llm_suspend_on_anomaly={enabled}, llm_suspend_threshold={threshold}".format(
             enabled=os.getenv("LLM_SUSPEND_ON_SERVER_ANOMALY", "1"),
             threshold=os.getenv("LLM_SUSPEND_FAILURE_THRESHOLD", "3"),
+        ),
+        file=sys.stderr,
+        flush=True,
+    )
+    print(
+        "[config] llm_stream_first_token_timeout={first}, llm_stream_idle_timeout={idle}, "
+        "llm_stream_signal_idle_timeout={signal}".format(
+            first=os.getenv("LLM_STREAM_FIRST_TOKEN_TIMEOUT_SECONDS", ""),
+            idle=os.getenv("LLM_STREAM_IDLE_TIMEOUT_SECONDS", ""),
+            signal=os.getenv("LLM_STREAM_SIGNAL_IDLE_TIMEOUT_SECONDS", ""),
         ),
         file=sys.stderr,
         flush=True,
@@ -6258,6 +6276,10 @@ def main() -> None:
                     ),
                     "llm_stream_idle_timeout_seconds": os.getenv(
                         "LLM_STREAM_IDLE_TIMEOUT_SECONDS",
+                        "",
+                    ),
+                    "llm_stream_signal_idle_timeout_seconds": os.getenv(
+                        "LLM_STREAM_SIGNAL_IDLE_TIMEOUT_SECONDS",
                         "",
                     ),
                     "input_post_count": len(posts),

@@ -2,6 +2,21 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-04 regression-safe grounding Loop374 TODO
+
+- 상태 업데이트: Loop373의 `11700470` runtime stall을 재발주 반복으로 처리하지 않고 stream signal-idle guard를 코드/테스트로 보강한 뒤 golden18 단일 런을 완료했다. Runtime은 `18/18`, expected-answer는 `NO-GO / 13 of 18`이다.
+- Loop374 TODO:
+  - [x] 공백-only content/reasoning이 first token 또는 progress signal로 계산되지 않게 했다.
+  - [x] 의미 token 이후 공백/무의미 stream이 `LLM_STREAM_SIGNAL_IDLE_TIMEOUT_SECONDS`를 넘으면 `ReadTimeout`으로 재시도하게 했다.
+  - [x] 완성 JSON 이후 공백-only stream은 완성 JSON을 보존하고 조기 종료하게 했다.
+  - [x] signal-idle 값을 `expert_main.py` config log와 manifest에 기록했다.
+  - [x] focused stream timeout unittest `5` tests PASS와 py_compile PASS를 확인했다.
+  - [x] golden18 단일 런 `20260704_000518_177628`을 완료하고 manifest `18/18/18/0/0`을 확인했다.
+  - [x] `11700470`은 `832.1s` 후 완료됐지만 final public title은 `null`이라 expected-answer 실패로 유지했다.
+  - [ ] search recovery는 이 런에서 열지 않는다. manifest health가 search 미포함 light preflight다.
+  - [ ] 다음 loop는 search P0 또는 failed rows `11698897`, `11705245`, `11663521`, `11668307`, `11700470` 중 하나를 일반 술어/검증으로 줄인다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop373 TODO
 
 - 상태 업데이트: current HEAD `e523989f`에서 golden18 단일 런만 실행했지만 `11700470` frontier에서 공백 stream/arbiter stall이 발생해 `18/18` 완주에 실패했다. 신규 대형 런은 계속 동결했고, 같은 failed run 반복은 중단한다.

@@ -1,0 +1,86 @@
+{
+  "loop": 374,
+  "date": "2026-07-04",
+  "head": "de0eec1d+worktree",
+  "scope": "post-patch golden18 single runtime proof with stream signal idle guard",
+  "large_runs": "FROZEN",
+  "run": {
+    "run_id": "20260704_000518_177628",
+    "input_count": 18,
+    "completed_count": 18,
+    "flushed_count": 18,
+    "pending_count": 0,
+    "failed_count": 0,
+    "result_rows": 18,
+    "checkpoint_rows": 18,
+    "large_run_complete": true,
+    "ordered_flush_blocked": false,
+    "partial_flush_gap": false,
+    "total_time_seconds": 2613.9,
+    "avg_time_per_post_seconds": 145.2
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_374_REPORT_20260704.md",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop374_golden18_signal_idle_de0eec1d_worktree_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop374_golden18_signal_idle_de0eec1d_worktree_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop374_golden18_signal_idle_de0eec1d_worktree_result_checkpoint.jsonl",
+    "pending_snapshot": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop374_golden18_signal_idle_de0eec1d_worktree_result_pending_snapshot.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop374_golden18_signal_idle_runtime_health_audit.json",
+    "expected_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop374_golden18_signal_idle_de0eec1d_worktree_audit.json",
+    "expected_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop374_golden18_signal_idle_de0eec1d_worktree_audit.md",
+    "collateral_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop374_golden18_signal_idle_de0eec1d_worktree_collateral.json",
+    "collateral_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop374_golden18_signal_idle_de0eec1d_worktree_collateral.md"
+  },
+  "stream_guard": {
+    "llm_stream_first_token_timeout_seconds": "45.0",
+    "llm_stream_idle_timeout_seconds": "45.0",
+    "llm_stream_signal_idle_timeout_seconds": "45",
+    "observed_signal_idle_timeout": true,
+    "observed_signal_idle_line": "ReadTimeout: verifier stream signal idle timeout after 45.01s",
+    "frontier_post_id": 11700470,
+    "frontier_completed": true,
+    "frontier_elapsed_seconds": 832.1
+  },
+  "health_audit": {
+    "flush_integrity_gate": "GO",
+    "flush_integrity_classification": "clean_completed_source",
+    "search_evidence_gate": "SEPARATE_AUDIT_REQUIRED",
+    "search_blockers": [
+      "manifest_search_health_not_included",
+      "manifest_light_health_only"
+    ],
+    "publication_contract_convergence": "GO",
+    "publication_contract_violation_count": 0,
+    "reason_error_count": 0
+  },
+  "expected_answer_audit": {
+    "canary_semantic_gate": "NO-GO",
+    "passed_count": 13,
+    "failed_count": 5,
+    "failed_post_ids": [
+      11698897,
+      11705245,
+      11663521,
+      11668307,
+      11700470
+    ]
+  },
+  "collateral": {
+    "scope": "golden_canary_shared_posts_only",
+    "changed_post_count": 17,
+    "collateral_regression_count": 8,
+    "full375_collateral_gate": "NOT_OPEN"
+  },
+  "gate": {
+    "new_large_runs": "FROZEN",
+    "golden18_runtime_proof": "GO / 18 of 18",
+    "expected_answer": "NO-GO / 13 of 18",
+    "golden_shared_collateral": "NO-GO / 8 regression candidates",
+    "full375_collateral": "NOT_OPEN",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

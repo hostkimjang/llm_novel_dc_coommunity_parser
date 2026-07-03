@@ -1,5 +1,42 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop374 signal-idle golden18 runtime proof
+
+- 범위: Loop373의 `11700470` runtime stall을 반복 재발주하지 않고 stream signal-idle guard를 구현한 뒤 golden18 단일 런으로 row 생산성을 검증한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_374_REPORT_20260704.md`
+  - state `docs\devs\loop374_golden18_signal_idle_runtime_20260704.json`
+  - result JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop374_golden18_signal_idle_de0eec1d_worktree_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop374_golden18_signal_idle_de0eec1d_worktree_result_manifest.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop374_golden18_signal_idle_runtime_health_audit.json`
+  - expected audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop374_golden18_signal_idle_de0eec1d_worktree_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop374_golden18_signal_idle_de0eec1d_worktree_collateral.json`
+- Code verification:
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\llm\client.py expert_main.py tests\test_llm_client_stream_timeout.py` PASS
+  - `.venv312\Scripts\python.exe -m unittest tests.test_llm_client_stream_timeout -v` PASS, `5` tests
+- Runtime evidence:
+  - run `20260704_000518_177628`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - result/checkpoint rows `18/18`
+  - total time `2613.9s`, avg `145.2s/post`
+  - VLM/OCR `READY`
+  - `llm_stream_signal_idle_timeout_seconds=45`
+  - `11700470` completed after `832.1s`; verifier signal-idle timeout fired once and retry continued.
+- Health evidence:
+  - flush integrity `GO / clean_completed_source`
+  - publication contract convergence `GO`, violations `0`
+  - reason errors `0`
+  - search evidence `SEPARATE_AUDIT_REQUIRED`, blockers `manifest_search_health_not_included`, `manifest_light_health_only`
+- Semantic evidence:
+  - expected-answer audit `NO-GO / 13 of 18`
+  - failed rows `11698897`, `11705245`, `11663521`, `11668307`, `11700470`
+  - `11660237` resolved `테라포밍`
+  - `11698880` expected evidence preserved but public title remains `null`, so hard-hold relaxation is still not open.
+- Collateral evidence:
+  - golden shared collateral regression candidates `8`
+  - full375 collateral gate remains `NOT_OPEN`
+- Gate: new large runs `FROZEN`, runtime production `GO / 18 of 18`, expected-answer `NO-GO / 13 of 18`, golden shared collateral `NO-GO / 8 regressions`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop373 current HEAD golden18 runtime stall
 
 - 범위: current HEAD `e523989f`에서 신규 대형 런 없이 golden18 단일 런으로 runtime row 생산성을 검증하고, runtime이 필요 없는 `11708445` OVERRIDE AUDIT를 source-native로 강제 고정한다.
