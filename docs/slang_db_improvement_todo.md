@@ -1,5 +1,12 @@
 # Slang DB Improvement TODO
 
+## 2026-07-03 Loop357 known-alias comparison boundary caveat
+
+- [x] 이번 회차는 slang DB write-back이 아니라 known-title abbreviation comparison boundary 계약 보정이다.
+- [x] `괴담텔` primary alias release와 `괴담동` comparison target 차단을 분리했다.
+- [ ] runtime replay 전까지 alias/slang 품질 승인 또는 residual closure로 세지 않는다.
+- Gate: slang DB write-back 아님, code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop356 current HEAD evidence refresh caveat
 
 - [x] 이번 회차는 slang DB write-back이 아니라 current HEAD runtime evidence refresh 발주다.

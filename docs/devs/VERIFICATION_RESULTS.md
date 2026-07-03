@@ -1,5 +1,26 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop357 known-alias comparison boundary repair
+
+- 범위: `known_alias_runtime_replay_required=3`에서 runtime stall을 반복하지 않고, known-title abbreviation 비교문 경계를 unit contract로 먼저 보정한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_357_REPORT_20260703.md`
+  - state `docs\devs\loop357_known_alias_comparison_boundary_20260703.json`
+  - code `src\llm_batch\agentic_pipeline.py`
+  - tests `tests\test_known_title_abbreviation_safe_loss_contract.py`
+- Failure evidence:
+  - `괴담텔 이번 전개는 괴담동이 살짝 생각나네`에서 뒤쪽 comparison alias `괴담동 -> 괴담 동아리`가 current-work anchor로 release됐다.
+  - 기대 동작은 primary alias `괴담텔 -> 괴담 호텔 탈출기`만 release하고, comparison target은 release하지 않는 것이다.
+- Fix evidence:
+  - `_known_title_abbreviation_alias_is_comparison_only_reference(...)`가 비교 cue 앞 primary alias와 비교대상 alias 순서를 확인해 뒤쪽 alias 승격을 차단한다.
+  - primary alias positive control은 유지한다.
+- Verification commands:
+  - `.\.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_known_title_abbreviation_safe_loss_contract.py` PASS.
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_known_title_abbreviation_safe_loss_contract -v` PASS (`12` tests).
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_regression_safe_work_bridge_contract tests.test_arbiter_curated_alias_guard tests.test_split_collateral_action_queue -v` PASS (`29` tests).
+- Background caveat: full375/bounded1200/golden18/safe-loss N5 current HEAD runs are still partial or background and approval 근거가 아니다.
+- Gate: code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, residual `NO_DELTA / remains 105`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop356 current HEAD background dispatch
 
 - 범위: Loop355 이후 현 HEAD `4ebe824b`에서 stale flip/golden/full375/bounded 증거 갱신용 background run을 search 포함 non-light 조건으로 발주한다.

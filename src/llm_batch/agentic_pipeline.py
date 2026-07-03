@@ -16314,6 +16314,13 @@ class AgenticPipeline:
         if not matched_alias:
             return False
 
+        title_text_for_anchor = str(post_data.get("title") or post_data.get("normalized_title") or "")
+        if self._known_title_abbreviation_alias_is_comparison_only_reference(
+            title_text_for_anchor,
+            matched_alias,
+        ):
+            return False
+
         discourse_out = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
         discourse = (discourse_out.get("discourse_analysis") or {}) if isinstance(discourse_out, dict) else {}
         if not isinstance(discourse, dict):
@@ -16362,11 +16369,10 @@ class AgenticPipeline:
             "recommendation_request",
         }
         if recommendation_request or recommendation_surface or recommendation_intent:
-            title_text = str(post_data.get("title") or post_data.get("normalized_title") or "")
             alias_title_work_cue = bool(
                 matched_alias
-                and self._curated_alias_surface_in_text(title_text, matched_alias)
-                and _has_curated_alias_work_discussion_cue(title_text)
+                and self._curated_alias_surface_in_text(title_text_for_anchor, matched_alias)
+                and _has_curated_alias_work_discussion_cue(title_text_for_anchor)
             )
             explicit_recommendation_query = bool(
                 recommendation_request
@@ -16469,6 +16475,44 @@ class AgenticPipeline:
         except Exception:
             pass
         return True
+
+    def _known_title_abbreviation_alias_is_comparison_only_reference(
+        self,
+        title_text: str,
+        alias_text: str,
+    ) -> bool:
+        """Block the right-hand comparison alias from becoming the current work anchor."""
+        text = str(title_text or "").strip()
+        alias = str(alias_text or "").strip()
+        if not text or not alias:
+            return False
+        cue_match = re.search(
+            r"(생각나(?:네|는데)?|떠오르(?:네|는데)?|느낌(?:이라|인데|나는데|임|이야)?|"
+            r"비슷(?:하네|하다|한)|연상(?:되네|됨)?|닮(?:았|은|았네)?|같(?:네|다|음))",
+            text,
+        )
+        if not cue_match:
+            return False
+        cue_start = cue_match.start()
+        alias_matches = list(re.finditer(re.escape(alias), text))
+        if not alias_matches:
+            return False
+        first_alias_before_cue = next((m for m in alias_matches if m.start() < cue_start), None)
+        if not first_alias_before_cue:
+            return False
+        prefix_before_alias = text[: first_alias_before_cue.start()]
+        if not prefix_before_alias.strip():
+            return False
+        for other_alias, other_title in (KNOWN_TITLE_ABBREVIATIONS or {}).items():
+            other_alias_text = str(other_alias or "").strip()
+            other_title_text = str(other_title or "").strip()
+            if not other_alias_text or other_alias_text == alias:
+                continue
+            if self._normalize_match_text(other_title_text) == self._normalize_match_text(alias):
+                continue
+            if self._curated_alias_surface_in_text(prefix_before_alias, other_alias_text):
+                return True
+        return False
 
     def _known_title_abbreviation_post_work_bridge(
         self,

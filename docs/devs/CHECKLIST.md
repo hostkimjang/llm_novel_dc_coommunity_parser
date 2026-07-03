@@ -1,5 +1,20 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop357 known-alias comparison boundary 체크
+
+- [x] active lane을 `known_alias_runtime_replay_required=3` contract audit로 전환했다.
+- [x] 실패를 재현했다.
+  - `tests.test_known_title_abbreviation_safe_loss_contract.test_comparison_only_adjacent_alias_does_not_release_known_title_abbreviation`
+  - 문제: `괴담텔 ... 괴담동이 생각나네`에서 뒤쪽 comparison alias `괴담동 -> 괴담 동아리`가 current-work anchor로 release됐다.
+- [x] `src/llm_batch/agentic_pipeline.py`에 comparison-only alias 차단 helper를 추가했다.
+- [x] primary alias positive control을 추가했다.
+- [x] 검증:
+  - `py_compile` PASS
+  - known-title abbreviation safe-loss contract `12` tests PASS
+  - work-bridge/arbiter/split-queue bundle `29` tests PASS
+- [ ] runtime replay 전까지 residual closure나 approval을 선언하지 않는다.
+- Gate: code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, residual `NO_DELTA / remains 105`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop356 current HEAD background dispatch 체크
 
 - [x] 현 HEAD `4ebe824b`에서 stale evidence refresh 발주를 새 prefix로 분리했다.

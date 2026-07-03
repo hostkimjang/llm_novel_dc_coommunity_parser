@@ -167,6 +167,17 @@ class KnownTitleAbbreviationSafeLossContractTest(unittest.TestCase):
 
         self.assertFalse(allowed)
 
+    def test_comparison_primary_alias_still_releases_known_title_abbreviation(self):
+        ctx = self._ctx(
+            post_id=11660232,
+            title="괴담텔 이번 전개는 괴담동이 살짝 생각나네",
+            body="현재 전개 비교 얘기",
+        )
+
+        allowed = self.pipeline._known_title_abbreviation_update_question_anchor(ctx, "괴담 호텔 탈출기")
+
+        self.assertTrue(allowed)
+
     def test_middle_age_modern_alias_without_work_consumption_cue_does_not_release(self):
         ctx = self._ctx(
             post_id=11668283,

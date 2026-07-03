@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop357 Addendum - known-alias comparison boundary
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop357은 approval 회차가 아니라 `known_alias_runtime_replay_required=3` lane에서 stalled replay 반복을 멈추고 comparison-only adjacent alias release를 unit contract로 보정한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_357_REPORT_20260703.md`, state `docs/devs/loop357_known_alias_comparison_boundary_20260703.json`, code `src/llm_batch/agentic_pipeline.py`, tests `tests/test_known_title_abbreviation_safe_loss_contract.py`.
+- Failure: `괴담텔 이번 전개는 괴담동이 살짝 생각나네`에서 primary alias `괴담텔`이 아니라 비교대상 `괴담동 -> 괴담 동아리`도 current-work anchor로 release됐다.
+- Fix: `_known_title_abbreviation_alias_is_comparison_only_reference(...)`를 추가해 비교 cue 뒤쪽 alias 승격을 차단하고, primary alias release positive control은 유지했다.
+- Verification: `py_compile` PASS, known-title abbreviation safe-loss contract `12` tests PASS, work-bridge/arbiter/split-queue bundle `29` tests PASS.
+- Boundary: runtime replay는 아직 없고 residual action queue는 `105`, queue delta `0`이다.
+- Gate: code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop356 Addendum - current HEAD background dispatch
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop356은 approval 회차가 아니라 Loop355 이후 현 HEAD `4ebe824b`에서 stale flip/golden/full375/bounded 증거를 갱신할 background run을 새 prefix로 발주한 회차다.

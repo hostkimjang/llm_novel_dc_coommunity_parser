@@ -1,5 +1,16 @@
 # Improvement Register
 
+## IMP-20260703-357 - known-alias comparison boundary
+
+| Item | Status | Evidence | Next action |
+| --- | --- | --- | --- |
+| Comparison-only adjacent alias | Fixed in unit contract / not runtime-approved | `괴담텔 ... 괴담동이 생각나네`에서 `괴담동 -> 괴담 동아리` release 실패를 재현 후 차단 | Run non-light targeted replay for `known_alias_runtime_replay_required=3` |
+| Primary alias preservation | Positive control PASS | `괴담텔 -> 괴담 호텔 탈출기` release remains true | Keep primary subject release while blocking comparison target |
+| Verification | PASS | py_compile, safe-loss contract `12`, work-bridge/arbiter/split-queue `29` | Re-run broader bundle only if runtime replay changes behavior |
+| Goal gate | Still open | residual action queue `105`, queue delta `0` | Do not claim approval before runtime replay and search recovery |
+
+Gate: code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260703-356 - current HEAD background dispatch
 
 | Item | Status | Evidence | Next action |

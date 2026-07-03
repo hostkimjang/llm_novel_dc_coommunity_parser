@@ -6,6 +6,20 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-03 Loop357 known-alias comparison boundary quality gate
+
+- 근거:
+  - [x] `known_alias_runtime_replay_required=3`를 동일 stalled replay가 아니라 contract audit로 전환했다.
+  - [x] comparison-only adjacent alias 실패를 재현했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_357_REPORT_20260703.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop357_known_alias_comparison_boundary_20260703.json`.
+  - [x] 관련 unit 검증 PASS를 기록했다.
+- 품질 게이트:
+  - [x] comparison target release 차단과 primary alias release 보존을 동시에 확인한다.
+  - [x] runtime replay 전 residual closure를 선언하지 않는다.
+  - [x] search recovery 전 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-03 Loop356 current HEAD background dispatch quality gate
 
 - 근거:

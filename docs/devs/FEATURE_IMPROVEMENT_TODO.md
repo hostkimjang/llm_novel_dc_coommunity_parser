@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop357 known-alias comparison boundary follow-up
+  - 상태: code_contract_go_unit / runtime_not_run_after_patch / residual_queue_105 / search_recovery_p0_open
+  - 적용: `괴담텔 ... 괴담동이 생각나네` 같은 비교문에서 뒤쪽 comparison alias가 current-work anchor로 release되지 않도록 보정했다.
+  - 산출물: `docs/devs/loop_reports/LOOP_357_REPORT_20260703.md`, `docs/devs/loop357_known_alias_comparison_boundary_20260703.json`.
+  - 완료 기준: `known_alias_runtime_replay_required=3`이 search 포함 non-light runtime에서 flush되고, actionable queue 감소와 동일 packet `safe_resolved` 단조 비감소가 함께 확인돼야 한다. 그 전까지 residual `105`, approval not open, `promotion_blocked=search-blind conditional`을 유지한다.
+
 - [ ] Loop356 current HEAD background dispatch follow-up
   - 상태: current_head_4ebe824b / background_launched / approval_not_open / search_recovery_p0_open
   - 적용: safe-loss N5, full375, bounded1200 completed-source, golden18을 search 포함 non-light로 새 발주했다.

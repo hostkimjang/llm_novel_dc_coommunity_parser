@@ -1,0 +1,88 @@
+{
+  "loop": 357,
+  "date": "2026-07-03",
+  "scope": "known-alias comparison-only adjacent alias boundary repair",
+  "base_head": "e2446ef0",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "summary": {
+    "approval": "NOT_OPEN",
+    "residual_action_queue_rows": 105,
+    "queue_delta": 0,
+    "runtime_rows_closed": 0,
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional"
+  },
+  "trigger": {
+    "active_lane": "known_alias_runtime_replay_required=3",
+    "target_post_ids": [11706827, 11708443, 11714907],
+    "initial_contract_check": "FAIL / tests.test_known_title_abbreviation_safe_loss_contract.test_comparison_only_adjacent_alias_does_not_release_known_title_abbreviation",
+    "problem": "A 작품 전개가 B 작품을 생각나게 한다는 비교문에서 B쪽 known-title abbreviation alias가 current-work anchor로 release됐다.",
+    "example": {
+      "post_id": 11660232,
+      "title": "괴담텔 이번 전개는 괴담동이 살짝 생각나네",
+      "blocked_candidate": "괴담 동아리",
+      "preserved_primary_candidate": "괴담 호텔 탈출기"
+    }
+  },
+  "code_change": {
+    "files": [
+      "src/llm_batch/agentic_pipeline.py",
+      "tests/test_known_title_abbreviation_safe_loss_contract.py"
+    ],
+    "new_guard": "_known_title_abbreviation_alias_is_comparison_only_reference",
+    "meaning": "known-title abbreviation bridge에서 비교 cue 앞에 다른 known alias가 먼저 있고 현재 alias가 comparison reference로만 쓰이면 release를 막는다.",
+    "positive_control": "같은 비교문에서도 앞쪽 primary alias인 괴담텔 -> 괴담 호텔 탈출기는 계속 release된다."
+  },
+  "background_snapshot": {
+    "safe_loss_n5_first": {
+      "run_id": "20260703_153459_689254",
+      "completed_flushed_pending_failed": "0/0/0/0",
+      "health": "1/0",
+      "gate": "RUNNING_BACKGROUND / NOT_ANALYZED_FULL_N5"
+    },
+    "full375": {
+      "run_id": "20260703_153340_038764",
+      "completed_flushed_pending_failed": "1/1/0/0",
+      "health": "3/0",
+      "gate": "RUNNING_BACKGROUND / NOT_APPROVAL"
+    },
+    "bounded1200": {
+      "run_id": "20260703_153419_850261",
+      "completed_flushed_pending_failed": "3/0/3/0",
+      "ordered_flush_blocked": true,
+      "health": "6/0",
+      "gate": "IN_PROGRESS_OR_PARTIAL / NOT_APPROVAL"
+    },
+    "golden18": {
+      "run_id": "20260703_153440_182245",
+      "completed_flushed_pending_failed": "1/1/0/0",
+      "health": "2/0",
+      "gate": "PARTIAL / APPROVAL_NOT_OPEN"
+    }
+  },
+  "verification": {
+    "py_compile": "PASS: src/llm_batch/agentic_pipeline.py tests/test_known_title_abbreviation_safe_loss_contract.py",
+    "known_title_abbreviation_safe_loss_contract": "PASS / 12 tests",
+    "work_bridge_arbiter_split_queue_bundle": "PASS / 29 tests",
+    "split_queue": "PASS / 3 tests",
+    "runtime_replay": "NOT_RUN_AFTER_PATCH"
+  },
+  "gate": {
+    "code_contract": "GO_UNIT",
+    "runtime_replay": "NOT_RUN_AFTER_PATCH",
+    "residual_queue": "NO_DELTA / remains 105",
+    "collateral": "NO-GO / residual_action_queue_rows=105",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next": [
+    "Loop357 patch 뒤 같은 3건은 runtime/search-clean replay 전까지 residual closure로 세지 않는다.",
+    "대형 Loop356 background는 completion 전 approval 근거가 아니다.",
+    "다음 active lane은 repair_after_wrong_work source-native/stall-root-cause review 또는 OVERRIDE AUDIT blind judge 검증이다."
+  ]
+}

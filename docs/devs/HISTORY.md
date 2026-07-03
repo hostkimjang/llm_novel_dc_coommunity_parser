@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop357 known-alias comparison boundary repair
+
+- `known_alias_runtime_replay_required=3`를 동일 stalled replay로 반복하지 않고 contract audit로 전환했다.
+- 기존 contract bundle에서 `comparison-only adjacent alias` 실패를 확인했다. `괴담텔 ... 괴담동이 생각나네` 같은 문장에서 뒤쪽 비교대상 `괴담동 -> 괴담 동아리`가 current-work anchor로 release됐다.
+- `src/llm_batch/agentic_pipeline.py`에 `_known_title_abbreviation_alias_is_comparison_only_reference`를 추가해 뒤쪽 comparison alias release를 차단했다.
+- `tests/test_known_title_abbreviation_safe_loss_contract.py`에 negative 계약과 primary alias positive control을 함께 고정했다.
+- 검증은 `py_compile` PASS, known-title abbreviation safe-loss contract `12` tests PASS, work-bridge/arbiter/split-queue bundle `29` tests PASS다.
+- Runtime replay는 아직 없고 residual action queue는 `105`, queue delta `0`이다.
+- Report는 `docs/devs/loop_reports/LOOP_357_REPORT_20260703.md`, state는 `docs/devs/loop357_known_alias_comparison_boundary_20260703.json`이다.
+- Gate는 code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop356 current HEAD background dispatch
 
 - Loop355 이후 현 HEAD `4ebe824b`에서 stale flip/golden/full375 증거를 갱신하기 위한 background 런을 새 prefix로 재발주했다.

@@ -2,6 +2,18 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop357 TODO
+
+- 상태 업데이트: `known_alias_runtime_replay_required=3` contract audit 중 comparison-only adjacent alias release 결함을 재현해 코드로 차단했다. Runtime replay는 아직 없고 residual action queue는 `105` 유지다.
+- Loop357 TODO:
+  - [x] `괴담텔 ... 괴담동이 생각나네`에서 뒤쪽 comparison alias `괴담동 -> 괴담 동아리`가 release되는 실패를 재현했다.
+  - [x] `_known_title_abbreviation_alias_is_comparison_only_reference`로 comparison-only alias release를 차단했다.
+  - [x] 같은 문장에서 앞쪽 primary alias `괴담텔 -> 괴담 호텔 탈출기`는 유지하는 positive control을 추가했다.
+  - [x] focused contract/broader guard tests `12 + 29` PASS를 확인했다.
+  - [ ] post-patch runtime replay 전까지 residual `105`, stale flip/golden/full375 대체, hard-hold 완화를 선언하지 않는다.
+  - [ ] 다음 active lane은 `repair_after_wrong_work=5` source-native/stall-root-cause review 또는 `OVERRIDE AUDIT(LLM=False -> final=True)` blind judge 검증으로 진행한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop356 TODO
 
 - 상태 업데이트: 현 HEAD `4ebe824b`에서 stale flip/golden/full375 증거 갱신용 N5/full375/bounded1200/golden18을 search 포함 non-light background로 재발주했다. 발주는 승인 근거가 아니며 residual action queue는 `105` 유지다.
