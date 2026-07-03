@@ -1,5 +1,17 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop363 golden18 runtime proof and semantic NO-GO
+
+- 신규 대형 런 발주는 계속 동결하고, 현 HEAD `b7b85936`에서 golden18 단일 실행만 수행했다.
+- 실행 전 search shard audit는 `3343/3344` 모두 OK였고 search 포함 non-light 조건으로 확인했다.
+- Run `20260703_175741_947094`는 manifest input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint lines `18`, result rows `18`로 완료됐다. Runtime production은 `GO / 18 of 18`이다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, publication contract convergence `GO`, violations `0`을 기록했다.
+- Search evidence는 `REVIEW / search_degraded_observed`이고 `unrecovered_degraded_total=19`가 남았다.
+- Expected-answer audit는 pass `13/18`, fail `5/18`, `canary_semantic_gate=NO-GO`다. 실패 행은 `11698897`, `11694019`, `11700470`, `11713222`, `11698880`이다.
+- `11660237`, `11698880`은 runtime completed지만 public title은 둘 다 `null`이므로 safe-loss hard-hold 완화 근거가 아니다.
+- Report는 `docs/devs/loop_reports/LOOP_363_REPORT_20260703.md`, state는 `docs/devs/loop363_golden18_runtime_proof_20260703.json`, health audit는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop363_golden18_runtime_health_audit.json`이다.
+- Gate는 new large runs `FROZEN`, golden18 runtime `GO / 18 of 18`, golden expected-answer `NO-GO / 13 of 18`, full375 collateral `NOT_OPEN`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop362 runtime stall guard CLI and freeze realignment
 
 - 최신 지시에 따라 신규 대형 런 발주를 동결하고 남아 있던 레거시 `expert_main.py` 프로세스를 정지했다. 재확인 결과 잔여 `expert_main.py` 프로세스는 `0`이다.

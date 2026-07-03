@@ -1,5 +1,14 @@
 # Slang DB Improvement TODO
 
+## 2026-07-03 Loop363 golden18 runtime proof caveat
+
+- [x] 이번 회차는 slang DB write-back이 아니라 golden18 runtime production proof다.
+- [x] golden18 runtime은 `18/18`로 완주했지만 expected-answer audit은 `NO-GO / 13 of 18`이다.
+- [x] Search evidence는 `REVIEW / search_degraded_observed`, `unrecovered_degraded_total=19`로 남았다.
+- [x] `11660237`, `11698880`은 runtime completed지만 public title `null`이라 safe-loss hard-hold 완화 근거가 아니다.
+- [ ] search degraded와 golden expected-answer 실패 5건을 닫기 전 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, golden18 runtime `GO / 18 of 18`, golden expected-answer `NO-GO / 13 of 18`, collateral active lane `REVIEW-LOCKED / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop360 background watchdog caveat
 
 - [x] 이번 회차는 slang DB write-back이 아니라 background watchdog hardening이다.

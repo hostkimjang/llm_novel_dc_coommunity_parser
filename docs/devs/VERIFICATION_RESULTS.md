@@ -1,5 +1,37 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop363 golden18 runtime proof and semantic NO-GO
+
+- 범위: 신규 대형 런 발주를 동결한 상태에서, Loop362 stream timeout guard가 실제 row를 생산하는지 golden18 단일 완주로 실증한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_363_REPORT_20260703.md`
+  - state `docs\devs\loop363_golden18_runtime_proof_20260703.json`
+  - search shard audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop363_search_shard_audit_3343_3344_before_golden18.json`
+  - golden18 manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop363_golden18_current_head_b7b85936_stream_guard_search_nonlight_result_manifest.json`
+  - result JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop363_golden18_current_head_b7b85936_stream_guard_search_nonlight_result.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop363_golden18_runtime_health_audit.json`
+  - expected-answer audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop363_golden18_current_head_b7b85936_stream_guard_search_nonlight_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop363_golden18_current_head_b7b85936_stream_guard_collateral_compare.json`
+- Runtime evidence:
+  - run `20260703_175741_947094`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint lines `18`
+  - result rows `18`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`, `partial_flush_gap=false`
+  - stream timeout manifest fields: first-token `45.0`, idle `45.0`
+- Health evidence:
+  - preflight search shard health `2/2 OK`
+  - `flush_integrity=GO / clean_completed_source`
+  - publication contract convergence `GO`, violations `0`
+  - search evidence `REVIEW / search_degraded_observed`
+  - `unrecovered_degraded_total=19`
+- Semantic evidence:
+  - expected-answer audit pass `13/18`, fail `5/18`
+  - fail rows: `11698897`, `11694019`, `11700470`, `11713222`, `11698880`
+  - `canary_semantic_gate=NO-GO`
+  - `11660237`, `11698880`은 runtime completed지만 public title `null`이라 hard-hold 완화 근거가 아니다.
+- Gate: new large runs `FROZEN`, golden18 runtime `GO / 18 of 18`, golden expected-answer `NO-GO / 13 of 18`, full375 collateral `NOT_OPEN`, collateral active lane `REVIEW-LOCKED / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop362 runtime stall guard CLI and freeze realignment
 
 - 범위: 최신 지시에 맞춰 신규 대형 런을 동결하고, Loop361 golden18 row 생산 실패를 증거화한 뒤 stream timeout guard를 CLI/helper 계약으로 노출한다.

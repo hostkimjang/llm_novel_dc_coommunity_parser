@@ -1,5 +1,30 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop363 golden18 runtime proof 체크
+
+- [x] 신규 대형 런 발주는 계속 동결했다.
+- [x] 오래된 safe-loss background `expert_main.py` 프로세스 6개를 정지하고 잔여 `0`을 확인했다.
+- [x] golden18 전 search shard health를 search 포함 non-light로 확인했다.
+  - audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop363_search_shard_audit_3343_3344_before_golden18.json`
+  - ok `2/2`
+- [x] 현 HEAD `b7b85936`에서 golden18 단일 실행을 완료했다.
+  - run `20260703_175741_947094`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop363_golden18_current_head_b7b85936_stream_guard_search_nonlight_result_manifest.json`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint lines `18`
+  - result rows `18`
+- [x] health audit 결과를 확인했다.
+  - `flush_integrity=GO / clean_completed_source`
+  - `publication_contract_convergence=GO`, violations `0`
+  - search evidence `REVIEW / search_degraded_observed`
+- [x] expected-answer audit 결과를 확인했다.
+  - pass `13/18`
+  - fail `5/18`: `11698897`, `11694019`, `11700470`, `11713222`, `11698880`
+  - `canary_semantic_gate=NO-GO`
+- [x] `11660237`, `11698880`은 runtime completed지만 public title `null`이라 safe-loss hard-hold 완화 근거가 아님을 기록했다.
+- [ ] search degraded `unrecovered_degraded_total=19`와 golden expected-answer 실패 5건을 닫기 전 semantic approval, full scan approval, hard-hold 완화를 금지한다.
+- Gate: new large runs `FROZEN`, golden18 runtime `GO / 18 of 18`, golden expected-answer `NO-GO / 13 of 18`, full375 collateral `NOT_OPEN`, collateral active lane `REVIEW-LOCKED / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop362 runtime stall guard CLI 체크
 
 - [x] 신규 대형 런 발주를 동결하고 레거시 `expert_main.py` 프로세스를 정지했다.

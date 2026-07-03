@@ -1,0 +1,86 @@
+{
+  "loop": 363,
+  "date": "2026-07-03",
+  "scope": "golden18 single-run runtime proof after stream stall guard",
+  "head": "b7b85936",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "large_run_policy": "FROZEN",
+  "run": {
+    "run_id": "20260703_175741_947094",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop363_golden18_current_head_b7b85936_stream_guard_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop363_golden18_current_head_b7b85936_stream_guard_search_nonlight_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop363_golden18_current_head_b7b85936_stream_guard_search_nonlight_result_checkpoint.jsonl",
+    "log": "logs/expert_run_20260703_175741_947094.log",
+    "parallel": 2,
+    "mcp_endpoints": "http://127.0.0.1:3343,http://127.0.0.1:3344",
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_failure": "2/0",
+    "slang_db": "off",
+    "vlm": true,
+    "ocr": true,
+    "require_vlm_ocr_for_images": true,
+    "llm_stream_first_token_timeout_seconds": 45,
+    "llm_stream_idle_timeout_seconds": 45,
+    "llm_suspend_on_anomaly": false,
+    "llm_suspend_threshold": 0
+  },
+  "runtime_proof": {
+    "input_post_count": 18,
+    "completed_count": 18,
+    "flushed_count": 18,
+    "pending_count": 0,
+    "failed_count": 0,
+    "checkpoint_completed_count": 18,
+    "result_rows": 18,
+    "ordered_flush_blocked": false,
+    "partial_flush_gap": false,
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop363_golden18_runtime_health_audit.json",
+    "flush_integrity": "GO / clean_completed_source"
+  },
+  "expected_answer_audit": {
+    "audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop363_golden18_current_head_b7b85936_stream_guard_search_nonlight_audit.json",
+    "audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop363_golden18_current_head_b7b85936_stream_guard_search_nonlight_audit.md",
+    "canary_semantic_gate": "NO-GO",
+    "passed_count": 13,
+    "failed_count": 5,
+    "negative_no_public_work_passed": "8/8",
+    "positive_expected_work_passed": "5/10",
+    "failed_post_ids": [11698897, 11694019, 11700470, 11713222, 11698880]
+  },
+  "search_evidence": {
+    "gate": "REVIEW",
+    "blocker": "search_degraded_observed",
+    "search_degraded_recovered_rows": 9,
+    "search_degraded_rows": 7,
+    "unrecovered_degraded_total": 19
+  },
+  "safe_loss_rows": {
+    "11660237": {
+      "runtime": "completed",
+      "audit_status": "expected_work_evidence_preserved_unresolved",
+      "public_title": null,
+      "hard_hold_relaxation_allowed": false
+    },
+    "11698880": {
+      "runtime": "completed",
+      "audit_status": "positive_work_unresolved",
+      "public_title": null,
+      "hard_hold_relaxation_allowed": false
+    }
+  },
+  "gates": {
+    "golden18_runtime_proof": "GO / 18 of 18",
+    "golden_expected_answer": "NO-GO / 13 of 18",
+    "publication_contract_convergence": "GO / violations=0",
+    "search_evidence": "REVIEW / search_degraded_observed",
+    "full375_collateral": "NOT_RUN_THIS_LOOP / NOT_OPEN",
+    "new_large_runs": "FROZEN",
+    "collateral_active_lane": "REVIEW-LOCKED / residual_action_queue_rows=105",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

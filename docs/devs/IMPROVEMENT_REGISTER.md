@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260703-363 - golden18 runtime proof and semantic NO-GO split
+
+| Item | Status | Evidence | Next action |
+| --- | --- | --- | --- |
+| New large runs | Frozen | No full375/bounded/N5 dispatch this loop | Keep frozen until golden semantic/search blockers are resolved |
+| Golden18 runtime proof | GO | run `20260703_175741_947094`, manifest `18/18/18/0/0`, checkpoint `18`, result rows `18` | Use as runtime production proof only |
+| Search evidence | REVIEW / P0 open | health audit `search_degraded_observed`, `unrecovered_degraded_total=19` | Recover degraded search before promotion hard-hold relaxation |
+| Expected-answer audit | NO-GO | pass `13/18`, fail `5/18`: `11698897`, `11694019`, `11700470`, `11713222`, `11698880` | Fix through shared promotion gate/general predicates, not R1 hardcoded cue expansion |
+| Safe-loss hard-hold | Not relaxed | `11660237`, `11698880` runtime completed but public title `null` | Keep hard-hold until blind/source-native correctness and stable public resolution are proven |
+| Publication contract | GO | publication contract convergence `GO`, violations `0` | Preserve contract tests while repairing semantic failures |
+| Documentation sync | Done | Loop363 report/state plus TODO/CHECKLIST/HISTORY/VERIFICATION updated | Next loop must change code or run targeted blind/source-native verification, not docs-only churn |
+
+Gate: new large runs `FROZEN`, golden18 runtime `GO / 18 of 18`, golden expected-answer `NO-GO / 13 of 18`, full375 collateral `NOT_OPEN`, collateral active lane `REVIEW-LOCKED / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260703-362 - runtime stall guard CLI and freeze realignment
 
 | Item | Status | Evidence | Next action |

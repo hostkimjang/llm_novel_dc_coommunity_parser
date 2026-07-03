@@ -2,6 +2,21 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop363 TODO
+
+- 상태 업데이트: 신규 대형 런은 계속 동결했고, 현 HEAD `b7b85936`에서 golden18 단일 실행만 수행했다. Runtime은 completed/flushed/pending/failed `18/18/0/0`로 완주했지만 expected-answer audit은 `NO-GO / 13 of 18`이다.
+- Loop363 TODO:
+  - [x] 오래된 safe-loss background `expert_main.py` 프로세스 6개를 정지하고 잔여 `0`을 확인했다.
+  - [x] search shard `3343/3344` health를 search 포함 non-light로 확인했다: `2/2 OK`.
+  - [x] `--llm-stream-first-token-timeout 45 --llm-stream-idle-timeout 45`를 명시해 golden18 단일 런을 실행했다.
+  - [x] manifest completed/flushed/pending/failed `18/18/0/0`, checkpoint `18`, result rows `18`을 확인했다.
+  - [x] health audit를 생성했다: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop363_golden18_runtime_health_audit.json`.
+  - [x] expected-answer audit를 생성했다: pass `13/18`, fail `5/18`, gate `NO-GO`.
+  - [x] `11660237`, `11698880`은 runtime completed지만 public title은 둘 다 `null`이라 hard-hold 완화 근거가 아님을 기록했다.
+  - [ ] 실패 행 `11698897`, `11694019`, `11700470`, `11713222`, `11698880`을 shared promotion gate / 일반 술어 수렴 방식으로 분류해 다음 코드 수정 후보를 정한다.
+  - [ ] search degraded `unrecovered_degraded_total=19` 복구 전 promotion hard-hold 완화를 금지한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop362 TODO
 
 - 상태 업데이트: 최신 지시에 따라 신규 대형 런을 동결하고 레거시 `expert_main.py` 프로세스를 정지했다. Loop361 golden18 단일 실증은 input `18`, completed/flushed/pending/failed `0/0/0/0`, checkpoint `0`이라 Loop360 우회가 row 생산을 증명하지 못했다.
