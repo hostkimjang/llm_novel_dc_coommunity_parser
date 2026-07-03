@@ -1,5 +1,29 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop371 golden18 runtime 재검증 체크
+
+- [x] 신규 full375/bounded/N5 대형 런 발주를 계속 동결했다.
+- [x] Loop370 이후 golden18 단일 런만 실행해 row 생산을 확인했다.
+  - run `20260703_214734_552300`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint/result rows `18/18`
+- [x] search 포함 preflight `2/2 OK`를 확인했지만 manifest `mcp_health_light_mode=true` caveat를 기록했다.
+- [x] health audit를 생성했다.
+  - `flush_integrity=NO-GO / artifact_count_mismatch`
+  - blocker `pending_count_actual_missing`
+  - publication contract convergence `GO`, violations `0`
+  - search evidence `REVIEW`, unrecovered degraded total `1`
+- [x] expected-answer audit를 생성했다.
+  - pass `14/18`, fail `4/18`
+  - failed rows `11663521`, `11694019`, `11700470`, `11698880`
+  - `canary_semantic_gate=NO-GO`
+- [x] golden shared collateral 비교를 생성했다.
+  - shared `18`, changed `17`, regression candidates `5`
+- [x] 감사 Markdown과 loop report를 한국어로 정리했다.
+- [ ] `11698880`을 safe-loss 정당 해소나 hard-hold 완화 근거로 쓰지 않는다.
+- [ ] search degraded `unrecovered=1`과 golden expected 실패 `4`건을 닫기 전 semantic approval, full scan approval, hard-hold 완화를 금지한다.
+- Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, runtime production `GO / 18 of 18`, health audit `REVIEW / pending_snapshot_missing + search_degraded_observed`, publication contract `GO / violations 0`, golden expected-answer `NO-GO / 14 of 18`, golden shared collateral `NO-GO / 5 regressions`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop370 search degraded-zero 반복 억제 체크
 
 - [x] 신규 대형 런과 동일 parent packet 재실행을 계속 동결했다.

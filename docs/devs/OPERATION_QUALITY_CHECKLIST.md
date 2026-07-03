@@ -6,6 +6,24 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-03 Loop371 golden18 runtime 재검증 quality gate
+
+- 근거:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았음을 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_371_REPORT_20260703.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop371_golden18_after_loop370_20260703.json`.
+  - [x] Runtime result/manifest/checkpoint `18/18/18` 완료를 기록했다.
+  - [x] Health audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop371_golden18_after_loop370_runtime_health_audit.json`.
+  - [x] Expected-answer audit와 collateral Markdown을 한국어로 정리했다.
+- 품질 게이트:
+  - [x] `runtime production GO / 18 of 18`와 semantic approval을 분리한다.
+  - [x] manifest `mcp_health_light_mode=true` caveat를 숨기지 않는다.
+  - [x] search degraded unrecovered `1`을 P0 open으로 유지한다.
+  - [x] `11698880` wrong publish를 safe-loss 정당 해소로 쓰지 않는다.
+  - [x] golden shared collateral `5` regressions를 full375 collateral approval과 분리한다.
+  - [x] search recovery 전 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-03 Loop370 search degraded-zero suppression quality gate
 
 - 근거:

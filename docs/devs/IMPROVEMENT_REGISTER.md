@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260703-371 - golden18 runtime proof after degraded-zero suppression
+
+| Item | Status | Evidence | Next action |
+| --- | --- | --- | --- |
+| New large runs | Frozen | No full375/bounded/N5 dispatch this loop | Keep frozen until targeted blockers require broader proof |
+| Golden18 runtime production | GO / 18 of 18 | run `20260703_214734_552300`, manifest/checkpoint/result `18/18/18` | Use as row-production proof only |
+| Health audit | REVIEW | `flush_integrity=NO-GO / artifact_count_mismatch`, pending snapshot missing | Keep caveat visible; do not call health approval |
+| Publication contract | GO | convergence `GO`, violations `0` | Preserve contract while fixing semantic/search blockers |
+| Search evidence | REVIEW / P0 open | row statuses `ok=15`, `SEARCH_DEGRADED_RECOVERED=1`, `SEARCH_DEGRADED=1`, unrecovered `1` | Recover degraded search before hard-hold relaxation |
+| Golden expected-answer | NO-GO | pass `14/18`, fail `4/18` | Triage `11663521`, `11694019`, `11700470`, `11698880` |
+| `11698880` safe-loss row | Wrong publish / not resolved | expected `가챠 중독자의 퓨전펑크 생활`, actual `아카데미 생존 갤러리` | Keep in search/source-native repair lane |
+| Golden shared collateral | NO-GO | regression candidates `5` | Do not claim full375 collateral approval |
+| Documentation sync | Done | Loop371 report/state plus TODO/CHECKLIST/VERIFICATION/HISTORY updated | Next loop must reduce failures/search blocker, not docs-only churn |
+
+Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, runtime production `GO / 18 of 18`, health audit `REVIEW / pending_snapshot_missing + search_degraded_observed`, publication contract `GO / violations 0`, golden expected-answer `NO-GO / 14 of 18`, golden shared collateral `NO-GO / 5 regressions`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260703-370 - search degraded-zero retry suppression contract
 
 | Item | Status | Evidence | Next action |

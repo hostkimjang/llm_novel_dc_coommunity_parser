@@ -1,5 +1,43 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop371 golden18 runtime 재검증
+
+- 범위: Loop370 degraded-zero suppression 계약 뒤, 신규 full375/bounded/N5 대형 런 없이 golden18 단일 런만 실행해 runtime row 생산을 확인한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_371_REPORT_20260703.md`
+  - state `docs\devs\loop371_golden18_after_loop370_20260703.json`
+  - result JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop371_golden18_after_loop370_d48a354b_search_nonlight_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop371_golden18_after_loop370_d48a354b_search_nonlight_result_manifest.json`
+  - checkpoint `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop371_golden18_after_loop370_d48a354b_search_nonlight_result_checkpoint.jsonl`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop371_golden18_after_loop370_runtime_health_audit.json`
+  - expected-answer audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop371_golden18_after_loop370_d48a354b_search_nonlight_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop371_golden18_after_loop370_d48a354b_collateral.json`
+- Runtime evidence:
+  - run `20260703_214734_552300`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint lines `18`
+  - result rows `18`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`, `partial_flush_gap=false`
+  - VLM/OCR `READY`
+  - search preflight `2/2 OK`, but manifest `mcp_health_light_mode=true`
+- Health evidence:
+  - publication contract convergence `GO`, violations `0`
+  - flush integrity `NO-GO / artifact_count_mismatch` because pending snapshot rows are missing even though manifest/checkpoint/result all show 18 completed rows
+  - search evidence `REVIEW / search_degraded_observed`
+  - row search statuses `ok=15`, `SEARCH_DEGRADED_RECOVERED=1`, `SEARCH_DEGRADED=1`
+  - unrecovered degraded total `1`
+- Semantic evidence:
+  - expected-answer audit pass `14/18`, fail `4/18`
+  - fail rows: `11663521`, `11694019`, `11700470`, `11698880`
+  - `11698880` remains wrong publish: expected `가챠 중독자의 퓨전펑크 생활`, actual `아카데미 생존 갤러리`
+  - `canary_semantic_gate=NO-GO`
+- Collateral evidence:
+  - scope `golden_canary_shared_posts_only`
+  - changed posts `17`
+  - collateral regression candidates `5`
+  - full375 collateral gate was not run this loop and remains `NOT_OPEN`
+- Gate: new large runs `FROZEN`, runtime production `GO / 18 of 18`, health audit `REVIEW / pending_snapshot_missing + search_degraded_observed`, publication contract `GO / violations 0`, golden expected-answer `NO-GO / 14 of 18`, golden shared collateral `NO-GO / 5 regressions`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop370 search degraded-zero retry suppression
 
 - 범위: 신규 대형 런과 동일 parent packet 재실행을 계속 동결하고, search degraded P0 중 반복 degraded-zero 쿼리 재호출만 코드 계약으로 줄였다.

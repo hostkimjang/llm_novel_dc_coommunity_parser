@@ -2,6 +2,22 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop371 TODO
+
+- 상태 업데이트: Loop370 이후 신규 대형 런은 발주하지 않았고 golden18 단일 런만 실행했다. Runtime은 `18/18`로 완주했지만 expected-answer audit은 `NO-GO / 14 of 18`, search recovery는 `P0 / OPEN`이다.
+- Loop371 TODO:
+  - [x] golden18 단일 런으로 row 생산 `18/18`을 확인했다.
+  - [x] `mcp_health_include_search=true`, health `2/2 OK`를 기록했다.
+  - [x] manifest `mcp_health_light_mode=true` caveat를 기록했다.
+  - [x] publication contract convergence `GO`, violations `0`을 확인했다.
+  - [x] search degraded unrecovered `1`건을 확인했다.
+  - [x] expected-answer fail `4`건을 기록했다: `11663521`, `11694019`, `11700470`, `11698880`.
+  - [x] golden shared collateral regression 후보 `5`건을 기록했다.
+  - [x] generated audit Markdown을 한국어로 정리했다.
+  - [ ] `11698880` wrong publish는 safe-loss 해소가 아니므로 source/search 복구 lane에 유지한다.
+  - [ ] 다음 loop는 실패 4건 중 일반 술어 수렴 또는 search degraded 복구를 해야 하며 docs-only 반복은 정지 신호로 본다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop370 TODO
 
 - 상태 업데이트: 신규 대형 런과 동일 parent packet 재실행은 계속 동결했고, search degraded 0건 반복 호출만 코드 계약으로 줄였다. Runtime replay는 아직 없으므로 search recovery는 계속 `P0 / OPEN`이다.

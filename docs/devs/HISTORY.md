@@ -1,5 +1,18 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop371 golden18 runtime 재검증 after Loop370
+
+- 신규 full375/bounded/N5 대형 런은 발주하지 않았고, Loop370 suppression 계약 뒤 golden18 단일 런만 실행했다.
+- Run `20260703_214734_552300`은 input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint lines `18`, result rows `18`, VLM/OCR `READY`로 완료됐다.
+- Search health preflight는 `2/2 OK`였지만 manifest `mcp_health_light_mode=true` caveat가 있어 strict non-light approval로 쓰지 않는다.
+- Health audit는 publication contract convergence `GO`, violations `0`을 기록했다. 다만 pending snapshot 부재 때문에 `flush_integrity=NO-GO / artifact_count_mismatch`이며 search evidence도 `REVIEW / search_degraded_observed`다.
+- Search row status는 `ok=15`, `SEARCH_DEGRADED_RECOVERED=1`, `SEARCH_DEGRADED=1`, unrecovered degraded total `1`이다.
+- Expected-answer audit는 pass `14/18`, fail `4/18`, `canary_semantic_gate=NO-GO`다. 실패 행은 `11663521`, `11694019`, `11700470`, `11698880`이다.
+- `11698880`은 expected `가챠 중독자의 퓨전펑크 생활` 대비 actual `아카데미 생존 갤러리` wrong publish라 safe-loss 정당 해소가 아니다.
+- Golden shared collateral compare는 regression 후보 `5`건이다. 이는 full375 collateral gate가 아니며 full-panel approval은 열지 않는다.
+- Report는 `docs/devs/loop_reports/LOOP_371_REPORT_20260703.md`, state는 `docs/devs/loop371_golden18_after_loop370_20260703.json`, health audit는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop371_golden18_after_loop370_runtime_health_audit.json`이다.
+- Gate는 new large runs `FROZEN`, runtime production `GO / 18 of 18`, health audit `REVIEW`, publication contract `GO / violations 0`, golden expected-answer `NO-GO / 14 of 18`, golden shared collateral `NO-GO / 5 regressions`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop370 search degraded-zero retry suppression
 
 - 신규 대형 런과 동일 parent packet replay는 계속 동결했다.

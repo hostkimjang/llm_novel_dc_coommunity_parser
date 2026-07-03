@@ -1,0 +1,128 @@
+{
+  "loop": 371,
+  "date": "2026-07-03",
+  "head": "d48a354b",
+  "scope": "golden18 single rerun after Loop370 degraded-zero suppression",
+  "large_runs": "FROZEN",
+  "same_parent_packet_replay": "STOPPED",
+  "run": {
+    "run_id": "20260703_214734_552300",
+    "input_count": 18,
+    "completed_count": 18,
+    "flushed_count": 18,
+    "pending_count": 0,
+    "failed_count": 0,
+    "checkpoint_rows": 18,
+    "result_rows": 18,
+    "large_run_complete": true,
+    "ordered_flush_blocked": false,
+    "partial_flush_gap": false,
+    "vlm_ocr_semantic_review_ready": true,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": true,
+    "mcp_health_ok_count": 2,
+    "mcp_health_failure_count": 0,
+    "note_ko": "search 포함 2/2 OK였지만 manifest light_mode=true라 strict non-light로 승인하지 않는다."
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_371_REPORT_20260703.md",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop371_golden18_after_loop370_d48a354b_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop371_golden18_after_loop370_d48a354b_search_nonlight_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop371_golden18_after_loop370_d48a354b_search_nonlight_result_checkpoint.jsonl",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop371_golden18_after_loop370_runtime_health_audit.json",
+    "expected_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop371_golden18_after_loop370_d48a354b_search_nonlight_audit.json",
+    "expected_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop371_golden18_after_loop370_d48a354b_search_nonlight_audit.md",
+    "collateral_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop371_golden18_after_loop370_d48a354b_collateral.json",
+    "collateral_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop371_golden18_after_loop370_d48a354b_collateral.md",
+    "logs": "logs/expert_run_20260703_214734_552300*.log"
+  },
+  "health_audit": {
+    "flush_integrity_gate": "NO-GO",
+    "flush_integrity_classification": "artifact_count_mismatch",
+    "flush_blockers": [
+      "pending_count_actual_missing"
+    ],
+    "publication_contract_convergence": "GO",
+    "publication_contract_violation_count": 0,
+    "search_evidence_gate": "REVIEW",
+    "search_blockers": [
+      "manifest_light_health_only",
+      "search_degraded_observed"
+    ],
+    "row_search_status_counts": {
+      "ok": 15,
+      "SEARCH_DEGRADED_RECOVERED": 1,
+      "SEARCH_DEGRADED": 1
+    },
+    "query_total": 150,
+    "degraded_total": 8,
+    "degraded_recovered_total": 5,
+    "unrecovered_degraded_total": 1,
+    "degraded_zero_suppression_hits": 0
+  },
+  "expected_answer_audit": {
+    "canary_semantic_gate": "NO-GO",
+    "passed_count": 14,
+    "failed_count": 4,
+    "status_counts": {
+      "expected_null_respected": 8,
+      "expected_title_resolved": 5,
+      "expected_hypothesis_preserved_unresolved": 1,
+      "positive_work_unresolved": 2,
+      "wrong_or_unexpected_title": 2
+    },
+    "failed_rows": [
+      {
+        "post_id": 11663521,
+        "status": "wrong_or_unexpected_title",
+        "expected": "어떤 마술의 금서목록 / 어떤 과학의 초전자포",
+        "actual": "성기사는 버생을 산다"
+      },
+      {
+        "post_id": 11694019,
+        "status": "positive_work_unresolved",
+        "expected": "이세계에서 사이비로 살아남기",
+        "actual": null
+      },
+      {
+        "post_id": 11700470,
+        "status": "positive_work_unresolved",
+        "expected": "악당 얼굴의 B급 모험자",
+        "actual": null
+      },
+      {
+        "post_id": 11698880,
+        "status": "wrong_or_unexpected_title",
+        "expected": "가챠 중독자의 퓨전펑크 생활",
+        "actual": "아카데미 생존 갤러리"
+      }
+    ]
+  },
+  "collateral_compare": {
+    "scope": "golden_canary_shared_posts_only",
+    "shared_post_count": 18,
+    "changed_post_count": 17,
+    "collateral_regression_count": 5,
+    "status_counts": {
+      "resolved_to_null": 11,
+      "resolved_to_different_title": 6
+    },
+    "regression_status_counts": {
+      "resolved_to_different_title": 2,
+      "resolved_to_null": 3
+    },
+    "note_ko": "golden shared post 비교이며 full375 collateral gate가 아니다."
+  },
+  "gate": {
+    "runtime_production": "GO / 18 of 18",
+    "health_audit": "REVIEW / pending_snapshot_missing + search_degraded_observed",
+    "publication_contract": "GO / violations 0",
+    "golden_expected_answer": "NO-GO / 14 of 18",
+    "golden_shared_collateral": "NO-GO / 5 regressions",
+    "search_recovery": "P0 / OPEN",
+    "promotion": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}
