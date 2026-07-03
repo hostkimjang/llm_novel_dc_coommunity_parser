@@ -1,5 +1,28 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop344 search budget partial recovery
+
+- 범위: search degraded P0를 retry/page/engine 계약으로 줄이고, 남은 known-alias `11705230` 단건이 runtime public contract로 flush되는지 확인한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_344_REPORT_20260703.md`
+  - state `docs\devs\loop344_search_budget_partial_recovery_20260703.json`
+  - live probe `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop344_search_budget_live_probe_after_presearch_removal.json`
+  - health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop344_search_budget_mcp3333_health_after_presearch_removal.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop344a_known_alias_11705230_search_budget_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop344a_known_alias_11705230_search_budget_result_manifest.json`
+  - convergence `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop344_goal_convergence_after_search_budget_canary.json`
+- Evidence:
+  - aborted run `20260703_111621_199545`는 completed/flushed/pending/failed `0/0/0/0`라 approval 증거가 아니다.
+  - live probe는 engine `google,bing,webcrawler,naver`, attempts `2`, pages `1`, degraded `false`를 기록했다.
+  - Loop344a run `20260703_114207_032135`는 completed/flushed/pending/failed `1/1/0/0`, `large_run_complete=true`다.
+  - `11705230`은 public contract 기준 `official_title=월야환담 : 신월야`, URL `null`, `candidate_ledger_status=safe_resolved`, publish `true`다.
+  - row search health는 `SEARCH_DEGRADED`, degraded `11`, unrecovered degraded `7`이다.
+- Verification:
+  - py_compile PASS
+  - unittest PASS: `tests.test_search_budget_contract`, `tests.test_mcp_bridge_direct_search`, `tests.test_headless_search_fallback`, `tests.test_search_recovery_contract`, 총 `24` tests.
+  - shard 1 build/recreate PASS, health `ok=1/1`.
+- Gate: search budget `GO_UNIT_AND_LIVE_SHARD1`, targeted row canary `GO_ROW_PUBLIC_CONTRACT`, collateral `NO-GO / residual_action_queue_rows=123`, search recovery `P0 / PARTIAL_RUNTIME_GO / UNRECOVERED_DEGRADED_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop343 post-patch verified alias runtime replay
 
 - 범위: Loop342 패치 후 alias seed 2건이 실제 runtime public contract에서 safe_resolved로 flush되는지 확인한다.

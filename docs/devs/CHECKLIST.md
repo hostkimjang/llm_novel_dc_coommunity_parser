@@ -1,5 +1,30 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop344 search budget partial recovery 체크
+
+- [x] 동일 38-row parent packet 재실행을 하지 않고 remaining known-alias 4건만 시도했다.
+  - run `20260703_111621_199545`
+  - manifest completed/flushed/pending/failed `0/0/0/0`
+  - result flush 없음, 검색 degraded 반복으로 중단
+- [x] search budget 기본 계약을 낮췄다.
+  - bridge/generated compose `MCP_SEARCH_MAX_RETRIES=1`
+  - bridge/generated compose `MCP_SEARCH_MAX_PAGES=2`
+  - client same-endpoint retry 기본값 `0`
+- [x] 상시 degraded 원인인 `presearch`를 기본 engine/fallback engine에서 제외했다.
+  - 기본 engine `google,bing,webcrawler,naver`
+  - fallback engine `webcrawler,google,bing,naver`
+- [x] shard 1 live probe를 확인했다.
+  - health `ok=1/1`
+  - query `월야환담 노벨피아`, attempts `2`, pages `1`, degraded `false`
+- [x] `11705230` 단건 runtime canary를 완료했다.
+  - run `20260703_114207_032135`
+  - manifest completed/flushed/pending/failed `1/1/0/0`
+  - public contract `월야환담 : 신월야`, URL `null`, `safe_resolved`, publish `true`
+- [ ] search degraded 100% 복구는 아직 열려 있다.
+  - row search health `SEARCH_DEGRADED`
+  - queries `16`, degraded `11`, unrecovered degraded `7`
+- Gate: search budget `GO_UNIT_AND_LIVE_SHARD1`, targeted row `GO_ROW_PUBLIC_CONTRACT`, collateral `NO-GO / residual_action_queue_rows=123`, search recovery `P0 / PARTIAL_RUNTIME_GO / UNRECOVERED_DEGRADED_OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop343 post-patch verified alias runtime replay 체크
 
 - [x] 현 HEAD `9daf715f`에서 Loop342 alias seed 2건을 재실행했다.

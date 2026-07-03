@@ -6,7 +6,17 @@ Status: `PARTIALLY_IMPLEMENTED_AS_SHARED_LAYER / LOOP179_UNITTEST_GO / LOOP182_P
 
 Latest addendum: `LOOP343_POST_PATCH_VERIFIED_ALIAS_RUNTIME_REPLAY / TARGETED_PACKET_GO / GOAL_NOT_COMPLETE / REVIEW_LOCKED`
 
-Current status override: collateral183 source-native queue는 `183/183` 완료됐지만 Loop333 review-adjusted collateral regression count가 `126`이라 collateral approval은 `NO-GO`였다. Loop343에서 Loop342 패치 후 동일 alias packet을 현 HEAD `9daf715f`로 재실행해 `11703624`, `11705251` 모두 runtime `safe_resolved`가 됐고, stop-condition evaluator는 actionable queue `126 -> 124`, same packet safe_resolved `0/2 -> 2/2`, gate `GO`를 기록했다. 따라서 targeted packet 수렴은 `GO`지만 collateral 전체는 `NO-GO / residual_action_queue_rows=124`다. 두 행 모두 `SEARCH_DEGRADED`라 search-blind promotion blocker는 canary/bounded run에서 `unrecovered_degraded=0`이 입증될 때까지 conditional로 유지한다.
+Current status override: collateral183 source-native queue는 `183/183` 완료됐지만 Loop333 review-adjusted collateral regression count가 `126`이라 collateral approval은 `NO-GO`였다. Loop343에서 Loop342 패치 후 동일 alias packet을 현 HEAD `9daf715f`로 재실행해 `11703624`, `11705251` 모두 runtime `safe_resolved`가 됐고, stop-condition evaluator는 actionable queue `126 -> 124`, same packet safe_resolved `0/2 -> 2/2`, gate `GO`를 기록했다. Loop344는 검색 예산 폭주를 줄이고 `presearch` 기본 제외를 적용한 뒤 `11705230` 단건 canary를 완료해 `월야환담 : 신월야` safe_resolved를 확인했다. 따라서 targeted alias 수렴은 `123`까지 줄었지만 collateral 전체는 `NO-GO / residual_action_queue_rows=123`다. Loop344a도 `SEARCH_DEGRADED / unrecovered_degraded=7`이라 search-blind promotion blocker는 canary/bounded run에서 `unrecovered_degraded=0`이 입증될 때까지 conditional로 유지한다.
+
+## 2026-07-03 Loop344 Search Budget Partial Recovery
+
+- Loop344는 approval 회차가 아니다. 먼저 remaining known-alias 4건 replay를 시도했지만 run `20260703_111621_199545`가 result flush 없이 중단되어 동일 묶음 반복을 멈췄다.
+- Search budget patch는 bridge/client/generated compose 기본값을 `max_retries=1`, `max_pages=2`, default engines `google,bing,webcrawler,naver`로 낮췄다. `presearch`는 access denied가 반복되어 모든 검색을 degraded로 만들 수 있어 기본값에서 제외했다.
+- Live shard 1 probe `월야환담 노벨피아`는 attempts `2`, pages `1`, degraded `false`, health `ok=1/1`이다.
+- Loop344a targeted run `20260703_114207_032135`는 `11705230`을 completed/flushed/pending/failed `1/1/0/0`으로 끝냈고 public contract는 `official_title=월야환담 : 신월야`, URL `null`, `safe_resolved`, publish `true`다.
+- Search health는 queries `16`, degraded `11`, unrecovered degraded `7`이라 search recovery는 `P0 / PARTIAL_RUNTIME_GO / UNRECOVERED_DEGRADED_OPEN`이다.
+- Artifacts: `docs/devs/loop_reports/LOOP_344_REPORT_20260703.md`, `docs/devs/loop344_search_budget_partial_recovery_20260703.json`, result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop344a_known_alias_11705230_search_budget_result.json`.
+- Gate: search budget `GO_UNIT_AND_LIVE_SHARD1`, targeted row `GO_ROW_PUBLIC_CONTRACT`, collateral `NO-GO / residual_action_queue_rows=123`, search recovery `P0 / OPEN`, promotion blocked `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
 
 ## 2026-07-03 Loop343 Post-patch Verified Alias Runtime Replay
 

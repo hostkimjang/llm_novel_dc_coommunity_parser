@@ -135,9 +135,9 @@ class MCPClient:
         except Exception:
             self.search_timeout_sec = 20.0
         try:
-            self.search_max_retries = max(0, min(int(os.getenv("MCP_CLIENT_SEARCH_MAX_RETRIES", "2")), 5))
+            self.search_max_retries = max(0, min(int(os.getenv("MCP_CLIENT_SEARCH_MAX_RETRIES", "0")), 5))
         except Exception:
-            self.search_max_retries = 1
+            self.search_max_retries = 0
         try:
             self.max_endpoints_per_search = max(
                 1, min(int(os.getenv("MCP_CLIENT_MAX_ENDPOINTS_PER_SEARCH", "4")), 64)

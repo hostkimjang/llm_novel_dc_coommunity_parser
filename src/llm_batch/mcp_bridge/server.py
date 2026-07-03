@@ -1235,13 +1235,13 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
     if default_language:
         params["language"] = default_language
     try:
-        max_retries = max(0, min(int(os.getenv("MCP_SEARCH_MAX_RETRIES", "3")), 8))
+        max_retries = max(0, min(int(os.getenv("MCP_SEARCH_MAX_RETRIES", "1")), 8))
     except Exception:
         max_retries = 1
     try:
-        max_pages = max(1, min(int(os.getenv("MCP_SEARCH_MAX_PAGES", "3")), 5))
+        max_pages = max(1, min(int(os.getenv("MCP_SEARCH_MAX_PAGES", "2")), 5))
     except Exception:
-        max_pages = 3
+        max_pages = 2
     try:
         backoff_ms = max(50, min(int(os.getenv("MCP_SEARCH_RETRY_BACKOFF_MS", "250")), 5000))
     except Exception:
@@ -1251,11 +1251,11 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
     timeout_sec = float(os.getenv("MCP_SEARCH_TIMEOUT_SEC", "20"))
     endpoint_candidates = _active_searchxng_urls()
     # 기본 엔진을 명시해 인스턴스 기본값(yahoo/wikidata 등) 유입을 방지한다.
-    # recall 확보를 위해 google/bing + presearch/webcrawler/naver를 기본 조합으로 둔다.
+    # presearch는 access denied가 반복되어 모든 검색을 degraded로 만들 수 있어 기본값에서 제외한다.
     # CAPTCHA가 잦은 startpage/duckduckgo/brave는 기본값에서 제외한다.
     _query_has_hangul = _contains_hangul(request.query)
-    _default_primary = "google,bing,presearch,webcrawler,naver"
-    _default_fallback = "webcrawler,google,bing,presearch,naver"
+    _default_primary = "google,bing,webcrawler,naver"
+    _default_fallback = "webcrawler,google,bing,naver"
     primary_engines = _sanitize_engines(
         os.getenv("MCP_SEARCH_ENGINES", _default_primary).strip(),
         _default_primary,
@@ -1378,7 +1378,8 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
             raise HTTPException(status_code=502, detail=str(exc)) from exc
 
         # 1페이지가 비한국어/브릿지 필터로 비거나, accepted 결과가 부족해도
-        # 2~3페이지를 더 훑어 관련 결과를 보충한다.
+        # 짧은 추가 페이지를 훑어 관련 결과를 보충한다. 과도한 page/retry는
+        # direct/headless fallback 진입을 늦춰 큰 런의 flush를 막을 수 있다.
         raw_items = list(data.get("results", []) or [])
         if _query_has_hangul:
             filtered_items, _removed_items, _removed_counts = _filter_korean_noise(

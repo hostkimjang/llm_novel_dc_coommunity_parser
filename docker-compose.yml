@@ -61,13 +61,14 @@ services:
       - MCP_DISCOVERY_CACHE_SEC=1800
       - MCP_PORT=3333
       - LLM_ENDPOINT=${LLM_ENDPOINT:-http://host.docker.internal:11434}
-      # recall 확보를 위해 presearch/webcrawler/naver를 primary에 다시 포함한다.
+      # presearch는 현재 access denied로 모든 검색을 degraded 처리하므로 기본값에서 제외한다.
+      # recall 보강이 필요한 별도 런에서만 MCP_SEARCH_ENGINES env로 다시 추가한다.
       # CAPTCHA가 심한 startpage/duckduckgo/brave는 계속 제외한다.
-      - MCP_SEARCH_ENGINES=google,bing,presearch,webcrawler,naver
-      - MCP_SEARCH_FALLBACK_ENGINES=webcrawler,google,bing,presearch,naver
+      - MCP_SEARCH_ENGINES=${MCP_SEARCH_ENGINES:-google,bing,webcrawler,naver}
+      - MCP_SEARCH_FALLBACK_ENGINES=${MCP_SEARCH_FALLBACK_ENGINES:-webcrawler,google,bing,naver}
       - MCP_SEARCH_LANGUAGE=ko-KR
-      - MCP_SEARCH_MAX_RETRIES=4
-      - MCP_SEARCH_MAX_PAGES=3
+      - MCP_SEARCH_MAX_RETRIES=${MCP_SEARCH_MAX_RETRIES:-1}
+      - MCP_SEARCH_MAX_PAGES=${MCP_SEARCH_MAX_PAGES:-2}
       - MCP_SEARCH_RETRY_BACKOFF_MS=400
       - MCP_SEARCH_RETRY_ON_EMPTY=1
       - MCP_SEARCH_SOFT_FAIL=1

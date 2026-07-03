@@ -1,0 +1,77 @@
+{
+  "loop": 344,
+  "date": "2026-07-03",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "base_head": "572985bf",
+  "scope": "search budget P0 partial recovery plus 11705230 targeted runtime canary",
+  "code_changes": [
+    "docker-compose.yml search engines exclude presearch by default and bound retries/pages to 1/2",
+    "tools/warp_shards.py renders the same search budget and engine defaults",
+    "src/llm_batch/mcp_bridge/server.py aligns bridge defaults with compose",
+    "src/llm_batch/search/client.py defaults same-endpoint search retries to 0",
+    "tests/test_search_budget_contract.py locks the client and generated compose contract"
+  ],
+  "runtime_artifacts": {
+    "aborted_remaining4_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop344_known_alias_remaining4_post_patch_572985bf_search_nonlight_result_manifest.json",
+    "aborted_remaining4_log": "logs/expert_run_20260703_111621_199545.log",
+    "health_after_presearch_removal": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop344_search_budget_mcp3333_health_after_presearch_removal.json",
+    "live_probe_after_presearch_removal": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop344_search_budget_live_probe_after_presearch_removal.json",
+    "targeted_input": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop344a_known_alias_11705230_search_budget_input.jsonl",
+    "targeted_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop344a_known_alias_11705230_search_budget_result.json",
+    "targeted_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop344a_known_alias_11705230_search_budget_result_manifest.json",
+    "targeted_log": "logs/expert_run_20260703_114207_032135.log",
+    "convergence": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop344_goal_convergence_after_search_budget_canary.json"
+  },
+  "search_budget_live_probe": {
+    "query": "월야환담 노벨피아",
+    "engines": "google,bing,webcrawler,naver",
+    "fallback_engines": "webcrawler,google,bing,naver",
+    "max_retries": 1,
+    "max_pages": 2,
+    "total": 4,
+    "attempts": 2,
+    "retry_count": 1,
+    "pages_fetched": 1,
+    "degraded": false,
+    "fallback_recovered": true
+  },
+  "targeted_row": {
+    "post_id": 11705230,
+    "official_title": "월야환담 : 신월야",
+    "official_url": null,
+    "candidate_ledger_status": "safe_resolved",
+    "publish_allowed": true,
+    "title_resolution_state": "resolved",
+    "search_status": "SEARCH_DEGRADED",
+    "queries_issued": 16,
+    "degraded": 11,
+    "unrecovered_degraded": 7
+  },
+  "convergence": {
+    "previous_actionable_queue": 124,
+    "current_actionable_queue": 123,
+    "safe_resolved_monotonic_nondecrease": true,
+    "closed_post_ids": [
+      11703624,
+      11705251,
+      11705230
+    ],
+    "remaining_known_alias_runtime_replay_required": 3
+  },
+  "verification": [
+    "py_compile PASS for tools/warp_shards.py, src/llm_batch/mcp_bridge/server.py, src/llm_batch/search/client.py",
+    "unittest PASS: tests.test_search_budget_contract tests.test_mcp_bridge_direct_search tests.test_headless_search_fallback tests.test_search_recovery_contract, 24 tests",
+    "shard1 rebuild/recreate PASS, health ok=1/1",
+    "Loop344a runtime canary PASS, completed/flushed/pending/failed 1/1/0/0"
+  ],
+  "gates": {
+    "search_budget_contract": "GO_UNIT_AND_LIVE_SHARD1",
+    "targeted_row_canary": "GO_ROW_PUBLIC_CONTRACT / 11705230",
+    "search_recovery": "P0 / PARTIAL_RUNTIME_GO / UNRECOVERED_DEGRADED_OPEN",
+    "collateral_gate": "NO-GO / residual_action_queue_rows=123",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

@@ -1,5 +1,41 @@
 # Improvement Register
 
+## IMP-20260703-344 - search budget partial recovery and alias canary
+
+- 상태: search budget 부분 복구 / 단건 runtime 수렴 / approval 미개방
+- Loop: 344
+- 문제:
+  - remaining known-alias 4건 replay가 첫 row에서 검색 degraded 반복으로 result flush 없이 멈췄다.
+  - 기본 compose/generated shard 설정이 `MCP_SEARCH_MAX_RETRIES=4`, `MCP_SEARCH_MAX_PAGES=3`라 direct/headless fallback 진입이 늦었다.
+  - `presearch`가 access denied를 반복해 검색 결과가 있어도 row search health를 상시 degraded로 만들었다.
+- 변경:
+  - bridge/generated compose search budget을 `retries=1`, `pages=2`로 낮췄다.
+  - client same-endpoint retry 기본값을 `0`으로 낮췄다.
+  - 기본 search engine/fallback engine에서 `presearch`를 제외하고 env override는 유지했다.
+  - `tests/test_search_budget_contract.py`로 client/generated compose 계약을 고정했다.
+- 근거:
+  - report `docs/devs/loop_reports/LOOP_344_REPORT_20260703.md`
+  - state `docs/devs/loop344_search_budget_partial_recovery_20260703.json`
+  - live probe `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop344_search_budget_live_probe_after_presearch_removal.json`
+  - result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop344a_known_alias_11705230_search_budget_result.json`
+- 결과:
+  - live probe `월야환담 노벨피아`: attempts `2`, pages `1`, degraded `false`.
+  - `11705230`: `official_title=월야환담 : 신월야`, URL `null`, `safe_resolved`, publish `true`.
+  - residual actionable queue `124 -> 123`.
+- 검증:
+  - py_compile PASS.
+  - search budget/direct/headless/recovery 관련 `24` tests PASS.
+  - shard 1 build/recreate 및 health `ok=1/1` PASS.
+  - Loop344a runtime canary manifest `1/1/0/0` PASS.
+- Gate:
+  - search budget `GO_UNIT_AND_LIVE_SHARD1`
+  - targeted row canary `GO_ROW_PUBLIC_CONTRACT`
+  - collateral `NO-GO / residual_action_queue_rows=123`
+  - search recovery `P0 / PARTIAL_RUNTIME_GO / UNRECOVERED_DEGRADED_OPEN`
+  - `promotion_blocked=search-blind conditional`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260703-343 - post-patch verified alias runtime replay
 
 - 상태: targeted packet runtime 수렴 / residual 2건 감소 / approval 미개방

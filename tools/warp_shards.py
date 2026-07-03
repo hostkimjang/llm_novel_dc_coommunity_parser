@@ -281,11 +281,11 @@ def _render_service_block(index: int, mcp_port: int, search_ui_port: int) -> str
       - MCP_DISCOVERY_CACHE_SEC=1800
       - MCP_PORT=3333
       - LLM_ENDPOINT=${{LLM_ENDPOINT:-http://host.docker.internal:11434}}
-      - MCP_SEARCH_ENGINES=google,bing,presearch,webcrawler,naver
-      - MCP_SEARCH_FALLBACK_ENGINES=webcrawler,google,bing,presearch,naver
+      - MCP_SEARCH_ENGINES=${{MCP_SEARCH_ENGINES:-google,bing,webcrawler,naver}}
+      - MCP_SEARCH_FALLBACK_ENGINES=${{MCP_SEARCH_FALLBACK_ENGINES:-webcrawler,google,bing,naver}}
       - MCP_SEARCH_LANGUAGE=${{MCP_SEARCH_LANGUAGE:-ko-KR}}
-      - MCP_SEARCH_MAX_RETRIES=${{MCP_SEARCH_MAX_RETRIES:-4}}
-      - MCP_SEARCH_MAX_PAGES=${{MCP_SEARCH_MAX_PAGES:-3}}
+      - MCP_SEARCH_MAX_RETRIES=${{MCP_SEARCH_MAX_RETRIES:-1}}
+      - MCP_SEARCH_MAX_PAGES=${{MCP_SEARCH_MAX_PAGES:-2}}
       - MCP_SEARCH_RETRY_BACKOFF_MS=${{MCP_SEARCH_RETRY_BACKOFF_MS:-400}}
       - MCP_SEARCH_RETRY_ON_EMPTY=${{MCP_SEARCH_RETRY_ON_EMPTY:-1}}
       - MCP_SEARCH_SOFT_FAIL=${{MCP_SEARCH_SOFT_FAIL:-1}}

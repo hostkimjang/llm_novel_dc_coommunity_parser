@@ -1,5 +1,23 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop344 search budget partial recovery and alias canary
+
+- remaining known-alias 4건 replay run `20260703_111621_199545`는 검색 degraded 반복으로 result flush 없이 중단했다.
+- `docker-compose.yml`, `tools/warp_shards.py`, `src/llm_batch/mcp_bridge/server.py`, `src/llm_batch/search/client.py`에서 search budget 기본값을 낮췄다.
+  - `MCP_SEARCH_MAX_RETRIES=1`
+  - `MCP_SEARCH_MAX_PAGES=2`
+  - client same-endpoint retry 기본값 `0`
+  - 기본 search engine에서 `presearch` 제외
+- `tests/test_search_budget_contract.py`를 추가해 client/warp-shard search budget 계약을 고정했다.
+- 검증은 py_compile PASS, search budget/direct/headless/recovery 관련 `24` tests PASS다.
+- generated 64-shard compose를 다시 렌더링했고, shard 1을 build/recreate했다.
+- live probe `월야환담 노벨피아`는 attempts `2`, pages `1`, degraded `false`, health `ok=1/1`이다.
+- Loop344a run `20260703_114207_032135`는 `11705230` 단건을 completed/flushed/pending/failed `1/1/0/0`으로 완료했다.
+- `11705230` public contract는 `official_title=월야환담 : 신월야`, URL `null`, `candidate_ledger_status=safe_resolved`, publish `true`다.
+- 단 row search health는 `SEARCH_DEGRADED`, degraded `11`, unrecovered degraded `7`이라 search recovery P0는 닫지 않는다.
+- Residual actionable queue는 `124 -> 123`으로만 갱신한다. Report는 `docs/devs/loop_reports/LOOP_344_REPORT_20260703.md`, state는 `docs/devs/loop344_search_budget_partial_recovery_20260703.json`이다.
+- Gate는 search budget `GO_UNIT_AND_LIVE_SHARD1`, targeted row `GO_ROW_PUBLIC_CONTRACT`, collateral `NO-GO / residual_action_queue_rows=123`, search recovery `P0 / PARTIAL_RUNTIME_GO / UNRECOVERED_DEGRADED_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop343 post-patch verified alias runtime replay
 
 - 현 HEAD `9daf715f`에서 Loop342 alias seed 2건(`11703624`, `11705251`)을 search 포함 non-light 조건으로 다시 실행했다.
