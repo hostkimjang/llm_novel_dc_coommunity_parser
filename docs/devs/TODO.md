@@ -2,6 +2,22 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-04 regression-safe grounding Loop386 TODO
+
+- 상태 업데이트: 신규 대형 런 없이 `11694019` search recovery P0를 코드 계약으로 좁혔다. `author_bridge`가 `미츄리` + `이세계에서 사이비로 살아남기`를 잡으면 broad site query보다 먼저 `미츄리 이세계에서 사이비로 살아남기` 공식 detail probe를 실행한다.
+- Loop386 TODO:
+  - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] `11694019` 수동 probe에서 broad site query의 wrong-detail 위험과 `작가+제목` query의 correct detail 회수를 분리했다.
+  - [x] `src/llm_batch/experts/orchestrator.py`에 `adaptive_author_bridge_official_url` query 생성 계약을 추가했다.
+  - [x] `tests/test_search_recovery_contract.py`에 `author_bridge` 공식 detail probe 계약 테스트를 추가했다.
+  - [x] search 관련 테스트 `32` PASS와 `py_compile` PASS를 확인했다.
+  - [ ] runtime replay after patch는 `NOT_RUN_AFTER_PATCH`이므로 Loop385 `unrecovered_degraded_total=3`을 닫힌 것으로 세지 않는다.
+  - [ ] 다음 loop는 `11694019` 단건 또는 golden18 소형 runtime에서 실제 search health/candidate evidence 개선을 확인한다.
+  - [ ] full375 collateral gate는 아직 열지 않는다.
+  - [x] R1 하드코딩 cue 리스트 확장은 하지 않았다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop385 TODO
 
 - 상태 업데이트: current-code golden18 runtime replay `20260704_045605_759573`는 `18/18/18/0/0`으로 완주했다. Health는 `GO / clean_completed_source`, publication contract는 `GO / violations 0`이지만 search evidence는 `REVIEW / search_degraded_observed`이고 expected-answer는 runtime 원본 `NO-GO / 15 of 18`, postprocess projection `NO-GO / 16 of 18`이다.

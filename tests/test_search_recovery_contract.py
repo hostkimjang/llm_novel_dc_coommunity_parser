@@ -1,11 +1,49 @@
 import unittest
 
 from llm_batch.agentic_pipeline import AgenticPipeline
-from llm_batch.experts.orchestrator import ConversationContext
+from llm_batch.experts.orchestrator import ConversationContext, Orchestrator
 from tools.audit_expert_run_health import _build_search_evidence_gate
 
 
 class SearchRecoveryContractTest(unittest.TestCase):
+    def test_author_bridge_title_builds_narrow_official_probe(self):
+        orchestrator = Orchestrator.__new__(Orchestrator)
+        ctx = ConversationContext(post_id=11694019, post_data={}, comments=[])
+        hints = {
+            "title_hints": [
+                {
+                    "title": "이세계에서 사이비로 살아남기",
+                    "source": "author_bridge",
+                    "author_anchor": "미츄리",
+                    "url": "https://arca.live/b/novelchannel/77980889",
+                }
+            ],
+            "author_hints": [
+                {
+                    "name": "미츄리",
+                    "source": "author_bridge",
+                    "url": "https://arca.live/b/novelchannel/77980889",
+                }
+            ],
+        }
+
+        queries = orchestrator._build_author_bridge_official_url_queries(
+            ctx,
+            hints,
+            "이세계에서 사이비로 살아남기",
+        )
+
+        self.assertEqual(
+            queries,
+            [
+                {
+                    "query": "미츄리 이세계에서 사이비로 살아남기",
+                    "purpose": "adaptive_author_bridge_official_url",
+                    "priority": -1,
+                }
+            ],
+        )
+
     def test_context_records_degraded_fallback_recovery(self):
         ctx = ConversationContext(post_id=1, post_data={}, comments=[])
 

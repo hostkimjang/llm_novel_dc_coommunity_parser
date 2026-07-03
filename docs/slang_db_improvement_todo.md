@@ -1,5 +1,13 @@
 # Slang DB Improvement TODO
 
+## 2026-07-04 Loop386 author_bridge search recovery slang 주의사항
+
+- [x] 이번 회차는 slang DB write-back이 아니라 author_bridge search recovery 계약 보정이다.
+- [x] R1 하드코딩 cue 리스트 확장은 하지 않았다.
+- [x] `미츄리 이세계에서 사이비로 살아남기` query는 `author_bridge` title hint와 author hint를 결합한 packet-local 일반 검색 확장이지 slang registry 추가가 아니다.
+- [ ] 단건 또는 golden18 runtime에서 search recovery `unrecovered=0`을 확인하기 전 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, runtime replay `NOT_RUN_AFTER_PATCH`, search recovery `P0 / CODE_CONTRACT_IMPROVED / RUNTIME_UNRECOVERED_STILL_OPEN`, golden18 runtime inherited `GO / 18 of 18`, runtime semantic inherited `NO-GO / 15 of 18`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop385 runtime proof / locked candidate slang 주의사항
 
 - [x] 이번 회차는 slang DB write-back이 아니라 current-code golden18 runtime proof와 publication contract 보정이다.

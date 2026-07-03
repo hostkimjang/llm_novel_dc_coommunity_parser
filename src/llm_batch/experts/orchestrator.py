@@ -19289,6 +19289,17 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     continue
                 
                 if gap_type == "no_official_url" and gap_term:
+                    # 공식 플랫폼 URL이 없음 → author_bridge가 있으면 작가+제목 2-hop을 먼저 확인한다.
+                    for bridge_query in self._build_author_bridge_official_url_queries(
+                        ctx,
+                        snippet_hints,
+                        gap_term,
+                    ):
+                        q_bridge = str(bridge_query.get("query") or "").strip()
+                        if q_bridge and q_bridge not in ctx.searched_queries:
+                            target_queries.append(bridge_query)
+                            ctx.searched_queries.add(q_bridge)
+
                     # 공식 플랫폼 URL이 없음 → 직접 플랫폼 검색
                     q = f"{gap_term} site:novelpia.com OR site:munpia.com OR site:page.kakao.com"
                     if q not in ctx.searched_queries:
@@ -19373,6 +19384,66 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                             pass
             else:
                 break
+
+    def _build_author_bridge_official_url_queries(
+        self,
+        ctx: ConversationContext,
+        snippet_hints: Dict[str, Any],
+        gap_term: str,
+    ) -> List[Dict[str, Any]]:
+        """Build narrow official-detail probes from an author_bridge title hint."""
+        term = self._normalize_title_candidate(str(gap_term or "").strip())
+        term_norm = self._normalize_hint_text(term)
+        if not term or len(term_norm) < 4:
+            return []
+
+        authors: List[str] = []
+
+        def _add_author(value: Any) -> None:
+            raw = str(value or "").strip()
+            if not raw:
+                return
+            author = self._normalize_author_candidate(raw)
+            author_norm = self._normalize_hint_text(author)
+            if not author or len(author_norm) < 2 or len(author_norm) > 16:
+                return
+            if author_norm in term_norm:
+                return
+            if author not in authors:
+                authors.append(author)
+
+        for hint in (snippet_hints.get("title_hints") or []):
+            if not isinstance(hint, dict):
+                continue
+            hint_title_norm = self._normalize_hint_text(hint.get("title"))
+            if hint_title_norm != term_norm:
+                continue
+            if str(hint.get("source") or "") != "author_bridge" and not hint.get("author_anchor"):
+                continue
+            _add_author(hint.get("author_anchor"))
+
+        for hint in (snippet_hints.get("author_hints") or []):
+            if not isinstance(hint, dict):
+                continue
+            if str(hint.get("source") or "") == "author_bridge":
+                _add_author(hint.get("name"))
+
+        queries: List[Dict[str, Any]] = []
+        seen: set[str] = set()
+        searched = getattr(ctx, "searched_queries", set()) or set()
+        for author in authors[:2]:
+            query = f"{author} {term}".strip()
+            if not query or query in searched or query in seen:
+                continue
+            seen.add(query)
+            queries.append(
+                {
+                    "query": query,
+                    "purpose": "adaptive_author_bridge_official_url",
+                    "priority": -1,
+                }
+            )
+        return queries
 
     def _is_generic_topic_gap_term(self, text: str) -> bool:
         """블로그/사전형 설명 제목을 AdaptiveChain gap seed에서 배제."""

@@ -1,5 +1,18 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop386 author_bridge search recovery contract
+
+- 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop385 search recovery P0 중 `11694019`를 저장 결과와 수동 probe로 좁혔다.
+- `11694019`는 `미츄리혼후순결` 검색에서 `미츄리의 신신신신작, 이세계에서 사이비로 살아남기` 커뮤니티 제목을 이미 보지만, 기존 AdaptiveChain 공식 URL 보충 쿼리는 작가 anchor를 결합하지 않았다.
+- 수동 probe에서 broad site query는 wrong detail `https://novelpia.com/novel/420923` 또는 degraded wrong detail `https://novelpia.com/novel/430855`를 회수할 수 있고, `미츄리 이세계에서 사이비로 살아남기`는 correct detail `https://novelpia.com/novel/181771`을 회수함을 확인했다.
+- `src/llm_batch/experts/orchestrator.py`는 `author_bridge` title hint가 있으면 `작가 + 후보제목` 공식 detail probe를 broad site query보다 먼저 추가한다.
+- `tests/test_search_recovery_contract.py`에 `adaptive_author_bridge_official_url` 계약 테스트를 추가했다.
+- 검증은 search 관련 묶음 `32` PASS와 `py_compile` PASS다.
+- Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`라 Loop385 `unrecovered_degraded_total=3`은 닫힌 것으로 세지 않는다.
+- Report는 `docs/devs/loop_reports/LOOP_386_REPORT_20260704.md`, state는 `docs/devs/loop386_author_bridge_search_recovery_20260704.json`이다.
+- Gate는 search recovery `P0 / CODE_CONTRACT_IMPROVED / RUNTIME_UNRECOVERED_STILL_OPEN`, runtime production Loop385 inherited `GO / 18 of 18`, runtime semantic `NO-GO / 15 of 18`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop385 golden18 runtime after Loop384
 
 - 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

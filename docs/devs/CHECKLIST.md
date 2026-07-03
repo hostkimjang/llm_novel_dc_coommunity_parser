@@ -1,5 +1,23 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop386 author_bridge search recovery contract 체크
+
+- [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] `11694019` 수동 search probe를 수행했다.
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop386_11694019_manual_search_probe.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop386_11694019_official_gap_probe.json`
+- [x] `미츄리 이세계에서 사이비로 살아남기`가 `degraded=false`, top detail `https://novelpia.com/novel/181771`을 회수함을 확인했다.
+- [x] 기존 broad site query가 wrong detail `https://novelpia.com/novel/420923` 또는 degraded wrong detail `https://novelpia.com/novel/430855`를 회수할 수 있음을 기록했다.
+- [x] `author_bridge` title hint 기반 `adaptive_author_bridge_official_url` query 생성을 구현했다.
+- [x] 검증:
+  - `tests.test_search_recovery_contract` `3` PASS
+  - search 관련 묶음 `32` PASS
+  - `py_compile` PASS
+- [ ] runtime replay after patch는 `NOT_RUN_AFTER_PATCH`이므로 search recovery 완료로 세지 않는다.
+- [ ] Loop385 `unrecovered_degraded_total=3`은 단건 또는 golden18 runtime 재확인 전까지 open이다.
+- Gate: search recovery `P0 / CODE_CONTRACT_IMPROVED / RUNTIME_UNRECOVERED_STILL_OPEN`, runtime production inherited Loop385 `GO / 18 of 18`, runtime semantic inherited `NO-GO / 15 of 18`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop385 golden18 runtime after Loop384 체크
 
 - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.

@@ -1,0 +1,59 @@
+{
+  "loop": 386,
+  "date": "2026-07-04",
+  "title": "author_bridge official search 2-hop contract",
+  "scope": {
+    "large_runs_launched": false,
+    "same_38_row_parent_packet_replayed": false,
+    "runtime_replay_after_patch": "NOT_RUN_AFTER_PATCH",
+    "target_post_ids": [
+      11694019
+    ]
+  },
+  "implementation": {
+    "files_changed": [
+      "src/llm_batch/experts/orchestrator.py",
+      "tests/test_search_recovery_contract.py"
+    ],
+    "contract": "author_bridge title hints create narrow author-plus-title official detail probes before broad site queries",
+    "hardcoded_r1_cue_expansion": false
+  },
+  "probe_artifacts": {
+    "manual_search_probe": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop386_11694019_manual_search_probe.json",
+    "official_gap_probe": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop386_11694019_official_gap_probe.json",
+    "correct_author_bridge_query": "미츄리 이세계에서 사이비로 살아남기",
+    "correct_detail_url": "https://novelpia.com/novel/181771",
+    "broad_site_query_wrong_detail_risk": [
+      "https://novelpia.com/novel/420923",
+      "https://novelpia.com/novel/430855"
+    ]
+  },
+  "verification": {
+    "unit_search_recovery_contract": {
+      "command": ".venv312\\Scripts\\python.exe -m unittest tests.test_search_recovery_contract",
+      "status": "PASS",
+      "tests": 3
+    },
+    "search_related_suite": {
+      "command": ".venv312\\Scripts\\python.exe -m unittest tests.test_search_recovery_contract tests.test_search_degraded_zero_suppression tests.test_mcp_bridge_direct_search tests.test_audit_expert_run_health",
+      "status": "PASS",
+      "tests": 32
+    },
+    "py_compile": {
+      "command": ".venv312\\Scripts\\python.exe -m py_compile src\\llm_batch\\experts\\orchestrator.py tests\\test_search_recovery_contract.py",
+      "status": "PASS"
+    }
+  },
+  "gates": {
+    "runtime_production": "GO / inherited Loop385 18 of 18",
+    "runtime_semantic": "NO-GO / inherited Loop385 15 of 18",
+    "projection_semantic": "NO-GO / inherited Loop385 16 of 18",
+    "search_recovery": "P0 / CODE_CONTRACT_IMPROVED / RUNTIME_UNRECOVERED_STILL_OPEN",
+    "full375_collateral": "NOT_OPEN",
+    "collateral_active_lane": "reclassified 74 / runtime-verified 4",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

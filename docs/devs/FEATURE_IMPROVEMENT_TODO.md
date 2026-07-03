@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop386 author_bridge search recovery follow-up
+  - 상태: code contract `GO_UNIT` / runtime replay `NOT_RUN_AFTER_PATCH` / search recovery `P0_CODE_CONTRACT_IMPROVED_RUNTIME_UNRECOVERED_STILL_OPEN` / approval not open
+  - 적용: `11694019`에서 author_bridge가 `미츄리` + `이세계에서 사이비로 살아남기`를 잡으면 broad site query보다 먼저 `미츄리 이세계에서 사이비로 살아남기` 공식 detail probe를 실행한다.
+  - 산출물: `docs/devs/loop_reports/LOOP_386_REPORT_20260704.md`, `docs/devs/loop386_author_bridge_search_recovery_20260704.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop386_11694019_official_gap_probe.json`.
+  - 완료 기준: `11694019` 단건 또는 golden18 runtime에서 `unrecovered_degraded_total` 감소와 candidate evidence 개선을 확인한다. Runtime 전까지 Loop385 `unrecovered=3`, semantic `NO-GO`, full375 `NOT_OPEN`을 유지한다.
+
 - [ ] Loop385 runtime proof / locked candidate follow-up
   - 상태: golden18 runtime `GO 18/18` / runtime expected `NO-GO 15/18` / projection expected `NO-GO 16/18` / golden shared collateral projection `NO-GO 4` / search recovery `P0_UNRECOVERED_DEGRADED_OPEN` / approval not open
   - 적용: `11698880`에서 URL 없는 title-only `아카데미 생존 갤러리` overwrite를 locked official-detail 후보 `가챠 중독자의 퓨전펑크 생활`로 되돌리는 publication contract를 추가했다.

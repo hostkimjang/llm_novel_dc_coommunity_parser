@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260704-386 - author_bridge search recovery contract
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/golden18 미발주 | 동결 유지 |
+| parent packet replay | 중단 | 동일 38-row replay 없음 | 반복 금지 |
+| `11694019` probe | 확인 | `미츄리 이세계에서 사이비로 살아남기`가 `https://novelpia.com/novel/181771` 회수 | 단건 runtime으로 실제 row health 확인 |
+| broad site query | 위험 확인 | wrong detail `420923`, `430855` 회수 가능 | author_bridge query 우선 |
+| search contract | GO_UNIT | `adaptive_author_bridge_official_url` helper/test 추가 | runtime replay 전 search recovery 완료로 세지 않음 |
+| 테스트 | PASS | search 관련 묶음 `32` PASS, `py_compile` PASS | 다음 loop에서 runtime health 감소 검증 |
+| 문서 동기화 | 완료 | Loop386 report/state와 운영 문서 갱신 | `unrecovered=0` runtime 증거 필요 |
+
+Gate: search recovery `P0 / CODE_CONTRACT_IMPROVED / RUNTIME_UNRECOVERED_STILL_OPEN`, runtime replay `NOT_RUN_AFTER_PATCH`, runtime production inherited `GO / 18 of 18`, runtime semantic inherited `NO-GO / 15 of 18`, full375 collateral `NOT_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260704-385 - golden18 runtime after Loop384
 
 | 항목 | 상태 | 근거 | 다음 조치 |

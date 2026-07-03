@@ -6,6 +6,23 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-04 Loop386 author_bridge search recovery 품질 게이트
+
+- 근거:
+  - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았음을 기록했다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았음을 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_386_REPORT_20260704.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop386_author_bridge_search_recovery_20260704.json`.
+  - [x] Manual search probe 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop386_11694019_manual_search_probe.json`.
+  - [x] Official gap probe 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop386_11694019_official_gap_probe.json`.
+- 품질 게이트:
+  - [x] runtime replay after patch가 `NOT_RUN_AFTER_PATCH`임을 기록한다.
+  - [x] search recovery code contract 개선과 runtime `unrecovered=0` 증명을 분리한다.
+  - [x] broad site query wrong-detail risk와 `author_bridge` query correct-detail hit를 분리한다.
+  - [x] R1 hardcoded cue 리스트 확장을 하지 않는다.
+  - [x] Loop385 `unrecovered_degraded_total=3`을 runtime 재확인 전까지 open으로 유지한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-04 Loop385 runtime/projection 품질 게이트
 
 - 근거:

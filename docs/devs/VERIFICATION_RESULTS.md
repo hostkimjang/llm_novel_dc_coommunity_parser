@@ -1,5 +1,27 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop386 author_bridge search recovery contract
+
+- 범위: `11694019`의 author_bridge search recovery를 코드 계약으로 보강한다. 신규 full375/bounded/N5/golden18 대형 런과 동일 parent packet replay는 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_386_REPORT_20260704.md`
+  - state `docs\devs\loop386_author_bridge_search_recovery_20260704.json`
+  - manual probe `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop386_11694019_manual_search_probe.json`
+  - official gap probe `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop386_11694019_official_gap_probe.json`
+- Code evidence:
+  - `_adaptive_query_chain`의 `no_official_url` gap에서 `author_bridge` query를 broad site query보다 먼저 추가한다.
+  - `_build_author_bridge_official_url_queries()`는 `author_bridge` title hint와 author hint를 결합해 `작가 + 후보제목` query만 만든다.
+  - R1 hardcoded cue 리스트 확장은 없다.
+- Probe evidence:
+  - `미츄리 이세계에서 사이비로 살아남기` -> `degraded=false`, correct detail `https://novelpia.com/novel/181771`.
+  - broad site query -> wrong detail risk `https://novelpia.com/novel/420923`.
+  - title-only site query -> `degraded=true`, wrong detail risk `https://novelpia.com/novel/430855`.
+- Verification commands:
+  - `.venv312\Scripts\python.exe -m unittest tests.test_search_recovery_contract` -> PASS, `3` tests.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_search_recovery_contract tests.test_search_degraded_zero_suppression tests.test_mcp_bridge_direct_search tests.test_audit_expert_run_health` -> PASS, `32` tests.
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\experts\orchestrator.py tests\test_search_recovery_contract.py` -> PASS.
+- Gate: runtime replay after patch `NOT_RUN_AFTER_PATCH`, search recovery `P0 / CODE_CONTRACT_IMPROVED / RUNTIME_UNRECOVERED_STILL_OPEN`, Loop385 `unrecovered_degraded_total=3` still open, full375 collateral `NOT_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop385 golden18 runtime after Loop384
 
 - 범위: Loop384의 postprocess-only 증거를 current-code golden18 runtime replay로 갱신하고, `11698880` title-only overwrite를 locked candidate publication contract로 차단한다. 신규 full375/bounded/N5 대형 런과 동일 parent packet replay는 발주하지 않는다.
