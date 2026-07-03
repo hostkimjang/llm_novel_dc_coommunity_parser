@@ -1,5 +1,23 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop351 stale evidence/background audit 체크
+
+- [x] Loop348 forced non-light background 런의 최신 manifest/result 상태를 확인했다.
+  - N5 first `1/0/0/0/0`
+  - full375 `375/1/1/0/0`
+  - bounded1200 completed-source `1200/4/0/4/0`
+  - golden18 `18/1/1/0/0`
+- [x] stale 증거를 대체하지 않는다고 명시했다.
+  - flip-rate 갱신 `NOT_ANALYZED`
+  - full375 replay `INCOMPLETE_1_OF_375`
+  - golden18 `INCOMPLETE_1_OF_18`
+- [x] HEAD `462ec714..2e1d09b0` diff가 docs only임을 확인했다.
+- [x] golden18 편입 파일과 bootstrap/golden 도구의 git 추적 상태를 확인했다.
+- [x] search recovery probe `tools/run_search_query_expansion_probe.py`를 추적 예외에 추가했다.
+- [x] 코드 변경 없음 3연속 조건에 따라 대형 런을 background 감시로 내리고 active lane을 residual queue/OVERRIDE AUDIT로 전환했다.
+- [ ] 다음 active loop는 `repair_unsafe_promotion=14`, `repair_safe_loss=73`, 또는 `OVERRIDE AUDIT(LLM=False -> final=True)` blind/source-native 검증으로 진행한다.
+- Gate: stale evidence refresh `INCOMPLETE / NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=120`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop350 repair_after_wrong_work runtime stall 체크
 
 - [x] Loop349 current residual `120`에서 `repair_after_wrong_work=5` 입력을 구성했다.

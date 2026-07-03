@@ -1,5 +1,30 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop351 stale evidence background audit
+
+- 범위: Loop348 forced non-light stale evidence refresh 발주의 최신 상태를 감사하고, completion 전 approval 근거에서 제외한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_351_REPORT_20260703.md`
+  - state `docs\devs\loop351_stale_evidence_background_audit_20260703.json`
+  - N5 plan `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop348_search_nonlight_safe_loss_independent_n5_run_plan.json`
+  - residual queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop349_current_residual_action_queue_after_canonical_variant_quarantine.json`
+- Evidence:
+  - `git diff --name-only 462ec714..HEAD`는 docs 파일만 반환했다.
+  - safe-loss N5 plan은 planned runs `15`, repeats `5/5/5`, missing post ids `[]`지만 첫 result manifest는 `1/0/0/0/0`이다.
+  - full375 manifest는 `375/1/1/0/0`, result rows `1`이다.
+  - bounded1200 completed-source manifest는 `1200/4/0/4/0`, result JSON 없음이다.
+  - golden18 manifest는 `18/1/1/0/0`, result rows `1`이다.
+  - golden files는 `18`행이고 `11660237`, `11698880`을 포함한다.
+- Git tracking:
+  - golden files: tracked.
+  - bootstrap/golden tools: tracked.
+  - search recovery probe: `.gitignore` 예외 추가 후 추적 대상.
+- Queue verification:
+  - residual action queue remains `120`.
+  - `REPROCESS=92`, `HOLD=28`.
+  - validation issue `0`.
+- Gate: stale evidence refresh `INCOMPLETE / NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=120`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop350 repair_after_wrong_work runtime stall
 
 - 범위: residual `120` 중 `repair_after_wrong_work=5`를 current HEAD `44de6d74` search 포함 non-light runtime으로 확인한다.

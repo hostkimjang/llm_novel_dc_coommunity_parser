@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop351 Addendum - stale evidence background audit
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop351은 approval 회차가 아니라 Loop348 forced non-light stale evidence refresh 발주의 현재 completion 상태를 감사하고, 코드 변경 없음 3연속 조건에 따라 대형 런을 background 감시로 내린 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_351_REPORT_20260703.md`, state `docs/devs/loop351_stale_evidence_background_audit_20260703.json`.
+- HEAD: 관찰 HEAD는 `2e1d09b0`이고 Loop348 dispatch HEAD `462ec714` 이후 diff는 docs only다. runtime code는 동일하지만 completed evidence는 manifest/result로만 판정한다.
+- Runtime snapshot: N5 first `1/0/0/0/0`, full375 `375/1/1/0/0`, bounded completed-source `1200/4/0/4/0`, golden18 `18/1/1/0/0`. stale flip `0.333` 또는 2026-06-28 golden GO를 대체하지 않는다.
+- Tracking: golden18 `11660237`, `11698880` 편입 파일은 git 추적 중이다. Loop351에서 search recovery probe `tools/run_search_query_expansion_probe.py`를 git 추적 예외에 추가했다.
+- Queue: active 기준은 Loop349 residual `120`, `REPROCESS=92`, `HOLD=28`, `repair_safe_loss=73`, `repair_unsafe_promotion=14`, `repair_after_wrong_work=5`, validation issue `0`.
+- Gate: stale evidence refresh `INCOMPLETE / NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=120`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop350 Addendum - repair_after_wrong_work runtime stall
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop350은 approval 회차가 아니라 residual `120`의 `repair_after_wrong_work=5`를 current HEAD runtime으로 확인하려 한 회차다.

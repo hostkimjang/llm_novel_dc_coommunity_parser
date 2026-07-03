@@ -1,0 +1,96 @@
+{
+  "loop": 351,
+  "date": "2026-07-03",
+  "title": "stale evidence background audit and search P0 transition",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "head_at_audit": "2e1d09b0",
+  "runtime_code_equivalent_head": "462ec714",
+  "head_diff_since_dispatch": {
+    "base": "462ec714",
+    "current": "2e1d09b0",
+    "code_changed": false,
+    "changed_scope": "docs only"
+  },
+  "tracked_artifacts": {
+    "golden_set": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl",
+    "golden_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json",
+    "golden_row_count": 18,
+    "golden_safe_loss_added_post_ids": [
+      11660237,
+      11698880
+    ],
+    "bootstrap_tools_tracked": [
+      "tools/bootstrap_regression_safe_grounding.py",
+      "tools/build_golden_regression_set.py",
+      "tools/audit_regression_safe_golden.py",
+      "tools/compare_against_golden.py",
+      "tools/safe_loss_flip_rate_probe.py",
+      "tools/run_independent_plan.py"
+    ],
+    "search_recovery_tool_newly_unignored": "tools/run_search_query_expansion_probe.py"
+  },
+  "background_runs": {
+    "safe_loss_n5": {
+      "pid": 137688,
+      "run_id": "20260703_134313_340607",
+      "plan": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop348_search_nonlight_safe_loss_independent_n5_run_plan.json",
+      "planned_run_count": 15,
+      "minimum_repeats_contract_met": true,
+      "first_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop348_search_nonlight_safe_loss_independent_n5_plan/results/loop348_safe_loss_current_head_462ec714_search_nonlight_11674712_r01_result_manifest.json",
+      "input_completed_flushed_pending_failed": "1/0/0/0/0",
+      "status": "IN_PROGRESS_OR_STALLED_NOT_ANALYZED"
+    },
+    "full375": {
+      "pid": 16352,
+      "run_id": "20260703_134313_519774",
+      "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop348_forced_nonlight_full375_current_head_462ec714_result_manifest.json",
+      "input_completed_flushed_pending_failed": "375/1/1/0/0",
+      "result_rows": 1,
+      "status": "INCOMPLETE_NOT_APPROVAL"
+    },
+    "bounded1200_completed_source": {
+      "pid": 40088,
+      "run_id": "20260703_134313_682776",
+      "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop348_forced_nonlight_completed_source_bounded1200_current_head_462ec714_result_manifest.json",
+      "input_completed_flushed_pending_failed": "1200/4/0/4/0",
+      "result_json_exists": false,
+      "status": "INCOMPLETE_NOT_APPROVAL"
+    },
+    "golden18": {
+      "pid": 138056,
+      "run_id": "20260703_134313_600449",
+      "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop348_forced_nonlight_golden18_current_head_462ec714_result_manifest.json",
+      "input_completed_flushed_pending_failed": "18/1/1/0/0",
+      "result_rows": 1,
+      "status": "INCOMPLETE_NOT_APPROVAL"
+    }
+  },
+  "active_queue_transition": {
+    "reason": "Loop348, Loop349, Loop350 had no code changes and large/background run waiting repeated three times.",
+    "action": "Move large runs to background monitoring and force active loop to collateral residual queue or OVERRIDE AUDIT blind/source-native verification.",
+    "source_queue": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop349_current_residual_action_queue_after_canonical_variant_quarantine.json",
+    "residual_action_queue_rows": 120,
+    "label_counts": {
+      "REPROCESS": 92,
+      "HOLD": 28
+    },
+    "action_counts_of_interest": {
+      "repair_safe_loss": 73,
+      "repair_unsafe_promotion": 14,
+      "repair_after_wrong_work": 5
+    },
+    "validation_issue_count": 0
+  },
+  "gate": {
+    "safe_loss_flip_refresh": "IN_PROGRESS_OR_STALLED / NOT_ANALYZED / NOT_APPROVAL",
+    "full375_replay": "INCOMPLETE_1_OF_375 / NOT_APPROVAL",
+    "bounded_completed_source": "INCOMPLETE_4_OF_1200 / NOT_APPROVAL",
+    "golden18": "INCOMPLETE_1_OF_18 / NOT_APPROVAL",
+    "collateral": "NO-GO / residual_action_queue_rows=120",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

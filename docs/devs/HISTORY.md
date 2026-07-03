@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop351 stale evidence background audit
+
+- Loop348 forced non-light N5/full375/bounded1200/golden18을 최신 manifest/result로 재감사했다.
+- 관찰 HEAD는 `2e1d09b0`이고 `462ec714..2e1d09b0` diff는 docs only라 runtime code는 동일하지만, 완료 판단은 manifest/result 기준으로만 한다.
+- N5 first는 `1/0/0/0/0`, full375는 `375/1/1/0/0`, bounded1200 completed-source는 `1200/4/0/4/0`, golden18은 `18/1/1/0/0`이라 stale flip/golden/full375 증거를 대체하지 않는다.
+- Golden18 `11660237`, `11698880` 편입 파일과 bootstrap/golden 도구가 git 추적 중임을 확인했고, search recovery probe `tools/run_search_query_expansion_probe.py`를 추적 예외에 추가했다.
+- 코드 변경 없음 3연속 조건에 따라 대형 런은 background 감시로 내리고 active 기준은 Loop349 residual `120` queue로 유지한다.
+- Report는 `docs/devs/loop_reports/LOOP_351_REPORT_20260703.md`, state는 `docs/devs/loop351_stale_evidence_background_audit_20260703.json`이다.
+- Gate는 stale evidence refresh `INCOMPLETE / NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=120`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop350 repair_after_wrong_work runtime stall
 
 - Loop349 residual `120`에서 `repair_after_wrong_work=5`를 current HEAD `44de6d74` search 포함 non-light targeted replay로 발주했다.

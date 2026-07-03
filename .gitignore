@@ -113,6 +113,7 @@ tests/inputs/test01.jsonl
 !/tools/build_judge_seed_registry.py
 !/tools/audit_expert_run_health.py
 !/tools/audit_publication_contract_convergence.py
+!/tools/run_search_query_expansion_probe.py
 !/tools/build_collateral_triage_review_batch.py
 !/tools/summarize_collateral_review_verdicts.py
 !/tools/split_collateral_action_queue.py

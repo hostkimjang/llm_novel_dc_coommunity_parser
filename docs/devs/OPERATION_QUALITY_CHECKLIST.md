@@ -6,6 +6,23 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-03 Loop351 stale evidence/background audit quality gate
+
+- 근거:
+  - [x] N5/full375/bounded/golden18 latest manifest를 확인했다.
+  - [x] incomplete 결과를 stale evidence replacement로 쓰지 않았다.
+  - [x] HEAD diff가 docs only임을 확인했지만 completion 판정은 manifest/result 기준으로 유지했다.
+  - [x] golden files와 bootstrap/golden tools git tracking을 확인했다.
+  - [x] search recovery probe 추적 예외를 추가했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_351_REPORT_20260703.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop351_stale_evidence_background_audit_20260703.json`.
+- 품질 게이트:
+  - [x] 2026-06-28 golden GO를 current approval로 재사용하지 않는다.
+  - [x] flip-rate는 N5 `15/15` 완료 전 갱신하지 않는다.
+  - [x] 대형 런은 background 감시로 내리고 active lane은 residual queue/OVERRIDE AUDIT로 전환한다.
+  - [x] search recovery 전 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-03 Loop336 post-patch runtime replay quality gate
 
 - 근거:

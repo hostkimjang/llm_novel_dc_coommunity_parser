@@ -4,6 +4,13 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop351 stale evidence/background audit follow-up
+  - 상태: stale_evidence_refresh_incomplete / search_recovery_p0_open / approval_not_open
+  - 감사: Loop348 forced non-light N5/full375/bounded1200/golden18은 발주됐지만 Loop351 시점 N5 first `1/0/0/0/0`, full375 `375/1/1/0/0`, bounded `1200/4/0/4/0`, golden18 `18/1/1/0/0`이다.
+  - 추적: golden files와 bootstrap/golden 도구는 git 추적 중이며, search recovery probe `tools/run_search_query_expansion_probe.py`를 추적 예외에 추가했다.
+  - active 기준: Loop349 residual `120`, `REPROCESS=92`, `HOLD=28`.
+  - 완료 기준: N5 `15/15`, golden18 `18/18`, full375/bounded completion, search degraded `unrecovered=0` audit 전까지 stale evidence를 대체하지 않는다.
+
 - [ ] Loop347 remaining known-alias contract/stall follow-up
   - 상태: runtime_aborted_vlm_stall / code_contract_go_unit / approval_not_open
   - 대상: residual `known_alias_runtime_replay_required=3` (`11706827`, `11708443`, `11714907`).
