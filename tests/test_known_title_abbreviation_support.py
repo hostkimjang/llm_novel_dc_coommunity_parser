@@ -768,6 +768,112 @@ class KnownTitleAbbreviationSupportTest(unittest.TestCase):
         finally:
             agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = original_registry
 
+    def test_known_title_abbreviation_recall_blocks_competing_verified_body_work(self):
+        pipeline = _build_pipeline()
+        original_registry = agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS
+        try:
+            agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = {"아생갤": "아카데미 생존 갤러리"}
+            ctx = ConversationContext(
+                post_id=11698880,
+                post_data={
+                    "post_id": 11698880,
+                    "title": "아생갤 개 존나게 재밌군 ㅇㅇ",
+                    "normalized_title": "아생갤 개 존나게 재밌군 ㅇㅇ",
+                    "content_blocks": [
+                        {"type": "text", "text": "가챠펑크 세드릭도 그렇고"},
+                        {"type": "text", "text": "시원시원한 상남자라서 너무 좋구나"},
+                    ],
+                },
+                comments=[],
+            )
+            ctx.verified_character_work_links = [
+                {
+                    "title": "가챠 중독자의 퓨전펑크 생활",
+                    "abbreviation": "가챠펑크",
+                    "character": "세드릭",
+                    "confidence": "high",
+                }
+            ]
+            ctx.set_expert_output(
+                ExpertType.GATEKEEPER,
+                {
+                    "post_type": "work_discussion",
+                    "detected_entities": {
+                        "possible_titles": ["아생갤", "가챠펑크"],
+                        "possible_characters": ["세드릭"],
+                    },
+                    "context_clues": {},
+                },
+            )
+            ctx.set_expert_output(
+                ExpertType.DISCOURSE,
+                {
+                    "discourse_analysis": {
+                        "primary_domain": "novel_literature",
+                        "intent": "discuss_work",
+                        "semantic_seed_review": {"is_specific_work_discussion": True},
+                    }
+                },
+            )
+            title_candidates = [
+                DetectedTitle(
+                    official_title="가챠 중독자의 퓨전펑크 생활",
+                    alias_or_mention="가챠펑크",
+                    confidence="High",
+                    source_tier="mixed",
+                    reference_role="candidate",
+                )
+            ]
+            extended_identity = {
+                "is_relevant": True,
+                "work_resolution": "unresolved",
+                "title_resolution_state": "unresolved_matchable",
+                "discussion_type": "general",
+                "consistency_flags": [],
+            }
+
+            with patch.object(
+                pipeline,
+                "_recover_corrected_title_official_url",
+                return_value="https://novelpia.com/novel/380218",
+            ):
+                recovered_identity, recovered_candidates, primary_work, promotion = (
+                    pipeline._apply_official_url_recall_promotion(
+                        ctx=ctx,
+                        extended_identity=extended_identity,
+                        title_candidates=title_candidates,
+                        primary_work=None,
+                        verification_result={"is_relevant": True, "novel_identity": {}},
+                        final_decision={"discussion_type": "character_talk"},
+                    )
+                )
+
+            self.assertIsNone(promotion)
+            self.assertIsNone(primary_work)
+            self.assertNotIn("official_title", recovered_identity)
+            self.assertIn(
+                "official_url_recall_blocked_body_verified_character_work_competes",
+                recovered_identity["consistency_flags"],
+            )
+            self.assertIn(
+                "body_verified_character_work_competes_with_title_led_alias",
+                recovered_identity["consistency_flags"],
+            )
+            self.assertEqual(
+                recovered_identity["blocked_official_title_competing_candidates"],
+                ["가챠 중독자의 퓨전펑크 생활"],
+            )
+            self.assertTrue(
+                any(
+                    candidate.official_title == "아카데미 생존 갤러리"
+                    and "body_verified_character_work_competes_with_title_led_alias"
+                    in (candidate.negative_evidence or [])
+                    for candidate in recovered_candidates
+                )
+            )
+        finally:
+            agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = original_registry
+
     def test_known_title_abbreviation_recall_allows_character_setting_theory_anchor(self):
         pipeline = _build_pipeline()
         original_registry = agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS

@@ -1,0 +1,70 @@
+{
+  "loop_range": "367-369",
+  "date": "2026-07-03",
+  "head_before_commit": "b8031004",
+  "scope": "11698880 single-row title-led alias/body verified competition audit",
+  "large_runs": "FROZEN",
+  "same_parent_packet_replay": "STOPPED",
+  "code_changes": [
+    "Added body/comment verified character-work competition predicate for title-led alias publication, canonical correction, and official-url recall.",
+    "Added stale blocked-gate replacement when a verified alias official-detail candidate has current-work bridge evidence.",
+    "Did not expand R1 hardcoded cue lists."
+  ],
+  "runtime_evidence": {
+    "loop367": {
+      "result": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop367_11698880_title_led_competing_body_result.json",
+      "log": "logs\\expert_run_20260703_210007_346337.log",
+      "completed_rows": 1,
+      "final_identity": {
+        "official_title": "아카데미 생존 갤러리",
+        "official_url": "https://novelpia.com/novel/380218",
+        "status": "wrong_publish"
+      }
+    },
+    "loop368": {
+      "result": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop368_11698880_body_verified_gate_result.json",
+      "log": "logs\\expert_run_20260703_211226_460281.log",
+      "completed_rows": 1,
+      "pre_gate_candidate": {
+        "official_title": "가챠 중독자의 퓨전펑크 생활",
+        "official_url": "https://novelpia.com/novel/387014"
+      },
+      "final_identity": {
+        "official_title": null,
+        "official_url": null,
+        "status": "promotion_blocked_by_stale_gate"
+      }
+    },
+    "loop369": {
+      "result": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop369_11698880_verified_alias_publish_result.json",
+      "log": "logs\\expert_run_20260703_211948_969447.log",
+      "completed_rows": 1,
+      "final_identity": {
+        "official_title": "아카데미 생존 갤러리",
+        "official_url": "https://novelpia.com/novel/380218",
+        "status": "wrong_publish"
+      },
+      "search_status": "degraded_observed"
+    }
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "unittest": {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_promotion_gate_contract tests.test_known_title_abbreviation_support tests.test_expert_main_comment_metadata -v",
+      "tests": 103,
+      "status": "PASS"
+    }
+  },
+  "gate": {
+    "code_contract": "GO_UNIT",
+    "targeted_runtime_production": "GO / 1 of 1",
+    "targeted_semantic": "NO-GO / 11698880 wrong publish",
+    "golden18": "NO_DELTA / Loop366 NO-GO 11 of 18",
+    "full375_collateral": "NOT_RUN_THIS_LOOP / NOT_OPEN",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

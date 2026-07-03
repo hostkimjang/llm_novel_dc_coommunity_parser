@@ -1939,6 +1939,16 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
             and candidate_direct_source_support
             and url_title_gate_context
         )
+        verified_alias_official_detail_surface = bool(
+            candidate_key
+            and not url_title_mismatch_title
+            and official_detail_evidence
+            and url_title_positive_support
+            and candidate_direct_source_support
+            and "verified_alias_official_detail_anchor" in flags
+            and "explicit_alias_official_work_lock" in flags
+            and _verified_character_bridge_to_candidate()
+        )
 
         if not candidate_key or not post_key or not (
             exact_title_surface
@@ -1947,6 +1957,7 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
             or direct_image_explicit_title_surface
             or search_character_parenthetical_surface
             or url_title_verified_official_detail_surface
+            or verified_alias_official_detail_surface
         ):
             return False
 
@@ -1964,6 +1975,7 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
             or direct_image_explicit_title_surface
             or search_character_parenthetical_surface
             or url_title_verified_official_detail_surface
+            or verified_alias_official_detail_surface
         ):
             return False
 
@@ -1983,6 +1995,7 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
             or direct_image_explicit_title_surface
             or search_character_parenthetical_surface
             or url_title_verified_official_detail_surface
+            or verified_alias_official_detail_surface
         ) and not (
             "decoder_exact_post_title_surface_resolved" in flags
             or str(identity.get("anchor_type") or ledger.get("anchor_type") or "").strip().lower()
@@ -1990,7 +2003,13 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
         ):
             return False
 
-        if not (scope_current_work and row_discusses_work and official_detail_evidence):
+        if not (
+            official_detail_evidence
+            and (
+                (scope_current_work and row_discusses_work)
+                or verified_alias_official_detail_surface
+            )
+        ):
             return False
         if url_title_mismatch_title:
             return False
@@ -2077,6 +2096,15 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
                             if url_title_verified_official_detail_surface
                             else []
                         ),
+                        *(
+                            [
+                                "verified_alias_official_detail_anchor",
+                                "explicit_alias_official_work_lock",
+                                "verified_character_work_link",
+                            ]
+                            if verified_alias_official_detail_surface
+                            else []
+                        ),
                         *(source for source in ("body", "comments") if source in contexts),
                     ]
                 )
@@ -2112,6 +2140,15 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
                 [
                     "url_title_verified_official_detail",
                     "final_semantic_reread_accepted_resolution",
+                ]
+            )
+        if verified_alias_official_detail_surface:
+            publish_reason_codes.extend(
+                [
+                    "verified_alias_official_detail_anchor",
+                    "explicit_alias_official_work_lock",
+                    "verified_character_work_link",
+                    "stale_blocked_gate_replaced_by_verified_alias_detail",
                 ]
             )
         gate_decision = {
@@ -2281,10 +2318,10 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
         _sync_allowed_publication_result_contract(result_dict)
         return True
 
-    if _restore_blocked_verified_alias_title_only(blocked_title, blocked_url):
+    if _restore_blocked_candidate_when_shared_gate_allows(blocked_title, blocked_url):
         return True
 
-    if _restore_blocked_candidate_when_shared_gate_allows(blocked_title, blocked_url):
+    if _restore_blocked_verified_alias_title_only(blocked_title, blocked_url):
         return True
 
     for key in ("official_title", "official_novel_title", "resolved_title"):

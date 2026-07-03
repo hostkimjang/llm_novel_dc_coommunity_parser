@@ -1,5 +1,26 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop367-369 11698880 title-led/body verified 체크
+
+- [x] 신규 대형 런과 동일 38-row parent packet 재실행을 계속 동결했다.
+- [x] `11698880` 단건으로 title-led alias와 본문 검증 작품 충돌 경로만 추적했다.
+- [x] 일반 술어를 보강했다.
+  - body/comment verified character-work competition
+  - canonical suspect correction 충돌 차단
+  - official-url recall promotion 충돌 차단
+  - stale blocked gate의 verified alias official-detail 재수렴
+- [x] 검증:
+  - `py_compile` PASS
+  - `tests.test_promotion_gate_contract + tests.test_known_title_abbreviation_support + tests.test_expert_main_comment_metadata` PASS, `103` tests
+- [x] runtime row 생산을 확인했다.
+  - Loop367 `1/1`, wrong publish `아카데미 생존 갤러리`
+  - Loop368 `1/1`, pre-gate 정답 후보 `가챠 중독자의 퓨전펑크 생활`, final `promotion_blocked`
+  - Loop369 `1/1`, wrong publish `아카데미 생존 갤러리`
+- [x] Loop369은 검색 degraded와 query priority 때문에 정답 verified link가 유지되지 않은 것으로 기록했다.
+- [ ] `11698880`을 safe-loss 해소나 hard-hold 완화 근거로 쓰지 않는다.
+- [ ] 같은 row/packet 반복 대신 search degraded 복구 또는 blind/source-native audit lane으로 전환한다.
+- Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, code contract `GO_UNIT`, targeted runtime `GO / 1 of 1`, targeted semantic `NO-GO`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop366 current HEAD golden18 체크
 
 - [x] 신규 대형 런 발주를 계속 동결했다.

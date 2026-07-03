@@ -2,6 +2,22 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop367-369 TODO
+
+- 상태 업데이트: 신규 대형 런과 동일 parent packet 재실행은 계속 동결했다. `11698880` 단건에서 본문 검증 작품 충돌 술어와 stale publish gate 재수렴을 보강했지만, Loop369 runtime은 다시 `아카데미 생존 갤러리` wrong publish로 끝났다.
+- Loop367-369 TODO:
+  - [x] R1 하드코딩 cue 리스트 확장 없이 body/comment verified character-work competition 일반 술어를 추가했다.
+  - [x] canonical suspect correction과 official-url recall promotion이 본문 검증 작품과 충돌할 때 차단되도록 계약을 추가했다.
+  - [x] stale `promotion_blocked` gate가 현재 verified alias official-detail 후보를 덮는 경우 shared gate 재수렴 계약을 추가했다.
+  - [x] py_compile PASS와 관련 unittest `103`개 PASS를 확인했다.
+  - [x] Loop367/368/369 단건 row 생산을 확인했다.
+  - [x] Loop368에서 pre-gate 정답 후보와 stale blocked gate 충돌을 기록했다.
+  - [x] Loop369에서 검색 degraded 상태의 wrong publish 재발을 기록했다.
+  - [ ] `11698880`은 safe-loss 해소로 보지 말고 search degraded/비결정 미해소 행으로 유지한다.
+  - [ ] 같은 row/packet 재시도 대신 search degraded 복구 또는 blind/source-native audit lane으로 전환한다.
+  - [ ] 코드 변경 없이 docs만 반복되는 회차는 loop 정지 신호로 취급한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop366 TODO
 
 - 상태 업데이트: 신규 대형 런은 계속 동결했고, 현 HEAD `5fd0ec99`에서 golden18 단일 런만 재실행했다. Runtime은 `18/18`로 완주했지만 expected-answer audit은 `NO-GO / 11 of 18`이다.

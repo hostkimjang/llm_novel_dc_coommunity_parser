@@ -2950,6 +2950,117 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertEqual(identity["candidate_ledger"]["publish_contract_trace"], trace)
         self.assertEqual(identity["candidate_ledger"]["publish_ledger"], identity["publish_ledger"])
 
+    def test_verified_alias_detail_replaces_stale_wrong_alias_blocked_gate(self):
+        correct_title = "가챠 중독자의 퓨전펑크 생활"
+        correct_url = "https://novelpia.com/novel/387014"
+        stale_blocked_decision = {
+            "status": "candidate_only",
+            "publish_allowed": False,
+            "official_title": None,
+            "official_url": None,
+            "candidate_preserved": True,
+            "reason_codes": [
+                "row_discussion_missing",
+                "nonwork",
+                "scope_platform_meta_nonwork",
+                "serialized_public_identity_scrubbed",
+            ],
+            "bypassed_gate": False,
+            "scope": {
+                "scope_kind": "platform_meta_nonwork",
+                "confidence": "medium",
+                "conflict_reason_codes": ["non_novel_discourse"],
+            },
+        }
+        stale_gate_state = {
+            "candidate_title": "아카데미 생존 갤러리",
+            "candidate_url": "",
+            "source": "batch_memory_exact_alias_rescued",
+            "official_title_exists": False,
+            "row_discusses_work_as_work": False,
+            "scope": stale_blocked_decision["scope"],
+        }
+        candidate = {
+            "official_title": correct_title,
+            "heretic_url": correct_url,
+            "confidence": "High",
+            "alias_or_mention": "가챠펑크",
+            "source_tier": "official_detail",
+            "page_type": "novel_page",
+            "reference_role": "primary",
+        }
+        result = {
+            "title": "아생갤 개 존나게 재밌군 ㅇㅇ",
+            "content": ["가챠펑크 세드릭도 그렇고", "시원시원한 상남자라서 너무 좋구나"],
+            "comments": [],
+            "identity": {
+                "title_resolution_allowed": False,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "unresolved",
+                "candidate_ledger_status": "promotion_blocked",
+                "discussion_type": "character_talk",
+                "topicality": "core_relevant",
+                "anchor_type": "title_exact",
+                "context_sources": ["title", "body", "search", "image"],
+                "blocked_official_title": correct_title,
+                "blocked_official_title_url": correct_url,
+                "consistency_flags": [
+                    "verified_alias_official_detail_anchor",
+                    "confirmed_alias:가챠펑크",
+                    "explicit_alias_official_work_lock",
+                    "weak_public_title_bridge_verified_alias_detail_exempt",
+                    "vlm_ocr_title_conflict_with_final_title",
+                ],
+                "novel_identity": {
+                    "official_title": None,
+                    "heretic_url": None,
+                    "confidence": "None",
+                },
+                "primary_work": dict(candidate),
+                "title_candidates": [dict(candidate)],
+                "promotion_decision": stale_blocked_decision,
+                "promotion_gate_state": stale_gate_state,
+                "candidate_ledger": {
+                    "blocked_official_title": correct_title,
+                    "blocked_official_title_url": correct_url,
+                    "candidate_preservation_sources": [dict(candidate)],
+                    "title_candidates": [dict(candidate)],
+                    "context_sources": ["title", "body", "search", "image"],
+                    "consistency_flags": [
+                        "verified_alias_official_detail_anchor",
+                        "confirmed_alias:가챠펑크",
+                        "explicit_alias_official_work_lock",
+                    ],
+                    "promotion_decision": stale_blocked_decision,
+                    "promotion_gate_state": stale_gate_state,
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertTrue(identity["title_resolution_allowed"])
+        self.assertEqual(identity["novel_identity"]["official_title"], correct_title)
+        self.assertEqual(identity["novel_identity"]["heretic_url"], correct_url)
+        decision = identity["promotion_decision"]
+        self.assertTrue(decision["publish_allowed"])
+        self.assertEqual(decision["official_title"], correct_title)
+        self.assertEqual(decision["official_url"], correct_url)
+        self.assertIn(
+            "stale_blocked_gate_replaced_by_verified_alias_detail",
+            decision["reason_codes"],
+        )
+        trace = identity["publish_contract_trace"]
+        self.assertEqual(trace["gate_decision"], decision)
+        self.assertEqual(trace["post_gate_identity"]["official_title"], correct_title)
+        self.assertEqual(
+            identity["candidate_ledger"]["promotion_gate_state"]["candidate_title"],
+            correct_title,
+        )
+
     def test_publish_contract_trace_converges_stale_publish_trace_to_blocked_decision(self):
         stale_publish_decision = {
             "status": "publish",

@@ -1,5 +1,27 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop367-369 11698880 title-led/body verified 충돌 감사
+
+- 범위: 신규 대형 런과 동일 38-row parent packet 재실행을 계속 동결하고, Loop366 실패 행 `11698880` 단건만 title-led alias와 본문 검증 작품 충돌 경로로 추적했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_367_369_REPORT_20260703.md`
+  - state `docs\devs\loop367_369_11698880_body_verified_publish_audit_20260703.json`
+  - Loop367 result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop367_11698880_title_led_competing_body_result.json`
+  - Loop368 result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop368_11698880_body_verified_gate_result.json`
+  - Loop369 result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop369_11698880_verified_alias_publish_result.json`
+  - Loop369 log `logs\expert_run_20260703_211948_969447.log`
+- Code verification:
+  - `py_compile` PASS
+  - `tests.test_promotion_gate_contract + tests.test_known_title_abbreviation_support + tests.test_expert_main_comment_metadata` PASS, `103` tests
+- Runtime evidence:
+  - Loop367: row `1/1`, final wrong publish `아카데미 생존 갤러리 / https://novelpia.com/novel/380218`
+  - Loop368: row `1/1`, pre-gate candidate `가챠 중독자의 퓨전펑크 생활 / https://novelpia.com/novel/387014`, final `promotion_blocked` because stale `batch_memory_exact_alias_rescued` gate kept wrong title
+  - Loop369: row `1/1`, final wrong publish `아카데미 생존 갤러리 / https://novelpia.com/novel/380218`
+- Judgment:
+  - 일반 술어 계약은 단위 테스트에서 통과했지만, 실제 Loop369에서는 검색 degraded와 query priority 때문에 정답 `가챠펑크` verified link가 유지되지 않았다.
+  - `11698880`은 current HEAD 기준 safe-loss 해소가 아니라 비결정/검색 degraded 미해소 행이다.
+- Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, code contract `GO_UNIT`, targeted runtime `GO / 1 of 1`, targeted semantic `NO-GO`, golden18 `NO_DELTA / Loop366 NO-GO 11 of 18`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop366 current HEAD golden18 rerun
 
 - 범위: Loop364 코드 보강과 Loop365 expected 교정 뒤, 현 HEAD `5fd0ec99`에서 golden18 단일 런을 search 포함 non-light 조건으로 재실행한다. 신규 full375/bounded/N5 대형 런은 발주하지 않는다.

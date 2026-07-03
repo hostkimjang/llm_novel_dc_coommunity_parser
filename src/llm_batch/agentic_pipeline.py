@@ -6629,6 +6629,26 @@ class AgenticPipeline:
                 }
             ):
                 _skip_canonical_override = True
+            if not _skip_canonical_override:
+                (
+                    _canonical_competing_body_titles,
+                    _canonical_current_has_body_surface,
+                ) = self._body_verified_character_work_competition(
+                    ctx,
+                    _best_canonical_title,
+                    include_comments=True,
+                )
+                if _canonical_competing_body_titles and not _canonical_current_has_body_surface:
+                    _skip_canonical_override = True
+                    try:
+                        setattr(ctx, "_canonical_body_verified_competing_work_blocked", True)
+                        setattr(
+                            ctx,
+                            "_canonical_body_verified_competing_work_titles",
+                            list(_canonical_competing_body_titles),
+                        )
+                    except Exception:
+                        pass
             _title_null_canonical_restore_blocked = bool(
                 not _skip_canonical_override
                 and _title_deliberately_null
@@ -6648,11 +6668,15 @@ class AgenticPipeline:
                 strong_suspected_title = None
                 has_strong_suspected_title = False
             elif _skip_canonical_override:
+                _body_compete_note = ""
+                if getattr(ctx, "_canonical_body_verified_competing_work_blocked", False):
+                    _body_compete_note = " (body_verified_character_work_competes)"
                 print(
                     f"[{_ts()}] 🛡️ canonical suspect 보정 스킵: "
                     f"'{strong_suspected_title}' 유지, "
                     f"후보 '{_best_canonical_title}' 차단"
-                    f"{' (snippet_alias_lock)' if _strong_snippet_alias_lock else ''}",
+                    f"{' (snippet_alias_lock)' if _strong_snippet_alias_lock else ''}"
+                    f"{_body_compete_note}",
                     file=sys.stderr,
                 )
             else:
@@ -17967,6 +17991,65 @@ class AgenticPipeline:
         matched_clue_alias = ""
         if matched_clue.startswith(("known_title_abbreviation:", "confirmed_alias:")) and ":" in matched_clue:
             matched_clue_alias = matched_clue.split(":", 1)[1].strip()
+        (
+            competing_verified_body_titles,
+            current_recall_has_body_surface,
+        ) = self._body_verified_character_work_competition(
+            ctx,
+            title,
+            title_candidates=title_candidates,
+            current_alias=matched_clue_alias,
+            include_comments=True,
+        )
+        recall_body_comment_text = self._collect_body_comment_text(ctx, include_comments=True)
+        recall_url_in_body_comment = bool(url and url in recall_body_comment_text)
+        if (
+            competing_verified_body_titles
+            and not current_recall_has_body_surface
+            and not recall_url_in_body_comment
+        ):
+            flags = list(extended_identity.get("consistency_flags") or [])
+            for flag in (
+                "official_url_recall_blocked_body_verified_character_work_competes",
+                "body_verified_character_work_competes_with_title_led_alias",
+            ):
+                if flag not in flags:
+                    flags.append(flag)
+            extended_identity["consistency_flags"] = flags
+            extended_identity["blocked_official_title"] = title
+            extended_identity["blocked_official_title_competing_candidates"] = list(
+                competing_verified_body_titles
+            )
+            if url:
+                extended_identity["blocked_official_title_url"] = url
+            title_key = self._normalize_match_text(title)
+            url_key = self._normalize_url_for_match(url)
+            already_preserved = any(
+                self._normalize_match_text(getattr(candidate, "official_title", "") or "") == title_key
+                and (
+                    not url_key
+                    or self._normalize_url_for_match(getattr(candidate, "heretic_url", "") or "") == url_key
+                )
+                for candidate in (title_candidates or [])
+                if isinstance(candidate, DetectedTitle)
+            )
+            if not already_preserved:
+                title_candidates = list(title_candidates or [])
+                title_candidates.append(
+                    DetectedTitle(
+                        official_title=title,
+                        heretic_url=url,
+                        confidence=str(promotion.get("confidence") or "Medium"),
+                        alias_or_mention=matched_clue_alias or matched_clue or None,
+                        source_tier=str(promotion.get("source_tier") or "official_detail"),
+                        page_type="novel_page",
+                        negative_evidence=[
+                            "body_verified_character_work_competes_with_title_led_alias"
+                        ],
+                        reference_role="candidate",
+                    )
+                )
+            return extended_identity, title_candidates, primary_work, None
         known_abbreviation_anchor = bool(
             matched_clue_alias
             and matched_clue.startswith(("known_title_abbreviation:", "confirmed_alias:"))
@@ -25413,6 +25496,117 @@ OUTPUT JSON:
                     chunks.append(str(comment.get("content") or ""))
         return " ".join(x for x in chunks if isinstance(x, str) and x.strip())
 
+    def _collect_body_comment_text(self, ctx, *, include_comments: bool = False) -> str:
+        post_data = getattr(ctx, "post_data", None) or {}
+        chunks: List[str] = []
+        for block in post_data.get("content_blocks", []) or []:
+            if isinstance(block, dict):
+                block_type = str(block.get("type") or "").strip().lower()
+                if block_type in {"image", "ocr_text", "image_summary"}:
+                    continue
+                chunks.append(str(block.get("text") or ""))
+            elif isinstance(block, str):
+                chunks.append(block)
+        if include_comments:
+            for comment in (getattr(ctx, "comments", None) or []):
+                if isinstance(comment, str):
+                    chunks.append(comment)
+                elif isinstance(comment, dict):
+                    chunks.append(str(comment.get("content") or comment.get("text") or ""))
+        return " ".join(x for x in chunks if isinstance(x, str) and x.strip())
+
+    def _body_verified_character_work_competition(
+        self,
+        ctx,
+        current_title: Optional[str],
+        *,
+        title_candidates: Optional[List[DetectedTitle]] = None,
+        current_alias: Optional[str] = None,
+        include_comments: bool = True,
+    ) -> Tuple[List[str], bool]:
+        """Find body/comment-anchored verified work links that compete with current_title."""
+        title = str(current_title or "").strip()
+        title_norm = self._normalize_match_text(title)
+        if not ctx or not title_norm:
+            return [], False
+
+        post_body_comment_text = self._collect_body_comment_text(ctx, include_comments=include_comments)
+        if not post_body_comment_text.strip():
+            return [], False
+
+        def _surface_in_body_or_comment(surface: Any, *, full_title: Any = None) -> bool:
+            raw = str(surface or "").strip()
+            if not raw:
+                return False
+            norm = self._normalize_match_text(raw)
+            if len(norm) < 2:
+                return False
+            if self._is_generic_alias_seed(raw, full_title=str(full_title or title or raw)):
+                return False
+            if self._is_single_token_surface(raw) and len(norm) <= 3:
+                return self._contains_standalone_phrase(post_body_comment_text, raw)
+            return self._text_matches_phrase(post_body_comment_text, raw)
+
+        current_has_body_surface = False
+        if _surface_in_body_or_comment(title, full_title=title):
+            current_has_body_surface = True
+        if current_alias and _surface_in_body_or_comment(current_alias, full_title=title):
+            current_has_body_surface = True
+        for cand in title_candidates or []:
+            if not isinstance(cand, DetectedTitle):
+                continue
+            cand_title = str(getattr(cand, "official_title", "") or "").strip()
+            if self._normalize_match_text(cand_title) != title_norm:
+                continue
+            if any(
+                _surface_in_body_or_comment(form, full_title=cand_title)
+                for form in self._candidate_surface_forms(ctx, cand)
+            ):
+                current_has_body_surface = True
+                break
+
+        competing_verified_body_titles: List[str] = []
+
+        def _add_competing_verified_title(raw_title: Any) -> None:
+            comp_title = self._normalize_title_candidate(raw_title)
+            if not comp_title:
+                return
+            if self._normalize_match_text(comp_title) == title_norm:
+                return
+            if comp_title not in competing_verified_body_titles:
+                competing_verified_body_titles.append(comp_title)
+
+        for link in getattr(ctx, "verified_character_work_links", []) or []:
+            if not isinstance(link, dict) or bool(link.get("_weak_match")):
+                continue
+            link_title = link.get("title") or link.get("work_title") or link.get("official_title")
+            surfaces = [
+                link_title,
+                link.get("character"),
+                link.get("abbreviation"),
+                link.get("alias"),
+                link.get("surface"),
+                link.get("matched_alias"),
+            ]
+            if any(_surface_in_body_or_comment(surface, full_title=link_title) for surface in surfaces):
+                _add_competing_verified_title(link_title)
+
+        for cand in title_candidates or []:
+            if not isinstance(cand, DetectedTitle):
+                continue
+            cand_title = str(getattr(cand, "official_title", "") or "").strip()
+            if not cand_title or self._normalize_match_text(cand_title) == title_norm:
+                continue
+            if not self._has_strong_verified_character_work_links(ctx, cand_title):
+                continue
+            if any(
+                _surface_in_body_or_comment(form, full_title=cand_title)
+                for form in self._candidate_surface_forms(ctx, cand)
+            ):
+                _add_competing_verified_title(cand_title)
+
+        return competing_verified_body_titles, current_has_body_surface
+
     def _title_candidate_mentioned(
         self,
         ctx,
@@ -32402,6 +32596,20 @@ OUTPUT JSON:
         if resolved_url:
             direct_sources.append("official_detail_url")
 
+        competing_verified_body_titles, current_candidate_has_body_surface = (
+            self._body_verified_character_work_competition(
+                ctx,
+                title,
+                title_candidates=title_candidates,
+                current_alias=alias_text,
+                include_comments=True,
+            )
+        )
+
+        scope_block_flags: List[str] = []
+        if competing_verified_body_titles and not current_candidate_has_body_surface:
+            scope_block_flags.append("body_verified_character_work_competes_with_title_led_alias")
+
         discussion_type = ""
         work_resolution = "resolved"
         title_resolution_state = "resolved"
@@ -32427,15 +32635,16 @@ OUTPUT JSON:
             candidate_url=resolved_url,
             source=source,
             official_title_exists=official_exists,
-            row_discusses_work_as_work=True,
+            row_discusses_work_as_work=not scope_block_flags,
             title_resolution_state=title_resolution_state,
             work_resolution=work_resolution,
             discussion_type=discussion_type or "review",
             scope=ScopeState(
-                scope_kind="current_work",
-                confidence="high" if resolved_url else "medium",
+                scope_kind="context_only" if scope_block_flags else "current_work",
+                confidence="medium" if scope_block_flags else ("high" if resolved_url else "medium"),
                 direct_bridge_sources=direct_sources,
-                conflict_reason_codes=[],
+                competing_candidates=competing_verified_body_titles,
+                conflict_reason_codes=scope_block_flags,
             ),
         )
         evidence = [
