@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260704-375 - 11668307 expected 교정
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5 발주 없음 | 동결 유지 |
+| 코드 변경 | 없음 | source-native/web label correction만 수행 | 남은 실패에서 일반 술어가 필요할 때만 코드 변경 |
+| `11668307` expected | 교정 완료 | `빛세구` direct alias와 공식 상세 URL이 `빚을 져서라도 세상은 구해야 할 거 아니야`를 지지 | golden manifest 교정 유지 |
+| Loop374 재감사 | NO-GO / 14 of 18 | 기존 result 재감사, 실패 `4`건 | `11698897`, `11705245`, `11663521`, `11700470` 처리 |
+| golden shared collateral | NO-GO / 7 | `11668307`은 expected-answer exempt로 regression 후보에서 제외 | full375 gate는 아직 열지 않음 |
+| 문서 동기화 | 완료 | Loop375 report/state/review와 운영 문서 갱신 | 다음 loop는 남은 실패 4건 또는 search P0 축소 |
+
+Gate: new large runs `FROZEN`, golden expected-answer `NO-GO / 14 of 18`, golden shared collateral `NO-GO / 7 regressions`, full375 collateral `NOT_OPEN`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260704-374 - signal-idle 런타임 증명과 golden18 완주
 
 | 항목 | 상태 | 근거 | 다음 조치 |

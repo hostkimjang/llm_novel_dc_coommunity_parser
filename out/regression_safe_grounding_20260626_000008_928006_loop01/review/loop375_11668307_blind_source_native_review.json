@@ -1,0 +1,51 @@
+{
+  "review_id": "loop375_11668307_blind_source_native",
+  "verified_at": "2026-07-04T01:08:02.3140903+09:00",
+  "post_id": 11668307,
+  "verdict": "ACCEPT_EXPECTED_CORRECTION",
+  "label_action": "golden_manifest_expected_corrected",
+  "runtime_action": "not_run",
+  "code_action": "not_changed",
+  "source_native_observation": {
+    "post_title": "빛세구 궁금한 점 있음",
+    "post_body_summary": "작품 설정 질문: 각 행성 1위/엘리트/튜토리얼 폐급",
+    "direct_alias_surface": "빛세구",
+    "loop374_actual_title": "빚을 져서라도 세상은 구해야 할 거 아니야 [독점]",
+    "loop374_actual_url": "https://series.naver.com/novel/detail.series?productNo=13598334"
+  },
+  "web_evidence": [
+    {
+      "kind": "official_detail",
+      "url": "https://series.naver.com/novel/detail.series?productNo=13598334",
+      "summary": "네이버 시리즈 공식 상세 페이지가 작품명 '빚을 져서라도 세상은 구해야 할 거 아니야 [독점]'과 작가/장르/연재 상태를 제공한다."
+    },
+    {
+      "kind": "community_alias",
+      "url": "https://m.dcinside.com/board/genrenovel/11853272",
+      "summary": "DC 장르소설 갤러리 '빛세구 풀네임이 뭐임' 질의에서 해당 약칭과 공식 작품명이 연결된다."
+    },
+    {
+      "kind": "community_alias",
+      "url": "https://m.dcinside.com/board/genrenovel/11826680",
+      "summary": "DC 장르소설 갤러리 '빛세구가 뭐 줄임말임?' 질의에서 같은 공식 작품명이 약칭 답으로 나타난다."
+    }
+  ],
+  "decision": {
+    "previous_golden_role": "negative_no_public_work",
+    "corrected_golden_role": "positive_expected_work",
+    "previous_expected_title_or_hypothesis": null,
+    "corrected_expected_title_or_hypothesis": "빚을 져서라도 세상은 구해야 할 거 아니야",
+    "corrected_expected_no_public_title": false,
+    "corrected_expected_url": "https://series.naver.com/novel/detail.series?productNo=13598334",
+    "reason": "원문 direct alias surface와 웹 alias evidence, 공식 상세 URL이 모두 Loop374 actual title을 지지한다. 기존 golden note의 실제 문제는 '디펜스게임 속 엘리트몹킬러가 되었다' wrong publish였고, 현재 Loop374 publish는 정당 해소다."
+  },
+  "gate_effect": {
+    "golden18_expected_answer": "NO-GO / 14 of 18",
+    "remaining_failed_rows": [11698897, 11705245, 11663521, 11700470],
+    "golden_shared_collateral": "NO-GO / 7 regressions",
+    "search_recovery": "P0 / OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

@@ -1,5 +1,23 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop375 11668307 expected 교정 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 코드 변경 없이 `11668307`을 source-native/web expected correction으로 처리했다.
+- [x] `빛세구` direct alias와 네이버 시리즈 공식 상세 URL이 `빚을 져서라도 세상은 구해야 할 거 아니야`를 지지함을 기록했다.
+- [x] `golden_manifest.json`을 갱신했다.
+  - `golden_role`: `negative_no_public_work -> positive_expected_work`
+  - `expected_title_or_hypothesis`: `빚을 져서라도 세상은 구해야 할 거 아니야`
+  - `expected_no_public_title=false`
+  - `expected_url=https://series.naver.com/novel/detail.series?productNo=13598334`
+- [x] 기존 Loop374 result 재감사를 완료했다.
+  - expected-answer `NO-GO / 14 of 18`
+  - 남은 실패 `11698897`, `11705245`, `11663521`, `11700470`
+  - golden shared collateral regression candidates `7`
+- [ ] 이 결과를 search recovery, semantic approval, full scan approval, hard-hold 완화 근거로 쓰지 않는다.
+- [ ] 다음 loop는 남은 실패 4건 또는 search recovery P0 중 하나를 줄인다.
+- Gate: new large runs `FROZEN`, golden expected-answer `NO-GO / 14 of 18`, golden shared collateral `NO-GO / 7 regressions`, full375 collateral `NOT_OPEN`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop374 signal-idle golden18 runtime proof 체크
 
 - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.

@@ -128,12 +128,13 @@
     },
     {
       "post_id": 11668307,
-      "golden_role": "negative_no_public_work",
+      "golden_role": "positive_expected_work",
       "failure_class": "generic_phrase_substring",
       "disagreement_type": "over_resolved",
       "severity": "high",
-      "expected_title_or_hypothesis": null,
-      "expected_no_public_title": true,
+      "expected_title_or_hypothesis": "빚을 져서라도 세상은 구해야 할 거 아니야",
+      "expected_no_public_title": false,
+      "expected_url": "https://series.naver.com/novel/detail.series?productNo=13598334",
       "baseline_identity": {
         "official_title": "디펜스게임 속 엘리트몹킬러가 되었다",
         "heretic_url": "https://novelpia.com/novel/420567",
@@ -142,7 +143,7 @@
         "candidate_ledger_status": "safe_resolved",
         "candidate_count": 5
       },
-      "note": "약칭 '빛세구' 작품에 대한 설정질문(행성 1위 엘리트 중 폐급)인데, 검색 스니펫의 일반 장르어 '엘리트'에 끌려 무관한 '디펜스게임 속 엘리트몹킬러가 되었다'로 귀속. 빛세구와 해당 작품은 아무 연결고리 없음. 틀린 작품 승격."
+      "note": "Loop375 blind/source-native 및 웹 확인으로 expected를 교정했다. 원문 제목의 '빛세구'는 DC 장르소설 갤러리에서 '빚을 져서라도 세상은 구해야 할 거 아니야' 약칭으로 쓰이며, 네이버 시리즈 공식 상세 URL도 같은 작품을 지지한다. 원래 문제는 검색 스니펫의 일반 장르어 '엘리트'에 끌려 무관한 '디펜스게임 속 엘리트몹킬러가 되었다'로 오귀속한 것이며, 현재 Loop374 publish `빚을 져서라도 세상은 구해야 할 거 아니야 [독점]`은 정당 해소로 본다."
     },
     {
       "post_id": 11669930,
@@ -334,8 +335,8 @@
   ],
   "golden_rows": 18,
   "counts_by_role": {
-    "negative_no_public_work": 8,
-    "positive_expected_work": 8,
+    "negative_no_public_work": 7,
+    "positive_expected_work": 9,
     "safe_loss_blind_judge_expected_work": 2
   },
   "per_bucket_limit": 8,

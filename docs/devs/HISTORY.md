@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop375 11668307 expected correction
+
+- 신규 full375/bounded/N5 대형 런은 발주하지 않았고, 코드 변경도 하지 않았다.
+- Loop374 실패 행 `11668307`은 runtime/semantic regression이 아니라 golden expected 충돌로 판정했다.
+- 원문 direct alias `빛세구`, 네이버 시리즈 공식 상세 URL, DC alias 질의가 `빚을 져서라도 세상은 구해야 할 거 아니야`를 지지한다.
+- `out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json`에서 `11668307`을 `negative_no_public_work`에서 `positive_expected_work`로 교정했다.
+- 기존 Loop374 result 재감사 결과 expected-answer는 `NO-GO / 14 of 18`, 남은 실패는 `11698897`, `11705245`, `11663521`, `11700470`이다.
+- Golden shared collateral regression 후보는 `7`건이다. full375 collateral gate는 열지 않았다.
+- Report는 `docs/devs/loop_reports/LOOP_375_REPORT_20260704.md`, state는 `docs/devs/loop375_11668307_expected_correction_20260704.json`, source-native review는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop375_11668307_blind_source_native_review.json`이다.
+- Gate는 new large runs `FROZEN`, golden expected-answer `NO-GO / 14 of 18`, golden shared collateral `NO-GO / 7 regressions`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop374 signal-idle golden18 runtime proof
 
 - 신규 full375/bounded/N5 대형 런은 발주하지 않았다.

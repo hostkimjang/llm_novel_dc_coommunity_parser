@@ -1,0 +1,51 @@
+{
+  "loop": 375,
+  "date": "2026-07-04",
+  "kind": "golden_expected_correction",
+  "post_id": 11668307,
+  "new_large_runs": "FROZEN",
+  "code_changed": false,
+  "runtime_run": "not_run",
+  "source_native_review": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop375_11668307_blind_source_native_review.json",
+  "golden_manifest": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\golden\\golden_manifest.json",
+  "correction": {
+    "previous_golden_role": "negative_no_public_work",
+    "corrected_golden_role": "positive_expected_work",
+    "previous_expected_title_or_hypothesis": null,
+    "corrected_expected_title_or_hypothesis": "빚을 져서라도 세상은 구해야 할 거 아니야",
+    "corrected_expected_no_public_title": false,
+    "corrected_expected_url": "https://series.naver.com/novel/detail.series?productNo=13598334"
+  },
+  "evidence": {
+    "local_post_title": "빛세구 궁금한 점 있음",
+    "local_post_summary": "행성 1위, 엘리트, 튜토리얼 폐급을 묻는 작품 설정 질문",
+    "loop374_actual_title": "빚을 져서라도 세상은 구해야 할 거 아니야 [독점]",
+    "loop374_actual_url": "https://series.naver.com/novel/detail.series?productNo=13598334",
+    "web_sources": [
+      "https://series.naver.com/novel/detail.series?productNo=13598334",
+      "https://m.dcinside.com/board/genrenovel/11853272",
+      "https://m.dcinside.com/board/genrenovel/11826680"
+    ]
+  },
+  "reaudit": {
+    "audit_json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop375_golden18_loop374_after_11668307_expected_correction_audit.json",
+    "audit_md": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop375_golden18_loop374_after_11668307_expected_correction_audit.md",
+    "canary_semantic_gate": "NO-GO",
+    "passed_count": 14,
+    "failed_count": 4,
+    "remaining_failed_rows": [11698897, 11705245, 11663521, 11700470]
+  },
+  "collateral": {
+    "collateral_json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\collateral\\loop375_golden18_loop374_after_11668307_expected_correction_collateral.json",
+    "collateral_md": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\collateral\\loop375_golden18_loop374_after_11668307_expected_correction_collateral.md",
+    "golden_shared_collateral": "NO-GO / 7 regressions",
+    "full375_collateral": "NOT_OPEN"
+  },
+  "gate": {
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

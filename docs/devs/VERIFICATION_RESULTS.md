@@ -1,5 +1,31 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop375 11668307 expected correction
+
+- 범위: Loop374 expected-answer 실패 `11668307`을 source-native/web evidence로 재판정하고, golden expected 충돌이면 manifest를 교정한 뒤 기존 Loop374 result를 재감사한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_375_REPORT_20260704.md`
+  - state `docs\devs\loop375_11668307_expected_correction_20260704.json`
+  - source-native review `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop375_11668307_blind_source_native_review.json`
+  - corrected golden manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\golden\golden_manifest.json`
+  - reaudit JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop375_golden18_loop374_after_11668307_expected_correction_audit.json`
+  - reaudit Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop375_golden18_loop374_after_11668307_expected_correction_audit.md`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop375_golden18_loop374_after_11668307_expected_correction_collateral.json`
+- Evidence:
+  - 원문 title `빛세구 궁금한 점 있음`과 설정 질문 본문은 `빛세구` 작품 토론이다.
+  - 네이버 시리즈 공식 상세 URL `https://series.naver.com/novel/detail.series?productNo=13598334`가 `빚을 져서라도 세상은 구해야 할 거 아니야 [독점]`을 제공한다.
+  - DC alias 질의 `https://m.dcinside.com/board/genrenovel/11853272`, `https://m.dcinside.com/board/genrenovel/11826680`가 `빛세구`와 같은 작품명을 연결한다.
+- Correction:
+  - `11668307` `golden_role`: `negative_no_public_work -> positive_expected_work`
+  - `expected_title_or_hypothesis`: `빚을 져서라도 세상은 구해야 할 거 아니야`
+  - `expected_no_public_title=false`
+  - `expected_url=https://series.naver.com/novel/detail.series?productNo=13598334`
+- Reaudit:
+  - expected-answer `NO-GO / 14 of 18`
+  - remaining failed rows `11698897`, `11705245`, `11663521`, `11700470`
+  - golden shared collateral regression candidates `7`
+- Gate: new large runs `FROZEN`, runtime new run `NOT_RUN`, code change `NONE`, expected-answer `NO-GO / 14 of 18`, full375 collateral `NOT_OPEN`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop374 signal-idle golden18 runtime proof
 
 - 범위: Loop373의 `11700470` runtime stall을 반복 재발주하지 않고 stream signal-idle guard를 구현한 뒤 golden18 단일 런으로 row 생산성을 검증한다.

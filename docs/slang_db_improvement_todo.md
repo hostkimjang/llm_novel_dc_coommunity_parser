@@ -1,5 +1,14 @@
 # Slang DB Improvement TODO
 
+## 2026-07-04 Loop375 11668307 expected 교정 slang 주의사항
+
+- [x] 이번 회차는 slang DB write-back이 아니라 `11668307` golden expected 교정이다.
+- [x] `빛세구`는 source-native/web 확인상 `빚을 져서라도 세상은 구해야 할 거 아니야` alias로 판정했다.
+- [x] Loop374 actual `빚을 져서라도 세상은 구해야 할 거 아니야 [독점]`은 정당 해소로 본다.
+- [x] 기존 wrong publish 문제는 `디펜스게임 속 엘리트몹킬러가 되었다`로의 오귀속이었다.
+- [ ] 남은 실패 4건과 search recovery P0를 닫기 전 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, golden expected-answer `NO-GO / 14 of 18`, golden shared collateral `NO-GO / 7 regressions`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop374 signal-idle golden18 slang 주의사항
 
 - [x] 이번 회차는 slang DB write-back이 아니라 runtime stall guard와 golden18 runtime proof다.

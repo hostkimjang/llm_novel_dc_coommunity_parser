@@ -2,6 +2,19 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-04 regression-safe grounding Loop375 TODO
+
+- 상태 업데이트: `11668307`은 Loop374 result regression이 아니라 golden expected 충돌로 판정했다. `빛세구` direct alias와 공식 상세 URL이 `빚을 져서라도 세상은 구해야 할 거 아니야`를 지지하므로 golden manifest expected를 교정했고, 기존 Loop374 결과 재감사에서 expected-answer가 `14/18`로 갱신됐다.
+- Loop375 TODO:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+  - [x] 코드 변경 없이 source-native/web expected correction으로 처리했다.
+  - [x] `out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json`에서 `11668307` role을 `positive_expected_work`로 교정했다.
+  - [x] 기존 Loop374 result를 재감사했다: `NO-GO / 14 of 18`.
+  - [x] golden shared collateral regression 후보를 `8 -> 7`로 갱신했다.
+  - [ ] 남은 실패 `11698897`, `11705245`, `11663521`, `11700470` 중 하나를 source-native/search 또는 일반 술어로 줄인다.
+  - [ ] Search recovery 전 semantic approval, full scan approval, hard-hold 완화를 금지한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop374 TODO
 
 - 상태 업데이트: Loop373의 `11700470` runtime stall을 재발주 반복으로 처리하지 않고 stream signal-idle guard를 코드/테스트로 보강한 뒤 golden18 단일 런을 완료했다. Runtime은 `18/18`, expected-answer는 `NO-GO / 13 of 18`이다.
