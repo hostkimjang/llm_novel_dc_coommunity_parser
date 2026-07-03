@@ -6,6 +6,15 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop352 Addendum - unsafe-promotion contract exclusion
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop352는 approval 회차가 아니라 Loop349 residual `120`에서 이미 현 publication contract로 hold 수렴한 `repair_unsafe_promotion=14`를 중복 queue에서 제외한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_352_REPORT_20260703.md`, state `docs/devs/loop352_unsafe_promotion_contract_exclusion_20260703.json`, queue `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop352_current_residual_action_queue_after_unsafe_promotion_contract_exclusion.json`.
+- Contract basis: Loop300/309 current contract replay가 `REPROCESS=14 -> promotion_blocked=14/14`를 이미 기록했다. 따라서 이 14건은 새 code repair queue가 아니라 중복 residual 표기로 본다.
+- Queue transition: residual action queue `120 -> 106`, `REPROCESS=92 -> 78`, `HOLD=28`, `repair_unsafe_promotion=14 -> 0`, validation issue `0`.
+- Stop condition: actionable queue 감소는 충족했지만, 이번 회차는 safe_resolved 증가가 아니라 over-promotion 차단 수렴 제거이므로 approval이나 hard-hold 완화 근거가 아니다.
+- Gate: queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=106`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop351 Addendum - stale evidence background audit
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop351은 approval 회차가 아니라 Loop348 forced non-light stale evidence refresh 발주의 현재 completion 상태를 감사하고, 코드 변경 없음 3연속 조건에 따라 대형 런을 background 감시로 내린 회차다.

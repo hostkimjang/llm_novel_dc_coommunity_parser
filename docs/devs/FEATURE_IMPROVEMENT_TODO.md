@@ -4,11 +4,18 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop352 unsafe-promotion contract exclusion follow-up
+  - 상태: residual_queue_106 / queue_delta_not_approval / search_recovery_p0_open
+  - 적용: Loop349 current residual `120`에서 Loop300/309 contract replay로 이미 `promotion_blocked=14/14` 수렴한 `repair_unsafe_promotion=14`를 제외했다.
+  - 현재 큐: residual `106`, `REPROCESS=78`, `HOLD=28`, `repair_safe_loss=73`, `repair_after_wrong_work=5`, `known_alias_runtime_replay_required=3`, `native_image_or_source_review_required=14`.
+  - 산출물: `docs/devs/loop_reports/LOOP_352_REPORT_20260703.md`, `docs/devs/loop352_unsafe_promotion_contract_exclusion_20260703.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop352_current_residual_action_queue_after_unsafe_promotion_contract_exclusion.json`.
+  - 완료 기준: 다음 small loop에서 `repair_safe_loss=73` 또는 `OVERRIDE AUDIT(LLM=False -> final=True)` blind/source-native 검증으로 추가 queue 감소를 만든다. search degraded 복구 전 approval과 hard-hold 완화는 금지한다.
+
 - [ ] Loop351 stale evidence/background audit follow-up
   - 상태: stale_evidence_refresh_incomplete / search_recovery_p0_open / approval_not_open
   - 감사: Loop348 forced non-light N5/full375/bounded1200/golden18은 발주됐지만 Loop351 시점 N5 first `1/0/0/0/0`, full375 `375/1/1/0/0`, bounded `1200/4/0/4/0`, golden18 `18/1/1/0/0`이다.
   - 추적: golden files와 bootstrap/golden 도구는 git 추적 중이며, search recovery probe `tools/run_search_query_expansion_probe.py`를 추적 예외에 추가했다.
-  - active 기준: Loop349 residual `120`, `REPROCESS=92`, `HOLD=28`.
+  - active 기준: Loop352 residual `106`, `REPROCESS=78`, `HOLD=28`.
   - 완료 기준: N5 `15/15`, golden18 `18/18`, full375/bounded completion, search degraded `unrecovered=0` audit 전까지 stale evidence를 대체하지 않는다.
 
 - [ ] Loop347 remaining known-alias contract/stall follow-up

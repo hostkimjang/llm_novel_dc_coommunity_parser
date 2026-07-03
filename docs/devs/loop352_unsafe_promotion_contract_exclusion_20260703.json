@@ -1,0 +1,58 @@
+{
+  "loop": 352,
+  "date": "2026-07-03",
+  "report": "docs/devs/loop_reports/LOOP_352_REPORT_20260703.md",
+  "state": "ACTIVE_NOT_COMPLETE",
+  "approval": false,
+  "input_queue": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop349_current_residual_action_queue_after_canonical_variant_quarantine.json",
+  "output_queue_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop352_current_residual_action_queue_after_unsafe_promotion_contract_exclusion.json",
+  "output_queue_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop352_current_residual_action_queue_after_unsafe_promotion_contract_exclusion.md",
+  "excluded_basis": "Loop300/309 current contract replay recorded REPROCESS=14 -> promotion_blocked=14/14 for unsafe_promotion_from_hold.",
+  "excluded_post_ids": [
+    11657046,
+    11658621,
+    11658668,
+    11671490,
+    11674703,
+    11690874,
+    11703657,
+    11706832,
+    11658637,
+    11673086,
+    11677913,
+    11685985,
+    11695637,
+    11718105
+  ],
+  "queue_transition": {
+    "residual_action_queue_rows_before": 120,
+    "residual_action_queue_rows_after": 106,
+    "reprocess_before": 92,
+    "reprocess_after": 78,
+    "hold_before": 28,
+    "hold_after": 28,
+    "repair_unsafe_promotion_before": 14,
+    "repair_unsafe_promotion_after": 0,
+    "validation_issue_count": 0
+  },
+  "remaining_major_actions": {
+    "repair_safe_loss": 73,
+    "repair_after_wrong_work": 5,
+    "known_alias_runtime_replay_required": 3,
+    "native_image_or_source_review_required": 14
+  },
+  "gate": {
+    "queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL",
+    "collateral": "NO-GO / residual_action_queue_rows=106",
+    "search_recovery": "P0 / OPEN",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next": [
+    "repair_safe_loss=73 blind/source-native small batch",
+    "OVERRIDE AUDIT(LLM=False -> final=True) flip row blind judge",
+    "background N5/full375/bounded/golden18 completion monitoring without approval language"
+  ]
+}

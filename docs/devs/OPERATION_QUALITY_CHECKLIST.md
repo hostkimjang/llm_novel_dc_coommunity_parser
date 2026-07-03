@@ -6,6 +6,20 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-03 Loop352 unsafe-promotion contract exclusion quality gate
+
+- 근거:
+  - [x] 입력 queue를 Loop349 current residual `120`으로 고정했다.
+  - [x] Loop300/309 current contract replay `REPROCESS=14 -> promotion_blocked=14/14` 근거를 확인했다.
+  - [x] `split_collateral_action_queue.py --fail-on-validation-issue`로 queue를 재생성했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_352_REPORT_20260703.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop352_unsafe_promotion_contract_exclusion_20260703.json`.
+- 품질 게이트:
+  - [x] `repair_unsafe_promotion=14` 제외를 approval이나 hard-hold 완화로 쓰지 않는다.
+  - [x] residual `120 -> 106`과 validation issue `0`을 기록한다.
+  - [x] search recovery 전 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-03 Loop351 stale evidence/background audit quality gate
 
 - 근거:

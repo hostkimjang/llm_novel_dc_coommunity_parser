@@ -1,5 +1,25 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop352 unsafe-promotion contract exclusion
+
+- 범위: Loop349 residual `120`에서 이미 current contract로 `promotion_blocked` 수렴한 `repair_unsafe_promotion=14`를 중복 action queue에서 제외한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_352_REPORT_20260703.md`
+  - state `docs\devs\loop352_unsafe_promotion_contract_exclusion_20260703.json`
+  - input queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop349_current_residual_action_queue_after_canonical_variant_quarantine.json`
+  - output queue JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop352_current_residual_action_queue_after_unsafe_promotion_contract_exclusion.json`
+  - output queue Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop352_current_residual_action_queue_after_unsafe_promotion_contract_exclusion.md`
+- Evidence:
+  - Loop300/309 current contract replay: `REPROCESS=14 -> promotion_blocked=14/14`.
+  - `split_collateral_action_queue.py --exclude-post-ids ... --fail-on-validation-issue` PASS.
+- Queue verification:
+  - residual action queue `120 -> 106`.
+  - `REPROCESS=92 -> 78`.
+  - `HOLD=28`.
+  - `repair_unsafe_promotion=14 -> 0`.
+  - validation issue `0`.
+- Gate: queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=106`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop351 stale evidence background audit
 
 - 범위: Loop348 forced non-light stale evidence refresh 발주의 최신 상태를 감사하고, completion 전 approval 근거에서 제외한다.

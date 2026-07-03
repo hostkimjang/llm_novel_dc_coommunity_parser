@@ -1,5 +1,23 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop352 unsafe-promotion contract exclusion 체크
+
+- [x] Loop351 이후 active lane을 대형 run 대기가 아니라 residual queue 감소로 전환했다.
+- [x] 입력 기준을 Loop349 current residual queue로 고정했다.
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop349_current_residual_action_queue_after_canonical_variant_quarantine.json`
+- [x] Loop300/309 current contract replay의 `REPROCESS=14 -> promotion_blocked=14/14` 근거를 중복 repair queue 제외 근거로 사용했다.
+- [x] queue artifact를 생성했다.
+  - JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop352_current_residual_action_queue_after_unsafe_promotion_contract_exclusion.json`
+  - Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop352_current_residual_action_queue_after_unsafe_promotion_contract_exclusion.md`
+- [x] current residual count를 확인했다.
+  - residual action queue `120 -> 106`
+  - `REPROCESS=92 -> 78`
+  - `HOLD=28`
+  - `repair_unsafe_promotion=14 -> 0`
+  - validation issue `0`
+- [ ] 다음 loop는 `repair_safe_loss=73` 또는 `OVERRIDE AUDIT(LLM=False -> final=True)` blind/source-native 검증으로 진행한다.
+- Gate: queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=106`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop351 stale evidence/background audit 체크
 
 - [x] Loop348 forced non-light background 런의 최신 manifest/result 상태를 확인했다.
@@ -15,7 +33,7 @@
 - [x] golden18 편입 파일과 bootstrap/golden 도구의 git 추적 상태를 확인했다.
 - [x] search recovery probe `tools/run_search_query_expansion_probe.py`를 추적 예외에 추가했다.
 - [x] 코드 변경 없음 3연속 조건에 따라 대형 런을 background 감시로 내리고 active lane을 residual queue/OVERRIDE AUDIT로 전환했다.
-- [ ] 다음 active loop는 `repair_unsafe_promotion=14`, `repair_safe_loss=73`, 또는 `OVERRIDE AUDIT(LLM=False -> final=True)` blind/source-native 검증으로 진행한다.
+- [x] 다음 active loop는 Loop352에서 `repair_unsafe_promotion=14` 중복 queue 제외로 진행했다.
 - Gate: stale evidence refresh `INCOMPLETE / NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=120`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-03 Loop350 repair_after_wrong_work runtime stall 체크

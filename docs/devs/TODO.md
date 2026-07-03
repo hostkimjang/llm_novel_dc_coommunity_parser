@@ -2,6 +2,18 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop352 TODO
+
+- 상태 업데이트: Loop349 residual `120`에서 Loop300/309 current contract replay로 이미 `14/14 promotion_blocked` 수렴이 확인된 `repair_unsafe_promotion=14`를 중복 repair queue에서 제외했다. Residual actionable queue는 `106`이다.
+- Loop352 TODO:
+  - [x] 최신 입력 queue를 Loop349 current residual `120`으로 고정했다.
+  - [x] `repair_unsafe_promotion=14` excluded post_id 목록을 적용했다.
+  - [x] `split_collateral_action_queue.py --fail-on-validation-issue`가 validation issue `0`으로 통과했다.
+  - [x] queue delta `120 -> 106`, `REPROCESS=92 -> 78`, `HOLD=28` 유지, `repair_unsafe_promotion=14 -> 0`을 기록했다.
+  - [ ] `repair_safe_loss=73` 또는 `OVERRIDE AUDIT(LLM=False -> final=True)` blind judge 검증으로 다음 작은 loop를 진행한다.
+  - [ ] search degraded `unrecovered=0` audit 전 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop351 TODO
 
 - 상태 업데이트: Loop348 forced non-light N5/full375/bounded1200/golden18을 재감사했지만 모두 incomplete라 stale flip/golden/full375 근거를 대체하지 않는다. Residual actionable queue는 `120` 유지다.
@@ -12,7 +24,7 @@
   - [x] golden files와 bootstrap/golden 도구가 git 추적 중임을 확인했다.
   - [x] 검색 복구 P0에 필요한 `tools/run_search_query_expansion_probe.py`를 추적 예외에 추가했다.
   - [x] Loop348~350 코드 변경 없음 3연속 조건으로 대형 런을 background 감시로 내렸다.
-  - [ ] active lane은 residual `120`에서 `repair_unsafe_promotion=14`, `repair_safe_loss=73`, 또는 `OVERRIDE AUDIT` blind/source-native 검증으로 진행한다.
+  - [x] active lane은 Loop352에서 `repair_unsafe_promotion=14` 중복 queue 제외로 전환했다.
   - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-03 regression-safe grounding Loop350 TODO

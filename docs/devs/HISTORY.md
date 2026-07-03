@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop352 unsafe-promotion contract exclusion
+
+- Loop351 이후 대형 run을 기다리지 않고 Loop349 current residual queue에서 작은 queue delta를 만들었다.
+- Loop300/309 current contract replay가 `unsafe_promotion_from_hold`의 `REPROCESS=14`를 `promotion_blocked=14/14`로 수렴시킨 근거를 사용했다.
+- 새 queue artifact는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop352_current_residual_action_queue_after_unsafe_promotion_contract_exclusion.json` 및 `.md`다.
+- Current residual queue는 `120 -> 106`, label counts `REPROCESS=78`, `HOLD=28`, validation issue `0`이다.
+- `repair_unsafe_promotion=14` action group은 제거됐고, 남은 주요 action은 `repair_safe_loss=73`, `repair_after_wrong_work=5`, `known_alias_runtime_replay_required=3`, `native_image_or_source_review_required=14`다.
+- Report는 `docs/devs/loop_reports/LOOP_352_REPORT_20260703.md`, state는 `docs/devs/loop352_unsafe_promotion_contract_exclusion_20260703.json`이다.
+- Gate는 queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=106`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop351 stale evidence background audit
 
 - Loop348 forced non-light N5/full375/bounded1200/golden18을 최신 manifest/result로 재감사했다.
