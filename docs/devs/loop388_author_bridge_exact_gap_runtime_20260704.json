@@ -92,8 +92,7 @@
     "diff_check": "git diff --check"
   },
   "open_items": [
-    "OVERRIDE AUDIT 11708445 blind judge 검증",
-    "golden18 단일 완주 18/18",
+    "Loop389 golden18 expected-answer NO-GO 후속",
     "full375 collateral diff 상시 게이트 승격",
     "broader search degraded 100% 복구 확인",
     "safe-loss 11674712/11660237/11698880 N>=5 flip probe"

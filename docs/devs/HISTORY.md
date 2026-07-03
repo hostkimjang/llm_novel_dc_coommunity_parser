@@ -1,5 +1,21 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop389 golden18 runtime after Loop388
+
+- 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- 현 HEAD `6349197e`에서 golden18 단일 search 포함 non-light runtime만 실행했다.
+- Run `20260704_062721_209425`는 input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, VLM/OCR `READY`, `large_run_complete=true`로 완료됐다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, frontier `complete_after_last_index`, publication contract convergence `GO`, violations `0`을 기록했다.
+- Search evidence는 `REVIEW / search_degraded_observed`다. Row degraded `3`, unrecovered degraded total `4`라 broader search recovery는 계속 P0다.
+- Expected-answer audit는 `NO-GO / 15 of 18`이다. 실패는 `11698897` wrong `쳇바퀴의 생쥐 사도가 되었다`, `11700470` positive unresolved, `11698880` wrong `아카데미 생존 갤러리`다.
+- `11660237`은 `테라포밍`으로 통과했다.
+- `11698880`은 blind judge expected `가챠 중독자의 퓨전펑크 생활` 대신 `아카데미 생존 갤러리`로 다시 publish되어 hard-hold 완화 근거가 아니다.
+- `11694019`는 Loop388 단건 safe_resolved가 golden18 안에서는 public publish로 유지되지 않고 expected evidence preserved unresolved로 내려갔다.
+- Golden shared collateral compare는 changed `5`, regression candidates `3`이다. Full375 collateral은 `NOT_OPEN`이다.
+- `11708445` OVERRIDE AUDIT는 Loop373 current-loop source-native 재검증 기준 `ACCEPT / candidate_only_block_is_correct`, `GO_ROW_CONTRACT_ONLY`로 닫힌 상태다.
+- Report는 `docs/devs/loop_reports/LOOP_389_REPORT_20260704.md`, state는 `docs/devs/loop389_golden18_after_loop388_runtime_20260704.json`이다.
+- Gate는 runtime production `GO / 18 of 18`, expected-answer `NO-GO / 15 of 18`, search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, golden shared collateral `NO-GO / 3`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop388 author_bridge exact official detail runtime closure
 
 - 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

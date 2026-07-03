@@ -1,5 +1,50 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop389 golden18 runtime after Loop388
+
+- 범위: Loop388 단건 회복 뒤 현 HEAD `6349197e`의 golden18 runtime 생산성과 expected-answer 상태를 갱신한다. 신규 full375/bounded/N5 대형 런과 동일 parent packet replay는 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_389_REPORT_20260704.md`
+  - state `docs\devs\loop389_golden18_after_loop388_runtime_20260704.json`
+  - runtime result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop389_golden18_after_loop388_6349197e_search_nonlight_result.json`
+  - runtime manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop389_golden18_after_loop388_6349197e_search_nonlight_result_manifest.json`
+  - runtime health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop389_golden18_after_loop388_runtime_health_audit.json`
+  - expected audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop389_golden18_after_loop388_6349197e_search_nonlight_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop389_golden18_after_loop388_6349197e_search_nonlight_collateral.json`
+- Runtime evidence:
+  - run `20260704_062721_209425`
+  - manifest input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint/result rows `18/18`
+  - pending snapshot rows `0`
+  - VLM/OCR semantic gate `READY`
+  - total time `1991.8s`, avg `110.7s/post`
+- Health evidence:
+  - `flush_integrity=GO / clean_completed_source`
+  - frontier `complete_after_last_index`
+  - publication contract convergence `GO`, violations `0`
+  - search evidence `REVIEW / search_degraded_observed`
+  - row search status `ok=9`, `SEARCH_DEGRADED_RECOVERED=5`, `SEARCH_DEGRADED=3`
+  - unrecovered degraded total `4`
+- Semantic evidence:
+  - expected-answer audit `NO-GO / 15 of 18`
+  - failed rows:
+    - `11698897`: expected `[림월드]변방계에서 회귀자로 살아남기`, actual `쳇바퀴의 생쥐 사도가 되었다`
+    - `11700470`: expected `악당 얼굴의 B급 모험자`, actual `null`
+    - `11698880`: expected `가챠 중독자의 퓨전펑크 생활`, actual `아카데미 생존 갤러리`
+  - `11660237`: `테라포밍` pass
+  - `11694019`: Loop388 단건 safe_resolved가 golden18에서는 expected evidence preserved unresolved로 내려감
+- Collateral evidence:
+  - shared posts `18`, changed `5`, regression candidates `3`
+  - regression candidates: `11663540`, `11698897`, `11705231`
+  - full375 collateral `NOT_OPEN`
+- Override evidence:
+  - `11708445` is `GO_ROW_CONTRACT_ONLY` from Loop373, verdict `ACCEPT / candidate_only_block_is_correct`
+  - state `docs\devs\loop373_override_audit_11708445_20260703.json`
+- Verification commands:
+  - `.venv312\Scripts\python.exe tools\audit_expert_run_health.py --run-id 20260704_062721_209425 ...` -> PASS, `flush_integrity=GO`, search `REVIEW`
+  - `.venv312\Scripts\python.exe tools\audit_regression_safe_golden.py --baseline ...loop385... --canary-result ...loop389...` -> PASS tool run, semantic `NO-GO / 15 of 18`, collateral candidates `3`
+- Gate: runtime production `GO / 18 of 18`, expected-answer `NO-GO / 15 of 18`, search evidence `REVIEW`, search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, golden shared collateral `NO-GO / 3`, full375 collateral `NOT_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop388 author_bridge exact official detail runtime closure
 
 - 범위: `11694019` author_bridge recovery를 단건 completed-source runtime으로 검증한다. 신규 full375/bounded/N5/golden18 대형 런과 동일 parent packet replay는 발주하지 않는다.

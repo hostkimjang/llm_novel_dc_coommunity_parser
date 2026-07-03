@@ -6,6 +6,18 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-04 Loop389 Addendum - golden18 runtime after Loop388
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop389는 approval 회차가 아니라 Loop388 뒤 current HEAD golden18 runtime 생산성과 semantic 상태를 갱신한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_389_REPORT_20260704.md`, state `docs/devs/loop389_golden18_after_loop388_runtime_20260704.json`, health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop389_golden18_after_loop388_runtime_health_audit.json`.
+- Runtime: run `20260704_062721_209425`, input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, VLM/OCR `READY`, `large_run_complete=true`.
+- Health: `flush_integrity=GO / clean_completed_source`, publication contract `GO / violations 0`; search evidence는 `REVIEW / search_degraded_observed`, unrecovered degraded total `4`.
+- Audit: expected-answer `NO-GO / 15 of 18`. 실패는 `11698897`, `11700470`, `11698880`.
+- Boundary: `11660237`은 `테라포밍`으로 통과했지만 N>=5 flip probe를 대체하지 않는다. `11698880`은 `아카데미 생존 갤러리`로 오귀속되어 hard-hold 완화 근거가 아니다. `11694019`는 Loop388 단건 publish가 golden18에서는 evidence-preserved unresolved로 내려갔다.
+- Collateral: golden shared changed `5`, regression candidates `3`; full375 collateral은 `NOT_OPEN`.
+- Override: `11708445`는 Loop373 `ACCEPT / candidate_only_block_is_correct`, `GO_ROW_CONTRACT_ONLY` 완료 상태다.
+- Gate: runtime production `GO / 18 of 18`, expected-answer `NO-GO / 15 of 18`, search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, golden shared collateral `NO-GO / 3`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-04 Loop388 Addendum - author_bridge exact official detail runtime closure
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop388은 approval 회차가 아니라 Loop386/387에서 확인한 `11694019` author_bridge gap을 단건 runtime으로 닫은 회차다.
@@ -14,7 +26,7 @@
 - Fix: author_bridge title hint별 official detail page title exact match가 없으면 `no_official_url` gap을 유지한다. 다른 작품 official detail URL이 있어도 대상 제목의 보충 검색을 막지 않는다.
 - Row result: `official_title=이세계에서 사이비로 살아남기`, `official_url=https://novelpia.com/novel/181771`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`, `bypassed_gate=false`.
 - Verification: search recovery contract `5` PASS, search 관련 묶음 `34` PASS, `py_compile` PASS, `git diff --check` PASS(CRLF warning only).
-- Boundary: R1 하드코딩 cue 확장 없음. full375, bounded, golden18 전체, N>=5 flip probe는 미실행이다. `11708445` OVERRIDE AUDIT blind judge 재검증도 아직 open이다.
+- Boundary: R1 하드코딩 cue 확장 없음. full375, bounded, golden18 전체, N>=5 flip probe는 미실행이다. `11708445` OVERRIDE AUDIT는 Loop373 기준 `GO_ROW_CONTRACT_ONLY` 완료 상태다.
 - Gate: runtime production `GO / 1 of 1`, row-level search/semantic recovery `GO`, broader search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
 
 ## 2026-07-03 Loop372 Addendum - 11663521 title-only URL support

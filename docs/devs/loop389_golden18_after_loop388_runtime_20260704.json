@@ -1,0 +1,167 @@
+{
+  "loop": 389,
+  "date": "2026-07-04",
+  "head": "6349197e",
+  "status": "golden18_runtime_go_semantic_no_go",
+  "goal_state": "ACTIVE_NOT_COMPLETE",
+  "approval_state": {
+    "semantic_quality": "REVIEW_LOCKED",
+    "full_scan_approval": false,
+    "broader_search_recovery": "P0_search_blind_conditional",
+    "full375_collateral": "NOT_OPEN"
+  },
+  "scope": {
+    "large_runs_frozen": true,
+    "same_38_row_parent_packet_replay": "stopped",
+    "bounded_1000_1500_non_light_run": "not_dispatched",
+    "full375_replay": "not_run",
+    "flip_probe_n_ge_5": "not_run",
+    "golden18_single_run": true,
+    "r1_hardcoded_cue_expansion": false
+  },
+  "runtime_evidence": {
+    "run_id": "20260704_062721_209425",
+    "result_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop389_golden18_after_loop388_6349197e_search_nonlight_result.json",
+    "manifest_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop389_golden18_after_loop388_6349197e_search_nonlight_result_manifest.json",
+    "health_audit_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop389_golden18_after_loop388_runtime_health_audit.json",
+    "input_completed_flushed_pending_failed": "18/18/18/0/0",
+    "checkpoint_rows": 18,
+    "result_rows": 18,
+    "pending_snapshot_rows": 0,
+    "large_run_complete": true,
+    "vlm_ocr_semantic_review_ready": true,
+    "flush_integrity": "GO_clean_completed_source",
+    "frontier": "complete_after_last_index",
+    "publication_contract_convergence": "GO",
+    "publication_contract_violations": 0,
+    "total_seconds": 1991.8,
+    "avg_seconds_per_post": 110.7
+  },
+  "search_evidence": {
+    "gate": "REVIEW",
+    "blocker": "search_degraded_observed",
+    "manifest_health": {
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_ok_count": 2,
+      "mcp_health_failure_count": 0
+    },
+    "row_status_counts": {
+      "ok": 9,
+      "SEARCH_DEGRADED_RECOVERED": 5,
+      "SEARCH_DEGRADED": 3
+    },
+    "rows_with_upstream_zero": 10,
+    "rows_with_degraded": 3,
+    "query_total": 161,
+    "degraded_total": 49,
+    "degraded_recovered_total": 34,
+    "unrecovered_degraded_total": 4,
+    "worker_log_search_degraded_detected": 4
+  },
+  "golden_expected_audit": {
+    "audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop389_golden18_after_loop388_6349197e_search_nonlight_audit.json",
+    "audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop389_golden18_after_loop388_6349197e_search_nonlight_audit.md",
+    "canary_semantic_gate": "NO-GO",
+    "row_count": 18,
+    "passed_count": 15,
+    "failed_count": 3,
+    "status_counts": {
+      "expected_null_respected": 7,
+      "wrong_or_unexpected_title": 2,
+      "expected_title_resolved": 4,
+      "expected_work_evidence_preserved_unresolved": 3,
+      "expected_hypothesis_preserved_unresolved": 1,
+      "positive_work_unresolved": 1
+    },
+    "failed_rows": [
+      {
+        "post_id": 11698897,
+        "expected": "[림월드]변방계에서 회귀자로 살아남기",
+        "actual": "쳇바퀴의 생쥐 사도가 되었다",
+        "status": "wrong_or_unexpected_title"
+      },
+      {
+        "post_id": 11700470,
+        "expected": "악당 얼굴의 B급 모험자",
+        "actual": null,
+        "status": "positive_work_unresolved"
+      },
+      {
+        "post_id": 11698880,
+        "expected": "가챠 중독자의 퓨전펑크 생활",
+        "actual": "아카데미 생존 갤러리",
+        "status": "wrong_or_unexpected_title"
+      }
+    ],
+    "key_rows": {
+      "11660237": {
+        "expected": "테라포밍",
+        "actual": "테라포밍",
+        "status": "expected_title_resolved",
+        "candidate_ledger_status": "safe_resolved"
+      },
+      "11698880": {
+        "expected": "가챠 중독자의 퓨전펑크 생활",
+        "actual": "아카데미 생존 갤러리",
+        "status": "wrong_or_unexpected_title",
+        "candidate_ledger_status": "safe_resolved"
+      },
+      "11694019": {
+        "expected": "이세계에서 사이비로 살아남기",
+        "actual": null,
+        "status": "expected_work_evidence_preserved_unresolved",
+        "candidate_ledger_status": "promotion_blocked"
+      }
+    }
+  },
+  "collateral_compare": {
+    "json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop389_golden18_after_loop388_6349197e_search_nonlight_collateral.json",
+    "md": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop389_golden18_after_loop388_6349197e_search_nonlight_collateral.md",
+    "scope": "golden_canary_shared_posts_only",
+    "shared_post_count": 18,
+    "changed_post_count": 5,
+    "collateral_regression_count": 3,
+    "regression_candidates": [
+      11663540,
+      11698897,
+      11705231
+    ],
+    "full375_collateral": "NOT_OPEN"
+  },
+  "override_audit_11708445": {
+    "status": "GO_ROW_CONTRACT_ONLY",
+    "runtime_required": false,
+    "source": "docs/devs/loop373_override_audit_11708445_20260703.json",
+    "review_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop373_override_audit_11708445_current_blind_source_native.json",
+    "verdict": "ACCEPT_candidate_only_block_is_correct",
+    "public_identity": {
+      "official_title": null,
+      "official_url": null,
+      "candidate_ledger_status": "promotion_blocked",
+      "safe_resolved": false,
+      "publish_allowed": false,
+      "bypassed_gate": false
+    }
+  },
+  "gates": {
+    "runtime_production": "GO_18_of_18",
+    "expected_answer": "NO-GO_15_of_18",
+    "search_evidence": "REVIEW_search_degraded_observed",
+    "publication_contract": "GO_violations_0",
+    "golden_shared_collateral": "NO-GO_3_regression_candidates",
+    "full375_collateral": "NOT_OPEN",
+    "collateral_105_accounting": "reclassified_74_runtime_verified_4",
+    "override_audit_11708445": "GO_ROW_CONTRACT_ONLY",
+    "semantic_quality": "REVIEW_LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE_NOT_COMPLETE"
+  },
+  "next_actions": [
+    "11698880 wrong public title repair without hardcoded cue expansion",
+    "11698897 wrong public title triage",
+    "11700470 positive unresolved source-native or general predicate repair",
+    "search degraded unrecovered=0 proof before promotion hard-hold relaxation",
+    "full375 collateral remains unopened until shared regressions are triaged"
+  ]
+}

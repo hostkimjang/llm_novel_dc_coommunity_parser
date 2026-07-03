@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop389 golden18 runtime after Loop388
+  - 상태: golden18 runtime `GO 18/18` / expected-answer `NO-GO 15/18` / search evidence `REVIEW_search_degraded_observed` / golden shared collateral `NO-GO 3` / full375 `NOT_OPEN` / approval not open
+  - 적용: 신규 대형 런 없이 현 HEAD `6349197e`의 golden18 단일 search non-light runtime을 완료했다. watchdog/stall 우회는 실제 row를 내는 것으로 실증됐지만 semantic gate는 닫히지 않았다.
+  - 산출물: `docs/devs/loop_reports/LOOP_389_REPORT_20260704.md`, `docs/devs/loop389_golden18_after_loop388_runtime_20260704.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop389_golden18_after_loop388_6349197e_search_nonlight_result.json`.
+  - 완료 기준: `11698880`, `11698897`, `11700470`을 R1 hardcoded cue 없이 줄이고, search degraded `unrecovered=0`과 full375 collateral gate를 별도 증명하기 전까지 approval과 hard-hold 완화를 열지 않는다.
+
 - [x] Loop388 author_bridge exact official detail runtime closure
   - 상태: row-level runtime `GO 1/1` / row-level semantic `GO` / broader search recovery `P0_SEARCH_BLIND_CONDITIONAL` / full375 `NOT_OPEN` / approval not open
   - 적용: author_bridge title hint마다 official detail URL의 page title exact match를 검사한다. 다른 작품의 official detail URL이 있어도 대상 제목의 exact official detail이 없으면 `no_official_url` gap을 유지한다.

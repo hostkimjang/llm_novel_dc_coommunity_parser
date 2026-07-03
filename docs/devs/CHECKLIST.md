@@ -1,5 +1,37 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop389 golden18 runtime after Loop388 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] 현 HEAD `6349197e`에서 golden18 단일 search 포함 non-light runtime을 실행했다.
+  - run `20260704_062721_209425`
+  - result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop389_golden18_after_loop388_6349197e_search_nonlight_result.json`
+  - manifest `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop389_golden18_after_loop388_6349197e_search_nonlight_result_manifest.json`
+  - health `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop389_golden18_after_loop388_runtime_health_audit.json`
+- [x] Runtime manifest `18/18/18/0/0`, checkpoint/result rows `18/18`, pending `0`, `large_run_complete=true`를 확인했다.
+- [x] Health audit를 생성했다.
+  - `flush_integrity=GO / clean_completed_source`
+  - publication contract convergence `GO`, violations `0`
+  - search evidence `REVIEW / search_degraded_observed`
+  - row degraded `3`, unrecovered degraded total `4`
+- [x] Golden expected-answer audit를 생성했다.
+  - audit `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop389_golden18_after_loop388_6349197e_search_nonlight_audit.json`
+  - `NO-GO / 15 of 18`
+  - 실패 `11698897`, `11700470`, `11698880`
+- [x] 핵심 row 상태를 분리했다.
+  - `11660237`: `테라포밍` pass
+  - `11698880`: expected `가챠 중독자의 퓨전펑크 생활`, actual `아카데미 생존 갤러리`, fail
+  - `11694019`: Loop388 단건 safe_resolved가 golden18에서는 `expected_work_evidence_preserved_unresolved`로 내려감
+- [x] Golden shared collateral compare를 생성했다.
+  - changed `5`
+  - regression candidates `3`: `11663540`, `11698897`, `11705231`
+- [x] `11708445` OVERRIDE AUDIT는 Loop373 기준 `GO_ROW_CONTRACT_ONLY / ACCEPT` 완료로 정정했다.
+- [ ] Search degraded `unrecovered=0` 전까지 `promotion_blocked=search-blind conditional`을 유지한다.
+- [ ] `11698880`, `11698897`, `11700470`을 R1 hardcoded cue 없이 줄인다.
+- [ ] full375 collateral approval은 `NOT_OPEN`으로 유지한다.
+- Gate: runtime production `GO / 18 of 18`, expected-answer `NO-GO / 15 of 18`, search evidence `REVIEW`, golden shared collateral `NO-GO / 3`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop388 author_bridge exact official detail runtime closure 체크
 
 - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
@@ -29,8 +61,8 @@
   - search 관련 묶음 `34` PASS
   - `py_compile` PASS
   - `git diff --check` PASS, CRLF warning only
-- [ ] Loop388은 단건 증거이므로 full375 collateral, golden18 전체, bounded run, N>=5 flip probe를 대체하지 않는다.
-- [ ] `11708445` OVERRIDE AUDIT blind judge 재검증은 아직 실행하지 않았다.
+- [x] Loop389에서 golden18 전체 runtime `18/18`을 확인했다. 단 expected-answer는 `NO-GO / 15 of 18`이라 approval은 아니다.
+- [x] `11708445` OVERRIDE AUDIT는 Loop373 재검증 기준 `GO_ROW_CONTRACT_ONLY / ACCEPT` 완료다.
 - Gate: runtime production `GO / 1 of 1`, row-level search/semantic `GO`, broader search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-04 Loop386 author_bridge search recovery contract 체크

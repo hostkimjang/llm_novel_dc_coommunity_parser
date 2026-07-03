@@ -1,5 +1,24 @@
 # Improvement Register
 
+## IMP-20260704-389 - golden18 runtime after Loop388
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5 미발주 | 동결 유지 |
+| parent packet replay | 중단 | 동일 38-row replay 없음 | 반복 금지 |
+| golden18 runtime | GO / 18 of 18 | run `20260704_062721_209425`, manifest `18/18/18/0/0` | runtime production 근거로만 사용 |
+| runtime health | GO | `flush_integrity=GO`, publication contract `GO / violations 0` | semantic과 분리 |
+| search evidence | REVIEW | row degraded `3`, unrecovered degraded total `4` | search P0 유지 |
+| expected-answer | NO-GO / 15 of 18 | 실패 `11698897`, `11700470`, `11698880` | approval 금지 |
+| `11660237` | 통과 | actual `테라포밍` | N>=5 flip probe는 별도 |
+| `11698880` | 실패 | actual `아카데미 생존 갤러리`, expected `가챠 중독자의 퓨전펑크 생활` | hard-hold 완화 금지, 일반 술어 수리 |
+| `11694019` | 단건 회복 미승격 | Loop388 safe_resolved가 golden18에서 evidence-preserved unresolved | mixed-input 안정성 원인 분석 |
+| collateral | NO-GO / 3 | changed `5`, regression candidates `3` | full375 전 shared regression triage |
+| OVERRIDE AUDIT `11708445` | 닫힘 | Loop373 `ACCEPT / candidate_only_block_is_correct` | open queue로 재등재 금지 |
+| 문서 동기화 | 완료 | Loop389 report/state와 운영 문서 갱신 | 검증 후 커밋 |
+
+Gate: runtime production `GO / 18 of 18`, expected-answer `NO-GO / 15 of 18`, search evidence `REVIEW / search_degraded_observed`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260704-388 - author_bridge exact official detail runtime closure
 
 | 항목 | 상태 | 근거 | 다음 조치 |
