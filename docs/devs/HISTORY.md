@@ -1,5 +1,17 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop378 11698880 title-led alias competition gate
+
+- 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop377 golden18 실패 `11698880`의 root cause를 코드 경로로 좁혔다.
+- `title-led alias public-title gate`가 현재 후보 `아카데미 생존 갤러리` evidence를 만들 때 Verifier `matched_alias=가챠펑크`를 그대로 사용했고, 이 alias는 본문 검증 후보 `가챠 중독자의 퓨전펑크 생활`의 표면이었다.
+- `src/llm_batch/agentic_pipeline.py`는 verifier alias가 현재 후보 title 또는 현재 후보 surface form을 지지할 때만 publish evidence로 쓰도록 보강했다.
+- `tests/test_title_lead_search_inferred_guard.py`에 `11698880` 형태 회귀 테스트를 추가해 본문 검증 후보가 경쟁하면 `candidate_only`, `publish_allowed=false`, `context_only`로 남는지 확인했다.
+- 검증은 focused 3 tests PASS, `tests.test_promotion_gate_contract` 22 PASS, `py_compile` PASS, `git diff --check` PASS다.
+- Runtime replay는 `NOT_RUN_AFTER_PATCH`라 expected-answer 개선으로 세지 않는다.
+- Report는 `docs/devs/loop_reports/LOOP_378_REPORT_20260704.md`, state는 `docs/devs/loop378_title_led_alias_competition_gate_20260704.json`이다.
+- Gate는 new large runs `FROZEN`, same parent packet replay `STOPPED`, code contract `GO_UNIT`, targeted runtime `NOT_RUN_AFTER_PATCH`, golden expected-answer `NO-GO / inherited 15 of 18`, golden shared collateral `NO-GO / inherited 7 regressions`, full375 collateral `NOT_OPEN`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop377 golden18 after Loop376 non-light runtime proof
 
 - 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

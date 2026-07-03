@@ -1,5 +1,27 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop378 11698880 title-led alias competition gate
+
+- 범위: Loop377 golden18 실패 `11698880`에서 현재 title-led 후보와 본문 검증 후보의 alias evidence가 섞이는 경로를 코드 계약으로 차단한다. 신규 대형 런과 동일 parent packet replay는 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_378_REPORT_20260704.md`
+  - state `docs\devs\loop378_title_led_alias_competition_gate_20260704.json`
+  - source result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop377_golden18_after_loop376_a4ea17c3_search_nonlight_result.json`
+  - previous report `docs\devs\loop_reports\LOOP_377_REPORT_20260704.md`
+- Evidence:
+  - target `11698880`
+  - expected `가챠 중독자의 퓨전펑크 생활`
+  - actual `아카데미 생존 갤러리`
+  - verifier `matched_alias=가챠펑크`
+  - current title-led alias `아생갤`
+  - competing body-verified candidate `가챠 중독자의 퓨전펑크 생활`
+- Code verification:
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_gate_blocks_mismatched_verifier_alias_when_body_verified_work_competes tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_gate_can_replace_prior_context_only_decision tests.test_known_title_abbreviation_support.KnownTitleAbbreviationSupportTest.test_known_title_abbreviation_recall_blocks_competing_verified_body_work` -> PASS, `3` tests.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_promotion_gate_contract` -> PASS, `22` tests.
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_title_lead_search_inferred_guard.py` -> PASS.
+  - `git diff --check` -> PASS.
+- Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, golden expected-answer `NO-GO / inherited 15 of 18`, golden shared collateral `NO-GO / inherited 7 regressions`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop377 golden18 after Loop376 non-light runtime proof
 
 - 범위: Loop376 이후 신규 대형 런 없이 `11705245` 단건 runtime과 golden18 단일 non-light 런으로 runtime production, search evidence, publication contract, expected-answer를 분리 검증한다.

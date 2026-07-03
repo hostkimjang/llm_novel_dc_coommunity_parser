@@ -1,0 +1,61 @@
+{
+  "loop": 378,
+  "date": "2026-07-04",
+  "title": "11698880 title-led alias competition gate",
+  "status": "GO_UNIT_RUNTIME_NOT_RUN",
+  "new_large_runs": "FROZEN",
+  "same_parent_packet_replay": "STOPPED",
+  "target_post_id": 11698880,
+  "source_evidence": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop377_golden18_after_loop376_a4ea17c3_search_nonlight_result.json",
+  "previous_report": "docs/devs/loop_reports/LOOP_377_REPORT_20260704.md",
+  "root_cause": {
+    "summary": "Verifier matched_alias from competing body-verified work was reused as current title-led candidate evidence.",
+    "current_candidate": "아카데미 생존 갤러리",
+    "current_candidate_alias": "아생갤",
+    "competing_body_verified_candidate": "가챠 중독자의 퓨전펑크 생활",
+    "mismatched_verifier_alias": "가챠펑크",
+    "character_anchor": "세드릭"
+  },
+  "code_change": {
+    "file": "src/llm_batch/agentic_pipeline.py",
+    "function": "_record_title_led_alias_public_title_gate_decision",
+    "description": "Only accept verifier alias text as publish evidence when it supports the current title or one of the current title candidate surface forms."
+  },
+  "test_change": {
+    "file": "tests/test_title_lead_search_inferred_guard.py",
+    "test": "test_title_led_gate_blocks_mismatched_verifier_alias_when_body_verified_work_competes",
+    "expected": "candidate_only / publish_allowed=false / body_verified_character_work_competes_with_title_led_alias"
+  },
+  "verification": [
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_gate_blocks_mismatched_verifier_alias_when_body_verified_work_competes tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_gate_can_replace_prior_context_only_decision tests.test_known_title_abbreviation_support.KnownTitleAbbreviationSupportTest.test_known_title_abbreviation_recall_blocks_competing_verified_body_work",
+      "status": "PASS",
+      "tests": 3
+    },
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_promotion_gate_contract",
+      "status": "PASS",
+      "tests": 22
+    },
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m py_compile src\\llm_batch\\agentic_pipeline.py tests\\test_title_lead_search_inferred_guard.py",
+      "status": "PASS"
+    },
+    {
+      "command": "git diff --check",
+      "status": "PASS"
+    }
+  ],
+  "runtime_replay": "NOT_RUN_AFTER_PATCH",
+  "gate": {
+    "golden_expected_answer": "NO-GO / inherited 15 of 18",
+    "golden_shared_collateral": "NO-GO / inherited 7 regressions",
+    "full375_collateral": "NOT_OPEN",
+    "search_recovery": "P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN",
+    "promotion": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next_action": "Run 11698880 single non-light runtime before counting expected-answer or hard-hold movement."
+}

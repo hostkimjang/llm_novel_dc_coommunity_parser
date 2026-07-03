@@ -2,6 +2,21 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-04 regression-safe grounding Loop378 TODO
+
+- 상태 업데이트: Loop377 golden18 실패 `11698880`에서 Verifier `matched_alias=가챠펑크`가 현재 후보 `아카데미 생존 갤러리`의 alias bridge evidence로 재사용되는 경로를 코드 계약으로 막았다. 신규 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop378 TODO:
+  - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] `11698880` Loop377 결과에서 mismatched verifier alias root cause를 확인했다.
+  - [x] 현재 후보 title/surface와 맞지 않는 verifier alias를 publish evidence에서 제외했다.
+  - [x] `가챠펑크/세드릭` 본문 검증 후보가 경쟁하면 title-led 후보를 `context_only`/`candidate_only`로 남기는 테스트를 추가했다.
+  - [x] focused 3 tests, promotion gate contract 22 tests, `py_compile`, `git diff --check`를 통과했다.
+  - [ ] runtime replay는 아직 하지 않았으므로 expected-answer 카운트 개선으로 계산하지 않는다.
+  - [ ] 다음 loop는 `11698880` 단건 non-light runtime으로 실제 public output 수렴을 확인한다.
+  - [ ] hard-hold 완화, full375 collateral approval, semantic approval은 금지한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop377 TODO
 
 - 상태 업데이트: Loop376 이후 `11705245` 단건 runtime과 golden18 단일 non-light 런을 완료했다. Runtime/search/publication contract는 `GO`지만 expected-answer는 `NO-GO / 15 of 18`, golden shared collateral은 `NO-GO / 7 regressions`다.

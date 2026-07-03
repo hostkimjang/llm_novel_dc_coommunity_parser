@@ -6992,6 +6992,88 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         )
         self.assertEqual(final_decision["_promotion_gate_decision"]["official_url"], url)
 
+    def test_title_led_gate_blocks_mismatched_verifier_alias_when_body_verified_work_competes(self):
+        pipeline = build_pipeline()
+        title_led_title = "아카데미 생존 갤러리"
+        title_led_url = "https://novelpia.com/novel/380218"
+        body_title = "가챠 중독자의 퓨전펑크 생활"
+        body_url = "https://novelpia.com/novel/387014"
+        post = PostInput(
+            post_id=11698880,
+            title="아생갤 개 존나게 재밌군 ㅇㅇ",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="text", text="가챠펑크 세드릭도 그렇고"),
+                ContentBlock(type="text", text="시원시원한 상남자라서 너무 좋구나"),
+            ],
+            comments=[],
+        )
+        ctx = ConversationContext(post_id=post.post_id, post_data=pipeline._post_to_dict(post), comments=[])
+        ctx.verified_character_work_links = [
+            {
+                "title": body_title,
+                "url": body_url,
+                "character": "세드릭",
+                "alias": "가챠펑크",
+                "matched_alias": "가챠펑크",
+            }
+        ]
+        final_decision = {
+            "discussion_type": "general",
+            "work_resolution": "resolved",
+            "title_resolution_state": "resolved",
+        }
+        vf_result = {
+            "grounding_check": {
+                "anchor_found": "title_abbrev_mention",
+                "title_abbrev_mentioned": True,
+                "matched_alias": "가챠펑크",
+            }
+        }
+        candidates = [
+            DetectedTitle(
+                official_title=body_title,
+                heretic_url=body_url,
+                confidence="High",
+                alias_or_mention="가챠펑크",
+                source_tier="official_detail",
+                page_type="novel_page",
+            ),
+            DetectedTitle(
+                official_title=title_led_title,
+                heretic_url=title_led_url,
+                confidence="High",
+                alias_or_mention="아생갤",
+                source_tier="official_detail",
+                page_type="novel_page",
+            ),
+        ]
+
+        decision = pipeline._record_title_led_alias_public_title_gate_decision(
+            ctx,
+            title_led_title,
+            candidate_url=title_led_url,
+            final_decision=final_decision,
+            verification_result=vf_result,
+            title_candidates=candidates,
+            acceptance={"decision": "accept", "title_led_consumption_bridge": True, "score": 27},
+        )
+
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn("body_verified_character_work_competes_with_title_led_alias", decision["reason_codes"])
+        state = ctx._last_promotion_gate_state
+        self.assertFalse(state["row_discusses_work_as_work"])
+        self.assertEqual(state["scope"]["scope_kind"], "context_only")
+        self.assertEqual(state["scope"]["competing_candidates"], [body_title])
+        evidence = ctx._last_promotion_gate_evidence
+        alias_sources = [
+            item["source_path_or_snippet"]
+            for item in evidence
+            if item["kind"] in {"title_led_consumption", "alias_bridge"}
+        ]
+        self.assertNotIn("가챠펑크", alias_sources)
+
     def test_title_led_evaluation_preserves_site_scoped_official_probe_under_recommendation_budget(self):
         calls = []
 

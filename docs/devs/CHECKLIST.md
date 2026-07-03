@@ -1,5 +1,26 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop378 11698880 title-led alias competition gate 체크
+
+- [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Loop377 `11698880` source evidence를 확인했다.
+  - expected `가챠 중독자의 퓨전펑크 생활`
+  - actual `아카데미 생존 갤러리`
+  - verifier alias `가챠펑크`
+  - current title-led alias `아생갤`
+- [x] `_record_title_led_alias_public_title_gate_decision`에서 현재 후보와 맞지 않는 verifier alias를 publish evidence에서 제외했다.
+- [x] R1 하드코딩 cue 리스트 확장은 하지 않았다.
+- [x] 신규 단위 테스트가 경쟁 본문 검증 후보를 `body_verified_character_work_competes_with_title_led_alias`로 차단함을 확인했다.
+- [x] 검증:
+  - focused title-led/known-alias tests `3` PASS
+  - `tests.test_promotion_gate_contract` `22` PASS
+  - `py_compile` PASS
+  - `git diff --check` PASS
+- [ ] post-patch runtime replay는 `NOT_RUN_AFTER_PATCH`이므로 expected-answer 개선으로 세지 않는다.
+- [ ] 다음 loop에서 `11698880` 단건 non-light runtime을 먼저 확인한다.
+- Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, code contract `GO_UNIT`, targeted runtime `NOT_RUN_AFTER_PATCH`, golden expected-answer `NO-GO / inherited 15 of 18`, golden shared collateral `NO-GO / inherited 7 regressions`, full375 collateral `NOT_OPEN`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop377 Loop376 후 golden18 non-light runtime proof 체크
 
 - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.

@@ -32674,12 +32674,35 @@ OUTPUT JSON:
         grounding = vf.get("grounding_check") or {}
         if not isinstance(grounding, dict):
             grounding = {}
+
+        def _alias_supports_current_title(raw_alias: Any) -> bool:
+            alias = str(raw_alias or "").strip()
+            alias_norm = self._normalize_match_text(alias)
+            if not alias_norm:
+                return False
+            if self._term_alias_matches_title(alias, title):
+                return True
+            for cand in title_candidates or []:
+                if not isinstance(cand, DetectedTitle):
+                    continue
+                cand_title = str(getattr(cand, "official_title", "") or "").strip()
+                if self._normalize_match_text(cand_title) != title_norm:
+                    continue
+                if any(
+                    self._normalize_match_text(form) == alias_norm
+                    for form in self._candidate_surface_forms(ctx, cand)
+                ):
+                    return True
+            return False
+
         alias_text = str(
             grounding.get("matched_alias")
             or grounding.get("anchor_text")
             or getattr(ctx, "_verified_alias_official_detail_anchor_alias", "")
             or ""
         ).strip()
+        if alias_text and not _alias_supports_current_title(alias_text):
+            alias_text = ""
         if not alias_text:
             for cand in title_candidates or []:
                 if not isinstance(cand, DetectedTitle):

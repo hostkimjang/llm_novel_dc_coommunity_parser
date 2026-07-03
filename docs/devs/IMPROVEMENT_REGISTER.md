@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260704-378 - 11698880 title-led alias 경쟁 후보 계약
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/golden18 발주 없음 | 동결 유지 |
+| parent packet replay | 중단 | 동일 38-row replay 없음 | 단건 runtime 전까지 반복 금지 |
+| root cause | 확인 | `가챠펑크` verifier alias가 현재 후보 `아카데미 생존 갤러리` evidence로 재사용됨 | 후보별 alias support 계약 유지 |
+| 코드 계약 | GO_UNIT | 현재 후보 title/surface와 맞지 않는 verifier alias 제외 | `11698880` 단건 runtime으로 public output 확인 |
+| 테스트 | PASS | focused 3, promotion gate contract 22, py_compile, diff check | runtime 전 expected-answer 개선 금지 |
+| 문서 동기화 | 완료 | Loop378 report/state/review와 운영 문서 갱신 | 다음 loop는 `11698880` non-light 단건 |
+
+Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, code contract `GO_UNIT`, targeted runtime `NOT_RUN_AFTER_PATCH`, golden expected-answer `NO-GO / inherited 15 of 18`, golden shared collateral `NO-GO / inherited 7 regressions`, full375 collateral `NOT_OPEN`, search recovery `P0 / PARTIAL_RUNTIME_GO / FULL_SCAN_NOT_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260704-375 - 11668307 expected 교정
 
 | 항목 | 상태 | 근거 | 다음 조치 |
