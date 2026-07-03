@@ -2,6 +2,19 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop372 TODO
+
+- 상태 업데이트: 신규 대형 런은 계속 동결했고, `11663521` 단건으로 URL 없는 title-only official-detail 후보가 `성기사는 버생을 산다`로 public publish되는 경로를 막았다. Runtime은 `1/1`, health audit는 `GO / clean_completed_source`다.
+- Loop372 TODO:
+  - [x] `11663521` 단건 input을 만들고 run `20260703_224934_380230`으로 row 생산 `1/1`을 확인했다.
+  - [x] `expert_main.py`에서 candidate preservation item의 official/page support를 URL-backed support로 제한했다.
+  - [x] `tools/audit_expert_run_health.py`에서 manifest-declared artifact path와 completed `N+1` frontier를 지원했다.
+  - [x] final public title `null`, `promotion_blocked`, `publish_allowed=false`, `safe_resolved=false`를 확인했다.
+  - [x] py_compile, focused title-only tests `3`, comment/promotion/convergence tests `76`, audit harness tests `18` PASS를 확인했다.
+  - [ ] `11663521`은 wrong-publish closure로만 세고 golden expected pass로 세지 않는다.
+  - [ ] 다음 loop는 남은 golden 실패 `11694019`, `11700470`, `11698880` 또는 `11663521` positive unresolved를 source/search/native audit로 줄여야 한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop371 TODO
 
 - 상태 업데이트: Loop370 이후 신규 대형 런은 발주하지 않았고 golden18 단일 런만 실행했다. Runtime은 `18/18`로 완주했지만 expected-answer audit은 `NO-GO / 14 of 18`, search recovery는 `P0 / OPEN`이다.

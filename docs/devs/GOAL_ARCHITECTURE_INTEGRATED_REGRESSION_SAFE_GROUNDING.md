@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop372 Addendum - 11663521 title-only URL support
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop372는 approval 회차가 아니라 Loop371 실패 `11663521`의 wrong publish `성기사는 버생을 산다`를 targeted contract/runtime으로 닫은 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_372_REPORT_20260703.md`, state `docs/devs/loop372_title_only_url_required_11663521_20260703.json`, health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop372_11663521_title_only_url_required_runtime_health_audit.json`.
+- Code: `expert_main.py`는 URL 없는 title-only `official_detail/page_type=novel_page` support를 public publish 복구 근거로 쓰지 않는다. `tools/audit_expert_run_health.py`는 manifest-declared artifact path와 completed `N+1` frontier를 처리한다.
+- Runtime: run `20260703_224934_380230`, input/completed/flushed/pending/failed `1/1/1/0/0`, checkpoint/result rows `1/1`, VLM/OCR `READY`.
+- Health: `flush_integrity=GO / clean_completed_source`, frontier `complete_after_last_index`, publication contract convergence `GO`, violations `0`, row-level search evidence `GO`, unrecovered degraded `0`, manifest `mcp_health_light_mode=true` caveat 유지.
+- Boundary: final public title은 `null`, `candidate_ledger_status=promotion_blocked`, `publish_allowed=false`, `safe_resolved=false`다. Golden expected `어떤 마술의 금서목록 / 어떤 과학의 초전자포` pass가 아니므로 golden expected-answer는 계속 `NO-GO`다.
+- Gate: targeted runtime `GO / 1 of 1`, wrong-publish closure `GO_TARGETED`, audit harness `GO_UNIT`, golden expected-answer `NO-GO / inherited 14 of 18`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop366 Addendum - current HEAD golden18 rerun
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop366은 approval 회차가 아니라 Loop364/365 이후 current HEAD `5fd0ec99`의 golden18 runtime/semantic 증거를 갱신한 회차다.

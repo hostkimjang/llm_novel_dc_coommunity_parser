@@ -6,6 +6,23 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-03 Loop372 11663521 title-only URL support quality gate
+
+- 근거:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았음을 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_372_REPORT_20260703.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop372_title_only_url_required_11663521_20260703.json`.
+  - [x] Runtime result/manifest/checkpoint `1/1/1` 완료를 기록했다.
+  - [x] Health audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop372_11663521_title_only_url_required_runtime_health_audit.json`.
+  - [x] `expert_main.py` title-only URL support 계약과 `audit_expert_run_health.py` manifest artifact 계약을 테스트로 고정했다.
+- 품질 게이트:
+  - [x] `11663521` wrong publish closure와 golden expected-answer pass를 분리한다.
+  - [x] `성기사는 버생을 산다` public publish 제거를 확인하되 final `null`을 approval로 세지 않는다.
+  - [x] row-level search `GO`와 global search recovery를 분리한다.
+  - [x] manifest `mcp_health_light_mode=true` caveat를 숨기지 않는다.
+  - [x] search recovery 전 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-03 Loop371 golden18 runtime 재검증 quality gate
 
 - 근거:

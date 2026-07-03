@@ -1,5 +1,38 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop372 11663521 title-only URL support
+
+- 범위: Loop371 실패 `11663521` 단건으로 URL 없는 title-only official-detail 후보가 public publish를 복구하는 경로를 차단한다. 신규 full375/bounded/N5 대형 런은 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_372_REPORT_20260703.md`
+  - state `docs\devs\loop372_title_only_url_required_11663521_20260703.json`
+  - result JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop372_11663521_title_only_url_required_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop372_11663521_title_only_url_required_result_manifest.json`
+  - checkpoint `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop372_11663521_title_only_url_required_result_checkpoint.jsonl`
+  - pending snapshot `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop372_11663521_title_only_url_required_result_pending_snapshot.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop372_11663521_title_only_url_required_runtime_health_audit.json`
+- Code verification:
+  - `py_compile` PASS
+  - focused title-only tests `3` PASS
+  - `tests.test_expert_main_comment_metadata + tests.test_promotion_gate_contract + tests.test_publication_contract_convergence_audit` PASS, `76` tests
+  - `tests.test_audit_expert_run_health` PASS, `18` tests
+- Runtime evidence:
+  - run `20260703_224934_380230`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - checkpoint/result rows `1/1`
+  - VLM/OCR `READY`
+- Health evidence:
+  - flush integrity `GO / clean_completed_source`
+  - frontier `complete_after_last_index`
+  - publication contract convergence `GO`, violations `0`
+  - row-level search evidence `GO`, query `7`, unrecovered degraded `0`
+  - manifest `mcp_health_light_mode=true` caveat 때문에 전체 search recovery 완료 근거로 쓰지 않는다.
+- Semantic evidence:
+  - `11663521` previous wrong publish `성기사는 버생을 산다`는 public title에서 제거됐다.
+  - final public title `null`, `candidate_ledger_status=promotion_blocked`, `publish_allowed=false`, `safe_resolved=false`
+  - expected `어떤 마술의 금서목록 / 어떤 과학의 초전자포`를 맞춘 것은 아니므로 golden expected-answer는 계속 `NO-GO`다.
+- Gate: new large runs `FROZEN`, targeted runtime `GO / 1 of 1`, wrong-publish closure `GO_TARGETED`, audit harness `GO_UNIT`, publication contract `GO / violations 0`, golden expected-answer `NO-GO / inherited 14 of 18`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop371 golden18 runtime 재검증
 
 - 범위: Loop370 degraded-zero suppression 계약 뒤, 신규 full375/bounded/N5 대형 런 없이 golden18 단일 런만 실행해 runtime row 생산을 확인한다.

@@ -118,6 +118,41 @@ class AuditExpertRunHealthTest(unittest.TestCase):
             self.assertEqual(artifacts["manifest"], missing_manifest)
             self.assertNotEqual(artifacts["manifest"], fallback_manifest)
 
+    def test_manifest_declared_paths_are_used_for_custom_artifacts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            sampling = repo / "out" / "sampling"
+            sampling.mkdir(parents=True)
+            manifest = sampling / "custom_manifest.json"
+            checkpoint = sampling / "custom_checkpoint.jsonl"
+            result_json = sampling / "custom_result.json"
+            pending = sampling / "custom_pending.json"
+            manifest.write_text(
+                json.dumps(
+                    {
+                        "run_id": "sample-run",
+                        "checkpoint_jsonl": str(checkpoint.relative_to(repo)),
+                        "output_file": str(result_json.relative_to(repo)),
+                        "pending_snapshot": str(pending.relative_to(repo)),
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            artifacts = _resolve_run_artifacts(
+                "sample-run",
+                repo=repo,
+                manifest_path=str(manifest),
+            )
+
+            self.assertEqual(artifacts["checkpoint"], checkpoint)
+            self.assertEqual(artifacts["result_json"], result_json)
+            self.assertEqual(artifacts["pending"], pending)
+            self.assertNotIn("checkpoint", artifacts["explicit_overrides"])
+            self.assertNotIn("result_json", artifacts["explicit_overrides"])
+            self.assertNotIn("pending_snapshot", artifacts["explicit_overrides"])
+
     def test_counts_result_rows_from_supported_json_shapes(self):
         with tempfile.TemporaryDirectory() as tmp:
             base = Path(tmp)
@@ -186,6 +221,35 @@ class AuditExpertRunHealthTest(unittest.TestCase):
         self.assertTrue(audit["completion_ready"])
         self.assertEqual(audit["frontier"]["status"], "ready_to_flush_or_flush_lag")
         self.assertEqual(audit["frontier"]["source_post"]["post_id"], 200)
+
+    def test_flush_integrity_go_when_next_save_idx_is_after_last_completed_row(self):
+        audit = _build_flush_integrity(
+            manifest_data={
+                "input_post_count": 1,
+                "completed_count": 1,
+                "flushed_count": 1,
+                "pending_count": 0,
+                "failed_count": 0,
+                "large_run_complete": True,
+                "ordered_flush_blocked": False,
+                "partial_flush_gap": False,
+                "next_save_idx": 2,
+            },
+            status_counts={"completed": 1},
+            result_audit={"row_count": 1},
+            pending_count_actual=0,
+            pending_samples=[],
+            checkpoint_completed_indexes=[1],
+            pending_global_indexes=[],
+            input_post_lookup={1: {"global_idx": 1, "post_id": 100, "title": "only"}},
+        )
+
+        self.assertEqual(audit["run_integrity_gate"], "GO")
+        self.assertEqual(audit["classification"], "clean_completed_source")
+        self.assertEqual(audit["frontier"]["status"], "complete_after_last_index")
+        self.assertEqual(audit["frontier"]["reason"], "next_save_idx_after_completed_input")
+        self.assertIsNone(audit["frontier"]["frontier_gap_global_idx"])
+        self.assertIsNone(audit["frontier"]["source_post"])
 
     def test_flush_integrity_in_progress_for_ordered_flush_gap(self):
         audit = _build_flush_integrity(

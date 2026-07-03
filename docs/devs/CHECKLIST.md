@@ -1,5 +1,33 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop372 11663521 title-only URL support 체크
+
+- [x] 신규 full375/bounded/N5 대형 런 발주를 계속 동결했다.
+- [x] Loop371 실패 중 `11663521` 단건만 실행했다.
+  - run `20260703_224934_380230`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - checkpoint/result rows `1/1`
+- [x] URL 없는 `official_detail/page_type=novel_page` title-only 후보가 public publish를 복구하지 못하도록 계약을 보강했다.
+- [x] audit 도구가 manifest-declared `output_file/checkpoint_jsonl/pending_snapshot`을 따라가고, completed frontier `next_save_idx=N+1`을 정상 종료로 분류하게 했다.
+- [x] health audit를 생성했다.
+  - `flush_integrity=GO / clean_completed_source`
+  - frontier `complete_after_last_index`
+  - publication contract convergence `GO`, violations `0`
+  - row-level search evidence `GO`, unrecovered degraded `0`, manifest `mcp_health_light_mode=true` caveat 유지
+- [x] `11663521` 결과를 확인했다.
+  - previous wrong publish `성기사는 버생을 산다` public publish 차단
+  - final public title `null`
+  - `candidate_ledger_status=promotion_blocked`
+  - `publish_allowed=false`, `safe_resolved=false`
+- [x] 검증:
+  - `py_compile` PASS
+  - focused title-only tests `3` PASS
+  - comment/promotion/convergence tests `76` PASS
+  - audit harness tests `18` PASS
+- [ ] 이 결과를 golden expected pass로 세지 않는다. `11663521`은 wrong-publish closure이며 positive unresolved가 남았다.
+- [ ] search recovery 전체 완료, semantic approval, full scan approval, hard-hold 완화를 금지한다.
+- Gate: new large runs `FROZEN`, same parent packet replay `STOPPED`, targeted runtime `GO / 1 of 1`, wrong-publish closure `GO_TARGETED`, audit harness `GO_UNIT`, publication contract `GO / violations 0`, golden expected-answer `NO-GO / inherited 14 of 18`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop371 golden18 runtime 재검증 체크
 
 - [x] 신규 full375/bounded/N5 대형 런 발주를 계속 동결했다.

@@ -1,5 +1,17 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop372 11663521 title-only URL support
+
+- 신규 full375/bounded/N5 대형 런은 발주하지 않았고, Loop371 실패 `11663521` 단건만 실행했다.
+- `expert_main.py`에서 URL 없는 `official_detail/page_type=novel_page` candidate preservation item이 public title 복구 근거가 되지 않도록 막았다.
+- `tools/audit_expert_run_health.py`는 manifest-declared `output_file/checkpoint_jsonl/pending_snapshot`을 자동으로 따라가고, 완료 런의 `next_save_idx=N+1`을 `complete_after_last_index`로 분류한다.
+- Run `20260703_224934_380230`은 input/completed/flushed/pending/failed `1/1/1/0/0`, checkpoint rows `1`, result rows `1`, VLM/OCR `READY`로 완료됐다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, publication contract convergence `GO`, violations `0`, row-level search evidence `GO`, unrecovered degraded `0`을 기록했다. 단 manifest `mcp_health_light_mode=true` caveat는 남아 있다.
+- `11663521`은 previous wrong publish `성기사는 버생을 산다`를 public title에서 제거했고, final은 `null / promotion_blocked / publish_allowed=false / safe_resolved=false`다.
+- 이는 wrong-publish closure이며 golden expected `어떤 마술의 금서목록 / 어떤 과학의 초전자포` pass가 아니다.
+- Report는 `docs/devs/loop_reports/LOOP_372_REPORT_20260703.md`, state는 `docs/devs/loop372_title_only_url_required_11663521_20260703.json`, health audit는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop372_11663521_title_only_url_required_runtime_health_audit.json`이다.
+- Gate는 new large runs `FROZEN`, targeted runtime `GO / 1 of 1`, wrong-publish closure `GO_TARGETED`, audit harness `GO_UNIT`, publication contract `GO / violations 0`, golden expected-answer `NO-GO / inherited 14 of 18`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop371 golden18 runtime 재검증 after Loop370
 
 - 신규 full375/bounded/N5 대형 런은 발주하지 않았고, Loop370 suppression 계약 뒤 golden18 단일 런만 실행했다.

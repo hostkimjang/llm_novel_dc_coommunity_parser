@@ -44,6 +44,20 @@ def _resolve_cli_path(value: str | None, *, repo: Path) -> Path | None:
     return repo / path
 
 
+def _resolve_manifest_artifact_path(
+    manifest_payload: Dict[str, Any] | None,
+    *keys: str,
+    repo: Path,
+) -> Path | None:
+    if not isinstance(manifest_payload, dict):
+        return None
+    for key in keys:
+        value = manifest_payload.get(key)
+        if isinstance(value, str) and value.strip():
+            return _resolve_cli_path(value, repo=repo)
+    return None
+
+
 def _resolve_run_artifacts(
     run_id: str,
     *,
@@ -68,6 +82,7 @@ def _resolve_run_artifacts(
     direct_manifest = out_dir / f"expert_result_{resolved_prefix}_manifest.json"
     manifest = direct_manifest
     manifest_run_id = run_id
+    manifest_payload: Dict[str, Any] | None = None
     resolution = "direct_prefix"
 
     if explicit_manifest is not None:
@@ -77,9 +92,10 @@ def _resolve_run_artifacts(
         if inferred_prefix and not artifact_prefix:
             resolved_prefix = inferred_prefix
         try:
-            payload = _load_json(manifest)
-            if isinstance(payload, dict):
-                manifest_run_id = str(payload.get("run_id") or run_id)
+            loaded_payload = _load_json(manifest)
+            if isinstance(loaded_payload, dict):
+                manifest_payload = loaded_payload
+                manifest_run_id = str(loaded_payload.get("run_id") or run_id)
         except Exception:
             manifest_run_id = run_id
         resolution = "explicit_paths"
@@ -98,27 +114,64 @@ def _resolve_run_artifacts(
             if not resolved_prefix:
                 continue
             manifest = candidate
+            manifest_payload = payload
             manifest_run_id = str(payload.get("run_id") or "")
             resolution = "manifest_run_id_lookup"
             break
+
+    if manifest_payload is None and manifest.exists():
+        try:
+            loaded_payload = _load_json(manifest)
+            if isinstance(loaded_payload, dict):
+                manifest_payload = loaded_payload
+                manifest_run_id = str(loaded_payload.get("run_id") or manifest_run_id)
+        except Exception:
+            pass
 
     checkpoint = out_dir / f"expert_result_{resolved_prefix}_checkpoint.jsonl"
     explicit_checkpoint = _resolve_cli_path(checkpoint_path, repo=repo)
     if explicit_checkpoint is not None:
         checkpoint = explicit_checkpoint
         explicit_overrides.append("checkpoint")
+    else:
+        manifest_checkpoint = _resolve_manifest_artifact_path(
+            manifest_payload,
+            "checkpoint_jsonl",
+            "checkpoint",
+            repo=repo,
+        )
+        if manifest_checkpoint is not None:
+            checkpoint = manifest_checkpoint
 
     result_json = out_dir / f"expert_result_{resolved_prefix}.json"
     explicit_result_json = _resolve_cli_path(result_json_path, repo=repo)
     if explicit_result_json is not None:
         result_json = explicit_result_json
         explicit_overrides.append("result_json")
+    else:
+        manifest_result_json = _resolve_manifest_artifact_path(
+            manifest_payload,
+            "output_file",
+            "result_json",
+            repo=repo,
+        )
+        if manifest_result_json is not None:
+            result_json = manifest_result_json
 
     pending = out_dir / f"expert_result_{resolved_prefix}_pending_snapshot.json"
     explicit_pending = _resolve_cli_path(pending_snapshot_path, repo=repo)
     if explicit_pending is not None:
         pending = explicit_pending
         explicit_overrides.append("pending_snapshot")
+    else:
+        manifest_pending = _resolve_manifest_artifact_path(
+            manifest_payload,
+            "pending_snapshot",
+            "pending_snapshot_path",
+            repo=repo,
+        )
+        if manifest_pending is not None:
+            pending = manifest_pending
 
     input_jsonl = _resolve_cli_path(input_jsonl_path, repo=repo)
     if input_jsonl is not None:
@@ -341,8 +394,23 @@ def _build_flush_frontier(
     input_post_lookup: Dict[int, Dict[str, Any]] | None = None,
 ) -> Dict[str, Any]:
     next_save_idx = _as_int(manifest_data.get("next_save_idx"))
+    input_count = _as_int(manifest_data.get("input_post_count"))
+    completed_count = _as_int(manifest_data.get("completed_count"))
+    flushed_count = _as_int(manifest_data.get("flushed_count"))
+    pending_count = _as_int(manifest_data.get("pending_count"))
+    failed_count = _as_int(manifest_data.get("failed_count"))
     completed = sorted(set(checkpoint_completed_indexes))
     pending = sorted(set(pending_global_indexes))
+    completed_after_last_index = (
+        next_save_idx is not None
+        and input_count is not None
+        and completed_count == input_count
+        and flushed_count == completed_count
+        and pending_count == 0
+        and failed_count == 0
+        and manifest_data.get("large_run_complete") is True
+        and next_save_idx == input_count + 1
+    )
 
     frontier_in_checkpoint = next_save_idx in completed if next_save_idx is not None else None
     frontier_in_pending = next_save_idx in pending if next_save_idx is not None else None
@@ -360,6 +428,9 @@ def _build_flush_frontier(
     if next_save_idx is None:
         status = "unknown"
         reason = "next_save_idx_missing"
+    elif completed_after_last_index:
+        status = "complete_after_last_index"
+        reason = "next_save_idx_after_completed_input"
     elif frontier_in_checkpoint:
         status = "ready_to_flush_or_flush_lag"
         reason = "frontier_completed_in_checkpoint"
@@ -389,7 +460,12 @@ def _build_flush_frontier(
         "first_completed_at_or_after_frontier": first_completed_at_or_after,
         "frontier_gap_global_idx": (
             next_save_idx
-            if next_save_idx is not None and not frontier_in_checkpoint and not frontier_in_pending
+            if (
+                next_save_idx is not None
+                and not completed_after_last_index
+                and not frontier_in_checkpoint
+                and not frontier_in_pending
+            )
             else None
         ),
     }

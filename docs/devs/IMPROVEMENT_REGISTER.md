@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260703-372 - 11663521 title-only URL support and audit manifest paths
+
+| Item | Status | Evidence | Next action |
+| --- | --- | --- | --- |
+| New large runs | Frozen | No full375/bounded/N5 dispatch this loop | Keep frozen until targeted blockers shrink |
+| URL-backed title support | GO_UNIT | URL-less `official_detail/page_type=novel_page` no longer restores public title | Preserve candidate ledger without publish |
+| Audit manifest paths | GO_UNIT | custom manifest-declared `output_file/checkpoint_jsonl/pending_snapshot` auto-resolved | Use audit without path omission false NO-GO |
+| Completed frontier | GO_UNIT | `next_save_idx=N+1` classified as `complete_after_last_index` | Keep clean completion distinct from in-flight gap |
+| Targeted runtime | GO / 1 of 1 | run `20260703_224934_380230`, manifest/checkpoint/result `1/1/1` | Use as targeted closure only |
+| `11663521` wrong publish | GO_TARGETED | `성기사는 버생을 산다` removed from public title; final `promotion_blocked` | Still needs positive expected resolution or source-native decision |
+| Search evidence | Row-level GO / P0 still open | unrecovered degraded `0`, but manifest light health caveat remains | Do not call global search recovery complete |
+| Verification | PASS | py_compile, focused `3`, broader `76`, audit harness `18` | Broaden only after next targeted semantic blocker |
+| Documentation sync | Done | Loop372 report/state plus TODO/CHECKLIST/VERIFICATION/HISTORY updated | Next loop must reduce remaining golden failures |
+
+Gate: new large runs `FROZEN`, targeted runtime `GO / 1 of 1`, wrong-publish closure `GO_TARGETED`, audit harness `GO_UNIT`, publication contract `GO / violations 0`, golden expected-answer `NO-GO / inherited 14 of 18`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260703-371 - golden18 runtime proof after degraded-zero suppression
 
 | Item | Status | Evidence | Next action |

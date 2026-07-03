@@ -1183,9 +1183,18 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
                 continue
             source_tier = str(item.get("source_tier") or "").strip().lower()
             page_type = str(item.get("page_type") or "").strip().lower()
-            if source_tier in {"official_detail", "novel_platform", "official", "search_result", "wiki", "mixed"}:
+            item_url_key = _publication_url_key(item_url)
+            has_item_url_support = bool(item_url_key and (not candidate_url_key or item_url_key == candidate_url_key))
+            if has_item_url_support and source_tier in {
+                "official_detail",
+                "novel_platform",
+                "official",
+                "search_result",
+                "wiki",
+                "mixed",
+            }:
                 return True
-            if page_type in {"novel_page", "work_detail"}:
+            if has_item_url_support and page_type in {"novel_page", "work_detail"}:
                 return True
         return False
 

@@ -2594,6 +2594,102 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertFalse(decision["publish_allowed"])
         self.assertNotIn("verified_alias_title_only_publication", decision["reason_codes"])
 
+    def test_title_only_official_detail_without_url_does_not_restore(self):
+        result = {
+            "title": "TS) 시스터즈 퍼스트 정신머리 고치려면",
+            "content": ["고쳐질때까지 토우마가 갱생펀치 갈기면 되지 않을까?"],
+            "comments": [],
+            "identity": {
+                "candidate_ledger_status": "promotion_blocked",
+                "title_resolution_allowed": False,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "unresolved",
+                "is_resolved_work_discussion": False,
+                "safe_resolved": False,
+                "promotion_blocked": True,
+                "blocked_official_title": "성기사는 버생을 산다",
+                "anchor_type": "title_alias",
+                "context_sources": ["title", "body", "search", "image"],
+                "discussion_type": "general",
+                "topicality": "core_relevant",
+                "novel_identity": {
+                    "official_title": None,
+                    "heretic_url": None,
+                    "confidence": "High",
+                },
+                "title_candidates": [
+                    {
+                        "official_title": "성기사는 버생을 산다",
+                        "heretic_url": None,
+                        "confidence": "High",
+                        "alias_or_mention": "시스터즈 이미지",
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                        "reference_role": "primary",
+                    },
+                    {
+                        "official_title": "어떤 마술의 금서목록",
+                        "heretic_url": "https://namu.wiki/w/example",
+                        "confidence": "High",
+                        "source_tier": "wiki",
+                        "reference_role": "candidate",
+                    },
+                ],
+                "candidate_preservation_sources": [
+                    {
+                        "official_title": "성기사는 버생을 산다",
+                        "heretic_url": None,
+                        "confidence": "High",
+                        "alias_or_mention": "시스터즈 이미지",
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                        "reference_role": "primary",
+                    },
+                    {
+                        "official_title": "어떤 마술의 금서목록",
+                        "heretic_url": "https://namu.wiki/w/example",
+                        "confidence": "High",
+                        "source_tier": "wiki",
+                        "reference_role": "candidate",
+                    },
+                ],
+                "search_evidence_catalog": [
+                    {
+                        "title": "어떤 마술의 금서목록 3 시스터즈 편",
+                        "url": "https://namu.wiki/w/example",
+                        "snippet": "카미조 토우마와 시스터즈 편",
+                        "source_tier": "wiki",
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "candidate_only",
+                    "publish_allowed": False,
+                    "official_title": None,
+                    "official_url": None,
+                    "candidate_preserved": True,
+                    "reason_codes": [
+                        "scope_context_only",
+                        "official_url_withheld_by_title_mismatch",
+                        "serialized_public_identity_scrubbed",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {"scope_kind": "context_only"},
+                },
+                "candidate_ledger": {},
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertFalse(identity["safe_resolved"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        decision = identity["promotion_decision"]
+        self.assertFalse(decision["publish_allowed"])
+        self.assertNotIn("verified_alias_title_only_publication", decision["reason_codes"])
+
     def test_short_generic_blocked_alias_does_not_restore_title_only(self):
         result = {
             "title": "판초법사 경찰력 사용하면서도 1달 이상 정보통제가 가능함?",
