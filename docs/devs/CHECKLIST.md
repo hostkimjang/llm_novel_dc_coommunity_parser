@@ -1,5 +1,32 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop345 bounded completed-source dispatch 체크
+
+- [x] 현 HEAD `4f1a488e`에서 bounded completed-source `1200`건을 새 output 경로로 발주했다.
+  - run `20260703_125052_015965`
+  - PID `135528`
+  - result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop345_completed_source_bounded1200_current_head_4f1a488e_search_budget_mcp3369_3376_search_nonlight_result.json`
+- [x] 기존 background와 충돌하지 않도록 37-44번 shard, host `3369-3376`으로 분리했다.
+  - `mcp-bridge-37..44`
+  - health `ok=8/8`, bad `[]`
+- [x] search 포함 non-light 조건을 확인했다.
+  - `mcp_health_include_search=true`
+  - `mcp_health_light_mode=false`
+  - `mcp_health_required_ok_count=8`
+  - `mcp_health_failure_count=0`
+- [x] VLM/OCR 조건을 확인했다.
+  - image posts `700`
+  - `vlm_enabled=true`, `ocr_enabled=true`
+  - `vlm_ocr_semantic_review_ready=true`
+- [x] search budget env가 적용된 shard에서 시작했다.
+  - engine `google,bing,webcrawler,naver`
+  - fallback `webcrawler,google,bing,naver`
+  - retries/pages `1/2`
+- [ ] bounded1200 완료와 search degraded audit는 아직 남아 있다.
+  - 초기 manifest completed/flushed/pending/failed `0/0/0/0`
+  - 완료 전 approval 근거로 쓰지 않는다.
+- Gate: bounded dispatch `GO_LAUNCHED_BACKGROUND`, bounded completion `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN / bounded evidence pending`, collateral `NO-GO / residual_action_queue_rows=123`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop344 search budget partial recovery 체크
 
 - [x] 동일 38-row parent packet 재실행을 하지 않고 remaining known-alias 4건만 시도했다.

@@ -1,5 +1,17 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop345 bounded completed-source dispatch on patched search budget
+
+- 현 HEAD `4f1a488e`에서 completed-source bounded `1200`건을 search 포함 non-light background run으로 발주했다.
+- 104k run 완주를 기다리지 않고 approval 교착을 풀기 위한 bounded evidence lane으로 전환했다.
+- 기존 Loop339 full375/bounded/golden/N5는 HEAD `77bdbe48` 증거라 stale background로만 추적한다.
+- 새 shard subset은 `mcp-bridge-37..44`, host `3369..3376`이며 기존 3333-3357 구간과 분리했다.
+- `audit_search_shards.py` health는 `ok=8/8`, bad `[]`다.
+- run `20260703_125052_015965`, PID `135528`, parallel `6`, input `1200`, image posts `700`, VLM/OCR ready다.
+- 초기 manifest는 completed/flushed/pending/failed `0/0/0/0`이며 completion/approval 증거가 아니다.
+- Report는 `docs/devs/loop_reports/LOOP_345_REPORT_20260703.md`, state는 `docs/devs/loop345_search_budget_bounded_dispatch_20260703.json`이다.
+- Gate는 bounded dispatch `GO_LAUNCHED_BACKGROUND`, bounded completion `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN / bounded evidence pending`, collateral `NO-GO / residual_action_queue_rows=123`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop344 search budget partial recovery and alias canary
 
 - remaining known-alias 4건 replay run `20260703_111621_199545`는 검색 degraded 반복으로 result flush 없이 중단했다.

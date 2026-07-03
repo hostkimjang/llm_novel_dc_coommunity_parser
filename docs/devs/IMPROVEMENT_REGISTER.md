@@ -1,5 +1,40 @@
 # Improvement Register
 
+## IMP-20260703-345 - bounded completed-source dispatch on patched search budget
+
+- 상태: bounded background 발주 / search P0 evidence pending / approval 미개방
+- Loop: 345
+- 문제:
+  - 104k run 완주 대기는 approval 교착을 풀기에 너무 느리다.
+  - Loop339 대형 런은 HEAD `77bdbe48` 증거라 current HEAD `4f1a488e` search-budget 패치 승인 근거가 아니다.
+  - Loop344 단건 canary는 retry 폭주를 줄였지만 row 내부 `SEARCH_DEGRADED`가 남았다.
+- 변경:
+  - 37-44번 shard(host `3369-3376`)를 새로 띄우고 search 포함 non-light health를 확인했다.
+  - completed-source bounded `1200`건을 current HEAD `4f1a488e`에서 background로 발주했다.
+  - 기존 Loop339 full375/bounded/golden/N5는 stale background로만 태깅했다.
+- 근거:
+  - report `docs/devs/loop_reports/LOOP_345_REPORT_20260703.md`
+  - state `docs/devs/loop345_search_budget_bounded_dispatch_20260703.json`
+  - health `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop345_search_budget_mcp3369_3376_health_before_bounded.json`
+  - manifest `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop345_completed_source_bounded1200_current_head_4f1a488e_search_budget_mcp3369_3376_search_nonlight_result_manifest.json`
+- 결과:
+  - shard health `ok=8/8`.
+  - run `20260703_125052_015965`, PID `135528`, parallel `6`.
+  - input posts `1200`, image posts `700`, VLM/OCR ready.
+  - manifest 초기 completed/flushed/pending/failed `0/0/0/0`.
+- 검증:
+  - `tools/audit_search_shards.py --count 8 --mcp-base-port 3369 --search-ui-base-port 0` PASS.
+  - launch manifest 생성 PASS.
+  - non-light MCP health PASS.
+- Gate:
+  - bounded dispatch `GO_LAUNCHED_BACKGROUND`
+  - bounded completion `IN_PROGRESS / NOT_APPROVAL`
+  - search recovery `P0 / OPEN / bounded evidence pending`
+  - collateral `NO-GO / residual_action_queue_rows=123`
+  - `promotion_blocked=search-blind conditional`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+
 ## IMP-20260703-344 - search budget partial recovery and alias canary
 
 - 상태: search budget 부분 복구 / 단건 runtime 수렴 / approval 미개방

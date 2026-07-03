@@ -1,0 +1,75 @@
+{
+  "loop": 345,
+  "date": "2026-07-03",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "head": "4f1a488e",
+  "scope": "completed-source bounded1200 non-light dispatch after search budget patch",
+  "reason": "104k run completion is not required for the next approval unblocker; dispatch a bounded completed-source run with search enabled on patched shards.",
+  "runtime_artifacts": {
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop288_completed_source_bounded1200_input.jsonl",
+    "health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop345_search_budget_mcp3369_3376_health_before_bounded.json",
+    "combined_launch_log": "logs/loop345_completed_source_bounded1200_current_head_4f1a488e_search_budget_mcp3369_3376_search_nonlight_combined.log",
+    "expert_log": "logs/expert_run_20260703_125052_015965.log",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop345_completed_source_bounded1200_current_head_4f1a488e_search_budget_mcp3369_3376_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop345_completed_source_bounded1200_current_head_4f1a488e_search_budget_mcp3369_3376_search_nonlight_result_manifest.json"
+  },
+  "process": {
+    "pid": 135528,
+    "run_id": "20260703_125052_015965",
+    "background": true,
+    "parallel": 6
+  },
+  "input": {
+    "post_count": 1200,
+    "source": "completed-source bounded1200",
+    "image_post_count": 700
+  },
+  "mcp": {
+    "shards": "37-44",
+    "endpoints": [
+      "http://127.0.0.1:3369",
+      "http://127.0.0.1:3370",
+      "http://127.0.0.1:3371",
+      "http://127.0.0.1:3372",
+      "http://127.0.0.1:3373",
+      "http://127.0.0.1:3374",
+      "http://127.0.0.1:3375",
+      "http://127.0.0.1:3376"
+    ],
+    "health_include_search": true,
+    "health_light_mode": false,
+    "health_ok_count": 8,
+    "health_failure_count": 0,
+    "health_required_ok_count": 8,
+    "health_checked_endpoint_count": 8,
+    "reuse_shards_only": true,
+    "auto_scale_up_missing_shards": false
+  },
+  "search_budget": {
+    "engines": "google,bing,webcrawler,naver",
+    "fallback_engines": "webcrawler,google,bing,naver",
+    "max_retries": 1,
+    "max_pages": 2,
+    "client_max_retries": 0,
+    "client_max_endpoints_per_search": 2
+  },
+  "manifest_initial": {
+    "completed_count": 0,
+    "flushed_count": 0,
+    "pending_count": 0,
+    "failed_count": 0,
+    "mcp_health_ok_count": 8,
+    "mcp_health_failure_count": 0
+  },
+  "gates": {
+    "bounded_dispatch": "GO_LAUNCHED_BACKGROUND",
+    "bounded_completion": "IN_PROGRESS / NOT_APPROVAL",
+    "stale_loop339_runtime": "BACKGROUND_STALE_HEAD_77bdbe48 / NOT_APPROVAL",
+    "search_recovery": "P0 / OPEN / bounded evidence pending",
+    "collateral_gate": "NO-GO / residual_action_queue_rows=123",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

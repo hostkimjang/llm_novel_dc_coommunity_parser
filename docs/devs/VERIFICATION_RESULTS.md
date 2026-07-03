@@ -1,5 +1,27 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop345 bounded completed-source dispatch
+
+- 범위: Loop344 search budget 패치 후 current HEAD `4f1a488e`에서 completed-source bounded `1200`건을 search 포함 non-light 조건으로 발주한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_345_REPORT_20260703.md`
+  - state `docs\devs\loop345_search_budget_bounded_dispatch_20260703.json`
+  - health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop345_search_budget_mcp3369_3376_health_before_bounded.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop345_completed_source_bounded1200_current_head_4f1a488e_search_budget_mcp3369_3376_search_nonlight_result_manifest.json`
+  - combined launch log `logs\loop345_completed_source_bounded1200_current_head_4f1a488e_search_budget_mcp3369_3376_search_nonlight_combined.log`
+  - expert log `logs\expert_run_20260703_125052_015965.log`
+- Evidence:
+  - `mcp-bridge-37..44`, host `3369-3376`, health `ok=8/8`, failure `0`.
+  - run `20260703_125052_015965`, PID `135528`, parallel `6`.
+  - input posts `1200`, image posts `700`, VLM/OCR ready.
+  - manifest 초기 completed/flushed/pending/failed `0/0/0/0`.
+  - old Loop339 full375/bounded/golden/N5는 HEAD `77bdbe48` 증거라 stale background다.
+- Verification:
+  - shard 37-44 `audit_search_shards.py` PASS, `ok=8/8`.
+  - launch manifest 생성 PASS.
+  - search non-light health PASS, `mcp_health_include_search=true`, `mcp_health_light_mode=false`.
+- Gate: bounded dispatch `GO_LAUNCHED_BACKGROUND`, bounded completion `IN_PROGRESS / NOT_APPROVAL`, search recovery `P0 / OPEN / bounded evidence pending`, collateral `NO-GO / residual_action_queue_rows=123`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop344 search budget partial recovery
 
 - 범위: search degraded P0를 retry/page/engine 계약으로 줄이고, 남은 known-alias `11705230` 단건이 runtime public contract로 flush되는지 확인한다.

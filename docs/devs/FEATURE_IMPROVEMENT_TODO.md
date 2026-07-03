@@ -4,6 +4,14 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop345 bounded1200 search-budget follow-up
+  - 상태: launched_background / current_head_4f1a488e / search_non_light / approval_not_open
+  - 발주: run `20260703_125052_015965`, PID `135528`, completed-source bounded `1200`건, image posts `700`, parallel `6`.
+  - shard: `mcp-bridge-37..44`, host `3369-3376`, health `ok=8/8`, search 포함 non-light.
+  - stale 구분: Loop339 full375/bounded/golden/N5는 HEAD `77bdbe48` 증거라 current patch approval 근거가 아니다.
+  - 산출물: `docs/devs/loop_reports/LOOP_345_REPORT_20260703.md`, `docs/devs/loop345_search_budget_bounded_dispatch_20260703.json`.
+  - 완료 기준: bounded manifest completion, search degraded/unrecovered degraded audit, collateral diff, override flip row blind judge 검증. 완료 전 `promotion_blocked`는 `search-blind conditional`로 유지한다.
+
 - [ ] Loop336 `11705250` post-patch replay follow-up
   - 상태: row_public_contract_recovered / publication_convergence_go / search_degraded_review / approval_not_open
   - 결과: run `20260703_051443_582943`에서 `official_title=심해의 마법사`, `heretic_url=https://m.munpia.com/novel/detail/483667`, `safe_resolved`, `promotion_blocked=false`로 복구됐다.
