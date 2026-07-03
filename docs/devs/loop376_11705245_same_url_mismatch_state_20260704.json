@@ -1,0 +1,185 @@
+{
+  "loop": 376,
+  "date": "2026-07-04",
+  "post_id": 11705245,
+  "source_result": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop374_golden18_signal_idle_de0eec1d_worktree_result.json",
+  "changed_by_postprocess": true,
+  "post_title": "하남자 재밌냐",
+  "input_content": [
+    "주인공 첨부터쌤?",
+    "- dc official App"
+  ],
+  "input_comments": [
+    "ㄴㄴ  - dc App"
+  ],
+  "before": {
+    "public_title": "하남 남자",
+    "public_url": "https://novelpia.com/novel/302245",
+    "candidate_ledger_status": "safe_resolved",
+    "title_resolution_allowed": true,
+    "title_resolution_state": "resolved",
+    "work_resolution": "resolved",
+    "safe_resolved": true,
+    "promotion_blocked": false,
+    "promotion_decision": {
+      "status": "publish",
+      "publish_allowed": true,
+      "official_title": "하남 남자",
+      "official_url": "https://novelpia.com/novel/302245",
+      "candidate_preserved": false,
+      "reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "context_only",
+        "scope_current_work",
+        "official_detail_url",
+        "work_consumption_marker",
+        "thematic_overlap_only",
+        "serialized_public_identity_published"
+      ],
+      "bypassed_gate": false,
+      "scope": {
+        "scope_kind": "current_work",
+        "confidence": "high",
+        "direct_bridge_sources": [
+          "row_discusses_work_as_work"
+        ]
+      }
+    },
+    "promotion_gate_state": {
+      "post_id": 11705245,
+      "candidate_title": "하남 남자",
+      "candidate_url": "https://novelpia.com/novel/315683",
+      "source": "title_surface_primary_candidate_rescued",
+      "official_title_exists": true,
+      "row_discusses_work_as_work": true,
+      "title_resolution_state": "context_only",
+      "work_resolution": "unresolved",
+      "discussion_type": "",
+      "prior_variance_quarantine": false,
+      "same_title_source_movement": false,
+      "caveated_alias_boundary": false,
+      "scope": {
+        "scope_kind": "current_work",
+        "confidence": "high",
+        "direct_bridge_sources": [
+          "row_discusses_work_as_work"
+        ]
+      }
+    },
+    "consistency_flags": [
+      "notes_demoted_for_unresolved",
+      "secondary_reference_official_alias_blocked_after_title_deliberately_null",
+      "batch_memory_alias_rescue_blocked_deliberate_null",
+      "batch_memory_alias_rescue_blocked_after_title_deliberately_null",
+      "official_url_recall_blocked_competing_candidate",
+      "official_url_recall_blocked_alias_only_competing_candidate",
+      "primary_work_cleared_non_resolved",
+      "title_surface_primary_candidate_rescued"
+    ],
+    "blocked_official_title": null,
+    "blocked_official_title_url": null
+  },
+  "after": {
+    "public_title": null,
+    "public_url": null,
+    "candidate_ledger_status": "promotion_blocked",
+    "title_resolution_allowed": false,
+    "title_resolution_state": "unresolved_matchable",
+    "work_resolution": "unresolved",
+    "safe_resolved": false,
+    "promotion_blocked": true,
+    "promotion_decision": {
+      "status": "candidate_only",
+      "publish_allowed": false,
+      "official_title": null,
+      "official_url": null,
+      "candidate_preserved": true,
+      "reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "context_only",
+        "official_detail_url",
+        "work_consumption_marker",
+        "thematic_overlap_only",
+        "url_title_mismatch",
+        "official_detail_url_title_mismatch_publish_blocked",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "bypassed_gate": false,
+      "scope": {
+        "scope_kind": "context_only",
+        "confidence": "high",
+        "conflict_reason_codes": [
+          "url_title_mismatch",
+          "official_detail_url_title_mismatch_publish_blocked"
+        ]
+      }
+    },
+    "promotion_gate_state": {
+      "scope": {
+        "scope_kind": "context_only",
+        "confidence": "high",
+        "conflict_reason_codes": [
+          "url_title_mismatch",
+          "official_detail_url_title_mismatch_publish_blocked"
+        ]
+      }
+    },
+    "consistency_flags": [
+      "notes_demoted_for_unresolved",
+      "secondary_reference_official_alias_blocked_after_title_deliberately_null",
+      "batch_memory_alias_rescue_blocked_deliberate_null",
+      "batch_memory_alias_rescue_blocked_after_title_deliberately_null",
+      "official_url_recall_blocked_competing_candidate",
+      "official_url_recall_blocked_alias_only_competing_candidate",
+      "primary_work_cleared_non_resolved",
+      "title_surface_primary_candidate_rescued",
+      "official_detail_url_title_mismatch_publish_blocked"
+    ],
+    "blocked_official_title": "하남 남자",
+    "blocked_official_title_url": "https://novelpia.com/novel/302245"
+  },
+  "same_url_conflict": {
+    "bad_public_title": "하남 남자",
+    "conflicting_official_detail_title": "하남자는 딸깍충이 되고 싶다",
+    "official_url": "https://novelpia.com/novel/302245",
+    "reason": "같은 official URL의 공식 detail 후보가 public title과 다르고, public title을 지지하는 URL title/snippet 양성 근거가 없어 publish를 차단했다."
+  },
+  "external_source_native_evidence": [
+    {
+      "label": "Novelpia official detail",
+      "url": "https://novelpia.com/novel/302245",
+      "observed_title": "하남자는 딸깍충이 되고 싶다"
+    },
+    {
+      "label": "Munpia official detail",
+      "url": "https://novel.munpia.com/400210",
+      "observed_title": "하남자의 탑 공략법"
+    },
+    {
+      "label": "Naver Series official detail",
+      "url": "https://series.naver.com/novel/detail.series?productNo=11227324",
+      "observed_title": "하남자의 탑 공략법"
+    }
+  ],
+  "verification": {
+    "runtime_replay": "NOT_RUN",
+    "large_run": "FROZEN",
+    "focused_tests": [
+      "tests.test_expert_main_comment_metadata: 52 tests OK",
+      "tests.test_candidate_audit short-lead focused: 4 tests OK"
+    ],
+    "preview_contract": "GO: public_title null / promotion_blocked / publish_allowed false"
+  },
+  "gate_state": {
+    "golden_expected_answer": "NO-GO / inherited 14 of 18 until golden18 rerun",
+    "search_recovery": "P0 / OPEN / search-blind conditional",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

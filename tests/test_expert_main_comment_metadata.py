@@ -1280,6 +1280,180 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         preserved = identity["candidate_ledger"]["candidate_preservation_sources"][0]
         self.assertIn("url_title_mismatch", preserved["negative_evidence"])
 
+    def test_published_official_url_demotes_same_url_detail_title_mismatch(self):
+        official_url = "https://novelpia.com/novel/302245"
+        result = {
+            "post_id": 11705245,
+            "title": "하남자 재밌냐",
+            "content": ["주인공 첨부터쌤?"],
+            "comments": ["ㄴㄴ"],
+            "identity": {
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "candidate_ledger_status": "safe_resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "context_sources": ["title", "body", "comments", "search", "image"],
+                "novel_identity": {
+                    "official_title": "하남 남자",
+                    "heretic_url": official_url,
+                    "confidence": "Low",
+                },
+                "primary_work": {
+                    "official_title": "하남 남자",
+                    "heretic_url": official_url,
+                    "confidence": "High",
+                    "alias_or_mention": "하남자",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                    "negative_evidence": ["missing_official_url_for_official_detail"],
+                    "reference_role": "primary",
+                },
+                "title_candidates": [
+                    {
+                        "official_title": "하남 남자",
+                        "heretic_url": official_url,
+                        "confidence": "High",
+                        "alias_or_mention": "하남자",
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                        "negative_evidence": ["missing_official_url_for_official_detail"],
+                        "reference_role": "primary",
+                    },
+                    {
+                        "official_title": "하남자는 딸깍충이 되고 싶다",
+                        "heretic_url": official_url,
+                        "confidence": "High",
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                        "content_status": "active",
+                        "reference_role": "candidate",
+                    },
+                ],
+                "candidate_preservation_sources": [
+                    {
+                        "official_title": "하남 남자",
+                        "heretic_url": official_url,
+                        "confidence": "High",
+                        "alias_or_mention": "하남자",
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                        "negative_evidence": ["missing_official_url_for_official_detail"],
+                        "reference_role": "primary",
+                        "preservation_role": "title_candidate",
+                    },
+                    {
+                        "official_title": "하남자는 딸깍충이 되고 싶다",
+                        "heretic_url": official_url,
+                        "confidence": "High",
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                        "content_status": "active",
+                        "reference_role": "candidate",
+                        "preservation_role": "title_candidate",
+                    },
+                ],
+                "search_evidence_catalog": [
+                    {
+                        "title": "노벨피아",
+                        "url": official_url,
+                        "domain": "novelpia.com",
+                        "source_tier": "novel_platform",
+                        "snippet": "노벨피아 - 웹소설로 꿈꾸는 세상! - 하남자는 딸깍충이 되고 싶다 플러스작품",
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": "하남 남자",
+                    "official_url": official_url,
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "context_only",
+                        "scope_current_work",
+                        "official_detail_url",
+                        "work_consumption_marker",
+                        "thematic_overlap_only",
+                        "serialized_public_identity_published",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": ["row_discusses_work_as_work"],
+                    },
+                },
+                "candidate_ledger": {
+                    "title_candidates": [
+                        {
+                            "official_title": "하남 남자",
+                            "heretic_url": official_url,
+                            "confidence": "High",
+                            "alias_or_mention": "하남자",
+                            "source_tier": "official_detail",
+                            "page_type": "novel_page",
+                            "negative_evidence": ["missing_official_url_for_official_detail"],
+                            "reference_role": "primary",
+                        },
+                        {
+                            "official_title": "하남자는 딸깍충이 되고 싶다",
+                            "heretic_url": official_url,
+                            "confidence": "High",
+                            "source_tier": "official_detail",
+                            "page_type": "novel_page",
+                            "content_status": "active",
+                            "reference_role": "candidate",
+                        },
+                    ],
+                    "candidate_preservation_sources": [
+                        {
+                            "official_title": "하남 남자",
+                            "heretic_url": official_url,
+                            "confidence": "High",
+                            "alias_or_mention": "하남자",
+                            "source_tier": "official_detail",
+                            "page_type": "novel_page",
+                            "negative_evidence": ["missing_official_url_for_official_detail"],
+                            "reference_role": "primary",
+                            "preservation_role": "title_candidate",
+                        },
+                        {
+                            "official_title": "하남자는 딸깍충이 되고 싶다",
+                            "heretic_url": official_url,
+                            "confidence": "High",
+                            "source_tier": "official_detail",
+                            "page_type": "novel_page",
+                            "content_status": "active",
+                            "reference_role": "candidate",
+                            "preservation_role": "title_candidate",
+                        },
+                    ],
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            result,
+            post_title="하남자 재밌냐",
+        )
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertIsNone(identity.get("novel_identity", {}).get("official_title"))
+        self.assertFalse(identity["promotion_decision"]["publish_allowed"])
+        self.assertIn("url_title_mismatch", identity["promotion_decision"]["reason_codes"])
+        self.assertIn(
+            "official_detail_url_title_mismatch_publish_blocked",
+            identity["consistency_flags"],
+        )
+        preserved = identity["candidate_ledger"]["candidate_preservation_sources"][0]
+        self.assertIn("url_title_mismatch", preserved["negative_evidence"])
+        self.assertTrue(str(preserved.get("url_title_mismatch_title") or "").strip())
+
     def test_direct_image_character_restore_blocks_wrong_work_without_matching_ocr_title(self):
         result = {
             "post_id": 11663540,

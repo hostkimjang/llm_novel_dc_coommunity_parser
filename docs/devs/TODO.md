@@ -2,6 +2,21 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-04 regression-safe grounding Loop376 TODO
+
+- 상태 업데이트: `11705245`의 Loop374 wrong publish `하남 남자` / `https://novelpia.com/novel/302245`를 같은 URL 공식 detail 제목 충돌로 차단하는 일반 계약을 추가했다. 기존 Loop374 행 postprocess preview는 public title `null`, `promotion_blocked`, `publish_allowed=false`로 내려간다.
+- Loop376 TODO:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+  - [x] `expert_main.py` same URL-title mismatch demotion 계약을 추가했다.
+  - [x] URL 제거 뒤 title-only 재복구 경로도 같은 URL 충돌 시 독립 official title support 없이는 막았다.
+  - [x] `11705245` 형태 회귀 테스트를 추가했다.
+  - [x] 기존 Loop374 행에 postprocess preview를 적용해 `promotion_blocked` 전환을 확인했다.
+  - [x] `tests.test_expert_main_comment_metadata` 52 PASS, short-lead candidate-audit focused 4 PASS를 확인했다.
+  - [ ] runtime replay는 아직 하지 않았으므로 expected-answer 카운트 개선으로 계산하지 않는다.
+  - [ ] 다음 golden18 또는 단건 runtime에서 `11705245` null 유지 여부를 확인한다.
+  - [ ] Search recovery 전 semantic approval, full scan approval, hard-hold 완화를 금지한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop375 TODO
 
 - 상태 업데이트: `11668307`은 Loop374 result regression이 아니라 golden expected 충돌로 판정했다. `빛세구` direct alias와 공식 상세 URL이 `빚을 져서라도 세상은 구해야 할 거 아니야`를 지지하므로 golden manifest expected를 교정했고, 기존 Loop374 결과 재감사에서 expected-answer가 `14/18`로 갱신됐다.

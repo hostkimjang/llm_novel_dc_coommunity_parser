@@ -1,5 +1,18 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop376 11705245 same URL-title mismatch contract
+
+- 신규 full375/bounded/N5 대형 런은 발주하지 않았다.
+- `11705245`의 Loop374 wrong publish `하남 남자` / `https://novelpia.com/novel/302245`를 같은 URL 공식 detail 제목 충돌로 차단했다.
+- Novelpia official detail은 `하남자는 딸깍충이 되고 싶다`를 지지하고, Munpia/Naver Series official detail은 `하남자의 탑 공략법`을 지지한다.
+- `expert_main.py`는 같은 URL의 다른 공식 detail 제목이 있고 public title 쪽 URL title/snippet 양성 근거가 없으면 `official_detail_url_title_mismatch_publish_blocked`로 `promotion_blocked`에 수렴한다.
+- URL 제거 뒤 title-only 복구도 같은 URL 충돌 시 독립 official title support 없이는 열리지 않는다.
+- 기존 Loop374 행 postprocess preview는 public title `null`, URL `null`, `promotion_blocked=true`, `publish_allowed=false`다.
+- 검증은 `tests.test_expert_main_comment_metadata` 52 PASS와 short-lead candidate-audit focused 4 PASS다.
+- Runtime replay는 `NOT_RUN`이므로 golden expected-answer는 `NO-GO / inherited 14 of 18`로 유지한다.
+- Report는 `docs/devs/loop_reports/LOOP_376_REPORT_20260704.md`, state는 `docs/devs/loop376_11705245_same_url_mismatch_state_20260704.json`, preview는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop376_11705245_same_url_mismatch_preview.json`이다.
+- Gate는 new large runs `FROZEN`, runtime replay `NOT_RUN`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop375 11668307 expected correction
 
 - 신규 full375/bounded/N5 대형 런은 발주하지 않았고, 코드 변경도 하지 않았다.

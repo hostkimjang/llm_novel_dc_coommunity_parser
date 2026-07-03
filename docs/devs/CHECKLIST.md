@@ -1,5 +1,21 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop376 11705245 same URL-title mismatch 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] `11705245` Loop374 actual `하남 남자` / `https://novelpia.com/novel/302245`가 같은 URL 공식 detail 제목 `하남자는 딸깍충이 되고 싶다`와 충돌함을 확인했다.
+- [x] `expert_main.py`에서 same URL-title mismatch publish를 `promotion_blocked`로 내리는 계약을 추가했다.
+- [x] URL 제거 뒤 `verified_alias_title_only_publication`으로 재복구되는 경로도 같은 URL 충돌 시 독립 official title support 없이는 막았다.
+- [x] 기존 Loop374 행 postprocess preview를 완료했다.
+  - before: public title `하남 남자`, URL `https://novelpia.com/novel/302245`, `safe_resolved=true`
+  - after: public title `null`, URL `null`, `promotion_blocked=true`, `publish_allowed=false`
+- [x] 검증:
+  - `.venv312\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata -v` PASS, `52` tests
+  - short-lead candidate-audit focused PASS, `4` tests
+- [ ] runtime replay는 `NOT_RUN`이므로 golden expected-answer 카운트 개선으로 계산하지 않는다.
+- [ ] 다음 golden18 또는 단건 runtime에서 `11705245` null 유지 여부를 확인한다.
+- Gate: new large runs `FROZEN`, runtime replay `NOT_RUN`, golden expected-answer `NO-GO / inherited 14 of 18`, full375 collateral `NOT_OPEN`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop375 11668307 expected 교정 체크
 
 - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.

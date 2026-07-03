@@ -1160,11 +1160,35 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
         if _repair_blocked_candidate_official_detail_url(blocked_title, blocked_url):
             changed = True
 
+    def _same_url_official_title_mismatch(candidate_title: str, candidate_url: str = "") -> str:
+        candidate_key = _title_key(candidate_title)
+        candidate_url_key = _publication_url_key(candidate_url)
+        if not candidate_key or not candidate_url_key:
+            return ""
+        for item in _blocked_candidate_source_items():
+            if not isinstance(item, dict):
+                continue
+            item_title, item_url = _candidate_title_url(item)
+            if _publication_url_key(item_url) != candidate_url_key:
+                continue
+            item_key = _title_key(item_title)
+            if not item_key or _publication_near_title_match(item_title, candidate_title):
+                continue
+            source_tier = str(item.get("source_tier") or "").strip().lower()
+            page_type = str(item.get("page_type") or "").strip().lower()
+            if source_tier in {"official_detail", "novel_platform", "official"} or page_type in {
+                "novel_page",
+                "work_detail",
+            }:
+                return item_title or item_url
+        return ""
+
     def _candidate_has_official_title_support(candidate_title: str, candidate_url: str = "") -> bool:
         candidate_key = _title_key(candidate_title)
         candidate_url_key = _publication_url_key(candidate_url)
         if not candidate_key:
             return False
+        same_url_mismatch_title = _same_url_official_title_mismatch(candidate_title, candidate_url)
         for item in _search_evidence_items():
             title_text = str(item.get("title") or item.get("official_title") or "").strip()
             snippet_text = str(item.get("snippet") or item.get("content") or "").strip()
@@ -1180,6 +1204,20 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
             if item_title_key != candidate_key and (
                 not candidate_url_key or _publication_url_key(item_url) != candidate_url_key
             ):
+                continue
+            if same_url_mismatch_title and item_title_key != candidate_key:
+                continue
+            negative = {
+                str(value or "").strip()
+                for value in (item.get("negative_evidence") or [])
+                if str(value or "").strip()
+            }
+            if same_url_mismatch_title and negative & {
+                "url_title_mismatch",
+                "official_detail_url_title_mismatch",
+                "official_detail_url_title_mismatch_publish_blocked",
+                "missing_official_url_for_official_detail",
+            }:
                 continue
             source_tier = str(item.get("source_tier") or "").strip().lower()
             page_type = str(item.get("page_type") or "").strip().lower()
@@ -2851,8 +2889,7 @@ def _demote_unsafe_url_title_verified_publication_contract(
         for code in (decision.get("reason_codes") or [])
         if str(code).strip()
     ]
-    if "url_title_verified_official_detail" not in reason_codes:
-        return False
+    has_url_title_verified_reason = "url_title_verified_official_detail" in reason_codes
 
     novel = identity.get("novel_identity") if isinstance(identity.get("novel_identity"), dict) else {}
     candidate_title = str(
@@ -2959,6 +2996,92 @@ def _demote_unsafe_url_title_verified_publication_contract(
             items.extend(item for item in source_items if isinstance(item, dict))
         return items
 
+    def _search_evidence_items() -> List[Dict[str, Any]]:
+        items: List[Dict[str, Any]] = []
+        for source in (identity, ledger):
+            if not isinstance(source, dict):
+                continue
+            for key in ("search_evidence_catalog", "search_results", "web_search_results"):
+                values = source.get(key)
+                if isinstance(values, list):
+                    items.extend(item for item in values if isinstance(item, dict))
+        return items
+
+    def _item_negative_evidence(item: Dict[str, Any]) -> set[str]:
+        return {
+            str(value or "").strip()
+            for value in (item.get("negative_evidence") or [])
+            if str(value or "").strip()
+        }
+
+    def _official_url_title_source(item: Dict[str, Any]) -> bool:
+        source_tier = str(item.get("source_tier") or "").strip().lower()
+        page_type = str(item.get("page_type") or "").strip().lower()
+        return source_tier in {"official_detail", "novel_platform", "official"} or page_type in {
+            "novel_page",
+            "work_detail",
+        }
+
+    def _same_url_mismatch_title() -> str:
+        if not candidate_url_key:
+            return ""
+        mismatch_codes = {
+            "url_title_mismatch",
+            "official_detail_url_title_mismatch",
+            "official_detail_url_title_mismatch_cleared",
+            "official_detail_url_title_mismatch_publish_blocked",
+        }
+        for item in _candidate_items():
+            item_title, item_url = _candidate_title_url(item)
+            if _url_key(item_url) != candidate_url_key:
+                continue
+            item_key = _title_key(item_title)
+            if item_key and not _near_match(item_title, candidate_title):
+                if _official_url_title_source(item):
+                    return item_title or item_url
+            if _item_negative_evidence(item) & mismatch_codes:
+                return item_title or item_url or "url_title_mismatch"
+        return ""
+
+    def _same_url_has_public_title_support() -> bool:
+        if not candidate_url_key:
+            return False
+        mismatch_codes = {
+            "url_title_mismatch",
+            "official_detail_url_title_mismatch",
+            "official_detail_url_title_mismatch_publish_blocked",
+            "missing_official_url_for_official_detail",
+        }
+        for item in _search_evidence_items():
+            if _url_key(item.get("url")) != candidate_url_key:
+                continue
+            if _near_match(item.get("title"), candidate_title):
+                return True
+            snippet = item.get("snippet") or item.get("content")
+            if _near_match(snippet, candidate_title):
+                return True
+            snippet_key = _title_key(snippet)
+            if candidate_key and candidate_key in snippet_key:
+                return True
+        for item in _candidate_items():
+            item_title, item_url = _candidate_title_url(item)
+            if _url_key(item_url) != candidate_url_key:
+                continue
+            if not _near_match(item_title, candidate_title):
+                continue
+            if _item_negative_evidence(item) & mismatch_codes:
+                continue
+            if _official_url_title_source(item):
+                return True
+        return False
+
+    url_title_mismatch_title = _same_url_mismatch_title()
+    has_same_url_title_mismatch = bool(
+        url_title_mismatch_title and not _same_url_has_public_title_support()
+    )
+    if not has_url_title_verified_reason and not has_same_url_title_mismatch:
+        return False
+
     source_values = _source_values()
     source_key = _title_key(" ".join(source_values))
     direct_support = any(_text_contains_candidate(value) for value in source_values)
@@ -2991,11 +3114,15 @@ def _demote_unsafe_url_title_verified_publication_contract(
                     break
             if direct_support:
                 break
-    if direct_support:
+    if direct_support and not has_same_url_title_mismatch:
         return False
 
     changed = False
-    flag = "official_detail_url_missing_direct_source_support"
+    flag = (
+        "official_detail_url_title_mismatch_publish_blocked"
+        if has_same_url_title_mismatch
+        else "official_detail_url_missing_direct_source_support"
+    )
     for target in (identity, ledger):
         current = [
             str(value)
@@ -3008,19 +3135,28 @@ def _demote_unsafe_url_title_verified_publication_contract(
             changed = True
     for item in _candidate_items():
         item_title, item_url = _candidate_title_url(item)
-        if _title_key(item_title) != candidate_key and (
-            not candidate_url_key or _url_key(item_url) != candidate_url_key
-        ):
-            continue
+        if has_same_url_title_mismatch:
+            if _title_key(item_title) != candidate_key:
+                continue
+        else:
+            if _title_key(item_title) != candidate_key and (
+                not candidate_url_key or _url_key(item_url) != candidate_url_key
+            ):
+                continue
         negative = [
             str(value)
             for value in (item.get("negative_evidence") or [])
             if str(value).strip()
         ]
-        if flag not in negative:
-            negative.append(flag)
-            item["negative_evidence"] = negative
-            changed = True
+        for code in (
+            ["url_title_mismatch", flag] if has_same_url_title_mismatch else [flag]
+        ):
+            if code not in negative:
+                negative.append(code)
+        if has_same_url_title_mismatch and url_title_mismatch_title:
+            item["url_title_mismatch_title"] = url_title_mismatch_title
+        item["negative_evidence"] = negative
+        changed = True
 
     for key, value in (
         ("candidate_ledger_status", "promotion_blocked"),
@@ -3051,14 +3187,44 @@ def _demote_unsafe_url_title_verified_publication_contract(
         identity["promotion_blocked_reasons"] = blocked_reasons
         changed = True
 
+    scope_state = {
+        "scope_kind": "context_only",
+        "confidence": "high" if has_same_url_title_mismatch else "medium",
+        "conflict_reason_codes": list(
+            dict.fromkeys(
+                [
+                    *(["url_title_mismatch"] if has_same_url_title_mismatch else []),
+                    flag,
+                ]
+            )
+        ),
+    }
     demoted_decision = dict(decision)
     demoted_decision["status"] = "candidate_only"
     demoted_decision["publish_allowed"] = False
     demoted_decision["official_title"] = None
     demoted_decision["official_url"] = None
     demoted_decision["candidate_preserved"] = True
-    demoted_reason_codes = list(dict.fromkeys([*reason_codes, flag, "serialized_public_identity_scrubbed"]))
+    base_demoted_reason_codes = [
+        code
+        for code in reason_codes
+        if code not in {"scope_current_work", "serialized_public_identity_published"}
+    ]
+    demoted_reason_codes = list(
+        dict.fromkeys(
+            [
+                *base_demoted_reason_codes,
+                *(["url_title_mismatch"] if has_same_url_title_mismatch else []),
+                flag,
+                "scope_context_only",
+                "scope_not_current_work",
+                "serialized_public_identity_scrubbed",
+            ]
+        )
+    )
     demoted_decision["reason_codes"] = demoted_reason_codes
+    demoted_decision["bypassed_gate"] = False
+    demoted_decision["scope"] = scope_state
     if identity.get("promotion_decision") != demoted_decision:
         identity["promotion_decision"] = demoted_decision
         changed = True
@@ -3068,6 +3234,9 @@ def _demote_unsafe_url_title_verified_publication_contract(
     ledger["candidate_ledger_status"] = "promotion_blocked"
     ledger["title_resolution_allowed"] = False
     ledger["promotion_decision"] = demoted_decision
+    gate_state_payload = {"scope": scope_state}
+    ledger["promotion_gate_state"] = gate_state_payload
+    identity["promotion_gate_state"] = gate_state_payload
     identity["candidate_ledger"] = ledger
     return changed
 

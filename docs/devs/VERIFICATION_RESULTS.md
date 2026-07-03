@@ -1,5 +1,29 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop376 11705245 same URL-title mismatch contract
+
+- 범위: Loop374 expected-answer 실패 `11705245`의 wrong publish를 같은 official URL-title mismatch 계약으로 차단하고, 기존 Loop374 행 postprocess preview로 확인한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_376_REPORT_20260704.md`
+  - state `docs\devs\loop376_11705245_same_url_mismatch_state_20260704.json`
+  - preview JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop376_11705245_same_url_mismatch_preview.json`
+  - preview Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop376_11705245_same_url_mismatch_preview.md`
+- Evidence:
+  - Loop374 before: `하남 남자` / `https://novelpia.com/novel/302245`, `safe_resolved=true`.
+  - 같은 URL의 공식 detail 후보는 `하남자는 딸깍충이 되고 싶다`다.
+  - Munpia `https://novel.munpia.com/400210`과 Naver Series `https://series.naver.com/novel/detail.series?productNo=11227324`는 `하남자의 탑 공략법`을 지지한다.
+- Verification:
+  - `.venv312\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata -v` -> PASS, `52` tests.
+  - short-lead candidate-audit focused -> PASS, `4` tests.
+  - Loop374 row preview -> `public_title=null`, `promotion_blocked=true`, `publish_allowed=false`.
+- Gate:
+  - runtime replay `NOT_RUN`
+  - golden expected-answer `NO-GO / inherited 14 of 18`
+  - search recovery `P0 / OPEN`
+  - semantic_quality `REVIEW-LOCKED`
+  - full_scan_approval `false`
+  - goal `ACTIVE / NOT_COMPLETE`
+
 ## 2026-07-04 Loop375 11668307 expected correction
 
 - 범위: Loop374 expected-answer 실패 `11668307`을 source-native/web evidence로 재판정하고, golden expected 충돌이면 manifest를 교정한 뒤 기존 Loop374 result를 재감사한다.
