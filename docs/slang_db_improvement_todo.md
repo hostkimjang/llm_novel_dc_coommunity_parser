@@ -665,3 +665,7 @@
 - [ ] Expected-answer `NO-GO / 15 of 18`이므로 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
 - [ ] `11698880`은 Loop391 단건 HOLD와 Loop392 mixed wrong publish가 갈려 safe-loss 완화 근거가 아니다.
 - Gate: slang DB write-back 아님, golden18 runtime `GO / 18 of 18`, search `GO_GOLDEN18_ONLY / FULL375_NOT_OPEN`, expected-answer `NO-GO / 15 of 18`, golden shared collateral `NO-GO / 5`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+## 2026-07-04 Loop393 Note
+
+- `11700470`은 slang/cue 리스트 확장으로 처리하지 않았다. `밤도깨비 에이브`, `미소녀 납치`는 R1 hardcoded cue가 아니라 이미지 장면 단서로만 보존하며, public title 승격은 promotion gate의 image-scope 술어가 막는다.
+- `slang_db` write-back 없음. Gate는 `REVIEW-LOCKED`, `full_scan_approval=false`.

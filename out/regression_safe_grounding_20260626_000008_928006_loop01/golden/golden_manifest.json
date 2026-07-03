@@ -223,8 +223,8 @@
       "failure_class": "generic_phrase_substring",
       "disagreement_type": "over_resolved",
       "severity": "high",
-      "expected_title_or_hypothesis": "악당 얼굴의 B급 모험자",
-      "expected_no_public_title": false,
+      "expected_title_or_hypothesis": "밤도깨비 에이브 이미지 장면 단서(public title HOLD)",
+      "expected_no_public_title": true,
       "baseline_identity": {
         "official_title": "가스라이팅",
         "heretic_url": "https://novelpia.com/novel/434757",
@@ -233,7 +233,7 @@
         "candidate_ledger_status": "safe_resolved",
         "candidate_count": 3
       },
-      "note": "OCR이 묘사하는 작품은 '밤도깨비 에이브'라는 B급 모험가 빌런 주인공물인데, 파이프라인은 OCR 죄목 나열문 속 단어 '가스라이팅'을 그대로 작품명으로 승격. '가스라이팅'은 본문 어휘이지 이 글이 논하는 작품 제목이 아님. 검색으로 OCR 내용과 일치하는 '가스라이팅' 작품 확인 불가."
+      "note": "Loop393 blind/source-native review: OCR은 '밤도깨비 에이브' 장면 단서를 제공하지만 public title로 승격 가능한 직접 제목 표면은 없다. 기존 expected '악당 얼굴의 B급 모험자'는 웹 근거상 별도 라이트노벨/만화 제목 계열이며 OCR 인물명/장면과 직접 일치하지 않는다. Loop392 actual '세계 최강 미소녀에게 납치당했습니다'는 Novelpia 공식 페이지 존재는 확인되나 OCR 장면 단서와 직접 title/alias bridge가 부족하므로 이 golden row의 정답 상태는 public title HOLD다."
     },
     {
       "post_id": 11705231,

@@ -21662,3 +21662,12 @@ The broader unittest result proves the code checkpoint did not break the current
   - golden shared posts `18`, changed `17`, regression candidates `5`
   - full375 collateral `NOT_OPEN`
 - Gate: runtime production `GO / 18 of 18`, search `GO_GOLDEN18_ONLY / FULL375_NOT_OPEN`, semantic `REVIEW-LOCKED`, full-scan approval `false`, goal `ACTIVE / NOT_COMPLETE`.
+## 2026-07-04 Loop393 Verification
+
+- Focused unittest: `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_resolved_public_title_gate_blocks_image_scene_only_official_detail` -> PASS / 1.
+- Focused related bundle: `test_non_novel_literature_warning_blocks_ocr_title_promotion`, `test_safe_single_candidate_unresolved_promotion_blocks_no_work_official_only`, `test_try_promote_best_candidate_blocks_no_work_decoder_alias_official_only` -> PASS / 3.
+- `tests.test_title_lead_search_inferred_guard` 전체 -> PASS / 190.
+- `tests.test_expert_main_comment_metadata` + `tests.test_promotion_gate_contract` -> PASS / 81.
+- `py_compile` -> PASS for `src/llm_batch/agentic_pipeline.py`, `tests/test_title_lead_search_inferred_guard.py`.
+- Loop392 stored-result 재감사 -> `NO-GO / 15 of 18`; runtime replay after patch는 `NOT_RUN_AFTER_PATCH`.
+- Gate 유지: `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, full375 collateral `NOT_OPEN`.

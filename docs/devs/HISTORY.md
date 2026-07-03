@@ -10290,3 +10290,10 @@
 - Golden shared collateral compare는 changed `17`, regression candidates `5`다. Full375 collateral은 `NOT_OPEN`이다.
 - Report는 `docs/devs/loop_reports/LOOP_391_392_REPORT_20260704.md`, state는 `docs/devs/loop392_golden18_after_loop390_runtime_20260704.json`이다.
 - Gate는 runtime production `GO / 18 of 18`, search `GO_GOLDEN18_ONLY / FULL375_NOT_OPEN`, expected-answer `NO-GO / 15 of 18`, collateral active lane `reclassified 74 / runtime-verified 4`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+## 2026-07-04 Loop393 11700470 image-scene promotion gate
+
+- Goal은 `ACTIVE / NOT_COMPLETE`다. 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 실행하지 않았다.
+- `11700470`은 source-native/web 재검증 결과 public title 확정 행이 아니라 이미지/OCR 장면 단서 HOLD 행으로 교정했다. Golden expected는 `밤도깨비 에이브 이미지 장면 단서(public title HOLD)`, `expected_no_public_title=true`다.
+- `src/llm_batch/agentic_pipeline.py`는 `image_evidence_catalog` 또는 `post_data.image_enrichment`가 있으면 image-driven scope guard를 실행하고, 비이미지 본문/댓글 또는 promotion-eligible 이미지 표면에 후보 제목/alias가 없으면 `image_scope_missing_candidate_surface`로 publish를 막는다.
+- Loop392 저장 결과 재감사는 `NO-GO / 15 of 18`이며, `11700470`은 expected HOLD 대비 `unexpected_resolved_title`로 남았다. Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다.
+- Artifacts: `docs/devs/loop_reports/LOOP_393_REPORT_20260704.md`, `docs/devs/loop393_11700470_source_native_gate_20260704.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop393_loop392_after_11700470_hold_expected_audit.md`.

@@ -10605,3 +10605,31 @@
 - [ ] full375 collateral gate는 아직 열지 않는다.
 - [ ] `11700470`은 blind/source-native 검증으로 expected 교정 필요 여부를 먼저 확인한다.
 - Gate: runtime production `GO / 18 of 18`, search `GO_GOLDEN18_ONLY / FULL375_NOT_OPEN`, expected-answer `NO-GO / 15 of 18`, golden shared collateral `NO-GO / 5`, collateral active lane `reclassified 74 / runtime-verified 4`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+## 2026-07-04 Loop393 11700470 image-scene gate 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] `11700470` 원문/golden/Loop392 actual 증거를 확인했다.
+  - 원문 OCR: `B급 모험가 '밤'도깨비 에이브` 장면 단서
+  - Loop392 actual: `세계 최강 미소녀에게 납치당했습니다`
+  - 기존 expected: `악당 얼굴의 B급 모험자`
+- [x] source-native/web 근거로 golden expected를 HOLD로 교정했다.
+  - `expected_title_or_hypothesis`: `밤도깨비 에이브 이미지 장면 단서(public title HOLD)`
+  - `expected_no_public_title=true`
+- [x] R1 hardcoded cue 리스트 확장 없이 일반 promotion gate 술어로 수렴했다.
+  - `image_evidence_catalog` / `post_data.image_enrichment`를 image-driven scope 신호로 사용
+  - 후보 제목/alias가 비이미지 본문/댓글 또는 promotion-eligible 이미지 표면에 없으면 `image_scope_missing_candidate_surface`
+- [x] 계약 테스트를 추가했다.
+  - `tests/test_title_lead_search_inferred_guard.py`
+- [x] Loop392 저장 결과를 새 manifest로 재감사했다.
+  - audit `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop393_loop392_after_11700470_hold_expected_audit.md`
+  - result `NO-GO / 15 of 18`
+  - `11700470` status `unexpected_resolved_title`
+- [x] 검증을 실행했다.
+  - focused `1` PASS
+  - focused bundle `3` PASS
+  - title-lead guard 전체 `190` PASS
+  - publication contract bundle `81` PASS
+  - py_compile PASS
+- [ ] current-code targeted replay로 `11700470` public title이 `null / promotion_blocked`로 내려가는지 확인한다.
+- Gate: code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

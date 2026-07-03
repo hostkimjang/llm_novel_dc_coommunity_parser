@@ -1872,3 +1872,10 @@ Gate remains: `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, sear
 - Safe-loss: `11660237`은 `테라포밍` 통과, `11698880`은 Loop391 HOLD와 Loop392 wrong publish가 갈려 hard-hold 완화 금지.
 - Collateral: golden shared regression candidates `5`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`.
 - Gate: runtime production `GO / 18 of 18`, search `GO_GOLDEN18_ONLY / FULL375_NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, overall `ACTIVE / NOT_COMPLETE`.
+## 2026-07-04 Loop393 Addendum
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 신규 대형 런과 동일 38-row parent packet replay는 동결 유지.
+- `11700470`은 source-native 기준 public title HOLD로 재분류했고 golden manifest를 `expected_no_public_title=true`로 교정했다.
+- Architecture change: `image_evidence_catalog` / `post_data.image_enrichment`를 promotion gate의 image-driven scope 신호로 승격해, 장면 단서만 있는 official detail 후보를 `image_scope_missing_candidate_surface`로 candidate-only 처리한다.
+- Evidence: Loop392 재감사 `NO-GO / 15 of 18`, 실패 `11663521`, `11700470`, `11698880`. Runtime replay after patch `NOT_RUN_AFTER_PATCH`.
+- Gate: code contract `GO_UNIT`, full375 collateral `NOT_OPEN`, search recovery `GO_GOLDEN18_ONLY / FULL375_NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.

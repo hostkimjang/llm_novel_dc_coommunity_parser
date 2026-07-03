@@ -1,0 +1,401 @@
+{
+  "shared_post_count": 18,
+  "changed_post_count": 17,
+  "collateral_regression_count": 5,
+  "status_counts": {
+    "resolved_to_null": 10,
+    "resolved_to_different_title": 7
+  },
+  "regression_status_counts": {
+    "resolved_to_null": 3,
+    "resolved_to_different_title": 2
+  },
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "rows": [
+    {
+      "post_id": 11661857,
+      "status": "resolved_to_null",
+      "is_regression": false,
+      "exempted_by_expected_answer": true,
+      "before_identity": {
+        "official_title": "아카데미 개망나니 교수가 되었다",
+        "heretic_url": "https://novelpia.com/novel/412444",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 1
+      },
+      "after_identity": {
+        "official_title": null,
+        "heretic_url": null,
+        "title_resolution_state": "ocr_explicit_title_unresolved",
+        "title_resolution_allowed": false,
+        "candidate_ledger_status": "promotion_blocked",
+        "candidate_count": 8
+      }
+    },
+    {
+      "post_id": 11663521,
+      "status": "resolved_to_null",
+      "is_regression": true,
+      "exempted_by_expected_answer": false,
+      "before_identity": {
+        "official_title": "초전자포] 시스터즈가 되었다",
+        "heretic_url": null,
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 2
+      },
+      "after_identity": {
+        "official_title": null,
+        "heretic_url": null,
+        "title_resolution_state": "unresolved_matchable",
+        "title_resolution_allowed": false,
+        "candidate_ledger_status": "promotion_blocked",
+        "candidate_count": 2
+      }
+    },
+    {
+      "post_id": 11663540,
+      "status": "resolved_to_different_title",
+      "is_regression": false,
+      "exempted_by_expected_answer": true,
+      "before_identity": {
+        "official_title": "방구석 여신이 되었다",
+        "heretic_url": "https://novelpia.com/novel/35984",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 3
+      },
+      "after_identity": {
+        "official_title": "전 버튜버가 하고 싶은데요",
+        "heretic_url": "https://novelpia.com/novel/275975",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 2
+      }
+    },
+    {
+      "post_id": 11668307,
+      "status": "resolved_to_null",
+      "is_regression": true,
+      "exempted_by_expected_answer": false,
+      "before_identity": {
+        "official_title": "디펜스게임 속 엘리트몹킬러가 되었다",
+        "heretic_url": "https://novelpia.com/novel/420567",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 5
+      },
+      "after_identity": {
+        "official_title": null,
+        "heretic_url": null,
+        "title_resolution_state": "unresolved_matchable",
+        "title_resolution_allowed": false,
+        "candidate_ledger_status": "promotion_blocked",
+        "candidate_count": 12
+      }
+    },
+    {
+      "post_id": 11669930,
+      "status": "resolved_to_null",
+      "is_regression": false,
+      "exempted_by_expected_answer": true,
+      "before_identity": {
+        "official_title": "수상할 정도로 돈이 많은 성주님 [독점]",
+        "heretic_url": "https://series.naver.com/novel/detail.series?productNo=9231312",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 0
+      },
+      "after_identity": {
+        "official_title": null,
+        "heretic_url": null,
+        "title_resolution_state": "adjacent",
+        "title_resolution_allowed": false,
+        "candidate_ledger_status": "promotion_blocked",
+        "candidate_count": 2
+      }
+    },
+    {
+      "post_id": 11673082,
+      "status": "resolved_to_null",
+      "is_regression": false,
+      "exempted_by_expected_answer": true,
+      "before_identity": {
+        "official_title": "용사 파티",
+        "heretic_url": "https://novelpia.com/novel/6269",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 0
+      },
+      "after_identity": {
+        "official_title": null,
+        "heretic_url": null,
+        "title_resolution_state": "adjacent",
+        "title_resolution_allowed": false,
+        "candidate_ledger_status": "promotion_blocked",
+        "candidate_count": 11
+      }
+    },
+    {
+      "post_id": 11684371,
+      "status": "resolved_to_null",
+      "is_regression": false,
+      "exempted_by_expected_answer": true,
+      "before_identity": {
+        "official_title": "괴담에 휘말렸다",
+        "heretic_url": null,
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 0
+      },
+      "after_identity": {
+        "official_title": null,
+        "heretic_url": null,
+        "title_resolution_state": "unresolved_matchable",
+        "title_resolution_allowed": false,
+        "candidate_ledger_status": "promotion_blocked",
+        "candidate_count": 2
+      }
+    },
+    {
+      "post_id": 11685994,
+      "status": "resolved_to_null",
+      "is_regression": true,
+      "exempted_by_expected_answer": false,
+      "before_identity": {
+        "official_title": "무한을 이해한 나는 외신의 사제가 되었습니다",
+        "heretic_url": "https://novelpia.com/novel/270445",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 3
+      },
+      "after_identity": {
+        "official_title": null,
+        "heretic_url": null,
+        "title_resolution_state": "ocr_explicit_title_unresolved",
+        "title_resolution_allowed": false,
+        "candidate_ledger_status": "promotion_blocked",
+        "candidate_count": 1
+      }
+    },
+    {
+      "post_id": 11694019,
+      "status": "resolved_to_different_title",
+      "is_regression": false,
+      "exempted_by_expected_answer": true,
+      "before_identity": {
+        "official_title": "혼후 순결",
+        "heretic_url": "https://page.kakao.com/content/61863349",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 2
+      },
+      "after_identity": {
+        "official_title": "이세계에서 사이비로 살아남기",
+        "heretic_url": "https://novelpia.com/novel/181771",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 1
+      }
+    },
+    {
+      "post_id": 11694035,
+      "status": "resolved_to_null",
+      "is_regression": false,
+      "exempted_by_expected_answer": true,
+      "before_identity": {
+        "official_title": "시로코의 제멋대로 일상 단편선",
+        "heretic_url": "https://novelpia.com/novel/203102",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 1
+      },
+      "after_identity": {
+        "official_title": null,
+        "heretic_url": null,
+        "title_resolution_state": "unresolved_matchable",
+        "title_resolution_allowed": false,
+        "candidate_ledger_status": "promotion_blocked",
+        "candidate_count": 1
+      }
+    },
+    {
+      "post_id": 11698880,
+      "status": "resolved_to_different_title",
+      "is_regression": true,
+      "exempted_by_expected_answer": false,
+      "before_identity": {
+        "official_title": "가챠 중독자의 퓨전펑크 생활",
+        "heretic_url": "https://novelpia.com/novel/387014",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 0
+      },
+      "after_identity": {
+        "official_title": "아카데미 생존 갤러리",
+        "heretic_url": "https://novelpia.com/novel/380218",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 1
+      }
+    },
+    {
+      "post_id": 11698897,
+      "status": "resolved_to_different_title",
+      "is_regression": false,
+      "exempted_by_expected_answer": true,
+      "before_identity": {
+        "official_title": "스페이스 오페라",
+        "heretic_url": "https://novelpia.com/novel/233029",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 2
+      },
+      "after_identity": {
+        "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+        "heretic_url": null,
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 2
+      }
+    },
+    {
+      "post_id": 11700470,
+      "status": "resolved_to_different_title",
+      "is_regression": true,
+      "exempted_by_expected_answer": false,
+      "before_identity": {
+        "official_title": "가스라이팅",
+        "heretic_url": "https://novelpia.com/novel/434757",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 3
+      },
+      "after_identity": {
+        "official_title": "세계 최강 미소녀에게 납치당했습니다",
+        "heretic_url": "https://novelpia.com/novel/201411",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 1
+      }
+    },
+    {
+      "post_id": 11705231,
+      "status": "resolved_to_different_title",
+      "is_regression": false,
+      "exempted_by_expected_answer": true,
+      "before_identity": {
+        "official_title": "한국 레전드 프로게이머인 내가 일본판타지 사정에 휘말린 것에 대하여",
+        "heretic_url": "https://novelpia.com/novel/143896",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 0
+      },
+      "after_identity": {
+        "official_title": "탐식의 재림",
+        "heretic_url": "https://page.kakao.com/content/50219568?tab_type=about",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 1
+      }
+    },
+    {
+      "post_id": 11705245,
+      "status": "resolved_to_null",
+      "is_regression": false,
+      "exempted_by_expected_answer": true,
+      "before_identity": {
+        "official_title": "하남자의 탑 공략법",
+        "heretic_url": "https://novel.munpia.com/400210",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 0
+      },
+      "after_identity": {
+        "official_title": null,
+        "heretic_url": null,
+        "title_resolution_state": "context_only",
+        "title_resolution_allowed": false,
+        "candidate_ledger_status": "promotion_blocked",
+        "candidate_count": 1
+      }
+    },
+    {
+      "post_id": 11713212,
+      "status": "resolved_to_null",
+      "is_regression": false,
+      "exempted_by_expected_answer": true,
+      "before_identity": {
+        "official_title": "SSS급 지력무한 영지를 손에 넣었다",
+        "heretic_url": null,
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 5
+      },
+      "after_identity": {
+        "official_title": null,
+        "heretic_url": null,
+        "title_resolution_state": "context_only",
+        "title_resolution_allowed": false,
+        "candidate_ledger_status": "promotion_blocked",
+        "candidate_count": 25
+      }
+    },
+    {
+      "post_id": 11713222,
+      "status": "resolved_to_different_title",
+      "is_regression": false,
+      "exempted_by_expected_answer": true,
+      "before_identity": {
+        "official_title": "하렘으로 장르를 착각함",
+        "heretic_url": "https://novelpia.com/novel/386322",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 1
+      },
+      "after_identity": {
+        "official_title": "잘생기면 편해지는 인방 생활",
+        "heretic_url": "https://novelpia.com/novel/384016",
+        "title_resolution_state": "resolved",
+        "title_resolution_allowed": true,
+        "candidate_ledger_status": "safe_resolved",
+        "candidate_count": 3
+      }
+    }
+  ],
+  "scope": "golden_canary_shared_posts_only",
+  "baseline_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\baseline\\baseline_result.json",
+  "after_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop392_golden18_after_loop390_e3e71b16_search_nonlight_result.json",
+  "golden_manifest_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\golden\\golden_manifest.json",
+  "canary_manifest_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop392_golden18_after_loop390_e3e71b16_search_nonlight_result_manifest.json",
+  "runtime_completed_count": 18,
+  "runtime_pending_count": 0,
+  "runtime_failed_count": 0,
+  "vlm_ocr_semantic_review_ready": true,
+  "slang_db_requested": "off"
+}

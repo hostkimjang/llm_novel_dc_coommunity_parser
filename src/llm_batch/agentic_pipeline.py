@@ -33053,9 +33053,31 @@ OUTPUT JSON:
             } or flag.startswith("unresolved_worklike_hold:"):
                 scope_block_flags.append(flag)
 
+        has_image_evidence_catalog = any(
+            isinstance(container, dict)
+            and isinstance(container.get("image_evidence_catalog"), list)
+            and bool(container.get("image_evidence_catalog"))
+            for container in (scope_fields, final, vf)
+        )
+        try:
+            post_data_for_image_scope = getattr(ctx, "post_data", None) or {}
+            has_image_evidence_catalog = bool(
+                has_image_evidence_catalog
+                or (
+                    isinstance(post_data_for_image_scope, dict)
+                    and (
+                        bool(post_data_for_image_scope.get("image_enrichment"))
+                        or bool(post_data_for_image_scope.get("image_evidence_catalog"))
+                    )
+                )
+            )
+        except Exception:
+            pass
+
         image_driven_scope = bool(
             anchor_type_norm == "image"
             or any(str(value or "").strip().lower() == "image" for value in context_sources)
+            or has_image_evidence_catalog
             or "image" in str(source or "").strip().lower()
             or "ocr" in str(source or "").strip().lower()
         )

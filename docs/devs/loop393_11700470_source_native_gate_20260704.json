@@ -1,0 +1,58 @@
+{
+  "loop": 393,
+  "date": "2026-07-04",
+  "scope": "11700470 source-native expected 교정 및 image scene-only promotion gate 계약",
+  "runtime_policy": {
+    "new_large_runs": "FROZEN",
+    "same_38_row_parent_packet_replay": "STOPPED",
+    "runtime_replay_after_patch": "NOT_RUN_AFTER_PATCH"
+  },
+  "post_id": 11700470,
+  "source_native_verdict": {
+    "decision": "HOLD_EXPECTED_NO_PUBLIC_TITLE",
+    "expected_title_or_hypothesis": "밤도깨비 에이브 이미지 장면 단서(public title HOLD)",
+    "expected_no_public_title": true,
+    "actual_loop392_title": "세계 최강 미소녀에게 납치당했습니다",
+    "reason": "OCR은 장면/인물 단서를 제공하지만 Loop392 actual title로 승격 가능한 직접 제목 표면 또는 검증된 alias bridge가 없다."
+  },
+  "web_evidence": [
+    {
+      "url": "https://novelpia.com/novel/201411",
+      "supports": "Loop392 actual title의 공식 Novelpia 페이지 존재는 확인되지만, 페이지 존재만으로 OCR 장면 단서와 해당 제목이 직접 연결되지는 않는다."
+    },
+    {
+      "url": "https://www.yes24.com/product/goods/183748215",
+      "supports": "기존 golden expected 문구는 별도 라이트노벨/만화 제목 계열을 가리키며, OCR 인물명 에이브와 직접 일치하지 않는다."
+    }
+  ],
+  "changed_files": [
+    "src/llm_batch/agentic_pipeline.py",
+    "tests/test_title_lead_search_inferred_guard.py",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json"
+  ],
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_393_REPORT_20260704.md",
+    "state": "docs/devs/loop393_11700470_source_native_gate_20260704.json",
+    "audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop393_loop392_after_11700470_hold_expected_audit.json",
+    "audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop393_loop392_after_11700470_hold_expected_audit.md",
+    "collateral_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop393_loop392_after_11700470_hold_expected_collateral.json",
+    "collateral_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop393_loop392_after_11700470_hold_expected_collateral.md"
+  },
+  "verification": {
+    "focused_unittest": "PASS / 1",
+    "focused_bundle": "PASS / 3",
+    "title_lead_search_inferred_guard": "PASS / 190",
+    "publication_contract_bundle": "PASS / 81",
+    "py_compile": "PASS"
+  },
+  "gates": {
+    "code_contract": "GO_UNIT",
+    "loop392_reaudit": "NO-GO / 15 of 18",
+    "search_recovery": "GO_GOLDEN18_ONLY / FULL375_NOT_OPEN",
+    "full375_collateral": "NOT_OPEN",
+    "collateral_active_lane": "reclassified 74 / runtime-verified 4",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

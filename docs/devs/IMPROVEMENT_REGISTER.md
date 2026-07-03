@@ -16566,3 +16566,9 @@ Gate: parent runtime `GO`, targeted deterministic replay `GO`, parent semantic `
 | golden shared collateral | NO-GO / 5 | changed `17`, regression candidates `5` | full375 열기 전 approval 금지 |
 
 Gate: runtime production `GO / 18 of 18`, search `GO_GOLDEN18_ONLY / FULL375_NOT_OPEN`, expected-answer `NO-GO / 15 of 18`, collateral active lane `reclassified 74 / runtime-verified 4`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+## 2026-07-04 Loop393 Improvement Register
+
+- 개선: 이미지/OCR 장면 단서만 있는 official detail 후보가 public title로 승격되는 경로를 일반 promotion gate 술어로 차단했다.
+- 적용 파일: `src/llm_batch/agentic_pipeline.py`, `tests/test_title_lead_search_inferred_guard.py`, `out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json`.
+- `11700470` expected는 특정 제목 강제 매칭이 아니라 `expected_no_public_title=true` HOLD로 교정했다.
+- 남은 리스크: current-code runtime replay가 아직 없으므로 `11700470` 실제 row 생산 결과는 `NOT_RUN_AFTER_PATCH`다. Loop392 재감사는 저장 결과 기준 `NO-GO / 15 of 18`이다.

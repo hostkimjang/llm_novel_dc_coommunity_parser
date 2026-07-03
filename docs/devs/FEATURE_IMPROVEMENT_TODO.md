@@ -590,3 +590,9 @@
   - 적용: current HEAD `e3e71b16`에서 Loop390 후 golden18 단일 search non-light runtime을 완료했다. watchdog/stall 우회는 row를 실제로 내지만 semantic gate는 닫혀 있다.
   - 산출물: `docs/devs/loop_reports/LOOP_391_392_REPORT_20260704.md`, `docs/devs/loop392_golden18_after_loop390_runtime_20260704.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop392_golden18_after_loop390_e3e71b16_search_nonlight_result.json`.
   - 완료 기준: `11698880` mixed wrong publish, `11700470` expected 충돌, `11663521` positive unresolved를 R1 hardcoded cue 없이 줄이고 full375 collateral gate를 별도 증명하기 전까지 approval과 hard-hold 완화를 열지 않는다.
+## 2026-07-04 Loop393 Follow-up
+
+- [x] `11700470` image-scene-only official detail publish를 일반 promotion gate 술어로 차단했다.
+- [x] Golden expected를 `expected_no_public_title=true` HOLD로 교정했다.
+- [ ] current-code targeted replay로 `11700470`이 `null / promotion_blocked`로 내려가는지 확인한다.
+- [ ] `11698880` mixed golden18 비결정 재오귀속을 batch-context 경쟁 후보 수렴으로 계속 좁힌다.
