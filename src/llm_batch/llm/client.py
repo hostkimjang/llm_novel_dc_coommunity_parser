@@ -795,10 +795,35 @@ class LLMClient:
             _STREAM_PROGRESS_MIN_CHUNKS = int(os.getenv("LLM_STREAM_PROGRESS_MIN_CHUNKS", "200"))
         except (ValueError, TypeError):
             _STREAM_PROGRESS_MIN_CHUNKS = 200
+
+        def _stream_timeout_env(name: str) -> Optional[float]:
+            raw = os.getenv(name)
+            if raw is None:
+                return None
+            try:
+                value = float(raw)
+            except (ValueError, TypeError):
+                return None
+            return value if value > 0 else None
+
+        _STREAM_FIRST_TOKEN_TIMEOUT_S = _stream_timeout_env("LLM_STREAM_FIRST_TOKEN_TIMEOUT_SECONDS")
+        _STREAM_IDLE_TIMEOUT_S = _stream_timeout_env("LLM_STREAM_IDLE_TIMEOUT_SECONDS")
+        _stream_read_timeout_candidates = [
+            value
+            for value in (
+                _STREAM_FIRST_TOKEN_TIMEOUT_S,
+                _STREAM_IDLE_TIMEOUT_S,
+            )
+            if value is not None
+        ]
+        _stream_timeout: float | httpx.Timeout = self.timeout_s
+        if _stream_read_timeout_candidates:
+            _stream_read_timeout_s = min([self.timeout_s, *_stream_read_timeout_candidates])
+            _stream_timeout = httpx.Timeout(self.timeout_s, read=_stream_read_timeout_s)
         
         try:
             # httpx streaming with iter_text() for better SSE handling
-            with httpx.stream("POST", url, json=stream_body, timeout=self.timeout_s) as response:
+            with httpx.stream("POST", url, json=stream_body, timeout=_stream_timeout) as response:
                 response.raise_for_status()
                 
                 # SSE 버퍼: 줄 단위로 누적
@@ -818,7 +843,21 @@ class LLMClient:
                                 file=sys.stderr,
                                 flush=True,
                             )
+                        if _STREAM_IDLE_TIMEOUT_S is not None and _gap >= _STREAM_IDLE_TIMEOUT_S:
+                            raise httpx.ReadTimeout(
+                                f"{tag} stream idle timeout after {_gap:.2f}s "
+                                f"(limit={_STREAM_IDLE_TIMEOUT_S:.2f}s)"
+                            )
                     last_chunk_at = _chunk_now
+                    if (
+                        first_token_at is None
+                        and _STREAM_FIRST_TOKEN_TIMEOUT_S is not None
+                        and (_chunk_now - _start) >= _STREAM_FIRST_TOKEN_TIMEOUT_S
+                    ):
+                        raise httpx.ReadTimeout(
+                            f"{tag} stream first-token timeout after {_chunk_now - _start:.2f}s "
+                            f"(limit={_STREAM_FIRST_TOKEN_TIMEOUT_S:.2f}s)"
+                        )
                     buffer += text_chunk
                     
                     # 줄 단위로 처리 (SSE는 \n 또는 \r\n으로 구분)

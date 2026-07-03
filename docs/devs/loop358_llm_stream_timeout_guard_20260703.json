@@ -1,0 +1,99 @@
+{
+  "loop": 358,
+  "date": "2026-07-03",
+  "head": "11bc1f20",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "summary": "11666713 단건 non-light replay에서 search health는 GO였지만 Gatekeeper LLM stream first-token stall로 결과 JSON과 checkpoint가 생성되지 않았다. 이번 변경은 stall을 명시 실패로 전환하는 harness guard다.",
+  "runtime_attempt": {
+    "post_id": 11666713,
+    "run_id": "20260703_161056_662847",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop358_repair_after_wrong_work_11666713_current_head_11bc1f20.jsonl",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop358_11666713_repair_after_wrong_work_current_head_11bc1f20_search_nonlight_result_manifest.json",
+    "audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop358_11666713_runtime_stall_health_audit.json",
+    "input_post_count": 1,
+    "completed_count": 0,
+    "flushed_count": 0,
+    "pending_count": 0,
+    "failed_count": 0,
+    "result_json_exists": false,
+    "checkpoint_rows": 0,
+    "image_post_count": 0,
+    "search_gate": "GO",
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_count": 1,
+    "mcp_health_failure_count": 0,
+    "stall_point": "Gatekeeper LLM stream first token",
+    "approval_ready": false
+  },
+  "background_snapshot": [
+    {
+      "name": "loop356_completed_source_bounded1200",
+      "input_post_count": 1200,
+      "completed_count": 5,
+      "flushed_count": 0,
+      "pending_count": 5,
+      "failed_count": 0,
+      "search_health": "GO 6/0",
+      "approval_gate": "NO-GO background partial"
+    },
+    {
+      "name": "loop356_full375",
+      "input_post_count": 375,
+      "completed_count": 1,
+      "flushed_count": 1,
+      "pending_count": 0,
+      "failed_count": 0,
+      "search_health": "GO 3/0",
+      "approval_gate": "NO-GO background partial"
+    },
+    {
+      "name": "loop356_golden18",
+      "input_post_count": 18,
+      "completed_count": 1,
+      "flushed_count": 1,
+      "pending_count": 0,
+      "failed_count": 0,
+      "search_health": "GO 2/0",
+      "approval_gate": "NO-GO background partial"
+    }
+  ],
+  "code_change": {
+    "files": [
+      "src/llm_batch/llm/client.py",
+      "tests/test_llm_client_stream_timeout.py"
+    ],
+    "env_contracts": [
+      "LLM_STREAM_FIRST_TOKEN_TIMEOUT_SECONDS",
+      "LLM_STREAM_IDLE_TIMEOUT_SECONDS"
+    ],
+    "behavior": "옵션 env가 설정된 경우 HTTP stream read timeout과 first-token/idle logical timeout을 적용한다. 기본 env 미설정 시 기존 LLM_TIMEOUT 동작을 유지한다."
+  },
+  "data_analytics": {
+    "artifact": "docs/devs/loop358_llm_stream_stall_data_analytics_artifact.json",
+    "validate": "PASS",
+    "render": "PASS"
+  },
+  "verification": [
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m py_compile src\\llm_batch\\llm\\client.py tests\\test_llm_client_stream_timeout.py",
+      "result": "PASS"
+    },
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_llm_client_stream_timeout -v",
+      "result": "PASS",
+      "tests": 2
+    }
+  ],
+  "gates": {
+    "run_integrity": "NO-GO / artifact_count_mismatch",
+    "targeted_canary_status": "ABORTED_LLM_STREAM_STALL / NOT_APPROVAL",
+    "search_recovery": "P0 / OPEN",
+    "residual_queue": "NO_DELTA / remains 105",
+    "collateral": "NO-GO / residual_action_queue_rows=105",
+    "promotion_blocked": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

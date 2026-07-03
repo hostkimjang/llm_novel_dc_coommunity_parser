@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-03 Loop358 Addendum - LLM stream stall guard
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop358은 approval 회차가 아니라 `repair_after_wrong_work=5` 중 `11666713` 단건으로 Loop350 stall 원인을 분리하고 stream timeout guard를 추가한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_358_REPORT_20260703.md`, state `docs/devs/loop358_llm_stream_timeout_guard_20260703.json`, Data Analytics artifact `docs/devs/loop358_llm_stream_stall_data_analytics_artifact.json`.
+- Runtime: run `20260703_161056_662847`, input `1`, image posts `0`, search health `GO 1/0`, `mcp_health_include_search=true`, `mcp_health_light_mode=false`.
+- Stall: Gatekeeper `llm-stream 토큰 생성 시작` 이후 result JSON과 checkpoint가 없었다. Run integrity는 `NO-GO / artifact_count_mismatch`이고 residual queue delta는 `0`이다.
+- Fix: `LLM_STREAM_FIRST_TOKEN_TIMEOUT_SECONDS`, `LLM_STREAM_IDLE_TIMEOUT_SECONDS`를 HTTP stream read timeout과 logical first-token/idle timeout에 반영했다. 기본 env 미설정 시 기존 `LLM_TIMEOUT` 동작을 유지한다.
+- Verification: `py_compile` PASS, stream timeout focused unittest `2` tests PASS, Data Analytics validate/render PASS.
+- Gate: runtime replay `ABORTED_LLM_STREAM_STALL / NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-03 Loop357 Addendum - known-alias comparison boundary
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop357은 approval 회차가 아니라 `known_alias_runtime_replay_required=3` lane에서 stalled replay 반복을 멈추고 comparison-only adjacent alias release를 unit contract로 보정한 회차다.

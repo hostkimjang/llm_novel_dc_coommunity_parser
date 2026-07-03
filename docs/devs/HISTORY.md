@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-03 - Loop358 LLM stream stall guard
+
+- `repair_after_wrong_work=5` 중 `11666713` image-free 단건을 현 HEAD `11bc1f20`에서 search 포함 non-light로 실행해 Loop350 stall을 분리했다.
+- Run `20260703_161056_662847`은 search health `GO 1/0`, `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `image_post_count=0`였지만 Gatekeeper `llm-stream 토큰 생성 시작` 이후 result JSON과 checkpoint가 없었다.
+- Health audit 결과 run integrity는 `NO-GO / artifact_count_mismatch`, completed/flushed/pending/failed는 `0/0/0/0`이다.
+- `src/llm_batch/llm/client.py`에 `LLM_STREAM_FIRST_TOKEN_TIMEOUT_SECONDS`, `LLM_STREAM_IDLE_TIMEOUT_SECONDS` 기반 stream timeout guard를 추가했다. 기본 env 미설정 시 기존 `LLM_TIMEOUT` 동작은 유지한다.
+- `tests/test_llm_client_stream_timeout.py`에 stream read timeout 전달과 first-token timeout fallback 계약을 추가했다.
+- 검증은 `py_compile` PASS, focused stream timeout unittest `2` tests PASS, Data Analytics validate/render PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_358_REPORT_20260703.md`, state는 `docs/devs/loop358_llm_stream_timeout_guard_20260703.json`, Data Analytics artifact는 `docs/devs/loop358_llm_stream_stall_data_analytics_artifact.json`이다.
+- Gate는 runtime replay `ABORTED_LLM_STREAM_STALL / NOT_APPROVAL`, residual `NO_DELTA / remains 105`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-03 - Loop357 known-alias comparison boundary repair
 
 - `known_alias_runtime_replay_required=3`를 동일 stalled replay로 반복하지 않고 contract audit로 전환했다.

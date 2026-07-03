@@ -6,6 +6,22 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-03 Loop358 LLM stream stall guard quality gate
+
+- 근거:
+  - [x] `11666713` image-free 단건 replay로 VLM 전용 stall이 아님을 분리했다.
+  - [x] search health `GO 1/0`와 result/checkpoint 부재를 함께 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_358_REPORT_20260703.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop358_llm_stream_timeout_guard_20260703.json`.
+  - [x] Data Analytics artifact 기록 완료: `docs/devs/loop358_llm_stream_stall_data_analytics_artifact.json`.
+  - [x] stream timeout unit 검증 PASS를 기록했다.
+- 품질 게이트:
+  - [x] search health GO와 runtime completion을 분리한다.
+  - [x] result JSON 없음과 checkpoint `0`을 approval 근거에서 제외한다.
+  - [x] stream timeout guard를 승격/매칭 로직 변경으로 쓰지 않는다.
+  - [x] search recovery 전 `promotion_blocked=search-blind conditional`을 유지한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-03 Loop357 known-alias comparison boundary quality gate
 
 - 근거:

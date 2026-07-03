@@ -1,0 +1,200 @@
+{
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "Loop358 LLM 스트림 Stall 검토",
+    "description": "Loop358 단건 non-light search replay와 background manifest snapshot의 gate 상태를 요약한다.",
+    "generatedAt": "2026-07-03T16:20:00+09:00",
+    "sources": [
+      {
+        "id": "loop358_audit",
+        "label": "Loop358 runtime stall audit",
+        "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop358_11666713_runtime_stall_health_audit.json"
+      },
+      {
+        "id": "loop356_manifests",
+        "label": "Loop356 background manifests",
+        "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/*loop356*_manifest.json"
+      },
+      {
+        "id": "unit_tests",
+        "label": "LLM stream timeout unit tests",
+        "path": "tests/test_llm_client_stream_timeout.py"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "summary",
+        "type": "markdown",
+        "body": "# Loop358 LLM 스트림 Stall 검토\n\nLoop358은 approval 회차가 아니다. 단건 `11666713` replay는 search health가 `GO`였지만 Gatekeeper LLM 스트림 첫 토큰 전 정지로 결과 JSON과 checkpoint를 만들지 못했다. 따라서 residual queue는 감소하지 않았고 `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다."
+      },
+      {
+        "id": "completion_chart",
+        "type": "chart",
+        "chartId": "run_completion_rate"
+      },
+      {
+        "id": "snapshot_table",
+        "type": "table",
+        "tableId": "run_snapshot_table"
+      },
+      {
+        "id": "gates",
+        "type": "markdown",
+        "body": "## 게이트 판정\n\nrun integrity는 `NO-GO/artifact_count_mismatch`, search recovery는 단건 probe 기준 `GO`, runtime replay는 `ABORTED_LLM_STREAM_STALL`, collateral/golden/full approval은 모두 `NO-GO/NOT_APPROVAL`이다. 이번 코드 변경은 stuck stream을 명시 실패로 전환하는 harness guard이며, 작품 매칭 승격 판정 자체는 변경하지 않는다."
+      }
+    ],
+    "charts": [
+      {
+        "id": "run_completion_rate",
+        "title": "Loop356/358 completed count snapshot",
+        "type": "bar",
+        "dataset": "run_snapshots",
+        "encodings": {
+          "x": {
+            "field": "run_label"
+          },
+          "y": {
+            "field": "completed_count"
+          }
+        },
+        "display": {
+          "yAxisTitle": "completed rows",
+          "xAxisTitle": "run"
+        },
+        "source": {
+          "id": "run_snapshot_source",
+          "label": "Run manifest snapshot rows",
+          "query": {
+            "language": "sql",
+            "sql": "SELECT run_label, input_count, completed_count, flushed_count, pending_count, failed_count, search_gate, approval_gate FROM run_snapshots ORDER BY input_count DESC",
+            "description": "Loop356 background manifests and Loop358 runtime audit were normalized into one run_snapshots table.",
+            "tables_used": [
+              "run_snapshots"
+            ],
+            "metric_definitions": [
+              "completed_count: manifest completed_count at inspection time",
+              "input_count: manifest input_post_count",
+              "approval_gate: analyst gate label derived from manifest and audit status"
+            ]
+          }
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "run_snapshot_table",
+        "title": "런별 manifest snapshot",
+        "dataset": "run_snapshots",
+        "columns": [
+          {
+            "field": "run_label",
+            "header": "run"
+          },
+          {
+            "field": "input_count",
+            "header": "input"
+          },
+          {
+            "field": "completed_count",
+            "header": "completed"
+          },
+          {
+            "field": "flushed_count",
+            "header": "flushed"
+          },
+          {
+            "field": "pending_count",
+            "header": "pending"
+          },
+          {
+            "field": "failed_count",
+            "header": "failed"
+          },
+          {
+            "field": "search_gate",
+            "header": "search"
+          },
+          {
+            "field": "approval_gate",
+            "header": "approval"
+          }
+        ],
+        "defaultSort": {
+          "field": "input_count",
+          "direction": "desc"
+        },
+        "source": {
+          "id": "run_snapshot_source",
+          "label": "Run manifest snapshot rows",
+          "query": {
+            "language": "sql",
+            "sql": "SELECT run_label, input_count, completed_count, flushed_count, pending_count, failed_count, search_gate, approval_gate FROM run_snapshots ORDER BY input_count DESC",
+            "description": "Loop356 background manifests and Loop358 runtime audit were normalized into one run_snapshots table.",
+            "tables_used": [
+              "run_snapshots"
+            ],
+            "metric_definitions": [
+              "completed_count: manifest completed_count at inspection time",
+              "input_count: manifest input_post_count",
+              "approval_gate: analyst gate label derived from manifest and audit status"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "status": "ready",
+    "generatedAt": "2026-07-03T16:20:00+09:00",
+    "datasets": {
+      "run_snapshots": [
+        {
+          "run_label": "loop356 bounded1200",
+          "input_count": 1200,
+          "completed_count": 5,
+          "flushed_count": 0,
+          "pending_count": 5,
+          "failed_count": 0,
+          "search_gate": "GO 6/0",
+          "approval_gate": "NO-GO background partial"
+        },
+        {
+          "run_label": "loop356 full375",
+          "input_count": 375,
+          "completed_count": 1,
+          "flushed_count": 1,
+          "pending_count": 0,
+          "failed_count": 0,
+          "search_gate": "GO 3/0",
+          "approval_gate": "NO-GO background partial"
+        },
+        {
+          "run_label": "loop356 golden18",
+          "input_count": 18,
+          "completed_count": 1,
+          "flushed_count": 1,
+          "pending_count": 0,
+          "failed_count": 0,
+          "search_gate": "GO 2/0",
+          "approval_gate": "NO-GO background partial"
+        },
+        {
+          "run_label": "loop358 11666713",
+          "input_count": 1,
+          "completed_count": 0,
+          "flushed_count": 0,
+          "pending_count": 0,
+          "failed_count": 0,
+          "search_gate": "GO 1/0",
+          "approval_gate": "NO-GO LLM stream stall"
+        }
+      ]
+    }
+  },
+  "validation": {
+    "validate_artifact": "PASS",
+    "render_artifact": "PASS"
+  }
+}

@@ -1,5 +1,13 @@
 # Slang DB Improvement TODO
 
+## 2026-07-03 Loop358 LLM stream stall guard caveat
+
+- [x] 이번 회차는 slang DB write-back이 아니라 LLM stream runtime harness guard다.
+- [x] `11666713` image-free replay에서 search `GO`와 runtime flush 실패를 분리했다.
+- [x] `LLM_STREAM_FIRST_TOKEN_TIMEOUT_SECONDS`, `LLM_STREAM_IDLE_TIMEOUT_SECONDS` 계약은 alias/slang 승격 판단을 바꾸지 않는다.
+- [ ] timeout env 후속 replay 전까지 alias/slang 품질 승인 또는 residual closure로 세지 않는다.
+- Gate: slang DB write-back 아님, runtime `ABORTED_LLM_STREAM_STALL`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop357 known-alias comparison boundary caveat
 
 - [x] 이번 회차는 slang DB write-back이 아니라 known-title abbreviation comparison boundary 계약 보정이다.

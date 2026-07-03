@@ -1,5 +1,26 @@
 ﻿# Development Checklist
 
+## 2026-07-03 Loop358 LLM stream stall guard 체크
+
+- [x] `11666713` 단건 non-light replay를 현 HEAD `11bc1f20`에서 실행했다.
+- [x] search health를 확인했다.
+  - `mcp_health_include_search=true`
+  - `mcp_health_light_mode=false`
+  - health `1/0`
+- [x] runtime stall을 approval 근거에서 제외했다.
+  - run `20260703_161056_662847`
+  - result JSON 없음
+  - checkpoint `0`
+  - completed/flushed/pending/failed `0/0/0/0`
+- [x] image 없는 행에서도 Gatekeeper LLM stream first-token stall이 재현됨을 기록했다.
+- [x] LLM stream first-token/idle timeout guard와 계약 테스트를 추가했다.
+- [x] 검증:
+  - `py_compile` PASS
+  - stream timeout focused unittest `2` tests PASS
+  - Data Analytics validate/render PASS
+- [ ] timeout env를 켠 runtime follow-up 전까지 row closure나 approval을 선언하지 않는다.
+- Gate: runtime replay `ABORTED_LLM_STREAM_STALL / NOT_APPROVAL`, residual `NO_DELTA / remains 105`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, promotion `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop357 known-alias comparison boundary 체크
 
 - [x] active lane을 `known_alias_runtime_replay_required=3` contract audit로 전환했다.

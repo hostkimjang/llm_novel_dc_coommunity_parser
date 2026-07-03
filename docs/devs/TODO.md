@@ -2,6 +2,19 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-03 regression-safe grounding Loop358 TODO
+
+- 상태 업데이트: `11666713` 단건 non-light replay로 Loop350 stall을 분리했다. Search health는 `GO`였지만 Gatekeeper LLM stream first-token stall로 result/checkpoint가 없으므로 residual action queue는 `105` 유지다.
+- Loop358 TODO:
+  - [x] image 없는 `11666713` 입력을 구성해 VLM 전용 stall 여부를 분리했다.
+  - [x] run `20260703_161056_662847` search health `1/0`, `mcp_health_include_search=true`, `mcp_health_light_mode=false`를 확인했다.
+  - [x] health audit에서 result JSON 없음, checkpoint `0`, run integrity `NO-GO/artifact_count_mismatch`를 확인했다.
+  - [x] `LLM_STREAM_FIRST_TOKEN_TIMEOUT_SECONDS`, `LLM_STREAM_IDLE_TIMEOUT_SECONDS` 기반 stream timeout guard를 추가했다.
+  - [x] stream timeout 계약 테스트 `2`개와 py_compile PASS를 확인했다.
+  - [ ] timeout env를 켠 follow-up replay 전까지 `11666713` closure, residual 감소, hard-hold 완화를 선언하지 않는다.
+  - [ ] 다음 active lane은 timeout guard 검증 replay, `collateral183` residual triage, 또는 `OVERRIDE AUDIT(LLM=False -> final=True)` blind judge 검증으로 진행한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 regression-safe grounding Loop357 TODO
 
 - 상태 업데이트: `known_alias_runtime_replay_required=3` contract audit 중 comparison-only adjacent alias release 결함을 재현해 코드로 차단했다. Runtime replay는 아직 없고 residual action queue는 `105` 유지다.

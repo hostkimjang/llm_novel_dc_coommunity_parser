@@ -76,6 +76,7 @@ tests/inputs/test01.jsonl
 !/tests/test_split_collateral_action_queue.py
 !/tests/test_mcp_bridge_direct_search.py
 !/tests/test_search_recovery_contract.py
+!/tests/test_llm_client_stream_timeout.py
 /tmp*
 *.bak
 *.badbak

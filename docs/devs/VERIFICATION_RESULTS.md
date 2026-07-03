@@ -1,5 +1,29 @@
 ﻿# Verification Results
 
+## 2026-07-03 Loop358 LLM stream stall guard
+
+- 범위: `repair_after_wrong_work=5` 중 `11666713` image-free 단건 replay로 Loop350 runtime stall을 분리하고, LLM stream first-token/idle timeout guard를 추가한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_358_REPORT_20260703.md`
+  - state `docs\devs\loop358_llm_stream_timeout_guard_20260703.json`
+  - Data Analytics artifact `docs\devs\loop358_llm_stream_stall_data_analytics_artifact.json`
+  - runtime audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop358_11666713_runtime_stall_health_audit.json`
+- Runtime evidence:
+  - run `20260703_161056_662847`
+  - input posts `1`, image posts `0`
+  - search health `GO 1/0`, `mcp_health_include_search=true`, `mcp_health_light_mode=false`
+  - result JSON 없음, checkpoint `0`, completed/flushed/pending/failed `0/0/0/0`
+  - run integrity `NO-GO / artifact_count_mismatch`
+- Fix evidence:
+  - `src\llm_batch\llm\client.py`가 `LLM_STREAM_FIRST_TOKEN_TIMEOUT_SECONDS`, `LLM_STREAM_IDLE_TIMEOUT_SECONDS`를 stream read timeout과 logical first-token/idle timeout에 반영한다.
+  - 기본 env 미설정 시 기존 `LLM_TIMEOUT` 동작을 유지한다.
+- Verification commands:
+  - `.\.venv312\Scripts\python.exe -m py_compile src\llm_batch\llm\client.py tests\test_llm_client_stream_timeout.py` PASS.
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_llm_client_stream_timeout -v` PASS (`2` tests).
+  - Data Analytics `validate_artifact` PASS, `render_artifact` PASS.
+- Background caveat: Loop356 bounded1200/full375/golden18/safe-loss N5는 아직 partial/background라 stale flip/golden/full375 근거를 대체하지 않는다.
+- Gate: runtime replay `ABORTED_LLM_STREAM_STALL / NOT_APPROVAL`, residual `NO_DELTA / remains 105`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-03 Loop357 known-alias comparison boundary repair
 
 - 범위: `known_alias_runtime_replay_required=3`에서 runtime stall을 반복하지 않고, known-title abbreviation 비교문 경계를 unit contract로 먼저 보정한다.

@@ -1,5 +1,17 @@
 # Improvement Register
 
+## IMP-20260703-358 - LLM stream stall guard
+
+| Item | Status | Evidence | Next action |
+| --- | --- | --- | --- |
+| `11666713` image-free runtime replay | Aborted / not approval | run `20260703_161056_662847`, search `GO 1/0`, result JSON 없음, checkpoint `0` | Replay with timeout env or switch to collateral/override audit lane |
+| LLM stream first-token stall | Reproduced | Gatekeeper `llm-stream 토큰 생성 시작` 이후 row flush 없음 | Treat as runtime harness blocker, not semantic result |
+| Stream timeout guard | Fixed in unit contract | `LLM_STREAM_FIRST_TOKEN_TIMEOUT_SECONDS`, `LLM_STREAM_IDLE_TIMEOUT_SECONDS` added | Use env in follow-up runtime to convert stuck stream into explicit failure |
+| Verification | PASS | py_compile, focused stream timeout tests `2`, Data Analytics validate/render | Broader LLM client suite before large replay if further client edits occur |
+| Goal gate | Still open | residual action queue `105`, queue delta `0` | Do not claim approval before runtime closure and search recovery |
+
+Gate: runtime replay `ABORTED_LLM_STREAM_STALL / NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260703-357 - known-alias comparison boundary
 
 | Item | Status | Evidence | Next action |

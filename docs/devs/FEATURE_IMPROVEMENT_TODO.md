@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop358 LLM stream stall guard follow-up
+  - 상태: runtime_aborted_llm_stream_stall / search_go_single_probe / residual_queue_105 / approval_not_open
+  - 적용: `11666713` image-free 단건 replay에서 Gatekeeper first-token stall을 분리하고, stream first-token/idle timeout guard를 추가했다.
+  - 산출물: `docs/devs/loop_reports/LOOP_358_REPORT_20260703.md`, `docs/devs/loop358_llm_stream_timeout_guard_20260703.json`, `docs/devs/loop358_llm_stream_stall_data_analytics_artifact.json`.
+  - 완료 기준: timeout env를 켠 follow-up replay에서 stuck stream이 explicit failure 또는 flushed row로 수렴하고, 그 결과를 residual queue/semantic gate와 분리해 기록한다. 완료 전 hard-hold 완화와 residual closure는 금지한다.
+
 - [ ] Loop357 known-alias comparison boundary follow-up
   - 상태: code_contract_go_unit / runtime_not_run_after_patch / residual_queue_105 / search_recovery_p0_open
   - 적용: `괴담텔 ... 괴담동이 생각나네` 같은 비교문에서 뒤쪽 comparison alias가 current-work anchor로 release되지 않도록 보정했다.
