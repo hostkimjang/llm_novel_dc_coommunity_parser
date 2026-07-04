@@ -1,5 +1,24 @@
 ﻿# Developer TODO Index
 
+## 2026-07-04 regression-safe grounding Loop408 TODO
+
+- 상태 업데이트: Loop408은 Loop406 `11705245` unexpected public title `하남 남자`를 런 반복 없이 shared publication contract로 막은 회차다. Code/unit contract와 저장 row projection은 닫혔지만 runtime replay와 golden expected-answer 갱신은 하지 않았다.
+- Loop408 TODO:
+  - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] R1 hardcoded cue/title 리스트와 `post_id` 예외를 추가하지 않았다.
+  - [x] `context_only + thematic_overlap_only` publish decision이 hard bridge 없이 public identity를 내보내는 경로를 차단했다.
+  - [x] `_demote_context_only_thematic_overlap_publication_contract(...)`를 final publication ledger sync에 배선했다.
+  - [x] stale gate/search-only `11705245` 재발 계약 테스트를 추가했다.
+  - [x] `py_compile`, focused tests `2`, publication/comment metadata + convergence + work-bridge contracts `66`, `git diff --check`를 PASS했다.
+  - [x] Loop406 `11705245` projection에서 `promotion_blocked / publish_allowed=false / official_title=null`로 내려가는 것을 확인했다.
+  - [ ] Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`이므로 Loop406 expected-answer `NO-GO / 16 of 18`을 닫지 않는다.
+  - [ ] 다음 active lane은 `11694019` search recovery/positive unresolved 또는 survey 136-error anchor 중 `wrong_work 27`, `recall_miss 49`에서 고른다.
+  - [ ] Search recovery는 `P0 / REVIEW / SEARCH_BLIND_CONDITIONAL`로 유지한다.
+  - [ ] Full375 collateral gate는 아직 열지 않는다.
+  - [x] Collateral 105는 `reclassified 74 / runtime-verified 4`로만 보고한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop407 TODO
 
 - 상태 업데이트: Loop407은 `11708445` OVERRIDE AUDIT를 current HEAD `6681f10b`에서 source-native로 재검증한 회차다. Runtime replay는 필요 없었고, 신규 full375/bounded/N5 또는 동일 38-row parent packet replay를 발주하지 않았다.

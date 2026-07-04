@@ -1,5 +1,27 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop408 11705245 context-only thematic publish 체크
+
+- [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Loop406 실패 `11705245`를 target으로 좁혔다.
+  - expected `null`
+  - actual Loop406 `하남 남자`
+- [x] R1 hardcoded cue 리스트나 `post_id` 예외를 추가하지 않았다.
+- [x] `context_only + thematic_overlap_only` publish decision이 hard bridge 없이 public identity로 나가는 경로를 shared publication contract에서 차단했다.
+- [x] `expert_main.py`에 `_demote_context_only_thematic_overlap_publication_contract(...)`를 추가하고 final ledger sync에 배선했다.
+- [x] `tests/test_expert_main_comment_metadata.py`에 stale gate/search-only 형태의 `11705245` 재발 계약을 추가했다.
+- [x] 검증:
+  - `py_compile` PASS
+  - focused tests `2` PASS
+  - publication/comment metadata + convergence + work-bridge contracts `66` PASS
+  - Loop406 `11705245` projection `safe_resolved,true,true,하남 남자` -> `promotion_blocked,false,false,null`
+  - `git diff --check` PASS(CRLF warning only)
+- [ ] Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`이므로 Loop406 expected-answer `NO-GO / 16 of 18`을 닫힌 것으로 세지 않는다.
+- [ ] `11694019` positive unresolved는 아직 open이다.
+- [x] Collateral 105는 `reclassified 74 / runtime-verified 4` 축으로 유지한다.
+- Gate: code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, golden18 runtime Loop406 상속 `GO / 18 of 18`, golden expected-answer Loop406 상속 `NO-GO / 16 of 18`, search recovery `P0 / REVIEW / SEARCH_BLIND_CONDITIONAL`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop407 OVERRIDE AUDIT 11708445 체크
 
 - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.

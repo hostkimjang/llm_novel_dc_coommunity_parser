@@ -1,5 +1,13 @@
 # Slang DB Improvement TODO
 
+## 2026-07-04 Loop408 context-only thematic publish slang 주의사항
+
+- [x] 이번 회차는 slang DB write-back이 아니라 shared publication contract 보정이다.
+- [x] `하남자 -> 하남 남자`류 alias/slang registry 추가나 R1 hardcoded cue 리스트 확장은 하지 않았다.
+- [x] `context_only + thematic_overlap_only` publish decision은 hard bridge 없이는 후보 보존으로 내려가도록 했다.
+- [ ] Runtime replay after patch, search recovery, full375 collateral을 닫기 전 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, golden18 runtime Loop406 상속 `GO / 18 of 18`, expected-answer Loop406 상속 `NO-GO / 16 of 18`, search recovery `P0 / REVIEW / SEARCH_BLIND_CONDITIONAL`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop394-395 runtime/image gate slang 주의사항
 
 - [x] 이번 회차는 slang DB write-back이 아니라 golden18 runtime 생산성 확인과 image-scope publication gate 보강이다.

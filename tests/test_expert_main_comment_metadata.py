@@ -1595,6 +1595,139 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertIn("url_title_mismatch", preserved["negative_evidence"])
         self.assertTrue(str(preserved.get("url_title_mismatch_title") or "").strip())
 
+    def test_context_only_thematic_overlap_publish_demotes_without_hard_bridge(self):
+        official_url = "https://novelpia.com/novel/302245"
+        stale_gate_url = "https://novelpia.com/novel/315683"
+        result = {
+            "post_id": 11705245,
+            "title": "하남자 재밌냐",
+            "content": ["주인공 첨부터쌤?"],
+            "comments": ["ㄴㄴ"],
+            "identity": {
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "candidate_ledger_status": "safe_resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "context_sources": ["title", "body", "comments", "search", "image"],
+                "novel_identity": {
+                    "official_title": "하남 남자",
+                    "heretic_url": official_url,
+                    "confidence": "Low",
+                },
+                "primary_work": {
+                    "official_title": "하남 남자",
+                    "heretic_url": official_url,
+                    "confidence": "High",
+                    "alias_or_mention": "하남자",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                    "reference_role": "primary",
+                },
+                "search_evidence_catalog": [
+                    {
+                        "title": "노벨피아",
+                        "url": official_url,
+                        "domain": "novelpia.com",
+                        "source_tier": "novel_platform",
+                        "snippet": "노벨피아 - 웹소설로 꿈꾸는 세상! - 하남자는 딸깍충이 되고 싶다 플러스작품",
+                    },
+                    {
+                        "title": "하남자 매니저가 로또 1등을 숨김",
+                        "url": stale_gate_url,
+                        "domain": "novelpia.com",
+                        "source_tier": "novel_platform",
+                        "snippet": "작품 상세",
+                    },
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": "하남 남자",
+                    "official_url": official_url,
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "context_only",
+                        "scope_current_work",
+                        "official_detail_url",
+                        "work_consumption_marker",
+                        "alias_bridge",
+                        "thematic_overlap_only",
+                        "serialized_public_identity_published",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": ["row_discusses_work_as_work"],
+                    },
+                },
+                "promotion_gate_state": {
+                    "candidate_title": "하남 남자",
+                    "candidate_url": stale_gate_url,
+                    "official_title_exists": True,
+                    "row_discusses_work_as_work": True,
+                    "title_resolution_state": "context_only",
+                    "work_resolution": "unresolved",
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": ["row_discusses_work_as_work"],
+                    },
+                },
+                "candidate_ledger": {
+                    "title_candidates": [
+                        {
+                            "official_title": "하남 남자",
+                            "heretic_url": official_url,
+                            "confidence": "High",
+                            "alias_or_mention": "하남자",
+                            "source_tier": "official_detail",
+                            "page_type": "novel_page",
+                            "reference_role": "primary",
+                        }
+                    ],
+                    "candidate_preservation_sources": [
+                        {
+                            "official_title": "하남 남자",
+                            "heretic_url": official_url,
+                            "confidence": "High",
+                            "alias_or_mention": "하남자",
+                            "source_tier": "official_detail",
+                            "page_type": "novel_page",
+                            "reference_role": "primary",
+                            "preservation_role": "title_candidate",
+                        }
+                    ],
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            result,
+            post_title="하남자 재밌냐",
+        )
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertFalse(identity["promotion_decision"]["publish_allowed"])
+        self.assertIsNone(identity.get("novel_identity", {}).get("official_title"))
+        self.assertIn(
+            "context_only_thematic_overlap_publish_blocked",
+            identity["promotion_decision"]["reason_codes"],
+        )
+        self.assertIn(
+            "context_only_thematic_overlap_publish_blocked",
+            identity["consistency_flags"],
+        )
+        trace = identity["publish_contract_trace"]
+        self.assertFalse(trace["gate_decision"]["publish_allowed"])
+        self.assertIsNone(trace["post_gate_identity"]["official_title"])
+
     def test_direct_image_character_restore_blocks_wrong_work_without_matching_ocr_title(self):
         result = {
             "post_id": 11663540,

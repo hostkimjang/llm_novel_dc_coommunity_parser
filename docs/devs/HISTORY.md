@@ -1,5 +1,18 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop408 11705245 context-only thematic publish 계약
+
+- 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop406 `11705245`는 expected `null`인데 `하남 남자`가 public title로 publish된 실패다.
+- 원인은 publish decision이 `context_only`, `thematic_overlap_only`, `row_discusses_work_as_work`를 동시에 들고도 hard bridge 없이 `scope_current_work`로 저장된 것이다.
+- `expert_main.py`에 `_demote_context_only_thematic_overlap_publication_contract(...)`를 추가해 hard bridge 없는 `context_only + thematic_overlap_only` publish를 후보 보존으로 내린다.
+- R1 hardcoded cue 리스트, title registry, `post_id` 예외는 추가하지 않았다.
+- `tests/test_expert_main_comment_metadata.py`에 stale gate/search-only 재발 계약을 추가했다.
+- 검증은 `py_compile` PASS, focused tests `2` PASS, publication/comment metadata + convergence + work-bridge contracts `66` PASS, `git diff --check` PASS(CRLF warning only)다.
+- Loop406 저장 row projection은 `safe_resolved / publish_allowed=true / 하남 남자`에서 `promotion_blocked / publish_allowed=false / official_title=null`로 내려간다.
+- Report는 `docs/devs/loop_reports/LOOP_408_REPORT_20260704.md`, state는 `docs/devs/loop408_context_only_thematic_publish_contract_20260704.json`이다.
+- Gate는 code contract `GO_UNIT`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, Loop406 runtime production 상속 `GO / 18 of 18`, expected-answer 상속 `NO-GO / 16 of 18`, search recovery `P0 / REVIEW / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop407 OVERRIDE AUDIT 11708445 재고정
 
 - 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

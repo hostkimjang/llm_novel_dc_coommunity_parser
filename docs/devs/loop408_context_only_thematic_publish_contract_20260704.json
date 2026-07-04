@@ -1,0 +1,90 @@
+{
+  "loop": 408,
+  "date": "2026-07-04",
+  "head_before_change": "68902c9e",
+  "scope": "11705245 context-only thematic-overlap publication contract",
+  "new_large_runs": "FROZEN",
+  "same_parent_packet_replay": "STOPPED",
+  "target": {
+    "post_id": 11705245,
+    "loop406_status": "unexpected_resolved_title",
+    "expected": null,
+    "actual": "하남 남자",
+    "root_cause": "publish decision carried context_only + thematic_overlap_only without a hard direct bridge"
+  },
+  "code_changes": [
+    "expert_main.py::_demote_context_only_thematic_overlap_publication_contract",
+    "expert_main.py::_sync_final_publication_ledger_contract",
+    "tests/test_expert_main_comment_metadata.py::test_context_only_thematic_overlap_publish_demotes_without_hard_bridge"
+  ],
+  "projection": {
+    "source": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop406_golden18_current_7a76d748_search_nonlight_result.json",
+    "post_id": 11705245,
+    "runtime_replay": false,
+    "before": {
+      "candidate_ledger_status": "safe_resolved",
+      "title_resolution_allowed": true,
+      "publish_allowed": true,
+      "official_title": "하남 남자"
+    },
+    "after": {
+      "candidate_ledger_status": "promotion_blocked",
+      "title_resolution_allowed": false,
+      "publish_allowed": false,
+      "official_title": null,
+      "trace_publish_allowed": false,
+      "trace_public_title": null
+    },
+    "reason_codes": [
+      "official_title_exists",
+      "row_discusses_work_as_work",
+      "context_only",
+      "official_detail_url",
+      "work_consumption_marker",
+      "alias_bridge",
+      "thematic_overlap_only",
+      "url_title_mismatch",
+      "official_detail_url_title_mismatch_publish_blocked",
+      "scope_context_only",
+      "scope_not_current_work",
+      "serialized_public_identity_scrubbed"
+    ]
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "focused_tests": {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_context_only_thematic_overlap_publish_demotes_without_hard_bridge tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_published_official_url_demotes_same_url_detail_title_mismatch",
+      "result": "PASS / 2 tests"
+    },
+    "contract_tests": {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_expert_main_comment_metadata tests.test_publication_contract_convergence_audit tests.test_regression_safe_work_bridge_contract",
+      "result": "PASS / 66 tests"
+    },
+    "diff_check": "PASS / CRLF warning only"
+  },
+  "web_evidence": [
+    {
+      "url": "https://novelpia.com/novel/302245",
+      "use": "반증 근거",
+      "observed_title": "하남자는 딸깍충이 되고 싶다"
+    },
+    {
+      "url": "https://novel.munpia.com/400210",
+      "use": "반증 근거",
+      "observed_title": "하남자의 탑 공략법"
+    }
+  ],
+  "gates": {
+    "code_contract": "GO_UNIT",
+    "runtime_replay_after_patch": "NOT_RUN_AFTER_PATCH",
+    "golden18_runtime": "INHERITED_LOOP406_GO / 18 of 18",
+    "golden18_expected_answer": "INHERITED_LOOP406_NO-GO / 16 of 18",
+    "projected_delta": "11705245 demoted; 11694019 remains open",
+    "full375_collateral": "NOT_OPEN",
+    "search_recovery": "P0 / REVIEW / SEARCH_BLIND_CONDITIONAL",
+    "collateral_105_active_lane": "reclassified 74 / runtime-verified 4",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

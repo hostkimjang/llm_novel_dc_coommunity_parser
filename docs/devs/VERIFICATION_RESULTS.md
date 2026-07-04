@@ -1,5 +1,32 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop408 11705245 context-only thematic publish 계약 검증
+
+- 범위: Loop406 golden18 실패 `11705245`의 unexpected public title `하남 남자`를 런 반복 없이 shared publication contract로 차단한다. 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_408_REPORT_20260704.md`
+  - state `docs\devs\loop408_context_only_thematic_publish_contract_20260704.json`
+  - Loop406 source result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop406_golden18_current_7a76d748_search_nonlight_result.json`
+  - Loop406 golden audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop406_golden18_current_7a76d748_golden_audit.json`
+- Code evidence:
+  - `expert_main.py`: `_demote_context_only_thematic_overlap_publication_contract(...)` 추가.
+  - `expert_main.py`: `_sync_final_publication_ledger_contract(...)`가 allowed publication sync 전에 위 계약을 호출한다.
+  - `tests\test_expert_main_comment_metadata.py`: hard bridge 없는 `context_only + thematic_overlap_only` publish 재발 계약 추가.
+- Verification commands:
+  - `.\\.venv312\\Scripts\\python.exe -m py_compile expert_main.py tests\\test_expert_main_comment_metadata.py` -> PASS
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_context_only_thematic_overlap_publish_demotes_without_hard_bridge tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_published_official_url_demotes_same_url_detail_title_mismatch` -> PASS, 2 tests
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_expert_main_comment_metadata tests.test_publication_contract_convergence_audit tests.test_regression_safe_work_bridge_contract` -> PASS, 66 tests
+  - Loop406 `11705245` in-memory projection -> `safe_resolved,true,true,하남 남자`에서 `promotion_blocked,false,false,null`로 변경
+  - `git diff --check` -> PASS, CRLF warning only
+- Result:
+  - `context_only`, `thematic_overlap_only`가 함께 있는 publish decision은 direct image/title/url/verified alias hard bridge 없이는 public identity로 저장되지 않는다.
+  - 후보와 원천 evidence는 보존하되 `promotion_decision.status=candidate_only`, `publish_allowed=false`, `official_title=null`로 수렴한다.
+- Boundary:
+  - Projection은 runtime replay가 아니므로 golden expected-answer를 갱신하지 않는다.
+  - Loop406 상속 expected-answer는 `NO-GO / 16 of 18`이고 `11694019`는 아직 open이다.
+  - Search recovery는 `P0 / REVIEW / SEARCH_BLIND_CONDITIONAL`로 유지한다.
+- Gate: code contract `GO_UNIT`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, Loop406 runtime production 상속 `GO / 18 of 18`, expected-answer 상속 `NO-GO / 16 of 18`, full375 collateral `NOT_OPEN`, Collateral 105 `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop407 OVERRIDE AUDIT 11708445 source-native 검증
 
 - 범위: runtime이 필요 없는 `11708445` OVERRIDE AUDIT를 current HEAD `6681f10b`에서 다시 확인한다. 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않는다.
