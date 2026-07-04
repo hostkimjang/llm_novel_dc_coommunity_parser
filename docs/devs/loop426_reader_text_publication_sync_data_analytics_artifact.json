@@ -1,0 +1,123 @@
+{
+  "title": "Loop426 11698880 공개 제목 및 독자용 reason 동기화 검산",
+  "status": "repo_structured_summary_only",
+  "generated_at": "2026-07-04T22:18:00+09:00",
+  "surface": "loop_report_support",
+  "tool_note": "@data-analytics 전용 커넥터가 현재 세션 도구로 노출되지 않아, loop426 산출 JSON과 감사 JSON을 직접 집계했다.",
+  "datasets": {
+    "gate_status_rows": [
+      {
+        "gate": "runtime_production",
+        "status": "GO",
+        "detail": "1/1 completed and flushed, pending 0, failed 0",
+        "score": 1
+      },
+      {
+        "gate": "search_evidence",
+        "status": "GO",
+        "detail": "query_total=12, avg_executed=6, degraded=0, unrecovered=0",
+        "score": 1
+      },
+      {
+        "gate": "publication_contract",
+        "status": "GO",
+        "detail": "row_count=1, violation_row_count=0",
+        "score": 1
+      },
+      {
+        "gate": "reader_text_sync",
+        "status": "GO",
+        "detail": "reason_contains_wrong=false, primary_subject_text uses correct public title",
+        "score": 1
+      },
+      {
+        "gate": "targeted_expected_answer",
+        "status": "GO_TARGETED_SAFE_RESOLVED",
+        "detail": "11698880 official_title=가챠 중독자의 퓨전펑크 생활, url=https://novelpia.com/novel/387014",
+        "score": 1
+      },
+      {
+        "gate": "golden_expected_answer",
+        "status": "NOT_REFRESHED_AFTER_LOOP426",
+        "detail": "loop426은 단건 runtime이며 golden18/full375 approval을 대체하지 않는다.",
+        "score": 0
+      },
+      {
+        "gate": "full375_collateral",
+        "status": "NOT_OPEN",
+        "detail": "이번 회차는 11698880 단건 P0 runtime/reader-text closure만 확인했다.",
+        "score": 0
+      },
+      {
+        "gate": "full_scan_approval",
+        "status": "false",
+        "detail": "semantic_quality=REVIEW-LOCKED",
+        "score": 0
+      }
+    ],
+    "loop_movement_rows": [
+      {
+        "loop": "423",
+        "status": "NO-GO",
+        "public_title": null,
+        "detail": "non-novel early exit로 실제 row search 0건; direct body alias probe가 차단됨"
+      },
+      {
+        "loop": "424",
+        "status": "PARTIAL",
+        "public_title": "아카데미 생존 갤러리",
+        "detail": "가챠펑크 세드릭 검색은 실행됐으나 Arbiter forced-upgrade가 verifier/raw title을 이김"
+      },
+      {
+        "loop": "425",
+        "status": "CONTRACT_GO_WITH_READER_TEXT_STALE",
+        "public_title": "가챠 중독자의 퓨전펑크 생활",
+        "detail": "promotion/publish contract는 GO지만 reason과 primary_subject_text가 이전 제목을 보존"
+      },
+      {
+        "loop": "426",
+        "status": "GO_TARGETED",
+        "public_title": "가챠 중독자의 퓨전펑크 생활",
+        "detail": "runtime 1/1, search GO, contract GO, reason stale-title 없음"
+      }
+    ],
+    "runtime_counts": [
+      {
+        "run_id": "20260704_221349_215778",
+        "input": 1,
+        "completed": 1,
+        "flushed": 1,
+        "pending": 0,
+        "failed": 0,
+        "large_run_complete": true
+      }
+    ],
+    "search_counts": [
+      {
+        "query_total": 12,
+        "avg_executed_queries": 6,
+        "degraded_total": 0,
+        "unrecovered_degraded_total": 0
+      }
+    ],
+    "reader_text_rows": [
+      {
+        "post_id": 11698880,
+        "official_title": "가챠 중독자의 퓨전펑크 생활",
+        "reason_contains_wrong": false,
+        "primary_subject_text": "메인 화제는 '가챠 중독자의 퓨전펑크 생활' 관련 작품 토론입니다."
+      }
+    ]
+  },
+  "sources": [
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop426_11698880_reader_text_publication_sync_result.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop426_11698880_reader_text_publication_sync_result_manifest.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop426_11698880_run_health_audit.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop426_11698880_publication_contract_audit.json"
+  ],
+  "gate": {
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

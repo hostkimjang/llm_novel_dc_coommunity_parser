@@ -4543,6 +4543,134 @@ class Orchestrator:
                 direct_alias_norms.add(norm)
         return direct_alias_norms
 
+    def _has_direct_worklike_alias_character_search_probe(
+        self,
+        ctx: ConversationContext,
+        gatekeeper_result: Optional[Dict[str, Any]] = None,
+    ) -> bool:
+        """
+        Detect direct body alias + character probes that should survive non-novel
+        demotion before search runs.
+
+        This is intentionally driven by existing Gatekeeper artifacts instead of
+        expanding a title/cue allowlist: a direct worklike alias must already be
+        present in the non-comment text, and a worklike search request must pair
+        that alias with a detected character token from the same packet.
+        """
+        gk_out = gatekeeper_result or ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
+        if not isinstance(gk_out, dict):
+            return False
+        entities = gk_out.get("detected_entities") or {}
+        if not isinstance(entities, dict):
+            entities = {}
+
+        post_data = getattr(ctx, "post_data", None) or {}
+        if not isinstance(post_data, dict):
+            post_data = {}
+        post_title = str(post_data.get("title") or "")
+        body_text = " ".join(
+            str(block.get("text") or "") if isinstance(block, dict) else str(block or "")
+            for block in (post_data.get("content_blocks") or [])
+        )
+        non_comment_norm = self._normalize_kor_token(f"{post_title} {body_text}")
+        if not non_comment_norm:
+            return False
+
+        raw_chars: List[Any] = []
+        raw_chars.extend(entities.get("possible_characters") or [])
+        raw_chars.extend(entities.get("relevant_characters") or [])
+        raw_chars.extend(gk_out.get("possible_characters") or [])
+        char_norms: set[str] = set()
+        for raw in raw_chars:
+            text = str(raw or "").strip(" \"'“”‘’.,;:!?…")
+            if not text:
+                continue
+            stripped = self._strip_trailing_korean_particle(text) or text
+            for value in (text, stripped):
+                norm = self._normalize_kor_token(value)
+                if (
+                    len(norm) < 3
+                    or norm not in non_comment_norm
+                    or self._is_low_specificity_search_seed(
+                        value,
+                        discourse_warning="direct_worklike_alias_character_probe",
+                    )
+                    or self._is_generic_topic_gap_term(value)
+                ):
+                    continue
+                char_norms.add(norm)
+        if not char_norms:
+            return False
+
+        alias_norms = self._collect_direct_worklike_alias_probe_norms(ctx, gatekeeper_result)
+        worklike_purposes = {
+            "alias_bridge_search",
+            "alias_raw_probe",
+            "character_verify",
+            "official_title_verify",
+            "platform_title_search",
+            "title_anchor_official_probe",
+            "title_body_sanitized_platform_probe",
+            "title_search_community",
+        }
+
+        search_requests = list(gk_out.get("search_requests") or [])
+        discourse_out = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
+        discourse = (
+            discourse_out.get("discourse_analysis") or {}
+            if isinstance(discourse_out, dict)
+            else {}
+        )
+        if isinstance(discourse, dict):
+            search_requests.extend(discourse.get("search_suggestions") or [])
+
+        if not alias_norms:
+            raw_alias_terms: List[Any] = []
+            raw_alias_terms.extend(entities.get("possible_titles") or [])
+            raw_alias_terms.extend(entities.get("key_terms") or [])
+            raw_alias_terms.extend(gk_out.get("key_terms") or [])
+            for req in search_requests:
+                if not isinstance(req, dict):
+                    continue
+                purpose = str(req.get("purpose") or "").split(":", 1)[0].strip().lower()
+                if purpose and purpose not in worklike_purposes:
+                    continue
+                raw_alias_terms.extend(
+                    self._extract_query_tokens(str(req.get("query") or ""), keep_generic=False)
+                )
+            for raw in raw_alias_terms:
+                text = str(raw or "").strip(" \"'“”‘’.,;:!?…")
+                if not text:
+                    continue
+                stripped = self._strip_trailing_korean_particle(text) or text
+                for value in (text, stripped):
+                    norm = self._normalize_kor_token(value)
+                    if (
+                        len(norm) < 4
+                        or norm in char_norms
+                        or norm not in non_comment_norm
+                        or self._is_generic_topic_gap_term(value)
+                    ):
+                        continue
+                    alias_norms.add(norm)
+        if not alias_norms:
+            return False
+
+        for req in search_requests:
+            if not isinstance(req, dict):
+                continue
+            purpose = str(req.get("purpose") or "").split(":", 1)[0].strip().lower()
+            if purpose and purpose not in worklike_purposes:
+                continue
+            query_norm = self._normalize_kor_token(str(req.get("query") or ""))
+            if not query_norm:
+                continue
+            if any(alias in query_norm for alias in alias_norms) and any(
+                char in query_norm for char in char_norms
+            ):
+                return True
+        return False
+
     def _has_short_worklike_alias_search_probe(
         self,
         ctx: ConversationContext,
@@ -9865,12 +9993,18 @@ class Orchestrator:
                     _short_alias_probe = self._has_short_worklike_alias_search_probe(
                         ctx, gatekeeper_result=gatekeeper_result
                     )
-                    if _ambiguous_work_signal or _short_alias_probe:
-                        _probe_reason = (
-                            "ambiguous_work_signal"
-                            if _ambiguous_work_signal
-                            else "short_alias_probe"
+                    _direct_alias_character_probe = (
+                        self._has_direct_worklike_alias_character_search_probe(
+                            ctx, gatekeeper_result=gatekeeper_result
                         )
+                    )
+                    if _ambiguous_work_signal or _short_alias_probe or _direct_alias_character_probe:
+                        if _ambiguous_work_signal:
+                            _probe_reason = "ambiguous_work_signal"
+                        elif _short_alias_probe:
+                            _probe_reason = "short_alias_probe"
+                        else:
+                            _probe_reason = "direct_alias_character_probe"
                         print(
                             f"[{_ts()}] {self.emoji} ⚠️ Discourse={domain}({domain_conf}) "
                             f"non_novel이지만 약한 작품 신호 감지({_probe_reason}) → 조기 종료 보류",

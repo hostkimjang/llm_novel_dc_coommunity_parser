@@ -1,5 +1,45 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop426 11698880 공개 제목 및 reason 동기화 검증
+
+- 범위: 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay 없이 `11698880` 단일 row만 search 포함 non-light로 실행했다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_426_REPORT_20260704.md`
+  - state `docs\devs\loop426_11698880_reader_text_publication_sync_20260704.json`
+  - Data Analytics summary `docs\devs\loop426_reader_text_publication_sync_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop426_11698880_reader_text_publication_sync_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop426_11698880_reader_text_publication_sync_result_manifest.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop426_11698880_run_health_audit.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop426_11698880_publication_contract_audit.json`
+  - log `logs\expert_run_20260704_221349_215778.log`
+- Code evidence:
+  - `src\llm_batch\experts\orchestrator.py`: direct body alias + character search probe가 non-novel early exit 전에 검색을 보존한다.
+  - `src\llm_batch\experts\arbiter.py`: verifier/raw LLM/relation allow 신호를 forced-upgrade scoring에 반영한다.
+  - `expert_main.py`: final public title 재수렴 뒤 reader-facing `reason`과 `primary_subject_text`를 동기화한다.
+- Verification commands:
+  - `.\\.venv312\\Scripts\\python.exe -m py_compile expert_main.py src\\llm_batch\\experts\\arbiter.py src\\llm_batch\\experts\\orchestrator.py tests\\test_title_lead_search_inferred_guard.py tests\\test_expert_main_comment_metadata.py` -> PASS
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_arbiter_curated_alias_guard tests.test_title_lead_search_inferred_guard tests.test_expert_main_comment_metadata` -> PASS, 300 tests
+  - `tools\\audit_expert_run_health.py` on run `20260704_221349_215778` -> `flush_integrity=GO / clean_completed_source`, search evidence `GO`, publication contract `GO`
+  - `tools\\audit_publication_contract_convergence.py` -> `GO / 0 violations`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`
+  - `git diff --check` -> PASS with CRLF warnings only
+- Runtime result:
+  - run `20260704_221349_215778`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - checkpoint/result rows `1/1`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - row search query_total `12`, degraded `0`, unrecovered degraded `0`
+- Semantic result:
+  - Final public identity는 `official_title=가챠 중독자의 퓨전펑크 생활`, `official_url=https://novelpia.com/novel/387014`다.
+  - `candidate_ledger_status=safe_resolved`, `safe_resolved=true`, `promotion_decision.status=publish`, `publish_allowed=true`다.
+  - Reader-facing `reason_contains_wrong=false`이며 `primary_subject_text`도 정답 제목으로 갱신됐다.
+- Boundary:
+  - 이번 결과는 `11698880` 단건 targeted closure다.
+  - Golden expected-answer는 아직 refresh하지 않았고 full375 collateral은 `NOT_OPEN`이다.
+  - Search recovery는 row-level `GO`지만 broader `P0 / REVIEW`를 유지한다.
+  - 런타임 콘솔 중간 `Post 완료` 요약은 postprocess 전 값을 찍을 수 있으므로 저장 JSON/최종 Result와 분리해 본다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_SAFE_RESOLVED`, publication contract `GO / 0`, reader text sync `GO`, search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop416 11698897 visual contextual alias release 검증
 
 - 범위: 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay 없이 `11698897` 단일 row만 search 포함 non-light로 실행했다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.

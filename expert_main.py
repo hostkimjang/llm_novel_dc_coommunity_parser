@@ -3933,6 +3933,60 @@ def _sync_allowed_publication_result_contract(
         identity["publish_ledger"] = publish_ledger
         changed = True
 
+    def _sync_reader_text_to_public_title(candidate_title: str) -> bool:
+        title_text = str(candidate_title or "").strip()
+        if not title_text:
+            return False
+        local_changed = False
+        raw_reason = identity.get("reason_lines")
+        if isinstance(raw_reason, list):
+            lines = [str(line) for line in raw_reason if str(line).strip()]
+        elif isinstance(raw_reason, str) and raw_reason.strip():
+            lines = raw_reason.splitlines()
+        elif isinstance(identity.get("reason"), str) and str(identity.get("reason")).strip():
+            lines = str(identity.get("reason")).splitlines()
+        else:
+            lines = []
+
+        if lines:
+            updated: List[str] = []
+            for line in lines:
+                stripped = line.strip()
+                replacement: Optional[str] = None
+                if stripped.startswith("- 공식 제목:"):
+                    replacement = f"- 공식 제목: '{title_text}'"
+                elif stripped.startswith("- 제목/본문 앵커와 검색 근거를 종합하여"):
+                    replacement = (
+                        f"- 제목/본문 앵커와 검색 근거를 종합하여 "
+                        f"'{title_text}' 관련 작품 토론으로 판정했습니다."
+                    )
+                elif stripped.startswith("- 최종 공식 제목은"):
+                    replacement = f"- 최종 공식 제목은 '{title_text}'로 확정됨."
+
+                if replacement is not None and replacement != line:
+                    updated.append(replacement)
+                    local_changed = True
+                else:
+                    updated.append(line)
+
+            if local_changed:
+                identity["reason_lines"] = updated
+                identity["reason"] = "\n".join(updated)
+
+        primary_subject_text = str(identity.get("primary_subject_text") or "").strip()
+        if (
+            primary_subject_text
+            and title_text not in primary_subject_text
+            and "메인 화제는" in primary_subject_text
+            and "관련 작품 토론" in primary_subject_text
+        ):
+            identity["primary_subject_text"] = f"메인 화제는 '{title_text}' 관련 작품 토론입니다."
+            local_changed = True
+        return local_changed
+
+    if _sync_reader_text_to_public_title(public_title):
+        changed = True
+
     gate_state_payload = dict(gate_state) if isinstance(gate_state, dict) else {}
     gate_state_payload["scope"] = scope_state
     if identity.get("promotion_gate_state") != gate_state_payload:

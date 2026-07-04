@@ -4248,6 +4248,12 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
                 "work_resolution": "resolved",
                 "safe_resolved": True,
                 "promotion_blocked": False,
+                "primary_subject_text": f"메인 화제는 '{wrong_title}' 관련 작품 토론입니다.",
+                "reason_lines": [
+                    f"- 공식 제목: '{wrong_title}'",
+                    f"- 제목/본문 앵커와 검색 근거를 종합하여 '{wrong_title}' 관련 작품 토론으로 판정했습니다.",
+                    f"- 최종 공식 제목은 '{wrong_title}'로 확정됨.",
+                ],
                 "context_sources": ["title", "body", "search", "image"],
                 "consistency_flags": [
                     "official_url_recall_blocked_body_verified_character_work_competes",
@@ -4358,6 +4364,17 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
             identity["publish_contract_trace"]["pre_gate_candidate"]["source"],
             "body_verified_character_work_competition",
         )
+        self.assertEqual(
+            identity["primary_subject_text"],
+            f"메인 화제는 '{correct_title}' 관련 작품 토론입니다.",
+        )
+        reason_text = "\n".join(identity["reason_lines"])
+        self.assertIn(f"- 공식 제목: '{correct_title}'", reason_text)
+        self.assertIn(f"'{correct_title}' 관련 작품 토론", reason_text)
+        self.assertIn(f"- 최종 공식 제목은 '{correct_title}'로 확정됨.", reason_text)
+        self.assertNotIn(f"- 공식 제목: '{wrong_title}'", reason_text)
+        self.assertNotIn(f"'{wrong_title}' 관련 작품 토론", reason_text)
+        self.assertNotIn(f"- 최종 공식 제목은 '{wrong_title}'", reason_text)
 
     def test_title_led_publication_reconciles_verified_alias_competing_work(self):
         correct_title = "가챠 중독자의 퓨전펑크 생활"

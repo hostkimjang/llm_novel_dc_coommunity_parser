@@ -1,5 +1,25 @@
 # Improvement Register
 
+## IMP-20260704-426 - 11698880 reader text publication sync
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/golden18 미발주 | 대형 dispatch 반복 금지 |
+| parent packet replay | 중단 | 동일 38-row replay 없음 | 큐 회계 회차 금지 |
+| direct alias search probe | GO_UNIT | body alias + character probe 검색 보존 | R1 cue 확장 금지 유지 |
+| Arbiter forced-upgrade | GO_UNIT | verifier/raw title/relation allow scoring 보강 | 다른 wrong-work 후보와 충돌 감시 |
+| `11698880` runtime | GO / 1 of 1 | run `20260704_221349_215778`, manifest `1/1/1/0/0`, checkpoint/result `1/1` | row 생산성 근거로만 사용 |
+| public identity | GO_TARGETED_SAFE_RESOLVED | `가챠 중독자의 퓨전펑크 생활` / `https://novelpia.com/novel/387014` | golden/full375로 과장 금지 |
+| reader text sync | GO | `reason_contains_wrong=false`, `primary_subject_text` correct | 콘솔 중간 summary 출력 위치는 다음 패치 후보 |
+| publication contract | GO | audit violations `0`, trace/ledger/serialized identity 수렴 | full semantic approval과 분리 |
+| search evidence | ROW_GO / BROADER_P0 | query_total `12`, degraded `0`, unrecovered `0` | broader search degraded 복구 P0 유지 |
+| expected-answer | GO_TARGETED / GOLDEN_NOT_REFRESHED | 단건은 pass, golden18은 미갱신 | 다음 회차에서 golden18 단일 완주 고려 |
+| collateral | NOT_OPEN | full375 전수 미실행 | survey 136-error anchor 유지 |
+| 테스트 | PASS | py_compile, Arbiter/title-lead/ExpertMain bundle `300`, diff check | 커밋 후 다음 targeted/golden lane 진행 |
+| 문서 동기화 | 완료 | Loop426 report/state/verification/register 갱신 | goal은 ACTIVE 유지 |
+
+Gate: targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_SAFE_RESOLVED`, golden expected-answer `NOT_REFRESHED_AFTER_LOOP426`, search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4 / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260704-416 - visual contextual alias release
 
 | 항목 | 상태 | 근거 | 다음 조치 |

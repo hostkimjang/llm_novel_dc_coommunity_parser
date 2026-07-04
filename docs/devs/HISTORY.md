@@ -1,5 +1,22 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop426 11698880 reader text publication sync
+
+- 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop423은 `11698880`에서 non-novel early exit 때문에 `가챠펑크 세드릭` 검색이 0건으로 끝났고, Loop424는 검색을 실행했지만 Arbiter forced-upgrade가 `아카데미 생존 갤러리`를 public title로 남겼다.
+- Loop425는 public contract를 `가챠 중독자의 퓨전펑크 생활`로 수렴했지만 reader-facing `reason`과 `primary_subject_text`가 이전 제목을 보존했다.
+- `src/llm_batch/experts/orchestrator.py`는 Gatekeeper/Discourse search request에서 direct body alias + character probe를 찾아 non-novel early exit 전 검색을 보존한다.
+- `src/llm_batch/experts/arbiter.py`는 verifier title, raw Arbiter title, relation judge allow를 forced-upgrade scoring에 반영한다.
+- `expert_main.py`는 final public title 재수렴 뒤 `reason_lines`, `reason`, `primary_subject_text`를 같은 제목으로 동기화한다.
+- Loop426 단건 search 포함 non-light runtime run `20260704_221349_215778`은 input/completed/flushed/pending/failed `1/1/1/0/0`, checkpoint/result rows `1/1`, `large_run_complete=true`, `ordered_flush_blocked=false`로 완료됐다.
+- MCP health는 `include_search=true`, `light_mode=false`, ok/failure `1/0`이고 row search health는 query_total `12`, degraded `0`, unrecovered degraded `0`이다.
+- Final public identity는 `가챠 중독자의 퓨전펑크 생활` / `https://novelpia.com/novel/387014`, `candidate_ledger_status=safe_resolved`, `safe_resolved=true`, `promotion_decision.status=publish`, `publish_allowed=true`다.
+- Reader-facing text는 `reason_contains_wrong=false`, `primary_subject_text=메인 화제는 '가챠 중독자의 퓨전펑크 생활' 관련 작품 토론입니다.`로 동기화됐다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, publication contract convergence는 `GO / 0 violations`다.
+- 검증은 py_compile PASS, `tests.test_arbiter_curated_alias_guard tests.test_title_lead_search_inferred_guard tests.test_expert_main_comment_metadata` `300` PASS, `git diff --check` PASS(CRLF warning only)다.
+- Report는 `docs/devs/loop_reports/LOOP_426_REPORT_20260704.md`, state는 `docs/devs/loop426_11698880_reader_text_publication_sync_20260704.json`, Data Analytics summary는 `docs/devs/loop426_reader_text_publication_sync_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_SAFE_RESOLVED`, golden expected-answer `NOT_REFRESHED_AFTER_LOOP426`, search recovery broader `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop416 11698897 visual contextual alias release
 
 - 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

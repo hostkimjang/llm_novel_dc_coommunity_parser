@@ -1,5 +1,27 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop426 11698880 reader-text publication sync 체크
+
+- [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] `11698880` 단일 search 포함 non-light runtime이 실제 row를 냈다.
+  - run `20260704_221349_215778`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - checkpoint/result rows `1/1`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] direct body alias + character probe가 `가챠펑크 세드릭` 검색을 보존했다.
+- [x] final public identity가 `가챠 중독자의 퓨전펑크 생활` / `https://novelpia.com/novel/387014`로 safe_resolved됐다.
+- [x] reader-facing `reason_lines`, `reason`, `primary_subject_text`가 최종 공개 제목과 동기화됐다.
+- [x] health audit는 `flush_integrity=GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`다.
+- [x] 검증: py_compile PASS, Arbiter/title-lead/ExpertMain bundle `300` PASS, `git diff --check` PASS(CRLF warning only).
+- [ ] Golden expected-answer는 아직 refresh하지 않았다. 이번 단건이 golden/full375 approval을 대체하지 않는다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다.
+- [ ] Search recovery는 row-level `GO`지만 broader `P0 / REVIEW`로 유지한다.
+- [ ] 런타임 콘솔 중간 `Post 완료` 요약은 postprocess 전 값을 찍을 수 있으므로 다음 작은 패치에서 출력 위치 조정 후보로 둔다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_SAFE_RESOLVED`, publication contract `GO / 0`, reader text sync `GO`, search recovery `P0 / REVIEW`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop416 11698897 visual contextual alias release 체크
 
 - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.

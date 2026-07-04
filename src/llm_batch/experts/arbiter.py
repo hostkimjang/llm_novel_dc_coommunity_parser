@@ -2475,6 +2475,31 @@ class ArbiterExpert:
 
                 _vf_result_local = (verifier_out_local.get("verification_result") or {}) if isinstance(verifier_out_local, dict) else {}
                 _vf_relevant_local = _vf_result_local.get("is_relevant")
+                _vf_title_match_local = False
+                _vf_identity_local = _vf_result_local.get("novel_identity") or {}
+                if isinstance(_vf_identity_local, dict):
+                    for _vf_key_local in ("official_novel_title", "official_title", "title"):
+                        _vf_title_local = _vf_identity_local.get(_vf_key_local)
+                        if _vf_title_local and _norm_title_local(_vf_title_local) == _norm_title_local(_title):
+                            _vf_title_match_local = True
+                            break
+                if not _vf_title_match_local:
+                    for _vf_key_local in ("verified_title", "title"):
+                        _vf_title_local = _vf_result_local.get(_vf_key_local)
+                        if _vf_title_local and _norm_title_local(_vf_title_local) == _norm_title_local(_title):
+                            _vf_title_match_local = True
+                            break
+                if _vf_title_match_local:
+                    _add(0.34, "verifier_title_match")
+                    _vf_relation_local = _vf_result_local.get("relation_judgment") or {}
+                    if (
+                        isinstance(_vf_relation_local, dict)
+                        and str(_vf_relation_local.get("promotion_decision") or "").lower() == "allow"
+                    ):
+                        _add(0.08, "verifier_relation_allow")
+                _raw_llm_title_local = decision.get("_raw_llm_title")
+                if _raw_llm_title_local and _norm_title_local(_raw_llm_title_local) == _norm_title_local(_title):
+                    _add(0.18, "arbiter_raw_title_match")
                 if _vf_relevant_local is True:
                     _add(0.10, "verifier_relevant_true")
                 elif _vf_relevant_local is False:
@@ -3529,6 +3554,11 @@ class ArbiterExpert:
                         and str(_v.get("source") or "") == "character_parenthetical_wiki"
                         for _v in (getattr(ctx, "verified_character_work_links", []) or [])
                     )
+                    _st_verifier_align = _norm_title_local(_st_title) in _verifier_title_norms
+                    _st_raw_llm_align = (
+                        _norm_title_local(_st_title)
+                        == _norm_title_local(decision.get("_raw_llm_title"))
+                    )
                     if _is_weak_fragment_title(_st_title) and (not _st_strong_support):
                         print(
                             f"[{_ts()}][{self.emoji}] 🚫 suspected_titles 필터: 단일어 파편 "
@@ -3587,6 +3617,9 @@ class ArbiterExpert:
                         and _st_decoder_align
                         and (not _st_direct_anchor)
                         and (not _st_strong_support)
+                        and (not _st_verifier_align)
+                        and (not _st_raw_llm_align)
+                        and (not _st_character_parenthetical_support)
                     ):
                         print(
                             f"[{_ts()}][{self.emoji}] 🚫 suspected_titles 필터: "

@@ -1,0 +1,71 @@
+{
+  "loop": 426,
+  "date": "2026-07-04",
+  "title": "11698880 direct body alias character probe and reader text publication sync",
+  "scope": {
+    "post_ids": [11698880],
+    "large_runs_dispatched": false,
+    "same_parent_packet_replay": false,
+    "slang_db": "off",
+    "search_mode": "non-light"
+  },
+  "code_changes": [
+    "orchestrator: Gatekeeper/Discourse search request 기반 direct body alias + character probe를 non-novel early exit 예외로 보존",
+    "arbiter: verifier title, raw Arbiter title, relation allow를 forced-upgrade score에 반영해 body-verified title을 보존",
+    "expert_main: final public title이 재수렴된 뒤 reason_lines와 primary_subject_text를 같은 제목으로 동기화"
+  ],
+  "runtime": {
+    "run_id": "20260704_221349_215778",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop426_11698880_reader_text_publication_sync_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop426_11698880_reader_text_publication_sync_result_manifest.json",
+    "log": "logs/expert_run_20260704_221349_215778.log",
+    "completed": 1,
+    "flushed": 1,
+    "pending": 0,
+    "failed": 0,
+    "search_gate": "GO",
+    "query_total": 12,
+    "degraded_total": 0,
+    "unrecovered_degraded_total": 0
+  },
+  "result": {
+    "post_id": 11698880,
+    "official_title": "가챠 중독자의 퓨전펑크 생활",
+    "official_url": "https://novelpia.com/novel/387014",
+    "candidate_ledger_status": "safe_resolved",
+    "safe_resolved": true,
+    "promotion_status": "publish",
+    "publish_allowed": true,
+    "reason_contains_wrong_title": false,
+    "primary_subject_text": "메인 화제는 '가챠 중독자의 퓨전펑크 생활' 관련 작품 토론입니다."
+  },
+  "audits": {
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop426_11698880_run_health_audit.json",
+    "flush_integrity": "GO / clean_completed_source",
+    "publication_contract_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop426_11698880_publication_contract_audit.json",
+    "publication_contract": "GO / 0 violations",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  },
+  "verification": [
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m py_compile expert_main.py src\\llm_batch\\experts\\arbiter.py src\\llm_batch\\experts\\orchestrator.py tests\\test_title_lead_search_inferred_guard.py tests\\test_expert_main_comment_metadata.py",
+      "status": "PASS"
+    },
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_arbiter_curated_alias_guard tests.test_title_lead_search_inferred_guard tests.test_expert_main_comment_metadata",
+      "status": "PASS",
+      "tests": 300
+    },
+    {
+      "command": "git diff --check",
+      "status": "PASS_WITH_CRLF_WARNINGS_ONLY"
+    }
+  ],
+  "boundaries": {
+    "golden_expected_answer": "NOT_REFRESHED_AFTER_LOOP426",
+    "full375_collateral": "NOT_OPEN",
+    "search_recovery": "ROW_GO / BROADER_P0_REVIEW",
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

@@ -10794,6 +10794,81 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertGreaterEqual(len(executed), 3)
         self.assertIn("가챠펑크 세드릭", executed)
 
+    def test_non_novel_early_exit_sees_direct_body_alias_character_probe(self):
+        orchestrator = Orchestrator(experts={})
+        ctx = ConversationContext(
+            post_id=11698880,
+            post_data={
+                "title": "아생갤 개 존나게 재밌군 ㅇㅇ",
+                "content_blocks": [
+                    {"type": "text", "text": "가챠펑크 세드릭도 그렇고 주인공이 시원시원해서 좋구나"},
+                    {"type": "image", "image_url": "https://example.test/spongebob.png"},
+                ],
+            },
+            comments=[],
+        )
+        gatekeeper = {
+            "post_type": "community_banter",
+            "detected_entities": {
+                "possible_titles": ["아생갤", "스폰지밥"],
+                "possible_characters": ["스폰지밥", "뚱이", "세드릭"],
+            },
+            "key_terms": ["아생갤", "가챠펑크", "세드릭"],
+            "search_requests": [
+                {"purpose": "title_search_community", "priority": 2, "query": "가챠펑크 세드릭"},
+            ],
+        }
+        ctx.set_expert_output(ExpertType.GATEKEEPER, gatekeeper)
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "make_joke",
+                    "target_kind": "community",
+                    "primary_domain": "memes_humor",
+                    "domain_confidence": "high",
+                }
+            },
+        )
+
+        self.assertNotIn(
+            "가챠펑크",
+            orchestrator._collect_direct_worklike_alias_probe_norms(ctx, gatekeeper),
+        )
+        self.assertTrue(
+            orchestrator._has_direct_worklike_alias_character_search_probe(ctx, gatekeeper)
+        )
+
+    def test_non_novel_early_exit_ignores_image_character_without_body_pair(self):
+        orchestrator = Orchestrator(experts={})
+        ctx = ConversationContext(
+            post_id=11698880,
+            post_data={
+                "title": "아생갤 개 존나게 재밌군 ㅇㅇ",
+                "content_blocks": [
+                    {"type": "text", "text": "가챠펑크 세드릭도 그렇고 주인공이 시원시원해서 좋구나"},
+                    {"type": "image", "image_url": "https://example.test/spongebob.png"},
+                ],
+            },
+            comments=[],
+        )
+        gatekeeper = {
+            "post_type": "community_banter",
+            "detected_entities": {
+                "possible_titles": ["아생갤", "스폰지밥"],
+                "possible_characters": ["스폰지밥", "뚱이", "세드릭"],
+            },
+            "key_terms": ["아생갤", "가챠펑크", "세드릭"],
+            "search_requests": [
+                {"purpose": "title_search_community", "priority": 2, "query": "가챠펑크 스폰지밥"},
+            ],
+        }
+        ctx.set_expert_output(ExpertType.GATEKEEPER, gatekeeper)
+
+        self.assertFalse(
+            orchestrator._has_direct_worklike_alias_character_search_probe(ctx, gatekeeper)
+        )
+
     def test_direct_body_alias_probe_processed_after_broad_genre_official_hit(self):
         calls = []
 

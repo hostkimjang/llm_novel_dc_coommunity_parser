@@ -1,5 +1,22 @@
 ﻿# Developer TODO Index
 
+## 2026-07-04 Loop426 TODO
+
+- 상태 업데이트: Loop426은 `11698880`의 `가챠펑크 세드릭` body alias + character probe를 보존하고, final public title 재수렴 뒤 reader-facing `reason`까지 `가챠 중독자의 퓨전펑크 생활`로 동기화한 단건 회차다. Golden/full375 approval은 아직 아니다.
+- [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] targeted runtime `20260704_221349_215778`에서 `1/1/1/0/0` row 생산을 확인했다.
+- [x] search 포함 non-light health `include_search=true`, `light_mode=false`, ok/failure `1/0`를 확인했다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] `11698880` public identity를 `가챠 중독자의 퓨전펑크 생활` / `https://novelpia.com/novel/387014`로 safe_resolved 처리했다.
+- [x] reader-facing `reason_contains_wrong=false`와 `primary_subject_text` 정합성을 확인했다.
+- [x] health audit, publication contract, py_compile, Arbiter/title-lead/ExpertMain bundle `300`, `git diff --check`를 PASS했다.
+- [ ] Golden expected-answer는 `NOT_REFRESHED_AFTER_LOOP426`로 유지한다.
+- [ ] 다음 active lane은 커밋 후 golden18 단일 완주 또는 survey 136-error anchor의 `wrong_work 27` / `recall_miss 49` 중 작은 단위로 고른다.
+- [ ] Full375 collateral gate는 아직 열지 않는다.
+- [ ] 코드 변경 없이 docs만 반복되는 회차는 loop 정지 신호로 취급한다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop416 TODO
 
 - 상태 업데이트: Loop416은 Loop414에서 `candidate_only`로 남은 `11698897`을 existing visual/bracket official-detail context 기반 shared alias selection으로 `변방계에서 회귀자로 살아남기` safe_resolved publish까지 닫은 회차다. 단건 targeted pass이며 golden/full375 approval은 완료가 아니다.
