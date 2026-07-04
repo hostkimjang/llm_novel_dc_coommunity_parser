@@ -1,5 +1,20 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop394-395 runtime production and image-gate stall
+
+- 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- 현 HEAD `8328c009`에서 golden18 단일 search 포함 non-light Loop394 runtime을 실행했다.
+- Loop394 run `20260704_084824_952454`는 completed/flushed/pending/failed `18/18/0/0`, checkpoint/result rows `18/18`, `large_run_complete=true`로 완료되어 runtime row production은 `GO_GOLDEN18_ONLY`다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, publication contract convergence `GO / violations 0`이지만 search evidence는 `REVIEW / search_degraded_observed`다.
+- Expected-answer audit는 `NO-GO / 13 of 18`이다. 실패는 `11705245`, `11663521`, `11663540`, `11700470`, `11698880`이다.
+- Golden shared collateral은 shared `18`, changed `17`, regression candidates `8`이라 full375 collateral approval은 열지 않는다.
+- `src/llm_batch/agentic_pipeline.py`는 runtime 직렬화 전 `image_enrichment`에서 fallback image evidence catalog를 구성해 image-scope public publish gate가 누락되지 않게 했다.
+- `tests/test_title_lead_search_inferred_guard.py`에 runtime image catalog 미직렬화 재현 테스트를 추가했고 focused test `2` PASS를 확인했다.
+- Loop395 `11700470` patch-after 단건 runtime은 내부 로그에서 `irrelevant canonical rescue 차단`, `unresolved worklike preserve`, `OVERRIDE AUDIT post_id=11700470 LLM=False -> final=True`까지 도달했으나 manifest `1/0/0/0/0`, checkpoint `0`, result 없음으로 flush 전 stall이라 closure 증거가 아니다.
+- `11708445` OVERRIDE AUDIT는 Loop394 산출물로 재고정했고 `ACCEPT / candidate_only_block_is_correct`, `GO_ROW_CONTRACT_ONLY`다.
+- Report는 `docs/devs/loop_reports/LOOP_394_395_REPORT_20260704.md`, state는 `docs/devs/loop394_395_runtime_and_image_gate_20260704.json`이다.
+- Gate는 runtime production `GO_GOLDEN18_ONLY`, targeted image replay `NO-GO_RUNTIME_STALL`, expected-answer `NO-GO / 13 of 18`, search recovery `P0 / REVIEW / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop390 verified-alias competition contract
 
 - 신규 full375/bounded/N5/golden18 runtime과 동일 38-row parent packet replay는 발주하지 않았다.

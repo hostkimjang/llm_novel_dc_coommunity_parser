@@ -1,5 +1,47 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop394-395 runtime production and image-gate stall
+
+- 범위: golden18 단일 search 포함 non-light runtime 생산성을 먼저 확인하고, `11700470` image-scene public title gate patch-after 단건 replay가 flush까지 완료되는지 확인한다. 신규 full375/bounded/N5 대형 런과 동일 parent packet replay는 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_394_395_REPORT_20260704.md`
+  - state `docs\devs\loop394_395_runtime_and_image_gate_20260704.json`
+  - Loop394 result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop394_golden18_after_loop393_8328c009_search_nonlight_result.json`
+  - Loop394 health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop394_golden18_after_loop393_runtime_health_audit.json`
+  - Loop394 expected audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop394_golden18_after_loop393_8328c009_search_nonlight_audit.json`
+  - Loop394 collateral `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop394_golden18_after_loop393_8328c009_search_nonlight_collateral.json`
+  - Loop395 manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop395_11700470_after_loop394_image_catalog_gate_worktree_search_nonlight_result_manifest.json`
+  - Loop395 console log `logs\loop395_11700470_after_loop394_image_catalog_gate_worktree_search_nonlight.console.log`
+- Runtime evidence:
+  - Loop394 run `20260704_084824_952454`
+  - completed/flushed/pending/failed `18/18/0/0`
+  - checkpoint/result rows `18/18`
+  - `large_run_complete=true`
+  - `flush_integrity=GO / clean_completed_source`
+  - publication contract convergence `GO`, violations `0`
+- Semantic evidence:
+  - expected-answer audit `NO-GO / 13 of 18`
+  - failed rows:
+    - `11705245`: expected no public title, actual `하남 남자`
+    - `11663521`: expected `어떤 마술의 금서목록 / 어떤 과학의 초전자포`, actual `구원자의 퍼스트 레이디`
+    - `11663540`: expected `전 버튜버가 하고 싶은데요`, actual `전 버두비가 하고 싶은데요`
+    - `11700470`: expected `밤도깨비 에이브 이미지 장면 단서(public title HOLD)`, actual `세계 최강 미소녀에게 납치당했습니다`
+    - `11698880`: expected `가챠 중독자의 퓨전펑크 생활`, actual `아카데미 생존 갤러리`
+- Collateral evidence:
+  - shared posts `18`
+  - changed `17`
+  - regression candidates `8`
+  - full375 collateral `NOT_OPEN`
+- Loop395 stall evidence:
+  - run `20260704_092519_252576`
+  - manifest input/completed/flushed/pending/failed `1/0/0/0/0`
+  - checkpoint `0`, result 없음
+  - console log reached `irrelevant canonical rescue 차단`, `unresolved worklike preserve`, `OVERRIDE AUDIT post_id=11700470 LLM=False -> final=True`
+  - gate `NO-GO_RUNTIME_STALL_FLUSH_MISSING`
+- Verification commands:
+  - `& .\.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_resolved_public_title_gate_blocks_image_scene_only_official_detail tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_resolved_public_title_gate_builds_runtime_image_catalog_before_serialization` -> PASS, `2` tests
+- Gate: runtime production `GO_GOLDEN18_ONLY`, targeted image replay `NO-GO_RUNTIME_STALL`, expected-answer `NO-GO / 13 of 18`, search recovery `P0 / REVIEW / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop390 verified-alias competition contract
 
 - 범위: Loop389 `11698880` wrong publish를 runtime 재발주 없이 final publication ledger code contract와 저장 결과 직접 재동기화로 검증한다. 신규 full375/bounded/N5/golden18 runtime과 동일 parent packet replay는 발주하지 않는다.

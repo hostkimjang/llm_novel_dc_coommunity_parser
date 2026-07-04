@@ -33053,12 +33053,22 @@ OUTPUT JSON:
             } or flag.startswith("unresolved_worklike_hold:"):
                 scope_block_flags.append(flag)
 
+        fallback_image_catalog: List[Dict[str, Any]] = []
+        try:
+            built_image_catalog = self._build_image_evidence_catalog(ctx)
+            if isinstance(built_image_catalog, list):
+                fallback_image_catalog = [
+                    item for item in built_image_catalog if isinstance(item, dict)
+                ]
+        except Exception:
+            fallback_image_catalog = []
+
         has_image_evidence_catalog = any(
             isinstance(container, dict)
             and isinstance(container.get("image_evidence_catalog"), list)
             and bool(container.get("image_evidence_catalog"))
             for container in (scope_fields, final, vf)
-        )
+        ) or bool(fallback_image_catalog)
         try:
             post_data_for_image_scope = getattr(ctx, "post_data", None) or {}
             has_image_evidence_catalog = bool(
@@ -33133,6 +33143,7 @@ OUTPUT JSON:
                     catalog = post_data.get(key)
                     if isinstance(catalog, list):
                         image_items.extend(item for item in catalog if isinstance(item, dict))
+            image_items.extend(fallback_image_catalog)
 
             matching_image_items = [
                 item

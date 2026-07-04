@@ -9849,6 +9849,74 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         )
         self.assertFalse(ctx._last_promotion_gate_state["row_discusses_work_as_work"])
 
+    def test_resolved_public_title_gate_builds_runtime_image_catalog_before_serialization(self):
+        pipeline = build_pipeline()
+        title = "세계 최강 미소녀에게 납치당했습니다"
+        url = "https://novelpia.com/novel/201411"
+        image_evidence = {
+            "ocr_text": (
+                "참고인의 모든 변론이 끝났다. 얼굴도 모르는 미소녀를 납치 후, "
+                "B급 모험가 '밤'도깨비 에이브가 되어 있었다."
+            ),
+            "evidence_type": "explicit_text",
+            "title_role": "unknown",
+            "promotion_eligible": False,
+            "work_cues": ["B급 모험가 '밤'도깨비 에이브", "미소녀 납치"],
+        }
+        post = PostInput(
+            post_id=11700470,
+            title="어케 주인공 죄목이",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="image", url="https://dcimg.example/11700470.jpg"),
+                ContentBlock(type="text", text="납치담금세뇌테러불법투기셍태계교란희롱준강간"),
+            ],
+            comments=["교수형"],
+        )
+        ctx = ConversationContext(
+            post_id=11700470,
+            post_data=pipeline._post_to_dict(post),
+            comments=post.comments,
+        )
+        ctx.post_data["image_enrichment"] = [dict(image_evidence)]
+        candidate = DetectedTitle(
+            official_title=title,
+            heretic_url=url,
+            confidence="High",
+            alias_or_mention="납치 미소녀",
+            source_tier="official_detail",
+            page_type="novel_page",
+            reference_role="primary",
+        )
+
+        decision = pipeline._record_resolved_public_title_gate_decision(
+            ctx,
+            title,
+            candidate_url=url,
+            title_candidates=[candidate],
+            resolution_scope_fields={
+                "is_resolved_work_discussion": True,
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "discussion_type": "character_talk",
+                "anchor_type": "title_alias",
+                "context_sources": ["title", "body", "comments", "search"],
+            },
+            verification_result={
+                "grounding_check": {"anchor_found": "plot_mention"},
+                "novel_identity": {"evidence_type": "search_platform_url"},
+            },
+        )
+
+        self.assertFalse(decision["publish_allowed"])
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertIn(
+            "image_scope_missing_candidate_surface",
+            decision["reason_codes"],
+        )
+        self.assertFalse(ctx._last_promotion_gate_state["row_discusses_work_as_work"])
+
     def test_physical_classic_book_cover_without_warning_does_not_rescue_public_title(self):
         pipeline = build_pipeline()
         title = "파우스트 1"

@@ -1,5 +1,15 @@
 # Slang DB Improvement TODO
 
+## 2026-07-04 Loop394-395 runtime/image gate slang 주의사항
+
+- [x] 이번 회차는 slang DB write-back이 아니라 golden18 runtime 생산성 확인과 image-scope publication gate 보강이다.
+- [x] `--slang-db off` 조건으로 실행했다.
+- [x] R1 하드코딩 cue 리스트 확장은 하지 않았다.
+- [x] `11700470`의 `세계 최강 미소녀에게 납치당했습니다` wrong publish는 `미소녀 납치` 일반 구절 rescue와 검색 hit 유혹에서 나온 것이며, alias/slang registry 추가로 풀 문제가 아니다.
+- [x] Loop395는 내부적으로 `unresolved worklike preserve`까지 도달했지만 result flush 전 stall이라 runtime closure가 아니다.
+- [ ] search recovery, `11700470` flush 완료, golden expected-answer 실패 5건, full375 collateral을 닫기 전 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, golden18 runtime `GO / 18 of 18`, targeted replay `NO-GO_RUNTIME_STALL`, expected-answer `NO-GO / 13 of 18`, collateral regression candidates `8`, search recovery `P0 / REVIEW`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop386 author_bridge search recovery slang 주의사항
 
 - [x] 이번 회차는 slang DB write-back이 아니라 author_bridge search recovery 계약 보정이다.

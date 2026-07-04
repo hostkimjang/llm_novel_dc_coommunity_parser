@@ -1,5 +1,43 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop394-395 runtime production and image-gate stall 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Loop394 golden18 단일 search 포함 non-light runtime을 실행했다.
+  - run `20260704_084824_952454`
+  - result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop394_golden18_after_loop393_8328c009_search_nonlight_result.json`
+  - manifest `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop394_golden18_after_loop393_8328c009_search_nonlight_result_manifest.json`
+- [x] Loop394 runtime row production을 확인했다.
+  - completed/flushed/pending/failed `18/18/0/0`
+  - checkpoint/result rows `18/18`
+  - `large_run_complete=true`
+- [x] Loop394 health와 publication contract를 확인했다.
+  - `flush_integrity=GO / clean_completed_source`
+  - publication contract convergence `GO`, violations `0`
+  - search evidence `REVIEW / search_degraded_observed`
+- [x] Loop394 expected-answer audit를 생성했다.
+  - `NO-GO / 13 of 18`
+  - 실패 `11705245`, `11663521`, `11663540`, `11700470`, `11698880`
+- [x] Loop394 collateral compare를 생성했다.
+  - shared `18`
+  - changed `17`
+  - regression candidates `8`
+- [x] `11700470` patch-after 단건 Loop395를 실행했지만 result flush 전 stall로 분리했다.
+  - run `20260704_092519_252576`
+  - manifest `1/0/0/0/0`
+  - checkpoint `0`
+  - result 없음
+  - 마지막 핵심 로그: `OVERRIDE AUDIT post_id=11700470 LLM=False -> final=True`
+- [x] `src/llm_batch/agentic_pipeline.py`에서 runtime 직렬화 전 `image_enrichment` fallback image catalog를 구성하도록 보강했다.
+- [x] `tests/test_title_lead_search_inferred_guard.py`에 runtime image catalog 미직렬화 재현 테스트를 추가했다.
+- [x] focused test `2` PASS.
+- [x] `11708445` OVERRIDE AUDIT를 Loop394 산출물로 재고정했다.
+- [ ] Loop395는 runtime closure가 아니므로 semantic approval로 세지 않는다.
+- [ ] Search degraded `unrecovered=0` 전까지 `promotion_blocked=search-blind conditional`을 유지한다.
+- [ ] full375 collateral approval은 `NOT_OPEN`으로 유지한다.
+- Gate: runtime production `GO_GOLDEN18_ONLY`, targeted image replay `NO-GO_RUNTIME_STALL`, expected-answer `NO-GO / 13 of 18`, search recovery `P0 / REVIEW / SEARCH_BLIND_CONDITIONAL`, full375 `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop390 verified-alias competition contract 체크
 
 - [x] 신규 full375/bounded/N5/golden18 runtime을 발주하지 않았다.
