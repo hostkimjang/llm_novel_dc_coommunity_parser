@@ -1,5 +1,49 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop399 golden18 런타임 증명
+
+- 범위: watchdog/stall 우회 후 현 HEAD `d7b7fa11`이 golden18 `18/18` row를 실제로 내는지 먼저 확인한다. 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_399_REPORT_20260704.md`
+  - state `docs\devs\loop399_golden18_runtime_proof_20260704.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop399_golden18_current_d7b7fa11_search_nonlight_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop399_golden18_current_d7b7fa11_search_nonlight_result_manifest.json`
+  - checkpoint `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop399_golden18_current_d7b7fa11_search_nonlight_result_checkpoint.jsonl`
+  - console log `logs\loop399_golden18_current_d7b7fa11_search_nonlight.console.log`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop399_golden18_current_d7b7fa11_run_health.json`
+  - publication contract audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop399_golden18_publication_contract.json`
+  - expected audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop399_golden18_current_d7b7fa11_golden_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop399_golden18_current_d7b7fa11_collateral_compare.json`
+- Runtime evidence:
+  - run `20260704_105814_374640`
+  - MCP health `include_search=true`, `light_mode=false`, required/ok `2/2`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint/result rows `18/18`
+  - `ordered_flush_blocked=false`
+  - `large_run_complete=true`
+  - gate `GO_GOLDEN18_RUNTIME_ONLY`
+- Audit evidence:
+  - run health `flush_integrity=GO / clean_completed_source`
+  - search evidence `GO`
+  - publication contract convergence `GO`, violations `0`
+- Semantic evidence:
+  - expected-answer audit `NO-GO / 14 of 18`
+  - failed rows:
+    - `11663540`: expected `전 버튜버가 하고 싶은데요`, actual `전 버두바가 하고 싶으데요`
+    - `11668307`: expected `빚을 져서라도 세상은 구해야 할 거 아니야`, actual `null`
+    - `11713212`: expected `null`, actual `SSS급 죽어야 사는 헌터`
+    - `11698880`: expected `가챠 중독자의 퓨전펑크 생활`, actual `아카데미 생존 갤러리`
+- Collateral evidence:
+  - golden shared posts `18`
+  - changed `17`
+  - regression candidates `7`
+  - full375 collateral `NOT_OPEN`
+- Caveat:
+  - `11660237`은 이번 런에서 `테라포밍`으로 통과했지만 N>=5 flip probe 대체 증거가 아니다.
+  - `11698880`은 wrong publish가 재현되어 hard-hold 완화 근거가 아니다.
+  - loop399 search evidence `GO`는 golden18 범위의 증거이며 broader search recovery 완료로 확대하지 않는다.
+- Gate: golden18 runtime `GO_GOLDEN18_RUNTIME_ONLY`, expected-answer `NO-GO / 14 of 18`, golden shared collateral `NO-GO / 7`, broader search recovery `P0 / GOLDEN18_SEARCH_GO_ONLY`, full375 `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop396-398 runtime stall shrink and 11700470 single-row flush
 
 - 범위: current HEAD `66e27ff5`에서 golden18 18/18 row 생산성을 먼저 확인하고, blocker `11700470`만 단건으로 줄여 flush 여부를 검증한다. 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않는다.

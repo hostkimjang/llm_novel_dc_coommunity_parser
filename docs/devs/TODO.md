@@ -1,5 +1,24 @@
 ﻿# Developer TODO Index
 
+## 2026-07-04 regression-safe grounding Loop399 TODO
+
+- 상태 업데이트: 현 HEAD `d7b7fa11` golden18 단일 search 포함 non-light Loop399는 `18/18/18/0/0`, checkpoint/result rows `18/18`, `ordered_flush_blocked=false`로 완료됐다. Runtime row production은 `GO_GOLDEN18_RUNTIME_ONLY`지만 expected-answer는 `NO-GO / 14 of 18`, golden shared collateral은 `NO-GO / 7`이다.
+- Loop399 TODO:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] golden18 current HEAD가 실제 row를 `18/18` 낸다는 점을 manifest/checkpoint/result로 확인했다.
+  - [x] search 포함 non-light health `2/2 OK`를 확인했다.
+  - [x] run health audit `flush_integrity=GO`, search evidence `GO`, publication contract `GO / 0 violations`를 생성했다.
+  - [x] expected-answer 실패 4건을 확인했다: `11663540`, `11668307`, `11713212`, `11698880`.
+  - [x] `11660237`은 이번 런에서 통과했지만 N>=5 flip probe 대체 증거로 세지 않는다.
+  - [x] `11698880`은 `아카데미 생존 갤러리` 오귀속이므로 hard-hold 완화 근거가 아니다.
+  - [x] Collateral 105는 queue-count 회차가 아니라 `reclassified 74 / runtime-verified 4` 축으로 유지한다.
+  - [ ] 다음 회차는 새 대형 런이 아니라 expected-answer 실패 4건 또는 survey 136-error anchor 기반 triage로 좁힌다.
+  - [ ] full375 collateral gate는 아직 열지 않는다.
+  - [ ] broader search recovery는 loop399 golden18 search GO만으로 완료 처리하지 않는다.
+  - [x] R1 하드코딩 cue 리스트 확장은 하지 않았다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
 ## 2026-07-04 regression-safe grounding Loop396-398 TODO

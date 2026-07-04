@@ -1,5 +1,44 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop399 golden18 런타임 증명 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] 현 HEAD `d7b7fa11`에서 golden18 단일 search 포함 non-light 런만 실행했다.
+  - run `20260704_105814_374640`
+  - result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop399_golden18_current_d7b7fa11_search_nonlight_result.json`
+  - manifest `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop399_golden18_current_d7b7fa11_search_nonlight_result_manifest.json`
+  - checkpoint `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop399_golden18_current_d7b7fa11_search_nonlight_result_checkpoint.jsonl`
+- [x] search 포함 non-light MCP health를 확인했다.
+  - `mcp_health_include_search=true`
+  - `mcp_health_light_mode=false`
+  - required/ok `2/2`
+- [x] runtime row production을 확인했다.
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint/result rows `18/18`
+  - `ordered_flush_blocked=false`
+  - `large_run_complete=true`
+- [x] run health audit를 생성했다.
+  - `flush_integrity=GO / clean_completed_source`
+  - search evidence `GO`
+  - publication contract convergence `GO`, violations `0`
+- [x] expected-answer audit를 생성했다.
+  - gate `NO-GO`
+  - passed/failed `14/18`
+  - 실패 `11663540`, `11668307`, `11713212`, `11698880`
+- [x] golden shared collateral compare를 생성했다.
+  - shared `18`
+  - changed `17`
+  - regression candidates `7`
+- [ ] `11660237` 단일 통과를 N>=5 flip probe 대체 증거로 세지 않는다.
+- [ ] `11698880` wrong publish 때문에 hard-hold 완화 근거로 세지 않는다.
+- [ ] golden shared collateral compare를 full375 collateral approval로 승격하지 않는다.
+- [ ] search evidence `GO`는 loop399 golden18 범위이며 broader search recovery 완료로 확대하지 않는다.
+- [x] R1 hardcoded cue 리스트 확장은 하지 않았다.
+- [x] Collateral 105는 `reclassified 74 / runtime-verified 4` 축으로 유지한다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: golden18 runtime `GO_GOLDEN18_RUNTIME_ONLY`, expected-answer `NO-GO / 14 of 18`, golden shared collateral `NO-GO / 7`, full375 `NOT_OPEN`, broader search recovery `P0 / GOLDEN18_SEARCH_GO_ONLY`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop396-398 runtime stall 축소 및 11700470 단건 flush 체크
 
 - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.

@@ -1,0 +1,105 @@
+{
+  "loop": 399,
+  "date": "2026-07-04",
+  "head": "d7b7fa11",
+  "scope": "golden18 single runtime proof only",
+  "new_large_runs": "FROZEN",
+  "same_parent_packet_replay": "STOPPED",
+  "run": {
+    "run_id": "20260704_105814_374640",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop399_golden18_current_d7b7fa11_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop399_golden18_current_d7b7fa11_search_nonlight_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop399_golden18_current_d7b7fa11_search_nonlight_result_checkpoint.jsonl",
+    "pending_snapshot": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop399_golden18_current_d7b7fa11_search_nonlight_result_pending_snapshot.json",
+    "console_log": "logs/loop399_golden18_current_d7b7fa11_search_nonlight.console.log",
+    "worker_log_glob": "logs/expert_run_20260704_105814_374640_W*.log"
+  },
+  "mcp_health": {
+    "include_search": true,
+    "light_mode": false,
+    "required_ok_count": 2,
+    "ok_count": 2,
+    "failure_count": 0,
+    "search_min_results": 1,
+    "search_max_latency_ms": 8000
+  },
+  "runtime": {
+    "input_post_count": 18,
+    "completed_count": 18,
+    "flushed_count": 18,
+    "pending_count": 0,
+    "failed_count": 0,
+    "checkpoint_rows": 18,
+    "result_rows": 18,
+    "large_run_complete": true,
+    "ordered_flush_blocked": false,
+    "gate": "GO_GOLDEN18_RUNTIME_ONLY"
+  },
+  "audits": {
+    "health_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop399_golden18_current_d7b7fa11_run_health.json",
+    "flush_integrity": "GO / clean_completed_source",
+    "search_evidence": "GO",
+    "publication_contract_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop399_golden18_publication_contract.json",
+    "publication_contract_gate": "GO",
+    "publication_contract_violations": 0
+  },
+  "expected_answer": {
+    "audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop399_golden18_current_d7b7fa11_golden_audit.json",
+    "audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop399_golden18_current_d7b7fa11_golden_audit.md",
+    "gate": "NO-GO",
+    "passed_count": 14,
+    "failed_count": 4,
+    "failures": [
+      {
+        "post_id": 11663540,
+        "status": "wrong_or_unexpected_title",
+        "expected": "전 버튜버가 하고 싶은데요",
+        "actual": "전 버두바가 하고 싶으데요"
+      },
+      {
+        "post_id": 11668307,
+        "status": "positive_work_unresolved",
+        "expected": "빚을 져서라도 세상은 구해야 할 거 아니야",
+        "actual": null
+      },
+      {
+        "post_id": 11713212,
+        "status": "unexpected_resolved_title",
+        "expected": null,
+        "actual": "SSS급 죽어야 사는 헌터"
+      },
+      {
+        "post_id": 11698880,
+        "status": "wrong_or_unexpected_title",
+        "expected": "가챠 중독자의 퓨전펑크 생활",
+        "actual": "아카데미 생존 갤러리"
+      }
+    ]
+  },
+  "collateral": {
+    "compare_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop399_golden18_current_d7b7fa11_collateral_compare.json",
+    "compare_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop399_golden18_current_d7b7fa11_collateral_compare.md",
+    "scope": "golden_canary_shared_posts_only",
+    "shared_posts": 18,
+    "changed_posts": 17,
+    "regression_candidates": 7,
+    "full375_collateral": "NOT_OPEN",
+    "active_lane": "reclassified 74 / runtime-verified 4"
+  },
+  "safe_loss": {
+    "11660237": "passed as 테라포밍 in this run, but N>=5 flip probe not replaced",
+    "11698880": "failed as 아카데미 생존 갤러리 instead of 가챠 중독자의 퓨전펑크 생활; no hard-hold relaxation"
+  },
+  "gates": {
+    "golden18_runtime": "GO_GOLDEN18_RUNTIME_ONLY",
+    "golden18_search_evidence": "GO",
+    "expected_answer": "NO-GO / 14 of 18",
+    "golden_shared_collateral": "NO-GO / 7 regression candidates",
+    "broader_search_recovery": "P0 / GOLDEN18_SEARCH_GO_ONLY",
+    "promotion_blocked_outside_this_canary": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

@@ -1,5 +1,19 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop399 golden18 런타임 증명
+
+- 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- 현 HEAD `d7b7fa11`에서 golden18 단일 search 포함 non-light runtime만 실행했다.
+- Run `20260704_105814_374640`은 input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, `ordered_flush_blocked=false`, `large_run_complete=true`로 완료됐다.
+- MCP health preflight는 `mcp_health_include_search=true`, `mcp_health_light_mode=false`, required/ok `2/2`로 통과했다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, search evidence `GO`, publication contract convergence `GO / violations 0`을 기록했다.
+- Expected-answer audit는 `NO-GO / 14 of 18`이다. 실패는 `11663540`, `11668307`, `11713212`, `11698880`이다.
+- `11660237`은 `테라포밍`으로 통과했지만 N>=5 flip probe 대체 증거가 아니다.
+- `11698880`은 expected `가챠 중독자의 퓨전펑크 생활` 대신 `아카데미 생존 갤러리`로 오귀속되어 hard-hold 완화 근거가 아니다.
+- Golden shared collateral compare는 shared `18`, changed `17`, regression candidates `7`이다. Full375 collateral은 `NOT_OPEN`이다.
+- Report는 `docs/devs/loop_reports/LOOP_399_REPORT_20260704.md`, state는 `docs/devs/loop399_golden18_runtime_proof_20260704.json`이다.
+- Gate는 golden18 runtime `GO_GOLDEN18_RUNTIME_ONLY`, expected-answer `NO-GO / 14 of 18`, golden shared collateral `NO-GO / 7`, broader search recovery `P0 / GOLDEN18_SEARCH_GO_ONLY`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop396-398 runtime stall shrink and 11700470 single-row flush
 
 - 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
