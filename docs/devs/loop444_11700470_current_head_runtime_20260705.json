@@ -1,0 +1,127 @@
+{
+  "loop": 444,
+  "date": "2026-07-05",
+  "head": "8f7634e1",
+  "branch": "goal/3202-slice-rank1-3",
+  "status": "ACTIVE / NOT_COMPLETE",
+  "scope": {
+    "post_id": 11700470,
+    "mode": "single_row_current_head_search_nonlight_vlm_ocr",
+    "large_runs_frozen": true,
+    "same_38_row_parent_packet_replay": false,
+    "full375": "NOT_OPEN",
+    "bounded_1000_1500": "NOT_DISPATCHED",
+    "n5_flip_probe": "NOT_DISPATCHED"
+  },
+  "runtime": {
+    "run_id": "20260705_050146_124655",
+    "input_completed_flushed_pending_failed": "1/1/1/0/0",
+    "large_run_complete": true,
+    "ordered_flush_blocked": false,
+    "partial_flush_gap": false,
+    "next_save_idx": 2,
+    "elapsed_seconds": 484.2,
+    "vlm_ocr_semantic_review_ready": true,
+    "image_post_count": 1,
+    "mcp_health": {
+      "include_search": true,
+      "light_mode": false,
+      "ok_count": 1,
+      "failure_count": 0
+    },
+    "row_search_health": {
+      "status": "ok",
+      "query_total": 10,
+      "degraded_total": 0,
+      "unrecovered_degraded_total": 0
+    }
+  },
+  "public_identity": {
+    "is_relevant": false,
+    "is_novel_related": true,
+    "is_resolved_work_discussion": false,
+    "discussion_type": "noise",
+    "official_title": null,
+    "heretic_url": null,
+    "candidate_ledger_status": "promotion_blocked",
+    "safe_resolved": false,
+    "title_resolution_state": "ocr_explicit_title_unresolved",
+    "title_resolution_allowed": false,
+    "candidate_count": 2,
+    "candidate_summary": [
+      {
+        "official_title": "낮에는 호구, 밤에는 각시탈",
+        "heretic_url": "https://m.munpia.com/novel/detail/581160",
+        "promotion_policy": "hold_without_promotion",
+        "matched_clue": "official_detail_candidate_cue:도깨비"
+      },
+      {
+        "title": "교수형",
+        "source_tier": "comment_surface",
+        "promotion_policy": "hold_without_promotion"
+      }
+    ]
+  },
+  "expected_contract": {
+    "expected": "밤도깨비 에이브 이미지 장면 단서(public title HOLD)",
+    "expected_no_public_title": true,
+    "golden_subset_gate": "PASS",
+    "passed_count": 1,
+    "failed_count": 0,
+    "status_counts": {
+      "expected_null_respected": 1
+    },
+    "collateral_regression_count": 0
+  },
+  "audits": {
+    "health": {
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop444_11700470_current_head_health_audit.json",
+      "flush_integrity": "GO / clean_completed_source",
+      "search_evidence": "GO",
+      "publication_contract_convergence": "GO / violations 0"
+    },
+    "publication_contract": {
+      "json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop444_11700470_current_head_publication_contract.json",
+      "md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop444_11700470_current_head_publication_contract.md",
+      "gate": "GO",
+      "row_count": 1,
+      "violation_row_count": 0
+    },
+    "golden_subset": {
+      "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop444_11700470_golden_manifest_subset.json",
+      "json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop444_11700470_current_head_golden_audit.json",
+      "md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop444_11700470_current_head_golden_audit.md"
+    },
+    "collateral_subset": {
+      "json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop444_11700470_current_head_collateral_compare.json",
+      "md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop444_11700470_current_head_collateral_compare.md"
+    }
+  },
+  "artifacts": {
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop397_11700470_from_golden18_after_image_scene_skip_input.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop444_11700470_current_head_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop444_11700470_current_head_search_nonlight_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop444_11700470_current_head_search_nonlight_result_checkpoint.jsonl",
+    "pending_snapshot": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop444_11700470_current_head_search_nonlight_result_pending_snapshot.json",
+    "log": "logs/expert_run_20260705_050146_124655.log",
+    "report": "docs/devs/loop_reports/LOOP_444_REPORT_20260705.md",
+    "data_analytics": "docs/devs/loop444_11700470_current_head_data_analytics_artifact.json"
+  },
+  "gate": {
+    "targeted_runtime": "GO / 1 of 1",
+    "targeted_expected_hold": "GO_TARGETED_EXPECTED_NULL_RESPECTED",
+    "relatedness_semantic": "REVIEW / is_novel_related=true but is_relevant=false",
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "golden18_expected_answer": "NOT_REFRESHED_AFTER_LOOP444",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next": [
+    "동일 stalled 38-row packet 반복 금지",
+    "11663521 또는 이미지 장면 단서 관련성 보존 술어를 단건으로 분리",
+    "11700470은 public HOLD 통과와 relatedness semantic REVIEW를 분리 유지"
+  ]
+}
+

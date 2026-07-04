@@ -1,5 +1,14 @@
 # Slang DB Improvement TODO
 
+## 2026-07-05 Loop444 11700470 이미지 장면 단서 slang 주의사항
+
+- [x] `밤도깨비 에이브`를 새 slang DB write-back이나 작품 전용 registry로 처리하지 않았다.
+- [x] `교수형` 댓글 표면과 `도깨비` 검색 후보는 후보로만 보존되고 public title로 승격되지 않았다.
+- [x] `--slang-db off` 조건으로 단건 runtime을 실행했다.
+- [x] Public title HOLD는 통과했지만 `is_novel_related=true`, `is_relevant=false/noise` 관련성 caveat를 별도 REVIEW로 남겼다.
+- [ ] 이미지 장면/캐릭터 단서가 작품 관련성은 보존하되 공개 제목은 HOLD하는 일반 술어를 검토한다.
+- Gate: slang DB write-back 아님, targeted expected-HOLD `GO_TARGETED_EXPECTED_NULL_RESPECTED`, relatedness semantic `REVIEW`, search recovery broader `P0 / ROW_LEVEL_GO_ONLY`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 아생갤 작중 갤러리 오마주 slang 주의사항
 
 - [x] `아생갤 -> 아카데미 생존 갤러리`를 새 slang DB write-back이나 작품 전용 registry 추가로 처리하지 않았다.

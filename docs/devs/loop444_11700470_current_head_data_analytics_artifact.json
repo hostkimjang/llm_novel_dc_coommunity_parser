@@ -1,0 +1,78 @@
+{
+  "artifact_type": "data_analytics_reader_facing_summary",
+  "loop": 444,
+  "language": "ko",
+  "title": "Loop444 11700470 current HEAD 이미지 장면 HOLD 단건 런타임",
+  "summary": {
+    "meaning": "11700470은 이미지 OCR의 '밤도깨비 에이브' 장면 단서가 있는 웹소설 관련 행이지만, 현재 증거로 공개 작품 제목을 확정하지 않는 HOLD 행이다.",
+    "primary_outcome": "wrong public title 재발 없음. public official_title은 null이고 expected_null_respected로 통과했다.",
+    "semantic_caveat": "최종 result는 is_novel_related=true와 is_relevant=false/noise가 갈라져 있어 작품 관련성 보존 품질은 REVIEW로 남긴다."
+  },
+  "runtime_metrics": {
+    "run_id": "20260705_050146_124655",
+    "input_count": 1,
+    "completed_count": 1,
+    "flushed_count": 1,
+    "pending_count": 0,
+    "failed_count": 0,
+    "elapsed_seconds": 484.2,
+    "ordered_flush_blocked": false,
+    "large_run_complete": true,
+    "vlm_ocr_ready": true
+  },
+  "search_metrics": {
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_count": 1,
+    "mcp_health_failure_count": 0,
+    "row_search_status": "ok",
+    "query_total": 10,
+    "degraded_total": 0,
+    "unrecovered_degraded_total": 0
+  },
+  "public_identity_metrics": {
+    "official_title": null,
+    "heretic_url": null,
+    "candidate_ledger_status": "promotion_blocked",
+    "safe_resolved": false,
+    "title_resolution_state": "ocr_explicit_title_unresolved",
+    "title_resolution_allowed": false,
+    "is_novel_related": true,
+    "is_relevant": false,
+    "discussion_type": "noise",
+    "candidate_count": 2
+  },
+  "audit_metrics": {
+    "health_flush_integrity": "GO / clean_completed_source",
+    "health_search_evidence": "GO",
+    "publication_contract_gate": "GO",
+    "publication_contract_violations": 0,
+    "golden_subset_gate": "PASS",
+    "golden_subset_passed": 1,
+    "golden_subset_failed": 0,
+    "golden_subset_status": "expected_null_respected",
+    "collateral_subset_regression_candidates": 0
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_444_REPORT_20260705.md",
+    "state": "docs/devs/loop444_11700470_current_head_runtime_20260705.json",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop444_11700470_current_head_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop444_11700470_current_head_search_nonlight_result_manifest.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop444_11700470_current_head_health_audit.json",
+    "publication_contract": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop444_11700470_current_head_publication_contract.json",
+    "golden_subset_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop444_11700470_current_head_golden_audit.json",
+    "collateral_subset_compare": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop444_11700470_current_head_collateral_compare.json"
+  },
+  "gate_status": {
+    "targeted_runtime": "GO / 1 of 1",
+    "targeted_expected_hold": "GO_TARGETED_EXPECTED_NULL_RESPECTED",
+    "relatedness_semantic": "REVIEW / is_novel_related=true but is_relevant=false",
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "golden18_expected_answer": "NOT_REFRESHED_AFTER_LOOP444",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}
+

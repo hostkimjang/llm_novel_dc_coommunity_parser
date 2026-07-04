@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260705-444 - 11700470 current HEAD image-scene HOLD runtime
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/parent replay 미발주 | dispatch 반복 금지 |
+| runtime proof | GO / 1 of 1 | run `20260705_050146_124655`, `1/1/1/0/0` | 단건 근거로만 사용 |
+| expected HOLD | GO_TARGETED | golden subset audit `PASS / 1 of 1`, `expected_null_respected` | golden18 전체 refresh와 분리 |
+| wrong publish closure | GO_TARGETED | `official_title=null`, Loop392 wrong title 재현 없음 | public HOLD 유지 |
+| publication contract | GO | row `1`, violation `0` | broader gate와 분리 |
+| search evidence | GO_ROW_LEVEL | include_search `true`, light_mode `false`, query/degraded/unrecovered `10/0/0` | broader search recovery는 P0 유지 |
+| relatedness semantic | REVIEW | `is_novel_related=true`, `is_relevant=false/noise` | 일반 술어 검토 |
+| 문서 동기화 | 완료 | Loop444 report/state/Data Analytics 갱신 | goal은 ACTIVE 유지 |
+
+Gate: targeted runtime `GO / 1 of 1`, targeted expected-HOLD `GO_TARGETED_EXPECTED_NULL_RESPECTED`, relatedness semantic `REVIEW`, golden18 expected-answer `NOT_REFRESHED_AFTER_LOOP444`, search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260705-443 - 아생갤 작중 갤러리 오마주 계약 정렬
 
 | 항목 | 상태 | 근거 | 다음 |

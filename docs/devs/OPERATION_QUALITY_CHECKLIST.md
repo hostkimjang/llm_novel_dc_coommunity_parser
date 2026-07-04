@@ -1,5 +1,21 @@
 # Operation Quality Checklist
 
+## 2026-07-05 Loop444 11700470 image-scene HOLD 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_444_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop444_11700470_current_head_runtime_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop444_11700470_current_head_data_analytics_artifact.json`.
+  - [x] Loop444 runtime `1/1/1/0/0`, `large_run_complete=true`, `ordered_flush_blocked=false`를 기록했다.
+  - [x] Health audit `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`를 기록했다.
+  - [x] Golden subset audit `PASS / 1 of 1`, status `expected_null_respected`를 기록했다.
+- 품질 게이트:
+  - [x] 단건 targeted runtime과 expected-HOLD 통과를 golden18/full375 approval로 승격하지 않는다.
+  - [x] Public title HOLD와 relatedness semantic REVIEW를 분리한다.
+  - [x] search row-level `GO`와 broader search recovery `P0 / ROW_LEVEL_GO_ONLY`를 분리한다.
+  - [x] 동일 stalled 38-row parent packet replay를 반복하지 않는다.
+  - [x] goal `ACTIVE / NOT_COMPLETE`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
+
 ## 2026-07-05 Loop442 11698897 frontier runtime probe 품질 게이트
 
 - 근거:

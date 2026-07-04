@@ -1,5 +1,19 @@
 # Development Checklist
 
+## 2026-07-05 Loop444 11700470 이미지 장면 HOLD 체크
+
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `11700470` 단건을 current HEAD `8f7634e1`에서 search 포함 non-light, VLM/OCR 필수로 실행했다.
+- [x] Run `20260705_050146_124655`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`, `ordered_flush_blocked=false`로 완료됐다.
+- [x] MCP health는 `include_search=true`, `light_mode=false`, ok/failure `1/0`이고 row search는 `ok`, query/degraded/unrecovered `10/0/0`이다.
+- [x] Public identity는 `official_title=null`, `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`, `title_resolution_state=ocr_explicit_title_unresolved`다.
+- [x] Loop392 wrong publish `세계 최강 미소녀에게 납치당했습니다`가 재현되지 않았음을 확인했다.
+- [x] Health audit `GO / clean_completed_source`, publication contract `GO / 0 violations`, golden subset audit `PASS / 1 of 1`, collateral subset regression `0`을 기록했다.
+- [x] `is_novel_related=true`와 `is_relevant=false/noise`가 갈라진 관련성 품질 caveat를 기록했다.
+- [ ] Golden18 전체 expected-answer는 `NOT_REFRESHED_AFTER_LOOP444`다. 단건 HOLD 통과를 golden/full375 approval로 승격하지 않는다.
+- [ ] Relatedness semantic은 `REVIEW`로 남긴다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted expected-HOLD `GO_TARGETED_EXPECTED_NULL_RESPECTED`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 아생갤 작중 갤러리 오마주 계약 체크
 
 - [x] 사용자 도메인 보정을 반영했다: `아생갤`은 현실 DC 갤러리명이 아니라 웹소설 `아카데미 생존 갤러리`의 작중 갤러리/커뮤니티 오마주형 제목 약어일 수 있다.

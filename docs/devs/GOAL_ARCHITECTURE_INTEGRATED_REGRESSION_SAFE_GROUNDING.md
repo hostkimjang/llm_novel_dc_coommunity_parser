@@ -8,6 +8,16 @@
 
 도메인 규칙: `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명으로 단정하지 않는다. 웹소설 안에서 갤러리/댓글식 커뮤니티를 오마주한 작품 제목일 수 있으므로, known abbreviation + explicit alias relation + specific-work target + community support가 있으면 shared work-bridge로 통과시키되, 경쟁 본문 작품 근거가 있으면 publish를 막는다.
 
+## 2026-07-05 Loop444 Addendum - 11700470 image-scene HOLD runtime
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop444는 `11700470` 단건 public title HOLD가 current HEAD에서 직렬화까지 도달하는지 확인한 회차이며 approval 회차가 아니다.
+- Evidence: report `docs/devs/loop_reports/LOOP_444_REPORT_20260705.md`, state `docs/devs/loop444_11700470_current_head_runtime_20260705.json`, Data Analytics summary `docs/devs/loop444_11700470_current_head_data_analytics_artifact.json`.
+- Runtime: run `20260705_050146_124655`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`, `ordered_flush_blocked=false`, MCP health `include_search=true`, `light_mode=false`, row search `ok`, VLM/OCR `READY`다.
+- Result: public `official_title=null`, `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`, `title_resolution_state=ocr_explicit_title_unresolved`. Golden subset audit는 `PASS / 1 of 1`, status `expected_null_respected`.
+- Boundary: 최종 result가 `is_novel_related=true`지만 `is_relevant=false/noise`라 relatedness semantic은 `REVIEW`다. Golden18 전체 expected-answer는 `NOT_REFRESHED_AFTER_LOOP444`.
+- Gate: targeted runtime `GO / 1 of 1`, targeted expected-HOLD `GO_TARGETED_EXPECTED_NULL_RESPECTED`, search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Next: 동일 stalled packet 반복 대신 `11663521` 또는 이미지 장면 단서 관련성 보존 술어를 작은 단위로 좁힌다.
+
 ## 2026-07-05 아생갤 작중 갤러리 오마주 Addendum
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. 사용자 도메인 보정을 코드 계약으로 재확인한 follow-up이며 approval 회차가 아니다.

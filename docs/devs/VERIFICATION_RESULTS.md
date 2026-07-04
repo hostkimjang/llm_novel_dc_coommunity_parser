@@ -1,5 +1,38 @@
 # Verification Results
 
+## 2026-07-05 Loop444 11700470 current HEAD image-scene HOLD 검증
+
+- 범위: `11700470` 단건을 current HEAD `8f7634e1`에서 search 포함 non-light, VLM/OCR 필수 조건으로 재실행해 public title HOLD 계약이 현재 코드에서 직렬화까지 도달하는지 확인했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_444_REPORT_20260705.md`
+  - state `docs\devs\loop444_11700470_current_head_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop444_11700470_current_head_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop444_11700470_current_head_search_nonlight_result.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop444_11700470_current_head_health_audit.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop444_11700470_current_head_publication_contract.json`
+  - golden subset audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop444_11700470_current_head_golden_audit.json`
+- Runtime:
+  - run `20260705_050146_124655`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - row search status `ok`, query/degraded/unrecovered `10/0/0`
+  - VLM/OCR `READY`, image post `1`
+- Result:
+  - `official_title=null`, `heretic_url=null`
+  - `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`
+  - `title_resolution_state=ocr_explicit_title_unresolved`, `title_resolution_allowed=false`
+  - `is_novel_related=true`, `is_relevant=false`, `discussion_type=noise`
+- Audit:
+  - `tools/audit_expert_run_health.py` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=GO`, `publication_contract_convergence=GO`.
+  - `tools/audit_publication_contract_convergence.py` -> `GO / row_count 1 / violation_row_count 0`.
+  - `tools/audit_regression_safe_golden.py` with `11700470` subset manifest -> `PASS / 1 of 1`, status `expected_null_respected`.
+- Boundary:
+  - Wrong publish closure와 expected-HOLD는 단건 GO다.
+  - `is_relevant=false/noise`는 관련성 semantic REVIEW로 남긴다.
+  - Golden18 전체 expected-answer는 `NOT_REFRESHED_AFTER_LOOP444`.
+  - Broader search recovery는 `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral은 `NOT_OPEN`.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 아생갤 작중 갤러리 오마주 계약 검증
 
 - 범위: `아생갤`을 현실 갤러리명으로 단정하지 않고, 웹소설 `아카데미 생존 갤러리`의 작중 갤러리/커뮤니티 오마주형 제목 약어로 인정할 수 있는 shared predicate 계약을 확인했다.
