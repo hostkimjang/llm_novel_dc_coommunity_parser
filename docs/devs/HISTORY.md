@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-05 - Loop453 11716498 마녀도시 author-work context runtime closure
+
+- 사용자 도메인 보정을 더 명확히 반영했다. `아생갤`은 웹소설 `아카데미 생존 갤러리` 약어일 수 있고, 작품 안의 갤러리/댓글식 커뮤니티 오마주를 현실 갤러리명으로만 단정하지 않는다.
+- 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- 첫 실행은 `include_search=false`, `light_mode=true` 잘못된 preflight였고 result JSON이 없어 증거에서 제외했다.
+- Run `20260705_081208_261938`은 `11716498` 단건을 search 포함 non-light, VLM/OCR 필수 조건으로 완료했고 input/completed/flushed/pending/failed `1/1/1/0/0`이다.
+- Result는 `official_title=마녀의 도시`, `official_url=https://novelpia.com/novel/23`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`, `publish_allowed=true`다.
+- `마녀도시`는 official detail로 확인된 작품 별칭이고, 작가/차기작/주식 드립 문맥은 adjacent-only null 근거가 아니라 현재 작품 author-work context로 판정했다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, search evidence `GO`, publication contract는 `GO / row_count 1 / violation_row_count 0`이다.
+- Golden subset audit는 `PASS / 1 of 1`, collateral subset regression candidate는 `0`이다.
+- Residual queue는 Loop452 current queue 기준 `102 -> 101`, `REPROCESS 74 -> 73`, `HOLD 28 -> 28`, `author_work_context_replay_required 1 -> 0`, validation issue `0`이다.
+- Report는 `docs/devs/loop_reports/LOOP_453_REPORT_20260705.md`, state는 `docs/devs/loop453_11716498_witch_city_author_context_runtime_20260705.json`, Data Analytics summary는 `docs/devs/loop453_11716498_witch_city_author_context_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_EXPECTED_TITLE_RESOLVED`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop439-441 gallery-homage alias bridge
 
 - 사용자 도메인 보정에 따라 `아생갤`을 현실 갤러리명으로만 보지 않고 웹소설 `아카데미 생존 갤러리`의 작품 내부 갤러리/커뮤니티 오마주형 제목 약어로 반영했다.

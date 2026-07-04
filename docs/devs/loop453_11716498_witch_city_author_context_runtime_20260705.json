@@ -1,0 +1,125 @@
+{
+  "loop": "453",
+  "date": "2026-07-05",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "scope": "11716498 마녀도시 author-work context single-row runtime closure",
+  "head": "e66fea26",
+  "user_domain_correction": {
+    "surface": "아생갤 / 갤러리",
+    "meaning": "아생갤은 웹소설 아카데미 생존 갤러리의 약어일 수 있고, 최신 웹소설은 작품 안의 갤러리/댓글식 커뮤니티 오마주를 서사 장치로 접목할 수 있으므로 갤러리 표면을 현실 DC 갤러리명으로만 단정하지 않음",
+    "not_real_gallery_only": true,
+    "slang_db_write_back": false
+  },
+  "excluded_wrong_preflight": {
+    "log": "logs/expert_run_20260705_081123_745986.log",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop453_11716498_witch_city_author_context_current_head_result_manifest.json",
+    "reason": "include_search=false, light_mode=true preflight였고 result JSON이 없어 증거에서 제외"
+  },
+  "artifacts": {
+    "input_jsonl": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop453_11716498_witch_city_author_context_input.jsonl",
+    "input_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop453_11716498_witch_city_author_context_input_manifest.json",
+    "result_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop453_11716498_witch_city_author_context_search_nonlight_result.json",
+    "result_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop453_11716498_witch_city_author_context_search_nonlight_result_manifest.json",
+    "checkpoint_jsonl": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop453_11716498_witch_city_author_context_search_nonlight_result_checkpoint.jsonl",
+    "pending_snapshot": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop453_11716498_witch_city_author_context_search_nonlight_result_pending_snapshot.json",
+    "log": "logs/expert_run_20260705_081208_261938.log",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop453_11716498_witch_city_author_context_runtime_health_audit.json",
+    "publication_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop453_11716498_witch_city_author_context_publication_contract_audit.json",
+    "publication_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop453_11716498_witch_city_author_context_publication_contract_audit.md",
+    "golden_manifest_subset": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop453_11716498_witch_city_author_context_golden_manifest_subset.json",
+    "golden_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop453_11716498_witch_city_author_context_golden_audit.json",
+    "golden_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop453_11716498_witch_city_author_context_golden_audit.md",
+    "collateral_compare_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop453_11716498_witch_city_author_context_collateral_compare.json",
+    "collateral_compare_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop453_11716498_witch_city_author_context_collateral_compare.md",
+    "residual_queue_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop453_after_11716498_author_work_context_residual_action_queue.json",
+    "residual_queue_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop453_after_11716498_author_work_context_residual_action_queue.md",
+    "loop_report": "docs/devs/loop_reports/LOOP_453_REPORT_20260705.md"
+  },
+  "runtime": {
+    "run_id": "20260705_081208_261938",
+    "input_count": 1,
+    "completed_count": 1,
+    "flushed_count": 1,
+    "pending_count": 0,
+    "failed_count": 0,
+    "large_run_complete": true,
+    "ordered_flush_blocked": false,
+    "partial_flush_gap": false,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_count": 1,
+    "mcp_health_failure_count": 0,
+    "image_post_count": 0,
+    "vlm_ocr": "NOT_APPLICABLE_NO_IMAGE"
+  },
+  "result": {
+    "post_id": 11716498,
+    "post_title": "마녀도시 작가 이민갔다옴?",
+    "official_title": "마녀의 도시",
+    "official_url": "https://novelpia.com/novel/23",
+    "candidate_ledger_status": "safe_resolved",
+    "title_resolution_state": "resolved",
+    "title_resolution_allowed": true,
+    "work_resolution": "resolved",
+    "promotion_decision_status": "publish",
+    "publish_allowed": true,
+    "bypassed_gate": false,
+    "discussion_type": "general",
+    "search_query_total": 12,
+    "search_degraded": 0,
+    "search_unrecovered_degraded": 0,
+    "search_upstream_zero": 1,
+    "search_accepted": 73,
+    "search_raw": 214,
+    "search_filtered": 7,
+    "search_retried": 4,
+    "reason": "마녀도시는 공식 작품 마녀의 도시의 직접 별칭으로 수렴했고, 작가/차기작/주식 드립은 author-work context이지 adjacent-only null 근거가 아님"
+  },
+  "audits": {
+    "health": {
+      "flush_integrity": "GO / clean_completed_source",
+      "search_evidence": "GO",
+      "publication_contract_convergence": "GO / violations 0",
+      "slang_db_bad_remaining": 0
+    },
+    "publication": {
+      "gate": "GO",
+      "row_count": 1,
+      "violation_row_count": 0
+    },
+    "golden_subset": {
+      "canary_semantic_gate": "PASS",
+      "passed_count": 1,
+      "failed_count": 0,
+      "status": "expected_title_resolved"
+    },
+    "collateral_subset": {
+      "collateral_regression_count": 0
+    }
+  },
+  "residual_queue": {
+    "source_queue": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop452_after_11708443_known_alias_residual_action_queue.json",
+    "source_rows_before": 102,
+    "residual_action_queue_rows_after": 101,
+    "reprocess_before": 74,
+    "reprocess_after": 73,
+    "hold_before": 28,
+    "hold_after": 28,
+    "author_work_context_replay_required_before": 1,
+    "author_work_context_replay_required_after": 0,
+    "closed_post_ids_excluded": [
+      11716498
+    ],
+    "validation_issue_count": 0
+  },
+  "gates": {
+    "targeted_runtime": "GO / 1 of 1",
+    "targeted_expected_answer": "GO_TARGETED_EXPECTED_TITLE_RESOLVED",
+    "row_level_search": "GO",
+    "residual_queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL / 102 -> 101",
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  }
+}

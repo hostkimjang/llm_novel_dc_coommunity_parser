@@ -1,5 +1,25 @@
 # Development Checklist
 
+## 2026-07-05 Loop453 11716498 마녀도시 author-work context runtime 체크
+
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] 사용자 도메인 보정을 갱신했다: `아생갤`은 웹소설 `아카데미 생존 갤러리`의 약어일 수 있고, 작품 안의 갤러리/댓글식 커뮤니티 오마주를 현실 갤러리명으로만 단정하지 않는다.
+- [x] 첫 실행은 `include_search=false`, `light_mode=true` 잘못된 preflight였고 result JSON이 없어 증거에서 제외했다.
+- [x] `11716498` 단건을 current HEAD `e66fea26`에서 search 포함 non-light, VLM/OCR 필수로 실행했다.
+- [x] Run `20260705_081208_261938`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`, `partial_flush_gap=false`로 완료됐다.
+- [x] MCP health는 `include_search=true`, `light_mode=false`, ok/failure `1/0`이다.
+- [x] Search는 query/degraded/unrecovered `12/0/0`, upstream zero `1`, accepted/raw `73/214`다.
+- [x] VLM/OCR은 image post가 없어 `NOT_APPLICABLE_NO_IMAGE`로 기록했다.
+- [x] Public identity는 `official_title=마녀의 도시`, `official_url=https://novelpia.com/novel/23`, `candidate_ledger_status=safe_resolved`, `title_resolution_state=resolved`다.
+- [x] Promotion은 `publish_allowed=true`, `bypassed_gate=false`이며 `마녀도시 -> 마녀의 도시` official detail bridge 근거를 기록했다.
+- [x] 작가/차기작/주식 드립 문맥은 adjacent-only null 근거가 아니라 현재 작품 author-work context로 판정했다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] Health audit `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`를 기록했다.
+- [x] Golden subset audit `PASS / 1 of 1`, status `expected_title_resolved`를 기록했다.
+- [x] Residual queue는 Loop452 current queue 기준 `102 -> 101`, `author_work_context_replay_required 1 -> 0`, validation issue `0`으로 갱신했다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 residual queue delta를 full scan approval로 승격하지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_EXPECTED_TITLE_RESOLVED`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, row-level search `GO`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop452 11708443 괴담출근 known-alias runtime closure 체크
 
 - [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

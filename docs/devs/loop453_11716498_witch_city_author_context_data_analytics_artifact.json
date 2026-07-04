@@ -1,0 +1,53 @@
+{
+  "artifact_type": "data_analytics_summary",
+  "loop": "453",
+  "date": "2026-07-05",
+  "language": "ko",
+  "reader_summary": "Loop453은 residual author_work_context_replay_required의 11716498 단건을 search 포함 non-light 조건으로 완료했다. 마녀도시는 공식 작품 마녀의 도시로 safe_resolved/publish 되었고 residual queue는 Loop452 기준 102에서 101로 감소했다. 이는 row-level closure이며 full375 승인 근거가 아니다.",
+  "domain_rule": {
+    "asaenggal_gallery_homage": "아생갤은 아카데미 생존 갤러리 약어일 수 있으며, 웹소설 안의 갤러리/댓글식 커뮤니티 오마주를 현실 갤러리명으로만 단정하지 않는다."
+  },
+  "run": {
+    "run_id": "20260705_081208_261938",
+    "input_completed_flushed_pending_failed": "1/1/1/0/0",
+    "mcp_health": "include_search=true / light_mode=false / ok=1 / failure=0",
+    "search": "queries=12 / degraded=0 / unrecovered=0 / upstream_zero=1",
+    "vlm_ocr": "NOT_APPLICABLE_NO_IMAGE"
+  },
+  "decision": {
+    "post_id": 11716498,
+    "source_surface": "마녀도시",
+    "official_title": "마녀의 도시",
+    "official_url": "https://novelpia.com/novel/23",
+    "candidate_ledger_status": "safe_resolved",
+    "promotion_decision_status": "publish",
+    "publish_allowed": true,
+    "bypassed_gate": false,
+    "meaning": "작가/차기작/주식 드립 문맥은 adjacent-only null 근거가 아니라 현재 작품에 대한 author-work context로 판정했다."
+  },
+  "audits": {
+    "health_audit": "GO / clean_completed_source / search_evidence GO / publication_contract GO",
+    "publication_audit": "GO / row_count 1 / violation_row_count 0",
+    "golden_subset_audit": "PASS / 1 of 1 / expected_title_resolved",
+    "collateral_subset_compare": "collateral_regression_count 0"
+  },
+  "queue": {
+    "source": "loop452_after_11708443_known_alias_residual_action_queue.json",
+    "transition": "102 -> 101",
+    "reprocess": "74 -> 73",
+    "hold": "28 -> 28",
+    "author_work_context_replay_required": "1 -> 0",
+    "validation_issue_count": 0
+  },
+  "gate_boundary": {
+    "targeted_runtime": "GO / 1 of 1",
+    "targeted_expected_answer": "GO_TARGETED_EXPECTED_TITLE_RESOLVED",
+    "row_level_search": "GO",
+    "residual_queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL / 102 -> 101",
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

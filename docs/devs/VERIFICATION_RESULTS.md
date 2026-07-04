@@ -1,5 +1,40 @@
 # Verification Results
 
+## 2026-07-05 Loop453 11716498 마녀도시 author-work context runtime 검증
+
+- 범위: residual `author_work_context_replay_required`의 `11716498` 단건을 current HEAD `e66fea26`에서 search 포함 non-light, VLM/OCR 필수 조건으로 재실행했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_453_REPORT_20260705.md`
+  - state `docs\devs\loop453_11716498_witch_city_author_context_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop453_11716498_witch_city_author_context_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop453_11716498_witch_city_author_context_search_nonlight_result.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop453_11716498_witch_city_author_context_runtime_health_audit.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop453_11716498_witch_city_author_context_publication_contract_audit.json`
+  - golden subset audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop453_11716498_witch_city_author_context_golden_audit.json`
+  - residual queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop453_after_11716498_author_work_context_residual_action_queue.json`
+- Runtime:
+  - run `20260705_081208_261938`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - Search query/degraded/unrecovered `12/0/0`, upstream zero `1`, accepted/raw `73/214`
+  - VLM/OCR `NOT_APPLICABLE_NO_IMAGE`
+- Result:
+  - `official_title=마녀의 도시`, `official_url=https://novelpia.com/novel/23`
+  - `candidate_ledger_status=safe_resolved`, `title_resolution_state=resolved`, `work_resolution=resolved`
+  - `promotion_decision.status=publish`, `publish_allowed=true`, `bypassed_gate=false`
+- Audit:
+  - `tools/audit_expert_run_health.py` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=GO`, `publication_contract_convergence=GO`.
+  - `tools/audit_publication_contract_convergence.py` -> `GO / row_count 1 / violation_row_count 0`.
+  - subset golden audit -> `PASS / 1 of 1`, status `expected_title_resolved`.
+  - residual queue split -> Loop452 current queue `102 -> 101`, `author_work_context_replay_required 1 -> 0`, validation issue `0`.
+- Boundary:
+  - 첫 실행은 `include_search=false`, `light_mode=true` 잘못된 preflight였고 result JSON이 없어 증거에서 제외한다.
+  - `마녀도시`는 search non-light와 official detail로 `마녀의 도시`에 수렴했다. `주식 드립`은 title 후보가 아니라 작품 내용 반응 cue다.
+  - 작가/차기작 언급은 adjacent-only null 근거가 아니라 현재 작품 author-work context로 판정했다.
+  - `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명으로만 보지 않는다. 웹소설 안의 갤러리/댓글식 커뮤니티 오마주형 제목 또는 약어일 수 있다.
+  - Broader search recovery는 `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral은 `NOT_OPEN`.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop452 11708443 괴담출근 known-alias runtime closure 검증
 
 - 범위: residual `known_alias_runtime_replay_required`의 마지막 단건 `11708443`을 current HEAD `62506620` + URL 후처리 lock/budget 패치에서 search 포함 non-light, VLM/OCR 필수 조건으로 재실행했다.
