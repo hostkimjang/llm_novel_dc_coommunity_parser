@@ -1,5 +1,18 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop428 11698880 Discourse alias-character probe contract
+
+- 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop427 golden18 실패 `11698880`은 Gatekeeper가 `search_requests=[]`, image-only `possible_characters=["스폰지밥","뚱이"]`로 판단하고, Discourse `search_suggestions`의 `가챠펑크 세드릭` query가 non-novel early exit 전에 반영되지 않아 search가 실행되지 않은 경로로 좁혔다.
+- `src/llm_batch/experts/orchestrator.py`는 Gatekeeper와 Discourse 검색 제안을 먼저 합치고, 자연어 purpose의 Discourse suggestion을 `discourse_suggestion` probe로 정규화한다.
+- 같은 함수는 Gatekeeper character set이 비어 있으면 worklike query token 중 본문에 직접 존재하고 alias가 아닌 토큰만 character 후보로 보강한다. 이미지 전용 캐릭터는 본문에 없으면 통과하지 않는다.
+- `tests/test_title_lead_search_inferred_guard.py`에 Gatekeeper search request가 비어 있고 Discourse suggestion만 있는 `11698880` 계약 테스트를 추가했다.
+- 검증은 py_compile PASS, focused non-novel early-exit `3` PASS, title-lead guard 전체 `213` PASS다.
+- R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 추가하지 않았다.
+- Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다. Loop427 runtime `18/18`은 생산성 상속 근거로만 사용하고, expected-answer나 full approval 근거로 승격하지 않는다.
+- Report는 `docs/devs/loop_reports/LOOP_428_REPORT_20260704.md`, state는 `docs/devs/loop428_direct_alias_discourse_probe_20260704.json`, Data Analytics summary는 `docs/devs/loop428_direct_alias_discourse_probe_data_analytics_artifact.json`이다.
+- Gate는 code contract `GO_UNIT`, runtime production `GO_INHERITED_LOOP427_ONLY`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, golden expected-answer `NO-GO / inherited Loop427 15 of 18`, search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop427 golden18 after Loop426 mixed-input verification
 
 - Loop426 커밋 `4849c538` 이후 golden18 단일 search 포함 non-light 런만 실행했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.

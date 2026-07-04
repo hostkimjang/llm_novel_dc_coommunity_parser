@@ -1,5 +1,18 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop428 11698880 Discourse alias-character probe 체크
+
+- [x] full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, 신규 대형 런을 발주하지 않았다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] Loop427 `11698880` mixed-input 실패 원인을 Gatekeeper character miss + Discourse suggestion 필터 탈락으로 좁혔다.
+- [x] `_has_direct_worklike_alias_character_search_probe`가 Discourse `search_suggestions`의 직접 alias+character query를 non-novel early exit 전에 볼 수 있게 했다.
+- [x] 이미지 전용 character 토큰은 본문에 없으면 통과하지 못하게 유지했다.
+- [x] 검증: py_compile PASS, focused non-novel early-exit `3` PASS, title-lead guard 전체 `213` PASS.
+- [ ] Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다. Loop427 `18/18`은 생산성 상속 근거일 뿐 current patch semantic approval이 아니다.
+- [ ] Golden expected-answer는 `NO-GO / inherited Loop427 15 of 18`이고 full375 collateral은 `NOT_OPEN`이다.
+- [ ] Search recovery는 `P0 / REVIEW / search_degraded_observed`로 유지한다.
+- Gate: code contract `GO_UNIT`, runtime production `GO_INHERITED_LOOP427_ONLY`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, expected-answer `NO-GO`, search recovery `P0 / REVIEW`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop427 golden18 after Loop426 체크
 
 - [x] full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

@@ -4552,10 +4552,10 @@ class Orchestrator:
         Detect direct body alias + character probes that should survive non-novel
         demotion before search runs.
 
-        This is intentionally driven by existing Gatekeeper artifacts instead of
-        expanding a title/cue allowlist: a direct worklike alias must already be
-        present in the non-comment text, and a worklike search request must pair
-        that alias with a detected character token from the same packet.
+        This is intentionally driven by existing Gatekeeper/Discourse artifacts
+        instead of expanding a title/cue allowlist: a direct worklike alias must
+        already be present in the non-comment text, and a worklike search request
+        must pair that alias with a direct character token from the same packet.
         """
         gk_out = gatekeeper_result or ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
         if not isinstance(gk_out, dict):
@@ -4576,37 +4576,11 @@ class Orchestrator:
         if not non_comment_norm:
             return False
 
-        raw_chars: List[Any] = []
-        raw_chars.extend(entities.get("possible_characters") or [])
-        raw_chars.extend(entities.get("relevant_characters") or [])
-        raw_chars.extend(gk_out.get("possible_characters") or [])
-        char_norms: set[str] = set()
-        for raw in raw_chars:
-            text = str(raw or "").strip(" \"'“”‘’.,;:!?…")
-            if not text:
-                continue
-            stripped = self._strip_trailing_korean_particle(text) or text
-            for value in (text, stripped):
-                norm = self._normalize_kor_token(value)
-                if (
-                    len(norm) < 3
-                    or norm not in non_comment_norm
-                    or self._is_low_specificity_search_seed(
-                        value,
-                        discourse_warning="direct_worklike_alias_character_probe",
-                    )
-                    or self._is_generic_topic_gap_term(value)
-                ):
-                    continue
-                char_norms.add(norm)
-        if not char_norms:
-            return False
-
-        alias_norms = self._collect_direct_worklike_alias_probe_norms(ctx, gatekeeper_result)
         worklike_purposes = {
             "alias_bridge_search",
             "alias_raw_probe",
             "character_verify",
+            "discourse_suggestion",
             "official_title_verify",
             "platform_title_search",
             "title_anchor_official_probe",
@@ -4622,7 +4596,50 @@ class Orchestrator:
             else {}
         )
         if isinstance(discourse, dict):
-            search_requests.extend(discourse.get("search_suggestions") or [])
+            for suggestion in discourse.get("search_suggestions") or []:
+                if not isinstance(suggestion, dict):
+                    search_requests.append(suggestion)
+                    continue
+                purpose = str(suggestion.get("purpose") or "").split(":", 1)[0].strip().lower()
+                if purpose and purpose not in worklike_purposes:
+                    suggestion = dict(suggestion)
+                    suggestion["purpose"] = "discourse_suggestion"
+                search_requests.append(suggestion)
+
+        raw_chars: List[Any] = []
+        raw_chars.extend(entities.get("possible_characters") or [])
+        raw_chars.extend(entities.get("relevant_characters") or [])
+        raw_chars.extend(gk_out.get("possible_characters") or [])
+        char_norms: set[str] = set()
+
+        def _add_direct_char_candidate(
+            raw: Any,
+            *,
+            disallowed_norms: Optional[set[str]] = None,
+        ) -> None:
+            text = str(raw or "").strip(" \"'“”‘’.,;:!?…")
+            if not text:
+                return
+            stripped = self._strip_trailing_korean_particle(text) or text
+            for value in (text, stripped):
+                norm = self._normalize_kor_token(value)
+                if (
+                    len(norm) < 3
+                    or (disallowed_norms is not None and norm in disallowed_norms)
+                    or norm not in non_comment_norm
+                    or self._is_low_specificity_search_seed(
+                        value,
+                        discourse_warning="direct_worklike_alias_character_probe",
+                    )
+                    or self._is_generic_topic_gap_term(value)
+                ):
+                    continue
+                char_norms.add(norm)
+
+        for raw in raw_chars:
+            _add_direct_char_candidate(raw)
+
+        alias_norms = self._collect_direct_worklike_alias_probe_norms(ctx, gatekeeper_result)
 
         if not alias_norms:
             raw_alias_terms: List[Any] = []
@@ -4654,6 +4671,20 @@ class Orchestrator:
                         continue
                     alias_norms.add(norm)
         if not alias_norms:
+            return False
+        if not char_norms:
+            for req in search_requests:
+                if not isinstance(req, dict):
+                    continue
+                purpose = str(req.get("purpose") or "").split(":", 1)[0].strip().lower()
+                if purpose and purpose not in worklike_purposes:
+                    continue
+                for raw in self._extract_query_tokens(
+                    str(req.get("query") or ""),
+                    keep_generic=False,
+                ):
+                    _add_direct_char_candidate(raw, disallowed_norms=alias_norms)
+        if not char_norms:
             return False
 
         for req in search_requests:

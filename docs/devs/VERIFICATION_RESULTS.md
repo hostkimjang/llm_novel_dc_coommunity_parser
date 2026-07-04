@@ -1,5 +1,27 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop428 11698880 Discourse alias-character probe 검증
+
+- 범위: Loop427 golden18 실패 `11698880`의 mixed-input 조기 종료 경로를 코드 계약으로 좁혔다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, 신규 대형 런은 발주하지 않았다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_428_REPORT_20260704.md`
+  - state `docs\devs\loop428_direct_alias_discourse_probe_20260704.json`
+  - Data Analytics summary `docs\devs\loop428_direct_alias_discourse_probe_data_analytics_artifact.json`
+- Code evidence:
+  - `src\llm_batch\experts\orchestrator.py`: Gatekeeper `search_requests`와 Discourse `search_suggestions`를 먼저 합치고, 자연어 purpose의 Discourse suggestion을 `discourse_suggestion`으로 정규화한다.
+  - `src\llm_batch\experts\orchestrator.py`: Gatekeeper character set이 비어 있으면 worklike query token에서 본문 직접 토큰이면서 alias가 아닌 값만 character 후보로 보강한다.
+  - `tests\test_title_lead_search_inferred_guard.py`: Gatekeeper search request가 없고 Discourse suggestion만 `가챠펑크 세드릭`을 제시하는 `11698880` 계약 테스트를 추가했다.
+- Verification commands:
+  - `.\\.venv312\\Scripts\\python.exe -m py_compile src\\llm_batch\\experts\\orchestrator.py tests\\test_title_lead_search_inferred_guard.py` -> PASS
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard -k non_novel_early_exit` -> PASS, 3 tests
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard` -> PASS, 213 tests
+- Boundary:
+  - Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다.
+  - Loop427 run `20260704_222456_555589`의 `18/18/18/0/0`은 runtime 생산성 상속 근거일 뿐 current patch semantic approval이 아니다.
+  - Golden expected-answer는 `NO-GO / inherited Loop427 15 of 18`이고 실패 `11694019`, `11660237`, `11698880`은 닫지 않았다.
+  - Search recovery는 `P0 / REVIEW / search_degraded_observed`, full375 collateral은 `NOT_OPEN`이다.
+- Gate: code contract `GO_UNIT`, runtime production `GO_INHERITED_LOOP427_ONLY`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, expected-answer `NO-GO`, search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop427 golden18 after Loop426 검증
 
 - 범위: Loop426 커밋 `4849c538` 뒤 golden18 단일 search 포함 non-light 런만 실행했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.

@@ -1,5 +1,18 @@
 ﻿# Developer TODO Index
 
+## 2026-07-04 Loop428 TODO
+
+- 상태 업데이트: Loop428은 Loop427 golden18에서 다시 unresolved가 된 `11698880`의 mixed-input 조기 종료 원인을 실코드 계약으로 좁힌 회차다. Code contract는 `GO_UNIT`이지만 runtime replay after patch는 `NOT_RUN_AFTER_PATCH`이고 goal은 완료가 아니다.
+- [x] full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, 신규 대형 런을 발주하지 않았다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] Discourse `search_suggestions`의 자연어 purpose가 direct alias+character probe에서 탈락하지 않도록 일반 contract로 정규화했다.
+- [x] Gatekeeper가 `possible_characters`에서 본문 인물을 놓쳐도 worklike query token이 본문에 직접 있고 alias가 아니면 character 후보로 쓸 수 있게 했다.
+- [x] py_compile, focused non-novel early-exit `3`, title-lead guard 전체 `213`을 PASS했다.
+- [ ] 다음 runtime 확인이 필요하면 신규 대형 런이 아니라 golden18 단일 또는 `11698880` 단건으로 제한한다.
+- [ ] Golden expected-answer `NO-GO / inherited Loop427 15 of 18`, search recovery `P0 / REVIEW`, full375 `NOT_OPEN`을 닫지 않는다.
+- [ ] `11694019` wrong `혼후순결`과 `11660237` unresolved는 별도 작은 계약/비결정 분석 lane으로 분리한다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop427 TODO
 
 - 상태 업데이트: Loop427은 Loop426 커밋 `4849c538` 뒤 golden18 단일 search 포함 non-light 런이 실제 `18/18` row를 내는지 확인한 회차다. Runtime은 `GO`지만 expected-answer는 `NO-GO / 15 of 18`이고 goal은 완료가 아니다.

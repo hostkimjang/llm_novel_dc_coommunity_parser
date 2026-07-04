@@ -10839,6 +10839,56 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             orchestrator._has_direct_worklike_alias_character_search_probe(ctx, gatekeeper)
         )
 
+    def test_non_novel_early_exit_uses_discourse_alias_character_probe(self):
+        orchestrator = Orchestrator(experts={})
+        ctx = ConversationContext(
+            post_id=11698880,
+            post_data={
+                "title": "아생갤 개 존나게 재밌군 ㅇㅇ",
+                "content_blocks": [
+                    {"type": "text", "text": "가챠펑크 세드릭도 그렇고 주인공이 시원시원해서 좋구나"},
+                    {"type": "image", "image_url": "https://example.test/spongebob.png"},
+                ],
+            },
+            comments=[],
+        )
+        gatekeeper = {
+            "post_type": "community_banter",
+            "detected_entities": {
+                "possible_titles": ["스폰지밥"],
+                "possible_characters": ["스폰지밥", "뚱이"],
+            },
+            "context_clues": {
+                "title_as_body_continuation": True,
+                "title_body_joined_text": "아생갤 가챠펑크 세드릭 주인공",
+            },
+            "key_terms": ["아생갤", "가챠펑크", "세드릭"],
+            "search_requests": [],
+        }
+        ctx.set_expert_output(ExpertType.GATEKEEPER, gatekeeper)
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "make_joke",
+                    "target_kind": "genre",
+                    "primary_domain": "anime",
+                    "domain_confidence": "high",
+                    "search_suggestions": [
+                        {
+                            "priority": 1,
+                            "query": "가챠펑크 세드릭",
+                            "purpose": "특정 작품 캐릭터명인지, 장르/밈 언급인지 검색으로 확인",
+                        }
+                    ],
+                }
+            },
+        )
+
+        self.assertTrue(
+            orchestrator._has_direct_worklike_alias_character_search_probe(ctx, gatekeeper)
+        )
+
     def test_non_novel_early_exit_ignores_image_character_without_body_pair(self):
         orchestrator = Orchestrator(experts={})
         ctx = ConversationContext(

@@ -1,0 +1,113 @@
+{
+  "title": "Loop428 11698880 Discourse alias-character probe 계약",
+  "status": "repo_structured_summary_only",
+  "generated_at": "2026-07-04T23:20:00+09:00",
+  "surface": "loop_report_support",
+  "tool_note": "@data-analytics 전용 커넥터가 현재 세션 도구로 노출되지 않아, 코드 diff와 unittest 결과를 직접 집계했다.",
+  "datasets": {
+    "gate_status_rows": [
+      {
+        "gate": "code_contract",
+        "status": "GO_UNIT",
+        "detail": "Discourse search_suggestions alias+character probe survives non-novel early exit",
+        "score": 1
+      },
+      {
+        "gate": "focused_contract",
+        "status": "PASS",
+        "detail": "non_novel_early_exit focused unittest 3 tests OK",
+        "score": 1
+      },
+      {
+        "gate": "related_regression",
+        "status": "PASS",
+        "detail": "tests.test_title_lead_search_inferred_guard 213 tests OK",
+        "score": 1
+      },
+      {
+        "gate": "runtime_after_patch",
+        "status": "NOT_RUN_AFTER_PATCH",
+        "detail": "No new large run or parent packet replay was dispatched",
+        "score": 0
+      },
+      {
+        "gate": "runtime_production_inherited",
+        "status": "GO_INHERITED_ONLY",
+        "detail": "Loop427 golden18 run 18/18/18/0/0 proves row production only",
+        "score": 0
+      },
+      {
+        "gate": "golden_expected_answer",
+        "status": "NO-GO",
+        "detail": "Inherited Loop427 15 of 18; failed rows 11694019, 11660237, 11698880",
+        "score": 0
+      },
+      {
+        "gate": "search_recovery",
+        "status": "P0 / REVIEW",
+        "detail": "Loop427 search_degraded_observed and unrecovered degraded total 14 remain open",
+        "score": 0
+      },
+      {
+        "gate": "full375_collateral",
+        "status": "NOT_OPEN",
+        "detail": "Full collateral replay was not opened in this loop",
+        "score": 0
+      },
+      {
+        "gate": "full_scan_approval",
+        "status": "false",
+        "detail": "semantic_quality=REVIEW-LOCKED and goal ACTIVE / NOT_COMPLETE",
+        "score": 0
+      }
+    ],
+    "contract_rows": [
+      {
+        "post_id": 11698880,
+        "failure_mode": "Gatekeeper possible_characters image-only, Discourse suggests 가챠펑크 세드릭",
+        "expected_contract": "direct body alias plus direct character query reaches search before non-novel early exit",
+        "status": "GO_UNIT",
+        "hardcoded_cue_added": false
+      }
+    ],
+    "verification_rows": [
+      {
+        "command": ".\\.venv312\\Scripts\\python.exe -m py_compile src\\llm_batch\\experts\\orchestrator.py tests\\test_title_lead_search_inferred_guard.py",
+        "status": "PASS"
+      },
+      {
+        "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard -k non_novel_early_exit",
+        "status": "PASS",
+        "tests": 3
+      },
+      {
+        "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard",
+        "status": "PASS",
+        "tests": 213
+      }
+    ],
+    "open_gate_rows": [
+      {
+        "gate": "search_recovery",
+        "status": "OPEN",
+        "next_action": "search degraded 100% recovery remains P0 before broad promotion unblock"
+      },
+      {
+        "gate": "golden_runtime_after_patch",
+        "status": "OPEN_OPTIONAL_SMALL_RUN",
+        "next_action": "If runtime proof is required, run golden18 single or 11698880 single only"
+      },
+      {
+        "gate": "full375_collateral",
+        "status": "NOT_OPEN",
+        "next_action": "Do not promote shared golden collateral to full approval"
+      }
+    ]
+  },
+  "sources": [
+    "src/llm_batch/experts/orchestrator.py",
+    "tests/test_title_lead_search_inferred_guard.py",
+    "docs/devs/loop_reports/LOOP_427_REPORT_20260704.md",
+    "docs/devs/loop428_direct_alias_discourse_probe_20260704.json"
+  ]
+}

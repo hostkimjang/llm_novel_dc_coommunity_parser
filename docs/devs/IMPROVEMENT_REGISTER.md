@@ -1,5 +1,23 @@
 # Improvement Register
 
+## IMP-20260704-428 - 11698880 Discourse alias-character probe contract
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/golden18/parent replay 미발주 | dispatch 반복 금지 |
+| R1 cue 확장 | 없음 | title/cue allowlist, `post_id` 예외, registry 추가 없음 | 일반 술어 유지 |
+| direct alias-character probe | GO_UNIT | Discourse `search_suggestions`의 alias+character query를 조기 종료 전에 보존 | runtime 확인은 작은 범위만 |
+| 이미지 캐릭터 안전성 | GO_UNIT | 본문에 없는 image-only character는 probe character로 쓰지 않음 | substring 위험 감시 |
+| 테스트 | PASS | py_compile, focused `3`, title-lead guard `213` | 커밋 후 다음 lane 선정 |
+| runtime after patch | NOT_RUN_AFTER_PATCH | 이번 회차는 코드 계약 검증만 수행 | 필요 시 golden18 단일 또는 `11698880` 단건 |
+| inherited runtime | GO_INHERITED_ONLY | Loop427 run `20260704_222456_555589`, `18/18/18/0/0` | semantic approval로 승격 금지 |
+| expected-answer | NO-GO / inherited 15 of 18 | 실패 `11694019`, `11660237`, `11698880` | 작은 계약/비결정 분석으로 분리 |
+| search evidence | P0 / REVIEW | Loop427 `search_degraded_observed`, unrecovered degraded `14` | search degraded 100% 복구 필요 |
+| collateral | NOT_OPEN | full375 전수 미실행 | golden shared와 full375 분리 |
+| 문서 동기화 | 완료 | Loop428 report/state/verification/register 갱신 | goal은 ACTIVE 유지 |
+
+Gate: code contract `GO_UNIT`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, runtime production `GO_INHERITED_LOOP427_ONLY`, expected-answer `NO-GO / inherited Loop427 15 of 18`, search recovery `P0 / REVIEW`, golden shared collateral `NO-GO / inherited Loop427 4`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4 / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260704-427 - golden18 mixed-input verification after Loop426
 
 | 항목 | 상태 | 근거 | 다음 조치 |
