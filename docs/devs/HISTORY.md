@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-05 - Loop439-441 gallery-homage alias bridge
+
+- 사용자 도메인 보정에 따라 `아생갤`을 현실 갤러리명으로만 보지 않고 웹소설 `아카데미 생존 갤러리`의 작품 내부 갤러리/커뮤니티 오마주형 제목 약어로 반영했다.
+- 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 새로 발주하지 않았다.
+- Loop439 run `20260705_032137_488821`은 golden18 search 포함 non-light였지만 checkpoint `15/18`, result `2`, frontier `11698897`, missing `11663521`/`11700470`, ordered flush gap으로 멈췄다.
+- Loop440 run `20260705_035603_114570`은 `11694035` 단건 `1/1`을 완료했지만 Arbiter/pipeline curated alias anchor 불일치로 `official_title=null`이었다.
+- `agentic_pipeline.py`와 `experts/arbiter.py`는 fictional gallery title + known abbreviation + explicit alias relation 또는 official detail bridge를 같은 anchor 경로로 통과시킨다.
+- Loop441 run `20260705_040614_500130`은 `11694035`를 `아카데미 생존 갤러리` / `https://novelpia.com/novel/380218`로 safe_resolved했다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, search evidence `GO`, publication contract는 `GO / row_count 1 / violation_row_count 0`이다.
+- Verification은 `py_compile` PASS, `tests.test_arbiter_curated_alias_guard` 24건 PASS, `tests.test_known_title_abbreviation_support` 34건 PASS, final precision focused 2건 PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_439_441_REPORT_20260705.md`, state는 `docs/devs/loop439_441_gallery_homage_runtime_and_patch_20260705.json`, Data Analytics summary는 `docs/devs/loop439_441_gallery_homage_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, golden18 current proof `NO-GO_RUNTIME_STALL`, golden expected-answer `NOT_REFRESHED_AFTER_LOOP441`, search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop437-438 gallery-homage candidate preservation
 
 - 사용자 도메인 보정에 따라 `아생갤`을 현실 갤러리명으로만 보지 않고 웹소설 `아카데미 생존 갤러리`의 작품 내부 갤러리/커뮤니티 오마주형 제목 약어 가능성으로 반영했다.

@@ -1,0 +1,137 @@
+{
+  "loop": "439-441",
+  "generated_at": "2026-07-05T04:30:00+09:00",
+  "language": "ko",
+  "status": "TARGETED_RUNTIME_GO_GALLERY_HOMAGE_ALIAS_BRIDGE",
+  "goal_state": "ACTIVE_NOT_COMPLETE",
+  "user_domain_note": {
+    "alias": "아생갤",
+    "correct_work_title": "아카데미 생존 갤러리",
+    "meaning": "현대 웹소설은 작품 내부에 갤러리/커뮤니티 오마주 컨셉을 접목할 수 있으므로, 갤러리 표면만으로 현실 커뮤니티라고 단정하지 않는다.",
+    "publish_policy": "known title abbreviation, fictional gallery title, explicit alias relation 또는 official detail이 함께 수렴할 때만 작품 bridge로 본다."
+  },
+  "run_freeze": {
+    "full375": "NOT_RUN",
+    "bounded_1000_1500": "NOT_RUN",
+    "n5_flip_probe": "NOT_RUN",
+    "same_38_row_parent_packet_replay": "NOT_RUN",
+    "new_large_run": "FROZEN"
+  },
+  "loop439_golden18_after_loop438": {
+    "run_id": "20260705_032137_488821",
+    "result_prefix": "loop439_golden18_after_loop438_5f272bb2_search_nonlight_result",
+    "scope": "golden18 current HEAD after Loop438",
+    "input_count": 18,
+    "checkpoint_completed_count": 15,
+    "result_flushed_count": 2,
+    "missing_post_ids": [
+      11698897,
+      11663521,
+      11700470
+    ],
+    "frontier": {
+      "global_idx": 3,
+      "post_id": 11698897,
+      "state": "ordered_flush_gap_in_progress"
+    },
+    "process_tree_killed": true,
+    "health": {
+      "flush_integrity": "IN_PROGRESS / ordered_flush_gap_in_progress",
+      "completed_count": 15,
+      "flushed_count": 2,
+      "pending_count": 13,
+      "failed_count": 0,
+      "search_evidence": "REVIEW / search_degraded_observed",
+      "publication_contract_convergence": "GO / 0 violations"
+    },
+    "audit": {
+      "golden_gate": "NO-GO",
+      "passed_count": 14,
+      "failed_count": 4,
+      "collateral_regression_count": 7
+    },
+    "meaning": "Loop439는 current golden18 approval이 아니라 runtime stall와 ordered flush gap 증거다."
+  },
+  "loop440_targeted_before_bridge_patch": {
+    "run_id": "20260705_035603_114570",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop440_11694035_gallery_homage_official_detail_input.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop440_11694035_gallery_homage_official_detail_result.json",
+    "completed_flushed_pending_failed": "1/1/0/0",
+    "post_id": 11694035,
+    "public_official_title": null,
+    "diagnosis": "LLM experts는 아생갤 alias를 인식했지만 Arbiter와 pipeline의 curated alias anchor 술어가 중복/불일치해 public title이 계속 null로 차단됐다."
+  },
+  "code_changes": [
+    "src/llm_batch/agentic_pipeline.py: _known_title_abbreviation_fictional_gallery_homage_bridge_context 추가",
+    "src/llm_batch/agentic_pipeline.py: _has_curated_alias_contextual_work_anchor가 explicit alias bridge anchor를 경유하도록 변경",
+    "src/llm_batch/agentic_pipeline.py: _final_precision_title_demote_profile에서 gallery homage bridge를 direct support로 인정",
+    "src/llm_batch/experts/arbiter.py: 동일 bridge helper와 curated alias anchor 배선 추가",
+    "tests/test_arbiter_curated_alias_guard.py: Arbiter 과차단 방지 테스트 추가",
+    "tests/test_known_title_abbreviation_support.py: official detail 및 search-blind bridge 테스트 추가"
+  ],
+  "loop441_targeted_after_bridge_patch": {
+    "run_id": "20260705_040614_500130",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop440_11694035_gallery_homage_official_detail_input.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop441_11694035_gallery_homage_alias_bridge_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop441_11694035_gallery_homage_alias_bridge_result_manifest.json",
+    "completed_flushed_pending_failed": "1/1/0/0",
+    "post_id": 11694035,
+    "public_official_title": "아카데미 생존 갤러리",
+    "public_official_url": "https://novelpia.com/novel/380218",
+    "confidence": "High",
+    "evidence_type": "search_platform_url",
+    "evidence_bucket": {
+      "post_spans": 2,
+      "search_snippets": 3,
+      "official_urls": 1
+    },
+    "search": {
+      "executed": 4,
+      "valid": 3,
+      "zero": 1,
+      "cumulative_results": 22
+    },
+    "runtime_evidence": [
+      "official detail result E001: Novelpia 아카데미 생존 갤러리",
+      "Arbiter 공식제목 보호 후보 추가",
+      "final title correction fast-path(verifier_official_lock)",
+      "post_alias_detail=True",
+      "relation_alias_detail=True",
+      "contextual_alias_detail=True"
+    ]
+  },
+  "verification": {
+    "py_compile_changed_files": "PASS",
+    "arbiter_curated_alias_guard": "PASS / 24",
+    "known_title_abbreviation_support": "PASS / 34",
+    "final_precision_focused": "PASS / 2",
+    "loop441_health_audit": "GO / clean_completed_source",
+    "loop441_publication_contract": "GO / row_count 1 / violation_row_count 0"
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_439_441_REPORT_20260705.md",
+    "state": "docs/devs/loop439_441_gallery_homage_runtime_and_patch_20260705.json",
+    "data_analytics": "docs/devs/loop439_441_gallery_homage_data_analytics_artifact.json",
+    "loop439_partial_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop439_golden18_after_loop438_5f272bb2_checkpoint_partial_result.json",
+    "loop441_health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop441_11694035_gallery_homage_alias_bridge_health_audit.json",
+    "loop441_publication_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop441_11694035_gallery_homage_alias_bridge_publication_contract.json",
+    "loop441_publication_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop441_11694035_gallery_homage_alias_bridge_publication_contract.md"
+  },
+  "gates": {
+    "targeted_runtime": "GO / 1 of 1",
+    "targeted_semantic": "GO_ROW_11694035",
+    "publication_contract": "GO / 0 violations",
+    "search_evidence": "GO_ROW_LEVEL_LOOP441",
+    "golden18_current_proof": "NO-GO_RUNTIME_STALL_LOOP439",
+    "golden_expected_answer": "NOT_REFRESHED_AFTER_LOOP441",
+    "broader_search_recovery": "P0 / REVIEW",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  },
+  "next_actions": [
+    "Loop439 frontier 11698897 ordered flush/runtime stall 원인을 먼저 분리한다.",
+    "동일 stalled golden18 즉시 반복을 금지한다.",
+    "broader search recovery와 full375 collateral은 별도 blocker로 유지한다."
+  ]
+}

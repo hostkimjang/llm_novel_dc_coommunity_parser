@@ -1,0 +1,88 @@
+{
+  "artifact_type": "data_analytics_reader_summary",
+  "loop": "439-441",
+  "generated_at": "2026-07-05T04:30:00+09:00",
+  "language": "ko",
+  "headline": "아생갤 갤러리 오마주 alias bridge targeted runtime",
+  "summary": "Loop441은 11694035 단일 row에서 아생갤을 웹소설 아카데미 생존 갤러리의 작품 내부 갤러리 오마주형 약어로 해석하고, explicit alias bridge와 official detail 근거를 통해 public title을 복구했다.",
+  "reader_decision": {
+    "can_count_as_full_approval": false,
+    "can_count_as_targeted_runtime_evidence": true,
+    "reason": "Loop441 단건 runtime과 publication contract는 통과했지만 Loop439 golden18은 ordered flush gap으로 멈췄고, golden expected-answer refresh, full375 collateral, broader search recovery가 열려 있다."
+  },
+  "before_after": [
+    {
+      "loop": "439",
+      "run_id": "20260705_032137_488821",
+      "scope": "golden18",
+      "state": "NO-GO_RUNTIME_STALL",
+      "diagnosis": "15/18 checkpoint, 2 result rows, frontier post_id 11698897 ordered flush gap."
+    },
+    {
+      "loop": "440",
+      "run_id": "20260705_035603_114570",
+      "scope": "11694035 targeted",
+      "public_title": null,
+      "diagnosis": "Arbiter/pipeline duplicate curated alias predicate mismatch로 아카데미 생존 갤러리가 과차단됐다."
+    },
+    {
+      "loop": "441",
+      "run_id": "20260705_040614_500130",
+      "scope": "11694035 targeted",
+      "public_title": "아카데미 생존 갤러리",
+      "official_url": "https://novelpia.com/novel/380218",
+      "diagnosis": "explicit alias bridge와 official detail이 수렴해 targeted row를 safe_resolved했다."
+    }
+  ],
+  "metrics": {
+    "loop439": {
+      "input": 18,
+      "checkpoint_completed": 15,
+      "result_flushed": 2,
+      "failed": 0,
+      "missing_post_ids": [
+        11698897,
+        11663521,
+        11700470
+      ]
+    },
+    "loop441": {
+      "input": 1,
+      "completed": 1,
+      "flushed": 1,
+      "pending": 0,
+      "failed": 0,
+      "search_executed": 4,
+      "search_valid": 3,
+      "search_zero": 1,
+      "official_urls": 1
+    },
+    "publication_contract": {
+      "gate": "GO",
+      "row_count": 1,
+      "violation_row_count": 0
+    },
+    "tests": {
+      "arbiter_curated_alias_guard": 24,
+      "known_title_abbreviation_support": 34,
+      "final_precision_focused": 2
+    }
+  },
+  "artifact_paths": {
+    "report": "docs/devs/loop_reports/LOOP_439_441_REPORT_20260705.md",
+    "state": "docs/devs/loop439_441_gallery_homage_runtime_and_patch_20260705.json",
+    "loop441_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop441_11694035_gallery_homage_alias_bridge_result.json",
+    "loop441_health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop441_11694035_gallery_homage_alias_bridge_health_audit.json",
+    "loop441_publication_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop441_11694035_gallery_homage_alias_bridge_publication_contract.json"
+  },
+  "gate_state": {
+    "targeted_runtime": "GO / 1 of 1",
+    "golden18_current_proof": "NO-GO_RUNTIME_STALL",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE",
+    "full375_collateral": "NOT_OPEN",
+    "broader_search_recovery": "P0 / REVIEW"
+  },
+  "next_action": "동일 stalled golden18 반복 전에 Loop439 frontier 11698897 ordered flush/runtime stall을 먼저 분리한다."
+}

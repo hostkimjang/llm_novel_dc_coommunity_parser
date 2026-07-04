@@ -1,5 +1,34 @@
 # Verification Results
 
+## 2026-07-05 Loop439-441 아생갤 alias bridge 검증
+
+- 범위: Loop439 golden18 stall, Loop440 `11694035` 과차단, Loop441 targeted recovery, Arbiter/pipeline bridge 계약을 검증했다. 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 새로 발주하지 않았다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_439_441_REPORT_20260705.md`
+  - state `docs\devs\loop439_441_gallery_homage_runtime_and_patch_20260705.json`
+  - Data Analytics summary `docs\devs\loop439_441_gallery_homage_data_analytics_artifact.json`
+  - Loop439 partial result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop439_golden18_after_loop438_5f272bb2_checkpoint_partial_result.json`
+  - Loop441 result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop441_11694035_gallery_homage_alias_bridge_result.json`
+  - Loop441 health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop441_11694035_gallery_homage_alias_bridge_health_audit.json`
+  - Loop441 publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop441_11694035_gallery_homage_alias_bridge_publication_contract.json`
+- Verification commands:
+  - `.\.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py src\llm_batch\experts\arbiter.py tests\test_arbiter_curated_alias_guard.py tests\test_known_title_abbreviation_support.py` -> PASS
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_arbiter_curated_alias_guard -v` -> PASS, `24` tests
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_known_title_abbreviation_support -v` -> PASS, `34` tests
+  - final precision focused 2건 -> PASS
+  - `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py ...loop441...` -> `GO / clean_completed_source`
+  - `.\.venv312\Scripts\python.exe tools\audit_publication_contract_convergence.py ...loop441...` -> `GO / 0 violations`
+- Runtime result:
+  - Loop439 run `20260705_032137_488821`: checkpoint `15/18`, result `2`, frontier post_id `11698897`, `flush_integrity=IN_PROGRESS / ordered_flush_gap_in_progress`, search evidence `REVIEW`.
+  - Loop440 run `20260705_035603_114570`: single row `1/1`, public title `null`, root cause `curated_alias_missing_contextual_work_anchor`.
+  - Loop441 run `20260705_040614_500130`: single row `1/1`, public identity `아카데미 생존 갤러리` / `https://novelpia.com/novel/380218`, confidence `High`, evidence type `search_platform_url`.
+- Boundary:
+  - Loop441은 targeted row-level 증거이며 golden/full375 approval이 아니다.
+  - Loop439는 current golden18 proof가 아니라 runtime stall 증거다.
+  - Golden expected-answer는 `NOT_REFRESHED_AFTER_LOOP441`다.
+  - Broader search recovery는 `P0 / REVIEW`, full375 collateral은 `NOT_OPEN`이다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE` 유지.
+
 ## 2026-07-05 Loop437-438 아생갤 후보 보존 검증
 
 - 범위: `11694035` 단일 row에서 `아생갤`을 웹소설 `아카데미 생존 갤러리`의 갤러리/커뮤니티 오마주형 제목 약어 후보로 보존하는지 검증했다. 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.

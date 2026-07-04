@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-05 Loop439-441 아생갤 alias bridge 체크
+
+- [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 새로 발주하지 않았다.
+- [x] `아생갤`을 현실 갤러리명으로 단정하지 않고 웹소설 `아카데미 생존 갤러리`의 작품 내부 갤러리/커뮤니티 오마주형 제목 약어 가능성으로 반영했다.
+- [x] Loop439 golden18은 checkpoint `15/18`, result `2`, frontier `11698897` ordered flush gap이라 current golden approval이 아님을 기록했다.
+- [x] Loop440 단건은 `1/1` 완료됐지만 Arbiter/pipeline curated alias anchor 불일치로 `official_title=null`이었음을 기록했다.
+- [x] Arbiter와 pipeline 양쪽에 fictional gallery homage explicit alias bridge 술어를 배선했다.
+- [x] Loop441 단건은 `official_title=아카데미 생존 갤러리`, `heretic_url=https://novelpia.com/novel/380218`로 완료됐다.
+- [x] Loop441 health audit는 `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`다.
+- [x] `py_compile`, Arbiter curated alias guard 24건, known title abbreviation 34건, final precision focused 2건을 통과했다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [ ] Golden expected-answer는 `NOT_REFRESHED_AFTER_LOOP441`다. 단건 성공을 golden/full375 approval로 승격하지 않는다.
+- [ ] Broader search recovery는 `P0 / REVIEW`, full375 collateral은 `NOT_OPEN`이다.
+- Gate: targeted runtime `GO / 1 of 1`, golden18 current proof `NO-GO_RUNTIME_STALL`, publication contract `GO / 0`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop437-438 아생갤 후보 보존 체크
 
 - [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

@@ -1,5 +1,22 @@
 # Improvement Register
 
+## IMP-20260705-441 - gallery-homage alias bridge runtime
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/parent replay 미발주 | dispatch 반복 금지 |
+| 도메인 보정 | 반영 | `아생갤`은 `아카데미 생존 갤러리` 작품 내부 갤러리 오마주형 약어 가능 | 현실 갤러리명 단정 금지 |
+| Loop439 golden18 | NO-GO_RUNTIME_STALL | checkpoint `15/18`, result `2`, frontier `11698897` ordered flush gap | stall 원인 분리 |
+| Loop440 단건 | REPRO_OVERBLOCK | `official_title=null`, `curated_alias_missing_contextual_work_anchor` | Arbiter/pipeline 술어 수렴 |
+| bridge contract | GO_UNIT | fictional gallery title + known abbreviation + explicit alias relation/official detail bridge | R1 cue 확장 금지 |
+| Loop441 runtime | GO / 1 of 1 | run `20260705_040614_500130`, `1/1/1/0/0` | golden/full375와 분리 |
+| public identity | GO_TARGETED | `아카데미 생존 갤러리` / `https://novelpia.com/novel/380218` | 단건 근거로만 사용 |
+| publication contract | GO | row `1`, violation `0` | broader gate와 분리 |
+| search evidence | GO_ROW_LEVEL | Loop441 search valid `3`, official URL `1` | broader search recovery는 P0 유지 |
+| 문서 동기화 | 완료 | Loop439-441 report/state/verification/register 갱신 | goal은 ACTIVE 유지 |
+
+Gate: targeted runtime `GO / 1 of 1`, targeted semantic `GO_ROW_11694035`, golden18 current proof `NO-GO_RUNTIME_STALL`, golden expected-answer `NOT_REFRESHED_AFTER_LOOP441`, broader search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260705-438 - gallery-homage alias candidate preservation
 
 | 항목 | 상태 | 근거 | 다음 조치 |

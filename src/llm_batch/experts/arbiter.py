@@ -8030,6 +8030,86 @@ class ArbiterExpert:
                 return True
         return False
 
+    def _known_title_abbreviation_fictional_gallery_homage_bridge_context(
+        self,
+        ctx: "ConversationContext",
+        title: Optional[str],
+        *,
+        verifier_out: Optional[Dict[str, Any]] = None,
+    ) -> bool:
+        """Accept gallery/community-as-fiction titles only when verifier proves an explicit work alias."""
+        title_raw = str(title or "").strip()
+        if not ctx or not title_raw:
+            return False
+        title_norm = self._normalize_match_text(title_raw)
+        if not title_norm or ("갤러리" not in title_raw and "gallery" not in title_raw.lower()):
+            return False
+
+        post_text = self._post_main_text_for_curated_alias(ctx)
+        aliases = [
+            str(alias or "").strip()
+            for alias, full_title in (KNOWN_TITLE_ABBREVIATIONS or {}).items()
+            if self._normalize_match_text(full_title) == title_norm and str(alias or "").strip()
+        ]
+        if not aliases or not any(self._curated_alias_surface_in_text(post_text, alias) for alias in aliases):
+            return False
+
+        vf_out = verifier_out if isinstance(verifier_out, dict) else {}
+        if not vf_out:
+            try:
+                from .orchestrator import ExpertType
+                vf_out = ctx.get_expert_output(ExpertType.VERIFIER) or {}
+            except Exception:
+                vf_out = {}
+        vf_result = vf_out.get("verification_result") if isinstance(vf_out, dict) else {}
+        if not isinstance(vf_result, dict):
+            vf_result = vf_out if isinstance(vf_out, dict) else {}
+
+        relation = vf_result.get("relation_judgment") or {}
+        if not isinstance(relation, dict):
+            return False
+        relation_type = str(relation.get("relation_type") or "").strip().lower()
+        target = str(relation.get("discussion_target") or "").strip().lower()
+        promotion = str(relation.get("promotion_decision") or "").strip().lower()
+        confidence = str(relation.get("confidence") or "").strip().lower()
+        if relation_type not in {"explicit_alias", "work_alias", "title_alias"}:
+            return False
+        if target != "specific_work" or promotion not in {"allow", "promote", "publish"}:
+            return False
+        if confidence and confidence not in {"high", "max", "very_high"}:
+            return False
+
+        def _as_int(value: Any) -> int:
+            try:
+                return int(value or 0)
+            except (TypeError, ValueError):
+                return 0
+
+        evidence_summary = relation.get("evidence_summary") or {}
+        search_summary = relation.get("search_support_summary") or {}
+        if not isinstance(evidence_summary, dict):
+            evidence_summary = {}
+        if not isinstance(search_summary, dict):
+            search_summary = {}
+        explicit_count = _as_int(
+            evidence_summary.get("explicit_alias_bridge_count")
+            or search_summary.get("explicit_alias_bridge_count")
+        )
+        community_count = _as_int(
+            search_summary.get("community_alias_support_count")
+            or evidence_summary.get("community_post_count")
+        )
+        if explicit_count < 1 or community_count < 1:
+            return False
+
+        for entry in getattr(ctx, "verified_character_work_links", []) or []:
+            if not isinstance(entry, dict) or entry.get("_weak_match"):
+                continue
+            link_title = str(entry.get("title") or entry.get("official_title") or "").strip()
+            if link_title and self._normalize_match_text(link_title) != title_norm:
+                return False
+        return True
+
     def _has_curated_alias_contextual_work_anchor(
         self,
         ctx: "ConversationContext",
@@ -8039,7 +8119,15 @@ class ArbiterExpert:
     ) -> bool:
         if not self._curated_alias_for_title_mentioned_in_post_main(ctx, title):
             return False
-        if self._semantic_no_work_signal_for_curated_alias(ctx, verifier_out=verifier_out):
+        gallery_homage_bridge_anchor = self._known_title_abbreviation_fictional_gallery_homage_bridge_context(
+            ctx,
+            title,
+            verifier_out=verifier_out,
+        )
+        if (
+            self._semantic_no_work_signal_for_curated_alias(ctx, verifier_out=verifier_out)
+            and not gallery_homage_bridge_anchor
+        ):
             return False
 
         post_text = self._post_main_text_for_curated_alias(ctx)
@@ -8084,8 +8172,15 @@ class ArbiterExpert:
                 post_text,
             )
             or _has_curated_alias_work_discussion_cue(post_text)
+            or gallery_homage_bridge_anchor
         )
-        return bool(has_positive_semantic_cue and (has_episode_or_serial_cue or has_character_entity_cue or has_concrete_work_cue))
+        return bool(
+            gallery_homage_bridge_anchor
+            or (
+                has_positive_semantic_cue
+                and (has_episode_or_serial_cue or has_character_entity_cue or has_concrete_work_cue)
+            )
+        )
 
     def _curated_alias_lacks_contextual_work_anchor(
         self,

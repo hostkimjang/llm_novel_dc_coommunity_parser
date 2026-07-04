@@ -1,5 +1,21 @@
 # Operation Quality Checklist
 
+## 2026-07-05 Loop439-441 아생갤 alias bridge 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_439_441_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop439_441_gallery_homage_runtime_and_patch_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop439_441_gallery_homage_data_analytics_artifact.json`.
+  - [x] Loop439 golden18 stall을 approval이 아니라 `NO-GO_RUNTIME_STALL`로 기록했다.
+  - [x] Loop441 runtime `1/1`, health `GO`, search `GO`, publication contract `GO / 0 violations`를 기록했다.
+  - [x] `아생갤` 도메인 보정을 현실 갤러리명 단정 금지와 explicit alias bridge 정책으로 기록했다.
+- 품질 게이트:
+  - [x] 단건 targeted runtime을 golden/full375 approval로 승격하지 않는다.
+  - [x] Loop439 ordered flush gap은 동일 run 반복이 아니라 frontier `11698897` stall 원인 분리 대상으로 둔다.
+  - [x] search row-level `GO`와 broader search recovery `P0 / REVIEW`를 분리한다.
+  - [x] R1 hardcoded cue/title list, `post_id` 예외, slang DB write-back을 하지 않았음을 명시한다.
+  - [x] goal `ACTIVE / NOT_COMPLETE`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
+
 ## 2026-07-05 Loop437-438 아생갤 후보 보존 품질 게이트
 
 - 근거:

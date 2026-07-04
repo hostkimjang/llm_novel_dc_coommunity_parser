@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop439-441 gallery-homage alias bridge follow-up
+  - 상태: Loop441 targeted runtime `GO 1/1` / health `GO clean_completed_source` / search evidence `GO` / publication contract `GO 0 violations` / Loop439 golden18 current proof `NO-GO_RUNTIME_STALL` / golden expected-answer `NOT_REFRESHED_AFTER_LOOP441` / search recovery broader `P0_REVIEW` / full375 `NOT_OPEN` / approval not open
+  - 적용: `아생갤`은 현실 갤러리명이 아니라 웹소설 `아카데미 생존 갤러리`의 작품 내부 갤러리/커뮤니티 오마주형 제목 약어일 수 있음을 반영했다. Arbiter와 pipeline의 curated alias bridge 술어를 통합해 official detail 또는 explicit alias relation이 수렴할 때만 작품 bridge를 연다.
+  - 산출물: `docs/devs/loop_reports/LOOP_439_441_REPORT_20260705.md`, `docs/devs/loop439_441_gallery_homage_runtime_and_patch_20260705.json`, `docs/devs/loop439_441_gallery_homage_data_analytics_artifact.json`.
+  - 완료 기준: Loop439 frontier `11698897` ordered flush/runtime stall 원인을 먼저 분리한다. 동일 stalled golden18 즉시 반복, full375 approval, hard-hold 완화는 금지한다.
+
 - [ ] Loop437-438 gallery-homage candidate preservation follow-up
   - 상태: targeted runtime `GO 1/1` / health `GO clean_completed_source` / publication contract `GO 0 violations` / candidate preservation `GO_TARGETED` / public publish `BLOCKED_OK` / golden expected-answer `NOT_REFRESHED_AFTER_LOOP438` / search recovery broader `P0_REVIEW` / full375 `NOT_OPEN` / approval not open
   - 적용: `아생갤`은 현실 갤러리명만이 아니라 웹소설 `아카데미 생존 갤러리`의 작품 내부 갤러리/커뮤니티 오마주형 제목 약어일 수 있음을 반영했다. Official detail 없는 경우 publish는 막고 `publish_ledger`/`publish_contract_trace` 후보로만 보존한다.

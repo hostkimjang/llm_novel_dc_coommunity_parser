@@ -1,5 +1,14 @@
 # Slang DB Improvement TODO
 
+## 2026-07-05 Loop439-441 gallery-homage alias bridge slang 주의사항
+
+- [x] 이번 회차는 slang DB write-back이 아니라 Arbiter/pipeline bridge 술어 수렴이다.
+- [x] `아생갤 -> 아카데미 생존 갤러리`를 slang DB나 작품 전용 registry에 새로 쓰지 않았다.
+- [x] `갤러리` 제목을 현실 커뮤니티로 단정하지 않되, explicit alias relation 또는 official detail bridge 없이 public title을 열지 않는다.
+- [x] Loop441 단건은 `아카데미 생존 갤러리` / `https://novelpia.com/novel/380218`로 수렴했다.
+- [ ] Loop439 golden18 stall, search recovery, full375 collateral을 닫기 전 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, targeted runtime `GO / 1 of 1`, golden18 current proof `NO-GO_RUNTIME_STALL`, golden expected-answer `NOT_REFRESHED_AFTER_LOOP441`, search recovery broader `P0 / REVIEW`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop433 low-specificity batch alias slang 주의사항
 
 - [x] 이번 회차는 slang DB write-back이 아니라 shared final publication contract 보정이다.

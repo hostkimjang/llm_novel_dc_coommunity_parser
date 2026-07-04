@@ -25612,7 +25612,7 @@ OUTPUT JSON:
     ) -> bool:
         """Known title aliases in the post title may name fictional gallery/community works."""
         candidate = str(title or "").strip()
-        if not ctx or not candidate or self._semantic_seed_no_work_signal(ctx):
+        if not ctx or not candidate:
             return False
 
         post_data = getattr(ctx, "post_data", None) or {}
@@ -25641,6 +25641,14 @@ OUTPUT JSON:
             or self._has_recommendation_seeking_surface_signal(title_surface)
         ):
             return False
+        semantic_no_work = self._semantic_seed_no_work_signal(ctx)
+        if semantic_no_work and not self._known_title_abbreviation_fictional_gallery_homage_context(
+            ctx,
+            candidate,
+            title_surface=title_surface,
+            aliases=aliases,
+        ):
+            return False
 
         try:
             if self._has_official_title_evidence(ctx, candidate):
@@ -25655,10 +25663,147 @@ OUTPUT JSON:
                 return True
         except Exception:
             pass
+        for sr in getattr(ctx, "search_results", None) or []:
+            if not isinstance(sr, dict):
+                continue
+            url = str(sr.get("url") or sr.get("link") or "").strip()
+            if not (
+                url
+                and self._is_novel_platform_url(url)
+                and self._is_novel_detail_url(url)
+            ):
+                continue
+            source_blob = " ".join(
+                str(sr.get(key) or "")
+                for key in ("title", "page_title", "content", "snippet")
+            )
+            source_norm = self._normalize_match_text(source_blob)
+            candidate_norm = self._normalize_match_text(candidate)
+            if self._source_title_matches_candidate(source_blob, candidate) or (
+                candidate_norm and candidate_norm in source_norm
+            ):
+                return True
         try:
             return bool(self._official_detail_exact_title_urls_for_no_work_anchor(ctx, candidate))
         except Exception:
             return False
+
+    def _known_title_abbreviation_fictional_gallery_homage_context(
+        self,
+        ctx,
+        title: Optional[str],
+        *,
+        title_surface: str,
+        aliases: Sequence[str],
+    ) -> bool:
+        """Allow semantic no-work override only for exact official-detail fictional gallery titles."""
+        candidate = str(title or "").strip()
+        if not ctx or not candidate or not title_surface.strip() or not aliases:
+            return False
+        candidate_norm = self._normalize_match_text(candidate)
+        if not candidate_norm or "갤러리" not in candidate and "gallery" not in candidate.lower():
+            return False
+        if not any(self._curated_alias_surface_in_text(title_surface, alias) for alias in aliases):
+            return False
+        for link in getattr(ctx, "verified_character_work_links", None) or []:
+            if not isinstance(link, dict):
+                continue
+            link_title = str(link.get("title") or link.get("official_title") or "").strip()
+            if link_title and self._normalize_match_text(link_title) != candidate_norm:
+                return False
+        return True
+
+    def _known_title_abbreviation_fictional_gallery_homage_bridge_context(
+        self,
+        ctx,
+        title: Optional[str],
+        *,
+        verification_result: Optional[Dict[str, Any]] = None,
+    ) -> bool:
+        """Search-blind bridge for fictional gallery/community titles with explicit alias proof."""
+        candidate = str(title or "").strip()
+        if not ctx or not candidate:
+            return False
+        candidate_norm = self._normalize_match_text(candidate)
+        if not candidate_norm or ("갤러리" not in candidate and "gallery" not in candidate.lower()):
+            return False
+
+        post_data = getattr(ctx, "post_data", None) or {}
+        title_surface = " ".join(
+            str(post_data.get(key) or "")
+            for key in ("title", "normalized_title")
+            if str(post_data.get(key) or "").strip()
+        )
+        if not title_surface.strip():
+            return False
+
+        aliases = [
+            str(alias or "").strip()
+            for alias, known_title in (KNOWN_TITLE_ABBREVIATIONS or {}).items()
+            if self._normalize_match_text(known_title) == candidate_norm and str(alias or "").strip()
+        ]
+        if not aliases or not any(self._curated_alias_surface_in_text(title_surface, alias) for alias in aliases):
+            return False
+
+        vf_result = verification_result if isinstance(verification_result, dict) else {}
+        if not vf_result:
+            try:
+                verifier_out = ctx.get_expert_output(ExpertType.VERIFIER) or {}
+                vf_result = (
+                    verifier_out.get("verification_result")
+                    if isinstance(verifier_out, dict)
+                    else {}
+                )
+                if not isinstance(vf_result, dict):
+                    vf_result = {}
+            except Exception:
+                vf_result = {}
+        relation = vf_result.get("relation_judgment") or {}
+        if not isinstance(relation, dict):
+            return False
+
+        relation_type = str(relation.get("relation_type") or "").strip().lower()
+        relation_target = str(relation.get("discussion_target") or "").strip().lower()
+        promotion = str(relation.get("promotion_decision") or "").strip().lower()
+        confidence = str(relation.get("confidence") or "").strip().lower()
+        if relation_type not in {"explicit_alias", "work_alias", "title_alias"}:
+            return False
+        if relation_target != "specific_work" or promotion not in {"allow", "promote", "publish"}:
+            return False
+        if confidence and confidence not in {"high", "max", "very_high"}:
+            return False
+
+        evidence_summary = relation.get("evidence_summary") or {}
+        search_summary = relation.get("search_support_summary") or {}
+        if not isinstance(evidence_summary, dict):
+            evidence_summary = {}
+        if not isinstance(search_summary, dict):
+            search_summary = {}
+
+        def _as_int(value: Any) -> int:
+            try:
+                return int(value or 0)
+            except (TypeError, ValueError):
+                return 0
+
+        explicit_count = _as_int(
+            evidence_summary.get("explicit_alias_bridge_count")
+            or search_summary.get("explicit_alias_bridge_count")
+        )
+        community_count = _as_int(
+            search_summary.get("community_alias_support_count")
+            or evidence_summary.get("community_post_count")
+        )
+        if explicit_count < 1 or community_count < 1:
+            return False
+
+        for link in getattr(ctx, "verified_character_work_links", None) or []:
+            if not isinstance(link, dict):
+                continue
+            link_title = str(link.get("title") or link.get("official_title") or "").strip()
+            if link_title and self._normalize_match_text(link_title) != candidate_norm:
+                return False
+        return True
 
     def _has_curated_alias_contextual_work_anchor(
         self,
@@ -25708,13 +25853,20 @@ OUTPUT JSON:
         if not isinstance(seed_review, dict):
             seed_review = {}
         discourse_intent = str(discourse_analysis.get("intent") or "").strip().lower()
-        if self._semantic_seed_no_work_signal(ctx):
-            return False
-
         official_detail_alias_title_anchor = self._has_official_detail_backed_curated_alias_title_context(
             ctx,
             title,
         )
+        gallery_homage_bridge_anchor = self._known_title_abbreviation_fictional_gallery_homage_bridge_context(
+            ctx,
+            title,
+        )
+        if (
+            self._semantic_seed_no_work_signal(ctx)
+            and not official_detail_alias_title_anchor
+            and not gallery_homage_bridge_anchor
+        ):
+            return False
         has_episode_or_serial_cue = bool(
             gk_clues.get("has_episode_reference")
             or gk_clues.get("is_spoiler_discussion")
@@ -25732,6 +25884,7 @@ OUTPUT JSON:
             )
             or _has_curated_alias_work_discussion_cue(packet_text)
             or official_detail_alias_title_anchor
+            or gallery_homage_bridge_anchor
         )
         if not has_packet_work_cue:
             try:
@@ -25748,7 +25901,12 @@ OUTPUT JSON:
         has_entity_cue = bool(possible_titles or (possible_characters and body_text.strip()))
         return bool(
             has_positive_semantic_cue
-            and (has_episode_or_serial_cue or has_entity_cue or official_detail_alias_title_anchor)
+            and (
+                has_episode_or_serial_cue
+                or has_entity_cue
+                or official_detail_alias_title_anchor
+                or gallery_homage_bridge_anchor
+            )
         )
 
     def _append_known_title_abbreviation_preservation_candidates(
@@ -39804,6 +39962,11 @@ OUTPUT JSON:
             or self._has_verified_public_work_detail_lock(ctx, title_raw, vf_result)
             or self._has_structured_direct_image_work_surface_evidence(ctx, title_raw)
             or self._has_title_lead_alias_search_work_support(ctx, title_raw)
+            or self._known_title_abbreviation_fictional_gallery_homage_bridge_context(
+                ctx,
+                title_raw,
+                verification_result=vf_result,
+            )
         )
         if (
             community_only_title_evidence

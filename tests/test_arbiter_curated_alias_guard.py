@@ -1067,6 +1067,109 @@ class ArbiterCuratedAliasGuardTest(unittest.TestCase):
         self.assertEqual(decision["official_title"], "괴담 호텔 탈출기")
         self.assertTrue(decision.get("_verifier_veto_exempt"))
 
+    def test_gallery_homage_explicit_alias_bridge_prevents_asaenggal_null_overblock(self):
+        arbiter_module.KNOWN_TITLE_ABBREVIATIONS = {"아생갤": "아카데미 생존 갤러리"}
+        title = "아카데미 생존 갤러리"
+        arbiter = _arbiter(
+            {
+                "final_decision": {
+                    "is_relevant": True,
+                    "is_novel_discussion": True,
+                    "official_title": title,
+                    "official_novel_title": title,
+                    "heretic_url": None,
+                    "confidence": "High",
+                    "discussion_type": "character_talk",
+                    "reason": "LLM seed decision",
+                    "final_reasoning": "LLM seed decision",
+                    "notes": "",
+                    "suspected_titles": [{"title": title, "confidence": "High"}],
+                },
+                "metadata": {},
+                "evidence_chain": [],
+            }
+        )
+        ctx = ConversationContext(
+            post_id=11694035,
+            post_data={
+                "post_id": 11694035,
+                "title": "아생갤) 가장 무서웠던 순간이",
+                "content_blocks": [
+                    {"type": "text", "text": "폐허가 된 도심지라면"},
+                    {"type": "text", "text": "지진이라도 난 거냐, 전쟁이라도 터진 거냐"},
+                    {"type": "text", "text": "현생 서사가 대체 어떻게 되길래"},
+                ],
+            },
+            comments=["얼탱ㅋㅋㅋㅋㅋ"],
+        )
+        ctx.uncertainty_sources.append("intent_permit_for_title_search=false(semantic_seed_review_not_specific_work)")
+        ctx.set_expert_output(
+            ExpertType.GATEKEEPER,
+            {
+                "post_type": "work_discussion",
+                "detected_entities": {"possible_titles": ["아생", "아생갤"]},
+                "context_clues": {},
+            },
+        )
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "express_opinion",
+                    "title_novel_terms": ["아생갤"],
+                    "semantic_seed_review": {"is_specific_work_discussion": False},
+                }
+            },
+        )
+        ctx.set_expert_output(
+            ExpertType.VERIFIER,
+            {
+                "verification_result": {
+                    "is_relevant": True,
+                    "novel_identity": {
+                        "official_novel_title": title,
+                        "confidence": "Low",
+                        "evidence_type": "community_mention",
+                    },
+                    "grounding_check": {
+                        "anchor_found": "title_mention",
+                        "matched_alias": "아생갤",
+                        "title_abbrev_mentioned": True,
+                    },
+                    "relation_judgment": {
+                        "relation_type": "explicit_alias",
+                        "discussion_target": "specific_work",
+                        "promotion_decision": "allow",
+                        "confidence": "high",
+                        "evidence_summary": {
+                            "official_detail_count": 0,
+                            "community_post_count": 6,
+                            "explicit_alias_bridge_count": 2,
+                        },
+                        "search_support_summary": {
+                            "official_exact_title_count": 0,
+                            "community_alias_support_count": 21,
+                            "explicit_alias_bridge_count": 2,
+                            "best_official_url": None,
+                            "converged_official_signal": False,
+                        },
+                    },
+                }
+            },
+        )
+
+        self.assertTrue(arbiter._has_curated_alias_contextual_work_anchor(ctx, title))
+        self.assertFalse(arbiter._curated_alias_lacks_contextual_work_anchor(ctx, title))
+
+        decision = arbiter.analyze(ctx)["final_decision"]
+
+        self.assertTrue(decision["is_relevant"])
+        self.assertEqual(decision["official_title"], title)
+        self.assertNotIn(
+            "curated_alias_missing_contextual_work_anchor",
+            decision.get("_title_null_block_reasons", []),
+        )
+
     def test_prefix_only_known_title_abbreviation_does_not_force_arbiter_public_title(self):
         arbiter_module.KNOWN_TITLE_ABBREVIATIONS = {"아생갤": "아카데미 생존 갤러리"}
         arbiter = _arbiter(

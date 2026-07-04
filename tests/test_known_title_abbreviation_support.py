@@ -636,6 +636,202 @@ class KnownTitleAbbreviationSupportTest(unittest.TestCase):
         finally:
             agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = original_registry
 
+    def test_official_detail_gallery_homage_survives_semantic_no_work_seed(self):
+        pipeline = _build_pipeline()
+        original_registry = agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS
+        try:
+            agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = {"아생갤": "아카데미 생존 갤러리"}
+            ctx = ConversationContext(
+                post_id=11694035,
+                post_data={
+                    "post_id": 11694035,
+                    "title": "아생갤) 가장 무서웠던 순간이",
+                    "normalized_title": "아생갤) 가장 무서웠던 순간이",
+                    "content_blocks": [
+                        {"type": "text", "text": "폐허가 된 도심지라면"},
+                        {"type": "text", "text": "지진이라도 난 거냐, 전쟁이라도 터진 거냐"},
+                        {"type": "text", "text": "현생 서사가 대체 어떻게 되길래"},
+                    ],
+                },
+                comments=["얼탱ㅋㅋㅋㅋㅋ"],
+            )
+            ctx.uncertainty_sources.append("intent_permit_for_title_search=false(semantic_seed_review_not_specific_work)")
+            ctx.set_expert_output(
+                ExpertType.GATEKEEPER,
+                {
+                    "post_type": "work_discussion",
+                    "detected_entities": {"possible_titles": ["아생", "아생갤"]},
+                    "context_clues": {},
+                },
+            )
+            ctx.set_expert_output(
+                ExpertType.DISCOURSE,
+                {
+                    "discourse_analysis": {
+                        "primary_domain": "novel_literature",
+                        "intent": "express_opinion",
+                        "semantic_seed_review": {"is_specific_work_discussion": False},
+                        "warnings": ["semantic_seed_review_specific_work_denied"],
+                    }
+                },
+            )
+            ctx.search_results = [
+                {
+                    "title": "웹소설로 꿈꾸는 세상! - 아카데미 생존 갤러리 - 노벨피아",
+                    "url": "https://novelpia.com/novel/380218",
+                    "content": "아카데미 생존 갤러리 공식 작품 페이지",
+                }
+            ]
+
+            self.assertTrue(
+                pipeline._known_title_abbreviation_update_question_anchor(
+                    ctx,
+                    "아카데미 생존 갤러리",
+                    "아생갤",
+                )
+            )
+            self.assertTrue(
+                pipeline._has_curated_alias_contextual_work_anchor(
+                    ctx,
+                    "아카데미 생존 갤러리",
+                )
+            )
+            self.assertTrue(
+                pipeline._post_discusses_work_as_work(
+                    ctx,
+                    "아카데미 생존 갤러리",
+                    source="known_abbreviation_title_guard:known_title_abbrev",
+                )
+            )
+
+            title, url = pipeline._apply_known_abbreviation_title_guard(
+                ctx,
+                "아생갤",
+                None,
+                final_decision={
+                    "discussion_type": "trope_discussion",
+                    "work_resolution": "none",
+                    "title_resolution_state": "context_only",
+                },
+                verification_result={},
+            )
+
+            self.assertEqual(title, "아카데미 생존 갤러리")
+            self.assertEqual(url, "https://novelpia.com/novel/380218")
+            self.assertFalse(getattr(ctx, "_known_abbreviation_title_guard_blocked_semantic_seed", False))
+        finally:
+            agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = original_registry
+
+    def test_gallery_homage_explicit_alias_bridge_survives_search_blind_semantic_no_work(self):
+        pipeline = _build_pipeline()
+        original_registry = agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS
+        try:
+            agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = {"아생갤": "아카데미 생존 갤러리"}
+            title = "아카데미 생존 갤러리"
+            ctx = ConversationContext(
+                post_id=11694035,
+                post_data={
+                    "post_id": 11694035,
+                    "title": "아생갤) 가장 무서웠던 순간이",
+                    "normalized_title": "아생갤) 가장 무서웠던 순간이",
+                    "content_blocks": [
+                        {"type": "text", "text": "폐허가 된 도심지라면"},
+                        {"type": "text", "text": "지진이라도 난 거냐, 전쟁이라도 터진 거냐"},
+                        {"type": "text", "text": "현생 서사가 대체 어떻게 되길래"},
+                    ],
+                },
+                comments=["얼탱ㅋㅋㅋㅋㅋ"],
+            )
+            ctx.uncertainty_sources.append("intent_permit_for_title_search=false(semantic_seed_review_not_specific_work)")
+            ctx.set_expert_output(
+                ExpertType.GATEKEEPER,
+                {
+                    "post_type": "work_discussion",
+                    "detected_entities": {"possible_titles": ["아생", "아생갤"]},
+                    "context_clues": {},
+                },
+            )
+            ctx.set_expert_output(
+                ExpertType.DISCOURSE,
+                {
+                    "discourse_analysis": {
+                        "primary_domain": "novel_literature",
+                        "intent": "express_opinion",
+                        "title_novel_terms": ["아생갤"],
+                        "semantic_seed_review": {"is_specific_work_discussion": False},
+                        "warnings": ["semantic_seed_review_specific_work_denied"],
+                    }
+                },
+            )
+            verification_result = {
+                "is_relevant": True,
+                "novel_identity": {
+                    "official_novel_title": title,
+                    "confidence": "Low",
+                    "evidence_type": "community_mention",
+                },
+                "grounding_check": {
+                    "anchor_found": "title_mention",
+                    "matched_alias": "아생갤",
+                    "title_abbrev_mentioned": True,
+                },
+                "relation_judgment": {
+                    "relation_type": "explicit_alias",
+                    "discussion_target": "specific_work",
+                    "promotion_decision": "allow",
+                    "confidence": "high",
+                    "evidence_summary": {
+                        "official_detail_count": 0,
+                        "community_post_count": 6,
+                        "explicit_alias_bridge_count": 2,
+                    },
+                    "search_support_summary": {
+                        "official_exact_title_count": 0,
+                        "community_alias_support_count": 21,
+                        "explicit_alias_bridge_count": 2,
+                        "best_official_url": None,
+                        "converged_official_signal": False,
+                    },
+                },
+            }
+            ctx.set_expert_output(ExpertType.VERIFIER, {"verification_result": verification_result})
+
+            self.assertTrue(
+                pipeline._known_title_abbreviation_fictional_gallery_homage_bridge_context(
+                    ctx,
+                    title,
+                    verification_result=verification_result,
+                )
+            )
+            self.assertTrue(pipeline._has_curated_alias_contextual_work_anchor(ctx, title))
+            self.assertTrue(
+                pipeline._post_discusses_work_as_work(
+                    ctx,
+                    title,
+                    source="known_abbreviation_title_guard:known_title_abbrev",
+                )
+            )
+
+            candidate = DetectedTitle(
+                official_title=title,
+                confidence="High",
+                alias_or_mention="아생갤",
+                source_tier="llm_only",
+                reference_role="primary",
+            )
+            profile = pipeline._final_precision_title_demote_profile(
+                ctx=ctx,
+                official_title=title,
+                verification_result=verification_result,
+                consistency_flags=["expert_conflict", "budget_quarantine_candidate"],
+                primary_work=candidate,
+                title_candidates=[candidate],
+            )
+
+            self.assertFalse(profile["demote"])
+        finally:
+            agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = original_registry
+
     def test_update_question_known_title_abbreviation_survives_semantic_no_work_without_search(self):
         pipeline = _build_pipeline()
         ctx = ConversationContext(
