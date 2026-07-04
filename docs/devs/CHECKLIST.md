@@ -1,5 +1,29 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop413 runtime proof / override audit / survey anchor 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] current HEAD `d95f1a57` golden18 단일 search 포함 non-light 런이 실제 row를 냈다.
+  - run `20260704_174823_875969`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint/result rows `18/18`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `8/0`
+- [x] 코드 변경 없이 런타임 비생산 여부만 먼저 실증했다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry를 추가하지 않았다.
+- [x] health audit는 `flush_integrity=GO / clean_completed_source`다.
+- [x] publication contract convergence는 golden18 및 `11708445` single-row 모두 `GO / 0 violations`다.
+- [x] `11708445` OVERRIDE AUDIT를 source-native blind judge로 강제 재확인했다.
+- [x] `11708445`는 `ACCEPT / candidate_only_block_is_correct`이며 active OVERRIDE AUDIT queue에 재등재하지 않는다.
+- [x] Collateral 105를 `reclassified 74 / runtime-verified 4 / residual 105`로 분리 보고했다.
+- [x] survey triage anchor를 loop290 self-batch가 아니라 `136` errors의 `wrong_work_among_aliases=27`, `recall_miss=49`로 재정렬했다.
+- [ ] Golden expected-answer는 `NO-GO / 16 of 18`이다. 실패는 `11698897`, `11698880`이다.
+- [ ] Golden shared collateral은 `NO-GO / 9`이고 full375 collateral은 `NOT_OPEN`이다.
+- [ ] Search recovery는 `P0 / REVIEW / search_degraded_observed`로 유지한다.
+- [ ] Hard-hold 완화와 full-scan approval은 열지 않는다.
+- Gate: runtime production `GO / 18 of 18`, expected-answer `NO-GO / 16 of 18`, golden shared collateral `NO-GO / 9`, override audit `GO_ROW_CONTRACT_ONLY`, search recovery `P0 / REVIEW`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop412 11698880 title-led candidate HOLD 체크
 
 - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.

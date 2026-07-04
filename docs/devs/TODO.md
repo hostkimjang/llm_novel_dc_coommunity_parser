@@ -1,5 +1,25 @@
 ﻿# Developer TODO Index
 
+## 2026-07-04 regression-safe grounding Loop413 TODO
+
+- 상태 업데이트: Loop413은 current HEAD `d95f1a57`에서 golden18 단일 search 포함 non-light 런이 실제 `18/18` row를 내는지 먼저 확인하고, runtime 불필요 `11708445` OVERRIDE AUDIT를 source-native로 재고정한 회차다. 그러나 expected-answer `16/18`, golden shared collateral `NO-GO / 9`, search `P0 / REVIEW`라 goal은 완료가 아니다.
+- Loop413 TODO:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] golden18 runtime `20260704_174823_875969`에서 `18/18/18/0/0` row 생산을 확인했다.
+  - [x] search 포함 non-light health `include_search=true`, `light_mode=false`, ok/failure `8/0`를 확인했다.
+  - [x] 코드 변경과 R1 hardcoded cue/title list 확장을 하지 않았다.
+  - [x] health audit `flush_integrity=GO / clean_completed_source`, publication contract `GO / 0 violations`를 확인했다.
+  - [x] `11708445`는 `ACCEPT / candidate_only_block_is_correct`로 다시 닫고 active OVERRIDE AUDIT queue에 재등재하지 않는다.
+  - [x] Collateral 105는 `reclassified 74 / runtime-verified 4 / residual 105`로 분리 보고한다.
+  - [x] survey anchor는 `wrong_work_among_aliases=27`, `recall_miss=49`로 재정렬했다.
+  - [ ] Expected-answer는 `NO-GO / 16 of 18`로 유지한다. 실패는 `11698897` wrong title, `11698880` positive unresolved다.
+  - [ ] 다음 active lane은 `11698897`, `11698880`, 또는 survey 136-error anchor에서 작은 runtime/contract 단위로 고른다.
+  - [ ] Search degraded 100% 복구 전 promotion-blocked는 `search-blind conditional`로 태깅한다.
+  - [ ] Full375 collateral gate는 아직 열지 않는다.
+  - [ ] 코드 변경 없이 docs만 반복되는 회차는 loop 정지 신호로 취급한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop412 TODO
 
 - 상태 업데이트: Loop412는 `11698880` 단건 runtime으로 Loop411 wrong publish `아카데미 생존 갤러리`를 public output에서 제거하고, 정답 후보 `가챠 중독자의 퓨전펑크 생활`을 candidate-only로 보존한 회차다. 그러나 public title은 아직 HOLD라 expected-answer pass가 아니며 goal은 완료가 아니다.

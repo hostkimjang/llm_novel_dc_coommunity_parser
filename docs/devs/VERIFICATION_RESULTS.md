@@ -1,5 +1,39 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop413 current HEAD golden18 런타임 / OVERRIDE AUDIT / survey anchor 검증
+
+- 범위: 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay 없이 current HEAD `d95f1a57` golden18 단일 search 포함 non-light 런만 실행했다. 코드 변경과 R1 hardcoded cue/title list 확장은 없다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_413_REPORT_20260704.md`
+  - state `docs\devs\loop413_runtime_override_survey_realign_20260704.json`
+  - Data Analytics summary `docs\devs\loop413_runtime_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop413_golden18_current_d95f1a57_runtime_proof_search_nonlight_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop413_golden18_current_d95f1a57_runtime_proof_search_nonlight_result_manifest.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop413_golden18_current_d95f1a57_runtime_proof_run_health.json`
+  - golden audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop413_golden18_current_d95f1a57_runtime_proof_golden_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop413_golden18_current_d95f1a57_runtime_proof_collateral_compare.json`
+  - override audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop413_override_audit_11708445_current_head_d95f1a57_blind_source_native.json`
+- Runtime result:
+  - run `20260704_174823_875969`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint/result rows `18/18`
+  - pending snapshot rows `0`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `8/0`
+- Audit result:
+  - health audit `flush_integrity=GO / clean_completed_source`, search evidence `REVIEW / search_degraded_observed`
+  - publication contract convergence `GO / 0 violations`
+  - expected-answer `NO-GO / 16 of 18`
+  - 실패는 `11698897` wrong title, `11698880` positive unresolved다.
+  - golden shared collateral compare는 shared `18`, changed `17`, regression candidates `9`이며 full375 전수가 아니다.
+- OVERRIDE AUDIT:
+  - `11708445`는 runtime 없이 completed-source/source-native blind judge로 `ACCEPT / candidate_only_block_is_correct`로 재고정했다.
+  - final public contract는 `official_title=null`, `official_url=null`, `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`, `promotion_decision.status=candidate_only`, `publish_allowed=false`다.
+- Collateral / survey:
+  - Collateral 105는 `reclassified 74 / runtime-verified 4 / residual 105`로 분리 보고한다.
+  - survey anchor는 `docs\devs\detection_survey_20260626_errors.json`의 `136` errors로 재정렬했고, 우선 축은 `wrong_work_among_aliases=27`, `recall_miss=49`다.
+- Gate: runtime production `GO / 18 of 18`, expected-answer `NO-GO / 16 of 18`, golden shared collateral `NO-GO / 9`, publication contract `GO / 0`, override audit `GO_ROW_CONTRACT_ONLY`, search recovery `P0 / REVIEW / search_degraded_observed`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop412 11698880 title-led candidate HOLD 및 ledger 계약 검증
 
 - 범위: 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay 없이 `11698880` 단일 row만 실행해 Loop411 wrong publish를 targeted로 줄이고, stale `candidate_ledger.title_candidates` 요약 보존 계약을 추가한다.

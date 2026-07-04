@@ -1,5 +1,20 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop413 current HEAD golden18 runtime proof / OVERRIDE AUDIT / survey anchor
+
+- 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Current HEAD `d95f1a57`에서 golden18 단일 search 포함 non-light 런만 실행했고, run `20260704_174823_875969`는 input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, `large_run_complete=true`, `ordered_flush_blocked=false`로 완료됐다.
+- MCP health는 `include_search=true`, `light_mode=false`, ok/failure `8/0`이라 Loop360 계열 watchdog/stall 우회가 현재 HEAD에서 row를 실제로 내는 것은 확인했다.
+- 코드 변경은 없다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry 확장은 하지 않았다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, publication contract convergence는 golden18 및 `11708445` single-row 모두 `GO / 0 violations`다.
+- Golden expected-answer audit는 `NO-GO / 16 of 18`이다. 실패는 `11698897` wrong title, `11698880` positive unresolved다.
+- Golden shared collateral compare는 shared `18`, changed `17`, regression candidates `9`이며 full375 전수 근거가 아니다.
+- `11708445` OVERRIDE AUDIT는 runtime 없이 completed-source/source-native blind judge로 `ACCEPT / candidate_only_block_is_correct`로 재고정했다. Final public contract는 `official_title=null`, `official_url=null`, `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`, `promotion_decision.status=candidate_only`, `publish_allowed=false`다.
+- Collateral 105는 큐 회차 수가 아니라 `reclassified 74 / runtime-verified 4 / residual 105`로 분리 보고한다.
+- Survey triage anchor는 loop290 self-batch가 아니라 `docs/devs/detection_survey_20260626_errors.json`의 `136` errors, 특히 `wrong_work_among_aliases=27`, `recall_miss=49`로 재정렬했다.
+- Report는 `docs/devs/loop_reports/LOOP_413_REPORT_20260704.md`, state는 `docs/devs/loop413_runtime_override_survey_realign_20260704.json`, Data Analytics summary는 `docs/devs/loop413_runtime_data_analytics_artifact.json`이다.
+- Gate는 runtime production `GO / 18 of 18`, expected-answer `NO-GO / 16 of 18`, golden shared collateral `NO-GO / 9`, search recovery `P0 / REVIEW / search_degraded_observed`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop412 11698880 title-led candidate HOLD 및 ledger 계약
 
 - 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

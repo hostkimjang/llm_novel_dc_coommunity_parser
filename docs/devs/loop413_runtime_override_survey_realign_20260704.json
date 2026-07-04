@@ -1,0 +1,904 @@
+{
+  "loop": 413,
+  "date": "2026-07-04",
+  "head": "d95f1a57",
+  "title": "runtime production proof plus override audit and survey anchor realignment",
+  "large_run_policy": "FROZEN",
+  "same_parent_packet_replay": "STOPPED",
+  "runtime_proof": {
+    "run_id": "20260704_174823_875969",
+    "scope": "golden18 current HEAD single run only",
+    "input_post_count": 18,
+    "completed_count": 18,
+    "flushed_count": 18,
+    "pending_count": 0,
+    "failed_count": 0,
+    "checkpoint_rows": 18,
+    "result_rows": 18,
+    "large_run_complete": true,
+    "ordered_flush_blocked": false,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_count": 8,
+    "mcp_health_failure_count": 0,
+    "health_gate": "GO / clean_completed_source",
+    "search_evidence": "REVIEW / search_degraded_observed"
+  },
+  "golden_audit": {
+    "gate": "NO-GO",
+    "passed_count": 16,
+    "failed_count": 2,
+    "failed_post_ids": [
+      11698897,
+      11698880
+    ],
+    "status_counts": {
+      "expected_null_respected": 8,
+      "wrong_or_unexpected_title": 1,
+      "expected_work_evidence_preserved_unresolved": 6,
+      "expected_hypothesis_preserved_unresolved": 1,
+      "expected_title_resolved": 1,
+      "positive_work_unresolved": 1
+    }
+  },
+  "collateral_compare": {
+    "scope": "golden shared posts only, not full375",
+    "gate": "NO-GO",
+    "shared_post_count": 18,
+    "changed_post_count": 17,
+    "collateral_regression_count": 9
+  },
+  "publication_contract": {
+    "golden18_gate": "GO / 0 violations",
+    "override_11708445_gate": "GO / 0 violations"
+  },
+  "override_audit_11708445": {
+    "verdict": "ACCEPT / candidate_only_block_is_correct",
+    "runtime_required": false,
+    "public_identity": {
+      "official_title": null,
+      "official_url": null,
+      "candidate_ledger_status": "promotion_blocked",
+      "safe_resolved": false
+    },
+    "gate": "GO_ROW_CONTRACT_ONLY"
+  },
+  "collateral105_accounting": {
+    "original_collateral_rows": 183,
+    "reclassified_rows": 74,
+    "runtime_verified_rows": 4,
+    "residual_action_queue_rows": 105,
+    "reclassified_components": {
+      "loop333_adjusted_exclusion": 57,
+      "loop348_variance_quarantine": 1,
+      "loop349_canonical_variant_quarantine": 2,
+      "loop352_unsafe_promotion_contract_exclusion": 14
+    },
+    "runtime_verified_post_ids": [
+      11703624,
+      11705251,
+      11705230,
+      11708470
+    ]
+  },
+  "survey_anchor": {
+    "source": "docs/devs/detection_survey_20260626_errors.json",
+    "total_judged": 577,
+    "total_errors": 136,
+    "failure_class_counts": {
+      "recall_miss": 49,
+      "wrong_work_among_aliases": 27,
+      "over_resolved_nonwork": 19,
+      "generic_phrase_substring": 16,
+      "image_anchor_spurious": 11,
+      "homonym_cross_domain": 4,
+      "batch_context_bleed": 4,
+      "other": 5,
+      "slang_pollution": 1
+    },
+    "anchors": {
+      "wrong_work_among_aliases": {
+        "count": 27,
+        "post_ids": [
+          11660232,
+          11660262,
+          11666699,
+          11666700,
+          11674694,
+          11682749,
+          11692436,
+          11694044,
+          11695609,
+          11703658,
+          11703674,
+          11706842,
+          11708453,
+          11710036,
+          11710047,
+          11711632,
+          11716475,
+          11718097,
+          11668300,
+          11671514,
+          11692444,
+          11694041,
+          11694063,
+          11697256,
+          11697267,
+          11708478,
+          11710021
+        ],
+        "rows": [
+          {
+            "post_id": 11660232,
+            "title": "괴담텔 이번 전개는 괴담동이 살짝 생각나네",
+            "official_title": "괴담 동아리",
+            "correct_hypothesis": "괴담 호텔 탈출기",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11660232"
+          },
+          {
+            "post_id": 11660262,
+            "title": "머여 로파민 완결났네",
+            "official_title": "그렇게, 그 괴물과 두 번 결혼했다",
+            "correct_hypothesis": "로판에 도파민을 풀었다",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11660262"
+          },
+          {
+            "post_id": 11666699,
+            "title": "남매역전 외전쓰다가 노피아에 짤린거지?",
+            "official_title": "여동생이 맛있다",
+            "correct_hypothesis": "남매역전",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11666699"
+          },
+          {
+            "post_id": 11666700,
+            "title": "내고향무림 최신화 댓글창에도 벌레새끼가 있네",
+            "official_title": "하남자의 탑 공략법",
+            "correct_hypothesis": "내 고향엔 무림인이 산다",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11666700"
+          },
+          {
+            "post_id": 11674694,
+            "title": "21세기무림 할매 꼬셔부렸다",
+            "official_title": "21세기 무림세가",
+            "correct_hypothesis": "21세기무림 (노벨피아 무협)",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11674694"
+          },
+          {
+            "post_id": 11682749,
+            "title": "TS주인공인데 힘 쎄지는 템플릿이 어디서 나왔냐고?",
+            "official_title": "주인공인데 주인공이 아님",
+            "correct_hypothesis": "묵향 (묵향 다크레이디)",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11682749"
+          },
+          {
+            "post_id": 11692436,
+            "title": "류서란(perfect)",
+            "official_title": "퍼펙트 메이지",
+            "correct_hypothesis": "죽었다 깨어도 수선",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11692436"
+          },
+          {
+            "post_id": 11694044,
+            "title": "즉사무림 유료화 카운트 들어갔네",
+            "official_title": "판초우의의 마법사",
+            "correct_hypothesis": "즉사무림",
+            "fix_axis": "relevance_context_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11694044"
+          },
+          {
+            "post_id": 11695609,
+            "title": "랫따싶이 머 퍼리말하는거임?",
+            "official_title": "쳇바퀴의 생쥐 사도가 되었다",
+            "correct_hypothesis": "[림월드]변방계에서 회귀자로 살아남기",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11695609"
+          },
+          {
+            "post_id": 11703658,
+            "title": "문피아 아프리카 식량왕이 되었다 나쁘진 않음",
+            "official_title": "아프리카 의 독재자가 되었다 .",
+            "correct_hypothesis": "아프리카 식량왕이 되었다",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11703658"
+          },
+          {
+            "post_id": 11703674,
+            "title": "아니 뭐야 아카데미 마피아 이거 씨즐꺼였네",
+            "official_title": "게임 속 도굴꾼이 되었다",
+            "correct_hypothesis": "아카데미의 마피아가 되었다",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11703674"
+          },
+          {
+            "post_id": 11706842,
+            "title": "대마대는 언제 완결 날까",
+            "official_title": "삼국지 마대 가 되었다",
+            "correct_hypothesis": "대마법사였던것은 다시 대마법사를 꿈꾼다",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11706842"
+          },
+          {
+            "post_id": 11708453,
+            "title": "미츄리가 이불사 쓸 때 했던 모방이 딱 모범적임",
+            "official_title": "감옥학원에서 나만 힐링할거다",
+            "correct_hypothesis": "이세계 불법체류 사이비",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11708453"
+          },
+          {
+            "post_id": 11710036,
+            "title": "5시간 뒤면 랫따싶이 올까요?",
+            "official_title": "쳇바퀴의 생쥐 사도가 되었다",
+            "correct_hypothesis": "[림월드]변방계에서 회귀자로 살아남기",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710036"
+          },
+          {
+            "post_id": 11710047,
+            "title": "이거 뭔가뭔가임",
+            "official_title": "로판 속 미움받는 악역이 되었다",
+            "correct_hypothesis": "아카데미 속 미움받는 악역이 되었다",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710047"
+          },
+          {
+            "post_id": 11711632,
+            "title": "의외로 10년된 것",
+            "official_title": "유어 네임(YOUR NAME)",
+            "correct_hypothesis": "너의 이름은. (신카이 마코토 애니메이션 영화)",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11711632"
+          },
+          {
+            "post_id": 11716475,
+            "title": "고능아는 일편독심 망카데미같은건가?",
+            "official_title": "지력 99 고능아인 척하기",
+            "correct_hypothesis": "저 머리 좋은데요",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11716475"
+          },
+          {
+            "post_id": 11718097,
+            "title": "망겜힐은 오행복 박태양이 빌런이였어야돼",
+            "official_title": "라디오에서 우리의 노래가 나오면",
+            "correct_hypothesis": "망겜의 힐러",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718097"
+          },
+          {
+            "post_id": 11668300,
+            "title": "즉사기 말 많아서 보러간다",
+            "official_title": "즉사기 들고 게임 속 으로",
+            "correct_hypothesis": "즉사기 들고 무림에 떨어지다",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11668300"
+          },
+          {
+            "post_id": 11671514,
+            "title": "악신총애) 마왕이 말하는거 의미심장한데",
+            "official_title": "악신에게 총애받는 자",
+            "correct_hypothesis": "악신이 총애하는 미궁 모험가",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11671514"
+          },
+          {
+            "post_id": 11692444,
+            "title": "엑칼뽑 캐빨 어떰?",
+            "official_title": "엑스칼리버 뽑습니다",
+            "correct_hypothesis": "엑스칼리버 뽑습니다 (novelpia.com/novel/229672)",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11692444"
+          },
+          {
+            "post_id": 11694041,
+            "title": "격투천재 살짝 경녀감성임?",
+            "official_title": "격투 소설 엑스트라가 타격 천재임",
+            "correct_hypothesis": "격투 천재 여고생이 되었다",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11694041"
+          },
+          {
+            "post_id": 11694063,
+            "title": "엘리시아가 아예 얀이 아니라",
+            "official_title": "빙의한 신의 아이, 엘리시아",
+            "correct_hypothesis": "",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11694063"
+          },
+          {
+            "post_id": 11697256,
+            "title": "좀 부끄러운 마이너 장르 추천 ㄱㄴ??",
+            "official_title": "황제의 딸로 환생했다",
+            "correct_hypothesis": "황제의 딸로 환생했습니다",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11697256"
+          },
+          {
+            "post_id": 11697267,
+            "title": "헐... 아생갤 라나 정체 충격이네",
+            "official_title": "아카데미 생존 갤러리",
+            "correct_hypothesis": "아카데미 생존 갤러리 (novelpia/380218)",
+            "fix_axis": "search_correctness",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11697267"
+          },
+          {
+            "post_id": 11708478,
+            "title": "사와요드릴머리영애등장 ㄷㄷ",
+            "official_title": "사연 있는 악역으로 착각 당한다",
+            "correct_hypothesis": "내 설정 속의 대검영애가 되었다.",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11708478"
+          },
+          {
+            "post_id": 11710021,
+            "title": "무마 웹툰 보는데",
+            "official_title": "무한의 마법사",
+            "correct_hypothesis": "",
+            "fix_axis": "relevance_context_gate",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710021"
+          }
+        ]
+      },
+      "recall_miss": {
+        "count": 49,
+        "post_ids": [
+          11658637,
+          11661880,
+          11666705,
+          11668324,
+          11669911,
+          11669928,
+          11671501,
+          11671538,
+          11673086,
+          11674712,
+          11676317,
+          11677913,
+          11677920,
+          11679574,
+          11681139,
+          11681177,
+          11682790,
+          11687635,
+          11695611,
+          11695622,
+          11695623,
+          11695639,
+          11697234,
+          11698862,
+          11700475,
+          11700495,
+          11702067,
+          11702084,
+          11703645,
+          11703657,
+          11705256,
+          11705261,
+          11706828,
+          11706852,
+          11706873,
+          11710044,
+          11714913,
+          11663512,
+          11669929,
+          11671490,
+          11674703,
+          11677957,
+          11694067,
+          11695637,
+          11706832,
+          11708466,
+          11710037,
+          11668288,
+          11694049
+        ],
+        "rows": [
+          {
+            "post_id": 11658637,
+            "title": "재막아)영기는 진짜 답이 없구나",
+            "official_title": null,
+            "correct_hypothesis": "재벌집 막내아들 (산경, 문피아/SERIES)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11658637"
+          },
+          {
+            "post_id": 11661880,
+            "title": "이티알 작가 필력이 좋은 편인가?",
+            "official_title": null,
+            "correct_hypothesis": "이세계 TRPG 게임마스터",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11661880"
+          },
+          {
+            "post_id": 11666705,
+            "title": "이런 아줌마는 가능?",
+            "official_title": null,
+            "correct_hypothesis": "시든 꽃에 눈물을",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11666705"
+          },
+          {
+            "post_id": 11668324,
+            "title": "니생들이랑 김괴라리 장갤픽 아니였음?",
+            "official_title": null,
+            "correct_hypothesis": "니들 생각 다 들린다 (약칭 니생들, 노벨피아, 작가 유4)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11668324"
+          },
+          {
+            "post_id": 11669911,
+            "title": "S급 헌터 결혼 보는 사람?",
+            "official_title": null,
+            "correct_hypothesis": "S급 헌터도 결혼이 하고 싶다 (노벨피아, novelpia/novel/396851)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11669911"
+          },
+          {
+            "post_id": 11669928,
+            "title": "탑성좌애호 노벨피아 이거 연중했었네",
+            "official_title": null,
+            "correct_hypothesis": "탑의 성좌들이 날 애호한다 (프리데이, 노벨피아 PLUS, novelpia.com/novel/377032)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11669928"
+          },
+          {
+            "post_id": 11671501,
+            "title": "판초법사 막 게이트열린 시점아님?",
+            "official_title": null,
+            "correct_hypothesis": "판초우의의 마법사",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11671501"
+          },
+          {
+            "post_id": 11671538,
+            "title": "여우비의 신 마커스 많이 아끼나보네",
+            "official_title": null,
+            "correct_hypothesis": "망한 교단의 성기사",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11671538"
+          },
+          {
+            "post_id": 11673086,
+            "title": "랫따싶 칸시가 정실이엿으면",
+            "official_title": null,
+            "correct_hypothesis": "[림월드]변방계에서 회귀자로 살아남기",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11673086"
+          },
+          {
+            "post_id": 11674712,
+            "title": "서문청이랑 주서연이 싸우면 누가 이김?",
+            "official_title": null,
+            "correct_hypothesis": "이 무림의 미친년은 나야",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11674712"
+          },
+          {
+            "post_id": 11676317,
+            "title": "마도서줍 그거 같아",
+            "official_title": null,
+            "correct_hypothesis": "마도서를 줍다 마법사가 되다 (방구석와룡, 문피아/네이버시리즈)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11676317"
+          },
+          {
+            "post_id": 11677913,
+            "title": "남캐일러 뽑아도 된다고",
+            "official_title": null,
+            "correct_hypothesis": "이세계 검은 머리 외국인 (노벨피아 novel/1082, 작가 김갈비뼈; 주인공 김캇트/검머외)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11677913"
+          },
+          {
+            "post_id": 11677920,
+            "title": "장생인방이라 하니까 수선물 같네.",
+            "official_title": null,
+            "correct_hypothesis": "악녀를 갱생시켜라 (노벨피아 novel/73524, 작가 오당티)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11677920"
+          },
+          {
+            "post_id": 11679574,
+            "title": "급함)이런 소설 뭐 없나",
+            "official_title": null,
+            "correct_hypothesis": "사랑하는 나의 늑대에게 (리디 RIDI ONLY, 작가 마셰리; ridibooks 4967000001)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11679574"
+          },
+          {
+            "post_id": 11681139,
+            "title": "목마야드디어해냈구나",
+            "official_title": null,
+            "correct_hypothesis": "검귀가 환생함 (목마, 노벨피아)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11681139"
+          },
+          {
+            "post_id": 11681177,
+            "title": "격투 천재 재밌다",
+            "official_title": null,
+            "correct_hypothesis": "격투 천재 여고생이 되었다 (소설술사, 노벨피아)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11681177"
+          },
+          {
+            "post_id": 11682790,
+            "title": "전투버 주서연은 외지주 나가도 위화감이없겠음",
+            "official_title": null,
+            "correct_hypothesis": "전 버튜버가 하고 싶은데요 (전튜버)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11682790"
+          },
+          {
+            "post_id": 11687635,
+            "title": "이런 히로인 나오는 소설 추천 좀",
+            "official_title": null,
+            "correct_hypothesis": "아포칼립스의 던전주가 되었다 (노벨피아 novel/367861, 작가 백수/배스)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11687635"
+          },
+          {
+            "post_id": 11695611,
+            "title": "여신애호 디시콘도 내라는 것이야...!",
+            "official_title": null,
+            "correct_hypothesis": "여신이 나만 애호함 (미츄리, novelpia.com/novel/346855)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11695611"
+          },
+          {
+            "post_id": 11695622,
+            "title": "랫킨모드보다 모요모드가 더 꼴리는데",
+            "official_title": null,
+            "correct_hypothesis": "[림월드]변방계에서 회귀자로 살아남기 (노벨피아 novel/382324)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11695622"
+          },
+          {
+            "post_id": 11695623,
+            "title": "랫따싶에서 따먹고싶다는애들이",
+            "official_title": null,
+            "correct_hypothesis": "[림월드]변방계에서 회귀자로 살아남기 (노벨피아 novel/382324)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11695623"
+          },
+          {
+            "post_id": 11695639,
+            "title": "TS해서 인방하는데 아빠가 내 방송을 봄",
+            "official_title": null,
+            "correct_hypothesis": "준우승 세 번 했더니 미소녀 됨 (알레미카, 노벨피아 novel/362860)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11695639"
+          },
+          {
+            "post_id": 11697234,
+            "title": "목마꺼 이번에 스타트 좋네",
+            "official_title": null,
+            "correct_hypothesis": "검귀가 환생함 (목마, 문피아)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11697234"
+          },
+          {
+            "post_id": 11698862,
+            "title": "이거 제발 제목좀",
+            "official_title": null,
+            "correct_hypothesis": "(미확정) '아발론 아카데미' 빙의물 — 주인공 김도한, '색깔론' 능력/'렙틸리언' 개그. 웹검색으로 공식 제목 미확정(노벨피아 등 니치 추정).",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11698862"
+          },
+          {
+            "post_id": 11700475,
+            "title": "NTR",
+            "official_title": null,
+            "correct_hypothesis": "내 파티에는 미친년들만 꼬인다 (novelpia.com/novel/398205)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11700475"
+          },
+          {
+            "post_id": 11700495,
+            "title": "서문청 보지 내 거임",
+            "official_title": null,
+            "correct_hypothesis": "이 무림의 미친년은 나야 (약칭 무친년/이무미나, novelpia.com/novel/217943, 작가 정통무협조와요)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11700495"
+          },
+          {
+            "post_id": 11702067,
+            "title": "폴랩이 난해한 건 맞는데 올드해서 보기 힘든가?",
+            "official_title": null,
+            "correct_hypothesis": "폴라리스 랩소디 (이영도) — 약칭 '폴랩'",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11702067"
+          },
+          {
+            "post_id": 11702084,
+            "title": "담호텔기라리는 언제 완결날 각 보임?",
+            "official_title": null,
+            "correct_hypothesis": "괴담 호텔 탈출기 (노벨피아, 쿠크루) — 약칭 '담텔기/괴라리'",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11702084"
+          },
+          {
+            "post_id": 11703645,
+            "title": "오늘에 ts 맘마는~~~~~",
+            "official_title": null,
+            "correct_hypothesis": "남매근친물 (노벨피아/밀리언클래스, 작가 binibig=비니빅)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11703645"
+          },
+          {
+            "post_id": 11703657,
+            "title": "식량이 부족한 부족에서 여자애는",
+            "official_title": null,
+            "correct_hypothesis": "야만인은 문명하면 안되냐 (노벨피아 405310)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11703657"
+          },
+          {
+            "post_id": 11705256,
+            "title": "하남자 탑은 국뽕을 못버티고 하차함",
+            "official_title": null,
+            "correct_hypothesis": "국뽕 안 하면 죽음 (작가 언행일치, 네이버시리즈 productNo 11626063) — 별칭 '하남자 탑'",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11705256"
+          },
+          {
+            "post_id": 11705261,
+            "title": "이티알은 루루가 가장 승리자같기도",
+            "official_title": null,
+            "correct_hypothesis": "이세계 TRPG 게임마스터 (노벨피아, 약칭 '이티알')",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11705261"
+          },
+          {
+            "post_id": 11706828,
+            "title": "마법도서관 봐라",
+            "official_title": null,
+            "correct_hypothesis": "내 마법도서관이 살아있다 (노벨피아 362450)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11706828"
+          },
+          {
+            "post_id": 11706852,
+            "title": "개장빙들아 판초법사 잼나냐?",
+            "official_title": null,
+            "correct_hypothesis": "판초우의의 마법사 (문피아, 작가 하드폭발, 2026 연재; '판초법사'는 정착 약칭) — 웹확인됨",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11706852"
+          },
+          {
+            "post_id": 11706873,
+            "title": "생각해보니까 미적은 전능뇌로 공부하는게 이득이네",
+            "official_title": null,
+            "correct_hypothesis": "전능의 뇌를 얻었다 (몽쉐르, 문피아/네이버시리즈)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11706873"
+          },
+          {
+            "post_id": 11710044,
+            "title": "가챠펑크 다음장이 아니였다고",
+            "official_title": null,
+            "correct_hypothesis": "가챠 중독자의 퓨전펑크 생활 (노벨피아 novel/387014, 작가 섦게지는꽃)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710044"
+          },
+          {
+            "post_id": 11714913,
+            "title": "주서연 삣삐미쿠랑 싸우면 이길 수 있음?",
+            "official_title": null,
+            "correct_hypothesis": "전 버튜버가 하고 싶은데요 (작가 플라나리아햄버거, 약칭 전튜버, novelpia.com/novel/275975)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "high",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11714913"
+          },
+          {
+            "post_id": 11663512,
+            "title": "지갤떡 멍미",
+            "official_title": null,
+            "correct_hypothesis": "헌터갤러리의 국가권력급 기계공주",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11663512"
+          },
+          {
+            "post_id": 11669929,
+            "title": "기계공주 재밌네",
+            "official_title": "기계공주",
+            "correct_hypothesis": "헌터갤러리의 국가권력급 기계공주",
+            "fix_axis": "search_correctness",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11669929"
+          },
+          {
+            "post_id": 11671490,
+            "title": "림월드 << 마땅히 장갤러라면 한번쯤은 해야만함",
+            "official_title": null,
+            "correct_hypothesis": "눈물을 마시는 새 (이영도)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11671490"
+          },
+          {
+            "post_id": 11674703,
+            "title": "도굴왕은 애니화 난이도 다른거 보단 괜찮을거 같은데",
+            "official_title": null,
+            "correct_hypothesis": "도굴왕",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11674703"
+          },
+          {
+            "post_id": 11677957,
+            "title": "페도부이 진짜 천재같네",
+            "official_title": null,
+            "correct_hypothesis": "음악 천재가 불륜을 못 숨김 (노벨피아 novel/402592, 작가 페도부이) — 다만 작가 앵커라 동일작가 타작품 가능성 잔존",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11677957"
+          },
+          {
+            "post_id": 11694067,
+            "title": "김괴라리) 그롱 이 개새끼 그냥 죽어랏",
+            "official_title": null,
+            "correct_hypothesis": "괴담에 휘말렸다",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11694067"
+          },
+          {
+            "post_id": 11695637,
+            "title": "알파카랑 눈싸움 하지마라",
+            "official_title": null,
+            "correct_hypothesis": "미상(웹검증 실패) — 등장인물 강시우/시트러스, '알파카랑 눈싸움하지 마라' 장면의 노벨피아 작품",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11695637"
+          },
+          {
+            "post_id": 11706832,
+            "title": "황제분충 ㄱㅊ함?",
+            "official_title": null,
+            "correct_hypothesis": "황제분충 (장르소설 갤 정착 작품 약칭; 정식 제목 웹확인 미확정 — 황제폐하가 웹소설 작가임을 숨기는 문피아/노벨피아 회귀물)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11706832"
+          },
+          {
+            "post_id": 11708466,
+            "title": "매국노 본 게이들 질문 좀 와봐라 ㅇㅇ",
+            "official_title": null,
+            "correct_hypothesis": "매국노 (노벨피아 추정, 동명 다수 존재로 불확실)",
+            "fix_axis": "wrong_work_disambiguation",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11708466"
+          },
+          {
+            "post_id": 11710037,
+            "title": "상식의 엇갈림 서술트릭 << GOAT임",
+            "official_title": null,
+            "correct_hypothesis": "괴담 호텔 탈출기 (노벨피아 novel/102155, 작가 쿠크루)",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "med",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710037"
+          },
+          {
+            "post_id": 11668288,
+            "title": "가챠펑크 오늘 호텔 스트레스 많이 받을거야",
+            "official_title": "가챠 중독자의 퓨전펑크 생활",
+            "correct_hypothesis": "",
+            "fix_axis": "search_correctness",
+            "severity": "low",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11668288"
+          },
+          {
+            "post_id": 11694049,
+            "title": "아생갤) 아레스가 가장 무서워할 일은 바로",
+            "official_title": "아카데미 생존 갤러리",
+            "correct_hypothesis": "",
+            "fix_axis": "resolution_promotion_gate",
+            "severity": "low",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11694049"
+          }
+        ]
+      }
+    },
+    "old_anchor_policy": "do_not_anchor_next_triage_on_loop290_self_batch",
+    "next_anchor_policy": "use_survey_136_wrong_work_27_and_recall_miss_49_post_ids"
+  },
+  "artifacts": {
+    "result": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop413_golden18_current_d95f1a57_runtime_proof_search_nonlight_result.json",
+    "manifest": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop413_golden18_current_d95f1a57_runtime_proof_search_nonlight_result_manifest.json",
+    "health_audit": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop413_golden18_current_d95f1a57_runtime_proof_run_health.json",
+    "golden_audit": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop413_golden18_current_d95f1a57_runtime_proof_golden_audit.json",
+    "collateral_compare": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\collateral\\loop413_golden18_current_d95f1a57_runtime_proof_collateral_compare.json",
+    "publication_contract": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop413_golden18_current_d95f1a57_runtime_proof_publication_contract.json",
+    "override_audit_json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop413_override_audit_11708445_current_head_d95f1a57_blind_source_native.json",
+    "override_publication_contract": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop413_override_audit_11708445_current_head_d95f1a57_publication_contract.json",
+    "survey_anchor_json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop413_survey_136_anchor_realignment.json",
+    "state": "docs/devs/loop413_runtime_override_survey_realign_20260704.json",
+    "report": "docs/devs/loop_reports/LOOP_413_REPORT_20260704.md"
+  },
+  "gates": {
+    "runtime_production": "GO / 18 of 18",
+    "expected_answer": "NO-GO / 16 of 18",
+    "golden_shared_collateral": "NO-GO / 9 regression candidates",
+    "publication_contract": "GO / 0 violations",
+    "override_audit_11708445": "GO_ROW_CONTRACT_ONLY",
+    "full375_collateral": "NOT_OPEN",
+    "search_recovery": "P0 / REVIEW / search_degraded_observed",
+    "collateral105": "reclassified 74 / runtime-verified 4 / residual 105",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

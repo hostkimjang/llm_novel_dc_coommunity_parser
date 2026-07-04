@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop413 runtime proof / OVERRIDE AUDIT / survey anchor follow-up
+  - 상태: golden18 runtime `GO 18/18` / expected-answer `NO-GO 16/18` / golden shared collateral `NO-GO 9` / publication contract `GO 0 violations` / override audit `GO_ROW_CONTRACT_ONLY` / search recovery `P0_REVIEW_DEGRADED` / full375 `NOT_OPEN` / approval not open
+  - 적용: 신규 대형 런 없이 current HEAD `d95f1a57` golden18 단일 search 포함 non-light 런으로 row 생산을 먼저 실증했다. 코드 변경과 R1 hardcoded cue/title list 확장은 없다.
+  - 산출물: `docs/devs/loop_reports/LOOP_413_REPORT_20260704.md`, `docs/devs/loop413_runtime_override_survey_realign_20260704.json`, `docs/devs/loop413_runtime_data_analytics_artifact.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop413_golden18_current_d95f1a57_runtime_proof_search_nonlight_result.json`.
+  - 완료 기준: `11698897` wrong publish와 `11698880` positive unresolved를 일반 술어/contract 또는 source-native 판정으로 줄이고, search degraded `unrecovered=0` 및 full375 collateral gate를 별도 증명하기 전까지 approval과 hard-hold 완화를 열지 않는다. 다음 anchor는 survey 136-error의 `wrong_work 27` / `recall_miss 49`다.
+
 - [ ] Loop412 11698880 title-led candidate HOLD follow-up
   - 상태: targeted runtime `GO 1/1` / wrong publish closure `GO_TARGETED` / correct candidate preservation `GO_CANDIDATE_ONLY` / expected-answer `NO-GO inherited Loop411 17/18` / golden shared collateral `NO-GO inherited Loop411 6` / search recovery `P0_ROW_LEVEL_EVIDENCE_WITH_PREFLIGHT_LIGHT_CAVEAT` / full375 `NOT_OPEN` / approval not open
   - 적용: title-led public gate가 `_has_unresolved_body_compound_character_anchor(...)`를 경유하고, promotion-blocked scrub이 stale `candidate_ledger.title_candidates` 요약에도 blocked title을 보존한다. R1 hardcoded cue/title list와 `post_id` 예외는 추가하지 않았다.

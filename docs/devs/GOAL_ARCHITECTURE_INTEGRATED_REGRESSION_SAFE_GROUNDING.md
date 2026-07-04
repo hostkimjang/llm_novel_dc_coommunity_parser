@@ -6,6 +6,18 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-04 Loop413 Addendum - current HEAD golden18 runtime proof / OVERRIDE AUDIT / survey anchor
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop413은 approval 회차가 아니라 current HEAD `d95f1a57`에서 런타임 비생산 여부를 먼저 닫고, runtime 불필요 `11708445` OVERRIDE AUDIT를 source-native로 재고정한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_413_REPORT_20260704.md`, state `docs/devs/loop413_runtime_override_survey_realign_20260704.json`, Data Analytics summary `docs/devs/loop413_runtime_data_analytics_artifact.json`.
+- Runtime: run `20260704_174823_875969`은 input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, pending snapshot `0`, `large_run_complete=true`, `ordered_flush_blocked=false`, MCP health `include_search=true`, `light_mode=false`, ok/failure `8/0`다.
+- Code: 코드 변경은 없다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry 확장은 하지 않았다.
+- Result: health audit는 `flush_integrity=GO / clean_completed_source`, publication contract는 `GO / 0 violations`다. Expected-answer는 `NO-GO / 16 of 18`이며 실패는 `11698897` wrong title, `11698880` positive unresolved다. Golden shared collateral은 `NO-GO / 9`, full375 collateral은 `NOT_OPEN`이다.
+- Override: `11708445`는 `ACCEPT / candidate_only_block_is_correct`로 재고정했다. Public contract는 `official_title=null`, `official_url=null`, `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`, `promotion_decision.status=candidate_only`, `publish_allowed=false`다.
+- Collateral / survey: Collateral 105는 `reclassified 74 / runtime-verified 4 / residual 105`로 보고한다. Survey anchor는 `136` errors의 `wrong_work_among_aliases=27`, `recall_miss=49`로 재정렬한다.
+- Gate: runtime production `GO / 18 of 18`, expected-answer `NO-GO / 16 of 18`, search recovery `P0 / REVIEW / search_degraded_observed`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Next: 신규 대형 런 dispatch는 계속 동결하고, 다음 active lane은 `11698897`, `11698880`, 또는 survey 136-error anchor의 작은 runtime/contract 단위로 고른다. 코드 변경 없이 docs만 반복되는 회차는 loop 정지 신호로 취급한다.
+
 ## 2026-07-04 Loop412 Addendum - 11698880 title-led candidate HOLD and ledger summary contract
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop412는 approval 회차가 아니라 Loop411 `11698880` wrong publish를 단건 runtime과 계약 보정으로 줄인 회차다.

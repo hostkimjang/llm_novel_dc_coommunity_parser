@@ -1,0 +1,157 @@
+{
+  "title": "Loop413 런타임 및 감사 검산",
+  "status": "repo_structured_summary_only",
+  "generated_at": "2026-07-04T18:18:45+09:00",
+  "surface": "loop_report_support",
+  "datasets": {
+    "gate_status_rows": [
+      {
+        "gate": "runtime_production",
+        "status": "GO",
+        "detail": "18/18 completed and flushed",
+        "score": 1
+      },
+      {
+        "gate": "golden_expected_answer",
+        "status": "NO-GO",
+        "detail": "16/18 pass; failed post_ids 11698897, 11698880",
+        "score": 0
+      },
+      {
+        "gate": "publication_contract",
+        "status": "GO",
+        "detail": "golden18 violations 0; 11708445 single-row violations 0",
+        "score": 1
+      },
+      {
+        "gate": "search_recovery",
+        "status": "P0 / REVIEW",
+        "detail": "search_degraded_observed",
+        "score": 0
+      },
+      {
+        "gate": "full375_collateral",
+        "status": "NOT_OPEN",
+        "detail": "loop413 did not run full375",
+        "score": 0
+      },
+      {
+        "gate": "full_scan_approval",
+        "status": "false",
+        "detail": "semantic_quality=REVIEW-LOCKED",
+        "score": 0
+      }
+    ],
+    "golden_status_rows": [
+      {
+        "status": "expected_null_respected",
+        "rows": 8
+      },
+      {
+        "status": "wrong_or_unexpected_title",
+        "rows": 1
+      },
+      {
+        "status": "expected_work_evidence_preserved_unresolved",
+        "rows": 6
+      },
+      {
+        "status": "expected_hypothesis_preserved_unresolved",
+        "rows": 1
+      },
+      {
+        "status": "expected_title_resolved",
+        "rows": 1
+      },
+      {
+        "status": "positive_work_unresolved",
+        "rows": 1
+      }
+    ],
+    "key_rows": [
+      {
+        "post_id": 11698897,
+        "role": "golden failure",
+        "status": "wrong_or_unexpected_title",
+        "expected": "[림월드]변방계에서 회귀자로 살아남기",
+        "actual": "쳇바퀴의 생쥐 사도가 되었다"
+      },
+      {
+        "post_id": 11698880,
+        "role": "golden failure",
+        "status": "positive_work_unresolved",
+        "expected": "가챠 중독자의 퓨전펑크 생활",
+        "actual": null
+      },
+      {
+        "post_id": 11708445,
+        "role": "OVERRIDE AUDIT",
+        "status": "ACCEPT / candidate_only_block_is_correct",
+        "expected": "public title null",
+        "actual": null
+      }
+    ],
+    "collateral105_rows": [
+      {
+        "bucket": "reclassified",
+        "rows": 74
+      },
+      {
+        "bucket": "runtime_verified",
+        "rows": 4
+      },
+      {
+        "bucket": "residual_action_queue",
+        "rows": 105
+      }
+    ],
+    "survey_anchor_rows": [
+      {
+        "failure_class": "recall_miss",
+        "rows": 49
+      },
+      {
+        "failure_class": "wrong_work_among_aliases",
+        "rows": 27
+      },
+      {
+        "failure_class": "over_resolved_nonwork",
+        "rows": 19
+      },
+      {
+        "failure_class": "generic_phrase_substring",
+        "rows": 16
+      },
+      {
+        "failure_class": "image_anchor_spurious",
+        "rows": 11
+      },
+      {
+        "failure_class": "other",
+        "rows": 5
+      },
+      {
+        "failure_class": "homonym_cross_domain",
+        "rows": 4
+      },
+      {
+        "failure_class": "batch_context_bleed",
+        "rows": 4
+      },
+      {
+        "failure_class": "slang_pollution",
+        "rows": 1
+      }
+    ]
+  },
+  "sources": [
+    "docs/devs/loop413_runtime_override_survey_realign_20260704.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop413_golden18_current_d95f1a57_runtime_proof_golden_audit.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop413_override_audit_11708445_current_head_d95f1a57_blind_source_native.json"
+  ],
+  "gate": {
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}
