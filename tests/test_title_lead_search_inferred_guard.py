@@ -7497,10 +7497,76 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             calls[0],
             ('site:novelpia.com/novel "테라포밍"', "title_anchor_official_probe"),
         )
-        self.assertEqual(calls[1], ("테라포밍 노벨피아", "platform_title_search"))
+        self.assertEqual(calls[1], ("시리즈 테라포밍 작가", "platform_title_search"))
+        self.assertEqual(calls[2], ("테라포밍 노벨피아", "platform_title_search"))
         self.assertEqual(
             [call for call in calls if call[0] == "테라포밍 노벨피아"],
             [("테라포밍 노벨피아", "platform_title_search")],
+        )
+
+    def test_title_led_mixed_input_injects_naver_series_author_probe_before_budget_tail(self):
+        calls = []
+
+        def search_fn(query, purpose=""):
+            calls.append((query, purpose))
+            return []
+
+        orchestrator = Orchestrator(experts={}, search_fn=search_fn)
+        ctx = ConversationContext(
+            post_id=11668307,
+            post_data={
+                "title": "빛세구 궁금한 점 있음",
+                "content_blocks": [
+                    {
+                        "type": "text",
+                        "text": (
+                            "다시보는 중인데, 각 행성에서 재능이 제일 뛰어난 사람만 골라오는 거 아님? "
+                            "전부 엘리트일 텐데 왜 튜토리얼에 폐급이 있지?"
+                        ),
+                    }
+                ],
+            },
+            comments=[
+                "그거 신경쓰면 대부분의 웹소 못 봄  - dc App",
+                "이건 중요한 거임... 행성 1위들끼리 급을 나누는 것부터 흥미로운데 행성 1위가 폐급이면...",
+            ],
+        )
+        gatekeeper = {
+            "post_type": "work_discussion",
+            "detected_entities": {"possible_titles": ["빛세구"]},
+        }
+        ctx.set_expert_output(ExpertType.GATEKEEPER, gatekeeper)
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "ask_question",
+                    "target_kind": "work",
+                    "primary_domain": "novel_literature",
+                    "title_novel_terms": ["빛세구"],
+                }
+            },
+        )
+        requests = [
+            {"purpose": "platform_title_search", "priority": 0, "query": "빛세구 노벨피아"},
+            {"purpose": "title_anchor_exact_probe", "priority": 1, "query": "빛세구궁금한"},
+            {"purpose": "platform_title_search", "priority": 1, "query": '"빛세구" "시리즈" 웹소설'},
+            {"purpose": "abbreviation_meaning_search", "priority": 1, "query": "빛세구 줄임"},
+        ]
+
+        self.assertTrue(orchestrator._has_title_led_work_consumption_search_signal(ctx))
+
+        with patch.dict(os.environ, {"PIPELINE_SEARCH_CONCURRENCY": "1"}):
+            orchestrator._execute_searches(requests, post_id=ctx.post_id, ctx=ctx)
+
+        queries = [query for query, _purpose in calls]
+        self.assertEqual(ctx.search_budget_profile, "core_fast_resolve")
+        self.assertEqual(ctx.search_budget_limit, 6)
+        self.assertIn("시리즈 빛세구 작가", queries[:3])
+        self.assertNotIn('"빛세구" "시리즈" 웹소설', queries)
+        self.assertLess(
+            queries.index("시리즈 빛세구 작가"),
+            queries.index("빛세구궁금한"),
         )
 
     def test_title_led_platform_probe_normalizer_routes_unscoped_novelpia_query_away_from_official_cap(self):

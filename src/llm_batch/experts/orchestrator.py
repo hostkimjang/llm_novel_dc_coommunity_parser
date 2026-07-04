@@ -3324,6 +3324,7 @@ class Orchestrator:
             for query, purpose in (
                 (f'site:novelpia.com/novel "{term}"', "title_anchor_official_probe"),
                 (f"{term} 노벨피아", "platform_title_search"),
+                (f"시리즈 {term} 작가", "platform_title_search"),
             ):
                 q_key = " ".join(query.split()).lower()
                 if q_key in searched_queries:
@@ -23466,7 +23467,15 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 and p_key in {"title_anchor_official_probe", "platform_title_search", "official_title_verify"}
             ):
                 q_lc = q_raw.lower()
-                if "노벨피아" in q_raw or "novelpia" in q_lc or "site:novelpia.com" in q_lc:
+                if (
+                    "노벨피아" in q_raw
+                    or "novelpia" in q_lc
+                    or "site:novelpia.com" in q_lc
+                    or "시리즈" in q_raw
+                    or "네이버" in q_raw
+                    or "naver" in q_lc
+                    or "series.naver.com" in q_lc
+                ):
                     score += 120.0
                     reasons.append("+title_led_official_detail_probe")
             if p_key == "discourse_suggestion":
