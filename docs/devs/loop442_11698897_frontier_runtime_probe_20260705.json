@@ -1,0 +1,101 @@
+{
+  "loop": 442,
+  "generated_at": "2026-07-05T04:45:00+09:00",
+  "language": "ko",
+  "status": "FRONTIER_RUNTIME_PROBE_GO_NOT_GOAL_COMPLETE",
+  "goal_state": "ACTIVE_NOT_COMPLETE",
+  "user_domain_note": {
+    "alias": "아생갤",
+    "correct_work_title": "아카데미 생존 갤러리",
+    "meaning": "웹소설 안에서 갤러리/커뮤니티 오마주 컨셉을 작품 장치로 쓸 수 있으므로 갤러리 표면만으로 현실 커뮤니티라고 단정하지 않는다.",
+    "loop442_effect": "이번 Loop442는 아생갤 코드 변경이 아니라 Loop439 frontier 11698897 stall 분리 검증이다."
+  },
+  "run_freeze": {
+    "full375": "NOT_RUN",
+    "bounded_1000_1500": "NOT_RUN",
+    "n5_flip_probe": "NOT_RUN",
+    "same_38_row_parent_packet_replay": "NOT_RUN",
+    "new_large_run": "FROZEN"
+  },
+  "loop439_frontier_context": {
+    "run_id": "20260705_032137_488821",
+    "frontier_global_idx": 3,
+    "frontier_post_id": 11698897,
+    "checkpoint_completed_count": 15,
+    "result_flushed_count": 2,
+    "ordered_flush_blocked": true,
+    "meaning": "Loop439는 current golden18 approval이 아니라 ordered flush stall 증거다."
+  },
+  "loop442_runtime": {
+    "run_id": "20260705_043053_568226",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop414_11698897_contextual_alias_gate_input.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop442_11698897_frontier_current_head_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop442_11698897_frontier_current_head_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop442_11698897_frontier_current_head_result_checkpoint.jsonl",
+    "pending_snapshot": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop442_11698897_frontier_current_head_result_pending_snapshot.json",
+    "log": "logs/expert_run_20260705_043053_568226.log",
+    "counts": {
+      "input": 1,
+      "completed": 1,
+      "flushed": 1,
+      "pending": 0,
+      "failed": 0,
+      "large_run_complete": true,
+      "ordered_flush_blocked": false,
+      "partial_flush_gap": false
+    },
+    "mcp_health": {
+      "include_search": true,
+      "light_mode": false,
+      "ok_count": 1,
+      "failure_count": 0
+    },
+    "row_search_health": {
+      "status": "GO",
+      "queries_executed": 5,
+      "valid": 4,
+      "zero": 1,
+      "cumulative_results": 21
+    },
+    "vlm_ocr": {
+      "ready": true,
+      "image_fetch_success": 4,
+      "image_fetch_count": 4,
+      "bytes": 184284
+    }
+  },
+  "public_identity": {
+    "post_id": 11698897,
+    "official_title": "변방계에서 회귀자로 살아남기",
+    "official_url": "https://novelpia.com/novel/382324",
+    "candidate_ledger_status": "safe_resolved",
+    "safe_resolved": true,
+    "promotion_blocked": false,
+    "promotion_decision_status": "publish",
+    "publish_allowed": true
+  },
+  "verification": {
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop442_11698897_frontier_current_head_health_audit.json",
+    "publication_contract_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop442_11698897_frontier_current_head_publication_contract.json",
+    "publication_contract_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop442_11698897_frontier_current_head_publication_contract.md",
+    "health_gate": "GO / clean_completed_source",
+    "search_evidence": "GO",
+    "publication_contract": "GO / row_count 1 / violation_row_count 0"
+  },
+  "gates": {
+    "targeted_runtime": "GO / 1 of 1",
+    "targeted_expected_answer": "GO_TARGETED_SAFE_RESOLVED",
+    "loop439_stall_reproduction": "NOT_REPRODUCED_SINGLE_ROW",
+    "golden18_current_proof": "NO-GO_RUNTIME_STALL_INHERITED_LOOP439",
+    "golden_expected_answer": "NOT_REFRESHED_AFTER_LOOP442",
+    "broader_search_recovery": "P0 / REVIEW",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  },
+  "next_actions": [
+    "동일 stalled golden18 즉시 반복을 계속 금지한다.",
+    "Loop439 missing 11663521/11700470 또는 residual queue를 작은 단위로 분리한다.",
+    "broader search recovery와 full375 collateral은 별도 blocker로 유지한다."
+  ]
+}

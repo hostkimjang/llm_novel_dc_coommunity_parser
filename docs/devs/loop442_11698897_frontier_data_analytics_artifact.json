@@ -1,0 +1,52 @@
+{
+  "title": "Loop442 11698897 frontier runtime probe 검산",
+  "language": "ko",
+  "generated_at": "2026-07-05T04:45:00+09:00",
+  "reader_summary": "Loop439 frontier 11698897은 current HEAD 단건에서 1/1로 완료되어 ordered flush stall이 재현되지 않았다. Row-level health/search/publication은 GO지만 golden18/full375 approval은 열지 않는다.",
+  "data_points": [
+    {
+      "name": "runtime_counts",
+      "value": "1/1/1/0/0",
+      "detail": "input/completed/flushed/pending/failed"
+    },
+    {
+      "name": "frontier_result",
+      "value": "NOT_REPRODUCED_SINGLE_ROW",
+      "detail": "Loop439 global_idx 3 post_id 11698897은 Loop442 단건에서 complete_after_last_index"
+    },
+    {
+      "name": "public_identity",
+      "value": "변방계에서 회귀자로 살아남기",
+      "detail": "official_url=https://novelpia.com/novel/382324, safe_resolved=true"
+    },
+    {
+      "name": "search_evidence",
+      "value": "GO_ROW_LEVEL",
+      "detail": "include_search=true, light_mode=false, queries=5, valid=4, zero=1, cumulative_results=21"
+    },
+    {
+      "name": "publication_contract",
+      "value": "GO",
+      "detail": "row_count=1, violation_row_count=0"
+    }
+  ],
+  "gate_status": {
+    "targeted_runtime": "GO / 1 of 1",
+    "targeted_expected_answer": "GO_TARGETED_SAFE_RESOLVED",
+    "golden18_current_proof": "NO-GO_RUNTIME_STALL_INHERITED_LOOP439",
+    "golden_expected_answer": "NOT_REFRESHED_AFTER_LOOP442",
+    "broader_search_recovery": "P0 / REVIEW",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "artifacts": [
+    "docs/devs/loop_reports/LOOP_442_REPORT_20260705.md",
+    "docs/devs/loop442_11698897_frontier_runtime_probe_20260705.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop442_11698897_frontier_current_head_result.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop442_11698897_frontier_current_head_health_audit.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop442_11698897_frontier_current_head_publication_contract.json"
+  ],
+  "next_action": "동일 stalled golden18 반복 대신 Loop439 missing 11663521/11700470 또는 residual queue를 작은 단위로 분리한다."
+}

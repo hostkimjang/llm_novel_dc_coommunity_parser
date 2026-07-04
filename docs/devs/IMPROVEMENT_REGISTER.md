@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260705-442 - 11698897 frontier runtime probe
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/parent replay 미발주 | dispatch 반복 금지 |
+| frontier probe | GO / 1 of 1 | run `20260705_043053_568226`, `1/1/1/0/0` | golden/full375와 분리 |
+| Loop439 stall 재현 | NOT_REPRODUCED_SINGLE_ROW | `ordered_flush_blocked=false`, `partial_flush_gap=false` | missing row를 별도 분리 |
+| public identity | GO_TARGETED | `변방계에서 회귀자로 살아남기` / `https://novelpia.com/novel/382324` | 단건 근거로만 사용 |
+| publication contract | GO | row `1`, violation `0` | broader gate와 분리 |
+| search evidence | GO_ROW_LEVEL | include_search `true`, light_mode `false`, queries `5`, valid `4` | broader search recovery는 P0 유지 |
+| 도메인 보정 | 유지 | `아생갤`은 작품 내부 갤러리/커뮤니티 오마주형 제목 약어 가능 | 현실 갤러리명 단정 금지 |
+| 문서 동기화 | 완료 | Loop442 report/state/verification/register 갱신 | goal은 ACTIVE 유지 |
+
+Gate: targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_SAFE_RESOLVED`, Loop439 stall reproduction `NOT_REPRODUCED_SINGLE_ROW`, golden18 current proof `NO-GO_RUNTIME_STALL / inherited Loop439`, golden expected-answer `NOT_REFRESHED_AFTER_LOOP442`, broader search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260705-441 - gallery-homage alias bridge runtime
 
 | 항목 | 상태 | 근거 | 다음 조치 |

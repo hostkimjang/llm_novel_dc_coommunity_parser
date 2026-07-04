@@ -1,5 +1,21 @@
 # Operation Quality Checklist
 
+## 2026-07-05 Loop442 11698897 frontier runtime probe 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_442_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop442_11698897_frontier_runtime_probe_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop442_11698897_frontier_data_analytics_artifact.json`.
+  - [x] Loop442 runtime `1/1/1/0/0`, `large_run_complete=true`, `ordered_flush_blocked=false`를 기록했다.
+  - [x] Health audit `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`를 기록했다.
+  - [x] `11698897` public identity `변방계에서 회귀자로 살아남기` / `https://novelpia.com/novel/382324`, `safe_resolved=true`를 기록했다.
+- 품질 게이트:
+  - [x] Loop442 단건 probe를 golden/full375 approval로 승격하지 않는다.
+  - [x] Loop439 stall reproduction은 `NOT_REPRODUCED_SINGLE_ROW`로만 보고한다.
+  - [x] search row-level `GO`와 broader search recovery `P0 / REVIEW`를 분리한다.
+  - [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 하지 않았음을 명시한다.
+  - [x] goal `ACTIVE / NOT_COMPLETE`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
+
 ## 2026-07-05 Loop439-441 아생갤 alias bridge 품질 게이트
 
 - 근거:
