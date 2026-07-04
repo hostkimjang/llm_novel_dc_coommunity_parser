@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260705-434 - contextual exact-title official detail gap contract
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/parent replay/golden18 runtime replay 미발주 | dispatch 반복 금지 |
+| R1 cue 확장 | 없음 | title/cue allowlist, `post_id` 예외, registry, slang DB write-back 추가 없음 | 일반 술어 유지 |
+| contextual exact-title gap contract | GO_UNIT | `_has_contextual_exact_title_official_detail_gap_probe` 추가 | runtime replay와 분리 |
+| `11694019` saved projection probe | GO_PROBE | `이세계에서 사이비로 살아남기` no-official-url gap 확인 | current runtime 검증은 별도 |
+| intent permit scope | GO_UNIT | adaptive official URL 2건 보존, broad community query 1건 차단 | query 확장 과잉 방지 |
+| expected-answer | NOT_REFRESHED / inherited 17 of 18 | Loop433 projection 상태 유지 | runtime/golden 소규모 재실증 필요 |
+| search evidence | P0 / REVIEW | Loop431 `search_degraded_observed` 상속 | search degraded 100% 복구 필요 |
+| full375 collateral | NOT_OPEN | 전수 replay 미실행 | golden shared와 full375 분리 |
+| 문서 동기화 | 완료 | Loop434 report/state/verification/register 갱신 | goal은 ACTIVE 유지 |
+
+Gate: runtime production `GO / inherited Loop431 18 of 18`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, publication contract `NOT_RERUN_AFTER_PATCH`, expected-answer `NOT_REFRESHED_AFTER_LOOP434 / inherited Loop433 NO-GO 17 of 18`, search recovery `P0 / REVIEW`, golden shared collateral raw `NO-GO / inherited Loop433 5`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260705-433 - low-specificity batch alias publication contract
 
 | 항목 | 상태 | 근거 | 다음 조치 |

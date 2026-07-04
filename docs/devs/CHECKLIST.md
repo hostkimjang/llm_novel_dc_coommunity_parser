@@ -1,5 +1,18 @@
 ﻿# Development Checklist
 
+## 2026-07-05 Loop434 contextual exact-title 공식 detail gap 계약 체크
+
+- [x] 신규 대형 런을 동결했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, golden18 runtime replay를 발주하지 않았다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] `semantic_seed_review` 조기 종료 전에 저장 검색 카탈로그의 contextual exact-title 공식 detail URL gap을 확인하는 일반 술어를 추가했다.
+- [x] `intent_permit` denied 상태에서도 `adaptive_official_url`, `adaptive_author_bridge_official_url`만 보존하고 일반 `title_search_community`는 계속 차단한다.
+- [x] Loop433 저장 projection `11694019`에서 `이세계에서 사이비로 살아남기` no-official-url gap과 kept adaptive query 2건을 확인했다.
+- [x] `py_compile`, `tests.test_search_recovery_contract` 8건, focused semantic-seed early-stop 3건을 통과했다.
+- [ ] Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다. Unit/probe 개선을 current runtime approval로 세지 않는다.
+- [ ] Golden expected-answer는 `NOT_REFRESHED_AFTER_LOOP434 / inherited Loop433 NO-GO 17 of 18`이다.
+- [ ] Search recovery는 `P0 / REVIEW / search_degraded_observed`, full375 collateral은 `NOT_OPEN`이다.
+- Gate: runtime production `GO / inherited Loop431 18 of 18`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, publication contract `NOT_RERUN_AFTER_PATCH`, expected-answer `NOT_REFRESHED / inherited 17 of 18`, search recovery `P0 / REVIEW`, golden shared collateral raw `NO-GO / inherited 5`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop433 low-specificity batch alias publish 계약 체크
 
 - [x] 신규 대형 런을 동결했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, golden18 runtime replay를 발주하지 않았다.

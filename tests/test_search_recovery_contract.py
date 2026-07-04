@@ -1,7 +1,7 @@
 import unittest
 
 from llm_batch.agentic_pipeline import AgenticPipeline
-from llm_batch.experts.orchestrator import ConversationContext, Orchestrator
+from llm_batch.experts.orchestrator import ConversationContext, ExpertType, Orchestrator
 from tools.audit_expert_run_health import _build_search_evidence_gate
 
 
@@ -202,6 +202,93 @@ class SearchRecoveryContractTest(unittest.TestCase):
                 ["미츄리", "혼후순결"],
             ),
             [],
+        )
+
+    def test_contextual_exact_title_gap_preserves_adaptive_probe_after_semantic_demotion(self):
+        orchestrator = Orchestrator(experts={})
+        ctx = ConversationContext(post_id=11694019, post_data={}, comments=[])
+        ctx.search_results = [
+            {
+                "title": "이세계에서 사이비로 살아남기 (r93 판) - 나무위키",
+                "url": "https://namu.wiki/w/이세계에서%20사이비로%20살아남기",
+                "domain": "namu.wiki",
+                "content": "노벨피아 연재. 미츄리. 혼후순결이라는 개념이 현대 기준으로도...",
+                "query": "혼후순결 노벨피아",
+                "source_tier": "wiki",
+            },
+            {
+                "title": "미츄리의 신신신신작, 이세계에서 사이비로 살아남기 - 장르소설 채널",
+                "url": "https://arca.live/b/novelchannel/77980889",
+                "domain": "arca.live",
+                "content": "노벨피아에서 보기 드문 착각물. 혼전혼후 순결 관련 언급.",
+                "query": "혼후순결 노벨피아",
+                "source_tier": "community",
+            },
+            {
+                "title": "감옥학원에서 나만 힐링할거다",
+                "url": "https://novelpia.com/novel/75754",
+                "content": "작가 미츄리",
+                "source_tier": "novel_platform",
+            },
+        ]
+        gatekeeper = {
+            "post_type": "work_discussion",
+            "key_terms": ["미츄리", "혼후순결", "중세 문화", "고증"],
+            "detected_entities": {"possible_titles": ["미츄리 혼후순결"]},
+        }
+        ctx.set_expert_output(
+            ExpertType.GATEKEEPER,
+            gatekeeper,
+        )
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "discuss_work",
+                    "target_kind": "work",
+                    "primary_domain": "novel_literature",
+                    "semantic_seed_review": {"is_specific_work_discussion": False},
+                    "warnings": [
+                        "semantic_seed_review_non_title_terms_removed",
+                        "semantic_seed_review_search_suggestions_removed",
+                        "semantic_seed_review_specific_work_denied",
+                    ],
+                    "semantic_seed_review_context_terms": ["미츄리", "혼후순결"],
+                }
+            },
+        )
+
+        self.assertTrue(orchestrator._has_discourse_semantic_seed_demotion(ctx))
+        self.assertTrue(
+            orchestrator._has_contextual_exact_title_official_detail_gap_probe(
+                ctx,
+                gatekeeper_result=gatekeeper,
+            )
+        )
+
+        kept = orchestrator._prune_title_search_requests_for_intent_permit(
+            ctx,
+            [
+                {
+                    "purpose": "adaptive_author_bridge_official_url",
+                    "query": "미츄리 이세계에서 사이비로 살아남기",
+                },
+                {
+                    "purpose": "adaptive_official_url",
+                    "query": "이세계에서 사이비로 살아남기 site:novelpia.com OR site:munpia.com OR site:page.kakao.com",
+                },
+                {
+                    "purpose": "title_search_community",
+                    "query": "혼후순결 노벨피아",
+                },
+            ],
+            gatekeeper_result=gatekeeper,
+            phase="unit",
+        )
+
+        self.assertEqual(
+            [item["purpose"] for item in kept],
+            ["adaptive_author_bridge_official_url", "adaptive_official_url"],
         )
 
     def test_context_records_degraded_fallback_recovery(self):

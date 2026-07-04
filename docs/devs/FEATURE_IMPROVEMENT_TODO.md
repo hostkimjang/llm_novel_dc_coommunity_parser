@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop434 contextual exact-title official detail gap follow-up
+  - 상태: code contract `GO_UNIT` / saved projection probe `GO` / runtime replay after patch `NOT_RUN` / expected-answer `NOT_REFRESHED inherited Loop433 NO-GO 17/18` / search recovery `P0_REVIEW_SEARCH_DEGRADED` / golden shared collateral raw `NO-GO inherited 5` / full375 `NOT_OPEN` / approval not open
+  - 적용: `semantic_seed_review` 조기 종료 전에 저장 검색 카탈로그의 contextual exact-title 공식 detail URL gap을 확인하고, `adaptive_official_url`, `adaptive_author_bridge_official_url`만 intent-denied 상태에서 보존한다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+  - 산출물: `docs/devs/loop_reports/LOOP_434_REPORT_20260705.md`, `docs/devs/loop434_contextual_exact_title_gap_contract_20260705.json`, `docs/devs/loop434_contextual_exact_title_gap_contract_data_analytics_artifact.json`.
+  - 완료 기준: `11694019`를 current runtime 단건 또는 golden18 소규모 재실증으로 확인하고, search degraded `unrecovered=0` 및 full375 collateral gate를 별도 증명하기 전까지 approval과 hard-hold 완화를 열지 않는다.
+
 - [ ] Loop433 low-specificity batch alias contract follow-up
   - 상태: code contract `GO_UNIT` / projection publication contract `GO 0 violations` / projection expected-answer `NO-GO 17/18` / runtime replay after patch `NOT_RUN` / search recovery `P0_REVIEW_SEARCH_DEGRADED` / golden shared collateral raw `NO-GO 5` / full375 `NOT_OPEN` / approval not open
   - 적용: 짧은 batch alias 표면과 official detail URL만 있고 후보 title 직접 source 근거, direct work bridge, image/OCR work title, verified character link가 없으며 복수 후보/반론이 남은 public title publish를 차단했다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.

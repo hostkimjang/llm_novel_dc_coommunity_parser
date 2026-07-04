@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-05 Loop434 Addendum - contextual exact-title official detail gap contract
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop434는 approval 회차가 아니라 Loop433 잔여 실패 `11694019`의 저장 검색 카탈로그 exact-title 근거를 semantic seed 조기 종료 전에 AdaptiveChain 공식 URL 보강으로 넘기도록 배선한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_434_REPORT_20260705.md`, state `docs/devs/loop434_contextual_exact_title_gap_contract_20260705.json`, Data Analytics summary `docs/devs/loop434_contextual_exact_title_gap_contract_data_analytics_artifact.json`.
+- Runtime: 신규 runtime replay는 없다. `runtime_replay_after_patch=NOT_RUN_AFTER_PATCH`, runtime production은 Loop431 `18/18`을 상속 근거로만 둔다.
+- Code: `orchestrator.py`는 `_has_contextual_exact_title_official_detail_gap_probe(...)`로 work-discussion 신호와 wiki/community exact-title evidence, 공식 detail URL gap을 함께 요구한다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+- Result: Loop433 저장 projection `11694019`에서 `contextual_exact_titles_without_official_detail=["이세계에서 사이비로 살아남기"]`, `gap_probe_allowed=true`, adaptive official query 2건 보존, broad community query 1건 차단을 확인했다.
+- Boundary: golden expected-answer는 `NOT_REFRESHED_AFTER_LOOP434 / inherited Loop433 NO-GO 17 of 18`이다. Search recovery는 `P0 / REVIEW`, full375 collateral은 `NOT_OPEN`, golden shared collateral raw는 inherited `NO-GO / 5`다.
+- Gate: code contract `GO_UNIT`, saved projection probe `GO`, runtime replay `NOT_RUN_AFTER_PATCH`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Next: 다음 active lane은 이 계약을 current runtime 단건 또는 golden18 소규모 재실증으로 확인하되, 대형 run dispatch 반복은 계속 금지한다.
+
 ## 2026-07-05 Loop433 Addendum - low-specificity batch alias publication contract
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop433은 approval 회차가 아니라 Loop432 잔여 실패 `11705245`의 저특이 batch alias public title 복구를 counterevidence contract로 막은 회차다.

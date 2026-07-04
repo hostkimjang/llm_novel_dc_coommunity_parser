@@ -1,5 +1,18 @@
 ﻿# Developer TODO Index
 
+## 2026-07-05 Loop434 TODO
+
+- 상태 업데이트: Loop434는 `11694019`의 저장 검색 카탈로그 exact-title 근거가 `semantic_seed_review` 조기 종료 때문에 공식 detail URL 보강으로 넘어가지 못한 경로를 일반 술어로 줄인 회차다. Runtime replay after patch가 없고 expected-answer/search/full375 gate가 닫히지 않아 goal은 완료가 아니다.
+- [x] 신규 대형 런과 동일 parent packet replay를 발주하지 않았다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] `_has_contextual_exact_title_official_detail_gap_probe(...)`를 추가하고 semantic early-stop 및 intent permit 경로에 배선했다.
+- [x] 저장 projection `11694019`에서 `이세계에서 사이비로 살아남기` no-official-url gap과 adaptive official query 보존을 확인했다.
+- [x] `py_compile`, search recovery contract 8건, semantic-seed focused 3건을 통과했다.
+- [ ] Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다. 필요 시 다음은 단건 또는 golden18 단일로 제한한다.
+- [ ] Golden expected-answer는 `NOT_REFRESHED_AFTER_LOOP434 / inherited Loop433 NO-GO 17 of 18`이다.
+- [ ] Search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, golden shared collateral `NO-GO / inherited 5`를 닫지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop433 TODO
 
 - 상태 업데이트: Loop433은 `11705245`의 저특이 batch alias publish 회귀를 일반 publication contract로 줄인 회차다. Projection expected-answer는 `17/18`로 개선됐지만 runtime replay after patch가 없고 search/full375 gate가 닫히지 않아 goal은 완료가 아니다.

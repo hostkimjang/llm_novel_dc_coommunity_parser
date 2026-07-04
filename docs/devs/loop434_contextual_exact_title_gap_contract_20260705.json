@@ -1,0 +1,87 @@
+{
+  "loop": 434,
+  "date": "2026-07-05",
+  "head_before_commit": "6a5b413c",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "scope": "contextual exact-title official detail gap contract for post_id 11694019",
+  "large_runs": {
+    "full375": "FROZEN_NOT_DISPATCHED",
+    "bounded_1000_1500": "FROZEN_NOT_DISPATCHED",
+    "safe_loss_n5": "FROZEN_NOT_DISPATCHED",
+    "parent_packet_38_replay": "FROZEN_NOT_DISPATCHED",
+    "golden18_runtime_replay": "FROZEN_NOT_DISPATCHED"
+  },
+  "code_contract": {
+    "file": "src/llm_batch/experts/orchestrator.py",
+    "helper": "_has_contextual_exact_title_official_detail_gap_probe",
+    "early_stop_bypass": "semantic_seed_review early stop now checks contextual exact-title official detail gap before returning noise",
+    "intent_permit_scope": [
+      "adaptive_official_url",
+      "adaptive_author_bridge_official_url"
+    ],
+    "forbidden_changes_absent": [
+      "R1 hardcoded cue/title list",
+      "post_id exception",
+      "work-specific registry",
+      "slang_db write-back"
+    ]
+  },
+  "saved_projection_probe": {
+    "source_projection": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop433_golden18_low_specificity_alias_contract_projection_result.json",
+    "post_id": 11694019,
+    "stored_status": {
+      "official_title": null,
+      "official_url": null,
+      "candidate_ledger_status": "hold_without_candidates",
+      "safe_resolved": false
+    },
+    "search_catalog_count": 17,
+    "semantic_seed_demotion": true,
+    "contextual_exact_titles_without_official_detail": [
+      "이세계에서 사이비로 살아남기"
+    ],
+    "gap_probe_allowed": true,
+    "evidence_gaps": [
+      {
+        "type": "no_official_url",
+        "term": "이세계에서 사이비로 살아남기",
+        "description": "'이세계에서 사이비로 살아남기'의 contextual exact-title 공식 detail 미확정"
+      }
+    ],
+    "kept_after_intent_permit": [
+      {
+        "purpose": "adaptive_author_bridge_official_url",
+        "query": "미츄리 이세계에서 사이비로 살아남기"
+      },
+      {
+        "purpose": "adaptive_official_url",
+        "query": "이세계에서 사이비로 살아남기 site:novelpia.com OR site:munpia.com OR site:page.kakao.com"
+      }
+    ],
+    "blocked_after_intent_permit": [
+      {
+        "purpose": "title_search_community",
+        "query": "혼후순결 노벨피아"
+      }
+    ]
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "unittest_tests_test_search_recovery_contract": "PASS_8",
+    "focused_semantic_seed_early_stop_unittest": "PASS_3",
+    "pytest": "NOT_RUN_NOT_INSTALLED_IN_DEFAULT_PYTHON_OR_WINDOWS_VENV"
+  },
+  "gates": {
+    "runtime_after_patch": "NOT_RUN_AFTER_PATCH",
+    "runtime_production": "GO_INHERITED_LOOP431_18_OF_18",
+    "publication_contract": "NOT_RERUN_AFTER_PATCH_INHERIT_LOOP433_GO_0",
+    "golden_expected_answer_projection": "NOT_REFRESHED_AFTER_LOOP434_INHERIT_LOOP433_NO_GO_17_OF_18",
+    "search_recovery": "P0_REVIEW_SEARCH_DEGRADED_OBSERVED",
+    "golden_shared_collateral_raw": "NO_GO_INHERITED_LOOP433_5",
+    "full375_collateral": "NOT_OPEN",
+    "collateral_105": "reclassified_74_runtime_verified_4_residual_105",
+    "semantic_quality": "REVIEW_LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE_NOT_COMPLETE"
+  }
+}

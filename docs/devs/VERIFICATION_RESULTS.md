@@ -1,5 +1,27 @@
 ﻿# Verification Results
 
+## 2026-07-05 Loop434 contextual exact-title 공식 detail gap 계약 검증
+
+- 범위: current patch의 contextual exact-title official detail gap 계약을 unit/focused test와 Loop433 저장 projection probe로 검증했다. 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, golden18 runtime replay는 발주하지 않았다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_434_REPORT_20260705.md`
+  - state `docs\devs\loop434_contextual_exact_title_gap_contract_20260705.json`
+  - Data Analytics summary `docs\devs\loop434_contextual_exact_title_gap_contract_data_analytics_artifact.json`
+  - source projection `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop433_golden18_low_specificity_alias_contract_projection_result.json`
+- Verification commands:
+  - `python -m py_compile src\llm_batch\experts\orchestrator.py tests\test_search_recovery_contract.py` -> PASS
+  - `$env:PYTHONPATH='src'; venv\Scripts\python.exe -m unittest tests.test_search_recovery_contract -v` -> PASS, `8` tests
+  - `$env:PYTHONPATH='src'; venv\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard -k "semantic_seed" -v` -> PASS, `3` tests
+  - Loop433 saved projection probe -> PASS, `gap_probe_allowed=true`, adaptive official queries kept `2`, broad query blocked `1`
+- Audit result:
+  - `11694019`: stored `official_title=null`, `official_url=null`, `candidate_ledger_status=hold_without_candidates`, `safe_resolved=false`
+  - contextual exact title gap: `이세계에서 사이비로 살아남기`
+  - preserved query purposes: `adaptive_author_bridge_official_url`, `adaptive_official_url`
+- Boundary:
+  - Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다.
+  - Unit/probe pass는 current runtime approval, golden expected-answer refresh, search recovery, full375 approval이 아니다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE` 유지.
+
 ## 2026-07-05 Loop433 low-specificity batch alias publish 계약 검증
 
 - 범위: current patch의 저특이 batch alias counterevidence demotion 계약을 unit/focused test와 Loop432 저장 결과 projection으로 검증했다. 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, golden18 runtime replay는 발주하지 않았다.

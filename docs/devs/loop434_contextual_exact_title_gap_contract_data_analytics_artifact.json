@@ -1,0 +1,37 @@
+{
+  "artifact_type": "data_analytics_loop_summary",
+  "loop": 434,
+  "date": "2026-07-05",
+  "title": "contextual exact-title 공식 detail gap 계약",
+  "reader_summary_ko": "Loop434는 11694019의 저장 검색 카탈로그에 정확 제목 근거가 있는데 semantic_seed_review 조기 종료 때문에 공식 detail URL 보강으로 넘어가지 못한 경로를 일반 술어로 보정했다. 후보를 바로 publish하지 않고 AdaptiveChain의 공식 URL 보강 쿼리만 보존한다.",
+  "input_evidence": {
+    "source_projection": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop433_golden18_low_specificity_alias_contract_projection_result.json",
+    "post_id": 11694019,
+    "search_catalog_count": 17,
+    "stored_candidate_ledger_status": "hold_without_candidates",
+    "stored_safe_resolved": false
+  },
+  "measured_effect": {
+    "semantic_seed_demotion": true,
+    "contextual_exact_title_gap_probe": true,
+    "detected_title_gap": "이세계에서 사이비로 살아남기",
+    "kept_adaptive_official_queries": 2,
+    "blocked_broad_queries": 1
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "search_recovery_contract_unittest": "PASS_8",
+    "semantic_seed_focused_unittest": "PASS_3",
+    "saved_projection_probe": "PASS"
+  },
+  "gate_status": {
+    "runtime_after_patch": "NOT_RUN_AFTER_PATCH",
+    "expected_answer": "NOT_REFRESHED_AFTER_LOOP434_INHERIT_LOOP433_NO_GO_17_OF_18",
+    "search_recovery": "P0_REVIEW_SEARCH_DEGRADED_OBSERVED",
+    "full375": "NOT_OPEN",
+    "semantic_quality": "REVIEW_LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE_NOT_COMPLETE"
+  },
+  "next_action": "current runtime 단건 또는 golden18 소규모 재실증으로 계약 효과를 확인하되, 대형 run dispatch 반복은 계속 금지한다."
+}

@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-05 - Loop434 contextual exact-title official detail gap contract
+
+- 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, golden18 runtime replay는 발주하지 않았다.
+- `orchestrator.py`는 `_has_contextual_exact_title_official_detail_gap_probe(...)`를 추가해 `semantic_seed_review` 조기 종료 전에 저장 검색 카탈로그의 wiki/community exact-title 근거와 공식 detail URL gap을 확인한다.
+- `intent_permit` denied 상태에서도 exact title을 포함한 `adaptive_official_url`, `adaptive_author_bridge_official_url`만 보존하고, `혼후순결 노벨피아` 같은 일반 커뮤니티 검색은 계속 차단한다.
+- Loop433 저장 projection `11694019`는 `official_title=null`, `candidate_ledger_status=hold_without_candidates`, `safe_resolved=false`였지만, search catalog 17건에서 `이세계에서 사이비로 살아남기` no-official-url gap이 확인됐다.
+- Verification은 `py_compile` PASS, `tests.test_search_recovery_contract` 8건 PASS, focused semantic-seed early-stop 3건 PASS, saved projection probe PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_434_REPORT_20260705.md`, state는 `docs/devs/loop434_contextual_exact_title_gap_contract_20260705.json`, Data Analytics summary는 `docs/devs/loop434_contextual_exact_title_gap_contract_data_analytics_artifact.json`이다.
+- Gate는 runtime production `GO / inherited Loop431 18 of 18`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, expected-answer `NOT_REFRESHED_AFTER_LOOP434 / inherited Loop433 NO-GO 17 of 18`, search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop433 low-specificity batch alias publication contract
 
 - 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, golden18 runtime replay는 발주하지 않았다.

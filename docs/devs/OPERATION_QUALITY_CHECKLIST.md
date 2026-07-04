@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-05 Loop434 contextual exact-title 공식 detail gap 품질 게이트
+
+- 근거:
+  - [x] 신규 full375/bounded/N5/golden18 runtime replay와 동일 38-row parent packet replay를 발주하지 않았음을 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_434_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop434_contextual_exact_title_gap_contract_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop434_contextual_exact_title_gap_contract_data_analytics_artifact.json`.
+  - [x] Loop433 saved projection probe에서 exact-title gap과 adaptive official query 보존을 기록했다.
+- 품질 게이트:
+  - [x] runtime replay after patch가 `NOT_RUN_AFTER_PATCH`임을 명시한다.
+  - [x] unit/probe pass를 current runtime approval로 승격하지 않는다.
+  - [x] R1 hardcoded cue/title list, `post_id` 예외, slang DB write-back을 하지 않았음을 명시한다.
+  - [x] `11694019`는 public publish가 아니라 공식 detail URL 보강 검색으로만 넘긴다.
+  - [x] search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-05 Loop433 low-specificity batch alias publication 품질 게이트
 
 - 근거:

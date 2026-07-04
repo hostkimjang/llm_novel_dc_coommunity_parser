@@ -3642,6 +3642,77 @@ class Orchestrator:
             )
         )
 
+    def _has_contextual_exact_title_official_detail_gap_probe(
+        self,
+        ctx: ConversationContext,
+        gatekeeper_result: Optional[Dict[str, Any]] = None,
+    ) -> bool:
+        """Allow search continuation when contextual evidence names an exact title but lacks its official detail URL."""
+        if ctx is None:
+            return False
+
+        gk = gatekeeper_result or ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
+        if not isinstance(gk, dict):
+            gk = {}
+        discourse_out = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
+        da = (
+            discourse_out.get("discourse_analysis") or {}
+            if isinstance(discourse_out, dict)
+            else {}
+        )
+        if not isinstance(da, dict):
+            da = {}
+
+        gk_post_type = str(gk.get("post_type") or "").strip().lower()
+        primary_domain = str(da.get("primary_domain") or "").strip().lower()
+        intent = str(da.get("intent") or "").strip().lower()
+        target_kind = str(da.get("target_kind") or "").strip().lower()
+        gk_work_discussion = gk_post_type in {
+            "work_discussion",
+            "spoiler_discussion",
+            "ask_identify",
+            "work_review",
+        }
+        discourse_work_discussion = (
+            primary_domain in {"novel_literature", "webnovel", "fiction"}
+            and intent in {"discuss_work", "ask_question", "express_opinion", "review"}
+            and target_kind in {"work", "character", "plot", "setting", "author", "unknown"}
+        )
+        if not (gk_work_discussion or discourse_work_discussion):
+            return False
+
+        key_terms: List[str] = []
+
+        def _add_terms(raw_terms: Any) -> None:
+            if not isinstance(raw_terms, list):
+                return
+            for term in raw_terms:
+                if not isinstance(term, str):
+                    continue
+                term = term.strip()
+                if term and term not in key_terms:
+                    key_terms.append(term)
+
+        _add_terms(gk.get("key_terms"))
+        entities = gk.get("detected_entities") or {}
+        if isinstance(entities, dict):
+            _add_terms(entities.get("key_terms"))
+            _add_terms(entities.get("possible_titles"))
+            _add_terms(entities.get("possible_characters"))
+        _add_terms(da.get("semantic_seed_review_context_terms"))
+        _add_terms(da.get("domain_evidence"))
+
+        snippet_hints = getattr(ctx, "snippet_hints", None) or {}
+        titles = self._contextual_exact_titles_without_official_detail(
+            ctx,
+            snippet_hints,
+            key_terms,
+        )
+        if not titles:
+            return False
+        setattr(ctx, "_semantic_seed_contextual_exact_title_gap_titles", titles[:5])
+        return True
+
     def _has_internal_work_cluster_search_probe(
         self,
         ctx: ConversationContext,
@@ -5657,6 +5728,15 @@ class Orchestrator:
             ctx,
             gatekeeper_result=gatekeeper_result,
         )
+        allow_contextual_exact_title_gap_probe = self._has_contextual_exact_title_official_detail_gap_probe(
+            ctx,
+            gatekeeper_result=gatekeeper_result,
+        )
+        contextual_gap_title_norms = [
+            self._normalize_hint_text(title)
+            for title in (getattr(ctx, "_semantic_seed_contextual_exact_title_gap_titles", None) or [])
+            if self._normalize_hint_text(title)
+        ]
         converged_title_norms: List[str] = []
 
         def _add_converged_title(raw: Any) -> None:
@@ -6005,6 +6085,15 @@ class Orchestrator:
                 and any(title_norm and title_norm in q_norm for title_norm in converged_title_norms)
             )
 
+        def _contextual_exact_title_official_gap_query(query: str, purpose: str) -> bool:
+            q_norm = self._normalize_hint_text(query)
+            return bool(
+                allow_contextual_exact_title_gap_probe
+                and q_norm
+                and purpose in {"adaptive_official_url", "adaptive_author_bridge_official_url"}
+                and any(title_norm and title_norm in q_norm for title_norm in contextual_gap_title_norms)
+            )
+
         for req in search_requests:
             if not isinstance(req, dict):
                 continue
@@ -6058,6 +6147,9 @@ class Orchestrator:
                 kept.append(req)
                 continue
             if _converged_title_official_detail_query(query_text, purpose):
+                kept.append(req)
+                continue
+            if _contextual_exact_title_official_gap_query(query_text, purpose):
                 kept.append(req)
                 continue
             if purpose not in allowed_when_denied or purpose in blocked_purposes:
@@ -10481,6 +10573,7 @@ class Orchestrator:
             and not self._has_title_body_official_search_probe(ctx, gatekeeper_result=gatekeeper_result)
             and not self._has_short_worklike_alias_search_probe(ctx, gatekeeper_result=gatekeeper_result)
             and not self._has_internal_work_cluster_search_probe(ctx, gatekeeper_result=gatekeeper_result)
+            and not self._has_contextual_exact_title_official_detail_gap_probe(ctx, gatekeeper_result=gatekeeper_result)
         ):
             reason = (
                 "semantic_seed_review가 제목/검색 seed를 작품명 후보가 아닌 자연어 문맥으로 낮췄고, "
