@@ -1,5 +1,19 @@
 ﻿# Developer TODO Index
 
+## 2026-07-04 Loop430 TODO
+
+- 상태 업데이트: Loop430은 current HEAD `43fdcd87`에서 `11708445` OVERRIDE AUDIT를 runtime replay 없이 completed-source single row와 publication contract 감사로 재고정한 회차다. Contract는 `GO / 1 row / 0 violations`지만 search/full375 gate는 여전히 닫히지 않아 goal은 완료가 아니다.
+- [x] full375, bounded 1000~1500, N5 flip probe, golden18 재실행, 동일 38-row parent packet replay, 신규 대형 런을 발주하지 않았다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] `tools/audit_publication_contract_convergence.py`로 `11708445` single-row contract를 current HEAD에서 검산했다.
+- [x] publication contract `GO / row_count 1 / violation_row_count 0`을 확인했다.
+- [x] blind/source-native verdict `ACCEPT / candidate_only_block_is_correct`를 재고정했다.
+- [x] `LLM=False -> final=True`를 public publish나 safe_resolved로 세지 않았다.
+- [ ] Search recovery는 `P0 / REVIEW_LIGHT_HEALTH_CAVEAT`다. broader promotion unblock을 열지 않는다.
+- [ ] Golden shared collateral 후보 `11663521`, `11685994`는 full375 approval 없이 닫지 않는다.
+- [ ] 다음 active lane은 docs-only 반복이 아니라 survey 136-error `wrong_work 27` / `recall_miss 49` 또는 collateral 후보 source-native 검증으로 진행한다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop429 TODO
 
 - 상태 업데이트: Loop429는 Loop428 커밋 `9a0ca3af` 이후 golden18 단일 런이 실제 `18/18` row를 내고 expected-answer `18/18`을 통과하는지 확인한 회차다. Runtime과 expected-answer는 개선됐지만 search health light caveat와 golden shared collateral 후보 `2`건 때문에 goal은 완료가 아니다.

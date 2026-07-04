@@ -1,5 +1,29 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop430 OVERRIDE AUDIT 11708445 current HEAD 검증
+
+- 범위: `11708445` OVERRIDE AUDIT를 current HEAD `43fdcd87`에서 completed-source single row와 publication contract 감사로 재고정했다. full375, bounded 1000~1500, N5 flip probe, golden18 재실행, 동일 38-row parent packet replay, 신규 대형 런은 발주하지 않았다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_430_REPORT_20260704.md`
+  - state `docs\devs\loop430_override_audit_11708445_current_head_20260704.json`
+  - Data Analytics summary `docs\devs\loop430_override_audit_data_analytics_artifact.json`
+  - blind/source-native JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop430_override_audit_11708445_current_head_43fdcd87_blind_source_native.json`
+  - blind/source-native MD `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop430_override_audit_11708445_current_head_43fdcd87_blind_source_native.md`
+  - publication contract JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop430_override_audit_11708445_current_head_43fdcd87_publication_contract.json`
+  - publication contract MD `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop430_override_audit_11708445_current_head_43fdcd87_publication_contract.md`
+- Verification command:
+  - `.\\.venv312\\Scripts\\python.exe tools\\audit_publication_contract_convergence.py --result out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop413_override_audit_11708445_current_head_d95f1a57_single_row_result.json --output-json out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop430_override_audit_11708445_current_head_43fdcd87_publication_contract.json --output-md out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop430_override_audit_11708445_current_head_43fdcd87_publication_contract.md --fail-on-no-go` -> PASS
+- Audit result:
+  - publication contract `GO / 1 row / 0 violations`
+  - blind/source-native verdict `ACCEPT / candidate_only_block_is_correct`
+  - public identity `official_title=null`, `official_url=null`
+  - promotion gate `promotion_decision.status=candidate_only`, `publish_allowed=false`, `bypassed_gate=false`
+- Boundary:
+  - `LLM=False -> final=True`는 내부 이벤트이며 public title publish가 아니다.
+  - 이 검증은 OVERRIDE AUDIT 단건 closure이고 golden/full375 approval이 아니다.
+  - Search recovery는 `P0 / REVIEW_LIGHT_HEALTH_CAVEAT`, full375 collateral은 `NOT_OPEN`이다.
+- Gate: override audit `GO_ROW_CONTRACT_ONLY`, runtime production `GO / inherited Loop429 18 of 18`, golden expected-answer `PASS / inherited Loop429 18 of 18`, search recovery `P0 / REVIEW_LIGHT_HEALTH_CAVEAT`, golden shared collateral `NO-GO / 2`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop429 golden18 after Loop428 검증
 
 - 범위: Loop428 커밋 `9a0ca3af` 뒤 golden18 단일 런만 실행했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, 신규 대형 런은 발주하지 않았다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.

@@ -1,0 +1,70 @@
+{
+  "report_type": "override_audit_blind_source_native_review",
+  "loop": 430,
+  "date": "2026-07-04",
+  "current_head": "43fdcd87",
+  "scope": "11708445 OVERRIDE AUDIT current HEAD contract refresh without runtime replay",
+  "target_post_id": 11708445,
+  "execution_mode": "runtime_not_required_completed_source_contract_audit",
+  "source_artifacts": {
+    "source_result_json": "out\\expert_result_20260702_065632_479765.json",
+    "single_row_result": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop413_override_audit_11708445_current_head_d95f1a57_single_row_result.json",
+    "current_head_publication_contract": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop430_override_audit_11708445_current_head_43fdcd87_publication_contract.json",
+    "prior_loop413_audit_json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop413_override_audit_11708445_current_head_d95f1a57_blind_source_native.json"
+  },
+  "input_source": {
+    "title": "퉁구스1캇햄 작품 하나도 안 봤는데",
+    "content": [
+      "념글 ㄹㅇ 대호감인데?",
+      "직업에 자부심을 가지고 떳떳한 인생을 살아왔다는 게 글에서 보이네",
+      "이런 게 진짜 씹상남자지(penis아님)",
+      "어디 쥐새끼마냥 '이근 븝즉으르 은 글르그든여?'",
+      "이런 애랑은 걍 차원이 다르네 ㅇㅇ;"
+    ],
+    "comments": [
+      "제냥꾼 함 무바라 호불호 갈리긴하는데 취향 맞으면 그만한게 없다",
+      "ㅇㅋㅇㅋ ㅋㅋ"
+    ]
+  },
+  "observed_public_identity": {
+    "official_title": null,
+    "official_url": null,
+    "candidate_ledger_status": "promotion_blocked",
+    "safe_resolved": false,
+    "promotion_decision_status": "candidate_only",
+    "publish_allowed": false,
+    "bypassed_gate": false
+  },
+  "blind_verdict": {
+    "label": "ACCEPT",
+    "source_native_verdict": "candidate_only_block_is_correct",
+    "rationale_ko": "원문 중심은 특정 작품의 줄거리, 캐릭터, 회차, 설정 감상이 아니라 작가/닉네임성 대상에 대한 메타 품평이다. 댓글의 제냥꾼은 추천성 부차 참조라 후보 보존은 맞지만 public title publish 근거가 아니다.",
+    "actions": [
+      "keep_11708445_closed",
+      "do_not_reopen_override_audit_queue",
+      "do_not_treat_internal_LLM_false_final_true_as_public_publish",
+      "do_not_count_as_safe_resolved",
+      "no_runtime_replay_required_for_this_row"
+    ]
+  },
+  "contract_refresh": {
+    "gate": "GO",
+    "row_count": 1,
+    "violation_row_count": 0
+  },
+  "gates": {
+    "override_audit": "GO_ROW_CONTRACT_ONLY",
+    "runtime_required": false,
+    "large_run_dispatch": "FROZEN",
+    "golden18_runtime_production": "GO / Loop429 18 of 18",
+    "golden_expected_answer": "PASS / Loop429 18 of 18",
+    "search_recovery": "P0 / REVIEW_LIGHT_HEALTH_CAVEAT",
+    "golden_shared_collateral": "NO-GO / Loop429 2 regression candidates",
+    "full375_collateral": "NOT_OPEN",
+    "collateral_105_reporting": "reclassified 74 / runtime-verified 4 / residual 105",
+    "survey_anchor": "136 errors / wrong_work_among_aliases 27 / recall_miss 49",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

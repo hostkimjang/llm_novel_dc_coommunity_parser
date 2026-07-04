@@ -1,0 +1,21 @@
+{
+  "report_type": "publication_contract_convergence_audit",
+  "generated_at": "2026-07-04T23:52:45",
+  "gate": "GO",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "policy": {
+    "promotion_decision_trace_ledger_serialized_identity_must_converge": true,
+    "blocked_decision_must_not_publish_serialized_public_identity": true,
+    "allowed_decision_must_match_serialized_public_identity": true
+  },
+  "summary": {
+    "row_count": 1,
+    "violation_row_count": 0,
+    "violation_counts": {}
+  },
+  "violations": [],
+  "result_paths": [
+    "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop413_override_audit_11708445_current_head_d95f1a57_single_row_result.json"
+  ]
+}

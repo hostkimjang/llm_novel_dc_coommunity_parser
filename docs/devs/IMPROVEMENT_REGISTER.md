@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260704-430 - OVERRIDE AUDIT 11708445 current HEAD refresh
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/golden18/parent replay 미발주 | dispatch 반복 금지 |
+| R1 cue 확장 | 없음 | title/cue allowlist, `post_id` 예외, registry, slang DB write-back 추가 없음 | 일반 술어 유지 |
+| OVERRIDE AUDIT `11708445` | GO_ROW_CONTRACT_ONLY | current HEAD `43fdcd87` single-row contract audit | active queue 재등재 금지 |
+| publication contract | GO | row `1`, violation `0` | semantic approval과 분리 |
+| blind verdict | ACCEPT | `candidate_only_block_is_correct` | 후보 보존만 유지 |
+| public identity | BLOCKED_OK | `official_title=null`, `publish_allowed=false`, `bypassed_gate=false` | publish로 해석 금지 |
+| search evidence | P0 / REVIEW_LIGHT_HEALTH_CAVEAT | Loop429 light health caveat 상속 | search degraded 100% 복구 필요 |
+| full375 collateral | NOT_OPEN | 전수 replay 미실행 | golden shared와 full375 분리 |
+| 문서 동기화 | 완료 | Loop430 report/state/verification/register 갱신 | goal은 ACTIVE 유지 |
+
+Gate: override audit `GO_ROW_CONTRACT_ONLY`, runtime production `GO / inherited Loop429 18 of 18`, publication contract `GO / 0`, expected-answer `PASS / inherited Loop429 18 of 18`, search recovery `P0 / REVIEW_LIGHT_HEALTH_CAVEAT`, golden shared collateral `NO-GO / 2`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4 / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260704-429 - golden18 runtime refresh after Loop428
 
 | 항목 | 상태 | 근거 | 다음 조치 |

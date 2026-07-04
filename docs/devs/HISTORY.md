@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop430 OVERRIDE AUDIT 11708445 current HEAD refresh
+
+- Current HEAD `43fdcd87`에서 `11708445` OVERRIDE AUDIT를 runtime replay 없이 completed-source single row와 publication contract 감사로 재고정했다.
+- full375, bounded 1000~1500, N5 flip probe, golden18 재실행, 동일 38-row parent packet replay, 신규 대형 런은 발주하지 않았다.
+- R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 추가하지 않았다.
+- Contract command는 `tools/audit_publication_contract_convergence.py`를 single-row result에 실행했고 `GO / row_count 1 / violation_row_count 0`으로 통과했다.
+- Blind/source-native verdict는 `ACCEPT / candidate_only_block_is_correct`다. `LLM=False -> final=True`는 내부 이벤트이며 public publish가 아니다.
+- Public identity는 `official_title=null`, `official_url=null`, `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`, `promotion_decision.status=candidate_only`, `publish_allowed=false`, `bypassed_gate=false`다.
+- Report는 `docs/devs/loop_reports/LOOP_430_REPORT_20260704.md`, state는 `docs/devs/loop430_override_audit_11708445_current_head_20260704.json`, Data Analytics summary는 `docs/devs/loop430_override_audit_data_analytics_artifact.json`이다.
+- Gate는 override audit `GO_ROW_CONTRACT_ONLY`, runtime production `GO / inherited Loop429 18 of 18`, expected-answer `PASS / inherited Loop429 18 of 18`, search recovery `P0 / REVIEW_LIGHT_HEALTH_CAVEAT`, golden shared collateral `NO-GO / 2`, full375 collateral `NOT_OPEN`, collateral 105 `reclassified 74 / runtime-verified 4 / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop429 golden18 after Loop428 runtime refresh
 
 - Loop428 커밋 `9a0ca3af` 이후 golden18 단일 런만 실행했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, 신규 대형 런은 발주하지 않았다.

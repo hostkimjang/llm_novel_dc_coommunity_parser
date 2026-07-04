@@ -1,0 +1,45 @@
+{
+  "loop": 430,
+  "date": "2026-07-04",
+  "current_head": "43fdcd87",
+  "scope": "11708445 OVERRIDE AUDIT current HEAD contract refresh",
+  "large_run_dispatch": "FROZEN",
+  "target_post_id": 11708445,
+  "runtime_required": false,
+  "contract_result": {
+    "gate": "GO",
+    "row_count": 1,
+    "violation_row_count": 0
+  },
+  "blind_verdict": "ACCEPT / candidate_only_block_is_correct",
+  "public_identity": {
+    "official_title": null,
+    "official_url": null,
+    "candidate_ledger_status": "promotion_blocked",
+    "safe_resolved": false,
+    "promotion_decision_status": "candidate_only",
+    "publish_allowed": false,
+    "bypassed_gate": false
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_430_REPORT_20260704.md",
+    "data_analytics_summary": "docs/devs/loop430_override_audit_data_analytics_artifact.json",
+    "blind_source_native_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop430_override_audit_11708445_current_head_43fdcd87_blind_source_native.json",
+    "blind_source_native_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop430_override_audit_11708445_current_head_43fdcd87_blind_source_native.md",
+    "publication_contract_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop430_override_audit_11708445_current_head_43fdcd87_publication_contract.json",
+    "publication_contract_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop430_override_audit_11708445_current_head_43fdcd87_publication_contract.md"
+  },
+  "gates": {
+    "override_audit": "GO_ROW_CONTRACT_ONLY",
+    "runtime_production": "GO / inherited Loop429 18 of 18",
+    "golden_expected_answer": "PASS / inherited Loop429 18 of 18",
+    "search_recovery": "P0 / REVIEW_LIGHT_HEALTH_CAVEAT",
+    "golden_shared_collateral": "NO-GO / 2 regression candidates",
+    "full375_collateral": "NOT_OPEN",
+    "collateral_105": "reclassified 74 / runtime-verified 4 / residual 105",
+    "survey_anchor": "136 errors / wrong_work_among_aliases 27 / recall_miss 49",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

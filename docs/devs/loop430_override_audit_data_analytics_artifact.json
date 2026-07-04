@@ -1,0 +1,99 @@
+{
+  "title": "Loop430 OVERRIDE AUDIT 11708445 current HEAD 재고정",
+  "status": "repo_structured_summary_only",
+  "generated_at": "2026-07-04T23:58:00+09:00",
+  "surface": "loop_report_support",
+  "tool_note": "@data-analytics 전용 커넥터가 현재 세션 도구로 노출되지 않아, completed-source single row와 publication contract 감사 JSON을 직접 집계했다.",
+  "datasets": {
+    "gate_status_rows": [
+      {
+        "gate": "override_audit",
+        "status": "GO_ROW_CONTRACT_ONLY",
+        "detail": "11708445 blind/source-native verdict ACCEPT / candidate_only_block_is_correct",
+        "score": 1
+      },
+      {
+        "gate": "publication_contract",
+        "status": "GO",
+        "detail": "current HEAD 43fdcd87 audit row_count 1, violation_row_count 0",
+        "score": 1
+      },
+      {
+        "gate": "runtime_required",
+        "status": "false",
+        "detail": "completed-source + source-native blind read로 충분해 runtime replay를 열지 않음",
+        "score": 1
+      },
+      {
+        "gate": "large_run_dispatch",
+        "status": "FROZEN",
+        "detail": "full375, bounded, N5, golden18 rerun, parent packet replay 모두 미발주",
+        "score": 1
+      },
+      {
+        "gate": "search_recovery",
+        "status": "P0 / REVIEW_LIGHT_HEALTH_CAVEAT",
+        "detail": "Loop429 manifest light health와 row degraded 관찰로 broader search recovery는 미해소",
+        "score": 0
+      },
+      {
+        "gate": "full375_collateral",
+        "status": "NOT_OPEN",
+        "detail": "full collateral replay를 열지 않음",
+        "score": 0
+      },
+      {
+        "gate": "full_scan_approval",
+        "status": "false",
+        "detail": "semantic_quality=REVIEW-LOCKED and goal ACTIVE / NOT_COMPLETE",
+        "score": 0
+      }
+    ],
+    "public_identity_rows": [
+      {
+        "post_id": 11708445,
+        "official_title": null,
+        "official_url": null,
+        "candidate_ledger_status": "promotion_blocked",
+        "safe_resolved": false,
+        "promotion_decision_status": "candidate_only",
+        "publish_allowed": false,
+        "bypassed_gate": false
+      }
+    ],
+    "collateral_accounting_rows": [
+      {
+        "metric": "reclassified",
+        "value": 74
+      },
+      {
+        "metric": "runtime_verified",
+        "value": 4
+      },
+      {
+        "metric": "residual",
+        "value": 105
+      }
+    ],
+    "survey_anchor_rows": [
+      {
+        "metric": "errors",
+        "value": 136
+      },
+      {
+        "metric": "wrong_work_among_aliases",
+        "value": 27
+      },
+      {
+        "metric": "recall_miss",
+        "value": 49
+      }
+    ]
+  },
+  "sources": [
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop430_override_audit_11708445_current_head_43fdcd87_publication_contract.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop430_override_audit_11708445_current_head_43fdcd87_blind_source_native.json",
+    "docs/devs/loop430_override_audit_11708445_current_head_20260704.json",
+    "docs/devs/loop_reports/LOOP_430_REPORT_20260704.md"
+  ]
+}

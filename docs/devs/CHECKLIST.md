@@ -1,5 +1,20 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop430 OVERRIDE AUDIT 11708445 체크
+
+- [x] full375, bounded 1000~1500, N5 flip probe, golden18 재실행, 동일 38-row parent packet replay, 신규 대형 런을 발주하지 않았다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] `11708445` completed-source single row를 current HEAD `43fdcd87` 계약 감사 도구로 재검산했다.
+- [x] publication contract는 `GO / row_count 1 / violation_row_count 0`이다.
+- [x] blind/source-native verdict는 `ACCEPT / candidate_only_block_is_correct`다.
+- [x] `LLM=False -> final=True`를 public publish로 해석하지 않았다.
+- [x] public identity는 `official_title=null`, `official_url=null`, `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`, `promotion_decision.status=candidate_only`, `publish_allowed=false`, `bypassed_gate=false`다.
+- [ ] Search recovery는 `P0 / REVIEW_LIGHT_HEALTH_CAVEAT`다.
+- [ ] Golden shared collateral은 `NO-GO / 2 regression candidates`다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다.
+- [ ] 다음 active lane은 docs-only 반복이 아니라 survey 136-error `wrong_work 27` / `recall_miss 49` 또는 collateral 후보 source-native 검증으로 잡는다.
+- Gate: override audit `GO_ROW_CONTRACT_ONLY`, runtime production `GO / inherited Loop429 18 of 18`, expected-answer `PASS / inherited Loop429 18 of 18`, search recovery `P0 / REVIEW_LIGHT_HEALTH_CAVEAT`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop429 golden18 after Loop428 체크
 
 - [x] full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, 신규 대형 런을 발주하지 않았다.
