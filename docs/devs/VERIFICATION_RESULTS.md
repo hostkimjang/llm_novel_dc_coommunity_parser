@@ -1,5 +1,47 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop396-398 runtime stall shrink and 11700470 single-row flush
+
+- 범위: current HEAD `66e27ff5`에서 golden18 18/18 row 생산성을 먼저 확인하고, blocker `11700470`만 단건으로 줄여 flush 여부를 검증한다. 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_396_398_REPORT_20260704.md`
+  - state `docs\devs\loop396_398_runtime_stall_and_local_bridge_20260704.json`
+  - Loop396 manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop396_golden18_current_66e27ff5_search_nonlight_result_manifest.json`
+  - Loop396 checkpoint `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop396_golden18_current_66e27ff5_search_nonlight_result_checkpoint.jsonl`
+  - Loop396 console log `logs\loop396_golden18_current_66e27ff5_search_nonlight.console.log`
+  - Loop398 result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop398_11700470_after_local_bridge_skip_search_nonlight_result.json`
+  - Loop398 manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop398_11700470_after_local_bridge_skip_search_nonlight_result_manifest.json`
+  - Loop398 console log `logs\loop398_11700470_after_local_bridge_skip_search_nonlight.console.log`
+- Runtime evidence:
+  - Loop396 run `20260704_095205_277619`
+  - input/completed/flushed/pending/failed `18/17/12/5/0`
+  - checkpoint rows `17`
+  - `next_save_idx=13`
+  - `ordered_flush_blocked=true`
+  - blocker `11700470`
+  - gate `NO-GO_RUNTIME_STALL`
+- Single-row evidence:
+  - Loop398 run `20260704_104217_102422`
+  - completed/flushed/pending/failed `1/1/0/0`
+  - `large_run_complete=true`
+  - `ordered_flush_blocked=false`
+  - serialized `novel_identity.official_title=null`
+  - `title_resolution_state=unresolved_matchable`
+  - `title_resolution_allowed=false`
+  - candidates `무당파 둔재의 엘프환생`, `교수형`
+- Code evidence:
+  - image/OCR scene HOLD에서 local title bridge 없는 late canonical rescue scan을 스킵하는 helper를 추가했다.
+  - 검색 공식 후보 또는 non-promotable OCR 제목 조각만으로는 direct title support를 열지 않는다.
+  - R1 hardcoded cue 리스트 확장은 없다.
+- Verification commands:
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_title_lead_search_inferred_guard.py` -> PASS
+  - focused contract tests `3` -> PASS
+  - broader guard bundle `10` -> PASS
+- Caveat:
+  - Loop398은 실제 검색 요청 `12`건을 수행했지만 MCP health preflight가 `mcp_health_light_mode=true`로 기록되어 search-health proof는 아니다.
+  - Loop398 단건 flush는 golden18 after-patch 18/18 proof가 아니며 expected-answer도 갱신하지 않는다.
+- Gate: current golden18 runtime `NO-GO_RUNTIME_STALL`, targeted `11700470` runtime `GO_SINGLE_ROW_FLUSH`, golden18 after patch `NOT_PROVEN`, search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop394-395 runtime production and image-gate stall
 
 - 범위: golden18 단일 search 포함 non-light runtime 생산성을 먼저 확인하고, `11700470` image-scene public title gate patch-after 단건 replay가 flush까지 완료되는지 확인한다. 신규 full375/bounded/N5 대형 런과 동일 parent packet replay는 발주하지 않는다.

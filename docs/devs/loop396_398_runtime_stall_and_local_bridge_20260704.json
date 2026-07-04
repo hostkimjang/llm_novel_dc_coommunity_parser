@@ -1,0 +1,105 @@
+{
+  "report_type": "loop_runtime_stall_and_local_bridge_state",
+  "loop": "396-398",
+  "date": "2026-07-04",
+  "current_head": "66e27ff5",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "large_runs": "FROZEN",
+  "same_parent_packet_replay": "STOPPED",
+  "collateral_reporting": {
+    "axis": "reclassified 74 / runtime-verified 4",
+    "queue_accounting_as_primary_progress_metric": false
+  },
+  "loop396_golden18_current_head": {
+    "run_id": "20260704_095205_277619",
+    "input_post_count": 18,
+    "completed_count": 17,
+    "flushed_count": 12,
+    "pending_count": 5,
+    "failed_count": 0,
+    "next_save_idx": 13,
+    "checkpoint_rows": 17,
+    "partial_flush_gap": true,
+    "ordered_flush_blocked": true,
+    "large_run_complete": false,
+    "blocker_post_id": 11700470,
+    "result_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop396_golden18_current_66e27ff5_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop396_golden18_current_66e27ff5_search_nonlight_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop396_golden18_current_66e27ff5_search_nonlight_result_checkpoint.jsonl",
+    "console_log": "logs/loop396_golden18_current_66e27ff5_search_nonlight.console.log",
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "gate": "NO-GO_RUNTIME_STALL"
+  },
+  "code_change": {
+    "file": "src/llm_batch/agentic_pipeline.py",
+    "summary": "image/OCR scene HOLD without local title bridge skips late canonical rescue scans",
+    "r1_hardcoded_cue_expansion": false,
+    "contract": "search official evidence or non-promotable OCR partial alone is not direct title support"
+  },
+  "loop397_single_11700470_first_patch": {
+    "run_id": "20260704_103335_972846",
+    "input_post_count": 1,
+    "completed_count": 1,
+    "flushed_count": 1,
+    "pending_count": 0,
+    "failed_count": 0,
+    "large_run_complete": true,
+    "result_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop397_11700470_after_image_scene_skip_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop397_11700470_after_image_scene_skip_search_nonlight_result_manifest.json",
+    "console_log": "logs/loop397_11700470_after_image_scene_skip_search_nonlight.console.log",
+    "title_result": "null / promotion_blocked",
+    "canonical_skip_runtime_log": false,
+    "gate": "GO_SINGLE_ROW_FLUSH_BUT_SKIP_CONTRACT_INSUFFICIENT"
+  },
+  "loop398_single_11700470_after_local_bridge_patch": {
+    "run_id": "20260704_104217_102422",
+    "input_post_count": 1,
+    "completed_count": 1,
+    "flushed_count": 1,
+    "pending_count": 0,
+    "failed_count": 0,
+    "next_save_idx": 2,
+    "partial_flush_gap": false,
+    "ordered_flush_blocked": false,
+    "large_run_complete": true,
+    "result_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop398_11700470_after_local_bridge_skip_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop398_11700470_after_local_bridge_skip_search_nonlight_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop398_11700470_after_local_bridge_skip_search_nonlight_result_checkpoint.jsonl",
+    "console_log": "logs/loop398_11700470_after_local_bridge_skip_search_nonlight.console.log",
+    "vlm_ocr_semantic_review_ready": true,
+    "search_requests_observed": 12,
+    "mcp_health_include_search": false,
+    "mcp_health_light_mode": true,
+    "health_caveat": "actual runtime searches executed, but MCP preflight was light and is not search-health proof",
+    "serialized_public_title": null,
+    "title_resolution_state": "unresolved_matchable",
+    "title_resolution_allowed": false,
+    "candidate_titles": ["무당파 둔재의 엘프환생", "교수형"],
+    "gate": "GO_SINGLE_ROW_FLUSH_TITLE_HOLD"
+  },
+  "tests": {
+    "py_compile": {
+      "command": ".venv312\\Scripts\\python.exe -m py_compile src\\llm_batch\\agentic_pipeline.py tests\\test_title_lead_search_inferred_guard.py",
+      "status": "PASS"
+    },
+    "focused_contract": {
+      "count": 3,
+      "status": "PASS"
+    },
+    "broader_guard_bundle": {
+      "count": 10,
+      "status": "PASS"
+    }
+  },
+  "gates": {
+    "runtime_production_current_golden18": "NO-GO_RUNTIME_STALL",
+    "targeted_runtime_11700470": "GO_SINGLE_ROW_FLUSH",
+    "golden18_after_patch": "NOT_PROVEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "search_recovery": "P0 / SEARCH_BLIND_CONDITIONAL",
+    "full375_collateral": "NOT_OPEN",
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

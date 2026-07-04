@@ -1,5 +1,19 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop396-398 runtime stall shrink and 11700470 single-row flush
+
+- 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Current HEAD `66e27ff5`에서 golden18 Loop396 run `20260704_095205_277619`를 실행했다.
+- Loop396은 input/completed/flushed/pending/failed `18/17/12/5/0`, checkpoint rows `17`, `next_save_idx=13`, `ordered_flush_blocked=true`, blocker `11700470`로 끝나 golden18 18/18 생산성을 증명하지 못했다.
+- `src/llm_batch/agentic_pipeline.py`는 image/OCR scene HOLD에서 local title bridge 없는 late canonical rescue scan을 스킵하도록 보강했다. 검색 공식 후보나 non-promotable OCR 제목 조각만으로는 직접 title support를 열지 않는다.
+- `tests/test_title_lead_search_inferred_guard.py`에 image scene hold, non-promotable image partial title, promotable direct image title 계약 테스트를 추가했다.
+- 검증은 py_compile PASS, focused contract `3` PASS, broader guard `10` PASS다.
+- Loop398 `11700470` 단건 run `20260704_104217_102422`는 completed/flushed/pending/failed `1/1/0/0`, `ordered_flush_blocked=false`, `large_run_complete=true`로 완료됐다.
+- Loop398 serialized public title은 `null`, `title_resolution_allowed=false`, 후보는 `무당파 둔재의 엘프환생`, `교수형`으로 보존됐다.
+- Loop398은 실제 검색 요청을 수행했지만 MCP health preflight가 light로 기록되어 search-health proof는 아니다.
+- Report는 `docs/devs/loop_reports/LOOP_396_398_REPORT_20260704.md`, state는 `docs/devs/loop396_398_runtime_stall_and_local_bridge_20260704.json`이다.
+- Gate는 current golden18 runtime `NO-GO_RUNTIME_STALL`, targeted `11700470` runtime `GO_SINGLE_ROW_FLUSH`, golden18 after patch `NOT_PROVEN`, search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop394-395 runtime production and image-gate stall
 
 - 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

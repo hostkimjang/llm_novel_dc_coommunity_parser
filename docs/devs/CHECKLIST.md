@@ -1,5 +1,37 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop396-398 runtime stall 축소 및 11700470 단건 flush 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Current HEAD `66e27ff5` golden18 Loop396를 먼저 실행해 runtime 생산성을 확인했다.
+  - run `20260704_095205_277619`
+  - manifest `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop396_golden18_current_66e27ff5_search_nonlight_result_manifest.json`
+  - result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop396_golden18_current_66e27ff5_search_nonlight_result.json`
+- [x] Loop396은 18/18 완주가 아니라 stall로 판정했다.
+  - input/completed/flushed/pending/failed `18/17/12/5/0`
+  - checkpoint rows `17`
+  - `next_save_idx=13`, blocker `11700470`
+  - `ordered_flush_blocked=true`, `large_run_complete=false`
+- [x] `src/llm_batch/agentic_pipeline.py`에 image/OCR scene HOLD 전용 late canonical rescue skip 계약을 추가했다.
+  - 검색 공식 후보만으로 직접 title support 인정하지 않음
+  - non-promotable OCR 제목 조각만으로 직접 title support 인정하지 않음
+  - R1 hardcoded cue 리스트 확장 없음
+- [x] `tests/test_title_lead_search_inferred_guard.py`에 non-promotable image partial title 회귀 테스트를 추가했다.
+- [x] 검증:
+  - py_compile PASS
+  - focused contract `3` PASS
+  - broader guard bundle `10` PASS
+- [x] `11700470` 단건 Loop398은 flush를 확인했다.
+  - run `20260704_104217_102422`
+  - completed/flushed/pending/failed `1/1/0/0`
+  - `ordered_flush_blocked=false`
+  - serialized public title `null`, `title_resolution_allowed=false`
+- [ ] Loop396 golden18은 `NO-GO_RUNTIME_STALL`이므로 golden18 18/18 proof로 세지 않는다.
+- [ ] Loop398은 단건 row 생산 증거일 뿐 expected-answer, search recovery, full375 approval 근거가 아니다.
+- [ ] Loop398 MCP health preflight는 light로 기록되어 search-health proof로 세지 않는다.
+- Gate: current golden18 `NO-GO_RUNTIME_STALL`, targeted `11700470` `GO_SINGLE_ROW_FLUSH`, golden18 after patch `NOT_PROVEN`, search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, full375 `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop394-395 runtime production and image-gate stall 체크
 
 - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.

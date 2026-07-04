@@ -2,6 +2,22 @@
 
 > 운영 주석: 이 파일의 과거 `--parallel 36` 기록은 해당 시점의 역사적 실행 로그다. 신규 소규모/targeted 테스트는 `36`을 Gemma 4 4B runtime worker 상한으로만 보고 `min(input_post_count, 36)` 및 manifest의 `effective_parallel` 기준으로 판단한다. Codex goal의 "subagent/전문가 병렬"은 Codex `spawn_agent` 검토 병렬이며 `expert_main.py --parallel`을 올리는 뜻이 아니다.
 
+## 2026-07-04 regression-safe grounding Loop396-398 TODO
+
+- 상태 업데이트: Current HEAD `66e27ff5` golden18 Loop396은 `18/17/12/5/0`, `next_save_idx=13`, blocker `11700470`로 stall했다. 대형 런을 반복하지 않고 `11700470` 단건으로 줄였고 Loop398은 `1/1/0/0`, public title `null`, title HOLD로 flush됐다.
+- Loop396-398 TODO:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] golden18 current HEAD가 18/18을 내지 못함을 manifest 기준으로 기록했다.
+  - [x] image/OCR scene HOLD late canonical rescue skip 계약을 추가했다.
+  - [x] non-promotable OCR partial title이 direct support로 오인되지 않게 테스트했다.
+  - [x] `11700470` 단건 flush를 확인했다.
+  - [ ] Loop398 단건 성공을 golden18 approval 또는 full-scan approval로 승격하지 않는다.
+  - [ ] Loop398 health preflight가 light였으므로 search recovery 완료로 세지 않는다.
+  - [ ] 다음 runtime은 golden18 18/18 생산성 증명 목적일 때만 열고, 실패 시 collateral 183 triage 또는 source-native audit로 전환한다.
+  - [x] R1 하드코딩 cue 리스트 확장은 하지 않았다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop386 TODO
 
 - 상태 업데이트: 신규 대형 런 없이 `11694019` search recovery P0를 코드 계약으로 좁혔다. `author_bridge`가 `미츄리` + `이세계에서 사이비로 살아남기`를 잡으면 broad site query보다 먼저 `미츄리 이세계에서 사이비로 살아남기` 공식 detail probe를 실행한다.

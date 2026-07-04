@@ -9917,6 +9917,154 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         )
         self.assertFalse(ctx._last_promotion_gate_state["row_discusses_work_as_work"])
 
+    def test_late_canonical_rescue_skips_image_scene_hold_without_candidate_surface(self):
+        pipeline = build_pipeline()
+        image_evidence = {
+            "ocr_text": (
+                "참고인의 모든 변론이 끝났다. 얼굴도 모르는 미소녀를 납치 후, "
+                "B급 모험가 '밤'도깨비 에이브가 되어 있었다."
+            ),
+            "evidence_type": "explicit_text",
+            "title_role": "unknown",
+            "promotion_eligible": False,
+            "work_cues": ["B급 모험가 '밤'도깨비 에이브", "미소녀 납치"],
+        }
+        post = PostInput(
+            post_id=11700470,
+            title="어케 주인공 죄목이",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="image", url="https://dcimg.example/11700470.jpg"),
+                ContentBlock(type="text", text="납치담금세뇌테러불법투기셍태계교란희롱준강간"),
+            ],
+            comments=["교수형"],
+        )
+        ctx = ConversationContext(
+            post_id=11700470,
+            post_data=pipeline._post_to_dict(post),
+            comments=post.comments,
+        )
+        ctx.post_data["image_enrichment"] = [dict(image_evidence)]
+        ctx.discourse_warning = "decoder_forced_match(3rd_attempt)"
+        final_decision = {
+            "_title_deliberately_null": True,
+            "_title_null_block_reasons": ["image_scope_missing_candidate_surface"],
+        }
+        verification_result = {
+            "relation_judgment": {
+                "relation_type": "thematic_overlap_only",
+                "promotion_decision": "reject",
+            },
+            "grounding_check": {"anchor_found": "plot_mention"},
+        }
+
+        self.assertTrue(
+            pipeline._should_skip_late_canonical_rescue_for_image_scene_hold(
+                ctx,
+                strong_suspected_title=None,
+                title_deliberately_null=True,
+                title_null_block_reasons={"image_scope_missing_candidate_surface"},
+                direct_strong_suspected_title_support=False,
+                final_decision=final_decision,
+                verification_result=verification_result,
+            )
+        )
+        self.assertEqual(
+            getattr(ctx, "_image_scene_hold_canonical_rescue_skip_reason", None),
+            "image_scene_no_candidate_surface",
+        )
+
+    def test_late_canonical_rescue_skips_non_promotable_image_partial_title(self):
+        pipeline = build_pipeline()
+        post = PostInput(
+            post_id=11700470,
+            title="어케 주인공 죄목이",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="image", url="https://dcimg.example/11700470.jpg"),
+                ContentBlock(type="text", text="납치담금세뇌테러불법투기셍태계교란희롱준강간"),
+            ],
+            comments=["교수형"],
+        )
+        ctx = ConversationContext(
+            post_id=11700470,
+            post_data=pipeline._post_to_dict(post),
+            comments=post.comments,
+        )
+        ctx.post_data["image_enrichment"] = [
+            {
+                "ocr_text": "B급 모험가 '밤'도깨비 에이브가 되어 있었다.",
+                "explicit_work_title": "밤도깨비 에이브",
+                "evidence_type": "explicit_text",
+                "title_role": "work_title",
+                "promotion_eligible": False,
+                "work_cues": ["B급 모험가 '밤'도깨비 에이브", "에이브"],
+            }
+        ]
+        ctx.discourse_warning = "decoder_forced_match(3rd_attempt)"
+        self.assertTrue(pipeline._title_matches_direct_image_partial(ctx, "밤도깨비"))
+
+        self.assertTrue(
+            pipeline._should_skip_late_canonical_rescue_for_image_scene_hold(
+                ctx,
+                strong_suspected_title="밤도깨비",
+                title_deliberately_null=True,
+                title_null_block_reasons={"image_scope_missing_candidate_surface"},
+                direct_strong_suspected_title_support=False,
+                final_decision={
+                    "_title_deliberately_null": True,
+                    "_title_null_block_reasons": ["image_scope_missing_candidate_surface"],
+                },
+                verification_result={
+                    "relation_judgment": {
+                        "relation_type": "thematic_overlap_only",
+                        "promotion_decision": "reject",
+                    }
+                },
+            )
+        )
+
+    def test_late_canonical_rescue_keeps_promotable_direct_image_title(self):
+        pipeline = build_pipeline()
+        title = "전 버튜버가 하고 싶은데요"
+        post = PostInput(
+            post_id=11663540,
+            title="TS) 주서연 전차랑 줄다리기 하면 이길까?",
+            author="ㅇㅇ",
+            content_blocks=[ContentBlock(type="image", url="https://dcimg.example/11663540.jpg")],
+            comments=[],
+        )
+        ctx = ConversationContext(
+            post_id=11663540,
+            post_data=pipeline._post_to_dict(post),
+            comments=[],
+        )
+        ctx.post_data["image_enrichment"] = [
+            {
+                "ocr_text": "ACTOR 아이, 탈의 주인공 전 버튜버가 하고 싶은데요",
+                "explicit_work_title": title,
+                "evidence_type": "cover_title",
+                "title_role": "work_title",
+                "focus_role": "work_anchor",
+                "screen_type": "work_surface",
+                "surface_type": "official_detail_page",
+                "promotion_eligible": True,
+                "work_cues": [title, "주인공"],
+            }
+        ]
+
+        self.assertFalse(
+            pipeline._should_skip_late_canonical_rescue_for_image_scene_hold(
+                ctx,
+                strong_suspected_title=title,
+                title_deliberately_null=True,
+                title_null_block_reasons={"image_scope_missing_candidate_surface"},
+                direct_strong_suspected_title_support=False,
+                final_decision={"_title_deliberately_null": True},
+                verification_result={"relation_judgment": {"promotion_decision": "hold"}},
+            )
+        )
+
     def test_physical_classic_book_cover_without_warning_does_not_rescue_public_title(self):
         pipeline = build_pipeline()
         title = "파우스트 1"

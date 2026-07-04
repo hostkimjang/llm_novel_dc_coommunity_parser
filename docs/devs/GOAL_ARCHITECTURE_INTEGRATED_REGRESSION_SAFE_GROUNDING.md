@@ -6,6 +6,16 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-04 Loop396-398 Addendum - current HEAD golden18 stall and 11700470 single-row flush
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop396-398은 approval 회차가 아니라 current HEAD golden18 stall을 확인하고 blocker `11700470`을 단건 flush로 줄인 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_396_398_REPORT_20260704.md`, state `docs/devs/loop396_398_runtime_stall_and_local_bridge_20260704.json`, Loop396 manifest `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop396_golden18_current_66e27ff5_search_nonlight_result_manifest.json`, Loop398 result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop398_11700470_after_local_bridge_skip_search_nonlight_result.json`.
+- Runtime: Loop396 run `20260704_095205_277619`은 input/completed/flushed/pending/failed `18/17/12/5/0`, checkpoint rows `17`, blocker `11700470`, `ordered_flush_blocked=true`다. golden18 18/18 proof가 아니다.
+- Fix: image/OCR scene HOLD에서 local title bridge 없는 late canonical rescue scan을 스킵한다. 검색 공식 후보나 non-promotable OCR 제목 조각만으로 direct title support를 열지 않는다. R1 hardcoded cue 확장은 없다.
+- Targeted row: Loop398 `11700470` run `20260704_104217_102422`는 `1/1/0/0`, `large_run_complete=true`, public title `null`, 후보 보존으로 끝났다. 단건 flush 증거이지 semantic approval은 아니다.
+- Verification: py_compile PASS, focused contract `3` PASS, broader guard `10` PASS.
+- Gate: current golden18 runtime `NO-GO_RUNTIME_STALL`, targeted `11700470` runtime `GO_SINGLE_ROW_FLUSH`, golden18 after patch `NOT_PROVEN`, search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-04 Loop390 Addendum - verified-alias competition contract
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop390은 approval 회차가 아니라 Loop389 `11698880` wrong publish를 final publication ledger code contract로 줄인 회차다.

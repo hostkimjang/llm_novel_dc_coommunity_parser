@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260704-396-398 - image scene local bridge skip and 11700470 flush
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5 미발주 | 동결 유지 |
+| parent packet replay | 중단 | 동일 38-row replay 없음 | 반복 금지 |
+| current golden18 runtime | NO-GO | Loop396 `18/17/12/5/0`, blocker `11700470` | golden18 18/18 증명 전 approval 금지 |
+| image scene local bridge 계약 | GO_UNIT | 검색 공식 후보와 non-promotable OCR partial을 direct support에서 제외 | runtime variance 추가 확인 |
+| `11700470` 단건 | GO_SINGLE_ROW_FLUSH | Loop398 `1/1/0/0`, public title `null`, HOLD 보존 | golden18 재완주 필요 |
+| 테스트 | PASS | py_compile, focused `3`, broader `10` | diff check 후 커밋 |
+| 문서 동기화 | 완료 | Loop396-398 report/state와 운영 문서 갱신 | search/full375 gate 별도 |
+
+Gate: current golden18 runtime `NO-GO_RUNTIME_STALL`, targeted `11700470` runtime `GO_SINGLE_ROW_FLUSH`, golden18 after patch `NOT_PROVEN`, search recovery `P0 / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260704-390 - verified-alias competition contract
 
 | 항목 | 상태 | 근거 | 다음 조치 |

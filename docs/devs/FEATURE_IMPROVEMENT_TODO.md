@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop396-398 current-head golden18 stall / `11700470` single-row flush follow-up
+  - 상태: current golden18 runtime `NO-GO_RUNTIME_STALL 17/18 completed, 12 flushed` / blocker `11700470` / targeted single row `GO_SINGLE_ROW_FLUSH` / golden18 after patch `NOT_PROVEN` / search recovery `P0_SEARCH_BLIND_CONDITIONAL` / full375 `NOT_OPEN` / approval not open
+  - 적용: image/OCR scene HOLD에서 local title bridge 없는 late canonical rescue scan을 스킵한다. 검색 공식 후보와 non-promotable OCR 제목 조각만으로는 direct title support를 열지 않는다.
+  - 산출물: `docs/devs/loop_reports/LOOP_396_398_REPORT_20260704.md`, `docs/devs/loop396_398_runtime_stall_and_local_bridge_20260704.json`, `src/llm_batch/agentic_pipeline.py`, `tests/test_title_lead_search_inferred_guard.py`.
+  - 완료 기준: current-code golden18이 18/18 row를 flush하고, expected-answer/search/full375 gate를 별도로 통과하기 전까지 approval과 hard-hold 완화를 열지 않는다.
+
 - [ ] Loop390 verified-alias competition contract follow-up
   - 상태: code contract `GO_UNIT` / direct resync `GO_DRY` / runtime replay after patch `NOT_RUN_AFTER_PATCH` / expected-answer inherited `NO-GO 15/18` / search recovery `P0_SEARCH_BLIND_CONDITIONAL` / full375 `NOT_OPEN` / approval not open
   - 적용: `11698880`의 title-led `아생갤 -> 아카데미 생존 갤러리` publish가 competing verified alias work `가챠펑크 -> 가챠 중독자의 퓨전펑크 생활`을 덮지 못하도록 final publication ledger 계약을 보강했다.

@@ -1833,6 +1833,113 @@ class AgenticPipeline:
                 return True
         return False
 
+    def _should_skip_late_canonical_rescue_for_image_scene_hold(
+        self,
+        ctx,
+        *,
+        strong_suspected_title: Optional[str],
+        title_deliberately_null: bool,
+        title_null_block_reasons: Optional[set],
+        direct_strong_suspected_title_support: bool,
+        final_decision: Optional[Dict[str, Any]],
+        verification_result: Optional[Dict[str, Any]],
+    ) -> bool:
+        """Avoid late canonical scans for image/OCR scene-only holds without a title surface."""
+        if not ctx or direct_strong_suspected_title_support:
+            return False
+
+        post_data = getattr(ctx, "post_data", None) or {}
+        if not isinstance(post_data, dict):
+            return False
+
+        image_items = [
+            item
+            for item in (post_data.get("image_enrichment") or [])
+            if isinstance(item, dict) and not self._is_background_listing_vlm_item(item)
+        ]
+        if not image_items:
+            return False
+
+        has_promotion_eligible_image_title = False
+        for item in image_items:
+            explicit_title = str(item.get("explicit_work_title") or "").strip()
+            if not explicit_title:
+                continue
+            if (
+                item.get("promotion_eligible") is True
+                or self._has_structured_direct_image_work_surface_evidence(ctx, explicit_title)
+            ):
+                has_promotion_eligible_image_title = True
+                break
+        if has_promotion_eligible_image_title:
+            return False
+
+        if strong_suspected_title:
+            try:
+                if (
+                    self._title_mentioned_in_non_image_main_context(ctx, strong_suspected_title)
+                    or self._has_structured_direct_image_work_surface_evidence(ctx, strong_suspected_title)
+                    or self._has_strong_verified_character_work_links(ctx, strong_suspected_title)
+                ):
+                    return False
+            except Exception:
+                pass
+
+        final = final_decision if isinstance(final_decision, dict) else {}
+        vf = verification_result if isinstance(verification_result, dict) else {}
+        reasons = {
+            str(item or "").strip().lower()
+            for item in (title_null_block_reasons or set())
+            if str(item or "").strip()
+        }
+        for container in (final, vf):
+            for key in (
+                "_title_null_block_reasons",
+                "title_null_block_reasons",
+                "promotion_blocked_reasons",
+                "consistency_flags",
+                "candidate_audit_lint",
+                "output_consistency_lint",
+            ):
+                value = container.get(key) if isinstance(container, dict) else None
+                if not isinstance(value, list):
+                    continue
+                for item in value:
+                    text = str(item or "").strip().lower()
+                    if text:
+                        reasons.add(text)
+
+        relation = vf.get("relation_judgment") if isinstance(vf, dict) else {}
+        if not isinstance(relation, dict):
+            relation = {}
+        relation_type = str(relation.get("relation_type") or "").strip().lower()
+        promotion_decision = str(relation.get("promotion_decision") or "").strip().lower()
+        if promotion_decision in {"defer", "pending"}:
+            promotion_decision = "hold"
+
+        discourse_warning = str(getattr(ctx, "discourse_warning", "") or "").strip().lower()
+        null_or_hold = bool(
+            title_deliberately_null
+            or final.get("_title_deliberately_null") is True
+            or final.get("title_deliberately_null") is True
+            or any(reason.startswith("unresolved_worklike_hold:") for reason in reasons)
+            or "image_scope_missing_candidate_surface" in reasons
+            or "image_title_not_promotion_eligible" in reasons
+            or "relation_hold_title_resolution_blocked" in reasons
+            or relation_type == "thematic_overlap_only"
+            or promotion_decision in {"reject", "hold"}
+            or "decoder_forced_match" in discourse_warning
+            or "weak_discourse_grounding" in discourse_warning
+        )
+        if not null_or_hold:
+            return False
+
+        try:
+            setattr(ctx, "_image_scene_hold_canonical_rescue_skip_reason", "image_scene_no_candidate_surface")
+        except Exception:
+            pass
+        return True
+
     def _title_matches_direct_image_partial(self, ctx, title: Optional[str]) -> bool:
         candidate = self._normalize_title_candidate(title) or str(title or "").strip()
         cand_norm = self._normalize_match_text(candidate)
@@ -6508,6 +6615,20 @@ class AgenticPipeline:
                 )
             )
         )
+        _direct_strong_suspected_title_local_bridge = bool(
+            strong_suspected_title
+            and not self._is_structural_nonwork_title(strong_suspected_title)
+            and (
+                self._title_mentioned_in_non_image_main_context(ctx, strong_suspected_title)
+                or self._has_structured_direct_image_work_surface_evidence(ctx, strong_suspected_title)
+                or self._has_strong_verified_character_work_links(ctx, strong_suspected_title)
+                or (
+                    bool(_deliberated_convergence_title)
+                    and self._normalize_match_text(_deliberated_convergence_title)
+                    == self._normalize_match_text(strong_suspected_title)
+                )
+            )
+        )
         _multi_work_guard_deliberate_null = bool(
             _title_deliberately_null
             and not official_title
@@ -6518,6 +6639,15 @@ class AgenticPipeline:
             and not _direct_strong_suspected_title_support
             and not _deliberated_convergence_title
         )
+        _skip_image_scene_hold_canonical_scan = self._should_skip_late_canonical_rescue_for_image_scene_hold(
+            ctx,
+            strong_suspected_title=strong_suspected_title,
+            title_deliberately_null=bool(_title_deliberately_null),
+            title_null_block_reasons=_title_null_block_reasons,
+            direct_strong_suspected_title_support=bool(_direct_strong_suspected_title_local_bridge),
+            final_decision=final_decision if isinstance(final_decision, dict) else None,
+            verification_result=vf_result if isinstance(vf_result, dict) else None,
+        )
         if _skip_multi_work_guard_canonical_scan:
             _best_canonical_candidate = {}
             try:
@@ -6527,6 +6657,17 @@ class AgenticPipeline:
             print(
                 f"[{_ts()}] 🛡️ canonical suspect 보정 스킵: "
                 f"multi_work_guard + deliberate null-title + direct title proof 없음",
+                file=sys.stderr,
+            )
+        elif _skip_image_scene_hold_canonical_scan:
+            _best_canonical_candidate = {}
+            try:
+                setattr(ctx, "_image_scene_hold_canonical_rescue_skipped", True)
+            except Exception:
+                pass
+            print(
+                f"[{_ts()}] 🛡️ canonical suspect 보정 스킵: "
+                f"image/OCR scene hold + direct title proof 없음",
                 file=sys.stderr,
             )
         elif _direct_image_work_surface_lock:
