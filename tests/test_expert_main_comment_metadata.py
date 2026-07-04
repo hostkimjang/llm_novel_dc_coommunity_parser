@@ -116,6 +116,79 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertEqual(identity["primary_work"]["promotion_policy"], "hold_without_promotion")
         self.assertTrue(identity["primary_work"]["blocked_by_candidate_audit"])
 
+    def test_promotion_blocked_result_contract_preserves_blocked_title_in_stale_ledger_summary(self):
+        correct_title = "가챠 중독자의 퓨전펑크 생활"
+        correct_url = "https://novelpia.com/novel/387014"
+        candidate = {
+            "official_title": correct_title,
+            "heretic_url": correct_url,
+            "confidence": "High",
+            "alias_or_mention": "가챠펑크",
+            "source_tier": "official_detail",
+            "page_type": "novel_page",
+            "reference_role": "primary",
+            "preservation_role": "title_candidate",
+        }
+        result = {
+            "post_id": 11698880,
+            "title": "아생갤 개 존나게 재밌군 ㅇㅇ",
+            "content": ["가챠펑크 세드릭도 그렇고"],
+            "comments": [],
+            "identity": {
+                "official_title": None,
+                "official_novel_title": None,
+                "heretic_url": None,
+                "title_resolution_allowed": False,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "unresolved",
+                "candidate_ledger_status": "promotion_blocked",
+                "blocked_official_title": correct_title,
+                "blocked_official_title_url": correct_url,
+                "context_sources": ["title", "body", "search"],
+                "consistency_flags": ["unresolved_worklike_hold:alias_character_discussion"],
+                "title_candidates": [dict(candidate)],
+                "candidate_preservation_sources": [dict(candidate)],
+                "candidate_ledger": {
+                    "title_candidates": ["스폰지밥"],
+                    "candidate_preservation_sources": [dict(candidate)],
+                    "blocked_official_title": correct_title,
+                    "blocked_official_title_url": correct_url,
+                    "candidate_ledger_status": "promotion_blocked",
+                    "promotion_decision": {
+                        "status": "candidate_only",
+                        "publish_allowed": False,
+                        "official_title": None,
+                        "official_url": None,
+                        "candidate_preserved": True,
+                        "reason_codes": ["scope_context_only", "scope_not_current_work"],
+                        "bypassed_gate": False,
+                    },
+                    "promotion_gate_state": {
+                        "scope": {
+                            "scope_kind": "context_only",
+                            "confidence": "medium",
+                            "conflict_reason_codes": ["unresolved_body_character_work_anchor"],
+                        }
+                    },
+                },
+            },
+            "analysis": {"detected_titles": [dict(candidate)]},
+        }
+
+        changed = _scrub_promotion_blocked_result_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        ledger_candidates = identity["candidate_ledger"]["title_candidates"]
+        self.assertEqual(ledger_candidates, ["스폰지밥", correct_title])
+        self.assertEqual(identity["candidate_ledger"]["candidate_count"], 2)
+        self.assertIsNone(identity["official_title"])
+        self.assertFalse(identity["promotion_decision"]["publish_allowed"])
+        self.assertEqual(
+            identity["publish_contract_trace"]["pre_gate_candidate"]["official_title"],
+            correct_title,
+        )
+
     def test_promotion_gate_blocked_result_contract_scrubs_nested_public_title(self):
         result = {
             "identity": {

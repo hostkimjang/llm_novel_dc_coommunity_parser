@@ -1,5 +1,32 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop412 11698880 title-led candidate HOLD 체크
+
+- [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] `11698880` 단건 runtime이 실제 row를 냈다.
+  - run `20260704_172216_712128`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - pending snapshot rows `0`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry를 추가하지 않았다.
+- [x] title-led public gate가 `_has_unresolved_body_compound_character_anchor(...)` 일반 술어를 경유하게 했다.
+- [x] promotion-blocked scrub이 stale `candidate_ledger.title_candidates` 요약에도 blocked title을 보존하게 했다.
+- [x] 검증:
+  - py_compile PASS
+  - ExpertMainCommentMetadata focused `1` PASS
+  - ExpertMainCommentMetadata 전체 `63` PASS
+  - title-led focused `2` PASS
+  - title-lead guard 전체 `202` PASS
+- [x] Loop411 wrong publish `아카데미 생존 갤러리`는 targeted runtime에서 public output에서 제거됐다.
+- [x] 정답 후보 `가챠 중독자의 퓨전펑크 생활` / `https://novelpia.com/novel/387014`는 identity 후보와 publish trace pre-gate에 보존됐다.
+- [ ] Golden expected-answer는 갱신하지 않았고 `NO-GO / inherited Loop411 17 of 18`로 유지한다.
+- [ ] Golden shared collateral은 `NO-GO / inherited Loop411 6`이고 full375 collateral은 `NOT_OPEN`이다.
+- [ ] Search recovery는 manifest preflight light caveat 때문에 `P0 / search-blind conditional`로 유지한다.
+- [x] `11708445` OVERRIDE AUDIT는 Loop407 closure로 유지하고 재등재하지 않는다.
+- [x] Collateral 105는 `reclassified 74 / runtime-verified 4` 축으로 유지한다.
+- Gate: targeted runtime `GO / 1 of 1`, wrong publish closure `GO_TARGETED`, correct candidate preservation `GO_CANDIDATE_ONLY`, expected-answer `NO-GO / 17 of 18 inherited`, golden shared collateral `NO-GO / 6 inherited`, search recovery `P0 / ROW_LEVEL_EVIDENCE_WITH_PREFLIGHT_LIGHT_CAVEAT`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop411 golden18 title-led Series probe 체크
 
 - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.

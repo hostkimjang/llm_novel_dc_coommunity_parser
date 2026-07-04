@@ -1,5 +1,46 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop412 11698880 title-led candidate HOLD 및 ledger 계약 검증
+
+- 범위: 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay 없이 `11698880` 단일 row만 실행해 Loop411 wrong publish를 targeted로 줄이고, stale `candidate_ledger.title_candidates` 요약 보존 계약을 추가한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_412_REPORT_20260704.md`
+  - state `docs\devs\loop412_11698880_title_led_candidate_hold_20260704.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop412_11698880_title_led_unresolved_body_anchor_gate_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop412_11698880_title_led_unresolved_body_anchor_gate_result_manifest.json`
+  - checkpoint `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop412_11698880_title_led_unresolved_body_anchor_gate_result_checkpoint.jsonl`
+  - console log `logs\loop412_11698880_title_led_unresolved_body_anchor_gate.console.log`
+- Code evidence:
+  - `src\llm_batch\agentic_pipeline.py`: title-led public gate가 기존 일반 술어 `_has_unresolved_body_compound_character_anchor(...)`를 경유한다.
+  - `expert_main.py`: promotion-blocked scrub이 blocked title을 `candidate_ledger.title_candidates` 요약에도 보존한다.
+  - `tests\test_title_lead_search_inferred_guard.py`: `11698880` unresolved body compound character anchor 계약 추가.
+  - `tests\test_expert_main_comment_metadata.py`: stale ledger summary가 있어도 blocked title이 보존되는 계약 추가.
+  - R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry는 추가하지 않았다.
+- Verification commands:
+  - `.\\.venv312\\Scripts\\python.exe -m py_compile expert_main.py src\\llm_batch\\agentic_pipeline.py` -> PASS
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_promotion_blocked_result_contract_preserves_blocked_title_in_stale_ledger_summary` -> PASS, 1 test
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_expert_main_comment_metadata` -> PASS, 63 tests
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_gate_blocks_unpreserved_body_compound_character_anchor tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_gate_blocks_mismatched_verifier_alias_when_body_verified_work_competes` -> PASS, 2 tests
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard` -> PASS, 202 tests
+- Runtime result:
+  - run `20260704_172216_712128`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - pending snapshot rows `0`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`
+  - manifest preflight `include_search=false`, `light_mode=true`
+- Semantic result:
+  - Loop411 wrong publish `아카데미 생존 갤러리`는 제거됐다.
+  - Public output은 `official_title=null`, `heretic_url=null`, `candidate_ledger_status=promotion_blocked`, `promotion_decision.status=candidate_only`, `publish_allowed=false`다.
+  - 정답 후보 `가챠 중독자의 퓨전펑크 생활`과 URL `https://novelpia.com/novel/387014`는 `identity.title_candidates`, `candidate_preservation_sources`, `publish_contract_trace.pre_gate_candidate`에 보존됐다.
+  - 저장된 Loop412 result의 `candidate_ledger.title_candidates` 요약은 stale `스폰지밥`만 남아 있었고, 이번 코드 계약은 이후 직렬화에서 blocked title을 요약에도 추가한다.
+- Boundary:
+  - Targeted wrong-publish closure는 golden expected-answer pass가 아니다.
+  - Search preflight가 light라 broader search recovery는 `P0`로 유지한다.
+  - Full375 collateral은 `NOT_OPEN`이다.
+  - Collateral 105는 계속 `reclassified 74 / runtime-verified 4` 2축으로 보고한다.
+  - `11708445` OVERRIDE AUDIT는 Loop407 `ACCEPT / candidate_only_block_is_correct`로 유지한다.
+- Gate: targeted runtime `GO / 1 of 1`, wrong publish closure `GO_TARGETED`, correct candidate preservation `GO_CANDIDATE_ONLY`, golden expected-answer `NO-GO / inherited Loop411 17 of 18`, golden shared collateral `NO-GO / inherited Loop411 6`, full375 collateral `NOT_OPEN`, search recovery `P0 / ROW_LEVEL_EVIDENCE_WITH_PREFLIGHT_LIGHT_CAVEAT`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop411 golden18 title-led Series probe 런타임 검증
 
 - 범위: 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay 없이 golden18 단일 런만 실행해 row 생산성을 확인하고, Loop410 뒤 남은 `11668307` mixed-input alias 회귀를 일반 title-led Series probe로 검증한다.

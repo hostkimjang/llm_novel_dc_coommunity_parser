@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-04 Loop412 Addendum - 11698880 title-led candidate HOLD and ledger summary contract
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop412는 approval 회차가 아니라 Loop411 `11698880` wrong publish를 단건 runtime과 계약 보정으로 줄인 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_412_REPORT_20260704.md`, state `docs/devs/loop412_11698880_title_led_candidate_hold_20260704.json`, result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop412_11698880_title_led_unresolved_body_anchor_gate_result.json`.
+- Runtime: run `20260704_172216_712128`은 input/completed/flushed/pending/failed `1/1/1/0/0`, pending snapshot `0`, `large_run_complete=true`, `ordered_flush_blocked=false`, VLM/OCR `READY`다.
+- Code: `src/llm_batch/agentic_pipeline.py`는 title-led public gate에서 `_has_unresolved_body_compound_character_anchor(...)`를 재사용한다. `expert_main.py`는 promotion-blocked scrub에서 blocked title을 `candidate_ledger.title_candidates` 요약에도 보존한다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry는 없다.
+- Result: Loop411 wrong publish `아카데미 생존 갤러리`는 public output에서 제거됐다. Final public contract는 `official_title=null`, `heretic_url=null`, `candidate_ledger_status=promotion_blocked`, `promotion_decision.status=candidate_only`, `publish_allowed=false`다. 정답 후보 `가챠 중독자의 퓨전펑크 생활` / `https://novelpia.com/novel/387014`는 identity 후보와 publish trace pre-gate에 보존됐다.
+- Boundary: 저장된 Loop412 result의 `candidate_ledger.title_candidates`는 stale `스폰지밥`만 남아 있었고, 이번 코드 보정은 이후 직렬화 계약을 고친다. Public title은 아직 HOLD라 golden expected-answer pass가 아니다.
+- Gate: targeted runtime `GO / 1 of 1`, wrong publish closure `GO_TARGETED`, correct candidate preservation `GO_CANDIDATE_ONLY`, expected-answer `NO-GO / inherited Loop411 17 of 18`, golden shared collateral `NO-GO / inherited Loop411 6`, search recovery `P0 / ROW_LEVEL_EVIDENCE_WITH_PREFLIGHT_LIGHT_CAVEAT`, full375 `NOT_OPEN`, Collateral 105 `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Next: 대형 run dispatch 대신 ledger 요약 보정의 단건/projection 반영을 확인하거나 survey 136-error anchor로 이동한다. `11708445` OVERRIDE AUDIT는 Loop407 closure로 유지한다.
+
 ## 2026-07-04 Loop407 Addendum - OVERRIDE AUDIT 11708445 source-native closure
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop407은 approval 회차가 아니라 runtime 불필요 OVERRIDE AUDIT row를 current HEAD `6681f10b`에서 source-native로 다시 닫은 회차다.

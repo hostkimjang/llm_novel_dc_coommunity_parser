@@ -1,5 +1,25 @@
 ﻿# Developer TODO Index
 
+## 2026-07-04 regression-safe grounding Loop412 TODO
+
+- 상태 업데이트: Loop412는 `11698880` 단건 runtime으로 Loop411 wrong publish `아카데미 생존 갤러리`를 public output에서 제거하고, 정답 후보 `가챠 중독자의 퓨전펑크 생활`을 candidate-only로 보존한 회차다. 그러나 public title은 아직 HOLD라 expected-answer pass가 아니며 goal은 완료가 아니다.
+- Loop412 TODO:
+  - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] targeted runtime `20260704_172216_712128`에서 `1/1/1/0/0` row 생산을 확인했다.
+  - [x] R1 hardcoded cue/title 리스트와 `post_id` 예외를 추가하지 않았다.
+  - [x] title-led public gate가 기존 `_has_unresolved_body_compound_character_anchor(...)` 일반 술어를 경유하게 했다.
+  - [x] stale `candidate_ledger.title_candidates` 요약에도 blocked title이 보존되도록 final scrub 계약을 추가했다.
+  - [x] py_compile, ExpertMainCommentMetadata `63`, title-lead guard `202`를 PASS했다.
+  - [x] `11698880` 정답 후보 `가챠 중독자의 퓨전펑크 생활`은 identity 후보와 publish trace에 보존됐다.
+  - [ ] Golden expected-answer는 `NO-GO / inherited Loop411 17 of 18`로 유지한다.
+  - [ ] 다음 active lane은 이번 ledger 요약 보정이 실제 직렬화에 반영되는지 단건/projection으로 확인하거나 survey 136-error anchor로 이동한다.
+  - [ ] Search recovery는 manifest preflight light caveat 때문에 `P0 / search-blind conditional`로 유지한다.
+  - [ ] Full375 collateral gate는 아직 열지 않는다.
+  - [x] `11708445` OVERRIDE AUDIT는 Loop407 closure로 유지하고 재등재하지 않는다.
+  - [x] Collateral 105는 `reclassified 74 / runtime-verified 4`로만 보고한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop411 TODO
 
 - 상태 업데이트: Loop411은 golden18 단일 search 포함 non-light 런으로 row 생산성 `18/18`을 재확인하고, Loop410 뒤 남은 `11668307` mixed-input alias 회귀를 generic Series platform probe로 회복한 회차다. 그러나 expected-answer는 `17/18`이라 goal은 완료가 아니다.

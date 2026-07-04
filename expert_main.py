@@ -2440,6 +2440,59 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
         ledger["is_resolved_work_discussion"] = identity.get("is_resolved_work_discussion")
         identity["candidate_ledger"] = ledger
 
+    def _ensure_blocked_candidate_ledger_summary() -> bool:
+        if not blocked_title:
+            return False
+        blocked_key = _title_key(blocked_title)
+        if not blocked_key:
+            return False
+
+        current_candidates = ledger.get("title_candidates")
+        changed_local = False
+        if not isinstance(current_candidates, list):
+            current_candidates = []
+            changed_local = True
+        for item in current_candidates:
+            candidate_title, _ = _candidate_title_url(item)
+            if _title_key(candidate_title) == blocked_key:
+                if ledger.get("title_candidates") != current_candidates:
+                    ledger["title_candidates"] = current_candidates
+                return changed_local
+
+        preserve_as_string = bool(current_candidates) and all(
+            isinstance(item, str) for item in current_candidates
+        )
+        if preserve_as_string:
+            current_candidates.append(blocked_title)
+        else:
+            source_candidate: Dict[str, Any] = {}
+            for item in _blocked_candidate_source_items():
+                candidate_title, candidate_url = _candidate_title_url(item)
+                if _title_key(candidate_title) != blocked_key:
+                    continue
+                if isinstance(item, dict):
+                    source_candidate = dict(item)
+                    if blocked_url and not _candidate_title_url(source_candidate)[1]:
+                        source_candidate["heretic_url"] = blocked_url
+                    break
+            if not source_candidate:
+                source_candidate = {"official_title": blocked_title}
+                if blocked_url:
+                    source_candidate["heretic_url"] = blocked_url
+            current_candidates.append(source_candidate)
+
+        ledger["title_candidates"] = current_candidates
+        candidate_count = ledger.get("candidate_count")
+        if isinstance(candidate_count, int):
+            ledger["candidate_count"] = max(candidate_count, len(current_candidates))
+        else:
+            ledger["candidate_count"] = len(current_candidates)
+        identity["candidate_ledger"] = ledger
+        return True
+
+    if _ensure_blocked_candidate_ledger_summary():
+        changed = True
+
     primary_work = identity.get("primary_work")
     if isinstance(primary_work, dict):
         primary_title = str(primary_work.get("official_title") or primary_work.get("title") or "").strip()

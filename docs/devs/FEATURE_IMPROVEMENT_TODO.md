@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop412 11698880 title-led candidate HOLD follow-up
+  - 상태: targeted runtime `GO 1/1` / wrong publish closure `GO_TARGETED` / correct candidate preservation `GO_CANDIDATE_ONLY` / expected-answer `NO-GO inherited Loop411 17/18` / golden shared collateral `NO-GO inherited Loop411 6` / search recovery `P0_ROW_LEVEL_EVIDENCE_WITH_PREFLIGHT_LIGHT_CAVEAT` / full375 `NOT_OPEN` / approval not open
+  - 적용: title-led public gate가 `_has_unresolved_body_compound_character_anchor(...)`를 경유하고, promotion-blocked scrub이 stale `candidate_ledger.title_candidates` 요약에도 blocked title을 보존한다. R1 hardcoded cue/title list와 `post_id` 예외는 추가하지 않았다.
+  - 산출물: `docs/devs/loop_reports/LOOP_412_REPORT_20260704.md`, `docs/devs/loop412_11698880_title_led_candidate_hold_20260704.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop412_11698880_title_led_unresolved_body_anchor_gate_result.json`.
+  - 완료 기준: ledger 요약 보정이 실제 직렬화에 반영되는지 단건/projection으로 확인하고, search degraded `unrecovered=0` 및 full375 collateral gate를 별도 증명하기 전까지 approval과 hard-hold 완화를 열지 않는다.
+
 - [ ] Loop411 golden18 title-led Series probe follow-up
   - 상태: golden18 runtime `GO 18/18` / expected-answer `NO-GO 17/18` / golden shared collateral `NO-GO 6` / search recovery `P0_REVIEW_TIMEOUT_DEGRADED` / full375 `NOT_OPEN` / approval not open
   - 적용: `11668307` mixed-input에서 `시리즈 빛세구 작가` official detail probe를 budget 안에 보존해 `빚을 져서라도 세상은 구해야 할 거 아니야`를 회복했다. R1 hardcoded cue/title list와 `post_id` 예외는 추가하지 않았다.

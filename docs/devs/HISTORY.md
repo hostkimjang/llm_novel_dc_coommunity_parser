@@ -1,5 +1,19 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop412 11698880 title-led candidate HOLD 및 ledger 계약
+
+- 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop412 targeted runtime run `20260704_172216_712128`은 input/completed/flushed/pending/failed `1/1/1/0/0`, pending snapshot rows `0`, `large_run_complete=true`, `ordered_flush_blocked=false`로 row 생산성을 증명했다.
+- `src/llm_batch/agentic_pipeline.py`는 title-led public gate에서도 기존 일반 술어 `_has_unresolved_body_compound_character_anchor(...)`를 호출해 본문 `가챠펑크 세드릭` unresolved anchor가 있으면 `unresolved_body_character_work_anchor` / `missing_body_work_bridge`로 publish를 막는다.
+- `expert_main.py`는 promotion-blocked scrub에서 blocked title이 `candidate_ledger.title_candidates` stale 요약에 빠져 있으면 요약에도 보존한다.
+- R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry는 추가하지 않았다.
+- Loop411 wrong publish `아카데미 생존 갤러리`는 public output에서 제거됐고, current result는 `official_title=null`, `candidate_ledger_status=promotion_blocked`, `promotion_decision.status=candidate_only`, `publish_allowed=false`다.
+- 정답 후보 `가챠 중독자의 퓨전펑크 생활`과 URL `https://novelpia.com/novel/387014`는 `identity.title_candidates`, `candidate_preservation_sources`, `publish_contract_trace.pre_gate_candidate`에 보존됐다.
+- 저장된 Loop412 result의 `candidate_ledger.title_candidates` 요약은 stale `스폰지밥`만 남아 있었으며, 이번 코드 계약은 이후 직렬화에서 blocked title을 요약에도 추가한다. 저장 result 자체는 재작성하지 않았다.
+- 검증은 py_compile PASS, ExpertMainCommentMetadata focused `1` PASS, ExpertMainCommentMetadata 전체 `63` PASS, title-led focused `2` PASS, title-lead guard 전체 `202` PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_412_REPORT_20260704.md`, state는 `docs/devs/loop412_11698880_title_led_candidate_hold_20260704.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, wrong publish closure `GO_TARGETED`, correct candidate preservation `GO_CANDIDATE_ONLY`, golden expected-answer `NO-GO / inherited Loop411 17 of 18`, golden shared collateral `NO-GO / inherited Loop411 6`, search recovery `P0 / ROW_LEVEL_EVIDENCE_WITH_PREFLIGHT_LIGHT_CAVEAT`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop411 golden18 title-led Series probe runtime
 
 - 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

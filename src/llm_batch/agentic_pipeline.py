@@ -33414,6 +33414,19 @@ OUTPUT JSON:
         scope_block_flags: List[str] = []
         if competing_verified_body_titles and not current_candidate_has_body_surface:
             scope_block_flags.append("body_verified_character_work_competes_with_title_led_alias")
+        try:
+            unresolved_body_compound_anchor = self._has_unresolved_body_compound_character_anchor(
+                ctx,
+                title,
+                final_decision=final_decision,
+                verification_result=verification_result,
+                title_candidates=title_candidates,
+            )
+        except Exception:
+            unresolved_body_compound_anchor = False
+        if unresolved_body_compound_anchor and not current_candidate_has_body_surface:
+            scope_block_flags.append("unresolved_body_character_work_anchor")
+            scope_block_flags.append("missing_body_work_bridge")
 
         discussion_type = ""
         work_resolution = "resolved"
