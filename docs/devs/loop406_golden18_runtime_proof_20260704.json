@@ -1,0 +1,104 @@
+{
+  "loop": 406,
+  "date": "2026-07-04",
+  "head": "7a76d748",
+  "scope": "golden18 runtime production proof only",
+  "new_large_runs": "FROZEN",
+  "same_parent_packet_replay": "STOPPED",
+  "run": {
+    "run_id": "20260704_134739_880141",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop406_golden18_current_7a76d748_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop406_golden18_current_7a76d748_search_nonlight_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop406_golden18_current_7a76d748_search_nonlight_result_checkpoint.jsonl",
+    "pending_snapshot": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop406_golden18_current_7a76d748_search_nonlight_result_pending_snapshot.json",
+    "console_log": "logs/loop406_golden18_current_7a76d748_search_nonlight.console.log",
+    "worker_log_glob": "logs/expert_run_20260704_134739_880141_W*.log"
+  },
+  "runtime": {
+    "input_post_count": 18,
+    "completed_count": 18,
+    "flushed_count": 18,
+    "pending_count": 0,
+    "failed_count": 0,
+    "checkpoint_rows": 18,
+    "result_rows": 18,
+    "large_run_complete": true,
+    "ordered_flush_blocked": false,
+    "shell_exit_code": 1,
+    "shell_exit_caveat": "PowerShell stderr wrapping; artifact and health audit are complete"
+  },
+  "mcp_health": {
+    "include_search": false,
+    "light_mode": true,
+    "required_ok_count": 2,
+    "ok_count": 2,
+    "failure_count": 0
+  },
+  "audits": {
+    "health_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop406_golden18_current_7a76d748_run_health.json",
+    "flush_integrity": "GO / clean_completed_source",
+    "search_evidence": "REVIEW",
+    "search_blockers": [
+      "manifest_search_health_not_included",
+      "manifest_light_health_only",
+      "search_degraded_observed"
+    ],
+    "publication_contract_gate": "GO",
+    "publication_contract_violations": 0,
+    "expected_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop406_golden18_current_7a76d748_golden_audit.json",
+    "expected_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop406_golden18_current_7a76d748_golden_audit.md",
+    "expected_gate": "NO-GO",
+    "expected_passed": 16,
+    "expected_failed": 2,
+    "expected_failures": [
+      {
+        "post_id": 11705245,
+        "status": "unexpected_resolved_title",
+        "expected": null,
+        "actual": "하남 남자"
+      },
+      {
+        "post_id": 11694019,
+        "status": "positive_work_unresolved",
+        "expected": "이세계에서 사이비로 살아남기",
+        "actual": null
+      }
+    ]
+  },
+  "safe_loss_rows": {
+    "11660237": {
+      "status": "expected_title_resolved",
+      "actual": "테라포밍",
+      "candidate_ledger_status": "safe_resolved"
+    },
+    "11698880": {
+      "status": "expected_work_evidence_preserved_unresolved",
+      "actual": null,
+      "candidate_ledger_status": "promotion_blocked"
+    }
+  },
+  "collateral": {
+    "compare_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop406_golden18_current_7a76d748_collateral_compare.json",
+    "compare_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop406_golden18_current_7a76d748_collateral_compare.md",
+    "scope": "golden_canary_shared_posts_only",
+    "shared_posts": 18,
+    "changed_posts": 7,
+    "regression_candidates": 3,
+    "full375_collateral": "NOT_OPEN",
+    "active_lane": "reclassified 74 / runtime-verified 4"
+  },
+  "gates": {
+    "golden18_runtime": "GO / 18 of 18",
+    "publication_contract": "GO / 0 violations",
+    "search_evidence": "REVIEW / light preflight + search_degraded_observed",
+    "expected_answer": "NO-GO / 16 of 18",
+    "golden_shared_collateral": "NO-GO / 3 regression candidates",
+    "full375_collateral": "NOT_OPEN",
+    "broader_search_recovery": "P0 / OPEN",
+    "promotion_blocked_outside_this_canary": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

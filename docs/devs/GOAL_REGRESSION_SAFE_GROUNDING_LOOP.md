@@ -531,3 +531,12 @@ seed movement만으로 채택 금지. 모든 loop는 **3중 회귀축**을 통�
   - panel/golden/collateral compare, repeated deterministic replay, affected-module and full unittest sweep remain open.
 - Gate: run integrity `GO`, targeted canary `NO-GO`, semantic_quality `REVIEW-LOCKED`, full_scan_approval `false`, goal `ACTIVE / NOT_COMPLETE`.
 > 2026-07-03 상태 addendum (Loop355 wrong-work alias contract reinforcement): goal은 완료가 아니다. Loop355는 Loop354 residual `105`의 `repair_after_wrong_work=5` 중 `11698890`, `11700500`, `11705252` 3행을 shared known-title-abbreviation work bridge 계약으로 보강했다. `댓천마`, `전1시`, `탐재`는 registry 단독 publish 권한이 아니라 작품 내부 cue(`장면`, `전개`, `최강자`, `강자라인`, `주인공`)와 official detail recall이 함께 있을 때만 승격된다. Code는 `src/llm_batch/experts/utils.py`, test는 `tests/test_known_title_abbreviation_support.py`에 반영했고 related unittest `63`개가 PASS다. Runtime replay는 아직 재시도하지 않았으므로 residual action queue는 `105`, queue delta `0`, runtime closure `0`이다. Artifacts: report `docs/devs/loop_reports/LOOP_355_REPORT_20260703.md`, state `docs/devs/loop355_wrong_work_alias_contract_20260703.json`. Gate는 contract `GO_UNIT_CONTRACT_ONLY`, runtime closure `NOT_RUN_AFTER_PATCH`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`다.
+
+## 2026-07-04 Loop406 Runtime Addendum
+
+- Current HEAD `7a76d748`에서 golden18 단일 runtime run `20260704_134739_880141`을 실행했다.
+- Artifact 기준 input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, `large_run_complete=true`, `ordered_flush_blocked=false`다.
+- Health audit는 `flush_integrity=GO`, publication contract `GO / 0 violations`다.
+- Search evidence는 preflight light와 `search_degraded_observed` 때문에 `REVIEW`다.
+- Expected-answer는 `NO-GO / 16 of 18`, golden shared collateral은 `NO-GO / 3`, full375 collateral은 `NOT_OPEN`이다.
+- Gate: golden18 runtime `GO / 18 of 18`, broader search recovery `P0 / OPEN`, Collateral 105 `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

@@ -10416,3 +10416,17 @@
 - Candidate ledger는 `safe_resolved`, `promotion_decision.status=publish`, `publish_allowed=true`, `bypassed_gate=false`다. Health audit는 `flush_integrity=GO / clean_completed_source`, `publication_contract_convergence=GO / violations 0`이다.
 - Artifacts: report `docs/devs/loop_reports/LOOP_403_REPORT_20260704.md`, state `docs/devs/loop403_11663540_after_loop402_runtime_20260704.json`, audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop403_11663540_after_loop402_runtime_health_audit.json`.
 - Gate는 targeted runtime `GO / 1 of 1`, targeted semantic `GO_ROW_ONLY`, golden expected-answer `NOT_REFRESHED_AFTER_LOOP403 / inherited Loop399 NO-GO 14 of 18`, full375 collateral `NOT_OPEN`, broader search recovery `P0 / ROW_LEVEL_RECOVERED_ONLY / search-blind conditional`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다.
+
+## 2026-07-04 Loop406 golden18 런타임 생산성 재증명
+
+- Goal은 `ACTIVE / NOT_COMPLETE`다. 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 실행하지 않았다.
+- Current HEAD `7a76d748`에서 golden18 단일 런 run `20260704_134739_880141`을 실행했다.
+- Artifact 기준 input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, `large_run_complete=true`, `ordered_flush_blocked=false`로 완료됐다.
+- Shell exit code는 `1`이었지만 PowerShell stderr wrapping 경고 이후 result/manifest/checkpoint가 모두 완성됐고, health audit가 `flush_integrity=GO / clean_completed_source`를 확인했다.
+- Health audit는 publication contract `GO / violations 0`도 확인했다.
+- Search evidence는 `REVIEW`다. Manifest preflight가 include_search `false`, light_mode `true`였고 row search에서 `search_degraded_observed`가 있어 broader search recovery 완료로 세지 않는다.
+- Expected-answer audit는 `NO-GO / 16 of 18`이다. 실패는 `11705245` unexpected `하남 남자`, `11694019` unresolved `이세계에서 사이비로 살아남기`다.
+- `11660237`은 `테라포밍`으로 통과했고, `11698880`은 정답 후보가 보존됐지만 public title은 `null`인 unresolved 보존 상태로 통과 처리됐다.
+- Golden shared collateral compare는 shared `18`, changed `7`, regression candidates `3`이다. Full375 collateral은 `NOT_OPEN`이다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_406_REPORT_20260704.md`, state `docs/devs/loop406_golden18_runtime_proof_20260704.json`, health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop406_golden18_current_7a76d748_run_health.json`.
+- Gate는 golden18 runtime `GO / 18 of 18`, search evidence `REVIEW`, expected-answer `NO-GO / 16 of 18`, golden shared collateral `NO-GO / 3`, full375 collateral `NOT_OPEN`, broader search recovery `P0 / OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다.

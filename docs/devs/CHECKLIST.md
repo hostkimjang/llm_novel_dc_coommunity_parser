@@ -10888,3 +10888,32 @@
 - [ ] Full375 collateral gate는 아직 열지 않는다.
 - [ ] Collateral 105는 계속 `reclassified 74 / runtime-verified 4`로만 보고한다.
 - Gate: targeted runtime `GO / 1 of 1`, targeted semantic `GO_ROW_ONLY`, broader search recovery `P0 / ROW_LEVEL_RECOVERED_ONLY / search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-04 Loop406 golden18 런타임 생산성 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] current HEAD `7a76d748`에서 golden18 단일 런을 실행했다.
+  - run `20260704_134739_880141`
+  - manifest input/completed/flushed/pending/failed `18/18/18/0/0`
+  - result/checkpoint rows `18/18`
+  - VLM/OCR `READY`
+- [x] Health audit를 실행했다.
+  - `flush_integrity=GO / clean_completed_source`
+  - publication contract `GO / violations 0`
+  - search evidence `REVIEW`
+- [x] Expected-answer audit를 실행했다.
+  - `NO-GO / 16 of 18`
+  - 실패 `11705245`, `11694019`
+- [x] Golden shared collateral compare를 실행했다.
+  - shared `18`, changed `7`, regression candidates `3`
+- [x] Safe-loss 포함 행을 확인했다.
+  - `11660237` -> `테라포밍`
+  - `11698880` -> public title `null`, 후보 보존 unresolved
+- [ ] Search recovery는 아직 완료가 아니다.
+  - preflight include_search `false`
+  - light_mode `true`
+  - health audit blocker `search_degraded_observed`
+- [ ] Full375 collateral gate는 아직 열지 않는다.
+- [x] Collateral 105는 `reclassified 74 / runtime-verified 4`로만 보고한다.
+- Gate: golden18 runtime `GO / 18 of 18`, search evidence `REVIEW`, expected-answer `NO-GO / 16 of 18`, golden shared collateral `NO-GO / 3`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

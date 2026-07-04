@@ -21931,3 +21931,23 @@ The broader unittest result proves the code checkpoint did not break the current
 - Search row status: `SEARCH_DEGRADED_RECOVERED`, unrecovered degraded total `0`.
 - Golden18 전체 expected-answer는 재실행하지 않았으므로 `NOT_REFRESHED_AFTER_LOOP403 / inherited Loop399 NO-GO 14 of 18`이다.
 - Gate 유지: `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, full375 collateral `NOT_OPEN`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-04 Loop406 Verification
+
+- Runtime command: golden18 단일 런 run `20260704_134739_880141`을 current HEAD `7a76d748`에서 실행했다. 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 실행하지 않았다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_406_REPORT_20260704.md`
+  - state `docs\devs\loop406_golden18_runtime_proof_20260704.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop406_golden18_current_7a76d748_search_nonlight_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop406_golden18_current_7a76d748_search_nonlight_result_manifest.json`
+  - checkpoint `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop406_golden18_current_7a76d748_search_nonlight_result_checkpoint.jsonl`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop406_golden18_current_7a76d748_run_health.json`
+  - expected audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop406_golden18_current_7a76d748_golden_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop406_golden18_current_7a76d748_collateral_compare.json`
+- Runtime result: input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, `large_run_complete=true`, `ordered_flush_blocked=false`, VLM/OCR `READY`.
+- Health audit: `flush_integrity=GO / clean_completed_source`, publication contract convergence `GO / violations 0`, search evidence `REVIEW` with blockers `manifest_search_health_not_included`, `manifest_light_health_only`, `search_degraded_observed`.
+- Expected-answer audit: `NO-GO / 16 of 18`; 실패 `11705245` unexpected `하남 남자`, `11694019` unresolved `이세계에서 사이비로 살아남기`.
+- Safe-loss rows: `11660237`은 `테라포밍`으로 통과했고, `11698880`은 정답 후보 보존 후 public title `null`로 통과 처리지만 hard-hold 완화 근거는 아니다.
+- Collateral: golden shared only, shared `18`, changed `7`, regression candidates `3`, full375 collateral `NOT_OPEN`.
+- Boundary: shell exit code는 `1`이었으나 result/manifest/checkpoint는 완성됐고 health audit가 flush integrity를 `GO`로 확인했다. 명령 환경상 preflight가 light였으므로 broader search recovery 완료가 아니다. Collateral 105는 계속 `reclassified 74 / runtime-verified 4`로만 보고한다.
+- Gate 유지: golden18 runtime `GO / 18 of 18`, search evidence `REVIEW`, expected-answer `NO-GO / 16 of 18`, golden shared collateral `NO-GO / 3`, full375 collateral `NOT_OPEN`, broader search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

@@ -9594,7 +9594,26 @@
     - search preflight include_search `true`, light_mode `false`, ok `2/2`
   - [x] Health audit에서 `flush_integrity=GO`, `search_evidence=GO`, publication contract `GO / violations 0`을 확인했다.
   - [x] `11663540`이 `safe_resolved`, `publish_allowed=true`, `bypassed_gate=false`로 수렴함을 확인했다.
-  - [ ] Golden18 전체 expected-answer는 current-code golden18 재실행 전까지 갱신하지 않는다.
-  - [ ] `11668307` positive unresolved를 다음 일반 계약 또는 source-native 검증 대상으로 유지한다.
+- [ ] Golden18 전체 expected-answer는 current-code golden18 재실행 전까지 갱신하지 않는다.
+- [ ] `11668307` positive unresolved를 다음 일반 계약 또는 source-native 검증 대상으로 유지한다.
+- [ ] full375 collateral gate는 아직 열지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-04 Loop406 TODO
+
+- 상태 업데이트: current HEAD `7a76d748`에서 golden18 단일 런 run `20260704_134739_880141`이 artifact 기준 `18/18/18/0/0`으로 완주했다. Runtime 생산성은 `GO`지만 search evidence는 `REVIEW`, expected-answer는 `NO-GO / 16 of 18`이다.
+- Loop406 TODO:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] golden18 단일 런이 실제 row를 내는지 확인했다.
+    - run `20260704_134739_880141`
+    - result/checkpoint rows `18/18`
+    - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - [x] Health audit에서 `flush_integrity=GO`, publication contract `GO / violations 0`을 확인했다.
+  - [x] Expected audit에서 `NO-GO / 16 of 18`, 실패 `11705245`, `11694019`를 확인했다.
+  - [x] `11660237`은 `테라포밍`으로 통과함을 확인했다.
+  - [x] `11698880`은 public title `null`, 정답 후보 보존 상태라 hard-hold 완화 근거로 쓰지 않는다.
+  - [ ] Search evidence는 preflight light와 `search_degraded_observed` 때문에 `REVIEW`다. 다음 search 검증 런은 `MCP_HEALTH_INCLUDE_SEARCH=1`, `MCP_HEALTH_LIGHT_MODE=0` 조건을 명시한다.
   - [ ] full375 collateral gate는 아직 열지 않는다.
+  - [x] Collateral 105는 `reclassified 74 / runtime-verified 4`로만 보고했다.
   - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.

@@ -1952,3 +1952,14 @@ Gate remains: `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, sear
 - Architecture change: `_has_low_specificity_alias_nonwork_context_block(...)`를 추가해 저특이 alias-only recall이 relation non-work/deliberate-null 흔적을 가진 경우 shared work bridge와 final semantic recall guard를 통과하지 못하게 했다. `low_specificity_alias_nonwork_context` reason code는 public promotion scope에 남는다.
 - Evidence: 신규 계약 `2` PASS, positive alias control `4` PASS, promotion/work-bridge 계약 `25` PASS, title-lead guard 전체 `198` PASS, `git diff --check` PASS. Runtime replay after patch `NOT_RUN_AFTER_PATCH`.
 - Gate: code contract `GO_UNIT`, full375 collateral `NOT_OPEN`, search recovery `GO_GOLDEN18_ONLY / FULL375_NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-07-04 Loop406 Addendum
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 신규 대형 런과 동일 38-row parent packet replay는 동결 유지.
+- Evidence: report `docs/devs/loop_reports/LOOP_406_REPORT_20260704.md`, state `docs/devs/loop406_golden18_runtime_proof_20260704.json`, result `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop406_golden18_current_7a76d748_search_nonlight_result.json`, health `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop406_golden18_current_7a76d748_run_health.json`.
+- Runtime: input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, VLM/OCR `READY`, `large_run_complete=true`, `ordered_flush_blocked=false`.
+- Search: preflight include_search `false`, light_mode `true`, health audit `search_evidence=REVIEW`, blocker `search_degraded_observed`; broader search recovery 완료가 아니다.
+- Semantic: expected-answer `NO-GO / 16 of 18`; 실패 `11705245`, `11694019`.
+- Safe-loss: `11660237`은 `테라포밍` 통과, `11698880`은 후보 보존 unresolved라 hard-hold 완화 근거가 아니다.
+- Collateral: golden shared regression candidates `3`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`.
+- Gate: runtime production `GO / 18 of 18`, search evidence `REVIEW`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, overall `ACTIVE / NOT_COMPLETE`.
