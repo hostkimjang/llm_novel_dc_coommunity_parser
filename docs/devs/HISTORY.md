@@ -10354,3 +10354,12 @@
 - `src/llm_batch/agentic_pipeline.py`는 `image_evidence_catalog` 또는 `post_data.image_enrichment`가 있으면 image-driven scope guard를 실행하고, 비이미지 본문/댓글 또는 promotion-eligible 이미지 표면에 후보 제목/alias가 없으면 `image_scope_missing_candidate_surface`로 publish를 막는다.
 - Loop392 저장 결과 재감사는 `NO-GO / 15 of 18`이며, `11700470`은 expected HOLD 대비 `unexpected_resolved_title`로 남았다. Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다.
 - Artifacts: `docs/devs/loop_reports/LOOP_393_REPORT_20260704.md`, `docs/devs/loop393_11700470_source_native_gate_20260704.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop393_loop392_after_11700470_hold_expected_audit.md`.
+
+## 2026-07-04 Loop401 저특이 alias non-work 계약
+
+- Goal은 `ACTIVE / NOT_COMPLETE`다. 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 실행하지 않았다.
+- Loop399 `11713212`는 expected `null`이지만 `confirmed_alias:가장`과 official detail recall 보호가 결합되어 `SSS급 죽어야 사는 헌터`로 publish됐다.
+- `src/llm_batch/agentic_pipeline.py`는 `_has_low_specificity_alias_nonwork_context_block(...)`를 추가해 relation non-work/deliberate-null 흔적이 있는 저특이 alias-only recall을 `post_alias`, shared work bridge, final semantic guard, public promotion scope에서 차단한다.
+- 검증은 신규 계약 `2`, positive alias control `4`, promotion/work-bridge 계약 `25`, title-lead guard 전체 `198`, `py_compile`, `git diff --check` 모두 PASS다.
+- Artifacts: `docs/devs/loop_reports/LOOP_401_REPORT_20260704.md`, `docs/devs/loop401_low_specificity_alias_nonwork_contract_20260704.json`.
+- Gate는 code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`다.

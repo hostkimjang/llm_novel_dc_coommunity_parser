@@ -1900,3 +1900,11 @@ Gate remains: `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, sear
 - Architecture change: `image_evidence_catalog` / `post_data.image_enrichment`를 promotion gate의 image-driven scope 신호로 승격해, 장면 단서만 있는 official detail 후보를 `image_scope_missing_candidate_surface`로 candidate-only 처리한다.
 - Evidence: Loop392 재감사 `NO-GO / 15 of 18`, 실패 `11663521`, `11700470`, `11698880`. Runtime replay after patch `NOT_RUN_AFTER_PATCH`.
 - Gate: code contract `GO_UNIT`, full375 collateral `NOT_OPEN`, search recovery `GO_GOLDEN18_ONLY / FULL375_NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## 2026-07-04 Loop401 Addendum
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 신규 대형 런과 동일 38-row parent packet replay는 동결 유지.
+- `11713212`은 expected `null` 대비 `SSS급 죽어야 사는 헌터`가 publish된 unexpected title 행이다. 원문은 `가장`을 일반 부사로 쓰고, 본문은 후보작 형태 문구를 `쓰려는 건 아니고`로 부정한다.
+- Architecture change: `_has_low_specificity_alias_nonwork_context_block(...)`를 추가해 저특이 alias-only recall이 relation non-work/deliberate-null 흔적을 가진 경우 shared work bridge와 final semantic recall guard를 통과하지 못하게 했다. `low_specificity_alias_nonwork_context` reason code는 public promotion scope에 남는다.
+- Evidence: 신규 계약 `2` PASS, positive alias control `4` PASS, promotion/work-bridge 계약 `25` PASS, title-lead guard 전체 `198` PASS, `git diff --check` PASS. Runtime replay after patch `NOT_RUN_AFTER_PATCH`.
+- Gate: code contract `GO_UNIT`, full375 collateral `NOT_OPEN`, search recovery `GO_GOLDEN18_ONLY / FULL375_NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.

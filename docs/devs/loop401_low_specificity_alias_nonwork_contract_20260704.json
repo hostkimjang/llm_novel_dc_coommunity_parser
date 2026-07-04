@@ -1,0 +1,72 @@
+{
+  "loop": 401,
+  "date": "2026-07-04",
+  "head_before_patch": "c035bfdf",
+  "status": "GO_UNIT",
+  "runtime_replay_after_patch": "NOT_RUN_AFTER_PATCH",
+  "new_large_runs": "FROZEN",
+  "same_parent_packet_replay": "STOPPED",
+  "scope": {
+    "target_post_id": 11713212,
+    "failure_from_loop399": {
+      "expected": null,
+      "actual": "SSS급 죽어야 사는 헌터",
+      "failure_type": "unexpected_resolved_title"
+    },
+    "root_cause": "저특이 alias '가장'이 relation non-work/deliberate-null 흔적을 가진 상태에서도 post_alias official detail bridge와 final semantic official-recall guard를 통과해 public publish로 승격됐다."
+  },
+  "code_changes": [
+    {
+      "file": "src/llm_batch/agentic_pipeline.py",
+      "summary": "_has_low_specificity_alias_nonwork_context_block를 추가하고 post_alias, shared work bridge, final semantic guard, resolved public scope, semantic no-work promotion gate에 배선했다."
+    },
+    {
+      "file": "tests/test_title_lead_search_inferred_guard.py",
+      "summary": "11713212 negative contract 2개를 추가하고 정상 alias bridge positive control을 검증했다."
+    }
+  ],
+  "no_hardcoded_cue_expansion": true,
+  "verification": [
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_batch_alias_semantic_no_work_blocks_low_specificity_alias_after_relation_hold tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_final_semantic_guard_does_not_keep_low_specificity_alias_relation_hold",
+      "status": "PASS",
+      "tests": 2
+    },
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m py_compile src\\llm_batch\\agentic_pipeline.py tests\\test_title_lead_search_inferred_guard.py",
+      "status": "PASS"
+    },
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_post_alias_official_detail_bridge_locks_meta_platform_drift tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_filtered_official_detail_supports_safe_url_and_post_alias_bridge tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_post_alias_official_detail_recall_overrides_relation_block tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_post_alias_official_detail_acceptance_overrides_thematic_reject -v",
+      "status": "PASS",
+      "tests": 4
+    },
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_promotion_gate_contract tests.test_regression_safe_work_bridge_contract -v",
+      "status": "PASS",
+      "tests": 25
+    },
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard -v",
+      "status": "PASS",
+      "tests": 198
+    },
+    {
+      "command": "git diff --check",
+      "status": "PASS",
+      "note": "CRLF warning only"
+    }
+  ],
+  "gates": {
+    "code_contract": "GO_UNIT",
+    "inherited_golden18_runtime": "GO_GOLDEN18_RUNTIME_ONLY / Loop399 18 of 18",
+    "inherited_expected_answer": "NO-GO / Loop399 14 of 18",
+    "inherited_golden_shared_collateral": "NO-GO / Loop399 7 regression candidates",
+    "full375_collateral": "NOT_OPEN",
+    "broader_search_recovery": "P0 / GOLDEN18_SEARCH_GO_ONLY / search-blind conditional",
+    "collateral_105": "reclassified 74 / runtime-verified 4",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

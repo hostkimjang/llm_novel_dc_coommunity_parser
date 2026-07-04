@@ -21823,3 +21823,13 @@ The broader unittest result proves the code checkpoint did not break the current
 - `py_compile` -> PASS for `src/llm_batch/agentic_pipeline.py`, `tests/test_title_lead_search_inferred_guard.py`.
 - Loop392 stored-result 재감사 -> `NO-GO / 15 of 18`; runtime replay after patch는 `NOT_RUN_AFTER_PATCH`.
 - Gate 유지: `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, full375 collateral `NOT_OPEN`.
+
+## 2026-07-04 Loop401 Verification
+
+- 신규 계약: `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_batch_alias_semantic_no_work_blocks_low_specificity_alias_after_relation_hold tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_final_semantic_guard_does_not_keep_low_specificity_alias_relation_hold` -> PASS / 2.
+- `py_compile`: `.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_title_lead_search_inferred_guard.py` -> PASS.
+- Positive alias controls: `test_post_alias_official_detail_bridge_locks_meta_platform_drift`, `test_filtered_official_detail_supports_safe_url_and_post_alias_bridge`, `test_post_alias_official_detail_recall_overrides_relation_block`, `test_post_alias_official_detail_acceptance_overrides_thematic_reject` -> PASS / 4.
+- Promotion/work-bridge 계약: `.venv312\Scripts\python.exe -m unittest tests.test_promotion_gate_contract tests.test_regression_safe_work_bridge_contract -v` -> PASS / 25.
+- `tests.test_title_lead_search_inferred_guard` 전체 -> PASS / 198.
+- `git diff --check` -> PASS(CRLF warning only).
+- Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다. Gate 유지: `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, full375 collateral `NOT_OPEN`.

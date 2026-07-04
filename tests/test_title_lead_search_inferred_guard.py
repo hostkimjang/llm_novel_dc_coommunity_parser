@@ -1111,6 +1111,162 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertIn("platform_meta_image_title_hard_hold", decision["reason_codes"])
         self.assertIn("scope_context_only", decision["reason_codes"])
 
+    def test_batch_alias_semantic_no_work_blocks_low_specificity_alias_after_relation_hold(self):
+        pipeline = build_pipeline()
+        title = "SSS급 죽어야 사는 헌터"
+        url = "https://series.naver.com/novel/detail.series?productNo=3962389"
+        post = PostInput(
+            post_id=11713212,
+            title="지력 무한일 때 가장 효과 좋은 작물이 머임",
+            author="메타쨩",
+            content_blocks=[
+                ContentBlock(
+                    type="text",
+                    text="절대 SSS급 지력무한 영지를 손에 넣었다 를 쓰려는 건 아니고",
+                )
+            ],
+            comments=["옥수수가 깡패 아닌가", "귀농물은 한번두 안바서.."],
+        )
+        ctx = ConversationContext(post_id=post.post_id, post_data=pipeline._post_to_dict(post), comments=post.comments)
+        mark_no_work_seed(ctx)
+        ctx.search_results = [
+            {
+                "title": title,
+                "url": url,
+                "content": f"{title} 작품 상세. 가장 alias candidate.",
+                "query": "SSS급 지력무한 영지를 손에 넣었다",
+            }
+        ]
+        final_decision = {
+            "title_resolution_allowed": False,
+            "title_resolution_state": "context_only",
+            "work_resolution": "unresolved",
+            "_title_deliberately_null": True,
+            "consistency_flags": [
+                "official_url_recall_blocked_relation_non_work_context",
+                "batch_memory_alias_rescue_blocked_deliberate_null",
+            ],
+        }
+        verification_result = {
+            "title_resolution_allowed": False,
+            "title_resolution_state": "context_only",
+            "work_resolution": "unresolved",
+            "relation_judgment": {
+                "relation_type": "thematic_overlap_only",
+                "discussion_target": "genre_general",
+                "promotion_decision": "reject",
+            },
+            "counter_arguments": [
+                {
+                    "severity": "critical",
+                    "issue": "본문의 예시 문구는 특정 작품 토론이 아니라 부정된 설정 가정입니다.",
+                }
+            ],
+        }
+        title_candidates = [
+            DetectedTitle(
+                official_title=title,
+                heretic_url=url,
+                confidence="Medium",
+                alias_or_mention="가장",
+                source_tier="official_detail",
+                reference_role="primary",
+            )
+        ]
+
+        old_release_context = pipeline._has_batch_alias_verified_no_work_release_context
+        pipeline._has_batch_alias_verified_no_work_release_context = lambda *_args, **_kwargs: True
+        try:
+            self.assertFalse(
+                pipeline._has_post_alias_official_detail_bridge_anchor(
+                    ctx,
+                    title,
+                    alias_text="가장",
+                )
+            )
+            allowed = pipeline._can_promote_title_after_semantic_no_work(
+                ctx,
+                title,
+                source="batch_memory_exact_alias_rescued",
+                final_decision=final_decision,
+                verification_result=verification_result,
+                title_candidates=title_candidates,
+            )
+        finally:
+            pipeline._has_batch_alias_verified_no_work_release_context = old_release_context
+
+        self.assertFalse(allowed)
+        decision = final_decision["_promotion_gate_decision"]
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn("row_discussion_missing", decision["reason_codes"])
+        self.assertIn("scope_context_only", decision["reason_codes"])
+        self.assertIn("low_specificity_alias_nonwork_context", decision["reason_codes"])
+
+    def test_final_semantic_guard_does_not_keep_low_specificity_alias_relation_hold(self):
+        pipeline = build_pipeline()
+        title = "SSS급 죽어야 사는 헌터"
+        url = "https://series.naver.com/novel/detail.series?productNo=3962389"
+        post = PostInput(
+            post_id=11713212,
+            title="지력 무한일 때 가장 효과 좋은 작물이 머임",
+            author="메타쨩",
+            content_blocks=[
+                ContentBlock(
+                    type="text",
+                    text="절대 SSS급 지력무한 영지를 손에 넣었다 를 쓰려는 건 아니고",
+                )
+            ],
+            comments=["옥수수가 깡패 아닌가"],
+        )
+        ctx = ConversationContext(post_id=post.post_id, post_data=pipeline._post_to_dict(post), comments=post.comments)
+        ctx.search_results = [
+            {
+                "title": title,
+                "url": url,
+                "content": f"{title} 작품 상세. 가장 alias candidate.",
+                "query": "SSS급 지력무한 영지를 손에 넣었다",
+            }
+        ]
+        flags = [
+            "official_url_recall_gate_recovered",
+            "post_alias_official_detail_bridge_anchor",
+            "confirmed_alias:가장",
+            "official_url_recall_blocked_relation_non_work_context",
+            "batch_memory_alias_rescue_blocked_after_title_deliberately_null",
+        ]
+
+        old_release_context = pipeline._has_batch_alias_verified_no_work_release_context
+        pipeline._has_batch_alias_verified_no_work_release_context = lambda *_args, **_kwargs: True
+        try:
+            keep = pipeline._should_keep_final_semantic_resolution_after_official_recall_anchor(
+                ctx=ctx,
+                official_title=title,
+                verification_result={
+                    "relation_judgment": {
+                        "relation_type": "thematic_overlap_only",
+                        "discussion_target": "genre_general",
+                        "promotion_decision": "reject",
+                    },
+                    "counter_arguments": [{"severity": "critical", "issue": "specific work not discussed"}],
+                },
+                title_candidates=[
+                    DetectedTitle(
+                        official_title=title,
+                        heretic_url=url,
+                        confidence="Medium",
+                        alias_or_mention="가장",
+                        source_tier="official_detail",
+                        reference_role="primary",
+                    )
+                ],
+                consistency_flags=flags,
+            )
+        finally:
+            pipeline._has_batch_alias_verified_no_work_release_context = old_release_context
+
+        self.assertFalse(keep)
+
     def test_verified_contextual_alias_wrapper_uses_shared_work_predicate(self):
         pipeline = build_pipeline()
         ctx = ConversationContext(

@@ -22886,6 +22886,14 @@ class AgenticPipeline:
         }
         if flags & no_work_context_flags:
             return False
+        if self._has_low_specificity_alias_nonwork_context_block(
+            ctx,
+            title,
+            verification_result=verification_result if isinstance(verification_result, dict) else None,
+            title_candidates=title_candidates,
+            consistency_flags=flags,
+        ):
+            return False
         title_body_anchor = bool(
             "title_body_official_detail_anchor" in flags
             or self._has_title_body_official_detail_anchor(ctx, title)
@@ -30612,6 +30620,137 @@ OUTPUT JSON:
             )
         )
 
+    def _has_low_specificity_alias_nonwork_context_block(
+        self,
+        ctx: Optional["ConversationContext"],
+        title: Optional[str],
+        *,
+        final_decision: Optional[Dict[str, Any]] = None,
+        verification_result: Optional[Dict[str, Any]] = None,
+        title_candidates: Optional[List[DetectedTitle]] = None,
+        consistency_flags: Optional[Iterable[Any]] = None,
+    ) -> bool:
+        """Block generic alias-only recall after semantic/relation no-work evidence."""
+        candidate = str(title or "").strip()
+        if ctx is None or not candidate:
+            return False
+
+        flags: set[str] = set()
+
+        def _merge_flags(container: Optional[Dict[str, Any]]) -> None:
+            if not isinstance(container, dict):
+                return
+            for key in (
+                "consistency_flags",
+                "promotion_blocked_reasons",
+                "candidate_audit_lint",
+                "output_consistency_lint",
+                "reason_codes",
+            ):
+                values = container.get(key)
+                if not isinstance(values, list):
+                    continue
+                for value in values:
+                    text = str(value or "").strip()
+                    if text:
+                        flags.add(text)
+
+        _merge_flags(final_decision)
+        _merge_flags(verification_result)
+        for value in consistency_flags or []:
+            text = str(value or "").strip()
+            if text:
+                flags.add(text)
+
+        vf = verification_result if isinstance(verification_result, dict) else {}
+        final = final_decision if isinstance(final_decision, dict) else {}
+        relation = vf.get("relation_judgment") or {}
+        if not isinstance(relation, dict):
+            relation = {}
+        relation_type = str(relation.get("relation_type") or "").strip().lower()
+        relation_target = str(relation.get("discussion_target") or "").strip().lower()
+        relation_promotion = str(relation.get("promotion_decision") or "").strip().lower()
+        if relation_promotion in {"defer", "pending"}:
+            relation_promotion = "hold"
+        major_or_critical_counter = any(
+            isinstance(item, dict)
+            and str(item.get("severity") or "").strip().lower() in {"major", "critical"}
+            for item in (vf.get("counter_arguments") or [])
+        )
+        relation_non_work = bool(
+            relation_type == "thematic_overlap_only"
+            or relation_target in {"community_banter", "genre_general", "comparison", "uncertain"}
+            or (
+                relation_promotion in {"reject", "downgrade", "keep_unresolved", "hold"}
+                and relation_target not in {"specific_work", "work"}
+            )
+            or major_or_critical_counter
+        )
+        nonwork_flagged = bool(
+            flags
+            & {
+                "official_url_recall_blocked_relation_non_work_context",
+                "batch_memory_alias_rescue_blocked_deliberate_null",
+                "batch_memory_alias_rescue_blocked_after_title_deliberately_null",
+                "secondary_reference_official_alias_blocked_after_title_deliberately_null",
+                "official_url_recall_blocked_semantic_no_work",
+                "context_only_no_work_anchor",
+                "genre_trope_context_only_no_work_anchor",
+                "generic_relation_only_demoted",
+            }
+        )
+        deliberately_null = bool(final.get("_title_deliberately_null") or final.get("title_deliberately_null"))
+        if not (nonwork_flagged or deliberately_null or relation_non_work):
+            return False
+
+        try:
+            if self._title_mentioned_in_non_image_main_context(ctx, candidate):
+                return False
+        except Exception:
+            pass
+        try:
+            if self._has_structured_direct_image_work_surface_evidence(ctx, candidate):
+                return False
+        except Exception:
+            pass
+
+        title_norm = self._normalize_match_text(candidate)
+        aliases: List[str] = []
+
+        def _add_alias(raw: Any) -> None:
+            alias = str(raw or "").strip()
+            alias_norm = self._normalize_match_text(alias)
+            if not alias_norm or alias_norm == title_norm:
+                return
+            if alias not in aliases:
+                aliases.append(alias)
+
+        for flag in flags:
+            if flag.startswith("confirmed_alias:") and ":" in flag:
+                _add_alias(flag.split(":", 1)[1])
+        for cand in title_candidates or []:
+            if not isinstance(cand, DetectedTitle):
+                continue
+            cand_title = str(getattr(cand, "official_title", "") or "").strip()
+            if self._normalize_match_text(cand_title) != title_norm:
+                continue
+            _add_alias(getattr(cand, "alias_or_mention", ""))
+        for attr in (
+            "_post_alias_official_detail_bridge_alias",
+            "_known_abbreviation_promotion_alias",
+            "_known_abbreviation_promotion_blocked_alias",
+            "_known_abbreviation_title_guard_blocked_alias",
+            "_known_title_abbreviation_official_detail_anchor_alias",
+            "_verified_alias_official_detail_anchor_alias",
+            "_batch_alias_rescue_blocked_nonwork_context_alias",
+        ):
+            _add_alias(getattr(ctx, attr, ""))
+
+        return any(
+            self._is_low_specificity_rescue_key(alias, full_title=candidate)
+            for alias in aliases
+        )
+
     def _post_discusses_work_as_work(
         self,
         ctx,
@@ -30629,6 +30768,15 @@ OUTPUT JSON:
         verification = verification_result if isinstance(verification_result, dict) else None
         final = final_decision if isinstance(final_decision, dict) else None
         bridge_source = str(source or "").strip()
+
+        if self._has_low_specificity_alias_nonwork_context_block(
+            ctx,
+            candidate,
+            final_decision=final,
+            verification_result=verification,
+            title_candidates=title_candidates,
+        ):
+            return False
 
         if self._platform_meta_image_title_requires_hold(
             ctx,
@@ -30868,6 +31016,8 @@ OUTPUT JSON:
             if alias_norm not in post_blob:
                 return
             if self._is_low_information_alias_surface(alias) or self._is_platform_alias_surface(alias):
+                return
+            if self._is_low_specificity_rescue_key(alias, full_title=candidate):
                 return
             if alias not in raw_aliases:
                 raw_aliases.append(alias)
@@ -33571,6 +33721,16 @@ OUTPUT JSON:
             current_candidate_alias = str(getattr(cand, "alias_or_mention", "") or "").strip()
             if current_candidate_alias:
                 break
+        if self._has_low_specificity_alias_nonwork_context_block(
+            ctx,
+            title,
+            final_decision=final,
+            verification_result=vf,
+            title_candidates=title_candidates,
+            consistency_flags=merged_scope_flags,
+        ):
+            scope_block_flags.append("low_specificity_alias_nonwork_context")
+            scope_block_flags.append("missing_direct_candidate_title")
         body_competing_titles_for_scope: List[str] = []
         try:
             competing_verified_body_titles, current_candidate_has_body_surface = (
@@ -33865,6 +34025,14 @@ OUTPUT JSON:
                     return str(value)
             return ""
 
+        low_specificity_alias_nonwork_context = self._has_low_specificity_alias_nonwork_context_block(
+            ctx,
+            candidate,
+            final_decision=final_decision if isinstance(final_decision, dict) else None,
+            verification_result=verification_result if isinstance(verification_result, dict) else None,
+            title_candidates=title_candidates,
+        )
+
         def _scope_state_for_gate(
             *,
             row_discusses_work: bool,
@@ -33922,6 +34090,9 @@ OUTPUT JSON:
             else:
                 scope_kind = "unknown"
                 conflicts.append("scope_unclassified")
+
+            if low_specificity_alias_nonwork_context:
+                conflicts.append("low_specificity_alias_nonwork_context")
 
             if competing:
                 conflicts.append("competing_candidate_present")
@@ -34096,6 +34267,8 @@ OUTPUT JSON:
                 verification_result=verification_result if isinstance(verification_result, dict) else None,
                 title_candidates=title_candidates,
             )
+            if low_specificity_alias_nonwork_context:
+                row_discusses_work = False
             if platform_meta_image_hold:
                 row_discusses_work = False
             official_exists_for_gate = _official_title_exists(candidate_url_for_gate)

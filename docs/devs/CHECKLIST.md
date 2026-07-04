@@ -10765,3 +10765,24 @@
   - py_compile PASS
 - [ ] current-code targeted replay로 `11700470` public title이 `null / promotion_blocked`로 내려가는지 확인한다.
 - Gate: code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-04 Loop401 저특이 alias non-work 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Loop399 `11713212` 증거를 확인했다.
+  - expected `null`, actual `SSS급 죽어야 사는 헌터`
+  - 실패 경로: `confirmed_alias:가장`, `post_alias_official_detail_bridge_anchor`, `final_semantic_reread_official_recall_guarded_resolution`
+  - non-work 흔적: `official_url_recall_blocked_relation_non_work_context`, `batch_memory_alias_rescue_blocked_after_title_deliberately_null`
+- [x] R1 hardcoded cue 리스트 확장 없이 기존 저특이 alias 일반 술어를 사용했다.
+- [x] 계약 테스트를 추가했다.
+  - `tests/test_title_lead_search_inferred_guard.py`
+- [x] 검증을 실행했다.
+  - 신규 계약 `2` PASS
+  - positive alias controls `4` PASS
+  - `py_compile` PASS
+  - promotion/work-bridge 계약 `25` PASS
+  - title-lead guard 전체 `198` PASS
+  - `git diff --check` PASS(CRLF warning only)
+- [ ] current-code targeted replay로 `11713212` public title이 `null / candidate_only`로 내려가는지 확인한다.
+- Gate: code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
