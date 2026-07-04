@@ -1,5 +1,26 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop409 golden18 runtime/contextual exact-title 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] watchdog/stall 우회가 실제 row를 내는지 golden18 단일 런으로 먼저 검증했다.
+  - run `20260704_150836_336421`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint/result rows `18/18`
+  - MCP health `include_search=true`, `light_mode=false`, required/ok `2/2`
+- [x] R1 hardcoded cue 리스트나 `post_id` 예외를 추가하지 않았다.
+- [x] `11694019` search catalog의 wiki/community exact-title evidence가 official detail gap을 열도록 일반 술어를 보강했다.
+- [x] community 글 제목 substring 과잉 후보는 차단했다.
+- [x] 검증: `py_compile` PASS, search recovery focused `7` PASS, broader search/recovery health `36` PASS, runtime health `GO`.
+- [x] `11694019`는 golden expected-answer에서 `expected_title_resolved`로 통과했다.
+- [ ] Golden expected-answer는 아직 `NO-GO / 16 of 18`이다. 실패는 `11705245`, `11668307`이다.
+- [ ] Search evidence는 row degraded가 남아 `P0 / REVIEW / SEARCH_DEGRADED_OBSERVED`다.
+- [ ] Golden shared collateral은 `NO-GO / 3 regression candidates`이고 full375 collateral은 `NOT_OPEN`이다.
+- [x] `11708445` OVERRIDE AUDIT는 Loop407 closure로 유지하고 재오픈하지 않는다.
+- [x] Collateral 105는 `reclassified 74 / runtime-verified 4` 축으로 유지한다.
+- Gate: runtime production `GO / 18 of 18`, code contract `GO_UNIT`, publication contract `GO / 0 violations`, expected-answer `NO-GO / 16 of 18`, golden shared collateral `NO-GO / 3`, search recovery `P0 / REVIEW`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop408 11705245 context-only thematic publish 체크
 
 - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.

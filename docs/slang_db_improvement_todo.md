@@ -1,5 +1,15 @@
 # Slang DB Improvement TODO
 
+## 2026-07-04 Loop409 contextual exact-title slang 주의사항
+
+- [x] 이번 회차는 slang DB write-back이 아니라 contextual exact-title evidence가 official-detail gap을 열도록 한 search/publication contract 보정이다.
+- [x] `미츄리`, `혼후순결` 같은 packet-local contextual term은 registry alias/slang 추가 근거가 아니다.
+- [x] R1 hardcoded cue 리스트나 특정 title/post_id 예외를 추가하지 않았다.
+- [x] community 글 제목 전체나 substring을 작품명 후보로 확장하지 않고, 쉼표 뒤 별도 title-like segment만 제한적으로 gap seed로 본다.
+- [x] golden18 single runtime은 `18/18`로 완주했다.
+- [ ] expected-answer `NO-GO / 16 of 18`, search degraded, full375 collateral을 닫기 전 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, code contract `GO_UNIT`, golden18 runtime `GO / 18 of 18`, expected-answer `NO-GO / 16 of 18`, search recovery `P0 / REVIEW / SEARCH_BLIND_CONDITIONAL`, golden shared collateral `NO-GO / 3`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop408 context-only thematic publish slang 주의사항
 
 - [x] 이번 회차는 slang DB write-back이 아니라 shared publication contract 보정이다.

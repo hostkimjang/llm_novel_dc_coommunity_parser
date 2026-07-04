@@ -1,0 +1,123 @@
+{
+  "loop": 409,
+  "date": "2026-07-04",
+  "head": "7d59ea2c+worktree",
+  "scope": "golden18 runtime proof plus contextual exact-title official-detail gap contract",
+  "new_large_runs": "FROZEN",
+  "same_parent_packet_replay": "STOPPED",
+  "code_change": {
+    "files": [
+      "src/llm_batch/experts/orchestrator.py",
+      "tests/test_search_recovery_contract.py"
+    ],
+    "hardcoded_cue_expansion": false,
+    "post_id_exception": false,
+    "summary": "wiki/community exact-title evidence와 post-side contextual overlap이 있으면 trope_generalization skip 대신 official detail gap을 열고, community title substring 과잉 후보를 제한한다."
+  },
+  "run": {
+    "run_id": "20260704_150836_336421",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop409_golden18_current_7d59ea2c_contextual_exact_title_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop409_golden18_current_7d59ea2c_contextual_exact_title_search_nonlight_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop409_golden18_current_7d59ea2c_contextual_exact_title_search_nonlight_result_checkpoint.jsonl",
+    "pending_snapshot": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop409_golden18_current_7d59ea2c_contextual_exact_title_search_nonlight_result_pending_snapshot.json",
+    "console_log": "logs/loop409_golden18_current_7d59ea2c_contextual_exact_title_search_nonlight.console.log",
+    "worker_log_glob": "logs/expert_run_20260704_150836_336421_W*.log"
+  },
+  "runtime": {
+    "input_post_count": 18,
+    "completed_count": 18,
+    "flushed_count": 18,
+    "pending_count": 0,
+    "failed_count": 0,
+    "checkpoint_rows": 18,
+    "result_rows": 18,
+    "large_run_complete": true,
+    "ordered_flush_blocked": false,
+    "shell_exit_code": 1,
+    "shell_exit_caveat": "PowerShell stderr wrapping; artifact and health audit are complete"
+  },
+  "mcp_health": {
+    "include_search": true,
+    "light_mode": false,
+    "required_ok_count": 2,
+    "ok_count": 2,
+    "failure_count": 0
+  },
+  "audits": {
+    "health_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop409_golden18_current_7d59ea2c_contextual_exact_title_run_health.json",
+    "flush_integrity": "GO / clean_completed_source",
+    "search_evidence": "REVIEW",
+    "search_blockers": [
+      "search_degraded_observed"
+    ],
+    "publication_contract_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop409_publication_contract_convergence.json",
+    "publication_contract_gate": "GO",
+    "publication_contract_violations": 0,
+    "expected_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop409_golden18_current_7d59ea2c_contextual_exact_title_golden_audit.json",
+    "expected_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop409_golden18_current_7d59ea2c_contextual_exact_title_golden_audit.md",
+    "expected_gate": "NO-GO",
+    "expected_passed": 16,
+    "expected_failed": 2,
+    "expected_failures": [
+      {
+        "post_id": 11705245,
+        "status": "unexpected_resolved_title",
+        "expected": null,
+        "actual": "하남자의 탑 공략법"
+      },
+      {
+        "post_id": 11668307,
+        "status": "positive_work_unresolved",
+        "expected": "빚을 져서라도 세상은 구해야 할 거 아니야",
+        "actual": null
+      }
+    ]
+  },
+  "row_changes": {
+    "11694019": {
+      "loop406_status": "positive_work_unresolved",
+      "loop409_status": "expected_title_resolved",
+      "actual": "이세계에서 사이비로 살아남기"
+    },
+    "11705245": {
+      "status": "unexpected_resolved_title",
+      "actual": "하남자의 탑 공략법",
+      "next_lane": "verified_alias_title_only_publication_leak"
+    },
+    "11668307": {
+      "status": "positive_work_unresolved",
+      "actual": null,
+      "next_lane": "title_led_alias_mixed_input_regression"
+    }
+  },
+  "collateral": {
+    "compare_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop409_golden18_current_7d59ea2c_contextual_exact_title_collateral_compare.json",
+    "compare_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop409_golden18_current_7d59ea2c_contextual_exact_title_collateral_compare.md",
+    "scope": "golden_canary_shared_posts_only",
+    "shared_posts": 18,
+    "changed_posts": 7,
+    "regression_candidates": 3,
+    "regression_post_ids": [
+      11698880,
+      11705231,
+      11705245
+    ],
+    "full375_collateral": "NOT_OPEN",
+    "active_lane": "reclassified 74 / runtime-verified 4"
+  },
+  "gates": {
+    "runtime_production": "GO / 18 of 18",
+    "code_contract": "GO_UNIT",
+    "publication_contract": "GO / 0 violations",
+    "search_evidence": "P0 / REVIEW / SEARCH_DEGRADED_OBSERVED",
+    "expected_answer": "NO-GO / 16 of 18",
+    "golden_shared_collateral": "NO-GO / 3 regression candidates",
+    "full375_collateral": "NOT_OPEN",
+    "broader_search_recovery": "P0 / REVIEW",
+    "promotion_blocked_outside_this_canary": "search-blind conditional",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

@@ -109,6 +109,101 @@ class SearchRecoveryContractTest(unittest.TestCase):
             [gap.get("description") for gap in gaps],
         )
 
+    def test_contextual_exact_title_keeps_official_detail_gap_under_trope_context(self):
+        orchestrator = Orchestrator.__new__(Orchestrator)
+        ctx = ConversationContext(post_id=11694019, post_data={}, comments=[])
+        ctx.search_results = [
+            {
+                "title": "이세계에서 사이비로 살아남기 (r93 판) - 나무위키",
+                "url": "https://namu.wiki/w/이세계에서%20사이비로%20살아남기",
+                "domain": "namu.wiki",
+                "content": "노벨피아 연재. 미츄리. 혼후순결이라는 개념이 현대 기준으로도...",
+                "query": "혼후순결 노벨피아",
+                "source_tier": "wiki",
+            },
+            {
+                "title": "미츄리의 신신신신작, 이세계에서 사이비로 살아남기 - 장르소설 채널",
+                "url": "https://arca.live/b/novelchannel/77980889",
+                "domain": "arca.live",
+                "content": "노벨피아에서 보기 드문 착각물. 혼전혼후 순결 관련 언급.",
+                "query": "혼후순결 노벨피아",
+                "source_tier": "community",
+            },
+            {
+                "title": "님프시티는 미츄리 스타일의 완전체같음 - 장르소설 채널",
+                "url": "https://arca.live/b/novelchannel/78014857",
+                "domain": "arca.live",
+                "content": "혼후순결 ㅇㅈㄹ해서 하차했다는 커뮤니티 감상.",
+                "query": "혼후순결 노벨피아",
+                "source_tier": "community",
+            },
+            {
+                "title": "감옥학원에서 나만 힐링할거다",
+                "url": "https://novelpia.com/novel/75754",
+                "content": "작가 미츄리",
+                "source_tier": "novel_platform",
+            },
+        ]
+        hints = {"title_hints": [], "author_hints": []}
+
+        gaps = orchestrator._identify_evidence_gaps(ctx, hints, ["미츄리", "혼후순결"])
+
+        self.assertIn(
+            {
+                "type": "no_official_url",
+                "term": "이세계에서 사이비로 살아남기",
+                "description": "'이세계에서 사이비로 살아남기'의 contextual exact-title 공식 detail 미확정",
+            },
+            gaps,
+        )
+        self.assertTrue(
+            orchestrator._contextual_exact_titles_without_official_detail(
+                ctx,
+                hints,
+                ["미츄리", "혼후순결"],
+            )
+        )
+        self.assertNotIn(
+            "님프시티는 미츄리 스타일의 완전체같음",
+            [gap.get("term") for gap in gaps],
+        )
+
+    def test_contextual_exact_title_gap_closes_with_exact_official_detail(self):
+        orchestrator = Orchestrator.__new__(Orchestrator)
+        ctx = ConversationContext(post_id=11694019, post_data={}, comments=[])
+        ctx.search_results = [
+            {
+                "title": "이세계에서 사이비로 살아남기 (r93 판) - 나무위키",
+                "url": "https://namu.wiki/w/이세계에서%20사이비로%20살아남기",
+                "domain": "namu.wiki",
+                "content": "노벨피아 연재. 미츄리. 혼후순결이라는 개념이 현대 기준으로도...",
+                "query": "혼후순결 노벨피아",
+                "source_tier": "wiki",
+            },
+            {
+                "title": "웹소설로 꿈꾸는 세상! - 이세계에서 사이비로 살아남기 - 노벨피아",
+                "url": "https://novelpia.com/novel/181771",
+                "content": "이세계에서 사이비로 살아남기. 작가명 미츄리.",
+                "source_tier": "novel_platform",
+            },
+        ]
+        hints = {"title_hints": [], "author_hints": []}
+
+        gaps = orchestrator._identify_evidence_gaps(ctx, hints, ["미츄리", "혼후순결"])
+
+        self.assertNotIn(
+            "'이세계에서 사이비로 살아남기'의 contextual exact-title 공식 detail 미확정",
+            [gap.get("description") for gap in gaps],
+        )
+        self.assertEqual(
+            orchestrator._contextual_exact_titles_without_official_detail(
+                ctx,
+                hints,
+                ["미츄리", "혼후순결"],
+            ),
+            [],
+        )
+
     def test_context_records_degraded_fallback_recovery(self):
         ctx = ConversationContext(post_id=1, post_data={}, comments=[])
 

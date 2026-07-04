@@ -1,5 +1,25 @@
 ﻿# Developer TODO Index
 
+## 2026-07-04 regression-safe grounding Loop409 TODO
+
+- 상태 업데이트: Loop409는 Loop360 watchdog/stall 우회가 현재 변경 포함 golden18 단일 런에서 실제 `18/18` row를 내는지 먼저 실증했고, `11694019` contextual exact-title official-detail gap을 일반 술어로 보강한 회차다.
+- Loop409 TODO:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] golden18 단일 runtime `20260704_150836_336421`에서 `18/18/18/0/0` row 생산을 확인했다.
+  - [x] search 포함 non-light health `include_search=true`, `light_mode=false`, ok `2/2`를 확인했다.
+  - [x] R1 hardcoded cue/title 리스트와 `post_id` 예외를 추가하지 않았다.
+  - [x] contextual exact-title official-detail gap 일반 술어와 community title 과잉 후보 방지 계약을 추가했다.
+  - [x] py_compile, focused search recovery `7`, broader search/recovery health `36`을 PASS했다.
+  - [x] `11694019`는 expected-title `이세계에서 사이비로 살아남기`로 runtime pass했다.
+  - [ ] Expected-answer는 `NO-GO / 16 of 18`로 유지한다.
+  - [ ] 다음 active lane은 `11705245` verified-alias/title-only publication leak 또는 `11668307` mixed-input alias 회귀로 좁힌다.
+  - [ ] Search recovery는 row degraded 때문에 `P0 / REVIEW`로 유지한다.
+  - [ ] Full375 collateral gate는 아직 열지 않는다.
+  - [x] `11708445` OVERRIDE AUDIT는 Loop407 closure로 유지하고 재등재하지 않는다.
+  - [x] Collateral 105는 `reclassified 74 / runtime-verified 4`로만 보고한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop408 TODO
 
 - 상태 업데이트: Loop408은 Loop406 `11705245` unexpected public title `하남 남자`를 런 반복 없이 shared publication contract로 막은 회차다. Code/unit contract와 저장 row projection은 닫혔지만 runtime replay와 golden expected-answer 갱신은 하지 않았다.

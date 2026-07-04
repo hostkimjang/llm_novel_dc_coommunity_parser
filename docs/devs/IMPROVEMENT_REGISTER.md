@@ -1,5 +1,23 @@
 # Improvement Register
 
+## IMP-20260704-409 - golden18 runtime proof and contextual exact-title gap
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5 미발주, golden18 단일만 실행 | 대형 dispatch 반복 금지 |
+| parent packet replay | 중단 | 동일 38-row replay 없음 | 큐 회계 회차 금지 |
+| golden18 runtime | GO / 18 of 18 | run `20260704_150836_336421`, manifest `18/18/18/0/0`, checkpoint/result `18/18` | row 생산성 근거로만 사용 |
+| contextual exact-title gap | GO_UNIT | wiki/community exact-title evidence가 official-detail gap을 열도록 일반 술어 보강 | R1 cue/title 하드코딩 금지 |
+| `11694019` | PASS_ROW | expected/actual `이세계에서 사이비로 살아남기` | broader approval로 승격 금지 |
+| expected-answer | NO-GO / 16 of 18 | 실패 `11705245`, `11668307` | 두 행을 source-native/일반 술어로 축소 |
+| search evidence | REVIEW | health audit `search_degraded_observed`, row health `SEARCH_DEGRADED_RECOVERED=10`, `SEARCH_DEGRADED=2` | search degraded 100% 복구 P0 유지 |
+| collateral | NO-GO / 3 | regression candidates `11698880`, `11705231`, `11705245` | full375 전수 gate 별도 |
+| OVERRIDE AUDIT `11708445` | CLOSED | Loop407 `ACCEPT / candidate_only_block_is_correct` | queue 재등재 금지 |
+| 테스트 | PASS | py_compile, focused `7`, search/audit bundle `36` | 커밋 후 다음 targeted lane 진행 |
+| 문서 동기화 | 완료 | Loop409 report/state와 운영 문서 갱신 | survey 136-error anchor 유지 |
+
+Gate: runtime production `GO / 18 of 18`, expected-answer `NO-GO / 16 of 18`, search recovery `P0 / REVIEW / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260704-407 - OVERRIDE AUDIT 11708445 row contract closure
 
 | 항목 | 상태 | 근거 | 다음 조치 |

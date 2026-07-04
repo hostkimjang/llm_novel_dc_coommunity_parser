@@ -6,6 +6,25 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-04 Loop409 contextual exact-title golden18 품질 게이트
+
+- 근거:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았음을 기록했다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았음을 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_409_REPORT_20260704.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop409_golden18_contextual_exact_title_runtime_20260704.json`.
+  - [x] Runtime manifest `20260704_150836_336421`의 `18/18/18/0/0`, checkpoint/result `18/18`을 기록했다.
+  - [x] Health audit와 golden expected/collateral audit 경로를 report에 기록했다.
+- 품질 게이트:
+  - [x] runtime production `GO / 18 of 18`와 semantic approval을 분리한다.
+  - [x] expected-answer `NO-GO / 16 of 18`와 실패 `11705245`, `11668307`을 명시한다.
+  - [x] search degraded가 관측되어 search recovery는 `P0 / REVIEW / SEARCH_BLIND_CONDITIONAL`로 유지한다.
+  - [x] R1 hardcoded cue 리스트 확장을 하지 않았고, community title substring 위험은 일반 술어로 제한했다.
+  - [x] collateral active lane은 `reclassified 74 / runtime-verified 4`로 분리 보고한다.
+  - [x] `11708445` OVERRIDE AUDIT는 Loop407에서 닫혔으므로 재큐잉하지 않는다.
+  - [x] full375 collateral은 `NOT_OPEN`, golden shared collateral은 `NO-GO / 3`으로 분리한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-04 Loop400 resolved-public body compound anchor 품질 게이트
 
 - 근거:

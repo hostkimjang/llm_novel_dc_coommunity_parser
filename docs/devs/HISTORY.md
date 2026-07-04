@@ -1,5 +1,22 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop409 golden18 런타임 재증명과 contextual exact-title gap
+
+- 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop360 watchdog/stall 우회가 현재 변경 포함 상태에서도 실제 row를 내는지 golden18 단일 런만 실행했다.
+- Run `20260704_150836_336421`은 input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, `large_run_complete=true`, `ordered_flush_blocked=false`로 완료됐다.
+- MCP health preflight는 `include_search=true`, `light_mode=false`, required/ok `2/2`로 통과했고, LLM suspend prompt는 껐다.
+- `src/llm_batch/experts/orchestrator.py`에 `_contextual_exact_titles_without_official_detail(...)`을 추가해 wiki/community exact-title evidence와 post-side contextual term overlap이 있으면 official detail gap을 열게 했다.
+- 커뮤니티 글 제목은 쉼표 뒤 별도 작품명처럼 분리된 경우만 후보로 삼고, 단순 substring 글 제목은 후보로 올리지 않는다.
+- `tests/test_search_recovery_contract.py`에 contextual exact-title gap 유지, exact official detail gap 종료, community title 과잉 후보 방지 계약을 추가했다.
+- 검증은 py_compile PASS, focused search recovery `7` PASS, broader search/recovery health `36` PASS, Loop406 `11694019` projection PASS다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, publication convergence는 `GO / violations 0`이다.
+- `11694019`는 이번 golden audit에서 `이세계에서 사이비로 살아남기`로 통과했다.
+- Expected-answer는 여전히 `NO-GO / 16 of 18`이다. 실패는 `11705245` unexpected `하남자의 탑 공략법`, `11668307` unresolved다.
+- Golden shared collateral은 `NO-GO / 3 regression candidates`이고 full375 collateral은 `NOT_OPEN`이다.
+- Report는 `docs/devs/loop_reports/LOOP_409_REPORT_20260704.md`, state는 `docs/devs/loop409_golden18_contextual_exact_title_runtime_20260704.json`이다.
+- Gate는 runtime production `GO / 18 of 18`, code contract `GO_UNIT`, search recovery `P0 / REVIEW / SEARCH_DEGRADED_OBSERVED`, expected-answer `NO-GO / 16 of 18`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop408 11705245 context-only thematic publish 계약
 
 - 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

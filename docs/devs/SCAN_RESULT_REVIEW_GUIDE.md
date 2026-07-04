@@ -93,6 +93,8 @@
 
 ## 4. 증거 정책
 
+- search catalog의 wiki/community exact-title evidence는 official-detail probe를 여는 gap seed로만 쓴다. 그 자체만으로 public title publish 근거가 아니며, official/detail/direct hard support와 row-discusses-work contract가 함께 수렴해야 한다.
+- community 글 제목은 쉼표 뒤 별도 작품명처럼 분리된 title-like segment만 exact-title seed로 본다. 커뮤니티 글 제목 전체나 substring이 post contextual term을 포함한다는 이유로 작품명 후보를 늘리지 않는다.
 - 재해독 active wording은 `표현 오타/축약 패턴(범용)`로만 쓴다. 특정 표면형을 어떤 정상 표현으로 읽는다는 문장, 특정 계열 자동 차단/허용 규칙, `X -> Y` 복원은 새 reason/prompt/report에 쓰지 않는다.
 - `표현 오타/축약 패턴(범용): X; Y`처럼 label 뒤에 표면값이나 복원 payload를 붙이지 않는다. 공개 reason/report는 `표현 오타/축약 패턴(범용)은 packet-local 원문 재검토 신호`처럼 경계만 남긴다.
 - 오타/축약 재해독은 hardcoded alias 규칙이나 특정 post/string 전용 예외가 아니다. packet의 title/body/comment/comment_dialogue를 다시 읽는 범용 자연어 이해 신호이며, 직접 title/alias/evidence와 결합될 때만 작품 판정 검토에 쓴다.

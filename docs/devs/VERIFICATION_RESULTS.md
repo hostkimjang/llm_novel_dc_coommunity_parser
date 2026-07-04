@@ -1,5 +1,46 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop409 golden18 runtime/contextual exact-title 검증
+
+- 범위: 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay 없이 golden18 단일 런으로 runtime production을 재증명하고, `11694019` contextual exact-title official-detail gap 계약을 검증한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_409_REPORT_20260704.md`
+  - state `docs\devs\loop409_golden18_contextual_exact_title_runtime_20260704.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop409_golden18_current_7d59ea2c_contextual_exact_title_search_nonlight_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop409_golden18_current_7d59ea2c_contextual_exact_title_search_nonlight_result_manifest.json`
+  - checkpoint `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop409_golden18_current_7d59ea2c_contextual_exact_title_search_nonlight_result_checkpoint.jsonl`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop409_golden18_current_7d59ea2c_contextual_exact_title_run_health.json`
+  - golden audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop409_golden18_current_7d59ea2c_contextual_exact_title_golden_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop409_golden18_current_7d59ea2c_contextual_exact_title_collateral_compare.json`
+  - publication convergence `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop409_publication_contract_convergence.json`
+- Code evidence:
+  - `src\llm_batch\experts\orchestrator.py`: `_contextual_exact_titles_without_official_detail(...)` 추가.
+  - `src\llm_batch\experts\orchestrator.py`: trope/context-only skip 전에 contextual exact-title official-detail gap을 확인.
+  - `tests\test_search_recovery_contract.py`: contextual exact-title gap, exact official detail gap close, community title over-candidate 방지 계약 추가.
+- Verification commands:
+  - `.\\.venv312\\Scripts\\python.exe -m py_compile src\\llm_batch\\experts\\orchestrator.py tests\\test_search_recovery_contract.py` -> PASS
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_search_recovery_contract -v` -> PASS, 7 tests
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_search_recovery_contract tests.test_search_degraded_zero_suppression tests.test_mcp_bridge_direct_search tests.test_audit_expert_run_health` -> PASS, 36 tests
+  - Loop406 `11694019` projection -> official-detail gap term `이세계에서 사이비로 살아남기` 1건
+  - `tools\audit_expert_run_health.py` on run `20260704_150836_336421` -> `flush_integrity=GO / clean_completed_source`, search evidence `REVIEW`
+  - `tools\audit_regression_safe_golden.py` -> expected-answer `NO-GO / 16 of 18`
+  - `tools\audit_publication_contract_convergence.py` -> `GO / 0 violations`
+- Runtime result:
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint/result rows `18/18`
+  - MCP health `include_search=true`, `light_mode=false`, ok `2/2`
+  - VLM/OCR semantic gate `READY`
+- Semantic result:
+  - `11694019` passed as `expected_title_resolved`, actual `이세계에서 사이비로 살아남기`
+  - failures remain `11705245` unexpected `하남자의 탑 공략법`, `11668307` unresolved
+  - collateral regression candidates `11698880`, `11705231`, `11705245`
+- Boundary:
+  - Runtime GO is not semantic approval.
+  - Search evidence remains `P0 / REVIEW` because row degraded was observed.
+  - Full375 collateral is `NOT_OPEN`.
+  - `11708445` OVERRIDE AUDIT remains closed from Loop407 and is not requeued.
+- Gate: runtime production `GO / 18 of 18`, code contract `GO_UNIT`, publication contract `GO / 0 violations`, expected-answer `NO-GO / 16 of 18`, golden shared collateral `NO-GO / 3`, full375 collateral `NOT_OPEN`, Collateral 105 `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop408 11705245 context-only thematic publish 계약 검증
 
 - 범위: Loop406 golden18 실패 `11705245`의 unexpected public title `하남 남자`를 런 반복 없이 shared publication contract로 차단한다. 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않는다.

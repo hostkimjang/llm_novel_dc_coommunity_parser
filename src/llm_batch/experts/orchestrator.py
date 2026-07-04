@@ -19247,7 +19247,15 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 file=sys.stderr,
             )
             return
-        if _trope_generalization_ctx and not self._has_official_like_title_hints(snippet_hints):
+        if (
+            _trope_generalization_ctx
+            and not self._has_official_like_title_hints(snippet_hints)
+            and not self._contextual_exact_titles_without_official_detail(
+                ctx,
+                snippet_hints,
+                key_terms,
+            )
+        ):
             print(
                 f"[{_ts()}] {self.emoji} ⚡AdaptiveChain 스킵: trope_generalization(no_official_hint)",
                 file=sys.stderr,
@@ -19533,6 +19541,17 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             best_title = ""
         
         if not best_title:
+            contextual_exact_title_gaps = self._contextual_exact_titles_without_official_detail(
+                ctx,
+                snippet_hints,
+                key_terms,
+            )
+            for contextual_title in contextual_exact_title_gaps[:2]:
+                gaps.append({
+                    "type": "no_official_url",
+                    "term": contextual_title,
+                    "description": f"'{contextual_title}'의 contextual exact-title 공식 detail 미확정",
+                })
             # 제목 후보조차 없으면 key_terms 기반 약칭 해소 시도
             for kt in (key_terms or [])[:2]:
                 if isinstance(kt, str) and len(kt) >= 2 and len(kt) <= 8:
@@ -19574,8 +19593,26 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 "term": bridge_title,
                 "description": f"'{bridge_title}'의 author_bridge 공식 detail 미확정",
             })
+
+        contextual_exact_title_gaps = self._contextual_exact_titles_without_official_detail(
+            ctx,
+            snippet_hints,
+            key_terms,
+        )
+        for contextual_title in contextual_exact_title_gaps[:2]:
+            if contextual_title in author_bridge_official_gaps:
+                continue
+            gaps.append({
+                "type": "no_official_url",
+                "term": contextual_title,
+                "description": f"'{contextual_title}'의 contextual exact-title 공식 detail 미확정",
+            })
         
-        if not has_official_url and best_title not in author_bridge_official_gaps:
+        if (
+            not has_official_url
+            and best_title not in author_bridge_official_gaps
+            and best_title not in contextual_exact_title_gaps
+        ):
             gaps.append({
                 "type": "no_official_url",
                 "term": best_title,
@@ -19688,6 +19725,151 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 continue
             missing.append(title)
         return missing
+
+    def _contextual_exact_titles_without_official_detail(
+        self,
+        ctx: ConversationContext,
+        snippet_hints: Dict[str, Any],
+        key_terms: List[str],
+    ) -> List[str]:
+        """Find exact title evidence that still needs an official detail probe."""
+        if ctx is None:
+            return []
+
+        key_norms: set[str] = set()
+        for term in key_terms or []:
+            if not isinstance(term, str):
+                continue
+            norm = self._normalize_hint_text(term)
+            if len(norm) < 2:
+                continue
+            if self._is_low_specificity_search_seed(term) or self._is_generic_topic_gap_term(term):
+                continue
+            key_norms.add(norm)
+        if not key_norms:
+            return []
+
+        def _is_contextual_title_source(item: Dict[str, Any]) -> bool:
+            source_tier = str(item.get("source_tier") or "").strip().lower()
+            domain = str(item.get("domain") or "").strip().lower()
+            url = str(item.get("url") or "").strip().lower()
+            if source_tier in {"wiki", "community"}:
+                return True
+            return any(
+                marker in domain or marker in url
+                for marker in ("namu.wiki", "arca.live", "dcinside.com")
+            )
+
+        def _is_community_title_source(item: Dict[str, Any]) -> bool:
+            source_tier = str(item.get("source_tier") or "").strip().lower()
+            domain = str(item.get("domain") or "").strip().lower()
+            url = str(item.get("url") or "").strip().lower()
+            return (
+                source_tier == "community"
+                or "arca.live" in domain
+                or "arca.live" in url
+                or "dcinside.com" in domain
+                or "dcinside.com" in url
+            )
+
+        def _title_from_search_item(item: Dict[str, Any]) -> str:
+            raw_title = str(item.get("title") or item.get("official_title") or "").strip()
+            if not raw_title:
+                return ""
+            if _is_community_title_source(item):
+                if "," not in raw_title:
+                    return ""
+                raw_title = raw_title.split(",", 1)[1].strip()
+            title = re.split(r"\s*(?:[-|]\s*|[（(])", raw_title, maxsplit=1)[0].strip()
+            title = self._normalize_title_candidate(title)
+            title_norm = self._normalize_hint_text(title)
+            if len(title_norm) < 4:
+                return ""
+            if title_norm in key_norms:
+                return ""
+            if _is_community_title_source(item) and any(norm and norm in title_norm for norm in key_norms):
+                return ""
+            if any(is_snippet_artifact_title_expansion(term, title) for term in key_terms or [] if isinstance(term, str)):
+                return ""
+            if not self._is_plausible_title_candidate(
+                title,
+                source="contextual_exact_search",
+                tied_to_post=True,
+            ):
+                return ""
+            return title
+
+        def _contextual_blob(item: Dict[str, Any]) -> str:
+            return self._normalize_hint_text(
+                " ".join(
+                    str(item.get(key) or "")
+                    for key in ("title", "content", "snippet", "query")
+                )
+            )
+
+        def _has_post_context_overlap(item: Dict[str, Any]) -> bool:
+            blob = _contextual_blob(item)
+            if not blob:
+                return False
+            return any(norm and norm in blob for norm in key_norms)
+
+        def _item_matches_official_detail_title(item: Dict[str, Any], title_norm: str) -> bool:
+            url = str(item.get("url") or "").strip()
+            if not (self._is_novel_platform_url(url) and self._is_novel_detail_url(url)):
+                return False
+            blob = self._normalize_hint_text(
+                " ".join(
+                    str(item.get(key) or "")
+                    for key in ("title", "content", "snippet", "novel_title", "official_title", "page_title", "fetched_title")
+                )
+            )
+            return bool(title_norm and blob and title_norm in blob)
+
+        official_items: List[Dict[str, Any]] = []
+        for item in (getattr(ctx, "search_results", None) or []):
+            if isinstance(item, dict):
+                official_items.append(item)
+        for item in (getattr(ctx, "fetched_page_info", None) or []):
+            if isinstance(item, dict):
+                official_items.append(item)
+
+        titles: List[str] = []
+        seen: set[str] = set()
+        for item in (getattr(ctx, "search_results", None) or [])[:40]:
+            if not isinstance(item, dict):
+                continue
+            if not _is_contextual_title_source(item):
+                continue
+            if not _has_post_context_overlap(item):
+                continue
+            title = _title_from_search_item(item)
+            title_norm = self._normalize_hint_text(title)
+            if not title or title_norm in seen:
+                continue
+            if any(_item_matches_official_detail_title(official_item, title_norm) for official_item in official_items):
+                continue
+            seen.add(title_norm)
+            titles.append(title)
+
+        if titles:
+            return titles
+
+        for hint in (snippet_hints or {}).get("title_hints") or []:
+            if not isinstance(hint, dict):
+                continue
+            source = str(hint.get("source") or "").strip().lower()
+            if source not in {"community_mention", "search_catalog_contextual_work", "llm_snippet", "llm_term_role"}:
+                continue
+            title = self._normalize_title_candidate(hint.get("title"))
+            title_norm = self._normalize_hint_text(title)
+            if len(title_norm) < 4 or title_norm in seen:
+                continue
+            if any(_item_matches_official_detail_title(official_item, title_norm) for official_item in official_items):
+                continue
+            seen.add(title_norm)
+            titles.append(title)
+
+        return titles
 
     def _community_chain_fetch(
         self,
