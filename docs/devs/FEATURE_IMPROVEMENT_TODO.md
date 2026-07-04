@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop429 golden18 after Loop428 follow-up
+  - 상태: runtime `GO 18/18` / expected-answer `PASS 18/18` / publication contract `GO 0 violations` / search recovery `P0_REVIEW_LIGHT_HEALTH_CAVEAT` / golden shared collateral `NO-GO 2` / full375 `NOT_OPEN` / approval not open
+  - 적용: 신규 대형 런 없이 Loop428 커밋 `9a0ca3af`의 golden18 단일 runtime을 완료했다. 코드 변경, R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+  - 산출물: `docs/devs/loop_reports/LOOP_429_REPORT_20260704.md`, `docs/devs/loop429_golden18_after_loop428_20260704.json`, `docs/devs/loop429_golden18_data_analytics_artifact.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop429_golden18_after_loop428_9a0ca3af_search_nonlight_result.json`.
+  - 완료 기준: search degraded `unrecovered=0`와 full375 collateral gate를 별도 증명하기 전까지 approval과 hard-hold 완화를 열지 않는다. Collateral 후보 `11663521`, `11685994`는 source-native 확인 대상으로 유지한다.
+
 - [ ] Loop416 11698897 visual contextual alias release follow-up
   - 상태: targeted runtime `GO 1/1` / targeted expected-answer `GO_TARGETED_SAFE_RESOLVED` / publication contract `GO 0 violations` / search row-level `GO` / broader search recovery `P0_REVIEW` / golden expected-answer `NOT_REFRESHED inherited Loop413 16/18` / full375 `NOT_OPEN` / approval not open
   - 적용: 기존 visual/bracket official-detail release context를 title-led shared alias candidate selection에 연결했다. `랫따싶` registry alias, R1 hardcoded cue/title list, `post_id` 예외, slang DB write-back은 없다.

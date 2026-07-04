@@ -1,0 +1,122 @@
+{
+  "loop": 429,
+  "date": "2026-07-04",
+  "base_head": "9a0ca3af",
+  "status": "GOLDEN18_RUNTIME_GO_EXPECTED_PASS_SEARCH_REVIEW_LIGHT_HEALTH_CAVEAT",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "scope": {
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl",
+    "row_count": 18,
+    "purpose": "Loop428 이후 current HEAD가 golden18을 실제 18/18 생산하고 expected-answer를 통과하는지 단일 범위로 확인"
+  },
+  "guardrails": {
+    "new_large_runs_frozen": true,
+    "full375_replay": "NOT_RUN",
+    "bounded_1000_1500": "NOT_RUN",
+    "n5_flip_probe": "NOT_RUN",
+    "same_38_row_parent_packet_replay": "STOPPED",
+    "r1_hardcoded_cue_list_expansion": false,
+    "post_id_exception": false,
+    "work_specific_registry": false,
+    "slang_db_write_back": false,
+    "code_changes": false
+  },
+  "runtime": {
+    "run_id": "20260704_231813_827053",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop429_golden18_after_loop428_9a0ca3af_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop429_golden18_after_loop428_9a0ca3af_search_nonlight_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop429_golden18_after_loop428_9a0ca3af_search_nonlight_result_checkpoint.jsonl",
+    "pending_snapshot": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop429_golden18_after_loop428_9a0ca3af_search_nonlight_result_pending_snapshot.json",
+    "input": 18,
+    "completed": 18,
+    "flushed": 18,
+    "pending": 0,
+    "failed": 0,
+    "checkpoint_rows": 18,
+    "result_rows": 18,
+    "vlm_ocr_semantic_review_ready": true,
+    "image_post_count": 14,
+    "slang_db": "off"
+  },
+  "preflight": {
+    "status": "GO",
+    "mcp_open_shards": "36/36",
+    "json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop429_golden18_after_loop428_preflight.json",
+    "markdown": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop429_golden18_after_loop428_preflight.md"
+  },
+  "audits": {
+    "health": {
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop429_golden18_after_loop428_run_health.json",
+      "flush_integrity": "GO / clean_completed_source",
+      "publication_contract_convergence": "GO / 0 violations",
+      "search_evidence": "REVIEW",
+      "search_blockers": [
+        "manifest_search_health_not_included",
+        "manifest_light_health_only",
+        "search_degraded_observed"
+      ],
+      "row_search_health": {
+        "rows_with_search_health": 17,
+        "SEARCH_DEGRADED": 10,
+        "SEARCH_DEGRADED_RECOVERED": 6,
+        "ok": 1,
+        "query_total": 154,
+        "degraded_total": 124,
+        "degraded_recovered_total": 58,
+        "unrecovered_degraded_total": 21
+      }
+    },
+    "publication_contract": {
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop429_golden18_after_loop428_publication_contract.json",
+      "gate": "GO",
+      "violations": 0
+    },
+    "golden_expected_answer": {
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop429_golden18_after_loop428_9a0ca3af_golden_audit.json",
+      "canary_semantic_gate": "PASS",
+      "passed": 18,
+      "failed": 0,
+      "negative_no_public_work": "8/8",
+      "positive_expected_work": "10/10",
+      "status_counts": {
+        "expected_null_respected": 8,
+        "expected_title_resolved": 8,
+        "expected_work_evidence_preserved_unresolved": 1,
+        "expected_hypothesis_resolved_by_direct_image": 1
+      }
+    },
+    "golden_shared_collateral": {
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop429_golden18_after_loop428_9a0ca3af_collateral_compare.json",
+      "scope": "golden_canary_shared_posts_only",
+      "changed_posts": 8,
+      "regression_candidates": 2,
+      "candidate_post_ids": [
+        11663521,
+        11685994
+      ],
+      "full375_approval": false
+    }
+  },
+  "key_rows": {
+    "11694019": "이세계에서 사이비로 살아남기",
+    "11660237": "테라포밍",
+    "11698880": "가챠 중독자의 퓨전펑크 생활",
+    "11663521": "public title HOLD / expected_work_evidence_preserved_unresolved",
+    "11685994": "direct image hypothesis resolved / collateral candidate still needs source-native review"
+  },
+  "open_gates": {
+    "search_recovery": "P0 / REVIEW_LIGHT_HEALTH_CAVEAT",
+    "golden_shared_collateral": "NO-GO / 2 regression candidates",
+    "full375_collateral": "NOT_OPEN",
+    "collateral_105": "reclassified 74 / runtime-verified 4 / residual 105",
+    "override_audit_11708445": "CLOSED / do not requeue",
+    "survey_anchor": "136 errors / wrong_work_among_aliases=27 / recall_miss=49"
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_429_REPORT_20260704.md",
+    "state": "docs/devs/loop429_golden18_after_loop428_20260704.json",
+    "data_analytics": "docs/devs/loop429_golden18_data_analytics_artifact.json"
+  }
+}

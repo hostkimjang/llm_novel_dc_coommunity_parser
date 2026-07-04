@@ -1,5 +1,20 @@
 ﻿# Developer TODO Index
 
+## 2026-07-04 Loop429 TODO
+
+- 상태 업데이트: Loop429는 Loop428 커밋 `9a0ca3af` 이후 golden18 단일 런이 실제 `18/18` row를 내고 expected-answer `18/18`을 통과하는지 확인한 회차다. Runtime과 expected-answer는 개선됐지만 search health light caveat와 golden shared collateral 후보 `2`건 때문에 goal은 완료가 아니다.
+- [x] full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, 신규 대형 런을 발주하지 않았다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] golden18 runtime `20260704_231813_827053`에서 input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`을 확인했다.
+- [x] health audit `flush_integrity=GO / clean_completed_source`, publication contract `GO / 0 violations`를 확인했다.
+- [x] golden expected-answer는 `PASS / 18 of 18`로 갱신했다. `11694019`, `11660237`, `11698880`은 모두 expected title로 수렴했다.
+- [ ] Search recovery는 `P0 / REVIEW_LIGHT_HEALTH_CAVEAT`다. runtime manifest가 `include_search=false`, `light_mode=true`이고 row degraded가 관찰됐으므로 broader promotion unblock을 열지 않는다.
+- [ ] Golden shared collateral은 `NO-GO / 2 regression candidates`다. `11663521`, `11685994`를 full375 approval 없이 닫지 않는다.
+- [ ] Full375 collateral gate는 아직 열지 않는다.
+- [ ] 다음 active lane은 survey 136-error `wrong_work 27` / `recall_miss 49` 또는 collateral 후보 source-native 확인으로 좁힌다.
+- [ ] 코드 변경 없이 docs만 반복되는 회차는 loop 정지 신호로 취급한다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop428 TODO
 
 - 상태 업데이트: Loop428은 Loop427 golden18에서 다시 unresolved가 된 `11698880`의 mixed-input 조기 종료 원인을 실코드 계약으로 좁힌 회차다. Code contract는 `GO_UNIT`이지만 runtime replay after patch는 `NOT_RUN_AFTER_PATCH`이고 goal은 완료가 아니다.

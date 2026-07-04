@@ -1,5 +1,39 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop429 golden18 after Loop428 검증
+
+- 범위: Loop428 커밋 `9a0ca3af` 뒤 golden18 단일 런만 실행했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, 신규 대형 런은 발주하지 않았다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_429_REPORT_20260704.md`
+  - state `docs\devs\loop429_golden18_after_loop428_20260704.json`
+  - Data Analytics summary `docs\devs\loop429_golden18_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop429_golden18_after_loop428_9a0ca3af_search_nonlight_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop429_golden18_after_loop428_9a0ca3af_search_nonlight_result_manifest.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop429_golden18_after_loop428_run_health.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop429_golden18_after_loop428_publication_contract.json`
+  - golden audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop429_golden18_after_loop428_9a0ca3af_golden_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop429_golden18_after_loop428_9a0ca3af_collateral_compare.json`
+- Runtime result:
+  - run `20260704_231813_827053`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint/result rows `18/18`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`
+  - VLM/OCR `READY`, image post count `14`
+- Audit result:
+  - health audit `flush_integrity=GO / clean_completed_source`
+  - publication contract `GO / 0 violations`
+  - golden expected-answer `PASS / 18 of 18`
+  - negative no-public-work `8/8`, positive expected-work `10/10`
+  - search evidence `P0 / REVIEW_LIGHT_HEALTH_CAVEAT`, manifest `include_search=false`, `light_mode=true`, row degraded `10`, unrecovered degraded total `21`
+  - golden shared collateral `NO-GO / 2 regression candidates`
+- Boundary:
+  - Golden expected-answer 통과는 full375 approval이 아니다.
+  - `11663521`은 evidence-preserved unresolved HOLD로 통과했지만 collateral 후보라 별도 확인이 필요하다.
+  - `11685994`는 direct image hypothesis로 통과했지만 collateral 후보라 source-native 확인 전 approval로 승격하지 않는다.
+  - Search degraded 복구는 아직 P0 / REVIEW다.
+  - Full375 collateral은 `NOT_OPEN`이다.
+- Gate: runtime production `GO / 18 of 18`, publication contract `GO / 0`, expected-answer `PASS / 18 of 18`, search recovery `P0 / REVIEW_LIGHT_HEALTH_CAVEAT`, golden shared collateral `NO-GO / 2`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop428 11698880 Discourse alias-character probe 검증
 
 - 범위: Loop427 golden18 실패 `11698880`의 mixed-input 조기 종료 경로를 코드 계약으로 좁혔다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, 신규 대형 런은 발주하지 않았다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.

@@ -1,5 +1,22 @@
 # Improvement Register
 
+## IMP-20260704-429 - golden18 runtime refresh after Loop428
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/parent replay 미발주, golden18 단일만 실행 | dispatch 반복 금지 |
+| R1 cue 확장 | 없음 | title/cue allowlist, `post_id` 예외, registry, slang DB write-back 추가 없음 | 일반 술어 유지 |
+| golden18 runtime | GO / 18 of 18 | run `20260704_231813_827053`, manifest/checkpoint/result `18/18/18/0/0` | row 생산성 근거로만 사용 |
+| flush integrity | GO | health audit `clean_completed_source`, pending `0` | stalled replay 반복 금지 |
+| publication contract | GO | audit violations `0`, trace/ledger/serialized identity 수렴 | full semantic approval과 분리 |
+| expected-answer | PASS / 18 of 18 | `11694019`, `11660237`, `11698880` 회복 | N5 flip과 full375 대체 금지 |
+| search evidence | P0 / REVIEW_LIGHT_HEALTH_CAVEAT | manifest light health, row degraded `10`, unrecovered degraded `21` | search degraded 100% 복구 필요 |
+| golden shared collateral | NO-GO / 2 | candidates `11663521`, `11685994` | source-native/full375 gate 별도 |
+| full375 collateral | NOT_OPEN | 전수 replay 미실행 | golden shared와 full375 분리 |
+| 문서 동기화 | 완료 | Loop429 report/state/verification/register 갱신 | goal은 ACTIVE 유지 |
+
+Gate: runtime production `GO / 18 of 18`, publication contract `GO / 0`, expected-answer `PASS / 18 of 18`, search recovery `P0 / REVIEW_LIGHT_HEALTH_CAVEAT`, golden shared collateral `NO-GO / 2`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4 / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260704-428 - 11698880 Discourse alias-character probe contract
 
 | 항목 | 상태 | 근거 | 다음 조치 |

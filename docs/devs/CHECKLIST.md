@@ -1,5 +1,24 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop429 golden18 after Loop428 체크
+
+- [x] full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, 신규 대형 런을 발주하지 않았다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] Loop428 커밋 `9a0ca3af` 이후 golden18 단일 런이 실제 row를 냈다.
+  - run `20260704_231813_827053`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint/result rows `18/18`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`
+- [x] health audit는 `flush_integrity=GO / clean_completed_source`다.
+- [x] publication contract convergence는 `GO / 0 violations`다.
+- [x] Golden expected-answer는 `PASS / 18 of 18`이다. `11694019 -> 이세계에서 사이비로 살아남기`, `11660237 -> 테라포밍`, `11698880 -> 가챠 중독자의 퓨전펑크 생활`을 확인했다.
+- [ ] Search evidence는 `P0 / REVIEW_LIGHT_HEALTH_CAVEAT`다. manifest health가 `include_search=false`, `light_mode=true`이고 row degraded `10`, unrecovered degraded total `21`이다.
+- [ ] Golden shared collateral은 `NO-GO / 2 regression candidates`다. `11663521`, `11685994`는 full375 approval 없이 닫지 않는다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다.
+- [x] `11708445` OVERRIDE AUDIT는 Loop413 closure로 유지하고 재등재하지 않는다.
+- [x] Collateral 105는 `reclassified 74 / runtime-verified 4 / residual 105`로만 보고한다.
+- Gate: runtime production `GO / 18 of 18`, publication contract `GO / 0`, expected-answer `PASS / 18 of 18`, search recovery `P0 / REVIEW_LIGHT_HEALTH_CAVEAT`, golden shared collateral `NO-GO / 2`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop428 11698880 Discourse alias-character probe 체크
 
 - [x] full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, 신규 대형 런을 발주하지 않았다.

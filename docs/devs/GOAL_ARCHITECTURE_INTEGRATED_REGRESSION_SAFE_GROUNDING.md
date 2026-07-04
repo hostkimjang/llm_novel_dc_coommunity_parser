@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-04 Loop429 Addendum - golden18 runtime refresh after Loop428
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop429는 approval 회차가 아니라 Loop428 이후 current HEAD가 golden18 `18/18`을 실제 생산하고 expected-answer를 통과하는지 갱신한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_429_REPORT_20260704.md`, state `docs/devs/loop429_golden18_after_loop428_20260704.json`, Data Analytics summary `docs/devs/loop429_golden18_data_analytics_artifact.json`.
+- Runtime: run `20260704_231813_827053`은 input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, `large_run_complete=true`, `ordered_flush_blocked=false`, VLM/OCR `READY`다.
+- Code: 코드 변경은 없다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 추가하지 않았다.
+- Result: health audit `flush_integrity=GO / clean_completed_source`, publication contract `GO / 0 violations`, golden expected-answer `PASS / 18 of 18`이다. `11694019`, `11660237`, `11698880`은 expected title로 수렴했다.
+- Boundary: runtime manifest의 MCP health는 `include_search=false`, `light_mode=true`이고 row search degraded `10`, unrecovered degraded total `21`이라 search recovery는 `P0 / REVIEW_LIGHT_HEALTH_CAVEAT`다. Golden shared collateral은 `NO-GO / 2`, full375 collateral은 `NOT_OPEN`이다.
+- Gate: runtime production `GO / 18 of 18`, expected-answer `PASS / 18 of 18`, search recovery `P0 / REVIEW_LIGHT_HEALTH_CAVEAT`, Collateral 105 `reclassified 74 / runtime-verified 4 / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Next: 대형 run dispatch는 계속 동결하고, 다음 active lane은 survey 136-error anchor의 `wrong_work 27` / `recall_miss 49` 또는 collateral 후보 `11663521` / `11685994`의 source-native 확인으로 좁힌다.
+
 ## 2026-07-04 Loop414 Addendum - 11698897 contextual alias official-detail competition gate
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop414는 approval 회차가 아니라 Loop413 실패 `11698897`의 wrong public publish를 shared title-led alias competition gate로 막은 회차다.

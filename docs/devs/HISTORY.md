@@ -1,5 +1,18 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop429 golden18 after Loop428 runtime refresh
+
+- Loop428 커밋 `9a0ca3af` 이후 golden18 단일 런만 실행했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, 신규 대형 런은 발주하지 않았다.
+- R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 추가하지 않았다. 코드 변경도 없다.
+- Strict preflight는 MCP/open shards `36/36`으로 `GO`였지만, 실제 runtime manifest의 MCP health는 `include_search=false`, `light_mode=true`라 search recovery 근거로 승격하지 않는다.
+- Run `20260704_231813_827053`은 input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, `large_run_complete=true`, `ordered_flush_blocked=false`로 완료됐다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, publication contract convergence는 `GO / 0 violations`다.
+- Golden expected-answer audit는 `PASS / 18 of 18`이다. Loop427 실패였던 `11694019`, `11660237`, `11698880`은 각각 `이세계에서 사이비로 살아남기`, `테라포밍`, `가챠 중독자의 퓨전펑크 생활`로 수렴했다.
+- Search evidence는 `P0 / REVIEW_LIGHT_HEALTH_CAVEAT`다. Row search health는 degraded `10`, recovered `6`, ok `1`, unrecovered degraded total `21`이다.
+- Golden shared collateral compare는 shared `18`, changed `8`, regression candidates `2`다. 후보는 `11663521` resolved-to-null, `11685994` null-to-resolved이며 full375 collateral approval이 아니다.
+- Report는 `docs/devs/loop_reports/LOOP_429_REPORT_20260704.md`, state는 `docs/devs/loop429_golden18_after_loop428_20260704.json`, Data Analytics summary는 `docs/devs/loop429_golden18_data_analytics_artifact.json`이다.
+- Gate는 runtime production `GO / 18 of 18`, expected-answer `PASS / 18 of 18`, search recovery `P0 / REVIEW_LIGHT_HEALTH_CAVEAT`, golden shared collateral `NO-GO / 2`, full375 collateral `NOT_OPEN`, collateral 105 `reclassified 74 / runtime-verified 4 / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop428 11698880 Discourse alias-character probe contract
 
 - 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
