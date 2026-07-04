@@ -1,5 +1,25 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop402 direct-image OCR canonical 수렴 체크
+
+- [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Loop399 `11663540` 실패를 target으로 좁혔다.
+  - expected `전 버튜버가 하고 싶은데요`
+  - actual `전 버두바가 하고 싶으데요`
+- [x] R1 hardcoded cue/title 리스트 확장 없이 public character-parenthetical bridge 기반 OCR near-variant 계약으로 구현했다.
+- [x] `src/llm_batch/agentic_pipeline.py`에 `_select_public_canonical_direct_image_ocr_variant(...)`와 `_is_near_ocr_title_variant(...)`를 추가했다.
+- [x] `tests/test_title_lead_search_inferred_guard.py`에 `11663540` direct-image OCR 변형 계약을 추가했다.
+- [x] 검증:
+  - py_compile PASS
+  - focused direct-image 계약 `3` PASS
+  - title-lead guard 전체 `199` PASS
+- [ ] Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`라 golden expected-answer 갱신 근거가 아니다.
+- [ ] ignored `tests.test_agentic_pipeline_rework` 전체는 481개 중 5개 기존 별도 실패가 있어 이번 patch approval gate로 세지 않는다.
+- [ ] Loop399 expected-answer `NO-GO / 14 of 18`, golden shared collateral `NO-GO / 7`, full375 `NOT_OPEN`을 유지한다.
+- [x] Collateral 105는 `reclassified 74 / runtime-verified 4` 축으로 유지한다.
+- Gate: code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, broader search recovery `P0 / GOLDEN18_SEARCH_GO_ONLY`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop400 resolved-public body compound anchor 체크
 
 - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.

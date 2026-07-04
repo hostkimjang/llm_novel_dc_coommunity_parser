@@ -1,5 +1,27 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop402 direct-image OCR canonical 수렴 검증
+
+- 범위: Loop399 `11663540` wrong title `전 버두바가 하고 싶으데요`를 런 반복 없이 public character-parenthetical OCR near-variant 계약으로 줄인다. 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_402_REPORT_20260704.md`
+  - state `docs\devs\loop402_direct_image_ocr_public_canonical_contract_20260704.json`
+- Code evidence:
+  - `src\llm_batch\agentic_pipeline.py`: `_select_public_canonical_direct_image_ocr_variant(...)` 추가.
+  - `src\llm_batch\agentic_pipeline.py`: `_is_near_ocr_title_variant(...)` 추가.
+  - `tests\test_title_lead_search_inferred_guard.py`: `test_direct_image_ocr_variant_uses_public_character_parenthetical_title` 추가.
+- Verification commands:
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_title_lead_search_inferred_guard.py` -> PASS
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_direct_image_ocr_variant_uses_public_character_parenthetical_title tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_author_anchor_conflict_preserves_character_parenthetical_ocr_correction tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_late_canonical_rescue_keeps_promotable_direct_image_title` -> PASS, 3 tests
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard` -> PASS, 199 tests
+  - `.venv312\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework` -> FAIL, 481 tests 중 5 failures. 이 파일은 `.gitignore`의 `/tests/*` 대상이며 실패는 batch alias/search-intent/recommendation 별도 계약이다.
+  - `pytest` -> unavailable in `.venv312`
+- Boundary:
+  - R1 hardcoded cue 리스트 확장은 없다.
+  - Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다.
+  - Loop399 expected-answer `NO-GO / 14 of 18`, golden shared collateral `NO-GO / 7`, full375 `NOT_OPEN`은 닫히지 않았다.
+- Gate: code contract `GO_UNIT`, broader search recovery `P0 / GOLDEN18_SEARCH_GO_ONLY / search-blind conditional`, Collateral 105 `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop400 resolved-public body compound anchor 계약
 
 - 범위: Loop399 `11698880` wrong publish를 런 반복 없이 단위 계약으로 막는다. 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않는다.

@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-04 Loop402 Addendum - direct-image OCR canonical near-variant contract
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop402는 approval 회차가 아니라 Loop399 `11663540` wrong title을 direct-image/OCR public canonical code contract로 줄인 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_402_REPORT_20260704.md`, state `docs/devs/loop402_direct_image_ocr_public_canonical_contract_20260704.json`.
+- Root cause: `전 버두바가 하고 싶으데요`는 URL 없는 OCR 표면인데, 검색 결과의 `주서연(전 버튜버가 하고 싶은데요)` public character-parenthetical bridge보다 먼저 direct-image publish 후보로 선택됐다.
+- Fix: `src/llm_batch/agentic_pipeline.py`는 public character-parenthetical bridge가 있고 OCR work-surface가 near-variant로 지지할 때만 `_select_public_canonical_direct_image_ocr_variant(...)`로 canonical title을 선택한다. `_is_near_ocr_title_variant(...)`는 OCR+공개 bridge 경로에만 쓰며 전역 title similarity를 낮추지 않는다.
+- Contract: `tests/test_title_lead_search_inferred_guard.py`에 `11663540` OCR 변형 positive와 no-bridge negative control을 추가했다.
+- Verification: py_compile PASS, focused direct-image `3` PASS, title-lead guard 전체 `199` PASS. 참고로 ignored `tests.test_agentic_pipeline_rework`는 별도 5개 failure가 있어 이번 approval gate로 세지 않는다.
+- Boundary: R1 hardcoded cue 리스트 확장은 없다. Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다. Loop399 expected-answer `NO-GO / 14 of 18`, golden shared collateral `NO-GO / 7`, full375 `NOT_OPEN`을 닫지 않는다.
+- Gate: code contract `GO_UNIT`, broader search recovery `P0 / GOLDEN18_SEARCH_GO_ONLY / search-blind conditional`, Collateral 105 `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-04 Loop400 Addendum - resolved-public body compound anchor contract
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop400은 approval 회차가 아니라 Loop399 `11698880` wrong publish를 resolved-public-title code contract로 줄인 회차다.

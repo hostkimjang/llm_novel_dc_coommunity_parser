@@ -1,0 +1,64 @@
+{
+  "loop": 402,
+  "date": "2026-07-04",
+  "head_before": "1e907d5f",
+  "target_post_id": 11663540,
+  "target_failure": {
+    "source": "Loop399 golden18 expected-answer audit",
+    "expected_title": "전 버튜버가 하고 싶은데요",
+    "actual_title": "전 버두바가 하고 싶으데요",
+    "classification": "wrong_public_title_from_url_less_direct_image_ocr_variant"
+  },
+  "run_policy": {
+    "new_large_runs_frozen": true,
+    "same_38_row_parent_packet_replay": "not_run",
+    "runtime_replay_after_patch": "NOT_RUN_AFTER_PATCH"
+  },
+  "architecture_change": {
+    "hardcoded_cue_list_expansion": false,
+    "new_helpers": [
+      "_select_public_canonical_direct_image_ocr_variant",
+      "_is_near_ocr_title_variant"
+    ],
+    "changed_paths": [
+      "src/llm_batch/agentic_pipeline.py",
+      "tests/test_title_lead_search_inferred_guard.py"
+    ],
+    "contract": "URL-less direct-image/OCR title near-variants may canonicalize only when a post-mentioned character has public character-parenthetical search support and the OCR work surface fuzzily supports that public title."
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "focused_direct_image_contract_tests": {
+      "status": "PASS",
+      "count": 3
+    },
+    "title_lead_search_inferred_guard": {
+      "status": "PASS",
+      "count": 199
+    },
+    "ignored_agentic_pipeline_rework_reference": {
+      "status": "FAIL",
+      "count": 481,
+      "failures": 5,
+      "failure_names": [
+        "test_batch_alias_candidate_rescues_v105_title_and_body_aliases",
+        "test_batch_alias_rescue_clears_stale_demotions",
+        "test_batch_memory_exact_alias_rescue_recovers_official_url",
+        "test_title_search_intent_permit_keeps_title_terms_when_context_terms_removed",
+        "test_verifier_failure_preserves_recommendation_request_as_unresolved"
+      ],
+      "note": "ignored test file; failures are outside the direct-image OCR canonicalization contract"
+    },
+    "pytest": "UNAVAILABLE_IN_VENV312"
+  },
+  "gates": {
+    "code_contract": "GO_UNIT",
+    "golden_expected_answer": "NO-GO_INHERITED_LOOP399_14_OF_18",
+    "full375_collateral": "NOT_OPEN",
+    "broader_search_recovery": "P0_GOLDEN18_SEARCH_GO_ONLY_SEARCH_BLIND_CONDITIONAL",
+    "collateral_105": "reclassified_74_runtime_verified_4",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE_NOT_COMPLETE"
+  }
+}

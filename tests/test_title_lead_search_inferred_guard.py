@@ -11485,6 +11485,57 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertTrue(pipeline._has_specific_character_parenthetical_work_link(ctx, title))
         self.assertTrue(pipeline._should_preserve_title_against_author_anchor_conflict(ctx, title))
 
+    def test_direct_image_ocr_variant_uses_public_character_parenthetical_title(self):
+        pipeline = build_pipeline()
+        title = "전 버튜버가 하고 싶은데요"
+        post = PostInput(
+            post_id=11663540,
+            title="TS) 주서연 전차랑 줄다리기 하면 이길까?",
+            author="ㅇㅇ",
+            content_blocks=[ContentBlock(type="image", url="https://dcimg.example/11663540.jpg")],
+            comments=[
+                "주서연이 클리로 줄다리기해야 아슬아슬하게 대결 성립됨",
+                "전차 주제에 주서연이랑 비비려하네",
+            ],
+        )
+        post_dict = pipeline._post_to_dict(post)
+        post_dict["image_enrichment"] = [
+            {
+                "evidence_type": "cover_title",
+                "title_role": "unknown",
+                "focus_role": "work_anchor",
+                "screen_type": "work_surface",
+                "surface_type": "quoted_text_screenshot",
+                "promotion_eligible": False,
+                "explicit_work_title": "전 버두바가 하고 싶으데요",
+                "ocr_text": "ACTOR JU SEO YEON COVER STORY 전 버두바가 하고 싶으데요",
+                "visual_summary": "노벨피아 웹소설 표지 이미지이며 작품명이 크게 보임",
+                "work_cues": ["노벨피아", "주서연"],
+                "confidence": "Max",
+            }
+        ]
+        ctx = ConversationContext(post_id=11663540, post_data=post_dict, comments=post.comments)
+        ctx.search_results = [
+            {
+                "title": "주서연(전 버튜버가 하고 싶은데요) - 나무위키",
+                "url": "https://namu.wiki/w/주서연(전%20버튜버가%20하고%20싶은데요)",
+                "content": "주서연은 전 버튜버가 하고 싶은데요의 주인공이다.",
+            }
+        ]
+
+        image_candidate = pipeline._pick_promotable_direct_image_work_title_candidate(ctx)
+        self.assertIsNotNone(image_candidate)
+        self.assertEqual(image_candidate.official_title, title)
+        self.assertIn("public canonical variant", image_candidate.alias_or_mention)
+        self.assertTrue(pipeline._has_ocr_catalog_official_title_evidence(ctx, title))
+
+        no_bridge_ctx = ConversationContext(post_id=11663540, post_data=post_dict, comments=post.comments)
+        no_bridge_ctx.search_results = []
+        no_bridge_candidate = pipeline._pick_promotable_direct_image_work_title_candidate(no_bridge_ctx)
+        self.assertIsNotNone(no_bridge_candidate)
+        self.assertEqual(no_bridge_candidate.official_title, "전 버두바가 하고 싶으데요")
+        self.assertNotIn("public canonical variant", no_bridge_candidate.alias_or_mention)
+
     def test_final_precision_demotes_community_only_alias_title_without_official_detail(self):
         pipeline = build_pipeline()
         title = "아카데미 생존 갤러리"

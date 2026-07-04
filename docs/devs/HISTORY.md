@@ -1,5 +1,19 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop402 direct-image OCR canonical 수렴 계약
+
+- 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop399 `11663540`은 expected `전 버튜버가 하고 싶은데요` 대신 URL 없는 direct-image/OCR 표면 `전 버두바가 하고 싶으데요`가 publish됐다.
+- 원인은 direct-image 후보 선택 단계가 검색 결과 `주서연(전 버튜버가 하고 싶은데요)`로 확인된 public canonical 근접 변형보다 OCR 원표면을 우선한 것이다.
+- `src/llm_batch/agentic_pipeline.py`는 `_select_public_canonical_direct_image_ocr_variant(...)`를 추가해 post-mentioned character와 public character-parenthetical bridge가 있을 때만 OCR near-variant를 canonical title로 치환한다.
+- `_is_near_ocr_title_variant(...)`는 전역 title similarity를 낮추지 않고 OCR+공개 bridge 경로에만 적용한다.
+- `tests/test_title_lead_search_inferred_guard.py`에 `test_direct_image_ocr_variant_uses_public_character_parenthetical_title`를 추가했다.
+- 검증은 py_compile PASS, focused direct-image 계약 `3` PASS, title-lead guard 전체 `199` PASS다.
+- 참고로 ignored `tests.test_agentic_pipeline_rework` 전체는 481개 중 batch alias/search-intent/recommendation 별도 5개 실패가 있어 이번 계약의 승인 근거로 세지 않는다.
+- R1 hardcoded cue 리스트 확장은 없다.
+- Report는 `docs/devs/loop_reports/LOOP_402_REPORT_20260704.md`, state는 `docs/devs/loop402_direct_image_ocr_public_canonical_contract_20260704.json`이다.
+- Gate는 code contract `GO_UNIT`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, inherited expected-answer `NO-GO / Loop399 14 of 18`, full375 collateral `NOT_OPEN`, broader search recovery `P0 / GOLDEN18_SEARCH_GO_ONLY`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop400 resolved-public body compound anchor 계약
 
 - 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

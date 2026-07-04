@@ -1564,6 +1564,99 @@ class AgenticPipeline:
                 titles.append(title)
         return list(dict.fromkeys(titles))
 
+    def _select_public_canonical_direct_image_ocr_variant(
+        self,
+        ctx,
+        image_title: Optional[str],
+    ) -> str:
+        """Replace a URL-less OCR title surface with a public canonical near-variant.
+
+        The replacement is deliberately narrow: a search-result character page must
+        bind a post-mentioned character to a near-identical work title, and the OCR
+        work-surface must fuzzily match that public title. This keeps typo repair
+        evidence-led instead of growing ad-hoc title/cue substitutions.
+        """
+        current = self._normalize_title_candidate(image_title) or str(image_title or "").strip()
+        current_norm = self._normalize_match_text(current)
+        if not ctx or not current_norm:
+            return current
+
+        search_results = getattr(ctx, "search_results", None) or []
+        if (
+            self._has_specific_character_parenthetical_work_link(ctx, current)
+            or self._find_title_matched_official_url(current, search_results)
+        ):
+            return current
+
+        candidates: List[Tuple[int, str]] = []
+        seen: set[str] = set()
+
+        def _push_candidate(raw_title: Any, base_score: int = 0) -> None:
+            candidate = self._normalize_title_candidate(raw_title)
+            candidate_norm = self._normalize_match_text(candidate)
+            if not candidate_norm or candidate_norm in seen or candidate_norm == current_norm:
+                return
+            if not self._is_near_ocr_title_variant(current, candidate):
+                return
+            if (
+                self._is_structural_nonwork_title(candidate)
+                or self._is_generic_topic_title(candidate)
+                or self._is_low_specificity_rescue_key(candidate, full_title=candidate)
+                or self._is_platform_branding_title(candidate)
+                or self._looks_like_listing_title(candidate)
+            ):
+                return
+            if self._final_title_rejection_profile(ctx, candidate).get("reject"):
+                return
+            if not self._has_specific_character_parenthetical_work_link(ctx, candidate):
+                return
+            if not (
+                self._has_structured_direct_image_work_surface_evidence(ctx, candidate)
+                or self._has_official_title_evidence(ctx, candidate)
+            ):
+                return
+
+            score = base_score
+            if self._find_title_matched_official_url(candidate, search_results):
+                score += 3
+            if self._has_official_title_evidence(ctx, candidate):
+                score += 2
+            if self._has_structured_direct_image_work_surface_evidence(ctx, candidate):
+                score += 1
+            seen.add(candidate_norm)
+            candidates.append((score, candidate))
+
+        for link in list(getattr(ctx, "verified_character_work_links", []) or []) + self._iter_search_character_parenthetical_links(ctx):
+            if not isinstance(link, dict):
+                continue
+            source = str(link.get("source") or "").strip()
+            if source and source != "character_parenthetical_wiki":
+                continue
+            _push_candidate(link.get("title") or link.get("work_title"), 4)
+
+        snippet_hints = getattr(ctx, "snippet_hints", None) or {}
+        if isinstance(snippet_hints, dict):
+            for hint in snippet_hints.get("title_hints", []) or []:
+                if not isinstance(hint, dict):
+                    continue
+                if str(hint.get("source") or "").strip() != "character_parenthetical_wiki":
+                    continue
+                _push_candidate(hint.get("title"), 3)
+
+        for st in getattr(ctx, "suspected_titles", None) or []:
+            if not isinstance(st, dict):
+                continue
+            source = str(st.get("source") or st.get("source_expert") or "").strip()
+            if "character_parenthetical" not in source:
+                continue
+            _push_candidate(st.get("title"), 2)
+
+        if not candidates:
+            return current
+
+        candidates.sort(key=lambda item: (item[0], len(self._normalize_match_text(item[1]))), reverse=True)
+        return candidates[0][1]
+
     def _pick_promotable_direct_image_work_title_candidate(self, ctx) -> Optional["DetectedTitle"]:
         """VLM/OCR이 직접 작품 표면을 읽은 단일 제목 후보를 선택한다."""
         post_data = getattr(ctx, "post_data", None) or {}
@@ -1619,12 +1712,23 @@ class AgenticPipeline:
             return None
 
         title, image_conf = next(iter(unique_titles.values()))
+        canonical_title = self._select_public_canonical_direct_image_ocr_variant(ctx, title)
+        canonicalized = bool(
+            canonical_title
+            and self._normalize_match_text(canonical_title) != self._normalize_match_text(title)
+        )
+        if canonical_title:
+            title = canonical_title
         confidence = "High" if image_conf in {"high", "max"} else "Medium"
         return DetectedTitle(
             official_title=title,
             heretic_url=None,
             confidence=confidence,
-            alias_or_mention="VLM/OCR explicit work title",
+            alias_or_mention=(
+                "VLM/OCR explicit work title via public canonical variant"
+                if canonicalized
+                else "VLM/OCR explicit work title"
+            ),
             source_tier="mixed",
             locked=True,
             reference_role="primary",
@@ -2283,7 +2387,7 @@ class AgenticPipeline:
             return False
         if min(len(explicit_norm), len(title_norm)) < 8:
             return False
-        return self._is_similar_title(explicit, title_raw)
+        return self._is_near_ocr_title_variant(explicit, title_raw)
 
     def _is_background_listing_vlm_signal(
         self,
@@ -58890,6 +58994,21 @@ OUTPUT JSON:
             return False
         from difflib import SequenceMatcher
         return SequenceMatcher(None, title_a, title_b).ratio() >= 0.80
+
+    def _is_near_ocr_title_variant(self, title_a: str, title_b: str) -> bool:
+        """Narrow OCR-title variant matcher used only after independent public support."""
+        if self._is_similar_title(str(title_a or ""), str(title_b or "")):
+            return True
+        left = self._normalize_match_text(title_a or "")
+        right = self._normalize_match_text(title_b or "")
+        if not left or not right:
+            return False
+        if abs(len(left) - len(right)) > 2 or min(len(left), len(right)) < 8:
+            return False
+        if left[:2] != right[:2] and left[-2:] != right[-2:]:
+            return False
+        from difflib import SequenceMatcher
+        return SequenceMatcher(None, left, right).ratio() >= 0.72
 
     def _collect_title_anchor_terms(self, ctx: "ConversationContext") -> List[str]:
         """Decoder/Gatekeeper에서 제목 앵커로 쓰인 원문 용어를 수집."""
