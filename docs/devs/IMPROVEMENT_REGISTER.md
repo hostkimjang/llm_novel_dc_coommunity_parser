@@ -1,5 +1,22 @@
 # Improvement Register
 
+## IMP-20260704-427 - golden18 mixed-input verification after Loop426
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5 미발주, golden18 단일만 실행 | 대형 dispatch 반복 금지 |
+| parent packet replay | 중단 | 동일 38-row replay 없음 | 큐 회계 회차 금지 |
+| golden18 runtime | GO / 18 of 18 | run `20260704_222456_555589`, manifest `18/18/18/0/0`, checkpoint/result `18/18` | row 생산성 근거로만 사용 |
+| publication contract | GO | audit violations `0`, trace/ledger/serialized identity 수렴 | full semantic approval과 분리 |
+| search evidence | REVIEW | `search_degraded_observed`, rows degraded `7`, unrecovered degraded total `14` | search degraded 100% 복구 P0 유지 |
+| expected-answer | NO-GO / 15 of 18 | 실패 `11694019`, `11660237`, `11698880` | 실패 3행을 작은 계약/targeted lane으로 축소 |
+| `11698880` stability | NO-GO_MIXED_INPUT | Loop426 단건 safe_resolved가 Loop427 golden18에서 unresolved | hard-hold 완화 금지 |
+| collateral | NO-GO / 4 | golden shared regression candidates `4`, full375 `NOT_OPEN` | full375 gate 별도 |
+| OVERRIDE AUDIT `11708445` | CLOSED | Loop407/413 closure 유지 | queue 재등재 금지 |
+| 문서 동기화 | 완료 | Loop427 report/state/verification/register 갱신 | goal은 ACTIVE 유지 |
+
+Gate: runtime production `GO / 18 of 18`, publication contract `GO / 0`, expected-answer `NO-GO / 15 of 18`, search recovery `P0 / REVIEW`, golden shared collateral `NO-GO / 4`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4 / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260704-426 - 11698880 reader text publication sync
 
 | 항목 | 상태 | 근거 | 다음 조치 |

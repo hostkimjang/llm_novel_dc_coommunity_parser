@@ -1,5 +1,19 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop427 golden18 after Loop426 mixed-input verification
+
+- Loop426 커밋 `4849c538` 이후 golden18 단일 search 포함 non-light 런만 실행했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 추가하지 않았다.
+- Run `20260704_222456_555589`는 input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, `large_run_complete=true`, `ordered_flush_blocked=false`로 완료됐다.
+- MCP health는 `include_search=true`, `light_mode=false`, ok/failure `8/0`이고 VLM/OCR은 `READY`, image post count는 `14`다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, publication contract convergence는 `GO / 0 violations`다.
+- Search evidence는 `REVIEW / search_degraded_observed`다. Rows with degraded search `7`, unrecovered degraded total `14`라 broader search recovery는 P0로 유지한다.
+- Golden expected-answer audit는 `NO-GO / 15 of 18`이다. 실패는 `11694019` wrong `혼후순결`, `11660237` unresolved expected `테라포밍`, `11698880` unresolved expected `가챠 중독자의 퓨전펑크 생활`이다.
+- Loop426 단건에서 safe_resolved된 `11698880`이 golden18 혼합 입력에서는 `positive_work_unresolved`로 다시 떨어졌으므로 hard-hold 완화 근거가 아니다.
+- Golden shared collateral compare는 shared `18`, changed `18`, regression candidates `4`이며 full375 collateral은 `NOT_OPEN`이다.
+- Report는 `docs/devs/loop_reports/LOOP_427_REPORT_20260704.md`, state는 `docs/devs/loop427_golden18_after_loop426_20260704.json`, Data Analytics summary는 `docs/devs/loop427_golden18_data_analytics_artifact.json`이다.
+- Gate는 runtime production `GO / 18 of 18`, expected-answer `NO-GO / 15 of 18`, search recovery `P0 / REVIEW`, golden shared collateral `NO-GO / 4`, full375 collateral `NOT_OPEN`, collateral 105 `reclassified 74 / runtime-verified 4 / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop426 11698880 reader text publication sync
 
 - 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

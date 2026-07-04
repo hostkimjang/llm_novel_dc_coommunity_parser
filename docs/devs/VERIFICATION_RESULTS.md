@@ -1,5 +1,41 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop427 golden18 after Loop426 검증
+
+- 범위: Loop426 커밋 `4849c538` 뒤 golden18 단일 search 포함 non-light 런만 실행했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_427_REPORT_20260704.md`
+  - state `docs\devs\loop427_golden18_after_loop426_20260704.json`
+  - Data Analytics summary `docs\devs\loop427_golden18_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop427_golden18_after_loop426_4849c538_search_nonlight_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop427_golden18_after_loop426_4849c538_search_nonlight_result_manifest.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop427_golden18_after_loop426_run_health_audit.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop427_golden18_after_loop426_publication_contract_audit.json`
+  - golden audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop427_golden18_after_loop426_4849c538_golden_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop427_golden18_after_loop426_4849c538_collateral_compare.json`
+- Runtime result:
+  - run `20260704_222456_555589`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint/result rows `18/18`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `8/0`
+  - VLM/OCR `READY`, image post count `14`
+- Audit result:
+  - health audit `flush_integrity=GO / clean_completed_source`
+  - search evidence `REVIEW / search_degraded_observed`, rows degraded `7`, unrecovered degraded total `14`
+  - publication contract `GO / 0 violations`
+  - golden expected-answer `NO-GO / 15 of 18`
+  - golden shared collateral `NO-GO / 4 regression candidates`
+- Failed rows:
+  - `11694019`: expected `이세계에서 사이비로 살아남기`, actual `혼후순결`, status `wrong_or_unexpected_title`
+  - `11660237`: expected `테라포밍`, actual null, status `positive_work_unresolved`
+  - `11698880`: expected `가챠 중독자의 퓨전펑크 생활`, actual null, status `positive_work_unresolved`
+- Boundary:
+  - Loop426 단건 `11698880` safe_resolved는 golden18 혼합 입력에서 유지되지 않았다.
+  - Search degraded 복구는 아직 P0 / REVIEW다.
+  - Full375 collateral은 `NOT_OPEN`이고 이번 golden shared compare는 전수 approval이 아니다.
+- Gate: runtime production `GO / 18 of 18`, publication contract `GO / 0`, expected-answer `NO-GO / 15 of 18`, search recovery `P0 / REVIEW`, golden shared collateral `NO-GO / 4`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop426 11698880 공개 제목 및 reason 동기화 검증
 
 - 범위: 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay 없이 `11698880` 단일 row만 search 포함 non-light로 실행했다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.

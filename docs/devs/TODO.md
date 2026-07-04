@@ -1,5 +1,20 @@
 ﻿# Developer TODO Index
 
+## 2026-07-04 Loop427 TODO
+
+- 상태 업데이트: Loop427은 Loop426 커밋 `4849c538` 뒤 golden18 단일 search 포함 non-light 런이 실제 `18/18` row를 내는지 확인한 회차다. Runtime은 `GO`지만 expected-answer는 `NO-GO / 15 of 18`이고 goal은 완료가 아니다.
+- [x] full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] golden18 runtime `20260704_222456_555589`에서 `18/18/18/0/0` row 생산을 확인했다.
+- [x] search 포함 non-light health `include_search=true`, `light_mode=false`, ok/failure `8/0`를 확인했다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] health audit `flush_integrity=GO / clean_completed_source`, publication contract `GO / 0 violations`를 확인했다.
+- [ ] Search evidence는 `REVIEW / search_degraded_observed`다. search degraded 100% 복구 전 broader `promotion_blocked`는 `search-blind conditional` 태깅을 유지한다.
+- [ ] Golden expected-answer 실패 `11694019`, `11660237`, `11698880`을 다음 active lane으로 좁힌다.
+- [ ] `11698880`은 Loop426 단건 safe_resolved와 Loop427 mixed-input unresolved가 갈렸으므로 hard-hold 완화를 열지 않는다.
+- [ ] Full375 collateral gate는 아직 열지 않는다.
+- [ ] 코드 변경 없이 docs만 반복되는 회차는 loop 정지 신호로 취급한다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop426 TODO
 
 - 상태 업데이트: Loop426은 `11698880`의 `가챠펑크 세드릭` body alias + character probe를 보존하고, final public title 재수렴 뒤 reader-facing `reason`까지 `가챠 중독자의 퓨전펑크 생활`로 동기화한 단건 회차다. Golden/full375 approval은 아직 아니다.

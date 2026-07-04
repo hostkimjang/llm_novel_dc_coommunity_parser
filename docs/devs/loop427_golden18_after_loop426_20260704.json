@@ -1,0 +1,111 @@
+{
+  "loop": 427,
+  "date": "2026-07-04",
+  "title": "golden18 after loop426 mixed-input verification",
+  "head_commit": "4849c538",
+  "scope": {
+    "post_count": 18,
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl",
+    "full375_dispatched": false,
+    "bounded_run_dispatched": false,
+    "n5_flip_probe_dispatched": false,
+    "same_38_row_parent_packet_replay": false,
+    "slang_db": "off",
+    "search_mode": "non-light",
+    "r1_hardcoded_cue_list_added": false
+  },
+  "runtime": {
+    "run_id": "20260704_222456_555589",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop427_golden18_after_loop426_4849c538_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop427_golden18_after_loop426_4849c538_search_nonlight_result_manifest.json",
+    "log": "logs/expert_run_20260704_222456_555589.log",
+    "input": 18,
+    "completed": 18,
+    "flushed": 18,
+    "pending": 0,
+    "failed": 0,
+    "large_run_complete": true,
+    "ordered_flush_blocked": false,
+    "requested_parallel": 18,
+    "effective_parallel": 18,
+    "vlm_ocr_ready": true,
+    "image_post_count": 14,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok": 8,
+    "mcp_health_failure": 0
+  },
+  "audits": {
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop427_golden18_after_loop426_run_health_audit.json",
+    "flush_integrity": "GO / clean_completed_source",
+    "search_evidence": "REVIEW / search_degraded_observed",
+    "rows_with_degraded_search": 7,
+    "unrecovered_degraded_total": 14,
+    "publication_contract_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop427_golden18_after_loop426_publication_contract_audit.json",
+    "publication_contract": "GO / 0 violations",
+    "golden_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop427_golden18_after_loop426_4849c538_golden_audit.json",
+    "golden_expected_answer": "NO-GO / 15 of 18",
+    "collateral_compare": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop427_golden18_after_loop426_4849c538_collateral_compare.json",
+    "golden_shared_collateral": "NO-GO / 4 regression candidates",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  },
+  "golden_expected_answer": {
+    "canary_semantic_gate": "NO-GO",
+    "passed": 15,
+    "failed": 3,
+    "status_counts": {
+      "expected_null_respected": 8,
+      "expected_title_resolved": 5,
+      "expected_hypothesis_preserved_unresolved": 1,
+      "wrong_or_unexpected_title": 1,
+      "expected_work_evidence_preserved_unresolved": 1,
+      "positive_work_unresolved": 2
+    },
+    "failed_rows": [
+      {
+        "post_id": 11694019,
+        "status": "wrong_or_unexpected_title",
+        "expected": "이세계에서 사이비로 살아남기",
+        "actual": "혼후순결",
+        "meaning": "플롯 요소/일반명사 표면이 무관 작품 title로 승격됐다."
+      },
+      {
+        "post_id": 11660237,
+        "status": "positive_work_unresolved",
+        "expected": "테라포밍",
+        "actual": null,
+        "meaning": "blind judge 정답이 있는 safe-loss 행이 혼합 입력에서 unresolved로 남았다."
+      },
+      {
+        "post_id": 11698880,
+        "status": "positive_work_unresolved",
+        "expected": "가챠 중독자의 퓨전펑크 생활",
+        "actual": null,
+        "meaning": "Loop426 단건 safe_resolved가 golden18 혼합 입력에서 유지되지 않았다."
+      }
+    ]
+  },
+  "collateral": {
+    "scope": "golden_canary_shared_posts_only",
+    "shared_posts": 18,
+    "changed_posts": 18,
+    "collateral_regression_candidates": 4,
+    "status_counts": {
+      "resolved_to_null": 12,
+      "resolved_to_different_title": 5,
+      "same_title_url_changed": 1
+    },
+    "full375_collateral": "NOT_OPEN",
+    "collateral_105": "reclassified 74 / runtime-verified 4 / residual 105"
+  },
+  "boundaries": {
+    "loop426_single_row_result": "11698880 GO_TARGETED_SAFE_RESOLVED",
+    "loop427_mixed_input_result": "11698880 positive_work_unresolved",
+    "hard_hold_relaxation": "NOT_ALLOWED",
+    "search_recovery": "P0 / REVIEW",
+    "override_audit_11708445": "CLOSED / not requeued",
+    "survey_anchor": "136 errors / wrong_work_among_aliases=27 / recall_miss=49",
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

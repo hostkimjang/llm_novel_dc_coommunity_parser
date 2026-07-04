@@ -1,0 +1,129 @@
+{
+  "title": "Loop427 golden18 혼합 입력 검산",
+  "status": "repo_structured_summary_only",
+  "generated_at": "2026-07-04T22:58:00+09:00",
+  "surface": "loop_report_support",
+  "tool_note": "@data-analytics 전용 커넥터가 현재 세션 도구로 노출되지 않아, loop427 result/manifest/audit JSON을 직접 집계했다.",
+  "datasets": {
+    "gate_status_rows": [
+      {
+        "gate": "runtime_production",
+        "status": "GO",
+        "detail": "18/18 completed and flushed, pending 0, failed 0",
+        "score": 1
+      },
+      {
+        "gate": "flush_integrity",
+        "status": "GO",
+        "detail": "clean_completed_source, checkpoint/result rows 18/18",
+        "score": 1
+      },
+      {
+        "gate": "search_evidence",
+        "status": "REVIEW",
+        "detail": "search_degraded_observed, rows_with_degraded=7, unrecovered_degraded_total=14",
+        "score": 0
+      },
+      {
+        "gate": "publication_contract",
+        "status": "GO",
+        "detail": "row_count=18, violation_row_count=0",
+        "score": 1
+      },
+      {
+        "gate": "golden_expected_answer",
+        "status": "NO-GO",
+        "detail": "passed=15, failed=3",
+        "score": 0
+      },
+      {
+        "gate": "golden_shared_collateral",
+        "status": "NO-GO",
+        "detail": "shared=18, changed=18, collateral_regression_candidates=4",
+        "score": 0
+      },
+      {
+        "gate": "full375_collateral",
+        "status": "NOT_OPEN",
+        "detail": "이번 회차는 golden shared post 비교이며 전수 collateral approval이 아니다.",
+        "score": 0
+      },
+      {
+        "gate": "full_scan_approval",
+        "status": "false",
+        "detail": "semantic_quality=REVIEW-LOCKED",
+        "score": 0
+      }
+    ],
+    "failed_rows": [
+      {
+        "post_id": 11694019,
+        "status": "wrong_or_unexpected_title",
+        "expected": "이세계에서 사이비로 살아남기",
+        "actual": "혼후순결",
+        "priority": "P0",
+        "next_action": "substring/플롯 요소 표면을 작품 title로 승격하는 경로를 단위 계약으로 재현"
+      },
+      {
+        "post_id": 11660237,
+        "status": "positive_work_unresolved",
+        "expected": "테라포밍",
+        "actual": null,
+        "priority": "P0",
+        "next_action": "safe-loss flip probe/비결정 원인 분석 유지"
+      },
+      {
+        "post_id": 11698880,
+        "status": "positive_work_unresolved",
+        "expected": "가챠 중독자의 퓨전펑크 생활",
+        "actual": null,
+        "priority": "P0",
+        "next_action": "Loop426 단건 성공과 mixed-input unresolved 차이를 root-cause"
+      }
+    ],
+    "runtime_counts": [
+      {
+        "run_id": "20260704_222456_555589",
+        "input": 18,
+        "completed": 18,
+        "flushed": 18,
+        "pending": 0,
+        "failed": 0,
+        "large_run_complete": true
+      }
+    ],
+    "search_counts": [
+      {
+        "rows_with_search_health": 15,
+        "rows_with_degraded": 7,
+        "rows_with_upstream_zero": 9,
+        "query_total": 149,
+        "degraded_total": 119,
+        "degraded_recovered_total": 76,
+        "unrecovered_degraded_total": 14
+      }
+    ],
+    "collateral_rows": [
+      {
+        "scope": "golden_canary_shared_posts_only",
+        "shared_posts": 18,
+        "changed_posts": 18,
+        "collateral_regression_candidates": 4,
+        "full375_collateral": "NOT_OPEN"
+      }
+    ]
+  },
+  "sources": [
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop427_golden18_after_loop426_4849c538_search_nonlight_result.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop427_golden18_after_loop426_4849c538_search_nonlight_result_manifest.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop427_golden18_after_loop426_run_health_audit.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop427_golden18_after_loop426_publication_contract_audit.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop427_golden18_after_loop426_4849c538_golden_audit.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop427_golden18_after_loop426_4849c538_collateral_compare.json"
+  ],
+  "gate": {
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

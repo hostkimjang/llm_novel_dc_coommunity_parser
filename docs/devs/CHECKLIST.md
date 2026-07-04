@@ -1,5 +1,25 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop427 golden18 after Loop426 체크
+
+- [x] full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] Loop426 커밋 `4849c538` 이후 golden18 단일 search 포함 non-light 런이 실제 row를 냈다.
+  - run `20260704_222456_555589`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint/result rows `18/18`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `8/0`
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] publication contract convergence는 `GO / 0 violations`다.
+- [x] health audit는 `flush_integrity=GO / clean_completed_source`다.
+- [ ] Search evidence는 `REVIEW / search_degraded_observed`다. rows degraded `7`, unrecovered degraded total `14`라 search P0는 닫지 않는다.
+- [ ] Golden expected-answer는 `NO-GO / 15 of 18`이다. 실패는 `11694019`, `11660237`, `11698880`이다.
+- [ ] Loop426 단건 `11698880` safe_resolved는 golden18 혼합 입력에서 유지되지 않았다. hard-hold 완화 근거로 쓰지 않는다.
+- [ ] Golden shared collateral은 `NO-GO / 4 regression candidates`이고 full375 collateral은 `NOT_OPEN`이다.
+- [x] `11708445` OVERRIDE AUDIT는 기존 closure로 유지하고 재등재하지 않는다.
+- [x] Collateral 105는 `reclassified 74 / runtime-verified 4 / residual 105`로만 보고한다.
+- Gate: runtime production `GO / 18 of 18`, publication contract `GO / 0`, expected-answer `NO-GO / 15 of 18`, search recovery `P0 / REVIEW`, golden shared collateral `NO-GO / 4`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop426 11698880 reader-text publication sync 체크
 
 - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
