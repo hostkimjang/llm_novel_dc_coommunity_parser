@@ -1,5 +1,29 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop407 OVERRIDE AUDIT 11708445 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] source result와 checkpoint에서 `post_id=11708445` completed row를 확인했다.
+  - result `out\expert_result_20260702_065632_479765.json`
+  - checkpoint `out\expert_result_20260702_065632_479765_checkpoint.jsonl`
+- [x] worker log line을 확인했다.
+  - `logs\expert_run_20260702_065642_030743_W24.log:14956`
+  - `OVERRIDE AUDIT post_id=11708445: LLM=False -> final=True`
+- [x] final public contract를 확인했다.
+  - `official_title=null`
+  - `promotion_decision.status=candidate_only`
+  - `publish_allowed=false`
+  - `bypassed_gate=false`
+  - `candidate_ledger_status=promotion_blocked`
+  - `safe_resolved=false`
+- [x] 댓글 `제냥꾼`은 후보 보존 대상이지만 public publish 대상이 아님을 source-native로 판정했다.
+- [x] Web 후보 `제국사냥꾼` 확인은 candidate existence 참고로만 사용했다.
+- [x] Loop407 report/state/review artifact를 작성했다.
+- [x] `11708445`는 더 이상 OVERRIDE AUDIT active queue로 재등재하지 않는다.
+- [ ] 다음 active lane은 survey 136-error anchor 또는 Loop406 실패 `11705245`, `11694019`에서 고른다.
+- Gate: override audit `GO_ROW_CONTRACT_ONLY`, runtime required `false`, search recovery `P0 / REVIEW / SEARCH_BLIND_CONDITIONAL`, full375 `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop405 11713212 저특이 alias non-work runtime 체크
 
 - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.

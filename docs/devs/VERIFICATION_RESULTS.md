@@ -1,5 +1,32 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop407 OVERRIDE AUDIT 11708445 source-native 검증
+
+- 범위: runtime이 필요 없는 `11708445` OVERRIDE AUDIT를 current HEAD `6681f10b`에서 다시 확인한다. 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_407_REPORT_20260704.md`
+  - state `docs\devs\loop407_override_audit_11708445_20260704.json`
+  - review JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop407_override_audit_11708445_current_blind_source_native.json`
+  - review Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop407_override_audit_11708445_current_blind_source_native.md`
+  - source result `out\expert_result_20260702_065632_479765.json`
+  - source checkpoint `out\expert_result_20260702_065632_479765_checkpoint.jsonl`
+  - worker log `logs\expert_run_20260702_065642_030743_W24.log:14956`
+  - web 후보 확인 `https://series.naver.com/novel/detail.series?productNo=6029701`
+- Verification commands:
+  - structured JSON/checkpoint extraction for `post_id=11708445` -> completed row and public contract confirmed
+  - `rg -n --fixed-strings "post_id=11708445" logs\expert_run_20260702_065642_030743_W24.log ...` -> worker event line `14956` confirmed
+- Result:
+  - worker event는 `LLM=False -> final=True`
+  - final public identity는 `official_title=null`, `official_url=null`
+  - `promotion_decision.status=candidate_only`, `publish_allowed=false`, `bypassed_gate=false`
+  - `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`
+  - blind/source-native verdict `ACCEPT / candidate_only_block_is_correct`
+- Boundary:
+  - `11708445`는 다시 OVERRIDE AUDIT queue로 재등재하지 않는다.
+  - 이 검증은 row-level contract closure이며 expected-answer, golden collateral, full375 approval을 갱신하지 않는다.
+  - Search recovery는 `P0 / REVIEW / SEARCH_BLIND_CONDITIONAL`로 유지한다.
+- Gate: override audit `GO_ROW_CONTRACT_ONLY`, Loop406 runtime production 상속 `GO / 18 of 18`, expected-answer 상속 `NO-GO / 16 of 18`, golden shared collateral 상속 `NO-GO / 3`, full375 collateral `NOT_OPEN`, Collateral 105 `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop405 11713212 저특이 alias non-work runtime 검증
 
 - 범위: Loop401의 `11713212` 저특이 alias/non-work publish 차단 계약이 current HEAD runtime 직렬화까지 도달하는지 단건으로 확인한다. 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않는다.

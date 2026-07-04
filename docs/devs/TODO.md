@@ -1,5 +1,23 @@
 ﻿# Developer TODO Index
 
+## 2026-07-04 regression-safe grounding Loop407 TODO
+
+- 상태 업데이트: Loop407은 `11708445` OVERRIDE AUDIT를 current HEAD `6681f10b`에서 source-native로 재검증한 회차다. Runtime replay는 필요 없었고, 신규 full375/bounded/N5 또는 동일 38-row parent packet replay를 발주하지 않았다.
+- Loop407 TODO:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] `11708445` source result/checkpoint를 직접 파싱했다.
+  - [x] worker log `LLM=False -> final=True` 이벤트를 확인했다.
+  - [x] final public contract가 `candidate_only / publish_allowed=false / official_title=null`임을 확인했다.
+  - [x] 댓글 `제냥꾼` 후보는 web상 `제국사냥꾼` 후보로 확인하되, 추천성 부차 참조라 public title publish 근거로 쓰지 않았다.
+  - [x] 판정 `ACCEPT / candidate_only_block_is_correct`를 새 review JSON/Markdown과 Loop407 report/state에 기록했다.
+  - [x] `11708445`는 OVERRIDE AUDIT queue로 재등재하지 않는다.
+  - [ ] 다음 active lane은 survey 136-error anchor 중 `wrong_work 27` 또는 `recall_miss 49`, 또는 Loop406 실패 `11705245`, `11694019`로 진행한다.
+  - [ ] Search recovery는 `P0 / REVIEW / SEARCH_BLIND_CONDITIONAL`로 유지한다.
+  - [ ] Full375 collateral gate는 아직 열지 않는다.
+  - [x] Collateral 105는 `reclassified 74 / runtime-verified 4`로만 보고한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop405 TODO
 
 - 상태 업데이트: Loop405는 Loop401 `11713212` 저특이 alias/non-work 계약이 current HEAD runtime 직렬화까지 도달하는지 단건으로 확인한 회차다. 단건 public title leak는 닫혔지만 golden expected-answer와 full375 approval은 갱신하지 않았다.

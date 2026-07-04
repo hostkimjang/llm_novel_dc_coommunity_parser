@@ -1,0 +1,63 @@
+{
+  "loop": 407,
+  "date": "2026-07-04",
+  "head": "6681f10b",
+  "scope": "OVERRIDE AUDIT 11708445 blind/source-native closure refresh",
+  "new_large_runs": "FROZEN",
+  "same_parent_packet_replay": "STOPPED",
+  "target": {
+    "post_id": 11708445,
+    "title": "퉁구스1캇햄 작품 하나도 안 봤는데",
+    "override_event": "LLM=False -> final=True",
+    "worker_log": "logs/expert_run_20260702_065642_030743_W24.log:14956"
+  },
+  "source_artifacts": {
+    "source_result": "out/expert_result_20260702_065632_479765.json",
+    "source_checkpoint": "out/expert_result_20260702_065632_479765_checkpoint.jsonl",
+    "source_manifest": "out/expert_result_20260702_065632_479765_manifest.json",
+    "review_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop407_override_audit_11708445_current_blind_source_native.json",
+    "review_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop407_override_audit_11708445_current_blind_source_native.md",
+    "loop_report": "docs/devs/loop_reports/LOOP_407_REPORT_20260704.md",
+    "prior_loop319": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop319_override_audit_11708445_review.json",
+    "prior_loop373": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop373_override_audit_11708445_current_blind_source_native.json",
+    "prior_loop394": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop394_override_audit_11708445_current_blind_source_native.json",
+    "web_candidate_check": "https://series.naver.com/novel/detail.series?productNo=6029701"
+  },
+  "observed_public_contract": {
+    "official_title": null,
+    "official_url": null,
+    "is_novel_related": true,
+    "is_resolved_work_discussion": false,
+    "discussion_type": "author_talk",
+    "title_resolution_state": "author_new_work_context",
+    "candidate_ledger_status": "promotion_blocked",
+    "promotion_decision_status": "candidate_only",
+    "publish_allowed": false,
+    "bypassed_gate": false,
+    "safe_resolved": false
+  },
+  "verdict": {
+    "label": "ACCEPT",
+    "source_native_verdict": "candidate_only_block_is_correct",
+    "evidence_grade": "Medium",
+    "summary_ko": "본문은 작가/닉네임성 대상에 대한 메타 품평이고 댓글의 `제냥꾼`은 추천성 부차 참조다. 후보 보존은 맞지만 public title publish는 부적절하므로 `candidate_only / promotion_blocked / official_title=null` 계약이 정당하다."
+  },
+  "gates": {
+    "override_audit": "GO_ROW_CONTRACT_ONLY",
+    "runtime_required": false,
+    "runtime_production_context": "Loop406 golden18 runtime remains GO / 18 of 18, but this row did not require replay",
+    "search_recovery": "P0 / REVIEW / SEARCH_BLIND_CONDITIONAL",
+    "expected_answer": "NOT_CHANGED / inherited Loop406 NO-GO 16 of 18",
+    "golden_shared_collateral": "NOT_CHANGED / inherited Loop406 NO-GO 3 regression candidates",
+    "full375_collateral": "NOT_OPEN",
+    "collateral_active_lane": "reclassified 74 / runtime-verified 4",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next_action": [
+    "Do not re-open 11708445 as an OVERRIDE AUDIT row.",
+    "Next active lane should use survey 136-error anchors, especially wrong_work 27 or recall_miss 49, or Loop406 failures 11705245 and 11694019.",
+    "No new large run or same 38-row parent packet replay until a small lane produces actionable semantic reduction."
+  ]
+}

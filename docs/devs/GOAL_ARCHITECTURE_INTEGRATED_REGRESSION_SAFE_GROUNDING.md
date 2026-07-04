@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-04 Loop407 Addendum - OVERRIDE AUDIT 11708445 source-native closure
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop407은 approval 회차가 아니라 runtime 불필요 OVERRIDE AUDIT row를 current HEAD `6681f10b`에서 source-native로 다시 닫은 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_407_REPORT_20260704.md`, state `docs/devs/loop407_override_audit_11708445_20260704.json`, review JSON `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop407_override_audit_11708445_current_blind_source_native.json`.
+- Source: `out/expert_result_20260702_065632_479765.json`과 checkpoint에서 `11708445` completed row를 직접 확인했다. Worker log `logs/expert_run_20260702_065642_030743_W24.log:14956`에는 `LLM=False -> final=True`가 있지만 public publish로 해석하지 않는다.
+- Result: final public contract는 `official_title=null`, `official_url=null`, `promotion_decision.status=candidate_only`, `publish_allowed=false`, `bypassed_gate=false`, `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`다.
+- Blind/source-native: 본문 중심은 작가/닉네임성 대상에 대한 메타 품평이다. 댓글 `제냥꾼`은 web상 `제국사냥꾼` 후보와 연결될 수 있지만 추천성 부차 참조라 단일 공식 작품 제목으로 publish하지 않는다.
+- Boundary: 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다. `11708445`는 `ACCEPT / candidate_only_block_is_correct`로 닫고 다시 OVERRIDE AUDIT active queue에 올리지 않는다.
+- Gate: override audit `GO_ROW_CONTRACT_ONLY`, Loop406 runtime production 상속 `GO / 18 of 18`, expected-answer 상속 `NO-GO / 16 of 18`, golden shared collateral 상속 `NO-GO / 3`, search recovery `P0 / REVIEW / SEARCH_BLIND_CONDITIONAL`, full375 `NOT_OPEN`, Collateral 105 `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Next: 다음 active lane은 survey 136-error anchor의 `wrong_work 27` 또는 `recall_miss 49`, 혹은 Loop406 실패 `11705245`, `11694019`로 좁힌다. 코드 변경 없이 문서만 반복되는 회차는 정지 신호로 취급한다.
+
 ## 2026-07-04 Loop405 Addendum - 11713212 low-specificity alias non-work runtime proof
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop405는 approval 회차가 아니라 Loop401 계약이 current HEAD runtime 직렬화까지 도달하는지 `11713212` 단건으로 확인한 회차다.

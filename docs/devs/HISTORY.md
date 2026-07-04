@@ -1,5 +1,15 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop407 OVERRIDE AUDIT 11708445 재고정
+
+- 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- `11708445`의 worker log 이벤트 `LLM=False -> final=True`를 completed-source result/checkpoint 기준으로 다시 확인했다.
+- 최종 public contract는 `official_title=null`, `official_url=null`, `promotion_decision.status=candidate_only`, `publish_allowed=false`, `bypassed_gate=false`, `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`다.
+- 댓글 `제냥꾼`은 web 후보 `제국사냥꾼`과 연결될 수 있지만 추천성 부차 참조라 public title publish 근거가 아니다.
+- 판정은 `ACCEPT / candidate_only_block_is_correct`, evidence grade `Medium`이다.
+- Review는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop407_override_audit_11708445_current_blind_source_native.json`, report는 `docs/devs/loop_reports/LOOP_407_REPORT_20260704.md`, state는 `docs/devs/loop407_override_audit_11708445_20260704.json`이다.
+- Gate는 override audit `GO_ROW_CONTRACT_ONLY`, Loop406 runtime production 상속 `GO / 18 of 18`, expected-answer 상속 `NO-GO / 16 of 18`, golden shared collateral 상속 `NO-GO / 3`, search recovery `P0 / REVIEW / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop405 11713212 저특이 alias non-work runtime 증명
 
 - 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

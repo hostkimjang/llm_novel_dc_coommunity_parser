@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260704-407 - OVERRIDE AUDIT 11708445 row contract closure
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5 미발주 | 동결 유지 |
+| parent packet replay | 중단 | 동일 38-row replay 없음 | 반복 금지 |
+| `11708445` override event | 확인 | worker log `LLM=False -> final=True` | public publish와 분리 유지 |
+| final public contract | GO_ROW | `official_title=null`, `candidate_only`, `publish_allowed=false`, `bypassed_gate=false` | queue 재등재 금지 |
+| source-native verdict | ACCEPT | `candidate_only_block_is_correct`, evidence `Medium` | 다음 row로 이동 |
+| Data Analytics 검산 | PASS_WITH_CAVEAT | event/public contract/candidate preservation/gate 분리 확인 | search P0 caveat 유지 |
+| 문서 동기화 | 완료 | Loop407 report/state/review와 운영 문서 갱신 | survey 136-error anchor로 진행 |
+
+Gate: override audit `GO_ROW_CONTRACT_ONLY`, runtime required `false`, expected-answer 상속 `NO-GO / 16 of 18`, golden shared collateral 상속 `NO-GO / 3`, search recovery `P0 / REVIEW / SEARCH_BLIND_CONDITIONAL`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## IMP-20260704-396-398 - image scene local bridge skip and 11700470 flush
 
 | 항목 | 상태 | 근거 | 다음 조치 |
