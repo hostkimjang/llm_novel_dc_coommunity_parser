@@ -8,6 +8,17 @@
 
 도메인 규칙: `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명으로 단정하지 않는다. 요즘 웹소설은 작품 안에 갤러리/댓글식 커뮤니티를 오마주한 장치를 엮을 수 있고, 그 표면 자체가 작품 제목 또는 약어일 수 있다. known abbreviation + explicit alias relation + specific-work target + community support가 있으면 shared work-bridge로 통과시키되, 경쟁 본문 작품 근거가 있으면 publish를 막는다.
 
+## 2026-07-05 Loop448 Addendum - 11714907 아생갤 known-alias runtime closure
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop448은 residual `known_alias_runtime_replay_required=3` 중 `11714907`을 단건 runtime으로 닫은 회차이며 approval 회차가 아니다.
+- Evidence: report `docs/devs/loop_reports/LOOP_448_REPORT_20260705.md`, state `docs/devs/loop448_11714907_asaenggal_known_alias_runtime_20260705.json`, Data Analytics summary `docs/devs/loop448_11714907_asaenggal_known_alias_data_analytics_artifact.json`.
+- Runtime: run `20260705_064539_854930`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`, `ordered_flush_blocked=false`, MCP health `include_search=true`, `light_mode=false`, VLM/OCR `READY`다.
+- Result: public `official_title=아카데미 생존 갤러리`, `official_url=https://novelpia.com/novel/380218`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`, `publish_allowed=true`, `bypassed_gate=false`.
+- Boundary: debate skeptic의 커뮤니티 장소 오해 반론은 기록했지만, judge는 제목 약어와 본문 `라나/엘리단/정실`, 댓글 `괴이/괴첩단`, 공식 URL 결속을 direct work discussion으로 판정했다. Slang DB write-back, `post_id` 예외, 작품 전용 registry는 없다.
+- Queue: residual action queue `105 -> 104`, `REPROCESS 77 -> 76`, `known_alias_runtime_replay_required 3 -> 2`, validation issue `0`. 남은 known-alias row는 `11706827`, `11708443`이다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_EXPECTED_TITLE_RESOLVED`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, row-level search `GO`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Next: 남은 known-alias 2건을 단건 runtime 또는 계약 감사로 분리하고, full375 approval은 계속 열지 않는다.
+
 ## 2026-07-05 Loop447 Addendum - 11663521 direct alias-character probe
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop447은 `11663521`의 `시스터즈 퍼스트 + 토우마` 직접 결속 검색 근거를 보강한 단건 runtime 회차이며 approval 회차가 아니다.

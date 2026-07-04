@@ -1,5 +1,15 @@
 # Slang DB Improvement TODO
 
+## 2026-07-05 Loop448 11714907 아생갤 known-alias runtime closure slang 주의사항
+
+- [x] `아생갤 -> 아카데미 생존 갤러리`를 새 slang DB write-back이나 작품 전용 registry 추가로 처리하지 않았다.
+- [x] `--slang-db off` 조건으로 `11714907` 단건 runtime을 실행했다.
+- [x] `아생갤`은 현실 DC 갤러리명만이 아니라 웹소설의 작중 갤러리/커뮤니티 오마주형 제목 약어일 수 있다는 도메인 보정을 기록했다.
+- [x] `11714907`은 `아생갤`, `라나`, `엘리단`, `정실`, `괴이`, `괴첩단`과 official URL `https://novelpia.com/novel/380218` 결속으로 `아카데미 생존 갤러리` safe-resolved publish가 됐다.
+- [x] Residual queue에서 `known_alias_runtime_replay_required`는 `3 -> 2`로 줄었고 남은 row는 `11706827`, `11708443`이다.
+- [ ] 이 단건 closure를 alias/slang 전체 품질 승인, hard-hold 완화, full375 approval로 승격하지 않는다.
+- Gate: slang DB write-back 아님, targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_EXPECTED_TITLE_RESOLVED`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL / 105 -> 104`, search recovery broader `P0 / ROW_LEVEL_GO_ONLY`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop445 11663521 Toaru/Railgun 경계 slang 주의사항
 
 - [x] `시스터즈`, `TS`, `토우마`, `갱생펀치` 표면을 새 slang DB write-back이나 작품 전용 registry로 처리하지 않았다.
@@ -240,13 +250,14 @@
 ## 2026-07-03 Loop354 current residual alias/runtime caveat
 
 - [x] current residual action lane에서 alias/runtime 관련 잔여를 다시 확인했다.
-  - residual `105`, `REPROCESS=77`, `HOLD=28`
-  - `known_alias_runtime_replay_required=3`: `11706827`, `11708443`, `11714907`
+  - Loop448 이후 residual `104`, `REPROCESS=76`, `HOLD=28`
+  - `known_alias_runtime_replay_required=2`: `11706827`, `11708443`
+  - `11714907`은 Loop448 단건 runtime에서 `아카데미 생존 갤러리`로 expected-title resolved되어 residual에서 제외했다.
   - `repair_safe_loss=72`, `repair_after_wrong_work=5`
 - [x] forced non-light N5/full375/bounded1200/golden18은 alive/partial snapshot일 뿐 slang/alias 품질 승인 근거가 아니다.
-- [ ] `known_alias_runtime_replay_required=3`은 unit contract와 current runtime flush를 분리해 재검증한다.
+- [ ] 남은 `known_alias_runtime_replay_required=2`는 unit contract와 current runtime flush를 분리해 재검증한다.
 - [ ] N5 `15/15`, golden18 `18/18`, full375/bounded completion 전 hard-hold 완화 또는 2026-06-28 golden GO 대체 판단을 하지 않는다.
-- Gate: slang DB write-back 아님, forced action lane `GO_QUEUE_RESHAPE_NOT_APPROVAL`, collateral `NO-GO / residual_action_queue_rows=105`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: slang DB write-back 아님, Loop448 residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL / 105 -> 104`, collateral `NO-GO / residual_action_queue_rows=104`, search recovery broader `P0 / ROW_LEVEL_GO_ONLY`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-03 Loop347 known alias contract / runtime caveat
 
@@ -255,7 +266,7 @@
   - `아생갤 -> 아카데미 생존 갤러리`: 작가/정실/라나 character-relation cue.
 - [x] `11708443`은 기존 Loop324/325 계약이 있으나 Loop347 runtime flush 증거는 없다.
 - [x] Loop347 runtime replay는 search health `2/2 OK` 후 VLM chunk에서 멈췄고 manifest `0/0/0/0`이라 approval 근거가 아니다.
-- [ ] `11706827`, `11708443`, `11714907`은 runtime/search recovery 또는 policy review로 계속 유지한다.
+- [ ] `11706827`, `11708443`은 runtime/search recovery 또는 policy review로 계속 유지한다. `11714907`은 Loop448 단건 runtime으로 제외했다.
 - Gate: slang DB write-back 아님, code contract `GO_UNIT_CONTRACT_ONLY`, runtime replay `ABORTED_VLM_STALL`, residual `123`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-03 Loop341 known alias seed / slang caveat

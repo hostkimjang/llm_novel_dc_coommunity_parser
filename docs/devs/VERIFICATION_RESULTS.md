@@ -1,5 +1,38 @@
 # Verification Results
 
+## 2026-07-05 Loop448 11714907 아생갤 known-alias runtime closure 검증
+
+- 범위: residual `known_alias_runtime_replay_required=3` 중 `11714907` 단건을 current HEAD `a5a0a3c1`에서 search 포함 non-light, VLM/OCR 필수 조건으로 재실행했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_448_REPORT_20260705.md`
+  - state `docs\devs\loop448_11714907_asaenggal_known_alias_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop448_11714907_asaenggal_known_alias_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop448_11714907_asaenggal_known_alias_runtime_result.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop448_11714907_asaenggal_known_alias_runtime_health_audit.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop448_11714907_asaenggal_publication_contract_audit.json`
+  - golden subset audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop448_11714907_asaenggal_known_alias_golden_audit.json`
+  - residual queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop448_after_11714907_known_alias_residual_action_queue.json`
+- Runtime:
+  - run `20260705_064539_854930`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - Search 실행 `4`, 유효 `2`, 무결과 `2`, 누적 결과 `18`
+  - VLM/OCR `READY`, image fetch `2/2`
+- Result:
+  - `official_title=아카데미 생존 갤러리`, `official_url=https://novelpia.com/novel/380218`
+  - `candidate_ledger_status=safe_resolved`, `title_resolution_state=resolved`, `work_resolution=resolved`
+  - `promotion_decision.status=publish`, `publish_allowed=true`, `bypassed_gate=false`
+- Audit:
+  - `tools/audit_expert_run_health.py` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=GO`, `publication_contract_convergence=GO`.
+  - `tools/audit_publication_contract_convergence.py` -> `GO / row_count 1 / violation_row_count 0`.
+  - subset golden audit -> `PASS / 1 of 1`, status `expected_title_resolved`.
+  - residual queue split -> `105 -> 104`, `known_alias_runtime_replay_required 3 -> 2`, validation issue `0`.
+- Boundary:
+  - `아생갤`은 현실 DC 갤러리명으로만 보지 않고, 작품 내부 갤러리/커뮤니티 오마주형 제목 약어로 판정했다.
+  - Debate skeptic의 커뮤니티 장소 오해 반론은 기록하되, 제목 약어 + 본문 캐릭터 + 공식 URL 결속이 우선했다.
+  - Broader search recovery는 `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral은 `NOT_OPEN`.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop447 11663521 직접 별칭+인물 검색 probe 검증
 
 - 범위: `11663521` 단건을 base HEAD `7b0a6000` + 워킹트리 direct alias-character probe에서 search 포함 non-light, VLM/OCR 필수 조건으로 재실행했다.
