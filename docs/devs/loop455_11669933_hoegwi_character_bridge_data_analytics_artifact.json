@@ -1,0 +1,47 @@
+{
+  "artifact_type": "data_analytics_summary",
+  "loop": "455",
+  "date": "2026-07-05",
+  "language": "ko",
+  "reader_summary": "Loop455는 residual character bridge 단건 11669933을 current HEAD에서 search 포함 non-light로 실행해 회귀수선전 safe_resolved를 확인했다. Publication contract와 stop-condition은 GO지만 search health는 search_degraded_observed로 REVIEW라서 broader search recovery와 full375 approval은 열지 않는다.",
+  "runtime": {
+    "run_id": "20260705_083842_289493",
+    "post_id": 11669933,
+    "input_completed_flushed_pending_failed": "1/1/1/0/0",
+    "mcp_health": "include_search=true / light_mode=false / ok_failure=1/0",
+    "slang_db": "off"
+  },
+  "result": {
+    "official_title": "회귀수선전(回歸修仙傳)",
+    "heretic_url": "https://novel.munpia.com/346981",
+    "candidate_ledger_status": "safe_resolved",
+    "discussion_type": "character_talk",
+    "primary_alias_or_mention": "해방상제"
+  },
+  "audit_result": {
+    "flush_integrity": "GO / clean_completed_source",
+    "search_evidence": "REVIEW / search_degraded_observed",
+    "publication_contract": "GO / 0 violations",
+    "goal_convergence": "GO / queue 101 -> 100 / safe 0 -> 1 / safe_loss []"
+  },
+  "queue_delta": {
+    "previous_actionable": 101,
+    "current_actionable": 100,
+    "reprocess": "73 -> 72",
+    "hold": "28 -> 28",
+    "repair_safe_loss": "68 -> 67",
+    "character_bridge_contract_required": "1 -> 0"
+  },
+  "domain_policy_note": "아생갤 같은 갤러리 표면은 실제 현실 갤러리명만이 아니라 웹소설 내부 커뮤니티/갤러리 오마주형 제목 또는 약어일 수 있다. 이번 row는 아생갤이 아니지만 같은 shared work-bridge 경계를 유지한다.",
+  "gate_boundary": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO",
+    "search_evidence": "REVIEW",
+    "queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL",
+    "broader_search_recovery": "P0 / OPEN_SEARCH_DEGRADED",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

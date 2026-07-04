@@ -1,5 +1,15 @@
 # Slang DB Improvement TODO
 
+## 2026-07-05 Loop455 11669933 회귀수선전 character bridge slang 주의사항
+
+- [x] `해방상제`/`중경계`/`서휼` bridge를 새 slang DB write-back이나 작품 전용 registry 추가로 처리하지 않았다.
+- [x] `--slang-db off` 조건으로 `11669933` 단건 runtime을 실행했다.
+- [x] `11669933`은 character/setting bridge와 official detail 근거로 `회귀수선전(回歸修仙傳)` safe-resolved publish가 됐다.
+- [x] Search evidence는 `REVIEW / search_degraded_observed`라 broader search recovery는 닫지 않았다.
+- [x] 사용자 도메인 보정을 유지한다: `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명만이 아니라 웹소설 내부 커뮤니티/갤러리 오마주형 제목 또는 약어일 수 있다.
+- [ ] 이 단건 closure를 alias/slang 전체 품질 승인, hard-hold 완화, full375 approval로 승격하지 않는다.
+- Gate: slang DB write-back 아님, targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `REVIEW`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL / 101 -> 100`, search recovery broader `P0 / OPEN_SEARCH_DEGRADED`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop452 11708443 괴담출근 known-alias runtime closure slang 주의사항
 
 - [x] `괴담출근 -> 괴담에 떨어져도 출근을 해야 하는구나`를 새 slang DB write-back이나 작품 전용 registry 추가로 처리하지 않았다.

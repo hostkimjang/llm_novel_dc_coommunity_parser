@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260705-455 - 11669933 회귀수선전 character bridge runtime closure
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/parent replay 미발주 | dispatch 반복 금지 |
+| runtime proof | GO / 1 of 1 | run `20260705_083842_289493`, `1/1/1/0/0` | 단건 근거로만 사용 |
+| publication contract | GO | row `1`, violation `0` | broader gate와 분리 |
+| search evidence | REVIEW | `search_degraded_observed`, query/degraded/unrecovered `15/1/1` | P0 search recovery 유지 |
+| source-native bridge | GO_TARGETED | `중경계`/`서휼`/`해방상제` -> `회귀수선전` character bridge | 같은 유형 residual에 일반화 |
+| stop-condition | GO_TARGETED | queue `101 -> 100`, safe `0 -> 1`, same packet `11669933` | queue 감소만 approval로 승격 금지 |
+| 도메인 정책 | 유지 | `아생갤`/`갤러리` 표면은 작중 커뮤니티 오마주형 제목/약어 가능 | 현실 갤러리 단정 금지 |
+| 문서 동기화 | 완료 | Loop455 report/state/Data Analytics 갱신 | goal은 ACTIVE 유지 |
+
+Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `REVIEW`, targeted stop-condition `GO_TARGETED / 101 -> 100 / safe 0 -> 1`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / OPEN_SEARCH_DEGRADED`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260705-454 - goal convergence evaluator queue compatibility
 
 | 항목 | 상태 | 근거 | 다음 |

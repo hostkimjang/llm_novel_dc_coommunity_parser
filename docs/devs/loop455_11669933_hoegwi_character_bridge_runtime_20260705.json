@@ -1,0 +1,104 @@
+{
+  "loop": "455",
+  "date": "2026-07-05",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "scope": "11669933 character bridge source-native repair runtime closure",
+  "head": "59d16672",
+  "large_runs": {
+    "full375": "NOT_LAUNCHED",
+    "bounded_1000_1500": "NOT_LAUNCHED",
+    "safe_loss_n5": "NOT_LAUNCHED",
+    "same_38_row_parent_packet": "NOT_LAUNCHED"
+  },
+  "input": {
+    "post_id": 11669933,
+    "title": "중경계에서 첨 만난게 해방상제임?",
+    "content_summary": "서휼을 따라가 지하에서 버티는 시합 중 해방상제를 만났는지 묻는 character/setting bridge",
+    "comments": [
+      "그거 미래의 주인공",
+      "ㅇㅇ"
+    ],
+    "image_count": 0,
+    "source_native_verdict": "before_correct_source_native_character_bridge",
+    "expected_work": "회귀수선전"
+  },
+  "runtime": {
+    "run_id": "20260705_083842_289493",
+    "input_completed_flushed_pending_failed": "1/1/1/0/0",
+    "large_run_complete": true,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_failure": "1/0",
+    "vlm_ocr_semantic_review_ready": true,
+    "slang_db": "off"
+  },
+  "result": {
+    "official_title": "회귀수선전(回歸修仙傳)",
+    "heretic_url": "https://novel.munpia.com/346981",
+    "candidate_ledger_status": "safe_resolved",
+    "safe_resolved": true,
+    "title_resolution_state": "resolved",
+    "promotion_blocked": false,
+    "discussion_type": "character_talk",
+    "primary_alias_or_mention": "해방상제",
+    "primary_source_tier": "official_detail"
+  },
+  "audits": {
+    "health": {
+      "flush_integrity": "GO / clean_completed_source",
+      "search_evidence": "REVIEW / search_degraded_observed",
+      "row_search_health": "SEARCH_DEGRADED",
+      "query_degraded_unrecovered": "15/1/1"
+    },
+    "publication_contract": {
+      "gate": "GO",
+      "row_count": 1,
+      "violation_row_count": 0
+    },
+    "goal_convergence": {
+      "gate": "GO",
+      "previous_actionable": 101,
+      "current_actionable": 100,
+      "same_packet": true,
+      "post_id": 11669933,
+      "previous_safe_resolved": 0,
+      "current_safe_resolved": 1,
+      "safe_loss_post_ids": []
+    }
+  },
+  "residual_queue": {
+    "previous": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop453_after_11716498_author_work_context_residual_action_queue.json",
+    "current": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop455_after_11669933_character_bridge_residual_action_queue.json",
+    "residual_action_queue_rows": "101 -> 100",
+    "label_counts": "REPROCESS 73 -> 72 / HOLD 28 -> 28",
+    "repair_safe_loss": "68 -> 67",
+    "character_bridge_contract_required": "1 -> 0",
+    "validation_issue_count": 0
+  },
+  "domain_policy": {
+    "asaenggal_gallery_homage": "아생갤 같은 갤러리 표면은 현실 DC 갤러리명으로만 단정하지 않고, 작품 내부 커뮤니티/갤러리 오마주형 제목 또는 약어 가능성을 보존한다.",
+    "loop455_relation": "이번 row는 아생갤 row가 아니지만 표면 커뮤니티어를 현실 커뮤니티로 고정하지 않는 shared work-bridge 원칙을 유지한다."
+  },
+  "gates": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO",
+    "search_evidence": "REVIEW / search_degraded_observed",
+    "targeted_stop_condition": "GO_TARGETED / 101 -> 100 / safe 0 -> 1",
+    "residual_queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL",
+    "broader_search_recovery": "P0 / OPEN_SEARCH_DEGRADED",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "artifacts": {
+    "loop_report": "docs/devs/loop_reports/LOOP_455_REPORT_20260705.md",
+    "data_analytics_summary": "docs/devs/loop455_11669933_hoegwi_character_bridge_data_analytics_artifact.json",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop455_11669933_hoegwi_character_bridge_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop455_11669933_hoegwi_character_bridge_search_nonlight_result_manifest.json",
+    "run_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop455_11669933_hoegwi_character_bridge_run_health.json",
+    "publication_contract": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop455_11669933_hoegwi_character_bridge_publication_contract.json",
+    "residual_queue": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop455_after_11669933_character_bridge_residual_action_queue.json",
+    "convergence": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop455_11669933_goal_convergence_stop_condition.json"
+  }
+}

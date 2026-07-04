@@ -8,6 +8,17 @@
 
 도메인 규칙: `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명으로 단정하지 않는다. 요즘 웹소설은 작품 안에 갤러리/댓글식 커뮤니티를 오마주한 장치를 엮을 수 있고, 그 표면 자체가 작품 제목 또는 약어일 수 있다. known abbreviation + explicit alias relation + specific-work target + community support가 있으면 shared work-bridge로 통과시키되, 경쟁 본문 작품 근거가 있으면 publish를 막는다.
 
+## 2026-07-05 Loop455 Addendum - 11669933 회귀수선전 character bridge runtime closure
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop455는 residual `character_bridge_contract_required` 단건 `11669933`을 runtime으로 닫은 회차이며 approval 회차가 아니다.
+- Evidence: report `docs/devs/loop_reports/LOOP_455_REPORT_20260705.md`, state `docs/devs/loop455_11669933_hoegwi_character_bridge_runtime_20260705.json`, Data Analytics summary `docs/devs/loop455_11669933_hoegwi_character_bridge_data_analytics_artifact.json`.
+- Runtime: run `20260705_083842_289493`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`, MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`이다.
+- Result: public `official_title=회귀수선전(回歸修仙傳)`, `heretic_url=https://novel.munpia.com/346981`, `candidate_ledger_status=safe_resolved`, `promotion_blocked=false`, `discussion_type=character_talk`.
+- Boundary: `중경계`, `서휼`, `해방상제`는 같은 작품 설정/인물 bridge로 처리했다. 새 R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+- Domain note: `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명만이 아니라 웹소설 내부 갤러리/댓글식 커뮤니티 오마주형 제목 또는 약어일 수 있다는 사용자 보정을 유지한다.
+- Audits: health `GO / clean_completed_source`, publication contract `GO / 0 violations`, search evidence `REVIEW / search_degraded_observed`, stop-condition `GO / queue 101 -> 100 / safe 0 -> 1`.
+- Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `REVIEW`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / OPEN_SEARCH_DEGRADED`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop452 Addendum - 11708443 괴담출근 known-alias runtime closure
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop452는 residual `known_alias_runtime_replay_required`의 마지막 단건 `11708443`을 runtime으로 닫은 회차이며 approval 회차가 아니다.

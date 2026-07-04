@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-05 Loop455 11669933 회귀수선전 character bridge runtime 체크
+
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `11669933` 단건을 current HEAD `59d16672`에서 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- [x] Run `20260705_083842_289493`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`로 완료됐다.
+- [x] MCP health는 `include_search=true`, `light_mode=false`, ok/failure `1/0`이다.
+- [x] Public identity는 `official_title=회귀수선전(回歸修仙傳)`, `heretic_url=https://novel.munpia.com/346981`, `candidate_ledger_status=safe_resolved`, `title_resolution_state=resolved`다.
+- [x] Source-native verdict `before_correct_source_native_character_bridge`의 `중경계`/`서휼`/`해방상제` 결속을 character bridge 근거로 기록했다.
+- [x] 사용자 도메인 보정을 유지했다: `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명만이 아니라 웹소설 내부 커뮤니티/갤러리 오마주형 제목 또는 약어일 수 있다.
+- [x] Health audit는 `GO / clean_completed_source`, publication contract는 `GO / 0 violations`다.
+- [x] Search evidence는 `REVIEW / search_degraded_observed`로 기록했다.
+- [x] Stop-condition audit는 queue `101 -> 100`, same packet `11669933`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- [x] Residual queue는 Loop453 current queue 기준 `101 -> 100`, `character_bridge_contract_required 1 -> 0`, validation issue `0`으로 갱신했다.
+- [ ] Search degraded가 남아 있으므로 broader search recovery를 닫지 않는다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 residual queue delta를 full scan approval로 승격하지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `REVIEW`, targeted stop-condition `GO_TARGETED / 101 -> 100 / safe 0 -> 1`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / OPEN_SEARCH_DEGRADED`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop454 goal convergence evaluator queue compatibility 체크
 
 - [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
