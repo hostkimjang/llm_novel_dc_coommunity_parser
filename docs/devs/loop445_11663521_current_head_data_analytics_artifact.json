@@ -1,0 +1,85 @@
+{
+  "artifact_type": "data_analytics_reader_facing_summary",
+  "loop": 445,
+  "language": "ko",
+  "title": "Loop445 11663521 current HEAD Toaru/Railgun unresolved 단건 런타임",
+  "summary": {
+    "meaning": "11663521은 토우마/시스터즈 표면 때문에 Toaru/Railgun 계열으로 의심되는 행이지만, 현재 public resolver는 정답 작품을 안전하게 확정하지 못하고 public title을 HOLD했다.",
+    "primary_outcome": "런타임은 1/1로 완주했고 publication contract는 GO다. 그러나 golden expected answer는 positive_work_unresolved로 NO-GO다.",
+    "semantic_caveat": "오답 후보 시스터즈 퍼스트는 public publish되지 않았지만, 기대값 어떤 마술의 금서목록 / 어떤 과학의 초전자포도 safe-resolved되지 않았다."
+  },
+  "runtime_metrics": {
+    "run_id": "20260705_052612_026911",
+    "input_count": 1,
+    "completed_count": 1,
+    "flushed_count": 1,
+    "pending_count": 0,
+    "failed_count": 0,
+    "ordered_flush_blocked": false,
+    "partial_flush_gap": false,
+    "large_run_complete": true,
+    "vlm_ocr_ready": true,
+    "image_fetch": "2/2"
+  },
+  "search_metrics": {
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_count": 1,
+    "mcp_health_failure_count": 0,
+    "row_search_status": "ok",
+    "query_total": 12,
+    "degraded_total": 0,
+    "unrecovered_degraded_total": 0,
+    "upstream_zero": 2,
+    "fallback_recovered": 9
+  },
+  "public_identity_metrics": {
+    "official_title": null,
+    "heretic_url": null,
+    "candidate_ledger_status": "promotion_blocked",
+    "safe_resolved": false,
+    "title_resolution_state": "unresolved_matchable",
+    "title_resolution_allowed": false,
+    "is_novel_related": true,
+    "is_relevant": false,
+    "discussion_type": "noise",
+    "blocked_official_title": "시스터즈 퍼스트",
+    "promotion_status": "candidate_only",
+    "publish_allowed": false
+  },
+  "audit_metrics": {
+    "health_flush_integrity": "GO / clean_completed_source",
+    "health_search_evidence": "GO",
+    "publication_contract_gate": "GO",
+    "publication_contract_violations": 0,
+    "golden_subset_gate": "NO-GO",
+    "golden_subset_passed": 0,
+    "golden_subset_failed": 1,
+    "golden_subset_status": "positive_work_unresolved",
+    "golden_expected": "어떤 마술의 금서목록 / 어떤 과학의 초전자포",
+    "collateral_subset_regression_candidates": 1,
+    "collateral_subset_status": "resolved_to_null"
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_445_REPORT_20260705.md",
+    "state": "docs/devs/loop445_11663521_current_head_runtime_20260705.json",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop445_11663521_current_head_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop445_11663521_current_head_search_nonlight_result_manifest.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop445_11663521_current_head_health_audit.json",
+    "publication_contract": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop445_11663521_current_head_publication_contract.json",
+    "golden_subset_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop445_11663521_current_head_golden_audit.json",
+    "collateral_subset_compare": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop445_11663521_current_head_collateral_compare.json"
+  },
+  "gate_status": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO / 1 row / 0 violations",
+    "row_level_search": "GO / non-light",
+    "golden_expected_answer": "NO-GO / positive_work_unresolved",
+    "collateral_subset": "NO-GO / 1 regression candidate",
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

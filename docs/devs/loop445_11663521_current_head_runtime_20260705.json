@@ -1,0 +1,141 @@
+{
+  "loop": 445,
+  "date": "2026-07-05",
+  "head": "bf9fb042",
+  "branch": "goal/3202-slice-rank1-3",
+  "status": "ACTIVE / NOT_COMPLETE",
+  "scope": {
+    "post_id": 11663521,
+    "mode": "single_row_current_head_search_nonlight_vlm_ocr",
+    "large_runs_frozen": true,
+    "same_38_row_parent_packet_replay": false,
+    "full375": "NOT_OPEN",
+    "bounded_1000_1500": "NOT_DISPATCHED",
+    "n5_flip_probe": "NOT_DISPATCHED"
+  },
+  "runtime": {
+    "run_id": "20260705_052612_026911",
+    "input_completed_flushed_pending_failed": "1/1/1/0/0",
+    "large_run_complete": true,
+    "ordered_flush_blocked": false,
+    "partial_flush_gap": false,
+    "next_save_idx": 2,
+    "vlm_ocr_semantic_review_ready": true,
+    "image_post_count": 1,
+    "image_fetch": "2/2",
+    "mcp_health": {
+      "include_search": true,
+      "light_mode": false,
+      "ok_count": 1,
+      "failure_count": 0
+    },
+    "row_search_health": {
+      "status": "ok",
+      "query_total": 12,
+      "degraded_total": 0,
+      "unrecovered_degraded_total": 0,
+      "upstream_zero": 2,
+      "fallback_recovered": 9
+    }
+  },
+  "public_identity": {
+    "is_relevant": false,
+    "is_novel_related": true,
+    "is_resolved_work_discussion": false,
+    "discussion_type": "noise",
+    "official_title": null,
+    "heretic_url": null,
+    "candidate_ledger_status": "promotion_blocked",
+    "safe_resolved": false,
+    "title_resolution_state": "unresolved_matchable",
+    "title_resolution_allowed": false,
+    "blocked_official_title": "시스터즈 퍼스트",
+    "promotion_decision": {
+      "status": "candidate_only",
+      "publish_allowed": false,
+      "candidate_preserved": true,
+      "bypassed_gate": false,
+      "scope_kind": "context_only",
+      "reason_codes": [
+        "scope_context_only",
+        "scope_not_current_work",
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "serialized_public_identity_scrubbed"
+      ]
+    },
+    "publish_contract_trace": {
+      "pre_gate_candidate": "시스터즈 퍼스트",
+      "post_gate_official_title": null,
+      "post_gate_official_url": null
+    }
+  },
+  "expected_contract": {
+    "golden_role": "positive_expected_work",
+    "failure_class": "generic_phrase_substring",
+    "expected": "어떤 마술의 금서목록 / 어떤 과학의 초전자포",
+    "expected_no_public_title": false,
+    "golden_subset_gate": "NO-GO",
+    "passed_count": 0,
+    "failed_count": 1,
+    "status_counts": {
+      "positive_work_unresolved": 1
+    },
+    "actual": null,
+    "collateral_regression_count": 1,
+    "collateral_status": "resolved_to_null"
+  },
+  "audits": {
+    "health": {
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop445_11663521_current_head_health_audit.json",
+      "flush_integrity": "GO / clean_completed_source",
+      "search_evidence": "GO",
+      "publication_contract_convergence": "GO / violations 0"
+    },
+    "publication_contract": {
+      "json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop445_11663521_current_head_publication_contract.json",
+      "md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop445_11663521_current_head_publication_contract.md",
+      "gate": "GO",
+      "row_count": 1,
+      "violation_row_count": 0
+    },
+    "golden_subset": {
+      "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop445_11663521_golden_manifest_subset.json",
+      "json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop445_11663521_current_head_golden_audit.json",
+      "md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop445_11663521_current_head_golden_audit.md"
+    },
+    "collateral_subset": {
+      "json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop445_11663521_current_head_collateral_compare.json",
+      "md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop445_11663521_current_head_collateral_compare.md"
+    }
+  },
+  "artifacts": {
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop445_11663521_current_head_input.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop445_11663521_current_head_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop445_11663521_current_head_search_nonlight_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop445_11663521_current_head_search_nonlight_result_checkpoint.jsonl",
+    "pending_snapshot": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop445_11663521_current_head_search_nonlight_result_pending_snapshot.json",
+    "log": "logs/expert_run_20260705_052612_026911.log",
+    "report": "docs/devs/loop_reports/LOOP_445_REPORT_20260705.md",
+    "data_analytics": "docs/devs/loop445_11663521_current_head_data_analytics_artifact.json"
+  },
+  "gate": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO / 1 row / 0 violations",
+    "row_level_search": "GO / non-light",
+    "golden_expected_answer": "NO-GO / positive_work_unresolved",
+    "collateral_subset": "NO-GO / 1 regression candidate",
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next": [
+    "11663521은 runtime stall이 아니라 expected positive work unresolved로 분리",
+    "Toaru/Railgun expected work를 public resolve할지 evidence-preserved unresolved로 둘지 blind/source-native 판정 갱신",
+    "단건 runtime GO를 golden/full375 approval로 승격하지 않음"
+  ]
+}

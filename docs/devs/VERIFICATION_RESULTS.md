@@ -1,5 +1,41 @@
 # Verification Results
 
+## 2026-07-05 Loop445 11663521 current HEAD Toaru/Railgun unresolved 검증
+
+- 범위: `11663521` 단건을 current HEAD `bf9fb042`에서 search 포함 non-light, VLM/OCR 필수 조건으로 재실행해 Loop439 missing row가 실제 row를 내는지와 publication contract가 public wrong title을 막는지 확인했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_445_REPORT_20260705.md`
+  - state `docs\devs\loop445_11663521_current_head_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop445_11663521_current_head_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop445_11663521_current_head_search_nonlight_result.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop445_11663521_current_head_health_audit.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop445_11663521_current_head_publication_contract.json`
+  - golden subset audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop445_11663521_current_head_golden_audit.json`
+  - collateral subset compare `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop445_11663521_current_head_collateral_compare.json`
+- Runtime:
+  - run `20260705_052612_026911`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - row search status `ok`, query/degraded/unrecovered `12/0/0`
+  - VLM/OCR `READY`, image fetch `2/2`
+- Result:
+  - `official_title=null`, `heretic_url=null`
+  - `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`
+  - `title_resolution_state=unresolved_matchable`, `title_resolution_allowed=false`
+  - `promotion_decision.status=candidate_only`, `publish_allowed=false`
+  - pre-gate candidate `시스터즈 퍼스트`
+- Audit:
+  - `tools/audit_expert_run_health.py` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=GO`, `publication_contract_convergence=GO`.
+  - `tools/audit_publication_contract_convergence.py` -> `GO / row_count 1 / violation_row_count 0`.
+  - `tools/audit_regression_safe_golden.py` with `11663521` subset manifest -> `NO-GO / 0 of 1`, status `positive_work_unresolved`.
+  - collateral subset compare -> `resolved_to_null`, regression candidate `1`.
+- Boundary:
+  - Runtime row production과 public wrong title 차단은 단건 GO다.
+  - Golden expected `어떤 마술의 금서목록 / 어떤 과학의 초전자포`는 아직 safe-resolved되지 않았다.
+  - Baseline wrong title `초전자포] 시스터즈가 되었다`가 제거된 것은 semantic closure가 아니라 expected positive work unresolved 상태다.
+  - Broader search recovery는 `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral은 `NOT_OPEN`.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop444 11700470 current HEAD image-scene HOLD 검증
 
 - 범위: `11700470` 단건을 current HEAD `8f7634e1`에서 search 포함 non-light, VLM/OCR 필수 조건으로 재실행해 public title HOLD 계약이 현재 코드에서 직렬화까지 도달하는지 확인했다.

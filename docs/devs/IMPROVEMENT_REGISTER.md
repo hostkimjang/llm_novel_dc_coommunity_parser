@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260705-445 - 11663521 current HEAD Toaru/Railgun unresolved runtime
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/parent replay 미발주 | dispatch 반복 금지 |
+| runtime proof | GO / 1 of 1 | run `20260705_052612_026911`, `1/1/1/0/0` | 단건 근거로만 사용 |
+| publication contract | GO | row `1`, violation `0` | broader gate와 분리 |
+| search evidence | GO_ROW_LEVEL | include_search `true`, light_mode `false`, query/degraded/unrecovered `12/0/0` | broader search recovery는 P0 유지 |
+| wrong publish 차단 | GO_TARGETED | `시스터즈 퍼스트` candidate-only, public title `null` | expected positive work와 분리 |
+| expected-answer | NO-GO | golden subset `positive_work_unresolved`, expected `어떤 마술의 금서목록 / 어떤 과학의 초전자포` | blind/source-native 판정 갱신 |
+| collateral subset | NO-GO / 1 | `resolved_to_null`, before `초전자포] 시스터즈가 되었다`, after `None` | full375 approval 금지 |
+| 문서 동기화 | 완료 | Loop445 report/state/Data Analytics 갱신 | goal은 ACTIVE 유지 |
+
+Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, row-level search `GO`, golden expected-answer `NO-GO / positive_work_unresolved`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260705-444 - 11700470 current HEAD image-scene HOLD runtime
 
 | 항목 | 상태 | 근거 | 다음 |

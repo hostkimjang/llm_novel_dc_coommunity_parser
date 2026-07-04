@@ -8,6 +8,16 @@
 
 도메인 규칙: `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명으로 단정하지 않는다. 웹소설 안에서 갤러리/댓글식 커뮤니티를 오마주한 작품 제목일 수 있으므로, known abbreviation + explicit alias relation + specific-work target + community support가 있으면 shared work-bridge로 통과시키되, 경쟁 본문 작품 근거가 있으면 publish를 막는다.
 
+## 2026-07-05 Loop445 Addendum - 11663521 Toaru/Railgun unresolved runtime
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop445는 Loop439 missing `11663521`이 current HEAD에서 row를 내는지 확인하고, public wrong title 차단과 expected-answer 미해소를 분리한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_445_REPORT_20260705.md`, state `docs/devs/loop445_11663521_current_head_runtime_20260705.json`, Data Analytics summary `docs/devs/loop445_11663521_current_head_data_analytics_artifact.json`.
+- Runtime: run `20260705_052612_026911`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`, `ordered_flush_blocked=false`, MCP health `include_search=true`, `light_mode=false`, row search `ok`, VLM/OCR `READY`다.
+- Result: public `official_title=null`, `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`, `title_resolution_state=unresolved_matchable`. `시스터즈 퍼스트`는 pre-gate candidate였지만 `candidate_only / publish_allowed=false`로 막혔다.
+- Boundary: golden subset audit는 `NO-GO / 0 of 1`, status `positive_work_unresolved`, expected `어떤 마술의 금서목록 / 어떤 과학의 초전자포`다. Collateral subset은 `resolved_to_null` regression candidate `1`이다.
+- Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, row-level search `GO`, expected-answer `NO-GO`, search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Next: `11663521`은 runtime stall이 아니라 known-IP/fanfic boundary의 정답성 미해소로 남기고, blind/source-native 판정 갱신 전까지 approval을 열지 않는다.
+
 ## 2026-07-05 Loop444 Addendum - 11700470 image-scene HOLD runtime
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop444는 `11700470` 단건 public title HOLD가 current HEAD에서 직렬화까지 도달하는지 확인한 회차이며 approval 회차가 아니다.

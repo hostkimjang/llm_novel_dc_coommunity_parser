@@ -1,5 +1,14 @@
 # Slang DB Improvement TODO
 
+## 2026-07-05 Loop445 11663521 Toaru/Railgun 경계 slang 주의사항
+
+- [x] `시스터즈`, `TS`, `토우마`, `갱생펀치` 표면을 새 slang DB write-back이나 작품 전용 registry로 처리하지 않았다.
+- [x] `시스터즈 퍼스트`는 candidate-only로 보존됐고 public title로 승격되지 않았다.
+- [x] `--slang-db off` 조건으로 단건 runtime을 실행했다.
+- [x] Golden expected `어떤 마술의 금서목록 / 어떤 과학의 초전자포`는 아직 safe-resolved되지 않았으므로 alias/slang 품질 승인으로 보지 않는다.
+- [ ] Toaru/Railgun 같은 known-IP/fanfic boundary에서 정답을 public resolve할지, evidence-preserved unresolved로 둘지 blind/source-native 판정을 갱신한다.
+- Gate: slang DB write-back 아님, targeted runtime `GO / 1 of 1`, publication contract `GO`, golden expected-answer `NO-GO / positive_work_unresolved`, search recovery broader `P0 / ROW_LEVEL_GO_ONLY`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop444 11700470 이미지 장면 단서 slang 주의사항
 
 - [x] `밤도깨비 에이브`를 새 slang DB write-back이나 작품 전용 registry로 처리하지 않았다.

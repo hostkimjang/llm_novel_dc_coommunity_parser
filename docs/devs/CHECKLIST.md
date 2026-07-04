@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-05 Loop445 11663521 Toaru/Railgun unresolved 체크
+
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `11663521` 단건을 current HEAD `bf9fb042`에서 search 포함 non-light, VLM/OCR 필수로 실행했다.
+- [x] Run `20260705_052612_026911`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`, `ordered_flush_blocked=false`, `partial_flush_gap=false`로 완료됐다.
+- [x] MCP health는 `include_search=true`, `light_mode=false`, ok/failure `1/0`이고 row search는 `ok`, query/degraded/unrecovered `12/0/0`이다.
+- [x] Public identity는 `official_title=null`, `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`, `title_resolution_state=unresolved_matchable`다.
+- [x] `시스터즈 퍼스트` pre-gate candidate는 `candidate_only / publish_allowed=false`로 public publish되지 않았다.
+- [x] Health audit `GO / clean_completed_source`, publication contract `GO / 0 violations`를 기록했다.
+- [x] Golden subset audit `NO-GO / 0 of 1`, status `positive_work_unresolved`, expected `어떤 마술의 금서목록 / 어떤 과학의 초전자포`, actual `None`을 기록했다.
+- [x] Collateral subset은 `resolved_to_null` regression candidate `1`로 남긴다.
+- [ ] Golden expected-answer는 `NO-GO`다. 단건 runtime GO를 golden/full375 approval로 승격하지 않는다.
+- [ ] `11663521`은 runtime stall이 아니라 expected positive work unresolved 정책/정답성 검토 대상으로 둔다.
+- Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, row-level search `GO`, golden expected-answer `NO-GO / positive_work_unresolved`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop444 11700470 이미지 장면 HOLD 체크
 
 - [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

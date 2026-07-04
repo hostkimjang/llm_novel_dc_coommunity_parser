@@ -1,5 +1,21 @@
 # Operation Quality Checklist
 
+## 2026-07-05 Loop445 11663521 Toaru/Railgun unresolved 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_445_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop445_11663521_current_head_runtime_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop445_11663521_current_head_data_analytics_artifact.json`.
+  - [x] Loop445 runtime `1/1/1/0/0`, `large_run_complete=true`, `ordered_flush_blocked=false`를 기록했다.
+  - [x] Health audit `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`를 기록했다.
+  - [x] Golden subset audit `NO-GO / 0 of 1`, status `positive_work_unresolved`를 기록했다.
+- 품질 게이트:
+  - [x] 단건 targeted runtime과 publication contract GO를 golden18/full375 approval로 승격하지 않는다.
+  - [x] Public wrong title 차단과 expected positive work 미해소를 분리한다.
+  - [x] search row-level `GO`와 broader search recovery `P0 / ROW_LEVEL_GO_ONLY`를 분리한다.
+  - [x] 동일 stalled 38-row parent packet replay를 반복하지 않는다.
+  - [x] goal `ACTIVE / NOT_COMPLETE`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
+
 ## 2026-07-05 Loop444 11700470 image-scene HOLD 품질 게이트
 
 - 근거:
