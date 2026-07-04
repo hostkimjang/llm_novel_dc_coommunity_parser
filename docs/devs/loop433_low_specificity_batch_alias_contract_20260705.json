@@ -1,0 +1,73 @@
+{
+  "loop": 433,
+  "date": "2026-07-05",
+  "current_head_before_commit": "53d47b52",
+  "scope": "low-specificity batch alias counterevidence publication guard",
+  "large_run_dispatch": "FROZEN",
+  "runtime_replay_after_patch": "NOT_RUN_AFTER_PATCH",
+  "target_post_id": 11705245,
+  "code_change": {
+    "files": [
+      "expert_main.py",
+      "tests/test_expert_main_comment_metadata.py"
+    ],
+    "contract": "_demote_low_specificity_batch_alias_publication_contract",
+    "reason_code": "low_specificity_batch_alias_counterevidence_blocked",
+    "hardcoded_cue_or_post_id_exception": false,
+    "slang_db_writeback": false
+  },
+  "projection_result": {
+    "source_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop432_golden18_source_denial_contract_projection_result.json",
+    "projected_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop433_golden18_low_specificity_alias_contract_projection_result.json",
+    "publication_contract": "GO / row_count 18 / violation_row_count 0",
+    "golden_expected_answer": "NO-GO / passed 17 of 18",
+    "golden_failed_post_ids": [
+      11694019
+    ],
+    "golden_shared_collateral": "NO-GO / raw regression candidates 5"
+  },
+  "target_row": {
+    "post_id": 11705245,
+    "before": {
+      "official_title": "하남자의 탑 공략법",
+      "candidate_ledger_status": "safe_resolved",
+      "promotion_decision_status": "publish",
+      "publish_allowed": true
+    },
+    "after_projection": {
+      "official_title": null,
+      "candidate_ledger_status": "promotion_blocked",
+      "title_resolution_state": "unresolved_matchable",
+      "promotion_decision_status": "candidate_only",
+      "publish_allowed": false,
+      "reason_code": "low_specificity_batch_alias_counterevidence_blocked"
+    }
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "focused_low_specificity_publication_tests": "PASS / 3 tests",
+    "expert_main_comment_metadata": "PASS / 69 tests",
+    "focused_work_bridge_low_specificity_bundle": "PASS / 6 tests",
+    "git_diff_check": "PASS / CRLF warning only"
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_433_REPORT_20260705.md",
+    "data_analytics_summary": "docs/devs/loop433_low_specificity_batch_alias_contract_data_analytics_artifact.json",
+    "projection_publication_contract_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop433_golden18_low_specificity_alias_projection_publication_contract.json",
+    "projection_golden_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop433_golden18_low_specificity_alias_contract_projection_golden_audit.json",
+    "projection_collateral_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop433_golden18_low_specificity_alias_contract_projection_collateral_compare.json"
+  },
+  "gates": {
+    "runtime_production": "GO / inherited Loop431 18 of 18",
+    "runtime_replay_after_patch": "NOT_RUN_AFTER_PATCH",
+    "publication_contract": "GO / 0 violations",
+    "golden_expected_answer_projection": "NO-GO / 17 of 18",
+    "search_recovery": "P0 / REVIEW / search_degraded_observed",
+    "golden_shared_collateral": "NO-GO / raw 5",
+    "full375_collateral": "NOT_OPEN",
+    "collateral_105": "reclassified 74 / runtime-verified 4 / residual 105",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

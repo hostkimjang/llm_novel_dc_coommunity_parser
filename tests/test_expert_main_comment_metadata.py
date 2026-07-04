@@ -3796,6 +3796,258 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertFalse(trace["gate_decision"]["publish_allowed"])
         self.assertIsNone(trace["post_gate_identity"]["official_title"])
 
+    def test_low_specificity_batch_alias_publication_demotes_competing_alias(self):
+        result = {
+            "post_id": 11705245,
+            "title": "하남자 재밌냐",
+            "content": ["주인공 첨부터쌤?", "- dc official App"],
+            "comments": ["ㄴㄴ - dc App"],
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "is_resolved_work_discussion": True,
+                "discussion_type": "general",
+                "anchor_type": "title_alias",
+                "anchor_strength": "medium",
+                "context_sources": ["title", "body", "comments", "search", "image"],
+                "consistency_flags": [
+                    "batch_memory_exact_alias_rescued",
+                    "title_lead_alias_official_detail_release",
+                    "verified_alias_official_detail_anchor",
+                    "explicit_alias_official_work_lock",
+                    "confirmed_alias:하남자",
+                    "final_semantic_reread_official_recall_guarded_resolution",
+                    "weak_public_title_bridge_batch_alias_exact_exempt",
+                ],
+                "novel_identity": {
+                    "official_title": "하남자의 탑 공략법",
+                    "heretic_url": "https://novel.munpia.com/400210",
+                    "confidence": "High",
+                },
+                "slang_insight": {
+                    "detected_term": "하남자",
+                    "decoded_term": "하남자의 괴담 공략법",
+                    "decode_verified": True,
+                    "alias_scope": "pure_work_alias",
+                },
+                "reason_lines": [
+                    "- grounding_anchor: title_mention",
+                    "- evidence_type: search_platform_url",
+                    "- title_in_post: false",
+                    "- image_ocr_title_evidence: false",
+                    "- official_title_evidence: true",
+                    "- evidence_bucket: post_spans=1, search_snippets=2, official_urls=1",
+                    "- 검증 반론(참고): Decoder가 '하남자의 마탑 레이드'로 식별했으나, 검색 결과와 본문 맥락상 '하남자의 탑 공략법'이 더 유력함(major)",
+                ],
+                "candidate_preservation_sources": [
+                    {
+                        "official_title": "하남자의 탑 공략법",
+                        "heretic_url": "https://novel.munpia.com/400210",
+                        "confidence": "High",
+                        "alias_or_mention": "하남자",
+                        "source_tier": "official_detail",
+                        "reference_role": "primary",
+                    },
+                    {
+                        "official_title": "하남자의 괴담 공략법",
+                        "confidence": "High",
+                        "source_tier": "community",
+                        "reference_role": "candidate",
+                    },
+                    {
+                        "official_title": "하남자의 마탑 레이드",
+                        "heretic_url": "https://novelpia.com/novel/285649",
+                        "confidence": "High",
+                        "source_tier": "mixed",
+                        "reference_role": "mentioned",
+                    },
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": "하남자의 탑 공략법",
+                    "official_url": "https://novel.munpia.com/400210",
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "batch_alias_public_title_bridge",
+                        "official_detail_url",
+                        "serialized_public_identity_published",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "batch_alias_candidate_accepted",
+                            "title_lead_alias_official_detail_release",
+                            "alias_surface",
+                            "official_detail_url",
+                        ],
+                    },
+                },
+                "promotion_gate_state": {
+                    "post_id": 11705245,
+                    "candidate_title": "하남자의 탑 공략법",
+                    "candidate_url": "https://novel.munpia.com/400210",
+                    "source": "title_lead_alias_official_detail_release",
+                    "official_title_exists": True,
+                    "row_discusses_work_as_work": True,
+                    "title_resolution_state": "resolved",
+                    "work_resolution": "resolved",
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "batch_alias_candidate_accepted",
+                            "title_lead_alias_official_detail_release",
+                            "alias_surface",
+                            "official_detail_url",
+                        ],
+                    },
+                },
+                "candidate_ledger": {
+                    "candidate_preservation_sources": [
+                        {
+                            "official_title": "하남자의 탑 공략법",
+                            "heretic_url": "https://novel.munpia.com/400210",
+                            "confidence": "High",
+                            "alias_or_mention": "하남자",
+                            "source_tier": "official_detail",
+                            "reference_role": "primary",
+                        },
+                        {
+                            "official_title": "하남자의 괴담 공략법",
+                            "confidence": "High",
+                            "source_tier": "community",
+                            "reference_role": "candidate",
+                        },
+                    ],
+                    "promotion_gate_evidence": [
+                        {
+                            "kind": "batch_alias_bridge",
+                            "strength": "high",
+                            "source_path_or_snippet": "하남자",
+                            "supports_publish": True,
+                            "reason_code": "batch_alias_public_title_bridge",
+                        }
+                    ],
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            result,
+            post_title="하남자 재밌냐",
+        )
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertFalse(identity["safe_resolved"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        decision = identity["promotion_decision"]
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn(
+            "low_specificity_batch_alias_counterevidence_blocked",
+            decision["reason_codes"],
+        )
+        self.assertIn(
+            "low_specificity_batch_alias_counterevidence_blocked",
+            identity["promotion_blocked_reasons"],
+        )
+        trace = identity["publish_contract_trace"]
+        self.assertFalse(trace["gate_decision"]["publish_allowed"])
+        self.assertIsNone(trace["post_gate_identity"]["official_title"])
+
+    def test_low_specificity_batch_alias_with_consumption_bridge_stays_publishable(self):
+        result = {
+            "title": "가챠펑크 세드릭 누구임",
+            "content": ["가챠펑크 세드릭 초반부터 나옴?"],
+            "comments": [],
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "is_resolved_work_discussion": True,
+                "discussion_type": "character_talk",
+                "anchor_type": "character_title_link",
+                "context_sources": ["title", "body", "search"],
+                "novel_identity": {
+                    "official_title": "가챠 중독자의 퓨전펑크 생활",
+                    "heretic_url": "https://novelpia.com/novel/387014",
+                    "confidence": "High",
+                },
+                "reason_lines": [
+                    "- title_in_post: false",
+                    "- image_ocr_title_evidence: false",
+                    "- evidence_bucket: post_spans=1, search_snippets=1, official_urls=1",
+                    "- 캐릭터 세드릭과 alias가 같은 원문에 결합됨",
+                ],
+                "candidate_preservation_sources": [
+                    {
+                        "official_title": "가챠 중독자의 퓨전펑크 생활",
+                        "heretic_url": "https://novelpia.com/novel/387014",
+                        "confidence": "High",
+                        "alias_or_mention": "가챠펑크",
+                        "source_tier": "official_detail",
+                        "reference_role": "primary",
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": "가챠 중독자의 퓨전펑크 생활",
+                    "official_url": "https://novelpia.com/novel/387014",
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "batch_alias_public_title_bridge",
+                        "official_detail_url",
+                        "title_led_consumption_bridge",
+                        "serialized_public_identity_published",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "batch_alias_candidate_accepted",
+                            "alias_surface",
+                            "official_detail_url",
+                            "title_led_consumption_bridge",
+                        ],
+                    },
+                },
+                "candidate_ledger": {},
+            },
+        }
+
+        _sync_final_publication_ledger_contract(
+            result,
+            post_title="가챠펑크 세드릭 누구임",
+        )
+
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertTrue(identity["promotion_decision"]["publish_allowed"])
+        self.assertNotIn(
+            "low_specificity_batch_alias_counterevidence_blocked",
+            identity["promotion_decision"]["reason_codes"],
+        )
+
     def test_short_generic_blocked_alias_does_not_restore_title_only(self):
         result = {
             "title": "판초법사 경찰력 사용하면서도 1달 이상 정보통제가 가능함?",

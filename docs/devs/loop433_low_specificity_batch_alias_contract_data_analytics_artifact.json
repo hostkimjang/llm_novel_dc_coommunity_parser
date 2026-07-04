@@ -1,0 +1,107 @@
+{
+  "title": "Loop433 low-specificity batch alias publish 차단",
+  "status": "repo_structured_summary_only",
+  "generated_at": "2026-07-05T01:40:00+09:00",
+  "surface": "loop_report_support",
+  "tool_note": "@data-analytics 전용 커넥터가 현재 세션 도구로 노출되지 않아, projection result와 audit JSON을 직접 집계했다.",
+  "datasets": {
+    "gate_status_rows": [
+      {
+        "gate": "runtime_replay_after_patch",
+        "status": "NOT_RUN_AFTER_PATCH",
+        "detail": "Loop433은 저장된 Loop432 golden18 projection 결과에 current contract를 projection 적용한 회차",
+        "score": 0
+      },
+      {
+        "gate": "publication_contract",
+        "status": "GO",
+        "detail": "row_count 18, violation_row_count 0",
+        "score": 1
+      },
+      {
+        "gate": "golden_expected_answer_projection",
+        "status": "NO-GO",
+        "detail": "passed 17 of 18; remaining 11694019",
+        "score": 0
+      },
+      {
+        "gate": "search_recovery",
+        "status": "P0 / REVIEW",
+        "detail": "Loop431 inherited search_degraded_observed",
+        "score": 0
+      },
+      {
+        "gate": "full375_collateral",
+        "status": "NOT_OPEN",
+        "detail": "full375 replay was not dispatched",
+        "score": 0
+      },
+      {
+        "gate": "full_scan_approval",
+        "status": "false",
+        "detail": "semantic_quality=REVIEW-LOCKED and goal ACTIVE / NOT_COMPLETE",
+        "score": 0
+      }
+    ],
+    "target_row_rows": [
+      {
+        "post_id": 11705245,
+        "before_official_title": "하남자의 탑 공략법",
+        "after_official_title": null,
+        "after_candidate_ledger_status": "promotion_blocked",
+        "reason_code": "low_specificity_batch_alias_counterevidence_blocked"
+      }
+    ],
+    "golden_projection_rows": [
+      {
+        "metric": "passed",
+        "value": 17
+      },
+      {
+        "metric": "failed",
+        "value": 1
+      },
+      {
+        "metric": "negative_no_public_work_passed",
+        "value": 8
+      },
+      {
+        "metric": "positive_expected_work_passed",
+        "value": 9
+      }
+    ],
+    "remaining_failed_rows": [
+      {
+        "post_id": 11694019,
+        "status": "positive_work_unresolved",
+        "expected": "이세계에서 사이비로 살아남기",
+        "actual": null
+      }
+    ],
+    "collateral_accounting_rows": [
+      {
+        "metric": "reclassified",
+        "value": 74
+      },
+      {
+        "metric": "runtime_verified",
+        "value": 4
+      },
+      {
+        "metric": "residual",
+        "value": 105
+      },
+      {
+        "metric": "golden_shared_raw_regression_candidates_projection",
+        "value": 5
+      }
+    ]
+  },
+  "sources": [
+    "docs/devs/loop433_low_specificity_batch_alias_contract_20260705.json",
+    "docs/devs/loop_reports/LOOP_433_REPORT_20260705.md",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop433_golden18_low_specificity_alias_projection_publication_contract.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop433_golden18_low_specificity_alias_contract_projection_golden_audit.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop433_golden18_low_specificity_alias_contract_projection_collateral_compare.json"
+  ]
+}

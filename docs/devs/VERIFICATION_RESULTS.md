@@ -1,5 +1,34 @@
 ﻿# Verification Results
 
+## 2026-07-05 Loop433 low-specificity batch alias publish 계약 검증
+
+- 범위: current patch의 저특이 batch alias counterevidence demotion 계약을 unit/focused test와 Loop432 저장 결과 projection으로 검증했다. 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, golden18 runtime replay는 발주하지 않았다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_433_REPORT_20260705.md`
+  - state `docs\devs\loop433_low_specificity_batch_alias_contract_20260705.json`
+  - Data Analytics summary `docs\devs\loop433_low_specificity_batch_alias_contract_data_analytics_artifact.json`
+  - projection result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop433_golden18_low_specificity_alias_contract_projection_result.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop433_golden18_low_specificity_alias_projection_publication_contract.json`
+  - golden audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop433_golden18_low_specificity_alias_contract_projection_golden_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop433_golden18_low_specificity_alias_contract_projection_collateral_compare.json`
+- Verification commands:
+  - `.\\.venv312\\Scripts\\python.exe -m py_compile expert_main.py tests\\test_expert_main_comment_metadata.py` -> PASS
+  - focused low-specificity publication tests `3` -> PASS
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_expert_main_comment_metadata` -> PASS, `69` tests
+  - focused work-bridge/low-specificity bundle `6` -> PASS
+  - `tools\\audit_publication_contract_convergence.py ... --fail-on-no-go` -> PASS, `GO / 0 violations`
+  - `tools\\audit_regression_safe_golden.py ...` -> `NO-GO / 17 of 18`
+  - `git diff --check` -> PASS, CRLF warning only
+- Audit result:
+  - `11705245`: before `official_title=하남자의 탑 공략법`, after projection `official_title=null`, `candidate_ledger_status=promotion_blocked`, reason `low_specificity_batch_alias_counterevidence_blocked`
+  - golden expected-answer projection `17/18`
+  - remaining failed row `11694019`
+  - golden shared collateral raw regression candidates `5`
+- Boundary:
+  - Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다.
+  - Projection pass는 current runtime approval, search recovery, full375 approval이 아니다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE` 유지.
+
 ## 2026-07-05 Loop432 source-denial title-only publish 계약 검증
 
 - 범위: current patch의 source explicit work-denial title-only demotion 계약을 unit/focused test와 Loop431 저장 결과 projection으로 검증했다. 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, golden18 runtime replay는 발주하지 않았다.

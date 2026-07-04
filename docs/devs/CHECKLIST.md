@@ -1,5 +1,18 @@
 ﻿# Development Checklist
 
+## 2026-07-05 Loop433 low-specificity batch alias publish 계약 체크
+
+- [x] 신규 대형 런을 동결했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, golden18 runtime replay를 발주하지 않았다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] 짧은 batch alias와 official detail URL만으로 복수 후보/반론이 남은 public publish를 막는 shared contract를 추가했다.
+- [x] `11705245` projection에서 public title `하남자의 탑 공략법`을 제거하고 `promotion_blocked / candidate_only`로 수렴시켰다.
+- [x] publication contract projection audit `GO / 18 rows / 0 violations`를 확인했다.
+- [x] golden projection은 Loop432 `16/18`에서 `17/18`로 개선됐다.
+- [ ] Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다. Projection 개선을 current runtime approval로 세지 않는다.
+- [ ] Golden expected-answer projection은 여전히 `NO-GO / 17 of 18`이다. 남은 실패는 `11694019`다.
+- [ ] Search recovery는 `P0 / REVIEW / search_degraded_observed`, full375 collateral은 `NOT_OPEN`이다.
+- Gate: runtime production `GO / inherited Loop431 18 of 18`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, publication contract `GO / 0`, expected-answer projection `NO-GO / 17 of 18`, search recovery `P0 / REVIEW`, golden shared collateral raw `NO-GO / 5`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop432 source-denial title-only publish 계약 체크
 
 - [x] 신규 대형 런을 동결했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, golden18 runtime replay를 발주하지 않았다.

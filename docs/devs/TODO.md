@@ -1,5 +1,18 @@
 ﻿# Developer TODO Index
 
+## 2026-07-05 Loop433 TODO
+
+- 상태 업데이트: Loop433은 `11705245`의 저특이 batch alias publish 회귀를 일반 publication contract로 줄인 회차다. Projection expected-answer는 `17/18`로 개선됐지만 runtime replay after patch가 없고 search/full375 gate가 닫히지 않아 goal은 완료가 아니다.
+- [x] 신규 대형 런과 동일 parent packet replay를 발주하지 않았다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] `low_specificity_batch_alias_counterevidence_blocked` contract를 추가하고 hard-negative 복구 목록에 연결했다.
+- [x] `11705245` projection에서 `하남자의 탑 공략법` public title을 제거했다.
+- [x] publication contract projection `GO / 0 violations`, golden projection `NO-GO / 17 of 18`을 확인했다.
+- [ ] Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다. 필요 시 다음은 단건 또는 golden18 단일로 제한한다.
+- [ ] 남은 실패 `11694019`를 다음 active lane으로 둔다.
+- [ ] Search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, golden shared collateral `NO-GO / 5`를 닫지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop432 TODO
 
 - 상태 업데이트: Loop432는 `11713212`의 URL 없는 title-only publish 회귀를 source explicit denial contract로 줄인 회차다. Projection expected-answer는 `16/18`로 개선됐지만 runtime replay after patch가 없고 search/full375 gate가 닫히지 않아 goal은 완료가 아니다.

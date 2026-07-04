@@ -6,6 +6,22 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-05 Loop433 low-specificity batch alias publication 품질 게이트
+
+- 근거:
+  - [x] 신규 full375/bounded/N5/golden18 runtime replay와 동일 38-row parent packet replay를 발주하지 않았음을 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_433_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop433_low_specificity_batch_alias_contract_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop433_low_specificity_batch_alias_contract_data_analytics_artifact.json`.
+  - [x] Projection publication contract `GO / 0 violations`와 golden projection `NO-GO / 17 of 18`을 기록했다.
+- 품질 게이트:
+  - [x] runtime replay after patch가 `NOT_RUN_AFTER_PATCH`임을 명시한다.
+  - [x] projection expected-answer 개선을 current runtime approval로 승격하지 않는다.
+  - [x] R1 hardcoded cue/title list, `post_id` 예외, slang DB write-back을 하지 않았음을 명시한다.
+  - [x] `11705245`는 저특이 batch alias와 counterevidence 조건으로 public title `하남자의 탑 공략법`을 차단한다.
+  - [x] 남은 실패 `11694019`를 별도 active lane으로 둔다.
+  - [x] search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-05 Loop432 source-denial title-only publication 품질 게이트
 
 - 근거:
