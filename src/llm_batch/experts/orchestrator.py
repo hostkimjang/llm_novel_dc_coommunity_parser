@@ -2418,6 +2418,169 @@ class Orchestrator:
             return injected + list(search_requests or [])
         return search_requests
 
+    def _collect_direct_worklike_alias_character_probe_pairs(
+        self,
+        ctx: ConversationContext,
+        gatekeeper_result: Optional[Dict[str, Any]] = None,
+    ) -> List[Tuple[str, str]]:
+        gk_out = gatekeeper_result or ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
+        if not isinstance(gk_out, dict):
+            return []
+        entities = gk_out.get("detected_entities") or {}
+        if not isinstance(entities, dict):
+            entities = {}
+
+        post_data = getattr(ctx, "post_data", None) or {}
+        if not isinstance(post_data, dict):
+            post_data = {}
+        post_title = str(post_data.get("title") or "")
+        body_text = " ".join(
+            str(block.get("text") or "") if isinstance(block, dict) else str(block or "")
+            for block in (post_data.get("content_blocks") or [])
+        )
+        non_comment_norm = self._normalize_kor_token(f"{post_title} {body_text}")
+        if not non_comment_norm:
+            return []
+
+        alias_norms = self._collect_direct_worklike_alias_probe_norms(ctx, gatekeeper_result)
+        if not alias_norms:
+            return []
+
+        def _variants(raw: Any) -> List[str]:
+            text = str(raw or "").strip(" \"'“”‘’.,;:!?…")
+            if not text:
+                return []
+            values = [text]
+            stripped = self._strip_trailing_korean_particle(text) or text
+            if stripped != text:
+                values.append(stripped)
+            out: List[str] = []
+            seen: set[str] = set()
+            for value in values:
+                norm = self._normalize_kor_token(value)
+                if not norm or norm in seen:
+                    continue
+                seen.add(norm)
+                out.append(value)
+            return out
+
+        raw_alias_terms: List[Any] = []
+        raw_alias_terms.extend(entities.get("possible_titles") or [])
+        raw_alias_terms.extend(entities.get("key_terms") or [])
+        raw_alias_terms.extend(gk_out.get("key_terms") or [])
+        discourse_out = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
+        discourse = (
+            discourse_out.get("discourse_analysis") or {}
+            if isinstance(discourse_out, dict)
+            else {}
+        )
+        if isinstance(discourse, dict):
+            raw_alias_terms.extend(discourse.get("title_novel_terms") or [])
+            raw_alias_terms.extend(discourse.get("semantic_seed_review_context_terms") or [])
+
+        alias_terms: List[str] = []
+        alias_seen: set[str] = set()
+        for raw in raw_alias_terms:
+            for value in _variants(raw):
+                norm = self._normalize_kor_token(value)
+                if (
+                    not norm
+                    or norm not in alias_norms
+                    or norm not in non_comment_norm
+                    or norm in alias_seen
+                    or self._is_generic_topic_gap_term(value)
+                ):
+                    continue
+                alias_seen.add(norm)
+                alias_terms.append(value)
+        if not alias_terms:
+            return []
+
+        raw_chars: List[Any] = []
+        raw_chars.extend(entities.get("possible_characters") or [])
+        raw_chars.extend(entities.get("relevant_characters") or [])
+        raw_chars.extend(gk_out.get("possible_characters") or [])
+
+        char_terms: List[str] = []
+        char_seen: set[str] = set()
+        for raw in raw_chars:
+            for value in _variants(raw):
+                norm = self._normalize_kor_token(value)
+                if (
+                    len(norm) < 3
+                    or norm in alias_norms
+                    or norm not in non_comment_norm
+                    or norm in char_seen
+                    or self._is_low_specificity_search_seed(
+                        value,
+                        discourse_warning="direct_worklike_alias_character_probe",
+                    )
+                    or self._is_generic_topic_gap_term(value)
+                ):
+                    continue
+                char_seen.add(norm)
+                char_terms.append(value)
+        if not char_terms:
+            return []
+
+        pairs: List[Tuple[str, str]] = []
+        seen_pairs: set[Tuple[str, str]] = set()
+        for alias in alias_terms[:4]:
+            alias_norm = self._normalize_kor_token(alias)
+            for char in char_terms[:4]:
+                char_norm = self._normalize_kor_token(char)
+                key = (alias_norm, char_norm)
+                if not alias_norm or not char_norm or key in seen_pairs:
+                    continue
+                seen_pairs.add(key)
+                pairs.append((alias, char))
+        return pairs[:6]
+
+    def _inject_direct_worklike_alias_character_search_requests(
+        self,
+        ctx: ConversationContext,
+        search_requests: List[Dict[str, Any]],
+        *,
+        gatekeeper_result: Optional[Dict[str, Any]] = None,
+    ) -> List[Dict[str, Any]]:
+        pairs = self._collect_direct_worklike_alias_character_probe_pairs(
+            ctx,
+            gatekeeper_result=gatekeeper_result,
+        )
+        if not pairs:
+            return search_requests
+
+        existing_queries = {
+            str(req.get("query", "")).strip().lower()
+            for req in (search_requests or [])
+            if isinstance(req, dict)
+        }
+        injected: List[Dict[str, Any]] = []
+        for alias, char in pairs[:3]:
+            for query in (f"{alias} {char}", f"{alias} {char} 웹소설"):
+                query = " ".join(str(query or "").split()).strip()
+                if not query:
+                    continue
+                q_key = query.lower()
+                if q_key in existing_queries:
+                    continue
+                injected.append(
+                    {
+                        "query": query,
+                        "purpose": "title_search_community",
+                        "priority": 0,
+                    }
+                )
+                existing_queries.add(q_key)
+        if injected:
+            print(
+                f"[{_ts()}] {self.emoji} 🔎 직접 별칭+인물 검색 보강: "
+                f"{[req['query'] for req in injected[:4]]}",
+                file=sys.stderr,
+            )
+            return injected + list(search_requests or [])
+        return search_requests
+
     def _has_stable_direct_seed(
         self,
         ctx: ConversationContext,
@@ -10937,6 +11100,11 @@ class Orchestrator:
 
         search_requests = self._inject_partial_work_surface_search_requests(ctx, search_requests)
         search_requests = self._inject_image_work_cue_search_requests(ctx, search_requests)
+        search_requests = self._inject_direct_worklike_alias_character_search_requests(
+            ctx,
+            search_requests,
+            gatekeeper_result=gatekeeper_result,
+        )
         search_requests = self._inject_title_surface_anchor_search_requests(
             ctx,
             search_requests,

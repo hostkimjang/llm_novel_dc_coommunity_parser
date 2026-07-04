@@ -10919,6 +10919,96 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             orchestrator._has_direct_worklike_alias_character_search_probe(ctx, gatekeeper)
         )
 
+    def test_injects_direct_worklike_alias_character_search_probe(self):
+        orchestrator = Orchestrator(experts={})
+        ctx = ConversationContext(
+            post_id=11663521,
+            post_data={
+                "title": "TS) 시스터즈 퍼스트 정신머리 고치려면",
+                "content_blocks": [
+                    {"type": "text", "text": "고쳐질때까지 토우마가 갱생펀치 갈기면 되지 않을까?"},
+                    {"type": "image", "image_url": "https://example.test/touma.png"},
+                ],
+            },
+            comments=[],
+        )
+        gatekeeper = {
+            "post_type": "character_talk",
+            "detected_entities": {
+                "possible_titles": ["시스터즈 퍼스트"],
+                "possible_characters": ["토우마"],
+            },
+            "context_clues": {
+                "title_as_body_continuation": True,
+                "title_body_joined_text": "시스터즈 퍼스트 토우마 갱생펀치",
+            },
+            "key_terms": ["시스터즈 퍼스트", "토우마"],
+        }
+        ctx.set_expert_output(ExpertType.GATEKEEPER, gatekeeper)
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {"discourse_analysis": {"primary_domain": "novel_literature", "intent": "character_talk"}},
+        )
+
+        requests = [
+            {"purpose": "title_search_community", "priority": 2, "query": "시스터즈 퍼스트 리뷰"},
+        ]
+        injected = orchestrator._inject_direct_worklike_alias_character_search_requests(
+            ctx,
+            requests,
+            gatekeeper_result=gatekeeper,
+        )
+        queries = [item["query"] for item in injected]
+
+        self.assertEqual(queries[0], "시스터즈 퍼스트 토우마")
+        self.assertIn("시스터즈 퍼스트 토우마 웹소설", queries)
+        self.assertLess(queries.index("시스터즈 퍼스트 토우마"), queries.index("시스터즈 퍼스트 리뷰"))
+        kept = orchestrator._prune_title_search_requests_for_intent_permit(
+            ctx,
+            injected,
+            gatekeeper_result=gatekeeper,
+            phase="unit",
+        )
+        self.assertIn("시스터즈 퍼스트 토우마", [item["query"] for item in kept])
+
+    def test_direct_worklike_alias_character_injection_requires_direct_character_surface(self):
+        orchestrator = Orchestrator(experts={})
+        ctx = ConversationContext(
+            post_id=11663521,
+            post_data={
+                "title": "TS) 시스터즈 퍼스트 정신머리 고치려면",
+                "content_blocks": [
+                    {"type": "text", "text": "고쳐질때까지 토우마가 갱생펀치 갈기면 되지 않을까?"},
+                    {"type": "image", "image_url": "https://example.test/misaka.png"},
+                ],
+            },
+            comments=[],
+        )
+        gatekeeper = {
+            "post_type": "character_talk",
+            "detected_entities": {
+                "possible_titles": ["시스터즈 퍼스트"],
+                "possible_characters": ["미사카"],
+            },
+            "context_clues": {
+                "title_as_body_continuation": True,
+                "title_body_joined_text": "시스터즈 퍼스트 토우마 갱생펀치",
+            },
+            "key_terms": ["시스터즈 퍼스트", "미사카"],
+        }
+        ctx.set_expert_output(ExpertType.GATEKEEPER, gatekeeper)
+
+        requests = [
+            {"purpose": "title_search_community", "priority": 2, "query": "시스터즈 퍼스트 리뷰"},
+        ]
+        injected = orchestrator._inject_direct_worklike_alias_character_search_requests(
+            ctx,
+            requests,
+            gatekeeper_result=gatekeeper,
+        )
+
+        self.assertEqual(injected, requests)
+
     def test_direct_body_alias_probe_processed_after_broad_genre_official_hit(self):
         calls = []
 

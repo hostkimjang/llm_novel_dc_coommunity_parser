@@ -6,7 +6,18 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
-도메인 규칙: `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명으로 단정하지 않는다. 웹소설 안에서 갤러리/댓글식 커뮤니티를 오마주한 작품 제목일 수 있으므로, known abbreviation + explicit alias relation + specific-work target + community support가 있으면 shared work-bridge로 통과시키되, 경쟁 본문 작품 근거가 있으면 publish를 막는다.
+도메인 규칙: `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명으로 단정하지 않는다. 요즘 웹소설은 작품 안에 갤러리/댓글식 커뮤니티를 오마주한 장치를 엮을 수 있고, 그 표면 자체가 작품 제목 또는 약어일 수 있다. known abbreviation + explicit alias relation + specific-work target + community support가 있으면 shared work-bridge로 통과시키되, 경쟁 본문 작품 근거가 있으면 publish를 막는다.
+
+## 2026-07-05 Loop447 Addendum - 11663521 direct alias-character probe
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop447은 `11663521`의 `시스터즈 퍼스트 + 토우마` 직접 결속 검색 근거를 보강한 단건 runtime 회차이며 approval 회차가 아니다.
+- Evidence: report `docs/devs/loop_reports/LOOP_447_REPORT_20260705.md`, state `docs/devs/loop447_11663521_direct_alias_character_runtime_20260705.json`, Data Analytics summary `docs/devs/loop447_11663521_direct_alias_character_data_analytics_artifact.json`.
+- Code: `orchestrator.py`는 직접 worklike alias와 본문 직접 인물 표면이 함께 있을 때 `title_search_community` query를 앞쪽에 주입한다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+- Runtime: run `20260705_061807_368130`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`, `ordered_flush_blocked=false`, MCP health `include_search=true`, `light_mode=false`, row search `ok`, VLM/OCR `READY`다.
+- Result: public `official_title=null`, `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`, `title_resolution_state=unresolved_matchable`. Pre-gate candidate `어떤 마술의 금서목록`은 보존됐지만 `promotion_decision.status=candidate_only`, `publish_allowed=false`, `bypassed_gate=false`다.
+- Boundary: subset golden audit는 `PASS / 1 of 1`, status `expected_work_evidence_preserved_unresolved`다. Subset collateral은 baseline wrong title `초전자포] 시스터즈가 되었다`에서 `null`로 내려간 `resolved_to_null` raw candidate `1`이므로 full375 approval 근거가 아니다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_EVIDENCE_PRESERVED_UNRESOLVED`, row-level search `GO`, search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Next: `11663521`은 evidence-preserved unresolved로 남기고, public title 확정은 broader recall bridge 또는 blind/source-native 정답성 갱신 전까지 보류한다.
 
 ## 2026-07-05 Loop446 Addendum - 11694035 아생갤 current HEAD runtime
 

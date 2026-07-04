@@ -1,5 +1,41 @@
 # Verification Results
 
+## 2026-07-05 Loop447 11663521 직접 별칭+인물 검색 probe 검증
+
+- 범위: `11663521` 단건을 base HEAD `7b0a6000` + 워킹트리 direct alias-character probe에서 search 포함 non-light, VLM/OCR 필수 조건으로 재실행했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_447_REPORT_20260705.md`
+  - state `docs\devs\loop447_11663521_direct_alias_character_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop447_11663521_direct_alias_character_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop447_11663521_direct_alias_character_probe_result.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop447_11663521_direct_alias_character_probe_health_audit.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop447_11663521_direct_alias_character_publication_contract_audit.json`
+  - golden subset audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop447_11663521_direct_alias_character_golden_subset_audit.json`
+  - collateral subset compare `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop447_11663521_direct_alias_character_collateral_subset_compare.json`
+- Runtime:
+  - run `20260705_061807_368130`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - row search status `ok`, query/degraded/unrecovered `9/0/0`
+  - VLM/OCR `READY`, image fetch `2/2`
+- Result:
+  - `official_title=null`, `heretic_url=null`
+  - `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`
+  - `title_resolution_state=unresolved_matchable`, `title_resolution_allowed=false`
+  - pre-gate candidate `어떤 마술의 금서목록`
+  - `promotion_decision.status=candidate_only`, `publish_allowed=false`, `bypassed_gate=false`
+- Audit:
+  - `tools/audit_expert_run_health.py` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=GO`, `publication_contract_convergence=GO`.
+  - `tools/audit_publication_contract_convergence.py` -> `GO / row_count 1 / violation_row_count 0`.
+  - subset golden audit -> `PASS / 1 of 1`, status `expected_work_evidence_preserved_unresolved`.
+  - subset collateral compare -> `resolved_to_null`, raw regression candidate `1`.
+- Boundary:
+  - `시스터즈 퍼스트 + 토우마` 직접 검색으로 금서목록/초전자포 시스터즈 맥락은 회수했다.
+  - Public title은 강제 승격하지 않는다. 공식 alias 직접 bridge가 약하므로 evidence-preserved unresolved로 남긴다.
+  - Baseline wrong title `초전자포] 시스터즈가 되었다`가 `null`로 내려간 것은 full375 collateral approval 근거가 아니다.
+  - Broader search recovery는 `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral은 `NOT_OPEN`.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop446 11694035 아생갤 current HEAD runtime 검증
 
 - 범위: `11694035` 단건을 current HEAD `69dd0c17`에서 search 포함 non-light, VLM/OCR 필수 조건으로 재실행해 `아생갤`이 현실 갤러리명이 아니라 웹소설 `아카데미 생존 갤러리`의 작중 갤러리/커뮤니티 오마주형 제목 약어로 publish되는지 확인했다.

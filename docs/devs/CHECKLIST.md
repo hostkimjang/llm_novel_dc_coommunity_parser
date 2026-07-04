@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-05 Loop447 11663521 직접 별칭+인물 검색 probe 체크
+
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `src/llm_batch/experts/orchestrator.py`에 직접 worklike alias와 본문 직접 인물 표면을 묶은 검색 요청 주입을 추가했다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] `11663521` 단건을 base HEAD `7b0a6000` + 워킹트리 패치에서 search 포함 non-light, VLM/OCR 필수로 실행했다.
+- [x] Run `20260705_061807_368130`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`, `ordered_flush_blocked=false`, `partial_flush_gap=false`로 완료됐다.
+- [x] MCP health는 `include_search=true`, `light_mode=false`, ok/failure `1/0`이고 row search는 `ok`, query/degraded/unrecovered `9/0/0`이다.
+- [x] VLM/OCR은 `READY`, image fetch `2/2`, chunks `1`이다.
+- [x] Public identity는 `official_title=null`, `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`, `title_resolution_state=unresolved_matchable`다.
+- [x] Pre-gate candidate `어떤 마술의 금서목록`은 보존됐지만 `candidate_only / publish_allowed=false / bypassed_gate=false`로 public publish되지 않았다.
+- [x] Health audit `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`를 기록했다.
+- [x] Golden subset audit `PASS / 1 of 1`, status `expected_work_evidence_preserved_unresolved`를 기록했다.
+- [x] Collateral subset은 baseline wrong title `초전자포] 시스터즈가 되었다`에서 `null`로 내려간 `resolved_to_null` raw candidate `1`로 기록했다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 subset PASS를 full scan approval로 승격하지 않는다.
+- [ ] `11663521` public title 확정은 HOLD다. 금서목록/초전자포 근거 보존과 safe-resolved publish를 분리한다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_EVIDENCE_PRESERVED_UNRESOLVED`, publication contract `GO`, row-level search `GO`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop446 11694035 아생갤 current HEAD runtime 체크
 
 - [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

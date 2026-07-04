@@ -1,0 +1,72 @@
+{
+  "artifact_type": "data_analytics_summary",
+  "loop": "447",
+  "date": "2026-07-05",
+  "language": "ko",
+  "summary": "11663521 단건에서 직접 별칭+본문 인물 검색 probe가 금서목록/초전자포 계열 근거를 회수했다. 공개 제목은 여전히 promotion_blocked/null이며, subset expected-answer는 evidence-preserved unresolved로 PASS다.",
+  "quantitative": {
+    "runtime_rows": {
+      "input": 1,
+      "completed": 1,
+      "flushed": 1,
+      "pending": 0,
+      "failed": 0
+    },
+    "search": {
+      "queries_issued": 9,
+      "degraded": 0,
+      "unrecovered_degraded": 0,
+      "accepted": 55,
+      "raw": 189,
+      "filtered": 2,
+      "fallback_recovered": 7
+    },
+    "identity_after": {
+      "safe_resolved": 0,
+      "promotion_blocked": 1,
+      "public_title_null": 1,
+      "candidate_preserved": 1
+    },
+    "golden_subset": {
+      "row_count": 1,
+      "passed_count": 1,
+      "failed_count": 0,
+      "status_counts": {
+        "expected_work_evidence_preserved_unresolved": 1
+      }
+    },
+    "collateral_subset": {
+      "shared_post_count": 1,
+      "changed_post_count": 1,
+      "collateral_regression_count": 1,
+      "status_counts": {
+        "resolved_to_null": 1
+      }
+    }
+  },
+  "interpretation": [
+    "baseline title '초전자포] 시스터즈가 되었다'는 wrong publish 성격이라 null로 내려간 변화는 단독으로 악화로 해석하지 않는다.",
+    "금서목록/시스터즈/토우마 검색 근거는 회복됐지만 official alias 직접 bridge가 약해 public title publish는 보류한다.",
+    "단건 row-level search GO는 broader search recovery나 full375 approval이 아니다."
+  ],
+  "gate_status": {
+    "targeted_runtime": "GO / 1 of 1",
+    "targeted_expected_answer": "GO_TARGETED_EVIDENCE_PRESERVED_UNRESOLVED",
+    "publication_contract": "GO / 0 violations",
+    "row_search": "GO",
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_447_REPORT_20260705.md",
+    "state": "docs/devs/loop447_11663521_direct_alias_character_runtime_20260705.json",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop447_11663521_direct_alias_character_probe_result.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop447_11663521_direct_alias_character_probe_health_audit.json",
+    "publication_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop447_11663521_direct_alias_character_publication_contract_audit.json",
+    "golden_subset_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop447_11663521_direct_alias_character_golden_subset_audit.json",
+    "collateral_subset_compare": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop447_11663521_direct_alias_character_collateral_subset_compare.json"
+  }
+}
