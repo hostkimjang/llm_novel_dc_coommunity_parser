@@ -1,5 +1,35 @@
 ﻿# Verification Results
 
+## 2026-07-05 Loop435-436 current runtime + 갤러리형 제목 계약 검증
+
+- 범위: Loop435 단건 runtime, Loop436 golden18 runtime, `아생갤` 라벨/계약 교정, focused unit 검증을 수행했다. 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_435_436_REPORT_20260705.md`
+  - state `docs\devs\loop435_436_runtime_gallery_contract_20260705.json`
+  - Data Analytics summary `docs\devs\loop435_436_runtime_gallery_contract_data_analytics_artifact.json`
+  - Loop436 result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop436_golden18_current_a2166e82_search_nonlight_result.json`
+  - Loop436 health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop436_golden18_current_a2166e82_health_audit.json`
+  - Loop436 golden audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop436_golden18_current_a2166e82_golden_audit.json`
+- Verification commands:
+  - `.\\.venv312\\Scripts\\python.exe -m py_compile src\\llm_batch\\agentic_pipeline.py tests\\test_known_title_abbreviation_support.py tools\\audit_regression_safe_golden.py` -> PASS
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_known_title_abbreviation_support` -> PASS, `31` tests
+  - focused unittest `4` tests -> PASS
+  - `.\\.venv312\\Scripts\\python.exe tools\\audit_expert_run_health.py ...loop436...` -> `GO / clean_completed_source`
+  - `.\\.venv312\\Scripts\\python.exe tools\\audit_publication_contract_convergence.py ...loop436...` -> `GO / 0 violations`
+  - `.\\.venv312\\Scripts\\python.exe tools\\audit_regression_safe_golden.py ...loop436...` -> `PASS / 18 of 18`
+  - `.\\.venv312\\Scripts\\python.exe -m json.tool ...golden_manifest.json` -> PASS
+  - `git diff --check` -> PASS, CRLF warning only
+- Audit result:
+  - Loop436 runtime `18/18/18/0/0`, publication contract `GO / 18 rows / 0 violations`
+  - Golden expected-answer `PASS / 18 of 18`
+  - `11694035`: expected `아카데미 생존 갤러리`, actual public title `null`, status `expected_work_evidence_preserved_unresolved`
+  - `11698880`: expected/actual `가챠 중독자의 퓨전펑크 생활`, status `expected_title_resolved`
+  - Search evidence `REVIEW`, unrecovered degraded total `16`
+- Boundary:
+  - Post-patch gallery contract runtime은 `NOT_RUN_AFTER_PATCH`다.
+  - Golden PASS는 full375 collateral approval이나 full-scan approval이 아니다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE` 유지.
+
 ## 2026-07-05 Loop434 contextual exact-title 공식 detail gap 계약 검증
 
 - 범위: current patch의 contextual exact-title official detail gap 계약을 unit/focused test와 Loop433 저장 projection probe로 검증했다. 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, golden18 runtime replay는 발주하지 않았다.

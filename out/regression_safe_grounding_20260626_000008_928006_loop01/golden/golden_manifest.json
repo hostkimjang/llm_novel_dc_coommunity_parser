@@ -20,12 +20,14 @@
     },
     {
       "post_id": 11694035,
-      "golden_role": "negative_no_public_work",
-      "failure_class": "batch_context_bleed",
-      "disagreement_type": "over_resolved",
+      "golden_role": "positive_expected_work",
+      "failure_class": "gallery_homage_title_alias",
+      "disagreement_type": "candidate_preservation_or_official_detail_resolution",
       "severity": "high",
-      "expected_title_or_hypothesis": null,
-      "expected_no_public_title": true,
+      "expected_title_or_hypothesis": "아카데미 생존 갤러리",
+      "expected_no_public_title": false,
+      "expected_url": "https://novelpia.com/novel/380218",
+      "expected_status": "safe_resolved_or_evidence_preserved_unresolved",
       "baseline_identity": {
         "official_title": "시로코의 제멋대로 일상 단편선",
         "heretic_url": "https://novelpia.com/novel/203102",
@@ -34,7 +36,7 @@
         "candidate_ledger_status": "safe_resolved",
         "candidate_count": 1
       },
-      "note": "본문은 '폐허 도심지=지진/전쟁?' 일반 반응이고 OCR도 일반 소설 본문 캡처(파란 트윈테일 메이드+폐허 도심지)인데, neighbor(low) 앵커로 여러 novelpia 항목에 공유된 핵전쟁 폐허 인트로 스니펫의 '시로코 단편선'(블아 2차창작)으로 과대해소. 제목/본문/OCR 어디에도 이 작품 결속 단서 없음."
+      "note": "사용자 도메인 보정: '아생갤'은 현실 갤러리명이 아니라 웹소설 '아카데미 생존 갤러리' 약어로 쓰일 수 있다. 작품 안의 갤러리/커뮤니티 오마주 제목은 official detail 또는 후보 보존 근거가 있으면 작품 후보로 유지한다. 과거 baseline의 '시로코 단편선'은 오귀속이며, 공식 detail이 없거나 search degraded이면 public title은 HOLD하되 '작품 없음'으로 세지 않는다."
     },
     {
       "post_id": 11698897,

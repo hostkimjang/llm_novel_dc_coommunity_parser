@@ -371,7 +371,7 @@ class KnownTitleAbbreviationSupportTest(unittest.TestCase):
         finally:
             agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = original_registry
 
-    def test_prefix_only_known_title_abbreviation_official_detail_does_not_lock(self):
+    def test_official_detail_backed_gallery_title_abbreviation_locks_work(self):
         pipeline = _build_pipeline()
         original_registry = agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS
         try:
@@ -421,36 +421,30 @@ class KnownTitleAbbreviationSupportTest(unittest.TestCase):
                     "아카데미 생존 갤러리",
                 )
             )
-            self.assertFalse(
+            self.assertTrue(
                 pipeline._has_curated_alias_contextual_work_anchor(
                     ctx,
                     "아카데미 생존 갤러리",
                 )
             )
-            self.assertFalse(
+            self.assertTrue(
                 pipeline._known_title_abbreviation_context_locks_title(
                     ctx,
                     "아카데미 생존 갤러리",
                 )
             )
+            self.assertTrue(
+                pipeline._post_discusses_work_as_work(
+                    ctx,
+                    "아카데미 생존 갤러리",
+                    source="official_url_recall_gate",
+                )
+            )
 
             title, url = pipeline._apply_known_abbreviation_title_guard(ctx, "아생갤", None)
-            self.assertEqual(title, "아생갤")
-            self.assertIsNone(url)
-            self.assertTrue(getattr(ctx, "_known_abbreviation_title_guard_blocked_soft_support", False))
-            self.assertEqual(getattr(ctx, "_known_abbreviation_title_guard_blocked_alias", ""), "아생갤")
-            self.assertEqual(
-                getattr(ctx, "_known_abbreviation_title_guard_blocked_title", ""),
-                "아카데미 생존 갤러리",
-            )
-
-            candidate, hit = pipeline._resolve_batch_memory_alias_candidate(ctx, verification_result={})
-            self.assertIsNone(candidate)
-            self.assertIsNone(hit)
-            self.assertEqual(
-                getattr(ctx, "_batch_alias_rescue_blocked_nonwork_context_reason", ""),
-                "known_title_abbreviation_missing_work_anchor",
-            )
+            self.assertEqual(title, "아카데미 생존 갤러리")
+            self.assertEqual(url, "https://novelpia.com/novel/380218")
+            self.assertFalse(getattr(ctx, "_known_abbreviation_title_guard_blocked_soft_support", False))
         finally:
             agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = original_registry
 

@@ -16840,6 +16840,11 @@ class AgenticPipeline:
                 flags=re.IGNORECASE,
             )
         )
+        official_detail_alias_title_anchor = self._has_official_detail_backed_curated_alias_title_context(
+            ctx,
+            candidate,
+            matched_alias,
+        )
         work_cue = bool(
             re.search(
                 r"(오늘|내일|새벽|오냐|오나|언제|몇\s*시|연재|연참|연중|휴재|지각|최신화|최신편|회차|몇\s*화|"
@@ -16860,6 +16865,7 @@ class AgenticPipeline:
             or character_anchor
             or character_surface_anchor
             or character_setting_theory_anchor
+            or official_detail_alias_title_anchor
         )
         if not work_cue:
             return False
@@ -25590,6 +25596,62 @@ OUTPUT JSON:
             return True
         return False
 
+    def _has_official_detail_backed_curated_alias_title_context(
+        self,
+        ctx,
+        title: Optional[str],
+        alias_text: Optional[str] = None,
+    ) -> bool:
+        """Known title aliases in the post title may name fictional gallery/community works."""
+        candidate = str(title or "").strip()
+        if not ctx or not candidate or self._semantic_seed_no_work_signal(ctx):
+            return False
+
+        post_data = getattr(ctx, "post_data", None) or {}
+        title_surface = " ".join(
+            str(post_data.get(key) or "")
+            for key in ("title", "normalized_title")
+            if str(post_data.get(key) or "").strip()
+        )
+        if not title_surface.strip():
+            return False
+
+        candidate_norm = self._normalize_match_text(candidate)
+        aliases: List[str] = []
+        if str(alias_text or "").strip():
+            aliases.append(str(alias_text or "").strip())
+        for alias, known_title in (KNOWN_TITLE_ABBREVIATIONS or {}).items():
+            if self._normalize_match_text(known_title) == candidate_norm:
+                alias_str = str(alias or "").strip()
+                if alias_str and alias_str not in aliases:
+                    aliases.append(alias_str)
+        if not aliases or not any(self._curated_alias_surface_in_text(title_surface, alias) for alias in aliases):
+            return False
+
+        if (
+            self._has_recommendation_request_signal(title_surface)
+            or self._has_recommendation_seeking_surface_signal(title_surface)
+        ):
+            return False
+
+        try:
+            if self._has_official_title_evidence(ctx, candidate):
+                return True
+        except Exception:
+            pass
+        try:
+            if self._find_title_matched_official_url(
+                candidate,
+                getattr(ctx, "search_results", None) or [],
+            ):
+                return True
+        except Exception:
+            pass
+        try:
+            return bool(self._official_detail_exact_title_urls_for_no_work_anchor(ctx, candidate))
+        except Exception:
+            return False
+
     def _has_curated_alias_contextual_work_anchor(
         self,
         ctx,
@@ -25641,6 +25703,10 @@ OUTPUT JSON:
         if self._semantic_seed_no_work_signal(ctx):
             return False
 
+        official_detail_alias_title_anchor = self._has_official_detail_backed_curated_alias_title_context(
+            ctx,
+            title,
+        )
         has_episode_or_serial_cue = bool(
             gk_clues.get("has_episode_reference")
             or gk_clues.get("is_spoiler_discussion")
@@ -25657,6 +25723,7 @@ OUTPUT JSON:
                 flags=re.IGNORECASE,
             )
             or _has_curated_alias_work_discussion_cue(packet_text)
+            or official_detail_alias_title_anchor
         )
         if not has_packet_work_cue:
             try:
@@ -25671,7 +25738,10 @@ OUTPUT JSON:
             or gk_post_type in {"work_discussion", "review", "spoiler_discussion"}
         )
         has_entity_cue = bool(possible_titles or (possible_characters and body_text.strip()))
-        return bool(has_positive_semantic_cue and (has_episode_or_serial_cue or has_entity_cue))
+        return bool(
+            has_positive_semantic_cue
+            and (has_episode_or_serial_cue or has_entity_cue or official_detail_alias_title_anchor)
+        )
 
     def _collect_title_support_kinds(
         self,

@@ -1,5 +1,17 @@
 ﻿# Developer TODO Index
 
+## 2026-07-05 Loop435-436 TODO
+
+- 상태 업데이트: Loop436은 golden18 runtime `18/18`과 expected-answer `PASS / 18 of 18`을 확인했지만, post-patch gallery contract runtime은 아직 없고 search/full375 gate가 닫히지 않아 goal은 완료가 아니다.
+- [x] 신규 대형 런과 동일 parent packet replay를 발주하지 않았다.
+- [x] 사용자 지시에 따라 golden18 단일 runtime으로 watchdog/stall 우회가 row를 내는지 확인했다.
+- [x] `아생갤`을 `아카데미 생존 갤러리` 작품 약어로 라벨 교정하고 `11694035`를 positive expected-work로 이동했다.
+- [x] `_has_official_detail_backed_curated_alias_title_context(...)`를 추가해 official detail backed known title abbreviation을 작품 bridge로 허용했다.
+- [x] known-title abbreviation unittest 31건, focused 4건, golden audit `PASS / 18 of 18`을 확인했다.
+- [ ] Post-patch gallery contract runtime은 `NOT_RUN_AFTER_PATCH`다. 필요 시 다음은 단건 또는 golden18 단일로 제한한다.
+- [ ] Search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, golden shared collateral `NO-GO / 6`을 닫지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop434 TODO
 
 - 상태 업데이트: Loop434는 `11694019`의 저장 검색 카탈로그 exact-title 근거가 `semantic_seed_review` 조기 종료 때문에 공식 detail URL 보강으로 넘어가지 못한 경로를 일반 술어로 줄인 회차다. Runtime replay after patch가 없고 expected-answer/search/full375 gate가 닫히지 않아 goal은 완료가 아니다.

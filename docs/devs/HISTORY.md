@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-05 - Loop435-436 current runtime proof and gallery-title contract
+
+- Loop435는 `11694019` 단건 current HEAD runtime으로 row production을 확인했다. 결과는 `이세계에서 사이비로 살아남기` / `https://novelpia.com/novel/181771`, `candidate_ledger_status=safe_resolved`다.
+- Loop436 golden18 run `20260705_020417_199593`는 input/completed/flushed/pending/failed `18/18/18/0/0`, `large_run_complete=true`, `ordered_flush_blocked=false`로 완료됐다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, publication contract는 `GO / 18 rows / 0 violations`다.
+- 사용자 도메인 보정에 따라 `아생갤`을 `아카데미 생존 갤러리` 작품 약어로 반영했다. `11694035` golden role은 `negative_no_public_work`에서 `positive_expected_work`로 교정했다.
+- `agentic_pipeline.py`는 `_has_official_detail_backed_curated_alias_title_context(...)`를 추가해 known title abbreviation이 post title에 있고 공식 플랫폼 detail 근거가 있으며 semantic no-work가 아니면 갤러리형 제목도 작품 bridge로 허용한다.
+- Verification은 `py_compile` PASS, `tests.test_known_title_abbreviation_support` 31건 PASS, focused unittest 4건 PASS, golden audit `PASS / 18 of 18`, `git diff --check` PASS(CRLF warning only)다.
+- Report는 `docs/devs/loop_reports/LOOP_435_436_REPORT_20260705.md`, state는 `docs/devs/loop435_436_runtime_gallery_contract_20260705.json`, Data Analytics summary는 `docs/devs/loop435_436_runtime_gallery_contract_data_analytics_artifact.json`이다.
+- Gate는 runtime production `GO / 18 of 18`, expected-answer `PASS / 18 of 18`, post-patch gallery runtime `NOT_RUN_AFTER_PATCH`, search recovery `P0 / REVIEW`, golden shared collateral `NO-GO / 6`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop434 contextual exact-title official detail gap contract
 
 - 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, golden18 runtime replay는 발주하지 않았다.

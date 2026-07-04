@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-05 Loop435-436 Addendum - runtime proof and gallery-title contract
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop436은 runtime 생산성과 label-corrected golden expected-answer를 갱신했지만 approval 회차가 아니다.
+- Evidence: report `docs/devs/loop_reports/LOOP_435_436_REPORT_20260705.md`, state `docs/devs/loop435_436_runtime_gallery_contract_20260705.json`, Data Analytics summary `docs/devs/loop435_436_runtime_gallery_contract_data_analytics_artifact.json`.
+- Runtime: Loop435 단건 `1/1`, Loop436 golden18 `18/18` 완료. Publication contract는 `GO / 0 violations`.
+- Code: `agentic_pipeline.py`에 `_has_official_detail_backed_curated_alias_title_context(...)`를 추가했다. Known title abbreviation이 post title에 있고 official detail 근거가 있으며 semantic no-work가 아니면 갤러리형 제목도 작품 bridge로 허용한다.
+- Label: `11694035`는 `아생갤 -> 아카데미 생존 갤러리` 도메인 보정으로 `positive_expected_work`가 됐다. Loop436 저장 결과는 public title HOLD지만 candidate evidence preserved로 통과한다.
+- Boundary: R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다. Post-patch runtime은 `NOT_RUN_AFTER_PATCH`.
+- Gate: expected-answer `PASS / 18 of 18`, search recovery `P0 / REVIEW`, golden shared collateral `NO-GO / 6`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Next: post-patch gallery contract runtime 재실증과 search degraded 복구를 분리한다. Full375 collateral 전까지 approval은 열지 않는다.
+
 ## 2026-07-05 Loop434 Addendum - contextual exact-title official detail gap contract
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop434는 approval 회차가 아니라 Loop433 잔여 실패 `11694019`의 저장 검색 카탈로그 exact-title 근거를 semantic seed 조기 종료 전에 AdaptiveChain 공식 URL 보강으로 넘기도록 배선한 회차다.

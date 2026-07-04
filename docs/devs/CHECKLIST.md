@@ -1,5 +1,20 @@
 ﻿# Development Checklist
 
+## 2026-07-05 Loop435-436 runtime + 갤러리형 제목 계약 체크
+
+- [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] 사용자 P0 지시에 따라 golden18 단일 runtime만 실행했고 Loop436은 input/completed/flushed/pending/failed `18/18/18/0/0`으로 완료됐다.
+- [x] Loop435 `11694019` 단건은 `이세계에서 사이비로 살아남기` safe_resolved로 row 생산을 확인했다.
+- [x] Loop436 health audit는 `flush_integrity=GO / clean_completed_source`, publication contract는 `GO / 18 rows / 0 violations`다.
+- [x] `아생갤`을 `아카데미 생존 갤러리` 작품 약어로 라벨 교정했다. `11694035`는 `negative_no_public_work`에서 `positive_expected_work`로 이동했다.
+- [x] `_has_official_detail_backed_curated_alias_title_context(...)`를 추가해 official detail backed known title abbreviation은 작품 bridge를 통과하게 했다.
+- [x] community-only / semantic no-work / community_banter 차단 테스트는 유지했다.
+- [x] `py_compile`, `tests.test_known_title_abbreviation_support` 31건, focused unittest 4건, golden manifest `json.tool`, `git diff --check`를 통과했다.
+- [ ] Post-patch gallery contract runtime replay는 `NOT_RUN_AFTER_PATCH`다. Unit pass를 runtime approval로 승격하지 않는다.
+- [ ] Loop436 search recovery는 `P0 / REVIEW / search_degraded_observed`, full375 collateral은 `NOT_OPEN`이다.
+- [ ] Golden shared collateral 후보는 `6`이며 full-panel approval이 아니다.
+- Gate: runtime production `GO / 18 of 18`, expected-answer `PASS / 18 of 18`, post-patch runtime `NOT_RUN_AFTER_PATCH`, search recovery `P0 / REVIEW`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop434 contextual exact-title 공식 detail gap 계약 체크
 
 - [x] 신규 대형 런을 동결했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, golden18 runtime replay를 발주하지 않았다.

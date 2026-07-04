@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop435-436 runtime proof and gallery-title contract follow-up
+  - 상태: Loop436 runtime `GO 18/18` / publication contract `GO 0 violations` / expected-answer `PASS 18/18` / post-patch gallery runtime `NOT_RUN` / search recovery `P0_REVIEW_SEARCH_DEGRADED` / golden shared collateral `NO-GO 6` / full375 `NOT_OPEN` / approval not open
+  - 적용: `아생갤`은 현실 갤러리명이 아니라 `아카데미 생존 갤러리` 작품 약어가 될 수 있다는 도메인 계약을 반영했다. Official detail backed known title abbreviation은 작품 bridge로 허용하고, community-only/semantic no-work는 계속 차단한다.
+  - 산출물: `docs/devs/loop_reports/LOOP_435_436_REPORT_20260705.md`, `docs/devs/loop435_436_runtime_gallery_contract_20260705.json`, `docs/devs/loop435_436_runtime_gallery_contract_data_analytics_artifact.json`.
+  - 완료 기준: post-patch gallery contract를 runtime으로 재실증하고, search degraded `unrecovered=0` 및 full375 collateral gate를 별도 증명하기 전까지 approval과 hard-hold 완화를 열지 않는다.
+
 - [ ] Loop434 contextual exact-title official detail gap follow-up
   - 상태: code contract `GO_UNIT` / saved projection probe `GO` / runtime replay after patch `NOT_RUN` / expected-answer `NOT_REFRESHED inherited Loop433 NO-GO 17/18` / search recovery `P0_REVIEW_SEARCH_DEGRADED` / golden shared collateral raw `NO-GO inherited 5` / full375 `NOT_OPEN` / approval not open
   - 적용: `semantic_seed_review` 조기 종료 전에 저장 검색 카탈로그의 contextual exact-title 공식 detail URL gap을 확인하고, `adaptive_official_url`, `adaptive_author_bridge_official_url`만 intent-denied 상태에서 보존한다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.

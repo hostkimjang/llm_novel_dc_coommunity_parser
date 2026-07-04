@@ -6,6 +6,21 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-05 Loop435-436 runtime + 갤러리형 제목 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_435_436_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop435_436_runtime_gallery_contract_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop435_436_runtime_gallery_contract_data_analytics_artifact.json`.
+  - [x] Loop436 runtime `18/18`과 publication contract `GO / 0 violations`를 기록했다.
+  - [x] `11694035` 라벨 교정과 `아생갤` 도메인 보정을 기록했다.
+- 품질 게이트:
+  - [x] golden expected-answer `PASS / 18 of 18`을 full approval로 승격하지 않는다.
+  - [x] post-patch gallery contract runtime이 `NOT_RUN_AFTER_PATCH`임을 명시한다.
+  - [x] search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, golden shared collateral `NO-GO / 6`을 유지한다.
+  - [x] R1 hardcoded cue/title list, `post_id` 예외, slang DB write-back을 하지 않았음을 명시한다.
+  - [x] goal `ACTIVE / NOT_COMPLETE`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
+
 ## 2026-07-05 Loop434 contextual exact-title 공식 detail gap 품질 게이트
 
 - 근거:

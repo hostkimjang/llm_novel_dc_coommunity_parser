@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260705-436 - runtime proof and gallery-title contract
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/parent replay 미발주 | dispatch 반복 금지 |
+| runtime proof | GO | Loop436 golden18 `18/18/18/0/0` | post-patch runtime과 분리 |
+| publication contract | GO | Loop436 `18 rows / 0 violations` | full approval로 승격 금지 |
+| expected-answer | PASS / 18 of 18 | 라벨 교정 후 golden audit PASS | full375와 별도 |
+| gallery-title contract | GO_UNIT | `_has_official_detail_backed_curated_alias_title_context` 추가 | runtime replay 필요 |
+| `11694035` label | corrected | `negative_no_public_work -> positive_expected_work`, expected `아카데미 생존 갤러리` | official detail 없으면 HOLD |
+| search evidence | P0 / REVIEW | Loop436 search degraded, unrecovered `16` | search degraded 100% 복구 필요 |
+| golden collateral | NO-GO / 6 | 라벨 교정 후 shared 후보 6 | full375 gate와 분리 |
+| 문서 동기화 | 완료 | Loop435-436 report/state/verification/register 갱신 | goal은 ACTIVE 유지 |
+
+Gate: runtime production `GO / 18 of 18`, expected-answer `PASS / 18 of 18`, post-patch gallery runtime `NOT_RUN_AFTER_PATCH`, search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260705-434 - contextual exact-title official detail gap contract
 
 | 항목 | 상태 | 근거 | 다음 조치 |

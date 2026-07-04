@@ -1,0 +1,122 @@
+{
+  "loop": "435_436",
+  "date": "2026-07-05",
+  "status": {
+    "goal": "ACTIVE / NOT_COMPLETE",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  },
+  "scope_control": {
+    "full375": "FROZEN / NOT_OPEN",
+    "bounded_1000_1500": "FROZEN",
+    "safe_loss_n5": "FROZEN",
+    "same_38_row_parent_packet_replay": "STOPPED",
+    "golden18_runtime": "RUN_ONCE_BY_USER_P0_RUNTIME_REQUEST",
+    "r1_hardcoded_cue_list_expansion": false,
+    "post_id_exception": false,
+    "work_specific_registry": false,
+    "slang_db_writeback": false
+  },
+  "loop435": {
+    "run_kind": "single_row_current_head_runtime",
+    "head": "a2166e82",
+    "post_id": 11694019,
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop435_11694019_contextual_exact_title_current_a2166e82_search_nonlight_result.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop435_11694019_contextual_exact_title_current_a2166e82_health_audit.json",
+    "publication_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop435_11694019_publication_contract_convergence.json",
+    "counts": {
+      "input": 1,
+      "completed": 1,
+      "flushed": 1,
+      "pending": 0,
+      "failed": 0
+    },
+    "runtime_gate": "GO_ROW_ONLY",
+    "publication_contract": "GO / 0 violations",
+    "row_identity": {
+      "official_title": "이세계에서 사이비로 살아남기",
+      "official_url": "https://novelpia.com/novel/181771",
+      "candidate_ledger_status": "safe_resolved"
+    },
+    "search_evidence": "REVIEW / search_timeout_observed + search_degraded_observed"
+  },
+  "loop436": {
+    "run_kind": "golden18_current_head_runtime",
+    "head": "a2166e82",
+    "run_id": "20260705_020417_199593",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop436_golden18_current_a2166e82_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop436_golden18_current_a2166e82_search_nonlight_result_manifest.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop436_golden18_current_a2166e82_health_audit.json",
+    "publication_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop436_golden18_publication_contract_convergence.json",
+    "golden_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop436_golden18_current_a2166e82_golden_audit.json",
+    "collateral_compare": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop436_golden18_current_a2166e82_collateral_compare.json",
+    "counts": {
+      "input": 18,
+      "completed": 18,
+      "flushed": 18,
+      "pending": 0,
+      "failed": 0
+    },
+    "runtime_gate": "GO / 18 of 18",
+    "flush_integrity": "GO / clean_completed_source",
+    "publication_contract": "GO / 18 rows / 0 violations",
+    "expected_answer": {
+      "gate": "PASS",
+      "passed": 18,
+      "failed": 0,
+      "status_counts": {
+        "expected_null_respected": 7,
+        "expected_title_resolved": 5,
+        "expected_work_evidence_preserved_unresolved": 5,
+        "expected_hypothesis_preserved_unresolved": 1
+      }
+    },
+    "search_evidence": {
+      "gate": "REVIEW",
+      "rows_with_search_health": 17,
+      "status_counts": {
+        "SEARCH_DEGRADED": 9,
+        "SEARCH_DEGRADED_RECOVERED": 7,
+        "ok": 1
+      },
+      "unrecovered_degraded_total": 16
+    },
+    "collateral": {
+      "scope": "golden_canary_shared_posts_only",
+      "full_panel_approval": false,
+      "regression_candidates": 6
+    }
+  },
+  "gallery_homage_contract": {
+    "code_helper": "AgenticPipeline._has_official_detail_backed_curated_alias_title_context",
+    "meaning": "known title abbreviation이 post title에 있고 공식 플랫폼 detail 근거가 있으며 semantic no-work가 아니면 갤러리형 제목도 작품 bridge로 허용한다.",
+    "negative_boundary": "community-only 근거 또는 semantic no-work/community_banter는 계속 publish 차단한다.",
+    "golden_manifest_update": {
+      "post_id": 11694035,
+      "old_role": "negative_no_public_work",
+      "new_role": "positive_expected_work",
+      "expected_title": "아카데미 생존 갤러리",
+      "expected_url": "https://novelpia.com/novel/380218",
+      "loop436_status": "expected_work_evidence_preserved_unresolved"
+    },
+    "competing_case": {
+      "post_id": 11698880,
+      "expected_title": "가챠 중독자의 퓨전펑크 생활",
+      "loop436_status": "expected_title_resolved",
+      "note": "아생갤 title surface가 있어도 본문 가챠펑크/세드릭 current-work 경쟁 근거를 우선한다."
+    }
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "unittest_known_title_abbreviation_support": "PASS / 31",
+    "focused_unittest": "PASS / 4",
+    "golden_manifest_json_tool": "PASS",
+    "git_diff_check": "PASS / CRLF warning only",
+    "pytest": "NOT_AVAILABLE_IN_VENV"
+  },
+  "next_gate": [
+    "search degraded 100% 복구 전 promotion_blocked는 search-blind conditional로 해석한다.",
+    "full375 collateral을 열기 전까지 full_scan_approval=false를 유지한다.",
+    "post-patch gallery contract runtime replay는 아직 NOT_RUN_AFTER_PATCH다."
+  ]
+}

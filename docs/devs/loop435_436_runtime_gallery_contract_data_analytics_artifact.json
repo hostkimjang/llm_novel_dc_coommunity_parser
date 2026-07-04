@@ -1,0 +1,83 @@
+{
+  "artifact_type": "data_analytics_summary",
+  "loop": "435_436",
+  "generated_for": "runtime_production_and_gallery_homage_title_contract",
+  "language": "ko",
+  "executive_summary": "Loop436 golden18은 18/18 완주와 expected-answer PASS를 보였지만 search degraded와 full375 미개방 때문에 approval은 아니다. 아생갤은 아카데미 생존 갤러리 작품 약어로 라벨을 교정했고, 공식 detail이 있으면 작품 bridge를 허용하는 일반 계약을 추가했다.",
+  "metrics": [
+    {
+      "name": "Loop435 targeted runtime",
+      "value": "1/1 completed",
+      "gate": "GO_ROW_ONLY",
+      "evidence": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop435_11694019_contextual_exact_title_current_a2166e82_health_audit.json"
+    },
+    {
+      "name": "Loop436 golden18 runtime",
+      "value": "18/18 completed",
+      "gate": "GO",
+      "evidence": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop436_golden18_current_a2166e82_health_audit.json"
+    },
+    {
+      "name": "Publication contract convergence",
+      "value": "18 rows / 0 violations",
+      "gate": "GO",
+      "evidence": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop436_golden18_publication_contract_convergence.json"
+    },
+    {
+      "name": "Golden expected-answer",
+      "value": "18 passed / 0 failed",
+      "gate": "PASS",
+      "evidence": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop436_golden18_current_a2166e82_golden_audit.json"
+    },
+    {
+      "name": "Search evidence",
+      "value": "SEARCH_DEGRADED 9 / SEARCH_DEGRADED_RECOVERED 7 / ok 1 / unrecovered degraded 16",
+      "gate": "REVIEW",
+      "evidence": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop436_golden18_current_a2166e82_health_audit.json"
+    },
+    {
+      "name": "Golden shared collateral",
+      "value": "6 regression candidates",
+      "gate": "NO-GO / full-panel approval 아님",
+      "evidence": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop436_golden18_current_a2166e82_collateral_compare.json"
+    }
+  ],
+  "row_highlights": [
+    {
+      "post_id": 11694019,
+      "meaning": "Loop435 단건에서는 이세계에서 사이비로 살아남기로 safe_resolved. Loop436 mixed golden에서는 후보 보존 unresolved로 통과.",
+      "gate": "targeted GO / mixed evidence-preserved HOLD"
+    },
+    {
+      "post_id": 11694035,
+      "meaning": "아생갤은 아카데미 생존 갤러리 작품 약어로 라벨 교정. Loop436 저장 결과는 공식 URL 부족으로 public title HOLD.",
+      "gate": "expected_work_evidence_preserved_unresolved"
+    },
+    {
+      "post_id": 11698880,
+      "meaning": "아생갤 title surface가 있으나 본문 가챠펑크/세드릭 current-work 근거가 우선되어 가챠 중독자의 퓨전펑크 생활로 resolved.",
+      "gate": "expected_title_resolved"
+    },
+    {
+      "post_id": 11700470,
+      "meaning": "OVERRIDE AUDIT 계열은 public title HOLD가 정답 상태이며 publish 승인 근거가 아니다.",
+      "gate": "expected_null_respected"
+    }
+  ],
+  "gate_state": {
+    "runtime_production": "GO / 18 of 18",
+    "post_patch_gallery_runtime": "NOT_RUN_AFTER_PATCH",
+    "expected_answer": "PASS / 18 of 18",
+    "search_recovery": "P0 / REVIEW",
+    "full375_collateral": "NOT_OPEN",
+    "collateral_105": "reclassified 74 / runtime-verified 4 / residual 105",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "reader_notes": [
+    "PASS / 18 of 18은 label-corrected golden audit 결과이며 full-scan approval이 아니다.",
+    "검색 degraded가 남아 있으므로 promotion_blocked 완화는 search-blind conditional로만 해석한다.",
+    "갤러리형 제목은 현실 커뮤니티 단어라는 이유만으로 비작품 처리하지 않는다."
+  ]
+}
