@@ -1,0 +1,77 @@
+{
+  "loop": 410,
+  "date": "2026-07-04",
+  "scope": "batch alias official-url-only publication contract for 11705245",
+  "new_large_runs": "FROZEN",
+  "same_parent_packet_replay": "STOPPED",
+  "code_change": {
+    "files": [
+      "expert_main.py",
+      "tests/test_expert_main_comment_metadata.py"
+    ],
+    "hardcoded_cue_expansion": false,
+    "post_id_exception": false,
+    "summary": "Final publication ledger now demotes verified/title-only counterevidence and batch-alias URL-only publish decisions when source/search spans are absent and candidate conflict remains."
+  },
+  "runtime": {
+    "run_id": "20260704_160456_941367",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop377_11705245_same_url_mismatch_runtime_input.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop410_11705245_verified_alias_counterevidence_current_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop410_11705245_verified_alias_counterevidence_current_result_manifest.json",
+    "health_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop410_11705245_verified_alias_counterevidence_runtime_health.json",
+    "completed_count": 1,
+    "flushed_count": 1,
+    "pending_count": 0,
+    "failed_count": 0,
+    "large_run_complete": true,
+    "semantic_result_before_final_patch": "NO-GO / unexpected publish 하남자의 탑 공략법"
+  },
+  "projection": {
+    "source_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop409_golden18_current_7d59ea2c_contextual_exact_title_search_nonlight_result.json",
+    "projected_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop410_projected_loop409_after_batch_alias_url_only_contract_result.json",
+    "golden_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop410_projected_loop409_after_batch_alias_url_only_contract_golden_audit.json",
+    "golden_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop410_projected_loop409_after_batch_alias_url_only_contract_golden_audit.md",
+    "collateral_compare_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop410_projected_loop409_after_batch_alias_url_only_contract_collateral_compare.json",
+    "expected_gate": "NO-GO",
+    "expected_passed": 17,
+    "expected_failed": 1,
+    "expected_failures": [
+      {
+        "post_id": 11668307,
+        "status": "positive_work_unresolved",
+        "expected": "빚을 져서라도 세상은 구해야 할 거 아니야",
+        "actual": null
+      }
+    ],
+    "collateral_regression_count": 5
+  },
+  "data_analytics": {
+    "artifact_title": "Loop410 Batch Alias URL-Only Gate Review",
+    "validate": "PASS",
+    "render": "PASS",
+    "datasets": {
+      "golden_status_rows": 5,
+      "gate_summary_rows": 6
+    }
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "focused_contract_tests": "PASS / 3",
+    "expert_main_comment_metadata_tests": "PASS / 62",
+    "publication_work_bridge_title_lead_bundle": "PASS / 206"
+  },
+  "gates": {
+    "targeted_runtime_production": "GO / 1 of 1",
+    "code_contract": "GO_UNIT",
+    "targeted_semantic_projection": "GO_ROW_ONLY_PUBLIC_TITLE_BLOCKED",
+    "golden_expected_answer_projection": "NO-GO / 17 of 18",
+    "golden_shared_collateral_projection": "NO-GO / 5",
+    "full375_collateral": "NOT_OPEN",
+    "search_recovery": "P0 / REVIEW / SEARCH_DEGRADED_OBSERVED",
+    "collateral_active_lane": "reclassified 74 / runtime-verified 4",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next_lane": "11668307 mixed-input positive unresolved"
+}

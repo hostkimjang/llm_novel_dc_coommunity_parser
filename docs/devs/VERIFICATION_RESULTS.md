@@ -1,5 +1,43 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop410 batch alias URL-only publish 계약 검증
+
+- 범위: 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay 없이 `11705245`의 batch alias + official URL-only publish leak를 shared final publication ledger에서 차단한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_410_REPORT_20260704.md`
+  - state `docs\devs\loop410_batch_alias_url_only_publish_contract_20260704.json`
+  - runtime result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop410_11705245_verified_alias_counterevidence_current_result.json`
+  - runtime health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop410_11705245_verified_alias_counterevidence_runtime_health.json`
+  - projection result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop410_projected_loop409_after_batch_alias_url_only_contract_result.json`
+  - projection golden audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop410_projected_loop409_after_batch_alias_url_only_contract_golden_audit.json`
+  - projection collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop410_projected_loop409_after_batch_alias_url_only_contract_collateral_compare.json`
+  - Data Analytics artifact `Loop410 Batch Alias URL-Only Gate Review` validate/render PASS
+- Code evidence:
+  - `expert_main.py`: `_demote_verified_alias_title_only_counterevidence_contract(...)` 추가.
+  - `expert_main.py`: `_demote_batch_alias_url_only_publication_contract(...)` 추가.
+  - `expert_main.py`: 두 demote flag를 hard-negative restore guard에 등록.
+  - `tests\test_expert_main_comment_metadata.py`: Loop409/Loop410 재발 계약 추가.
+- Verification commands:
+  - `.\\.venv312\\Scripts\\python.exe -m py_compile expert_main.py tests\\test_expert_main_comment_metadata.py` -> PASS
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_batch_alias_url_only_publication_demotes_ambiguous_alias tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_verified_alias_title_only_counterevidence_demotes_restored_publish tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_inferred_serialized_publication_keeps_direct_alias_source_support -v` -> PASS, 3 tests
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest -v` -> PASS, 62 tests
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_publication_contract_convergence_audit tests.test_regression_safe_work_bridge_contract tests.test_title_lead_search_inferred_guard -v` -> PASS, 206 tests
+  - `tools\audit_expert_run_health.py` on run `20260704_160456_941367` -> `flush_integrity=GO / clean_completed_source`, search evidence `GO`
+  - `tools\audit_regression_safe_golden.py` on Loop410 projection -> expected-answer `NO-GO / 17 of 18`
+- Runtime result:
+  - Loop410 targeted runtime row production `GO / 1 of 1`
+  - First live result still published `하남자의 탑 공략법`; final patch after that is projection-verified, not replay-verified.
+- Semantic result:
+  - `11705245` projection now `expected_null_respected`
+  - remaining expected failure `11668307` as `positive_work_unresolved`
+  - golden shared collateral projection `NO-GO / 5`
+- Boundary:
+  - Runtime production is not semantic approval.
+  - Final patch has no new golden18 runtime replay.
+  - Search recovery remains `P0 / REVIEW` because Loop409 search degraded evidence is still open.
+  - Full375 collateral is `NOT_OPEN`.
+- Gate: targeted runtime `GO / 1 of 1`, code contract `GO_UNIT`, golden expected-answer projection `NO-GO / 17 of 18`, golden shared collateral projection `NO-GO / 5`, full375 collateral `NOT_OPEN`, Collateral 105 `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop409 golden18 runtime/contextual exact-title 검증
 
 - 범위: 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay 없이 golden18 단일 런으로 runtime production을 재증명하고, `11694019` contextual exact-title official-detail gap 계약을 검증한다.

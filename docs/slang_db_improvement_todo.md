@@ -1,5 +1,14 @@
 # Slang DB Improvement TODO
 
+## 2026-07-04 Loop410 batch alias URL-only slang 주의사항
+
+- [x] 이번 회차는 slang DB write-back이 아니라 shared final publication contract 보정이다.
+- [x] `하남자`를 registry alias로 추가하거나 R1 hardcoded cue/title 리스트를 늘리지 않았다.
+- [x] `하남자 -> 하남자의 탑 공략법` publish는 `post_spans=0`, `search_snippets=0`, `official_urls=1` 및 복수 후보 충돌 조건에서만 차단했다.
+- [x] Loop409 golden18 저장 결과 projection은 `11705245`를 expected-null pass로 이동시켰다.
+- [ ] `11668307`, search recovery, full375 collateral을 닫기 전 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, code contract `GO_UNIT`, targeted runtime `GO / 1 of 1`, golden expected-answer projection `NO-GO / 17 of 18`, golden shared collateral projection `NO-GO / 5`, search recovery `P0 / REVIEW`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop409 contextual exact-title slang 주의사항
 
 - [x] 이번 회차는 slang DB write-back이 아니라 contextual exact-title evidence가 official-detail gap을 열도록 한 search/publication contract 보정이다.

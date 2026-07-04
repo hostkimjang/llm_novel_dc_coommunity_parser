@@ -1,5 +1,25 @@
 ﻿# Developer TODO Index
 
+## 2026-07-04 regression-safe grounding Loop410 TODO
+
+- 상태 업데이트: Loop410은 `11705245`의 batch alias + official URL-only publish leak를 final publication ledger 계약으로 차단한 회차다. 단건 runtime은 row를 냈지만 최종 패치 뒤 golden18 runtime replay는 하지 않았고, 저장 결과 projection은 `17/18`이다.
+- Loop410 TODO:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] Loop410 targeted runtime `20260704_160456_941367`에서 `1/1/1/0/0` row 생산을 확인했다.
+  - [x] R1 hardcoded cue/title 리스트와 `post_id` 예외를 추가하지 않았다.
+  - [x] title-only alias counterevidence publish를 후보 보존으로 내리는 계약을 추가했다.
+  - [x] batch alias + official URL-only publish가 `post_spans=0`, `search_snippets=0`, `official_urls=1` 및 후보 충돌을 가질 때 후보 보존으로 내려가게 했다.
+  - [x] py_compile, focused contract `3`, ExpertMainCommentMetadataTest `62`, publication/work-bridge/title-lead bundle `206`을 PASS했다.
+  - [x] Data Analytics artifact `Loop410 Batch Alias URL-Only Gate Review` validate/render PASS를 확인했다.
+  - [x] Loop410 저장 row projection은 `promotion_blocked / safe_resolved=false / official_title=null`로 닫힌다.
+  - [x] Loop409 golden18 projection에서 `11705245`는 expected-null pass로 이동했다.
+  - [ ] Golden expected-answer projection은 `NO-GO / 17 of 18`로 유지한다. 남은 실패는 `11668307`이다.
+  - [ ] Golden shared collateral projection은 `NO-GO / 5`이고 full375 collateral은 아직 열지 않는다.
+  - [ ] Search recovery는 `P0 / REVIEW`로 유지한다.
+  - [x] Collateral 105는 `reclassified 74 / runtime-verified 4`로만 보고한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop409 TODO
 
 - 상태 업데이트: Loop409는 Loop360 watchdog/stall 우회가 현재 변경 포함 golden18 단일 런에서 실제 `18/18` row를 내는지 먼저 실증했고, `11694019` contextual exact-title official-detail gap을 일반 술어로 보강한 회차다.

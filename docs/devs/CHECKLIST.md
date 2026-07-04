@@ -1,5 +1,31 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop410 batch alias URL-only publish 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Loop410 targeted runtime이 실제 row를 냈다.
+  - run `20260704_160456_941367`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - health audit `flush_integrity=GO / clean_completed_source`
+- [x] R1 hardcoded cue 리스트나 `post_id` 예외를 추가하지 않았다.
+- [x] `verified_alias_title_only_publication`이 자체 counterevidence를 가진 경우 public title을 내린다.
+- [x] `batch_alias_public_title_bridge + official_detail_url`이 URL-only bucket과 후보 충돌만 가진 경우 public title을 내린다.
+- [x] 새 demote flag를 restore hard-negative에 등록해 재승격을 막았다.
+- [x] 검증:
+  - `py_compile` PASS
+  - focused contract `3` PASS
+  - ExpertMainCommentMetadataTest `62` PASS
+  - publication/work-bridge/title-lead bundle `206` PASS
+  - Data Analytics artifact validate/render PASS
+- [x] Loop410 저장 row projection은 `promotion_blocked / safe_resolved=false / official_title=null`로 닫힌다.
+- [x] Loop409 golden18 projection에서 `11705245`는 `expected_null_respected`가 됐다.
+- [ ] Golden expected-answer projection은 아직 `NO-GO / 17 of 18`이다. 남은 실패는 `11668307`이다.
+- [ ] Golden shared collateral projection은 `NO-GO / 5`이고 full375 collateral은 `NOT_OPEN`이다.
+- [ ] Search recovery는 `P0 / REVIEW`로 유지한다.
+- [x] Collateral 105는 `reclassified 74 / runtime-verified 4` 축으로 유지한다.
+- Gate: targeted runtime `GO / 1 of 1`, code contract `GO_UNIT`, golden expected-answer projection `NO-GO / 17 of 18`, golden shared collateral projection `NO-GO / 5`, search recovery `P0 / REVIEW`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop409 golden18 runtime/contextual exact-title 체크
 
 - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.

@@ -1,5 +1,20 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop410 batch alias URL-only publish 계약
+
+- 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop410 targeted runtime run `20260704_160456_941367`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`로 row 생산성은 확인했다.
+- 첫 live 결과는 `11705245`를 여전히 `하남자의 탑 공략법`으로 publish했다.
+- 원인은 `batch_alias_public_title_bridge + official_detail_url`이 `title_in_post=false`, `image_ocr_title_evidence=false`, `post_spans=0`, `search_snippets=0`, `official_urls=1`인데도 public ledger를 연 것이다.
+- `expert_main.py`에 `_demote_verified_alias_title_only_counterevidence_contract(...)`와 `_demote_batch_alias_url_only_publication_contract(...)`를 추가했다.
+- `tests/test_expert_main_comment_metadata.py`에 Loop409 title-only counterevidence와 Loop410 batch alias URL-only 재발 계약을 추가했다.
+- 저장된 Loop410 row projection은 `promotion_blocked`, `safe_resolved=false`, public title `null`로 닫힌다.
+- Loop409 golden18 저장 결과 projection audit는 expected-answer `NO-GO / 17 of 18`이다. `11705245`는 pass로 이동했고 남은 실패는 `11668307` positive unresolved다.
+- Golden shared collateral projection은 `NO-GO / 5`, full375 collateral은 `NOT_OPEN`이다.
+- 검증은 py_compile PASS, focused contract `3` PASS, ExpertMainCommentMetadataTest `62` PASS, publication/work-bridge/title-lead bundle `206` PASS, Data Analytics artifact validate/render PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_410_REPORT_20260704.md`, state는 `docs/devs/loop410_batch_alias_url_only_publish_contract_20260704.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, code contract `GO_UNIT`, golden expected-answer projection `NO-GO / 17 of 18`, golden shared collateral projection `NO-GO / 5`, search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop409 golden18 런타임 재증명과 contextual exact-title gap
 
 - 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

@@ -3234,6 +3234,292 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         )
         self.assertEqual(decision["status"], "candidate_only")
 
+    def test_verified_alias_title_only_counterevidence_demotes_restored_publish(self):
+        result = {
+            "post_id": 11705245,
+            "title": "하남자 재밌냐",
+            "content": ["주인공 첨부터쌤?", "- dc official App"],
+            "comments": ["ㄴㄴ - dc App"],
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "is_resolved_work_discussion": True,
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "anchor_type": "title_alias",
+                "context_sources": ["title", "body", "comments", "search", "image"],
+                "novel_identity": {
+                    "official_title": "하남자의 탑 공략법",
+                    "heretic_url": None,
+                    "confidence": "High",
+                },
+                "reason_lines": [
+                    "- 판정: 관련(정식 제목 미확정)",
+                    "- 공식 제목: 미확정",
+                    "- official_title_evidence: false",
+                    "- 복수 후보가 공존하여 단일 제목 확정 위험이 높음",
+                    "- 웹소설/장르 맥락은 인정하되 단일 공식 제목 확정은 위험하여 제목 지목을 보류했습니다.",
+                ],
+                "candidate_preservation_sources": [
+                    {
+                        "official_title": "하남자의 탑 공략법",
+                        "heretic_url": "https://novel.munpia.com/400210",
+                        "confidence": "High",
+                        "alias_or_mention": "하남자",
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                        "reference_role": "primary",
+                        "negative_evidence": ["weak_alias_surface_public_title_bridge"],
+                    },
+                    {
+                        "official_title": "하남자는 딸깍충이 되고 싶다",
+                        "heretic_url": None,
+                        "confidence": "High",
+                        "source_tier": "community",
+                        "reference_role": "candidate",
+                        "negative_evidence": ["missing_official_url_for_official_detail"],
+                    },
+                ],
+                "search_evidence_catalog": [
+                    {
+                        "title": "하남자의 탑 공략법 - 문피아 웹소설",
+                        "url": "https://novel.munpia.com/400210",
+                        "source_tier": "novel_platform",
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": "하남자의 탑 공략법",
+                    "official_url": None,
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "verified_alias_title_only_publication",
+                        "official_url_withheld_by_title_mismatch",
+                        "serialized_public_identity_shared_gate_restored",
+                        "serialized_public_identity_published",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "verified_alias_title_only_publication",
+                            "post_title_alias",
+                            "title",
+                            "search",
+                            "body",
+                            "comments",
+                        ],
+                        "conflict_reason_codes": [
+                            "official_url_withheld_by_title_mismatch",
+                            "verified_alias_title_only_publication",
+                        ],
+                    },
+                },
+                "candidate_ledger": {
+                    "candidate_preservation_sources": [
+                        {
+                            "official_title": "하남자의 탑 공략법",
+                            "heretic_url": "https://novel.munpia.com/400210",
+                            "confidence": "High",
+                            "alias_or_mention": "하남자",
+                            "source_tier": "official_detail",
+                            "page_type": "novel_page",
+                            "reference_role": "primary",
+                            "negative_evidence": ["weak_alias_surface_public_title_bridge"],
+                        }
+                    ],
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            result,
+            post_title="하남자 재밌냐",
+        )
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertFalse(identity["safe_resolved"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        decision = identity["promotion_decision"]
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn(
+            "verified_alias_title_only_counterevidence_blocked",
+            decision["reason_codes"],
+        )
+        trace = identity["publish_contract_trace"]
+        self.assertFalse(trace["gate_decision"]["publish_allowed"])
+        self.assertIsNone(trace["post_gate_identity"]["official_title"])
+
+    def test_batch_alias_url_only_publication_demotes_ambiguous_alias(self):
+        result = {
+            "post_id": 11705245,
+            "title": "하남자 재밌냐",
+            "content": ["주인공 첨부터쌤?"],
+            "comments": ["ㄴㄴ - dc App"],
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "discussion_type": "general",
+                "anchor_type": "title_alias",
+                "context_sources": ["title", "body", "comments", "search", "image"],
+                "consistency_flags": [
+                    "batch_memory_exact_alias_rescued",
+                    "title_lead_alias_official_detail_release",
+                    "verified_alias_official_detail_anchor",
+                    "explicit_alias_official_work_lock",
+                    "confirmed_alias:하남자",
+                    "final_semantic_reread_official_recall_guarded_resolution",
+                    "weak_public_title_bridge_batch_alias_exact_exempt",
+                ],
+                "novel_identity": {
+                    "official_title": "하남자의 탑 공략법",
+                    "heretic_url": "https://novel.munpia.com/400210",
+                    "confidence": "High",
+                },
+                "slang_insight": {
+                    "detected_term": "하남자",
+                    "decoded_term": "하남자는 딸깍충이 되고 싶다",
+                    "decode_verified": True,
+                    "alias_scope": "pure_work_alias",
+                },
+                "reason_lines": [
+                    "- grounding_anchor: title_mention",
+                    "- evidence_type: search_platform_url",
+                    "- title_in_post: false",
+                    "- image_ocr_title_evidence: false",
+                    "- official_title_evidence: true",
+                    "- evidence_bucket: post_spans=0, search_snippets=0, official_urls=1",
+                    "- 검증 반론(참고): 제목 '하남자'와 정식 제목 '하남자는 딸깍충이 되고 싶다'의 형태소 불일치(minor)",
+                ],
+                "candidate_preservation_sources": [
+                    {
+                        "official_title": "하남자의 탑 공략법",
+                        "heretic_url": "https://novel.munpia.com/400210",
+                        "confidence": "High",
+                        "alias_or_mention": "하남자",
+                        "source_tier": "official_detail",
+                        "reference_role": "primary",
+                    },
+                    {
+                        "official_title": "하남자는 딸깍충이 되고 싶다",
+                        "confidence": "High",
+                        "source_tier": "community",
+                        "reference_role": "candidate",
+                    },
+                    {
+                        "official_title": "하남 남자",
+                        "heretic_url": "https://novelpia.com/novel/315683",
+                        "confidence": "High",
+                        "source_tier": "mixed",
+                        "reference_role": "primary",
+                    },
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": "하남자의 탑 공략법",
+                    "official_url": "https://novel.munpia.com/400210",
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "batch_alias_public_title_bridge",
+                        "official_detail_url",
+                        "serialized_public_identity_published",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "batch_alias_candidate_accepted",
+                            "title_lead_alias_official_detail_release",
+                            "alias_surface",
+                            "official_detail_url",
+                        ],
+                    },
+                },
+                "promotion_gate_state": {
+                    "post_id": 11705245,
+                    "candidate_title": "하남자의 탑 공략법",
+                    "candidate_url": "https://novel.munpia.com/400210",
+                    "source": "title_lead_alias_official_detail_release",
+                    "official_title_exists": True,
+                    "row_discusses_work_as_work": True,
+                    "title_resolution_state": "resolved",
+                    "work_resolution": "resolved",
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "batch_alias_candidate_accepted",
+                            "title_lead_alias_official_detail_release",
+                            "alias_surface",
+                            "official_detail_url",
+                        ],
+                    },
+                },
+                "candidate_ledger": {
+                    "candidate_preservation_sources": [
+                        {
+                            "official_title": "하남자의 탑 공략법",
+                            "heretic_url": "https://novel.munpia.com/400210",
+                            "confidence": "High",
+                            "alias_or_mention": "하남자",
+                            "source_tier": "official_detail",
+                            "reference_role": "primary",
+                        },
+                        {
+                            "official_title": "하남자는 딸깍충이 되고 싶다",
+                            "confidence": "High",
+                            "source_tier": "community",
+                            "reference_role": "candidate",
+                        },
+                    ],
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            result,
+            post_title="하남자 재밌냐",
+        )
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertFalse(identity["safe_resolved"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        decision = identity["promotion_decision"]
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn(
+            "batch_alias_url_only_counterevidence_blocked",
+            decision["reason_codes"],
+        )
+        self.assertIn(
+            "batch_alias_url_only_counterevidence_blocked",
+            identity["promotion_blocked_reasons"],
+        )
+        trace = identity["publish_contract_trace"]
+        self.assertFalse(trace["gate_decision"]["publish_allowed"])
+        self.assertIsNone(trace["post_gate_identity"]["official_title"])
+
     def test_short_generic_blocked_alias_does_not_restore_title_only(self):
         result = {
             "title": "판초법사 경찰력 사용하면서도 1달 이상 정보통제가 가능함?",
