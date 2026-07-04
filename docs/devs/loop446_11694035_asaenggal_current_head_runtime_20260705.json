@@ -1,0 +1,113 @@
+{
+  "loop": 446,
+  "date": "2026-07-05",
+  "title": "아생갤 current HEAD runtime proof",
+  "goal_status": "ACTIVE_NOT_COMPLETE",
+  "head": "69dd0c17",
+  "run": {
+    "run_id": "20260705_055515_829767",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop440_11694035_gallery_homage_official_detail_input.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop446_11694035_asaenggal_current_head_runtime_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop446_11694035_asaenggal_current_head_runtime_result_manifest.json",
+    "log": "logs/expert_run_20260705_055515_829767.log",
+    "input_completed_flushed_pending_failed": "1/1/1/0/0",
+    "large_run_complete": true,
+    "ordered_flush_blocked": false,
+    "partial_flush_gap": false
+  },
+  "domain_rule": {
+    "alias": "아생갤",
+    "official_title": "아카데미 생존 갤러리",
+    "meaning": "현실 DC 갤러리명이 아니라 웹소설 안의 갤러리/커뮤니티 오마주형 제목 약어일 수 있다.",
+    "required_bridge": "official detail URL + explicit alias relation + specific work target + community support + no competing verified body work"
+  },
+  "result": {
+    "post_id": 11694035,
+    "official_title": "아카데미 생존 갤러리",
+    "heretic_url": "https://novelpia.com/novel/380218",
+    "candidate_ledger_status": "safe_resolved",
+    "safe_resolved": true,
+    "title_resolution_state": "resolved",
+    "promotion_status": "publish",
+    "publish_allowed": true,
+    "bypassed_gate": false,
+    "reason_codes": [
+      "official_title_exists",
+      "row_discusses_work_as_work",
+      "scope_current_work",
+      "resolved_public_title_scope",
+      "official_detail_url",
+      "serialized_public_identity_published"
+    ],
+    "consistency_flags": [
+      "verified_alias_official_detail_anchor",
+      "confirmed_alias:아생갤",
+      "explicit_alias_official_work_lock",
+      "weak_public_title_bridge_verified_alias_detail_exempt"
+    ]
+  },
+  "search": {
+    "queries_issued": 6,
+    "upstream_zero": 2,
+    "degraded": 0,
+    "unrecovered_degraded": 0,
+    "fallback_recovered": 4,
+    "status": "ok"
+  },
+  "vlm_ocr": {
+    "ready": true,
+    "image_fetch": "2/2",
+    "chunks": 1,
+    "bytes": 9078002
+  },
+  "audits": {
+    "health": {
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop446_11694035_asaenggal_current_head_runtime_health_audit.json",
+      "flush_integrity": "GO",
+      "classification": "clean_completed_source",
+      "search_evidence": "GO",
+      "publication_contract_convergence": "GO",
+      "violations": 0
+    },
+    "publication_contract": {
+      "json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop446_11694035_asaenggal_publication_contract_audit.json",
+      "md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop446_11694035_asaenggal_publication_contract_audit.md",
+      "gate": "GO",
+      "row_count": 1,
+      "violation_row_count": 0
+    },
+    "golden_subset": {
+      "json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop446_11694035_asaenggal_golden_audit.json",
+      "md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop446_11694035_asaenggal_golden_audit.md",
+      "gate": "PASS",
+      "passed": 1,
+      "failed": 0,
+      "status": "expected_title_resolved"
+    },
+    "collateral_subset": {
+      "json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop446_11694035_asaenggal_collateral_compare.json",
+      "md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop446_11694035_asaenggal_collateral_compare.md",
+      "regression_candidates": 0,
+      "status": "resolved_to_different_title"
+    }
+  },
+  "gates": {
+    "targeted_runtime": "GO / 1 of 1",
+    "targeted_expected_answer": "GO_TARGETED_EXPECTED_TITLE_RESOLVED",
+    "row_level_search": "GO",
+    "publication_contract": "GO / 0",
+    "broader_search_recovery": "P0_ROW_LEVEL_GO_ONLY",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW_LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE_NOT_COMPLETE"
+  },
+  "forbidden_changes": {
+    "large_run_dispatched": false,
+    "same_38_row_parent_replay": false,
+    "r1_hardcoded_cue_or_title_list": false,
+    "post_id_exception": false,
+    "new_work_specific_registry": false,
+    "slang_db_write_back": false
+  }
+}

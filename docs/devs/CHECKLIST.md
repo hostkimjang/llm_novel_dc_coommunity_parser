@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-05 Loop446 11694035 아생갤 current HEAD runtime 체크
+
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] 사용자 도메인 보정을 유지했다: `아생갤`은 현실 DC 갤러리명이 아니라 웹소설 `아카데미 생존 갤러리`의 작중 갤러리/커뮤니티 오마주형 제목 약어일 수 있다.
+- [x] `11694035` 단건을 current HEAD `69dd0c17`에서 search 포함 non-light, VLM/OCR 필수로 실행했다.
+- [x] Run `20260705_055515_829767`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`, `ordered_flush_blocked=false`, `partial_flush_gap=false`로 완료됐다.
+- [x] MCP health는 `include_search=true`, `light_mode=false`, ok/failure `1/0`이고 row search는 `ok`, query/degraded/unrecovered `6/0/0`이다.
+- [x] VLM/OCR은 `READY`, image fetch `2/2`, chunks `1`이다.
+- [x] Public identity는 `official_title=아카데미 생존 갤러리`, `heretic_url=https://novelpia.com/novel/380218`, `candidate_ledger_status=safe_resolved`, `safe_resolved=true`다.
+- [x] Promotion은 `publish_allowed=true`, `bypassed_gate=false`이며 `official_detail_url`과 `explicit_alias_official_work_lock` 근거를 기록했다.
+- [x] Debate caveat는 `갤러리` 표면을 커뮤니티 장소로 오해할 위험으로 기록하고, final synthesis가 official URL + explicit alias bridge + 본문 장면 anchor를 우선했음을 기록했다.
+- [x] Health audit `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`를 기록했다.
+- [x] Golden subset audit `PASS / 1 of 1`, status `expected_title_resolved`를 기록했다.
+- [x] Collateral subset은 before `시로코의 제멋대로 일상 단편선`, after `아카데미 생존 갤러리`, regression candidate `0`으로 기록했다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO를 full scan approval로 승격하지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_EXPECTED_TITLE_RESOLVED`, row-level search `GO`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop445 11663521 Toaru/Railgun unresolved 체크
 
 - [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
@@ -37,8 +54,9 @@
 - [x] `tests/test_known_title_abbreviation_support.py`에 작중 갤러리/댓글식 커뮤니티 오마주 표면 회귀 테스트를 추가했다.
 - [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
 - [x] Verification: `py_compile` PASS, known-title abbreviation `35` PASS, Arbiter curated alias guard `24` PASS, work-bridge contract `3` PASS, title-lead search inferred guard `213` PASS.
-- [ ] Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다. Unit/contract PASS를 golden/full375 approval로 승격하지 않는다.
-- Gate: code contract `GO_UNIT`, targeted runtime `NOT_RUN_AFTER_PATCH`, broader search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- [x] Runtime replay after patch는 Loop446 current HEAD 단건으로 확인했다: `11694035`가 `아카데미 생존 갤러리` / `https://novelpia.com/novel/380218`로 safe_resolved publish됐다.
+- [ ] Loop446은 단건 runtime 증거다. Unit/contract PASS와 targeted PASS를 golden/full375 approval로 승격하지 않는다.
+- Gate: code contract `GO_UNIT`, targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_EXPECTED_TITLE_RESOLVED`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-05 Loop439-441 아생갤 alias bridge 체크
 

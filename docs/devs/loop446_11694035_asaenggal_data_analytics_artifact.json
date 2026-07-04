@@ -1,0 +1,35 @@
+{
+  "artifact_type": "data_analytics_runtime_summary",
+  "loop": 446,
+  "date": "2026-07-05",
+  "language": "ko",
+  "summary": "11694035 단건 current HEAD runtime에서 `아생갤`을 웹소설 `아카데미 생존 갤러리`의 작품 약어로 safe_resolved publish했다.",
+  "reader_facing_points": [
+    "이 행의 핵심은 현실 DC 갤러리명이 아니라 작품 안의 갤러리/커뮤니티 오마주형 제목 약어를 해석하는 문제다.",
+    "Run `20260705_055515_829767`은 `1/1/1/0/0`으로 완료됐고 search 포함 non-light, VLM/OCR 필수 조건을 만족했다.",
+    "최종 public identity는 `아카데미 생존 갤러리` / `https://novelpia.com/novel/380218`이며 promotion gate를 우회하지 않았다.",
+    "Golden subset audit는 `PASS / 1 of 1`, collateral subset regression candidate는 `0`이다.",
+    "이 결과는 단건 runtime 증거이며 full375 collateral 또는 full scan approval이 아니다."
+  ],
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_446_REPORT_20260705.md",
+    "state": "docs/devs/loop446_11694035_asaenggal_current_head_runtime_20260705.json",
+    "runtime_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop446_11694035_asaenggal_current_head_runtime_result.json",
+    "runtime_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop446_11694035_asaenggal_current_head_runtime_result_manifest.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop446_11694035_asaenggal_current_head_runtime_health_audit.json",
+    "publication_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop446_11694035_asaenggal_publication_contract_audit.json",
+    "golden_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop446_11694035_asaenggal_golden_audit.json",
+    "collateral_compare": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop446_11694035_asaenggal_collateral_compare.json"
+  },
+  "gates": {
+    "targeted_runtime": "GO / 1 of 1",
+    "targeted_expected_answer": "GO_TARGETED_EXPECTED_TITLE_RESOLVED",
+    "row_level_search": "GO",
+    "publication_contract": "GO / 0",
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

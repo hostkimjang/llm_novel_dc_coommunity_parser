@@ -1,5 +1,39 @@
 # Verification Results
 
+## 2026-07-05 Loop446 11694035 아생갤 current HEAD runtime 검증
+
+- 범위: `11694035` 단건을 current HEAD `69dd0c17`에서 search 포함 non-light, VLM/OCR 필수 조건으로 재실행해 `아생갤`이 현실 갤러리명이 아니라 웹소설 `아카데미 생존 갤러리`의 작중 갤러리/커뮤니티 오마주형 제목 약어로 publish되는지 확인했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_446_REPORT_20260705.md`
+  - state `docs\devs\loop446_11694035_asaenggal_current_head_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop446_11694035_asaenggal_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop446_11694035_asaenggal_current_head_runtime_result.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop446_11694035_asaenggal_current_head_runtime_health_audit.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop446_11694035_asaenggal_publication_contract_audit.json`
+  - golden subset audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop446_11694035_asaenggal_golden_audit.json`
+  - collateral subset compare `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop446_11694035_asaenggal_collateral_compare.json`
+- Runtime:
+  - run `20260705_055515_829767`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - row search status `ok`, queries/degraded/unrecovered `6/0/0`
+  - VLM/OCR `READY`, image fetch `2/2`
+- Result:
+  - `official_title=아카데미 생존 갤러리`, `heretic_url=https://novelpia.com/novel/380218`
+  - `candidate_ledger_status=safe_resolved`, `safe_resolved=true`
+  - `title_resolution_state=resolved`, `promotion_decision.status=publish`, `publish_allowed=true`
+  - `bypassed_gate=false`
+- Audit:
+  - `tools/audit_expert_run_health.py` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=GO`, `publication_contract_convergence=GO`.
+  - `tools/audit_publication_contract_convergence.py` -> `GO / row_count 1 / violation_row_count 0`.
+  - `tools/audit_regression_safe_golden.py` with `11694035` subset manifest -> `PASS / 1 of 1`, status `expected_title_resolved`.
+  - collateral subset compare -> `resolved_to_different_title`, regression candidate `0`.
+- Boundary:
+  - Debate judge는 `갤러리` 표면을 커뮤니티 장소로 오해할 위험을 제기했지만, final synthesis는 official URL, explicit alias bridge, 본문 `폐허가 된 도심지` 장면 anchor를 우선했다.
+  - Baseline wrong title `시로코의 제멋대로 일상 단편선`에서 expected title `아카데미 생존 갤러리`로 교정된 단건 증거다.
+  - Broader search recovery는 `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral은 `NOT_OPEN`.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop445 11663521 current HEAD Toaru/Railgun unresolved 검증
 
 - 범위: `11663521` 단건을 current HEAD `bf9fb042`에서 search 포함 non-light, VLM/OCR 필수 조건으로 재실행해 Loop439 missing row가 실제 row를 내는지와 publication contract가 public wrong title을 막는지 확인했다.
@@ -81,7 +115,10 @@
   - `.venv312\Scripts\python.exe -m unittest tests.test_regression_safe_work_bridge_contract` PASS, `3` tests
   - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard` PASS, `213` tests
 - 금지 준수: R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
-- Gate: code contract `GO_UNIT`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Runtime follow-up:
+  - Loop446 current HEAD `69dd0c17` 단건 replay에서 `11694035`는 `아카데미 생존 갤러리` / `https://novelpia.com/novel/380218`로 safe_resolved publish됐다.
+  - `tools/audit_regression_safe_golden.py` subset audit는 `PASS / 1 of 1`, status `expected_title_resolved`다.
+- Gate: code contract `GO_UNIT`, runtime replay after patch `GO / Loop446 targeted`, search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-05 Loop439-441 아생갤 alias bridge 검증
 

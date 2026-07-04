@@ -8,6 +8,16 @@
 
 도메인 규칙: `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명으로 단정하지 않는다. 웹소설 안에서 갤러리/댓글식 커뮤니티를 오마주한 작품 제목일 수 있으므로, known abbreviation + explicit alias relation + specific-work target + community support가 있으면 shared work-bridge로 통과시키되, 경쟁 본문 작품 근거가 있으면 publish를 막는다.
 
+## 2026-07-05 Loop446 Addendum - 11694035 아생갤 current HEAD runtime
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop446은 `아생갤` 작중 갤러리 오마주 계약을 current HEAD 단건 runtime으로 확인한 회차이며 approval 회차가 아니다.
+- Evidence: report `docs/devs/loop_reports/LOOP_446_REPORT_20260705.md`, state `docs/devs/loop446_11694035_asaenggal_current_head_runtime_20260705.json`, Data Analytics summary `docs/devs/loop446_11694035_asaenggal_data_analytics_artifact.json`.
+- Runtime: run `20260705_055515_829767`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`, `ordered_flush_blocked=false`, MCP health `include_search=true`, `light_mode=false`, row search `ok`, VLM/OCR `READY`다.
+- Result: public `official_title=아카데미 생존 갤러리`, `heretic_url=https://novelpia.com/novel/380218`, `candidate_ledger_status=safe_resolved`, `safe_resolved=true`, `promotion_decision.status=publish`, `publish_allowed=true`, `bypassed_gate=false`.
+- Boundary: Debate 회의론은 `갤러리` 표면의 커뮤니티 장소 오해 위험을 제기했다. 최종 합성은 official URL, explicit alias bridge, 본문 `폐허가 된 도심지` 장면 anchor를 우선했다. Golden subset audit는 `PASS / 1 of 1`, collateral subset regression candidate는 `0`이다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_EXPECTED_TITLE_RESOLVED`, row-level search `GO`, search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Next: full375를 열지 말고 `11663521` expected positive work unresolved 또는 residual queue를 작은 단위로 계속 분리한다.
+
 ## 2026-07-05 Loop445 Addendum - 11663521 Toaru/Railgun unresolved runtime
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop445는 Loop439 missing `11663521`이 current HEAD에서 row를 내는지 확인하고, public wrong title 차단과 expected-answer 미해소를 분리한 회차다.
@@ -34,9 +44,9 @@
 - Evidence: `src/llm_batch/agentic_pipeline.py`, `tests/test_known_title_abbreviation_support.py`, checklist `docs/devs/CHECKLIST.md`, slang note `docs/slang_db_improvement_todo.md`.
 - Code: `_has_curated_alias_contextual_work_anchor(...)`의 final return을 Arbiter 계약과 맞춰 `gallery_homage_bridge_anchor`가 참이면 `community_banter` seed에도 work bridge가 닫히지 않게 했다. 이 bridge 자체는 verifier explicit alias proof와 community support를 요구한다.
 - Test: 작중 갤러리/댓글식 커뮤니티 오마주 표면 테스트를 추가했다. Verification은 `py_compile` PASS, known-title abbreviation `35` PASS, Arbiter curated alias guard `24` PASS, work-bridge `3` PASS, title-led guard `213` PASS다.
-- Boundary: R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다. Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다.
-- Gate: code contract `GO_UNIT`, search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
-- Next: 이 계약은 Loop439-441 `11694035` 도메인 보정의 술어 정렬이다. 다음 active lane은 Loop439 missing `11663521`/`11700470` 또는 residual queue를 작은 단위로 분리한다.
+- Boundary: R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다. Runtime replay after patch는 Loop446에서 `GO / 1 of 1`로 확인했다.
+- Gate: code contract `GO_UNIT`, targeted runtime `GO / 1 of 1`, search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Next: 이 계약은 Loop439-441 `11694035` 도메인 보정의 술어 정렬이고 Loop446에서 current HEAD 단건 runtime까지 확인됐다. 다음 active lane은 `11663521` 또는 residual queue를 작은 단위로 분리한다.
 
 ## 2026-07-05 Loop435-436 Addendum - runtime proof and gallery-title contract
 
