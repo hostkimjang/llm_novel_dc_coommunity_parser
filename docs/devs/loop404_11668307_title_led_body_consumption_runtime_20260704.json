@@ -1,0 +1,106 @@
+{
+  "loop": 404,
+  "date": "2026-07-04",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "scope": "11668307 targeted row recovery after Loop399 golden18 positive unresolved",
+  "approval_cycle": false,
+  "new_large_runs_launched": false,
+  "same_38_row_parent_packet_replayed": false,
+  "r1_hardcoded_cue_or_title_list_expansion": false,
+  "collateral_105_reporting": {
+    "reclassified": 74,
+    "runtime_verified": 4,
+    "queue_counting_status": "stopped_for_loop404"
+  },
+  "code_changes": [
+    {
+      "file": "src/llm_batch/agentic_pipeline.py",
+      "summary": "Add compact title-lead alias fallback only when _has_title_led_work_consumption_signal(ctx) is true and existing generic/low-info/low-specificity filters pass."
+    }
+  ],
+  "tests_added": [
+    {
+      "file": "tests/test_title_lead_search_inferred_guard.py",
+      "name": "test_title_led_body_consumption_question_uses_search_alias_bridge",
+      "summary": "Models post_id 11668307 and verifies title-led alias '빛세구' resolves through official/detail search support to the Naver Series title."
+    }
+  ],
+  "verification": {
+    "py_compile": "PASS",
+    "focused_contract": "PASS",
+    "title_lead_guard_full": {
+      "status": "PASS",
+      "tests": 200
+    },
+    "known_title_abbreviation_safe_loss_contract": {
+      "status": "PASS",
+      "tests": 12
+    }
+  },
+  "runtime": {
+    "run_id": "20260704_130002_186429",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/fix8f_generic_alias_11668307_input.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop404_11668307_title_led_body_consumption_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop404_11668307_title_led_body_consumption_search_nonlight_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop404_11668307_title_led_body_consumption_search_nonlight_result_checkpoint.jsonl",
+    "pending_snapshot": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop404_11668307_title_led_body_consumption_search_nonlight_result_pending_snapshot.json",
+    "log": "logs/expert_run_20260704_130002_186429.log",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop404_11668307_title_led_body_consumption_runtime_health_audit.json",
+    "counts": {
+      "input_post_count": 1,
+      "completed_count": 1,
+      "flushed_count": 1,
+      "pending_count": 0,
+      "failed_count": 0,
+      "checkpoint_rows": 1,
+      "result_rows": 1,
+      "large_run_complete": true,
+      "ordered_flush_blocked": false
+    },
+    "manifest_health_preflight": {
+      "mcp_health_include_search": false,
+      "mcp_health_light_mode": true,
+      "mcp_health_ok_count": 1,
+      "mcp_health_failure_count": 0
+    },
+    "row_search_health": {
+      "status": "ok",
+      "queries_issued": 20,
+      "degraded": 0,
+      "unrecovered_degraded": 0,
+      "upstream_zero": 8
+    }
+  },
+  "row_result": {
+    "post_id": 11668307,
+    "is_relevant": true,
+    "official_title": "빚을 져서라도 세상은 구해야 할 거 아니야",
+    "heretic_url": "https://series.naver.com/novel/detail.series?productNo=13598334",
+    "work_resolution": "resolved",
+    "title_resolution_state": "resolved",
+    "candidate_ledger_status": "safe_resolved",
+    "safe_resolved": true,
+    "promotion_blocked": false,
+    "hold_unresolved": false,
+    "publish_allowed": true,
+    "bypassed_gate": false,
+    "publication_contract_convergence": "GO",
+    "publication_contract_violations": 0
+  },
+  "known_caveats": [
+    "Manifest preflight remained search-blind/light even though row-level search executed and returned status ok.",
+    "Search/rerank still admitted competing '전지적 세구 시점' evidence before final correction.",
+    "Relation judge intermediate reason included wrong-work contamination, although final identity and publication ledger converged to the Naver Series title."
+  ],
+  "gates": {
+    "targeted_runtime": "GO_1_OF_1",
+    "targeted_semantic": "GO_ROW_ONLY",
+    "publication_contract": "GO_0_VIOLATIONS",
+    "broader_search_recovery": "P0_ROW_LEVEL_OK_WITH_PREFLIGHT_LIGHT_CAVEAT_SEARCH_BLIND_CONDITIONAL",
+    "golden_expected_answer": "NOT_REFRESHED_AFTER_LOOP404_INHERITED_LOOP399_NO_GO_14_OF_18",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW_LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE_NOT_COMPLETE"
+  }
+}

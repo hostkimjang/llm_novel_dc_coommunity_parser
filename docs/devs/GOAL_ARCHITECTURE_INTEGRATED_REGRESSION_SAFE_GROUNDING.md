@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-04 Loop404 Addendum - 11668307 title-led body consumption bridge
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop404는 approval 회차가 아니라 Loop399 `11668307` positive unresolved를 단건으로 좁혀 runtime row 생산과 publication contract 수렴을 확인한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_404_REPORT_20260704.md`, state `docs/devs/loop404_11668307_title_led_body_consumption_runtime_20260704.json`, health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop404_11668307_title_led_body_consumption_runtime_health_audit.json`.
+- Code: `_has_title_led_work_consumption_signal(ctx)`가 true일 때 제목 선두 compact token을 기존 generic/low-info/low-specificity 필터 통과 후 title-lead alias로 보존한다. `빛세구` 전용 registry나 R1 hardcoded cue/title list 확장은 없다.
+- Runtime: run `20260704_130002_186429`은 input/completed/flushed/pending/failed `1/1/1/0/0`, checkpoint/result rows `1/1`, `large_run_complete=true`, `ordered_flush_blocked=false`, VLM/OCR `READY`다.
+- Result: `11668307`은 `official_title=빚을 져서라도 세상은 구해야 할 거 아니야`, URL `https://series.naver.com/novel/detail.series?productNo=13598334`, `candidate_ledger_status=safe_resolved`, `publish_allowed=true`, `bypassed_gate=false`로 수렴했다.
+- Search: row search는 `status=ok`, queries `20`, degraded `0`, unrecovered degraded `0`이지만 manifest preflight는 include_search `false`, light_mode `true`라 health audit `search_evidence=SEPARATE_AUDIT_REQUIRED`다. Broader search recovery는 아직 닫지 않는다.
+- Boundary: 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다. Golden expected-answer는 `NOT_REFRESHED_AFTER_LOOP404 / inherited Loop399 NO-GO 14 of 18`, full375는 `NOT_OPEN`이다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted semantic `GO_ROW_ONLY`, publication contract `GO / violations 0`, broader search recovery `P0 / ROW_LEVEL_OK_WITH_PREFLIGHT_LIGHT_CAVEAT / search-blind conditional`, Collateral 105 `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-04 Loop403 Addendum - 11663540 post-Loop402 runtime proof
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop403은 approval 회차가 아니라 Loop402 direct-image/OCR canonical 계약이 실제 runtime 직렬화까지 도달하는지 `11663540` 단건으로 검증한 회차다.

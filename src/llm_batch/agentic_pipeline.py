@@ -50910,6 +50910,27 @@ OUTPUT JSON:
                 if len(out) >= limit:
                     return out
 
+        if self._has_title_led_work_consumption_signal(ctx):
+            compact_lead_match = re.match(
+                r"^\s*([가-힣A-Za-z0-9]{3,16})",
+                title_without_prefix,
+            )
+            if compact_lead_match:
+                compact_alias = compact_lead_match.group(1).strip()
+                compact_norm = self._normalize_match_text(compact_alias)
+                if (
+                    compact_norm
+                    and compact_norm not in seen
+                    and not self._is_generic_role_or_species_surface_title(compact_alias)
+                    and not self._is_generic_topic_title(compact_alias)
+                    and not self._is_low_information_alias_surface(compact_alias)
+                    and not self._is_low_specificity_rescue_key(compact_alias, full_title=title_without_prefix)
+                ):
+                    seen.add(compact_norm)
+                    out.append(compact_alias)
+                    if len(out) >= limit:
+                        return out
+
         stop_pattern = re.compile(
             r"(?:조금|많이|너무|진짜|완전|개|좀|약간|유치|재밌|재미|노잼|별로|좋|싫|"
             r"심하|저능|후기|리뷰|감상|어떰|봤|보고|보니|읽|읽고|하차|추천|비추|"

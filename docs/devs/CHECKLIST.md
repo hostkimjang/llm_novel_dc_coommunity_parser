@@ -1,5 +1,31 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop404 11668307 title-led body consumption 체크
+
+- [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Loop399 `11668307` positive unresolved를 target으로 좁혔다.
+  - expected `빚을 져서라도 세상은 구해야 할 거 아니야`
+  - actual Loop399 `null / positive_work_unresolved`
+- [x] R1 hardcoded cue/title 리스트 확장 없이 `_has_title_led_work_consumption_signal(ctx)` 기반 일반 술어로 compact title-lead alias를 보존했다.
+- [x] `tests/test_title_lead_search_inferred_guard.py`에 `11668307` alias bridge 계약을 추가했다.
+- [x] 검증:
+  - py_compile PASS
+  - focused contract PASS
+  - title-lead guard 전체 `200` PASS
+  - known-title abbreviation safe-loss contract `12` PASS
+- [x] 단건 runtime row 생산을 확인했다.
+  - run `20260704_130002_186429`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - checkpoint/result rows `1/1`
+  - `official_title=빚을 져서라도 세상은 구해야 할 거 아니야`
+  - `publish_allowed=true`, `candidate_ledger_status=safe_resolved`
+- [ ] Manifest preflight가 include_search `false`, light_mode `true`였으므로 broader search recovery 완료로 세지 않는다.
+- [ ] Golden expected-answer는 `NOT_REFRESHED_AFTER_LOOP404 / inherited Loop399 NO-GO 14 of 18`로 유지한다.
+- [ ] Full375 collateral은 `NOT_OPEN`으로 유지한다.
+- [x] Collateral 105는 `reclassified 74 / runtime-verified 4` 축으로 유지한다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted semantic `GO_ROW_ONLY`, publication contract `GO / 0 violations`, broader search recovery `P0 / ROW_LEVEL_OK_WITH_PREFLIGHT_LIGHT_CAVEAT`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop402 direct-image OCR canonical 수렴 체크
 
 - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.

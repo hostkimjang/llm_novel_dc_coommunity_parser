@@ -1,5 +1,20 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop404 11668307 title-led body consumption bridge
+
+- 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop399 `11668307`은 expected `빚을 져서라도 세상은 구해야 할 거 아니야` 대신 public title `null`과 `positive_work_unresolved`로 남았다.
+- 원인은 title-led work consumption 문맥에서 제목 첫 토큰 `빛세구`를 alias 후보로 보존하지 못한 것이다.
+- `src/llm_batch/agentic_pipeline.py`는 `_has_title_led_work_consumption_signal(ctx)`가 true일 때 제목 선두 compact token을 기존 generic/low-info/low-specificity 필터 통과 후 title-lead alias로 보존한다.
+- `빛세구` 전용 registry, known-title abbreviation, R1 hardcoded cue/title list 확장은 없다.
+- `tests/test_title_lead_search_inferred_guard.py`에 `test_title_led_body_consumption_question_uses_search_alias_bridge`를 추가했다.
+- 검증은 py_compile PASS, focused contract PASS, title-lead guard 전체 `200` PASS, known-title abbreviation safe-loss contract `12` PASS다.
+- 단건 runtime run `20260704_130002_186429`은 input/completed/flushed/pending/failed `1/1/1/0/0`, checkpoint/result rows `1/1`, `large_run_complete=true`, `ordered_flush_blocked=false`로 완료됐다.
+- Final은 `official_title=빚을 져서라도 세상은 구해야 할 거 아니야`, URL `https://series.naver.com/novel/detail.series?productNo=13598334`, `candidate_ledger_status=safe_resolved`, `publish_allowed=true`, publication contract `GO / violations 0`이다.
+- Row search는 `ok`, queries `20`, degraded `0`이지만 manifest preflight는 include_search `false`, light_mode `true`라 broader search recovery 완료로 세지 않는다.
+- Report는 `docs/devs/loop_reports/LOOP_404_REPORT_20260704.md`, state는 `docs/devs/loop404_11668307_title_led_body_consumption_runtime_20260704.json`, health audit은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop404_11668307_title_led_body_consumption_runtime_health_audit.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, targeted semantic `GO_ROW_ONLY`, golden expected-answer `NOT_REFRESHED_AFTER_LOOP404 / inherited Loop399 NO-GO 14 of 18`, full375 collateral `NOT_OPEN`, broader search recovery `P0 / ROW_LEVEL_OK_WITH_PREFLIGHT_LIGHT_CAVEAT`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop402 direct-image OCR canonical 수렴 계약
 
 - 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

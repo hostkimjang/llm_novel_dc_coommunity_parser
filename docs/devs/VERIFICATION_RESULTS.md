@@ -1,5 +1,39 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop404 11668307 title-led body consumption bridge 검증
+
+- 범위: Loop399 `11668307` positive unresolved를 R1 hardcoded cue/title 리스트 확장 없이 title-led work consumption compact alias 계약으로 줄이고, 단건 runtime row 생산과 publication contract 수렴을 확인한다. 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_404_REPORT_20260704.md`
+  - state `docs\devs\loop404_11668307_title_led_body_consumption_runtime_20260704.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop404_11668307_title_led_body_consumption_search_nonlight_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop404_11668307_title_led_body_consumption_search_nonlight_result_manifest.json`
+  - checkpoint `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop404_11668307_title_led_body_consumption_search_nonlight_result_checkpoint.jsonl`
+  - log `logs\expert_run_20260704_130002_186429.log`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop404_11668307_title_led_body_consumption_runtime_health_audit.json`
+- Code evidence:
+  - `src\llm_batch\agentic_pipeline.py`: `_extract_post_title_lead_alias_terms(...)`에 `_has_title_led_work_consumption_signal(ctx)` 기반 compact title-lead alias fallback 추가.
+  - `tests\test_title_lead_search_inferred_guard.py`: `test_title_led_body_consumption_question_uses_search_alias_bridge` 추가.
+- Verification commands:
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_title_lead_search_inferred_guard.py` -> PASS
+  - focused title-led/body-consumption bridge contract -> PASS
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard` -> PASS, 200 tests
+  - `.venv312\Scripts\python.exe -m unittest tests.test_known_title_abbreviation_safe_loss_contract` -> PASS, 12 tests
+  - `tools\audit_expert_run_health.py` on run `20260704_130002_186429` -> `flush_integrity=GO / clean_completed_source`, `publication_contract_convergence=GO`, violations `0`
+- Runtime result:
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - checkpoint/result rows `1/1`
+  - final title `빚을 져서라도 세상은 구해야 할 거 아니야`
+  - URL `https://series.naver.com/novel/detail.series?productNo=13598334`
+  - `candidate_ledger_status=safe_resolved`
+  - `publish_allowed=true`
+- Boundary:
+  - Manifest preflight는 include_search `false`, light_mode `true`라 health audit `search_evidence=SEPARATE_AUDIT_REQUIRED`다.
+  - Row search는 `ok`, queries `20`, degraded `0`이지만 broader search recovery 완료로 세지 않는다.
+  - Golden expected-answer는 `NOT_REFRESHED_AFTER_LOOP404 / inherited Loop399 NO-GO 14 of 18`이다.
+  - Full375 collateral은 `NOT_OPEN`이다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted semantic `GO_ROW_ONLY`, publication contract `GO / 0 violations`, broader search recovery `P0 / ROW_LEVEL_OK_WITH_PREFLIGHT_LIGHT_CAVEAT / search-blind conditional`, Collateral 105 `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop402 direct-image OCR canonical 수렴 검증
 
 - 범위: Loop399 `11663540` wrong title `전 버두바가 하고 싶으데요`를 런 반복 없이 public character-parenthetical OCR near-variant 계약으로 줄인다. 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않는다.

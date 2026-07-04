@@ -9189,6 +9189,81 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             )
         )
 
+    def test_title_led_body_consumption_question_uses_search_alias_bridge(self):
+        pipeline = build_pipeline()
+        title = "빚을 져서라도 세상은 구해야 할 거 아니야"
+        url = "https://series.naver.com/novel/detail.series?productNo=13598334"
+        post = PostInput(
+            post_id=11668307,
+            title="빛세구 궁금한 점 있음",
+            author="비듬빙수슝슝",
+            content_blocks=[
+                ContentBlock(
+                    type="text",
+                    text=(
+                        "다시보는 중인데, 각 행성에서 재능이 제일 뛰어난 사람만 골라오는 거 아님? "
+                        "전부 엘리트일 텐데 왜 튜토리얼에 폐급이 있지?"
+                    ),
+                )
+            ],
+            comments=[
+                "그거 신경쓰면 대부분의 웹소 못 봄  - dc App",
+                "이건 중요한 거임... 행성 1위들끼리 급을 나누는 것부터 흥미로운데 행성 1위가 폐급이면...",
+                "@비듬빙수슝슝\n그 행성이 개씹 폐급이라고 봐야지 ㅇㅇ\n전독시에도 비슷한 내용 있음",
+            ],
+        )
+        ctx = ConversationContext(post_id=post.post_id, post_data=pipeline._post_to_dict(post), comments=post.comments)
+        mark_no_work_seed(ctx)
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "ask_question",
+                    "target_kind": "work",
+                    "primary_domain": "novel_literature",
+                    "semantic_seed_review": {"is_specific_work_discussion": False},
+                    "warnings": ["semantic_seed_review_specific_work_denied"],
+                }
+            },
+        )
+        ctx.search_results = [
+            {
+                "title": f"{title} - 네이버 시리즈",
+                "url": url,
+                "content": "네이버 시리즈 웹소설. 작가 1_394. 판타지 연재 중.",
+                "snippet": "네이버 시리즈 웹소설 공식 상세.",
+                "query": "빛세구 네이버 시리즈",
+            },
+            {
+                "title": "빛세구가 뭐 줄임말임? - 장르소설 마이너 갤러리",
+                "url": "https://m.dcinside.com/board/genrenovel/11826680",
+                "content": f"빛세구는 {title}를 말함. 웹소설 약칭 질의 답변.",
+                "snippet": f"빛세구 답변: {title}",
+                "query": "빛세구 줄임말",
+            },
+        ]
+
+        self.assertTrue(pipeline._has_title_led_work_consumption_signal(ctx))
+        self.assertIn("빛세구", pipeline._extract_post_title_lead_alias_terms(ctx))
+        self.assertTrue(
+            pipeline._has_title_lead_alias_search_work_support(
+                ctx,
+                title,
+                allow_semantic_no_work=True,
+            )
+        )
+        self.assertTrue(pipeline._has_batch_alias_verified_no_work_release_context(ctx, title))
+
+        candidate, hit = pipeline._resolve_batch_memory_alias_candidate(ctx, verification_result={})
+
+        self.assertIsNotNone(candidate)
+        self.assertEqual(candidate.official_title, title)
+        self.assertEqual(candidate.heretic_url, url)
+        self.assertEqual(candidate.alias_or_mention, "빛세구")
+        self.assertTrue(candidate.locked)
+        self.assertTrue(candidate.resolved_recall_anchor)
+        self.assertEqual(hit["source"], "title_lead_alias_official_detail_release")
+
     def test_visual_title_lead_alias_probe_rejects_game_context_query(self):
         orchestrator = Orchestrator(experts={})
         ctx = ConversationContext(

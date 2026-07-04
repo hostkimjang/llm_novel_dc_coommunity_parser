@@ -1,5 +1,23 @@
 ﻿# Developer TODO Index
 
+## 2026-07-04 regression-safe grounding Loop404 TODO
+
+- 상태 업데이트: Loop404는 Loop399 `11668307` positive unresolved를 단건으로 좁혀 title-led work consumption compact alias 계약과 runtime row 생산을 확인한 회차다. 단건 public identity는 회복됐지만 golden expected-answer와 full375 approval은 갱신하지 않았다.
+- Loop404 TODO:
+  - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] R1 hardcoded cue/title 리스트 확장을 하지 않았다.
+  - [x] `_has_title_led_work_consumption_signal(ctx)` 기반 compact title-lead alias fallback을 추가했다.
+  - [x] `11668307` 구조 계약 테스트를 추가했다.
+  - [x] py_compile, focused contract, title-lead guard `200`, known-title abbreviation safe-loss `12`를 PASS했다.
+  - [x] 단건 runtime `20260704_130002_186429`에서 `1/1/1/0/0` row 생산과 `safe_resolved / publish_allowed=true`를 확인했다.
+  - [ ] Manifest preflight가 include_search `false`, light_mode `true`였으므로 search recovery P0를 닫지 않는다.
+  - [ ] Search/rerank 중간 오염 `전지적 세구 시점`과 relation reason 오염은 다음 hygiene 대상으로 남긴다.
+  - [ ] Golden expected-answer는 `NOT_REFRESHED_AFTER_LOOP404 / inherited Loop399 NO-GO 14 of 18`로 유지한다.
+  - [ ] Full375 collateral은 `NOT_OPEN`으로 유지한다.
+  - [x] Collateral 105는 `reclassified 74 / runtime-verified 4` 축으로 유지한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop400 TODO
 
 - 상태 업데이트: Loop400은 Loop399 `11698880` wrong publish를 런 반복 없이 code contract로 막은 회차다. `resolved_public_title_scope`가 current body bridge 없이 post-title alias와 search official detail만으로 publish하는 경로에 body-local compound character anchor block을 배선했다.
