@@ -10806,3 +10806,32 @@
   - `git diff --check` PASS(CRLF warning only)
 - [ ] current-code targeted replay로 `11713212` public title이 `null / candidate_only`로 내려가는지 확인한다.
 - Gate: code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-04 Loop403 11663540 post-Loop402 runtime 체크
+
+- [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Loop402 코드 계약 이후 `11663540` 단건을 search 포함 non-light로 재실행했다.
+  - run `20260704_123503_819467`
+  - manifest input/completed/flushed/pending/failed `1/1/1/0/0`
+  - result/checkpoint rows `1/1`
+  - VLM/OCR `READY`
+- [x] search preflight와 row search를 확인했다.
+  - include_search `true`
+  - light_mode `false`
+  - health ok `2/2`
+  - row status `SEARCH_DEGRADED_RECOVERED`
+  - unrecovered degraded `0`
+- [x] `11663540` public title이 expected로 수렴함을 확인했다.
+  - official title `전 버튜버가 하고 싶은데요`
+  - official URL `https://novelpia.com/novel/275975`
+  - candidate ledger `safe_resolved`
+  - `publish_allowed=true`
+  - `bypassed_gate=false`
+- [x] publication contract convergence를 확인했다.
+  - health audit `GO / violations 0`
+- [ ] Golden18 전체 expected-answer는 이번 회차에서 갱신하지 않는다.
+  - inherited Loop399 `NO-GO / 14 of 18`
+- [ ] Full375 collateral gate는 아직 열지 않는다.
+- [ ] Collateral 105는 계속 `reclassified 74 / runtime-verified 4`로만 보고한다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted semantic `GO_ROW_ONLY`, broader search recovery `P0 / ROW_LEVEL_RECOVERED_ONLY / search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

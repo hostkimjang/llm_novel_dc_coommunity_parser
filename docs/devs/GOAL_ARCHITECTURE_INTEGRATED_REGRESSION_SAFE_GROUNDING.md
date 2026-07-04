@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-04 Loop403 Addendum - 11663540 post-Loop402 runtime proof
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop403은 approval 회차가 아니라 Loop402 direct-image/OCR canonical 계약이 실제 runtime 직렬화까지 도달하는지 `11663540` 단건으로 검증한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_403_REPORT_20260704.md`, state `docs/devs/loop403_11663540_after_loop402_runtime_20260704.json`, health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop403_11663540_after_loop402_runtime_health_audit.json`.
+- Runtime: run `20260704_123503_819467`은 input/completed/flushed/pending/failed `1/1/1/0/0`, result/checkpoint rows `1/1`, `large_run_complete=true`, `ordered_flush_blocked=false`, VLM/OCR `READY`다.
+- Search: preflight는 include_search `true`, light_mode `false`, ok `2/2`다. Row search는 `SEARCH_DEGRADED_RECOVERED`, unrecovered degraded `0`이므로 row-level search는 닫혔지만 broader search recovery는 아니다.
+- Result: final public title은 `전 버튜버가 하고 싶은데요`, URL은 `https://novelpia.com/novel/275975`다. OCR 표면 `전 버두비가 하고 싶은데요`는 후보로 보존되고 public title을 덮지 않는다.
+- Contract: `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`, `publish_allowed=true`, `bypassed_gate=false`, `publish_contract_trace` convergence `GO / violations 0`이다.
+- Boundary: 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다. Golden expected-answer는 `NOT_REFRESHED_AFTER_LOOP403 / inherited Loop399 NO-GO 14 of 18`, full375는 `NOT_OPEN`이다. R1 hardcoded cue 리스트 확장은 없다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted semantic `GO_ROW_ONLY`, broader search recovery `P0 / ROW_LEVEL_RECOVERED_ONLY / search-blind conditional`, Collateral 105 `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-04 Loop402 Addendum - direct-image OCR canonical near-variant contract
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop402는 approval 회차가 아니라 Loop399 `11663540` wrong title을 direct-image/OCR public canonical code contract로 줄인 회차다.

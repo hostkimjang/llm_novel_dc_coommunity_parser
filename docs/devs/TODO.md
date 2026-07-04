@@ -9545,3 +9545,20 @@
   - [ ] `11700470`은 blind/source-native 검증으로 expected 교정 가능성을 먼저 확인한다.
   - [ ] full375 collateral gate는 아직 열지 않는다.
   - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-04 Loop403 TODO
+
+- 상태 업데이트: Loop402 이후 `11663540` 단건 runtime은 search 포함 non-light 조건에서 `1/1/1/0/0`으로 완주했고 public title은 `전 버튜버가 하고 싶은데요`로 수렴했다. 이 결과는 target row runtime proof이지 golden/full375 approval이 아니다.
+- Loop403 TODO:
+  - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] Loop403 단건 runtime을 실행했다.
+    - run `20260704_123503_819467`
+    - result/checkpoint rows `1/1`
+    - search preflight include_search `true`, light_mode `false`, ok `2/2`
+  - [x] Health audit에서 `flush_integrity=GO`, `search_evidence=GO`, publication contract `GO / violations 0`을 확인했다.
+  - [x] `11663540`이 `safe_resolved`, `publish_allowed=true`, `bypassed_gate=false`로 수렴함을 확인했다.
+  - [ ] Golden18 전체 expected-answer는 current-code golden18 재실행 전까지 갱신하지 않는다.
+  - [ ] `11668307` positive unresolved를 다음 일반 계약 또는 source-native 검증 대상으로 유지한다.
+  - [ ] full375 collateral gate는 아직 열지 않는다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.

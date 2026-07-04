@@ -21855,3 +21855,14 @@ The broader unittest result proves the code checkpoint did not break the current
 - `tests.test_title_lead_search_inferred_guard` 전체 -> PASS / 198.
 - `git diff --check` -> PASS(CRLF warning only).
 - Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다. Gate 유지: `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, full375 collateral `NOT_OPEN`.
+
+## 2026-07-04 Loop403 Verification
+
+- Runtime command: `expert_main.py --input out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop403_11663540_after_loop402_input.jsonl --output out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop403_11663540_after_loop402_search_nonlight_result.json --server-type vllm --llm-endpoint http://10.20.0.101:8000 --llm-model bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4 --reuse-shards-only --no-dashboard --slang-db off --parallel 1 --vlm on --ocr on --require-vlm-ocr-for-images --llm-stream-first-token-timeout 45 --llm-stream-idle-timeout 45` -> PASS.
+- Run `20260704_123503_819467`: manifest input/completed/flushed/pending/failed `1/1/1/0/0`, result/checkpoint rows `1/1`, pending snapshot rows `0`, `large_run_complete=true`, `ordered_flush_blocked=false`.
+- MCP health: include_search `true`, light_mode `false`, required/ok/failure `2/2/0`.
+- Health audit: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop403_11663540_after_loop402_runtime_health_audit.json` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=GO`, `publication_contract_convergence=GO / violations 0`, reason errors `0`.
+- Target row `11663540`: official title `전 버튜버가 하고 싶은데요`, URL `https://novelpia.com/novel/275975`, `candidate_ledger_status=safe_resolved`, `publish_allowed=true`, `bypassed_gate=false`.
+- Search row status: `SEARCH_DEGRADED_RECOVERED`, unrecovered degraded total `0`.
+- Golden18 전체 expected-answer는 재실행하지 않았으므로 `NOT_REFRESHED_AFTER_LOOP403 / inherited Loop399 NO-GO 14 of 18`이다.
+- Gate 유지: `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, full375 collateral `NOT_OPEN`, goal `ACTIVE / NOT_COMPLETE`.

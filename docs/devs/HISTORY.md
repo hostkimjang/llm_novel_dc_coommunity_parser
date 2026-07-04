@@ -10377,3 +10377,13 @@
 - 검증은 신규 계약 `2`, positive alias control `4`, promotion/work-bridge 계약 `25`, title-lead guard 전체 `198`, `py_compile`, `git diff --check` 모두 PASS다.
 - Artifacts: `docs/devs/loop_reports/LOOP_401_REPORT_20260704.md`, `docs/devs/loop401_low_specificity_alias_nonwork_contract_20260704.json`.
 - Gate는 code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`다.
+
+## 2026-07-04 Loop403 11663540 post-Loop402 runtime proof
+
+- Goal은 `ACTIVE / NOT_COMPLETE`다. 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 실행하지 않았다.
+- Loop402 direct-image/OCR canonical 계약을 `11663540` 단건 runtime으로 검증했다. Run `20260704_123503_819467`은 input/completed/flushed/pending/failed `1/1/1/0/0`, result/checkpoint rows `1/1`, VLM/OCR `READY`, `large_run_complete=true`다.
+- Search 조건은 include_search `true`, light_mode `false`, health ok `2/2`이며 row search는 `SEARCH_DEGRADED_RECOVERED`, unrecovered degraded `0`이다.
+- Final public title은 `전 버튜버가 하고 싶은데요`, URL은 `https://novelpia.com/novel/275975`다. OCR 표면 `전 버두비가 하고 싶은데요`는 후보로 보존됐지만 public title을 덮지 않았다.
+- Candidate ledger는 `safe_resolved`, `promotion_decision.status=publish`, `publish_allowed=true`, `bypassed_gate=false`다. Health audit는 `flush_integrity=GO / clean_completed_source`, `publication_contract_convergence=GO / violations 0`이다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_403_REPORT_20260704.md`, state `docs/devs/loop403_11663540_after_loop402_runtime_20260704.json`, audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop403_11663540_after_loop402_runtime_health_audit.json`.
+- Gate는 targeted runtime `GO / 1 of 1`, targeted semantic `GO_ROW_ONLY`, golden expected-answer `NOT_REFRESHED_AFTER_LOOP403 / inherited Loop399 NO-GO 14 of 18`, full375 collateral `NOT_OPEN`, broader search recovery `P0 / ROW_LEVEL_RECOVERED_ONLY / search-blind conditional`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다.

@@ -1,0 +1,93 @@
+{
+  "loop": 403,
+  "date": "2026-07-04",
+  "scope": "Loop402 direct-image OCR public canonical contract runtime replay for post_id 11663540",
+  "git_head": "9fb854b5",
+  "status": "TARGETED_RUNTIME_GO_NOT_APPROVAL",
+  "run_id": "20260704_123503_819467",
+  "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop403_11663540_after_loop402_input.jsonl",
+  "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop403_11663540_after_loop402_search_nonlight_result.json",
+  "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop403_11663540_after_loop402_search_nonlight_result_manifest.json",
+  "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop403_11663540_after_loop402_search_nonlight_result_checkpoint.jsonl",
+  "pending_snapshot": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop403_11663540_after_loop402_search_nonlight_result_pending_snapshot.json",
+  "console_log": "logs/loop403_11663540_after_loop402_search_nonlight.console.log",
+  "worker_log": "logs/expert_run_20260704_123503_819467.log",
+  "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop403_11663540_after_loop402_runtime_health_audit.json",
+  "runtime_counts": {
+    "input_post_count": 1,
+    "completed_count": 1,
+    "flushed_count": 1,
+    "pending_count": 0,
+    "failed_count": 0,
+    "checkpoint_rows": 1,
+    "result_rows": 1,
+    "large_run_complete": true,
+    "ordered_flush_blocked": false
+  },
+  "mcp_health": {
+    "include_search": true,
+    "light_mode": false,
+    "required_ok_count": 2,
+    "ok_count": 2,
+    "failure_count": 0
+  },
+  "search_health": {
+    "row_status": "SEARCH_DEGRADED_RECOVERED",
+    "queries_issued": 7,
+    "degraded_total": 6,
+    "degraded_recovered_total": 4,
+    "unrecovered_degraded_total": 0,
+    "health_audit_gate": "GO"
+  },
+  "target_result": {
+    "post_id": 11663540,
+    "loop399_failed_actual": "전 버두바가 하고 싶으데요",
+    "loop403_ocr_surface": "전 버두비가 하고 싶은데요",
+    "official_title": "전 버튜버가 하고 싶은데요",
+    "official_url": "https://novelpia.com/novel/275975",
+    "candidate_ledger_status": "safe_resolved",
+    "publish_allowed": true,
+    "bypassed_gate": false,
+    "promotion_status": "publish",
+    "promotion_reason_codes": [
+      "official_title_exists",
+      "row_discusses_work_as_work",
+      "scope_current_work",
+      "direct_image_work_surface_bridge",
+      "ocr_catalog_official_title",
+      "official_detail_url",
+      "serialized_public_identity_published"
+    ],
+    "consistency_flags": [
+      "image_ocr_variant_not_title_in_post",
+      "direct_image_explicit_title_rescued",
+      "official_detail_title_preferred_over_surface_form",
+      "surface_form_duplicate_reference_pruned",
+      "verified_alias_official_detail_anchor",
+      "confirmed_alias:주서연",
+      "explicit_alias_official_work_lock",
+      "weak_public_title_bridge_verified_alias_detail_exempt"
+    ]
+  },
+  "health_audit_summary": {
+    "flush_integrity": "GO / clean_completed_source",
+    "publication_contract_convergence": "GO / violations 0",
+    "reason_errors": 0,
+    "slang_db_writeback": "off / store_true 0"
+  },
+  "gates": {
+    "new_large_runs": "FROZEN",
+    "same_38_row_parent_packet_replay": "STOPPED",
+    "targeted_runtime": "GO / 1 of 1",
+    "targeted_semantic": "GO_ROW_ONLY",
+    "golden18_after_loop402": "NOT_RUN",
+    "golden_expected_answer": "NOT_REFRESHED_AFTER_LOOP403 / inherited Loop399 NO-GO 14 of 18",
+    "full375_collateral": "NOT_OPEN",
+    "broader_search_recovery": "P0 / ROW_LEVEL_RECOVERED_ONLY / search-blind conditional",
+    "collateral_105": "reclassified 74 / runtime-verified 4",
+    "r1_hardcoded_cue_expansion": "NONE",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}
