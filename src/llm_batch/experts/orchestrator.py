@@ -24716,6 +24716,13 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         file=sys.stderr,
                     )
                     return False
+                if _has_unprocessed_direct_worklike_alias_probe():
+                    print(
+                        f"[{_ts()}] ⚠️ 검색 조기 종료 보류: core_fast_resolve "
+                        f"nonzero={_nonzero_total} but direct worklike alias probes remain",
+                        file=sys.stderr,
+                    )
+                    return False
                 if ctx_ref is not None:
                     ctx_ref.search_stop_reason = "core_fast_resolve_nonzero"
                 print(

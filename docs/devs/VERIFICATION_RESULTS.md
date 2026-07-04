@@ -22283,3 +22283,25 @@ The broader unittest result proves the code checkpoint did not break the current
 - Collateral: golden shared only, shared `18`, changed `7`, regression candidates `3`, full375 collateral `NOT_OPEN`.
 - Boundary: shell exit code는 `1`이었으나 result/manifest/checkpoint는 완성됐고 health audit가 flush integrity를 `GO`로 확인했다. 명령 환경상 preflight가 light였으므로 broader search recovery 완료가 아니다. Collateral 105는 계속 `reclassified 74 / runtime-verified 4`로만 보고한다.
 - Gate 유지: golden18 runtime `GO / 18 of 18`, search evidence `REVIEW`, expected-answer `NO-GO / 16 of 18`, golden shared collateral `NO-GO / 3`, full375 collateral `NOT_OPEN`, broader search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-04 Loop422 Verification
+
+- Runtime evidence:
+  - Loop417 golden18 run `20260704_201602_507443` -> input/completed/flushed/pending/failed `18/18/18/0/0`.
+  - Loop421 single run `20260704_212422_496887` -> input/completed/flushed/pending/failed `1/1/1/0/0`, VLM/OCR `READY`, search `include_search=true`, `light_mode=false`, degraded `0`.
+- Original Loop421 result:
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop421_11698880_direct_body_alias_search_nonlight_result.json`
+  - final public title `아카데미 생존 갤러리`
+  - semantic gate `NO-GO`
+- Loop422 contract replay:
+  - replay result `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop421_11698880_direct_body_alias_contract_replayed_result.json`
+  - before `아카데미 생존 갤러리`, after `가챠 중독자의 퓨전펑크 생활`
+  - replay publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop421_11698880_direct_body_alias_contract_replayed_publication_audit.json` -> gate `GO`, violations `0`
+- Tests:
+  - `py_compile expert_main.py src\llm_batch\agentic_pipeline.py src\llm_batch\experts\orchestrator.py tests\test_expert_main_comment_metadata.py tests\test_title_lead_search_inferred_guard.py` -> PASS
+  - `tests.test_expert_main_comment_metadata tests.test_title_lead_search_inferred_guard` -> PASS / `275`
+  - `tests.test_promotion_gate_contract tests.test_publication_contract_convergence_audit tests.test_expert_main_comment_metadata` -> PASS / `90`
+- Logs:
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop422_expert_main_title_guard_tests.log`
+  - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop422_publication_contract_bundle_tests.log`
+- Gate: runtime production `GO`, original semantic `NO-GO`, contract replay `GO_CONTRACT_REPLAY_ONLY`, full375 collateral `NOT_OPEN`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

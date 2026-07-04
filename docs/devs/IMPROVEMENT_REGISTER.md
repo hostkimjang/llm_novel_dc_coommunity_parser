@@ -16655,3 +16655,17 @@ Gate: runtime production `GO / 18 of 18`, search `GO_GOLDEN18_ONLY / FULL375_NOT
 - 적용 파일: `src/llm_batch/agentic_pipeline.py`, `tests/test_title_lead_search_inferred_guard.py`, `out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json`.
 - `11700470` expected는 특정 제목 강제 매칭이 아니라 `expected_no_public_title=true` HOLD로 교정했다.
 - 남은 리스크: current-code runtime replay가 아직 없으므로 `11700470` 실제 row 생산 결과는 `NOT_RUN_AFTER_PATCH`다. Loop392 재감사는 저장 결과 기준 `NO-GO / 15 of 18`이다.
+
+## IMP-20260704-422 - 11698880 body-alias publication sync
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| runtime production | GO | Loop417 golden18 `18/18`, Loop421 `11698880` `1/1` | 대형 반복 dispatch 금지 |
+| Loop421 original semantic | NO-GO | public title `아카데미 생존 갤러리` | approval로 세지 않음 |
+| direct body alias search | Recovered row-level | Loop421 query `가챠펑크 세드릭` 실행, search degraded `0` | broader search P0 유지 |
+| publication sync context | Patched | `expert_main.py` sync context에 body/comment 전달 | actual runtime 필요 시 단건만 |
+| title-led family predicate | Patched | `verified_alias_title_only_publication`을 title-led family에 포함 | locked 후보 우선순위 유지 |
+| contract replay | GO_CONTRACT_REPLAY_ONLY | Loop421 replay title `가챠 중독자의 퓨전펑크 생활`, audit `GO / 0` | golden/full375 대체 금지 |
+| tests | PASS | `275` + `90` tests PASS | 회귀 suite 유지 |
+
+Gate: runtime production `GO`, original semantic `NO-GO`, contract replay `GO_CONTRACT_REPLAY_ONLY`, full375 collateral `NOT_OPEN`, collateral `reclassified 74 / runtime-verified 4 / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.

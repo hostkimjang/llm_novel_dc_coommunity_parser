@@ -3635,7 +3635,18 @@ def _sync_allowed_publication_result_contract(
             gate_source == "title_led_alias_public_title"
             or "title_led_consumption_bridge" in reason_code_set
             or "title_led_consumption_bridge" in scope_sources
+            or "title_led_consumption_bridge" in flags
+            or "verified_alias_title_only_publication" in reason_code_set
+            or "verified_alias_title_only_publication" in scope_sources
+            or "verified_alias_title_only_publication" in flags
             or "title_abbrev_mentioned" in scope_sources
+        )
+        title_only_weak_publication = bool(
+            "verified_alias_title_only_publication" in reason_code_set
+            and (
+                "official_url_withheld_by_title_mismatch" in reason_code_set
+                or "official_detail_url_missing_direct_source_support" in flags
+            )
         )
         confirmed_alias_keys = {
             _title_key(flag.split(":", 1)[1])
@@ -3682,6 +3693,46 @@ def _sync_allowed_publication_result_contract(
             )
             return bool(confirmed_alias_support or flags & explicit_alias_lock_flags)
 
+        def _candidate_has_preserved_body_alias_bridge(
+            item: Dict[str, Any],
+            item_title: str,
+            item_url: str,
+        ) -> bool:
+            if not (title_led_publication and title_only_weak_publication):
+                return False
+            reference_role = str(item.get("reference_role") or "").strip().lower()
+            preservation_role = str(item.get("preservation_role") or "").strip().lower()
+            if reference_role not in {"primary", "mentioned", "candidate"} and preservation_role not in {
+                "mentioned_work",
+                "comparison_target",
+                "secondary_reference",
+                "title_candidate",
+            }:
+                return False
+            source_tier = str(item.get("source_tier") or "").strip().lower()
+            if source_tier in {"", "unknown", "weak"}:
+                return False
+            alias_keys = [
+                alias_key
+                for alias_key in _candidate_alias_keys(item_title, item_url)
+                if len(alias_key) >= 3
+            ]
+            if not alias_keys or not any(alias_key in source_key for alias_key in alias_keys):
+                return False
+            negative_evidence = {
+                str(value or "").strip()
+                for value in (item.get("negative_evidence") or [])
+                if str(value or "").strip()
+            }
+            return not bool(
+                negative_evidence
+                & {
+                    "official_detail_url_missing_direct_source_support",
+                    "weak_alias_surface_public_title_bridge",
+                    "url_title_mismatch",
+                }
+            )
+
         body_competition_present = bool(flags & body_competition_flags)
         if not body_competition_present and not title_led_publication:
             return None
@@ -3700,13 +3751,18 @@ def _sync_allowed_publication_result_contract(
                 item_title,
                 item_url,
             )
-            if not body_competition_present and not verified_alias_bridge:
+            preserved_body_alias_bridge = _candidate_has_preserved_body_alias_bridge(
+                item,
+                item_title,
+                item_url,
+            )
+            if not body_competition_present and not (verified_alias_bridge or preserved_body_alias_bridge):
                 continue
             if not _candidate_has_direct_source_support(item_title, item_url):
                 continue
             if (
                 body_competition_present
-                and not verified_alias_bridge
+                and not (verified_alias_bridge or preserved_body_alias_bridge)
                 and not _candidate_has_search_title_support(item_title, item_url)
             ):
                 continue
@@ -3728,10 +3784,18 @@ def _sync_allowed_publication_result_contract(
                 score += 2
             if verified_alias_bridge:
                 score += 4
+            if preserved_body_alias_bridge:
+                score += 3
             if score > best_score:
                 best_item = item
                 best_score = score
-                if verified_alias_bridge:
+                if preserved_body_alias_bridge:
+                    best_source = "preserved_body_alias_candidate"
+                    best_reason_codes = [
+                        "serialized_public_identity_preserved_body_alias_reconciled",
+                        "title_only_publication_reconciled_to_preserved_body_alias",
+                    ]
+                elif verified_alias_bridge:
                     best_source = "verified_alias_work_competition"
                     best_reason_codes = [
                         "serialized_public_identity_verified_alias_competition_reconciled",
@@ -3751,7 +3815,7 @@ def _sync_allowed_publication_result_contract(
             "reason_codes": best_reason_codes,
         }
 
-    if not gate_candidate_override:
+    if not gate_candidate_override and not locked_candidate_override:
         body_candidate_override = _body_verified_competing_candidate_override()
         if body_candidate_override:
             public_title = body_candidate_override["official_title"]
@@ -4126,6 +4190,14 @@ def _demote_unsafe_url_title_verified_publication_contract(
         and not has_missing_direct_source_blocker
     ):
         return False
+    if _publication_preserved_body_alias_candidate(
+        result_dict,
+        identity,
+        ledger,
+        candidate_title,
+        post_title=post_title,
+    ):
+        return False
 
     source_values = _source_values()
     source_key = _title_key(" ".join(source_values))
@@ -4456,6 +4528,109 @@ def _publication_has_direct_source_support(
         ):
             return True
     return False
+
+
+def _publication_preserved_body_alias_candidate(
+    result_dict: Dict[str, Any],
+    identity: Dict[str, Any],
+    ledger: Dict[str, Any],
+    current_title: Any,
+    *,
+    post_title: Optional[str] = None,
+) -> Optional[Dict[str, Any]]:
+    current_key = _publication_title_key(current_title)
+    if not current_key:
+        return None
+    source_key = _publication_source_key(result_dict, post_title=post_title)
+    if not source_key:
+        return None
+
+    decision = identity.get("promotion_decision")
+    if not isinstance(decision, dict):
+        decision = ledger.get("promotion_decision")
+    reason_codes = {
+        str(code or "").strip()
+        for code in ((decision or {}).get("reason_codes") if isinstance(decision, dict) else [])
+        if str(code or "").strip()
+    }
+    flags = {
+        str(value or "").strip()
+        for source in (identity.get("consistency_flags"), ledger.get("consistency_flags"))
+        if isinstance(source, list)
+        for value in source
+        if str(value or "").strip()
+    }
+    weak_title_only_current = bool(
+        "verified_alias_title_only_publication" in reason_codes
+        and (
+            "official_url_withheld_by_title_mismatch" in reason_codes
+            or "official_detail_url_missing_direct_source_support" in flags
+        )
+    )
+    title_led_context = bool(
+        {
+            "title_led_consumption_bridge",
+            "title_led_evaluation_official_candidate_rescued",
+            "verified_alias_title_only_publication",
+        }
+        & (reason_codes | flags)
+    )
+    if not (weak_title_only_current and title_led_context):
+        return None
+
+    best_item: Optional[Dict[str, Any]] = None
+    best_score = -1
+    tier_rank = {
+        "official_detail": 5,
+        "novel_platform": 5,
+        "official": 5,
+        "mixed": 4,
+        "community": 3,
+        "llm_only": 2,
+    }
+    for item in _publication_candidate_items(identity, ledger):
+        item_title, item_url = _publication_candidate_title_url(item)
+        item_key = _publication_title_key(item_title)
+        if not item_key or item_key == current_key:
+            continue
+        reference_role = str(item.get("reference_role") or "").strip().lower()
+        preservation_role = str(item.get("preservation_role") or "").strip().lower()
+        if reference_role not in {"primary", "mentioned", "candidate"} and preservation_role not in {
+            "mentioned_work",
+            "comparison_target",
+            "secondary_reference",
+            "title_candidate",
+        }:
+            continue
+        source_tier = str(item.get("source_tier") or "").strip().lower()
+        if source_tier in {"", "unknown", "weak"}:
+            continue
+        negative = {
+            str(value or "").strip()
+            for value in (item.get("negative_evidence") or [])
+            if str(value or "").strip()
+        }
+        if negative & {
+            "official_detail_url_missing_direct_source_support",
+            "weak_alias_surface_public_title_bridge",
+            "url_title_mismatch",
+        }:
+            continue
+        alias_supported = any(
+            _publication_alias_in_source(item.get(key), source_key)
+            for key in ("alias_or_mention", "alias", "surface", "matched_alias", "anchor_text", "resolved_recall_anchor")
+        )
+        if not alias_supported:
+            continue
+        score = tier_rank.get(source_tier, 0)
+        if str(item.get("confidence") or "").strip().lower() in {"high", "max"}:
+            score += 2
+        if _publication_url_key(item_url):
+            score += 1
+        if score > best_score:
+            best_item = item
+            best_score = score
+    return best_item
 
 
 def _publication_sentence_like_alias_overreach(identity: Dict[str, Any], candidate_title: Any) -> bool:
@@ -8000,7 +8175,17 @@ def main() -> None:
                     apply_judge_seed_expected_candidate_preservation(identity_dict, getattr(post, "judge_seed", None))
                     apply_judge_seed_trope_boundary_hold_guard(identity_dict, getattr(post, "judge_seed", None))
                     apply_candidate_audit_fields(identity_dict, getattr(post, "judge_seed", None))
-                    _sync_final_publication_ledger_contract(result_dict, post_title=post.title)
+                    sync_result_dict = dict(result_dict)
+                    sync_result_dict.update(
+                        {
+                            "title": post.title,
+                            "content": content_texts,
+                            "comments": comment_texts,
+                            "comment_context_lines": comment_context_lines,
+                            "comment_dialogue_context_lines": comment_dialogue_context_lines,
+                        }
+                    )
+                    _sync_final_publication_ledger_contract(sync_result_dict, post_title=post.title)
                 
                 full_result = {
                     "gallery_id": getattr(post, "gallery_id", ""),

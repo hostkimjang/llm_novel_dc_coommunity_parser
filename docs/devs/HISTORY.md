@@ -10556,3 +10556,14 @@
 - Golden shared collateral compare는 shared `18`, changed `7`, regression candidates `3`이다. Full375 collateral은 `NOT_OPEN`이다.
 - Artifacts: report `docs/devs/loop_reports/LOOP_406_REPORT_20260704.md`, state `docs/devs/loop406_golden18_runtime_proof_20260704.json`, health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop406_golden18_current_7a76d748_run_health.json`.
 - Gate는 golden18 runtime `GO / 18 of 18`, search evidence `REVIEW`, expected-answer `NO-GO / 16 of 18`, golden shared collateral `NO-GO / 3`, full375 collateral `NOT_OPEN`, broader search recovery `P0 / OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다.
+
+## 2026-07-04 Loop417-422 runtime proof and 11698880 contract replay
+
+- Goal은 `ACTIVE / NOT_COMPLETE`다. 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 실행하지 않았다.
+- Loop417 golden18은 run `20260704_201602_507443`, input/completed/flushed/pending/failed `18/18/18/0/0`으로 runtime 생산성을 확인했다.
+- Loop421 `11698880`은 run `20260704_212422_496887`, `1/1/1/0/0`, VLM/OCR `READY`, search `include_search=true`, `light_mode=false`, row `ok`, degraded `0`으로 완주했다.
+- 원본 Loop421 semantic은 wrong `아카데미 생존 갤러리`다. 다만 `가챠펑크 세드릭` direct body alias 검색과 후보 보존은 실행됐다.
+- Loop422는 publication sync에 원문 body/comment context를 전달하고, `verified_alias_title_only_publication`을 title-led family로 수렴시켰다. 기존 Loop421 결과의 contract replay는 `가챠 중독자의 퓨전펑크 생활`로 교정됐다.
+- Artifacts: report `docs/devs/loop_reports/LOOP_417_422_REPORT_20260704.md`, state `docs/devs/loop422_11698880_publish_contract_context_patch_20260704.json`, replay result `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop421_11698880_direct_body_alias_contract_replayed_result.json`.
+- 검증: `tests.test_expert_main_comment_metadata tests.test_title_lead_search_inferred_guard` `275` tests PASS, publication contract bundle `90` tests PASS.
+- Gate는 runtime production `GO`, Loop421 원본 semantic `NO-GO`, Loop422 contract replay `GO_CONTRACT_REPLAY_ONLY`, full375 collateral `NOT_OPEN`, collateral `reclassified 74 / runtime-verified 4 / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다.

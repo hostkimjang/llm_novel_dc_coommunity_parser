@@ -1,0 +1,44 @@
+{
+  "loop": "417-422",
+  "date": "2026-07-04",
+  "goal_state": "ACTIVE / NOT_COMPLETE",
+  "scope": "golden18 runtime proof plus 11698880 targeted body-alias contract",
+  "large_runs_frozen": true,
+  "parent_packet_replay_frozen": true,
+  "runtime_evidence": {
+    "loop417_golden18": {
+      "run_id": "20260704_201602_507443",
+      "counts": "18/18/18/0/0",
+      "gate": "GO_RUNTIME_ONLY"
+    },
+    "loop421_11698880": {
+      "run_id": "20260704_212422_496887",
+      "counts": "1/1/1/0/0",
+      "search": "include_search=true, light_mode=false, row ok, degraded=0",
+      "original_semantic": "NO-GO / 아카데미 생존 갤러리"
+    }
+  },
+  "contract_replay": {
+    "source_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop421_11698880_direct_body_alias_search_nonlight_result.json",
+    "replayed_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop421_11698880_direct_body_alias_contract_replayed_result.json",
+    "before": "아카데미 생존 갤러리",
+    "after": "가챠 중독자의 퓨전펑크 생활",
+    "gate": "GO_CONTRACT_REPLAY_ONLY"
+  },
+  "tests": {
+    "expert_main_and_title_guard": "PASS / 275",
+    "publication_contract_bundle": "PASS / 90",
+    "logs": [
+      "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop422_expert_main_title_guard_tests.log",
+      "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop422_publication_contract_bundle_tests.log"
+    ]
+  },
+  "gates": {
+    "runtime_production": "GO",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "full375_collateral": "NOT_OPEN",
+    "collateral_105": "reclassified 74 / runtime-verified 4 / residual 105",
+    "search_recovery": "P0 / OPEN"
+  }
+}

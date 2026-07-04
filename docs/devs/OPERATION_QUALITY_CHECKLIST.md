@@ -5383,3 +5383,13 @@
 - [ ] 대형 run이 `IN_PROGRESS`이고 search blockers가 있으면 health 증가분을 completed-source approval로 쓰지 않는다.
 - [ ] `promotion_blocked`는 search 복구 전까지 `search-blind conditional`로 태깅한다.
 - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.
+
+## 2026-07-04 추가 운영 체크 - Loop422 runtime/contract replay boundary
+
+- [ ] Runtime production GO와 semantic answer GO를 분리한다. Loop421은 `1/1`로 row를 냈지만 원본 title은 wrong이다.
+- [ ] Contract replay GO는 새 코드의 publication sync 수렴 증거이며 actual runtime replay를 대체하지 않는다.
+- [ ] `verified_alias_title_only_publication`은 title-led family로 취급하되 locked official detail 후보보다 우선하지 않는다.
+- [ ] Direct body alias probe가 남아 있으면 `core_fast_resolve` nonzero count만으로 검색을 조기 종료하지 않는다.
+- [ ] 코드 변경 없는 동일 row dispatch 반복은 중단한다. 필요 시 새 코드 actual runtime은 `11698880` 단건만 실행한다.
+- [ ] Full375 collateral gate는 `NOT_OPEN`으로 유지하고, collateral 105는 `reclassified 74 / runtime-verified 4 / residual 105`로 분리 보고한다.
+- [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.

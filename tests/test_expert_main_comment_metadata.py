@@ -4515,6 +4515,181 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
             "verified_alias_work_competition",
         )
 
+    def test_title_only_publication_reconciles_preserved_body_alias_candidate_without_url(self):
+        correct_title = "가챠 중독자의 퓨전펑크 생활"
+        wrong_title = "아카데미 생존 갤러리"
+        correct_candidate = {
+            "official_title": correct_title,
+            "confidence": "High",
+            "alias_or_mention": "가챠펑크",
+            "source_tier": "llm_only",
+            "reference_role": "candidate",
+            "preservation_role": "title_candidate",
+        }
+        wrong_candidate = {
+            "official_title": wrong_title,
+            "heretic_url": None,
+            "confidence": "High",
+            "alias_or_mention": "아생갤",
+            "source_tier": "official_detail",
+            "page_type": "novel_page",
+            "reference_role": "primary",
+            "preservation_role": "title_candidate",
+            "negative_evidence": [
+                "official_detail_url_missing_direct_source_support",
+            ],
+        }
+        result = {
+            "post_id": 11698880,
+            "title": "아생갤 개 존나게 재밌군 ㅇㅇ",
+            "content": [
+                "가챠펑크 세드릭도 그렇고",
+                "일본 씹찐따 주인공 처럼",
+                "시원시원한 상남자라서 너무 좋구나",
+            ],
+            "comments": [],
+        }
+        analysis_result = {
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "is_resolved_work_discussion": True,
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "discussion_type": "general",
+                "context_sources": ["title", "body", "search", "image"],
+                "consistency_flags": [
+                    "title_led_evaluation_official_candidate_rescued",
+                    "title_led_consumption_bridge",
+                    "official_detail_url_missing_direct_source_support",
+                    "verified_alias_title_only_publication",
+                    "serialized_public_identity_shared_gate_restored",
+                ],
+                "novel_identity": {
+                    "official_title": wrong_title,
+                    "heretic_url": None,
+                    "confidence": "High",
+                },
+                "primary_work": dict(wrong_candidate),
+                "title_candidates": [dict(wrong_candidate), dict(correct_candidate)],
+                "candidate_preservation_sources": [
+                    dict(wrong_candidate),
+                    dict(correct_candidate),
+                ],
+                "search_evidence_catalog": [
+                    {
+                        "title": wrong_title,
+                        "url": "https://novelpia.com/novel/380218",
+                        "domain": "novelpia.com",
+                        "snippet": "아생갤 팬아트와 리뷰가 검색되지만 본문 별칭 후보와 충돌한다.",
+                        "query": "아생갤",
+                        "source_tier": "novel_platform",
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": wrong_title,
+                    "official_url": None,
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "verified_alias_title_only_publication",
+                        "official_url_withheld_by_title_mismatch",
+                        "serialized_public_identity_shared_gate_restored",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "verified_alias_title_only_publication",
+                            "post_title_alias",
+                            "title",
+                            "search",
+                            "body",
+                        ],
+                        "conflict_reason_codes": [
+                            "official_url_withheld_by_title_mismatch",
+                            "verified_alias_title_only_publication",
+                        ],
+                    },
+                },
+                "promotion_gate_state": {
+                    "candidate_title": wrong_title,
+                    "candidate_url": None,
+                    "official_title_exists": True,
+                    "row_discusses_work_as_work": True,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "verified_alias_title_only_publication",
+                            "post_title_alias",
+                            "title",
+                            "search",
+                            "body",
+                        ],
+                        "conflict_reason_codes": [
+                            "official_url_withheld_by_title_mismatch",
+                            "verified_alias_title_only_publication",
+                        ],
+                    },
+                },
+                "candidate_ledger": {
+                    "candidate_preservation_sources": [
+                        dict(wrong_candidate),
+                        dict(correct_candidate),
+                    ],
+                    "search_evidence_catalog": [
+                        {
+                            "title": wrong_title,
+                            "url": "https://novelpia.com/novel/380218",
+                            "domain": "novelpia.com",
+                            "snippet": "아생갤 팬아트와 리뷰가 검색되지만 본문 별칭 후보와 충돌한다.",
+                            "query": "아생갤",
+                            "source_tier": "novel_platform",
+                        }
+                    ],
+                    "consistency_flags": [
+                        "official_detail_url_missing_direct_source_support",
+                    ],
+                },
+            },
+        }
+        sync_context = dict(analysis_result)
+        sync_context.update(
+            {
+                "title": result["title"],
+                "content": result["content"],
+                "comments": result["comments"],
+            }
+        )
+
+        changed = _sync_final_publication_ledger_contract(
+            sync_context,
+            post_title=result["title"],
+        )
+
+        self.assertTrue(changed)
+        identity = analysis_result["identity"]
+        self.assertEqual(identity["novel_identity"]["official_title"], correct_title)
+        self.assertIsNone(identity["novel_identity"]["heretic_url"])
+        self.assertEqual(identity["promotion_decision"]["official_title"], correct_title)
+        self.assertIsNone(identity["promotion_decision"]["official_url"])
+        self.assertIn(
+            "serialized_public_identity_preserved_body_alias_reconciled",
+            identity["promotion_decision"]["reason_codes"],
+        )
+        self.assertEqual(
+            identity["publish_contract_trace"]["pre_gate_candidate"]["source"],
+            "preserved_body_alias_candidate",
+        )
+
     def test_locked_public_candidate_blocks_title_only_gate_candidate_override(self):
         correct_title = "가챠 중독자의 퓨전펑크 생활"
         correct_url = "https://novelpia.com/novel/387014"

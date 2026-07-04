@@ -11131,3 +11131,25 @@
 - [ ] Full375 collateral gate는 아직 열지 않는다.
 - [x] Collateral 105는 `reclassified 74 / runtime-verified 4`로만 보고한다.
 - Gate: golden18 runtime `GO / 18 of 18`, search evidence `REVIEW`, expected-answer `NO-GO / 16 of 18`, golden shared collateral `NO-GO / 3`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-04 Loop422 11698880 body-alias contract 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Loop417 golden18 runtime 생산성 `18/18`을 먼저 확인했다.
+- [x] Loop421 `11698880` 단건이 실제 row를 냈다.
+  - run `20260704_212422_496887`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - VLM/OCR `READY`
+  - search `include_search=true`, `light_mode=false`, row `ok`, degraded `0`
+- [x] 원본 Loop421 semantic은 wrong `아카데미 생존 갤러리`로 기록했다.
+- [x] Contract replay는 `가챠 중독자의 퓨전펑크 생활`로 수렴했다.
+  - replay result `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop421_11698880_direct_body_alias_contract_replayed_result.json`
+  - replay audit `GO / violations 0`
+- [x] 관련 테스트를 통과했다.
+  - expert main + title guard `275` PASS
+  - publication contract bundle `90` PASS
+- [ ] 새 코드 actual runtime은 필요 시 `11698880` 단건만 실행한다.
+- [ ] Full375 collateral gate는 아직 열지 않는다.
+- [x] Collateral 105는 `reclassified 74 / runtime-verified 4 / residual 105`로만 보고한다.
+- Gate: runtime production `GO`, Loop421 original semantic `NO-GO`, Loop422 contract replay `GO_CONTRACT_REPLAY_ONLY`, full375 collateral `NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

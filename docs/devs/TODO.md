@@ -18,6 +18,24 @@
   - [ ] 코드 변경 없이 docs만 반복되는 회차는 loop 정지 신호로 취급한다.
   - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 
+## 2026-07-04 Loop422 TODO
+
+- 상태 업데이트: Loop421은 `11698880` 단건을 search 포함 non-light로 `1/1/1/0/0` 완주했지만 원본 public title은 wrong `아카데미 생존 갤러리`다. Loop422 계약 리플레이는 새 코드로 `가챠 중독자의 퓨전펑크 생활`에 수렴했다.
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Loop417 golden18 runtime 생산성 `18/18`을 근거로 기록했다.
+- [x] Loop421 단건 runtime health를 확인했다.
+  - run `20260704_212422_496887`
+  - result/checkpoint rows `1/1`
+  - search `include_search=true`, `light_mode=false`, degraded `0`
+- [x] `core_fast_resolve` direct body alias probe 조기 종료 회귀를 계약 테스트로 고정했다.
+- [x] `verified_alias_title_only_publication`과 preserved body alias 후보의 publication sync 수렴을 계약 테스트로 고정했다.
+- [x] locked official detail 후보가 preserved body alias override에 다시 덮이지 않도록 우선순위를 복구했다.
+- [ ] 새 코드의 actual runtime 재확인이 필요하면 `11698880` 단건만 실행한다. 코드 변경 없는 dispatch 반복은 금지한다.
+- [ ] Golden/full375/parent packet은 search P0와 collateral gate 설계 전까지 계속 동결한다.
+- [x] Collateral 105는 `reclassified 74 / runtime-verified 4 / residual 105`로만 보고한다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop414 TODO
 
 - 상태 업데이트: Loop414는 Loop413 실패 `11698897`의 wrong public publish를 shared title-led alias competition gate로 차단한 회차다. `쳇바퀴의 생쥐 사도가 되었다` public title은 내려갔지만, final public title은 아직 `null`이므로 expected-answer와 full approval은 완료가 아니다.
