@@ -1,5 +1,32 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop405 11713212 저특이 alias non-work runtime 체크
+
+- [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Loop399 `11713212` unexpected public title leak를 target으로 좁혔다.
+  - expected `null`
+  - actual Loop399 `SSS급 죽어야 사는 헌터`
+- [x] R1 hardcoded cue/title 리스트 확장 없이 Loop401 일반 술어 계약을 재사용했다.
+- [x] 코드 변경 없이 current HEAD runtime replay만 수행했다.
+- [x] 검증:
+  - focused contract `4` PASS
+  - runtime health audit `flush_integrity=GO / clean_completed_source`
+  - publication contract `GO / 0 violations`
+- [x] 단건 runtime row 생산을 확인했다.
+  - run `20260704_132624_502514`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - checkpoint/result rows `1/1`
+  - `official_title=null`, `heretic_url=null`
+  - `promotion_decision.status=candidate_only`, `publish_allowed=false`
+  - `candidate_ledger_status=promotion_blocked`
+- [x] 로그에서 `가장`, `절대`, `무한`, `in`, `sss급` alias rescue가 `semantic_seed_no_work_context`로 차단된 것을 확인했다.
+- [ ] Manifest preflight가 include_search `false`, light_mode `true`였으므로 broader search recovery 완료로 세지 않는다.
+- [ ] Golden expected-answer는 `NOT_REFRESHED_AFTER_LOOP405 / inherited Loop399 NO-GO 14 of 18`로 유지한다.
+- [ ] Full375 collateral은 `NOT_OPEN`으로 유지한다.
+- [x] Collateral 105는 `reclassified 74 / runtime-verified 4` 축으로 유지한다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted semantic `GO_ROW_ONLY_PUBLIC_TITLE_BLOCKED`, publication contract `GO / 0 violations`, broader search recovery `P0 / ROW_LEVEL_OK_WITH_PREFLIGHT_LIGHT_CAVEAT`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop404 11668307 title-led body consumption 체크
 
 - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.

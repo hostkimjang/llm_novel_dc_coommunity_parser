@@ -1,5 +1,36 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop405 11713212 저특이 alias non-work runtime 검증
+
+- 범위: Loop401의 `11713212` 저특이 alias/non-work publish 차단 계약이 current HEAD runtime 직렬화까지 도달하는지 단건으로 확인한다. 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_405_REPORT_20260704.md`
+  - state `docs\devs\loop405_11713212_low_specificity_nonwork_runtime_20260704.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop405_11713212_low_specificity_nonwork_current_head_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop405_11713212_low_specificity_nonwork_current_head_result_manifest.json`
+  - checkpoint `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop405_11713212_low_specificity_nonwork_current_head_result_checkpoint.jsonl`
+  - console log `logs\loop405_11713212_low_specificity_nonwork_current_head.console.log`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop405_11713212_low_specificity_nonwork_runtime_health_audit.json`
+- Code evidence:
+  - 신규 코드 변경 없음. Loop401의 `_has_low_specificity_alias_nonwork_context_block(...)`와 shared publish gate 배선을 current HEAD runtime에서 검증했다.
+- Verification commands:
+  - `.\\venv\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_batch_alias_semantic_no_work_blocks_low_specificity_alias_after_relation_hold tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_final_semantic_guard_does_not_keep_low_specificity_alias_relation_hold tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_batch_alias_verified_official_detail_allows_no_work_promotion tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_known_abbreviation_update_question_allows_batch_alias_url_recovery` -> PASS, 4 tests
+  - `tools\audit_expert_run_health.py` on run `20260704_132624_502514` -> `flush_integrity=GO / clean_completed_source`, `publication_contract_convergence=GO`, violations `0`
+- Runtime result:
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - checkpoint/result rows `1/1`
+  - final public title `null`
+  - `candidate_ledger_status=promotion_blocked`
+  - `promotion_decision.status=candidate_only`
+  - `publish_allowed=false`
+  - 로그에서 `SSS급 죽어야 사는 헌터`는 검색 결과에 있었지만 `가장`, `절대`, `무한`, `in`, `sss급` alias rescue가 `semantic_seed_no_work_context`로 차단됐다.
+- Boundary:
+  - Manifest preflight는 include_search `false`, light_mode `true`라 health audit `search_evidence=SEPARATE_AUDIT_REQUIRED`다.
+  - Row search는 `ok`, queries `6`, degraded `0`이지만 broader search recovery 완료로 세지 않는다.
+  - Golden expected-answer는 `NOT_REFRESHED_AFTER_LOOP405 / inherited Loop399 NO-GO 14 of 18`이다.
+  - Full375 collateral은 `NOT_OPEN`이다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted semantic `GO_ROW_ONLY_PUBLIC_TITLE_BLOCKED`, publication contract `GO / 0 violations`, broader search recovery `P0 / ROW_LEVEL_OK_WITH_PREFLIGHT_LIGHT_CAVEAT / search-blind conditional`, Collateral 105 `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop404 11668307 title-led body consumption bridge 검증
 
 - 범위: Loop399 `11668307` positive unresolved를 R1 hardcoded cue/title 리스트 확장 없이 title-led work consumption compact alias 계약으로 줄이고, 단건 runtime row 생산과 publication contract 수렴을 확인한다. 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않는다.

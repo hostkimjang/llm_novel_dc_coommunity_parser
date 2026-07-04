@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-04 Loop405 Addendum - 11713212 low-specificity alias non-work runtime proof
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop405는 approval 회차가 아니라 Loop401 계약이 current HEAD runtime 직렬화까지 도달하는지 `11713212` 단건으로 확인한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_405_REPORT_20260704.md`, state `docs/devs/loop405_11713212_low_specificity_nonwork_runtime_20260704.json`, health audit `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop405_11713212_low_specificity_nonwork_runtime_health_audit.json`.
+- Code: 신규 코드 변경은 없다. Loop401의 저특이 alias/non-work 일반 술어 계약을 runtime으로 확인했고, R1 hardcoded cue/title list 확장은 없다.
+- Runtime: run `20260704_132624_502514`은 input/completed/flushed/pending/failed `1/1/1/0/0`, checkpoint/result rows `1/1`, `large_run_complete=true`, `ordered_flush_blocked=false`, VLM/OCR `READY`다.
+- Result: `11713212`은 final public title/url `null/null`, `promotion_decision.status=candidate_only`, `publish_allowed=false`, `candidate_ledger_status=promotion_blocked`로 수렴했다. 로그에서 `가장`, `절대`, `무한`, `in`, `sss급` alias rescue는 `semantic_seed_no_work_context`로 차단됐다.
+- Search: row search는 `status=ok`, queries `6`, degraded `0`, unrecovered degraded `0`이지만 manifest preflight는 include_search `false`, light_mode `true`라 health audit `search_evidence=SEPARATE_AUDIT_REQUIRED`다. Broader search recovery는 아직 닫지 않는다.
+- Boundary: 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다. Golden expected-answer는 `NOT_REFRESHED_AFTER_LOOP405 / inherited Loop399 NO-GO 14 of 18`, full375는 `NOT_OPEN`이다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted semantic `GO_ROW_ONLY_PUBLIC_TITLE_BLOCKED`, publication contract `GO / violations 0`, broader search recovery `P0 / ROW_LEVEL_OK_WITH_PREFLIGHT_LIGHT_CAVEAT / search-blind conditional`, Collateral 105 `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-04 Loop404 Addendum - 11668307 title-led body consumption bridge
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop404는 approval 회차가 아니라 Loop399 `11668307` positive unresolved를 단건으로 좁혀 runtime row 생산과 publication contract 수렴을 확인한 회차다.

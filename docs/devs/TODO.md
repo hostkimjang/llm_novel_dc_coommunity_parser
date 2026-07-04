@@ -1,5 +1,23 @@
 ﻿# Developer TODO Index
 
+## 2026-07-04 regression-safe grounding Loop405 TODO
+
+- 상태 업데이트: Loop405는 Loop401 `11713212` 저특이 alias/non-work 계약이 current HEAD runtime 직렬화까지 도달하는지 단건으로 확인한 회차다. 단건 public title leak는 닫혔지만 golden expected-answer와 full375 approval은 갱신하지 않았다.
+- Loop405 TODO:
+  - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] R1 hardcoded cue/title 리스트 확장을 하지 않았다.
+  - [x] 코드 변경 없이 기존 일반 술어 계약의 runtime 증거만 갱신했다.
+  - [x] focused contract 4개를 PASS했다.
+  - [x] 단건 runtime `20260704_132624_502514`에서 `1/1/1/0/0` row 생산을 확인했다.
+  - [x] `11713212` final public title이 `null`, `promotion_decision.status=candidate_only`, `publish_allowed=false`, `candidate_ledger_status=promotion_blocked`로 내려가는 것을 확인했다.
+  - [x] Health audit `flush_integrity=GO`, publication contract `GO / 0 violations`를 확인했다.
+  - [ ] Manifest preflight가 include_search `false`, light_mode `true`였으므로 broader search recovery 완료로 세지 않는다.
+  - [ ] Golden expected-answer는 `NOT_REFRESHED_AFTER_LOOP405 / inherited Loop399 NO-GO 14 of 18`로 유지한다.
+  - [ ] Full375 collateral은 `NOT_OPEN`으로 유지한다.
+  - [x] Collateral 105는 `reclassified 74 / runtime-verified 4` 축으로 유지한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop404 TODO
 
 - 상태 업데이트: Loop404는 Loop399 `11668307` positive unresolved를 단건으로 좁혀 title-led work consumption compact alias 계약과 runtime row 생산을 확인한 회차다. 단건 public identity는 회복됐지만 golden expected-answer와 full375 approval은 갱신하지 않았다.

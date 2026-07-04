@@ -1,5 +1,19 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop405 11713212 저특이 alias non-work runtime 증명
+
+- 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop399 `11713212`은 expected `null` 대신 `SSS급 죽어야 사는 헌터`가 public title로 publish된 행이다.
+- Loop405는 코드 변경 없이 Loop401의 저특이 alias/non-work 계약이 current HEAD runtime 직렬화까지 닫히는지 확인했다.
+- Focused contract 4개는 PASS했다.
+- 단건 runtime run `20260704_132624_502514`은 input/completed/flushed/pending/failed `1/1/1/0/0`, checkpoint/result rows `1/1`, `large_run_complete=true`, `ordered_flush_blocked=false`로 완료됐다.
+- Final은 `official_title=null`, `heretic_url=null`, `promotion_decision.status=candidate_only`, `publish_allowed=false`, `candidate_ledger_status=promotion_blocked`다.
+- 로그에서 `가장`, `절대`, `무한`, `in`, `sss급` alias rescue가 `semantic_seed_no_work_context`로 차단됐다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, publication contract `GO / violations 0`을 기록했다.
+- Manifest preflight는 include_search `false`, light_mode `true`라 broader search recovery 완료로 세지 않는다.
+- Report는 `docs/devs/loop_reports/LOOP_405_REPORT_20260704.md`, state는 `docs/devs/loop405_11713212_low_specificity_nonwork_runtime_20260704.json`, health audit은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop405_11713212_low_specificity_nonwork_runtime_health_audit.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, targeted semantic `GO_ROW_ONLY_PUBLIC_TITLE_BLOCKED`, golden expected-answer `NOT_REFRESHED_AFTER_LOOP405 / inherited Loop399 NO-GO 14 of 18`, full375 collateral `NOT_OPEN`, broader search recovery `P0 / ROW_LEVEL_OK_WITH_PREFLIGHT_LIGHT_CAVEAT`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop404 11668307 title-led body consumption bridge
 
 - 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

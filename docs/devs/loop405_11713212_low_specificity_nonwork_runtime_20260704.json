@@ -1,0 +1,123 @@
+{
+  "loop": 405,
+  "date": "2026-07-04",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "head": "7b17580e",
+  "scope": "11713212 targeted runtime proof for low-specificity alias non-work guard",
+  "approval_cycle": false,
+  "new_large_runs_launched": false,
+  "same_38_row_parent_packet_replayed": false,
+  "r1_hardcoded_cue_or_title_list_expansion": false,
+  "code_changes": [],
+  "collateral_105_reporting": {
+    "reclassified": 74,
+    "runtime_verified": 4,
+    "queue_counting_status": "stopped_for_loop405"
+  },
+  "verification": {
+    "focused_contract": {
+      "status": "PASS",
+      "tests": 4,
+      "command": ".\\venv\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_batch_alias_semantic_no_work_blocks_low_specificity_alias_after_relation_hold tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_final_semantic_guard_does_not_keep_low_specificity_alias_relation_hold tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_batch_alias_verified_official_detail_allows_no_work_promotion tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_known_abbreviation_update_question_allows_batch_alias_url_recovery"
+    },
+    "health_audit": {
+      "status": "PASS",
+      "flush_integrity": "GO / clean_completed_source",
+      "publication_contract_convergence": "GO",
+      "publication_contract_violations": 0,
+      "search_evidence": "SEPARATE_AUDIT_REQUIRED",
+      "search_blockers": [
+        "manifest_search_health_not_included",
+        "manifest_light_health_only"
+      ]
+    }
+  },
+  "runtime": {
+    "run_id": "20260704_132624_502514",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/fix8au_11713212_input.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop405_11713212_low_specificity_nonwork_current_head_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop405_11713212_low_specificity_nonwork_current_head_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop405_11713212_low_specificity_nonwork_current_head_result_checkpoint.jsonl",
+    "pending_snapshot": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop405_11713212_low_specificity_nonwork_current_head_result_pending_snapshot.json",
+    "console_log": "logs/loop405_11713212_low_specificity_nonwork_current_head.console.log",
+    "main_log": "logs/expert_run_20260704_132624_502514.log",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop405_11713212_low_specificity_nonwork_runtime_health_audit.json",
+    "counts": {
+      "input_post_count": 1,
+      "completed_count": 1,
+      "flushed_count": 1,
+      "pending_count": 0,
+      "failed_count": 0,
+      "checkpoint_rows": 1,
+      "result_rows": 1,
+      "large_run_complete": true,
+      "ordered_flush_blocked": false
+    },
+    "manifest_health_preflight": {
+      "mcp_health_include_search": false,
+      "mcp_health_light_mode": true,
+      "mcp_health_ok_count": 1,
+      "mcp_health_failure_count": 0
+    },
+    "row_search_health": {
+      "status": "ok",
+      "queries_issued": 6,
+      "degraded": 0,
+      "unrecovered_degraded": 0
+    },
+    "shell_exit_note": "Codex shell session returned exit code 1, but manifest/result/checkpoint/pending artifacts were complete and health audit was GO."
+  },
+  "row_result": {
+    "post_id": 11713212,
+    "expected_public_title": null,
+    "is_relevant": false,
+    "discussion_type": "trope_discussion",
+    "official_title": null,
+    "heretic_url": null,
+    "primary_work": null,
+    "work_resolution": "none",
+    "title_resolution_state": "adjacent",
+    "title_resolution_allowed": false,
+    "candidate_ledger_status": "promotion_blocked",
+    "safe_resolved": false,
+    "promotion_blocked": true,
+    "publish_allowed": false,
+    "bypassed_gate": false,
+    "promotion_decision_status": "candidate_only",
+    "reason_codes": [
+      "llm_only_sentence_candidate_pruned",
+      "scope_context_only",
+      "scope_not_current_work",
+      "blocked_candidate_scope_inferred_from_final_contract",
+      "exact_alias_candidate_preserved_without_work_discussion",
+      "image_ocr_without_title_anchor",
+      "nonwork_or_noise_context",
+      "body_comments_absent_or_empty",
+      "serialized_public_identity_scrubbed"
+    ],
+    "blocked_aliases_observed_in_log": [
+      "가장",
+      "절대",
+      "무한",
+      "in",
+      "sss급"
+    ],
+    "blocked_title_observed_in_log": "SSS급 죽어야 사는 헌터"
+  },
+  "known_caveats": [
+    "Manifest preflight remained search-blind/light even though row-level search executed and returned status ok.",
+    "Loop405 is a single-row runtime proof and does not refresh golden18 expected-answer or full375 collateral.",
+    "The row was classified adjacent/trope_discussion with public title blocked; this is correct for the negative golden expectation but not a broader semantic approval."
+  ],
+  "gates": {
+    "targeted_runtime": "GO_1_OF_1",
+    "targeted_semantic": "GO_ROW_ONLY_PUBLIC_TITLE_BLOCKED",
+    "publication_contract": "GO_0_VIOLATIONS",
+    "broader_search_recovery": "P0_ROW_LEVEL_OK_WITH_PREFLIGHT_LIGHT_CAVEAT_SEARCH_BLIND_CONDITIONAL",
+    "golden_expected_answer": "NOT_REFRESHED_AFTER_LOOP405_INHERITED_LOOP399_NO_GO_14_OF_18",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW_LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE_NOT_COMPLETE"
+  }
+}
