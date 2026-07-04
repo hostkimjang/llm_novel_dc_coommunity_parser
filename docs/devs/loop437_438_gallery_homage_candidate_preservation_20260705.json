@@ -1,0 +1,117 @@
+{
+  "loop": "437-438",
+  "generated_at": "2026-07-05T03:20:00+09:00",
+  "language": "ko",
+  "status": "TARGETED_RUNTIME_GO_CANDIDATE_PRESERVED",
+  "goal_state": "ACTIVE_NOT_COMPLETE",
+  "user_domain_note": {
+    "alias": "아생갤",
+    "correct_work_title": "아카데미 생존 갤러리",
+    "meaning": "웹소설 내부의 갤러리/커뮤니티 오마주형 제목 약어일 수 있으므로 현실 갤러리명으로만 해석하지 않는다.",
+    "publish_policy": "official detail 또는 직접 작품 bridge가 없으면 public title publish는 열지 않고 후보 보존만 수행한다."
+  },
+  "run_freeze": {
+    "full375": "NOT_RUN",
+    "bounded_1000_1500": "NOT_RUN",
+    "n5_flip_probe": "NOT_RUN",
+    "same_38_row_parent_packet_replay": "NOT_RUN",
+    "new_large_run": "FROZEN"
+  },
+  "before_loop437": {
+    "run_id": "20260705_025300_567301",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop437_11694035_gallery_title_postpatch_36b677f7_search_nonlight_result.json",
+    "post_id": 11694035,
+    "public_official_title": null,
+    "candidate_ledger_status": "promotion_blocked",
+    "blocked_official_title": "엔트로피아",
+    "candidate_preservation_title": "엔트로피아",
+    "search": {
+      "queries": 5,
+      "degraded": 0,
+      "unrecovered_degraded": 0,
+      "direct_search_used": 1
+    },
+    "diagnosis": "공개 publish 차단은 안전했지만 후보 대표가 정답 작품명 대신 wrong search candidate로 남았다."
+  },
+  "after_loop438": {
+    "run_id": "20260705_030416_257309",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop438_11694035_gallery_title_candidate_preservation_worktree_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop438_11694035_gallery_title_candidate_preservation_worktree_search_nonlight_result_manifest.json",
+    "post_id": 11694035,
+    "completed_flushed_pending_failed": "1/1/0/0",
+    "public_official_title": null,
+    "public_official_url": null,
+    "title_resolution_state": "context_only",
+    "candidate_ledger_status": "promotion_blocked",
+    "blocked_official_title": "아카데미 생존 갤러리",
+    "promotion_decision": {
+      "status": "candidate_only",
+      "publish_allowed": false,
+      "candidate_preserved": true,
+      "reason_codes": [
+        "scope_context_only",
+        "scope_not_current_work",
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "serialized_public_identity_scrubbed"
+      ]
+    },
+    "publish_ledger": {
+      "candidate_preservation_title": "아카데미 생존 갤러리",
+      "public_publish_title": null
+    },
+    "publish_contract_trace": {
+      "pre_gate_candidate_title": "아카데미 생존 갤러리",
+      "post_gate_public_title": null
+    },
+    "consistency_flags": [
+      "notes_demoted_for_unresolved",
+      "batch_memory_alias_rescue_blocked_nonwork_context",
+      "batch_memory_alias_rescue_blocked_genre_context",
+      "known_title_abbreviation_candidate_preserved"
+    ],
+    "search": {
+      "status": "ok",
+      "queries": 3,
+      "degraded": 0,
+      "unrecovered_degraded": 0,
+      "fallback_recovered": 3,
+      "direct_search_used": 1
+    }
+  },
+  "code_changes": [
+    "src/llm_batch/agentic_pipeline.py: _append_known_title_abbreviation_preservation_candidates 추가",
+    "tests/test_known_title_abbreviation_support.py: 갤러리 오마주형 제목 약어 후보 보존 테스트 추가",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl: 11694035 golden role을 positive_expected_work로 교정"
+  ],
+  "verification": {
+    "py_compile": "PASS",
+    "focused_unittest": "PASS / 3",
+    "known_title_abbreviation_module": "PASS / 32",
+    "health_audit": "GO / clean_completed_source",
+    "publication_contract": "GO / row_count 1 / violation_row_count 0"
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_437_438_REPORT_20260705.md",
+    "state": "docs/devs/loop437_438_gallery_homage_candidate_preservation_20260705.json",
+    "data_analytics": "docs/devs/loop437_438_gallery_homage_candidate_preservation_data_analytics_artifact.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop438_11694035_gallery_title_candidate_preservation_health_audit.json",
+    "publication_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop438_11694035_gallery_title_publication_contract_convergence.json",
+    "publication_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop438_11694035_gallery_title_publication_contract_convergence.md"
+  },
+  "gates": {
+    "targeted_runtime": "GO / 1 of 1",
+    "candidate_preservation": "GO_TARGETED",
+    "public_publish": "BLOCKED_OK",
+    "publication_contract": "GO / 0 violations",
+    "search_evidence": "GO_ROW_LEVEL",
+    "golden_expected_answer": "NOT_REFRESHED_AFTER_LOOP438",
+    "golden_shared_collateral": "NO-GO / inherited Loop436 6",
+    "full375_collateral": "NOT_OPEN",
+    "broader_search_recovery": "P0 / REVIEW",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  }
+}

@@ -14645,6 +14645,14 @@ class AgenticPipeline:
             title_candidates=title_candidates,
             extended_identity=extended_identity,
         )
+        title_candidates, _known_title_candidate_preserved = (
+            self._append_known_title_abbreviation_preservation_candidates(ctx, title_candidates)
+        )
+        if _known_title_candidate_preserved:
+            _flags_known_title_preserved = list(extended_identity.get("consistency_flags") or [])
+            if "known_title_abbreviation_candidate_preserved" not in _flags_known_title_preserved:
+                _flags_known_title_preserved.append("known_title_abbreviation_candidate_preserved")
+            extended_identity["consistency_flags"] = _flags_known_title_preserved
         candidate_preservation_sources = self._build_candidate_preservation_sources(
             title_candidates=title_candidates,
             mentioned_works=mentioned_works,
@@ -25742,6 +25750,105 @@ OUTPUT JSON:
             has_positive_semantic_cue
             and (has_episode_or_serial_cue or has_entity_cue or official_detail_alias_title_anchor)
         )
+
+    def _append_known_title_abbreviation_preservation_candidates(
+        self,
+        ctx,
+        title_candidates: Optional[List["DetectedTitle"]],
+    ) -> Tuple[List["DetectedTitle"], bool]:
+        """Preserve curated alias full titles as candidates without granting publish permission."""
+        candidates = [cand for cand in (title_candidates or []) if isinstance(cand, DetectedTitle)]
+        if not ctx:
+            return candidates, False
+
+        post_data = getattr(ctx, "post_data", None) or {}
+        title_surface = " ".join(
+            str(post_data.get(key) or "")
+            for key in ("title", "normalized_title")
+            if str(post_data.get(key) or "").strip()
+        )
+        if not title_surface.strip():
+            return candidates, False
+        if self._has_recommendation_request_signal(title_surface) or self._has_recommendation_seeking_surface_signal(title_surface):
+            return candidates, False
+
+        main_text, full_text = self._collect_post_texts(ctx)
+        comments_text = " ".join(str(comment or "") for comment in (getattr(ctx, "comments", None) or []))
+        packet_text = " ".join(part for part in (title_surface, main_text, full_text, comments_text) if str(part or "").strip())
+        if not packet_text.strip() or self._has_memory_query_signal(packet_text):
+            return candidates, False
+        if self._has_recommendation_request_signal(packet_text) or self._has_recommendation_seeking_surface_signal(packet_text):
+            return candidates, False
+
+        try:
+            gk_out = ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
+        except Exception:
+            gk_out = {}
+        gk_post_type = str(
+            gk_out.get("post_type") or gk_out.get("classification") or ""
+        ).strip().lower() if isinstance(gk_out, dict) else ""
+
+        try:
+            discourse_out = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
+        except Exception:
+            discourse_out = {}
+        discourse = (
+            discourse_out.get("discourse_analysis") if isinstance(discourse_out, dict) else {}
+        )
+        if not isinstance(discourse, dict):
+            discourse = {}
+        domain = str(
+            discourse.get("primary_domain")
+            or discourse.get("domain")
+            or discourse.get("topic_domain")
+            or ""
+        ).strip().lower()
+        intent = str(discourse.get("intent") or "").strip().lower()
+
+        positive_work_context = bool(
+            gk_post_type in {"work_discussion", "review", "spoiler_discussion"}
+            or domain in {"novel_literature", "webnovel", "novel"}
+            or intent in {"discuss_work", "express_opinion", "review_work", "ask_work_question"}
+        )
+        hard_nonwork_context = bool(
+            gk_post_type in {"community_banter", "noise", "off_topic"}
+            and domain not in {"novel_literature", "webnovel", "novel"}
+        )
+        if not positive_work_context or hard_nonwork_context:
+            return candidates, False
+
+        existing_norms = {
+            self._normalize_match_text(getattr(cand, "official_title", "") or getattr(cand, "title", "") or "")
+            for cand in candidates
+            if self._normalize_match_text(getattr(cand, "official_title", "") or getattr(cand, "title", "") or "")
+        }
+        added = False
+        for alias, known_title in (KNOWN_TITLE_ABBREVIATIONS or {}).items():
+            alias_text = str(alias or "").strip()
+            title_text = str(known_title or "").strip()
+            title_norm = self._normalize_match_text(title_text)
+            if not alias_text or not title_text or not title_norm or title_norm in existing_norms:
+                continue
+            if not self._curated_alias_surface_in_text(title_surface, alias_text):
+                continue
+            if self._known_title_abbreviation_alias_is_comparison_only_reference(title_surface, alias_text):
+                continue
+            candidates.append(
+                DetectedTitle(
+                    official_title=title_text,
+                    heretic_url=None,
+                    confidence="Medium",
+                    alias_or_mention=alias_text,
+                    source_tier="mixed",
+                    locked=False,
+                    resolved_recall_anchor=True,
+                    negative_evidence=["candidate_preservation_only_no_official_detail"],
+                    reference_role="candidate",
+                )
+            )
+            existing_norms.add(title_norm)
+            added = True
+        return candidates, added
 
     def _collect_title_support_kinds(
         self,

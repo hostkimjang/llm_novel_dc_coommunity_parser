@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260705-438 - gallery-homage alias candidate preservation
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/parent replay 미발주 | dispatch 반복 금지 |
+| 도메인 보정 | 반영 | `아생갤`은 `아카데미 생존 갤러리` 작품 내부 갤러리 오마주형 약어 가능 | 현실 갤러리명 단정 금지 |
+| Loop437 문제 | 확인 | 후보 대표 `엔트로피아` | wrong search candidate 보존 방지 |
+| 후보 보존 계약 | GO_UNIT | `_append_known_title_abbreviation_preservation_candidates` 추가 | publish와 분리 유지 |
+| Loop438 runtime | GO / 1 of 1 | run `20260705_030416_257309`, `1/1/1/0/0` | golden/full375와 분리 |
+| candidate preservation | GO_TARGETED | `publish_ledger.candidate_preservation=아카데미 생존 갤러리` | public publish 금지 유지 |
+| publication contract | GO | row `1`, violation `0` | broader gate와 분리 |
+| search evidence | GO_ROW_LEVEL | queries `3`, degraded `0`, unrecovered `0` | broader search recovery는 P0 유지 |
+| 문서 동기화 | 완료 | Loop437-438 report/state/verification/register 갱신 | goal은 ACTIVE 유지 |
+
+Gate: targeted runtime `GO / 1 of 1`, candidate preservation `GO_TARGETED`, public publish `BLOCKED_OK`, golden expected-answer `NOT_REFRESHED_AFTER_LOOP438`, broader search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260705-436 - runtime proof and gallery-title contract
 
 | 항목 | 상태 | 근거 | 다음 조치 |

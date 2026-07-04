@@ -1,4 +1,17 @@
-﻿# Development History
+# Development History
+
+## 2026-07-05 - Loop437-438 gallery-homage candidate preservation
+
+- 사용자 도메인 보정에 따라 `아생갤`을 현실 갤러리명으로만 보지 않고 웹소설 `아카데미 생존 갤러리`의 작품 내부 갤러리/커뮤니티 오마주형 제목 약어 가능성으로 반영했다.
+- 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop437 run `20260705_025300_567301`은 `11694035` public title을 `null`로 차단했지만 candidate preservation 대표가 `엔트로피아`로 남았다.
+- `agentic_pipeline.py`는 `_append_known_title_abbreviation_preservation_candidates(...)`를 추가해 publish-level bridge가 부족한 known title abbreviation full title을 후보로만 보존한다.
+- Loop438 run `20260705_030416_257309`은 input/completed/flushed/pending/failed `1/1/1/0/0`, search `queries=3/degraded=0/unrecovered=0`로 완료됐다.
+- Loop438 result는 `official_title=null`, `candidate_ledger_status=promotion_blocked`, `promotion_decision.status=candidate_only`, `publish_allowed=false`, `publish_ledger.candidate_preservation.official_title=아카데미 생존 갤러리`, `publish_contract_trace.pre_gate_candidate.official_title=아카데미 생존 갤러리`다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, publication contract는 `GO / row_count 1 / violation_row_count 0`이다.
+- Verification은 `py_compile` PASS, focused unittest 3건 PASS, `tests.test_known_title_abbreviation_support` 32건 PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_437_438_REPORT_20260705.md`, state는 `docs/devs/loop437_438_gallery_homage_candidate_preservation_20260705.json`, Data Analytics summary는 `docs/devs/loop437_438_gallery_homage_candidate_preservation_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, candidate preservation `GO_TARGETED`, public publish `BLOCKED_OK`, golden expected-answer `NOT_REFRESHED_AFTER_LOOP438`, broader search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
 
 ## 2026-07-05 - Loop435-436 current runtime proof and gallery-title contract
 

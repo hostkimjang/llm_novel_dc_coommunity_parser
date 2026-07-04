@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop437-438 gallery-homage candidate preservation follow-up
+  - 상태: targeted runtime `GO 1/1` / health `GO clean_completed_source` / publication contract `GO 0 violations` / candidate preservation `GO_TARGETED` / public publish `BLOCKED_OK` / golden expected-answer `NOT_REFRESHED_AFTER_LOOP438` / search recovery broader `P0_REVIEW` / full375 `NOT_OPEN` / approval not open
+  - 적용: `아생갤`은 현실 갤러리명만이 아니라 웹소설 `아카데미 생존 갤러리`의 작품 내부 갤러리/커뮤니티 오마주형 제목 약어일 수 있음을 반영했다. Official detail 없는 경우 publish는 막고 `publish_ledger`/`publish_contract_trace` 후보로만 보존한다.
+  - 산출물: `docs/devs/loop_reports/LOOP_437_438_REPORT_20260705.md`, `docs/devs/loop437_438_gallery_homage_candidate_preservation_20260705.json`, `docs/devs/loop437_438_gallery_homage_candidate_preservation_data_analytics_artifact.json`.
+  - 완료 기준: golden expected-answer refresh, broader search recovery, full375 collateral gate를 별도 증명하기 전까지 approval과 hard-hold 완화를 열지 않는다.
+
 - [ ] Loop435-436 runtime proof and gallery-title contract follow-up
   - 상태: Loop436 runtime `GO 18/18` / publication contract `GO 0 violations` / expected-answer `PASS 18/18` / post-patch gallery runtime `NOT_RUN` / search recovery `P0_REVIEW_SEARCH_DEGRADED` / golden shared collateral `NO-GO 6` / full375 `NOT_OPEN` / approval not open
   - 적용: `아생갤`은 현실 갤러리명이 아니라 `아카데미 생존 갤러리` 작품 약어가 될 수 있다는 도메인 계약을 반영했다. Official detail backed known title abbreviation은 작품 bridge로 허용하고, community-only/semantic no-work는 계속 차단한다.

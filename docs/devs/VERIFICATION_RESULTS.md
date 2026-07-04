@@ -1,4 +1,33 @@
-﻿# Verification Results
+# Verification Results
+
+## 2026-07-05 Loop437-438 아생갤 후보 보존 검증
+
+- 범위: `11694035` 단일 row에서 `아생갤`을 웹소설 `아카데미 생존 갤러리`의 갤러리/커뮤니티 오마주형 제목 약어 후보로 보존하는지 검증했다. 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_437_438_REPORT_20260705.md`
+  - state `docs\devs\loop437_438_gallery_homage_candidate_preservation_20260705.json`
+  - Data Analytics summary `docs\devs\loop437_438_gallery_homage_candidate_preservation_data_analytics_artifact.json`
+  - Loop438 result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop438_11694035_gallery_title_candidate_preservation_worktree_search_nonlight_result.json`
+  - Loop438 health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop438_11694035_gallery_title_candidate_preservation_health_audit.json`
+  - Loop438 publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop438_11694035_gallery_title_publication_contract_convergence.json`
+- Verification commands:
+  - `.\.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_known_title_abbreviation_support.py` -> PASS
+  - focused unittest 3건 -> PASS
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_known_title_abbreviation_support -v` -> PASS, `32` tests
+  - `.\.venv312\Scripts\python.exe tools\audit_expert_run_health.py ...loop438...` -> `GO / clean_completed_source`
+  - `.\.venv312\Scripts\python.exe tools\audit_publication_contract_convergence.py ...loop438...` -> `GO / 0 violations`
+- Runtime result:
+  - run `20260705_030416_257309`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - public identity `official_title=null`, `official_url=null`
+  - candidate preservation `아카데미 생존 갤러리`
+  - `promotion_decision.status=candidate_only`, `publish_allowed=false`, `candidate_preserved=true`
+  - search `queries=3`, degraded `0`, unrecovered degraded `0`, fallback recovered `3`
+- Boundary:
+  - Loop438은 targeted row-level 증거이며 golden/full375 approval이 아니다.
+  - Golden expected-answer는 `NOT_REFRESHED_AFTER_LOOP438`다.
+  - Broader search recovery는 `P0 / REVIEW`, full375 collateral은 `NOT_OPEN`이다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE` 유지.
 
 ## 2026-07-05 Loop435-436 current runtime + 갤러리형 제목 계약 검증
 

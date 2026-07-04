@@ -1,0 +1,65 @@
+{
+  "artifact_type": "data_analytics_reader_summary",
+  "loop": "437-438",
+  "generated_at": "2026-07-05T03:20:00+09:00",
+  "language": "ko",
+  "headline": "아생갤 갤러리형 제목 약어 후보 보존 targeted runtime",
+  "summary": "Loop438은 11694035 단일 row에서 public title publish를 계속 차단하면서, 아생갤의 정답 작품 후보인 아카데미 생존 갤러리를 publish ledger와 contract trace에 보존했다.",
+  "reader_decision": {
+    "can_count_as_full_approval": false,
+    "can_count_as_targeted_runtime_evidence": true,
+    "reason": "단일 row runtime과 publication contract 감사는 통과했지만 golden expected-answer refresh, full375 collateral, broader search recovery가 열려 있다."
+  },
+  "before_after": [
+    {
+      "loop": "437",
+      "run_id": "20260705_025300_567301",
+      "public_title": null,
+      "candidate_preservation_title": "엔트로피아",
+      "diagnosis": "wrong search candidate가 후보 대표로 남았다."
+    },
+    {
+      "loop": "438",
+      "run_id": "20260705_030416_257309",
+      "public_title": null,
+      "candidate_preservation_title": "아카데미 생존 갤러리",
+      "diagnosis": "정답 작품 후보를 보존하고 public publish는 차단했다."
+    }
+  ],
+  "metrics": {
+    "runtime_rows": {
+      "input": 1,
+      "completed": 1,
+      "flushed": 1,
+      "pending": 0,
+      "failed": 0
+    },
+    "search": {
+      "status": "ok",
+      "queries": 3,
+      "degraded": 0,
+      "unrecovered_degraded": 0,
+      "fallback_recovered": 3,
+      "direct_search_used": 1
+    },
+    "publication_contract": {
+      "gate": "GO",
+      "row_count": 1,
+      "violation_row_count": 0
+    }
+  },
+  "artifact_paths": {
+    "report": "docs/devs/loop_reports/LOOP_437_438_REPORT_20260705.md",
+    "state": "docs/devs/loop437_438_gallery_homage_candidate_preservation_20260705.json",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop438_11694035_gallery_title_candidate_preservation_worktree_search_nonlight_result.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop438_11694035_gallery_title_candidate_preservation_health_audit.json",
+    "publication_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop438_11694035_gallery_title_publication_contract_convergence.json"
+  },
+  "gate_state": {
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE",
+    "full375_collateral": "NOT_OPEN",
+    "broader_search_recovery": "P0 / REVIEW"
+  }
+}

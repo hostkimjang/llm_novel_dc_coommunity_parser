@@ -1,5 +1,20 @@
 # Operation Quality Checklist
 
+## 2026-07-05 Loop437-438 아생갤 후보 보존 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_437_438_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop437_438_gallery_homage_candidate_preservation_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop437_438_gallery_homage_candidate_preservation_data_analytics_artifact.json`.
+  - [x] Loop438 runtime `1/1`과 publication contract `GO / 0 violations`를 기록했다.
+  - [x] `아생갤` 도메인 보정을 현실 갤러리명 단정 금지와 후보 보존 정책으로 기록했다.
+- 품질 게이트:
+  - [x] 단건 targeted runtime을 golden/full375 approval로 승격하지 않는다.
+  - [x] public title은 `null`이고 `아카데미 생존 갤러리`는 후보로만 보존됨을 명시한다.
+  - [x] search row-level `GO`와 broader search recovery `P0 / REVIEW`를 분리한다.
+  - [x] R1 hardcoded cue/title list, `post_id` 예외, slang DB write-back을 하지 않았음을 명시한다.
+  - [x] goal `ACTIVE / NOT_COMPLETE`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
+
 ## Global Report Language Gate
 
 - [x] 보고서는 한국어로 작성한다.

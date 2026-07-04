@@ -1,4 +1,20 @@
-﻿# Development Checklist
+# Development Checklist
+
+## 2026-07-05 Loop437-438 아생갤 후보 보존 체크
+
+- [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `아생갤`을 현실 갤러리명으로만 단정하지 않고 웹소설 `아카데미 생존 갤러리`의 작품 내부 갤러리/커뮤니티 오마주형 제목 약어 가능성으로 반영했다.
+- [x] Loop437은 public publish를 차단했지만 후보 대표가 `엔트로피아`로 남은 문제를 기록했다.
+- [x] `_append_known_title_abbreviation_preservation_candidates(...)`로 known title abbreviation full title을 후보로만 보존하게 했다.
+- [x] Loop438 single row runtime은 input/completed/flushed/pending/failed `1/1/1/0/0`으로 완료됐다.
+- [x] Loop438 result는 `official_title=null`, `promotion_decision.status=candidate_only`, `publish_allowed=false`, `publish_ledger.candidate_preservation.official_title=아카데미 생존 갤러리`다.
+- [x] Health audit는 `flush_integrity=GO / clean_completed_source`, search evidence `GO`, publication contract convergence `GO`다.
+- [x] Publication contract는 `GO / row_count 1 / violation_row_count 0`이다.
+- [x] `py_compile`, focused unittest 3건, known title abbreviation unittest 32건을 통과했다.
+- [x] `11694035` golden row role을 `positive_expected_work`로 맞췄다.
+- [ ] Golden expected-answer는 `NOT_REFRESHED_AFTER_LOOP438`다. 단건 후보 보존을 golden/full375 approval로 승격하지 않는다.
+- [ ] Broader search recovery는 `P0 / REVIEW`, full375 collateral은 `NOT_OPEN`이다.
+- Gate: targeted runtime `GO / 1 of 1`, candidate preservation `GO_TARGETED`, public publish `BLOCKED_OK`, publication contract `GO / 0`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-05 Loop435-436 runtime + 갤러리형 제목 계약 체크
 
