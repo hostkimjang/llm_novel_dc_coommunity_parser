@@ -1128,6 +1128,107 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
             identity["publish_contract_trace"]["gate_decision"]["reason_codes"],
         )
 
+    def test_unverified_direct_image_ocr_publication_without_official_bridge_is_held(self):
+        result = {
+            "post_id": 11685994,
+            "title": "교황님 아 하세요 표지",
+            "content": [""],
+            "comments": [],
+            "image_count": 1,
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "safe_resolved": True,
+                "context_sources": ["image"],
+                "consistency_flags": ["direct_image_explicit_title_rescued"],
+                "novel_identity": {
+                    "official_title": "교황님 아하세요 마왕 들어 가요",
+                    "heretic_url": None,
+                    "confidence": "High",
+                },
+                "image_evidence_catalog": [
+                    {
+                        "promotion_eligible": True,
+                        "title_role": "work_title",
+                        "evidence_type": "ocr_title",
+                        "explicit_work_title": "교황님 아 하세요 마왕들어가요",
+                    }
+                ],
+                "search_evidence_catalog": [
+                    {
+                        "title": "축구 천재로 태어난 교황님",
+                        "url": "https://page.kakao.com/content/56516207",
+                        "domain": "page.kakao.com",
+                        "source_tier": "novel_platform",
+                        "snippet": "교황 후보 단어만 겹치는 별도 작품.",
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": "교황님 아하세요 마왕 들어 가요",
+                    "official_url": None,
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "image_ocr_work_title",
+                        "direct_image_explicit_title_rescued",
+                        "serialized_public_identity_published",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "image_ocr_work_title",
+                            "direct_image_explicit_title_rescued",
+                        ],
+                    },
+                },
+                "candidate_ledger": {
+                    "promotion_gate_state": {
+                        "candidate_title": "교황님 아하세요 마왕 들어 가요",
+                        "candidate_url": "",
+                        "official_title_exists": True,
+                        "row_discusses_work_as_work": True,
+                        "scope": {
+                            "scope_kind": "current_work",
+                            "confidence": "high",
+                            "direct_bridge_sources": [
+                                "image_ocr_work_title",
+                                "direct_image_explicit_title_rescued",
+                            ],
+                        },
+                    }
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertEqual(identity["title_resolution_state"], "ocr_explicit_title_unresolved")
+        self.assertEqual(identity["work_resolution"], "unresolved")
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertIn(
+            "unverified_promoted_image_work_title_without_official_support",
+            identity["promotion_blocked_reasons"],
+        )
+        decision = identity["publish_contract_trace"]["gate_decision"]
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn(
+            "unverified_promoted_image_work_title_without_official_support",
+            decision["reason_codes"],
+        )
+        preserved = identity["candidate_ledger"]["candidate_preservation_sources"]
+        self.assertEqual(preserved[0]["official_title"], "교황님 아하세요 마왕 들어 가요")
+
     def test_final_reread_url_title_verified_detail_restores_precision_seed_hold(self):
         result = {
             "post_id": 11663540,

@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-05 Loop431 Addendum - URL-less OCR publish contract and golden18 runtime proof
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop431은 approval 회차가 아니라 URL 없는 direct-image/OCR public title을 공식 bridge 없이 publish하지 못하게 shared publication contract로 수렴하고, current HEAD `5150b13f`에서 golden18 `18/18` row 생산을 재실증한 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_431_REPORT_20260705.md`, state `docs/devs/loop431_golden18_ocr_contract_20260705.json`, Data Analytics summary `docs/devs/loop431_golden18_ocr_contract_data_analytics_artifact.json`.
+- Runtime: run `20260705_001512_110161`은 input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, `large_run_complete=true`, `ordered_flush_blocked=false`, MCP health `include_search=true`, `light_mode=false`, ok/failure `8/0`다.
+- Code: `expert_main.py`는 `_demote_unverified_image_ocr_publication_contract(...)`로 URL 없는 image/OCR public title을 `candidate_only`로 내리고 후보 evidence는 보존한다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+- Result: `11685994`는 URL 없는 OCR 표지명 HOLD가 정당하고, `11663521`은 source-native상 공식 alias bridge 부재와 URL mismatch 때문에 HOLD가 정당하다. `11660237`, `11698880`은 expected title로 safe_resolved했다.
+- Boundary: golden expected-answer는 `NO-GO / 15 of 18`이며 실패는 `11705245`, `11694019`, `11713212`다. Search recovery는 `P0 / REVIEW / search_degraded_observed`, golden shared collateral은 raw `NO-GO / 6`, full375 collateral은 `NOT_OPEN`이다.
+- Gate: runtime production `GO / 18 of 18`, publication contract `GO / 0`, expected-answer `NO-GO / 15 of 18`, search recovery `P0 / REVIEW`, Collateral 105 `reclassified 74 / runtime-verified 4 / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Next: 대형 run dispatch는 계속 동결하고, 다음 active lane은 golden 실패 3건 또는 survey 136-error anchor의 `wrong_work 27` / `recall_miss 49` 중 작은 단위로 고른다.
+
 ## 2026-07-04 Loop429 Addendum - golden18 runtime refresh after Loop428
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop429는 approval 회차가 아니라 Loop428 이후 current HEAD가 golden18 `18/18`을 실제 생산하고 expected-answer를 통과하는지 갱신한 회차다.

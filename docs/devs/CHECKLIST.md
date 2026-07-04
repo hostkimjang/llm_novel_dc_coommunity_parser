@@ -1,5 +1,19 @@
 ﻿# Development Checklist
 
+## 2026-07-05 Loop431 golden18 OCR publish 계약 체크
+
+- [x] 신규 대형 런을 동결했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았고 golden18 단일만 실행했다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] URL 없는 direct-image/OCR public title을 공식 bridge 없이 publish하지 않도록 shared publication contract를 추가했다.
+- [x] `11685994`는 `unverified_promoted_image_work_title_without_official_support`로 candidate-only HOLD가 정당함을 확인했다.
+- [x] golden18 run `20260705_001512_110161`은 input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, MCP health `include_search=true`, `light_mode=false`, ok/failure `8/0`로 완료됐다.
+- [x] health audit `GO / clean_completed_source`, publication contract `GO / 18 rows / 0 violations`를 확인했다.
+- [ ] Golden expected-answer는 `NO-GO / 15 of 18`이다. 실패는 `11705245`, `11694019`, `11713212`다.
+- [ ] Search recovery는 `P0 / REVIEW / search_degraded_observed`다. preflight search non-light 통과만으로 복구 완료로 보지 않는다.
+- [ ] Golden shared collateral은 raw `NO-GO / 6 regression candidates`, full375 collateral은 `NOT_OPEN`이다.
+- [ ] 다음 active lane은 docs-only 반복이 아니라 golden 실패 3건 또는 survey 136-error `wrong_work 27` / `recall_miss 49`로 잡는다.
+- Gate: runtime production `GO / 18 of 18`, publication contract `GO / 0`, expected-answer `NO-GO / 15 of 18`, search recovery `P0 / REVIEW`, full375 `NOT_OPEN`, collateral 105 `reclassified 74 / runtime-verified 4 / residual 105`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop430 OVERRIDE AUDIT 11708445 체크
 
 - [x] full375, bounded 1000~1500, N5 flip probe, golden18 재실행, 동일 38-row parent packet replay, 신규 대형 런을 발주하지 않았다.

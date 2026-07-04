@@ -1,5 +1,42 @@
 ﻿# Verification Results
 
+## 2026-07-05 Loop431 golden18 OCR publish 계약 검증
+
+- 범위: current HEAD `5150b13f` 기반 URL 없는 direct-image/OCR public title demotion 계약과 golden18 단일 runtime을 검증했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, 신규 대형 런은 발주하지 않았다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_431_REPORT_20260705.md`
+  - state `docs\devs\loop431_golden18_ocr_contract_20260705.json`
+  - Data Analytics summary `docs\devs\loop431_golden18_ocr_contract_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop431_golden18_after_ocr_contract_5150b13f_search_nonlight_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop431_golden18_after_ocr_contract_5150b13f_search_nonlight_result_manifest.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop431_golden18_after_ocr_contract_run_health.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop431_golden18_after_ocr_contract_publication_contract.json`
+  - golden audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop431_golden18_after_ocr_contract_5150b13f_golden_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop431_golden18_after_ocr_contract_5150b13f_collateral_compare.json`
+- Verification commands:
+  - `.\\.venv312\\Scripts\\python.exe -m py_compile expert_main.py tests\\test_expert_main_comment_metadata.py src\\llm_batch\\promotion_gate.py src\\llm_batch\\agentic_pipeline.py` -> PASS
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_expert_main_comment_metadata` -> PASS, 66 tests
+  - `.\\.venv312\\Scripts\\python.exe tools\\audit_expert_run_health.py ... --output out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop431_golden18_after_ocr_contract_run_health.json` -> `GO / clean_completed_source`
+  - `.\\.venv312\\Scripts\\python.exe tools\\audit_publication_contract_convergence.py ... --fail-on-no-go` -> PASS, `GO / 0 violations`
+  - `.\\.venv312\\Scripts\\python.exe tools\\audit_regression_safe_golden.py ...` -> `NO-GO / 15 of 18`
+- Runtime result:
+  - run `20260705_001512_110161`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint/result rows `18/18`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `8/0`
+- Audit result:
+  - health audit `flush_integrity=GO / clean_completed_source`
+  - publication contract `GO / 18 rows / 0 violations`
+  - golden expected-answer `NO-GO / 15 of 18`
+  - failed rows `11705245`, `11694019`, `11713212`
+  - search evidence `P0 / REVIEW / search_degraded_observed`
+  - golden shared collateral raw `NO-GO / 6 regression candidates`
+- Boundary:
+  - `11685994`와 `11663521`은 publish가 아니라 HOLD 정당성 증거다.
+  - Golden expected-answer 실패와 search degraded가 남아 promotion unblock, hard-hold 완화, full-scan approval은 열지 않는다.
+  - Full375 collateral은 `NOT_OPEN`이다.
+- Gate: runtime production `GO / 18 of 18`, publication contract `GO / 0`, expected-answer `NO-GO / 15 of 18`, search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop430 OVERRIDE AUDIT 11708445 current HEAD 검증
 
 - 범위: `11708445` OVERRIDE AUDIT를 current HEAD `43fdcd87`에서 completed-source single row와 publication contract 감사로 재고정했다. full375, bounded 1000~1500, N5 flip probe, golden18 재실행, 동일 38-row parent packet replay, 신규 대형 런은 발주하지 않았다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.

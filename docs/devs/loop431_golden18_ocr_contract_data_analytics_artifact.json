@@ -1,0 +1,165 @@
+{
+  "title": "Loop431 golden18 OCR publish 계약 재실증",
+  "status": "repo_structured_summary_only",
+  "generated_at": "2026-07-05T00:45:00+09:00",
+  "surface": "loop_report_support",
+  "tool_note": "@data-analytics 전용 커넥터가 현재 세션 도구로 노출되지 않아, run manifest, health audit, publication contract audit, golden audit, collateral compare JSON을 직접 집계했다.",
+  "datasets": {
+    "gate_status_rows": [
+      {
+        "gate": "runtime_production",
+        "status": "GO",
+        "detail": "run 20260705_001512_110161 input/completed/flushed/pending/failed 18/18/18/0/0",
+        "score": 1
+      },
+      {
+        "gate": "mcp_health",
+        "status": "GO_PREFLIGHT",
+        "detail": "include_search=true, light_mode=false, ok/failure 8/0",
+        "score": 1
+      },
+      {
+        "gate": "publication_contract",
+        "status": "GO",
+        "detail": "row_count 18, violation_row_count 0",
+        "score": 1
+      },
+      {
+        "gate": "golden_expected_answer",
+        "status": "NO-GO",
+        "detail": "passed 15 of 18; failed 11705245, 11694019, 11713212",
+        "score": 0
+      },
+      {
+        "gate": "search_recovery",
+        "status": "P0 / REVIEW",
+        "detail": "search_degraded_observed remains in health audit",
+        "score": 0
+      },
+      {
+        "gate": "full375_collateral",
+        "status": "NOT_OPEN",
+        "detail": "full375 replay was not dispatched",
+        "score": 0
+      },
+      {
+        "gate": "full_scan_approval",
+        "status": "false",
+        "detail": "semantic_quality=REVIEW-LOCKED and goal ACTIVE / NOT_COMPLETE",
+        "score": 0
+      }
+    ],
+    "runtime_rows": [
+      {
+        "run_id": "20260705_001512_110161",
+        "input": 18,
+        "completed": 18,
+        "flushed": 18,
+        "pending": 0,
+        "failed": 0,
+        "checkpoint_rows": 18,
+        "result_rows": 18,
+        "total_seconds": 1454.4,
+        "average_seconds_per_post": 80.8
+      }
+    ],
+    "golden_expected_rows": [
+      {
+        "metric": "passed",
+        "value": 15
+      },
+      {
+        "metric": "failed",
+        "value": 3
+      },
+      {
+        "metric": "negative_no_public_work_passed",
+        "value": 6
+      },
+      {
+        "metric": "positive_expected_work_passed",
+        "value": 9
+      }
+    ],
+    "failed_golden_rows": [
+      {
+        "post_id": 11705245,
+        "status": "unexpected_resolved_title",
+        "actual": "하남자의 탑 공략법"
+      },
+      {
+        "post_id": 11694019,
+        "status": "positive_work_unresolved",
+        "expected": "이세계에서 사이비로 살아남기"
+      },
+      {
+        "post_id": 11713212,
+        "status": "unexpected_resolved_title",
+        "actual": "지력"
+      }
+    ],
+    "key_row_rows": [
+      {
+        "post_id": 11685994,
+        "status": "HOLD_OK",
+        "detail": "URL 없는 OCR 표지명 candidate_only 보존"
+      },
+      {
+        "post_id": 11663521,
+        "status": "HOLD_OK",
+        "detail": "URL mismatch와 공식 alias bridge 부재로 publish 금지"
+      },
+      {
+        "post_id": 11660237,
+        "status": "SAFE_RESOLVED",
+        "detail": "테라포밍"
+      },
+      {
+        "post_id": 11698880,
+        "status": "SAFE_RESOLVED",
+        "detail": "가챠 중독자의 퓨전펑크 생활"
+      }
+    ],
+    "collateral_accounting_rows": [
+      {
+        "metric": "reclassified",
+        "value": 74
+      },
+      {
+        "metric": "runtime_verified",
+        "value": 4
+      },
+      {
+        "metric": "residual",
+        "value": 105
+      },
+      {
+        "metric": "golden_shared_raw_regression_candidates",
+        "value": 6
+      }
+    ],
+    "survey_anchor_rows": [
+      {
+        "metric": "errors",
+        "value": 136
+      },
+      {
+        "metric": "wrong_work_among_aliases",
+        "value": 27
+      },
+      {
+        "metric": "recall_miss",
+        "value": 49
+      }
+    ]
+  },
+  "sources": [
+    "docs/devs/loop431_golden18_ocr_contract_20260705.json",
+    "docs/devs/loop_reports/LOOP_431_REPORT_20260705.md",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop431_golden18_after_ocr_contract_5150b13f_search_nonlight_result_manifest.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop431_golden18_after_ocr_contract_run_health.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop431_golden18_after_ocr_contract_publication_contract.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop431_golden18_after_ocr_contract_5150b13f_golden_audit.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop431_golden18_after_ocr_contract_5150b13f_collateral_compare.json"
+  ]
+}

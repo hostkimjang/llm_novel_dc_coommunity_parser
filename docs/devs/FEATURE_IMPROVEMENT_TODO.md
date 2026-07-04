@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop431 golden18 OCR publish contract follow-up
+  - 상태: runtime `GO 18/18` / publication contract `GO 0 violations` / expected-answer `NO-GO 15/18` / search recovery `P0_REVIEW_SEARCH_DEGRADED` / golden shared collateral raw `NO-GO 6` / full375 `NOT_OPEN` / approval not open
+  - 적용: URL 없는 direct-image/OCR public title을 공식 bridge 없이 publish하지 않도록 `expert_main.py` shared publication contract를 추가했다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+  - 산출물: `docs/devs/loop_reports/LOOP_431_REPORT_20260705.md`, `docs/devs/loop431_golden18_ocr_contract_20260705.json`, `docs/devs/loop431_golden18_ocr_contract_data_analytics_artifact.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop431_golden18_after_ocr_contract_5150b13f_search_nonlight_result.json`.
+  - 완료 기준: `11705245`, `11694019`, `11713212` 또는 survey 136-error anchor를 작은 단위로 줄이고, search degraded `unrecovered=0` 및 full375 collateral gate를 별도 증명하기 전까지 approval과 hard-hold 완화를 열지 않는다.
+
 - [ ] Loop430 OVERRIDE AUDIT 11708445 current HEAD follow-up
   - 상태: override audit `GO_ROW_CONTRACT_ONLY` / publication contract `GO 0 violations` / runtime replay `NOT_REQUIRED` / search recovery `P0_REVIEW_LIGHT_HEALTH_CAVEAT` / golden shared collateral `NO-GO 2` / full375 `NOT_OPEN` / approval not open
   - 적용: current HEAD `43fdcd87`에서 completed-source single row를 publication contract 감사로 재검산했다. 코드 변경, R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.

@@ -1,5 +1,17 @@
 ﻿# Development History
 
+## 2026-07-05 - Loop431 URL-less OCR publish contract and golden18 runtime proof
+
+- 신규 대형 런은 계속 동결했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았고 current HEAD `5150b13f` 기반 golden18 단일 런만 실행했다.
+- `expert_main.py`는 URL 없는 direct-image/OCR 유래 public title이 공식 detail URL 또는 검증된 official bridge 없이 publish되는 경로를 `candidate_only`로 demote한다.
+- R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 추가하지 않았다.
+- Run `20260705_001512_110161`은 input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, `large_run_complete=true`, `ordered_flush_blocked=false`, MCP health `include_search=true`, `light_mode=false`, ok/failure `8/0`로 완료됐다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, publication contract는 `GO / row_count 18 / violation_row_count 0`이다.
+- Golden expected-answer는 `NO-GO / 15 of 18`이다. 실패는 `11705245` unexpected `하남자의 탑 공략법`, `11694019` unresolved expected `이세계에서 사이비로 살아남기`, `11713212` unexpected `지력`이다.
+- `11685994`는 URL 없는 OCR 표지명 publish를 막고 candidate-only로 보존했다. `11663521`은 source-native상 HOLD가 정당하며, `11660237`과 `11698880`은 expected title로 safe_resolved했다.
+- Report는 `docs/devs/loop_reports/LOOP_431_REPORT_20260705.md`, state는 `docs/devs/loop431_golden18_ocr_contract_20260705.json`, Data Analytics summary는 `docs/devs/loop431_golden18_ocr_contract_data_analytics_artifact.json`이다.
+- Gate는 runtime production `GO / 18 of 18`, publication contract `GO / 0`, expected-answer `NO-GO / 15 of 18`, search recovery `P0 / REVIEW / search_degraded_observed`, golden shared collateral raw `NO-GO / 6`, full375 collateral `NOT_OPEN`, collateral 105 `reclassified 74 / runtime-verified 4 / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop430 OVERRIDE AUDIT 11708445 current HEAD refresh
 
 - Current HEAD `43fdcd87`에서 `11708445` OVERRIDE AUDIT를 runtime replay 없이 completed-source single row와 publication contract 감사로 재고정했다.

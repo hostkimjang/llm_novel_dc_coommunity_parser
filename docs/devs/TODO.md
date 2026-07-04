@@ -1,5 +1,20 @@
 ﻿# Developer TODO Index
 
+## 2026-07-05 Loop431 TODO
+
+- 상태 업데이트: Loop431은 URL 없는 direct-image/OCR public title을 공식 bridge 없이 publish하지 못하게 실코드 계약을 추가하고, current HEAD `5150b13f`에서 golden18 단일 런이 실제 `18/18` row를 내는지 재실증한 회차다. Runtime과 publication contract는 GO지만 golden expected-answer, search recovery, full375 collateral이 닫히지 않아 goal은 완료가 아니다.
+- [x] 신규 대형 런을 동결했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] `expert_main.py`에 URL 없는 image/OCR publish demotion shared contract를 추가했다.
+- [x] `tests/test_expert_main_comment_metadata.py`에 `11685994` 스타일 계약 테스트를 추가했다.
+- [x] golden18 runtime `20260705_001512_110161`에서 `18/18/18/0/0`, checkpoint/result rows `18/18`, MCP health `include_search=true`, `light_mode=false`, ok/failure `8/0`를 확인했다.
+- [x] health audit `GO / clean_completed_source`, publication contract `GO / 0 violations`를 확인했다.
+- [ ] Golden expected-answer는 `NO-GO / 15 of 18`이다. `11705245`, `11694019`, `11713212`를 다음 작은 lane 후보로 둔다.
+- [ ] Search recovery는 `P0 / REVIEW / search_degraded_observed`다. broader promotion unblock을 열지 않는다.
+- [ ] Full375 collateral gate는 아직 열지 않는다.
+- [ ] 다음 active lane은 docs-only 반복이 아니라 golden 실패 3건 또는 survey 136-error `wrong_work 27` / `recall_miss 49`로 진행한다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop430 TODO
 
 - 상태 업데이트: Loop430은 current HEAD `43fdcd87`에서 `11708445` OVERRIDE AUDIT를 runtime replay 없이 completed-source single row와 publication contract 감사로 재고정한 회차다. Contract는 `GO / 1 row / 0 violations`지만 search/full375 gate는 여전히 닫히지 않아 goal은 완료가 아니다.
