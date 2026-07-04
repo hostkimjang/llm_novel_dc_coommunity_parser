@@ -1,5 +1,29 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop400 resolved-public body compound anchor 계약
+
+- 범위: Loop399 `11698880` wrong publish를 런 반복 없이 단위 계약으로 막는다. 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않는다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_400_REPORT_20260704.md`
+  - state `docs\devs\loop400_resolved_public_body_compound_anchor_contract_20260704.json`
+- Code evidence:
+  - `src\llm_batch\agentic_pipeline.py`: `_has_unresolved_body_compound_character_anchor(...)` 추가.
+  - `src\llm_batch\agentic_pipeline.py`: `_record_resolved_public_title_gate_decision(...)`가 verified body competition 및 unresolved body compound character anchor를 `context_only` scope block으로 기록한다.
+  - `tests\test_title_lead_search_inferred_guard.py`: `11698880` 구조 negative 계약과 current-alias-in-body positive control 추가.
+- Verification commands:
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_title_lead_search_inferred_guard.py` -> PASS
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_resolved_public_title_scope_blocks_unpreserved_body_compound_character_anchor tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_resolved_public_title_scope_allows_body_compound_when_current_alias_is_in_body tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_resolved_public_title_scope_blocks_character_collision_alias_variant tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_resolved_public_title_scope_allows_character_collision_when_candidate_title_is_direct -v` -> PASS, 4 tests
+  - `.venv312\Scripts\python.exe -m unittest tests.test_promotion_gate_contract.PromotionGateContractTest.test_title_led_alias_public_title_blocks_competing_verified_body_work tests.test_promotion_gate_contract.PromotionGateContractTest.test_resolved_public_title_records_current_scope_gate_without_serialization_inference tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_gate_blocks_mismatched_verifier_alias_when_body_verified_work_competes tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_batch_alias_gate_blocks_body_verified_character_work_competition tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_title_led_publication_reconciles_verified_alias_competing_work -v` -> PASS, 5 tests
+  - `.venv312\Scripts\python.exe -m unittest tests.test_regression_safe_work_bridge_contract -v` -> PASS, 3 tests
+  - `.venv312\Scripts\python.exe -m unittest tests.test_promotion_gate_contract -v` -> PASS, 22 tests
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard -v` -> PASS, 196 tests
+  - `git diff --check` -> PASS, CRLF warning only
+- Boundary:
+  - R1 hardcoded cue 리스트 확장은 없다.
+  - Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다.
+  - Loop399 expected-answer `NO-GO / 14 of 18`, golden shared collateral `NO-GO / 7`, full375 `NOT_OPEN`은 닫히지 않았다.
+- Gate: code contract `GO_UNIT`, broader search recovery `P0 / GOLDEN18_SEARCH_GO_ONLY / search-blind conditional`, Collateral 105 `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop399 golden18 런타임 증명
 
 - 범위: watchdog/stall 우회 후 현 HEAD `d7b7fa11`이 golden18 `18/18` row를 실제로 내는지 먼저 확인한다. 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않는다.

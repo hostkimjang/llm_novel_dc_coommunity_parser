@@ -1,0 +1,72 @@
+{
+  "loop": 400,
+  "date": "2026-07-04",
+  "head_before_patch": "934cb151",
+  "status": "GO_UNIT",
+  "runtime_replay_after_patch": "NOT_RUN_AFTER_PATCH",
+  "new_large_runs": "FROZEN",
+  "same_parent_packet_replay": "STOPPED",
+  "scope": {
+    "target_post_id": 11698880,
+    "failure_from_loop399": {
+      "expected": "가챠 중독자의 퓨전펑크 생활",
+      "actual": "아카데미 생존 갤러리",
+      "failure_type": "wrong_work_publish"
+    },
+    "root_cause": "resolved_public_title_scope가 current title의 body bridge 없이 post-title alias와 search official detail만으로 publish를 허용했고, body-local compound character anchor는 competing candidate로 보존되지 않았다."
+  },
+  "code_changes": [
+    {
+      "file": "src/llm_batch/agentic_pipeline.py",
+      "summary": "_has_unresolved_body_compound_character_anchor를 추가하고 resolved public title scope gate에 body competition 및 unresolved compound character anchor block을 배선했다."
+    },
+    {
+      "file": "tests/test_title_lead_search_inferred_guard.py",
+      "summary": "11698880 negative contract와 current-alias-in-body positive control을 추가했다."
+    }
+  ],
+  "no_hardcoded_cue_expansion": true,
+  "verification": [
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m py_compile src\\llm_batch\\agentic_pipeline.py tests\\test_title_lead_search_inferred_guard.py",
+      "status": "PASS"
+    },
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_resolved_public_title_scope_blocks_unpreserved_body_compound_character_anchor tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_resolved_public_title_scope_allows_body_compound_when_current_alias_is_in_body tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_resolved_public_title_scope_blocks_character_collision_alias_variant tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_resolved_public_title_scope_allows_character_collision_when_candidate_title_is_direct -v",
+      "status": "PASS",
+      "tests": 4
+    },
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_promotion_gate_contract -v",
+      "status": "PASS",
+      "tests": 22
+    },
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard -v",
+      "status": "PASS",
+      "tests": 196
+    },
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_regression_safe_work_bridge_contract -v",
+      "status": "PASS",
+      "tests": 3
+    },
+    {
+      "command": "git diff --check",
+      "status": "PASS",
+      "note": "CRLF warning only"
+    }
+  ],
+  "gates": {
+    "code_contract": "GO_UNIT",
+    "inherited_golden18_runtime": "GO_GOLDEN18_RUNTIME_ONLY / Loop399 18 of 18",
+    "inherited_expected_answer": "NO-GO / Loop399 14 of 18",
+    "inherited_golden_shared_collateral": "NO-GO / Loop399 7 regression candidates",
+    "full375_collateral": "NOT_OPEN",
+    "broader_search_recovery": "P0 / GOLDEN18_SEARCH_GO_ONLY / search-blind conditional",
+    "collateral_105": "reclassified 74 / runtime-verified 4",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

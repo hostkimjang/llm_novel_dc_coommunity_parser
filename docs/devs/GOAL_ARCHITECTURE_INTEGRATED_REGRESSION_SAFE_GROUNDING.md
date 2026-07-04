@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-04 Loop400 Addendum - resolved-public body compound anchor contract
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop400은 approval 회차가 아니라 Loop399 `11698880` wrong publish를 resolved-public-title code contract로 줄인 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_400_REPORT_20260704.md`, state `docs/devs/loop400_resolved_public_body_compound_anchor_contract_20260704.json`.
+- Root cause: `아생갤 -> 아카데미 생존 갤러리` 후보는 post-title alias와 search official detail로 publish됐지만, 본문 `가챠펑크 세드릭` modifier+character anchor는 current body bridge나 competing candidate로 보존되지 않았다.
+- Fix: `src/llm_batch/agentic_pipeline.py`의 `resolved_public_title_scope`에 body verified competition과 unresolved body compound character anchor block을 배선했다. Current title/alias가 body에 없고 strong verified current link도 없으면 `unresolved_body_character_work_anchor` / `missing_body_work_bridge`로 `context_only`를 기록한다.
+- Contract: `tests/test_title_lead_search_inferred_guard.py`에 `11698880` negative와 current-alias-in-body positive control을 추가했다.
+- Verification: py_compile PASS, focused `4` PASS, related gate `5` PASS, work-bridge `3` PASS, promotion gate `22` PASS, title-lead guard `196` PASS, `git diff --check` PASS(CRLF warning only).
+- Boundary: R1 hardcoded cue 리스트 확장은 없다. Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다. Loop399 expected-answer `NO-GO / 14 of 18`, golden shared collateral `NO-GO / 7`, full375 `NOT_OPEN`을 닫지 않는다.
+- Gate: code contract `GO_UNIT`, broader search recovery `P0 / GOLDEN18_SEARCH_GO_ONLY / search-blind conditional`, Collateral 105 `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-04 Loop396-398 Addendum - current HEAD golden18 stall and 11700470 single-row flush
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop396-398은 approval 회차가 아니라 current HEAD golden18 stall을 확인하고 blocker `11700470`을 단건 flush로 줄인 회차다.

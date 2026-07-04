@@ -6,6 +6,22 @@
 - [x] 간략하게 쓰되 의미, 근거, 산출물 경로, gate 상태를 생략하지 않는다.
 - [x] `runtime GO`, `targeted canary GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 분리해 적는다.
 
+## 2026-07-04 Loop400 resolved-public body compound anchor 품질 게이트
+
+- 근거:
+  - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았음을 기록했다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았음을 기록했다.
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_400_REPORT_20260704.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop400_resolved_public_body_compound_anchor_contract_20260704.json`.
+  - [x] `11698880` wrong publish 원인을 candidate 보존 실패와 resolved-public-title body bridge 누락으로 분리했다.
+- 품질 게이트:
+  - [x] R1 hardcoded cue 리스트 확장을 하지 않았다.
+  - [x] current alias가 body에 직접 있는 positive control을 추가해 과차단을 줄였다.
+  - [x] runtime replay after patch가 `NOT_RUN_AFTER_PATCH`임을 기록한다.
+  - [x] code contract `GO_UNIT`과 Loop399 expected-answer `NO-GO / 14 of 18`을 분리한다.
+  - [x] golden shared collateral `NO-GO / 7`과 full375 `NOT_OPEN`을 분리한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-04 Loop386 author_bridge search recovery 품질 게이트
 
 - 근거:

@@ -1,5 +1,19 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop400 resolved-public body compound anchor 계약
+
+- 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop399 `11698880`은 expected `가챠 중독자의 퓨전펑크 생활` 대신 `아카데미 생존 갤러리`로 publish됐다.
+- 원인은 정답 후보가 final `title_candidates`에 보존되지 않은 상태에서 `resolved_public_title_scope`가 post-title alias `아생갤`과 search official detail만으로 current work publish를 허용한 것이다.
+- `src/llm_batch/agentic_pipeline.py`에 `_has_unresolved_body_compound_character_anchor(...)`를 추가했다.
+- `resolved_public_title_scope`는 current title/alias가 body에 없고 strong verified current link도 없는데 body-local modifier+character anchor가 남으면 `unresolved_body_character_work_anchor` / `missing_body_work_bridge`로 `context_only`를 기록한다.
+- Verified body competition이 보존된 경우도 `body_verified_character_work_competes_with_resolved_public_title`로 같은 gate를 탄다.
+- `tests/test_title_lead_search_inferred_guard.py`에 `11698880` negative 계약과 current-alias-in-body positive control을 추가했다.
+- 검증은 py_compile PASS, focused resolved-public `4` PASS, related gate `5` PASS, work-bridge contract `3` PASS, promotion gate `22` PASS, title-lead guard `196` PASS, `git diff --check` PASS(CRLF warning only)다.
+- R1 hardcoded cue 리스트 확장은 없다.
+- Report는 `docs/devs/loop_reports/LOOP_400_REPORT_20260704.md`, state는 `docs/devs/loop400_resolved_public_body_compound_anchor_contract_20260704.json`이다.
+- Gate는 code contract `GO_UNIT`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, inherited expected-answer `NO-GO / Loop399 14 of 18`, golden shared collateral `NO-GO / 7`, full375 collateral `NOT_OPEN`, broader search recovery `P0 / GOLDEN18_SEARCH_GO_ONLY`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop399 golden18 런타임 증명
 
 - 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

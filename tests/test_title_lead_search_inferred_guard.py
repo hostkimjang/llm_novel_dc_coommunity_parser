@@ -1214,6 +1214,166 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertIn("missing_direct_candidate_title", decision["reason_codes"])
         self.assertEqual(final_decision["_promotion_gate_state"]["scope"]["scope_kind"], "context_only")
 
+    def test_resolved_public_title_scope_blocks_unpreserved_body_compound_character_anchor(self):
+        pipeline = build_pipeline()
+        title = "아카데미 생존 갤러리"
+        url = "https://novelpia.com/novel/380218"
+        post = PostInput(
+            post_id=11698880,
+            title="아생갤 개 존나게 재밌군 ㅇㅇ",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="text", text="가챠펑크 세드릭도 그렇고"),
+                ContentBlock(type="text", text="이런게 아닌 시원시원한 상남자라서 좋구나"),
+            ],
+            comments=[],
+        )
+        ctx = ConversationContext(post_id=post.post_id, post_data=pipeline._post_to_dict(post), comments=[])
+        ctx.search_results = [{"title": "아카데미 생존 갤러리", "url": url, "content": "아생갤 작품 상세"}]
+        ctx.set_expert_output(
+            ExpertType.DECODER,
+            {
+                "decoded_terms": [
+                    {
+                        "original": "아생갤",
+                        "best_match": {"title": title, "confidence": "high"},
+                    },
+                    {
+                        "original": "가챠펑크 세드릭",
+                        "morphehens": ["가챠펑크", "세드릭"],
+                        "interpretations": [{"type": "character_name", "value": "세드릭"}],
+                        "best_match": {"title": None, "confidence": "none"},
+                    },
+                ]
+            },
+        )
+        final_decision = {
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "context_sources": ["title", "body", "search", "image"],
+            "anchor_type": "title_exact",
+            "entity_mentions": [
+                {
+                    "text": "가챠펑크 세드릭",
+                    "entity_type": "character",
+                    "canonical_value": None,
+                    "source": "decoder",
+                    "role": "character_focus",
+                }
+            ],
+        }
+        verification_result = {
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "grounding_check": {"anchor_found": "title_mention", "matched_alias": "아생갤"},
+        }
+
+        decision = pipeline._record_resolved_public_title_gate_decision(
+            ctx,
+            title,
+            candidate_url=url,
+            final_decision=final_decision,
+            verification_result=verification_result,
+            title_candidates=[
+                DetectedTitle(
+                    official_title=title,
+                    heretic_url=url,
+                    confidence="High",
+                    alias_or_mention="아생갤",
+                    source_tier="official_detail",
+                    page_type="novel_page",
+                    reference_role="primary",
+                )
+            ],
+            source="serialized_public_identity",
+        )
+
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn("scope_context_only", decision["reason_codes"])
+        self.assertIn("unresolved_body_character_work_anchor", decision["reason_codes"])
+        self.assertIn("missing_body_work_bridge", decision["reason_codes"])
+        scope = final_decision["_promotion_gate_state"]["scope"]
+        self.assertEqual(scope["scope_kind"], "context_only")
+        self.assertIn("unresolved_body_character_work_anchor", scope["conflict_reason_codes"])
+
+    def test_resolved_public_title_scope_allows_body_compound_when_current_alias_is_in_body(self):
+        pipeline = build_pipeline()
+        title = "아카데미 생존 갤러리"
+        url = "https://novelpia.com/novel/380218"
+        post = PostInput(
+            post_id=11698881,
+            title="아생갤 개 존나게 재밌군 ㅇㅇ",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="text", text="아생갤 아레스도 그렇고"),
+                ContentBlock(type="text", text="이번화 주인공 성격이 좋구나"),
+            ],
+            comments=[],
+        )
+        ctx = ConversationContext(post_id=post.post_id, post_data=pipeline._post_to_dict(post), comments=[])
+        ctx.search_results = [{"title": "아카데미 생존 갤러리", "url": url, "content": "아생갤 작품 상세"}]
+        ctx.set_expert_output(
+            ExpertType.DECODER,
+            {
+                "decoded_terms": [
+                    {
+                        "original": "아생갤",
+                        "best_match": {"title": title, "confidence": "high"},
+                    },
+                    {
+                        "original": "아생갤 아레스",
+                        "morphehens": ["아생갤", "아레스"],
+                        "interpretations": [{"type": "character_name", "value": "아레스"}],
+                        "best_match": {"title": None, "confidence": "none"},
+                    },
+                ]
+            },
+        )
+        final_decision = {
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "context_sources": ["title", "body", "search"],
+            "anchor_type": "title_exact",
+        }
+
+        decision = pipeline._record_resolved_public_title_gate_decision(
+            ctx,
+            title,
+            candidate_url=url,
+            final_decision=final_decision,
+            verification_result={
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "grounding_check": {"anchor_found": "title_mention", "matched_alias": "아생갤"},
+            },
+            title_candidates=[
+                DetectedTitle(
+                    official_title=title,
+                    heretic_url=url,
+                    confidence="High",
+                    alias_or_mention="아생갤",
+                    source_tier="official_detail",
+                    page_type="novel_page",
+                    reference_role="primary",
+                )
+            ],
+            source="serialized_public_identity",
+        )
+
+        self.assertEqual(decision["status"], "publish")
+        self.assertTrue(decision["publish_allowed"])
+        self.assertNotIn("unresolved_body_character_work_anchor", decision["reason_codes"])
+        self.assertEqual(final_decision["_promotion_gate_state"]["scope"]["scope_kind"], "current_work")
+
     def test_resolved_public_title_scope_allows_character_collision_when_candidate_title_is_direct(self):
         pipeline = build_pipeline()
         title = "조선 퇴마록"

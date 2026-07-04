@@ -1,5 +1,28 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop400 resolved-public body compound anchor 체크
+
+- [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_400_REPORT_20260704.md`.
+- [x] State JSON 기록 완료: `docs/devs/loop400_resolved_public_body_compound_anchor_contract_20260704.json`.
+- [x] `11698880` Loop399 wrong publish 원인을 resolved-public-title scope의 body bridge 누락으로 분리했다.
+- [x] `src/llm_batch/agentic_pipeline.py`에 unresolved body compound character anchor block을 추가했다.
+- [x] `tests/test_title_lead_search_inferred_guard.py`에 negative/positive 계약을 추가했다.
+- [x] 검증:
+  - py_compile PASS
+  - focused resolved-public tests `4` PASS
+  - related gate tests `5` PASS
+  - work-bridge contract `3` PASS
+  - promotion gate contract `22` PASS
+  - title-lead guard `196` PASS
+  - `git diff --check` PASS(CRLF warning only)
+- [ ] Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`라 semantic approval 근거가 아니다.
+- [ ] Loop399 expected-answer `NO-GO / 14 of 18`, golden shared collateral `NO-GO / 7`, full375 `NOT_OPEN`을 유지한다.
+- [x] R1 hardcoded cue 리스트 확장은 하지 않았다.
+- [x] Collateral 105는 `reclassified 74 / runtime-verified 4` 축으로 유지한다.
+- Gate: code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, broader search recovery `P0 / GOLDEN18_SEARCH_GO_ONLY`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop399 golden18 런타임 증명 체크
 
 - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.

@@ -25874,6 +25874,200 @@ OUTPUT JSON:
 
         return competing_verified_body_titles, current_has_body_surface
 
+    def _has_unresolved_body_compound_character_anchor(
+        self,
+        ctx,
+        current_title: Optional[str],
+        *,
+        final_decision: Optional[Dict[str, Any]] = None,
+        verification_result: Optional[Dict[str, Any]] = None,
+        title_candidates: Optional[List[DetectedTitle]] = None,
+    ) -> bool:
+        """Detect body-local modifier+character anchors not bridged to the published title."""
+        title = str(current_title or "").strip()
+        title_norm = self._normalize_match_text(title)
+        if not ctx or not title_norm:
+            return False
+
+        body_text = self._collect_body_comment_text(ctx, include_comments=True)
+        if not body_text.strip():
+            return False
+
+        final = final_decision if isinstance(final_decision, dict) else {}
+        vf = verification_result if isinstance(verification_result, dict) else {}
+
+        current_forms: List[str] = []
+
+        def _push_current_form(value: Any) -> None:
+            raw = str(value or "").strip()
+            if not raw:
+                return
+            norm = self._normalize_match_text(raw)
+            if not norm:
+                return
+            if any(self._normalize_match_text(existing) == norm for existing in current_forms):
+                return
+            current_forms.append(raw)
+
+        _push_current_form(title)
+        for cand in title_candidates or []:
+            if not isinstance(cand, DetectedTitle):
+                continue
+            cand_title = str(getattr(cand, "official_title", "") or "").strip()
+            if self._normalize_match_text(cand_title) != title_norm:
+                continue
+            for form in self._candidate_surface_forms(ctx, cand):
+                _push_current_form(form)
+
+        for container in (final, vf):
+            if not isinstance(container, dict):
+                continue
+            novel_identity = container.get("novel_identity")
+            if isinstance(novel_identity, dict):
+                for source in novel_identity.get("alias_resolution_sources") or []:
+                    if not isinstance(source, dict):
+                        continue
+                    canonical = str(source.get("canonical_title") or "").strip()
+                    if self._normalize_match_text(canonical) == title_norm:
+                        _push_current_form(source.get("alias"))
+            slang = container.get("slang_insight")
+            if isinstance(slang, dict):
+                decoded = str(slang.get("decoded_term") or "").strip()
+                if self._normalize_match_text(decoded) == title_norm:
+                    _push_current_form(slang.get("detected_term"))
+                    _push_current_form(slang.get("canonical_work_alias"))
+
+        def _surface_in_body(surface: Any) -> bool:
+            raw = str(surface or "").strip()
+            if not raw:
+                return False
+            norm = self._normalize_match_text(raw)
+            if len(norm) < 2:
+                return False
+            if self._is_single_token_surface(raw) and len(norm) <= 3:
+                return self._contains_standalone_phrase(body_text, raw)
+            return self._text_matches_phrase(body_text, raw)
+
+        if any(_surface_in_body(form) for form in current_forms):
+            return False
+        if self._has_strong_verified_character_work_links(ctx, title):
+            return False
+
+        competing_verified_titles, current_has_body_surface = (
+            self._body_verified_character_work_competition(
+                ctx,
+                title,
+                title_candidates=title_candidates,
+                include_comments=True,
+            )
+        )
+        if competing_verified_titles and not current_has_body_surface:
+            return True
+
+        current_form_norms = {
+            self._normalize_match_text(form)
+            for form in current_forms
+            if self._normalize_match_text(form)
+        }
+
+        def _specific_modifier_token(raw: Any) -> bool:
+            token = str(raw or "").strip()
+            norm = self._normalize_match_text(token)
+            if len(norm) < 3:
+                return False
+            if norm in current_form_norms or norm == title_norm:
+                return False
+            if self._is_generic_topic_title(token) or self._is_platform_branding_title(token):
+                return False
+            if self._is_generic_alias_seed(token, full_title=title):
+                return False
+            if self._looks_like_role_or_honorific_alias(token):
+                return False
+            if self._is_structural_nonwork_title(token):
+                return False
+            if self._is_low_specificity_rescue_key(token, full_title=title):
+                return False
+            return True
+
+        def _body_has_surface(raw: Any) -> bool:
+            surface = str(raw or "").strip()
+            return bool(surface and self._text_matches_phrase(body_text, surface))
+
+        def _best_title_norm(term: Dict[str, Any]) -> str:
+            best = term.get("best_match") if isinstance(term.get("best_match"), dict) else {}
+            raw = best.get("title") or best.get("official_novel_title")
+            return self._normalize_match_text(raw or "")
+
+        try:
+            decoder_out = ctx.get_expert_output(ExpertType.DECODER) or {}
+        except Exception:
+            decoder_out = {}
+        for term in decoder_out.get("decoded_terms") or []:
+            if not isinstance(term, dict):
+                continue
+            original = str(term.get("original") or "").strip()
+            if not original or not _body_has_surface(original):
+                continue
+            best_norm = _best_title_norm(term)
+            if best_norm == title_norm:
+                continue
+            if best_norm and best_norm != title_norm:
+                return True
+            character_values = []
+            for interpretation in term.get("interpretations") or []:
+                if not isinstance(interpretation, dict):
+                    continue
+                interp_type = str(interpretation.get("type") or "").strip().lower()
+                if "character" not in interp_type:
+                    continue
+                value = str(interpretation.get("value") or "").strip()
+                if value:
+                    character_values.append(value)
+            if not character_values:
+                continue
+            morphemes = [
+                str(value or "").strip()
+                for value in term.get("morphehens") or []
+                if str(value or "").strip()
+            ]
+            if not morphemes:
+                morphemes = [part for part in re.split(r"\s+", original) if part.strip()]
+            character_norms = {
+                self._normalize_match_text(value)
+                for value in character_values
+                if self._normalize_match_text(value)
+            }
+            modifier_tokens = [
+                value
+                for value in morphemes
+                if self._normalize_match_text(value) not in character_norms
+            ]
+            if any(_specific_modifier_token(value) for value in modifier_tokens):
+                return True
+
+        for container in (final, vf):
+            mentions = container.get("entity_mentions") if isinstance(container, dict) else None
+            if not isinstance(mentions, list):
+                continue
+            for mention in mentions:
+                if not isinstance(mention, dict):
+                    continue
+                entity_type = str(mention.get("entity_type") or "").strip().lower()
+                if entity_type != "character":
+                    continue
+                text = str(mention.get("text") or "").strip()
+                if not text or not _body_has_surface(text):
+                    continue
+                tokens = [part for part in re.split(r"\s+", text) if part.strip()]
+                if len(tokens) < 2:
+                    continue
+                if any(self._normalize_match_text(token) in current_form_norms for token in tokens):
+                    continue
+                if any(_specific_modifier_token(token) for token in tokens):
+                    return True
+
+        return False
+
     def _title_candidate_mentioned(
         self,
         ctx,
@@ -33366,6 +33560,47 @@ OUTPUT JSON:
             anchor_type_norm in {"title_alias", "character"}
             or grounding_anchor in {"character_mention", "character_title_link", "plot_mention"}
         )
+
+        current_candidate_alias = ""
+        for cand in title_candidates or []:
+            if not isinstance(cand, DetectedTitle):
+                continue
+            cand_title = str(getattr(cand, "official_title", "") or "").strip()
+            if self._normalize_match_text(cand_title) != title_norm:
+                continue
+            current_candidate_alias = str(getattr(cand, "alias_or_mention", "") or "").strip()
+            if current_candidate_alias:
+                break
+        body_competing_titles_for_scope: List[str] = []
+        try:
+            competing_verified_body_titles, current_candidate_has_body_surface = (
+                self._body_verified_character_work_competition(
+                    ctx,
+                    title,
+                    title_candidates=title_candidates,
+                    current_alias=current_candidate_alias,
+                    include_comments=True,
+                )
+            )
+        except Exception:
+            competing_verified_body_titles = []
+            current_candidate_has_body_surface = False
+        if competing_verified_body_titles and not current_candidate_has_body_surface:
+            body_competing_titles_for_scope = list(competing_verified_body_titles)
+            scope_block_flags.append("body_verified_character_work_competes_with_resolved_public_title")
+        try:
+            unresolved_body_compound_anchor = self._has_unresolved_body_compound_character_anchor(
+                ctx,
+                title,
+                final_decision=final,
+                verification_result=vf,
+                title_candidates=title_candidates,
+            )
+        except Exception:
+            unresolved_body_compound_anchor = False
+        if unresolved_body_compound_anchor and not current_candidate_has_body_surface:
+            scope_block_flags.append("unresolved_body_character_work_anchor")
+            scope_block_flags.append("missing_body_work_bridge")
         if (
             alias_or_character_scope
             and not title_visible_in_non_image
@@ -33413,6 +33648,10 @@ OUTPUT JSON:
         competing: List[str] = []
         direct_body_competing_titles: List[str] = []
         direct_surface_competing_titles: List[str] = []
+        for body_competing_title in body_competing_titles_for_scope:
+            body_competing_text = str(body_competing_title or "").strip()
+            if body_competing_text and body_competing_text not in competing:
+                competing.append(body_competing_text)
         ack_previous_flags = [
             flag for flag in merged_scope_flags if flag.startswith("acknowledged_previous_work_comment")
         ]

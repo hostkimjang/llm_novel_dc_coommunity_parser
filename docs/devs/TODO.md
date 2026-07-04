@@ -1,5 +1,22 @@
 ﻿# Developer TODO Index
 
+## 2026-07-04 regression-safe grounding Loop400 TODO
+
+- 상태 업데이트: Loop400은 Loop399 `11698880` wrong publish를 런 반복 없이 code contract로 막은 회차다. `resolved_public_title_scope`가 current body bridge 없이 post-title alias와 search official detail만으로 publish하는 경로에 body-local compound character anchor block을 배선했다.
+- Loop400 TODO:
+  - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] R1 hardcoded cue 리스트 확장을 하지 않았다.
+  - [x] `_has_unresolved_body_compound_character_anchor(...)`를 추가했다.
+  - [x] `_record_resolved_public_title_gate_decision(...)`가 verified body competition 및 unresolved body compound character anchor를 `context_only` scope block으로 기록하게 했다.
+  - [x] `11698880` 구조 negative 계약과 current-alias-in-body positive control을 추가했다.
+  - [x] focused 4 tests, related 5 tests, work-bridge contract 3 tests, promotion gate 22 tests, title-lead guard 196 tests를 PASS했다.
+  - [ ] Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`이므로 Loop399 expected-answer `NO-GO / 14 of 18`을 닫힌 것으로 세지 않는다.
+  - [ ] Golden shared collateral `NO-GO / 7`과 full375 `NOT_OPEN`을 계속 분리한다.
+  - [ ] 다음 triage는 남은 Loop399 실패 `11663540`, `11668307`, `11713212` 또는 survey 136-error anchor에서 고른다.
+  - [x] Collateral 105는 `reclassified 74 / runtime-verified 4` 축으로 유지한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop399 TODO
 
 - 상태 업데이트: 현 HEAD `d7b7fa11` golden18 단일 search 포함 non-light Loop399는 `18/18/18/0/0`, checkpoint/result rows `18/18`, `ordered_flush_blocked=false`로 완료됐다. Runtime row production은 `GO_GOLDEN18_RUNTIME_ONLY`지만 expected-answer는 `NO-GO / 14 of 18`, golden shared collateral은 `NO-GO / 7`이다.
