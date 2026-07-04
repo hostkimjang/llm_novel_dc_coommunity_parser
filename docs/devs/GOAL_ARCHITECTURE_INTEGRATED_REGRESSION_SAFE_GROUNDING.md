@@ -8,6 +8,18 @@
 
 도메인 규칙: `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명으로 단정하지 않는다. 요즘 웹소설은 작품 안에 갤러리/댓글식 커뮤니티를 오마주한 장치를 엮을 수 있고, 그 표면 자체가 작품 제목 또는 약어일 수 있다. known abbreviation + explicit alias relation + specific-work target + community support가 있으면 shared work-bridge로 통과시키되, 경쟁 본문 작품 근거가 있으면 publish를 막는다.
 
+## 2026-07-05 Loop452 Addendum - 11708443 괴담출근 known-alias runtime closure
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop452는 residual `known_alias_runtime_replay_required`의 마지막 단건 `11708443`을 runtime으로 닫은 회차이며 approval 회차가 아니다.
+- Evidence: report `docs/devs/loop_reports/LOOP_452_REPORT_20260705.md`, state `docs/devs/loop452_11708443_goedam_commute_known_alias_runtime_20260705.json`, Data Analytics summary `docs/devs/loop452_11708443_goedam_commute_known_alias_data_analytics_artifact.json`.
+- Runtime: run `20260705_074842_463253`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`, `ordered_flush_blocked=false`, MCP health `include_search=true`, `light_mode=false`, VLM/OCR `READY`다.
+- Result: public `official_title=괴담에 떨어져도 출근을 해야 하는구나`, `official_url=https://page.kakao.com/content/65171279`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`, `publish_allowed=true`, `bypassed_gate=false`.
+- Architecture note: Loop450/451 후처리 stall을 `heretic_url` exact official fast-path, candidate eval cap, per-post live-fetch budget, official fetch lock으로 줄였다. 작품별 hardcoded cue나 `post_id` 예외는 추가하지 않았다.
+- Domain note: `괴담출근`/`ㄱㄷㅊㄱ`는 작품 별칭이고 `SCP 재단`은 설정/배경 비교 단서, `인간추출기`는 작가/사용자 언급이다. `아생갤`/`갤러리` 오마주 규칙도 계속 유지한다.
+- Audits: health `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`, golden subset `PASS / 1 of 1`, collateral subset regression candidate `0`.
+- Residual queue: source baseline `105 -> 102`, `REPROCESS 77 -> 74`, `known_alias_runtime_replay_required 3 -> 0`, validation issue `0`.
+- Gate: targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_EXPECTED_TITLE_RESOLVED`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop449 Addendum - 11706827 기계공주 known-alias runtime closure
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop449는 residual `known_alias_runtime_replay_required=3` 중 `11706827`을 단건 runtime으로 닫은 회차이며 approval 회차가 아니다.

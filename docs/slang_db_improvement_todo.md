@@ -1,5 +1,16 @@
 # Slang DB Improvement TODO
 
+## 2026-07-05 Loop452 11708443 괴담출근 known-alias runtime closure slang 주의사항
+
+- [x] `괴담출근 -> 괴담에 떨어져도 출근을 해야 하는구나`를 새 slang DB write-back이나 작품 전용 registry 추가로 처리하지 않았다.
+- [x] `--slang-db off` 조건으로 `11708443` 단건 runtime을 실행했다.
+- [x] `괴담출근`/`ㄱㄷㅊㄱ`는 작품 별칭이고, `SCP 재단`은 설정/배경 비교 cue, `인간추출기`는 작가/사용자 mention이라는 경계를 기록했다.
+- [x] `11708443`은 제목/본문/OCR의 별칭 표면과 official URL `https://page.kakao.com/content/65171279` 결속으로 `괴담에 떨어져도 출근을 해야 하는구나` safe-resolved publish가 됐다.
+- [x] Residual queue에서 `known_alias_runtime_replay_required`는 `3 -> 0`으로 줄었고 남은 known-alias row는 없다.
+- [x] 사용자 도메인 보정을 유지한다: `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명만이 아니라 웹소설 안의 갤러리/댓글식 커뮤니티 오마주형 제목 또는 약어일 수 있다.
+- [ ] 이 단건 closure를 alias/slang 전체 품질 승인, hard-hold 완화, full375 approval로 승격하지 않는다.
+- Gate: slang DB write-back 아님, targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_EXPECTED_TITLE_RESOLVED`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL / 105 -> 102`, search recovery broader `P0 / ROW_LEVEL_GO_ONLY`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop449 11706827 기계공주 known-alias runtime closure slang 주의사항
 
 - [x] `기계공주 -> 헌터갤러리의 국가권력급 기계공주`를 새 slang DB write-back이나 작품 전용 registry 추가로 처리하지 않았다.

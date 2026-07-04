@@ -1,0 +1,54 @@
+{
+  "artifact_type": "data_analytics_summary",
+  "loop": "452",
+  "title": "11708443 괴담출근 known-alias runtime closure",
+  "language": "ko",
+  "reader_summary": "11708443 단건은 search 포함 non-light, VLM/OCR 필수 조건에서 1/1 완료됐다. 괴담출근은 괴담에 떨어져도 출근을 해야 하는구나의 작품 별칭으로 수렴했고, official URL https://page.kakao.com/content/65171279 publish가 계약 위반 없이 통과했다. SCP 재단은 설정/배경 비교 단서, 인간추출기는 작가/사용자 언급으로 처리했다. 이 결과는 residual queue 105 -> 102의 row-level 감소 증거지만 full375 approval은 아니다.",
+  "post_ids": [
+    11708443
+  ],
+  "input_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop450_11708443_goedam_commute_known_alias_runtime_input.jsonl",
+  "result_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop452_11708443_goedam_commute_official_lock_runtime_result.json",
+  "report_path": "docs/devs/loop_reports/LOOP_452_REPORT_20260705.md",
+  "run": {
+    "run_id": "20260705_074842_463253",
+    "runtime_counts": "1/1/1/0/0",
+    "mcp_health": "include_search=true, light_mode=false, ok/failure=1/0",
+    "vlm_ocr": "READY"
+  },
+  "decision": {
+    "official_title": "괴담에 떨어져도 출근을 해야 하는구나",
+    "official_url": "https://page.kakao.com/content/65171279",
+    "candidate_ledger_status": "safe_resolved",
+    "promotion_decision": "publish",
+    "publish_allowed": true,
+    "bypassed_gate": false
+  },
+  "audits": {
+    "health_audit_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop452_11708443_goedam_commute_runtime_health_audit.json",
+    "health_gate": "GO / clean_completed_source",
+    "search_evidence": "GO",
+    "publication_contract": "GO / violations 0",
+    "golden_audit_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop452_11708443_goedam_commute_known_alias_golden_audit.json",
+    "golden_gate": "PASS / expected_title_resolved",
+    "collateral_compare_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop452_11708443_goedam_commute_known_alias_collateral_compare.json",
+    "collateral_regression_count": 0
+  },
+  "queue_accounting": {
+    "residual_queue_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop452_after_11708443_known_alias_residual_action_queue.json",
+    "before": 105,
+    "after": 102,
+    "known_alias_runtime_replay_required_before": 3,
+    "known_alias_runtime_replay_required_after": 0,
+    "remaining_known_alias_post_ids": []
+  },
+  "gate_boundary": {
+    "targeted_runtime": "GO / 1 of 1",
+    "targeted_expected_answer": "GO_TARGETED_EXPECTED_TITLE_RESOLVED",
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

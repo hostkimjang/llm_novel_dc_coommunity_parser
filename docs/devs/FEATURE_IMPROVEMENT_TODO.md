@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop452 known-alias runtime closure follow-up
+  - 상태: targeted runtime `GO 1/1` / health `GO clean_completed_source` / search evidence `GO` / publication contract `GO 0 violations` / golden subset `PASS 1/1` / residual queue source baseline `105 -> 102` / known-alias `3 -> 0` / search recovery broader `P0_ROW_LEVEL_GO_ONLY` / full375 `NOT_OPEN` / approval not open
+  - 적용: `11708443`은 `괴담출근 -> 괴담에 떨어져도 출근을 해야 하는구나`로 safe-resolved됐다. `SCP 재단`은 설정/배경 비교 단서, `인간추출기`는 작가/사용자 언급으로 처리했다. Loop450/451 stall 뒤 `heretic_url` official lock/budget으로 runtime row 생산을 확인했다.
+  - 산출물: `docs/devs/loop_reports/LOOP_452_REPORT_20260705.md`, `docs/devs/loop452_11708443_goedam_commute_known_alias_runtime_20260705.json`, `docs/devs/loop452_11708443_goedam_commute_known_alias_data_analytics_artifact.json`.
+  - 완료 기준: known-alias lane은 0이지만 full375 approval은 아니다. 다음은 residual `REPROCESS 74 / HOLD 28`의 작은 lane, survey 136-error, collateral triage, 또는 native/source review로 전환한다.
+
 - [ ] Loop449 known-alias runtime closure follow-up
   - 상태: targeted runtime `GO 1/1` / health `GO clean_completed_source` / search evidence `GO` / publication contract `GO 0 violations` / golden subset `PASS 1/1` / residual queue `105 -> 103` / search recovery broader `P0_ROW_LEVEL_GO_ONLY` / full375 `NOT_OPEN` / approval not open
   - 적용: `11706827`은 `기계공주 -> 헌터갤러리의 국가권력급 기계공주`로 safe-resolved됐다. `일상물/행복`은 별도 작품명이 아니라 작품 톤 cue로 처리했고, `갤러리` 표면은 현실 갤러리명만이 아니라 작품 안의 커뮤니티/갤러리 오마주 장치일 수 있음을 기록했다.

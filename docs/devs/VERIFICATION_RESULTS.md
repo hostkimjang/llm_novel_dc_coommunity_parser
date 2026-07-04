@@ -1,5 +1,39 @@
 # Verification Results
 
+## 2026-07-05 Loop452 11708443 괴담출근 known-alias runtime closure 검증
+
+- 범위: residual `known_alias_runtime_replay_required`의 마지막 단건 `11708443`을 current HEAD `62506620` + URL 후처리 lock/budget 패치에서 search 포함 non-light, VLM/OCR 필수 조건으로 재실행했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_452_REPORT_20260705.md`
+  - state `docs\devs\loop452_11708443_goedam_commute_known_alias_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop452_11708443_goedam_commute_known_alias_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop452_11708443_goedam_commute_official_lock_runtime_result.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop452_11708443_goedam_commute_runtime_health_audit.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop452_11708443_goedam_commute_publication_contract_audit.json`
+  - golden subset audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop452_11708443_goedam_commute_known_alias_golden_audit.json`
+  - residual queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop452_after_11708443_known_alias_residual_action_queue.json`
+- Runtime:
+  - run `20260705_074842_463253`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - Search row status `ok`, query/degraded/unrecovered `12/0/0`, upstream zero `1`
+  - VLM/OCR `READY`, image fetch `1/1`
+- Result:
+  - `official_title=괴담에 떨어져도 출근을 해야 하는구나`, `official_url=https://page.kakao.com/content/65171279`
+  - `candidate_ledger_status=safe_resolved`, `title_resolution_state=resolved`, `work_resolution=resolved`
+  - `promotion_decision.status=publish`, `publish_allowed=true`, `bypassed_gate=false`
+- Audit:
+  - `tools/audit_expert_run_health.py` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=GO`, `publication_contract_convergence=GO`.
+  - `tools/audit_publication_contract_convergence.py` -> `GO / row_count 1 / violation_row_count 0`.
+  - subset golden audit -> `PASS / 1 of 1`, status `expected_title_resolved`.
+  - residual queue split -> source baseline `105 -> 102`, `known_alias_runtime_replay_required 3 -> 0`, validation issue `0`.
+- Boundary:
+  - Loop450/451은 같은 입력에서 result/checkpoint가 없던 runtime stall이다. Loop452는 URL 후보 후처리 lock/budget 보강 뒤 row를 실제 생산했다.
+  - `괴담출근`/`ㄱㄷㅊㄱ`는 작품 별칭, `SCP 재단`은 설정/배경 비교 단서, `인간추출기`는 작가/사용자 언급으로 분리했다.
+  - `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명으로만 보지 않고, 웹소설 안의 갤러리/댓글식 커뮤니티 오마주형 제목 또는 약어일 수 있다고 유지한다.
+  - Broader search recovery는 `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral은 `NOT_OPEN`.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop449 11706827 기계공주 known-alias runtime closure 검증
 
 - 범위: residual `known_alias_runtime_replay_required=3` 중 `11706827` 단건을 current HEAD `7cc4562c`에서 search 포함 non-light, VLM/OCR 필수 조건으로 재실행했다.

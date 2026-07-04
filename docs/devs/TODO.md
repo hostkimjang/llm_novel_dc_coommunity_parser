@@ -1,5 +1,18 @@
 ﻿# Developer TODO Index
 
+## 2026-07-05 Loop452 TODO
+
+- 상태 업데이트: Loop452는 `11708443`을 current HEAD `62506620` + URL 후처리 lock/budget 패치에서 search 포함 non-light, VLM/OCR 필수 단건 runtime으로 닫았다. `괴담출근 -> 괴담에 떨어져도 출근을 해야 하는구나`가 expected-title resolved됐고 residual queue는 source baseline `105 -> 102`, `known_alias_runtime_replay_required 3 -> 0`이지만 goal은 완료가 아니다.
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] Loop450/451 같은 입력 stall을 result/checkpoint 없음으로 기록했고, dispatch 반복 대신 `heretic_url` official lock/budget을 적용했다.
+- [x] Run `20260705_074842_463253`은 `1/1/1/0/0`, health `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`다.
+- [x] Golden subset audit `PASS / 1 of 1`, status `expected_title_resolved`, collateral regression candidate `0`을 확인했다.
+- [x] `괴담출근`/`ㄱㄷㅊㄱ`는 작품 별칭, `SCP 재단`은 설정/배경 cue, `인간추출기`는 작가/사용자 mention으로 기록했다.
+- [x] 사용자 도메인 보정을 유지했다: `아생갤`/`갤러리`는 현실 DC 갤러리명만이 아니라 작품 안 커뮤니티/갤러리 오마주형 제목 또는 약어일 수 있다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 queue delta를 full scan approval로 승격하지 않는다.
+- [ ] 다음은 residual `REPROCESS 74 / HOLD 28` 중 작은 lane으로 진행한다. docs-only 반복은 정지 신호다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop449 TODO
 
 - 상태 업데이트: Loop449는 `11706827`을 current HEAD `7cc4562c`에서 search 포함 non-light, VLM/OCR 필수 단건 runtime으로 닫았다. `기계공주 -> 헌터갤러리의 국가권력급 기계공주`가 expected-title resolved됐고 residual queue는 `105 -> 103`, `known_alias_runtime_replay_required 3 -> 1`이지만 goal은 완료가 아니다.

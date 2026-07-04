@@ -254,6 +254,23 @@ class AgenticPipeline:
         )
         # heretic_url 후보 검증 시, fetched_page_info가 비어 있으면 1회 직접 fetch 시도
         self.enable_heretic_live_fetch = os.getenv("PIPELINE_HERETIC_LIVE_FETCH", "1") == "1"
+        try:
+            self.heretic_url_eval_max = max(
+                1,
+                int(os.getenv("PIPELINE_HERETIC_URL_EVAL_MAX", "8")),
+            )
+        except Exception:
+            self.heretic_url_eval_max = 8
+        try:
+            self.heretic_live_fetch_max_per_post = max(
+                1,
+                int(os.getenv("PIPELINE_HERETIC_LIVE_FETCH_MAX_PER_POST", "6")),
+            )
+        except Exception:
+            self.heretic_live_fetch_max_per_post = 6
+        self.heretic_url_fast_exact_official = (
+            os.getenv("PIPELINE_HERETIC_URL_FAST_EXACT_OFFICIAL", "1") == "1"
+        )
         self._heretic_fetch_cache: Dict[str, Optional[Dict[str, Any]]] = {}
         self.enable_vlm = os.getenv("LLM_VLM", "0").strip().lower() in {"1", "true", "yes", "on"}
         self.enable_ocr = os.getenv("LLM_OCR", "1").strip().lower() in {"1", "true", "yes", "on"}
@@ -24767,6 +24784,7 @@ OUTPUT JSON:
 
         candidate_urls: List[str] = [url]
         candidate_urls.extend(self._collect_expert_urls(ctx))
+        matched_url = None
         if selected_title:
             matched_url = self._find_title_matched_official_url(selected_title, search_results, ctx=ctx)
             if matched_url:
@@ -24782,8 +24800,63 @@ OUTPUT JSON:
             seen_norms.add(cand_norm)
             deduped_candidates.append(cand)
 
+        matched_norm = self._normalize_url_for_match(matched_url or "")
+        if matched_norm:
+            deduped_candidates.sort(
+                key=lambda cand: 0
+                if self._normalize_url_for_match(cand) == matched_norm
+                else 1
+            )
+
         evaluations: List[Dict[str, Any]] = []
+        evaluated_norms: set[str] = set()
+
+        if (
+            self.heretic_url_fast_exact_official
+            and matched_url
+            and matched_norm
+            and self._is_novel_platform_url(matched_url)
+            and self._is_novel_detail_url(matched_url)
+        ):
+            matched_ev = self._evaluate_heretic_url_candidate(
+                matched_url,
+                ctx=ctx,
+                search_results=search_results,
+                identified_title=selected_title,
+                identified_author=selected_author,
+            )
+            evaluations.append(matched_ev)
+            evaluated_norms.add(matched_norm)
+            if matched_ev.get("valid") and matched_ev.get("title_evidence"):
+                ctx._heretic_official_url_lock_norm = matched_norm
+                ctx._heretic_official_url_lock_url = matched_ev.get("url") or matched_url
+                ctx._heretic_official_url_lock_title_norm = self._normalize_match_text(selected_title or "")
+                if self._normalize_url_for_match(url) != matched_norm:
+                    print(
+                        f"[{_ts()}] 🔁 heretic_url fast exact official: "
+                        f"'{url}' → '{matched_ev.get('url')}' "
+                        f"(title='{selected_title or ''}')",
+                        file=sys.stderr,
+                    )
+                return matched_ev.get("url")
+
+        capped_candidates: List[str] = []
         for cand in deduped_candidates:
+            cand_norm = self._normalize_url_for_match(cand)
+            if cand_norm and cand_norm in evaluated_norms:
+                continue
+            capped_candidates.append(cand)
+        eval_max = max(1, int(getattr(self, "heretic_url_eval_max", 8) or 8))
+        if len(capped_candidates) > eval_max:
+            print(
+                f"[{_ts()}] 🧯 heretic_url 후보 평가 cap: "
+                f"{len(capped_candidates)} -> {eval_max} "
+                f"(selected='{selected_title or ''}')",
+                file=sys.stderr,
+            )
+            capped_candidates = capped_candidates[:eval_max]
+
+        for cand in capped_candidates:
             ev = self._evaluate_heretic_url_candidate(
                 cand,
                 ctx=ctx,
@@ -24825,6 +24898,10 @@ OUTPUT JSON:
             None,
         )
         if current and float(current.get("score", 0.0)) + 0.75 >= float(best.get("score", 0.0)):
+            if current.get("title_evidence"):
+                ctx._heretic_official_url_lock_norm = current_norm
+                ctx._heretic_official_url_lock_url = url
+                ctx._heretic_official_url_lock_title_norm = self._normalize_match_text(selected_title or "")
             return url
 
         if current and best.get("url") != url:
@@ -24849,6 +24926,10 @@ OUTPUT JSON:
                 f"title_ev={best.get('title_evidence')}, author_ev={best.get('author_evidence')})",
                 file=sys.stderr,
             )
+        if best.get("title_evidence"):
+            ctx._heretic_official_url_lock_norm = self._normalize_url_for_match(best.get("url", ""))
+            ctx._heretic_official_url_lock_url = best.get("url")
+            ctx._heretic_official_url_lock_title_norm = self._normalize_match_text(selected_title or "")
         return best.get("url")
 
     @staticmethod
@@ -46212,6 +46293,118 @@ OUTPUT JSON:
         deduped.sort(key=_platform_priority)
         return deduped
 
+    def _heretic_url_lock_title_norms(self, ctx) -> set[str]:
+        titles: set[str] = set()
+
+        def _add(raw: Any) -> None:
+            norm = self._normalize_match_text(str(raw or ""))
+            if norm:
+                titles.add(norm)
+
+        for item in getattr(ctx, "suspected_titles", None) or []:
+            if isinstance(item, dict):
+                _add(item.get("title") or item.get("official_title"))
+
+        try:
+            arbiter_out = ctx.get_expert_output(ExpertType.ARBITER) or {}
+        except Exception:
+            arbiter_out = {}
+        final_decision = arbiter_out.get("final_decision") if isinstance(arbiter_out, dict) else {}
+        if isinstance(final_decision, dict):
+            _add(final_decision.get("official_title") or final_decision.get("official_novel_title"))
+
+        try:
+            verifier_out = ctx.get_expert_output(ExpertType.VERIFIER) or {}
+        except Exception:
+            verifier_out = {}
+        verification = verifier_out.get("verification_result") if isinstance(verifier_out, dict) else {}
+        novel_identity = verification.get("novel_identity") if isinstance(verification, dict) else {}
+        if isinstance(novel_identity, dict):
+            _add(novel_identity.get("official_title") or novel_identity.get("official_novel_title"))
+
+        return titles
+
+    def _maybe_lock_heretic_official_url_from_entry(
+        self,
+        ctx,
+        *,
+        url: str,
+        structured: Dict[str, Any],
+    ) -> None:
+        if not ctx or not self._is_novel_detail_url(url):
+            return
+        title_norms = self._heretic_url_lock_title_norms(ctx)
+        if not title_norms:
+            return
+        fetched_titles = [
+            structured.get("title"),
+            structured.get("page_title"),
+            structured.get("llm_identified_title"),
+        ]
+        for fetched in fetched_titles:
+            fetched_norm = self._normalize_match_text(
+                self._normalize_title_candidate(fetched) or str(fetched or "")
+            )
+            if not fetched_norm or fetched_norm not in title_norms:
+                continue
+            norm_url = self._normalize_url_for_match(url)
+            if not norm_url:
+                return
+            existing = str(getattr(ctx, "_heretic_official_url_lock_norm", "") or "")
+            if existing == norm_url:
+                return
+            if not existing:
+                ctx._heretic_official_url_lock_norm = norm_url
+                ctx._heretic_official_url_lock_url = url
+                ctx._heretic_official_url_lock_title_norm = fetched_norm
+                print(
+                    f"[{_ts()}] 🔒 heretic_url official fetch lock: "
+                    f"title='{fetched}' url='{url}'",
+                    file=sys.stderr,
+                )
+            return
+
+    def _should_skip_heretic_live_fetch_after_lock(self, ctx, url: str) -> bool:
+        if not ctx or not url:
+            return False
+        lock_norm = str(getattr(ctx, "_heretic_official_url_lock_norm", "") or "")
+        if not lock_norm:
+            return False
+        norm_url = self._normalize_url_for_match(url)
+        if not norm_url or norm_url == lock_norm:
+            return False
+        if not (self._is_novel_platform_url(url) and self._is_novel_detail_url(url)):
+            return False
+        print(
+            f"[{_ts()}] 🧯 heretic_url live fetch skip(official_lock): "
+            f"locked='{getattr(ctx, '_heretic_official_url_lock_url', '')}' candidate='{url}'",
+            file=sys.stderr,
+        )
+        return True
+
+    def _consume_heretic_live_fetch_budget(self, ctx, url: str) -> bool:
+        if not ctx:
+            return True
+        norm_url = self._normalize_url_for_match(url)
+        if not norm_url:
+            return False
+        seen = getattr(ctx, "_heretic_live_fetch_seen_norms", None)
+        if not isinstance(seen, set):
+            seen = set()
+            ctx._heretic_live_fetch_seen_norms = seen
+        if norm_url in seen:
+            return True
+        budget = max(1, int(getattr(self, "heretic_live_fetch_max_per_post", 6) or 6))
+        if len(seen) >= budget:
+            print(
+                f"[{_ts()}] 🧯 heretic_url live fetch budget cap: "
+                f"{len(seen)} >= {budget}, skip='{url}'",
+                file=sys.stderr,
+            )
+            return False
+        seen.add(norm_url)
+        return True
+
     @staticmethod
     def _normalize_url_for_match(url: str) -> str:
         return _normalize_url_for_match_cached(str(url or ""))
@@ -48830,6 +49023,12 @@ OUTPUT JSON:
         norm_url = self._normalize_url_for_match(url)
         if norm_url in self._heretic_fetch_cache:
             return self._heretic_fetch_cache.get(norm_url)
+        if self._should_skip_heretic_live_fetch_after_lock(ctx, url):
+            self._heretic_fetch_cache[norm_url] = None
+            return None
+        if not self._consume_heretic_live_fetch_budget(ctx, url):
+            self._heretic_fetch_cache[norm_url] = None
+            return None
 
         raw = self._fetch(url)
         if not isinstance(raw, dict):
@@ -48877,6 +49076,11 @@ OUTPUT JSON:
         _fetched_page_title = str(
             structured.get('page_title') or structured.get('title') or ''
         ).strip()
+        self._maybe_lock_heretic_official_url_from_entry(
+            ctx,
+            url=url,
+            structured=structured,
+        )
 
         # 🛡️ Phase41: LLM 기반 content_status 판정
         # 하드코딩만으로는 각 플랫폼의 삭제 페이지 구조를 모두 대응할 수 없음

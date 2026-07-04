@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260705-452 - 11708443 괴담출근 known-alias runtime closure
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/parent replay 미발주 | dispatch 반복 금지 |
+| stall 대응 | GO_TARGETED | Loop450/451 result/checkpoint 없음, Loop452 URL lock/budget 뒤 완료 | 같은 stalled 입력 반복 금지 |
+| runtime proof | GO / 1 of 1 | run `20260705_074842_463253`, `1/1/1/0/0` | 단건 근거로만 사용 |
+| publication contract | GO | row `1`, violation `0` | broader gate와 분리 |
+| search evidence | GO_ROW_LEVEL | include_search `true`, light_mode `false`, query/degraded/unrecovered `12/0/0` | broader search recovery는 P0 유지 |
+| expected-answer | GO_TARGETED | golden subset `PASS / 1 of 1`, `expected_title_resolved` | full375와 분리 |
+| queue delta | GO_QUEUE_DELTA_NOT_APPROVAL | source baseline residual `105 -> 102`, known-alias `3 -> 0` | approval로 승격 금지 |
+| 문서 동기화 | 완료 | Loop452 report/state/Data Analytics 갱신 | goal은 ACTIVE 유지 |
+
+Gate: targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_EXPECTED_TITLE_RESOLVED`, row-level search `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260705-449 - 11706827 기계공주 known-alias runtime closure
 
 | 항목 | 상태 | 근거 | 다음 |
