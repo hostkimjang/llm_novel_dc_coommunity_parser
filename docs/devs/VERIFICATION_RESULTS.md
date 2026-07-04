@@ -1,5 +1,48 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop411 golden18 title-led Series probe 런타임 검증
+
+- 범위: 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay 없이 golden18 단일 런만 실행해 row 생산성을 확인하고, Loop410 뒤 남은 `11668307` mixed-input alias 회귀를 일반 title-led Series probe로 검증한다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_411_REPORT_20260704.md`
+  - state `docs\devs\loop411_title_led_series_probe_runtime_20260704.json`
+  - Data Analytics artifact `docs\devs\loop411_golden18_runtime_data_analytics_artifact.json`, validate/render PASS
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop411_golden18_current_316a6148_title_led_series_probe_search_nonlight_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop411_golden18_current_316a6148_title_led_series_probe_search_nonlight_result_manifest.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop411_golden18_current_316a6148_title_led_series_probe_run_health.json`
+  - golden audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop411_golden18_current_316a6148_title_led_series_probe_golden_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop411_golden18_current_316a6148_title_led_series_probe_collateral_compare.json`
+  - publication convergence `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop411_golden18_current_316a6148_title_led_series_probe_publication_contract.json`
+- Code evidence:
+  - `src\llm_batch\experts\orchestrator.py`: title-led official detail probe에 generic `시리즈 {term} 작가` platform query를 추가.
+  - `src\llm_batch\experts\orchestrator.py`: Naver Series 계열 official detail result를 title-led rerank bonus에서 보존.
+  - `tests\test_title_lead_search_inferred_guard.py`: mixed-input 예산에서 Series author probe가 budget tail 전에 남는 계약 추가.
+  - R1 hardcoded cue/title list, `post_id` 예외, `빛세구` 전용 registry는 추가하지 않았다.
+- Verification commands:
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_evaluation_preserves_site_scoped_official_probe_under_recommendation_budget tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_mixed_input_injects_naver_series_author_probe_before_budget_tail tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_led_body_consumption_question_uses_search_alias_bridge` -> PASS, 3 tests
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard` -> PASS, 201 tests
+  - `.\\.venv312\\Scripts\\python.exe -m py_compile src\\llm_batch\\experts\\orchestrator.py src\\llm_batch\\agentic_pipeline.py expert_main.py` -> PASS
+  - `tools\audit_expert_run_health.py` on run `20260704_163610_473354` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=REVIEW`, publication contract `GO`
+  - `tools\audit_regression_safe_golden.py` -> expected-answer `NO-GO / 17 of 18`, collateral regression candidates `6`
+  - `tools\audit_publication_contract_convergence.py` -> `GO / 0 violations`
+- Runtime result:
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint/result rows `18/18`
+  - pending snapshot rows `0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `8/0`
+  - VLM/OCR semantic gate `READY`
+- Semantic result:
+  - `11668307`는 `빚을 져서라도 세상은 구해야 할 거 아니야`와 Naver Series URL `https://series.naver.com/novel/detail.series?productNo=13598334`로 회복했다.
+  - 실패는 `11698880`: expected `가챠 중독자의 퓨전펑크 생활`, actual `아카데미 생존 갤러리`.
+  - `11705245`는 expected-null hold를 유지했다.
+  - `11708445` OVERRIDE AUDIT는 Loop407 `ACCEPT / candidate_only_block_is_correct`로 유지한다.
+- Boundary:
+  - Runtime GO는 semantic approval이 아니다.
+  - Search evidence는 timeout/degraded 로그 때문에 `P0 / REVIEW`다.
+  - Full375 collateral은 `NOT_OPEN`이다.
+  - Collateral 105는 계속 `reclassified 74 / runtime-verified 4` 2축으로 보고한다.
+- Gate: runtime production `GO / 18 of 18`, code contract `GO_UNIT`, publication contract `GO / 0 violations`, expected-answer `NO-GO / 17 of 18`, golden shared collateral `NO-GO / 6`, full375 collateral `NOT_OPEN`, search recovery `P0 / REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop410 batch alias URL-only publish 계약 검증
 
 - 범위: 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay 없이 `11705245`의 batch alias + official URL-only publish leak를 shared final publication ledger에서 차단한다.

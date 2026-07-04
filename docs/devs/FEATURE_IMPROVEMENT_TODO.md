@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop411 golden18 title-led Series probe follow-up
+  - 상태: golden18 runtime `GO 18/18` / expected-answer `NO-GO 17/18` / golden shared collateral `NO-GO 6` / search recovery `P0_REVIEW_TIMEOUT_DEGRADED` / full375 `NOT_OPEN` / approval not open
+  - 적용: `11668307` mixed-input에서 `시리즈 빛세구 작가` official detail probe를 budget 안에 보존해 `빚을 져서라도 세상은 구해야 할 거 아니야`를 회복했다. R1 hardcoded cue/title list와 `post_id` 예외는 추가하지 않았다.
+  - 산출물: `docs/devs/loop_reports/LOOP_411_REPORT_20260704.md`, `docs/devs/loop411_title_led_series_probe_runtime_20260704.json`, `docs/devs/loop411_golden18_runtime_data_analytics_artifact.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop411_golden18_current_316a6148_title_led_series_probe_search_nonlight_result.json`.
+  - 완료 기준: `11698880` wrong title을 일반 술어/후보 보존으로 줄이고, search degraded `unrecovered=0` 및 full375 collateral gate를 별도 증명하기 전까지 approval과 hard-hold 완화를 열지 않는다.
+
 - [ ] Loop396-398 current-head golden18 stall / `11700470` single-row flush follow-up
   - 상태: current golden18 runtime `NO-GO_RUNTIME_STALL 17/18 completed, 12 flushed` / blocker `11700470` / targeted single row `GO_SINGLE_ROW_FLUSH` / golden18 after patch `NOT_PROVEN` / search recovery `P0_SEARCH_BLIND_CONDITIONAL` / full375 `NOT_OPEN` / approval not open
   - 적용: image/OCR scene HOLD에서 local title bridge 없는 late canonical rescue scan을 스킵한다. 검색 공식 후보와 non-promotable OCR 제목 조각만으로는 direct title support를 열지 않는다.

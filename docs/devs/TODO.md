@@ -1,5 +1,26 @@
 ﻿# Developer TODO Index
 
+## 2026-07-04 regression-safe grounding Loop411 TODO
+
+- 상태 업데이트: Loop411은 golden18 단일 search 포함 non-light 런으로 row 생산성 `18/18`을 재확인하고, Loop410 뒤 남은 `11668307` mixed-input alias 회귀를 generic Series platform probe로 회복한 회차다. 그러나 expected-answer는 `17/18`이라 goal은 완료가 아니다.
+- Loop411 TODO:
+  - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] golden18 runtime `20260704_163610_473354`에서 `18/18/18/0/0` row 생산을 확인했다.
+  - [x] search 포함 non-light health `include_search=true`, `light_mode=false`, ok/failure `8/0`를 확인했다.
+  - [x] R1 hardcoded cue/title 리스트와 `post_id` 예외를 추가하지 않았다.
+  - [x] title-led compact alias에 대해 `시리즈 {term} 작가` probe와 Naver Series rerank 보존 계약을 추가했다.
+  - [x] focused title-led `3`, title-lead guard 전체 `201`, py_compile을 PASS했다.
+  - [x] `11668307`은 `빚을 져서라도 세상은 구해야 할 거 아니야`로 runtime pass했다.
+  - [x] Data Analytics artifact `Loop411 Golden18 런타임 및 회귀 감사` validate/render PASS를 확인했다.
+  - [ ] Expected-answer는 `NO-GO / 17 of 18`로 유지한다. 남은 실패는 `11698880` wrong title이다.
+  - [ ] 다음 active lane은 `11698880` wrong publish를 R1 hardcoded cue 없이 일반 술어/후보 보존으로 줄인다.
+  - [ ] Search recovery는 timeout/degraded 때문에 `P0 / REVIEW`로 유지한다.
+  - [ ] Full375 collateral gate는 아직 열지 않는다.
+  - [x] `11708445` OVERRIDE AUDIT는 Loop407 closure로 유지하고 재등재하지 않는다.
+  - [x] Collateral 105는 `reclassified 74 / runtime-verified 4`로만 보고한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop410 TODO
 
 - 상태 업데이트: Loop410은 `11705245`의 batch alias + official URL-only publish leak를 final publication ledger 계약으로 차단한 회차다. 단건 runtime은 row를 냈지만 최종 패치 뒤 golden18 runtime replay는 하지 않았고, 저장 결과 projection은 `17/18`이다.

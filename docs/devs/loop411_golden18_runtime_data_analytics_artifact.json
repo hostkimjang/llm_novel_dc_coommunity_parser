@@ -1,0 +1,110 @@
+{
+  "title": "Loop411 Golden18 런타임 및 회귀 감사",
+  "status": "validate_render_pass",
+  "generated_at": "2026-07-04T17:08:00+09:00",
+  "surface": "report",
+  "datasets": {
+    "golden_status_rows": [
+      {
+        "status": "expected_null_respected",
+        "rows": 8
+      },
+      {
+        "status": "expected_title_resolved",
+        "rows": 4
+      },
+      {
+        "status": "expected_work_evidence_preserved_unresolved",
+        "rows": 4
+      },
+      {
+        "status": "expected_hypothesis_resolved_by_direct_image",
+        "rows": 1
+      },
+      {
+        "status": "wrong_or_unexpected_title",
+        "rows": 1
+      }
+    ],
+    "gate_status_rows": [
+      {
+        "gate": "runtime_completion",
+        "status": "GO",
+        "score": 1
+      },
+      {
+        "gate": "golden_semantic",
+        "status": "NO-GO",
+        "score": 0
+      },
+      {
+        "gate": "search_evidence",
+        "status": "REVIEW",
+        "score": 0
+      },
+      {
+        "gate": "publication_contract",
+        "status": "GO",
+        "score": 1
+      },
+      {
+        "gate": "full_scan_approval",
+        "status": "false",
+        "score": 0
+      }
+    ],
+    "key_rows": [
+      {
+        "post_id": 11668307,
+        "role": "title-led Series probe 회복",
+        "status": "safe_resolved",
+        "expected": "빚을 져서라도 세상은 구해야 할 거 아니야",
+        "actual": "빚을 져서라도 세상은 구해야 할 거 아니야"
+      },
+      {
+        "post_id": 11698880,
+        "role": "golden 실패 / safe-loss flip probe",
+        "status": "wrong_or_unexpected_title",
+        "expected": "가챠 중독자의 퓨전펑크 생활",
+        "actual": "아카데미 생존 갤러리"
+      },
+      {
+        "post_id": 11660237,
+        "role": "safe-loss flip probe",
+        "status": "expected_title_resolved",
+        "expected": "테라포밍",
+        "actual": "테라포밍"
+      },
+      {
+        "post_id": 11705245,
+        "role": "negative hold 확인",
+        "status": "expected_null_respected",
+        "expected": "공개 제목 없음",
+        "actual": "promotion_blocked"
+      },
+      {
+        "post_id": 11708445,
+        "role": "OVERRIDE AUDIT",
+        "status": "not_in_golden18",
+        "expected": "blind judge forced action",
+        "actual": "이번 runtime 입력 밖"
+      }
+    ]
+  },
+  "sources": [
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop411_golden18_current_316a6148_title_led_series_probe_search_nonlight_result.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop411_golden18_current_316a6148_title_led_series_probe_golden_audit.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop411_golden18_current_316a6148_title_led_series_probe_collateral_compare.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop411_golden18_current_316a6148_title_led_series_probe_run_health.json"
+  ],
+  "gate_summary": {
+    "runtime_production": "GO / 18 of 18",
+    "golden_expected_answer": "NO-GO / 17 of 18",
+    "golden_shared_collateral": "NO-GO / 6",
+    "search_recovery": "P0 / REVIEW",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

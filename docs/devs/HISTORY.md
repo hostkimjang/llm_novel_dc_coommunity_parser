@@ -1,5 +1,19 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop411 golden18 title-led Series probe runtime
+
+- 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop411 golden18 runtime run `20260704_163610_473354`는 input/completed/flushed/pending/failed `18/18/18/0/0`, checkpoint/result rows `18/18`, pending snapshot rows `0`, `large_run_complete=true`, `ordered_flush_blocked=false`로 row 생산성을 증명했다.
+- `src/llm_batch/experts/orchestrator.py`는 title-led compact alias에 대해 `시리즈 {term} 작가` platform query를 주입하고, Naver Series official detail result가 rerank budget에서 보존되도록 했다.
+- R1 hardcoded cue/title list, `post_id` 예외, `빛세구` 전용 registry는 추가하지 않았다.
+- `11668307`은 mixed-input golden18에서도 `시리즈 빛세구 작가` query가 살아남아 Naver Series URL `https://series.naver.com/novel/detail.series?productNo=13598334`와 `빚을 져서라도 세상은 구해야 할 거 아니야`로 safe_resolved됐다.
+- Golden expected-answer audit는 `NO-GO / 17 of 18`이다. 남은 실패는 `11698880`, expected `가챠 중독자의 퓨전펑크 생활`, actual `아카데미 생존 갤러리`다.
+- Golden shared collateral compare는 shared `18`, changed `17`, regression candidates `6`이다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, publication contract convergence `GO / violations 0`이지만 search evidence는 `REVIEW / search_timeout_observed + search_degraded_observed`다.
+- 검증은 focused title-led `3` PASS, title-lead guard 전체 `201` PASS, py_compile PASS, audit_expert_run_health PASS, audit_regression_safe_golden PASS, audit_publication_contract_convergence PASS, Data Analytics artifact validate/render PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_411_REPORT_20260704.md`, state는 `docs/devs/loop411_title_led_series_probe_runtime_20260704.json`, Data Analytics artifact는 `docs/devs/loop411_golden18_runtime_data_analytics_artifact.json`이다.
+- Gate는 runtime production `GO / 18 of 18`, code contract `GO_UNIT`, golden expected-answer `NO-GO / 17 of 18`, golden shared collateral `NO-GO / 6`, search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop410 batch alias URL-only publish 계약
 
 - 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

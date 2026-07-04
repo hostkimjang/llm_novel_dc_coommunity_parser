@@ -1,5 +1,33 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop411 golden18 title-led Series probe 체크
+
+- [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] watchdog/stall 우회가 실제 row를 내는지 golden18 단일 런으로 먼저 검증했다.
+  - run `20260704_163610_473354`
+  - input/completed/flushed/pending/failed `18/18/18/0/0`
+  - checkpoint/result rows `18/18`
+  - pending snapshot rows `0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `8/0`
+- [x] R1 hardcoded cue 리스트나 `post_id` 예외를 추가하지 않았다.
+- [x] title-led compact alias에 대해 generic `시리즈 {term} 작가` platform probe를 추가했다.
+- [x] Naver Series official detail result가 mixed-input rerank budget에서 보존되는 계약을 추가했다.
+- [x] 검증:
+  - focused title-led contract `3` PASS
+  - title-lead guard 전체 `201` PASS
+  - py_compile PASS
+  - health audit `flush_integrity=GO / clean_completed_source`
+  - publication contract `GO / 0 violations`
+  - Data Analytics artifact validate/render PASS
+- [x] `11668307`은 `빚을 져서라도 세상은 구해야 할 거 아니야`로 회복했다.
+- [ ] Golden expected-answer는 아직 `NO-GO / 17 of 18`이다. 남은 실패는 `11698880` wrong title이다.
+- [ ] Golden shared collateral은 `NO-GO / 6`이고 full375 collateral은 `NOT_OPEN`이다.
+- [ ] Search recovery는 timeout/degraded evidence 때문에 `P0 / REVIEW`로 유지한다.
+- [x] `11708445` OVERRIDE AUDIT는 Loop407 closure로 유지하고 재등재하지 않는다.
+- [x] Collateral 105는 `reclassified 74 / runtime-verified 4` 축으로 유지한다.
+- Gate: runtime production `GO / 18 of 18`, code contract `GO_UNIT`, publication contract `GO / 0 violations`, expected-answer `NO-GO / 17 of 18`, golden shared collateral `NO-GO / 6`, search recovery `P0 / REVIEW`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop410 batch alias URL-only publish 체크
 
 - [x] 신규 full375/bounded/N5 대형 런을 발주하지 않았다.

@@ -1,0 +1,125 @@
+{
+  "loop": 411,
+  "date": "2026-07-04",
+  "head": "316a6148",
+  "title": "golden18 title-led Series probe runtime",
+  "scope": {
+    "new_large_runs": "FROZEN",
+    "same_38_row_parent_packet_replay": "STOPPED",
+    "runtime_input": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl",
+    "runtime_rows": 18
+  },
+  "runtime": {
+    "run_id": "20260704_163610_473354",
+    "input_post_count": 18,
+    "completed_count": 18,
+    "flushed_count": 18,
+    "pending_count": 0,
+    "failed_count": 0,
+    "checkpoint_rows": 18,
+    "result_rows": 18,
+    "pending_snapshot_rows": 0,
+    "large_run_complete": true,
+    "ordered_flush_blocked": false,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_count": 8,
+    "mcp_health_failure_count": 0
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_411_REPORT_20260704.md",
+    "data_analytics_artifact": "docs/devs/loop411_golden18_runtime_data_analytics_artifact.json",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop411_golden18_current_316a6148_title_led_series_probe_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop411_golden18_current_316a6148_title_led_series_probe_search_nonlight_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop411_golden18_current_316a6148_title_led_series_probe_search_nonlight_result_checkpoint.jsonl",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop411_golden18_current_316a6148_title_led_series_probe_run_health.json",
+    "golden_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop411_golden18_current_316a6148_title_led_series_probe_golden_audit.json",
+    "collateral_compare": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop411_golden18_current_316a6148_title_led_series_probe_collateral_compare.json",
+    "publication_contract": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop411_golden18_current_316a6148_title_led_series_probe_publication_contract.json"
+  },
+  "code_change": {
+    "files": [
+      "src/llm_batch/experts/orchestrator.py",
+      "tests/test_title_lead_search_inferred_guard.py"
+    ],
+    "summary": "title-led compact alias probe에서 generic platform query `시리즈 {term} 작가`를 추가하고, Naver Series 계열을 official detail rerank에서 보존한다.",
+    "no_r1_hardcoded_cue_list_expansion": true,
+    "no_post_id_exception": true
+  },
+  "key_rows": [
+    {
+      "post_id": 11668307,
+      "status": "recovered",
+      "expected": "빚을 져서라도 세상은 구해야 할 거 아니야",
+      "actual": "빚을 져서라도 세상은 구해야 할 거 아니야",
+      "url": "https://series.naver.com/novel/detail.series?productNo=13598334"
+    },
+    {
+      "post_id": 11698880,
+      "status": "remaining_wrong_or_unexpected_title",
+      "expected": "가챠 중독자의 퓨전펑크 생활",
+      "actual": "아카데미 생존 갤러리"
+    },
+    {
+      "post_id": 11708445,
+      "status": "not_in_golden18_this_run",
+      "expected": "Loop407 override audit remains closed",
+      "actual": "ACCEPT / candidate_only_block_is_correct"
+    }
+  ],
+  "audit": {
+    "golden_expected_answer": {
+      "gate": "NO-GO",
+      "passed_count": 17,
+      "failed_count": 1,
+      "failed_post_ids": [
+        11698880
+      ]
+    },
+    "golden_shared_collateral": {
+      "gate": "NO-GO",
+      "shared_post_count": 18,
+      "changed_post_count": 17,
+      "collateral_regression_count": 6,
+      "regression_post_ids": [
+        11663521,
+        11685994,
+        11694019,
+        11698880,
+        11705231,
+        11713222
+      ]
+    },
+    "run_health": {
+      "flush_integrity": "GO / clean_completed_source",
+      "search_evidence": "REVIEW",
+      "search_blockers": [
+        "search_timeout_observed",
+        "search_degraded_observed"
+      ],
+      "publication_contract_convergence": "GO / 0 violations"
+    }
+  },
+  "verification": {
+    "unit_tests": [
+      "tests.test_title_lead_search_inferred_guard focused 3 PASS",
+      "tests.test_title_lead_search_inferred_guard 201 PASS"
+    ],
+    "compile": "py_compile orchestrator.py agentic_pipeline.py expert_main.py PASS",
+    "diff_check": "PASS with CRLF warnings only",
+    "data_analytics_artifact": "validate/render PASS"
+  },
+  "gates": {
+    "runtime_production": "GO / 18 of 18",
+    "code_contract": "GO_UNIT",
+    "publication_contract": "GO / 0 violations",
+    "golden_expected_answer": "NO-GO / 17 of 18",
+    "golden_shared_collateral": "NO-GO / 6",
+    "full375_collateral": "NOT_OPEN",
+    "search_recovery": "P0 / REVIEW / search_timeout_observed + search_degraded_observed",
+    "collateral_105": "reclassified 74 / runtime-verified 4",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}
