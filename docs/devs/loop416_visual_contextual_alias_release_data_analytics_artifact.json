@@ -1,0 +1,97 @@
+{
+  "title": "Loop416 11698897 visual contextual alias release 검산",
+  "status": "repo_structured_summary_only",
+  "generated_at": "2026-07-04T19:35:00+09:00",
+  "surface": "loop_report_support",
+  "datasets": {
+    "gate_status_rows": [
+      {
+        "gate": "targeted_runtime",
+        "status": "GO",
+        "detail": "1/1 completed and flushed",
+        "score": 1
+      },
+      {
+        "gate": "targeted_expected_answer",
+        "status": "GO_TARGETED_SAFE_RESOLVED",
+        "detail": "11698897 publishes 변방계에서 회귀자로 살아남기 / 382324",
+        "score": 1
+      },
+      {
+        "gate": "publication_contract",
+        "status": "GO",
+        "detail": "PromotionDecision, trace, ledger, serialized identity converge with 0 violations",
+        "score": 1
+      },
+      {
+        "gate": "search_recovery",
+        "status": "P0 / REVIEW",
+        "detail": "row-level search GO, broader search recovery still open",
+        "score": 0
+      },
+      {
+        "gate": "full375_collateral",
+        "status": "NOT_OPEN",
+        "detail": "single-row targeted runtime does not replace full375 collateral gate",
+        "score": 0
+      },
+      {
+        "gate": "full_scan_approval",
+        "status": "false",
+        "detail": "semantic_quality=REVIEW-LOCKED",
+        "score": 0
+      }
+    ],
+    "row_outcome_rows": [
+      {
+        "post_id": 11698897,
+        "expected": "[림월드]변방계에서 회귀자로 살아남기",
+        "runtime_public_title": "변방계에서 회귀자로 살아남기",
+        "runtime_public_url": "https://novelpia.com/novel/382324",
+        "runtime_status": "publish",
+        "safe_resolved": true,
+        "previous_loop414_status": "candidate_only",
+        "blocked_wrong_title": "쳇바퀴의 생쥐 사도가 되었다"
+      }
+    ],
+    "verification_rows": [
+      {
+        "check": "py_compile",
+        "status": "PASS",
+        "rows": 2
+      },
+      {
+        "check": "tests.test_title_lead_search_inferred_guard",
+        "status": "PASS",
+        "rows": 205
+      },
+      {
+        "check": "tests.test_promotion_gate_contract + tests.test_publication_contract_convergence_audit + tests.test_expert_main_comment_metadata",
+        "status": "PASS",
+        "rows": 89
+      },
+      {
+        "check": "health_audit",
+        "status": "GO",
+        "rows": 1
+      },
+      {
+        "check": "publication_contract",
+        "status": "GO",
+        "rows": 1
+      }
+    ]
+  },
+  "sources": [
+    "docs/devs/loop_reports/LOOP_416_REPORT_20260704.md",
+    "docs/devs/loop416_11698897_visual_contextual_alias_release_20260704.json",
+    "docs/devs/loop416_11698897_health_audit_20260704.json",
+    "docs/devs/loop416_11698897_publication_contract_audit_20260704.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop416_11698897_visual_contextual_alias_current_candidate_release_result.json"
+  ],
+  "gate": {
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

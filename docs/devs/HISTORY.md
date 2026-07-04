@@ -1,5 +1,18 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop416 11698897 visual contextual alias release
+
+- 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop414에서 `candidate_only`로 남은 `11698897`만 단건 search 포함 non-light로 실행했고, run `20260704_192247_496871`는 input/completed/flushed/pending/failed `1/1/1/0/0`, checkpoint/result rows `1/1`, `large_run_complete=true`, `ordered_flush_blocked=false`로 완료됐다.
+- MCP health는 `include_search=true`, `light_mode=false`, ok/failure `1/0`이고 row search health는 queries `12`, degraded `0`, unrecovered degraded `0`, status `ok`다.
+- `src/llm_batch/agentic_pipeline.py`는 title-led alias gate에서 existing visual/bracket official-detail release context를 활용해 shared alias competitor 중 current-work 후보를 선택한다.
+- R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 추가하지 않았다.
+- Runtime public identity는 `변방계에서 회귀자로 살아남기` / `https://novelpia.com/novel/382324`, `candidate_ledger_status=safe_resolved`, `safe_resolved=true`, `promotion_decision.status=publish`, `publish_allowed=true`다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, publication contract convergence는 `GO / 0 violations`다.
+- 검증은 py_compile PASS, `tests.test_title_lead_search_inferred_guard` `205` PASS, `tests.test_promotion_gate_contract tests.test_publication_contract_convergence_audit tests.test_expert_main_comment_metadata` `89` PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_416_REPORT_20260704.md`, state는 `docs/devs/loop416_11698897_visual_contextual_alias_release_20260704.json`, Data Analytics summary는 `docs/devs/loop416_visual_contextual_alias_release_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_SAFE_RESOLVED`, golden expected-answer `NOT_REFRESHED_AFTER_LOOP416 / inherited Loop413 16 of 18`, search recovery broader `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop414 11698897 contextual alias official-detail competition gate
 
 - 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

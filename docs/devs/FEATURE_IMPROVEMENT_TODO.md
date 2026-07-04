@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop416 11698897 visual contextual alias release follow-up
+  - 상태: targeted runtime `GO 1/1` / targeted expected-answer `GO_TARGETED_SAFE_RESOLVED` / publication contract `GO 0 violations` / search row-level `GO` / broader search recovery `P0_REVIEW` / golden expected-answer `NOT_REFRESHED inherited Loop413 16/18` / full375 `NOT_OPEN` / approval not open
+  - 적용: 기존 visual/bracket official-detail release context를 title-led shared alias candidate selection에 연결했다. `랫따싶` registry alias, R1 hardcoded cue/title list, `post_id` 예외, slang DB write-back은 없다.
+  - 산출물: `docs/devs/loop_reports/LOOP_416_REPORT_20260704.md`, `docs/devs/loop416_11698897_visual_contextual_alias_release_20260704.json`, `docs/devs/loop416_visual_contextual_alias_release_data_analytics_artifact.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop416_11698897_visual_contextual_alias_current_candidate_release_result.json`.
+  - 완료 기준: `11698880` positive unresolved 또는 survey 136-error anchor를 작은 단위로 줄이고, search degraded `unrecovered=0` 및 full375 collateral gate를 별도 증명하기 전까지 approval과 hard-hold 완화를 열지 않는다.
+
 - [ ] Loop413 runtime proof / OVERRIDE AUDIT / survey anchor follow-up
   - 상태: golden18 runtime `GO 18/18` / expected-answer `NO-GO 16/18` / golden shared collateral `NO-GO 9` / publication contract `GO 0 violations` / override audit `GO_ROW_CONTRACT_ONLY` / search recovery `P0_REVIEW_DEGRADED` / full375 `NOT_OPEN` / approval not open
   - 적용: 신규 대형 런 없이 current HEAD `d95f1a57` golden18 단일 search 포함 non-light 런으로 row 생산을 먼저 실증했다. 코드 변경과 R1 hardcoded cue/title list 확장은 없다.

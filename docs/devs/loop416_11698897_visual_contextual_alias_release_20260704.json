@@ -1,0 +1,114 @@
+{
+  "loop": 416,
+  "date": "2026-07-04",
+  "post_id": 11698897,
+  "status": "targeted_runtime_go_not_goal_complete",
+  "goal_state": "ACTIVE / NOT_COMPLETE",
+  "scope": {
+    "new_large_runs_launched": false,
+    "same_38_row_parent_packet_replayed": false,
+    "targeted_input_rows": 1,
+    "slang_db_write_back": false,
+    "r1_hardcoded_cue_list_expanded": false,
+    "post_id_exception_added": false
+  },
+  "runtime": {
+    "run_id": "20260704_192247_496871",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop414_11698897_contextual_alias_gate_input.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop416_11698897_visual_contextual_alias_current_candidate_release_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop416_11698897_visual_contextual_alias_current_candidate_release_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop416_11698897_visual_contextual_alias_current_candidate_release_result_checkpoint.jsonl",
+    "pending_snapshot": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop416_11698897_visual_contextual_alias_current_candidate_release_result_pending_snapshot.json",
+    "log": "logs/expert_run_20260704_192247_496871.log",
+    "counts": {
+      "input": 1,
+      "completed": 1,
+      "flushed": 1,
+      "pending": 0,
+      "failed": 0,
+      "checkpoint_rows": 1,
+      "result_rows": 1,
+      "large_run_complete": true,
+      "ordered_flush_blocked": false
+    },
+    "mcp_health": {
+      "include_search": true,
+      "light_mode": false,
+      "ok_count": 1,
+      "failure_count": 0
+    },
+    "row_search_health": {
+      "status": "ok",
+      "queries_issued": 12,
+      "degraded": 0,
+      "unrecovered_degraded": 0,
+      "direct_search_results": 18
+    },
+    "vlm_ocr": {
+      "ready": true,
+      "image_post_count": 1,
+      "fetch_success": 4,
+      "fetch_count": 4,
+      "bytes": 184284
+    }
+  },
+  "public_identity": {
+    "official_title": "변방계에서 회귀자로 살아남기",
+    "official_url": "https://novelpia.com/novel/382324",
+    "title_resolution_allowed": true,
+    "candidate_ledger_status": "safe_resolved",
+    "safe_resolved": true,
+    "promotion_blocked": false
+  },
+  "promotion_decision": {
+    "status": "publish",
+    "publish_allowed": true,
+    "scope_kind": "current_work",
+    "reason_codes": [
+      "official_title_exists",
+      "row_discusses_work_as_work",
+      "scope_current_work",
+      "title_led_consumption_bridge",
+      "title_acceptance_accept",
+      "official_detail_url",
+      "title_led_alias_contextual_official_detail_selected",
+      "official_detail_bracket_visual_release_context",
+      "serialized_public_identity_published",
+      "serialized_public_identity_shared_gate_restored",
+      "serialized_public_identity_gate_candidate_reconciled"
+    ],
+    "direct_bridge_sources": [
+      "title_led_consumption_bridge",
+      "title_abbrev_mentioned",
+      "official_detail_url",
+      "contextual_alias_official_detail_selected",
+      "official_detail_bracket_visual_release_context"
+    ]
+  },
+  "verification": {
+    "health_audit": "docs/devs/loop416_11698897_health_audit_20260704.json",
+    "publication_contract_audit_json": "docs/devs/loop416_11698897_publication_contract_audit_20260704.json",
+    "publication_contract_audit_md": "docs/devs/loop416_11698897_publication_contract_audit_20260704.md",
+    "publication_contract_gate": "GO",
+    "publication_contract_violations": 0,
+    "py_compile": "PASS",
+    "title_lead_guard_tests": "PASS / 205",
+    "promotion_publication_comment_bundle_tests": "PASS / 89"
+  },
+  "gates": {
+    "targeted_runtime": "GO / 1 of 1",
+    "targeted_expected_answer": "GO_TARGETED_SAFE_RESOLVED",
+    "golden_expected_answer": "NOT_REFRESHED_AFTER_LOOP416 / inherited Loop413 16 of 18",
+    "golden_shared_collateral": "NO-GO / inherited Loop413 9",
+    "full375_collateral": "NOT_OPEN",
+    "search_recovery": "P0 / REVIEW",
+    "collateral_105": "reclassified 74 / runtime-verified 4 / residual 105",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  },
+  "next": [
+    "11698880 positive unresolved 또는 survey 136-error anchor의 wrong_work 27 / recall_miss 49 중 작은 단위로 이동한다.",
+    "대형 dispatch와 동일 38-row parent packet replay는 계속 동결한다.",
+    "search degraded 100% 복구와 full375 collateral gate 전 hard-hold 완화 및 approval을 열지 않는다."
+  ]
+}

@@ -1,5 +1,26 @@
 ﻿# Development Checklist
 
+## 2026-07-04 Loop416 11698897 visual contextual alias release 체크
+
+- [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] `11698897` 단일 search 포함 non-light runtime이 실제 row를 냈다.
+  - run `20260704_192247_496871`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - checkpoint/result rows `1/1`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] existing visual/bracket official-detail context를 title-led shared alias candidate selection에 연결했다.
+- [x] `11698897` final public identity가 `변방계에서 회귀자로 살아남기` / `https://novelpia.com/novel/382324`로 safe_resolved됐다.
+- [x] health audit는 `flush_integrity=GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`다.
+- [x] 검증: py_compile PASS, title-lead guard `205` PASS, promotion/publication/comment bundle `89` PASS.
+- [ ] Golden expected-answer는 아직 refresh하지 않았다. Loop413 `16 of 18` 상속 상태이며 이번 단건이 golden/full375 approval을 대체하지 않는다.
+- [ ] Golden shared collateral은 `NO-GO / inherited Loop413 9`이고 full375 collateral은 `NOT_OPEN`이다.
+- [ ] Search recovery는 broader `P0 / REVIEW`로 유지한다. 단, 이번 row-level search는 `GO / degraded 0 / unrecovered 0`이다.
+- [ ] Hard-hold 완화와 full-scan approval은 열지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_SAFE_RESOLVED`, publication contract `GO / 0`, search recovery `P0 / REVIEW`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop414 11698897 contextual alias gate 체크
 
 - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.

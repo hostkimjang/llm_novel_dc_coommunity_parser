@@ -1,5 +1,44 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop416 11698897 visual contextual alias release 검증
+
+- 범위: 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay 없이 `11698897` 단일 row만 search 포함 non-light로 실행했다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_416_REPORT_20260704.md`
+  - state `docs\devs\loop416_11698897_visual_contextual_alias_release_20260704.json`
+  - Data Analytics summary `docs\devs\loop416_visual_contextual_alias_release_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop416_11698897_visual_contextual_alias_current_candidate_release_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop416_11698897_visual_contextual_alias_current_candidate_release_result_manifest.json`
+  - checkpoint `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop416_11698897_visual_contextual_alias_current_candidate_release_result_checkpoint.jsonl`
+  - health audit `docs\devs\loop416_11698897_health_audit_20260704.json`
+  - publication audit `docs\devs\loop416_11698897_publication_contract_audit_20260704.json`
+- Code evidence:
+  - `src\llm_batch\agentic_pipeline.py`: title-led alias gate가 visual/bracket official-detail context를 가진 후보를 `contextual_alias_official_detail_selected`로 선택하거나 current correct candidate competitor를 nonblocking으로 처리한다.
+  - `tests\test_title_lead_search_inferred_guard.py`: competitor 선택, context 없는 shared alias block, current-correct nonblocking 계약 추가.
+- Verification commands:
+  - `.\\.venv312\\Scripts\\python.exe -m py_compile src\\llm_batch\\agentic_pipeline.py tests\\test_title_lead_search_inferred_guard.py` -> PASS
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard` -> PASS, 205 tests
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_promotion_gate_contract tests.test_publication_contract_convergence_audit tests.test_expert_main_comment_metadata` -> PASS, 89 tests
+  - `tools\\audit_expert_run_health.py` on run `20260704_192247_496871` -> `flush_integrity=GO / clean_completed_source`, search evidence `GO`, publication contract `GO`
+  - `tools\\audit_publication_contract_convergence.py` -> `GO / 0 violations`
+- Runtime result:
+  - run `20260704_192247_496871`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - checkpoint/result rows `1/1`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - row search status `ok`, queries `12`, degraded `0`, unrecovered degraded `0`
+- Semantic result:
+  - Final public identity는 `official_title=변방계에서 회귀자로 살아남기`, `official_url=https://novelpia.com/novel/382324`다.
+  - `candidate_ledger_status=safe_resolved`, `safe_resolved=true`, `promotion_decision.status=publish`, `publish_allowed=true`, `scope_kind=current_work`다.
+  - Wrong candidate `쳇바퀴의 생쥐 사도가 되었다`는 public identity로 publish되지 않았다.
+- Boundary:
+  - 이번 결과는 `11698897` 단건 targeted closure다.
+  - Golden expected-answer는 아직 refresh하지 않았고 Loop413 `NO-GO / 16 of 18`을 상속한다.
+  - Search recovery는 row-level `GO`지만 broader `P0 / REVIEW`를 유지한다.
+  - Full375 collateral은 `NOT_OPEN`이고 collateral 105는 `reclassified 74 / runtime-verified 4 / residual 105`로 유지한다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_SAFE_RESOLVED`, publication contract `GO / 0`, search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop414 11698897 contextual alias gate 검증
 
 - 범위: 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay 없이 `11698897` 단일 row만 search 포함 non-light로 실행했다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.

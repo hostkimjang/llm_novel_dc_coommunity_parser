@@ -33427,7 +33427,82 @@ OUTPUT JSON:
         if unresolved_body_compound_anchor and not current_candidate_has_body_surface:
             scope_block_flags.append("unresolved_body_character_work_anchor")
             scope_block_flags.append("missing_body_work_bridge")
-        contextual_alias_competitors: List[str] = []
+        contextual_alias_competitors: List[Dict[str, Any]] = []
+        selected_contextual_alias_competitor: Dict[str, Any] = {}
+
+        def _contextual_alias_release_titles(candidate: str, url: str) -> List[str]:
+            release_titles = [str(candidate or "").strip()]
+            candidate_norm = self._normalize_match_text(candidate)
+            url_norm = self._normalize_url_for_match(url)
+            if not candidate_norm:
+                return [title for title in release_titles if title]
+            for sr in (getattr(ctx, "search_results", None) or [])[:80]:
+                if not isinstance(sr, dict):
+                    continue
+                sr_url = str(sr.get("url") or "").strip()
+                if not (
+                    sr_url
+                    and self._is_novel_platform_url(sr_url)
+                    and self._is_novel_detail_url(sr_url)
+                ):
+                    continue
+                sr_url_norm = self._normalize_url_for_match(sr_url)
+                if url_norm and sr_url_norm and sr_url_norm != url_norm:
+                    continue
+                raw_surfaces: List[str] = []
+                for key in ("title", "page_title"):
+                    raw_value = str(sr.get(key) or "").strip()
+                    if not raw_value:
+                        continue
+                    raw_surfaces.append(raw_value)
+                    if re.search(r"\s+-\s+|\s+\|\s+|\s+[:：]\s+", raw_value):
+                        raw_surfaces.extend(
+                            part.strip()
+                            for part in re.split(r"\s+-\s+|\s+\|\s+|\s+[:：]\s+", raw_value)
+                            if part and part.strip()
+                        )
+                for raw_surface in raw_surfaces:
+                    surface = re.sub(
+                        r"^(?:웹소설로\s*꿈꾸는\s*세상!?\s*-\s*|노벨피아\s*-\s*)",
+                        "",
+                        raw_surface,
+                        flags=re.IGNORECASE,
+                    ).strip()
+                    surface_norm = self._normalize_match_text(surface)
+                    if not surface_norm:
+                        continue
+                    if not (
+                        candidate_norm in surface_norm
+                        or self._source_title_matches_candidate(surface, candidate)
+                    ):
+                        continue
+                    if surface not in release_titles:
+                        release_titles.append(surface)
+            return [title for title in release_titles if title]
+
+        try:
+            cross_media_hold_for_title = self._official_url_recall_cross_media_title_body_hold(
+                ctx,
+                extended_identity=final_decision if isinstance(final_decision, dict) else {},
+                verification_result=verification_result if isinstance(verification_result, dict) else None,
+                final_decision=final_decision if isinstance(final_decision, dict) else None,
+            )
+        except Exception:
+            cross_media_hold_for_title = False
+        try:
+            current_title_visual_release_context = bool(
+                not cross_media_hold_for_title
+                and any(
+                    self._has_official_detail_bracket_visual_release_context(ctx, release_title)
+                    for release_title in _contextual_alias_release_titles(title, resolved_url)
+                )
+            )
+        except Exception:
+            current_title_visual_release_context = False
+        if current_title_visual_release_context:
+            if "official_detail_bracket_visual_release_context" not in direct_sources:
+                direct_sources.append("official_detail_bracket_visual_release_context")
+
         try:
             post_data = getattr(ctx, "post_data", None) or {}
             post_surface = str(post_data.get("normalized_title") or post_data.get("title") or "").strip()
@@ -33461,12 +33536,132 @@ OUTPUT JSON:
                 )
                 if same_title:
                     continue
-                contextual_alias_competitors.append(inferred_title)
-                if "title_led_alias_contextual_official_detail_competes" not in scope_block_flags:
-                    scope_block_flags.append("title_led_alias_contextual_official_detail_competes")
+                competitor_record = {
+                    "title": inferred_title,
+                    "url": inferred_url,
+                    "surface": str(surface or "").strip(),
+                    "alias": str(inferred.get("alias") or "").strip(),
+                    "release_titles": _contextual_alias_release_titles(inferred_title, inferred_url),
+                }
+                contextual_alias_competitors.append(competitor_record)
+                try:
+                    competitor_has_visual_release_context = any(
+                        self._has_official_detail_bracket_visual_release_context(ctx, release_title)
+                        for release_title in competitor_record.get("release_titles", [])
+                    )
+                except Exception:
+                    competitor_has_visual_release_context = False
+                try:
+                    cross_media_hold = self._official_url_recall_cross_media_title_body_hold(
+                        ctx,
+                        extended_identity=final_decision if isinstance(final_decision, dict) else {},
+                        verification_result=verification_result if isinstance(verification_result, dict) else None,
+                        final_decision=final_decision if isinstance(final_decision, dict) else None,
+                    )
+                except Exception:
+                    cross_media_hold = False
+                if (
+                    not scope_block_flags
+                    and competitor_has_visual_release_context
+                    and not current_title_visual_release_context
+                    and not cross_media_hold
+                ):
+                    selected_contextual_alias_competitor = competitor_record
+                elif not current_title_visual_release_context:
+                    if "title_led_alias_contextual_official_detail_competes" not in scope_block_flags:
+                        scope_block_flags.append("title_led_alias_contextual_official_detail_competes")
                 break
+            if not contextual_alias_competitors and alias_text:
+                alias_norm = self._normalize_match_text(alias_text)
+                for sr in (getattr(ctx, "search_results", None) or [])[:80]:
+                    if not isinstance(sr, dict):
+                        continue
+                    sr_url = str(sr.get("url") or "").strip()
+                    if not (
+                        alias_norm
+                        and sr_url
+                        and self._is_novel_platform_url(sr_url)
+                        and self._is_novel_detail_url(sr_url)
+                    ):
+                        continue
+                    sr_blob_norm = self._normalize_match_text(
+                        " ".join(
+                            str(sr.get(key) or "")
+                            for key in ("title", "page_title", "content", "snippet", "description", "query")
+                        )
+                    )
+                    if alias_norm not in sr_blob_norm:
+                        continue
+                    for inferred_title in self._search_result_candidate_titles_for_alias_inference(sr, alias_norm):
+                        inferred_title = str(inferred_title or "").strip()
+                        inferred_norm = self._normalize_match_text(inferred_title)
+                        if not inferred_title or not inferred_norm:
+                            continue
+                        same_title = bool(
+                            inferred_norm == title_norm
+                            or self._is_similar_title(inferred_title, title)
+                            or self._source_title_matches_candidate(inferred_title, title)
+                            or self._source_title_matches_candidate(title, inferred_title)
+                            or (
+                                min(len(inferred_norm), len(title_norm)) >= 4
+                                and (inferred_norm in title_norm or title_norm in inferred_norm)
+                            )
+                        )
+                        if same_title:
+                            continue
+                        competitor_record = {
+                            "title": inferred_title,
+                            "url": sr_url,
+                            "surface": alias_text,
+                            "alias": alias_norm,
+                            "release_titles": _contextual_alias_release_titles(inferred_title, sr_url),
+                        }
+                        contextual_alias_competitors.append(competitor_record)
+                        try:
+                            competitor_has_visual_release_context = any(
+                                self._has_official_detail_bracket_visual_release_context(ctx, release_title)
+                                for release_title in competitor_record.get("release_titles", [])
+                            )
+                        except Exception:
+                            competitor_has_visual_release_context = False
+                        try:
+                            cross_media_hold = self._official_url_recall_cross_media_title_body_hold(
+                                ctx,
+                                extended_identity=final_decision if isinstance(final_decision, dict) else {},
+                                verification_result=verification_result if isinstance(verification_result, dict) else None,
+                                final_decision=final_decision if isinstance(final_decision, dict) else None,
+                            )
+                        except Exception:
+                            cross_media_hold = False
+                        if (
+                            not scope_block_flags
+                            and competitor_has_visual_release_context
+                            and not current_title_visual_release_context
+                            and not cross_media_hold
+                        ):
+                            selected_contextual_alias_competitor = competitor_record
+                        elif not current_title_visual_release_context:
+                            if "title_led_alias_contextual_official_detail_competes" not in scope_block_flags:
+                                scope_block_flags.append("title_led_alias_contextual_official_detail_competes")
+                        break
+                    if contextual_alias_competitors:
+                        break
         except Exception:
             contextual_alias_competitors = []
+            selected_contextual_alias_competitor = {}
+
+        selected_title = str(selected_contextual_alias_competitor.get("title") or title).strip()
+        selected_url = str(selected_contextual_alias_competitor.get("url") or resolved_url).strip()
+        selected_contextual_alias_release = bool(selected_contextual_alias_competitor)
+        if selected_contextual_alias_release:
+            for source_name in (
+                "contextual_alias_official_detail_selected",
+                "official_detail_bracket_visual_release_context",
+            ):
+                if source_name not in direct_sources:
+                    direct_sources.append(source_name)
+        if selected_url and "official_detail_url" not in direct_sources:
+            direct_sources.append("official_detail_url")
 
         discussion_type = ""
         work_resolution = "resolved"
@@ -33481,16 +33676,16 @@ OUTPUT JSON:
                 or title_resolution_state
             )
 
-        official_exists = bool(resolved_url)
+        official_exists = bool(selected_url)
         if not official_exists:
             official_exists = bool(
-                self._has_official_title_evidence(ctx, title)
-                or self._official_detail_exact_title_urls_for_no_work_anchor(ctx, title)
+                self._has_official_title_evidence(ctx, selected_title)
+                or self._official_detail_exact_title_urls_for_no_work_anchor(ctx, selected_title)
             )
         state = GroundingState(
             post_id=getattr(ctx, "post_id", None),
-            candidate_title=title,
-            candidate_url=resolved_url,
+            candidate_title=selected_title,
+            candidate_url=selected_url,
             source=source,
             official_title_exists=official_exists,
             row_discusses_work_as_work=not scope_block_flags,
@@ -33499,9 +33694,21 @@ OUTPUT JSON:
             discussion_type=discussion_type or "review",
             scope=ScopeState(
                 scope_kind="context_only" if scope_block_flags else "current_work",
-                confidence="medium" if scope_block_flags else ("high" if resolved_url else "medium"),
+                confidence="medium" if scope_block_flags else ("high" if selected_url else "medium"),
                 direct_bridge_sources=direct_sources,
-                competing_candidates=list(dict.fromkeys([*competing_verified_body_titles, *contextual_alias_competitors])),
+                competing_candidates=list(
+                    dict.fromkeys(
+                        [
+                            *competing_verified_body_titles,
+                            *(
+                                str(item.get("title") or "").strip()
+                                for item in contextual_alias_competitors
+                                if not selected_contextual_alias_release
+                                and not current_title_visual_release_context
+                            ),
+                        ]
+                    )
+                ),
                 conflict_reason_codes=scope_block_flags,
             ),
         )
@@ -33509,7 +33716,7 @@ OUTPUT JSON:
             EvidenceRecord(
                 kind="title_led_consumption",
                 strength="strong",
-                source_path_or_snippet=alias_text or title,
+                source_path_or_snippet=alias_text or selected_title,
                 supports_publish=True,
                 reason_code="title_led_consumption_bridge",
             ),
@@ -33531,24 +33738,58 @@ OUTPUT JSON:
                     reason_code="alias_bridge",
                 )
             )
-        if resolved_url:
+        if selected_url:
             evidence.append(
                 EvidenceRecord(
                     kind="official_detail_url",
                     strength="strong",
-                    source_path_or_snippet=resolved_url,
+                    source_path_or_snippet=selected_url,
                     supports_publish=False,
                     reason_code="official_detail_url",
                 )
             )
         for competitor in contextual_alias_competitors:
+            competitor_title = str(competitor.get("title") or "").strip()
+            competitor_url = str(competitor.get("url") or "").strip()
+            is_selected_competitor = bool(
+                selected_contextual_alias_release
+                and competitor_title
+                and self._normalize_match_text(competitor_title) == self._normalize_match_text(selected_title)
+                and (not competitor_url or not selected_url or competitor_url == selected_url)
+            )
             evidence.append(
                 EvidenceRecord(
-                    kind="contextual_alias_official_detail_competition",
+                    kind=(
+                        "contextual_alias_official_detail_selected"
+                        if is_selected_competitor
+                        else (
+                            "contextual_alias_official_detail_nonblocking_competition"
+                            if current_title_visual_release_context
+                            else "contextual_alias_official_detail_competition"
+                        )
+                    ),
                     strength="strong",
-                    source_path_or_snippet=competitor,
-                    supports_publish=False,
-                    reason_code="title_led_alias_contextual_official_detail_competes",
+                    source_path_or_snippet=competitor_title,
+                    supports_publish=is_selected_competitor,
+                    reason_code=(
+                        "title_led_alias_contextual_official_detail_selected"
+                        if is_selected_competitor
+                        else (
+                            "title_led_alias_contextual_official_detail_nonblocking_competition"
+                            if current_title_visual_release_context
+                            else "title_led_alias_contextual_official_detail_competes"
+                        )
+                    ),
+                )
+            )
+        if selected_contextual_alias_release or current_title_visual_release_context:
+            evidence.append(
+                EvidenceRecord(
+                    kind="official_detail_bracket_visual_release_context",
+                    strength="strong",
+                    source_path_or_snippet=selected_title,
+                    supports_publish=True,
+                    reason_code="official_detail_bracket_visual_release_context",
                 )
             )
         return self._record_public_title_gate_decision(
