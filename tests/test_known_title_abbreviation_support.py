@@ -832,6 +832,95 @@ class KnownTitleAbbreviationSupportTest(unittest.TestCase):
         finally:
             agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = original_registry
 
+    def test_in_universe_gallery_community_homage_is_work_bridge_with_explicit_alias(self):
+        pipeline = _build_pipeline()
+        original_registry = agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS
+        try:
+            agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = {"아생갤": "아카데미 생존 갤러리"}
+            title = "아카데미 생존 갤러리"
+            ctx = ConversationContext(
+                post_id=99000001,
+                post_data={
+                    "post_id": 99000001,
+                    "title": "아생갤 작중 갤질 설정 개웃기네",
+                    "normalized_title": "아생갤 작중 갤질 설정 개웃기네",
+                    "content_blocks": [
+                        {"type": "text", "text": "주인공이 작품 안 커뮤니티에 글 올리는 장면이 진짜 갤러리 오마주 같음"},
+                        {"type": "text", "text": "라나 반응까지 댓글식으로 엮어버린 게 요즘 웹소설 시대상 반영 같더라"},
+                    ],
+                },
+                comments=["현실 갤 얘기가 아니라 작중 커뮤니티 설정 말하는 거지"],
+            )
+            ctx.uncertainty_sources.append("intent_permit_for_title_search=false(semantic_seed_review_not_specific_work)")
+            ctx.set_expert_output(
+                ExpertType.GATEKEEPER,
+                {
+                    "post_type": "community_banter",
+                    "detected_entities": {
+                        "possible_titles": ["아생갤"],
+                        "possible_characters": ["라나"],
+                    },
+                    "context_clues": {},
+                },
+            )
+            ctx.set_expert_output(
+                ExpertType.DISCOURSE,
+                {
+                    "discourse_analysis": {
+                        "primary_domain": "novel_literature",
+                        "intent": "community_banter",
+                        "title_novel_terms": ["아생갤"],
+                        "semantic_seed_review": {"is_specific_work_discussion": False},
+                    }
+                },
+            )
+            verification_result = {
+                "is_relevant": True,
+                "novel_identity": {
+                    "official_novel_title": title,
+                    "confidence": "High",
+                    "evidence_type": "community_alias_bridge",
+                },
+                "grounding_check": {
+                    "anchor_found": "title_mention",
+                    "matched_alias": "아생갤",
+                    "title_abbrev_mentioned": True,
+                },
+                "relation_judgment": {
+                    "relation_type": "explicit_alias",
+                    "discussion_target": "specific_work",
+                    "promotion_decision": "allow",
+                    "confidence": "high",
+                    "evidence_summary": {
+                        "community_post_count": 4,
+                        "explicit_alias_bridge_count": 1,
+                    },
+                    "search_support_summary": {
+                        "community_alias_support_count": 8,
+                        "explicit_alias_bridge_count": 1,
+                    },
+                },
+            }
+            ctx.set_expert_output(ExpertType.VERIFIER, {"verification_result": verification_result})
+
+            self.assertTrue(
+                pipeline._known_title_abbreviation_fictional_gallery_homage_bridge_context(
+                    ctx,
+                    title,
+                    verification_result=verification_result,
+                )
+            )
+            self.assertTrue(pipeline._has_curated_alias_contextual_work_anchor(ctx, title))
+            self.assertTrue(
+                pipeline._post_discusses_work_as_work(
+                    ctx,
+                    title,
+                    source="known_abbreviation_title_guard:known_title_abbrev",
+                )
+            )
+        finally:
+            agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = original_registry
+
     def test_update_question_known_title_abbreviation_survives_semantic_no_work_without_search(self):
         pipeline = _build_pipeline()
         ctx = ConversationContext(

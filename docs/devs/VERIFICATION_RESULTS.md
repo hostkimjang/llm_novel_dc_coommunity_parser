@@ -1,5 +1,19 @@
 # Verification Results
 
+## 2026-07-05 아생갤 작중 갤러리 오마주 계약 검증
+
+- 범위: `아생갤`을 현실 갤러리명으로 단정하지 않고, 웹소설 `아카데미 생존 갤러리`의 작중 갤러리/커뮤니티 오마주형 제목 약어로 인정할 수 있는 shared predicate 계약을 확인했다.
+- 코드: `src/llm_batch/agentic_pipeline.py`의 `_has_curated_alias_contextual_work_anchor(...)`가 Arbiter의 gallery-homage bridge와 같이 explicit alias bridge를 직접 인정하도록 맞췄다.
+- 테스트: `tests/test_known_title_abbreviation_support.py`에 작중 갤러리/댓글식 커뮤니티 오마주 표면 회귀 테스트를 추가했다.
+- 검증:
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py src\llm_batch\experts\arbiter.py` PASS
+  - `.venv312\Scripts\python.exe -m unittest tests.test_known_title_abbreviation_support` PASS, `35` tests
+  - `.venv312\Scripts\python.exe -m unittest tests.test_arbiter_curated_alias_guard` PASS, `24` tests
+  - `.venv312\Scripts\python.exe -m unittest tests.test_regression_safe_work_bridge_contract` PASS, `3` tests
+  - `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard` PASS, `213` tests
+- 금지 준수: R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- Gate: code contract `GO_UNIT`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop439-441 아생갤 alias bridge 검증
 
 - 범위: Loop439 golden18 stall, Loop440 `11694035` 과차단, Loop441 targeted recovery, Arbiter/pipeline bridge 계약을 검증했다. 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 새로 발주하지 않았다.

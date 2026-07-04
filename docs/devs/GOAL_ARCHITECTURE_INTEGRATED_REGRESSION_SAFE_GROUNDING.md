@@ -6,6 +6,18 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+도메인 규칙: `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명으로 단정하지 않는다. 웹소설 안에서 갤러리/댓글식 커뮤니티를 오마주한 작품 제목일 수 있으므로, known abbreviation + explicit alias relation + specific-work target + community support가 있으면 shared work-bridge로 통과시키되, 경쟁 본문 작품 근거가 있으면 publish를 막는다.
+
+## 2026-07-05 아생갤 작중 갤러리 오마주 Addendum
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. 사용자 도메인 보정을 코드 계약으로 재확인한 follow-up이며 approval 회차가 아니다.
+- Evidence: `src/llm_batch/agentic_pipeline.py`, `tests/test_known_title_abbreviation_support.py`, checklist `docs/devs/CHECKLIST.md`, slang note `docs/slang_db_improvement_todo.md`.
+- Code: `_has_curated_alias_contextual_work_anchor(...)`의 final return을 Arbiter 계약과 맞춰 `gallery_homage_bridge_anchor`가 참이면 `community_banter` seed에도 work bridge가 닫히지 않게 했다. 이 bridge 자체는 verifier explicit alias proof와 community support를 요구한다.
+- Test: 작중 갤러리/댓글식 커뮤니티 오마주 표면 테스트를 추가했다. Verification은 `py_compile` PASS, known-title abbreviation `35` PASS, Arbiter curated alias guard `24` PASS, work-bridge `3` PASS, title-led guard `213` PASS다.
+- Boundary: R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다. Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다.
+- Gate: code contract `GO_UNIT`, search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Next: 이 계약은 Loop439-441 `11694035` 도메인 보정의 술어 정렬이다. 다음 active lane은 Loop439 missing `11663521`/`11700470` 또는 residual queue를 작은 단위로 분리한다.
+
 ## 2026-07-05 Loop435-436 Addendum - runtime proof and gallery-title contract
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop436은 runtime 생산성과 label-corrected golden expected-answer를 갱신했지만 approval 회차가 아니다.

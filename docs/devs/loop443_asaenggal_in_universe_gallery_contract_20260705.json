@@ -1,0 +1,70 @@
+{
+  "loop": 443,
+  "date": "2026-07-05",
+  "title": "아생갤 작중 갤러리 오마주 계약 정렬",
+  "goal_status": "ACTIVE_NOT_COMPLETE",
+  "status": "CODE_CONTRACT_GO_UNIT_NOT_APPROVAL",
+  "domain_rule": {
+    "alias": "아생갤",
+    "official_title": "아카데미 생존 갤러리",
+    "meaning": "현실 DC 갤러리명이 아니라 웹소설 안의 갤러리/커뮤니티 오마주형 제목 약어일 수 있다.",
+    "publish_boundary": "explicit alias relation, specific_work target, allow/promote/publish decision, community support, and no competing verified body work"
+  },
+  "code_changes": [
+    {
+      "path": "src/llm_batch/agentic_pipeline.py",
+      "symbol": "_has_curated_alias_contextual_work_anchor",
+      "change": "gallery_homage_bridge_anchor가 참이면 Arbiter와 같이 direct work bridge로 인정하도록 final return을 정렬"
+    }
+  ],
+  "tests_added": [
+    {
+      "path": "tests/test_known_title_abbreviation_support.py",
+      "name": "test_in_universe_gallery_community_homage_is_work_bridge_with_explicit_alias",
+      "purpose": "작중 갤러리/댓글식 커뮤니티 오마주 표면이 explicit alias bridge로만 통과하는지 고정"
+    }
+  ],
+  "verification": [
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m py_compile src\\llm_batch\\agentic_pipeline.py src\\llm_batch\\experts\\arbiter.py",
+      "status": "PASS"
+    },
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_known_title_abbreviation_support",
+      "status": "PASS",
+      "tests": 35
+    },
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_arbiter_curated_alias_guard",
+      "status": "PASS",
+      "tests": 24
+    },
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_regression_safe_work_bridge_contract",
+      "status": "PASS",
+      "tests": 3
+    },
+    {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard",
+      "status": "PASS",
+      "tests": 213
+    }
+  ],
+  "gates": {
+    "code_contract": "GO_UNIT",
+    "runtime_replay_after_patch": "NOT_RUN_AFTER_PATCH",
+    "targeted_canary_status": "NOT_RUN_AFTER_PATCH",
+    "broader_search_recovery": "P0_REVIEW",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW_LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE_NOT_COMPLETE"
+  },
+  "forbidden_changes": {
+    "r1_hardcoded_cue_or_title_list": false,
+    "post_id_exception": false,
+    "work_specific_registry": false,
+    "slang_db_write_back": false
+  },
+  "next": "Loop439 missing 11663521/11700470 또는 residual queue를 작은 단위 runtime으로 분리"
+}

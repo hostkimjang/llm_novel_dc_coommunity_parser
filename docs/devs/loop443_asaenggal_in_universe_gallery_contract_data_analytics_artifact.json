@@ -1,0 +1,56 @@
+{
+  "artifact": "Loop443 Asaenggal In-Universe Gallery Homage Contract",
+  "date": "2026-07-05",
+  "summary": {
+    "changed_files": 12,
+    "code_files": 1,
+    "test_files": 1,
+    "doc_files": 10,
+    "runtime_rows": 0,
+    "runtime_status": "NOT_RUN_AFTER_PATCH"
+  },
+  "before_after": {
+    "before": {
+      "new_contract_test": "FAIL",
+      "pipeline_curated_alias_bridge": "explicit alias bridge could still be blocked by community_banter seed",
+      "arbiter_pipeline_alignment": "mismatch"
+    },
+    "after": {
+      "new_contract_test": "PASS",
+      "pipeline_curated_alias_bridge": "gallery_homage_bridge_anchor directly releases shared work bridge",
+      "arbiter_pipeline_alignment": "aligned"
+    }
+  },
+  "verification_counts": {
+    "known_title_abbreviation_support": 35,
+    "arbiter_curated_alias_guard": 24,
+    "regression_safe_work_bridge_contract": 3,
+    "title_lead_search_inferred_guard": 213
+  },
+  "gate_table": [
+    {
+      "gate": "code_contract",
+      "status": "GO_UNIT"
+    },
+    {
+      "gate": "runtime_replay_after_patch",
+      "status": "NOT_RUN_AFTER_PATCH"
+    },
+    {
+      "gate": "search_recovery",
+      "status": "P0_REVIEW"
+    },
+    {
+      "gate": "full375_collateral",
+      "status": "NOT_OPEN"
+    },
+    {
+      "gate": "semantic_quality",
+      "status": "REVIEW_LOCKED"
+    },
+    {
+      "gate": "full_scan_approval",
+      "status": "false"
+    }
+  ]
+}

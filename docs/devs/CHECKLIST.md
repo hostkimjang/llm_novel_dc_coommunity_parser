@@ -1,5 +1,16 @@
 # Development Checklist
 
+## 2026-07-05 아생갤 작중 갤러리 오마주 계약 체크
+
+- [x] 사용자 도메인 보정을 반영했다: `아생갤`은 현실 DC 갤러리명이 아니라 웹소설 `아카데미 생존 갤러리`의 작중 갤러리/커뮤니티 오마주형 제목 약어일 수 있다.
+- [x] `community_banter` 분류만으로 갤러리형 제목을 닫지 않는다. 단, `explicit_alias` / `specific_work` / `allow|promote|publish` 관계와 community alias support가 있는 경우에만 work bridge로 통과한다.
+- [x] `src/llm_batch/agentic_pipeline.py`의 `_has_curated_alias_contextual_work_anchor(...)`를 Arbiter 쪽 gallery-homage bridge 계약과 맞췄다.
+- [x] `tests/test_known_title_abbreviation_support.py`에 작중 갤러리/댓글식 커뮤니티 오마주 표면 회귀 테스트를 추가했다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] Verification: `py_compile` PASS, known-title abbreviation `35` PASS, Arbiter curated alias guard `24` PASS, work-bridge contract `3` PASS, title-lead search inferred guard `213` PASS.
+- [ ] Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다. Unit/contract PASS를 golden/full375 approval로 승격하지 않는다.
+- Gate: code contract `GO_UNIT`, targeted runtime `NOT_RUN_AFTER_PATCH`, broader search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop439-441 아생갤 alias bridge 체크
 
 - [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 새로 발주하지 않았다.

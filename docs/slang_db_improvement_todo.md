@@ -1,5 +1,14 @@
 # Slang DB Improvement TODO
 
+## 2026-07-05 아생갤 작중 갤러리 오마주 slang 주의사항
+
+- [x] `아생갤 -> 아카데미 생존 갤러리`를 새 slang DB write-back이나 작품 전용 registry 추가로 처리하지 않았다.
+- [x] `갤러리` 표면을 현실 커뮤니티로만 단정하지 않는다. 작중 갤러리/댓글식 커뮤니티 오마주가 작품 제목 자체인 경우가 있다.
+- [x] 허용 조건은 shared predicate로 유지한다: post title의 known abbreviation, verifier의 explicit alias relation, `specific_work` target, alias bridge/community support, competing verified body work 부재.
+- [x] 관련 계약 검증은 known-title abbreviation `35`, Arbiter curated alias guard `24`, work-bridge `3`, title-led guard `213` PASS다.
+- [ ] Search recovery와 full375 collateral 전까지 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, search recovery broader `P0 / REVIEW`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop439-441 gallery-homage alias bridge slang 주의사항
 
 - [x] 이번 회차는 slang DB write-back이 아니라 Arbiter/pipeline bridge 술어 수렴이다.

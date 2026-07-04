@@ -25900,12 +25900,15 @@ OUTPUT JSON:
         )
         has_entity_cue = bool(possible_titles or (possible_characters and body_text.strip()))
         return bool(
-            has_positive_semantic_cue
-            and (
-                has_episode_or_serial_cue
-                or has_entity_cue
-                or official_detail_alias_title_anchor
-                or gallery_homage_bridge_anchor
+            gallery_homage_bridge_anchor
+            or (
+                has_positive_semantic_cue
+                and (
+                    has_episode_or_serial_cue
+                    or has_entity_cue
+                    or official_detail_alias_title_anchor
+                    or gallery_homage_bridge_anchor
+                )
             )
         )
 

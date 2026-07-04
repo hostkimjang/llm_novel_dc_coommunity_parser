@@ -1,5 +1,16 @@
 # Improvement Register
 
+## IMP-20260705-443 - 아생갤 작중 갤러리 오마주 계약 정렬
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| 도메인 보정 | 반영 | `아생갤`은 현실 DC 갤러리명이 아니라 웹소설 `아카데미 생존 갤러리`의 작중 갤러리/커뮤니티 오마주형 제목 약어 가능 | 현실 갤러리명 단정 금지 |
+| shared predicate | GO_UNIT | pipeline `_has_curated_alias_contextual_work_anchor(...)` final return을 Arbiter gallery-homage bridge 계약과 정렬 | runtime replay 전 approval 금지 |
+| 회귀 테스트 | PASS | 작중 갤러리/댓글식 커뮤니티 오마주 표면 테스트 추가 | broader residual queue로 복귀 |
+| 검증 | PASS | `py_compile`, known-title abbreviation `35`, Arbiter `24`, work-bridge `3`, title-led guard `213` | full375 collateral은 별도 |
+
+Gate: code contract `GO_UNIT`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260705-442 - 11698897 frontier runtime probe
 
 | 항목 | 상태 | 근거 | 다음 조치 |
