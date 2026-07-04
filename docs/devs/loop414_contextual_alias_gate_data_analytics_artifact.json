@@ -1,0 +1,95 @@
+{
+  "title": "Loop414 11698897 contextual alias gate 검산",
+  "status": "repo_structured_summary_only",
+  "generated_at": "2026-07-04T18:58:00+09:00",
+  "surface": "loop_report_support",
+  "datasets": {
+    "gate_status_rows": [
+      {
+        "gate": "targeted_runtime",
+        "status": "GO",
+        "detail": "1/1 completed and flushed",
+        "score": 1
+      },
+      {
+        "gate": "wrong_public_publish_closure",
+        "status": "GO_TARGETED",
+        "detail": "쳇바퀴의 생쥐 사도가 되었다 public publish blocked",
+        "score": 1
+      },
+      {
+        "gate": "candidate_preservation_trace",
+        "status": "GO_CODE_AND_PROJECTION",
+        "detail": "projection preserves 변방계에서 회귀자로 살아남기 as promotion_gate_competing_candidate",
+        "score": 1
+      },
+      {
+        "gate": "golden_expected_answer",
+        "status": "NO-GO",
+        "detail": "inherited Loop413 16/18; 11698897 remains unresolved, not safe_resolved",
+        "score": 0
+      },
+      {
+        "gate": "search_recovery",
+        "status": "P0 / REVIEW",
+        "detail": "row-level search GO, broader search recovery still open",
+        "score": 0
+      },
+      {
+        "gate": "full_scan_approval",
+        "status": "false",
+        "detail": "semantic_quality=REVIEW-LOCKED",
+        "score": 0
+      }
+    ],
+    "row_outcome_rows": [
+      {
+        "post_id": 11698897,
+        "expected": "[림월드]변방계에서 회귀자로 살아남기",
+        "runtime_public_title": null,
+        "runtime_status": "candidate_only",
+        "safe_resolved": false,
+        "blocked_wrong_title": "쳇바퀴의 생쥐 사도가 되었다",
+        "projected_preserved_candidate": "변방계에서 회귀자로 살아남기"
+      }
+    ],
+    "verification_rows": [
+      {
+        "check": "py_compile",
+        "status": "PASS",
+        "rows": 4
+      },
+      {
+        "check": "tests.test_expert_main_comment_metadata",
+        "status": "PASS",
+        "rows": 64
+      },
+      {
+        "check": "tests.test_title_lead_search_inferred_guard",
+        "status": "PASS",
+        "rows": 203
+      },
+      {
+        "check": "publication_contract_runtime",
+        "status": "GO",
+        "rows": 1
+      },
+      {
+        "check": "publication_contract_projected",
+        "status": "GO",
+        "rows": 1
+      }
+    ]
+  },
+  "sources": [
+    "docs/devs/loop414_11698897_contextual_alias_gate_20260704.json",
+    "docs/devs/loop414_11698897_health_audit_20260704.json",
+    "docs/devs/loop414_11698897_trace_projection_20260704.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop414_11698897_contextual_alias_gate_result.json"
+  ],
+  "gate": {
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

@@ -1,5 +1,14 @@
 # Slang DB Improvement TODO
 
+## 2026-07-04 Loop414 contextual alias gate slang 주의사항
+
+- [x] 이번 회차는 slang DB write-back이 아니라 shared title-led alias/publication contract 보정이다.
+- [x] `랫따싶`을 registry alias로 추가하거나 R1 hardcoded cue/title 리스트를 늘리지 않았다.
+- [x] shared alias가 복수 official detail 후보를 만들 때 `title_led_alias_contextual_official_detail_competes` conflict로 public publish를 막았다.
+- [x] Wrong candidate `쳇바퀴의 생쥐 사도가 되었다`는 public output에서 제거됐고, current-code projection은 `변방계에서 회귀자로 살아남기` 후보를 보존한다.
+- [ ] Correct candidate가 current-work로 안전 확정되기 전 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, targeted runtime `GO / 1 of 1`, wrong publish closure `GO_TARGETED`, expected-answer `NO-GO / inherited Loop413 16 of 18`, search recovery broader `P0 / REVIEW`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop410 batch alias URL-only slang 주의사항
 
 - [x] 이번 회차는 slang DB write-back이 아니라 shared final publication contract 보정이다.

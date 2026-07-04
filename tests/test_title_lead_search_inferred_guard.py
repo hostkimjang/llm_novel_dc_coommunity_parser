@@ -5272,6 +5272,108 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertEqual(hit["title"], "변방계에서 회귀자로 살아남기")
         self.assertEqual(hit["matched_url"], "https://novelpia.com/novel/382324")
 
+    def test_title_led_gate_blocks_shared_alias_when_search_context_prefers_other_official_detail(self):
+        pipeline = build_pipeline()
+        wrong_title = "쳇바퀴의 생쥐 사도가 되었다"
+        wrong_url = "https://novelpia.com/novel/406113"
+        correct_title = "[림월드]변방계에서 회귀자로 살아남기"
+        correct_url = "https://novelpia.com/novel/382324"
+        post = PostInput(
+            post_id=11698897,
+            title="랫따싶 림월드 요소 생각나게 하는거 좋네에...",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="image", url="https://example.test/rimworld.png"),
+                ContentBlock(type="text", text="게임적 요소 있는거 아주 굿"),
+            ],
+            comments=["랫따싶 이거 참 잘쓴 패러디야"],
+        )
+        post_data = pipeline._post_to_dict(post)
+        post_data["image_enrichment"] = [
+            {
+                "ocr_text": "림월드 최대의 적폐 건물, 기지가치 대비 살상력 GOAT. 목발 제작 스킬이 늘었으려나.",
+                "visual_summary": "웹소설 본문 텍스트 화면. 게임 림월드 요소와 제작 장면을 묘사.",
+                "work_cues": ["림월드", "방어건물", "제작 스킬"],
+            }
+        ]
+        ctx = ConversationContext(post_id=post.post_id, post_data=post_data, comments=post.comments)
+        ctx.search_results = [
+            {
+                "title": wrong_title,
+                "url": wrong_url,
+                "content": "랫따싶. #판타지 #전생 #성장. 생쥐 미소녀로 전생했더니 쥐의 여신과 만났다.",
+                "query": "랫따싶 노벨피아",
+                "source_tier": "official_detail",
+            },
+            {
+                "title": correct_title,
+                "url": correct_url,
+                "content": "단, 죽어서만. #패러디 #림월드 #랫따싶. 잡탕 종족모드가 적용된 변방계에 떨어졌다.",
+                "query": "랫따싶 노벨피아",
+                "source_tier": "official_detail",
+            },
+        ]
+        final_decision = {
+            "discussion_type": "character_talk",
+            "work_resolution": "resolved",
+            "title_resolution_state": "resolved",
+        }
+        vf_result = {
+            "grounding_check": {
+                "anchor_found": "title_abbrev_mention",
+                "title_abbrev_mentioned": True,
+                "matched_alias": "랫따싶",
+            },
+            "slang_insight": {
+                "detected_term": "랫따싶",
+                "decoded_term": wrong_title,
+                "decode_verified": True,
+                "alias_scope": "pure_work_alias",
+            },
+        }
+        candidates = [
+            DetectedTitle(
+                official_title=wrong_title,
+                heretic_url=wrong_url,
+                confidence="High",
+                alias_or_mention="랫따싶",
+                source_tier="official_detail",
+                page_type="novel_page",
+            )
+        ]
+
+        decision = pipeline._record_title_led_alias_public_title_gate_decision(
+            ctx,
+            wrong_title,
+            candidate_url=wrong_url,
+            final_decision=final_decision,
+            verification_result=vf_result,
+            title_candidates=candidates,
+            acceptance={"decision": "accept", "title_led_consumption_bridge": True, "score": 29},
+        )
+
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn("scope_context_only", decision["reason_codes"])
+        self.assertIn(
+            "title_led_alias_contextual_official_detail_competes",
+            decision["reason_codes"],
+        )
+        state = ctx._last_promotion_gate_state
+        self.assertFalse(state["row_discusses_work_as_work"])
+        self.assertEqual(state["scope"]["scope_kind"], "context_only")
+        self.assertIn(
+            "title_led_alias_contextual_official_detail_competes",
+            state["scope"]["conflict_reason_codes"],
+        )
+        self.assertTrue(
+            any("변방계에서 회귀자로 살아남기" in title for title in state["scope"]["competing_candidates"])
+        )
+        evidence = ctx._last_promotion_gate_evidence
+        self.assertTrue(
+            any(item["kind"] == "contextual_alias_official_detail_competition" for item in evidence)
+        )
+
     def test_official_url_recall_verified_alias_can_override_final_noise_and_competing_candidate(self):
         pipeline = build_pipeline()
         title = "잘생기면 편해지는 인방 생활"

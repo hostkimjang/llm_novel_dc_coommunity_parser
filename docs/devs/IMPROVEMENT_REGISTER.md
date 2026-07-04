@@ -1,5 +1,24 @@
 # Improvement Register
 
+## IMP-20260704-414 - contextual alias official-detail competition gate
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/golden18 미발주 | 대형 dispatch 반복 금지 |
+| parent packet replay | 중단 | 동일 38-row replay 없음 | 큐 회계 회차 금지 |
+| `11698897` runtime | GO / 1 of 1 | run `20260704_183852_026609`, manifest `1/1/1/0/0`, checkpoint/result `1/1` | row 생산성 근거로만 사용 |
+| wrong public publish | GO_TARGETED | final public title `null`, wrong `쳇바퀴의 생쥐 사도가 되었다` 제거 | expected-answer pass로 과장 금지 |
+| contextual alias competition | GO_UNIT | `title_led_alias_contextual_official_detail_competes` conflict 추가 | 일반 술어 유지, R1 cue 확장 금지 |
+| candidate trace | GO_CODE_AND_PROJECTION | projection `변방계에서 회귀자로 살아남기` / `https://novelpia.com/novel/382324` 보존 | runtime 재발주 전 unit/projection 근거로만 사용 |
+| publication contract | GO | runtime/projected audits 모두 violations `0` | full semantic approval과 분리 |
+| search evidence | ROW_GO / BROADER_P0 | row queries `14`, unrecovered degraded `0` | broader search degraded 복구 P0 유지 |
+| expected-answer | NO-GO | inherited Loop413 `16/18`, `11698897` safe_resolved 아님 | current-work 확정 bridge 탐색 |
+| collateral | NOT_OPEN | full375 전수 미실행, Loop413 shared collateral `NO-GO / 9` 상속 | full375 gate 별도 |
+| 테스트 | PASS | py_compile, ExpertMainCommentMetadata `64`, title-lead guard `203` | 커밋 후 다음 targeted lane 진행 |
+| 문서 동기화 | 완료 | Loop414 report/state/verification/goal 문서 갱신 | survey 136-error anchor 유지 |
+
+Gate: targeted runtime `GO / 1 of 1`, wrong publish closure `GO_TARGETED`, candidate trace `GO_CODE_AND_PROJECTION`, expected-answer `NO-GO / inherited Loop413 16 of 18`, search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, collateral active lane `reclassified 74 / runtime-verified 4 / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260704-409 - golden18 runtime proof and contextual exact-title gap
 
 | 항목 | 상태 | 근거 | 다음 조치 |

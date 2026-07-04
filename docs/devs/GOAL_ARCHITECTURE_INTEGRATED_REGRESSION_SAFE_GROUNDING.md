@@ -6,6 +6,18 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-04 Loop414 Addendum - 11698897 contextual alias official-detail competition gate
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop414는 approval 회차가 아니라 Loop413 실패 `11698897`의 wrong public publish를 shared title-led alias competition gate로 막은 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_414_REPORT_20260704.md`, state `docs/devs/loop414_11698897_contextual_alias_gate_20260704.json`, Data Analytics summary `docs/devs/loop414_contextual_alias_gate_data_analytics_artifact.json`.
+- Runtime: run `20260704_183852_026609`은 input/completed/flushed/pending/failed `1/1/1/0/0`, checkpoint/result rows `1/1`, `large_run_complete=true`, `ordered_flush_blocked=false`, MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`다.
+- Code: `src/llm_batch/agentic_pipeline.py`는 competing official detail 후보를 `title_led_alias_contextual_official_detail_competes`로 기록하고, `expert_main.py`는 gate competing candidate를 trace 대표 후보로 보존한다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+- Result: wrong candidate `쳇바퀴의 생쥐 사도가 되었다` public publish는 제거됐다. Final public contract는 `official_title=null`, `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`, `promotion_decision.status=candidate_only`, `publish_allowed=false`다. Current-code projection은 `변방계에서 회귀자로 살아남기` / `https://novelpia.com/novel/382324`를 `promotion_gate_competing_candidate`로 보존한다.
+- Verification: health audit `GO`, runtime/projected publication contract `GO / 0 violations`, py_compile PASS, ExpertMainCommentMetadata `64` PASS, title-lead guard `203` PASS.
+- Boundary: `11698897`은 wrong publish closure이지 safe_resolved 확정이 아니다. Golden expected-answer는 `NO-GO / inherited Loop413 16 of 18`, full375 collateral은 `NOT_OPEN`이다.
+- Gate: targeted runtime `GO / 1 of 1`, wrong publish closure `GO_TARGETED`, candidate trace `GO_CODE_AND_PROJECTION`, search recovery broader `P0 / REVIEW`, Collateral 105 `reclassified 74 / runtime-verified 4 / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Next: 대형 run dispatch는 계속 동결하고, 다음 active lane은 `11698897` current-work 확정 bridge, `11698880` positive unresolved, 또는 survey 136-error anchor의 `wrong_work 27` / `recall_miss 49` 중 작은 단위로 고른다.
+
 ## 2026-07-04 Loop413 Addendum - current HEAD golden18 runtime proof / OVERRIDE AUDIT / survey anchor
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop413은 approval 회차가 아니라 current HEAD `d95f1a57`에서 런타임 비생산 여부를 먼저 닫고, runtime 불필요 `11708445` OVERRIDE AUDIT를 source-native로 재고정한 회차다.

@@ -1,5 +1,20 @@
 ﻿# Development History
 
+## 2026-07-04 - Loop414 11698897 contextual alias official-detail competition gate
+
+- 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.
+- Loop413 실패 `11698897`만 단건 search 포함 non-light로 실행했고, run `20260704_183852_026609`는 input/completed/flushed/pending/failed `1/1/1/0/0`, checkpoint/result rows `1/1`, `large_run_complete=true`, `ordered_flush_blocked=false`로 완료됐다.
+- MCP health는 `include_search=true`, `light_mode=false`, ok/failure `1/0`이고 row search health는 queries `14`, unrecovered degraded `0`, status `ok`다.
+- `src/llm_batch/agentic_pipeline.py`는 title-led alias gate에서 search evidence의 competing official detail 후보를 감지해 `title_led_alias_contextual_official_detail_competes`로 public publish를 막는다.
+- `expert_main.py`는 promotion-blocked trace에서 gate competing candidate가 official detail URL을 가지면 이를 `pre_gate_candidate`와 candidate preservation 대표로 우선 보존한다.
+- R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 추가하지 않았다.
+- Runtime result는 `official_title=null`, `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`, `promotion_decision.status=candidate_only`, `publish_allowed=false`다. Wrong candidate `쳇바퀴의 생쥐 사도가 되었다` public publish는 차단됐다.
+- 저장 runtime result는 trace 보정 전 산출물이라 candidate preservation 대표가 wrong candidate로 남아 있으나, current-code projection은 `변방계에서 회귀자로 살아남기` / `https://novelpia.com/novel/382324`를 `promotion_gate_competing_candidate`로 보존한다.
+- Health audit는 `flush_integrity=GO / clean_completed_source`, publication contract convergence는 runtime/projected 모두 `GO / 0 violations`다.
+- 검증은 py_compile PASS, `tests.test_expert_main_comment_metadata` `64` PASS, `tests.test_title_lead_search_inferred_guard` `203` PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_414_REPORT_20260704.md`, state는 `docs/devs/loop414_11698897_contextual_alias_gate_20260704.json`, Data Analytics summary는 `docs/devs/loop414_contextual_alias_gate_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, wrong public publish closure `GO_TARGETED`, candidate trace `GO_CODE_AND_PROJECTION`, expected-answer `NO-GO / inherited Loop413 16 of 18`, search recovery broader `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-04 - Loop413 current HEAD golden18 runtime proof / OVERRIDE AUDIT / survey anchor
 
 - 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다.

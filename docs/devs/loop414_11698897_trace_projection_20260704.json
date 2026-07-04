@@ -1,0 +1,74 @@
+{
+  "generated_at": "2026-07-04",
+  "source_result": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop414_11698897_contextual_alias_gate_result.json",
+  "projected_result": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop414_11698897_contextual_alias_gate_result_projected_after_trace_fix.json",
+  "runtime_rerun": false,
+  "postprocess_changed": true,
+  "before": {
+    "official_title": null,
+    "safe_resolved": false,
+    "candidate_preservation": {
+      "official_title": "쳇바퀴의 생쥐 사도가 되었다",
+      "official_url": "https://novelpia.com/novel/406113",
+      "source": "candidate_ledger_or_serialized_identity"
+    },
+    "pre_gate_candidate": {
+      "official_title": "쳇바퀴의 생쥐 사도가 되었다",
+      "official_url": "https://novelpia.com/novel/406113",
+      "source": "candidate_ledger_or_serialized_identity"
+    }
+  },
+  "after": {
+    "official_title": null,
+    "safe_resolved": false,
+    "candidate_preservation": {
+      "official_title": "변방계에서 회귀자로 살아남기",
+      "official_url": "https://novelpia.com/novel/382324",
+      "source": "promotion_gate_competing_candidate"
+    },
+    "pre_gate_candidate": {
+      "official_title": "변방계에서 회귀자로 살아남기",
+      "official_url": "https://novelpia.com/novel/382324",
+      "source": "promotion_gate_competing_candidate"
+    },
+    "promotion_decision": {
+      "status": "candidate_only",
+      "publish_allowed": false,
+      "official_title": null,
+      "official_url": null,
+      "candidate_preserved": true,
+      "reason_codes": [
+        "official_title_exists",
+        "row_discussion_missing",
+        "scope_context_only",
+        "scope_not_current_work",
+        "title_led_alias_contextual_official_detail_competes",
+        "title_led_consumption_bridge",
+        "title_acceptance_accept",
+        "official_detail_url",
+        "serialized_public_identity_scrubbed"
+      ],
+      "bypassed_gate": false,
+      "scope": {
+        "scope_kind": "context_only",
+        "confidence": "medium",
+        "direct_bridge_sources": [
+          "title_led_consumption_bridge",
+          "title_abbrev_mentioned",
+          "official_detail_url"
+        ],
+        "competing_candidates": [
+          "변방계에서 회귀자로 살아남기"
+        ],
+        "conflict_reason_codes": [
+          "title_led_alias_contextual_official_detail_competes"
+        ]
+      }
+    }
+  },
+  "gate": {
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+        "note": "저장된 Loop414 1-row 결과에 현재 expert_main trace 수렴 로직을 적용한 projection이다. 신규 dispatch가 아니다."
+  }
+}

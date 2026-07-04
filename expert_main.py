@@ -818,6 +818,76 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
                 score -= 10
         return score
 
+    def _candidate_detail_for_title(candidate_title: str) -> tuple[str, str]:
+        candidate_title = str(candidate_title or "").strip()
+        candidate_key = _title_key(candidate_title)
+        if not candidate_key:
+            return "", ""
+        best_title = candidate_title
+        best_url = _official_detail_url_from_search_evidence(candidate_title)
+        best_score = _candidate_trace_score(best_title, best_url)
+        source_lists = (
+            ledger.get("candidate_preservation_sources") or [],
+            identity.get("candidate_preservation_sources") or [],
+            ledger.get("title_candidates") or [],
+            identity.get("title_candidates") or [],
+            [identity.get("primary_work")],
+        )
+        for source_items in source_lists:
+            if not isinstance(source_items, list):
+                continue
+            for item in source_items:
+                item_title, item_url = _candidate_title_url(item)
+                item_key = _title_key(item_title)
+                if not item_key:
+                    continue
+                if not (
+                    item_key == candidate_key
+                    or candidate_key in item_key
+                    or item_key in candidate_key
+                ):
+                    continue
+                score = _candidate_trace_score(item_title, item_url, item)
+                if score > best_score:
+                    best_title = item_title or candidate_title
+                    best_url = item_url or best_url
+                    best_score = score
+        return best_title, best_url
+
+    def _gate_competing_candidate_for_trace(current_title: str) -> tuple[str, str]:
+        current_key = _title_key(current_title)
+        seen = set()
+        scopes: List[Any] = []
+        for container in (
+            promotion_gate_state,
+            promotion_decision,
+            ledger.get("promotion_gate_state"),
+            ledger.get("promotion_decision"),
+        ):
+            if not isinstance(container, dict):
+                continue
+            scope = container.get("scope")
+            if isinstance(scope, dict):
+                scopes.append(scope)
+        for scope in scopes:
+            conflict_codes = {
+                str(code or "").strip()
+                for code in (scope.get("conflict_reason_codes") or [])
+                if str(code or "").strip()
+            }
+            if "title_led_alias_contextual_official_detail_competes" not in conflict_codes:
+                continue
+            for value in scope.get("competing_candidates") or []:
+                candidate_title = str(value or "").strip()
+                candidate_key = _title_key(candidate_title)
+                if not candidate_key or candidate_key == current_key or candidate_key in seen:
+                    continue
+                seen.add(candidate_key)
+                detail_title, detail_url = _candidate_detail_for_title(candidate_title)
+                if _official_detail_url(detail_url):
+                    return detail_title or candidate_title, detail_url
+        return "", ""
+
     def _preferred_blocked_candidate_for_trace(current_title: str, current_url: str) -> tuple[str, str]:
         current_title = str(current_title or "").strip()
         current_url = str(current_url or "").strip()
@@ -1130,11 +1200,19 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
             if blocked_title:
                 break
 
-    preferred_title, preferred_url = _preferred_blocked_candidate_for_trace(blocked_title, blocked_url)
-    if preferred_title and (preferred_title != blocked_title or preferred_url != blocked_url):
-        blocked_title = preferred_title
-        blocked_url = preferred_url
+    pre_gate_candidate_source = "candidate_ledger_or_serialized_identity"
+    gate_competing_title, gate_competing_url = _gate_competing_candidate_for_trace(blocked_title)
+    if gate_competing_title:
+        blocked_title = gate_competing_title
+        blocked_url = gate_competing_url
+        pre_gate_candidate_source = "promotion_gate_competing_candidate"
         changed = True
+    else:
+        preferred_title, preferred_url = _preferred_blocked_candidate_for_trace(blocked_title, blocked_url)
+        if preferred_title and (preferred_title != blocked_title or preferred_url != blocked_url):
+            blocked_title = preferred_title
+            blocked_url = preferred_url
+            changed = True
 
     if not blocked_title:
         primary_work = identity.get("primary_work")
@@ -2691,7 +2769,7 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
         "pre_gate_candidate": {
             "official_title": blocked_title or None,
             "official_url": blocked_url or None,
-            "source": "candidate_ledger_or_serialized_identity",
+            "source": pre_gate_candidate_source,
         },
         "gate_decision": gate_decision,
         "scope_state": scope_state or None,

@@ -4843,6 +4843,81 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
             result["identity"]["publish_ledger"],
         )
 
+    def test_promotion_blocked_trace_prefers_gate_competing_candidate_for_contextual_alias_conflict(self):
+        wrong_title = "쳇바퀴의 생쥐 사도가 되었다"
+        wrong_url = "https://novelpia.com/novel/406113"
+        correct_title = "변방계에서 회귀자로 살아남기"
+        correct_url = "https://novelpia.com/novel/382324"
+        result = {
+            "identity": {
+                "candidate_ledger_status": "promotion_blocked",
+                "title_resolution_allowed": False,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "unresolved",
+                "blocked_official_title": wrong_title,
+                "blocked_official_title_url": wrong_url,
+                "promotion_decision": {
+                    "status": "candidate_only",
+                    "publish_allowed": False,
+                    "official_title": None,
+                    "official_url": None,
+                    "candidate_preserved": True,
+                    "reason_codes": ["title_led_alias_contextual_official_detail_competes"],
+                    "scope": {
+                        "scope_kind": "context_only",
+                        "competing_candidates": [correct_title],
+                        "conflict_reason_codes": [
+                            "title_led_alias_contextual_official_detail_competes"
+                        ],
+                    },
+                },
+                "candidate_ledger": {
+                    "blocked_official_title": wrong_title,
+                    "blocked_official_title_url": wrong_url,
+                    "candidate_preservation_sources": [
+                        {
+                            "official_title": wrong_title,
+                            "heretic_url": wrong_url,
+                            "confidence": "High",
+                            "source_tier": "official_detail",
+                            "page_type": "novel_page",
+                            "reference_role": "primary",
+                        },
+                        {
+                            "official_title": correct_title,
+                            "heretic_url": correct_url,
+                            "confidence": "High",
+                            "source_tier": "official_detail",
+                            "page_type": "novel_page",
+                            "reference_role": "candidate",
+                        },
+                    ],
+                },
+            }
+        }
+
+        changed = _scrub_promotion_blocked_result_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        trace = identity["publish_contract_trace"]
+        self.assertEqual(trace["pre_gate_candidate"]["official_title"], correct_title)
+        self.assertEqual(trace["pre_gate_candidate"]["official_url"], correct_url)
+        self.assertEqual(
+            trace["pre_gate_candidate"]["source"],
+            "promotion_gate_competing_candidate",
+        )
+        self.assertFalse(trace["gate_decision"]["publish_allowed"])
+        self.assertIn(
+            "title_led_alias_contextual_official_detail_competes",
+            trace["gate_decision"]["reason_codes"],
+        )
+        self.assertIsNone(trace["post_gate_identity"]["official_title"])
+        self.assertEqual(
+            identity["publish_ledger"]["candidate_preservation"],
+            trace["pre_gate_candidate"],
+        )
+
     def test_output_consistency_lint_hold_scrubs_resolution_text(self):
         result = {
             "identity": {

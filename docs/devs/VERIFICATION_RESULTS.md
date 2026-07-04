@@ -1,5 +1,47 @@
 ﻿# Verification Results
 
+## 2026-07-04 Loop414 11698897 contextual alias gate 검증
+
+- 범위: 신규 full375/bounded/N5/golden18 대형 런과 동일 38-row parent packet replay 없이 `11698897` 단일 row만 search 포함 non-light로 실행했다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_414_REPORT_20260704.md`
+  - state `docs\devs\loop414_11698897_contextual_alias_gate_20260704.json`
+  - Data Analytics summary `docs\devs\loop414_contextual_alias_gate_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop414_11698897_contextual_alias_gate_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop414_11698897_contextual_alias_gate_result_manifest.json`
+  - checkpoint `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop414_11698897_contextual_alias_gate_result_checkpoint.jsonl`
+  - health audit `docs\devs\loop414_11698897_health_audit_20260704.json`
+  - trace projection `docs\devs\loop414_11698897_trace_projection_20260704.json`
+  - projected result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop414_11698897_contextual_alias_gate_result_projected_after_trace_fix.json`
+- Code evidence:
+  - `src\llm_batch\agentic_pipeline.py`: title-led alias gate가 competing official detail 후보를 `title_led_alias_contextual_official_detail_competes`로 기록하고 public publish를 막는다.
+  - `expert_main.py`: promotion-blocked trace가 gate competing candidate를 representative candidate로 보존한다.
+  - `tests\test_title_lead_search_inferred_guard.py`: shared alias official-detail competition 계약 추가.
+  - `tests\test_expert_main_comment_metadata.py`: competing candidate trace 보존 계약 추가.
+- Verification commands:
+  - `.\\.venv312\\Scripts\\python.exe -m py_compile expert_main.py src\\llm_batch\\agentic_pipeline.py tests\\test_expert_main_comment_metadata.py tests\\test_title_lead_search_inferred_guard.py` -> PASS
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_expert_main_comment_metadata` -> PASS, 64 tests
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_title_lead_search_inferred_guard` -> PASS, 203 tests
+  - `tools\\audit_expert_run_health.py` on run `20260704_183852_026609` -> `flush_integrity=GO / clean_completed_source`, search evidence `GO`, publication contract `GO`
+  - `tools\\audit_publication_contract_convergence.py` on runtime and projected results -> `GO / 0 violations`
+- Runtime result:
+  - run `20260704_183852_026609`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - checkpoint/result rows `1/1`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - row search status `ok`, queries `14`, unrecovered degraded `0`
+- Semantic result:
+  - Wrong public title `쳇바퀴의 생쥐 사도가 되었다`는 final public output에서 제거됐다.
+  - Final public output은 `official_title=null`, `candidate_ledger_status=promotion_blocked`, `safe_resolved=false`, `promotion_decision.status=candidate_only`, `publish_allowed=false`다.
+  - Current-code projection은 competing candidate `변방계에서 회귀자로 살아남기` / `https://novelpia.com/novel/382324`를 `promotion_gate_competing_candidate`로 보존한다.
+- Boundary:
+  - `11698897`은 wrong publish가 닫혔지만 expected-title safe_resolved가 아니다.
+  - Golden expected-answer는 `NO-GO / inherited Loop413 16 of 18`이다.
+  - Search recovery는 row-level `GO`지만 broader `P0 / REVIEW`를 유지한다.
+  - Full375 collateral은 `NOT_OPEN`이고 collateral 105는 `reclassified 74 / runtime-verified 4 / residual 105`로 유지한다.
+- Gate: targeted runtime `GO / 1 of 1`, wrong publish closure `GO_TARGETED`, candidate trace `GO_CODE_AND_PROJECTION`, publication contract `GO / 0`, expected-answer `NO-GO`, search recovery `P0 / REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 Loop413 current HEAD golden18 런타임 / OVERRIDE AUDIT / survey anchor 검증
 
 - 범위: 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay 없이 current HEAD `d95f1a57` golden18 단일 search 포함 non-light 런만 실행했다. 코드 변경과 R1 hardcoded cue/title list 확장은 없다.

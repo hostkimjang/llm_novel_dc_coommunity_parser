@@ -33427,6 +33427,46 @@ OUTPUT JSON:
         if unresolved_body_compound_anchor and not current_candidate_has_body_surface:
             scope_block_flags.append("unresolved_body_character_work_anchor")
             scope_block_flags.append("missing_body_work_bridge")
+        contextual_alias_competitors: List[str] = []
+        try:
+            post_data = getattr(ctx, "post_data", None) or {}
+            post_surface = str(post_data.get("normalized_title") or post_data.get("title") or "").strip()
+            alias_surfaces = [post_surface]
+            if alias_text:
+                alias_surfaces.append(alias_text)
+            for surface in alias_surfaces:
+                inferred = self._infer_alias_title_from_search_evidence(ctx, surface)
+                if not isinstance(inferred, dict):
+                    continue
+                inferred_title = str(inferred.get("title") or "").strip()
+                inferred_url = str(inferred.get("matched_url") or "").strip()
+                inferred_norm = self._normalize_match_text(inferred_title)
+                if not inferred_title or not inferred_norm:
+                    continue
+                if not (
+                    inferred_url
+                    and self._is_novel_platform_url(inferred_url)
+                    and self._is_novel_detail_url(inferred_url)
+                ):
+                    continue
+                same_title = bool(
+                    inferred_norm == title_norm
+                    or self._is_similar_title(inferred_title, title)
+                    or self._source_title_matches_candidate(inferred_title, title)
+                    or self._source_title_matches_candidate(title, inferred_title)
+                    or (
+                        min(len(inferred_norm), len(title_norm)) >= 4
+                        and (inferred_norm in title_norm or title_norm in inferred_norm)
+                    )
+                )
+                if same_title:
+                    continue
+                contextual_alias_competitors.append(inferred_title)
+                if "title_led_alias_contextual_official_detail_competes" not in scope_block_flags:
+                    scope_block_flags.append("title_led_alias_contextual_official_detail_competes")
+                break
+        except Exception:
+            contextual_alias_competitors = []
 
         discussion_type = ""
         work_resolution = "resolved"
@@ -33461,7 +33501,7 @@ OUTPUT JSON:
                 scope_kind="context_only" if scope_block_flags else "current_work",
                 confidence="medium" if scope_block_flags else ("high" if resolved_url else "medium"),
                 direct_bridge_sources=direct_sources,
-                competing_candidates=competing_verified_body_titles,
+                competing_candidates=list(dict.fromkeys([*competing_verified_body_titles, *contextual_alias_competitors])),
                 conflict_reason_codes=scope_block_flags,
             ),
         )
@@ -33499,6 +33539,16 @@ OUTPUT JSON:
                     source_path_or_snippet=resolved_url,
                     supports_publish=False,
                     reason_code="official_detail_url",
+                )
+            )
+        for competitor in contextual_alias_competitors:
+            evidence.append(
+                EvidenceRecord(
+                    kind="contextual_alias_official_detail_competition",
+                    strength="strong",
+                    source_path_or_snippet=competitor,
+                    supports_publish=False,
+                    reason_code="title_led_alias_contextual_official_detail_competes",
                 )
             )
         return self._record_public_title_gate_decision(

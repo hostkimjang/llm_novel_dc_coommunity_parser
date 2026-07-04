@@ -1,5 +1,24 @@
 ﻿# Developer TODO Index
 
+## 2026-07-04 regression-safe grounding Loop414 TODO
+
+- 상태 업데이트: Loop414는 Loop413 실패 `11698897`의 wrong public publish를 shared title-led alias competition gate로 차단한 회차다. `쳇바퀴의 생쥐 사도가 되었다` public title은 내려갔지만, final public title은 아직 `null`이므로 expected-answer와 full approval은 완료가 아니다.
+- Loop414 TODO:
+  - [x] 신규 full375/bounded/N5/golden18 대형 런을 발주하지 않았다.
+  - [x] 동일 38-row parent packet replay를 실행하지 않았다.
+  - [x] targeted runtime `20260704_183852_026609`에서 `1/1/1/0/0` row 생산을 확인했다.
+  - [x] search 포함 non-light health `include_search=true`, `light_mode=false`, ok/failure `1/0`를 확인했다.
+  - [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+  - [x] `title_led_alias_contextual_official_detail_competes` conflict를 shared promotion gate에 연결했다.
+  - [x] `publish_contract_trace.pre_gate_candidate`가 gate competing candidate를 대표 후보로 보존하도록 projection/unit 계약을 추가했다.
+  - [x] health audit, runtime/projected publication contract, py_compile, ExpertMainCommentMetadata `64`, title-lead guard `203`을 PASS했다.
+  - [ ] Expected-answer는 `NO-GO / inherited Loop413 16 of 18`로 유지한다. `11698897`은 safe_resolved가 아니다.
+  - [ ] 다음 active lane은 `11698897` current-work 확정 bridge, `11698880` positive unresolved, 또는 survey 136-error anchor에서 작은 단위로 고른다.
+  - [ ] Search degraded 100% 복구 전 broader promotion-blocked는 `search-blind conditional` 태깅을 유지한다.
+  - [ ] Full375 collateral gate는 아직 열지 않는다.
+  - [ ] 코드 변경 없이 docs만 반복되는 회차는 loop 정지 신호로 취급한다.
+  - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-04 regression-safe grounding Loop413 TODO
 
 - 상태 업데이트: Loop413은 current HEAD `d95f1a57`에서 golden18 단일 search 포함 non-light 런이 실제 `18/18` row를 내는지 먼저 확인하고, runtime 불필요 `11708445` OVERRIDE AUDIT를 source-native로 재고정한 회차다. 그러나 expected-answer `16/18`, golden shared collateral `NO-GO / 9`, search `P0 / REVIEW`라 goal은 완료가 아니다.
