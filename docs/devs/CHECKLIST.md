@@ -1,5 +1,21 @@
 # Development Checklist
 
+## 2026-07-05 Loop449 11706827 기계공주 known-alias runtime closure 체크
+
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] 사용자 도메인 보정을 유지했다: `갤러리` 표면은 현실 DC 갤러리명만이 아니라 웹소설 안의 커뮤니티/갤러리 오마주형 제목 또는 세계관 장치일 수 있다.
+- [x] `11706827` 단건을 current HEAD `7cc4562c`에서 search 포함 non-light, VLM/OCR 필수로 실행했다.
+- [x] Run `20260705_070350_487784`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`, `ordered_flush_blocked=false`, `partial_flush_gap=false`로 완료됐다.
+- [x] MCP health는 `include_search=true`, `light_mode=false`, ok/failure `1/0`이다.
+- [x] VLM/OCR은 `READY`, image fetch `1/1`, chunks `1`이다.
+- [x] Public identity는 `official_title=헌터갤러리의 국가권력급 기계공주`, `official_url=https://novelpia.com/novel/390228`, `candidate_ledger_status=safe_resolved`, `title_resolution_state=resolved`다.
+- [x] Promotion은 `publish_allowed=true`, `bypassed_gate=false`이며 제목/댓글 alias, 공식 URL, 작품 톤 cue 근거를 기록했다.
+- [x] Health audit `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`를 기록했다.
+- [x] Golden subset audit `PASS / 1 of 1`, status `expected_title_resolved`를 기록했다.
+- [x] Residual queue는 `105 -> 103`, `known_alias_runtime_replay_required 3 -> 1`, validation issue `0`으로 갱신했다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 residual queue delta를 full scan approval로 승격하지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_EXPECTED_TITLE_RESOLVED`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, row-level search `GO`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop448 11714907 아생갤 known-alias runtime closure 체크
 
 - [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

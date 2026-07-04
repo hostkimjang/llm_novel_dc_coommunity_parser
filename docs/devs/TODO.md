@@ -1,5 +1,16 @@
 ﻿# Developer TODO Index
 
+## 2026-07-05 Loop449 TODO
+
+- 상태 업데이트: Loop449는 `11706827`을 current HEAD `7cc4562c`에서 search 포함 non-light, VLM/OCR 필수 단건 runtime으로 닫았다. `기계공주 -> 헌터갤러리의 국가권력급 기계공주`가 expected-title resolved됐고 residual queue는 `105 -> 103`, `known_alias_runtime_replay_required 3 -> 1`이지만 goal은 완료가 아니다.
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] Run `20260705_070350_487784`은 `1/1/1/0/0`, health `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`다.
+- [x] Golden subset audit `PASS / 1 of 1`, status `expected_title_resolved`, collateral regression candidate `0`을 확인했다.
+- [x] `일상물/행복`은 별도 작품명이 아니라 작품 전개 톤 cue로 기록했고, `갤러리` 표면은 현실 갤러리명만이 아니라 작품 안의 커뮤니티/갤러리 오마주 장치일 수 있음을 기록했다.
+- [ ] 남은 known-alias row는 `11708443` 1건이다. 다음도 단건 runtime 또는 계약 감사로 분리한다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 queue delta를 full scan approval로 승격하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop435-436 TODO
 
 - 상태 업데이트: Loop436은 golden18 runtime `18/18`과 expected-answer `PASS / 18 of 18`을 확인했지만, post-patch gallery contract runtime은 아직 없고 search/full375 gate가 닫히지 않아 goal은 완료가 아니다.

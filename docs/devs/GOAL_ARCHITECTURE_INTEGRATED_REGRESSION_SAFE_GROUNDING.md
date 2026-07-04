@@ -8,6 +8,17 @@
 
 도메인 규칙: `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명으로 단정하지 않는다. 요즘 웹소설은 작품 안에 갤러리/댓글식 커뮤니티를 오마주한 장치를 엮을 수 있고, 그 표면 자체가 작품 제목 또는 약어일 수 있다. known abbreviation + explicit alias relation + specific-work target + community support가 있으면 shared work-bridge로 통과시키되, 경쟁 본문 작품 근거가 있으면 publish를 막는다.
 
+## 2026-07-05 Loop449 Addendum - 11706827 기계공주 known-alias runtime closure
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop449는 residual `known_alias_runtime_replay_required=3` 중 `11706827`을 단건 runtime으로 닫은 회차이며 approval 회차가 아니다.
+- Evidence: report `docs/devs/loop_reports/LOOP_449_REPORT_20260705.md`, state `docs/devs/loop449_11706827_machine_princess_known_alias_runtime_20260705.json`, Data Analytics summary `docs/devs/loop449_11706827_machine_princess_known_alias_data_analytics_artifact.json`.
+- Runtime: run `20260705_070350_487784`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`, `ordered_flush_blocked=false`, MCP health `include_search=true`, `light_mode=false`, VLM/OCR `READY`다.
+- Result: public `official_title=헌터갤러리의 국가권력급 기계공주`, `official_url=https://novelpia.com/novel/390228`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`, `publish_allowed=true`, `bypassed_gate=false`.
+- Boundary: `기계공주`는 제목/댓글 explicit alias bridge로 작품 약칭이 됐고, `일상물/행복`은 별도 작품명이 아니라 작품 전개 톤 cue로 처리됐다. `갤러리` 표면은 현실 커뮤니티명으로 단정하지 않지만 official detail과 alias relation 없이 publish하지 않는다. Slang DB write-back, `post_id` 예외, 작품 전용 registry는 없다.
+- Queue: residual action queue `105 -> 103`, `REPROCESS 77 -> 75`, `known_alias_runtime_replay_required 3 -> 1`, validation issue `0`. 남은 known-alias row는 `11708443`이다.
+- Gate: targeted runtime `GO / 1 of 1`, targeted expected-answer `GO_TARGETED_EXPECTED_TITLE_RESOLVED`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, row-level search `GO`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Next: 남은 known-alias 1건을 단건 runtime 또는 계약 감사로 분리하고, full375 approval은 계속 열지 않는다.
+
 ## 2026-07-05 Loop448 Addendum - 11714907 아생갤 known-alias runtime closure
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop448은 residual `known_alias_runtime_replay_required=3` 중 `11714907`을 단건 runtime으로 닫은 회차이며 approval 회차가 아니다.

@@ -1,5 +1,38 @@
 # Verification Results
 
+## 2026-07-05 Loop449 11706827 기계공주 known-alias runtime closure 검증
+
+- 범위: residual `known_alias_runtime_replay_required=3` 중 `11706827` 단건을 current HEAD `7cc4562c`에서 search 포함 non-light, VLM/OCR 필수 조건으로 재실행했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_449_REPORT_20260705.md`
+  - state `docs\devs\loop449_11706827_machine_princess_known_alias_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop449_11706827_machine_princess_known_alias_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop449_11706827_machine_princess_known_alias_runtime_result.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop449_11706827_machine_princess_known_alias_runtime_health_audit.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop449_11706827_machine_princess_publication_contract_audit.json`
+  - golden subset audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop449_11706827_machine_princess_known_alias_golden_audit.json`
+  - residual queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop449_after_11706827_known_alias_residual_action_queue.json`
+- Runtime:
+  - run `20260705_070350_487784`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - Search row status `ok`, query/degraded/unrecovered `8/0/0`, upstream zero `1`
+  - VLM/OCR `READY`, image fetch `1/1`
+- Result:
+  - `official_title=헌터갤러리의 국가권력급 기계공주`, `official_url=https://novelpia.com/novel/390228`
+  - `candidate_ledger_status=safe_resolved`, `title_resolution_state=resolved`, `work_resolution=resolved`
+  - `promotion_decision.status=publish`, `publish_allowed=true`, `bypassed_gate=false`
+- Audit:
+  - `tools/audit_expert_run_health.py` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=GO`, `publication_contract_convergence=GO`.
+  - `tools/audit_publication_contract_convergence.py` -> `GO / row_count 1 / violation_row_count 0`.
+  - subset golden audit -> `PASS / 1 of 1`, status `expected_title_resolved`.
+  - residual queue split -> `105 -> 103`, `known_alias_runtime_replay_required 3 -> 1`, validation issue `0`.
+- Boundary:
+  - `기계공주`는 작품 약칭으로, `일상물/행복`은 별도 작품명이 아니라 작품 전개 톤 cue로 판정했다.
+  - `갤러리` 표면은 현실 DC 갤러리명으로만 보지 않고, 웹소설 안의 커뮤니티/갤러리 오마주형 제목 또는 세계관 장치일 수 있다고 기록했다.
+  - Broader search recovery는 `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral은 `NOT_OPEN`.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop448 11714907 아생갤 known-alias runtime closure 검증
 
 - 범위: residual `known_alias_runtime_replay_required=3` 중 `11714907` 단건을 current HEAD `a5a0a3c1`에서 search 포함 non-light, VLM/OCR 필수 조건으로 재실행했다.

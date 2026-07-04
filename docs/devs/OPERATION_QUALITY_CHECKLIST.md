@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-05 Loop449 11706827 기계공주 known-alias runtime closure 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_449_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop449_11706827_machine_princess_known_alias_runtime_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop449_11706827_machine_princess_known_alias_data_analytics_artifact.json`.
+  - [x] Loop449 runtime `1/1/1/0/0`, `large_run_complete=true`, `ordered_flush_blocked=false`를 기록했다.
+  - [x] Health audit `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`를 기록했다.
+  - [x] Golden subset audit `PASS / 1 of 1`, status `expected_title_resolved`를 기록했다.
+  - [x] Residual queue delta `105 -> 103`, `known_alias_runtime_replay_required 3 -> 1`을 기록했다.
+- 품질 게이트:
+  - [x] `기계공주`를 작품 약칭으로 기록하고 `일상물/행복`은 작품 톤 cue로 분리한다.
+  - [x] `갤러리` 표면을 현실 DC 갤러리명으로만 보지 않고 작품 내부 커뮤니티/갤러리 오마주 가능성으로 기록한다.
+  - [x] 단건 targeted runtime과 residual queue delta를 golden18/full375 approval로 승격하지 않는다.
+  - [x] search row-level `GO`와 broader search recovery `P0 / ROW_LEVEL_GO_ONLY`를 분리한다.
+  - [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 하지 않았음을 명시한다.
+  - [x] goal `ACTIVE / NOT_COMPLETE`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
+
 ## 2026-07-05 Loop448 11714907 아생갤 known-alias runtime closure 품질 게이트
 
 - 근거:

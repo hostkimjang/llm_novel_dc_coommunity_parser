@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop449 known-alias runtime closure follow-up
+  - 상태: targeted runtime `GO 1/1` / health `GO clean_completed_source` / search evidence `GO` / publication contract `GO 0 violations` / golden subset `PASS 1/1` / residual queue `105 -> 103` / search recovery broader `P0_ROW_LEVEL_GO_ONLY` / full375 `NOT_OPEN` / approval not open
+  - 적용: `11706827`은 `기계공주 -> 헌터갤러리의 국가권력급 기계공주`로 safe-resolved됐다. `일상물/행복`은 별도 작품명이 아니라 작품 톤 cue로 처리했고, `갤러리` 표면은 현실 갤러리명만이 아니라 작품 안의 커뮤니티/갤러리 오마주 장치일 수 있음을 기록했다.
+  - 산출물: `docs/devs/loop_reports/LOOP_449_REPORT_20260705.md`, `docs/devs/loop449_11706827_machine_princess_known_alias_runtime_20260705.json`, `docs/devs/loop449_11706827_machine_princess_known_alias_data_analytics_artifact.json`.
+  - 완료 기준: 남은 `known_alias_runtime_replay_required=1`인 `11708443`을 단건 runtime 또는 계약 감사로 분리한다. 단건 GO와 queue delta를 full375 approval로 승격하지 않는다.
+
 - [ ] Loop439-441 gallery-homage alias bridge follow-up
   - 상태: Loop441 targeted runtime `GO 1/1` / health `GO clean_completed_source` / search evidence `GO` / publication contract `GO 0 violations` / Loop439 golden18 current proof `NO-GO_RUNTIME_STALL` / golden expected-answer `NOT_REFRESHED_AFTER_LOOP441` / search recovery broader `P0_REVIEW` / full375 `NOT_OPEN` / approval not open
   - 적용: `아생갤`은 현실 갤러리명이 아니라 웹소설 `아카데미 생존 갤러리`의 작품 내부 갤러리/커뮤니티 오마주형 제목 약어일 수 있음을 반영했다. Arbiter와 pipeline의 curated alias bridge 술어를 통합해 official detail 또는 explicit alias relation이 수렴할 때만 작품 bridge를 연다.
@@ -189,13 +195,13 @@
   - 완료 기준: N5 `15/15`, golden18 `18/18`, full375/bounded completion, search degraded `unrecovered=0` audit 전까지 stale evidence를 대체하지 않는다.
 
 - [ ] Loop347 remaining known-alias contract/stall follow-up
-  - 상태: runtime_aborted_vlm_stall / code_contract_go_unit / approval_not_open
-  - 대상: residual `known_alias_runtime_replay_required=3` (`11706827`, `11708443`, `11714907`).
+  - 상태: runtime_aborted_vlm_stall resolved_partially_by_loop448_449 / code_contract_go_unit / approval_not_open
+  - 대상: residual `known_alias_runtime_replay_required=1` (`11708443`). `11714907`은 Loop448, `11706827`은 Loop449 단건 runtime으로 expected-title resolved됐다.
   - runtime: run `20260703_131039_800703`, search health `2/2 OK`, manifest `0/0/0/0`, VLM chunk 이후 결과 없음.
   - 적용: `기계공주` 일상물 cue와 `아생갤` 작가/정실 character-relation cue를 shared curated-alias work cue 계약으로 고정했다.
   - 보호: 추천 요청/탐색 hard-hold는 유지하며 `11714892` negated recommendation 계약을 PASS로 확인했다.
   - 산출물: `docs/devs/loop_reports/LOOP_347_REPORT_20260703.md`, `docs/devs/loop347_known_alias_remaining3_contract_and_stall_20260703.json`.
-  - 완료 기준: VLM stall 원인을 분리하고 같은 3건이 runtime에서 flush되어 safe_resolved 단조 비감소와 actionable queue 감소를 만족해야 한다. 그 전까지 residual `123`, search recovery `P0 / OPEN`, approval not open 유지.
+  - 완료 기준: 남은 `11708443`이 runtime에서 flush되어 safe_resolved 단조 비감소와 actionable queue 감소를 만족해야 한다. 그 전까지 search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 `NOT_OPEN`, approval not open 유지.
 
 - [ ] Loop346 current residual queue follow-up
   - 상태: current_queue_rebased_123 / validation_issue_0 / approval_not_open
