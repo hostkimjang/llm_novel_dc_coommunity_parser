@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-05 Loop454 goal convergence evaluator queue compatibility 체크
+
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `tools/evaluate_goal_convergence.py`가 최신 residual queue artifact의 `summary.residual_action_queue_rows`를 actionable count로 읽도록 보강했다.
+- [x] `tests/test_goal_convergence.py`에 residual action queue summary 형식 계약 테스트를 추가했다.
+- [x] Loop452 queue와 Loop453 queue를 evaluator로 읽었고 actionable count source가 `summary.residual_action_queue_rows`로 잡혔다.
+- [x] Loop453 `11716498` baseline/current same-packet subset을 만들어 stop-condition audit를 실행했다.
+- [x] Stop-condition audit 결과는 queue `102 -> 101`, same packet `true`, safe_resolved `1 -> 1`, safe loss `[]`, gate `GO`다.
+- [x] `python -m unittest tests.test_goal_convergence -v` PASS, 8 tests.
+- [x] `.venv312\Scripts\python.exe -m unittest tests.test_goal_convergence tests.test_publication_contract_convergence_audit tests.test_regression_safe_work_bridge_contract -v` PASS, 14 tests.
+- [x] py_compile PASS.
+- [ ] 시스템 Python의 focused bundle 실패는 `httpx` 미설치 환경 mismatch로 기록한다. repo 기준 검증은 `.venv312` PASS를 사용한다.
+- [ ] Loop453 targeted stop-condition GO를 full375 approval이나 semantic unlock으로 승격하지 않는다.
+- Gate: stop-condition evaluator compatibility `GO_UNIT`, Loop453 targeted stop-condition `GO_TARGETED / 102 -> 101 / safe 1 -> 1`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop453 11716498 마녀도시 author-work context runtime 체크
 
 - [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

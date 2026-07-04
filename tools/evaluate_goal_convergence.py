@@ -85,6 +85,7 @@ def actionable_count(payload: dict[str, Any]) -> tuple[int | None, str]:
             ("summary", "next_actionable_queue"),
             ("summary", "actionable_queue"),
             ("summary", "actionable_count"),
+            ("summary", "residual_action_queue_rows"),
             ("queue", "next_actionable"),
             ("residual_accounting", "next_actionable"),
         ],

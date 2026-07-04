@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-05 - Loop454 goal convergence evaluator queue compatibility
+
+- 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- `tools/evaluate_goal_convergence.py`가 최신 residual action queue artifact의 `summary.residual_action_queue_rows`를 actionable count로 읽도록 보강했다.
+- `tests/test_goal_convergence.py`에 current residual queue summary 형식 계약 테스트를 추가했다.
+- Loop453 `11716498` closure를 stop-condition evaluator로 감사했다. 결과는 queue `102 -> 101`, same packet `true`, safe_resolved `1 -> 1`, safe loss `[]`, gate `GO`다.
+- Verification은 `tests.test_goal_convergence` 8 PASS, `.venv312` focused architecture bundle 14 PASS, py_compile PASS다.
+- 시스템 Python focused bundle은 `httpx` 미설치로 import 실패했지만, repo 실행 환경 `.venv312`에서 통과했다.
+- Report는 `docs/devs/loop_reports/LOOP_454_REPORT_20260705.md`, state는 `docs/devs/loop454_goal_convergence_queue_compat_20260705.json`, Data Analytics summary는 `docs/devs/loop454_goal_convergence_queue_compat_data_analytics_artifact.json`이다.
+- Gate는 stop-condition evaluator compatibility `GO_UNIT`, Loop453 targeted stop-condition `GO_TARGETED / 102 -> 101 / safe 1 -> 1`, search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop453 11716498 마녀도시 author-work context runtime closure
 
 - 사용자 도메인 보정을 더 명확히 반영했다. `아생갤`은 웹소설 `아카데미 생존 갤러리` 약어일 수 있고, 작품 안의 갤러리/댓글식 커뮤니티 오마주를 현실 갤러리명으로만 단정하지 않는다.

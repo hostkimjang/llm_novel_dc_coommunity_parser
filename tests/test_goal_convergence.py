@@ -34,6 +34,17 @@ class GoalConvergenceTest(unittest.TestCase):
         self.assertEqual(count, 130)
         self.assertEqual(source, "summary.next_actionable_queue")
 
+    def test_actionable_count_reads_residual_queue_summary_artifact(self):
+        payload = {
+            "report_type": "collateral_residual_action_queue",
+            "summary": {"residual_action_queue_rows": 101},
+        }
+
+        count, source = actionable_count(payload)
+
+        self.assertEqual(count, 101)
+        self.assertEqual(source, "summary.residual_action_queue_rows")
+
     def test_packet_summary_counts_safe_resolved_rows(self):
         summary = packet_summary(
             [

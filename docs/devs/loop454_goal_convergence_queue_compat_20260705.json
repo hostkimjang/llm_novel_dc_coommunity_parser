@@ -1,0 +1,60 @@
+{
+  "loop": "454",
+  "date": "2026-07-05",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "scope": "goal convergence evaluator residual queue compatibility and Loop453 stop-condition audit",
+  "head_before": "7b4cd340",
+  "code_change": {
+    "tools/evaluate_goal_convergence.py": [
+      "actionable_count now reads summary.residual_action_queue_rows from current residual action queue artifacts"
+    ],
+    "tests/test_goal_convergence.py": [
+      "added coverage for collateral_residual_action_queue summary.residual_action_queue_rows"
+    ]
+  },
+  "artifacts": {
+    "baseline_packet_subset": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop454_11716498_baseline_packet_subset.json",
+    "convergence_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop454_11716498_goal_convergence_stop_condition.json",
+    "convergence_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop454_11716498_goal_convergence_stop_condition.md",
+    "previous_queue": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop452_after_11708443_known_alias_residual_action_queue.json",
+    "current_queue": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop453_after_11716498_author_work_context_residual_action_queue.json",
+    "current_packet_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop453_11716498_witch_city_author_context_search_nonlight_result.json",
+    "loop_report": "docs/devs/loop_reports/LOOP_454_REPORT_20260705.md"
+  },
+  "stop_condition_audit": {
+    "gate": "GO",
+    "previous_actionable": 102,
+    "current_actionable": 101,
+    "previous_source": "summary.residual_action_queue_rows",
+    "current_source": "summary.residual_action_queue_rows",
+    "decreased": true,
+    "same_packet": true,
+    "post_ids": [
+      11716498
+    ],
+    "previous_safe_resolved": 1,
+    "current_safe_resolved": 1,
+    "safe_resolved_monotonic_nondecrease": true,
+    "safe_loss_post_ids": [],
+    "safe_gain_post_ids": [],
+    "blockers": []
+  },
+  "verification": {
+    "system_python_goal_convergence_unittest": "PASS / 8 tests",
+    "system_python_py_compile": "PASS",
+    "venv312_py_compile": "PASS",
+    "venv312_focused_architecture_bundle": "PASS / 14 tests",
+    "system_python_bundle_caveat": "tests.test_regression_safe_work_bridge_contract import failed with ModuleNotFoundError: httpx; .venv312 rerun passed"
+  },
+  "gates": {
+    "stop_condition_evaluator_compatibility": "GO_UNIT",
+    "loop453_targeted_stop_condition": "GO_TARGETED / 102 -> 101 / safe 1 -> 1",
+    "publication_contract_coverage": "GO / focused bundle retained",
+    "shared_work_bridge_contract": "GO / focused bundle retained",
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

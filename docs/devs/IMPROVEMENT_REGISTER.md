@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260705-454 - goal convergence evaluator queue compatibility
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/parent replay 미발주 | dispatch 반복 금지 |
+| 정지조건 도구 | GO_UNIT | `summary.residual_action_queue_rows` actionable count 지원 | 다음 residual closure에 계속 사용 |
+| 계약 테스트 | PASS | `tests.test_goal_convergence` 8 tests | queue schema drift 감시 |
+| focused architecture bundle | PASS | `.venv312` 14 tests | publication/work-bridge 계약 유지 |
+| Loop453 stop-condition audit | GO_TARGETED | queue `102 -> 101`, safe `1 -> 1`, same packet `11716498` | 단건 근거로만 사용 |
+| 문서 동기화 | 완료 | Loop454 report/state/Data Analytics 갱신 | goal은 ACTIVE 유지 |
+
+Gate: stop-condition evaluator compatibility `GO_UNIT`, Loop453 targeted stop-condition `GO_TARGETED / 102 -> 101 / safe 1 -> 1`, row-level search inherited `GO`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260705-452 - 11708443 괴담출근 known-alias runtime closure
 
 | 항목 | 상태 | 근거 | 다음 |
