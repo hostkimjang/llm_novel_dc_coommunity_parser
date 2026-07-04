@@ -6,6 +6,17 @@
 
 보고서 작성 규칙: 모든 loop report와 goal addendum은 한국어로 작성한다. 간략하게 쓰되 의미, 근거, 산출물 경로, run/semantic/full-scan 게이트 상태를 생략하지 않는다.
 
+## 2026-07-05 Loop432 Addendum - source-denial title-only publication contract
+
+- 상태: goal `ACTIVE / NOT_COMPLETE`. Loop432는 approval 회차가 아니라 Loop431 실패 `11713212`의 URL 없는 weak title-only public title 복구를 source explicit denial contract로 막은 회차다.
+- Evidence: report `docs/devs/loop_reports/LOOP_432_REPORT_20260705.md`, state `docs/devs/loop432_source_denial_title_only_contract_20260705.json`, Data Analytics summary `docs/devs/loop432_source_denial_title_only_contract_data_analytics_artifact.json`.
+- Runtime: 신규 runtime replay는 없다. `runtime_replay_after_patch=NOT_RUN_AFTER_PATCH`, runtime production은 Loop431 `18/18`을 상속 근거로만 둔다.
+- Code: `expert_main.py`는 `_demote_title_only_publication_with_source_denial_contract(...)`로 source text가 후보 작품 사용/언급을 명시적으로 부인하는데 weak `verified_alias_title_only_publication`이 URL 없이 public title을 복구하는 경로를 차단한다.
+- Result: `11713212` projection은 before `official_title=지력`, after `official_title=null`, `candidate_ledger_status=promotion_blocked`, reason `source_explicit_work_denial_title_only_publication_blocked`로 수렴했다.
+- Boundary: golden expected-answer projection은 `NO-GO / 16 of 18`이고 남은 실패는 `11705245`, `11694019`다. Search recovery는 `P0 / REVIEW`, full375 collateral은 `NOT_OPEN`이다.
+- Gate: publication contract `GO / 0`, expected-answer projection `NO-GO / 16 of 18`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Next: 다음 active lane은 `11705245` 또는 `11694019`를 일반 술어/contract 또는 source-native 검증으로 줄인다.
+
 ## 2026-07-05 Loop431 Addendum - URL-less OCR publish contract and golden18 runtime proof
 
 - 상태: goal `ACTIVE / NOT_COMPLETE`. Loop431은 approval 회차가 아니라 URL 없는 direct-image/OCR public title을 공식 bridge 없이 publish하지 못하게 shared publication contract로 수렴하고, current HEAD `5150b13f`에서 golden18 `18/18` row 생산을 재실증한 회차다.

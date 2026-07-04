@@ -1,0 +1,71 @@
+{
+  "loop": 432,
+  "date": "2026-07-05",
+  "current_head_before_commit": "ac8483bb",
+  "scope": "source explicit work-denial guard for weak verified_alias_title_only_publication",
+  "large_run_dispatch": "FROZEN",
+  "runtime_replay_after_patch": "NOT_RUN_AFTER_PATCH",
+  "target_post_id": 11713212,
+  "code_change": {
+    "files": [
+      "expert_main.py",
+      "tests/test_expert_main_comment_metadata.py"
+    ],
+    "contract": "_demote_title_only_publication_with_source_denial_contract",
+    "hardcoded_cue_or_post_id_exception": false,
+    "slang_db_writeback": false
+  },
+  "projection_result": {
+    "source_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop431_golden18_after_ocr_contract_5150b13f_search_nonlight_result.json",
+    "projected_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop432_golden18_source_denial_contract_projection_result.json",
+    "publication_contract": "GO / row_count 18 / violation_row_count 0",
+    "golden_expected_answer": "NO-GO / passed 16 of 18",
+    "golden_failed_post_ids": [
+      11705245,
+      11694019
+    ],
+    "golden_shared_collateral": "NO-GO / raw regression candidates 5"
+  },
+  "target_row": {
+    "post_id": 11713212,
+    "before": {
+      "official_title": "지력",
+      "candidate_ledger_status": "safe_resolved",
+      "promotion_decision_status": "publish",
+      "publish_allowed": true
+    },
+    "after_projection": {
+      "official_title": null,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_decision_status": "candidate_only",
+      "publish_allowed": false,
+      "reason_code": "source_explicit_work_denial_title_only_publication_blocked"
+    }
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "expert_main_comment_metadata": "PASS / 67 tests",
+    "focused_publication_tests": "PASS / 3 tests",
+    "focused_title_lead_tests": "PASS / 3 tests"
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_432_REPORT_20260705.md",
+    "data_analytics_summary": "docs/devs/loop432_source_denial_title_only_contract_data_analytics_artifact.json",
+    "projection_publication_contract_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop432_golden18_source_denial_projection_publication_contract.json",
+    "projection_golden_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop432_golden18_source_denial_contract_projection_golden_audit.json",
+    "projection_collateral_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop432_golden18_source_denial_contract_projection_collateral_compare.json"
+  },
+  "gates": {
+    "runtime_production": "GO / inherited Loop431 18 of 18",
+    "runtime_replay_after_patch": "NOT_RUN_AFTER_PATCH",
+    "publication_contract": "GO / 0 violations",
+    "golden_expected_answer_projection": "NO-GO / 16 of 18",
+    "search_recovery": "P0 / REVIEW / search_degraded_observed",
+    "golden_shared_collateral": "NO-GO / raw 5",
+    "full375_collateral": "NOT_OPEN",
+    "collateral_105": "reclassified 74 / runtime-verified 4 / residual 105",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

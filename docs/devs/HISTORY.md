@@ -1,5 +1,16 @@
 ﻿# Development History
 
+## 2026-07-05 - Loop432 source-denial title-only publication contract
+
+- 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, golden18 runtime replay는 발주하지 않았다.
+- `expert_main.py`는 weak `verified_alias_title_only_publication`이 source text의 명시적 부인 문맥과 충돌하면 public title을 `candidate_only`로 demote한다.
+- `11713212`는 원문이 `절대 ... 를 쓰려는 건 아니고`로 특정 작품 사용을 부인했는데 URL 없는 `지력` title-only publish가 되살아난 회귀였다.
+- Projection result는 `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop432_golden18_source_denial_contract_projection_result.json`이다.
+- Publication contract projection audit는 `GO / row_count 18 / violation_row_count 0`이다.
+- Golden projection audit는 `NO-GO / 16 of 18`이다. Loop431 대비 `11713212`가 expected-null pass로 이동했고 남은 실패는 `11705245`, `11694019`다.
+- Report는 `docs/devs/loop_reports/LOOP_432_REPORT_20260705.md`, state는 `docs/devs/loop432_source_denial_title_only_contract_20260705.json`, Data Analytics summary는 `docs/devs/loop432_source_denial_title_only_contract_data_analytics_artifact.json`이다.
+- Gate는 runtime production `GO / inherited Loop431 18 of 18`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, publication contract `GO / 0`, expected-answer projection `NO-GO / 16 of 18`, search recovery `P0 / REVIEW`, golden shared collateral raw `NO-GO / 5`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop431 URL-less OCR publish contract and golden18 runtime proof
 
 - 신규 대형 런은 계속 동결했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았고 current HEAD `5150b13f` 기반 golden18 단일 런만 실행했다.

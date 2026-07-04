@@ -3534,6 +3534,108 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertFalse(trace["gate_decision"]["publish_allowed"])
         self.assertIsNone(trace["post_gate_identity"]["official_title"])
 
+    def test_title_only_publication_with_source_denial_is_demoted(self):
+        result = {
+            "post_id": 11713212,
+            "title": "지력 무한일 때 가장 효과 좋은 작물이 머임",
+            "content": ["절대 SSS급 지력무한 영지를 손에 넣었다 를 쓰려는 건 아니고"],
+            "comments": ["옥수수가 깡패 아닌가", "귀농물은 한번두 안바서.."],
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "is_resolved_work_discussion": True,
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "anchor_type": "title_alias",
+                "context_sources": ["title", "search", "body", "comments"],
+                "slang_insight": {
+                    "detected_term": "지력 무한",
+                    "decoded_term": "SSS급 지력무한 영지를 손에 넣었다",
+                    "decode_verified": True,
+                    "alias_scope": "mixed_unknown",
+                },
+                "novel_identity": {
+                    "official_title": "지력",
+                    "heretic_url": None,
+                    "confidence": "High",
+                },
+                "title_candidates": [
+                    {
+                        "official_title": "지력",
+                        "heretic_url": None,
+                        "confidence": "Medium",
+                        "alias_or_mention": "옥수수",
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                        "reference_role": "primary",
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": "지력",
+                    "official_url": None,
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "verified_alias_title_only_publication",
+                        "official_url_withheld_by_title_mismatch",
+                        "serialized_public_identity_shared_gate_restored",
+                        "serialized_public_identity_published",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "verified_alias_title_only_publication",
+                            "post_title_alias",
+                            "title",
+                            "search",
+                            "body",
+                            "comments",
+                        ],
+                        "conflict_reason_codes": [
+                            "official_url_withheld_by_title_mismatch",
+                            "verified_alias_title_only_publication",
+                        ],
+                    },
+                },
+                "candidate_ledger": {},
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            result,
+            post_title="지력 무한일 때 가장 효과 좋은 작물이 머임",
+        )
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertEqual(identity["title_resolution_state"], "context_only")
+        self.assertEqual(identity["work_resolution"], "none")
+        self.assertFalse(identity["safe_resolved"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        decision = identity["promotion_decision"]
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn(
+            "source_explicit_work_denial_title_only_publication_blocked",
+            decision["reason_codes"],
+        )
+        self.assertIn(
+            "source_explicit_work_denial_title_only_publication_blocked",
+            identity["promotion_blocked_reasons"],
+        )
+        trace = identity["publish_contract_trace"]
+        self.assertFalse(trace["gate_decision"]["publish_allowed"])
+        self.assertIsNone(trace["post_gate_identity"]["official_title"])
+
     def test_batch_alias_url_only_publication_demotes_ambiguous_alias(self):
         result = {
             "post_id": 11705245,

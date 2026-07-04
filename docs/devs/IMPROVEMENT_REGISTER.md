@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260705-432 - source-denial title-only publication contract
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/parent replay/golden18 runtime replay 미발주 | dispatch 반복 금지 |
+| R1 cue 확장 | 없음 | title/cue allowlist, `post_id` 예외, registry, slang DB write-back 추가 없음 | 일반 술어 유지 |
+| source denial contract | GO_UNIT | `_demote_title_only_publication_with_source_denial_contract` 추가 | runtime replay와 분리 |
+| `11713212` projection | GO_TARGETED | `지력` public title 제거, `promotion_blocked` 수렴 | current runtime 검증은 별도 |
+| publication contract | GO | projection audit row `18`, violation `0` | broader gate와 분리 |
+| expected-answer projection | NO-GO / 16 of 18 | 남은 실패 `11705245`, `11694019` | 작은 lane으로 수리 |
+| search evidence | P0 / REVIEW | Loop431 `search_degraded_observed` 상속 | search degraded 100% 복구 필요 |
+| full375 collateral | NOT_OPEN | 전수 replay 미실행 | golden shared와 full375 분리 |
+| 문서 동기화 | 완료 | Loop432 report/state/verification/register 갱신 | goal은 ACTIVE 유지 |
+
+Gate: runtime production `GO / inherited Loop431 18 of 18`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, publication contract `GO / 0`, expected-answer projection `NO-GO / 16 of 18`, search recovery `P0 / REVIEW`, golden shared collateral raw `NO-GO / 5`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260705-431 - URL-less OCR publish contract and golden18 runtime proof
 
 | 항목 | 상태 | 근거 | 다음 조치 |

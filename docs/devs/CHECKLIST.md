@@ -1,5 +1,18 @@
 ﻿# Development Checklist
 
+## 2026-07-05 Loop432 source-denial title-only publish 계약 체크
+
+- [x] 신규 대형 런을 동결했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, golden18 runtime replay를 발주하지 않았다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [x] weak `verified_alias_title_only_publication`이 source text의 명시적 부인 문맥과 충돌하면 public publish를 막는 shared contract를 추가했다.
+- [x] `11713212` projection에서 public title `지력`을 제거하고 `promotion_blocked / candidate_only`로 수렴시켰다.
+- [x] publication contract projection audit `GO / 18 rows / 0 violations`를 확인했다.
+- [x] golden projection은 Loop431 `15/18`에서 `16/18`로 개선됐다.
+- [ ] Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다. Projection 개선을 current runtime approval로 세지 않는다.
+- [ ] Golden expected-answer projection은 여전히 `NO-GO / 16 of 18`이다. 남은 실패는 `11705245`, `11694019`다.
+- [ ] Search recovery는 `P0 / REVIEW / search_degraded_observed`, full375 collateral은 `NOT_OPEN`이다.
+- Gate: runtime production `GO / inherited Loop431 18 of 18`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, publication contract `GO / 0`, expected-answer projection `NO-GO / 16 of 18`, search recovery `P0 / REVIEW`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop431 golden18 OCR publish 계약 체크
 
 - [x] 신규 대형 런을 동결했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았고 golden18 단일만 실행했다.

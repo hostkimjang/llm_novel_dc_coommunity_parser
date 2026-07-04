@@ -4,6 +4,12 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop432 source-denial title-only contract follow-up
+  - 상태: code contract `GO_UNIT` / projection publication contract `GO 0 violations` / projection expected-answer `NO-GO 16/18` / runtime replay after patch `NOT_RUN` / search recovery `P0_REVIEW_SEARCH_DEGRADED` / full375 `NOT_OPEN` / approval not open
+  - 적용: source text가 특정 작품 사용/언급을 명시적으로 부인하는데 weak `verified_alias_title_only_publication`이 URL 없이 public title을 복구하는 경로를 차단했다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+  - 산출물: `docs/devs/loop_reports/LOOP_432_REPORT_20260705.md`, `docs/devs/loop432_source_denial_title_only_contract_20260705.json`, `docs/devs/loop432_source_denial_title_only_contract_data_analytics_artifact.json`.
+  - 완료 기준: `11705245`, `11694019`를 일반 술어 또는 source-native 검증으로 줄이고, search degraded `unrecovered=0` 및 full375 collateral gate를 별도 증명하기 전까지 approval과 hard-hold 완화를 열지 않는다.
+
 - [ ] Loop431 golden18 OCR publish contract follow-up
   - 상태: runtime `GO 18/18` / publication contract `GO 0 violations` / expected-answer `NO-GO 15/18` / search recovery `P0_REVIEW_SEARCH_DEGRADED` / golden shared collateral raw `NO-GO 6` / full375 `NOT_OPEN` / approval not open
   - 적용: URL 없는 direct-image/OCR public title을 공식 bridge 없이 publish하지 않도록 `expert_main.py` shared publication contract를 추가했다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.

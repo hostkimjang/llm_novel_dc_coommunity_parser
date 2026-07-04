@@ -1,5 +1,33 @@
 ﻿# Verification Results
 
+## 2026-07-05 Loop432 source-denial title-only publish 계약 검증
+
+- 범위: current patch의 source explicit work-denial title-only demotion 계약을 unit/focused test와 Loop431 저장 결과 projection으로 검증했다. 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, golden18 runtime replay는 발주하지 않았다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_432_REPORT_20260705.md`
+  - state `docs\devs\loop432_source_denial_title_only_contract_20260705.json`
+  - Data Analytics summary `docs\devs\loop432_source_denial_title_only_contract_data_analytics_artifact.json`
+  - projection result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop432_golden18_source_denial_contract_projection_result.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop432_golden18_source_denial_projection_publication_contract.json`
+  - golden audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop432_golden18_source_denial_contract_projection_golden_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop432_golden18_source_denial_contract_projection_collateral_compare.json`
+- Verification commands:
+  - `.\\.venv312\\Scripts\\python.exe -m py_compile expert_main.py tests\\test_expert_main_comment_metadata.py` -> PASS
+  - `.\\.venv312\\Scripts\\python.exe -m unittest tests.test_expert_main_comment_metadata` -> PASS, 67 tests
+  - focused publication tests `3` -> PASS
+  - focused title-lead low-specificity tests `3` -> PASS
+  - `tools\\audit_publication_contract_convergence.py ... --fail-on-no-go` -> PASS, `GO / 0 violations`
+  - `tools\\audit_regression_safe_golden.py ...` -> `NO-GO / 16 of 18`
+- Audit result:
+  - `11713212`: before `official_title=지력`, after projection `official_title=null`, `candidate_ledger_status=promotion_blocked`, reason `source_explicit_work_denial_title_only_publication_blocked`
+  - golden expected-answer projection `16/18`
+  - remaining failed rows `11705245`, `11694019`
+  - golden shared collateral raw regression candidates `5`
+- Boundary:
+  - Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다.
+  - Projection pass는 current runtime approval, search recovery, full375 approval이 아니다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE` 유지.
+
 ## 2026-07-05 Loop431 golden18 OCR publish 계약 검증
 
 - 범위: current HEAD `5150b13f` 기반 URL 없는 direct-image/OCR public title demotion 계약과 golden18 단일 runtime을 검증했다. full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay, 신규 대형 런은 발주하지 않았다. R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
