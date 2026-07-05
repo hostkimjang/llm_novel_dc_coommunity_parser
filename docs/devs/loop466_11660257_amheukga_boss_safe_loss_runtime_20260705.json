@@ -1,0 +1,111 @@
+{
+  "loop": 466,
+  "date": "2026-07-05",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "head_before_commit": "7a5fcbfd",
+  "post_id": 11660257,
+  "lane": "repair_safe_loss",
+  "priority": "P0",
+  "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop466_11660257_amheukga_boss_safe_loss_input.jsonl",
+  "runs": {
+    "v1": {
+      "run_id": "20260705_133259_981279",
+      "status": "promotion_blocked",
+      "used_for_queue_closure": false,
+      "note": "publication contract는 GO였지만 candidate_only/promotion_blocked라 safe-resolved가 아니었다."
+    },
+    "v2": {
+      "run_id": "20260705_134550_629087",
+      "status": "noise_or_wrong_candidate_regression",
+      "used_for_queue_closure": false,
+      "note": "surface-only community_banter guard와 batch alias rescue가 wrong candidate로 끌렸다."
+    },
+    "v3": {
+      "run_id": "20260705_135142_651455",
+      "status": "safe_resolved",
+      "used_for_queue_closure": true,
+      "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop466_11660257_amheukga_boss_safe_loss_search_nonlight_result_v3.json",
+      "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop466_11660257_amheukga_boss_safe_loss_search_nonlight_result_v3_manifest.json",
+      "log": "logs/expert_run_20260705_135142_651455.log",
+      "input_completed_flushed_pending_failed": "1/1/1/0/0"
+    }
+  },
+  "expected": {
+    "official_title": "암흑가 보스요? 제가요?",
+    "official_url": "https://novelpia.com/novel/384111"
+  },
+  "public_identity": {
+    "official_title": "암흑가 보스요? 제가요?",
+    "official_url": "https://novelpia.com/novel/384111",
+    "candidate_ledger_status": "safe_resolved",
+    "title_resolution_state": "resolved",
+    "work_resolution": "resolved",
+    "promotion_decision_status": "publish",
+    "publish_allowed": true,
+    "bypassed_gate": false
+  },
+  "search_health": {
+    "status": "GO",
+    "queries_issued": 10,
+    "degraded": 0,
+    "unrecovered_degraded": 0,
+    "accepted": 58,
+    "raw": 150,
+    "upstream_zero": 2,
+    "retried": 4,
+    "cache_hits": 2,
+    "fallback_recovered": 8
+  },
+  "vlm_ocr": {
+    "status": "READY",
+    "image_fetch": "2/2",
+    "chunks": 1,
+    "bytes": 5890867,
+    "used_as_title_evidence": false
+  },
+  "audits": {
+    "health": {
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop466_11660257_amheukga_boss_safe_loss_run_health_v3.json",
+      "flush_integrity": "GO / clean_completed_source",
+      "search_evidence": "GO",
+      "publication_contract_convergence": "GO"
+    },
+    "publication_contract": {
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop466_11660257_amheukga_boss_safe_loss_publication_contract_v3.json",
+      "gate": "GO",
+      "violation_row_count": 0
+    },
+    "goal_convergence": {
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop466_11660257_goal_convergence_stop_condition.json",
+      "gate": "GO",
+      "queue_previous": 92,
+      "queue_current": 91,
+      "safe_resolved_previous": 0,
+      "safe_resolved_current": 1,
+      "safe_loss_post_ids": []
+    }
+  },
+  "residual_queue": {
+    "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop466_after_11660257_amheukga_boss_safe_loss_residual_action_queue.json",
+    "previous": 92,
+    "current": 91,
+    "reprocess_previous": 64,
+    "reprocess_current": 63,
+    "hold_previous": 28,
+    "hold_current": 28,
+    "validation_issue_count": 0
+  },
+  "code_changes": [
+    "title-led consumption work signal을 low-specific noise override에 배선했다.",
+    "alias surface를 official detail full title로 canonicalize하는 gate 경로를 추가했다.",
+    "카테고리/매체 꼬리 후보를 invalid alias title로 거르는 일반 필터를 추가했다."
+  ],
+  "boundaries": {
+    "new_large_runs_dispatched": false,
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "domain_note": "아생갤/갤러리 표면은 현실 커뮤니티 단정이 아니라 작중 커뮤니티 오마주형 제목/약어/장치일 수 있다."
+  }
+}

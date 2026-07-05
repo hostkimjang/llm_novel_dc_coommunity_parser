@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-05 - Loop466 11660257 암흑가보스 safe-loss runtime closure
+
+- 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- Current HEAD `7a5fcbfd` + 워킹트리 패치에서 residual `repair_safe_loss` P0 행 `11660257`을 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- v1 `20260705_133259_981279`은 publication contract는 GO였지만 `promotion_blocked/candidate_only`였고, v2 `20260705_134550_629087`은 surface-only noise와 wrong candidate rescue 경로가 남아 queue 감소 근거로 쓰지 않았다.
+- `orchestrator.py`는 title-led consumption work signal을 low-specific noise override에 배선했고, `agentic_pipeline.py`는 alias surface `암흑가보스`를 official detail full title `암흑가 보스요? 제가요?`로 canonicalize하는 gate 경로를 추가했다.
+- v3 run `20260705_135142_651455`은 input/completed/flushed/pending/failed `1/1/1/0/0`, MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`, row search query/degraded/unrecovered `10/0/0`으로 완료됐다.
+- Result는 `official_title=암흑가 보스요? 제가요?`, `official_url=https://novelpia.com/novel/384111`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`, `publish_allowed=true`다.
+- 사용자 도메인 보정을 유지한다. `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명으로만 보지 않는다. 웹소설 내부에서 갤러리/댓글식 커뮤니티를 서사 장치로 엮은 오마주형 제목, 약어, 세계관 장치일 수 있다.
+- Health audit는 `GO / clean_completed_source`, search evidence는 `GO`, publication contract는 `GO / 0 violations`다.
+- Stop-condition audit는 queue `92 -> 91`, same packet `11660257`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- Report는 `docs/devs/loop_reports/LOOP_466_REPORT_20260705.md`, state는 `docs/devs/loop466_11660257_amheukga_boss_safe_loss_runtime_20260705.json`, Data Analytics summary는 `docs/devs/loop466_11660257_amheukga_boss_safe_loss_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop465 11708478 comment-title image-context safe-loss runtime closure
 
 - 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.

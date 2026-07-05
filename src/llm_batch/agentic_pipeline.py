@@ -34616,6 +34616,134 @@ OUTPUT JSON:
         if resolved_url:
             direct_sources.append("official_detail_url")
 
+        alias_official_detail_canonicalized = False
+        alias_official_detail_canonical_surface = ""
+        canonical_surfaces = [
+            alias_text,
+            str((getattr(ctx, "post_data", None) or {}).get("title") or "").strip(),
+            str((getattr(ctx, "post_data", None) or {}).get("normalized_title") or "").strip(),
+        ]
+
+        def _explicit_alias_mapped_titles(surface: Any) -> List[str]:
+            surface_text = str(surface or "").strip()
+            surface_norm = self._normalize_match_text(surface_text)
+            if not surface_norm:
+                return []
+            mapped_titles: List[str] = []
+
+            def _add_mapped(raw_title: Any, raw_alias: Any = None) -> None:
+                mapped = str(raw_title or "").strip()
+                mapped_norm = self._normalize_match_text(mapped)
+                if not mapped_norm:
+                    return
+                alias_norm = self._normalize_match_text(raw_alias)
+                if alias_norm and alias_norm not in surface_norm:
+                    return
+                if mapped not in mapped_titles:
+                    mapped_titles.append(mapped)
+
+            snippet = getattr(ctx, "llm_snippet_analysis", None) or {}
+            if isinstance(snippet, dict):
+                for mapping in snippet.get("abbreviation_mappings") or []:
+                    if not isinstance(mapping, dict):
+                        continue
+                    _add_mapped(
+                        mapping.get("full") or mapping.get("title") or mapping.get("official_title"),
+                        mapping.get("abbrev") or mapping.get("alias") or mapping.get("surface"),
+                    )
+                for key in ("identified_title", "official_title", "official_novel_title"):
+                    if alias_text and self._normalize_match_text(alias_text) in surface_norm:
+                        _add_mapped(snippet.get(key), alias_text)
+
+            vf_local = verification_result if isinstance(verification_result, dict) else {}
+            slang = vf_local.get("slang_insight") or {}
+            if isinstance(slang, dict) and slang.get("decode_verified") is True:
+                _add_mapped(
+                    slang.get("decoded_term") or slang.get("official_title"),
+                    slang.get("canonical_work_alias") or slang.get("detected_term"),
+                )
+            grounding_local = vf_local.get("grounding_check") or {}
+            if isinstance(grounding_local, dict):
+                mapped_title = (
+                    grounding_local.get("matched_title")
+                    or grounding_local.get("official_title")
+                    or grounding_local.get("resolved_title")
+                )
+                _add_mapped(
+                    mapped_title,
+                    grounding_local.get("matched_alias") or grounding_local.get("anchor_text"),
+                )
+            novel_identity = vf_local.get("novel_identity") or {}
+            if isinstance(novel_identity, dict) and alias_text and self._normalize_match_text(alias_text) in surface_norm:
+                for key in ("official_title", "official_novel_title", "title"):
+                    _add_mapped(novel_identity.get(key), alias_text)
+
+            return mapped_titles
+
+        for surface in canonical_surfaces:
+            if not str(surface or "").strip():
+                continue
+            inferred_candidates: List[Tuple[str, str, int]] = []
+            try:
+                inferred = self._infer_alias_title_from_search_evidence(ctx, surface)
+            except Exception:
+                inferred = None
+            if isinstance(inferred, dict):
+                inferred_candidates.append(
+                    (
+                        str(inferred.get("title") or "").strip(),
+                        str(inferred.get("matched_url") or "").strip(),
+                        int(inferred.get("confidence") or 0),
+                    )
+                )
+            inferred_candidates.extend(
+                (mapped_title, "", 3)
+                for mapped_title in _explicit_alias_mapped_titles(surface)
+            )
+            for inferred_title, inferred_url, inferred_confidence in inferred_candidates:
+                inferred_norm = self._normalize_match_text(inferred_title)
+                if not inferred_title or not inferred_norm or inferred_norm == title_norm:
+                    continue
+                bracket_stripped_title = re.sub(r"^\s*\[[^\]]{1,24}\]\s*", "", inferred_title).strip()
+                if (
+                    bracket_stripped_title
+                    and self._normalize_match_text(bracket_stripped_title) == title_norm
+                ):
+                    continue
+                if len(inferred_norm) <= len(title_norm):
+                    continue
+                if inferred_confidence < 3:
+                    continue
+                if not (
+                    self._source_title_matches_candidate(inferred_title, title)
+                    or self._source_title_matches_candidate(title, inferred_title)
+                    or self._term_alias_matches_title(title, inferred_title)
+                ):
+                    continue
+                safe_inferred_url = self._safe_official_detail_url_for_title(
+                    ctx,
+                    title=inferred_title,
+                    candidate_url=inferred_url or resolved_url,
+                )
+                if not safe_inferred_url:
+                    continue
+                title = inferred_title
+                title_norm = inferred_norm
+                resolved_url = safe_inferred_url
+                alias_official_detail_canonicalized = True
+                alias_official_detail_canonical_surface = str(surface or "").strip()
+                for source_name in (
+                    "title_led_alias_official_detail_canonicalized",
+                    "search_evidence_alias_official_detail_selected",
+                ):
+                    if source_name not in direct_sources:
+                        direct_sources.append(source_name)
+                if "official_detail_url" not in direct_sources:
+                    direct_sources.append("official_detail_url")
+                break
+            if alias_official_detail_canonicalized:
+                break
+
         competing_verified_body_titles, current_candidate_has_body_surface = (
             self._body_verified_character_work_competition(
                 ctx,
@@ -34826,7 +34954,14 @@ OUTPUT JSON:
                     and not cross_media_hold
                 ):
                     selected_contextual_alias_competitor = competitor_record
-                elif not current_title_visual_release_context:
+                elif (
+                    not current_title_visual_release_context
+                    and not (
+                        alias_official_detail_canonicalized
+                        and not competitor_has_visual_release_context
+                        and not cross_media_hold
+                    )
+                ):
                     if "title_led_alias_contextual_official_detail_competes" not in scope_block_flags:
                         scope_block_flags.append("title_led_alias_contextual_official_detail_competes")
                 break
@@ -34899,7 +35034,14 @@ OUTPUT JSON:
                             and not cross_media_hold
                         ):
                             selected_contextual_alias_competitor = competitor_record
-                        elif not current_title_visual_release_context:
+                        elif (
+                            not current_title_visual_release_context
+                            and not (
+                                alias_official_detail_canonicalized
+                                and not competitor_has_visual_release_context
+                                and not cross_media_hold
+                            )
+                        ):
                             if "title_led_alias_contextual_official_detail_competes" not in scope_block_flags:
                                 scope_block_flags.append("title_led_alias_contextual_official_detail_competes")
                         break
@@ -34940,6 +35082,9 @@ OUTPUT JSON:
         selected_body_verified_release = bool(selected_body_verified_competitor)
         selected_contextual_alias_release = bool(selected_contextual_alias_competitor)
         selected_preserved_title_release = bool(selected_preserved_title_candidate)
+        nonblocking_contextual_alias_competition = bool(
+            current_title_visual_release_context or alias_official_detail_canonicalized
+        )
         if selected_body_verified_release:
             for source_name in (
                 "body_verified_work_candidate_selected",
@@ -35009,7 +35154,7 @@ OUTPUT JSON:
                                 str(item.get("title") or "").strip()
                                 for item in contextual_alias_competitors
                                 if not selected_contextual_alias_release
-                                and not current_title_visual_release_context
+                                and not nonblocking_contextual_alias_competition
                             ),
                         ]
                     )
@@ -35074,6 +35219,16 @@ OUTPUT JSON:
                     reason_code="official_detail_url",
                 )
             )
+        if alias_official_detail_canonicalized:
+            evidence.append(
+                EvidenceRecord(
+                    kind="title_led_alias_official_detail_canonicalized",
+                    strength="strong",
+                    source_path_or_snippet=alias_official_detail_canonical_surface or alias_text or selected_title,
+                    supports_publish=True,
+                    reason_code="title_led_alias_official_detail_canonicalized",
+                )
+            )
         for competitor in contextual_alias_competitors:
             competitor_title = str(competitor.get("title") or "").strip()
             competitor_url = str(competitor.get("url") or "").strip()
@@ -35090,7 +35245,7 @@ OUTPUT JSON:
                         if is_selected_competitor
                         else (
                             "contextual_alias_official_detail_nonblocking_competition"
-                            if current_title_visual_release_context
+                            if nonblocking_contextual_alias_competition
                             else "contextual_alias_official_detail_competition"
                         )
                     ),
@@ -35102,7 +35257,7 @@ OUTPUT JSON:
                         if is_selected_competitor
                         else (
                             "title_led_alias_contextual_official_detail_nonblocking_competition"
-                            if current_title_visual_release_context
+                            if nonblocking_contextual_alias_competition
                             else "title_led_alias_contextual_official_detail_competes"
                         )
                     ),
@@ -55014,6 +55169,31 @@ OUTPUT JSON:
         if not candidate:
             return True
         candidate_norm = self._normalize_match_text(candidate)
+        category_media_norms = {
+            self._normalize_match_text(value)
+            for value in (
+                "e북",
+                "이북",
+                "로판 e북",
+                "로판 이북",
+                "판타지 e북",
+                "판타지 이북",
+                "무협 e북",
+                "무협 이북",
+                "현판 e북",
+                "현판 이북",
+                "웹소설 e북",
+                "웹소설 이북",
+            )
+        }
+        if candidate_norm in category_media_norms:
+            return True
+        if re.fullmatch(
+            r"(?:로판|판타지|무협|현판|무협지|bl|BL|웹소설|소설)\s*(?:e북|이북|웹소설|소설)",
+            candidate,
+            flags=re.IGNORECASE,
+        ):
+            return True
         if re.search(r"(?:마이너\s*갤러리|갤러리\s*/\s*밈|/밈|/드립)", candidate):
             return True
         if re.search(r"(?:채널|아카라이브|디시인사이드|마이너\s*갤러리)$", candidate):

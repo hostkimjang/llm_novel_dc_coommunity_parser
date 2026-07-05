@@ -10658,6 +10658,11 @@ class Orchestrator:
                         ctx,
                         gatekeeper_result=gatekeeper_result,
                     )
+                    _title_led_consumption_work_signal = self._has_title_led_work_consumption_search_signal(
+                        ctx,
+                        gatekeeper_result=gatekeeper_result,
+                        discourse_analysis=discourse_analysis,
+                    )
                     _worklike_alias_preserve_signal = self._has_worklike_alias_preservation_signal(
                         ctx,
                         gatekeeper_result=gatekeeper_result,
@@ -10669,10 +10674,14 @@ class Orchestrator:
                     )
                     if (
                         (_community_banter_low_specific or _strict_noise_low_specific)
-                        and (_short_support_signal or _worklike_alias_preserve_signal)
+                        and (
+                            _short_support_signal
+                            or _worklike_alias_preserve_signal
+                            or _title_led_consumption_work_signal
+                        )
                     ):
                         print(
-                            f"[{_ts()}] {self.emoji} ⚠️ worklike alias/signal 감지 "
+                            f"[{_ts()}] {self.emoji} ⚠️ worklike/title-led signal 감지 "
                             f"→ noise 조기 종료 보류",
                             file=sys.stderr,
                         )
@@ -10680,17 +10689,25 @@ class Orchestrator:
                             ctx.discourse_warning = (
                                 "short_support_signal(novel_literature)"
                                 if _short_support_signal
-                                else "worklike_alias_preservation(novel_literature)"
+                                else (
+                                    "title_led_work_consumption(novel_literature)"
+                                    if _title_led_consumption_work_signal
+                                    else "worklike_alias_preservation(novel_literature)"
+                                )
                             )
                         ctx.uncertainty_sources.append(
-                            "DiscourseAnalyzer: short worklike alias/support signal detected"
+                            "DiscourseAnalyzer: short worklike alias/support/title-led consumption signal detected"
                         )
                         ctx.original_gatekeeper_noise = True
                         ctx.original_gatekeeper_noise_reason = gatekeeper_result.get("noise_reason")
                         ctx.noise_override_reason = (
                             "short_support_signal"
                             if _short_support_signal
-                            else "worklike_alias_preservation"
+                            else (
+                                "title_led_work_consumption"
+                                if _title_led_consumption_work_signal
+                                else "worklike_alias_preservation"
+                            )
                         )
                         gatekeeper_result["is_noise"] = False
                         gatekeeper_result["noise_reason"] = None
@@ -10702,6 +10719,13 @@ class Orchestrator:
                                 list(gatekeeper_result.get("search_requests") or []),
                                 gatekeeper_result=gatekeeper_result,
                                 discourse_analysis=discourse_analysis,
+                                phase="noise_override",
+                            )
+                        if _title_led_consumption_work_signal:
+                            gatekeeper_result["search_requests"] = self._inject_title_led_official_detail_search_requests(
+                                ctx,
+                                list(gatekeeper_result.get("search_requests") or []),
+                                gatekeeper_result=gatekeeper_result,
                                 phase="noise_override",
                             )
                         ctx.set_expert_output(ExpertType.GATEKEEPER, gatekeeper_result)

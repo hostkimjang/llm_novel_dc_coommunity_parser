@@ -5561,6 +5561,108 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             any(item["kind"] == "contextual_alias_official_detail_competition" for item in evidence)
         )
 
+    def test_title_led_gate_canonicalizes_alias_surface_to_official_detail_title(self):
+        pipeline = build_pipeline()
+        alias_title = "암흑가보스"
+        official_title = "암흑가 보스요? 제가요?"
+        official_url = "https://novelpia.com/novel/384111"
+        weak_phrase_competitor = "암흑가 보스의 버려진 딸이 되었다"
+        weak_competitor_url = "https://ridibooks.com/books/3863000164"
+        post = PostInput(
+            post_id=11660257,
+            title="암흑가보스<<이거 재밋네",
+            author="ㅇㅇ",
+            content_blocks=[],
+            comments=[],
+        )
+        ctx = ConversationContext(post_id=post.post_id, post_data=pipeline._post_to_dict(post), comments=[])
+        ctx.llm_snippet_analysis = {
+            "identified_title": official_title,
+            "abbreviation_mappings": [{"abbrev": alias_title, "full": official_title}],
+        }
+        ctx.search_results = [
+            {
+                "title": official_title,
+                "url": official_url,
+                "content": "암흑가 보스요? 제가요? 작가명 손아픈사람. PLUS 독점. #현대 #판타지 #하렘",
+                "query": "암흑가보스 노벨피아",
+                "source_tier": "official_detail",
+            },
+            {
+                "title": f"{weak_phrase_competitor} - 로판 e북",
+                "url": weak_competitor_url,
+                "content": "암흑가 보스의 버려진 딸이 되었다 작품소개.",
+                "query": "시리즈 암흑가보스 작가",
+                "source_tier": "novel_platform",
+            },
+        ]
+        final_decision = {
+            "discussion_type": "general",
+            "work_resolution": "resolved",
+            "title_resolution_state": "resolved",
+            "_raw_llm_title": official_title,
+        }
+        vf_result = {
+            "novel_identity": {
+                "official_title": official_title,
+                "official_novel_title": official_title,
+                "heretic_url": official_url,
+            },
+            "grounding_check": {
+                "anchor_found": "title_mention",
+                "title_abbrev_mentioned": True,
+                "matched_alias": alias_title,
+            },
+            "slang_insight": {
+                "detected_term": alias_title,
+                "decoded_term": official_title,
+                "decode_verified": True,
+                "alias_scope": "pure_work_alias",
+            },
+            "relation_judgment": {
+                "relation_type": "explicit_alias",
+                "discussion_target": "specific_work",
+                "promotion_decision": "hold",
+            },
+        }
+        candidates = [
+            DetectedTitle(
+                official_title=alias_title,
+                heretic_url=official_url,
+                confidence="High",
+                source_tier="official_detail",
+                page_type="novel_page",
+            ),
+            DetectedTitle(
+                official_title=official_title,
+                confidence="High",
+                source_tier="community",
+            ),
+        ]
+
+        decision = pipeline._record_title_led_alias_public_title_gate_decision(
+            ctx,
+            alias_title,
+            candidate_url=official_url,
+            final_decision=final_decision,
+            verification_result=vf_result,
+            title_candidates=candidates,
+            acceptance={"decision": "accept", "title_led_consumption_bridge": True, "score": 29},
+        )
+
+        self.assertEqual(decision["status"], "publish")
+        self.assertTrue(decision["publish_allowed"])
+        self.assertEqual(decision["official_title"], official_title)
+        self.assertEqual(decision["official_url"], official_url)
+        self.assertIn("title_led_alias_official_detail_canonicalized", decision["reason_codes"])
+        state = ctx._last_promotion_gate_state
+        self.assertTrue(state["row_discusses_work_as_work"])
+        self.assertEqual(state["scope"]["scope_kind"], "current_work")
+        self.assertEqual(state["scope"]["conflict_reason_codes"], [])
+        self.assertIn("title_led_alias_official_detail_canonicalized", state["scope"]["direct_bridge_sources"])
+        self.assertNotIn("title_led_alias_contextual_official_detail_competes", decision["reason_codes"])
+        self.assertNotIn(weak_phrase_competitor, state["scope"]["competing_candidates"])
+
     def test_title_led_gate_keeps_current_visual_bracket_candidate_when_shared_alias_competitor_exists(self):
         pipeline = build_pipeline()
         correct_title = "변방계에서 회귀자로 살아남기"
@@ -8336,6 +8438,83 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             [call for call in calls if call[0] == "테라포밍 노벨피아"],
             [("테라포밍 노벨피아", "platform_title_search")],
         )
+
+    def test_title_led_consumption_signal_revives_low_specific_noise_official_probe(self):
+        class StaticExpert:
+            def __init__(self, payload):
+                self.payload = payload
+
+            def analyze(self, *_args, **_kwargs):
+                return self.payload
+
+        calls = []
+
+        def search_fn(query, purpose=""):
+            calls.append((query, purpose))
+            return []
+
+        orchestrator = Orchestrator(
+            experts={
+                ExpertType.GATEKEEPER: StaticExpert(
+                    {
+                        "is_noise": True,
+                        "noise_reason": "제목-본문 연속문이며 제목 파편만 존재하는 저특이 잡담 패턴",
+                        "post_type": "community_banter",
+                        "detected_entities": {
+                            "possible_titles": ["암흑가보스"],
+                            "possible_authors": [],
+                            "possible_characters": [],
+                            "platforms_mentioned": [],
+                        },
+                        "key_terms": ["암흑가보스", "재밋네"],
+                        "context_clues": {
+                            "title_as_body_continuation": True,
+                            "has_specific_names": False,
+                        },
+                        "search_requests": [],
+                        "confidence": "low",
+                    }
+                ),
+                ExpertType.DISCOURSE: StaticExpert(
+                    {
+                        "discourse_analysis": {
+                            "primary_domain": "novel_literature",
+                            "domain_confidence": "high",
+                            "intent": "discuss_work",
+                            "target_kind": "work",
+                            "title_body_consistency": True,
+                            "is_association_not_discussion": False,
+                            "title_novel_terms": ["암흑가보스"],
+                            "domain_evidence": ["암흑가보스", "재밋네"],
+                        }
+                    }
+                ),
+            },
+            search_fn=search_fn,
+            fetch_fn=None,
+        )
+
+        ctx = orchestrator.process(
+            post_data={
+                "post_id": 11660257,
+                "title": "암흑가보스<<이거 재밋네",
+                "content_blocks": [{"type": "image", "url": "https://example.test/cover.jpg"}],
+                "neighbor_hints": {"repeated_terms": []},
+                "compound_anchor_terms": [],
+            },
+            comments=[],
+            rules_config={},
+        )
+
+        gatekeeper_out = ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
+        self.assertFalse(gatekeeper_out.get("is_noise"))
+        self.assertEqual(gatekeeper_out.get("post_type"), "work_discussion")
+        self.assertEqual(getattr(ctx, "noise_override_reason", ""), "title_led_work_consumption")
+        self.assertEqual(
+            calls[0],
+            ('site:novelpia.com/novel "암흑가보스"', "title_anchor_official_probe"),
+        )
+        self.assertIn(("암흑가보스 노벨피아", "platform_title_search"), calls)
 
     def test_title_led_mixed_input_injects_naver_series_author_probe_before_budget_tail(self):
         calls = []

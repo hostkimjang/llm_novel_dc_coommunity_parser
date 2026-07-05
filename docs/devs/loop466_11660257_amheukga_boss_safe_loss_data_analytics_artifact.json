@@ -1,0 +1,59 @@
+{
+  "artifact_type": "data_analytics_summary",
+  "loop": 466,
+  "generated_at": "2026-07-05T13:58:00+09:00",
+  "language": "ko",
+  "audience": "runtime_gate_review",
+  "answer_first": "Loop466은 11660257 단건 safe-loss를 v3에서 safe_resolved로 닫았다. queue는 92에서 91로 감소했고, 동일 packet safe_resolved는 0에서 1로 증가했다. 단 full375 approval은 아니다.",
+  "metrics": {
+    "runtime_rows": 1,
+    "completed_rows": 1,
+    "safe_resolved_before": 0,
+    "safe_resolved_after": 1,
+    "safe_loss_after": 0,
+    "residual_queue_before": 92,
+    "residual_queue_after": 91,
+    "search_degraded": 0,
+    "unrecovered_degraded": 0,
+    "publication_contract_violations": 0
+  },
+  "evidence": [
+    {
+      "name": "v3 result",
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop466_11660257_amheukga_boss_safe_loss_search_nonlight_result_v3.json",
+      "meaning": "public identity가 암흑가 보스요? 제가요? / https://novelpia.com/novel/384111로 safe_resolved publish됨"
+    },
+    {
+      "name": "health audit",
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop466_11660257_amheukga_boss_safe_loss_run_health_v3.json",
+      "meaning": "completed-source flush, search evidence, publication contract convergence가 모두 GO"
+    },
+    {
+      "name": "publication contract audit",
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop466_11660257_amheukga_boss_safe_loss_publication_contract_v3.json",
+      "meaning": "row 1건, violation 0건"
+    },
+    {
+      "name": "goal convergence audit",
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop466_11660257_goal_convergence_stop_condition.json",
+      "meaning": "회차 수가 아니라 queue 감소와 same-packet safe_resolved 단조 비감소 조건으로 GO"
+    }
+  ],
+  "gate_state": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO",
+    "search_evidence": "GO",
+    "targeted_stop_condition": "GO_TARGETED / 92 -> 91 / safe 0 -> 1",
+    "residual_queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL",
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "caveats": [
+    "단건 closure는 broader approval이 아니다.",
+    "v1/v2 실패를 거쳐 v3에서 닫혔으므로, stale v1/v2 결과로 queue를 줄이면 안 된다.",
+    "아생갤/갤러리 표면은 현실 커뮤니티 단정이 아니라 작중 커뮤니티 오마주형 제목/약어/장치 가능성을 유지한다."
+  ]
+}

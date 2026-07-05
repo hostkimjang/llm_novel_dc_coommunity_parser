@@ -1,5 +1,21 @@
 # Development Checklist
 
+## 2026-07-05 Loop466 11660257 암흑가보스 safe-loss 체크
+
+- [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `11660257` 단건을 current HEAD `7a5fcbfd` + 워킹트리 패치에서 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- [x] v1/v2는 각각 `promotion_blocked`와 noise/wrong candidate 경로라 queue 감소 근거로 쓰지 않았다.
+- [x] `orchestrator.py` title-led consumption signal을 low-specific noise override에 배선했다.
+- [x] `agentic_pipeline.py` alias surface `암흑가보스`를 official detail full title `암흑가 보스요? 제가요?`로 canonicalize하도록 했다.
+- [x] Run `20260705_135142_651455`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`로 완료됐다.
+- [x] Row search는 query/degraded/unrecovered `10/0/0`, accepted/raw `58/150`이다.
+- [x] Public publish contract는 `official_title=암흑가 보스요? 제가요?`, `official_url=https://novelpia.com/novel/384111`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`다.
+- [x] Stop-condition audit는 queue `92 -> 91`, same packet `11660257`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- [x] 사용자 도메인 보정을 유지했다: `아생갤` 같은 `갤러리` 표면은 현실 커뮤니티로 자동 고정하지 않고 웹소설 내부 갤러리/댓글식 커뮤니티 오마주형 제목/약어/세계관 장치일 수 있다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 residual queue delta를 full scan approval로 승격하지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, targeted stop-condition `GO_TARGETED / 92 -> 91 / safe 0 -> 1`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop465 11708478 comment-title image-context safe-loss 체크
 
 - [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

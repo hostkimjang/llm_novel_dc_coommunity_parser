@@ -1,5 +1,37 @@
 # Verification Results
 
+## 2026-07-05 Loop466 11660257 암흑가보스 safe-loss 검증
+
+- 범위: residual `repair_safe_loss`의 `11660257` 단건을 current HEAD `7a5fcbfd` + 워킹트리 패치에서 search 포함 non-light 조건으로 실행하고, publication contract와 goal convergence stop-condition을 감사했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_466_REPORT_20260705.md`
+  - state `docs\devs\loop466_11660257_amheukga_boss_safe_loss_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop466_11660257_amheukga_boss_safe_loss_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop466_11660257_amheukga_boss_safe_loss_search_nonlight_result_v3.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop466_11660257_amheukga_boss_safe_loss_run_health_v3.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop466_11660257_amheukga_boss_safe_loss_publication_contract_v3.json`
+  - residual queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop466_after_11660257_amheukga_boss_safe_loss_residual_action_queue.json`
+  - convergence audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop466_11660257_goal_convergence_stop_condition.json`
+- Runtime:
+  - v1 `20260705_133259_981279`은 `promotion_blocked`, v2 `20260705_134550_629087`은 noise/wrong candidate 경로라 queue closure 근거에서 제외했다.
+  - v3 run `20260705_135142_651455`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - Search `GO`, query/degraded/unrecovered `10/0/0`, upstream zero `2`, accepted `58`
+- Result:
+  - `official_title=암흑가 보스요? 제가요?`, public `official_url=https://novelpia.com/novel/384111`
+  - `candidate_ledger_status=safe_resolved`, `safe_resolved=true`, `promotion_decision.status=publish`, `publish_allowed=true`
+  - `title_led_consumption_bridge`와 `title_led_alias_official_detail_canonicalized`로 alias surface와 official detail full title이 같은 current work로 수렴했다.
+- Audit:
+  - `tools/audit_expert_run_health.py` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=GO`, `publication_contract_convergence=GO`.
+  - `tools/audit_publication_contract_convergence.py` -> `GO / row_count 1 / violation_row_count 0`.
+  - `tools/evaluate_goal_convergence.py` -> queue `92 -> 91`, same packet `true`, safe_resolved `0 -> 1`, safe_loss `[]`, gate `GO`.
+- Boundary:
+  - 이 단건 closure는 full375 approval이 아니다.
+  - `아생갤`은 웹소설 `아카데미 생존 갤러리`처럼 작중 갤러리/댓글식 커뮤니티 오마주형 제목 약어일 수 있으므로 `갤러리` 표면을 현실 커뮤니티로 자동 고정하지 않는다.
+  - R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+  - Full375 collateral은 `NOT_OPEN`, broader search recovery는 `P0 / ROW_LEVEL_GO_ONLY`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop465 11708478 comment-title image-context safe-loss 검증
 
 - 범위: residual `repair_safe_loss`의 `11708478` 단건을 current HEAD `b14c3e7c`에서 search 포함 non-light 조건으로 실행하고, publication contract와 goal convergence stop-condition을 감사했다.
