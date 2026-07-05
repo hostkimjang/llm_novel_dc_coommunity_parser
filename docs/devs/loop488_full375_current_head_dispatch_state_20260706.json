@@ -1,0 +1,59 @@
+{
+  "loop": 488,
+  "date": "2026-07-06",
+  "report_type": "current_head_full375_dispatch_state",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "head": "4b838520",
+  "run": {
+    "pid": 42256,
+    "run_id": "20260706_044255_159249",
+    "status": "IN_PROGRESS",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/panel/regression_panel_input.jsonl",
+    "input_post_count": 375,
+    "output": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop488_full375_current_head_4b838520_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop488_full375_current_head_4b838520_search_nonlight_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop488_full375_current_head_4b838520_search_nonlight_result_checkpoint.jsonl",
+    "stderr": "logs/loop488_full375_current_head_4b838520_search_nonlight_stderr.log",
+    "stdout": "logs/loop488_full375_current_head_4b838520_search_nonlight_stdout.log",
+    "expert_log": "logs/expert_run_20260706_044255_159249.log"
+  },
+  "runtime_config": {
+    "server_type": "vllm",
+    "llm_endpoint": "http://10.20.0.101:8000",
+    "llm_model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+    "parallel": 16,
+    "reuse_shards_only": true,
+    "slang_db": "off",
+    "vlm": true,
+    "ocr": true,
+    "require_vlm_ocr_for_images": true,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_required_ok": 16
+  },
+  "initial_evidence": {
+    "mcp_health_ok_count": 16,
+    "mcp_health_failure_count": 0,
+    "vlm_ocr_semantic_review_ready": true,
+    "image_post_count": 241,
+    "completed_count": 3,
+    "flushed_count": 1,
+    "pending_count": 2,
+    "failed_count": 0,
+    "checkpoint_lines": 3,
+    "completed_post_ids_sample": [
+      11673082,
+      11684371,
+      11668305
+    ]
+  },
+  "gates": {
+    "full375_runtime": "IN_PROGRESS / 3 of 375 initial checkpoint",
+    "full375_collateral": "PENDING / NO-GO 유지",
+    "golden_audit_after_loop488": "NOT_RUN_AFTER_LOOP488",
+    "collateral_compare_after_loop488": "NOT_RUN_AFTER_LOOP488",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

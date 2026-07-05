@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-06 - Loop488 current HEAD full375 dispatch
+
+- Loop487 코드 변경 이후 stale Loop477 full375 증거를 재사용하지 않고 current HEAD `4b838520`에서 full375 collateral 런을 새로 발주했다.
+- Run `20260706_044255_159249`, PID `42256`, input `out/regression_safe_grounding_20260626_000008_928006_loop01/panel/regression_panel_input.jsonl`, output `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop488_full375_current_head_4b838520_search_nonlight_result.json`이다.
+- 실행 조건은 search 포함 non-light, VLM/OCR on, `--slang-db off`, 기존 16 shard 재사용, parallel `16`이다.
+- 초기 health는 MCP `16/16`, VLM/OCR `READY`, checkpoint `3` rows, completed/flushed/pending/failed `3/1/2/0`이다.
+- 이번 회차는 dispatch 및 초기 생산성 확인이다. Full375 완료, golden audit, collateral compare는 아직 없다.
+- Report는 `docs/devs/loop_reports/LOOP_488_REPORT_20260706.md`, state는 `docs/devs/loop488_full375_current_head_dispatch_state_20260706.json`이다.
+- Gate는 full375 runtime `IN_PROGRESS`, full375 collateral `PENDING / NO-GO 유지`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop487 stable alias collision contract
 
 - Loop486 exact9 mismatch `11685987`, `11692444`를 stable alias collision 계약으로 먼저 수리했다.

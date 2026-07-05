@@ -1,5 +1,18 @@
 # Developer TODO Index
 
+## 2026-07-06 Loop488 TODO
+
+- 상태 업데이트: current HEAD `4b838520` full375가 background로 진행 중이다. Goal은 완료가 아니다.
+- [x] Loop477 full375를 stale 증거로 분리하고 Loop488 full375를 새 결과 파일로 발주했다.
+- [x] Run `20260706_044255_159249`, PID `42256`, input `375` rows, output path를 기록했다.
+- [x] Search 포함 non-light MCP health `16/16`과 VLM/OCR `READY`를 확인했다.
+- [x] Checkpoint `3` rows로 실제 row 생산을 확인했다.
+- [ ] Background run이 `375/375`로 닫히는지 감시한다.
+- [ ] 완료되면 run health audit, publication contract audit, golden18 audit, full375 collateral compare를 생성한다.
+- [ ] Collateral이 조용하면 수렴 이정표와 full_scan 경로를 정의한다.
+- [ ] Collateral이 시끄러우면 regression panel 확대 또는 review-adjusted residual queue 갱신으로 전환한다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop487 TODO
 
 - 상태 업데이트: Loop486 expected-title mismatch 2건은 stable alias collision 계약으로 코드 수리했다. Goal은 완료가 아니다.

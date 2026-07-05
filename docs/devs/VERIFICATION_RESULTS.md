@@ -1,5 +1,26 @@
 # Verification Results
 
+## 2026-07-06 Loop488 current HEAD full375 dispatch 검증
+
+- 범위: Loop487 이후 current HEAD `4b838520`에서 full375 collateral을 새로 실행 시작했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_488_REPORT_20260706.md`
+  - state `docs\devs\loop488_full375_current_head_dispatch_state_20260706.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop488_full375_current_head_4b838520_search_nonlight_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop488_full375_current_head_4b838520_search_nonlight_result_manifest.json`
+  - checkpoint `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop488_full375_current_head_4b838520_search_nonlight_result_checkpoint.jsonl`
+- Result:
+  - run_id `20260706_044255_159249`, PID `42256`
+  - input rows `375`
+  - search 포함 non-light MCP health `16/16`
+  - VLM/OCR `READY`, image posts `241`
+  - initial completed/flushed/pending/failed `3/1/2/0`
+  - checkpoint lines `3`
+- Boundary:
+  - 이번 검증은 dispatch와 초기 row 생산성 확인이다.
+  - Full375 runtime은 아직 완료되지 않았고 golden audit/collateral compare도 없다.
+  - Full375 collateral은 `PENDING / NO-GO 유지`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 Loop487 stable alias collision contract 검증
 
 - 범위: Loop486 expected-title mismatch `11685987`, `11692444`의 stable alias collision을 코드 계약으로 고정했다.

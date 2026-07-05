@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260706-488 - current HEAD full375 dispatch
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Full375 dispatch | IN_PROGRESS | run `20260706_044255_159249`, PID `42256`, input `375` | background completion 감시 |
+| Runtime health | GO_STARTUP | MCP health `16/16`, search 포함 non-light | 완료 후 run health audit |
+| VLM/OCR | READY | `vlm=true`, `ocr=true`, image posts `241` | 완료 후 golden/collateral audit |
+| Row production | GO_INITIAL | checkpoint `3` rows, completed/flushed/pending/failed `3/1/2/0` | 375/375 완료 확인 |
+| Collateral gate | PENDING/NO-GO | Loop488 compare 미실행 | 완료 후 full375 collateral compare |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: full375 runtime `IN_PROGRESS`, full375 collateral `PENDING / NO-GO 유지`, golden/collateral audit `NOT_RUN_AFTER_LOOP488`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-487 - stable alias collision contract
 
 | 항목 | 상태 | 근거 | 다음 |

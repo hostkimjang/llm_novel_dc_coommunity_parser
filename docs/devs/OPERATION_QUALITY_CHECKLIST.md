@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop488 current HEAD full375 dispatch 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_488_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop488_full375_current_head_dispatch_state_20260706.json`.
+  - [x] Input `375` rows와 current HEAD `4b838520`을 기록했다.
+  - [x] Search 포함 non-light MCP health `16/16`을 확인했다.
+  - [x] VLM/OCR `READY`를 확인했다.
+  - [x] Checkpoint `3` rows로 runtime row 생산을 확인했다.
+- 품질 경계:
+  - [x] Dispatch와 초기 row 생산은 full375 approval이 아니다.
+  - [x] Loop477 full375는 Loop487 코드 변경 이후 current HEAD 증거가 아니므로 stale로 분리한다.
+  - [ ] Full375 runtime은 아직 `375/375` 완료되지 않았다.
+  - [ ] Golden audit과 collateral compare는 아직 실행되지 않았다.
+  - [ ] Full375 collateral은 `PENDING / NO-GO 유지`다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: full375 runtime `IN_PROGRESS`, full375 collateral `PENDING / NO-GO 유지`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop487 stable alias collision contract 품질 게이트
 
 - 근거:

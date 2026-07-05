@@ -1,5 +1,19 @@
 # Development Checklist
 
+## 2026-07-06 Loop488 current HEAD full375 dispatch 체크
+
+- [x] Loop487 이후 current HEAD `4b838520`으로 full375를 새로 발주했다.
+- [x] 기존 Loop477 full375 결과는 stale 증거로 취급하고 approval 근거로 재사용하지 않는다.
+- [x] Input `375` rows를 확인했다.
+- [x] Search 포함 non-light health `MCP 16/16`을 확인했다.
+- [x] VLM/OCR `READY`, image posts `241`을 확인했다.
+- [x] Checkpoint `3` rows로 실제 row 생산을 확인했다.
+- [ ] Full375 runtime은 아직 `375/375` 완료되지 않았다.
+- [ ] 완료 후 run health audit, publication contract audit, golden18 audit, collateral compare를 실행한다.
+- [ ] Full375 collateral `GO` 전 goal 완료를 주장하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: full375 runtime `IN_PROGRESS`, full375 collateral `PENDING / NO-GO 유지`, golden/collateral audit `NOT_RUN_AFTER_LOOP488`.
+
 ## 2026-07-06 Loop487 stable alias collision contract 체크
 
 - [x] `11685987` mismatch를 `괴담동 -> 괴담 동아리` stable alias가 `[괴담 동아리] 겨울` 파생 상세에 밀린 케이스로 재현했다.
