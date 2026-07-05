@@ -1,5 +1,34 @@
 # Verification Results
 
+## 2026-07-06 Loop478 full375 P0 review batch 검증
+
+- 범위: Loop477 full375 collateral `NO-GO`의 P0 회귀 후보를 source-native/blind judge 검토 입력으로 고정하고, 배치 도구의 scope 하드코딩을 제거했다.
+- Code:
+  - `tools\build_collateral_triage_review_batch.py`
+  - `tests\test_build_collateral_triage_review_batch.py`
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_478_REPORT_20260706.md`
+  - state `docs\devs\loop478_full375_p0_review_batch_20260706.json`
+  - batch JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop478_full375_p0_review_batch.json`
+  - batch JSONL `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop478_full375_p0_review_batch.jsonl`
+  - batch Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop478_full375_p0_review_batch.md`
+- Batch result:
+  - gate `REVIEW-LOCKED`
+  - selected review rows `138`
+  - bucket `wrong_work_title_flip 21`, `unsafe_promotion_from_hold 24`, `safe_loss_resolved_to_null 93`
+  - missing source/baseline/after `0/0/0`
+  - search recovery gate `P0_OPEN`
+  - promotion_blocked interpretation `search-blind conditional`
+- Validation:
+  - `.\venv\Scripts\python.exe -m py_compile tools\build_collateral_triage_review_batch.py tests\test_build_collateral_triage_review_batch.py` PASS
+  - `.\venv\Scripts\python.exe -m unittest tests.test_build_collateral_triage_review_batch -v` PASS, `4` tests
+  - batch generation command PASS, `selected_review_rows=138`
+  - generated batch artifacts contain no fixed `collateral183` wording and no `reason_lines` in blind judge input.
+- Boundary:
+  - Source-native/blind verdicts are not filled yet.
+  - This is not full375 collateral approval.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE` remain.
+
 ## 2026-07-06 Loop477 full375 collateral 검증
 
 - 범위: golden expected-answer `18/18 PASS` 이후 full375 collateral을 1회 실행해 golden 소표본 과적합 여부를 확인했다.

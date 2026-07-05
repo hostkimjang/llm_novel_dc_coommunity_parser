@@ -1,5 +1,21 @@
 # Development Checklist
 
+## 2026-07-06 Loop478 full375 P0 review batch 체크
+
+- [x] Loop477 full375 collateral `NO-GO` 이후 residual 단건 감소가 아니라 P0 batch review 경로로 전환했다.
+- [x] `tools/build_collateral_triage_review_batch.py`의 `collateral183` 하드코딩을 제거했다.
+- [x] `--scope-label`을 추가해 full375와 과거 collateral183 모두 같은 도구로 보고할 수 있게 했다.
+- [x] Scope label JSON/Markdown 계약 테스트를 추가했다.
+- [x] Loop478 batch JSON/JSONL/MD를 생성했다.
+- [x] selected review rows는 `138`, bucket은 `wrong_work_title_flip 21`, `unsafe_promotion_from_hold 24`, `safe_loss_resolved_to_null 93`이다.
+- [x] missing source/baseline/after는 `0/0/0`이다.
+- [x] 생성 batch 산출물에는 `collateral183` 고정 문구가 없고 blind judge 입력에 `reason_lines`가 없다.
+- [x] `py_compile` PASS, `tests.test_build_collateral_triage_review_batch` `4` tests PASS.
+- [ ] Source-native/blind verdict는 아직 채워지지 않았다.
+- [ ] Full375 collateral approval은 `NO-GO`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: batch generation `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, promotion blocked `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-06 Loop477 full375 collateral 체크
 
 - [x] Golden expected-answer `18/18 PASS` 이후 residual 단건 반복 전에 full375 collateral을 실행했다.

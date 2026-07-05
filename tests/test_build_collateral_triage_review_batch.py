@@ -1,6 +1,8 @@
 import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
-from tools.build_collateral_triage_review_batch import build_review_batch
+from tools.build_collateral_triage_review_batch import build_review_batch, write_markdown
 
 
 def _triage_row(post_id, bucket, status, before_title, after_title):
@@ -113,6 +115,32 @@ class BuildCollateralTriageReviewBatchTest(unittest.TestCase):
         self.assertEqual([row["post_id"] for row in report["review_rows"]], [18])
         self.assertEqual(report["summary"]["counts_by_bucket"], {"unsafe_promotion_from_hold": 1})
         self.assertEqual(report["summary"]["bucket_filter"], ["unsafe_promotion_from_hold"])
+
+    def test_scope_label_is_configurable(self):
+        report = build_review_batch(
+            triage_report={
+                "rows": [
+                    _triage_row(20, "safe_loss_resolved_to_null", "resolved_to_null", "A", None),
+                ]
+            },
+            panel_rows={20: {"post_id": 20, "title": "post 20"}},
+            baseline_rows={},
+            after_rows={},
+            scope_label="Loop477 full375 P0 collateral",
+            generated_at="2026-07-06T00:00:00",
+        )
+
+        self.assertEqual(report["report_type"], "collateral_p0_blind_source_review_batch")
+        self.assertEqual(report["scope_label"], "Loop477 full375 P0 collateral")
+
+        with TemporaryDirectory() as tmp:
+            output = Path(tmp) / "batch.md"
+            write_markdown(output, report, inputs={"triage": Path("triage.json")})
+            text = output.read_text(encoding="utf-8")
+
+        self.assertIn("# Loop477 full375 P0 collateral blind/source-native 검토 배치", text)
+        self.assertIn("Loop477 full375 P0 collateral 정답성 검토 입력", text)
+        self.assertNotIn("collateral183", text)
 
 
 if __name__ == "__main__":

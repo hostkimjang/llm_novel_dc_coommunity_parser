@@ -1,0 +1,56 @@
+{
+  "loop": 478,
+  "date": "2026-07-06",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "goal_complete": false,
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "purpose": "Convert Loop477 full375 collateral P0 regressions into a shared blind/source-native review batch before ordinary residual reduction.",
+    "batch_gate": "REVIEW-LOCKED",
+    "selected_review_rows": 138,
+    "missing_source_rows": 0,
+    "missing_baseline_result_rows": 0,
+    "missing_after_result_rows": 0,
+    "search_recovery_gate": "P0_OPEN",
+    "promotion_blocked_interpretation": "search-blind conditional"
+  },
+  "bucket_counts": {
+    "wrong_work_title_flip": 21,
+    "unsafe_promotion_from_hold": 24,
+    "safe_loss_resolved_to_null": 93
+  },
+  "code_changes": [
+    "tools/build_collateral_triage_review_batch.py adds --scope-label and generic collateral_p0_blind_source_review_batch report_type.",
+    "tests/test_build_collateral_triage_review_batch.py covers JSON and Markdown scope label behavior."
+  ],
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_478_REPORT_20260706.md",
+    "batch_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop478_full375_p0_review_batch.json",
+    "batch_jsonl": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop478_full375_p0_review_batch.jsonl",
+    "batch_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop478_full375_p0_review_batch.md",
+    "triage_source": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop477_full375_current_head_merged375_collateral_triage.json",
+    "after_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop477_full375_current_head_merged375_search_nonlight_result.json"
+  },
+  "validation": [
+    {
+      "command": ".\\venv\\Scripts\\python.exe -m py_compile tools\\build_collateral_triage_review_batch.py tests\\test_build_collateral_triage_review_batch.py",
+      "result": "PASS"
+    },
+    {
+      "command": ".\\venv\\Scripts\\python.exe -m unittest tests.test_build_collateral_triage_review_batch -v",
+      "result": "PASS",
+      "tests": 4
+    },
+    {
+      "command": ".\\venv\\Scripts\\python.exe tools\\build_collateral_triage_review_batch.py --scope-label \"Loop477 full375 P0 collateral\" ...",
+      "result": "PASS",
+      "selected_review_rows": 138
+    }
+  ],
+  "next_actions": [
+    "Fill N-row source-native/blind verdicts from wrong_work_title_flip or unsafe_promotion_from_hold first.",
+    "Do not count ACCEPT as regression exclusion until gate wiring consumes the review summary.",
+    "Keep full375 collateral NO-GO until review-adjusted regression count reaches zero and full_scan path is defined."
+  ]
+}

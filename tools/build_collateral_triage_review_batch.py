@@ -254,6 +254,7 @@ def build_review_batch(
     after_rows: dict[int, dict[str, Any]],
     per_bucket_limit: int = 0,
     buckets: set[str] | None = None,
+    scope_label: str = "collateral P0",
     generated_at: str | None = None,
 ) -> dict[str, Any]:
     selected = _p0_rows(triage_report, per_bucket_limit=per_bucket_limit, buckets=buckets)
@@ -304,7 +305,8 @@ def build_review_batch(
         )
     counts_by_bucket = Counter(str(row.get("triage_bucket") or "") for row in review_rows)
     return {
-        "report_type": "collateral183_p0_blind_source_review_batch",
+        "report_type": "collateral_p0_blind_source_review_batch",
+        "scope_label": scope_label,
         "generated_at": generated_at or datetime.now().replace(microsecond=0).isoformat(),
         "gate": "REVIEW-LOCKED",
         "semantic_quality": "REVIEW-LOCKED",
@@ -333,8 +335,9 @@ def build_review_batch(
 
 def write_markdown(path: Path, report: dict[str, Any], *, inputs: dict[str, Path]) -> None:
     summary = report["summary"]
+    scope_label = str(report.get("scope_label") or "collateral P0")
     lines = [
-        "# Collateral P0 blind/source-native 검토 배치",
+        f"# {scope_label} blind/source-native 검토 배치",
         "",
         f"- gate: `{report['gate']}`",
         f"- semantic_quality: `{report['semantic_quality']}`",
@@ -361,7 +364,7 @@ def write_markdown(path: Path, report: dict[str, Any], *, inputs: dict[str, Path
             "- judge에는 `source_native_packet`, `blind_judge_options`, `blind_judge_hold_option`만 전달한다.",
             "- `comparison_private_not_for_blind_judge`는 전후 회귀 추적용이므로 judge 입력에서 제외한다.",
             "- native web 확인 전까지 `needs_native_web_check=true`를 유지한다.",
-            "- 이 배치는 collateral183의 P0 정답성 검토 입력이며 승인 산출물이 아니다.",
+            f"- 이 배치는 {scope_label} 정답성 검토 입력이며 승인 산출물이 아니다.",
             "",
             "## 대표 행",
             "",
@@ -386,7 +389,7 @@ def write_markdown(path: Path, report: dict[str, Any], *, inputs: dict[str, Path
         [
             "## Gate 해석",
             "",
-            "대형 런은 background 감시로 내렸고, 이 산출물은 collateral183 P0를 blind/source-native 검토 가능한 입력으로 고정한다. "
+            f"이 산출물은 {scope_label}를 blind/source-native 검토 가능한 입력으로 고정한다. "
             "정답 라벨이 채워지기 전까지 full collateral approval은 열리지 않는다.",
             "",
         ]
@@ -416,6 +419,11 @@ def parse_args() -> argparse.Namespace:
         default=[],
         help="Restrict the batch to one triage_bucket. Repeat to include multiple buckets.",
     )
+    parser.add_argument(
+        "--scope-label",
+        default="collateral P0",
+        help="Reader-facing scope label used in report JSON/Markdown.",
+    )
     return parser.parse_args()
 
 
@@ -428,6 +436,7 @@ def main() -> None:
         after_rows=_result_rows_by_post_id(load_json(args.after_result)),
         per_bucket_limit=args.per_bucket_limit,
         buckets={bucket for bucket in args.bucket if bucket},
+        scope_label=args.scope_label,
     )
     inputs = {
         "triage": args.triage,

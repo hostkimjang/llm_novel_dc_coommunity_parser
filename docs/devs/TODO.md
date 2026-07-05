@@ -1,5 +1,19 @@
 # Developer TODO Index
 
+## 2026-07-06 Loop478 TODO
+
+- 상태 업데이트: Loop477 full375 P0 `138`건을 blind/source-native review batch로 고정했다. 이 배치는 approval이 아니라 다음 N건 판정 입력이다.
+- [x] `build_collateral_triage_review_batch.py` scope 하드코딩을 제거하고 `--scope-label`을 추가했다.
+- [x] `Loop477 full375 P0 collateral` scope로 batch JSON/JSONL/MD를 생성했다.
+- [x] selected review rows `138`, missing source/baseline/after `0/0/0`을 확인했다.
+- [x] `wrong_work_title_flip 21`, `unsafe_promotion_from_hold 24`, `safe_loss_resolved_to_null 93`으로 bucket을 고정했다.
+- [x] `py_compile`과 focused unittest를 통과했다.
+- [ ] 다음은 `wrong_work_title_flip` 또는 `unsafe_promotion_from_hold`부터 N건 source-native/blind verdict를 채운다.
+- [ ] `ACCEPT`는 gate wiring 후에만 regression count 제외 후보로 쓴다.
+- [ ] `REPROCESS`는 targeted guard/runtime follow-up 전까지 해소 처리하지 않는다.
+- [ ] 완료 기준은 여전히 `full375 collateral GO + full_scan 경로 정의`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop477 TODO
 
 - 상태 업데이트: full375 병합 runtime은 `375/375` 완료됐지만 full375 collateral은 `NO-GO / changed 197 / regression candidates 139`다. Goal은 완료가 아니다.

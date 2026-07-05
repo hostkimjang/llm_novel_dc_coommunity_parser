@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260706-478 - full375 P0 review batch scope generalization
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Scope 하드코딩 | 제거 | `build_collateral_triage_review_batch.py --scope-label` 추가 | future collateral scope는 label로 명시 |
+| Report type | 일반화 | `collateral_p0_blind_source_review_batch` | collateral183 전용 명칭 재사용 금지 |
+| Loop477 P0 batch | 생성 | `loop478_full375_p0_review_batch.json/.jsonl/.md`, selected `138` | source-native/blind verdict 채우기 |
+| Bucket | 고정 | wrong-work `21`, unsafe promotion `24`, safe-loss `93` | N건 batch 판정 |
+| Blind judge 입력 | 보호 | generated artifact에 `reason_lines` 없음 | comparison private는 judge 입력 제외 유지 |
+| 검증 | PASS | py_compile PASS, focused unittest `4` tests PASS | broader bundle은 verdict tooling 변경 시 재실행 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | approval 주장 금지 |
+
+Gate: batch generation `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, `promotion_blocked=search-blind conditional`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260705-475 - 11671517 기계공주 title-variant closure
 
 | 항목 | 상태 | 근거 | 다음 |

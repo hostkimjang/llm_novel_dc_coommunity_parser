@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-06 - Loop478 full375 P0 review batch
+
+- Loop477 full375 collateral `NO-GO` 이후 ordinary residual 단건 감소로 돌아가지 않고 P0 회귀 후보를 shared blind/source-native 검토 배치로 고정했다.
+- `tools/build_collateral_triage_review_batch.py`에서 `collateral183` 하드코딩을 제거하고 `--scope-label`을 추가했다.
+- Report type은 `collateral_p0_blind_source_review_batch`로 일반화했고 Markdown 제목/해석도 scope label을 사용한다.
+- Test `tests.test_build_collateral_triage_review_batch`에 scope label JSON/Markdown 계약을 추가했다.
+- Loop478 batch는 selected review rows `138`, bucket `wrong_work_title_flip 21`, `unsafe_promotion_from_hold 24`, `safe_loss_resolved_to_null 93`이다.
+- Source/panel, baseline result, after result 누락은 `0/0/0`이다.
+- 산출물은 state `docs/devs/loop478_full375_p0_review_batch_20260706.json`와 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop478_full375_p0_review_batch.json/.jsonl/.md`다.
+- 검증은 `py_compile` PASS, `tests.test_build_collateral_triage_review_batch` `4` tests PASS, batch generation PASS다.
+- Gate는 batch generation `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, `promotion_blocked=search-blind conditional`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop477 full375 collateral replay after golden18 PASS
 
 - Golden expected-answer는 full375 병합 결과에서 `18/18 PASS`였지만, 이것만으로 승인하지 않고 full375 collateral을 실행했다.
