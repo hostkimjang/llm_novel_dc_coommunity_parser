@@ -1,5 +1,19 @@
 # Development Checklist
 
+## 2026-07-05 Loop468 11660259 기계공주 safe-loss 체크
+
+- [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `11660259` 단건을 current HEAD `755f769e`에서 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- [x] Run `20260705_142933_043692`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`로 완료됐다.
+- [x] Row search는 query/degraded/unrecovered `7/0/0`, accepted/raw `23/134`이다.
+- [x] Public publish contract는 `official_title=헌터갤러리의 국가권력급 기계공주`, `official_url=https://novelpia.com/novel/390228`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`다.
+- [x] `기계공주` title alias, 본문 전개 반응, official detail URL이 같은 current work로 수렴했음을 확인했다.
+- [x] Stop-condition audit는 queue `90 -> 89`, same packet `11660259`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- [x] 도메인 보정을 유지했다: `기계공주`는 작품 약칭이고 full title의 `갤러리` 표면은 현실 커뮤니티 단정이 아니라 작중 커뮤니티 오마주형 장치일 수 있다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 residual queue delta를 full scan approval로 승격하지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, targeted stop-condition `GO_TARGETED / 90 -> 89 / safe 0 -> 1`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop467 11660258 괴담텔 safe-loss 체크
 
 - [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

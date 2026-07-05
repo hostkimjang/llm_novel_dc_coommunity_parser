@@ -1,5 +1,22 @@
 # Operation Quality Checklist
 
+## 2026-07-05 Loop468 11660259 기계공주 safe-loss 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_468_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop468_11660259_machine_princess_safe_loss_runtime_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop468_11660259_machine_princess_safe_loss_data_analytics_artifact.json`.
+  - [x] Health audit `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`를 기록했다.
+  - [x] Stop-condition audit artifact를 기록했다: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop468_11660259_goal_convergence_stop_condition.json`.
+  - [x] Residual queue delta `90 -> 89`, `repair_safe_loss 62 -> 61`을 기록했다.
+- 품질 게이트:
+  - [x] `기계공주`를 `헌터갤러리의 국가권력급 기계공주` 작품 약칭으로 닫는다.
+  - [x] `갤에서 말한대로`는 현실 커뮤니티 자체를 최종 작품으로 삼는 근거가 아니라, 작품 주변 커뮤니티 전개 예측 맥락으로만 기록한다.
+  - [x] Verifier의 slang DB 저장 제안은 채택하지 않고 `--slang-db off` 및 BatchMem 일반명사형 약칭 보류 상태를 기록한다.
+  - [x] 단건 targeted runtime과 residual queue delta를 golden18/full375 approval로 승격하지 않는다.
+  - [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 하지 않았음을 명시한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-05 Loop465 11708478 comment-title image-context 품질 게이트
 
 - 근거:

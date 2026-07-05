@@ -1,0 +1,60 @@
+{
+  "artifact_type": "data_analytics_summary",
+  "loop": 468,
+  "generated_at": "2026-07-05T14:34:00+09:00",
+  "language": "ko",
+  "audience": "runtime_gate_review",
+  "answer_first": "Loop468은 11660259 단건 safe-loss를 헌터갤러리의 국가권력급 기계공주로 safe_resolved publish했다. queue는 90에서 89로 감소했고, 동일 packet safe_resolved는 0에서 1로 증가했다. 단 full375 approval은 아니다.",
+  "metrics": {
+    "runtime_rows": 1,
+    "completed_rows": 1,
+    "safe_resolved_before": 0,
+    "safe_resolved_after": 1,
+    "safe_loss_after": 0,
+    "residual_queue_before": 90,
+    "residual_queue_after": 89,
+    "search_degraded": 0,
+    "unrecovered_degraded": 0,
+    "publication_contract_violations": 0
+  },
+  "evidence": [
+    {
+      "name": "result",
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop468_11660259_machine_princess_safe_loss_search_nonlight_result.json",
+      "meaning": "public identity가 헌터갤러리의 국가권력급 기계공주 / https://novelpia.com/novel/390228로 safe_resolved publish됨"
+    },
+    {
+      "name": "health audit",
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop468_11660259_machine_princess_safe_loss_run_health.json",
+      "meaning": "completed-source flush, search evidence, publication contract convergence가 모두 GO"
+    },
+    {
+      "name": "publication contract audit",
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop468_11660259_machine_princess_safe_loss_publication_contract.json",
+      "meaning": "row 1건, violation 0건"
+    },
+    {
+      "name": "goal convergence audit",
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop468_11660259_goal_convergence_stop_condition.json",
+      "meaning": "회차 수가 아니라 queue 감소와 same-packet safe_resolved 단조 비감소 조건으로 GO"
+    }
+  ],
+  "gate_state": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO",
+    "search_evidence": "GO",
+    "targeted_stop_condition": "GO_TARGETED / 90 -> 89 / safe 0 -> 1",
+    "residual_queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL",
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "caveats": [
+    "단건 closure는 broader approval이 아니다.",
+    "search degraded는 0이지만 전체 search recovery를 닫는 근거는 아니다.",
+    "Verifier의 slang DB 저장 제안은 채택하지 않았다. 실행은 --slang-db off였고 repo slang DB write-back은 없다.",
+    "기계공주/헌터갤러리의 갤러리 표면은 현실 커뮤니티 단정이 아니라 작품 제목 또는 작중 커뮤니티 오마주형 장치 가능성을 유지한다."
+  ]
+}
