@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260706-481 - safe_loss_resolved_to_null source-native verdict batch
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Bucket verdict | 완료 | `safe_loss_resolved_to_null 93`, reviewed `93/93` | repair/HOLD queue 분리 |
+| Label 분포 | NO-GO | `REPROCESS 59 / HOLD 25 / ACCEPT 9` | restore/candidate-set/image/policy 후속 |
+| Bucket queue | PARTIAL | original `93`, exclusion candidates `9`, residual `84` | exclusion은 collateral gate wiring 필요 |
+| Combined P0 | REVIEW-LOCKED | reviewed `138/138`, `ACCEPT 34 / HOLD 41 / REPROCESS 63`, residual `104` | full375 collateral GO 전 수리 필요 |
+| 도메인 정책 | 유지 | `아생갤`은 작품 약칭/작중 갤러리 오마주 가능성 보존 | reality-gallery 단정 금지 |
+| 검증 | PASS | batch build PASS, verdict JSON parse PASS, bucket/combined summary validation issue `0` | gate wiring 후 always-on gate 재검증 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: source-native review `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-480 - unsafe_promotion_from_hold source-native verdict batch
 
 | 항목 | 상태 | 근거 | 다음 |

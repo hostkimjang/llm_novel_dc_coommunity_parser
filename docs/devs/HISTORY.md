@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-06 - Loop481 safe_loss_resolved_to_null source-native verdict
+
+- Loop478 P0 `138`건 중 남은 `safe_loss_resolved_to_null 93`건을 별도 batch로 고정하고 source-native/blind verdict를 전수 작성했다.
+- 결과는 reviewed `93/93`, validation issue `0`, label `REPROCESS 59`, `HOLD 25`, `ACCEPT 9`이다.
+- Bucket action queue는 원 P0 `93`에서 gate wiring 뒤 제외 후보 `9`, 수리 큐 `59`, 정책/native 추가 검토 큐 `25`, 잔여 `84`로 정리됐다.
+- Loop479+Loop480+Loop481 combined summary는 P0 `138`, reviewed `138`, unreviewed `0`, label `ACCEPT 34`, `HOLD 41`, `REPROCESS 63`, residual action queue `104`다.
+- Verdict 산출물은 `docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json`이다.
+- Report는 `docs/devs/loop_reports/LOOP_481_REPORT_20260706.md`, state는 `docs/devs/loop481_safe_loss_resolved_to_null_source_native_20260706.json`이다.
+- 검증은 batch build PASS, verdict JSON parse PASS, bucket/combined summary validation issue `0`이다.
+- Gate는 source-native review `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop480 unsafe_promotion_from_hold source-native verdict
 
 - Loop478 P0 `138`건 중 `unsafe_promotion_from_hold 24`건을 별도 batch로 고정하고 source-native/blind verdict를 전수 작성했다.

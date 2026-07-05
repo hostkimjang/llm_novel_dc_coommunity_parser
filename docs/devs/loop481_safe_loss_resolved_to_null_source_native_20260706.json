@@ -1,0 +1,126 @@
+{
+  "loop": 481,
+  "date": "2026-07-06",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "goal_complete": false,
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "scope": "Loop477 full375 P0 collateral safe_loss_resolved_to_null 93-row source-native/blind verdict",
+  "summary": {
+    "bucket_review_rows": 93,
+    "bucket_reviewed_rows": 93,
+    "bucket_unreviewed_rows": 0,
+    "bucket_validation_issue_count": 0,
+    "bucket_gate": "REVIEW-LOCKED",
+    "bucket_label_counts": {
+      "REPROCESS": 59,
+      "HOLD": 25,
+      "ACCEPT": 9
+    },
+    "bucket_queue_transition": {
+      "original_p0_rows": 93,
+      "source_native_reviewed_rows": 93,
+      "exclusion_candidate_rows": 9,
+      "repair_required_rows": 59,
+      "policy_or_native_review_required_rows": 25,
+      "residual_action_queue_rows": 84,
+      "full_collateral_approval_open": false
+    },
+    "combined_full375_p0": {
+      "batch_review_rows": 138,
+      "reviewed_rows": 138,
+      "unreviewed_batch_rows": 0,
+      "validation_issue_count": 0,
+      "label_counts": {
+        "HOLD": 41,
+        "ACCEPT": 34,
+        "REPROCESS": 63
+      },
+      "queue_transition": {
+        "original_p0_rows": 138,
+        "source_native_reviewed_rows": 138,
+        "exclusion_candidate_rows": 34,
+        "repair_required_rows": 63,
+        "policy_or_native_review_required_rows": 41,
+        "residual_action_queue_rows": 104,
+        "full_collateral_approval_open": false
+      },
+      "queue_by_bucket": {
+        "wrong_work_title_flip": {
+          "rows": 21,
+          "label_counts": {
+            "HOLD": 6,
+            "ACCEPT": 12,
+            "REPROCESS": 3
+          },
+          "residual_action_queue_rows": 9
+        },
+        "unsafe_promotion_from_hold": {
+          "rows": 24,
+          "label_counts": {
+            "HOLD": 10,
+            "ACCEPT": 13,
+            "REPROCESS": 1
+          },
+          "residual_action_queue_rows": 11
+        },
+        "safe_loss_resolved_to_null": {
+          "rows": 93,
+          "label_counts": {
+            "REPROCESS": 59,
+            "HOLD": 25,
+            "ACCEPT": 9
+          },
+          "residual_action_queue_rows": 84
+        }
+      }
+    }
+  },
+  "interpretation": [
+    "Loop481 completes source-native/blind verdict coverage for the remaining full375 P0 bucket, not full collateral approval.",
+    "For safe_loss_resolved_to_null, REPROCESS means the prior safe title or a corrected title is source-supported and after-null needs repair.",
+    "ACCEPT rows are regression-count exclusion candidates only after the collateral gate consumes the combined review summary.",
+    "Full375 collateral remains NO-GO because the combined P0 review still has 63 REPROCESS and 41 HOLD rows."
+  ],
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_481_REPORT_20260706.md",
+    "verdicts": "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+    "batch_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json",
+    "batch_jsonl": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.jsonl",
+    "batch_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.md",
+    "summary_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_source_native_review.json",
+    "summary_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_source_native_review.md",
+    "combined_summary_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_combined_full375_p0_source_native_review.json",
+    "combined_summary_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_combined_full375_p0_source_native_review.md"
+  },
+  "validation": [
+    {
+      "command": ".\\venv\\Scripts\\python.exe tools\\build_collateral_triage_review_batch.py --bucket safe_loss_resolved_to_null --scope-label \"Loop481 full375 safe_loss_resolved_to_null\" ...",
+      "result": "PASS",
+      "selected_review_rows": 93,
+      "missing_source_baseline_after": "0/0/0"
+    },
+    {
+      "command": ".\\venv\\Scripts\\python.exe -m json.tool docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "result": "PASS"
+    },
+    {
+      "command": ".\\venv\\Scripts\\python.exe tools\\summarize_collateral_review_verdicts.py --batch loop481_safe_loss_resolved_to_null_review_batch.json --verdicts docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json ...",
+      "result": "PASS",
+      "validation_issue_count": 0
+    },
+    {
+      "command": ".\\venv\\Scripts\\python.exe tools\\summarize_collateral_review_verdicts.py --batch loop478_full375_p0_review_batch.json --verdicts loop479 loop480 loop481 verdicts ...",
+      "result": "PASS",
+      "reviewed_rows": 138,
+      "unreviewed_batch_rows": 0,
+      "validation_issue_count": 0
+    }
+  ],
+  "next_actions": [
+    "Wire the combined Loop479+Loop480+Loop481 summary into the collateral gate before counting 34 ACCEPT rows as review-adjusted exclusions.",
+    "Prioritize 63 REPROCESS rows: safe-loss restore, wrong-work repair, unsafe promotion repair, and candidate-set rebuild.",
+    "Triage 41 HOLD rows by image/native-web/policy queues before claiming full375 collateral GO.",
+    "Keep full375 collateral NO-GO until review-adjusted regression count reaches zero and the full_scan path is defined."
+  ]
+}

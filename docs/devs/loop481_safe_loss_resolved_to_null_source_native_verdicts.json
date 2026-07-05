@@ -1,0 +1,1716 @@
+{
+  "review_id": "loop481_safe_loss_resolved_to_null_source_native_verdicts",
+  "loop": 481,
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json",
+  "scope": "Loop481 full375 safe_loss_resolved_to_null 93건 source-native/blind 판정",
+  "review_policy": "source-native review only; native web/search is not refreshed; no full collateral approval; for safe_loss, REPROCESS means the prior safe title or a corrected title is source-supported and after-null needs repair, ACCEPT means null/hold is justified and can be excluded only after gate wiring",
+  "generated_at": "2026-07-06T02:38:47",
+  "rows": [
+    {
+      "post_id": 11658620,
+      "selected_option_id": "C1",
+      "selected_title": "이거 럽코 빙의물인가요",
+      "selected_url": "https://novel.munpia.com/533816",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`럽코빙의`가 post title에 직접 있고 전생/현실 작품 언급 방식과 연중 직전 화 맥락도 같은 작품 소비 맥락이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11658620",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11658620",
+        "https://novel.munpia.com/533816"
+      ]
+    },
+    {
+      "post_id": 11660232,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "multi_work_or_comparison_context_needs_policy_review",
+      "evidence_grade": "Medium",
+      "action": [
+        "multi_work_policy_review",
+        "preserve_secondary_candidates"
+      ],
+      "rationale_ko": "post title은 `괴담텔` 전개를 말하면서 비교 대상으로 `괴담동`을 든다. 후보 C1은 비교작으로는 지지되지만 final current-work로 복원할지 정책 판정이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11660232",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11660232"
+      ]
+    },
+    {
+      "post_id": 11660257,
+      "selected_option_id": "C1",
+      "selected_title": "암흑가 보스요? 제가요?",
+      "selected_url": "https://novelpia.com/novel/384111",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`암흑가보스`가 후보 title의 직접 약칭이고 post title이 재미 평가를 직접 수행한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11660257",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11660257",
+        "https://novelpia.com/novel/384111"
+      ]
+    },
+    {
+      "post_id": 11660265,
+      "selected_option_id": "C1",
+      "selected_title": "헌터갤러리의 국가권력급 기계공주",
+      "selected_url": "https://novelpia.com/novel/390228",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`기계공주`, 이브, 오필리아가 같은 작품 인물/설정 맥락으로 직접 결속된다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11660265",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11660265",
+        "https://novelpia.com/novel/390228"
+      ]
+    },
+    {
+      "post_id": 11660271,
+      "selected_option_id": "C1",
+      "selected_title": "월야의 여인들",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "본문과 댓글이 `월야의 여인들`을 직접 말하고 아이돌 히로인 장면을 같은 작품 근거로 설명한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11660271",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11660271"
+      ]
+    },
+    {
+      "post_id": 11660273,
+      "selected_option_id": "C1",
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "selected_url": "https://novelpia.com/novel/414963",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "본문이 `마줍에 나오는 투명 우주 흡혈귀`라고 후보 작품의 약칭과 설정 대상을 직접 연결한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11660273",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11660273",
+        "https://novelpia.com/novel/414963"
+      ]
+    },
+    {
+      "post_id": 11660277,
+      "selected_option_id": "C1",
+      "selected_title": "아카메디 아카데미 본 사람?",
+      "selected_url": "https://novelpia.com/novel/22299",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`완결난 아카메디`가 후보 title의 짧은 표면과 직접 대응하고 완결 감상 맥락이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11660277",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11660277",
+        "https://novelpia.com/novel/22299"
+      ]
+    },
+    {
+      "post_id": 11661856,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "source text에는 후보 title을 직접 지지하는 표면이 없고 이미지/탭 맥락에서 온 title일 가능성이 있어 null 회귀로 단정할 수 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11661856",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11661856"
+      ]
+    },
+    {
+      "post_id": 11661881,
+      "selected_option_id": "C1",
+      "selected_title": "여신이 나만 애호함",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`여신애호` prefix와 `잉잉이/클라우드 링` 설정 언급이 후보 작품 소비 맥락으로 직접 결속된다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11661881",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11661881"
+      ]
+    },
+    {
+      "post_id": 11663514,
+      "selected_option_id": "C1",
+      "selected_title": "마탄 속의 제국",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "본문에 공식/상세 URL과 `마탄 속의 제국` 장면 인용이 함께 있어 기존 safe title을 유지해야 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11663514",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11663514"
+      ]
+    },
+    {
+      "post_id": 11663521,
+      "selected_option_id": "C1",
+      "selected_title": "초전자포] 시스터즈가 되었다",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`TS) 시스터즈`와 토우마/갱생펀치 맥락이 후보 패러디/작품 title을 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11663521",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11663521"
+      ]
+    },
+    {
+      "post_id": 11663535,
+      "selected_option_id": "C1",
+      "selected_title": "퇴마록",
+      "selected_url": "https://page.kakao.com/content/66470141",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "post title과 본문이 `퇴마록` 인물/능력 체계를 직접 열거한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11663535",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11663535",
+        "https://page.kakao.com/content/66470141"
+      ]
+    },
+    {
+      "post_id": 11663540,
+      "selected_option_id": "C1",
+      "selected_title": "방구석 여신이 되었다",
+      "selected_url": "https://novelpia.com/novel/35984",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "character_bridge_supports_safe_title_lost_to_null",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`주서연`과 여고생/전차 농담이 후보 작품 캐릭터 맥락으로 결속되며 경쟁 후보는 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11663540",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11663540",
+        "https://novelpia.com/novel/35984"
+      ]
+    },
+    {
+      "post_id": 11663557,
+      "selected_option_id": "C1",
+      "selected_title": "퇴마록",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "post title과 본문이 `퇴마록` 애니/이우혁을 직접 언급한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11663557",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11663557"
+      ]
+    },
+    {
+      "post_id": 11665110,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "alias_or_legacy_title_needs_native_confirmation",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_web_review_required",
+        "alias_relation_review_required"
+      ],
+      "rationale_ko": "source text는 `사이키델리아`만 직접 말하고 후보 C1 `낭만적인 초능력을 위하여`와의 alias 관계는 source-native만으로 확정하기 어렵다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11665110",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11665110"
+      ]
+    },
+    {
+      "post_id": 11665124,
+      "selected_option_id": "C1",
+      "selected_title": "화산파(화산귀환)",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "댓글이 `화귀` 회차와 해남편을 직접 말해 후보 작품 맥락을 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11665124",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11665124"
+      ]
+    },
+    {
+      "post_id": 11666700,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "multi_work_or_current_target_policy_review",
+      "evidence_grade": "Medium",
+      "action": [
+        "multi_work_policy_review",
+        "preserve_secondary_candidates"
+      ],
+      "rationale_ko": "본문은 `내고향무림` 최신화 댓글창을 주 대상으로 삼고 `하남자탑등반`은 비교 대상으로 언급한다. 단일 final title 복원은 정책 판정이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11666700",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11666700"
+      ]
+    },
+    {
+      "post_id": 11666725,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "post는 이미지 기반 감상으로 보이고 source text만으로 후보 title을 직접 확인할 수 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11666725",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11666725"
+      ]
+    },
+    {
+      "post_id": 11666731,
+      "selected_option_id": "C1",
+      "selected_title": "약먹는 천재마법사",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`약먹마`는 후보 title의 약칭이고 본문이 최근 전개 감상을 직접 말한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11666731",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11666731"
+      ]
+    },
+    {
+      "post_id": 11668278,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "null_or_hold_preferred_candidate_not_source_supported",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문은 실제 음식 `짜장면` 재료 이야기이며 작품 title로 볼 결속 근거가 없다. after null이 더 안전하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11668278",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11668278"
+      ]
+    },
+    {
+      "post_id": 11668288,
+      "selected_option_id": "C1",
+      "selected_title": "가챠 중독자의 퓨전펑크 생활",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`가챠펑크`와 호텔 스트레스 맥락이 후보 작품의 직접 약칭/전개 감상이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11668288",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11668288"
+      ]
+    },
+    {
+      "post_id": 11668300,
+      "selected_option_id": "C1",
+      "selected_title": "즉사기 들고 게임 속 으로",
+      "selected_url": "https://series.naver.com/novel/detail.series?productNo=8050192",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`즉사기` 표면과 보러간다는 독서 의사가 후보 작품을 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11668300",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11668300",
+        "https://series.naver.com/novel/detail.series?productNo=8050192"
+      ]
+    },
+    {
+      "post_id": 11668305,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "null_or_hold_preferred_candidate_not_source_supported",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문은 실제 마파두부 가게 추억이고 후보 `Fate/stay night`를 지지하는 source-native 표면이 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11668305",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11668305"
+      ]
+    },
+    {
+      "post_id": 11668325,
+      "selected_option_id": "C1",
+      "selected_title": "Fate/stay night",
+      "selected_url": "https://ridibooks.com/books/505001486",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "본문/댓글이 마파두부 밈과 `페이트스테이나이트`를 직접 연결하므로 후보 작품 맥락이 성립한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11668325",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11668325",
+        "https://ridibooks.com/books/505001486"
+      ]
+    },
+    {
+      "post_id": 11669907,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "본문은 결말 내용만 말하고 후보 title 표면은 source text에 없다. 이미지/원문 맥락 확인 전 복원은 보류한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11669907",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11669907"
+      ]
+    },
+    {
+      "post_id": 11669908,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "null_or_hold_preferred_candidate_not_source_supported",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "본문은 이과 마법 일반론이고 댓글도 다른 예시를 섞는다. 후보 `아카데미에서 살아남기`를 직접 지지하지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11669908",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11669908"
+      ]
+    },
+    {
+      "post_id": 11669913,
+      "selected_option_id": "C1",
+      "selected_title": "하룬",
+      "selected_url": "https://ridibooks.com/books/1811007466",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "post title이 `하룬`을 직접 말하고 수학 마법 평가도 같은 작품 감상이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11669913",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11669913",
+        "https://ridibooks.com/books/1811007466"
+      ]
+    },
+    {
+      "post_id": 11669926,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "source text에는 후보 `싸울아비 룬`이 없고 이미지 기반 캐릭터/장면 판정이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11669926",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11669926"
+      ]
+    },
+    {
+      "post_id": 11669933,
+      "selected_option_id": "C1",
+      "selected_title": "회귀수선전",
+      "selected_url": "https://series.naver.com/novel/detail.series?productNo=9807283",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`중경계`, `해방상제`, `서휼`이 후보 작품 설정/인물 맥락으로 직접 결속된다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11669933",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11669933",
+        "https://series.naver.com/novel/detail.series?productNo=9807283"
+      ]
+    },
+    {
+      "post_id": 11671507,
+      "selected_option_id": "C1",
+      "selected_title": "판초우의의 마법사",
+      "selected_url": "https://novel.munpia.com/530500",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`판초우의`와 마법사 합격/주인공 능력 감상이 후보 작품을 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11671507",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11671507",
+        "https://novel.munpia.com/530500"
+      ]
+    },
+    {
+      "post_id": 11671512,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "source text는 유카리 히로인 패러디 언급뿐이고 후보 title `삼시세끼, 심아식당`은 이미지/외부 맥락 확인이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11671512",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11671512"
+      ]
+    },
+    {
+      "post_id": 11673096,
+      "selected_option_id": "C1",
+      "selected_title": "삼국지",
+      "selected_url": "https://novelpia.com/novel/270775",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_work_surface_supports_safe_title_lost_to_null",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "본문이 책장에서 집어온 `삼국지` 독서 맥락이고 댓글도 연의/삼국지 흐름을 말한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11673096",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11673096",
+        "https://novelpia.com/novel/270775"
+      ]
+    },
+    {
+      "post_id": 11673102,
+      "selected_option_id": "C1",
+      "selected_title": "갤질하는 천재 의사",
+      "selected_url": "https://mm.munpia.com/?menu=novel&action=view&id=556720&entry_id=next&entry_seq=-10860205",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "본문이 랭킹 작품 목록에 `갤질의사`를 직접 포함하므로 후보 title의 약칭이 source-native로 지지된다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11673102",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11673102",
+        "https://mm.munpia.com/?menu=novel&action=view&id=556720&entry_id=next&entry_seq=-10860205"
+      ]
+    },
+    {
+      "post_id": 11674694,
+      "selected_option_id": "C1",
+      "selected_title": "21세기 무림세가",
+      "selected_url": "https://page.kakao.com/content/49668687",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`21세기무림`과 무협 설정/노벨피아 무협 댓글이 후보 작품을 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11674694",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11674694",
+        "https://page.kakao.com/content/49668687"
+      ]
+    },
+    {
+      "post_id": 11676314,
+      "selected_option_id": "HOLD",
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "candidate_set_incomplete_correct_title_outside_options",
+      "evidence_grade": "Strong",
+      "action": [
+        "candidate_set_rebuild_required",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "post title의 `마도줍`은 `마도서를 줍다 마법사가 되다` 쪽을 직접 가리키며 후보 C1 `소설 속 엑스트라`는 지지되지 않는다. null보다 후보 재구성이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11676314",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11676314"
+      ]
+    },
+    {
+      "post_id": 11677915,
+      "selected_option_id": "C1",
+      "selected_title": "전지적 독자 시점",
+      "selected_url": "https://novel.munpia.com/104753",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "댓글이 `전독시`를 직접 언급하며 최애작 비난 맥락의 대상 후보로 source-native 지지가 있다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11677915",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11677915",
+        "https://novel.munpia.com/104753"
+      ]
+    },
+    {
+      "post_id": 11677924,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "source text는 남캐 일러/갑옷 감상만 있고 후보 작품명은 보이지 않는다. 이미지 확인 없이는 복원할 수 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11677924",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11677924"
+      ]
+    },
+    {
+      "post_id": 11677926,
+      "selected_option_id": "C1",
+      "selected_title": "재앙급 막내 공자의 회귀",
+      "selected_url": "https://page.kakao.com/content/66110131",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "댓글이 `무영자 카카페 재앙급 막내공자 355`라고 직접 회차/플랫폼/작품을 확인한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11677926",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11677926",
+        "https://page.kakao.com/content/66110131"
+      ]
+    },
+    {
+      "post_id": 11681152,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "본문은 공지 생존 여부만 말하며 후보 title은 source text에 직접 없다. 이미지 공지 확인이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11681152",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11681152"
+      ]
+    },
+    {
+      "post_id": 11681172,
+      "selected_option_id": "C1",
+      "selected_title": "헌터갤러리의 국가권력급 기계공주",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "post title의 `기계공주맛`이 후보 작품의 직접 약칭/비교 표면이고 복원 근거가 충분하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11681172",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11681172"
+      ]
+    },
+    {
+      "post_id": 11681178,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "본문은 보일러/반려견 사고 농담만 있고 후보 title 결속은 이미지 확인이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11681178",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11681178"
+      ]
+    },
+    {
+      "post_id": 11682749,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "null_or_hold_preferred_candidate_not_source_supported",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "본문과 댓글은 TS 템플릿의 원형으로 `묵향`을 말한다. 후보 C1 `주인공인데 주인공이 아님`은 source-native 근거가 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11682749",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11682749"
+      ]
+    },
+    {
+      "post_id": 11682761,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "`목마` 작가 언급만으로 후보 title을 확정하기 어렵고 이미지/작가-작품 관계 확인이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11682761",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11682761"
+      ]
+    },
+    {
+      "post_id": 11682767,
+      "selected_option_id": "C1",
+      "selected_title": "묵향",
+      "selected_url": "https://mm.munpia.com/?menu=novel&action=view&id=51088&entry_id=776982",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "post title과 본문/댓글이 `묵향` TS 초기 설정과 드래곤 하트 설정을 직접 논의한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11682767",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11682767",
+        "https://mm.munpia.com/?menu=novel&action=view&id=51088&entry_id=776982"
+      ]
+    },
+    {
+      "post_id": 11682775,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "source text는 TS무협 추천 질문뿐이고 후보 title은 직접 보이지 않는다. 이미지/게시물 맥락 확인이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11682775",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11682775"
+      ]
+    },
+    {
+      "post_id": 11684372,
+      "selected_option_id": "C1",
+      "selected_title": "밀리언 클래스",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`밀리언클래스` 공지와 대학원생 휴재 사유를 직접 말한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11684372",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11684372"
+      ]
+    },
+    {
+      "post_id": 11685987,
+      "selected_option_id": "C1",
+      "selected_title": "괴담 동아리",
+      "selected_url": "https://page.kakao.com/content/54701995",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`괴담동`이 후보 title의 약칭이고 post title이 작품 성향 질문을 직접 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11685987",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11685987",
+        "https://page.kakao.com/content/54701995"
+      ]
+    },
+    {
+      "post_id": 11685994,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "source text는 `외신소환 주문`만 말하고 후보 긴 title은 이미지/원글 맥락 없이 확정하기 어렵다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11685994",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11685994"
+      ]
+    },
+    {
+      "post_id": 11687661,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "광고 이미지 기반으로 보이며 source text만으로 후보 `약혼녀가 소천마였다`를 확인할 수 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11687661",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11687661"
+      ]
+    },
+    {
+      "post_id": 11690841,
+      "selected_option_id": "C1",
+      "selected_title": "블루 아카이브",
+      "selected_url": "https://page.kakao.com/content/67135563",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`블아`, 칸나, 리오 등 원작 캐릭터 표면이 후보 작품을 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11690841",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11690841",
+        "https://page.kakao.com/content/67135563"
+      ]
+    },
+    {
+      "post_id": 11692436,
+      "selected_option_id": "C1",
+      "selected_title": "퍼펙트 메이지",
+      "selected_url": "https://novelpia.com/novel/17203",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "character_bridge_supports_safe_title_lost_to_null",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`류서란(perfect)`와 댓글 `old girl`이 후보 작품/캐릭터 맥락으로 결속된다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11692436",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11692436",
+        "https://novelpia.com/novel/17203"
+      ]
+    },
+    {
+      "post_id": 11692444,
+      "selected_option_id": "C1",
+      "selected_title": "엑스칼리버 뽑습니다",
+      "selected_url": "https://novelpia.com/novel/381767",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`엑칼뽑`은 후보 title의 직접 약칭이고 캐빨 평가도 작품 감상이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11692444",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11692444",
+        "https://novelpia.com/novel/381767"
+      ]
+    },
+    {
+      "post_id": 11694019,
+      "selected_option_id": "C1",
+      "selected_title": "혼후 순결",
+      "selected_url": "https://page.kakao.com/content/61863349",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "post title과 본문이 `혼후순결` 설정/장면을 직접 논의한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11694019",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11694019",
+        "https://page.kakao.com/content/61863349"
+      ]
+    },
+    {
+      "post_id": 11694035,
+      "selected_option_id": "HOLD",
+      "selected_title": "아카데미 생존 갤러리",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "candidate_set_incomplete_correct_title_outside_options",
+      "evidence_grade": "Medium",
+      "action": [
+        "candidate_set_rebuild_required",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`아생갤` 표면은 작품 약어일 수 있고 현생/아레스/엘리 맥락은 `아카데미 생존 갤러리` 쪽 검토가 필요하다. 후보 C1 `시로코의 제멋대로 일상 단편선`은 source-native로 부족하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11694035",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11694035"
+      ]
+    },
+    {
+      "post_id": 11694049,
+      "selected_option_id": "C1",
+      "selected_title": "아카데미 생존 갤러리",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "domain_alias_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`아생갤`과 아레스/엘리 기억 맥락이 후보 `아카데미 생존 갤러리`를 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11694049",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11694049"
+      ]
+    },
+    {
+      "post_id": 11695609,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "alias_collision_needs_native_or_policy_review",
+      "evidence_grade": "Medium",
+      "action": [
+        "native_web_review_required",
+        "alias_relation_review_required"
+      ],
+      "rationale_ko": "`랫따싶`과 림월드/퍼리 밈이 보이지만 후보 C1과의 관계는 source-native만으로 불안정하다. 다른 랫따싶 계열 후보와 충돌한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11695609",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11695609"
+      ]
+    },
+    {
+      "post_id": 11697239,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "null_or_hold_preferred_candidate_not_source_supported",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문은 조혈모세포 기증 신청/우편 수령 이야기이며 작품 title 결속이 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11697239",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11697239"
+      ]
+    },
+    {
+      "post_id": 11697242,
+      "selected_option_id": "C1",
+      "selected_title": "유희왕",
+      "selected_url": "https://m.munpia.com/novel/detail/567990",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`유희왕 패러디`와 듀얼리스트/삼전의 재 댓글이 후보 작품/프랜차이즈를 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11697242",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11697242",
+        "https://m.munpia.com/novel/detail/567990"
+      ]
+    },
+    {
+      "post_id": 11697249,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "null_or_hold_preferred_nonwork_or_platform_surface",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "`버거피아 합석`은 노벨피아/장갤 이벤트성 표면으로 읽히며 후보를 작품 title로 확정할 근거가 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11697249",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11697249"
+      ]
+    },
+    {
+      "post_id": 11697256,
+      "selected_option_id": "C1",
+      "selected_title": "황제의 딸로 환생했다",
+      "selected_url": "https://novelpia.com/novel/250464",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "comment_answer_directly_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "댓글이 `황제의 딸로 환생했습니다`, 플랫폼, 내용 요약까지 직접 답해 후보 title을 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11697256",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11697256",
+        "https://novelpia.com/novel/250464"
+      ]
+    },
+    {
+      "post_id": 11698859,
+      "selected_option_id": "C1",
+      "selected_title": "귤부인 대롱대롱",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "post title이 후보 title `귤부인 대롱대롱`을 직접 말하고 후반 전개 감상도 이어진다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11698859",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11698859"
+      ]
+    },
+    {
+      "post_id": 11698870,
+      "selected_option_id": "C1",
+      "selected_title": "인간실격",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "post title이 `인간실격`을 직접 말하고 작가/결말 질문도 같은 작품 맥락이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11698870",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11698870"
+      ]
+    },
+    {
+      "post_id": 11698871,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "character_vs_work_policy_review_required",
+      "evidence_grade": "Medium",
+      "action": [
+        "policy_or_canonical_title_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "source는 `리제로`와 렘 캐릭터를 직접 말하지만 후보 title은 캐릭터 항목 형태다. final identity를 작품 title로 둘지 캐릭터로 둘지 정책 판정이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11698871",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11698871"
+      ]
+    },
+    {
+      "post_id": 11698904,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "null_or_hold_preferred_generic_surface",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "`타락`은 추천 요청의 일반 장르/상태 표면이며 특정 작품 title로 확정할 수 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11698904",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11698904"
+      ]
+    },
+    {
+      "post_id": 11698910,
+      "selected_option_id": "C1",
+      "selected_title": "판초우의의 마법사",
+      "selected_url": "https://novel.munpia.com/530500",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`판초우의`와 정부 대응/마법사 설정 논의가 후보 작품을 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11698910",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11698910",
+        "https://novel.munpia.com/530500"
+      ]
+    },
+    {
+      "post_id": 11702090,
+      "selected_option_id": "C1",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_url": "https://novelpia.com/novel/102155",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "character_and_plot_bridge_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "한가인, 아리, 부등변, 상현쌤이 후보 작품 인물/설정 맥락으로 강하게 결속된다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11702090",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11702090",
+        "https://novelpia.com/novel/102155"
+      ]
+    },
+    {
+      "post_id": 11702094,
+      "selected_option_id": "C1",
+      "selected_title": "#더블오",
+      "selected_url": "https://novelpia.com/novel/417074",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_short_title_supports_safe_title_lost_to_null",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`더블오` 정체 공개와 댓글창 반응이 후보 title을 직접 말하며 후보가 단일이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11702094",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11702094",
+        "https://novelpia.com/novel/417074"
+      ]
+    },
+    {
+      "post_id": 11703674,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "multi_work_or_author_previous_work_policy_review",
+      "evidence_grade": "Medium",
+      "action": [
+        "multi_work_policy_review",
+        "preserve_secondary_candidates"
+      ],
+      "rationale_ko": "post는 `아카데미 마피아`와 작가 씨즐을 주 대상으로 하면서 후보 `게임 속 도굴꾼이 되었다`는 전작/비교 대상으로 언급한다. 단일 final title 복원은 정책 검토가 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11703674",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11703674"
+      ]
+    },
+    {
+      "post_id": 11705230,
+      "selected_option_id": "C1",
+      "selected_title": "월야환담",
+      "selected_url": "https://ridibooks.com/books/3685002646",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "post title과 본문이 `월야환담` 세계관의 시대 변화 영향을 직접 논의한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11705230",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11705230",
+        "https://ridibooks.com/books/3685002646"
+      ]
+    },
+    {
+      "post_id": 11705251,
+      "selected_option_id": "C1",
+      "selected_title": "월야환담 창월야",
+      "selected_url": "https://ridibooks.com/books/3685002646",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`창월야`, 한세건, 진마 이름들이 후보 작품 맥락을 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11705251",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11705251",
+        "https://ridibooks.com/books/3685002646"
+      ]
+    },
+    {
+      "post_id": 11706844,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_native_confirmation_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "source text는 `편곤 괴이물 신작`만 말하고 후보 title은 직접 보이지 않는다. 이미지/작가 공지 확인이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11706844",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11706844"
+      ]
+    },
+    {
+      "post_id": 11706871,
+      "selected_option_id": "C1",
+      "selected_title": "파우스트",
+      "selected_url": "https://ridibooks.com/books/1242000797",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "post title과 본문이 `파우스트` 독후감/결말을 직접 말한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11706871",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11706871",
+        "https://ridibooks.com/books/1242000797"
+      ]
+    },
+    {
+      "post_id": 11708432,
+      "selected_option_id": "C1",
+      "selected_title": "전지적 독자 시점",
+      "selected_url": "https://novel.munpia.com/104753",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`전독시`가 후보 title의 직접 약칭이고 성좌물 독창성 논쟁도 같은 작품 맥락이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11708432",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11708432",
+        "https://novel.munpia.com/104753"
+      ]
+    },
+    {
+      "post_id": 11708447,
+      "selected_option_id": "C1",
+      "selected_title": "잠룡회귀",
+      "selected_url": "https://ridibooks.com/books/425439440",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "post title이 `잠룡회귀`를 직접 말하고 하렘/순애 질문이 같은 작품 독서 의사다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11708447",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11708447",
+        "https://ridibooks.com/books/425439440"
+      ]
+    },
+    {
+      "post_id": 11708478,
+      "selected_option_id": "C1",
+      "selected_title": "사연 있는 악역으로 착각 당한다",
+      "selected_url": "https://novelpia.com/novel/396159",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "comment_answer_directly_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "댓글이 `사연있는악역착각`이라고 직접 답해 후보 title을 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11708478",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11708478",
+        "https://novelpia.com/novel/396159"
+      ]
+    },
+    {
+      "post_id": 11710021,
+      "selected_option_id": "C1",
+      "selected_title": "무한의 마법사",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_and_character_support_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`무마`는 후보 title 약칭이고 시로네/히로인 장면 맥락이 작품을 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11710021",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710021"
+      ]
+    },
+    {
+      "post_id": 11710036,
+      "selected_option_id": "HOLD",
+      "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "candidate_set_incomplete_correct_title_outside_options",
+      "evidence_grade": "Medium",
+      "action": [
+        "candidate_set_rebuild_required",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "댓글이 `변방계에서 회귀자로 살아남기`를 직접 후보로 제시한다. 기존 C1은 불안정하므로 null이 아니라 후보 재구성이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11710036",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710036"
+      ]
+    },
+    {
+      "post_id": 11710047,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "본문은 소개문/캐릭터 수 반응만 있고 후보 title은 source text에 없다. 이미지/소개문 확인이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11710047",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710047"
+      ]
+    },
+    {
+      "post_id": 11710049,
+      "selected_option_id": "C1",
+      "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_alias_and_comment_context_support_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`랫따싶`, 림월드, 랫킨 설명이 후보 작품/태그 맥락을 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11710049",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710049"
+      ]
+    },
+    {
+      "post_id": 11711632,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "source text는 `의외로 10년된 것`과 일본 기준뿐이라 후보 `유어 네임`은 이미지 확인 없이는 확정할 수 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11711632",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11711632"
+      ]
+    },
+    {
+      "post_id": 11713220,
+      "selected_option_id": "C1",
+      "selected_title": "나만 성좌들이 안 무서움",
+      "selected_url": "https://novelpia.com/novel/383627",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`성좌안무서움`이 후보 title의 직접 약칭이고 도시락 사장 정체 질문도 작품 설정 맥락이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11713220",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11713220",
+        "https://novelpia.com/novel/383627"
+      ]
+    },
+    {
+      "post_id": 11713222,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "null_or_hold_preferred_candidate_not_source_supported",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "본문은 현대 하렘물 일반론과 다른 작품 `잘생인방`을 말한다. 후보 C1을 직접 지지하지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11713222",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11713222"
+      ]
+    },
+    {
+      "post_id": 11714885,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "본문은 환생/몸 갈아타기 줄거리만 말하고 후보 title은 직접 보이지 않는다. 이미지/원문 확인이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11714885",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11714885"
+      ]
+    },
+    {
+      "post_id": 11714887,
+      "selected_option_id": "C1",
+      "selected_title": "도굴왕 1 |",
+      "selected_url": "https://page.kakao.com/content/53190884",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "post title과 본문 링크/영상 제목이 `도굴왕` PV를 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11714887",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11714887",
+        "https://page.kakao.com/content/53190884"
+      ]
+    },
+    {
+      "post_id": 11714892,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "null_or_hold_preferred_explicit_candidate_rejected",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "본문이 `기계공주는 ㄴㄴ`라고 후보를 명시적으로 제외한다. after null은 기존 후보 제거 관점에서 정당하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11714892",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11714892"
+      ]
+    },
+    {
+      "post_id": 11714903,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "current_work_vs_phrase_policy_review",
+      "evidence_grade": "Medium",
+      "action": [
+        "policy_or_canonical_title_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "본문은 `괴담텔` 인물들이 모두 버튜버라는 감상이고 `온 세상이 버튜버`는 표현/패러디 표면이다. 후보 title 복원은 정책 판정이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11714903",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11714903"
+      ]
+    },
+    {
+      "post_id": 11716475,
+      "selected_option_id": "C1",
+      "selected_title": "지력 99 고능아인 척하기",
+      "selected_url": "https://novelpia.com/novel/308293",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_and_author_context_support_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`고능아`와 작가 `슈퍼갑` 언급이 후보 작품을 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11716475",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11716475",
+        "https://novelpia.com/novel/308293"
+      ]
+    },
+    {
+      "post_id": 11716480,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "source text는 `포티햄` 반응과 이미지 의존 내용뿐이라 후보 title 확인이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11716480",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11716480"
+      ]
+    },
+    {
+      "post_id": 11716498,
+      "selected_option_id": "C1",
+      "selected_title": "마녀의 도시",
+      "selected_url": "https://novelpia.com/novel/23",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "post title이 `마녀도시` 작가를 직접 말하고 후보 작품 맥락이 분명하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11716498",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11716498",
+        "https://novelpia.com/novel/23"
+      ]
+    },
+    {
+      "post_id": 11716505,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "source text는 로판/단어 논쟁 일반론이고 후보 title 표면은 이미지 또는 외부 맥락 없이는 확정되지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11716505",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11716505"
+      ]
+    },
+    {
+      "post_id": 11718099,
+      "selected_option_id": "C1",
+      "selected_title": "빌어먹을 환생",
+      "selected_url": "https://novel.munpia.com/222360",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`빌환`은 후보 title의 직접 약칭이고 표지 변경 감상 맥락이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11718099",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718099",
+        "https://novel.munpia.com/222360"
+      ]
+    },
+    {
+      "post_id": 11718110,
+      "selected_option_id": "C1",
+      "selected_title": "지구온라인에서 쌀먹합니다",
+      "selected_url": "https://novelpia.com/novel/395678",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`지구온라인`과 쌀먹/주인공 외모찬양 반응이 후보 작품 감상으로 직접 결속된다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11718110",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718110",
+        "https://novelpia.com/novel/395678"
+      ]
+    },
+    {
+      "post_id": 11718114,
+      "selected_option_id": "C1",
+      "selected_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "selected_url": "https://novelpia.com/novel/383584",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "title_phrase_and_plot_context_support_safe_title_lost_to_null",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`시스템 딸깍` 설정과 마법 강사질 비판이 후보 title/설정 맥락과 직접 대응한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11718114",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718114",
+        "https://novelpia.com/novel/383584"
+      ]
+    }
+  ]
+}

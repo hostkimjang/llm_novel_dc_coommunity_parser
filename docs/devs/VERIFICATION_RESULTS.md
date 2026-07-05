@@ -1,5 +1,32 @@
 # Verification Results
 
+## 2026-07-06 Loop481 safe_loss_resolved_to_null source-native 검증
+
+- 범위: Loop478 P0 배치 중 남은 `safe_loss_resolved_to_null 93`건을 별도 batch로 만들고 source-native/blind verdict를 전수 작성했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_481_REPORT_20260706.md`
+  - state `docs\devs\loop481_safe_loss_resolved_to_null_source_native_20260706.json`
+  - verdicts `docs\devs\loop481_safe_loss_resolved_to_null_source_native_verdicts.json`
+  - batch JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop481_safe_loss_resolved_to_null_review_batch.json`
+  - summary JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop481_safe_loss_resolved_to_null_source_native_review.json`
+  - combined summary JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop481_combined_full375_p0_source_native_review.json`
+- Result:
+  - bucket gate `REVIEW-LOCKED`
+  - bucket reviewed rows `93/93`
+  - bucket validation issue `0`
+  - bucket label `REPROCESS 59`, `HOLD 25`, `ACCEPT 9`
+  - bucket queue transition: original P0 `93`, exclusion candidates after gate wiring `9`, repair `59`, policy/native review `25`, residual action queue `84`
+  - combined P0: original `138`, reviewed `138`, unreviewed `0`, `ACCEPT 34`, `HOLD 41`, `REPROCESS 63`, residual action queue `104`
+- Validation:
+  - `.\venv\Scripts\python.exe tools\build_collateral_triage_review_batch.py --bucket safe_loss_resolved_to_null --scope-label "Loop481 full375 safe_loss_resolved_to_null" ...` PASS, selected review rows `93`, missing source/baseline/after `0/0/0`
+  - `.\venv\Scripts\python.exe -m json.tool docs\devs\loop481_safe_loss_resolved_to_null_source_native_verdicts.json` PASS
+  - `.\venv\Scripts\python.exe tools\summarize_collateral_review_verdicts.py --batch ...loop481... --verdicts docs\devs\loop481_safe_loss_resolved_to_null_source_native_verdicts.json ...` PASS, validation issue `0`
+  - combined summary command PASS, reviewed rows `138`, unreviewed `0`, validation issue `0`
+- Boundary:
+  - P0 source-native coverage `138/138`은 approval이 아니다.
+  - `REPROCESS 63`과 `HOLD 41`이 남아 full375 collateral은 `NO-GO`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop480 unsafe_promotion_from_hold source-native 검증
 
 - 범위: Loop478 P0 배치 중 `unsafe_promotion_from_hold 24`건을 별도 batch로 만들고 source-native/blind verdict를 전수 작성했다.
@@ -26,8 +53,9 @@
   - Loop480 verdict/batch/summary/combined JSON parse PASS
   - Loop480 batch/verdict artifacts contain no `reason_lines` and no fixed `collateral183` wording
 - Boundary:
-  - `ACCEPT 25`는 gate wiring 뒤 regression-count 제외 후보일 뿐이다.
-  - Remaining P0 `safe_loss_resolved_to_null 93`은 아직 unreviewed다.
+  - `ACCEPT 25`는 Loop480 당시 gate wiring 뒤 regression-count 제외 후보일 뿐이었다.
+  - Remaining P0 `safe_loss_resolved_to_null 93`은 후속 Loop481에서 reviewed `93/93`으로 처리됐다.
+  - 최신 combined P0는 Loop481 기준 `ACCEPT 34 / HOLD 41 / REPROCESS 63`, residual action queue `104`다.
   - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
 
 ## 2026-07-06 Loop479 wrong_work_title_flip source-native 검증

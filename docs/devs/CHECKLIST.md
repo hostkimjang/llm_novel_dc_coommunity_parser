@@ -1,5 +1,21 @@
 # Development Checklist
 
+## 2026-07-06 Loop481 safe_loss_resolved_to_null source-native 체크
+
+- [x] Loop478 P0 batch 중 남은 `safe_loss_resolved_to_null 93`건을 별도 `Loop481 full375 safe_loss_resolved_to_null` batch로 고정했다.
+- [x] Source-native/blind verdict를 `93/93` 작성했다.
+- [x] Validation issue는 `0`이다.
+- [x] 라벨은 `REPROCESS 59`, `HOLD 25`, `ACCEPT 9`이다.
+- [x] Bucket action queue는 원 P0 `93`에서 gate wiring 뒤 제외 후보 `9`, 수리 큐 `59`, 정책/native 추가 검토 큐 `25`, 잔여 `84`로 정리했다.
+- [x] Loop479+Loop480+Loop481 combined summary는 P0 `138`, reviewed `138`, unreviewed `0`, `ACCEPT 34 / HOLD 41 / REPROCESS 63`, residual action queue `104`다.
+- [x] `아생갤` 표면은 작품 약칭/작중 갤러리 오마주 가능성을 유지했고, `11694035`는 후보 재구성 필요로 기록했다.
+- [ ] Combined `ACCEPT 34`는 collateral gate wiring 전까지 regression count에서 제거하지 않는다.
+- [ ] `REPROCESS 63`과 `HOLD 41`을 repair/native/policy queue로 유지한다.
+- [ ] Full375 collateral approval은 아직 `NO-GO`다.
+- [ ] 완료 기준은 여전히 `full375 collateral GO + full_scan 경로 정의`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: source-native review `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-06 Loop480 unsafe_promotion_from_hold source-native 체크
 
 - [x] Loop478 P0 batch 중 `unsafe_promotion_from_hold 24`건을 별도 `Loop480 full375 unsafe_promotion_from_hold` batch로 고정했다.
@@ -11,8 +27,8 @@
 - [x] `11690855`는 게임 일반 토론을 림버스 팬픽 소설로 승격한 REPROCESS로 남겼다.
 - [x] `아생갤` 2건은 작품 약칭/작중 갤러리 오마주 표면 가능성을 반영해 ACCEPT 후보로 판정했다.
 - [x] `py_compile`, collateral review unittest `19`, JSON parse를 통과했다.
-- [ ] Combined `ACCEPT 25`는 collateral gate wiring 전까지 regression count에서 제거하지 않는다.
-- [ ] Remaining P0 bucket은 `safe_loss_resolved_to_null 93`이다.
+- [x] Loop481에서 remaining P0 bucket `safe_loss_resolved_to_null 93` source-native verdict를 완료했다.
+- [ ] Combined `ACCEPT 34`는 collateral gate wiring 전까지 regression count에서 제거하지 않는다.
 - [ ] Full375 collateral approval은 아직 `NO-GO`다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 - Gate: source-native review `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
@@ -30,7 +46,8 @@
 - [x] `py_compile`, collateral review unittest `19`, JSON parse를 통과했다.
 - [x] Loop479 batch/verdict 산출물에는 `reason_lines`와 `collateral183` 고정 문구가 없다.
 - [ ] Full375 collateral approval은 아직 `NO-GO`다.
-- [ ] Remaining P0 bucket은 `unsafe_promotion_from_hold 24`, `safe_loss_resolved_to_null 93`이다.
+- [x] Loop480/Loop481에서 remaining P0 bucket `unsafe_promotion_from_hold 24`, `safe_loss_resolved_to_null 93` verdict를 완료했다.
+- [ ] Combined `ACCEPT 34`는 collateral gate wiring 전까지 regression count에서 제거하지 않는다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 - Gate: source-native review `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
 
@@ -46,7 +63,8 @@
 - [x] 생성 batch 산출물에는 `collateral183` 고정 문구가 없고 blind judge 입력에 `reason_lines`가 없다.
 - [x] `py_compile` PASS, `tests.test_build_collateral_triage_review_batch` `4` tests PASS.
 - [x] Loop479에서 `wrong_work_title_flip 21`건 source-native/blind verdict를 채웠다.
-- [ ] `unsafe_promotion_from_hold 24`, `safe_loss_resolved_to_null 93` verdict는 아직 남아 있다.
+- [x] Loop480/Loop481에서 `unsafe_promotion_from_hold 24`, `safe_loss_resolved_to_null 93` verdict를 채웠다.
+- [ ] P0 `138/138` verdict 완료는 approval이 아니며, `REPROCESS 63 / HOLD 41` 후속이 남아 있다.
 - [ ] Full375 collateral approval은 `NO-GO`다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 - Gate: batch generation `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, promotion blocked `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
@@ -65,7 +83,8 @@
 - [ ] Search evidence는 `REVIEW / search_degraded_observed`다. Search recovery를 닫지 않는다.
 - [ ] Full375 collateral은 `NO-GO / changed 197 / regression candidates 139`다.
 - [ ] Bounded/full375 동결 해제와 completion gate GO 정의는 보류한다.
-- [ ] 다음 작업은 residual 단건 비우기가 아니라 P0 bucket batch triage다.
+- [x] P0 bucket batch triage는 Loop478-481에서 source-native review coverage `138/138`로 완료했다.
+- [ ] 다음 작업은 `REPROCESS 63 / HOLD 41` 후속 처리와 collateral gate wiring이다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 - Gate: runtime integrity `GO`, publication contract `GO`, golden18 `GO`, full375 collateral `NO-GO`, always-on gate `NO-GO`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 

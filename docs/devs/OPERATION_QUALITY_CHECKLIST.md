@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop481 safe_loss_resolved_to_null source-native 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_481_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop481_safe_loss_resolved_to_null_source_native_20260706.json`.
+  - [x] Verdict JSON 기록 완료: `docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json`.
+  - [x] Bucket summary 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_source_native_review.json/.md`.
+  - [x] Combined P0 summary 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_combined_full375_p0_source_native_review.json/.md`.
+  - [x] Bucket reviewed `93/93`, validation issue `0`, label `REPROCESS 59 / HOLD 25 / ACCEPT 9`를 기록했다.
+- 품질 경계:
+  - [x] `safe_loss_resolved_to_null`에서 `REPROCESS`는 after-null 회귀/후보 재구성 필요로 기록했다.
+  - [x] `ACCEPT`는 collateral gate wiring 뒤 regression-count 제외 후보로만 기록했다.
+  - [x] 이미지/다작품/alias relation/canonical 정책 불확실성은 `HOLD`로 남겼다.
+  - [x] `아생갤`은 `아카데미 생존 갤러리` 작품 약칭/작중 갤러리 오마주 가능성을 유지했다.
+  - [ ] Combined `ACCEPT 34`는 gate wiring 전까지 regression count에서 제거하지 않는다.
+  - [ ] Full375 collateral은 `NO-GO`다.
+- Gate: source-native review `REVIEW-LOCKED`, combined reviewed `138/138`, residual action queue `104`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop480 unsafe_promotion_from_hold source-native 품질 게이트
 
 - 근거:
