@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop479 wrong_work_title_flip source-native 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_479_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop479_wrong_work_title_flip_source_native_20260706.json`.
+  - [x] Verdict JSON 기록 완료: `docs/devs/loop479_wrong_work_title_flip_source_native_verdicts.json`.
+  - [x] Batch 산출물 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json/.jsonl/.md`.
+  - [x] Summary 산출물 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_source_native_review.json/.md`.
+  - [x] Reviewed `21/21`, validation issue `0`, label `ACCEPT 12 / HOLD 6 / REPROCESS 3`을 기록했다.
+- 품질 경계:
+  - [x] `ACCEPT`는 collateral gate wiring 뒤 regression-count 제외 후보로만 기록했다.
+  - [x] 이미지가 필요한 행은 `HOLD`로 남겼고 텍스트만으로 후보를 강제 선택하지 않았다.
+  - [x] Multi-work/canonical/platform/language title 충돌은 full approval이 아니라 policy/native review로 남겼다.
+  - [x] `REPROCESS` 3건은 targeted repair 또는 candidate-set rebuild 대상으로 남겼다.
+  - [x] `기계공주`/`헌터갤러리`의 `갤러리` 표면은 현실 DC 갤러리 단정이 아니라 작품 title/작중 커뮤니티 오마주 표면 가능성을 유지했다.
+  - [ ] Full375 collateral은 `NO-GO`다.
+- Gate: source-native review `REVIEW-LOCKED`, validation `GO`, action queue `21 -> 9`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop475 11671517 기계공주 품질 게이트
 
 - 근거:

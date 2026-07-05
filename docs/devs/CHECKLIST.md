@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-06 Loop479 wrong_work_title_flip source-native 체크
+
+- [x] Loop478 P0 batch 중 `wrong_work_title_flip 21`건을 별도 `Loop479 full375 wrong_work_title_flip` batch로 고정했다.
+- [x] Source-native/blind verdict를 `21/21` 작성했다.
+- [x] Validation issue는 `0`이다.
+- [x] 라벨은 `ACCEPT 12`, `HOLD 6`, `REPROCESS 3`이다.
+- [x] Action queue는 원 P0 `21`에서 gate wiring 뒤 제외 후보 `12`, 수리 큐 `3`, 정책/native 추가 검토 큐 `6`, 잔여 `9`로 정리했다.
+- [x] `ACCEPT`는 collateral gate wiring 뒤에만 regression-count 제외 후보로 쓴다고 명시했다.
+- [x] `HOLD`는 image/native-web/canonical policy 검토 대상으로 남겼다.
+- [x] `REPROCESS`는 targeted repair 또는 candidate-set rebuild 대상으로 남겼다.
+- [x] `py_compile`, collateral review unittest `19`, JSON parse를 통과했다.
+- [x] Loop479 batch/verdict 산출물에는 `reason_lines`와 `collateral183` 고정 문구가 없다.
+- [ ] Full375 collateral approval은 아직 `NO-GO`다.
+- [ ] Remaining P0 bucket은 `unsafe_promotion_from_hold 24`, `safe_loss_resolved_to_null 93`이다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: source-native review `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-06 Loop478 full375 P0 review batch 체크
 
 - [x] Loop477 full375 collateral `NO-GO` 이후 residual 단건 감소가 아니라 P0 batch review 경로로 전환했다.
@@ -11,7 +28,8 @@
 - [x] missing source/baseline/after는 `0/0/0`이다.
 - [x] 생성 batch 산출물에는 `collateral183` 고정 문구가 없고 blind judge 입력에 `reason_lines`가 없다.
 - [x] `py_compile` PASS, `tests.test_build_collateral_triage_review_batch` `4` tests PASS.
-- [ ] Source-native/blind verdict는 아직 채워지지 않았다.
+- [x] Loop479에서 `wrong_work_title_flip 21`건 source-native/blind verdict를 채웠다.
+- [ ] `unsafe_promotion_from_hold 24`, `safe_loss_resolved_to_null 93` verdict는 아직 남아 있다.
 - [ ] Full375 collateral approval은 `NO-GO`다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 - Gate: batch generation `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, promotion blocked `search-blind conditional`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.

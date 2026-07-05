@@ -1,0 +1,379 @@
+{
+  "review_id": "loop479_wrong_work_title_flip_source_native_verdicts",
+  "loop": 479,
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json",
+  "scope": "Loop479 full375 wrong_work_title_flip 21건 source-native/blind 판정",
+  "review_policy": "source-native review only; native web/search is not refreshed; no full collateral approval; ACCEPT is regression-count exclusion candidate only after gate wiring",
+  "rows": [
+    {
+      "post_id": 11660254,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "candidate_set_not_grounded_in_text_image_review_required",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "원문 텍스트는 글로벌 노피아 애니메이션과 AI 표지 반응이며, 댓글의 `사펑성녀` 외에는 후보 C1/C2를 직접 지지하는 작품 표면이 없다. 첨부 이미지에 후보가 보이는지 확인하기 전에는 어느 후보도 정답으로 세울 수 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11660254",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11660254"
+      ]
+    },
+    {
+      "post_id": 11660262,
+      "selected_option_id": "C2",
+      "selected_title": "로판에 도파민을 풀었다",
+      "selected_url": "https://novelpia.com/novel/376145",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_title_supported_by_raw_abbreviation",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 제목의 `로파민`과 본문 완결/AI 논란 맥락은 `로판에 도파민을 풀었다` 약칭으로 읽히며, C1 `그렇게, 그 괴물과 두 번 결혼했다`를 지지하는 표면은 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11660262",
+        "https://novelpia.com/novel/376145"
+      ]
+    },
+    {
+      "post_id": 11663554,
+      "selected_option_id": "C1",
+      "selected_title": "전 버튜버가 하고 싶은데요",
+      "selected_url": "https://novelpia.com/novel/275975",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "same_work_canonical_title_after_preferred",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "`주서연`은 후보 C1 작품 내부 인물 표면으로 보이며 C1/C2는 같은 URL의 같은 작품이다. after는 인물명 괄호를 제거한 canonical title 정리로 보므로 wrong-work 회귀에서 제외할 수 있다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11663554",
+        "https://novelpia.com/novel/275975"
+      ]
+    },
+    {
+      "post_id": 11665099,
+      "selected_option_id": "C2",
+      "selected_title": "옥탑방의 천재 마물 소환사",
+      "selected_url": "https://novelpia.com/novel/377416",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_title_supported_by_abbreviation_and_plot_context",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 제목의 `옥천마`와 본문의 소환수/연참/205화 감상은 `옥탑방의 천재 마물 소환사` 약칭과 작품 소비 맥락으로 이어진다. C1 `옥천마 출정`은 raw surface를 제목처럼 보존한 후보에 가깝고 URL도 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11665099",
+        "https://novelpia.com/novel/377416"
+      ]
+    },
+    {
+      "post_id": 11669929,
+      "selected_option_id": "C2",
+      "selected_title": "헌터갤러리의 국가권력급 기계공주",
+      "selected_url": "https://novelpia.com/novel/390228",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_title_supported_by_short_title_alias",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문은 `기계공주`를 직접 작품 감상 대상으로 말하고, 후보 C2는 같은 표면을 포함한 공식 full title이다. `갤러리` 표면은 현실 DC 갤러리 단정이 아니라 웹소설 제목/작중 커뮤니티 오마주 표면일 수 있으므로 C2 승격이 타당하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11669929",
+        "https://novelpia.com/novel/390228"
+      ]
+    },
+    {
+      "post_id": 11671500,
+      "selected_option_id": "C2",
+      "selected_title": "악당은 살고 싶다",
+      "selected_url": "https://book.novelpia.com/novel/6607",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_title_supported_by_raw_abbreviation",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "`악살싶`은 `악당은 살고 싶다`의 직접 약칭으로 읽히며, 말투 강제/강의씬 감상도 해당 작품 소비 맥락이다. C1 `악당도 살고 싶다`는 제목 변형 충돌이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11671500",
+        "https://book.novelpia.com/novel/6607",
+        "docs/devs/loop473_11671500_aksalsip_safe_loss_runtime_20260705.json"
+      ]
+    },
+    {
+      "post_id": 11671514,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "candidate_set_incomplete_correct_title_known_from_prior_closure",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_after_wrong_work",
+        "candidate_set_rebuild_required"
+      ],
+      "rationale_ko": "Loop474에서 같은 post는 `악신이 총애하는 모험가`로 닫혔다. 현재 후보 C1/C2는 그 교정 제목을 포함하지 않으므로 blind 후보셋 자체가 불완전하며, after C2를 정답으로 세우면 잘못된 작품 승격이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11671514",
+        "docs/devs/loop474_11671514_aksin_chongaes_safe_loss_runtime_20260705.json",
+        "docs/devs/loop_reports/LOOP_474_REPORT_20260705.md"
+      ]
+    },
+    {
+      "post_id": 11673077,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "multi_work_packet_both_candidates_discussed",
+      "evidence_grade": "Strong",
+      "action": [
+        "multi_work_policy_review",
+        "preserve_secondary_candidates"
+      ],
+      "rationale_ko": "원문은 `즉사무림`, `판초우의`, `빛세구`를 함께 비교한다. C1과 C2 모두 실제로 언급된 작품이므로 단일 final title로 어느 하나를 확정하면 multi-work 맥락이 사라진다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11673077",
+        "https://novel.munpia.com/528383",
+        "https://novel.munpia.com/530500"
+      ]
+    },
+    {
+      "post_id": 11679547,
+      "selected_option_id": "C2",
+      "selected_title": "도굴왕",
+      "selected_url": "https://page.kakao.com/content/65130395",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_title_supported_after_title_is_comparator",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_after_wrong_work"
+      ],
+      "rationale_ko": "원문은 `나혼렙의 뒤를 잇는`을 비교 기준으로 쓰고 실제 초점은 `도굴왕 애니화`다. after C1 `나 혼자만 레벨업`은 comparator를 final title로 승격한 잘못된 판정이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11679547",
+        "https://page.kakao.com/content/65130395"
+      ]
+    },
+    {
+      "post_id": 11682791,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_context_required_no_textual_work_anchor",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "텍스트에는 `아령`, `핑크덤벨`만 있고 후보 C1/C2를 직접 지지하는 작품 표면이 없다. 이미지 앞부분이 판단 근거일 수 있으므로 시각 근거 확인 전까지 HOLD가 맞다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11682791",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11682791"
+      ]
+    },
+    {
+      "post_id": 11689292,
+      "selected_option_id": "C1",
+      "selected_title": "[원신] 최악의 파트너",
+      "selected_url": "https://novelpia.com/novel/40854",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_title_supported_by_raw_title_and_fandom_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 제목은 `최악의 파트너`를 직접 말하고 댓글의 타르탈리아/패러디 맥락이 원신 팬픽 범위를 지지한다. C1/C2는 같은 URL이지만 after의 `[원신]` prefix가 source context를 더 잘 보존한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11689292",
+        "https://novelpia.com/novel/40854"
+      ]
+    },
+    {
+      "post_id": 11692426,
+      "selected_option_id": "C1",
+      "selected_title": "절대타경",
+      "selected_url": "https://ridibooks.com/books/2391055753",
+      "review_label": "HOLD",
+      "source_native_verdict": "same_work_platform_suffix_canonical_policy_required",
+      "evidence_grade": "Strong",
+      "action": [
+        "canonical_title_policy_review"
+      ],
+      "rationale_ko": "원문은 `절대타경`을 직접 말한다. C1과 C2는 같은 작품의 플랫폼/독점 표기 차이로 보이며, after C2의 `[독점]` suffix를 public title에 남길지 여부는 wrong-work가 아니라 canonical title 정책 문제다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11692426",
+        "https://ridibooks.com/books/2391055753",
+        "https://series.naver.com/novel/detail.series?productNo=8834603"
+      ]
+    },
+    {
+      "post_id": 11694041,
+      "selected_option_id": "C2",
+      "selected_title": "딱대(격투천재의 탄생)",
+      "selected_url": "https://ridibooks.com/books/425251065?srsltid=AfmBOoqx0uYBf73fZ3cV7dZbX2F1mtV08QjhMdX9igy9FzkEw9JcL6Cw",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_title_supported_by_exact_short_title_surface",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 제목의 `격투천재`가 C2 parenthetical title과 직접 맞고, 댓글도 격투/스포츠 만화 감성 비교를 이어간다. C1은 비슷한 장르어를 공유하지만 원문 표면과의 직접성이 더 약하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11694041",
+        "https://ridibooks.com/books/425251065?srsltid=AfmBOoqx0uYBf73fZ3cV7dZbX2F1mtV08QjhMdX9igy9FzkEw9JcL6Cw"
+      ]
+    },
+    {
+      "post_id": 11694044,
+      "selected_option_id": "C1",
+      "selected_title": "즉사기 들고 무림에 떨어지다",
+      "selected_url": "https://novel.munpia.com/528383",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_title_supported_as_primary_work_with_secondary_comparison",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "preserve_secondary_candidates"
+      ],
+      "rationale_ko": "원문 제목의 주어는 `즉사무림 유료화`이고, 본문은 `판초우의`와 비교한다. C1은 primary work로 타당하지만 secondary comparison 후보를 잃지 않도록 multi-work 보존이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11694044",
+        "https://novel.munpia.com/528383",
+        "https://series.naver.com/novel/detail.series?productNo=14207846"
+      ]
+    },
+    {
+      "post_id": 11694068,
+      "selected_option_id": "C2",
+      "selected_title": "트와일라잇",
+      "selected_url": "https://ridibooks.com/books/593000441",
+      "review_label": "HOLD",
+      "source_native_verdict": "same_work_language_variant_before_preferred",
+      "evidence_grade": "Strong",
+      "action": [
+        "canonical_title_policy_review"
+      ],
+      "rationale_ko": "원문과 댓글은 한국어판 `트와일라잇` 번역/문체를 말한다. C1 `Twilight`와 C2 `트와일라잇`은 같은 작품 계열이지만, 한국어 커뮤니티 문맥에서는 C2 표기가 더 안전해 보인다. 이는 wrong-work보다 canonical/language policy 문제다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11694068",
+        "https://ridibooks.com/books/593000441",
+        "https://page.kakao.com/content/47180017"
+      ]
+    },
+    {
+      "post_id": 11698865,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "after_fanfic_candidate_wrong_source_discusses_rezero_canon_character_arc",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_after_wrong_work",
+        "source_main_work_title_needed"
+      ],
+      "rationale_ko": "원문은 스바루 6장/7장, 감시탑, 폭식 등 `리제로` 본편 캐릭터 서사 맥락을 말한다. after C1 `[리제로] 스바루가 여자가 되었다.`는 팬픽 후보로 보이며, C2도 작품 title이 아니라 캐릭터 행적 페이지라 후보셋을 재구성해야 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11698865",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11698865"
+      ]
+    },
+    {
+      "post_id": 11703658,
+      "selected_option_id": "C1",
+      "selected_title": "아프리카 식량왕이 되었다",
+      "selected_url": "https://novel.munpia.com/528703",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_title_directly_mentioned_in_post_title",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 제목이 `문피아 아프리카 식량왕이 되었다`를 직접 말하고, 본문도 식량/옥수수/카사바 전개 감상으로 이어진다. C2 `아프리카 의 독재자가 되었다`는 인접 제목 오귀속이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11703658",
+        "https://novel.munpia.com/528703"
+      ]
+    },
+    {
+      "post_id": 11706842,
+      "selected_option_id": "C1",
+      "selected_title": "대마법사였던것은 다시 대마법사를 꿈꾼다",
+      "selected_url": "https://novelpia.com/novel/998",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_title_supported_by_raw_abbreviation",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "`대마대`는 C1 full title의 약칭으로 읽히며, 완결/초창기 작품 댓글도 장기 연재 웹소설 감상 맥락이다. C2 `삼국지 마대가 되었다`는 표면 substring 충돌이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11706842",
+        "https://novelpia.com/novel/998"
+      ]
+    },
+    {
+      "post_id": 11706867,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_meme_context_required_no_textual_work_anchor",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "텍스트는 장갤 따옴표/밈 반응과 댓글의 `쨍쨍그랑`, `징계나무`뿐이며 후보 C1/C2를 직접 지지하는 작품 표면이 부족하다. 이미지 확인 없이 `야스터이 따옴표집` 같은 no-URL 후보를 정답으로 세울 수 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11706867",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11706867"
+      ]
+    },
+    {
+      "post_id": 11708453,
+      "selected_option_id": "C2",
+      "selected_title": "이세계 불법체류 사이비",
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_title_supported_by_raw_abbreviation_and_comparison_context",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "official_url_backfill_required"
+      ],
+      "rationale_ko": "원문은 `이불사`를 직접 말하고 `검머외`와 다른 길을 갔다고 비교한다. 댓글의 감옥학원 언급은 표절 논란 예시로, C1 `감옥학원에서 나만 힐링할거다`를 final title로 세우는 근거가 아니다. 다만 C2 URL이 없어 official URL 보강이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11708453"
+      ]
+    },
+    {
+      "post_id": 11718097,
+      "selected_option_id": "C2",
+      "selected_title": "망겜의 힐러",
+      "selected_url": "https://series.naver.com/novel/detail.series?productNo=9146730",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_title_supported_by_raw_abbreviation_character_and_author_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "`망겜힐`은 C2 약칭으로 읽히며, 오행복/박태양/검미성/TS녀 맥락도 같은 작품 논의로 이어진다. C1 `라디오에서 우리의 노래가 나오면`을 지지하는 원문 표면은 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11718097",
+        "https://series.naver.com/novel/detail.series?productNo=9146730"
+      ]
+    }
+  ]
+}

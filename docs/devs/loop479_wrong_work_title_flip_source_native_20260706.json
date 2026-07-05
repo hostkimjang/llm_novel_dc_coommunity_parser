@@ -1,0 +1,80 @@
+{
+  "loop": 479,
+  "date": "2026-07-06",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "goal_complete": false,
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "scope": "Loop477 full375 P0 collateral wrong_work_title_flip 21-row source-native/blind verdict",
+  "summary": {
+    "batch_review_rows": 21,
+    "reviewed_rows": 21,
+    "unreviewed_batch_rows": 0,
+    "validation_issue_count": 0,
+    "gate": "REVIEW-LOCKED",
+    "label_counts": {
+      "ACCEPT": 12,
+      "HOLD": 6,
+      "REPROCESS": 3
+    },
+    "queue_transition": {
+      "original_p0_rows": 21,
+      "source_native_reviewed_rows": 21,
+      "exclusion_candidate_rows": 12,
+      "repair_required_rows": 3,
+      "policy_or_native_review_required_rows": 6,
+      "residual_action_queue_rows": 9,
+      "full_collateral_approval_open": false,
+      "exclusion_requires_gate_wiring": true
+    }
+  },
+  "interpretation": [
+    "ACCEPT rows are regression-count exclusion candidates only after the collateral gate consumes this review summary.",
+    "HOLD rows need image/native-web/canonical policy review before they can reduce the actionable queue.",
+    "REPROCESS rows require targeted repair or candidate-set rebuild before full375 collateral can become GO.",
+    "This loop does not reopen bounded/full375 approval and does not change full_scan_approval=false."
+  ],
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_479_REPORT_20260706.md",
+    "verdicts": "docs/devs/loop479_wrong_work_title_flip_source_native_verdicts.json",
+    "batch_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json",
+    "batch_jsonl": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.jsonl",
+    "batch_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.md",
+    "summary_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_source_native_review.json",
+    "summary_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_source_native_review.md"
+  },
+  "validation": [
+    {
+      "command": ".\\venv\\Scripts\\python.exe tools\\build_collateral_triage_review_batch.py --bucket wrong_work_title_flip --scope-label \"Loop479 full375 wrong_work_title_flip\" ...",
+      "result": "PASS",
+      "selected_review_rows": 21
+    },
+    {
+      "command": ".\\venv\\Scripts\\python.exe tools\\summarize_collateral_review_verdicts.py --batch loop479_wrong_work_title_flip_review_batch.json --verdicts docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json ...",
+      "result": "PASS",
+      "validation_issue_count": 0
+    },
+    {
+      "command": ".\\venv\\Scripts\\python.exe -m py_compile tools\\build_collateral_triage_review_batch.py tools\\summarize_collateral_review_verdicts.py tests\\test_build_collateral_triage_review_batch.py tests\\test_summarize_collateral_review_verdicts.py",
+      "result": "PASS"
+    },
+    {
+      "command": ".\\venv\\Scripts\\python.exe -m unittest tests.test_build_collateral_triage_review_batch tests.test_summarize_collateral_review_verdicts tests.test_triage_collateral_regressions tests.test_always_on_regression_gates -v",
+      "result": "PASS",
+      "tests": 19
+    },
+    {
+      "command": ".\\venv\\Scripts\\python.exe -m json.tool <loop479 batch/summary/verdict json>",
+      "result": "PASS"
+    },
+    {
+      "command": "rg -n \"reason_lines|collateral183\" <loop479 batch/verdict artifacts>",
+      "result": "PASS_NO_MATCH"
+    }
+  ],
+  "next_actions": [
+    "Wire the Loop479 review summary into the collateral gate before counting the 12 ACCEPT rows as review-adjusted exclusions.",
+    "Process unsafe_promotion_from_hold 24 as the next N-row P0 bucket or resolve Loop479 REPROCESS/HOLD rows with targeted repairs.",
+    "Keep full375 collateral NO-GO until review-adjusted regression count reaches zero and the full_scan path is defined."
+  ]
+}

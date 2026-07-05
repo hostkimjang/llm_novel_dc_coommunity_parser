@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260706-479 - wrong_work_title_flip source-native verdict batch
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Batch scope | 완료 | `Loop479 full375 wrong_work_title_flip`, rows `21` | 다음 bucket도 scope label로 분리 |
+| Verdict coverage | 완료 | `docs/devs/loop479_wrong_work_title_flip_source_native_verdicts.json`, reviewed `21/21` | gate wiring 전까지 승인 아님 |
+| Label 분포 | REVIEW | `ACCEPT 12 / HOLD 6 / REPROCESS 3` | HOLD/REPROCESS 우선순위 분리 |
+| Queue transition | PARTIAL | original `21`, exclusion candidates `12`, residual `9` | exclusion은 collateral gate wiring 필요 |
+| Evidence boundary | 유지 | native web/search 미갱신, image-required rows HOLD | image/native-web 확인 전 강제 승격 금지 |
+| 검증 | PASS | py_compile PASS, collateral review unittest `19` PASS, JSON parse PASS | gate wiring 후 always-on gate 재검증 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: source-native review `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-478 - full375 P0 review batch scope generalization
 
 | 항목 | 상태 | 근거 | 다음 |

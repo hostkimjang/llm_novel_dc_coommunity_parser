@@ -1,5 +1,35 @@
 # Verification Results
 
+## 2026-07-06 Loop479 wrong_work_title_flip source-native 검증
+
+- 범위: Loop478 P0 배치 중 `wrong_work_title_flip 21`건을 별도 batch로 만들고 source-native/blind verdict를 전수 작성했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_479_REPORT_20260706.md`
+  - state `docs\devs\loop479_wrong_work_title_flip_source_native_20260706.json`
+  - verdicts `docs\devs\loop479_wrong_work_title_flip_source_native_verdicts.json`
+  - batch JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop479_wrong_work_title_flip_review_batch.json`
+  - batch JSONL `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop479_wrong_work_title_flip_review_batch.jsonl`
+  - batch Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop479_wrong_work_title_flip_review_batch.md`
+  - summary JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop479_wrong_work_title_flip_source_native_review.json`
+  - summary Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop479_wrong_work_title_flip_source_native_review.md`
+- Result:
+  - gate `REVIEW-LOCKED`
+  - reviewed rows `21/21`
+  - validation issue `0`
+  - label `ACCEPT 12`, `HOLD 6`, `REPROCESS 3`
+  - queue transition: original P0 `21`, exclusion candidates after gate wiring `12`, repair `3`, policy/native review `6`, residual action queue `9`
+- Validation:
+  - `.\venv\Scripts\python.exe tools\build_collateral_triage_review_batch.py --bucket wrong_work_title_flip --scope-label "Loop479 full375 wrong_work_title_flip" ...` PASS, selected review rows `21`
+  - `.\venv\Scripts\python.exe tools\summarize_collateral_review_verdicts.py --batch ... --verdicts docs\devs\loop479_wrong_work_title_flip_source_native_verdicts.json ...` PASS, validation issue `0`
+  - `.\venv\Scripts\python.exe -m py_compile tools\build_collateral_triage_review_batch.py tools\summarize_collateral_review_verdicts.py tests\test_build_collateral_triage_review_batch.py tests\test_summarize_collateral_review_verdicts.py` PASS
+  - `.\venv\Scripts\python.exe -m unittest tests.test_build_collateral_triage_review_batch tests.test_summarize_collateral_review_verdicts tests.test_triage_collateral_regressions tests.test_always_on_regression_gates -v` PASS, `19` tests
+  - Loop479 batch/summary/verdict JSON parse PASS
+  - Loop479 batch/verdict artifacts contain no `reason_lines` and no fixed `collateral183` wording
+- Boundary:
+  - `ACCEPT 12`는 gate wiring 뒤 regression-count 제외 후보일 뿐이다.
+  - `HOLD 6`과 `REPROCESS 3`이 남아 full375 collateral approval은 열리지 않는다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop478 full375 P0 review batch 검증
 
 - 범위: Loop477 full375 collateral `NO-GO`의 P0 회귀 후보를 source-native/blind judge 검토 입력으로 고정하고, 배치 도구의 scope 하드코딩을 제거했다.

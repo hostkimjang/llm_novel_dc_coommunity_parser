@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-06 - Loop479 wrong_work_title_flip source-native verdict
+
+- Loop478 P0 `138`건 중 `wrong_work_title_flip 21`건을 별도 batch로 고정하고 source-native/blind verdict를 전수 작성했다.
+- Verdict 산출물은 `docs/devs/loop479_wrong_work_title_flip_source_native_verdicts.json`이다.
+- Batch 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json/.jsonl/.md`다.
+- Summary 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_source_native_review.json/.md`다.
+- 결과는 reviewed `21/21`, validation issue `0`, label `ACCEPT 12`, `HOLD 6`, `REPROCESS 3`이다.
+- Action queue는 원 P0 `21`에서 gate wiring 뒤 제외 후보 `12`, 수리 큐 `3`, 정책/native 추가 검토 큐 `6`, 잔여 `9`로 정리됐다.
+- `ACCEPT`는 regression-count 제외 후보일 뿐이고 collateral gate wiring 전에는 full375 collateral approval을 열지 않는다.
+- 검증은 `py_compile` PASS, collateral review 관련 unittest `19` tests PASS, JSON parse PASS, `reason_lines`/`collateral183` no-match다.
+- Gate는 source-native review `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop478 full375 P0 review batch
 
 - Loop477 full375 collateral `NO-GO` 이후 ordinary residual 단건 감소로 돌아가지 않고 P0 회귀 후보를 shared blind/source-native 검토 배치로 고정했다.
