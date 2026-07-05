@@ -1,0 +1,98 @@
+{
+  "loop": 485,
+  "generated_at": "2026-07-06T03:46:33+09:00",
+  "title": "Loop485 shared gate projection follow-up action queue",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "status": "GO_QUEUE_AND_INPUT_ONLY",
+  "summary": "Loop484 projection 59건을 runtime replay, canonical/source-native review, lint contract, still-blocked review lane으로 분해하고 exact-match 9건 runtime replay 입력을 생성했다.",
+  "source_projection": "docs/devs/loop484_shared_gate_counterevidence_projection_20260706.json",
+  "artifacts": {
+    "queue_json": "docs/devs/loop485_shared_gate_projection_followup_action_queue.json",
+    "queue_md": "docs/devs/loop485_shared_gate_projection_followup_action_queue.md",
+    "runtime_input_jsonl": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop485_shared_gate_exact9_runtime_replay_input.jsonl",
+    "runtime_input_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop485_shared_gate_exact9_runtime_replay_input_manifest.json",
+    "report": "docs/devs/loop_reports/LOOP_485_REPORT_20260706.md",
+    "state": "docs/devs/loop485_shared_gate_projection_followup_state_20260706.json"
+  },
+  "queue_summary": {
+    "followup_action_queue_rows": 59,
+    "label_counts": {
+      "HOLD": 35,
+      "REPROCESS": 24
+    },
+    "priority_counts": {
+      "P0": 12,
+      "P1": 17,
+      "P2": 30
+    },
+    "projected_status_counts": {
+      "safe_resolved": 14,
+      "promotion_blocked": 42,
+      "output_consistency_lint": 3
+    },
+    "exact_match_counts": {
+      "match": 9,
+      "mismatch": 50
+    },
+    "runtime_replay_candidate_rows": 9,
+    "variant_review_rows": 5,
+    "lint_followup_rows": 3,
+    "still_blocked_rows": 42,
+    "validation_issue_count": 0
+  },
+  "action_lanes": {
+    "P0_runtime_replay_exact": 9,
+    "P0_output_consistency_lint": 3,
+    "P1_shared_gate_support_gap_repair": 12,
+    "P1_source_native_canonical_variant_review": 5,
+    "P2_scope_or_nonwork_hard_hold_review": 23,
+    "P2_blocked_projection_manual_review": 7
+  },
+  "runtime_input": {
+    "candidate_rows": 9,
+    "input_rows": 9,
+    "missing_post_ids": [],
+    "post_ids": [
+      11658620,
+      11660265,
+      11661881,
+      11676314,
+      11685987,
+      11692444,
+      11694035,
+      11713220,
+      11716498
+    ],
+    "expected_titles": [
+      "이거 럽코 빙의물인가요",
+      "헌터갤러리의 국가권력급 기계공주",
+      "여신이 나만 애호함",
+      "마도서를 줍다 마법사가 되다",
+      "괴담 동아리",
+      "엑스칼리버 뽑습니다",
+      "아카데미 생존 갤러리",
+      "나만 성좌들이 안 무서움",
+      "마녀의 도시"
+    ],
+    "git_tracking": "ignored_by_out_gitignore"
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "unit_tests": "PASS / tests.test_projection_followup_queue / 3 tests",
+    "related_gate_tests": "PASS / tests.test_projection_followup_queue tests.test_split_collateral_action_queue tests.test_always_on_regression_gates / 17 tests",
+    "queue_generation": "PASS",
+    "runtime_input_generation": "PASS / 9 rows / missing 0",
+    "json_parse": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "gates": {
+    "queue": "REVIEW-LOCKED",
+    "runtime_input_generation": "GO_INPUT_ONLY",
+    "runtime_replay_after_input": "NOT_RUN_AFTER_INPUT",
+    "full375_collateral": "NO-GO",
+    "search_recovery": "P0_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "completion_gate": "NO-GO / full375 collateral GO + full_scan path still required"
+  }
+}

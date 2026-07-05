@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop485 shared gate projection follow-up queue 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_485_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop485_shared_gate_projection_followup_state_20260706.json`.
+  - [x] Queue JSON/MD 기록 완료: `docs/devs/loop485_shared_gate_projection_followup_action_queue.json/.md`.
+  - [x] Runtime input path 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop485_shared_gate_exact9_runtime_replay_input.jsonl`.
+  - [x] Queue `59`, `REPROCESS 24 / HOLD 35`, priority `P0 12 / P1 17 / P2 30`을 기록했다.
+  - [x] Runtime input rows `9`, missing `0`을 기록했다.
+- 품질 경계:
+  - [x] Queue/input generation은 approval이 아니다.
+  - [x] Exact projected safe rows도 runtime replay 전에는 해소 처리하지 않는다.
+  - [x] Search recovery는 계속 `P0_OPEN`이다.
+  - [ ] Runtime replay after input은 아직 실행하지 않았다.
+  - [ ] Full375 collateral은 여전히 `NO-GO`다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: queue `REVIEW-LOCKED`, runtime input generation `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop484 shared gate counterevidence projection 품질 게이트
 
 - 근거:

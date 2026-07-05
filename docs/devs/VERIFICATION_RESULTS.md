@@ -1,5 +1,40 @@
 # Verification Results
 
+## 2026-07-06 Loop485 shared gate projection follow-up queue 검증
+
+- 범위: Loop484 projection `59`건을 후속 action queue로 분해하고 exact-match projected safe `9`건 runtime input을 생성했다.
+- Code:
+  - `tools\build_projection_followup_queue.py`
+  - `tests\test_projection_followup_queue.py`
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_485_REPORT_20260706.md`
+  - state `docs\devs\loop485_shared_gate_projection_followup_state_20260706.json`
+  - queue JSON `docs\devs\loop485_shared_gate_projection_followup_action_queue.json`
+  - queue Markdown `docs\devs\loop485_shared_gate_projection_followup_action_queue.md`
+  - runtime input `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop485_shared_gate_exact9_runtime_replay_input.jsonl`
+  - runtime manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop485_shared_gate_exact9_runtime_replay_input_manifest.json`
+- Result:
+  - queue gate `REVIEW-LOCKED`
+  - followup rows `59`
+  - label `REPROCESS 24`, `HOLD 35`
+  - priority `P0 12`, `P1 17`, `P2 30`
+  - runtime replay candidate rows `9`
+  - runtime input rows `9`, missing `0`
+  - validation issue `0`
+- Validation:
+  - `.\venv\Scripts\python.exe -m py_compile tools\build_projection_followup_queue.py tests\test_projection_followup_queue.py` PASS
+  - `.\venv\Scripts\python.exe -m unittest tests.test_projection_followup_queue -v` PASS, `3` tests
+  - `.\venv\Scripts\python.exe -m unittest tests.test_projection_followup_queue tests.test_split_collateral_action_queue tests.test_always_on_regression_gates -v` PASS, `17` tests
+  - `.\venv\Scripts\python.exe -m json.tool docs\devs\loop485_shared_gate_projection_followup_action_queue.json` PASS
+  - `.\venv\Scripts\python.exe -m json.tool docs\devs\loop485_shared_gate_projection_followup_state_20260706.json` PASS
+  - `git diff --check` PASS
+  - Loop485 queue generation PASS
+  - runtime input generation PASS, rows `9`, missing `0`
+- Boundary:
+  - Queue/input generation은 runtime approval이 아니다.
+  - Runtime replay after input은 `NOT_RUN_AFTER_INPUT`다.
+  - Full375 collateral은 `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop484 shared gate counterevidence projection 검증
 
 - 범위: Loop483 `shared_promotion_gate_wiring_required` 59건에서 stale counterevidence가 shared gate current-work 판단을 다시 demote하는 경로를 보강했다.

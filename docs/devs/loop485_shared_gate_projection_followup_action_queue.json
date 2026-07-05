@@ -1,0 +1,4158 @@
+{
+  "report_type": "projection_followup_action_queue",
+  "queue_id": "loop485_shared_gate_projection_followup_action_queue",
+  "generated_at": "2026-07-06T03:46:33",
+  "source_projection_id": "loop484_shared_gate_counterevidence_projection",
+  "source_projection_path": "docs/devs/loop484_shared_gate_counterevidence_projection_20260706.json",
+  "source_queue": "docs/devs/loop483_full375_review_adjusted_residual105_action_queue.json",
+  "source_full375_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop477_full375_current_head_merged375_search_nonlight_result.json",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "REVIEW-LOCKED",
+  "summary": {
+    "source_rows": 59,
+    "followup_action_queue_rows": 59,
+    "label_counts": {
+      "HOLD": 35,
+      "REPROCESS": 24
+    },
+    "priority_counts": {
+      "P0": 12,
+      "P1": 17,
+      "P2": 30
+    },
+    "projected_status_counts": {
+      "output_consistency_lint": 3,
+      "promotion_blocked": 42,
+      "safe_resolved": 14
+    },
+    "exact_match_counts": {
+      "match": 9,
+      "mismatch": 50
+    },
+    "owner_mode_counts": {
+      "CODE_CONTRACT_OR_LINT_REVIEW": 3,
+      "CODE_OR_CANDIDATE_REPAIR": 12,
+      "MANUAL_REVIEW": 7,
+      "POLICY_OR_SOURCE_NATIVE_REVIEW": 23,
+      "RUNTIME_REPLAY": 9,
+      "SOURCE_NATIVE_OR_CANONICAL_REVIEW": 5
+    },
+    "action_counts": {
+      "blocked_projection_manual_review_required": 7,
+      "full375_collateral_recheck_after_runtime": 9,
+      "output_consistency_lint_contract_followup_required": 3,
+      "publication_trace_lint_review_required": 3,
+      "runtime_replay_after_variant_review": 5,
+      "runtime_replay_projected_safe_resolved_exact_required": 9,
+      "scope_or_nonwork_hard_hold_review_required": 23,
+      "shared_gate_support_gap_repair_required": 12,
+      "source_native_canonical_variant_review_required": 5
+    },
+    "action_group_count": 9,
+    "runtime_replay_candidate_rows": 9,
+    "variant_review_rows": 5,
+    "lint_followup_rows": 3,
+    "still_blocked_rows": 42,
+    "validation_issue_count": 0
+  },
+  "validation_issues": [],
+  "action_groups": [
+    {
+      "action": "blocked_projection_manual_review_required",
+      "row_count": 7,
+      "priority_counts": {
+        "P2": 7
+      },
+      "label_counts": {
+        "HOLD": 7
+      },
+      "projected_status_counts": {
+        "promotion_blocked": 7
+      },
+      "owner_modes": {
+        "MANUAL_REVIEW": 7
+      },
+      "post_ids": [
+        11663535,
+        11669933,
+        11677915,
+        11690841,
+        11698870,
+        11716475,
+        11718099
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11663535,
+          "projected_status": "promotion_blocked",
+          "review_label": "HOLD",
+          "priority": "P2",
+          "owner_mode": "MANUAL_REVIEW",
+          "actions": [
+            "blocked_projection_manual_review_required"
+          ],
+          "selected_title": "퇴마록",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "promotion_blocked",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 promotion_blocked가 남았지만 자동 분류 marker가 부족하다. 수동 review가 필요하다.",
+          "close_condition": "source-native/blind review가 publish, candidate_only, lint 중 하나로 확정해야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11663535"
+          ]
+        },
+        {
+          "post_id": 11669933,
+          "projected_status": "promotion_blocked",
+          "review_label": "HOLD",
+          "priority": "P2",
+          "owner_mode": "MANUAL_REVIEW",
+          "actions": [
+            "blocked_projection_manual_review_required"
+          ],
+          "selected_title": "회귀수선전",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "blocked_candidate_scope_inferred_from_search_evidence",
+            "character_bridge_variance_hold",
+            "official_detail_url_recovered_from_search_evidence",
+            "scope_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 promotion_blocked가 남았지만 자동 분류 marker가 부족하다. 수동 review가 필요하다.",
+          "close_condition": "source-native/blind review가 publish, candidate_only, lint 중 하나로 확정해야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11669933"
+          ]
+        },
+        {
+          "post_id": 11677915,
+          "projected_status": "promotion_blocked",
+          "review_label": "HOLD",
+          "priority": "P2",
+          "owner_mode": "MANUAL_REVIEW",
+          "actions": [
+            "blocked_projection_manual_review_required"
+          ],
+          "selected_title": "전지적 독자 시점",
+          "selected_option_id": "C1",
+          "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "promotion_blocked",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 promotion_blocked가 남았지만 자동 분류 marker가 부족하다. 수동 review가 필요하다.",
+          "close_condition": "source-native/blind review가 publish, candidate_only, lint 중 하나로 확정해야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11677915"
+          ]
+        },
+        {
+          "post_id": 11690841,
+          "projected_status": "promotion_blocked",
+          "review_label": "HOLD",
+          "priority": "P2",
+          "owner_mode": "MANUAL_REVIEW",
+          "actions": [
+            "blocked_projection_manual_review_required"
+          ],
+          "selected_title": "블루 아카이브",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "promotion_blocked",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 promotion_blocked가 남았지만 자동 분류 marker가 부족하다. 수동 review가 필요하다.",
+          "close_condition": "source-native/blind review가 publish, candidate_only, lint 중 하나로 확정해야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11690841"
+          ]
+        },
+        {
+          "post_id": 11698870,
+          "projected_status": "promotion_blocked",
+          "review_label": "HOLD",
+          "priority": "P2",
+          "owner_mode": "MANUAL_REVIEW",
+          "actions": [
+            "blocked_projection_manual_review_required"
+          ],
+          "selected_title": "인간실격",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "batch_alias_public_title_bridge",
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_scrubbed",
+            "weak_alias_surface_public_title_bridge"
+          ],
+          "rationale_ko": "Projection 후에도 promotion_blocked가 남았지만 자동 분류 marker가 부족하다. 수동 review가 필요하다.",
+          "close_condition": "source-native/blind review가 publish, candidate_only, lint 중 하나로 확정해야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11698870"
+          ]
+        },
+        {
+          "post_id": 11716475,
+          "projected_status": "promotion_blocked",
+          "review_label": "HOLD",
+          "priority": "P2",
+          "owner_mode": "MANUAL_REVIEW",
+          "actions": [
+            "blocked_projection_manual_review_required"
+          ],
+          "selected_title": "지력 99 고능아인 척하기",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_abbreviation_and_author_context_support_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "promotion_blocked",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 promotion_blocked가 남았지만 자동 분류 marker가 부족하다. 수동 review가 필요하다.",
+          "close_condition": "source-native/blind review가 publish, candidate_only, lint 중 하나로 확정해야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11716475"
+          ]
+        },
+        {
+          "post_id": 11718099,
+          "projected_status": "promotion_blocked",
+          "review_label": "HOLD",
+          "priority": "P2",
+          "owner_mode": "MANUAL_REVIEW",
+          "actions": [
+            "blocked_projection_manual_review_required"
+          ],
+          "selected_title": "빌어먹을 환생",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "promoted_image_work_title_conflicts_with_public_title",
+            "resolved_public_title_scope",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 promotion_blocked가 남았지만 자동 분류 marker가 부족하다. 수동 review가 필요하다.",
+          "close_condition": "source-native/blind review가 publish, candidate_only, lint 중 하나로 확정해야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11718099"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "full375_collateral_recheck_after_runtime",
+      "row_count": 9,
+      "priority_counts": {
+        "P0": 9
+      },
+      "label_counts": {
+        "REPROCESS": 9
+      },
+      "projected_status_counts": {
+        "safe_resolved": 9
+      },
+      "owner_modes": {
+        "RUNTIME_REPLAY": 9
+      },
+      "post_ids": [
+        11658620,
+        11660265,
+        11661881,
+        11676314,
+        11685987,
+        11692444,
+        11694035,
+        11713220,
+        11716498
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11658620,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "이거 럽코 빙의물인가요",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "이거 럽코 빙의물인가요",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11658620"
+          ]
+        },
+        {
+          "post_id": 11660265,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "헌터갤러리의 국가권력급 기계공주",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "헌터갤러리의 국가권력급 기계공주",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11660265"
+          ]
+        },
+        {
+          "post_id": 11661881,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "여신이 나만 애호함",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "여신이 나만 애호함",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11661881"
+          ]
+        },
+        {
+          "post_id": 11676314,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "마도서를 줍다 마법사가 되다",
+          "selected_option_id": "HOLD",
+          "source_native_verdict": "candidate_set_incomplete_correct_title_outside_options",
+          "projected_title": "마도서를 줍다 마법사가 되다",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11676314"
+          ]
+        },
+        {
+          "post_id": 11685987,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "괴담 동아리",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+          "projected_title": "괴담 동아리",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11685987"
+          ]
+        },
+        {
+          "post_id": 11692444,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "엑스칼리버 뽑습니다",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+          "projected_title": "엑스칼리버 뽑습니다",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11692444"
+          ]
+        },
+        {
+          "post_id": 11694035,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "아카데미 생존 갤러리",
+          "selected_option_id": "HOLD",
+          "source_native_verdict": "candidate_set_incomplete_correct_title_outside_options",
+          "projected_title": "아카데미 생존 갤러리",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11694035"
+          ]
+        },
+        {
+          "post_id": 11713220,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "나만 성좌들이 안 무서움",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+          "projected_title": "나만 성좌들이 안 무서움",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11713220"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "output_consistency_lint_contract_followup_required",
+      "row_count": 3,
+      "priority_counts": {
+        "P0": 3
+      },
+      "label_counts": {
+        "REPROCESS": 3
+      },
+      "projected_status_counts": {
+        "output_consistency_lint": 3
+      },
+      "owner_modes": {
+        "CODE_CONTRACT_OR_LINT_REVIEW": 3
+      },
+      "post_ids": [
+        11681172,
+        11697242,
+        11710021
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11681172,
+          "projected_status": "output_consistency_lint",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_CONTRACT_OR_LINT_REVIEW",
+          "actions": [
+            "output_consistency_lint_contract_followup_required",
+            "publication_trace_lint_review_required"
+          ],
+          "selected_title": "헌터갤러리의 국가권력급 기계공주",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "output_consistency_lint",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "output_consistency_lint",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 output_consistency_lint가 남았다. public ledger, candidate ledger, publish_contract_trace consistency를 먼저 맞춰야 한다.",
+          "close_condition": "lint reason이 제거되고 blocked/publish trace가 동일한 decision으로 수렴해야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11681172"
+          ]
+        },
+        {
+          "post_id": 11697242,
+          "projected_status": "output_consistency_lint",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_CONTRACT_OR_LINT_REVIEW",
+          "actions": [
+            "output_consistency_lint_contract_followup_required",
+            "publication_trace_lint_review_required"
+          ],
+          "selected_title": "유희왕",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "output_consistency_lint",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "community_banter",
+            "non_novel_discourse",
+            "nonwork",
+            "official_detail_url",
+            "official_title_exists",
+            "row_discussion_missing",
+            "scope_not_current_work",
+            "scope_platform_meta_nonwork",
+            "serialized_public_identity_scrubbed",
+            "thematic_overlap_only"
+          ],
+          "rationale_ko": "Projection 후에도 output_consistency_lint가 남았다. public ledger, candidate ledger, publish_contract_trace consistency를 먼저 맞춰야 한다.",
+          "close_condition": "lint reason이 제거되고 blocked/publish trace가 동일한 decision으로 수렴해야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11697242"
+          ]
+        },
+        {
+          "post_id": 11710021,
+          "projected_status": "output_consistency_lint",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_CONTRACT_OR_LINT_REVIEW",
+          "actions": [
+            "output_consistency_lint_contract_followup_required",
+            "publication_trace_lint_review_required"
+          ],
+          "selected_title": "무한의 마법사",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_abbreviation_and_character_support_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "output_consistency_lint",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "community_banter",
+            "non_novel_discourse",
+            "nonwork",
+            "row_discussion_missing",
+            "scope_not_current_work",
+            "scope_platform_meta_nonwork",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 output_consistency_lint가 남았다. public ledger, candidate ledger, publish_contract_trace consistency를 먼저 맞춰야 한다.",
+          "close_condition": "lint reason이 제거되고 blocked/publish trace가 동일한 decision으로 수렴해야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11710021"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "publication_trace_lint_review_required",
+      "row_count": 3,
+      "priority_counts": {
+        "P0": 3
+      },
+      "label_counts": {
+        "REPROCESS": 3
+      },
+      "projected_status_counts": {
+        "output_consistency_lint": 3
+      },
+      "owner_modes": {
+        "CODE_CONTRACT_OR_LINT_REVIEW": 3
+      },
+      "post_ids": [
+        11681172,
+        11697242,
+        11710021
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11681172,
+          "projected_status": "output_consistency_lint",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_CONTRACT_OR_LINT_REVIEW",
+          "actions": [
+            "output_consistency_lint_contract_followup_required",
+            "publication_trace_lint_review_required"
+          ],
+          "selected_title": "헌터갤러리의 국가권력급 기계공주",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "output_consistency_lint",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "output_consistency_lint",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 output_consistency_lint가 남았다. public ledger, candidate ledger, publish_contract_trace consistency를 먼저 맞춰야 한다.",
+          "close_condition": "lint reason이 제거되고 blocked/publish trace가 동일한 decision으로 수렴해야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11681172"
+          ]
+        },
+        {
+          "post_id": 11697242,
+          "projected_status": "output_consistency_lint",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_CONTRACT_OR_LINT_REVIEW",
+          "actions": [
+            "output_consistency_lint_contract_followup_required",
+            "publication_trace_lint_review_required"
+          ],
+          "selected_title": "유희왕",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "output_consistency_lint",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "community_banter",
+            "non_novel_discourse",
+            "nonwork",
+            "official_detail_url",
+            "official_title_exists",
+            "row_discussion_missing",
+            "scope_not_current_work",
+            "scope_platform_meta_nonwork",
+            "serialized_public_identity_scrubbed",
+            "thematic_overlap_only"
+          ],
+          "rationale_ko": "Projection 후에도 output_consistency_lint가 남았다. public ledger, candidate ledger, publish_contract_trace consistency를 먼저 맞춰야 한다.",
+          "close_condition": "lint reason이 제거되고 blocked/publish trace가 동일한 decision으로 수렴해야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11697242"
+          ]
+        },
+        {
+          "post_id": 11710021,
+          "projected_status": "output_consistency_lint",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_CONTRACT_OR_LINT_REVIEW",
+          "actions": [
+            "output_consistency_lint_contract_followup_required",
+            "publication_trace_lint_review_required"
+          ],
+          "selected_title": "무한의 마법사",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_abbreviation_and_character_support_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "output_consistency_lint",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "community_banter",
+            "non_novel_discourse",
+            "nonwork",
+            "row_discussion_missing",
+            "scope_not_current_work",
+            "scope_platform_meta_nonwork",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 output_consistency_lint가 남았다. public ledger, candidate ledger, publish_contract_trace consistency를 먼저 맞춰야 한다.",
+          "close_condition": "lint reason이 제거되고 blocked/publish trace가 동일한 decision으로 수렴해야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11710021"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "runtime_replay_after_variant_review",
+      "row_count": 5,
+      "priority_counts": {
+        "P1": 5
+      },
+      "label_counts": {
+        "HOLD": 5
+      },
+      "projected_status_counts": {
+        "safe_resolved": 5
+      },
+      "owner_modes": {
+        "SOURCE_NATIVE_OR_CANONICAL_REVIEW": 5
+      },
+      "post_ids": [
+        11668300,
+        11674694,
+        11694049,
+        11705230,
+        11708447
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11668300,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P1",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "즉사기 들고 게임 속 으로",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "즉사기 인 줄 알았는데 지옥이었다",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 safe_resolved지만 source-native selected title `즉사기 들고 게임 속 으로`와 projected title `즉사기 인 줄 알았는데 지옥이었다`가 정확히 일치하지 않는다. canonical variant인지 wrong-work인지 먼저 확인해야 한다.",
+          "close_condition": "source-native 또는 blind review가 title variant를 정당 해소로 확정한 뒤 runtime replay를 실행한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11668300"
+          ]
+        },
+        {
+          "post_id": 11674694,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P1",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "21세기 무림세가",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "21세기를 여행하는 무림인을 위한 안내서",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_body_verified_competition_reconciled",
+            "serialized_public_identity_gate_candidate_blocked_by_locked_public_candidate",
+            "serialized_public_identity_preserved_body_alias_reconciled",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "title_only_publication_reconciled_to_preserved_body_alias",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 safe_resolved지만 source-native selected title `21세기 무림세가`와 projected title `21세기를 여행하는 무림인을 위한 안내서`가 정확히 일치하지 않는다. canonical variant인지 wrong-work인지 먼저 확인해야 한다.",
+          "close_condition": "source-native 또는 blind review가 title variant를 정당 해소로 확정한 뒤 runtime replay를 실행한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11674694"
+          ]
+        },
+        {
+          "post_id": 11694049,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P1",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "아카데미 생존 갤러리",
+          "selected_option_id": "C1",
+          "source_native_verdict": "domain_alias_supports_safe_title_lost_to_null",
+          "projected_title": "더 아레스",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_body_verified_competition_reconciled",
+            "serialized_public_identity_gate_candidate_reconciled",
+            "serialized_public_identity_preserved_body_alias_reconciled",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "title_only_publication_reconciled_to_preserved_body_alias",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 safe_resolved지만 source-native selected title `아카데미 생존 갤러리`와 projected title `더 아레스`가 정확히 일치하지 않는다. canonical variant인지 wrong-work인지 먼저 확인해야 한다.",
+          "close_condition": "source-native 또는 blind review가 title variant를 정당 해소로 확정한 뒤 runtime replay를 실행한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11694049"
+          ]
+        },
+        {
+          "post_id": 11705230,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P1",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "월야환담",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "월야환담 시리즈",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 safe_resolved지만 source-native selected title `월야환담`와 projected title `월야환담 시리즈`가 정확히 일치하지 않는다. canonical variant인지 wrong-work인지 먼저 확인해야 한다.",
+          "close_condition": "source-native 또는 blind review가 title variant를 정당 해소로 확정한 뒤 runtime replay를 실행한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11705230"
+          ]
+        },
+        {
+          "post_id": 11708447,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P1",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "잠룡회귀",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "잠룡회귀 [단행본]",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 safe_resolved지만 source-native selected title `잠룡회귀`와 projected title `잠룡회귀 [단행본]`가 정확히 일치하지 않는다. canonical variant인지 wrong-work인지 먼저 확인해야 한다.",
+          "close_condition": "source-native 또는 blind review가 title variant를 정당 해소로 확정한 뒤 runtime replay를 실행한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11708447"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "runtime_replay_projected_safe_resolved_exact_required",
+      "row_count": 9,
+      "priority_counts": {
+        "P0": 9
+      },
+      "label_counts": {
+        "REPROCESS": 9
+      },
+      "projected_status_counts": {
+        "safe_resolved": 9
+      },
+      "owner_modes": {
+        "RUNTIME_REPLAY": 9
+      },
+      "post_ids": [
+        11658620,
+        11660265,
+        11661881,
+        11676314,
+        11685987,
+        11692444,
+        11694035,
+        11713220,
+        11716498
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11658620,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "이거 럽코 빙의물인가요",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "이거 럽코 빙의물인가요",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11658620"
+          ]
+        },
+        {
+          "post_id": 11660265,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "헌터갤러리의 국가권력급 기계공주",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "헌터갤러리의 국가권력급 기계공주",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11660265"
+          ]
+        },
+        {
+          "post_id": 11661881,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "여신이 나만 애호함",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "여신이 나만 애호함",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11661881"
+          ]
+        },
+        {
+          "post_id": 11676314,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "마도서를 줍다 마법사가 되다",
+          "selected_option_id": "HOLD",
+          "source_native_verdict": "candidate_set_incomplete_correct_title_outside_options",
+          "projected_title": "마도서를 줍다 마법사가 되다",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11676314"
+          ]
+        },
+        {
+          "post_id": 11685987,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "괴담 동아리",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+          "projected_title": "괴담 동아리",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11685987"
+          ]
+        },
+        {
+          "post_id": 11692444,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "엑스칼리버 뽑습니다",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+          "projected_title": "엑스칼리버 뽑습니다",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11692444"
+          ]
+        },
+        {
+          "post_id": 11694035,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "아카데미 생존 갤러리",
+          "selected_option_id": "HOLD",
+          "source_native_verdict": "candidate_set_incomplete_correct_title_outside_options",
+          "projected_title": "아카데미 생존 갤러리",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11694035"
+          ]
+        },
+        {
+          "post_id": 11713220,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "나만 성좌들이 안 무서움",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+          "projected_title": "나만 성좌들이 안 무서움",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11713220"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "scope_or_nonwork_hard_hold_review_required",
+      "row_count": 23,
+      "priority_counts": {
+        "P2": 23
+      },
+      "label_counts": {
+        "HOLD": 23
+      },
+      "projected_status_counts": {
+        "promotion_blocked": 23
+      },
+      "owner_modes": {
+        "POLICY_OR_SOURCE_NATIVE_REVIEW": 23
+      },
+      "post_ids": [
+        11660257,
+        11663514,
+        11663521,
+        11663540,
+        11663557,
+        11666731,
+        11668288,
+        11668325,
+        11669913,
+        11671507,
+        11673096,
+        11692436,
+        11698859,
+        11698910,
+        11702090,
+        11705251,
+        11706871,
+        11708478,
+        11710036,
+        11710049,
+        11714887,
+        11718110,
+        11718114
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11660257,
+          "projected_status": "promotion_blocked",
+          "review_label": "HOLD",
+          "priority": "P2",
+          "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+          "actions": [
+            "scope_or_nonwork_hard_hold_review_required"
+          ],
+          "selected_title": "암흑가 보스요? 제가요?",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_counterevidence_blocked",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+          "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11660257"
+          ]
+        },
+        {
+          "post_id": 11663514,
+          "projected_status": "promotion_blocked",
+          "review_label": "HOLD",
+          "priority": "P2",
+          "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+          "actions": [
+            "scope_or_nonwork_hard_hold_review_required"
+          ],
+          "selected_title": "마탄 속의 제국",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "llm_only_sentence_candidate_pruned",
+            "official_title_exists",
+            "official_url_recall_candidate_preserved",
+            "official_url_recall_candidate_source_preserved",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_counterevidence_blocked",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+          "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11663514"
+          ]
+        },
+        {
+          "post_id": 11663521,
+          "projected_status": "promotion_blocked",
+          "review_label": "HOLD",
+          "priority": "P2",
+          "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+          "actions": [
+            "scope_or_nonwork_hard_hold_review_required"
+          ],
+          "selected_title": "초전자포] 시스터즈가 되었다",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+          "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11663521"
+          ]
+        },
+        {
+          "post_id": 11663540,
+          "projected_status": "promotion_blocked",
+          "review_label": "HOLD",
+          "priority": "P2",
+          "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+          "actions": [
+            "scope_or_nonwork_hard_hold_review_required"
+          ],
+          "selected_title": "방구석 여신이 되었다",
+          "selected_option_id": "C1",
+          "source_native_verdict": "character_bridge_supports_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "llm_only_sentence_candidate_pruned",
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_counterevidence_blocked",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+          "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11663540"
+          ]
+        },
+        {
+          "post_id": 11663557,
+          "projected_status": "promotion_blocked",
+          "review_label": "HOLD",
+          "priority": "P2",
+          "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+          "actions": [
+            "scope_or_nonwork_hard_hold_review_required"
+          ],
+          "selected_title": "퇴마록",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "batch_alias_public_title_bridge",
+            "batch_alias_url_only_counterevidence_blocked",
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+          "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11663557"
+          ]
+        },
+        {
+          "post_id": 11666731,
+          "projected_status": "promotion_blocked",
+          "review_label": "HOLD",
+          "priority": "P2",
+          "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+          "actions": [
+            "scope_or_nonwork_hard_hold_review_required"
+          ],
+          "selected_title": "약먹는 천재마법사",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "batch_alias_public_title_bridge",
+            "low_specificity_batch_alias_counterevidence_blocked",
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+          "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11666731"
+          ]
+        },
+        {
+          "post_id": 11668288,
+          "projected_status": "promotion_blocked",
+          "review_label": "HOLD",
+          "priority": "P2",
+          "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+          "actions": [
+            "scope_or_nonwork_hard_hold_review_required"
+          ],
+          "selected_title": "가챠 중독자의 퓨전펑크 생활",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+          "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11668288"
+          ]
+        },
+        {
+          "post_id": 11668325,
+          "projected_status": "promotion_blocked",
+          "review_label": "HOLD",
+          "priority": "P2",
+          "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+          "actions": [
+            "scope_or_nonwork_hard_hold_review_required"
+          ],
+          "selected_title": "Fate/stay night",
+          "selected_option_id": "C1",
+          "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "batch_alias_public_title_bridge",
+            "batch_alias_url_only_counterevidence_blocked",
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+          "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11668325"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "shared_gate_support_gap_repair_required",
+      "row_count": 12,
+      "priority_counts": {
+        "P1": 12
+      },
+      "label_counts": {
+        "REPROCESS": 12
+      },
+      "projected_status_counts": {
+        "promotion_blocked": 12
+      },
+      "owner_modes": {
+        "CODE_OR_CANDIDATE_REPAIR": 12
+      },
+      "post_ids": [
+        11660271,
+        11660273,
+        11660277,
+        11665124,
+        11673102,
+        11677926,
+        11682767,
+        11684372,
+        11694019,
+        11697256,
+        11702094,
+        11708432
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11660271,
+          "projected_status": "promotion_blocked",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+          "actions": [
+            "shared_gate_support_gap_repair_required"
+          ],
+          "selected_title": "월야의 여인들",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+          "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11660271"
+          ]
+        },
+        {
+          "post_id": 11660273,
+          "projected_status": "promotion_blocked",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+          "actions": [
+            "shared_gate_support_gap_repair_required"
+          ],
+          "selected_title": "마도서를 줍다 마법사가 되다",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "blocked_candidate_scope_inferred_from_search_evidence",
+            "character_bridge_variance_hold",
+            "llm_only_sentence_candidate_pruned",
+            "official_detail_url_recovered_from_search_evidence",
+            "scope_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+          "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11660273"
+          ]
+        },
+        {
+          "post_id": 11660277,
+          "projected_status": "promotion_blocked",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+          "actions": [
+            "shared_gate_support_gap_repair_required"
+          ],
+          "selected_title": "아카메디 아카데미 본 사람?",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "direct_image_work_surface_bridge",
+            "ocr_catalog_official_title",
+            "official_title_exists",
+            "official_url_recall_candidate_preserved",
+            "official_url_recall_candidate_source_preserved",
+            "precision_seed_official_title_requires_review",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+          "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11660277"
+          ]
+        },
+        {
+          "post_id": 11665124,
+          "projected_status": "promotion_blocked",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+          "actions": [
+            "shared_gate_support_gap_repair_required"
+          ],
+          "selected_title": "화산파(화산귀환)",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "llm_only_sentence_candidate_pruned",
+            "official_url_recall_candidate_preserved",
+            "official_url_recall_candidate_source_preserved",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+          "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11665124"
+          ]
+        },
+        {
+          "post_id": 11673102,
+          "projected_status": "promotion_blocked",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+          "actions": [
+            "shared_gate_support_gap_repair_required"
+          ],
+          "selected_title": "갤질하는 천재 의사",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "alias_bridge",
+            "official_detail_bracket_visual_release_context",
+            "official_detail_url",
+            "official_title_exists",
+            "precision_seed_official_title_requires_review",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_scrubbed",
+            "title_acceptance_accept",
+            "title_led_consumption_bridge"
+          ],
+          "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+          "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11673102"
+          ]
+        },
+        {
+          "post_id": 11677926,
+          "projected_status": "promotion_blocked",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+          "actions": [
+            "shared_gate_support_gap_repair_required"
+          ],
+          "selected_title": "재앙급 막내 공자의 회귀",
+          "selected_option_id": "C1",
+          "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+          "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11677926"
+          ]
+        },
+        {
+          "post_id": 11682767,
+          "projected_status": "promotion_blocked",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+          "actions": [
+            "shared_gate_support_gap_repair_required"
+          ],
+          "selected_title": "묵향",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "blocked_candidate_scope_inferred_from_search_evidence",
+            "character_bridge_variance_hold",
+            "llm_only_sentence_candidate_pruned",
+            "official_detail_url_recovered_from_search_evidence",
+            "official_url_recall_candidate_preserved",
+            "official_url_recall_candidate_source_preserved",
+            "scope_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+          "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11682767"
+          ]
+        },
+        {
+          "post_id": 11684372,
+          "projected_status": "promotion_blocked",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+          "actions": [
+            "shared_gate_support_gap_repair_required"
+          ],
+          "selected_title": "밀리언 클래스",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": null,
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "direct_image_work_surface_bridge",
+            "ocr_catalog_official_title",
+            "official_title_exists",
+            "precision_seed_official_title_requires_review",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+          "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11684372"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "source_native_canonical_variant_review_required",
+      "row_count": 5,
+      "priority_counts": {
+        "P1": 5
+      },
+      "label_counts": {
+        "HOLD": 5
+      },
+      "projected_status_counts": {
+        "safe_resolved": 5
+      },
+      "owner_modes": {
+        "SOURCE_NATIVE_OR_CANONICAL_REVIEW": 5
+      },
+      "post_ids": [
+        11668300,
+        11674694,
+        11694049,
+        11705230,
+        11708447
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11668300,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P1",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "즉사기 들고 게임 속 으로",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "즉사기 인 줄 알았는데 지옥이었다",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 safe_resolved지만 source-native selected title `즉사기 들고 게임 속 으로`와 projected title `즉사기 인 줄 알았는데 지옥이었다`가 정확히 일치하지 않는다. canonical variant인지 wrong-work인지 먼저 확인해야 한다.",
+          "close_condition": "source-native 또는 blind review가 title variant를 정당 해소로 확정한 뒤 runtime replay를 실행한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11668300"
+          ]
+        },
+        {
+          "post_id": 11674694,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P1",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "21세기 무림세가",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "21세기를 여행하는 무림인을 위한 안내서",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_body_verified_competition_reconciled",
+            "serialized_public_identity_gate_candidate_blocked_by_locked_public_candidate",
+            "serialized_public_identity_preserved_body_alias_reconciled",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "title_only_publication_reconciled_to_preserved_body_alias",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 safe_resolved지만 source-native selected title `21세기 무림세가`와 projected title `21세기를 여행하는 무림인을 위한 안내서`가 정확히 일치하지 않는다. canonical variant인지 wrong-work인지 먼저 확인해야 한다.",
+          "close_condition": "source-native 또는 blind review가 title variant를 정당 해소로 확정한 뒤 runtime replay를 실행한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11674694"
+          ]
+        },
+        {
+          "post_id": 11694049,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P1",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "아카데미 생존 갤러리",
+          "selected_option_id": "C1",
+          "source_native_verdict": "domain_alias_supports_safe_title_lost_to_null",
+          "projected_title": "더 아레스",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_body_verified_competition_reconciled",
+            "serialized_public_identity_gate_candidate_reconciled",
+            "serialized_public_identity_preserved_body_alias_reconciled",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "title_only_publication_reconciled_to_preserved_body_alias",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 safe_resolved지만 source-native selected title `아카데미 생존 갤러리`와 projected title `더 아레스`가 정확히 일치하지 않는다. canonical variant인지 wrong-work인지 먼저 확인해야 한다.",
+          "close_condition": "source-native 또는 blind review가 title variant를 정당 해소로 확정한 뒤 runtime replay를 실행한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11694049"
+          ]
+        },
+        {
+          "post_id": 11705230,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P1",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "월야환담",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "월야환담 시리즈",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 safe_resolved지만 source-native selected title `월야환담`와 projected title `월야환담 시리즈`가 정확히 일치하지 않는다. canonical variant인지 wrong-work인지 먼저 확인해야 한다.",
+          "close_condition": "source-native 또는 blind review가 title variant를 정당 해소로 확정한 뒤 runtime replay를 실행한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11705230"
+          ]
+        },
+        {
+          "post_id": 11708447,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P1",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "잠룡회귀",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "잠룡회귀 [단행본]",
+          "projected_url": null,
+          "before_status": "promotion_blocked",
+          "before_title": null,
+          "before_url": null,
+          "matches_source_native_title": false,
+          "projected_reasons": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Projection은 safe_resolved지만 source-native selected title `잠룡회귀`와 projected title `잠룡회귀 [단행본]`가 정확히 일치하지 않는다. canonical variant인지 wrong-work인지 먼저 확인해야 한다.",
+          "close_condition": "source-native 또는 blind review가 title variant를 정당 해소로 확정한 뒤 runtime replay를 실행한다.",
+          "evidence_refs": [
+            "loop484_shared_gate_counterevidence_projection#post_id=11708447"
+          ]
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "post_id": 11658620,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "RUNTIME_REPLAY",
+      "actions": [
+        "runtime_replay_projected_safe_resolved_exact_required",
+        "full375_collateral_recheck_after_runtime"
+      ],
+      "selected_title": "이거 럽코 빙의물인가요",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "이거 럽코 빙의물인가요",
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+      "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11658620"
+      ]
+    },
+    {
+      "post_id": 11660257,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "암흑가 보스요? 제가요?",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "serialized_public_identity_shared_gate_restored",
+        "verified_alias_title_only_counterevidence_blocked",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11660257"
+      ]
+    },
+    {
+      "post_id": 11660265,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "RUNTIME_REPLAY",
+      "actions": [
+        "runtime_replay_projected_safe_resolved_exact_required",
+        "full375_collateral_recheck_after_runtime"
+      ],
+      "selected_title": "헌터갤러리의 국가권력급 기계공주",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "헌터갤러리의 국가권력급 기계공주",
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+      "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11660265"
+      ]
+    },
+    {
+      "post_id": 11660271,
+      "projected_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+      "actions": [
+        "shared_gate_support_gap_repair_required"
+      ],
+      "selected_title": "월야의 여인들",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+      "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11660271"
+      ]
+    },
+    {
+      "post_id": 11660273,
+      "projected_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+      "actions": [
+        "shared_gate_support_gap_repair_required"
+      ],
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "blocked_candidate_scope_inferred_from_search_evidence",
+        "character_bridge_variance_hold",
+        "llm_only_sentence_candidate_pruned",
+        "official_detail_url_recovered_from_search_evidence",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+      "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11660273"
+      ]
+    },
+    {
+      "post_id": 11660277,
+      "projected_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+      "actions": [
+        "shared_gate_support_gap_repair_required"
+      ],
+      "selected_title": "아카메디 아카데미 본 사람?",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "direct_image_work_surface_bridge",
+        "ocr_catalog_official_title",
+        "official_title_exists",
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved",
+        "precision_seed_official_title_requires_review",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+      "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11660277"
+      ]
+    },
+    {
+      "post_id": 11661881,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "RUNTIME_REPLAY",
+      "actions": [
+        "runtime_replay_projected_safe_resolved_exact_required",
+        "full375_collateral_recheck_after_runtime"
+      ],
+      "selected_title": "여신이 나만 애호함",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "여신이 나만 애호함",
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+      "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11661881"
+      ]
+    },
+    {
+      "post_id": 11663514,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "마탄 속의 제국",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "llm_only_sentence_candidate_pruned",
+        "official_title_exists",
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "serialized_public_identity_shared_gate_restored",
+        "verified_alias_title_only_counterevidence_blocked",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11663514"
+      ]
+    },
+    {
+      "post_id": 11663521,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "초전자포] 시스터즈가 되었다",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11663521"
+      ]
+    },
+    {
+      "post_id": 11663535,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "MANUAL_REVIEW",
+      "actions": [
+        "blocked_projection_manual_review_required"
+      ],
+      "selected_title": "퇴마록",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 promotion_blocked가 남았지만 자동 분류 marker가 부족하다. 수동 review가 필요하다.",
+      "close_condition": "source-native/blind review가 publish, candidate_only, lint 중 하나로 확정해야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11663535"
+      ]
+    },
+    {
+      "post_id": 11663540,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "방구석 여신이 되었다",
+      "selected_option_id": "C1",
+      "source_native_verdict": "character_bridge_supports_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "llm_only_sentence_candidate_pruned",
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "serialized_public_identity_shared_gate_restored",
+        "verified_alias_title_only_counterevidence_blocked",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11663540"
+      ]
+    },
+    {
+      "post_id": 11663557,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "퇴마록",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "batch_alias_public_title_bridge",
+        "batch_alias_url_only_counterevidence_blocked",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11663557"
+      ]
+    },
+    {
+      "post_id": 11665124,
+      "projected_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+      "actions": [
+        "shared_gate_support_gap_repair_required"
+      ],
+      "selected_title": "화산파(화산귀환)",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "llm_only_sentence_candidate_pruned",
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+      "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11665124"
+      ]
+    },
+    {
+      "post_id": 11666731,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "약먹는 천재마법사",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "batch_alias_public_title_bridge",
+        "low_specificity_batch_alias_counterevidence_blocked",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11666731"
+      ]
+    },
+    {
+      "post_id": 11668288,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "가챠 중독자의 퓨전펑크 생활",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11668288"
+      ]
+    },
+    {
+      "post_id": 11668300,
+      "projected_status": "safe_resolved",
+      "review_label": "HOLD",
+      "priority": "P1",
+      "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+      "actions": [
+        "source_native_canonical_variant_review_required",
+        "runtime_replay_after_variant_review"
+      ],
+      "selected_title": "즉사기 들고 게임 속 으로",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "즉사기 인 줄 알았는데 지옥이었다",
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection은 safe_resolved지만 source-native selected title `즉사기 들고 게임 속 으로`와 projected title `즉사기 인 줄 알았는데 지옥이었다`가 정확히 일치하지 않는다. canonical variant인지 wrong-work인지 먼저 확인해야 한다.",
+      "close_condition": "source-native 또는 blind review가 title variant를 정당 해소로 확정한 뒤 runtime replay를 실행한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11668300"
+      ]
+    },
+    {
+      "post_id": 11668325,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "Fate/stay night",
+      "selected_option_id": "C1",
+      "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "batch_alias_public_title_bridge",
+        "batch_alias_url_only_counterevidence_blocked",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11668325"
+      ]
+    },
+    {
+      "post_id": 11669913,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "하룬",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "precision_seed_official_title_requires_review",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11669913"
+      ]
+    },
+    {
+      "post_id": 11669933,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "MANUAL_REVIEW",
+      "actions": [
+        "blocked_projection_manual_review_required"
+      ],
+      "selected_title": "회귀수선전",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "blocked_candidate_scope_inferred_from_search_evidence",
+        "character_bridge_variance_hold",
+        "official_detail_url_recovered_from_search_evidence",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 promotion_blocked가 남았지만 자동 분류 marker가 부족하다. 수동 review가 필요하다.",
+      "close_condition": "source-native/blind review가 publish, candidate_only, lint 중 하나로 확정해야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11669933"
+      ]
+    },
+    {
+      "post_id": 11671507,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "판초우의의 마법사",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "alias_bridge",
+        "context_only",
+        "llm_only_sentence_candidate_pruned",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discussion_missing",
+        "scope_not_current_work",
+        "scope_unclassified",
+        "scope_unknown",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11671507"
+      ]
+    },
+    {
+      "post_id": 11673096,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "삼국지",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_work_surface_supports_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "meta_primary_subject:platform_release_meta",
+        "missing_body_work_bridge",
+        "official_detail_url",
+        "official_title_exists",
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved",
+        "precision_seed_official_title_requires_review",
+        "resolved_public_title_scope",
+        "row_discussion_missing",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "unresolved_body_character_work_anchor"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11673096"
+      ]
+    },
+    {
+      "post_id": 11673102,
+      "projected_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+      "actions": [
+        "shared_gate_support_gap_repair_required"
+      ],
+      "selected_title": "갤질하는 천재 의사",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "alias_bridge",
+        "official_detail_bracket_visual_release_context",
+        "official_detail_url",
+        "official_title_exists",
+        "precision_seed_official_title_requires_review",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed",
+        "title_acceptance_accept",
+        "title_led_consumption_bridge"
+      ],
+      "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+      "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11673102"
+      ]
+    },
+    {
+      "post_id": 11674694,
+      "projected_status": "safe_resolved",
+      "review_label": "HOLD",
+      "priority": "P1",
+      "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+      "actions": [
+        "source_native_canonical_variant_review_required",
+        "runtime_replay_after_variant_review"
+      ],
+      "selected_title": "21세기 무림세가",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "21세기를 여행하는 무림인을 위한 안내서",
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_body_verified_competition_reconciled",
+        "serialized_public_identity_gate_candidate_blocked_by_locked_public_candidate",
+        "serialized_public_identity_preserved_body_alias_reconciled",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "title_only_publication_reconciled_to_preserved_body_alias",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection은 safe_resolved지만 source-native selected title `21세기 무림세가`와 projected title `21세기를 여행하는 무림인을 위한 안내서`가 정확히 일치하지 않는다. canonical variant인지 wrong-work인지 먼저 확인해야 한다.",
+      "close_condition": "source-native 또는 blind review가 title variant를 정당 해소로 확정한 뒤 runtime replay를 실행한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11674694"
+      ]
+    },
+    {
+      "post_id": 11676314,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "RUNTIME_REPLAY",
+      "actions": [
+        "runtime_replay_projected_safe_resolved_exact_required",
+        "full375_collateral_recheck_after_runtime"
+      ],
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "selected_option_id": "HOLD",
+      "source_native_verdict": "candidate_set_incomplete_correct_title_outside_options",
+      "projected_title": "마도서를 줍다 마법사가 되다",
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+      "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11676314"
+      ]
+    },
+    {
+      "post_id": 11677915,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "MANUAL_REVIEW",
+      "actions": [
+        "blocked_projection_manual_review_required"
+      ],
+      "selected_title": "전지적 독자 시점",
+      "selected_option_id": "C1",
+      "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 promotion_blocked가 남았지만 자동 분류 marker가 부족하다. 수동 review가 필요하다.",
+      "close_condition": "source-native/blind review가 publish, candidate_only, lint 중 하나로 확정해야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11677915"
+      ]
+    },
+    {
+      "post_id": 11677926,
+      "projected_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+      "actions": [
+        "shared_gate_support_gap_repair_required"
+      ],
+      "selected_title": "재앙급 막내 공자의 회귀",
+      "selected_option_id": "C1",
+      "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+      "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11677926"
+      ]
+    },
+    {
+      "post_id": 11681172,
+      "projected_status": "output_consistency_lint",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_CONTRACT_OR_LINT_REVIEW",
+      "actions": [
+        "output_consistency_lint_contract_followup_required",
+        "publication_trace_lint_review_required"
+      ],
+      "selected_title": "헌터갤러리의 국가권력급 기계공주",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "output_consistency_lint",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "output_consistency_lint",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 output_consistency_lint가 남았다. public ledger, candidate ledger, publish_contract_trace consistency를 먼저 맞춰야 한다.",
+      "close_condition": "lint reason이 제거되고 blocked/publish trace가 동일한 decision으로 수렴해야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11681172"
+      ]
+    },
+    {
+      "post_id": 11682767,
+      "projected_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+      "actions": [
+        "shared_gate_support_gap_repair_required"
+      ],
+      "selected_title": "묵향",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "blocked_candidate_scope_inferred_from_search_evidence",
+        "character_bridge_variance_hold",
+        "llm_only_sentence_candidate_pruned",
+        "official_detail_url_recovered_from_search_evidence",
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+      "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11682767"
+      ]
+    },
+    {
+      "post_id": 11684372,
+      "projected_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+      "actions": [
+        "shared_gate_support_gap_repair_required"
+      ],
+      "selected_title": "밀리언 클래스",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "direct_image_work_surface_bridge",
+        "ocr_catalog_official_title",
+        "official_title_exists",
+        "precision_seed_official_title_requires_review",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+      "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11684372"
+      ]
+    },
+    {
+      "post_id": 11685987,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "RUNTIME_REPLAY",
+      "actions": [
+        "runtime_replay_projected_safe_resolved_exact_required",
+        "full375_collateral_recheck_after_runtime"
+      ],
+      "selected_title": "괴담 동아리",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "projected_title": "괴담 동아리",
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+      "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11685987"
+      ]
+    },
+    {
+      "post_id": 11690841,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "MANUAL_REVIEW",
+      "actions": [
+        "blocked_projection_manual_review_required"
+      ],
+      "selected_title": "블루 아카이브",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 promotion_blocked가 남았지만 자동 분류 marker가 부족하다. 수동 review가 필요하다.",
+      "close_condition": "source-native/blind review가 publish, candidate_only, lint 중 하나로 확정해야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11690841"
+      ]
+    },
+    {
+      "post_id": 11692436,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "퍼펙트 메이지",
+      "selected_option_id": "C1",
+      "source_native_verdict": "character_bridge_supports_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11692436"
+      ]
+    },
+    {
+      "post_id": 11692444,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "RUNTIME_REPLAY",
+      "actions": [
+        "runtime_replay_projected_safe_resolved_exact_required",
+        "full375_collateral_recheck_after_runtime"
+      ],
+      "selected_title": "엑스칼리버 뽑습니다",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "projected_title": "엑스칼리버 뽑습니다",
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+      "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11692444"
+      ]
+    },
+    {
+      "post_id": 11694019,
+      "projected_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+      "actions": [
+        "shared_gate_support_gap_repair_required"
+      ],
+      "selected_title": "혼후 순결",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "competing_candidate_present",
+        "context_only",
+        "llm_only_sentence_candidate_pruned",
+        "official_detail_url",
+        "official_title_exists",
+        "precision_seed_author_plot_composite_requires_review",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed",
+        "work_consumption_marker"
+      ],
+      "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+      "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11694019"
+      ]
+    },
+    {
+      "post_id": 11694035,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "RUNTIME_REPLAY",
+      "actions": [
+        "runtime_replay_projected_safe_resolved_exact_required",
+        "full375_collateral_recheck_after_runtime"
+      ],
+      "selected_title": "아카데미 생존 갤러리",
+      "selected_option_id": "HOLD",
+      "source_native_verdict": "candidate_set_incomplete_correct_title_outside_options",
+      "projected_title": "아카데미 생존 갤러리",
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+      "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11694035"
+      ]
+    },
+    {
+      "post_id": 11694049,
+      "projected_status": "safe_resolved",
+      "review_label": "HOLD",
+      "priority": "P1",
+      "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+      "actions": [
+        "source_native_canonical_variant_review_required",
+        "runtime_replay_after_variant_review"
+      ],
+      "selected_title": "아카데미 생존 갤러리",
+      "selected_option_id": "C1",
+      "source_native_verdict": "domain_alias_supports_safe_title_lost_to_null",
+      "projected_title": "더 아레스",
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_body_verified_competition_reconciled",
+        "serialized_public_identity_gate_candidate_reconciled",
+        "serialized_public_identity_preserved_body_alias_reconciled",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "title_only_publication_reconciled_to_preserved_body_alias",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection은 safe_resolved지만 source-native selected title `아카데미 생존 갤러리`와 projected title `더 아레스`가 정확히 일치하지 않는다. canonical variant인지 wrong-work인지 먼저 확인해야 한다.",
+      "close_condition": "source-native 또는 blind review가 title variant를 정당 해소로 확정한 뒤 runtime replay를 실행한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11694049"
+      ]
+    },
+    {
+      "post_id": 11697242,
+      "projected_status": "output_consistency_lint",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_CONTRACT_OR_LINT_REVIEW",
+      "actions": [
+        "output_consistency_lint_contract_followup_required",
+        "publication_trace_lint_review_required"
+      ],
+      "selected_title": "유희왕",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "output_consistency_lint",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "community_banter",
+        "non_novel_discourse",
+        "nonwork",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discussion_missing",
+        "scope_not_current_work",
+        "scope_platform_meta_nonwork",
+        "serialized_public_identity_scrubbed",
+        "thematic_overlap_only"
+      ],
+      "rationale_ko": "Projection 후에도 output_consistency_lint가 남았다. public ledger, candidate ledger, publish_contract_trace consistency를 먼저 맞춰야 한다.",
+      "close_condition": "lint reason이 제거되고 blocked/publish trace가 동일한 decision으로 수렴해야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11697242"
+      ]
+    },
+    {
+      "post_id": 11697256,
+      "projected_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+      "actions": [
+        "shared_gate_support_gap_repair_required"
+      ],
+      "selected_title": "황제의 딸로 환생했다",
+      "selected_option_id": "C1",
+      "source_native_verdict": "comment_answer_directly_supports_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+      "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11697256"
+      ]
+    },
+    {
+      "post_id": 11698859,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "귤부인 대롱대롱",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11698859"
+      ]
+    },
+    {
+      "post_id": 11698870,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "MANUAL_REVIEW",
+      "actions": [
+        "blocked_projection_manual_review_required"
+      ],
+      "selected_title": "인간실격",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "batch_alias_public_title_bridge",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed",
+        "weak_alias_surface_public_title_bridge"
+      ],
+      "rationale_ko": "Projection 후에도 promotion_blocked가 남았지만 자동 분류 marker가 부족하다. 수동 review가 필요하다.",
+      "close_condition": "source-native/blind review가 publish, candidate_only, lint 중 하나로 확정해야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11698870"
+      ]
+    },
+    {
+      "post_id": 11698910,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "판초우의의 마법사",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "alias_bridge",
+        "context_only",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discussion_missing",
+        "scope_not_current_work",
+        "scope_unclassified",
+        "scope_unknown",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11698910"
+      ]
+    },
+    {
+      "post_id": 11702090,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_option_id": "C1",
+      "source_native_verdict": "character_and_plot_bridge_supports_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "context_only",
+        "llm_only_sentence_candidate_pruned",
+        "row_discussion_missing",
+        "scope_not_current_work",
+        "scope_unclassified",
+        "scope_unknown",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11702090"
+      ]
+    },
+    {
+      "post_id": 11702094,
+      "projected_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+      "actions": [
+        "shared_gate_support_gap_repair_required"
+      ],
+      "selected_title": "#더블오",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_short_title_supports_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "llm_only_sentence_candidate_pruned",
+        "official_detail_bracket_visual_release_context",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed",
+        "short_lead_surface_public_title_bridge",
+        "title_acceptance_accept",
+        "title_led_consumption_bridge"
+      ],
+      "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+      "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11702094"
+      ]
+    },
+    {
+      "post_id": 11705230,
+      "projected_status": "safe_resolved",
+      "review_label": "HOLD",
+      "priority": "P1",
+      "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+      "actions": [
+        "source_native_canonical_variant_review_required",
+        "runtime_replay_after_variant_review"
+      ],
+      "selected_title": "월야환담",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "월야환담 시리즈",
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection은 safe_resolved지만 source-native selected title `월야환담`와 projected title `월야환담 시리즈`가 정확히 일치하지 않는다. canonical variant인지 wrong-work인지 먼저 확인해야 한다.",
+      "close_condition": "source-native 또는 blind review가 title variant를 정당 해소로 확정한 뒤 runtime replay를 실행한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11705230"
+      ]
+    },
+    {
+      "post_id": 11705251,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "월야환담 창월야",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "llm_only_sentence_candidate_pruned",
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "serialized_public_identity_shared_gate_restored",
+        "verified_alias_title_only_counterevidence_blocked",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11705251"
+      ]
+    },
+    {
+      "post_id": 11706871,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "파우스트",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "community_banter",
+        "llm_only_sentence_candidate_pruned",
+        "non_novel_discourse",
+        "nonwork",
+        "row_discussion_missing",
+        "scope_not_current_work",
+        "scope_platform_meta_nonwork",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11706871"
+      ]
+    },
+    {
+      "post_id": 11708432,
+      "projected_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+      "actions": [
+        "shared_gate_support_gap_repair_required"
+      ],
+      "selected_title": "전지적 독자 시점",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. direct source support, official detail support, candidate preservation을 다시 점검한다.",
+      "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11708432"
+      ]
+    },
+    {
+      "post_id": 11708447,
+      "projected_status": "safe_resolved",
+      "review_label": "HOLD",
+      "priority": "P1",
+      "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+      "actions": [
+        "source_native_canonical_variant_review_required",
+        "runtime_replay_after_variant_review"
+      ],
+      "selected_title": "잠룡회귀",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "잠룡회귀 [단행본]",
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection은 safe_resolved지만 source-native selected title `잠룡회귀`와 projected title `잠룡회귀 [단행본]`가 정확히 일치하지 않는다. canonical variant인지 wrong-work인지 먼저 확인해야 한다.",
+      "close_condition": "source-native 또는 blind review가 title variant를 정당 해소로 확정한 뒤 runtime replay를 실행한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11708447"
+      ]
+    },
+    {
+      "post_id": 11708478,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "사연 있는 악역으로 착각 당한다",
+      "selected_option_id": "C1",
+      "source_native_verdict": "comment_answer_directly_supports_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "image_scope_missing_candidate_surface",
+        "llm_only_sentence_candidate_pruned",
+        "missing_body_work_bridge",
+        "official_detail_url",
+        "official_title_exists",
+        "precision_seed_official_title_requires_review",
+        "resolved_public_title_scope",
+        "row_discussion_missing",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "unresolved_body_character_work_anchor"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11708478"
+      ]
+    },
+    {
+      "post_id": 11710021,
+      "projected_status": "output_consistency_lint",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_CONTRACT_OR_LINT_REVIEW",
+      "actions": [
+        "output_consistency_lint_contract_followup_required",
+        "publication_trace_lint_review_required"
+      ],
+      "selected_title": "무한의 마법사",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_and_character_support_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "output_consistency_lint",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "community_banter",
+        "non_novel_discourse",
+        "nonwork",
+        "row_discussion_missing",
+        "scope_not_current_work",
+        "scope_platform_meta_nonwork",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 output_consistency_lint가 남았다. public ledger, candidate ledger, publish_contract_trace consistency를 먼저 맞춰야 한다.",
+      "close_condition": "lint reason이 제거되고 blocked/publish trace가 동일한 decision으로 수렴해야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11710021"
+      ]
+    },
+    {
+      "post_id": 11710036,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "selected_option_id": "HOLD",
+      "source_native_verdict": "candidate_set_incomplete_correct_title_outside_options",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "missing_body_work_bridge",
+        "official_detail_bracket_visual_release_context",
+        "official_detail_url",
+        "official_title_exists",
+        "precision_seed_official_title_requires_review",
+        "row_discussion_missing",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "title_acceptance_accept",
+        "title_led_consumption_bridge",
+        "unresolved_body_character_work_anchor"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11710036"
+      ]
+    },
+    {
+      "post_id": 11710049,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_alias_and_comment_context_support_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "alias_bridge",
+        "llm_only_sentence_candidate_pruned",
+        "missing_body_work_bridge",
+        "official_detail_bracket_visual_release_context",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discussion_missing",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "title_acceptance_accept",
+        "title_led_consumption_bridge",
+        "unresolved_body_character_work_anchor"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11710049"
+      ]
+    },
+    {
+      "post_id": 11713220,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "RUNTIME_REPLAY",
+      "actions": [
+        "runtime_replay_projected_safe_resolved_exact_required",
+        "full375_collateral_recheck_after_runtime"
+      ],
+      "selected_title": "나만 성좌들이 안 무서움",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "projected_title": "나만 성좌들이 안 무서움",
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+      "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11713220"
+      ]
+    },
+    {
+      "post_id": 11714887,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "도굴왕 1 |",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_image_ocr_derived_work",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "serialized_public_identity_shared_gate_restored",
+        "unverified_promoted_image_work_title_without_official_support",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11714887"
+      ]
+    },
+    {
+      "post_id": 11716475,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "MANUAL_REVIEW",
+      "actions": [
+        "blocked_projection_manual_review_required"
+      ],
+      "selected_title": "지력 99 고능아인 척하기",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_and_author_context_support_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 promotion_blocked가 남았지만 자동 분류 marker가 부족하다. 수동 review가 필요하다.",
+      "close_condition": "source-native/blind review가 publish, candidate_only, lint 중 하나로 확정해야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11716475"
+      ]
+    },
+    {
+      "post_id": 11716498,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "RUNTIME_REPLAY",
+      "actions": [
+        "runtime_replay_projected_safe_resolved_exact_required",
+        "full375_collateral_recheck_after_runtime"
+      ],
+      "selected_title": "마녀의 도시",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "마녀의 도시",
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+      "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11716498"
+      ]
+    },
+    {
+      "post_id": 11718099,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "MANUAL_REVIEW",
+      "actions": [
+        "blocked_projection_manual_review_required"
+      ],
+      "selected_title": "빌어먹을 환생",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "promoted_image_work_title_conflicts_with_public_title",
+        "resolved_public_title_scope",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 promotion_blocked가 남았지만 자동 분류 marker가 부족하다. 수동 review가 필요하다.",
+      "close_condition": "source-native/blind review가 publish, candidate_only, lint 중 하나로 확정해야 한다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11718099"
+      ]
+    },
+    {
+      "post_id": 11718110,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "지구온라인에서 쌀먹합니다",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_body_verified_competition_reconciled",
+        "serialized_public_identity_gate_candidate_reconciled",
+        "serialized_public_identity_preserved_body_alias_reconciled",
+        "serialized_public_identity_scrubbed",
+        "serialized_public_identity_shared_gate_restored",
+        "title_only_publication_reconciled_to_preserved_body_alias",
+        "verified_alias_title_only_counterevidence_blocked",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11718110"
+      ]
+    },
+    {
+      "post_id": 11718114,
+      "projected_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+      "actions": [
+        "scope_or_nonwork_hard_hold_review_required"
+      ],
+      "selected_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "selected_option_id": "C1",
+      "source_native_verdict": "title_phrase_and_plot_context_support_safe_title_lost_to_null",
+      "projected_title": null,
+      "projected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "before_url": null,
+      "matches_source_native_title": false,
+      "projected_reasons": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. 무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다.",
+      "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+      "evidence_refs": [
+        "loop484_shared_gate_counterevidence_projection#post_id=11718114"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "projection_queue_is_not_approval": true,
+    "runtime_replay_required_for_projected_safe_resolved": true,
+    "full375_collateral_remains_no_go_until_replayed": true,
+    "completion_gate": "full375 collateral GO + full_scan path"
+  }
+}

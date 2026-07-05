@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-06 - Loop485 shared gate projection follow-up queue
+
+- Loop484 projection `59`건을 runtime replay, canonical/source-native review, lint contract, still-blocked review lane으로 분해했다.
+- Queue 결과는 rows `59`, label `REPROCESS 24 / HOLD 35`, priority `P0 12 / P1 17 / P2 30`, validation issue `0`이다.
+- Projected status는 `safe_resolved 14 / promotion_blocked 42 / output_consistency_lint 3`이고 exact source-native match는 `9`다.
+- Exact `9`건 runtime input JSONL과 manifest를 생성했다. 입력 rows는 `9`, missing post_id는 `0`이다.
+- Report는 `docs/devs/loop_reports/LOOP_485_REPORT_20260706.md`, state는 `docs/devs/loop485_shared_gate_projection_followup_state_20260706.json`, queue는 `docs/devs/loop485_shared_gate_projection_followup_action_queue.json/.md`다.
+- Runtime input은 `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop485_shared_gate_exact9_runtime_replay_input.jsonl`이고 out 경로라 git 추적 대상은 아니다.
+- 검증은 py_compile PASS, `tests.test_projection_followup_queue` `3` tests PASS, queue/input generation PASS다.
+- Gate는 queue `REVIEW-LOCKED`, runtime input generation `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop484 shared gate counterevidence projection
 
 - Loop483 residual105 중 `shared_promotion_gate_wiring_required` 59건을 먼저 처리했다.

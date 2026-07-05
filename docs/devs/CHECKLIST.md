@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-06 Loop485 shared gate projection follow-up queue 체크
+
+- [x] Loop484 projection `59`건을 후속 action queue로 분해했다.
+- [x] Queue rows는 `59`, label은 `REPROCESS 24 / HOLD 35`다.
+- [x] Priority는 `P0 12 / P1 17 / P2 30`이다.
+- [x] Exact source-native match runtime replay 후보 `9`건을 분리했다.
+- [x] P0 lint `3`건, P1 support gap `12`건, P1 canonical/source-native variant `5`건, P2 hold/manual `30`건으로 분리했다.
+- [x] Runtime input JSONL은 rows `9`, missing `0`으로 생성했다.
+- [x] py_compile, `tests.test_projection_followup_queue` `3` tests, queue/input generation을 통과했다.
+- [ ] Exact `9`건 runtime replay는 아직 실행하지 않았다.
+- [ ] Full375 collateral은 여전히 `NO-GO`다.
+- [ ] 완료 기준은 여전히 `full375 collateral GO + full_scan 경로 정의`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: queue `REVIEW-LOCKED`, runtime input generation `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO`.
+
 ## 2026-07-06 Loop484 shared gate counterevidence projection 체크
 
 - [x] Loop483 `shared_promotion_gate_wiring_required` 59건을 ordinary residual 단건 처리보다 먼저 확인했다.

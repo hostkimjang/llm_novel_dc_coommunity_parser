@@ -1,0 +1,470 @@
+from __future__ import annotations
+
+import argparse
+import json
+from collections import Counter, defaultdict
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+
+def load_json(path: Path) -> dict[str, Any]:
+    payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"Expected JSON object: {path}")
+    return payload
+
+
+def load_result_rows(path: Path) -> list[dict[str, Any]]:
+    payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    if isinstance(payload, list):
+        return [row for row in payload if isinstance(row, dict)]
+    if isinstance(payload, dict):
+        for key in ("results", "rows", "items", "data"):
+            rows = payload.get(key)
+            if isinstance(rows, list):
+                return [row for row in rows if isinstance(row, dict)]
+    raise ValueError(f"Expected result row list: {path}")
+
+
+def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="\n") as f:
+        for row in rows:
+            f.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+
+def _counter_to_dict(counter: Counter[str]) -> dict[str, int]:
+    return {key: counter[key] for key in sorted(counter)}
+
+
+def _reason_set(row: dict[str, Any]) -> set[str]:
+    reasons = row.get("projected_reasons") or []
+    if not isinstance(reasons, list):
+        reasons = [reasons]
+    return {str(reason or "").strip() for reason in reasons if str(reason or "").strip()}
+
+
+def _projected_status(row: dict[str, Any]) -> str:
+    return str(row.get("projected_status") or "").strip()
+
+
+def classify_projection_row(row: dict[str, Any]) -> dict[str, Any]:
+    status = _projected_status(row)
+    reasons = _reason_set(row)
+    exact_match = row.get("matches_source_native_title") is True
+    selected_title = row.get("selected_title")
+    projected_title = row.get("projected_title")
+
+    if status == "safe_resolved" and exact_match:
+        return {
+            "review_label": "REPROCESS",
+            "priority": "P0",
+            "owner_mode": "RUNTIME_REPLAY",
+            "actions": [
+                "runtime_replay_projected_safe_resolved_exact_required",
+                "full375_collateral_recheck_after_runtime",
+            ],
+            "rationale_ko": (
+                "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. "
+                "같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다."
+            ),
+            "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+        }
+
+    if status == "safe_resolved":
+        return {
+            "review_label": "HOLD",
+            "priority": "P1",
+            "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+            "actions": [
+                "source_native_canonical_variant_review_required",
+                "runtime_replay_after_variant_review",
+            ],
+            "rationale_ko": (
+                f"Projection은 safe_resolved지만 source-native selected title `{selected_title}`와 "
+                f"projected title `{projected_title}`가 정확히 일치하지 않는다. canonical variant인지 "
+                "wrong-work인지 먼저 확인해야 한다."
+            ),
+            "close_condition": "source-native 또는 blind review가 title variant를 정당 해소로 확정한 뒤 runtime replay를 실행한다.",
+        }
+
+    if status == "output_consistency_lint":
+        return {
+            "review_label": "REPROCESS",
+            "priority": "P0",
+            "owner_mode": "CODE_CONTRACT_OR_LINT_REVIEW",
+            "actions": [
+                "output_consistency_lint_contract_followup_required",
+                "publication_trace_lint_review_required",
+            ],
+            "rationale_ko": (
+                "Projection 후에도 output_consistency_lint가 남았다. public ledger, "
+                "candidate ledger, publish_contract_trace consistency를 먼저 맞춰야 한다."
+            ),
+            "close_condition": "lint reason이 제거되고 blocked/publish trace가 동일한 decision으로 수렴해야 한다.",
+        }
+
+    scope_or_nonwork_markers = {
+        "scope_not_current_work",
+        "scope_context_only",
+        "row_discussion_missing",
+        "nonwork",
+        "nonwork_or_noise_context",
+        "community_banter",
+        "scope_platform_meta_nonwork",
+        "non_novel_discourse",
+        "missing_body_work_bridge",
+        "unresolved_body_character_work_anchor",
+    }
+    if status == "promotion_blocked" and reasons & scope_or_nonwork_markers:
+        return {
+            "review_label": "HOLD",
+            "priority": "P2",
+            "owner_mode": "POLICY_OR_SOURCE_NATIVE_REVIEW",
+            "actions": ["scope_or_nonwork_hard_hold_review_required"],
+            "rationale_ko": (
+                "Projection 후에도 current-work scope가 닫히지 않거나 nonwork/context-only 근거가 남았다. "
+                "무리한 promotion 완화가 아니라 source-native 또는 policy review가 필요하다."
+            ),
+            "close_condition": "current-work direct bridge가 source-native로 확인되기 전까지 public publish를 열지 않는다.",
+        }
+
+    support_gap_markers = {
+        "verified_alias_title_only_counterevidence_blocked",
+        "official_url_withheld_by_title_mismatch",
+        "serialized_public_identity_shared_gate_restored",
+        "llm_only_sentence_candidate_pruned",
+        "precision_seed_official_title_requires_review",
+        "exact_alias_candidate_preserved_without_work_discussion",
+    }
+    if status == "promotion_blocked" and reasons & support_gap_markers:
+        return {
+            "review_label": "REPROCESS",
+            "priority": "P1",
+            "owner_mode": "CODE_OR_CANDIDATE_REPAIR",
+            "actions": ["shared_gate_support_gap_repair_required"],
+            "rationale_ko": (
+                "Projection 후에도 shared gate support gap 또는 candidate pruning/counterevidence가 남았다. "
+                "direct source support, official detail support, candidate preservation을 다시 점검한다."
+            ),
+            "close_condition": "supported current-work candidate만 publish되고 hard negative evidence가 있으면 계속 candidate_only여야 한다.",
+        }
+
+    return {
+        "review_label": "HOLD",
+        "priority": "P2",
+        "owner_mode": "MANUAL_REVIEW",
+        "actions": ["blocked_projection_manual_review_required"],
+        "rationale_ko": "Projection 후에도 promotion_blocked가 남았지만 자동 분류 marker가 부족하다. 수동 review가 필요하다.",
+        "close_condition": "source-native/blind review가 publish, candidate_only, lint 중 하나로 확정해야 한다.",
+    }
+
+
+def build_followup_queue(
+    projection: dict[str, Any],
+    *,
+    generated_at: str | None = None,
+    queue_id: str = "projection_followup_action_queue",
+) -> dict[str, Any]:
+    rows = projection.get("rows") or []
+    if not isinstance(rows, list):
+        raise ValueError("projection.rows must be a list")
+
+    out_rows: list[dict[str, Any]] = []
+    label_counts: Counter[str] = Counter()
+    priority_counts: Counter[str] = Counter()
+    status_counts: Counter[str] = Counter()
+    action_counts: Counter[str] = Counter()
+    owner_counts: Counter[str] = Counter()
+    exact_counts: Counter[str] = Counter()
+    groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    validation_issues: list[dict[str, Any]] = []
+
+    for row in rows:
+        if not isinstance(row, dict):
+            validation_issues.append({"code": "non_object_projection_row"})
+            continue
+        classification = classify_projection_row(row)
+        status = _projected_status(row)
+        exact_key = "match" if row.get("matches_source_native_title") is True else "mismatch"
+        actions = classification["actions"]
+        entry = {
+            "post_id": row.get("post_id"),
+            "projected_status": status,
+            "review_label": classification["review_label"],
+            "priority": classification["priority"],
+            "owner_mode": classification["owner_mode"],
+            "actions": actions,
+            "selected_title": row.get("selected_title"),
+            "selected_option_id": row.get("selected_option_id"),
+            "source_native_verdict": row.get("source_native_verdict"),
+            "projected_title": row.get("projected_title"),
+            "projected_url": row.get("projected_url"),
+            "before_status": row.get("before_status"),
+            "before_title": row.get("before_title"),
+            "before_url": row.get("before_url"),
+            "matches_source_native_title": row.get("matches_source_native_title") is True,
+            "projected_reasons": sorted(_reason_set(row)),
+            "rationale_ko": classification["rationale_ko"],
+            "close_condition": classification["close_condition"],
+            "evidence_refs": [
+                f"{projection.get('projection_id') or queue_id}#post_id={row.get('post_id')}"
+            ],
+        }
+        out_rows.append(entry)
+        label_counts[entry["review_label"]] += 1
+        priority_counts[entry["priority"]] += 1
+        status_counts[status] += 1
+        owner_counts[entry["owner_mode"]] += 1
+        exact_counts[exact_key] += 1
+        for action in actions:
+            action_counts[action] += 1
+            groups[action].append(entry)
+
+    action_groups: list[dict[str, Any]] = []
+    for action in sorted(groups):
+        group_rows = groups[action]
+        action_groups.append(
+            {
+                "action": action,
+                "row_count": len(group_rows),
+                "priority_counts": _counter_to_dict(Counter(str(item["priority"]) for item in group_rows)),
+                "label_counts": _counter_to_dict(Counter(str(item["review_label"]) for item in group_rows)),
+                "projected_status_counts": _counter_to_dict(Counter(str(item["projected_status"]) for item in group_rows)),
+                "owner_modes": _counter_to_dict(Counter(str(item["owner_mode"]) for item in group_rows)),
+                "post_ids": [item["post_id"] for item in group_rows],
+                "sample_rows": group_rows[:8],
+            }
+        )
+
+    if projection.get("input_rows") is not None and int(projection.get("input_rows")) != len(rows):
+        validation_issues.append(
+            {
+                "code": "projection_input_rows_mismatch",
+                "expected": projection.get("input_rows"),
+                "actual": len(rows),
+            }
+        )
+
+    return {
+        "report_type": "projection_followup_action_queue",
+        "queue_id": queue_id,
+        "generated_at": generated_at or datetime.now().replace(microsecond=0).isoformat(),
+        "source_projection_id": projection.get("projection_id"),
+        "source_projection_path": projection.get("source_projection_path"),
+        "source_queue": projection.get("source_queue"),
+        "source_full375_result": projection.get("source_full375_result"),
+        "semantic_quality": "REVIEW-LOCKED",
+        "full_scan_approval": False,
+        "gate": "NO-GO" if validation_issues else "REVIEW-LOCKED",
+        "summary": {
+            "source_rows": len(rows),
+            "followup_action_queue_rows": len(out_rows),
+            "label_counts": _counter_to_dict(label_counts),
+            "priority_counts": _counter_to_dict(priority_counts),
+            "projected_status_counts": _counter_to_dict(status_counts),
+            "exact_match_counts": _counter_to_dict(exact_counts),
+            "owner_mode_counts": _counter_to_dict(owner_counts),
+            "action_counts": _counter_to_dict(action_counts),
+            "action_group_count": len(action_groups),
+            "runtime_replay_candidate_rows": action_counts.get("runtime_replay_projected_safe_resolved_exact_required", 0),
+            "variant_review_rows": action_counts.get("source_native_canonical_variant_review_required", 0),
+            "lint_followup_rows": action_counts.get("output_consistency_lint_contract_followup_required", 0),
+            "still_blocked_rows": status_counts.get("promotion_blocked", 0),
+            "validation_issue_count": len(validation_issues),
+        },
+        "validation_issues": validation_issues,
+        "action_groups": action_groups,
+        "rows": out_rows,
+        "approval_boundary": {
+            "projection_queue_is_not_approval": True,
+            "runtime_replay_required_for_projected_safe_resolved": True,
+            "full375_collateral_remains_no_go_until_replayed": True,
+            "completion_gate": "full375 collateral GO + full_scan path",
+        },
+    }
+
+
+def _source_input_row(source: dict[str, Any], queue_row: dict[str, Any], queue_id: str) -> dict[str, Any]:
+    keep_keys = [
+        "post_id",
+        "url",
+        "gallery_id",
+        "title",
+        "content",
+        "content_blocks",
+        "image_urls",
+        "image_count",
+        "comments",
+        "comments_raw",
+        "comment_metadata",
+        "comment_context_lines",
+        "comment_dialogue_context_lines",
+        "author",
+        "post_author",
+        "ip",
+        "author_ip",
+        "post_ip",
+        "created_at",
+    ]
+    out = {key: source.get(key) for key in keep_keys if key in source}
+    out["_loop_projection_followup"] = {
+        "queue_id": queue_id,
+        "post_id": queue_row.get("post_id"),
+        "selected_title": queue_row.get("selected_title"),
+        "projected_title": queue_row.get("projected_title"),
+        "projected_url": queue_row.get("projected_url"),
+        "source_native_verdict": queue_row.get("source_native_verdict"),
+        "actions": queue_row.get("actions") or [],
+        "close_condition": queue_row.get("close_condition"),
+        "approval_state": "runtime_replay_required_not_approval",
+    }
+    return out
+
+
+def build_runtime_replay_input(
+    queue: dict[str, Any],
+    source_rows: list[dict[str, Any]],
+    *,
+    source_result_path: Path,
+    output_jsonl: Path | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    source_index = {str(row.get("post_id")): row for row in source_rows if row.get("post_id") is not None}
+    runtime_rows = [
+        row
+        for row in queue.get("rows") or []
+        if isinstance(row, dict)
+        and "runtime_replay_projected_safe_resolved_exact_required" in (row.get("actions") or [])
+    ]
+    missing_post_ids: list[Any] = []
+    input_rows: list[dict[str, Any]] = []
+    for row in runtime_rows:
+        source = source_index.get(str(row.get("post_id")))
+        if source is None:
+            missing_post_ids.append(row.get("post_id"))
+            continue
+        input_rows.append(_source_input_row(source, row, str(queue.get("queue_id") or "")))
+
+    manifest = {
+        "queue_id": queue.get("queue_id"),
+        "generated_at": datetime.now().replace(microsecond=0).isoformat(),
+        "source_result_path": source_result_path.as_posix(),
+        "runtime_replay_candidate_rows": len(runtime_rows),
+        "runtime_input_rows": len(input_rows),
+        "missing_post_ids": missing_post_ids,
+        "post_ids": [row.get("post_id") for row in input_rows],
+        "expected_titles": [
+            (row.get("_loop_projection_followup") or {}).get("projected_title")
+            for row in input_rows
+        ],
+        "output_jsonl": output_jsonl.as_posix() if output_jsonl else None,
+        "gate": {
+            "runtime_input_generation": "GO" if not missing_post_ids else "NO-GO",
+            "semantic_quality": "REVIEW-LOCKED",
+            "full_scan_approval": False,
+            "approval_boundary": "input generation is not runtime approval",
+        },
+    }
+    return input_rows, manifest
+
+
+def write_markdown(queue: dict[str, Any], path: Path) -> None:
+    summary = queue["summary"]
+    lines = [
+        f"# {queue.get('queue_id')}",
+        "",
+        "## 요약",
+        "",
+        f"- source_projection_id: `{queue.get('source_projection_id')}`",
+        f"- gate: `{queue.get('gate')}`",
+        f"- followup_action_queue_rows: `{summary.get('followup_action_queue_rows')}`",
+        f"- label_counts: `{summary.get('label_counts')}`",
+        f"- priority_counts: `{summary.get('priority_counts')}`",
+        f"- projected_status_counts: `{summary.get('projected_status_counts')}`",
+        f"- exact_match_counts: `{summary.get('exact_match_counts')}`",
+        f"- runtime_replay_candidate_rows: `{summary.get('runtime_replay_candidate_rows')}`",
+        f"- variant_review_rows: `{summary.get('variant_review_rows')}`",
+        f"- lint_followup_rows: `{summary.get('lint_followup_rows')}`",
+        f"- still_blocked_rows: `{summary.get('still_blocked_rows')}`",
+        f"- validation_issue_count: `{summary.get('validation_issue_count')}`",
+        "- approval: `false`",
+        "- semantic_quality: `REVIEW-LOCKED`",
+        "",
+        "## 승인 경계",
+        "",
+        "- 이 큐는 Loop484 projection의 후속 실행 단위이며 approval이 아니다.",
+        "- `safe_resolved` projection도 runtime replay와 publication contract audit 전에는 해소 처리하지 않는다.",
+        "- source-native exact title mismatch는 canonical variant 또는 wrong-work review 전까지 publish 근거가 아니다.",
+        "- 완료 기준은 여전히 `full375 collateral GO + full_scan 경로 정의`다.",
+        "",
+        "## Action groups",
+        "",
+    ]
+    for group in queue.get("action_groups") or []:
+        sample = ", ".join(str(post_id) for post_id in group.get("post_ids", [])[:12])
+        lines.extend(
+            [
+                f"### {group.get('action')}",
+                "",
+                f"- row_count: `{group.get('row_count')}`",
+                f"- priority_counts: `{group.get('priority_counts')}`",
+                f"- label_counts: `{group.get('label_counts')}`",
+                f"- projected_status_counts: `{group.get('projected_status_counts')}`",
+                f"- owner_modes: `{group.get('owner_modes')}`",
+                f"- sample_post_ids: `{sample}`",
+                "",
+            ]
+        )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    while lines and lines[-1] == "":
+        lines.pop()
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Build follow-up action queue from a projection artifact.")
+    parser.add_argument("--projection", required=True, type=Path)
+    parser.add_argument("--queue-id", default="projection_followup_action_queue")
+    parser.add_argument("--output-json", required=True, type=Path)
+    parser.add_argument("--output-md", required=True, type=Path)
+    parser.add_argument("--source-result", type=Path, default=None)
+    parser.add_argument("--runtime-input-jsonl", type=Path, default=None)
+    parser.add_argument("--runtime-manifest-json", type=Path, default=None)
+    parser.add_argument("--fail-on-validation-issue", action="store_true")
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    projection = load_json(args.projection)
+    projection.setdefault("source_projection_path", args.projection.as_posix())
+    queue = build_followup_queue(projection, queue_id=args.queue_id)
+    args.output_json.parent.mkdir(parents=True, exist_ok=True)
+    args.output_json.write_text(json.dumps(queue, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    write_markdown(queue, args.output_md)
+    if args.source_result or args.runtime_input_jsonl or args.runtime_manifest_json:
+        if not (args.source_result and args.runtime_input_jsonl and args.runtime_manifest_json):
+            raise ValueError("--source-result, --runtime-input-jsonl, and --runtime-manifest-json must be passed together")
+        runtime_rows, manifest = build_runtime_replay_input(
+            queue,
+            load_result_rows(args.source_result),
+            source_result_path=args.source_result,
+            output_jsonl=args.runtime_input_jsonl,
+        )
+        write_jsonl(args.runtime_input_jsonl, runtime_rows)
+        args.runtime_manifest_json.parent.mkdir(parents=True, exist_ok=True)
+        args.runtime_manifest_json.write_text(
+            json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+        if args.fail_on_validation_issue and manifest["missing_post_ids"]:
+            return 1
+    if args.fail_on_validation_issue and queue["summary"]["validation_issue_count"]:
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

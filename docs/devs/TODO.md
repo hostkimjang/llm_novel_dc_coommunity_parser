@@ -1,5 +1,19 @@
 # Developer TODO Index
 
+## 2026-07-06 Loop485 TODO
+
+- 상태 업데이트: Loop484 projection `59`건을 후속 queue로 분해했다. Queue는 `REPROCESS 24 / HOLD 35`, priority `P0 12 / P1 17 / P2 30`, validation issue `0`이고 goal은 완료가 아니다.
+- [x] `tools/build_projection_followup_queue.py`를 추가해 projection rows를 후속 lane으로 분류했다.
+- [x] `tests.test_projection_followup_queue`에 lane split과 runtime input 생성 계약을 추가했다.
+- [x] Exact-match projected safe `9`건 runtime input JSONL/manifest를 생성했다.
+- [ ] Exact `9`건 runtime replay를 search 포함 non-light 조건으로 실행한다.
+- [ ] P0 lint `3`건은 public ledger와 publish_contract_trace consistency를 수리한다.
+- [ ] P1 support gap `12`건은 shared gate/candidate preservation repair로 분리한다.
+- [ ] P1 canonical/source-native variant `5`건은 source-native 또는 blind review로 정당 해소 여부를 확정한다.
+- [ ] P2 hold/manual `30`건은 hard hold로 유지하고 promotion 완화 근거로 쓰지 않는다.
+- [ ] 완료 기준은 여전히 `full375 collateral GO + full_scan 경로 정의`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop484 TODO
 
 - 상태 업데이트: shared promotion gate 경로부터 처리했다. Projection은 input `59`에서 `safe_resolved 14 / promotion_blocked 42 / output_consistency_lint 3`이고, goal은 완료가 아니다.

@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260706-485 - shared gate projection follow-up queue
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Follow-up queue | 완료 | rows `59`, validation issue `0` | exact 9 runtime replay |
+| P0 lane | OPEN | runtime exact `9`, lint `3` | runtime replay와 lint contract repair |
+| P1 lane | OPEN | support gap `12`, canonical/source-native variant `5` | source-native/blind review 또는 targeted repair |
+| P2 lane | HOLD | scope/nonwork hard hold `23`, manual blocked `7` | promotion 완화 금지 |
+| Runtime input | 준비 | rows `9`, missing `0`, out input path 생성 | 실행 후 health/contract audit |
+| 검증 | PASS | py_compile PASS, projection follow-up unittest `3` tests PASS, queue/input generation PASS | broader gate는 runtime/full375 후속 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: queue `REVIEW-LOCKED`, runtime input generation `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-484 - shared gate counterevidence projection
 
 | 항목 | 상태 | 근거 | 다음 |
