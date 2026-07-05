@@ -3959,6 +3959,81 @@ class Orchestrator:
             return True
         return False
 
+    def _has_character_setting_continuation_bridge(
+        self,
+        ctx: ConversationContext,
+        gatekeeper_result: Optional[Dict[str, Any]] = None,
+    ) -> bool:
+        """Keep title-body continuation rows alive when characters are tied to an in-work setting term."""
+        gk = gatekeeper_result or ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
+        if not isinstance(gk, dict):
+            return False
+        if str(gk.get("post_type") or "").strip().lower() not in {
+            "work_discussion",
+            "spoiler_discussion",
+            "character_talk",
+            "review",
+            "general_discussion",
+        }:
+            return False
+        clues = (gk.get("context_clues") or {}) if isinstance(gk.get("context_clues"), dict) else {}
+        if not bool(clues.get("title_as_body_continuation")):
+            return False
+
+        entities = (gk.get("detected_entities") or {}) if isinstance(gk.get("detected_entities"), dict) else {}
+        characters = [
+            str(ch or "").strip()
+            for ch in (entities.get("possible_characters") or [])
+            if str(ch or "").strip()
+        ]
+        character_norms = {self._normalize_hint_text(ch) for ch in characters if self._normalize_hint_text(ch)}
+        if len(character_norms) < 2:
+            return False
+
+        title_norms = {
+            self._normalize_hint_text(t)
+            for t in (entities.get("possible_titles") or [])
+            if self._normalize_hint_text(t)
+        }
+        generic_norms = {
+            self._normalize_hint_text(item)
+            for item in (
+                "그래서", "그러니까", "근데", "그런데", "그리고", "아니", "이거", "저거",
+                "소원", "유산", "작품", "소설", "웹소설", "노벨피아", "문피아", "카카페",
+                "주인공", "남주", "여주", "히로인", "캐릭터", "작가", "신작", "내용", "결말",
+                "리뷰", "후기", "스포", "qna", "qa",
+            )
+        }
+
+        post_data = getattr(ctx, "post_data", None) or {}
+        text_parts: List[str] = [str(post_data.get("title") or "")]
+        for block in (post_data.get("content_blocks") or []):
+            if isinstance(block, dict):
+                if str(block.get("type") or "").strip().lower() == "image":
+                    continue
+                text_parts.append(str(block.get("text") or block.get("content") or ""))
+            else:
+                text_parts.append(str(block or ""))
+        text_parts.extend(str(comment or "") for comment in (ctx.comments or []) if isinstance(comment, str))
+        full_norm = self._normalize_hint_text(" ".join(text_parts))
+        if not full_norm:
+            return False
+        if sum(1 for norm in character_norms if norm and norm in full_norm) < 2:
+            return False
+
+        for raw in (gk.get("key_terms") or []):
+            term = str(raw or "").strip()
+            norm = self._normalize_hint_text(term)
+            if not norm or len(norm) < 3:
+                continue
+            if norm in generic_norms or norm in character_norms or norm in title_norms:
+                continue
+            if self._is_low_specificity_search_seed(term) or self._is_generic_topic_gap_term(term):
+                continue
+            if norm in full_norm:
+                return True
+        return False
+
     @staticmethod
     def _post_has_image_or_vlm_context(ctx: ConversationContext) -> bool:
         post_data = getattr(ctx, "post_data", None) or {}
@@ -4269,6 +4344,8 @@ class Orchestrator:
             for char in possible_characters
         )
         if self._has_worklike_alias_preservation_signal(ctx, gatekeeper_result=gatekeeper_result):
+            return gatekeeper_result
+        if self._has_character_setting_continuation_bridge(ctx, gatekeeper_result=gatekeeper_result):
             return gatekeeper_result
         if (
             weak_single_token_context

@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-05 Loop456 11702090 괴담 호텔 탈출기 character+setting bridge runtime 체크
+
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `src/llm_batch/experts/orchestrator.py`에 character+setting continuation bridge를 추가해 work discussion을 low-specificity noise로 덮어쓰지 않게 했다.
+- [x] `src/llm_batch/agentic_pipeline.py`에서 specific character parenthetical work link가 relation hard-hold를 완화하도록 배선했고, post title과 한국식 인명 anchor를 bridge 근거로 포함했다.
+- [x] v2 run `20260705_090156_252172`은 VLM/OCR은 준비됐지만 `noise / official_title=null`이라 closure가 아니었다.
+- [x] v3 run `20260705_090855_674205`은 `character_talk`까지 회복했지만 publication hold가 남아 closure가 아니었다.
+- [x] v4 run `20260705_091900_732700`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`로 완료됐다.
+- [x] MCP health는 `include_search=true`, `light_mode=false`, ok/failure `1/0`이다.
+- [x] Public publish contract는 `official_title=괴담 호텔 탈출기`, `official_url=https://novelpia.com/novel/102155`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`다.
+- [x] Source-native verdict `before_correct_character_setting_bridge_hotel`의 `한가인`/`아리`/`부등변`/`상현쌤` 결속을 character+setting bridge 근거로 기록했다.
+- [x] 사용자 도메인 보정을 유지했다: `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명만이 아니라 웹소설 내부 커뮤니티/갤러리 오마주형 제목 또는 약어일 수 있다.
+- [x] Health audit는 `GO / clean_completed_source`, search evidence는 `GO`, publication contract는 `GO / 0 violations`다.
+- [x] Stop-condition audit는 queue `100 -> 99`, same packet `11702090`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- [x] Residual queue는 Loop455 current queue 기준 `100 -> 99`, `character_bridge_contract_or_runtime_replay_required 1 -> 0`, validation issue `0`으로 갱신했다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 residual queue delta를 full scan approval로 승격하지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, targeted stop-condition `GO_TARGETED / 100 -> 99 / safe 0 -> 1`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop455 11669933 회귀수선전 character bridge runtime 체크
 
 - [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

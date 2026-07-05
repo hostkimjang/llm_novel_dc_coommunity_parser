@@ -227,6 +227,65 @@ class FinalSemanticRereadGateTest(unittest.TestCase):
             ["한가인 차진철 웹소설 노벨피아", "한가인 뜻"],
         )
 
+    def test_low_specific_guard_keeps_character_setting_continuation_bridge(self):
+        orchestrator = Orchestrator(experts={}, search_fn=lambda *_args, **_kwargs: [])
+        ctx = ConversationContext(
+            post_id=11702090,
+            post_data={
+                "post_id": 11702090,
+                "title": "애초에 한가인이 아리한테 부등변 준 이유가",
+                "content_blocks": [
+                    {
+                        "type": "text",
+                        "text": "아직 깨달음 부족할때 정신 와리가리 하니까 자기 브레이크 걸어달라고 준건데",
+                    },
+                    {
+                        "type": "text",
+                        "text": "누구한테 준건진 뭐 의미없지 상현쌤 줬어도 제대로 못썼다고 하니까",
+                    },
+                ],
+            },
+            comments=["아리는 브레이크 걸기에는 너무 약해"],
+        )
+        gatekeeper = {
+            "is_noise": False,
+            "post_type": "work_discussion",
+            "detected_entities": {
+                "possible_titles": ["한가인", "아리"],
+                "possible_characters": ["한가인", "아리"],
+            },
+            "key_terms": ["한가인", "아리", "부등변", "상현쌤"],
+            "context_clues": {
+                "title_as_body_continuation": True,
+                "has_specific_names": True,
+            },
+            "search_requests": [
+                {
+                    "query": "한가인 아리 부등변 웹소설",
+                    "purpose": "official_title_verify",
+                    "priority": 1,
+                }
+            ],
+        }
+
+        guarded = orchestrator._apply_gatekeeper_low_specific_guard(ctx, gatekeeper)
+
+        self.assertFalse(guarded["is_noise"])
+        self.assertEqual(guarded["post_type"], "work_discussion")
+        self.assertEqual(
+            guarded["search_requests"],
+            [
+                {
+                    "query": "한가인 아리 부등변 웹소설",
+                    "purpose": "official_title_verify",
+                    "priority": 1,
+                }
+            ],
+        )
+        self.assertTrue(
+            orchestrator._has_character_setting_continuation_bridge(ctx, gatekeeper)
+        )
+
     def test_intent_permit_keeps_converged_title_official_probe_under_seed_denial(self):
         orchestrator = Orchestrator(experts={}, search_fn=lambda *_args, **_kwargs: [])
         ctx = ConversationContext(

@@ -4275,6 +4275,89 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             )
         )
 
+    def test_character_parenthetical_bridge_unblocks_relation_hold_for_setting_discussion(self):
+        pipeline = build_pipeline()
+        title = "괴담 호텔 탈출기"
+        post = PostInput(
+            post_id=11702090,
+            title="애초에 한가인이 아리한테 부등변 준 이유가",
+            author="WildFlower",
+            content_blocks=[
+                ContentBlock(
+                    type="text",
+                    text="아직 깨달음 부족할때 정신 와리가리 하니까 자기 브레이크 걸어달라고 준건데",
+                ),
+                ContentBlock(
+                    type="text",
+                    text="누구한테 준건진 뭐 의미없지 상현쌤 줬어도 제대로 못썼다고 하니까",
+                ),
+            ],
+            comments=["아리는 브레이크 걸기에는 너무 약해"],
+        )
+        ctx = ConversationContext(post_id=post.post_id, post_data=pipeline._post_to_dict(post), comments=post.comments)
+        ctx.search_results = [
+            {
+                "title": "한가인(괴담 호텔 탈출기) - 나무위키",
+                "url": "https://namu.wiki/w/%ED%95%9C%EA%B0%80%EC%9D%B8(%EA%B4%B4%EB%8B%B4%20%ED%98%B8%ED%85%94%20%ED%83%88%EC%B6%9C%EA%B8%B0)",
+                "content": "한가인은 괴담 호텔 탈출기의 등장인물이다. 아리와 부등변 설정이 함께 언급된다.",
+            },
+            {
+                "title": "마지막 황녀, 아리 연 - 웹소설",
+                "url": "https://page.kakao.com/content/47822679",
+                "content": "아리 연이라는 다른 작품 상세.",
+            },
+        ]
+        vf_result = {
+            "is_relevant": True,
+            "is_novel_discussion": True,
+            "novel_identity": {
+                "official_novel_title": title,
+                "official_title": title,
+                "heretic_url": "https://namu.wiki/w/%ED%95%9C%EA%B0%80%EC%9D%B8(%EA%B4%B4%EB%8B%B4%20%ED%98%B8%ED%85%94%20%ED%83%88%EC%B6%9C%EA%B8%B0)",
+                "confidence": "High",
+                "evidence_type": "wiki",
+            },
+            "grounding_check": {
+                "decoder_grounded": True,
+                "anchor_found": "character_mention",
+                "anchor_text": "한가인, 아리, 부등변",
+            },
+            "relation_judgment": {
+                "relation_type": "work_specific_nickname",
+                "discussion_target": "specific_work",
+                "promotion_decision": "hold",
+                "post_direct_grounding": False,
+                "search_support_summary": {
+                    "official_exact_title_count": 0,
+                    "official_alias_context_count": 2,
+                    "community_alias_support_count": 2,
+                    "explicit_alias_bridge_count": 0,
+                    "alias_in_post_count": 1,
+                    "support_channel_count": 1,
+                    "bridge_quality": "character_parenthetical",
+                    "closed_bridge": True,
+                    "character_context_match_count": 1,
+                    "matched_related_anchor_terms": ["한가인"],
+                },
+            },
+        }
+
+        self.assertTrue(pipeline._has_specific_character_parenthetical_work_link(ctx, title))
+        self.assertFalse(
+            pipeline._relation_hold_should_block_title_resolution(
+                ctx=ctx,
+                official_title=title,
+                verification_result=vf_result,
+            )
+        )
+        self.assertTrue(
+            pipeline._relation_hold_should_block_title_resolution(
+                ctx=ctx,
+                official_title="마지막 황녀, 아리 연",
+                verification_result=vf_result,
+            )
+        )
+
     def test_verified_contextual_alias_work_bridge_requires_post_specific_anchor(self):
         pipeline = build_pipeline()
         title = "이세계에서 사이비로 살아남기"

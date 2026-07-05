@@ -1,5 +1,22 @@
 # Operation Quality Checklist
 
+## 2026-07-05 Loop456 11702090 괴담 호텔 탈출기 character+setting bridge runtime 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_456_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop456_11702090_hotel_character_bridge_runtime_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop456_11702090_hotel_character_bridge_data_analytics_artifact.json`.
+  - [x] v2/v3 미해소 계단과 v4 closure를 분리해 기록했다.
+  - [x] Health audit `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`를 기록했다.
+  - [x] Stop-condition audit artifact를 기록했다: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop456_11702090_goal_convergence_stop_condition.json`.
+  - [x] Residual queue delta `100 -> 99`, `character_bridge_contract_or_runtime_replay_required 1 -> 0`을 기록했다.
+- 품질 게이트:
+  - [x] `한가인`/`아리`/`부등변`을 `괴담 호텔 탈출기` character+setting bridge로 닫되, hardcoded title/cue list나 `post_id` 예외는 추가하지 않는다.
+  - [x] `아생갤`/`갤러리` 표면을 현실 DC 갤러리명으로만 보지 않고 작품 내부 커뮤니티/갤러리 오마주 가능성으로 기록한다.
+  - [x] 단건 targeted runtime과 residual queue delta를 golden18/full375 approval로 승격하지 않는다.
+  - [x] search row-level `GO`와 broader search recovery `P0 / ROW_LEVEL_GO_ONLY`를 분리한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-05 Loop454 goal convergence evaluator queue compatibility 품질 게이트
 
 - 근거:

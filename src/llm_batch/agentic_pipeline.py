@@ -15223,6 +15223,8 @@ class AgenticPipeline:
             return False
         if self._has_verified_contextual_alias_work_bridge(ctx, title, verification_result):
             return False
+        if self._has_specific_character_parenthetical_work_link(ctx, title):
+            return False
         if self._has_contextual_alias_official_detail_lock(ctx, title, verification_result):
             return False
         if self._has_relation_alias_official_detail_lock(ctx, title, verification_result):
@@ -27411,8 +27413,10 @@ OUTPUT JSON:
         if not title_norm:
             return False
 
+        post_data = getattr(ctx, "post_data", None) or {}
+        post_title = str(post_data.get("normalized_title") or post_data.get("title") or "").strip()
         post_main, post_full = self._collect_post_texts(ctx)
-        post_norm = self._normalize_match_text(post_full or post_main or "")
+        post_norm = self._normalize_match_text(f"{post_title} {post_full or post_main or ''}")
         if not post_norm:
             return False
 
@@ -27430,7 +27434,14 @@ OUTPUT JSON:
                 character_norm = self._normalize_match_text(character)
                 if not character_norm or character_norm not in post_norm:
                     continue
-                if self._is_generic_alias_seed(character, full_title=title_raw):
+                common_surnames = set(
+                    "김이박최정강조윤장임한오서신권황안송전홍유고문양손배조백허남심노하곽성차주우구민류나진지엄채원천방공현함변염여추도석소마길설"
+                )
+                personlike_korean_name = bool(
+                    re.fullmatch(r"[가-힣]{2,4}", character)
+                    and character[0] in common_surnames
+                )
+                if self._is_generic_alias_seed(character, full_title=title_raw) and not personlike_korean_name:
                     continue
                 if self._is_generic_character_parenthetical_anchor(character):
                     continue

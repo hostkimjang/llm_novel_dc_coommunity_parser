@@ -1,5 +1,20 @@
 # Development History
 
+## 2026-07-05 - Loop456 11702090 괴담 호텔 탈출기 character+setting bridge runtime closure
+
+- 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- `orchestrator.py`는 `한가인`/`아리` 같은 복수 인물 표면과 `부등변` 같은 설정 cue가 함께 있을 때 work discussion을 low-specificity noise로 덮어쓰지 않도록 character+setting continuation bridge를 추가했다.
+- `agentic_pipeline.py`는 specific character parenthetical work link가 있으면 relation hold를 계속 publish hard-hold로 유지하지 않게 했고, post title과 한국식 인명 anchor도 bridge 근거로 보도록 보강했다.
+- v2 run `20260705_090156_252172`은 VLM/OCR은 준비됐지만 `noise / official_title=null`이라 closure가 아니었고, v3 run `20260705_090855_674205`은 `character_talk`까지 회복했지만 publication hold가 남았다.
+- v4 run `20260705_091900_732700`은 input/completed/flushed/pending/failed `1/1/1/0/0`, MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`으로 완료됐다.
+- Result는 `official_title=괴담 호텔 탈출기`, `official_url=https://novelpia.com/novel/102155`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`, `publish_allowed=true`다.
+- Source-native verdict는 `한가인`, `아리`, `부등변`, `상현쌤`을 `괴담 호텔 탈출기` 인물/설정 bridge로 본 `before_correct_character_setting_bridge_hotel`이다.
+- 사용자 도메인 보정도 유지했다. `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명만이 아니라 웹소설 내부 갤러리/댓글식 커뮤니티 오마주형 제목 또는 약어일 수 있다.
+- Health audit는 `GO / clean_completed_source`, search evidence는 `GO`, publication contract는 `GO / 0 violations`다.
+- Stop-condition audit는 queue `100 -> 99`, same packet `11702090`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- Report는 `docs/devs/loop_reports/LOOP_456_REPORT_20260705.md`, state는 `docs/devs/loop456_11702090_hotel_character_bridge_runtime_20260705.json`, Data Analytics summary는 `docs/devs/loop456_11702090_hotel_character_bridge_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop455 11669933 회귀수선전 character bridge runtime closure
 
 - 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
