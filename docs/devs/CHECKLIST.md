@@ -1,5 +1,19 @@
 # Development Checklist
 
+## 2026-07-05 Loop467 11660258 괴담텔 safe-loss 체크
+
+- [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `11660258` 단건을 current HEAD `c40d7208`에서 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- [x] Run `20260705_140928_447735`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`로 완료됐다.
+- [x] Row search는 query/degraded/unrecovered `5/0/0`, accepted/raw `31/99`이다.
+- [x] Public publish contract는 `official_title=괴담 호텔 탈출기`, `official_url=https://novelpia.com/novel/102155`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`다.
+- [x] `괴담텔` title alias와 official detail URL이 같은 current work로 수렴했음을 확인했다.
+- [x] Stop-condition audit는 queue `91 -> 90`, same packet `11660258`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- [x] 사용자 도메인 보정을 재확인했다: `아생갤`은 `아카데미 생존 갤러리` 같은 실제 작품 제목/약어일 수 있고, `갤러리` 표면은 작중 커뮤니티 오마주형 장치일 수 있다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 residual queue delta를 full scan approval로 승격하지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, targeted stop-condition `GO_TARGETED / 91 -> 90 / safe 0 -> 1`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop466 11660257 암흑가보스 safe-loss 체크
 
 - [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

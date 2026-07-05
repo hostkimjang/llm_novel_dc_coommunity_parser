@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260705-467 - 11660258 괴담텔 safe-loss closure
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/parent replay 미발주 | dispatch 반복 금지 |
+| runtime proof | GO / 1 of 1 | run `20260705_140928_447735`, `1/1/1/0/0` | 단건 근거로만 사용 |
+| publication contract | GO | row `1`, violation `0` | broader gate와 분리 |
+| search evidence | GO_ROW_LEVEL | query/degraded/unrecovered `5/0/0`, accepted `31` | broader recovery는 row-level로만 기록 |
+| safe-loss 원인 | 해소 | before null, now `괴담 호텔 탈출기` safe_resolved publish | residual queue에서 1건 제외 |
+| alias bridge | 해소 | `괴담텔` title alias + official detail `102155` -> `괴담 호텔 탈출기` | character/author surface는 보조 근거로만 유지 |
+| 도메인 정책 | 재확인 | `아생갤`은 `아카데미 생존 갤러리` 같은 실제 작품 제목/약어일 수 있고 `갤러리`는 작중 커뮤니티 오마주형 표면일 수 있음 | 현실 커뮤니티 단정 금지 |
+| 문서 동기화 | 완료 | Loop467 report/state/Data Analytics 갱신 | goal은 ACTIVE 유지 |
+
+Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, targeted stop-condition `GO_TARGETED / 91 -> 90 / safe 0 -> 1`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260705-466 - 11660257 암흑가보스 safe-loss closure
 
 | 항목 | 상태 | 근거 | 다음 |

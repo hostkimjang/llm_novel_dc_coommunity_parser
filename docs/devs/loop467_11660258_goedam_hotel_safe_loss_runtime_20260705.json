@@ -1,0 +1,93 @@
+{
+  "loop": 467,
+  "date": "2026-07-05",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "head_before_commit": "c40d7208",
+  "post_id": 11660258,
+  "lane": "repair_safe_loss",
+  "priority": "P0",
+  "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop467_11660258_goedam_hotel_safe_loss_input.jsonl",
+  "run": {
+    "run_id": "20260705_140928_447735",
+    "status": "safe_resolved",
+    "used_for_queue_closure": true,
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop467_11660258_goedam_hotel_safe_loss_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop467_11660258_goedam_hotel_safe_loss_search_nonlight_result_manifest.json",
+    "log": "logs/expert_run_20260705_140928_447735.log",
+    "input_completed_flushed_pending_failed": "1/1/1/0/0"
+  },
+  "expected": {
+    "official_title": "괴담 호텔 탈출기",
+    "official_url": "https://novelpia.com/novel/102155"
+  },
+  "public_identity": {
+    "official_title": "괴담 호텔 탈출기",
+    "official_url": "https://novelpia.com/novel/102155",
+    "candidate_ledger_status": "safe_resolved",
+    "title_resolution_state": "resolved",
+    "work_resolution": "resolved",
+    "promotion_decision_status": "publish",
+    "publish_allowed": true,
+    "bypassed_gate": false
+  },
+  "search_health": {
+    "status": "GO",
+    "queries_issued": 5,
+    "degraded": 0,
+    "unrecovered_degraded": 0,
+    "accepted": 31,
+    "raw": 99,
+    "upstream_zero": 1,
+    "retried": 1,
+    "cache_hits": 0,
+    "fallback_recovered": 3,
+    "direct_search_results": 29
+  },
+  "vlm_ocr": {
+    "status": "READY",
+    "image_posts": 0,
+    "skip_reason": "no_image_blocks",
+    "used_as_title_evidence": false
+  },
+  "audits": {
+    "health": {
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop467_11660258_goedam_hotel_safe_loss_run_health.json",
+      "flush_integrity": "GO / clean_completed_source",
+      "search_evidence": "GO",
+      "publication_contract_convergence": "GO"
+    },
+    "publication_contract": {
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop467_11660258_goedam_hotel_safe_loss_publication_contract.json",
+      "gate": "GO",
+      "violation_row_count": 0
+    },
+    "goal_convergence": {
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop467_11660258_goal_convergence_stop_condition.json",
+      "gate": "GO",
+      "queue_previous": 91,
+      "queue_current": 90,
+      "safe_resolved_previous": 0,
+      "safe_resolved_current": 1,
+      "safe_loss_post_ids": []
+    }
+  },
+  "residual_queue": {
+    "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop467_after_11660258_goedam_hotel_safe_loss_residual_action_queue.json",
+    "previous": 91,
+    "current": 90,
+    "reprocess_previous": 63,
+    "reprocess_current": 62,
+    "hold_previous": 28,
+    "hold_current": 28,
+    "validation_issue_count": 0
+  },
+  "code_changes": [],
+  "boundaries": {
+    "new_large_runs_dispatched": false,
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "domain_note": "아생갤은 아카데미 생존 갤러리 같은 실제 작품 제목/약어일 수 있고, 갤러리 표면은 작중 커뮤니티 오마주형 장치일 수 있다."
+  }
+}

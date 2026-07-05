@@ -1,5 +1,36 @@
 # Verification Results
 
+## 2026-07-05 Loop467 11660258 괴담텔 safe-loss 검증
+
+- 범위: residual `repair_safe_loss`의 `11660258` 단건을 current HEAD `c40d7208`에서 search 포함 non-light 조건으로 실행하고, publication contract와 goal convergence stop-condition을 감사했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_467_REPORT_20260705.md`
+  - state `docs\devs\loop467_11660258_goedam_hotel_safe_loss_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop467_11660258_goedam_hotel_safe_loss_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop467_11660258_goedam_hotel_safe_loss_search_nonlight_result.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop467_11660258_goedam_hotel_safe_loss_run_health.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop467_11660258_goedam_hotel_safe_loss_publication_contract.json`
+  - residual queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop467_after_11660258_goedam_hotel_safe_loss_residual_action_queue.json`
+  - convergence audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop467_11660258_goal_convergence_stop_condition.json`
+- Runtime:
+  - run `20260705_140928_447735`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - Search `GO`, query/degraded/unrecovered `5/0/0`, upstream zero `1`, accepted `31`
+- Result:
+  - `official_title=괴담 호텔 탈출기`, public `official_url=https://novelpia.com/novel/102155`
+  - `candidate_ledger_status=safe_resolved`, `safe_resolved=true`, `promotion_decision.status=publish`, `promotion_decision.publish_allowed=true`
+  - `괴담텔`은 title alias, search bridge, official detail URL로 같은 current work에 수렴했다. `아리`는 캐릭터/작가명 일부 가능성으로만 보조 기록했다.
+- Audit:
+  - `tools/audit_expert_run_health.py` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=GO`, `publication_contract_convergence=GO`.
+  - `tools/audit_publication_contract_convergence.py` -> `GO / row_count 1 / violation_row_count 0`.
+  - `tools/evaluate_goal_convergence.py` -> queue `91 -> 90`, same packet `true`, safe_resolved `0 -> 1`, safe_loss `[]`, gate `GO`.
+- Boundary:
+  - 이 단건 closure는 full375 approval이 아니다.
+  - `아생갤`은 웹소설 `아카데미 생존 갤러리`처럼 실제 작품 제목/약어일 수 있고, 작중 갤러리/댓글식 커뮤니티 오마주형 표면일 수 있으므로 `갤러리` 표면을 현실 커뮤니티로 자동 고정하지 않는다.
+  - R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+  - Full375 collateral은 `NOT_OPEN`, broader search recovery는 `P0 / ROW_LEVEL_GO_ONLY`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop466 11660257 암흑가보스 safe-loss 검증
 
 - 범위: residual `repair_safe_loss`의 `11660257` 단건을 current HEAD `7a5fcbfd` + 워킹트리 패치에서 search 포함 non-light 조건으로 실행하고, publication contract와 goal convergence stop-condition을 감사했다.

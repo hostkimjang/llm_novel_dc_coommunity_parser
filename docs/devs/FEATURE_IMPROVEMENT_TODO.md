@@ -4,6 +4,13 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop467 safe-loss runtime closure follow-up
+  - 상태: targeted runtime `GO 1/1` / health `GO clean_completed_source` / publication contract `GO 0 violations` / search evidence `GO` / stop-condition `GO 91->90 safe 0->1` / full375 `NOT_OPEN` / approval not open
+  - 적용: `11660258`은 `괴담텔 -> 괴담 호텔 탈출기`로 safe-resolved됐다. official detail은 `https://novelpia.com/novel/102155`이고, `아리` 표면은 캐릭터/작가명 일부 가능성으로만 보조 기록했다.
+  - 도메인 보정: `아생갤`은 `아카데미 생존 갤러리` 같은 실제 웹소설 작품 제목/약어일 수 있고, `갤러리` 표면은 작품 안 커뮤니티/갤러리 오마주형 제목 또는 약어일 수 있다. 이 정책은 shared work-bridge 경계로 유지한다.
+  - 산출물: `docs/devs/loop_reports/LOOP_467_REPORT_20260705.md`, `docs/devs/loop467_11660258_goedam_hotel_safe_loss_runtime_20260705.json`, `docs/devs/loop467_11660258_goedam_hotel_safe_loss_data_analytics_artifact.json`.
+  - 완료 기준: full375 collateral gate와 broader search recovery를 별도 증명하기 전까지 approval과 hard-hold 완화를 열지 않는다.
+
 - [ ] Loop455 character bridge runtime closure follow-up
   - 상태: targeted runtime `GO 1/1` / health `GO clean_completed_source` / publication contract `GO 0 violations` / search evidence `REVIEW search_degraded_observed` / stop-condition `GO 101->100 safe 0->1` / full375 `NOT_OPEN` / approval not open
   - 적용: `11669933`은 `중경계`, `서휼`, `해방상제` character/setting bridge로 `회귀수선전(回歸修仙傳)`에 safe-resolved됐다. 새 slang DB write-back, R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry는 없다.
