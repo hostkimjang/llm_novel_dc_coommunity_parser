@@ -3101,6 +3101,100 @@ def _sync_allowed_publication_result_contract(
                 return True
         return False
 
+    def _known_abbreviation_canonical_public_title() -> Optional[str]:
+        public_key = _title_key(public_title)
+        if not public_key:
+            return None
+        try:
+            from llm_batch.experts.utils import KNOWN_TITLE_ABBREVIATIONS as _KNOWN_TITLE_ABBREVIATIONS
+        except Exception:
+            try:
+                from src.llm_batch.experts.utils import KNOWN_TITLE_ABBREVIATIONS as _KNOWN_TITLE_ABBREVIATIONS
+            except Exception:
+                _KNOWN_TITLE_ABBREVIATIONS = {}
+        if not isinstance(_KNOWN_TITLE_ABBREVIATIONS, dict):
+            return None
+
+        source_key = _source_text_key()
+        alias_keys_for_public = set(_candidate_alias_keys(public_title, public_url))
+        flag_values = {
+            str(value or "").strip()
+            for source in (identity.get("consistency_flags"), ledger.get("consistency_flags"))
+            if isinstance(source, list)
+            for value in source
+            if str(value or "").strip()
+        }
+        flag_alias_keys = {
+            _title_key(flag.split(":", 1)[1])
+            for flag in flag_values
+            if ":" in flag
+            and flag.split(":", 1)[0]
+            in {"known_title_abbreviation", "confirmed_alias", "bracket_alias"}
+        }
+
+        for alias, canonical_title in _KNOWN_TITLE_ABBREVIATIONS.items():
+            alias_text = str(alias or "").strip()
+            canonical_text = str(canonical_title or "").strip()
+            alias_key = _title_key(alias_text)
+            canonical_key = _title_key(canonical_text)
+            if not alias_key or not canonical_key or public_key != canonical_key:
+                continue
+            if public_title == canonical_text:
+                return None
+            has_alias_support = bool(
+                alias_key in source_key
+                or alias_key in alias_keys_for_public
+                or alias_key in flag_alias_keys
+            )
+            if has_alias_support:
+                return canonical_text
+        return None
+
+    def _sync_canonical_public_title_surface(previous_key: str, canonical_title: str) -> bool:
+        local_changed = False
+        title_keys = ("official_title", "official_novel_title", "resolved_title", "title")
+
+        def _sync_title_container(container: Any) -> None:
+            nonlocal local_changed
+            if not isinstance(container, dict):
+                return
+            for key in title_keys:
+                value = str(container.get(key) or "").strip()
+                if value and _title_key(value) == previous_key and value != canonical_title:
+                    container[key] = canonical_title
+                    local_changed = True
+
+        for container in (identity, ledger, novel_identity, identity.get("primary_work")):
+            _sync_title_container(container)
+        for item in _candidate_items():
+            _sync_title_container(item)
+
+        if isinstance(novel_identity, dict):
+            current_title = str(novel_identity.get("official_title") or "").strip()
+            if not current_title or _title_key(current_title) == previous_key:
+                if current_title != canonical_title:
+                    novel_identity["official_title"] = canonical_title
+                    local_changed = True
+                identity["novel_identity"] = novel_identity
+
+        def _add_flag(container: Any) -> None:
+            nonlocal local_changed
+            if not isinstance(container, dict):
+                return
+            flags = [
+                str(value)
+                for value in (container.get("consistency_flags") or [])
+                if str(value).strip()
+            ]
+            if "known_title_abbreviation_public_canonicalized" not in flags:
+                flags.append("known_title_abbreviation_public_canonicalized")
+                container["consistency_flags"] = flags
+                local_changed = True
+
+        _add_flag(identity)
+        _add_flag(ledger)
+        return local_changed
+
     decision = identity.get("promotion_decision")
     if not isinstance(decision, dict):
         decision = ledger.get("promotion_decision")
@@ -3119,6 +3213,16 @@ def _sync_allowed_publication_result_contract(
         trace_reason_codes.append("final_publication_decision_inferred_from_serialized_identity")
     if "serialized_public_identity_published" not in trace_reason_codes:
         trace_reason_codes.append("serialized_public_identity_published")
+
+    canonical_public_title = _known_abbreviation_canonical_public_title()
+    if canonical_public_title:
+        previous_public_key = _title_key(public_title)
+        public_title = canonical_public_title
+        publication_source = "known_title_abbreviation_public_canonicalization"
+        if _sync_canonical_public_title_surface(previous_public_key, canonical_public_title):
+            changed = True
+        if "known_title_abbreviation_public_canonicalized" not in trace_reason_codes:
+            trace_reason_codes.append("known_title_abbreviation_public_canonicalized")
 
     def _scope_payload(raw: Any) -> Dict[str, Any]:
         if not isinstance(raw, dict):

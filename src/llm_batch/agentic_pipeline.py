@@ -1553,6 +1553,46 @@ class AgenticPipeline:
             return True
         return self._text_matches_title_strict(text_raw, title or "")
 
+    def _non_promotable_cover_anchor_has_catalog_signal(self, item: Dict[str, Any]) -> bool:
+        """Allow promotion_eligible=False cover anchors only with independent work-surface cues."""
+        if not isinstance(item, dict):
+            return False
+        evidence_type = str(item.get("evidence_type") or "").strip().lower()
+        focus_role = str(item.get("focus_role") or "").strip().lower()
+        if evidence_type != "cover_title" or focus_role != "work_anchor":
+            return False
+        if str(item.get("explicit_author_name") or "").strip():
+            return True
+        merged_text = " ".join(
+            [
+                str(item.get("ocr_text") or ""),
+                str(item.get("visual_summary") or ""),
+                str(item.get("screen_type") or ""),
+                str(item.get("surface_type") or ""),
+                " ".join(str(cue or "") for cue in (item.get("work_cues") or [])),
+            ]
+        )
+        if self._score_vlm_work_surface_signal(merged_text) > 0:
+            return True
+        lowered = merged_text.lower()
+        work_surface_markers = (
+            "웹소설",
+            "작품명",
+            "작품 제목",
+            "소설 표지",
+            "novel cover",
+            "web novel",
+            "webnovel",
+        )
+        return any(marker in merged_text or marker in lowered for marker in work_surface_markers)
+
+    def _non_promotable_vlm_title_allows_direct_rescue(self, item: Dict[str, Any]) -> bool:
+        if not isinstance(item, dict):
+            return False
+        if item.get("promotion_eligible") is not False:
+            return True
+        return self._non_promotable_cover_anchor_has_catalog_signal(item)
+
     def _collect_direct_image_titles(self, ctx) -> List[str]:
         """배경 리스트가 아닌 이미지 직접 근거(explicit_text/cover_title)의 제목만 수집."""
         post_data = getattr(ctx, "post_data", None) or {}
@@ -1685,6 +1725,8 @@ class AgenticPipeline:
             if not isinstance(item, dict):
                 continue
             if self._is_background_listing_vlm_item(item):
+                continue
+            if not self._non_promotable_vlm_title_allows_direct_rescue(item):
                 continue
             explicit_title = self._normalize_title_candidate(item.get("explicit_work_title"))
             if not explicit_title:
@@ -1912,6 +1954,8 @@ class AgenticPipeline:
             if not isinstance(item, dict):
                 continue
             if self._is_background_listing_vlm_item(item):
+                continue
+            if not self._non_promotable_vlm_title_allows_direct_rescue(item):
                 continue
             evidence_type = str(item.get("evidence_type") or "").strip().lower()
             title_role = str(item.get("title_role") or "").strip().lower()
@@ -2268,6 +2312,8 @@ class AgenticPipeline:
             title_role = str(item.get("title_role") or "").strip().lower()
             focus_role = str(item.get("focus_role") or "").strip().lower()
             cover_work_anchor = bool(evidence_type == "cover_title" and focus_role == "work_anchor")
+            if not self._non_promotable_vlm_title_allows_direct_rescue(item):
+                continue
             if not bool(item.get("promotion_eligible")) and not cover_work_anchor:
                 continue
             if focus_role not in {"work_anchor", "supporting_text"}:
@@ -17038,6 +17084,104 @@ class AgenticPipeline:
             }
         return None
 
+    def _canonicalize_known_title_abbreviation_recall_promotion(
+        self,
+        ctx: "ConversationContext",
+        promotion: Optional[Dict[str, Any]],
+    ) -> Optional[Dict[str, Any]]:
+        """Rewrite bracket-alias recall hits to the registry canonical work when possible."""
+        if not isinstance(promotion, dict):
+            return promotion
+        title = str(promotion.get("official_title") or "").strip()
+        matched_clue = str(promotion.get("matched_clue") or "").strip()
+        if not title:
+            return promotion
+
+        aliases: List[str] = []
+        if ":" in matched_clue and matched_clue.startswith(
+            ("known_title_abbreviation:", "confirmed_alias:", "bracket_alias:")
+        ):
+            aliases.append(matched_clue.split(":", 1)[1].strip())
+        aliases.extend(alias.strip() for alias in re.findall(r"\[([^\]]{2,20})\]", title))
+
+        seen_aliases: set[str] = set()
+        for alias_text in aliases:
+            alias_norm = self._normalize_match_text(alias_text)
+            if not alias_norm or alias_norm in seen_aliases:
+                continue
+            seen_aliases.add(alias_norm)
+            for known_alias, known_title in (KNOWN_TITLE_ABBREVIATIONS or {}).items():
+                if alias_norm != self._normalize_match_text(known_alias):
+                    continue
+                canonical_title = str(known_title or "").strip()
+                canonical_norm = self._normalize_match_text(
+                    self._normalize_title_candidate(canonical_title) or canonical_title
+                )
+                title_norm = self._normalize_match_text(
+                    self._normalize_title_candidate(title) or title
+                )
+                if not canonical_title or not canonical_norm or canonical_norm == title_norm:
+                    return promotion
+                if not self._known_title_abbreviation_update_question_anchor(
+                    ctx,
+                    canonical_title,
+                    alias_text,
+                ):
+                    continue
+
+                canonical_url = self._safe_official_detail_url_for_title(
+                    ctx,
+                    title=canonical_title,
+                )
+                if not canonical_url:
+                    canonical_url = self._recover_corrected_title_official_url(
+                        ctx,
+                        title=canonical_title,
+                        alias_text=alias_text,
+                        purpose="known_title_abbreviation_recall_canonicalization",
+                        allow_known_abbreviation_anchor=True,
+                    )
+                if not canonical_url:
+                    print(
+                        f"[{_ts()}] 🛡️ bracket alias recall 보류: "
+                        f"alias='{alias_text}', candidate='{title}', canonical='{canonical_title}', "
+                        "canonical_url=missing",
+                        file=sys.stderr,
+                    )
+                    return None
+
+                normalized_old_url = self._normalize_url_for_match(
+                    promotion.get("heretic_url") or ""
+                )
+                normalized_new_url = self._normalize_url_for_match(canonical_url)
+                if normalized_old_url and normalized_old_url == normalized_new_url:
+                    print(
+                        f"[{_ts()}] 🛡️ bracket alias recall 보류: "
+                        f"alias='{alias_text}', candidate='{title}', canonical='{canonical_title}', "
+                        "canonical_url_conflicts_with_variant",
+                        file=sys.stderr,
+                    )
+                    return None
+
+                fixed = dict(promotion)
+                fixed.update(
+                    {
+                        "official_title": canonical_title,
+                        "heretic_url": canonical_url,
+                        "source_tier": "official_detail",
+                        "source": "known_title_abbreviation",
+                        "matched_clue": f"known_title_abbreviation:{alias_text}",
+                        "confidence": "High",
+                    }
+                )
+                print(
+                    f"[{_ts()}] 🧩 bracket alias recall canonicalized: "
+                    f"'{title}' -> '{canonical_title}', alias='{alias_text}', url='{canonical_url}'",
+                    file=sys.stderr,
+                )
+                return fixed
+        return promotion
+
     def _title_body_listing_official_url_recall_promotion(
         self,
         ctx: "ConversationContext",
@@ -18277,6 +18421,11 @@ class AgenticPipeline:
             verification_result=verification_result if isinstance(verification_result, dict) else None,
         )
         promotion = official_url_recoverable(identity)
+        if promotion:
+            promotion = self._canonicalize_known_title_abbreviation_recall_promotion(
+                ctx,
+                promotion,
+            )
         if not promotion:
             promotion = self._known_title_abbreviation_official_url_recall_promotion(
                 ctx,
@@ -25009,6 +25158,59 @@ OUTPUT JSON:
         """검색/페치 소스 텍스트가 후보 제목을 실제로 지지하는지 확인한다."""
         return self._source_title_match_quality(text, title) is not None
 
+    def _known_alias_canonical_source_conflicts_with_title(self, source_title: Any, title: Any) -> bool:
+        """유사 match가 registry canonical과 다른 후보 제목을 공식 근거처럼 세는 것을 막는다."""
+        title_text = str(title or "").strip()
+        title_norm = self._normalize_match_text(self._normalize_title_candidate(title_text) or title_text)
+        source_text = str(source_title or "").strip()
+        raw_source_norm = self._normalize_match_text(source_text)
+        if title_norm and raw_source_norm:
+            for bracket_alias in re.findall(r"\[([^\]]+)\]", source_text):
+                bracket_alias_norm = self._normalize_match_text(bracket_alias)
+                if not bracket_alias_norm:
+                    continue
+                for _known_alias, known_title in (KNOWN_TITLE_ABBREVIATIONS or {}).items():
+                    if bracket_alias_norm != self._normalize_match_text(_known_alias):
+                        continue
+                    known_text = str(known_title or "").strip()
+                    known_norm = self._normalize_match_text(
+                        self._normalize_title_candidate(known_text) or known_text
+                    )
+                    if known_norm and known_norm == title_norm:
+                        source_without_bracket = re.sub(r"\[[^\]]+\]", " ", source_text)
+                        source_without_bracket = (
+                            self._normalize_title_candidate(source_without_bracket)
+                            or source_without_bracket
+                        )
+                        source_without_norm = self._normalize_match_text(source_without_bracket)
+                        if (
+                            source_without_norm
+                            and source_without_norm != title_norm
+                            and known_norm not in source_without_norm
+                        ):
+                            return True
+                    if (
+                        known_norm
+                        and known_norm != title_norm
+                        and title_norm in raw_source_norm
+                        and known_norm not in raw_source_norm
+                    ):
+                        return True
+        source_clean = self._normalize_title_candidate(source_text) or source_text
+        source_norm = self._normalize_match_text(source_clean)
+        if not title_norm or not source_norm or source_norm == title_norm:
+            return False
+        for _alias, known_title in (KNOWN_TITLE_ABBREVIATIONS or {}).items():
+            known_text = str(known_title or "").strip()
+            known_norm = self._normalize_match_text(
+                self._normalize_title_candidate(known_text) or known_text
+            )
+            if not known_norm or known_norm == title_norm:
+                continue
+            if source_norm == known_norm or self._text_matches_title_strict(source_clean, known_text):
+                return True
+        return False
+
     def _source_title_match_quality(self, text: Any, title: Optional[str]) -> Optional[int]:
         """검색/페치 제목과 후보 제목의 일치 품질을 반환한다. 낮을수록 강한 match."""
         title_raw = str(title or "").strip()
@@ -25191,6 +25393,8 @@ OUTPUT JSON:
                 continue
             if not self._source_title_matches_candidate(sr.get("title"), title_raw):
                 continue
+            if self._known_alias_canonical_source_conflicts_with_title(sr.get("title"), title_raw):
+                continue
             canonical_url = self._canonical_title_matched_kakao_non_detail_tab_url(sr, title_raw)
             if self._is_novel_detail_url(sr_url):
                 matched_url = sr_url
@@ -25239,6 +25443,19 @@ OUTPUT JSON:
                 )
             )
             if not matched:
+                continue
+            if any(
+                cand
+                and self._source_title_matches_candidate(cand, title_raw)
+                and self._known_alias_canonical_source_conflicts_with_title(cand, title_raw)
+                for cand in (
+                    structured.get("llm_identified_title"),
+                    structured.get("title"),
+                    structured.get("page_title"),
+                    fe.get("title"),
+                    fe.get("page_title"),
+                )
+            ):
                 continue
             _mark_url(fe_url, 0.0, matched_via_search=False)
 
@@ -44585,6 +44802,8 @@ OUTPUT JSON:
             sr_title = str(sr.get("title") or "")
             if not self._source_title_matches_candidate(sr_title, title_raw):
                 continue
+            if self._known_alias_canonical_source_conflicts_with_title(sr_title, title_raw):
+                continue
             if self._is_non_novel_media_platform_detail_hit(sr, title_raw):
                 continue
             if self._is_derivative_fanfic_novel_detail_hit(sr, title_raw):
@@ -44638,6 +44857,8 @@ OUTPUT JSON:
             ]
             for cand in candidates:
                 if cand and self._source_title_matches_candidate(str(cand), title_raw):
+                    if self._known_alias_canonical_source_conflicts_with_title(cand, title_raw):
+                        continue
                     if self._is_non_novel_media_platform_detail_hit(fe, title_raw):
                         continue
                     if self._is_derivative_fanfic_novel_detail_hit(fe, title_raw):
@@ -49147,12 +49368,30 @@ OUTPUT JSON:
                 or ""
             )
             if _arb_title_guard and _arb_title_guard == cur_norm:
-                print(
-                    f"[{_ts()}] 🛡️ 약칭-제목 가드 스킵(Arbiter 명시 제목 보호): "
-                    f"'{official_title}' → '{full_title}' 교정 차단 "
-                    f"(Arbiter가 선택한 제목 보호, source={best_upgrade.get('source')})",
-                    file=sys.stderr,
+                _registry_canonical_conflict_override = bool(
+                    best_upgrade.get("source") == "known_title_abbrev"
+                    and self._known_title_abbreviation_update_question_anchor(
+                        ctx,
+                        full_title,
+                        str(best_upgrade.get("abbr") or ""),
+                    )
+                    and not self._has_clean_novel_detail_title_evidence(ctx, official_title)
+                    and self._has_clean_novel_detail_title_evidence(ctx, full_title)
                 )
+                if _registry_canonical_conflict_override:
+                    print(
+                        f"[{_ts()}] 🧩 약칭-제목 가드: Arbiter 명시 제목 보호 해제 "
+                        f"(registry canonical conflict) — '{official_title}' -> '{full_title}'",
+                        file=sys.stderr,
+                    )
+                    should_upgrade = True
+                else:
+                    print(
+                        f"[{_ts()}] 🛡️ 약칭-제목 가드 스킵(Arbiter 명시 제목 보호): "
+                        f"'{official_title}' → '{full_title}' 교정 차단 "
+                        f"(Arbiter가 선택한 제목 보호, source={best_upgrade.get('source')})",
+                        file=sys.stderr,
+                    )
             else:
                 should_upgrade = True
 
@@ -50544,6 +50783,8 @@ OUTPUT JSON:
             )
             blob_has_title = self._text_matches_title_strict(sr_blob, normalized_title)
             if match_quality is not None or blob_has_title:
+                if self._known_alias_canonical_source_conflicts_with_title(sr_title, normalized_title):
+                    continue
                 matched_search = [
                     item for item in search_results
                     if isinstance(item, dict)
@@ -50596,6 +50837,8 @@ OUTPUT JSON:
                 )
                 matched = sum(1 for word in title_words if word in sr_blob)
                 if matched >= min(2, len(title_words)):
+                    if self._known_alias_canonical_source_conflicts_with_title(sr_title, normalized_title):
+                        continue
                     matched_search = [
                         item for item in search_results
                         if isinstance(item, dict)
@@ -63233,6 +63476,8 @@ OUTPUT JSON:
                 continue
             if not self._source_title_matches_candidate(str(sr.get("title") or ""), title_text):
                 continue
+            if self._known_alias_canonical_source_conflicts_with_title(sr.get("title") or "", title_text):
+                continue
             if not self._is_novel_detail_url(url):
                 canonical_url = self._canonical_title_matched_kakao_non_detail_tab_url(sr, title_text)
                 if canonical_url:
@@ -63280,6 +63525,13 @@ OUTPUT JSON:
                 fe.get("page_title"),
             ]
             if any(cand and self._source_title_matches_candidate(str(cand), title_text) for cand in candidates):
+                if any(
+                    cand
+                    and self._source_title_matches_candidate(str(cand), title_text)
+                    and self._known_alias_canonical_source_conflicts_with_title(cand, title_text)
+                    for cand in candidates
+                ):
+                    continue
                 if self._is_non_novel_media_platform_detail_hit(fe, title_text):
                     continue
                 if self._is_derivative_fanfic_novel_detail_hit(fe, title_text):
@@ -63738,6 +63990,21 @@ OUTPUT JSON:
                 and title_norm in bracketed_norm
                 and sr_title_norm != title_norm
             )
+            for bracket_alias in re.findall(r"\[([^\]]+)\]", sr_title):
+                bracket_alias_norm = self._normalize_match_text(bracket_alias)
+                if not bracket_alias_norm:
+                    continue
+                for known_alias, known_title in (KNOWN_TITLE_ABBREVIATIONS or {}).items():
+                    if bracket_alias_norm != self._normalize_match_text(known_alias):
+                        continue
+                    known_title_norm = self._normalize_match_text(known_title)
+                    if (
+                        known_title_norm
+                        and known_title_norm != title_norm
+                        and title_norm in sr_title_norm
+                        and known_title_norm not in sr_title_norm
+                    ):
+                        return True
         if source_title_matches and not bracketed_original_ip:
             original_ip_patterns = (
                 r"원작\s*(?:소설|웹툰|만화|게임|애니|애니메이션|ip|IP|기반|팬픽|패러디|2차\s*창작)",

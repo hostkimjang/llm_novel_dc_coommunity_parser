@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-05 Loop473 11671500 악살싶 safe-loss 체크
+
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `11671500` 단건을 current HEAD `504a5aa4` 기반 워킹트리에서 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- [x] Run `20260705_171346_295417`은 input/completed/flushed/pending/failed `1/1/1/0/0`, MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`으로 완료됐다.
+- [x] Public publish contract는 `official_title=악당은 살고 싶다`, `official_url=https://m.munpia.com/novel/detail/236702`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`다.
+- [x] `[악살싶]악당도 살고 싶다` 파생작 URL/제목을 canonical 근거로 승격하지 않고, `악살싶 -> 악당은 살고 싶다` canonical으로 수렴시켰다.
+- [x] 요시노야 OCR `吉野家 YOSHINOYA Coca-Cola`는 `promotion_eligible=false` 이미지 보조 정보라 제목 근거로 쓰지 않았다.
+- [x] `expert_main.py` 최종 public ledger에서 `악당 은 살고 싶다` 띄어쓰기 변형을 `KNOWN_TITLE_ABBREVIATIONS` canonical surface로 정리했다.
+- [x] Expert run health는 `flush_integrity=GO`, `search_evidence=GO`, `publication_contract_convergence=GO`다.
+- [x] Publication contract audit는 `GO / row_count 1 / violation_row_count 0`이다.
+- [x] Stop-condition audit는 queue `85 -> 84`, same packet safe `1 -> 1`, gate `GO`다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [ ] Goal/test runtime audit는 소규모 런 기본 정책 때문에 `REVIEW`다. 이번 회차는 사용자 요구상 search 포함 non-light 실증이므로 expert run health와 분리해서 본다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 queue delta를 full scan approval로 승격하지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, expert run health `GO`, publication contract `GO`, stop-condition `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop472 11669943 즉사무림 safe-loss 체크
 
 - [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

@@ -1,0 +1,65 @@
+{
+  "loop": 473,
+  "post_id": 11671500,
+  "base_head": "504a5aa4",
+  "working_tree_patch": true,
+  "status": "targeted_runtime_closed_not_approval",
+  "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop473_11671500_aksalsip_safe_loss_input.jsonl",
+  "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop473_11671500_aksalsip_safe_loss_search_nonlight_after_public_canonical_result.json",
+  "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop473_11671500_aksalsip_safe_loss_search_nonlight_after_public_canonical_result_manifest.json",
+  "log": "logs/expert_run_20260705_171346_295417.log",
+  "run": {
+    "run_id": "20260705_171346_295417",
+    "input_completed_flushed_pending_failed": "1/1/1/0/0",
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_failure": "1/0",
+    "vlm_ocr_ready": true,
+    "executed_queries": 7,
+    "valid_queries": 5,
+    "no_result_queries": 2,
+    "cumulative_results": 32
+  },
+  "result_identity": {
+    "official_title": "악당은 살고 싶다",
+    "official_url": "https://m.munpia.com/novel/detail/236702",
+    "candidate_ledger_status": "safe_resolved",
+    "safe_resolved": true,
+    "title_resolution_state": "resolved",
+    "work_resolution": "resolved",
+    "promotion_decision_status": "publish",
+    "publish_allowed": true
+  },
+  "image_boundary": {
+    "ocr_text": "吉野家 YOSHINOYA Coca-Cola",
+    "evidence_type": "character_visual_only",
+    "promotion_eligible": false,
+    "used_as_title_evidence": false
+  },
+  "audits": {
+    "expert_run_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop473_11671500_aksalsip_safe_loss_expert_run_health.json",
+    "goal_test_runtime_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop473_11671500_aksalsip_safe_loss_run_health.json",
+    "publication_contract": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop473_11671500_aksalsip_safe_loss_publication_contract.json",
+    "residual_queue": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop473_after_11671500_aksalsip_safe_loss_residual_action_queue.json",
+    "stop_condition": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop473_11671500_goal_convergence_stop_condition.json"
+  },
+  "queue": {
+    "previous": 85,
+    "current": 84,
+    "previous_reprocess": 57,
+    "current_reprocess": 56,
+    "hold": 28,
+    "validation_issue_count": 0
+  },
+  "gates": {
+    "targeted_runtime": "GO / 1 of 1",
+    "expert_run_health": "GO",
+    "goal_test_runtime_audit": "REVIEW_small_run_policy_conflicts_with_requested_nonlight_search",
+    "publication_contract": "GO",
+    "stop_condition": "GO",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

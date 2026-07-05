@@ -1,5 +1,40 @@
 # Verification Results
 
+## 2026-07-05 Loop473 11671500 악살싶 safe-loss 검증
+
+- 범위: residual `repair_safe_loss`의 `11671500` 단건을 current HEAD `504a5aa4` 기반 워킹트리에서 search 포함 non-light 조건으로 실행하고, publication contract와 stop-condition을 감사했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_473_REPORT_20260705.md`
+  - state `docs\devs\loop473_11671500_aksalsip_safe_loss_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop473_11671500_aksalsip_safe_loss_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop473_11671500_aksalsip_safe_loss_search_nonlight_after_public_canonical_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop473_11671500_aksalsip_safe_loss_search_nonlight_after_public_canonical_result_manifest.json`
+  - expert run health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop473_11671500_aksalsip_safe_loss_expert_run_health.json`
+  - goal/test runtime audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop473_11671500_aksalsip_safe_loss_run_health.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop473_11671500_aksalsip_safe_loss_publication_contract.json`
+  - residual queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop473_after_11671500_aksalsip_safe_loss_residual_action_queue.json`
+  - convergence audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop473_11671500_goal_convergence_stop_condition.json`
+- Runtime:
+  - run `20260705_171346_295417`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - Search 실행 `7`건, 유효 `5`건, 무결과 `2`건, 누적 결과 `32`건
+  - VLM/OCR `READY`, OCR `吉野家 YOSHINOYA Coca-Cola`, image `promotion_eligible=false`
+- Result:
+  - `official_title=악당은 살고 싶다`, public `official_url=https://m.munpia.com/novel/detail/236702`
+  - `candidate_ledger_status=safe_resolved`, `safe_resolved=true`, `promotion_decision.status=publish`, `promotion_decision.publish_allowed=true`
+  - `[악살싶]악당도 살고 싶다` 파생작 URL/제목은 canonical 근거로 승격하지 않았다.
+- Audit:
+  - `tools/audit_expert_run_health.py` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=GO`, `publication_contract_convergence=GO`.
+  - `tools/audit_goal_test_run_contract.py` -> `runtime_contract=REVIEW`; 소규모 goal/test 기본 정책이 `include_search=false`, `light_mode=true`를 기대해서 생긴 정책 REVIEW다.
+  - `tools/audit_publication_contract_convergence.py` -> `GO / row_count 1 / violation_row_count 0`.
+  - `tools/split_collateral_action_queue.py` -> residual queue `85 -> 84`, `REPROCESS 57 -> 56`, validation issue `0`.
+  - `tools/evaluate_goal_convergence.py` -> queue `85 -> 84`, same packet `true`, safe_resolved `1 -> 1`, safe_loss `[]`, gate `GO`.
+- Boundary:
+  - 이 단건 closure는 full375 approval이 아니다.
+  - R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+  - Full375 collateral은 `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop472 11669943 즉사무림 safe-loss 검증
 
 - 범위: residual `repair_safe_loss`의 `11669943` 단건을 current HEAD `0d6dde4c`에서 search 포함 non-light 조건으로 실행하고, publication contract와 goal convergence stop-condition을 감사했다.

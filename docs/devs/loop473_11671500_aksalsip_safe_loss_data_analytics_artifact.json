@@ -1,0 +1,37 @@
+{
+  "artifact_type": "data_analytics_summary",
+  "loop": 473,
+  "post_id": 11671500,
+  "answer_first": "Loop473은 11671500 safe-loss를 악당은 살고 싶다 / https://m.munpia.com/novel/detail/236702 로 닫았지만 full-scan approval은 아니다.",
+  "metrics": {
+    "runtime_rows": 1,
+    "completed": 1,
+    "flushed": 1,
+    "pending": 0,
+    "failed": 0,
+    "executed_queries": 7,
+    "valid_queries": 5,
+    "no_result_queries": 2,
+    "residual_queue_before": 85,
+    "residual_queue_after": 84,
+    "reprocess_before": 57,
+    "reprocess_after": 56,
+    "hold_after": 28,
+    "publication_violations": 0,
+    "validation_issues": 0
+  },
+  "evidence": {
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop473_11671500_aksalsip_safe_loss_search_nonlight_after_public_canonical_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop473_11671500_aksalsip_safe_loss_search_nonlight_after_public_canonical_result_manifest.json",
+    "log": "logs/expert_run_20260705_171346_295417.log",
+    "publication_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop473_11671500_aksalsip_safe_loss_publication_contract.json",
+    "expert_run_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop473_11671500_aksalsip_safe_loss_expert_run_health.json",
+    "goal_test_runtime_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop473_11671500_aksalsip_safe_loss_run_health.json",
+    "stop_condition": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop473_11671500_goal_convergence_stop_condition.json"
+  },
+  "caveats": [
+    "Goal/test runtime audit는 소규모 런 기본 정책 때문에 REVIEW를 냈다. 이번 회차는 search 포함 non-light 실증이 요구 조건이었다.",
+    "Full375 collateral은 열지 않았다.",
+    "semantic_quality=REVIEW-LOCKED, full_scan_approval=false 유지."
+  ]
+}

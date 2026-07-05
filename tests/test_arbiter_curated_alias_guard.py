@@ -1170,6 +1170,146 @@ class ArbiterCuratedAliasGuardTest(unittest.TestCase):
             decision.get("_title_null_block_reasons", []),
         )
 
+    def test_verified_alias_bridge_accepts_aksalsip_comment_work_cue(self):
+        arbiter_module.KNOWN_TITLE_ABBREVIATIONS = {"악살싶": "악당은 살고 싶다"}
+        title = "악당은 살고 싶다"
+        response = _arbiter_response(title, discussion_type="review")
+        response["final_decision"]["suspected_titles"] = [
+            {
+                "title": title,
+                "confidence": "Max",
+                "reason": "약칭과 말투/강의씬 댓글 맥락이 작품 전개와 결속됨",
+            }
+        ]
+        arbiter = _arbiter(response)
+        ctx = ConversationContext(
+            post_id=11671500,
+            post_data={
+                "post_id": 11671500,
+                "title": "말투 바뀌는 거 악살싶에서는 호평받았었는데",
+                "content_blocks": [
+                    {"type": "image", "url": "https://example.invalid/yoshinoya.jpg"},
+                    {"type": "text", "text": "흠"},
+                ],
+            },
+            comments=[
+                "그때도 말투강제 자체는 막 만장일치 호평까진 아니엇음",
+                "말투고정되고 ㅈ간지 강의씬(표절) 보여주니까 캬 하고 본거지",
+            ],
+        )
+        ctx.search_results = [
+            {
+                "title": "악당은 살고 싶다 - 웹소설 - 카카오페이지",
+                "url": "https://page.kakao.com/content/56807841",
+                "content": "악당은 살고 싶다 작품 공식 상세",
+                "_trust_score": 0.95,
+            },
+            {
+                "title": "[악살싶]악당도 살고 싶다",
+                "url": "https://novelpia.com/novel/355931",
+                "content": "[악당은 살고 싶다]를 원작으로 언급하는 파생/패러디 표면",
+                "_is_derivative": True,
+            },
+        ]
+        ctx.suspected_titles = [
+            {
+                "title": title,
+                "confidence": "High",
+                "source_expert": "verifier",
+            }
+        ]
+        ctx.add_evidence_for_candidate(
+            title,
+            "official_url",
+            {"url": "https://page.kakao.com/content/56807841", "title": title},
+        )
+        ctx.set_expert_output(
+            ExpertType.GATEKEEPER,
+            {
+                "post_type": "work_discussion",
+                "detected_entities": {"possible_titles": ["악살싶"]},
+                "context_clues": {"has_specific_names": True},
+            },
+        )
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "primary_domain": "novel_literature",
+                    "intent": "discuss_work",
+                    "title_novel_terms": ["악살싶"],
+                }
+            },
+        )
+        ctx.set_expert_output(
+            ExpertType.DECODER,
+            {
+                "overall_best_match": {"title": title, "confidence": "high"},
+                "decoded_terms": [
+                    {
+                        "original": "악살싶",
+                        "best_match": {"title": title, "confidence": "High"},
+                        "grounding": {"anchor_type": "title_mention"},
+                    }
+                ],
+            },
+        )
+        ctx.set_expert_output(
+            ExpertType.VERIFIER,
+            {
+                "verification_result": {
+                    "is_relevant": True,
+                    "is_novel_discussion": True,
+                    "novel_identity": {
+                        "official_novel_title": title,
+                        "heretic_url": "https://page.kakao.com/content/56807841",
+                        "confidence": "High",
+                    },
+                    "grounding_check": {
+                        "anchor_found": "title_mention",
+                        "matched_alias": "악살싶",
+                        "title_abbrev_mentioned": True,
+                    },
+                    "slang_insight": {
+                        "detected_term": "악살싶",
+                        "decoded_term": title,
+                        "decode_verified": True,
+                        "canonical_work_alias": "악살싶",
+                    },
+                    "relation_judgment": {
+                        "relation_type": "explicit_alias",
+                        "discussion_target": "specific_work",
+                        "promotion_decision": "allow",
+                        "confidence": "high",
+                        "evidence_summary": {
+                            "official_detail_count": 4,
+                            "community_post_count": 0,
+                            "explicit_alias_bridge_count": 1,
+                        },
+                        "search_support_summary": {
+                            "official_exact_title_count": 4,
+                            "community_alias_support_count": 3,
+                            "explicit_alias_bridge_count": 1,
+                            "support_channel_count": 2,
+                        },
+                    },
+                }
+            },
+        )
+
+        self.assertTrue(arbiter._verified_contextual_alias_work_bridge_context(ctx, title))
+        self.assertTrue(arbiter._has_curated_alias_contextual_work_anchor(ctx, title))
+        self.assertFalse(arbiter._curated_alias_lacks_contextual_work_anchor(ctx, title))
+
+        decision = arbiter.analyze(ctx)["final_decision"]
+
+        self.assertTrue(decision["is_relevant"])
+        self.assertEqual(decision["official_title"], title)
+        self.assertNotIn(
+            "curated_alias_missing_contextual_work_anchor",
+            decision.get("_title_null_block_reasons", []),
+        )
+
     def test_prefix_only_known_title_abbreviation_does_not_force_arbiter_public_title(self):
         arbiter_module.KNOWN_TITLE_ABBREVIATIONS = {"아생갤": "아카데미 생존 갤러리"}
         arbiter = _arbiter(

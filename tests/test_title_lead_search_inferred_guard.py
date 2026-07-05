@@ -13159,6 +13159,44 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertEqual(no_bridge_candidate.official_title, "전 버두바가 하고 싶으데요")
         self.assertNotIn("public canonical variant", no_bridge_candidate.alias_or_mention)
 
+    def test_direct_image_rescue_rejects_non_promotable_brand_sign_cover_anchor(self):
+        pipeline = build_pipeline()
+        title = "吉野家 (요시노야)"
+        post = PostInput(
+            post_id=11671500,
+            title="말투 바뀌는 거 악살싶에서는 호평받았었는데",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="image", url="https://dcimg.example/11671500.jpg"),
+                ContentBlock(type="text", text="흠"),
+            ],
+            comments=["그때도 말투강제 자체는 막 만장일치 호평까진 아니엇음"],
+        )
+        post_dict = pipeline._post_to_dict(post)
+        post_dict["image_enrichment"] = [
+            {
+                "evidence_type": "cover_title",
+                "title_role": "unknown",
+                "focus_role": "work_anchor",
+                "screen_type": "work_surface",
+                "surface_type": "quoted_text_screenshot",
+                "promotion_eligible": False,
+                "explicit_work_title": title,
+                "ocr_text": "吉野家 YOSHINOYA",
+                "visual_summary": (
+                    "밤 시간대, 밝게 빛나는 요시노야 음식점 앞을 배경으로 "
+                    "교복을 입은 소녀들이 서 있는 애니메이션 스타일 일러스트"
+                ),
+                "work_cues": ["요시노야(Yoshinoya) 간판", "애니메이션 스타일 일러스트"],
+                "confidence": "High",
+            }
+        ]
+        ctx = ConversationContext(post_id=11671500, post_data=post_dict, comments=post.comments)
+
+        self.assertEqual(pipeline._collect_direct_image_titles(ctx), [title])
+        self.assertIsNone(pipeline._pick_promotable_direct_image_work_title_candidate(ctx))
+        self.assertFalse(pipeline._has_image_primary_promotion_signal(ctx, title))
+
     def test_final_precision_demotes_community_only_alias_title_without_official_detail(self):
         pipeline = build_pipeline()
         title = "아카데미 생존 갤러리"

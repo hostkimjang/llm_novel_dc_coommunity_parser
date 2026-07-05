@@ -3055,6 +3055,96 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
             identity["promotion_decision"]["reason_codes"],
         )
 
+    def test_known_title_abbreviation_public_canonicalizes_spacing_variant(self):
+        from src.llm_batch.experts import utils as expert_utils
+
+        result = {
+            "title": "말투 바뀌는 거 악살싶에서는 호평받았었는데",
+            "content": ["갑1송게이 악살싶 초반부 금기교전 파쿠리건"],
+            "comments": [],
+            "identity": {
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "is_resolved_work_discussion": True,
+                "candidate_ledger_status": "safe_resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "anchor_type": "title_alias",
+                "context_sources": ["title", "body", "comments", "search"],
+                "consistency_flags": [
+                    "known_title_abbreviation:악살싶",
+                    "confirmed_alias:악살싶",
+                    "verified_alias_title_only_publication",
+                    "official_url_withheld_by_title_mismatch",
+                ],
+                "novel_identity": {
+                    "official_title": "악당 은 살고 싶다",
+                    "heretic_url": None,
+                    "confidence": "High",
+                },
+                "title_candidates": [
+                    {
+                        "official_title": "악당 은 살고 싶다",
+                        "alias_or_mention": "악살싶",
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                        "reference_role": "primary",
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": "악당 은 살고 싶다",
+                    "official_url": None,
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "verified_alias_title_only_publication",
+                        "official_url_withheld_by_title_mismatch",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": ["title_abbrev_mentioned"],
+                    },
+                },
+                "candidate_ledger": {},
+            },
+        }
+        original_abbreviations = expert_utils.KNOWN_TITLE_ABBREVIATIONS
+        try:
+            expert_utils.KNOWN_TITLE_ABBREVIATIONS = {"악살싶": "악당은 살고 싶다"}
+            changed = _sync_final_publication_ledger_contract(
+                result,
+                post_title="말투 바뀌는 거 악살싶에서는 호평받았었는데",
+            )
+        finally:
+            expert_utils.KNOWN_TITLE_ABBREVIATIONS = original_abbreviations
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["novel_identity"]["official_title"], "악당은 살고 싶다")
+        decision = identity["promotion_decision"]
+        self.assertEqual(decision["official_title"], "악당은 살고 싶다")
+        self.assertIsNone(decision["official_url"])
+        self.assertIn(
+            "known_title_abbreviation_public_canonicalized",
+            decision["reason_codes"],
+        )
+        self.assertIn(
+            "known_title_abbreviation_public_canonicalized",
+            identity["consistency_flags"],
+        )
+        trace = identity["publish_contract_trace"]
+        self.assertEqual(trace["post_gate_identity"]["official_title"], "악당은 살고 싶다")
+        self.assertEqual(
+            trace["pre_gate_candidate"]["source"],
+            "known_title_abbreviation_public_canonicalization",
+        )
+
     def test_blocked_verified_alias_title_only_restores_without_mismatched_url(self):
         result = {
             "title": "창월야 기준 한세건보다 강한 진마 몇 안되네",

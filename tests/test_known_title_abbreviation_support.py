@@ -371,6 +371,254 @@ class KnownTitleAbbreviationSupportTest(unittest.TestCase):
         finally:
             agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = original_registry
 
+    def test_known_abbreviation_title_guard_prefers_registry_canonical_over_bracket_alias_variant(self):
+        pipeline = _build_pipeline()
+        original_registry = agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS
+        try:
+            agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = {"악살싶": "악당은 살고 싶다"}
+            ctx = ConversationContext(
+                post_id=11671500,
+                post_data={
+                    "post_id": 11671500,
+                    "title": "말투 바뀌는 거 악살싶에서는 호평받았었는데",
+                    "normalized_title": "말투 바뀌는 거 악살싶에서는 호평받았었는데",
+                    "content_blocks": [{"type": "text", "text": "흠"}],
+                },
+                comments=[
+                    "그때도 말투강제 자체는 막 만장일치 호평까진 아니엇음",
+                    "말투고정되고 ㅈ간지 강의씬(표절) 보여주니까 캬 하고 본거지",
+                ],
+            )
+            ctx.set_expert_output(
+                ExpertType.GATEKEEPER,
+                {
+                    "post_type": "work_discussion",
+                    "detected_entities": {"possible_titles": ["악살싶"]},
+                    "context_clues": {},
+                },
+            )
+            ctx.set_expert_output(
+                ExpertType.DISCOURSE,
+                {
+                    "discourse_analysis": {
+                        "primary_domain": "novel_literature",
+                        "intent": "discuss_work",
+                        "title_novel_terms": ["악살싶"],
+                        "semantic_seed_review": {"is_specific_work_discussion": True},
+                    }
+                },
+            )
+            ctx.search_results = [
+                {
+                    "title": "웹소설로 꿈꾸는 세상! - [악살싶]악당도 살고 싶다 - 노벨피아",
+                    "url": "https://novelpia.com/novel/355931",
+                    "content": "[악살싶]악당도 살고 싶다. 무료 웹소설 페이지.",
+                },
+                {
+                    "title": "악당은 살고 싶다 - 웹소설 - 카카오페이지",
+                    "url": "https://page.kakao.com/content/56807841?tab_type=comment",
+                    "content": "악당은 살고 싶다. 데큘레인. 웹소설.",
+                },
+                {
+                    "title": "악당은 살고 싶다 - 리디",
+                    "url": "https://ridibooks.com/books/2057151411",
+                    "content": "악당은 살고 싶다. 웹소설.",
+                },
+            ]
+
+            self.assertFalse(
+                pipeline._has_clean_novel_detail_title_evidence(ctx, "악당도 살고 싶다")
+            )
+            self.assertTrue(
+                pipeline._has_clean_novel_detail_title_evidence(ctx, "악당은 살고 싶다")
+            )
+            self.assertTrue(
+                pipeline._known_title_abbreviation_update_question_anchor(
+                    ctx,
+                    "악당은 살고 싶다",
+                    "악살싶",
+                )
+            )
+            ctx.set_expert_output(
+                ExpertType.ARBITER,
+                {
+                    "final_decision": {
+                        "is_relevant": True,
+                        "official_title": "악당도 살고 싶다",
+                        "official_novel_title": "악당도 살고 싶다",
+                        "discussion_type": "review",
+                    }
+                },
+            )
+
+            title, url = pipeline._apply_known_abbreviation_title_guard(
+                ctx,
+                "악당도 살고 싶다",
+                "https://novelpia.com/novel/355931",
+                final_decision={"discussion_type": "general"},
+                verification_result={"is_relevant": True, "novel_identity": {}},
+            )
+
+            self.assertEqual(title, "악당은 살고 싶다")
+            self.assertIn(
+                url,
+                {
+                    "https://page.kakao.com/content/56807841?tab_type=comment",
+                    "https://ridibooks.com/books/2057151411",
+                },
+            )
+            self.assertNotEqual(url, "https://novelpia.com/novel/355931")
+        finally:
+            agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = original_registry
+
+    def test_official_url_recall_canonicalizes_bracket_alias_variant(self):
+        pipeline = _build_pipeline()
+        original_registry = agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS
+        try:
+            agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = {"악살싶": "악당은 살고 싶다"}
+            ctx = ConversationContext(
+                post_id=11671500,
+                post_data={
+                    "post_id": 11671500,
+                    "title": "말투 바뀌는 거 악살싶에서는 호평받았었는데",
+                    "normalized_title": "말투 바뀌는 거 악살싶에서는 호평받았었는데",
+                    "content_blocks": [{"type": "text", "text": "흠"}],
+                },
+                comments=[
+                    "그때도 말투강제 자체는 막 만장일치 호평까진 아니엇음",
+                    "말투고정되고 ㅈ간지 강의씬(표절) 보여주니까 캬 하고 본거지",
+                ],
+            )
+            ctx.search_results = [
+                {
+                    "title": "웹소설로 꿈꾸는 세상! - [악살싶]악당도 살고 싶다 - 노벨피아",
+                    "url": "https://novelpia.com/novel/355931",
+                    "content": "[악살싶]악당도 살고 싶다. [악당은 살고 싶다]를 바탕으로 한 패러디 무료 웹소설.",
+                    "source_tier": "official_detail",
+                },
+                {
+                    "title": "악당 은 살고 싶다 - 웹소설 문피아",
+                    "url": "https://novel.munpia.com/236702",
+                    "content": "악당은 살고 싶다. 데큘레인. 웹소설.",
+                    "source_tier": "official_detail",
+                },
+                {
+                    "title": "악당은 살고 싶다 - 리디",
+                    "url": "https://ridibooks.com/books/2057151411",
+                    "content": "악당은 살고 싶다. 웹소설.",
+                    "source_tier": "official_detail",
+                },
+            ]
+            ctx.set_expert_output(
+                ExpertType.GATEKEEPER,
+                {
+                    "post_type": "work_discussion",
+                    "detected_entities": {"possible_titles": ["악살싶"]},
+                    "context_clues": {},
+                },
+            )
+            ctx.set_expert_output(
+                ExpertType.DISCOURSE,
+                {
+                    "discourse_analysis": {
+                        "primary_domain": "novel_literature",
+                        "intent": "discuss_work",
+                        "title_novel_terms": ["악살싶"],
+                        "semantic_seed_review": {"is_specific_work_discussion": True},
+                    }
+                },
+            )
+            ctx.set_expert_output(
+                ExpertType.VERIFIER,
+                {
+                    "is_relevant": True,
+                    "novel_identity": {},
+                    "evidence_assessment": {
+                        "promotion_decision": "allow",
+                        "matched_alias": "악살싶",
+                        "explicit_alias_bridge_count": 1,
+                    },
+                    "source_analysis": {
+                        "source_relation": {
+                            "relation_type": "explicit_alias",
+                            "relation_target": "specific_work",
+                            "promotion_decision": "allow",
+                            "confidence": "high",
+                        }
+                    },
+                },
+            )
+            extended_identity = {
+                "is_relevant": False,
+                "work_resolution": "none",
+                "title_resolution_state": "unresolved_matchable",
+                "discussion_type": "noise",
+                "consistency_flags": [],
+            }
+            self.assertTrue(
+                pipeline._known_alias_canonical_source_conflicts_with_title(
+                    "웹소설로 꿈꾸는 세상! - [악살싶]악당도 살고 싶다 - 노벨피아",
+                    "악당은 살고 싶다",
+                )
+            )
+            self.assertNotEqual(
+                pipeline._find_title_matched_official_url(
+                    "악당은 살고 싶다",
+                    ctx.search_results,
+                    ctx=ctx,
+                ),
+                "https://novelpia.com/novel/355931",
+            )
+
+            with patch.object(
+                agentic_pipeline_module,
+                "official_url_recoverable",
+                return_value={
+                    "official_title": "[악살싶]악당도 살고 싶다",
+                    "heretic_url": "https://novelpia.com/novel/355931",
+                    "source_tier": "official_detail",
+                    "source": "search_evidence",
+                    "matched_clue": "bracket_alias:악살싶",
+                    "confidence": "Medium",
+                },
+            ):
+                recovered_identity, recovered_candidates, primary_work, promotion = (
+                    pipeline._apply_official_url_recall_promotion(
+                        ctx=ctx,
+                        extended_identity=extended_identity,
+                        title_candidates=[],
+                        primary_work=None,
+                        verification_result=ctx.get_expert_output(ExpertType.VERIFIER),
+                        final_decision={"discussion_type": "review"},
+                    )
+                )
+
+            self.assertIsNotNone(promotion)
+            self.assertEqual(promotion["official_title"], "악당은 살고 싶다")
+            self.assertEqual(promotion["matched_clue"], "known_title_abbreviation:악살싶")
+            self.assertEqual(recovered_identity["official_title"], "악당은 살고 싶다")
+            self.assertNotEqual(
+                recovered_identity["heretic_url"],
+                "https://novelpia.com/novel/355931",
+            )
+            self.assertIn(
+                recovered_identity["heretic_url"],
+                {
+                    "https://novel.munpia.com/236702",
+                    "https://ridibooks.com/books/2057151411",
+                },
+            )
+            self.assertIsNotNone(primary_work)
+            self.assertEqual(primary_work.official_title, "악당은 살고 싶다")
+            self.assertEqual(recovered_candidates[0].alias_or_mention, "악살싶")
+            self.assertIn(
+                "known_title_abbreviation_official_detail_anchor",
+                recovered_identity["consistency_flags"],
+            )
+            self.assertIn("confirmed_alias:악살싶", recovered_identity["consistency_flags"])
+        finally:
+            agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS = original_registry
+
     def test_official_detail_backed_gallery_title_abbreviation_locks_work(self):
         pipeline = _build_pipeline()
         original_registry = agentic_pipeline_module.KNOWN_TITLE_ABBREVIATIONS

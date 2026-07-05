@@ -8110,6 +8110,98 @@ class ArbiterExpert:
                 return False
         return True
 
+    def _verified_contextual_alias_work_bridge_context(
+        self,
+        ctx: "ConversationContext",
+        title: Optional[str],
+        *,
+        verifier_out: Optional[Dict[str, Any]] = None,
+    ) -> bool:
+        """Accept a curated alias only when Verifier proves alias->specific-work context."""
+        title_raw = str(title or "").strip()
+        if not ctx or not title_raw:
+            return False
+        title_norm = self._normalize_match_text(title_raw)
+        if not title_norm or not self._curated_alias_for_title_mentioned_in_post_main(ctx, title_raw):
+            return False
+
+        vf_out = verifier_out if isinstance(verifier_out, dict) else {}
+        if not vf_out:
+            try:
+                from .orchestrator import ExpertType
+                vf_out = ctx.get_expert_output(ExpertType.VERIFIER) or {}
+            except Exception:
+                vf_out = {}
+        vf_result = vf_out.get("verification_result") if isinstance(vf_out, dict) else {}
+        if not isinstance(vf_result, dict):
+            vf_result = vf_out if isinstance(vf_out, dict) else {}
+
+        relation = vf_result.get("relation_judgment") or {}
+        if not isinstance(relation, dict):
+            return False
+        relation_type = str(relation.get("relation_type") or "").strip().lower()
+        target = str(relation.get("discussion_target") or "").strip().lower()
+        promotion = str(relation.get("promotion_decision") or "").strip().lower()
+        confidence = str(relation.get("confidence") or "").strip().lower()
+        if relation_type not in {"explicit_alias", "work_alias", "title_alias", "work_specific_nickname"}:
+            return False
+        if target != "specific_work" or promotion not in {"allow", "promote", "publish"}:
+            return False
+        if confidence and confidence not in {"high", "max", "very_high"}:
+            return False
+
+        grounding = vf_result.get("grounding_check") or {}
+        if isinstance(grounding, dict):
+            matched_alias = str(grounding.get("matched_alias") or "").strip()
+            if matched_alias:
+                mapped_title = str((KNOWN_TITLE_ABBREVIATIONS or {}).get(matched_alias) or "").strip()
+                if mapped_title and self._normalize_match_text(mapped_title) != title_norm:
+                    return False
+
+        evidence_summary = relation.get("evidence_summary") or {}
+        search_summary = relation.get("search_support_summary") or {}
+        if not isinstance(evidence_summary, dict):
+            evidence_summary = {}
+        if not isinstance(search_summary, dict):
+            search_summary = {}
+
+        def _as_int(value: Any) -> int:
+            try:
+                return int(value or 0)
+            except (TypeError, ValueError):
+                return 0
+
+        explicit_count = _as_int(
+            evidence_summary.get("explicit_alias_bridge_count")
+            or search_summary.get("explicit_alias_bridge_count")
+        )
+        community_count = _as_int(
+            search_summary.get("community_alias_support_count")
+            or evidence_summary.get("community_post_count")
+        )
+        official_count = _as_int(
+            evidence_summary.get("official_detail_count")
+            or search_summary.get("official_exact_title_count")
+            or search_summary.get("official_alias_context_count")
+        )
+        alias_in_post = _as_int(
+            evidence_summary.get("alias_in_post_count")
+            or search_summary.get("alias_in_post_count")
+        )
+        support_channels = _as_int(search_summary.get("support_channel_count"))
+        if explicit_count < 1:
+            return False
+        if max(community_count, official_count, alias_in_post, support_channels) < 1:
+            return False
+
+        for entry in getattr(ctx, "verified_character_work_links", []) or []:
+            if not isinstance(entry, dict) or entry.get("_weak_match"):
+                continue
+            link_title = str(entry.get("title") or entry.get("official_title") or "").strip()
+            if link_title and self._normalize_match_text(link_title) != title_norm:
+                return False
+        return True
+
     def _has_curated_alias_contextual_work_anchor(
         self,
         ctx: "ConversationContext",
@@ -8124,13 +8216,25 @@ class ArbiterExpert:
             title,
             verifier_out=verifier_out,
         )
+        verified_alias_bridge_anchor = self._verified_contextual_alias_work_bridge_context(
+            ctx,
+            title,
+            verifier_out=verifier_out,
+        )
         if (
             self._semantic_no_work_signal_for_curated_alias(ctx, verifier_out=verifier_out)
             and not gallery_homage_bridge_anchor
+            and not verified_alias_bridge_anchor
         ):
             return False
 
         post_text = self._post_main_text_for_curated_alias(ctx)
+        comments_text = " ".join(
+            str(comment or "").strip()
+            for comment in (getattr(ctx, "comments", None) or [])
+            if str(comment or "").strip()
+        )
+        packet_text = " ".join(part for part in (post_text, comments_text) if str(part or "").strip())
         try:
             from .orchestrator import ExpertType
             gatekeeper_out = ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
@@ -8155,12 +8259,13 @@ class ArbiterExpert:
         has_episode_or_serial_cue = bool(
             gk_clues.get("has_episode_reference")
             or gk_clues.get("is_spoiler_discussion")
-            or re.search(r"\d+\s*(?:화|회차|호)\b|휴재|연재|스포|작가의\s*말|최신화|완결", post_text)
+            or re.search(r"\d+\s*(?:화|회차|호)\b|휴재|연재|스포|작가의\s*말|최신화|완결", packet_text)
         )
         has_positive_semantic_cue = bool(
             seed.get("is_specific_work_discussion") is True
             or intent in {"discuss_work", "express_opinion", "review_work", "ask_work_question"}
             or gk_type in {"work_discussion", "review", "spoiler_discussion", "character_talk"}
+            or verified_alias_bridge_anchor
         )
         has_character_entity_cue = bool(
             gk_entities.get("possible_characters")
@@ -8169,13 +8274,15 @@ class ArbiterExpert:
             re.search(
                 r"\d+\s*(?:화|회차|호)\b|휴재|연재|스포|작가의\s*말|최신화|완결|"
                 r"주인공|히로인|남주|여주|작중|등장인물|캐릭터|빌런|마왕|능력|스킬|세계관|에피소드",
-                post_text,
+                packet_text,
             )
-            or _has_curated_alias_work_discussion_cue(post_text)
+            or _has_curated_alias_work_discussion_cue(packet_text)
             or gallery_homage_bridge_anchor
+            or verified_alias_bridge_anchor
         )
         return bool(
             gallery_homage_bridge_anchor
+            or verified_alias_bridge_anchor
             or (
                 has_positive_semantic_cue
                 and (has_episode_or_serial_cue or has_character_entity_cue or has_concrete_work_cue)

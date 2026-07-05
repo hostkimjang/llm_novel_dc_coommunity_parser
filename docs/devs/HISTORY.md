@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-05 - Loop473 11671500 악살싶 safe-loss runtime closure
+
+- 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- Current HEAD `504a5aa4` 기반 워킹트리에서 residual `repair_safe_loss` 행 `11671500`을 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- 원문 `말투 바뀌는 거 악살싶에서는 호평받았었는데`와 댓글 `말투강제`, `강의씬(표절)`은 title alias `악살싶`과 작품 전개 감상으로 결속됐다.
+- 파생작 `[악살싶]악당도 살고 싶다` URL/제목은 canonical 증거로 승격하지 않고, final public identity는 `악당은 살고 싶다` / `https://m.munpia.com/novel/detail/236702`로 수렴했다.
+- 요시노야 OCR `吉野家 YOSHINOYA Coca-Cola`는 `character_visual_only`, `promotion_eligible=false`라 제목 근거로 쓰지 않았다.
+- Run `20260705_171346_295417`은 input/completed/flushed/pending/failed `1/1/1/0/0`, MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`, search 실행 `7`건으로 완료됐다.
+- Result는 `candidate_ledger_status=safe_resolved`, `title_resolution_state=resolved`, `work_resolution=resolved`, `promotion_decision.status=publish`, `promotion_decision.publish_allowed=true`다.
+- Expert run health는 `GO / clean_completed_source`, search evidence는 `GO`, publication contract는 `GO / 0 violations`다. Goal/test runtime audit는 소규모 런 기본 정책 때문에 `REVIEW`다.
+- Stop-condition audit는 queue `85 -> 84`, same packet `11671500`, safe_resolved `1 -> 1`, safe loss `[]`, gate `GO`다.
+- Report는 `docs/devs/loop_reports/LOOP_473_REPORT_20260705.md`, state는 `docs/devs/loop473_11671500_aksalsip_safe_loss_runtime_20260705.json`, Data Analytics summary는 `docs/devs/loop473_11671500_aksalsip_safe_loss_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, publication contract `GO`, stop-condition `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop472 11669943 즉사무림 safe-loss runtime closure
 
 - 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
