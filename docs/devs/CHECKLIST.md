@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-05 Loop472 11669943 즉사무림 safe-loss 체크
+
+- [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `11669943` 단건을 current HEAD `0d6dde4c`에서 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- [x] Run `20260705_154406_604808`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`로 완료됐다.
+- [x] Row search는 query/degraded/unrecovered `12/0/0`, accepted/raw `89/280`이다.
+- [x] Public publish contract는 `official_title=즉사기 들고 무림에 떨어지다`, `official_url=https://series.naver.com/novel/detail.series?productNo=14041321`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`다.
+- [x] `즉사무림` title alias와 본문 최신편/무협미식/1000화 감상이 같은 current work의 작품 소비 맥락으로 수렴했음을 확인했다.
+- [x] 이미지 VLM/OCR은 `READY`였지만 작품명/작가명 텍스트가 없어 제목 근거로 쓰지 않았다.
+- [x] Stop-condition audit는 queue `86 -> 85`, same packet `11669943`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- [x] 사용자 도메인 보정을 명시했다: `아생갤`은 `아카데미 생존 갤러리` 같은 실제 작품 약어일 수 있고, `갤러리` 표면은 현실 커뮤니티 단정이 아니라 작중 커뮤니티 오마주형 제목, 약어, 장치일 수 있다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 residual queue delta를 full scan approval로 승격하지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, targeted stop-condition `GO_TARGETED / 86 -> 85 / safe 0 -> 1`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop471 11666731 약먹마 safe-loss 체크
 
 - [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

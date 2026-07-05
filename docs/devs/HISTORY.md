@@ -1,5 +1,20 @@
 # Development History
 
+## 2026-07-05 - Loop472 11669943 즉사무림 safe-loss runtime closure
+
+- 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- Current HEAD `0d6dde4c`에서 residual `repair_safe_loss` P0 행 `11669943`을 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- 원문 `즉사무림 최신편도 개개맛있군`은 title alias `즉사무림`, 본문 `무협미식`/최신편/1000화 감상은 작품 소비 맥락이며, Naver Series official detail `https://series.naver.com/novel/detail.series?productNo=14041321`와 Munpia official detail `https://novel.munpia.com/528383`이 `즉사기 들고 무림에 떨어지다`로 수렴했다.
+- Run `20260705_154406_604808`은 input/completed/flushed/pending/failed `1/1/1/0/0`, MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`, row search query/degraded/unrecovered `12/0/0`으로 완료됐다.
+- Result는 `official_title=즉사기 들고 무림에 떨어지다`, `official_url=https://series.naver.com/novel/detail.series?productNo=14041321`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`, `promotion_decision.publish_allowed=true`다.
+- 이미지는 VLM/OCR `READY`였지만 작품명/작가명 텍스트가 없어서 제목 근거로 쓰지 않았다.
+- 사용자 도메인 보정을 더 명시한다. `아생갤`은 `아카데미 생존 갤러리` 같은 실제 웹소설 작품 약어일 수 있고, `갤러리` 표면은 현실 DC 갤러리명만이 아니라 웹소설 안 커뮤니티/갤러리 오마주형 제목, 약어, 서사 장치일 수 있다.
+- BatchMem/Verifier alias 관측은 최종 public identity에서 `store_in_slang_db=false / other_attached_composite`로 정리됐고, 실행은 `--slang-db off`다.
+- Health audit는 `GO / clean_completed_source`, search evidence는 `GO`, publication contract는 `GO / 0 violations`다.
+- Stop-condition audit는 queue `86 -> 85`, same packet `11669943`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- Report는 `docs/devs/loop_reports/LOOP_472_REPORT_20260705.md`, state는 `docs/devs/loop472_11669943_juksamurim_safe_loss_runtime_20260705.json`, Data Analytics summary는 `docs/devs/loop472_11669943_juksamurim_safe_loss_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop471 11666731 약먹마 safe-loss runtime closure
 
 - 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.

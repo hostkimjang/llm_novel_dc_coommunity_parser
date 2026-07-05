@@ -4,6 +4,13 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop472 safe-loss runtime closure follow-up
+  - 상태: targeted runtime `GO 1/1` / health `GO clean_completed_source` / publication contract `GO 0 violations` / search evidence `GO` / stop-condition `GO 86->85 safe 0->1` / full375 `NOT_OPEN` / approval not open
+  - 적용: `11669943`은 `즉사무림` title alias와 본문 최신편/무협미식/1000화 감상을 통해 `즉사기 들고 무림에 떨어지다`로 safe-resolved됐다. public official detail은 `https://series.naver.com/novel/detail.series?productNo=14041321`이고 Munpia 근거 `https://novel.munpia.com/528383`도 보존했다.
+  - 도메인 보정: `아생갤`은 `아카데미 생존 갤러리` 같은 실제 작품 약어일 수 있고, `갤러리` 표면은 현실 커뮤니티 단정이 아니라 웹소설 내부 커뮤니티/갤러리 오마주형 제목, 약어, 장치일 수 있다.
+  - 산출물: `docs/devs/loop_reports/LOOP_472_REPORT_20260705.md`, `docs/devs/loop472_11669943_juksamurim_safe_loss_runtime_20260705.json`, `docs/devs/loop472_11669943_juksamurim_safe_loss_data_analytics_artifact.json`.
+  - 완료 기준: full375 collateral gate와 broader search recovery를 별도 증명하기 전까지 approval과 hard-hold 완화를 열지 않는다.
+
 - [ ] Loop471 safe-loss runtime closure follow-up
   - 상태: targeted runtime `GO 1/1` / health `GO clean_completed_source` / publication contract `GO 0 violations` / search evidence `GO` / stop-condition `GO 87->86 safe 0->1` / full375 `NOT_OPEN` / approval not open
   - 적용: `11666731`은 `약먹마` title alias와 본문 `하이라이트가 부족해` 전개 감상을 통해 `약먹는 천재마법사`로 safe-resolved됐다. official detail은 `https://novel.munpia.com/223890`이다.

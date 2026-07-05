@@ -1,0 +1,42 @@
+{
+  "artifact_type": "data_analytics_loop_summary",
+  "loop": 472,
+  "date": "2026-07-05",
+  "language": "ko",
+  "question": "11669943 safe-loss residual row가 현 HEAD에서 정당하게 safe-resolved되는가?",
+  "answer": "예. search 포함 non-light 단건 runtime에서 즉사기 들고 무림에 떨어지다 / https://series.naver.com/novel/detail.series?productNo=14041321 로 safe_resolved publish됐고, queue는 86에서 85로 감소했다.",
+  "evidence": {
+    "run_id": "20260705_154406_604808",
+    "runtime_counts": "1/1/1/0/0",
+    "search": {
+      "gate": "GO",
+      "query_degraded_unrecovered": "12/0/0",
+      "accepted": 89,
+      "raw": 280
+    },
+    "publication_contract": "GO / 0 violations",
+    "stop_condition": "GO / queue 86 -> 85 / safe_resolved 0 -> 1 / safe_loss []",
+    "residual_queue": "REPROCESS 58 -> 57, HOLD 28 -> 28, validation issue 0"
+  },
+  "interpretation": "원문 제목의 즉사무림은 즉사기 들고 무림에 떨어지다의 title alias로 처리됐고, 본문 최신편/무협미식/1000화 감상은 작품 소비 맥락이다. 이미지는 제목 근거가 아니며, search와 publication contract가 통과했다. 이 결과는 full375 approval이 아니라 residual queue 감소 근거다.",
+  "domain_note": "아생갤은 아카데미 생존 갤러리 같은 작품 약어일 수 있고, 갤러리 표면은 현실 커뮤니티 단정이 아니라 작품 내부 커뮤니티 오마주형 제목, 약어, 장치일 수 있다.",
+  "gate_state": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO",
+    "search_evidence": "GO",
+    "targeted_stop_condition": "GO_TARGETED",
+    "residual_queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "artifact_paths": {
+    "report": "docs/devs/loop_reports/LOOP_472_REPORT_20260705.md",
+    "state": "docs/devs/loop472_11669943_juksamurim_safe_loss_runtime_20260705.json",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop472_11669943_juksamurim_safe_loss_search_nonlight_result.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop472_11669943_juksamurim_safe_loss_run_health.json",
+    "publication_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop472_11669943_juksamurim_safe_loss_publication_contract.json",
+    "convergence_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop472_11669943_goal_convergence_stop_condition.json"
+  }
+}
