@@ -1,0 +1,104 @@
+{
+  "loop": "464",
+  "date": "2026-07-05",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "scope": "11660237 terraforming safe-loss source-native repair runtime closure",
+  "head": "dd63dcfc",
+  "large_runs": {
+    "full375": "NOT_LAUNCHED",
+    "bounded_1000_1500": "NOT_LAUNCHED",
+    "safe_loss_n5": "NOT_LAUNCHED",
+    "same_38_row_parent_packet": "NOT_LAUNCHED"
+  },
+  "input": {
+    "post_id": 11660237,
+    "title": "테라포밍 볼만함?",
+    "content_summary": "주인공이 멍청하다는 평판을 묻고 댓글이 작품 수위/감상 반응으로 이어지는 테라포밍 review discussion",
+    "image_count": 1,
+    "source_native_verdict": "before_correct_source_native",
+    "expected_work": "테라포밍",
+    "expected_official_url": "https://novelpia.com/novel/61947",
+    "previous_failure": "safe_loss_resolved_to_null"
+  },
+  "runtime": {
+    "run_id": "20260705_124602_019714",
+    "input_completed_flushed_pending_failed": "1/1/1/0/0",
+    "large_run_complete": true,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_failure": "1/0",
+    "row_search_query_degraded_unrecovered": "18/0/0",
+    "row_search_accepted_raw": "106/289",
+    "vlm_ocr_semantic_review_ready": true,
+    "image_fetch": "1/1",
+    "slang_db": "off"
+  },
+  "result": {
+    "official_title": "테라포밍",
+    "official_url": "https://novelpia.com/novel/61947",
+    "candidate_ledger_status": "safe_resolved",
+    "title_resolution_state": "resolved",
+    "work_resolution": "resolved",
+    "promotion_decision_status": "publish",
+    "publish_allowed": true,
+    "bypassed_gate": false,
+    "discussion_type": "review",
+    "primary_bridge": "title mention + official Novelpia detail URL + search platform evidence"
+  },
+  "audits": {
+    "health": {
+      "flush_integrity": "GO / clean_completed_source",
+      "search_evidence": "GO"
+    },
+    "publication_contract": {
+      "gate": "GO",
+      "row_count": 1,
+      "violation_row_count": 0
+    },
+    "goal_convergence": {
+      "gate": "GO",
+      "previous_actionable": 94,
+      "current_actionable": 93,
+      "same_packet": true,
+      "post_id": 11660237,
+      "previous_safe_resolved": 0,
+      "current_safe_resolved": 1,
+      "safe_loss_post_ids": []
+    }
+  },
+  "residual_queue": {
+    "previous": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop463_after_11666713_21c_murim_wrong_work_residual_action_queue.json",
+    "current": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop464_after_11660237_terraforming_safe_loss_residual_action_queue.json",
+    "residual_action_queue_rows": "94 -> 93",
+    "label_counts": "REPROCESS 66 -> 65 / HOLD 28 -> 28",
+    "repair_safe_loss": "66 -> 65",
+    "validation_issue_count": 0
+  },
+  "observed_risks": {
+    "surface_collision": "검색 중 테라포밍 마스 보드게임/wiki 후보가 강하게 들어왔으나, 공식 플랫폼 근거가 있는 현재 제목 테라포밍을 약칭-제목 guard가 유지했다.",
+    "gallery_homage_policy": "아생갤/갤러리 표면은 현실 DC 갤러리명으로 자동 고정하지 않고, 작중 갤러리/댓글식 커뮤니티 오마주형 제목 또는 약어 가능성을 분리한다."
+  },
+  "gates": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO",
+    "search_evidence": "GO",
+    "targeted_stop_condition": "GO_TARGETED / 94 -> 93 / safe 0 -> 1",
+    "residual_queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL",
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "artifacts": {
+    "loop_report": "docs/devs/loop_reports/LOOP_464_REPORT_20260705.md",
+    "data_analytics_summary": "docs/devs/loop464_11660237_terraforming_safe_loss_data_analytics_artifact.json",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop361_current_head_safe_loss_independent_n5_plan/inputs/loop361_safe_loss_current_head_3fb529bf_search_nonlight_11660237_r01.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop464_11660237_terraforming_safe_loss_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop464_11660237_terraforming_safe_loss_search_nonlight_result_manifest.json",
+    "run_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop464_11660237_terraforming_safe_loss_run_health.json",
+    "publication_contract": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop464_11660237_terraforming_safe_loss_publication_contract.json",
+    "residual_queue": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop464_after_11660237_terraforming_safe_loss_residual_action_queue.json",
+    "convergence": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop464_11660237_goal_convergence_stop_condition.json"
+  }
+}

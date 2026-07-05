@@ -1,5 +1,16 @@
 ﻿# Developer TODO Index
 
+## 2026-07-05 Loop464 TODO
+
+- 상태 업데이트: Loop464는 `11660237` safe-loss를 `테라포밍` / `https://novelpia.com/novel/61947`로 닫았다. Residual queue는 `94 -> 93`, `repair_safe_loss 66 -> 65`지만 goal은 완료가 아니다.
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] Run `20260705_124602_019714`은 `1/1/1/0/0`, health `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`다.
+- [x] `테라포밍 마스` 검색 후보가 끼어든 위험을 기록했고, 공식 플랫폼 근거가 있는 현재 제목 유지 guard가 작동했음을 확인했다.
+- [x] 사용자 도메인 보정을 재확인했다: `아생갤`/`갤러리`는 현실 DC 갤러리명만이 아니라 작품 안 커뮤니티/갤러리 오마주형 제목 또는 약어일 수 있다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 queue delta를 full scan approval로 승격하지 않는다.
+- [ ] 다음은 residual `REPROCESS 65 / HOLD 28` 중 작은 lane으로 진행한다. docs-only 반복은 정지 신호다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop461-463 TODO
 
 - 상태 업데이트: Loop461-463은 `11666713` wrong-work를 `21세기 무림세가`로 닫았다. Loop462 wrong publish `21세기를 여행하는 무림인을 위한 안내서`는 후단 약어 교정 오귀속으로 판정했고, Loop463 runtime에서 correct publish를 확인했다. Residual queue는 `95 -> 94`지만 goal은 완료가 아니다.

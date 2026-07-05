@@ -1,5 +1,7 @@
 ﻿# GOAL: Architecture-Integrated Regression-Safe Grounding Loop
 
+> 2026-07-05 상태 addendum (Loop464 11660237 테라포밍 safe-loss runtime closure): goal은 완료가 아니다. 신규 full375/bounded/N5 대형 런과 동일 38-row parent packet replay는 발주하지 않았다. Current HEAD `dd63dcfc`에서 `11660237` 단건을 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했고 run `20260705_124602_019714`은 `1/1/1/0/0`, search evidence `GO`, publication contract `GO / 0`이다. Result는 `테라포밍` / `https://novelpia.com/novel/61947`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`다. `테라포밍 마스` surface collision은 guard가 막았고, `아생갤`/`갤러리` 표면은 작품 안 갤러리/댓글식 커뮤니티 오마주형 제목 또는 약어일 수 있다는 도메인 보정을 유지한다. Stop-condition audit는 queue `94 -> 93`, safe `0 -> 1`, gate `GO`지만 full375 collateral은 `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## Purpose
 
 현재 개선 하네스 goal은 완료가 아니다. Loop176 기준 broader unittest gate가 `FAIL`이며, 전문가 협업 결과 현재 구조는 단건 guard 누적으로는 한계가 있다고 판단했다. 따라서 다음 goal은 기존 residual queue를 버리는 것이 아니라, 먼저 공통 title-promotion 아키텍처를 추가한 뒤 Loop176 실패와 residual queue로 복귀하는 architecture-integrated goal로 변경한다.

@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-05 - Loop464 11660237 테라포밍 safe-loss runtime closure
+
+- 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- Current HEAD `dd63dcfc`에서 residual `repair_safe_loss` P0 행 `11660237`을 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- 원문 `테라포밍 볼만함?`은 제목 표면, 본문 `주인공 멍창하다는 말 많던데`, 댓글 감상 반응, 공식 Novelpia URL `https://novelpia.com/novel/61947`이 같은 작품으로 수렴했다.
+- Run `20260705_124602_019714`은 input/completed/flushed/pending/failed `1/1/1/0/0`, MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`, row search query/degraded/unrecovered `18/0/0`으로 완료됐다.
+- Result는 `official_title=테라포밍`, `official_url=https://novelpia.com/novel/61947`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`, `publish_allowed=true`다.
+- 검색 중 `테라포밍 마스` 후보가 끼어들었지만 공식 플랫폼 근거가 있는 현재 제목을 유지하는 guard가 최종 wrong-work 교체를 막았다.
+- 사용자 도메인 보정을 재확인했다. `아생갤`은 웹소설 `아카데미 생존 갤러리`처럼 작품 안에서 갤러리/댓글식 커뮤니티를 서사 장치로 엮은 제목 약어일 수 있으므로, `갤러리` 표면을 현실 DC 갤러리명으로 자동 고정하지 않는다.
+- Health audit는 `GO / clean_completed_source`, search evidence는 `GO`, publication contract는 `GO / 0 violations`다.
+- Stop-condition audit는 queue `94 -> 93`, same packet `11660237`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- Report는 `docs/devs/loop_reports/LOOP_464_REPORT_20260705.md`, state는 `docs/devs/loop464_11660237_terraforming_safe_loss_runtime_20260705.json`, Data Analytics summary는 `docs/devs/loop464_11660237_terraforming_safe_loss_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop461-463 11666713 21세기 무림 wrong-work closure
 
 - 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.

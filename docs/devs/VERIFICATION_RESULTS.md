@@ -1,5 +1,36 @@
 # Verification Results
 
+## 2026-07-05 Loop464 11660237 테라포밍 safe-loss runtime 검증
+
+- 범위: residual `repair_safe_loss`의 `11660237` 단건을 current HEAD `dd63dcfc`에서 search 포함 non-light 조건으로 실행하고, publication contract와 goal convergence stop-condition을 감사했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_464_REPORT_20260705.md`
+  - state `docs\devs\loop464_11660237_terraforming_safe_loss_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop464_11660237_terraforming_safe_loss_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop464_11660237_terraforming_safe_loss_search_nonlight_result.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop464_11660237_terraforming_safe_loss_run_health.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop464_11660237_terraforming_safe_loss_publication_contract.json`
+  - residual queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop464_after_11660237_terraforming_safe_loss_residual_action_queue.json`
+  - convergence audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop464_11660237_goal_convergence_stop_condition.json`
+- Runtime:
+  - run `20260705_124602_019714`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - Search `GO`, query/degraded/unrecovered `18/0/0`, upstream zero `2`, accepted `106`
+- Result:
+  - `official_title=테라포밍`, public `official_url=https://novelpia.com/novel/61947`
+  - `candidate_ledger_status=safe_resolved`, `safe_resolved=true`, `promotion_decision.status=publish`, `publish_allowed=true`
+  - `테라포밍 마스` 후보가 중간 mapping에 들어왔지만 공식 플랫폼 근거가 있는 현재 제목 유지 guard가 최종 교체를 막았다.
+- Audit:
+  - `tools/audit_expert_run_health.py` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=GO`, `publication_contract_convergence=GO`.
+  - `tools/audit_publication_contract_convergence.py` -> `GO / row_count 1 / violation_row_count 0`.
+  - `tools/evaluate_goal_convergence.py` -> queue `94 -> 93`, same packet `true`, safe_resolved `0 -> 1`, safe_loss `[]`, gate `GO`.
+- Boundary:
+  - 이 단건 closure는 full375 approval이 아니다.
+  - `아생갤`은 웹소설 `아카데미 생존 갤러리`처럼 작중 갤러리/댓글식 커뮤니티 오마주형 제목 약어일 수 있으므로 `갤러리` 표면을 현실 커뮤니티로 자동 고정하지 않는다.
+  - R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+  - Full375 collateral은 `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop461-463 11666713 21세기 무림 wrong-work 검증
 
 - 범위: residual `repair_after_wrong_work`의 `11666713` 단건을 Loop461-463에서 search 포함 non-light 조건으로 실행하고, wrong publish 원인과 post-patch runtime closure를 감사했다.

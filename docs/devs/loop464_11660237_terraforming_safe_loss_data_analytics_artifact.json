@@ -1,0 +1,57 @@
+{
+  "artifact_type": "data_analytics_reader_summary",
+  "title": "Loop464 11660237 테라포밍 safe-loss runtime closure",
+  "language": "ko",
+  "answer_first_summary": "11660237 단건은 current HEAD에서 테라포밍 / https://novelpia.com/novel/61947 로 safe_resolved publish까지 수렴했다. Residual queue는 94에서 93으로 줄었지만 full375와 full scan approval은 열지 않았다.",
+  "scope": {
+    "post_id": 11660237,
+    "loop": "464",
+    "run_id": "20260705_124602_019714",
+    "run_type": "single-row search non-light VLM/OCR on runtime"
+  },
+  "key_findings": [
+    {
+      "finding": "runtime production은 clean completed source다.",
+      "evidence": "manifest/checkpoint/result가 input/completed/flushed/pending/failed 1/1/1/0/0으로 일치하고 pending/failed가 없다."
+    },
+    {
+      "finding": "safe-loss는 이번 단건에서 해소됐다.",
+      "evidence": "publication contract GO, candidate_ledger_status safe_resolved, official_title 테라포밍, official_url https://novelpia.com/novel/61947."
+    },
+    {
+      "finding": "표면어 오귀속 위험은 남는 감시 항목이다.",
+      "evidence": "검색 중 테라포밍 마스 mapping이 들어왔으나 약칭-제목 guard가 공식 플랫폼 근거가 있는 테라포밍을 유지했다."
+    },
+    {
+      "finding": "아생갤 도메인 보정은 계속 유지한다.",
+      "evidence": "아생갤/갤러리 표면은 현실 커뮤니티 단정이 아니라 작중 갤러리/댓글식 커뮤니티 오마주형 제목/약어일 수 있다."
+    }
+  ],
+  "metrics": {
+    "input_completed_flushed_pending_failed": "1/1/1/0/0",
+    "row_search_query_degraded_unrecovered": "18/0/0",
+    "residual_action_queue_rows": "94 -> 93",
+    "repair_safe_loss": "66 -> 65",
+    "publication_contract_violations": 0
+  },
+  "gate_state": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO",
+    "search_evidence": "GO",
+    "targeted_stop_condition": "GO_TARGETED / 94 -> 93 / safe 0 -> 1",
+    "residual_queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL",
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "artifacts": [
+    "docs/devs/loop_reports/LOOP_464_REPORT_20260705.md",
+    "docs/devs/loop464_11660237_terraforming_safe_loss_runtime_20260705.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop464_11660237_terraforming_safe_loss_search_nonlight_result.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop464_11660237_terraforming_safe_loss_run_health.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop464_11660237_terraforming_safe_loss_publication_contract.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop464_11660237_goal_convergence_stop_condition.json"
+  ]
+}

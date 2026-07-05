@@ -1,5 +1,22 @@
 # Operation Quality Checklist
 
+## 2026-07-05 Loop464 11660237 테라포밍 safe-loss 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_464_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop464_11660237_terraforming_safe_loss_runtime_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop464_11660237_terraforming_safe_loss_data_analytics_artifact.json`.
+  - [x] Health audit `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`를 기록했다.
+  - [x] Stop-condition audit artifact를 기록했다: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop464_11660237_goal_convergence_stop_condition.json`.
+  - [x] Residual queue delta `94 -> 93`, `repair_safe_loss 66 -> 65`를 기록했다.
+- 품질 게이트:
+  - [x] `테라포밍`을 공식 플랫폼 URL과 제목 표면 결속으로 닫는다.
+  - [x] `테라포밍 마스` surface collision은 최종 오귀속이 아니라 guard 작동 감시 항목으로 기록한다.
+  - [x] `아생갤`/`갤러리` 표면은 현실 DC 갤러리로 자동 고정하지 않고, 작품 안의 커뮤니티/갤러리 오마주 가능성을 기록한다.
+  - [x] 단건 targeted runtime과 residual queue delta를 golden18/full375 approval로 승격하지 않는다.
+  - [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 하지 않았음을 명시한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-05 Loop461-463 11666713 21세기 무림 wrong-work 품질 게이트
 
 - 근거:

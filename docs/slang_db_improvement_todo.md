@@ -1,5 +1,13 @@
 # Slang DB Improvement TODO
 
+## 2026-07-05 Loop464 11660237 테라포밍 slang 주의사항
+
+- [x] `--slang-db off` 조건으로 Loop464 단건 runtime을 실행했다.
+- [x] `테라포밍 -> 테라포밍 마스` 중간 mapping은 slang DB 보강 대상이 아니라 surface collision 감시 항목으로 기록했다.
+- [x] 공식 플랫폼 근거가 있는 `테라포밍` 제목을 유지한 guard를 기록했다.
+- [x] 사용자 도메인 보정을 재확인한다: `아생갤`은 웹소설 `아카데미 생존 갤러리`처럼 작중 갤러리/댓글식 커뮤니티 오마주형 제목 약어일 수 있고, `갤러리` 표면을 현실 커뮤니티로 자동 고정하지 않는다.
+- [x] 새 slang DB write-back, 작품 전용 registry, `post_id` 예외는 추가하지 않았다.
+
 ## 2026-07-05 Loop461-463 11666713 21세기 무림 wrong-work slang 주의사항
 
 - [x] `21세기 무림 -> 21세기 무림세가`를 새 slang DB write-back이나 작품 전용 registry 추가로 처리하지 않았다.

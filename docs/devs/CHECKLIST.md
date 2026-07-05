@@ -1,5 +1,19 @@
 # Development Checklist
 
+## 2026-07-05 Loop464 11660237 테라포밍 safe-loss runtime 체크
+
+- [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `11660237` 단건을 current HEAD `dd63dcfc`에서 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- [x] Run `20260705_124602_019714`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`로 완료됐다.
+- [x] Row search는 query/degraded/unrecovered `18/0/0`, accepted/raw `106/289`이다.
+- [x] Public publish contract는 `official_title=테라포밍`, `official_url=https://novelpia.com/novel/61947`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`다.
+- [x] `테라포밍 마스` 후보가 검색/Decoder 쪽에 들어왔지만 공식 플랫폼 근거가 있는 현재 제목을 유지하는 guard가 교체를 막았다.
+- [x] Stop-condition audit는 queue `94 -> 93`, same packet `11660237`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- [x] 사용자 도메인 보정을 재확인했다: `아생갤` 같은 `갤러리` 표면은 현실 커뮤니티로 자동 고정하지 않고 웹소설 내부 갤러리/댓글식 커뮤니티 오마주형 제목/약어/세계관 장치일 수 있다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 residual queue delta를 full scan approval로 승격하지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, targeted stop-condition `GO_TARGETED / 94 -> 93 / safe 0 -> 1`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop461-463 11666713 21세기 무림 wrong-work 체크
 
 - [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
