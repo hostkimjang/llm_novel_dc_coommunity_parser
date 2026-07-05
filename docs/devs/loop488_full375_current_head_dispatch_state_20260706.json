@@ -55,40 +55,31 @@
     ]
   },
   "latest_monitoring_evidence": {
-    "snapshot_time_kst": "2026-07-06 05:44:41",
+    "snapshot_time_kst": "2026-07-06 05:58:38",
     "status": "IN_PROGRESS",
-    "completed_count": 65,
-    "flushed_count": 51,
-    "pending_count": 14,
+    "completed_count": 74,
+    "flushed_count": 73,
+    "pending_count": 1,
     "failed_count": 0,
-    "checkpoint_lines": 65,
-    "next_save_idx": 52,
-    "partial_flush_gap": true,
+    "checkpoint_lines": 74,
+    "next_save_idx": 74,
+    "partial_flush_gap": false,
     "ordered_flush_blocked": true,
     "large_run_complete": false,
     "live_pids": [
       42256,
       968
     ],
-    "latest_manifest_write_kst": "2026-07-06 05:43:15",
-    "latest_checkpoint_write_kst": "2026-07-06 05:43:15",
-    "result_json_write_lag_reason": "ordered_flush_blocked: 앞쪽 row 지연으로 result.json flush가 밀리므로 manifest/checkpoint/log를 authoritative runtime evidence로 본다.",
+    "latest_manifest_write_kst": "2026-07-06 05:58:17",
+    "latest_checkpoint_write_kst": "2026-07-06 05:58:17",
+    "result_json_write_lag_reason": "05:44 KST에는 ordered_flush_blocked로 result.json flush가 밀렸지만, 05:58 KST에는 completed/flushed/pending이 74/73/1로 회복되어 큰 backlog가 해소됐다. 완료 전 runtime evidence는 계속 manifest/checkpoint/log를 기준으로 본다.",
     "first_pending_snapshot": [
-      "53:11700475",
-      "54:11700495",
-      "55:11702067",
-      "56:11702084",
-      "57:11702094",
-      "58:11703640",
-      "59:11703645",
-      "60:11703657",
-      "61:11705256",
-      "62:11705261"
+      "79:11685994"
     ],
-    "interpretation": "런 전체 stall이 아니라 ordered flush 병목과 checkpoint backlog가 공존하는 상태다."
+    "interpretation": "11700470 전후의 장기 row가 만든 ordered flush backlog는 해소됐고, 런은 실패 없이 계속 진행 중이다."
   },
   "gates": {
-    "full375_runtime": "IN_PROGRESS / 65 of 375 checkpoint at 2026-07-06 05:44 KST",
+    "full375_runtime": "IN_PROGRESS / 74 of 375 checkpoint at 2026-07-06 05:58 KST",
     "full375_collateral": "PENDING / NO-GO 유지",
     "golden_audit_after_loop488": "NOT_RUN_AFTER_LOOP488",
     "collateral_compare_after_loop488": "NOT_RUN_AFTER_LOOP488",
