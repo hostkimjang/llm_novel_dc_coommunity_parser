@@ -1,0 +1,109 @@
+{
+  "loop": "465",
+  "date": "2026-07-05",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "scope": "11708478 comment-title image-context safe-loss source-native repair runtime closure",
+  "head": "b14c3e7c",
+  "large_runs": {
+    "full375": "NOT_LAUNCHED",
+    "bounded_1000_1500": "NOT_LAUNCHED",
+    "safe_loss_n5": "NOT_LAUNCHED",
+    "same_38_row_parent_packet": "NOT_LAUNCHED"
+  },
+  "input": {
+    "post_id": 11708478,
+    "title": "사와요드릴머리영애등장 ㄷㄷ",
+    "content_summary": "본문은 비어 있고 image OCR에 금발 드릴 머리, 펠릭스 장면이 있으며 댓글 작성자가 사연있는악역착각이라고 답한 comment-title image-context row",
+    "image_count": 1,
+    "source_native_verdict": "before_correct_comment_title_with_image_context",
+    "expected_work": "사연 있는 악역으로 착각 당한다",
+    "expected_official_url": "https://novelpia.com/novel/396159",
+    "previous_failure": "safe_loss_resolved_to_null"
+  },
+  "runtime": {
+    "run_id": "20260705_130841_169550",
+    "input_completed_flushed_pending_failed": "1/1/1/0/0",
+    "large_run_complete": true,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_failure": "1/0",
+    "row_search_status": "SEARCH_DEGRADED",
+    "row_search_query_degraded_unrecovered": "17/1/1",
+    "row_search_accepted_raw": "76/322",
+    "row_search_retry_cache_hit": "4/0",
+    "vlm_ocr_semantic_review_ready": true,
+    "image_fetch": "1/1",
+    "slang_db": "off"
+  },
+  "result": {
+    "official_title": "사연 있는 악역으로 착각 당한다",
+    "official_url": "https://novelpia.com/novel/396159",
+    "candidate_ledger_status": "safe_resolved",
+    "safe_resolved": true,
+    "title_resolution_state": "resolved",
+    "work_resolution": "resolved",
+    "promotion_decision_status": "publish",
+    "publish_allowed": true,
+    "bypassed_gate": false,
+    "discussion_type": "character_talk",
+    "primary_bridge": "post-author comment title answer + official Novelpia detail URL + final semantic reread"
+  },
+  "audits": {
+    "health": {
+      "flush_integrity": "GO / clean_completed_source",
+      "search_evidence": "REVIEW / search_degraded_observed"
+    },
+    "publication_contract": {
+      "gate": "GO",
+      "row_count": 1,
+      "violation_row_count": 0
+    },
+    "goal_convergence": {
+      "gate": "GO",
+      "previous_actionable": 93,
+      "current_actionable": 92,
+      "same_packet": true,
+      "post_id": 11708478,
+      "previous_safe_resolved": 0,
+      "current_safe_resolved": 1,
+      "safe_loss_post_ids": []
+    }
+  },
+  "residual_queue": {
+    "previous": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop464_after_11660237_terraforming_safe_loss_residual_action_queue.json",
+    "current": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop465_after_11708478_comment_title_image_context_residual_action_queue.json",
+    "residual_action_queue_rows": "93 -> 92",
+    "label_counts": "REPROCESS 65 -> 64 / HOLD 28 -> 28",
+    "repair_safe_loss": "65 -> 64",
+    "comment_title_or_image_review_required": "1 -> 0",
+    "validation_issue_count": 0
+  },
+  "observed_risks": {
+    "image_scene_collision": "Verifier/Arbiter 단계에서 이미지 OCR의 펠릭스/드릴머리 단서가 악역 영애 루트가 없다니, 누가 그랬어? 후보로 잘못 잠기는 경로가 있었다.",
+    "final_public_identity_recovery": "최종 serialized public identity는 사연 있는 악역으로 착각 당한다 / https://novelpia.com/novel/396159로 복원됐고 publication contract violation은 0이다.",
+    "gallery_homage_policy": "아생갤/갤러리 표면은 현실 DC 갤러리명으로 자동 고정하지 않고, 작중 갤러리/댓글식 커뮤니티 오마주형 제목 또는 약어 가능성을 분리한다."
+  },
+  "gates": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO",
+    "search_evidence": "REVIEW",
+    "targeted_stop_condition": "GO_TARGETED / 93 -> 92 / safe 0 -> 1",
+    "residual_queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL",
+    "broader_search_recovery": "P0 / OPEN_SEARCH_DEGRADED",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "artifacts": {
+    "loop_report": "docs/devs/loop_reports/LOOP_465_REPORT_20260705.md",
+    "data_analytics_summary": "docs/devs/loop465_11708478_comment_title_image_context_data_analytics_artifact.json",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop465_11708478_comment_title_image_context_input.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop465_11708478_comment_title_image_context_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop465_11708478_comment_title_image_context_search_nonlight_result_manifest.json",
+    "run_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop465_11708478_comment_title_image_context_run_health.json",
+    "publication_contract": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop465_11708478_comment_title_image_context_publication_contract.json",
+    "residual_queue": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop465_after_11708478_comment_title_image_context_residual_action_queue.json",
+    "convergence": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop465_11708478_goal_convergence_stop_condition.json"
+  }
+}

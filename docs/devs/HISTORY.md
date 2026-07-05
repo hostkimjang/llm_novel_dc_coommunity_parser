@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-05 - Loop465 11708478 comment-title image-context safe-loss runtime closure
+
+- 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- Current HEAD `b14c3e7c`에서 residual `repair_safe_loss` P1 `comment_title_or_image_review_required` 행 `11708478`을 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- 원문 `사와요드릴머리영애등장 ㄷㄷ`은 image OCR의 `드릴 머리`, `펠릭스` 장면 단서와 댓글 작성자 답변 `사연있는악역착각`이 충돌할 수 있는 row였고, 최종 public identity는 `사연 있는 악역으로 착각 당한다`로 수렴했다.
+- Run `20260705_130841_169550`은 input/completed/flushed/pending/failed `1/1/1/0/0`, MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`, row search `SEARCH_DEGRADED` query/degraded/unrecovered `17/1/1`로 완료됐다.
+- Result는 `official_title=사연 있는 악역으로 착각 당한다`, `official_url=https://novelpia.com/novel/396159`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`, `publish_allowed=true`다.
+- 내부 Verifier/Arbiter는 한때 `펠릭스/드릴머리` 단서로 `악역 영애 루트가 없다니, 누가 그랬어?` 후보를 잠갔지만, serialized public identity shared gate와 final semantic reread가 댓글 제목 답변과 official detail을 우선해 정답 public title을 복원했다.
+- 사용자 도메인 보정을 유지한다. `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명으로만 보지 않는다. 웹소설 내부에서 갤러리/댓글식 커뮤니티를 서사 장치로 엮은 오마주형 제목, 약어, 세계관 장치일 수 있다.
+- Health audit는 `GO / clean_completed_source`, search evidence는 `REVIEW / search_degraded_observed`, publication contract는 `GO / 0 violations`다.
+- Stop-condition audit는 queue `93 -> 92`, same packet `11708478`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- Report는 `docs/devs/loop_reports/LOOP_465_REPORT_20260705.md`, state는 `docs/devs/loop465_11708478_comment_title_image_context_runtime_20260705.json`, Data Analytics summary는 `docs/devs/loop465_11708478_comment_title_image_context_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `REVIEW`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / OPEN_SEARCH_DEGRADED`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop464 11660237 테라포밍 safe-loss runtime closure
 
 - 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.

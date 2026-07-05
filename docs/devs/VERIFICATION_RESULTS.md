@@ -1,5 +1,36 @@
 # Verification Results
 
+## 2026-07-05 Loop465 11708478 comment-title image-context safe-loss 검증
+
+- 범위: residual `repair_safe_loss`의 `11708478` 단건을 current HEAD `b14c3e7c`에서 search 포함 non-light 조건으로 실행하고, publication contract와 goal convergence stop-condition을 감사했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_465_REPORT_20260705.md`
+  - state `docs\devs\loop465_11708478_comment_title_image_context_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop465_11708478_comment_title_image_context_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop465_11708478_comment_title_image_context_search_nonlight_result.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop465_11708478_comment_title_image_context_run_health.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop465_11708478_comment_title_image_context_publication_contract.json`
+  - residual queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop465_after_11708478_comment_title_image_context_residual_action_queue.json`
+  - convergence audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop465_11708478_goal_convergence_stop_condition.json`
+- Runtime:
+  - run `20260705_130841_169550`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - Search `REVIEW`, row status `SEARCH_DEGRADED`, query/degraded/unrecovered `17/1/1`, accepted `76`
+- Result:
+  - `official_title=사연 있는 악역으로 착각 당한다`, public `official_url=https://novelpia.com/novel/396159`
+  - `candidate_ledger_status=safe_resolved`, `safe_resolved=true`, `promotion_decision.status=publish`, `publish_allowed=true`
+  - 내부 단계에서는 `펠릭스/드릴머리` 장면 단서가 `악역 영애 루트가 없다니, 누가 그랬어?` 후보를 잠그는 위험이 있었지만 final public identity는 댓글 작성자 답변과 official detail로 복원됐다.
+- Audit:
+  - `tools/audit_expert_run_health.py` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=REVIEW / search_degraded_observed`, `publication_contract_convergence=GO`.
+  - `tools/audit_publication_contract_convergence.py` -> `GO / row_count 1 / violation_row_count 0`.
+  - `tools/evaluate_goal_convergence.py` -> queue `93 -> 92`, same packet `true`, safe_resolved `0 -> 1`, safe_loss `[]`, gate `GO`.
+- Boundary:
+  - 이 단건 closure는 full375 approval이 아니다.
+  - `아생갤`은 웹소설 `아카데미 생존 갤러리`처럼 작중 갤러리/댓글식 커뮤니티 오마주형 제목 약어일 수 있으므로 `갤러리` 표면을 현실 커뮤니티로 자동 고정하지 않는다.
+  - R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+  - Full375 collateral은 `NOT_OPEN`, search recovery는 `P0 / OPEN_SEARCH_DEGRADED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop464 11660237 테라포밍 safe-loss runtime 검증
 
 - 범위: residual `repair_safe_loss`의 `11660237` 단건을 current HEAD `dd63dcfc`에서 search 포함 non-light 조건으로 실행하고, publication contract와 goal convergence stop-condition을 감사했다.

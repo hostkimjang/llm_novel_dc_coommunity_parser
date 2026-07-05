@@ -1,5 +1,15 @@
 # Slang DB Improvement TODO
 
+## 2026-07-05 Loop465 11708478 comment-title image-context slang 주의사항
+
+- [x] `--slang-db off` 조건으로 Loop465 단건 runtime을 실행했다.
+- [x] 런 중 `사연있는악역착각 -> 사연 있는 악역으로 착각 당한다` batch memory mapping은 관측됐지만 persistent slang DB write-back으로 처리하지 않았다.
+- [x] `드릴머리영애`와 `펠릭스`는 이미지 장면/캐릭터 단서이며, `악역 영애 루트가 없다니, 누가 그랬어?` public title publish 근거로 승격하지 않는 경계를 기록했다.
+- [x] 사용자 도메인 보정을 유지한다: `아생갤`은 웹소설 `아카데미 생존 갤러리`처럼 작중 갤러리/댓글식 커뮤니티 오마주형 제목 약어일 수 있고, `갤러리` 표면을 현실 커뮤니티로 자동 고정하지 않는다.
+- [x] 새 slang DB write-back, 작품 전용 registry, `post_id` 예외는 추가하지 않았다.
+- [ ] Search degraded가 남아 있으므로 이 단건 closure를 alias/slang 전체 품질 승인, hard-hold 완화, full375 approval로 승격하지 않는다.
+- Gate: slang DB write-back 아님, targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `REVIEW`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL / 93 -> 92`, search recovery broader `P0 / OPEN_SEARCH_DEGRADED`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop464 11660237 테라포밍 slang 주의사항
 
 - [x] `--slang-db off` 조건으로 Loop464 단건 runtime을 실행했다.

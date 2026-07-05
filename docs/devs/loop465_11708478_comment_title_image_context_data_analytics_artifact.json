@@ -1,0 +1,43 @@
+{
+  "artifact_type": "data_analytics_loop_summary",
+  "loop": "465",
+  "date": "2026-07-05",
+  "language": "ko",
+  "answer_first_summary": "Loop465는 11708478 단건을 search 포함 non-light로 완료했고, comment-title image-context safe-loss를 사연 있는 악역으로 착각 당한다 safe_resolved publish로 닫았다. 검색 degraded 1건 때문에 search evidence는 REVIEW이며 full375 approval은 아니다.",
+  "decision": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO",
+    "search_evidence": "REVIEW / search_degraded_observed",
+    "goal_convergence": "GO_TARGETED / 93 -> 92 / safe 0 -> 1",
+    "residual_queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal_status": "ACTIVE / NOT_COMPLETE"
+  },
+  "evidence": {
+    "run_id": "20260705_130841_169550",
+    "input_completed_flushed_pending_failed": "1/1/1/0/0",
+    "mcp_health": "include_search=true / light_mode=false / ok_failure=1/0",
+    "search": "SEARCH_DEGRADED / query_degraded_unrecovered=17/1/1 / accepted_raw=76/322",
+    "vlm_ocr": "READY / image_fetch=1/1",
+    "result": "official_title=사연 있는 악역으로 착각 당한다 / official_url=https://novelpia.com/novel/396159 / candidate_ledger_status=safe_resolved",
+    "audits": [
+      "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop465_11708478_comment_title_image_context_run_health.json",
+      "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop465_11708478_comment_title_image_context_publication_contract.json",
+      "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop465_11708478_goal_convergence_stop_condition.json"
+    ]
+  },
+  "risk_notes": [
+    "이미지 OCR 장면 단서 펠릭스/드릴머리 때문에 내부 Verifier/Arbiter가 악역 영애 루트가 없다니, 누가 그랬어? 후보를 잘못 잠근 경로가 있었다.",
+    "최종 public identity는 serialized public identity shared gate와 final semantic reread로 정답 제목과 URL을 복원했다.",
+    "검색 degraded가 남아 broader search recovery는 P0 OPEN_SEARCH_DEGRADED로 유지한다.",
+    "아생갤/갤러리 표면은 현실 갤러리명으로 자동 고정하지 않고 작중 커뮤니티 오마주형 작품 제목/약어 가능성을 분리한다."
+  ],
+  "artifacts": {
+    "loop_report": "docs/devs/loop_reports/LOOP_465_REPORT_20260705.md",
+    "state": "docs/devs/loop465_11708478_comment_title_image_context_runtime_20260705.json",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop465_11708478_comment_title_image_context_search_nonlight_result.json",
+    "residual_queue": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop465_after_11708478_comment_title_image_context_residual_action_queue.json"
+  }
+}
