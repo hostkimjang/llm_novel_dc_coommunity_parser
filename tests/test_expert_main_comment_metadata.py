@@ -4494,6 +4494,141 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertEqual(identity["candidate_ledger"]["publish_contract_trace"], trace)
         self.assertEqual(identity["candidate_ledger"]["publish_ledger"], identity["publish_ledger"])
 
+    def test_shared_gate_current_work_alias_bridge_survives_stale_counterevidence_text(self):
+        title = "이거 럽코 빙의물인가요"
+        url = "https://novel.munpia.com/533816"
+        decision = {
+            "status": "publish",
+            "publish_allowed": True,
+            "official_title": title,
+            "official_url": url,
+            "candidate_preserved": False,
+            "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "verified_alias_title_only_publication",
+                "official_url_withheld_by_title_mismatch",
+                "serialized_public_identity_shared_gate_restored",
+            ],
+            "bypassed_gate": False,
+            "scope": {
+                "scope_kind": "current_work",
+                "confidence": "high",
+                "direct_bridge_sources": [
+                    "verified_alias_title_only_publication",
+                    "post_title_alias",
+                    "title",
+                    "body",
+                    "search",
+                ],
+            },
+        }
+        candidate = {
+            "official_title": title,
+            "heretic_url": url,
+            "confidence": "High",
+            "alias_or_mention": "럽코빙",
+            "source_tier": "official_detail",
+            "page_type": "novel_page",
+            "reference_role": "primary",
+        }
+        result = {
+            "post_id": 11658620,
+            "title": "럽코빙의 원래도 그렇게 대놓고 언급 안했는데",
+            "content": [
+                "전생 현실 작품 언급 방식이랑 연중 직전 화 얘기임",
+                "럽코빙 간접 언급도 작품 소비 맥락으로 말하는 중",
+            ],
+            "comments": [],
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "is_resolved_work_discussion": True,
+                "discussion_type": "review",
+                "topicality": "core_relevant",
+                "context_sources": ["title", "body", "search"],
+                "anchor_type": "title_exact",
+                "consistency_flags": [
+                    "verified_alias_title_only_publication",
+                    "serialized_public_identity_shared_gate_restored",
+                ],
+                "reason_lines": [
+                    "관련 포스트로 판정되었으나 정식 제목은 미확정입니다.",
+                    "공식 제목: 미확정",
+                    "작품/IP 후보 맥락은 보존하되 단일 공식 제목 확정은 보류함.",
+                ],
+                "novel_identity": {
+                    "official_title": title,
+                    "heretic_url": url,
+                    "confidence": "High",
+                },
+                "primary_work": dict(candidate),
+                "title_candidates": [dict(candidate)],
+                "candidate_preservation_sources": [dict(candidate)],
+                "search_evidence_catalog": [
+                    {
+                        "title": f"{title} - 문피아 웹소설",
+                        "url": url,
+                        "snippet": f"{title}. 두유하이볼.",
+                        "source_tier": "novel_platform",
+                    }
+                ],
+                "promotion_decision": dict(decision),
+                "promotion_gate_state": {
+                    "candidate_title": title,
+                    "candidate_url": url,
+                    "official_title_exists": True,
+                    "row_discusses_work_as_work": True,
+                    "scope": dict(decision["scope"]),
+                },
+                "candidate_ledger": {
+                    "candidate_ledger_status": "safe_resolved",
+                    "title_resolution_allowed": True,
+                    "context_sources": ["title", "body", "search"],
+                    "candidate_preservation_sources": [dict(candidate)],
+                    "search_evidence_catalog": [
+                        {
+                            "title": f"{title} - 문피아 웹소설",
+                            "url": url,
+                            "snippet": f"{title}. 두유하이볼.",
+                            "source_tier": "novel_platform",
+                        }
+                    ],
+                    "promotion_decision": dict(decision),
+                    "promotion_gate_state": {
+                        "candidate_title": title,
+                        "candidate_url": url,
+                        "official_title_exists": True,
+                        "row_discusses_work_as_work": True,
+                        "scope": dict(decision["scope"]),
+                    },
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertEqual(identity["novel_identity"]["official_title"], title)
+        self.assertEqual(identity["novel_identity"]["heretic_url"], url)
+        self.assertTrue(identity["promotion_decision"]["publish_allowed"])
+        self.assertEqual(identity["promotion_decision"]["official_title"], title)
+        self.assertNotIn(
+            "verified_alias_title_only_counterevidence_blocked",
+            identity["promotion_decision"]["reason_codes"],
+        )
+        trace = identity["publish_contract_trace"]
+        self.assertEqual(trace["gate_decision"], identity["promotion_decision"])
+        self.assertEqual(trace["post_gate_identity"]["official_title"], title)
+        self.assertEqual(identity["candidate_ledger"]["publish_contract_trace"], trace)
+
     def test_verified_alias_detail_replaces_stale_wrong_alias_blocked_gate(self):
         correct_title = "가챠 중독자의 퓨전펑크 생활"
         correct_url = "https://novelpia.com/novel/387014"

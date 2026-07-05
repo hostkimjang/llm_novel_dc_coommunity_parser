@@ -1,0 +1,67 @@
+{
+  "loop": 484,
+  "generated_at": "2026-07-06T03:35:19+09:00",
+  "title": "Loop484 shared gate counterevidence projection",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "status": "GO_UNIT_AND_PROJECTION_ONLY",
+  "summary": "Loop483 residual105 중 shared_promotion_gate_wiring_required 59건에 대해 stale verified_alias_title_only_counterevidence_blocked가 current-work shared gate 결정을 덮는 경로를 실코드와 계약 테스트로 보강하고 projection으로 영향 범위를 확인했다.",
+  "source_inputs": {
+    "queue": "docs/devs/loop483_full375_review_adjusted_residual105_action_queue.json",
+    "full375_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop477_full375_current_head_merged375_search_nonlight_result.json"
+  },
+  "changed_code": [
+    "expert_main.py",
+    "tests/test_expert_main_comment_metadata.py"
+  ],
+  "artifacts": {
+    "projection": "docs/devs/loop484_shared_gate_counterevidence_projection_20260706.json",
+    "report": "docs/devs/loop_reports/LOOP_484_REPORT_20260706.md",
+    "state": "docs/devs/loop484_shared_gate_counterevidence_projection_state_20260706.json"
+  },
+  "projection_summary": {
+    "input_rows": 59,
+    "projection_status_counts": {
+      "safe_resolved": 14,
+      "promotion_blocked": 42,
+      "output_consistency_lint": 3
+    },
+    "projected_publish_allowed_counts": {
+      "true": 14,
+      "false": 45
+    },
+    "matches_source_native_title_count": 9,
+    "missing_after_row_count": 0
+  },
+  "contract": {
+    "restore_or_demote_skip_allowed_only_when": [
+      "promotion_decision이 row_discusses_work_as_work와 current_work scope를 가진다",
+      "title/search/context(body 또는 comments) 근거가 함께 존재한다",
+      "distinct alias bridge와 direct source support가 존재한다",
+      "candidate URL 또는 official detail support가 존재한다",
+      "missing_official_url_for_official_detail와 weak_alias_surface_public_title_bridge hard negative evidence가 없다"
+    ],
+    "still_blocks": [
+      "missing_official_url_for_official_detail",
+      "weak_alias_surface_public_title_bridge",
+      "scope_context_only",
+      "scope_not_current_work",
+      "direct source 또는 official detail support가 없는 title-only alias"
+    ]
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "unit_tests": "PASS / tests.test_expert_main_comment_metadata tests.test_regression_safe_work_bridge_contract tests.test_publication_contract_convergence_audit / 77 tests",
+    "accounting_gate_tests": "PASS / tests.test_split_collateral_action_queue tests.test_always_on_regression_gates / 14 tests",
+    "projection_generation": "PASS",
+    "json_parse": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "gates": {
+    "runtime_replay_after_patch": "NOT_RUN_AFTER_PATCH",
+    "full375_collateral": "NO-GO",
+    "search_recovery": "P0_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "completion_gate": "NO-GO / full375 collateral GO + full_scan path still required"
+  }
+}

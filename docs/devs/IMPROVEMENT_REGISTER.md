@@ -1,5 +1,17 @@
 # Improvement Register
 
+## IMP-20260706-484 - shared gate counterevidence projection
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Shared gate wiring | GO_UNIT | stale `verified_alias_title_only_counterevidence_blocked` demotion 경로 보강 | runtime replay 또는 lane batch |
+| Projection | PARTIAL | `59 -> safe_resolved 14 / promotion_blocked 42 / output_consistency_lint 3` | blocked/lint 후속 분해 |
+| Hard negative | 유지 | `missing_official_url_for_official_detail`, `weak_alias_surface_public_title_bridge`는 restore 차단 | false hard-hold는 source-native로 검증 |
+| 검증 | PASS | py_compile PASS, related unittest `77` tests PASS, projection generation PASS | broader gate는 runtime/full375 후속 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: code/test/projection `GO_UNIT_AND_PROJECTION_ONLY`, runtime replay `NOT_RUN_AFTER_PATCH`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-483 - full375 residual105 action queue
 
 | 항목 | 상태 | 근거 | 다음 |

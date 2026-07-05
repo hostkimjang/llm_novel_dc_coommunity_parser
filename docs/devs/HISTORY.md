@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-06 - Loop484 shared gate counterevidence projection
+
+- Loop483 residual105 중 `shared_promotion_gate_wiring_required` 59건을 먼저 처리했다.
+- `expert_main.py`는 stale `verified_alias_title_only_counterevidence_blocked`가 current-work shared gate 결정을 덮는 경로를 보수적으로 막았다.
+- Restore 또는 demotion-skip은 direct source support, official detail support, title/search/body-or-comments context, distinct alias bridge가 모두 있고 hard negative evidence가 없을 때만 허용한다.
+- `missing_official_url_for_official_detail`, `weak_alias_surface_public_title_bridge`는 계속 hard hold로 유지한다.
+- Projection 결과는 input `59`, `safe_resolved 14`, `promotion_blocked 42`, `output_consistency_lint 3`, publish_allowed `14`, source-native exact title match `9`다.
+- Report는 `docs/devs/loop_reports/LOOP_484_REPORT_20260706.md`, state는 `docs/devs/loop484_shared_gate_counterevidence_projection_state_20260706.json`, projection은 `docs/devs/loop484_shared_gate_counterevidence_projection_20260706.json`이다.
+- 검증은 py_compile PASS, related unittest `77` tests PASS, projection generation PASS다.
+- Gate는 code/test/projection `GO_UNIT_AND_PROJECTION_ONLY`, runtime replay `NOT_RUN_AFTER_PATCH`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop483 full375 residual105 action queue
 
 - Loop482 review-adjusted blocker `105`를 실행 가능한 residual action queue로 분해했다.

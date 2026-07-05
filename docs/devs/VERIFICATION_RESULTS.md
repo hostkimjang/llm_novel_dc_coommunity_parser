@@ -1,5 +1,35 @@
 # Verification Results
 
+## 2026-07-06 Loop484 shared gate counterevidence projection 검증
+
+- 범위: Loop483 `shared_promotion_gate_wiring_required` 59건에서 stale counterevidence가 shared gate current-work 판단을 다시 demote하는 경로를 보강했다.
+- Code:
+  - `expert_main.py`
+  - `tests\test_expert_main_comment_metadata.py`
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_484_REPORT_20260706.md`
+  - state `docs\devs\loop484_shared_gate_counterevidence_projection_state_20260706.json`
+  - projection `docs\devs\loop484_shared_gate_counterevidence_projection_20260706.json`
+- Result:
+  - gate `GO_UNIT_AND_PROJECTION_ONLY`
+  - input rows `59`
+  - projected `safe_resolved 14`, `promotion_blocked 42`, `output_consistency_lint 3`
+  - projected publish_allowed `14/59`
+  - source-native exact title match `9/59`
+  - missing after row `0`
+- Validation:
+  - `.\venv\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_comment_metadata.py tests\test_regression_safe_work_bridge_contract.py tests\test_publication_contract_convergence_audit.py` PASS
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata tests.test_regression_safe_work_bridge_contract tests.test_publication_contract_convergence_audit -v` PASS, `77` tests
+  - `.\venv\Scripts\python.exe -m unittest tests.test_split_collateral_action_queue tests.test_always_on_regression_gates -v` PASS, `14` tests
+  - `.\venv\Scripts\python.exe -m json.tool docs\devs\loop484_shared_gate_counterevidence_projection_20260706.json` PASS
+  - `.\venv\Scripts\python.exe -m json.tool docs\devs\loop484_shared_gate_counterevidence_projection_state_20260706.json` PASS
+  - `git diff --check` PASS
+  - projection generation PASS
+- Boundary:
+  - Projection은 runtime approval이 아니다.
+  - Runtime replay after patch는 `NOT_RUN_AFTER_PATCH`다.
+  - Full375 collateral은 `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop483 full375 residual105 action queue 검증
 
 - 범위: Loop482 review-adjusted blocker `105`를 실행 가능한 residual action queue로 분해했다.

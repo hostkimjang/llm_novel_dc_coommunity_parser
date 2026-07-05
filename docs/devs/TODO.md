@@ -1,5 +1,19 @@
 # Developer TODO Index
 
+## 2026-07-06 Loop484 TODO
+
+- 상태 업데이트: shared promotion gate 경로부터 처리했다. Projection은 input `59`에서 `safe_resolved 14 / promotion_blocked 42 / output_consistency_lint 3`이고, goal은 완료가 아니다.
+- [x] `expert_main.py`에서 stale `verified_alias_title_only_counterevidence_blocked`가 current-work shared gate 결정을 다시 demote하지 못하게 했다.
+- [x] Restore/demotion-skip은 direct source support, official detail support, title/search/body-or-comments context, distinct alias bridge가 모두 있는 경우로 제한했다.
+- [x] Hard negative evidence `missing_official_url_for_official_detail`, `weak_alias_surface_public_title_bridge`는 계속 hold로 유지했다.
+- [x] Projection JSON/state/report를 생성했다.
+- [x] py_compile, related unittest `77` tests, projection generation을 통과했다.
+- [ ] `promotion_blocked 42`를 hard negative/source support 부족/lint 후속으로 다시 분해한다.
+- [ ] `output_consistency_lint 3`은 public ledger와 trace consistency 경로를 별도 점검한다.
+- [ ] Runtime replay after patch 또는 lane batch replay로 실제 row 생산성을 확인한다.
+- [ ] 완료 기준은 여전히 `full375 collateral GO + full_scan 경로 정의`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop483 TODO
 
 - 상태 업데이트: Loop482 review-adjusted blocker `105`를 residual action queue로 분해했다. Queue는 `REPROCESS 63 / HOLD 41 / INFO_MISSING 1`, validation issue `0`이고 goal은 완료가 아니다.

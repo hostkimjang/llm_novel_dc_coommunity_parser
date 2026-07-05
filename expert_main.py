@@ -1367,8 +1367,36 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
             "batch_alias_url_only_counterevidence_blocked",
             "low_specificity_batch_alias_counterevidence_blocked",
         }
-        if flags & hard_negative_flags:
-            return False
+        hard_negative_hits = flags & hard_negative_flags
+        if hard_negative_hits:
+            counterevidence_only_recoverable = hard_negative_hits <= {
+                "verified_alias_title_only_counterevidence_blocked",
+            }
+            shared_gate_supported_current_work = bool(
+                counterevidence_only_recoverable
+                and "title" in contexts
+                and "search" in contexts
+                and bool(contexts & {"body", "comments"})
+                and _has_distinct_alias_bridge_for_title_only(candidate_title)
+                and not (
+                    _publication_candidate_negative_evidence(identity, ledger, candidate_title, candidate_url)
+                    & {
+                        "missing_official_url_for_official_detail",
+                        "weak_alias_surface_public_title_bridge",
+                    }
+                )
+                and _publication_has_direct_source_support(
+                    result_dict,
+                    identity,
+                    ledger,
+                    candidate_title,
+                    candidate_url,
+                    post_title=_source_post_title(),
+                )
+                and _candidate_has_official_title_support(candidate_title, candidate_url)
+            )
+            if not shared_gate_supported_current_work:
+                return False
         if "title" not in contexts or "search" not in contexts or not (contexts & {"body", "comments"}):
             return False
 
@@ -4609,6 +4637,24 @@ def _publication_candidate_matches(item: Any, candidate_title: Any, candidate_ur
     return bool(candidate_url_key and _publication_url_key(item_url) == candidate_url_key)
 
 
+def _publication_candidate_negative_evidence(
+    identity: Dict[str, Any],
+    ledger: Dict[str, Any],
+    candidate_title: Any,
+    candidate_url: Any = "",
+) -> set[str]:
+    negative: set[str] = set()
+    for item in _publication_candidate_items(identity, ledger):
+        if not _publication_candidate_matches(item, candidate_title, candidate_url):
+            continue
+        negative.update(
+            str(value or "").strip()
+            for value in (item.get("negative_evidence") or [])
+            if str(value or "").strip()
+        )
+    return negative
+
+
 def _publication_source_text_chunks(result_dict: Dict[str, Any], post_title: Optional[str] = None) -> List[str]:
     chunks: List[str] = []
 
@@ -5121,6 +5167,97 @@ def _demote_verified_alias_title_only_counterevidence_contract(result_dict: Dict
         "verified_character_work_link",
     }
     if reason_code_set & hard_bridge_codes or scope_sources & hard_bridge_codes:
+        return False
+
+    def _has_candidate_official_detail_support() -> bool:
+        candidate_key = _publication_title_key(candidate_title)
+        candidate_url_key = _publication_url_key(candidate_url)
+        if not candidate_key:
+            return False
+        for item in _publication_candidate_items(identity, ledger):
+            if not _publication_candidate_matches(item, candidate_title, candidate_url):
+                continue
+            item_title, item_url = _publication_candidate_title_url(item)
+            item_url_key = _publication_url_key(item_url)
+            source_tier = str(item.get("source_tier") or "").strip().lower()
+            page_type = str(item.get("page_type") or "").strip().lower()
+            if (
+                item_url_key
+                and (not candidate_url_key or item_url_key == candidate_url_key)
+                and (
+                    source_tier
+                    in {"official", "official_detail", "official_platform", "official_search", "novel_platform"}
+                    or page_type in {"novel_page", "work_detail"}
+                )
+            ):
+                return True
+            if _publication_near_title_match(item_title, candidate_title) and source_tier in {
+                "official",
+                "official_detail",
+                "official_platform",
+                "official_search",
+                "novel_platform",
+            }:
+                return True
+
+        for container in (identity, ledger):
+            for item in container.get("search_evidence_catalog") or []:
+                if not isinstance(item, dict):
+                    continue
+                item_url_key = _publication_url_key(item.get("url"))
+                source_tier = str(item.get("source_tier") or "").strip().lower()
+                if (
+                    item_url_key
+                    and candidate_url_key
+                    and item_url_key == candidate_url_key
+                    and source_tier in {"official", "official_detail", "official_platform", "official_search", "novel_platform"}
+                ):
+                    return True
+                if source_tier in {"official", "official_detail", "official_platform", "official_search", "novel_platform"} and (
+                    _publication_near_title_match(item.get("title"), candidate_title)
+                    or _publication_near_title_match(item.get("official_title"), candidate_title)
+                ):
+                    return True
+        return False
+
+    def _shared_gate_has_supported_current_work_bridge() -> bool:
+        contexts = {
+            str(value or "").strip().lower()
+            for source in (identity.get("context_sources"), ledger.get("context_sources"))
+            if isinstance(source, list)
+            for value in source
+            if str(value or "").strip()
+        }
+        scope_kinds = {
+            str(scope.get("scope_kind") or "").strip().lower()
+            for scope in (decision_scope, gate_scope)
+            if isinstance(scope, dict)
+        }
+        return bool(
+            "row_discusses_work_as_work" in reason_code_set
+            and ("scope_current_work" in reason_code_set or "current_work" in scope_kinds)
+            and "title" in contexts
+            and "search" in contexts
+            and bool(contexts & {"body", "comments"})
+            and not (
+                _publication_candidate_negative_evidence(identity, ledger, candidate_title, candidate_url)
+                & {
+                    "missing_official_url_for_official_detail",
+                    "weak_alias_surface_public_title_bridge",
+                }
+            )
+            and _publication_has_direct_source_support(
+                result_dict,
+                identity,
+                ledger,
+                candidate_title,
+                candidate_url,
+                post_title=post_title,
+            )
+            and (bool(candidate_url) or _has_candidate_official_detail_support())
+        )
+
+    if _shared_gate_has_supported_current_work_bridge():
         return False
 
     candidate_key = _publication_title_key(candidate_title)

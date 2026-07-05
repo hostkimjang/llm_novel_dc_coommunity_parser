@@ -1,5 +1,22 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop484 shared gate counterevidence projection 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_484_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop484_shared_gate_counterevidence_projection_state_20260706.json`.
+  - [x] Projection JSON 기록 완료: `docs/devs/loop484_shared_gate_counterevidence_projection_20260706.json`.
+  - [x] Projection 결과 `safe_resolved 14 / promotion_blocked 42 / output_consistency_lint 3`을 기록했다.
+  - [x] source-native exact title match `9/59`와 missing after row `0`을 기록했다.
+- 품질 경계:
+  - [x] Projection은 runtime approval이 아니다.
+  - [x] Hard negative evidence가 있는 title-only alias는 계속 hold한다.
+  - [x] Search recovery는 계속 `P0_OPEN`이다.
+  - [ ] Runtime replay after patch는 아직 실행하지 않았다.
+  - [ ] Full375 collateral은 여전히 `NO-GO`다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: code/test/projection `GO_UNIT_AND_PROJECTION_ONLY`, runtime replay `NOT_RUN_AFTER_PATCH`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop483 full375 residual105 action queue 품질 게이트
 
 - 근거:

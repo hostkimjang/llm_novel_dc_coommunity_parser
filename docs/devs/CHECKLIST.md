@@ -1,5 +1,19 @@
 # Development Checklist
 
+## 2026-07-06 Loop484 shared gate counterevidence projection 체크
+
+- [x] Loop483 `shared_promotion_gate_wiring_required` 59건을 ordinary residual 단건 처리보다 먼저 확인했다.
+- [x] stale `verified_alias_title_only_counterevidence_blocked`가 current-work shared gate 결정을 덮는 경로를 실코드로 보강했다.
+- [x] Restore/demotion-skip 조건을 direct source support, official detail support, title/search/body-or-comments context, distinct alias bridge로 제한했다.
+- [x] `missing_official_url_for_official_detail`, `weak_alias_surface_public_title_bridge`는 hard negative로 유지했다.
+- [x] Projection은 `safe_resolved 14 / promotion_blocked 42 / output_consistency_lint 3`, publish_allowed `14/59`, source-native exact title match `9/59`다.
+- [x] py_compile, related unittest `77` tests, projection generation을 통과했다.
+- [ ] Runtime replay after patch는 아직 실행하지 않았다.
+- [ ] Full375 collateral은 여전히 `NO-GO`다.
+- [ ] 완료 기준은 여전히 `full375 collateral GO + full_scan 경로 정의`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: code/test/projection `GO_UNIT_AND_PROJECTION_ONLY`, runtime replay `NOT_RUN_AFTER_PATCH`, full375 collateral `NO-GO`, search recovery `P0_OPEN`.
+
 ## 2026-07-06 Loop483 full375 residual105 action queue 체크
 
 - [x] Loop482 review-adjusted blocker `105`를 residual action queue로 분해했다.
