@@ -1,5 +1,15 @@
 # Slang DB Improvement TODO
 
+## 2026-07-05 Loop471 11666731 약먹마 slang 주의사항
+
+- [x] `--slang-db off` 조건으로 Loop471 단건 runtime을 실행했다.
+- [x] `약먹마 -> 약먹는 천재마법사`는 Munpia official detail과 title alias bridge로 safe-resolved publish됐지만, persistent slang DB write-back으로 처리하지 않았다.
+- [x] Verifier는 slang 저장 가능성을 제안했으나, 최종 public identity는 `store_in_slang_db=false / non_pure_store_reason`으로 정리됐다.
+- [x] 이미지 VLM/OCR은 텍스트가 없어 slang/alias 근거로 쓰지 않았다.
+- [x] `아생갤` 같은 `갤러리` 표면은 현실 커뮤니티 단정이 아니라 작품/커뮤니티 오마주형 제목, 약어, 장치로 기록했다.
+- [ ] 이 단건 closure를 alias/slang 전체 품질 승인, hard-hold 완화, full375 approval로 승격하지 않는다.
+- Gate: slang DB write-back 아님, targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL / 87 -> 86`, search recovery broader `P0 / ROW_LEVEL_GO_ONLY`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop470 11661876 와인의 신 slang 주의사항
 
 - [x] `--slang-db off` 조건으로 Loop470 단건 runtime을 실행했다.

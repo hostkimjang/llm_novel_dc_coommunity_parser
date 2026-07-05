@@ -4,6 +4,13 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop471 safe-loss runtime closure follow-up
+  - 상태: targeted runtime `GO 1/1` / health `GO clean_completed_source` / publication contract `GO 0 violations` / search evidence `GO` / stop-condition `GO 87->86 safe 0->1` / full375 `NOT_OPEN` / approval not open
+  - 적용: `11666731`은 `약먹마` title alias와 본문 `하이라이트가 부족해` 전개 감상을 통해 `약먹는 천재마법사`로 safe-resolved됐다. official detail은 `https://novel.munpia.com/223890`이다.
+  - 도메인 보정: `아생갤` 같은 `갤러리` 표면은 현실 커뮤니티 단정이 아니라 웹소설 내부 커뮤니티/갤러리 오마주형 제목, 약어, 장치일 수 있다.
+  - 산출물: `docs/devs/loop_reports/LOOP_471_REPORT_20260705.md`, `docs/devs/loop471_11666731_yakmeokma_safe_loss_runtime_20260705.json`, `docs/devs/loop471_11666731_yakmeokma_safe_loss_data_analytics_artifact.json`.
+  - 완료 기준: full375 collateral gate와 broader search recovery를 별도 증명하기 전까지 approval과 hard-hold 완화를 열지 않는다.
+
 - [ ] Loop470 safe-loss runtime closure follow-up
   - 상태: targeted runtime `GO 1/1` / health `GO clean_completed_source` / publication contract `GO 0 violations` / search evidence `GO` / stop-condition `GO 88->87 safe 0->1` / full375 `NOT_OPEN` / approval not open
   - 적용: `11661876`은 `와인의신` title alias, `클로이`, 댓글 작성자 `문피아`, 작중 토마토 가격 설정 반응을 통해 `와인의 신`으로 safe-resolved됐다. official detail은 `https://series.naver.com/novel/detail.series?productNo=13342533`이다.

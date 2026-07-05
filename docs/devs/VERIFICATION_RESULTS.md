@@ -1,5 +1,38 @@
 # Verification Results
 
+## 2026-07-05 Loop471 11666731 약먹마 safe-loss 검증
+
+- 범위: residual `repair_safe_loss`의 `11666731` 단건을 current HEAD `393e9df9`에서 search 포함 non-light 조건으로 실행하고, publication contract와 goal convergence stop-condition을 감사했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_471_REPORT_20260705.md`
+  - state `docs\devs\loop471_11666731_yakmeokma_safe_loss_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop471_11666731_yakmeokma_safe_loss_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop471_11666731_yakmeokma_safe_loss_search_nonlight_result.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop471_11666731_yakmeokma_safe_loss_run_health.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop471_11666731_yakmeokma_safe_loss_publication_contract.json`
+  - residual queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop471_after_11666731_yakmeokma_safe_loss_residual_action_queue.json`
+  - convergence audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop471_11666731_goal_convergence_stop_condition.json`
+- Runtime:
+  - run `20260705_152536_551371`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - Search `GO`, query/degraded/unrecovered `4/0/0`, accepted/raw `23/76`, cache hits `0`
+  - VLM/OCR `READY`, image fetch/success `1/1`, title evidence `false`
+- Result:
+  - `official_title=약먹는 천재마법사`, public `official_url=https://novel.munpia.com/223890`
+  - `candidate_ledger_status=safe_resolved`, `safe_resolved=true`, `promotion_decision.status=publish`, `promotion_decision.publish_allowed=true`
+  - `약먹마`는 title alias이고, 본문 `하이라이트가 부족해`는 특정 작품의 전개 감상이다.
+- Audit:
+  - `tools/audit_expert_run_health.py` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=GO`, `publication_contract_convergence=GO`.
+  - `tools/audit_publication_contract_convergence.py` -> `GO / row_count 1 / violation_row_count 0`.
+  - `tools/split_collateral_action_queue.py` -> residual queue `87 -> 86`, `REPROCESS 59 -> 58`, validation issue `0`.
+  - `tools/evaluate_goal_convergence.py` -> queue `87 -> 86`, same packet `true`, safe_resolved `0 -> 1`, safe_loss `[]`, gate `GO`.
+- Boundary:
+  - 이 단건 closure는 full375 approval이 아니다.
+  - `아생갤` 같은 `갤러리` 표면은 현실 커뮤니티 단정이 아니라 작중 커뮤니티 오마주형 제목, 약어, 장치일 수 있다.
+  - R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+  - Full375 collateral은 `NOT_OPEN`, broader search recovery는 `P0 / ROW_LEVEL_GO_ONLY`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop470 11661876 와인의 신 safe-loss 검증
 
 - 범위: residual `repair_safe_loss`의 `11661876` 단건을 current HEAD `34adc8a2`에서 search 포함 non-light 조건으로 실행하고, publication contract와 goal convergence stop-condition을 감사했다.

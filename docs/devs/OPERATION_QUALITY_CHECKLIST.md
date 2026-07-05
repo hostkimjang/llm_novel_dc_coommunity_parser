@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-05 Loop471 11666731 약먹마 safe-loss 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_471_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop471_11666731_yakmeokma_safe_loss_runtime_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop471_11666731_yakmeokma_safe_loss_data_analytics_artifact.json`.
+  - [x] Health audit `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`를 기록했다.
+  - [x] Stop-condition audit artifact를 기록했다: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop471_11666731_goal_convergence_stop_condition.json`.
+  - [x] Residual queue delta `87 -> 86`, `repair_safe_loss 59 -> 58`을 기록했다.
+- 품질 게이트:
+  - [x] `약먹마`를 title alias로 보되, public title은 official detail의 `약먹는 천재마법사`로 닫는다.
+  - [x] `하이라이트가 부족해`는 작품 전개 감상으로 기록한다.
+  - [x] 이미지 VLM/OCR은 작품명/작가명 텍스트가 없으므로 제목 근거로 쓰지 않는다.
+  - [x] `아생갤` 같은 `갤러리` 표면은 현실 커뮤니티 단정이 아니라 작중 커뮤니티 오마주형 제목, 약어, 장치일 수 있음을 유지한다.
+  - [x] 단건 targeted runtime과 residual queue delta를 golden18/full375 approval로 승격하지 않는다.
+  - [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 하지 않았음을 명시한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-05 Loop470 11661876 와인의 신 safe-loss 품질 게이트
 
 - 근거:

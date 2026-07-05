@@ -1,0 +1,42 @@
+{
+  "artifact_type": "data_analytics_loop_summary",
+  "loop": 471,
+  "date": "2026-07-05",
+  "language": "ko",
+  "question": "11666731 safe-loss residual row가 현 HEAD에서 정당하게 safe-resolved되는가?",
+  "answer": "예. search 포함 non-light 단건 runtime에서 약먹는 천재마법사 / https://novel.munpia.com/223890 로 safe_resolved publish됐고, queue는 87에서 86으로 감소했다.",
+  "evidence": {
+    "run_id": "20260705_152536_551371",
+    "runtime_counts": "1/1/1/0/0",
+    "search": {
+      "gate": "GO",
+      "query_degraded_unrecovered": "4/0/0",
+      "accepted": 23,
+      "raw": 76,
+      "cache_hits": 0
+    },
+    "publication_contract": "GO / 0 violations",
+    "stop_condition": "GO / queue 87 -> 86 / safe_resolved 0 -> 1 / safe_loss []",
+    "residual_queue": "REPROCESS 59 -> 58, HOLD 28 -> 28, validation issue 0"
+  },
+  "interpretation": "원문 제목의 약먹마는 약먹는 천재마법사의 통용 약칭이고, 본문 하이라이트가 부족해는 작품 전개 감상이다. 이미지는 제목 근거가 아니며, search와 publication contract가 통과했다. 이 결과는 full375 approval이 아니라 residual queue 감소 근거다.",
+  "gate_state": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO",
+    "search_evidence": "GO",
+    "targeted_stop_condition": "GO_TARGETED",
+    "residual_queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "artifact_paths": {
+    "report": "docs/devs/loop_reports/LOOP_471_REPORT_20260705.md",
+    "state": "docs/devs/loop471_11666731_yakmeokma_safe_loss_runtime_20260705.json",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop471_11666731_yakmeokma_safe_loss_search_nonlight_result.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop471_11666731_yakmeokma_safe_loss_run_health.json",
+    "publication_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop471_11666731_yakmeokma_safe_loss_publication_contract.json",
+    "convergence_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop471_11666731_goal_convergence_stop_condition.json"
+  }
+}
