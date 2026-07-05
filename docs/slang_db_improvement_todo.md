@@ -1,5 +1,15 @@
 # Slang DB Improvement TODO
 
+## 2026-07-05 Loop458 11698890 댓천마 wrong-work slang 주의사항
+
+- [x] `댓천마 -> 댓글창의 천재 마법사`를 새 slang DB write-back이나 작품 전용 registry 추가로 처리하지 않았다.
+- [x] `--slang-db off` 조건으로 `11698890` 단건 runtime을 실행했다.
+- [x] `11698890`은 `댓천마`, `한별`, `데미갓`, `카디언 킴`, Novelpia official detail 근거로 `댓글창의 천재 마법사` safe-resolved publish가 됐다.
+- [x] public URL은 title-mismatch guard로 `null`이며, 공식 상세 URL `https://novelpia.com/novel/370230`은 근거로만 보존한다.
+- [x] 사용자 도메인 보정을 유지한다: `갤러리` 표면은 현실 커뮤니티로 자동 고정하지 않고 웹소설 내부 커뮤니티/갤러리 오마주형 제목 또는 약어일 수 있다.
+- [ ] 이 단건 closure를 alias/slang 전체 품질 승인, hard-hold 완화, full375 approval로 승격하지 않는다.
+- Gate: slang DB write-back 아님, targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL / 98 -> 97`, search recovery broader `P0 / ROW_LEVEL_GO_ONLY`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop455 11669933 회귀수선전 character bridge slang 주의사항
 
 - [x] `해방상제`/`중경계`/`서휼` bridge를 새 slang DB write-back이나 작품 전용 registry 추가로 처리하지 않았다.

@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-05 - Loop458 11698890 댓천마 wrong-work runtime closure
+
+- 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- Current HEAD `22672ebf`에서 residual `repair_after_wrong_work` P0 행 `11698890`을 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- 원문 `댓천마 왜 얼공 안하냐`는 `한별`, `데미갓`, `카디언 킴`, `더블오` 장면과 결속되어 `댓글창의 천재 마법사` 작품 토론으로 수렴했다.
+- Run `20260705_095144_254418`은 input/completed/flushed/pending/failed `1/1/1/0/0`, MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`, row search query/degraded/unrecovered `11/0/0`으로 완료됐다.
+- Result는 `official_title=댓글창의 천재 마법사`, public `official_url=null`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`, `publish_allowed=true`다.
+- 공식 상세 근거 `https://novelpia.com/novel/370230`은 확보했지만 public URL은 title-mismatch guard로 보류했다.
+- Health audit는 `GO / clean_completed_source`, search evidence는 `GO`, publication contract는 `GO / 0 violations`다.
+- Stop-condition audit는 queue `98 -> 97`, same packet `11698890`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- 사용자 도메인 보정을 유지했다. `갤러리` 표면은 현실 커뮤니티만이 아니라 웹소설 내부 갤러리/댓글식 커뮤니티 오마주형 제목, 약어, 세계관 장치일 수 있다.
+- Report는 `docs/devs/loop_reports/LOOP_458_REPORT_20260705.md`, state는 `docs/devs/loop458_11698890_daetcheonma_wrong_work_runtime_20260705.json`, Data Analytics summary는 `docs/devs/loop458_11698890_daetcheonma_wrong_work_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop457 11716448 아생갤 wrong-work runtime closure
 
 - 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.

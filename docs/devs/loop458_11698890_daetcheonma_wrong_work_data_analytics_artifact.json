@@ -1,0 +1,51 @@
+﻿{
+    "artifact_type":  "data_analytics_summary",
+    "loop":  "458",
+    "date":  "2026-07-05",
+    "language":  "ko",
+    "reader_summary":  "Loop458은 residual wrong-work P0 행 11698890을 search 포함 non-light 단건으로 실행해 댓천마를 댓글창의 천재 마법사의 작품 약칭으로 닫았다. 한별/데미갓/카디언 킴 장면과 Novelpia 공식 상세 URL이 수렴했고, wrong-work인 다크판타지 속 데미갓이 되었다로 끌리던 경로를 safe_resolved publish로 회복했다. 최종 공개 URL은 title-mismatch guard로 null이며 제목만 공개한다. 단건 closure이므로 full375 approval은 열지 않는다.",
+    "runtime":  {
+                    "run_id":  "20260705_095144_254418",
+                    "post_id":  11698890,
+                    "input_completed_flushed_pending_failed":  "1/1/1/0/0",
+                    "mcp_health":  "include_search=true / light_mode=false / ok_failure=1/0",
+                    "row_search":  "ok / query_degraded_unrecovered=11/0/0 / upstream_zero=3",
+                    "vlm_ocr":  "READY / image_fetch=1/1 / OCR=감자모리중",
+                    "slang_db":  "off"
+                },
+    "result":  {
+                   "official_title":  "댓글창의 천재 마법사",
+                   "public_official_url":  null,
+                   "official_detail_evidence_url":  "https://novelpia.com/novel/370230",
+                   "candidate_ledger_status":  "safe_resolved",
+                   "promotion_decision_status":  "publish",
+                   "discussion_type":  "character_talk",
+                   "primary_bridge":  "댓천마 title alias, 한별/데미갓/카디언 킴 character/setting anchor, Novelpia official detail evidence"
+               },
+    "audit_result":  {
+                         "flush_integrity":  "GO / clean_completed_source",
+                         "search_evidence":  "GO",
+                         "publication_contract":  "GO / 0 violations",
+                         "goal_convergence":  "GO / queue 98 -\u003e 97 / safe 0 -\u003e 1 / safe_loss []"
+                     },
+    "queue_delta":  {
+                        "previous_actionable":  98,
+                        "current_actionable":  97,
+                        "reprocess":  "70 -\u003e 69",
+                        "hold":  "28 -\u003e 28",
+                        "wrong_work_title_flip":  "4 -\u003e 3",
+                        "repair_after_wrong_work":  "4 -\u003e 3"
+                    },
+    "domain_policy_note":  "갤러리 표면은 실제 현실 갤러리만이 아니라 웹소설 내부 커뮤니티/갤러리 오마주형 제목, 약어, 세계관 장치일 수 있다. 이번 row는 갤러리 제목은 아니지만 같은 약칭/커뮤니티어 오분류 경계를 유지한다.",
+    "gate_boundary":  {
+                          "targeted_runtime":  "GO / 1 of 1",
+                          "publication_contract":  "GO",
+                          "search_evidence":  "GO",
+                          "queue_delta":  "GO_QUEUE_DELTA_NOT_APPROVAL",
+                          "broader_search_recovery":  "P0 / ROW_LEVEL_GO_ONLY",
+                          "full375_collateral":  "NOT_OPEN",
+                          "semantic_quality":  "REVIEW-LOCKED",
+                          "full_scan_approval":  false,
+                          "overall_goal":  "ACTIVE / NOT_COMPLETE"
+                      }
+}

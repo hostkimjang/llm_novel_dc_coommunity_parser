@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-05 Loop458 11698890 댓천마 wrong-work runtime 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_458_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop458_11698890_daetcheonma_wrong_work_runtime_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop458_11698890_daetcheonma_wrong_work_data_analytics_artifact.json`.
+  - [x] Health audit `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`를 기록했다.
+  - [x] Stop-condition audit artifact를 기록했다: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop458_11698890_goal_convergence_stop_condition.json`.
+  - [x] Residual queue delta `98 -> 97`, `wrong_work_title_flip 4 -> 3`, `repair_after_wrong_work 4 -> 3`을 기록했다.
+- 품질 게이트:
+  - [x] `댓천마`를 `댓글창의 천재 마법사` 작품 약칭으로 닫되, `한별`/`데미갓`/`카디언 킴` 장면과 공식 상세 근거를 함께 요구한다.
+  - [x] 공식 상세 URL `https://novelpia.com/novel/370230`은 근거로 보존하지만 public URL은 title-mismatch guard로 `null` 유지한다.
+  - [x] `갤러리` 표면은 현실 커뮤니티로 자동 고정하지 않고 웹소설 내부 커뮤니티/갤러리 오마주 가능성을 기록한다.
+  - [x] 단건 targeted runtime과 residual queue delta를 golden18/full375 approval로 승격하지 않는다.
+  - [x] search row-level `GO`와 broader search recovery `P0 / ROW_LEVEL_GO_ONLY`를 분리한다.
+  - [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 하지 않았음을 명시한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-05 Loop457 11716448 아생갤 wrong-work runtime 품질 게이트
 
 - 근거:

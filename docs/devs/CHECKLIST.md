@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-05 Loop458 11698890 댓천마 wrong-work runtime 체크
+
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `11698890` 단건을 current HEAD `22672ebf`에서 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- [x] `댓천마`를 `댓글창의 천재 마법사` 약칭으로 해석하고, `한별`/`데미갓`/`카디언 킴` 장면을 current-work 근거로 기록했다.
+- [x] Run `20260705_095144_254418`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`로 완료됐다.
+- [x] MCP health는 `include_search=true`, `light_mode=false`, ok/failure `1/0`이고 row search는 query/degraded/unrecovered `11/0/0`, upstream zero `3`이다.
+- [x] VLM/OCR은 `READY`, image fetch `1/1`이다. OCR `감자모리중`은 title 확정 근거로 쓰지 않았다.
+- [x] Public publish contract는 `official_title=댓글창의 천재 마법사`, public `official_url=null`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`다.
+- [x] 공식 상세 근거 `https://novelpia.com/novel/370230`은 확보했지만 URL은 title-mismatch guard로 보류된다고 기록했다.
+- [x] Health audit는 `GO / clean_completed_source`, search evidence는 `GO`, publication contract는 `GO / 0 violations`다.
+- [x] Stop-condition audit는 queue `98 -> 97`, same packet `11698890`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- [x] Residual queue는 Loop457 current queue 기준 `98 -> 97`, `wrong_work_title_flip 4 -> 3`, `repair_after_wrong_work 4 -> 3`, validation issue `0`으로 갱신했다.
+- [x] 사용자 도메인 보정을 유지했다: `갤러리` 표면은 현실 커뮤니티로 자동 고정하지 않고 웹소설 내부 갤러리/댓글식 커뮤니티 오마주형 제목/약어/세계관 장치일 수 있다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 residual queue delta를 full scan approval로 승격하지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, targeted stop-condition `GO_TARGETED / 98 -> 97 / safe 0 -> 1`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop457 11716448 아생갤 wrong-work runtime 체크
 
 - [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
