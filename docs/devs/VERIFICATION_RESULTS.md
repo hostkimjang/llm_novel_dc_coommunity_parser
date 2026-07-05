@@ -1,5 +1,40 @@
 # Verification Results
 
+## 2026-07-06 Loop477 full375 collateral 검증
+
+- 범위: golden expected-answer `18/18 PASS` 이후 full375 collateral을 1회 실행해 golden 소표본 과적합 여부를 확인했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_477_REPORT_20260706.md`
+  - merged result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop477_full375_current_head_merged375_search_nonlight_result.json`
+  - merged manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop477_full375_current_head_merged375_search_nonlight_result_manifest.json`
+  - integrity summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop477_full375_current_head_merged375_integrity_summary.json`
+  - runtime health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop477_full375_current_head_merged375_run_health.json`
+  - golden audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop477_full375_current_head_merged375_golden_audit.json`
+  - always-on gate `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop477_always_on_golden18_full375_gate.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop477_full375_current_head_merged375_collateral_compare.json`
+  - collateral triage `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop477_full375_current_head_merged375_collateral_triage.json`
+- Runtime:
+  - 1차 run `20260705_184740_284727`은 `233/375` checkpoint completed subset으로 복구했다.
+  - 나머지 run `20260705_232938_477739`은 `142/142/0/0` 완료했다.
+  - 병합 결과는 `375/375`, pending `0`, failed `0`, missing/extra/duplicate `[]`다.
+- Audit:
+  - runtime health `flush_integrity=GO / clean_completed_source`.
+  - publication contract convergence `GO / 0 violations`.
+  - search evidence `REVIEW / search_degraded_observed`.
+  - golden18 `GO / 18 passed / 0 failed`.
+  - full375 collateral `NO-GO / changed 197 / regression candidates 139`.
+  - always-on gate `NO-GO / collateral:collateral_regression_count_nonzero`.
+- Triage:
+  - `safe_loss_resolved_to_null 93`
+  - `unsafe_promotion_from_hold 24`
+  - `wrong_work_title_flip 21`
+  - `new_resolution_promotion 1`
+  - priority `P0 138 / P1 1`
+- Boundary:
+  - 이 결과는 full375 runtime 완료지만 semantic approval이 아니다.
+  - Golden18 PASS는 smoke gate이며 full375 collateral GO를 대체하지 않는다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-05 Loop475 11671517 기계공주 title-variant 검증
 
 - 범위: residual `repair_safe_loss`의 `11671517` 단건을 current HEAD `1a7f333b`에서 search 포함 non-light 조건으로 실행하고, publication contract와 stop-condition을 감사했다.

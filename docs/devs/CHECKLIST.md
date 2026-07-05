@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-06 Loop477 full375 collateral 체크
+
+- [x] Golden expected-answer `18/18 PASS` 이후 residual 단건 반복 전에 full375 collateral을 실행했다.
+- [x] 1차 run `20260705_184740_284727`의 중단 상태를 `233/375` checkpoint completed subset으로 안전 복구했다.
+- [x] 나머지 `142`건을 run `20260705_232938_477739`로 완료했다.
+- [x] 병합 산출물은 panel/result/checkpoint `375/375/375`, missing/extra/duplicate `[]`다.
+- [x] Runtime health는 `GO / clean_completed_source`다.
+- [x] Publication contract convergence는 `GO / 0 violations`다.
+- [x] Golden18 gate는 `GO / 18 passed / 0 failed`다.
+- [x] Full375 collateral을 golden과 동급 상시 gate로 적용했다.
+- [x] Always-on gate가 `collateral:collateral_regression_count_nonzero`로 `NO-GO`임을 확인했다.
+- [ ] Search evidence는 `REVIEW / search_degraded_observed`다. Search recovery를 닫지 않는다.
+- [ ] Full375 collateral은 `NO-GO / changed 197 / regression candidates 139`다.
+- [ ] Bounded/full375 동결 해제와 completion gate GO 정의는 보류한다.
+- [ ] 다음 작업은 residual 단건 비우기가 아니라 P0 bucket batch triage다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: runtime integrity `GO`, publication contract `GO`, golden18 `GO`, full375 collateral `NO-GO`, always-on gate `NO-GO`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop475 11671517 기계공주 title-variant safe-loss 체크
 
 - [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

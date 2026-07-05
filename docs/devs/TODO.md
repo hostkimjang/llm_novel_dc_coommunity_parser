@@ -1,5 +1,21 @@
 # Developer TODO Index
 
+## 2026-07-06 Loop477 TODO
+
+- 상태 업데이트: full375 병합 runtime은 `375/375` 완료됐지만 full375 collateral은 `NO-GO / changed 197 / regression candidates 139`다. Goal은 완료가 아니다.
+- [x] Golden expected-answer `18/18 PASS` 이후 full375 collateral을 실행했다.
+- [x] 중단된 1차 full375 `233/375`를 checkpoint completed subset으로 복구했다.
+- [x] 나머지 `142`건을 별도 run으로 완료하고 merged375 산출물을 만들었다.
+- [x] Runtime integrity는 `GO / clean_completed_source`, publication contract는 `GO / 0 violations`다.
+- [x] Golden18은 `GO / 18 passed / 0 failed`다.
+- [x] Full375 collateral을 상시 gate로 적용해 `NO-GO`를 확인했다.
+- [ ] Search evidence는 `REVIEW / search_degraded_observed`다. Search recovery를 닫지 않는다.
+- [ ] `safe_loss_resolved_to_null 93`, `unsafe_promotion_from_hold 24`, `wrong_work_title_flip 21`, `new_resolution_promotion 1`을 bucket batch로 triage한다.
+- [ ] P0 `138`건은 source-native 또는 blind judge 검증 없이 해소 처리하지 않는다.
+- [ ] Residual queue를 단건으로 비우는 방식으로 완료 기준을 대체하지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop475 TODO
 
 - 상태 업데이트: Loop475는 `11671517` safe-loss를 `헌터갤러리의 국가권력급 기계공주` / `https://novelpia.com/novel/390228`로 닫았다. Residual queue는 `83 -> 82`, `repair_safe_loss 55 -> 54`이지만 goal은 완료가 아니다.

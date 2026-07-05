@@ -1,5 +1,21 @@
 # Development History
 
+## 2026-07-06 - Loop477 full375 collateral replay after golden18 PASS
+
+- Golden expected-answer는 full375 병합 결과에서 `18/18 PASS`였지만, 이것만으로 승인하지 않고 full375 collateral을 실행했다.
+- 1차 run `20260705_184740_284727`은 `233/375`에서 중단됐고 checkpoint completed subset을 안전 복구했다.
+- 나머지 `142`건은 run `20260705_232938_477739`로 `142/142/0/0` 완료했다.
+- 병합 결과 `loop477_full375_current_head_merged375_search_nonlight_result.json`은 panel/result/checkpoint `375/375/375`, missing/extra/duplicate `[]`다.
+- Runtime health는 `GO / clean_completed_source`, publication contract convergence는 `GO / 0 violations`, search evidence는 `REVIEW / search_degraded_observed`다.
+- Golden gate는 `GO / 18 passed / 0 failed`다.
+- Full375 collateral은 shared `375`, changed `197`, regression candidates `139`로 `NO-GO`다.
+- Always-on gate는 blocker `collateral:collateral_regression_count_nonzero`로 `NO-GO`다.
+- Collateral triage는 `safe_loss_resolved_to_null 93`, `unsafe_promotion_from_hold 24`, `wrong_work_title_flip 21`, `new_resolution_promotion 1`, priority `P0 138 / P1 1`이다.
+- 결론: full375가 조용하지 않으므로 golden18은 smoke gate로는 유효하지만 승인 게이트로 충분하지 않다. Bounded/full375 동결 해제와 completion gate GO 정의는 보류한다.
+- 다음은 residual 단건 비우기가 아니라 full375 collateral P0 bucket batch triage와 source-native 또는 blind judge 검증이다.
+- Report는 `docs/devs/loop_reports/LOOP_477_REPORT_20260706.md`다.
+- Gate는 runtime integrity `GO`, golden18 `GO`, full375 collateral `NO-GO`, always-on gate `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop475 11671517 기계공주 title-variant safe-loss runtime closure
 
 - 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
