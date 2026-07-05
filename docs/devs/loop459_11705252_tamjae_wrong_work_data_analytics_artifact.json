@@ -1,0 +1,51 @@
+{
+  "artifact_type": "data_analytics_summary",
+  "loop": "459",
+  "date": "2026-07-05",
+  "language": "ko",
+  "reader_summary": "Loop459는 residual wrong-work P0 행 11705252를 search 포함 non-light 단건으로 실행해 탐재를 탐식의 재림의 작품 약칭으로 닫았다. 설지후/설진희/휴게소 씬 OCR과 문피아/리디 공식 상세 근거가 수렴했고, 제목 일반어 순수한에 끌려 순수한 분노의 결정으로 갔던 wrong-work 경로를 safe_resolved publish로 회복했다. 단건 closure이므로 full375 approval은 열지 않는다.",
+  "runtime": {
+    "run_id": "20260705_101042_335540",
+    "post_id": 11705252,
+    "input_completed_flushed_pending_failed": "1/1/1/0/0",
+    "mcp_health": "include_search=true / light_mode=false / ok_failure=1/0",
+    "row_search": "ok / query_degraded_unrecovered=8/0/0 / upstream_zero=2 / fallback_recovered=6",
+    "vlm_ocr": "READY / image_fetch=2/3 / OCR=탐식 여동생, 설지후, 설진희, 휴게소 씬",
+    "slang_db": "off"
+  },
+  "result": {
+    "official_title": "탐식의 재림",
+    "public_official_url": "https://m.munpia.com/novel/detail/340930",
+    "official_detail_evidence_url": "https://m.munpia.com/novel/detail/340930",
+    "candidate_ledger_status": "safe_resolved",
+    "promotion_decision_status": "publish",
+    "discussion_type": "character_talk",
+    "primary_bridge": "탐재 title alias, 탐식 여동생 OCR surface, 설지후/설진희 character anchors, 휴게소 scene, Munpia/Ridi official detail evidence"
+  },
+  "audit_result": {
+    "flush_integrity": "GO / clean_completed_source",
+    "search_evidence": "GO",
+    "publication_contract": "GO / 0 violations",
+    "goal_convergence": "GO / queue 97 -> 96 / safe 0 -> 1 / safe_loss []"
+  },
+  "queue_delta": {
+    "previous_actionable": 97,
+    "current_actionable": 96,
+    "reprocess": "69 -> 68",
+    "hold": "28 -> 28",
+    "wrong_work_title_flip": "3 -> 2",
+    "repair_after_wrong_work": "3 -> 2"
+  },
+  "domain_policy_note": "갤러리 표면은 실제 현실 갤러리만이 아니라 웹소설 내부 커뮤니티/갤러리 오마주형 제목, 약어, 세계관 장치일 수 있다. 작품 안에서 갤러리/댓글식 커뮤니티를 서사 장치로 엮는 최신 웹소설 문맥을 지침에 유지한다.",
+  "gate_boundary": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO",
+    "search_evidence": "GO",
+    "queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL",
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

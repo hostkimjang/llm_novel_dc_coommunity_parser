@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-05 Loop459 11705252 탐재 wrong-work runtime 체크
+
+- [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `11705252` 단건을 current HEAD `fbf8ee59`에서 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- [x] `탐재`를 `탐식의 재림` 약칭으로 해석하고, OCR `탐식 여동생` 및 `설지후`/`설진희`/`휴게소 씬`을 current-work 근거로 기록했다.
+- [x] Run `20260705_101042_335540`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`로 완료됐다.
+- [x] MCP health는 `include_search=true`, `light_mode=false`, ok/failure `1/0`이고 row search는 query/degraded/unrecovered `8/0/0`, upstream zero `2`이다.
+- [x] VLM/OCR은 `READY`, image fetch `2/3`이다. OCR은 title 확정의 단독 근거가 아니라 캐릭터/장면 bridge 보조 근거로 사용했다.
+- [x] Public publish contract는 `official_title=탐식의 재림`, `official_url=https://m.munpia.com/novel/detail/340930`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`다.
+- [x] 이전 wrong-work `순수한 분노의 결정`은 제목 일반어 `순수한` 오귀속으로 기록했다.
+- [x] Health audit는 `GO / clean_completed_source`, search evidence는 `GO`, publication contract는 `GO / 0 violations`다.
+- [x] Stop-condition audit는 queue `97 -> 96`, same packet `11705252`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- [x] Residual queue는 Loop458 current queue 기준 `97 -> 96`, `wrong_work_title_flip 3 -> 2`, `repair_after_wrong_work 3 -> 2`, validation issue `0`으로 갱신했다.
+- [x] 사용자 도메인 보정을 유지했다: `아생갤` 같은 `갤러리` 표면은 현실 커뮤니티로 자동 고정하지 않고 웹소설 내부 갤러리/댓글식 커뮤니티 오마주형 제목/약어/세계관 장치일 수 있다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 residual queue delta를 full scan approval로 승격하지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, targeted stop-condition `GO_TARGETED / 97 -> 96 / safe 0 -> 1`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop458 11698890 댓천마 wrong-work runtime 체크
 
 - [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

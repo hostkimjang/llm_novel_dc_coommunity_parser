@@ -1,5 +1,38 @@
 # Verification Results
 
+## 2026-07-05 Loop459 11705252 탐재 wrong-work runtime 검증
+
+- 범위: residual `repair_after_wrong_work`의 `11705252` 단건을 current HEAD `fbf8ee59`에서 search 포함 non-light 조건으로 실행하고, publication contract와 goal convergence stop-condition을 감사했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_459_REPORT_20260705.md`
+  - state `docs\devs\loop459_11705252_tamjae_wrong_work_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop459_11705252_tamjae_wrong_work_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop459_11705252_tamjae_wrong_work_search_nonlight_result.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop459_11705252_tamjae_wrong_work_run_health.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop459_11705252_tamjae_wrong_work_publication_contract.json`
+  - residual queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop459_after_11705252_tamjae_wrong_work_residual_action_queue.json`
+  - convergence audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop459_11705252_goal_convergence_stop_condition.json`
+- Runtime:
+  - run `20260705_101042_335540`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - Search query/degraded/unrecovered `8/0/0`, upstream zero `2`, fallback recovered `6`, status `ok`
+  - VLM/OCR `READY`, image fetch `2/3`, OCR `탐식 여동생`, `설지후`, `설진희`, `휴게소`
+- Result:
+  - `official_title=탐식의 재림`, public `official_url=https://m.munpia.com/novel/detail/340930`
+  - `candidate_ledger_status=safe_resolved`, `safe_resolved=true`, `promotion_decision.status=publish`, `publish_allowed=true`
+  - `탐재`, `탐식 여동생`, `설지후`, `설진희`, `휴게소 씬`이 same-work bridge로 수렴했다.
+- Audit:
+  - `tools/audit_expert_run_health.py` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=GO`, `publication_contract_convergence=GO`.
+  - `tools/audit_publication_contract_convergence.py` -> `GO / row_count 1 / violation_row_count 0`.
+  - `tools/evaluate_goal_convergence.py` -> queue `97 -> 96`, same packet `true`, safe_resolved `0 -> 1`, safe_loss `[]`, gate `GO`.
+  - residual queue split -> Loop458 current queue `97 -> 96`, `REPROCESS 69 -> 68`, `HOLD 28 -> 28`, validation issue `0`.
+- Boundary:
+  - 이 단건 closure는 full375 approval이 아니다.
+  - `갤러리` 표면은 현실 커뮤니티로 자동 고정하지 않고 웹소설 내부 커뮤니티/갤러리 오마주형 제목 또는 약어일 수 있다고 유지한다.
+  - R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+  - Full375 collateral은 `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop458 11698890 댓천마 wrong-work runtime 검증
 
 - 범위: residual `repair_after_wrong_work`의 `11698890` 단건을 current HEAD `22672ebf`에서 search 포함 non-light 조건으로 실행하고, publication contract와 goal convergence stop-condition을 감사했다.
