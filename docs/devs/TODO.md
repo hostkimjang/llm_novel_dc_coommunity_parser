@@ -1,5 +1,18 @@
 # Developer TODO Index
 
+## 2026-07-06 Loop480 TODO
+
+- 상태 업데이트: `unsafe_promotion_from_hold 24`건은 source-native/blind verdict `24/24`로 전수 판정했다. 결과는 `ACCEPT 13 / HOLD 10 / REPROCESS 1`, validation issue `0`, bucket action queue `24 -> 11`이다. Combined P0는 reviewed `45/138`, unreviewed `93`, `ACCEPT 25 / HOLD 16 / REPROCESS 4`, residual action queue `113`이다. Goal은 완료가 아니다.
+- [x] `Loop480 full375 unsafe_promotion_from_hold` batch JSON/JSONL/MD를 생성했다.
+- [x] `docs/devs/loop480_unsafe_promotion_from_hold_source_native_verdicts.json`에 24건 verdict를 기록했다.
+- [x] Bucket summary와 Loop479+Loop480 combined summary를 생성했다.
+- [x] `ACCEPT 13`은 gate wiring 후 regression-count 제외 후보로만 기록했다.
+- [ ] Combined `ACCEPT 25`를 실제 collateral gate에 wiring하기 전까지 regression count에서 제거하지 않는다.
+- [ ] `HOLD 16`과 `REPROCESS 4`를 repair/native review queue로 유지한다.
+- [ ] 다음 P0 bucket은 `safe_loss_resolved_to_null 93`이다.
+- [ ] 완료 기준은 여전히 `full375 collateral GO + full_scan 경로 정의`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop479 TODO
 
 - 상태 업데이트: `wrong_work_title_flip 21`건은 source-native/blind verdict `21/21`로 전수 판정했다. 결과는 `ACCEPT 12 / HOLD 6 / REPROCESS 3`, validation issue `0`, action queue `21 -> 9`다. Goal은 완료가 아니다.

@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260706-480 - unsafe_promotion_from_hold source-native verdict batch
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Bucket verdict | 완료 | `unsafe_promotion_from_hold 24`, reviewed `24/24` | safe-loss bucket으로 이동 |
+| Label 분포 | REVIEW | `ACCEPT 13 / HOLD 10 / REPROCESS 1` | HOLD/REPROCESS 해소 전 approval 금지 |
+| Bucket queue | PARTIAL | original `24`, exclusion candidates `13`, residual `11` | exclusion은 collateral gate wiring 필요 |
+| Combined P0 | PARTIAL | reviewed `45/138`, unreviewed `93`, exclusion candidates `25`, residual `113` | safe_loss `93` 전수 판정 |
+| Intent guard | 필요 | `11690855` 게임 논의 -> 팬픽 후보 오승격 | intent permit guard/repair |
+| 검증 | PASS | py_compile PASS, collateral review unittest `19` PASS, JSON parse PASS | gate wiring 후 always-on gate 재검증 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: source-native review `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-479 - wrong_work_title_flip source-native verdict batch
 
 | 항목 | 상태 | 근거 | 다음 |

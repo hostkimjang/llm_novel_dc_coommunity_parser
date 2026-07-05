@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-06 - Loop480 unsafe_promotion_from_hold source-native verdict
+
+- Loop478 P0 `138`건 중 `unsafe_promotion_from_hold 24`건을 별도 batch로 고정하고 source-native/blind verdict를 전수 작성했다.
+- 결과는 reviewed `24/24`, validation issue `0`, label `ACCEPT 13`, `HOLD 10`, `REPROCESS 1`이다.
+- Bucket action queue는 원 P0 `24`에서 gate wiring 뒤 제외 후보 `13`, 수리 큐 `1`, 정책/native 추가 검토 큐 `10`, 잔여 `11`로 정리됐다.
+- Loop479+Loop480 combined summary는 P0 `138`, reviewed `45`, unreviewed `93`, label `ACCEPT 25`, `HOLD 16`, `REPROCESS 4`, residual action queue `113`이다.
+- Verdict 산출물은 `docs/devs/loop480_unsafe_promotion_from_hold_source_native_verdicts.json`이다.
+- Report는 `docs/devs/loop_reports/LOOP_480_REPORT_20260706.md`, state는 `docs/devs/loop480_unsafe_promotion_from_hold_source_native_20260706.json`이다.
+- 검증은 `py_compile` PASS, collateral review 관련 unittest `19` tests PASS, JSON parse PASS, `reason_lines`/`collateral183` no-match다.
+- Gate는 source-native review `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop479 wrong_work_title_flip source-native verdict
 
 - Loop478 P0 `138`건 중 `wrong_work_title_flip 21`건을 별도 batch로 고정하고 source-native/blind verdict를 전수 작성했다.

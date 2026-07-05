@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-06 Loop480 unsafe_promotion_from_hold source-native 체크
+
+- [x] Loop478 P0 batch 중 `unsafe_promotion_from_hold 24`건을 별도 `Loop480 full375 unsafe_promotion_from_hold` batch로 고정했다.
+- [x] Source-native/blind verdict를 `24/24` 작성했다.
+- [x] Validation issue는 `0`이다.
+- [x] 라벨은 `ACCEPT 13`, `HOLD 10`, `REPROCESS 1`이다.
+- [x] Bucket action queue는 원 P0 `24`에서 gate wiring 뒤 제외 후보 `13`, 수리 큐 `1`, 정책/native 추가 검토 큐 `10`, 잔여 `11`로 정리했다.
+- [x] Loop479+Loop480 combined summary는 P0 `138`, reviewed `45`, unreviewed `93`, `ACCEPT 25 / HOLD 16 / REPROCESS 4`, residual action queue `113`이다.
+- [x] `11690855`는 게임 일반 토론을 림버스 팬픽 소설로 승격한 REPROCESS로 남겼다.
+- [x] `아생갤` 2건은 작품 약칭/작중 갤러리 오마주 표면 가능성을 반영해 ACCEPT 후보로 판정했다.
+- [x] `py_compile`, collateral review unittest `19`, JSON parse를 통과했다.
+- [ ] Combined `ACCEPT 25`는 collateral gate wiring 전까지 regression count에서 제거하지 않는다.
+- [ ] Remaining P0 bucket은 `safe_loss_resolved_to_null 93`이다.
+- [ ] Full375 collateral approval은 아직 `NO-GO`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: source-native review `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-06 Loop479 wrong_work_title_flip source-native 체크
 
 - [x] Loop478 P0 batch 중 `wrong_work_title_flip 21`건을 별도 `Loop479 full375 wrong_work_title_flip` batch로 고정했다.

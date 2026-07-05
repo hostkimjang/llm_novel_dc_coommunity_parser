@@ -1,5 +1,35 @@
 # Verification Results
 
+## 2026-07-06 Loop480 unsafe_promotion_from_hold source-native 검증
+
+- 범위: Loop478 P0 배치 중 `unsafe_promotion_from_hold 24`건을 별도 batch로 만들고 source-native/blind verdict를 전수 작성했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_480_REPORT_20260706.md`
+  - state `docs\devs\loop480_unsafe_promotion_from_hold_source_native_20260706.json`
+  - verdicts `docs\devs\loop480_unsafe_promotion_from_hold_source_native_verdicts.json`
+  - batch JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop480_unsafe_promotion_from_hold_review_batch.json`
+  - summary JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop480_unsafe_promotion_from_hold_source_native_review.json`
+  - combined summary JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop480_combined_full375_p0_source_native_review.json`
+- Result:
+  - bucket gate `REVIEW-LOCKED`
+  - bucket reviewed rows `24/24`
+  - bucket validation issue `0`
+  - bucket label `ACCEPT 13`, `HOLD 10`, `REPROCESS 1`
+  - bucket queue transition: original P0 `24`, exclusion candidates after gate wiring `13`, repair `1`, policy/native review `10`, residual action queue `11`
+  - combined P0: original `138`, reviewed `45`, unreviewed `93`, `ACCEPT 25`, `HOLD 16`, `REPROCESS 4`, residual action queue `113`
+- Validation:
+  - `.\venv\Scripts\python.exe tools\build_collateral_triage_review_batch.py --bucket unsafe_promotion_from_hold --scope-label "Loop480 full375 unsafe_promotion_from_hold" ...` PASS, selected review rows `24`
+  - `.\venv\Scripts\python.exe tools\summarize_collateral_review_verdicts.py --batch ... --verdicts docs\devs\loop480_unsafe_promotion_from_hold_source_native_verdicts.json ...` PASS, validation issue `0`
+  - combined summary command PASS, reviewed rows `45`, unreviewed `93`
+  - `.\venv\Scripts\python.exe -m py_compile tools\build_collateral_triage_review_batch.py tools\summarize_collateral_review_verdicts.py tests\test_build_collateral_triage_review_batch.py tests\test_summarize_collateral_review_verdicts.py` PASS
+  - `.\venv\Scripts\python.exe -m unittest tests.test_build_collateral_triage_review_batch tests.test_summarize_collateral_review_verdicts tests.test_triage_collateral_regressions tests.test_always_on_regression_gates -v` PASS, `19` tests
+  - Loop480 verdict/batch/summary/combined JSON parse PASS
+  - Loop480 batch/verdict artifacts contain no `reason_lines` and no fixed `collateral183` wording
+- Boundary:
+  - `ACCEPT 25`는 gate wiring 뒤 regression-count 제외 후보일 뿐이다.
+  - Remaining P0 `safe_loss_resolved_to_null 93`은 아직 unreviewed다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop479 wrong_work_title_flip source-native 검증
 
 - 범위: Loop478 P0 배치 중 `wrong_work_title_flip 21`건을 별도 batch로 만들고 source-native/blind verdict를 전수 작성했다.

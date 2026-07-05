@@ -1,0 +1,429 @@
+{
+  "review_id": "loop480_unsafe_promotion_from_hold_source_native_verdicts",
+  "loop": 480,
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json",
+  "scope": "Loop480 full375 unsafe_promotion_from_hold 24건 source-native/blind 판정",
+  "review_policy": "source-native review only; native web/search is not refreshed; no full collateral approval; ACCEPT is regression-count exclusion candidate only after gate wiring",
+  "rows": [
+    {
+      "post_id": 11658621,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "weak_title_like_surface_needs_native_web_confirmation",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_web_review_required",
+        "promotion_guard_review"
+      ],
+      "rationale_ko": "원문은 실제 이름을 못 쓰는 문제와 편결 도전을 말하지만, 후보 title `무능한게 아니라 전설이였다고?`를 직접 작품명으로 지지하는 표면은 약하다. `진짜였다고` 유사 표면만으로 hold에서 safe publish로 올리기에는 부족하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11658621",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11658621"
+      ]
+    },
+    {
+      "post_id": 11658637,
+      "selected_option_id": "C1",
+      "selected_title": "재벌집 막내아들",
+      "selected_url": "https://series.naver.com/novel/detail.series?productNo=4340987",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "direct_abbreviation_and_character_bridge_support_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "`재막아`는 `재벌집 막내아들` 약칭이고, 영기/진양철/윤기 인물 맥락도 같은 작품을 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11658637",
+        "https://series.naver.com/novel/detail.series?productNo=4340987"
+      ]
+    },
+    {
+      "post_id": 11660238,
+      "selected_option_id": "C1",
+      "selected_title": "무림마조",
+      "selected_url": "https://novelpia.com/novel/347096",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "abbreviation_and_character_context_support_promotion",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "`림조`와 한서진/청월/타락 루트 맥락은 후보 C1의 작품 소비 맥락으로 읽힌다. 후보가 단일이고 경쟁 작품 표면은 보이지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11660238",
+        "https://novelpia.com/novel/347096"
+      ]
+    },
+    {
+      "post_id": 11666705,
+      "selected_option_id": "C1",
+      "selected_title": "시든 꽃에 눈물을",
+      "selected_url": "https://namu.wiki/w/%EC%8B%9C%EB%93%A0%20%EA%BD%83%EC%97%90%20%EB%88%88%EB%AC%BC%EC%9D%84",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "comment_answer_directly_identifies_work_but_official_url_backfill_needed",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "official_url_backfill_required"
+      ],
+      "rationale_ko": "원문은 이미지 기반 질문이지만 댓글이 `네웹 시든꽃에 눈물을 여주`라고 직접 답한다. 다만 후보 URL이 공식 상세가 아니라 wiki라 official URL 보강은 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11666705",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11666705"
+      ]
+    },
+    {
+      "post_id": 11668324,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "multi_work_surface_single_candidate_partial_only",
+      "evidence_grade": "Medium",
+      "action": [
+        "multi_work_policy_review",
+        "preserve_secondary_candidates"
+      ],
+      "rationale_ko": "원문은 `니생들`과 `김괴라리`를 함께 언급한다. C1은 `니들 생각 다 들린다`로 보이지만, 단일 final title로 올리면 다른 작품 언급이 사라지므로 multi-work 정책 검토가 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11668324",
+        "https://novelpia.com/novel/384318"
+      ]
+    },
+    {
+      "post_id": 11669928,
+      "selected_option_id": "C1",
+      "selected_title": "탑의 성좌들이 날 애호한다",
+      "selected_url": "https://novelpia.com/novel/377032",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "direct_abbreviation_and_platform_context_support_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "`탑성좌애호`와 노벨피아/연중 반응이 C1 title을 직접 지지한다. 경쟁 작품 표면은 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11669928",
+        "https://novelpia.com/novel/377032"
+      ]
+    },
+    {
+      "post_id": 11671501,
+      "selected_option_id": "C1",
+      "selected_title": "판초우의의 마법사",
+      "selected_url": "https://novel.munpia.com/530500",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "direct_abbreviation_and_plot_context_support_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "`판초법사`는 C1의 안정 약칭으로 보이며, 게이트/국군/괴물 최초 발견 시점 같은 본문과 댓글도 같은 작품 전개 맥락이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11671501",
+        "https://novel.munpia.com/530500"
+      ]
+    },
+    {
+      "post_id": 11671538,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "character_or_deity_bridge_not_enough_without_verified_work_link",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_web_review_required",
+        "character_bridge_review_required"
+      ],
+      "rationale_ko": "원문은 `여우비의 신`과 `마커스`를 말하지만, 후보 C1 `망한 교단의 성기사`와의 직접 title/alias relation이 packet text만으로는 충분히 드러나지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11671538",
+        "https://series.naver.com/novel/detail.series?productNo=12696086"
+      ]
+    },
+    {
+      "post_id": 11674704,
+      "selected_option_id": "C1",
+      "selected_title": "흑막 가문에게 입양당했다",
+      "selected_url": "https://novelpia.com/novel/348778",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "comment_answer_directly_identifies_work",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "본문은 이미지/장면 반응이지만 댓글에서 `흑막입양`을 직접 답하고, 이는 C1 title의 안정 약칭으로 보인다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11674704",
+        "https://novelpia.com/novel/348778"
+      ]
+    },
+    {
+      "post_id": 11676317,
+      "selected_option_id": "C1",
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "selected_url": "https://novel.munpia.com/477135",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "direct_abbreviation_supports_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "`마도서줍`은 C1 title의 직접 약칭이고, 완결에 닿지 않는 연재 감상도 작품 소비 맥락이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11676317",
+        "https://novel.munpia.com/477135"
+      ]
+    },
+    {
+      "post_id": 11681180,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "abusive_or_paraphrase_alias_needs_confirmation",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_web_review_required",
+        "alias_relation_review_required"
+      ],
+      "rationale_ko": "`아카엠창`과 감정선 언급은 작품 감상으로 보이지만, C1 `아카데미 패드립 면역`과의 alias relation은 packet text만으로 충분히 확인되지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11681180",
+        "https://novelpia.com/novel/383527"
+      ]
+    },
+    {
+      "post_id": 11682768,
+      "selected_option_id": "C1",
+      "selected_title": "마법소녀ㄴ은 은퇴하고 싶다",
+      "selected_url": "https://novelpia.com/novel/347507",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "direct_title_surface_and_character_context_support_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 제목의 `마법소녀ㄴ`은 C1 title surface와 직접 맞고, 세진/세린/앨리스 댓글 맥락도 같은 작품 내부 설정으로 보인다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11682768",
+        "https://novelpia.com/novel/347507"
+      ]
+    },
+    {
+      "post_id": 11684370,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "character_ending_context_needs_verified_work_link",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_web_review_required",
+        "character_bridge_review_required"
+      ],
+      "rationale_ko": "단아/사에/유지아/엔딩 맥락은 작품 내부 캐릭터 논의처럼 보이지만, C1 title과의 verified character-work link가 packet text 안에서 직접 확인되지는 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11684370",
+        "https://ridibooks.com/books/3049078605"
+      ]
+    },
+    {
+      "post_id": 11685985,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "generic_animal_image_context_not_enough_for_title_promotion",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "원문과 댓글은 고양이/홍어 수인 이미지 반응이다. C1 `고양이를 주웠다`는 generic title collision 위험이 있어 이미지와 공식 작품 맥락 확인 전에는 publish하면 안 된다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11685985",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11685985"
+      ]
+    },
+    {
+      "post_id": 11687618,
+      "selected_option_id": "C1",
+      "selected_title": "아카데미 생존 갤러리",
+      "selected_url": "https://novelpia.com/novel/380218",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "gallery_homage_abbreviation_and_character_context_support_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "`아생갤`은 `아카데미 생존 갤러리` 약칭일 수 있고, 라나/엘리/클레어/아레스 맥락이 작품 내부 논의를 지지한다. `갤러리` 표면은 현실 DC 갤러리명으로 단정하지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11687618",
+        "https://novelpia.com/novel/380218"
+      ]
+    },
+    {
+      "post_id": 11687627,
+      "selected_option_id": "C1",
+      "selected_title": "변방계에서 회귀자로 살아남기",
+      "selected_url": "https://novelpia.com/novel/382324",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "comment_answer_directly_resolves_abbreviation",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문이 `렛따싶` full name을 묻고 댓글이 `변방계에서 회귀자로 살아남기`를 직접 답한다. 후보 C1 promotion은 source-native로 타당하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11687627",
+        "https://novelpia.com/novel/382324"
+      ]
+    },
+    {
+      "post_id": 11687635,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "recommendation_or_image_request_no_textual_work_anchor",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "recommendation_context_review_required"
+      ],
+      "rationale_ko": "원문은 `이런 히로인 나오는 소설 추천` 요청이고 텍스트에는 C1을 직접 지지하는 작품명/별칭/캐릭터 bridge가 없다. 이미지 확인 없이 단일 title을 publish하면 추천/이미지 context를 오해할 수 있다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11687635",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11687635"
+      ]
+    },
+    {
+      "post_id": 11690855,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "source_discusses_game_not_fanfic_novel_candidate",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_after_unsafe_promotion",
+        "intent_permit_guard_required"
+      ],
+      "rationale_ko": "원문은 한국 씹덕게임 유저수와 `림버스` 게임 체급을 말한다. C1 `[림버스 컴퍼니] 열세 번째 수감자가 되었다.`는 팬픽/패러디 소설 후보로 보이며, 게임 일반 토론을 해당 소설 작품 논의로 승격한 것은 잘못이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11690855",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11690855"
+      ]
+    },
+    {
+      "post_id": 11694067,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "alias_or_character_bridge_needs_confirmation",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_web_review_required",
+        "alias_relation_review_required"
+      ],
+      "rationale_ko": "`김괴라리`, 그롱, 달콤살벌한 양다리 썸 에피 맥락은 작품 내부 논의처럼 보이지만, C1 `괴담에 휘말렸다`와의 직접 title/alias relation은 packet text만으로 충분하지 않다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11694067",
+        "https://novelpia.com/novel/363195"
+      ]
+    },
+    {
+      "post_id": 11697231,
+      "selected_option_id": "C1",
+      "selected_title": "아카데미 생존 갤러리",
+      "selected_url": "https://novelpia.com/novel/380218",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "gallery_homage_abbreviation_and_plot_context_support_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "`아생갤`과 현실쪽 위기/괴담/판타지 기대 맥락은 `아카데미 생존 갤러리` 작품 논의로 읽힌다. `갤러리`를 현실 커뮤니티명으로만 해석하지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11697231",
+        "https://novelpia.com/novel/380218"
+      ]
+    },
+    {
+      "post_id": 11697234,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "author_new_work_context_title_not_directly_named",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_web_review_required",
+        "author_new_work_context_review_required"
+      ],
+      "rationale_ko": "원문은 목마 작가의 신작 성과와 문피아/전작 비교를 말하지만, C1 `검귀가 환생함` title surface가 packet text에 직접 나오지는 않는다. 작가 신작 문맥만으로 title을 확정하면 위험하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11697234",
+        "https://novel.munpia.com/524526"
+      ]
+    },
+    {
+      "post_id": 11703645,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "descriptive_or_generic_title_surface_needs_confirmation",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_web_review_required",
+        "title_surface_specificity_review_required"
+      ],
+      "rationale_ko": "원문은 비니빅의 `남매근친피폐물`이라고 설명하지만, 후보 C1 `남매근친물`이 실제 작품 title인지 일반 묘사인지 packet text만으로는 불명확하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11703645",
+        "https://novelpia.com/novel/399584"
+      ]
+    },
+    {
+      "post_id": 11706852,
+      "selected_option_id": "C1",
+      "selected_title": "판초우의의 마법사",
+      "selected_url": "https://novel.munpia.com/530500",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "direct_abbreviation_and_recommendation_context_support_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "`판초법사`는 C1의 안정 약칭이고, 댓글도 아포물/문피아/즉사무림과 함께 작품 추천 신뢰를 논한다. promotion은 source-native로 타당하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11706852",
+        "https://novel.munpia.com/530500"
+      ]
+    },
+    {
+      "post_id": 11710037,
+      "selected_option_id": "C1",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_url": "https://novelpia.com/novel/102155",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "direct_abbreviation_and_trope_context_support_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "`담텔기`는 C1의 약칭이고, 상식의 엇갈림/괴담/세계관 서술트릭 감상은 같은 작품 소비 맥락이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11710037",
+        "https://novelpia.com/novel/102155"
+      ]
+    }
+  ]
+}

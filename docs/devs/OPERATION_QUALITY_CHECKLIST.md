@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop480 unsafe_promotion_from_hold source-native 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_480_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop480_unsafe_promotion_from_hold_source_native_20260706.json`.
+  - [x] Verdict JSON 기록 완료: `docs/devs/loop480_unsafe_promotion_from_hold_source_native_verdicts.json`.
+  - [x] Bucket summary 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_source_native_review.json/.md`.
+  - [x] Combined P0 summary 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_combined_full375_p0_source_native_review.json/.md`.
+  - [x] Bucket reviewed `24/24`, validation issue `0`, label `ACCEPT 13 / HOLD 10 / REPROCESS 1`을 기록했다.
+- 품질 경계:
+  - [x] `ACCEPT`는 collateral gate wiring 뒤 regression-count 제외 후보로만 기록했다.
+  - [x] 게임 일반 토론을 팬픽 소설로 승격한 `11690855`는 `REPROCESS`로 남겼다.
+  - [x] 이미지/추천/작가 신작/일반 묘사/약한 캐릭터 bridge는 `HOLD`로 남겼다.
+  - [x] `아생갤`은 `아카데미 생존 갤러리` 작품 약칭/작중 갤러리 오마주 가능성을 유지했다.
+  - [ ] Combined `ACCEPT 25`는 gate wiring 전까지 regression count에서 제거하지 않는다.
+  - [ ] Full375 collateral은 `NO-GO`다.
+- Gate: source-native review `REVIEW-LOCKED`, combined reviewed `45/138`, residual action queue `113`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop479 wrong_work_title_flip source-native 품질 게이트
 
 - 근거:
