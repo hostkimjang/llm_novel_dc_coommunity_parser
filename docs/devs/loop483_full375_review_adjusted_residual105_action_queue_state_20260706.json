@@ -1,0 +1,52 @@
+{
+  "loop": 483,
+  "date": "2026-07-06",
+  "report_type": "loop_state",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "summary": {
+    "purpose": "Loop482 review-adjusted blocker 105를 실행 가능한 residual action queue로 분해했다.",
+    "source_review_id": "loop481_combined_full375_p0_source_native_review",
+    "queue_id": "loop483_full375_review_adjusted_residual105_action_queue",
+    "residual_action_queue_rows": 105,
+    "label_counts": {
+      "REPROCESS": 63,
+      "HOLD": 41,
+      "INFO_MISSING": 1
+    },
+    "bucket_counts": {
+      "safe_loss_resolved_to_null": 84,
+      "unsafe_promotion_from_hold": 11,
+      "wrong_work_title_flip": 9,
+      "new_resolution_promotion": 1
+    },
+    "action_group_count": 21,
+    "validation_issue_count": 0
+  },
+  "code_changes": [
+    "tools/split_collateral_action_queue.py can append unreviewed collateral triage regression rows by priority.",
+    "P1 new_resolution_promotion is represented as INFO_MISSING with source_native_or_blind_review_required actions.",
+    "tests/test_split_collateral_action_queue.py covers P1 unreviewed regression queue accounting."
+  ],
+  "artifacts": {
+    "loop_report": "docs/devs/loop_reports/LOOP_483_REPORT_20260706.md",
+    "state": "docs/devs/loop483_full375_review_adjusted_residual105_action_queue_state_20260706.json",
+    "queue_json": "docs/devs/loop483_full375_review_adjusted_residual105_action_queue.json",
+    "queue_markdown": "docs/devs/loop483_full375_review_adjusted_residual105_action_queue.md",
+    "source_combined_review": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_combined_full375_p0_source_native_review.json",
+    "source_collateral_triage": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop477_full375_current_head_merged375_collateral_triage.json"
+  },
+  "quality_gates": {
+    "queue_gate": "REVIEW-LOCKED",
+    "full375_collateral": "NO-GO",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "search_recovery": "P0_OPEN",
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next_actions": [
+    "P0 repair_safe_loss_restore_supported_title 56 rows를 shared promotion gate/runtime repair lane으로 분리한다.",
+    "P0 repair_after_wrong_work 3 rows와 repair_after_unsafe_promotion 1 row를 targeted repair lane으로 분리한다.",
+    "HOLD 41 rows는 image/native-web/multi-work/policy review로 분리한다.",
+    "P1 new_resolution_promotion 1 row, post_id 11682800, source-native 또는 blind review를 수행한다."
+  ]
+}

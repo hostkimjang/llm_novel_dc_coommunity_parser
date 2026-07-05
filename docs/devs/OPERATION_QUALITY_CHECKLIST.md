@@ -1,5 +1,21 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop483 full375 residual105 action queue 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_483_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop483_full375_review_adjusted_residual105_action_queue_state_20260706.json`.
+  - [x] Queue JSON/MD 기록 완료: `docs/devs/loop483_full375_review_adjusted_residual105_action_queue.json/.md`.
+  - [x] residual rows `105`, label `REPROCESS 63 / HOLD 41 / INFO_MISSING 1`을 기록했다.
+  - [x] validation issue `0`을 기록했다.
+- 품질 경계:
+  - [x] Queue split은 approval이 아니다.
+  - [x] P1 `11682800`은 미검토 회귀로 별도 source-native/blind review가 필요하다.
+  - [x] Search recovery는 계속 `P0_OPEN`이다.
+  - [ ] Full375 collateral은 여전히 `NO-GO`다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: queue `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop482 full375 P0 review-adjusted 품질 게이트
 
 - 근거:

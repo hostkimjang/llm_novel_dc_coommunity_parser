@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-06 Loop483 full375 residual105 action queue 체크
+
+- [x] Loop482 review-adjusted blocker `105`를 residual action queue로 분해했다.
+- [x] P0 source-native residual `104`에 P1 `new_resolution_promotion 1`을 `INFO_MISSING`으로 추가했다.
+- [x] Queue rows는 `105`, label은 `REPROCESS 63 / HOLD 41 / INFO_MISSING 1`이다.
+- [x] Bucket은 `safe_loss_resolved_to_null 84`, `unsafe_promotion_from_hold 11`, `wrong_work_title_flip 9`, `new_resolution_promotion 1`이다.
+- [x] Action group은 `21`, validation issue는 `0`이다.
+- [x] P1 `11682800`은 `source_native_or_blind_review_required`로 남겼다.
+- [ ] `repair_safe_loss_restore_supported_title 56`을 shared promotion gate/runtime repair lane으로 분리한다.
+- [ ] `repair_after_wrong_work 3`과 `repair_after_unsafe_promotion 1`을 targeted repair lane으로 분리한다.
+- [ ] `HOLD 41`을 image/native-web/multi-work/policy review로 분리한다.
+- [ ] 완료 기준은 여전히 `full375 collateral GO + full_scan 경로 정의`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: queue `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-06 Loop482 full375 P0 review-adjusted gate 체크
 
 - [x] Loop481 combined P0 source-native review summary를 always-on full375 collateral gate에 입력했다.

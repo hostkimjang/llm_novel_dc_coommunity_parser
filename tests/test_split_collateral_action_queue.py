@@ -150,6 +150,69 @@ class SplitCollateralActionQueueTest(unittest.TestCase):
         )
         self.assertEqual(repair_safe_loss["post_ids"], [11])
 
+    def test_appends_unreviewed_p1_regression_rows_to_residual_queue(self) -> None:
+        combined_review = {
+            "review_id": "unit_combined_p0",
+            "gate": "REVIEW-LOCKED",
+            "summary": {
+                "queue_transition": {
+                    "residual_action_queue_rows": 2,
+                    "repair_required_rows": 1,
+                    "policy_or_native_review_required_rows": 1,
+                }
+            },
+            "rows": [
+                {
+                    "post_id": 20,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "review_label": "REPROCESS",
+                    "action": ["repair_safe_loss"],
+                },
+                {
+                    "post_id": 21,
+                    "triage_bucket": "unsafe_promotion_from_hold",
+                    "review_label": "HOLD",
+                    "action": ["native_web_review_required"],
+                },
+            ],
+        }
+        p1_rows = [
+            {
+                "post_id": 22,
+                "status": "null_to_resolved",
+                "is_regression": True,
+                "priority": "P1",
+                "triage_bucket": "new_resolution_promotion",
+                "before_title": None,
+                "after_title": "갤질하는 천재 의사",
+                "before_url": None,
+                "after_url": "https://novelpia.com/novel/372180",
+            }
+        ]
+
+        queue = build_residual_queue(
+            combined_review,
+            generated_at="2026-07-06T00:00:00",
+            unreviewed_regression_rows=p1_rows,
+        )
+
+        self.assertEqual(queue["gate"], "REVIEW-LOCKED")
+        self.assertEqual(queue["summary"]["residual_action_queue_rows"], 3)
+        self.assertEqual(queue["summary"]["unreviewed_regression_rows_added"], 1)
+        self.assertEqual(
+            queue["summary"]["label_counts"],
+            {"HOLD": 1, "INFO_MISSING": 1, "REPROCESS": 1},
+        )
+        self.assertEqual(queue["summary"]["validation_issue_count"], 0)
+        p1_group = next(
+            group
+            for group in queue["action_groups"]
+            if group["action"] == "p1_new_resolution_promotion_review_required"
+        )
+        self.assertEqual(p1_group["priority"], "P1")
+        self.assertEqual(p1_group["owner_mode"], "SOURCE_NATIVE_OR_BLIND_REVIEW")
+        self.assertEqual(p1_group["post_ids"], [22])
+
 
 if __name__ == "__main__":
     unittest.main()

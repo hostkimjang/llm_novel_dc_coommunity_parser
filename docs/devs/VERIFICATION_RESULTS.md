@@ -1,5 +1,32 @@
 # Verification Results
 
+## 2026-07-06 Loop483 full375 residual105 action queue 검증
+
+- 범위: Loop482 review-adjusted blocker `105`를 실행 가능한 residual action queue로 분해했다.
+- Code:
+  - `tools\split_collateral_action_queue.py`
+  - `tests\test_split_collateral_action_queue.py`
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_483_REPORT_20260706.md`
+  - state `docs\devs\loop483_full375_review_adjusted_residual105_action_queue_state_20260706.json`
+  - queue JSON `docs\devs\loop483_full375_review_adjusted_residual105_action_queue.json`
+  - queue Markdown `docs\devs\loop483_full375_review_adjusted_residual105_action_queue.md`
+- Result:
+  - gate `REVIEW-LOCKED`
+  - residual_action_queue_rows `105`
+  - label `REPROCESS 63`, `HOLD 41`, `INFO_MISSING 1`
+  - bucket `safe_loss_resolved_to_null 84`, `unsafe_promotion_from_hold 11`, `wrong_work_title_flip 9`, `new_resolution_promotion 1`
+  - action_group_count `21`
+  - validation_issue_count `0`
+- Validation:
+  - `.\venv\Scripts\python.exe -m py_compile tools\split_collateral_action_queue.py tests\test_split_collateral_action_queue.py` PASS
+  - `.\venv\Scripts\python.exe -m unittest tests.test_split_collateral_action_queue -v` PASS, `4` tests
+  - Loop483 queue generation PASS, validation issue `0`
+- Boundary:
+  - 이 큐 분해는 approval이 아니다.
+  - `REPROCESS 63`, `HOLD 41`, `INFO_MISSING 1`이 남아 full375 collateral은 `NO-GO`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop482 full375 P0 review-adjusted gate 검증
 
 - 범위: Loop481 combined P0 source-native review summary를 full375 always-on collateral gate에 실제 배선했다.

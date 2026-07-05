@@ -1,5 +1,19 @@
 # Developer TODO Index
 
+## 2026-07-06 Loop483 TODO
+
+- 상태 업데이트: Loop482 review-adjusted blocker `105`를 residual action queue로 분해했다. Queue는 `REPROCESS 63 / HOLD 41 / INFO_MISSING 1`, validation issue `0`이고 goal은 완료가 아니다.
+- [x] `tools/split_collateral_action_queue.py`에 `--collateral-triage`, `--include-triage-priorities`를 추가했다.
+- [x] P1 `new_resolution_promotion 1`을 `INFO_MISSING`과 `source_native_or_blind_review_required`로 queue에 포함했다.
+- [x] Loop483 queue JSON/MD를 생성했다.
+- [x] `tests.test_split_collateral_action_queue`에 P1 미검토 regression accounting 계약을 추가했다.
+- [ ] `repair_safe_loss_restore_supported_title 56`을 우선 repair lane으로 분해한다.
+- [ ] `repair_after_wrong_work 3`, `repair_after_unsafe_promotion 1`을 targeted repair lane으로 분리한다.
+- [ ] `HOLD 41`은 native image/web/source 또는 policy review lane으로 분리한다.
+- [ ] P1 `11682800`은 source-native 또는 blind review로 검증한다.
+- [ ] 완료 기준은 여전히 `full375 collateral GO + full_scan 경로 정의`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop482 TODO
 
 - 상태 업데이트: Loop481 combined P0 review를 always-on full375 collateral gate에 배선했다. Golden18은 `GO`지만 full375 collateral은 raw `139`, review-adjusted `105`, unreviewed regression `1`로 `NO-GO`다. Goal은 완료가 아니다.

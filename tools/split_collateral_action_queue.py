@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 
-RESIDUAL_LABELS = {"REPROCESS", "HOLD"}
+RESIDUAL_LABELS = {"REPROCESS", "HOLD", "INFO_MISSING"}
 REPAIR_PREFIXES = ("repair_",)
 REVIEW_ACTION_MARKERS = (
     "_review_required",
@@ -43,6 +43,8 @@ def _counter_to_dict(counter: Counter[str]) -> dict[str, int]:
 def _priority_for_group(action: str, labels: Counter[str]) -> str:
     if labels.get("REPROCESS") and action.startswith(REPAIR_PREFIXES):
         return "P0"
+    if labels.get("INFO_MISSING") or action.startswith("p1_"):
+        return "P1"
     if labels.get("REPROCESS"):
         return "P1"
     return "P2"
@@ -51,17 +53,57 @@ def _priority_for_group(action: str, labels: Counter[str]) -> str:
 def _owner_mode_for_group(action: str, labels: Counter[str]) -> str:
     if action.startswith(REPAIR_PREFIXES):
         return "CODE_OR_RUNTIME_REPAIR"
+    if labels.get("INFO_MISSING"):
+        return "SOURCE_NATIVE_OR_BLIND_REVIEW"
     if labels.get("HOLD"):
         return "POLICY_OR_NATIVE_REVIEW"
     return "RUNTIME_REPLAY_OR_REVIEW"
+
+
+def _coerce_post_id(value: Any) -> int | Any:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return value
+
+
+def _unreviewed_regression_entry(row: dict[str, Any], source_review_id: str | None) -> dict[str, Any]:
+    bucket = str(row.get("triage_bucket") or "unknown")
+    actions = [
+        "source_native_or_blind_review_required",
+        f"p1_{bucket}_review_required",
+    ]
+    return {
+        "post_id": row.get("post_id"),
+        "triage_bucket": bucket,
+        "review_label": "INFO_MISSING",
+        "source_native_verdict": "unreviewed_regression_row",
+        "selected_title": row.get("after_title"),
+        "selected_option_id": "UNREVIEWED_P1",
+        "evidence_grade": "Missing",
+        "actions": actions,
+        "rationale_ko": (
+            "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 "
+            "별도 source-native 또는 blind review가 필요하다."
+        ),
+        "evidence_refs": [],
+        "source_review_id": source_review_id,
+        "before_title": row.get("before_title"),
+        "after_title": row.get("after_title"),
+        "before_url": row.get("before_url"),
+        "after_url": row.get("after_url"),
+        "priority": row.get("priority"),
+        "collateral_status": row.get("status"),
+    }
 
 
 def build_residual_queue(
     combined_review: dict[str, Any],
     *,
     generated_at: str | None = None,
-    queue_id: str = "collateral183_residual_action_queue",
+    queue_id: str = "collateral_residual_action_queue",
     exclude_post_ids: set[int] | None = None,
+    unreviewed_regression_rows: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     rows = combined_review.get("rows") or []
     if not isinstance(rows, list):
@@ -80,10 +122,7 @@ def build_residual_queue(
         if not isinstance(row, dict):
             continue
         raw_post_id = row.get("post_id")
-        try:
-            post_id = int(raw_post_id)
-        except (TypeError, ValueError):
-            post_id = raw_post_id
+        post_id = _coerce_post_id(raw_post_id)
         label = str(row.get("review_label") or "").strip().upper()
         if label not in RESIDUAL_LABELS:
             continue
@@ -122,6 +161,41 @@ def build_residual_queue(
             action_counts[action] += 1
             groups[action].append(entry)
 
+    seen_post_ids = {_coerce_post_id(row.get("post_id")) for row in rows if isinstance(row, dict)}
+    unreviewed_regression_rows = unreviewed_regression_rows or []
+    for row in unreviewed_regression_rows:
+        if not isinstance(row, dict):
+            continue
+        post_id = _coerce_post_id(row.get("post_id"))
+        if isinstance(post_id, int) and post_id in exclude_post_ids:
+            excluded_label_counts["INFO_MISSING"] += 1
+            excluded_rows.append(
+                {
+                    "post_id": post_id,
+                    "review_label": "INFO_MISSING",
+                    "triage_bucket": row.get("triage_bucket"),
+                    "source_native_verdict": "unreviewed_regression_row",
+                }
+            )
+            continue
+        if post_id in seen_post_ids:
+            continue
+        entry = _unreviewed_regression_entry(
+            row,
+            source_review_id=(
+                combined_review.get("review_id")
+                or combined_review.get("source_review_id")
+                or combined_review.get("queue_id")
+            ),
+        )
+        residual_rows.append(entry)
+        label_counts["INFO_MISSING"] += 1
+        bucket = str(entry["triage_bucket"])
+        bucket_counts[bucket] += 1
+        for action in entry["actions"]:
+            action_counts[action] += 1
+            groups[action].append(entry)
+
     action_groups: list[dict[str, Any]] = []
     for action in sorted(groups):
         group_rows = groups[action]
@@ -153,7 +227,18 @@ def build_residual_queue(
         excluded_count = len(excluded_rows) if label is None else excluded_label_counts.get(label, 0)
         return int(value) - excluded_count
 
+    unreviewed_regression_count = len(
+        [
+            row
+            for row in unreviewed_regression_rows
+            if isinstance(row, dict)
+            and _coerce_post_id(row.get("post_id")) not in seen_post_ids
+            and _coerce_post_id(row.get("post_id")) not in exclude_post_ids
+        ]
+    )
     expected_residual = _adjust_expected(source_expected_residual)
+    if expected_residual is not None:
+        expected_residual += unreviewed_regression_count
     expected_reprocess = _adjust_expected(source_expected_reprocess, "REPROCESS")
     expected_hold = _adjust_expected(source_expected_hold, "HOLD")
     validation_issues: list[dict[str, Any]] = []
@@ -213,6 +298,7 @@ def build_residual_queue(
             "closed_post_ids_excluded": sorted(exclude_post_ids),
             "excluded_residual_action_queue_rows": len(excluded_rows),
             "excluded_label_counts": _counter_to_dict(excluded_label_counts),
+            "unreviewed_regression_rows_added": unreviewed_regression_count,
             "validation_issue_count": len(validation_issues),
         },
         "validation_issues": validation_issues,
@@ -241,6 +327,7 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
         f"- label_counts: `{summary.get('label_counts')}`",
         f"- closed_post_ids_excluded: `{summary.get('closed_post_ids_excluded')}`",
         f"- excluded_residual_action_queue_rows: `{summary.get('excluded_residual_action_queue_rows')}`",
+        f"- unreviewed_regression_rows_added: `{summary.get('unreviewed_regression_rows_added')}`",
         f"- action_group_count: `{summary.get('action_group_count')}`",
         f"- validation_issue_count: `{summary.get('validation_issue_count')}`",
         "- approval: `false`",
@@ -270,7 +357,9 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
             ]
         )
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("\n".join(lines), encoding="utf-8")
+    while lines and lines[-1] == "":
+        lines.pop()
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def parse_args() -> argparse.Namespace:
@@ -278,7 +367,13 @@ def parse_args() -> argparse.Namespace:
         description="Split a combined collateral source-native review into residual action groups."
     )
     parser.add_argument("--combined-review", required=True, type=Path)
-    parser.add_argument("--queue-id", default="collateral183_residual_action_queue")
+    parser.add_argument("--queue-id", default="collateral_residual_action_queue")
+    parser.add_argument("--collateral-triage", type=Path, default=None)
+    parser.add_argument(
+        "--include-triage-priorities",
+        default="",
+        help="쉼표로 구분한 collateral triage priority 목록. 예: P1",
+    )
     parser.add_argument(
         "--exclude-post-ids",
         default="",
@@ -297,10 +392,27 @@ def main() -> int:
         for item in str(args.exclude_post_ids or "").split(",")
         if item.strip()
     }
+    include_priorities = {
+        item.strip()
+        for item in str(args.include_triage_priorities or "").split(",")
+        if item.strip()
+    }
+    unreviewed_rows: list[dict[str, Any]] = []
+    if args.collateral_triage and include_priorities:
+        triage = load_json(args.collateral_triage)
+        triage_rows = triage.get("rows") if isinstance(triage.get("rows"), list) else []
+        unreviewed_rows = [
+            row
+            for row in triage_rows
+            if isinstance(row, dict)
+            and row.get("is_regression") is True
+            and str(row.get("priority") or "") in include_priorities
+        ]
     queue = build_residual_queue(
         load_json(args.combined_review),
         queue_id=args.queue_id,
         exclude_post_ids=exclude_post_ids,
+        unreviewed_regression_rows=unreviewed_rows,
     )
     args.output_json.parent.mkdir(parents=True, exist_ok=True)
     args.output_json.write_text(json.dumps(queue, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

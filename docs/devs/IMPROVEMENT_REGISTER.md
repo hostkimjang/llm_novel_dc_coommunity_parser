@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260706-483 - full375 residual105 action queue
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Queue split | 완료 | residual rows `105`, validation issue `0` | action lane별 후속 |
+| P0 residual | OPEN | `REPROCESS 63 / HOLD 41` | repair/native/policy 분리 |
+| P1 unreviewed | OPEN | `new_resolution_promotion 1`, post_id `11682800`, `INFO_MISSING` | source-native 또는 blind review |
+| Action groups | REVIEW-LOCKED | `21` groups, largest repair `repair_safe_loss_restore_supported_title 56` | repair lane 우선 |
+| 검증 | PASS | py_compile PASS, split queue unittest `4` tests PASS, generation PASS | broader bundle은 후속 코드 변경 시 재실행 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: queue `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-482 - full375 P0 review-adjusted always-on gate
 
 | 항목 | 상태 | 근거 | 다음 |

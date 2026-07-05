@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-06 - Loop483 full375 residual105 action queue
+
+- Loop482 review-adjusted blocker `105`를 실행 가능한 residual action queue로 분해했다.
+- `tools/split_collateral_action_queue.py`는 `--collateral-triage`와 `--include-triage-priorities`를 받아 P1 미검토 regression row를 queue에 추가할 수 있게 보강했다.
+- P1 `new_resolution_promotion 1`은 `INFO_MISSING`, `source_native_or_blind_review_required`, `p1_new_resolution_promotion_review_required`로 기록했다.
+- Queue 결과는 residual rows `105`, label `REPROCESS 63`, `HOLD 41`, `INFO_MISSING 1`, action groups `21`, validation issue `0`이다.
+- Bucket은 `safe_loss_resolved_to_null 84`, `unsafe_promotion_from_hold 11`, `wrong_work_title_flip 9`, `new_resolution_promotion 1`이다.
+- Report는 `docs/devs/loop_reports/LOOP_483_REPORT_20260706.md`, state는 `docs/devs/loop483_full375_review_adjusted_residual105_action_queue_state_20260706.json`이다.
+- Queue 산출물은 `docs/devs/loop483_full375_review_adjusted_residual105_action_queue.json/.md`다.
+- 검증은 `py_compile` PASS, `tests.test_split_collateral_action_queue` `4` tests PASS, queue generation PASS다.
+- Gate는 queue `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop482 full375 P0 review-adjusted gate
 
 - Loop481 combined P0 source-native review summary를 full375 always-on collateral gate에 실제 배선했다.
