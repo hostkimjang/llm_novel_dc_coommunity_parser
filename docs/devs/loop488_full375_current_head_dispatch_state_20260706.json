@@ -31,6 +31,13 @@
     "mcp_health_light_mode": false,
     "mcp_health_required_ok": 16
   },
+  "post_completion_audit_inputs": {
+    "baseline": "out/regression_safe_grounding_20260626_000008_928006_loop01/baseline/baseline_result.json",
+    "current_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop488_full375_current_head_4b838520_search_nonlight_result.json",
+    "current_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop488_full375_current_head_4b838520_search_nonlight_result_manifest.json",
+    "current_checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop488_full375_current_head_4b838520_search_nonlight_result_checkpoint.jsonl",
+    "golden_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json"
+  },
   "initial_evidence": {
     "mcp_health_ok_count": 16,
     "mcp_health_failure_count": 0,
@@ -47,8 +54,41 @@
       11668305
     ]
   },
+  "latest_monitoring_evidence": {
+    "snapshot_time_kst": "2026-07-06 05:44:41",
+    "status": "IN_PROGRESS",
+    "completed_count": 65,
+    "flushed_count": 51,
+    "pending_count": 14,
+    "failed_count": 0,
+    "checkpoint_lines": 65,
+    "next_save_idx": 52,
+    "partial_flush_gap": true,
+    "ordered_flush_blocked": true,
+    "large_run_complete": false,
+    "live_pids": [
+      42256,
+      968
+    ],
+    "latest_manifest_write_kst": "2026-07-06 05:43:15",
+    "latest_checkpoint_write_kst": "2026-07-06 05:43:15",
+    "result_json_write_lag_reason": "ordered_flush_blocked: 앞쪽 row 지연으로 result.json flush가 밀리므로 manifest/checkpoint/log를 authoritative runtime evidence로 본다.",
+    "first_pending_snapshot": [
+      "53:11700475",
+      "54:11700495",
+      "55:11702067",
+      "56:11702084",
+      "57:11702094",
+      "58:11703640",
+      "59:11703645",
+      "60:11703657",
+      "61:11705256",
+      "62:11705261"
+    ],
+    "interpretation": "런 전체 stall이 아니라 ordered flush 병목과 checkpoint backlog가 공존하는 상태다."
+  },
   "gates": {
-    "full375_runtime": "IN_PROGRESS / 3 of 375 initial checkpoint",
+    "full375_runtime": "IN_PROGRESS / 65 of 375 checkpoint at 2026-07-06 05:44 KST",
     "full375_collateral": "PENDING / NO-GO 유지",
     "golden_audit_after_loop488": "NOT_RUN_AFTER_LOOP488",
     "collateral_compare_after_loop488": "NOT_RUN_AFTER_LOOP488",
