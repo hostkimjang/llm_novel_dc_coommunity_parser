@@ -4506,6 +4506,28 @@ class DecoderExpert:
             elif (
                 best_alt_title
                 and current_has_structural_alias_support
+                and current_from_official
+                and best_alt_from_official
+                and current_has_official_keyword_support
+                and current_official_support_count >= best_alt_official_support_count
+                and current_support_strength >= best_alt_support_strength
+                and (not has_explicit_alias)
+            ):
+                print(
+                    f"[{_ts()}][{self.emoji}] 🛡️ 공식 키워드 결속 제목 유지: "
+                    f"'{current_title}' ←/→ '{best_alt_title}' "
+                    f"(current_strength={current_support_strength:.1f}, "
+                    f"alt_strength={best_alt_support_strength:.1f}, "
+                    f"current_official={current_official_support_count}, "
+                    f"alt_official={best_alt_official_support_count}, "
+                    f"official_keyword_support=True, "
+                    f"alt_source={best_alt_source or 'search_pool'})",
+                    file=sys.stderr,
+                )
+                best_alt_title = None
+            elif (
+                best_alt_title
+                and current_has_structural_alias_support
                 and current_support_strength >= best_alt_support_strength + 2.0
                 and (
                     current_official_support_count >= 1

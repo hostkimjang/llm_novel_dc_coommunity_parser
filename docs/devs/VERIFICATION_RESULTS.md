@@ -1,5 +1,36 @@
 # Verification Results
 
+## 2026-07-05 Loop461-463 11666713 21세기 무림 wrong-work 검증
+
+- 범위: residual `repair_after_wrong_work`의 `11666713` 단건을 Loop461-463에서 search 포함 non-light 조건으로 실행하고, wrong publish 원인과 post-patch runtime closure를 감사했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_461_463_REPORT_20260705.md`
+  - state `docs\devs\loop463_11666713_21c_murim_wrong_work_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop463_11666713_21c_murim_wrong_work_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop463_11666713_21c_murim_wrong_work_search_nonlight_result.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop463_11666713_21c_murim_wrong_work_run_health.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop463_11666713_21c_murim_wrong_work_publication_contract.json`
+  - residual queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop463_after_11666713_21c_murim_wrong_work_residual_action_queue.json`
+  - convergence audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop463_11666713_goal_convergence_stop_condition.json`
+- Runtime:
+  - run `20260705_111849_337561`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - Search `GO`, query/degraded/unrecovered `7/0/0`, upstream zero `1`, accepted `50`
+- Result:
+  - `official_title=21세기 무림세가`, public `official_url=https://page.kakao.com/content/49668687?tab_type=about`
+  - `candidate_ledger_status=safe_resolved`, `safe_resolved=true`, `promotion_decision.status=publish`, `publish_allowed=true`
+  - Loop462 wrong title `21세기를 여행하는 무림인을 위한 안내서`는 official 후보였지만 본문/공식 키워드 결속이 약한 후단 약어 교정 오귀속이었다.
+- Audit:
+  - `tools/audit_expert_run_health.py` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=GO`, `publication_contract_convergence=GO`.
+  - `tools/audit_publication_contract_convergence.py` -> `GO / row_count 1 / violation_row_count 0`.
+  - `tools/evaluate_goal_convergence.py` -> queue `95 -> 94`, same packet `true`, safe_resolved `1 -> 1`, safe_loss `[]`, gate `GO`.
+- Boundary:
+  - 이 단건 closure는 full375 approval이 아니다.
+  - `갤러리` 표면은 현실 커뮤니티로 자동 고정하지 않고 웹소설 내부 커뮤니티/갤러리 오마주형 제목 또는 약어일 수 있다고 유지한다.
+  - R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+  - Full375 collateral은 `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop460 11700500 전1시 wrong-work runtime 검증
 
 - 범위: residual `repair_after_wrong_work`의 `11700500` 단건을 current HEAD `621274cb`에서 search 포함 non-light 조건으로 실행하고, publication contract와 goal convergence stop-condition을 감사했다.

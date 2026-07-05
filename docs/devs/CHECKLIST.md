@@ -1,5 +1,21 @@
 # Development Checklist
 
+## 2026-07-05 Loop461-463 11666713 21세기 무림 wrong-work 체크
+
+- [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `11666713` 단건을 Loop461-463에서 search 포함 non-light, VLM/OCR on, `--slang-db off`로 검증했다.
+- [x] Loop461 `promotion_blocked/null`, Loop462 wrong publish, Loop463 correct publish의 개선 전/후를 분리 기록했다.
+- [x] `orchestrator.py`는 title/body work-review 공식 probe가 저특이/poison pruning에 잘리지 않게 했다.
+- [x] `decoder.py`는 official keyword support와 support strength가 현재 후보 쪽에 있을 때 약어 스코어만 높은 공식 후보로 교체하지 않게 했다.
+- [x] Loop463 run `20260705_111849_337561`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`로 완료됐다.
+- [x] Row search는 query/degraded/unrecovered `7/0/0`, upstream zero `1`, accepted `50`이다.
+- [x] Public publish contract는 `official_title=21세기 무림세가`, `official_url=https://page.kakao.com/content/49668687?tab_type=about`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`다.
+- [x] Stop-condition audit는 queue `95 -> 94`, same packet `11666713`, safe_resolved `1 -> 1`, safe loss `[]`, gate `GO`다.
+- [x] 사용자 도메인 보정을 유지했다: `아생갤` 같은 `갤러리` 표면은 현실 커뮤니티로 자동 고정하지 않고 웹소설 내부 갤러리/댓글식 커뮤니티 오마주형 제목/약어/세계관 장치일 수 있다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 residual queue delta를 full scan approval로 승격하지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, targeted stop-condition `GO_TARGETED / 95 -> 94 / safe 1 -> 1`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop460 11700500 전1시 wrong-work runtime 체크
 
 - [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

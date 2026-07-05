@@ -1,5 +1,17 @@
 ﻿# Developer TODO Index
 
+## 2026-07-05 Loop461-463 TODO
+
+- 상태 업데이트: Loop461-463은 `11666713` wrong-work를 `21세기 무림세가`로 닫았다. Loop462 wrong publish `21세기를 여행하는 무림인을 위한 안내서`는 후단 약어 교정 오귀속으로 판정했고, Loop463 runtime에서 correct publish를 확인했다. Residual queue는 `95 -> 94`지만 goal은 완료가 아니다.
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] 제목-본문 work-review 공식 probe 보존과 공식 키워드 결속 제목 유지 guard를 실코드와 계약 테스트로 추가했다.
+- [x] Loop463 run `20260705_111849_337561`은 `1/1/1/0/0`, health `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`다.
+- [x] `21세기 무림세가` 공식 근거와 본문 표면 결속을 기록했다. Loop462 wrong candidate는 구조 contract `GO`였지만 semantic 정답성은 NO-GO로 기록했다.
+- [x] 사용자 도메인 보정을 유지했다: `아생갤`/`갤러리`는 현실 DC 갤러리명만이 아니라 작품 안 커뮤니티/갤러리 오마주형 제목 또는 약어일 수 있다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 queue delta를 full scan approval로 승격하지 않는다.
+- [ ] 다음은 residual `REPROCESS 66 / HOLD 28` 중 작은 lane으로 진행한다. docs-only 반복은 정지 신호다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop460 TODO
 
 - 상태 업데이트: Loop460은 `11700500`을 current HEAD `621274cb`에서 search 포함 non-light, VLM/OCR on, `--slang-db off` 단건 runtime으로 닫았다. `전1시 -> 전지적 1인칭 시점`이 safe_resolved됐고 residual queue는 `96 -> 95`, `repair_after_wrong_work 2 -> 1`이지만 goal은 완료가 아니다.

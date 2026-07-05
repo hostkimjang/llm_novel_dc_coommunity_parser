@@ -7108,6 +7108,191 @@ class Orchestrator:
             return False
         return True
 
+    def _is_title_body_work_official_probe_query(
+        self,
+        query: Any,
+        *,
+        ctx: Optional[ConversationContext] = None,
+        gatekeeper_result: Optional[Dict[str, Any]] = None,
+        purpose: Optional[Any] = None,
+    ) -> bool:
+        """Keep official/detail probes for title-led work-review packets.
+
+        This is search preservation only. Publication still depends on the
+        shared promotion gate and official evidence checks.
+        """
+        if ctx is None:
+            return False
+        raw = " ".join(str(query or "").split()).strip()
+        if not raw:
+            return False
+        purpose_key = str(purpose or "").strip().lower().split(":", 1)[0]
+        if purpose_key not in {
+            "official_title_verify",
+            "platform_title_search",
+            "title_anchor_exact_probe",
+            "title_anchor_official_probe",
+            "confident_title_platform_expansion",
+            "adaptive_official_url",
+            "title_body_sanitized_platform_probe",
+        }:
+            return False
+
+        q_norm = self._normalize_search_term(raw)
+        q_lc = raw.lower()
+        platform_markers = (
+            "웹소설",
+            "소설",
+            "작품",
+            "노벨피아",
+            "노피아",
+            "novelpia",
+            "문피아",
+            "munpia",
+            "카카오페이지",
+            "카카페",
+            "page.kakao",
+            "시리즈",
+            "네이버",
+            "series",
+            "naver",
+            "site:novelpia.com",
+            "site:munpia.com",
+            "site:page.kakao.com",
+            "site:series.naver.com",
+            "작가",
+        )
+        if not any(
+            (marker.isascii() and marker in q_lc)
+            or ((not marker.isascii()) and self._normalize_search_term(marker) in q_norm)
+            for marker in platform_markers
+        ):
+            return False
+
+        gk = gatekeeper_result or ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
+        if not isinstance(gk, dict):
+            gk = {}
+        post_type = str(gk.get("post_type") or "").strip().lower()
+        if post_type in {"meta_platform", "off_topic", "noise"}:
+            return False
+
+        clues = gk.get("context_clues") or {}
+        if not isinstance(clues, dict):
+            clues = {}
+
+        discourse_out = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
+        discourse = (
+            discourse_out.get("discourse_analysis")
+            if isinstance(discourse_out, dict)
+            else {}
+        )
+        if not isinstance(discourse, dict):
+            discourse = {}
+        domain = str(
+            discourse.get("primary_domain")
+            or discourse.get("domain")
+            or discourse.get("topic_domain")
+            or getattr(ctx, "primary_domain", "")
+            or ""
+        ).strip().lower()
+        if domain and not is_novel_domain(domain):
+            return False
+
+        seed_review = discourse.get("semantic_seed_review") or {}
+        if not isinstance(seed_review, dict):
+            seed_review = {}
+        intent = str(
+            discourse.get("intent") or getattr(ctx, "discourse_intent", "") or ""
+        ).strip().lower()
+        target_kind = str(discourse.get("target_kind") or "").strip().lower()
+        title_body_continuation = bool(clues.get("title_as_body_continuation"))
+        post_type_work = post_type in {
+            "work_discussion",
+            "review",
+            "short_reaction",
+            "recommendation",
+            "character_talk",
+            "spoiler",
+            "meme",
+            "",
+        }
+        model_specific_work = seed_review.get("is_specific_work_discussion") is True
+        target_work = target_kind in {"work", "specific_work", "single_work"}
+        intent_work = intent in {"discuss_work", "express_opinion", "ask_question", "request_recommendation"} and (
+            post_type_work or model_specific_work or target_work
+        )
+        work_frame = bool(
+            model_specific_work
+            or post_type_work
+            or target_work
+            or intent_work
+            or (title_body_continuation and (post_type_work or model_specific_work or target_work))
+        )
+        if not work_frame:
+            return False
+
+        joined = str(clues.get("title_body_joined_text") or "").strip()
+        if not joined:
+            post_data = getattr(ctx, "post_data", None) or {}
+            title = str(post_data.get("normalized_title") or post_data.get("title") or "")
+            body = " ".join(
+                str(block.get("text") or block.get("content") or "")
+                if isinstance(block, dict)
+                else str(block or "")
+                for block in (post_data.get("content_blocks") or [])
+            )
+            comments = " ".join(str(c or "") for c in (getattr(ctx, "comments", None) or [])[:5])
+            joined = f"{title} {body} {comments}".strip()
+        if len(joined) < 12:
+            return False
+
+        work_context_norm = self._normalize_search_term(joined)
+        work_context_markers = (
+            "작품",
+            "웹소설",
+            "소설",
+            "주인공",
+            "히로인",
+            "전개",
+            "서사",
+            "설정",
+        )
+        has_work_context_marker = any(
+            self._normalize_search_term(marker) in work_context_norm
+            for marker in work_context_markers
+        )
+        if not (has_work_context_marker or model_specific_work or post_type in {"review", "work_discussion"}):
+            return False
+
+        candidate_terms: List[str] = []
+        entities = gk.get("detected_entities") or {}
+        if isinstance(entities, dict):
+            candidate_terms.extend(
+                str(term or "").strip()
+                for term in (entities.get("possible_titles") or [])
+                if str(term or "").strip()
+            )
+        candidate_terms.extend(
+            str(term or "").strip()
+            for term in (discourse.get("title_novel_terms") or [])
+            if str(term or "").strip()
+        )
+        candidate_terms.extend(
+            self._collect_title_surface_anchor_tokens(
+                ctx,
+                gatekeeper_result=gk,
+                limit=2,
+            )
+        )
+
+        for term in candidate_terms:
+            term_norm = self._normalize_search_term(term)
+            if len(term_norm) < 3:
+                continue
+            if term_norm in q_norm and term_norm in work_context_norm:
+                return True
+        return False
+
     def _is_direct_image_ocr_work_phrase_query(
         self,
         query: Any,
@@ -8634,6 +8819,12 @@ class Orchestrator:
                 continue
             purpose_full = str(req.get("purpose", "") or "").strip()
             purpose = purpose_full.split(":", 1)[0].strip().lower()
+            keep_title_body_work_probe = self._is_title_body_work_official_probe_query(
+                query,
+                ctx=ctx,
+                gatekeeper_result=gk if isinstance(gk, dict) else None,
+                purpose=purpose,
+            )
             if purpose in keep_purposes:
                 filtered.append(req)
                 continue
@@ -8667,6 +8858,7 @@ class Orchestrator:
                     continue
             if (
                 purpose in prune_purposes
+                and not keep_title_body_work_probe
                 and not self._is_direct_image_ocr_work_phrase_query(query, ctx=ctx)
                 and self._is_surface_expression_non_title_query(
                     query,
@@ -8701,6 +8893,9 @@ class Orchestrator:
                     for safe in safe_terms
                 )
             if (matched_risky or matched_risky_prefix) and (not matched_safe) and purpose in prune_purposes:
+                if keep_title_body_work_probe:
+                    filtered.append(req)
+                    continue
                 skipped += 1
                 if len(skipped_examples) < 4:
                     skipped_examples.append(f"{purpose}:{query}")
@@ -14535,8 +14730,15 @@ class Orchestrator:
             if not raw_query:
                 continue
             clean_query = self._sanitize_query_poison_text(raw_query)
+            keep_title_body_work_probe = self._is_title_body_work_official_probe_query(
+                clean_query,
+                ctx=ctx,
+                gatekeeper_result=gatekeeper_result,
+                purpose=req.get("purpose"),
+            )
             if (
-                not self._is_direct_image_ocr_work_phrase_query(clean_query, ctx=ctx)
+                not keep_title_body_work_probe
+                and not self._is_direct_image_ocr_work_phrase_query(clean_query, ctx=ctx)
                 and self._is_surface_expression_non_title_query(
                     clean_query,
                     ctx=ctx,

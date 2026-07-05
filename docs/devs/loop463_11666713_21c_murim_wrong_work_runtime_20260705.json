@@ -1,0 +1,81 @@
+{
+  "artifact_type": "runtime_state",
+  "loop": "461-463",
+  "date": "2026-07-05",
+  "language": "ko",
+  "post_id": 11666713,
+  "source_native_verdict": "before_correct_after_wrong",
+  "expected_title": "21세기 무림세가",
+  "wrong_title_before_fix": "21세기를 여행하는 무림인을 위한 안내서",
+  "runs": {
+    "loop461": {
+      "run_id": "20260705_105350_442895",
+      "counts": "1/1/1/0/0",
+      "search_evidence": "GO",
+      "publication_contract": "GO / 0 violations",
+      "result_status": "promotion_blocked",
+      "official_title": null
+    },
+    "loop462": {
+      "run_id": "20260705_110705_625720",
+      "counts": "1/1/1/0/0",
+      "search_evidence": "REVIEW / search_degraded_observed",
+      "publication_contract": "GO / 0 violations",
+      "result_status": "wrong_publish",
+      "official_title": "21세기를 여행하는 무림인을 위한 안내서",
+      "official_url": "https://novelpia.com/novel/384498"
+    },
+    "loop463": {
+      "run_id": "20260705_111849_337561",
+      "counts": "1/1/1/0/0",
+      "mcp_health": "include_search=true / light_mode=false / ok_failure=1/0",
+      "search_evidence": "GO",
+      "row_search": "ok / queries=7 / accepted=50 / degraded=0 / unrecovered=0 / upstream_zero=1",
+      "vlm_ocr": "NOT_APPLICABLE / no_image_blocks",
+      "publication_contract": "GO / 0 violations",
+      "result_status": "correct_publish",
+      "official_title": "21세기 무림세가",
+      "official_url": "https://page.kakao.com/content/49668687?tab_type=about",
+      "candidate_ledger_status": "safe_resolved",
+      "promotion_decision_status": "publish",
+      "publish_allowed": true
+    }
+  },
+  "code_changes": [
+    {
+      "path": "src/llm_batch/experts/orchestrator.py",
+      "summary": "title/body work-review 공식 probe를 pruning하지 않도록 보존"
+    },
+    {
+      "path": "src/llm_batch/experts/decoder.py",
+      "summary": "공식 키워드 결속 후보를 약어 스코어만 높은 다른 공식 후보로 교체하지 않도록 보호"
+    },
+    {
+      "path": "tests/test_title_lead_search_inferred_guard.py",
+      "summary": "Loop462 wrong publish를 압축한 단위 계약 추가"
+    }
+  ],
+  "queue": {
+    "previous_residual_action_queue_rows": 95,
+    "current_residual_action_queue_rows": 94,
+    "previous_reprocess": 67,
+    "current_reprocess": 66,
+    "hold": 28,
+    "wrong_work_title_flip": "1 -> 0",
+    "repair_after_wrong_work": "1 -> 0",
+    "excluded_post_ids": [11666713],
+    "validation_issue_count": 0
+  },
+  "gate_boundary": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO",
+    "search_evidence": "GO_ROW_LEVEL",
+    "targeted_stop_condition": "GO_TARGETED / 95 -> 94 / safe 1 -> 1",
+    "residual_queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL",
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

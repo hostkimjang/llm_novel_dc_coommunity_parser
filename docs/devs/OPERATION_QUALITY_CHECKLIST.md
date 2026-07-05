@@ -1,5 +1,22 @@
 # Operation Quality Checklist
 
+## 2026-07-05 Loop461-463 11666713 21세기 무림 wrong-work 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_461_463_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop463_11666713_21c_murim_wrong_work_runtime_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop463_11666713_21c_murim_wrong_work_data_analytics_artifact.json`.
+  - [x] Health audit `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`를 기록했다.
+  - [x] Stop-condition audit artifact를 기록했다: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop463_11666713_goal_convergence_stop_condition.json`.
+  - [x] Residual queue delta `95 -> 94`, `wrong_work_title_flip 1 -> 0`, `repair_after_wrong_work 1 -> 0`을 기록했다.
+- 품질 게이트:
+  - [x] `21세기 무림세가`를 공식 검색 근거와 본문 title/body work-review 표면 결속으로 닫는다.
+  - [x] Loop462 wrong-work `21세기를 여행하는 무림인을 위한 안내서`는 구조 contract GO와 semantic 정답성을 분리해 NO-GO로 기록한다.
+  - [x] `아생갤`/`갤러리` 표면은 현실 DC 갤러리로 자동 고정하지 않고, 작품 안의 커뮤니티/갤러리 오마주 가능성을 기록한다.
+  - [x] 단건 targeted runtime과 residual queue delta를 golden18/full375 approval로 승격하지 않는다.
+  - [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 하지 않았음을 명시한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-05 Loop460 11700500 전1시 wrong-work runtime 품질 게이트
 
 - 근거:

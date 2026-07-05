@@ -10579,6 +10579,202 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             ],
         )
 
+    def test_title_body_work_review_official_probe_survives_surface_pruning(self):
+        orchestrator = Orchestrator(experts={})
+        ctx = ConversationContext(
+            post_id=11666713,
+            post_data={
+                "title": "21세기 무림 이거 재미네 ㅋㅋㅋ",
+                "content_blocks": [
+                    {"type": "text", "text": "무틀딱 각혈하게 만드는 작품인 줄 알았는데"},
+                    {"type": "text", "text": "진지할 땐 진지하고 무협스러움이 가득한 작품이네 ㅋㅋ"},
+                ],
+            },
+            comments=[],
+        )
+        gatekeeper = {
+            "post_type": "review",
+            "detected_entities": {"possible_titles": ["21세기 무림"]},
+            "context_clues": {
+                "title_as_body_continuation": True,
+                "title_body_joined_text": (
+                    "21세기 무림 이거 재미네 ㅋㅋㅋ "
+                    "무틀딱 각혈하게 만드는 작품인 줄 알았는데 "
+                    "진지할 땐 진지하고 무협스러움이 가득한 작품이네 ㅋㅋ"
+                ),
+            },
+            "search_requests": [{"purpose": "official_title_verify", "query": "21세기 무림 웹소설"}],
+            "key_terms": ["21세기 무림", "작품"],
+        }
+        ctx.set_expert_output(ExpertType.GATEKEEPER, gatekeeper)
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "primary_domain": "novel_literature",
+                    "intent": "express_opinion",
+                    "title_novel_terms": ["21세기 무림"],
+                    "semantic_seed_review": {"is_specific_work_discussion": True},
+                }
+            },
+        )
+        requests = [
+            {"purpose": "official_title_verify", "query": "21세기 무림 웹소설"},
+            {"purpose": "platform_title_search", "query": "21세기 무림 노벨피아"},
+            {"purpose": "platform_title_search", "query": "시리즈 21세기 무림 작가"},
+        ]
+
+        sanitized = orchestrator._sanitize_query_poison_search_requests(
+            requests,
+            ctx=ctx,
+            gatekeeper_result=gatekeeper,
+            phase="unit",
+        )
+        kept = orchestrator._prune_low_specificity_seed_search_requests(
+            ctx,
+            sanitized,
+            gatekeeper_result=gatekeeper,
+        )
+
+        self.assertEqual([item["query"] for item in kept], [item["query"] for item in requests])
+
+    def test_decoder_keeps_official_keyword_bound_title_over_higher_abbreviation_alt(self):
+        decoder = DecoderExpert(JSONLLM({"decoded_terms": [], "overall_confidence": "none"}))
+        ctx = ConversationContext(
+            post_id=11666713,
+            post_data={
+                "title": "21세기 무림 이거 재미네 ㅋㅋㅋ",
+                "content_blocks": [
+                    {"type": "text", "text": "무틀딱 각혈하게 만드는 작품인 줄 알았는데"},
+                    {"type": "text", "text": "진지할 땐 진지하고 무협스러움이 가득한 작품이네 ㅋㅋ"},
+                ],
+            },
+            comments=[],
+        )
+        ctx.set_expert_output(
+            ExpertType.GATEKEEPER,
+            {
+                "post_type": "review",
+                "detected_entities": {"possible_titles": ["21세기 무림"]},
+                "key_terms": ["21세기 무림", "작품"],
+                "context_clues": {
+                    "title_as_body_continuation": True,
+                    "title_body_joined_text": (
+                        "21세기 무림 이거 재미네 ㅋㅋㅋ "
+                        "무틀딱 각혈하게 만드는 작품인 줄 알았는데 "
+                        "진지할 땐 진지하고 무협스러움이 가득한 작품이네 ㅋㅋ"
+                    ),
+                },
+            },
+        )
+        ctx.search_results = [
+            {
+                "title": "21세기 무림세가",
+                "url": "https://series.naver.com/novel/detail.series?productNo=1894278",
+                "content": "21세기 무림세가. 21세기 무림 키워드로 확인되는 네이버 시리즈 웹소설.",
+                "source_tier": "official_detail",
+            },
+            {
+                "title": "21세기 무림세가",
+                "url": "https://page.kakao.com/content/49668687?tab_type=about",
+                "content": "21세기 무림세가 웹소설. 무림세가 서사.",
+                "source_tier": "official_detail",
+            },
+            {
+                "title": "웹소설로 꿈꾸는 세상! - 21세기를 여행하는 무림인을 위한 안내서",
+                "url": "https://novelpia.com/novel/384498",
+                "content": "21세기를 여행하는 무림인을 위한 안내서 작품 상세.",
+                "source_tier": "official_detail",
+            },
+        ]
+        result = {
+            "decoded_terms": [
+                {
+                    "original": "21세기 무림",
+                    "morphemes": ["21세기", "무림"],
+                    "interpretations": [
+                        {
+                            "type": "novel_title",
+                            "value": "21세기 무림세가",
+                            "context_fit": "high",
+                        }
+                    ],
+                    "best_match": {
+                        "title": "21세기 무림세가",
+                        "confidence": "high",
+                        "url": "https://series.naver.com/novel/detail.series?productNo=1894278",
+                    },
+                    "candidates": [
+                        {
+                            "official_novel_title": "21세기 무림세가",
+                            "url": "https://series.naver.com/novel/detail.series?productNo=1894278",
+                            "platform": "naver_series",
+                        }
+                    ],
+                    "grounding": {
+                        "is_grounded": True,
+                        "anchor_type": "title_mention",
+                        "anchor_evidence": "21세기 무림 이거 재미네",
+                    },
+                }
+            ],
+            "overall_confidence": "high",
+        }
+
+        updated = decoder._validate_morpheme_in_title(result, ctx)
+
+        self.assertEqual(
+            updated["decoded_terms"][0]["best_match"]["title"],
+            "21세기 무림세가",
+        )
+        self.assertFalse(
+            any(
+                hint.get("type") == "abbreviation_correction"
+                and hint.get("corrected_title") == "21세기를 여행하는 무림인을 위한 안내서"
+                for hint in getattr(ctx, "code_level_hints", [])
+            )
+        )
+
+    def test_title_body_work_review_probe_does_not_rescue_plain_community_noise(self):
+        orchestrator = Orchestrator(experts={})
+        ctx = ConversationContext(
+            post_id=20010010,
+            post_data={
+                "title": "그냥 잡담",
+                "content_blocks": [{"type": "text", "text": "커뮤니티 잡담 길게 이어지는 글이다"}],
+            },
+            comments=[],
+        )
+        gatekeeper = {
+            "post_type": "community_banter",
+            "detected_entities": {"possible_titles": ["잡담"]},
+            "context_clues": {
+                "title_as_body_continuation": True,
+                "title_body_joined_text": "그냥 잡담 커뮤니티 잡담 길게 이어지는 글이다",
+            },
+            "search_requests": [{"purpose": "official_title_verify", "query": "잡담 웹소설"}],
+        }
+        ctx.set_expert_output(ExpertType.GATEKEEPER, gatekeeper)
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "primary_domain": "novel_literature",
+                    "intent": "community_banter",
+                    "semantic_seed_review": {"is_specific_work_discussion": False},
+                }
+            },
+        )
+
+        self.assertFalse(
+            orchestrator._is_title_body_work_official_probe_query(
+                "잡담 웹소설",
+                ctx=ctx,
+                gatekeeper_result=gatekeeper,
+                purpose="official_title_verify",
+            )
+        )
+
     def test_low_specific_prune_keeps_title_body_compact_official_anchor(self):
         orchestrator = Orchestrator(experts={})
         ctx = ConversationContext(

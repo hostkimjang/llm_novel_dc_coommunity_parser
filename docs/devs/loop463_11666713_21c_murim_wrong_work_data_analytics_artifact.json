@@ -1,0 +1,66 @@
+{
+  "artifact_type": "data_analytics_summary",
+  "loop": "461-463",
+  "date": "2026-07-05",
+  "language": "ko",
+  "reader_summary": "Loop461은 11666713에서 official probe pruning 때문에 promotion_blocked에 머물렀고, Loop462는 검색을 회복했지만 약어 스코어 후단 교정이 wrong-work `21세기를 여행하는 무림인을 위한 안내서`를 publish했다. Loop463은 공식 키워드 결속 후보 보호 가드로 `21세기 무림세가`를 유지했고, search evidence와 publication contract가 모두 GO인 단일 runtime closure를 만들었다. 이 queue delta는 full375 approval이 아니다.",
+  "before_after": {
+    "loop461": {
+      "movement_status": "candidate_only_null",
+      "official_title": null,
+      "run_integrity": "GO / clean_completed_source",
+      "search_evidence": "GO",
+      "publication_contract": "GO / 0"
+    },
+    "loop462": {
+      "movement_status": "wrong_work_publish",
+      "official_title": "21세기를 여행하는 무림인을 위한 안내서",
+      "official_url": "https://novelpia.com/novel/384498",
+      "run_integrity": "GO / clean_completed_source",
+      "search_evidence": "REVIEW / search_degraded_observed",
+      "publication_contract": "GO / 0"
+    },
+    "loop463": {
+      "movement_status": "correct_safe_resolved",
+      "official_title": "21세기 무림세가",
+      "official_url": "https://page.kakao.com/content/49668687?tab_type=about",
+      "run_integrity": "GO / clean_completed_source",
+      "search_evidence": "GO",
+      "publication_contract": "GO / 0"
+    }
+  },
+  "runtime_distribution": {
+    "runs": 3,
+    "completed_runs": 3,
+    "single_row_completed": "3/3",
+    "loop463_queries": 7,
+    "loop463_degraded": 0,
+    "loop463_unrecovered_degraded": 0,
+    "loop463_accepted_results": 50
+  },
+  "queue_delta": {
+    "previous_actionable": 95,
+    "current_actionable": 94,
+    "delta": -1,
+    "reprocess": "67 -> 66",
+    "hold": "28 -> 28",
+    "wrong_work_title_flip": "1 -> 0",
+    "repair_after_wrong_work": "1 -> 0",
+    "safe_loss_post_ids": [],
+    "safe_resolved_same_packet": "1 -> 1"
+  },
+  "gate_boundary": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO",
+    "targeted_stop_condition": "GO_TARGETED",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "full375_collateral": "NOT_OPEN",
+    "approval_claim": false
+  },
+  "notes": [
+    "Data Analytics 전용 도구는 설치 확인이 완료되지 않아 현재 repo reader-facing JSON artifact로 정량 요약을 남겼다.",
+    "Loop462의 publication contract GO는 구조 수렴만 의미하며 semantic 정답성을 보장하지 않는다.",
+    "생산 코드에는 post_id/title-specific hardcoding, 작품 전용 registry, slang DB write-back을 추가하지 않았다."
+  ]
+}

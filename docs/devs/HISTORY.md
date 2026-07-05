@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-05 - Loop461-463 11666713 21세기 무림 wrong-work closure
+
+- 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- `11666713`은 Loop461에서 `promotion_blocked/null`, Loop462에서 wrong publish `21세기를 여행하는 무림인을 위한 안내서`, Loop463에서 correct publish `21세기 무림세가`로 수렴했다.
+- `orchestrator.py`는 제목-본문 work-review 공식 probe를 pruning에서 보존했고, `decoder.py`는 공식 후보끼리 경쟁할 때 본문 표면과 공식 검색 근거가 더 강한 현재 후보를 약어 스코어만 높은 다른 공식 후보로 교체하지 않게 했다.
+- Loop463 run `20260705_111849_337561`은 input/completed/flushed/pending/failed `1/1/1/0/0`, MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`, row search query/degraded/unrecovered `7/0/0`으로 완료됐다.
+- Result는 `official_title=21세기 무림세가`, `official_url=https://page.kakao.com/content/49668687?tab_type=about`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`, `publish_allowed=true`다.
+- Health audit는 `GO / clean_completed_source`, search evidence는 `GO`, publication contract는 `GO / 0 violations`다. Loop462의 publication contract `GO`는 구조 계약만 의미하며 semantic 정답성은 NO-GO였다.
+- Stop-condition audit는 queue `95 -> 94`, same packet `11666713`, safe_resolved `1 -> 1`, safe loss `[]`, gate `GO`다.
+- 사용자 도메인 보정을 유지했다. `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명으로만 보지 않는다. 웹소설 내부에서 갤러리/댓글식 커뮤니티를 서사 장치로 엮은 오마주형 제목, 약어, 세계관 장치일 수 있다.
+- Report는 `docs/devs/loop_reports/LOOP_461_463_REPORT_20260705.md`, state는 `docs/devs/loop463_11666713_21c_murim_wrong_work_runtime_20260705.json`, Data Analytics summary는 `docs/devs/loop463_11666713_21c_murim_wrong_work_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop460 11700500 전1시 wrong-work runtime closure
 
 - 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
