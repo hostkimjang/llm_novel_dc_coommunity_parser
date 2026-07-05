@@ -1,5 +1,17 @@
 # Improvement Register
 
+## IMP-20260705-474 - 11671514 악신총애 corrected-title closure
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| 대형 런 동결 | 유지 | full375/bounded/N5/동일 38-row parent replay 미발주 | 동결 유지 |
+| Runtime 생산 | GO | run `20260705_173757_685425`, `1/1/1/0/0` | 다음도 단건/작은 lane만 |
+| Residual expected 교정 | 교정됨 | C1 `악신에게 총애받는 자`가 아니라 `악신이 총애하는 모험가`로 수렴 | stale expected-title로 재승인 금지 |
+| Publication contract | GO | audit `row_count 1`, violation `0` | contract audit 계속 상시화 |
+| Search evidence | REVIEW | `search_timeout_observed`, `search_degraded_observed` | broader search recovery P0 유지 |
+| Residual queue | 감소 | `84 -> 83`, `REPROCESS 56 -> 55`, `HOLD 28` | queue delta를 approval로 승격 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | goal 완료 처리 금지 |
+
 ## IMP-20260705-472 - 11669943 즉사무림 safe-loss closure
 
 | 항목 | 상태 | 근거 | 다음 |

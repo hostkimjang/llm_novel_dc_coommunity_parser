@@ -1,5 +1,18 @@
 ﻿# Developer TODO Index
 
+## 2026-07-05 Loop474 TODO
+
+- 상태 업데이트: Loop474은 `11671514` safe-loss를 기존 C1 `악신에게 총애받는 자`가 아니라 live source-native 교정값 `악신이 총애하는 모험가` / `https://novelpia.com/novel/357967`로 닫았다. Residual queue는 `84 -> 83`, `repair_safe_loss 56 -> 55`이지만 goal은 완료가 아니다.
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] Run `20260705_173757_685425`은 `1/1/1/0/0`, publication contract `GO / 0 violations`, stop-condition `GO`다.
+- [x] 제목 `악신총애`, 본문 `하진우의 그림자`, 댓글 `세라`, `미궁의 주인`, official detail이 `악신이 총애하는 모험가`로 수렴했음을 확인했다.
+- [x] 이미지 2건은 `character_visual_only`, `promotion_eligible=false`로 제목 근거에서 제외했다.
+- [x] `악신총애`는 persistent slang DB write-back으로 저장하지 않았다.
+- [ ] Expert run health search evidence는 `REVIEW`다. `search_timeout_observed`, `search_degraded_observed`가 있어 broader search recovery 완료로 세지 않는다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 queue delta를 full scan approval로 승격하지 않는다.
+- [ ] 다음은 residual `REPROCESS 55 / HOLD 28` 중 작은 lane으로 진행한다. 현재 첫 REPROCESS는 `11671517`이지만 title truncation/variant 위험이 있어 blind source-native 우선순위를 다시 확인한다. docs-only 반복은 정지 신호다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop473 TODO
 
 - 상태 업데이트: Loop473은 `11671500` safe-loss를 `악당은 살고 싶다` / `https://m.munpia.com/novel/detail/236702`로 닫았다. Residual queue는 `85 -> 84`, `repair_safe_loss 57 -> 56`이지만 goal은 완료가 아니다.

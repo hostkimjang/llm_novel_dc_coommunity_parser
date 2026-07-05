@@ -1,0 +1,78 @@
+{
+  "loop": 474,
+  "post_id": 11671514,
+  "base_head": "4feb4763",
+  "working_tree_patch": false,
+  "status": "targeted_runtime_closed_corrected_title_not_approval",
+  "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop474_11671514_aksin_chongaes_safe_loss_input.jsonl",
+  "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop474_11671514_aksin_chongaes_safe_loss_search_nonlight_result.json",
+  "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop474_11671514_aksin_chongaes_safe_loss_search_nonlight_result_manifest.json",
+  "log": "logs/expert_run_20260705_173757_685425.log",
+  "run": {
+    "run_id": "20260705_173757_685425",
+    "input_completed_flushed_pending_failed": "1/1/1/0/0",
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_failure": "1/0",
+    "vlm_ocr_ready": true,
+    "executed_queries": 11,
+    "valid_queries": 8,
+    "no_result_queries": 3,
+    "cumulative_results": 40,
+    "engine_warning_queries": 1,
+    "degraded_zero_queries": 1,
+    "retried_queries": 5
+  },
+  "source_native_correction": {
+    "residual_selected_title": "악신에게 총애받는 자",
+    "residual_selected_url": "https://novelpia.com/novel/137926",
+    "runtime_corrected_title": "악신이 총애하는 모험가",
+    "runtime_corrected_url": "https://novelpia.com/novel/357967",
+    "disposition": "old_expected_title_not_affirmed_live_source_native_corrected"
+  },
+  "result_identity": {
+    "official_title": "악신이 총애하는 모험가",
+    "official_url": "https://novelpia.com/novel/357967",
+    "candidate_ledger_status": "safe_resolved",
+    "safe_resolved": true,
+    "title_resolution_state": "resolved",
+    "work_resolution": "resolved",
+    "discussion_type": "character_talk",
+    "promotion_decision_status": "publish",
+    "publish_allowed": true,
+    "bypassed_gate": false
+  },
+  "image_boundary": {
+    "image_count": 2,
+    "evidence_type": "character_visual_only",
+    "promotion_eligible": false,
+    "used_as_title_evidence": false
+  },
+  "audits": {
+    "expert_run_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop474_11671514_aksin_chongaes_safe_loss_expert_run_health.json",
+    "goal_test_runtime_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop474_11671514_aksin_chongaes_safe_loss_run_health.json",
+    "publication_contract": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop474_11671514_aksin_chongaes_safe_loss_publication_contract.json",
+    "residual_queue": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop474_after_11671514_aksin_chongaes_corrected_title_residual_action_queue.json",
+    "stop_condition": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop474_11671514_goal_convergence_stop_condition.json"
+  },
+  "queue": {
+    "previous": 84,
+    "current": 83,
+    "previous_reprocess": 56,
+    "current_reprocess": 55,
+    "hold": 28,
+    "validation_issue_count": 0
+  },
+  "gates": {
+    "targeted_runtime": "GO / 1 of 1",
+    "expert_run_health": "GO_flush_integrity_REVIEW_search_evidence",
+    "goal_test_runtime_audit": "REVIEW_small_run_policy_conflicts_with_requested_nonlight_search",
+    "publication_contract": "GO",
+    "stop_condition": "GO",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}
+

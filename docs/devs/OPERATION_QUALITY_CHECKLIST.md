@@ -1,5 +1,21 @@
 # Operation Quality Checklist
 
+## 2026-07-05 Loop474 11671514 악신총애 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_474_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop474_11671514_aksin_chongaes_safe_loss_runtime_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop474_11671514_aksin_chongaes_data_analytics_artifact.json`.
+  - [x] Publication contract audit 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop474_11671514_aksin_chongaes_safe_loss_publication_contract.json`.
+  - [x] Stop-condition audit 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop474_11671514_goal_convergence_stop_condition.json`.
+- 품질 경계:
+  - [x] Residual C1 `악신에게 총애받는 자`는 그대로 승인하지 않고 corrected-title closure로 기록했다.
+  - [x] 이미지 2건은 `character_visual_only`, `promotion_eligible=false`라 제목 근거에서 제외했다.
+  - [x] Persistent slang DB write-back, hardcoded cue/title list, `post_id` 예외를 추가하지 않았다.
+  - [ ] Search evidence는 `REVIEW`다. `search_timeout_observed`, `search_degraded_observed`가 있어 broader search recovery 완료로 세지 않는다.
+  - [ ] Full375 collateral은 `NOT_OPEN`이다.
+- Gate: targeted runtime `GO / 1 of 1`, publication `GO`, search `REVIEW`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop472 11669943 즉사무림 safe-loss 품질 게이트
 
 - 근거:

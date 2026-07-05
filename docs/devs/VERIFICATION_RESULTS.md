@@ -1,5 +1,22 @@
 # Verification Results
 
+## 2026-07-05 Loop474 11671514 악신총애 corrected-title 검증
+
+- 범위: residual `repair_safe_loss`의 `11671514` 단건을 current HEAD `4feb4763` clean 워킹트리에서 search 포함 non-light 조건으로 실행하고, corrected-title closure, publication contract, stop-condition을 감사했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_474_REPORT_20260705.md`
+  - state `docs\devs\loop474_11671514_aksin_chongaes_safe_loss_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop474_11671514_aksin_chongaes_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop474_11671514_aksin_chongaes_safe_loss_search_nonlight_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop474_11671514_aksin_chongaes_safe_loss_search_nonlight_result_manifest.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop474_11671514_aksin_chongaes_safe_loss_expert_run_health.json`
+- Runtime: run `20260705_173757_685425`, input/completed/flushed/pending/failed `1/1/1/0/0`, VLM/OCR `READY`, MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`.
+- Semantic result: residual C1 `악신에게 총애받는 자`는 확정하지 않았고, final public title은 `악신이 총애하는 모험가`, URL은 `https://novelpia.com/novel/357967`이다.
+- Publication contract: `GO / row_count 1 / violation_row_count 0`.
+- Expert health: `flush_integrity=GO / clean_completed_source`, `publication_contract_convergence=GO`, search evidence `REVIEW` with `search_timeout_observed`, `search_degraded_observed`.
+- Queue: residual `84 -> 83`, `REPROCESS 56 -> 55`, `HOLD 28`, validation issue `0`.
+- Gate 유지: targeted runtime `GO / 1 of 1`, search evidence `REVIEW`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop473 11671500 악살싶 safe-loss 검증
 
 - 범위: residual `repair_safe_loss`의 `11671500` 단건을 current HEAD `504a5aa4` 기반 워킹트리에서 search 포함 non-light 조건으로 실행하고, publication contract와 stop-condition을 감사했다.

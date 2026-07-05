@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-05 Loop474 11671514 악신총애 corrected-title safe-loss 체크
+
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `11671514` 단건을 current HEAD `4feb4763` clean 워킹트리에서 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- [x] Run `20260705_173757_685425`은 input/completed/flushed/pending/failed `1/1/1/0/0`, MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`으로 완료됐다.
+- [x] Residual C1 `악신에게 총애받는 자`를 그대로 승인하지 않고, live source-native 근거로 `악신이 총애하는 모험가` / `https://novelpia.com/novel/357967` 교정을 기록했다.
+- [x] Public publish contract는 `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`, `publish_allowed=true`, `bypassed_gate=false`다.
+- [x] 제목 `악신총애`, 본문 `하진우의 그림자`, 댓글 `세라`, `미궁의 주인`이 같은 current work character_talk로 수렴했음을 확인했다.
+- [x] 두 이미지는 `character_visual_only`, `promotion_eligible=false`, `image_ocr_title_evidence=false`라 제목 근거로 쓰지 않았다.
+- [x] Slang DB write-back, R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry를 추가하지 않았다.
+- [x] Publication contract audit는 `GO / row_count 1 / violation_row_count 0`이다.
+- [x] Stop-condition audit는 queue `84 -> 83`, same packet safe `1 -> 1`, gate `GO`다.
+- [ ] Expert run health search evidence는 `REVIEW`다. `search_timeout_observed`, `search_degraded_observed`가 있어 broader search recovery 완료로 세지 않는다.
+- [ ] Goal/test runtime audit는 소규모 런 기본 정책 때문에 `REVIEW`다. 이번 회차는 사용자 요구상 search 포함 non-light 실증이므로 별도 expert run health와 분리해서 본다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 queue delta를 full scan approval로 승격하지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `REVIEW`, stop-condition `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / OPEN_SEARCH_DEGRADED`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop473 11671500 악살싶 safe-loss 체크
 
 - [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

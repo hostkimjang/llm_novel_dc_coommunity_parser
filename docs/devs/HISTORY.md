@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-05 - Loop474 11671514 악신총애 corrected-title safe-loss runtime closure
+
+- 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- Current HEAD `4feb4763` clean 워킹트리에서 residual `repair_safe_loss` 행 `11671514`를 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- Residual C1은 `악신에게 총애받는 자` / `https://novelpia.com/novel/137926`였지만, runtime은 이를 그대로 긍정하지 않고 `악신총애 -> 악신이 총애하는 모험가` / `https://novelpia.com/novel/357967`로 live source-native 교정했다.
+- 원문 제목 `악신총애`, 본문 `하진우의 그림자`, 댓글 `세라`, `미궁의 주인`은 같은 작품의 character_talk anchor로 결속됐다.
+- 두 이미지는 `character_visual_only`, `promotion_eligible=false`, `image_ocr_title_evidence=false`라 제목 근거로 쓰지 않았다.
+- Run `20260705_173757_685425`은 input/completed/flushed/pending/failed `1/1/1/0/0`, MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`, search 실행 `11`건으로 완료됐다.
+- Result는 `official_title=악신이 총애하는 모험가`, `official_url=https://novelpia.com/novel/357967`, `candidate_ledger_status=safe_resolved`, `title_resolution_state=resolved`, `work_resolution=resolved`, `promotion_decision.status=publish`, `publish_allowed=true`다.
+- Expert run health는 `flush_integrity=GO / clean_completed_source`, publication contract는 `GO / 0 violations`지만 search evidence는 `REVIEW / search_timeout_observed / search_degraded_observed`다.
+- Stop-condition audit는 queue `84 -> 83`, same packet `11671514`, safe_resolved `1 -> 1`, safe loss `[]`, gate `GO`다.
+- Report는 `docs/devs/loop_reports/LOOP_474_REPORT_20260705.md`, state는 `docs/devs/loop474_11671514_aksin_chongaes_safe_loss_runtime_20260705.json`, Data Analytics summary는 `docs/devs/loop474_11671514_aksin_chongaes_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `REVIEW`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / OPEN_SEARCH_DEGRADED`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop473 11671500 악살싶 safe-loss runtime closure
 
 - 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
