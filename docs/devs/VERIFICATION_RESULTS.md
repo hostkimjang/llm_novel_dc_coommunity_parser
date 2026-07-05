@@ -1,5 +1,26 @@
 # Verification Results
 
+## 2026-07-05 Loop475 11671517 기계공주 title-variant 검증
+
+- 범위: residual `repair_safe_loss`의 `11671517` 단건을 current HEAD `1a7f333b`에서 search 포함 non-light 조건으로 실행하고, publication contract와 stop-condition을 감사했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_475_REPORT_20260705.md`
+  - state `docs\devs\loop475_11671517_machine_princess_title_variant_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop475_11671517_machine_princess_title_variant_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop475_11671517_machine_princess_title_variant_search_nonlight_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop475_11671517_machine_princess_title_variant_search_nonlight_result_manifest.json`
+  - expert run health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop475_11671517_machine_princess_title_variant_expert_run_health.json`
+  - goal/test runtime audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop475_11671517_machine_princess_title_variant_run_health.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop475_11671517_machine_princess_title_variant_publication_contract.json`
+  - convergence audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop475_11671517_goal_convergence_stop_condition.json`
+- Runtime: run `20260705_180130_272344`, input/completed/flushed/pending/failed `1/1/1/0/0`, VLM/OCR `READY`, image fetch `1/1`, search query/degraded/unrecovered `10/0/0`, accepted/raw `59/161`.
+- Semantic result: previous packet은 `promotion_blocked / unresolved_matchable`였고, current packet은 `safe_resolved / resolved`다. Public publish title은 `헌터갤러리의 국가권력급 기계공주`, URL은 `https://novelpia.com/novel/390228`이다.
+- Publication contract: `GO / row_count 1 / violation_row_count 0`.
+- Expert health: `flush_integrity=GO / clean_completed_source`, `search_evidence=GO`, `publication_contract_convergence=GO`.
+- Goal/test runtime audit: `runtime_contract=REVIEW`; 소규모 기본 정책과 search 포함 non-light 요구가 충돌한 정책 REVIEW다.
+- Queue: residual `83 -> 82`, `REPROCESS 55 -> 54`, `HOLD 28`, validation issue `0`.
+- Gate 유지: targeted runtime `GO / 1 of 1`, search evidence `GO`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop474 11671514 악신총애 corrected-title 검증
 
 - 범위: residual `repair_safe_loss`의 `11671514` 단건을 current HEAD `4feb4763` clean 워킹트리에서 search 포함 non-light 조건으로 실행하고, corrected-title closure, publication contract, stop-condition을 감사했다.

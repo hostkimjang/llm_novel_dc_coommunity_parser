@@ -1,0 +1,48 @@
+{
+  "artifact_type": "data_analytics_runtime_summary",
+  "loop": 475,
+  "post_id": 11671517,
+  "answer_first": "Loop475는 11671517 safe-loss를 헌터갤러리의 국가권력급 기계공주 / https://novelpia.com/novel/390228 로 닫았지만 full-scan approval은 아니다.",
+  "evidence": [
+    "Run 20260705_180130_272344 completed/flushed/pending/failed = 1/1/0/0 with VLM/OCR READY.",
+    "Image OCR 직접 근거가 기계공주, 헌터갤러리의 국가권력급 기계 공주, 작가명 쟈장가를 포함했다.",
+    "Search health at row level was GO: queries/degraded/unrecovered = 10/0/0, accepted/raw = 59/161.",
+    "Previous same packet source was promotion_blocked/unresolved_matchable; current packet is safe_resolved/resolved.",
+    "Publication contract audit reported GO with 0 violations."
+  ],
+  "source_context": {
+    "post_title": "기계공주 작가 여초딩임?",
+    "comments": [
+      "19금 떡소설 쓴 거 보고오셈",
+      "플레시골렘 작가네 / 좀 보다 말았었는데 전혀 눈치 못챘다"
+    ],
+    "domain_note": "갤러리 표면은 현실 DC 갤러리명으로 단정하지 않고 작품 제목 또는 작중 커뮤니티 오마주 표면일 수 있음을 유지한다."
+  },
+  "artifact_paths": {
+    "report": "docs/devs/loop_reports/LOOP_475_REPORT_20260705.md",
+    "state": "docs/devs/loop475_11671517_machine_princess_title_variant_runtime_20260705.json",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop475_11671517_machine_princess_title_variant_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop475_11671517_machine_princess_title_variant_search_nonlight_result_manifest.json",
+    "expert_run_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop475_11671517_machine_princess_title_variant_expert_run_health.json",
+    "goal_test_runtime_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop475_11671517_machine_princess_title_variant_run_health.json",
+    "publication_contract": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop475_11671517_machine_princess_title_variant_publication_contract.json",
+    "stop_condition": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop475_11671517_goal_convergence_stop_condition.json"
+  },
+  "gates": {
+    "targeted_runtime": "GO / 1 of 1",
+    "expert_run_health": "GO",
+    "goal_test_runtime_contract": "REVIEW",
+    "publication_contract": "GO",
+    "search_evidence": "GO",
+    "stop_condition": "GO_TARGETED",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "caveats": [
+    "단건 runtime과 residual queue delta는 full scan approval이 아니다.",
+    "Verifier의 slang DB 저장 제안은 persistent write-back으로 채택하지 않았다.",
+    "Goal/test runtime audit REVIEW는 search 포함 non-light 단건 검증 조건과 small-run 기본 정책의 충돌이다."
+  ]
+}

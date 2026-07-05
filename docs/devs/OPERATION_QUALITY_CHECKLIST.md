@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-05 Loop475 11671517 기계공주 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_475_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop475_11671517_machine_princess_title_variant_runtime_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop475_11671517_machine_princess_title_variant_data_analytics_artifact.json`.
+  - [x] Expert run health `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`를 기록했다.
+  - [x] Stop-condition audit artifact를 기록했다: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop475_11671517_goal_convergence_stop_condition.json`.
+  - [x] Residual queue delta `83 -> 82`, `repair_safe_loss 55 -> 54`를 기록했다.
+- 품질 경계:
+  - [x] `기계공주`를 title alias로 보되, public title은 official detail/OCR의 `헌터갤러리의 국가권력급 기계공주`로 닫는다.
+  - [x] `헌터갤러리`의 `갤러리` 표면은 현실 커뮤니티 단정이 아니라 작품 full title/작중 커뮤니티 오마주 표면으로 처리한다.
+  - [x] `플레시골렘`은 같은 작가 전작 언급으로만 보존한다.
+  - [x] Persistent slang DB write-back, hardcoded cue/title list, `post_id` 예외를 추가하지 않았다.
+  - [ ] Goal/test runtime audit는 search 포함 non-light 조건 때문에 `REVIEW`다.
+  - [ ] Full375 collateral은 `NOT_OPEN`이다.
+- Gate: targeted runtime `GO / 1 of 1`, expert health `GO`, publication `GO`, search `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop474 11671514 악신총애 품질 게이트
 
 - 근거:

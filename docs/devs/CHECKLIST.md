@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-05 Loop475 11671517 기계공주 title-variant safe-loss 체크
+
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `11671517` 단건을 current HEAD `1a7f333b` clean 워킹트리에서 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- [x] Run `20260705_180130_272344`은 input/completed/flushed/pending/failed `1/1/1/0/0`, MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`으로 완료됐다.
+- [x] 이미지 OCR은 `기계공주`, `헌터갤러리의 국가권력급 기계 공주`, 작가 `쟈장가`를 explicit work title 근거로 잡았다.
+- [x] 이전 packet `promotion_blocked / unresolved_matchable`를 현재 `safe_resolved / resolved`로 바꿨다.
+- [x] Public scalar `identity.official_title=null` 경계를 기록하고, `primary_work`/`publish_ledger`/`publish_contract_trace`의 public publish가 `헌터갤러리의 국가권력급 기계공주` / `https://novelpia.com/novel/390228`임을 확인했다.
+- [x] `헌터갤러리`의 `갤러리` 표면은 현실 DC 갤러리명 단정이 아니라 작품 제목/작중 커뮤니티 오마주 표면으로 처리했다.
+- [x] `플레시골렘`은 같은 작가 전작 언급으로 보존하고 primary work로 승격하지 않았다.
+- [x] Slang DB write-back, R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry를 추가하지 않았다.
+- [x] Expert run health는 `flush_integrity=GO`, `search_evidence=GO`, `publication_contract_convergence=GO`다.
+- [x] Publication contract audit는 `GO / row_count 1 / violation_row_count 0`이다.
+- [x] Stop-condition audit는 queue `83 -> 82`, same packet `11671517`, safe_resolved `0 -> 1`, gate `GO`다.
+- [ ] Goal/test runtime audit는 소규모 런 기본 정책 때문에 `REVIEW`다. 이번 회차는 사용자 요구상 search 포함 non-light 실증이므로 expert run health와 분리해서 본다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 queue delta를 full scan approval로 승격하지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, expert run health `GO`, goal/test runtime contract `REVIEW`, publication contract `GO`, search evidence `GO`, stop-condition `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop474 11671514 악신총애 corrected-title safe-loss 체크
 
 - [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

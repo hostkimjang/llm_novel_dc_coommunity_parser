@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260705-475 - 11671517 기계공주 title-variant closure
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| 대형 런 동결 | 유지 | full375/bounded/N5/동일 38-row parent replay 미발주 | 동결 유지 |
+| Runtime 생산 | GO | run `20260705_180130_272344`, `1/1/1/0/0` | 다음도 단건/작은 lane만 |
+| Title variant | 교정됨 | `헌터갤러리의 국가권력급 기계공주 마이너 ...` truncation block에서 canonical full title publish로 수렴 | truncation title 재승격 금지 |
+| Publication contract | GO | audit `row_count 1`, violation `0` | contract audit 계속 상시화 |
+| Search evidence | GO_ROW_LEVEL | query/degraded/unrecovered `10/0/0`, accepted/raw `59/161` | broader recovery는 row-level로만 기록 |
+| 도메인 정책 | 적용 | `헌터갤러리`를 현실 갤러리 단정이 아닌 작품 full title/작중 커뮤니티 오마주 표면으로 처리 | `아생갤`류 표면도 source-native 확인 |
+| Slang DB | 보류 | `--slang-db off`, BatchMem 일반명사형 약칭 즉시등록 보류 | write-back 금지 유지 |
+| Residual queue | 감소 | `83 -> 82`, `REPROCESS 55 -> 54`, `HOLD 28` | queue delta를 approval로 승격 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | goal 완료 처리 금지 |
+
+Gate: targeted runtime `GO / 1 of 1`, expert run health `GO`, goal/test runtime contract `REVIEW`, publication contract `GO`, search evidence `GO`, targeted stop-condition `GO_TARGETED / 83 -> 82 / safe 0 -> 1`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260705-474 - 11671514 악신총애 corrected-title closure
 
 | 항목 | 상태 | 근거 | 다음 |

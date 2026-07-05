@@ -1,5 +1,15 @@
 # Slang DB Improvement TODO
 
+## 2026-07-05 Loop475 11671517 기계공주 slang 주의사항
+
+- [x] `--slang-db off` 조건으로 Loop475 단건 runtime을 실행했다.
+- [x] `기계공주 -> 헌터갤러리의 국가권력급 기계공주`는 image OCR, Novelpia official detail, explicit alias bridge로 safe-resolved publish됐지만, persistent slang DB write-back으로 처리하지 않았다.
+- [x] Verifier는 `store_in_slang_db=true / pure_work_alias`를 제안했으나, 이번 산출물은 row-local runtime proof와 residual queue delta로만 기록한다.
+- [x] BatchMem도 일반명사형 약칭 `기계공주` 즉시등록을 보류했다.
+- [x] `헌터갤러리`의 `갤러리` 표면은 현실 커뮤니티 단정이 아니라 작품/커뮤니티 오마주형 제목, 약어, 장치로 기록했다.
+- [ ] 이 단건 closure를 alias/slang 전체 품질 승인, hard-hold 완화, full375 approval로 승격하지 않는다.
+- Gate: slang DB write-back 아님, targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL / 83 -> 82`, search recovery broader `P0 / ROW_LEVEL_GO_ONLY`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop472 11669943 즉사무림 slang 주의사항
 
 - [x] `--slang-db off` 조건으로 Loop472 단건 runtime을 실행했다.

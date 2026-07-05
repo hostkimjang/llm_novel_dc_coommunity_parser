@@ -1,4 +1,18 @@
-﻿# Developer TODO Index
+# Developer TODO Index
+
+## 2026-07-05 Loop475 TODO
+
+- 상태 업데이트: Loop475는 `11671517` safe-loss를 `헌터갤러리의 국가권력급 기계공주` / `https://novelpia.com/novel/390228`로 닫았다. Residual queue는 `83 -> 82`, `repair_safe_loss 55 -> 54`이지만 goal은 완료가 아니다.
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] Run `20260705_180130_272344`은 `1/1/1/0/0`, expert run health `GO`, search evidence `GO`, publication contract `GO / 0 violations`다.
+- [x] 이미지 OCR의 `기계공주`, `헌터갤러리의 국가권력급 기계 공주`, `쟈장가`가 current work direct image bridge로 수렴했음을 확인했다.
+- [x] `헌터갤러리`는 현실 갤러리 단정이 아니라 작품 full title/작중 커뮤니티 오마주 표면으로 처리했다.
+- [x] `플레시골렘`은 같은 작가 전작 언급으로만 보존했다.
+- [x] Slang DB write-back, hardcoded cue/title list, `post_id` 예외, 작품 전용 registry를 추가하지 않았다.
+- [ ] Goal/test runtime audit는 소규모 런 기본 정책 때문에 `REVIEW`다. 이번 회차의 search 포함 non-light 요구와 분리해서 본다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 queue delta를 full scan approval로 승격하지 않는다.
+- [ ] 다음은 residual `REPROCESS 54 / HOLD 28` 중 작은 lane으로 진행한다. 현재 첫 REPROCESS는 `11676310` (`마도줍 시리즈 왔구나` -> `마도서를 줍다 마법사가 되다`)이며, 유사 표면 `마도줍`의 wrong-work survey 위험을 blind source-native로 먼저 확인한다. docs-only 반복은 정지 신호다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-05 Loop474 TODO
 
@@ -10,7 +24,7 @@
 - [x] `악신총애`는 persistent slang DB write-back으로 저장하지 않았다.
 - [ ] Expert run health search evidence는 `REVIEW`다. `search_timeout_observed`, `search_degraded_observed`가 있어 broader search recovery 완료로 세지 않는다.
 - [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 queue delta를 full scan approval로 승격하지 않는다.
-- [ ] 다음은 residual `REPROCESS 55 / HOLD 28` 중 작은 lane으로 진행한다. 현재 첫 REPROCESS는 `11671517`이지만 title truncation/variant 위험이 있어 blind source-native 우선순위를 다시 확인한다. docs-only 반복은 정지 신호다.
+- [x] 다음 후보였던 `11671517`은 Loop475에서 current HEAD runtime으로 닫았다. 이후 residual은 `REPROCESS 54 / HOLD 28`이다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-05 Loop473 TODO

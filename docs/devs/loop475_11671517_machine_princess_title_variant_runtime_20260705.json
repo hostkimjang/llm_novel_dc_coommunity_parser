@@ -1,0 +1,70 @@
+{
+  "loop": 475,
+  "post_id": 11671517,
+  "label": "machine_princess_title_variant_safe_loss",
+  "generated_at": "2026-07-05",
+  "head_at_start": "1a7f333b",
+  "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop475_11671517_machine_princess_title_variant_input.jsonl",
+  "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop475_11671517_machine_princess_title_variant_search_nonlight_result.json",
+  "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop475_11671517_machine_princess_title_variant_search_nonlight_result_manifest.json",
+  "run": {
+    "run_id": "20260705_180130_272344",
+    "input_posts": 1,
+    "completed": 1,
+    "flushed": 1,
+    "pending": 0,
+    "failed": 0,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok": 1,
+    "mcp_health_failure": 0,
+    "vlm_ocr_ready": true,
+    "image_fetch": "1/1",
+    "search_queries": 10,
+    "search_degraded": 0,
+    "search_unrecovered_degraded": 0,
+    "search_accepted": 59,
+    "search_raw": 161
+  },
+  "result_identity": {
+    "public_scalar_official_title": null,
+    "primary_work_title": "헌터갤러리의 국가권력급 기계공주",
+    "primary_work_url": "https://novelpia.com/novel/390228",
+    "candidate_ledger_status": "safe_resolved",
+    "title_resolution_state": "resolved",
+    "work_resolution": "resolved",
+    "promotion_status": "publish",
+    "publish_allowed": true,
+    "bypassed_gate": false
+  },
+  "previous_packet": {
+    "source": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop07_wrong_work_disambiguation_7_result.json#post_id=11671517",
+    "candidate_ledger_status": "promotion_blocked",
+    "title_resolution_state": "unresolved_matchable",
+    "blocked_title": "헌터갤러리의 국가권력급 기계공주 마이너 ...",
+    "blocked_url": "https://novelpia.com/novel/390228"
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_475_REPORT_20260705.md",
+    "data_analytics": "docs/devs/loop475_11671517_machine_princess_title_variant_data_analytics_artifact.json",
+    "expert_run_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop475_11671517_machine_princess_title_variant_expert_run_health.json",
+    "goal_test_runtime_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop475_11671517_machine_princess_title_variant_run_health.json",
+    "publication_contract": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop475_11671517_machine_princess_title_variant_publication_contract.json",
+    "residual_queue": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop475_after_11671517_machine_princess_title_variant_residual_action_queue.json",
+    "stop_condition": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop475_11671517_goal_convergence_stop_condition.json"
+  },
+  "gates": {
+    "targeted_runtime": "GO / 1 of 1",
+    "expert_run_health": "GO",
+    "goal_test_runtime_contract": "REVIEW",
+    "publication_contract": "GO",
+    "search_evidence": "GO",
+    "stop_condition": "GO_TARGETED / 83 -> 82 / safe 0 -> 1",
+    "residual_queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL",
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

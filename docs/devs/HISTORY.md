@@ -1,5 +1,20 @@
 # Development History
 
+## 2026-07-05 - Loop475 11671517 기계공주 title-variant safe-loss runtime closure
+
+- 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- Current HEAD `1a7f333b` clean 워킹트리에서 residual `repair_safe_loss` 행 `11671517`을 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- 이전 packet은 `헌터갤러리의 국가권력급 기계공주 마이너 ...` truncation title을 `promotion_blocked / unresolved_matchable`로 보존했지만, 현재 run은 `기계공주 -> 헌터갤러리의 국가권력급 기계공주`로 safe-resolved publish했다.
+- 이미지 OCR은 작품 상세 화면에서 `기계공주`, `헌터갤러리의 국가권력급 기계 공주`, 작가 `쟈장가`를 직접 잡았다.
+- `플레시골렘`은 같은 작가 전작 언급으로 보존했고 primary work로 승격하지 않았다.
+- `헌터갤러리`의 `갤러리` 표면은 현실 DC 갤러리명으로 단정하지 않고 작품 title/작중 커뮤니티 오마주 표면으로 처리했다.
+- Run `20260705_180130_272344`은 input/completed/flushed/pending/failed `1/1/1/0/0`, VLM/OCR `READY`, search query/degraded/unrecovered `10/0/0`, accepted/raw `59/161`로 완료됐다.
+- Result는 `primary_work=헌터갤러리의 국가권력급 기계공주`, `primary_work_url=https://novelpia.com/novel/390228`, `candidate_ledger_status=safe_resolved`, `title_resolution_state=resolved`, `work_resolution=resolved`, `promotion_decision.status=publish`, `publish_allowed=true`다.
+- Expert run health는 `GO / clean_completed_source`, search evidence는 `GO`, publication contract는 `GO / 0 violations`다. Goal/test runtime audit는 소규모 런 기본 정책 때문에 `REVIEW`다.
+- Stop-condition audit는 queue `83 -> 82`, same packet `11671517`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- Report는 `docs/devs/loop_reports/LOOP_475_REPORT_20260705.md`, state는 `docs/devs/loop475_11671517_machine_princess_title_variant_runtime_20260705.json`, Data Analytics summary는 `docs/devs/loop475_11671517_machine_princess_title_variant_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop474 11671514 악신총애 corrected-title safe-loss runtime closure
 
 - 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
