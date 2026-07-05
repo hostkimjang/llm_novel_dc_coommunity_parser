@@ -1,12 +1,25 @@
 # Developer TODO Index
 
+## 2026-07-06 Loop486 TODO
+
+- 상태 업데이트: Loop485 exact-match projected safe `9`건 runtime replay는 완료됐지만 expected-title은 `7/9 PASS`라 goal은 완료가 아니다.
+- [x] `9`건 runtime replay를 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- [x] Run health audit, goal/test runtime audit, publication contract audit를 생성했다.
+- [x] Loop486 report/state/summary를 한국어로 작성했다.
+- [ ] `11685987`은 expected `괴담 동아리`와 actual `[괴담 동아리] 겨울`의 차이를 source-native/blind judge로 판정한다.
+- [ ] `11692444`는 expected `엑스칼리버 뽑습니다`와 actual `엑스칼리버 는 뽑았는데 신탁이 엉터리잖아!`의 차이를 source-native/blind judge로 판정한다.
+- [ ] `11694035`는 `아카데미 생존 갤러리` 후보를 publish하지 않은 `promotion_blocked / candidate_only` 원인이 정당한지 trace한다.
+- [ ] Search degraded 복구 전 promotion_blocked는 `search-blind conditional`로 태깅한다.
+- [ ] Full375 collateral `NO-GO`를 닫기 전 bounded/full375 동결 해제나 goal 완료를 주장하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop485 TODO
 
 - 상태 업데이트: Loop484 projection `59`건을 후속 queue로 분해했다. Queue는 `REPROCESS 24 / HOLD 35`, priority `P0 12 / P1 17 / P2 30`, validation issue `0`이고 goal은 완료가 아니다.
 - [x] `tools/build_projection_followup_queue.py`를 추가해 projection rows를 후속 lane으로 분류했다.
 - [x] `tests.test_projection_followup_queue`에 lane split과 runtime input 생성 계약을 추가했다.
 - [x] Exact-match projected safe `9`건 runtime input JSONL/manifest를 생성했다.
-- [ ] Exact `9`건 runtime replay를 search 포함 non-light 조건으로 실행한다.
+- [x] Exact `9`건 runtime replay는 Loop486에서 실행했다. 단 expected-title `7/9`라 semantic gate는 `NO-GO`다.
 - [ ] P0 lint `3`건은 public ledger와 publish_contract_trace consistency를 수리한다.
 - [ ] P1 support gap `12`건은 shared gate/candidate preservation repair로 분리한다.
 - [ ] P1 canonical/source-native variant `5`건은 source-native 또는 blind review로 정당 해소 여부를 확정한다.

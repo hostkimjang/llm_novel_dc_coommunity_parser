@@ -1,5 +1,35 @@
 # Verification Results
 
+## 2026-07-06 Loop486 exact9 runtime replay 검증
+
+- 범위: Loop485 exact-match projected safe `9`건을 실제 runtime replay로 검증했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_486_REPORT_20260706.md`
+  - state `docs\devs\loop486_shared_gate_exact9_runtime_state_20260706.json`
+  - summary `docs\devs\loop486_shared_gate_exact9_runtime_summary_20260706.json`
+  - run health audit `docs\devs\loop486_shared_gate_exact9_run_health_audit.json`
+  - goal/test runtime audit `docs\devs\loop486_shared_gate_exact9_goal_test_run_contract_audit.json/.md`
+  - publication contract audit `docs\devs\loop486_shared_gate_exact9_publication_contract_audit.json/.md`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop486_shared_gate_exact9_runtime_replay_result.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop486_shared_gate_exact9_runtime_replay_result_manifest.json`
+- Result:
+  - runtime completed/flushed/pending/failed `9/9/0/0`
+  - run health `GO / clean_completed_source`
+  - expected-title `NO-GO / 7 of 9`
+  - expected-title mismatch post_id `11685987`, `11692444`
+  - publication contract `GO / 0 violations`
+  - search evidence `REVIEW / search_degraded_observed`, unrecovered degraded total `17`
+  - `11694035`는 title 표면이 맞지만 `promotion_blocked / candidate_only / publish_allowed=false`라 safe_resolved가 아니다.
+- Validation:
+  - Loop486 runtime replay command completed PASS
+  - `.\venv\Scripts\python.exe tools\audit_expert_run_health.py ...` PASS, flush integrity `GO`
+  - `.\venv\Scripts\python.exe tools\audit_goal_test_run_contract.py ...` PASS, runtime contract `REVIEW`
+  - `.\venv\Scripts\python.exe tools\audit_publication_contract_convergence.py ...` PASS, gate `GO`
+- Boundary:
+  - Runtime 생산성은 회복됐지만 semantic approval은 아니다.
+  - Search degraded가 남아 promotion_blocked는 `search-blind conditional`로 유지한다.
+  - Full375 collateral은 `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop485 shared gate projection follow-up queue 검증
 
 - 범위: Loop484 projection `59`건을 후속 action queue로 분해하고 exact-match projected safe `9`건 runtime input을 생성했다.

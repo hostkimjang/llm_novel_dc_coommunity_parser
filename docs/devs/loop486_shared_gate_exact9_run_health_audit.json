@@ -1,0 +1,484 @@
+{
+  "generated_at": "2026-07-06T04:08:45",
+  "run_id": "20260706_035613_577781",
+  "artifact_resolution": {
+    "resolution": "explicit_paths",
+    "artifact_prefix": "20260706_035613_577781",
+    "explicit_overrides": [
+      "manifest",
+      "checkpoint",
+      "result_json",
+      "pending_snapshot",
+      "input_jsonl",
+      "log_glob"
+    ],
+    "manifest_run_id": "20260706_035613_577781",
+    "manifest": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop486_shared_gate_exact9_runtime_replay_result_manifest.json",
+    "checkpoint": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop486_shared_gate_exact9_runtime_replay_result_checkpoint.jsonl",
+    "result_json": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop486_shared_gate_exact9_runtime_replay_result.json",
+    "pending_snapshot": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop486_shared_gate_exact9_runtime_replay_result_pending_snapshot.json",
+    "input_jsonl": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\inputs\\loop485_shared_gate_exact9_runtime_replay_input.jsonl",
+    "worker_log_count": 10
+  },
+  "manifest": {
+    "run_id": "20260706_035613_577781",
+    "output_file": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop486_shared_gate_exact9_runtime_replay_result.json",
+    "checkpoint_jsonl": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop486_shared_gate_exact9_runtime_replay_result_checkpoint.jsonl",
+    "pending_snapshot": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop486_shared_gate_exact9_runtime_replay_result_pending_snapshot.json",
+    "completed_subset_json": "",
+    "completed_subset_manifest": "",
+    "completed_subset_written": false,
+    "completed_subset_count": 0,
+    "completed_subset_reason": "",
+    "requested_parallel_raw": 9,
+    "requested_parallel": 9,
+    "effective_parallel": 9,
+    "parallel_count": 9,
+    "parallel_policy": "effective_parallel=min(min(requested_parallel_raw,model_parallel_max),input_post_count)",
+    "model_parallel_max": 36,
+    "model_parallel_cap_applied": false,
+    "model_parallel_cap_model": "bg-digitalservices/Gemma-4-E4B-it-NVFP4",
+    "llm_model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+    "llm_endpoint": "http://10.20.0.101:8000/",
+    "llm_stream_first_token_timeout_seconds": "",
+    "llm_stream_idle_timeout_seconds": "",
+    "llm_stream_signal_idle_timeout_seconds": "",
+    "input_post_count": 9,
+    "vlm_enabled": true,
+    "ocr_enabled": true,
+    "image_post_count": 6,
+    "image_post_sample_post_ids": [
+      11660265,
+      11661881,
+      11676314,
+      11685987,
+      11694035,
+      11713220
+    ],
+    "image_posts_present": true,
+    "vlm_ocr_semantic_review_ready": true,
+    "vlm_ocr_semantic_review_skip_reasons": [],
+    "vlm_ocr_semantic_review_skip_reason": "",
+    "vlm_ocr_semantic_review_required_for_images": true,
+    "vlm_ocr_semantic_review_blocker": false,
+    "vlm_ocr_semantic_review_blocker_code": "",
+    "vlm_ocr_semantic_review_blocker_action": "",
+    "vlm_ocr_semantic_review_warning": "",
+    "mcp_auto_up_shards": false,
+    "mcp_auto_recreate_shards": false,
+    "mcp_auto_scale_up_missing_shards": false,
+    "mcp_local_shard_management_enabled": false,
+    "mcp_local_shard_status_audit": false,
+    "mcp_local_shard_status_audit_requested": false,
+    "mcp_local_shard_status_audit_allowed": false,
+    "mcp_shard_lifecycle_policy": "docker_up_recreate_opt_in+missing_shard_scale_up_default_on",
+    "mcp_allow_goal_shard_lifecycle": false,
+    "mcp_command_shard_lifecycle_allowed": false,
+    "mcp_interactive_codex_run": true,
+    "mcp_env_shard_lifecycle_requested": false,
+    "mcp_env_shard_lifecycle_global_opt_in": false,
+    "mcp_env_shard_lifecycle_allowed": false,
+    "mcp_env_shard_lifecycle_blocked_by_context": false,
+    "mcp_shard_lifecycle_block_threshold": 36,
+    "mcp_run_post_count_for_lifecycle": 9,
+    "mcp_small_targeted_run": true,
+    "mcp_small_run_shard_lifecycle_blocked": true,
+    "mcp_endpoints": "http://127.0.0.1:3333,http://127.0.0.1:3334",
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_required_ok_count": 2,
+    "mcp_health_checked_endpoint_count": 2,
+    "mcp_health_probe_batch_size": 2,
+    "mcp_health_probe_stopped_after_required_ok": false,
+    "mcp_health_workers": 2,
+    "mcp_health_attempts": 1,
+    "mcp_health_timeout_sec": 8.0,
+    "mcp_health_search_max_latency_ms": 8000.0,
+    "mcp_health_search_min_results": 1,
+    "mcp_health_ok_count": 2,
+    "mcp_health_failure_count": 0,
+    "mcp_missing_shard_scale_up_allowed": false,
+    "mcp_missing_shard_scale_up_triggered": false,
+    "mcp_missing_shard_scale_up_shards": "",
+    "mcp_missing_shard_scale_up_recovered_endpoints": 0,
+    "mcp_missing_shard_scale_up_error": "",
+    "mcp_healthy_endpoint_filter": false,
+    "mcp_healthy_endpoint_filter_reason": "reuse_shards_only",
+    "mcp_healthy_endpoint_filter_autogen": true,
+    "mcp_healthy_autogen_endpoint_filter": false,
+    "mcp_healthy_autogen_endpoint_filter_reason": "reuse_shards_only",
+    "mcp_reuse_shards_only_health_filtered": false,
+    "mcp_goal_run_health_filtered": false,
+    "mcp_requested_endpoint_count_before_health_filter": 2,
+    "mcp_healthy_endpoint_count": 2,
+    "mcp_endpoint_count_after_health_filter": 2,
+    "mcp_parallel_before_health_filter": 9,
+    "mcp_parallel_after_health_filter": 9,
+    "completed_count": 9,
+    "flushed_count": 9,
+    "pending_count": 0,
+    "failed_count": 0,
+    "next_save_idx": 10,
+    "partial_flush_gap": false,
+    "ordered_flush_blocked": false,
+    "large_run_complete": true
+  },
+  "input_source": {
+    "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\inputs\\loop485_shared_gate_exact9_runtime_replay_input.jsonl",
+    "exists": true,
+    "lookup_method": "expert_main_post_map_order_without_model_import",
+    "post_count": 9,
+    "line_count": 9,
+    "comment_row_count": 0,
+    "load_error": null
+  },
+  "result_json": {
+    "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop486_shared_gate_exact9_runtime_replay_result.json",
+    "exists": true,
+    "shape": "list",
+    "row_count": 9,
+    "load_error": null
+  },
+  "result_rows": 9,
+  "checkpoint_rows": 9,
+  "pending_count_actual": 0,
+  "flush_integrity": {
+    "run_integrity_gate": "GO",
+    "classification": "clean_completed_source",
+    "completion_ready": true,
+    "approval_ready": true,
+    "blockers": [],
+    "counts": {
+      "manifest_input_post_count": 9,
+      "manifest_completed_count": 9,
+      "manifest_flushed_count": 9,
+      "manifest_pending_count": 0,
+      "manifest_failed_count": 0,
+      "checkpoint_completed_count": 9,
+      "checkpoint_failed_count": 0,
+      "result_rows": 9,
+      "pending_snapshot_rows": 0,
+      "completed_minus_flushed": 0
+    },
+    "consistency": {
+      "result_rows_eq_flushed_count": true,
+      "checkpoint_completed_eq_manifest_completed": true,
+      "checkpoint_failed_eq_manifest_failed": true,
+      "pending_snapshot_rows_eq_manifest_pending": true,
+      "pending_snapshot_rows_eq_completed_minus_flushed": true
+    },
+    "frontier": {
+      "next_save_idx": 10,
+      "status": "complete_after_last_index",
+      "reason": "next_save_idx_after_completed_input",
+      "source_post": null,
+      "frontier_in_checkpoint_completed": false,
+      "frontier_in_pending_snapshot": false,
+      "completed_index_min": 1,
+      "completed_index_max": 9,
+      "pending_index_min": null,
+      "pending_index_max": null,
+      "first_pending_at_or_after_frontier": null,
+      "first_completed_at_or_after_frontier": null,
+      "frontier_gap_global_idx": null
+    },
+    "pending_blocker_samples": []
+  },
+  "frontier_worker_trace": {
+    "target": null,
+    "status": "no_source_post",
+    "event_count": 0,
+    "events": []
+  },
+  "search_evidence": {
+    "gate": "REVIEW",
+    "approval_ready": false,
+    "direct_probe_in_manifest": true,
+    "manifest": {
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_ok_count": 2,
+      "mcp_health_failure_count": 0
+    },
+    "row_search_health": {
+      "rows_with_search_health": 9,
+      "status_counts": {
+        "SEARCH_DEGRADED": 7,
+        "SEARCH_DEGRADED_RECOVERED": 2
+      },
+      "flag_counts": {},
+      "rows_with_upstream_zero": 8,
+      "rows_with_degraded": 7,
+      "query_total": 97,
+      "degraded_total": 74,
+      "degraded_recovered_total": 52,
+      "unrecovered_degraded_total": 17
+    },
+    "worker_log_search": {
+      "search_timeout": 0,
+      "search_degraded_detected": 14,
+      "search_upstream_zero": 46,
+      "search_bridge_after_filter_zero": 0
+    },
+    "blockers": [
+      "search_degraded_observed"
+    ]
+  },
+  "publication_contract_convergence": {
+    "gate": "GO",
+    "approval_ready": true,
+    "result_json": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop486_shared_gate_exact9_runtime_replay_result.json",
+    "summary": {
+      "row_count": 9,
+      "violation_row_count": 0,
+      "violation_counts": {}
+    },
+    "violations": [],
+    "blockers": []
+  },
+  "status_counts": {
+    "completed": 9
+  },
+  "identity_state_counts": {
+    "resolved_title": 5,
+    "unresolved_title": 4
+  },
+  "discussion_type_counts_top": {
+    "general": 4,
+    "character_talk": 4,
+    "review": 1
+  },
+  "topicality_counts": {
+    "core_relevant": 9
+  },
+  "work_resolution_counts": {
+    "resolved": 8,
+    "unresolved": 1
+  },
+  "novel_confidence_counts": {
+    "High": 7,
+    "Medium": 1,
+    "": 1
+  },
+  "consistency_flag_counts_top": {
+    "verified_alias_title_only_publication": 5,
+    "serialized_public_identity_shared_gate_restored": 5,
+    "verified_alias_official_detail_anchor": 4,
+    "explicit_alias_official_work_lock": 3,
+    "llm_only_sentence_candidate_pruned": 3,
+    "weak_public_title_bridge_verified_alias_detail_exempt": 2,
+    "vlm_ocr_title_conflict_with_final_title": 2,
+    "ocr_title_conflict_with_stable_alias": 2,
+    "same_url_official_detail_canonicalized": 2,
+    "platform_seo_title_suffix_canonicalized": 2,
+    "promoted_image_work_title_conflicts_with_public_title": 2,
+    "official_url_recall_gate_recovered": 2,
+    "known_title_abbreviation_candidate_preserved": 2,
+    "notes_demoted_for_unresolved": 2,
+    "confirmed_alias:마도줍": 1,
+    "non_novel_media_url_cleared": 1,
+    "image_surface_title_unverified_without_official_evidence": 1,
+    "batch_memory_exact_alias_rescued": 1,
+    "batch_memory_alias_rescue_cleared_stale_demotions": 1,
+    "title_lead_alias_official_detail_release": 1,
+    "confirmed_alias:괴담동": 1,
+    "weak_public_title_bridge_batch_alias_exact_exempt": 1,
+    "adjacent_title_cleared": 1,
+    "confirmed_alias:마녀도시": 1,
+    "batch_memory_alias_rescue_blocked_by_author_meta": 1,
+    "confirmed_alias:엑칼뽑": 1,
+    "primary_work_cleared_non_core": 1,
+    "batch_memory_alias_rescue_blocked_deliberate_null": 1,
+    "batch_memory_alias_rescue_blocked_after_title_deliberately_null": 1,
+    "known_title_abbreviation:여신애호": 1,
+    "known_title_abbreviation_official_detail_anchor": 1,
+    "confirmed_alias:여신애호": 1,
+    "post_alias_official_detail_bridge_anchor": 1,
+    "local_candidate_hold_preserved": 1,
+    "ocr_explicit_title_unresolved": 1
+  },
+  "reason_error_count": 0,
+  "reason_error_samples": [],
+  "query_stats": {
+    "parsed_count": 4,
+    "avg_executed_queries": 9.5,
+    "p95_executed_queries": 12,
+    "max_executed_queries": 12,
+    "avg_degraded_queries": 7.25,
+    "max_degraded_queries": 9
+  },
+  "slang": {
+    "slang_insight_count": 6,
+    "old_store_true_count": 4,
+    "new_store_true_after_patch_count": 3,
+    "old_store_true_blocked_by_patch_count": 1,
+    "blocked_reason_counts": {
+      "unclear_canonical_alias": 1
+    },
+    "blocked_samples": [
+      {
+        "post_id": 11685987,
+        "post_title": "괴담동 뭔데 팸돔임?",
+        "detected_term": "괴담동",
+        "decoded_term": "괴담 동아리",
+        "old_store_in_slang_db": true,
+        "old_store_reason": "pure_work_alias",
+        "old_alias_scope": "pure_work_alias",
+        "new_store_in_slang_db": false,
+        "new_store_reason": "unclear_canonical_alias",
+        "new_alias_scope": "pure_work_alias",
+        "new_canonical_work_alias": null,
+        "official_title": "[괴담 동아리] 겨울",
+        "discussion_type": "character_talk",
+        "topicality": "core_relevant",
+        "work_resolution": "resolved"
+      }
+    ],
+    "kept_samples": [
+      {
+        "post_id": 11716498,
+        "post_title": "마녀도시 작가 이민갔다옴?",
+        "detected_term": "마녀도시",
+        "decoded_term": "마녀의 도시",
+        "old_store_in_slang_db": true,
+        "old_store_reason": "pure_work_alias",
+        "old_alias_scope": "pure_work_alias",
+        "new_store_in_slang_db": true,
+        "new_store_reason": "pure_work_alias",
+        "new_alias_scope": "pure_work_alias",
+        "new_canonical_work_alias": "마녀도시",
+        "official_title": "마녀의 도시",
+        "discussion_type": "general",
+        "topicality": "core_relevant",
+        "work_resolution": "resolved"
+      },
+      {
+        "post_id": 11692444,
+        "post_title": "엑칼뽑 캐빨 어떰?",
+        "detected_term": "엑칼뽑",
+        "decoded_term": "엑스칼리버는 뽑았는데 신탁이 엉터리잖아!",
+        "old_store_in_slang_db": true,
+        "old_store_reason": "pure_work_alias",
+        "old_alias_scope": "pure_work_alias",
+        "new_store_in_slang_db": true,
+        "new_store_reason": "pure_work_alias",
+        "new_alias_scope": "pure_work_alias",
+        "new_canonical_work_alias": "엑칼뽑",
+        "official_title": "엑스칼리버 는 뽑았는데 신탁이 엉터리잖아!",
+        "discussion_type": "character_talk",
+        "topicality": "core_relevant",
+        "work_resolution": "resolved"
+      },
+      {
+        "post_id": 11661881,
+        "post_title": "여신애호) 잉잉이의 정체...",
+        "detected_term": "여신애호",
+        "decoded_term": "여신이 나만 애호함",
+        "old_store_in_slang_db": true,
+        "old_store_reason": "pure_work_alias",
+        "old_alias_scope": "pure_work_alias",
+        "new_store_in_slang_db": true,
+        "new_store_reason": "pure_work_alias",
+        "new_alias_scope": "pure_work_alias",
+        "new_canonical_work_alias": "여신애호",
+        "official_title": "여신이 나만 애호함",
+        "discussion_type": "general",
+        "topicality": "core_relevant",
+        "work_resolution": "resolved"
+      }
+    ],
+    "slang_db": {
+      "title_count": 544,
+      "slang_term_count": 351,
+      "sentence_or_exact_bad_remaining": 0,
+      "bad_remaining_samples": []
+    }
+  },
+  "logs": {
+    "worker_log_count": 10,
+    "post_start_count_in_worker_logs": 18,
+    "post_complete_count_in_worker_logs": 18,
+    "counts": {
+      "title_anchor_exact_probe_lines": 62,
+      "search_upstream_zero": 46,
+      "headless_meta_lines": 48,
+      "search_degraded_detected": 14
+    },
+    "worker_counts_top": {
+      "expert_run_20260706_035613_577781.log": {
+        "title_anchor_exact_probe_lines": 31,
+        "headless_meta_lines": 24,
+        "search_upstream_zero": 23,
+        "search_degraded_detected": 14,
+        "post_start": 9,
+        "post_complete": 9
+      },
+      "W3": {
+        "search_upstream_zero": 6,
+        "headless_meta_lines": 5,
+        "post_start": 1,
+        "title_anchor_exact_probe_lines": 1,
+        "post_complete": 1
+      },
+      "W0": {
+        "headless_meta_lines": 10,
+        "search_upstream_zero": 5,
+        "post_start": 1,
+        "title_anchor_exact_probe_lines": 1,
+        "post_complete": 1
+      },
+      "W1": {
+        "search_upstream_zero": 5,
+        "title_anchor_exact_probe_lines": 5,
+        "headless_meta_lines": 4,
+        "post_start": 1,
+        "post_complete": 1
+      },
+      "W2": {
+        "search_upstream_zero": 2,
+        "post_start": 1,
+        "title_anchor_exact_probe_lines": 1,
+        "post_complete": 1
+      },
+      "W6": {
+        "search_upstream_zero": 2,
+        "post_start": 1,
+        "post_complete": 1
+      },
+      "W5": {
+        "title_anchor_exact_probe_lines": 7,
+        "headless_meta_lines": 2,
+        "post_start": 1,
+        "search_upstream_zero": 1,
+        "post_complete": 1
+      },
+      "W7": {
+        "title_anchor_exact_probe_lines": 10,
+        "post_start": 1,
+        "headless_meta_lines": 1,
+        "search_upstream_zero": 1,
+        "post_complete": 1
+      },
+      "W8": {
+        "title_anchor_exact_probe_lines": 5,
+        "headless_meta_lines": 2,
+        "post_start": 1,
+        "search_upstream_zero": 1,
+        "post_complete": 1
+      },
+      "W4": {
+        "post_start": 1,
+        "title_anchor_exact_probe_lines": 1,
+        "post_complete": 1
+      }
+    },
+    "headless_engine_counts": {},
+    "processing_error_samples": []
+  },
+  "rates": {
+    "reason_error_rate_pct": 0.0,
+    "resolved_title_rate_pct": 55.56,
+    "unresolved_title_rate_pct": 44.44,
+    "headless_line_per_completed_pct": 0.0
+  }
+}

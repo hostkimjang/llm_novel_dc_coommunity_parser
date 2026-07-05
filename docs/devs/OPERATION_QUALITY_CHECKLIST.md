@@ -1,5 +1,25 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop486 exact9 runtime replay 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_486_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop486_shared_gate_exact9_runtime_state_20260706.json`.
+  - [x] Summary JSON 기록 완료: `docs/devs/loop486_shared_gate_exact9_runtime_summary_20260706.json`.
+  - [x] Run health audit 기록 완료: `docs/devs/loop486_shared_gate_exact9_run_health_audit.json`.
+  - [x] Publication contract audit 기록 완료: `docs/devs/loop486_shared_gate_exact9_publication_contract_audit.json/.md`.
+  - [x] Runtime은 `9/9/0/0`으로 완료됐다.
+  - [x] Expected-title 비교는 `7/9 PASS`, `2/9 FAIL`로 기록했다.
+- 품질 경계:
+  - [x] Runtime completion은 semantic approval이 아니다.
+  - [x] Publication contract `GO`는 expected-title 정답성이나 full375 collateral 승인으로 쓰지 않는다.
+  - [x] `11694035`는 `아생갤` 도메인 규칙을 유지하되 이번 runtime에서는 `promotion_blocked / candidate_only`로 기록한다.
+  - [ ] Search evidence는 `REVIEW / search_degraded_observed`라 복구 전 promotion_blocked는 `search-blind conditional`이다.
+  - [ ] Expected-title mismatch `11685987`, `11692444`는 source-native/blind judge 검증이 필요하다.
+  - [ ] Full375 collateral은 여전히 `NO-GO`다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: runtime integrity `GO`, expected-title `NO-GO / 7 of 9`, publication contract `GO`, search evidence `REVIEW`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop485 shared gate projection follow-up queue 품질 게이트
 
 - 근거:
@@ -13,7 +33,7 @@
   - [x] Queue/input generation은 approval이 아니다.
   - [x] Exact projected safe rows도 runtime replay 전에는 해소 처리하지 않는다.
   - [x] Search recovery는 계속 `P0_OPEN`이다.
-  - [ ] Runtime replay after input은 아직 실행하지 않았다.
+  - [x] Runtime replay after input은 Loop486에서 실행했다. 단 expected-title `7/9`라 semantic gate는 `NO-GO`다.
   - [ ] Full375 collateral은 여전히 `NO-GO`다.
   - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
 - Gate: queue `REVIEW-LOCKED`, runtime input generation `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

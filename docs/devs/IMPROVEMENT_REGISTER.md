@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260706-486 - exact9 runtime replay semantic check
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime production | GO | run `20260706_035613_577781`, completed/flushed/pending/failed `9/9/0/0`, total `627.9s` | semantic mismatch 후속 |
+| Expected-title | NO-GO | `7/9 PASS`, mismatch `11685987`, `11692444` | source-native/blind judge |
+| Publication contract | GO | `0` violations | semantic approval 대체 금지 |
+| Search evidence | REVIEW | `search_degraded_observed`, unrecovered degraded total `17` | search recovery P0 유지 |
+| `11694035` | HOLD | `아카데미 생존 갤러리` 후보는 있으나 `promotion_blocked / candidate_only / publish_allowed=false` | 아생갤 도메인 규칙 유지 후 trace |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: runtime integrity `GO`, exact9 expected-title `NO-GO / 7 of 9`, publication contract `GO`, search evidence `REVIEW`, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-485 - shared gate projection follow-up queue
 
 | 항목 | 상태 | 근거 | 다음 |

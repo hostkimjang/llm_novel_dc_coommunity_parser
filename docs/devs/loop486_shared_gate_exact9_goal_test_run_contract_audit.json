@@ -1,0 +1,151 @@
+{
+  "audit_type": "goal_test_run_contract",
+  "generated_at": "2026-07-06T04:08:44",
+  "manifest_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop486_shared_gate_exact9_runtime_replay_result_manifest.json",
+  "log_paths": [
+    "logs\\expert_run_20260706_035613_577781.log",
+    "logs\\expert_run_20260706_035613_577781_W0.log",
+    "logs\\expert_run_20260706_035613_577781_W1.log",
+    "logs\\expert_run_20260706_035613_577781_W2.log",
+    "logs\\expert_run_20260706_035613_577781_W3.log",
+    "logs\\expert_run_20260706_035613_577781_W4.log",
+    "logs\\expert_run_20260706_035613_577781_W5.log",
+    "logs\\expert_run_20260706_035613_577781_W6.log",
+    "logs\\expert_run_20260706_035613_577781_W7.log",
+    "logs\\expert_run_20260706_035613_577781_W8.log"
+  ],
+  "auto_discovered_logs": true,
+  "log_evidence_present": true,
+  "expect_small_goal_run": true,
+  "small_run_threshold": 36,
+  "allow_lifecycle": false,
+  "allow_status_audit": false,
+  "observed": {
+    "run_id": "20260706_035613_577781",
+    "llm_model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+    "llm_endpoint": "http://10.20.0.101:8000/",
+    "requested_parallel_raw": 9,
+    "requested_parallel": 9,
+    "effective_parallel": 9,
+    "parallel_policy": "effective_parallel=min(min(requested_parallel_raw,model_parallel_max),input_post_count)",
+    "model_parallel_max": 36,
+    "model_parallel_cap_applied": false,
+    "input_post_count": 9,
+    "completed_count": 9,
+    "flushed_count": 9,
+    "pending_count": 0,
+    "failed_count": 0,
+    "image_post_count": 6,
+    "vlm_enabled": true,
+    "ocr_enabled": true,
+    "vlm_ocr_semantic_review_ready": true,
+    "mcp_auto_up_shards": false,
+    "mcp_auto_recreate_shards": false,
+    "mcp_local_shard_management_enabled": false,
+    "mcp_local_shard_status_audit": false,
+    "mcp_small_run_shard_lifecycle_blocked": true,
+    "mcp_healthy_endpoint_filter": false,
+    "mcp_requested_endpoint_count_before_health_filter": 2,
+    "mcp_endpoint_count_after_health_filter": 2,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_required_ok_count": 2,
+    "mcp_health_checked_endpoint_count": 2,
+    "mcp_health_probe_batch_size": 2,
+    "mcp_health_probe_stopped_after_required_ok": false,
+    "mcp_health_workers": 2,
+    "mcp_health_attempts": 1,
+    "mcp_health_timeout_sec": 8.0,
+    "mcp_health_ok_count": 2,
+    "mcp_health_failure_count": 0
+  },
+  "log_scan": {
+    "total_counts": {},
+    "files": [
+      {
+        "path": "logs\\expert_run_20260706_035613_577781.log",
+        "counts": {},
+        "samples": {}
+      },
+      {
+        "path": "logs\\expert_run_20260706_035613_577781_W0.log",
+        "counts": {},
+        "samples": {}
+      },
+      {
+        "path": "logs\\expert_run_20260706_035613_577781_W1.log",
+        "counts": {},
+        "samples": {}
+      },
+      {
+        "path": "logs\\expert_run_20260706_035613_577781_W2.log",
+        "counts": {},
+        "samples": {}
+      },
+      {
+        "path": "logs\\expert_run_20260706_035613_577781_W3.log",
+        "counts": {},
+        "samples": {}
+      },
+      {
+        "path": "logs\\expert_run_20260706_035613_577781_W4.log",
+        "counts": {},
+        "samples": {}
+      },
+      {
+        "path": "logs\\expert_run_20260706_035613_577781_W5.log",
+        "counts": {},
+        "samples": {}
+      },
+      {
+        "path": "logs\\expert_run_20260706_035613_577781_W6.log",
+        "counts": {},
+        "samples": {}
+      },
+      {
+        "path": "logs\\expert_run_20260706_035613_577781_W7.log",
+        "counts": {},
+        "samples": {}
+      },
+      {
+        "path": "logs\\expert_run_20260706_035613_577781_W8.log",
+        "counts": {},
+        "samples": {}
+      }
+    ]
+  },
+  "issues": [
+    {
+      "code": "small_run_health_include_search_true",
+      "severity": "REVIEW",
+      "evidence": "small goal/reuse-only run used search health instead of Bridge readiness only",
+      "action": "rerun_or_override_with_MCP_HEALTH_INCLUDE_SEARCH_0"
+    },
+    {
+      "code": "small_run_health_light_mode_false",
+      "severity": "REVIEW",
+      "evidence": "small goal/reuse-only run did not record light health mode",
+      "action": "review_expert_main_health_policy_or_rerun_with_v488_contract"
+    }
+  ],
+  "gate": {
+    "runtime_contract": "REVIEW",
+    "semantic_approval": "not_evaluated_by_runtime_contract_audit",
+    "reason": "runtime/log/manifest contract only; semantic decision quality remains separately gated"
+  },
+  "process_snapshot": {
+    "enabled": false,
+    "available": false,
+    "source": "disabled",
+    "patterns": [
+      "expert_main",
+      "llm_batch",
+      "warp_shards",
+      "vllm",
+      "uvicorn"
+    ],
+    "matching_process_count": 0,
+    "processes": [],
+    "stale_process_candidate_count": 0
+  }
+}

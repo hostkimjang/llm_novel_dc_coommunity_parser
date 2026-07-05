@@ -1,0 +1,349 @@
+{
+  "loop": "Loop486",
+  "generated_at": "2026-07-06T04:11:31",
+  "purpose": "Loop485 exact-match projected safe 9건을 search 포함 non-light 조건으로 실제 runtime replay하여 projection 과적합 여부를 확인한다.",
+  "run": {
+    "run_id": "20260706_035613_577781",
+    "result_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop486_shared_gate_exact9_runtime_replay_result.json",
+    "manifest_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop486_shared_gate_exact9_runtime_replay_result_manifest.json",
+    "input_manifest_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\inputs\\loop485_shared_gate_exact9_runtime_replay_input_manifest.json",
+    "log_path": "logs\\expert_run_20260706_035613_577781.log",
+    "input_post_count": 9,
+    "completed_count": 9,
+    "flushed_count": 9,
+    "pending_count": 0,
+    "failed_count": 0,
+    "effective_parallel": 9,
+    "vlm_enabled": true,
+    "ocr_enabled": true,
+    "vlm_ocr_semantic_review_ready": true,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_count": 2,
+    "mcp_health_failure_count": 0
+  },
+  "runtime_cli_summary": {
+    "total_time_seconds": 627.9,
+    "relevant": 9,
+    "identified_with_title": 8
+  },
+  "expected_title": {
+    "row_count": 9,
+    "pass_count": 7,
+    "fail_count": 2,
+    "failed_post_ids": [
+      11685987,
+      11692444
+    ]
+  },
+  "row_state_counts": {
+    "safe_resolved": 8,
+    "promotion_blocked": 1,
+    "candidate_ledger_status": {
+      "safe_resolved": 8,
+      "promotion_blocked": 1
+    },
+    "search_status": {
+      "SEARCH_DEGRADED_RECOVERED": 2,
+      "SEARCH_DEGRADED": 7
+    }
+  },
+  "search": {
+    "gate": "REVIEW",
+    "blockers": [
+      "search_degraded_observed"
+    ],
+    "unrecovered_degraded_total": 17,
+    "degraded_total": 74,
+    "query_total": 97
+  },
+  "audits": {
+    "run_health_path": "docs\\devs\\loop486_shared_gate_exact9_run_health_audit.json",
+    "flush_integrity_gate": "GO",
+    "flush_integrity_classification": "clean_completed_source",
+    "reason_error_count": 0,
+    "publication_contract_from_health": "GO",
+    "publication_contract_path": "docs\\devs\\loop486_shared_gate_exact9_publication_contract_audit.json",
+    "publication_contract_gate": "GO",
+    "publication_contract_violations": 0,
+    "runtime_contract_path": "docs\\devs\\loop486_shared_gate_exact9_goal_test_run_contract_audit.json",
+    "runtime_contract_gate": "REVIEW",
+    "runtime_contract_issues": [
+      {
+        "code": "small_run_health_include_search_true",
+        "severity": "REVIEW",
+        "evidence": "small goal/reuse-only run used search health instead of Bridge readiness only",
+        "action": "rerun_or_override_with_MCP_HEALTH_INCLUDE_SEARCH_0"
+      },
+      {
+        "code": "small_run_health_light_mode_false",
+        "severity": "REVIEW",
+        "evidence": "small goal/reuse-only run did not record light health mode",
+        "action": "review_expert_main_health_policy_or_rerun_with_v488_contract"
+      }
+    ]
+  },
+  "gates": {
+    "runtime_integrity": "GO",
+    "expected_title": "NO-GO",
+    "publication_contract": "GO",
+    "search_evidence": "REVIEW",
+    "goal_test_runtime_contract": "REVIEW",
+    "targeted_exact9_runtime": "NO-GO_EXPECTED_TITLE_7_OF_9",
+    "full375_collateral": "NO-GO",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "rows": [
+    {
+      "post_id": 11658620,
+      "post_title": "럽코빙의 원래도 그렇게 대놓고 언급 안했는데",
+      "expected_title": "이거 럽코 빙의물인가요",
+      "actual_public_title": "이거 럽코 빙의물인가요",
+      "expected_title_match": true,
+      "is_relevant": true,
+      "title_resolution_state": "resolved",
+      "candidate_ledger_status": "safe_resolved",
+      "safe_resolved": true,
+      "promotion_blocked": false,
+      "promotion_decision_status": "publish",
+      "publish_allowed": true,
+      "promotion_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "verified_alias_title_only_publication",
+        "official_url_withheld_by_title_mismatch",
+        "serialized_public_identity_shared_gate_restored",
+        "serialized_public_identity_published"
+      ],
+      "publish_contract_status": null,
+      "search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_queries": 15,
+      "search_degraded": 5,
+      "search_unrecovered_degraded": 0
+    },
+    {
+      "post_id": 11660265,
+      "post_title": "기계공주 전생 이브는 편이 오필리아뿐이었나",
+      "expected_title": "헌터갤러리의 국가권력급 기계공주",
+      "actual_public_title": "헌터갤러리의 국가권력급 기계공주",
+      "expected_title_match": true,
+      "is_relevant": true,
+      "title_resolution_state": "resolved",
+      "candidate_ledger_status": "safe_resolved",
+      "safe_resolved": true,
+      "promotion_blocked": false,
+      "promotion_decision_status": "publish",
+      "publish_allowed": true,
+      "promotion_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "verified_alias_title_only_publication",
+        "official_url_withheld_by_title_mismatch",
+        "serialized_public_identity_shared_gate_restored",
+        "serialized_public_identity_published"
+      ],
+      "publish_contract_status": null,
+      "search_status": "SEARCH_DEGRADED",
+      "search_queries": 15,
+      "search_degraded": 12,
+      "search_unrecovered_degraded": 5
+    },
+    {
+      "post_id": 11661881,
+      "post_title": "여신애호) 잉잉이의 정체...",
+      "expected_title": "여신이 나만 애호함",
+      "actual_public_title": "여신이 나만 애호함",
+      "expected_title_match": true,
+      "is_relevant": true,
+      "title_resolution_state": "resolved",
+      "candidate_ledger_status": "safe_resolved",
+      "safe_resolved": true,
+      "promotion_blocked": false,
+      "promotion_decision_status": "publish",
+      "publish_allowed": true,
+      "promotion_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "verified_alias_title_only_publication",
+        "official_url_withheld_by_title_mismatch",
+        "serialized_public_identity_shared_gate_restored",
+        "serialized_public_identity_published"
+      ],
+      "publish_contract_status": null,
+      "search_status": "SEARCH_DEGRADED",
+      "search_queries": 12,
+      "search_degraded": 9,
+      "search_unrecovered_degraded": 1
+    },
+    {
+      "post_id": 11676314,
+      "post_title": "마도줍 완결이 빠를까",
+      "expected_title": "마도서를 줍다 마법사가 되다",
+      "actual_public_title": "마도서를 줍다 마법사가 되다",
+      "expected_title_match": true,
+      "is_relevant": true,
+      "title_resolution_state": "resolved",
+      "candidate_ledger_status": "safe_resolved",
+      "safe_resolved": true,
+      "promotion_blocked": false,
+      "promotion_decision_status": "publish",
+      "publish_allowed": true,
+      "promotion_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "verified_alias_title_only_publication",
+        "official_url_withheld_by_title_mismatch",
+        "serialized_public_identity_shared_gate_restored",
+        "serialized_public_identity_published"
+      ],
+      "publish_contract_status": null,
+      "search_status": "SEARCH_DEGRADED",
+      "search_queries": 13,
+      "search_degraded": 13,
+      "search_unrecovered_degraded": 6
+    },
+    {
+      "post_id": 11685987,
+      "post_title": "괴담동 뭔데 팸돔임?",
+      "expected_title": "괴담 동아리",
+      "actual_public_title": "[괴담 동아리] 겨울",
+      "expected_title_match": false,
+      "is_relevant": true,
+      "title_resolution_state": "resolved",
+      "candidate_ledger_status": "safe_resolved",
+      "safe_resolved": true,
+      "promotion_blocked": false,
+      "promotion_decision_status": "publish",
+      "publish_allowed": true,
+      "promotion_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "batch_alias_public_title_bridge",
+        "official_detail_url",
+        "serialized_public_identity_published"
+      ],
+      "publish_contract_status": null,
+      "search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_queries": 9,
+      "search_degraded": 8,
+      "search_unrecovered_degraded": 0
+    },
+    {
+      "post_id": 11692444,
+      "post_title": "엑칼뽑 캐빨 어떰?",
+      "expected_title": "엑스칼리버 뽑습니다",
+      "actual_public_title": "엑스칼리버 는 뽑았는데 신탁이 엉터리잖아!",
+      "expected_title_match": false,
+      "is_relevant": true,
+      "title_resolution_state": "resolved",
+      "candidate_ledger_status": "safe_resolved",
+      "safe_resolved": true,
+      "promotion_blocked": false,
+      "promotion_decision_status": "publish",
+      "publish_allowed": true,
+      "promotion_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "resolved_public_title_scope",
+        "official_detail_url",
+        "serialized_public_identity_published"
+      ],
+      "publish_contract_status": null,
+      "search_status": "SEARCH_DEGRADED",
+      "search_queries": 9,
+      "search_degraded": 8,
+      "search_unrecovered_degraded": 1
+    },
+    {
+      "post_id": 11694035,
+      "post_title": "아생갤) 가장 무서웠던 순간이",
+      "expected_title": "아카데미 생존 갤러리",
+      "actual_public_title": "아카데미 생존 갤러리",
+      "expected_title_match": true,
+      "is_relevant": true,
+      "title_resolution_state": "author_new_work_context",
+      "candidate_ledger_status": "promotion_blocked",
+      "safe_resolved": false,
+      "promotion_blocked": true,
+      "promotion_decision_status": "candidate_only",
+      "publish_allowed": false,
+      "promotion_reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "scope_context_only",
+        "scope_not_current_work",
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "serialized_public_identity_scrubbed"
+      ],
+      "publish_contract_status": null,
+      "search_status": "SEARCH_DEGRADED",
+      "search_queries": 4,
+      "search_degraded": 4,
+      "search_unrecovered_degraded": 2
+    },
+    {
+      "post_id": 11713220,
+      "post_title": "성좌안무서움 이거 도시락 사장은 정체 뭐임?",
+      "expected_title": "나만 성좌들이 안 무서움",
+      "actual_public_title": "나만 성좌들이 안 무서움",
+      "expected_title_match": true,
+      "is_relevant": true,
+      "title_resolution_state": "resolved",
+      "candidate_ledger_status": "safe_resolved",
+      "safe_resolved": true,
+      "promotion_blocked": false,
+      "promotion_decision_status": "publish",
+      "publish_allowed": true,
+      "promotion_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "verified_alias_title_only_publication",
+        "official_url_withheld_by_title_mismatch",
+        "serialized_public_identity_shared_gate_restored",
+        "serialized_public_identity_published"
+      ],
+      "publish_contract_status": null,
+      "search_status": "SEARCH_DEGRADED",
+      "search_queries": 8,
+      "search_degraded": 7,
+      "search_unrecovered_degraded": 1
+    },
+    {
+      "post_id": 11716498,
+      "post_title": "마녀도시 작가 이민갔다옴?",
+      "expected_title": "마녀의 도시",
+      "actual_public_title": "마녀의 도시",
+      "expected_title_match": true,
+      "is_relevant": true,
+      "title_resolution_state": "resolved",
+      "candidate_ledger_status": "safe_resolved",
+      "safe_resolved": true,
+      "promotion_blocked": false,
+      "promotion_decision_status": "publish",
+      "publish_allowed": true,
+      "promotion_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "resolved_public_title_scope",
+        "official_detail_url",
+        "serialized_public_identity_published"
+      ],
+      "publish_contract_status": null,
+      "search_status": "SEARCH_DEGRADED",
+      "search_queries": 12,
+      "search_degraded": 8,
+      "search_unrecovered_degraded": 1
+    }
+  ]
+}

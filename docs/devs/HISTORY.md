@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-06 - Loop486 exact9 runtime replay
+
+- Loop485 exact-match projected safe `9`건을 search 포함 non-light, VLM/OCR on, `--slang-db off`, parallel `9`로 실행했다.
+- Run `20260706_035613_577781`은 completed/flushed/pending/failed `9/9/0/0`, total time `627.9s`, VLM/OCR `READY`로 완료됐다.
+- Run health는 `GO / clean_completed_source`, publication contract convergence는 `GO / 0 violations`다.
+- Expected-title 검증은 `7/9 PASS`, `2/9 FAIL`이다.
+- 실패 행은 `11685987` expected `괴담 동아리` 대비 actual `[괴담 동아리] 겨울`, `11692444` expected `엑스칼리버 뽑습니다` 대비 actual `엑스칼리버 는 뽑았는데 신탁이 엉터리잖아!`다.
+- `11694035`는 `아카데미 생존 갤러리` 표면을 잡았지만 `promotion_blocked / candidate_only / publish_allowed=false`라 safe_resolved로 계산하지 않는다.
+- Search evidence는 `REVIEW / search_degraded_observed`, unrecovered degraded total `17`이다.
+- Report는 `docs/devs/loop_reports/LOOP_486_REPORT_20260706.md`, state는 `docs/devs/loop486_shared_gate_exact9_runtime_state_20260706.json`, summary는 `docs/devs/loop486_shared_gate_exact9_runtime_summary_20260706.json`이다.
+- Gate는 runtime integrity `GO`, expected-title `NO-GO / 7 of 9`, publication contract `GO`, search evidence `REVIEW`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop485 shared gate projection follow-up queue
 
 - Loop484 projection `59`건을 runtime replay, canonical/source-native review, lint contract, still-blocked review lane으로 분해했다.

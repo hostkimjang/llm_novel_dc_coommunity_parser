@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-06 Loop486 exact9 runtime replay 체크
+
+- [x] Loop485 exact-match projected safe `9`건을 search 포함 non-light 조건으로 실행했다.
+- [x] Runtime은 completed/flushed/pending/failed `9/9/0/0`으로 닫혔다.
+- [x] Run health는 `GO / clean_completed_source`다.
+- [x] Publication contract는 `GO / 0 violations`다.
+- [x] Expected-title 비교를 전수 수행했다.
+- [ ] Expected-title gate는 `7/9 PASS`라 아직 `NO-GO`다.
+- [ ] `11685987`은 `[괴담 동아리] 겨울`이 bracket/episode surface 오염인지 source-native로 확인한다.
+- [ ] `11692444`는 `엑스칼리버` 계열 wrong-work 또는 canonical variant인지 blind/source-native로 확인한다.
+- [ ] `11694035`는 `아생갤` 도메인 규칙을 유지하되 `promotion_blocked / candidate_only` 원인을 trace한다.
+- [ ] Search evidence는 `REVIEW / search_degraded_observed`라 복구 전 promotion_blocked는 `search-blind conditional`로 유지한다.
+- [ ] Full375 collateral은 여전히 `NO-GO`다.
+- [ ] 완료 기준은 여전히 `full375 collateral GO + full_scan 경로 정의`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: runtime integrity `GO`, expected-title `NO-GO / 7 of 9`, publication contract `GO`, search evidence `REVIEW`, full375 collateral `NO-GO`.
+
 ## 2026-07-06 Loop485 shared gate projection follow-up queue 체크
 
 - [x] Loop484 projection `59`건을 후속 action queue로 분해했다.
@@ -9,7 +26,7 @@
 - [x] P0 lint `3`건, P1 support gap `12`건, P1 canonical/source-native variant `5`건, P2 hold/manual `30`건으로 분리했다.
 - [x] Runtime input JSONL은 rows `9`, missing `0`으로 생성했다.
 - [x] py_compile, `tests.test_projection_followup_queue` `3` tests, queue/input generation을 통과했다.
-- [ ] Exact `9`건 runtime replay는 아직 실행하지 않았다.
+- [x] Exact `9`건 runtime replay는 Loop486에서 실행했다. 단 expected-title `7/9`라 semantic gate는 `NO-GO`다.
 - [ ] Full375 collateral은 여전히 `NO-GO`다.
 - [ ] 완료 기준은 여전히 `full375 collateral GO + full_scan 경로 정의`다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
