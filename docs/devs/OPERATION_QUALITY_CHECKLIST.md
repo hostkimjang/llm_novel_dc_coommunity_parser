@@ -1,5 +1,22 @@
 # Operation Quality Checklist
 
+## 2026-07-05 Loop457 11716448 아생갤 wrong-work runtime 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_457_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop457_11716448_asaenggal_wrong_work_runtime_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop457_11716448_asaenggal_wrong_work_data_analytics_artifact.json`.
+  - [x] Health audit `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`를 기록했다.
+  - [x] Stop-condition audit artifact를 기록했다: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop457_11716448_goal_convergence_stop_condition.json`.
+  - [x] Residual queue delta `99 -> 98`, `wrong_work_title_flip 5 -> 4`, `repair_after_wrong_work 5 -> 4`를 기록했다.
+- 품질 게이트:
+  - [x] `아생갤`을 현실 DC 갤러리명으로만 보지 않고 웹소설 `아카데미 생존 갤러리`의 작중 갤러리/커뮤니티 오마주형 제목 약어로 닫는다.
+  - [x] 공식 URL `https://novelpia.com/novel/380218`과 `아레스/엘리/라나/괴이` 인물·설정 앵커를 함께 요구한다.
+  - [x] 단건 targeted runtime과 residual queue delta를 golden18/full375 approval로 승격하지 않는다.
+  - [x] search row-level `GO`와 broader search recovery `P0 / ROW_LEVEL_GO_ONLY`를 분리한다.
+  - [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 하지 않았음을 명시한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-05 Loop456 11702090 괴담 호텔 탈출기 character+setting bridge runtime 품질 게이트
 
 - 근거:

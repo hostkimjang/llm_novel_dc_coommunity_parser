@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-05 Loop457 11716448 아생갤 wrong-work runtime 체크
+
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `11716448` 단건을 current HEAD `9ebc19fb`에서 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- [x] 사용자 도메인 보정을 적용했다: `아생갤`은 현실 DC 갤러리명만이 아니라 웹소설 `아카데미 생존 갤러리`의 작중 갤러리/커뮤니티 오마주형 제목 약어일 수 있다.
+- [x] Run `20260705_093534_298769`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`로 완료됐다.
+- [x] MCP health는 `include_search=true`, `light_mode=false`, ok/failure `1/0`이고 row search는 query/degraded/unrecovered `12/0/0`이다.
+- [x] VLM/OCR은 `READY`, image fetch `1/1`이다. OCR은 반응 이미지 수준이라 title 확정 근거로 쓰지 않았다.
+- [x] Public publish contract는 `official_title=아카데미 생존 갤러리`, `official_url=https://novelpia.com/novel/380218`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`다.
+- [x] Source-native verdict `before_correct_after_wrong`의 `아생갤`/`아레스`/`엘리`/`라나`/`괴이` 결속을 wrong-work repair 근거로 기록했다.
+- [x] Health audit는 `GO / clean_completed_source`, search evidence는 `GO`, publication contract는 `GO / 0 violations`다.
+- [x] Stop-condition audit는 queue `99 -> 98`, same packet `11716448`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- [x] Residual queue는 Loop456 current queue 기준 `99 -> 98`, `wrong_work_title_flip 5 -> 4`, `repair_after_wrong_work 5 -> 4`, validation issue `0`으로 갱신했다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 residual queue delta를 full scan approval로 승격하지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, targeted stop-condition `GO_TARGETED / 99 -> 98 / safe 0 -> 1`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop456 11702090 괴담 호텔 탈출기 character+setting bridge runtime 체크
 
 - [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
@@ -2851,7 +2868,7 @@
   - `tests.test_title_lead_search_inferred_guard` 180 tests PASS
   - `git diff --check` PASS, LF/CRLF 경고만 있음
 - [x] 진짜 `N>=5` flip probe wrapper를 만들었다. 동일 process 입력은 post_id de-dupe로 반복 측정이 무효화되므로 Loop296부터 `one_post_per_process` plan을 쓴다.
-- [ ] search degraded 복구 후 `11716448` scope-order smoke를 다시 실행한다.
+- [x] search degraded 복구 후 `11716448` scope-order smoke를 다시 실행했다. Loop457 run `20260705_093534_298769`에서 `아카데미 생존 갤러리` safe_resolved, search evidence `GO`, stop-condition `99 -> 98 / safe 0 -> 1`로 닫혔다.
 - [ ] background full375/bounded1200/golden18 완료 후 collateral/golden gate를 재평가한다.
 - Gate: code contract `GO_UNIT`, Loop293 runtime `REVIEW_LOCKED_SEARCH_DEGRADED`, Loop294 `INVALID_ABORTED`, Loop295 `ABORTED_INCOMPLETE`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 

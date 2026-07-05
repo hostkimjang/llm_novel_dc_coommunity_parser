@@ -1,0 +1,50 @@
+{
+  "artifact_type": "data_analytics_summary",
+  "loop": "457",
+  "date": "2026-07-05",
+  "language": "ko",
+  "reader_summary": "Loop457은 residual wrong-work P0 행 11716448을 search 포함 non-light 단건으로 실행해 아생갤을 현실 갤러리명이 아니라 웹소설 아카데미 생존 갤러리의 작중 갤러리/커뮤니티 오마주형 제목 약어로 닫았다. 공식 Novelpia URL과 아레스/엘리/라나/괴이 앵커가 수렴했고 safe_resolved publish가 확인됐다. 단건 closure이므로 full375 approval은 열지 않는다.",
+  "runtime": {
+    "run_id": "20260705_093534_298769",
+    "post_id": 11716448,
+    "input_completed_flushed_pending_failed": "1/1/1/0/0",
+    "mcp_health": "include_search=true / light_mode=false / ok_failure=1/0",
+    "row_search": "ok / query_degraded_unrecovered=12/0/0",
+    "vlm_ocr": "READY / image_fetch=1/1",
+    "slang_db": "off"
+  },
+  "result": {
+    "official_title": "아카데미 생존 갤러리",
+    "official_url": "https://novelpia.com/novel/380218",
+    "candidate_ledger_status": "safe_resolved",
+    "promotion_decision_status": "publish",
+    "discussion_type": "character_talk",
+    "primary_bridge": "아생갤 title alias, 아레스/엘리/라나 character anchor, 괴이 setting anchor"
+  },
+  "audit_result": {
+    "flush_integrity": "GO / clean_completed_source",
+    "search_evidence": "GO",
+    "publication_contract": "GO / 0 violations",
+    "goal_convergence": "GO / queue 99 -> 98 / safe 0 -> 1 / safe_loss []"
+  },
+  "queue_delta": {
+    "previous_actionable": 99,
+    "current_actionable": 98,
+    "reprocess": "71 -> 70",
+    "hold": "28 -> 28",
+    "wrong_work_title_flip": "5 -> 4",
+    "repair_after_wrong_work": "5 -> 4"
+  },
+  "domain_policy_note": "아생갤 같은 갤러리 표면은 실제 현실 갤러리명만이 아니라 웹소설 내부 커뮤니티/갤러리 오마주형 제목 또는 약어일 수 있다. 이번 row는 공식 URL과 인물/설정 앵커가 있어 safe_resolved로 닫혔다.",
+  "gate_boundary": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO",
+    "search_evidence": "GO",
+    "queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL",
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

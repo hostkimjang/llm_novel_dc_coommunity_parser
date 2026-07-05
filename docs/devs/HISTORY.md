@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-05 - Loop457 11716448 아생갤 wrong-work runtime closure
+
+- 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- Current HEAD `9ebc19fb`에서 residual `repair_after_wrong_work` P0 행 `11716448`을 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- 사용자가 지적한 대로 `아생갤`은 현실 DC 갤러리명으로만 보지 않는다. 이번 row는 웹소설 `아카데미 생존 갤러리`의 작중 갤러리/커뮤니티 오마주형 제목 약어로 평가했다.
+- Run `20260705_093534_298769`은 input/completed/flushed/pending/failed `1/1/1/0/0`, MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`, row search query/degraded/unrecovered `12/0/0`으로 완료됐다.
+- Result는 `official_title=아카데미 생존 갤러리`, `official_url=https://novelpia.com/novel/380218`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`, `publish_allowed=true`다.
+- Source-native verdict는 `아생갤`, `아레스`, `엘리`, `라나`, `괴이`를 `아카데미 생존 갤러리` 인물/설정 discussion으로 결속한 `before_correct_after_wrong`이다.
+- Health audit는 `GO / clean_completed_source`, search evidence는 `GO`, publication contract는 `GO / 0 violations`다.
+- Stop-condition audit는 queue `99 -> 98`, same packet `11716448`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- Report는 `docs/devs/loop_reports/LOOP_457_REPORT_20260705.md`, state는 `docs/devs/loop457_11716448_asaenggal_wrong_work_runtime_20260705.json`, Data Analytics summary는 `docs/devs/loop457_11716448_asaenggal_wrong_work_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop456 11702090 괴담 호텔 탈출기 character+setting bridge runtime closure
 
 - 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
