@@ -1,5 +1,16 @@
 ﻿# Developer TODO Index
 
+## 2026-07-05 Loop469 TODO
+
+- 상태 업데이트: Loop469는 `11660265` safe-loss를 `헌터갤러리의 국가권력급 기계공주` / `https://novelpia.com/novel/390228`로 닫았다. Residual queue는 `89 -> 88`, `repair_safe_loss 61 -> 60`이지만 goal은 완료가 아니다.
+- [x] 신규 full375, bounded 1000-1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] Run `20260705_144313_212963`은 `1/1/1/0/0`, health `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`다.
+- [x] `기계공주` title alias, `이브/오필리아` character bridge, official detail `https://novelpia.com/novel/390228`이 `헌터갤러리의 국가권력급 기계공주`로 수렴했음을 확인했다.
+- [x] 사용자 도메인 보정을 반영했다: `아생갤`/`헌터갤러리` 같은 `갤러리` 표면은 현실 커뮤니티 단정이 아니라 작품 안 커뮤니티/갤러리 오마주형 제목, 약어, 장치일 수 있다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 queue delta를 full scan approval로 승격하지 않는다.
+- [ ] 다음은 residual `REPROCESS 60 / HOLD 28` 중 작은 lane으로 진행한다. docs-only 반복은 정지 신호다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop468 TODO
 
 - 상태 업데이트: Loop468은 `11660259` safe-loss를 `헌터갤러리의 국가권력급 기계공주` / `https://novelpia.com/novel/390228`로 닫았다. Residual queue는 `90 -> 89`, `repair_safe_loss 62 -> 61`이지만 goal은 완료가 아니다.

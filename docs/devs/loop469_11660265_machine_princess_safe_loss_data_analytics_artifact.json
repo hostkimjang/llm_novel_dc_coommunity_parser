@@ -1,0 +1,41 @@
+{
+  "artifact_type": "data_analytics_loop_summary",
+  "loop": 469,
+  "date": "2026-07-05",
+  "language": "ko",
+  "question": "11660265 safe-loss residual row가 현 HEAD에서 정당하게 safe-resolved되는가?",
+  "answer": "예. search 포함 non-light 단건 runtime에서 헌터갤러리의 국가권력급 기계공주 / https://novelpia.com/novel/390228 로 safe_resolved publish됐고, queue는 89에서 88로 감소했다.",
+  "evidence": {
+    "run_id": "20260705_144313_212963",
+    "runtime_counts": "1/1/1/0/0",
+    "search": {
+      "gate": "GO",
+      "query_degraded_unrecovered": "26/0/0",
+      "valid_results": 19,
+      "catalog_results": 64
+    },
+    "publication_contract": "GO / 0 violations",
+    "stop_condition": "GO / queue 89 -> 88 / safe_resolved 0 -> 1 / safe_loss []",
+    "residual_queue": "REPROCESS 61 -> 60, HOLD 28 -> 28, validation issue 0"
+  },
+  "interpretation": "원문 제목의 기계공주, 전생 이브, 오필리아와 본문 병약한 공주 설정이 모두 같은 작품 내부 별칭/인물/서사 단서로 묶였다. 갤러리 표면은 현실 게시판 단정이 아니라 작품 full title의 커뮤니티 오마주형 표면으로 처리했다.",
+  "gate_state": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO",
+    "search_evidence": "GO",
+    "targeted_stop_condition": "GO_TARGETED",
+    "residual_queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "artifact_paths": {
+    "report": "docs/devs/loop_reports/LOOP_469_REPORT_20260705.md",
+    "state": "docs/devs/loop469_11660265_machine_princess_safe_loss_runtime_20260705.json",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop469_11660265_machine_princess_safe_loss_search_nonlight_result.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop469_11660265_machine_princess_safe_loss_run_health.json",
+    "publication_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop469_11660265_machine_princess_safe_loss_publication_contract.json",
+    "convergence_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop469_11660265_goal_convergence_stop_condition.json"
+  }
+}

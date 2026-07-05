@@ -4,6 +4,13 @@
 
 ## Current HEAD evidence refresh
 
+- [ ] Loop469 safe-loss runtime closure follow-up
+  - 상태: targeted runtime `GO 1/1` / health `GO clean_completed_source` / publication contract `GO 0 violations` / search evidence `GO` / stop-condition `GO 89->88 safe 0->1` / full375 `NOT_OPEN` / approval not open
+  - 적용: `11660265`는 `기계공주 전생 이브` 표면과 `오필리아` character bridge를 통해 `헌터갤러리의 국가권력급 기계공주`로 safe-resolved됐다. official detail은 `https://novelpia.com/novel/390228`이고, `전생/이브/오필리아`는 작품 내부 설정/인물 근거로 기록했다.
+  - 도메인 보정: `아생갤`/`헌터갤러리` 같은 `갤러리` 표면은 현실 커뮤니티 단정이 아니라 웹소설 내부 커뮤니티/갤러리 오마주형 제목, 약어, 장치일 수 있다.
+  - 산출물: `docs/devs/loop_reports/LOOP_469_REPORT_20260705.md`, `docs/devs/loop469_11660265_machine_princess_safe_loss_runtime_20260705.json`, `docs/devs/loop469_11660265_machine_princess_safe_loss_data_analytics_artifact.json`.
+  - 완료 기준: full375 collateral gate와 broader search recovery를 별도 증명하기 전까지 approval과 hard-hold 완화를 열지 않는다.
+
 - [ ] Loop468 safe-loss runtime closure follow-up
   - 상태: targeted runtime `GO 1/1` / health `GO clean_completed_source` / publication contract `GO 0 violations` / search evidence `GO` / stop-condition `GO 90->89 safe 0->1` / full375 `NOT_OPEN` / approval not open
   - 적용: `11660259`는 `기계공주 -> 헌터갤러리의 국가권력급 기계공주`로 safe-resolved됐다. official detail은 `https://novelpia.com/novel/390228`이고, `갤에서 말한대로`는 현실 갤러리 자체가 아니라 작품/커뮤니티 전개 예측 맥락으로 기록했다.

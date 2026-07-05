@@ -1,0 +1,93 @@
+{
+  "loop": 469,
+  "date": "2026-07-05",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "head_before_commit": "8702d73b",
+  "post_id": 11660265,
+  "lane": "repair_safe_loss",
+  "priority": "P0",
+  "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop469_11660265_machine_princess_safe_loss_input.jsonl",
+  "run": {
+    "run_id": "20260705_144313_212963",
+    "status": "safe_resolved",
+    "used_for_queue_closure": true,
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop469_11660265_machine_princess_safe_loss_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop469_11660265_machine_princess_safe_loss_search_nonlight_result_manifest.json",
+    "log": "logs/expert_run_20260705_144313_212963.log",
+    "input_completed_flushed_pending_failed": "1/1/1/0/0"
+  },
+  "expected": {
+    "official_title": "헌터갤러리의 국가권력급 기계공주",
+    "official_url": "https://novelpia.com/novel/390228"
+  },
+  "public_identity": {
+    "official_title": "헌터갤러리의 국가권력급 기계공주",
+    "official_url": "https://novelpia.com/novel/390228",
+    "candidate_ledger_status": "safe_resolved",
+    "title_resolution_state": "resolved",
+    "work_resolution": "resolved",
+    "promotion_decision_status": "publish",
+    "publish_allowed": true,
+    "bypassed_gate": false
+  },
+  "search_health": {
+    "status": "GO",
+    "queries_issued": 26,
+    "degraded": 0,
+    "unrecovered_degraded": 0,
+    "valid_results": 19,
+    "empty_results": 7,
+    "catalog_results": 64,
+    "cache_hits": 12,
+    "rows_with_upstream_zero": 1
+  },
+  "vlm_ocr": {
+    "status": "READY",
+    "image_posts": 1,
+    "ocr_text": "LOVE",
+    "used_as_title_evidence": false
+  },
+  "audits": {
+    "health": {
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop469_11660265_machine_princess_safe_loss_run_health.json",
+      "flush_integrity": "GO / clean_completed_source",
+      "search_evidence": "GO",
+      "publication_contract_convergence": "GO"
+    },
+    "publication_contract": {
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop469_11660265_machine_princess_safe_loss_publication_contract.json",
+      "gate": "GO",
+      "violation_row_count": 0
+    },
+    "goal_convergence": {
+      "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop469_11660265_goal_convergence_stop_condition.json",
+      "gate": "GO",
+      "queue_previous": 89,
+      "queue_current": 88,
+      "safe_resolved_previous": 0,
+      "safe_resolved_current": 1,
+      "safe_loss_post_ids": []
+    }
+  },
+  "residual_queue": {
+    "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop469_after_11660265_machine_princess_safe_loss_residual_action_queue.json",
+    "previous": 89,
+    "current": 88,
+    "reprocess_previous": 61,
+    "reprocess_current": 60,
+    "hold_previous": 28,
+    "hold_current": 28,
+    "validation_issue_count": 0
+  },
+  "code_changes": [],
+  "boundaries": {
+    "new_large_runs_dispatched": false,
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "broader_search_recovery": "P0 / ROW_LEVEL_GO_ONLY",
+    "slang_db_write_back": false,
+    "domain_note": "아생갤/헌터갤러리 같은 갤러리 표면은 현실 커뮤니티 단정이 아니라 웹소설 제목, 약어, 작중 커뮤니티 오마주형 장치일 수 있다."
+  }
+}
+

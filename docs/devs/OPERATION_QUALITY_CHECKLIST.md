@@ -1,5 +1,22 @@
 # Operation Quality Checklist
 
+## 2026-07-05 Loop469 11660265 기계공주 safe-loss 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_469_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop469_11660265_machine_princess_safe_loss_runtime_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop469_11660265_machine_princess_safe_loss_data_analytics_artifact.json`.
+  - [x] Health audit `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`를 기록했다.
+  - [x] Stop-condition audit artifact를 기록했다: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop469_11660265_goal_convergence_stop_condition.json`.
+  - [x] Residual queue delta `89 -> 88`, `repair_safe_loss 61 -> 60`을 기록했다.
+- 품질 게이트:
+  - [x] `기계공주 전생 이브`를 title alias + character bridge로 보되, public title은 official detail의 `헌터갤러리의 국가권력급 기계공주`로 닫는다.
+  - [x] `LOVE` OCR은 title evidence로 쓰지 않고 image 보조 정보로만 기록한다.
+  - [x] `아생갤`/`헌터갤러리` 같은 `갤러리` 표면은 현실 커뮤니티 단정이 아니라 작중 커뮤니티 오마주형 제목, 약어, 장치일 수 있음을 기록한다.
+  - [x] 단건 targeted runtime과 residual queue delta를 golden18/full375 approval로 승격하지 않는다.
+  - [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 하지 않았음을 명시한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-05 Loop468 11660259 기계공주 safe-loss 품질 게이트
 
 - 근거:
