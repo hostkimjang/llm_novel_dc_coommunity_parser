@@ -1,5 +1,16 @@
 # Slang DB Improvement TODO
 
+## 2026-07-05 Loop460 11700500 전1시 wrong-work slang 주의사항
+
+- [x] `전1시 -> 전지적 1인칭 시점`을 새 slang DB write-back이나 작품 전용 registry 추가로 처리하지 않았다.
+- [x] `--slang-db off` 조건으로 `11700500` 단건 runtime을 실행했다.
+- [x] `11700500`은 `전1시`, `셰이`, OCR `지선`, `크라이오스`, `성검대`, `마신`, Novelpia official detail 근거로 `전지적 1인칭 시점` safe-resolved publish가 됐다.
+- [x] 이전 wrong-work `사상 최강의 길드마스터`는 `최강자라인` 일반어 오귀속으로 기록했다.
+- [x] 사용자 도메인 보정을 유지한다: `아생갤` 같은 `갤러리` 표면은 현실 커뮤니티로 자동 고정하지 않고 웹소설 내부 커뮤니티/갤러리 오마주형 제목 또는 약어일 수 있다.
+- [ ] Search degraded가 관측됐으므로 broader search recovery를 닫지 않는다.
+- [ ] 이 단건 closure를 alias/slang 전체 품질 승인, hard-hold 완화, full375 approval로 승격하지 않는다.
+- Gate: slang DB write-back 아님, targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `REVIEW`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL / 96 -> 95`, search recovery broader `P0 / OPEN_SEARCH_DEGRADED`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop459 11705252 탐재 wrong-work slang 주의사항
 
 - [x] `탐재 -> 탐식의 재림`을 새 slang DB write-back이나 작품 전용 registry 추가로 처리하지 않았다.

@@ -1,0 +1,26 @@
+[
+  {
+    "post_id": 11700500,
+    "analysis_result": {
+      "identity": {
+        "candidate_ledger_status": "promotion_blocked",
+        "safe_resolved": false,
+        "official_title": "전지적 1인칭 시점",
+        "novel_identity": {
+          "official_title": "전지적 1인칭 시점",
+          "heretic_url": "https://novelpia.com/novel/49942"
+        },
+        "promotion_decision": {
+          "status": "blocked",
+          "publish_allowed": false,
+          "official_title": "전지적 1인칭 시점",
+          "official_url": null,
+          "candidate_preserved": true,
+          "reason_codes": [
+            "baseline_previous_wrong_work_or_promotion_hold"
+          ]
+        }
+      }
+    }
+  }
+]

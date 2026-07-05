@@ -1,0 +1,113 @@
+{
+  "loop": "460",
+  "date": "2026-07-05",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "scope": "11700500 jeon1si wrong-work source-native repair runtime closure",
+  "head": "621274cb",
+  "large_runs": {
+    "full375": "NOT_LAUNCHED",
+    "bounded_1000_1500": "NOT_LAUNCHED",
+    "safe_loss_n5": "NOT_LAUNCHED",
+    "same_38_row_parent_packet": "NOT_LAUNCHED"
+  },
+  "input": {
+    "post_id": 11700500,
+    "title": "전1시 지잔든 지선이 최강자라인 바로 밑이라더니",
+    "content_summary": "전1시 제목 약칭, 지선/크라이오스/성검대/마신 OCR 전투 장면, 셰이/막타 댓글을 포함한 전지적 1인칭 시점 character discussion",
+    "comments": [
+      "보빔",
+      "막타",
+      "셰이 이 미친 막타원툴킬딸충새끼"
+    ],
+    "image_count": 1,
+    "source_native_verdict": "before_correct_after_wrong",
+    "expected_work": "전지적 1인칭 시점",
+    "expected_url": "https://novelpia.com/novel/49942",
+    "previous_wrong_work": "사상 최강의 길드마스터"
+  },
+  "runtime": {
+    "run_id": "20260705_103249_509338",
+    "input_completed_flushed_pending_failed": "1/1/1/0/0",
+    "large_run_complete": true,
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_ok_failure": "1/0",
+    "row_search_status": "SEARCH_DEGRADED",
+    "row_search_query_degraded_unrecovered": "13/2/1",
+    "row_search_upstream_zero": 6,
+    "row_search_fallback_recovered": 6,
+    "row_search_degraded_recovered": 1,
+    "vlm_ocr_semantic_review_ready": true,
+    "image_fetch": "1/1",
+    "image_ocr": "지선, 크라이오스, 성검대, 마신",
+    "slang_db": "off"
+  },
+  "result": {
+    "official_title": "전지적 1인칭 시점",
+    "public_official_url": "https://novelpia.com/novel/49942",
+    "official_detail_evidence_url": "https://novelpia.com/novel/49942",
+    "candidate_ledger_status": "safe_resolved",
+    "safe_resolved": true,
+    "promotion_decision_status": "publish",
+    "publish_allowed": true,
+    "bypassed_gate": false,
+    "discussion_type": "character_talk",
+    "primary_bridge": "전1시 title alias + 셰이 character anchor + 지선/크라이오스/성검대/마신 OCR scene + Novelpia official detail evidence"
+  },
+  "audits": {
+    "health": {
+      "flush_integrity": "GO / clean_completed_source",
+      "search_evidence": "REVIEW / search_degraded_observed"
+    },
+    "publication_contract": {
+      "gate": "GO",
+      "row_count": 1,
+      "violation_row_count": 0
+    },
+    "goal_convergence": {
+      "gate": "GO",
+      "previous_actionable": 96,
+      "current_actionable": 95,
+      "same_packet": true,
+      "post_id": 11700500,
+      "previous_safe_resolved": 0,
+      "current_safe_resolved": 1,
+      "safe_loss_post_ids": []
+    }
+  },
+  "residual_queue": {
+    "previous": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop459_after_11705252_tamjae_wrong_work_residual_action_queue.json",
+    "current": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop460_after_11700500_jeon1si_wrong_work_residual_action_queue.json",
+    "residual_action_queue_rows": "96 -> 95",
+    "label_counts": "REPROCESS 68 -> 67 / HOLD 28 -> 28",
+    "wrong_work_title_flip": "2 -> 1",
+    "repair_after_wrong_work": "2 -> 1",
+    "validation_issue_count": 0
+  },
+  "domain_policy": {
+    "gallery_homage": "갤러리 표면은 현실 커뮤니티로 자동 고정하지 않는다. 요즘 웹소설은 작품 안에서 갤러리/댓글식 커뮤니티를 서사 장치로 엮거나 오마주 컨셉으로 차용할 수 있고, 이 표면이 제목/약어/세계관 장치가 될 수 있으므로 explicit alias relation, specific-work target, 공식/커뮤니티 근거, 경쟁 body-work 부재를 확인한다."
+  },
+  "gates": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO",
+    "search_evidence": "REVIEW",
+    "targeted_stop_condition": "GO_TARGETED / 96 -> 95 / safe 0 -> 1",
+    "residual_queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL",
+    "broader_search_recovery": "P0 / OPEN_SEARCH_DEGRADED",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "artifacts": {
+    "loop_report": "docs/devs/loop_reports/LOOP_460_REPORT_20260705.md",
+    "data_analytics_summary": "docs/devs/loop460_11700500_jeon1si_wrong_work_data_analytics_artifact.json",
+    "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop460_11700500_jeon1si_wrong_work_input.jsonl",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop460_11700500_jeon1si_wrong_work_search_nonlight_result.json",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop460_11700500_jeon1si_wrong_work_search_nonlight_result_manifest.json",
+    "run_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop460_11700500_jeon1si_wrong_work_run_health.json",
+    "publication_contract": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop460_11700500_jeon1si_wrong_work_publication_contract.json",
+    "residual_queue": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop460_after_11700500_jeon1si_wrong_work_residual_action_queue.json",
+    "convergence": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop460_11700500_goal_convergence_stop_condition.json"
+  }
+}

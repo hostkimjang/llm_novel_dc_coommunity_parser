@@ -1,0 +1,3126 @@
+{
+  "report_type": "collateral_residual_action_queue",
+  "queue_id": "loop460_after_11700500_jeon1si_wrong_work_residual_action_queue",
+  "generated_at": "2026-07-05T10:39:25",
+  "source_review_id": "loop457_11716448_asaenggal_wrong_work_runtime",
+  "source_gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "REVIEW-LOCKED",
+  "summary": {
+    "source_rows": 96,
+    "residual_action_queue_rows": 95,
+    "label_counts": {
+      "HOLD": 28,
+      "REPROCESS": 67
+    },
+    "bucket_counts": {
+      "safe_loss_resolved_to_null": 94,
+      "wrong_work_title_flip": 1
+    },
+    "action_counts": {
+      "canonical_title_variant_policy_required": 1,
+      "comment_title_or_image_review_required": 1,
+      "comparison_context_policy_required": 1,
+      "multi_candidate_recommendation_review_required": 1,
+      "multi_work_or_benchmark_context_policy_required": 1,
+      "native_image_or_canonical_review_required": 2,
+      "native_image_or_character_bridge_review_required": 2,
+      "native_image_or_media_boundary_review_required": 1,
+      "native_image_or_ocr_title_review_required": 1,
+      "native_image_or_scope_review_required": 1,
+      "native_image_or_source_review_required": 14,
+      "native_image_or_url_review_required": 1,
+      "native_web_or_alternative_title_review_required": 1,
+      "native_web_or_scope_review_required": 1,
+      "native_web_or_source_review_required": 3,
+      "native_web_or_url_review_required": 3,
+      "preserve_hold_boundary": 1,
+      "repair_after_wrong_work": 1,
+      "repair_safe_loss": 66,
+      "title_field_split_contract_required": 1,
+      "title_variant_canonicalization_required": 5,
+      "url_canonicalization_review_required": 4
+    },
+    "action_group_count": 22,
+    "expected_from_source_transition": {
+      "residual_action_queue_rows": 95,
+      "repair_required_rows": 67,
+      "policy_or_native_review_required_rows": 28,
+      "source_residual_action_queue_rows": 96,
+      "source_repair_required_rows": 68,
+      "source_policy_or_native_review_required_rows": 28
+    },
+    "closed_post_ids_excluded": [
+      11698890,
+      11700500,
+      11702090,
+      11705252,
+      11716448
+    ],
+    "excluded_residual_action_queue_rows": 1,
+    "excluded_label_counts": {
+      "REPROCESS": 1
+    },
+    "validation_issue_count": 0
+  },
+  "validation_issues": [],
+  "excluded_rows": [
+    {
+      "post_id": 11700500,
+      "review_label": "REPROCESS",
+      "triage_bucket": "wrong_work_title_flip",
+      "source_native_verdict": "before_correct_after_wrong"
+    }
+  ],
+  "action_groups": [
+    {
+      "action": "canonical_title_variant_policy_required",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_NATIVE_REVIEW",
+      "row_count": 1,
+      "label_counts": {
+        "HOLD": 1
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 1
+      },
+      "post_ids": [
+        11665124
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11665124,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "canonical_title_variant_policy_required",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Medium",
+          "actions": [
+            "canonical_title_variant_policy_required"
+          ],
+          "rationale_ko": "??? `??`? ?? ?? ??? ?? ???? before ?? `???(????)`? ???? faction/entity? ?? composite title??. clean `????` ?? ??? ?? canonical policy? ????.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11665124"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "comment_title_or_image_review_required",
+      "priority": "P1",
+      "owner_mode": "RUNTIME_REPLAY_OR_REVIEW",
+      "row_count": 1,
+      "label_counts": {
+        "REPROCESS": 1
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 1
+      },
+      "post_ids": [
+        11708478
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11708478,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_comment_title_with_image_context",
+          "selected_title": "사연 있는 악역으로 착각 당한다",
+          "selected_option_id": "C1",
+          "evidence_grade": "Medium",
+          "actions": [
+            "repair_safe_loss",
+            "comment_title_or_image_review_required"
+          ],
+          "rationale_ko": "??? ?? ??? ??? ??? C1 `?? ?? ???? ?? ???`? ????. ?? ??/??? ?? ???? ????? ??.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11708478",
+            "https://novelpia.com/novel/396159"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "comparison_context_policy_required",
+      "priority": "P1",
+      "owner_mode": "RUNTIME_REPLAY_OR_REVIEW",
+      "row_count": 1,
+      "label_counts": {
+        "REPROCESS": 1
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 1
+      },
+      "post_ids": [
+        11716475
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11716475,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_comparison_context",
+          "selected_title": "지력 99 고능아인 척하기",
+          "selected_option_id": "C1",
+          "evidence_grade": "Medium",
+          "actions": [
+            "repair_safe_loss",
+            "comparison_context_policy_required"
+          ],
+          "rationale_ko": "`???`? C1 `?? 99 ???? ???`? ????? `????/????`? ?? ???? comparison ??? ????.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11716475",
+            "https://novelpia.com/novel/308293"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "multi_candidate_recommendation_review_required",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_NATIVE_REVIEW",
+      "row_count": 1,
+      "label_counts": {
+        "HOLD": 1
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 1
+      },
+      "post_ids": [
+        11697256
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11697256,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "hold_multi_candidate_recommendation_thread",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Medium",
+          "actions": [
+            "multi_candidate_recommendation_review_required"
+          ],
+          "rationale_ko": "원문은 TS 장르 추천 요청이고 댓글에 `황제의 딸로 환생했습니다`, `꼬시러 왔습니다` 등 여러 추천 후보가 나온다. 후보 C1은 댓글에 직접 있지만 단일 public title로 확정하면 다중 추천 thread overreach가 되므로 HOLD한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11697256",
+            "docs/devs/VERIFICATION_RESULTS.md#post_id=11697256"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "multi_work_or_benchmark_context_policy_required",
+      "priority": "P1",
+      "owner_mode": "RUNTIME_REPLAY_OR_REVIEW",
+      "row_count": 1,
+      "label_counts": {
+        "REPROCESS": 1
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 1
+      },
+      "post_ids": [
+        11708432
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11708432,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_but_benchmark_context",
+          "selected_title": "전지적 독자 시점",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss",
+            "multi_work_or_benchmark_context_policy_required"
+          ],
+          "rationale_ko": "??? `???`? `??? ?? ??`? ?? ???? ??? ???/?? ????. ?? ??/benchmark ????? shared gate?? ?? ??? ????.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11708432",
+            "https://novel.munpia.com/104753"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "native_image_or_canonical_review_required",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_NATIVE_REVIEW",
+      "row_count": 2,
+      "label_counts": {
+        "HOLD": 2
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 2
+      },
+      "post_ids": [
+        11706844,
+        11716480
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11706844,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "hold_ocr_title_author_vs_current_munpia_title_requires_reverify",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Medium",
+          "actions": [
+            "native_image_or_canonical_review_required"
+          ],
+          "rationale_ko": "??? `?? ??? ??`?? after ??? `? ?? ?? ???`, `??? ???`, `??` ?? ?? ??. ?? survey? OCR title/author clue? ?? ??? title ??? ???? ?????? HOLD??.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11706844",
+            "docs/devs/VERIFICATION_RESULTS.md#post_id=11706844"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11716480,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "after_hold_needs_native_image_or_canonical_review",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "NeedsImage",
+          "actions": [
+            "native_image_or_canonical_review_required"
+          ],
+          "rationale_ko": "?? `???`? ??? 2???? C1 `??? ??? ?? ?? ?? ???`? ?? ??? ??? ? ??.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11716480"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "native_image_or_character_bridge_review_required",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_NATIVE_REVIEW",
+      "row_count": 2,
+      "label_counts": {
+        "HOLD": 2
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 2
+      },
+      "post_ids": [
+        11663554,
+        11692436
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11663554,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "character_bridge_or_image_review_required",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Weak",
+          "actions": [
+            "native_image_or_character_bridge_review_required"
+          ],
+          "rationale_ko": "??? `???` ??? ???? before ??? `??? ( ? ???? ?? ???? )`?? ???? ???? ?? composite title??. ???/character bridge ?? ?? clean public title? ?? ???.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11663554"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11692436,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "hold_character_bridge_or_native_image_required",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Medium",
+          "actions": [
+            "native_image_or_character_bridge_review_required"
+          ],
+          "rationale_ko": "원문 텍스트는 `류서란(perfect)`와 댓글 `류서란(old girl)`만 제공한다. `perfect` 표면은 후보 `퍼펙트 메이지`와 닿지만, 로컬 테스트/문서에서 `류서란` bridge가 확인되지 않았고 이미지도 있다. 단일 캐릭터/설정 bridge 과잉 승격을 막기 위해 repair로 세지 않고 HOLD한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11692436"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "native_image_or_media_boundary_review_required",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_NATIVE_REVIEW",
+      "row_count": 1,
+      "label_counts": {
+        "HOLD": 1
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 1
+      },
+      "post_ids": [
+        11668325
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11668325,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "image_or_media_boundary_review_required",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Weak",
+          "actions": [
+            "native_image_or_media_boundary_review_required"
+          ],
+          "rationale_ko": "본문은 `마파두부`와 이미지 지시가 핵심이고 댓글에 `페이트스테이나이트` 언급이 있지만, 이미지/매체 경계 확인 없이 `Fate/stay night`를 parser의 safe public work로 확정하기에는 약하다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11668325"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "native_image_or_ocr_title_review_required",
+      "priority": "P1",
+      "owner_mode": "RUNTIME_REPLAY_OR_REVIEW",
+      "row_count": 1,
+      "label_counts": {
+        "REPROCESS": 1
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 1
+      },
+      "post_ids": [
+        11718099
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11718099,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_direct_alias_image_context",
+          "selected_title": "빌어먹을 환생",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss",
+            "native_image_or_ocr_title_review_required"
+          ],
+          "rationale_ko": "`?? ?????`? ??/??/?????/?? ??? ??? C1 `???? ??`? ?? ????. ?? ???/OCR ?? replay? ????.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11718099",
+            "https://novel.munpia.com/222360"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "native_image_or_scope_review_required",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_NATIVE_REVIEW",
+      "row_count": 1,
+      "label_counts": {
+        "HOLD": 1
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 1
+      },
+      "post_ids": [
+        11711632
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11711632,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "after_hold_needs_native_image_or_scope_review",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "NeedsImage",
+          "actions": [
+            "native_image_or_scope_review_required"
+          ],
+          "rationale_ko": "??? `?? ????`? ??? 2???? C1 `?? ??(YOUR NAME)`? ??/?? ???? ???? ???. ???/OCR? scope ?? ? ?? ???.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11711632"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "native_image_or_source_review_required",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_NATIVE_REVIEW",
+      "row_count": 14,
+      "label_counts": {
+        "HOLD": 14
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 14
+      },
+      "post_ids": [
+        11658615,
+        11660254,
+        11661856,
+        11661863,
+        11665099,
+        11666725,
+        11669908,
+        11669924,
+        11671512,
+        11673080,
+        11677924,
+        11695599,
+        11706867,
+        11714891
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11658615,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "source_text_insufficient_image_or_native_required",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Missing",
+          "actions": [
+            "native_image_or_source_review_required"
+          ],
+          "rationale_ko": "?? `? ? ? ! !`? ?? `???? on`???? ?? `?? ?? ??????`? ?? ???? ??? ?? ??? ??. ??? 1?? ?? native/image ?? ??? safe-loss repair? ?? ???.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11658615"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11660254,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "source_text_insufficient_image_or_native_required",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Missing",
+          "actions": [
+            "native_image_or_source_review_required"
+          ],
+          "rationale_ko": "??? `??? ?????`? AI ??/??? ??? ???, ?????? ?? `??? ??? ??? ??`? ?? ???? ??? ??? ??. ???/?? ?? ? repair ??? ???.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660254"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11661856,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "image_or_native_evidence_required",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Missing",
+          "actions": [
+            "native_image_or_source_review_required"
+          ],
+          "rationale_ko": "???? `???`? ?? ????? ?? `??? ?! ?! ? ?Kill???!`? ?? ???? ???. ??? 1? ?? ??? repair_safe_loss? ?? ???.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11661856"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11661863,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "image_or_native_evidence_required",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Missing",
+          "actions": [
+            "native_image_or_source_review_required"
+          ],
+          "rationale_ko": "?? `?? ?? ??? ?????`? ?????? ?? `???? ??? ?????`? ??? ? ??. ??? 2?? ???/?? ??? ????.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11661863"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11665099,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "image_or_native_evidence_required",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Missing",
+          "actions": [
+            "native_image_or_source_review_required"
+          ],
+          "rationale_ko": "`??? ??`? ?? ??/205? ??? ???? ???? ?? ????? ??/?? ???? ?????? ???? ???. ??? 2? ?? ? safe-loss repair? ?? ???.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11665099"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11666725,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "image_or_native_evidence_required",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Missing",
+          "actions": [
+            "native_image_or_source_review_required"
+          ],
+          "rationale_ko": "??? ??? `??`, `??`?? ??? ???? ?? `???? 11? ??? ??? ??`? ???/?? ?? ?? ??? ?? ???? ???.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11666725"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11669908,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "source_text_insufficient_native_required",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Weak",
+          "actions": [
+            "native_image_or_source_review_required"
+          ],
+          "rationale_ko": "글은 이과 마법 설정 일반론이고 댓글은 `마카물리`, `노나메` 등 다른 표면을 말한다. 후보 `아카데미에서 살아남기 (완)`을 직접 지지하는 원문 표면이 약해 native/source 확인 전에는 safe-loss로 세지 않는다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11669908"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11669924,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "image_or_native_evidence_required",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Weak",
+          "actions": [
+            "native_image_or_source_review_required"
+          ],
+          "rationale_ko": "원문 텍스트는 `루리드래곤`, `사일런트위치`와 설정 비교를 말하지만 후보 `용인족의 아카데미 생존기`를 직접 지지하지 않는다. 이미지/OCR 또는 native source 확인 전에는 before safe title을 정답으로 확정하지 않는다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11669924"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "native_image_or_url_review_required",
+      "priority": "P1",
+      "owner_mode": "RUNTIME_REPLAY_OR_REVIEW",
+      "row_count": 1,
+      "label_counts": {
+        "REPROCESS": 1
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 1
+      },
+      "post_ids": [
+        11702086
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11702086,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_ocr_explicit_title_variant_requires_image_url_replay",
+          "selected_title": "6? ?? ???? ???",
+          "selected_option_id": "C1",
+          "evidence_grade": "Medium",
+          "actions": [
+            "repair_safe_loss",
+            "native_image_or_url_review_required"
+          ],
+          "rationale_ko": "?? `6???)`? OCR/??? `6? ?? ???? ???`? ?? ?? ??? ????. ?? image_count=2?? after? `ocr_explicit_title_unresolved`? ?????? native image/OCR ?? ?? URL replay ??? full approval? ?? ???.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11702086",
+            "docs/devs/detection_survey_20260626_errors.json#post_id=11702086"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "native_web_or_alternative_title_review_required",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_NATIVE_REVIEW",
+      "row_count": 1,
+      "label_counts": {
+        "HOLD": 1
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 1
+      },
+      "post_ids": [
+        11702094
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11702094,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "hold_doubleo_vs_comment_window_title_disambiguation_required",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Medium",
+          "actions": [
+            "native_web_or_alternative_title_review_required"
+          ],
+          "rationale_ko": "???? `??? ??`? ?? ???? ?? survey? `??? -> ???? ?? ???` ??? ????. C1 `#???`? ?? ???? ?? ??/??? ??? ?? ? ?? HOLD??.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11702094",
+            "docs/devs/detection_survey_20260626_errors.json#post_id=11702094"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "native_web_or_scope_review_required",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_NATIVE_REVIEW",
+      "row_count": 1,
+      "label_counts": {
+        "HOLD": 1
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 1
+      },
+      "post_ids": [
+        11698870
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11698870,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "hold_classic_literature_scope_review_required",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Medium",
+          "actions": [
+            "native_web_or_scope_review_required"
+          ],
+          "rationale_ko": "원문은 `인간실격` 고전문학/작가 자살 맥락을 말해 title surface 자체는 강하지만, 후보는 URL이 없고 기존 native-web 메모도 classic-literature scope HOLD로 분리했다. parser public-work scope 정책 확인 전 repair로 세지 않는다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11698870",
+            "docs/devs/VERIFICATION_RESULTS.md#post_id=11698870"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "native_web_or_source_review_required",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_NATIVE_REVIEW",
+      "row_count": 3,
+      "label_counts": {
+        "HOLD": 3
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 3
+      },
+      "post_ids": [
+        11660262,
+        11665110,
+        11685994
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11660262,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "source_text_insufficient_native_required",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Weak",
+          "actions": [
+            "native_web_or_source_review_required"
+          ],
+          "rationale_ko": "??? `??? ??`? AI ??? ???? ?? `???, ? ??? ? ? ????`?? ???? ?? ???? ???. ??/?? ?? ?? ?? before title? ?? safe-loss? ?? author-new-work ??? ?? ? ?? HOLD? ??.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660262"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11665110,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "native_web_title_alias_review_required",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Weak",
+          "actions": [
+            "native_web_or_source_review_required"
+          ],
+          "rationale_ko": "??? `??????`? ?? ??? before ??? `???? ???? ???`? ??? ???. ? ??? ??/?? ?? ?? ??? repair? accept? ?? ???.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11665110"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11685994,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "source_text_insufficient_native_required",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Weak",
+          "actions": [
+            "native_web_or_source_review_required"
+          ],
+          "rationale_ko": "원문은 `념글`의 외신소환 주문을 묻는 짧은 반응이고 후보 제목을 직접 말하지 않는다. 후보 `무한을 이해한 나는 외신의 사제가 되었습니다`는 source-native 텍스트만으로는 약해 native/source 확인 전 repair로 세지 않는다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11685994"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "native_web_or_url_review_required",
+      "priority": "P1",
+      "owner_mode": "RUNTIME_REPLAY_OR_REVIEW",
+      "row_count": 3,
+      "label_counts": {
+        "REPROCESS": 3
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 3
+      },
+      "post_ids": [
+        11697267,
+        11698895,
+        11700483
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11697267,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_source_native_title_alias_and_character_context",
+          "selected_title": "아카데미 생존 갤러리",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss",
+            "native_web_or_url_review_required"
+          ],
+          "rationale_ko": "제목 `아생갤`은 후보 작품 약칭이고 본문은 `라나 정체`라는 작품 내부 캐릭터/설정 반전을 직접 말한다. title은 source-native로 맞지만, 기존 native-web 메모의 URL mismatch caveat 때문에 URL은 별도 확인 대상으로 남긴다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11697267",
+            "https://novelpia.com/novel/390001",
+            "docs/devs/VERIFICATION_RESULTS.md#post_id=11697267"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11698895,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_source_native_alias_and_rimworld_context",
+          "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss",
+            "native_web_or_url_review_required"
+          ],
+          "rationale_ko": "제목 `랫따싶`과 본문 `림월드` 플레이 재점화 맥락은 기존 테스트/문서에서 `[림월드]변방계에서 회귀자로 살아남기` 후보군의 직접 alias/context로 다뤄진다. URL은 없지만 before title 자체는 source-native로 맞아 after null은 safe-loss다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11698895",
+            "tests/test_candidate_audit.py#랫따싶",
+            "docs/devs/VERIFICATION_RESULTS.md#post_id=11698895"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11700483,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_source_native_title_alias_and_character_context",
+          "selected_title": "니들 생각 다 들린다",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss",
+            "native_web_or_url_review_required"
+          ],
+          "rationale_ko": "제목 `니생들`은 `니들 생각 다 들린다`의 curated abbreviation이고 댓글 `누리`, `대 누 리`도 작품 내부 캐릭터/이모티콘 맥락이다. URL은 빠졌지만 title 자체는 source-native로 맞으므로 after null은 safe-loss다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11700483",
+            "src/llm_batch/experts/utils.py#니생들",
+            "docs/devs/VERIFICATION_RESULTS.md#post_id=11700483"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "preserve_hold_boundary",
+      "priority": "P2",
+      "owner_mode": "POLICY_OR_NATIVE_REVIEW",
+      "row_count": 1,
+      "label_counts": {
+        "HOLD": 1
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 1
+      },
+      "post_ids": [
+        11663521
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11663521,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "hold_boundary_confirmed_not_safe_loss",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Medium",
+          "actions": [
+            "preserve_hold_boundary"
+          ],
+          "rationale_ko": "?? Loop141?? ???? ?? ???/??? bridge? ?? character/meme art? ????, `[????] ????? ???` ??? ???? promotion-safe? ???? ????. safe-loss repair? ??? HOLD ?? ???.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11663521",
+            "docs/devs/VERIFICATION_RESULTS.md#Loop141-post_id=11663521"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "repair_after_wrong_work",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "row_count": 1,
+      "label_counts": {
+        "REPROCESS": 1
+      },
+      "bucket_counts": {
+        "wrong_work_title_flip": 1
+      },
+      "post_ids": [
+        11666713
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11666713,
+          "triage_bucket": "wrong_work_title_flip",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_after_wrong",
+          "selected_title": "21세기 무림세가",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_after_wrong_work"
+          ],
+          "rationale_ko": "원문 제목의 `21세기 무림` 표면과 무협스럽다는 감상은 `21세기 무림세가` 쪽을 직접 지지한다. `21세기 헌터가된 무림인`은 official page가 있어도 원문에 헌터/해당 제목 앵커가 없다.",
+          "evidence_refs": [
+            "https://page.kakao.com/content/49668687",
+            "https://series.naver.com/novel/detail.series?productNo=1894278",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop290_collateral183_p0_review_batch.json#post_id=11666713"
+          ],
+          "source_review_id": "loop291_wrong_work_title_flip_source_native_verdicts"
+        }
+      ]
+    },
+    {
+      "action": "repair_safe_loss",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "row_count": 66,
+      "label_counts": {
+        "REPROCESS": 66
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 66
+      },
+      "post_ids": [
+        11660237,
+        11660257,
+        11660258,
+        11660259,
+        11660265,
+        11661876,
+        11666731,
+        11669943,
+        11671500,
+        11671517,
+        11676310,
+        11684372,
+        11685987,
+        11689292,
+        11658620,
+        11660264,
+        11660273,
+        11661881,
+        11663514,
+        11663547,
+        11666741,
+        11668288,
+        11668300,
+        11660271,
+        11660277,
+        11663544,
+        11663557,
+        11669913,
+        11669921,
+        11669929,
+        11671514,
+        11673091,
+        11673109,
+        11674694,
+        11676309,
+        11676326,
+        11676331,
+        11681159,
+        11682767,
+        11689282,
+        11692444,
+        11694030,
+        11694041,
+        11694047,
+        11694049,
+        11694068,
+        11695596,
+        11697267,
+        11698895,
+        11700483,
+        11702044,
+        11702085,
+        11702086,
+        11705231,
+        11705269,
+        11708432,
+        11708447,
+        11708478,
+        11710020,
+        11710021,
+        11710052,
+        11713220,
+        11714887,
+        11716475,
+        11718099,
+        11718110
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11660237,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_source_native",
+          "selected_title": "테라포밍",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss"
+          ],
+          "rationale_ko": "게시글 제목이 `테라포밍 볼만함?`으로 작품명을 직접 묻고, 후보 URL도 공식 작품 `테라포밍`에 대응한다. after null은 정당한 safe title을 잃은 회귀다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660237",
+            "https://novelpia.com/novel/61947"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11660257,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_source_native",
+          "selected_title": "암흑가 보스요? 제가요?",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss"
+          ],
+          "rationale_ko": "제목 `암흑가보스<<이거 재밋네`는 후보 작품의 안정 축약 표면이다. 공식 URL에서도 후보 제목이 확인되므로 after null은 safe-loss다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660257",
+            "https://novelpia.com/novel/384111"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11660258,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_source_native",
+          "selected_title": "괴담 호텔 탈출기",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss"
+          ],
+          "rationale_ko": "제목 `괴담텔 아리야...`는 `괴담 호텔 탈출기`의 장갤 약칭과 등장인물 맥락이다. 후보 URL의 공식 제목도 `괴담 호텔 탈출기`로 확인된다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660258",
+            "https://novelpia.com/novel/102155"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11660259,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_source_native",
+          "selected_title": "헌터갤러리의 국가권력급 기계공주",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss"
+          ],
+          "rationale_ko": "제목의 `기계공주`와 본문 전개 언급이 후보 작품을 직접 가리킨다. 공식 URL의 제목도 `헌터갤러리의 국가권력급 기계공주`다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660259",
+            "https://novelpia.com/novel/390228"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11660265,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_source_native",
+          "selected_title": "헌터갤러리의 국가권력급 기계공주",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss"
+          ],
+          "rationale_ko": "제목 `기계공주 전생 이브...`와 본문 `오필리아` 맥락은 후보 작품의 내부 인물/전개를 직접 다룬다. after의 author-new-work context demotion은 과도하다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660265",
+            "https://novelpia.com/novel/390228"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11661876,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_source_native",
+          "selected_title": "와인의 신",
+          "selected_option_id": "C1",
+          "evidence_grade": "Medium",
+          "actions": [
+            "repair_safe_loss"
+          ],
+          "rationale_ko": "제목 `와인의신 재밌다`와 댓글의 `문피아에서 봤다`가 후보 `와인의 신`을 직접 지지한다. after null은 작품명 직접 언급을 잃은 회귀다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11661876"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11666731,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_source_native",
+          "selected_title": "약먹는 천재마법사",
+          "selected_option_id": "C1",
+          "evidence_grade": "Medium",
+          "actions": [
+            "repair_safe_loss"
+          ],
+          "rationale_ko": "제목 `약먹마 요즘 좀 애매함`은 후보 작품의 통용 약칭을 직접 사용한다. 후보 URL은 없지만 원문 surface가 충분하므로 null demotion은 safe-loss다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11666731"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11669943,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_source_native",
+          "selected_title": "즉사기 들고 무림에 떨어지다",
+          "selected_option_id": "C1",
+          "evidence_grade": "Medium",
+          "actions": [
+            "repair_safe_loss"
+          ],
+          "rationale_ko": "제목 `즉사무림 최신편`과 본문 `무협미식` 맥락은 후보 작품을 직접 다룬다. after의 author-new-work context demotion은 현재 작품 언급을 과소평가했다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11669943"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "title_field_split_contract_required",
+      "priority": "P1",
+      "owner_mode": "RUNTIME_REPLAY_OR_REVIEW",
+      "row_count": 1,
+      "label_counts": {
+        "REPROCESS": 1
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 1
+      },
+      "post_ids": [
+        11705231
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11705231,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_wrong_but_source_native_correct_title_field_split_required",
+          "selected_title": "??? ??",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss",
+            "title_field_split_contract_required"
+          ],
+          "rationale_ko": "??? `???`, `???`, `???`, ?? `??`?? `??? ??` character/work bridge? ???. C2? wrong-work?? C1 URL? ?? Loop223/228 ??? `??? ??` title-field split ??? ?? ?????? repair ??? ??.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11705231",
+            "docs/devs/loop_reports/LOOP_223_REPORT_20260701.md#11705231",
+            "docs/devs/loop_reports/LOOP_228_REPORT_20260701.md#11705231"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "title_variant_canonicalization_required",
+      "priority": "P1",
+      "owner_mode": "RUNTIME_REPLAY_OR_REVIEW",
+      "row_count": 5,
+      "label_counts": {
+        "REPROCESS": 5
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 5
+      },
+      "post_ids": [
+        11660277,
+        11663544,
+        11669929,
+        11705269,
+        11714887
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11660277,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_source_native_title_variant",
+          "selected_title": "???? ????",
+          "selected_option_id": "C1",
+          "evidence_grade": "Medium",
+          "actions": [
+            "repair_safe_loss",
+            "title_variant_canonicalization_required"
+          ],
+          "rationale_ko": "?? `??? ????`? ?? Loop259/Loop76 ??? `???? ????` ??? ????. before ???? `? ???` ??? ?? ?? ????? clean title canonicalization? ?????, after null ??? safe-loss?.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660277",
+            "docs/devs/VERIFICATION_RESULTS.md#post_id=11660277",
+            "docs/devs/CHECKLIST.md#post_id=11660277"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11663544,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_source_native_title_variant",
+          "selected_title": "?????? ????? ????",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss",
+            "title_variant_canonicalization_required"
+          ],
+          "rationale_ko": "??? `????`? ??/??? ?? ??? ?? URL? ?? ????. before title? truncation variant?? ?? ??? ????? after null? safe-loss?.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11663544",
+            "https://novelpia.com/novel/390228",
+            "docs/devs/VERIFICATION_RESULTS.md#post_id=11663544"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11669929,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_source_native_title_variant",
+          "selected_title": "기계공주",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss",
+            "title_variant_canonicalization_required"
+          ],
+          "rationale_ko": "제목의 `기계공주 재밌네`와 본문 주인공 평가가 작품 소비 맥락을 직접 형성한다. canonical full title 정리는 필요하지만 after null은 safe-loss다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11669929"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11705269,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_series_title_but_volume_canonicalization_required",
+          "selected_title": "????",
+          "selected_option_id": "C1",
+          "evidence_grade": "Medium",
+          "actions": [
+            "repair_safe_loss",
+            "title_variant_canonicalization_required"
+          ],
+          "rationale_ko": "??? `???? ??`?? ?? `?????`?? ?? ???? ?? character/series ????. ?? after ??? `???? : ???`? ??? URL/?? canonical ??? ?? ????.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11705269",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop50_panel_collateral_requeue.md#post_id=11705269"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11714887,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_title_variant_adaptation",
+          "selected_title": "도굴왕 1 |",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss",
+            "title_variant_canonicalization_required"
+          ],
+          "rationale_ko": "`??? PV`? YouTube ?? ??? C1 `???` ?? ????. `??? 1 |` ?? title variant ???? ????.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11714887",
+            "https://page.kakao.com/content/53190884"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    },
+    {
+      "action": "url_canonicalization_review_required",
+      "priority": "P1",
+      "owner_mode": "RUNTIME_REPLAY_OR_REVIEW",
+      "row_count": 4,
+      "label_counts": {
+        "REPROCESS": 4
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 4
+      },
+      "post_ids": [
+        11702085,
+        11710020,
+        11710021,
+        11710052
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11702085,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_source_native_character_setting_context",
+          "selected_title": "괴담 호텔 탈출기",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss",
+            "url_canonicalization_review_required"
+          ],
+          "rationale_ko": "원문은 `알레프`, `아리`, 호텔파티, 부처/흑송이 여사님 등 `괴담 호텔 탈출기` 내부 인물/설정 토론이다. 후보 title은 source-native로 맞고, URL의 tracking query는 별도 canonicalization 대상으로 남긴다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11702085",
+            "https://novelpia.com/novel/102155?p_id=novelsup6_5"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11710020,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_alias_without_url",
+          "selected_title": "주무시기 전에 무엇을 하셨나요?",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss",
+            "url_canonicalization_review_required"
+          ],
+          "rationale_ko": "`???`? C1 `???? ?? ??? ?????` ???? ?? ????. URL? ?? ?? canonicalization ??? ????.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11710020"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11710021,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_alias_without_url",
+          "selected_title": "무한의 마법사",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss",
+            "url_canonicalization_review_required"
+          ],
+          "rationale_ko": "`?? ??`? `???` ??? C1 `??? ???`? ?? ????. URL ?? ??? replay?? ???? ??.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11710021"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        },
+        {
+          "post_id": 11710052,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "before_correct_alias_without_url",
+          "selected_title": "아카데미 패드립 면역",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss",
+            "url_canonicalization_review_required"
+          ],
+          "rationale_ko": "`????` ??? C1 `???? ??? ??`? ??/?? ????. URL ?? C1??? canonical replay? ????.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11710052"
+          ],
+          "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "post_id": 11666713,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_after_wrong",
+      "selected_title": "21세기 무림세가",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_after_wrong_work"
+      ],
+      "rationale_ko": "원문 제목의 `21세기 무림` 표면과 무협스럽다는 감상은 `21세기 무림세가` 쪽을 직접 지지한다. `21세기 헌터가된 무림인`은 official page가 있어도 원문에 헌터/해당 제목 앵커가 없다.",
+      "evidence_refs": [
+        "https://page.kakao.com/content/49668687",
+        "https://series.naver.com/novel/detail.series?productNo=1894278",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop290_collateral183_p0_review_batch.json#post_id=11666713"
+      ],
+      "source_review_id": "loop291_wrong_work_title_flip_source_native_verdicts"
+    },
+    {
+      "post_id": 11660237,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "테라포밍",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "게시글 제목이 `테라포밍 볼만함?`으로 작품명을 직접 묻고, 후보 URL도 공식 작품 `테라포밍`에 대응한다. after null은 정당한 safe title을 잃은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660237",
+        "https://novelpia.com/novel/61947"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11660257,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "암흑가 보스요? 제가요?",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `암흑가보스<<이거 재밋네`는 후보 작품의 안정 축약 표면이다. 공식 URL에서도 후보 제목이 확인되므로 after null은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660257",
+        "https://novelpia.com/novel/384111"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11660258,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `괴담텔 아리야...`는 `괴담 호텔 탈출기`의 장갤 약칭과 등장인물 맥락이다. 후보 URL의 공식 제목도 `괴담 호텔 탈출기`로 확인된다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660258",
+        "https://novelpia.com/novel/102155"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11660259,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "헌터갤러리의 국가권력급 기계공주",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목의 `기계공주`와 본문 전개 언급이 후보 작품을 직접 가리킨다. 공식 URL의 제목도 `헌터갤러리의 국가권력급 기계공주`다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660259",
+        "https://novelpia.com/novel/390228"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11660265,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "헌터갤러리의 국가권력급 기계공주",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `기계공주 전생 이브...`와 본문 `오필리아` 맥락은 후보 작품의 내부 인물/전개를 직접 다룬다. after의 author-new-work context demotion은 과도하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660265",
+        "https://novelpia.com/novel/390228"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11661876,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "와인의 신",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `와인의신 재밌다`와 댓글의 `문피아에서 봤다`가 후보 `와인의 신`을 직접 지지한다. after null은 작품명 직접 언급을 잃은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11661876"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11666731,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "약먹는 천재마법사",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `약먹마 요즘 좀 애매함`은 후보 작품의 통용 약칭을 직접 사용한다. 후보 URL은 없지만 원문 surface가 충분하므로 null demotion은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11666731"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11669943,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "즉사기 들고 무림에 떨어지다",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `즉사무림 최신편`과 본문 `무협미식` 맥락은 후보 작품을 직접 다룬다. after의 author-new-work context demotion은 현재 작품 언급을 과소평가했다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11669943"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11671500,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "악당도 살고 싶다",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `악살싶에서는`은 후보 작품의 약칭이고, 댓글도 해당 작품의 말투/강의씬 맥락을 이어간다. after null은 직접 alias를 잃은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11671500"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11671517,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_variant",
+      "selected_title": "헌터갤러리의 국가권력급 기계공주 마이너 ...",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `기계공주 작가...`와 댓글의 작가/전작 맥락은 후보 URL의 작품을 직접 다룬다. before title 문자열은 truncation variant지만 URL과 작품 표면은 정당하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11671517",
+        "https://novelpia.com/novel/390228"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11676310,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `마도줍 시리즈 왔구나`는 후보 작품의 축약 표면이다. 후속 문맥도 구매/연재 소비 맥락이라 null demotion은 과도하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11676310"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11684372,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "밀리언 클래스",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `밀리언클래스 공지보고`가 후보 작품명을 직접 붙여 쓴다. 본문/댓글도 공지와 대학원생 휴재 사유 맥락이라 작품 공지에 대한 반응으로 읽는 것이 자연스럽다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11684372"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11685987,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "괴담 동아리",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `괴담동 뭔데`는 후보 작품의 안정 약칭을 직접 사용한다. after의 OCR unresolved는 제목 표면을 잃은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11685987"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11689292,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "최악의 파트너",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목이 `최악의 파트너 표지`를 직접 말하고, 본문도 표지/그림작가/패러디 작품 댓글로 이어진다. 후보 작품을 null로 내리는 것은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11689292"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11658615,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "source_text_insufficient_image_or_native_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Missing",
+      "actions": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "?? `? ? ? ! !`? ?? `???? on`???? ?? `?? ?? ??????`? ?? ???? ??? ?? ??? ??. ??? 1?? ?? native/image ?? ??? safe-loss repair? ?? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11658615"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11658620,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "?? ?? ??????",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? `????`? ?? ?? ????, ??? ??/?? ?? ??? ?? ?? ?? ?? ??? ?? ?? ?? ??? ????. after null? ??? ?? ??? ?? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11658620",
+        "https://novel.munpia.com/533816"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11660254,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "source_text_insufficient_image_or_native_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Missing",
+      "actions": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "??? `??? ?????`? AI ??/??? ??? ???, ?????? ?? `??? ??? ??? ??`? ?? ???? ??? ??? ??. ???/?? ?? ? repair ??? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660254"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11660264,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "?? ???? ??? ??? ? ? ???",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? `???`? ?? ??? ?? ???? ???, ???/??? ??/??? ??? ?? ??? ?? ?? ?? ??? ???. ?? URL? batch? ???? Medium?? ????? after null? safe-loss repair ??? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660264"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11660273,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "???? ?? ???? ??",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? `??? ??? ?? ?? ???`?? ?? ??? ?? ?? ??? ??? ?? ????. after null? source-native safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660273",
+        "https://novelpia.com/novel/414963"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11661881,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "??? ?? ???",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? `????`? ?? ?? ???? ??/??? `???`, `???? ?`? ?? ?? ???? ????. URL? ??? source-native repair ??? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11661881"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11663514,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "?? ?? ??",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "?? ? ?? `https://novel.munpia.com/486006` ?? ?? URL? ??, ??? ?? ?? ??? ???? ????. URL ?? ??? ???? after null? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11663514",
+        "https://novel.munpia.com/486006"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11663547,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "?????? ????? ????",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? `???? ???`? ?? ??? ??? ??? ???/?? ???? ??? ???. ?? ?? URL? ?? after null? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11663547",
+        "https://novelpia.com/novel/390228"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11666741,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "?? ?? ?????",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? ??? `???` ??/???/??? ?? ???. ?? ?? `?? ?? ?????`? ?? ????, after null? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11666741",
+        "https://novel.munpia.com/254718"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11668288,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "?? ???? ???? ??",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? `????`? ?? ?? ????, ?? ?????? ?? ?? ?? ???? ???. URL? ??? source-native repair ??? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11668288"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11668300,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "??? ?? ?? ? ??",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? `???`? ?? ?? ???? `????`, `?????`?? ?? ?? ??? ?? ????. after null? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11668300",
+        "https://series.naver.com/novel/detail.series?productNo=8050192"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11660262,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "source_text_insufficient_native_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Weak",
+      "actions": [
+        "native_web_or_source_review_required"
+      ],
+      "rationale_ko": "??? `??? ??`? AI ??? ???? ?? `???, ? ??? ? ? ????`?? ???? ?? ???? ???. ??/?? ?? ?? ?? before title? ?? safe-loss? ?? author-new-work ??? ?? ? ?? HOLD? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660262"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11660271,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "??? ???",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? `??? ???`? ?? ???? ??? ?? ??? ?? ????. after null? ?? ?? ??? ?? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660271"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11660277,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_variant",
+      "selected_title": "???? ????",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss",
+        "title_variant_canonicalization_required"
+      ],
+      "rationale_ko": "?? `??? ????`? ?? Loop259/Loop76 ??? `???? ????` ??? ????. before ???? `? ???` ??? ?? ?? ????? clean title canonicalization? ?????, after null ??? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11660277",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11660277",
+        "docs/devs/CHECKLIST.md#post_id=11660277"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11661856,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_native_evidence_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Missing",
+      "actions": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "???? `???`? ?? ????? ?? `??? ?! ?! ? ?Kill???!`? ?? ???? ???. ??? 1? ?? ??? repair_safe_loss? ?? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11661856"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11661863,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_native_evidence_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Missing",
+      "actions": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "?? `?? ?? ??? ?????`? ?????? ?? `???? ??? ?????`? ??? ? ??. ??? 2?? ???/?? ??? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11661863"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11663521,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "hold_boundary_confirmed_not_safe_loss",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Medium",
+      "actions": [
+        "preserve_hold_boundary"
+      ],
+      "rationale_ko": "?? Loop141?? ???? ?? ???/??? bridge? ?? character/meme art? ????, `[????] ????? ???` ??? ???? promotion-safe? ???? ????. safe-loss repair? ??? HOLD ?? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11663521",
+        "docs/devs/VERIFICATION_RESULTS.md#Loop141-post_id=11663521"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11663544,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_variant",
+      "selected_title": "?????? ????? ????",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss",
+        "title_variant_canonicalization_required"
+      ],
+      "rationale_ko": "??? `????`? ??/??? ?? ??? ?? URL? ?? ????. before title? truncation variant?? ?? ??? ????? after null? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11663544",
+        "https://novelpia.com/novel/390228",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11663544"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11663554,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "character_bridge_or_image_review_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Weak",
+      "actions": [
+        "native_image_or_character_bridge_review_required"
+      ],
+      "rationale_ko": "??? `???` ??? ???? before ??? `??? ( ? ???? ?? ???? )`?? ???? ???? ?? composite title??. ???/character bridge ?? ?? clean public title? ?? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11663554"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11663557,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "???",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? ??? `???` ??/??? ??? ?? ???. URL? ??? ?? ?? ??? ???? after null? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11663557"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11665099,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_native_evidence_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Missing",
+      "actions": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "`??? ??`? ?? ??/205? ??? ???? ???? ?? ????? ??/?? ???? ?????? ???? ???. ??? 2? ?? ? safe-loss repair? ?? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11665099"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11665110,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "native_web_title_alias_review_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Weak",
+      "actions": [
+        "native_web_or_source_review_required"
+      ],
+      "rationale_ko": "??? `??????`? ?? ??? before ??? `???? ???? ???`? ??? ???. ? ??? ??/?? ?? ?? ??? repair? accept? ?? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11665110"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11665124,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "canonical_title_variant_policy_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Medium",
+      "actions": [
+        "canonical_title_variant_policy_required"
+      ],
+      "rationale_ko": "??? `??`? ?? ?? ??? ?? ???? before ?? `???(????)`? ???? faction/entity? ?? composite title??. clean `????` ?? ??? ?? canonical policy? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11665124"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11666725,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_native_evidence_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Missing",
+      "actions": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "??? ??? `??`, `??`?? ??? ???? ?? `???? 11? ??? ??? ??`? ???/?? ?? ?? ??? ?? ???? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11666725"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11668325,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_media_boundary_review_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Weak",
+      "actions": [
+        "native_image_or_media_boundary_review_required"
+      ],
+      "rationale_ko": "본문은 `마파두부`와 이미지 지시가 핵심이고 댓글에 `페이트스테이나이트` 언급이 있지만, 이미지/매체 경계 확인 없이 `Fate/stay night`를 parser의 safe public work로 확정하기에는 약하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11668325"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11669908,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "source_text_insufficient_native_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Weak",
+      "actions": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "글은 이과 마법 설정 일반론이고 댓글은 `마카물리`, `노나메` 등 다른 표면을 말한다. 후보 `아카데미에서 살아남기 (완)`을 직접 지지하는 원문 표면이 약해 native/source 확인 전에는 safe-loss로 세지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11669908"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11669913,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "하룬",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목이 `하룬`을 직접 말하고 본문도 수학/이과 마법 평가로 해당 작품 논의를 이어간다. after null은 직접 작품 표면을 잃은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11669913",
+        "https://ridibooks.com/books/1811007466"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11669921,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "selected_title": "악당은 살고 싶다",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "`악살싶`은 `악당은 살고 싶다`의 안정 약칭이고, 제목/본문이 유료분과 전개 평가를 직접 말한다. after null은 정당한 safe title 손실이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11669921"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11669924,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_native_evidence_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Weak",
+      "actions": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "원문 텍스트는 `루리드래곤`, `사일런트위치`와 설정 비교를 말하지만 후보 `용인족의 아카데미 생존기`를 직접 지지하지 않는다. 이미지/OCR 또는 native source 확인 전에는 before safe title을 정답으로 확정하지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11669924"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11669929,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_variant",
+      "selected_title": "기계공주",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss",
+        "title_variant_canonicalization_required"
+      ],
+      "rationale_ko": "제목의 `기계공주 재밌네`와 본문 주인공 평가가 작품 소비 맥락을 직접 형성한다. canonical full title 정리는 필요하지만 after null은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11669929"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11671512,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_native_evidence_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Weak",
+      "actions": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "텍스트는 패러디와 `유카리` 히로인 여부를 말하지만 후보 `삼시세끼, 심아식당`을 직접 지지하는 제목/URL 표면은 없다. 첨부 이미지 또는 native source 확인 전에는 safe-loss로 세지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11671512"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11671514,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "selected_title": "악신에게 총애받는 자",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `악신총애)`는 후보 작품의 안정 약칭이고, 본문과 댓글이 하진우/세라 등 작품 내부 맥락을 이어간다. after null은 정당한 title recall 손실이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11671514",
+        "https://novelpia.com/novel/137926"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11673080,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "source_text_insufficient_native_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Weak",
+      "actions": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "텍스트는 의사물 일반 감상과 의료소송 장면을 말하지만 `갤질하는 천재 의사` 제목 표면은 직접 보이지 않는다. 첨부 이미지나 native source 확인 전에는 before title을 정답으로 확정하지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11673080"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11673091,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "selected_title": "전지적 독자 시점",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "`전독시`는 `전지적 독자 시점`의 안정 약칭이고 제목/본문이 영화화 맥락을 직접 말한다. after `hold_without_candidates`는 직접 작품 표면을 잃은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11673091",
+        "https://novel.munpia.com/104753"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11673109,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "selected_title": "헌터갤러리의 국가권력급 기계공주",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목의 `기계공주`와 본문 `오필리아`, 주인공 설정 논의가 후보 작품을 직접 지지한다. 공식 URL도 있으므로 after null은 safe title 손실이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11673109",
+        "https://novelpia.com/novel/390228"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11674694,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "selected_title": "21세기 무림세가",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목의 `21세기무림`과 본문 `21세기무림은 천화일로의 정신적 후계작`이 후보 작품을 직접 지지한다. 댓글도 노벨피아 무협/선작/설정 호불호로 이어져 after null은 safe title 손실이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11674694",
+        "https://page.kakao.com/content/49668687"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11676309,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "selected_title": "갤질하는 천재 의사",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `갤질의사 정실일러 예고`는 후보 작품의 안정 약칭과 일러스트 공지 맥락을 직접 담고, 댓글도 히로인/캐릭터 논의로 이어진다. after null은 작품 표면을 잃은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11676309",
+        "https://novelpia.com/novel/372180"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11676326,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "selected_title": "아카데미 생존 갤러리",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `아생갤`과 본문 `갤러리물`, `엘리`, `괴이` 논의가 후보 작품을 직접 지지한다. after null은 안정 alias와 작품 내부 맥락을 잃은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11676326",
+        "https://novelpia.com/novel/390001"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11676331,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "selected_title": "판초우의의 마법사",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목의 `판초법사`는 후보 작품 약칭이고 본문/댓글은 작품 내 신앙 설정을 직접 토론한다. after null은 작품 설정 토론을 잃은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11676331",
+        "https://novel.munpia.com/530500"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11677924,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_native_evidence_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Weak",
+      "actions": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "원문은 `남캐일러` 선호와 갑옷 이미지 반응만 보인다. 후보 `고결에 오만이 깃들 때`를 직접 지지하는 텍스트 표면이나 URL이 없어 이미지/native evidence 확인 전에는 safe-loss repair로 세지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11677924"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11681159,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "selected_title": "괴담에 휘말렸다",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `김괴라리`와 본문 `상태창`, `회귀`, 댓글 `스팡달`, `고르고리오`가 후보 작품의 내부 전개/인물 맥락을 직접 지지한다. after null은 안정 alias와 작품 설정 논의를 잃은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11681159",
+        "https://novelpia.com/novel/363195"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11682767,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native",
+      "selected_title": "묵향",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목이 `묵향`을 직접 말하고 본문/댓글도 태허무령심법, 천마구령심법, 아르티어스, 드래곤 하트 등 해당 작품 전개를 논한다. after null은 직접 작품 논의를 잃은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11682767",
+        "https://mm.munpia.com/?menu=novel&action=view&id=51088&entry_id=776982"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11685994,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "source_text_insufficient_native_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Weak",
+      "actions": [
+        "native_web_or_source_review_required"
+      ],
+      "rationale_ko": "원문은 `념글`의 외신소환 주문을 묻는 짧은 반응이고 후보 제목을 직접 말하지 않는다. 후보 `무한을 이해한 나는 외신의 사제가 되었습니다`는 source-native 텍스트만으로는 약해 native/source 확인 전 repair로 세지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11685994"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11689282,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "selected_title": "전생하고 보니 크툴루",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `전툴루 엔딩`은 후보 작품의 안정 약칭이고 본문/댓글은 엔딩과 후반부 완성도를 직접 평가한다. after null은 작품 alias를 잃은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11689282",
+        "https://novel.munpia.com/199081"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11692436,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "hold_character_bridge_or_native_image_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Medium",
+      "actions": [
+        "native_image_or_character_bridge_review_required"
+      ],
+      "rationale_ko": "원문 텍스트는 `류서란(perfect)`와 댓글 `류서란(old girl)`만 제공한다. `perfect` 표면은 후보 `퍼펙트 메이지`와 닿지만, 로컬 테스트/문서에서 `류서란` bridge가 확인되지 않았고 이미지도 있다. 단일 캐릭터/설정 bridge 과잉 승격을 막기 위해 repair로 세지 않고 HOLD한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11692436"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11692444,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "selected_title": "엑스칼리버 뽑습니다",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `엑칼뽑`은 후보 작품의 직접 약칭이고 댓글 `그 소설에 캐빨 빼면 남는게 있나`도 동일 작품 소비 맥락이다. after null은 안정 alias를 잃은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11692444",
+        "https://novelpia.com/novel/381767"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11694030,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias_and_character_context",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `괴담텔`은 후보 작품 약칭이고 본문/댓글의 `한가인`, `대레프`, `경력직` 맥락이 작품 내부 인물/설정을 직접 지지한다. after null은 safe title 손실이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11694030",
+        "https://novelpia.com/novel/102155"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11694041,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "selected_title": "격투 소설 엑스트라가 타격 천재임",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `격투천재`는 후보 작품의 핵심 title alias이고 본문/댓글도 격투 감성, 천박함, 유사 장르 비교를 논한다. after null은 작품 약칭을 잃은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11694041",
+        "https://novelpia.com/novel/427330"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11694047,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias",
+      "selected_title": "판초우의의 마법사",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `판초법사`는 후보 작품의 직접 약칭이고 본문도 팬아트/도로헤도로 감성 등 작품 소비 맥락을 말한다. after null은 안정 title alias 손실이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11694047",
+        "https://novel.munpia.com/530500"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11694049,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias_and_character_context",
+      "selected_title": "아카데미 생존 갤러리",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `아생갤`은 후보 작품 약칭이고 본문은 `아레스`, `엘리`, 기억 맥락을 직접 논한다. 후보 URL은 없지만 before title 자체는 source-native로 맞으므로 after null은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11694049"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11694068,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_public_title_discussion",
+      "selected_title": "트와일라잇",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목과 댓글 모두 `트와일라잇`의 출판, 번역, 뱀파이어 소설 맥락을 직접 논한다. 이는 일반 단어가 아니라 작품 discussion이므로 after null은 public title 손실이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11694068",
+        "https://ridibooks.com/books/593000441"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11695596,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias_and_character_context",
+      "selected_title": "여신이 나만 애호함",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `여신애호`는 후보 작품의 직접 약칭이고 본문/댓글의 `조이노이`, `방주`, `3개의 세계`가 작품 내부 맥락을 지지한다. after null은 강한 작품 bridge를 잃은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11695596",
+        "https://novelpia.com/novel/346855"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11695599,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "hold_native_image_or_source_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Medium",
+      "actions": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "텍스트는 `봐라`, `ㅈㅈㅐ밌다`, 댓글 `틀내나는데/실제로는 아님`뿐이고 이미지가 있다. 후보 `창관전생`을 텍스트만으로 확정할 수 없으므로 이미지 또는 원소스 확인 전 repair로 세지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11695599"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11697256,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "hold_multi_candidate_recommendation_thread",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Medium",
+      "actions": [
+        "multi_candidate_recommendation_review_required"
+      ],
+      "rationale_ko": "원문은 TS 장르 추천 요청이고 댓글에 `황제의 딸로 환생했습니다`, `꼬시러 왔습니다` 등 여러 추천 후보가 나온다. 후보 C1은 댓글에 직접 있지만 단일 public title로 확정하면 다중 추천 thread overreach가 되므로 HOLD한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11697256",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11697256"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11697267,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias_and_character_context",
+      "selected_title": "아카데미 생존 갤러리",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss",
+        "native_web_or_url_review_required"
+      ],
+      "rationale_ko": "제목 `아생갤`은 후보 작품 약칭이고 본문은 `라나 정체`라는 작품 내부 캐릭터/설정 반전을 직접 말한다. title은 source-native로 맞지만, 기존 native-web 메모의 URL mismatch caveat 때문에 URL은 별도 확인 대상으로 남긴다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11697267",
+        "https://novelpia.com/novel/390001",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11697267"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11698870,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "hold_classic_literature_scope_review_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Medium",
+      "actions": [
+        "native_web_or_scope_review_required"
+      ],
+      "rationale_ko": "원문은 `인간실격` 고전문학/작가 자살 맥락을 말해 title surface 자체는 강하지만, 후보는 URL이 없고 기존 native-web 메모도 classic-literature scope HOLD로 분리했다. parser public-work scope 정책 확인 전 repair로 세지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11698870",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11698870"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11698895,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_alias_and_rimworld_context",
+      "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss",
+        "native_web_or_url_review_required"
+      ],
+      "rationale_ko": "제목 `랫따싶`과 본문 `림월드` 플레이 재점화 맥락은 기존 테스트/문서에서 `[림월드]변방계에서 회귀자로 살아남기` 후보군의 직접 alias/context로 다뤄진다. URL은 없지만 before title 자체는 source-native로 맞아 after null은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11698895",
+        "tests/test_candidate_audit.py#랫따싶",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11698895"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11700483,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias_and_character_context",
+      "selected_title": "니들 생각 다 들린다",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss",
+        "native_web_or_url_review_required"
+      ],
+      "rationale_ko": "제목 `니생들`은 `니들 생각 다 들린다`의 curated abbreviation이고 댓글 `누리`, `대 누 리`도 작품 내부 캐릭터/이모티콘 맥락이다. URL은 빠졌지만 title 자체는 source-native로 맞으므로 after null은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11700483",
+        "src/llm_batch/experts/utils.py#니생들",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11700483"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11702044,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_title_alias_and_internal_setting",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "제목 `괴담텔`은 후보 작품 약칭이고 본문/댓글은 `천국편`, `305호`, `QnA`, 떡밥 등 작품 내부 전개를 직접 토론한다. after null은 안정 작품 discussion을 잃은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11702044",
+        "https://novelpia.com/novel/102155"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11702085,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_source_native_character_setting_context",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss",
+        "url_canonicalization_review_required"
+      ],
+      "rationale_ko": "원문은 `알레프`, `아리`, 호텔파티, 부처/흑송이 여사님 등 `괴담 호텔 탈출기` 내부 인물/설정 토론이다. 후보 title은 source-native로 맞고, URL의 tracking query는 별도 canonicalization 대상으로 남긴다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11702085",
+        "https://novelpia.com/novel/102155?p_id=novelsup6_5"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11702086,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_ocr_explicit_title_variant_requires_image_url_replay",
+      "selected_title": "6? ?? ???? ???",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss",
+        "native_image_or_url_review_required"
+      ],
+      "rationale_ko": "?? `6???)`? OCR/??? `6? ?? ???? ???`? ?? ?? ??? ????. ?? image_count=2?? after? `ocr_explicit_title_unresolved`? ?????? native image/OCR ?? ?? URL replay ??? full approval? ?? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11702086",
+        "docs/devs/detection_survey_20260626_errors.json#post_id=11702086"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11702094,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "hold_doubleo_vs_comment_window_title_disambiguation_required",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Medium",
+      "actions": [
+        "native_web_or_alternative_title_review_required"
+      ],
+      "rationale_ko": "???? `??? ??`? ?? ???? ?? survey? `??? -> ???? ?? ???` ??? ????. C1 `#???`? ?? ???? ?? ??/??? ??? ?? ? ?? HOLD??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11702094",
+        "docs/devs/detection_survey_20260626_errors.json#post_id=11702094"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11705231,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_wrong_but_source_native_correct_title_field_split_required",
+      "selected_title": "??? ??",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss",
+        "title_field_split_contract_required"
+      ],
+      "rationale_ko": "??? `???`, `???`, `???`, ?? `??`?? `??? ??` character/work bridge? ???. C2? wrong-work?? C1 URL? ?? Loop223/228 ??? `??? ??` title-field split ??? ?? ?????? repair ??? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11705231",
+        "docs/devs/loop_reports/LOOP_223_REPORT_20260701.md#11705231",
+        "docs/devs/loop_reports/LOOP_228_REPORT_20260701.md#11705231"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11705269,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_series_title_but_volume_canonicalization_required",
+      "selected_title": "????",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss",
+        "title_variant_canonicalization_required"
+      ],
+      "rationale_ko": "??? `???? ??`?? ?? `?????`?? ?? ???? ?? character/series ????. ?? after ??? `???? : ???`? ??? URL/?? canonical ??? ?? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11705269",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop50_panel_collateral_requeue.md#post_id=11705269"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11706844,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "hold_ocr_title_author_vs_current_munpia_title_requires_reverify",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Medium",
+      "actions": [
+        "native_image_or_canonical_review_required"
+      ],
+      "rationale_ko": "??? `?? ??? ??`?? after ??? `? ?? ?? ???`, `??? ???`, `??` ?? ?? ??. ?? survey? OCR title/author clue? ?? ??? title ??? ???? ?????? HOLD??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11706844",
+        "docs/devs/VERIFICATION_RESULTS.md#post_id=11706844"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11706867,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "after_hold_needs_native_image_or_source",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "NeedsImage",
+      "actions": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "??? ?? ?? ??? 2?? ?????? C1 `???`? ?? ??? ???? ???. ??/????? C1? ???? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11706867"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11708432,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_but_benchmark_context",
+      "selected_title": "전지적 독자 시점",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss",
+        "multi_work_or_benchmark_context_policy_required"
+      ],
+      "rationale_ko": "??? `???`? `??? ?? ??`? ?? ???? ??? ???/?? ????. ?? ??/benchmark ????? shared gate?? ?? ??? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11708432",
+        "https://novel.munpia.com/104753"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11708447,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_direct_title",
+      "selected_title": "잠룡회귀",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "??? `???? ???????`?? C1 ???? ?? ???. after null? ?? ??? ?? safe-loss?.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11708447",
+        "https://ridibooks.com/books/425439440"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11708478,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_comment_title_with_image_context",
+      "selected_title": "사연 있는 악역으로 착각 당한다",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss",
+        "comment_title_or_image_review_required"
+      ],
+      "rationale_ko": "??? ?? ??? ??? ??? C1 `?? ?? ???? ?? ???`? ????. ?? ??/??? ?? ???? ????? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11708478",
+        "https://novelpia.com/novel/396159"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11710020,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_alias_without_url",
+      "selected_title": "주무시기 전에 무엇을 하셨나요?",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss",
+        "url_canonicalization_review_required"
+      ],
+      "rationale_ko": "`???`? C1 `???? ?? ??? ?????` ???? ?? ????. URL? ?? ?? canonicalization ??? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11710020"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11710021,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_alias_without_url",
+      "selected_title": "무한의 마법사",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss",
+        "url_canonicalization_review_required"
+      ],
+      "rationale_ko": "`?? ??`? `???` ??? C1 `??? ???`? ?? ????. URL ?? ??? replay?? ???? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11710021"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11710052,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_alias_without_url",
+      "selected_title": "아카데미 패드립 면역",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss",
+        "url_canonicalization_review_required"
+      ],
+      "rationale_ko": "`????` ??? C1 `???? ??? ??`? ??/?? ????. URL ?? C1??? canonical replay? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11710052"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11711632,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "after_hold_needs_native_image_or_scope_review",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "NeedsImage",
+      "actions": [
+        "native_image_or_scope_review_required"
+      ],
+      "rationale_ko": "??? `?? ????`? ??? 2???? C1 `?? ??(YOUR NAME)`? ??/?? ???? ???? ???. ???/OCR? scope ?? ? ?? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11711632"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11713220,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_direct_alias",
+      "selected_title": "나만 성좌들이 안 무서움",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "`??????`? C1 `?? ???? ? ???`? ?? ???? ??? ?? ??? ???.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11713220",
+        "https://novelpia.com/novel/383627"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11714887,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_title_variant_adaptation",
+      "selected_title": "도굴왕 1 |",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss",
+        "title_variant_canonicalization_required"
+      ],
+      "rationale_ko": "`??? PV`? YouTube ?? ??? C1 `???` ?? ????. `??? 1 |` ?? title variant ???? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11714887",
+        "https://page.kakao.com/content/53190884"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11714891,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "after_hold_needs_native_image_or_source",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "NeedsImage",
+      "actions": [
+        "native_image_or_source_review_required"
+      ],
+      "rationale_ko": "??/???? ???? ?? ??? 1?? ?? ???. C1 `????? ???? ????` ??? ???/OCR ?? ? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11714891"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11716475,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_comparison_context",
+      "selected_title": "지력 99 고능아인 척하기",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss",
+        "comparison_context_policy_required"
+      ],
+      "rationale_ko": "`???`? C1 `?? 99 ???? ???`? ????? `????/????`? ?? ???? comparison ??? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11716475",
+        "https://novelpia.com/novel/308293"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11716480,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "after_hold_needs_native_image_or_canonical_review",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "NeedsImage",
+      "actions": [
+        "native_image_or_canonical_review_required"
+      ],
+      "rationale_ko": "?? `???`? ??? 2???? C1 `??? ??? ?? ?? ?? ???`? ?? ??? ??? ? ??.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11716480"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11718099,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_direct_alias_image_context",
+      "selected_title": "빌어먹을 환생",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss",
+        "native_image_or_ocr_title_review_required"
+      ],
+      "rationale_ko": "`?? ?????`? ??/??/?????/?? ??? ??? C1 `???? ??`? ?? ????. ?? ???/OCR ?? replay? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11718099",
+        "https://novel.munpia.com/222360"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    },
+    {
+      "post_id": 11718110,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_correct_direct_title",
+      "selected_title": "지구온라인에서 쌀먹합니다",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss"
+      ],
+      "rationale_ko": "`????? ????`? C1 `??????? ?????`? ?? ???? ?? ????.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop301_safe_loss_resolved_to_null_review_batch.json#post_id=11718110",
+        "https://novelpia.com/novel/395678"
+      ],
+      "source_review_id": "loop321_safe_loss_source_native_verdicts_cumulative_147"
+    }
+  ],
+  "approval_boundary": {
+    "launch_or_queue_split_is_not_approval": true,
+    "search_recovery_required_before_promotion_unblock": true,
+    "promotion_blocked_tag_until_search_recovery": "search-blind conditional"
+  }
+}

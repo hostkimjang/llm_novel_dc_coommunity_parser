@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-05 - Loop460 11700500 전1시 wrong-work runtime closure
+
+- 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- Current HEAD `621274cb`에서 residual `repair_after_wrong_work` P0 행 `11700500`을 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- 원문 `전1시 지잔든 지선이 최강자라인 바로 밑이라더니`는 `전1시`, `셰이`, OCR `지선`, `크라이오스`, `성검대`, `마신`과 결속되어 `전지적 1인칭 시점` 작품 토론으로 수렴했다.
+- Run `20260705_103249_509338`은 input/completed/flushed/pending/failed `1/1/1/0/0`, MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`, row search `SEARCH_DEGRADED` query/degraded/unrecovered `13/2/1`으로 완료됐다.
+- Result는 `official_title=전지적 1인칭 시점`, `official_url=https://novelpia.com/novel/49942`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`, `publish_allowed=true`다.
+- Source-native verdict는 `전1시`, `셰이`, `지선`, `크라이오스`, `성검대`, `마신`을 `전지적 1인칭 시점` 인물/장면 bridge로 결속한 `before_correct_after_wrong`이다. 이전 wrong-work `사상 최강의 길드마스터`는 `최강자라인` 일반어에 끌린 오귀속이었다.
+- Health audit는 `GO / clean_completed_source`, search evidence는 `REVIEW / search_degraded_observed`, publication contract는 `GO / 0 violations`다.
+- Stop-condition audit는 queue `96 -> 95`, same packet `11700500`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- 사용자 도메인 보정을 유지했다. `아생갤` 같은 `갤러리` 표면은 현실 DC 갤러리명으로만 보지 않는다. 웹소설 내부에서 갤러리/댓글식 커뮤니티를 서사 장치로 엮은 오마주형 제목, 약어, 세계관 장치일 수 있다.
+- Report는 `docs/devs/loop_reports/LOOP_460_REPORT_20260705.md`, state는 `docs/devs/loop460_11700500_jeon1si_wrong_work_runtime_20260705.json`, Data Analytics summary는 `docs/devs/loop460_11700500_jeon1si_wrong_work_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `REVIEW`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / OPEN_SEARCH_DEGRADED`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop459 11705252 탐재 wrong-work runtime closure
 
 - 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.

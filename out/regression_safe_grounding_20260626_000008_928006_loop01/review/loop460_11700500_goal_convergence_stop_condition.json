@@ -1,0 +1,53 @@
+{
+  "report_type": "goal_convergence_stop_condition",
+  "generated_at": "2026-07-05T10:40:06",
+  "gate": "GO",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "stop_condition": {
+    "loop_count_based_stop": false,
+    "requires_actionable_queue_decrease": true,
+    "requires_same_packet_safe_resolved_monotonic_nondecrease": true
+  },
+  "actionable_queue": {
+    "previous": 96,
+    "current": 95,
+    "previous_source": "summary.residual_action_queue_rows",
+    "current_source": "summary.residual_action_queue_rows",
+    "decreased": true
+  },
+  "packet": {
+    "same_packet": true,
+    "previous": {
+      "post_ids": [
+        "11700500"
+      ],
+      "row_count": 1,
+      "safe_resolved_count": 0,
+      "safe_resolved_post_ids": [],
+      "status_counts": {
+        "promotion_blocked": 1
+      }
+    },
+    "current": {
+      "post_ids": [
+        "11700500"
+      ],
+      "row_count": 1,
+      "safe_resolved_count": 1,
+      "safe_resolved_post_ids": [
+        "11700500"
+      ],
+      "status_counts": {
+        "safe_resolved": 1
+      }
+    },
+    "safe_resolved_monotonic_nondecrease": true,
+    "safe_loss_post_ids": [],
+    "safe_gain_post_ids": [
+      "11700500"
+    ],
+    "safe_delta_evaluated": true
+  },
+  "blockers": []
+}

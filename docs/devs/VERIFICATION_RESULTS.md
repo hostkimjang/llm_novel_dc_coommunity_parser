@@ -1,5 +1,39 @@
 # Verification Results
 
+## 2026-07-05 Loop460 11700500 전1시 wrong-work runtime 검증
+
+- 범위: residual `repair_after_wrong_work`의 `11700500` 단건을 current HEAD `621274cb`에서 search 포함 non-light 조건으로 실행하고, publication contract와 goal convergence stop-condition을 감사했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_460_REPORT_20260705.md`
+  - state `docs\devs\loop460_11700500_jeon1si_wrong_work_runtime_20260705.json`
+  - Data Analytics summary `docs\devs\loop460_11700500_jeon1si_wrong_work_data_analytics_artifact.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop460_11700500_jeon1si_wrong_work_search_nonlight_result.json`
+  - health audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop460_11700500_jeon1si_wrong_work_run_health.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop460_11700500_jeon1si_wrong_work_publication_contract.json`
+  - residual queue `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop460_after_11700500_jeon1si_wrong_work_residual_action_queue.json`
+  - convergence audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop460_11700500_goal_convergence_stop_condition.json`
+- Runtime:
+  - run `20260705_103249_509338`
+  - input/completed/flushed/pending/failed `1/1/1/0/0`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`
+  - Search `SEARCH_DEGRADED`, query/degraded/unrecovered `13/2/1`, upstream zero `6`, fallback recovered `6`
+  - VLM/OCR `READY`, image fetch `1/1`, OCR `지선`, `크라이오스`, `성검대`, `마신`
+- Result:
+  - `official_title=전지적 1인칭 시점`, public `official_url=https://novelpia.com/novel/49942`
+  - `candidate_ledger_status=safe_resolved`, `safe_resolved=true`, `promotion_decision.status=publish`, `publish_allowed=true`
+  - `전1시`, `셰이`, `지선`, `크라이오스`, `성검대`, `마신`이 same-work bridge로 수렴했다.
+- Audit:
+  - `tools/audit_expert_run_health.py` -> `flush_integrity=GO / clean_completed_source`, `search_evidence=REVIEW / search_degraded_observed`, `publication_contract_convergence=GO`.
+  - `tools/audit_publication_contract_convergence.py` -> `GO / row_count 1 / violation_row_count 0`.
+  - `tools/evaluate_goal_convergence.py` -> queue `96 -> 95`, same packet `true`, safe_resolved `0 -> 1`, safe_loss `[]`, gate `GO`.
+  - residual queue split -> Loop459 current queue `96 -> 95`, `REPROCESS 68 -> 67`, `HOLD 28 -> 28`, validation issue `0`.
+- Boundary:
+  - 이 단건 closure는 full375 approval이 아니다.
+  - Search degraded가 관측되어 broader search recovery는 `P0 / OPEN_SEARCH_DEGRADED`다.
+  - `갤러리` 표면은 현실 커뮤니티로 자동 고정하지 않고 웹소설 내부 커뮤니티/갤러리 오마주형 제목 또는 약어일 수 있다고 유지한다.
+  - R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back은 없다.
+  - Full375 collateral은 `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop459 11705252 탐재 wrong-work runtime 검증
 
 - 범위: residual `repair_after_wrong_work`의 `11705252` 단건을 current HEAD `fbf8ee59`에서 search 포함 non-light 조건으로 실행하고, publication contract와 goal convergence stop-condition을 감사했다.

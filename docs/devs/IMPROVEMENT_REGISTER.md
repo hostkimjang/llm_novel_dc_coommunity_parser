@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260705-460 - 11700500 전1시 wrong-work runtime closure
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| 신규 대형 런 | 동결 | full375/bounded/N5/parent replay 미발주 | dispatch 반복 금지 |
+| runtime proof | GO / 1 of 1 | run `20260705_103249_509338`, `1/1/1/0/0` | 단건 근거로만 사용 |
+| publication contract | GO | row `1`, violation `0` | broader gate와 분리 |
+| search evidence | REVIEW | `SEARCH_DEGRADED`, query/degraded/unrecovered `13/2/1` | P0 search recovery 유지 |
+| source-native bridge | GO_TARGETED | `전1시`/`셰이`/`지선`/`크라이오스`/`성검대`/`마신` -> `전지적 1인칭 시점` | 같은 wrong-work residual에 일반화 |
+| stop-condition | GO_TARGETED | queue `96 -> 95`, safe `0 -> 1`, same packet `11700500` | queue 감소만 approval로 승격 금지 |
+| 도메인 정책 | 유지 | `아생갤`/`갤러리` 표면은 작중 커뮤니티 오마주형 제목/약어/장치 가능 | 현실 커뮤니티 단정 금지 |
+| 문서 동기화 | 완료 | Loop460 report/state/Data Analytics 갱신 | goal은 ACTIVE 유지 |
+
+Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `REVIEW`, targeted stop-condition `GO_TARGETED / 96 -> 95 / safe 0 -> 1`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / OPEN_SEARCH_DEGRADED`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260705-459 - 11705252 탐재 wrong-work runtime closure
 
 | 항목 | 상태 | 근거 | 다음 |

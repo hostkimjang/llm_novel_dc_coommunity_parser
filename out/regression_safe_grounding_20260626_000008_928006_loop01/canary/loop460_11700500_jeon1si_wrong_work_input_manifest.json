@@ -1,0 +1,26 @@
+{
+  "generated_at": "2026-07-05T10:31:52+09:00",
+  "loop": 460,
+  "purpose": "11700500 jeon1si wrong-work source-native repair runtime input",
+  "source_queue": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop459_after_11705252_tamjae_wrong_work_residual_action_queue.json",
+  "source_row": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop350_repair_after_wrong_work_5_current_head.jsonl#post_id=11700500",
+  "input_jsonl": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop460_11700500_jeon1si_wrong_work_input.jsonl",
+  "row_count": 1,
+  "post_id": 11700500,
+  "image_post_count": 1,
+  "image_count": 1,
+  "comment_count": 4,
+  "expected_title": "전지적 1인칭 시점",
+  "expected_url": "https://novelpia.com/novel/49942",
+  "previous_wrong_work": "사상 최강의 길드마스터",
+  "source_native_verdict": "before_correct_after_wrong",
+  "native_web_judge_evidence": "out/codex_native_web_judge_20260620_165159_711176_completed779/report/rows/codex_native_web_judge_rows_p02.md#post_id=11700500",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "large_runs": {
+    "full375": "NOT_LAUNCHED",
+    "bounded_1000_1500": "NOT_LAUNCHED",
+    "safe_loss_n5": "NOT_LAUNCHED",
+    "same_38_row_parent_packet": "NOT_LAUNCHED"
+  }
+}
