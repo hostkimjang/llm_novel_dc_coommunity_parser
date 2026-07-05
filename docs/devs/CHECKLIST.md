@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-06 Loop487 stable alias collision contract 체크
+
+- [x] `11685987` mismatch를 `괴담동 -> 괴담 동아리` stable alias가 `[괴담 동아리] 겨울` 파생 상세에 밀린 케이스로 재현했다.
+- [x] `11692444` mismatch를 `엑칼뽑 -> 엑스칼리버 뽑습니다` stable alias가 더 긴 별도 공식작에 밀린 케이스로 재현했다.
+- [x] alias syllable affinity와 bracketed derivative detail hit 조건을 일반 술어로 추가했다.
+- [x] focused stable alias unittest `3/3` PASS.
+- [x] gate/queue regression unittest `17/17` PASS.
+- [ ] `AgenticPipelineReworkTest` 전체 class run은 `4` failures, `1` error로 `REVIEW`라 별도 정리 필요하다.
+- [ ] Runtime replay after patch는 아직 실행하지 않았다.
+- [ ] `11694035`는 공식 상세 회수 전 community-only publish 완화하지 않는다.
+- [ ] Full375 collateral은 여전히 `NO-GO`다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: code contract `GO_UNIT`, targeted tests `GO`, runtime replay `NOT_RUN_AFTER_PATCH`, exact9 last gate `NO-GO / 7 of 9`, full375 collateral `NO-GO`.
+
 ## 2026-07-06 Loop486 exact9 runtime replay 체크
 
 - [x] Loop485 exact-match projected safe `9`건을 search 포함 non-light 조건으로 실행했다.

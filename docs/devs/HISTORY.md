@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-06 - Loop487 stable alias collision contract
+
+- Loop486 exact9 mismatch `11685987`, `11692444`를 stable alias collision 계약으로 먼저 수리했다.
+- `agentic_pipeline.py`에 alias syllable affinity가 canonical title에 더 조밀하게 결속되는 경우 loose official search hit보다 stable alias를 우선하는 조건을 추가했다.
+- canonical 원작을 브래킷으로 품은 파생/패러디 상세 hit가 stable alias canonical을 덮지 못하게 했다.
+- 추가 테스트는 `괴담동 -> 괴담 동아리`와 `엑칼뽑 -> 엑스칼리버 뽑습니다`를 고정한다.
+- `아생갤 -> 아카데미 생존 갤러리`는 공식 상세 회수와 post-side work bridge 전까지 community-only publish 완화하지 않는다.
+- 검증은 focused stable alias unittest `3` tests PASS, gate/queue regression unittest `17` tests PASS다.
+- 광범위 `AgenticPipelineReworkTest` class run은 `378` tests 중 `4` failures, `1` error로 `REVIEW`다.
+- Report는 `docs/devs/loop_reports/LOOP_487_REPORT_20260706.md`, state는 `docs/devs/loop487_stable_alias_collision_contract_state_20260706.json`이다.
+- Gate는 code contract `GO_UNIT`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, exact9 expected-title last gate `NO-GO / 7 of 9`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop486 exact9 runtime replay
 
 - Loop485 exact-match projected safe `9`건을 search 포함 non-light, VLM/OCR on, `--slang-db off`, parallel `9`로 실행했다.

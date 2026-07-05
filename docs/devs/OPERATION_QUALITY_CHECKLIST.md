@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop487 stable alias collision contract 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_487_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop487_stable_alias_collision_contract_state_20260706.json`.
+  - [x] `11685987` bracketed derivative collision test 기록.
+  - [x] `11692444` syllable alias collision test 기록.
+  - [x] focused stable alias unittest `3/3` PASS.
+  - [x] gate/queue regression unittest `17/17` PASS.
+- 품질 경계:
+  - [x] Unit contract는 runtime approval이 아니다.
+  - [x] `아생갤`은 현실 갤러리로 단정하지 않지만 공식 상세 회수 전 community-only publish 완화도 하지 않는다.
+  - [ ] Broad `AgenticPipelineReworkTest` class run은 `4` failures, `1` error로 별도 REVIEW다.
+  - [ ] Runtime replay after patch는 아직 실행하지 않았다.
+  - [ ] Full375 collateral은 여전히 `NO-GO`다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: code contract `GO_UNIT`, targeted tests `GO`, runtime replay `NOT_RUN_AFTER_PATCH`, exact9 last gate `NO-GO / 7 of 9`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop486 exact9 runtime replay 품질 게이트
 
 - 근거:

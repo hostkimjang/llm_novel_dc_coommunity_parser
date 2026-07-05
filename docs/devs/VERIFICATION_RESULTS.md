@@ -1,5 +1,27 @@
 # Verification Results
 
+## 2026-07-06 Loop487 stable alias collision contract 검증
+
+- 범위: Loop486 expected-title mismatch `11685987`, `11692444`의 stable alias collision을 코드 계약으로 고정했다.
+- Code:
+  - `src\llm_batch\agentic_pipeline.py`
+  - `tests\test_agentic_pipeline_rework.py`
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_487_REPORT_20260706.md`
+  - state `docs\devs\loop487_stable_alias_collision_contract_state_20260706.json`
+- Result:
+  - `11685987`: `괴담동 -> 괴담 동아리` canonical이 `[괴담 동아리] 겨울` 파생/패러디 상세 hit보다 우선하도록 계약화했다.
+  - `11692444`: `엑칼뽑 -> 엑스칼리버 뽑습니다` canonical이 더 긴 loose official search collision보다 우선하도록 계약화했다.
+  - `11694035`: `아생갤 -> 아카데미 생존 갤러리`는 공식 상세 회수 전 community-only publish 완화하지 않는다.
+- Validation:
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_stable_batch_alias_corrects_syllable_alias_collision tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_stable_batch_alias_corrects_bracketed_derivative_detail_hit tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_stable_batch_alias_corrects_loose_official_search_collision` PASS, `3` tests.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_projection_followup_queue tests.test_split_collateral_action_queue tests.test_always_on_regression_gates -v` PASS, `17` tests.
+  - `.\venv\Scripts\python.exe -m unittest tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest` REVIEW, `378` tests 중 `4` failures, `1` error.
+- Boundary:
+  - 이번 검증은 unit/contract 검증이다. Runtime replay after patch는 아직 없다.
+  - Exact9 last runtime expected-title gate는 `NO-GO / 7 of 9` 그대로다.
+  - Full375 collateral은 `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop486 exact9 runtime replay 검증
 
 - 범위: Loop485 exact-match projected safe `9`건을 실제 runtime replay로 검증했다.

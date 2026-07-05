@@ -53927,6 +53927,104 @@ OUTPUT JSON:
             )
         )
 
+    def _alias_subsequence_span(self, alias_norm: str, title_norm: str) -> Optional[int]:
+        """Return the compact span covering alias syllables in title, or None when absent."""
+        if not alias_norm or not title_norm:
+            return None
+        positions: List[int] = []
+        cursor = 0
+        for ch in alias_norm:
+            found = title_norm.find(ch, cursor)
+            if found < 0:
+                return None
+            positions.append(found)
+            cursor = found + 1
+        if not positions:
+            return None
+        return positions[-1] - positions[0] + 1
+
+    def _stable_alias_canonical_affinity_beats_current(
+        self,
+        *,
+        alias_norm: str,
+        canonical_norm: str,
+        current_norm: str,
+    ) -> bool:
+        """Prefer a registered alias title when the alias binds denser to it than to a loose hit."""
+        canonical_span = self._alias_subsequence_span(alias_norm, canonical_norm)
+        if canonical_span is None:
+            return False
+        current_span = self._alias_subsequence_span(alias_norm, current_norm)
+        if current_span is None:
+            return True
+
+        alias_len = max(1, len(alias_norm))
+        canonical_density = alias_len / max(1, canonical_span)
+        current_density = alias_len / max(1, current_span)
+        canonical_ratio = alias_len / max(1, len(canonical_norm))
+        current_ratio = alias_len / max(1, len(current_norm))
+        return bool(
+            (
+                canonical_density >= current_density + 0.05
+                and canonical_ratio > current_ratio
+            )
+            or (
+                len(current_norm) >= len(canonical_norm) + 4
+                and canonical_ratio >= current_ratio * 1.35
+                and canonical_density >= current_density - 0.01
+            )
+        )
+
+    def _current_title_is_derivative_hit_for_canonical(
+        self,
+        ctx,
+        *,
+        current_title: Any,
+        canonical_title: Any,
+    ) -> bool:
+        """Detect a platform detail hit whose title is a derivative of the stable canonical work."""
+        current_text = str(current_title or "").strip()
+        canonical_text = str(canonical_title or "").strip()
+        current_norm = self._normalize_match_text(current_text)
+        canonical_norm = self._normalize_match_text(canonical_text)
+        if not ctx or not current_norm or not canonical_norm or current_norm == canonical_norm:
+            return False
+
+        entries: List[Dict[str, Any]] = []
+        for sr in (getattr(ctx, "search_results", None) or [])[:120]:
+            if isinstance(sr, dict):
+                entries.append(sr)
+        for fe in (getattr(ctx, "fetched_page_info", None) or [])[:50]:
+            if not isinstance(fe, dict):
+                continue
+            structured = fe.get("structured_info") or {}
+            if not isinstance(structured, dict):
+                structured = {}
+            entries.append(
+                {
+                    "url": fe.get("url"),
+                    "title": fe.get("title") or fe.get("page_title") or structured.get("title"),
+                    "page_title": fe.get("page_title") or structured.get("page_title"),
+                    "content": fe.get("text_preview") or fe.get("text") or structured.get("description"),
+                    "snippet": fe.get("snippet"),
+                    "description": fe.get("description") or structured.get("description"),
+                }
+            )
+
+        for entry in entries:
+            source_title = str(entry.get("title") or entry.get("page_title") or "").strip()
+            source_title_norm = self._normalize_match_text(source_title)
+            source_names_current = bool(
+                self._source_title_matches_candidate(source_title, current_text)
+                or (current_norm and current_norm in source_title_norm)
+                or (source_title_norm and source_title_norm in current_norm)
+            )
+            if source_title and not source_names_current:
+                continue
+            if self._is_derivative_fanfic_novel_detail_hit(entry, canonical_text):
+                return True
+        return False
+
     def _stable_batch_alias_conflicts_with_official_title(
         self,
         ctx,
@@ -53977,7 +54075,12 @@ OUTPUT JSON:
         if self._text_matches_title_strict(source_norm, current_title):
             return False
 
-        if alias_norm in current_norm:
+        current_derivative_of_canonical = self._current_title_is_derivative_hit_for_canonical(
+            ctx,
+            current_title=current_title,
+            canonical_title=canonical_title,
+        )
+        if alias_norm in current_norm and not current_derivative_of_canonical:
             return False
         if self._decoder_treats_alias_as_non_title_descriptor(
             ctx,
@@ -53985,6 +54088,16 @@ OUTPUT JSON:
             canonical_title=canonical_title,
         ):
             return False
+
+        if current_derivative_of_canonical:
+            return True
+
+        if self._stable_alias_canonical_affinity_beats_current(
+            alias_norm=alias_norm,
+            canonical_norm=canonical_norm,
+            current_norm=current_norm,
+        ):
+            return True
 
         alias_chunks = {
             alias_norm[idx : idx + 2]

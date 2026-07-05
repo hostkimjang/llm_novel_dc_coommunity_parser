@@ -1,5 +1,17 @@
 # Improvement Register
 
+## IMP-20260706-487 - stable alias collision contract
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| `11685987` | GO_UNIT | `괴담동 -> 괴담 동아리`가 `[괴담 동아리] 겨울` 파생 상세에 밀리는 경로를 테스트 고정 | targeted replay |
+| `11692444` | GO_UNIT | `엑칼뽑 -> 엑스칼리버 뽑습니다`가 loose official search hit에 밀리는 경로를 테스트 고정 | targeted replay |
+| `11694035` | HOLD | `아생갤 -> 아카데미 생존 갤러리`는 공식 상세 회수 전 community-only publish 완화 금지 | official detail recall 확인 |
+| 검증 | PASS/REVIEW | focused `3` tests PASS, gate/queue `17` tests PASS, broad class `4F/1E` REVIEW | broad class 실패 triage |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: code contract `GO_UNIT`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, exact9 expected-title last gate `NO-GO / 7 of 9`, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-486 - exact9 runtime replay semantic check
 
 | 항목 | 상태 | 근거 | 다음 |

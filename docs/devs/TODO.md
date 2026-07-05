@@ -1,5 +1,19 @@
 # Developer TODO Index
 
+## 2026-07-06 Loop487 TODO
+
+- 상태 업데이트: Loop486 expected-title mismatch 2건은 stable alias collision 계약으로 코드 수리했다. Goal은 완료가 아니다.
+- [x] `11685987`을 bracketed derivative detail collision으로 테스트 고정했다.
+- [x] `11692444`를 syllable alias loose official collision으로 테스트 고정했다.
+- [x] `agentic_pipeline.py` stable alias conflict 판정을 보강했다.
+- [x] focused stable alias unittest `3/3` PASS.
+- [x] gate/queue regression unittest `17/17` PASS.
+- [ ] `11685987/11692444/11694035` targeted replay 또는 exact9 replay로 runtime output 반영을 확인한다.
+- [ ] `11694035`는 공식 상세 회수와 post-side work bridge 전까지 candidate_only로 보존한다.
+- [ ] `AgenticPipelineReworkTest` 전체 class run의 `4` failures, `1` error를 별도 triage한다.
+- [ ] Full375 collateral `NO-GO`를 닫기 전 bounded/full375 동결 해제나 goal 완료를 주장하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop486 TODO
 
 - 상태 업데이트: Loop485 exact-match projected safe `9`건 runtime replay는 완료됐지만 expected-title은 `7/9 PASS`라 goal은 완료가 아니다.

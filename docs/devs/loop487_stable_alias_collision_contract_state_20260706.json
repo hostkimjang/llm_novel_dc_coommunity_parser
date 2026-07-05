@@ -1,0 +1,69 @@
+{
+  "loop": 487,
+  "date": "2026-07-06",
+  "title": "stable alias collision contract",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "summary": "Loop486 exact9 expected-title mismatch 2건을 stable alias collision 계약으로 수리했다. 대형 런은 새로 발주하지 않았다.",
+  "contract_files": [
+    "src/llm_batch/agentic_pipeline.py",
+    "tests/test_agentic_pipeline_rework.py"
+  ],
+  "rows": [
+    {
+      "post_id": 11685987,
+      "alias": "괴담동",
+      "canonical_title": "괴담 동아리",
+      "loop486_actual": "[괴담 동아리] 겨울",
+      "action": "stable alias beats bracketed derivative detail hit",
+      "status": "code_contract_added"
+    },
+    {
+      "post_id": 11692444,
+      "alias": "엑칼뽑",
+      "canonical_title": "엑스칼리버 뽑습니다",
+      "loop486_actual": "엑스칼리버 는 뽑았는데 신탁이 엉터리잖아!",
+      "action": "stable alias syllable affinity beats loose official search collision",
+      "status": "code_contract_added"
+    },
+    {
+      "post_id": 11694035,
+      "alias": "아생갤",
+      "canonical_title": "아카데미 생존 갤러리",
+      "loop486_actual": "아카데미 생존 갤러리 candidate_only",
+      "action": "keep promotion_blocked until official detail and post-side work bridge close",
+      "status": "held_not_relaxed"
+    }
+  ],
+  "verification": {
+    "focused_stable_alias_unittest": {
+      "status": "PASS",
+      "tests": 3,
+      "command": ".\\venv\\Scripts\\python.exe -m unittest tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_stable_batch_alias_corrects_syllable_alias_collision tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_stable_batch_alias_corrects_bracketed_derivative_detail_hit tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest.test_stable_batch_alias_corrects_loose_official_search_collision"
+    },
+    "gate_queue_unittest": {
+      "status": "PASS",
+      "tests": 17,
+      "command": ".\\venv\\Scripts\\python.exe -m unittest tests.test_projection_followup_queue tests.test_split_collateral_action_queue tests.test_always_on_regression_gates -v"
+    },
+    "agentic_pipeline_rework_class": {
+      "status": "REVIEW",
+      "tests": 378,
+      "failures": 4,
+      "errors": 1,
+      "command": ".\\venv\\Scripts\\python.exe -m unittest tests.test_agentic_pipeline_rework.AgenticPipelineReworkTest",
+      "note": "광범위 class run은 focused Loop487 gate 밖의 실패가 포함되어 통과하지 않았다. 이번 추가 stable alias 계약 2건과 기존 stable collision 테스트는 별도 PASS다."
+    }
+  },
+  "gates": {
+    "code_contract": "GO_UNIT",
+    "targeted_stable_alias_tests": "GO / 3 of 3",
+    "gate_queue_regression_tests": "GO / 17 of 17",
+    "runtime_replay_after_patch": "NOT_RUN_AFTER_PATCH",
+    "exact9_expected_title_runtime_gate": "NO-GO / last runtime 7 of 9",
+    "search_evidence": "REVIEW / search_degraded_observed",
+    "full375_collateral": "NO-GO",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "completion_gate": "NO-GO / requires full375 collateral GO + full_scan path"
+  }
+}
