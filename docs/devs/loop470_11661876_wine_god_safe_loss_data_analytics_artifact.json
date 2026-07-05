@@ -1,0 +1,42 @@
+{
+  "artifact_type": "data_analytics_loop_summary",
+  "loop": 470,
+  "date": "2026-07-05",
+  "language": "ko",
+  "question": "11661876 safe-loss residual row가 현 HEAD에서 정당하게 safe-resolved되는가?",
+  "answer": "예. search 포함 non-light 단건 runtime에서 와인의 신 / https://series.naver.com/novel/detail.series?productNo=13342533 로 safe_resolved publish됐고, queue는 88에서 87로 감소했다.",
+  "evidence": {
+    "run_id": "20260705_150551_716315",
+    "runtime_counts": "1/1/1/0/0",
+    "search": {
+      "gate": "GO",
+      "query_degraded_unrecovered": "17/0/0",
+      "accepted": 116,
+      "raw": 284,
+      "cache_hits": 9
+    },
+    "publication_contract": "GO / 0 violations",
+    "stop_condition": "GO / queue 88 -> 87 / safe_resolved 0 -> 1 / safe_loss []",
+    "residual_queue": "REPROCESS 60 -> 59, HOLD 28 -> 28, validation issue 0"
+  },
+  "interpretation": "원문 제목의 와인의신, 본문 클로이, 토마토 가격 설정 반응, 댓글 작성자의 문피아 답변이 모두 같은 작품 와인의 신을 가리킨다. row-level search와 publication contract는 통과했지만, 이는 full375 approval이 아니라 residual queue 감소 근거다.",
+  "gate_state": {
+    "targeted_runtime": "GO / 1 of 1",
+    "publication_contract": "GO",
+    "search_evidence": "GO",
+    "targeted_stop_condition": "GO_TARGETED",
+    "residual_queue_delta": "GO_QUEUE_DELTA_NOT_APPROVAL",
+    "full375_collateral": "NOT_OPEN",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "artifact_paths": {
+    "report": "docs/devs/loop_reports/LOOP_470_REPORT_20260705.md",
+    "state": "docs/devs/loop470_11661876_wine_god_safe_loss_runtime_20260705.json",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop470_11661876_wine_god_safe_loss_search_nonlight_result.json",
+    "health_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop470_11661876_wine_god_safe_loss_run_health.json",
+    "publication_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop470_11661876_wine_god_safe_loss_publication_contract.json",
+    "convergence_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop470_11661876_goal_convergence_stop_condition.json"
+  }
+}

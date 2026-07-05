@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-05 - Loop470 11661876 와인의 신 safe-loss runtime closure
+
+- 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.
+- Current HEAD `34adc8a2`에서 residual `repair_safe_loss` P0 행 `11661876`을 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- 원문 `와인의신 재밌다`는 title alias `와인의신`, 본문 `클로이가 정실임`과 작중 토마토 가격 반응, 댓글 작성자의 `문피아` 플랫폼 답변, Naver Series official detail `https://series.naver.com/novel/detail.series?productNo=13342533`이 `와인의 신`으로 수렴했다.
+- Run `20260705_150551_716315`은 input/completed/flushed/pending/failed `1/1/1/0/0`, MCP health `include_search=true`, `light_mode=false`, ok/failure `1/0`, row search query/degraded/unrecovered `17/0/0`으로 완료됐다.
+- Result는 `official_title=와인의 신`, `official_url=https://series.naver.com/novel/detail.series?productNo=13342533`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`, `promotion_decision.publish_allowed=true`다.
+- 사용자 도메인 보정을 유지한다. `아생갤`처럼 `갤러리` 표면은 현실 DC 갤러리명만이 아니라 웹소설 안 커뮤니티/갤러리 오마주형 제목, 약어, 서사 장치일 수 있다.
+- Verifier의 slang DB 저장 제안은 persistent write-back으로 채택하지 않았다. 실행은 `--slang-db off`다.
+- Health audit는 `GO / clean_completed_source`, search evidence는 `GO`, publication contract는 `GO / 0 violations`다.
+- Stop-condition audit는 queue `88 -> 87`, same packet `11661876`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- Report는 `docs/devs/loop_reports/LOOP_470_REPORT_20260705.md`, state는 `docs/devs/loop470_11661876_wine_god_safe_loss_runtime_20260705.json`, Data Analytics summary는 `docs/devs/loop470_11661876_wine_god_safe_loss_data_analytics_artifact.json`이다.
+- Gate는 targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-05 - Loop469 11660265 기계공주 safe-loss runtime closure
 
 - 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay는 발주하지 않았다.

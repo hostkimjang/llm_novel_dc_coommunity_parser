@@ -1,5 +1,19 @@
 # Development Checklist
 
+## 2026-07-05 Loop470 11661876 와인의 신 safe-loss 체크
+
+- [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.
+- [x] `11661876` 단건을 current HEAD `34adc8a2`에서 search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행했다.
+- [x] Run `20260705_150551_716315`은 input/completed/flushed/pending/failed `1/1/1/0/0`, `large_run_complete=true`로 완료됐다.
+- [x] Row search는 query/degraded/unrecovered `17/0/0`, accepted/raw `116/284`이다.
+- [x] Public publish contract는 `official_title=와인의 신`, `official_url=https://series.naver.com/novel/detail.series?productNo=13342533`, `candidate_ledger_status=safe_resolved`, `promotion_decision.status=publish`다.
+- [x] `와인의신` title alias, `클로이` character bridge, 댓글 `문피아`, 작중 토마토 가격 설정 반응, official detail URL이 같은 current work로 수렴했음을 확인했다.
+- [x] Stop-condition audit는 queue `88 -> 87`, same packet `11661876`, safe_resolved `0 -> 1`, safe loss `[]`, gate `GO`다.
+- [x] 사용자 도메인 보정을 유지했다: `아생갤` 같은 `갤러리` 표면은 현실 커뮤니티 단정이 아니라 작중 커뮤니티 오마주형 제목, 약어, 장치일 수 있다.
+- [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 추가하지 않았다.
+- [ ] Full375 collateral은 `NOT_OPEN`이다. 단건 runtime GO와 residual queue delta를 full scan approval로 승격하지 않는다.
+- Gate: targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, targeted stop-condition `GO_TARGETED / 88 -> 87 / safe 0 -> 1`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL`, broader search recovery `P0 / ROW_LEVEL_GO_ONLY`, full375 collateral `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop469 11660265 기계공주 safe-loss 체크
 
 - [x] 신규 full375, bounded 1000~1500, N5 flip probe, 동일 38-row parent packet replay를 발주하지 않았다.

@@ -1,5 +1,15 @@
 # Slang DB Improvement TODO
 
+## 2026-07-05 Loop470 11661876 와인의 신 slang 주의사항
+
+- [x] `--slang-db off` 조건으로 Loop470 단건 runtime을 실행했다.
+- [x] `와인의신 -> 와인의 신`은 Naver Series official detail과 title alias/character bridge로 safe-resolved publish됐지만, persistent slang DB write-back으로 처리하지 않았다.
+- [x] Verifier는 `store_in_slang_db=true`를 제안했으나, 이 회차 산출물은 runtime proof와 residual queue delta로만 기록한다.
+- [x] `클로이` BatchMem 즉시등록 관측은 persistent slang DB 승인이 아니며, full scan approval 또는 hard-hold 완화 근거가 아니다.
+- [x] `아생갤` 같은 `갤러리` 표면은 현실 커뮤니티 단정이 아니라 작품/커뮤니티 오마주형 제목, 약어, 장치로 기록했다.
+- [ ] 이 단건 closure를 alias/slang 전체 품질 승인, hard-hold 완화, full375 approval로 승격하지 않는다.
+- Gate: slang DB write-back 아님, targeted runtime `GO / 1 of 1`, publication contract `GO`, search evidence `GO`, residual queue delta `GO_QUEUE_DELTA_NOT_APPROVAL / 88 -> 87`, search recovery broader `P0 / ROW_LEVEL_GO_ONLY`, full375 `NOT_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop469 11660265 기계공주 slang 주의사항
 
 - [x] `--slang-db off` 조건으로 Loop469 단건 runtime을 실행했다.

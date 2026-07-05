@@ -1,5 +1,22 @@
 # Operation Quality Checklist
 
+## 2026-07-05 Loop470 11661876 와인의 신 safe-loss 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_470_REPORT_20260705.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop470_11661876_wine_god_safe_loss_runtime_20260705.json`.
+  - [x] Data Analytics summary 기록 완료: `docs/devs/loop470_11661876_wine_god_safe_loss_data_analytics_artifact.json`.
+  - [x] Health audit `GO / clean_completed_source`, search evidence `GO`, publication contract `GO / 0 violations`를 기록했다.
+  - [x] Stop-condition audit artifact를 기록했다: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop470_11661876_goal_convergence_stop_condition.json`.
+  - [x] Residual queue delta `88 -> 87`, `repair_safe_loss 60 -> 59`를 기록했다.
+- 품질 게이트:
+  - [x] `와인의신`을 title alias로 보되, public title은 official detail의 `와인의 신`으로 닫는다.
+  - [x] `클로이`, 댓글 `문피아`, 작중 토마토 가격 반응은 작품 내부 인물/설정/플랫폼 bridge로 기록한다.
+  - [x] `아생갤` 같은 `갤러리` 표면은 현실 커뮤니티 단정이 아니라 작중 커뮤니티 오마주형 제목, 약어, 장치일 수 있음을 유지한다.
+  - [x] 단건 targeted runtime과 residual queue delta를 golden18/full375 approval로 승격하지 않는다.
+  - [x] R1 hardcoded cue/title list, `post_id` 예외, 작품 전용 registry, slang DB write-back을 하지 않았음을 명시한다.
+  - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-05 Loop469 11660265 기계공주 safe-loss 품질 게이트
 
 - 근거:
