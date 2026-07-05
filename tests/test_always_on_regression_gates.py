@@ -65,6 +65,15 @@ class AlwaysOnRegressionGatesTest(unittest.TestCase):
         self.assertEqual(report["collateral"]["gate"], "GO")
         self.assertFalse(report["full_scan_approval"])
 
+    def test_golden_runtime_can_come_from_full_panel_audit(self):
+        report = evaluate_gates(
+            golden=_golden(runtime={"completed_count": 375, "pending_count": 0, "failed_count": 0}),
+            collateral=_collateral(),
+        )
+
+        self.assertEqual(report["golden"]["gate"], "GO")
+        self.assertTrue(report["golden"]["runtime_complete"])
+
     def test_golden_pass_alone_does_not_approve_without_375_collateral(self):
         report = evaluate_gates(
             golden=_golden(),
@@ -98,6 +107,47 @@ class AlwaysOnRegressionGatesTest(unittest.TestCase):
         self.assertEqual(report["collateral"]["review_adjustment"]["exclusion_candidate_rows"], 57)
         self.assertIn(
             "collateral:collateral_review_adjusted_regression_count_nonzero",
+            report["blockers"],
+        )
+
+    def test_collateral_review_p0_scope_exclusions_apply_and_leave_unreviewed_p1_visible(self):
+        p0_review = _collateral_review(
+            summary={
+                "batch_review_rows": 138,
+                "reviewed_rows": 138,
+                "unreviewed_batch_rows": 0,
+                "validation_issue_count": 0,
+                "label_counts": {"ACCEPT": 34, "REPROCESS": 63, "HOLD": 41},
+                "action_counts": {
+                    "exclude_from_regression_count_after_gate_wiring": 34,
+                    "repair_safe_loss_restore_supported_title": 56,
+                },
+                "queue_transition": {
+                    "original_p0_rows": 138,
+                    "exclusion_candidate_rows": 34,
+                    "residual_action_queue_rows": 104,
+                },
+            }
+        )
+
+        report = evaluate_gates(
+            golden=_golden(),
+            collateral=_collateral(changed_post_count=197, collateral_regression_count=139),
+            collateral_review=p0_review,
+        )
+
+        self.assertEqual(report["gate"], "NO-GO")
+        self.assertTrue(report["collateral"]["review_adjustment"]["applied"])
+        self.assertEqual(report["collateral"]["review_adjustment"]["review_scope"], "p0_scoped")
+        self.assertEqual(report["collateral"]["review_adjustment"]["exclusion_candidate_rows"], 34)
+        self.assertEqual(report["collateral"]["review_adjustment"]["unreviewed_regression_rows"], 1)
+        self.assertEqual(report["collateral"]["review_adjusted_regression_count"], 105)
+        self.assertIn(
+            "collateral:collateral_review_adjusted_regression_count_nonzero",
+            report["blockers"],
+        )
+        self.assertIn(
+            "collateral:collateral_review_unreviewed_regression_rows_nonzero",
             report["blockers"],
         )
 

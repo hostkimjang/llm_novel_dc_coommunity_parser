@@ -1,0 +1,47 @@
+{
+  "loop": 482,
+  "date": "2026-07-06",
+  "report_type": "loop_state",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "summary": {
+    "purpose": "Loop481 combined P0 source-native review summary를 full375 always-on collateral gate에 실제 배선했다.",
+    "golden18_gate": "GO",
+    "full375_collateral_gate": "NO-GO",
+    "always_on_gate": "NO-GO",
+    "raw_collateral_regression_count": 139,
+    "p0_reviewed_rows": 138,
+    "p0_exclusion_candidate_rows": 34,
+    "p0_label_counts": {
+      "ACCEPT": 34,
+      "HOLD": 41,
+      "REPROCESS": 63
+    },
+    "p0_residual_action_queue_rows": 104,
+    "unreviewed_regression_rows": 1,
+    "review_adjusted_regression_count": 105
+  },
+  "code_changes": [
+    "tools/evaluate_always_on_regression_gates.py accepts full-panel runtime counts for golden subset audit when completed_count >= expected golden rows and pending/failed are zero.",
+    "tools/evaluate_always_on_regression_gates.py applies clean P0-scoped review exclusions when queue_transition.original_p0_rows matches batch_review_rows, while leaving unreviewed regression rows visible.",
+    "tests/test_always_on_regression_gates.py covers full-panel golden runtime and P0-scoped review-adjusted accounting."
+  ],
+  "artifacts": {
+    "loop_report": "docs/devs/loop_reports/LOOP_482_REPORT_20260706.md",
+    "state": "docs/devs/loop482_full375_p0_review_adjusted_gate_20260706.json",
+    "gate_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop482_always_on_golden18_full375_p0_review_adjusted_gate.json",
+    "gate_markdown": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop482_always_on_golden18_full375_p0_review_adjusted_gate.md",
+    "input_golden_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop477_full375_current_head_merged375_golden_audit.json",
+    "input_collateral_compare": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop477_full375_current_head_merged375_collateral_compare.json",
+    "input_review_summary": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_combined_full375_p0_source_native_review.json"
+  },
+  "blockers": [
+    "collateral:collateral_review_adjusted_regression_count_nonzero",
+    "collateral:collateral_review_unreviewed_regression_rows_nonzero"
+  ],
+  "quality_gates": {
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "search_recovery": "P0_OPEN",
+    "completion_gate": "NO-GO"
+  }
+}

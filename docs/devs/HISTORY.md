@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-06 - Loop482 full375 P0 review-adjusted gate
+
+- Loop481 combined P0 source-native review summary를 full375 always-on collateral gate에 실제 배선했다.
+- `tools/evaluate_always_on_regression_gates.py`는 full375 audit에서 golden subset runtime `completed_count=375`가 들어와도 expected golden rows 이상이면 통과하도록 보정했다.
+- Clean P0-scoped review summary는 `queue_transition.original_p0_rows == batch_review_rows`일 때 exclusion 후보만 차감하고, unreviewed regression rows를 별도 blocker로 남긴다.
+- Loop482 gate 결과는 golden18 `GO`, full375 collateral `NO-GO`, raw regression `139`, exclusion candidates `34`, unreviewed regression rows `1`, review-adjusted regression count `105`다.
+- Blocker는 `collateral:collateral_review_adjusted_regression_count_nonzero`, `collateral:collateral_review_unreviewed_regression_rows_nonzero`다.
+- Report는 `docs/devs/loop_reports/LOOP_482_REPORT_20260706.md`, state는 `docs/devs/loop482_full375_p0_review_adjusted_gate_20260706.json`이다.
+- Gate 산출물은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop482_always_on_golden18_full375_p0_review_adjusted_gate.json/.md`다.
+- 검증은 `py_compile` PASS, `tests.test_always_on_regression_gates` `10` tests PASS다.
+- Gate는 full375 collateral `NO-GO`, search recovery `P0_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop481 safe_loss_resolved_to_null source-native verdict
 
 - Loop478 P0 `138`건 중 남은 `safe_loss_resolved_to_null 93`건을 별도 batch로 고정하고 source-native/blind verdict를 전수 작성했다.

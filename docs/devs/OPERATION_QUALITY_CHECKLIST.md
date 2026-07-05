@@ -1,5 +1,21 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop482 full375 P0 review-adjusted 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_482_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop482_full375_p0_review_adjusted_gate_20260706.json`.
+  - [x] Gate JSON/MD 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop482_always_on_golden18_full375_p0_review_adjusted_gate.json/.md`.
+  - [x] Golden18 `GO`, full375 collateral `NO-GO`를 기록했다.
+  - [x] raw regression `139`, exclusion candidates `34`, review-adjusted regression `105`, unreviewed regression rows `1`을 기록했다.
+- 품질 경계:
+  - [x] P0-scoped review summary는 clean full review가 아니라 P0 `138` 범위로만 적용했다.
+  - [x] `ACCEPT 34`만 regression-count 제외 후보로 차감했다.
+  - [x] `REPROCESS 63`, `HOLD 41`, P1 `1`은 approval blocker로 남겼다.
+  - [ ] Full375 collateral은 여전히 `NO-GO`다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: always-on `NO-GO`, full375 collateral `NO-GO`, blockers `collateral_review_adjusted_regression_count_nonzero`, `collateral_review_unreviewed_regression_rows_nonzero`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop481 safe_loss_resolved_to_null source-native 품질 게이트
 
 - 근거:
@@ -14,7 +30,7 @@
   - [x] `ACCEPT`는 collateral gate wiring 뒤 regression-count 제외 후보로만 기록했다.
   - [x] 이미지/다작품/alias relation/canonical 정책 불확실성은 `HOLD`로 남겼다.
   - [x] `아생갤`은 `아카데미 생존 갤러리` 작품 약칭/작중 갤러리 오마주 가능성을 유지했다.
-  - [ ] Combined `ACCEPT 34`는 gate wiring 전까지 regression count에서 제거하지 않는다.
+  - [x] Loop482에서 Combined `ACCEPT 34`를 gate에 배선했지만 review-adjusted regression `105`가 남아 approval은 열리지 않았다.
   - [ ] Full375 collateral은 `NO-GO`다.
 - Gate: source-native review `REVIEW-LOCKED`, combined reviewed `138/138`, residual action queue `104`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
@@ -32,7 +48,7 @@
   - [x] 게임 일반 토론을 팬픽 소설로 승격한 `11690855`는 `REPROCESS`로 남겼다.
   - [x] 이미지/추천/작가 신작/일반 묘사/약한 캐릭터 bridge는 `HOLD`로 남겼다.
   - [x] `아생갤`은 `아카데미 생존 갤러리` 작품 약칭/작중 갤러리 오마주 가능성을 유지했다.
-  - [ ] Combined `ACCEPT 25`는 gate wiring 전까지 regression count에서 제거하지 않는다.
+  - [x] Loop482에서 combined `ACCEPT 34` 일부로 gate에 배선했지만 review-adjusted regression `105`가 남아 approval은 열리지 않았다.
   - [ ] Full375 collateral은 `NO-GO`다.
 - Gate: source-native review `REVIEW-LOCKED`, combined reviewed `45/138`, residual action queue `113`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 

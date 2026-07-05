@@ -36,8 +36,10 @@ def golden_gate(golden: dict[str, Any], expected_rows: int) -> dict[str, Any]:
     failed_count = _safe_int(golden.get("failed_count"))
     semantic_gate = str(golden.get("canary_semantic_gate") or "").strip()
     runtime = golden.get("runtime") if isinstance(golden.get("runtime"), dict) else {}
+    runtime_completed = _safe_int(runtime.get("completed_count"))
     runtime_complete = (
-        _safe_int(runtime.get("completed_count")) == expected_rows
+        runtime_completed is not None
+        and runtime_completed >= expected_rows
         and (_safe_int(runtime.get("pending_count")) or 0) == 0
         and (_safe_int(runtime.get("failed_count")) or 0) == 0
     )
@@ -116,10 +118,20 @@ def _collateral_review_adjustment(
         blockers.append("collateral_review_unreviewed_rows_nonzero")
     if raw_regression_count is None:
         blockers.append("collateral_raw_regression_count_missing")
-    elif batch_review_rows != raw_regression_count:
-        blockers.append("collateral_review_batch_count_mismatch")
+    else:
+        scoped_rows = _safe_int(transition.get("original_p0_rows"))
+        full_review = batch_review_rows == raw_regression_count
+        scoped_p0_review = (
+            batch_review_rows is not None
+            and batch_review_rows < raw_regression_count
+            and scoped_rows == batch_review_rows
+        )
+        if not (full_review or scoped_p0_review):
+            blockers.append("collateral_review_batch_count_mismatch")
     if raw_regression_count is not None and exclusion_candidate_rows > raw_regression_count:
         blockers.append("collateral_review_exclusion_exceeds_regression_count")
+    if batch_review_rows is not None and exclusion_candidate_rows > batch_review_rows:
+        blockers.append("collateral_review_exclusion_exceeds_batch_count")
 
     applied = not blockers
     adjusted = (
@@ -127,14 +139,27 @@ def _collateral_review_adjustment(
         if applied and raw_regression_count is not None
         else raw_regression_count
     )
+    unreviewed_regression_rows = (
+        max(raw_regression_count - batch_review_rows, 0)
+        if raw_regression_count is not None and batch_review_rows is not None
+        else None
+    )
     return {
         "provided": True,
         "applied": applied,
         "review_id": collateral_review.get("review_id"),
         "review_gate": review_gate,
+        "review_scope": (
+            "full_regression"
+            if raw_regression_count is not None and batch_review_rows == raw_regression_count
+            else "p0_scoped"
+            if applied and (unreviewed_regression_rows or 0) > 0
+            else "unknown"
+        ),
         "batch_review_rows": batch_review_rows,
         "reviewed_rows": reviewed_rows,
         "unreviewed_batch_rows": unreviewed_batch_rows,
+        "unreviewed_regression_rows": unreviewed_regression_rows,
         "validation_issue_count": validation_issue_count,
         "exclusion_candidate_rows": exclusion_candidate_rows,
         "label_counts": summary.get("label_counts") or {},
@@ -181,6 +206,11 @@ def collateral_gate(
             if review_adjustment.get("applied")
             else "collateral_regression_count_nonzero"
         )
+    if (
+        review_adjustment.get("applied")
+        and (review_adjustment.get("unreviewed_regression_rows") or 0) != 0
+    ):
+        blockers.append("collateral_review_unreviewed_regression_rows_nonzero")
     if runtime_completed is None:
         blockers.append("collateral_runtime_counts_missing")
     elif not runtime_complete:
@@ -271,6 +301,14 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         (
             "- review adjustment applied: "
             f"`{report['collateral']['review_adjustment'].get('applied')}`"
+        ),
+        (
+            "- review scope: "
+            f"`{report['collateral']['review_adjustment'].get('review_scope')}`"
+        ),
+        (
+            "- unreviewed regression rows: "
+            f"`{report['collateral']['review_adjustment'].get('unreviewed_regression_rows')}`"
         ),
         (
             "- review_adjusted_regression_count: "

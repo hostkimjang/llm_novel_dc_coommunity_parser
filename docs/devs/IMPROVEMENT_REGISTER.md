@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260706-482 - full375 P0 review-adjusted always-on gate
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Golden runtime | GO | full375 audit runtime `completed_count=375`를 golden expected rows `18` 이상으로 인정 | pending/failed 0 조건 유지 |
+| P0 review adjustment | 적용 | Loop481 combined P0 `138/138`, exclusion candidates `34` | exclusion은 source-native ACCEPT만 허용 |
+| Collateral gate | NO-GO | raw regression `139`, review-adjusted `105`, unreviewed regression `1` | residual 105 해소 전 approval 금지 |
+| Residual queue | OPEN | `REPROCESS 63 / HOLD 41`, P1 `1` | repair/native/policy/P1 queue 분리 |
+| 검증 | PASS | py_compile PASS, always-on gate unittest `10` tests PASS | broader bundle은 후속 코드 변경 시 재실행 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: always-on `NO-GO`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-481 - safe_loss_resolved_to_null source-native verdict batch
 
 | 항목 | 상태 | 근거 | 다음 |

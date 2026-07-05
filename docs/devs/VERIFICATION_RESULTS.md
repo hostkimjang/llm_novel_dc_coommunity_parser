@@ -1,5 +1,34 @@
 # Verification Results
 
+## 2026-07-06 Loop482 full375 P0 review-adjusted gate 검증
+
+- 범위: Loop481 combined P0 source-native review summary를 full375 always-on collateral gate에 실제 배선했다.
+- Code:
+  - `tools\evaluate_always_on_regression_gates.py`
+  - `tests\test_always_on_regression_gates.py`
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_482_REPORT_20260706.md`
+  - state `docs\devs\loop482_full375_p0_review_adjusted_gate_20260706.json`
+  - gate JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop482_always_on_golden18_full375_p0_review_adjusted_gate.json`
+  - gate Markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop482_always_on_golden18_full375_p0_review_adjusted_gate.md`
+- Result:
+  - always-on gate `NO-GO`
+  - golden18 `GO / 18 passed / runtime_complete=true`
+  - full375 collateral `NO-GO / raw regression 139`
+  - review adjustment `applied=true`, scope `p0_scoped`
+  - exclusion candidates `34`
+  - unreviewed regression rows `1`
+  - review-adjusted regression count `105`
+  - blockers `collateral:collateral_review_adjusted_regression_count_nonzero`, `collateral:collateral_review_unreviewed_regression_rows_nonzero`
+- Validation:
+  - `.\venv\Scripts\python.exe -m py_compile tools\evaluate_always_on_regression_gates.py tests\test_always_on_regression_gates.py` PASS
+  - `.\venv\Scripts\python.exe -m unittest tests.test_always_on_regression_gates -v` PASS, `10` tests
+  - Loop482 always-on gate generation PASS
+- Boundary:
+  - `ACCEPT 34`는 이제 gate에 반영됐지만 full375 collateral approval은 열리지 않았다.
+  - `REPROCESS 63`, `HOLD 41`, P1 `1`이 남아 완료 기준은 아직 `NO-GO`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop481 safe_loss_resolved_to_null source-native 검증
 
 - 범위: Loop478 P0 배치 중 남은 `safe_loss_resolved_to_null 93`건을 별도 batch로 만들고 source-native/blind verdict를 전수 작성했다.

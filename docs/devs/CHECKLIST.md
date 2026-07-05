@@ -1,5 +1,19 @@
 # Development Checklist
 
+## 2026-07-06 Loop482 full375 P0 review-adjusted gate 체크
+
+- [x] Loop481 combined P0 source-native review summary를 always-on full375 collateral gate에 입력했다.
+- [x] Golden subset audit의 full-panel runtime count `375`를 expected golden rows `18` 이상으로 인정하는 계약을 추가했다.
+- [x] Clean P0-scoped review summary는 `original_p0_rows == batch_review_rows`일 때 exclusion 후보만 차감하게 했다.
+- [x] Loop482 gate는 golden18 `GO`, full375 collateral `NO-GO`다.
+- [x] raw collateral regression `139`에서 `ACCEPT 34`만 차감해 review-adjusted regression count `105`를 기록했다.
+- [x] P1 `new_resolution_promotion 1`은 `unreviewed_regression_rows=1`로 blocker에 남겼다.
+- [ ] `REPROCESS 63`은 targeted repair/candidate rebuild/shared gate follow-up으로 분해해야 한다.
+- [ ] `HOLD 41`은 image/native-web/multi-work/policy review queue로 분리해야 한다.
+- [ ] 완료 기준은 여전히 `full375 collateral GO + full_scan 경로 정의`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: always-on `NO-GO`, full375 collateral `NO-GO`, blockers `collateral_review_adjusted_regression_count_nonzero`, `collateral_review_unreviewed_regression_rows_nonzero`.
+
 ## 2026-07-06 Loop481 safe_loss_resolved_to_null source-native 체크
 
 - [x] Loop478 P0 batch 중 남은 `safe_loss_resolved_to_null 93`건을 별도 `Loop481 full375 safe_loss_resolved_to_null` batch로 고정했다.
@@ -9,7 +23,7 @@
 - [x] Bucket action queue는 원 P0 `93`에서 gate wiring 뒤 제외 후보 `9`, 수리 큐 `59`, 정책/native 추가 검토 큐 `25`, 잔여 `84`로 정리했다.
 - [x] Loop479+Loop480+Loop481 combined summary는 P0 `138`, reviewed `138`, unreviewed `0`, `ACCEPT 34 / HOLD 41 / REPROCESS 63`, residual action queue `104`다.
 - [x] `아생갤` 표면은 작품 약칭/작중 갤러리 오마주 가능성을 유지했고, `11694035`는 후보 재구성 필요로 기록했다.
-- [ ] Combined `ACCEPT 34`는 collateral gate wiring 전까지 regression count에서 제거하지 않는다.
+- [x] Loop482에서 Combined `ACCEPT 34`를 collateral gate에 배선했지만 review-adjusted regression `105`와 unreviewed regression `1`이 남아 full375 collateral은 `NO-GO`다.
 - [ ] `REPROCESS 63`과 `HOLD 41`을 repair/native/policy queue로 유지한다.
 - [ ] Full375 collateral approval은 아직 `NO-GO`다.
 - [ ] 완료 기준은 여전히 `full375 collateral GO + full_scan 경로 정의`다.
@@ -28,7 +42,7 @@
 - [x] `아생갤` 2건은 작품 약칭/작중 갤러리 오마주 표면 가능성을 반영해 ACCEPT 후보로 판정했다.
 - [x] `py_compile`, collateral review unittest `19`, JSON parse를 통과했다.
 - [x] Loop481에서 remaining P0 bucket `safe_loss_resolved_to_null 93` source-native verdict를 완료했다.
-- [ ] Combined `ACCEPT 34`는 collateral gate wiring 전까지 regression count에서 제거하지 않는다.
+- [x] Loop482에서 Combined `ACCEPT 34`를 collateral gate에 배선했지만 review-adjusted regression `105`와 unreviewed regression `1`이 남아 full375 collateral은 `NO-GO`다.
 - [ ] Full375 collateral approval은 아직 `NO-GO`다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 - Gate: source-native review `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
@@ -47,7 +61,7 @@
 - [x] Loop479 batch/verdict 산출물에는 `reason_lines`와 `collateral183` 고정 문구가 없다.
 - [ ] Full375 collateral approval은 아직 `NO-GO`다.
 - [x] Loop480/Loop481에서 remaining P0 bucket `unsafe_promotion_from_hold 24`, `safe_loss_resolved_to_null 93` verdict를 완료했다.
-- [ ] Combined `ACCEPT 34`는 collateral gate wiring 전까지 regression count에서 제거하지 않는다.
+- [x] Loop482에서 Combined `ACCEPT 34`를 collateral gate에 배선했지만 review-adjusted regression `105`와 unreviewed regression `1`이 남아 full375 collateral은 `NO-GO`다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 - Gate: source-native review `REVIEW-LOCKED`, full375 collateral `NO-GO`, search recovery `P0_OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
 
