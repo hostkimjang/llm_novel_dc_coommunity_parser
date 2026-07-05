@@ -55,14 +55,14 @@
     ]
   },
   "latest_monitoring_evidence": {
-    "snapshot_time_kst": "2026-07-06 06:29:54",
+    "snapshot_time_kst": "2026-07-06 07:34:11",
     "status": "IN_PROGRESS",
-    "completed_count": 100,
-    "flushed_count": 96,
-    "pending_count": 4,
+    "completed_count": 147,
+    "flushed_count": 140,
+    "pending_count": 7,
     "failed_count": 0,
-    "checkpoint_lines": 100,
-    "next_save_idx": 97,
+    "checkpoint_lines": 147,
+    "next_save_idx": 141,
     "partial_flush_gap": true,
     "ordered_flush_blocked": true,
     "large_run_complete": false,
@@ -70,19 +70,22 @@
       42256,
       968
     ],
-    "latest_manifest_write_kst": "2026-07-06 06:29:19",
-    "latest_checkpoint_write_kst": "2026-07-06 06:29:19",
-    "result_json_write_lag_reason": "05:44 KST에는 11700470 전후 ordered_flush_blocked로 result.json flush가 밀렸고, 05:58 KST에는 74/73/1로 회복됐다. 이후 11692436 장기 후처리로 flush가 80에서 다시 막혔지만 06:29 KST에 100/96/4로 회수됐다. 완료 전 runtime evidence는 계속 manifest/checkpoint/log를 기준으로 본다.",
+    "latest_manifest_write_kst": "2026-07-06 07:33:33",
+    "latest_checkpoint_write_kst": "2026-07-06 07:33:33",
+    "result_json_write_lag_reason": "05:44 KST에는 11700470 전후 ordered_flush_blocked로 result.json flush가 밀렸고, 05:58 KST에는 74/73/1로 회복됐다. 이후 11692436 장기 후처리로 flush가 80에서 다시 막혔지만 06:29 KST에 100/96/4로 회수됐다. 07:24 KST에는 133/133/0으로 backlog가 다시 해소됐고, 07:34 KST에는 147/140/7로 새 앞쪽 pending이 생겼다. 완료 전 runtime evidence는 계속 manifest/checkpoint/log를 기준으로 본다.",
     "first_pending_snapshot": [
-      "98:11687661",
-      "101:11681172",
-      "102:11697242",
-      "104:11710021"
+      "142:11698865",
+      "143:11698871",
+      "144:11698910",
+      "145:11700459",
+      "146:11702085",
+      "147:11702090",
+      "159:11708470"
     ],
-    "interpretation": "11700470, 11692436 장기 row가 만든 ordered flush backlog는 각각 회수됐고, 런은 실패 없이 계속 진행 중이다."
+    "interpretation": "11700470, 11692436 장기 row가 만든 ordered flush backlog는 각각 회수됐고, 07:24 KST에도 pending 0까지 회복됐다. 07:34 KST에는 새 ordered flush backlog가 생겼지만 checkpoint는 147/375까지 증가했고 실패는 0이므로, 런은 완료 전 중간 병목을 지나며 계속 진행 중이다."
   },
   "gates": {
-    "full375_runtime": "IN_PROGRESS / 100 of 375 checkpoint at 2026-07-06 06:29 KST",
+    "full375_runtime": "IN_PROGRESS / 147 of 375 checkpoint at 2026-07-06 07:34 KST",
     "full375_collateral": "PENDING / NO-GO 유지",
     "golden_audit_after_loop488": "NOT_RUN_AFTER_LOOP488",
     "collateral_compare_after_loop488": "NOT_RUN_AFTER_LOOP488",
