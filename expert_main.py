@@ -232,8 +232,32 @@ def _enforce_publish_contract_trace_convergence(result_dict: Dict[str, Any]) -> 
     gate_decision = dict(decision)
     gate_decision["bypassed_gate"] = False
     publish_allowed = gate_decision.get("publish_allowed") is True
+    reason_code_set = {
+        str(code or "").strip()
+        for code in (gate_decision.get("reason_codes") or [])
+        if str(code or "").strip()
+    }
+    url_withheld_by_title_mismatch = (
+        publish_allowed and "official_url_withheld_by_title_mismatch" in reason_code_set
+    )
 
     converged_trace = dict(trace)
+    if url_withheld_by_title_mismatch:
+        withheld_url = str(gate_decision.get("official_url") or "").strip()
+        if withheld_url:
+            pre_gate_candidate = converged_trace.get("pre_gate_candidate")
+            if isinstance(pre_gate_candidate, dict):
+                pre_gate_candidate = dict(pre_gate_candidate)
+            else:
+                pre_gate_candidate = {}
+            if not str(pre_gate_candidate.get("official_title") or "").strip():
+                pre_gate_candidate["official_title"] = gate_decision.get("official_title")
+            if not str(pre_gate_candidate.get("official_url") or "").strip():
+                pre_gate_candidate["official_url"] = withheld_url
+            pre_gate_candidate.setdefault("source", "official_url_withheld_by_title_mismatch")
+            converged_trace["pre_gate_candidate"] = pre_gate_candidate
+        gate_decision["official_url"] = None
+
     post_gate_identity = converged_trace.get("post_gate_identity")
     if not isinstance(post_gate_identity, dict):
         post_gate_identity = {}
@@ -270,6 +294,21 @@ def _enforce_publish_contract_trace_convergence(result_dict: Dict[str, Any]) -> 
     if identity.get("publish_ledger") != converged_ledger:
         identity["publish_ledger"] = converged_ledger
         changed = True
+    if url_withheld_by_title_mismatch:
+        novel = identity.get("novel_identity")
+        if isinstance(novel, dict):
+            novel = dict(novel)
+            for key in ("heretic_url", "official_url", "resolved_url"):
+                if novel.get(key) is not None:
+                    novel[key] = None
+                    changed = True
+            if identity.get("novel_identity") != novel:
+                identity["novel_identity"] = novel
+                changed = True
+        for key in ("heretic_url", "official_url", "resolved_url"):
+            if identity.get(key) is not None:
+                identity[key] = None
+                changed = True
     if ledger.get("promotion_decision") != gate_decision:
         ledger["promotion_decision"] = gate_decision
         changed = True

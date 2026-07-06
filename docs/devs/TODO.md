@@ -1,5 +1,18 @@
 # Developer TODO Index
 
+## 2026-07-06 Loop506 TODO
+
+- 상태 업데이트: title/url mismatch publication contract를 강화했고 current full375 static audit는 `NO-GO / 6 stale artifact rows`다. Goal은 완료가 아니다.
+- [x] `official_url_withheld_by_title_mismatch` reason이 있으면 URL이 public decision/trace/ledger/serialized identity에 남지 않도록 audit를 추가했다.
+- [x] `url_title_mismatch` / `official_detail_url_title_mismatch_publish_blocked` reason이 public publish를 허용하거나 후보 URL을 보존하지 않으면 NO-GO로 잡도록 했다.
+- [x] `expert_main.py` convergence sanitizer가 withheld URL을 `pre_gate_candidate`에만 보존하고 public URL 계층에서는 제거하도록 보강했다.
+- [x] Current Loop496 full375 static audit는 `NO-GO / 375 rows / 6 violation rows`로 stale contract gap을 드러냈다.
+- [x] Focused tests는 publication contract `16`건, expert_main comment metadata `72`건, shared/always-on focused `30`건 PASS다.
+- [ ] Loop506 NO-GO URL rows `11674694`, `11689292`, `11705251`, `11677924`, `11671500`은 새 runtime replay가 아니라 다음 contract/replay batch에서 fixed-output 여부를 확인한다.
+- [ ] Loop502 repair queue의 `image_or_alias_anchor_contract_repair` 1건과 남은 title/url variant facet을 계속 shared gate 계약으로 처리한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop505 TODO
 
 - 상태 업데이트: scope reason contract audit를 강화했고 current full375 static audit는 `NO-GO / 1 stale artifact row / post_id 11658668`이다. Goal은 완료가 아니다.

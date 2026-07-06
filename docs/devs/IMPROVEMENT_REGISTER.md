@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260706-506 - title/url mismatch publication contract
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| URL withheld audit | GO_UNIT | `audit_publication_contract_convergence.py`가 `official_url_withheld_by_title_mismatch` URL leak을 NO-GO로 잡음 | full375/static gate에 계속 적용 |
+| URL/title block audit | GO_UNIT | URL/title mismatch block reason의 public publish와 후보 URL 보존 누락을 NO-GO로 잡음 | title/url lane 잔여 facet에 적용 |
+| Final convergence sanitizer | GO_UNIT | `expert_main.py`가 withheld URL을 pre-gate 후보로만 보존하고 public URL 계층에서 제거 | 다음 runtime replay에서 fixed-output 확인 |
+| Full375 static audit | NO-GO | Loop496 full375 result 기준 `375` rows, violation `6`, URL leak `5`, scope stale `1` | stale artifact gap으로 보존 |
+| Runtime replay | NOT_RUN | 이번 회차는 contract patch + static audit | replay는 repair lane 정리 뒤 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: title/url contract `NO-GO_TITLE_URL_TRACE_CONTRACT_STATIC`, production sanitizer patch `GO_UNIT`, runtime replay `NOT_RUN_AFTER_CONTRACT_PATCH`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-505 - scope reason contract hardening
 
 | 항목 | 상태 | 근거 | 다음 |

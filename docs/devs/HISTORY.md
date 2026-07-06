@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-06 - Loop506 title/url mismatch publication contract hardening
+
+- `tools/audit_publication_contract_convergence.py`에 URL/title mismatch block과 `official_url_withheld_by_title_mismatch` 전용 감사를 추가했다.
+- URL/title mismatch block reason은 public publish를 허용하지 않고 후보 URL을 trace/ledger/blocked field에 보존해야 한다.
+- `official_url_withheld_by_title_mismatch` reason은 제목 publish만 허용하며 URL은 `PromotionDecision`, `publish_contract_trace.post_gate_identity`, `publish_ledger.public_publish`, serialized public identity에 남기지 않아야 한다.
+- `expert_main.py` final convergence sanitizer가 withheld URL을 `publish_contract_trace.pre_gate_candidate`에 보존하고 public URL 계층에서는 제거하도록 보강했다.
+- Current Loop496 full375 결과에 새 static audit를 적용했고 `NO-GO / row_count 375 / violation_row_count 6`을 확인했다.
+- 새 URL leak stale row는 `11674694`, `11689292`, `11705251`, `11677924`, `11671500`이고 기존 scope stale row는 `11658668`이다.
+- Report는 `docs/devs/loop_reports/LOOP_506_REPORT_20260706.md`, state는 `docs/devs/loop506_title_url_mismatch_contract_state_20260706.json`이다.
+- Gate는 title/url contract `NO-GO_TITLE_URL_TRACE_CONTRACT_STATIC`, production sanitizer patch `GO_UNIT`, runtime replay `NOT_RUN_AFTER_CONTRACT_PATCH`, full375 collateral `NO-GO / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop505 scope reason contract hardening
 
 - `tools/audit_publication_contract_convergence.py`에 `PromotionDecision.scope`와 `publish_contract_trace.scope_state`, scope reason code, publish/block reason code 정합성 감사를 추가했다.

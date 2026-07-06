@@ -19,6 +19,11 @@ NO_CANDIDATE_REASON_CODES = {
 PUBLISH_ONLY_REASON_CODES = {
     "serialized_public_identity_published",
 }
+URL_TITLE_MISMATCH_BLOCK_REASON_CODES = {
+    "url_title_mismatch",
+    "official_detail_url_title_mismatch_publish_blocked",
+}
+URL_WITHHELD_REASON_CODE = "official_url_withheld_by_title_mismatch"
 
 
 def load_json(path: Path) -> Any:
@@ -308,6 +313,63 @@ def audit_row(row: dict[str, Any], *, index: int) -> dict[str, Any]:
     public_publish = _dict_or_empty(publish_ledger.get("public_publish")) if isinstance(publish_ledger, dict) else {}
     expected_title = _string_or_none(decision.get("official_title"))
     expected_url = _string_or_none(decision.get("official_url"))
+    url_title_mismatch_block = bool(reason_codes & URL_TITLE_MISMATCH_BLOCK_REASON_CODES)
+    if url_title_mismatch_block:
+        preserved_url_sources = [
+            pre_gate_candidate,
+            ledger_candidate_preservation,
+            {
+                "official_title": identity.get("blocked_official_title"),
+                "official_url": identity.get("blocked_official_title_url"),
+            },
+            {
+                "official_title": ledger.get("blocked_official_title"),
+                "official_url": ledger.get("blocked_official_title_url"),
+            },
+        ]
+        if publish_allowed:
+            _append_violation(
+                violations,
+                "url_title_mismatch_block_reason_allows_publish",
+                "url-title mismatch block reason must not allow public title publication",
+            )
+        if expected_url:
+            _append_violation(
+                violations,
+                "url_title_mismatch_block_reason_has_decision_url",
+                "url-title mismatch block reason must keep the URL only as a preserved candidate",
+            )
+        if not any(_string_or_none(_dict_or_empty(source).get("official_url")) for source in preserved_url_sources):
+            _append_violation(
+                violations,
+                "url_title_mismatch_candidate_url_not_preserved",
+                "url-title mismatch block reason must preserve the blocked candidate URL in trace, ledger, or blocked fields",
+            )
+    if URL_WITHHELD_REASON_CODE in reason_codes:
+        if expected_url:
+            _append_violation(
+                violations,
+                "official_url_withheld_reason_has_decision_url",
+                "official_url_withheld_by_title_mismatch must keep official_url out of PromotionDecision",
+            )
+        if _string_or_none(post_gate.get("official_url")):
+            _append_violation(
+                violations,
+                "official_url_withheld_reason_publishes_trace_url",
+                "official_url_withheld_by_title_mismatch must keep official_url out of publish_contract_trace.post_gate_identity",
+            )
+        if _string_or_none(public_publish.get("official_url")):
+            _append_violation(
+                violations,
+                "official_url_withheld_reason_publishes_ledger_url",
+                "official_url_withheld_by_title_mismatch must keep official_url out of publish_ledger.public_publish",
+            )
+        if public_identity["official_url"]:
+            _append_violation(
+                violations,
+                "official_url_withheld_reason_serialized_url_leak",
+                "official_url_withheld_by_title_mismatch must keep official_url out of serialized public identity",
+            )
     if publish_allowed:
         if not expected_title:
             _append_violation(violations, "publish_allowed_missing_official_title", "allowed decision lacks official_title")
@@ -441,6 +503,8 @@ def audit_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "scrubbed_candidate_must_be_preserved_or_marked_no_candidate": True,
             "promotion_decision_scope_must_match_trace_and_reason_codes": True,
             "blocked_decision_must_not_carry_publish_only_reason_codes": True,
+            "url_title_mismatch_block_must_preserve_candidate_url_without_publication": True,
+            "official_url_withheld_reason_must_not_publish_url": True,
         },
         "summary": {
             "row_count": len(row_reports),
@@ -461,6 +525,8 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         "- 정책: `PromotionDecision`, `publish_contract_trace`, `publish_ledger`, serialized public identity는 같은 publish/block 결론으로 수렴해야 한다.",
         "- 정책: `serialized_public_identity_scrubbed`는 후보가 있으면 candidate ledger/trace에 보존하고, 후보가 없으면 `hold_without_candidates` 같은 no-candidate reason을 남겨야 한다.",
         "- 정책: `PromotionDecision.scope`는 `publish_contract_trace.scope_state`와 일치해야 하며, scope reason code와 publish/block reason code가 충돌하면 안 된다.",
+        "- 정책: URL/title mismatch block은 후보 URL을 보존하되 public decision/trace/ledger/serialized identity로 URL을 publish하지 않아야 한다.",
+        "- 정책: `official_url_withheld_by_title_mismatch`는 제목 publish만 허용하고 URL은 pre-gate 후보로만 남겨야 한다.",
         "",
         "## 요약",
         "",

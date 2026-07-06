@@ -4718,9 +4718,10 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         identity = result["identity"]
         self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
         self.assertEqual(identity["novel_identity"]["official_title"], title)
-        self.assertEqual(identity["novel_identity"]["heretic_url"], url)
+        self.assertIsNone(identity["novel_identity"]["heretic_url"])
         self.assertTrue(identity["promotion_decision"]["publish_allowed"])
         self.assertEqual(identity["promotion_decision"]["official_title"], title)
+        self.assertIsNone(identity["promotion_decision"]["official_url"])
         self.assertNotIn(
             "verified_alias_title_only_counterevidence_blocked",
             identity["promotion_decision"]["reason_codes"],
@@ -4728,6 +4729,9 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         trace = identity["publish_contract_trace"]
         self.assertEqual(trace["gate_decision"], identity["promotion_decision"])
         self.assertEqual(trace["post_gate_identity"]["official_title"], title)
+        self.assertIsNone(trace["post_gate_identity"]["official_url"])
+        self.assertEqual(trace["pre_gate_candidate"]["official_url"], url)
+        self.assertIsNone(identity["publish_ledger"]["public_publish"]["official_url"])
         self.assertEqual(identity["candidate_ledger"]["publish_contract_trace"], trace)
 
     def test_verified_alias_detail_replaces_stale_wrong_alias_blocked_gate(self):
@@ -5620,10 +5624,16 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         identity = result["identity"]
         self.assertEqual(identity["novel_identity"]["official_title"], correct_title)
         self.assertEqual(identity["promotion_decision"]["official_title"], correct_title)
-        self.assertEqual(identity["promotion_decision"]["official_url"], correct_url)
+        self.assertIsNone(identity["promotion_decision"]["official_url"])
         self.assertIn(
             "serialized_public_identity_gate_candidate_blocked_by_locked_public_candidate",
             identity["promotion_decision"]["reason_codes"],
+        )
+        self.assertIsNone(identity["novel_identity"]["heretic_url"])
+        self.assertIsNone(identity["publish_contract_trace"]["post_gate_identity"]["official_url"])
+        self.assertEqual(
+            identity["publish_contract_trace"]["pre_gate_candidate"]["official_url"],
+            correct_url,
         )
         self.assertEqual(
             identity["publish_contract_trace"]["pre_gate_candidate"]["source"],

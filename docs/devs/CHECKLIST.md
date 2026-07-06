@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-06 Loop506 title/url mismatch 계약 체크
+
+- [x] `tools/audit_publication_contract_convergence.py`에 URL/title mismatch block 감사를 추가했다.
+- [x] `official_url_withheld_by_title_mismatch` reason이 있으면 public decision/trace/ledger/serialized identity URL leak을 NO-GO로 잡는다.
+- [x] URL/title mismatch block reason이 public publish를 허용하거나 후보 URL을 보존하지 않으면 NO-GO로 잡는다.
+- [x] `expert_main.py` final convergence sanitizer가 withheld URL을 `pre_gate_candidate`에만 보존하고 public URL 계층에서는 제거하도록 보강했다.
+- [x] Current Loop496 full375 static audit는 `NO-GO / 375 rows / 6 violation rows`로 stale contract gap을 드러냈다.
+- [x] publication contract unittest `16`건 PASS.
+- [x] expert_main comment metadata unittest `72`건 PASS.
+- [x] shared/always-on focused unittest `30`건 PASS.
+- [ ] Runtime replay는 실행하지 않았다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: title/url contract `NO-GO_TITLE_URL_TRACE_CONTRACT_STATIC`, production sanitizer patch `GO_UNIT`, runtime replay `NOT_RUN_AFTER_CONTRACT_PATCH`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop505 scope reason 계약 체크
 
 - [x] `tools/audit_publication_contract_convergence.py`에 scope reason 정합성 감사를 추가했다.

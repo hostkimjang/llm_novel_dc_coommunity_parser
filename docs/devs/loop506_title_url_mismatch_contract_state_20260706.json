@@ -1,0 +1,65 @@
+{
+  "loop": 506,
+  "generated_at": "2026-07-07T00:01:50+09:00",
+  "state_type": "title_url_mismatch_publication_contract",
+  "summary": {
+    "status": "NO-GO_TITLE_URL_TRACE_CONTRACT_STATIC",
+    "change": "Loop502 title_url_or_variant_trace lane에서 official_url_withheld_by_title_mismatch와 url_title_mismatch block reason의 publish 계약을 강화했다.",
+    "production_patch": "expert_main.py final convergence sanitizer now preserves a withheld URL only in publish_contract_trace.pre_gate_candidate and removes it from PromotionDecision, post_gate_identity, publish_ledger.public_publish, and serialized novel_identity URL fields.",
+    "audit_patch": "tools/audit_publication_contract_convergence.py now flags URL/title mismatch block reasons that still publish, fail to preserve candidate URLs, or leak officially-withheld URLs into public decision/trace/ledger/serialized identity."
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_506_REPORT_20260706.md",
+    "state": "docs/devs/loop506_title_url_mismatch_contract_state_20260706.json",
+    "full375_static_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop506_full375_publication_contract_title_url_mismatch_audit.json",
+    "full375_static_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop506_full375_publication_contract_title_url_mismatch_audit.md"
+  },
+  "full375_static_audit": {
+    "source_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop496_full375_current_head_4fd250f7_search_nonlight_result.json",
+    "gate": "NO-GO",
+    "row_count": 375,
+    "violation_row_count": 6,
+    "url_withheld_leak_post_ids": [
+      "11674694",
+      "11689292",
+      "11705251",
+      "11677924",
+      "11671500"
+    ],
+    "scope_stale_post_ids": [
+      "11658668"
+    ],
+    "violation_counts": {
+      "official_url_withheld_reason_has_decision_url": 5,
+      "official_url_withheld_reason_publishes_trace_url": 5,
+      "official_url_withheld_reason_publishes_ledger_url": 5,
+      "official_url_withheld_reason_serialized_url_leak": 5,
+      "scope_non_current_conflicts_with_current_reason": 1,
+      "blocked_non_current_scope_missing_not_current_reason": 1,
+      "blocked_decision_has_publish_only_reason": 1,
+      "published_and_scrubbed_reason_conflict": 1
+    }
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "publication_contract_unittest": "PASS / 16 tests",
+    "expert_main_comment_metadata_unittest": "PASS / 72 tests",
+    "shared_gate_and_always_on_unittest": "PASS / 30 tests",
+    "full375_static_audit_command": "PASS command / expected gate NO-GO"
+  },
+  "gates": {
+    "title_url_contract": "NO-GO_TITLE_URL_TRACE_CONTRACT_STATIC",
+    "production_sanitizer_patch": "GO_UNIT",
+    "runtime_replay_after_patch": "NOT_RUN_AFTER_CONTRACT_PATCH",
+    "full375_collateral": "NO-GO / residual 105",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next": [
+    "새 runtime replay에서는 withheld URL 5건이 PromotionDecision/post_gate/public_publish/serialized identity에서 제거되고 pre_gate 후보로만 보존되는지 확인한다.",
+    "Loop502 image_or_alias_anchor_contract_repair 1건과 남은 title/url variant facet은 동일 입력 반복 전에 shared gate 계약으로 계속 처리한다.",
+    "full375 collateral GO 전에는 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다."
+  ],
+  "completion_criteria": "full375 collateral GO + full_scan path definition"
+}

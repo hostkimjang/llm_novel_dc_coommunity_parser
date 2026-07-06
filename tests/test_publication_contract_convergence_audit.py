@@ -518,6 +518,170 @@ class PublicationContractConvergenceAuditTest(unittest.TestCase):
         }
         self.assertIn("publish_allowed_non_current_scope", codes)
 
+    def test_official_url_withheld_reason_allows_title_only_publication(self):
+        row = _converged_publish_row()
+        identity = row["analysis_result"]["identity"]
+        decision = dict(identity["promotion_decision"])
+        decision["official_url"] = None
+        decision["reason_codes"] = [
+            *decision["reason_codes"],
+            "official_url_withheld_by_title_mismatch",
+        ]
+        trace = {
+            **identity["publish_contract_trace"],
+            "gate_decision": decision,
+            "post_gate_identity": {
+                **identity["publish_contract_trace"]["post_gate_identity"],
+                "official_url": None,
+            },
+            "reason_codes": decision["reason_codes"],
+        }
+        publish_ledger = {
+            **identity["publish_ledger"],
+            "public_publish": trace["post_gate_identity"],
+            "gate_decision": decision,
+        }
+        identity["novel_identity"]["heretic_url"] = None
+        identity["promotion_decision"] = decision
+        identity["publish_contract_trace"] = trace
+        identity["publish_ledger"] = publish_ledger
+        identity["candidate_ledger"] = {
+            **identity["candidate_ledger"],
+            "promotion_decision": decision,
+            "publish_contract_trace": trace,
+            "publish_ledger": publish_ledger,
+        }
+
+        report = audit_rows([row])
+
+        self.assertEqual(report["gate"], "GO")
+        self.assertEqual(report["summary"]["violation_row_count"], 0)
+
+    def test_official_url_withheld_reason_must_not_publish_url(self):
+        row = _converged_publish_row()
+        identity = row["analysis_result"]["identity"]
+        decision = dict(identity["promotion_decision"])
+        decision["reason_codes"] = [
+            *decision["reason_codes"],
+            "official_url_withheld_by_title_mismatch",
+        ]
+        identity["promotion_decision"] = decision
+        identity["publish_contract_trace"] = {
+            **identity["publish_contract_trace"],
+            "gate_decision": decision,
+            "reason_codes": decision["reason_codes"],
+        }
+        identity["publish_ledger"] = {
+            **identity["publish_ledger"],
+            "gate_decision": decision,
+        }
+        identity["candidate_ledger"] = {
+            **identity["candidate_ledger"],
+            "promotion_decision": decision,
+            "publish_contract_trace": identity["publish_contract_trace"],
+            "publish_ledger": identity["publish_ledger"],
+        }
+
+        report = audit_rows([row])
+
+        self.assertEqual(report["gate"], "NO-GO")
+        codes = {
+            violation["code"]
+            for row_report in report["violations"]
+            for violation in row_report["violations"]
+        }
+        self.assertIn("official_url_withheld_reason_has_decision_url", codes)
+        self.assertIn("official_url_withheld_reason_publishes_trace_url", codes)
+        self.assertIn("official_url_withheld_reason_publishes_ledger_url", codes)
+        self.assertIn("official_url_withheld_reason_serialized_url_leak", codes)
+
+    def test_url_title_mismatch_block_reason_must_block_and_preserve_candidate_url(self):
+        row = _converged_publish_row()
+        identity = row["analysis_result"]["identity"]
+        decision = {
+            **identity["promotion_decision"],
+            "reason_codes": [
+                *identity["promotion_decision"]["reason_codes"],
+                "url_title_mismatch",
+                "official_detail_url_title_mismatch_publish_blocked",
+            ],
+        }
+        identity["promotion_decision"] = decision
+        identity["publish_contract_trace"] = {
+            **identity["publish_contract_trace"],
+            "gate_decision": decision,
+            "reason_codes": decision["reason_codes"],
+        }
+        identity["publish_ledger"] = {
+            **identity["publish_ledger"],
+            "gate_decision": decision,
+        }
+        identity["candidate_ledger"] = {
+            **identity["candidate_ledger"],
+            "promotion_decision": decision,
+            "publish_contract_trace": identity["publish_contract_trace"],
+            "publish_ledger": identity["publish_ledger"],
+        }
+
+        report = audit_rows([row])
+
+        self.assertEqual(report["gate"], "NO-GO")
+        codes = {
+            violation["code"]
+            for row_report in report["violations"]
+            for violation in row_report["violations"]
+        }
+        self.assertIn("url_title_mismatch_block_reason_allows_publish", codes)
+        self.assertIn("url_title_mismatch_block_reason_has_decision_url", codes)
+
+    def test_url_title_mismatch_block_reason_requires_candidate_url_preservation(self):
+        row = _converged_scrubbed_candidate_row()
+        identity = row["analysis_result"]["identity"]
+        decision = {
+            **identity["promotion_decision"],
+            "reason_codes": [
+                *identity["promotion_decision"]["reason_codes"],
+                "url_title_mismatch",
+                "official_detail_url_title_mismatch_publish_blocked",
+            ],
+        }
+        trace = {
+            **identity["publish_contract_trace"],
+            "pre_gate_candidate": {
+                "official_title": "아카데미 생존 갤러리",
+                "official_url": None,
+                "source": "candidate_ledger_or_serialized_identity",
+            },
+            "gate_decision": decision,
+            "reason_codes": decision["reason_codes"],
+        }
+        publish_ledger = {
+            **identity["publish_ledger"],
+            "candidate_preservation": trace["pre_gate_candidate"],
+            "gate_decision": decision,
+        }
+        identity["blocked_official_title_url"] = None
+        identity["candidate_ledger"]["blocked_official_title_url"] = None
+        identity["promotion_decision"] = decision
+        identity["publish_contract_trace"] = trace
+        identity["publish_ledger"] = publish_ledger
+        identity["candidate_ledger"] = {
+            **identity["candidate_ledger"],
+            "promotion_decision": decision,
+            "publish_contract_trace": trace,
+            "publish_ledger": publish_ledger,
+        }
+
+        report = audit_rows([row])
+
+        self.assertEqual(report["gate"], "NO-GO")
+        codes = {
+            violation["code"]
+            for row_report in report["violations"]
+            for violation in row_report["violations"]
+        }
+        self.assertIn("url_title_mismatch_candidate_url_not_preserved", codes)
+
 
 if __name__ == "__main__":
     unittest.main()
