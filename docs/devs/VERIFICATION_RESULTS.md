@@ -63,23 +63,45 @@
     - state markdown `docs\devs\loop488_residual52_text_only_source_native_state_20260706.md`
     - summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_residual52_text_only_source_native_review.json`
     - summary markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_residual52_text_only_source_native_review.md`
+  - Residual52 image/native verdicts:
+    - verdicts `docs\devs\loop488_residual52_image_native_source_native_verdicts.json`
+    - P0 full state `docs\devs\loop488_p0_full_source_native_state_20260706.json`
+    - P0 full state markdown `docs\devs\loop488_p0_full_source_native_state_20260706.md`
+    - residual52 full summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_residual52_full_source_native_review.json`
+    - residual52 full summary markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_residual52_full_source_native_review.md`
+    - P0 full summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_p0_full_source_native_review.json`
+    - P0 full summary markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_p0_full_source_native_review.md`
+    - review-adjusted always-on gate `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_always_on_golden18_full375_p0_full_source_native_gate.json`
+    - review-adjusted always-on gate markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_always_on_golden18_full375_p0_full_source_native_gate.md`
   - Residual52 text-only reviewed rows `16/52`, unreviewed rows `36/52`, validation issues `0`
   - Residual52 text-only labels: `ACCEPT 6`, `REPROCESS 7`, `HOLD 3`
   - Combined P0 summary after text-only: reviewed `100/136`, unreviewed `36/136`, validation issues `0`
   - Combined P0 labels: `ACCEPT 29`, `REPROCESS 44`, `HOLD 27`
   - Combined P0 queue transition: original `136`, reviewed `100`, exclusion candidates `29`, repair required `44`, policy/native review required `27`, residual action queue `107`
+  - Residual52 image/native reviewed rows `36/36`, validation issues `0`
+  - Residual52 image/native labels: `ACCEPT 10`, `REPROCESS 19`, `HOLD 7`
+  - Residual52 full summary: reviewed `52/52`, unreviewed `0/52`, validation issues `0`
+  - Residual52 full labels: `ACCEPT 16`, `REPROCESS 26`, `HOLD 10`
+  - P0 full summary: reviewed `136/136`, unreviewed `0/136`, validation issues `0`
+  - P0 full labels: `ACCEPT 39`, `REPROCESS 63`, `HOLD 34`
+  - P0 full queue transition: original `136`, reviewed `136`, exclusion candidates `39`, repair required `63`, policy/native review required `34`, residual action queue `97`
+  - Review-adjusted always-on gate after P0 full review: `NO-GO`, raw regression `137`, review-adjusted regression `98`, unreviewed regression rows `1`
 - Validation:
   - `.\venv\Scripts\python.exe -m unittest tests.test_build_prior_compatible_collateral_verdicts tests.test_summarize_collateral_review_verdicts` PASS, `9` tests
   - `.\venv\Scripts\python.exe tools\build_prior_compatible_collateral_verdicts.py ... --output-unreviewed-batch-*` PASS, compatible rows `84`, unreviewed `52`
   - `.\venv\Scripts\python.exe tools\summarize_collateral_review_verdicts.py ...` PASS, gate `REVIEW-LOCKED`, validation issue `0`
   - `.\venv\Scripts\python.exe tools\summarize_collateral_review_verdicts.py --batch ...residual52... --verdicts docs\devs\loop488_residual52_text_only_source_native_verdicts.json ...` PASS, reviewed `16/52`, validation issue `0`
   - `.\venv\Scripts\python.exe tools\summarize_collateral_review_verdicts.py --batch ...p0... --verdicts prior-compatible text-only ...` PASS, reviewed `100/136`, validation issue `0`
+  - `.\venv\Scripts\python.exe tools\summarize_collateral_review_verdicts.py --batch ...residual52... --verdicts text-only image-native ...` PASS, reviewed `52/52`, validation issue `0`
+  - `.\venv\Scripts\python.exe tools\summarize_collateral_review_verdicts.py --batch ...p0... --verdicts prior-compatible text-only image-native ...` PASS, reviewed `136/136`, validation issue `0`
+  - `.\venv\Scripts\python.exe tools\evaluate_always_on_regression_gates.py --collateral-review-summary ...loop488_p0_full_source_native_review.json ...` PASS, gate `NO-GO`, review-adjusted regression `98`
 - Boundary:
   - Runtime 완료와 golden18 `18/18 PASS`는 full-scan approval이 아니다.
   - Full375 collateral이 regression `137`건으로 `NO-GO`라 golden 소표본 통과는 과적합 가능성을 해소하지 못했다.
   - P0 batch 생성은 verdict 입력 고정이며 approval이 아니다.
   - Prior-compatible `84`건은 과거 source-native verdict의 title/url 호환 carry-forward이며 approval이 아니다.
-  - P0 batch 잔여 `36`건은 이미지 또는 native 확인이 필요한 신규 blind/source-native 검토가 필요하다.
+  - P0 `136/136` source-native coverage는 완료됐지만 full375 approval이 아니다.
+  - P0 residual action queue `97`건은 `REPROCESS 63 / HOLD 34` 기준으로 N건 배치 처리해야 한다.
   - P1 `11682800 / new_resolution_promotion`은 별도 source-native 또는 blind review가 필요하다.
   - Search degraded가 관측됐으므로 promotion_blocked 계열은 계속 `search-blind 조건부`로 태깅한다.
   - Completion gate는 여전히 `full375 collateral GO + full_scan 경로 정의`다.

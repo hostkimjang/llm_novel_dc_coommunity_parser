@@ -14,16 +14,18 @@
   - [x] P0 `136`건 중 prior-compatible source-native verdict `84`건을 title/url 기준으로 분리했다.
   - [x] 호환되지 않은 P0 `52`건을 residual52 batch로 고정했다. Bucket은 `wrong_work_title_flip 19 / unsafe_promotion_from_hold 11 / safe_loss_resolved_to_null 22`, image/text-only는 `36/16`이다.
   - [x] Residual52 text-only `16`건을 source-native verdict로 판정했고 validation issue `0`을 확인했다.
-  - [x] Combined P0 source-native coverage는 `100/136`으로 갱신됐다.
+  - [x] Residual52 image/native lane `36`건을 source-native verdict로 판정했고 validation issue `0`을 확인했다.
+  - [x] Combined P0 source-native coverage는 `136/136`으로 갱신됐다.
 - 품질 경계:
   - [x] Runtime completion과 golden18 `GO`는 full375 collateral approval이 아니다.
   - [x] Loop477 full375는 Loop487 코드 변경 이후 current HEAD 증거가 아니므로 stale로 분리한다.
   - [x] Prior-compatible `84`건은 carry-forward 후보이며 즉시 approval이 아니다.
-  - [ ] 남은 P0 image/native lane `36`건 verdict는 아직 작성되지 않았다.
+  - [x] P0 `136/136` 검토 완료는 full375 approval이 아니다.
+  - [ ] P0 residual action queue `97`건은 `REPROCESS 63 / HOLD 34` 기준으로 N건 배치 처리한다.
   - [ ] P1 `11682800 / new_resolution_promotion`은 별도 검토가 필요하다.
-  - [ ] Full375 collateral은 `NO-GO / regression 137`이다.
+  - [ ] Full375 collateral은 `NO-GO / raw regression 137 / review-adjusted regression 98`이다.
   - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
-- Gate: full375 runtime `GO`, run health `GO`, publication contract `GO`, golden18 `GO`, full375 collateral `NO-GO`, always-on gate `NO-GO`, P0 source-native reviewed `100/136`, remaining image/native lane `36`, search evidence `REVIEW / search_degraded_observed`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: full375 runtime `GO`, run health `GO`, publication contract `GO`, golden18 `GO`, full375 collateral `NO-GO / raw regression 137 / review-adjusted regression 98`, always-on gate `NO-GO`, P0 source-native reviewed `136/136`, residual action queue `97`, P1 unreviewed regression `1`, search evidence `REVIEW / search_degraded_observed`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-06 Loop487 stable alias collision contract 품질 게이트
 

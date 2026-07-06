@@ -7,14 +7,15 @@
 | Full375 runtime | GO | run `20260706_044255_159249`, completed/flushed/pending/failed `375/375/0/0` | approval과 분리 유지 |
 | Runtime health | GO | `clean_completed_source`, MCP health `16/16`, search 포함 non-light | search degraded는 별도 REVIEW |
 | Publication/golden | GO | publication contract `0` violations, golden18 `18/18 PASS` | full375 collateral approval 대체 금지 |
-| Collateral gate | NO-GO | changed `199`, regression `137`, always-on blocker `collateral_regression_count_nonzero` | residual52와 P1 검토 |
+| Collateral gate | NO-GO | changed `199`, raw regression `137`, P0 review-adjusted regression `98` | residual queue와 P1 검토 |
 | Prior-compatible verdict | REVIEW-LOCKED | title/url 기준 호환 carry-forward `84/136`, validation issue `0` | ACCEPT `23`은 gate wiring 뒤 제외 후보 |
-| Residual52 text-only | REVIEW-LOCKED | text-only `16/52` reviewed, `ACCEPT 6 / REPROCESS 7 / HOLD 3`, validation issue `0` | image/native lane 유지 |
-| Combined P0 review | REVIEW-LOCKED | source-native reviewed `100/136`, `ACCEPT 29 / REPROCESS 44 / HOLD 27`, residual action queue `107` | 남은 `36`건 이미지/native 검토 |
+| Residual52 text-only | REVIEW-LOCKED | text-only `16/52` reviewed, `ACCEPT 6 / REPROCESS 7 / HOLD 3`, validation issue `0` | P0 full summary에 합산 완료 |
+| Residual52 image/native | REVIEW-LOCKED | image/native `36/36` reviewed, `ACCEPT 10 / REPROCESS 19 / HOLD 7`, validation issue `0` | HOLD는 native/browser 확인 유지 |
+| Combined P0 review | REVIEW-LOCKED | source-native reviewed `136/136`, `ACCEPT 39 / REPROCESS 63 / HOLD 34`, residual action queue `97` | N건 배치 repair/policy 처리 |
 | P1 | OPEN | `11682800 / new_resolution_promotion` | 별도 source-native 또는 blind review |
 | Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
 
-Gate: full375 runtime `GO`, run health `GO`, publication contract `GO`, golden18 `GO`, full375 collateral `NO-GO`, P0 source-native reviewed `100/136`, remaining image/native lane `36`, search evidence `REVIEW / search_degraded_observed`, goal `ACTIVE / NOT_COMPLETE`.
+Gate: full375 runtime `GO`, run health `GO`, publication contract `GO`, golden18 `GO`, full375 collateral `NO-GO / raw regression 137 / review-adjusted regression 98`, P0 source-native reviewed `136/136`, residual action queue `97`, P1 unreviewed regression `1`, search evidence `REVIEW / search_degraded_observed`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## IMP-20260706-487 - stable alias collision contract
 

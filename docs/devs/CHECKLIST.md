@@ -20,11 +20,13 @@
 - [x] 현재 P0 배치에서 호환 carry-forward 가능한 verdict `84/136`건을 분리했고 validation issue `0`을 확인했다.
 - [x] 호환되지 않은 P0 `52`건을 residual52 batch로 고정했다. Bucket은 `wrong_work_title_flip 19 / unsafe_promotion_from_hold 11 / safe_loss_resolved_to_null 22`, image/text-only는 `36/16`이다.
 - [x] Residual52 중 text-only `16`건 verdict를 작성했고 validation issue `0`을 확인했다.
-- [ ] P0 batch 중 남은 이미지/native lane `36`건 verdict를 신규 blind/source-native 검토로 채운다.
+- [x] Residual52 중 image/native lane `36`건 verdict를 작성했고 validation issue `0`을 확인했다.
+- [x] P0 source-native coverage는 `136/136`으로 닫혔다.
+- [ ] P0 residual action queue `97`건은 `REPROCESS 63 / HOLD 34` 기준으로 N건 배치 처리한다.
 - [ ] P1 `11682800 / new_resolution_promotion`을 별도 source-native 또는 blind review로 처리한다.
 - [ ] Search evidence는 `REVIEW / search_degraded_observed`다. Search recovery를 닫지 않는다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
-- Gate: full375 runtime `GO`, run health `GO`, publication contract `GO`, golden18 `GO`, full375 collateral `NO-GO`, always-on gate `NO-GO`, P0 batch `REVIEW-LOCKED`, source-native reviewed `100 of 136`, remaining image/native lane `36`, search evidence `REVIEW`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: full375 runtime `GO`, run health `GO`, publication contract `GO`, golden18 `GO`, full375 collateral `NO-GO / raw regression 137 / review-adjusted regression 98`, always-on gate `NO-GO`, P0 batch `REVIEW-LOCKED`, source-native reviewed `136 of 136`, residual action queue `97`, P1 unreviewed regression `1`, search evidence `REVIEW`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-06 Loop487 stable alias collision contract 체크
 

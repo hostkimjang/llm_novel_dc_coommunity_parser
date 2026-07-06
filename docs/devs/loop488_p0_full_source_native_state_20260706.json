@@ -1,0 +1,122 @@
+{
+  "loop": 488,
+  "date": "2026-07-06",
+  "report_type": "loop488_p0_full_source_native_state",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "source_gate": "full375 collateral NO-GO",
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json",
+  "source_verdicts": [
+    "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json",
+    "docs/devs/loop488_residual52_text_only_source_native_verdicts.json",
+    "docs/devs/loop488_residual52_image_native_source_native_verdicts.json"
+  ],
+  "residual52_image_native_source_native": {
+    "gate": "REVIEW-LOCKED",
+    "reviewed_rows": 36,
+    "validation_issue_count": 0,
+    "label_counts": {
+      "ACCEPT": 10,
+      "REPROCESS": 19,
+      "HOLD": 7
+    },
+    "counts_by_bucket": {
+      "wrong_work_title_flip": 16,
+      "unsafe_promotion_from_hold": 9,
+      "safe_loss_resolved_to_null": 11
+    },
+    "artifacts": {
+      "verdicts": "docs/devs/loop488_residual52_image_native_source_native_verdicts.json"
+    }
+  },
+  "residual52_full_source_native_summary": {
+    "gate": "REVIEW-LOCKED",
+    "batch_review_rows": 52,
+    "reviewed_rows": 52,
+    "unreviewed_batch_rows": 0,
+    "validation_issue_count": 0,
+    "label_counts": {
+      "ACCEPT": 16,
+      "REPROCESS": 26,
+      "HOLD": 10
+    },
+    "counts_by_bucket": {
+      "wrong_work_title_flip": 19,
+      "unsafe_promotion_from_hold": 11,
+      "safe_loss_resolved_to_null": 22
+    },
+    "queue_transition": {
+      "original_p0_rows": 52,
+      "source_native_reviewed_rows": 52,
+      "exclusion_candidate_rows": 16,
+      "repair_required_rows": 26,
+      "policy_or_native_review_required_rows": 10,
+      "residual_action_queue_rows": 36
+    }
+  },
+  "p0_full_source_native_summary": {
+    "gate": "REVIEW-LOCKED",
+    "batch_review_rows": 136,
+    "reviewed_rows": 136,
+    "unreviewed_batch_rows": 0,
+    "validation_issue_count": 0,
+    "label_counts": {
+      "ACCEPT": 39,
+      "REPROCESS": 63,
+      "HOLD": 34
+    },
+    "counts_by_bucket": {
+      "wrong_work_title_flip": 30,
+      "unsafe_promotion_from_hold": 25,
+      "safe_loss_resolved_to_null": 81
+    },
+    "queue_transition": {
+      "original_p0_rows": 136,
+      "source_native_reviewed_rows": 136,
+      "exclusion_candidate_rows": 39,
+      "repair_required_rows": 63,
+      "policy_or_native_review_required_rows": 34,
+      "residual_action_queue_rows": 97,
+      "full_collateral_approval_open": false,
+      "exclusion_requires_gate_wiring": true
+    }
+  },
+  "always_on_gate_after_p0_review": {
+    "gate": "NO-GO",
+    "golden_gate": "GO",
+    "collateral_gate": "NO-GO",
+    "raw_collateral_regression_count": 137,
+    "review_exclusion_candidate_rows": 39,
+    "review_adjusted_regression_count": 98,
+    "unreviewed_regression_rows": 1,
+    "blockers": [
+      "collateral:collateral_review_adjusted_regression_count_nonzero",
+      "collateral:collateral_review_unreviewed_regression_rows_nonzero"
+    ]
+  },
+  "remaining_non_p0": {
+    "p1_rows": 1,
+    "p1_post_ids": [
+      11682800
+    ],
+    "bucket": "new_resolution_promotion",
+    "required_action": "source_native_or_blind_review_required"
+  },
+  "artifacts": {
+    "residual52_full_review_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_residual52_full_source_native_review.json",
+    "residual52_full_review_markdown": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_residual52_full_source_native_review.md",
+    "p0_full_review_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json",
+    "p0_full_review_markdown": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.md",
+    "always_on_gate_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_always_on_golden18_full375_p0_full_source_native_gate.json",
+    "always_on_gate_markdown": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_always_on_golden18_full375_p0_full_source_native_gate.md"
+  },
+  "approval_boundary": {
+    "p0_review_coverage_complete_is_not_approval": true,
+    "full375_collateral_gate": "NO-GO",
+    "search_recovery_gate": "REVIEW / search_degraded_observed",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "completion_gate": "full375 collateral GO + full_scan 경로 정의"
+  }
+}
