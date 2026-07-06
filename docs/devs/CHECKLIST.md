@@ -1,5 +1,21 @@
 # Development Checklist
 
+## 2026-07-06 Loop497 full375 current residual111 회계 체크
+
+- [x] Loop496 full375 raw collateral regression `137`건을 current P0 review batch로 재생성했다.
+- [x] Prior Loop488 review `136`건은 post_id overlap `112`만으로 재사용하지 않았다.
+- [x] 동일 `post_id`, 동일 `triage_bucket`, current option title/url 일치 조건으로 prior-compatible `90`건만 carry-forward했다.
+- [x] Current 미검토 `47`건은 `INFO_MISSING` placeholder verdict로 남겼다.
+- [x] Current review summary는 `ACCEPT 26 / REPROCESS 42 / HOLD 22 / INFO_MISSING 47`이다.
+- [x] Review-adjusted regression count는 `111`이고 residual action queue도 `111`건이다.
+- [x] Action queue top groups는 `source_native_or_blind_review_required 47`, `repair_safe_loss_restore_supported_title 36`, `shared_promotion_gate_wiring_required 36`이다.
+- [x] Data Analytics artifact `Loop497 full375 잔여 큐 회계` validate/render PASS.
+- [x] 이후 테스트런/검증런은 기본 `--parallel 16`과 웹 대시보드 부착으로 진행한다.
+- [ ] Residual `111`건은 단건이 아니라 action group N건 배치로 처리한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: golden18 `GO`, full375 runtime inherited `GO`, full375 collateral `NO-GO / review-adjusted residual 111`, always-on `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop496 full375 current HEAD 감사 체크
 
 - [x] Current HEAD `4fd250f7` full375를 search 포함 non-light, VLM/OCR on, `--slang-db off`, `--parallel 16`으로 완주했다.

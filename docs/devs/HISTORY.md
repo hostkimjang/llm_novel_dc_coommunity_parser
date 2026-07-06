@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-06 - Loop497 current full375 residual111 accounting
+
+- Loop496 full375 raw collateral regression `137`건을 current P0 review batch 기준으로 다시 회계했다.
+- Loop488 prior source-native verdict `136`건은 post_id overlap만으로 재사용하지 않고, 동일 `post_id`, 동일 `triage_bucket`, current option title/url 일치 조건을 걸었다.
+- Prior-compatible carry-forward는 `90`건이고 current 미검토 `47`건은 `INFO_MISSING` placeholder verdict로 남겼다.
+- Current review summary는 `ACCEPT 26 / REPROCESS 42 / HOLD 22 / INFO_MISSING 47`이다.
+- Review-adjusted regression count는 `111`이고 residual action queue도 `111`건이다.
+- Always-on gate는 golden18 `GO`에도 `NO-GO / collateral_review_adjusted_regression_count_nonzero`다.
+- Data Analytics artifact `Loop497 full375 잔여 큐 회계`를 validate/render PASS로 생성했다.
+- 이후 테스트런/검증런은 기본 `--parallel 16`과 웹 대시보드 부착으로 진행하도록 상태/보고서에 명시했다.
+- Report는 `docs/devs/loop_reports/LOOP_497_REPORT_20260706.md`, state는 `docs/devs/loop497_current_full375_residual111_state_20260706.json`이다.
+- Gate는 full375 collateral `NO-GO / residual 111`, always-on `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop496 full375 current HEAD collateral audit
 
 - Current HEAD `4fd250f7`에서 Loop496 full375 run `20260706_151001_584579`를 완료했다.

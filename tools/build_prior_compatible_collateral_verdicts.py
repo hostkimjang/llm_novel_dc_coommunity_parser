@@ -71,6 +71,15 @@ def _source_spec(value: str) -> tuple[Path, str]:
     return path, bucket
 
 
+def _expected_bucket_for_row(old_row: dict[str, Any], source_bucket: str) -> tuple[str, str | None]:
+    if source_bucket != "*":
+        return source_bucket, None
+    expected_bucket = _string(old_row.get("triage_bucket"))
+    if not expected_bucket:
+        return "", "missing_source_triage_bucket_for_auto_bucket"
+    return expected_bucket, None
+
+
 def _copy_refs(refs: Any, *, verdict_path: Path, batch_path: Path, post_id: int) -> list[Any]:
     out: list[Any] = []
     if isinstance(refs, list):
@@ -118,14 +127,26 @@ def build_prior_compatible_verdicts(
                 continue
             input_counts["overlap_rows"] += 1
             current_bucket = _string(current.get("triage_bucket"))
-            if current_bucket != expected_bucket:
+            expected_bucket_for_row, auto_bucket_skip_reason = _expected_bucket_for_row(old_row, expected_bucket)
+            if auto_bucket_skip_reason:
+                skip_counts[auto_bucket_skip_reason] += 1
+                skipped_rows.append(
+                    {
+                        "post_id": post_id,
+                        "reason": auto_bucket_skip_reason,
+                        "source_path": str(verdict_path),
+                        "current_bucket": current_bucket,
+                    }
+                )
+                continue
+            if current_bucket != expected_bucket_for_row:
                 skip_counts["triage_bucket_changed"] += 1
                 skipped_rows.append(
                     {
                         "post_id": post_id,
                         "reason": "triage_bucket_changed",
                         "source_path": str(verdict_path),
-                        "source_bucket": expected_bucket,
+                        "source_bucket": expected_bucket_for_row,
                         "current_bucket": current_bucket,
                     }
                 )
@@ -263,6 +284,71 @@ def build_unreviewed_batch(batch: dict[str, Any], compatible_verdicts: dict[str,
     return out
 
 
+def build_unreviewed_placeholder_verdicts(
+    batch: dict[str, Any],
+    compatible_verdicts: dict[str, Any],
+    state: dict[str, Any],
+    *,
+    review_id: str,
+    scope: str,
+    batch_path: Path,
+) -> dict[str, Any]:
+    covered_post_ids = {
+        row.get("post_id")
+        for row in compatible_verdicts.get("rows") or []
+        if isinstance(row, dict) and isinstance(row.get("post_id"), int)
+    }
+    rows: list[dict[str, Any]] = []
+    for row in batch.get("review_rows") or []:
+        if not isinstance(row, dict):
+            continue
+        post_id = row.get("post_id")
+        if not isinstance(post_id, int) or post_id in covered_post_ids:
+            continue
+        bucket = _string(row.get("triage_bucket")) or "unknown"
+        rows.append(
+            {
+                "post_id": post_id,
+                "triage_bucket": bucket,
+                "selected_option_id": "HOLD",
+                "selected_title": None,
+                "selected_url": None,
+                "review_label": "INFO_MISSING",
+                "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+                "evidence_grade": "Missing",
+                "action": [
+                    "source_native_or_blind_review_required",
+                    f"p0_{bucket}_review_required",
+                ],
+                "rationale_ko": (
+                    "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 "
+                    "동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. "
+                    "정답성 확정 전까지 별도 blind/source-native 검토가 필요하다."
+                ),
+                "evidence_refs": [
+                    f"{batch_path.as_posix()}#post_id={post_id}",
+                    f"{state.get('review_id')}#unreviewed_current_batch_row",
+                ],
+            }
+        )
+    return {
+        "review_id": review_id,
+        "scope": scope,
+        "source_batch": str(batch_path),
+        "generated_at": datetime.now().replace(microsecond=0).isoformat(),
+        "gate": "REVIEW-LOCKED",
+        "semantic_quality": "REVIEW-LOCKED",
+        "full_scan_approval": False,
+        "summary": {
+            "source_review_rows": len(batch.get("review_rows") or []),
+            "prior_compatible_rows": len(covered_post_ids),
+            "placeholder_rows": len(rows),
+            "counts_by_bucket": dict(Counter(row["triage_bucket"] for row in rows)),
+        },
+        "rows": rows,
+    }
+
+
 def write_unreviewed_markdown(path: Path, batch: dict[str, Any]) -> None:
     summary = batch["summary"]
     lines = [
@@ -350,6 +436,19 @@ def write_markdown(path: Path, state: dict[str, Any], *, verdicts_path: Path) ->
                 f"- markdown: `{artifacts.get('markdown')}`",
             ]
         )
+    placeholders = state.get("unreviewed_placeholder_verdicts")
+    if isinstance(placeholders, dict):
+        placeholder_summary = placeholders.get("summary") or {}
+        lines.extend(
+            [
+                "",
+                "## 미검토 placeholder verdict",
+                "",
+                f"- gate: `{placeholders.get('gate')}`",
+                f"- placeholder rows: `{placeholder_summary.get('placeholder_rows')}`",
+                f"- json: `{placeholders.get('artifact')}`",
+            ]
+        )
     lines.extend(
         [
             "",
@@ -382,6 +481,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-unreviewed-batch-json", type=Path)
     parser.add_argument("--output-unreviewed-batch-jsonl", type=Path)
     parser.add_argument("--output-unreviewed-batch-md", type=Path)
+    parser.add_argument("--output-unreviewed-verdicts-json", type=Path)
     return parser.parse_args()
 
 
@@ -414,6 +514,21 @@ def main() -> int:
             write_jsonl(args.output_unreviewed_batch_jsonl, unreviewed_batch["review_rows"])
         if args.output_unreviewed_batch_md:
             write_unreviewed_markdown(args.output_unreviewed_batch_md, unreviewed_batch)
+    if args.output_unreviewed_verdicts_json:
+        unreviewed_verdicts = build_unreviewed_placeholder_verdicts(
+            batch,
+            verdicts,
+            state,
+            review_id=f"{args.review_id}_unreviewed_placeholders",
+            scope=f"{args.scope} unreviewed placeholders",
+            batch_path=args.batch,
+        )
+        state["unreviewed_placeholder_verdicts"] = {
+            "gate": unreviewed_verdicts["gate"],
+            "summary": unreviewed_verdicts["summary"],
+            "artifact": str(args.output_unreviewed_verdicts_json),
+        }
+        write_json(args.output_unreviewed_verdicts_json, unreviewed_verdicts)
     write_json(args.output_state_json, state)
     write_markdown(args.output_md, state, verdicts_path=args.output_json)
     print(

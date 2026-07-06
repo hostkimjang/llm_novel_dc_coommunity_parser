@@ -1,5 +1,23 @@
 # Developer TODO Index
 
+## 2026-07-06 Loop497 TODO
+
+- 상태 업데이트: Loop496 full375 raw regression `137`건을 current title/url 호환 기준으로 재회계했다. Goal은 완료가 아니다.
+- [x] Current Loop496 full375 P0 review batch `137`건을 생성했다.
+- [x] Loop488 prior source-native verdict를 동일 `post_id`, 동일 `triage_bucket`, current option title/url 일치 조건으로만 carry-forward했다.
+- [x] Prior-compatible rows `90`, current 미검토 rows `47`을 분리했다.
+- [x] 미검토 `47`건은 `INFO_MISSING` placeholder verdict로 남겨 과승인하지 않았다.
+- [x] Current summary `ACCEPT 26 / REPROCESS 42 / HOLD 22 / INFO_MISSING 47`을 생성했다.
+- [x] Review-adjusted residual action queue `111`건을 생성했다.
+- [x] Always-on gate를 재평가했고 `NO-GO / review_adjusted_regression_count 111`을 확인했다.
+- [x] Data Analytics artifact `Loop497 full375 잔여 큐 회계` validate/render PASS를 확인했다.
+- [x] 이후 테스트런/검증런은 기본 `--parallel 16`과 웹 대시보드 부착으로 진행한다.
+- [ ] `source_native_or_blind_review_required 47`건을 bucket별 N건 배치로 검토한다.
+- [ ] `repair_safe_loss_restore_supported_title 36`건을 shared promotion gate wiring/runtime replay 후보로 분리한다.
+- [ ] `repair_after_wrong_work 5`건과 `repair_unsafe_promotion 1`건은 단건 반복이 아니라 P0 코드/계약 배치로 처리한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop496 TODO
 
 - 상태 업데이트: Current HEAD `4fd250f7` full375는 runtime `GO / 375 of 375`로 완주했지만 full375 collateral은 `NO-GO / regression 137`이다. Goal은 완료가 아니다.

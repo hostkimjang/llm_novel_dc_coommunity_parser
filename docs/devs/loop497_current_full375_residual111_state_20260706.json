@@ -1,0 +1,114 @@
+{
+  "loop": 497,
+  "date": "2026-07-06",
+  "title": "Loop497 current Loop496 full375 residual accounting",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "purpose": "Loop496 full375 collateral raw 137 regressions를 기존 Loop488 P0 source-native verdict와 current option title/url 기준으로 재대조해 실제 current residual queue를 재회계한다.",
+  "inputs": {
+    "loop496_triage": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop496_full375_current_head_collateral_triage.json",
+    "loop496_collateral_compare": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop496_full375_current_head_collateral_compare.json",
+    "loop496_golden_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop496_full375_current_head_golden_audit.json",
+    "loop488_prior_review": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json",
+    "panel_input": "out/regression_safe_grounding_20260626_000008_928006_loop01/panel/regression_panel_input.jsonl",
+    "baseline_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/baseline/baseline_result.json",
+    "after_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop496_full375_current_head_4fd250f7_search_nonlight_result.json"
+  },
+  "tool_changes": {
+    "path": "tools/build_prior_compatible_collateral_verdicts.py",
+    "summary": "source-verdicts PATH::* auto-bucket mode를 추가해 mixed prior review summary를 prior row triage_bucket 기준으로만 carry-forward하고, current option title/url 미호환 row는 INFO_MISSING placeholder verdict로 남긴다.",
+    "tests": "tests/test_build_prior_compatible_collateral_verdicts.py"
+  },
+  "artifacts": {
+    "review_batch_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json",
+    "review_batch_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.md",
+    "prior_compatible_verdicts": "docs/devs/loop497_current_full375_p0_prior_compatible_source_native_verdicts.json",
+    "prior_compatible_state": "docs/devs/loop497_current_full375_p0_prior_compatible_source_native_state_20260706.json",
+    "prior_compatible_md": "docs/devs/loop497_current_full375_p0_prior_compatible_source_native.md",
+    "unreviewed_batch_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_unreviewed_batch.json",
+    "unreviewed_batch_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_unreviewed_batch.md",
+    "unreviewed_placeholder_verdicts": "docs/devs/loop497_current_full375_p0_unreviewed_placeholder_verdicts.json",
+    "current_review_summary_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_current_review_summary.json",
+    "current_review_summary_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_current_review_summary.md",
+    "always_on_gate_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_always_on_golden18_full375_current_review_adjusted_gate.json",
+    "always_on_gate_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_always_on_golden18_full375_current_review_adjusted_gate.md",
+    "action_queue_json": "docs/devs/loop497_current_full375_review_adjusted_residual111_action_queue.json",
+    "action_queue_md": "docs/devs/loop497_current_full375_review_adjusted_residual111_action_queue.md",
+    "loop_report": "docs/devs/loop_reports/LOOP_497_REPORT_20260706.md"
+  },
+  "accounting": {
+    "raw_collateral_regressions": 137,
+    "prior_review_source_rows": 136,
+    "post_id_overlap": 112,
+    "prior_compatible_rows": 90,
+    "unreviewed_current_batch_rows": 47,
+    "skip_counts": {
+      "triage_bucket_changed": 20,
+      "post_id_not_in_current_batch": 24,
+      "ambiguous_current_option_match": 2
+    },
+    "label_counts": {
+      "ACCEPT": 26,
+      "REPROCESS": 42,
+      "HOLD": 22,
+      "INFO_MISSING": 47
+    },
+    "exclusion_candidate_rows": 26,
+    "review_adjusted_regression_count": 111,
+    "residual_action_queue_rows": 111,
+    "residual_bucket_counts": {
+      "safe_loss_resolved_to_null": 78,
+      "unsafe_promotion_from_hold": 15,
+      "wrong_work_title_flip": 18
+    },
+    "top_action_groups": {
+      "source_native_or_blind_review_required": 47,
+      "repair_safe_loss_restore_supported_title": 36,
+      "shared_promotion_gate_wiring_required": 36,
+      "native_web_review_required": 22,
+      "image_native_review_required": 16,
+      "repair_after_wrong_work": 5,
+      "repair_unsafe_promotion": 1
+    }
+  },
+  "data_analytics": {
+    "artifact_title": "Loop497 full375 잔여 큐 회계",
+    "validate_artifact": "PASS",
+    "render_artifact": "PASS",
+    "datasets": [
+      "kpi",
+      "bucket_rows",
+      "label_rows",
+      "action_groups"
+    ]
+  },
+  "runtime_run_policy": {
+    "parallel_default": 16,
+    "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+    "dashboard_url_default": "http://127.0.0.1:8080",
+    "note": "신규 regression-safe grounding 테스트런/검증런은 명시적 반대 지시가 없으면 --parallel 16과 웹 대시보드 부착으로 실행한다. 이미 --no-dashboard로 시작된 런은 tools/attach_manifest_dashboard.py로 manifest 기반 진행률을 사후 부착한다."
+  },
+  "validation": {
+    "py_compile": "PASS",
+    "focused_unittest": "PASS / 25 tests",
+    "queue_generation": "PASS / validation_issue_count 0",
+    "data_analytics_validate": "PASS",
+    "data_analytics_render": "PASS"
+  },
+  "gates": {
+    "golden18": "GO / 18 of 18",
+    "full375_runtime": "GO / inherited Loop496 375 of 375",
+    "always_on_gate": "NO-GO",
+    "full375_collateral": "NO-GO / review_adjusted_regression_count 111",
+    "search_evidence": "REVIEW / inherited Loop496 row-level degraded",
+    "completion": "NO / blocked_by_full375_collateral_residual111"
+  },
+  "next_actions": [
+    "source_native_or_blind_review_required 47건을 bucket별 N건 배치로 검토한다.",
+    "repair_safe_loss_restore_supported_title 36건은 shared promotion gate wiring 또는 runtime replay 후보로 분리한다.",
+    "repair_after_wrong_work 5건과 repair_unsafe_promotion 1건은 단건 반복이 아니라 P0 코드/계약 배치로 처리한다.",
+    "다음 테스트런/검증런부터 --parallel 16과 웹 대시보드 부착을 기본 실행 조건으로 둔다.",
+    "full375 collateral GO 전에는 bounded/full375 동결 해제 또는 full_scan path를 정의하지 않는다."
+  ]
+}

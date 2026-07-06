@@ -1,5 +1,38 @@
 # Verification Results
 
+## 2026-07-06 Loop497 Verification
+
+- 범위: Loop496 full375 raw collateral regression `137`건을 current-state 기준으로 다시 회계하고, prior review carry-forward가 현재 후보 title/url에 맞는지 검증했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_497_REPORT_20260706.md`
+  - state `docs\devs\loop497_current_full375_residual111_state_20260706.json`
+  - prior-compatible verdicts `docs\devs\loop497_current_full375_p0_prior_compatible_source_native_verdicts.json`
+  - prior-compatible state `docs\devs\loop497_current_full375_p0_prior_compatible_source_native_state_20260706.json`
+  - INFO_MISSING placeholder verdicts `docs\devs\loop497_current_full375_p0_unreviewed_placeholder_verdicts.json`
+  - current review summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop497_current_full375_p0_current_review_summary.md`
+  - adjusted gate `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop497_always_on_golden18_full375_current_review_adjusted_gate.md`
+  - residual queue `docs\devs\loop497_current_full375_review_adjusted_residual111_action_queue.md`
+- Result:
+  - raw collateral regression `137`
+  - prior review source rows `136`
+  - post_id overlap `112`
+  - prior-compatible carry-forward `90`
+  - unreviewed current batch rows `47`
+  - label counts `ACCEPT 26 / REPROCESS 42 / HOLD 22 / INFO_MISSING 47`
+  - review-adjusted regression count `111`
+  - residual action queue `111`
+- Validation:
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_build_prior_compatible_collateral_verdicts tests.test_summarize_collateral_review_verdicts tests.test_split_collateral_action_queue tests.test_always_on_regression_gates` PASS, `25` tests
+  - `.\.venv312\Scripts\python.exe -m py_compile tools/build_prior_compatible_collateral_verdicts.py tools/build_collateral_triage_review_batch.py tools/summarize_collateral_review_verdicts.py tools/split_collateral_action_queue.py tools/evaluate_always_on_regression_gates.py` PASS
+  - current review summary validation issue `0`
+  - residual action queue validation issue `0`
+  - Data Analytics artifact `Loop497 full375 잔여 큐 회계` validate/render PASS
+- Boundary:
+  - Golden18 `GO`는 full375 approval이 아니다.
+  - Full375 collateral은 `NO-GO / review-adjusted residual 111`이다.
+  - 이후 테스트런/검증런은 기본 `--parallel 16`과 웹 대시보드 부착으로 진행한다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop496 Verification
 
 - 범위: Current HEAD `4fd250f7`에서 golden18 과적합 여부를 보려고 full375 전수 collateral replay와 always-on gate를 실행했다.

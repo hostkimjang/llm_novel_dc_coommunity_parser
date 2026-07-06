@@ -2,7 +2,11 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from tools.build_prior_compatible_collateral_verdicts import build_prior_compatible_verdicts, build_unreviewed_batch
+from tools.build_prior_compatible_collateral_verdicts import (
+    build_prior_compatible_verdicts,
+    build_unreviewed_batch,
+    build_unreviewed_placeholder_verdicts,
+)
 
 
 class BuildPriorCompatibleCollateralVerdictsTest(unittest.TestCase):
@@ -88,6 +92,66 @@ class BuildPriorCompatibleCollateralVerdictsTest(unittest.TestCase):
         self.assertEqual(payload["rows"], [])
         self.assertEqual(state["summary"]["skip_counts"], {"triage_bucket_changed": 1})
 
+    def test_auto_bucket_mode_uses_source_row_bucket(self):
+        batch = {
+            "review_rows": [
+                {
+                    "post_id": 1,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "blind_judge_options": [
+                        {"option_id": "C1", "official_title": "title", "heretic_url": "https://example.test/work"}
+                    ],
+                },
+                {
+                    "post_id": 2,
+                    "triage_bucket": "unsafe_promotion_from_hold",
+                    "blind_judge_options": [
+                        {"option_id": "C1", "official_title": "other", "heretic_url": "https://example.test/other"}
+                    ],
+                },
+            ]
+        }
+        verdicts = {
+            "rows": [
+                {
+                    "post_id": 1,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "selected_option_id": "C9",
+                    "selected_title": "title",
+                    "selected_url": "https://example.test/work",
+                    "review_label": "REPROCESS",
+                    "source_native_verdict": "before_supported",
+                    "evidence_refs": ["unit://old-1"],
+                },
+                {
+                    "post_id": 2,
+                    "triage_bucket": "wrong_work_title_flip",
+                    "selected_option_id": "C1",
+                    "selected_title": "other",
+                    "selected_url": "https://example.test/other",
+                    "review_label": "ACCEPT",
+                    "source_native_verdict": "after_supported",
+                    "evidence_refs": ["unit://old-2"],
+                },
+            ]
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            verdict_path = Path(tmp) / "mixed.json"
+            verdict_path.write_text(__import__("json").dumps(verdicts), encoding="utf-8")
+
+            payload, state = build_prior_compatible_verdicts(
+                batch=batch,
+                batch_path=Path("batch.json"),
+                source_specs=[(verdict_path, "*")],
+                review_id="unit",
+                scope="unit",
+            )
+
+        self.assertEqual(state["summary"]["compatible_rows"], 1)
+        self.assertEqual(payload["rows"][0]["post_id"], 1)
+        self.assertEqual(payload["rows"][0]["selected_option_id"], "C1")
+        self.assertEqual(state["summary"]["skip_counts"], {"triage_bucket_changed": 1})
+
     def test_builds_unreviewed_batch_from_not_covered_rows(self):
         batch = {
             "review_rows": [
@@ -116,6 +180,39 @@ class BuildPriorCompatibleCollateralVerdictsTest(unittest.TestCase):
         self.assertEqual(unreviewed["summary"]["image_rows"], 1)
         self.assertEqual(unreviewed["summary"]["counts_by_bucket"], {"safe_loss_resolved_to_null": 1})
         self.assertEqual(unreviewed["review_rows"][0]["post_id"], 2)
+
+    def test_builds_info_missing_placeholder_verdicts_for_uncovered_rows(self):
+        batch = {
+            "review_rows": [
+                {
+                    "post_id": 1,
+                    "triage_bucket": "wrong_work_title_flip",
+                    "collateral_status": "resolved_to_different_title",
+                },
+                {
+                    "post_id": 2,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "collateral_status": "resolved_to_null",
+                },
+            ]
+        }
+        compatible_verdicts = {"rows": [{"post_id": 1}]}
+        state = {"review_id": "unit_prior", "summary": {"compatible_rows": 1}}
+
+        placeholders = build_unreviewed_placeholder_verdicts(
+            batch,
+            compatible_verdicts,
+            state,
+            review_id="unit_unreviewed",
+            scope="unit unreviewed",
+            batch_path=Path("batch.json"),
+        )
+
+        self.assertEqual(placeholders["summary"]["placeholder_rows"], 1)
+        self.assertEqual(placeholders["rows"][0]["post_id"], 2)
+        self.assertEqual(placeholders["rows"][0]["selected_option_id"], "HOLD")
+        self.assertEqual(placeholders["rows"][0]["review_label"], "INFO_MISSING")
+        self.assertIn("p0_safe_loss_resolved_to_null_review_required", placeholders["rows"][0]["action"])
 
 
 if __name__ == "__main__":

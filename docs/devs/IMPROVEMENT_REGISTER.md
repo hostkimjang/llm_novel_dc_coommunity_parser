@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260706-497 - current full375 residual111 accounting
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Current P0 batch | GO | Loop496 raw regression `137`건을 current review batch로 생성 | residual action group 처리 |
+| Prior carry-forward | REVIEW-LOCKED | 동일 `post_id`, 동일 `triage_bucket`, current title/url 일치 조건으로 `90`건만 compatible | 과거 verdict 과적용 금지 |
+| Missing review | OPEN | current 미검토 `47`건을 `INFO_MISSING` placeholder로 보존 | source-native/blind N건 배치 |
+| Review summary | REVIEW-LOCKED | `ACCEPT 26 / REPROCESS 42 / HOLD 22 / INFO_MISSING 47` | ACCEPT는 gate wiring 뒤 제외 후보일 뿐 |
+| Residual queue | NO-GO | review-adjusted residual `111`, action queue `111` | action group별 배치 처리 |
+| Data Analytics | PASS | `Loop497 full375 잔여 큐 회계` validate/render PASS | reader-facing 요약 근거로 사용 |
+| Runtime policy | LOCKED | 이후 테스트런/검증런은 기본 `--parallel 16`과 웹 대시보드 부착 | 병렬/대시보드는 approval 아님 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: golden18 `GO`, full375 collateral `NO-GO / review-adjusted residual 111`, always-on `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-496 - full375 collateral regression panel expansion
 
 | 항목 | 상태 | 근거 | 다음 |

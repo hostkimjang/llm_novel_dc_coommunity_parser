@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop497 full375 residual111 회계 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_497_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop497_current_full375_residual111_state_20260706.json`.
+  - [x] Prior-compatible verdict 기록 완료: `docs/devs/loop497_current_full375_p0_prior_compatible_source_native_verdicts.json`.
+  - [x] INFO_MISSING placeholder verdict 기록 완료: `docs/devs/loop497_current_full375_p0_unreviewed_placeholder_verdicts.json`.
+  - [x] Residual action queue 기록 완료: `docs/devs/loop497_current_full375_review_adjusted_residual111_action_queue.json/.md`.
+  - [x] Data Analytics artifact `Loop497 full375 잔여 큐 회계` validate/render PASS.
+- 품질 경계:
+  - [x] Prior-compatible `90`건은 current title/url 호환 조건을 통과한 carry-forward일 뿐 approval이 아니다.
+  - [x] `INFO_MISSING 47`은 미검토로 보존하며 prior verdict로 과승인하지 않는다.
+  - [x] Review-adjusted residual `111`이 남아 full375 collateral은 `NO-GO`다.
+  - [x] 병렬도 `16`과 웹 대시보드는 runtime 관측/생산성 조건이지 semantic/full_scan approval이 아니다.
+  - [ ] Residual `111`건은 action group N건 배치로 처리한다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: golden18 `GO`, full375 collateral `NO-GO / residual 111`, always-on `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop496 full375 current HEAD 감사 품질 게이트
 
 - 근거:
