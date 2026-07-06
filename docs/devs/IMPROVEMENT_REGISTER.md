@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260706-502 - shared gate runtime block repair queue
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Repair queue | REVIEW-LOCKED | Loop500 prior promotion-block `28`건을 수리 lane으로 재분해 | contract repair 전 replay 금지 |
+| Replay gate | BLOCKED | `runtime_replay_allowed_rows=0` | 수리 후 replay 후보 재개 |
+| Lane split | GO_QUEUE_SPLIT | candidate preservation `9`, scope/nonwork `9`, title/url/variant `9`, image/alias `1` | lane별 계약 수리 |
+| Search boundary | REVIEW | `SEARCH_BLIND_BLOCKER 9`, `SEARCH_EVIDENCE_MISSING 3`, recovered conditional `14` | search-blind 조건부 태그 유지 |
+| Single predicate | GO_CONTRACT_PRESENT | `_has_verified_contextual_alias_work_bridge`는 `_post_discusses_work_as_work` 경유 테스트로 고정 | scope lane에서 같은 술어 유지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: repair queue `REVIEW-LOCKED`, runtime replay `FORBIDDEN_BEFORE_CONTRACT_REPAIR`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-501 - test-run dashboard auto attach
 
 | 항목 | 상태 | 근거 | 다음 |

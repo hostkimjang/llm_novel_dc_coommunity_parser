@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-06 Loop502 shared gate runtime block repair 큐 체크
+
+- [x] Loop500 `prior_runtime_promotion_block_repair_required 28`건을 동일 runtime replay로 보내지 않았다.
+- [x] `tools/build_shared_gate_runtime_block_repair_queue.py`를 추가했다.
+- [x] 계약 테스트 `tests/test_shared_gate_runtime_block_repair_queue.py`를 추가했다.
+- [x] Repair queue는 `28`건이며 `runtime_replay_allowed_rows=0`이다.
+- [x] Primary repair lane은 `candidate_preservation_or_scrub 9 / scope_or_nonwork 9 / title_url_or_variant_trace 9 / image_or_alias_anchor 1`이다.
+- [x] Search gate는 `SEARCH_BLIND_BLOCKER 9 / SEARCH_EVIDENCE_MISSING 3 / SEARCH_RECOVERED_CONDITIONAL 14 / SEARCH_OK 2`다.
+- [x] `_has_verified_contextual_alias_work_bridge`는 `_post_discusses_work_as_work` 경유 계약 테스트가 이미 존재함을 확인했다.
+- [x] py_compile PASS.
+- [x] focused unittest `4`건 PASS.
+- [x] Queue generation validation issue `0`.
+- [ ] Contract repair 전 runtime replay를 실행하지 않는다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: repair queue `REVIEW-LOCKED`, runtime replay `FORBIDDEN_BEFORE_CONTRACT_REPAIR`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop501 테스트런 대시보드 자동 부착 체크
 
 - [x] `tools/run_independent_plan.py` CLI가 기본으로 standalone dashboard를 확인하거나 시작한다.

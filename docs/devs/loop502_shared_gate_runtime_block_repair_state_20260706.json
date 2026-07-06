@@ -1,0 +1,65 @@
+{
+  "loop": 502,
+  "generated_at": "2026-07-06T23:23:01+09:00",
+  "state_type": "shared_gate_runtime_block_repair_queue",
+  "source": {
+    "followup_queue": "docs/devs/loop500_shared_gate_residual37_prior_runtime_followup_queue.json",
+    "source_projection": "docs/devs/loop500_shared_gate_residual37_projection.json",
+    "prior_runtime_basis": "Loop489 expected-audit status carried through Loop500"
+  },
+  "summary": {
+    "source_queue_rows": 37,
+    "prior_runtime_promotion_block_rows": 28,
+    "repair_queue_rows": 28,
+    "runtime_replay_allowed_rows": 0,
+    "primary_repair_lane_counts": {
+      "candidate_preservation_or_scrub_repair": 9,
+      "image_or_alias_anchor_contract_repair": 1,
+      "scope_or_nonwork_monotonicity_repair": 9,
+      "title_url_or_variant_trace_repair": 9
+    },
+    "search_gate_counts": {
+      "SEARCH_BLIND_BLOCKER": 9,
+      "SEARCH_EVIDENCE_MISSING": 3,
+      "SEARCH_OK": 2,
+      "SEARCH_RECOVERED_CONDITIONAL": 14
+    },
+    "repair_facet_counts": {
+      "candidate_preservation_or_scrub": 28,
+      "image_or_alias_anchor_contract": 5,
+      "official_support_reconciliation": 11,
+      "public_identity_serialization_trace": 28,
+      "scope_or_nonwork_monotonicity": 15,
+      "search_blind_or_missing_preflight": 26,
+      "title_url_or_variant_trace": 9
+    }
+  },
+  "artifacts": {
+    "tool": "tools/build_shared_gate_runtime_block_repair_queue.py",
+    "test": "tests/test_shared_gate_runtime_block_repair_queue.py",
+    "queue_json": "docs/devs/loop502_shared_gate_runtime_block_repair28_queue.json",
+    "queue_md": "docs/devs/loop502_shared_gate_runtime_block_repair28_queue.md",
+    "report": "docs/devs/loop_reports/LOOP_502_REPORT_20260706.md"
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "focused_unittest": "PASS / 4 tests",
+    "queue_generation": "PASS / validation_issue_count=0",
+    "single_predicate_contract": "already covered by tests/test_regression_safe_work_bridge_contract.py"
+  },
+  "gates": {
+    "repair_queue": "REVIEW-LOCKED",
+    "runtime_replay": "FORBIDDEN_BEFORE_CONTRACT_REPAIR",
+    "full375_collateral": "NO-GO / residual 105",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "stop_condition": {
+    "actionable_queue_must_decrease": true,
+    "same_packet_safe_resolved_must_be_monotonic_non_decreasing": true,
+    "round_count_is_not_a_stop_condition": true,
+    "current_loop_status": "repair_lanes_created_not_completed"
+  },
+  "completion_criteria": "full375 collateral GO + full_scan path definition"
+}

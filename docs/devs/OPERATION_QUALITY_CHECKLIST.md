@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop502 shared gate runtime block repair 큐 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_502_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop502_shared_gate_runtime_block_repair_state_20260706.json`.
+  - [x] Repair queue 기록 완료: `docs/devs/loop502_shared_gate_runtime_block_repair28_queue.json/.md`.
+  - [x] Tool 기록 완료: `tools/build_shared_gate_runtime_block_repair_queue.py`.
+  - [x] Test 기록 완료: `tests/test_shared_gate_runtime_block_repair_queue.py`.
+- 품질 경계:
+  - [x] `prior_runtime_promotion_block_repair_required 28`건은 runtime replay 입력이 아니다.
+  - [x] `runtime_replay_allowed_rows=0`으로 수리 전 동일 packet 반복 실행을 차단했다.
+  - [x] Search degraded/missing `12`건과 recovered conditional `14`건은 search-blind 조건부를 보존한다.
+  - [x] 단일 술어 계약은 `tests/test_regression_safe_work_bridge_contract.py`로 이미 고정되어 있다.
+  - [ ] Contract repair 전 runtime replay를 실행하지 않는다.
+  - [ ] Full375 collateral `GO` 전 full_scan path를 정의하지 않는다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: repair queue `REVIEW-LOCKED`, runtime replay `FORBIDDEN_BEFORE_CONTRACT_REPAIR`, full375 collateral `NO-GO / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop501 테스트런 대시보드 자동 부착 품질 게이트
 
 - 근거:
