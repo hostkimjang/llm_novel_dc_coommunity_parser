@@ -1,5 +1,14 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-06 Loop503 테스트런 병렬도와 웹 대시보드 최신 지침
+
+- 현재 regression-safe grounding 계열 테스트런/검증런의 기본 요청 병렬도는 사용자 지시에 따라 `--parallel 16`이다. 입력 수가 16보다 작으면 실제 worker는 manifest의 `effective_parallel=min(input_post_count, healthy_endpoint_count, 16)`로 낮아질 수 있으며 정상이다.
+- 신규 테스트런 명령, run-plan, manifest 추천 명령에는 `--no-dashboard`를 기본으로 넣지 않는다. 진행상황은 standalone dashboard `http://127.0.0.1:8080`에 붙여 확인한다.
+- plan runner를 쓸 때는 `tools/run_independent_plan.py` 기본값이 dashboard on이다. 이 runner는 dashboard를 확인/시작하고 child run에 `DASHBOARD_URL`, `DASHBOARD_PORT`, `EXPERT_DASHBOARD_FORWARD=1`을 전달하며, 계획에 남은 `--no-dashboard`도 실행 직전에 제거한다.
+- 이미 `--no-dashboard`로 시작된 런은 중단하지 말고 `tools/attach_manifest_dashboard.py --manifest <result_manifest.json> --dashboard-url http://127.0.0.1:8080`로 manifest 진행률을 사후 부착한다.
+- 과거 섹션의 `--parallel 36`, `--no-dashboard` 예시는 해당 시점의 역사 기록이다. 새 goal/test 실행 지침은 이 Loop503 섹션과 Loop499/501 보고서가 우선한다.
+- 병렬도와 대시보드는 runtime 관측/생산성 계약이다. `full375 collateral GO`, `semantic_quality`, `full_scan_approval` 근거로 단독 승격하지 않는다.
+
 ## 2026-05-31 v408 goal/test runtime and semantic permit refresh
 
 - 이 문서의 `parallel`, `worker`, `shard`는 `expert_main.py` 런타임 병렬도만 뜻한다. Codex goal 수행 중 `spawn_agent` subagent 병렬 운영은 `docs/devs/SCAN_RESULT_REVIEW_GUIDE.md`의 Codex goal 전문 subagent 병렬 운영 항목을 따른다.
@@ -15,7 +24,7 @@
 - v454 확인 산출물: `qualitative_review\20260528_141006_620986\v454_post11718080_11718082_model_cap_reason_contract_result_manifest.json`, audit `v454_goal_test_run_contract_audit.json`, run id `20260601_042151_464777`.
 - cap canary 예시는 runtime 계약 검증용이다. v454/v458처럼 runtime `GO`가 나와도 Browser visual 캡처를 새로 수행하지 않았다면 이미지 row semantic approval은 여전히 `REVIEW-LOCKED`다.
 - small input에서는 manifest/run_meta의 `effective_parallel`이 입력 수 또는 healthy endpoint 수에 맞게 낮아지는 것이 정상이다.
-- 잔여 action 입력 패키지나 실행 템플릿은 현재 입력 수 기준 권장 `--parallel min(input_count,36)`를 표시한다. `MCP_SHARD_COUNT=36`은 소규모 reuse-only goal/test의 필수 env가 아니며, large run 또는 명시 shard audit에서만 별도로 둔다.
+- 잔여 action 입력 패키지나 실행 템플릿은 2026-07-06 이후 기본 요청 병렬도 `--parallel 16`을 표시한다. `MCP_SHARD_COUNT=36`은 소규모 reuse-only goal/test의 필수 env가 아니며, large run 또는 명시 shard audit에서만 별도로 둔다.
 - 이미 `--parallel 36`으로 완료된 소규모 run은 manifest의 `effective_parallel`, lifecycle flags, health/audit contract가 맞으면 worker 수를 맞추려고 재실행하지 않는다. 재실행은 semantic bug, evidence gap, manifest contract gap처럼 명확한 검증 목적이 있을 때만 한다.
 - goal/test run에서 Docker Compose/shard lifecycle은 기본 금지다. shard 복구 자체가 검증 대상일 때만 `--allow-goal-shard-lifecycle --auto-up-shards` 또는 `--allow-goal-shard-lifecycle --auto-recreate-shards`를 명시한다.
 - v491 이후 소규모 goal/test run 감사는 `mcp_health_include_search=false`, `mcp_health_light_mode=true`, `mcp_health_checked_endpoint_count`, `mcp_health_required_ok_count`, `mcp_health_probe_batch_size`, `mcp_health_workers`, `mcp_health_attempts`, `mcp_health_timeout_sec`를 함께 확인한다. 이 필드가 manifest에 없으면 runtime `REVIEW`, `mcp_health_include_search=true`도 runtime `REVIEW`, health count 모순은 `NO-GO`다.
@@ -43,7 +52,7 @@
 ## 2026-05-31 v372 targeted run log mode
 
 - Gemma 4 4B 기준 최대 worker cap은 `36`이지만, 소규모 goal/test regression 명령 템플릿은 실제 입력 수 기준 `--parallel min(input_count, 36)` 값을 적는다. 본체도 `effective_parallel`을 입력 수/healthy endpoint 수로 낮추지만, 10건 미만 재테스트를 36 worker로 맞추려고 재실행하지 않는다.
-- 예: 입력 1건이면 `--parallel 1`, 입력 4건이면 `--parallel 4`, 대형/배치 검증이면 `--parallel 36`을 사용한다. 공통 옵션은 `--reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`이다.
+- 예: 현재 새 테스트런은 입력 1건이어도 요청값은 `--parallel 16`으로 두고, manifest에서 `effective_parallel=1`을 확인한다. 공통 옵션은 `--reuse-shards-only --slang-db on --vlm on --ocr on`이며, 진행 확인을 위해 dashboard는 기본 ON으로 둔다.
 - `--parallel 36`은 최대치이며, 단건 입력에서는 `effective_parallel=1`이 정상이다.
 - targeted run 로그에서 Slang DB seed preload가 너무 길면 기본 `PIPELINE_BATCHMEM_SEED_LOG_MODE=summary`를 유지한다.
 - per-alias seed preload 로그가 꼭 필요할 때만 `PIPELINE_BATCHMEM_SEED_LOG_MODE=full`을 임시로 사용한다.
@@ -60,7 +69,7 @@
 ## 2026-05-29 v186 large rerun VLM/OCR-on 고정
 
 - 10만 건급 semantic 재검증 source를 새로 만들 때도 `--vlm on --ocr on`은 필수 옵션이다.
-- 대형 재런 기본 템플릿은 `.\venv\Scripts\python.exe expert_main.py --input <FULL_INPUT_JSONL> --output out\expert_result_<NEW_TIMESTAMP>.json --server-type vllm --parallel 36 --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`이다.
+- 대형 재런 기본 템플릿은 현재 운영 지침에서는 먼저 사용자의 명시 승인을 받고, 실행 시 `.\venv\Scripts\python.exe expert_main.py --input <FULL_INPUT_JSONL> --output out\expert_result_<NEW_TIMESTAMP>.json --server-type vllm --parallel 16 --reuse-shards-only --slang-db on --vlm on --ocr on` 형태로 시작한다. dashboard는 기본 ON이며, `--no-dashboard`는 사용자가 명시적으로 끌 때만 둔다.
 - 기존 `out\expert_result_20260528_141006_620986*` partial artifacts는 덮어쓰지 않는다.
 - 전체 입력 JSONL 경로가 확정되기 전에는 10만 건 재런을 시작하지 않는다.
 - 36-shard Docker lifecycle 자체가 검증 대상이면 `--allow-goal-shard-lifecycle --auto-up-shards`를 명시하고, 일반 semantic 재검증과 분리 보고한다.
@@ -74,7 +83,7 @@
 - `--vlm off --ocr off` 실행은 text-only guard나 VLM crash 회피를 따로 검증할 때만 쓰며, 이미지가 있는 post의 semantic approval 근거로 사용하지 않는다.
 - 이미지 block이 있는 입력에서 VLM/OCR이 완전히 켜지지 않으면 manifest의 `vlm_ocr_semantic_review_ready=false`와 `vlm_ocr_semantic_review_warning=image_posts_present_but_vlm_ocr_not_fully_enabled`를 확인하고, 해당 run은 `INFO_MISSING` 또는 `REPROCESS` 증거로만 취급한다.
 - `11718082`처럼 이미지 안에 작품명/회차/OCR 텍스트가 있는 경우, 텍스트 본문만 읽은 판정은 자연어 품질 승인 대상이 아니다.
-- 소규모 goal/test 명령 예시는 `.\venv\Scripts\python.exe expert_main.py --input <input.jsonl> --output <result.json> --server-type vllm --parallel <min(input_count,36)> --reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on`이다. `--parallel 36`이 들어와도 본체는 effective parallel을 낮춰야 하지만, 새 명령 템플릿은 작은 입력에서 불필요한 오해를 줄이기 위해 권장값을 입력 수 기준으로 표기한다.
+- 소규모 goal/test 명령 예시는 `.\venv\Scripts\python.exe expert_main.py --input <input.jsonl> --output <result.json> --server-type vllm --parallel 16 --reuse-shards-only --slang-db on --vlm on --ocr on`이다. 본체는 effective parallel을 입력 수/healthy endpoint 수로 낮춰야 하며, dashboard는 기본 ON이다.
 
 ## 2026-05-29 v180 goal/reuse-only explicit endpoint 필터 기준
 

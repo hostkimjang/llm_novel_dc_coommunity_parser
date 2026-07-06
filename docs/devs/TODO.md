@@ -1,5 +1,16 @@
 # Developer TODO Index
 
+## 2026-07-06 Loop503 TODO
+
+- 상태 업데이트: 테스트런 진행상황 확인을 위해 `--parallel 16 + 웹 대시보드 기본 ON` 지침을 최신 문서에 고정했다. Goal은 완료가 아니다.
+- [x] Standalone dashboard health `ok=true / standalone=true / pid=9320`을 확인했다.
+- [x] Loop496 full375 manifest를 dashboard에 사후 attach해 status `375/375`, `parallel_count=16`을 확인했다.
+- [x] `docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md` 상단에 최신 지침을 추가했다.
+- [x] 오래된 `--parallel 36 --no-dashboard` 템플릿이 새 실행 지침으로 오해되지 않도록 현재 규칙을 명시했다.
+- [ ] 다음 실제 테스트런/검증런은 명시적 반대 지시가 없으면 `--parallel 16`, dashboard 기본 ON으로 실행한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop498 TODO
 
 - 상태 업데이트: Loop497 residual `111` 중 wrong_work INFO_MISSING `11`건을 source-native 배치로 판정했고 residual은 `105`로 감소했다. Goal은 완료가 아니다.

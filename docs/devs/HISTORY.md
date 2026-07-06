@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-06 - Loop503 test-run dashboard guide sync
+
+- 사용자가 테스트런 진행상황 확인을 위해 웹 대시보드 부착을 재확인했다.
+- Standalone dashboard `http://127.0.0.1:8080` health는 `GO / ok=true / standalone=true / pid=9320`이다.
+- Loop496 full375 manifest를 사후 attach해 dashboard status `375/375`, `parallel_count=16`, `batch_running=false`를 확인했다.
+- `docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md`에 최신 지침을 추가해 새 테스트런/검증런 기본값을 `--parallel 16`과 dashboard 기본 ON으로 고정했다.
+- 오래된 `--parallel 36 --no-dashboard` 예시는 역사 기록이며 최신 지침보다 우선하지 않는다고 명시했다.
+- Report는 `docs/devs/loop_reports/LOOP_503_REPORT_20260706.md`, state는 `docs/devs/loop503_test_run_dashboard_guide_sync_state_20260706.json`이다.
+- Gate는 dashboard policy `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`, runtime parallel policy `LOCKED_TO_16_BY_USER`, runtime replay `NOT_RUN_AFTER_DOC_SYNC`, full375 collateral `NO-GO / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop498 wrong_work INFO_MISSING source-native batch
 
 - Loop497 residual `111` 중 `INFO_MISSING wrong_work_title_flip 11`건을 N건 배치로 source-native 판정했다.

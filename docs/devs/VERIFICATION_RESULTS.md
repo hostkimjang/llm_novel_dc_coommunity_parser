@@ -1,5 +1,27 @@
 # Verification Results
 
+## 2026-07-06 Loop503 Verification
+
+- 범위: 테스트런/검증런 진행상황 확인을 위해 `--parallel 16 + 웹 대시보드 기본 ON` 지침을 최신 문서와 실제 dashboard 상태로 재확인했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_503_REPORT_20260706.md`
+  - state `docs\devs\loop503_test_run_dashboard_guide_sync_state_20260706.json`
+  - guide `docs\devs\SAMPLING_AND_PARALLEL_TEST_GUIDE.md`
+- Result:
+  - dashboard health `GO / ok=true / standalone=true / pid=9320`
+  - dashboard status after attach `375/375`, `parallel_count=16`, `batch_running=false`
+  - 새 runtime replay `NOT_RUN_AFTER_DOC_SYNC`
+- Validation:
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\run_independent_plan.py tools\test_run_dashboard_policy.py tools\attach_manifest_dashboard.py` PASS
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_run_independent_plan tests.test_safe_loss_flip_rate_probe tests.test_goal_next_seed_package tests.test_goal_test_run_contract_audit -v` PASS, `30` tests
+  - `tools/attach_manifest_dashboard.py --once` PASS
+  - `/api/status` 확인 PASS
+  - `git diff --check` PASS, CRLF 경고만 있음
+- Boundary:
+  - 웹 대시보드는 진행 관측 도구이며 semantic/full_scan approval 증거가 아니다.
+  - Full375 collateral은 `NO-GO / residual 105`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop498 Verification
 
 - 범위: Loop497 current full375 P0 `INFO_MISSING wrong_work_title_flip 11`건을 source-native 배치로 판정하고 full375 review-adjusted residual을 재계산했다.

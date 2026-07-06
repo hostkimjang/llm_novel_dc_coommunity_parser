@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-06 Loop503 테스트런 대시보드 지침 정합화 체크
+
+- [x] Standalone dashboard health가 `GO / ok=true / standalone=true / pid=9320`임을 확인했다.
+- [x] Loop496 full375 manifest를 `tools/attach_manifest_dashboard.py --once`로 다시 주입했다.
+- [x] Dashboard status는 `375/375`, `parallel_count=16`, `batch_running=false`다.
+- [x] `docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md`에 최신 Loop503 지침을 추가했다.
+- [x] 새 테스트런/검증런은 기본 `--parallel 16`을 요청한다고 문서화했다.
+- [x] 신규 명령과 run-plan에는 `--no-dashboard`를 기본으로 넣지 않는다고 문서화했다.
+- [x] 이미 시작된 `--no-dashboard` 런은 manifest attach로 사후 부착한다고 문서화했다.
+- [x] 대시보드는 진행 관측 도구이며 semantic/full_scan approval 근거가 아님을 문서화했다.
+- [x] py_compile PASS.
+- [x] focused unittest `30`건 PASS.
+- [x] `git diff --check` PASS(CRLF 경고만 있음).
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: dashboard policy `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`, runtime parallel policy `LOCKED_TO_16_BY_USER`, runtime replay `NOT_RUN_AFTER_DOC_SYNC`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop502 shared gate runtime block repair 큐 체크
 
 - [x] Loop500 `prior_runtime_promotion_block_repair_required 28`건을 동일 runtime replay로 보내지 않았다.

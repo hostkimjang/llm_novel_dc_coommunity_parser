@@ -1,0 +1,56 @@
+{
+  "loop": 503,
+  "generated_at": "2026-07-06T23:45:00+09:00",
+  "state_type": "test_run_dashboard_guide_sync",
+  "summary": {
+    "status": "GO_DOC_SYNC",
+    "change": "테스트런/검증런 진행상황 확인을 위해 --parallel 16 + standalone dashboard 기본 ON 지침을 최신 guide에 고정했다.",
+    "dashboard_url": "http://127.0.0.1:8080",
+    "dashboard_health": {
+      "ok": true,
+      "service": "expert-pipeline-monitor",
+      "standalone": true,
+      "pid": 9320
+    },
+    "dashboard_status_after_attach": {
+      "batch_running": false,
+      "total_posts": 375,
+      "current_index": 375,
+      "done_count": 375,
+      "parallel_count": 16,
+      "output_file": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop496_full375_current_head_4fd250f7_search_nonlight_result.json"
+    },
+    "requested_parallel_policy": "LOCKED_TO_16_BY_USER",
+    "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS"
+  },
+  "changed_docs": [
+    {
+      "path": "docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md",
+      "details": [
+        "Loop503 최신 지침 섹션을 추가했다.",
+        "새 goal/test 실행은 --parallel 16을 요청하고 effective_parallel은 manifest에서 확인한다고 명시했다.",
+        "신규 명령과 run-plan에는 --no-dashboard를 기본으로 넣지 않는다고 명시했다.",
+        "이미 시작된 --no-dashboard 런은 attach_manifest_dashboard.py로 사후 부착한다고 명시했다.",
+        "과거 --parallel 36 / --no-dashboard 예시는 역사 기록이며 최신 지침보다 우선하지 않는다고 명시했다."
+      ]
+    }
+  ],
+  "verification": {
+    "py_compile": "PASS",
+    "focused_unittest": "PASS / 30 tests",
+    "dashboard_health_probe": "PASS / ok=true standalone=true pid=9320",
+    "dashboard_manifest_attach_once": "PASS / status 375 of 375, parallel_count=16",
+    "git_diff_check": "PASS / CRLF warnings only",
+    "runtime_replay": "NOT_RUN_AFTER_DOC_SYNC"
+  },
+  "gates": {
+    "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+    "runtime_parallel_policy": "LOCKED_TO_16_BY_USER",
+    "runtime_replay_after_doc_sync": "NOT_RUN_AFTER_DOC_SYNC",
+    "full375_collateral": "NO-GO / residual 105",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "completion_criteria": "full375 collateral GO + full_scan path definition"
+}
