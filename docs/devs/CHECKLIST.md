@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-06 Loop498 wrong_work INFO_MISSING 배치 체크
+
+- [x] Source-native action batch `47`건을 생성했다.
+- [x] `wrong_work_title_flip INFO_MISSING 11`건을 N건 배치로 판정했다.
+- [x] Verdict label은 `ACCEPT 6 / REPROCESS 3 / HOLD 2`다.
+- [x] Current option 기준으로 `selected_option_id`를 다시 맞췄다.
+- [x] Remaining unreviewed batch는 `36`건으로 재생성했다.
+- [x] Full review summary는 `ACCEPT 32 / REPROCESS 45 / HOLD 24 / INFO_MISSING 36`이다.
+- [x] Review-adjusted residual은 `105`다.
+- [x] Residual action queue validation issue는 `0`이다.
+- [ ] Remaining `source_native_or_blind_review_required 36`을 다음 N건 배치로 처리한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: golden18 `GO`, full375 runtime inherited `GO`, full375 collateral `NO-GO / residual 105`, always-on `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop497 full375 current residual111 회계 체크
 
 - [x] Loop496 full375 raw collateral regression `137`건을 current P0 review batch로 재생성했다.

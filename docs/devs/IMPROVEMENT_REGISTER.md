@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260706-498 - wrong_work INFO_MISSING batch closure
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Source-native batch | GO | `INFO_MISSING wrong_work_title_flip 11`건 판정 완료 | remaining 36 배치 |
+| Verdict labels | REVIEW-LOCKED | `ACCEPT 6 / REPROCESS 3 / HOLD 2` | ACCEPT는 gate wiring 뒤 제외 후보일 뿐 |
+| Queue delta | GO_DELTA_NOT_APPROVAL | review-adjusted residual `111 -> 105` | full375 collateral은 계속 NO-GO |
+| Tooling | GO_UNIT | INFO_MISSING review packet 분류와 additional covered 반영 테스트 통과 | 다음 batch 재사용 |
+| Remaining INFO_MISSING | OPEN | `safe_loss 25 / unsafe 11`, total `36` | source-native/blind N건 배치 |
+| Shared gate | OPEN | `shared_promotion_gate_wiring_required 37` | projection/contract batch |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: full375 collateral `NO-GO / review-adjusted residual 105`, always-on `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-497 - current full375 residual111 accounting
 
 | 항목 | 상태 | 근거 | 다음 |

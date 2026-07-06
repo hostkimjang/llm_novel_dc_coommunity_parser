@@ -181,6 +181,30 @@ class BuildPriorCompatibleCollateralVerdictsTest(unittest.TestCase):
         self.assertEqual(unreviewed["summary"]["counts_by_bucket"], {"safe_loss_resolved_to_null": 1})
         self.assertEqual(unreviewed["review_rows"][0]["post_id"], 2)
 
+    def test_unreviewed_batch_honors_additional_covered_verdicts(self):
+        batch = {
+            "review_rows": [
+                {"post_id": 1, "triage_bucket": "wrong_work_title_flip", "source_native_packet": {"image_count": 0}},
+                {"post_id": 2, "triage_bucket": "safe_loss_resolved_to_null", "source_native_packet": {"image_count": 0}},
+                {"post_id": 3, "triage_bucket": "unsafe_promotion_from_hold", "source_native_packet": {"image_count": 0}},
+            ]
+        }
+        compatible_verdicts = {"rows": [{"post_id": 1}]}
+        state = {"review_id": "unit", "summary": {"compatible_rows": 1}}
+
+        unreviewed = build_unreviewed_batch(
+            batch,
+            compatible_verdicts,
+            state,
+            additional_covered_verdicts=[{"rows": [{"post_id": 2}]}],
+        )
+
+        self.assertEqual(unreviewed["summary"]["prior_compatible_rows"], 1)
+        self.assertEqual(unreviewed["summary"]["additional_covered_rows"], 1)
+        self.assertEqual(unreviewed["summary"]["covered_post_ids"], 2)
+        self.assertEqual(unreviewed["summary"]["unreviewed_rows"], 1)
+        self.assertEqual(unreviewed["review_rows"][0]["post_id"], 3)
+
     def test_builds_info_missing_placeholder_verdicts_for_uncovered_rows(self):
         batch = {
             "review_rows": [
@@ -213,6 +237,33 @@ class BuildPriorCompatibleCollateralVerdictsTest(unittest.TestCase):
         self.assertEqual(placeholders["rows"][0]["selected_option_id"], "HOLD")
         self.assertEqual(placeholders["rows"][0]["review_label"], "INFO_MISSING")
         self.assertIn("p0_safe_loss_resolved_to_null_review_required", placeholders["rows"][0]["action"])
+
+    def test_placeholder_generation_honors_additional_covered_verdicts(self):
+        batch = {
+            "review_rows": [
+                {"post_id": 1, "triage_bucket": "wrong_work_title_flip"},
+                {"post_id": 2, "triage_bucket": "safe_loss_resolved_to_null"},
+                {"post_id": 3, "triage_bucket": "unsafe_promotion_from_hold"},
+            ]
+        }
+        compatible_verdicts = {"rows": [{"post_id": 1}]}
+        state = {"review_id": "unit_prior"}
+
+        placeholders = build_unreviewed_placeholder_verdicts(
+            batch,
+            compatible_verdicts,
+            state,
+            review_id="unit_unreviewed",
+            scope="unit unreviewed",
+            batch_path=Path("batch.json"),
+            additional_covered_verdicts=[{"rows": [{"post_id": 2}]}],
+        )
+
+        self.assertEqual(placeholders["summary"]["prior_compatible_rows"], 1)
+        self.assertEqual(placeholders["summary"]["additional_covered_rows"], 1)
+        self.assertEqual(placeholders["summary"]["covered_post_ids"], 2)
+        self.assertEqual(placeholders["summary"]["placeholder_rows"], 1)
+        self.assertEqual(placeholders["rows"][0]["post_id"], 3)
 
 
 if __name__ == "__main__":

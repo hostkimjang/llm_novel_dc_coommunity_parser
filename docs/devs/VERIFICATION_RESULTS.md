@@ -1,5 +1,36 @@
 # Verification Results
 
+## 2026-07-06 Loop498 Verification
+
+- 범위: Loop497 current full375 P0 `INFO_MISSING wrong_work_title_flip 11`건을 source-native 배치로 판정하고 full375 review-adjusted residual을 재계산했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_498_REPORT_20260706.md`
+  - state `docs\devs\loop498_wrong_work_info_missing_batch_state_20260706.json`
+  - action batch `docs\devs\loop498_source_native_info_missing47_action_batch.json`
+  - review packet `docs\devs\loop498_source_native_info_missing47_review_packet.json`
+  - wrong_work verdicts `docs\devs\loop498_current_wrong_work_info_missing_source_native_verdicts.json`
+  - wrong_work summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop498_current_wrong_work_info_missing_source_native_summary.json`
+  - full summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop498_current_full375_p0_review_summary.json`
+  - adjusted gate `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop498_always_on_golden18_full375_current_review_adjusted_gate.md`
+  - residual queue `docs\devs\loop498_current_full375_review_adjusted_residual105_action_queue.md`
+- Result:
+  - wrong_work reviewed rows `11`
+  - wrong_work labels `ACCEPT 6 / REPROCESS 3 / HOLD 2`
+  - remaining INFO_MISSING `36`
+  - full review labels `ACCEPT 32 / REPROCESS 45 / HOLD 24 / INFO_MISSING 36`
+  - review-adjusted residual `105`
+- Validation:
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_action_queue_batch tests.test_build_prior_compatible_collateral_verdicts` PASS, `10` tests
+  - `.\.venv312\Scripts\python.exe -m py_compile tools/build_action_queue_batch.py tools/build_prior_compatible_collateral_verdicts.py` PASS
+  - wrong_work verdict JSON parse PASS
+  - wrong_work summary validation issue `0`
+  - full review summary validation issue `0`
+  - residual action queue validation issue `0`
+- Boundary:
+  - Runtime replay는 새로 발주하지 않았다.
+  - Full375 collateral은 `NO-GO / review_adjusted_regression_count 105`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop497 Verification
 
 - 범위: Loop496 full375 raw collateral regression `137`건을 current-state 기준으로 다시 회계하고, prior review carry-forward가 현재 후보 title/url에 맞는지 검증했다.

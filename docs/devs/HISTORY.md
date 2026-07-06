@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-06 - Loop498 wrong_work INFO_MISSING source-native batch
+
+- Loop497 residual `111` 중 `INFO_MISSING wrong_work_title_flip 11`건을 N건 배치로 source-native 판정했다.
+- Verdict label은 `ACCEPT 6 / REPROCESS 3 / HOLD 2`다.
+- `tools/build_action_queue_batch.py`는 `INFO_MISSING + source_native_or_blind_review_required`를 review packet으로 분류하게 보강했다.
+- `tools/build_prior_compatible_collateral_verdicts.py`는 additional covered verdict를 remaining unreviewed batch와 placeholder verdict에 반영하게 보강했다.
+- Remaining INFO_MISSING은 `47 -> 36`, review-adjusted residual은 `111 -> 105`로 감소했다.
+- Always-on gate는 `NO-GO / collateral_review_adjusted_regression_count_nonzero`를 유지한다.
+- Report는 `docs/devs/loop_reports/LOOP_498_REPORT_20260706.md`, state는 `docs/devs/loop498_wrong_work_info_missing_batch_state_20260706.json`이다.
+- Gate는 full375 collateral `NO-GO / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop497 current full375 residual111 accounting
 
 - Loop496 full375 raw collateral regression `137`건을 current P0 review batch 기준으로 다시 회계했다.

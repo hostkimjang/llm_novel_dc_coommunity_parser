@@ -118,6 +118,39 @@ class ActionQueueBatchTest(unittest.TestCase):
         self.assertEqual(packet["summary"]["review_rows"], 1)
         self.assertEqual(packet["rows"][0]["post_id"], 2)
 
+    def test_info_missing_source_native_action_enters_review_packet(self) -> None:
+        queue = {
+            "queue_id": "unit_queue",
+            "summary": {"action_queue_rows": 1},
+            "rows": [
+                {
+                    "post_id": 42,
+                    "triage_bucket": "wrong_work_title_flip",
+                    "review_label": "INFO_MISSING",
+                    "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+                    "selected_option_id": "HOLD",
+                    "actions": [
+                        "source_native_or_blind_review_required",
+                        "p0_wrong_work_title_flip_review_required",
+                    ],
+                }
+            ],
+        }
+
+        batch = build_action_batch(
+            queue,
+            batch_id="unit_info_missing",
+            actions={"source_native_or_blind_review_required"},
+        )
+        packet = build_review_packet(batch)
+
+        self.assertEqual(batch["summary"]["selected_rows"], 1)
+        self.assertEqual(batch["summary"]["source_native_review_rows"], 1)
+        self.assertEqual(batch["summary"]["dispatch_lane_counts"], {"source_native_or_blind_review": 1})
+        self.assertTrue(batch["rows"][0]["source_native_review_required"])
+        self.assertEqual(packet["summary"]["review_rows"], 1)
+        self.assertEqual(packet["rows"][0]["post_id"], 42)
+
 
 if __name__ == "__main__":
     unittest.main()

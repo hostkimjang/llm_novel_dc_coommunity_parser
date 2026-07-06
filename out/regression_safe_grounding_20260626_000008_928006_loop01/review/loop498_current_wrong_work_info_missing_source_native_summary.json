@@ -1,0 +1,373 @@
+{
+  "report_type": "collateral_source_native_review",
+  "review_id": "loop498_current_wrong_work_info_missing_source_native_summary",
+  "scope": "Loop498 current full375 INFO_MISSING wrong_work_title_flip 11 source-native review",
+  "generated_at": "2026-07-06T22:39:23",
+  "source_batch": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop497_current_full375_p0_unreviewed_batch.json",
+  "source_verdicts": [
+    {
+      "review_id": "loop498_current_wrong_work_info_missing_source_native_verdicts",
+      "scope": "Loop498 current full375 INFO_MISSING wrong_work_title_flip 11건 source-native/blind 판정",
+      "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_unreviewed_batch.json",
+      "source_path": "docs\\devs\\loop498_current_wrong_work_info_missing_source_native_verdicts.json",
+      "row_count": 11
+    }
+  ],
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "batch_review_rows": 47,
+    "reviewed_rows": 11,
+    "unreviewed_batch_rows": 36,
+    "validation_issue_count": 0,
+    "counts_by_bucket": {
+      "wrong_work_title_flip": 11
+    },
+    "label_counts": {
+      "ACCEPT": 6,
+      "HOLD": 2,
+      "REPROCESS": 3
+    },
+    "source_native_verdict_counts": {
+      "after_title_supported_by_raw_abbreviation": 1,
+      "after_canonical_title_supported_character_context_same_url": 1,
+      "image_or_context_required_for_wrong_work_candidate": 1,
+      "hold_preferred_both_candidates_not_source_supported": 1,
+      "after_fandom_prefixed_official_title_supported_by_source_context": 1,
+      "before_title_character_bridge_supported_after_wrong": 1,
+      "after_title_supported_as_primary_work_with_secondary_comparison": 1,
+      "after_title_directly_mentioned_in_post_title": 1,
+      "before_exact_title_supported_after_series_title_needs_cleanup": 1,
+      "after_title_supported_but_candidate_url_rebuild_required": 1,
+      "current_work_vs_phrase_policy_review": 1
+    },
+    "action_counts": {
+      "exclude_from_regression_count_after_gate_wiring": 6,
+      "image_native_review_required": 1,
+      "native_web_review_required": 2,
+      "repair_after_wrong_work": 2,
+      "character_bridge_review_required": 1,
+      "preserve_secondary_candidates": 1,
+      "canonical_title_cleanup_required": 1,
+      "candidate_set_rebuild_required": 1,
+      "shared_promotion_gate_wiring_required": 1,
+      "policy_or_canonical_title_review_required": 1
+    },
+    "queue_transition": {
+      "original_p0_rows": 47,
+      "source_native_reviewed_rows": 11,
+      "exclusion_candidate_rows": 6,
+      "repair_required_rows": 3,
+      "policy_or_native_review_required_rows": 2,
+      "residual_action_queue_rows": 41,
+      "validation_issue_count": 0,
+      "full_collateral_approval_open": false,
+      "exclusion_requires_gate_wiring": true
+    },
+    "queue_by_bucket": {
+      "wrong_work_title_flip": {
+        "rows": 11,
+        "label_counts": {
+          "ACCEPT": 6,
+          "HOLD": 2,
+          "REPROCESS": 3
+        },
+        "action_counts": {
+          "exclude_from_regression_count_after_gate_wiring": 6,
+          "image_native_review_required": 1,
+          "native_web_review_required": 2,
+          "repair_after_wrong_work": 2,
+          "character_bridge_review_required": 1,
+          "preserve_secondary_candidates": 1,
+          "canonical_title_cleanup_required": 1,
+          "candidate_set_rebuild_required": 1,
+          "shared_promotion_gate_wiring_required": 1,
+          "policy_or_canonical_title_review_required": 1
+        },
+        "exclusion_candidate_rows": 6,
+        "residual_action_queue_rows": 5
+      }
+    }
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11660262,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "머여 로파민 완결났네",
+      "selected_option_id": "C2",
+      "selected_title": "로판에 도파민을 풀었다",
+      "selected_url": "https://novelpia.com/novel/376145",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_title_supported_by_raw_abbreviation",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 제목의 `로파민`과 본문 완결/AI 논란 맥락은 `로판에 도파민을 풀었다` 약칭으로 읽힌다. C1 `그렇게, 그 괴물과 두 번 결혼했다`를 지지하는 원문 표면은 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_unreviewed_batch.json#post_id=11660262",
+        "docs/devs/loop479_wrong_work_title_flip_source_native_verdicts.json#post_id=11660262",
+        "https://novelpia.com/novel/376145"
+      ],
+      "before_title": "그렇게, 그 괴물과 두 번 결혼했다",
+      "after_title": "로판에 도파민을 풀었다",
+      "source_review_id": "loop498_current_wrong_work_info_missing_source_native_verdicts"
+    },
+    {
+      "post_id": 11663554,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "TS) 주서연 영화개봉 했는데 1엄복동도 못되면",
+      "selected_option_id": "C1",
+      "selected_title": "전 버튜버가 하고 싶은데요",
+      "selected_url": "https://novelpia.com/novel/275975",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_canonical_title_supported_character_context_same_url",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 `주서연`은 같은 Novelpia URL의 작품 내부 인물 표면으로 보이며 C2는 캐릭터명 괄호 표시형이다. C1은 같은 작품의 canonical title 정리라 wrong-work 회귀에서 제외할 수 있다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_unreviewed_batch.json#post_id=11663554",
+        "docs/devs/loop488_residual52_image_native_source_native_verdicts.json#post_id=11663554",
+        "https://novelpia.com/novel/275975"
+      ],
+      "before_title": "주서연 ( 전 버튜버가 하고 싶은데요 )",
+      "after_title": "전 버튜버가 하고 싶은데요",
+      "source_review_id": "loop498_current_wrong_work_info_missing_source_native_verdicts"
+    },
+    {
+      "post_id": 11677924,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "남캐일러 거부감 해결법 알아왔다",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_wrong_work_candidate",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "원문 텍스트는 남캐 일러/갑옷 감상만 있고 C1/C2 작품명을 직접 지지하지 않는다. 이미지 확인 없이는 어느 후보도 source-native 정답으로 세울 수 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_unreviewed_batch.json#post_id=11677924",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11677924",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11677924"
+      ],
+      "before_title": "고결에 오만이 깃들 때",
+      "after_title": "귀쟁이 투기장의 역배 기사님",
+      "source_review_id": "loop498_current_wrong_work_info_missing_source_native_verdicts"
+    },
+    {
+      "post_id": 11682749,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "TS주인공인데 힘 쎄지는 템플릿이 어디서 나왔냐고?",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "hold_preferred_both_candidates_not_source_supported",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "본문과 댓글은 TS 템플릿 원형으로 `묵향`을 말한다. C1 `주인공인데 주인공이 아님`과 C2 `템플릿 헌터` 모두 source-native 근거가 약하므로 후보 변경 회귀로 세지 않고 hold/null 선호로 제외한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_unreviewed_batch.json#post_id=11682749",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11682749",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11682749"
+      ],
+      "before_title": "주인공인데 주인공이 아님",
+      "after_title": "템플릿 헌터",
+      "source_review_id": "loop498_current_wrong_work_info_missing_source_native_verdicts"
+    },
+    {
+      "post_id": 11689292,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "욘꼰 최악의 파트너 표지 쩌왔어",
+      "selected_option_id": "C1",
+      "selected_title": "[원신] 최악의 파트너",
+      "selected_url": "https://novelpia.com/novel/40854",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_fandom_prefixed_official_title_supported_by_source_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 제목이 `최악의 파트너`를 직접 말하고 댓글의 타르탈리아/시뇨라/원신 패러디 맥락이 C1의 fandom prefix를 지지한다. C1/C2는 같은 URL이며 after의 `[원신]` 표면은 source context를 더 잘 보존한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_unreviewed_batch.json#post_id=11689292",
+        "docs/devs/loop488_residual52_image_native_source_native_verdicts.json#post_id=11689292",
+        "https://novelpia.com/novel/40854"
+      ],
+      "before_title": "최악의 파트너",
+      "after_title": "[원신] 최악의 파트너",
+      "source_review_id": "loop498_current_wrong_work_info_missing_source_native_verdicts"
+    },
+    {
+      "post_id": 11692436,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "류서란(perfect)",
+      "selected_option_id": "C2",
+      "selected_title": "퍼펙트 메이지",
+      "selected_url": "https://novelpia.com/novel/17203",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_title_character_bridge_supported_after_wrong",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_after_wrong_work",
+        "character_bridge_review_required"
+      ],
+      "rationale_ko": "`류서란(perfect)`와 댓글 `old girl`은 C2 `퍼펙트 메이지`의 캐릭터/작품 맥락으로 결속된다. Current after C1 `죽었다 깨어도 수선`을 지지하는 원문 표면은 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_unreviewed_batch.json#post_id=11692436",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11692436",
+        "https://novelpia.com/novel/17203"
+      ],
+      "before_title": "퍼펙트 메이지",
+      "after_title": "죽었다 깨어도 수선",
+      "source_review_id": "loop498_current_wrong_work_info_missing_source_native_verdicts"
+    },
+    {
+      "post_id": 11694044,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "즉사무림 유료화 카운트 들어갔네",
+      "selected_option_id": "C1",
+      "selected_title": "즉사기 들고 무림에 떨어지다",
+      "selected_url": "https://novel.munpia.com/528383",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_title_supported_as_primary_work_with_secondary_comparison",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "preserve_secondary_candidates"
+      ],
+      "rationale_ko": "원문 제목의 주어는 `즉사무림 유료화`이고 본문은 `판초우의`와 비교한다. C1은 primary work로 타당하지만 C2는 secondary comparison 후보로 보존해야 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_unreviewed_batch.json#post_id=11694044",
+        "docs/devs/loop479_wrong_work_title_flip_source_native_verdicts.json#post_id=11694044",
+        "https://novel.munpia.com/528383",
+        "https://series.naver.com/novel/detail.series?productNo=14207846"
+      ],
+      "before_title": "판초우의의 마법사",
+      "after_title": "즉사기 들고 무림에 떨어지다",
+      "source_review_id": "loop498_current_wrong_work_info_missing_source_native_verdicts"
+    },
+    {
+      "post_id": 11703658,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "문피아 아프리카 식량왕이 되었다 나쁘진 않음",
+      "selected_option_id": "C1",
+      "selected_title": "아프리카 식량왕이 되었다",
+      "selected_url": "https://novel.munpia.com/375691",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_title_directly_mentioned_in_post_title",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 제목이 `문피아 아프리카 식량왕이 되었다`를 직접 말하고, 본문도 식량/옥수수/카사바 전개 감상으로 이어진다. C2는 인접 제목 오귀속이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_unreviewed_batch.json#post_id=11703658",
+        "docs/devs/loop479_wrong_work_title_flip_source_native_verdicts.json#post_id=11703658",
+        "https://novel.munpia.com/375691"
+      ],
+      "before_title": "아프리카 의 독재자가 되었다 .",
+      "after_title": "아프리카 식량왕이 되었다",
+      "source_review_id": "loop498_current_wrong_work_info_missing_source_native_verdicts"
+    },
+    {
+      "post_id": 11705230,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "월야환담은 진짜 시대변화 직통으로 처맞앗네..",
+      "selected_option_id": "C1",
+      "selected_title": "월야환담",
+      "selected_url": "https://ridibooks.com/books/3685002646",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_exact_title_supported_after_series_title_needs_cleanup",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_after_wrong_work",
+        "canonical_title_cleanup_required"
+      ],
+      "rationale_ko": "post title과 본문이 `월야환담` 세계관의 시대 변화 영향을 직접 논의한다. Current after C2 `월야환담 시리즈`는 URL 없는 broad series 표면이므로 C1 official URL 기반 title로 정리해야 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_unreviewed_batch.json#post_id=11705230",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11705230",
+        "https://ridibooks.com/books/3685002646"
+      ],
+      "before_title": "월야환담",
+      "after_title": "월야환담 시리즈",
+      "source_review_id": "loop498_current_wrong_work_info_missing_source_native_verdicts"
+    },
+    {
+      "post_id": 11710036,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "5시간 뒤면 랫따싶이 올까요?",
+      "selected_option_id": "C1",
+      "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "after_title_supported_but_candidate_url_rebuild_required",
+      "evidence_grade": "Medium",
+      "action": [
+        "candidate_set_rebuild_required",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "댓글이 `변방계에서 회귀자로 살아남기`를 직접 후보로 제시하고 `랫따싶` 검색 안내와 이어진다. Current after title 방향은 맞지만 URL이 없으므로 후보 재구성이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_unreviewed_batch.json#post_id=11710036",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11710036",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710036"
+      ],
+      "before_title": "쳇바퀴의 생쥐 사도가 되었다",
+      "after_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "source_review_id": "loop498_current_wrong_work_info_missing_source_native_verdicts"
+    },
+    {
+      "post_id": 11714903,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "온세상이 버튜버다",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "current_work_vs_phrase_policy_review",
+      "evidence_grade": "Medium",
+      "action": [
+        "policy_or_canonical_title_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "본문은 `괴담텔` 인물들이 모두 버튜버라는 감상이고 `온 세상이 버튜버`는 표현/패러디 표면이다. C1/C2 중 어느 쪽을 public title로 세울지는 native web 또는 canonical policy 확인이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_unreviewed_batch.json#post_id=11714903",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11714903",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11714903"
+      ],
+      "before_title": "온 세상이 정신이상자다",
+      "after_title": "괴담 호텔 탈출기",
+      "source_review_id": "loop498_current_wrong_work_info_missing_source_native_verdicts"
+    }
+  ],
+  "next_actions": [
+    "REPROCESS rows require targeted guard/runtime follow-up before collateral approval.",
+    "HOLD rows require native-web or policy review before they can reduce the actionable queue.",
+    "ACCEPT rows can be excluded from regression-counting only after the summary is wired into the collateral gate.",
+    "Keep semantic_quality=REVIEW-LOCKED and full_scan_approval=false."
+  ]
+}

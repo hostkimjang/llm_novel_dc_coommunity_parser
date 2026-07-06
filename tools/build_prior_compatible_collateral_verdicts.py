@@ -233,12 +233,34 @@ def build_prior_compatible_verdicts(
     return payload, state
 
 
-def build_unreviewed_batch(batch: dict[str, Any], compatible_verdicts: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
+def _covered_post_ids(
+    compatible_verdicts: dict[str, Any],
+    additional_covered_verdicts: list[dict[str, Any]] | None = None,
+) -> tuple[set[int], int]:
     covered_post_ids = {
         row.get("post_id")
         for row in compatible_verdicts.get("rows") or []
         if isinstance(row, dict) and isinstance(row.get("post_id"), int)
     }
+    additional_covered_rows = 0
+    for verdicts in additional_covered_verdicts or []:
+        for row in verdicts.get("rows") or []:
+            if isinstance(row, dict) and isinstance(row.get("post_id"), int):
+                additional_covered_rows += 1
+                covered_post_ids.add(row["post_id"])
+    return covered_post_ids, additional_covered_rows
+
+
+def build_unreviewed_batch(
+    batch: dict[str, Any],
+    compatible_verdicts: dict[str, Any],
+    state: dict[str, Any],
+    additional_covered_verdicts: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    covered_post_ids, additional_covered_rows = _covered_post_ids(
+        compatible_verdicts,
+        additional_covered_verdicts,
+    )
     review_rows = [
         row
         for row in batch.get("review_rows") or []
@@ -255,7 +277,7 @@ def build_unreviewed_batch(batch: dict[str, Any], compatible_verdicts: dict[str,
     out = {
         "report_type": "collateral_p0_unreviewed_source_review_batch",
         "source_report_type": batch.get("report_type"),
-        "scope_label": "Loop488 full375 P0 prior-incompatible residual",
+        "scope_label": "full375 P0 prior-incompatible residual",
         "generated_at": datetime.now().replace(microsecond=0).isoformat(),
         "gate": "REVIEW-LOCKED",
         "semantic_quality": "REVIEW-LOCKED",
@@ -265,7 +287,9 @@ def build_unreviewed_batch(batch: dict[str, Any], compatible_verdicts: dict[str,
         "prior_compatible_summary": state.get("summary"),
         "summary": {
             "source_review_rows": len(batch.get("review_rows") or []),
-            "prior_compatible_rows": len(covered_post_ids),
+            "prior_compatible_rows": len(compatible_verdicts.get("rows") or []),
+            "additional_covered_rows": additional_covered_rows,
+            "covered_post_ids": len(covered_post_ids),
             "unreviewed_rows": len(review_rows),
             "counts_by_bucket": dict(bucket_counts),
             "counts_by_collateral_status": dict(status_counts),
@@ -292,12 +316,12 @@ def build_unreviewed_placeholder_verdicts(
     review_id: str,
     scope: str,
     batch_path: Path,
+    additional_covered_verdicts: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    covered_post_ids = {
-        row.get("post_id")
-        for row in compatible_verdicts.get("rows") or []
-        if isinstance(row, dict) and isinstance(row.get("post_id"), int)
-    }
+    covered_post_ids, additional_covered_rows = _covered_post_ids(
+        compatible_verdicts,
+        additional_covered_verdicts,
+    )
     rows: list[dict[str, Any]] = []
     for row in batch.get("review_rows") or []:
         if not isinstance(row, dict):
@@ -341,7 +365,15 @@ def build_unreviewed_placeholder_verdicts(
         "full_scan_approval": False,
         "summary": {
             "source_review_rows": len(batch.get("review_rows") or []),
-            "prior_compatible_rows": len(covered_post_ids),
+            "prior_compatible_rows": len(
+                {
+                    row.get("post_id")
+                    for row in compatible_verdicts.get("rows") or []
+                    if isinstance(row, dict) and isinstance(row.get("post_id"), int)
+                }
+            ),
+            "additional_covered_rows": additional_covered_rows,
+            "covered_post_ids": len(covered_post_ids),
             "placeholder_rows": len(rows),
             "counts_by_bucket": dict(Counter(row["triage_bucket"] for row in rows)),
         },
@@ -352,13 +384,15 @@ def build_unreviewed_placeholder_verdicts(
 def write_unreviewed_markdown(path: Path, batch: dict[str, Any]) -> None:
     summary = batch["summary"]
     lines = [
-        "# Loop488 P0 이전 비호환 잔여 검토 배치",
+        "# full375 P0 이전 비호환 잔여 검토 배치",
         "",
         f"- gate: `{batch['gate']}`",
         f"- semantic_quality: `{batch['semantic_quality']}`",
         f"- full_scan_approval: `{str(batch['full_scan_approval']).lower()}`",
         f"- source review rows: `{summary['source_review_rows']}`",
         f"- prior-compatible rows: `{summary['prior_compatible_rows']}`",
+        f"- additional covered rows: `{summary.get('additional_covered_rows', 0)}`",
+        f"- covered post ids: `{summary.get('covered_post_ids', summary['prior_compatible_rows'])}`",
         f"- unreviewed rows: `{summary['unreviewed_rows']}`",
         f"- image rows: `{summary['image_rows']}`",
         f"- text-only rows: `{summary['text_only_rows']}`",
@@ -385,7 +419,7 @@ def write_unreviewed_markdown(path: Path, batch: dict[str, Any]) -> None:
             "## 해석",
             "",
             "이 배치는 잔여 검토 입력이며 approval이 아니다.",
-            "52건 verdict가 채워지고 full375 collateral gate에 반영되기 전까지 full375 collateral은 `NO-GO`다.",
+            f"잔여 `{summary['unreviewed_rows']}`건 verdict가 채워지고 full375 collateral gate에 반영되기 전까지 full375 collateral은 `NO-GO`다.",
             "",
         ]
     )
@@ -403,7 +437,7 @@ def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
 def write_markdown(path: Path, state: dict[str, Any], *, verdicts_path: Path) -> None:
     summary = state["summary"]
     lines = [
-        "# Loop488 P0 이전 호환 source-native verdict 상태",
+        "# full375 P0 이전 호환 source-native verdict 상태",
         "",
         f"- gate: `{state['gate']}`",
         f"- semantic_quality: `{state['semantic_quality']}`",
@@ -482,6 +516,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-unreviewed-batch-jsonl", type=Path)
     parser.add_argument("--output-unreviewed-batch-md", type=Path)
     parser.add_argument("--output-unreviewed-verdicts-json", type=Path)
+    parser.add_argument("--additional-covered-verdicts-json", nargs="*", type=Path, default=[])
     return parser.parse_args()
 
 
@@ -497,8 +532,14 @@ def main() -> int:
         scope=args.scope,
     )
     write_json(args.output_json, verdicts)
+    additional_covered_verdicts = [load_json(path) for path in args.additional_covered_verdicts_json]
     if args.output_unreviewed_batch_json or args.output_unreviewed_batch_jsonl or args.output_unreviewed_batch_md:
-        unreviewed_batch = build_unreviewed_batch(batch, verdicts, state)
+        unreviewed_batch = build_unreviewed_batch(
+            batch,
+            verdicts,
+            state,
+            additional_covered_verdicts,
+        )
         state["unreviewed_batch"] = {
             "gate": unreviewed_batch["gate"],
             "summary": unreviewed_batch["summary"],
@@ -522,6 +563,7 @@ def main() -> int:
             review_id=f"{args.review_id}_unreviewed_placeholders",
             scope=f"{args.scope} unreviewed placeholders",
             batch_path=args.batch,
+            additional_covered_verdicts=additional_covered_verdicts,
         )
         state["unreviewed_placeholder_verdicts"] = {
             "gate": unreviewed_verdicts["gate"],

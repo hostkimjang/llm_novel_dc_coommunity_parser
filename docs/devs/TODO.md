@@ -1,5 +1,19 @@
 # Developer TODO Index
 
+## 2026-07-06 Loop498 TODO
+
+- 상태 업데이트: Loop497 residual `111` 중 wrong_work INFO_MISSING `11`건을 source-native 배치로 판정했고 residual은 `105`로 감소했다. Goal은 완료가 아니다.
+- [x] `INFO_MISSING + source_native_or_blind_review_required`를 action batch/review packet에 포함하도록 도구를 보강했다.
+- [x] additional covered verdict를 remaining unreviewed batch/placeholder에 반영하도록 도구를 보강했다.
+- [x] `wrong_work_title_flip 11`건을 `ACCEPT 6 / REPROCESS 3 / HOLD 2`로 판정했다.
+- [x] Remaining INFO_MISSING을 `47 -> 36`으로 줄였다.
+- [x] Full review summary를 재생성해 review-adjusted residual `105`를 확인했다.
+- [x] Always-on gate와 residual105 action queue를 재생성했다.
+- [ ] Remaining `source_native_or_blind_review_required 36`을 unsafe `11` 또는 safe_loss `25` 배치로 처리한다.
+- [ ] Shared promotion gate wiring `37`건은 단건 반복이 아니라 shared gate projection/contract 배치로 처리한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop497 TODO
 
 - 상태 업데이트: Loop496 full375 raw regression `137`건을 current title/url 호환 기준으로 재회계했다. Goal은 완료가 아니다.

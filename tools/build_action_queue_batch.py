@@ -12,6 +12,7 @@ RUNTIME_REPROCESS_ACTION = "shared_gate_runtime_block_repair_required"
 SEARCH_REPLAY_ACTION = "search_degraded_or_timeout_replay_required"
 CANONICAL_REVIEW_ACTION = "canonical_variant_or_wrong_work_review_required"
 VARIANT_POLICY_ACTION = "spacing_or_canonical_variant_policy_review_required"
+SOURCE_NATIVE_REVIEW_ACTION = "source_native_or_blind_review_required"
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -82,6 +83,8 @@ def _lanes_for(row: dict[str, Any]) -> list[str]:
     actions = set(_actions(row))
     label = str(row.get("review_label") or "")
     lanes: list[str] = []
+    if SOURCE_NATIVE_REVIEW_ACTION in actions:
+        lanes.append("source_native_or_blind_review")
     if label == "REPROCESS" and RUNTIME_REPROCESS_ACTION in actions:
         lanes.append("runtime_repair_replay")
     if SEARCH_REPLAY_ACTION in actions:
@@ -98,6 +101,8 @@ def _lanes_for(row: dict[str, Any]) -> list[str]:
 def _dispatch_lane(row: dict[str, Any]) -> str:
     label = str(row.get("review_label") or "")
     lanes = _lanes_for(row)
+    if "source_native_or_blind_review" in lanes:
+        return "source_native_or_blind_review"
     if label == "HOLD" and "canonical_variant_policy_review" in lanes:
         return "canonical_variant_policy_review"
     if label == "HOLD":
@@ -187,7 +192,8 @@ def build_action_batch(
                 str(row.get("review_label")) == "REPROCESS"
                 and RUNTIME_REPROCESS_ACTION in _actions(row)
             ),
-            "source_native_review_required": str(row.get("review_label")) == "HOLD",
+            "source_native_review_required": SOURCE_NATIVE_REVIEW_ACTION in _actions(row)
+            or str(row.get("review_label")) == "HOLD",
         }
         selected.append(entry)
         label_counts[str(entry.get("review_label"))] += 1
@@ -372,7 +378,7 @@ def write_markdown(batch: dict[str, Any], path: Path) -> None:
         "",
         "- 이 batch는 실행 순서를 정한 산출물이며 approval이 아니다.",
         "- `runtime_input_candidate_rows`는 입력 생성 후보일 뿐 runtime replay 결과가 아니다.",
-        "- `HOLD` 행은 source-native/blind review 전까지 hard-hold 완화 대상이 아니다.",
+        "- `HOLD`/`INFO_MISSING` 행은 source-native/blind review 전까지 hard-hold 완화 대상이 아니다.",
         "- 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다.",
         "",
         "## Lanes",
