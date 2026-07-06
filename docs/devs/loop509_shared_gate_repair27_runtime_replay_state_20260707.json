@@ -1,13 +1,19 @@
 {
   "state_type": "loop509_shared_gate_repair27_runtime_replay_state",
-  "generated_at": "2026-07-07T00:58:04",
+  "generated_at": "2026-07-07T01:49:30",
   "reconciliation": "docs\\devs\\loop509_shared_gate_repair28_after_loop508_reconciliation.json",
   "reconciliation_md": "docs\\devs\\loop509_shared_gate_repair28_after_loop508_reconciliation.md",
   "runtime_input": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\inputs\\loop509_shared_gate_repair27_runtime_replay_input.jsonl",
   "runtime_input_manifest": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\inputs\\loop509_shared_gate_repair27_runtime_replay_input_manifest.json",
   "run_plan": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\plans\\loop509_shared_gate_repair27_runtime_replay_plan.json",
-  "runtime_result_expected": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop509_shared_gate_repair27_current_head_result.json",
-  "runtime_replay_status": "INPUT_AND_PLAN_READY_NOT_RUN",
+  "runtime_result": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop509_shared_gate_repair27_current_head_result.json",
+  "runtime_manifest": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop509_shared_gate_repair27_current_head_result_manifest.json",
+  "runtime_checkpoint": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop509_shared_gate_repair27_current_head_result_checkpoint.jsonl",
+  "runtime_pending_snapshot": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop509_shared_gate_repair27_current_head_result_pending_snapshot.json",
+  "run_health_audit": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop509_shared_gate_repair27_run_health.json",
+  "publication_contract_audit_json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop509_shared_gate_repair27_publication_contract_audit.json",
+  "publication_contract_audit_md": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop509_shared_gate_repair27_publication_contract_audit.md",
+  "runtime_replay_status": "RUN_COMPLETE_AUDITED",
   "summary": {
     "repair_rows_before": 28,
     "loop508_result_rows": 7,
@@ -51,7 +57,38 @@
       "SEARCH_EVIDENCE_MISSING": 3,
       "SEARCH_OK": 2
     },
+    "runtime_replay_run_id": "20260707_010620_968739",
     "runtime_replay_input_rows_generated": 27,
+    "runtime_replay_result_rows": 27,
+    "runtime_replay_completed_flushed_pending_failed": "27/27/0/0",
+    "runtime_replay_large_run_complete": true,
+    "runtime_replay_requested_parallel": 16,
+    "runtime_replay_effective_parallel": 16,
+    "dashboard_url": "http://127.0.0.1:8080",
+    "dashboard_final": "27/27 batch_running=false progress_pct=100.0",
+    "run_health": "GO / clean_completed_source",
+    "publication_contract": "GO / row_count 27 / violation_row_count 0",
+    "search_evidence": "REVIEW / manifest light health and degraded observed",
+    "search_evidence_blockers": [
+      "manifest_search_health_not_included",
+      "manifest_light_health_only",
+      "search_degraded_observed"
+    ],
+    "row_candidate_ledger_status_counts": {
+      "promotion_blocked": 21,
+      "output_consistency_lint": 3,
+      "safe_resolved": 3
+    },
+    "promotion_decision_status_counts": {
+      "candidate_only": 24,
+      "publish": 3
+    },
+    "search_health_status_counts": {
+      "SEARCH_DEGRADED_RECOVERED": 11,
+      "SEARCH_DEGRADED": 11,
+      "missing": 3,
+      "ok": 2
+    },
     "missing_source_post_ids": [],
     "validation_issue_count": 0,
     "residual105_rows_remain": 105,
@@ -60,7 +97,10 @@
   "gates": {
     "reconciliation": "GO_ACCOUNTING_NOT_APPROVAL",
     "runtime_input": "GO_INPUT_ONLY",
-    "runtime_replay": "NOT_RUN_AFTER_INPUT",
+    "runtime_replay": "GO_RUNTIME_COMPLETE_AUDITED",
+    "run_health": "GO / clean_completed_source",
+    "publication_contract": "GO / 27 rows / 0 violations",
+    "search_evidence": "REVIEW / not approval",
     "full375_collateral": "NO-GO / residual 105",
     "semantic_quality": "REVIEW-LOCKED",
     "full_scan_approval": false,

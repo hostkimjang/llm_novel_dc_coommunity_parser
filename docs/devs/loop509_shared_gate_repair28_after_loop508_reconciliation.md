@@ -45,13 +45,18 @@
 - replay input: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop509_shared_gate_repair27_runtime_replay_input.jsonl`
 - replay input manifest: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop509_shared_gate_repair27_runtime_replay_input_manifest.json`
 - run plan: `out/regression_safe_grounding_20260626_000008_928006_loop01/plans/loop509_shared_gate_repair27_runtime_replay_plan.json`
+- runtime result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop509_shared_gate_repair27_current_head_result.json`
+- runtime audits: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop509_shared_gate_repair27_run_health.json`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop509_shared_gate_repair27_publication_contract_audit.json/.md`
 - state: `docs/devs/loop509_shared_gate_repair27_runtime_replay_state_20260707.json`
 
 ## 게이트
 
 - reconciliation: `GO_ACCOUNTING_NOT_APPROVAL`
 - runtime input: `GO_INPUT_ONLY`
-- runtime replay: `NOT_RUN_AFTER_INPUT`
+- runtime replay: `GO_RUNTIME_COMPLETE_AUDITED`
+- run health: `GO / clean_completed_source`
+- publication contract: `GO / 27 rows / 0 violations`
+- search evidence: `REVIEW / not approval`
 - full375 collateral: `NO-GO / residual 105`
 - semantic_quality: `REVIEW-LOCKED`
 - full_scan_approval: `false`

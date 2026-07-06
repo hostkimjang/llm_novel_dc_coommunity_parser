@@ -2,7 +2,7 @@
 
 ## 2026-07-07 Loop509 TODO
 
-- 상태 업데이트: Loop508 runtime evidence를 Loop502 `repair28`에 교차 반영했고, repair27 batch replay input/plan을 준비했다. Goal은 완료가 아니다.
+- 상태 업데이트: Loop508 runtime evidence를 Loop502 `repair28`에 교차 반영했고, repair27 batch replay를 `--parallel 16` 및 웹 대시보드로 완주했다. Goal은 완료가 아니다.
 - [x] Loop508 결과와 Loop502 repair28 queue의 post_id overlap을 계산했다.
 - [x] repair28 내부 overlap은 `11684372` 1건뿐임을 확인했다.
 - [x] image/alias anchor lane은 `1 -> 0`으로 줄었지만 residual105는 `105`로 유지한다고 기록했다.
@@ -12,8 +12,12 @@
 - [x] Run plan `out/regression_safe_grounding_20260626_000008_928006_loop01/plans/loop509_shared_gate_repair27_runtime_replay_plan.json`을 생성했다.
 - [x] Run plan은 `--parallel 16`과 dashboard 기본 ON 경로를 사용한다.
 - [x] Data Analytics MCP report `Loop509 repair27 재회계` validate/render PASS.
-- [ ] Loop509 repair27 runtime replay를 아직 실행하지 않았다.
-- [ ] Replay 완료 후 run health와 publication contract audit를 생성한다.
+- [x] Loop509 repair27 runtime replay run `20260707_010620_968739`을 실행했다.
+- [x] Dashboard `http://127.0.0.1:8080` 최종 상태는 `27/27`, `progress_pct=100.0`, `batch_running=false`다.
+- [x] Run은 completed/flushed/pending/failed `27/27/0/0`, requested/effective parallel `16/16`으로 완주했다.
+- [x] Run health는 `GO / clean_completed_source`다.
+- [x] Publication contract audit는 `GO / row_count 27 / violation_row_count 0`이다.
+- [ ] Search evidence는 `REVIEW`이므로 search/full_scan approval로 승격하지 않는다.
 - [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 

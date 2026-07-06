@@ -1,11 +1,14 @@
 {
   "report_type": "shared_gate_repair_queue_reconciliation",
   "loop": 509,
-  "generated_at": "2026-07-07T00:58:04",
+  "generated_at": "2026-07-07T01:49:30",
   "source_repair_queue": "docs\\devs\\loop502_shared_gate_runtime_block_repair28_queue.json",
   "source_residual_queue": "docs\\devs\\loop498_current_full375_review_adjusted_residual105_action_queue.json",
   "source_loop508_result": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop508_publication_contract_stale7_current_head_result.json",
   "source_loop508_audit": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop508_publication_contract_stale7_publication_contract_audit.json",
+  "loop509_runtime_result": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop509_shared_gate_repair27_current_head_result.json",
+  "loop509_run_health_audit": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop509_shared_gate_repair27_run_health.json",
+  "loop509_publication_contract_audit": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop509_shared_gate_repair27_publication_contract_audit.json",
   "gate": "REVIEW-LOCKED",
   "semantic_quality": "REVIEW-LOCKED",
   "full_scan_approval": false,
@@ -53,6 +56,15 @@
       "SEARCH_OK": 2
     },
     "runtime_replay_input_rows_generated": 27,
+    "runtime_replay_status": "RUN_COMPLETE_AUDITED",
+    "runtime_replay_run_id": "20260707_010620_968739",
+    "runtime_replay_result_rows": 27,
+    "runtime_replay_completed_flushed_pending_failed": "27/27/0/0",
+    "runtime_replay_requested_effective_parallel": "16/16",
+    "runtime_replay_dashboard_final": "27/27 batch_running=false progress_pct=100.0",
+    "runtime_replay_run_health": "GO / clean_completed_source",
+    "runtime_replay_publication_contract": "GO / row_count 27 / violation_row_count 0",
+    "runtime_replay_search_evidence": "REVIEW / manifest light health and degraded observed",
     "missing_source_post_ids": [],
     "validation_issue_count": 0,
     "residual105_rows_remain": 105,
@@ -642,7 +654,9 @@
   "approval_boundary": {
     "loop508_overlap_closes_only_targeted_contract_runtime_evidence": true,
     "residual105_is_not_reduced_by_this_reconciliation": true,
-    "repair27_runtime_replay_is_required_before_full375_recheck": true,
+    "repair27_runtime_replay_completed_before_full375_recheck": true,
+    "repair27_runtime_replay_is_full375_approval": false,
+    "search_evidence_review_blocks_search_full_scan_approval": true,
     "completion_gate": "full375 collateral GO + full_scan path"
   }
 }

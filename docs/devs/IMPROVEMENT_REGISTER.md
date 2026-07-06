@@ -1,18 +1,21 @@
 # Improvement Register
 
-## IMP-20260707-509 - repair28 reconciliation and repair27 replay plan
+## IMP-20260707-509 - repair28 reconciliation and repair27 runtime replay
 
 | 항목 | 상태 | 근거 | 다음 |
 | --- | --- | --- | --- |
 | Repair28 교차 재회계 | GO_ACCOUNTING_NOT_APPROVAL | Loop508 결과와 Loop502 repair28 overlap은 `11684372` 1건 | residual 감소로 과대 해석 금지 |
 | Repair lane delta | GO_QUEUE_DELTA_NOT_APPROVAL | image/alias anchor lane `1 -> 0`, remaining repair `27` | 남은 3개 lane batch replay |
-| Runtime input | GO_INPUT_ONLY | `loop509_shared_gate_repair27_runtime_replay_input.jsonl`, rows `27`, missing `0` | `tools.run_independent_plan`으로 실행 |
-| Run plan | READY_NOT_RUN | `--parallel 16`, dashboard 기본 ON, `--slang-db off`, VLM/OCR on | 실행 후 health/audit 생성 |
+| Runtime input | GO_INPUT_ONLY | `loop509_shared_gate_repair27_runtime_replay_input.jsonl`, rows `27`, missing `0` | 완료 결과와 분리 보존 |
+| Runtime replay | GO_RUNTIME_COMPLETE_AUDITED | run `20260707_010620_968739`, dashboard `27/27`, completed/flushed/pending/failed `27/27/0/0`, requested/effective parallel `16/16` | full375 전수 collateral에서 재확인 |
+| Run health | GO | `loop509_shared_gate_repair27_run_health.json`, `clean_completed_source` | approval과 분리해 runtime integrity 증거로 보존 |
+| Publication contract | GO | `loop509_shared_gate_repair27_publication_contract_audit.json`, `27` rows, violations `0` | full375 current replay에서 재확인 |
+| Search evidence | REVIEW | light manifest health와 degraded 관측 | search/full_scan approval로 승격 금지 |
 | Data Analytics report | PASS | MCP report `Loop509 repair27 재회계` validate/render PASS | loop report의 정량 근거로 보존 |
 | Full375 collateral | NO-GO | residual `105` 유지 | full375 collateral GO 전 완료 주장 금지 |
 | Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
 
-Gate: reconciliation `GO_ACCOUNTING_NOT_APPROVAL`, runtime input `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+Gate: reconciliation `GO_ACCOUNTING_NOT_APPROVAL`, runtime input `GO_INPUT_ONLY`, runtime replay `GO_RUNTIME_COMPLETE_AUDITED`, search evidence `REVIEW`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## IMP-20260707-508 - publication contract stale 7 runtime replay
 
