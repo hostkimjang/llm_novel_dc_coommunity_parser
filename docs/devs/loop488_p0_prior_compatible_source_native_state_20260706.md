@@ -14,6 +14,16 @@
 - post_id_not_in_current_batch: `34`
 - triage_bucket_changed: `18`
 
+## 잔여 배치
+
+- gate: `REVIEW-LOCKED`
+- unreviewed rows: `52`
+- image rows: `36`
+- text-only rows: `16`
+- json: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_p0_prior_incompatible_residual52_review_batch.json`
+- jsonl: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_p0_prior_incompatible_residual52_review_batch.jsonl`
+- markdown: `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_p0_prior_incompatible_residual52_review_batch.md`
+
 ## 해석
 
 이 산출물은 과거 source-native verdict를 현재 P0 배치에 그대로 승인한 것이 아니다.

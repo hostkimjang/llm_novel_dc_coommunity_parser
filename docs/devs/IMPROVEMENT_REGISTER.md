@@ -1,17 +1,19 @@
 # Improvement Register
 
-## IMP-20260706-488 - current HEAD full375 dispatch
+## IMP-20260706-488 - current HEAD full375 completion and residual52 batch
 
 | 항목 | 상태 | 근거 | 다음 |
 | --- | --- | --- | --- |
-| Full375 dispatch | IN_PROGRESS | run `20260706_044255_159249`, PID `42256`, input `375` | background completion 감시 |
-| Runtime health | GO_STARTUP | MCP health `16/16`, search 포함 non-light | 완료 후 run health audit |
-| VLM/OCR | READY | `vlm=true`, `ocr=true`, image posts `241` | 완료 후 golden/collateral audit |
-| Row production | GO_INITIAL | checkpoint `3` rows, completed/flushed/pending/failed `3/1/2/0` | 375/375 완료 확인 |
-| Collateral gate | PENDING/NO-GO | Loop488 compare 미실행 | 완료 후 full375 collateral compare |
+| Full375 runtime | GO | run `20260706_044255_159249`, completed/flushed/pending/failed `375/375/0/0` | approval과 분리 유지 |
+| Runtime health | GO | `clean_completed_source`, MCP health `16/16`, search 포함 non-light | search degraded는 별도 REVIEW |
+| Publication/golden | GO | publication contract `0` violations, golden18 `18/18 PASS` | full375 collateral approval 대체 금지 |
+| Collateral gate | NO-GO | changed `199`, regression `137`, always-on blocker `collateral_regression_count_nonzero` | residual52와 P1 검토 |
+| Prior-compatible verdict | REVIEW-LOCKED | title/url 기준 호환 carry-forward `84/136`, validation issue `0` | ACCEPT `23`은 gate wiring 뒤 제외 후보 |
+| Residual52 batch | OPEN | `wrong_work_title_flip 19 / unsafe_promotion_from_hold 11 / safe_loss_resolved_to_null 22`, image/text-only `36/16` | 신규 blind/source-native verdict 작성 |
+| P1 | OPEN | `11682800 / new_resolution_promotion` | 별도 source-native 또는 blind review |
 | Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
 
-Gate: full375 runtime `IN_PROGRESS`, full375 collateral `PENDING / NO-GO 유지`, golden/collateral audit `NOT_RUN_AFTER_LOOP488`, goal `ACTIVE / NOT_COMPLETE`.
+Gate: full375 runtime `GO`, run health `GO`, publication contract `GO`, golden18 `GO`, full375 collateral `NO-GO`, residual52 batch `REVIEW-LOCKED`, search evidence `REVIEW / search_degraded_observed`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## IMP-20260706-487 - stable alias collision contract
 

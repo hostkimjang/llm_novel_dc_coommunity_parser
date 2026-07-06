@@ -1,6 +1,6 @@
 # Operation Quality Checklist
 
-## 2026-07-06 Loop488 current HEAD full375 dispatch 품질 게이트
+## 2026-07-06 Loop488 current HEAD full375 완료 및 P0 residual52 품질 게이트
 
 - 근거:
   - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_488_REPORT_20260706.md`.
@@ -8,15 +8,20 @@
   - [x] Input `375` rows와 current HEAD `4b838520`을 기록했다.
   - [x] Search 포함 non-light MCP health `16/16`을 확인했다.
   - [x] VLM/OCR `READY`를 확인했다.
-  - [x] Checkpoint `3` rows로 runtime row 생산을 확인했다.
+  - [x] Full375 runtime은 `375/375` completed, `375/375` flushed, pending `0`, failed `0`으로 완료됐다.
+  - [x] Run health `GO / clean_completed_source`, publication contract `GO / 0 violations`, golden18 `18/18 PASS`를 확인했다.
+  - [x] Full375 collateral compare와 always-on gate를 실행했고 regression `137`로 `NO-GO`를 확인했다.
+  - [x] P0 `136`건 중 prior-compatible source-native verdict `84`건을 title/url 기준으로 분리했다.
+  - [x] 호환되지 않은 P0 `52`건을 residual52 batch로 고정했다. Bucket은 `wrong_work_title_flip 19 / unsafe_promotion_from_hold 11 / safe_loss_resolved_to_null 22`, image/text-only는 `36/16`이다.
 - 품질 경계:
-  - [x] Dispatch와 초기 row 생산은 full375 approval이 아니다.
+  - [x] Runtime completion과 golden18 `GO`는 full375 collateral approval이 아니다.
   - [x] Loop477 full375는 Loop487 코드 변경 이후 current HEAD 증거가 아니므로 stale로 분리한다.
-  - [ ] Full375 runtime은 아직 `375/375` 완료되지 않았다.
-  - [ ] Golden audit과 collateral compare는 아직 실행되지 않았다.
-  - [ ] Full375 collateral은 `PENDING / NO-GO 유지`다.
+  - [x] Prior-compatible `84`건은 carry-forward 후보이며 즉시 approval이 아니다.
+  - [ ] Residual52 신규 blind/source-native verdict는 아직 작성되지 않았다.
+  - [ ] P1 `11682800 / new_resolution_promotion`은 별도 검토가 필요하다.
+  - [ ] Full375 collateral은 `NO-GO / regression 137`이다.
   - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
-- Gate: full375 runtime `IN_PROGRESS`, full375 collateral `PENDING / NO-GO 유지`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: full375 runtime `GO`, run health `GO`, publication contract `GO`, golden18 `GO`, full375 collateral `NO-GO`, always-on gate `NO-GO`, residual52 batch `REVIEW-LOCKED`, search evidence `REVIEW / search_degraded_observed`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-06 Loop487 stable alias collision contract 품질 게이트
 

@@ -46,15 +46,20 @@
     - compatibility state markdown `docs\devs\loop488_p0_prior_compatible_source_native_state_20260706.md`
     - review summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_p0_prior_compatible_source_native_review.json`
     - review summary markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_p0_prior_compatible_source_native_review.md`
+    - residual52 batch `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_p0_prior_incompatible_residual52_review_batch.json`
+    - residual52 batch JSONL `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_p0_prior_incompatible_residual52_review_batch.jsonl`
+    - residual52 batch markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_p0_prior_incompatible_residual52_review_batch.md`
   - Prior-compatible reviewed rows `84/136`, unreviewed current batch rows `52/136`
   - Skip counts: `triage_bucket_changed 18`, `ambiguous_current_option_match 2`, `post_id_not_in_current_batch 34`
   - Prior-compatible summary validation issues `0`
   - Prior-compatible labels: `REPROCESS 37`, `HOLD 24`, `ACCEPT 23`
   - Prior-compatible reviewed buckets: `safe_loss_resolved_to_null 59`, `unsafe_promotion_from_hold 14`, `wrong_work_title_flip 11`
   - Queue transition after compatible carry-forward: original P0 `136`, reviewed `84`, exclusion candidates `23`, repair required `37`, policy/native review required `24`, residual action queue `113`
+  - Residual52 buckets: `wrong_work_title_flip 19`, `unsafe_promotion_from_hold 11`, `safe_loss_resolved_to_null 22`
+  - Residual52 image/text-only rows `36/16`
 - Validation:
-  - `.\venv\Scripts\python.exe -m unittest tests.test_build_prior_compatible_collateral_verdicts tests.test_summarize_collateral_review_verdicts` PASS, `8` tests
-  - `.\venv\Scripts\python.exe tools\build_prior_compatible_collateral_verdicts.py ...` PASS, compatible rows `84`, unreviewed `52`
+  - `.\venv\Scripts\python.exe -m unittest tests.test_build_prior_compatible_collateral_verdicts tests.test_summarize_collateral_review_verdicts` PASS, `9` tests
+  - `.\venv\Scripts\python.exe tools\build_prior_compatible_collateral_verdicts.py ... --output-unreviewed-batch-*` PASS, compatible rows `84`, unreviewed `52`
   - `.\venv\Scripts\python.exe tools\summarize_collateral_review_verdicts.py ...` PASS, gate `REVIEW-LOCKED`, validation issue `0`
 - Boundary:
   - Runtime 완료와 golden18 `18/18 PASS`는 full-scan approval이 아니다.

@@ -2,7 +2,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from tools.build_prior_compatible_collateral_verdicts import build_prior_compatible_verdicts
+from tools.build_prior_compatible_collateral_verdicts import build_prior_compatible_verdicts, build_unreviewed_batch
 
 
 class BuildPriorCompatibleCollateralVerdictsTest(unittest.TestCase):
@@ -87,6 +87,35 @@ class BuildPriorCompatibleCollateralVerdictsTest(unittest.TestCase):
 
         self.assertEqual(payload["rows"], [])
         self.assertEqual(state["summary"]["skip_counts"], {"triage_bucket_changed": 1})
+
+    def test_builds_unreviewed_batch_from_not_covered_rows(self):
+        batch = {
+            "review_rows": [
+                {
+                    "post_id": 1,
+                    "triage_bucket": "wrong_work_title_flip",
+                    "collateral_status": "resolved_to_different_title",
+                    "source_native_packet": {"image_count": 0},
+                },
+                {
+                    "post_id": 2,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "collateral_status": "resolved_to_null",
+                    "source_native_packet": {"image_count": 1},
+                },
+            ]
+        }
+        compatible_verdicts = {"rows": [{"post_id": 1}]}
+        state = {"review_id": "unit", "summary": {"compatible_rows": 1}}
+
+        unreviewed = build_unreviewed_batch(batch, compatible_verdicts, state)
+
+        self.assertEqual(unreviewed["summary"]["source_review_rows"], 2)
+        self.assertEqual(unreviewed["summary"]["prior_compatible_rows"], 1)
+        self.assertEqual(unreviewed["summary"]["unreviewed_rows"], 1)
+        self.assertEqual(unreviewed["summary"]["image_rows"], 1)
+        self.assertEqual(unreviewed["summary"]["counts_by_bucket"], {"safe_loss_resolved_to_null": 1})
+        self.assertEqual(unreviewed["review_rows"][0]["post_id"], 2)
 
 
 if __name__ == "__main__":

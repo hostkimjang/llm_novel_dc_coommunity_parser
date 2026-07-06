@@ -212,6 +212,108 @@ def build_prior_compatible_verdicts(
     return payload, state
 
 
+def build_unreviewed_batch(batch: dict[str, Any], compatible_verdicts: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
+    covered_post_ids = {
+        row.get("post_id")
+        for row in compatible_verdicts.get("rows") or []
+        if isinstance(row, dict) and isinstance(row.get("post_id"), int)
+    }
+    review_rows = [
+        row
+        for row in batch.get("review_rows") or []
+        if isinstance(row, dict) and isinstance(row.get("post_id"), int) and row["post_id"] not in covered_post_ids
+    ]
+    bucket_counts = Counter(_string(row.get("triage_bucket")) for row in review_rows)
+    status_counts = Counter(_string(row.get("collateral_status")) for row in review_rows)
+    image_rows = sum(
+        1
+        for row in review_rows
+        if isinstance(row.get("source_native_packet"), dict)
+        and int(row["source_native_packet"].get("image_count") or 0) > 0
+    )
+    out = {
+        "report_type": "collateral_p0_unreviewed_source_review_batch",
+        "source_report_type": batch.get("report_type"),
+        "scope_label": "Loop488 full375 P0 prior-incompatible residual",
+        "generated_at": datetime.now().replace(microsecond=0).isoformat(),
+        "gate": "REVIEW-LOCKED",
+        "semantic_quality": "REVIEW-LOCKED",
+        "full_scan_approval": False,
+        "source_batch": state.get("source_batch") or batch.get("scope_label"),
+        "prior_compatible_review_id": state.get("review_id"),
+        "prior_compatible_summary": state.get("summary"),
+        "summary": {
+            "source_review_rows": len(batch.get("review_rows") or []),
+            "prior_compatible_rows": len(covered_post_ids),
+            "unreviewed_rows": len(review_rows),
+            "counts_by_bucket": dict(bucket_counts),
+            "counts_by_collateral_status": dict(status_counts),
+            "image_rows": image_rows,
+            "text_only_rows": len(review_rows) - image_rows,
+        },
+        "instructions_ko": [
+            "이 배치는 과거 source-native verdict와 title/url 기준으로 호환되지 않은 현재 P0 행만 포함한다.",
+            "blind judge 입력에는 source_native_packet과 blind_judge_options만 제공한다.",
+            "comparison_private_not_for_blind_judge는 전후 diff 검수용이며 blind judge에는 제공하지 않는다.",
+            "이미지 행은 VLM/OCR 또는 native/browser 확인 없이 텍스트만으로 Strong evidence로 올리지 않는다.",
+            "정답 판정 전까지 semantic_quality=REVIEW-LOCKED, full_scan_approval=false를 유지한다.",
+        ],
+        "review_rows": review_rows,
+    }
+    return out
+
+
+def write_unreviewed_markdown(path: Path, batch: dict[str, Any]) -> None:
+    summary = batch["summary"]
+    lines = [
+        "# Loop488 P0 이전 비호환 잔여 검토 배치",
+        "",
+        f"- gate: `{batch['gate']}`",
+        f"- semantic_quality: `{batch['semantic_quality']}`",
+        f"- full_scan_approval: `{str(batch['full_scan_approval']).lower()}`",
+        f"- source review rows: `{summary['source_review_rows']}`",
+        f"- prior-compatible rows: `{summary['prior_compatible_rows']}`",
+        f"- unreviewed rows: `{summary['unreviewed_rows']}`",
+        f"- image rows: `{summary['image_rows']}`",
+        f"- text-only rows: `{summary['text_only_rows']}`",
+        "",
+        "## 버킷",
+        "",
+    ]
+    for bucket, count in sorted((summary.get("counts_by_bucket") or {}).items()):
+        lines.append(f"- {bucket}: `{count}`")
+    lines.extend(["", "## 행 목록", ""])
+    for row in batch.get("review_rows") or []:
+        source = row.get("source_native_packet") or {}
+        options = ", ".join(
+            f"{option.get('option_id')}={option.get('official_title')}"
+            for option in row.get("blind_judge_options") or []
+            if isinstance(option, dict)
+        )
+        lines.append(
+            f"- `{row.get('post_id')}` / `{row.get('triage_bucket')}` / image `{source.get('image_count', 0)}` / {source.get('post_title')} / options: {options}"
+        )
+    lines.extend(
+        [
+            "",
+            "## 해석",
+            "",
+            "이 배치는 잔여 검토 입력이며 approval이 아니다.",
+            "52건 verdict가 채워지고 full375 collateral gate에 반영되기 전까지 full375 collateral은 `NO-GO`다.",
+            "",
+        ]
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as fh:
+        for row in rows:
+            fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+
 def write_markdown(path: Path, state: dict[str, Any], *, verdicts_path: Path) -> None:
     summary = state["summary"]
     lines = [
@@ -230,6 +332,24 @@ def write_markdown(path: Path, state: dict[str, Any], *, verdicts_path: Path) ->
     ]
     for reason, count in sorted((summary.get("skip_counts") or {}).items()):
         lines.append(f"- {reason}: `{count}`")
+    unreviewed = state.get("unreviewed_batch")
+    if isinstance(unreviewed, dict):
+        unreviewed_summary = unreviewed.get("summary") or {}
+        artifacts = unreviewed.get("artifacts") or {}
+        lines.extend(
+            [
+                "",
+                "## 잔여 배치",
+                "",
+                f"- gate: `{unreviewed.get('gate')}`",
+                f"- unreviewed rows: `{unreviewed_summary.get('unreviewed_rows')}`",
+                f"- image rows: `{unreviewed_summary.get('image_rows')}`",
+                f"- text-only rows: `{unreviewed_summary.get('text_only_rows')}`",
+                f"- json: `{artifacts.get('json')}`",
+                f"- jsonl: `{artifacts.get('jsonl')}`",
+                f"- markdown: `{artifacts.get('markdown')}`",
+            ]
+        )
     lines.extend(
         [
             "",
@@ -259,6 +379,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-json", required=True, type=Path)
     parser.add_argument("--output-state-json", required=True, type=Path)
     parser.add_argument("--output-md", required=True, type=Path)
+    parser.add_argument("--output-unreviewed-batch-json", type=Path)
+    parser.add_argument("--output-unreviewed-batch-jsonl", type=Path)
+    parser.add_argument("--output-unreviewed-batch-md", type=Path)
     return parser.parse_args()
 
 
@@ -274,6 +397,23 @@ def main() -> int:
         scope=args.scope,
     )
     write_json(args.output_json, verdicts)
+    if args.output_unreviewed_batch_json or args.output_unreviewed_batch_jsonl or args.output_unreviewed_batch_md:
+        unreviewed_batch = build_unreviewed_batch(batch, verdicts, state)
+        state["unreviewed_batch"] = {
+            "gate": unreviewed_batch["gate"],
+            "summary": unreviewed_batch["summary"],
+            "artifacts": {
+                "json": str(args.output_unreviewed_batch_json) if args.output_unreviewed_batch_json else None,
+                "jsonl": str(args.output_unreviewed_batch_jsonl) if args.output_unreviewed_batch_jsonl else None,
+                "markdown": str(args.output_unreviewed_batch_md) if args.output_unreviewed_batch_md else None,
+            },
+        }
+        if args.output_unreviewed_batch_json:
+            write_json(args.output_unreviewed_batch_json, unreviewed_batch)
+        if args.output_unreviewed_batch_jsonl:
+            write_jsonl(args.output_unreviewed_batch_jsonl, unreviewed_batch["review_rows"])
+        if args.output_unreviewed_batch_md:
+            write_unreviewed_markdown(args.output_unreviewed_batch_md, unreviewed_batch)
     write_json(args.output_state_json, state)
     write_markdown(args.output_md, state, verdicts_path=args.output_json)
     print(
@@ -283,6 +423,11 @@ def main() -> int:
                 "compatible_rows": state["summary"]["compatible_rows"],
                 "unreviewed_current_batch_rows": state["summary"]["unreviewed_current_batch_rows"],
                 "skip_counts": state["summary"]["skip_counts"],
+                "unreviewed_batch_written": bool(
+                    args.output_unreviewed_batch_json
+                    or args.output_unreviewed_batch_jsonl
+                    or args.output_unreviewed_batch_md
+                ),
             },
             ensure_ascii=False,
             indent=2,

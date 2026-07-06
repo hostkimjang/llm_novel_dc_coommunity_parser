@@ -2,7 +2,7 @@
   "review_id": "loop488_p0_prior_compatible_source_native",
   "scope": "Loop488 P0 이전 호환 source-native verdict",
   "source_batch": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop488_full375_current_head_p0_review_batch.json",
-  "generated_at": "2026-07-06T11:32:56",
+  "generated_at": "2026-07-06T11:42:56",
   "compatibility_policy": {
     "requires_same_post_id": true,
     "requires_same_triage_bucket": true,

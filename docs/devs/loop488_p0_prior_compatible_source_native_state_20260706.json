@@ -2,7 +2,7 @@
   "report_type": "prior_compatible_collateral_verdicts_state",
   "review_id": "loop488_p0_prior_compatible_source_native",
   "scope": "Loop488 P0 이전 호환 source-native verdict",
-  "generated_at": "2026-07-06T11:32:56",
+  "generated_at": "2026-07-06T11:42:56",
   "gate": "REVIEW-LOCKED",
   "semantic_quality": "REVIEW-LOCKED",
   "full_scan_approval": false,
@@ -349,5 +349,30 @@
       "reason": "post_id_not_in_current_batch",
       "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
     }
-  ]
+  ],
+  "unreviewed_batch": {
+    "gate": "REVIEW-LOCKED",
+    "summary": {
+      "source_review_rows": 136,
+      "prior_compatible_rows": 84,
+      "unreviewed_rows": 52,
+      "counts_by_bucket": {
+        "wrong_work_title_flip": 19,
+        "unsafe_promotion_from_hold": 11,
+        "safe_loss_resolved_to_null": 22
+      },
+      "counts_by_collateral_status": {
+        "resolved_to_different_title": 19,
+        "null_to_resolved": 11,
+        "resolved_to_null": 22
+      },
+      "image_rows": 36,
+      "text_only_rows": 16
+    },
+    "artifacts": {
+      "json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop488_p0_prior_incompatible_residual52_review_batch.json",
+      "jsonl": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop488_p0_prior_incompatible_residual52_review_batch.jsonl",
+      "markdown": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop488_p0_prior_incompatible_residual52_review_batch.md"
+    }
+  }
 }
