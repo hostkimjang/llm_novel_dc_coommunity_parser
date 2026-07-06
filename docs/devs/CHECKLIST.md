@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-06 Loop494 publish_contract_trace 모바일 문피아 계약 체크
+
+- [x] Loop493 `publish_contract_trace_repair_before_replay` 5건 중 `11718099`의 모바일 문피아 URL 차단 원인을 분리했다.
+- [x] `mm.munpia.com`/`m.munpia.com` `menu=novel&id=<숫자>` URL을 `https://novel.munpia.com/<id>`로 정규화하는 `_canonical_official_detail_url(...)`를 추가했다.
+- [x] 중첩 `_official_detail_url(...)` 3곳을 shared helper 경유로 수렴시켰다.
+- [x] `11718099 / 빌어먹을 환생` 재현 테스트를 추가했다.
+- [x] py_compile, targeted unittest `1`, promotion contract suite `72`, work bridge contract suite `3`을 통과했다.
+- [ ] Runtime replay after patch는 아직 실행하지 않았다.
+- [ ] Full375 after patch는 아직 실행하지 않았다.
+- [ ] Loop493 `publish_contract_trace_repair_before_replay` 잔여 `4`건을 계속 처리한다.
+- [ ] Full375 collateral은 여전히 `NO-GO`다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop491 P0 runtime failure batch 체크
 
 - [x] Loop490 action queue `37`건에서 P0 `23`건을 분리했다.

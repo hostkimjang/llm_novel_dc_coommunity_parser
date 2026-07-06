@@ -464,6 +464,107 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertEqual(detected["reference_role"], "primary")
         self.assertIsNone(detected.get("negative_evidence"))
 
+    def test_blocked_current_work_shared_gate_restores_mobile_munpia_detail_publication(self):
+        mobile_url = "https://mm.munpia.com/?menu=novel&action=view&id=222360&entry_id=next&entry_seq=-5102048"
+        canonical_url = "https://novel.munpia.com/222360"
+        result = {
+            "post_id": 11718099,
+            "title": "빌어먹을 환생 최근화 재밌다",
+            "content": ["문피아에서 빌어먹을 환생 최신화 얘기하는 글", "작품 전개랑 캐릭터 반응 얘기임"],
+            "comments": ["빌환은 역시 초반부가 좋았음"],
+            "identity": {
+                "title_resolution_allowed": False,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "unresolved",
+                "discussion_type": "review",
+                "candidate_ledger_status": "promotion_blocked",
+                "anchor_type": "title_exact",
+                "anchor_strength": "high",
+                "context_sources": ["title", "body", "comments", "search"],
+                "blocked_official_title": "빌어먹을 환생",
+                "blocked_official_title_url": mobile_url,
+                "novel_identity": None,
+                "consistency_flags": [
+                    "batch_alias_public_title_bridge",
+                    "official_detail_url",
+                    "row_discusses_work_as_work",
+                    "scope_current_work",
+                    "promoted_image_work_title_conflicts_with_public_title",
+                ],
+                "title_candidates": [
+                    {
+                        "official_title": "빌어먹을 환생",
+                        "heretic_url": mobile_url,
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                        "reference_role": "candidate",
+                    }
+                ],
+                "candidate_ledger": {
+                    "blocked_official_title": "빌어먹을 환생",
+                    "blocked_official_title_url": mobile_url,
+                    "context_sources": ["title", "body", "comments", "search"],
+                    "candidate_preservation_sources": [
+                        {
+                            "official_title": "빌어먹을 환생",
+                            "heretic_url": mobile_url,
+                            "source_tier": "official_detail",
+                            "page_type": "novel_page",
+                            "reference_role": "candidate",
+                        }
+                    ],
+                    "promotion_decision": {
+                        "status": "candidate_only",
+                        "publish_allowed": False,
+                        "official_title": None,
+                        "official_url": None,
+                        "candidate_preserved": True,
+                        "reason_codes": [
+                            "official_title_exists",
+                            "row_discusses_work_as_work",
+                            "scope_current_work",
+                            "official_detail_url",
+                            "serialized_public_identity_scrubbed",
+                        ],
+                        "bypassed_gate": False,
+                        "scope": {
+                            "scope_kind": "current_work",
+                            "confidence": "high",
+                            "direct_bridge_sources": ["row_discusses_work_as_work"],
+                        },
+                    },
+                    "promotion_gate_state": {
+                        "candidate_title": "빌어먹을 환생",
+                        "candidate_url": mobile_url,
+                        "official_title_exists": True,
+                        "row_discusses_work_as_work": True,
+                        "scope": {
+                            "scope_kind": "current_work",
+                            "confidence": "high",
+                            "direct_bridge_sources": ["row_discusses_work_as_work"],
+                        },
+                    },
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertTrue(identity["title_resolution_allowed"])
+        self.assertEqual(identity["novel_identity"]["official_title"], "빌어먹을 환생")
+        self.assertEqual(identity["novel_identity"]["heretic_url"], canonical_url)
+        decision = identity["promotion_decision"]
+        self.assertTrue(decision["publish_allowed"])
+        self.assertEqual(decision["official_title"], "빌어먹을 환생")
+        self.assertEqual(decision["official_url"], canonical_url)
+        trace = identity["publish_contract_trace"]
+        self.assertEqual(trace["gate_decision"], decision)
+        self.assertEqual(trace["post_gate_identity"]["official_url"], canonical_url)
+        self.assertEqual(identity["candidate_ledger"]["publish_contract_trace"], trace)
+
     def test_inner_analysis_payload_uses_caller_post_title_for_shared_gate_restore(self):
         result = {
             "post_id": 11661876,

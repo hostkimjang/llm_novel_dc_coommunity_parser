@@ -1,0 +1,50 @@
+{
+  "loop_id": "Loop494",
+  "date": "2026-07-06",
+  "report_type": "publish_contract_trace_mobile_munpia_contract_repair",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "scope": {
+    "source_loop": "Loop493",
+    "source_lane": "publish_contract_trace_repair_before_replay",
+    "source_lane_rows": 5,
+    "target_post_ids": [
+      11718099
+    ],
+    "remaining_source_lane_post_ids": [
+      11677915,
+      11684372,
+      11694019,
+      11682780
+    ]
+  },
+  "repair": {
+    "status": "GO_UNIT",
+    "summary": "Mobile Munpia detail URLs such as https://mm.munpia.com/?menu=novel&id=222360 are now canonicalized to https://novel.munpia.com/222360 before shared promotion gate restoration.",
+    "files": [
+      "expert_main.py",
+      "tests/test_expert_main_comment_metadata.py"
+    ],
+    "contract": [
+      "_canonical_official_detail_url is the shared official detail URL normalization helper.",
+      "Nested _official_detail_url wrappers now route through the shared helper.",
+      "A blocked current-work candidate with mobile Munpia official detail evidence restores to safe_resolved only through the shared gate and publish_contract_trace."
+    ]
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "targeted_test": "PASS / 1 test",
+    "promotion_contract_suite": "PASS / 72 tests",
+    "work_bridge_contract_suite": "PASS / 3 tests",
+    "runtime_replay_after_patch": "NOT_RUN_AFTER_PATCH",
+    "full375_after_patch": "NOT_RUN_AFTER_PATCH"
+  },
+  "gates": {
+    "code_contract": "GO_UNIT",
+    "runtime_replay": "NOT_RUN_AFTER_PATCH",
+    "full375_collateral": "NO-GO",
+    "search_evidence": "REVIEW",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "completion_gate": "full375 collateral GO + full_scan path"
+  }
+}

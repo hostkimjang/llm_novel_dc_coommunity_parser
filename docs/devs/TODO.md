@@ -1,5 +1,17 @@
 # Developer TODO Index
 
+## 2026-07-06 Loop494 TODO
+
+- 상태 업데이트: Loop493 `publish_contract_trace_repair_before_replay` 중 `11718099 / 빌어먹을 환생`의 모바일 문피아 URL 정규화 계약을 수리했다. Goal은 완료가 아니다.
+- [x] `mm.munpia.com`/`m.munpia.com` 상세 URL을 `https://novel.munpia.com/<id>`로 정규화하는 helper를 추가했다.
+- [x] 중첩 `_official_detail_url(...)` 3곳을 shared helper 경유로 수렴시켰다.
+- [x] `11718099`가 shared gate와 `publish_contract_trace`를 통해 canonical URL로 복구되는 테스트를 추가했다.
+- [x] py_compile, targeted unittest `1`, promotion contract suite `72`, work bridge contract suite `3` PASS를 확인했다.
+- [ ] Loop493 `publish_contract_trace_repair_before_replay` 잔여 `4`건을 계속 처리한다.
+- [ ] Runtime replay after patch 또는 준비된 batch replay는 잔여 lane 수리와 search-blind 태깅 뒤 실행한다.
+- [ ] Full375 collateral `NO-GO`를 닫기 전 bounded/full375 동결 해제나 goal 완료를 주장하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop488 TODO
 
 - 상태 업데이트: current HEAD `4b838520` full375가 background로 진행 중이다. Goal은 완료가 아니다.

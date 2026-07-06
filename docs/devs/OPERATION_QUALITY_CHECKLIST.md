@@ -1,5 +1,22 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop494 publish_contract_trace 모바일 문피아 계약 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_494_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop494_publish_contract_trace_mobile_munpia_state_20260706.json`.
+  - [x] Code/test 기록 완료: `expert_main.py`, `tests/test_expert_main_comment_metadata.py`.
+  - [x] `11718099 / 빌어먹을 환생`의 모바일 문피아 URL을 canonical official detail URL로 정규화했다.
+  - [x] Shared gate 복구와 `publish_contract_trace` 동기화 테스트를 추가했다.
+- 품질 경계:
+  - [x] Code contract `GO_UNIT`은 runtime replay가 아니다.
+  - [x] `11718099` 단위 복구는 full375 collateral approval이 아니다.
+  - [x] Loop493 `publish_contract_trace_repair_before_replay` 잔여 `4`건을 보존한다.
+  - [ ] Runtime replay after patch는 아직 실행하지 않았다.
+  - [ ] Full375 after patch는 아직 실행하지 않았다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop491 P0 runtime failure batch 품질 게이트
 
 - 근거:

@@ -24,12 +24,37 @@ from queue import Queue, Empty
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any, Optional
-from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import parse_qs, urlsplit, urlunsplit
 
 _DEFAULT_VLM_MAX_IMAGE_BYTES = "16777216"
 
 # 대시보드 비활성화 플래그: --no-dashboard
 _NO_DASHBOARD = "--no-dashboard" in sys.argv
+
+
+def _canonical_official_detail_url(value: Any) -> str:
+    url = str(value or "").strip()
+    if not url:
+        return ""
+    lowered = url.lower()
+    if "novelpia.com/novel/" in lowered:
+        return url
+    if "series.naver.com/novel/detail.series" in lowered:
+        return url
+    if "page.kakao.com/content/" in lowered:
+        return url
+    if "novel.munpia.com/" in lowered:
+        return url
+
+    parts = urlsplit(url)
+    host = parts.netloc.lower()
+    if host in {"mm.munpia.com", "m.munpia.com"}:
+        params = parse_qs(parts.query)
+        menu = (params.get("menu") or [""])[0].strip().lower()
+        novel_id = (params.get("id") or [""])[0].strip()
+        if menu == "novel" and novel_id.isdigit():
+            return f"https://novel.munpia.com/{novel_id}"
+    return ""
 
 # ─── CLI 인자 파싱 ──────────────────────────────────────
 def _build_arg_parser(*, add_help: bool) -> argparse.ArgumentParser:
@@ -629,19 +654,7 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
         return False
 
     def _official_detail_url(value: Any) -> str:
-        url = str(value or "").strip()
-        lowered = url.lower()
-        if not url:
-            return ""
-        if "novelpia.com/novel/" in lowered:
-            return url
-        if "series.naver.com/novel/detail.series" in lowered:
-            return url
-        if "page.kakao.com/content/" in lowered:
-            return url
-        if "novel.munpia.com/" in lowered:
-            return url
-        return ""
+        return _canonical_official_detail_url(value)
 
     def _search_evidence_items() -> List[Dict[str, Any]]:
         items: List[Dict[str, Any]] = []
@@ -2911,19 +2924,7 @@ def _sync_allowed_publication_result_contract(
         return re.sub(r"[?#].*$", "", raw.rstrip("/"))
 
     def _official_detail_url(value: Any) -> str:
-        url = str(value or "").strip()
-        lowered = url.lower()
-        if not url:
-            return ""
-        if "novelpia.com/novel/" in lowered:
-            return url
-        if "series.naver.com/novel/detail.series" in lowered:
-            return url
-        if "page.kakao.com/content/" in lowered:
-            return url
-        if "novel.munpia.com/" in lowered:
-            return url
-        return ""
+        return _canonical_official_detail_url(value)
 
     def _candidate_title_url(item: Any) -> tuple[str, str]:
         if isinstance(item, dict):
@@ -6556,19 +6557,7 @@ def _demote_unverified_image_ocr_publication_contract(
         return [str(value) for value in sources if str(value).strip()]
 
     def _official_detail_url(value: Any) -> str:
-        url = str(value or "").strip()
-        lowered = url.lower()
-        if not url:
-            return ""
-        if "novelpia.com/novel/" in lowered:
-            return url
-        if "series.naver.com/novel/detail.series" in lowered:
-            return url
-        if "page.kakao.com/content/" in lowered:
-            return url
-        if "novel.munpia.com/" in lowered:
-            return url
-        return ""
+        return _canonical_official_detail_url(value)
 
     def _iter_dict_lists(*keys: str) -> List[Dict[str, Any]]:
         out: List[Dict[str, Any]] = []

@@ -1,5 +1,17 @@
 # Improvement Register
 
+## IMP-20260706-494 - mobile Munpia official detail contract
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| URL 정규화 | GO_UNIT | `mm.munpia.com`/`m.munpia.com` `menu=novel&id=<숫자>`를 `https://novel.munpia.com/<id>`로 정규화 | 다른 플랫폼 모바일 URL 필요 여부는 증거 발생 시 추가 |
+| Shared gate 복구 | GO_UNIT | `11718099 / 빌어먹을 환생` 재현 테스트에서 `safe_resolved`와 canonical URL 복구 확인 | runtime replay로 실제 row 반영 확인 |
+| Publish trace | GO_UNIT | `publish_contract_trace.gate_decision`과 `promotion_decision` 동기화 확인 | Loop493 잔여 trace lane 처리 |
+| 검증 | PASS | py_compile PASS, targeted `1` PASS, promotion contract `72` PASS, work bridge `3` PASS | full375는 미실행 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: code contract `GO_UNIT`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-491 - P0 runtime failure batch split
 
 | 항목 | 상태 | 근거 | 다음 |

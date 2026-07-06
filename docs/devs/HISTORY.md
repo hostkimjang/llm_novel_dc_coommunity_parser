@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-06 - Loop494 publish_contract_trace mobile Munpia contract repair
+
+- Loop493 `publish_contract_trace_repair_before_replay` 5건 중 `11718099 / 빌어먹을 환생`의 모바일 문피아 상세 URL 차단 경로를 수리했다.
+- `expert_main.py`에 `_canonical_official_detail_url(...)`를 추가해 `mm.munpia.com`/`m.munpia.com` `menu=novel&id=<숫자>`를 `https://novel.munpia.com/<id>`로 정규화한다.
+- 중첩 `_official_detail_url(...)` 3곳을 shared helper 경유로 수렴시켰다.
+- `tests/test_expert_main_comment_metadata.py`에 `11718099` 재현 테스트를 추가했다.
+- 검증은 py_compile PASS, targeted unittest `1` PASS, `tests.test_expert_main_comment_metadata` `72` PASS, `tests.test_regression_safe_work_bridge_contract` `3` PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_494_REPORT_20260706.md`, state는 `docs/devs/loop494_publish_contract_trace_mobile_munpia_state_20260706.json`이다.
+- Gate는 code contract `GO_UNIT`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop491 P0 runtime failure batch
 
 - Loop490 action queue `37`건에서 P0 `23`건을 분리했다.

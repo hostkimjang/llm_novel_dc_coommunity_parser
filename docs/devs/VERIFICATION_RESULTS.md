@@ -1,5 +1,28 @@
 # Verification Results
 
+## 2026-07-06 Loop494 Verification
+
+- 범위: Loop493 `publish_contract_trace_repair_before_replay` 중 `11718099 / 빌어먹을 환생`의 모바일 문피아 공식 상세 URL 정규화 누락을 코드 계약으로 수리했다. 신규 runtime/full375/full_scan 런은 발주하지 않았다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_494_REPORT_20260706.md`
+  - state `docs\devs\loop494_publish_contract_trace_mobile_munpia_state_20260706.json`
+  - code `expert_main.py`
+  - test `tests\test_expert_main_comment_metadata.py`
+- Result:
+  - `https://mm.munpia.com/?menu=novel&action=view&id=222360...`을 `https://novel.munpia.com/222360`으로 정규화한다.
+  - blocked current-work candidate는 shared gate와 `publish_contract_trace`를 통해서만 `safe_resolved`로 복구된다.
+  - Loop493 `publish_contract_trace_repair_before_replay` 잔여는 `4`건이다.
+- Validation:
+  - `.\venv\Scripts\python.exe -m py_compile expert_main.py tests\test_expert_main_comment_metadata.py` PASS
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_blocked_current_work_shared_gate_restores_mobile_munpia_detail_publication -v` PASS, `1` test
+  - `.\venv\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata -v` PASS, `72` tests
+  - `.\venv\Scripts\python.exe -m unittest tests.test_regression_safe_work_bridge_contract -v` PASS, `3` tests
+- Boundary:
+  - Code contract `GO_UNIT`은 runtime replay나 full375 approval이 아니다.
+  - Runtime replay after patch와 full375 after patch는 아직 실행하지 않았다.
+  - Completion gate는 `full375 collateral GO + full_scan 경로 정의`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop491 P0 runtime failure batch 검증
 
 - 범위: Loop490 action queue `37`건에서 P0 `23`건을 runtime repair 후보와 source-native/blind review 후보로 분리했다. 신규 runtime/full375/full_scan 런은 발주하지 않았다.
