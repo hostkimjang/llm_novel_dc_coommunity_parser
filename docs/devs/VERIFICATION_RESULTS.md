@@ -31,9 +31,18 @@
   - always-on gate `NO-GO / collateral_regression_count_nonzero`
   - collateral triage priority `P0 136 / P1 1`
   - regression buckets: `safe_loss_resolved_to_null 81`, `wrong_work_title_flip 30`, `unsafe_promotion_from_hold 25`, `new_resolution_promotion 1`
+  - P0 blind/source-native review batch generated: selected rows `136`, bucket `safe_loss_resolved_to_null 81`, `wrong_work_title_flip 30`, `unsafe_promotion_from_hold 25`
+  - P0 batch missing source/baseline/after rows `0/0/0`
+  - P0 batch state `docs\devs\loop488_full375_p0_review_batch_state_20260706.json`
+  - P0 batch artifacts:
+    - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_full375_current_head_p0_review_batch.json`
+    - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_full375_current_head_p0_review_batch.jsonl`
+    - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_full375_current_head_p0_review_batch.md`
 - Boundary:
   - Runtime 완료와 golden18 `18/18 PASS`는 full-scan approval이 아니다.
   - Full375 collateral이 regression `137`건으로 `NO-GO`라 golden 소표본 통과는 과적합 가능성을 해소하지 못했다.
+  - P0 batch 생성은 verdict 입력 고정이며 approval이 아니다.
+  - P1 `11682800 / new_resolution_promotion`은 별도 source-native 또는 blind review가 필요하다.
   - Search degraded가 관측됐으므로 promotion_blocked 계열은 계속 `search-blind 조건부`로 태깅한다.
   - Completion gate는 여전히 `full375 collateral GO + full_scan 경로 정의`다.
   - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.

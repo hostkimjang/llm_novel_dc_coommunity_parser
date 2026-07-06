@@ -15,10 +15,12 @@
 - [x] Full375 collateral compare와 always-on gate를 실행했다.
 - [x] Full375 collateral `GO` 전 goal 완료를 주장하지 않는다.
 - [ ] Full375 collateral은 `NO-GO / changed 199 / regression 137`이다.
-- [ ] Collateral triage `P0 136 / P1 1`을 N건 배치 후속으로 분해한다.
+- [x] Collateral triage `P0 136`을 blind/source-native N건 배치로 분해했다.
+- [ ] P0 batch `136`건 verdict를 채운다.
+- [ ] P1 `11682800 / new_resolution_promotion`을 별도 source-native 또는 blind review로 처리한다.
 - [ ] Search evidence는 `REVIEW / search_degraded_observed`다. Search recovery를 닫지 않는다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
-- Gate: full375 runtime `GO`, run health `GO`, publication contract `GO`, golden18 `GO`, full375 collateral `NO-GO`, always-on gate `NO-GO`, search evidence `REVIEW`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: full375 runtime `GO`, run health `GO`, publication contract `GO`, golden18 `GO`, full375 collateral `NO-GO`, always-on gate `NO-GO`, P0 batch `REVIEW-LOCKED`, search evidence `REVIEW`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-06 Loop487 stable alias collision contract 체크
 

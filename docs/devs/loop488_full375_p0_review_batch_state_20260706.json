@@ -1,0 +1,49 @@
+{
+  "loop": 488,
+  "date": "2026-07-06",
+  "report_type": "loop488_full375_p0_review_batch_state",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "source_gate": "NO-GO",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "source_artifacts": {
+    "collateral_triage_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_collateral_triage.json",
+    "panel_input": "out/regression_safe_grounding_20260626_000008_928006_loop01/panel/regression_panel_input.jsonl",
+    "baseline_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/baseline/baseline_result.json",
+    "after_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop488_full375_current_head_4b838520_search_nonlight_result.json"
+  },
+  "batch_artifacts": {
+    "json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json",
+    "jsonl": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.jsonl",
+    "markdown": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.md"
+  },
+  "batch_summary": {
+    "gate": "REVIEW-LOCKED",
+    "input_triage_rows": 199,
+    "selected_review_rows": 136,
+    "counts_by_bucket": {
+      "safe_loss_resolved_to_null": 81,
+      "wrong_work_title_flip": 30,
+      "unsafe_promotion_from_hold": 25
+    },
+    "missing_source_rows": 0,
+    "missing_baseline_result_rows": 0,
+    "missing_after_result_rows": 0,
+    "per_bucket_limit": 0
+  },
+  "remaining_non_p0": {
+    "p1_rows": 1,
+    "p1_post_ids": [
+      11682800
+    ],
+    "bucket": "new_resolution_promotion",
+    "required_action": "source_native_or_blind_review_required"
+  },
+  "approval_boundary": {
+    "batch_generation_is_not_approval": true,
+    "full375_collateral_gate": "NO-GO",
+    "always_on_gate": "NO-GO",
+    "search_recovery_gate": "REVIEW / search_degraded_observed",
+    "completion_gate": "full375 collateral GO + full_scan 경로 정의"
+  }
+}
