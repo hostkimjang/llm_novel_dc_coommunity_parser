@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260706-490 - projected safe46 runtime failure queue
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Expected audit split | GO | Loop489 `46` rows 중 PASS `10` 제외, FAIL `36` 포함 | 실패 lane별 배치 |
+| Action queue | REVIEW-LOCKED | queue `37`, validation issue `0` | P0 `23` 우선 |
+| Runtime block repair | OPEN | `shared_gate_runtime_block_repair_required 27` | code/runtime gate repair 후 replay |
+| Canonical/wrong-work review | HOLD | `canonical_variant_or_wrong_work_review_required 8` | blind/source-native 판정 |
+| Search degraded | P0_OPEN | unrecovered degraded `13` rows / total `25` | search replay 또는 search-blind 조건 명시 |
+| Candidate rebuild | HOLD | `11710036`, candidate_set_rebuild_required | 후보 재구성 뒤 gate 재투입 |
+| 검증 | PASS | py_compile PASS, unittest `2` PASS, queue generation PASS | broader runtime은 미실행 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: queue generation `GO`, runtime replay after queue `NOT_RUN_AFTER_QUEUE`, inherited expected-title `NO-GO / 10 of 46`, publication contract inherited `GO`, full375 collateral `NO-GO / raw regression 137 / review-adjusted regression 98`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-489 - shared gate residual projection and safe46 runtime replay
 
 | 항목 | 상태 | 근거 | 다음 |

@@ -1,5 +1,25 @@
 # Development Checklist
 
+## 2026-07-06 Loop490 projected safe46 runtime failure queue 체크
+
+- [x] Loop489 expected audit source `46` rows를 재확인했다.
+- [x] PASS exact safe_resolved `10`건은 queue에서 제외했다.
+- [x] FAIL `36`건을 runtime promotion block, title mismatch, compact variant lane으로 분리했다.
+- [x] Projection still-blocked `11710036`을 candidate-set rebuild lane으로 유지했다.
+- [x] Action queue `37` rows를 생성했다.
+- [x] Queue labels는 `REPROCESS 27 / HOLD 10`이다.
+- [x] Queue priorities는 `P0 23 / P1 13 / P2 1`이다.
+- [x] Search unrecovered degraded는 `13` rows, total `25`로 분리했다.
+- [x] Validation issue `0`을 확인했다.
+- [x] `tools/build_runtime_expected_failure_queue.py`와 `tests/test_runtime_expected_failure_queue.py`를 추가했다.
+- [x] py_compile, unittest `2` tests, queue generation `--fail-on-validation-issue`를 통과했다.
+- [ ] Runtime replay after queue는 아직 실행하지 않았다.
+- [ ] P0 `23`건을 shared gate repair/search replay/source-native review 배치로 처리한다.
+- [ ] Full375 collateral은 여전히 `NO-GO`다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: queue generation `GO`, runtime replay after queue `NOT_RUN_AFTER_QUEUE`, inherited expected-title `NO-GO / 10 of 46`, search evidence `REVIEW`, full375 collateral `NO-GO / raw regression 137 / review-adjusted regression 98`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop489 shared gate residual projection 체크
 
 - [x] Loop488 P0 full source-native summary에서 residual action queue를 최신화했다.
@@ -12,7 +32,7 @@
 - [x] shared gate projected safe `46`건 runtime replay를 search 포함 non-light, VLM/OCR on으로 실행했다.
 - [x] Runtime replay는 `46/46/0/0`, run health `GO`, publication contract `GO / 0 violations`로 완료됐다.
 - [x] Expected-title exact safe_resolved audit를 실행했고 `10/46`으로 `NO-GO`를 확인했다.
-- [ ] Runtime mismatch `36`건을 `promotion_blocked 30 / title mismatch 5 / compact variant 1` 기준으로 재분해한다.
+- [x] Runtime mismatch `36`건을 `promotion_blocked 30 / title mismatch 5 / compact variant 1` 기준으로 재분해했고 Loop490 queue `37`건으로 기록했다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 - Gate: queue split `REVIEW-LOCKED`, shared gate projection `REVIEW-LOCKED / safe 46 / rebuild 1`, runtime replay integrity `GO / 46 of 46`, expected-title `NO-GO / 10 of 46`, publication contract `GO`, search evidence `REVIEW`, full375 collateral `NO-GO / raw regression 137 / review-adjusted regression 98`, goal `ACTIVE / NOT_COMPLETE`.
 

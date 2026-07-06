@@ -1,5 +1,36 @@
 # Verification Results
 
+## 2026-07-06 Loop490 projected safe46 runtime failure queue 검증
+
+- 범위: Loop489 runtime expected-audit 실패 `36`건과 projection still-blocked `11710036`을 다음 실행 가능한 action queue로 재분해했다. 신규 runtime/full375 런은 발주하지 않았다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_490_REPORT_20260706.md`
+  - state `docs\devs\loop490_projected_safe46_runtime_failure_state_20260706.json`
+  - queue `docs\devs\loop490_projected_safe46_runtime_failure_action_queue.json`
+  - queue markdown `docs\devs\loop490_projected_safe46_runtime_failure_action_queue.md`
+  - source expected audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop489_projected_safe46_runtime_expected_audit.json`
+- Result:
+  - source expected rows `46`
+  - passed rows excluded `10`
+  - failed rows `36`
+  - projection still blocked rows `1`
+  - action queue rows `37`
+  - labels `REPROCESS 27 / HOLD 10`
+  - priorities `P0 23 / P1 13 / P2 1`
+  - source audit status counts `FAIL_RUNTIME_PROMOTION_BLOCKED 30 / FAIL_SAFE_RESOLVED_TITLE_MISMATCH 5 / FAIL_VARIANT_COMPACT_MATCH_ONLY 1 / PASS_EXACT_SAFE_RESOLVED 10`
+  - search unrecovered degraded rows/total `13/25`
+  - validation issue `0`
+- Validation:
+  - `.\venv\Scripts\python.exe -m py_compile tools\build_runtime_expected_failure_queue.py tests\test_runtime_expected_failure_queue.py` PASS
+  - `.\venv\Scripts\python.exe -m unittest tests.test_runtime_expected_failure_queue -v` PASS, `2` tests
+  - `tools\build_runtime_expected_failure_queue.py ... --fail-on-validation-issue` PASS
+- Boundary:
+  - Queue generation은 approval이 아니다.
+  - Runtime replay after queue는 아직 실행하지 않았다.
+  - Loop489 runtime integrity `GO`와 publication contract `GO`는 expected-title 정답성이나 full375 collateral 승인이 아니다.
+  - Completion gate는 `full375 collateral GO + full_scan 경로 정의`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop489 projected safe46 runtime replay 검증
 
 - 범위: Loop489 shared gate projection에서 `safe_resolved`로 예측한 46건을 search 포함 non-light, VLM/OCR on, `--slang-db off`, parallel `16`으로 실제 재실행했다.

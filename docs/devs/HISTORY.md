@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-06 - Loop490 projected safe46 runtime failure queue
+
+- Loop489 runtime expected-audit에서 projected safe `46`건 중 PASS `10`건은 제외하고 실패 `36`건을 action queue로 재분해했다.
+- Projection 단계 still-blocked `11710036`은 candidate-set rebuild lane으로 유지해 queue rows는 `37`이다.
+- Queue labels는 `REPROCESS 27 / HOLD 10`, priorities는 `P0 23 / P1 13 / P2 1`이다.
+- Source audit status는 `FAIL_RUNTIME_PROMOTION_BLOCKED 30`, `FAIL_SAFE_RESOLVED_TITLE_MISMATCH 5`, `FAIL_VARIANT_COMPACT_MATCH_ONLY 1`, `PASS_EXACT_SAFE_RESOLVED 10`이다.
+- Search unrecovered degraded는 `13` rows, total `25`로 분리했다.
+- `tools/build_runtime_expected_failure_queue.py`와 `tests/test_runtime_expected_failure_queue.py`를 추가했다.
+- 검증은 py_compile PASS, `tests.test_runtime_expected_failure_queue` `2` tests PASS, queue generation `--fail-on-validation-issue` PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_490_REPORT_20260706.md`, state는 `docs/devs/loop490_projected_safe46_runtime_failure_state_20260706.json`, queue는 `docs/devs/loop490_projected_safe46_runtime_failure_action_queue.json/.md`다.
+- Gate는 queue generation `GO`, runtime replay after queue `NOT_RUN_AFTER_QUEUE`, inherited expected-title `NO-GO / 10 of 46`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop489 projected safe46 runtime replay
 
 - Loop489 projected safe `46`건을 search 포함 non-light, VLM/OCR on, `--slang-db off`, parallel `16`으로 실행했다.

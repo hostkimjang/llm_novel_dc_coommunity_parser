@@ -1,5 +1,25 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop490 projected safe46 runtime failure queue 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_490_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop490_projected_safe46_runtime_failure_state_20260706.json`.
+  - [x] Action queue 기록 완료: `docs/devs/loop490_projected_safe46_runtime_failure_action_queue.json/.md`.
+  - [x] Source expected audit 경로 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop489_projected_safe46_runtime_expected_audit.json`.
+  - [x] Tool/test 기록 완료: `tools/build_runtime_expected_failure_queue.py`, `tests/test_runtime_expected_failure_queue.py`.
+  - [x] PASS `10`건 제외, FAIL `36`건 포함, projection still-blocked `1`건 포함을 확인했다.
+  - [x] Queue `37`, labels `REPROCESS 27 / HOLD 10`, priorities `P0 23 / P1 13 / P2 1`, validation issue `0`을 확인했다.
+- 품질 경계:
+  - [x] Queue generation은 approval이 아니다.
+  - [x] Runtime replay after queue는 아직 실행하지 않았다.
+  - [x] Search unrecovered degraded `13/25`를 별도 action으로 유지했다.
+  - [x] `11710036`은 candidate-set rebuild 전 public publish하지 않는다.
+  - [x] Runtime completion과 publication contract `GO`는 semantic/full_scan approval이 아니다.
+  - [ ] P0 `23`건을 다음 배치로 처리할 때 actionable queue 감소와 동일 packet safe_resolved 단조 비감소를 확인한다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: queue generation `GO`, runtime replay after queue `NOT_RUN_AFTER_QUEUE`, inherited expected-title `NO-GO / 10 of 46`, search evidence `REVIEW / timeout + degraded`, full375 collateral `NO-GO / review-adjusted regression 98`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop489 shared gate residual projection 품질 게이트
 
 - 근거:
@@ -20,7 +40,7 @@
   - [x] Shared gate projected safe `46`건 runtime replay는 `46/46/0/0`으로 완료됐다.
   - [x] Runtime completion과 publication contract `GO`는 semantic/full_scan approval이 아니다.
   - [x] Expected-title exact safe_resolved는 `10/46`이라 projection semantic gate는 `NO-GO`다.
-  - [ ] Runtime mismatch `36`건은 재분해가 필요하다.
+  - [x] Runtime mismatch `36`건은 Loop490 action queue `37`건으로 재분해했다.
   - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
 - Gate: shared gate projection `REVIEW-LOCKED / safe 46 / rebuild 1`, runtime replay integrity `GO / 46 of 46`, expected-title `NO-GO / 10 of 46`, publication contract `GO`, search evidence `REVIEW / timeout + degraded`, full375 collateral `NO-GO / review-adjusted regression 98`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
