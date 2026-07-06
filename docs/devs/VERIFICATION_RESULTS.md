@@ -1,5 +1,33 @@
 # Verification Results
 
+## 2026-07-07 Loop507 Verification
+
+- 범위: Loop502 `image_or_alias_anchor_contract_repair` lane의 verified image/OCR work-title title-only publication contract를 감사/production sanitizer에 반영했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_507_REPORT_20260707.md`
+  - state `docs\devs\loop507_image_anchor_contract_state_20260707.json`
+  - full375 static audit JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop507_full375_publication_contract_image_anchor_audit.json`
+  - full375 static audit MD `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop507_full375_publication_contract_image_anchor_audit.md`
+- Result:
+  - full375 static audit `NO-GO`
+  - row_count `375`
+  - violation_row_count `7`
+  - 신규 image/OCR stale post_id `11684372`
+  - 기존 URL withheld leak post_ids `11674694`, `11689292`, `11705251`, `11677924`, `11671500`
+  - existing scope stale post_id `11658668`
+  - 새 runtime replay `NOT_RUN_AFTER_CONTRACT_PATCH`
+- Validation:
+  - `.\.venv312\Scripts\python.exe -m py_compile expert_main.py tools\audit_publication_contract_convergence.py` PASS
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_publication_contract_convergence_audit` PASS, `18` tests
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata` PASS, `73` tests
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_shared_gate_runtime_block_repair_queue tests.test_always_on_regression_gates tests.test_publication_contract_convergence_audit tests.test_expert_main_comment_metadata` PASS, `105` tests
+  - `tools\audit_publication_contract_convergence.py --result <Loop496 full375 result>` PASS command, expected audit gate `NO-GO / 7 violation rows`
+- Boundary:
+  - 이 NO-GO는 current stale artifact의 image/OCR anchor contract gap이다.
+  - Production sanitizer patch는 unit-level `GO`지만 runtime replay는 아직 실행하지 않았다.
+  - Full375 collateral은 `NO-GO / residual 105`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop506 Verification
 
 - 범위: Loop502 `title_url_or_variant_trace_repair` lane의 URL/title mismatch 및 URL withheld publication contract를 감사/production sanitizer에 반영했다.

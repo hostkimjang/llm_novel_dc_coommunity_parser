@@ -1229,6 +1229,115 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
             identity["publish_contract_trace"]["gate_decision"]["reason_codes"],
         )
 
+    def test_verified_image_ocr_work_title_restores_title_only_publication(self):
+        result = {
+            "post_id": 11684372,
+            "title": "밀리언클래스 공지보고 웃음",
+            "content": ["대학원생이 시간이 남아..?"],
+            "comments": [
+                "도피대학원생인가보지",
+                "문학은 힘든상황어쩌고",
+                "휴재사유 : 교수",
+            ],
+            "image_count": 2,
+            "identity": {
+                "title_resolution_allowed": False,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "unresolved",
+                "candidate_ledger_status": "promotion_blocked",
+                "blocked_official_title": "밀리언 클래스",
+                "context_sources": ["title", "body", "comments", "search", "image"],
+                "anchor_type": "image",
+                "novel_identity": {
+                    "official_title": None,
+                    "heretic_url": None,
+                    "confidence": "None",
+                },
+                "image_evidence_catalog": [
+                    {
+                        "promotion_eligible": True,
+                        "title_role": "work_title",
+                        "evidence_type": "explicit_text",
+                        "focus_role": "work_anchor",
+                        "screen_type": "work_surface",
+                        "explicit_work_title": "밀리언 클래스",
+                        "ocr_text": "APPLICATION GUIDE 밀리언 클래스 모집 요강 및 일정",
+                    }
+                ],
+                "candidate_ledger": {
+                    "candidate_preservation_sources": [
+                        {
+                            "official_title": "밀리언 클래스",
+                            "heretic_url": None,
+                            "source_tier": "image_ocr",
+                            "reference_role": "candidate",
+                            "promotion_policy": "hold_without_promotion",
+                        }
+                    ],
+                    "promotion_decision": {
+                        "status": "candidate_only",
+                        "publish_allowed": False,
+                        "official_title": None,
+                        "official_url": None,
+                        "candidate_preserved": True,
+                        "reason_codes": [
+                            "official_title_exists",
+                            "row_discusses_work_as_work",
+                            "scope_current_work",
+                            "direct_image_work_surface_bridge",
+                            "ocr_catalog_official_title",
+                            "precision_seed_official_title_requires_review",
+                            "serialized_public_identity_scrubbed",
+                        ],
+                        "bypassed_gate": False,
+                        "scope": {
+                            "scope_kind": "current_work",
+                            "confidence": "high",
+                            "direct_bridge_sources": [
+                                "direct_image_work_surface_lock",
+                                "structured_direct_image_work_surface",
+                                "ocr_catalog_official_title",
+                            ],
+                        },
+                    },
+                    "promotion_gate_state": {
+                        "candidate_title": "밀리언 클래스",
+                        "candidate_url": "",
+                        "official_title_exists": True,
+                        "row_discusses_work_as_work": True,
+                        "scope": {
+                            "scope_kind": "current_work",
+                            "confidence": "high",
+                            "direct_bridge_sources": [
+                                "direct_image_work_surface_lock",
+                                "structured_direct_image_work_surface",
+                                "ocr_catalog_official_title",
+                            ],
+                        },
+                    },
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertTrue(identity["safe_resolved"])
+        self.assertEqual(identity["novel_identity"]["official_title"], "밀리언 클래스")
+        self.assertIsNone(identity["novel_identity"]["heretic_url"])
+        decision = identity["publish_contract_trace"]["gate_decision"]
+        self.assertTrue(decision["publish_allowed"])
+        self.assertEqual(decision["official_title"], "밀리언 클래스")
+        self.assertIsNone(decision["official_url"])
+        self.assertIn("verified_image_ocr_work_title_publication", decision["reason_codes"])
+        self.assertNotIn("serialized_public_identity_scrubbed", decision["reason_codes"])
+        self.assertEqual(
+            identity["publish_contract_trace"]["post_gate_identity"]["official_title"],
+            "밀리언 클래스",
+        )
+
     def test_unverified_direct_image_ocr_publication_without_official_bridge_is_held(self):
         result = {
             "post_id": 11685994,

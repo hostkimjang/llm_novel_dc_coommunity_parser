@@ -24,6 +24,21 @@ URL_TITLE_MISMATCH_BLOCK_REASON_CODES = {
     "official_detail_url_title_mismatch_publish_blocked",
 }
 URL_WITHHELD_REASON_CODE = "official_url_withheld_by_title_mismatch"
+IMAGE_DIRECT_WORK_REASON_CODES = {
+    "direct_image_work_surface_bridge",
+    "direct_image_work_surface_lock",
+    "structured_direct_image_work_surface",
+    "ocr_catalog_official_title",
+    "image_ocr_work_title",
+}
+IMAGE_TITLE_ONLY_PUBLISH_REASON_CODE = "verified_image_ocr_work_title_publication"
+IMAGE_HARD_HOLD_REASON_CODES = {
+    "image_ocr_without_title_anchor",
+    "platform_meta_image_title_hard_hold",
+    "image_scene_cues_unverified_public_title_bridge",
+    "precision_seed_weak_source_title_without_official_support",
+}
+IMAGE_UNVERIFIED_REASON_CODE = "unverified_promoted_image_work_title_without_official_support"
 
 
 def load_json(path: Path) -> Any:
@@ -136,6 +151,75 @@ def _scope_kind(value: Any) -> str:
     return str(_dict_or_empty(value).get("scope_kind") or "").strip()
 
 
+def _title_key(value: Any) -> str:
+    import re
+
+    return re.sub(r"[^0-9A-Za-z가-힣]+", "", str(value or "")).lower()
+
+
+def _near_title_match(left: Any, right: Any) -> bool:
+    left_key = _title_key(left)
+    right_key = _title_key(right)
+    if not left_key or not right_key:
+        return False
+    return bool(left_key == right_key or left_key in right_key or right_key in left_key)
+
+
+def _iter_dict_list(container: Any, key: str) -> list[dict[str, Any]]:
+    if not isinstance(container, dict):
+        return []
+    values = container.get(key)
+    if not isinstance(values, list):
+        return []
+    return [item for item in values if isinstance(item, dict)]
+
+
+def _direct_bridge_sources(*scopes: Any) -> set[str]:
+    out: set[str] = set()
+    for scope in scopes:
+        payload = _dict_or_empty(scope)
+        values = payload.get("direct_bridge_sources")
+        if isinstance(values, list):
+            out.update(str(value or "").strip() for value in values if str(value or "").strip())
+    return out
+
+
+def _matching_verified_image_work_title(identity: dict[str, Any], ledger: dict[str, Any], title: Any) -> bool:
+    candidate_title = str(title or "").strip()
+    if not candidate_title:
+        return False
+    for source in (identity, ledger):
+        for item in (
+            _iter_dict_list(source, "image_evidence_catalog")
+            + _iter_dict_list(source, "image_enrichment")
+        ):
+            if item.get("promotion_eligible") is not True:
+                continue
+            role = str(item.get("title_role") or "").strip().lower()
+            evidence_type = str(item.get("evidence_type") or "").strip().lower()
+            if role not in {"title", "cover_title", "explicit_title", "work_title"} and evidence_type not in {
+                "ocr_title",
+                "explicit_title",
+                "work_title",
+                "explicit_text",
+            }:
+                continue
+            if any(
+                _near_title_match(item.get(key), candidate_title)
+                for key in ("explicit_work_title", "detected_title", "work_title", "official_title")
+            ):
+                return True
+    return False
+
+
+def _candidate_title_from_sources(*values: Any) -> str | None:
+    for value in values:
+        candidate = _candidate_title_url(value)
+        if candidate["official_title"]:
+            return candidate["official_title"]
+    return None
+
+
 def _append_violation(violations: list[dict[str, Any]], code: str, detail: str) -> None:
     violations.append({"code": code, "detail": detail})
 
@@ -165,6 +249,11 @@ def audit_row(row: dict[str, Any], *, index: int) -> dict[str, Any]:
     publish_ledger = identity.get("publish_ledger")
     if not isinstance(publish_ledger, dict):
         publish_ledger = ledger.get("publish_ledger")
+    promotion_gate_state = identity.get("promotion_gate_state")
+    if not isinstance(promotion_gate_state, dict):
+        promotion_gate_state = ledger.get("promotion_gate_state")
+    if not isinstance(promotion_gate_state, dict):
+        promotion_gate_state = {}
 
     has_public_title = bool(public_identity["official_title"])
     if has_public_title and not isinstance(decision, dict):
@@ -313,6 +402,30 @@ def audit_row(row: dict[str, Any], *, index: int) -> dict[str, Any]:
     public_publish = _dict_or_empty(publish_ledger.get("public_publish")) if isinstance(publish_ledger, dict) else {}
     expected_title = _string_or_none(decision.get("official_title"))
     expected_url = _string_or_none(decision.get("official_url"))
+    gate_scope = _dict_or_empty(promotion_gate_state.get("scope"))
+    image_direct_sources = _direct_bridge_sources(decision_scope, trace_scope, gate_scope)
+    image_anchor_context = bool(
+        reason_codes & IMAGE_DIRECT_WORK_REASON_CODES
+        or image_direct_sources & IMAGE_DIRECT_WORK_REASON_CODES
+    )
+    if publish_allowed and IMAGE_UNVERIFIED_REASON_CODE in reason_codes:
+        _append_violation(
+            violations,
+            "image_unverified_reason_allows_publish",
+            "unverified image/OCR public-title reason must not allow public publication",
+        )
+    if (
+        publish_allowed
+        and image_anchor_context
+        and not expected_url
+        and IMAGE_TITLE_ONLY_PUBLISH_REASON_CODE in reason_codes
+        and not _matching_verified_image_work_title(identity, ledger, expected_title)
+    ):
+        _append_violation(
+            violations,
+            "verified_image_ocr_publication_missing_verified_evidence",
+            "verified image/OCR title-only publication lacks a matching promotion_eligible work-title evidence item",
+        )
     url_title_mismatch_block = bool(reason_codes & URL_TITLE_MISMATCH_BLOCK_REASON_CODES)
     if url_title_mismatch_block:
         preserved_url_sources = [
@@ -398,6 +511,35 @@ def audit_row(row: dict[str, Any], *, index: int) -> dict[str, Any]:
                 "serialized official_title does not match allowed decision",
             )
     else:
+        blocked_candidate_title = _candidate_title_from_sources(
+            pre_gate_candidate,
+            ledger_candidate_preservation,
+            {
+                "official_title": identity.get("blocked_official_title"),
+                "official_url": identity.get("blocked_official_title_url"),
+            },
+            {
+                "official_title": ledger.get("blocked_official_title"),
+                "official_url": ledger.get("blocked_official_title_url"),
+            },
+        )
+        blocked_current_work = bool(scope_kind == "current_work" or "scope_current_work" in reason_codes)
+        blocked_row_discusses = bool("row_discusses_work_as_work" in reason_codes)
+        blocked_official_exists = bool("official_title_exists" in reason_codes)
+        if (
+            image_anchor_context
+            and blocked_candidate_title
+            and blocked_current_work
+            and blocked_row_discusses
+            and blocked_official_exists
+            and not (reason_codes & IMAGE_HARD_HOLD_REASON_CODES)
+            and _matching_verified_image_work_title(identity, ledger, blocked_candidate_title)
+        ):
+            _append_violation(
+                violations,
+                "verified_image_ocr_work_title_blocked_by_precision_review",
+                "promotion_eligible image/OCR work-title current-work candidate is still blocked instead of title-only publication",
+            )
         no_candidate_hold = bool(reason_codes & NO_CANDIDATE_REASON_CODES)
         candidate_preservation_expected = (
             decision.get("candidate_preserved") is True
@@ -505,6 +647,7 @@ def audit_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "blocked_decision_must_not_carry_publish_only_reason_codes": True,
             "url_title_mismatch_block_must_preserve_candidate_url_without_publication": True,
             "official_url_withheld_reason_must_not_publish_url": True,
+            "verified_image_ocr_work_title_current_work_candidate_must_not_remain_precision_blocked": True,
         },
         "summary": {
             "row_count": len(row_reports),
@@ -527,6 +670,7 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         "- 정책: `PromotionDecision.scope`는 `publish_contract_trace.scope_state`와 일치해야 하며, scope reason code와 publish/block reason code가 충돌하면 안 된다.",
         "- 정책: URL/title mismatch block은 후보 URL을 보존하되 public decision/trace/ledger/serialized identity로 URL을 publish하지 않아야 한다.",
         "- 정책: `official_url_withheld_by_title_mismatch`는 제목 publish만 허용하고 URL은 pre-gate 후보로만 남겨야 한다.",
+        "- 정책: `promotion_eligible=true`인 이미지/OCR work-title 후보가 current-work shared gate를 충족하면 title-only publish로 수렴해야 하며, 직접 제목 앵커가 없는 이미지는 candidate_only로 남아야 한다.",
         "",
         "## 요약",
         "",

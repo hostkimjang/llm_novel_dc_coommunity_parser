@@ -1,5 +1,21 @@
 # Development Checklist
 
+## 2026-07-07 Loop507 image/OCR anchor 계약 체크
+
+- [x] `expert_main.py`에 verified image/OCR work-title title-only 복구 경로를 추가했다.
+- [x] 복구 조건은 `promotion_eligible=true`, image/OCR work-title evidence, current-work scope, `row_discusses_work_as_work`, direct image bridge reason/source 조합으로 제한했다.
+- [x] `precision_seed_weak_source_title_without_official_support`와 `image_ocr_without_title_anchor` 계열 hard-hold는 유지했다.
+- [x] `tools/audit_publication_contract_convergence.py`에 verified image/OCR work-title precision block 감사를 추가했다.
+- [x] Current Loop496 full375 static audit는 `NO-GO / 375 rows / 7 violation rows`로 stale contract gap을 드러냈다.
+- [x] 신규 image/OCR stale row는 `11684372`이다.
+- [x] publication contract unittest `18`건 PASS.
+- [x] expert_main comment metadata unittest `73`건 PASS.
+- [x] shared/always-on 포함 focused unittest `105`건 PASS.
+- [ ] Runtime replay는 실행하지 않았다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: image/OCR anchor contract `NO-GO_IMAGE_ANCHOR_TRACE_CONTRACT_STATIC`, production sanitizer patch `GO_UNIT`, runtime replay `NOT_RUN_AFTER_CONTRACT_PATCH`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop506 title/url mismatch 계약 체크
 
 - [x] `tools/audit_publication_contract_convergence.py`에 URL/title mismatch block 감사를 추가했다.

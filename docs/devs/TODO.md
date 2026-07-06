@@ -1,5 +1,18 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop507 TODO
+
+- 상태 업데이트: Loop502 `image_or_alias_anchor_contract_repair` 1건을 shared promotion gate 계약으로 승격했고 current full375 static audit는 `NO-GO / 7 stale artifact rows`다. Goal은 완료가 아니다.
+- [x] `promotion_eligible=true` 이미지/OCR work-title 후보가 current-work shared gate를 충족하면 title-only publication으로 복구되도록 `expert_main.py`를 보강했다.
+- [x] `precision_seed_weak_source_title_without_official_support`와 `image_ocr_without_title_anchor` 계열은 hard-hold로 유지했다.
+- [x] `tools/audit_publication_contract_convergence.py`가 verified image/OCR work-title precision block을 NO-GO로 잡도록 했다.
+- [x] Current Loop496 full375 static audit는 `NO-GO / 375 rows / 7 violation rows`로 stale contract gap을 드러냈다.
+- [x] Focused tests는 publication contract `18`건, expert_main comment metadata `73`건, shared/always-on 포함 `105`건 PASS다.
+- [ ] Loop507 NO-GO image row `11684372`은 새 runtime replay가 아니라 다음 contract/replay batch에서 fixed-output 여부를 확인한다.
+- [ ] 기존 URL leak 5건과 scope stale 1건도 같은 static NO-GO로 남아 있으므로 full375 collateral `GO` 전 승인하지 않는다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop506 TODO
 
 - 상태 업데이트: title/url mismatch publication contract를 강화했고 current full375 static audit는 `NO-GO / 6 stale artifact rows`다. Goal은 완료가 아니다.

@@ -118,6 +118,184 @@ def _converged_scrubbed_candidate_row():
     }
 
 
+def _verified_image_ocr_blocked_row():
+    scope = {
+        "scope_kind": "current_work",
+        "confidence": "high",
+        "direct_bridge_sources": [
+            "direct_image_work_surface_lock",
+            "structured_direct_image_work_surface",
+            "ocr_catalog_official_title",
+        ],
+    }
+    decision = {
+        "status": "candidate_only",
+        "publish_allowed": False,
+        "official_title": None,
+        "official_url": None,
+        "candidate_preserved": True,
+        "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "direct_image_work_surface_bridge",
+            "ocr_catalog_official_title",
+            "precision_seed_official_title_requires_review",
+            "serialized_public_identity_scrubbed",
+        ],
+        "bypassed_gate": False,
+        "scope": scope,
+    }
+    pre_gate = {
+        "official_title": "밀리언 클래스",
+        "official_url": None,
+        "source": "candidate_ledger_or_serialized_identity",
+    }
+    post_gate = {
+        "official_title": None,
+        "official_url": None,
+        "candidate_ledger_status": "promotion_blocked",
+    }
+    trace = {
+        "pre_gate_candidate": pre_gate,
+        "gate_decision": decision,
+        "scope_state": scope,
+        "post_gate_identity": post_gate,
+        "reason_codes": decision["reason_codes"],
+        "bypassed_gate": False,
+    }
+    publish_ledger = {
+        "candidate_preservation": pre_gate,
+        "public_publish": post_gate,
+        "gate_decision": decision,
+    }
+    return {
+        "post_id": 11684372,
+        "analysis_result": {
+            "identity": {
+                "candidate_ledger_status": "promotion_blocked",
+                "blocked_official_title": "밀리언 클래스",
+                "context_sources": ["title", "body", "comments", "search", "image"],
+                "image_evidence_catalog": [
+                    {
+                        "promotion_eligible": True,
+                        "title_role": "work_title",
+                        "evidence_type": "explicit_text",
+                        "explicit_work_title": "밀리언 클래스",
+                    }
+                ],
+                "promotion_decision": decision,
+                "publish_contract_trace": trace,
+                "publish_ledger": publish_ledger,
+                "candidate_ledger": {
+                    "candidate_ledger_status": "promotion_blocked",
+                    "blocked_official_title": "밀리언 클래스",
+                    "image_evidence_catalog": [
+                        {
+                            "promotion_eligible": True,
+                            "title_role": "work_title",
+                            "evidence_type": "explicit_text",
+                            "explicit_work_title": "밀리언 클래스",
+                        }
+                    ],
+                    "promotion_decision": decision,
+                    "promotion_gate_state": {
+                        "candidate_title": "밀리언 클래스",
+                        "candidate_url": "",
+                        "official_title_exists": True,
+                        "row_discusses_work_as_work": True,
+                        "scope": scope,
+                    },
+                    "publish_contract_trace": trace,
+                    "publish_ledger": publish_ledger,
+                },
+            }
+        },
+    }
+
+
+def _verified_image_ocr_publish_row():
+    scope = {
+        "scope_kind": "current_work",
+        "confidence": "high",
+        "direct_bridge_sources": [
+            "direct_image_work_surface_bridge",
+            "ocr_catalog_official_title",
+            "verified_image_ocr_work_title_publication",
+        ],
+    }
+    decision = {
+        "status": "publish",
+        "publish_allowed": True,
+        "official_title": "밀리언 클래스",
+        "official_url": None,
+        "candidate_preserved": False,
+        "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "direct_image_work_surface_bridge",
+            "ocr_catalog_official_title",
+            "verified_image_ocr_work_title_publication",
+            "serialized_public_identity_shared_gate_restored",
+            "serialized_public_identity_published",
+        ],
+        "bypassed_gate": False,
+        "scope": scope,
+    }
+    pre_gate = {
+        "official_title": "밀리언 클래스",
+        "official_url": None,
+        "source": "candidate_ledger_or_serialized_identity",
+    }
+    post_gate = {
+        "official_title": "밀리언 클래스",
+        "official_url": None,
+        "candidate_ledger_status": "safe_resolved",
+    }
+    trace = {
+        "pre_gate_candidate": pre_gate,
+        "gate_decision": decision,
+        "scope_state": scope,
+        "post_gate_identity": post_gate,
+        "reason_codes": decision["reason_codes"],
+        "bypassed_gate": False,
+    }
+    publish_ledger = {
+        "candidate_preservation": pre_gate,
+        "public_publish": post_gate,
+        "gate_decision": decision,
+    }
+    return {
+        "post_id": 11684372,
+        "analysis_result": {
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "novel_identity": {
+                    "official_title": "밀리언 클래스",
+                    "heretic_url": None,
+                },
+                "image_evidence_catalog": [
+                    {
+                        "promotion_eligible": True,
+                        "title_role": "work_title",
+                        "evidence_type": "explicit_text",
+                        "explicit_work_title": "밀리언 클래스",
+                    }
+                ],
+                "promotion_decision": decision,
+                "publish_contract_trace": trace,
+                "publish_ledger": publish_ledger,
+                "candidate_ledger": {
+                    "promotion_decision": decision,
+                    "publish_contract_trace": trace,
+                    "publish_ledger": publish_ledger,
+                },
+            }
+        },
+    }
+
+
 class PublicationContractConvergenceAuditTest(unittest.TestCase):
     def test_converged_publish_contract_is_go(self):
         report = audit_rows([_converged_publish_row()])
@@ -130,6 +308,23 @@ class PublicationContractConvergenceAuditTest(unittest.TestCase):
 
         self.assertEqual(report["gate"], "GO")
         self.assertEqual(report["summary"]["violation_row_count"], 0)
+
+    def test_verified_image_ocr_title_only_publication_contract_is_go(self):
+        report = audit_rows([_verified_image_ocr_publish_row()])
+
+        self.assertEqual(report["gate"], "GO")
+        self.assertEqual(report["summary"]["violation_row_count"], 0)
+
+    def test_verified_image_ocr_work_title_blocked_by_precision_review_is_no_go(self):
+        report = audit_rows([_verified_image_ocr_blocked_row()])
+
+        self.assertEqual(report["gate"], "NO-GO")
+        codes = {
+            violation["code"]
+            for row in report["violations"]
+            for violation in row["violations"]
+        }
+        self.assertIn("verified_image_ocr_work_title_blocked_by_precision_review", codes)
 
     def test_public_title_without_contract_is_no_go(self):
         report = audit_rows(

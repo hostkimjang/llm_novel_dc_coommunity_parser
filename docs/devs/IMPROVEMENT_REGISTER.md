@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260707-507 - image/OCR work-title anchor publication contract
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Verified image/OCR title-only restore | GO_UNIT | `expert_main.py`가 `promotion_eligible=true` image/OCR work-title + current-work shared gate 후보를 title-only publish로 복구 | 다음 runtime replay에서 fixed-output 확인 |
+| Weak source hard-hold boundary | GO_UNIT | `precision_seed_weak_source_title_without_official_support`와 직접 제목 앵커 없는 image/OCR hold는 계속 차단 | hard-hold 회귀 방지 |
+| Image/OCR static audit | GO_UNIT | `audit_publication_contract_convergence.py`가 verified image/OCR work-title precision block을 NO-GO로 잡음 | full375/static gate에 계속 적용 |
+| Full375 static audit | NO-GO | Loop496 full375 result 기준 `375` rows, violation `7`, 신규 image/OCR stale `11684372` | stale artifact gap으로 보존 |
+| Runtime replay | NOT_RUN | 이번 회차는 contract patch + static audit | replay는 repair lane 정리 뒤 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: image/OCR anchor contract `NO-GO_IMAGE_ANCHOR_TRACE_CONTRACT_STATIC`, production sanitizer patch `GO_UNIT`, runtime replay `NOT_RUN_AFTER_CONTRACT_PATCH`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-506 - title/url mismatch publication contract
 
 | 항목 | 상태 | 근거 | 다음 |

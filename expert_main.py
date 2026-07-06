@@ -1646,6 +1646,299 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
         _sync_allowed_publication_result_contract(result_dict)
         return changed_local or True
 
+    def _restore_verified_image_ocr_work_title_only(candidate_title: str, candidate_url: str) -> bool:
+        candidate_title = str(candidate_title or "").strip()
+        candidate_url = _official_detail_url(candidate_url)
+        if not candidate_title or candidate_url:
+            return False
+
+        decision = promotion_decision if isinstance(promotion_decision, dict) else {}
+        gate_state = promotion_gate_state if isinstance(promotion_gate_state, dict) else {}
+        trace = identity.get("publish_contract_trace")
+        if not isinstance(trace, dict):
+            trace = ledger.get("publish_contract_trace")
+        if not isinstance(trace, dict):
+            trace = {}
+        reason_codes = {
+            str(code or "").strip()
+            for raw in (decision.get("reason_codes"), trace.get("reason_codes"))
+            if isinstance(raw, list)
+            for code in raw
+            if str(code or "").strip()
+        }
+        decision_scope = decision.get("scope") if isinstance(decision.get("scope"), dict) else {}
+        gate_scope = gate_state.get("scope") if isinstance(gate_state.get("scope"), dict) else {}
+        trace_scope = trace.get("scope_state") if isinstance(trace.get("scope_state"), dict) else {}
+        scope_kind = str(
+            decision_scope.get("scope_kind")
+            or gate_scope.get("scope_kind")
+            or trace_scope.get("scope_kind")
+            or ""
+        ).strip().lower()
+        scope_sources = {
+            str(value or "").strip()
+            for raw_scope in (decision_scope, gate_scope, trace_scope)
+            for value in (
+                raw_scope.get("direct_bridge_sources")
+                if isinstance(raw_scope.get("direct_bridge_sources"), list)
+                else []
+            )
+            if str(value or "").strip()
+        }
+        image_bridge_codes = {
+            "direct_image_work_surface_bridge",
+            "direct_image_work_surface_lock",
+            "structured_direct_image_work_surface",
+            "ocr_catalog_official_title",
+            "image_ocr_work_title",
+        }
+        hard_hold_codes = {
+            "image_ocr_without_title_anchor",
+            "platform_meta_image_title_hard_hold",
+            "image_scene_cues_unverified_public_title_bridge",
+            "precision_seed_weak_source_title_without_official_support",
+        }
+        if reason_codes & hard_hold_codes:
+            return False
+        if not (reason_codes & image_bridge_codes or scope_sources & image_bridge_codes):
+            return False
+        scope_current_work = scope_kind == "current_work" or "scope_current_work" in reason_codes
+        row_discusses_work = bool(
+            gate_state.get("row_discusses_work_as_work") is True
+            or "row_discusses_work_as_work" in reason_codes
+        )
+        official_title_exists = bool(
+            gate_state.get("official_title_exists") is True
+            or "official_title_exists" in reason_codes
+        )
+        if not (scope_current_work and row_discusses_work and official_title_exists):
+            return False
+
+        contexts = {
+            str(value or "").strip().lower()
+            for source in (identity.get("context_sources"), ledger.get("context_sources"))
+            if isinstance(source, list)
+            for value in source
+            if str(value or "").strip()
+        }
+        if "image" not in contexts or "title" not in contexts:
+            return False
+        if not (contexts & {"body", "comments", "search"}):
+            return False
+
+        flags = {
+            str(value or "").strip()
+            for source in (identity.get("consistency_flags"), ledger.get("consistency_flags"))
+            if isinstance(source, list)
+            for value in source
+            if str(value or "").strip()
+        }
+        hard_negative_flags = {
+            "recommendation_context_only_no_work_anchor",
+            "recommendation_context_only_public_title_conflict",
+            "batch_memory_alias_rescue_blocked_nonwork_context",
+            "batch_memory_alias_rescue_blocked_genre_context",
+            "semantic_seed_no_work_context",
+            "source_explicit_work_denial_title_only_publication_blocked",
+            "unresolved_worklike_hold:alias_character_discussion",
+            "inferred_publication_sentence_like_alias_overreach",
+            "batch_alias_url_only_counterevidence_blocked",
+            "low_specificity_batch_alias_counterevidence_blocked",
+        }
+        if flags & hard_negative_flags:
+            return False
+
+        candidate_key = _title_key(candidate_title)
+        if not candidate_key:
+            return False
+
+        def _iter_image_evidence() -> List[Dict[str, Any]]:
+            items: List[Dict[str, Any]] = []
+            for source in (identity, ledger):
+                if not isinstance(source, dict):
+                    continue
+                for key in ("image_evidence_catalog", "image_enrichment"):
+                    values = source.get(key)
+                    if isinstance(values, list):
+                        items.extend(item for item in values if isinstance(item, dict))
+            return items
+
+        def _verified_image_work_title() -> bool:
+            for item in _iter_image_evidence():
+                if item.get("promotion_eligible") is not True:
+                    continue
+                role = str(item.get("title_role") or "").strip().lower()
+                evidence_type = str(item.get("evidence_type") or "").strip().lower()
+                if role not in {"title", "cover_title", "explicit_title", "work_title"} and evidence_type not in {
+                    "ocr_title",
+                    "explicit_title",
+                    "work_title",
+                    "explicit_text",
+                }:
+                    continue
+                for key in ("explicit_work_title", "detected_title", "work_title", "official_title"):
+                    if _publication_near_title_match(item.get(key), candidate_title):
+                        return True
+            return False
+
+        if not _verified_image_work_title():
+            return False
+
+        changed_local = False
+        scope_state = {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": list(
+                dict.fromkeys(
+                    [
+                        *sorted(scope_sources & image_bridge_codes),
+                        "verified_image_ocr_work_title_publication",
+                        "direct_image_work_surface_bridge",
+                        "ocr_catalog_official_title",
+                        "title",
+                        "image",
+                        *(source for source in ("body", "comments", "search") if source in contexts),
+                    ]
+                )
+            ),
+        }
+        gate_decision = {
+            "status": "publish",
+            "publish_allowed": True,
+            "official_title": candidate_title,
+            "official_url": None,
+            "candidate_preserved": False,
+            "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "direct_image_work_surface_bridge",
+                "ocr_catalog_official_title",
+                "verified_image_ocr_work_title_publication",
+                "serialized_public_identity_shared_gate_restored",
+            ],
+            "bypassed_gate": False,
+            "scope": scope_state,
+        }
+        gate_state_payload = dict(gate_state) if isinstance(gate_state, dict) else {}
+        gate_state_payload.update(
+            {
+                "candidate_title": candidate_title,
+                "candidate_url": None,
+                "official_title_exists": True,
+                "row_discusses_work_as_work": True,
+                "scope": scope_state,
+            }
+        )
+
+        novel = identity.get("novel_identity")
+        if not isinstance(novel, dict):
+            novel = {}
+        if novel.get("official_title") != candidate_title:
+            novel["official_title"] = candidate_title
+            changed_local = True
+        if novel.get("heretic_url") is not None:
+            novel["heretic_url"] = None
+            changed_local = True
+        if novel.get("confidence") in {None, "", "None"}:
+            novel["confidence"] = "High"
+            changed_local = True
+        identity["novel_identity"] = novel
+
+        for key, value in (
+            ("candidate_ledger_status", "safe_resolved"),
+            ("title_resolution_allowed", True),
+            ("title_resolution_state", "resolved"),
+            ("work_resolution", "resolved"),
+            ("is_resolved_work_discussion", True),
+            ("promotion_blocked", False),
+            ("safe_resolved", True),
+            ("promotion_decision", gate_decision),
+            ("promotion_gate_state", gate_state_payload),
+        ):
+            if identity.get(key) != value:
+                identity[key] = value
+                changed_local = True
+        for key in ("blocked_official_title", "blocked_official_title_url", "promotion_blocked_reasons"):
+            value = [] if key == "promotion_blocked_reasons" else None
+            if identity.get(key) != value:
+                identity[key] = value
+                changed_local = True
+
+        cleaned_flags = [
+            str(value)
+            for value in (identity.get("consistency_flags") or [])
+            if str(value).strip()
+            and str(value)
+            not in {
+                "unverified_promoted_image_work_title_without_official_support",
+                "weak_public_title_bridge_direct_image_work_surface_exempt",
+            }
+        ]
+        for value in (
+            "verified_image_ocr_work_title_publication",
+            "serialized_public_identity_shared_gate_restored",
+        ):
+            if value not in cleaned_flags:
+                cleaned_flags.append(value)
+        if identity.get("consistency_flags") != cleaned_flags:
+            identity["consistency_flags"] = cleaned_flags
+            changed_local = True
+
+        primary_work = identity.get("primary_work")
+        if not isinstance(primary_work, dict):
+            primary_work = {}
+        primary_work.update(
+            {
+                "official_title": candidate_title,
+                "heretic_url": None,
+                "confidence": primary_work.get("confidence") or "High",
+                "source_tier": primary_work.get("source_tier") or "image_ocr",
+                "reference_role": "primary",
+            }
+        )
+        for key in ("promotion_policy", "blocked_by_candidate_audit"):
+            primary_work.pop(key, None)
+        _remove_negative_evidence(primary_work, "unverified_promoted_image_work_title_without_official_support")
+        identity["primary_work"] = primary_work
+
+        for source_items in (
+            identity.get("title_candidates"),
+            identity.get("candidate_preservation_sources"),
+            ledger.get("title_candidates"),
+            ledger.get("candidate_preservation_sources"),
+        ):
+            if not isinstance(source_items, list):
+                continue
+            for item in source_items:
+                if not isinstance(item, dict):
+                    continue
+                item_title, _item_url = _candidate_title_url(item)
+                if _title_key(item_title) != candidate_key:
+                    continue
+                item["official_title"] = candidate_title
+                item["heretic_url"] = None
+                item["reference_role"] = "primary"
+                item.pop("promotion_policy", None)
+                item.pop("blocked_by_candidate_audit", None)
+                _remove_negative_evidence(item, "unverified_promoted_image_work_title_without_official_support")
+
+        ledger["pipeline_official_title"] = candidate_title
+        ledger["blocked_official_title"] = None
+        ledger["blocked_official_title_url"] = None
+        ledger["promotion_blocked_reasons"] = []
+        ledger["promotion_decision"] = gate_decision
+        ledger["promotion_gate_state"] = gate_state_payload
+        ledger["candidate_ledger_status"] = "safe_resolved"
+        ledger["title_resolution_allowed"] = True
+        ledger["title_resolution_state"] = "resolved"
+        ledger["work_resolution"] = "resolved"
+        ledger["is_resolved_work_discussion"] = True
+        identity["candidate_ledger"] = ledger
+
+        _sync_allowed_publication_result_contract(result_dict)
+        return changed_local or True
+
     def _restore_blocked_candidate_when_shared_gate_allows(candidate_title: str, candidate_url: str) -> bool:
         candidate_title = str(candidate_title or "").strip()
         candidate_url = _official_detail_url(candidate_url)
@@ -2548,6 +2841,9 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
         return True
 
     if _restore_blocked_candidate_when_shared_gate_allows(blocked_title, blocked_url):
+        return True
+
+    if _restore_verified_image_ocr_work_title_only(blocked_title, blocked_url):
         return True
 
     if _restore_blocked_verified_alias_title_only(blocked_title, blocked_url):
@@ -6726,6 +7022,7 @@ def _demote_unverified_image_ocr_publication_contract(
         "url_title_verified_official_detail",
         "verified_alias_official_detail_anchor",
         "verified_character_work_link",
+        "verified_image_ocr_work_title_publication",
     }
     if reason_code_set & official_bridge_codes or scope_sources & official_bridge_codes:
         return False

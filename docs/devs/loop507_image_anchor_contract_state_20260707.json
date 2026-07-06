@@ -1,0 +1,61 @@
+{
+  "loop": 507,
+  "date": "2026-07-07",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "scope": "Loop502 image_or_alias_anchor_contract_repair lane",
+  "changed_files": [
+    "expert_main.py",
+    "tools/audit_publication_contract_convergence.py",
+    "tests/test_expert_main_comment_metadata.py",
+    "tests/test_publication_contract_convergence_audit.py"
+  ],
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_507_REPORT_20260707.md",
+    "full375_static_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop507_full375_publication_contract_image_anchor_audit.json",
+    "full375_static_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop507_full375_publication_contract_image_anchor_audit.md"
+  },
+  "contract": {
+    "verified_image_ocr_work_title_title_only_publication": true,
+    "requires_promotion_eligible_image_work_title": true,
+    "requires_current_work_scope": true,
+    "requires_row_discusses_work_as_work": true,
+    "hard_hold_precision_seed_weak_source_title_without_official_support": true,
+    "no_post_id_or_title_hardcoding": true
+  },
+  "full375_static_audit": {
+    "source_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop496_full375_current_head_4fd250f7_search_nonlight_result.json",
+    "gate": "NO-GO",
+    "row_count": 375,
+    "violation_row_count": 7,
+    "new_image_anchor_violation_post_ids": [
+      11684372
+    ],
+    "existing_url_leak_violation_post_ids": [
+      11674694,
+      11689292,
+      11705251,
+      11677924,
+      11671500
+    ],
+    "existing_scope_stale_violation_post_ids": [
+      11658668
+    ]
+  },
+  "validation": {
+    "py_compile": "PASS",
+    "publication_contract_unittest": "PASS / 18 tests",
+    "expert_main_comment_metadata_unittest": "PASS / 73 tests",
+    "combined_focused_unittest": "PASS / 105 tests",
+    "full375_static_audit_command": "PASS command / expected NO-GO"
+  },
+  "gates": {
+    "image_ocr_anchor_contract": "NO-GO_IMAGE_ANCHOR_TRACE_CONTRACT_STATIC",
+    "production_sanitizer_patch": "GO_UNIT",
+    "runtime_replay_after_patch": "NOT_RUN_AFTER_CONTRACT_PATCH",
+    "full375_collateral": "NO-GO / residual 105",
+    "overall_goal": "ACTIVE / NOT_COMPLETE",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  }
+}

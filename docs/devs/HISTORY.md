@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-07 - Loop507 image/OCR work-title anchor contract hardening
+
+- Loop502 `image_or_alias_anchor_contract_repair` lane의 11684372형 direct image/OCR work-title 후보를 shared promotion gate 계약으로 승격했다.
+- `expert_main.py`는 `promotion_eligible=true`인 이미지/OCR work-title 후보가 current-work scope와 `row_discusses_work_as_work`를 충족하면 URL이 없어도 title-only publication으로 수렴한다.
+- `precision_seed_weak_source_title_without_official_support`, `image_ocr_without_title_anchor`, platform meta/image scene hard-hold는 계속 candidate_only로 남긴다.
+- `tools/audit_publication_contract_convergence.py`는 verified image/OCR work-title current-work candidate가 precision block에 남으면 NO-GO로 잡는다.
+- Current Loop496 full375 결과에 새 static audit를 적용했고 `NO-GO / row_count 375 / violation_row_count 7`을 확인했다.
+- 신규 image/OCR stale row는 `11684372`이고 기존 stale rows는 URL leak 5건과 scope stale `11658668`이다.
+- Report는 `docs/devs/loop_reports/LOOP_507_REPORT_20260707.md`, state는 `docs/devs/loop507_image_anchor_contract_state_20260707.json`이다.
+- Gate는 image/OCR anchor contract `NO-GO_IMAGE_ANCHOR_TRACE_CONTRACT_STATIC`, production sanitizer patch `GO_UNIT`, runtime replay `NOT_RUN_AFTER_CONTRACT_PATCH`, full375 collateral `NO-GO / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop506 title/url mismatch publication contract hardening
 
 - `tools/audit_publication_contract_convergence.py`에 URL/title mismatch block과 `official_url_withheld_by_title_mismatch` 전용 감사를 추가했다.
