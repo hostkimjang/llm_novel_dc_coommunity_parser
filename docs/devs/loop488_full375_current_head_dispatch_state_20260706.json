@@ -55,14 +55,14 @@
     ]
   },
   "latest_monitoring_evidence": {
-    "snapshot_time_kst": "2026-07-06 08:36:34",
+    "snapshot_time_kst": "2026-07-06 09:08:13",
     "status": "IN_PROGRESS",
-    "completed_count": 212,
-    "flushed_count": 207,
-    "pending_count": 5,
+    "completed_count": 239,
+    "flushed_count": 228,
+    "pending_count": 11,
     "failed_count": 0,
-    "checkpoint_lines": 212,
-    "next_save_idx": 208,
+    "checkpoint_lines": 239,
+    "next_save_idx": 229,
     "partial_flush_gap": true,
     "ordered_flush_blocked": true,
     "large_run_complete": false,
@@ -70,20 +70,25 @@
       42256,
       968
     ],
-    "latest_manifest_write_kst": "2026-07-06 08:35:20",
-    "latest_checkpoint_write_kst": "2026-07-06 08:35:20",
-    "result_json_write_lag_reason": "05:44 KST에는 11700470 전후 ordered_flush_blocked로 result.json flush가 밀렸고, 05:58 KST에는 74/73/1로 회복됐다. 이후 11692436 장기 후처리로 flush가 80에서 다시 막혔지만 06:29 KST에 100/96/4로 회수됐다. 07:24 KST에는 133/133/0으로 backlog가 다시 해소됐고, 08:31 KST에는 204까지 다시 flush가 점프했다. 08:36 KST에는 212/207/5로 새 앞쪽 pending이 생겼다. 완료 전 runtime evidence는 계속 manifest/checkpoint/log를 기준으로 본다.",
+    "latest_manifest_write_kst": "2026-07-06 09:07:33",
+    "latest_checkpoint_write_kst": "2026-07-06 09:07:33",
+    "result_json_write_lag_reason": "05:44 KST에는 11700470 전후 ordered_flush_blocked로 result.json flush가 밀렸고, 05:58 KST에는 74/73/1로 회복됐다. 이후 11692436 장기 후처리로 flush가 80에서 다시 막혔지만 06:29 KST에 100/96/4로 회수됐다. 07:24 KST에는 133/133/0으로 backlog가 다시 해소됐고, 08:31 KST에는 204까지 다시 flush가 점프했다. 08:59 KST에는 227/227/0까지 완전 flush 회복이 확인됐다. 09:08 KST에는 239/228/11로 새 앞쪽 pending이 생겼다. 완료 전 runtime evidence는 계속 manifest/checkpoint/log를 기준으로 본다.",
     "first_pending_snapshot": [
-      "209:11702088",
-      "210:11703622",
-      "211:11703669",
-      "213:11706827",
-      "214:11706831"
+      "230:11677957",
+      "232:11694041",
+      "235:11708466",
+      "237:11718110",
+      "238:11657037",
+      "241:11657040",
+      "242:11657041",
+      "243:11657042",
+      "244:11657043",
+      "248:11657047"
     ],
-    "interpretation": "11700470, 11692436 장기 row가 만든 ordered flush backlog는 각각 회수됐고, 07:24 KST 및 08:31 KST에도 flush backlog가 크게 회복됐다. 08:36 KST에는 checkpoint가 212/375까지 증가했고 실패는 0이므로, watchdog/ordered flush 경로는 row를 계속 내고 있다. 다만 large_run_complete=false라 full375 collateral과 full_scan 경로 판정은 아직 보류한다."
+    "interpretation": "11700470, 11692436 장기 row가 만든 ordered flush backlog는 각각 회수됐고, 07:24 KST, 08:31 KST, 08:59 KST에도 flush backlog가 크게 회복됐다. 09:08 KST에는 checkpoint가 239/375까지 증가했고 실패는 0이므로, watchdog/ordered flush 경로는 row를 계속 내고 있다. 다만 large_run_complete=false라 full375 collateral과 full_scan 경로 판정은 아직 보류한다."
   },
   "gates": {
-    "full375_runtime": "IN_PROGRESS / 212 of 375 checkpoint at 2026-07-06 08:36 KST",
+    "full375_runtime": "IN_PROGRESS / 239 of 375 checkpoint at 2026-07-06 09:08 KST",
     "full375_collateral": "PENDING / NO-GO 유지",
     "golden_audit_after_loop488": "NOT_RUN_AFTER_LOOP488",
     "collateral_compare_after_loop488": "NOT_RUN_AFTER_LOOP488",
