@@ -1,5 +1,37 @@
 # Verification Results
 
+## 2026-07-06 Loop491 P0 runtime failure batch 검증
+
+- 범위: Loop490 action queue `37`건에서 P0 `23`건을 runtime repair 후보와 source-native/blind review 후보로 분리했다. 신규 runtime/full375/full_scan 런은 발주하지 않았다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_491_REPORT_20260706.md`
+  - state `docs\devs\loop491_p0_runtime_failure_batch_state_20260706.json`
+  - batch queue `docs\devs\loop491_p0_runtime_failure_batch_queue.json`
+  - batch markdown `docs\devs\loop491_p0_runtime_failure_batch_queue.md`
+  - runtime input `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop491_p0_reprocess14_runtime_replay_input.jsonl`
+  - runtime manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop491_p0_reprocess14_runtime_replay_input_manifest.json`
+  - HOLD review packet `docs\devs\loop491_p0_hold9_source_native_review_packet.json`
+  - HOLD review packet markdown `docs\devs\loop491_p0_hold9_source_native_review_packet.md`
+- Result:
+  - selected P0 rows `23`
+  - runtime input candidates `14`
+  - runtime input rows `14`, missing post ids `[]`
+  - HOLD source-native/blind review rows `9`
+  - search replay required rows `13`
+  - labels `REPROCESS 14 / HOLD 9`
+  - dispatch lanes `runtime_repair_with_search_replay 9 / runtime_repair_without_search_replay 5 / source_native_or_blind_review 8 / canonical_variant_policy_review 1`
+  - validation issue `0`
+- Validation:
+  - `.\venv\Scripts\python.exe -m py_compile tools\build_action_queue_batch.py tests\test_action_queue_batch.py` PASS
+  - `.\venv\Scripts\python.exe -m unittest tests.test_action_queue_batch -v` PASS, `2` tests
+  - `tools\build_action_queue_batch.py ... --fail-on-validation-issue` PASS
+- Boundary:
+  - Runtime input generation은 runtime replay가 아니다.
+  - HOLD review packet generation은 source-native/blind review 완료가 아니다.
+  - REPROCESS `14`건은 shared promotion gate 수리 또는 search-blind 태깅 없이 반복 dispatch하지 않는다.
+  - Completion gate는 `full375 collateral GO + full_scan 경로 정의`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop490 projected safe46 runtime failure queue 검증
 
 - 범위: Loop489 runtime expected-audit 실패 `36`건과 projection still-blocked `11710036`을 다음 실행 가능한 action queue로 재분해했다. 신규 runtime/full375 런은 발주하지 않았다.

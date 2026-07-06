@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260706-491 - P0 runtime failure batch split
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| P0 batch | GO | Loop490 queue `37` 중 P0 `23` selected, validation issue `0` | runtime/HOLD 분리 후속 |
+| Runtime input | GO_INPUT_ONLY | REPROCESS `14`, input rows `14`, missing `0` | shared gate repair 뒤 replay |
+| HOLD review packet | REVIEW-LOCKED | HOLD `9`, source-native/blind review packet 생성 | variant/wrong-work 판정 |
+| Search replay | P0_OPEN | search replay required `13` rows | search-blind 조건 유지 |
+| Dispatch lanes | REVIEW-LOCKED | `runtime_repair_with_search_replay 9 / runtime_repair_without_search_replay 5 / source_native_or_blind_review 8 / canonical_variant_policy_review 1` | lane별 배치 |
+| 검증 | PASS | py_compile PASS, unittest `2` PASS, batch generation PASS | runtime은 미실행 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: batch generation `GO`, runtime input generation `GO / 14 of 14`, runtime replay after input `NOT_RUN_AFTER_INPUT`, HOLD review `NOT_RUN_AFTER_PACKET`, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-490 - projected safe46 runtime failure queue
 
 | 항목 | 상태 | 근거 | 다음 |

@@ -1,0 +1,59 @@
+{
+  "loop": "Loop491",
+  "date": "2026-07-06",
+  "status": "REVIEW-LOCKED",
+  "goal_status": "ACTIVE_NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_queue_rows": 37,
+    "selected_p0_rows": 23,
+    "runtime_input_candidate_rows": 14,
+    "runtime_input_rows": 14,
+    "runtime_input_missing_post_ids": [],
+    "source_native_review_rows": 9,
+    "search_replay_required_rows": 13,
+    "label_counts": {
+      "HOLD": 9,
+      "REPROCESS": 14
+    },
+    "dispatch_lane_counts": {
+      "canonical_variant_policy_review": 1,
+      "runtime_repair_with_search_replay": 9,
+      "runtime_repair_without_search_replay": 5,
+      "source_native_or_blind_review": 8
+    },
+    "audit_status_counts": {
+      "FAIL_RUNTIME_PROMOTION_BLOCKED": 17,
+      "FAIL_SAFE_RESOLVED_TITLE_MISMATCH": 5,
+      "FAIL_VARIANT_COMPACT_MATCH_ONLY": 1
+    },
+    "validation_issue_count": 0
+  },
+  "artifacts": {
+    "source_queue": "docs/devs/loop490_projected_safe46_runtime_failure_action_queue.json",
+    "batch_queue_json": "docs/devs/loop491_p0_runtime_failure_batch_queue.json",
+    "batch_queue_markdown": "docs/devs/loop491_p0_runtime_failure_batch_queue.md",
+    "runtime_input_jsonl": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop491_p0_reprocess14_runtime_replay_input.jsonl",
+    "runtime_input_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop491_p0_reprocess14_runtime_replay_input_manifest.json",
+    "hold_review_packet_json": "docs/devs/loop491_p0_hold9_source_native_review_packet.json",
+    "hold_review_packet_markdown": "docs/devs/loop491_p0_hold9_source_native_review_packet.md",
+    "loop_report": "docs/devs/loop_reports/LOOP_491_REPORT_20260706.md"
+  },
+  "gate": {
+    "batch_generation": "GO",
+    "runtime_input_generation": "GO / 14 of 14 / missing 0",
+    "hold_review_packet_generation": "GO / 9 rows",
+    "runtime_replay_after_input": "NOT_RUN_AFTER_INPUT",
+    "source_native_hold_review": "NOT_RUN_AFTER_PACKET",
+    "expected_title": "INHERITED_LOOP489_NO-GO / 10 of 46",
+    "search_evidence": "REVIEW / search_timeout_observed + search_degraded_observed",
+    "full375_collateral": "NO-GO / raw regression 137 / review-adjusted regression 98",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "next": [
+    "Run source-native or blind review for the HOLD 9 packet before hard-hold relaxation.",
+    "Patch shared promotion gate repair for the REPROCESS 14 rows before runtime replay, or explicitly tag any replay as search-blind/repair-blind if no code change has occurred.",
+    "After replay, audit actionable queue decrease and same-packet safe_resolved monotonicity before considering full375 thaw."
+  ]
+}

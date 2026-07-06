@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-06 Loop491 P0 runtime failure batch 체크
+
+- [x] Loop490 action queue `37`건에서 P0 `23`건을 분리했다.
+- [x] P0 labels는 `REPROCESS 14 / HOLD 9`이다.
+- [x] REPROCESS `14`건을 runtime input 후보로 분리했다.
+- [x] Runtime input rows `14`, missing post ids `[]`를 확인했다.
+- [x] HOLD `9`건을 source-native/blind review packet으로 분리했다.
+- [x] Search replay required rows `13`을 별도 lane으로 유지했다.
+- [x] Dispatch lanes는 `runtime_repair_with_search_replay 9 / runtime_repair_without_search_replay 5 / source_native_or_blind_review 8 / canonical_variant_policy_review 1`이다.
+- [x] `tools/build_action_queue_batch.py`와 `tests/test_action_queue_batch.py`를 추가했다.
+- [x] py_compile, unittest `2` tests, batch generation `--fail-on-validation-issue`를 통과했다.
+- [ ] Runtime replay after input은 아직 실행하지 않았다.
+- [ ] HOLD `9`건 source-native/blind review는 아직 실행하지 않았다.
+- [ ] REPROCESS `14`건은 shared gate repair 또는 search-blind 태깅 없이 반복 dispatch하지 않는다.
+- [ ] Full375 collateral은 여전히 `NO-GO`다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: batch generation `GO`, runtime input generation `GO / 14 of 14`, runtime replay after input `NOT_RUN_AFTER_INPUT`, HOLD review `NOT_RUN_AFTER_PACKET`, inherited expected-title `NO-GO / 10 of 46`, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop490 projected safe46 runtime failure queue 체크
 
 - [x] Loop489 expected audit source `46` rows를 재확인했다.
@@ -14,7 +33,8 @@
 - [x] `tools/build_runtime_expected_failure_queue.py`와 `tests/test_runtime_expected_failure_queue.py`를 추가했다.
 - [x] py_compile, unittest `2` tests, queue generation `--fail-on-validation-issue`를 통과했다.
 - [ ] Runtime replay after queue는 아직 실행하지 않았다.
-- [ ] P0 `23`건을 shared gate repair/search replay/source-native review 배치로 처리한다.
+- [x] P0 `23`건은 Loop491에서 `REPROCESS 14 / HOLD 9` batch로 분리했다.
+- [ ] P0 runtime replay와 HOLD review는 아직 실행하지 않았다.
 - [ ] Full375 collateral은 여전히 `NO-GO`다.
 - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.

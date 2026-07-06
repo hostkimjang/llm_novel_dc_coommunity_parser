@@ -1,5 +1,27 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop491 P0 runtime failure batch 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_491_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop491_p0_runtime_failure_batch_state_20260706.json`.
+  - [x] Batch queue 기록 완료: `docs/devs/loop491_p0_runtime_failure_batch_queue.json/.md`.
+  - [x] Runtime input manifest 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop491_p0_reprocess14_runtime_replay_input_manifest.json`.
+  - [x] HOLD review packet 기록 완료: `docs/devs/loop491_p0_hold9_source_native_review_packet.json/.md`.
+  - [x] Tool/test 기록 완료: `tools/build_action_queue_batch.py`, `tests/test_action_queue_batch.py`.
+  - [x] P0 `23`건을 `REPROCESS 14 / HOLD 9`로 분리했다.
+  - [x] Runtime input rows `14/14`, missing `0`을 확인했다.
+- 품질 경계:
+  - [x] Batch generation은 approval이 아니다.
+  - [x] Runtime input generation은 runtime replay가 아니다.
+  - [x] HOLD review packet generation은 source-native/blind review 완료가 아니다.
+  - [x] Search replay required `13`건을 별도 lane으로 보존했다.
+  - [ ] Runtime replay after input은 아직 실행하지 않았다.
+  - [ ] HOLD `9`건 review는 아직 실행하지 않았다.
+  - [ ] 다음 replay는 actionable queue 감소와 동일 packet safe_resolved 단조 비감소를 감사해야 한다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: batch generation `GO`, runtime input generation `GO / 14 of 14`, runtime replay after input `NOT_RUN_AFTER_INPUT`, HOLD review `NOT_RUN_AFTER_PACKET`, inherited expected-title `NO-GO / 10 of 46`, search evidence `REVIEW / timeout + degraded`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop490 projected safe46 runtime failure queue 품질 게이트
 
 - 근거:
@@ -16,7 +38,8 @@
   - [x] Search unrecovered degraded `13/25`를 별도 action으로 유지했다.
   - [x] `11710036`은 candidate-set rebuild 전 public publish하지 않는다.
   - [x] Runtime completion과 publication contract `GO`는 semantic/full_scan approval이 아니다.
-  - [ ] P0 `23`건을 다음 배치로 처리할 때 actionable queue 감소와 동일 packet safe_resolved 단조 비감소를 확인한다.
+  - [x] P0 `23`건은 Loop491에서 runtime input 후보 `14`와 HOLD review packet `9`로 분리했다.
+  - [ ] Loop491 runtime replay/HOLD review 후 actionable queue 감소와 동일 packet safe_resolved 단조 비감소를 확인한다.
   - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
 - Gate: queue generation `GO`, runtime replay after queue `NOT_RUN_AFTER_QUEUE`, inherited expected-title `NO-GO / 10 of 46`, search evidence `REVIEW / timeout + degraded`, full375 collateral `NO-GO / review-adjusted regression 98`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 

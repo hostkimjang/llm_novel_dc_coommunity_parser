@@ -1,0 +1,284 @@
+{
+  "report_type": "source_native_or_blind_review_packet",
+  "packet_id": "loop491_p0_runtime_failure_batch_hold_review_packet",
+  "generated_at": "2026-07-06T14:12:47",
+  "source_batch_id": "loop491_p0_runtime_failure_batch",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "review_rows": 9,
+    "priority_counts": {
+      "P0": 9
+    },
+    "dispatch_lane_counts": {
+      "canonical_variant_policy_review": 1,
+      "source_native_or_blind_review": 8
+    },
+    "audit_status_counts": {
+      "FAIL_RUNTIME_PROMOTION_BLOCKED": 3,
+      "FAIL_SAFE_RESOLVED_TITLE_MISMATCH": 5,
+      "FAIL_VARIANT_COMPACT_MATCH_ONLY": 1
+    }
+  },
+  "rows": [
+    {
+      "post_id": 11663535,
+      "priority": "P0",
+      "review_label": "HOLD",
+      "dispatch_lane": "source_native_or_blind_review",
+      "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "expected_title": "퇴마록",
+      "actual_title": "퇴마록 외전 1",
+      "actual_url": "https://ridibooks.com/books/4239000218",
+      "actions": [
+        "blocked_title_mismatch_source_native_review_required",
+        "canonical_variant_or_wrong_work_review_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "reason_codes": [
+        "body_verified_character_work_competes_with_resolved_public_title",
+        "character_title_collision",
+        "missing_body_work_bridge",
+        "missing_direct_candidate_title",
+        "official_detail_url",
+        "official_title_exists",
+        "resolved_public_title_scope",
+        "row_discussion_missing",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "unresolved_body_character_work_anchor"
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop489_projected_safe46_runtime_expected_audit.json#post_id=11663535"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    },
+    {
+      "post_id": 11673102,
+      "priority": "P0",
+      "review_label": "HOLD",
+      "dispatch_lane": "source_native_or_blind_review",
+      "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "expected_title": "갤질하는 천재 의사",
+      "actual_title": "댓글 보는 천재 의사",
+      "actual_url": "https://novelpia.com/novel/372180",
+      "actions": [
+        "canonical_variant_or_wrong_work_review_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "reason_codes": [
+        "alias_bridge",
+        "official_detail_bracket_visual_release_context",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published",
+        "title_acceptance_accept",
+        "title_led_alias_official_detail_canonicalized",
+        "title_led_consumption_bridge"
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop489_projected_safe46_runtime_expected_audit.json#post_id=11673102"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    },
+    {
+      "post_id": 11692436,
+      "priority": "P0",
+      "review_label": "HOLD",
+      "dispatch_lane": "source_native_or_blind_review",
+      "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "expected_title": "퍼펙트 메이지",
+      "actual_title": "죽었다 깨어도 수선",
+      "actual_url": null,
+      "actions": [
+        "canonical_variant_or_wrong_work_review_required"
+      ],
+      "reason_codes": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "verified_alias_title_only_publication"
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop489_projected_safe46_runtime_expected_audit.json#post_id=11692436"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    },
+    {
+      "post_id": 11698870,
+      "priority": "P0",
+      "review_label": "HOLD",
+      "dispatch_lane": "canonical_variant_policy_review",
+      "audit_status": "FAIL_VARIANT_COMPACT_MATCH_ONLY",
+      "expected_title": "인간실격",
+      "actual_title": "인간 실격",
+      "actual_url": "https://ridibooks.com/books/509000257",
+      "actions": [
+        "spacing_or_canonical_variant_policy_review_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "reason_codes": [
+        "official_detail_url",
+        "official_title_exists",
+        "resolved_public_title_scope",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published"
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop489_projected_safe46_runtime_expected_audit.json#post_id=11698870"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    },
+    {
+      "post_id": 11705230,
+      "priority": "P0",
+      "review_label": "HOLD",
+      "dispatch_lane": "source_native_or_blind_review",
+      "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "expected_title": "월야환담",
+      "actual_title": "월야환담 시리즈",
+      "actual_url": null,
+      "actions": [
+        "canonical_variant_or_wrong_work_review_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "reason_codes": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "verified_alias_title_only_publication"
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop489_projected_safe46_runtime_expected_audit.json#post_id=11705230"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    },
+    {
+      "post_id": 11714887,
+      "priority": "P0",
+      "review_label": "HOLD",
+      "dispatch_lane": "source_native_or_blind_review",
+      "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "expected_title": "도굴왕 1 |",
+      "actual_title": "[도굴왕] [fate] 도굴왕에서 에누마 엘리시를!!",
+      "actual_url": null,
+      "actions": [
+        "blocked_title_mismatch_source_native_review_required",
+        "canonical_variant_or_wrong_work_review_required"
+      ],
+      "reason_codes": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_image_ocr_derived_work",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "serialized_public_identity_shared_gate_restored",
+        "unverified_promoted_image_work_title_without_official_support",
+        "verified_alias_title_only_publication"
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop489_projected_safe46_runtime_expected_audit.json#post_id=11714887"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    },
+    {
+      "post_id": 11718098,
+      "priority": "P0",
+      "review_label": "HOLD",
+      "dispatch_lane": "source_native_or_blind_review",
+      "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "expected_title": "마법 좋아좋아좋아",
+      "actual_title": "마법 좋아, 마법과 좋아",
+      "actual_url": "https://novelpia.com/novel/3260401",
+      "actions": [
+        "canonical_variant_or_wrong_work_review_required"
+      ],
+      "reason_codes": [
+        "official_detail_url",
+        "official_title_exists",
+        "resolved_public_title_scope",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published"
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop489_projected_safe46_runtime_expected_audit.json#post_id=11718098"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    },
+    {
+      "post_id": 11673077,
+      "priority": "P0",
+      "review_label": "HOLD",
+      "dispatch_lane": "source_native_or_blind_review",
+      "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "expected_title": "판초우의의 마법사",
+      "actual_title": "즉사기 들고 무림에 떨어지다",
+      "actual_url": "https://novel.munpia.com/528383",
+      "actions": [
+        "blocked_title_mismatch_source_native_review_required",
+        "canonical_variant_or_wrong_work_review_required"
+      ],
+      "reason_codes": [
+        "alias_bridge",
+        "llm_only_sentence_candidate_pruned",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discussion_missing",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "title_acceptance_accept",
+        "title_led_alias_contextual_official_detail_competes",
+        "title_led_consumption_bridge"
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop489_projected_safe46_runtime_expected_audit.json#post_id=11673077"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    },
+    {
+      "post_id": 11694068,
+      "priority": "P0",
+      "review_label": "HOLD",
+      "dispatch_lane": "source_native_or_blind_review",
+      "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "expected_title": "트와일라잇",
+      "actual_title": "Twilight",
+      "actual_url": "https://page.kakao.com/content/47180017",
+      "actions": [
+        "canonical_variant_or_wrong_work_review_required"
+      ],
+      "reason_codes": [
+        "direct_image_explicit_title_rescued",
+        "image_ocr_official_detail_title",
+        "image_ocr_work_title",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored"
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop489_projected_safe46_runtime_expected_audit.json#post_id=11694068"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    }
+  ],
+  "approval_boundary": {
+    "packet_generation_is_not_review_completion": true,
+    "hard_hold_relaxation_requires_review_verdict": true
+  }
+}

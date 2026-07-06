@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-06 - Loop491 P0 runtime failure batch
+
+- Loop490 action queue `37`건에서 P0 `23`건을 분리했다.
+- 결과는 `REPROCESS 14 / HOLD 9`, runtime input candidates `14`, HOLD source-native/blind review packet `9`이다.
+- Runtime input은 rows `14`, missing post ids `[]`로 생성했다.
+- Search replay required rows `13`은 별도 lane으로 유지했다.
+- Dispatch lanes는 `runtime_repair_with_search_replay 9`, `runtime_repair_without_search_replay 5`, `source_native_or_blind_review 8`, `canonical_variant_policy_review 1`이다.
+- `tools/build_action_queue_batch.py`와 `tests/test_action_queue_batch.py`를 추가했다.
+- 검증은 py_compile PASS, `tests.test_action_queue_batch` `2` tests PASS, batch generation `--fail-on-validation-issue` PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_491_REPORT_20260706.md`, state는 `docs/devs/loop491_p0_runtime_failure_batch_state_20260706.json`이다.
+- Runtime input manifest는 `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop491_p0_reprocess14_runtime_replay_input_manifest.json`이다.
+- Gate는 batch generation `GO`, runtime input generation `GO / 14 of 14`, runtime replay after input `NOT_RUN_AFTER_INPUT`, HOLD review `NOT_RUN_AFTER_PACKET`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop490 projected safe46 runtime failure queue
 
 - Loop489 runtime expected-audit에서 projected safe `46`건 중 PASS `10`건은 제외하고 실패 `36`건을 action queue로 재분해했다.
