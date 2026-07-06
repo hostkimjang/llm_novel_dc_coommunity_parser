@@ -1,0 +1,58 @@
+{
+  "state_type": "loop510_full375_current_head_replay_state",
+  "generated_at": "2026-07-07T02:00:00",
+  "head": "a729e745",
+  "run_id": "20260707_015830_870785",
+  "background_runner_pid": 85452,
+  "input_jsonl": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\panel\\regression_panel_input.jsonl",
+  "input_rows": 375,
+  "plan": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\plans\\loop510_full375_current_head_a729e745_search_nonlight_replay_plan.json",
+  "output_json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop510_full375_current_head_a729e745_search_nonlight_result.json",
+  "manifest_json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop510_full375_current_head_a729e745_search_nonlight_result_manifest.json",
+  "checkpoint_jsonl": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop510_full375_current_head_a729e745_search_nonlight_result_checkpoint.jsonl",
+  "pending_snapshot": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop510_full375_current_head_a729e745_search_nonlight_result_pending_snapshot.json",
+  "log_dir": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\logs\\loop510_full375_current_head_a729e745_search_nonlight_replay",
+  "dashboard_url": "http://127.0.0.1:8080",
+  "requested_parallel": 16,
+  "effective_parallel_initial": 16,
+  "runtime_options": {
+    "server_type": "vllm",
+    "llm_endpoint": "http://10.20.0.101:8000",
+    "llm_model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+    "reuse_shards_only": true,
+    "slang_db": "off",
+    "vlm": "on",
+    "ocr": "on",
+    "require_vlm_ocr_for_images": true,
+    "dashboard": "on"
+  },
+  "initial_observation": {
+    "batch_running": true,
+    "total_posts": 375,
+    "done_count": 1,
+    "current_index": 17,
+    "progress_pct": 0.3,
+    "checkpoint_bytes": 31104,
+    "manifest_counts": "completed/flushed/pending/failed 1/0/1/0",
+    "runner_process": "running"
+  },
+  "gates": {
+    "runtime_dispatch": "GO_BACKGROUND_STARTED",
+    "initial_productivity": "GO_ROW_PRODUCED_1_OF_375",
+    "runtime_completion": "IN_PROGRESS",
+    "run_health_audit": "NOT_RUN_UNTIL_COMPLETION",
+    "publication_contract": "NOT_RUN_UNTIL_COMPLETION",
+    "golden18": "NOT_RERUN_AFTER_LOOP510_DISPATCH",
+    "full375_collateral": "PENDING_LOOP510_COMPLETION / prior residual 105",
+    "search_evidence": "PENDING_LOOP510_AUDIT",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "approval_boundary": {
+    "dispatch_is_not_approval": true,
+    "initial_row_production_is_not_full375_go": true,
+    "full375_collateral_compare_required_after_completion": true,
+    "completion_gate": "full375 collateral GO + full_scan path"
+  }
+}

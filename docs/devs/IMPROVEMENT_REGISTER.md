@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260707-510 - full375 current HEAD replay dispatch
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Full375 dispatch | GO_BACKGROUND_STARTED | run `20260707_015830_870785`, runner PID `85452`, input rows `375` | background 진행률 감시 |
+| Runtime productivity | GO_ROW_PRODUCED_1_OF_375 | dashboard `1/375`, checkpoint `31104` bytes | completion까지 계속 감시 |
+| Parallel/dashboard policy | GO | requested/effective 초기 `16/16`, dashboard `http://127.0.0.1:8080` | 진행률 관측 유지 |
+| VLM/OCR config | GO_INPUT_CONTRACT | `--vlm on --ocr on --require-vlm-ocr-for-images` | 완료 manifest에서 READY 확인 |
+| Run health | PENDING | completion 전 audit 미실행 | 완료 후 `audit_expert_run_health.py` |
+| Publication contract | PENDING | completion 전 audit 미실행 | 완료 후 `audit_publication_contract_convergence.py` |
+| Full375 collateral | PENDING_LOOP510_COMPLETION | prior residual `105` 유지 | collateral compare 재생성 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: dispatch `GO_BACKGROUND_STARTED`, initial productivity `GO_ROW_PRODUCED_1_OF_375`, runtime completion `IN_PROGRESS`, full375 collateral `PENDING_LOOP510_COMPLETION / prior residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-509 - repair28 reconciliation and repair27 runtime replay
 
 | 항목 | 상태 | 근거 | 다음 |

@@ -1,5 +1,25 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop510 full375 current HEAD replay 발주 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_510_REPORT_20260707.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop510_full375_current_head_replay_state_20260707.json`.
+  - [x] Run plan 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/plans/loop510_full375_current_head_a729e745_search_nonlight_replay_plan.json`.
+  - [x] Full375 input row count `375` 확인.
+  - [x] vLLM endpoint와 dashboard health 확인.
+- 품질 경계:
+  - [x] Background runner PID `85452`, run id `20260707_015830_870785`로 시작했다.
+  - [x] Dashboard 초기 상태는 `1/375`, `progress_pct=0.3`, `parallel_count=16`이다.
+  - [x] Manifest 초기 상태는 completed/flushed/pending/failed `1/0/1/0`이다.
+  - [x] Checkpoint가 `31104` bytes로 기록되어 런타임 비생산 상태가 아님을 확인했다.
+  - [ ] Runtime completion 전에는 run health GO를 주장하지 않는다.
+  - [ ] Completion 전에는 full375 collateral GO를 주장하지 않는다.
+  - [ ] 완료 후 run health, publication contract, collateral compare, always-on gate를 재생성한다.
+  - [ ] Search evidence를 full_scan approval로 쓰려면 completion 후 별도 audit에서 확인한다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: dispatch `GO_BACKGROUND_STARTED`, initial productivity `GO_ROW_PRODUCED_1_OF_375`, runtime completion `IN_PROGRESS`, full375 collateral `PENDING_LOOP510_COMPLETION / prior residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop509 repair28 재회계 및 repair27 replay 완료 품질 게이트
 
 - 근거:

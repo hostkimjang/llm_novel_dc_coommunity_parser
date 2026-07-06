@@ -1,5 +1,35 @@
 # Verification Results
 
+## 2026-07-07 Loop510 Verification
+
+- 범위: Loop509 이후 current HEAD `a729e745` full375 collateral replay를 background로 발주하고 초기 row 생산성을 확인했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_510_REPORT_20260707.md`
+  - state `docs\devs\loop510_full375_current_head_replay_state_20260707.json`
+  - plan `out\regression_safe_grounding_20260626_000008_928006_loop01\plans\loop510_full375_current_head_a729e745_search_nonlight_replay_plan.json`
+  - input `out\regression_safe_grounding_20260626_000008_928006_loop01\panel\regression_panel_input.jsonl`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop510_full375_current_head_a729e745_search_nonlight_result_manifest.json`
+  - checkpoint `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop510_full375_current_head_a729e745_search_nonlight_result_checkpoint.jsonl`
+- Result:
+  - run id `20260707_015830_870785`
+  - runner PID `85452`
+  - input rows `375`
+  - dashboard initial `1/375`, `progress_pct=0.3`, `parallel_count=16`
+  - manifest initial completed/flushed/pending/failed `1/0/1/0`
+  - checkpoint bytes `31104`
+- Validation:
+  - Plan JSON parse PASS.
+  - Input row count `375` PASS.
+  - Plan argv `--parallel 16` PASS.
+  - Plan argv has no `--no-dashboard` PASS.
+  - Dashboard health PASS.
+  - vLLM endpoint `http://10.20.0.101:8000/v1/models` PASS.
+- Boundary:
+  - Dispatch와 `1/375` row 생산은 runtime non-stall 증거일 뿐 full375 collateral approval이 아니다.
+  - Run health, publication contract, collateral compare, always-on gate는 completion 후 재생성해야 한다.
+  - Full375 collateral은 `PENDING_LOOP510_COMPLETION / prior residual 105`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-07 Loop509 Verification
 
 - 범위: Loop508 runtime evidence를 Loop502 repair28 queue에 교차 반영하고, 남은 repair27 batch replay를 `--parallel 16`과 웹 대시보드로 실행한 뒤 runtime health와 publication contract를 감사했다.

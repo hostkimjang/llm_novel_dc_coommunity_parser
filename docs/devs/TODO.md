@@ -1,5 +1,21 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop510 TODO
+
+- 상태 업데이트: Loop509 이후 full375 collateral gate를 확인하기 위해 current HEAD `a729e745` full375 replay를 background로 발주했다. Goal은 완료가 아니다.
+- [x] Full375 input `out/regression_safe_grounding_20260626_000008_928006_loop01/panel/regression_panel_input.jsonl` row count `375`를 확인했다.
+- [x] Run plan `out/regression_safe_grounding_20260626_000008_928006_loop01/plans/loop510_full375_current_head_a729e745_search_nonlight_replay_plan.json`을 생성했다.
+- [x] Run plan은 `--parallel 16`, dashboard 기본 ON, `--reuse-shards-only`, `--slang-db off`, VLM/OCR on, `--require-vlm-ocr-for-images`를 사용한다.
+- [x] vLLM endpoint `http://10.20.0.101:8000`와 dashboard `http://127.0.0.1:8080` health를 확인했다.
+- [x] Background runner PID `85452`, run id `20260707_015830_870785`로 시작했다.
+- [x] 초기 dashboard/manifest 관측에서 `1/375`, completed/flushed/pending/failed `1/0/1/0`, checkpoint `31104` bytes를 확인했다.
+- [ ] Loop510 full375 replay completion을 기다린 뒤 run health audit를 실행한다.
+- [ ] Completion 후 publication contract audit를 실행한다.
+- [ ] Completion 후 collateral compare와 always-on golden18/full375 gate를 재생성한다.
+- [ ] Search evidence를 별도 보고하고, `REVIEW`이면 search/full_scan approval로 승격하지 않는다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop509 TODO
 
 - 상태 업데이트: Loop508 runtime evidence를 Loop502 `repair28`에 교차 반영했고, repair27 batch replay를 `--parallel 16` 및 웹 대시보드로 완주했다. Goal은 완료가 아니다.

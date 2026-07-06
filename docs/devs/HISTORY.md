@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-07 - Loop510 full375 current HEAD replay dispatch
+
+- Loop509 repair27 runtime replay 완료 뒤 full375 collateral gate 확인으로 전환했다.
+- Current HEAD `a729e745`에서 full375 panel `375`건 replay plan을 생성했다.
+- Plan은 `out/regression_safe_grounding_20260626_000008_928006_loop01/plans/loop510_full375_current_head_a729e745_search_nonlight_replay_plan.json`이다.
+- 실행 조건은 `--parallel 16`, dashboard 기본 ON, `--reuse-shards-only`, `--slang-db off`, VLM/OCR on, `--require-vlm-ocr-for-images`다.
+- Background runner PID `85452`, run id `20260707_015830_870785`로 시작했다.
+- 초기 관측은 dashboard `1/375`, `progress_pct=0.3`, manifest completed/flushed/pending/failed `1/0/1/0`, checkpoint `31104` bytes다.
+- 이 dispatch와 초기 row 생산은 full375 collateral approval이 아니다.
+- Gate는 dispatch `GO_BACKGROUND_STARTED`, initial productivity `GO_ROW_PRODUCED_1_OF_375`, runtime completion `IN_PROGRESS`, full375 collateral `PENDING_LOOP510_COMPLETION / prior residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop509 repair28 reconciliation and repair27 runtime replay
 
 - Loop508 targeted runtime replay 결과를 Loop502 `repair28` queue에 교차 반영했다.
