@@ -1,11 +1,17 @@
 # Operation Quality Checklist
 
-## 2026-07-07 Loop510 full375 current HEAD replay 발주 품질 게이트
+## 2026-07-07 Loop510 full375 current HEAD replay 완료 감사 품질 게이트
 
 - 근거:
   - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_510_REPORT_20260707.md`.
   - [x] State JSON 기록 완료: `docs/devs/loop510_full375_current_head_replay_state_20260707.json`.
   - [x] Run plan 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/plans/loop510_full375_current_head_a729e745_search_nonlight_replay_plan.json`.
+  - [x] Runtime result 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop510_full375_current_head_a729e745_search_nonlight_result.json`.
+  - [x] Run health 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop510_full375_current_head_run_health.json`.
+  - [x] Publication contract audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop510_full375_current_head_publication_contract_audit.json/.md`.
+  - [x] Golden audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop510_full375_current_head_golden_audit.json/.md`.
+  - [x] Collateral compare 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop510_full375_current_head_collateral_compare.json/.md`.
+  - [x] Always-on gate 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop510_always_on_golden18_full375_gate.json/.md`.
   - [x] Full375 input row count `375` 확인.
   - [x] vLLM endpoint와 dashboard health 확인.
 - 품질 경계:
@@ -13,12 +19,18 @@
   - [x] Dashboard 초기 상태는 `1/375`, `progress_pct=0.3`, `parallel_count=16`이다.
   - [x] Manifest 초기 상태는 completed/flushed/pending/failed `1/0/1/0`이다.
   - [x] Checkpoint가 `31104` bytes로 기록되어 런타임 비생산 상태가 아님을 확인했다.
-  - [ ] Runtime completion 전에는 run health GO를 주장하지 않는다.
-  - [ ] Completion 전에는 full375 collateral GO를 주장하지 않는다.
-  - [ ] 완료 후 run health, publication contract, collateral compare, always-on gate를 재생성한다.
-  - [ ] Search evidence를 full_scan approval로 쓰려면 completion 후 별도 audit에서 확인한다.
+  - [x] Dashboard 최종 상태는 `375/375`, `progress_pct=100.0`, `batch_running=false`, requested/effective parallel `16/16`이다.
+  - [x] Runtime completion은 `GO_RUNTIME_COMPLETE_AUDITED`다.
+  - [x] Run health는 `GO / clean_completed_source`다.
+  - [x] Publication contract는 `GO / 375 rows / 0 violations`다.
+  - [x] Golden18은 `NO-GO / 17 of 18`이며 `11663521`을 P0로 분리한다.
+  - [x] Full375 collateral은 regression candidates `142`로 `NO-GO`다.
+  - [x] Always-on gate는 `NO-GO`다.
+  - [x] Search evidence `REVIEW`를 full_scan approval로 쓰지 않는다.
+  - [x] 웹 대시보드는 진행 관측 도구이며 semantic/full_scan approval 증거가 아니다.
+  - [x] 다음 테스트런/검증런은 명시적 반대 지시가 없으면 `--parallel 16`과 웹 대시보드 기본 부착을 유지한다.
   - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
-- Gate: dispatch `GO_BACKGROUND_STARTED`, initial productivity `GO_ROW_PRODUCED_1_OF_375`, runtime completion `IN_PROGRESS`, full375 collateral `PENDING_LOOP510_COMPLETION / prior residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: runtime completion `GO_RUNTIME_COMPLETE_AUDITED`, run health `GO / clean_completed_source`, publication contract `GO / 0 violations`, golden18 `NO-GO / 17 of 18`, full375 collateral `NO-GO / regression candidates 142`, always-on gate `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-07 Loop509 repair28 재회계 및 repair27 replay 완료 품질 게이트
 

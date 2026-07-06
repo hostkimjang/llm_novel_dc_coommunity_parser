@@ -1,9 +1,8 @@
 {
   "state_type": "loop510_full375_current_head_replay_state",
-  "generated_at": "2026-07-07T02:00:00",
+  "generated_at": "2026-07-07T08:35:00",
   "head": "a729e745",
   "run_id": "20260707_015830_870785",
-  "background_runner_pid": 85452,
   "input_jsonl": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\panel\\regression_panel_input.jsonl",
   "input_rows": 375,
   "plan": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\plans\\loop510_full375_current_head_a729e745_search_nonlight_replay_plan.json",
@@ -11,10 +10,9 @@
   "manifest_json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop510_full375_current_head_a729e745_search_nonlight_result_manifest.json",
   "checkpoint_jsonl": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop510_full375_current_head_a729e745_search_nonlight_result_checkpoint.jsonl",
   "pending_snapshot": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop510_full375_current_head_a729e745_search_nonlight_result_pending_snapshot.json",
-  "log_dir": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\logs\\loop510_full375_current_head_a729e745_search_nonlight_replay",
   "dashboard_url": "http://127.0.0.1:8080",
   "requested_parallel": 16,
-  "effective_parallel_initial": 16,
+  "effective_parallel": 16,
   "runtime_options": {
     "server_type": "vllm",
     "llm_endpoint": "http://10.20.0.101:8000",
@@ -26,33 +24,91 @@
     "require_vlm_ocr_for_images": true,
     "dashboard": "on"
   },
-  "initial_observation": {
-    "batch_running": true,
-    "total_posts": 375,
-    "done_count": 1,
-    "current_index": 17,
-    "progress_pct": 0.3,
-    "checkpoint_bytes": 31104,
-    "manifest_counts": "completed/flushed/pending/failed 1/0/1/0",
-    "runner_process": "running"
+  "final_runtime": {
+    "dashboard_done": 375,
+    "dashboard_total": 375,
+    "dashboard_progress_pct": 100.0,
+    "dashboard_batch_running": false,
+    "completed_count": 375,
+    "flushed_count": 375,
+    "pending_count": 0,
+    "failed_count": 0,
+    "next_save_idx": 376,
+    "large_run_complete": true,
+    "ordered_flush_blocked": false,
+    "partial_flush_gap": false,
+    "checkpoint_rows": 375,
+    "result_rows": 375,
+    "vlm_ocr_semantic_review_ready": true
+  },
+  "audits": {
+    "run_health": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop510_full375_current_head_run_health.json",
+    "publication_contract_json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop510_full375_current_head_publication_contract_audit.json",
+    "publication_contract_md": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop510_full375_current_head_publication_contract_audit.md",
+    "golden_audit_json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop510_full375_current_head_golden_audit.json",
+    "golden_audit_md": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop510_full375_current_head_golden_audit.md",
+    "collateral_compare_json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\collateral\\loop510_full375_current_head_collateral_compare.json",
+    "collateral_compare_md": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\collateral\\loop510_full375_current_head_collateral_compare.md",
+    "always_on_gate_json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop510_always_on_golden18_full375_gate.json",
+    "always_on_gate_md": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop510_always_on_golden18_full375_gate.md",
+    "collateral_triage_json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop510_full375_current_head_collateral_triage.json",
+    "collateral_triage_md": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop510_full375_current_head_collateral_triage.md"
+  },
+  "audit_results": {
+    "run_health_gate": "GO",
+    "run_health_classification": "clean_completed_source",
+    "search_evidence": "REVIEW",
+    "search_blockers": [
+      "manifest_search_health_not_included",
+      "manifest_light_health_only",
+      "search_degraded_observed"
+    ],
+    "publication_contract_gate": "GO",
+    "publication_contract_violation_rows": 0,
+    "golden_expected_rows": 18,
+    "golden_passed_count": 17,
+    "golden_failed_count": 1,
+    "golden_failed_post_id": 11663521,
+    "golden_failed_expected": "어떤 마술의 금서목록 / 어떤 과학의 초전자포",
+    "golden_failed_actual": "카미조 토우마가 IS세계관에 떨어지는 이야기. 꽤 예전에 썼던 글인데 저쪽에선 읽기 힘들어서 여기에 재업합니다",
+    "collateral_shared_posts": 375,
+    "collateral_changed_posts": 202,
+    "collateral_regression_count": 142,
+    "collateral_regression_buckets": {
+      "safe_loss_resolved_to_null": 87,
+      "unsafe_promotion_from_hold": 30,
+      "wrong_work_title_flip": 25
+    },
+    "always_on_gate": "NO-GO",
+    "always_on_blockers": [
+      "golden:golden_expected_answer_failures",
+      "golden:golden_semantic_gate_not_pass",
+      "collateral:collateral_regression_count_nonzero"
+    ]
   },
   "gates": {
-    "runtime_dispatch": "GO_BACKGROUND_STARTED",
-    "initial_productivity": "GO_ROW_PRODUCED_1_OF_375",
-    "runtime_completion": "IN_PROGRESS",
-    "run_health_audit": "NOT_RUN_UNTIL_COMPLETION",
-    "publication_contract": "NOT_RUN_UNTIL_COMPLETION",
-    "golden18": "NOT_RERUN_AFTER_LOOP510_DISPATCH",
-    "full375_collateral": "PENDING_LOOP510_COMPLETION / prior residual 105",
-    "search_evidence": "PENDING_LOOP510_AUDIT",
+    "runtime_completion": "GO_RUNTIME_COMPLETE_AUDITED",
+    "run_health": "GO / clean_completed_source",
+    "publication_contract": "GO / 0 violations",
+    "golden18": "NO-GO / 17 of 18",
+    "full375_collateral": "NO-GO / regression candidates 142",
+    "always_on_gate": "NO-GO",
+    "search_evidence": "REVIEW",
     "semantic_quality": "REVIEW-LOCKED",
     "full_scan_approval": false,
     "overall_goal": "ACTIVE / NOT_COMPLETE"
   },
   "approval_boundary": {
-    "dispatch_is_not_approval": true,
-    "initial_row_production_is_not_full375_go": true,
-    "full375_collateral_compare_required_after_completion": true,
+    "runtime_completion_is_not_semantic_approval": true,
+    "publication_contract_go_is_not_full_scan_approval": true,
+    "golden18_failed": true,
+    "full375_collateral_go": false,
+    "full_scan_path_defined": false,
     "completion_gate": "full375 collateral GO + full_scan path"
-  }
+  },
+  "next_actions": [
+    "11663521 golden failure source-native or blind judge review",
+    "full375 collateral P0 142 rows bucket batch triage",
+    "keep search evidence REVIEW separate from full_scan approval"
+  ]
 }

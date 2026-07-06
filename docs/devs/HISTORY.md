@@ -1,6 +1,6 @@
 # Development History
 
-## 2026-07-07 - Loop510 full375 current HEAD replay dispatch
+## 2026-07-07 - Loop510 full375 current HEAD replay 완료 감사
 
 - Loop509 repair27 runtime replay 완료 뒤 full375 collateral gate 확인으로 전환했다.
 - Current HEAD `a729e745`에서 full375 panel `375`건 replay plan을 생성했다.
@@ -8,8 +8,15 @@
 - 실행 조건은 `--parallel 16`, dashboard 기본 ON, `--reuse-shards-only`, `--slang-db off`, VLM/OCR on, `--require-vlm-ocr-for-images`다.
 - Background runner PID `85452`, run id `20260707_015830_870785`로 시작했다.
 - 초기 관측은 dashboard `1/375`, `progress_pct=0.3`, manifest completed/flushed/pending/failed `1/0/1/0`, checkpoint `31104` bytes다.
-- 이 dispatch와 초기 row 생산은 full375 collateral approval이 아니다.
-- Gate는 dispatch `GO_BACKGROUND_STARTED`, initial productivity `GO_ROW_PRODUCED_1_OF_375`, runtime completion `IN_PROGRESS`, full375 collateral `PENDING_LOOP510_COMPLETION / prior residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+- Replay는 dashboard `http://127.0.0.1:8080`에서 최종 `375/375`, `progress_pct=100.0`, `batch_running=false`, requested/effective parallel `16/16`로 완주했다.
+- Manifest counts는 completed/flushed/pending/failed `375/375/0/0`, checkpoint/result rows `375/375`다.
+- Run health는 `GO / clean_completed_source`, publication contract audit는 `GO / row_count 375 / violation_row_count 0`이다.
+- Search evidence는 `REVIEW`라서 search/full_scan approval로 쓰지 않는다.
+- Golden18은 `NO-GO / 17 of 18`이며 실패 post_id는 `11663521`이다.
+- Full375 collateral은 changed `202`, regression candidates `142`로 `NO-GO`다.
+- Always-on gate도 `NO-GO`이며 blockers는 `golden:golden_expected_answer_failures`, `golden:golden_semantic_gate_not_pass`, `collateral:collateral_regression_count_nonzero`다.
+- 다음 테스트런/검증런도 명시적 반대 지시가 없으면 `--parallel 16`과 웹 대시보드 기본 부착을 유지한다.
+- Gate는 runtime completion `GO_RUNTIME_COMPLETE_AUDITED`, run health `GO`, publication contract `GO`, golden18 `NO-GO`, full375 collateral `NO-GO / regression candidates 142`, always-on `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
 
 ## 2026-07-07 - Loop509 repair28 reconciliation and repair27 runtime replay
 

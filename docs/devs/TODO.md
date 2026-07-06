@@ -2,19 +2,25 @@
 
 ## 2026-07-07 Loop510 TODO
 
-- 상태 업데이트: Loop509 이후 full375 collateral gate를 확인하기 위해 current HEAD `a729e745` full375 replay를 background로 발주했다. Goal은 완료가 아니다.
+- 상태 업데이트: Loop510 full375 current HEAD replay는 `375/375` 완주했지만 golden18 `17/18`, full375 collateral regression candidates `142`로 always-on gate가 `NO-GO`다. Goal은 완료가 아니다.
 - [x] Full375 input `out/regression_safe_grounding_20260626_000008_928006_loop01/panel/regression_panel_input.jsonl` row count `375`를 확인했다.
 - [x] Run plan `out/regression_safe_grounding_20260626_000008_928006_loop01/plans/loop510_full375_current_head_a729e745_search_nonlight_replay_plan.json`을 생성했다.
 - [x] Run plan은 `--parallel 16`, dashboard 기본 ON, `--reuse-shards-only`, `--slang-db off`, VLM/OCR on, `--require-vlm-ocr-for-images`를 사용한다.
 - [x] vLLM endpoint `http://10.20.0.101:8000`와 dashboard `http://127.0.0.1:8080` health를 확인했다.
 - [x] Background runner PID `85452`, run id `20260707_015830_870785`로 시작했다.
 - [x] 초기 dashboard/manifest 관측에서 `1/375`, completed/flushed/pending/failed `1/0/1/0`, checkpoint `31104` bytes를 확인했다.
-- [ ] Loop510 full375 replay completion을 기다린 뒤 run health audit를 실행한다.
-- [ ] Completion 후 publication contract audit를 실행한다.
-- [ ] Completion 후 collateral compare와 always-on golden18/full375 gate를 재생성한다.
-- [ ] Search evidence를 별도 보고하고, `REVIEW`이면 search/full_scan approval로 승격하지 않는다.
+- [x] Dashboard 최종 상태 `375/375`, `progress_pct=100.0`, `batch_running=false`, requested/effective parallel `16/16`을 확인했다.
+- [x] Manifest completed/flushed/pending/failed `375/375/0/0`, checkpoint/result rows `375/375`를 확인했다.
+- [x] Loop510 full375 replay completion 후 run health audit를 실행했다: `GO / clean_completed_source`.
+- [x] Publication contract audit를 실행했다: `GO / 375 rows / 0 violations`.
+- [x] Collateral compare와 always-on golden18/full375 gate를 재생성했다.
+- [x] Search evidence는 `REVIEW`로 별도 기록했고 search/full_scan approval로 승격하지 않는다.
+- [x] Golden18 failure `11663521`을 P0로 분리한다.
+- [x] Full375 collateral P0 `142`건은 회차당 단건이 아니라 bucket batch로 처리한다.
+- [x] 다음 테스트런/검증런도 명시적 반대 지시가 없으면 `--parallel 16`과 웹 대시보드를 기본 부착한다.
 - [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: runtime completion `GO_RUNTIME_COMPLETE_AUDITED`, run health `GO / clean_completed_source`, publication contract `GO / 0 violations`, golden18 `NO-GO / 17 of 18`, full375 collateral `NO-GO / regression candidates 142`, always-on gate `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-07 Loop509 TODO
 

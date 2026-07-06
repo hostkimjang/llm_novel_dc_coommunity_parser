@@ -1,19 +1,21 @@
 # Improvement Register
 
-## IMP-20260707-510 - full375 current HEAD replay dispatch
+## IMP-20260707-510 - full375 current HEAD replay 완료 감사
 
 | 항목 | 상태 | 근거 | 다음 |
 | --- | --- | --- | --- |
-| Full375 dispatch | GO_BACKGROUND_STARTED | run `20260707_015830_870785`, runner PID `85452`, input rows `375` | background 진행률 감시 |
-| Runtime productivity | GO_ROW_PRODUCED_1_OF_375 | dashboard `1/375`, checkpoint `31104` bytes | completion까지 계속 감시 |
-| Parallel/dashboard policy | GO | requested/effective 초기 `16/16`, dashboard `http://127.0.0.1:8080` | 진행률 관측 유지 |
-| VLM/OCR config | GO_INPUT_CONTRACT | `--vlm on --ocr on --require-vlm-ocr-for-images` | 완료 manifest에서 READY 확인 |
-| Run health | PENDING | completion 전 audit 미실행 | 완료 후 `audit_expert_run_health.py` |
-| Publication contract | PENDING | completion 전 audit 미실행 | 완료 후 `audit_publication_contract_convergence.py` |
-| Full375 collateral | PENDING_LOOP510_COMPLETION | prior residual `105` 유지 | collateral compare 재생성 |
+| Full375 runtime | GO_RUNTIME_COMPLETE_AUDITED | run `20260707_015830_870785`, dashboard `375/375`, manifest completed/flushed/pending/failed `375/375/0/0` | runtime 완료와 semantic approval 분리 |
+| Parallel/dashboard policy | GO | requested/effective `16/16`, dashboard `http://127.0.0.1:8080` | 다음 테스트런/검증런도 기본 부착 |
+| VLM/OCR config | GO | `--vlm on --ocr on --require-vlm-ocr-for-images`, semantic gate ready `true` | 이미지/OCR 근거는 row별 review에서만 승격 |
+| Run health | GO | `loop510_full375_current_head_run_health.json`, `clean_completed_source` | approval과 분리해 runtime integrity 증거로 보존 |
+| Publication contract | GO | `loop510_full375_current_head_publication_contract_audit.json`, `375` rows, violations `0` | full375 collateral NO-GO와 분리 |
+| Golden18 | NO-GO | `17/18`, failed post_id `11663521` | P0 source-native 또는 blind judge 검증 |
+| Full375 collateral | NO-GO | changed `202`, regression candidates `142` | P0 bucket batch triage |
+| Always-on gate | NO-GO | golden failure와 collateral regression blockers | bounded/full375 동결 해제 보류 |
+| Search evidence | REVIEW | `manifest_search_health_not_included`, `manifest_light_health_only`, `search_degraded_observed` | search/full_scan approval로 승격 금지 |
 | Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
 
-Gate: dispatch `GO_BACKGROUND_STARTED`, initial productivity `GO_ROW_PRODUCED_1_OF_375`, runtime completion `IN_PROGRESS`, full375 collateral `PENDING_LOOP510_COMPLETION / prior residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+Gate: runtime completion `GO_RUNTIME_COMPLETE_AUDITED`, run health `GO / clean_completed_source`, publication contract `GO / 0 violations`, golden18 `NO-GO / 17 of 18`, full375 collateral `NO-GO / regression candidates 142`, always-on gate `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## IMP-20260707-509 - repair28 reconciliation and repair27 runtime replay
 
