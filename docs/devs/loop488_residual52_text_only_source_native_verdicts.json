@@ -1,0 +1,304 @@
+{
+  "review_id": "loop488_residual52_text_only_source_native",
+  "scope": "Loop488 residual52 텍스트 전용 source-native verdict",
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json",
+  "rows": [
+    {
+      "post_id": 11660241,
+      "selected_option_id": "C1",
+      "selected_title": "[이티알] 이 세계 TRPG 마스터",
+      "selected_url": "https://novelpia.com/novel/271517",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_title_supported_by_direct_abbreviation_and_trpg_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 제목의 `이티알`과 본문 `trpg 파트`, 현실 파트 불호 맥락이 C1 `[이티알] 이 세계 TRPG 마스터`를 직접 지지한다. C2는 표면 약칭과 맞지 않는 인접 후보로 보인다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11660241",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11660241",
+        "https://novelpia.com/novel/271517"
+      ]
+    },
+    {
+      "post_id": 11666700,
+      "selected_option_id": "C1",
+      "selected_title": "내 고향엔 무림인이 산다",
+      "selected_url": "https://novel.munpia.com/493263",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_title_supported_by_direct_short_title_before_title_is_comparator",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 제목의 `내고향무림`이 C1 `내 고향엔 무림인이 산다`를 직접 가리키며, 본문 `하남자탑등반`은 도파민 비교 대상으로 언급된다. C2는 current work가 아니라 비교작이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11666700",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11666700",
+        "https://novel.munpia.com/493263"
+      ]
+    },
+    {
+      "post_id": 11716464,
+      "selected_option_id": "C1",
+      "selected_title": "슈라라펜란트",
+      "selected_url": "https://ridibooks.com/books/875100425?srsltid=AfmBOoofl7JWNm8VjXcYyPEHm-Ornr9TDfKp1dV5nu0oNIQPZtZVumDF",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_canonical_title_supported_after_page_title_suffix_contaminated",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_after_wrong_work",
+        "canonical_title_cleanup_required"
+      ],
+      "rationale_ko": "원문은 `슈라라펜란트`를 말한다. C2는 같은 리디 상세의 페이지/카테고리성 제목 `- 판타지 웹소설`이 붙은 형태라 canonical public title로 쓰기 부적절하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11716464",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11716464",
+        "https://ridibooks.com/books/875100425"
+      ]
+    },
+    {
+      "post_id": 11674712,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "multi_character_cross_work_comparison_needs_policy_review",
+      "evidence_grade": "Medium",
+      "action": [
+        "multi_work_policy_review",
+        "native_web_review_required",
+        "preserve_secondary_candidates"
+      ],
+      "rationale_ko": "원문은 `서문청`과 `주서연`의 승부를 묻는 캐릭터 비교다. C1 한 작품만 final current-work로 승격할지, 또는 다작품/캐릭터 비교로 보류할지는 별도 정책 검토가 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11674712",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11674712"
+      ]
+    },
+    {
+      "post_id": 11705256,
+      "selected_option_id": "C1",
+      "selected_title": "하남자의 탑 공략법",
+      "selected_url": "https://novel.munpia.com/400210",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "direct_short_title_supports_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 제목의 `하남자 탑`이 C1 `하남자의 탑 공략법`을 직접 지지하며, 본문도 하차 감상으로 같은 작품 소비 맥락이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11705256",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11705256",
+        "https://novel.munpia.com/400210"
+      ]
+    },
+    {
+      "post_id": 11660262,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "null_preferred_candidate_not_source_supported_correct_title_outside_options",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "candidate_set_rebuild_required"
+      ],
+      "rationale_ko": "원문 `로파민` 완결/AI 논란 맥락은 C1 `그렇게, 그 괴물과 두 번 결혼했다`를 지지하지 않는다. 후보군 안에서는 HOLD/null이 맞고, 정답 후보가 필요하면 후보 재구성이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11660262",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11660262"
+      ]
+    },
+    {
+      "post_id": 11661876,
+      "selected_option_id": "C1",
+      "selected_title": "와인의 신",
+      "selected_url": "https://novel.munpia.com/494781",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_title_and_platform_comment_support_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "원문 제목 `와인의신`, 본문 `클로이`, 댓글 `문피아에서 봤읍니다`가 C1 `와인의 신`을 직접 지지한다. after null은 safe title loss로 보인다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11661876",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11661876",
+        "https://novel.munpia.com/494781"
+      ]
+    },
+    {
+      "post_id": 11666741,
+      "selected_option_id": "C1",
+      "selected_title": "별을 품은 소드마스터",
+      "selected_url": "https://novel.munpia.com/254718",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "원문 `별품소`와 기사뽕/웹툰 감상 맥락은 C1 `별을 품은 소드마스터`의 약칭 소비 맥락이다. after null은 safe title loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11666741",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11666741",
+        "https://novel.munpia.com/254718"
+      ]
+    },
+    {
+      "post_id": 11679537,
+      "selected_option_id": "C1",
+      "selected_title": "죽었다 깨어도 수선",
+      "selected_url": "https://novelpia.com/novel/233173",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_and_plot_context_support_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "본문의 `죽깨수`와 선협/신선/단약 전개 언급이 C1 `죽었다 깨어도 수선`을 직접 지지한다. after null은 safe title loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11679537",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11679537",
+        "https://novelpia.com/novel/233173"
+      ]
+    },
+    {
+      "post_id": 11689282,
+      "selected_option_id": "C1",
+      "selected_title": "전생하고 보니 크툴루",
+      "selected_url": "https://novel.munpia.com/199081",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "원문 `전툴루` 엔딩 질문과 댓글의 회차/후반부 감상은 C1 `전생하고 보니 크툴루` 약칭 소비 맥락이다. after null은 safe title loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11689282",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11689282",
+        "https://novel.munpia.com/199081"
+      ]
+    },
+    {
+      "post_id": 11694044,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "null_preferred_candidate_is_comparison_target_not_current_work",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "preserve_secondary_candidates"
+      ],
+      "rationale_ko": "원문 제목은 `즉사무림` 유료화이고 본문 `즉사무림게 판초우의 중 뭘 따라갈 것인가`에서 C1 `판초우의의 마법사`는 비교 대상이다. 후보군 기준으로는 null/HOLD가 더 안전하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11694044",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11694044"
+      ]
+    },
+    {
+      "post_id": 11703640,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "comment_only_work_mention_current_target_policy_review_required",
+      "evidence_grade": "Medium",
+      "action": [
+        "multi_work_policy_review",
+        "preserve_secondary_candidates",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "글 제목과 본문은 `부기피아` 경험을 말하고, C1 `기계공주`는 댓글의 옆자리 대화로 등장한다. final current-work로 복원할지 secondary candidate로 보존할지 정책 검토가 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11703640",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11703640"
+      ]
+    },
+    {
+      "post_id": 11705231,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "null_preferred_candidate_not_source_supported_source_discusses_different_work",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "candidate_set_rebuild_required"
+      ],
+      "rationale_ko": "원문은 설지후/유선화/탐식 맥락을 논의한다. C1 `한국 레전드 프로게이머인 내가 일본판타지 사정에 휘말린 것에 대하여`를 지지하는 표면은 없어 null/HOLD가 안전하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11705231",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11705231"
+      ]
+    },
+    {
+      "post_id": 11718057,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "generic_or_author_like_surface_needs_native_confirmation",
+      "evidence_grade": "Medium",
+      "action": [
+        "native_web_review_required",
+        "title_surface_specificity_review_required"
+      ],
+      "rationale_ko": "원문 `컵라면 이ㅅㄲ`는 작품명일 수도 있지만 작가/사용자/별칭처럼도 읽히는 짧은 일반명사 표면이다. C1을 작품으로 복원하려면 native 확인이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11718057",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718057"
+      ]
+    },
+    {
+      "post_id": 11718098,
+      "selected_option_id": "C1",
+      "selected_title": "마법 좋아좋아좋아",
+      "selected_url": "https://novelpia.com/novel/326040",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_and_comment_context_support_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "원문 `마좋좋좋` 결말 질문과 댓글 반응은 C1 `마법 좋아좋아좋아` 약칭/결말 소비 맥락이다. after null은 safe title loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11718098",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718098",
+        "https://novelpia.com/novel/326040"
+      ]
+    },
+    {
+      "post_id": 11718120,
+      "selected_option_id": "C1",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_and_episode_context_support_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required",
+        "official_url_recall_required"
+      ],
+      "rationale_ko": "원문 `담텔기`, `305호`, 작가의 말/스포 맥락은 C1 `괴담 호텔 탈출기`를 직접 지지한다. URL은 없지만 title 복원은 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11718120",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718120"
+      ]
+    }
+  ]
+}

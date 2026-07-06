@@ -90,6 +90,64 @@
     },
     "required_action": "new_blind_or_source_native_verdicts_required"
   },
+  "residual52_text_only_source_native": {
+    "gate": "REVIEW-LOCKED",
+    "reviewed_rows": 16,
+    "unreviewed_batch_rows": 36,
+    "validation_issue_count": 0,
+    "label_counts": {
+      "ACCEPT": 6,
+      "REPROCESS": 7,
+      "HOLD": 3
+    },
+    "counts_by_bucket": {
+      "wrong_work_title_flip": 3,
+      "unsafe_promotion_from_hold": 2,
+      "safe_loss_resolved_to_null": 11
+    },
+    "queue_transition": {
+      "original_p0_rows": 52,
+      "source_native_reviewed_rows": 16,
+      "exclusion_candidate_rows": 6,
+      "repair_required_rows": 7,
+      "policy_or_native_review_required_rows": 3,
+      "residual_action_queue_rows": 46
+    },
+    "artifacts": {
+      "verdicts": "docs/devs/loop488_residual52_text_only_source_native_verdicts.json",
+      "state_json": "docs/devs/loop488_residual52_text_only_source_native_state_20260706.json",
+      "state_markdown": "docs/devs/loop488_residual52_text_only_source_native_state_20260706.md",
+      "summary_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_residual52_text_only_source_native_review.json",
+      "summary_markdown": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_residual52_text_only_source_native_review.md"
+    }
+  },
+  "combined_p0_source_native_after_text_only": {
+    "gate": "REVIEW-LOCKED",
+    "reviewed_rows": 100,
+    "unreviewed_batch_rows": 36,
+    "validation_issue_count": 0,
+    "label_counts": {
+      "ACCEPT": 29,
+      "REPROCESS": 44,
+      "HOLD": 27
+    },
+    "queue_transition": {
+      "original_p0_rows": 136,
+      "source_native_reviewed_rows": 100,
+      "exclusion_candidate_rows": 29,
+      "repair_required_rows": 44,
+      "policy_or_native_review_required_rows": 27,
+      "residual_action_queue_rows": 107
+    },
+    "remaining_review_lane": {
+      "rows": 36,
+      "reason": "image_or_native_review_required"
+    },
+    "artifacts": {
+      "summary_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_compatible_plus_residual52_text_only_review.json",
+      "summary_markdown": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_compatible_plus_residual52_text_only_review.md"
+    }
+  },
   "remaining_non_p0": {
     "p1_rows": 1,
     "p1_post_ids": [

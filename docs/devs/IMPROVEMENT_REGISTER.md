@@ -9,11 +9,12 @@
 | Publication/golden | GO | publication contract `0` violations, golden18 `18/18 PASS` | full375 collateral approval 대체 금지 |
 | Collateral gate | NO-GO | changed `199`, regression `137`, always-on blocker `collateral_regression_count_nonzero` | residual52와 P1 검토 |
 | Prior-compatible verdict | REVIEW-LOCKED | title/url 기준 호환 carry-forward `84/136`, validation issue `0` | ACCEPT `23`은 gate wiring 뒤 제외 후보 |
-| Residual52 batch | OPEN | `wrong_work_title_flip 19 / unsafe_promotion_from_hold 11 / safe_loss_resolved_to_null 22`, image/text-only `36/16` | 신규 blind/source-native verdict 작성 |
+| Residual52 text-only | REVIEW-LOCKED | text-only `16/52` reviewed, `ACCEPT 6 / REPROCESS 7 / HOLD 3`, validation issue `0` | image/native lane 유지 |
+| Combined P0 review | REVIEW-LOCKED | source-native reviewed `100/136`, `ACCEPT 29 / REPROCESS 44 / HOLD 27`, residual action queue `107` | 남은 `36`건 이미지/native 검토 |
 | P1 | OPEN | `11682800 / new_resolution_promotion` | 별도 source-native 또는 blind review |
 | Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
 
-Gate: full375 runtime `GO`, run health `GO`, publication contract `GO`, golden18 `GO`, full375 collateral `NO-GO`, residual52 batch `REVIEW-LOCKED`, search evidence `REVIEW / search_degraded_observed`, goal `ACTIVE / NOT_COMPLETE`.
+Gate: full375 runtime `GO`, run health `GO`, publication contract `GO`, golden18 `GO`, full375 collateral `NO-GO`, P0 source-native reviewed `100/136`, remaining image/native lane `36`, search evidence `REVIEW / search_degraded_observed`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## IMP-20260706-487 - stable alias collision contract
 

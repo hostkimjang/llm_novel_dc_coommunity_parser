@@ -1,0 +1,78 @@
+{
+  "loop": 488,
+  "date": "2026-07-06",
+  "report_type": "loop488_residual52_text_only_source_native_state",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "source_gate": "full375 collateral NO-GO",
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json",
+  "verdicts": "docs/devs/loop488_residual52_text_only_source_native_verdicts.json",
+  "residual52_summary": {
+    "gate": "REVIEW-LOCKED",
+    "batch_review_rows": 52,
+    "reviewed_rows": 16,
+    "unreviewed_batch_rows": 36,
+    "validation_issue_count": 0,
+    "label_counts": {
+      "ACCEPT": 6,
+      "REPROCESS": 7,
+      "HOLD": 3
+    },
+    "counts_by_bucket": {
+      "wrong_work_title_flip": 3,
+      "unsafe_promotion_from_hold": 2,
+      "safe_loss_resolved_to_null": 11
+    },
+    "queue_transition": {
+      "original_p0_rows": 52,
+      "source_native_reviewed_rows": 16,
+      "exclusion_candidate_rows": 6,
+      "repair_required_rows": 7,
+      "policy_or_native_review_required_rows": 3,
+      "residual_action_queue_rows": 46
+    }
+  },
+  "combined_p0_summary": {
+    "gate": "REVIEW-LOCKED",
+    "batch_review_rows": 136,
+    "reviewed_rows": 100,
+    "unreviewed_batch_rows": 36,
+    "validation_issue_count": 0,
+    "label_counts": {
+      "ACCEPT": 29,
+      "REPROCESS": 44,
+      "HOLD": 27
+    },
+    "counts_by_bucket": {
+      "wrong_work_title_flip": 14,
+      "unsafe_promotion_from_hold": 16,
+      "safe_loss_resolved_to_null": 70
+    },
+    "queue_transition": {
+      "original_p0_rows": 136,
+      "source_native_reviewed_rows": 100,
+      "exclusion_candidate_rows": 29,
+      "repair_required_rows": 44,
+      "policy_or_native_review_required_rows": 27,
+      "residual_action_queue_rows": 107
+    }
+  },
+  "remaining_review_lane": {
+    "rows": 36,
+    "reason": "image_or_native_review_required",
+    "required_action": "VLM/OCR, browser/native, or image-aware source-native review before collateral gate can move"
+  },
+  "artifacts": {
+    "residual52_review_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_residual52_text_only_source_native_review.json",
+    "residual52_review_markdown": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_residual52_text_only_source_native_review.md",
+    "combined_p0_review_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_compatible_plus_residual52_text_only_review.json",
+    "combined_p0_review_markdown": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_compatible_plus_residual52_text_only_review.md"
+  },
+  "approval_boundary": {
+    "text_only_review_is_not_approval": true,
+    "full375_collateral_gate": "NO-GO",
+    "search_recovery_gate": "REVIEW / search_degraded_observed",
+    "completion_gate": "full375 collateral GO + full_scan 경로 정의"
+  }
+}
