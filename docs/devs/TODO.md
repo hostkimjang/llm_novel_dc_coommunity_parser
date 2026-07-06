@@ -1,5 +1,19 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop508 TODO
+
+- 상태 업데이트: Loop507 static stale `7`행을 current HEAD runtime replay로 확인했다. Goal은 완료가 아니다.
+- [x] 원본 panel 입력에서 stale post_ids `11674694`, `11689292`, `11684372`, `11705251`, `11677924`, `11671500`, `11658668`만 추출했다.
+- [x] `--parallel 16` 요청과 dashboard live forwarding을 포함한 run plan을 생성했다.
+- [x] Standalone dashboard `http://127.0.0.1:8080`에 테스트런을 붙였고 최종 `7/7`, `batch_running=false`를 확인했다.
+- [x] Run `20260707_002725_851451`은 completed/flushed/pending/failed `7/7/0/0`으로 완주했다.
+- [x] Run health는 `GO / clean_completed_source`다.
+- [x] Publication contract audit는 `GO / row_count 7 / violation_row_count 0`이다.
+- [x] Loop505-507 static stale rows는 current runtime output에서 contract violation으로 재현되지 않았다.
+- [ ] Search evidence는 `REVIEW`이므로 search approval이나 full_scan approval로 쓰지 않는다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop507 TODO
 
 - 상태 업데이트: Loop502 `image_or_alias_anchor_contract_repair` 1건을 shared promotion gate 계약으로 승격했고 current full375 static audit는 `NO-GO / 7 stale artifact rows`다. Goal은 완료가 아니다.

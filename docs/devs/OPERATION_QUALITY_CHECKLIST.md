@@ -1,5 +1,26 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop508 publication contract stale 7 runtime replay 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_508_REPORT_20260707.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop508_publication_contract_stale7_runtime_replay_state_20260707.json`.
+  - [x] Runtime input 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop508_publication_contract_stale7_runtime_replay_input.jsonl`.
+  - [x] Run plan 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/plans/loop508_publication_contract_stale7_runtime_replay_plan.json`.
+  - [x] Runtime result 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop508_publication_contract_stale7_current_head_result.json`.
+  - [x] Run health 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop508_publication_contract_stale7_run_health.json`.
+  - [x] Publication contract audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop508_publication_contract_stale7_publication_contract_audit.json/.md`.
+- 품질 경계:
+  - [x] Dashboard live forwarding은 `GO`, 최종 `7/7`이다.
+  - [x] Runtime flush integrity는 `GO / clean_completed_source`다.
+  - [x] Publication contract는 `GO / 0 violations`다.
+  - [x] Loop505-507 static stale은 current runtime output에서 contract violation으로 재현되지 않았다.
+  - [x] 이 `GO`는 targeted contract replay 범위에 한정한다.
+  - [ ] Search evidence `REVIEW`를 full_scan approval로 쓰지 않는다.
+  - [ ] Full375 collateral `GO` 전 full_scan path를 정의하지 않는다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: targeted runtime replay `GO`, publication contract `GO`, search evidence `REVIEW`, full375 collateral `NO-GO / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop507 image/OCR anchor 계약 품질 게이트
 
 - 근거:

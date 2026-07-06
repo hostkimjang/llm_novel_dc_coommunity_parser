@@ -1,5 +1,33 @@
 # Verification Results
 
+## 2026-07-07 Loop508 Verification
+
+- 범위: Loop507 publication contract static audit에서 남은 stale `7`행을 current HEAD runtime replay로 확인했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_508_REPORT_20260707.md`
+  - state `docs\devs\loop508_publication_contract_stale7_runtime_replay_state_20260707.json`
+  - input `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop508_publication_contract_stale7_runtime_replay_input.jsonl`
+  - plan `out\regression_safe_grounding_20260626_000008_928006_loop01\plans\loop508_publication_contract_stale7_runtime_replay_plan.json`
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop508_publication_contract_stale7_current_head_result.json`
+  - run health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop508_publication_contract_stale7_run_health.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop508_publication_contract_stale7_publication_contract_audit.json`
+- Result:
+  - dashboard final `7/7`, `batch_running=false`
+  - run id `20260707_002725_851451`
+  - requested/effective parallel `16/7`
+  - completed/flushed/pending/failed `7/7/0/0`
+  - run health `GO / clean_completed_source`
+  - publication contract `GO / row_count 7 / violation_row_count 0`
+  - search evidence `REVIEW`
+- Validation:
+  - `.\.venv312\Scripts\python.exe -m tools.audit_expert_run_health --run-id 20260707_002725_851451 ...` PASS, flush integrity `GO`
+  - `.\.venv312\Scripts\python.exe -m tools.audit_publication_contract_convergence --result <Loop508 result>` PASS, gate `GO`
+- Boundary:
+  - 이 `GO`는 targeted contract replay 범위다.
+  - Search evidence가 `REVIEW`라서 search recovery/full_scan approval 근거가 아니다.
+  - Full375 collateral은 `NO-GO / residual 105`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-07 Loop507 Verification
 
 - 범위: Loop502 `image_or_alias_anchor_contract_repair` lane의 verified image/OCR work-title title-only publication contract를 감사/production sanitizer에 반영했다.

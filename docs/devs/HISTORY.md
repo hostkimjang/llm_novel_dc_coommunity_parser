@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-07 - Loop508 publication contract stale 7 runtime replay
+
+- Loop507 static audit에서 남은 stale `7`행을 current HEAD `65fe2dfa`에서 runtime replay로 검증했다.
+- 실행 입력은 `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop508_publication_contract_stale7_runtime_replay_input.jsonl`이고 run plan은 `out/regression_safe_grounding_20260626_000008_928006_loop01/plans/loop508_publication_contract_stale7_runtime_replay_plan.json`이다.
+- 사용자 지시대로 `--parallel 16`을 요청했고 effective parallel은 입력 수 기준 `7`이었다.
+- Standalone dashboard `http://127.0.0.1:8080` live forwarding으로 진행률을 붙였고 최종 `7/7`, `batch_running=false`를 확인했다.
+- Run `20260707_002725_851451`은 completed/flushed/pending/failed `7/7/0/0`, `large_run_complete=true`, VLM/OCR `READY`다.
+- Run health는 `GO / clean_completed_source`, publication contract audit는 `GO / row_count 7 / violation_row_count 0`이다.
+- Search evidence는 `REVIEW`다. Manifest health가 `include_search=false`, `light_mode=true`였고 row degraded가 관측됐으므로 search approval로 쓰지 않는다.
+- Gate는 targeted runtime replay `GO`, publication contract `GO`, search evidence `REVIEW`, full375 collateral `NO-GO / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop507 image/OCR work-title anchor contract hardening
 
 - Loop502 `image_or_alias_anchor_contract_repair` lane의 11684372형 direct image/OCR work-title 후보를 shared promotion gate 계약으로 승격했다.

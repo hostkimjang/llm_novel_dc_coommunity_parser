@@ -1,0 +1,63 @@
+{
+  "loop": 508,
+  "date": "2026-07-07",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "head": "65fe2dfa",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "scope": "Loop507 publication contract stale 7 current runtime replay",
+  "dashboard": {
+    "url": "http://127.0.0.1:8080",
+    "policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+    "runner_status": "already_running",
+    "final_status": "7/7",
+    "batch_running": false
+  },
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_508_REPORT_20260707.md",
+    "input_jsonl": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop508_publication_contract_stale7_runtime_replay_input.jsonl",
+    "input_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop508_publication_contract_stale7_runtime_replay_input_manifest.json",
+    "run_plan": "out/regression_safe_grounding_20260626_000008_928006_loop01/plans/loop508_publication_contract_stale7_runtime_replay_plan.json",
+    "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop508_publication_contract_stale7_current_head_result.json",
+    "result_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop508_publication_contract_stale7_current_head_result_manifest.json",
+    "checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop508_publication_contract_stale7_current_head_result_checkpoint.jsonl",
+    "run_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop508_publication_contract_stale7_run_health.json",
+    "publication_contract_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop508_publication_contract_stale7_publication_contract_audit.json",
+    "publication_contract_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop508_publication_contract_stale7_publication_contract_audit.md"
+  },
+  "runtime": {
+    "run_id": "20260707_002725_851451",
+    "requested_parallel": 16,
+    "effective_parallel": 7,
+    "completed": 7,
+    "flushed": 7,
+    "pending": 0,
+    "failed": 0,
+    "large_run_complete": true,
+    "vlm_enabled": true,
+    "ocr_enabled": true
+  },
+  "audits": {
+    "run_health": "GO / clean_completed_source",
+    "publication_contract": "GO / row_count 7 / violation_row_count 0",
+    "search_evidence": "REVIEW / manifest_search_health_not_included + manifest_light_health_only + search_degraded_observed"
+  },
+  "post_ids": [
+    11674694,
+    11689292,
+    11684372,
+    11705251,
+    11677924,
+    11671500,
+    11658668
+  ],
+  "gates": {
+    "dashboard_attach": "GO",
+    "targeted_runtime_replay": "GO",
+    "publication_contract": "GO",
+    "search_evidence": "REVIEW",
+    "full375_collateral": "NO-GO / residual 105",
+    "overall_goal": "ACTIVE / NOT_COMPLETE",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  }
+}

@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260707-508 - publication contract stale 7 runtime replay
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Dashboard runtime replay | GO | `tools.run_independent_plan`으로 `http://127.0.0.1:8080` live forwarding, 최종 `7/7` | 다음 테스트런도 dashboard 기본 ON 유지 |
+| Runtime integrity | GO | run `20260707_002725_851451`, completed/flushed/pending/failed `7/7/0/0` | full375 전수 경로와 분리 |
+| Publication contract | GO | Loop508 audit `7` rows, violations `0` | full375 current replay에서 재확인 필요 |
+| Search evidence | REVIEW | manifest health `include_search=false`, `light_mode=true`, row degraded 관측 | search approval 필요 시 non-light health로 별도 실행 |
+| Full375 collateral | NO-GO | residual `105` 유지 | full375 collateral GO 전 완료 주장 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: targeted runtime replay `GO`, publication contract `GO`, search evidence `REVIEW`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-507 - image/OCR work-title anchor publication contract
 
 | 항목 | 상태 | 근거 | 다음 |

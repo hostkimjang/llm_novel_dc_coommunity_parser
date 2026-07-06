@@ -1,5 +1,21 @@
 # Development Checklist
 
+## 2026-07-07 Loop508 publication contract stale 7 runtime replay 체크
+
+- [x] Loop507 static audit 위반 post_id `7`건을 원본 panel 입력에서 추출했다.
+- [x] 입력 manifest `loop508_publication_contract_stale7_runtime_replay_input_manifest.json`을 생성했다.
+- [x] `tools.run_independent_plan` 경로로 dashboard 기본 ON 실행을 사용했다.
+- [x] 테스트런은 `--parallel 16`을 요청했고 manifest 기준 effective parallel은 `7`이다.
+- [x] Dashboard `http://127.0.0.1:8080` 최종 상태는 `7/7`, `batch_running=false`다.
+- [x] Run `20260707_002725_851451`은 completed/flushed/pending/failed `7/7/0/0`이다.
+- [x] Run health audit는 `GO / clean_completed_source`다.
+- [x] Publication contract audit는 `GO / 7 rows / 0 violations`다.
+- [x] VLM/OCR semantic gate는 `READY`다.
+- [ ] Search evidence는 `REVIEW`이므로 search/full_scan approval로 승격하지 않는다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: targeted runtime replay `GO`, publication contract `GO`, search evidence `REVIEW`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop507 image/OCR anchor 계약 체크
 
 - [x] `expert_main.py`에 verified image/OCR work-title title-only 복구 경로를 추가했다.
