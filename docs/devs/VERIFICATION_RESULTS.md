@@ -24079,3 +24079,27 @@ The broader unittest result proves the code checkpoint did not break the current
   - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop422_expert_main_title_guard_tests.log`
   - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop422_publication_contract_bundle_tests.log`
 - Gate: runtime production `GO`, original semantic `NO-GO`, contract replay `GO_CONTRACT_REPLAY_ONLY`, full375 collateral `NOT_OPEN`, search recovery `P0 / OPEN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-06 Loop492 Verification
+
+- JSON parse:
+  - `docs\devs\loop492_p0_hold9_source_native_verdicts.json` -> PASS
+  - `docs\devs\loop492_p0_hold9_source_native_state_20260706.json` -> PASS
+- Verdict count validation:
+  - rows `9`
+  - labels `ACCEPT 4 / REPROCESS 3 / HOLD 2`
+  - native_web_checked `3`
+  - result `PASS`
+- `git diff --check` -> PASS
+- Artifacts:
+  - verdict JSON `docs\devs\loop492_p0_hold9_source_native_verdicts.json`
+  - verdict Markdown `docs\devs\loop492_p0_hold9_source_native_verdicts.md`
+  - state `docs\devs\loop492_p0_hold9_source_native_state_20260706.json`
+  - report `docs\devs\loop_reports\LOOP_492_REPORT_20260706.md`
+- Gate 유지:
+  - source-native review `REVIEW-LOCKED / completed 9 of 9`
+  - runtime replay after review `NOT_RUN_AFTER_REVIEW`
+  - full375 collateral `NO-GO`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+  - goal `ACTIVE / NOT_COMPLETE`

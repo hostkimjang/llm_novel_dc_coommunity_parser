@@ -10282,3 +10282,20 @@
   - [ ] full375 collateral gate는 아직 열지 않는다.
   - [x] Collateral 105는 `reclassified 74 / runtime-verified 4`로만 보고했다.
   - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-06 Loop492 Follow-up
+
+- [ ] `ACCEPT 4` variant 후보를 gate policy로만 제외한다.
+  - `11673102`: official-title/alias variant
+  - `11698870`: spacing variant
+  - `11705230`: base/series variant
+  - `11694068`: Korean/English language variant
+- [ ] `REPROCESS 3`을 다음 residual batch에 넣어 canonical title cleanup 또는 후보 재구성을 수행한다.
+  - `11663535`: `퇴마록 외전 1` 과특정
+  - `11714887`: `도굴왕` 후보 오염
+  - `11718098`: `마법 좋아좋아좋아` URL/title 오염
+- [ ] `HOLD 2`는 hard-hold 유지 상태로 image/native 또는 multi-work policy를 별도 판정한다.
+  - `11692436`: image/character bridge 필요
+  - `11673077`: 다작품 감상 정책 필요
+- [ ] Loop491 runtime input `14`건 replay는 search 조건과 runtime 생산성 preflight를 먼저 확인한 뒤 발주한다.
+- [ ] Full375 collateral은 계속 `NO-GO`이며 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.

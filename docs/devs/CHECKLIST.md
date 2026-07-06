@@ -12071,3 +12071,22 @@
 - [ ] Full375 collateral gate는 아직 열지 않는다.
 - [x] Collateral 105는 `reclassified 74 / runtime-verified 4 / residual 105`로만 보고한다.
 - Gate: runtime production `GO`, Loop421 original semantic `NO-GO`, Loop422 contract replay `GO_CONTRACT_REPLAY_ONLY`, full375 collateral `NOT_OPEN`, search recovery `P0 / OPEN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-06 Loop492 P0 HOLD 9 source-native verdict 체크
+
+- [x] 신규 full375/104k/bounded 대형 런을 발주하지 않았다.
+- [x] 동일 38-row parent packet replay를 실행하지 않았다.
+- [x] Loop491 `HOLD 9`를 source-native/blind canonical verdict로 판정했다.
+  - verdict: `ACCEPT 4 / REPROCESS 3 / HOLD 2`
+  - native web checked rows: `3`
+- [x] Variant 후보 4건을 approval이 아닌 gate-policy 후 제외 후보로만 기록했다.
+  - `11673102`, `11698870`, `11705230`, `11694068`
+- [x] Repair 필요 3건을 residual action으로 유지했다.
+  - `11663535`, `11714887`, `11718098`
+- [x] Hard-hold 유지 2건을 별도 image/native 또는 multi-work policy lane으로 남겼다.
+  - `11692436`, `11673077`
+- [x] JSON parse, verdict count validation, `git diff --check`를 통과했다.
+- [ ] Variant policy/gate wiring 전까지 `ACCEPT 4`를 full375 count에서 자동 제외하지 않는다.
+- [ ] Runtime replay after review는 아직 실행하지 않는다.
+- [ ] Full375 collateral gate는 `NO-GO`로 유지한다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

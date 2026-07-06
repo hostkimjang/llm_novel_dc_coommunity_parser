@@ -1,0 +1,262 @@
+{
+  "review_id": "loop492_p0_hold9_source_native_verdicts",
+  "scope": "Loop491 P0 HOLD 9 source-native/blind canonical verdict",
+  "generated_at": "2026-07-06T15:05:00+09:00",
+  "source_packet": "docs/devs/loop491_p0_hold9_source_native_review_packet.json",
+  "source_runtime_input": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop489_shared_gate_projected_safe46_runtime_replay_input.jsonl",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "review_rows": 9,
+    "review_label_counts": {
+      "ACCEPT": 4,
+      "REPROCESS": 3,
+      "HOLD": 2
+    },
+    "evidence_grade_counts": {
+      "Strong": 7,
+      "Medium": 1,
+      "Weak": 1
+    },
+    "native_web_checked_rows": 3,
+    "runtime_replay_after_review": "NOT_RUN_AFTER_REVIEW",
+    "full375_collateral": "NO-GO",
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "queue_transition": {
+    "source_hold_review_rows": 9,
+    "variant_accept_candidates": 4,
+    "repair_required_rows": 3,
+    "policy_or_native_hold_rows": 2,
+    "review_adjusted_action_rows": 5,
+    "hard_hold_relaxation_ready": false,
+    "completion_criterion": "full375 collateral GO + full_scan path definition"
+  },
+  "rows": [
+    {
+      "post_id": 11663535,
+      "expected_title": "퇴마록",
+      "actual_title": "퇴마록 외전 1",
+      "actual_url": "https://ridibooks.com/books/4239000218",
+      "selected_option_id": "EXPECTED_CANONICAL_BASE",
+      "selected_title": "퇴마록",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "base_work_supported_but_after_specific_side_story_overpromoted",
+      "evidence_grade": "Strong",
+      "native_web_checked": false,
+      "action": [
+        "repair_after_over_specific_variant",
+        "canonical_title_cleanup_required",
+        "search_replay_required"
+      ],
+      "rationale_ko": "원문 제목과 본문은 `퇴마록` 자체와 박신부, 이현암, 부동심결, 월향검 같은 본편/세계관 단서를 직접 말한다. `퇴마록 외전 1`은 같은 계열 상세권일 수 있으나 현재 글의 공용 작품명으로는 과특정되어 canonical base로 되돌려야 한다.",
+      "evidence_refs": [
+        "docs/devs/loop491_p0_hold9_source_native_review_packet.json#post_id=11663535",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop489_shared_gate_projected_safe46_runtime_replay_input.jsonl#post_id=11663535",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11663535"
+      ]
+    },
+    {
+      "post_id": 11673102,
+      "expected_title": "갤질하는 천재 의사",
+      "actual_title": "댓글 보는 천재 의사",
+      "actual_url": "https://novelpia.com/novel/372180",
+      "selected_option_id": "ACTUAL_ALIAS_VARIANT",
+      "selected_title": "댓글 보는 천재 의사",
+      "selected_url": "https://novelpia.com/novel/372180",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "official_title_with_galjil_alias_same_work",
+      "evidence_grade": "Strong",
+      "native_web_checked": true,
+      "action": [
+        "canonical_alias_variant_policy_update_required",
+        "exclude_from_regression_count_after_variant_policy"
+      ],
+      "rationale_ko": "원문은 `갤질의사`를 랭킹 소비 목록 안에서 언급한다. 공식 노벨피아 상세의 현재 제목은 `댓글 보는 천재 의사`이고 태그에 `갤질의사`가 있어, expected 표면은 커뮤니티식 별칭이고 actual은 같은 작품의 공식 제목으로 판정한다.",
+      "evidence_refs": [
+        "docs/devs/loop491_p0_hold9_source_native_review_packet.json#post_id=11673102",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop489_shared_gate_projected_safe46_runtime_replay_input.jsonl#post_id=11673102",
+        "https://novelpia.com/novel/372180",
+        "https://www.novelupdates.com/series/a-genius-doctor-who-does-gallery-work/"
+      ]
+    },
+    {
+      "post_id": 11692436,
+      "expected_title": "퍼펙트 메이지",
+      "actual_title": "죽었다 깨어도 수선",
+      "actual_url": null,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_character_bridge_required_before_single_work_publish",
+      "evidence_grade": "Weak",
+      "native_web_checked": false,
+      "action": [
+        "image_native_review_required",
+        "character_work_link_review_required",
+        "preserve_candidates"
+      ],
+      "rationale_ko": "텍스트 원문은 `류서란(perfect)`와 앱 꼬리말뿐이고 이미지가 1장 있다. expected와 actual 모두 캐릭터/이미지 근거 없이는 단일 current work로 확정하기 어렵다. hard-hold 완화 없이 image/native 또는 blind judge로 넘긴다.",
+      "evidence_refs": [
+        "docs/devs/loop491_p0_hold9_source_native_review_packet.json#post_id=11692436",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop489_shared_gate_projected_safe46_runtime_replay_input.jsonl#post_id=11692436",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11692436"
+      ]
+    },
+    {
+      "post_id": 11698870,
+      "expected_title": "인간실격",
+      "actual_title": "인간 실격",
+      "actual_url": "https://ridibooks.com/books/509000257",
+      "selected_option_id": "ACTUAL_SPACING_VARIANT",
+      "selected_title": "인간 실격",
+      "selected_url": "https://ridibooks.com/books/509000257",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "spacing_variant_same_work",
+      "evidence_grade": "Strong",
+      "native_web_checked": false,
+      "action": [
+        "spacing_variant_policy_update_required",
+        "exclude_from_regression_count_after_variant_policy"
+      ],
+      "rationale_ko": "원문 제목은 `인간실격`이고 본문도 일본 문학 작품의 결말/작가 맥락을 묻는다. actual `인간 실격`은 띄어쓰기 변형이므로 wrong-work가 아니라 canonical spacing variant로 처리한다.",
+      "evidence_refs": [
+        "docs/devs/loop491_p0_hold9_source_native_review_packet.json#post_id=11698870",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop489_shared_gate_projected_safe46_runtime_replay_input.jsonl#post_id=11698870",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11698870",
+        "https://ridibooks.com/books/509000257"
+      ]
+    },
+    {
+      "post_id": 11705230,
+      "expected_title": "월야환담",
+      "actual_title": "월야환담 시리즈",
+      "actual_url": null,
+      "selected_option_id": "ACTUAL_SERIES_VARIANT",
+      "selected_title": "월야환담 시리즈",
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "series_title_variant_same_work_family",
+      "evidence_grade": "Strong",
+      "native_web_checked": false,
+      "action": [
+        "series_variant_policy_update_required",
+        "exclude_from_regression_count_after_variant_policy"
+      ],
+      "rationale_ko": "원문은 `월야환담`의 시대 변화와 어반판타지 설정을 직접 논한다. actual `월야환담 시리즈`는 같은 작품군을 넓게 부르는 variant로 보이며 wrong-work 증거가 없다.",
+      "evidence_refs": [
+        "docs/devs/loop491_p0_hold9_source_native_review_packet.json#post_id=11705230",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop489_shared_gate_projected_safe46_runtime_replay_input.jsonl#post_id=11705230",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11705230"
+      ]
+    },
+    {
+      "post_id": 11714887,
+      "expected_title": "도굴왕 1 |",
+      "actual_title": "[도굴왕] [fate] 도굴왕에서 에누마 엘리시를!!",
+      "actual_url": null,
+      "selected_option_id": "CANONICAL_BASE",
+      "selected_title": "도굴왕",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "source_supports_base_work_but_both_candidates_are_contaminated",
+      "evidence_grade": "Strong",
+      "native_web_checked": true,
+      "action": [
+        "candidate_set_rebuild_required",
+        "canonical_title_cleanup_required",
+        "repair_after_wrong_work"
+      ],
+      "rationale_ko": "원문 제목과 본문은 애니플러스 PV 맥락의 `도굴왕`을 직접 가리킨다. expected `도굴왕 1 |`은 권/페이지 제목 오염이고, actual은 `[fate]` 파생/팬픽 표면이라 current work로 publish하면 안 된다.",
+      "evidence_refs": [
+        "docs/devs/loop491_p0_hold9_source_native_review_packet.json#post_id=11714887",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop489_shared_gate_projected_safe46_runtime_replay_input.jsonl#post_id=11714887",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11714887",
+        "https://webtoon.kakao.com/viewer/%EB%8F%84%EA%B5%B4%EC%99%95-002/126597",
+        "https://www.yes24.com/product/goods/95520300"
+      ]
+    },
+    {
+      "post_id": 11718098,
+      "expected_title": "마법 좋아좋아좋아",
+      "actual_title": "마법 좋아, 마법과 좋아",
+      "actual_url": "https://novelpia.com/novel/3260401",
+      "selected_option_id": "EXPECTED_CANONICAL",
+      "selected_title": "마법 좋아좋아좋아",
+      "selected_url": "https://novelpia.com/novel/326040",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "abbreviation_supports_expected_official_title_after_candidate_contaminated",
+      "evidence_grade": "Strong",
+      "native_web_checked": true,
+      "action": [
+        "repair_after_wrong_work",
+        "canonical_title_cleanup_required",
+        "official_url_correction_required"
+      ],
+      "rationale_ko": "원문 `마좋좋좋`과 결말 언급은 공식 작품 `마법 좋아좋아좋아`를 직접 가리킨다. actual `마법 좋아, 마법과 좋아` 및 URL `3260401`은 공식 상세 `326040`과 맞지 않아 후보/URL 오염으로 재처리해야 한다.",
+      "evidence_refs": [
+        "docs/devs/loop491_p0_hold9_source_native_review_packet.json#post_id=11718098",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop489_shared_gate_projected_safe46_runtime_replay_input.jsonl#post_id=11718098",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718098",
+        "https://novelpia.com/novel/326040"
+      ]
+    },
+    {
+      "post_id": 11673077,
+      "expected_title": "판초우의의 마법사",
+      "actual_title": "즉사기 들고 무림에 떨어지다",
+      "actual_url": "https://novel.munpia.com/528383",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "multi_work_consumption_post_needs_policy_before_single_work_publish",
+      "evidence_grade": "Strong",
+      "native_web_checked": false,
+      "action": [
+        "multi_work_policy_review",
+        "preserve_secondary_candidates",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "원문 제목과 본문은 `즉사무림`, `판초우의`, `빛세구`를 함께 본 감상이다. expected와 actual 모두 본문에 등장하는 후보라 단일 current work promotion은 정책 없이는 위험하다.",
+      "evidence_refs": [
+        "docs/devs/loop491_p0_hold9_source_native_review_packet.json#post_id=11673077",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop489_shared_gate_projected_safe46_runtime_replay_input.jsonl#post_id=11673077",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11673077",
+        "https://novel.munpia.com/528383"
+      ]
+    },
+    {
+      "post_id": 11694068,
+      "expected_title": "트와일라잇",
+      "actual_title": "Twilight",
+      "actual_url": "https://page.kakao.com/content/47180017",
+      "selected_option_id": "ACTUAL_LANGUAGE_VARIANT",
+      "selected_title": "Twilight",
+      "selected_url": "https://page.kakao.com/content/47180017",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "korean_english_title_variant_same_work",
+      "evidence_grade": "Strong",
+      "native_web_checked": false,
+      "action": [
+        "language_variant_policy_update_required",
+        "exclude_from_regression_count_after_variant_policy"
+      ],
+      "rationale_ko": "원문 제목은 `트와일라잇 인터뷰`이고 image/OCR reason codes도 title rescue를 기록한다. actual `Twilight`는 같은 작품의 영어 표기 variant로 보이며 wrong-work 증거가 없다.",
+      "evidence_refs": [
+        "docs/devs/loop491_p0_hold9_source_native_review_packet.json#post_id=11694068",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop489_shared_gate_projected_safe46_runtime_replay_input.jsonl#post_id=11694068",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11694068",
+        "https://page.kakao.com/content/47180017"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "source_native_verdict_is_not_full375_go": true,
+    "variant_accept_requires_gate_policy_before_count_exclusion": true,
+    "hard_hold_relaxation_requires_runtime_or_policy_gate": true,
+    "full_scan_approval": false
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "loop": 492,
+  "date": "2026-07-06",
+  "title": "Loop492 P0 HOLD 9 source-native verdict",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "inputs": {
+    "review_packet": "docs/devs/loop491_p0_hold9_source_native_review_packet.json",
+    "source_runtime_input": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop489_shared_gate_projected_safe46_runtime_replay_input.jsonl"
+  },
+  "outputs": {
+    "verdict_json": "docs/devs/loop492_p0_hold9_source_native_verdicts.json",
+    "verdict_md": "docs/devs/loop492_p0_hold9_source_native_verdicts.md",
+    "report": "docs/devs/loop_reports/LOOP_492_REPORT_20260706.md"
+  },
+  "counts": {
+    "review_rows": 9,
+    "accept": 4,
+    "reprocess": 3,
+    "hold": 2,
+    "native_web_checked_rows": 3,
+    "variant_accept_candidates": 4,
+    "repair_required_rows": 3,
+    "policy_or_native_hold_rows": 2,
+    "review_adjusted_action_rows": 5
+  },
+  "post_id_sets": {
+    "accept": [
+      11673102,
+      11698870,
+      11705230,
+      11694068
+    ],
+    "reprocess": [
+      11663535,
+      11714887,
+      11718098
+    ],
+    "hold": [
+      11692436,
+      11673077
+    ]
+  },
+  "gate_status": {
+    "source_native_review": "REVIEW-LOCKED / completed 9 of 9",
+    "variant_policy": "REQUIRED_BEFORE_EXCLUSION",
+    "runtime_replay_after_review": "NOT_RUN_AFTER_REVIEW",
+    "full375_collateral": "NO-GO",
+    "search_evidence": "REVIEW / inherited search-degraded rows remain",
+    "completion_gate": "OPEN / full375 collateral GO + full_scan path definition required"
+  },
+  "verification": {
+    "json_parse": "PASS",
+    "verdict_count_validation": "PASS / rows 9 / ACCEPT 4 / REPROCESS 3 / HOLD 2 / native_web_checked 3",
+    "git_diff_check": "PASS"
+  },
+  "approval_boundary": {
+    "source_native_verdict_is_not_full375_go": true,
+    "accept_candidates_are_not_auto_excluded": true,
+    "runtime_or_policy_gate_required_before_hard_hold_relaxation": true
+  }
+}

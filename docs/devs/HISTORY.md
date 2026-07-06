@@ -11200,3 +11200,18 @@
 - Artifacts: report `docs/devs/loop_reports/LOOP_417_422_REPORT_20260704.md`, state `docs/devs/loop422_11698880_publish_contract_context_patch_20260704.json`, replay result `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop421_11698880_direct_body_alias_contract_replayed_result.json`.
 - 검증: `tests.test_expert_main_comment_metadata tests.test_title_lead_search_inferred_guard` `275` tests PASS, publication contract bundle `90` tests PASS.
 - Gate는 runtime production `GO`, Loop421 원본 semantic `NO-GO`, Loop422 contract replay `GO_CONTRACT_REPLAY_ONLY`, full375 collateral `NOT_OPEN`, collateral `reclassified 74 / runtime-verified 4 / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다.
+
+## 2026-07-06 - Loop492 P0 HOLD 9 source-native verdict
+
+- Goal은 `ACTIVE / NOT_COMPLETE`다. 신규 full375/104k/bounded 대형 런과 동일 38-row parent replay는 실행하지 않았다.
+- Loop491 `HOLD 9`를 source-native/blind canonical verdict로 판정했다.
+- 결과는 `ACCEPT 4 / REPROCESS 3 / HOLD 2`다.
+  - `ACCEPT`: `11673102`, `11698870`, `11705230`, `11694068`
+  - `REPROCESS`: `11663535`, `11714887`, `11718098`
+  - `HOLD`: `11692436`, `11673077`
+- `ACCEPT 4`는 alias/spacing/series/language variant 후보일 뿐 full375 approval이 아니며, variant policy 또는 gate wiring 뒤 regression-count 제외 후보로만 둔다.
+- `REPROCESS 3`은 canonical title cleanup, 후보 재구성, URL 오염 수리가 필요하다.
+- `HOLD 2`는 이미지/캐릭터 근거 또는 다작품 감상이라 hard-hold를 유지한다.
+- Artifacts: verdict `docs/devs/loop492_p0_hold9_source_native_verdicts.json/.md`, state `docs/devs/loop492_p0_hold9_source_native_state_20260706.json`, report `docs/devs/loop_reports/LOOP_492_REPORT_20260706.md`.
+- 검증: JSON parse PASS, verdict count validation PASS, `git diff --check` PASS.
+- Gate는 source-native review `REVIEW-LOCKED / 9 of 9`, runtime replay after review `NOT_RUN_AFTER_REVIEW`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다.
