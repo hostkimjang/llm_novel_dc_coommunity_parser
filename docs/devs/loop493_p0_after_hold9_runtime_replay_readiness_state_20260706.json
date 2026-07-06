@@ -1,0 +1,84 @@
+{
+  "loop": 493,
+  "date": "2026-07-06",
+  "title": "Loop493 P0 after HOLD9 runtime replay readiness",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "inputs": {
+    "batch_queue": "docs/devs/loop491_p0_runtime_failure_batch_queue.json",
+    "hold9_verdicts": "docs/devs/loop492_p0_hold9_source_native_verdicts.json"
+  },
+  "outputs": {
+    "readiness_queue_json": "docs/devs/loop493_p0_after_hold9_runtime_replay_readiness_queue.json",
+    "readiness_queue_md": "docs/devs/loop493_p0_after_hold9_runtime_replay_readiness_queue.md",
+    "report": "docs/devs/loop_reports/LOOP_493_REPORT_20260706.md"
+  },
+  "counts": {
+    "loop491_selected_p0_rows": 23,
+    "loop491_runtime_reprocess_rows": 14,
+    "loop492_verdict_rows": 9,
+    "ready_for_runtime_replay_rows": 0,
+    "blocked_before_runtime_replay_rows": 23,
+    "publish_contract_trace_repair_before_replay": 5,
+    "search_blind_or_recovered_preflight_before_replay": 9,
+    "canonical_repair_before_runtime_replay": 3,
+    "hard_hold_policy_or_native_review": 2,
+    "variant_policy_before_regression_exclusion": 4
+  },
+  "post_id_sets": {
+    "publish_contract_trace_repair_before_replay": [
+      11677915,
+      11684372,
+      11694019,
+      11718099,
+      11682780
+    ],
+    "search_blind_or_recovered_preflight_before_replay": [
+      11663521,
+      11665124,
+      11677926,
+      11698910,
+      11708447,
+      11710049,
+      11716475,
+      11718110,
+      11710020
+    ],
+    "canonical_repair_before_runtime_replay": [
+      11663535,
+      11714887,
+      11718098
+    ],
+    "hard_hold_policy_or_native_review": [
+      11692436,
+      11673077
+    ],
+    "variant_policy_before_regression_exclusion": [
+      11673102,
+      11698870,
+      11705230,
+      11694068
+    ]
+  },
+  "gate_status": {
+    "readiness_queue_generation": "GO / validation issue 0",
+    "runtime_replay_after_readiness": "BLOCKED_BEFORE_REPAIR",
+    "prepared_input_rows": "14 / not dispatched",
+    "full375_collateral": "NO-GO",
+    "search_evidence": "REVIEW / inherited search-degraded rows remain",
+    "completion_gate": "OPEN / full375 collateral GO + full_scan path definition required"
+  },
+  "verification": {
+    "py_compile": "PASS / tools.build_runtime_replay_readiness_queue + tests.test_runtime_replay_readiness_queue",
+    "unit_test": "PASS / tests.test_runtime_replay_readiness_queue / 2 tests",
+    "queue_generation": "PASS / --fail-on-validation-issue",
+    "json_parse": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "approval_boundary": {
+    "readiness_queue_is_not_runtime_approval": true,
+    "prepared_14_replay_not_launched": true,
+    "full_scan_approval": false
+  }
+}

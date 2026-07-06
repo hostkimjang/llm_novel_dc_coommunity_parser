@@ -1,0 +1,766 @@
+{
+  "report_type": "runtime_replay_readiness_queue",
+  "queue_id": "loop493_p0_after_hold9_runtime_replay_readiness_queue",
+  "generated_at": "2026-07-06T14:36:04",
+  "source_batch": "loop491_p0_runtime_failure_batch",
+  "source_verdict": "loop492_p0_hold9_source_native_verdicts",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "REVIEW-LOCKED",
+  "summary": {
+    "loop491_selected_p0_rows": 23,
+    "loop491_runtime_reprocess_rows": 14,
+    "loop492_verdict_rows": 9,
+    "ready_for_runtime_replay_rows": 0,
+    "blocked_before_runtime_replay_rows": 23,
+    "runtime_lane_counts": {
+      "publish_contract_trace_repair_before_replay": 5,
+      "search_blind_or_recovered_preflight_before_replay": 9
+    },
+    "verdict_lane_counts": {
+      "canonical_repair_before_runtime_replay": 3,
+      "hard_hold_policy_or_native_review": 2,
+      "variant_policy_before_regression_exclusion": 4
+    },
+    "blocker_counts": {
+      "canonical_title_or_url_repair_required": 3,
+      "exact_title_blocked_by_publish_contract_trace": 5,
+      "hard_hold_not_relaxed": 2,
+      "search_degraded_or_timeout_not_recovered": 9,
+      "variant_accept_requires_gate_policy": 4
+    },
+    "validation_issue_count": 0
+  },
+  "runtime_replay_gate": {
+    "status": "BLOCKED_BEFORE_REPAIR",
+    "reason": "Loop491 warned that REPROCESS 14 would be a repeat unless shared-gate repair or search-blind tagging happens first.",
+    "prepared_input": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop491_p0_reprocess14_runtime_replay_input.jsonl",
+    "dispatch_rule": "Do not run the prepared input until ready_for_runtime_replay_rows is nonzero after code/contract repair or search preflight tagging."
+  },
+  "stop_condition": {
+    "actionable_queue_must_decrease": true,
+    "same_packet_safe_resolved_must_be_monotonic_non_decreasing": true,
+    "round_count_is_not_a_stop_condition": true
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11663521,
+      "source": "loop491_runtime_reprocess",
+      "review_label": "REPROCESS",
+      "lane": "search_blind_or_recovered_preflight_before_replay",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "search_degraded_or_timeout_not_recovered"
+      ],
+      "expected_title": "초전자포] 시스터즈가 되었다",
+      "actual_title": null,
+      "actual_url": null,
+      "search_status": "SEARCH_DEGRADED",
+      "search_unrecovered_degraded": 2,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "none",
+      "discussion_type": "community_banter",
+      "actions": [
+        "shared_gate_runtime_block_repair_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다."
+    },
+    {
+      "post_id": 11665124,
+      "source": "loop491_runtime_reprocess",
+      "review_label": "REPROCESS",
+      "lane": "search_blind_or_recovered_preflight_before_replay",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "search_degraded_or_timeout_not_recovered"
+      ],
+      "expected_title": "화산파(화산귀환)",
+      "actual_title": null,
+      "actual_url": null,
+      "search_status": "SEARCH_DEGRADED",
+      "search_unrecovered_degraded": 1,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "ocr_explicit_title_unresolved",
+      "work_resolution": "none",
+      "discussion_type": "recommendation",
+      "actions": [
+        "shared_gate_runtime_block_repair_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved",
+        "serialized_public_identity_scrubbed"
+      ],
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다."
+    },
+    {
+      "post_id": 11677915,
+      "source": "loop491_runtime_reprocess",
+      "review_label": "REPROCESS",
+      "lane": "publish_contract_trace_repair_before_replay",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "exact_title_blocked_by_publish_contract_trace"
+      ],
+      "expected_title": "전지적 독자 시점",
+      "actual_title": "전지적 독자 시점",
+      "actual_url": "https://novel.munpia.com/104753",
+      "search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": true,
+      "compact_title_match": true,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "discussion_type": "meme",
+      "actions": [
+        "blocked_expected_title_trace_review_required",
+        "shared_gate_runtime_block_repair_required"
+      ],
+      "reason_codes": [
+        "alias_bridge",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discussion_missing",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "title_acceptance_accept",
+        "title_led_alias_contextual_official_detail_competes",
+        "title_led_consumption_bridge"
+      ],
+      "close_condition": "같은 입력 runtime replay에서 같은 title/url safe_resolved와 publication contract 0 violation을 확인한다."
+    },
+    {
+      "post_id": 11677926,
+      "source": "loop491_runtime_reprocess",
+      "review_label": "REPROCESS",
+      "lane": "search_blind_or_recovered_preflight_before_replay",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "search_degraded_or_timeout_not_recovered"
+      ],
+      "expected_title": "재앙급 막내 공자의 회귀",
+      "actual_title": null,
+      "actual_url": null,
+      "search_status": "SEARCH_DEGRADED",
+      "search_unrecovered_degraded": 2,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "discussion_type": "character_talk",
+      "actions": [
+        "shared_gate_runtime_block_repair_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다."
+    },
+    {
+      "post_id": 11684372,
+      "source": "loop491_runtime_reprocess",
+      "review_label": "REPROCESS",
+      "lane": "publish_contract_trace_repair_before_replay",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "exact_title_blocked_by_publish_contract_trace"
+      ],
+      "expected_title": "밀리언 클래스",
+      "actual_title": "밀리언 클래스",
+      "actual_url": null,
+      "search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": true,
+      "compact_title_match": true,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "ocr_explicit_title_unresolved",
+      "work_resolution": "unresolved",
+      "discussion_type": "general",
+      "actions": [
+        "blocked_expected_title_trace_review_required",
+        "shared_gate_runtime_block_repair_required"
+      ],
+      "reason_codes": [
+        "direct_image_work_surface_bridge",
+        "ocr_catalog_official_title",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed",
+        "unverified_promoted_image_work_title_without_official_support"
+      ],
+      "close_condition": "같은 입력 runtime replay에서 같은 title/url safe_resolved와 publication contract 0 violation을 확인한다."
+    },
+    {
+      "post_id": 11694019,
+      "source": "loop491_runtime_reprocess",
+      "review_label": "REPROCESS",
+      "lane": "publish_contract_trace_repair_before_replay",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "exact_title_blocked_by_publish_contract_trace"
+      ],
+      "expected_title": "혼후 순결",
+      "actual_title": "혼후 순결",
+      "actual_url": "https://page.kakao.com/content/61863349",
+      "search_status": "ok",
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": true,
+      "compact_title_match": true,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "discussion_type": "character_talk",
+      "actions": [
+        "blocked_expected_title_trace_review_required",
+        "shared_gate_runtime_block_repair_required"
+      ],
+      "reason_codes": [
+        "context_only",
+        "llm_only_sentence_candidate_pruned",
+        "official_detail_url_title_mismatch_publish_blocked",
+        "row_discusses_work_as_work",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "url_title_mismatch",
+        "work_consumption_marker"
+      ],
+      "close_condition": "같은 입력 runtime replay에서 같은 title/url safe_resolved와 publication contract 0 violation을 확인한다."
+    },
+    {
+      "post_id": 11698910,
+      "source": "loop491_runtime_reprocess",
+      "review_label": "REPROCESS",
+      "lane": "search_blind_or_recovered_preflight_before_replay",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "search_degraded_or_timeout_not_recovered"
+      ],
+      "expected_title": "판초우의의 마법사",
+      "actual_title": "판초우의의 마법사",
+      "actual_url": "https://novel.munpia.com/530500",
+      "search_status": "SEARCH_DEGRADED",
+      "search_unrecovered_degraded": 1,
+      "exact_title_match": true,
+      "compact_title_match": true,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "discussion_type": "review",
+      "actions": [
+        "blocked_expected_title_trace_review_required",
+        "shared_gate_runtime_block_repair_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "reason_codes": [
+        "missing_body_work_bridge",
+        "official_detail_url",
+        "official_title_exists",
+        "resolved_public_title_scope",
+        "row_discussion_missing",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "unresolved_body_character_work_anchor"
+      ],
+      "close_condition": "같은 입력 runtime replay에서 같은 title/url safe_resolved와 publication contract 0 violation을 확인한다."
+    },
+    {
+      "post_id": 11708447,
+      "source": "loop491_runtime_reprocess",
+      "review_label": "REPROCESS",
+      "lane": "search_blind_or_recovered_preflight_before_replay",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "search_degraded_or_timeout_not_recovered"
+      ],
+      "expected_title": "잠룡회귀",
+      "actual_title": null,
+      "actual_url": null,
+      "search_status": "SEARCH_DEGRADED",
+      "search_unrecovered_degraded": 1,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "discussion_type": "character_talk",
+      "actions": [
+        "shared_gate_runtime_block_repair_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_search_evidence",
+        "character_bridge_variance_hold",
+        "official_detail_url_recovered_from_search_evidence",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다."
+    },
+    {
+      "post_id": 11710049,
+      "source": "loop491_runtime_reprocess",
+      "review_label": "REPROCESS",
+      "lane": "search_blind_or_recovered_preflight_before_replay",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "search_degraded_or_timeout_not_recovered"
+      ],
+      "expected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "actual_title": null,
+      "actual_url": null,
+      "search_status": "SEARCH_DEGRADED",
+      "search_unrecovered_degraded": 3,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "ocr_explicit_title_unresolved",
+      "work_resolution": "none",
+      "discussion_type": "recommendation",
+      "actions": [
+        "shared_gate_runtime_block_repair_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved",
+        "serialized_public_identity_scrubbed"
+      ],
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다."
+    },
+    {
+      "post_id": 11716475,
+      "source": "loop491_runtime_reprocess",
+      "review_label": "REPROCESS",
+      "lane": "search_blind_or_recovered_preflight_before_replay",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "search_degraded_or_timeout_not_recovered"
+      ],
+      "expected_title": "지력 99 고능아인 척하기",
+      "actual_title": null,
+      "actual_url": null,
+      "search_status": "SEARCH_DEGRADED",
+      "search_unrecovered_degraded": 3,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "adjacent",
+      "work_resolution": "none",
+      "discussion_type": "author_talk",
+      "actions": [
+        "shared_gate_runtime_block_repair_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_search_evidence",
+        "character_bridge_variance_hold",
+        "official_detail_url_recovered_from_search_evidence",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다."
+    },
+    {
+      "post_id": 11718099,
+      "source": "loop491_runtime_reprocess",
+      "review_label": "REPROCESS",
+      "lane": "publish_contract_trace_repair_before_replay",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "exact_title_blocked_by_publish_contract_trace"
+      ],
+      "expected_title": "빌어먹을 환생",
+      "actual_title": "빌어먹을 환생",
+      "actual_url": "https://mm.munpia.com/?menu=novel&action=view&id=222360&entry_id=next&entry_seq=-5102048",
+      "search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": true,
+      "compact_title_match": true,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "ocr_explicit_title_unresolved",
+      "work_resolution": "unresolved",
+      "discussion_type": "character_talk",
+      "actions": [
+        "blocked_expected_title_trace_review_required",
+        "shared_gate_runtime_block_repair_required"
+      ],
+      "reason_codes": [
+        "batch_alias_public_title_bridge",
+        "official_detail_url",
+        "official_title_exists",
+        "promoted_image_work_title_conflicts_with_public_title",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "close_condition": "같은 입력 runtime replay에서 같은 title/url safe_resolved와 publication contract 0 violation을 확인한다."
+    },
+    {
+      "post_id": 11718110,
+      "source": "loop491_runtime_reprocess",
+      "review_label": "REPROCESS",
+      "lane": "search_blind_or_recovered_preflight_before_replay",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "search_degraded_or_timeout_not_recovered"
+      ],
+      "expected_title": "지구온라인에서 쌀먹합니다",
+      "actual_title": null,
+      "actual_url": null,
+      "search_status": "SEARCH_DEGRADED",
+      "search_unrecovered_degraded": 2,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "discussion_type": "noise",
+      "actions": [
+        "shared_gate_runtime_block_repair_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다."
+    },
+    {
+      "post_id": 11682780,
+      "source": "loop491_runtime_reprocess",
+      "review_label": "REPROCESS",
+      "lane": "publish_contract_trace_repair_before_replay",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "exact_title_blocked_by_publish_contract_trace"
+      ],
+      "expected_title": "이 무림의 미친년은 나야",
+      "actual_title": "이 무림의 미친년은 나야",
+      "actual_url": "https://novelpia.com/novel/217943",
+      "search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": true,
+      "compact_title_match": true,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "discussion_type": "general",
+      "actions": [
+        "blocked_expected_title_trace_review_required",
+        "shared_gate_runtime_block_repair_required"
+      ],
+      "reason_codes": [
+        "alias_bridge",
+        "llm_only_sentence_candidate_pruned",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discussion_missing",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "title_acceptance_accept",
+        "title_led_alias_contextual_official_detail_competes",
+        "title_led_consumption_bridge"
+      ],
+      "close_condition": "같은 입력 runtime replay에서 같은 title/url safe_resolved와 publication contract 0 violation을 확인한다."
+    },
+    {
+      "post_id": 11710020,
+      "source": "loop491_runtime_reprocess",
+      "review_label": "REPROCESS",
+      "lane": "search_blind_or_recovered_preflight_before_replay",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "search_degraded_or_timeout_not_recovered"
+      ],
+      "expected_title": "주무시기 전에 무엇을 하셨나요?",
+      "actual_title": null,
+      "actual_url": null,
+      "search_status": "SEARCH_DEGRADED",
+      "search_unrecovered_degraded": 4,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "none",
+      "discussion_type": "noise",
+      "actions": [
+        "shared_gate_runtime_block_repair_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다."
+    },
+    {
+      "post_id": 11663535,
+      "source": "loop492_hold_verdict",
+      "review_label": "REPROCESS",
+      "lane": "canonical_repair_before_runtime_replay",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "canonical_title_or_url_repair_required"
+      ],
+      "expected_title": "퇴마록",
+      "actual_title": "퇴마록 외전 1",
+      "actual_url": "https://ridibooks.com/books/4239000218",
+      "selected_title": "퇴마록",
+      "selected_url": null,
+      "source_native_verdict": "base_work_supported_but_after_specific_side_story_overpromoted",
+      "evidence_grade": "Strong",
+      "native_web_checked": false,
+      "actions": [
+        "repair_after_over_specific_variant",
+        "canonical_title_cleanup_required",
+        "search_replay_required"
+      ],
+      "rationale_ko": "원문 제목과 본문은 `퇴마록` 자체와 박신부, 이현암, 부동심결, 월향검 같은 본편/세계관 단서를 직접 말한다. `퇴마록 외전 1`은 같은 계열 상세권일 수 있으나 현재 글의 공용 작품명으로는 과특정되어 canonical base로 되돌려야 한다."
+    },
+    {
+      "post_id": 11673102,
+      "source": "loop492_hold_verdict",
+      "review_label": "ACCEPT",
+      "lane": "variant_policy_before_regression_exclusion",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "variant_accept_requires_gate_policy"
+      ],
+      "expected_title": "갤질하는 천재 의사",
+      "actual_title": "댓글 보는 천재 의사",
+      "actual_url": "https://novelpia.com/novel/372180",
+      "selected_title": "댓글 보는 천재 의사",
+      "selected_url": "https://novelpia.com/novel/372180",
+      "source_native_verdict": "official_title_with_galjil_alias_same_work",
+      "evidence_grade": "Strong",
+      "native_web_checked": true,
+      "actions": [
+        "canonical_alias_variant_policy_update_required",
+        "exclude_from_regression_count_after_variant_policy"
+      ],
+      "rationale_ko": "원문은 `갤질의사`를 랭킹 소비 목록 안에서 언급한다. 공식 노벨피아 상세의 현재 제목은 `댓글 보는 천재 의사`이고 태그에 `갤질의사`가 있어, expected 표면은 커뮤니티식 별칭이고 actual은 같은 작품의 공식 제목으로 판정한다."
+    },
+    {
+      "post_id": 11692436,
+      "source": "loop492_hold_verdict",
+      "review_label": "HOLD",
+      "lane": "hard_hold_policy_or_native_review",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "hard_hold_not_relaxed"
+      ],
+      "expected_title": "퍼펙트 메이지",
+      "actual_title": "죽었다 깨어도 수선",
+      "actual_url": null,
+      "selected_title": null,
+      "selected_url": null,
+      "source_native_verdict": "image_or_character_bridge_required_before_single_work_publish",
+      "evidence_grade": "Weak",
+      "native_web_checked": false,
+      "actions": [
+        "image_native_review_required",
+        "character_work_link_review_required",
+        "preserve_candidates"
+      ],
+      "rationale_ko": "텍스트 원문은 `류서란(perfect)`와 앱 꼬리말뿐이고 이미지가 1장 있다. expected와 actual 모두 캐릭터/이미지 근거 없이는 단일 current work로 확정하기 어렵다. hard-hold 완화 없이 image/native 또는 blind judge로 넘긴다."
+    },
+    {
+      "post_id": 11698870,
+      "source": "loop492_hold_verdict",
+      "review_label": "ACCEPT",
+      "lane": "variant_policy_before_regression_exclusion",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "variant_accept_requires_gate_policy"
+      ],
+      "expected_title": "인간실격",
+      "actual_title": "인간 실격",
+      "actual_url": "https://ridibooks.com/books/509000257",
+      "selected_title": "인간 실격",
+      "selected_url": "https://ridibooks.com/books/509000257",
+      "source_native_verdict": "spacing_variant_same_work",
+      "evidence_grade": "Strong",
+      "native_web_checked": false,
+      "actions": [
+        "spacing_variant_policy_update_required",
+        "exclude_from_regression_count_after_variant_policy"
+      ],
+      "rationale_ko": "원문 제목은 `인간실격`이고 본문도 일본 문학 작품의 결말/작가 맥락을 묻는다. actual `인간 실격`은 띄어쓰기 변형이므로 wrong-work가 아니라 canonical spacing variant로 처리한다."
+    },
+    {
+      "post_id": 11705230,
+      "source": "loop492_hold_verdict",
+      "review_label": "ACCEPT",
+      "lane": "variant_policy_before_regression_exclusion",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "variant_accept_requires_gate_policy"
+      ],
+      "expected_title": "월야환담",
+      "actual_title": "월야환담 시리즈",
+      "actual_url": null,
+      "selected_title": "월야환담 시리즈",
+      "selected_url": null,
+      "source_native_verdict": "series_title_variant_same_work_family",
+      "evidence_grade": "Strong",
+      "native_web_checked": false,
+      "actions": [
+        "series_variant_policy_update_required",
+        "exclude_from_regression_count_after_variant_policy"
+      ],
+      "rationale_ko": "원문은 `월야환담`의 시대 변화와 어반판타지 설정을 직접 논한다. actual `월야환담 시리즈`는 같은 작품군을 넓게 부르는 variant로 보이며 wrong-work 증거가 없다."
+    },
+    {
+      "post_id": 11714887,
+      "source": "loop492_hold_verdict",
+      "review_label": "REPROCESS",
+      "lane": "canonical_repair_before_runtime_replay",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "canonical_title_or_url_repair_required"
+      ],
+      "expected_title": "도굴왕 1 |",
+      "actual_title": "[도굴왕] [fate] 도굴왕에서 에누마 엘리시를!!",
+      "actual_url": null,
+      "selected_title": "도굴왕",
+      "selected_url": null,
+      "source_native_verdict": "source_supports_base_work_but_both_candidates_are_contaminated",
+      "evidence_grade": "Strong",
+      "native_web_checked": true,
+      "actions": [
+        "candidate_set_rebuild_required",
+        "canonical_title_cleanup_required",
+        "repair_after_wrong_work"
+      ],
+      "rationale_ko": "원문 제목과 본문은 애니플러스 PV 맥락의 `도굴왕`을 직접 가리킨다. expected `도굴왕 1 |`은 권/페이지 제목 오염이고, actual은 `[fate]` 파생/팬픽 표면이라 current work로 publish하면 안 된다."
+    },
+    {
+      "post_id": 11718098,
+      "source": "loop492_hold_verdict",
+      "review_label": "REPROCESS",
+      "lane": "canonical_repair_before_runtime_replay",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "canonical_title_or_url_repair_required"
+      ],
+      "expected_title": "마법 좋아좋아좋아",
+      "actual_title": "마법 좋아, 마법과 좋아",
+      "actual_url": "https://novelpia.com/novel/3260401",
+      "selected_title": "마법 좋아좋아좋아",
+      "selected_url": "https://novelpia.com/novel/326040",
+      "source_native_verdict": "abbreviation_supports_expected_official_title_after_candidate_contaminated",
+      "evidence_grade": "Strong",
+      "native_web_checked": true,
+      "actions": [
+        "repair_after_wrong_work",
+        "canonical_title_cleanup_required",
+        "official_url_correction_required"
+      ],
+      "rationale_ko": "원문 `마좋좋좋`과 결말 언급은 공식 작품 `마법 좋아좋아좋아`를 직접 가리킨다. actual `마법 좋아, 마법과 좋아` 및 URL `3260401`은 공식 상세 `326040`과 맞지 않아 후보/URL 오염으로 재처리해야 한다."
+    },
+    {
+      "post_id": 11673077,
+      "source": "loop492_hold_verdict",
+      "review_label": "HOLD",
+      "lane": "hard_hold_policy_or_native_review",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "hard_hold_not_relaxed"
+      ],
+      "expected_title": "판초우의의 마법사",
+      "actual_title": "즉사기 들고 무림에 떨어지다",
+      "actual_url": "https://novel.munpia.com/528383",
+      "selected_title": null,
+      "selected_url": null,
+      "source_native_verdict": "multi_work_consumption_post_needs_policy_before_single_work_publish",
+      "evidence_grade": "Strong",
+      "native_web_checked": false,
+      "actions": [
+        "multi_work_policy_review",
+        "preserve_secondary_candidates",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "원문 제목과 본문은 `즉사무림`, `판초우의`, `빛세구`를 함께 본 감상이다. expected와 actual 모두 본문에 등장하는 후보라 단일 current work promotion은 정책 없이는 위험하다."
+    },
+    {
+      "post_id": 11694068,
+      "source": "loop492_hold_verdict",
+      "review_label": "ACCEPT",
+      "lane": "variant_policy_before_regression_exclusion",
+      "ready_for_runtime_replay": false,
+      "blockers": [
+        "variant_accept_requires_gate_policy"
+      ],
+      "expected_title": "트와일라잇",
+      "actual_title": "Twilight",
+      "actual_url": "https://page.kakao.com/content/47180017",
+      "selected_title": "Twilight",
+      "selected_url": "https://page.kakao.com/content/47180017",
+      "source_native_verdict": "korean_english_title_variant_same_work",
+      "evidence_grade": "Strong",
+      "native_web_checked": false,
+      "actions": [
+        "language_variant_policy_update_required",
+        "exclude_from_regression_count_after_variant_policy"
+      ],
+      "rationale_ko": "원문 제목은 `트와일라잇 인터뷰`이고 image/OCR reason codes도 title rescue를 기록한다. actual `Twilight`는 같은 작품의 영어 표기 variant로 보이며 wrong-work 증거가 없다."
+    }
+  ],
+  "approval_boundary": {
+    "readiness_queue_is_not_runtime_approval": true,
+    "full375_collateral_remains_no_go": true,
+    "full_scan_approval": false
+  }
+}

@@ -24103,3 +24103,29 @@ The broader unittest result proves the code checkpoint did not break the current
   - `semantic_quality=REVIEW-LOCKED`
   - `full_scan_approval=false`
   - goal `ACTIVE / NOT_COMPLETE`
+
+## 2026-07-06 Loop493 Verification
+
+- `py_compile`:
+  - `tools\build_runtime_replay_readiness_queue.py`
+  - `tests\test_runtime_replay_readiness_queue.py`
+  - result `PASS`
+- Unit test:
+  - command: `.\venv\Scripts\python.exe -m unittest tests.test_runtime_replay_readiness_queue -v`
+  - result: `PASS / 2 tests`
+- Queue generation:
+  - command: `tools\build_runtime_replay_readiness_queue.py --fail-on-validation-issue`
+  - result: `PASS`
+  - output: `docs\devs\loop493_p0_after_hold9_runtime_replay_readiness_queue.json`
+- JSON parse:
+  - readiness queue JSON -> PASS
+  - readiness state JSON -> PASS
+- `git diff --check` -> PASS
+- Gate:
+  - readiness generation `GO / validation issue 0`
+  - runtime replay `BLOCKED_BEFORE_REPAIR`
+  - prepared 14 input `NOT_DISPATCHED`
+  - full375 collateral `NO-GO`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+  - goal `ACTIVE / NOT_COMPLETE`

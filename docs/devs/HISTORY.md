@@ -11215,3 +11215,15 @@
 - Artifacts: verdict `docs/devs/loop492_p0_hold9_source_native_verdicts.json/.md`, state `docs/devs/loop492_p0_hold9_source_native_state_20260706.json`, report `docs/devs/loop_reports/LOOP_492_REPORT_20260706.md`.
 - 검증: JSON parse PASS, verdict count validation PASS, `git diff --check` PASS.
 - Gate는 source-native review `REVIEW-LOCKED / 9 of 9`, runtime replay after review `NOT_RUN_AFTER_REVIEW`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다.
+
+## 2026-07-06 - Loop493 P0 after HOLD9 runtime replay readiness
+
+- Goal은 `ACTIVE / NOT_COMPLETE`다. 신규 full375/104k/bounded 대형 런과 Loop491 prepared 14건 runtime replay는 실행하지 않았다.
+- `tools/build_runtime_replay_readiness_queue.py`와 `tests/test_runtime_replay_readiness_queue.py`를 추가해 Loop491 `REPROCESS 14`와 Loop492 verdict `9`를 하나의 readiness queue로 분해했다.
+- 결과는 `ready_for_runtime_replay_rows=0`, `blocked_before_runtime_replay_rows=23`이다.
+- Runtime blocker는 `publish_contract_trace_repair_before_replay 5`, `search_blind_or_recovered_preflight_before_replay 9`로 나뉜다.
+- Loop492 후속 lane은 `variant_policy_before_regression_exclusion 4`, `canonical_repair_before_runtime_replay 3`, `hard_hold_policy_or_native_review 2`로 유지했다.
+- Prepared input `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop491_p0_reprocess14_runtime_replay_input.jsonl`은 code/contract repair 또는 search preflight tagging 전에는 dispatch하지 않는다.
+- Artifacts: queue `docs/devs/loop493_p0_after_hold9_runtime_replay_readiness_queue.json/.md`, state `docs/devs/loop493_p0_after_hold9_runtime_replay_readiness_state_20260706.json`, report `docs/devs/loop_reports/LOOP_493_REPORT_20260706.md`.
+- 검증: py_compile PASS, unittest `2` PASS, queue generation PASS, JSON parse PASS, `git diff --check` PASS.
+- Gate는 readiness generation `GO`, runtime replay `BLOCKED_BEFORE_REPAIR`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다.

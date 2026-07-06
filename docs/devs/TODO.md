@@ -10299,3 +10299,12 @@
   - `11673077`: 다작품 감상 정책 필요
 - [ ] Loop491 runtime input `14`건 replay는 search 조건과 runtime 생산성 preflight를 먼저 확인한 뒤 발주한다.
 - [ ] Full375 collateral은 계속 `NO-GO`이며 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+
+## 2026-07-06 Loop493 Follow-up
+
+- [ ] `publish_contract_trace_repair_before_replay` 5건을 code/contract test로 먼저 줄인다.
+  - `11677915`, `11684372`, `11694019`, `11718099`, `11682780`
+- [ ] `search_blind_or_recovered_preflight_before_replay` 9건은 search-blind 조건부 태깅 또는 search-recovered preflight 뒤에만 replay한다.
+  - `11663521`, `11665124`, `11677926`, `11698910`, `11708447`, `11710049`, `11716475`, `11718110`, `11710020`
+- [ ] Loop491 prepared 14건 input은 `ready_for_runtime_replay_rows > 0`을 만든 뒤 dispatch한다.
+- [ ] 다음 replay 감사는 `actionable queue 감소 + 동일 packet safe_resolved 단조 비감소`를 필수 stop condition으로 기록한다.

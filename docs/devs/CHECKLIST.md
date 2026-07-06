@@ -12090,3 +12090,27 @@
 - [ ] Runtime replay after review는 아직 실행하지 않는다.
 - [ ] Full375 collateral gate는 `NO-GO`로 유지한다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-06 Loop493 runtime replay readiness 체크
+
+- [x] 신규 full375/104k/bounded 대형 런을 발주하지 않았다.
+- [x] Loop491 prepared `REPROCESS 14` runtime input을 즉시 실행하지 않았다.
+- [x] Loop491 batch queue와 Loop492 verdict를 합쳐 runtime replay readiness queue를 생성했다.
+  - `ready_for_runtime_replay_rows=0`
+  - `blocked_before_runtime_replay_rows=23`
+- [x] Runtime blocker를 2축으로 분리했다.
+  - `publish_contract_trace_repair_before_replay`: `5`
+  - `search_blind_or_recovered_preflight_before_replay`: `9`
+- [x] Loop492 후속 lane을 3축으로 유지했다.
+  - `variant_policy_before_regression_exclusion`: `4`
+  - `canonical_repair_before_runtime_replay`: `3`
+  - `hard_hold_policy_or_native_review`: `2`
+- [x] 검증을 통과했다.
+  - py_compile PASS
+  - `tests.test_runtime_replay_readiness_queue` PASS / `2` tests
+  - queue generation `--fail-on-validation-issue` PASS
+  - JSON parse PASS
+  - `git diff --check` PASS
+- [ ] 다음 replay 전 `ready_for_runtime_replay_rows`가 code/contract repair 또는 search preflight tagging 이후 0보다 커졌는지 확인한다.
+- [ ] Stop condition은 회차 수가 아니라 `actionable queue 감소 + 동일 packet safe_resolved 단조 비감소`로 감사한다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
