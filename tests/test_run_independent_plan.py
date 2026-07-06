@@ -3,6 +3,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from tools.run_independent_plan import run_plan
 
@@ -47,6 +48,60 @@ class RunIndependentPlanTest(unittest.TestCase):
 
             self.assertEqual(rc, 0)
             self.assertEqual(env_path.read_text(encoding="utf-8"), "0|0|45|45")
+
+    def test_runner_dashboard_mode_sets_forwarding_env_and_strips_no_dashboard(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            env_path = root / "env.txt"
+            plan_path = root / "plan.json"
+            code = (
+                "import os,pathlib,sys;"
+                f"pathlib.Path({str(env_path)!r}).write_text("
+                "os.environ.get('DASHBOARD_URL','')+'|'+"
+                "os.environ.get('DASHBOARD_PORT','')+'|'+"
+                "os.environ.get('EXPERT_DASHBOARD_FORWARD','')+'|'+"
+                "str('--no-dashboard' in sys.argv),encoding='utf-8')"
+            )
+            plan_path.write_text(
+                json.dumps(
+                    {
+                        "planned_runs": [
+                            {
+                                "post_id": 1,
+                                "repeat_index": 1,
+                                "output_json": "",
+                                "command_argv": [sys.executable, "-c", code, "--no-dashboard"],
+                            }
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with patch(
+                "tools.run_independent_plan._ensure_dashboard",
+                return_value={
+                    "status": "already_running",
+                    "ok": True,
+                    "standalone": True,
+                    "url": "http://127.0.0.1:18080",
+                },
+            ):
+                rc = run_plan(
+                    plan_path=plan_path,
+                    log_dir=root / "logs",
+                    env_updates={},
+                    skip_existing=False,
+                    limit=None,
+                    dashboard=True,
+                    dashboard_url="http://127.0.0.1:18080",
+                    dashboard_python=sys.executable,
+                )
+
+            self.assertEqual(rc, 0)
+            self.assertEqual(env_path.read_text(encoding="utf-8"), "http://127.0.0.1:18080|18080|1|False")
+            dashboard_marker = root / "logs" / "dashboard.marker.log"
+            self.assertIn("status=already_running", dashboard_marker.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

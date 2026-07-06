@@ -1,5 +1,17 @@
 # Improvement Register
 
+## IMP-20260706-501 - test-run dashboard auto attach
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runner dashboard | GO_UNIT | `tools/run_independent_plan.py` CLI가 standalone dashboard를 확인/기동 | 다음 독립 테스트런부터 기본 사용 |
+| Forwarding env | GO_UNIT | `DASHBOARD_URL`, `DASHBOARD_PORT`, `EXPERT_DASHBOARD_FORWARD=1` child run 전달 | expert_main live event forwarding 확인 |
+| Forbidden flag strip | GO_UNIT | Dashboard mode에서 `--no-dashboard` argv 제거 | 계획 생성/실행 이중 안전장치 유지 |
+| Live dashboard | GO | `http://127.0.0.1:8080/api/health` ok=true, standalone=true, pid=9320 | 진행률 관측 전용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: dashboard auto attach `GO_UNIT`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-500 - shared gate residual37 prior-runtime follow-up
 
 | 항목 | 상태 | 근거 | 다음 |

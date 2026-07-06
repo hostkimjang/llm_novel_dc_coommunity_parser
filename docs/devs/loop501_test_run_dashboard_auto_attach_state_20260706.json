@@ -1,0 +1,51 @@
+{
+  "loop": 501,
+  "generated_at": "2026-07-06T23:15:27+09:00",
+  "state_type": "test_run_dashboard_auto_attach",
+  "summary": {
+    "status": "GO_UNIT",
+    "change": "tools/run_independent_plan.py CLI now starts or reuses the standalone dashboard by default and forwards expert_main runs to it.",
+    "dashboard_url": "http://127.0.0.1:8080",
+    "dashboard_health": {
+      "ok": true,
+      "service": "expert-pipeline-monitor",
+      "standalone": true,
+      "pid": 9320
+    },
+    "requested_parallel_policy": "LOCKED_TO_16_BY_USER for generated test-run plans",
+    "runner_dashboard_policy": "CLI default on; pass --no-dashboard only to opt out of runner-managed dashboard startup"
+  },
+  "code_changes": [
+    {
+      "path": "tools/run_independent_plan.py",
+      "details": [
+        "Checks /api/health on the configured standalone dashboard URL.",
+        "Starts tools/dashboard_server.py when no standalone dashboard is already available.",
+        "Sets DASHBOARD_URL, DASHBOARD_PORT, and EXPERT_DASHBOARD_FORWARD=1 for child runs.",
+        "Strips any remaining --no-dashboard argv item when dashboard mode is active.",
+        "Records dashboard status and stripped flag count in runner output and marker logs."
+      ]
+    },
+    {
+      "path": "tests/test_run_independent_plan.py",
+      "details": [
+        "Keeps the direct run_plan call lightweight by default.",
+        "Covers dashboard mode env forwarding and --no-dashboard stripping."
+      ]
+    }
+  ],
+  "verification": {
+    "py_compile": "PASS",
+    "focused_unittest": "PASS / 12 tests",
+    "dashboard_health_probe": "PASS / ok=true standalone=true pid=9320"
+  },
+  "gates": {
+    "dashboard_auto_attach": "GO_UNIT",
+    "runtime_replay_after_input": "NOT_RUN_AFTER_INPUT",
+    "full375_collateral": "NO-GO / residual 105",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "completion_criteria": "full375 collateral GO + full_scan path definition"
+}
