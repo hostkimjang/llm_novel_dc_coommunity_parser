@@ -1,5 +1,16 @@
 # Development Checklist
 
+## 2026-07-06 Loop496 테스트런 병렬도/대시보드 운영 체크
+
+- [x] 이후 regression-safe grounding 계열 테스트런/검증런은 명시적 반대 지시가 없으면 `--parallel 16`으로 실행한다.
+- [x] 입력 수가 16보다 작을 때는 manifest의 `effective_parallel=min(input_count,16)`을 함께 확인한다.
+- [x] Loop496 full375 current HEAD runtime은 이미 `--parallel 16`, search 포함 non-light, VLM/OCR on, `--slang-db off` 조건으로 실행 중이다.
+- [x] 이후 테스트런/검증런은 진행상황 확인을 위해 웹 대시보드를 붙인다.
+- [x] 새 런은 `--no-dashboard`를 사용하지 않는 것을 기본으로 하고, standalone dashboard가 필요한 경우 `tools/dashboard_server.py`를 먼저 띄운다.
+- [x] 이미 `--no-dashboard`로 시작한 Loop496 current run은 `tools/attach_manifest_dashboard.py`로 manifest 기반 진행률을 `http://127.0.0.1:8080`에 사후 부착했다.
+- [x] 병렬도 고정은 runtime 운영 규칙이며 semantic/full_scan approval이 아니다.
+- Gate: runtime parallel policy `LOCKED_TO_16_BY_USER`, dashboard policy `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`, current Loop496 runtime `IN_PROGRESS`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop495 title-led 플랫폼 표면 경쟁 후보 계약 체크
 
 - [x] Loop493 `publish_contract_trace_repair_before_replay` 잔여 4건 중 `11677915`, `11682780`의 공통 차단 원인을 분리했다.

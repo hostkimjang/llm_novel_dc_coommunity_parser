@@ -1,0 +1,167 @@
+{
+  "generated_at": "2026-07-06T15:05:10",
+  "input_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/panel/regression_panel_input.jsonl",
+  "manifest_path": "",
+  "input_count": 375,
+  "raw_input_row_count": 375,
+  "unique_post_count": 375,
+  "input_count_source": "jsonl.unique_post_id_count",
+  "execution_contract": {},
+  "requested_parallel_max": 36,
+  "effective_parallel_expected": 36,
+  "expected_shards": 16,
+  "require_all_shards": false,
+  "endpoint_count_expected": 16,
+  "endpoint_caps": [],
+  "auto_shard_limit": 0,
+  "small_run_threshold": 10,
+  "small_run_auto_shard_limit": 2,
+  "goal_run_lifecycle_threshold": 36,
+  "goal_run_auto_shard_limit": 8,
+  "required_open_for_run": 16,
+  "llm": {
+    "ok": true,
+    "url": "http://10.20.0.101:8000/v1/models",
+    "status_code": 200,
+    "latency_ms": 69.7,
+    "models": [
+      "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4"
+    ],
+    "expected_model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+    "expected_model_found": true
+  },
+  "mcp_tcp": {
+    "host": "127.0.0.1",
+    "base_port": 3333,
+    "expected_count": 16,
+    "open_count": 16,
+    "closed_count": 0,
+    "open_ports": [
+      3333,
+      3334,
+      3335,
+      3336,
+      3337,
+      3338,
+      3339,
+      3340,
+      3341,
+      3342,
+      3343,
+      3344,
+      3345,
+      3346,
+      3347,
+      3348
+    ],
+    "closed_ports": [],
+    "ports": [
+      {
+        "port": 3333,
+        "open": true,
+        "latency_ms": 1.1,
+        "error": ""
+      },
+      {
+        "port": 3334,
+        "open": true,
+        "latency_ms": 0.8,
+        "error": ""
+      },
+      {
+        "port": 3335,
+        "open": true,
+        "latency_ms": 0.7,
+        "error": ""
+      },
+      {
+        "port": 3336,
+        "open": true,
+        "latency_ms": 1.3,
+        "error": ""
+      },
+      {
+        "port": 3337,
+        "open": true,
+        "latency_ms": 1.1,
+        "error": ""
+      },
+      {
+        "port": 3338,
+        "open": true,
+        "latency_ms": 1.2,
+        "error": ""
+      },
+      {
+        "port": 3339,
+        "open": true,
+        "latency_ms": 0.9,
+        "error": ""
+      },
+      {
+        "port": 3340,
+        "open": true,
+        "latency_ms": 0.9,
+        "error": ""
+      },
+      {
+        "port": 3341,
+        "open": true,
+        "latency_ms": 0.8,
+        "error": ""
+      },
+      {
+        "port": 3342,
+        "open": true,
+        "latency_ms": 1.1,
+        "error": ""
+      },
+      {
+        "port": 3343,
+        "open": true,
+        "latency_ms": 0.6,
+        "error": ""
+      },
+      {
+        "port": 3344,
+        "open": true,
+        "latency_ms": 1.3,
+        "error": ""
+      },
+      {
+        "port": 3345,
+        "open": true,
+        "latency_ms": 0.7,
+        "error": ""
+      },
+      {
+        "port": 3346,
+        "open": true,
+        "latency_ms": 0.9,
+        "error": ""
+      },
+      {
+        "port": 3347,
+        "open": true,
+        "latency_ms": 0.7,
+        "error": ""
+      },
+      {
+        "port": 3348,
+        "open": true,
+        "latency_ms": 0.6,
+        "error": ""
+      }
+    ],
+    "ok": true
+  },
+  "gate": {
+    "llm_endpoint_readiness": "GO",
+    "mcp_shard_readiness": "GO",
+    "mcp_effective_shard_readiness": "GO",
+    "mcp_full_shard_readiness": "GO",
+    "rerun_execution": "GO",
+    "reasons": [],
+    "warnings": []
+  }
+}

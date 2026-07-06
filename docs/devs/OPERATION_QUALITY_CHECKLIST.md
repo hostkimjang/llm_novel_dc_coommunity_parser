@@ -1,5 +1,22 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop496 테스트런 병렬도/대시보드 운영 규칙
+
+- 근거:
+  - [x] 사용자 운영 지시: 이후 이 계열 테스트런은 병렬 `16`개로 실행한다.
+  - [x] 사용자 운영 지시: 진행상황을 보기 쉽게 이후 테스트런에도 웹 대시보드를 붙인다.
+  - [x] Loop496 full375 current HEAD runtime은 `--parallel 16`, search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행 중이다.
+  - [x] Loop496 current run은 `--no-dashboard`로 시작되어 직접 이벤트 포워딩은 없지만, standalone dashboard + manifest attach로 `http://127.0.0.1:8080`에 사후 부착했다.
+- 운영 규칙:
+  - [x] regression-safe grounding 계열 테스트런/검증런은 명시적 반대 지시가 없으면 `--parallel 16`을 기본 요청 병렬도로 사용한다.
+  - [x] 입력 수가 16보다 작으면 `effective_parallel=min(input_count,16)`으로 축소될 수 있으므로 manifest에서 requested/effective parallel을 함께 확인한다.
+  - [x] 새 테스트런/검증런은 `--no-dashboard`를 사용하지 않는 것을 기본으로 한다.
+  - [x] 장시간 런은 먼저 `tools/dashboard_server.py` standalone을 띄우고 expert_main이 외부 대시보드로 포워딩하게 한다.
+  - [x] 이미 `--no-dashboard`로 시작한 런은 `tools/attach_manifest_dashboard.py --manifest <manifest>`로 manifest 기반 진행률을 사후 부착한다.
+  - [x] 병렬도 `16` 설정은 runtime health 조건이지 semantic/full_scan approval이 아니다.
+  - [x] 웹 대시보드는 진행상황 관측 도구이지 semantic/full_scan approval이 아니다.
+- Gate: runtime parallel policy `LOCKED_TO_16_BY_USER`, dashboard policy `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`, current Loop496 runtime `IN_PROGRESS`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop495 title-led 플랫폼 표면 경쟁 후보 계약 품질 게이트
 
 - 근거:
