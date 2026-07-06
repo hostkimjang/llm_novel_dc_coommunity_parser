@@ -4775,6 +4775,14 @@ class SourceEnrichedCanaryTest(unittest.TestCase):
 
             self.assertEqual(manifest["restored_count"], 1)
             self.assertEqual(manifest["unrecovered_count"], 0)
+            self.assertEqual(manifest["recommended_parallel"], 16)
+            self.assertEqual(manifest["expected_effective_parallel"], 1)
+            self.assertIn("--parallel 16", manifest["recommended_commands"]["expert_main_source_enriched_canary"])
+            self.assertNotIn("--no-dashboard", manifest["recommended_commands"]["expert_main_source_enriched_canary"])
+            self.assertEqual(
+                manifest["execution_contract"]["dashboard_contract"]["dashboard_policy"],
+                "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+            )
             rows = [
                 json.loads(line)
                 for line in (out_dir / "seed_source_enriched_canary_input.jsonl").read_text(encoding="utf-8").splitlines()

@@ -8,6 +8,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Iterable
 
+from tools.test_run_dashboard_policy import (
+    dashboard_contract,
+    expected_effective_parallel,
+    requested_parallel_for_test_run,
+)
+
 
 RERUN_ACTIONS = {"re_judge", "re_search", "re_run"}
 REVIEW_ACTIONS = {"human_review", "slang_db_review", "docs_issue", "comment_url_verify"}
@@ -368,8 +374,10 @@ def build_followup_package(
     for label in labels:
         for action in recommended_actions(label):
             action_counts[action] += 1
-    recommended_parallel = min(MAX_PARALLEL, len(input_rows)) if input_rows else 0
+    recommended_requested_parallel = requested_parallel_for_test_run(len(input_rows))
+    recommended_parallel = expected_effective_parallel(len(input_rows))
     result_path = out_dir / f"{prefix}_result.json"
+    result_manifest_path = out_dir / f"{prefix}_result_manifest.json"
     preflight_json_path = out_dir / f"{prefix}_preflight.json"
     preflight_md_path = out_dir / f"{prefix}_preflight_ko.md"
 
@@ -394,9 +402,9 @@ def build_followup_package(
         "output_paths": output_paths,
         "parallel_policy": {
             "requested_parallel_max": MAX_PARALLEL,
-            "recommended_requested_parallel": MAX_PARALLEL if input_rows else 0,
+            "recommended_requested_parallel": recommended_requested_parallel,
             "expected_effective_parallel": recommended_parallel,
-            "rule": "expert_main --parallel 36 is a maximum; effective workers are min(input_post_count, 36). Do not restart/rerun only to fill 36 workers.",
+            "rule": "신규 테스트런/검증런은 expert_main --parallel 16을 요청하고, effective workers는 min(input_post_count, 16)로 manifest에서 확인한다.",
         },
         "execution_contract": {
             "server_type": "vllm",
@@ -405,8 +413,9 @@ def build_followup_package(
             "ocr": "on",
             "require_vlm_ocr_for_images": True,
             "reuse_shards_only": True,
-            "no_dashboard": True,
+            "dashboard_contract": dashboard_contract(manifest_path=result_manifest_path, python_executable=".\\venv\\Scripts\\python.exe"),
             "forbidden_flags": [
+                "--no-dashboard",
                 "--allow-goal-shard-lifecycle",
                 "--auto-up-shards",
                 "--auto-recreate-shards",
@@ -420,8 +429,8 @@ def build_followup_package(
         ),
         "recommended_rerun_command": (
             f".\\venv\\Scripts\\python.exe expert_main.py --input {combined_input_path} "
-            f"--output {result_path} --server-type vllm --parallel 36 --reuse-shards-only "
-            "--no-dashboard --slang-db on --vlm on --ocr on --require-vlm-ocr-for-images"
+            f"--output {result_path} --server-type vllm --parallel {recommended_requested_parallel} --reuse-shards-only "
+            "--slang-db on --vlm on --ocr on --require-vlm-ocr-for-images"
         ),
         "gate": {
             "run_integrity": "REVIEW",
@@ -467,11 +476,12 @@ def write_summary(path: Path, manifest: dict[str, Any]) -> None:
             "",
             "## 병렬/실행 계약",
             "",
-            f"- requested parallel max: `{manifest['parallel_policy']['requested_parallel_max']}`",
+            f"- recommended requested parallel: `{manifest['parallel_policy']['recommended_requested_parallel']}`",
             f"- expected effective parallel: `{manifest['parallel_policy']['expected_effective_parallel']}`",
+            f"- dashboard URL: `{manifest['execution_contract']['dashboard_contract']['dashboard_url']}`",
             f"- 정책: {manifest['parallel_policy']['rule']}",
             "- Codex `spawn_agent` 병렬 검토와 `expert_main.py --parallel` runtime worker cap은 별개다.",
-            "- v421 같은 소규모 targeted rerun은 `--parallel 36`을 상한으로만 기록하고, 36 worker를 채우려고 재실행하지 않는다.",
+            "- 소규모 targeted rerun은 16 worker를 채우려고 재실행하지 않고 manifest의 effective_parallel로 판단한다.",
             "- Docker compose/shard lifecycle flag는 금지하고 `--reuse-shards-only`로 현재 서버 상태를 재사용한다.",
             "- VLM/OCR 기준 테스트이므로 이미지 post가 있으면 `--vlm on --ocr on --require-vlm-ocr-for-images`를 사용한다.",
             "",

@@ -132,7 +132,7 @@ class SafeLossFlipRateProbeTest(unittest.TestCase):
                 run_prefix="loop296_safe_loss_current_head",
                 python_executable="python",
                 expert_main=Path("expert_main.py"),
-                parallel=1,
+                parallel=16,
                 expert_args=["--no-dashboard", "--reuse-shards-only"],
             )
 
@@ -152,7 +152,7 @@ class SafeLossFlipRateProbeTest(unittest.TestCase):
             argv = run["command_argv"]
             self.assertIn("--input", argv)
             self.assertIn("--output", argv)
-            self.assertIn("--no-dashboard", argv)
+            self.assertNotIn("--no-dashboard", argv)
             self.assertIn("--reuse-shards-only", argv)
             self.assertIn("--llm-suspend-on-anomaly", argv)
             self.assertEqual(argv[argv.index("--llm-suspend-on-anomaly") + 1], "off")
@@ -162,7 +162,10 @@ class SafeLossFlipRateProbeTest(unittest.TestCase):
             self.assertEqual(argv[argv.index("--llm-stream-first-token-timeout") + 1], "45")
             self.assertIn("--llm-stream-idle-timeout", argv)
             self.assertEqual(argv[argv.index("--llm-stream-idle-timeout") + 1], "45")
-            self.assertEqual(argv[argv.index("--parallel") + 1], "1")
+            self.assertEqual(argv[argv.index("--parallel") + 1], "16")
+            self.assertIn("tools/attach_manifest_dashboard.py", run["attach_dashboard_command_line"])
+        self.assertEqual(manifest["dashboard_contract"]["dashboard_policy"], "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS")
+        self.assertEqual(manifest["stripped_forbidden_expert_args"], ["--no-dashboard"])
         self.assertEqual(
             manifest["noninteractive_watchdog_contract"],
             "background_probe_commands_disable_llm_suspend_prompt",

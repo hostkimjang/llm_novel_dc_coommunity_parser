@@ -79,8 +79,14 @@ class GoalNextSeedPackageTest(unittest.TestCase):
             self.assertEqual(manifest["target_post_count"], 2)
             self.assertEqual(manifest["rerun_post_count"], 2)
             self.assertEqual(manifest["browser_visual_required_count"], 1)
-            self.assertEqual(manifest["recommended_parallel"], 2)
-            self.assertIn("--parallel 2", manifest["recommended_commands"]["rerun"])
+            self.assertEqual(manifest["recommended_parallel"], 16)
+            self.assertEqual(manifest["expected_effective_parallel"], 2)
+            self.assertIn("--parallel 16", manifest["recommended_commands"]["rerun"])
+            self.assertNotIn("--no-dashboard", manifest["recommended_commands"]["rerun"])
+            self.assertEqual(
+                manifest["execution_contract"]["dashboard_contract"]["dashboard_policy"],
+                "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+            )
             self.assertEqual(manifest["fallback_without_image_url_post_ids"], [])
 
             rerun_rows = [

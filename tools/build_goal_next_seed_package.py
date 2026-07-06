@@ -8,6 +8,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Iterable
 
+from tools.test_run_dashboard_policy import (
+    dashboard_contract,
+    expected_effective_parallel,
+    requested_parallel_for_test_run,
+)
+
 
 IMAGE_ISSUES = {
     "image_evidence_catalog_missing",
@@ -285,12 +291,14 @@ def build_package(
     write_jsonl(browser_path, browser_targets)
 
     issue_counts = Counter(code for codes in target_issues.values() for code in codes)
-    recommended_parallel = min(PARALLEL_MAX, len({row_post_id(row) for row in rerun_rows if not is_comment_row(row)}))
+    rerun_post_count = len({row_post_id(row) for row in rerun_rows if not is_comment_row(row)})
+    recommended_parallel = requested_parallel_for_test_run(rerun_post_count)
+    expected_parallel = expected_effective_parallel(rerun_post_count)
     recommended_commands = {
         "rerun": (
             f".\\venv\\Scripts\\python.exe expert_main.py --input {rerun_path.as_posix()} "
             f"--output {result_path.as_posix()} --server-type vllm --parallel {recommended_parallel} "
-            "--reuse-shards-only --no-dashboard --slang-db on --vlm on --ocr on --require-vlm-ocr-for-images"
+            "--reuse-shards-only --slang-db on --vlm on --ocr on --require-vlm-ocr-for-images"
         ),
         "runtime_audit": (
             f".\\venv\\Scripts\\python.exe tools\\audit_goal_test_run_contract.py "
@@ -321,14 +329,16 @@ def build_package(
         "fallback_without_image_url_post_ids": fallback_without_image_url,
         "issue_counts": dict(issue_counts),
         "recommended_parallel": recommended_parallel,
+        "expected_effective_parallel": expected_parallel,
         "recommended_commands": recommended_commands,
         "execution_contract": {
             "expert_main_parallel_is_max": PARALLEL_MAX,
-            "small_run_policy": "새 소규모 run은 --parallel min(input_count,36)을 권장한다. 과거 p36 run은 effective_parallel로 판단한다.",
+            "test_run_requested_parallel": recommended_parallel,
+            "small_run_policy": "새 테스트런/검증런은 --parallel 16을 요청하고, 실제 축소는 manifest effective_parallel로 판단한다.",
+            "dashboard_contract": dashboard_contract(manifest_path=result_manifest_path, python_executable=".\\venv\\Scripts\\python.exe"),
             "required_flags": [
                 "--server-type vllm",
                 "--reuse-shards-only",
-                "--no-dashboard",
                 "--slang-db on",
                 "--vlm on",
                 "--ocr on",
@@ -382,8 +392,9 @@ def write_summary(path: Path, manifest: dict[str, Any]) -> None:
             "## 실행 계약",
             "",
             f"- 권장 `--parallel`: `{manifest['recommended_parallel']}`",
-            "- `36`은 Gemma 4 4B runtime worker 상한이며 Codex `spawn_agent` 병렬과 별개다.",
-            "- 소규모 targeted run은 36 worker를 채우려고 재실행하지 않고 manifest의 `effective_parallel`로 판단한다.",
+            f"- 예상 effective parallel: `{manifest['expected_effective_parallel']}`",
+            "- 새 테스트런/검증런은 요청 병렬도 `16`을 기본으로 쓰고, 입력 수가 작으면 manifest의 `effective_parallel` 축소를 확인한다.",
+            f"- dashboard URL: `{manifest['execution_contract']['dashboard_contract']['dashboard_url']}`",
             "- 이미지 post는 VLM/OCR on과 browser visual/loading gate가 같이 필요하다.",
             "",
             "## 산출물",

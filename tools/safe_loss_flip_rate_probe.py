@@ -9,6 +9,13 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from tools.test_run_dashboard_policy import (
+    attach_dashboard_command,
+    dashboard_contract,
+    requested_parallel_for_test_run,
+    strip_no_dashboard,
+)
+
 
 DEFAULT_SAFE_LOSS_POST_IDS = ("11674712", "11660237", "11698880")
 
@@ -149,7 +156,7 @@ def build_independent_run_plan(
     run_prefix: str,
     python_executable: str,
     expert_main: Path,
-    parallel: int = 1,
+    parallel: int = 16,
     expert_args: list[str] | None = None,
     minimum_repeats: int = 5,
 ) -> tuple[dict[str, Any], list[tuple[Path, dict[str, Any]]]]:
@@ -163,7 +170,8 @@ def build_independent_run_plan(
     safe_prefix = "".join(ch if ch.isalnum() or ch in {"-", "_"} else "_" for ch in run_prefix).strip("_")
     if not safe_prefix:
         safe_prefix = "safe_loss_flip_probe"
-    expert_args = _with_noninteractive_watchdog_args(list(expert_args or []))
+    raw_expert_args = list(expert_args or [])
+    expert_args = _with_noninteractive_watchdog_args(strip_no_dashboard(raw_expert_args))
     input_dir = work_dir / "inputs"
     result_dir = work_dir / "results"
     planned_runs: list[dict[str, Any]] = []
@@ -198,6 +206,10 @@ def build_independent_run_plan(
                     "manifest_json": str(output_path.with_name(output_path.stem + "_manifest.json")),
                     "command_argv": argv,
                     "command_line": subprocess.list2cmdline(argv),
+                    "attach_dashboard_command_line": attach_dashboard_command(
+                        output_path.with_name(output_path.stem + "_manifest.json"),
+                        python_executable=python_executable,
+                    ),
                 }
             )
             input_writes.append((input_path, dict(row)))
@@ -229,6 +241,11 @@ def build_independent_run_plan(
         "repeat_count_by_post": {pid: repeat_counts.get(pid, 0) for pid in post_ids},
         "dedupe_guard": "one_post_per_process",
         "noninteractive_watchdog_contract": "background_probe_commands_disable_llm_suspend_prompt",
+        "requested_parallel_policy": "test_run_requested_parallel_locked_to_16_by_user",
+        "dashboard_contract": dashboard_contract(python_executable=python_executable),
+        "stripped_forbidden_expert_args": [
+            str(arg) for arg in raw_expert_args if str(arg).strip() == "--no-dashboard"
+        ],
         "input_surface_contract": "Each generated JSONL contains exactly one copied source row and no _flip_probe metadata.",
         "aggregation_contract": "Analyze all per-repeat result JSON files together with the same post_ids and repeats value.",
         "planned_runs": planned_runs,
@@ -441,7 +458,7 @@ def parse_args() -> argparse.Namespace:
     plan.add_argument("--manifest", required=True, type=Path)
     plan.add_argument("--python", default=sys.executable)
     plan.add_argument("--expert-main", default=Path("expert_main.py"), type=Path)
-    plan.add_argument("--parallel", type=int, default=1)
+    plan.add_argument("--parallel", type=int, default=16)
     plan.add_argument(
         "--expert-arg",
         action="append",
@@ -494,7 +511,7 @@ def main() -> int:
             run_prefix=args.run_prefix,
             python_executable=str(args.python),
             expert_main=args.expert_main,
-            parallel=max(1, int(args.parallel)),
+            parallel=requested_parallel_for_test_run(1) if int(args.parallel) <= 0 else max(1, int(args.parallel)),
             expert_args=list(args.expert_arg or []),
             minimum_repeats=max(1, int(args.minimum_repeats)),
         )

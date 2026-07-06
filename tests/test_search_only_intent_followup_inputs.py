@@ -104,7 +104,14 @@ class SearchOnlyIntentFollowupInputsTest(unittest.TestCase):
             self.assertEqual(manifest["source_comment_rows_found"], 1)
             self.assertEqual(manifest["missing_post_ids"], [])
             self.assertEqual(manifest["browser_target_rows"], 1)
+            self.assertEqual(manifest["parallel_policy"]["recommended_requested_parallel"], 16)
             self.assertEqual(manifest["parallel_policy"]["expected_effective_parallel"], 2)
+            self.assertIn("--parallel 16", manifest["recommended_rerun_command"])
+            self.assertNotIn("--no-dashboard", manifest["recommended_rerun_command"])
+            self.assertEqual(
+                manifest["execution_contract"]["dashboard_contract"]["dashboard_policy"],
+                "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+            )
             self.assertEqual(manifest["recommended_action_counts"]["re_search"], 1)
             self.assertEqual(manifest["recommended_action_counts"]["comment_url_verify"], 1)
             self.assertEqual(manifest["recommended_action_counts"]["re_judge"], 1)

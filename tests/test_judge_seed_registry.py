@@ -107,6 +107,14 @@ class JudgeSeedRegistryTest(unittest.TestCase):
             self.assertEqual(manifest["seed_count"], 3)
             self.assertEqual(manifest["counts"]["by_group"], {"recall": 1, "precision": 1, "hygiene": 1})
             self.assertEqual(manifest["canary_post_count"], 3)
+            self.assertEqual(manifest["recommended_parallel"], 16)
+            self.assertEqual(manifest["expected_effective_parallel"], 3)
+            self.assertIn("--parallel 16", manifest["recommended_commands"]["expert_main_canary"])
+            self.assertNotIn("--no-dashboard", manifest["recommended_commands"]["expert_main_canary"])
+            self.assertEqual(
+                manifest["execution_contract"]["dashboard_contract"]["dashboard_policy"],
+                "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+            )
 
             registry = json.loads((out_dir / "seed_seed_registry.json").read_text(encoding="utf-8"))
             labels = {row["post_id"]: row["shadow_label"] for row in registry["seeds"]}

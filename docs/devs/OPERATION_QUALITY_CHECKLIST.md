@@ -1,5 +1,24 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop499 테스트런 대시보드 부착 계약 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_499_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop499_test_run_dashboard_policy_state_20260706.json`.
+  - [x] 공통 정책 helper `tools/test_run_dashboard_policy.py` 추가.
+  - [x] 테스트런 추천 명령 생성기에서 `--no-dashboard` 제거.
+  - [x] 추천 요청 병렬도를 `--parallel 16`으로 고정하고 expected effective parallel을 별도 기록.
+  - [x] Manifest에 dashboard URL, standalone 시작 명령, 사후 attach 명령을 기록.
+  - [x] 현재 standalone dashboard health `GO / pid=9320`.
+  - [x] Loop496 manifest attach once로 dashboard status `375/375`, `progress_pct=100.0`, `parallel_count=16` 확인.
+- 품질 경계:
+  - [x] 웹 대시보드는 진행 관측 도구이며 semantic/full_scan approval 증거가 아니다.
+  - [x] `--parallel 16`은 요청 병렬도이며 실제 worker는 manifest의 `effective_parallel`로 확인한다.
+  - [x] `--no-dashboard` 과거 실행 기록은 이력으로 보존하고, 신규 추천 명령만 변경했다.
+  - [ ] Full375 collateral `GO` 전 full_scan path를 정의하지 않는다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: dashboard policy `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`, runtime parallel policy `LOCKED_TO_16_BY_USER`, full375 collateral `NO-GO / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop498 wrong_work INFO_MISSING 배치 품질 게이트
 
 - 근거:

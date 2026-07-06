@@ -8,6 +8,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Iterable
 
+from tools.test_run_dashboard_policy import (
+    dashboard_contract,
+    expected_effective_parallel,
+    requested_parallel_for_test_run,
+)
+
 
 RECALL_TYPES = {"under_resolved_false_negative"}
 PRECISION_TYPES = {
@@ -476,11 +482,12 @@ def build_registry(
         if nested_dict(row.get("_judge_seed")).get("source_img_count")
         and not nested_dict(row.get("_judge_seed")).get("source_has_image_url")
     )
-    recommended_parallel = min(PARALLEL_MAX, max(1, len(canary_rows)))
+    recommended_parallel = requested_parallel_for_test_run(len(canary_rows))
+    expected_parallel = expected_effective_parallel(len(canary_rows))
     recommended_command = (
         f"python expert_main.py --input {canary_path.as_posix()} "
         f"--output {expected_result_path.as_posix()} --server-type vllm "
-        f"--parallel {recommended_parallel} --reuse-shards-only --no-dashboard "
+        f"--parallel {recommended_parallel} --reuse-shards-only "
         "--slang-db on --vlm on --ocr on --require-vlm-ocr-for-images"
     )
     compare_command = (
@@ -501,6 +508,8 @@ def build_registry(
         "missing_source_count": len(missing_source_post_ids),
         "missing_source_post_ids": missing_source_post_ids,
         "canary_post_count": len(canary_rows),
+        "recommended_parallel": recommended_parallel,
+        "expected_effective_parallel": expected_parallel,
         "canary_image_seed_without_url_count": image_seed_without_url_count,
         "canary_post_ids": [row.get("post_id") for row in canary_rows],
         "counts": counts,
@@ -518,6 +527,12 @@ def build_registry(
         "recommended_commands": {
             "expert_main_canary": recommended_command,
             "compare_after_canary": compare_command,
+        },
+        "execution_contract": {
+            "test_run_requested_parallel": recommended_parallel,
+            "expected_effective_parallel": expected_parallel,
+            "dashboard_contract": dashboard_contract(manifest_path=expected_manifest_path),
+            "forbidden_flags": ["--no-dashboard"],
         },
         "gate": {
             "run_integrity": "PENDING",
@@ -697,6 +712,17 @@ def write_summary(path: Path, manifest: dict[str, Any]) -> None:
     lines.extend(["", "## 산출물", ""])
     for key, value in sorted(manifest["outputs"].items()):
         lines.append(f"- `{key}`: `{value}`")
+    lines.extend(
+        [
+            "",
+            "## 실행 계약",
+            "",
+            f"- 요청 `--parallel`: `{manifest['recommended_parallel']}`",
+            f"- 예상 effective parallel: `{manifest['expected_effective_parallel']}`",
+            f"- dashboard URL: `{manifest['execution_contract']['dashboard_contract']['dashboard_url']}`",
+            "- `--no-dashboard`는 신규 테스트런 추천 명령에 넣지 않는다.",
+        ]
+    )
     lines.extend(["", "## 권장 expert_main canary", "", "```powershell", manifest["recommended_commands"]["expert_main_canary"], "```"])
     lines.extend(["", "## canary 후 비교", "", "```powershell", manifest["recommended_commands"]["compare_after_canary"], "```"])
     lines.extend(

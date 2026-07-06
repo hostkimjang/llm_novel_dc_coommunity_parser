@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-06 Loop499 테스트런 대시보드 부착 계약 체크
+
+- [x] 공통 helper `tools/test_run_dashboard_policy.py`를 추가했다.
+- [x] 신규 테스트런/검증런 추천 명령은 요청 병렬도 `--parallel 16`을 사용한다.
+- [x] 입력 수가 16보다 작은 경우 `expected_effective_parallel=min(input_count,16)`을 manifest에 남긴다.
+- [x] 신규 추천 명령에서 `--no-dashboard`를 제거했다.
+- [x] Manifest에 dashboard URL `http://127.0.0.1:8080`, standalone 시작 명령, manifest attach 명령을 기록한다.
+- [x] `safe_loss_flip_rate_probe`는 `--no-dashboard`가 expert arg로 들어와도 계획 생성 시 제거한다.
+- [x] 현재 standalone dashboard health는 `GO / pid=9320`이다.
+- [x] Loop496 manifest 사후 attach로 dashboard status를 `375/375`, `progress_pct=100.0`, `parallel_count=16`으로 갱신했다.
+- [x] py_compile PASS.
+- [x] focused unittest `13 + 3`건 PASS.
+- [x] `git diff --check` PASS(CRLF 경고만 있음).
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: dashboard policy `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`, runtime parallel policy `LOCKED_TO_16_BY_USER`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop498 wrong_work INFO_MISSING 배치 체크
 
 - [x] Source-native action batch `47`건을 생성했다.

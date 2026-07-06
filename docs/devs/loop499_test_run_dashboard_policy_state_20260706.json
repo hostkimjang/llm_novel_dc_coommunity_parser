@@ -1,0 +1,55 @@
+{
+  "loop": 499,
+  "date": "2026-07-06",
+  "title": "test_run_dashboard_policy_wiring",
+  "goal_complete": false,
+  "dashboard": {
+    "policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+    "url": "http://127.0.0.1:8080",
+    "standalone_health": "GO",
+    "health_pid": 9320,
+    "loop496_attach_once": {
+      "status": "GO",
+      "done_count": 375,
+      "total_posts": 375,
+      "progress_pct": 100.0,
+      "parallel_count": 16
+    }
+  },
+  "runtime_parallel": {
+    "requested_parallel_policy": "LOCKED_TO_16_BY_USER",
+    "requested_parallel": 16,
+    "effective_parallel_rule": "min(input_post_count, 16)"
+  },
+  "changed_files": [
+    "tools/test_run_dashboard_policy.py",
+    "tools/safe_loss_flip_rate_probe.py",
+    "tools/build_current_remaining_action_inputs.py",
+    "tools/build_goal_next_seed_package.py",
+    "tools/build_judge_seed_registry.py",
+    "tools/build_judge3905_expansion_inputs.py",
+    "tools/build_judge3905_source_enriched_canary.py",
+    "tools/build_search_only_intent_followup_inputs.py",
+    "tests/test_safe_loss_flip_rate_probe.py",
+    "tests/test_qualitative_review_packet_tools.py",
+    "tests/test_goal_next_seed_package.py",
+    "tests/test_judge_seed_registry.py",
+    "tests/test_judge3905_expansion_inputs.py",
+    "tests/test_candidate_audit.py",
+    "tests/test_search_only_intent_followup_inputs.py"
+  ],
+  "verification": {
+    "py_compile": "PASS",
+    "focused_unittest_primary": "PASS / 13 tests",
+    "focused_unittest_additional": "PASS / 3 tests",
+    "git_diff_check": "PASS"
+  },
+  "gate": {
+    "runtime_dashboard_policy": "GO",
+    "full375_collateral": "NO-GO / inherited residual 105",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE",
+    "completion_criterion": "full375 collateral GO + full_scan path definition"
+  }
+}

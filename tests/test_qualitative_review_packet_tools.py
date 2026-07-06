@@ -2248,11 +2248,17 @@ class QualitativeReviewPacketToolsTest(unittest.TestCase):
         self.assertEqual(rejudge_inputs[0]["_round3_target"]["primary_pattern"], "reason_says_no_anchor_but_resolved")
         self.assertEqual(rejudge_inputs[0]["_issue_regression"]["previous_resolved_title"], "소보로설")
         self.assertEqual(manifest["execution_contract"]["current_rerun_input_count"], 1)
-        self.assertEqual(manifest["execution_contract"]["recommended_parallel_for_current_inputs"], 1)
-        self.assertIn("--parallel 1", manifest["execution_contract"]["required_flags"])
+        self.assertEqual(manifest["execution_contract"]["recommended_parallel_for_current_inputs"], 16)
+        self.assertEqual(manifest["execution_contract"]["expected_effective_parallel_for_current_inputs"], 1)
+        self.assertIn("--parallel 16", manifest["execution_contract"]["required_flags"])
+        self.assertNotIn("--no-dashboard", manifest["execution_contract"]["required_flags"])
+        self.assertEqual(
+            manifest["execution_contract"]["dashboard_contract"]["dashboard_policy"],
+            "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+        )
         self.assertNotIn("MCP_SHARD_COUNT", manifest["execution_contract"])
 
-    def test_current_remaining_action_inputs_caps_recommended_parallel_at_36(self) -> None:
+    def test_current_remaining_action_inputs_locks_requested_parallel_at_16(self) -> None:
         with TemporaryDirectory() as tmp:
             root = Path(tmp)
             review_dir = root / "review"
@@ -2292,8 +2298,10 @@ class QualitativeReviewPacketToolsTest(unittest.TestCase):
         self.assertEqual(manifest["rerun_combined_rows"], 37)
         self.assertEqual(manifest["execution_contract"]["current_rerun_input_count"], 37)
         self.assertEqual(manifest["execution_contract"]["expert_main_parallel_max"], 36)
-        self.assertEqual(manifest["execution_contract"]["recommended_parallel_for_current_inputs"], 36)
-        self.assertIn("--parallel 36", manifest["execution_contract"]["required_flags"])
+        self.assertEqual(manifest["execution_contract"]["recommended_parallel_for_current_inputs"], 16)
+        self.assertEqual(manifest["execution_contract"]["expected_effective_parallel_for_current_inputs"], 16)
+        self.assertIn("--parallel 16", manifest["execution_contract"]["required_flags"])
+        self.assertNotIn("--no-dashboard", manifest["execution_contract"]["required_flags"])
 
     def test_current_remaining_action_inputs_loads_jsonl_source_with_comments_and_images(self) -> None:
         with TemporaryDirectory() as tmp:
