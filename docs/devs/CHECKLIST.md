@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-07 Loop509 repair28 재회계 및 repair27 replay 준비 체크
+
+- [x] Loop508 결과와 Loop502 repair28 queue를 post_id 기준으로 교차 대조했다.
+- [x] repair28 내부 Loop508 overlap은 `11684372` 1건이다.
+- [x] Loop508 residual105 overlap은 `11674694`, `11677924`, `11684372` 3건이지만 residual105 감소로 세지 않았다.
+- [x] repair replay 후보는 `28 -> 27`로 재회계했다.
+- [x] Remaining lane은 `candidate_preservation_or_scrub_repair 9`, `scope_or_nonwork_monotonicity_repair 9`, `title_url_or_variant_trace_repair 9`다.
+- [x] Remaining search gate는 `SEARCH_BLIND_BLOCKER 9`, `SEARCH_EVIDENCE_MISSING 3`, `SEARCH_RECOVERED_CONDITIONAL 13`, `SEARCH_OK 2`다.
+- [x] Replay input manifest는 missing source post_id `0`이다.
+- [x] Replay input은 원본 panel row만 복사했고 repair metadata를 model-visible row에 주입하지 않았다.
+- [x] Run plan은 `--parallel 16`, `--reuse-shards-only`, `--slang-db off`, VLM/OCR on, dashboard 기본 ON이다.
+- [x] Data Analytics MCP report `Loop509 repair27 재회계` validate/render PASS.
+- [ ] Loop509 repair27 runtime replay는 아직 실행하지 않았다.
+- [ ] Replay 완료 후 run health와 publication contract audit를 생성한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: reconciliation `GO_ACCOUNTING_NOT_APPROVAL`, runtime input `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop508 publication contract stale 7 runtime replay 체크
 
 - [x] Loop507 static audit 위반 post_id `7`건을 원본 panel 입력에서 추출했다.

@@ -1,0 +1,69 @@
+{
+  "state_type": "loop509_shared_gate_repair27_runtime_replay_state",
+  "generated_at": "2026-07-07T00:58:04",
+  "reconciliation": "docs\\devs\\loop509_shared_gate_repair28_after_loop508_reconciliation.json",
+  "reconciliation_md": "docs\\devs\\loop509_shared_gate_repair28_after_loop508_reconciliation.md",
+  "runtime_input": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\inputs\\loop509_shared_gate_repair27_runtime_replay_input.jsonl",
+  "runtime_input_manifest": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\inputs\\loop509_shared_gate_repair27_runtime_replay_input_manifest.json",
+  "run_plan": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\plans\\loop509_shared_gate_repair27_runtime_replay_plan.json",
+  "runtime_result_expected": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop509_shared_gate_repair27_current_head_result.json",
+  "runtime_replay_status": "INPUT_AND_PLAN_READY_NOT_RUN",
+  "summary": {
+    "repair_rows_before": 28,
+    "loop508_result_rows": 7,
+    "loop508_repair_overlap_rows": 1,
+    "loop508_repair_overlap_post_ids": [
+      "11684372"
+    ],
+    "loop508_residual105_overlap_rows": 3,
+    "loop508_residual105_overlap_post_ids": [
+      "11674694",
+      "11677924",
+      "11684372"
+    ],
+    "repair_rows_remaining_after_loop508_contract_runtime_evidence": 27,
+    "lane_counts_before": {
+      "candidate_preservation_or_scrub_repair": 9,
+      "scope_or_nonwork_monotonicity_repair": 9,
+      "title_url_or_variant_trace_repair": 9,
+      "image_or_alias_anchor_contract_repair": 1
+    },
+    "lane_counts_runtime_verified_by_loop508": {
+      "image_or_alias_anchor_contract_repair": 1
+    },
+    "lane_counts_remaining": {
+      "candidate_preservation_or_scrub_repair": 9,
+      "scope_or_nonwork_monotonicity_repair": 9,
+      "title_url_or_variant_trace_repair": 9
+    },
+    "search_gate_counts_before": {
+      "SEARCH_RECOVERED_CONDITIONAL": 14,
+      "SEARCH_BLIND_BLOCKER": 9,
+      "SEARCH_EVIDENCE_MISSING": 3,
+      "SEARCH_OK": 2
+    },
+    "search_gate_counts_runtime_verified_by_loop508": {
+      "SEARCH_RECOVERED_CONDITIONAL": 1
+    },
+    "search_gate_counts_remaining": {
+      "SEARCH_RECOVERED_CONDITIONAL": 13,
+      "SEARCH_BLIND_BLOCKER": 9,
+      "SEARCH_EVIDENCE_MISSING": 3,
+      "SEARCH_OK": 2
+    },
+    "runtime_replay_input_rows_generated": 27,
+    "missing_source_post_ids": [],
+    "validation_issue_count": 0,
+    "residual105_rows_remain": 105,
+    "full375_collateral_gate": "NO-GO"
+  },
+  "gates": {
+    "reconciliation": "GO_ACCOUNTING_NOT_APPROVAL",
+    "runtime_input": "GO_INPUT_ONLY",
+    "runtime_replay": "NOT_RUN_AFTER_INPUT",
+    "full375_collateral": "NO-GO / residual 105",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}

@@ -1,5 +1,34 @@
 # Verification Results
 
+## 2026-07-07 Loop509 Verification
+
+- 범위: Loop508 runtime evidence를 Loop502 repair28 queue에 교차 반영하고 repair27 batch replay input/plan을 생성했다. Runtime replay 자체는 아직 실행하지 않았다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_509_REPORT_20260707.md`
+  - reconciliation `docs\devs\loop509_shared_gate_repair28_after_loop508_reconciliation.json`
+  - reconciliation md `docs\devs\loop509_shared_gate_repair28_after_loop508_reconciliation.md`
+  - state `docs\devs\loop509_shared_gate_repair27_runtime_replay_state_20260707.json`
+  - input `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop509_shared_gate_repair27_runtime_replay_input.jsonl`
+  - input manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop509_shared_gate_repair27_runtime_replay_input_manifest.json`
+  - plan `out\regression_safe_grounding_20260626_000008_928006_loop01\plans\loop509_shared_gate_repair27_runtime_replay_plan.json`
+- Result:
+  - repair28 rows before `28`
+  - Loop508 repair overlap `1`, post_id `11684372`
+  - remaining repair replay rows `27`
+  - remaining lane counts `candidate_preservation_or_scrub_repair 9`, `scope_or_nonwork_monotonicity_repair 9`, `title_url_or_variant_trace_repair 9`
+  - remaining search gate counts `SEARCH_BLIND_BLOCKER 9`, `SEARCH_EVIDENCE_MISSING 3`, `SEARCH_RECOVERED_CONDITIONAL 13`, `SEARCH_OK 2`
+  - input missing post_ids `0`
+- Validation:
+  - Reconciliation JSON parse PASS.
+  - Runtime input manifest JSON parse PASS.
+  - Runtime input row count `27` PASS.
+  - Data Analytics MCP report `Loop509 repair27 재회계` validate/render PASS.
+- Boundary:
+  - Reconciliation `GO_ACCOUNTING_NOT_APPROVAL`은 full375 collateral approval이 아니다.
+  - Runtime input `GO_INPUT_ONLY`는 runtime replay completion이 아니다.
+  - Full375 collateral은 `NO-GO / residual 105`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-07 Loop508 Verification
 
 - 범위: Loop507 publication contract static audit에서 남은 stale `7`행을 current HEAD runtime replay로 확인했다.

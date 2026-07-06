@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-07 - Loop509 repair28 reconciliation and repair27 replay plan
+
+- Loop508 targeted runtime replay 결과를 Loop502 `repair28` queue에 교차 반영했다.
+- Repair28 내부 Loop508 overlap은 `11684372` 1건뿐이라 repair queue는 `28 -> 27`로만 줄었다.
+- `11684372`은 image/alias anchor lane의 current runtime contract 증거로 분리했지만, full375 collateral 감소로 세지 않았다.
+- Remaining lane은 `candidate_preservation_or_scrub_repair 9`, `scope_or_nonwork_monotonicity_repair 9`, `title_url_or_variant_trace_repair 9`다.
+- Remaining search gate는 `SEARCH_BLIND_BLOCKER 9`, `SEARCH_EVIDENCE_MISSING 3`, `SEARCH_RECOVERED_CONDITIONAL 13`, `SEARCH_OK 2`다.
+- Replay input `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop509_shared_gate_repair27_runtime_replay_input.jsonl`은 원본 panel row만 복사했고 missing source post_id는 `0`이다.
+- Run plan은 `out/regression_safe_grounding_20260626_000008_928006_loop01/plans/loop509_shared_gate_repair27_runtime_replay_plan.json`이며 `--parallel 16`과 dashboard 기본 ON 경로를 사용한다.
+- Data Analytics MCP report `Loop509 repair27 재회계`는 validate/render PASS다.
+- Gate는 reconciliation `GO_ACCOUNTING_NOT_APPROVAL`, runtime input `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop508 publication contract stale 7 runtime replay
 
 - Loop507 static audit에서 남은 stale `7`행을 current HEAD `65fe2dfa`에서 runtime replay로 검증했다.

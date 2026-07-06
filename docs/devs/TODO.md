@@ -1,5 +1,22 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop509 TODO
+
+- 상태 업데이트: Loop508 runtime evidence를 Loop502 `repair28`에 교차 반영했고, repair27 batch replay input/plan을 준비했다. Goal은 완료가 아니다.
+- [x] Loop508 결과와 Loop502 repair28 queue의 post_id overlap을 계산했다.
+- [x] repair28 내부 overlap은 `11684372` 1건뿐임을 확인했다.
+- [x] image/alias anchor lane은 `1 -> 0`으로 줄었지만 residual105는 `105`로 유지한다고 기록했다.
+- [x] 남은 repair27 lane은 `candidate_preservation_or_scrub_repair 9`, `scope_or_nonwork_monotonicity_repair 9`, `title_url_or_variant_trace_repair 9`로 분리했다.
+- [x] Search gate remaining은 `SEARCH_BLIND_BLOCKER 9`, `SEARCH_EVIDENCE_MISSING 3`, `SEARCH_RECOVERED_CONDITIONAL 13`, `SEARCH_OK 2`로 기록했다.
+- [x] Replay input `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop509_shared_gate_repair27_runtime_replay_input.jsonl`을 생성했다.
+- [x] Run plan `out/regression_safe_grounding_20260626_000008_928006_loop01/plans/loop509_shared_gate_repair27_runtime_replay_plan.json`을 생성했다.
+- [x] Run plan은 `--parallel 16`과 dashboard 기본 ON 경로를 사용한다.
+- [x] Data Analytics MCP report `Loop509 repair27 재회계` validate/render PASS.
+- [ ] Loop509 repair27 runtime replay를 아직 실행하지 않았다.
+- [ ] Replay 완료 후 run health와 publication contract audit를 생성한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop508 TODO
 
 - 상태 업데이트: Loop507 static stale `7`행을 current HEAD runtime replay로 확인했다. Goal은 완료가 아니다.

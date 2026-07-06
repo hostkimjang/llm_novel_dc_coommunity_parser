@@ -1,5 +1,27 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop509 repair28 재회계 및 repair27 replay 준비 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_509_REPORT_20260707.md`.
+  - [x] Reconciliation 기록 완료: `docs/devs/loop509_shared_gate_repair28_after_loop508_reconciliation.json/.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop509_shared_gate_repair27_runtime_replay_state_20260707.json`.
+  - [x] Runtime input 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop509_shared_gate_repair27_runtime_replay_input.jsonl`.
+  - [x] Runtime input manifest 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop509_shared_gate_repair27_runtime_replay_input_manifest.json`.
+  - [x] Run plan 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/plans/loop509_shared_gate_repair27_runtime_replay_plan.json`.
+  - [x] Data Analytics MCP report `Loop509 repair27 재회계` validate/render PASS.
+- 품질 경계:
+  - [x] Loop508 overlap은 repair28 내부 `11684372` 1건뿐이다.
+  - [x] Repair replay 후보는 `28 -> 27`로만 줄었다.
+  - [x] Residual105는 `105`로 유지한다.
+  - [x] Search-blind 조건부를 remaining search gate에 보존한다.
+  - [x] Replay input은 원본 panel row만 복사했다.
+  - [x] 새 runtime 실행은 아직 하지 않았다.
+  - [ ] Runtime replay 완료 전 repair27을 닫지 않는다.
+  - [ ] Full375 collateral `GO` 전 full_scan path를 정의하지 않는다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: reconciliation `GO_ACCOUNTING_NOT_APPROVAL`, runtime input `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop508 publication contract stale 7 runtime replay 품질 게이트
 
 - 근거:
