@@ -1,5 +1,26 @@
 # Developer TODO Index
 
+## 2026-07-06 Loop496 TODO
+
+- 상태 업데이트: Current HEAD `4fd250f7` full375는 runtime `GO / 375 of 375`로 완주했지만 full375 collateral은 `NO-GO / regression 137`이다. Goal은 완료가 아니다.
+- [x] Full375 replay를 search 포함 non-light, VLM/OCR on, `--slang-db off`, `--parallel 16`으로 완료했다.
+- [x] Run health `GO / clean_completed_source`를 확인했다.
+- [x] Publication contract `GO / 0 violations`를 확인했다.
+- [x] Golden18 `18/18 PASS`를 확인했다.
+- [x] Full375 collateral compare와 always-on gate를 실행했다.
+- [x] Collateral triage에서 P0 regression `137`을 bucket별로 분리했다.
+  - `safe_loss_resolved_to_null 84`
+  - `unsafe_promotion_from_hold 28`
+  - `wrong_work_title_flip 25`
+- [ ] Golden18 `GO`를 full375 approval로 확대하지 않는다.
+- [ ] Regression `137`건을 N건 배치 회귀패널로 확대한다.
+- [ ] `safe_loss_resolved_to_null 84`는 동일 입력 반복/expected/blind evidence 기준으로 정당 hold인지 recall regression인지 분리한다.
+- [ ] `unsafe_promotion_from_hold 28`은 promotion gate hard-hold와 source-native 정답성을 먼저 검증한다.
+- [ ] `wrong_work_title_flip 25`는 title/url source-native mismatch와 canonical variant를 분리한다.
+- [ ] Search evidence는 `REVIEW / search_degraded_observed`이므로 search 회복 전 promotion_blocked를 `search-blind 조건부`로 유지한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop495 TODO
 
 - 상태 업데이트: Loop493 `publish_contract_trace_repair_before_replay` 중 `11677915`, `11682780`의 플랫폼/리스팅 표면 competing candidate 오분류를 수리했다. Goal은 완료가 아니다.

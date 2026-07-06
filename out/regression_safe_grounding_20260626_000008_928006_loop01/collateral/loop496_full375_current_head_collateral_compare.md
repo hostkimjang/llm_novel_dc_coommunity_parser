@@ -1,0 +1,219 @@
+# Regression-safe golden collateral 비교
+
+- scope: `golden_canary_shared_posts_only`
+- shared posts: `375`
+- changed posts: `203`
+- collateral regression candidates: `137`
+- status counts: `{'null_to_resolved': 28, 'same_title_url_changed': 55, 'resolved_to_null': 91, 'resolved_to_different_title': 29}`
+- runtime: completed=`375`, pending=`0`, failed=`0`
+- VLM/OCR semantic gate ready: `True`
+- semantic_quality: `REVIEW-LOCKED`
+- full_scan_approval: `false`
+
+이 파일은 golden shared post_id 비교이며, full-panel collateral approval이 아닙니다.
+
+## 변경 행
+
+- `11657047`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`사이버펑크 베지테리언 매드니스`
+- `11658620`: `same_title_url_changed`, regression_candidate=`false`, before=`이거 럽코 빙의물인가요`, after=`이거 럽코 빙의물인가요`
+- `11658621`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`무능한게 아니라 전설이였다고?`
+- `11658637`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`재벌집 막내아들`
+- `11660232`: `same_title_url_changed`, regression_candidate=`false`, before=`괴담 동아리`, after=`괴담 동아리`
+- `11660254`: `resolved_to_null`, regression_candidate=`true`, before=`푸푸푸 랜드의 두가지 일상`, after=`None`
+- `11660262`: `resolved_to_different_title`, regression_candidate=`true`, before=`그렇게, 그 괴물과 두 번 결혼했다`, after=`로판에 도파민을 풀었다`
+- `11660264`: `same_title_url_changed`, regression_candidate=`false`, before=`빚을 져서라도 세상은 구해야 할 거 아니야`, after=`빚을 져서라도 세상은 구해야 할 거 아니야`
+- `11660268`: `same_title_url_changed`, regression_candidate=`false`, before=`을 위한 세계는 없다`, after=`을 위한 세계는 없다`
+- `11660271`: `resolved_to_null`, regression_candidate=`true`, before=`월야의 여인들`, after=`None`
+- `11660273`: `resolved_to_null`, regression_candidate=`true`, before=`마도서를 줍다 마법사가 되다`, after=`None`
+- `11660277`: `resolved_to_null`, regression_candidate=`true`, before=`아카메디 아카데미 본 사람?`, after=`None`
+- `11661856`: `resolved_to_null`, regression_candidate=`true`, before=`너랑은 절! 대! 안 사Kill거니까!`, after=`None`
+- `11661857`: `resolved_to_null`, regression_candidate=`false`, before=`아카데미 개망나니 교수가 되었다`, after=`None`
+- `11661863`: `resolved_to_different_title`, regression_candidate=`true`, before=`저주받은 영애가 되었습니다`, after=`용의 신부로 바쳐지고 말았다`
+- `11661865`: `same_title_url_changed`, regression_candidate=`false`, before=`우주 게임 속 용병이 되었다`, after=`우주 게임 속 용병이 되었다`
+- `11661876`: `same_title_url_changed`, regression_candidate=`false`, before=`와인의 신`, after=`와인의 신`
+- `11661881`: `same_title_url_changed`, regression_candidate=`false`, before=`여신이 나만 애호함`, after=`여신이 나만 애호함`
+- `11663510`: `same_title_url_changed`, regression_candidate=`false`, before=`후회 안 하는 프로듀서`, after=`후회 안 하는 프로듀서`
+- `11663514`: `resolved_to_different_title`, regression_candidate=`true`, before=`마탄 속의 제국`, after=`올바른 슬라임 사용법`
+- `11663521`: `resolved_to_null`, regression_candidate=`true`, before=`초전자포] 시스터즈가 되었다`, after=`None`
+- `11663535`: `resolved_to_null`, regression_candidate=`true`, before=`퇴마록`, after=`None`
+- `11663540`: `resolved_to_null`, regression_candidate=`true`, before=`방구석 여신이 되었다`, after=`None`
+- `11663554`: `resolved_to_different_title`, regression_candidate=`true`, before=`주서연 ( 전 버튜버가 하고 싶은데요 )`, after=`전 버튜버가 하고 싶은데요`
+- `11663557`: `resolved_to_null`, regression_candidate=`true`, before=`퇴마록`, after=`None`
+- `11665099`: `resolved_to_different_title`, regression_candidate=`true`, before=`옥천마 출정`, after=`옥탑방의 천재 마물 소환사`
+- `11665110`: `resolved_to_null`, regression_candidate=`true`, before=`낭만적인 초능력을 위하여`, after=`None`
+- `11665119`: `same_title_url_changed`, regression_candidate=`false`, before=`즉사기 들고 무림에 떨어지다`, after=`즉사기 들고 무림에 떨어지다`
+- `11665121`: `resolved_to_null`, regression_candidate=`true`, before=`후회 안 하는 프로듀서`, after=`None`
+- `11665124`: `resolved_to_null`, regression_candidate=`true`, before=`화산파(화산귀환)`, after=`None`
+- `11666699`: `resolved_to_null`, regression_candidate=`true`, before=`여동생이 맛있다`, after=`None`
+- `11666700`: `resolved_to_different_title`, regression_candidate=`true`, before=`하남자의 탑 공략법`, after=`내 고향엔 무림인이 산다`
+- `11666713`: `same_title_url_changed`, regression_candidate=`false`, before=`21세기 무림세가`, after=`21세기 무림세가`
+- `11666725`: `resolved_to_null`, regression_candidate=`true`, before=`학대받던 11살 고마가 각성한 이유`, after=`None`
+- `11666729`: `same_title_url_changed`, regression_candidate=`false`, before=`이 무림의 미친년은 나야`, after=`이 무림의 미친년은 나야`
+- `11666731`: `resolved_to_null`, regression_candidate=`true`, before=`약먹는 천재마법사`, after=`None`
+- `11666741`: `resolved_to_null`, regression_candidate=`true`, before=`별을 품은 소드마스터`, after=`None`
+- `11668278`: `resolved_to_null`, regression_candidate=`true`, before=`짜장면`, after=`None`
+- `11668288`: `resolved_to_null`, regression_candidate=`true`, before=`가챠 중독자의 퓨전펑크 생활`, after=`None`
+- `11668293`: `same_title_url_changed`, regression_candidate=`false`, before=`즉사기 들고 무림에 떨어지다`, after=`즉사기 들고 무림에 떨어지다`
+- `11668300`: `resolved_to_null`, regression_candidate=`true`, before=`즉사기 들고 게임 속 으로`, after=`None`
+- `11668305`: `resolved_to_null`, regression_candidate=`true`, before=`Fate/stay night`, after=`None`
+- `11668307`: `resolved_to_different_title`, regression_candidate=`false`, before=`디펜스게임 속 엘리트몹킬러가 되었다`, after=`빚을 져서라도 세상은 구해야 할 거 아니야`
+- `11668324`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`니들 생각 다 들린다`
+- `11668325`: `resolved_to_null`, regression_candidate=`true`, before=`Fate/stay night`, after=`None`
+- `11669907`: `resolved_to_null`, regression_candidate=`true`, before=`마법 좋아좋아좋아`, after=`None`
+- `11669908`: `resolved_to_null`, regression_candidate=`true`, before=`아카데미에서 살아남기 (완)`, after=`None`
+- `11669911`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`S급 헌터도 결혼이 하고 싶다`
+- `11669913`: `resolved_to_null`, regression_candidate=`true`, before=`하룬`, after=`None`
+- `11669921`: `same_title_url_changed`, regression_candidate=`false`, before=`악당은 살고 싶다`, after=`악당은 살고 싶다`
+- `11669924`: `same_title_url_changed`, regression_candidate=`false`, before=`용인족의 아카데미 생존기`, after=`용인족의 아카데미 생존기`
+- `11669926`: `resolved_to_null`, regression_candidate=`true`, before=`싸울아비 룬`, after=`None`
+- `11669928`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`탑의 성좌들이 날 애호한다`
+- `11669929`: `resolved_to_different_title`, regression_candidate=`true`, before=`기계공주`, after=`헌터갤러리의 국가권력급 기계공주`
+- `11669930`: `resolved_to_null`, regression_candidate=`false`, before=`수상할 정도로 돈이 많은 성주님 [독점]`, after=`None`
+- `11669933`: `same_title_url_changed`, regression_candidate=`false`, before=`회귀수선전`, after=`회귀수선전`
+- `11671500`: `resolved_to_different_title`, regression_candidate=`true`, before=`악당도 살고 싶다`, after=`악당은 살고 싶다`
+- `11671501`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`판초우의의 마법사`
+- `11671512`: `resolved_to_null`, regression_candidate=`true`, before=`삼시세끼, 심아식당`, after=`None`
+- `11671514`: `resolved_to_different_title`, regression_candidate=`true`, before=`악신에게 총애받는 자`, after=`악신의 총애를 받는 성직자가 되었다`
+- `11671538`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`망한 교단의 성기사`
+- `11673077`: `resolved_to_null`, regression_candidate=`true`, before=`판초우의의 마법사`, after=`None`
+- `11673080`: `same_title_url_changed`, regression_candidate=`false`, before=`갤질하는 천재 의사`, after=`갤질하는 천재 의사`
+- `11673082`: `resolved_to_null`, regression_candidate=`false`, before=`용사 파티`, after=`None`
+- `11673086`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`[림월드]변방계에서 회귀자로 살아남기`
+- `11673091`: `same_title_url_changed`, regression_candidate=`false`, before=`전지적 독자 시점`, after=`전지적 독자 시점`
+- `11673096`: `resolved_to_null`, regression_candidate=`true`, before=`삼국지`, after=`None`
+- `11673102`: `resolved_to_null`, regression_candidate=`true`, before=`갤질하는 천재 의사`, after=`None`
+- `11673109`: `same_title_url_changed`, regression_candidate=`false`, before=`헌터갤러리의 국가권력급 기계공주`, after=`헌터갤러리의 국가권력급 기계공주`
+- `11674694`: `resolved_to_different_title`, regression_candidate=`true`, before=`21세기 무림세가`, after=`21세기를 여행하는 무림인을 위한 안내서`
+- `11674703`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`도굴왕`
+- `11676314`: `resolved_to_different_title`, regression_candidate=`true`, before=`소설 속 엑스트라`, after=`마도서를 줍다 마법사가 되다`
+- `11676317`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`마도서를 줍다 마법사가 되다`
+- `11676326`: `same_title_url_changed`, regression_candidate=`false`, before=`아카데미 생존 갤러리`, after=`아카데미 생존 갤러리`
+- `11676327`: `same_title_url_changed`, regression_candidate=`false`, before=`빚을 져서라도 세상은 구해야 할 거 아니야`, after=`빚을 져서라도 세상은 구해야 할 거 아니야`
+- `11677915`: `resolved_to_null`, regression_candidate=`true`, before=`전지적 독자 시점`, after=`None`
+- `11677924`: `resolved_to_different_title`, regression_candidate=`true`, before=`고결에 오만이 깃들 때`, after=`귀쟁이 투기장의 역배 기사님`
+- `11677926`: `resolved_to_null`, regression_candidate=`true`, before=`재앙급 막내 공자의 회귀`, after=`None`
+- `11679537`: `resolved_to_null`, regression_candidate=`true`, before=`죽었다 깨어도 수선`, after=`None`
+- `11679547`: `resolved_to_different_title`, regression_candidate=`true`, before=`도굴왕`, after=`나 혼자만 레벨업`
+- `11679553`: `resolved_to_null`, regression_candidate=`true`, before=`마도서를 줍다 마법사가 되다`, after=`None`
+- `11679572`: `same_title_url_changed`, regression_candidate=`false`, before=`내 고향엔 무림인이 산다`, after=`내 고향엔 무림인이 산다`
+- `11679576`: `same_title_url_changed`, regression_candidate=`false`, before=`판초우의의 마법사`, after=`판초우의의 마법사`
+- `11681141`: `same_title_url_changed`, regression_candidate=`false`, before=`아카데미 악당영애 교정하기`, after=`아카데미 악당영애 교정하기`
+- `11681152`: `resolved_to_null`, regression_candidate=`true`, before=`체육관 챌린지에서 살아남기`, after=`None`
+- `11681172`: `resolved_to_null`, regression_candidate=`true`, before=`헌터갤러리의 국가권력급 기계공주`, after=`None`
+- `11681177`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`격투 천재 여고생이 되었다`
+- `11681178`: `resolved_to_null`, regression_candidate=`true`, before=`재벌가 차녀의 2회차 걸그룹`, after=`None`
+- `11682749`: `resolved_to_different_title`, regression_candidate=`true`, before=`주인공인데 주인공이 아님`, after=`템플릿 헌터`
+- `11682761`: `same_title_url_changed`, regression_candidate=`false`, before=`그레이스 길들이기`, after=`그레이스 길들이기`
+- `11682767`: `resolved_to_null`, regression_candidate=`true`, before=`묵향`, after=`None`
+- `11682768`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`마법소녀ㄴ은 은퇴하고 싶다`
+- `11682775`: `same_title_url_changed`, regression_candidate=`false`, before=`여자가 되어서라도 복수한다`, after=`여자가 되어서라도 복수한다`
+- `11682791`: `resolved_to_different_title`, regression_candidate=`true`, before=`피아조아 <시간을 달리는 소설가>`, after=`시간을 달리는 소설가`
+- `11684370`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`목표는 엔딩 요정`
+- `11684371`: `resolved_to_null`, regression_candidate=`false`, before=`괴담에 휘말렸다`, after=`None`
+- `11684372`: `resolved_to_null`, regression_candidate=`true`, before=`밀리언 클래스`, after=`None`
+- `11684380`: `same_title_url_changed`, regression_candidate=`false`, before=`신비의 제왕`, after=`신비의 제왕`
+- `11685987`: `resolved_to_null`, regression_candidate=`true`, before=`괴담 동아리`, after=`None`
+- `11685994`: `resolved_to_null`, regression_candidate=`true`, before=`무한을 이해한 나는 외신의 사제가 되었습니다`, after=`None`
+- `11687618`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`아카데미 생존 갤러리`
+- `11687661`: `resolved_to_null`, regression_candidate=`true`, before=`약혼녀가 소천마였다`, after=`None`
+- `11689248`: `same_title_url_changed`, regression_candidate=`false`, before=`애호받는 뉴비가 되었다`, after=`애호받는 뉴비가 되었다`
+- `11689292`: `resolved_to_different_title`, regression_candidate=`true`, before=`최악의 파트너`, after=`[원신] 최악의 파트너`
+- `11690841`: `resolved_to_null`, regression_candidate=`true`, before=`블루 아카이브`, after=`None`
+- `11690855`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`버스 최단신이 되었다.`
+- `11692426`: `same_title_url_changed`, regression_candidate=`false`, before=`절대타경`, after=`절대타경`
+- `11692436`: `resolved_to_different_title`, regression_candidate=`true`, before=`퍼펙트 메이지`, after=`죽었다 깨어도 수선`
+- `11692441`: `same_title_url_changed`, regression_candidate=`false`, before=`사이버펑크 속 드래곤이 되었다`, after=`사이버펑크 속 드래곤이 되었다`
+- `11692444`: `same_title_url_changed`, regression_candidate=`false`, before=`엑스칼리버 뽑습니다`, after=`엑스칼리버 뽑습니다`
+- `11694019`: `resolved_to_null`, regression_candidate=`true`, before=`혼후 순결`, after=`None`
+- `11694035`: `resolved_to_null`, regression_candidate=`true`, before=`시로코의 제멋대로 일상 단편선`, after=`None`
+- `11694041`: `resolved_to_null`, regression_candidate=`true`, before=`격투 소설 엑스트라가 타격 천재임`, after=`None`
+- `11694044`: `resolved_to_different_title`, regression_candidate=`true`, before=`판초우의의 마법사`, after=`즉사기 들고 무림에 떨어지다`
+- `11694049`: `same_title_url_changed`, regression_candidate=`false`, before=`아카데미 생존 갤러리`, after=`아카데미 생존 갤러리`
+- `11694065`: `same_title_url_changed`, regression_candidate=`false`, before=`아카데미에서 살아남기`, after=`아카데미에서 살아남기`
+- `11694067`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`괴담에 휘말렸다`
+- `11694068`: `resolved_to_null`, regression_candidate=`true`, before=`트와일라잇`, after=`None`
+- `11695599`: `resolved_to_null`, regression_candidate=`true`, before=`창관전생`, after=`None`
+- `11695609`: `resolved_to_null`, regression_candidate=`true`, before=`쳇바퀴의 생쥐 사도가 되었다`, after=`None`
+- `11695611`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`여신이 나만 애호함`
+- `11695614`: `same_title_url_changed`, regression_candidate=`false`, before=`사무실 동료들의 눈빛이 어딘가 이상하다`, after=`사무소 동료들의 눈빛이 어딘가 이상하다`
+- `11697231`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`아카데미 생존 갤러리`
+- `11697234`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`환생 한 천재 검귀가 미래를 너무 잘 봄`
+- `11697237`: `resolved_to_null`, regression_candidate=`true`, before=`죽었다 깨어도 수선`, after=`None`
+- `11697239`: `resolved_to_null`, regression_candidate=`true`, before=`조혈모세포 기증 궁금해요`, after=`None`
+- `11697242`: `resolved_to_null`, regression_candidate=`true`, before=`유희왕`, after=`None`
+- `11697249`: `resolved_to_null`, regression_candidate=`true`, before=`버거피아`, after=`None`
+- `11697256`: `resolved_to_null`, regression_candidate=`true`, before=`황제의 딸로 환생했다`, after=`None`
+- `11697267`: `same_title_url_changed`, regression_candidate=`false`, before=`아카데미 생존 갤러리`, after=`아카데미 생존 갤러리`
+- `11698859`: `resolved_to_null`, regression_candidate=`true`, before=`귤부인 대롱대롱`, after=`None`
+- `11698864`: `same_title_url_changed`, regression_candidate=`false`, before=`무한 회귀자인데 썰 푼다`, after=`무한 회귀자인데 썰 푼다`
+- `11698865`: `resolved_to_null`, regression_candidate=`true`, before=`나츠키 스바루/작중 행적/5~8장`, after=`None`
+- `11698870`: `resolved_to_null`, regression_candidate=`true`, before=`인간실격`, after=`None`
+- `11698871`: `resolved_to_null`, regression_candidate=`true`, before=`렘(Re: 제로부터 시작하는 이세계 생활)`, after=`None`
+- `11698880`: `resolved_to_null`, regression_candidate=`true`, before=`가챠 중독자의 퓨전펑크 생활`, after=`None`
+- `11698890`: `same_title_url_changed`, regression_candidate=`false`, before=`댓글창의 천재 마법사`, after=`댓글창의 천재 마법사`
+- `11698895`: `same_title_url_changed`, regression_candidate=`false`, before=`[림월드]변방계에서 회귀자로 살아남기`, after=`[림월드]변방계에서 회귀자로 살아남기`
+- `11698897`: `resolved_to_different_title`, regression_candidate=`false`, before=`스페이스 오페라`, after=`변방계에서 회귀자로 살아남기`
+- `11698904`: `resolved_to_null`, regression_candidate=`true`, before=`타락`, after=`None`
+- `11698910`: `resolved_to_null`, regression_candidate=`true`, before=`판초우의의 마법사`, after=`None`
+- `11700470`: `resolved_to_null`, regression_candidate=`false`, before=`가스라이팅`, after=`None`
+- `11700483`: `same_title_url_changed`, regression_candidate=`false`, before=`니들 생각 다 들린다`, after=`니들 생각 다 들린다`
+- `11700500`: `same_title_url_changed`, regression_candidate=`false`, before=`전지적 1인칭 시점`, after=`전지적 1인칭 시점`
+- `11702044`: `same_title_url_changed`, regression_candidate=`false`, before=`괴담 호텔 탈출기`, after=`괴담 호텔 탈출기`
+- `11702050`: `same_title_url_changed`, regression_candidate=`false`, before=`폴라리스 랩소디`, after=`폴라리스 랩소디`
+- `11702081`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`게임 속 재해병 이야기`
+- `11702085`: `same_title_url_changed`, regression_candidate=`false`, before=`괴담 호텔 탈출기`, after=`괴담 호텔 탈출기`
+- `11702086`: `same_title_url_changed`, regression_candidate=`false`, before=`6★ 가챠 캐릭터가 되었다`, after=`6★ 가챠 캐릭터가 되었다`
+- `11702094`: `resolved_to_null`, regression_candidate=`true`, before=`#더블오`, after=`None`
+- `11703657`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`야만인은 문명하면 안되냐`
+- `11703658`: `resolved_to_different_title`, regression_candidate=`true`, before=`아프리카 의 독재자가 되었다 .`, after=`아프리카 식량왕이 되었다`
+- `11703674`: `resolved_to_null`, regression_candidate=`true`, before=`게임 속 도굴꾼이 되었다`, after=`None`
+- `11705230`: `resolved_to_different_title`, regression_candidate=`true`, before=`월야환담`, after=`월야환담 시리즈`
+- `11705231`: `resolved_to_different_title`, regression_candidate=`false`, before=`한국 레전드 프로게이머인 내가 일본판타지 사정에 휘말린 것에 대하여`, after=`탐식의 재림`
+- `11705241`: `same_title_url_changed`, regression_candidate=`false`, before=`하남자의 탑 공략법`, after=`하남자의 탑 공략법`
+- `11705245`: `resolved_to_null`, regression_candidate=`false`, before=`하남자의 탑 공략법`, after=`None`
+- `11705251`: `same_title_url_changed`, regression_candidate=`false`, before=`월야환담 창월야`, after=`월야환담 창월야`
+- `11705252`: `same_title_url_changed`, regression_candidate=`false`, before=`탐식의 재림`, after=`탐식의 재림`
+- `11705257`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`히어로 IN 히로인`
+- `11705269`: `same_title_url_changed`, regression_candidate=`false`, before=`월야환담`, after=`월야환담`
+- `11706827`: `same_title_url_changed`, regression_candidate=`false`, before=`헌터갤러리의 국가권력급 기계공주`, after=`헌터갤러리의 국가권력급 기계공주`
+- `11706831`: `same_title_url_changed`, regression_candidate=`false`, before=`소설 속 빌런은 아카데미 차석으로 살아간다`, after=`소설 속 빌런은 아카데미 차석으로 살아간다`
+- `11706842`: `resolved_to_different_title`, regression_candidate=`true`, before=`삼국지 마대 가 되었다`, after=`대마법사였던것은 다시 대마법사를 꿈꾼다`
+- `11706844`: `resolved_to_null`, regression_candidate=`true`, before=`범 먹는 괴이 사냥꾼`, after=`None`
+- `11706852`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`판초우의의 마법사`
+- `11706867`: `resolved_to_null`, regression_candidate=`true`, before=`따옴표`, after=`None`
+- `11706871`: `resolved_to_null`, regression_candidate=`true`, before=`파우스트`, after=`None`
+- `11708432`: `resolved_to_null`, regression_candidate=`true`, before=`전지적 독자 시점`, after=`None`
+- `11708443`: `resolved_to_null`, regression_candidate=`true`, before=`괴담에 떨어져도 출근을 해야 하는구나`, after=`None`
+- `11708447`: `resolved_to_null`, regression_candidate=`true`, before=`잠룡회귀`, after=`None`
+- `11708453`: `resolved_to_null`, regression_candidate=`true`, before=`감옥학원에서 나만 힐링할거다`, after=`None`
+- `11708466`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`매국노`
+- `11708470`: `same_title_url_changed`, regression_candidate=`false`, before=`절대 꺾이지 않을거야!`, after=`절대 꺾이지 않을거야!`
+- `11710020`: `resolved_to_null`, regression_candidate=`true`, before=`주무시기 전에 무엇을 하셨나요?`, after=`None`
+- `11710021`: `resolved_to_null`, regression_candidate=`true`, before=`무한의 마법사`, after=`None`
+- `11710036`: `resolved_to_different_title`, regression_candidate=`true`, before=`쳇바퀴의 생쥐 사도가 되었다`, after=`[림월드]변방계에서 회귀자로 살아남기`
+- `11710037`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`괴담 호텔 탈출기`
+- `11710043`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`악역 영애의 회계장부`
+- `11710045`: `null_to_resolved`, regression_candidate=`true`, before=`None`, after=`공주는 언니를 황제로 만든다`
+- `11710047`: `resolved_to_null`, regression_candidate=`true`, before=`로판 속 미움받는 악역이 되었다`, after=`None`
+- `11710049`: `resolved_to_null`, regression_candidate=`true`, before=`[림월드]변방계에서 회귀자로 살아남기`, after=`None`
+- `11710052`: `resolved_to_null`, regression_candidate=`true`, before=`아카데미 패드립 면역`, after=`None`
+- `11711632`: `resolved_to_null`, regression_candidate=`true`, before=`유어 네임(YOUR NAME)`, after=`None`
+- `11713212`: `resolved_to_null`, regression_candidate=`false`, before=`SSS급 지력무한 영지를 손에 넣었다`, after=`None`
+- `11713220`: `same_title_url_changed`, regression_candidate=`false`, before=`나만 성좌들이 안 무서움`, after=`나만 성좌들이 안 무서움`
+- `11713222`: `resolved_to_different_title`, regression_candidate=`false`, before=`하렘으로 장르를 착각함`, after=`잘생기면 편해지는 인방 생활`
+- `11714885`: `resolved_to_null`, regression_candidate=`true`, before=`새아빠가 여동생을 탐하길래, 나는 새엄마를 길들였다`, after=`None`
+- `11714887`: `resolved_to_null`, regression_candidate=`true`, before=`도굴왕 1 |`, after=`None`
+- `11714892`: `resolved_to_null`, regression_candidate=`true`, before=`헌터갤러리의 국가권력급 기계공주`, after=`None`
+- `11714903`: `resolved_to_different_title`, regression_candidate=`true`, before=`온 세상이 정신이상자다`, after=`괴담 호텔 탈출기`
+- `11716464`: `resolved_to_different_title`, regression_candidate=`true`, before=`슈라라펜란트`, after=`슈라라펜л란트`
+- `11716480`: `resolved_to_null`, regression_candidate=`true`, before=`여대생 가랑이 사이 무릎 꿇은 엄마들`, after=`None`
+- `11716498`: `same_title_url_changed`, regression_candidate=`false`, before=`마녀의 도시`, after=`마녀의 도시`
+- `11716505`: `resolved_to_null`, regression_candidate=`true`, before=`헌터대회) A급 헌터가 살아가는 법`, after=`None`
+- `11718057`: `resolved_to_null`, regression_candidate=`true`, before=`컵라면`, after=`None`
+- `11718077`: `same_title_url_changed`, regression_candidate=`false`, before=`즉사기 들고 무림에 떨어지다`, after=`즉사기 들고 무림에 떨어지다`
+- `11718097`: `resolved_to_different_title`, regression_candidate=`true`, before=`라디오에서 우리의 노래가 나오면`, after=`망겜의 힐러`
+- `11718099`: `resolved_to_null`, regression_candidate=`true`, before=`빌어먹을 환생`, after=`None`
+- `11718101`: `same_title_url_changed`, regression_candidate=`false`, before=`망겜의 성기사`, after=`망겜의 성기사`
+- `11718110`: `resolved_to_null`, regression_candidate=`true`, before=`지구온라인에서 쌀먹합니다`, after=`None`
+- `11718114`: `resolved_to_null`, regression_candidate=`true`, before=`설정값 딸깍으로 판타지 시스템 정상화`, after=`None`
+- `11718120`: `same_title_url_changed`, regression_candidate=`false`, before=`괴담 호텔 탈출기`, after=`괴담 호텔 탈출기`

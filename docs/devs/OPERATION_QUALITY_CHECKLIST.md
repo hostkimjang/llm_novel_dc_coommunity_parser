@@ -1,11 +1,33 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop496 full375 current HEAD 감사 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_496_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop496_full375_current_head_state_20260706.json`.
+  - [x] Run `20260706_151001_584579`는 completed/flushed/pending/failed `375/375/0/0`으로 완료됐다.
+  - [x] Run health는 `GO / clean_completed_source`, result/checkpoint rows `375/375`, pending snapshot rows `0`이다.
+  - [x] Publication contract는 `GO / 0 violations`다.
+  - [x] Golden18은 `18/18 PASS`다.
+  - [x] Full375 collateral compare는 shared `375`, changed `203`, regression `137`이다.
+  - [x] Always-on gate는 `NO-GO / collateral_regression_count_nonzero`다.
+  - [x] Collateral triage는 `safe_loss_resolved_to_null 84`, `unsafe_promotion_from_hold 28`, `wrong_work_title_flip 25`다.
+- 품질 경계:
+  - [x] Runtime full375 `GO`는 semantic/full_scan approval이 아니다.
+  - [x] Golden18 `18/18 PASS`는 full375 collateral approval이 아니다.
+  - [x] Search preflight `16/16`이어도 row-level `search_degraded_observed`가 있으면 search evidence는 `REVIEW`다.
+  - [x] Dashboard는 진행 관측 도구이며 approval evidence가 아니다.
+  - [ ] Full375 regression `137`건을 회귀패널 확대 입력으로 다룬다.
+  - [ ] Full375 collateral `GO` 전 full_scan path를 정의하지 않는다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: runtime full375 `GO`, publication contract `GO`, golden18 `GO`, full375 collateral `NO-GO / regression 137`, always-on `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop496 테스트런 병렬도/대시보드 운영 규칙
 
 - 근거:
   - [x] 사용자 운영 지시: 이후 이 계열 테스트런은 병렬 `16`개로 실행한다.
   - [x] 사용자 운영 지시: 진행상황을 보기 쉽게 이후 테스트런에도 웹 대시보드를 붙인다.
-  - [x] Loop496 full375 current HEAD runtime은 `--parallel 16`, search 포함 non-light, VLM/OCR on, `--slang-db off`로 실행 중이다.
+  - [x] Loop496 full375 current HEAD runtime은 `--parallel 16`, search 포함 non-light, VLM/OCR on, `--slang-db off`로 완주했다.
   - [x] Loop496 current run은 `--no-dashboard`로 시작되어 직접 이벤트 포워딩은 없지만, standalone dashboard + manifest attach로 `http://127.0.0.1:8080`에 사후 부착했다.
 - 운영 규칙:
   - [x] regression-safe grounding 계열 테스트런/검증런은 명시적 반대 지시가 없으면 `--parallel 16`을 기본 요청 병렬도로 사용한다.
@@ -15,7 +37,7 @@
   - [x] 이미 `--no-dashboard`로 시작한 런은 `tools/attach_manifest_dashboard.py --manifest <manifest>`로 manifest 기반 진행률을 사후 부착한다.
   - [x] 병렬도 `16` 설정은 runtime health 조건이지 semantic/full_scan approval이 아니다.
   - [x] 웹 대시보드는 진행상황 관측 도구이지 semantic/full_scan approval이 아니다.
-- Gate: runtime parallel policy `LOCKED_TO_16_BY_USER`, dashboard policy `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`, current Loop496 runtime `IN_PROGRESS`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: runtime parallel policy `LOCKED_TO_16_BY_USER`, dashboard policy `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`, Loop496 runtime `GO / 375 of 375`, full375 collateral `NO-GO / regression 137`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-06 Loop495 title-led 플랫폼 표면 경쟁 후보 계약 품질 게이트
 

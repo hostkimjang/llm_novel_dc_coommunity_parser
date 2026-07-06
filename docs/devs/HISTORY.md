@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-06 - Loop496 full375 current HEAD collateral audit
+
+- Current HEAD `4fd250f7`에서 Loop496 full375 run `20260706_151001_584579`를 완료했다.
+- 실행 조건은 search 포함 non-light, VLM/OCR on, `--slang-db off`, `--parallel 16`, `--reuse-shards-only`다.
+- Runtime은 completed/flushed/pending/failed `375/375/0/0`이며 run health는 `GO / clean_completed_source`다.
+- Publication contract audit는 `GO / 0 violations`다.
+- Golden18 audit는 `18/18 PASS`로 `GO`다.
+- Full375 collateral compare는 shared `375`, changed `203`, regression `137`로 `NO-GO`다.
+- Collateral triage는 `safe_loss_resolved_to_null 84`, `unsafe_promotion_from_hold 28`, `wrong_work_title_flip 25`를 P0 regression으로 분리했다.
+- Search preflight는 `16/16` non-light였지만 row-level degraded가 있어 search evidence는 `REVIEW`다.
+- Dashboard는 `http://127.0.0.1:8080`에 manifest attach로 붙였고, 관측 도구일 뿐 approval evidence가 아니다.
+- Report는 `docs/devs/loop_reports/LOOP_496_REPORT_20260706.md`, state는 `docs/devs/loop496_full375_current_head_state_20260706.json`이다.
+- Gate는 runtime full375 `GO`, golden18 `GO`, full375 collateral `NO-GO / regression 137`, always-on `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop495 title-led platform surface competitor contract repair
 
 - Loop493 `publish_contract_trace_repair_before_replay` 잔여 4건 중 `11677915`, `11682780`의 공통 차단 원인을 플랫폼/리스팅 표면 competing candidate 오분류로 분리했다.

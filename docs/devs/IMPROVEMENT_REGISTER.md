@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260706-496 - full375 collateral regression panel expansion
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime full375 | GO | Loop496 run `20260706_151001_584579` completed/flushed/pending/failed `375/375/0/0`, run health `GO / clean_completed_source` | runtime 결과를 approval로 확대하지 않음 |
+| Publication contract | GO | `loop496_full375_current_head_publication_contract_audit` rows `375`, violations `0` | trace contract는 유지 |
+| Golden18 | GO | `loop496_full375_current_head_golden_audit` `18/18 PASS` | golden 소표본만으로 completion 주장 금지 |
+| Full375 collateral | NO-GO | shared `375`, changed `203`, regression `137`, always-on gate `NO-GO` | 회귀패널 확대 |
+| Regression buckets | P0 | `safe_loss_resolved_to_null 84 / unsafe_promotion_from_hold 28 / wrong_work_title_flip 25` | bucket별 N건 배치 triage |
+| Search evidence | REVIEW | preflight `16/16`이지만 row-level `search_degraded_observed`, unrecovered degraded total `271` | search-blind 조건부 유지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO + full_scan path 전 완료 주장 금지 |
+
+Gate: runtime full375 `GO`, publication contract `GO`, golden18 `GO`, full375 collateral `NO-GO / regression 137`, always-on `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-495 - title-led platform surface competitor filter
 
 | 항목 | 상태 | 근거 | 다음 |

@@ -1,0 +1,119 @@
+{
+  "loop": 496,
+  "date": "2026-07-06",
+  "title": "Loop496 current HEAD full375 collateral audit",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "head_at_run_start": "4fd250f7",
+  "run": {
+    "run_id": "20260706_151001_584579",
+    "input_rows": 375,
+    "completed_rows": 375,
+    "flushed_rows": 375,
+    "pending_rows": 0,
+    "failed_rows": 0,
+    "large_run_complete": true,
+    "requested_parallel": 16,
+    "effective_parallel": 16,
+    "server_type": "vllm",
+    "llm_endpoint": "http://10.20.0.101:8000",
+    "llm_model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+    "reuse_shards_only": true,
+    "slang_db": "off",
+    "vlm_enabled": true,
+    "ocr_enabled": true,
+    "image_post_count": 241,
+    "started_at_kst": "2026-07-06 15:10:01",
+    "completed_at_kst": "2026-07-06 21:59:21"
+  },
+  "search_preflight": {
+    "include_search": true,
+    "light_mode": false,
+    "required_ok": 16,
+    "ok_count": 16,
+    "failure_count": 0,
+    "probe_batch_size": 16,
+    "note": "Shard 1 host UI publish was restored before dispatch; compose up with count 16 removed orphan shards 17-44, so future >16 shard runs need re-up."
+  },
+  "dashboard": {
+    "url": "http://127.0.0.1:8080",
+    "started_with_no_dashboard": true,
+    "attached_after_start": true,
+    "attach_tool": "tools/attach_manifest_dashboard.py",
+    "note": "This dashboard was an observability bridge only, not semantic approval evidence."
+  },
+  "runtime_audit": {
+    "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop496_full375_current_head_run_health.json",
+    "flush_integrity_gate": "GO",
+    "classification": "clean_completed_source",
+    "result_rows": 375,
+    "checkpoint_rows": 375,
+    "pending_snapshot_rows": 0,
+    "search_evidence_gate": "REVIEW",
+    "search_evidence_blockers": [
+      "search_degraded_observed"
+    ],
+    "row_search_status_counts": {
+      "SEARCH_DEGRADED": 142,
+      "SEARCH_DEGRADED_RECOVERED": 119,
+      "ok": 53
+    },
+    "unrecovered_degraded_total": 271
+  },
+  "publication_contract_audit": {
+    "json_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop496_full375_current_head_publication_contract_audit.json",
+    "md_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop496_full375_current_head_publication_contract_audit.md",
+    "gate": "GO",
+    "row_count": 375,
+    "violation_row_count": 0
+  },
+  "golden_audit": {
+    "json_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop496_full375_current_head_golden_audit.json",
+    "md_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop496_full375_current_head_golden_audit.md",
+    "gate": "GO",
+    "canary_semantic_gate": "PASS",
+    "passed_count": 18,
+    "failed_count": 0
+  },
+  "collateral_audit": {
+    "compare_json_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop496_full375_current_head_collateral_compare.json",
+    "compare_md_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop496_full375_current_head_collateral_compare.md",
+    "triage_json_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop496_full375_current_head_collateral_triage.json",
+    "triage_md_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop496_full375_current_head_collateral_triage.md",
+    "gate": "NO-GO",
+    "shared_post_count": 375,
+    "changed_post_count": 203,
+    "collateral_regression_count": 137,
+    "regression_buckets": {
+      "unsafe_promotion_from_hold": 28,
+      "safe_loss_resolved_to_null": 84,
+      "wrong_work_title_flip": 25
+    },
+    "non_regression_change_rows": 66
+  },
+  "always_on_gate": {
+    "json_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop496_always_on_golden18_full375_gate.json",
+    "md_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop496_always_on_golden18_full375_gate.md",
+    "gate": "NO-GO",
+    "golden_gate": "GO",
+    "collateral_gate": "NO-GO",
+    "blockers": [
+      "collateral:collateral_regression_count_nonzero"
+    ]
+  },
+  "interpretation": {
+    "full375_quiet": false,
+    "golden18_overfit_risk": true,
+    "bounded_full375_freeze_release": false,
+    "full_scan_path_defined": false,
+    "completion_criterion": "full375 collateral GO + full_scan path definition",
+    "current_result": "Runtime GO and golden18 GO, but full375 collateral NO-GO. Goal remains active and not complete."
+  },
+  "next_actions": [
+    "Expand the regression panel from full375 collateral regression rows instead of shrinking work to golden18.",
+    "Batch triage the 137 P0 regressions by bucket: safe_loss_resolved_to_null 84, unsafe_promotion_from_hold 28, wrong_work_title_flip 25.",
+    "Keep search recovery as REVIEW/P0 because row search degraded was observed despite preflight 16/16.",
+    "Do not define or open the full_scan completion path until full375 collateral is GO."
+  ]
+}

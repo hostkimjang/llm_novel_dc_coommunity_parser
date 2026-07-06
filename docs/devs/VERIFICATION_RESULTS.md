@@ -1,5 +1,42 @@
 # Verification Results
 
+## 2026-07-06 Loop496 Verification
+
+- 범위: Current HEAD `4fd250f7`에서 golden18 과적합 여부를 보려고 full375 전수 collateral replay와 always-on gate를 실행했다.
+- Runtime command 조건:
+  - input `out\regression_safe_grounding_20260626_000008_928006_loop01\panel\regression_panel_input.jsonl`
+  - output `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop496_full375_current_head_4fd250f7_search_nonlight_result.json`
+  - search 포함 non-light, VLM/OCR on, `--slang-db off`, `--parallel 16`, `--reuse-shards-only`
+- Runtime result:
+  - run `20260706_151001_584579`
+  - completed/flushed/pending/failed `375/375/0/0`
+  - result/checkpoint rows `375/375`
+  - VLM/OCR `READY`, image posts `241`
+  - MCP health include_search `true`, light_mode `false`, ok/failure `16/0`
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_496_REPORT_20260706.md`
+  - state `docs\devs\loop496_full375_current_head_state_20260706.json`
+  - run health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop496_full375_current_head_run_health.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop496_full375_current_head_publication_contract_audit.md`
+  - golden audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop496_full375_current_head_golden_audit.md`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop496_full375_current_head_collateral_compare.md`
+  - always-on gate `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop496_always_on_golden18_full375_gate.md`
+  - collateral triage `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop496_full375_current_head_collateral_triage.md`
+- Audit result:
+  - run health `GO / clean_completed_source`
+  - publication contract `GO / 0 violations`
+  - golden18 `GO / 18 of 18`
+  - search evidence `REVIEW / search_degraded_observed`
+  - full375 collateral `NO-GO / shared 375 / changed 203 / regression 137`
+  - always-on gate `NO-GO / collateral_regression_count_nonzero`
+- Triage:
+  - regression `137`
+  - `safe_loss_resolved_to_null 84`
+  - `unsafe_promotion_from_hold 28`
+  - `wrong_work_title_flip 25`
+  - non-regression change `66`
+- Gate: runtime full375 `GO`, golden18 `GO`, full375 collateral `NO-GO`, always-on `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop495 Verification
 
 - 범위: Loop493 `publish_contract_trace_repair_before_replay` 잔여 4건 중 `11677915`, `11682780`의 플랫폼/리스팅 표면 competing candidate 오분류를 코드 계약으로 수리했다. 신규 runtime/full375/full_scan 런은 발주하지 않았다.

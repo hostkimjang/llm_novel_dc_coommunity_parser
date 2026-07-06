@@ -246,6 +246,8 @@ python expert_main.py tests/inputs/sample.jsonl --parallel 4
 - `MCP_CLIENT_ENDPOINT_FAILOVER=1` -> 런 중 워커 기본 MCP shard가 실패하면 `MCP_ENDPOINTS` pool의 다른 endpoint로 우회
 - `MCP_CLIENT_ENDPOINT_BACKOFF_SEC=90` -> 실패 endpoint를 클라이언트 쪽에서 잠시 제외하는 시간
 
+2026-07-06 Loop496 운영 메모: shard 1의 SearchXNG host UI publish가 끊겨 `warp_shards.py render --count 16` 뒤 `up --count 16 --shards 1`로 복구했다. 이때 compose가 현재 count 밖 shard `17-44`를 orphan으로 보고 제거했다. 이번 full375는 shard `1-16`만 사용해 문제가 없었지만, 16개를 넘는 후속 런은 먼저 필요한 shard를 다시 `up`해야 한다. 더 큰 풀을 보존해야 하는 복구 작업에서는 `WARP_SHARDS_REMOVE_ORPHANS=0` 또는 전체 count 렌더를 함께 사용한다.
+
 shard 복구 모드에서 자동 기동을 명시적으로 끄려면:
 
 ```bash

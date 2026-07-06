@@ -1,15 +1,33 @@
 # Development Checklist
 
+## 2026-07-06 Loop496 full375 current HEAD 감사 체크
+
+- [x] Current HEAD `4fd250f7` full375를 search 포함 non-light, VLM/OCR on, `--slang-db off`, `--parallel 16`으로 완주했다.
+- [x] Run `20260706_151001_584579` 결과는 completed/flushed/pending/failed `375/375/0/0`이다.
+- [x] Run health는 `GO / clean_completed_source`이고 result/checkpoint rows는 `375/375`다.
+- [x] Publication contract convergence는 `GO / 0 violations`다.
+- [x] Golden18 expected audit는 `18/18 PASS`다.
+- [x] Full375 collateral compare와 always-on gate를 실행했다.
+- [x] Full375 collateral은 shared `375`, changed `203`, regression `137`로 `NO-GO`다.
+- [x] Collateral triage는 P0 regression `137`, bucket `safe_loss_resolved_to_null 84 / unsafe_promotion_from_hold 28 / wrong_work_title_flip 25`다.
+- [x] Search preflight는 `16/16` non-light로 통과했지만 row-level search degraded가 있어 search evidence는 `REVIEW`다.
+- [x] `--no-dashboard`로 시작한 run은 standalone dashboard와 `tools/attach_manifest_dashboard.py`로 `http://127.0.0.1:8080`에 사후 부착했다.
+- [ ] Golden18 `GO`를 full375 approval로 확대하지 않는다.
+- [ ] Full375 regression `137`건을 bucket별 N건 배치로 다음 패널에 편입한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: runtime full375 `GO`, publication contract `GO`, golden18 `GO`, full375 collateral `NO-GO / regression 137`, always-on `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop496 테스트런 병렬도/대시보드 운영 체크
 
 - [x] 이후 regression-safe grounding 계열 테스트런/검증런은 명시적 반대 지시가 없으면 `--parallel 16`으로 실행한다.
 - [x] 입력 수가 16보다 작을 때는 manifest의 `effective_parallel=min(input_count,16)`을 함께 확인한다.
-- [x] Loop496 full375 current HEAD runtime은 이미 `--parallel 16`, search 포함 non-light, VLM/OCR on, `--slang-db off` 조건으로 실행 중이다.
+- [x] Loop496 full375 current HEAD runtime은 `--parallel 16`, search 포함 non-light, VLM/OCR on, `--slang-db off` 조건으로 완주했다.
 - [x] 이후 테스트런/검증런은 진행상황 확인을 위해 웹 대시보드를 붙인다.
 - [x] 새 런은 `--no-dashboard`를 사용하지 않는 것을 기본으로 하고, standalone dashboard가 필요한 경우 `tools/dashboard_server.py`를 먼저 띄운다.
 - [x] 이미 `--no-dashboard`로 시작한 Loop496 current run은 `tools/attach_manifest_dashboard.py`로 manifest 기반 진행률을 `http://127.0.0.1:8080`에 사후 부착했다.
 - [x] 병렬도 고정은 runtime 운영 규칙이며 semantic/full_scan approval이 아니다.
-- Gate: runtime parallel policy `LOCKED_TO_16_BY_USER`, dashboard policy `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`, current Loop496 runtime `IN_PROGRESS`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: runtime parallel policy `LOCKED_TO_16_BY_USER`, dashboard policy `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`, Loop496 runtime `GO / 375 of 375`, full375 collateral `NO-GO / regression 137`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-06 Loop495 title-led 플랫폼 표면 경쟁 후보 계약 체크
 
