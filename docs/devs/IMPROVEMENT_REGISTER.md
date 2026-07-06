@@ -1,5 +1,17 @@
 # Improvement Register
 
+## IMP-20260706-505 - scope reason contract hardening
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Scope reason audit | GO_UNIT | `audit_publication_contract_convergence.py`가 scope/trace/reason mismatch를 NO-GO로 잡음 | full375/static gate에 계속 적용 |
+| Platform meta demotion sanitizer | GO_UNIT | `expert_main.py`가 blocked demotion 후 publish-only reason을 제거 | 다음 runtime replay에서 fixed-output 확인 |
+| Full375 static audit | NO-GO | Loop496 full375 result 기준 `375` rows, violation `1`, post_id `11658668` | stale artifact gap으로 보존 |
+| Runtime replay | NOT_RUN | 이번 회차는 contract patch + static audit | replay는 repair lane 정리 뒤 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: scope reason contract `NO-GO_SCOPE_TRACE_CONTRACT_STATIC`, production sanitizer patch `GO_UNIT`, runtime replay `NOT_RUN_AFTER_CONTRACT_PATCH`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-504 - serialized public identity candidate preservation contract
 
 | 항목 | 상태 | 근거 | 다음 |

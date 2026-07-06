@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-06 Loop505 scope reason 계약 체크
+
+- [x] `tools/audit_publication_contract_convergence.py`에 scope reason 정합성 감사를 추가했다.
+- [x] `PromotionDecision.scope`와 `publish_contract_trace.scope_state` mismatch를 NO-GO로 잡는다.
+- [x] `scope_kind`와 `scope_*` reason code 불일치를 NO-GO로 잡는다.
+- [x] blocked decision에 `serialized_public_identity_published`가 남으면 NO-GO로 잡는다.
+- [x] `expert_main.py`의 platform meta image title hard-hold demotion에서 blocked reason code를 정리했다.
+- [x] Current Loop496 full375 static audit는 `NO-GO / 375 rows / 1 violation / post_id 11658668`로 stale contract gap을 드러냈다.
+- [x] publication contract unittest `12`건 PASS.
+- [x] platform meta hard-hold unittest `1`건 PASS.
+- [ ] Runtime replay는 실행하지 않았다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: scope reason contract `NO-GO_SCOPE_TRACE_CONTRACT_STATIC`, production sanitizer patch `GO_UNIT`, runtime replay `NOT_RUN_AFTER_CONTRACT_PATCH`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop504 serialized public identity 후보 보존 계약 체크
 
 - [x] `tools/audit_publication_contract_convergence.py`에 `serialized_public_identity_scrubbed` 후보 보존 계약을 추가했다.

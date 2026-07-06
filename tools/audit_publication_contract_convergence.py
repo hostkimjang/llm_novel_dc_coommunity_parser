@@ -16,6 +16,9 @@ NO_CANDIDATE_REASON_CODES = {
     "missing_candidate_title",
     "no_public_candidate",
 }
+PUBLISH_ONLY_REASON_CODES = {
+    "serialized_public_identity_published",
+}
 
 
 def load_json(path: Path) -> Any:
@@ -124,6 +127,10 @@ def _has_candidate_payload(value: Any) -> bool:
     return bool(candidate["official_title"] or candidate["official_url"])
 
 
+def _scope_kind(value: Any) -> str:
+    return str(_dict_or_empty(value).get("scope_kind") or "").strip()
+
+
 def _append_violation(violations: list[dict[str, Any]], code: str, detail: str) -> None:
     violations.append({"code": code, "detail": detail})
 
@@ -220,6 +227,14 @@ def audit_row(row: dict[str, Any], *, index: int) -> dict[str, Any]:
 
     publish_allowed = decision.get("publish_allowed") is True
     status = str(decision.get("status") or "").strip()
+    reason_codes = {
+        str(code or "").strip()
+        for code in (decision.get("reason_codes") or [])
+        if str(code or "").strip()
+    }
+    decision_scope = _dict_or_empty(decision.get("scope"))
+    trace_scope = _dict_or_empty(trace.get("scope_state")) if isinstance(trace, dict) else {}
+    scope_kind = _scope_kind(decision_scope)
     if publish_allowed and status != "publish":
         _append_violation(violations, "publish_allowed_status_mismatch", "publish_allowed=true but status is not publish")
     if not publish_allowed and status == "publish":
@@ -229,6 +244,64 @@ def audit_row(row: dict[str, Any], *, index: int) -> dict[str, Any]:
             violations,
             "publish_allowed_candidate_preserved_true",
             "publish_allowed=true but candidate_preserved=true",
+        )
+    if decision_scope and isinstance(trace, dict) and not _same_dict(trace_scope, decision_scope):
+        _append_violation(
+            violations,
+            "publish_contract_trace_scope_state_mismatch",
+            "publish_contract_trace.scope_state differs from PromotionDecision.scope",
+        )
+    if scope_kind:
+        expected_scope_code = f"scope_{scope_kind}"
+        if expected_scope_code not in reason_codes:
+            _append_violation(
+                violations,
+                "promotion_decision_scope_reason_missing",
+                f"PromotionDecision.scope.scope_kind={scope_kind} lacks reason code {expected_scope_code}",
+            )
+        if scope_kind == "current_work":
+            if "scope_not_current_work" in reason_codes:
+                _append_violation(
+                    violations,
+                    "scope_current_work_conflicts_with_not_current_reason",
+                    "scope_kind=current_work conflicts with scope_not_current_work reason",
+                )
+        else:
+            if "scope_current_work" in reason_codes:
+                _append_violation(
+                    violations,
+                    "scope_non_current_conflicts_with_current_reason",
+                    "non-current scope_kind conflicts with scope_current_work reason",
+                )
+            if not publish_allowed and "scope_not_current_work" not in reason_codes:
+                _append_violation(
+                    violations,
+                    "blocked_non_current_scope_missing_not_current_reason",
+                    "blocked non-current scope lacks scope_not_current_work reason",
+                )
+            if publish_allowed:
+                _append_violation(
+                    violations,
+                    "publish_allowed_non_current_scope",
+                    "publish_allowed=true with non-current PromotionDecision.scope",
+                )
+    if not publish_allowed and reason_codes & PUBLISH_ONLY_REASON_CODES:
+        _append_violation(
+            violations,
+            "blocked_decision_has_publish_only_reason",
+            "blocked decision still carries publish-only reason code",
+        )
+    if publish_allowed and "serialized_public_identity_scrubbed" in reason_codes:
+        _append_violation(
+            violations,
+            "publish_allowed_has_scrubbed_reason",
+            "publish_allowed=true still carries serialized_public_identity_scrubbed reason",
+        )
+    if "serialized_public_identity_published" in reason_codes and "serialized_public_identity_scrubbed" in reason_codes:
+        _append_violation(
+            violations,
+            "published_and_scrubbed_reason_conflict",
+            "decision carries both serialized_public_identity_published and serialized_public_identity_scrubbed",
         )
 
     post_gate = _dict_or_empty(trace.get("post_gate_identity")) if isinstance(trace, dict) else {}
@@ -263,11 +336,6 @@ def audit_row(row: dict[str, Any], *, index: int) -> dict[str, Any]:
                 "serialized official_title does not match allowed decision",
             )
     else:
-        reason_codes = {
-            str(code or "").strip()
-            for code in (decision.get("reason_codes") or [])
-            if str(code or "").strip()
-        }
         no_candidate_hold = bool(reason_codes & NO_CANDIDATE_REASON_CODES)
         candidate_preservation_expected = (
             decision.get("candidate_preserved") is True
@@ -371,6 +439,8 @@ def audit_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "blocked_decision_must_not_publish_serialized_public_identity": True,
             "allowed_decision_must_match_serialized_public_identity": True,
             "scrubbed_candidate_must_be_preserved_or_marked_no_candidate": True,
+            "promotion_decision_scope_must_match_trace_and_reason_codes": True,
+            "blocked_decision_must_not_carry_publish_only_reason_codes": True,
         },
         "summary": {
             "row_count": len(row_reports),
@@ -390,6 +460,7 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         f"- full_scan_approval: `{str(report['full_scan_approval']).lower()}`",
         "- 정책: `PromotionDecision`, `publish_contract_trace`, `publish_ledger`, serialized public identity는 같은 publish/block 결론으로 수렴해야 한다.",
         "- 정책: `serialized_public_identity_scrubbed`는 후보가 있으면 candidate ledger/trace에 보존하고, 후보가 없으면 `hold_without_candidates` 같은 no-candidate reason을 남겨야 한다.",
+        "- 정책: `PromotionDecision.scope`는 `publish_contract_trace.scope_state`와 일치해야 하며, scope reason code와 publish/block reason code가 충돌하면 안 된다.",
         "",
         "## 요약",
         "",

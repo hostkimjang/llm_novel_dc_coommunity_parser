@@ -387,7 +387,22 @@ def _demote_platform_meta_image_title_publication_contract(
         decision = ledger.get("promotion_decision")
     if isinstance(decision, dict) and isinstance(decision.get("reason_codes"), list):
         reason_codes.extend(str(code) for code in decision.get("reason_codes") if str(code).strip())
-    reason_codes = list(dict.fromkeys([*reason_codes, reason_code, "scope_context_only", "serialized_public_identity_scrubbed"]))
+    reason_codes = [
+        code
+        for code in reason_codes
+        if code not in {"scope_current_work", "serialized_public_identity_published"}
+    ]
+    reason_codes = list(
+        dict.fromkeys(
+            [
+                *reason_codes,
+                reason_code,
+                "scope_context_only",
+                "scope_not_current_work",
+                "serialized_public_identity_scrubbed",
+            ]
+        )
+    )
 
     demoted_decision = dict(decision) if isinstance(decision, dict) else {}
     demoted_decision.update(

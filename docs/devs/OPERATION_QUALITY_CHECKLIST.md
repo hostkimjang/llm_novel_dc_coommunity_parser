@@ -1,5 +1,24 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop505 scope reason 계약 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_505_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop505_scope_reason_contract_state_20260706.json`.
+  - [x] 강화 full375 static audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop505_full375_publication_contract_scope_monotonicity_audit.json/.md`.
+  - [x] Tool 보강 완료: `tools/audit_publication_contract_convergence.py`.
+  - [x] Production sanitizer 보강 완료: `expert_main.py`.
+  - [x] Test 보강 완료: `tests/test_publication_contract_convergence_audit.py`, `tests/test_expert_main_comment_metadata.py`.
+- 품질 경계:
+  - [x] `PromotionDecision.scope`는 `publish_contract_trace.scope_state`와 일치해야 한다.
+  - [x] blocked decision은 publish-only reason code를 들고 있으면 안 된다.
+  - [x] Current full375 static audit는 `NO-GO / 375 rows / 1 violation / post_id 11658668`이다.
+  - [x] 이 NO-GO는 stale artifact contract gap이며 full375 collateral approval이 아니다.
+  - [ ] Runtime replay는 실행하지 않는다.
+  - [ ] Full375 collateral `GO` 전 full_scan path를 정의하지 않는다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: scope reason contract `NO-GO_SCOPE_TRACE_CONTRACT_STATIC`, production sanitizer patch `GO_UNIT`, runtime replay `NOT_RUN_AFTER_CONTRACT_PATCH`, full375 collateral `NO-GO / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop504 serialized public identity 후보 보존 품질 게이트
 
 - 근거:

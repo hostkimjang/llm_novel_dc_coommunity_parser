@@ -5746,7 +5746,9 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
                     "reason_codes": [
                         "official_title_exists",
                         "row_discusses_work_as_work",
+                        "scope_current_work",
                         "resolved_public_title_scope",
+                        "serialized_public_identity_published",
                     ],
                     "bypassed_gate": False,
                     "scope": {"scope_kind": "current_work"},
@@ -5772,10 +5774,18 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertFalse(decision["publish_allowed"])
         self.assertTrue(decision["candidate_preserved"])
         self.assertIn("platform_meta_image_title_hard_hold", decision["reason_codes"])
+        self.assertIn("scope_context_only", decision["reason_codes"])
+        self.assertIn("scope_not_current_work", decision["reason_codes"])
+        self.assertNotIn("scope_current_work", decision["reason_codes"])
+        self.assertNotIn("serialized_public_identity_published", decision["reason_codes"])
+        self.assertIn("serialized_public_identity_scrubbed", decision["reason_codes"])
         self.assertEqual(decision["scope"]["scope_kind"], "context_only")
         trace = identity["publish_contract_trace"]
         self.assertFalse(trace["gate_decision"]["publish_allowed"])
         self.assertIsNone(trace["post_gate_identity"]["official_title"])
+        self.assertEqual(trace["scope_state"], decision["scope"])
+        self.assertNotIn("scope_current_work", trace["reason_codes"])
+        self.assertNotIn("serialized_public_identity_published", trace["reason_codes"])
         self.assertEqual(identity["candidate_ledger"]["promotion_decision"], decision)
 
     def test_promotion_blocked_trace_uses_candidate_ledger_sources(self):

@@ -1,5 +1,14 @@
 # Development History
 
+## 2026-07-06 - Loop505 scope reason contract hardening
+
+- `tools/audit_publication_contract_convergence.py`에 `PromotionDecision.scope`와 `publish_contract_trace.scope_state`, scope reason code, publish/block reason code 정합성 감사를 추가했다.
+- `expert_main.py`의 `platform_meta_image_title_hard_hold` demotion이 blocked decision으로 바뀔 때 `scope_current_work`와 `serialized_public_identity_published`를 제거하고 `scope_not_current_work`와 `serialized_public_identity_scrubbed`를 남기도록 보강했다.
+- Current Loop496 full375 결과에 새 static audit를 적용했고 `NO-GO / row_count 375 / violation_row_count 1 / post_id 11658668`을 확인했다.
+- 이 NO-GO는 current stale artifact의 contract gap 증거이며 runtime replay나 full375 approval이 아니다.
+- Report는 `docs/devs/loop_reports/LOOP_505_REPORT_20260706.md`, state는 `docs/devs/loop505_scope_reason_contract_state_20260706.json`이다.
+- Gate는 scope reason contract `NO-GO_SCOPE_TRACE_CONTRACT_STATIC`, production sanitizer patch `GO_UNIT`, runtime replay `NOT_RUN_AFTER_CONTRACT_PATCH`, full375 collateral `NO-GO / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop504 serialized public identity candidate preservation contract
 
 - `tools/audit_publication_contract_convergence.py`에 `serialized_public_identity_scrubbed` 후보 보존 계약을 추가했다.

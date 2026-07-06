@@ -53,6 +53,11 @@ def _converged_publish_row():
 
 
 def _converged_scrubbed_candidate_row():
+    scope = {
+        "scope_kind": "context_only",
+        "confidence": "medium",
+        "conflict_reason_codes": ["scope_contract_unit"],
+    }
     decision = {
         "status": "candidate_only",
         "publish_allowed": False,
@@ -65,6 +70,7 @@ def _converged_scrubbed_candidate_row():
             "serialized_public_identity_scrubbed",
         ],
         "bypassed_gate": False,
+        "scope": scope,
     }
     pre_gate = {
         "official_title": "아카데미 생존 갤러리",
@@ -79,6 +85,7 @@ def _converged_scrubbed_candidate_row():
     trace = {
         "pre_gate_candidate": pre_gate,
         "gate_decision": decision,
+        "scope_state": scope,
         "post_gate_identity": post_gate,
         "reason_codes": decision["reason_codes"],
         "bypassed_gate": False,
@@ -373,6 +380,143 @@ class PublicationContractConvergenceAuditTest(unittest.TestCase):
             for violation in row_report["violations"]
         }
         self.assertIn("candidate_preservation_trace_ledger_mismatch", codes)
+
+    def test_scope_state_must_match_promotion_decision_scope(self):
+        row = _converged_scrubbed_candidate_row()
+        identity = row["analysis_result"]["identity"]
+        identity["publish_contract_trace"] = {
+            **identity["publish_contract_trace"],
+            "scope_state": {
+                "scope_kind": "current_work",
+                "confidence": "high",
+            },
+        }
+        identity["candidate_ledger"] = {
+            **identity["candidate_ledger"],
+            "publish_contract_trace": identity["publish_contract_trace"],
+        }
+
+        report = audit_rows([row])
+
+        self.assertEqual(report["gate"], "NO-GO")
+        codes = {
+            violation["code"]
+            for row_report in report["violations"]
+            for violation in row_report["violations"]
+        }
+        self.assertIn("publish_contract_trace_scope_state_mismatch", codes)
+
+    def test_scope_kind_requires_matching_reason_code(self):
+        row = _converged_scrubbed_candidate_row()
+        identity = row["analysis_result"]["identity"]
+        decision = dict(identity["promotion_decision"])
+        decision["reason_codes"] = [
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed",
+        ]
+        identity["promotion_decision"] = decision
+        identity["publish_contract_trace"] = {
+            **identity["publish_contract_trace"],
+            "gate_decision": decision,
+            "reason_codes": decision["reason_codes"],
+        }
+        identity["publish_ledger"] = {
+            **identity["publish_ledger"],
+            "gate_decision": decision,
+        }
+        identity["candidate_ledger"] = {
+            **identity["candidate_ledger"],
+            "promotion_decision": decision,
+            "publish_contract_trace": identity["publish_contract_trace"],
+            "publish_ledger": identity["publish_ledger"],
+        }
+
+        report = audit_rows([row])
+
+        self.assertEqual(report["gate"], "NO-GO")
+        codes = {
+            violation["code"]
+            for row_report in report["violations"]
+            for violation in row_report["violations"]
+        }
+        self.assertIn("promotion_decision_scope_reason_missing", codes)
+
+    def test_non_current_scope_cannot_carry_current_work_reason(self):
+        row = _converged_scrubbed_candidate_row()
+        identity = row["analysis_result"]["identity"]
+        decision = dict(identity["promotion_decision"])
+        decision["reason_codes"] = [
+            "scope_context_only",
+            "scope_current_work",
+            "serialized_public_identity_scrubbed",
+            "serialized_public_identity_published",
+        ]
+        identity["promotion_decision"] = decision
+        identity["publish_contract_trace"] = {
+            **identity["publish_contract_trace"],
+            "gate_decision": decision,
+            "reason_codes": decision["reason_codes"],
+        }
+        identity["publish_ledger"] = {
+            **identity["publish_ledger"],
+            "gate_decision": decision,
+        }
+        identity["candidate_ledger"] = {
+            **identity["candidate_ledger"],
+            "promotion_decision": decision,
+            "publish_contract_trace": identity["publish_contract_trace"],
+            "publish_ledger": identity["publish_ledger"],
+        }
+
+        report = audit_rows([row])
+
+        self.assertEqual(report["gate"], "NO-GO")
+        codes = {
+            violation["code"]
+            for row_report in report["violations"]
+            for violation in row_report["violations"]
+        }
+        self.assertIn("scope_non_current_conflicts_with_current_reason", codes)
+        self.assertIn("blocked_non_current_scope_missing_not_current_reason", codes)
+        self.assertIn("blocked_decision_has_publish_only_reason", codes)
+        self.assertIn("published_and_scrubbed_reason_conflict", codes)
+
+    def test_publish_allowed_requires_current_work_scope(self):
+        row = _converged_publish_row()
+        identity = row["analysis_result"]["identity"]
+        scope = {"scope_kind": "context_only", "confidence": "medium"}
+        decision = {
+            **identity["promotion_decision"],
+            "scope": scope,
+            "reason_codes": ["scope_context_only", "row_discusses_work_as_work"],
+        }
+        identity["promotion_decision"] = decision
+        identity["publish_contract_trace"] = {
+            **identity["publish_contract_trace"],
+            "gate_decision": decision,
+            "scope_state": scope,
+            "reason_codes": decision["reason_codes"],
+        }
+        identity["publish_ledger"] = {
+            **identity["publish_ledger"],
+            "gate_decision": decision,
+        }
+        identity["candidate_ledger"] = {
+            **identity["candidate_ledger"],
+            "promotion_decision": decision,
+            "publish_contract_trace": identity["publish_contract_trace"],
+            "publish_ledger": identity["publish_ledger"],
+        }
+
+        report = audit_rows([row])
+
+        self.assertEqual(report["gate"], "NO-GO")
+        codes = {
+            violation["code"]
+            for row_report in report["violations"]
+            for violation in row_report["violations"]
+        }
+        self.assertIn("publish_allowed_non_current_scope", codes)
 
 
 if __name__ == "__main__":

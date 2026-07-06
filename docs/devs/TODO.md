@@ -1,5 +1,17 @@
 # Developer TODO Index
 
+## 2026-07-06 Loop505 TODO
+
+- 상태 업데이트: scope reason contract audit를 강화했고 current full375 static audit는 `NO-GO / 1 stale artifact row / post_id 11658668`이다. Goal은 완료가 아니다.
+- [x] `PromotionDecision.scope`와 `publish_contract_trace.scope_state` mismatch를 잡는 계약을 추가했다.
+- [x] blocked decision이 publish-only reason code를 들고 있으면 NO-GO로 잡도록 했다.
+- [x] `platform_meta_image_title_hard_hold` demotion에서 `scope_current_work`와 `serialized_public_identity_published`가 남지 않도록 보강했다.
+- [x] Focused tests는 publication contract `12`건, platform meta hard-hold `1`건 PASS다.
+- [ ] Loop505 NO-GO row `11658668`은 새 runtime replay가 아니라 다음 contract/replay batch에서 fixed-output 여부를 확인한다.
+- [ ] Loop502 repair queue의 `scope_or_nonwork_monotonicity`, `title_url_or_variant_trace`, `image_or_alias_anchor` lane을 계속 shared gate 계약으로 처리한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop504 TODO
 
 - 상태 업데이트: `serialized_public_identity_scrubbed` 후보 보존 계약을 강화했고 current full375 static audit는 `GO / 375 rows / 0 violations`다. Goal은 완료가 아니다.

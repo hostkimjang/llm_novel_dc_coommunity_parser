@@ -1,5 +1,30 @@
 # Verification Results
 
+## 2026-07-06 Loop505 Verification
+
+- 범위: blocked `PromotionDecision`이 non-current scope로 demote됐는데도 publish-only reason code를 유지하는 contract gap을 잡고, platform meta image title hard-hold demotion sanitizer를 보강했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_505_REPORT_20260706.md`
+  - state `docs\devs\loop505_scope_reason_contract_state_20260706.json`
+  - full375 static audit JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop505_full375_publication_contract_scope_monotonicity_audit.json`
+  - full375 static audit MD `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop505_full375_publication_contract_scope_monotonicity_audit.md`
+- Result:
+  - full375 static audit `NO-GO`
+  - row_count `375`
+  - violation_row_count `1`
+  - violation post_id `11658668`
+  - 새 runtime replay `NOT_RUN_AFTER_CONTRACT_PATCH`
+- Validation:
+  - `.\.venv312\Scripts\python.exe -m py_compile expert_main.py tools\audit_publication_contract_convergence.py` PASS
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_publication_contract_convergence_audit -v` PASS, `12` tests
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata.ExpertMainCommentMetadataTest.test_platform_meta_image_title_hard_hold_demotes_final_publication_contract -v` PASS, `1` test
+  - `tools\audit_publication_contract_convergence.py --result <Loop496 full375 result>` PASS command, expected audit gate `NO-GO / 1 violation`
+- Boundary:
+  - 이 NO-GO는 current stale artifact의 scope reason contract gap이다.
+  - Production sanitizer patch는 unit-level `GO`지만 runtime replay는 아직 실행하지 않았다.
+  - Full375 collateral은 `NO-GO / residual 105`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop504 Verification
 
 - 범위: `serialized_public_identity_scrubbed`가 후보를 지우기만 하고 candidate ledger/trace에 보존하지 않는 회귀를 publication contract audit에서 잡도록 보강했다.

@@ -1,0 +1,73 @@
+{
+  "loop": 505,
+  "generated_at": "2026-07-06T23:55:00+09:00",
+  "state_type": "promotion_scope_reason_contract",
+  "summary": {
+    "status": "NO-GO_SCOPE_TRACE_CONTRACT_STATIC",
+    "change": "PromotionDecision.scope와 publish_contract_trace.scope_state, scope reason code, publish/block reason code의 정합성 감사를 추가했다.",
+    "production_repair": "platform meta image title hard-hold demotion이 blocked decision으로 바뀔 때 scope_current_work와 serialized_public_identity_published를 제거하고 scope_not_current_work와 serialized_public_identity_scrubbed를 남기도록 보강했다.",
+    "full375_static_audit": {
+      "result_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop496_full375_current_head_4fd250f7_search_nonlight_result.json",
+      "audit_json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop505_full375_publication_contract_scope_monotonicity_audit.json",
+      "audit_md": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop505_full375_publication_contract_scope_monotonicity_audit.md",
+      "gate": "NO-GO",
+      "row_count": 375,
+      "violation_row_count": 1,
+      "violation_post_ids": [11658668],
+      "violation_counts": {
+        "scope_non_current_conflicts_with_current_reason": 1,
+        "blocked_non_current_scope_missing_not_current_reason": 1,
+        "blocked_decision_has_publish_only_reason": 1,
+        "published_and_scrubbed_reason_conflict": 1
+      }
+    }
+  },
+  "code_changes": [
+    {
+      "path": "tools/audit_publication_contract_convergence.py",
+      "details": [
+        "PromotionDecision.scope와 publish_contract_trace.scope_state mismatch를 NO-GO로 잡는다.",
+        "scope_kind와 scope_* reason code 불일치를 NO-GO로 잡는다.",
+        "blocked decision에 serialized_public_identity_published 같은 publish-only reason이 남으면 NO-GO로 잡는다.",
+        "publish_allowed=true인데 non-current scope면 NO-GO로 잡는다."
+      ]
+    },
+    {
+      "path": "expert_main.py",
+      "details": [
+        "platform_meta_image_title_hard_hold demotion에서 기존 publish reason code를 그대로 끌고 오지 않는다.",
+        "blocked demotion 후 scope_current_work와 serialized_public_identity_published를 제거한다.",
+        "blocked demotion 후 scope_context_only, scope_not_current_work, serialized_public_identity_scrubbed를 남긴다."
+      ]
+    },
+    {
+      "path": "tests/test_publication_contract_convergence_audit.py",
+      "details": [
+        "scope trace mismatch, scope reason 누락, non-current/current reason 충돌, publish-only reason 잔존, publish non-current scope를 계약 테스트로 고정했다."
+      ]
+    },
+    {
+      "path": "tests/test_expert_main_comment_metadata.py",
+      "details": [
+        "platform meta image title hard-hold demotion이 blocked reason code를 정리하는지 고정했다."
+      ]
+    }
+  ],
+  "verification": {
+    "py_compile": "PASS",
+    "focused_unittest_publication_contract": "PASS / 12 tests",
+    "focused_unittest_platform_meta_hard_hold": "PASS / 1 test",
+    "full375_static_audit": "PASS_COMMAND / NO-GO_EXPECTED / 1 stale artifact row",
+    "runtime_replay": "NOT_RUN_AFTER_CONTRACT_PATCH"
+  },
+  "gates": {
+    "scope_reason_contract": "NO-GO_SCOPE_TRACE_CONTRACT_STATIC",
+    "production_sanitizer_patch": "GO_UNIT",
+    "runtime_replay_after_contract_patch": "NOT_RUN_AFTER_CONTRACT_PATCH",
+    "full375_collateral": "NO-GO / residual 105",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "completion_criteria": "full375 collateral GO + full_scan path definition"
+}
