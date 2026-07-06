@@ -75,7 +75,8 @@ expert_main.py worker
 |------|------------------|------|
 | **운영/주력 분석** | `expert_main.py` | 8개 전문가 협업, 타임어택, 후처리 하드게이트 포함 |
 | **레거시 단일 흐름 재현** | `main.py` | 기존 Sequential Pipeline 비교/회귀 테스트 용도 |
-| **빠른 로컬 실험** | `expert_main.py --parallel 1 --no-dashboard` | 디버깅 친화적 단일 워커 모드 |
+| **regression-safe 테스트런/검증런** | `expert_main.py --parallel 16` | 웹 대시보드 기본 ON, 실제 worker 수는 manifest의 `effective_parallel` 확인 |
+| **명시적 로컬 디버그** | `expert_main.py --parallel 1 --no-dashboard` | 대시보드가 방해되는 단일 워커 재현에만 사용 |
 
 ---
 
@@ -469,11 +470,11 @@ python expert_main.py
 # 입력 파일 지정
 python expert_main.py tests/inputs/sample.jsonl
 
-# 병렬 상한 4
+# regression-safe 테스트런/검증런 기본 병렬 상한 16
 # 실제 worker 수는 input 수/healthy endpoint 수에 따라 effective_parallel로 줄어들 수 있음
-python expert_main.py tests/inputs/sample.jsonl --parallel 4
+python expert_main.py tests/inputs/sample.jsonl --parallel 16
 
-# 대시보드 비활성화
+# 대시보드 비활성화: 명시적 로컬 디버그에만 사용
 python expert_main.py --no-dashboard
 ```
 
@@ -482,8 +483,8 @@ python expert_main.py --no-dashboard
 | 인자 | 타입 | 기본값 | 설명 |
 |------|------|--------|------|
 | `input` | positional | `tests/inputs/test01.jsonl` | 입력 JSONL 파일 경로 |
-| `--parallel`, `-p` | int | `1` | 병렬 처리 worker 최대치. 실제 실행 worker 수는 `effective_parallel`로 manifest/run_meta에 기록됨 |
-| `--no-dashboard` | flag | — | 대시보드 비활성화 |
+| `--parallel`, `-p` | int | `1` | 병렬 처리 worker 최대치. regression-safe 테스트런/검증런은 사용자 지시에 따라 `--parallel 16`을 요청하고, 실제 실행 worker 수는 `effective_parallel`로 manifest/run_meta에 기록됨 |
+| `--no-dashboard` | flag | — | 대시보드 비활성화. 신규 테스트런/검증런 기본 명령에는 넣지 않고, 명시적 로컬 디버그에만 사용 |
 
 ### LLM 모드
 
@@ -1077,11 +1078,12 @@ pipeline = AgenticPipeline(
 주의: 이 절의 병렬은 `expert_main.py` 런타임 worker/shard 병렬도만 뜻한다. Codex `/goal`에서 사용자가 "여러 전문가", "subagent", "병렬 검토"를 말한 경우는 Codex `spawn_agent` 기반 전문가 분업이며, `docs/devs/SCAN_RESULT_REVIEW_GUIDE.md`와 `docs/devs/OPERATION_QUALITY_CHECKLIST.md`를 따른다.
 
 ```bash
-python expert_main.py tests/inputs/sample.jsonl --parallel 4
+python expert_main.py tests/inputs/sample.jsonl --parallel 16
 ```
 
 **ThreadPoolExecutor** 기반 병렬 처리:
 - `--parallel`은 고정 worker 수가 아니라 최대치다. small input에서는 `effective_parallel=min(requested_parallel,input_post_count,healthy_endpoint_count)` 계열로 줄어드는 것이 정상이다.
+- 2026-07-06 이후 regression-safe grounding 계열 테스트런/검증런은 명시적 반대 지시가 없으면 `--parallel 16`을 요청한다.
 - Gemma 4 E4B/4B 계열 운영 상한은 `36`이다. `--parallel 36`은 36 worker 강제 실행이 아니라 최대치 지정이다.
 - 각 워커는 독립된 게시글 묶음을 처리
 - 로컬 shard가 이미 healthy이면 재사용한다. goal/test small run에서 Docker compose up/recreate는 기본 금지이며, shard lifecycle 자체를 검증할 때만 `--allow-goal-shard-lifecycle`과 `--auto-up-shards` 또는 `--auto-recreate-shards`를 함께 사용한다.
@@ -1129,8 +1131,12 @@ python tools/warp_shards.py recreate --shards 33,35-38
 `monitor.event_bus`를 통해 실시간 로그 포워딩:
 - 줄바꿈 단위 버퍼링
 - `monitor.add_log(line, worker_id=wid)` 전송
-- `--no-dashboard` 플래그로 비활성화 가능
+- regression-safe 테스트런/검증런은 기본적으로 standalone dashboard `http://127.0.0.1:8080`에 붙인다.
+- plan runner(`tools/run_independent_plan.py`)는 기본값으로 dashboard를 확인/시작하고 child run에 `DASHBOARD_URL`, `DASHBOARD_PORT`, `EXPERT_DASHBOARD_FORWARD=1`을 전달한다.
+- 이미 `--no-dashboard`로 시작한 run은 `tools/attach_manifest_dashboard.py --manifest <result_manifest.json> --dashboard-url http://127.0.0.1:8080`로 manifest 기반 진행률을 사후 부착한다.
+- `--no-dashboard` 플래그는 명시적 로컬 디버그 opt-out이다.
 - 기본 포트는 `8080`이며 `DASHBOARD_PORT`로 변경 가능
+- 대시보드는 runtime 관측 도구다. `full375 collateral GO`, `semantic_quality`, `full_scan_approval` 근거로 단독 승격하지 않는다.
 
 ### Session Knowledge
 
