@@ -9,10 +9,12 @@
 - [x] projection 결과는 `safe_resolved 46 / promotion_blocked 1`, validation issue `0`이다.
 - [x] `11710036`은 selected title이 없어 candidate-set rebuild lane으로 남겼다.
 - [x] projected safe `46`건 runtime replay input과 manifest를 생성했다.
-- [ ] shared gate projected safe `46`건 runtime replay는 아직 실행하지 않았다.
-- [ ] Runtime replay 뒤 publication contract와 full375 collateral gate를 다시 계산한다.
+- [x] shared gate projected safe `46`건 runtime replay를 search 포함 non-light, VLM/OCR on으로 실행했다.
+- [x] Runtime replay는 `46/46/0/0`, run health `GO`, publication contract `GO / 0 violations`로 완료됐다.
+- [x] Expected-title exact safe_resolved audit를 실행했고 `10/46`으로 `NO-GO`를 확인했다.
+- [ ] Runtime mismatch `36`건을 `promotion_blocked 30 / title mismatch 5 / compact variant 1` 기준으로 재분해한다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
-- Gate: queue split `REVIEW-LOCKED`, shared gate projection `REVIEW-LOCKED / safe 46 / rebuild 1`, runtime input generation `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / raw regression 137 / review-adjusted regression 98`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: queue split `REVIEW-LOCKED`, shared gate projection `REVIEW-LOCKED / safe 46 / rebuild 1`, runtime replay integrity `GO / 46 of 46`, expected-title `NO-GO / 10 of 46`, publication contract `GO`, search evidence `REVIEW`, full375 collateral `NO-GO / raw regression 137 / review-adjusted regression 98`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-06 Loop488 current HEAD full375 dispatch 체크
 

@@ -79,14 +79,72 @@
       "tests.test_projection_followup_queue": "PASS / 3"
     },
     "json_validation": "PASS / 5",
-    "combined_regression_tests": "PASS / 20"
+    "combined_regression_tests": "PASS / 20",
+    "runtime_replay": "PASS_RUNTIME_COMPLETION / 46 of 46",
+    "runtime_expected_audit": "NO-GO / exact safe_resolved 10 of 46",
+    "run_health_audit": "GO / clean_completed_source",
+    "publication_contract_audit": "GO / 0 violations",
+    "goal_test_run_contract": "GO / large-run runtime contract"
   },
   "approval_boundary": {
     "queue_split_is_not_approval": true,
     "projection_is_not_runtime_replay": true,
     "runtime_input_generation_is_not_approval": true,
     "full375_collateral_gate": "NO-GO / raw regression 137 / review-adjusted regression 98",
-    "search_recovery_gate": "REVIEW / search_degraded_observed",
-    "completion_gate": "full375 collateral GO + full_scan 경로 정의"
+    "search_recovery_gate": "REVIEW / search_timeout_observed + search_degraded_observed",
+    "completion_gate": "full375 collateral GO + full_scan 경로 정의",
+    "projection_runtime_replay_completed": true,
+    "runtime_completion_is_not_semantic_approval": true,
+    "projection_expected_gate": "NO-GO / 10 of 46 exact safe_resolved"
+  },
+  "runtime_replay": {
+    "gate": "NO-GO_EXPECTED_TITLE_10_OF_46",
+    "runtime_integrity": "GO / 46 of 46",
+    "run_id": "20260706_122534_646192",
+    "completed_flushed_pending_failed": [
+      46,
+      46,
+      0,
+      0
+    ],
+    "large_run_complete": true,
+    "search_nonlight_health": {
+      "include_search": true,
+      "light_mode": false,
+      "ok": 16,
+      "failure": 0
+    },
+    "vlm_ocr_ready": true,
+    "expected_audit": {
+      "exact_safe_resolved_pass": 10,
+      "exact_safe_resolved_fail": 36,
+      "runtime_safe_resolved_count": 16,
+      "runtime_promotion_blocked_count": 30,
+      "status_counts": {
+        "FAIL_RUNTIME_PROMOTION_BLOCKED": 30,
+        "PASS_EXACT_SAFE_RESOLVED": 10,
+        "FAIL_SAFE_RESOLVED_TITLE_MISMATCH": 5,
+        "FAIL_VARIANT_COMPACT_MATCH_ONLY": 1
+      }
+    },
+    "run_health_gate": "GO",
+    "run_health_classification": "clean_completed_source",
+    "publication_contract_gate": "GO",
+    "publication_contract_violations": 0,
+    "goal_test_runtime_contract": "GO",
+    "search_evidence_gate": "REVIEW",
+    "search_evidence_blockers": [
+      "search_timeout_observed",
+      "search_degraded_observed"
+    ],
+    "artifacts": {
+      "result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop489_shared_gate_projected_safe46_runtime_replay_search_nonlight_result_v2.json",
+      "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop489_shared_gate_projected_safe46_runtime_replay_search_nonlight_result_v2_manifest.json",
+      "run_health": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop489_projected_safe46_runtime_run_health.json",
+      "publication_contract": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop489_projected_safe46_runtime_publication_contract.json",
+      "goal_test_run_contract": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop489_projected_safe46_goal_test_run_contract.json",
+      "expected_audit": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop489_projected_safe46_runtime_expected_audit.json",
+      "expected_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop489_projected_safe46_runtime_expected_audit.md"
+    }
   }
 }

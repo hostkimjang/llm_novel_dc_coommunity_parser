@@ -9,13 +9,20 @@
   - [x] Shared gate projection 기록 완료: `docs/devs/loop489_shared_gate_residual47_projection.json/.md`.
   - [x] Projection follow-up queue 기록 완료: `docs/devs/loop489_shared_gate_projection_followup_queue.json/.md`.
   - [x] Runtime input `46` rows와 manifest를 생성했다.
+  - [x] Runtime replay v2 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop489_shared_gate_projected_safe46_runtime_replay_search_nonlight_result_v2.json`.
+  - [x] Run health audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop489_projected_safe46_runtime_run_health.json`.
+  - [x] Publication contract audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop489_projected_safe46_runtime_publication_contract.json/.md`.
+  - [x] Expected audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop489_projected_safe46_runtime_expected_audit.json/.md`.
 - 품질 경계:
   - [x] Projection은 runtime replay가 아니다.
   - [x] Runtime input generation은 approval이 아니다.
   - [x] `11710036`은 candidate-set rebuild 전 public publish하지 않는다.
-  - [ ] Shared gate projected safe `46`건 runtime replay는 아직 실행하지 않았다.
+  - [x] Shared gate projected safe `46`건 runtime replay는 `46/46/0/0`으로 완료됐다.
+  - [x] Runtime completion과 publication contract `GO`는 semantic/full_scan approval이 아니다.
+  - [x] Expected-title exact safe_resolved는 `10/46`이라 projection semantic gate는 `NO-GO`다.
+  - [ ] Runtime mismatch `36`건은 재분해가 필요하다.
   - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
-- Gate: shared gate projection `REVIEW-LOCKED / safe 46 / rebuild 1`, runtime input `GO_INPUT_ONLY / 46`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / review-adjusted regression 98`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: shared gate projection `REVIEW-LOCKED / safe 46 / rebuild 1`, runtime replay integrity `GO / 46 of 46`, expected-title `NO-GO / 10 of 46`, publication contract `GO`, search evidence `REVIEW / timeout + degraded`, full375 collateral `NO-GO / review-adjusted regression 98`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-06 Loop488 current HEAD full375 완료 및 P0 residual52 품질 게이트
 

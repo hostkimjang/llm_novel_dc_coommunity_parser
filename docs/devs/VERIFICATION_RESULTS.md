@@ -1,5 +1,38 @@
 # Verification Results
 
+## 2026-07-06 Loop489 projected safe46 runtime replay 검증
+
+- 범위: Loop489 shared gate projection에서 `safe_resolved`로 예측한 46건을 search 포함 non-light, VLM/OCR on, `--slang-db off`, parallel `16`으로 실제 재실행했다.
+- Artifacts:
+  - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop489_shared_gate_projected_safe46_runtime_replay_search_nonlight_result_v2.json`
+  - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop489_shared_gate_projected_safe46_runtime_replay_search_nonlight_result_v2_manifest.json`
+  - run health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop489_projected_safe46_runtime_run_health.json`
+  - publication contract `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop489_projected_safe46_runtime_publication_contract.json`
+  - goal/test runtime contract `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop489_projected_safe46_goal_test_run_contract.json`
+  - expected audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop489_projected_safe46_runtime_expected_audit.json`
+  - expected audit markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop489_projected_safe46_runtime_expected_audit.md`
+- Result:
+  - 첫 시도는 `include_search=false`, `light_mode=true`라 중단했고 증거에서 제외한다.
+  - 유효 v2 run id `20260706_122534_646192`
+  - completed/flushed/pending/failed `46/46/0/0`
+  - total time `4719.5s`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`
+  - MCP health `include_search=true`, `light_mode=false`, ok/failure `16/0`
+  - VLM/OCR `READY`, image posts `26`
+  - run health `GO / clean_completed_source`
+  - publication contract `GO / 0 violations`
+  - goal/test runtime contract `GO`
+  - expected-title exact safe_resolved `NO-GO / 10 of 46`
+  - runtime state `safe_resolved 16 / promotion_blocked 30`
+  - audit status counts: `FAIL_RUNTIME_PROMOTION_BLOCKED 30`, `PASS_EXACT_SAFE_RESOLVED 10`, `FAIL_SAFE_RESOLVED_TITLE_MISMATCH 5`, `FAIL_VARIANT_COMPACT_MATCH_ONLY 1`
+  - search evidence `REVIEW / search_timeout_observed + search_degraded_observed`, degraded/unrecovered total `260/30`
+- Boundary:
+  - Runtime completion은 semantic approval이 아니다.
+  - Publication contract `GO`는 expected-title 정답성이나 full375 collateral 승인이 아니다.
+  - Projection safe46은 runtime에서 과낙관으로 판정됐으므로 full375 동결 해제 근거로 쓰지 않는다.
+  - Completion gate는 `full375 collateral GO + full_scan 경로 정의`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop489 shared gate residual projection 검증
 
 - 범위: Loop488 P0 full source-native review 이후 residual을 단건으로 줄이기 전에 shared promotion gate architecture에 통과시켰다.
@@ -31,7 +64,7 @@
   - `tools\build_projection_followup_queue.py ... --fail-on-validation-issue` PASS
 - Boundary:
   - Projection과 runtime input generation은 approval이 아니다.
-  - Runtime replay after input은 아직 실행하지 않았다.
+  - 이 projection 생성 시점에는 runtime replay after input이 아직 실행되지 않았다. 이후 위 Loop489 projected safe46 runtime replay 검증에서 v2 실런 결과를 별도 기록했다.
   - Full375 collateral은 계속 `NO-GO / raw regression 137 / review-adjusted regression 98`이다.
   - Completion gate는 `full375 collateral GO + full_scan 경로 정의`다.
   - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.

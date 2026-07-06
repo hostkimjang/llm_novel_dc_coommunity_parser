@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-06 - Loop489 projected safe46 runtime replay
+
+- Loop489 projected safe `46`건을 search 포함 non-light, VLM/OCR on, `--slang-db off`, parallel `16`으로 실행했다.
+- 첫 시도는 MCP health env 없이 떠서 `include_search=false`, `light_mode=true`였으므로 중단했고 증거에서 제외했다.
+- 유효 v2 run `20260706_122534_646192`는 completed/flushed/pending/failed `46/46/0/0`, total time `4719.5s`, `large_run_complete=true`, `ordered_flush_blocked=false`로 완료됐다.
+- MCP health는 `include_search=true`, `light_mode=false`, ok/failure `16/0`이고 VLM/OCR은 `READY`다.
+- Run health는 `GO / clean_completed_source`, goal/test runtime contract는 `GO`, publication contract는 `GO / 0 violations`다.
+- Expected-title exact safe_resolved audit는 `10/46` PASS라 `NO-GO`다.
+- Runtime state는 `safe_resolved 16 / promotion_blocked 30`이고 mismatch는 `title mismatch 5`, `compact variant 1`이다.
+- Search evidence는 `REVIEW / search_timeout_observed + search_degraded_observed`, degraded/unrecovered total `260/30`이다.
+- Report는 `docs/devs/loop_reports/LOOP_489_REPORT_20260706.md`, state는 `docs/devs/loop489_shared_gate_residual_projection_state_20260706.json`이다.
+- Expected audit는 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop489_projected_safe46_runtime_expected_audit.json/.md`다.
+- Gate는 runtime integrity `GO`, expected-title `NO-GO / 10 of 46`, publication contract `GO`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop489 shared gate residual projection
 
 - Loop488 P0 full source-native review 뒤 residual `97`에 P1 `11682800`을 더해 `loop489_current_residual98_action_queue`를 생성했다.
@@ -10,7 +24,7 @@
 - Follow-up queue는 runtime replay candidates `46`, still blocked `1`이며 runtime input JSONL/manifest를 생성했다.
 - 검증은 py_compile PASS, projection/follow-up/split/always-on unittest `20` tests PASS, JSON parse `5` files PASS다.
 - Report는 `docs/devs/loop_reports/LOOP_489_REPORT_20260706.md`, state는 `docs/devs/loop489_shared_gate_residual_projection_state_20260706.json`이다.
-- Gate는 shared gate projection `REVIEW-LOCKED`, runtime input `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / review-adjusted regression 98`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+- 이 projection 생성 시점 gate는 shared gate projection `REVIEW-LOCKED`, runtime input `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`이었다. 이후 같은 Loop489의 v2 runtime replay에서 expected-title `NO-GO / 10 of 46`으로 갱신했다.
 
 ## 2026-07-06 - Loop488 current HEAD full375 dispatch
 

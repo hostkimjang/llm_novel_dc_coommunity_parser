@@ -1,16 +1,19 @@
 # Improvement Register
 
-## IMP-20260706-489 - shared gate residual projection and safe46 replay input
+## IMP-20260706-489 - shared gate residual projection and safe46 runtime replay
 
 | 항목 | 상태 | 근거 | 다음 |
 | --- | --- | --- | --- |
 | Residual98 queue | REVIEW-LOCKED | `REPROCESS 63 / HOLD 34 / INFO_MISSING 1`, validation issue `0` | shared gate lane 우선 |
-| Shared gate projection | REVIEW-LOCKED | `47 -> safe_resolved 46 / promotion_blocked 1`, `can_publish_title` 경유 | safe46 runtime replay |
+| Shared gate projection | REVIEW-LOCKED | `47 -> safe_resolved 46 / promotion_blocked 1`, `can_publish_title` 경유 | runtime 결과와 차이 분석 |
 | Candidate rebuild | HOLD | `11710036`, selected title 없음, candidate_set_rebuild_required | 후보 재구성 후 gate 재투입 |
-| Runtime input | GO_INPUT_ONLY | safe projection `46` rows, missing post ids `[]` | search 포함 non-light replay |
+| Runtime replay | GO_RUNTIME | run `20260706_122534_646192`, `46/46/0/0`, search non-light health `16/0` | semantic gate와 분리 |
+| Expected-title | NO-GO | exact safe_resolved `10/46`, runtime `safe_resolved 16 / promotion_blocked 30` | mismatch `36`건 재분해 |
+| Publication contract | GO | `0` violations | expected 정답성 승인으로 쓰지 않음 |
+| Search evidence | REVIEW | `search_timeout_observed`, `search_degraded_observed`, degraded/unrecovered `260/30` | search recovery P0 유지 |
 | Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
 
-Gate: shared gate projection `REVIEW-LOCKED`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / raw regression 137 / review-adjusted regression 98`, goal `ACTIVE / NOT_COMPLETE`.
+Gate: shared gate projection `REVIEW-LOCKED`, runtime integrity `GO / 46 of 46`, expected-title `NO-GO / 10 of 46`, publication contract `GO`, full375 collateral `NO-GO / raw regression 137 / review-adjusted regression 98`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## IMP-20260706-488 - current HEAD full375 completion and residual52 batch
 
