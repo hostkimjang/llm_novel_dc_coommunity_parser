@@ -1,5 +1,22 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop489 shared gate residual projection 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_489_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop489_shared_gate_residual_projection_state_20260706.json`.
+  - [x] Residual98 action queue 기록 완료: `docs/devs/loop489_current_residual98_action_queue.json/.md`.
+  - [x] Shared gate projection 기록 완료: `docs/devs/loop489_shared_gate_residual47_projection.json/.md`.
+  - [x] Projection follow-up queue 기록 완료: `docs/devs/loop489_shared_gate_projection_followup_queue.json/.md`.
+  - [x] Runtime input `46` rows와 manifest를 생성했다.
+- 품질 경계:
+  - [x] Projection은 runtime replay가 아니다.
+  - [x] Runtime input generation은 approval이 아니다.
+  - [x] `11710036`은 candidate-set rebuild 전 public publish하지 않는다.
+  - [ ] Shared gate projected safe `46`건 runtime replay는 아직 실행하지 않았다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: shared gate projection `REVIEW-LOCKED / safe 46 / rebuild 1`, runtime input `GO_INPUT_ONLY / 46`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / review-adjusted regression 98`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop488 current HEAD full375 완료 및 P0 residual52 품질 게이트
 
 - 근거:

@@ -1,5 +1,41 @@
 # Verification Results
 
+## 2026-07-06 Loop489 shared gate residual projection 검증
+
+- 범위: Loop488 P0 full source-native review 이후 residual을 단건으로 줄이기 전에 shared promotion gate architecture에 통과시켰다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_489_REPORT_20260706.md`
+  - state `docs\devs\loop489_shared_gate_residual_projection_state_20260706.json`
+  - residual queue `docs\devs\loop489_current_residual98_action_queue.json`
+  - residual queue markdown `docs\devs\loop489_current_residual98_action_queue.md`
+  - shared gate projection `docs\devs\loop489_shared_gate_residual47_projection.json`
+  - shared gate projection markdown `docs\devs\loop489_shared_gate_residual47_projection.md`
+  - follow-up queue `docs\devs\loop489_shared_gate_projection_followup_queue.json`
+  - follow-up queue markdown `docs\devs\loop489_shared_gate_projection_followup_queue.md`
+  - runtime input `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop489_shared_gate_projected_safe46_runtime_replay_input.jsonl`
+  - runtime manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop489_shared_gate_projected_safe46_runtime_replay_input_manifest.json`
+- Result:
+  - residual queue rows `98`
+  - residual labels `REPROCESS 63 / HOLD 34 / INFO_MISSING 1`
+  - shared gate projection rows `47`
+  - projection status `safe_resolved 46 / promotion_blocked 1`
+  - publish allowed rows `46`
+  - source-native exact title match rows `46`
+  - candidate rebuild row `11710036`
+  - runtime input rows `46`, missing post ids `[]`
+- Validation:
+  - `.\venv\Scripts\python.exe -m py_compile tools\project_residual_queue_through_promotion_gate.py tools\build_projection_followup_queue.py tests\test_project_residual_queue_through_promotion_gate.py tests\test_projection_followup_queue.py` PASS
+  - `.\venv\Scripts\python.exe -m unittest tests.test_project_residual_queue_through_promotion_gate tests.test_projection_followup_queue -v` PASS, `6` tests
+  - `tools\split_collateral_action_queue.py ... --fail-on-validation-issue` PASS
+  - `tools\project_residual_queue_through_promotion_gate.py ... --fail-on-validation-issue` PASS
+  - `tools\build_projection_followup_queue.py ... --fail-on-validation-issue` PASS
+- Boundary:
+  - Projection과 runtime input generation은 approval이 아니다.
+  - Runtime replay after input은 아직 실행하지 않았다.
+  - Full375 collateral은 계속 `NO-GO / raw regression 137 / review-adjusted regression 98`이다.
+  - Completion gate는 `full375 collateral GO + full_scan 경로 정의`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop488 current HEAD full375 완료/gate 검증
 
 - 범위: Loop487 이후 current HEAD `4b838520`에서 stale Loop477 full375 증거를 재사용하지 않고 full375 collateral을 새로 완료한 뒤, golden18과 full375 collateral always-on gate를 같은 output으로 감사했다.

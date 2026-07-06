@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-06 - Loop489 shared gate residual projection
+
+- Loop488 P0 full source-native review 뒤 residual `97`에 P1 `11682800`을 더해 `loop489_current_residual98_action_queue`를 생성했다.
+- Queue는 `REPROCESS 63 / HOLD 34 / INFO_MISSING 1`, largest lane은 `shared_promotion_gate_wiring_required 47`이다.
+- `tools/project_residual_queue_through_promotion_gate.py`를 추가해 residual source-native verdict를 shared `GroundingState -> can_publish_title -> PromotionDecision` 계약으로 projection한다.
+- Projection 결과는 `47 -> safe_resolved 46 / promotion_blocked 1`, source-native exact title match `46`, validation issue `0`이다.
+- `11710036`은 selected title이 없어 `candidate_set_rebuild_required` lane으로 남겼다.
+- Follow-up queue는 runtime replay candidates `46`, still blocked `1`이며 runtime input JSONL/manifest를 생성했다.
+- 검증은 py_compile PASS, projection/follow-up/split/always-on unittest `20` tests PASS, JSON parse `5` files PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_489_REPORT_20260706.md`, state는 `docs/devs/loop489_shared_gate_residual_projection_state_20260706.json`이다.
+- Gate는 shared gate projection `REVIEW-LOCKED`, runtime input `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / review-adjusted regression 98`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop488 current HEAD full375 dispatch
 
 - Loop487 코드 변경 이후 stale Loop477 full375 증거를 재사용하지 않고 current HEAD `4b838520`에서 full375 collateral 런을 새로 발주했다.

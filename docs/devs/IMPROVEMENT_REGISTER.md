@@ -1,5 +1,17 @@
 # Improvement Register
 
+## IMP-20260706-489 - shared gate residual projection and safe46 replay input
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Residual98 queue | REVIEW-LOCKED | `REPROCESS 63 / HOLD 34 / INFO_MISSING 1`, validation issue `0` | shared gate lane 우선 |
+| Shared gate projection | REVIEW-LOCKED | `47 -> safe_resolved 46 / promotion_blocked 1`, `can_publish_title` 경유 | safe46 runtime replay |
+| Candidate rebuild | HOLD | `11710036`, selected title 없음, candidate_set_rebuild_required | 후보 재구성 후 gate 재투입 |
+| Runtime input | GO_INPUT_ONLY | safe projection `46` rows, missing post ids `[]` | search 포함 non-light replay |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: shared gate projection `REVIEW-LOCKED`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / raw regression 137 / review-adjusted regression 98`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-488 - current HEAD full375 completion and residual52 batch
 
 | 항목 | 상태 | 근거 | 다음 |

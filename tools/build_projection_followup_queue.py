@@ -137,6 +137,9 @@ def classify_projection_row(row: dict[str, Any]) -> dict[str, Any]:
         "llm_only_sentence_candidate_pruned",
         "precision_seed_official_title_requires_review",
         "exact_alias_candidate_preserved_without_work_discussion",
+        "candidate_set_rebuild_required",
+        "no_candidate_title",
+        "source_native_support_not_sufficient",
     }
     if status == "promotion_blocked" and reasons & support_gap_markers:
         return {

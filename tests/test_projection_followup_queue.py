@@ -46,20 +46,27 @@ class ProjectionFollowupQueueTest(unittest.TestCase):
                     "selected_title": "E",
                     "projected_reasons": ["verified_alias_title_only_counterevidence_blocked"],
                 },
+                {
+                    "post_id": 6,
+                    "projected_status": "promotion_blocked",
+                    "selected_title": None,
+                    "projected_reasons": ["candidate_set_rebuild_required", "no_candidate_title"],
+                },
             ],
         }
+        projection["input_rows"] = 6
 
         queue = build_followup_queue(projection, generated_at="2026-07-06T04:00:00")
 
         self.assertEqual(queue["gate"], "REVIEW-LOCKED")
         self.assertFalse(queue["full_scan_approval"])
-        self.assertEqual(queue["summary"]["followup_action_queue_rows"], 5)
+        self.assertEqual(queue["summary"]["followup_action_queue_rows"], 6)
         self.assertEqual(queue["summary"]["runtime_replay_candidate_rows"], 1)
         self.assertEqual(queue["summary"]["variant_review_rows"], 1)
         self.assertEqual(queue["summary"]["lint_followup_rows"], 1)
-        self.assertEqual(queue["summary"]["still_blocked_rows"], 2)
-        self.assertEqual(queue["summary"]["label_counts"], {"HOLD": 2, "REPROCESS": 3})
-        self.assertEqual(queue["summary"]["priority_counts"], {"P0": 2, "P1": 2, "P2": 1})
+        self.assertEqual(queue["summary"]["still_blocked_rows"], 3)
+        self.assertEqual(queue["summary"]["label_counts"], {"HOLD": 2, "REPROCESS": 4})
+        self.assertEqual(queue["summary"]["priority_counts"], {"P0": 2, "P1": 3, "P2": 1})
         self.assertIn(
             "runtime_replay_projected_safe_resolved_exact_required",
             queue["summary"]["action_counts"],

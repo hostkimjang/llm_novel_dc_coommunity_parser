@@ -1,5 +1,19 @@
 # Development Checklist
 
+## 2026-07-06 Loop489 shared gate residual projection 체크
+
+- [x] Loop488 P0 full source-native summary에서 residual action queue를 최신화했다.
+- [x] P0 residual `97`과 P1 `11682800`을 합쳐 `loop489_current_residual98_action_queue`를 생성했다.
+- [x] residual98 labels는 `REPROCESS 63 / HOLD 34 / INFO_MISSING 1`이다.
+- [x] shared gate lane `47`건을 `GroundingState -> can_publish_title -> PromotionDecision` projection으로 통과시켰다.
+- [x] projection 결과는 `safe_resolved 46 / promotion_blocked 1`, validation issue `0`이다.
+- [x] `11710036`은 selected title이 없어 candidate-set rebuild lane으로 남겼다.
+- [x] projected safe `46`건 runtime replay input과 manifest를 생성했다.
+- [ ] shared gate projected safe `46`건 runtime replay는 아직 실행하지 않았다.
+- [ ] Runtime replay 뒤 publication contract와 full375 collateral gate를 다시 계산한다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: queue split `REVIEW-LOCKED`, shared gate projection `REVIEW-LOCKED / safe 46 / rebuild 1`, runtime input generation `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / raw regression 137 / review-adjusted regression 98`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop488 current HEAD full375 dispatch 체크
 
 - [x] Loop487 이후 current HEAD `4b838520`으로 full375를 새로 발주했다.

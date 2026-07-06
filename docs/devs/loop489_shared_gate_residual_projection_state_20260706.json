@@ -1,0 +1,92 @@
+{
+  "loop": 489,
+  "date": "2026-07-06",
+  "report_type": "loop489_shared_gate_residual_projection_state",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "source_gate": "full375 collateral NO-GO",
+  "source_artifacts": {
+    "loop488_p0_full_state": "docs/devs/loop488_p0_full_source_native_state_20260706.json",
+    "loop488_p0_full_review": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json",
+    "loop488_collateral_triage": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_collateral_triage.json"
+  },
+  "residual98_queue": {
+    "gate": "REVIEW-LOCKED",
+    "rows": 98,
+    "label_counts": {
+      "REPROCESS": 63,
+      "HOLD": 34,
+      "INFO_MISSING": 1
+    },
+    "action_counts": {
+      "shared_promotion_gate_wiring_required": 47,
+      "repair_safe_loss_restore_supported_title": 46,
+      "native_web_review_required": 34,
+      "image_native_review_required": 23,
+      "repair_after_wrong_work": 12,
+      "p1_new_resolution_promotion_review_required": 1
+    },
+    "artifacts": {
+      "json": "docs/devs/loop489_current_residual98_action_queue.json",
+      "markdown": "docs/devs/loop489_current_residual98_action_queue.md"
+    }
+  },
+  "shared_gate_projection": {
+    "gate": "REVIEW-LOCKED",
+    "action_filter": "shared_promotion_gate_wiring_required",
+    "projected_rows": 47,
+    "projected_status_counts": {
+      "safe_resolved": 46,
+      "promotion_blocked": 1
+    },
+    "publish_allowed_rows": 46,
+    "matches_source_native_title_rows": 46,
+    "candidate_rebuild_or_hold_rows": 1,
+    "candidate_rebuild_post_ids": [
+      11710036
+    ],
+    "validation_issue_count": 0,
+    "artifacts": {
+      "json": "docs/devs/loop489_shared_gate_residual47_projection.json",
+      "markdown": "docs/devs/loop489_shared_gate_residual47_projection.md"
+    }
+  },
+  "projection_followup_queue": {
+    "gate": "REVIEW-LOCKED",
+    "followup_action_queue_rows": 47,
+    "runtime_replay_candidate_rows": 46,
+    "still_blocked_rows": 1,
+    "label_counts": {
+      "REPROCESS": 46,
+      "HOLD": 1
+    },
+    "priority_counts": {
+      "P0": 46,
+      "P2": 1
+    },
+    "artifacts": {
+      "json": "docs/devs/loop489_shared_gate_projection_followup_queue.json",
+      "markdown": "docs/devs/loop489_shared_gate_projection_followup_queue.md",
+      "runtime_input_jsonl": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop489_shared_gate_projected_safe46_runtime_replay_input.jsonl",
+      "runtime_input_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop489_shared_gate_projected_safe46_runtime_replay_input_manifest.json"
+    }
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "unit_tests": {
+      "tests.test_project_residual_queue_through_promotion_gate": "PASS / 3",
+      "tests.test_projection_followup_queue": "PASS / 3"
+    },
+    "json_validation": "PASS / 5",
+    "combined_regression_tests": "PASS / 20"
+  },
+  "approval_boundary": {
+    "queue_split_is_not_approval": true,
+    "projection_is_not_runtime_replay": true,
+    "runtime_input_generation_is_not_approval": true,
+    "full375_collateral_gate": "NO-GO / raw regression 137 / review-adjusted regression 98",
+    "search_recovery_gate": "REVIEW / search_degraded_observed",
+    "completion_gate": "full375 collateral GO + full_scan 경로 정의"
+  }
+}
