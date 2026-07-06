@@ -1,0 +1,4091 @@
+{
+  "report_type": "projection_followup_action_queue",
+  "queue_id": "loop500_shared_gate_residual37_prior_runtime_followup_queue",
+  "generated_at": "2026-07-06T23:06:17",
+  "source_projection_id": "loop500_shared_gate_residual37_projection",
+  "source_projection_path": "docs/devs/loop500_shared_gate_residual37_projection.json",
+  "source_queue": null,
+  "source_full375_result": null,
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "REVIEW-LOCKED",
+  "summary": {
+    "source_rows": 37,
+    "followup_action_queue_rows": 37,
+    "label_counts": {
+      "HOLD": 4,
+      "REPROCESS": 33
+    },
+    "priority_counts": {
+      "P0": 31,
+      "P1": 6
+    },
+    "projected_status_counts": {
+      "safe_resolved": 37
+    },
+    "exact_match_counts": {
+      "match": 37
+    },
+    "prior_runtime_audit_status_counts": {
+      "FAIL_RUNTIME_PROMOTION_BLOCKED": 28,
+      "FAIL_SAFE_RESOLVED_TITLE_MISMATCH": 2,
+      "FAIL_VARIANT_COMPACT_MATCH_ONLY": 1,
+      "NO_PRIOR_AUDIT": 1,
+      "PASS_EXACT_SAFE_RESOLVED": 5
+    },
+    "owner_mode_counts": {
+      "CODE_OR_RUNTIME_CONTRACT_REPAIR": 28,
+      "RUNTIME_AUDIT_GAP_REVIEW": 1,
+      "RUNTIME_REPLAY": 5,
+      "SOURCE_NATIVE_OR_CANONICAL_REVIEW": 3
+    },
+    "action_counts": {
+      "full375_collateral_recheck_after_repair": 28,
+      "full375_collateral_recheck_after_runtime": 6,
+      "prior_runtime_expected_audit_missing_review_required": 1,
+      "prior_runtime_promotion_block_repair_required": 28,
+      "prior_runtime_title_mismatch_review_required": 3,
+      "runtime_replay_after_variant_review": 3,
+      "runtime_replay_projected_safe_resolved_exact_required": 6,
+      "shared_gate_runtime_block_repair_required": 28,
+      "source_native_canonical_variant_review_required": 3
+    },
+    "action_group_count": 9,
+    "runtime_replay_candidate_rows": 6,
+    "variant_review_rows": 3,
+    "lint_followup_rows": 0,
+    "still_blocked_rows": 0,
+    "validation_issue_count": 0
+  },
+  "validation_issues": [],
+  "action_groups": [
+    {
+      "action": "full375_collateral_recheck_after_repair",
+      "row_count": 28,
+      "priority_counts": {
+        "P0": 28
+      },
+      "label_counts": {
+        "REPROCESS": 28
+      },
+      "projected_status_counts": {
+        "safe_resolved": 28
+      },
+      "owner_modes": {
+        "CODE_OR_RUNTIME_CONTRACT_REPAIR": 28
+      },
+      "post_ids": [
+        11660271,
+        11663521,
+        11663535,
+        11663557,
+        11665124,
+        11668325,
+        11669913,
+        11677915,
+        11677926,
+        11681172,
+        11684372,
+        11690841,
+        11694019,
+        11697242,
+        11697256,
+        11698910,
+        11702094,
+        11706871,
+        11708447,
+        11710021,
+        11710049,
+        11714887,
+        11718099,
+        11718110,
+        11718114,
+        11666741,
+        11673077,
+        11710020
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11660271,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "월야의 여인들",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "월야의 여인들",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "월야의 여인들",
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11660271"
+          ]
+        },
+        {
+          "post_id": 11663521,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "초전자포] 시스터즈가 되었다",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "초전자포] 시스터즈가 되었다",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "초전자포] 시스터즈가 되었다",
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [
+            "scope_context_only",
+            "scope_not_current_work",
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11663521"
+          ]
+        },
+        {
+          "post_id": 11663535,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "퇴마록",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "퇴마록",
+          "projected_url": "https://page.kakao.com/content/66470141",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "퇴마록",
+          "prior_runtime_actual_title": "퇴마록 외전 1",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discussion_missing",
+            "scope_context_only",
+            "scope_not_current_work",
+            "body_verified_character_work_competes_with_resolved_public_title",
+            "unresolved_body_character_work_anchor",
+            "missing_body_work_bridge",
+            "character_title_collision",
+            "missing_direct_candidate_title",
+            "resolved_public_title_scope",
+            "official_detail_url",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11663535"
+          ]
+        },
+        {
+          "post_id": 11663557,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "퇴마록",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "퇴마록",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "퇴마록",
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [
+            "scope_current_work",
+            "blocked_candidate_scope_inferred_from_search_evidence",
+            "official_detail_url_recovered_from_search_evidence",
+            "character_bridge_variance_hold",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11663557"
+          ]
+        },
+        {
+          "post_id": 11665124,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "화산파(화산귀환)",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "화산파(화산귀환)",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "화산파(화산귀환)",
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [
+            "official_url_recall_candidate_preserved",
+            "official_url_recall_candidate_source_preserved",
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11665124"
+          ]
+        },
+        {
+          "post_id": 11668325,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "Fate/stay night",
+          "selected_option_id": "C1",
+          "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+          "projected_title": "Fate/stay night",
+          "projected_url": "https://ridibooks.com/books/505001486",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "Fate/stay night",
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "scope_context_only",
+            "scope_not_current_work",
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11668325"
+          ]
+        },
+        {
+          "post_id": 11669913,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "하룬",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "하룬",
+          "projected_url": "https://ridibooks.com/books/1811007466",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "하룬",
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [
+            "scope_context_only",
+            "scope_not_current_work",
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11669913"
+          ]
+        },
+        {
+          "post_id": 11677915,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "전지적 독자 시점",
+          "selected_option_id": "C1",
+          "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+          "projected_title": "전지적 독자 시점",
+          "projected_url": "https://novel.munpia.com/104753",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "전지적 독자 시점",
+          "prior_runtime_actual_title": "전지적 독자 시점",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discussion_missing",
+            "scope_context_only",
+            "scope_not_current_work",
+            "title_led_alias_contextual_official_detail_competes",
+            "title_led_consumption_bridge",
+            "title_acceptance_accept",
+            "alias_bridge",
+            "official_detail_url",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11677915"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "full375_collateral_recheck_after_runtime",
+      "row_count": 6,
+      "priority_counts": {
+        "P1": 6
+      },
+      "label_counts": {
+        "HOLD": 1,
+        "REPROCESS": 5
+      },
+      "projected_status_counts": {
+        "safe_resolved": 6
+      },
+      "owner_modes": {
+        "RUNTIME_AUDIT_GAP_REVIEW": 1,
+        "RUNTIME_REPLAY": 5
+      },
+      "post_ids": [
+        11660273,
+        11673096,
+        11679537,
+        11665121,
+        11679553,
+        11710036
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11660273,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "마도서를 줍다 마법사가 되다",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "마도서를 줍다 마법사가 되다",
+          "projected_url": "https://novelpia.com/novel/414963",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "PASS_EXACT_SAFE_RESOLVED",
+          "prior_runtime_expected_title": "마도서를 줍다 마법사가 되다",
+          "prior_runtime_actual_title": "마도서를 줍다 마법사가 되다",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "resolved_public_title_scope",
+            "official_detail_url",
+            "serialized_public_identity_published"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11660273"
+          ]
+        },
+        {
+          "post_id": 11673096,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "삼국지",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_work_surface_supports_safe_title_lost_to_null",
+          "projected_title": "삼국지",
+          "projected_url": "https://novelpia.com/novel/270775",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "PASS_EXACT_SAFE_RESOLVED",
+          "prior_runtime_expected_title": "삼국지",
+          "prior_runtime_actual_title": "삼국지",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "direct_image_work_surface_bridge",
+            "ocr_catalog_official_title",
+            "official_detail_url",
+            "serialized_public_identity_published"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11673096"
+          ]
+        },
+        {
+          "post_id": 11679537,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "죽었다 깨어도 수선",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_abbreviation_and_plot_context_support_safe_title_lost_to_null",
+          "projected_title": "죽었다 깨어도 수선",
+          "projected_url": "https://novelpia.com/novel/233173",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "PASS_EXACT_SAFE_RESOLVED",
+          "prior_runtime_expected_title": "죽었다 깨어도 수선",
+          "prior_runtime_actual_title": "죽었다 깨어도 수선",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "resolved_public_title_scope",
+            "official_detail_url",
+            "serialized_public_identity_published"
+          ],
+          "prior_runtime_search_status": "ok",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11679537"
+          ]
+        },
+        {
+          "post_id": 11665121,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "후회 안 하는 프로듀서",
+          "selected_option_id": "C1",
+          "source_native_verdict": "comment_abbreviation_supports_safe_title_lost_to_null",
+          "projected_title": "후회 안 하는 프로듀서",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "PASS_EXACT_SAFE_RESOLVED",
+          "prior_runtime_expected_title": "후회 안 하는 프로듀서",
+          "prior_runtime_actual_title": "후회 안 하는 프로듀서",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "direct_image_work_surface_bridge",
+            "ocr_catalog_official_title",
+            "official_detail_url",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "serialized_public_identity_gate_candidate_reconciled"
+          ],
+          "prior_runtime_search_status": "ok",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11665121"
+          ]
+        },
+        {
+          "post_id": 11679553,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "마도서를 줍다 마법사가 되다",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+          "projected_title": "마도서를 줍다 마법사가 되다",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "PASS_EXACT_SAFE_RESOLVED",
+          "prior_runtime_expected_title": "마도서를 줍다 마법사가 되다",
+          "prior_runtime_actual_title": "마도서를 줍다 마법사가 되다",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "direct_image_work_surface_bridge",
+            "ocr_catalog_official_title",
+            "official_detail_url",
+            "serialized_public_identity_published"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11679553"
+          ]
+        },
+        {
+          "post_id": 11710036,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P1",
+          "owner_mode": "RUNTIME_AUDIT_GAP_REVIEW",
+          "actions": [
+            "prior_runtime_expected_audit_missing_review_required",
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+          "selected_option_id": "C1",
+          "source_native_verdict": "after_title_supported_but_candidate_url_rebuild_required",
+          "projected_title": "[림월드]변방계에서 회귀자로 살아남기",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": null,
+          "prior_runtime_expected_title": null,
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [],
+          "prior_runtime_search_status": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "candidate_set_rebuild_required",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 비교할 prior runtime expected-audit가 없다. 신규 runtime replay 후보로 남기되, audit gap을 명시한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11710036"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "prior_runtime_expected_audit_missing_review_required",
+      "row_count": 1,
+      "priority_counts": {
+        "P1": 1
+      },
+      "label_counts": {
+        "HOLD": 1
+      },
+      "projected_status_counts": {
+        "safe_resolved": 1
+      },
+      "owner_modes": {
+        "RUNTIME_AUDIT_GAP_REVIEW": 1
+      },
+      "post_ids": [
+        11710036
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11710036,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P1",
+          "owner_mode": "RUNTIME_AUDIT_GAP_REVIEW",
+          "actions": [
+            "prior_runtime_expected_audit_missing_review_required",
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+          "selected_option_id": "C1",
+          "source_native_verdict": "after_title_supported_but_candidate_url_rebuild_required",
+          "projected_title": "[림월드]변방계에서 회귀자로 살아남기",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": null,
+          "prior_runtime_expected_title": null,
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [],
+          "prior_runtime_search_status": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "candidate_set_rebuild_required",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 비교할 prior runtime expected-audit가 없다. 신규 runtime replay 후보로 남기되, audit gap을 명시한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11710036"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "prior_runtime_promotion_block_repair_required",
+      "row_count": 28,
+      "priority_counts": {
+        "P0": 28
+      },
+      "label_counts": {
+        "REPROCESS": 28
+      },
+      "projected_status_counts": {
+        "safe_resolved": 28
+      },
+      "owner_modes": {
+        "CODE_OR_RUNTIME_CONTRACT_REPAIR": 28
+      },
+      "post_ids": [
+        11660271,
+        11663521,
+        11663535,
+        11663557,
+        11665124,
+        11668325,
+        11669913,
+        11677915,
+        11677926,
+        11681172,
+        11684372,
+        11690841,
+        11694019,
+        11697242,
+        11697256,
+        11698910,
+        11702094,
+        11706871,
+        11708447,
+        11710021,
+        11710049,
+        11714887,
+        11718099,
+        11718110,
+        11718114,
+        11666741,
+        11673077,
+        11710020
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11660271,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "월야의 여인들",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "월야의 여인들",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "월야의 여인들",
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11660271"
+          ]
+        },
+        {
+          "post_id": 11663521,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "초전자포] 시스터즈가 되었다",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "초전자포] 시스터즈가 되었다",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "초전자포] 시스터즈가 되었다",
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [
+            "scope_context_only",
+            "scope_not_current_work",
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11663521"
+          ]
+        },
+        {
+          "post_id": 11663535,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "퇴마록",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "퇴마록",
+          "projected_url": "https://page.kakao.com/content/66470141",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "퇴마록",
+          "prior_runtime_actual_title": "퇴마록 외전 1",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discussion_missing",
+            "scope_context_only",
+            "scope_not_current_work",
+            "body_verified_character_work_competes_with_resolved_public_title",
+            "unresolved_body_character_work_anchor",
+            "missing_body_work_bridge",
+            "character_title_collision",
+            "missing_direct_candidate_title",
+            "resolved_public_title_scope",
+            "official_detail_url",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11663535"
+          ]
+        },
+        {
+          "post_id": 11663557,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "퇴마록",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "퇴마록",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "퇴마록",
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [
+            "scope_current_work",
+            "blocked_candidate_scope_inferred_from_search_evidence",
+            "official_detail_url_recovered_from_search_evidence",
+            "character_bridge_variance_hold",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11663557"
+          ]
+        },
+        {
+          "post_id": 11665124,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "화산파(화산귀환)",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "화산파(화산귀환)",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "화산파(화산귀환)",
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [
+            "official_url_recall_candidate_preserved",
+            "official_url_recall_candidate_source_preserved",
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11665124"
+          ]
+        },
+        {
+          "post_id": 11668325,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "Fate/stay night",
+          "selected_option_id": "C1",
+          "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+          "projected_title": "Fate/stay night",
+          "projected_url": "https://ridibooks.com/books/505001486",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "Fate/stay night",
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "scope_context_only",
+            "scope_not_current_work",
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11668325"
+          ]
+        },
+        {
+          "post_id": 11669913,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "하룬",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "하룬",
+          "projected_url": "https://ridibooks.com/books/1811007466",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "하룬",
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [
+            "scope_context_only",
+            "scope_not_current_work",
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11669913"
+          ]
+        },
+        {
+          "post_id": 11677915,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "전지적 독자 시점",
+          "selected_option_id": "C1",
+          "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+          "projected_title": "전지적 독자 시점",
+          "projected_url": "https://novel.munpia.com/104753",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "전지적 독자 시점",
+          "prior_runtime_actual_title": "전지적 독자 시점",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discussion_missing",
+            "scope_context_only",
+            "scope_not_current_work",
+            "title_led_alias_contextual_official_detail_competes",
+            "title_led_consumption_bridge",
+            "title_acceptance_accept",
+            "alias_bridge",
+            "official_detail_url",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11677915"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "prior_runtime_title_mismatch_review_required",
+      "row_count": 3,
+      "priority_counts": {
+        "P0": 3
+      },
+      "label_counts": {
+        "HOLD": 3
+      },
+      "projected_status_counts": {
+        "safe_resolved": 3
+      },
+      "owner_modes": {
+        "SOURCE_NATIVE_OR_CANONICAL_REVIEW": 3
+      },
+      "post_ids": [
+        11673102,
+        11698870,
+        11694068
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11673102,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P0",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "prior_runtime_title_mismatch_review_required",
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "갤질하는 천재 의사",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "갤질하는 천재 의사",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+          "prior_runtime_expected_title": "갤질하는 천재 의사",
+          "prior_runtime_actual_title": "댓글 보는 천재 의사",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "title_led_consumption_bridge",
+            "title_acceptance_accept",
+            "alias_bridge",
+            "official_detail_url",
+            "title_led_alias_official_detail_canonicalized",
+            "official_detail_bracket_visual_release_context",
+            "serialized_public_identity_published"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 runtime은 다른 title 또는 compact variant로 수렴했다. 정당 variant인지 wrong-work인지 source-native/blind review로 먼저 확정한다.",
+          "close_condition": "variant/wrong-work 판정을 닫은 뒤에만 runtime replay 후보로 되돌린다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11673102"
+          ]
+        },
+        {
+          "post_id": 11698870,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P0",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "prior_runtime_title_mismatch_review_required",
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "인간실격",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "인간실격",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_VARIANT_COMPACT_MATCH_ONLY",
+          "prior_runtime_expected_title": "인간실격",
+          "prior_runtime_actual_title": "인간 실격",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "resolved_public_title_scope",
+            "official_detail_url",
+            "serialized_public_identity_published"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 runtime은 다른 title 또는 compact variant로 수렴했다. 정당 variant인지 wrong-work인지 source-native/blind review로 먼저 확정한다.",
+          "close_condition": "variant/wrong-work 판정을 닫은 뒤에만 runtime replay 후보로 되돌린다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11698870"
+          ]
+        },
+        {
+          "post_id": 11694068,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P0",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "prior_runtime_title_mismatch_review_required",
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "트와일라잇",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_title_and_quote_context_support_safe_title_lost_to_null",
+          "projected_title": "트와일라잇",
+          "projected_url": "https://ridibooks.com/books/593000441",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+          "prior_runtime_expected_title": "트와일라잇",
+          "prior_runtime_actual_title": "Twilight",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "official_detail_url",
+            "serialized_public_identity_shared_gate_restored",
+            "direct_image_explicit_title_rescued",
+            "image_ocr_work_title",
+            "image_ocr_official_detail_title",
+            "serialized_public_identity_published"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 runtime은 다른 title 또는 compact variant로 수렴했다. 정당 variant인지 wrong-work인지 source-native/blind review로 먼저 확정한다.",
+          "close_condition": "variant/wrong-work 판정을 닫은 뒤에만 runtime replay 후보로 되돌린다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11694068"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "runtime_replay_after_variant_review",
+      "row_count": 3,
+      "priority_counts": {
+        "P0": 3
+      },
+      "label_counts": {
+        "HOLD": 3
+      },
+      "projected_status_counts": {
+        "safe_resolved": 3
+      },
+      "owner_modes": {
+        "SOURCE_NATIVE_OR_CANONICAL_REVIEW": 3
+      },
+      "post_ids": [
+        11673102,
+        11698870,
+        11694068
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11673102,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P0",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "prior_runtime_title_mismatch_review_required",
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "갤질하는 천재 의사",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "갤질하는 천재 의사",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+          "prior_runtime_expected_title": "갤질하는 천재 의사",
+          "prior_runtime_actual_title": "댓글 보는 천재 의사",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "title_led_consumption_bridge",
+            "title_acceptance_accept",
+            "alias_bridge",
+            "official_detail_url",
+            "title_led_alias_official_detail_canonicalized",
+            "official_detail_bracket_visual_release_context",
+            "serialized_public_identity_published"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 runtime은 다른 title 또는 compact variant로 수렴했다. 정당 variant인지 wrong-work인지 source-native/blind review로 먼저 확정한다.",
+          "close_condition": "variant/wrong-work 판정을 닫은 뒤에만 runtime replay 후보로 되돌린다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11673102"
+          ]
+        },
+        {
+          "post_id": 11698870,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P0",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "prior_runtime_title_mismatch_review_required",
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "인간실격",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "인간실격",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_VARIANT_COMPACT_MATCH_ONLY",
+          "prior_runtime_expected_title": "인간실격",
+          "prior_runtime_actual_title": "인간 실격",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "resolved_public_title_scope",
+            "official_detail_url",
+            "serialized_public_identity_published"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 runtime은 다른 title 또는 compact variant로 수렴했다. 정당 variant인지 wrong-work인지 source-native/blind review로 먼저 확정한다.",
+          "close_condition": "variant/wrong-work 판정을 닫은 뒤에만 runtime replay 후보로 되돌린다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11698870"
+          ]
+        },
+        {
+          "post_id": 11694068,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P0",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "prior_runtime_title_mismatch_review_required",
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "트와일라잇",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_title_and_quote_context_support_safe_title_lost_to_null",
+          "projected_title": "트와일라잇",
+          "projected_url": "https://ridibooks.com/books/593000441",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+          "prior_runtime_expected_title": "트와일라잇",
+          "prior_runtime_actual_title": "Twilight",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "official_detail_url",
+            "serialized_public_identity_shared_gate_restored",
+            "direct_image_explicit_title_rescued",
+            "image_ocr_work_title",
+            "image_ocr_official_detail_title",
+            "serialized_public_identity_published"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 runtime은 다른 title 또는 compact variant로 수렴했다. 정당 variant인지 wrong-work인지 source-native/blind review로 먼저 확정한다.",
+          "close_condition": "variant/wrong-work 판정을 닫은 뒤에만 runtime replay 후보로 되돌린다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11694068"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "runtime_replay_projected_safe_resolved_exact_required",
+      "row_count": 6,
+      "priority_counts": {
+        "P1": 6
+      },
+      "label_counts": {
+        "HOLD": 1,
+        "REPROCESS": 5
+      },
+      "projected_status_counts": {
+        "safe_resolved": 6
+      },
+      "owner_modes": {
+        "RUNTIME_AUDIT_GAP_REVIEW": 1,
+        "RUNTIME_REPLAY": 5
+      },
+      "post_ids": [
+        11660273,
+        11673096,
+        11679537,
+        11665121,
+        11679553,
+        11710036
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11660273,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "마도서를 줍다 마법사가 되다",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "마도서를 줍다 마법사가 되다",
+          "projected_url": "https://novelpia.com/novel/414963",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "PASS_EXACT_SAFE_RESOLVED",
+          "prior_runtime_expected_title": "마도서를 줍다 마법사가 되다",
+          "prior_runtime_actual_title": "마도서를 줍다 마법사가 되다",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "resolved_public_title_scope",
+            "official_detail_url",
+            "serialized_public_identity_published"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11660273"
+          ]
+        },
+        {
+          "post_id": 11673096,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "삼국지",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_work_surface_supports_safe_title_lost_to_null",
+          "projected_title": "삼국지",
+          "projected_url": "https://novelpia.com/novel/270775",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "PASS_EXACT_SAFE_RESOLVED",
+          "prior_runtime_expected_title": "삼국지",
+          "prior_runtime_actual_title": "삼국지",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "direct_image_work_surface_bridge",
+            "ocr_catalog_official_title",
+            "official_detail_url",
+            "serialized_public_identity_published"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11673096"
+          ]
+        },
+        {
+          "post_id": 11679537,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "죽었다 깨어도 수선",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_abbreviation_and_plot_context_support_safe_title_lost_to_null",
+          "projected_title": "죽었다 깨어도 수선",
+          "projected_url": "https://novelpia.com/novel/233173",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "PASS_EXACT_SAFE_RESOLVED",
+          "prior_runtime_expected_title": "죽었다 깨어도 수선",
+          "prior_runtime_actual_title": "죽었다 깨어도 수선",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "resolved_public_title_scope",
+            "official_detail_url",
+            "serialized_public_identity_published"
+          ],
+          "prior_runtime_search_status": "ok",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11679537"
+          ]
+        },
+        {
+          "post_id": 11665121,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "후회 안 하는 프로듀서",
+          "selected_option_id": "C1",
+          "source_native_verdict": "comment_abbreviation_supports_safe_title_lost_to_null",
+          "projected_title": "후회 안 하는 프로듀서",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "PASS_EXACT_SAFE_RESOLVED",
+          "prior_runtime_expected_title": "후회 안 하는 프로듀서",
+          "prior_runtime_actual_title": "후회 안 하는 프로듀서",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "direct_image_work_surface_bridge",
+            "ocr_catalog_official_title",
+            "official_detail_url",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "serialized_public_identity_gate_candidate_reconciled"
+          ],
+          "prior_runtime_search_status": "ok",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11665121"
+          ]
+        },
+        {
+          "post_id": 11679553,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "RUNTIME_REPLAY",
+          "actions": [
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "마도서를 줍다 마법사가 되다",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+          "projected_title": "마도서를 줍다 마법사가 되다",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "PASS_EXACT_SAFE_RESOLVED",
+          "prior_runtime_expected_title": "마도서를 줍다 마법사가 되다",
+          "prior_runtime_actual_title": "마도서를 줍다 마법사가 되다",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "direct_image_work_surface_bridge",
+            "ocr_catalog_official_title",
+            "official_detail_url",
+            "serialized_public_identity_published"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11679553"
+          ]
+        },
+        {
+          "post_id": 11710036,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P1",
+          "owner_mode": "RUNTIME_AUDIT_GAP_REVIEW",
+          "actions": [
+            "prior_runtime_expected_audit_missing_review_required",
+            "runtime_replay_projected_safe_resolved_exact_required",
+            "full375_collateral_recheck_after_runtime"
+          ],
+          "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+          "selected_option_id": "C1",
+          "source_native_verdict": "after_title_supported_but_candidate_url_rebuild_required",
+          "projected_title": "[림월드]변방계에서 회귀자로 살아남기",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": null,
+          "prior_runtime_expected_title": null,
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [],
+          "prior_runtime_search_status": null,
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "candidate_set_rebuild_required",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 비교할 prior runtime expected-audit가 없다. 신규 runtime replay 후보로 남기되, audit gap을 명시한다.",
+          "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11710036"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "shared_gate_runtime_block_repair_required",
+      "row_count": 28,
+      "priority_counts": {
+        "P0": 28
+      },
+      "label_counts": {
+        "REPROCESS": 28
+      },
+      "projected_status_counts": {
+        "safe_resolved": 28
+      },
+      "owner_modes": {
+        "CODE_OR_RUNTIME_CONTRACT_REPAIR": 28
+      },
+      "post_ids": [
+        11660271,
+        11663521,
+        11663535,
+        11663557,
+        11665124,
+        11668325,
+        11669913,
+        11677915,
+        11677926,
+        11681172,
+        11684372,
+        11690841,
+        11694019,
+        11697242,
+        11697256,
+        11698910,
+        11702094,
+        11706871,
+        11708447,
+        11710021,
+        11710049,
+        11714887,
+        11718099,
+        11718110,
+        11718114,
+        11666741,
+        11673077,
+        11710020
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11660271,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "월야의 여인들",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "월야의 여인들",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "월야의 여인들",
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11660271"
+          ]
+        },
+        {
+          "post_id": 11663521,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "초전자포] 시스터즈가 되었다",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "초전자포] 시스터즈가 되었다",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "초전자포] 시스터즈가 되었다",
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [
+            "scope_context_only",
+            "scope_not_current_work",
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11663521"
+          ]
+        },
+        {
+          "post_id": 11663535,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "퇴마록",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "퇴마록",
+          "projected_url": "https://page.kakao.com/content/66470141",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "퇴마록",
+          "prior_runtime_actual_title": "퇴마록 외전 1",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discussion_missing",
+            "scope_context_only",
+            "scope_not_current_work",
+            "body_verified_character_work_competes_with_resolved_public_title",
+            "unresolved_body_character_work_anchor",
+            "missing_body_work_bridge",
+            "character_title_collision",
+            "missing_direct_candidate_title",
+            "resolved_public_title_scope",
+            "official_detail_url",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11663535"
+          ]
+        },
+        {
+          "post_id": 11663557,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "퇴마록",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "퇴마록",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "퇴마록",
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [
+            "scope_current_work",
+            "blocked_candidate_scope_inferred_from_search_evidence",
+            "official_detail_url_recovered_from_search_evidence",
+            "character_bridge_variance_hold",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11663557"
+          ]
+        },
+        {
+          "post_id": 11665124,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "화산파(화산귀환)",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "화산파(화산귀환)",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "화산파(화산귀환)",
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [
+            "official_url_recall_candidate_preserved",
+            "official_url_recall_candidate_source_preserved",
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11665124"
+          ]
+        },
+        {
+          "post_id": 11668325,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "Fate/stay night",
+          "selected_option_id": "C1",
+          "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+          "projected_title": "Fate/stay night",
+          "projected_url": "https://ridibooks.com/books/505001486",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "Fate/stay night",
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "scope_context_only",
+            "scope_not_current_work",
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11668325"
+          ]
+        },
+        {
+          "post_id": 11669913,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "하룬",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "하룬",
+          "projected_url": "https://ridibooks.com/books/1811007466",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "하룬",
+          "prior_runtime_actual_title": null,
+          "prior_runtime_reason_codes": [
+            "scope_context_only",
+            "scope_not_current_work",
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11669913"
+          ]
+        },
+        {
+          "post_id": 11677915,
+          "projected_status": "safe_resolved",
+          "review_label": "REPROCESS",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+          "actions": [
+            "prior_runtime_promotion_block_repair_required",
+            "shared_gate_runtime_block_repair_required",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "selected_title": "전지적 독자 시점",
+          "selected_option_id": "C1",
+          "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+          "projected_title": "전지적 독자 시점",
+          "projected_url": "https://novel.munpia.com/104753",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_expected_title": "전지적 독자 시점",
+          "prior_runtime_actual_title": "전지적 독자 시점",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discussion_missing",
+            "scope_context_only",
+            "scope_not_current_work",
+            "title_led_alias_contextual_official_detail_competes",
+            "title_led_consumption_bridge",
+            "title_acceptance_accept",
+            "alias_bridge",
+            "official_detail_url",
+            "serialized_public_identity_scrubbed"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+          "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11677915"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "source_native_canonical_variant_review_required",
+      "row_count": 3,
+      "priority_counts": {
+        "P0": 3
+      },
+      "label_counts": {
+        "HOLD": 3
+      },
+      "projected_status_counts": {
+        "safe_resolved": 3
+      },
+      "owner_modes": {
+        "SOURCE_NATIVE_OR_CANONICAL_REVIEW": 3
+      },
+      "post_ids": [
+        11673102,
+        11698870,
+        11694068
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11673102,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P0",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "prior_runtime_title_mismatch_review_required",
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "갤질하는 천재 의사",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "갤질하는 천재 의사",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+          "prior_runtime_expected_title": "갤질하는 천재 의사",
+          "prior_runtime_actual_title": "댓글 보는 천재 의사",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "title_led_consumption_bridge",
+            "title_acceptance_accept",
+            "alias_bridge",
+            "official_detail_url",
+            "title_led_alias_official_detail_canonicalized",
+            "official_detail_bracket_visual_release_context",
+            "serialized_public_identity_published"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 runtime은 다른 title 또는 compact variant로 수렴했다. 정당 variant인지 wrong-work인지 source-native/blind review로 먼저 확정한다.",
+          "close_condition": "variant/wrong-work 판정을 닫은 뒤에만 runtime replay 후보로 되돌린다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11673102"
+          ]
+        },
+        {
+          "post_id": 11698870,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P0",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "prior_runtime_title_mismatch_review_required",
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "인간실격",
+          "selected_option_id": "C1",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "projected_title": "인간실격",
+          "projected_url": null,
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_VARIANT_COMPACT_MATCH_ONLY",
+          "prior_runtime_expected_title": "인간실격",
+          "prior_runtime_actual_title": "인간 실격",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "resolved_public_title_scope",
+            "official_detail_url",
+            "serialized_public_identity_published"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 runtime은 다른 title 또는 compact variant로 수렴했다. 정당 variant인지 wrong-work인지 source-native/blind review로 먼저 확정한다.",
+          "close_condition": "variant/wrong-work 판정을 닫은 뒤에만 runtime replay 후보로 되돌린다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11698870"
+          ]
+        },
+        {
+          "post_id": 11694068,
+          "projected_status": "safe_resolved",
+          "review_label": "HOLD",
+          "priority": "P0",
+          "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+          "actions": [
+            "prior_runtime_title_mismatch_review_required",
+            "source_native_canonical_variant_review_required",
+            "runtime_replay_after_variant_review"
+          ],
+          "selected_title": "트와일라잇",
+          "selected_option_id": "C1",
+          "source_native_verdict": "direct_title_and_quote_context_support_safe_title_lost_to_null",
+          "projected_title": "트와일라잇",
+          "projected_url": "https://ridibooks.com/books/593000441",
+          "before_status": null,
+          "before_title": null,
+          "before_url": null,
+          "prior_runtime_audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+          "prior_runtime_expected_title": "트와일라잇",
+          "prior_runtime_actual_title": "Twilight",
+          "prior_runtime_reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "official_detail_url",
+            "serialized_public_identity_shared_gate_restored",
+            "direct_image_explicit_title_rescued",
+            "image_ocr_work_title",
+            "image_ocr_official_detail_title",
+            "serialized_public_identity_published"
+          ],
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "matches_source_native_title": true,
+          "projected_reasons": [
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "rationale_ko": "Projection은 safe_resolved exact지만 과거 runtime은 다른 title 또는 compact variant로 수렴했다. 정당 variant인지 wrong-work인지 source-native/blind review로 먼저 확정한다.",
+          "close_condition": "variant/wrong-work 판정을 닫은 뒤에만 runtime replay 후보로 되돌린다.",
+          "evidence_refs": [
+            "loop500_shared_gate_residual37_projection#post_id=11694068"
+          ]
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "post_id": 11660271,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "월야의 여인들",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "월야의 여인들",
+      "projected_url": null,
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "월야의 여인들",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11660271"
+      ]
+    },
+    {
+      "post_id": 11660273,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "RUNTIME_REPLAY",
+      "actions": [
+        "runtime_replay_projected_safe_resolved_exact_required",
+        "full375_collateral_recheck_after_runtime"
+      ],
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "마도서를 줍다 마법사가 되다",
+      "projected_url": "https://novelpia.com/novel/414963",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "PASS_EXACT_SAFE_RESOLVED",
+      "prior_runtime_expected_title": "마도서를 줍다 마법사가 되다",
+      "prior_runtime_actual_title": "마도서를 줍다 마법사가 되다",
+      "prior_runtime_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "resolved_public_title_scope",
+        "official_detail_url",
+        "serialized_public_identity_published"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+      "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11660273"
+      ]
+    },
+    {
+      "post_id": 11663521,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "초전자포] 시스터즈가 되었다",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "초전자포] 시스터즈가 되었다",
+      "projected_url": null,
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "초전자포] 시스터즈가 되었다",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "scope_context_only",
+        "scope_not_current_work",
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11663521"
+      ]
+    },
+    {
+      "post_id": 11663535,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "퇴마록",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "퇴마록",
+      "projected_url": "https://page.kakao.com/content/66470141",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "퇴마록",
+      "prior_runtime_actual_title": "퇴마록 외전 1",
+      "prior_runtime_reason_codes": [
+        "official_title_exists",
+        "row_discussion_missing",
+        "scope_context_only",
+        "scope_not_current_work",
+        "body_verified_character_work_competes_with_resolved_public_title",
+        "unresolved_body_character_work_anchor",
+        "missing_body_work_bridge",
+        "character_title_collision",
+        "missing_direct_candidate_title",
+        "resolved_public_title_scope",
+        "official_detail_url",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11663535"
+      ]
+    },
+    {
+      "post_id": 11663557,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "퇴마록",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "퇴마록",
+      "projected_url": null,
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "퇴마록",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "scope_current_work",
+        "blocked_candidate_scope_inferred_from_search_evidence",
+        "official_detail_url_recovered_from_search_evidence",
+        "character_bridge_variance_hold",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11663557"
+      ]
+    },
+    {
+      "post_id": 11665124,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "화산파(화산귀환)",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "화산파(화산귀환)",
+      "projected_url": null,
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "화산파(화산귀환)",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved",
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11665124"
+      ]
+    },
+    {
+      "post_id": 11668325,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "Fate/stay night",
+      "selected_option_id": "C1",
+      "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+      "projected_title": "Fate/stay night",
+      "projected_url": "https://ridibooks.com/books/505001486",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "Fate/stay night",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "scope_context_only",
+        "scope_not_current_work",
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11668325"
+      ]
+    },
+    {
+      "post_id": 11669913,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "하룬",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "하룬",
+      "projected_url": "https://ridibooks.com/books/1811007466",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "하룬",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "scope_context_only",
+        "scope_not_current_work",
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11669913"
+      ]
+    },
+    {
+      "post_id": 11673096,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "RUNTIME_REPLAY",
+      "actions": [
+        "runtime_replay_projected_safe_resolved_exact_required",
+        "full375_collateral_recheck_after_runtime"
+      ],
+      "selected_title": "삼국지",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_work_surface_supports_safe_title_lost_to_null",
+      "projected_title": "삼국지",
+      "projected_url": "https://novelpia.com/novel/270775",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "PASS_EXACT_SAFE_RESOLVED",
+      "prior_runtime_expected_title": "삼국지",
+      "prior_runtime_actual_title": "삼국지",
+      "prior_runtime_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "direct_image_work_surface_bridge",
+        "ocr_catalog_official_title",
+        "official_detail_url",
+        "serialized_public_identity_published"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+      "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11673096"
+      ]
+    },
+    {
+      "post_id": 11673102,
+      "projected_status": "safe_resolved",
+      "review_label": "HOLD",
+      "priority": "P0",
+      "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+      "actions": [
+        "prior_runtime_title_mismatch_review_required",
+        "source_native_canonical_variant_review_required",
+        "runtime_replay_after_variant_review"
+      ],
+      "selected_title": "갤질하는 천재 의사",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "갤질하는 천재 의사",
+      "projected_url": null,
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "prior_runtime_expected_title": "갤질하는 천재 의사",
+      "prior_runtime_actual_title": "댓글 보는 천재 의사",
+      "prior_runtime_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "title_led_consumption_bridge",
+        "title_acceptance_accept",
+        "alias_bridge",
+        "official_detail_url",
+        "title_led_alias_official_detail_canonicalized",
+        "official_detail_bracket_visual_release_context",
+        "serialized_public_identity_published"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 runtime은 다른 title 또는 compact variant로 수렴했다. 정당 variant인지 wrong-work인지 source-native/blind review로 먼저 확정한다.",
+      "close_condition": "variant/wrong-work 판정을 닫은 뒤에만 runtime replay 후보로 되돌린다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11673102"
+      ]
+    },
+    {
+      "post_id": 11677915,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "전지적 독자 시점",
+      "selected_option_id": "C1",
+      "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+      "projected_title": "전지적 독자 시점",
+      "projected_url": "https://novel.munpia.com/104753",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "전지적 독자 시점",
+      "prior_runtime_actual_title": "전지적 독자 시점",
+      "prior_runtime_reason_codes": [
+        "official_title_exists",
+        "row_discussion_missing",
+        "scope_context_only",
+        "scope_not_current_work",
+        "title_led_alias_contextual_official_detail_competes",
+        "title_led_consumption_bridge",
+        "title_acceptance_accept",
+        "alias_bridge",
+        "official_detail_url",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11677915"
+      ]
+    },
+    {
+      "post_id": 11677926,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "재앙급 막내 공자의 회귀",
+      "selected_option_id": "C1",
+      "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+      "projected_title": "재앙급 막내 공자의 회귀",
+      "projected_url": "https://page.kakao.com/content/66110131",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "재앙급 막내 공자의 회귀",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11677926"
+      ]
+    },
+    {
+      "post_id": 11681172,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "헌터갤러리의 국가권력급 기계공주",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "projected_title": "헌터갤러리의 국가권력급 기계공주",
+      "projected_url": null,
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "헌터갤러리의 국가권력급 기계공주",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11681172"
+      ]
+    },
+    {
+      "post_id": 11684372,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "밀리언 클래스",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "밀리언 클래스",
+      "projected_url": null,
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "밀리언 클래스",
+      "prior_runtime_actual_title": "밀리언 클래스",
+      "prior_runtime_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "direct_image_work_surface_bridge",
+        "ocr_catalog_official_title",
+        "unverified_promoted_image_work_title_without_official_support",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11684372"
+      ]
+    },
+    {
+      "post_id": 11690841,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "블루 아카이브",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "블루 아카이브",
+      "projected_url": "https://page.kakao.com/content/67135563",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "블루 아카이브",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": null,
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11690841"
+      ]
+    },
+    {
+      "post_id": 11694019,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "혼후 순결",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "혼후 순결",
+      "projected_url": "https://page.kakao.com/content/61863349",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "혼후 순결",
+      "prior_runtime_actual_title": "혼후 순결",
+      "prior_runtime_reason_codes": [
+        "row_discusses_work_as_work",
+        "context_only",
+        "work_consumption_marker",
+        "url_title_mismatch",
+        "official_detail_url_title_mismatch_publish_blocked",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "llm_only_sentence_candidate_pruned"
+      ],
+      "prior_runtime_search_status": "ok",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11694019"
+      ]
+    },
+    {
+      "post_id": 11697242,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "유희왕",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "유희왕",
+      "projected_url": "https://m.munpia.com/novel/detail/567990",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "유희왕",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11697242"
+      ]
+    },
+    {
+      "post_id": 11697256,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "황제의 딸로 환생했다",
+      "selected_option_id": "C1",
+      "source_native_verdict": "comment_answer_directly_supports_safe_title_lost_to_null",
+      "projected_title": "황제의 딸로 환생했다",
+      "projected_url": "https://novelpia.com/novel/250464",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "황제의 딸로 환생했다",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "ok",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11697256"
+      ]
+    },
+    {
+      "post_id": 11698870,
+      "projected_status": "safe_resolved",
+      "review_label": "HOLD",
+      "priority": "P0",
+      "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+      "actions": [
+        "prior_runtime_title_mismatch_review_required",
+        "source_native_canonical_variant_review_required",
+        "runtime_replay_after_variant_review"
+      ],
+      "selected_title": "인간실격",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "인간실격",
+      "projected_url": null,
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_VARIANT_COMPACT_MATCH_ONLY",
+      "prior_runtime_expected_title": "인간실격",
+      "prior_runtime_actual_title": "인간 실격",
+      "prior_runtime_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "resolved_public_title_scope",
+        "official_detail_url",
+        "serialized_public_identity_published"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 runtime은 다른 title 또는 compact variant로 수렴했다. 정당 variant인지 wrong-work인지 source-native/blind review로 먼저 확정한다.",
+      "close_condition": "variant/wrong-work 판정을 닫은 뒤에만 runtime replay 후보로 되돌린다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11698870"
+      ]
+    },
+    {
+      "post_id": 11698910,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "판초우의의 마법사",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "판초우의의 마법사",
+      "projected_url": "https://novel.munpia.com/530500",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "판초우의의 마법사",
+      "prior_runtime_actual_title": "판초우의의 마법사",
+      "prior_runtime_reason_codes": [
+        "official_title_exists",
+        "row_discussion_missing",
+        "scope_context_only",
+        "scope_not_current_work",
+        "unresolved_body_character_work_anchor",
+        "missing_body_work_bridge",
+        "resolved_public_title_scope",
+        "official_detail_url",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11698910"
+      ]
+    },
+    {
+      "post_id": 11702094,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "#더블오",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_short_title_supports_safe_title_lost_to_null",
+      "projected_title": "#더블오",
+      "projected_url": "https://novelpia.com/novel/417074",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "#더블오",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "official_title_exists",
+        "row_discussion_missing",
+        "context_only",
+        "scope_unknown",
+        "scope_not_current_work",
+        "scope_unclassified",
+        "competing_candidate_present",
+        "official_detail_url",
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11702094"
+      ]
+    },
+    {
+      "post_id": 11706871,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "파우스트",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "파우스트",
+      "projected_url": "https://ridibooks.com/books/1242000797",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "파우스트",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "official_title_exists",
+        "row_discussion_missing",
+        "nonwork",
+        "community_banter",
+        "scope_platform_meta_nonwork",
+        "scope_not_current_work",
+        "non_novel_discourse",
+        "official_detail_url",
+        "thematic_overlap_only",
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11706871"
+      ]
+    },
+    {
+      "post_id": 11708447,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "잠룡회귀",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "잠룡회귀",
+      "projected_url": "https://ridibooks.com/books/425439440",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "잠룡회귀",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "scope_current_work",
+        "blocked_candidate_scope_inferred_from_search_evidence",
+        "official_detail_url_recovered_from_search_evidence",
+        "character_bridge_variance_hold",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11708447"
+      ]
+    },
+    {
+      "post_id": 11710021,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "무한의 마법사",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_and_character_support_safe_title_lost_to_null",
+      "projected_title": "무한의 마법사",
+      "projected_url": null,
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "무한의 마법사",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "row_discussion_missing",
+        "nonwork",
+        "community_banter",
+        "scope_platform_meta_nonwork",
+        "scope_not_current_work",
+        "non_novel_discourse",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": null,
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11710021"
+      ]
+    },
+    {
+      "post_id": 11710049,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_alias_and_comment_context_support_safe_title_lost_to_null",
+      "projected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "projected_url": null,
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved",
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11710049"
+      ]
+    },
+    {
+      "post_id": 11714887,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "도굴왕 1 |",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "projected_title": "도굴왕 1 |",
+      "projected_url": "https://page.kakao.com/content/53190884",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "도굴왕 1 |",
+      "prior_runtime_actual_title": "[도굴왕] [fate] 도굴왕에서 에누마 엘리시를!!",
+      "prior_runtime_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "verified_alias_title_only_publication",
+        "official_url_withheld_by_title_mismatch",
+        "serialized_public_identity_shared_gate_restored",
+        "unverified_promoted_image_work_title_without_official_support",
+        "scope_image_ocr_derived_work",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11714887"
+      ]
+    },
+    {
+      "post_id": 11718099,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "빌어먹을 환생",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "projected_title": "빌어먹을 환생",
+      "projected_url": "https://novel.munpia.com/222360",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "빌어먹을 환생",
+      "prior_runtime_actual_title": "빌어먹을 환생",
+      "prior_runtime_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "batch_alias_public_title_bridge",
+        "official_detail_url",
+        "promoted_image_work_title_conflicts_with_public_title",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11718099"
+      ]
+    },
+    {
+      "post_id": 11718110,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "지구온라인에서 쌀먹합니다",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "projected_title": "지구온라인에서 쌀먹합니다",
+      "projected_url": "https://novelpia.com/novel/395678",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "지구온라인에서 쌀먹합니다",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "scope_context_only",
+        "scope_not_current_work",
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11718110"
+      ]
+    },
+    {
+      "post_id": 11718114,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "selected_option_id": "C1",
+      "source_native_verdict": "title_phrase_and_plot_context_support_safe_title_lost_to_null",
+      "projected_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "projected_url": "https://novelpia.com/novel/383584",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "scope_context_only",
+        "scope_not_current_work",
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11718114"
+      ]
+    },
+    {
+      "post_id": 11666741,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "별을 품은 소드마스터",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "projected_title": "별을 품은 소드마스터",
+      "projected_url": "https://novel.munpia.com/254718",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "별을 품은 소드마스터",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": null,
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11666741"
+      ]
+    },
+    {
+      "post_id": 11679537,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "RUNTIME_REPLAY",
+      "actions": [
+        "runtime_replay_projected_safe_resolved_exact_required",
+        "full375_collateral_recheck_after_runtime"
+      ],
+      "selected_title": "죽었다 깨어도 수선",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_and_plot_context_support_safe_title_lost_to_null",
+      "projected_title": "죽었다 깨어도 수선",
+      "projected_url": "https://novelpia.com/novel/233173",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "PASS_EXACT_SAFE_RESOLVED",
+      "prior_runtime_expected_title": "죽었다 깨어도 수선",
+      "prior_runtime_actual_title": "죽었다 깨어도 수선",
+      "prior_runtime_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "resolved_public_title_scope",
+        "official_detail_url",
+        "serialized_public_identity_published"
+      ],
+      "prior_runtime_search_status": "ok",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+      "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11679537"
+      ]
+    },
+    {
+      "post_id": 11665121,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "RUNTIME_REPLAY",
+      "actions": [
+        "runtime_replay_projected_safe_resolved_exact_required",
+        "full375_collateral_recheck_after_runtime"
+      ],
+      "selected_title": "후회 안 하는 프로듀서",
+      "selected_option_id": "C1",
+      "source_native_verdict": "comment_abbreviation_supports_safe_title_lost_to_null",
+      "projected_title": "후회 안 하는 프로듀서",
+      "projected_url": null,
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "PASS_EXACT_SAFE_RESOLVED",
+      "prior_runtime_expected_title": "후회 안 하는 프로듀서",
+      "prior_runtime_actual_title": "후회 안 하는 프로듀서",
+      "prior_runtime_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "direct_image_work_surface_bridge",
+        "ocr_catalog_official_title",
+        "official_detail_url",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "serialized_public_identity_gate_candidate_reconciled"
+      ],
+      "prior_runtime_search_status": "ok",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+      "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11665121"
+      ]
+    },
+    {
+      "post_id": 11673077,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "판초우의의 마법사",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_title_surface_supports_safe_title_lost_to_null",
+      "projected_title": "판초우의의 마법사",
+      "projected_url": "https://novel.munpia.com/530500",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "판초우의의 마법사",
+      "prior_runtime_actual_title": "즉사기 들고 무림에 떨어지다",
+      "prior_runtime_reason_codes": [
+        "official_title_exists",
+        "row_discussion_missing",
+        "scope_context_only",
+        "scope_not_current_work",
+        "title_led_alias_contextual_official_detail_competes",
+        "title_led_consumption_bridge",
+        "title_acceptance_accept",
+        "alias_bridge",
+        "official_detail_url",
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11673077"
+      ]
+    },
+    {
+      "post_id": 11679553,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "RUNTIME_REPLAY",
+      "actions": [
+        "runtime_replay_projected_safe_resolved_exact_required",
+        "full375_collateral_recheck_after_runtime"
+      ],
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "projected_title": "마도서를 줍다 마법사가 되다",
+      "projected_url": null,
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "PASS_EXACT_SAFE_RESOLVED",
+      "prior_runtime_expected_title": "마도서를 줍다 마법사가 되다",
+      "prior_runtime_actual_title": "마도서를 줍다 마법사가 되다",
+      "prior_runtime_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "direct_image_work_surface_bridge",
+        "ocr_catalog_official_title",
+        "official_detail_url",
+        "serialized_public_identity_published"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 source-native selected title과 같은 safe_resolved로 수렴했다. 같은 입력 runtime replay에서 실제 publish 계약과 row 생산성을 확인해야 한다.",
+      "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11679553"
+      ]
+    },
+    {
+      "post_id": 11694068,
+      "projected_status": "safe_resolved",
+      "review_label": "HOLD",
+      "priority": "P0",
+      "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+      "actions": [
+        "prior_runtime_title_mismatch_review_required",
+        "source_native_canonical_variant_review_required",
+        "runtime_replay_after_variant_review"
+      ],
+      "selected_title": "트와일라잇",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_title_and_quote_context_support_safe_title_lost_to_null",
+      "projected_title": "트와일라잇",
+      "projected_url": "https://ridibooks.com/books/593000441",
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "prior_runtime_expected_title": "트와일라잇",
+      "prior_runtime_actual_title": "Twilight",
+      "prior_runtime_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "official_detail_url",
+        "serialized_public_identity_shared_gate_restored",
+        "direct_image_explicit_title_rescued",
+        "image_ocr_work_title",
+        "image_ocr_official_detail_title",
+        "serialized_public_identity_published"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 runtime은 다른 title 또는 compact variant로 수렴했다. 정당 variant인지 wrong-work인지 source-native/blind review로 먼저 확정한다.",
+      "close_condition": "variant/wrong-work 판정을 닫은 뒤에만 runtime replay 후보로 되돌린다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11694068"
+      ]
+    },
+    {
+      "post_id": 11710020,
+      "projected_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+      "actions": [
+        "prior_runtime_promotion_block_repair_required",
+        "shared_gate_runtime_block_repair_required",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "selected_title": "주무시기 전에 무엇을 하셨나요?",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_and_plot_context_support_safe_title_lost_to_null",
+      "projected_title": "주무시기 전에 무엇을 하셨나요?",
+      "projected_url": null,
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_expected_title": "주무시기 전에 무엇을 하셨나요?",
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [
+        "scope_context_only",
+        "scope_not_current_work",
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "serialized_public_identity_scrubbed"
+      ],
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다.",
+      "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11710020"
+      ]
+    },
+    {
+      "post_id": 11710036,
+      "projected_status": "safe_resolved",
+      "review_label": "HOLD",
+      "priority": "P1",
+      "owner_mode": "RUNTIME_AUDIT_GAP_REVIEW",
+      "actions": [
+        "prior_runtime_expected_audit_missing_review_required",
+        "runtime_replay_projected_safe_resolved_exact_required",
+        "full375_collateral_recheck_after_runtime"
+      ],
+      "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "selected_option_id": "C1",
+      "source_native_verdict": "after_title_supported_but_candidate_url_rebuild_required",
+      "projected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "projected_url": null,
+      "before_status": null,
+      "before_title": null,
+      "before_url": null,
+      "prior_runtime_audit_status": null,
+      "prior_runtime_expected_title": null,
+      "prior_runtime_actual_title": null,
+      "prior_runtime_reason_codes": [],
+      "prior_runtime_search_status": null,
+      "matches_source_native_title": true,
+      "projected_reasons": [
+        "candidate_set_rebuild_required",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "rationale_ko": "Projection은 safe_resolved exact지만 비교할 prior runtime expected-audit가 없다. 신규 runtime replay 후보로 남기되, audit gap을 명시한다.",
+      "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+      "evidence_refs": [
+        "loop500_shared_gate_residual37_projection#post_id=11710036"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "projection_queue_is_not_approval": true,
+    "runtime_replay_required_for_projected_safe_resolved": true,
+    "full375_collateral_remains_no_go_until_replayed": true,
+    "completion_gate": "full375 collateral GO + full_scan path"
+  }
+}

@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-06 Loop500 shared gate residual37 prior-runtime follow-up 체크
+
+- [x] Loop498 residual105 중 `shared_promotion_gate_wiring_required 37`건을 먼저 처리했다.
+- [x] `tools/build_projection_followup_queue.py`가 prior runtime expected-audit를 받아 실패 행을 replay 전 repair/review lane으로 분리하도록 보강했다.
+- [x] 계약 테스트 `tests/test_projection_followup_queue.py`를 추가했다.
+- [x] Projection 결과는 `safe_resolved 37 / exact 37 / validation issue 0`이다.
+- [x] Prior runtime audit status는 `FAIL_RUNTIME_PROMOTION_BLOCKED 28 / title mismatch 2 / variant 1 / PASS 5 / NO_PRIOR_AUDIT 1`이다.
+- [x] Follow-up queue는 `REPROCESS 33 / HOLD 4`, P0 `31`, P1 `6`이다.
+- [x] Immediate runtime replay 후보는 `37`이 아니라 `6`건으로 제한했다.
+- [x] `prior_runtime_promotion_block_repair_required 28`건을 먼저 repair lane으로 보존했다.
+- [x] `prior_runtime_title_mismatch_review_required 3`건을 variant/wrong-work review lane으로 보존했다.
+- [x] Runtime input manifest는 `6`건, missing post_id `0`이다.
+- [ ] Runtime replay는 아직 실행하지 않았다.
+- [ ] Repair lane `28`건은 publish trace/candidate preservation/search-blind 원인을 수리한 뒤 replay한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: projection `REVIEW-LOCKED`, follow-up queue `REVIEW-LOCKED`, runtime input `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop499 테스트런 대시보드 부착 계약 체크
 
 - [x] 공통 helper `tools/test_run_dashboard_policy.py`를 추가했다.

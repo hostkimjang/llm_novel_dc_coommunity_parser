@@ -284,7 +284,7 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         "",
         "## 경계",
         "",
-        "- 이 projection은 source-native residual queue를 shared `can_publish_title` 계약으로 통과시킨 결정적 산출물이다.",
+        "- 이 projection은 source-native residual queue를 shared `can_publish_title` 계약으로 투영한 산출물이다.",
         "- Runtime replay, full375 collateral GO, full_scan approval을 대체하지 않는다.",
         "- `safe_resolved` projection 행은 후속 runtime replay 후보이며, replay 후 publication contract와 collateral gate를 다시 봐야 한다.",
         "",

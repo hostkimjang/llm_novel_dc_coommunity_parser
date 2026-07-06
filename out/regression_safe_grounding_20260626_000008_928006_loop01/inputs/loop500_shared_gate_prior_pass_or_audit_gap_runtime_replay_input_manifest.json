@@ -1,0 +1,31 @@
+{
+  "queue_id": "loop500_shared_gate_residual37_prior_runtime_followup_queue",
+  "generated_at": "2026-07-06T23:06:17",
+  "source_result_path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop496_full375_current_head_4fd250f7_search_nonlight_result.json",
+  "runtime_replay_candidate_rows": 6,
+  "runtime_input_rows": 6,
+  "missing_post_ids": [],
+  "post_ids": [
+    11660273,
+    11673096,
+    11679537,
+    11665121,
+    11679553,
+    11710036
+  ],
+  "expected_titles": [
+    "마도서를 줍다 마법사가 되다",
+    "삼국지",
+    "죽었다 깨어도 수선",
+    "후회 안 하는 프로듀서",
+    "마도서를 줍다 마법사가 되다",
+    "[림월드]변방계에서 회귀자로 살아남기"
+  ],
+  "output_jsonl": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop500_shared_gate_prior_pass_or_audit_gap_runtime_replay_input.jsonl",
+  "gate": {
+    "runtime_input_generation": "GO",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "approval_boundary": "input generation is not runtime approval"
+  }
+}

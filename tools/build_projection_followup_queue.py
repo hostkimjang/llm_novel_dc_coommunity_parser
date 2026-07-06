@@ -49,17 +49,98 @@ def _projected_status(row: dict[str, Any]) -> str:
     return str(row.get("projected_status") or "").strip()
 
 
-def classify_projection_row(row: dict[str, Any]) -> dict[str, Any]:
+def _post_id_key(value: Any) -> str:
+    return str(value or "").strip()
+
+
+def _prior_audit_rows(prior_runtime_expected_audit: dict[str, Any] | None) -> dict[str, dict[str, Any]]:
+    if not prior_runtime_expected_audit:
+        return {}
+    rows = prior_runtime_expected_audit.get("rows") or []
+    if not isinstance(rows, list):
+        return {}
+    out: dict[str, dict[str, Any]] = {}
+    for item in rows:
+        if not isinstance(item, dict):
+            continue
+        post_id = _post_id_key(item.get("post_id"))
+        if post_id:
+            out[post_id] = item
+    return out
+
+
+def _prior_status(prior_runtime_audit: dict[str, Any] | None) -> str:
+    if not prior_runtime_audit:
+        return ""
+    return str(prior_runtime_audit.get("audit_status") or "").strip()
+
+
+def classify_projection_row(
+    row: dict[str, Any],
+    *,
+    prior_runtime_audit: dict[str, Any] | None = None,
+    prior_audit_enabled: bool = False,
+) -> dict[str, Any]:
     status = _projected_status(row)
     reasons = _reason_set(row)
     exact_match = row.get("matches_source_native_title") is True
     selected_title = row.get("selected_title")
     projected_title = row.get("projected_title")
+    prior_status = _prior_status(prior_runtime_audit)
 
     if status == "safe_resolved" and exact_match:
+        if prior_status == "FAIL_RUNTIME_PROMOTION_BLOCKED":
+            return {
+                "review_label": "REPROCESS",
+                "priority": "P0",
+                "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
+                "actions": [
+                    "prior_runtime_promotion_block_repair_required",
+                    "shared_gate_runtime_block_repair_required",
+                    "full375_collateral_recheck_after_repair",
+                ],
+                "rationale_ko": (
+                    "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 "
+                    "promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 "
+                    "publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다."
+                ),
+                "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
+            }
+        if prior_status in {"FAIL_SAFE_RESOLVED_TITLE_MISMATCH", "FAIL_VARIANT_COMPACT_MATCH_ONLY"}:
+            return {
+                "review_label": "HOLD",
+                "priority": "P0",
+                "owner_mode": "SOURCE_NATIVE_OR_CANONICAL_REVIEW",
+                "actions": [
+                    "prior_runtime_title_mismatch_review_required",
+                    "source_native_canonical_variant_review_required",
+                    "runtime_replay_after_variant_review",
+                ],
+                "rationale_ko": (
+                    "Projection은 safe_resolved exact지만 과거 runtime은 다른 title 또는 compact variant로 "
+                    "수렴했다. 정당 variant인지 wrong-work인지 source-native/blind review로 먼저 확정한다."
+                ),
+                "close_condition": "variant/wrong-work 판정을 닫은 뒤에만 runtime replay 후보로 되돌린다.",
+            }
+        if prior_audit_enabled and prior_runtime_audit is None:
+            return {
+                "review_label": "HOLD",
+                "priority": "P1",
+                "owner_mode": "RUNTIME_AUDIT_GAP_REVIEW",
+                "actions": [
+                    "prior_runtime_expected_audit_missing_review_required",
+                    "runtime_replay_projected_safe_resolved_exact_required",
+                    "full375_collateral_recheck_after_runtime",
+                ],
+                "rationale_ko": (
+                    "Projection은 safe_resolved exact지만 비교할 prior runtime expected-audit가 없다. "
+                    "신규 runtime replay 후보로 남기되, audit gap을 명시한다."
+                ),
+                "close_condition": "runtime replay가 같은 title/url safe_resolved를 내고 publication contract violation이 0이어야 한다.",
+            }
         return {
             "review_label": "REPROCESS",
-            "priority": "P0",
+            "priority": "P1" if prior_status == "PASS_EXACT_SAFE_RESOLVED" else "P0",
             "owner_mode": "RUNTIME_REPLAY",
             "actions": [
                 "runtime_replay_projected_safe_resolved_exact_required",
@@ -169,6 +250,7 @@ def build_followup_queue(
     *,
     generated_at: str | None = None,
     queue_id: str = "projection_followup_action_queue",
+    prior_runtime_expected_audit: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     rows = projection.get("rows") or []
     if not isinstance(rows, list):
@@ -181,14 +263,25 @@ def build_followup_queue(
     action_counts: Counter[str] = Counter()
     owner_counts: Counter[str] = Counter()
     exact_counts: Counter[str] = Counter()
+    prior_audit_counts: Counter[str] = Counter()
     groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     validation_issues: list[dict[str, Any]] = []
+    prior_audit_enabled = prior_runtime_expected_audit is not None
+    prior_by_post_id = _prior_audit_rows(prior_runtime_expected_audit)
 
     for row in rows:
         if not isinstance(row, dict):
             validation_issues.append({"code": "non_object_projection_row"})
             continue
-        classification = classify_projection_row(row)
+        prior_runtime_audit = prior_by_post_id.get(_post_id_key(row.get("post_id")))
+        prior_status = _prior_status(prior_runtime_audit) or "NO_PRIOR_AUDIT"
+        if prior_audit_enabled:
+            prior_audit_counts[prior_status] += 1
+        classification = classify_projection_row(
+            row,
+            prior_runtime_audit=prior_runtime_audit,
+            prior_audit_enabled=prior_audit_enabled,
+        )
         status = _projected_status(row)
         exact_key = "match" if row.get("matches_source_native_title") is True else "mismatch"
         actions = classification["actions"]
@@ -207,6 +300,11 @@ def build_followup_queue(
             "before_status": row.get("before_status"),
             "before_title": row.get("before_title"),
             "before_url": row.get("before_url"),
+            "prior_runtime_audit_status": None if prior_status == "NO_PRIOR_AUDIT" else prior_status,
+            "prior_runtime_expected_title": (prior_runtime_audit or {}).get("expected_title"),
+            "prior_runtime_actual_title": (prior_runtime_audit or {}).get("actual_title"),
+            "prior_runtime_reason_codes": (prior_runtime_audit or {}).get("reason_codes") or [],
+            "prior_runtime_search_status": (prior_runtime_audit or {}).get("search_status"),
             "matches_source_native_title": row.get("matches_source_native_title") is True,
             "projected_reasons": sorted(_reason_set(row)),
             "rationale_ko": classification["rationale_ko"],
@@ -268,6 +366,7 @@ def build_followup_queue(
             "priority_counts": _counter_to_dict(priority_counts),
             "projected_status_counts": _counter_to_dict(status_counts),
             "exact_match_counts": _counter_to_dict(exact_counts),
+            "prior_runtime_audit_status_counts": _counter_to_dict(prior_audit_counts),
             "owner_mode_counts": _counter_to_dict(owner_counts),
             "action_counts": _counter_to_dict(action_counts),
             "action_group_count": len(action_groups),
@@ -386,6 +485,7 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
         f"- priority_counts: `{summary.get('priority_counts')}`",
         f"- projected_status_counts: `{summary.get('projected_status_counts')}`",
         f"- exact_match_counts: `{summary.get('exact_match_counts')}`",
+        f"- prior_runtime_audit_status_counts: `{summary.get('prior_runtime_audit_status_counts')}`",
         f"- runtime_replay_candidate_rows: `{summary.get('runtime_replay_candidate_rows')}`",
         f"- variant_review_rows: `{summary.get('variant_review_rows')}`",
         f"- lint_followup_rows: `{summary.get('lint_followup_rows')}`",
@@ -396,8 +496,9 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
         "",
         "## 승인 경계",
         "",
-        "- 이 큐는 Loop484 projection의 후속 실행 단위이며 approval이 아니다.",
+        "- 이 큐는 source projection의 후속 실행 단위이며 approval이 아니다.",
         "- `safe_resolved` projection도 runtime replay와 publication contract audit 전에는 해소 처리하지 않는다.",
+        "- prior runtime expected-audit 실패 행은 같은 입력 반복 실행 전에 repair/source-native review lane으로 보낸다.",
         "- source-native exact title mismatch는 canonical variant 또는 wrong-work review 전까지 publish 근거가 아니다.",
         "- 완료 기준은 여전히 `full375 collateral GO + full_scan 경로 정의`다.",
         "",
@@ -431,6 +532,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--queue-id", default="projection_followup_action_queue")
     parser.add_argument("--output-json", required=True, type=Path)
     parser.add_argument("--output-md", required=True, type=Path)
+    parser.add_argument("--prior-runtime-expected-audit", type=Path, default=None)
     parser.add_argument("--source-result", type=Path, default=None)
     parser.add_argument("--runtime-input-jsonl", type=Path, default=None)
     parser.add_argument("--runtime-manifest-json", type=Path, default=None)
@@ -442,7 +544,16 @@ def main() -> int:
     args = parse_args()
     projection = load_json(args.projection)
     projection.setdefault("source_projection_path", args.projection.as_posix())
-    queue = build_followup_queue(projection, queue_id=args.queue_id)
+    prior_runtime_expected_audit = (
+        load_json(args.prior_runtime_expected_audit)
+        if args.prior_runtime_expected_audit
+        else None
+    )
+    queue = build_followup_queue(
+        projection,
+        queue_id=args.queue_id,
+        prior_runtime_expected_audit=prior_runtime_expected_audit,
+    )
     args.output_json.parent.mkdir(parents=True, exist_ok=True)
     args.output_json.write_text(json.dumps(queue, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     write_markdown(queue, args.output_md)

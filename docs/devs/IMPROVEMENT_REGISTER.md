@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260706-500 - shared gate residual37 prior-runtime follow-up
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Shared gate projection | REVIEW-LOCKED | Loop498 residual105 중 `shared_promotion_gate_wiring_required 37`건을 shared `can_publish_title`로 projection, `safe_resolved 37 / exact 37` | projection만으로 해소 처리 금지 |
+| Prior runtime audit 반영 | GO_QUEUE_SPLIT | Loop489 expected-audit overlap `36`, `FAIL_RUNTIME_PROMOTION_BLOCKED 28`, title mismatch/variant `3`, pass `5`, no prior audit `1` | 실패 행 먼저 repair/review |
+| Follow-up queue | REVIEW-LOCKED | `REPROCESS 33 / HOLD 4`, P0 `31`, P1 `6`, validation issue `0` | action group별 배치 |
+| Runtime input | GO_INPUT_ONLY | prior pass/audit-gap `6`건 input 생성, missing `0` | 실행 시 `--parallel 16` + dashboard |
+| Repair lane | OPEN | `prior_runtime_promotion_block_repair_required 28` | publish trace/candidate preservation/search-blind 수리 |
+| Variant lane | OPEN | `prior_runtime_title_mismatch_review_required 3` | source-native/blind variant/wrong-work 판정 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: projection `REVIEW-LOCKED`, follow-up queue `REVIEW-LOCKED`, runtime input `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-498 - wrong_work INFO_MISSING batch closure
 
 | 항목 | 상태 | 근거 | 다음 |

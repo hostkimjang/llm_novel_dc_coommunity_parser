@@ -95,6 +95,88 @@ class ProjectionFollowupQueueTest(unittest.TestCase):
         self.assertEqual(queue["summary"]["validation_issue_count"], 1)
         self.assertEqual(queue["validation_issues"][0]["code"], "projection_input_rows_mismatch")
 
+    def test_prior_runtime_promotion_block_failure_requires_repair_before_replay(self) -> None:
+        projection = {
+            "projection_id": "unit_projection",
+            "input_rows": 1,
+            "rows": [
+                {
+                    "post_id": 11660271,
+                    "projected_status": "safe_resolved",
+                    "matches_source_native_title": True,
+                    "selected_title": "월야의 여인들",
+                    "projected_title": "월야의 여인들",
+                    "projected_reasons": ["scope_current_work"],
+                }
+            ],
+        }
+        prior_audit = {
+            "rows": [
+                {
+                    "post_id": 11660271,
+                    "expected_title": "월야의 여인들",
+                    "actual_title": None,
+                    "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+                    "reason_codes": ["llm_only_sentence_candidate_pruned"],
+                    "search_status": "SEARCH_DEGRADED_RECOVERED",
+                }
+            ]
+        }
+
+        queue = build_followup_queue(
+            projection,
+            prior_runtime_expected_audit=prior_audit,
+        )
+
+        self.assertEqual(queue["gate"], "REVIEW-LOCKED")
+        self.assertEqual(queue["summary"]["runtime_replay_candidate_rows"], 0)
+        self.assertEqual(
+            queue["summary"]["prior_runtime_audit_status_counts"],
+            {"FAIL_RUNTIME_PROMOTION_BLOCKED": 1},
+        )
+        self.assertIn(
+            "prior_runtime_promotion_block_repair_required",
+            queue["summary"]["action_counts"],
+        )
+        self.assertEqual(queue["rows"][0]["priority"], "P0")
+        self.assertEqual(queue["rows"][0]["prior_runtime_reason_codes"], ["llm_only_sentence_candidate_pruned"])
+
+    def test_prior_runtime_exact_pass_still_requires_replay_recheck(self) -> None:
+        projection = {
+            "projection_id": "unit_projection",
+            "input_rows": 1,
+            "rows": [
+                {
+                    "post_id": 11660273,
+                    "projected_status": "safe_resolved",
+                    "matches_source_native_title": True,
+                    "selected_title": "마도서를 줍다 마법사가 되다",
+                    "projected_title": "마도서를 줍다 마법사가 되다",
+                }
+            ],
+        }
+        prior_audit = {
+            "rows": [
+                {
+                    "post_id": 11660273,
+                    "audit_status": "PASS_EXACT_SAFE_RESOLVED",
+                    "actual_title": "마도서를 줍다 마법사가 되다",
+                }
+            ]
+        }
+
+        queue = build_followup_queue(
+            projection,
+            prior_runtime_expected_audit=prior_audit,
+        )
+
+        self.assertEqual(queue["summary"]["runtime_replay_candidate_rows"], 1)
+        self.assertEqual(queue["rows"][0]["priority"], "P1")
+        self.assertIn(
+            "runtime_replay_projected_safe_resolved_exact_required",
+            queue["rows"][0]["actions"],
+        )
+
     def test_builds_runtime_input_for_exact_projected_safe_rows(self) -> None:
         projection = {
             "projection_id": "unit_projection",

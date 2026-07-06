@@ -1,5 +1,25 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop500 shared gate residual37 prior-runtime follow-up 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_500_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop500_shared_gate_prior_runtime_followup_state_20260706.json`.
+  - [x] Projection 기록 완료: `docs/devs/loop500_shared_gate_residual37_projection.json/.md`.
+  - [x] Follow-up queue 기록 완료: `docs/devs/loop500_shared_gate_residual37_prior_runtime_followup_queue.json/.md`.
+  - [x] Runtime input manifest 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop500_shared_gate_prior_pass_or_audit_gap_runtime_replay_input_manifest.json`.
+  - [x] Prior runtime expected-audit `loop489_projected_safe46_runtime_expected_audit.json`를 반영했다.
+- 품질 경계:
+  - [x] Projection `safe_resolved 37/37`은 approval이 아니다.
+  - [x] Prior runtime failure `28`건은 동일 입력 반복 실행 전 repair lane으로 분리했다.
+  - [x] Title mismatch/variant `3`건은 source-native/canonical review 전까지 replay하지 않는다.
+  - [x] Immediate runtime replay candidate는 prior pass/audit gap `6`건뿐이다.
+  - [x] Runtime input generation `GO_INPUT_ONLY`는 runtime approval이 아니다.
+  - [ ] Runtime replay after input은 아직 실행하지 않았다.
+  - [ ] Full375 collateral `GO` 전 full_scan path를 정의하지 않는다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: projection `REVIEW-LOCKED`, follow-up queue `REVIEW-LOCKED`, runtime input `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop499 테스트런 대시보드 부착 계약 품질 게이트
 
 - 근거:
