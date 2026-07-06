@@ -31,6 +31,43 @@
     "missing_after_result_rows": 0,
     "per_bucket_limit": 0
   },
+  "prior_compatible_source_native": {
+    "gate": "REVIEW-LOCKED",
+    "policy": "same post_id + same triage_bucket + current option title/url match only",
+    "compatible_rows": 84,
+    "unreviewed_current_batch_rows": 52,
+    "validation_issue_count": 0,
+    "counts_by_bucket": {
+      "safe_loss_resolved_to_null": 59,
+      "unsafe_promotion_from_hold": 14,
+      "wrong_work_title_flip": 11
+    },
+    "label_counts": {
+      "REPROCESS": 37,
+      "HOLD": 24,
+      "ACCEPT": 23
+    },
+    "skip_counts": {
+      "triage_bucket_changed": 18,
+      "ambiguous_current_option_match": 2,
+      "post_id_not_in_current_batch": 34
+    },
+    "queue_transition": {
+      "original_p0_rows": 136,
+      "source_native_reviewed_rows": 84,
+      "exclusion_candidate_rows": 23,
+      "repair_required_rows": 37,
+      "policy_or_native_review_required_rows": 24,
+      "residual_action_queue_rows": 113
+    },
+    "artifacts": {
+      "compatible_verdicts": "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json",
+      "state_json": "docs/devs/loop488_p0_prior_compatible_source_native_state_20260706.json",
+      "state_markdown": "docs/devs/loop488_p0_prior_compatible_source_native_state_20260706.md",
+      "summary_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_compatible_source_native_review.json",
+      "summary_markdown": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_compatible_source_native_review.md"
+    }
+  },
   "remaining_non_p0": {
     "p1_rows": 1,
     "p1_post_ids": [

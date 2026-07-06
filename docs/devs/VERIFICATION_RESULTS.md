@@ -38,10 +38,30 @@
     - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_full375_current_head_p0_review_batch.json`
     - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_full375_current_head_p0_review_batch.jsonl`
     - `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_full375_current_head_p0_review_batch.md`
+  - Prior-compatible source-native verdict filter:
+    - tool `tools\build_prior_compatible_collateral_verdicts.py`
+    - tests `tests\test_build_prior_compatible_collateral_verdicts.py`
+    - compatible verdicts `docs\devs\loop488_p0_prior_compatible_source_native_verdicts.json`
+    - compatibility state `docs\devs\loop488_p0_prior_compatible_source_native_state_20260706.json`
+    - compatibility state markdown `docs\devs\loop488_p0_prior_compatible_source_native_state_20260706.md`
+    - review summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_p0_prior_compatible_source_native_review.json`
+    - review summary markdown `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_p0_prior_compatible_source_native_review.md`
+  - Prior-compatible reviewed rows `84/136`, unreviewed current batch rows `52/136`
+  - Skip counts: `triage_bucket_changed 18`, `ambiguous_current_option_match 2`, `post_id_not_in_current_batch 34`
+  - Prior-compatible summary validation issues `0`
+  - Prior-compatible labels: `REPROCESS 37`, `HOLD 24`, `ACCEPT 23`
+  - Prior-compatible reviewed buckets: `safe_loss_resolved_to_null 59`, `unsafe_promotion_from_hold 14`, `wrong_work_title_flip 11`
+  - Queue transition after compatible carry-forward: original P0 `136`, reviewed `84`, exclusion candidates `23`, repair required `37`, policy/native review required `24`, residual action queue `113`
+- Validation:
+  - `.\venv\Scripts\python.exe -m unittest tests.test_build_prior_compatible_collateral_verdicts tests.test_summarize_collateral_review_verdicts` PASS, `8` tests
+  - `.\venv\Scripts\python.exe tools\build_prior_compatible_collateral_verdicts.py ...` PASS, compatible rows `84`, unreviewed `52`
+  - `.\venv\Scripts\python.exe tools\summarize_collateral_review_verdicts.py ...` PASS, gate `REVIEW-LOCKED`, validation issue `0`
 - Boundary:
   - Runtime 완료와 golden18 `18/18 PASS`는 full-scan approval이 아니다.
   - Full375 collateral이 regression `137`건으로 `NO-GO`라 golden 소표본 통과는 과적합 가능성을 해소하지 못했다.
   - P0 batch 생성은 verdict 입력 고정이며 approval이 아니다.
+  - Prior-compatible `84`건은 과거 source-native verdict의 title/url 호환 carry-forward이며 approval이 아니다.
+  - P0 batch 잔여 `52`건은 신규 blind/source-native 검토가 필요하다.
   - P1 `11682800 / new_resolution_promotion`은 별도 source-native 또는 blind review가 필요하다.
   - Search degraded가 관측됐으므로 promotion_blocked 계열은 계속 `search-blind 조건부`로 태깅한다.
   - Completion gate는 여전히 `full375 collateral GO + full_scan 경로 정의`다.

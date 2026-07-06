@@ -1,0 +1,353 @@
+{
+  "report_type": "prior_compatible_collateral_verdicts_state",
+  "review_id": "loop488_p0_prior_compatible_source_native",
+  "scope": "Loop488 P0 이전 호환 source-native verdict",
+  "generated_at": "2026-07-06T11:32:56",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "current_batch_rows": 136,
+    "source_verdict_rows": 138,
+    "overlap_rows": 104,
+    "compatible_rows": 84,
+    "unreviewed_current_batch_rows": 52,
+    "skip_counts": {
+      "triage_bucket_changed": 18,
+      "ambiguous_current_option_match": 2,
+      "post_id_not_in_current_batch": 34
+    }
+  },
+  "source_verdicts": [
+    {
+      "path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json",
+      "expected_triage_bucket": "wrong_work_title_flip"
+    },
+    {
+      "path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json",
+      "expected_triage_bucket": "unsafe_promotion_from_hold"
+    },
+    {
+      "path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "expected_triage_bucket": "safe_loss_resolved_to_null"
+    }
+  ],
+  "skipped_rows": [
+    {
+      "post_id": 11660262,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11663554,
+      "reason": "ambiguous_current_option_match",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "wrong_work_title_flip",
+      "selected_option_id": "C1",
+      "selected_title": "전 버튜버가 하고 싶은데요",
+      "selected_url": "https://novelpia.com/novel/275975"
+    },
+    {
+      "post_id": 11673077,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11689292,
+      "reason": "ambiguous_current_option_match",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "wrong_work_title_flip",
+      "selected_option_id": "C1",
+      "selected_title": "[원신] 최악의 파트너",
+      "selected_url": "https://novelpia.com/novel/40854"
+    },
+    {
+      "post_id": 11692426,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694044,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11694068,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11703658,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11706867,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11708453,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11658621,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660238,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666705,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668324,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11674704,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681180,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11684370,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687627,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687635,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11690855,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11658620,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660232,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660257,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660265,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660277,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11661881,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663514,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11663540,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666700,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11666731,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668288,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668300,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11669907,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669926,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671507,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11674694,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11676314,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11682761,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682767,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11685987,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11692444,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694035,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694049,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11695609,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11697249,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11698859,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11702090,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11703674,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11705251,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708432,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708478,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11713220,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714903,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716498,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    }
+  ]
+}
