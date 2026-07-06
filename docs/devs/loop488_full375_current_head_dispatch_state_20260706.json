@@ -1,13 +1,13 @@
 {
   "loop": 488,
   "date": "2026-07-06",
-  "report_type": "current_head_full375_dispatch_state",
+  "report_type": "current_head_full375_completion_gate_state",
   "goal_status": "ACTIVE / NOT_COMPLETE",
   "head": "4b838520",
   "run": {
     "pid": 42256,
     "run_id": "20260706_044255_159249",
-    "status": "IN_PROGRESS",
+    "status": "COMPLETE",
     "input": "out/regression_safe_grounding_20260626_000008_928006_loop01/panel/regression_panel_input.jsonl",
     "input_post_count": 375,
     "output": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop488_full375_current_head_4b838520_search_nonlight_result.json",
@@ -38,6 +38,19 @@
     "current_checkpoint": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop488_full375_current_head_4b838520_search_nonlight_result_checkpoint.jsonl",
     "golden_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json"
   },
+  "post_completion_audit_outputs": {
+    "run_health": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_run_health.json",
+    "publication_contract_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_publication_contract_audit.json",
+    "publication_contract_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_publication_contract_audit.md",
+    "golden_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop488_full375_current_head_golden_audit.json",
+    "golden_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop488_full375_current_head_golden_audit.md",
+    "collateral_compare_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop488_full375_current_head_collateral_compare.json",
+    "collateral_compare_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/collateral/loop488_full375_current_head_collateral_compare.md",
+    "always_on_gate_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_always_on_golden18_full375_gate.json",
+    "always_on_gate_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_always_on_golden18_full375_gate.md",
+    "collateral_triage_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_collateral_triage.json",
+    "collateral_triage_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_collateral_triage.md"
+  },
   "initial_evidence": {
     "mcp_health_ok_count": 16,
     "mcp_health_failure_count": 0,
@@ -55,38 +68,88 @@
     ]
   },
   "latest_monitoring_evidence": {
-    "snapshot_time_kst": "2026-07-06 10:42:58",
-    "status": "IN_PROGRESS",
-    "completed_count": 342,
-    "flushed_count": 337,
-    "pending_count": 5,
+    "snapshot_time_kst": "2026-07-06 11:15:55",
+    "status": "COMPLETE",
+    "completed_count": 375,
+    "flushed_count": 375,
+    "pending_count": 0,
     "failed_count": 0,
-    "checkpoint_lines": 342,
-    "next_save_idx": 338,
-    "partial_flush_gap": true,
-    "ordered_flush_blocked": true,
-    "large_run_complete": false,
-    "live_pids": [
-      42256,
-      968
-    ],
-    "latest_manifest_write_kst": "2026-07-06 10:41:45",
-    "latest_checkpoint_write_kst": "2026-07-06 10:41:45",
-    "result_json_write_lag_reason": "05:44 KST에는 11700470 전후 ordered_flush_blocked로 result.json flush가 밀렸고, 05:58 KST에는 74/73/1로 회복됐다. 이후 11692436 장기 후처리로 flush가 80에서 다시 막혔지만 06:29 KST에 100/96/4로 회수됐다. 07:24 KST에는 133/133/0으로 backlog가 다시 해소됐고, 08:31 KST에는 204까지 다시 flush가 점프했다. 08:59 KST에는 227/227/0까지 완전 flush 회복이 확인됐다. 09:38 KST에는 260까지 다시 flush가 회복됐고, 09:53 KST에는 300/300/0까지 완전 flush 회복이 확인됐다. 10:39 KST에는 334까지 다시 flush가 회복됐다. 10:43 KST에는 342/337/5로 새 앞쪽 pending이 생겼다. 완료 전 runtime evidence는 계속 manifest/checkpoint/log를 기준으로 본다.",
-    "first_pending_snapshot": [
-      "339:11698895",
-      "340:11702050",
-      "342:11711633",
-      "345:11668288",
-      "350:11665089"
-    ],
-    "interpretation": "11700470, 11692436 장기 row가 만든 ordered flush backlog는 각각 회수됐고, 07:24 KST, 08:31 KST, 08:59 KST, 09:38 KST, 09:53 KST, 10:39 KST에도 flush backlog가 크게 회복됐다. 10:43 KST에는 checkpoint가 342/375까지 증가했고 실패는 0이므로, watchdog/ordered flush 경로는 row를 계속 내고 있다. 다만 large_run_complete=false라 full375 collateral과 full_scan 경로 판정은 아직 보류한다."
+    "checkpoint_lines": 375,
+    "next_save_idx": 376,
+    "partial_flush_gap": false,
+    "ordered_flush_blocked": false,
+    "large_run_complete": true,
+    "latest_manifest_write_kst": "2026-07-06 11:15:55",
+    "latest_checkpoint_write_kst": "2026-07-06 11:15:55",
+    "result_json_write_lag_reason": "중간에는 여러 ordered flush backlog가 생겼지만 07:24, 08:31, 08:59, 09:38, 09:53, 10:39 KST 등에 반복적으로 회복됐고 최종적으로 375/375/0/0으로 닫혔다.",
+    "first_pending_snapshot": [],
+    "interpretation": "Loop488 full375 런타임은 clean completed-source 상태다. 그러나 full375 collateral always-on gate가 regression 137건으로 NO-GO이므로 이 runtime 완료는 approval이 아니다."
+  },
+  "audit_summary": {
+    "run_health": {
+      "gate": "GO",
+      "classification": "clean_completed_source",
+      "completed_count": 375,
+      "flushed_count": 375,
+      "pending_count": 0,
+      "failed_count": 0
+    },
+    "search_evidence": {
+      "gate": "REVIEW",
+      "blockers": [
+        "search_degraded_observed"
+      ],
+      "row_status_counts": {
+        "SEARCH_DEGRADED": 137,
+        "SEARCH_DEGRADED_RECOVERED": 114,
+        "ok": 58
+      }
+    },
+    "publication_contract": {
+      "gate": "GO",
+      "violation_row_count": 0
+    },
+    "golden18": {
+      "gate": "GO",
+      "passed_count": 18,
+      "failed_count": 0
+    },
+    "full375_collateral": {
+      "gate": "NO-GO",
+      "shared_post_count": 375,
+      "changed_post_count": 199,
+      "collateral_regression_count": 137,
+      "review_adjusted_regression_count": 137
+    },
+    "collateral_triage": {
+      "gate": "NO-GO",
+      "triaged_regression_rows": 137,
+      "priority": {
+        "P0": 136,
+        "P1": 1
+      },
+      "regression_buckets": {
+        "safe_loss_resolved_to_null": 81,
+        "wrong_work_title_flip": 30,
+        "unsafe_promotion_from_hold": 25,
+        "new_resolution_promotion": 1
+      }
+    },
+    "always_on_gate": {
+      "gate": "NO-GO",
+      "blockers": [
+        "collateral:collateral_regression_count_nonzero"
+      ]
+    }
   },
   "gates": {
-    "full375_runtime": "IN_PROGRESS / 342 of 375 checkpoint at 2026-07-06 10:43 KST",
-    "full375_collateral": "PENDING / NO-GO 유지",
-    "golden_audit_after_loop488": "NOT_RUN_AFTER_LOOP488",
-    "collateral_compare_after_loop488": "NOT_RUN_AFTER_LOOP488",
+    "full375_runtime": "GO / 375 of 375 completed / failed 0",
+    "run_health": "GO / clean_completed_source",
+    "publication_contract": "GO / 0 violations",
+    "golden_audit_after_loop488": "GO / 18 of 18 PASS",
+    "full375_collateral": "NO-GO / regression 137",
+    "always_on_gate": "NO-GO / collateral_regression_count_nonzero",
+    "search_recovery": "REVIEW / search_degraded_observed",
     "semantic_quality": "REVIEW-LOCKED",
     "full_scan_approval": false,
     "goal": "ACTIVE / NOT_COMPLETE"

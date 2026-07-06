@@ -1,25 +1,42 @@
 # Verification Results
 
-## 2026-07-06 Loop488 current HEAD full375 dispatch 검증
+## 2026-07-06 Loop488 current HEAD full375 완료/gate 검증
 
-- 범위: Loop487 이후 current HEAD `4b838520`에서 full375 collateral을 새로 실행 시작했다.
+- 범위: Loop487 이후 current HEAD `4b838520`에서 stale Loop477 full375 증거를 재사용하지 않고 full375 collateral을 새로 완료한 뒤, golden18과 full375 collateral always-on gate를 같은 output으로 감사했다.
 - Artifacts:
   - report `docs\devs\loop_reports\LOOP_488_REPORT_20260706.md`
   - state `docs\devs\loop488_full375_current_head_dispatch_state_20260706.json`
   - result `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop488_full375_current_head_4b838520_search_nonlight_result.json`
   - manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop488_full375_current_head_4b838520_search_nonlight_result_manifest.json`
   - checkpoint `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop488_full375_current_head_4b838520_search_nonlight_result_checkpoint.jsonl`
+  - run health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_full375_current_head_run_health.json`
+  - publication contract `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_full375_current_head_publication_contract_audit.json`
+  - golden audit `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop488_full375_current_head_golden_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\collateral\loop488_full375_current_head_collateral_compare.json`
+  - always-on gate `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_always_on_golden18_full375_gate.json`
+  - collateral triage `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop488_full375_current_head_collateral_triage.json`
 - Result:
-  - run_id `20260706_044255_159249`, PID `42256`
+  - run_id `20260706_044255_159249`
   - input rows `375`
   - search 포함 non-light MCP health `16/16`
   - VLM/OCR `READY`, image posts `241`
-  - initial completed/flushed/pending/failed `3/1/2/0`
-  - checkpoint lines `3`
+  - final completed/flushed/pending/failed `375/375/0/0`
+  - checkpoint/result rows `375/375`
+  - `large_run_complete=true`, `ordered_flush_blocked=false`
+  - run health `GO / clean_completed_source`
+  - publication contract `GO / violations 0`
+  - golden18 `GO / 18 of 18 PASS`
+  - search evidence `REVIEW / search_degraded_observed`
+  - full375 collateral `NO-GO / changed 199 / regression 137`
+  - always-on gate `NO-GO / collateral_regression_count_nonzero`
+  - collateral triage priority `P0 136 / P1 1`
+  - regression buckets: `safe_loss_resolved_to_null 81`, `wrong_work_title_flip 30`, `unsafe_promotion_from_hold 25`, `new_resolution_promotion 1`
 - Boundary:
-  - 이번 검증은 dispatch와 초기 row 생산성 확인이다.
-  - Full375 runtime은 아직 완료되지 않았고 golden audit/collateral compare도 없다.
-  - Full375 collateral은 `PENDING / NO-GO 유지`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+  - Runtime 완료와 golden18 `18/18 PASS`는 full-scan approval이 아니다.
+  - Full375 collateral이 regression `137`건으로 `NO-GO`라 golden 소표본 통과는 과적합 가능성을 해소하지 못했다.
+  - Search degraded가 관측됐으므로 promotion_blocked 계열은 계속 `search-blind 조건부`로 태깅한다.
+  - Completion gate는 여전히 `full375 collateral GO + full_scan 경로 정의`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
 
 ## 2026-07-06 Loop487 stable alias collision contract 검증
 

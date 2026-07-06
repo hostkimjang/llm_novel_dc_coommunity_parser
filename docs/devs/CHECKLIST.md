@@ -8,11 +8,17 @@
 - [x] Search 포함 non-light health `MCP 16/16`을 확인했다.
 - [x] VLM/OCR `READY`, image posts `241`을 확인했다.
 - [x] Checkpoint `3` rows로 실제 row 생산을 확인했다.
-- [ ] Full375 runtime은 아직 `375/375` 완료되지 않았다.
-- [ ] 완료 후 run health audit, publication contract audit, golden18 audit, collateral compare를 실행한다.
-- [ ] Full375 collateral `GO` 전 goal 완료를 주장하지 않는다.
+- [x] Full375 runtime이 `375/375` completed, `375/375` flushed, pending `0`, failed `0`으로 완료됐다.
+- [x] Run health audit를 실행했고 `GO / clean_completed_source`를 확인했다.
+- [x] Publication contract audit를 실행했고 `GO / 0 violations`를 확인했다.
+- [x] Golden18 audit를 실행했고 `18/18 PASS`를 확인했다.
+- [x] Full375 collateral compare와 always-on gate를 실행했다.
+- [x] Full375 collateral `GO` 전 goal 완료를 주장하지 않는다.
+- [ ] Full375 collateral은 `NO-GO / changed 199 / regression 137`이다.
+- [ ] Collateral triage `P0 136 / P1 1`을 N건 배치 후속으로 분해한다.
+- [ ] Search evidence는 `REVIEW / search_degraded_observed`다. Search recovery를 닫지 않는다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
-- Gate: full375 runtime `IN_PROGRESS`, full375 collateral `PENDING / NO-GO 유지`, golden/collateral audit `NOT_RUN_AFTER_LOOP488`.
+- Gate: full375 runtime `GO`, run health `GO`, publication contract `GO`, golden18 `GO`, full375 collateral `NO-GO`, always-on gate `NO-GO`, search evidence `REVIEW`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-06 Loop487 stable alias collision contract 체크
 
