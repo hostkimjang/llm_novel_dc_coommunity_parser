@@ -1,5 +1,21 @@
 # Development Checklist
 
+## 2026-07-06 Loop495 title-led 플랫폼 표면 경쟁 후보 계약 체크
+
+- [x] Loop493 `publish_contract_trace_repair_before_replay` 잔여 4건 중 `11677915`, `11682780`의 공통 차단 원인을 분리했다.
+- [x] `Munpia` 영문 플랫폼 표면을 competing work title로 쓰지 않도록 platform branding 필터를 보강했다.
+- [x] `플러스작품` 등 노벨피아 리스팅 라벨을 competing work title로 쓰지 않도록 listing title 필터를 보강했다.
+- [x] alias inference 후보 필터 tests `2`건을 추가했다.
+- [x] `11677915`, `11682780`형 title-led gate 복구 tests `2`건을 추가했다.
+- [x] py_compile, 신규 focused `4`, title-lead suite `226`, work-bridge/promotion focused `5`를 통과했다.
+- [ ] Runtime replay after patch는 아직 실행하지 않았다.
+- [ ] Full375 after patch는 아직 실행하지 않았다.
+- [ ] Loop493 `publish_contract_trace_repair_before_replay` 잔여 `2`건(`11684372`, `11694019`)을 계속 처리한다.
+- [ ] Full375 collateral은 여전히 `NO-GO`다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: code contract `GO_UNIT`, runtime replay `NOT_RUN_AFTER_PATCH`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop494 publish_contract_trace 모바일 문피아 계약 체크
 
 - [x] Loop493 `publish_contract_trace_repair_before_replay` 5건 중 `11718099`의 모바일 문피아 URL 차단 원인을 분리했다.

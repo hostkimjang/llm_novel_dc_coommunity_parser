@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-06 - Loop495 title-led platform surface competitor contract repair
+
+- Loop493 `publish_contract_trace_repair_before_replay` 잔여 4건 중 `11677915`, `11682780`의 공통 차단 원인을 플랫폼/리스팅 표면 competing candidate 오분류로 분리했다.
+- `src/llm_batch/agentic_pipeline.py`에서 `Munpia` 등 영문 플랫폼 표면을 platform branding으로 처리한다.
+- `플러스작품` 등 단독 노벨피아 리스팅 라벨을 listing title로 처리한다.
+- `tests/test_title_lead_search_inferred_guard.py`에 alias inference 후보 필터 2건과 `11677915`/`11682780`형 title-led gate 복구 2건을 추가했다.
+- 검증은 py_compile PASS, 신규 focused `4` PASS, title-lead suite `226` PASS, work-bridge/promotion focused `5` PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_495_REPORT_20260706.md`, state는 `docs/devs/loop495_title_led_platform_surface_competitor_state_20260706.json`이다.
+- Gate는 code contract `GO_UNIT`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop494 publish_contract_trace mobile Munpia contract repair
 
 - Loop493 `publish_contract_trace_repair_before_replay` 5건 중 `11718099 / 빌어먹을 환생`의 모바일 문피아 상세 URL 차단 경로를 수리했다.

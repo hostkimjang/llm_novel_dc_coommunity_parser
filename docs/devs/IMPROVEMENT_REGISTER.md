@@ -1,5 +1,17 @@
 # Improvement Register
 
+## IMP-20260706-495 - title-led platform surface competitor filter
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| `Munpia` platform surface | GO_UNIT | 영문 `Munpia`를 platform branding으로 분류하고 `11677915`형 gate 복구 테스트 통과 | runtime replay로 실제 row 반영 확인 |
+| `플러스작품` listing surface | GO_UNIT | 단독 `플러스작품`을 listing title로 분류하고 `11682780`형 gate 복구 테스트 통과 | runtime replay로 실제 row 반영 확인 |
+| 실제 경쟁 후보 보호 | PASS | title-led contextual alias competition/selection tests 포함 suite `226` PASS | 잔여 `11684372`, `11694019` 별도 처리 |
+| 검증 | PASS | py_compile PASS, 신규 focused `4` PASS, title-lead `226` PASS, work-bridge/promotion `5` PASS | full375는 미실행 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: code contract `GO_UNIT`, runtime replay after patch `NOT_RUN_AFTER_PATCH`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-494 - mobile Munpia official detail contract
 
 | 항목 | 상태 | 근거 | 다음 |

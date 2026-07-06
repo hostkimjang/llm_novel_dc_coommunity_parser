@@ -1,0 +1,49 @@
+{
+  "loop_id": "Loop495",
+  "date": "2026-07-06",
+  "report_type": "title_led_platform_surface_competitor_contract_repair",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "scope": {
+    "source_loop": "Loop493",
+    "source_lane": "publish_contract_trace_repair_before_replay",
+    "source_lane_rows_after_loop494": 4,
+    "target_post_ids": [
+      11677915,
+      11682780
+    ],
+    "remaining_source_lane_post_ids": [
+      11684372,
+      11694019
+    ]
+  },
+  "repair": {
+    "status": "GO_UNIT",
+    "summary": "Title-led alias competition now ignores platform/listing tail surfaces such as Munpia and 플러스작품, so those labels cannot demote an otherwise current-work official-detail candidate.",
+    "files": [
+      "src/llm_batch/agentic_pipeline.py",
+      "tests/test_title_lead_search_inferred_guard.py"
+    ],
+    "contract": [
+      "Munpia is treated as platform branding, not a competing work title.",
+      "플러스작품 and adjacent listing labels are treated as listing surfaces, not competing work titles.",
+      "Real official-detail competitors still block or redirect through the existing contextual alias competition tests."
+    ]
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "targeted_new_tests": "PASS / 4 tests",
+    "title_lead_guard_suite": "PASS / 226 tests",
+    "work_bridge_and_promotion_focus": "PASS / 5 tests",
+    "runtime_replay_after_patch": "NOT_RUN_AFTER_PATCH",
+    "full375_after_patch": "NOT_RUN_AFTER_PATCH"
+  },
+  "gates": {
+    "code_contract": "GO_UNIT",
+    "runtime_replay": "NOT_RUN_AFTER_PATCH",
+    "full375_collateral": "NO-GO",
+    "search_evidence": "REVIEW",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "completion_gate": "full375 collateral GO + full_scan path"
+  }
+}

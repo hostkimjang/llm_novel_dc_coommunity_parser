@@ -1,5 +1,18 @@
 # Developer TODO Index
 
+## 2026-07-06 Loop495 TODO
+
+- 상태 업데이트: Loop493 `publish_contract_trace_repair_before_replay` 중 `11677915`, `11682780`의 플랫폼/리스팅 표면 competing candidate 오분류를 수리했다. Goal은 완료가 아니다.
+- [x] `Munpia` 영문 플랫폼 표면을 platform branding으로 분류했다.
+- [x] `플러스작품` 등 단독 리스팅 라벨을 listing title로 분류했다.
+- [x] alias inference 후보 필터 tests `2`건을 추가했다.
+- [x] `11677915`, `11682780`형 title-led gate 복구 tests `2`건을 추가했다.
+- [x] py_compile, 신규 focused `4`, title-lead suite `226`, work-bridge/promotion focused `5` PASS를 확인했다.
+- [ ] Loop493 `publish_contract_trace_repair_before_replay` 잔여 `2`건(`11684372`, `11694019`)을 계속 처리한다.
+- [ ] Runtime replay after patch 또는 준비된 batch replay는 잔여 lane 수리와 search-blind 태깅 뒤 실행한다.
+- [ ] Full375 collateral `NO-GO`를 닫기 전 bounded/full375 동결 해제나 goal 완료를 주장하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop494 TODO
 
 - 상태 업데이트: Loop493 `publish_contract_trace_repair_before_replay` 중 `11718099 / 빌어먹을 환생`의 모바일 문피아 URL 정규화 계약을 수리했다. Goal은 완료가 아니다.

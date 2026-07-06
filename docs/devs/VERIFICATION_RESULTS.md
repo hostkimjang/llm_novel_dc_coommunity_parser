@@ -1,5 +1,30 @@
 # Verification Results
 
+## 2026-07-06 Loop495 Verification
+
+- 범위: Loop493 `publish_contract_trace_repair_before_replay` 잔여 4건 중 `11677915`, `11682780`의 플랫폼/리스팅 표면 competing candidate 오분류를 코드 계약으로 수리했다. 신규 runtime/full375/full_scan 런은 발주하지 않았다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_495_REPORT_20260706.md`
+  - state `docs\devs\loop495_title_led_platform_surface_competitor_state_20260706.json`
+  - code `src\llm_batch\agentic_pipeline.py`
+  - test `tests\test_title_lead_search_inferred_guard.py`
+- Result:
+  - `Munpia`는 platform branding으로 분류한다.
+  - `플러스작품` 등 단독 리스팅 라벨은 listing title로 분류한다.
+  - alias inference와 title-led gate는 이 표면을 competing work title로 쓰지 않는다.
+  - 실제 official-detail 경쟁 후보를 막거나 redirect하는 기존 테스트는 계속 통과했다.
+- Validation:
+  - `.\venv\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py tests\test_title_lead_search_inferred_guard.py` PASS
+  - 신규 focused tests PASS, `4` tests
+  - `.\venv\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard -v` PASS, `226` tests
+  - work-bridge/promotion focused PASS, `5` tests
+- Boundary:
+  - Code contract `GO_UNIT`은 runtime replay나 full375 approval이 아니다.
+  - Runtime replay after patch와 full375 after patch는 아직 실행하지 않았다.
+  - `11684372`, `11694019`는 별도 hard-hold/source-native 경로로 남긴다.
+  - Completion gate는 `full375 collateral GO + full_scan 경로 정의`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop494 Verification
 
 - 범위: Loop493 `publish_contract_trace_repair_before_replay` 중 `11718099 / 빌어먹을 환생`의 모바일 문피아 공식 상세 URL 정규화 누락을 코드 계약으로 수리했다. 신규 runtime/full375/full_scan 런은 발주하지 않았다.

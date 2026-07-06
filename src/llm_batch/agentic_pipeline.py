@@ -47058,6 +47058,17 @@ OUTPUT JSON:
         raw = title.strip()
         if not raw:
             return False
+        norm = re.sub(r"[^\w가-힣]", "", raw).lower()
+        listing_label_norms = {
+            "자유연재",
+            "무료연재",
+            "플러스작품",
+            "독점작품",
+            "챌린지",
+            "완결작품",
+        }
+        if norm in listing_label_norms:
+            return True
         low = raw.lower()
         markers = (
             "작가 -",
@@ -48097,11 +48108,20 @@ OUTPUT JSON:
             "웹소설의유토피아",
             "노벨피아",
             "문피아",
+            "munpia",
             "네이버",
             "네이버웹소설",
             "카카오페이지",
+            "kakaopage",
             "네이버시리즈",
+            "naverseries",
+            "naverwebnovel",
+            "novelpia",
             "리디",
+            "ridi",
+            "ridibooks",
+            "joara",
+            "bookcube",
             "소설넷",
             "나무위키",
             "더위키",

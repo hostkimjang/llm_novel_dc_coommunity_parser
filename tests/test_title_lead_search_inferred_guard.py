@@ -92,6 +92,186 @@ def mark_no_work_seed(ctx: ConversationContext) -> None:
 
 
 class TitleLeadSearchInferredGuardTest(unittest.TestCase):
+    def test_search_alias_inference_filters_munpia_brand_tail(self):
+        pipeline = build_pipeline()
+
+        candidates = pipeline._search_result_candidate_titles_for_alias_inference(
+            {
+                "title": "전지적 독자 시점 - 문피아 웹소설 - Munpia",
+                "url": "https://novel.munpia.com/104753",
+                "content": "전독시로 불리는 문피아 웹소설.",
+            },
+            pipeline._normalize_match_text("전독시"),
+        )
+
+        self.assertIn("전지적 독자 시점", candidates)
+        self.assertNotIn("Munpia", candidates)
+
+    def test_search_alias_inference_filters_novelpia_listing_label(self):
+        pipeline = build_pipeline()
+
+        candidates = pipeline._search_result_candidate_titles_for_alias_inference(
+            {
+                "title": "플러스작품 - 이 무림의 미친년은 나야 - 노벨피아",
+                "url": "https://novelpia.com/novel/217943",
+                "content": "무친년으로 불리는 노벨피아 무협 웹소설.",
+            },
+            pipeline._normalize_match_text("무친년"),
+        )
+
+        self.assertIn("이 무림의 미친년은 나야", candidates)
+        self.assertNotIn("플러스작품", candidates)
+
+    def test_title_led_gate_ignores_munpia_brand_tail_competitor(self):
+        pipeline = build_pipeline()
+        title = "전지적 독자 시점"
+        url = "https://novel.munpia.com/104753"
+        post = PostInput(
+            post_id=11677915,
+            title="내가 재밌게 본 거 별거 없다고 리뷰하면 화가남",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="text", text="이 새끼의 최애작품은 뭔지 알아내서"),
+                ContentBlock(type="text", text="메차쿠차 비난하고 ntr하고 싶음"),
+            ],
+            comments=["응 느그 전독시 느그 배본블 ㅋ"],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=post.comments,
+        )
+        ctx.search_results = [
+            {
+                "title": f"{title} - 문피아 웹소설 - Munpia",
+                "url": url,
+                "content": f"전독시로 불리는 {title}. 싱숑 작가.",
+                "query": "전독시 문피아",
+                "source_tier": "official_detail",
+            }
+        ]
+        final_decision = {
+            "discussion_type": "meme",
+            "work_resolution": "resolved",
+            "title_resolution_state": "resolved",
+        }
+        vf_result = {
+            "grounding_check": {
+                "anchor_found": "title_abbrev_mention",
+                "title_abbrev_mentioned": True,
+                "matched_alias": "전독시",
+            },
+            "slang_insight": {
+                "detected_term": "전독시",
+                "decoded_term": title,
+                "decode_verified": True,
+                "alias_scope": "pure_work_alias",
+            },
+        }
+
+        decision = pipeline._record_title_led_alias_public_title_gate_decision(
+            ctx,
+            title,
+            candidate_url=url,
+            final_decision=final_decision,
+            verification_result=vf_result,
+            title_candidates=[
+                DetectedTitle(
+                    official_title=title,
+                    heretic_url=url,
+                    confidence="High",
+                    alias_or_mention="전독시",
+                    source_tier="official_detail",
+                    page_type="novel_page",
+                )
+            ],
+            acceptance={"decision": "accept", "title_led_consumption_bridge": True, "score": 29},
+        )
+
+        self.assertEqual(decision["status"], "publish")
+        self.assertTrue(decision["publish_allowed"])
+        self.assertEqual(decision["official_title"], title)
+        self.assertNotIn("title_led_alias_contextual_official_detail_competes", decision["reason_codes"])
+        state = ctx._last_promotion_gate_state
+        self.assertTrue(state["row_discusses_work_as_work"])
+        self.assertEqual(state["scope"]["scope_kind"], "current_work")
+        self.assertEqual(state["scope"]["competing_candidates"], [])
+
+    def test_title_led_gate_ignores_novelpia_listing_label_competitor(self):
+        pipeline = build_pipeline()
+        title = "이 무림의 미친년은 나야"
+        url = "https://novelpia.com/novel/217943"
+        post = PostInput(
+            post_id=11682780,
+            title="근데 무친년은 뭉청이 지금 화경 대원만인데 현경 찍으면 ㅆㅂㅋㅋ",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="text", text="십대마공이랑 북명신공 마스터하고"),
+                ContentBlock(type="text", text="독고구검 체화해서 마스터하면"),
+            ],
+            comments=["무친년이 김용소설 영향 씨게 받아서 그런것도 있음"],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=post.comments,
+        )
+        ctx.search_results = [
+            {
+                "title": f"플러스작품 - {title} - 노벨피아",
+                "url": url,
+                "content": f"무친년으로 불리는 {title}. 무협 웹소설.",
+                "query": "무친년 노벨피아",
+                "source_tier": "official_detail",
+            }
+        ]
+        final_decision = {
+            "discussion_type": "general",
+            "work_resolution": "resolved",
+            "title_resolution_state": "resolved",
+        }
+        vf_result = {
+            "grounding_check": {
+                "anchor_found": "title_abbrev_mention",
+                "title_abbrev_mentioned": True,
+                "matched_alias": "무친년",
+            },
+            "slang_insight": {
+                "detected_term": "무친년",
+                "decoded_term": title,
+                "decode_verified": True,
+                "alias_scope": "pure_work_alias",
+            },
+        }
+
+        decision = pipeline._record_title_led_alias_public_title_gate_decision(
+            ctx,
+            title,
+            candidate_url=url,
+            final_decision=final_decision,
+            verification_result=vf_result,
+            title_candidates=[
+                DetectedTitle(
+                    official_title=title,
+                    heretic_url=url,
+                    confidence="High",
+                    alias_or_mention="무친년",
+                    source_tier="official_detail",
+                    page_type="novel_page",
+                )
+            ],
+            acceptance={"decision": "accept", "title_led_consumption_bridge": True, "score": 29},
+        )
+
+        self.assertEqual(decision["status"], "publish")
+        self.assertTrue(decision["publish_allowed"])
+        self.assertEqual(decision["official_title"], title)
+        self.assertNotIn("title_led_alias_contextual_official_detail_competes", decision["reason_codes"])
+        state = ctx._last_promotion_gate_state
+        self.assertTrue(state["row_discusses_work_as_work"])
+        self.assertEqual(state["scope"]["scope_kind"], "current_work")
+        self.assertEqual(state["scope"]["competing_candidates"], [])
+
     def test_sanitize_reason_neutralizes_code_guard_flip_marker_for_relevant_result(self):
         reason = (
             "[판정 요약]\n"
