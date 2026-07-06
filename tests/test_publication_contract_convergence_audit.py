@@ -52,9 +52,74 @@ def _converged_publish_row():
     }
 
 
+def _converged_scrubbed_candidate_row():
+    decision = {
+        "status": "candidate_only",
+        "publish_allowed": False,
+        "official_title": None,
+        "official_url": None,
+        "candidate_preserved": True,
+        "reason_codes": [
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed",
+        ],
+        "bypassed_gate": False,
+    }
+    pre_gate = {
+        "official_title": "아카데미 생존 갤러리",
+        "official_url": "https://novelpia.com/novel/380218",
+        "source": "serialized_public_identity",
+    }
+    post_gate = {
+        "official_title": None,
+        "official_url": None,
+        "candidate_ledger_status": "promotion_blocked",
+    }
+    trace = {
+        "pre_gate_candidate": pre_gate,
+        "gate_decision": decision,
+        "post_gate_identity": post_gate,
+        "reason_codes": decision["reason_codes"],
+        "bypassed_gate": False,
+    }
+    publish_ledger = {
+        "candidate_preservation": pre_gate,
+        "public_publish": post_gate,
+        "gate_decision": decision,
+    }
+    return {
+        "post_id": 11698880,
+        "analysis_result": {
+            "identity": {
+                "candidate_ledger_status": "promotion_blocked",
+                "blocked_official_title": "아카데미 생존 갤러리",
+                "blocked_official_title_url": "https://novelpia.com/novel/380218",
+                "promotion_decision": decision,
+                "publish_contract_trace": trace,
+                "publish_ledger": publish_ledger,
+                "candidate_ledger": {
+                    "candidate_ledger_status": "promotion_blocked",
+                    "blocked_official_title": "아카데미 생존 갤러리",
+                    "blocked_official_title_url": "https://novelpia.com/novel/380218",
+                    "promotion_decision": decision,
+                    "publish_contract_trace": trace,
+                    "publish_ledger": publish_ledger,
+                },
+            }
+        },
+    }
+
+
 class PublicationContractConvergenceAuditTest(unittest.TestCase):
     def test_converged_publish_contract_is_go(self):
         report = audit_rows([_converged_publish_row()])
+
+        self.assertEqual(report["gate"], "GO")
+        self.assertEqual(report["summary"]["violation_row_count"], 0)
+
+    def test_scrubbed_blocked_candidate_preservation_contract_is_go(self):
+        report = audit_rows([_converged_scrubbed_candidate_row()])
 
         self.assertEqual(report["gate"], "GO")
         self.assertEqual(report["summary"]["violation_row_count"], 0)
@@ -154,6 +219,160 @@ class PublicationContractConvergenceAuditTest(unittest.TestCase):
         self.assertIn("blocked_trace_publishes_title", codes)
         self.assertIn("blocked_ledger_publishes_title", codes)
         self.assertIn("blocked_serialized_public_title_leak", codes)
+
+    def test_scrubbed_blocked_decision_requires_candidate_preservation(self):
+        decision = {
+            "status": "candidate_only",
+            "publish_allowed": False,
+            "official_title": None,
+            "official_url": None,
+            "candidate_preserved": True,
+            "reason_codes": ["serialized_public_identity_scrubbed"],
+            "bypassed_gate": False,
+        }
+        trace = {
+            "gate_decision": decision,
+            "post_gate_identity": {"official_title": None, "official_url": None},
+            "reason_codes": decision["reason_codes"],
+            "bypassed_gate": False,
+        }
+        publish_ledger = {
+            "public_publish": trace["post_gate_identity"],
+            "gate_decision": decision,
+        }
+        report = audit_rows(
+            [
+                {
+                    "post_id": 11660271,
+                    "analysis_result": {
+                        "identity": {
+                            "promotion_decision": decision,
+                            "publish_contract_trace": trace,
+                            "publish_ledger": publish_ledger,
+                            "candidate_ledger": {
+                                "promotion_decision": decision,
+                                "publish_contract_trace": trace,
+                                "publish_ledger": publish_ledger,
+                            },
+                        }
+                    },
+                }
+            ]
+        )
+
+        self.assertEqual(report["gate"], "NO-GO")
+        codes = {
+            violation["code"]
+            for row in report["violations"]
+            for violation in row["violations"]
+        }
+        self.assertIn("blocked_candidate_preservation_missing", codes)
+
+    def test_scrubbed_hold_without_candidates_is_converged_without_candidate_payload(self):
+        decision = {
+            "status": "candidate_only",
+            "publish_allowed": False,
+            "official_title": None,
+            "official_url": None,
+            "candidate_preserved": False,
+            "reason_codes": ["hold_without_candidates", "serialized_public_identity_scrubbed"],
+            "bypassed_gate": False,
+        }
+        pre_gate = {
+            "official_title": None,
+            "official_url": None,
+            "source": "candidate_ledger_or_serialized_identity",
+        }
+        post_gate = {"official_title": None, "official_url": None}
+        trace = {
+            "pre_gate_candidate": pre_gate,
+            "gate_decision": decision,
+            "post_gate_identity": post_gate,
+            "reason_codes": decision["reason_codes"],
+            "bypassed_gate": False,
+        }
+        publish_ledger = {
+            "candidate_preservation": pre_gate,
+            "public_publish": post_gate,
+            "gate_decision": decision,
+        }
+        report = audit_rows(
+            [
+                {
+                    "post_id": 11665122,
+                    "analysis_result": {
+                        "identity": {
+                            "promotion_decision": decision,
+                            "publish_contract_trace": trace,
+                            "publish_ledger": publish_ledger,
+                            "candidate_ledger": {
+                                "promotion_decision": decision,
+                                "publish_contract_trace": trace,
+                                "publish_ledger": publish_ledger,
+                            },
+                        }
+                    },
+                }
+            ]
+        )
+
+        self.assertEqual(report["gate"], "GO")
+        self.assertEqual(report["summary"]["violation_row_count"], 0)
+
+    def test_scrubbed_decision_must_mark_candidate_preserved(self):
+        row = _converged_scrubbed_candidate_row()
+        identity = row["analysis_result"]["identity"]
+        decision = dict(identity["promotion_decision"])
+        decision["candidate_preserved"] = False
+        identity["promotion_decision"] = decision
+        identity["publish_contract_trace"] = {
+            **identity["publish_contract_trace"],
+            "gate_decision": decision,
+        }
+        identity["publish_ledger"] = {
+            **identity["publish_ledger"],
+            "gate_decision": decision,
+        }
+        identity["candidate_ledger"] = {
+            **identity["candidate_ledger"],
+            "promotion_decision": decision,
+            "publish_contract_trace": identity["publish_contract_trace"],
+            "publish_ledger": identity["publish_ledger"],
+        }
+
+        report = audit_rows([row])
+
+        self.assertEqual(report["gate"], "NO-GO")
+        codes = {
+            violation["code"]
+            for row_report in report["violations"]
+            for violation in row_report["violations"]
+        }
+        self.assertIn("scrubbed_decision_not_candidate_preserved", codes)
+
+    def test_candidate_preservation_trace_and_ledger_must_match(self):
+        row = _converged_scrubbed_candidate_row()
+        identity = row["analysis_result"]["identity"]
+        publish_ledger = dict(identity["publish_ledger"])
+        publish_ledger["candidate_preservation"] = {
+            "official_title": "다른 후보",
+            "official_url": "https://example.test/other",
+        }
+        identity["publish_ledger"] = publish_ledger
+        identity["candidate_ledger"] = {
+            **identity["candidate_ledger"],
+            "publish_ledger": publish_ledger,
+        }
+
+        report = audit_rows([row])
+
+        self.assertEqual(report["gate"], "NO-GO")
+        codes = {
+            violation["code"]
+            for row_report in report["violations"]
+            for violation in row_report["violations"]
+        }
+        self.assertIn("candidate_preservation_trace_ledger_mismatch", codes)
 
 
 if __name__ == "__main__":

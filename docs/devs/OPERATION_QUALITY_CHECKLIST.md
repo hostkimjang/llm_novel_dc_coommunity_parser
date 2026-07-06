@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-06 Loop504 serialized public identity 후보 보존 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_504_REPORT_20260706.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop504_serialized_public_identity_candidate_preservation_state_20260706.json`.
+  - [x] 강화 full375 static audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop504_full375_publication_contract_candidate_preservation_audit.json/.md`.
+  - [x] Tool 보강 완료: `tools/audit_publication_contract_convergence.py`.
+  - [x] Test 보강 완료: `tests/test_publication_contract_convergence_audit.py`.
+- 품질 경계:
+  - [x] `serialized_public_identity_scrubbed`는 후보가 있으면 candidate ledger/trace에 보존되어야 한다.
+  - [x] 후보가 없는 `hold_without_candidates` 계열은 no-candidate reason으로 구분한다.
+  - [x] Current full375 static audit는 `GO / 375 rows / 0 violations`다.
+  - [x] 이 `GO`는 publication serialization 후보 보존 계약만 의미한다.
+  - [ ] Runtime replay는 실행하지 않는다.
+  - [ ] Full375 collateral `GO` 전 full_scan path를 정의하지 않는다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: serialization candidate preservation `GO_CONTRACT_FULL375_STATIC`, runtime replay `NOT_RUN_AFTER_CONTRACT_AUDIT`, full375 collateral `NO-GO / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop502 shared gate runtime block repair 큐 품질 게이트
 
 - 근거:

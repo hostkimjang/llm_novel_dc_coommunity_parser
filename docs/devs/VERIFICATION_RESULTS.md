@@ -1,5 +1,27 @@
 # Verification Results
 
+## 2026-07-06 Loop504 Verification
+
+- 범위: `serialized_public_identity_scrubbed`가 후보를 지우기만 하고 candidate ledger/trace에 보존하지 않는 회귀를 publication contract audit에서 잡도록 보강했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_504_REPORT_20260706.md`
+  - state `docs\devs\loop504_serialized_public_identity_candidate_preservation_state_20260706.json`
+  - full375 static audit JSON `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop504_full375_publication_contract_candidate_preservation_audit.json`
+  - full375 static audit MD `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop504_full375_publication_contract_candidate_preservation_audit.md`
+- Result:
+  - 강화 full375 static audit `GO`
+  - row_count `375`
+  - violation_row_count `0`
+  - 새 runtime replay `NOT_RUN_AFTER_CONTRACT_AUDIT`
+- Validation:
+  - `.\.venv312\Scripts\python.exe -m py_compile tools\audit_publication_contract_convergence.py` PASS
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_publication_contract_convergence_audit -v` PASS, `8` tests
+  - `tools\audit_publication_contract_convergence.py --result <Loop496 full375 result>` PASS, `GO / 0 violations`
+- Boundary:
+  - 이 `GO`는 serialization 후보 보존 계약의 static gate일 뿐 full375 collateral approval이 아니다.
+  - Full375 collateral은 `NO-GO / residual 105`다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-06 Loop503 Verification
 
 - 범위: 테스트런/검증런 진행상황 확인을 위해 `--parallel 16 + 웹 대시보드 기본 ON` 지침을 최신 문서와 실제 dashboard 상태로 재확인했다.

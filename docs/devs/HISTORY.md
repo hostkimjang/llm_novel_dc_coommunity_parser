@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-06 - Loop504 serialized public identity candidate preservation contract
+
+- `tools/audit_publication_contract_convergence.py`에 `serialized_public_identity_scrubbed` 후보 보존 계약을 추가했다.
+- 후보가 있는 blocked/scrubbed decision은 `candidate_preserved=true`와 `publish_contract_trace.pre_gate_candidate`, `publish_ledger.candidate_preservation`, blocked title field 중 하나의 후보 보존을 요구한다.
+- 후보가 없는 `hold_without_candidates` scrubbed hold는 후보 보존 누락으로 세지 않도록 정밀화했다.
+- `tests/test_publication_contract_convergence_audit.py`에 후보 보존 GO, 후보 보존 누락 NO-GO, candidate_preserved 누락 NO-GO, trace/ledger mismatch NO-GO, no-candidate hold GO를 추가했다.
+- Current Loop496 full375 결과에 강화 static audit를 적용했고 `GO / row_count 375 / violation_row_count 0`을 확인했다.
+- Report는 `docs/devs/loop_reports/LOOP_504_REPORT_20260706.md`, state는 `docs/devs/loop504_serialized_public_identity_candidate_preservation_state_20260706.json`이다.
+- Gate는 serialization candidate preservation `GO_CONTRACT_FULL375_STATIC`, runtime replay `NOT_RUN_AFTER_CONTRACT_AUDIT`, full375 collateral `NO-GO / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-06 - Loop503 test-run dashboard guide sync
 
 - 사용자가 테스트런 진행상황 확인을 위해 웹 대시보드 부착을 재확인했다.

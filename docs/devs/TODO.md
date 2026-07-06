@@ -1,5 +1,16 @@
 # Developer TODO Index
 
+## 2026-07-06 Loop504 TODO
+
+- 상태 업데이트: `serialized_public_identity_scrubbed` 후보 보존 계약을 강화했고 current full375 static audit는 `GO / 375 rows / 0 violations`다. Goal은 완료가 아니다.
+- [x] `PromotionDecision`이 blocked/scrubbed일 때 후보가 있으면 candidate ledger/trace에 보존되도록 감사 계약을 추가했다.
+- [x] 후보가 없는 `hold_without_candidates` scrubbed hold는 후보 보존 누락으로 세지 않도록 계약을 정밀화했다.
+- [x] `tests.test_publication_contract_convergence_audit` `8`건 PASS를 확인했다.
+- [x] Loop504 full375 static audit 산출물 `loop504_full375_publication_contract_candidate_preservation_audit.json/.md`를 생성했다.
+- [ ] Loop502 repair queue의 남은 lane은 runtime replay가 아니라 scope/nonwork 또는 title/url/variant 계약 수리로 계속 처리한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop503 TODO
 
 - 상태 업데이트: 테스트런 진행상황 확인을 위해 `--parallel 16 + 웹 대시보드 기본 ON` 지침을 최신 문서에 고정했다. Goal은 완료가 아니다.

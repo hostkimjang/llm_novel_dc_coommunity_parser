@@ -1,5 +1,17 @@
 # Improvement Register
 
+## IMP-20260706-504 - serialized public identity candidate preservation contract
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Candidate preservation audit | GO_UNIT | `audit_publication_contract_convergence.py`가 scrubbed candidate 보존 누락을 NO-GO로 잡음 | full375/static gate에 계속 적용 |
+| No-candidate boundary | GO_UNIT | `hold_without_candidates` scrubbed hold는 후보 보존 누락으로 세지 않음 | no-candidate reason 유지 |
+| Full375 static audit | GO | Loop496 full375 result 기준 `375` rows, violation `0` | residual lane 수리와 별개로 유지 |
+| Runtime replay | NOT_RUN | 이번 회차는 정적 contract audit | replay는 Loop502 lane repair 뒤 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375 collateral GO 전 완료 주장 금지 |
+
+Gate: serialization candidate preservation `GO_CONTRACT_FULL375_STATIC`, runtime replay `NOT_RUN_AFTER_CONTRACT_AUDIT`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260706-502 - shared gate runtime block repair queue
 
 | 항목 | 상태 | 근거 | 다음 |

@@ -1,0 +1,67 @@
+{
+  "loop": 504,
+  "generated_at": "2026-07-06T23:40:00+09:00",
+  "state_type": "serialized_public_identity_candidate_preservation_contract",
+  "summary": {
+    "status": "GO_CONTRACT_FULL375_STATIC",
+    "change": "publication contract convergence audit에 serialized_public_identity_scrubbed 후보 보존 계약을 추가했다.",
+    "contract": {
+      "scrubbed_candidate_must_be_preserved_or_marked_no_candidate": true,
+      "candidate_payload_sources": [
+        "publish_contract_trace.pre_gate_candidate",
+        "publish_ledger.candidate_preservation",
+        "identity.blocked_official_title / blocked_official_title_url",
+        "candidate_ledger.blocked_official_title / blocked_official_title_url"
+      ],
+      "no_candidate_reason_codes": [
+        "hold_without_candidates",
+        "no_candidate_title",
+        "missing_candidate_title",
+        "no_public_candidate"
+      ]
+    },
+    "full375_static_audit": {
+      "result_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop496_full375_current_head_4fd250f7_search_nonlight_result.json",
+      "audit_json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop504_full375_publication_contract_candidate_preservation_audit.json",
+      "audit_md": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop504_full375_publication_contract_candidate_preservation_audit.md",
+      "gate": "GO",
+      "row_count": 375,
+      "violation_row_count": 0
+    }
+  },
+  "code_changes": [
+    {
+      "path": "tools/audit_publication_contract_convergence.py",
+      "details": [
+        "Blocked/scrubbed decision의 후보 보존 여부를 검사한다.",
+        "serialized_public_identity_scrubbed가 후보를 갖는 경우 candidate_preserved=true를 요구한다.",
+        "trace pre_gate candidate와 publish ledger candidate_preservation mismatch를 NO-GO로 보고한다.",
+        "hold_without_candidates 등 no-candidate reason이 있는 scrubbed hold는 후보 보존 요구에서 제외한다.",
+        "Markdown 보고서에 한국어 후보 보존 정책을 출력한다."
+      ]
+    },
+    {
+      "path": "tests/test_publication_contract_convergence_audit.py",
+      "details": [
+        "scrubbed candidate 보존 GO를 고정했다.",
+        "후보 보존 누락, candidate_preserved 누락, trace/ledger mismatch를 NO-GO로 고정했다.",
+        "hold_without_candidates no-candidate scrubbed hold는 GO로 고정했다."
+      ]
+    }
+  ],
+  "verification": {
+    "py_compile": "PASS",
+    "focused_unittest": "PASS / 8 tests",
+    "full375_static_audit": "PASS / GO / 375 rows / 0 violations",
+    "runtime_replay": "NOT_RUN_AFTER_CONTRACT_AUDIT"
+  },
+  "gates": {
+    "serialization_candidate_preservation": "GO_CONTRACT_FULL375_STATIC",
+    "runtime_replay_after_contract_audit": "NOT_RUN_AFTER_CONTRACT_AUDIT",
+    "full375_collateral": "NO-GO / residual 105",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "completion_criteria": "full375 collateral GO + full_scan path definition"
+}

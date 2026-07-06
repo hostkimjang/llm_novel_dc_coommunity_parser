@@ -1,5 +1,19 @@
 # Development Checklist
 
+## 2026-07-06 Loop504 serialized public identity 후보 보존 계약 체크
+
+- [x] `tools/audit_publication_contract_convergence.py`에 `serialized_public_identity_scrubbed` 후보 보존 계약을 추가했다.
+- [x] 후보가 있는 scrubbed blocked decision은 `candidate_preserved=true`와 trace/ledger/blocked field 후보 보존을 요구한다.
+- [x] `hold_without_candidates` 등 no-candidate reason이 있으면 후보 보존 요구에서 제외한다.
+- [x] trace `pre_gate_candidate`와 publish ledger `candidate_preservation` mismatch를 NO-GO로 잡는다.
+- [x] 계약 테스트를 `8`건으로 확장했다.
+- [x] Current Loop496 full375 결과에 강화 static audit를 적용했다.
+- [x] 강화 full375 static audit는 `GO / 375 rows / 0 violations`다.
+- [ ] Runtime replay는 실행하지 않았다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: serialization candidate preservation `GO_CONTRACT_FULL375_STATIC`, runtime replay `NOT_RUN_AFTER_CONTRACT_AUDIT`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop503 테스트런 대시보드 지침 정합화 체크
 
 - [x] Standalone dashboard health가 `GO / ok=true / standalone=true / pid=9320`임을 확인했다.

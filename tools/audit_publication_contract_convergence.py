@@ -10,6 +10,12 @@ from typing import Any
 
 PUBLIC_TITLE_KEYS = ("official_title", "official_novel_title", "resolved_title")
 PUBLIC_URL_KEYS = ("heretic_url", "official_url", "resolved_url")
+NO_CANDIDATE_REASON_CODES = {
+    "hold_without_candidates",
+    "no_candidate_title",
+    "missing_candidate_title",
+    "no_public_candidate",
+}
 
 
 def load_json(path: Path) -> Any:
@@ -105,6 +111,19 @@ def _same_dict(left: Any, right: Any) -> bool:
     return isinstance(left, dict) and isinstance(right, dict) and left == right
 
 
+def _candidate_title_url(value: Any) -> dict[str, str | None]:
+    payload = _dict_or_empty(value)
+    return {
+        "official_title": _string_or_none(payload.get("official_title")),
+        "official_url": _string_or_none(payload.get("official_url")),
+    }
+
+
+def _has_candidate_payload(value: Any) -> bool:
+    candidate = _candidate_title_url(value)
+    return bool(candidate["official_title"] or candidate["official_url"])
+
+
 def _append_violation(violations: list[dict[str, Any]], code: str, detail: str) -> None:
     violations.append({"code": code, "detail": detail})
 
@@ -158,6 +177,10 @@ def audit_row(row: dict[str, Any], *, index: int) -> dict[str, Any]:
 
     gate_decision = _dict_or_empty(trace.get("gate_decision")) if isinstance(trace, dict) else {}
     ledger_gate_decision = _dict_or_empty(publish_ledger.get("gate_decision")) if isinstance(publish_ledger, dict) else {}
+    pre_gate_candidate = trace.get("pre_gate_candidate") if isinstance(trace, dict) else {}
+    ledger_candidate_preservation = (
+        publish_ledger.get("candidate_preservation") if isinstance(publish_ledger, dict) else {}
+    )
     candidate_decision = ledger.get("promotion_decision")
     candidate_trace = ledger.get("publish_contract_trace")
     candidate_publish_ledger = ledger.get("publish_ledger")
@@ -201,6 +224,12 @@ def audit_row(row: dict[str, Any], *, index: int) -> dict[str, Any]:
         _append_violation(violations, "publish_allowed_status_mismatch", "publish_allowed=true but status is not publish")
     if not publish_allowed and status == "publish":
         _append_violation(violations, "blocked_decision_status_publish", "publish_allowed=false but status=publish")
+    if publish_allowed and decision.get("candidate_preserved") is True:
+        _append_violation(
+            violations,
+            "publish_allowed_candidate_preserved_true",
+            "publish_allowed=true but candidate_preserved=true",
+        )
 
     post_gate = _dict_or_empty(trace.get("post_gate_identity")) if isinstance(trace, dict) else {}
     public_publish = _dict_or_empty(publish_ledger.get("public_publish")) if isinstance(publish_ledger, dict) else {}
@@ -234,6 +263,59 @@ def audit_row(row: dict[str, Any], *, index: int) -> dict[str, Any]:
                 "serialized official_title does not match allowed decision",
             )
     else:
+        reason_codes = {
+            str(code or "").strip()
+            for code in (decision.get("reason_codes") or [])
+            if str(code or "").strip()
+        }
+        no_candidate_hold = bool(reason_codes & NO_CANDIDATE_REASON_CODES)
+        candidate_preservation_expected = (
+            decision.get("candidate_preserved") is True
+            or ("serialized_public_identity_scrubbed" in reason_codes and not no_candidate_hold)
+        )
+        candidate_preservation_sources = [
+            pre_gate_candidate,
+            ledger_candidate_preservation,
+            {
+                "official_title": identity.get("blocked_official_title"),
+                "official_url": identity.get("blocked_official_title_url"),
+            },
+            {
+                "official_title": ledger.get("blocked_official_title"),
+                "official_url": ledger.get("blocked_official_title_url"),
+            },
+        ]
+        candidate_preserved_payload_present = any(
+            _has_candidate_payload(source) for source in candidate_preservation_sources
+        )
+        if (
+            "serialized_public_identity_scrubbed" in reason_codes
+            and not no_candidate_hold
+            and decision.get("candidate_preserved") is not True
+        ):
+            _append_violation(
+                violations,
+                "scrubbed_decision_not_candidate_preserved",
+                "serialized_public_identity_scrubbed decision with a candidate must mark candidate_preserved=true",
+            )
+        if candidate_preservation_expected and not candidate_preserved_payload_present:
+            _append_violation(
+                violations,
+                "blocked_candidate_preservation_missing",
+                "blocked/scrubbed decision does not preserve the candidate in trace, ledger, or blocked title fields",
+            )
+        if (
+            isinstance(trace, dict)
+            and isinstance(publish_ledger, dict)
+            and _has_candidate_payload(pre_gate_candidate)
+            and _has_candidate_payload(ledger_candidate_preservation)
+            and _candidate_title_url(pre_gate_candidate) != _candidate_title_url(ledger_candidate_preservation)
+        ):
+            _append_violation(
+                violations,
+                "candidate_preservation_trace_ledger_mismatch",
+                "publish_ledger.candidate_preservation differs from publish_contract_trace.pre_gate_candidate",
+            )
         if _string_or_none(post_gate.get("official_title")):
             _append_violation(violations, "blocked_trace_publishes_title", "blocked trace still publishes title")
         if _string_or_none(post_gate.get("official_url")):
@@ -288,6 +370,7 @@ def audit_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "promotion_decision_trace_ledger_serialized_identity_must_converge": True,
             "blocked_decision_must_not_publish_serialized_public_identity": True,
             "allowed_decision_must_match_serialized_public_identity": True,
+            "scrubbed_candidate_must_be_preserved_or_marked_no_candidate": True,
         },
         "summary": {
             "row_count": len(row_reports),
@@ -300,12 +383,13 @@ def audit_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 def write_markdown(report: dict[str, Any], path: Path) -> None:
     lines = [
-        "# Publication contract convergence audit",
+        "# Publication contract convergence 감사",
         "",
         f"- gate: `{report['gate']}`",
         f"- semantic_quality: `{report['semantic_quality']}`",
         f"- full_scan_approval: `{str(report['full_scan_approval']).lower()}`",
         "- 정책: `PromotionDecision`, `publish_contract_trace`, `publish_ledger`, serialized public identity는 같은 publish/block 결론으로 수렴해야 한다.",
+        "- 정책: `serialized_public_identity_scrubbed`는 후보가 있으면 candidate ledger/trace에 보존하고, 후보가 없으면 `hold_without_candidates` 같은 no-candidate reason을 남겨야 한다.",
         "",
         "## 요약",
         "",
