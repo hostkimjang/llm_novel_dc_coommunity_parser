@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260707-517 - shared gate scope conflict split
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Scope conflict split | GO_CONTRACT | `projection_runtime_scope_conflict 13`을 kind로 분리 | hard/mixed를 다른 수리 lane으로 처리 |
+| Hard noncurrent | OPEN_REPAIR | `hard_noncurrent 11` | shared predicate reconciliation 뒤 replay |
+| Mixed trace | OPEN_TRACE_REPAIR | `mixed_trace 2` | `publish_contract_trace`/scope reason normalization |
+| Replay allowed rows | GO_BLOCKED | `runtime_replay_allowed_rows 0` | 수리 전 동일 packet replay 금지 |
+| Verification | GO_UNIT | py_compile PASS, focused unittest `6` PASS, split queue generation PASS | broader runtime은 아직 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: repair queue `REVIEW-LOCKED`, runtime replay `NOT_RUN`, full375 collateral `NO-GO / not rerun`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-516 - shared gate runtime block repair queue
 
 | 항목 | 상태 | 근거 | 다음 |

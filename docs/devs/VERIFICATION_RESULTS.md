@@ -1,5 +1,30 @@
 # Verification Results
 
+## 2026-07-07 Loop517 Verification
+
+- 범위: Loop516 repair queue의 projection/runtime scope conflict `13`건을 hard conflict와 mixed trace로 분리했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_517_REPORT_20260707.md`
+  - state `docs\devs\loop517_shared_gate_scope_conflict_split_state_20260707.json`
+  - split repair queue `docs\devs\loop517_shared_gate_scope_conflict_split_repair32_queue.json`
+  - split repair queue markdown `docs\devs\loop517_shared_gate_scope_conflict_split_repair32_queue.md`
+  - tool `tools\build_shared_gate_runtime_block_repair_queue.py`
+  - test `tests\test_shared_gate_runtime_block_repair_queue.py`
+- Result:
+  - repair rows `32`
+  - runtime replay allowed rows `0`
+  - projection/runtime scope conflict `13`
+  - conflict kind `hard_noncurrent 11`, `mixed_trace 2`, `none 19`
+  - validation issue `0`
+- Validation:
+  - `python -m py_compile tools\build_shared_gate_runtime_block_repair_queue.py tests\test_shared_gate_runtime_block_repair_queue.py` PASS.
+  - `python -m unittest tests.test_shared_gate_runtime_block_repair_queue -v` PASS, `6` tests.
+  - `tools\build_shared_gate_runtime_block_repair_queue.py ... --fail-on-validation-issue` PASS.
+- Boundary:
+  - Loop517은 runtime replay가 아니다.
+  - Mixed trace `2`건은 hard-hold 완화가 아니라 trace normalization 대상이다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-07 Loop516 Verification
 
 - 범위: Loop515 expected-title audit의 `FAIL_RUNTIME_PROMOTION_BLOCKED 32`건을 동일 입력 replay가 아니라 shared gate contract repair queue로 재분류했다.

@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-07 - Loop517 shared gate scope conflict split
+
+- Loop516 repair queue의 `projection_runtime_scope_conflict 13`건을 hard conflict와 mixed trace로 분리했다.
+- 새 runtime replay는 실행하지 않았고, `runtime_replay_allowed_rows`는 계속 `0`이다.
+- `tools/build_shared_gate_runtime_block_repair_queue.py`는 `projection_runtime_scope_conflict_kind`를 기록한다.
+- 결과는 `hard_noncurrent 11`, `mixed_trace 2`, `none 19`다.
+- Hard conflict는 `projection_runtime_scope_reconciliation_required`, mixed trace는 `projection_runtime_scope_trace_normalization_required` action으로 분리했다.
+- Verification은 py_compile PASS, `tests.test_shared_gate_runtime_block_repair_queue` `6` tests PASS, split queue generation PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_517_REPORT_20260707.md`, state는 `docs/devs/loop517_shared_gate_scope_conflict_split_state_20260707.json`, queue는 `docs/devs/loop517_shared_gate_scope_conflict_split_repair32_queue.json/.md`다.
+- Gate는 repair queue `REVIEW-LOCKED`, runtime replay `NOT_RUN`, full375 collateral `NO-GO / not rerun`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop516 shared gate runtime block repair queue
 
 - Loop515 expected-title runtime 재현 실패 중 `FAIL_RUNTIME_PROMOTION_BLOCKED 32`건을 동일 입력 재실행하지 않고 shared gate repair queue로 재분류했다.

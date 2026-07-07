@@ -1,5 +1,24 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop517 shared gate scope conflict split 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_517_REPORT_20260707.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop517_shared_gate_scope_conflict_split_state_20260707.json`.
+  - [x] Split repair queue 기록 완료: `docs/devs/loop517_shared_gate_scope_conflict_split_repair32_queue.json/.md`.
+  - [x] Tool contract 갱신 완료: `tools/build_shared_gate_runtime_block_repair_queue.py`.
+  - [x] Test 갱신 완료: `tests/test_shared_gate_runtime_block_repair_queue.py`.
+- 품질 경계:
+  - [x] 새 runtime replay는 실행하지 않았다.
+  - [x] 동일 입력 replay 허용 rows는 `0`이다.
+  - [x] Scope conflict `13`건을 `hard_noncurrent 11`, `mixed_trace 2`로 분리했다.
+  - [x] Mixed trace는 hard conflict가 아니라 trace normalization 대상으로 분리했다.
+  - [x] Validation issue는 `0`이다.
+  - [ ] 이 split queue를 full_scan approval 또는 full375 collateral GO로 승격하지 않는다.
+  - [ ] Runtime replay는 contract repair 뒤에만 실행한다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: repair queue `REVIEW-LOCKED`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop516 shared gate runtime block repair queue 품질 게이트
 
 - 근거:

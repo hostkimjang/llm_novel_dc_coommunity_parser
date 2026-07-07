@@ -190,17 +190,27 @@ def _scope_claim(reasons: set[str], *, projected: bool = False) -> str:
         if reasons & PROJECTED_CURRENT_WORK_MARKERS:
             return "PROJECTED_CURRENT_WORK"
         return "PROJECTED_SCOPE_UNSPECIFIED"
-    if reasons & RUNTIME_NONCURRENT_MARKERS:
+    has_current = bool(reasons & RUNTIME_CURRENT_WORK_MARKERS)
+    has_noncurrent = bool(reasons & RUNTIME_NONCURRENT_MARKERS)
+    if has_current and has_noncurrent:
+        return "RUNTIME_MIXED_CURRENT_AND_NONCURRENT"
+    if has_noncurrent:
         return "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY"
-    if reasons & RUNTIME_CURRENT_WORK_MARKERS:
+    if has_current:
         return "RUNTIME_CURRENT_WORK"
     return "RUNTIME_SCOPE_UNSPECIFIED"
 
 
-def _has_projection_runtime_scope_conflict(projected_reasons: set[str], runtime_reasons: set[str]) -> bool:
-    return bool(projected_reasons & PROJECTED_CURRENT_WORK_MARKERS) and bool(
-        runtime_reasons & RUNTIME_NONCURRENT_MARKERS
-    )
+def _projection_runtime_scope_conflict_kind(projected_reasons: set[str], runtime_reasons: set[str]) -> str:
+    if not projected_reasons & PROJECTED_CURRENT_WORK_MARKERS:
+        return "none"
+    has_current = bool(runtime_reasons & RUNTIME_CURRENT_WORK_MARKERS)
+    has_noncurrent = bool(runtime_reasons & RUNTIME_NONCURRENT_MARKERS)
+    if has_current and has_noncurrent:
+        return "mixed_trace"
+    if has_noncurrent:
+        return "hard_noncurrent"
+    return "none"
 
 
 def _primary_lane(reasons: set[str]) -> str:
@@ -271,17 +281,22 @@ def classify_repair_row(row: dict[str, Any]) -> dict[str, Any]:
     search_gate = _search_gate(row)
     lane = _primary_lane(reasons)
     facets = _facets_for(reasons, search_gate)
-    scope_conflict = _has_projection_runtime_scope_conflict(projected_reasons, reasons)
+    scope_conflict_kind = _projection_runtime_scope_conflict_kind(projected_reasons, reasons)
+    scope_conflict = scope_conflict_kind != "none"
     if scope_conflict:
         facets.append("projection_runtime_scope_conflict")
+    if scope_conflict_kind == "mixed_trace":
+        facets.append("projection_runtime_scope_mixed_trace")
     actions = [
         _lane_action(lane),
         "publish_contract_trace_contract_test_required",
         "runtime_replay_after_contract_repair",
         "full375_collateral_recheck_after_repair",
     ]
-    if scope_conflict:
+    if scope_conflict_kind == "hard_noncurrent":
         actions.insert(1, "projection_runtime_scope_reconciliation_required")
+    elif scope_conflict_kind == "mixed_trace":
+        actions.insert(1, "projection_runtime_scope_trace_normalization_required")
     if search_gate in {"SEARCH_BLIND_BLOCKER", "SEARCH_EVIDENCE_MISSING"}:
         actions.insert(1, "search_blind_preflight_required")
     elif search_gate == "SEARCH_RECOVERED_CONDITIONAL":
@@ -298,6 +313,7 @@ def classify_repair_row(row: dict[str, Any]) -> dict[str, Any]:
         "projected_scope_claim": _scope_claim(projected_reasons, projected=True),
         "runtime_scope_claim": _scope_claim(reasons),
         "projection_runtime_scope_conflict": scope_conflict,
+        "projection_runtime_scope_conflict_kind": scope_conflict_kind,
         "primary_repair_lane": lane,
         "repair_facets": facets,
         "reason_codes": sorted(reasons),
@@ -328,6 +344,7 @@ def build_repair_queue(
     scope_conflict_counts = Counter(
         "conflict" if row.get("projection_runtime_scope_conflict") else "no_conflict" for row in out_rows
     )
+    scope_conflict_kind_counts = Counter(str(row.get("projection_runtime_scope_conflict_kind") or "none") for row in out_rows)
     lane_groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in out_rows:
         lane_groups[str(row["primary_repair_lane"])].append(row)
@@ -351,6 +368,9 @@ def build_repair_queue(
                 ),
                 "projection_runtime_scope_conflict_rows": sum(
                     1 for row in group_rows if row.get("projection_runtime_scope_conflict")
+                ),
+                "projection_runtime_scope_conflict_kind_counts": _counter_to_dict(
+                    Counter(str(row.get("projection_runtime_scope_conflict_kind") or "none") for row in group_rows)
                 ),
                 "post_ids": [row.get("post_id") for row in group_rows],
                 "sample_rows": group_rows[:8],
@@ -376,6 +396,7 @@ def build_repair_queue(
             "reason_counts": _counter_to_dict(reason_counts),
             "action_counts": _counter_to_dict(action_counts),
             "projection_runtime_scope_conflict_counts": _counter_to_dict(scope_conflict_counts),
+            "projection_runtime_scope_conflict_kind_counts": _counter_to_dict(scope_conflict_kind_counts),
             "validation_issue_count": len(validation_issues),
         },
         "stop_condition": {
@@ -410,6 +431,7 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
         f"- repair_facet_counts: `{summary.get('repair_facet_counts')}`",
         f"- search_gate_counts: `{summary.get('search_gate_counts')}`",
         f"- projection_runtime_scope_conflict_counts: `{summary.get('projection_runtime_scope_conflict_counts')}`",
+        f"- projection_runtime_scope_conflict_kind_counts: `{summary.get('projection_runtime_scope_conflict_kind_counts')}`",
         f"- validation_issue_count: `{summary.get('validation_issue_count')}`",
         "- approval: `false`",
         "- semantic_quality: `REVIEW-LOCKED`",
@@ -434,6 +456,7 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
                 f"- search_gate_counts: `{group.get('search_gate_counts')}`",
                 f"- facet_counts: `{group.get('facet_counts')}`",
                 f"- projection_runtime_scope_conflict_rows: `{group.get('projection_runtime_scope_conflict_rows')}`",
+                f"- projection_runtime_scope_conflict_kind_counts: `{group.get('projection_runtime_scope_conflict_kind_counts')}`",
                 f"- sample_post_ids: `{sample}`",
                 "",
             ]

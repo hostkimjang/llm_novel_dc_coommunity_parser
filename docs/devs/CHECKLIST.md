@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-07 Loop517 shared gate scope conflict split 체크
+
+- [x] Loop516 `projection_runtime_scope_conflict 13`건을 hard/mixed로 분리했다.
+- [x] 새 runtime replay는 실행하지 않았다.
+- [x] `runtime_replay_allowed_rows`는 계속 `0`이다.
+- [x] `projection_runtime_scope_conflict_kind` 계약을 도구와 테스트에 추가했다.
+- [x] Conflict kind는 `hard_noncurrent 11`, `mixed_trace 2`, `none 19`다.
+- [x] Hard conflict는 `projection_runtime_scope_reconciliation_required` action으로 둔다.
+- [x] Mixed trace는 `projection_runtime_scope_trace_normalization_required` action으로 분리한다.
+- [x] Report `docs/devs/loop_reports/LOOP_517_REPORT_20260707.md`를 작성했다.
+- [x] State `docs/devs/loop517_shared_gate_scope_conflict_split_state_20260707.json`을 작성했다.
+- [x] Split queue `docs/devs/loop517_shared_gate_scope_conflict_split_repair32_queue.json/.md`를 작성했다.
+- [x] py_compile PASS.
+- [x] `tests.test_shared_gate_runtime_block_repair_queue` `6` tests PASS.
+- [ ] Mixed trace `2`건은 hard-hold 완화가 아니라 trace normalization 수리로 처리한다.
+- [ ] Hard conflict `11`건은 `_post_discusses_work_as_work` shared predicate 수렴 뒤에만 replay 후보로 되돌린다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: repair queue `REVIEW-LOCKED`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop516 shared gate runtime block repair queue 체크
 
 - [x] Loop515 expected-title failure 중 `FAIL_RUNTIME_PROMOTION_BLOCKED 32`건을 별도 repair queue로 분리했다.

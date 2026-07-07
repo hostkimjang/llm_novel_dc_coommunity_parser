@@ -1,0 +1,61 @@
+{
+  "loop": 517,
+  "date": "2026-07-07",
+  "scope": "Loop516 projection/runtime scope conflict split",
+  "head_before_loop": "add7ebd2",
+  "runtime_replay": "NOT_RUN",
+  "source_queue": "docs/devs/loop515_after_safe57_runtime_expected_failure_queue.json",
+  "split_queue_json": "docs/devs/loop517_shared_gate_scope_conflict_split_repair32_queue.json",
+  "split_queue_md": "docs/devs/loop517_shared_gate_scope_conflict_split_repair32_queue.md",
+  "report": "docs/devs/loop_reports/LOOP_517_REPORT_20260707.md",
+  "tooling": {
+    "tool": "tools/build_shared_gate_runtime_block_repair_queue.py",
+    "test": "tests/test_shared_gate_runtime_block_repair_queue.py",
+    "new_contract": "projection_runtime_scope_conflict_kind hard_noncurrent vs mixed_trace"
+  },
+  "summary": {
+    "repair_rows": 32,
+    "runtime_replay_allowed_rows": 0,
+    "primary_repair_lane_counts": {
+      "candidate_preservation_or_scrub_repair": 9,
+      "image_or_alias_anchor_contract_repair": 6,
+      "scope_or_nonwork_monotonicity_repair": 10,
+      "title_url_or_variant_trace_repair": 7
+    },
+    "projection_runtime_scope_conflict_counts": {
+      "conflict": 13,
+      "no_conflict": 19
+    },
+    "projection_runtime_scope_conflict_kind_counts": {
+      "hard_noncurrent": 11,
+      "mixed_trace": 2,
+      "none": 19
+    },
+    "validation_issue_count": 0
+  },
+  "verification": [
+    {
+      "command": ".\\\\venv\\\\Scripts\\\\python.exe -m py_compile .\\\\tools\\\\build_shared_gate_runtime_block_repair_queue.py .\\\\tests\\\\test_shared_gate_runtime_block_repair_queue.py",
+      "result": "PASS"
+    },
+    {
+      "command": ".\\\\venv\\\\Scripts\\\\python.exe -m unittest tests.test_shared_gate_runtime_block_repair_queue -v",
+      "result": "PASS",
+      "tests": 6
+    },
+    {
+      "command": ".\\\\venv\\\\Scripts\\\\python.exe .\\\\tools\\\\build_shared_gate_runtime_block_repair_queue.py --queue .\\\\docs\\\\devs\\\\loop515_after_safe57_runtime_expected_failure_queue.json --queue-id loop517_shared_gate_scope_conflict_split_repair32_queue --output-json .\\\\docs\\\\devs\\\\loop517_shared_gate_scope_conflict_split_repair32_queue.json --output-md .\\\\docs\\\\devs\\\\loop517_shared_gate_scope_conflict_split_repair32_queue.md --fail-on-validation-issue",
+      "result": "PASS"
+    }
+  ],
+  "gate": {
+    "repair_queue": "REVIEW-LOCKED",
+    "runtime_replay": "NOT_RUN",
+    "full375_collateral": "NO-GO / not rerun",
+    "search_evidence": "REVIEW / search-blind conditional preserved",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  }
+}
