@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop564 dashboard-attached runtime replay 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_564_REPORT_20260707.md`.
+  - [x] Runtime result/manifest 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop564_conflict_safe_p0_shared_gate_runtime_replay_result.json`, `..._manifest.json`.
+  - [x] Runtime health, expected-title, publication contract, goal/test contract audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_*`.
+  - [x] Failure action queue와 runtime block repair queue 기록 완료: `...runtime_failure_action_queue.json/.md`, `...runtime_block_repair_queue.json/.md`.
+- 품질 경계:
+  - [x] 테스트런은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 미사용으로 실행했다.
+  - [x] Dashboard final status `30/30`은 진행 관측 근거이며 approval 근거가 아니다.
+  - [x] Runtime completion `30/30`과 publication contract `GO`를 semantic/full_scan approval로 승격하지 않았다.
+  - [x] Expected-title `NO-GO / 13 of 30`을 full375 collateral gate blocker로 유지했다.
+  - [x] Failure `17`건은 단건 반복이 아니라 batch queue로 분리했다.
+  - [x] Shared-gate runtime block `15`건은 canonical candidate recheck 전 replay allowed `0`으로 유지했다.
+  - [x] Search degraded/timeout 흔적은 `search-blind 조건부`와 P0 검색 복구 항목으로 보존했다.
+  - [x] Full375 collateral `GO` 전 goal completion을 선언하지 않는다.
+- Gate: runtime replay `GO_RUNTIME_COMPLETE_AUDITED / 30`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, publication contract `GO`, expected-title `NO-GO / 13 of 30`, repair queue `REVIEW-LOCKED / 17`, full375 collateral `NO-GO / adjusted residual 87`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop563 P0 shared-gate projection 품질 게이트
 
 - 근거:

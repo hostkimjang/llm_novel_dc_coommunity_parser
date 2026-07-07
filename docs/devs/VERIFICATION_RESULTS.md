@@ -1,5 +1,40 @@
 # Verification Results
 
+## 2026-07-07 Loop564 dashboard-attached runtime replay
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_564_REPORT_20260707.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop564_conflict_safe_p0_shared_gate_runtime_replay_result.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop564_conflict_safe_p0_shared_gate_runtime_replay_result_manifest.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_run_health_audit.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_expected_title_audit.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_expected_title_audit.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_publication_contract_audit.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_publication_contract_audit.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_goal_contract_audit.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_goal_contract_audit.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_failure_action_queue.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_failure_action_queue.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_block_repair_queue.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_block_repair_queue.md`
+- 검증:
+  - Runtime replay: PASS, run `20260707_231751_124228`, completed/flushed/pending/failed `30/30/0/0`, requested/effective parallel `16/16`, total time `1924.3s`.
+  - Dashboard: PASS, external standalone forwarding, URL `http://127.0.0.1:8080`, final status `30/30`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`.
+  - Search health preflight: PASS runtime connectivity, include_search `True`, checked `8/8`, failure `0`.
+  - VLM/OCR: PASS, semantic gate `READY`, image post `19`.
+  - Run health audit: PASS, `GO / clean_completed_source`, checkpoint rows `30`.
+  - Publication contract audit: PASS, `GO / 30 rows / 0 violations`.
+  - Goal/test runtime contract audit: REVIEW, small run에서 search health 포함 실행.
+  - Expected-title audit: expected NO-GO, `PASS_EXACT_SAFE_RESOLVED 13/30`, `FAIL_RUNTIME_PROMOTION_BLOCKED 15`, `FAIL_SAFE_RESOLVED_TITLE_MISMATCH 2`.
+  - Failure action queue generation: PASS, rows `17`, validation issue `0`.
+  - Runtime block repair queue generation: PASS, rows `15`, runtime replay allowed `0`, validation issue `0`.
+- 결과:
+  - 대시보드 부착과 parallel16 런타임 생산성은 실증됐다.
+  - 그러나 expected-title 재현은 `13/30`에 그쳐 full375 동결 해제나 full_scan approval 근거가 아니다.
+  - Search evidence는 로그 degraded `27`, timeout `1` 때문에 `REVIEW`로 유지한다.
+  - 동일 packet replay는 `B1_missing_candidate_alignment_review 15`와 mismatch review `2`를 닫기 전 금지한다.
+- Gate: runtime replay `GO_RUNTIME_COMPLETE_AUDITED / 30`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, publication contract `GO`, expected-title `NO-GO / 13 of 30`, repair queue `REVIEW-LOCKED / 17`, full375 collateral `NO-GO / adjusted residual 87`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop563 P0 shared-gate projection and replay input
 
 - 산출물:

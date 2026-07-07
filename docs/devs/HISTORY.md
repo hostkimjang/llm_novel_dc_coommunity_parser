@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-07 - Loop564 dashboard-attached runtime replay
+
+- Loop563 runtime replay input `30`건을 실제 실행했다.
+- 실행은 `--parallel 16`, `--reuse-shards-only`, `--slang-db off`, VLM/OCR ON, dashboard live forwarding으로 진행했다.
+- Run `20260707_231751_124228`는 completed/flushed/pending/failed `30/30/0/0`, requested/effective parallel `16/16`, total time `1924.3s`로 완주했다.
+- Standalone dashboard `http://127.0.0.1:8080` 최종 status는 `30/30`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`다.
+- Run health는 `GO / clean_completed_source`, publication contract는 `GO / 30 rows / 0 violations`다.
+- Expected-title audit은 `NO-GO / 13 of 30`이며 실패는 `FAIL_RUNTIME_PROMOTION_BLOCKED 15`, `FAIL_SAFE_RESOLVED_TITLE_MISMATCH 2`다.
+- Failure action queue `17`건과 shared-gate runtime block repair queue `15`건을 생성했고 runtime replay allowed는 `0`이다.
+- Search evidence는 degraded/timeout 로그 때문에 `REVIEW`다.
+- Report는 `docs/devs/loop_reports/LOOP_564_REPORT_20260707.md`다.
+- Gate는 runtime replay `GO_RUNTIME_COMPLETE_AUDITED / 30`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, expected-title `NO-GO / 13 of 30`, repair queue `REVIEW-LOCKED / 17`, full375 collateral `NO-GO / adjusted residual 87`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop563 P0 shared-gate projection and replay input
 
 - 새 runtime replay, bounded run, full375 대형 run은 실행하지 않았다.

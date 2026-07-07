@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-07 Loop564 dashboard-attached runtime replay 체크
+
+- [x] Loop563 runtime replay input `30`건을 실제 실행했다.
+- [x] 실행은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 미사용으로 진행했다.
+- [x] Standalone dashboard `http://127.0.0.1:8080` live forwarding을 확인했고 최종 status는 `30/30`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`다.
+- [x] Runtime manifest는 completed/flushed/pending/failed `30/30/0/0`, requested/effective parallel `16/16`, VLM/OCR `READY`를 기록한다.
+- [x] Run health는 `GO / clean_completed_source`, publication contract는 `GO / 30 rows / 0 violations`다.
+- [x] Expected-title replay는 `NO-GO / 13 of 30`으로 기록했다.
+- [x] Runtime failure action queue `17`건과 shared-gate block repair queue `15`건을 batch로 생성했고 validation issue는 `0`이다.
+- [x] 동일 packet replay는 canonical candidate recheck와 shared-gate repair 전 금지한다.
+- [ ] `FAIL_RUNTIME_PROMOTION_BLOCKED 15`건의 `B1_missing_candidate_alignment_review`를 닫는다.
+- [ ] `FAIL_SAFE_RESOLVED_TITLE_MISMATCH 2`건(`11665121`, `11673080`)을 source-native/blind canonical review로 닫는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: runtime replay `GO_RUNTIME_COMPLETE_AUDITED / 30`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, publication contract `GO`, expected-title `NO-GO / 13 of 30`, repair queue `REVIEW-LOCKED / 17`, full375 collateral `NO-GO / adjusted residual 87`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop563 P0 shared-gate projection 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 run을 실행하지 않았다.

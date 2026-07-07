@@ -1,5 +1,22 @@
 # Improvement Register
 
+## IMP-20260707-564 - Dashboard-attached runtime replay and expected-title NO-GO
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | GO_RUNTIME_COMPLETE_AUDITED | `30/30/0/0`, run `20260707_231751_124228`, total `1924.3s` | audit 결과만 후속 queue에 반영 |
+| Dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | `http://127.0.0.1:8080`, 최종 `30/30`, `parallel_count=16` | 다음 테스트런도 live forwarding |
+| Parallel policy | GO | requested/effective `16/16` | 입력 수가 작을 때만 effective 축소 허용 |
+| Run health | GO | clean completed source, checkpoint rows `30` | search evidence와 분리 |
+| Publication contract | GO | `30` rows, violation `0` | full_scan approval로 오해 금지 |
+| Expected-title replay | NO-GO | exact safe_resolved `13/30`, promotion_blocked `15`, mismatch `2` | 실패 queue batch 처리 |
+| Failure action queue | REVIEW-LOCKED | rows `17`, validation issue `0` | 단건 소모 금지 |
+| Runtime block repair queue | REVIEW-LOCKED | rows `15`, runtime replay allowed `0`, B1 missing candidate alignment | canonical candidate recheck 후 replay |
+| Search evidence | REVIEW | degraded `27`, timeout `1`, search status degraded/recovered 혼재 | search-blind 조건부 유지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: runtime replay `GO_RUNTIME_COMPLETE_AUDITED / 30`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, expected-title `NO-GO / 13 of 30`, repair queue `REVIEW-LOCKED / 17`, full375 collateral `NO-GO / adjusted residual 87`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-563 - P0 shared-gate projection and replay input
 
 | 항목 | 상태 | 근거 | 다음 |

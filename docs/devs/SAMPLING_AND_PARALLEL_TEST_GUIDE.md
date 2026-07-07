@@ -1,5 +1,16 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-07 Loop564 runtime replay 대시보드 관측 결과
+
+- Loop564 runtime replay는 사용자 지시에 따라 `--parallel 16`과 dashboard ON으로 실행했다.
+- Run `20260707_231751_124228`의 manifest는 requested/effective parallel `16/16`, completed/flushed/pending/failed `30/30/0/0`, VLM/OCR `READY`를 기록했다.
+- Dashboard URL은 `http://127.0.0.1:8080`이며 외부 standalone 서버가 감지되어 live forwarding으로 붙었다.
+- Dashboard 최종 상태는 `30/30`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`다.
+- Total time은 `1924.3s`, avg time/post는 `64.1s`였다. 마지막 2건은 deliberation/verifier 구간이 길어져 진행률이 `28/30`, `29/30`에서 잠시 머물렀다.
+- Search health는 include_search `True`, checked `8/8`, failure `0`이었지만, 사후 run health에는 degraded/timeout 로그가 있어 search evidence는 `REVIEW`다.
+- 다음 테스트런/검증런도 기본은 `--parallel 16`과 dashboard ON이다. `--no-dashboard`는 사용자가 명시적으로 끌 때만 허용한다.
+- Dashboard는 진행상황 관측 도구이며 `semantic_quality`, `full_scan_approval`, `full375 collateral GO`의 승인 근거가 아니다.
+
 ## 2026-07-07 Loop560-562 action batch dashboard 계약
 
 - `tools/test_run_dashboard_policy.py`는 `TEST_RUNS_USE_PARALLEL_16_AND_WEB_DASHBOARD` 실행 계약을 제공한다.
