@@ -129,6 +129,103 @@ class ReaccountResidualAfterContractReviewsTest(unittest.TestCase):
             "contract_processed_non_webnovel_ebook_policy_hold_no_publish",
         )
 
+    def test_release_audit_can_satisfy_candidate_set_hold_accounting(self):
+        residual_queue = {
+            "queue_id": "unit_residual",
+            "rows": [
+                {
+                    "post_id": 11694035,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "review_label": "HOLD",
+                    "actions": ["candidate_set_rebuild_required"],
+                }
+            ],
+        }
+        contract_plan = {
+            "plan_id": "unit_plan",
+            "rows": [
+                {
+                    "post_id": 11694035,
+                    "contract_action": "candidate_set_rebuild_required_before_publish",
+                    "target_title": None,
+                }
+            ],
+        }
+        release_gate_audit = {
+            "audit_id": "unit_release_gate",
+            "satisfied_no_release_rows": [
+                {
+                    "post_id": 11694035,
+                    "release_gate_state": "candidate_set_rebuild_preserved_no_release",
+                    "satisfied_no_release": True,
+                    "violation": False,
+                }
+            ],
+        }
+
+        accounting = build_accounting(
+            residual_queue=residual_queue,
+            contract_plan=contract_plan,
+            release_gate_audit=release_gate_audit,
+            accounting_id="unit",
+        )
+
+        summary = accounting["summary"]
+        self.assertEqual(summary["contract_processed_rows"], 1)
+        self.assertEqual(summary["candidate_set_rebuild_hold_rows"], 1)
+        self.assertEqual(summary["ordinary_residual_unprocessed_rows"], 0)
+        self.assertEqual(summary["validation_issue_count"], 0)
+        self.assertEqual(accounting["rows"][0]["policy_review_ref"], "unit_release_gate")
+
+    def test_canonical_cleanup_counts_as_release_candidate_after_application(self):
+        residual_queue = {
+            "queue_id": "unit_residual",
+            "rows": [
+                {
+                    "post_id": 11669907,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "review_label": "REPROCESS",
+                    "actions": ["canonical_title_cleanup_required"],
+                }
+            ],
+        }
+        contract_plan = {
+            "plan_id": "unit_plan",
+            "rows": [
+                {
+                    "post_id": 11669907,
+                    "contract_action": "canonical_cleanup_or_url_correction_contract_case",
+                    "target_title": "마법 좋아좋아좋아",
+                    "target_url": "https://novelpia.com/novel/326040",
+                }
+            ],
+        }
+        application = {
+            "projection_id": "unit_application",
+            "applied_rows": [
+                {
+                    "post_id": 11669907,
+                    "contract_action": "canonical_cleanup_or_url_correction_contract_case",
+                    "status": "applied",
+                }
+            ],
+        }
+
+        accounting = build_accounting(
+            residual_queue=residual_queue,
+            contract_plan=contract_plan,
+            expected_restore_application=application,
+            accounting_id="unit",
+        )
+
+        summary = accounting["summary"]
+        self.assertEqual(summary["contract_processed_rows"], 1)
+        self.assertEqual(summary["release_candidate_not_approval_rows"], 1)
+        self.assertEqual(summary["canonical_cleanup_release_candidate_rows"], 1)
+        self.assertEqual(summary["ordinary_residual_unprocessed_rows"], 0)
+        self.assertEqual(summary["validation_issue_count"], 0)
+        self.assertFalse(accounting["rows"][0]["publish_allowed"])
+
 
 if __name__ == "__main__":
     unittest.main()

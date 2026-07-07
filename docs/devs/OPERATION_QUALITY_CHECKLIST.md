@@ -1,5 +1,24 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop593 canonical cleanup 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_593_REPORT_20260708.md`.
+  - [x] Canonical cleanup verdict/contract/application/release/publication 산출물 기록 완료.
+  - [x] Combined plan/application/release/publication/accounting/remaining dispatch 산출물 기록 완료.
+  - [x] Full375 collateral compare와 always-on gate 산출물을 확인했다.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] `11669907`은 spoiler prefix가 섞인 public title만 clean title/url로 정리했고, full375 GO 전 approval로 세지 않았다.
+  - [x] Loop593 combined release gate는 violation `0`, release candidate `9`, no-release `15`, runtime allowed `0`이다.
+  - [x] Residual46 ordinary는 `19 -> 18`로 줄었지만 approval이 아니다.
+  - [x] Full375 collateral은 `NO-GO / raw 76 / adjusted 72 / runtime counts missing`이다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+  - [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`로 확인했다.
+  - [x] Dashboard status는 마지막 Loop564 runtime replay `30/30`, `parallel_count=16`, `batch_running=false`다.
+  - [x] Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+- Gate: residual46 `REVIEW-LOCKED / ordinary 18`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 76 / adjusted 72`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop591-592 residual46 batch 품질 게이트
 
 - 근거:

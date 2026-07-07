@@ -1,0 +1,42 @@
+{
+  "review_id": "loop593_11669907_canonical_cleanup_verdicts",
+  "source_dispatch": "loop593_residual46_ordinary19_dispatch",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "rows": 1,
+    "review_label_counts": {
+      "REPROCESS": 1
+    },
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "rows": [
+    {
+      "post_id": 11669907,
+      "review_label": "REPROCESS",
+      "expected_title": "마법 좋아좋아좋아",
+      "actual_title": "약스포) 마법 좋아좋아좋아",
+      "selected_title": "마법 좋아좋아좋아",
+      "selected_url": "https://novelpia.com/novel/326040",
+      "source_native_verdict": "vlm_ocr_supports_clean_title_after_title_polluted_by_spoiler_prefix",
+      "evidence_grade": "Medium",
+      "rationale_ko": "Loop592 projection의 public title은 `약스포) 마법 좋아좋아좋아`로 spoiler prefix가 섞여 있으나, baseline과 candidate ledger의 clean work title은 `마법 좋아좋아좋아`이고 official detail URL은 `https://novelpia.com/novel/326040`이다. Canonical cleanup은 clean title과 URL을 함께 보존해야 하며 새 runtime approval이 아니다.",
+      "evidence_refs": [
+        "docs/devs/loop593_residual46_ordinary19_dispatch.json#post_id=11669907",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop592_residual46_multi_work_candidate_preservation_projection_result.json#post_id=11669907",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/baseline/baseline_result.json#post_id=11669907",
+        "https://novelpia.com/novel/326040"
+      ],
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false
+    }
+  ],
+  "approval_boundary": {
+    "canonical_cleanup_verdict_is_not_runtime_replay": true,
+    "clean_title_and_url_must_pass_shared_promotion_gate": true,
+    "full375_collateral_go_required_before_completion": true
+  }
+}

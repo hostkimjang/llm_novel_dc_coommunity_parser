@@ -1,5 +1,21 @@
 # Development History
 
+## 2026-07-08 - Loop593 canonical cleanup and dashboard contract refresh
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Residual46 ordinary `19`건 중 `11669907`을 canonical cleanup 계약으로 처리했다.
+- `11669907`은 `약스포) 마법 좋아좋아좋아`를 clean title `마법 좋아좋아좋아`와 NovelPia URL `https://novelpia.com/novel/326040`로 projection-only 정리했다.
+- `tools/build_title_mismatch_verdict_contract_plan.py`는 `REPROCESS` canonical cleanup에서도 target URL을 보존하도록 수정했다.
+- `tools/reaccount_residual_after_contract_reviews.py`는 release gate audit 기반 candidate-set hold 회계와 canonical cleanup release-candidate 회계를 지원한다.
+- Loop593 combined release gate는 rows `24`, violation `0`, release candidate `9`, no-release `15`, runtime allowed `0`이다.
+- Publication contract는 `GO / 375 rows / 0 violations`다.
+- Residual46 accounting은 processed_or_excluded `28`, ordinary residual `18`, validation issue `0`이다.
+- Full375 collateral은 `NO-GO / changed 154 / raw regression 76 / adjusted 72 / runtime counts missing`이다.
+- Always-on gate는 golden18 `GO`지만 collateral `NO-GO`로 전체 `NO-GO`다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했고, 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+- Report는 `docs/devs/loop_reports/LOOP_593_REPORT_20260708.md`다.
+- Gate는 residual46 `REVIEW-LOCKED / ordinary 18`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 76 / adjusted 72`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop591-592 residual46 batch convergence and dashboard contract refresh
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

@@ -65,6 +65,7 @@ class BuildTitleMismatchVerdictContractPlanTest(unittest.TestCase):
                     "review_label": "REPROCESS",
                     "expected_title": "Clean Canonical",
                     "actual_title": "Contaminated Candidate",
+                    "selected_url": "https://novelpia.com/novel/3",
                     "source_native_verdict": "candidate_url_contaminated",
                     "evidence_grade": "Strong",
                 }
@@ -76,6 +77,7 @@ class BuildTitleMismatchVerdictContractPlanTest(unittest.TestCase):
 
         self.assertEqual(row["contract_action"], "canonical_cleanup_or_url_correction_contract_case")
         self.assertEqual(row["target_title"], "Clean Canonical")
+        self.assertEqual(row["target_url"], "https://novelpia.com/novel/3")
         self.assertEqual(row["contract_blocking_reason"], "canonical_cleanup_required")
         self.assertEqual(row["promotion_decision"]["status"], "candidate_only")
         self.assertTrue(row["contract_test_required_before_runtime"])

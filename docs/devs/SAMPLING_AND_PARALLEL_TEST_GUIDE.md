@@ -1,5 +1,15 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-08 Loop593 dashboard health와 테스트런 기본값
+
+- 다음 regression-safe grounding test/runtime run은 반드시 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- 현재 standalone dashboard health는 `ok=true`, `standalone=true`, `pid=9320`이고 URL은 `http://127.0.0.1:8080`이다.
+- 최신 status는 마지막 runtime replay Loop564 `30/30`, `parallel_count=16`, `batch_running=false`다.
+- `tools/run_independent_plan.py`는 dashboard를 기본 확인/시작하고 child run에 `DASHBOARD_URL`, `DASHBOARD_PORT`, `EXPERT_DASHBOARD_FORWARD=1`을 전달한다.
+- Runner CLI나 계획 내부에 남은 `--no-dashboard`는 breakglass `ALLOW_TEST_RUN_NO_DASHBOARD=1` 없이는 제거/무시한다.
+- Loop593은 projection/static 검증이라 새 runtime 진행률은 없었다. 새 test/runtime run이 시작되면 expert_main live forwarding 또는 manifest attach로 dashboard 진행률을 갱신한다.
+- Dashboard는 진행상황 관측 도구이며 `semantic_quality`, `full_scan_approval`, `full375 collateral GO`의 승인 근거가 아니다.
+
 ## 2026-07-08 Loop592 dashboard health와 테스트런 기본값
 
 - 다음 regression-safe grounding test/runtime run은 반드시 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.

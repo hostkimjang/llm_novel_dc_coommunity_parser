@@ -1,5 +1,34 @@
 # Verification Results
 
+## 2026-07-08 Loop593 canonical cleanup과 residual46 회계 갱신
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_593_REPORT_20260708.md`
+  - `docs/devs/loop593_11669907_canonical_cleanup_verdicts.json/.md`
+  - `docs/devs/loop593_11669907_canonical_cleanup_contract_plan.json/.md`
+  - `docs/devs/loop593_11669907_canonical_cleanup_projection_application.json/.md`
+  - `docs/devs/loop593_11669907_canonical_cleanup_publication_contract_audit.json/.md`
+  - `docs/devs/loop593_11669907_canonical_cleanup_release_gate_audit.json/.md`
+  - `docs/devs/loop593_residual46_combined_contract_plan.json/.md`
+  - `docs/devs/loop593_residual46_combined_projection_application.json/.md`
+  - `docs/devs/loop593_residual46_combined_publication_contract_audit.json/.md`
+  - `docs/devs/loop593_residual46_combined_release_gate_audit.json/.md`
+  - `docs/devs/loop593_residual46_canonical_cleanup_accounting.json/.md`
+  - `docs/devs/loop593_residual46_remaining18_dispatch.json/.md`
+- 검증:
+  - Canonical cleanup plan/application: PASS, rows `1`, applied canonical cleanup `1`, validation issue `0`, runtime allowed `0`.
+  - Combined projection application: PASS, publish contract `9`, restore `8`, canonical cleanup `1`, validation issue `0`.
+  - Publication/release audit: PASS, publication `GO`, release `REVIEW-LOCKED`, violation `0`, release candidate `9`, no-release `15`.
+  - Residual accounting: PASS, processed_or_excluded `28`, ordinary residual `18`, validation issue `0`.
+  - Remaining dispatch: PASS, `native_web_image_evidence_review 18`, runtime allowed `0`.
+  - Full375 collateral compare: PASS 산출, gate `NO-GO`, shared `375`, changed `154`, raw regression `76`, adjusted `72`, runtime counts missing.
+  - Always-on gate: PASS 산출, golden18 `GO`, collateral `NO-GO / raw 76 / adjusted 72`, overall `NO-GO`.
+  - Dashboard health/status: PASS, health `ok=true / standalone=true / pid=9320`, status Loop564 `30/30`, `parallel_count=16`, `batch_running=false`.
+- 결과:
+  - Residual46 ordinary는 `18`건으로 줄었지만 full375 collateral이 `GO`가 아니므로 approval이 아니다.
+  - 다음 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- Gate: residual46 `REVIEW-LOCKED / 18`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 76 / adjusted 72`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop591-592 residual46 batch와 dashboard 계약 재확인
 
 - 산출물:

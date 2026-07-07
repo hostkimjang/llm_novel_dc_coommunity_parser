@@ -19,6 +19,7 @@ OFFICIAL_SUPPORT_MISSING_RESTORE_HOLD = "official_support_missing_restore_hold_c
 NON_WEBNOVEL_EBOOK_POLICY_HOLD = "non_webnovel_ebook_policy_hold_contract_case"
 CANDIDATE_SET_REBUILD_HOLD = "candidate_set_rebuild_required_before_publish"
 NO_PUBLISH_INTENT_GUARD = "no_publish_intent_guard_contract_case"
+CANONICAL_CLEANUP = "canonical_cleanup_or_url_correction_contract_case"
 SOURCE_NATIVE_EXCLUDE = "exclude_from_regression_count_after_gate_wiring"
 
 
@@ -63,11 +64,24 @@ def _source_native_by_post_id(review: dict[str, Any] | None) -> dict[str, dict[s
     return {_string(row.get("post_id")): row for row in rows if isinstance(row, dict) and _string(row.get("post_id"))}
 
 
+def _release_audit_by_post_id(audit: dict[str, Any] | None) -> dict[str, dict[str, Any]]:
+    out: dict[str, dict[str, Any]] = {}
+    for key in ("rows", "release_candidate_rows", "satisfied_no_release_rows", "pending_rows"):
+        rows = (audit or {}).get(key) or []
+        if not isinstance(rows, list):
+            continue
+        for row in rows:
+            if isinstance(row, dict) and _string(row.get("post_id")):
+                out[_string(row.get("post_id"))] = row
+    return out
+
+
 def _classification_for(
     residual_row: dict[str, Any],
     *,
     plan_row: dict[str, Any] | None,
     applied_row: dict[str, Any] | None,
+    release_audit_row: dict[str, Any] | None,
     variant_row: dict[str, Any] | None,
     c3_row: dict[str, Any] | None,
     source_native_row: dict[str, Any] | None,
@@ -140,10 +154,22 @@ def _classification_for(
             issues,
         )
     if action == CANDIDATE_SET_REBUILD_HOLD:
+        release_hold_satisfied = (
+            isinstance(release_audit_row, dict)
+            and _string(release_audit_row.get("release_gate_state")) == "candidate_set_rebuild_preserved_no_release"
+            and bool(release_audit_row.get("satisfied_no_release"))
+            and not bool(release_audit_row.get("violation"))
+        )
         if not applied_row or _string(applied_row.get("status")) not in {
             "scrubbed_public_identity",
             "preserved_no_release",
         }:
+            if release_hold_satisfied:
+                return (
+                    "contract_processed_candidate_set_rebuild_hold_no_publish",
+                    "candidate_set_rebuild_hold_not_approval",
+                    issues,
+                )
             issues.append("candidate_set_rebuild_hold_application_missing")
             return "contract_processing_validation_issue", "candidate_set_rebuild_hold_application_missing", issues
         return (
@@ -181,6 +207,22 @@ def _classification_for(
             "native_web_or_blind_judge_required_not_approval",
             issues,
         )
+    if action == CANONICAL_CLEANUP:
+        release_candidate_satisfied = (
+            isinstance(release_audit_row, dict)
+            and _string(release_audit_row.get("release_gate_state"))
+            == "canonical_cleanup_contract_satisfied_release_candidate"
+            and bool(release_audit_row.get("release_candidate_after_contract"))
+            and not bool(release_audit_row.get("violation"))
+        )
+        if (not applied_row or _string(applied_row.get("status")) != "applied") and not release_candidate_satisfied:
+            issues.append("canonical_cleanup_application_missing")
+            return "contract_processing_validation_issue", "canonical_cleanup_application_missing", issues
+        return (
+            "contract_processed_canonical_cleanup_projection_applied",
+            "release_candidate_not_approval_full375_recheck_required",
+            issues,
+        )
     issues.append("unknown_contract_action")
     return "contract_processing_validation_issue", "unknown_contract_action", issues
 
@@ -190,6 +232,7 @@ def build_accounting(
     residual_queue: dict[str, Any],
     contract_plan: dict[str, Any],
     expected_restore_application: dict[str, Any] | None = None,
+    release_gate_audit: dict[str, Any] | None = None,
     variant_review: dict[str, Any] | None = None,
     c3_review: dict[str, Any] | None = None,
     source_native_review: dict[str, Any] | None = None,
@@ -199,6 +242,7 @@ def build_accounting(
     residual_rows = _rows(residual_queue)
     plan_by_id = _by_post_id(_rows(contract_plan))
     applied_by_id = _applied_by_post_id(expected_restore_application)
+    release_audit_by_id = _release_audit_by_post_id(release_gate_audit)
     source_native_by_id = _source_native_by_post_id(source_native_review)
     variant_by_id = _by_post_id(_rows(variant_review)) if variant_review else {}
     c3_by_id = _by_post_id(_rows(c3_review)) if c3_review else {}
@@ -218,11 +262,13 @@ def build_accounting(
         variant_row = variant_by_id.get(post_id)
         c3_row = c3_by_id.get(post_id)
         applied_row = applied_by_id.get(post_id)
+        release_audit_row = release_audit_by_id.get(post_id)
         source_native_row = source_native_by_id.get(post_id)
         state, effect, issues = _classification_for(
             residual_row,
             plan_row=plan_row,
             applied_row=applied_row,
+            release_audit_row=release_audit_row,
             variant_row=variant_row,
             c3_row=c3_row,
             source_native_row=source_native_row,
@@ -272,9 +318,11 @@ def build_accounting(
                     action=(plan_row or {}).get("contract_action"),
                     contract_plan=contract_plan,
                     expected_restore_application=expected_restore_application,
+                    release_gate_audit=release_gate_audit,
                     variant_review=variant_review,
                     c3_review=c3_review,
                 ),
+                "release_gate_state": (release_audit_row or {}).get("release_gate_state"),
                 "rationale_ko": residual_row.get("rationale_ko"),
                 "source_native_review_label": (source_native_row or {}).get("review_label"),
                 "source_native_review_effect": effect if state == "source_native_reviewed_exclusion_candidate" else None,
@@ -293,6 +341,7 @@ def build_accounting(
         "source_residual_queue": _source_id(residual_queue, fallback="residual_queue"),
         "source_contract_plan": contract_plan.get("plan_id"),
         "source_expected_restore_application": (expected_restore_application or {}).get("projection_id"),
+        "source_release_gate_audit": (release_gate_audit or {}).get("audit_id"),
         "source_variant_review": (variant_review or {}).get("review_id"),
         "source_c3_review": (c3_review or {}).get("review_id"),
         "source_source_native_review": (source_native_review or {}).get("review_id"),
@@ -332,6 +381,9 @@ def build_accounting(
                 "non_webnovel_ebook_policy_hold_not_approval", 0
             ),
             "candidate_set_rebuild_hold_rows": effect_counts.get("candidate_set_rebuild_hold_not_approval", 0),
+            "canonical_cleanup_release_candidate_rows": state_counts.get(
+                "contract_processed_canonical_cleanup_projection_applied", 0
+            ),
             "no_publish_intent_guard_rows": effect_counts.get("no_publish_intent_guard_not_approval", 0),
             "source_native_exclusion_candidate_rows": effect_counts.get(
                 "source_native_exclusion_candidate_not_approval", 0
@@ -359,7 +411,7 @@ def build_accounting(
 def _payload_ref(payload: dict[str, Any] | None, *, default_prefix: str) -> str | None:
     if not isinstance(payload, dict):
         return None
-    for key in ("projection_id", "plan_id", "review_id", "dispatch_id", "accounting_id", "queue_id"):
+    for key in ("projection_id", "plan_id", "audit_id", "review_id", "dispatch_id", "accounting_id", "queue_id"):
         value = _string(payload.get(key))
         if value:
             return value
@@ -379,15 +431,18 @@ def _policy_ref_for(
     action: Any,
     contract_plan: dict[str, Any] | None = None,
     expected_restore_application: dict[str, Any] | None = None,
+    release_gate_audit: dict[str, Any] | None = None,
     variant_review: dict[str, Any] | None = None,
     c3_review: dict[str, Any] | None = None,
 ) -> str | None:
     action_text = _string(action)
-    if action_text in {EXPECTED_RESTORE, CANDIDATE_SET_RESTORE, CANDIDATE_SET_REBUILD_HOLD, NO_PUBLISH_INTENT_GUARD}:
+    if action_text in {EXPECTED_RESTORE, CANDIDATE_SET_RESTORE, CANONICAL_CLEANUP}:
         return _payload_ref(
             expected_restore_application,
             default_prefix="expected_restore_projection_contract_application",
         )
+    if action_text in {CANDIDATE_SET_REBUILD_HOLD, NO_PUBLISH_INTENT_GUARD}:
+        return _payload_ref(release_gate_audit, default_prefix="promotion_gate_release_contract_audit")
     if action_text in {
         CANDIDATE_SCRUB,
         EXPECTED_RESTORE,
@@ -467,6 +522,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--residual-queue", required=True, type=Path)
     parser.add_argument("--contract-plan", required=True, type=Path)
     parser.add_argument("--expected-restore-application", type=Path)
+    parser.add_argument("--release-gate-audit", type=Path)
     parser.add_argument("--variant-review", type=Path)
     parser.add_argument("--c3-review", type=Path)
     parser.add_argument("--source-native-review", type=Path)
@@ -485,6 +541,7 @@ def main() -> int:
         expected_restore_application=load_json(args.expected_restore_application)
         if args.expected_restore_application
         else None,
+        release_gate_audit=load_json(args.release_gate_audit) if args.release_gate_audit else None,
         variant_review=load_json(args.variant_review) if args.variant_review else None,
         c3_review=load_json(args.c3_review) if args.c3_review else None,
         source_native_review=load_json(args.source_native_review) if args.source_native_review else None,

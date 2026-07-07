@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260708-593 - canonical cleanup accounting and test-run dashboard visibility
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Canonical cleanup | REVIEW-LOCKED | `11669907` clean title/url projection 적용, validation issue `0` | full375 GO 전 approval 금지 |
+| Release gate | REVIEW-LOCKED | combined rows `24`, release candidate `9`, no-release `15`, violation `0` | full375 GO 전 release 금지 |
+| Residual46 | REVIEW-LOCKED | processed_or_excluded `28`, ordinary residual `18` | native-web/image evidence batch 처리 |
+| Full375 collateral | NO-GO | raw `76`, adjusted `72`, runtime counts missing | collateral GO 전 approval 금지 |
+| Test run dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | `http://127.0.0.1:8080`, health `ok=true`, next run dashboard forced ON | 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: residual46 `REVIEW-LOCKED / ordinary 18`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 76 / adjusted 72`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-591-592 - residual46 batch convergence and test-run dashboard visibility
 
 | 항목 | 상태 | 근거 | 다음 |

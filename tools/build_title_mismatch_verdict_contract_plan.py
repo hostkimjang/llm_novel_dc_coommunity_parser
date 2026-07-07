@@ -84,6 +84,8 @@ def _target_title(row: dict[str, Any]) -> str:
 def _target_url(row: dict[str, Any]) -> str:
     if _label(row) == "ACCEPT":
         return _string(row.get("selected_url"))
+    if _label(row) == "REPROCESS":
+        return _string(row.get("selected_url") or row.get("expected_url") or row.get("actual_url"))
     return ""
 
 
