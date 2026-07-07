@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-07 Loop548 B1 canonical verdict 적용 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.
+- [x] Loop547 B1 canonical recheck packet `14`건 verdict를 작성했다.
+- [x] Verdict application은 reviewed `14/14`, accepted `14`, validation issue `0`이다.
+- [x] Verdict counts는 `EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED 6`, `RELATED_CANONICAL_VARIANT_CONFIRMED 5`, `INSUFFICIENT_EVIDENCE_HOLD 3`이다.
+- [x] Post-verdict contract queue lane은 `C1 6`, `C2 5`, `C3 3`이다.
+- [x] Shared promotion gate plan action은 `expected_restore 3`, `candidate_scrub_no_publish 3`, `variant_hold 5`, `stronger_hold 3`이다.
+- [x] Release audit은 violation `0`, pending contract `3`, no-release `11`, release candidate `0`이다.
+- [x] Runtime replay allowed rows는 계속 `0`이다.
+- [ ] C1 expected restore `3`건은 contract test 전 runtime release하지 않는다.
+- [ ] C2 variant `5`건은 variant policy 계약 전 publish하지 않는다.
+- [ ] C3 hold `3`건은 stronger evidence/native-web 검증 전 hard-hold를 완화하지 않는다.
+- [ ] Search blind/missing row는 search 복구 전 promotion approval로 쓰지 않는다.
+- [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: canonical verdict application `REVIEW-LOCKED / 14`, contract queue `REVIEW-LOCKED / 14`, release audit `REVIEW-LOCKED / violation 0 / pending 3 / no-release 11`, runtime replay `BLOCKED_UNTIL_C1_C2_CONTRACT_TESTS_OR_C3_STRONGER_EVIDENCE`, full375 collateral `NO-GO / residual78 still open`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop547 B1 canonical candidate recheck14 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.

@@ -1,5 +1,26 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop548 B1 post-verdict contract 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_548_REPORT_20260707.md`.
+  - [x] Verdict 기록 완료: `docs/devs/loop548_b1_canonical_candidate_source_native_verdicts.json`.
+  - [x] Application state 기록 완료: `docs/devs/loop548_b1_canonical_candidate_verdict_application_state_20260707.json`.
+  - [x] Contract queue 기록 완료: `docs/devs/loop548_b1_post_verdict_contract_queue.json`.
+  - [x] Shared promotion gate plan 기록 완료: `docs/devs/loop548_b1_post_verdict_promotion_gate_contract_plan.json`.
+  - [x] Release audit 기록 완료: `docs/devs/loop548_b1_post_verdict_release_gate_contract_audit.json`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+  - [x] Verdict application validation issue는 `0`이다.
+  - [x] Contract queue/plan validation issue는 `0`이다.
+  - [x] Release audit violation은 `0`이다.
+  - [x] Runtime replay allowed rows는 `0`이다.
+  - [x] Plan의 publish `3`은 contract case일 뿐 approval이 아니다.
+  - [ ] C1/C2 contract test 또는 C3 stronger evidence 없이 runtime release하지 않는다.
+  - [ ] Search evidence `REVIEW`를 복구 전 promotion approval로 쓰지 않는다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- Gate: canonical verdict application `REVIEW-LOCKED / 14`, contract queue `REVIEW-LOCKED / 14`, release audit `REVIEW-LOCKED / violation 0 / pending 3 / no-release 11`, runtime replay `BLOCKED_UNTIL_C1_C2_CONTRACT_TESTS_OR_C3_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop547 B1 canonical packet 품질 게이트
 
 - 근거:

@@ -1,5 +1,34 @@
 # Verification Results
 
+## 2026-07-07 Loop548 B1 canonical verdict application and contract plan
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_548_REPORT_20260707.md`
+  - `docs/devs/loop548_b1_canonical_candidate_source_native_verdicts.json`
+  - `docs/devs/loop548_b1_canonical_candidate_source_native_verdicts.md`
+  - `docs/devs/loop548_b1_canonical_candidate_verdict_application_state_20260707.json`
+  - `docs/devs/loop548_b1_canonical_candidate_verdict_application_state_20260707.md`
+  - `docs/devs/loop548_b1_post_verdict_contract_queue.json`
+  - `docs/devs/loop548_b1_post_verdict_contract_queue.md`
+  - `docs/devs/loop548_b1_post_verdict_promotion_gate_contract_plan.json`
+  - `docs/devs/loop548_b1_post_verdict_promotion_gate_contract_plan.md`
+  - `docs/devs/loop548_b1_post_verdict_release_gate_contract_audit.json`
+  - `docs/devs/loop548_b1_post_verdict_release_gate_contract_audit.md`
+- 검증:
+  - Verdict application: PASS, reviewed `14/14`, accepted `14`, validation issue `0`.
+  - Contract queue generation: PASS, lane C1 `6`, C2 `5`, C3 `3`, validation issue `0`.
+  - Shared promotion gate plan generation: PASS, validation issue `0`, runtime allowed `0`.
+  - Release contract audit: PASS, violation `0`, pending `3`, no-release `11`, release candidate `0`, runtime allowed `0`.
+  - py_compile: PASS, post-verdict application/queue/plan/audit tools.
+  - unittest: PASS, `tests.test_apply_canonical_candidate_recheck_verdicts`, `tests.test_build_canonical_post_verdict_contract_queue`, `tests.test_build_post_verdict_promotion_gate_contract_plan`, `tests.test_audit_post_verdict_promotion_gate_release_contract`, `22` tests.
+  - JSON invariant check: PASS, Loop548 `5` JSON artifacts parse and summary assertions pass.
+  - `git diff --check`: PASS. LF/CRLF warning만 있었고 whitespace error는 없었다.
+- 결과:
+  - Loop547의 unreviewed `14`건을 source-native verdict로 닫았다.
+  - Runtime replay는 여전히 `0`건 허용이다.
+  - 다음 단계는 동일 packet replay가 아니라 C1/C2 contract test와 C3 stronger evidence/native-web 검토다.
+- Gate: canonical verdict application `REVIEW-LOCKED / 14`, release audit `REVIEW-LOCKED / violation 0 / pending 3 / no-release 11`, runtime replay `BLOCKED_UNTIL_C1_C2_CONTRACT_TESTS_OR_C3_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop547 B1 canonical candidate recheck14 packet
 
 - 코드:

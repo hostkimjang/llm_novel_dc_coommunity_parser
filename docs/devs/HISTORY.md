@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-07 - Loop548 B1 canonical verdict 적용과 shared-gate contract plan
+
+- 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+- Loop547 B1 canonical recheck packet `14`건에 source-native verdict를 적용했다.
+- Verdict application은 reviewed `14/14`, accepted `14`, validation issue `0`이다.
+- Verdict 분포는 `EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED 6`, `RELATED_CANONICAL_VARIANT_CONFIRMED 5`, `INSUFFICIENT_EVIDENCE_HOLD 3`이다.
+- Contract queue는 C1 `6`, C2 `5`, C3 `3`으로 나뉜다.
+- Shared promotion gate plan은 `expected_title_restore_contract_case 3`, `candidate_scrub_no_publish_contract_case 3`, `canonical_variant_policy_hold_contract_case 5`, `stronger_evidence_hard_hold_contract_case 3`이다.
+- Release audit은 Loop546 projection `49` rows 기준 violation `0`, pending `3`, no-release `11`, release candidate `0`, runtime allowed `0`이다.
+- Report는 `docs/devs/loop_reports/LOOP_548_REPORT_20260707.md`다.
+- Gate는 canonical verdict application `REVIEW-LOCKED / 14`, release audit `REVIEW-LOCKED / violation 0 / pending 3 / no-release 11`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop547 B1 canonical candidate recheck14 packet
 
 - 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.

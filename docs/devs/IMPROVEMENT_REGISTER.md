@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260707-548 - B1 canonical verdict 적용과 shared-gate contract plan
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | BLOCKED | 새 runtime/bounded/full375 실행 없음, runtime allowed `0` | C1/C2 contract test 또는 C3 stronger evidence 전 replay 금지 |
+| Verdict application | GO_REVIEWED | reviewed `14/14`, accepted `14`, validation issue `0` | contract queue 기준 후속 처리 |
+| Verdict 분포 | REVIEW-LOCKED | expected-confirmed `6`, variant `5`, hold `3` | C1/C2/C3 배치 유지 |
+| Contract queue | REVIEW-LOCKED | C1 `6`, C2 `5`, C3 `3`, validation issue `0` | C1 expected restore, C2 variant policy, C3 stronger evidence 분리 |
+| Shared gate plan | REVIEW-LOCKED | action `restore 3 / scrub 3 / variant hold 5 / stronger hold 3` | publish `3`은 contract case로만 취급 |
+| Release audit | REVIEW-LOCKED | violation `0`, pending `3`, no-release `11`, release candidate `0` | pending C1 contract test 작성 |
+| Full375 collateral | NO-GO | residual78 계속 open | contract repair 뒤 full375 재확인 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: canonical verdict application `REVIEW-LOCKED / 14`, release audit `REVIEW-LOCKED / violation 0 / pending 3 / no-release 11`, runtime replay `BLOCKED_UNTIL_C1_C2_CONTRACT_TESTS_OR_C3_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-547 - B1 canonical candidate recheck14 context packet
 
 | 항목 | 상태 | 근거 | 다음 |

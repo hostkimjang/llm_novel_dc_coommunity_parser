@@ -1,0 +1,515 @@
+{
+  "report_type": "canonical_post_verdict_contract_queue",
+  "queue_id": "loop548_b1_post_verdict_contract_queue",
+  "generated_at": "2026-07-07T20:39:33",
+  "source_application": "loop548_b1_canonical_candidate_verdict_application",
+  "source_batch": "docs\\devs\\loop547_b1_canonical_candidate_recheck14_batch.json",
+  "source_verdicts": "docs\\devs\\loop548_b1_canonical_candidate_source_native_verdicts.json",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_application_rows": 14,
+    "contract_queue_rows": 14,
+    "validation_issue_count": 0,
+    "contract_batch_lane_counts": {
+      "C1_expected_restore_or_candidate_scrub_contract": 6,
+      "C3_stronger_evidence_or_native_web_hold": 3,
+      "C2_canonical_variant_policy_contract": 5
+    },
+    "post_verdict_next_state_counts": {
+      "candidate_scrub_or_expected_title_restore_contract_required": 6,
+      "hard_hold_or_native_web_review_required": 3,
+      "canonical_variant_policy_contract_required": 5
+    },
+    "canonical_verdict_counts": {
+      "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": 6,
+      "INSUFFICIENT_EVIDENCE_HOLD": 3,
+      "RELATED_CANONICAL_VARIANT_CONFIRMED": 5
+    },
+    "runtime_replay_allowed_rows": 0,
+    "contract_test_required_rows": 14,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "next_batches": [
+    {
+      "contract_batch_lane": "C1_expected_restore_or_candidate_scrub_contract",
+      "row_count": 6,
+      "post_ids": [
+        11665124,
+        11668325,
+        11690841,
+        11710049,
+        11718099,
+        11710046
+      ],
+      "canonical_verdict_counts": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": 6
+      },
+      "search_gate_counts": {
+        "SEARCH_BLIND_BLOCKER": 2,
+        "SEARCH_RECOVERED_CONDITIONAL": 3,
+        "SEARCH_EVIDENCE_MISSING": 1
+      },
+      "runtime_replay_allowed_rows": 0
+    },
+    {
+      "contract_batch_lane": "C2_canonical_variant_policy_contract",
+      "row_count": 5,
+      "post_ids": [
+        11697256,
+        11710021,
+        11714887,
+        11682767,
+        11698859
+      ],
+      "canonical_verdict_counts": {
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": 5
+      },
+      "search_gate_counts": {
+        "SEARCH_BLIND_BLOCKER": 3,
+        "SEARCH_EVIDENCE_MISSING": 1,
+        "SEARCH_RECOVERED_CONDITIONAL": 1
+      },
+      "runtime_replay_allowed_rows": 0
+    },
+    {
+      "contract_batch_lane": "C3_stronger_evidence_or_native_web_hold",
+      "row_count": 3,
+      "post_ids": [
+        11697242,
+        11718114,
+        11692436
+      ],
+      "canonical_verdict_counts": {
+        "INSUFFICIENT_EVIDENCE_HOLD": 3
+      },
+      "search_gate_counts": {
+        "SEARCH_RECOVERED_CONDITIONAL": 1,
+        "SEARCH_EVIDENCE_MISSING": 1,
+        "SEARCH_BLIND_BLOCKER": 1
+      },
+      "runtime_replay_allowed_rows": 0
+    }
+  ],
+  "rows": [
+    {
+      "post_id": 11665124,
+      "contract_batch_lane": "C1_expected_restore_or_candidate_scrub_contract",
+      "post_verdict_next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Medium",
+      "canonical_title": "화산파(화산귀환)",
+      "canonical_url": null,
+      "expected_or_source_native_title": "화산파(화산귀환)",
+      "current_projection_candidate_title": "네이버 시리즈",
+      "current_projection_candidate_url": "https://series.naver.com/novel/detail.series?productNo=2244809",
+      "review_lane": "B1_different_candidate_alignment_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "runtime_release_condition": "blocked_until_contract_tests_pass",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "write_expected_restore_or_candidate_scrub_contract_test",
+        "keep_runtime_replay_blocked_until_contract_passes"
+      ],
+      "rationale_ko": "댓글의 `화귀 800화`, `1250화`, `해남편` 흐름은 화산귀환 계열 논의다. current projection 후보 `네이버 시리즈`는 플랫폼/검색 후보로 보존됐지만 작품 canonical 후보가 아니다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11665124",
+        "docs/devs/loop530_b1_canonical_source_native_verdicts.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop545_current_full375_residual97_runtime_expected_title_audit.json#post_id=11665124"
+      ]
+    },
+    {
+      "post_id": 11668325,
+      "contract_batch_lane": "C1_expected_restore_or_candidate_scrub_contract",
+      "post_verdict_next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Medium",
+      "canonical_title": "Fate/stay night",
+      "canonical_url": "https://ridibooks.com/books/505001486",
+      "expected_or_source_native_title": "Fate/stay night",
+      "current_projection_candidate_title": "마파두부를 너무나도 좋아하는 신부님의 키보토스 생활",
+      "current_projection_candidate_url": "https://novelpia.com/novel/392916",
+      "review_lane": "B1_different_candidate_alignment_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "runtime_release_condition": "blocked_until_contract_tests_pass",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "write_expected_restore_or_candidate_scrub_contract_test",
+        "keep_runtime_replay_blocked_until_contract_passes"
+      ],
+      "rationale_ko": "대화 흐름에서 post author가 `마파두부` 밈을 `페이트스테이나이트`와 직접 연결한다. current projection 후보인 노벨피아 파생/패러디 후보는 원문 canonical 작품보다 뒤에 보존될 후보일 뿐이다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11668325",
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11668325.source_context.comment_dialogue_context_preview",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop545_current_full375_residual97_runtime_expected_title_audit.json#post_id=11668325"
+      ]
+    },
+    {
+      "post_id": 11690841,
+      "contract_batch_lane": "C1_expected_restore_or_candidate_scrub_contract",
+      "post_verdict_next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Strong",
+      "canonical_title": "블루 아카이브",
+      "canonical_url": "https://page.kakao.com/content/67135563",
+      "expected_or_source_native_title": "블루 아카이브",
+      "current_projection_candidate_title": "가츠동도 만들어줌",
+      "current_projection_candidate_url": null,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "candidate_support_state": "non_official_candidate_preservation_only",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "runtime_release_condition": "blocked_until_contract_tests_pass",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "write_expected_restore_or_candidate_scrub_contract_test",
+        "keep_runtime_replay_blocked_until_contract_passes"
+      ],
+      "rationale_ko": "제목의 `블아`와 본문 `칸나 오가타`, 댓글 `리오`는 `블루 아카이브` 맥락을 직접 지지한다. `가츠동도 만들어줌`은 댓글 반응 표면이라 canonical title 후보가 아니다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11690841",
+        "docs/devs/loop530_b1_canonical_source_native_verdicts.json#post_id=11690841",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop545_current_full375_residual97_runtime_expected_title_audit.json#post_id=11690841"
+      ]
+    },
+    {
+      "post_id": 11697242,
+      "contract_batch_lane": "C3_stronger_evidence_or_native_web_hold",
+      "post_verdict_next_state": "hard_hold_or_native_web_review_required",
+      "canonical_verdict": "INSUFFICIENT_EVIDENCE_HOLD",
+      "evidence_grade": "Weak",
+      "canonical_title": null,
+      "canonical_url": null,
+      "expected_or_source_native_title": "유희왕",
+      "current_projection_candidate_title": "삼전의 재를 썼어야지",
+      "current_projection_candidate_url": null,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "candidate_support_state": "non_official_candidate_preservation_only",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "runtime_release_condition": "blocked_until_stronger_evidence",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "collect_stronger_source_or_native_web_evidence",
+        "keep_hard_hold_until_evidence_strength_improves"
+      ],
+      "rationale_ko": "원문은 `유희왕 패러디`, 듀얼리스트, 카드 댓글처럼 프랜차이즈/패러디/밈 표면을 다룬다. 웹소설 current-work canonical title로 `유희왕`을 복구하기에는 non-novel/프랜차이즈 오버리치 위험이 남아 hard-hold로 둔다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11697242",
+        "docs/devs/loop540_b1_missing_candidate_source_native_verdicts.json#post_id=11697242",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop545_current_full375_residual97_runtime_expected_title_audit.json#post_id=11697242"
+      ]
+    },
+    {
+      "post_id": 11697256,
+      "contract_batch_lane": "C2_canonical_variant_policy_contract",
+      "post_verdict_next_state": "canonical_variant_policy_contract_required",
+      "canonical_verdict": "RELATED_CANONICAL_VARIANT_CONFIRMED",
+      "evidence_grade": "Medium",
+      "canonical_title": "황제의 딸로 환생했습니다",
+      "canonical_url": "https://novelpia.com/novel/250464",
+      "expected_or_source_native_title": "황제의 딸로 환생했다",
+      "current_projection_candidate_title": "황제의 딸로 환생했습니다",
+      "current_projection_candidate_url": "https://novelpia.com/novel/250464",
+      "review_lane": "B1_related_candidate_alignment_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "runtime_release_condition": "blocked_until_variant_policy_tests_pass",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "write_canonical_variant_policy_contract_test",
+        "preserve_variant_alias_without_unverified_publish",
+        "keep_runtime_replay_blocked_until_contract_passes"
+      ],
+      "rationale_ko": "추천 댓글에서 `황제딸` 약칭 뒤 `황제의 딸로 환생했습니다` 풀네임과 노벨피아 플랫폼이 직접 나온다. expected `황제의 딸로 환생했다`와 current candidate는 같은 작품 계열 표기 variant로 보고 variant policy 계약으로 넘긴다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11697256",
+        "docs/devs/loop530_b1_canonical_source_native_verdicts.json#post_id=11697256",
+        "docs/devs/loop540_b1_missing_candidate_source_native_verdicts.json#post_id=11697256"
+      ]
+    },
+    {
+      "post_id": 11710021,
+      "contract_batch_lane": "C2_canonical_variant_policy_contract",
+      "post_verdict_next_state": "canonical_variant_policy_contract_required",
+      "canonical_verdict": "RELATED_CANONICAL_VARIANT_CONFIRMED",
+      "evidence_grade": "Medium",
+      "canonical_title": "무한의 마법사",
+      "canonical_url": null,
+      "expected_or_source_native_title": "무한의 마법사",
+      "current_projection_candidate_title": "무마",
+      "current_projection_candidate_url": null,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "candidate_support_state": "non_official_candidate_preservation_only",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "runtime_release_condition": "blocked_until_variant_policy_tests_pass",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "write_canonical_variant_policy_contract_test",
+        "preserve_variant_alias_without_unverified_publish",
+        "keep_runtime_replay_blocked_until_contract_passes"
+      ],
+      "rationale_ko": "제목 `무마 웹툰`과 본문 `시로네` 맥락은 `무한의 마법사` 약칭으로 볼 수 있다. current candidate `무마`는 별도 작품이 아니라 약칭 variant이므로 canonical variant policy 계약으로 둔다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11710021",
+        "docs/devs/loop530_b1_canonical_source_native_verdicts.json#post_id=11710021",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop545_current_full375_residual97_runtime_expected_title_audit.json#post_id=11710021"
+      ]
+    },
+    {
+      "post_id": 11710049,
+      "contract_batch_lane": "C1_expected_restore_or_candidate_scrub_contract",
+      "post_verdict_next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Strong",
+      "canonical_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "canonical_url": null,
+      "expected_or_source_native_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "current_projection_candidate_title": "변방계 행성 하렘 생존기",
+      "current_projection_candidate_url": "https://novelpia.com/novel/196996",
+      "review_lane": "B1_different_candidate_alignment_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "runtime_release_condition": "blocked_until_contract_tests_pass",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "write_expected_restore_or_candidate_scrub_contract_test",
+        "keep_runtime_replay_blocked_until_contract_passes"
+      ],
+      "rationale_ko": "본문의 `랫따싶` 태그 설명과 댓글의 `랫킨`, runtime candidate preview의 `[림월드]변방계에서 회귀자로 살아남기` 표면이 expected 작품을 지지한다. current candidate `변방계 행성 하렘 생존기`는 official URL 후보로 보존됐지만 canonical source-native title과 다르다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop545_current_full375_residual97_runtime_expected_title_audit.json#post_id=11710049",
+        "docs/devs/loop493_p0_after_hold9_runtime_replay_readiness_queue.json#post_id=11710049"
+      ]
+    },
+    {
+      "post_id": 11714887,
+      "contract_batch_lane": "C2_canonical_variant_policy_contract",
+      "post_verdict_next_state": "canonical_variant_policy_contract_required",
+      "canonical_verdict": "RELATED_CANONICAL_VARIANT_CONFIRMED",
+      "evidence_grade": "Medium",
+      "canonical_title": "도굴왕",
+      "canonical_url": "https://page.kakao.com/content/53190884",
+      "expected_or_source_native_title": "도굴왕 1 |",
+      "current_projection_candidate_title": "도굴왕",
+      "current_projection_candidate_url": null,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "candidate_support_state": "image_ocr_preservation_pending_official_url",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "runtime_release_condition": "blocked_until_variant_policy_tests_pass",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "write_canonical_variant_policy_contract_test",
+        "preserve_variant_alias_without_unverified_publish",
+        "keep_runtime_replay_blocked_until_contract_passes"
+      ],
+      "rationale_ko": "본문 제목, YouTube/Aniplus PV 제목, 영상 설명이 모두 `도굴왕`을 직접 지지한다. expected `도굴왕 1 |`는 오염된 표기이고 current candidate `도굴왕`은 clean canonical variant로 보되 release는 variant policy 계약 뒤로 둔다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11714887",
+        "docs/devs/loop530_b1_canonical_source_native_verdicts.json#post_id=11714887",
+        "docs/devs/loop492_p0_hold9_source_native_verdicts.json#post_id=11714887"
+      ]
+    },
+    {
+      "post_id": 11718099,
+      "contract_batch_lane": "C1_expected_restore_or_candidate_scrub_contract",
+      "post_verdict_next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Strong",
+      "canonical_title": "빌어먹을 환생",
+      "canonical_url": "https://novel.munpia.com/222360",
+      "expected_or_source_native_title": "빌어먹을 환생",
+      "current_projection_candidate_title": "불을 먹을 환생",
+      "current_projection_candidate_url": "https://novel.munpia.com/385432",
+      "review_lane": "B1_related_candidate_alignment_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "runtime_release_condition": "blocked_until_contract_tests_pass",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "write_expected_restore_or_candidate_scrub_contract_test",
+        "keep_runtime_replay_blocked_until_contract_passes"
+      ],
+      "rationale_ko": "제목 `빌환`과 본문 `시엘`, `세냐`, `아니스티나`, `매르`가 `빌어먹을 환생`을 직접 지지한다. current candidate `불을 먹을 환생`은 제목/URL이 다른 후보라 scrub 또는 expected restore 계약 대상이다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11718099",
+        "docs/devs/loop494_publish_contract_trace_mobile_munpia_state_20260706.json#post_id=11718099",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop545_current_full375_residual97_runtime_expected_title_audit.json#post_id=11718099"
+      ]
+    },
+    {
+      "post_id": 11718114,
+      "contract_batch_lane": "C3_stronger_evidence_or_native_web_hold",
+      "post_verdict_next_state": "hard_hold_or_native_web_review_required",
+      "canonical_verdict": "INSUFFICIENT_EVIDENCE_HOLD",
+      "evidence_grade": "Weak",
+      "canonical_title": null,
+      "canonical_url": null,
+      "expected_or_source_native_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "current_projection_candidate_title": "시스템",
+      "current_projection_candidate_url": null,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "candidate_support_state": "non_official_candidate_preservation_only",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "runtime_release_condition": "blocked_until_stronger_evidence",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "collect_stronger_source_or_native_web_evidence",
+        "keep_hard_hold_until_evidence_strength_improves"
+      ],
+      "rationale_ko": "원문은 시스템 딸깍, 상태창, 파이어볼, 마법 강사질 같은 장르/클리셰 비평이다. expected 장문 제목과 current candidate `시스템` 모두 원문 직접 작품 표면으로 확정하기 어려워 stronger evidence 전 hard-hold로 둔다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11718114",
+        "docs/devs/loop530_b1_canonical_source_native_verdicts.json#post_id=11718114",
+        "docs/devs/loop540_b1_missing_candidate_source_native_verdicts.json#post_id=11718114"
+      ]
+    },
+    {
+      "post_id": 11682767,
+      "contract_batch_lane": "C2_canonical_variant_policy_contract",
+      "post_verdict_next_state": "canonical_variant_policy_contract_required",
+      "canonical_verdict": "RELATED_CANONICAL_VARIANT_CONFIRMED",
+      "evidence_grade": "Medium",
+      "canonical_title": "묵향",
+      "canonical_url": null,
+      "expected_or_source_native_title": "묵향",
+      "current_projection_candidate_title": "묵향 1권",
+      "current_projection_candidate_url": "https://mm.munpia.com/?menu=novel&action=view&id=51088&entry_id=776982",
+      "review_lane": "B1_related_candidate_alignment_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "primary_repair_lane": "image_or_alias_anchor_contract_repair",
+      "runtime_release_condition": "blocked_until_variant_policy_tests_pass",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "write_canonical_variant_policy_contract_test",
+        "preserve_variant_alias_without_unverified_publish",
+        "keep_runtime_replay_blocked_until_contract_passes"
+      ],
+      "rationale_ko": "제목 `묵향`과 본문/댓글의 아르티어스, 드래곤 하트, TS 초기 전개가 같은 작품 맥락을 지지한다. current candidate `묵향 1권`은 권차/상세 페이지 variant라 canonical variant policy 계약으로 둔다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11682767",
+        "docs/devs/loop530_b1_canonical_source_native_verdicts.json#post_id=11682767",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop545_current_full375_residual97_runtime_expected_title_audit.json#post_id=11682767"
+      ]
+    },
+    {
+      "post_id": 11692436,
+      "contract_batch_lane": "C3_stronger_evidence_or_native_web_hold",
+      "post_verdict_next_state": "hard_hold_or_native_web_review_required",
+      "canonical_verdict": "INSUFFICIENT_EVIDENCE_HOLD",
+      "evidence_grade": "Medium",
+      "canonical_title": null,
+      "canonical_url": null,
+      "expected_or_source_native_title": "퍼펙트 메이지",
+      "current_projection_candidate_title": "죽었다 깨어도 수선",
+      "current_projection_candidate_url": "https://novelpia.com/novel/233173",
+      "review_lane": "B1_different_candidate_alignment_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "runtime_release_condition": "blocked_until_stronger_evidence",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "collect_stronger_source_or_native_web_evidence",
+        "keep_hard_hold_until_evidence_strength_improves"
+      ],
+      "rationale_ko": "`류서란(perfect)`와 댓글 `old girl`, 이미지/캐릭터 장면은 `퍼펙트 메이지` 가능성을 주지만 원문 텍스트만으로는 character bridge와 이미지 의존성이 크다. current candidate `죽었다 깨어도 수선`도 다른 작품 후보라, native-web/시각 근거 강화 전 hard-hold로 둔다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11692436",
+        "docs/devs/loop492_p0_hold9_source_native_verdicts.json#post_id=11692436",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop545_current_full375_residual97_runtime_expected_title_audit.json#post_id=11692436"
+      ]
+    },
+    {
+      "post_id": 11698859,
+      "contract_batch_lane": "C2_canonical_variant_policy_contract",
+      "post_verdict_next_state": "canonical_variant_policy_contract_required",
+      "canonical_verdict": "RELATED_CANONICAL_VARIANT_CONFIRMED",
+      "evidence_grade": "Medium",
+      "canonical_title": "귤부인 대롱대롱",
+      "canonical_url": null,
+      "expected_or_source_native_title": "귤부인 대롱대롱",
+      "current_projection_candidate_title": "귤부인",
+      "current_projection_candidate_url": null,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "candidate_support_state": "non_official_candidate_preservation_only",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "runtime_release_condition": "blocked_until_variant_policy_tests_pass",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "write_canonical_variant_policy_contract_test",
+        "preserve_variant_alias_without_unverified_publish",
+        "keep_runtime_replay_blocked_until_contract_passes"
+      ],
+      "rationale_ko": "제목이 `귤부인 대롱대롱`을 직접 말하고 본문이 해당 장면 반응을 이어간다. current candidate `귤부인`은 축약/부분 표면이므로 canonical title은 원문 전체 표면으로 보존한다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11698859",
+        "docs/devs/loop530_b1_canonical_source_native_verdicts.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop545_current_full375_residual97_runtime_expected_title_audit.json#post_id=11698859"
+      ]
+    },
+    {
+      "post_id": 11710046,
+      "contract_batch_lane": "C1_expected_restore_or_candidate_scrub_contract",
+      "post_verdict_next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Strong",
+      "canonical_title": "샷건 치는 병약 천사님",
+      "canonical_url": "https://novelpia.com/novel/402367",
+      "expected_or_source_native_title": "샷건 치는 병약 천사님",
+      "current_projection_candidate_title": "병약 미소녀가 되었다.",
+      "current_projection_candidate_url": "https://novelpia.com/novel/322179",
+      "review_lane": "B1_different_candidate_alignment_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "runtime_release_condition": "blocked_until_contract_tests_pass",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "write_expected_restore_or_candidate_scrub_contract_test",
+        "keep_runtime_replay_blocked_until_contract_passes"
+      ],
+      "rationale_ko": "원문 `천사님` 피디픽 맥락과 이미지 OCR의 `[TS] 샷건 치는 병약 천사님`, 공식 URL 근거가 expected title을 지지한다. current candidate `병약 미소녀가 되었다.`는 competing candidate라 scrub/restore 계약이 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11710046",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop545_current_full375_residual97_runtime_expected_title_audit.json#post_id=11710046",
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11710046.source_context.projection_followup"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "post_verdict_queue_is_not_runtime_release": true,
+    "runtime_replay_before_contract_tests_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

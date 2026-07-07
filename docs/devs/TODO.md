@@ -1,5 +1,21 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop548 TODO
+
+- 상태 업데이트: Loop547 B1 canonical recheck packet `14`건 verdict를 적용하고 shared promotion gate contract queue/plan/release audit으로 전환했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 런을 발주하지 않았다.
+- [x] Verdict application reviewed `14/14`, accepted `14`, validation issue `0`이다.
+- [x] Contract queue는 C1 `6`, C2 `5`, C3 `3`이다.
+- [x] Shared gate plan은 restore `3`, scrub `3`, variant hold `5`, stronger hold `3`이다.
+- [x] Release audit은 violation `0`, pending `3`, no-release `11`, release candidate `0`, runtime allowed `0`이다.
+- [ ] C1 expected restore `3`건 contract test를 작성한다.
+- [ ] C2 variant policy `5`건을 policy gate로 닫기 전 publish하지 않는다.
+- [ ] C3 stronger evidence/native-web hold `3`건은 근거 보강 전 runtime release하지 않는다.
+- [ ] Search degraded/timeout 복구 전 promotion approval을 열지 않는다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: canonical verdict application `REVIEW-LOCKED / 14`, release audit `REVIEW-LOCKED / violation 0 / pending 3 / no-release 11`, runtime replay `BLOCKED_UNTIL_C1_C2_CONTRACT_TESTS_OR_C3_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop547 TODO
 
 - 상태 업데이트: Loop545 repair queue `22`건 중 B1 canonical recheck 대상 `14`건을 원문/runtime context 포함 packet으로 만들었다. Goal은 완료가 아니다.
