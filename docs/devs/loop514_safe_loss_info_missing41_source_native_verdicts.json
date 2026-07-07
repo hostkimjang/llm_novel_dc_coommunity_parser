@@ -1,0 +1,673 @@
+{
+  "review_id": "loop514_safe_loss_info_missing41_source_native_verdicts",
+  "loop": 514,
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json",
+  "scope": "Loop514 projected Loop511/513 INFO_MISSING safe_loss_resolved_to_null 41건 source-native/native-web 보강 판정",
+  "review_policy": "source-native packet과 image_evidence_catalog를 우선하고, 필요한 경우 native-web/official URL 근거를 보강했다. ACCEPT는 after null/hold가 정당한 과거 safe false-positive 제외 후보이며 semantic_quality/full_scan approval을 열지 않는다.",
+  "rows": [
+    {
+      "post_id": 11660254,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "novelpia_animation_listing_not_single_work_discussion",
+      "evidence_grade": "Strong",
+      "action": ["exclude_from_regression_count_after_gate_wiring"],
+      "rationale_ko": "원문은 글로벌 노피아의 Animation 목록/AI 표지 여부를 묻는 글이고 OCR도 여러 작품 카드 목록이다. C1 `푸푸푸 랜드의 두가지 일상`을 단일 작품 토론으로 publish한 before가 과승격이며 after null/hold가 더 안전하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11660254",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11660254"
+      ]
+    },
+    {
+      "post_id": 11660277,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "아카메디 아카데미",
+      "selected_url": "https://novelpia.com/novel/22299",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "ocr_explicit_title_supports_clean_title_candidate_suffix_polluted",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required", "canonical_title_cleanup_required"],
+      "rationale_ko": "원문 제목의 `아카메디`와 이미지 OCR의 `아카메디 아카데미` 작품 상세 화면이 같은 작품을 직접 지지한다. 다만 current option title은 `본 사람?` 같은 글 제목 조각이 섞인 오염 제목이라 clean title로 canonical cleanup이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11660277",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11660277",
+        "https://novelpia.com/novel/22299"
+      ]
+    },
+    {
+      "post_id": 11661863,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "platform_listing_two_works_single_title_incomplete",
+      "evidence_grade": "Medium",
+      "action": ["image_listing_multi_work_guard_required", "preserve_secondary_candidates", "native_web_review_required"],
+      "rationale_ko": "이미지 OCR은 같은 작가의 두 작품 `저주받은 영애가 되었습니다`와 `용의 신부로 바쳐지고 말았다`가 동시에 올라온 플랫폼 목록이다. C1은 목록 중 하나로 지지되지만 원문은 두 작품 동시 업로드 맥락이라 단일 title publish는 불완전하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11661863",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11661863"
+      ]
+    },
+    {
+      "post_id": 11663511,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "부캐 키우는 황태자님",
+      "selected_url": "https://novelpia.com/novel/330363",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_short_title_and_episode_support_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "원문 제목 `부캐황태자99화`가 C1의 직접 약칭과 회차 맥락을 제공한다. 이미지가 character-only여도 텍스트 자체가 작품 소비 글이므로 after null은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11663511",
+        "https://novelpia.com/novel/330363"
+      ]
+    },
+    {
+      "post_id": 11666713,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "21세기 무림세가",
+      "selected_url": "https://series.naver.com/novel/detail.series?productNo=1894278",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_title_surface_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "원문 제목이 `21세기 무림`을 직접 말하고 본문도 무림/무협스러움 감상으로 이어진다. native-web에서도 `21세기 무림세가` 작품 존재가 확인되어 after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11666713",
+        "https://series.naver.com/novel/detail.series?productNo=1894278",
+        "https://page.kakao.com/content/49668687?tab_type=about"
+      ]
+    },
+    {
+      "post_id": 11668300,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "즉사기 들고 게임 속으로",
+      "selected_url": "https://series.naver.com/novel/detail.series?productNo=8050192",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_short_title_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "원문 제목 `즉사기`와 `보러간다`가 C1의 직접 약칭과 독서 의사를 함께 제공한다. 캐릭터 이미지가 약해도 텍스트 앵커가 충분하므로 after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11668300",
+        "https://series.naver.com/novel/detail.series?productNo=8050192"
+      ]
+    },
+    {
+      "post_id": 11669921,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "악당은 살고 싶다",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_and_paid_episode_context_support_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "`악살싶`은 C1의 직접 약칭이고 `유료분`, 용두용미 질문, 댓글의 회차 평가가 모두 같은 작품 소비 맥락이다. after null은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11669921"
+      ]
+    },
+    {
+      "post_id": 11669926,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "싸울아비 룬",
+      "selected_url": "https://page.kakao.com/content/50625910",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "ocr_cover_title_typo_supports_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required", "ocr_title_variant_cleanup_required"],
+      "rationale_ko": "이미지 OCR은 표지와 작가/장르 정보를 읽었고 `싸울라 비룬`은 C1 `싸울아비 룬`의 OCR 오독으로 보인다. 원문도 미적분 마법/마녀 캐릭터를 말해 같은 작품 장면 맥락이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11669926",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11669926",
+        "https://page.kakao.com/content/50625910"
+      ]
+    },
+    {
+      "post_id": 11669933,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "회귀수선전",
+      "selected_url": "https://series.naver.com/novel/detail.series?productNo=9807283",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "character_setting_terms_support_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "`중경계`, `해방상제`, `서휼` 같은 packet-local 설정/인물 표면이 C1 작품 토론을 직접 지지한다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11669933",
+        "https://series.naver.com/novel/detail.series?productNo=9807283"
+      ]
+    },
+    {
+      "post_id": 11673080,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "갤질하는 천재 의사",
+      "selected_url": "https://novelpia.com/novel/372180",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "ocr_explicit_work_title_and_medical_context_support_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "본문은 의사물/의료사고 소송 장면을 말하고, 이미지 OCR은 `갤질하는 천재 의사` 작품 상세와 작가/태그를 직접 읽었다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11673080",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11673080",
+        "https://novelpia.com/novel/372180"
+      ]
+    },
+    {
+      "post_id": 11677924,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "고결에 오만이 깃들 때",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "ocr_explicit_work_title_supports_armor_illustration_context",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required", "image_multi_panel_review_required"],
+      "rationale_ko": "두 이미지 중 하나가 `고결에 오만이 깃들 때` 작품 상세와 작가명을 직접 보여주고, 본문도 남캐 일러/갑옷 거부감 해결이라는 이미지 감상 맥락이다. after null은 회귀지만 다중 이미지 후보 보존도 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11677924",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11677924"
+      ]
+    },
+    {
+      "post_id": 11679547,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "도굴왕",
+      "selected_url": "https://page.kakao.com/content/65130395",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_title_and_ocr_detail_support_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "본문이 `도굴왕 애니화`를 직접 말하고, 이미지 OCR도 `도굴왕` 작품 상세/작가명을 확인한다. after null은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11679547",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11679547",
+        "https://page.kakao.com/content/65130395"
+      ]
+    },
+    {
+      "post_id": 11681159,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "괴담에 휘말렸다",
+      "selected_url": "https://novelpia.com/novel/363195",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "known_alias_and_plot_context_support_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "`김괴라리` 표면과 상태창/김어니언/괴이/스팡달 등 plot context가 C1 작품 토론을 직접 지지한다. 이미지는 보조적이지만 텍스트 앵커가 충분하므로 after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11681159",
+        "https://novelpia.com/novel/363195"
+      ]
+    },
+    {
+      "post_id": 11682749,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "current_option_misses_mukhyang_title_source_discusses_mukhyang",
+      "evidence_grade": "Strong",
+      "action": ["candidate_set_rebuild_required", "repair_after_wrong_work", "preserve_secondary_candidates"],
+      "rationale_ko": "원문과 댓글, 이미지 OCR은 모두 `묵향/DARK LADY` 맥락을 지지한다. current C1 `주인공인데 주인공이 아님`은 source-supported title이 아니므로 after null이 C1 safe-loss인 것은 아니지만 후보셋 재구성이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11682749"
+      ]
+    },
+    {
+      "post_id": 11682767,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "묵향",
+      "selected_url": "https://mm.munpia.com/?menu=novel&action=view&id=51088&entry_id=776982",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_title_and_character_context_support_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "원문 제목이 `묵향`을 직접 말하고 TS 초기/드래곤하트/아르티어스 같은 작품 설정을 댓글이 이어받는다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11682767",
+        "https://mm.munpia.com/?menu=novel&action=view&id=51088&entry_id=776982"
+      ]
+    },
+    {
+      "post_id": 11682775,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "여자가 되어서라도 복수한다",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "ocr_explicit_title_matches_ts_murim_request",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "원문은 TS 무협 추천/감상 질문이고 이미지 OCR은 `여자가 되어서라도 복수한다` 작품 상세와 무협/TS 태그를 직접 읽었다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11682775",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11682775"
+      ]
+    },
+    {
+      "post_id": 11689292,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "최악의 파트너",
+      "selected_url": "https://novelpia.com/novel/40854",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_title_and_cover_ocr_support_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "원문 제목이 `최악의 파트너 표지`를 직접 말하고 이미지 OCR도 같은 제목을 읽는다. 댓글도 패러디 작품 맥락으로 이어지므로 after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11689292",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11689292",
+        "https://novelpia.com/novel/40854"
+      ]
+    },
+    {
+      "post_id": 11692436,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "퍼펙트 메이지",
+      "selected_url": "https://novelpia.com/novel/17203",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "title_parenthetical_and_character_scene_support_safe_title",
+      "evidence_grade": "Medium",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required", "character_bridge_review_required"],
+      "rationale_ko": "원문 `류서란(perfect)`와 댓글 `old girl`, 이미지 본문 속 `퍼펙트 서란`이 C1 title/캐릭터 장면으로 이어진다. native-web에서도 `퍼펙트 메이지` 작품 존재가 확인된다. 다만 character bridge 성격이라 Medium으로 둔다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11692436",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11692436",
+        "https://novel.munpia.com/150143/page/1/neSrl/2500724",
+        "https://novel.naver.com/best/list?OSType=pc&novelId=815161&page=3"
+      ]
+    },
+    {
+      "post_id": 11692444,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "엑스칼리버 뽑습니다",
+      "selected_url": "https://novelpia.com/novel/381767",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_and_character_appeal_question_support_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "`엑칼뽑`은 C1의 직접 약칭이고 `캐빨 어떰?` 질문과 댓글이 같은 작품 소비 맥락이다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11692444",
+        "https://novelpia.com/novel/381767"
+      ]
+    },
+    {
+      "post_id": 11694035,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "asenggal_alias_supported_but_current_option_wrong",
+      "evidence_grade": "Medium",
+      "action": ["candidate_set_rebuild_required", "multi_work_guard_required", "preserve_secondary_candidates"],
+      "rationale_ko": "`아생갤`은 `아카데미 생존 갤러리` 같은 작품 약어일 수 있고, 원문도 폐허 도심/현생 서사 같은 작품 내부 장면을 말한다. 그러나 current C1 `시로코의 제멋대로 일상 단편선`은 source-supported target이 아니므로 후보셋 재구성이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11694035",
+        "https://novelpia.com/novel/380218"
+      ]
+    },
+    {
+      "post_id": 11694063,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "빙의한 신의 아이, 엘리시아",
+      "selected_url": "https://novelpia.com/novel/57074",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_character_and_title_surface_support_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "원문은 엘리시아/아레스/엘리 정실 맥락을 직접 말하고 C1 title이 핵심 캐릭터명을 포함한다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11694063",
+        "https://novelpia.com/novel/57074"
+      ]
+    },
+    {
+      "post_id": 11694065,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "아카데미에서 살아남기",
+      "selected_url": "https://mm.munpia.com/?menu=novel&action=view&id=240910&entry_id=4262178",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_and_character_names_support_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "`아카살`은 C1의 직접 약칭이고 이미지 OCR의 아니스/클라라/예니카/에드도 같은 작품 캐릭터 맥락이다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11694065",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11694065",
+        "https://mm.munpia.com/?menu=novel&action=view&id=240910&entry_id=4262178"
+      ]
+    },
+    {
+      "post_id": 11695609,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "ratdasip_term_question_blocks_wrong_mouse_apostle_title",
+      "evidence_grade": "Strong",
+      "action": ["exclude_from_regression_count_after_gate_wiring"],
+      "rationale_ko": "원문은 `랫따싶`이 퍼리/캐릭터 이름인지 묻고 댓글은 림월드 밈이라고 정정한다. native-web상 `랫따싶`은 `[림월드]변방계에서 회귀자로 살아남기` 태그/별칭으로 확인되지만 current C1 `쳇바퀴의 생쥐 사도가 되었다`는 지지되지 않는다. after null/hold가 before보다 안전하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11695609",
+        "https://novelpia.com/novel/382324",
+        "https://m.dcinside.com/board/genrenovel/11768968"
+      ]
+    },
+    {
+      "post_id": 11697249,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "burgerpia_event_reservation_not_novel_work",
+      "evidence_grade": "Strong",
+      "action": ["exclude_from_regression_count_after_gate_wiring"],
+      "rationale_ko": "원문과 이미지 OCR은 노벨피아의 `버거피아` 행사 예약/합석 안내를 말한다. 이는 작품 title publish 대상이 아니라 행사/플랫폼 이벤트 맥락이므로 after null/hold가 정당하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11697249",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11697249"
+      ]
+    },
+    {
+      "post_id": 11698859,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "귤부인 대롱대롱",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_title_surface_and_scene_reaction_support_safe_title",
+      "evidence_grade": "Medium",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required", "native_web_review_required"],
+      "rationale_ko": "원문 제목이 `귤부인 대롱대롱`을 직접 말하고 본문은 해당 장면에 대한 감상이다. 공식 URL은 packet에 없지만 raw title surface가 강하므로 after null은 회귀이며 native-web 보강은 후속이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11698859"
+      ]
+    },
+    {
+      "post_id": 11698865,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "rezero_character_discussion_character_page_not_work_title",
+      "evidence_grade": "Medium",
+      "action": ["policy_or_canonical_title_review_required", "candidate_set_rebuild_required"],
+      "rationale_ko": "원문은 스바루/리제로 6장/7장 감상으로 특정 작품 맥락이 있지만 current C1은 작품 title이 아니라 `나츠키 스바루/작중 행적/5~8장` 같은 character/page title이다. null로 닫기보다 canonical work title 정책 검토가 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11698865"
+      ]
+    },
+    {
+      "post_id": 11700483,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "니들 생각 다 들린다",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "work_specific_emoticon_purchase_supports_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required", "merchandise_or_emoticon_work_context_guard"],
+      "rationale_ko": "원문 `니생들 이모티콘`과 이미지 OCR `니들 생각 다 들린다 미니미콘`이 작품별 이모티콘 구매 맥락을 직접 지지한다. 작품 상품/이모티콘 맥락이므로 after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11700483",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11700483"
+      ]
+    },
+    {
+      "post_id": 11700500,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "전지적 1인칭 시점",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_and_character_context_support_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "`전1시`는 C1의 직접 약칭이고 지잔든/지선/성검대/셰이 등 캐릭터 전투 맥락이 작품 토론을 지지한다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11700500"
+      ]
+    },
+    {
+      "post_id": 11703640,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "bugipia_event_context_comment_mentions_machine_princess_only_incidentally",
+      "evidence_grade": "Strong",
+      "action": ["exclude_from_regression_count_after_gate_wiring"],
+      "rationale_ko": "원문은 `부기피아` 행사/현장 경험이고, 댓글의 `기계공주 보냐`는 현장 대화 농담에 가깝다. C1 작품 존재는 native-web으로 확인되지만 post target이 C1은 아니므로 after null/hold가 더 안전하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11703640",
+        "https://novelpia.com/novel/390228"
+      ]
+    },
+    {
+      "post_id": 11703658,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "current_option_wrong_title_image_ocr_supports_africa_food_king",
+      "evidence_grade": "Strong",
+      "action": ["candidate_set_rebuild_required", "repair_after_wrong_work", "image_platform_url_preference"],
+      "rationale_ko": "원문 제목과 이미지 OCR은 `아프리카 식량왕이 되었다`를 직접 말한다. current C1 `아프리카 의 독재자가 되었다 .`와 URL은 다른 작품으로 보이므로 C1 복구가 아니라 후보셋 재구성이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11703658"
+      ]
+    },
+    {
+      "post_id": 11705230,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "월야환담",
+      "selected_url": "https://ridibooks.com/books/3685002646",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_title_surface_and_setting_discussion_support_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "원문이 `월야환담`을 직접 말하고 CCTV/스마트폰/마약 설정 같은 시대상 비교를 이어간다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11705230",
+        "https://ridibooks.com/books/3685002646"
+      ]
+    },
+    {
+      "post_id": 11705231,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "current_option_wrong_work_source_discusses_seol_jihu_tamsik_context",
+      "evidence_grade": "Strong",
+      "action": ["candidate_set_rebuild_required", "repair_after_wrong_work", "preserve_secondary_candidates"],
+      "rationale_ko": "원문은 설지후/로유진/유선화 자매 등 `탐식의 재림` 계열 캐릭터와 장갤 밈을 직접 논한다. current C1 `한국 레전드 프로게이머...`는 source-supported title이 아니므로 후보셋 재구성이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11705231"
+      ]
+    },
+    {
+      "post_id": 11705251,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "월야환담 창월야",
+      "selected_url": "https://ridibooks.com/books/3685002646",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_series_title_and_character_context_support_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "원문 제목 `창월야 기준`과 한세건/진마/유다/팬텀/아르곤 맥락이 C1을 직접 지지한다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11705251",
+        "https://ridibooks.com/books/3685002646"
+      ]
+    },
+    {
+      "post_id": 11706831,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "소설 속 빌런은 아카데미 차석으로 살아간다",
+      "selected_url": "https://novelpia.com/novel/341994",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_short_title_and_serial_status_support_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "`빌런차석`은 C1의 직접 약칭이고 댓글 `연재는 하고 있음`이 같은 작품 상태 질문에 답한다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11706831",
+        "https://novelpia.com/novel/341994"
+      ]
+    },
+    {
+      "post_id": 11706842,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "삼국지 마대가 되었다",
+      "selected_url": "https://novel.munpia.com/374118",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_and_completion_status_support_safe_title",
+      "evidence_grade": "Medium",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "`대마대`와 댓글의 `초창기작품`, 완결 여부 질문이 C1 약칭/연재 상태 맥락을 지지한다. 표면은 축약형이라 Medium이지만 after null은 회귀로 본다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11706842",
+        "https://novel.munpia.com/374118"
+      ]
+    },
+    {
+      "post_id": 11708453,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "comparison_plagiarism_context_not_single_work_publish_ready",
+      "evidence_grade": "Medium",
+      "action": ["multi_work_guard_required", "policy_or_canonical_title_review_required", "native_web_review_required"],
+      "rationale_ko": "원문은 `미츄리`, `이불사`, `검머외`, 댓글의 `감옥학원 아카편` 등 여러 작품/표절 비교 맥락이다. C1은 관련 후보일 수 있지만 단일 current work publish로 확정하기에는 약하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11708453",
+        "https://novelpia.com/novel/75754"
+      ]
+    },
+    {
+      "post_id": 11708470,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "절대 꺾이지 않을거야!",
+      "selected_url": "https://novelpia.com/novel/338557",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_and_webtoon_context_support_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "`절꺾않`은 C1의 직접 약칭이고 웹툰/소설 평가 댓글이 같은 작품 소비 맥락이다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11708470",
+        "https://novelpia.com/novel/338557"
+      ]
+    },
+    {
+      "post_id": 11708478,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "사연 있는 악역으로 착각 당한다",
+      "selected_url": "https://novelpia.com/novel/396159",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "comment_answer_and_scene_ocr_support_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "댓글이 제목 질문에 `사연있는악역착각`이라고 답하고, 이미지 본문도 드릴머리 영애 장면을 보여준다. C1 title 복구가 맞고 after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11708478",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11708478",
+        "https://novelpia.com/novel/396159"
+      ]
+    },
+    {
+      "post_id": 11710036,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "ratdasip_source_points_to_rimworld_work_current_option_wrong",
+      "evidence_grade": "Strong",
+      "action": ["candidate_set_rebuild_required", "repair_after_wrong_work", "preserve_secondary_candidates"],
+      "rationale_ko": "원문과 댓글은 `랫따싶`의 full title을 묻고 `[림월드]변방계에서 회귀자로 살아남기`로 답한다. native-web도 `#랫따싶` 태그를 확인한다. current C1 `쳇바퀴의 생쥐 사도가 되었다`는 wrong option이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11710036",
+        "https://novelpia.com/novel/382324",
+        "https://m.dcinside.com/board/genrenovel/11768968"
+      ]
+    },
+    {
+      "post_id": 11710046,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "샷건 치는 병약 천사님",
+      "selected_url": "https://novelpia.com/novel/402367",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "ocr_explicit_title_and_pd_pick_context_support_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "원문 `천사님` 피디픽 맥락과 이미지 OCR의 `샷건 치는 병약 천사님` 작품 상세가 C1을 직접 지지한다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11710046",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11710046",
+        "https://novelpia.com/novel/402367"
+      ]
+    },
+    {
+      "post_id": 11718098,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "C1",
+      "selected_title": "마법 좋아좋아좋아",
+      "selected_url": "https://novelpia.com/novel/326040",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_and_ending_reaction_support_safe_title",
+      "evidence_grade": "Strong",
+      "action": ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+      "rationale_ko": "`마좋좋좋`은 C1의 직접 약칭이고 결말 반응/댓글 대사가 작품 소비 맥락이다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11718098",
+        "https://novelpia.com/novel/326040"
+      ]
+    }
+  ]
+}

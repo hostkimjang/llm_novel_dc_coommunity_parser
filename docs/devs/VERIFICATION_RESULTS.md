@@ -1,5 +1,41 @@
 # Verification Results
 
+## 2026-07-07 Loop514 Verification
+
+- 범위: Loop513 residual `safe_loss_resolved_to_null` INFO_MISSING `41`건을 source-native/image evidence/native-web review로 처리하고, Loop514 summary와 residual action queue를 재생성했다. 새 runtime replay는 실행하지 않았다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_514_REPORT_20260707.md`
+  - state `docs\devs\loop514_safe_loss_batch_state_20260707.json`
+  - safe_loss verdicts `docs\devs\loop514_safe_loss_info_missing41_source_native_verdicts.json`
+  - prior-compatible verdicts `docs\devs\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json`
+  - placeholder verdicts `docs\devs\loop514_projected_loop511_p0_unreviewed_placeholder_verdicts.json`
+  - review summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop514_projected_loop511_after_safe_loss41_review_summary.json`
+  - residual queue `docs\devs\loop514_after_safe_loss41_review_adjusted_residual100_action_queue.json`
+- Result:
+  - additional safe_loss reviewed rows `41`
+  - additional verdict label counts `ACCEPT 4`, `REPROCESS 34`, `HOLD 3`
+  - placeholder INFO_MISSING rows `0`
+  - label counts `ACCEPT 41`, `REPROCESS 78`, `HOLD 22`, `INFO_MISSING 0`
+  - residual action queue rows `100`
+  - residual bucket counts `safe_loss_resolved_to_null 80`, `unsafe_promotion_from_hold 9`, `wrong_work_title_flip 11`
+  - source-native/blind review remaining `0`
+- Dashboard:
+  - health `http://127.0.0.1:8080/api/health` PASS, `ok=true`, `standalone=true`, `pid=9320`
+  - status PASS, `375/375`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`
+  - 신규 테스트런/검증런은 `--parallel 16`과 dashboard 기본 ON을 유지하며 `--no-dashboard`는 제거한다.
+- Validation:
+  - JSON parse PASS for Loop514 verdict artifact.
+  - `tools\build_prior_compatible_collateral_verdicts.py ... --additional-covered-verdicts-json ...` PASS, compatible rows `78`, unreviewed current batch rows `63`.
+  - `tools\summarize_collateral_review_verdicts.py ...` PASS, reviewed rows `141`, validation issue `0`, INFO_MISSING `0`.
+  - `tools\split_collateral_action_queue.py ... --fail-on-validation-issue` PASS, residual action queue `100`, validation issue `0`.
+  - JSON parse sweep PASS for Loop514 related JSON `8` files.
+  - unittest PASS, `28` tests: `tests.test_build_prior_compatible_collateral_verdicts`, `tests.test_summarize_collateral_review_verdicts`, `tests.test_split_collateral_action_queue`, `tests.test_triage_collateral_regressions`, `tests.test_run_independent_plan`, `tests.test_safe_loss_flip_rate_probe`.
+  - `git diff --check` PASS with CRLF conversion warnings only.
+- Boundary:
+  - Loop514 is review/accounting progress, not runtime replay.
+  - Full375 collateral remains `NO-GO`.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-07 Loop513 Verification
 
 - 범위: Loop512 residual `unsafe_promotion_from_hold` INFO_MISSING `12`건을 source-native/native-web review로 처리하고, Loop513 summary와 residual action queue를 재생성했다. 새 runtime replay는 실행하지 않았다.

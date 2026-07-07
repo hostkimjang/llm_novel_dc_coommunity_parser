@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-514 - safe_loss INFO_MISSING 41 review and dashboard contract
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| safe_loss INFO_MISSING 41 | GO_REVIEW_BATCH | `ACCEPT 4`, `REPROCESS 34`, `HOLD 3` | REPROCESS 34는 supported-title restore, wrong option, 후보 재구성 수리로 분리 |
+| Review summary | REVIEW-LOCKED | label `ACCEPT 41`, `REPROCESS 78`, `HOLD 22`, `INFO_MISSING 0` | ACCEPT는 gate wiring 뒤 regression 제외 후보 |
+| Residual action queue | NO-GO | residual `100`, safe_loss `80`, unsafe `9`, wrong_work `11` | code/contract repair로 전환 |
+| Source-native/blind remaining | CLOSED | `source_native_or_blind_review_required 0` | review 반복 대신 repair queue 실행 |
+| Dashboard policy | GO | health `ok=true`, status `375/375`, `parallel_count=16` | 신규 테스트런도 `--parallel 16`과 dashboard 기본 부착, `--no-dashboard` 제거 |
+| Runtime replay | NOT_RUN | 이번 회차는 회계/검토 산출물만 생성 | 다음 runtime 검증은 dashboard 붙인 run-plan으로 실행 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: full375 collateral `NO-GO / residual_action_queue_rows 100`, runtime replay `NOT_RUN`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-513 - unsafe_promotion INFO_MISSING 12 review and dashboard check
 
 | 항목 | 상태 | 근거 | 다음 |

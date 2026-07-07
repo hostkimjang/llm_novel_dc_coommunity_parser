@@ -1,5 +1,26 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop514 safe_loss 배치 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_514_REPORT_20260707.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop514_safe_loss_batch_state_20260707.json`.
+  - [x] safe_loss verdict 기록 완료: `docs/devs/loop514_safe_loss_info_missing41_source_native_verdicts.json/.md`.
+  - [x] Prior-compatible verdict 기록 완료: `docs/devs/loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json/.md`.
+  - [x] Summary 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json/.md`.
+  - [x] Residual queue 기록 완료: `docs/devs/loop514_after_safe_loss41_review_adjusted_residual100_action_queue.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay는 실행하지 않았다.
+  - [x] safe_loss INFO_MISSING `41`건과 기존 prior-compatible/추가 verdict를 분리했다.
+  - [x] Placeholder INFO_MISSING은 `41 -> 0`으로 닫혔다.
+  - [x] Residual action queue는 `104 -> 100`이다.
+  - [x] Validation issue는 `0`이다.
+  - [x] `source_native_or_blind_review_required` 반복은 닫혔다.
+  - [x] 테스트런 dashboard health/status를 재확인했고 다음 런도 `--parallel 16` + dashboard 기본 ON을 유지한다.
+  - [ ] ACCEPT `41`건은 gate wiring 뒤에만 regression count 제외 후보로 쓴다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: full375 collateral `NO-GO / residual_action_queue_rows 100`, runtime replay `NOT_RUN`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop513 unsafe_promotion 배치 품질 게이트
 
 - 근거:

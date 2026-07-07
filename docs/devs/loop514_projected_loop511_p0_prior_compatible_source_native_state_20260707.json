@@ -1,0 +1,210 @@
+{
+  "report_type": "prior_compatible_collateral_verdicts_state",
+  "review_id": "loop514_projected_loop511_prior_compatible_after_safe_loss41",
+  "scope": "Loop514 projected Loop511 current full375 P0 prior-compatible after safe_loss41",
+  "generated_at": "2026-07-07T09:47:41",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "current_batch_rows": 141,
+    "source_verdict_rows": 101,
+    "overlap_rows": 92,
+    "compatible_rows": 78,
+    "unreviewed_current_batch_rows": 63,
+    "skip_counts": {
+      "triage_bucket_changed": 13,
+      "post_id_not_in_current_batch": 9,
+      "ambiguous_current_option_match": 1
+    }
+  },
+  "source_verdicts": [
+    {
+      "path": "docs\\devs\\loop498_current_full375_p0_prior_compatible_source_native_verdicts.json",
+      "expected_triage_bucket": "*"
+    },
+    {
+      "path": "docs\\devs\\loop498_current_wrong_work_info_missing_source_native_verdicts.json",
+      "expected_triage_bucket": "wrong_work_title_flip"
+    }
+  ],
+  "skipped_rows": [
+    {
+      "post_id": 11679547,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop498_current_full375_p0_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11706842,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop498_current_full375_p0_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11663521,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop498_current_full375_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669908,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop498_current_full375_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671512,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop498_current_full375_p0_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11673096,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop498_current_full375_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681152,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop498_current_full375_p0_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11684372,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop498_current_full375_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698870,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop498_current_full375_p0_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11698910,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop498_current_full375_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11679537,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop498_current_full375_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11661863,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop498_current_full375_p0_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11679553,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop498_current_full375_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710020,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop498_current_full375_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663554,
+      "reason": "ambiguous_current_option_match",
+      "source_path": "docs\\devs\\loop498_current_wrong_work_info_missing_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "wrong_work_title_flip",
+      "selected_option_id": "C1",
+      "selected_title": "전 버튜버가 하고 싶은데요",
+      "selected_url": "https://novelpia.com/novel/275975"
+    },
+    {
+      "post_id": 11677924,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop498_current_wrong_work_info_missing_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11682749,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop498_current_wrong_work_info_missing_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11689292,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop498_current_wrong_work_info_missing_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11692436,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop498_current_wrong_work_info_missing_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11703658,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop498_current_wrong_work_info_missing_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11705230,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop498_current_wrong_work_info_missing_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11710036,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop498_current_wrong_work_info_missing_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11714903,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop498_current_wrong_work_info_missing_source_native_verdicts.json"
+    }
+  ],
+  "unreviewed_batch": {
+    "gate": "REVIEW-LOCKED",
+    "summary": {
+      "source_review_rows": 141,
+      "prior_compatible_rows": 78,
+      "additional_covered_rows": 63,
+      "covered_post_ids": 141,
+      "unreviewed_rows": 0,
+      "counts_by_bucket": {},
+      "counts_by_collateral_status": {},
+      "image_rows": 0,
+      "text_only_rows": 0
+    },
+    "artifacts": {
+      "json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop514_projected_loop511_p0_unreviewed_batch.json",
+      "jsonl": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop514_projected_loop511_p0_unreviewed_batch.jsonl",
+      "markdown": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop514_projected_loop511_p0_unreviewed_batch.md"
+    }
+  },
+  "unreviewed_placeholder_verdicts": {
+    "gate": "REVIEW-LOCKED",
+    "summary": {
+      "source_review_rows": 141,
+      "prior_compatible_rows": 78,
+      "additional_covered_rows": 63,
+      "covered_post_ids": 141,
+      "placeholder_rows": 0,
+      "counts_by_bucket": {}
+    },
+    "artifact": "docs\\devs\\loop514_projected_loop511_p0_unreviewed_placeholder_verdicts.json"
+  }
+}
