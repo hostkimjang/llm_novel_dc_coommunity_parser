@@ -1,5 +1,25 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop587 P0 candidate-set rebuild hold 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_587_REPORT_20260708.md`.
+  - [x] Candidate-set application 기록 완료: `docs/devs/loop587_p0_candidate_set_rebuild_hold_projection_application.json/.md`.
+  - [x] Candidate-set release gate 기록 완료: `docs/devs/loop587_p0_candidate_set_rebuild_hold_release_gate_audit.json/.md`.
+  - [x] Combined plan/application 기록 완료: `docs/devs/loop587_p0_candidate_set_combined_contract_plan.json/.md`, `docs/devs/loop587_p0_candidate_set_combined_projection_application.json/.md`.
+  - [x] Full375 collateral compare 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop587_p0_candidate_set_rebuild_hold_full375_collateral_compare.json/.md`.
+  - [x] Residual accounting 기록 완료: `docs/devs/loop587_residual_p0_candidate_set_hold_accounting.json/.md`, `docs/devs/loop587_residual46_candidate_set_hold_accounting.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Candidate-set rebuild `4`건은 no-release hold로 처리했고 publish 후보로 세지 않았다.
+  - [x] Publication contract는 `GO / 375 rows / 0 violations`다.
+  - [x] Combined release gate는 violation `0`, release candidate `5`, no-release `5`, runtime allowed `0`이다.
+  - [x] Residual46은 ordinary `37`건 남고, P0 residual은 ordinary `10`건 남는다.
+  - [x] Full375 collateral은 `NO-GO / raw 82 / runtime counts missing`이다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+  - [x] Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+- Gate: candidate-set hold `REVIEW-LOCKED / hold 4`, publication `GO`, release `REVIEW-LOCKED`, residual46 `REVIEW-LOCKED / 37`, P0 residual `REVIEW-LOCKED / 10`, full375 collateral `NO-GO / raw 82`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop583 ready restore projection 품질 게이트
 
 - 근거:

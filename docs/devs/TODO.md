@@ -1,5 +1,25 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop587 이후
+
+- 상태 업데이트: P0 candidate-set rebuild `4`건은 no-release hold로 회계 처리됐지만 full375 collateral은 여전히 `NO-GO`다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Candidate-set projection application을 생성했다: `docs/devs/loop587_p0_candidate_set_rebuild_hold_projection_application.json/.md`.
+- [x] Candidate-set hold `4`, already blocked hold `4`, validation issue `0`을 확인했다.
+- [x] Publication contract `GO / 375 rows / 0 violations`를 확인했다.
+- [x] Candidate-set release gate `REVIEW-LOCKED / no-release 4 / violation 0`을 확인했다.
+- [x] Combined plan/application을 생성했다: `docs/devs/loop587_p0_candidate_set_combined_contract_plan.json/.md`, `docs/devs/loop587_p0_candidate_set_combined_projection_application.json/.md`.
+- [x] Combined release gate `REVIEW-LOCKED / release candidate 5 / no-release 5 / violation 0`을 확인했다.
+- [x] Full375 collateral compare를 실행했다. shared `375`, changed `158`, raw regression `82`, gate `NO-GO`.
+- [x] Always-on gate를 재산출했다. golden18 `GO`, collateral `NO-GO / raw 82 / runtime counts missing`, 전체 `NO-GO`.
+- [x] P0 residual accounting을 생성했다. contract processed `9`, ordinary residual `10`, official URL follow-up `1`.
+- [x] Residual46 accounting을 생성했다. contract processed `9`, ordinary residual `37`, official URL follow-up `1`.
+- [x] `tools/reaccount_residual_after_contract_reviews.py`에 candidate-set rebuild hold accounting을 추가했다.
+- [ ] 남은 P0 ordinary `10`건은 source-native/blind `7`, native/policy preflight `2`, eBook/classic follow-up `1`로 batch 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지 상태로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: candidate-set hold `REVIEW-LOCKED / hold 4`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 82`, residual46 `REVIEW-LOCKED / 37`, P0 residual `REVIEW-LOCKED / 10`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop586 이후
 
 - 상태 업데이트: `11665124` canonical rewrite 계약은 shared restore/projection/release gate를 통과했지만 full375 collateral은 여전히 `NO-GO`다. Goal은 완료가 아니다.

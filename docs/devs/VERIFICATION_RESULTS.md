@@ -1,5 +1,37 @@
 # Verification Results
 
+## 2026-07-08 Loop587 P0 candidate-set rebuild hold와 residual 회계 갱신
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_587_REPORT_20260708.md`
+  - `tools/reaccount_residual_after_contract_reviews.py`
+  - `tests/test_reaccount_residual_after_contract_reviews.py`
+  - `docs/devs/loop587_p0_candidate_set_rebuild_hold_projection_application.json/.md`
+  - `docs/devs/loop587_p0_candidate_set_rebuild_hold_publication_contract_audit.json/.md`
+  - `docs/devs/loop587_p0_candidate_set_rebuild_hold_release_gate_audit.json/.md`
+  - `docs/devs/loop587_p0_candidate_set_combined_contract_plan.json/.md`
+  - `docs/devs/loop587_p0_candidate_set_combined_projection_application.json/.md`
+  - `docs/devs/loop587_p0_candidate_set_combined_release_gate_audit.json/.md`
+  - `docs/devs/loop587_residual_p0_candidate_set_hold_accounting.json/.md`
+  - `docs/devs/loop587_residual46_candidate_set_hold_accounting.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop587_p0_candidate_set_rebuild_hold_projection_result.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop587_p0_candidate_set_rebuild_hold_full375_collateral_compare.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop587_always_on_golden18_full375_candidate_set_hold_gate.json/.md`
+- 검증:
+  - Candidate-set projection application: PASS, hold `4`, already blocked hold `4`, validation issue `0`.
+  - Publication contract audit: PASS, `GO / 375 rows / 0 violations`.
+  - Candidate-set release gate audit: PASS, `REVIEW-LOCKED`, violation `0`, no-release `4`, release candidate `0`.
+  - Combined release gate audit: PASS, `REVIEW-LOCKED`, violation `0`, release candidate `5`, no-release `5`.
+  - Full375 collateral compare: PASS 산출, gate `NO-GO`, shared `375`, changed `158`, raw regression `82`, runtime counts missing.
+  - Always-on gate: PASS 산출, gate `NO-GO`, golden18 `GO`, collateral `NO-GO / raw 82`.
+  - Residual accounting: PASS, P0 ordinary `10`, residual46 ordinary `37`, candidate-set no-publish/hold `4`, official support follow-up `1`, validation issue `0`.
+  - `python -m unittest tests.test_apply_candidate_set_projection_contract tests.test_reaccount_residual_after_contract_reviews tests.test_build_candidate_set_contract_plan tests.test_audit_post_verdict_promotion_gate_release_contract tests.test_publication_contract_convergence_audit -v`: PASS, `54` tests.
+  - `python -m py_compile tools\apply_candidate_set_projection_contract.py tools\reaccount_residual_after_contract_reviews.py tools\audit_post_verdict_promotion_gate_release_contract.py tools\build_candidate_set_contract_plan.py`: PASS.
+- 결과:
+  - Candidate-set rebuild `4`건은 처리된 no-release hold로 분리됐지만 publish approval이나 full_scan approval이 아니다.
+  - Full375 collateral이 `NO-GO / raw 82`이므로 release candidate `5`건과 no-release hold `5`건은 완료 근거가 아니다.
+- Gate: candidate-set hold `REVIEW-LOCKED / hold 4`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 82`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop586 canonical title rewrite와 full375 collateral 재검증
 
 - 산출물:

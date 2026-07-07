@@ -432,7 +432,7 @@ def write_markdown(path: Path, report: dict[str, Any]) -> None:
     lines = [
         f"# {report.get('projection_id')}",
         "",
-        "Loop578 candidate-set 계약 계획을 Loop577 full375 projection에 적용한 projection-only 산출물이다. "
+        "Candidate-set 계약 계획을 지정된 full375 projection에 적용한 projection-only 산출물이다. "
         "새 runtime replay가 아니며, release 후보가 생겨도 full375 collateral GO 전에는 approval 근거가 아니다.",
         "",
         "## 요약",

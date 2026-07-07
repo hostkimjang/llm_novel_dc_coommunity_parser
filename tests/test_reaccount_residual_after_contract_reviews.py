@@ -173,6 +173,41 @@ class ReaccountResidualAfterContractReviewsTest(unittest.TestCase):
         self.assertEqual(row["contract_accounting_effect"], "official_support_missing_restore_followup_required")
         self.assertIn("official_detail_url_enrichment_required", row["actions"])
 
+    def test_candidate_set_rebuild_hold_with_application_is_processed_no_publish(self):
+        accounting = build_accounting(
+            residual_queue={
+                "queue_id": "residual",
+                "summary": {"residual_action_queue_rows": 1},
+                "rows": [_residual_row(50, actions=["candidate_set_rebuild_required"])],
+            },
+            contract_plan={
+                "plan_id": "candidate_set_plan",
+                "rows": [
+                    _plan_row(
+                        50,
+                        "candidate_set_rebuild_required_before_publish",
+                        target_title=None,
+                    )
+                ],
+            },
+            expected_restore_application={
+                "projection_id": "candidate_set_application",
+                "applied_rows": [{"post_id": 50, "status": "scrubbed_public_identity"}],
+            },
+            accounting_id="unit",
+        )
+
+        row = accounting["rows"][0]
+        self.assertEqual(accounting["gate"], "REVIEW-LOCKED")
+        self.assertEqual(accounting["summary"]["contract_processed_rows"], 1)
+        self.assertEqual(accounting["summary"]["ordinary_residual_unprocessed_rows"], 0)
+        self.assertEqual(accounting["summary"]["candidate_set_rebuild_hold_rows"], 1)
+        self.assertEqual(accounting["summary"]["no_publish_or_hold_contract_rows"], 1)
+        self.assertTrue(row["contract_processed"])
+        self.assertFalse(row["ordinary_residual_unprocessed"])
+        self.assertEqual(row["contract_accounting_effect"], "candidate_set_rebuild_hold_not_approval")
+        self.assertEqual(row["policy_review_ref"], "candidate_set_application")
+
 
 if __name__ == "__main__":
     unittest.main()

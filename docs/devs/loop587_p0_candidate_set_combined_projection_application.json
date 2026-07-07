@@ -1,0 +1,123 @@
+{
+  "report_type": "post_verdict_projection_publish_contract_application_overlay",
+  "projection_id": "loop587_p0_candidate_set_combined_projection_contract",
+  "generated_at": "2026-07-08T05:09:03",
+  "source_contract_plan": "loop587_p0_candidate_set_combined_contract_plan",
+  "source_applications": [
+    "loop586_canonical_title_rewrite_combined_restore_projection_contract",
+    "loop587_p0_candidate_set_rebuild_hold_projection_contract"
+  ],
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 375,
+    "contract_plan_rows": 10,
+    "applied_publish_contract_rows": 5,
+    "applied_restore_rows": 5,
+    "applied_hold_rows": 4,
+    "applied_candidate_set_rebuild_hold_rows": 4,
+    "validation_issue_count": 0,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11718114,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "target_url": "https://novelpia.com/novel/383584",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11710049,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "target_url": "https://novelpia.com/novel/382324",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11682775,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "여자가 되어서라도 복수한다",
+      "target_url": "https://novelpia.com/novel/403405",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11700500,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "전지적 1인칭 시점",
+      "target_url": "https://novelpia.com/novel/49942",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11665124,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "화산귀환",
+      "target_url": "https://series.naver.com/novel/detail.series?productNo=4130558",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11682749,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "묵향",
+      "preserved_candidate_url": "https://series.naver.com/novel/detail.series?productNo=1820151",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11703658,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "novel.munpia.com›neSrl",
+      "preserved_candidate_url": "https://novel.munpia.com/528703",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11705231,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "탐식의 재림",
+      "preserved_candidate_url": "https://ridibooks.com/books/2008016338?srsltid=AfmBOor0D2eQqJHQhQ5MP_YVO9iFbWmBP6Mb_pxl60TSAUvek1EgsqiC",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11710036,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "preserved_candidate_url": "https://novelpia.com/novel/382324",
+      "status": "preserved_no_release"
+    }
+  ],
+  "approval_boundary": {
+    "overlay_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "candidate_set_holds_are_no_publish_contracts": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

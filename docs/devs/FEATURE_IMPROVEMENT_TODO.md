@@ -15,8 +15,18 @@
 - [x] Loop583에서 projection/static 검증 중에도 dashboard health를 다시 확인했다. `http://127.0.0.1:8080`, health `ok=true / standalone=true / pid=9320`.
 - [x] Loop584에서 dashboard status를 다시 확인했다. latest status는 Loop564 `30/30`, `parallel_count=16`, `batch_running=false`다.
 - [x] Loop586 시작 전에도 dashboard health/status를 확인했다. health `ok=true / standalone=true / pid=9320`, status Loop564 `30/30`, `parallel_count=16`, `batch_running=false`다.
+- [x] Loop587에서도 새 runtime은 없었지만 다음 test/runtime run 계약을 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 유지했다.
 - [ ] 다음 실제 test/runtime run 시작 시 `http://127.0.0.1:8080` dashboard health와 진행률을 함께 보고한다.
 - Gate: dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, runtime approval 아님, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-08 candidate-set rebuild hold 후속 UX/운영 TODO
+
+- [x] Loop587에서 P0 candidate-set rebuild `4`건을 projection-only no-release hold로 적용했다.
+- [x] 이미 blocked 상태였으므로 scrubbed public identity는 `0`, already blocked hold는 `4`다.
+- [x] Residual accounting은 P0 ordinary `14 -> 10`, residual46 ordinary `41 -> 37`로 줄었다.
+- [x] Full375 collateral은 raw regression `82`로 여전히 `NO-GO / runtime counts missing`임을 확인했다.
+- [ ] 남은 P0 ordinary `10`건은 source-native/blind, native/policy preflight, eBook/classic policy follow-up으로 분리 처리한다.
+- Gate: candidate-set hold `REVIEW-LOCKED / hold 4`, full375 collateral `NO-GO / raw 82`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-08 canonical title rewrite 후속 UX/운영 TODO
 

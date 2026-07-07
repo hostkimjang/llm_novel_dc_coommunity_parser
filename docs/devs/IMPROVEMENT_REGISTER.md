@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260708-587 - P0 candidate-set rebuild hold and residual accounting
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Candidate-set application | REVIEW-LOCKED | hold `4`, already blocked `4`, validation issue `0` | publish 후보로 세지 않음 |
+| Publication contract | GO | `375` rows, violation `0` | full_scan approval과 분리 |
+| Candidate-set release gate | REVIEW-LOCKED | no-release `4`, release candidate `0`, violation `0` | hold는 no-publish 계약 |
+| Combined release gate | REVIEW-LOCKED | release candidate `5`, no-release `5`, violation `0` | full375 GO 전 release 금지 |
+| Residual46 | REVIEW-LOCKED | contract processed `9`, ordinary residual `37`, official follow-up `1` | 다음 batch lane 처리 |
+| P0 residual19 | REVIEW-LOCKED | contract processed `9`, ordinary residual `10`, official follow-up `1` | source-native/native/policy batch 처리 |
+| Full375 collateral | NO-GO | raw regression `82`, runtime counts missing | collateral GO 전 approval 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: candidate-set hold `REVIEW-LOCKED / hold 4`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 82`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-586 - Canonical title rewrite and full375 collateral recheck
 
 | 항목 | 상태 | 근거 | 다음 |

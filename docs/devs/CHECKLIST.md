@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-08 Loop587 P0 candidate-set rebuild hold 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] P0 ordinary residual `14`건 중 candidate-set rebuild `4`건을 기존 candidate-set contract plan으로 projection-only 적용했다.
+- [x] Candidate-set application 결과 hold `4`, already blocked hold `4`, scrubbed public identity `0`, validation issue `0`을 확인했다.
+- [x] Publication contract `GO / 375 rows / 0 violations`를 확인했다.
+- [x] Candidate-set release gate `REVIEW-LOCKED / violation 0 / no-release 4 / release candidate 0`을 확인했다.
+- [x] Combined plan rows `10`, expected restore `5`, candidate-set hold `4`, official-support hold `1`, runtime allowed `0`을 확인했다.
+- [x] Combined release gate `REVIEW-LOCKED / violation 0 / release candidate 5 / no-release 5`를 확인했다.
+- [x] Full375 collateral compare는 shared `375`, changed `158`, raw regression `82`, `NO-GO / runtime counts missing`임을 확인했다.
+- [x] Always-on gate는 golden18 `GO`, collateral `NO-GO / raw 82 / runtime counts missing`, 전체 `NO-GO`임을 확인했다.
+- [x] P0 residual은 ordinary `10`, official follow-up `1`; residual46은 ordinary `37`, official follow-up `1`로 재회계했다.
+- [ ] 남은 P0 ordinary `10`건은 source-native/blind `7`, native/policy preflight `2`, eBook/classic follow-up `1`로 분리 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- [ ] Dashboard 진행률을 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: candidate-set hold `REVIEW-LOCKED / hold 4`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 82 / runtime counts missing`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop586 canonical title rewrite 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.

@@ -9,11 +9,14 @@ from typing import Any
 
 
 EXPECTED_RESTORE = "expected_title_restore_contract_case"
+CANDIDATE_SET_RESTORE = "candidate_set_expected_restore_contract_case"
 CANDIDATE_SCRUB = "candidate_scrub_no_publish_contract_case"
 VARIANT_HOLD = "canonical_variant_policy_hold_contract_case"
 STRONGER_HOLD = "stronger_evidence_hard_hold_contract_case"
 MISMATCH_REVIEW = "restore_target_runtime_mismatch_review_required"
 OFFICIAL_SUPPORT_MISSING_RESTORE_HOLD = "official_support_missing_restore_hold_contract_case"
+CANDIDATE_SET_REBUILD_HOLD = "candidate_set_rebuild_required_before_publish"
+NO_PUBLISH_INTENT_GUARD = "no_publish_intent_guard_contract_case"
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -63,10 +66,16 @@ def _classification_for(
 
     issues: list[str] = []
     action = _string(plan_row.get("contract_action"))
-    if action == EXPECTED_RESTORE:
+    if action in {EXPECTED_RESTORE, CANDIDATE_SET_RESTORE}:
         if not applied_row or _string(applied_row.get("status")) != "applied":
             issues.append("expected_restore_application_missing")
             return "contract_processing_validation_issue", "expected_restore_application_missing", issues
+        if action == CANDIDATE_SET_RESTORE:
+            return (
+                "contract_processed_candidate_set_expected_restore_projection_applied",
+                "release_candidate_not_approval_full375_recheck_required",
+                issues,
+            )
         return (
             "contract_processed_expected_restore_projection_applied",
             "release_candidate_not_approval_full375_recheck_required",
@@ -88,6 +97,30 @@ def _classification_for(
         return (
             "ordinary_residual_unprocessed",
             "official_support_missing_restore_followup_required",
+            issues,
+        )
+    if action == CANDIDATE_SET_REBUILD_HOLD:
+        if not applied_row or _string(applied_row.get("status")) not in {
+            "scrubbed_public_identity",
+            "preserved_no_release",
+        }:
+            issues.append("candidate_set_rebuild_hold_application_missing")
+            return "contract_processing_validation_issue", "candidate_set_rebuild_hold_application_missing", issues
+        return (
+            "contract_processed_candidate_set_rebuild_hold_no_publish",
+            "candidate_set_rebuild_hold_not_approval",
+            issues,
+        )
+    if action == NO_PUBLISH_INTENT_GUARD:
+        if not applied_row or _string(applied_row.get("status")) not in {
+            "scrubbed_public_identity",
+            "preserved_no_release",
+        }:
+            issues.append("no_publish_intent_guard_application_missing")
+            return "contract_processing_validation_issue", "no_publish_intent_guard_application_missing", issues
+        return (
+            "contract_processed_no_publish_intent_guard",
+            "no_publish_intent_guard_not_approval",
             issues,
         )
     if action == VARIANT_HOLD:
@@ -241,6 +274,8 @@ def build_accounting(
             "official_support_missing_restore_followup_rows": effect_counts.get(
                 "official_support_missing_restore_followup_required", 0
             ),
+            "candidate_set_rebuild_hold_rows": effect_counts.get("candidate_set_rebuild_hold_not_approval", 0),
+            "no_publish_intent_guard_rows": effect_counts.get("no_publish_intent_guard_not_approval", 0),
             "publish_allowed_rows": 0,
             "runtime_replay_allowed_rows": 0,
             "full375_collateral_gate": "NO-GO",
@@ -287,7 +322,7 @@ def _policy_ref_for(
     c3_review: dict[str, Any] | None = None,
 ) -> str | None:
     action_text = _string(action)
-    if action == EXPECTED_RESTORE:
+    if action_text in {EXPECTED_RESTORE, CANDIDATE_SET_RESTORE, CANDIDATE_SET_REBUILD_HOLD, NO_PUBLISH_INTENT_GUARD}:
         return _payload_ref(
             expected_restore_application,
             default_prefix="expected_restore_projection_contract_application",
@@ -326,6 +361,8 @@ def write_markdown(path: Path, accounting: dict[str, Any]) -> None:
         f"- release_candidate_not_approval_rows: `{summary['release_candidate_not_approval_rows']}`",
         f"- no_publish_or_hold_contract_rows: `{summary['no_publish_or_hold_contract_rows']}`",
         f"- official_support_missing_restore_followup_rows: `{summary['official_support_missing_restore_followup_rows']}`",
+        f"- candidate_set_rebuild_hold_rows: `{summary['candidate_set_rebuild_hold_rows']}`",
+        f"- no_publish_intent_guard_rows: `{summary['no_publish_intent_guard_rows']}`",
         f"- publish_allowed_rows: `{summary['publish_allowed_rows']}`",
         f"- runtime_replay_allowed_rows: `{summary['runtime_replay_allowed_rows']}`",
         f"- full375 collateral: `{summary['full375_collateral_gate']}`",

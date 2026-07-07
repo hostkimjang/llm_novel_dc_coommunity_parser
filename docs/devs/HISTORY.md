@@ -1,5 +1,22 @@
 # Development History
 
+## 2026-07-08 - Loop587 P0 candidate-set rebuild hold and residual accounting
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop586 이후 P0 ordinary residual `14`건 중 candidate-set rebuild `4`건을 기존 candidate-set contract plan으로 projection-only 적용했다.
+- Candidate-set application은 hold `4`, already blocked hold `4`, scrubbed public identity `0`, validation issue `0`이다.
+- Publication contract는 `GO / 375 rows / 0 violations`다.
+- Candidate-set release gate는 `REVIEW-LOCKED`, violation `0`, satisfied no-release `4`, release candidate `0`, runtime allowed `0`이다.
+- Combined plan은 rows `10`, expected restore `5`, candidate-set rebuild hold `4`, official-support hold `1`, runtime allowed `0`이다.
+- Combined release gate는 `REVIEW-LOCKED`, violation `0`, release candidate `5`, no-release `5`다.
+- Full375 collateral은 shared `375`, changed `158`, raw regression `82`로 여전히 `NO-GO / runtime counts missing`다.
+- Always-on gate는 golden18 `GO / 18 of 18`과 collateral `NO-GO / raw 82` 조합으로 전체 `NO-GO`다.
+- Residual P0 accounting은 contract processed `9`, ordinary residual `10`, official support follow-up `1`이다.
+- Residual46 accounting은 contract processed `9`, ordinary residual `37`, official support follow-up `1`이다.
+- `tools/reaccount_residual_after_contract_reviews.py`는 candidate-set rebuild/no-publish hold application을 처리된 no-release 계약으로 회계할 수 있게 보강했다.
+- Report는 `docs/devs/loop_reports/LOOP_587_REPORT_20260708.md`다.
+- Gate는 candidate-set hold `REVIEW-LOCKED / hold 4`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 82`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop586 canonical title rewrite and full375 collateral recheck
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
