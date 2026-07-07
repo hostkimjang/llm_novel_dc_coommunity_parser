@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-08 Loop601 full375 post_id overlap gate 교정 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop600 always-on `unreviewed regression 8`이 count-only 산식의 stale 회계였음을 확인했다.
+- [x] full375 raw regression post_id와 review summary post_id를 직접 교차하도록 gate 도구를 보강했다.
+- [x] Corrected always-on gate는 golden18 `GO`, full375 `NO-GO / raw 73 / adjusted 29 / unreviewed 13 / runtime counts missing`이다.
+- [x] Corrected residual action queue는 rows `29`, reviewed raw residual `16`, unreviewed raw residual `13`, validation issue `0`이다.
+- [x] Residual29 lane은 unreviewed safe-loss/native-contract `12`, native-web/image evidence `7`, human/native review `2`, shared gate contract repair `2`, 기타 단건 lane `6`으로 분리했다.
+- [x] `tests.test_always_on_regression_gates`와 corrected queue builder 테스트를 추가했다.
+- [ ] Residual29를 lane별 N건 배치로 계속 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: corrected always-on `NO-GO / adjusted 29 / unreviewed 13 / runtime missing`, residual29 queue `REVIEW-LOCKED`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_601_REPORT_20260708.md`, `docs/devs/loop601_always_on_golden18_full375_postid_overlap_gate.json`, `docs/devs/loop601_corrected_full375_residual29_action_queue.json`, `tools/build_full375_residual_gate_action_queue.py`.
+
 ## 2026-07-08 Loop600 unreviewed40 source-native 판정과 full375 gate 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.

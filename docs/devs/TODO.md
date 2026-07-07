@@ -1,5 +1,18 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop601 이후
+
+- 상태 업데이트: Loop600 always-on gate의 count-only `unreviewed regression 8`을 post_id overlap 기준으로 교정했고, corrected residual queue는 `29`건이다. Full375 collateral은 여전히 `NO-GO`다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Corrected always-on gate를 생성했다. golden18 `GO`, full375 `NO-GO / raw 73 / adjusted 29 / unreviewed 13 / runtime counts missing`.
+- [x] Corrected residual action queue를 생성했다. rows `29`, reviewed raw residual `16`, unreviewed raw residual `13`.
+- [x] post_id overlap 회계 테스트와 residual queue builder 테스트를 추가했다.
+- [ ] Residual29는 lane별 N건 배치로 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지 상태로 실행한다.
+- [ ] Dashboard 진행률은 approval 근거로 쓰지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: corrected always-on `NO-GO / adjusted 29 / unreviewed 13`, residual29 queue `REVIEW-LOCKED`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop593 이후
 
 - 상태 업데이트: residual46 ordinary `19`건 중 `11669907` canonical cleanup `1`건을 처리했고, 현재 ordinary residual은 `18`건이다. Full375 collateral은 여전히 `NO-GO`다. Goal은 완료가 아니다.

@@ -1,5 +1,13 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-08 Loop601 dashboard health와 corrected gate
+
+- 다음 regression-safe grounding test/runtime run은 반드시 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- 현재 standalone dashboard health는 `ok=true`, `standalone=true`, `pid=9320`이고 URL은 `http://127.0.0.1:8080`이다.
+- Loop601은 projection/static gate 교정이라 새 runtime 진행률은 없다. 새 test/runtime run이 시작되면 expert_main live forwarding 또는 manifest attach로 dashboard 진행률을 갱신한다.
+- Corrected full375 gate는 raw `73`, adjusted `29`, unreviewed raw `13`, runtime counts missing으로 `NO-GO`다.
+- Dashboard는 진행상황 관측 도구이며 `semantic_quality`, `full_scan_approval`, `full375 collateral GO`의 승인 근거가 아니다.
+
 ## 2026-07-08 Loop598 dashboard health와 테스트런 기본값
 
 - 다음 regression-safe grounding test/runtime run은 반드시 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.

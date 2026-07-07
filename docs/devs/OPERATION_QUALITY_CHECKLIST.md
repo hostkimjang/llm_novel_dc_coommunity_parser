@@ -1,5 +1,21 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop601 post_id overlap gate 교정 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_601_REPORT_20260708.md`.
+  - [x] Corrected always-on gate 기록 완료: `docs/devs/loop601_always_on_golden18_full375_postid_overlap_gate.json/.md`.
+  - [x] Corrected residual queue 기록 완료: `docs/devs/loop601_corrected_full375_residual29_action_queue.json/.md`.
+  - [x] Gate 도구와 corrected queue builder 테스트 기록 완료.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Count-only `unreviewed 8`은 최신 gate 근거로 쓰지 않는다.
+  - [x] Corrected gate는 post_id overlap 기준 `reviewed raw 60`, `reviewed non-regression 5`, `unreviewed raw 13`이다.
+  - [x] Review-adjusted regression은 `29`이고 full375 gate는 계속 `NO-GO`다.
+  - [x] Residual29 queue가 남아 full_scan approval은 열리지 않는다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+- Gate: corrected always-on `NO-GO`, residual29 queue `REVIEW-LOCKED`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop600 source-native 판정과 full375 gate 품질 게이트
 
 - 근거:

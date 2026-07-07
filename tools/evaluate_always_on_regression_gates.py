@@ -30,6 +30,46 @@ def _safe_int(value: Any) -> int | None:
         return None
 
 
+def _raw_regression_post_ids(collateral: dict[str, Any]) -> set[int] | None:
+    rows = collateral.get("rows")
+    if not isinstance(rows, list):
+        return None
+    post_ids: set[int] = set()
+    saw_regression_row = False
+    for row in rows:
+        if not isinstance(row, dict) or not row.get("is_regression"):
+            continue
+        saw_regression_row = True
+        post_id = row.get("post_id")
+        if isinstance(post_id, int):
+            post_ids.add(post_id)
+    return post_ids if saw_regression_row else None
+
+
+def _review_post_ids(collateral_review: dict[str, Any]) -> set[int] | None:
+    rows = collateral_review.get("rows")
+    if not isinstance(rows, list):
+        return None
+    post_ids = {row.get("post_id") for row in rows if isinstance(row, dict)}
+    return {post_id for post_id in post_ids if isinstance(post_id, int)}
+
+
+def _exclusion_post_ids(collateral_review: dict[str, Any]) -> set[int] | None:
+    rows = collateral_review.get("rows")
+    if not isinstance(rows, list):
+        return None
+    post_ids: set[int] = set()
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        if "exclude_from_regression_count_after_gate_wiring" not in (row.get("action") or []):
+            continue
+        post_id = row.get("post_id")
+        if isinstance(post_id, int):
+            post_ids.add(post_id)
+    return post_ids
+
+
 def golden_gate(golden: dict[str, Any], expected_rows: int) -> dict[str, Any]:
     row_count = _safe_int(golden.get("row_count"))
     passed_count = _safe_int(golden.get("passed_count"))
@@ -75,6 +115,7 @@ def _collateral_review_adjustment(
     *,
     collateral_review: dict[str, Any] | None,
     raw_regression_count: int | None,
+    raw_regression_post_ids: set[int] | None = None,
 ) -> dict[str, Any]:
     if not collateral_review:
         return {
@@ -107,6 +148,17 @@ def _collateral_review_adjustment(
         )
     if exclusion_candidate_rows is None:
         exclusion_candidate_rows = 0
+    reviewed_raw_regression_rows: int | None = None
+    reviewed_non_regression_rows: int | None = None
+    unreviewed_regression_post_ids: list[int] | None = None
+    review_post_ids = _review_post_ids(collateral_review)
+    exclusion_post_ids = _exclusion_post_ids(collateral_review)
+    if raw_regression_post_ids is not None and review_post_ids is not None:
+        reviewed_raw_regression_rows = len(raw_regression_post_ids & review_post_ids)
+        reviewed_non_regression_rows = len(review_post_ids - raw_regression_post_ids)
+        unreviewed_regression_post_ids = sorted(raw_regression_post_ids - review_post_ids)
+        if exclusion_post_ids is not None:
+            exclusion_candidate_rows = len(exclusion_post_ids & raw_regression_post_ids)
 
     blockers: list[str] = []
     if review_gate != "REVIEW-LOCKED":
@@ -142,11 +194,12 @@ def _collateral_review_adjustment(
         if applied and raw_regression_count is not None
         else raw_regression_count
     )
-    unreviewed_regression_rows = (
-        max(raw_regression_count - batch_review_rows, 0)
-        if raw_regression_count is not None and batch_review_rows is not None
-        else None
-    )
+    if raw_regression_count is not None and reviewed_raw_regression_rows is not None:
+        unreviewed_regression_rows = max(raw_regression_count - reviewed_raw_regression_rows, 0)
+    elif raw_regression_count is not None and batch_review_rows is not None:
+        unreviewed_regression_rows = max(raw_regression_count - batch_review_rows, 0)
+    else:
+        unreviewed_regression_rows = None
     return {
         "provided": True,
         "applied": applied,
@@ -166,6 +219,9 @@ def _collateral_review_adjustment(
         "unreviewed_batch_rows": unreviewed_batch_rows,
         "unreviewed_or_info_missing_batch_rows": unreviewed_or_info_missing_batch_rows,
         "unreviewed_regression_rows": unreviewed_regression_rows,
+        "reviewed_raw_regression_rows": reviewed_raw_regression_rows,
+        "reviewed_non_regression_rows": reviewed_non_regression_rows,
+        "unreviewed_regression_post_ids": unreviewed_regression_post_ids,
         "validation_issue_count": validation_issue_count,
         "exclusion_candidate_rows": exclusion_candidate_rows,
         "label_counts": summary.get("label_counts") or {},
@@ -194,6 +250,7 @@ def collateral_gate(
     review_adjustment = _collateral_review_adjustment(
         collateral_review=collateral_review,
         raw_regression_count=regression_count,
+        raw_regression_post_ids=_raw_regression_post_ids(collateral),
     )
     adjusted_regression_count = review_adjustment.get("review_adjusted_regression_count")
     passed = (
@@ -327,6 +384,14 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         (
             "- unreviewed regression rows: "
             f"`{report['collateral']['review_adjustment'].get('unreviewed_regression_rows')}`"
+        ),
+        (
+            "- reviewed raw regression rows: "
+            f"`{display(report['collateral']['review_adjustment'].get('reviewed_raw_regression_rows'))}`"
+        ),
+        (
+            "- reviewed non-regression rows: "
+            f"`{display(report['collateral']['review_adjustment'].get('reviewed_non_regression_rows'))}`"
         ),
         (
             "- review_adjusted_regression_count: "

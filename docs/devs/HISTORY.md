@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-08 - Loop601 full375 post_id overlap gate correction
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop600 always-on gate의 `unreviewed regression 8`이 count-only 산식이라 post_id overlap을 반영하지 못한 점을 확인했다.
+- `tools/evaluate_always_on_regression_gates.py`가 full375 raw regression post_id와 review summary post_id를 직접 교차하도록 보강했다.
+- Corrected always-on gate는 golden18 `GO`, full375 `NO-GO / raw 73 / adjusted 29 / unreviewed 13 / runtime counts missing`이다.
+- Corrected residual action queue는 rows `29`, reviewed raw residual `16`, unreviewed raw residual `13`이다.
+- `tools/build_full375_residual_gate_action_queue.py`와 테스트를 추가했다.
+- Report는 `docs/devs/loop_reports/LOOP_601_REPORT_20260708.md`다.
+- Gate는 corrected always-on `NO-GO`, residual29 queue `REVIEW-LOCKED`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop600 unreviewed40 source-native verdict and full375 gate refresh
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

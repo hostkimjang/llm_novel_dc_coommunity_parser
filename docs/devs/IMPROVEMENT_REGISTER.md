@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260708-601 - full375 post_id overlap gate correction
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Gate correction | PASS_UNIT | raw regression post_id와 review rows post_id 교차 계산 추가 | count-only unreviewed 산식 재발 방지 |
+| Corrected always-on | NO-GO | raw `73`, reviewed raw `60`, non-regression reviewed `5`, adjusted `29`, unreviewed `13`, runtime missing | full375 GO 전 approval 금지 |
+| Corrected residual queue | REVIEW-LOCKED | rows `29`, reviewed raw residual `16`, unreviewed raw residual `13` | lane별 N건 배치 처리 |
+| Test run dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | standalone dashboard health 유지 | 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: corrected always-on `NO-GO / adjusted 29 / unreviewed 13 / runtime missing`, residual29 queue `REVIEW-LOCKED`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-600 - unreviewed40 source-native verdict and full375 gate
 
 | 항목 | 상태 | 근거 | 다음 |

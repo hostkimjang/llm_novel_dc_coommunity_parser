@@ -1,5 +1,25 @@
 # Verification Results
 
+## 2026-07-08 Loop601 full375 post_id overlap gate 교정
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_601_REPORT_20260708.md`
+  - `docs/devs/loop601_always_on_golden18_full375_postid_overlap_gate.json/.md`
+  - `docs/devs/loop601_corrected_full375_residual29_action_queue.json/.md`
+  - `tools/evaluate_always_on_regression_gates.py`
+  - `tools/build_full375_residual_gate_action_queue.py`
+  - `tests/test_always_on_regression_gates.py`
+  - `tests/test_build_full375_residual_gate_action_queue.py`
+- 검증:
+  - Post_id overlap gate: PASS, reviewed raw `60`, reviewed non-regression `5`, unreviewed raw `13`.
+  - Corrected always-on: PASS 산출, golden18 `GO`, collateral `NO-GO / raw 73 / adjusted 29 / unreviewed 13 / runtime counts missing`, overall `NO-GO`.
+  - Residual queue builder: PASS 산출, rows `29`, reviewed raw residual `16`, unreviewed raw residual `13`, validation issue `0`.
+  - Unit tests: PASS, corrected overlap tests 포함.
+- 결과:
+  - Loop600의 count-only `unreviewed 8`은 최신 승인/완료 근거로 쓰지 않는다.
+  - Corrected residual29 queue가 남아 goal은 `ACTIVE / NOT_COMPLETE`다.
+- Gate: corrected always-on `NO-GO / adjusted 29 / unreviewed 13 / runtime missing`, residual29 queue `REVIEW-LOCKED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop600 unreviewed40 source-native 판정과 always-on gate
 
 - 산출물:
