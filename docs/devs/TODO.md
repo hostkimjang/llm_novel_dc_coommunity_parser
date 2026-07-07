@@ -1,5 +1,21 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop529 TODO
+
+- 상태 업데이트: B1 canonical verdict application 경로와 template을 추가했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay를 발주하지 않았다.
+- [x] `tools/apply_canonical_candidate_recheck_verdicts.py`를 추가했다.
+- [x] `tests/test_apply_canonical_candidate_recheck_verdicts.py`를 추가했다.
+- [x] Verdict application state와 report를 생성했다.
+- [x] Verdict template `docs/devs/loop529_b1_canonical_candidate_verdict_template.json/.md`를 생성했다.
+- [x] 현재 verdict rows는 `0`, unreviewed rows는 `22`, runtime replay allowed rows는 `0`이다.
+- [ ] Template 기준으로 source-native/blind canonical verdict를 작성한다.
+- [ ] Valid verdict를 적용한 뒤 `post_verdict_next_state`별 contract test를 먼저 작성한다.
+- [ ] Contract test 전에는 B1 runtime replay를 열지 않는다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: verdict application schema `GO_UNIT`, canonical verdict `NOT_RUN / 0 of 22`, runtime replay `BLOCKED_UNTIL_CANONICAL_VERDICT_AND_CONTRACT_TESTS`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop528 TODO
 
 - 상태 업데이트: B1 `22`건을 canonical candidate recheck batch로 묶었다. Goal은 완료가 아니다.

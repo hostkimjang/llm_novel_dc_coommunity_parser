@@ -1,5 +1,26 @@
 # Verification Results
 
+## 2026-07-07 Loop529 B1 canonical verdict application
+
+- 코드:
+  - `tools/apply_canonical_candidate_recheck_verdicts.py`를 추가했다.
+  - Loop528 B1 canonical recheck batch의 verdict row를 검증하고, verdict별 `after_verdict_contract`를 `post_verdict_next_state`와 `runtime_release_condition`으로 전환한다.
+  - verdict가 유효해도 contract test 전에는 `runtime_replay_allowed_rows=0`을 유지한다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_529_REPORT_20260707.md`
+  - `docs/devs/loop529_b1_canonical_verdict_application_state_20260707.json`
+  - `docs/devs/loop529_b1_canonical_candidate_verdict_template.json`
+  - `docs/devs/loop529_b1_canonical_candidate_verdict_template.md`
+- 검증:
+  - `python -m py_compile tools\apply_canonical_candidate_recheck_verdicts.py tests\test_apply_canonical_candidate_recheck_verdicts.py`: PASS.
+  - `python -m unittest tests.test_apply_canonical_candidate_recheck_verdicts -v`: PASS, `4` tests.
+  - Loop528 batch application/template generation with `--fail-on-validation-issue`: PASS.
+- 결과:
+  - batch rows `22`, verdict rows `0`, reviewed rows `0`, unreviewed rows `22`, validation issue `0`.
+  - runtime replay allowed `0`, full375 collateral `NO-GO`.
+  - 현재 결과는 readiness/application schema 검증이며 canonical verdict 자체가 아니다.
+- Gate: verdict application schema `GO_UNIT`, canonical verdict `NOT_RUN / 0 of 22`, runtime replay `BLOCKED_UNTIL_CANONICAL_VERDICT_AND_CONTRACT_TESTS`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop528 B1 canonical candidate recheck batch
 
 - 코드:

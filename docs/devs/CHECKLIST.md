@@ -1,5 +1,21 @@
 # Development Checklist
 
+## 2026-07-07 Loop529 B1 canonical verdict application 체크
+
+- [x] 새 runtime replay를 실행하지 않았다.
+- [x] Loop528 B1 `22`건을 verdict 적용/검증 도구의 입력으로 연결했다.
+- [x] `tools/apply_canonical_candidate_recheck_verdicts.py`를 추가했다.
+- [x] `tests/test_apply_canonical_candidate_recheck_verdicts.py` 계약 테스트를 추가했다.
+- [x] Verdict template `docs/devs/loop529_b1_canonical_candidate_verdict_template.json/.md`를 생성했다.
+- [x] 현재 적용 verdict rows는 `0`, reviewed rows는 `0`, unreviewed rows는 `22`다.
+- [x] Validation issue는 `0`이다.
+- [x] `runtime_replay_allowed_rows`는 `0`이다.
+- [x] py_compile PASS, focused unittest `4` tests PASS, application generation PASS다.
+- [ ] Source-native/blind canonical verdict를 작성하기 전에는 B1 runtime replay를 열지 않는다.
+- [ ] 유효 verdict 뒤에도 contract test 전에는 runtime replay 후보로 되돌리지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: verdict application schema `GO_UNIT`, canonical verdict `NOT_RUN / 0 of 22`, runtime replay `BLOCKED_UNTIL_CANONICAL_VERDICT_AND_CONTRACT_TESTS`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop528 B1 canonical candidate recheck batch 체크
 
 - [x] 새 runtime replay를 실행하지 않았다.

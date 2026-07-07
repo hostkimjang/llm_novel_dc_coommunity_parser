@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260707-529 - B1 canonical verdict application gate
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Verdict application tool | GO_UNIT | `tools/apply_canonical_candidate_recheck_verdicts.py` 추가 | 실제 source-native/blind verdict JSON 적용 |
+| Contract tests | GO_UNIT | `tests.test_apply_canonical_candidate_recheck_verdicts` `4` tests PASS | invalid verdict/variant title 누락 방지 유지 |
+| Verdict template | GO_TEMPLATE | `loop529_b1_canonical_candidate_verdict_template.json/.md` 생성 | B1 `22`건 판정 작성 |
+| Current verdict coverage | OPEN_REVIEW | verdict rows `0`, unreviewed rows `22` | expected/current/related/wrong/insufficient 분리 |
+| Runtime release boundary | GO_BLOCKED | `runtime_replay_allowed_rows=0` | verdict+contract test 전 replay 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: verdict application schema `GO_UNIT`, canonical verdict `NOT_RUN / 0 of 22`, runtime replay `BLOCKED_UNTIL_CANONICAL_VERDICT_AND_CONTRACT_TESTS`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-528 - B1 canonical candidate recheck batch
 
 | 항목 | 상태 | 근거 | 다음 |

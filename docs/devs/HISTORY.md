@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-07 - Loop529 B1 canonical verdict application
+
+- 새 runtime replay는 실행하지 않았다.
+- Loop528 B1 canonical recheck batch `22`건을 verdict 적용/검증 경로로 받는 `tools/apply_canonical_candidate_recheck_verdicts.py`를 추가했다.
+- `tests/test_apply_canonical_candidate_recheck_verdicts.py`를 추가해 expected/current/related/invalid/empty verdict 경계를 고정했다.
+- 현재 적용된 source-native/blind verdict는 없으므로 verdict rows `0`, reviewed rows `0`, unreviewed rows `22`, runtime replay allowed `0`이다.
+- Verdict 작성 template은 `docs/devs/loop529_b1_canonical_candidate_verdict_template.json/.md`다.
+- Report는 `docs/devs/loop_reports/LOOP_529_REPORT_20260707.md`, state는 `docs/devs/loop529_b1_canonical_verdict_application_state_20260707.json`이다.
+- Gate는 verdict application schema `GO_UNIT`, canonical verdict `NOT_RUN / 0 of 22`, runtime replay `BLOCKED_UNTIL_CANONICAL_VERDICT_AND_CONTRACT_TESTS`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop528 B1 canonical candidate recheck batch
 
 - 새 runtime replay는 실행하지 않았다.

@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop529 B1 canonical verdict application 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_529_REPORT_20260707.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop529_b1_canonical_verdict_application_state_20260707.json`.
+  - [x] Verdict template 기록 완료: `docs/devs/loop529_b1_canonical_candidate_verdict_template.json/.md`.
+  - [x] Tool 추가 완료: `tools/apply_canonical_candidate_recheck_verdicts.py`.
+  - [x] Test 추가 완료: `tests/test_apply_canonical_candidate_recheck_verdicts.py`.
+- 품질 경계:
+  - [x] 새 runtime replay는 실행하지 않았다.
+  - [x] 적용된 verdict는 아직 `0/22`다.
+  - [x] 미판정 row `22`건을 template에 보존했다.
+  - [x] `runtime_replay_allowed_rows`는 `0`이다.
+  - [x] Validation issue는 `0`이다.
+  - [ ] Verdict template이나 empty application을 canonical verdict, semantic approval, full_scan approval 근거로 쓰지 않는다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- Gate: verdict application schema `GO_UNIT`, canonical verdict `NOT_RUN / 0 of 22`, runtime replay `BLOCKED_UNTIL_CANONICAL_VERDICT_AND_CONTRACT_TESTS`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop528 B1 canonical candidate recheck batch 품질 게이트
 
 - 근거:
