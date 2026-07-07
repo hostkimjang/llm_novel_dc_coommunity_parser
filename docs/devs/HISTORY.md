@@ -1,5 +1,20 @@
 # Development History
 
+## 2026-07-08 - Loop591-592 residual46 batch convergence and dashboard contract refresh
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop590 residual46 ordinary `27`건 중 candidate-set rebuild batch `4`건과 multi-work/listing preservation batch `4`건을 no-release 계약으로 처리했다.
+- Loop591 candidate-set application은 applied hold `4`, scrubbed public identity `2`, already blocked hold `2`, validation issue `0`이다.
+- Loop592 multi-work/listing application은 applied hold `4`, scrubbed public identity `2`, already blocked hold `2`, validation issue `0`이다.
+- Loop592 publication contract는 `GO / 375 rows / 0 violations`다.
+- Loop592 combined release gate는 rows `23`, violation `0`, release candidate `8`, no-release `15`, runtime allowed `0`이다.
+- Residual46 accounting은 processed_or_excluded `27`, ordinary residual `19`다.
+- Full375 collateral은 `NO-GO / changed 154 / raw regression 77 / adjusted 73 / runtime counts missing`이다.
+- Always-on gate는 golden18 `GO`지만 collateral `NO-GO`로 전체 `NO-GO`다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했고, 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+- Report는 `docs/devs/loop_reports/LOOP_591_592_REPORT_20260708.md`다.
+- Gate는 residual46 `REVIEW-LOCKED / ordinary 19`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 77 / adjusted 73`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop590 P0 policy hold convergence and residual accounting
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

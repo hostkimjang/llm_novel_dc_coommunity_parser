@@ -1,0 +1,28 @@
+{
+  "report_type": "publication_contract_convergence_audit",
+  "generated_at": "2026-07-08T06:26:50",
+  "gate": "GO",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "policy": {
+    "promotion_decision_trace_ledger_serialized_identity_must_converge": true,
+    "blocked_decision_must_not_publish_serialized_public_identity": true,
+    "allowed_decision_must_match_serialized_public_identity": true,
+    "scrubbed_candidate_must_be_preserved_or_marked_no_candidate": true,
+    "promotion_decision_scope_must_match_trace_and_reason_codes": true,
+    "blocked_decision_must_not_carry_publish_only_reason_codes": true,
+    "url_title_mismatch_block_must_preserve_candidate_url_without_publication": true,
+    "official_url_withheld_reason_must_not_publish_url": true,
+    "verified_image_ocr_work_title_current_work_candidate_must_not_remain_precision_blocked": true,
+    "mixed_current_and_noncurrent_scope_reason_codes_must_be_normalized": true
+  },
+  "summary": {
+    "row_count": 375,
+    "violation_row_count": 0,
+    "violation_counts": {}
+  },
+  "violations": [],
+  "result_paths": [
+    "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop592_residual46_multi_work_candidate_preservation_projection_result.json"
+  ]
+}

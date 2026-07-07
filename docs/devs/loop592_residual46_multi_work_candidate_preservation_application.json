@@ -1,0 +1,66 @@
+{
+  "report_type": "candidate_set_projection_contract_application",
+  "projection_id": "loop592_residual46_multi_work_candidate_preservation_projection",
+  "generated_at": "2026-07-08T06:26:39",
+  "source_contract_plan": "loop592_residual46_multi_work_candidate_preservation_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 375,
+    "contract_plan_rows": 4,
+    "candidate_set_contract_rows": 4,
+    "applied_restore_rows": 0,
+    "applied_hold_rows": 4,
+    "applied_candidate_set_rebuild_hold_rows": 4,
+    "applied_no_publish_intent_guard_rows": 0,
+    "scrubbed_public_identity_rows": 2,
+    "already_blocked_hold_rows": 2,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {},
+    "runtime_replay_allowed_rows": 0,
+    "requested_parallel_for_future_runtime": 16,
+    "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+    "dashboard_url": "http://127.0.0.1:8080",
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11668324,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "니들 생각 다 들린다",
+      "preserved_candidate_url": "https://novelpia.com/novel/384318",
+      "status": "scrubbed_public_identity"
+    },
+    {
+      "post_id": 11718105,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "몰락민족의 천재 기사",
+      "preserved_candidate_url": "https://novel.munpia.com/510190",
+      "status": "scrubbed_public_identity"
+    },
+    {
+      "post_id": 11661863,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "용의 신부로 바쳐지고 말았다",
+      "preserved_candidate_url": "https://novelpia.com/novel/403463",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11708453,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "이세계 검은 머리 외국인",
+      "preserved_candidate_url": "https://novelpia.com/novel/1082",
+      "status": "preserved_no_release"
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true,
+    "test_runs_require_parallel_16_and_web_dashboard": true
+  }
+}

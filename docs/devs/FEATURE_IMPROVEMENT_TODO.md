@@ -4,6 +4,9 @@
 
 ## 2026-07-08 테스트런 dashboard 진행률 UX
 
+- [x] Loop592에서 현재 dashboard health/status를 다시 확인했다. `http://127.0.0.1:8080`, health `ok=true / standalone=true / pid=9320`, status Loop564 `30/30`, `parallel_count=16`, `batch_running=false`.
+- [x] `tools/run_independent_plan.py` 경로는 breakglass `ALLOW_TEST_RUN_NO_DASHBOARD=1` 없이는 runner CLI `--no-dashboard`도 무시하고 dashboard를 기본 ON으로 유지한다.
+- [x] 다음 실제 test/runtime run 계약을 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 재확인했다.
 - [x] 현재 테스트런 기본값을 `--parallel 16`, web dashboard ON, `--no-dashboard` 금지로 재확인했다.
 - [x] `tools/test_run_dashboard_policy.py`는 `TEST_RUNS_USE_PARALLEL_16_AND_WEB_DASHBOARD` 계약을 제공한다.
 - [x] `tools/run_independent_plan.py` 경로는 dashboard 기본 ON과 `--no-dashboard` 제거를 사용한다.

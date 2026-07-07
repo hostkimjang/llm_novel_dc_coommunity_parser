@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-08 Loop591-592 residual46 batch와 dashboard 계약 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop591 candidate-set rebuild batch `4`건을 no-release hold로 처리했다.
+- [x] Loop592 multi-work/listing preservation batch `4`건을 no-release hold로 처리했다.
+- [x] Loop592 publication contract `GO / 375 rows / violation 0`을 확인했다.
+- [x] Loop592 combined release gate rows `23`, violation `0`, release candidate `8`, no-release `15`, runtime allowed `0`을 확인했다.
+- [x] Residual46은 processed_or_excluded `27`, ordinary residual `19`로 재회계했다.
+- [x] Full375 collateral은 `NO-GO / changed 154 / raw 77 / adjusted 73 / runtime counts missing`임을 확인했다.
+- [x] Always-on gate는 golden18 `GO`, collateral `NO-GO`, overall `NO-GO`임을 확인했다.
+- [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`으로 확인했다.
+- [x] Dashboard status는 마지막 Loop564 runtime replay `30/30`, `parallel_count=16`, `batch_running=false`로 확인했다.
+- [x] `tools/run_independent_plan.py`는 breakglass `ALLOW_TEST_RUN_NO_DASHBOARD=1` 없이는 dashboard를 끄지 않는 경로임을 확인했다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- [ ] Dashboard 진행률을 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] Remaining residual46 ordinary `19`건은 native-web/image review 중심 batch로 처리한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: residual46 `REVIEW-LOCKED / ordinary 19`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 77 / adjusted 73`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop590 P0 policy hold 수렴 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.

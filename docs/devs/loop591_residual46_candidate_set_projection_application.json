@@ -1,0 +1,66 @@
+{
+  "report_type": "candidate_set_projection_contract_application",
+  "projection_id": "loop591_residual46_candidate_set_projection",
+  "generated_at": "2026-07-08T06:23:12",
+  "source_contract_plan": "loop591_residual46_candidate_set_contract_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 375,
+    "contract_plan_rows": 4,
+    "candidate_set_contract_rows": 4,
+    "applied_restore_rows": 0,
+    "applied_hold_rows": 4,
+    "applied_candidate_set_rebuild_hold_rows": 4,
+    "applied_no_publish_intent_guard_rows": 0,
+    "scrubbed_public_identity_rows": 2,
+    "already_blocked_hold_rows": 2,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {},
+    "runtime_replay_allowed_rows": 0,
+    "requested_parallel_for_future_runtime": 16,
+    "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+    "dashboard_url": "http://127.0.0.1:8080",
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11671512,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "킹덤, 전국의 패왕 [킹덤 패러디 ]",
+      "preserved_candidate_url": null,
+      "status": "scrubbed_public_identity"
+    },
+    {
+      "post_id": 11694041,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "격투기 천재",
+      "preserved_candidate_url": null,
+      "status": "scrubbed_public_identity"
+    },
+    {
+      "post_id": 11694035,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "아카데미 생존 갤러리",
+      "preserved_candidate_url": null,
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11698865,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "리제로x자살헌터] 헌터 나츠키",
+      "preserved_candidate_url": "https://novelpia.com/novel/134771",
+      "status": "preserved_no_release"
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true,
+    "test_runs_require_parallel_16_and_web_dashboard": true
+  }
+}

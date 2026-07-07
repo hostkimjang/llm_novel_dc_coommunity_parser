@@ -1,5 +1,41 @@
 # Verification Results
 
+## 2026-07-08 Loop591-592 residual46 batch와 dashboard 계약 재확인
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_591_592_REPORT_20260708.md`
+  - `docs/devs/loop591_residual46_candidate_set_rebuild_batch.json/.md`
+  - `docs/devs/loop591_residual46_candidate_set_contract_plan.json/.md`
+  - `docs/devs/loop591_residual46_candidate_set_projection_application.json/.md`
+  - `docs/devs/loop591_residual46_candidate_set_publication_contract_audit.json/.md`
+  - `docs/devs/loop591_residual46_candidate_set_release_gate_audit.json/.md`
+  - `docs/devs/loop591_residual46_combined_contract_plan.json/.md`
+  - `docs/devs/loop591_residual46_combined_projection_application.json/.md`
+  - `docs/devs/loop591_residual46_combined_release_gate_audit.json/.md`
+  - `docs/devs/loop592_residual46_multi_work_candidate_preservation_plan.json/.md`
+  - `docs/devs/loop592_residual46_multi_work_candidate_preservation_application.json/.md`
+  - `docs/devs/loop592_residual46_multi_work_publication_contract_audit.json/.md`
+  - `docs/devs/loop592_residual46_multi_work_release_gate_audit.json/.md`
+  - `docs/devs/loop592_residual46_combined_contract_plan.json/.md`
+  - `docs/devs/loop592_residual46_combined_projection_application.json/.md`
+  - `docs/devs/loop592_residual46_combined_release_gate_audit.json/.md`
+  - `docs/devs/loop592_residual46_multi_work_accounting.json/.md`
+- 검증:
+  - Loop591 candidate-set plan/application: PASS, rows `4`, applied hold `4`, validation issue `0`, runtime allowed `0`.
+  - Loop591 publication/release audit: PASS, publication `GO`, release `REVIEW-LOCKED`, violation `0`, no-release `4`.
+  - Loop592 multi-work/listing plan/application: PASS, rows `4`, applied hold `4`, validation issue `0`, runtime allowed `0`.
+  - Loop592 publication/release audit: PASS, publication `GO`, release `REVIEW-LOCKED`, violation `0`, no-release `4`.
+  - Loop592 combined release audit: PASS, rows `23`, violation `0`, release candidate `8`, no-release `15`.
+  - Residual accounting: PASS, processed_or_excluded `27`, ordinary residual `19`, validation issue `0`.
+  - Full375 collateral compare: PASS 산출, gate `NO-GO`, shared `375`, changed `154`, raw regression `77`, runtime counts missing.
+  - Always-on gate: PASS 산출, golden18 `GO`, collateral `NO-GO / raw 77 / adjusted 73`, overall `NO-GO`.
+  - Dashboard health: PASS, `http://127.0.0.1:8080/api/health` 기준 `ok=true`, `standalone=true`, `pid=9320`.
+  - Dashboard status: PASS, 마지막 Loop564 runtime replay `30/30`, `parallel_count=16`, `batch_running=false`.
+- 결과:
+  - Residual46 ordinary는 `19`건으로 줄었지만 full375 collateral이 `GO`가 아니므로 approval이 아니다.
+  - 다음 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- Gate: residual46 `REVIEW-LOCKED / 19`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 77 / adjusted 73`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop590 P0 policy hold 수렴과 residual 회계 갱신
 
 - 산출물:

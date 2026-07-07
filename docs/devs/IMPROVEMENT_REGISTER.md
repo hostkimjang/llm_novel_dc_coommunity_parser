@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260708-591-592 - residual46 batch convergence and test-run dashboard visibility
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Candidate-set batch | REVIEW-LOCKED | Loop591 `4`건 no-release hold, validation issue `0` | 후보셋 재구성 전 publish 금지 |
+| Multi-work/listing batch | REVIEW-LOCKED | Loop592 `4`건 no-release hold, scope reason 보강 후 publication `GO` | 단일 public identity 축소 금지 |
+| Release gate | REVIEW-LOCKED | combined rows `23`, release candidate `8`, no-release `15`, violation `0` | full375 GO 전 release 금지 |
+| Residual46 | REVIEW-LOCKED | processed_or_excluded `27`, ordinary residual `19` | native-web/image 중심 batch 처리 |
+| Full375 collateral | NO-GO | raw `77`, adjusted `73`, runtime counts missing | collateral GO 전 approval 금지 |
+| Test run dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | `http://127.0.0.1:8080`, health `ok=true`, runner dashboard forced ON | 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: residual46 `REVIEW-LOCKED / ordinary 19`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 77 / adjusted 73`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-590 - P0 policy hold convergence and residual accounting
 
 | 항목 | 상태 | 근거 | 다음 |

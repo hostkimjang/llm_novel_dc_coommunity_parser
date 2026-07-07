@@ -1,5 +1,23 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop592 이후
+
+- 상태 업데이트: residual46 ordinary `27`건 중 Loop591/592 batch로 `8`건을 no-release 계약 처리했고, 현재 ordinary residual은 `19`건이다. Full375 collateral은 여전히 `NO-GO`다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop591 candidate-set rebuild batch `4`건을 처리했다.
+- [x] Loop592 multi-work/listing preservation batch `4`건을 처리했다.
+- [x] Publication contract `GO / 375 rows / 0 violations`를 확인했다.
+- [x] Combined release gate `REVIEW-LOCKED / release candidate 8 / no-release 15 / violation 0`을 확인했다.
+- [x] Full375 collateral compare를 실행했다. shared `375`, changed `154`, raw regression `77`, gate `NO-GO`.
+- [x] Always-on gate를 재산출했다. golden18 `GO`, collateral `NO-GO / raw 77 / adjusted 73 / runtime counts missing`, 전체 `NO-GO`.
+- [x] Residual46 accounting을 생성했다. processed_or_excluded `27`, ordinary residual `19`.
+- [x] Dashboard health/status를 확인했다. `http://127.0.0.1:8080`, health `ok=true / standalone=true / pid=9320`, status Loop564 `30/30`, `parallel_count=16`, `batch_running=false`.
+- [ ] 남은 ordinary `19`건은 native-web/image review 중심으로 batch 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지 상태로 실행한다.
+- [ ] Dashboard 진행률은 approval 근거로 쓰지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: residual46 `REVIEW-LOCKED / 19`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 77`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop588 이후
 
 - 상태 업데이트: native/policy preflight `2`건 중 `11700483`만 shared restore dispatch로 처리됐고 `11698859`는 exact 공식 title 부재로 hold 유지했다. Full375 collateral은 여전히 `NO-GO`다. Goal은 완료가 아니다.
