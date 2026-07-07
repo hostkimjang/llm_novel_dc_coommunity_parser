@@ -1,5 +1,22 @@
 # Improvement Register
 
+## IMP-20260708-567-568 - Full375 collateral recheck and residual79 batch
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | P0 repair 뒤 필요한 test run만 dashboard attached로 실행 |
+| Contract projection | REVIEW-LOCKED | B1 applied `6`, scrub `6`, hard-hold `3`, title mismatch applied `2`, validation issue `0` | contract 결과를 approval로 승격 금지 |
+| Publication contract | GO_PROJECTION_CONTRACT | `375` rows, violation `0` | full_scan approval로 오해 금지 |
+| Golden18 | GO | `18/18`, failed `0` | full375 collateral로 과적합 여부 계속 확인 |
+| Full375 collateral | NO-GO | raw regression `118`, review-adjusted residual `79` | residual79 batch 처리 후 재평가 |
+| Prior-compatible verdicts | REVIEW-LOCKED | reviewed `118/118`, decision `113`, info_missing `5` | `HOLD`/`INFO_MISSING`은 source-native/native evidence 유지 |
+| Residual queue | REVIEW-LOCKED | rows `79`, `REPROCESS 53 / HOLD 21 / INFO_MISSING 5` | 단건 소모 대신 batch 처리 |
+| P0 repair batch | REVIEW-LOCKED | rows `47`, `runtime_repair_without_search_replay 47` | 코드/계약 수리 후 test run |
+| Test run dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | `--parallel 16`, dashboard URL `http://127.0.0.1:8080`, `--no-dashboard` 금지 | 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: publication contract `GO`, golden `GO`, full375 collateral `NO-GO / adjusted residual 79`, residual queue `REVIEW-LOCKED / 79`, P0 repair batch `REVIEW-LOCKED / 47`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-566 - B1/title-mismatch verdict contract projection
 
 | 항목 | 상태 | 근거 | 다음 |

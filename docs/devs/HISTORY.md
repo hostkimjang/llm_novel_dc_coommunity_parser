@@ -1,5 +1,21 @@
 # Development History
 
+## 2026-07-08 - Loop567-568 full375 collateral recheck after Loop566
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop566 B1/title-mismatch contract를 Loop557 full375 projection에 projection-only로 적용했다.
+- B1 application은 applied publish/restore `6`, skipped scrub `6`, hard-hold `3`, validation issue `0`이다.
+- Title mismatch application은 applied `2`, expected audit update `1`, canonical cleanup `1`, validation issue `0`이다.
+- Release audit은 B1 violation/pending `0/0`, release candidate `6`, no-release `9`, title mismatch violation/pending `0/0`, release candidate `2`다.
+- Publication contract convergence는 `GO / 375 rows / 0 violations`다.
+- Golden18은 `GO / 18 of 18`이지만 full375 collateral은 changed `182`, raw regression `118`, always-on review-adjusted residual `79`로 `NO-GO`다.
+- Prior-compatible verdict 재사용은 reviewed `118/118`, source-native decision `113`, info missing `5`, label `ACCEPT 39 / REPROCESS 53 / HOLD 21 / INFO_MISSING 5`다.
+- Residual queue `79`건과 P0 code repair batch `47`건을 생성했다.
+- Data Analytics MCP artifact `Loop567 full375 collateral 재평가`를 렌더링했다.
+- 다음 runtime/test run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- Report는 `docs/devs/loop_reports/LOOP_567_568_REPORT_20260708.md`다.
+- Gate는 publication contract `GO`, golden `GO`, full375 collateral `NO-GO / adjusted residual 79`, residual queue `REVIEW-LOCKED / 79`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop566 B1/title-mismatch verdict contract projection
 
 - 새 runtime replay, bounded run, full375 대형 run은 실행하지 않았다.

@@ -1,0 +1,18 @@
+{
+  "review_id": "loop567_full375_after_loop566_prior_compatible_source_native_verdicts_unreviewed_placeholders",
+  "scope": "loop567 full375 after Loop566 prior-compatible source-native verdicts unreviewed placeholders",
+  "source_batch": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop567_full375_after_loop566_p0_review_batch.json",
+  "generated_at": "2026-07-08T00:33:14",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_review_rows": 118,
+    "prior_compatible_rows": 118,
+    "additional_covered_rows": 0,
+    "covered_post_ids": 118,
+    "placeholder_rows": 0,
+    "counts_by_bucket": {}
+  },
+  "rows": []
+}

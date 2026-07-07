@@ -1,5 +1,20 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop567-568 이후
+
+- 상태 업데이트: Golden18은 `GO / 18 of 18`이지만 full375 collateral은 raw regression `118`, review-adjusted residual `79`로 `NO-GO`다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop566 B1/title-mismatch contract를 full375 projection에 projection-only로 적용했다.
+- [x] Publication contract는 `GO / 375 rows / 0 violations`로 확인했다.
+- [x] Prior-compatible source-native verdict는 reviewed `118/118`, decision `113`, info missing `5`로 재사용했다.
+- [x] Residual queue `79`건과 P0 code repair batch `47`건을 생성했다.
+- [x] Data Analytics MCP artifact `Loop567 full375 collateral 재평가`를 렌더링했다.
+- [x] 다음 runtime/test run 계약을 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 기록했다.
+- [ ] P0 repair batch `47`건은 코드/계약 수리 후 필요한 경우에만 dashboard attached test run으로 실행한다.
+- [ ] `HOLD 21`과 `INFO_MISSING 5`는 source-native/blind/native evidence 전 hard-hold 완화 대상이 아니다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: publication contract `GO`, golden `GO`, full375 collateral `NO-GO / adjusted residual 79`, residual queue `REVIEW-LOCKED / 79`, P0 repair batch `REVIEW-LOCKED / 47`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop566 이후
 
 - [ ] Loop566 release candidate `8`건은 approval이 아니라 projection contract 결과로만 유지한다.

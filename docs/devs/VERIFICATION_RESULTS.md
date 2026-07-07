@@ -1,5 +1,41 @@
 # Verification Results
 
+## 2026-07-08 Loop567-568 full375 collateral recheck after Loop566
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_567_568_REPORT_20260708.md`
+  - `docs/devs/loop567_full375_after_loop566_b1_contract_projection_application.json/.md`
+  - `docs/devs/loop567_full375_after_loop566_b1_release_gate_audit.json/.md`
+  - `docs/devs/loop567_full375_after_loop566_title_mismatch_contract_projection_application.json/.md`
+  - `docs/devs/loop567_full375_after_loop566_title_mismatch_release_gate_audit.json/.md`
+  - `docs/devs/loop567_full375_after_loop566_publication_contract_audit.json/.md`
+  - `docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json`
+  - `docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_state_20260708.json/.md`
+  - `docs/devs/loop567_full375_after_loop566_residual79_action_queue.json/.md`
+  - `docs/devs/loop568_full375_after_loop566_p0_code_repair47_batch.json/.md`
+- 검증:
+  - B1 projection application: PASS, projection rows `375`, applied publish/restore `6`, skipped scrub `6`, hard-hold `3`, validation issue `0`.
+  - Title mismatch projection application: PASS, applied `2`, expected audit update `1`, canonical cleanup `1`, validation issue `0`.
+  - Release audits: PASS, B1 violation/pending `0/0`, title mismatch violation/pending `0/0`.
+  - Publication contract audit: PASS, `GO / 375 rows / 0 violations`.
+  - Golden audit: PASS, `GO / 18 of 18`.
+  - Full375 collateral compare: NO-GO, changed `182`, raw regression `118`.
+  - Prior-compatible source-native transfer: PASS, reviewed `118/118`, source-native decision `113`, info missing `5`, validation issue `0`.
+  - Always-on review-adjusted gate: NO-GO, adjusted residual `79`.
+  - Residual queue split: PASS, residual `79`, validation issue `0`.
+  - P0 code repair batch: PASS, selected `47`, required `--parallel 16`, dashboard URL `http://127.0.0.1:8080`, forbidden `--no-dashboard`.
+  - Data Analytics MCP artifact: PASS, `Loop567 full375 collateral 재평가`.
+  - JSON parse: PASS, Loop567-568 JSON artifact `11` files.
+  - py_compile: PASS, projection/release/publication/collateral/queue tools `10` files.
+  - focused unittest: PASS, `64` tests.
+  - Dashboard health: PASS, `ok=true / standalone=true / pid=9320`.
+  - `git diff --check`: PASS.
+- 결과:
+  - Golden18 PASS는 유지됐지만 full375 collateral이 `NO-GO`라 동결 해제와 full_scan approval은 열지 않는다.
+  - 다음 작업 단위는 residual 단건 반복이 아니라 residual79와 P0 repair47 batch다.
+  - Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+- Gate: publication contract `GO`, golden `GO`, full375 collateral `NO-GO / adjusted residual 79`, residual queue `REVIEW-LOCKED / 79`, P0 repair batch `REVIEW-LOCKED / 47`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop566 B1/title-mismatch verdict contract projection
 
 - 산출물:

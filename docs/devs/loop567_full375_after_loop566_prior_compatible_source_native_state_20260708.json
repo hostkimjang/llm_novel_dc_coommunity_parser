@@ -1,0 +1,98 @@
+{
+  "report_type": "prior_compatible_collateral_verdicts_state",
+  "review_id": "loop567_full375_after_loop566_prior_compatible_source_native_verdicts",
+  "scope": "loop567 full375 after Loop566 prior-compatible source-native verdicts",
+  "generated_at": "2026-07-08T00:33:14",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "current_batch_rows": 118,
+    "source_verdict_rows": 126,
+    "overlap_rows": 118,
+    "compatible_rows": 118,
+    "unreviewed_current_batch_rows": 0,
+    "skip_counts": {
+      "post_id_not_in_current_batch": 8
+    }
+  },
+  "source_verdicts": [
+    {
+      "path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json",
+      "expected_triage_bucket": "*"
+    }
+  ],
+  "skipped_rows": [
+    {
+      "post_id": 11663557,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668325,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669913,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714887,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665121,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673080,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677924,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681159,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    }
+  ],
+  "unreviewed_batch": {
+    "gate": "REVIEW-LOCKED",
+    "summary": {
+      "source_review_rows": 118,
+      "prior_compatible_rows": 118,
+      "additional_covered_rows": 0,
+      "covered_post_ids": 118,
+      "unreviewed_rows": 0,
+      "counts_by_bucket": {},
+      "counts_by_collateral_status": {},
+      "image_rows": 0,
+      "text_only_rows": 0
+    },
+    "artifacts": {
+      "json": "docs\\devs\\loop567_full375_after_loop566_unreviewed_batch.json",
+      "jsonl": "docs\\devs\\loop567_full375_after_loop566_unreviewed_batch.jsonl",
+      "markdown": "docs\\devs\\loop567_full375_after_loop566_unreviewed_batch.md"
+    }
+  },
+  "unreviewed_placeholder_verdicts": {
+    "gate": "REVIEW-LOCKED",
+    "summary": {
+      "source_review_rows": 118,
+      "prior_compatible_rows": 118,
+      "additional_covered_rows": 0,
+      "covered_post_ids": 118,
+      "placeholder_rows": 0,
+      "counts_by_bucket": {}
+    },
+    "artifact": "docs\\devs\\loop567_full375_after_loop566_unreviewed_placeholder_verdicts.json"
+  }
+}

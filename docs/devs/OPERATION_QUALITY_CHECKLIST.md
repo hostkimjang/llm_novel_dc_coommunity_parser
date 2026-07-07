@@ -1,5 +1,25 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop567-568 full375 collateral 재확인 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_567_568_REPORT_20260708.md`.
+  - [x] B1/title-mismatch projection application과 release audit 기록 완료: `docs/devs/loop567_full375_after_loop566_*`.
+  - [x] Publication contract audit 기록 완료: `docs/devs/loop567_full375_after_loop566_publication_contract_audit.json/.md`.
+  - [x] Prior-compatible verdict/state와 residual79 queue 기록 완료: `docs/devs/loop567_full375_after_loop566_prior_compatible_*`, `docs/devs/loop567_full375_after_loop566_residual79_action_queue.json/.md`.
+  - [x] P0 repair47 batch 기록 완료: `docs/devs/loop568_full375_after_loop566_p0_code_repair47_batch.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Golden18 `GO`를 full_scan approval로 승격하지 않았다.
+  - [x] Full375 raw regression `118`과 adjusted residual `79`를 `NO-GO` blocker로 유지했다.
+  - [x] Publication contract `GO / 375 rows / 0 violations`는 trace convergence 근거일 뿐 approval이 아니다.
+  - [x] Residual `79`는 단건 소모가 아니라 batch queue로 기록했다.
+  - [x] P0 repair `47`건은 runtime input이 아니라 코드/계약 수리 선행 batch다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+  - [x] Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+  - [x] Full375 collateral `GO` 전 goal completion을 선언하지 않는다.
+- Gate: publication contract `GO`, golden `GO`, full375 collateral `NO-GO / adjusted residual 79`, residual queue `REVIEW-LOCKED / 79`, P0 repair batch `REVIEW-LOCKED / 47`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop566 verdict contract projection 품질 게이트
 
 - 근거:
