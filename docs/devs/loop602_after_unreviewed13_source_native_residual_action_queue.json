@@ -1,0 +1,628 @@
+{
+  "report_type": "full375_residual_gate_action_queue",
+  "queue_id": "loop602_after_unreviewed13_source_native_residual_action_queue",
+  "generated_at": "2026-07-08T08:53:40",
+  "source_collateral_compare": "loop598_remaining4_native_hold_full375_collateral_compare",
+  "source_review_summary": "loop602_combined_loop595_loop599_unreviewed13_source_native_review",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "raw_regression_rows": 73,
+    "reviewed_raw_regression_rows": 73,
+    "reviewed_non_regression_rows": 5,
+    "exclusion_candidate_rows": 45,
+    "residual_action_queue_rows": 28,
+    "reviewed_raw_residual_rows": 28,
+    "unreviewed_raw_residual_rows": 0,
+    "validation_issue_count": 0,
+    "counts_by_lane": {
+      "native_web_or_image_evidence_batch": 8,
+      "image_native_review": 2,
+      "candidate_set_rebuild_contract": 8,
+      "alias_relation_native_web_review": 1,
+      "shared_promotion_gate_contract_repair": 4,
+      "policy_or_cross_media_hold_review": 2,
+      "character_bridge_native_web_review": 1,
+      "native_web_or_image_human_review": 2
+    },
+    "counts_by_status": {
+      "resolved_to_different_title": 5,
+      "resolved_to_null": 19,
+      "null_to_resolved": 4
+    },
+    "counts_by_review_label": {
+      "INFO_MISSING": 7,
+      "HOLD": 8,
+      "REPROCESS": 12,
+      "REJECT": 1
+    },
+    "counts_by_coverage": {
+      "reviewed_raw_regression": 28
+    },
+    "counts_by_bucket": {
+      "safe_loss_resolved_to_null": 23,
+      "unsafe_promotion_from_hold": 4,
+      "wrong_work_title_flip": 1
+    }
+  },
+  "rows": [
+    {
+      "post_id": 11661856,
+      "status": "resolved_to_different_title",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "native_web_or_image_evidence_batch",
+      "before_title": "너랑은 절! 대! 안 사Kill거니까!",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": "너랑은 절! 대! 안 사갈거니까!",
+      "after_candidate_ledger_status": "safe_resolved",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "codex_native_web_judge_missing_for_current_dispatch",
+      "evidence_grade": "Missing",
+      "selected_title": null,
+      "action": [
+        "native_web_or_image_evidence_required"
+      ],
+      "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "reason_ko": "source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다."
+    },
+    {
+      "post_id": 11661863,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "image_native_review",
+      "before_title": "저주받은 영애가 되었습니다",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_only_candidate_requires_native_review",
+      "evidence_grade": "Missing",
+      "selected_title": null,
+      "action": [
+        "image_native_review_required"
+      ],
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "reason_ko": "native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다."
+    },
+    {
+      "post_id": 11665110,
+      "status": "resolved_to_different_title",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "native_web_or_image_evidence_batch",
+      "before_title": "낭만적인 초능력을 위하여",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": "사이키델리아",
+      "after_candidate_ledger_status": "safe_resolved",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "codex_native_web_judge_missing_for_current_dispatch",
+      "evidence_grade": "Missing",
+      "selected_title": null,
+      "action": [
+        "native_web_or_image_evidence_required"
+      ],
+      "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "reason_ko": "source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다."
+    },
+    {
+      "post_id": 11671512,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "native_web_or_image_evidence_batch",
+      "before_title": "삼시세끼, 심아식당",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "source_native_verdict": "alias_or_image_context_requires_native_evidence",
+      "evidence_grade": "Weak",
+      "selected_title": null,
+      "action": [
+        "native_web_or_image_evidence_required"
+      ],
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "reason_ko": "native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다."
+    },
+    {
+      "post_id": 11671514,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "candidate_set_rebuild_contract",
+      "before_title": "악신에게 총애받는 자",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "candidate_set_incomplete_correct_title_known_from_prior_closure",
+      "evidence_grade": "Strong",
+      "selected_title": null,
+      "action": [
+        "repair_after_wrong_work",
+        "candidate_set_rebuild_required"
+      ],
+      "source_review_id": "loop589_p0_info_missing_source_native_verdicts",
+      "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
+    },
+    {
+      "post_id": 11677957,
+      "status": "null_to_resolved",
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "alias_relation_native_web_review",
+      "before_title": null,
+      "before_candidate_ledger_status": "promotion_blocked",
+      "after_title": "음악 천재가 불륜을 못 숨김",
+      "after_candidate_ledger_status": "safe_resolved",
+      "review_label": "HOLD",
+      "source_native_verdict": "alias_bridge_unverified_hold",
+      "evidence_grade": "Weak",
+      "selected_title": null,
+      "action": [
+        "native_web_or_alias_relation_review_required"
+      ],
+      "source_review_id": "loop599_full375_unreviewed40_source_native_verdicts",
+      "reason_ko": "native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다."
+    },
+    {
+      "post_id": 11681178,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "native_web_or_image_evidence_batch",
+      "before_title": "재벌가 차녀의 2회차 걸그룹",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "codex_native_web_judge_missing_for_current_dispatch",
+      "evidence_grade": "Missing",
+      "selected_title": null,
+      "action": [
+        "native_web_or_image_evidence_required"
+      ],
+      "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "reason_ko": "source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다."
+    },
+    {
+      "post_id": 11682749,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "candidate_set_rebuild_contract",
+      "before_title": "주인공인데 주인공이 아님",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "candidate_set_incomplete_correct_work_not_in_options_mukhyang",
+      "evidence_grade": "Strong",
+      "selected_title": null,
+      "action": [
+        "candidate_set_rebuild_required"
+      ],
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
+    },
+    {
+      "post_id": 11682791,
+      "status": "resolved_to_different_title",
+      "triage_bucket": "wrong_work_title_flip",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "native_web_or_image_evidence_batch",
+      "before_title": "피아조아 <시간을 달리는 소설가>",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": "시간을 달리는 소설가",
+      "after_candidate_ledger_status": "safe_resolved",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "codex_native_web_judge_missing_for_current_dispatch",
+      "evidence_grade": "Missing",
+      "selected_title": null,
+      "action": [
+        "native_web_or_image_evidence_required"
+      ],
+      "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "reason_ko": "source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다."
+    },
+    {
+      "post_id": 11685994,
+      "status": "resolved_to_different_title",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "native_web_or_image_evidence_batch",
+      "before_title": "무한을 이해한 나는 외신의 사제가 되었습니다",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": "교황님 아하세요 마왕 들어 가요",
+      "after_candidate_ledger_status": "safe_resolved",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "codex_native_web_judge_missing_for_current_dispatch",
+      "evidence_grade": "Missing",
+      "selected_title": null,
+      "action": [
+        "native_web_or_image_evidence_required"
+      ],
+      "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "reason_ko": "source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다."
+    },
+    {
+      "post_id": 11687635,
+      "status": "null_to_resolved",
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "image_native_review",
+      "before_title": null,
+      "before_candidate_ledger_status": "promotion_blocked",
+      "after_title": "아포칼립스의 던전주가 되었다",
+      "after_candidate_ledger_status": "safe_resolved",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_only_candidate_requires_native_review",
+      "evidence_grade": "Missing",
+      "selected_title": null,
+      "action": [
+        "image_native_review_required"
+      ],
+      "source_review_id": "loop599_full375_unreviewed40_source_native_verdicts",
+      "reason_ko": "native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다."
+    },
+    {
+      "post_id": 11687661,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "native_web_or_image_evidence_batch",
+      "before_title": "약혼녀가 소천마였다",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "codex_native_web_judge_missing_for_current_dispatch",
+      "evidence_grade": "Missing",
+      "selected_title": null,
+      "action": [
+        "native_web_or_image_evidence_required"
+      ],
+      "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "reason_ko": "source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다."
+    },
+    {
+      "post_id": 11694035,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "candidate_set_rebuild_contract",
+      "before_title": "시로코의 제멋대로 일상 단편선",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "asaenggal_candidate_set_rebuild_required",
+      "evidence_grade": "Medium",
+      "selected_title": null,
+      "action": [
+        "candidate_set_rebuild_required",
+        "native_web_or_image_evidence_required"
+      ],
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
+    },
+    {
+      "post_id": 11694041,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "shared_promotion_gate_contract_repair",
+      "before_title": "격투 소설 엑스트라가 타격 천재임",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "source_alias_supports_safe_loss_restore",
+      "evidence_grade": "Strong",
+      "selected_title": "격투 소설 엑스트라가 타격 천재임",
+      "action": [
+        "shared_promotion_gate_wiring_required"
+      ],
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
+    },
+    {
+      "post_id": 11694067,
+      "status": "null_to_resolved",
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "native_web_or_image_evidence_batch",
+      "before_title": null,
+      "before_candidate_ledger_status": "promotion_blocked",
+      "after_title": "괴담에 휘말렸다",
+      "after_candidate_ledger_status": "safe_resolved",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "codex_native_web_judge_missing_for_current_dispatch",
+      "evidence_grade": "Missing",
+      "selected_title": null,
+      "action": [
+        "native_web_or_image_evidence_required"
+      ],
+      "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "reason_ko": "source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다."
+    },
+    {
+      "post_id": 11698859,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "shared_promotion_gate_contract_repair",
+      "before_title": "귤부인 대롱대롱",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "source_title_exact_safe_loss_restore_requires_gate",
+      "evidence_grade": "Strong",
+      "selected_title": "귤부인 대롱대롱",
+      "action": [
+        "shared_promotion_gate_wiring_required",
+        "official_detail_url_enrichment_required"
+      ],
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
+    },
+    {
+      "post_id": 11698865,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "candidate_set_rebuild_contract",
+      "before_title": "나츠키 스바루/작중 행적/5~8장",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "candidate_set_incomplete_rezero_work_not_character_article",
+      "evidence_grade": "Strong",
+      "selected_title": null,
+      "action": [
+        "candidate_set_rebuild_required",
+        "wrong_work_or_cross_media_policy_hold_required"
+      ],
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
+    },
+    {
+      "post_id": 11698870,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "policy_or_cross_media_hold_review",
+      "before_title": "인간실격",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "source_native_verdict": "non_webnovel_classic_policy_hold",
+      "evidence_grade": "Medium",
+      "selected_title": "인간실격",
+      "action": [
+        "wrong_work_or_cross_media_policy_hold_required",
+        "blind_or_policy_judge_required"
+      ],
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "reason_ko": "native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다."
+    },
+    {
+      "post_id": 11703658,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "candidate_set_rebuild_contract",
+      "before_title": "아프리카 의 독재자가 되었다 .",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "official_title_mismatch_candidate_set_rebuild_required",
+      "evidence_grade": "Medium",
+      "selected_title": null,
+      "action": [
+        "candidate_set_rebuild_required",
+        "native_web_or_image_evidence_required"
+      ],
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
+    },
+    {
+      "post_id": 11705231,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "candidate_set_rebuild_contract",
+      "before_title": "한국 레전드 프로게이머인 내가 일본판타지 사정에 휘말린 것에 대하여",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "candidate_set_incomplete_correct_work_from_source_context",
+      "evidence_grade": "Strong",
+      "selected_title": null,
+      "action": [
+        "candidate_set_rebuild_required"
+      ],
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
+    },
+    {
+      "post_id": 11706844,
+      "status": "resolved_to_different_title",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "shared_promotion_gate_contract_repair",
+      "before_title": "범 먹는 괴이 사냥꾼",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": "호랑이 사냥꾼",
+      "after_candidate_ledger_status": "safe_resolved",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "codex_native_web_judge_reprocess_under_resolved",
+      "evidence_grade": "Medium",
+      "selected_title": "호랑이 사냥꾼",
+      "action": [
+        "native_web_judge_reprocess_required",
+        "shared_promotion_gate_wiring_required",
+        "native_web_reverify_required"
+      ],
+      "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
+    },
+    {
+      "post_id": 11708453,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "candidate_set_rebuild_contract",
+      "before_title": "감옥학원에서 나만 힐링할거다",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "primary_alias_not_candidate_secondary_comment_wrong_work",
+      "evidence_grade": "Medium",
+      "selected_title": null,
+      "action": [
+        "candidate_set_rebuild_required"
+      ],
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
+    },
+    {
+      "post_id": 11710036,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "candidate_set_rebuild_contract",
+      "before_title": "쳇바퀴의 생쥐 사도가 되었다",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "candidate_set_incomplete_ratdasip_expanded_by_comments",
+      "evidence_grade": "Strong",
+      "selected_title": null,
+      "action": [
+        "candidate_set_rebuild_required"
+      ],
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
+    },
+    {
+      "post_id": 11710047,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "shared_promotion_gate_contract_repair",
+      "before_title": "로판 속 미움받는 악역이 되었다",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "codex_native_web_judge_reprocess_wrong_work",
+      "evidence_grade": "Strong",
+      "selected_title": "아카데미 속 미움받는 악역이 되었다",
+      "action": [
+        "native_web_judge_reprocess_required",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
+    },
+    {
+      "post_id": 11711632,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "policy_or_cross_media_hold_review",
+      "before_title": "유어 네임(YOUR NAME)",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "REJECT",
+      "source_native_verdict": "codex_native_web_judge_reject_wrong_work",
+      "evidence_grade": "Strong",
+      "selected_title": "너의 이름은.",
+      "action": [
+        "wrong_work_or_cross_media_policy_hold_required",
+        "blind_or_policy_judge_required"
+      ],
+      "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "reason_ko": "wrong-work 또는 cross-media policy hold 검토가 필요하다."
+    },
+    {
+      "post_id": 11714913,
+      "status": "null_to_resolved",
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "character_bridge_native_web_review",
+      "before_title": null,
+      "before_candidate_ledger_status": "promotion_blocked",
+      "after_title": "전 버튜버가 하고 싶은데요",
+      "after_candidate_ledger_status": "safe_resolved",
+      "review_label": "HOLD",
+      "source_native_verdict": "character_bridge_unverified_hold",
+      "evidence_grade": "Weak",
+      "selected_title": null,
+      "action": [
+        "character_bridge_native_web_review_required"
+      ],
+      "source_review_id": "loop599_full375_unreviewed40_source_native_verdicts",
+      "reason_ko": "native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다."
+    },
+    {
+      "post_id": 11716480,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "native_web_or_image_human_review",
+      "before_title": "여대생 가랑이 사이 무릎 꿇은 엄마들",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "source_native_verdict": "codex_native_web_judge_hold_heretic_url_null",
+      "evidence_grade": "Weak",
+      "selected_title": "여대학생 가랑이 사이 무릎 꿇은 엄마들",
+      "action": [
+        "native_web_or_image_human_review_required",
+        "official_detail_url_enrichment_required"
+      ],
+      "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "reason_ko": "native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다."
+    },
+    {
+      "post_id": 11718057,
+      "status": "resolved_to_null",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_coverage": "reviewed_raw_regression",
+      "queue_lane": "native_web_or_image_human_review",
+      "before_title": "컵라면",
+      "before_candidate_ledger_status": "safe_resolved",
+      "after_title": null,
+      "after_candidate_ledger_status": "promotion_blocked",
+      "review_label": "HOLD",
+      "source_native_verdict": "codex_native_web_judge_hold_under_resolved_false_negative",
+      "evidence_grade": "Medium",
+      "selected_title": "B급 헌터로 살아남기",
+      "action": [
+        "native_web_or_image_human_review_required"
+      ],
+      "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "reason_ko": "native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다."
+    }
+  ],
+  "next_actions": [
+    "unreviewed raw regression rows must be source-native or native-web reviewed before approval.",
+    "reviewed residual rows must go through the lane-specific contract or native evidence path.",
+    "Do not dispatch a runtime test run unless a lane explicitly produces runtime input candidates.",
+    "Keep semantic_quality=REVIEW-LOCKED and full_scan_approval=false."
+  ]
+}

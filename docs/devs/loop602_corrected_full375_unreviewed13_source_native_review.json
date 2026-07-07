@@ -1,0 +1,415 @@
+{
+  "report_type": "collateral_source_native_review",
+  "review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+  "scope": "Loop602 corrected full375 unreviewed13 source-native/blind 판정",
+  "generated_at": "2026-07-08T08:52:01",
+  "source_batch": "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json",
+  "source_verdicts": [
+    {
+      "review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "scope": "Loop602 corrected full375 unreviewed13 source-native/blind 판정",
+      "source_batch": "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json",
+      "source_path": "docs\\devs\\loop602_corrected_full375_unreviewed13_source_native_verdicts.json",
+      "row_count": 13
+    }
+  ],
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "batch_review_rows": 13,
+    "reviewed_rows": 13,
+    "source_native_decision_rows": 13,
+    "info_missing_rows": 0,
+    "unreviewed_batch_rows": 0,
+    "unreviewed_or_info_missing_batch_rows": 0,
+    "validation_issue_count": 0,
+    "counts_by_bucket": {
+      "wrong_work_title_flip": 1,
+      "safe_loss_resolved_to_null": 12
+    },
+    "label_counts": {
+      "ACCEPT": 1,
+      "HOLD": 3,
+      "REPROCESS": 9
+    },
+    "source_native_verdict_counts": {
+      "after_canonical_title_correct_prior_variant_wrong": 1,
+      "image_only_candidate_requires_native_review": 1,
+      "alias_or_image_context_requires_native_evidence": 1,
+      "candidate_set_incomplete_correct_work_not_in_options_mukhyang": 1,
+      "asaenggal_candidate_set_rebuild_required": 1,
+      "source_alias_supports_safe_loss_restore": 1,
+      "source_title_exact_safe_loss_restore_requires_gate": 1,
+      "candidate_set_incomplete_rezero_work_not_character_article": 1,
+      "non_webnovel_classic_policy_hold": 1,
+      "official_title_mismatch_candidate_set_rebuild_required": 1,
+      "candidate_set_incomplete_correct_work_from_source_context": 1,
+      "primary_alias_not_candidate_secondary_comment_wrong_work": 1,
+      "candidate_set_incomplete_ratdasip_expanded_by_comments": 1
+    },
+    "action_counts": {
+      "exclude_from_regression_count_after_gate_wiring": 1,
+      "image_native_review_required": 1,
+      "native_web_or_image_evidence_required": 3,
+      "candidate_set_rebuild_required": 7,
+      "shared_promotion_gate_wiring_required": 2,
+      "official_detail_url_enrichment_required": 1,
+      "wrong_work_or_cross_media_policy_hold_required": 2,
+      "blind_or_policy_judge_required": 1
+    },
+    "queue_transition": {
+      "original_p0_rows": 13,
+      "source_native_reviewed_rows": 13,
+      "source_native_decision_rows": 13,
+      "info_missing_rows": 0,
+      "exclusion_candidate_rows": 1,
+      "repair_required_rows": 9,
+      "policy_or_native_review_required_rows": 3,
+      "residual_action_queue_rows": 12,
+      "validation_issue_count": 0,
+      "full_collateral_approval_open": false,
+      "exclusion_requires_gate_wiring": true
+    },
+    "queue_by_bucket": {
+      "safe_loss_resolved_to_null": {
+        "rows": 12,
+        "source_native_decision_rows": 12,
+        "info_missing_rows": 0,
+        "label_counts": {
+          "HOLD": 3,
+          "REPROCESS": 9
+        },
+        "action_counts": {
+          "image_native_review_required": 1,
+          "native_web_or_image_evidence_required": 3,
+          "candidate_set_rebuild_required": 7,
+          "shared_promotion_gate_wiring_required": 2,
+          "official_detail_url_enrichment_required": 1,
+          "wrong_work_or_cross_media_policy_hold_required": 2,
+          "blind_or_policy_judge_required": 1
+        },
+        "exclusion_candidate_rows": 0,
+        "residual_action_queue_rows": 12
+      },
+      "wrong_work_title_flip": {
+        "rows": 1,
+        "source_native_decision_rows": 1,
+        "info_missing_rows": 0,
+        "label_counts": {
+          "ACCEPT": 1
+        },
+        "action_counts": {
+          "exclude_from_regression_count_after_gate_wiring": 1
+        },
+        "exclusion_candidate_rows": 1,
+        "residual_action_queue_rows": 0
+      }
+    }
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11665124,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "난 시리즈 댓글은 정말 많이 달았었음",
+      "selected_option_id": "C1",
+      "selected_title": "화산귀환",
+      "selected_url": "https://series.naver.com/novel/detail.series?productNo=4130558",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_canonical_title_correct_prior_variant_wrong",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "댓글의 `화귀`, 800화, 1250화, 1324화, 해남편 맥락은 `화산귀환`을 직접 가리킨다. prior `화산파(화산귀환)`은 작품 자체가 아니라 파생/항목 표면에 가까워 after의 공식 제목이 더 맞다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11665124",
+        "https://series.naver.com/novel/detail.series?productNo=4130558"
+      ],
+      "before_title": "화산파(화산귀환)",
+      "after_title": "화산귀환",
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts"
+    },
+    {
+      "post_id": 11661863,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "두개 써서 동시에 올리나보네",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_only_candidate_requires_native_review",
+      "evidence_grade": "Missing",
+      "action": [
+        "image_native_review_required"
+      ],
+      "rationale_ko": "텍스트는 `두개 써서 동시에 올리나보네`, `음음 그래 개같이 먹어주마`뿐이고 C1 `저주받은 영애가 되었습니다`를 직접 지지하지 않는다. 이미지 2장이 식별 근거일 수 있으므로 image/native 확인 전 hard-hold를 유지한다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11661863"
+      ],
+      "before_title": "저주받은 영애가 되었습니다",
+      "after_title": null,
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts"
+    },
+    {
+      "post_id": 11671512,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "패러디 떡밥 하니까 이거 봐야하는데",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "alias_or_image_context_requires_native_evidence",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_web_or_image_evidence_required"
+      ],
+      "rationale_ko": "본문은 패러디 떡밥, 유카리 히로인, 20화 감상을 말하지만 텍스트만으로 C1 `삼시세끼, 심아식당`과의 관계가 확정되지 않는다. 이미지 또는 native-web alias 근거가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11671512"
+      ],
+      "before_title": "삼시세끼, 심아식당",
+      "after_title": null,
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts"
+    },
+    {
+      "post_id": 11682749,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "TS주인공인데 힘 쎄지는 템플릿이 어디서 나왔냐고?",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "candidate_set_incomplete_correct_work_not_in_options_mukhyang",
+      "evidence_grade": "Strong",
+      "action": [
+        "candidate_set_rebuild_required"
+      ],
+      "rationale_ko": "본문이 `묵향이라니까?`라고 직접 정리하고 댓글도 묵향의 약화/재강화, 타이탄, 천마구령심법, 드래곤 하트 맥락을 이어간다. C1 `주인공인데 주인공이 아님`은 지지되지 않지만 null로 닫기보다 `묵향` 후보 재구축이 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11682749"
+      ],
+      "before_title": "주인공인데 주인공이 아님",
+      "after_title": null,
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts"
+    },
+    {
+      "post_id": 11694035,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "아생갤) 가장 무서웠던 순간이",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "asaenggal_candidate_set_rebuild_required",
+      "evidence_grade": "Medium",
+      "action": [
+        "candidate_set_rebuild_required",
+        "native_web_or_image_evidence_required"
+      ],
+      "rationale_ko": "`아생갤`은 현실 DC 갤러리 표면으로만 단정할 수 없고 `아카데미 생존 갤러리` 같은 작품 약어일 수 있다. 원문 텍스트와 이미지 2장은 C1 `시로코의 제멋대로 일상 단편선`을 지지하지 않으므로, candidate-set을 `아생갤` 계열로 다시 만들어 확인해야 한다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11694035",
+        "AGENTS.md#도메인-규칙-아생갤"
+      ],
+      "before_title": "시로코의 제멋대로 일상 단편선",
+      "after_title": null,
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts"
+    },
+    {
+      "post_id": 11694041,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "격투천재 살짝 경녀감성임?",
+      "selected_option_id": "C1",
+      "selected_title": "격투 소설 엑스트라가 타격 천재임",
+      "selected_url": "https://novelpia.com/novel/427330",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "source_alias_supports_safe_loss_restore",
+      "evidence_grade": "Strong",
+      "action": [
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "제목의 `격투천재`와 본문/댓글의 경녀감성, 보지킥, 덤벨/바키 비교가 C1 작품 감상 맥락을 직접 지지한다. null로 해소된 safe-loss는 shared PromotionDecision gate를 통해 restore해야 한다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11694041",
+        "https://novelpia.com/novel/427330"
+      ],
+      "before_title": "격투 소설 엑스트라가 타격 천재임",
+      "after_title": null,
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts"
+    },
+    {
+      "post_id": 11698859,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "귤부인 대롱대롱 좋았는데",
+      "selected_option_id": "C1",
+      "selected_title": "귤부인 대롱대롱",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "source_title_exact_safe_loss_restore_requires_gate",
+      "evidence_grade": "Strong",
+      "action": [
+        "shared_promotion_gate_wiring_required",
+        "official_detail_url_enrichment_required"
+      ],
+      "rationale_ko": "게시글 제목이 C1 `귤부인 대롱대롱`을 그대로 말하고 본문도 그 뒤 전개 감상을 이어간다. 다만 후보 URL이 없으므로 shared gate restore와 공식 상세 URL 보강을 함께 요구한다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11698859"
+      ],
+      "before_title": "귤부인 대롱대롱",
+      "after_title": null,
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts"
+    },
+    {
+      "post_id": 11698865,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "스바루는 6장이 ㄹㅇ개씹테토남",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "candidate_set_incomplete_rezero_work_not_character_article",
+      "evidence_grade": "Strong",
+      "action": [
+        "candidate_set_rebuild_required",
+        "wrong_work_or_cross_media_policy_hold_required"
+      ],
+      "rationale_ko": "댓글이 `리제로?`라고 묻고 글쓴이가 긍정하며 6장/7장, 감시탑, 폭식, 나츠키 스바루를 말한다. C1은 작품 제목이 아니라 캐릭터/위키성 항목이므로 publish 후보가 아니고, `Re:제로` 작품 후보로 재구축해야 한다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11698865"
+      ],
+      "before_title": "나츠키 스바루/작중 행적/5~8장",
+      "after_title": null,
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts"
+    },
+    {
+      "post_id": 11698870,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "인간실격이 살자엔딩이였나?",
+      "selected_option_id": "C1",
+      "selected_title": "인간실격",
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "non_webnovel_classic_policy_hold",
+      "evidence_grade": "Medium",
+      "action": [
+        "wrong_work_or_cross_media_policy_hold_required",
+        "blind_or_policy_judge_required"
+      ],
+      "rationale_ko": "원문은 일본의 유명작 `인간실격`과 작가의 자살 맥락을 말해 C1 표면 자체는 맞다. 그러나 웹소설 작품 publish 범위와 고전/일반문학 정책 경계가 남아 있어 policy hold로 유지한다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11698870",
+        "docs/devs/loop590_residual_p0_policy_hold_contract_plan.md#post_id=11698870"
+      ],
+      "before_title": "인간실격",
+      "after_title": null,
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts"
+    },
+    {
+      "post_id": 11703658,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "문피아 아프리카 식량왕이 되었다 나쁘진 않음",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "official_title_mismatch_candidate_set_rebuild_required",
+      "evidence_grade": "Medium",
+      "action": [
+        "candidate_set_rebuild_required",
+        "native_web_or_image_evidence_required"
+      ],
+      "rationale_ko": "게시글 제목은 `문피아 아프리카 식량왕이 되었다`이고 본문/댓글도 카사바, 옥수수, 무료/유료화 감상으로 같은 문피아 작품을 논한다. C1 `아프리카 의 독재자가 되었다 .`는 제목이 맞지 않으므로 공식 상세 확인과 후보 재구축이 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11703658",
+        "https://novel.munpia.com/246271"
+      ],
+      "before_title": "아프리카 의 독재자가 되었다 .",
+      "after_title": null,
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts"
+    },
+    {
+      "post_id": 11705231,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "장갤 설지후 변화도 레전드임",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "candidate_set_incomplete_correct_work_from_source_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "candidate_set_rebuild_required"
+      ],
+      "rationale_ko": "원문과 댓글은 설지후, 유선화, 백혜주, 로유진, 탐식 6년 전 완독 기억을 말해 `탐식의 재림` 맥락을 강하게 지지한다. C1 `한국 레전드 프로게이머...`는 지지되지 않으므로 후보셋 재구축이 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11705231"
+      ],
+      "before_title": "한국 레전드 프로게이머인 내가 일본판타지 사정에 휘말린 것에 대하여",
+      "after_title": null,
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts"
+    },
+    {
+      "post_id": 11708453,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "미츄리가 이불사 쓸 때 했던 모방이 딱 모범적임",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "primary_alias_not_candidate_secondary_comment_wrong_work",
+      "evidence_grade": "Medium",
+      "action": [
+        "candidate_set_rebuild_required"
+      ],
+      "rationale_ko": "게시글 제목과 본문은 `이불사`, 검머외와 다른 길, 모방 떡밥을 주된 대상으로 삼는다. C1 `감옥학원에서 나만 힐링할거다`는 댓글에서 표절 논란 예시로 나온 보조 맥락이라 public identity로 승격하면 wrong-work 위험이 있다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11708453"
+      ],
+      "before_title": "감옥학원에서 나만 힐링할거다",
+      "after_title": null,
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts"
+    },
+    {
+      "post_id": 11710036,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "5시간 뒤면 랫따싶이 올까요?",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "candidate_set_incomplete_ratdasip_expanded_by_comments",
+      "evidence_grade": "Strong",
+      "action": [
+        "candidate_set_rebuild_required"
+      ],
+      "rationale_ko": "댓글이 `노피아에 랫따싶 검색`, `변방계에서 회귀자로 살아남기임?`, `랫따싶에 나오는 종족`으로 약어와 풀네임 관계를 설명한다. C1 `쳇바퀴의 생쥐 사도가 되었다`는 지지되지 않으므로 랫따싶 계열 후보를 다시 만들어야 한다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11710036"
+      ],
+      "before_title": "쳇바퀴의 생쥐 사도가 되었다",
+      "after_title": null,
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts"
+    }
+  ],
+  "next_actions": [
+    "REPROCESS rows require targeted guard/runtime follow-up before collateral approval.",
+    "HOLD rows require native-web or policy review before they can reduce the actionable queue.",
+    "ACCEPT rows can be excluded from regression-counting only after the summary is wired into the collateral gate.",
+    "Keep semantic_quality=REVIEW-LOCKED and full_scan_approval=false."
+  ]
+}

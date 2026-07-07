@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260708-603 - unreviewed13 source-native verdict and post-id overlap application
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Source-native verdict | REVIEW-LOCKED | reviewed `13/13`, validation issue `0`, `ACCEPT 1 / HOLD 3 / REPROCESS 9` | HOLD/REPROCESS는 lane별 후속 처리 |
+| Domain rule | PRESERVED | `아생갤` row `11694035`를 현실 갤러리명으로 단정하지 않고 candidate-set rebuild로 보존 | 작품 약어 후보와 이미지/native evidence 확인 |
+| Gate correction | PASS_UNIT | raw regression post_id full coverage + extra non-regression rows를 허용하는 테스트 추가 | count-only mismatch 재발 방지 |
+| Corrected always-on | NO-GO | raw `73`, adjusted `28`, unreviewed raw `0`, runtime counts missing | residual28과 runtime counts 전 approval 금지 |
+| Corrected residual queue | REVIEW-LOCKED | rows `28`, reviewed raw residual `28`, unreviewed raw residual `0` | lane별 N건 배치 처리 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: source-native verdict `REVIEW-LOCKED`, merged review `REVIEW-LOCKED`, always-on `NO-GO / adjusted 28 / runtime missing`, residual28 queue `REVIEW-LOCKED`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-602 - corrected full375 unreviewed13 review batch
 
 | 항목 | 상태 | 근거 | 다음 |

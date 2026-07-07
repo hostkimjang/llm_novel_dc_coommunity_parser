@@ -1,5 +1,25 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop603 source-native verdict와 full375 gate 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_603_REPORT_20260708.md`.
+  - [x] Source-native verdict 기록 완료: `docs/devs/loop602_corrected_full375_unreviewed13_source_native_verdicts.json`.
+  - [x] Source-native summary 기록 완료: `docs/devs/loop602_corrected_full375_unreviewed13_source_native_review.json/.md`.
+  - [x] Merged review 기록 완료: `docs/devs/loop602_combined_loop595_loop599_unreviewed13_source_native_review.json/.md`.
+  - [x] Always-on gate 기록 완료: `docs/devs/loop602_always_on_golden18_full375_unreviewed13_source_native_gate.json/.md`.
+  - [x] Residual queue 기록 완료: `docs/devs/loop602_after_unreviewed13_source_native_residual_action_queue.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Loop602 batch `13/13`은 validation issue `0`으로 판정됐다.
+  - [x] `ACCEPT 1`은 regression count 제외 후보일 뿐 approval이 아니다.
+  - [x] `HOLD 3 / REPROCESS 9`는 residual queue로 남긴다.
+  - [x] `아생갤`은 작품 약어 가능성을 보존해 candidate-set rebuild로 남겼다.
+  - [x] Post_id-overlap full coverage는 raw `73`, reviewed raw `73`, reviewed non-regression `5`, unreviewed raw `0`이다.
+  - [x] Always-on gate는 golden18 `GO`지만 collateral `NO-GO / adjusted 28 / runtime counts missing`이다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+- Gate: source-native verdict `REVIEW-LOCKED`, merged review `REVIEW-LOCKED`, always-on `NO-GO`, residual28 queue `REVIEW-LOCKED`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop602 unreviewed13 batch 품질 게이트
 
 - 근거:

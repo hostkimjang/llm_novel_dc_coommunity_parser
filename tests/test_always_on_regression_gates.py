@@ -236,6 +236,65 @@ class AlwaysOnRegressionGatesTest(unittest.TestCase):
         self.assertEqual(adjustment["unreviewed_regression_post_ids"], [3, 4])
         self.assertEqual(report["collateral"]["review_adjusted_regression_count"], 3)
 
+    def test_collateral_review_allows_extra_non_regression_rows_when_raw_ids_fully_covered(self):
+        review = _collateral_review(
+            summary={
+                "batch_review_rows": 4,
+                "reviewed_rows": 4,
+                "unreviewed_batch_rows": 0,
+                "validation_issue_count": 0,
+                "action_counts": {
+                    "exclude_from_regression_count_after_gate_wiring": 3,
+                },
+                "queue_transition": {
+                    "original_p0_rows": 4,
+                    "exclusion_candidate_rows": 3,
+                    "residual_action_queue_rows": 1,
+                },
+            },
+            rows=[
+                {
+                    "post_id": 1,
+                    "action": ["exclude_from_regression_count_after_gate_wiring"],
+                },
+                {
+                    "post_id": 2,
+                    "action": ["exclude_from_regression_count_after_gate_wiring"],
+                },
+                {"post_id": 3, "action": ["repair_after_wrong_work"]},
+                {
+                    "post_id": 9,
+                    "action": ["exclude_from_regression_count_after_gate_wiring"],
+                },
+            ],
+        )
+        collateral = _collateral(
+            changed_post_count=4,
+            collateral_regression_count=3,
+            rows=[
+                {"post_id": 1, "is_regression": True},
+                {"post_id": 2, "is_regression": True},
+                {"post_id": 3, "is_regression": True},
+                {"post_id": 9, "is_regression": False},
+            ],
+        )
+
+        report = evaluate_gates(golden=_golden(), collateral=collateral, collateral_review=review)
+        adjustment = report["collateral"]["review_adjustment"]
+
+        self.assertTrue(adjustment["applied"])
+        self.assertEqual(adjustment["review_scope"], "full_regression_post_id_overlap")
+        self.assertEqual(adjustment["reviewed_raw_regression_rows"], 3)
+        self.assertEqual(adjustment["reviewed_non_regression_rows"], 1)
+        self.assertEqual(adjustment["unreviewed_regression_rows"], 0)
+        self.assertEqual(adjustment["unreviewed_regression_post_ids"], [])
+        self.assertEqual(adjustment["exclusion_candidate_rows"], 2)
+        self.assertEqual(report["collateral"]["review_adjusted_regression_count"], 1)
+        self.assertNotIn(
+            "collateral:collateral_review_batch_count_mismatch",
+            report["blockers"],
+        )
+
     def test_collateral_review_adjustment_requires_clean_full_review_summary(self):
         dirty_review = _collateral_review(
             summary={

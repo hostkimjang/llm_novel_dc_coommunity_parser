@@ -171,6 +171,14 @@ def _collateral_review_adjustment(
         blockers.append("collateral_review_not_fully_reviewed")
     if (unreviewed_batch_rows or 0) != 0:
         blockers.append("collateral_review_unreviewed_rows_nonzero")
+    full_review_by_post_id = False
+    if (
+        raw_regression_post_ids is not None
+        and review_post_ids is not None
+        and raw_regression_count is not None
+    ):
+        full_review_by_post_id = raw_regression_post_ids.issubset(review_post_ids)
+
     if raw_regression_count is None:
         blockers.append("collateral_raw_regression_count_missing")
     else:
@@ -181,7 +189,7 @@ def _collateral_review_adjustment(
             and batch_review_rows < raw_regression_count
             and scoped_rows == batch_review_rows
         )
-        if not (full_review or scoped_p0_review):
+        if not (full_review or full_review_by_post_id or scoped_p0_review):
             blockers.append("collateral_review_batch_count_mismatch")
     if raw_regression_count is not None and exclusion_candidate_rows > raw_regression_count:
         blockers.append("collateral_review_exclusion_exceeds_regression_count")
@@ -208,6 +216,8 @@ def _collateral_review_adjustment(
         "review_scope": (
             "full_regression"
             if raw_regression_count is not None and batch_review_rows == raw_regression_count
+            else "full_regression_post_id_overlap"
+            if full_review_by_post_id
             else "p0_scoped"
             if applied and (unreviewed_regression_rows or 0) > 0
             else "unknown"

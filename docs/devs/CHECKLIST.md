@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-08 Loop603 unreviewed13 판정과 post_id-overlap gate 적용 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop602 batch `13`건을 source-native/blind verdict로 전수 판정했다.
+- [x] Verdict summary는 reviewed `13/13`, decision `13`, info missing `0`, validation issue `0`, label `ACCEPT 1 / HOLD 3 / REPROCESS 9`이다.
+- [x] `아생갤` row `11694035`는 현실 갤러리명으로 단정하지 않고 작품 약어 가능성을 보존해 candidate-set rebuild로 남겼다.
+- [x] Loop595+Loop599+Loop602 병합 review는 rows `78`, reviewed raw regression `73`, reviewed non-regression `5`, unreviewed raw regression `0`, exclusion candidate `45`이다.
+- [x] Always-on gate가 post_id-overlap full coverage와 extra non-regression review rows를 함께 허용하도록 `tools/evaluate_always_on_regression_gates.py`를 보강했다.
+- [x] Contract test `test_collateral_review_allows_extra_non_regression_rows_when_raw_ids_fully_covered`를 추가했다.
+- [x] Corrected always-on은 `NO-GO / raw 73 / adjusted 28 / unreviewed 0 / runtime counts missing`이다.
+- [x] Corrected residual queue는 rows `28`, reviewed raw residual `28`, unreviewed raw residual `0`이다.
+- [ ] Residual28을 lane별 N건 배치로 계속 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: source-native verdict `REVIEW-LOCKED`, merged review `REVIEW-LOCKED`, always-on `NO-GO / adjusted 28 / runtime missing`, residual28 queue `REVIEW-LOCKED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_603_REPORT_20260708.md`, `docs/devs/loop602_corrected_full375_unreviewed13_source_native_review.json`, `docs/devs/loop602_combined_loop595_loop599_unreviewed13_source_native_review.json`, `docs/devs/loop602_always_on_golden18_full375_unreviewed13_source_native_gate.json`, `docs/devs/loop602_after_unreviewed13_source_native_residual_action_queue.json`.
+
 ## 2026-07-08 Loop602 corrected full375 unreviewed13 review batch 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
