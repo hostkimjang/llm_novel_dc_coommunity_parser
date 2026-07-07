@@ -1,0 +1,67 @@
+{
+  "loop_id": "Loop524",
+  "date": "2026-07-07",
+  "mode": "projection_queue_accounting_only",
+  "runtime_replay": "NOT_RUN",
+  "source_queue": "docs/devs/loop523_direct_title_surface_safe57_expected_failure_queue.json",
+  "projection_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json",
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_524_REPORT_20260707.md",
+    "repair_queue_json": "docs/devs/loop524_current_projection_candidate_alignment_repair27_queue.json",
+    "repair_queue_md": "docs/devs/loop524_current_projection_candidate_alignment_repair27_queue.md"
+  },
+  "summary": {
+    "source_queue_rows": 38,
+    "repair_rows": 27,
+    "runtime_replay_allowed_rows": 0,
+    "validation_issue_count": 0,
+    "current_projection_candidate_alignment_counts": {
+      "same_title_surface": 5,
+      "related_title_surface_review": 10,
+      "different_title_candidate_review": 12
+    },
+    "current_projection_candidate_review_rows": 22,
+    "primary_repair_lane_counts": {
+      "candidate_preservation_or_scrub_repair": 9,
+      "image_or_alias_anchor_contract_repair": 5,
+      "scope_or_nonwork_monotonicity_repair": 10,
+      "title_url_or_variant_trace_repair": 3
+    },
+    "search_gate_counts": {
+      "SEARCH_BLIND_BLOCKER": 11,
+      "SEARCH_EVIDENCE_MISSING": 8,
+      "SEARCH_OK": 1,
+      "SEARCH_RECOVERED_CONDITIONAL": 7
+    }
+  },
+  "validation": {
+    "py_compile": "PASS",
+    "unittest": "PASS / tests.test_shared_gate_runtime_block_repair_queue / 9 tests",
+    "queue_generation": "PASS",
+    "json_parse": "PASS"
+  },
+  "dashboard": {
+    "url": "http://127.0.0.1:8080",
+    "health": "ok=true / standalone=true / pid=9320",
+    "latest_attached_status": "57/57 / progress_pct=100.0 / parallel_count=16 / batch_running=false",
+    "approval_evidence": false
+  },
+  "gates": {
+    "queue_schema": "GO",
+    "repair_queue": "REVIEW-LOCKED / 27",
+    "current_projection_candidate_alignment": "REVIEW / 22 rows",
+    "runtime_replay": "NOT_RUN / replay_allowed_rows 0",
+    "full375_collateral": "NO-GO",
+    "search_evidence": "REVIEW",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "completion_gate": "full375 collateral GO + full_scan path",
+  "next_actions": [
+    "same_title_surface 5건은 lane별 계약 수리 후보로 우선 검토한다.",
+    "related_title_surface_review 10건은 별칭/표면형 관계를 source-native 또는 blind judge로 확인한 뒤에만 gate 완화한다.",
+    "different_title_candidate_review 12건은 잘못된 current projection candidate 가능성이 높으므로 promotion gate 완화 전에 canonical candidate를 재확정한다.",
+    "repair27은 runtime replay 입력이 아니며 contract/source-context 수리 전 동일 packet 반복 실행을 금지한다."
+  ]
+}

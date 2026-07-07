@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-524 - current projection candidate alignment in shared gate repair queue
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Projection candidate attachment | GO_UNIT | repair row에 현재 `publish_contract_trace.pre_gate_candidate`를 보존 | gate 완화 전 후보 canonicality 확인 |
+| Alignment accounting | REVIEW | `same 5`, `related-review 10`, `different-review 12`, review required `22` | related/different를 source-native 또는 blind judge로 분리 |
+| Runtime replay boundary | GO_BLOCKED | `runtime_replay_allowed_rows=0` | contract/source-context 수리 전 반복 실행 금지 |
+| Repair queue | REVIEW-LOCKED | repair rows `27`, validation issue `0` | same-title 5건부터 lane별 수리 후보로 검토 |
+| Dashboard policy | GO_PROGRESS_VIEW | `http://127.0.0.1:8080`, health `ok=true`, latest status `57/57`, `parallel_count=16` | 다음 테스트런도 `--parallel 16` + dashboard 기본 ON |
+| Verification | GO_UNIT | py_compile PASS, focused unittest `9` PASS, queue generation PASS | full375 collateral 전 approval 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: queue schema `GO`, repair queue `REVIEW-LOCKED / 27`, current projection candidate alignment `REVIEW / 22`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-523 - direct title surface publication bridge
 
 | 항목 | 상태 | 근거 | 다음 |

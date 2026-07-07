@@ -246,6 +246,98 @@ class SharedGateRuntimeBlockRepairQueueTest(unittest.TestCase):
         self.assertIn("title_url_or_variant_trace", repair["rows"][0]["repair_facets"])
         self.assertIn("scope_or_nonwork_monotonicity", repair["rows"][0]["repair_facets"])
 
+    def test_current_projection_candidate_mismatch_requires_recheck_not_runtime_replay(self):
+        queue = {
+            "queue_id": "unit_followup",
+            "rows": [
+                {
+                    "post_id": 11665124,
+                    "selected_title": "화산파(화산귀환)",
+                    "projected_title": "화산파(화산귀환)",
+                    "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+                    "prior_runtime_search_status": "SEARCH_DEGRADED",
+                    "prior_runtime_reason_codes": [
+                        "official_url_recall_candidate_preserved",
+                        "official_url_recall_candidate_source_preserved",
+                        "llm_only_sentence_candidate_pruned",
+                        "serialized_public_identity_scrubbed",
+                    ],
+                    "actions": ["shared_gate_runtime_block_repair_required"],
+                }
+            ],
+        }
+
+        repair = build_repair_queue(
+            queue,
+            queue_id="unit_repair",
+            projection_candidates_by_post_id={
+                "11665124": {
+                    "official_title": "뿔 달고 귀환했다 뿔을 단 채 귀환해버렸다 표지는 ai그림입니다",
+                    "official_url": "https://novelpia.com/novel/320490",
+                    "source": "candidate_ledger_or_serialized_identity",
+                }
+            },
+        )
+
+        row = repair["rows"][0]
+        self.assertEqual(row["current_projection_candidate_alignment_state"], "different_title_candidate_review")
+        self.assertTrue(row["current_projection_candidate_alignment_requires_review"])
+        self.assertEqual(
+            row["current_projection_candidate"]["official_title"],
+            "뿔 달고 귀환했다 뿔을 단 채 귀환해버렸다 표지는 ai그림입니다",
+        )
+        self.assertFalse(row["runtime_replay_allowed"])
+        self.assertIn("current_projection_candidate_alignment_review", row["repair_facets"])
+        self.assertIn("current_projection_candidate_recheck_required", row["actions"])
+        self.assertEqual(
+            repair["summary"]["current_projection_candidate_alignment_counts"],
+            {"different_title_candidate_review": 1},
+        )
+        self.assertEqual(repair["summary"]["current_projection_candidate_review_rows"], 1)
+
+    def test_matching_current_projection_candidate_does_not_add_recheck_action(self):
+        queue = {
+            "queue_id": "unit_followup",
+            "rows": [
+                {
+                    "post_id": 11702094,
+                    "selected_title": "#더블오",
+                    "projected_title": "#더블오",
+                    "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+                    "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+                    "prior_runtime_reason_codes": [
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "title_led_consumption_bridge",
+                        "serialized_public_identity_scrubbed",
+                    ],
+                    "actions": ["shared_gate_runtime_block_repair_required"],
+                }
+            ],
+        }
+
+        repair = build_repair_queue(
+            queue,
+            queue_id="unit_repair",
+            projection_candidates_by_post_id={
+                "11702094": {
+                    "official_title": "더블오",
+                    "official_url": None,
+                    "source": "candidate_ledger_or_serialized_identity",
+                }
+            },
+        )
+
+        row = repair["rows"][0]
+        self.assertEqual(row["current_projection_candidate_alignment_state"], "same_title_surface")
+        self.assertFalse(row["current_projection_candidate_alignment_requires_review"])
+        self.assertNotIn("current_projection_candidate_alignment_review", row["repair_facets"])
+        self.assertNotIn("current_projection_candidate_recheck_required", row["actions"])
+        self.assertEqual(
+            repair["summary"]["current_projection_candidate_alignment_counts"],
+            {"same_title_surface": 1},
+        )
+
     def test_invalid_prior_status_is_validation_issue(self):
         queue = {
             "queue_id": "unit_followup",

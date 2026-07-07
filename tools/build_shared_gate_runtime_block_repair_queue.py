@@ -104,8 +104,96 @@ def load_json(path: Path) -> dict[str, Any]:
     return payload
 
 
+def _iter_payload_rows(payload: Any) -> list[dict[str, Any]]:
+    if isinstance(payload, list):
+        return [row for row in payload if isinstance(row, dict)]
+    if not isinstance(payload, dict):
+        return []
+    for key in ("rows", "results", "items", "data"):
+        value = payload.get(key)
+        if isinstance(value, list):
+            return [row for row in value if isinstance(row, dict)]
+    return []
+
+
+def _unwrap_result_row(row: dict[str, Any]) -> dict[str, Any]:
+    result = row.get("result")
+    if isinstance(result, dict):
+        return result
+    return row
+
+
+def load_projection_candidate_map(path: Path) -> dict[str, dict[str, Any]]:
+    payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    candidates: dict[str, dict[str, Any]] = {}
+    for raw_row in _iter_payload_rows(payload):
+        row = _unwrap_result_row(raw_row)
+        post_id = str(row.get("post_id") or "").strip()
+        if not post_id:
+            continue
+        identity = ((row.get("analysis_result") or {}).get("identity") or row.get("identity") or {})
+        if not isinstance(identity, dict):
+            identity = {}
+        ledger = identity.get("candidate_ledger") or {}
+        if not isinstance(ledger, dict):
+            ledger = {}
+        trace = identity.get("publish_contract_trace") or ledger.get("publish_contract_trace") or {}
+        if not isinstance(trace, dict):
+            trace = {}
+        pre_gate = trace.get("pre_gate_candidate") or {}
+        if not isinstance(pre_gate, dict):
+            pre_gate = {}
+        blocked_reasons = trace.get("blocked_reason_codes") or trace.get("reason_codes") or []
+        if not isinstance(blocked_reasons, list):
+            blocked_reasons = [blocked_reasons]
+        candidates[post_id] = {
+            "official_title": pre_gate.get("official_title"),
+            "official_url": pre_gate.get("official_url"),
+            "source": pre_gate.get("source"),
+            "decision": trace.get("decision"),
+            "reason_codes": [str(item) for item in blocked_reasons if str(item or "").strip()],
+            "blocked_official_title": ledger.get("blocked_official_title") or identity.get("blocked_official_title"),
+            "blocked_official_url": ledger.get("blocked_official_url") or identity.get("blocked_official_url"),
+        }
+    return candidates
+
+
 def _counter_to_dict(counter: Counter[str]) -> dict[str, int]:
     return {key: counter[key] for key in sorted(counter)}
+
+
+def _title_key(value: Any) -> str:
+    return "".join(ch for ch in str(value or "").casefold() if ch.isalnum())
+
+
+def _title_alignment_state(expected_title: Any, current_title: Any) -> str:
+    expected = _title_key(expected_title)
+    current = _title_key(current_title)
+    if not expected or not current:
+        return "missing_current_projection_candidate"
+    if expected == current:
+        return "same_title_surface"
+
+    shorter, longer = (expected, current) if len(expected) <= len(current) else (current, expected)
+    if len(shorter) >= 2 and shorter in longer:
+        return "related_title_surface_review"
+
+    shorter_chars = set(shorter)
+    if shorter_chars:
+        overlap = len(shorter_chars & set(longer)) / len(shorter_chars)
+        if len(shorter) <= 4 and overlap >= 0.75:
+            return "related_title_surface_review"
+        if len(shorter) > 4 and overlap >= 0.55:
+            return "related_title_surface_review"
+    return "different_title_candidate_review"
+
+
+def _candidate_alignment_requires_review(state: str) -> bool:
+    return state in {
+        "missing_current_projection_candidate",
+        "related_title_surface_review",
+        "different_title_candidate_review",
+    }
 
 
 def _actions(row: dict[str, Any]) -> list[str]:
@@ -283,7 +371,11 @@ def _contract_tests(lane: str) -> list[str]:
     return lane_tests.get(lane, ["manual review packet이 next action을 확정한다."]) + common
 
 
-def classify_repair_row(row: dict[str, Any]) -> dict[str, Any]:
+def classify_repair_row(
+    row: dict[str, Any],
+    *,
+    projection_candidates_by_post_id: dict[str, dict[str, Any]] | None = None,
+) -> dict[str, Any]:
     reasons = _reason_set(row)
     projected_reasons = _projected_reason_set(row)
     search_gate = _search_gate(row)
@@ -310,10 +402,44 @@ def classify_repair_row(row: dict[str, Any]) -> dict[str, Any]:
     elif search_gate == "SEARCH_RECOVERED_CONDITIONAL":
         actions.insert(1, "search_recovered_conditional_tag_required")
 
+    selected_title = row.get("selected_title") or row.get("expected_title")
+    projected_title = row.get("projected_title") or row.get("expected_title")
+    expected_title_for_alignment = selected_title or projected_title
+    projection_candidate: dict[str, Any] | None = None
+    alignment_state = "not_checked"
+    if projection_candidates_by_post_id is not None:
+        projection_candidate = projection_candidates_by_post_id.get(str(row.get("post_id") or "").strip())
+        if projection_candidate is None:
+            alignment_state = "missing_current_projection_candidate"
+            projection_candidate = {}
+        else:
+            alignment_state = _title_alignment_state(
+                expected_title_for_alignment,
+                projection_candidate.get("official_title"),
+            )
+    alignment_requires_review = _candidate_alignment_requires_review(alignment_state)
+    if alignment_requires_review:
+        facets.append("current_projection_candidate_alignment_review")
+        actions.insert(1, "current_projection_candidate_recheck_required")
+
+    contract_tests = _contract_tests(lane)
+    if alignment_requires_review:
+        contract_tests = contract_tests + [
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다.",
+        ]
+    evidence_refs = list(row.get("evidence_refs") or []) + [
+        f"prior_runtime_expected_audit#post_id={row.get('post_id')}"
+    ]
+    if projection_candidates_by_post_id is not None:
+        evidence_refs.append(f"current_projection_result#post_id={row.get('post_id')}")
+
     return {
         "post_id": row.get("post_id"),
-        "selected_title": row.get("selected_title") or row.get("expected_title"),
-        "projected_title": row.get("projected_title") or row.get("expected_title"),
+        "selected_title": selected_title,
+        "projected_title": projected_title,
+        "current_projection_candidate": projection_candidate,
+        "current_projection_candidate_alignment_state": alignment_state,
+        "current_projection_candidate_alignment_requires_review": alignment_requires_review,
         "source_native_verdict": row.get("source_native_verdict"),
         "prior_runtime_audit_status": _runtime_audit_status(row) or None,
         "prior_runtime_search_status": _runtime_search_status(row),
@@ -330,9 +456,8 @@ def classify_repair_row(row: dict[str, Any]) -> dict[str, Any]:
         "runtime_replay_blocker": "contract_repair_required_before_replay",
         "actions": actions,
         "close_condition": _close_condition(lane),
-        "required_contract_tests": _contract_tests(lane),
-        "evidence_refs": list(row.get("evidence_refs") or [])
-        + [f"prior_runtime_expected_audit#post_id={row.get('post_id')}"],
+        "required_contract_tests": contract_tests,
+        "evidence_refs": evidence_refs,
     }
 
 
@@ -341,9 +466,14 @@ def build_repair_queue(
     *,
     queue_id: str,
     generated_at: str | None = None,
+    projection_candidates_by_post_id: dict[str, dict[str, Any]] | None = None,
+    projection_result_path: str | Path | None = None,
 ) -> dict[str, Any]:
     rows, validation_issues = _repair_rows(source_queue)
-    out_rows = [classify_repair_row(row) for row in rows]
+    out_rows = [
+        classify_repair_row(row, projection_candidates_by_post_id=projection_candidates_by_post_id)
+        for row in rows
+    ]
     primary_counts = Counter(str(row["primary_repair_lane"]) for row in out_rows)
     facet_counts: Counter[str] = Counter()
     reason_counts: Counter[str] = Counter()
@@ -353,6 +483,7 @@ def build_repair_queue(
         "conflict" if row.get("projection_runtime_scope_conflict") else "no_conflict" for row in out_rows
     )
     scope_conflict_kind_counts = Counter(str(row.get("projection_runtime_scope_conflict_kind") or "none") for row in out_rows)
+    alignment_counts = Counter(str(row.get("current_projection_candidate_alignment_state") or "not_checked") for row in out_rows)
     lane_groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in out_rows:
         lane_groups[str(row["primary_repair_lane"])].append(row)
@@ -380,6 +511,15 @@ def build_repair_queue(
                 "projection_runtime_scope_conflict_kind_counts": _counter_to_dict(
                     Counter(str(row.get("projection_runtime_scope_conflict_kind") or "none") for row in group_rows)
                 ),
+                "current_projection_candidate_alignment_counts": _counter_to_dict(
+                    Counter(
+                        str(row.get("current_projection_candidate_alignment_state") or "not_checked")
+                        for row in group_rows
+                    )
+                ),
+                "current_projection_candidate_review_rows": sum(
+                    1 for row in group_rows if row.get("current_projection_candidate_alignment_requires_review")
+                ),
                 "post_ids": [row.get("post_id") for row in group_rows],
                 "sample_rows": group_rows[:8],
             }
@@ -391,6 +531,7 @@ def build_repair_queue(
         "generated_at": generated_at or datetime.now().replace(microsecond=0).isoformat(),
         "source_queue_id": source_queue.get("queue_id"),
         "source_queue_path": source_queue.get("source_projection_path") or "",
+        "projection_result_path": str(projection_result_path or ""),
         "semantic_quality": "REVIEW-LOCKED",
         "full_scan_approval": False,
         "gate": "NO-GO" if validation_issues else "REVIEW-LOCKED",
@@ -405,6 +546,10 @@ def build_repair_queue(
             "action_counts": _counter_to_dict(action_counts),
             "projection_runtime_scope_conflict_counts": _counter_to_dict(scope_conflict_counts),
             "projection_runtime_scope_conflict_kind_counts": _counter_to_dict(scope_conflict_kind_counts),
+            "current_projection_candidate_alignment_counts": _counter_to_dict(alignment_counts),
+            "current_projection_candidate_review_rows": sum(
+                1 for row in out_rows if row.get("current_projection_candidate_alignment_requires_review")
+            ),
             "validation_issue_count": len(validation_issues),
         },
         "stop_condition": {
@@ -440,6 +585,8 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
         f"- search_gate_counts: `{summary.get('search_gate_counts')}`",
         f"- projection_runtime_scope_conflict_counts: `{summary.get('projection_runtime_scope_conflict_counts')}`",
         f"- projection_runtime_scope_conflict_kind_counts: `{summary.get('projection_runtime_scope_conflict_kind_counts')}`",
+        f"- current_projection_candidate_alignment_counts: `{summary.get('current_projection_candidate_alignment_counts')}`",
+        f"- current_projection_candidate_review_rows: `{summary.get('current_projection_candidate_review_rows')}`",
         f"- validation_issue_count: `{summary.get('validation_issue_count')}`",
         "- approval: `false`",
         "- semantic_quality: `REVIEW-LOCKED`",
@@ -465,6 +612,8 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
                 f"- facet_counts: `{group.get('facet_counts')}`",
                 f"- projection_runtime_scope_conflict_rows: `{group.get('projection_runtime_scope_conflict_rows')}`",
                 f"- projection_runtime_scope_conflict_kind_counts: `{group.get('projection_runtime_scope_conflict_kind_counts')}`",
+                f"- current_projection_candidate_alignment_counts: `{group.get('current_projection_candidate_alignment_counts')}`",
+                f"- current_projection_candidate_review_rows: `{group.get('current_projection_candidate_review_rows')}`",
                 f"- sample_post_ids: `{sample}`",
                 "",
             ]
@@ -478,6 +627,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build a repair queue for shared gate runtime promotion-block rows.")
     parser.add_argument("--queue", required=True, type=Path)
     parser.add_argument("--queue-id", default="shared_gate_runtime_block_repair_queue")
+    parser.add_argument("--projection-result", type=Path, default=None)
     parser.add_argument("--output-json", required=True, type=Path)
     parser.add_argument("--output-md", required=True, type=Path)
     parser.add_argument("--fail-on-validation-issue", action="store_true")
@@ -486,7 +636,15 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    queue = build_repair_queue(load_json(args.queue), queue_id=args.queue_id)
+    projection_candidates = None
+    if args.projection_result is not None:
+        projection_candidates = load_projection_candidate_map(args.projection_result)
+    queue = build_repair_queue(
+        load_json(args.queue),
+        queue_id=args.queue_id,
+        projection_candidates_by_post_id=projection_candidates,
+        projection_result_path=args.projection_result,
+    )
     args.output_json.parent.mkdir(parents=True, exist_ok=True)
     args.output_json.write_text(
         json.dumps(queue, ensure_ascii=False, indent=2) + "\n",

@@ -1,5 +1,37 @@
 # Verification Results
 
+## 2026-07-07 Loop524 Verification
+
+- 범위: Loop523 shared gate repair27 큐에 현재 projection `pre_gate_candidate`를 결합해 gate 완화 전 후보 정렬 review를 상시 회계하도록 했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_524_REPORT_20260707.md`
+  - state `docs\devs\loop524_current_projection_candidate_alignment_state_20260707.json`
+  - repair queue `docs\devs\loop524_current_projection_candidate_alignment_repair27_queue.json`
+  - repair queue markdown `docs\devs\loop524_current_projection_candidate_alignment_repair27_queue.md`
+  - source queue `docs\devs\loop523_direct_title_surface_safe57_expected_failure_queue.json`
+  - projection result `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop523_direct_title_surface_final_sync_projection_result.json`
+  - tool `tools\build_shared_gate_runtime_block_repair_queue.py`
+  - test `tests\test_shared_gate_runtime_block_repair_queue.py`
+- Result:
+  - repair queue rows `27`
+  - runtime replay allowed rows `0`
+  - validation issue `0`
+  - current projection candidate alignment `same_title_surface 5`, `related_title_surface_review 10`, `different_title_candidate_review 12`
+  - current projection candidate review rows `22`
+  - search gate `SEARCH_BLIND_BLOCKER 11`, `SEARCH_EVIDENCE_MISSING 8`, `SEARCH_RECOVERED_CONDITIONAL 7`, `SEARCH_OK 1`
+  - dashboard `http://127.0.0.1:8080`, health `ok=true`, latest status `57/57`, `parallel_count=16`
+- Validation:
+  - `python -m py_compile tools\build_shared_gate_runtime_block_repair_queue.py tests\test_shared_gate_runtime_block_repair_queue.py` PASS.
+  - `python -m unittest tests.test_shared_gate_runtime_block_repair_queue -v` PASS, `9` tests.
+  - `tools\build_shared_gate_runtime_block_repair_queue.py --projection-result ... --fail-on-validation-issue` PASS.
+  - Generated queue JSON parse PASS.
+- Boundary:
+  - Loop524는 runtime replay가 아니다.
+  - `related_title_surface_review`는 정답 확정이 아니라 source-native/blind 확인 대기 상태다.
+  - `different_title_candidate_review`는 promotion gate 완화 전 canonical candidate 재확정 대상이다.
+  - Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-07 Loop523 Verification
 
 - 범위: direct raw title surface와 official detail support가 함께 있는 blocked title/url variant 행을 final publication sync에서 복구했다.

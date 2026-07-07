@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-07 Loop524 current projection candidate alignment 체크
+
+- [x] 새 runtime replay를 실행하지 않았다.
+- [x] Loop523 failure queue `38`건에서 shared gate repair 대상 `27`건을 재회계했다.
+- [x] `tools/build_shared_gate_runtime_block_repair_queue.py`에 `--projection-result` 입력을 추가했다.
+- [x] 각 repair row에 현재 projection `pre_gate_candidate`와 expected/source-native title alignment state를 기록한다.
+- [x] Alignment 분포는 `same_title_surface 5`, `related_title_surface_review 10`, `different_title_candidate_review 12`다.
+- [x] Alignment review required rows는 `22`건이다.
+- [x] `current_projection_candidate_recheck_required` action을 추가했다.
+- [x] `runtime_replay_allowed_rows`는 계속 `0`이다.
+- [x] Queue validation issue는 `0`이다.
+- [x] Dashboard health는 `ok=true`, `standalone=true`, `pid=9320`이다.
+- [x] `tests.test_shared_gate_runtime_block_repair_queue`는 `9` tests PASS다.
+- [ ] `related_title_surface_review`를 정답으로 간주하지 않는다. source-native/blind 확인 전에는 gate 완화 금지.
+- [ ] `different_title_candidate_review`는 promotion gate 완화 전 canonical candidate를 재확정한다.
+- [ ] Repair queue `27`건은 contract/source-context 수리 전 runtime replay 입력으로 쓰지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: queue schema `GO`, repair queue `REVIEW-LOCKED / 27`, current projection candidate alignment `REVIEW / 22`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop523 direct-title surface projection sync 체크
 
 - [x] 새 runtime replay를 실행하지 않았다.

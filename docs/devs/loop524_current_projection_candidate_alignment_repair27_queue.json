@@ -1,0 +1,3919 @@
+{
+  "report_type": "shared_gate_runtime_block_repair_queue",
+  "queue_id": "loop524_current_projection_candidate_alignment_repair27_queue",
+  "generated_at": "2026-07-07T13:55:16",
+  "source_queue_id": "loop523_direct_title_surface_safe57_expected_failure_queue",
+  "source_queue_path": "",
+  "projection_result_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop523_direct_title_surface_final_sync_projection_result.json",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "REVIEW-LOCKED",
+  "summary": {
+    "source_queue_rows": 38,
+    "repair_rows": 27,
+    "runtime_replay_allowed_rows": 0,
+    "primary_repair_lane_counts": {
+      "candidate_preservation_or_scrub_repair": 9,
+      "image_or_alias_anchor_contract_repair": 5,
+      "scope_or_nonwork_monotonicity_repair": 10,
+      "title_url_or_variant_trace_repair": 3
+    },
+    "repair_facet_counts": {
+      "candidate_preservation_or_scrub": 27,
+      "current_projection_candidate_alignment_review": 22,
+      "image_or_alias_anchor_contract": 5,
+      "official_support_reconciliation": 11,
+      "public_identity_serialization_trace": 27,
+      "scope_or_nonwork_monotonicity": 12,
+      "search_blind_or_missing_preflight": 26,
+      "title_url_or_variant_trace": 3
+    },
+    "search_gate_counts": {
+      "SEARCH_BLIND_BLOCKER": 11,
+      "SEARCH_EVIDENCE_MISSING": 8,
+      "SEARCH_OK": 1,
+      "SEARCH_RECOVERED_CONDITIONAL": 7
+    },
+    "reason_counts": {
+      "alias_bridge": 2,
+      "batch_alias_public_title_bridge": 3,
+      "blocked_candidate_scope_inferred_from_final_contract": 5,
+      "blocked_candidate_scope_inferred_from_search_evidence": 2,
+      "character_bridge_variance_hold": 2,
+      "community_banter": 2,
+      "context_only": 1,
+      "exact_alias_candidate_preserved_without_work_discussion": 5,
+      "external_ip_unresolved_final_blocked": 1,
+      "image_ocr_without_title_anchor": 5,
+      "llm_only_sentence_candidate_pruned": 8,
+      "missing_body_work_bridge": 1,
+      "non_novel_discourse": 2,
+      "nonwork": 2,
+      "nonwork_or_noise_context": 5,
+      "official_detail_bracket_visual_release_context": 1,
+      "official_detail_url": 8,
+      "official_detail_url_recovered_from_search_evidence": 2,
+      "official_title_exists": 9,
+      "official_title_looks_like_listing_description": 1,
+      "official_url_recall_candidate_preserved": 4,
+      "official_url_recall_candidate_source_preserved": 4,
+      "promoted_image_work_title_conflicts_with_public_title": 1,
+      "promotion_blocked": 5,
+      "recommendation_context_only_no_work_anchor": 1,
+      "resolved_public_title_scope": 3,
+      "row_discusses_work_as_work": 4,
+      "row_discussion_missing": 6,
+      "row_discussion_present_noncurrent_scope": 1,
+      "scope_context_only": 8,
+      "scope_current_work": 6,
+      "scope_image_ocr_derived_work": 1,
+      "scope_not_current_work": 12,
+      "scope_platform_meta_nonwork": 2,
+      "scope_unclassified": 1,
+      "scope_unknown": 1,
+      "serialized_public_identity_scrubbed": 27,
+      "title_acceptance_accept": 1,
+      "title_led_consumption_bridge": 1,
+      "unresolved_body_character_work_anchor": 1,
+      "unverified_promoted_image_work_title_without_official_support": 1,
+      "weak_alias_surface_public_title_bridge": 1,
+      "work_consumption_marker": 1
+    },
+    "action_counts": {
+      "candidate_preservation_or_scrub_repair_required": 9,
+      "current_projection_candidate_recheck_required": 22,
+      "full375_collateral_recheck_after_repair": 27,
+      "image_or_alias_anchor_contract_repair_required": 5,
+      "publish_contract_trace_contract_test_required": 27,
+      "runtime_replay_after_contract_repair": 27,
+      "scope_or_nonwork_monotonicity_repair_required": 10,
+      "search_blind_preflight_required": 19,
+      "search_recovered_conditional_tag_required": 7,
+      "title_url_or_variant_trace_repair_required": 3
+    },
+    "projection_runtime_scope_conflict_counts": {
+      "no_conflict": 27
+    },
+    "projection_runtime_scope_conflict_kind_counts": {
+      "none": 27
+    },
+    "current_projection_candidate_alignment_counts": {
+      "different_title_candidate_review": 12,
+      "related_title_surface_review": 10,
+      "same_title_surface": 5
+    },
+    "current_projection_candidate_review_rows": 22,
+    "validation_issue_count": 0
+  },
+  "stop_condition": {
+    "actionable_queue_must_decrease": true,
+    "same_packet_safe_resolved_must_be_monotonic_non_decreasing": true,
+    "round_count_is_not_a_stop_condition": true
+  },
+  "approval_boundary": {
+    "repair_queue_is_not_approval": true,
+    "runtime_replay_before_contract_repair_forbidden": true,
+    "full375_collateral_remains_no_go": true,
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "action_groups": [
+    {
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "row_count": 9,
+      "search_gate_counts": {
+        "SEARCH_BLIND_BLOCKER": 3,
+        "SEARCH_EVIDENCE_MISSING": 3,
+        "SEARCH_RECOVERED_CONDITIONAL": 3
+      },
+      "facet_counts": {
+        "candidate_preservation_or_scrub": 9,
+        "current_projection_candidate_alignment_review": 8,
+        "public_identity_serialization_trace": 9,
+        "search_blind_or_missing_preflight": 9
+      },
+      "projection_runtime_scope_conflict_rows": 0,
+      "projection_runtime_scope_conflict_kind_counts": {
+        "none": 9
+      },
+      "current_projection_candidate_alignment_counts": {
+        "different_title_candidate_review": 5,
+        "related_title_surface_review": 3,
+        "same_title_surface": 1
+      },
+      "current_projection_candidate_review_rows": 8,
+      "post_ids": [
+        11665124,
+        11677926,
+        11690841,
+        11697242,
+        11706871,
+        11666741,
+        11694068,
+        11669926,
+        11682775
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11665124,
+          "selected_title": "화산파(화산귀환)",
+          "projected_title": "화산파(화산귀환)",
+          "current_projection_candidate": {
+            "official_title": "뿔 달고 귀환했다 뿔을 단 채 귀환해버렸다 표지는 ai그림입니다",
+            "official_url": "https://novelpia.com/novel/320490",
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "official_url_recall_candidate_preserved",
+              "official_url_recall_candidate_source_preserved",
+              "llm_only_sentence_candidate_pruned",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "뿔 달고 귀환했다 뿔을 단 채 귀환해버렸다 표지는 ai그림입니다",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "different_title_candidate_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "search_gate": "SEARCH_BLIND_BLOCKER",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_SCOPE_UNSPECIFIED",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "candidate_preservation_or_scrub",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "official_url_recall_candidate_preserved",
+            "official_url_recall_candidate_source_preserved",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "candidate_preservation_or_scrub_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "supported candidate가 serialized public identity에서 사라지지 않고 candidate ledger와 publish trace에 보존되어야 한다.",
+          "required_contract_tests": [
+            "llm-only sentence pruning 뒤에도 source-native supported candidate는 candidate ledger에 보존된다.",
+            "serialized_public_identity_scrubbed reason은 public identity와 candidate ledger의 불일치로 audit 가능해야 한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11665124",
+            "prior_runtime_expected_audit#post_id=11665124",
+            "current_projection_result#post_id=11665124"
+          ]
+        },
+        {
+          "post_id": 11677926,
+          "selected_title": "재앙급 막내 공자의 회귀",
+          "projected_title": "재앙급 막내 공자의 회귀",
+          "current_projection_candidate": {
+            "official_title": "무영자 가 돌아왔다",
+            "official_url": null,
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "llm_only_sentence_candidate_pruned",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "무영자 가 돌아왔다",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "different_title_candidate_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "search_gate": "SEARCH_BLIND_BLOCKER",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_SCOPE_UNSPECIFIED",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "candidate_preservation_or_scrub",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "candidate_preservation_or_scrub_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "supported candidate가 serialized public identity에서 사라지지 않고 candidate ledger와 publish trace에 보존되어야 한다.",
+          "required_contract_tests": [
+            "llm-only sentence pruning 뒤에도 source-native supported candidate는 candidate ledger에 보존된다.",
+            "serialized_public_identity_scrubbed reason은 public identity와 candidate ledger의 불일치로 audit 가능해야 한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11677926",
+            "prior_runtime_expected_audit#post_id=11677926",
+            "current_projection_result#post_id=11677926"
+          ]
+        },
+        {
+          "post_id": 11690841,
+          "selected_title": "블루 아카이브",
+          "projected_title": "블루 아카이브",
+          "current_projection_candidate": {
+            "official_title": "가츠동도 만들어줌",
+            "official_url": null,
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "promotion_blocked",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "가츠동도 만들어줌",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "different_title_candidate_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "None",
+          "search_gate": "SEARCH_EVIDENCE_MISSING",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_SCOPE_UNSPECIFIED",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "candidate_preservation_or_scrub",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "promotion_blocked",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "candidate_preservation_or_scrub_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "supported candidate가 serialized public identity에서 사라지지 않고 candidate ledger와 publish trace에 보존되어야 한다.",
+          "required_contract_tests": [
+            "llm-only sentence pruning 뒤에도 source-native supported candidate는 candidate ledger에 보존된다.",
+            "serialized_public_identity_scrubbed reason은 public identity와 candidate ledger의 불일치로 audit 가능해야 한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11690841",
+            "prior_runtime_expected_audit#post_id=11690841",
+            "current_projection_result#post_id=11690841"
+          ]
+        },
+        {
+          "post_id": 11697242,
+          "selected_title": "유희왕",
+          "projected_title": "유희왕",
+          "current_projection_candidate": {
+            "official_title": "삼전의 재를 썼어야지",
+            "official_url": null,
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "promotion_blocked",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "삼전의 재를 썼어야지",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "different_title_candidate_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "None",
+          "search_gate": "SEARCH_EVIDENCE_MISSING",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_SCOPE_UNSPECIFIED",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "candidate_preservation_or_scrub",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "promotion_blocked",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "candidate_preservation_or_scrub_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "supported candidate가 serialized public identity에서 사라지지 않고 candidate ledger와 publish trace에 보존되어야 한다.",
+          "required_contract_tests": [
+            "llm-only sentence pruning 뒤에도 source-native supported candidate는 candidate ledger에 보존된다.",
+            "serialized_public_identity_scrubbed reason은 public identity와 candidate ledger의 불일치로 audit 가능해야 한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11697242",
+            "prior_runtime_expected_audit#post_id=11697242",
+            "current_projection_result#post_id=11697242"
+          ]
+        },
+        {
+          "post_id": 11706871,
+          "selected_title": "파우스트",
+          "projected_title": "파우스트",
+          "current_projection_candidate": {
+            "official_title": "데빌게이머 파우스트",
+            "official_url": "https://series.naver.com/novel/detail.series?productNo=2179539",
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "llm_only_sentence_candidate_pruned",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "데빌게이머 파우스트",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "related_title_surface_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_SCOPE_UNSPECIFIED",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "candidate_preservation_or_scrub",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "candidate_preservation_or_scrub_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_recovered_conditional_tag_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "supported candidate가 serialized public identity에서 사라지지 않고 candidate ledger와 publish trace에 보존되어야 한다.",
+          "required_contract_tests": [
+            "llm-only sentence pruning 뒤에도 source-native supported candidate는 candidate ledger에 보존된다.",
+            "serialized_public_identity_scrubbed reason은 public identity와 candidate ledger의 불일치로 audit 가능해야 한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11706871",
+            "prior_runtime_expected_audit#post_id=11706871",
+            "current_projection_result#post_id=11706871"
+          ]
+        },
+        {
+          "post_id": 11666741,
+          "selected_title": "별을 품은 소드마스터",
+          "projected_title": "별을 품은 소드마스터",
+          "current_projection_candidate": {
+            "official_title": "별품소",
+            "official_url": null,
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "promotion_blocked",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "별품소",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "related_title_surface_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "None",
+          "search_gate": "SEARCH_EVIDENCE_MISSING",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_SCOPE_UNSPECIFIED",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "candidate_preservation_or_scrub",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "promotion_blocked",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "candidate_preservation_or_scrub_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "supported candidate가 serialized public identity에서 사라지지 않고 candidate ledger와 publish trace에 보존되어야 한다.",
+          "required_contract_tests": [
+            "llm-only sentence pruning 뒤에도 source-native supported candidate는 candidate ledger에 보존된다.",
+            "serialized_public_identity_scrubbed reason은 public identity와 candidate ledger의 불일치로 audit 가능해야 한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11666741",
+            "prior_runtime_expected_audit#post_id=11666741",
+            "current_projection_result#post_id=11666741"
+          ]
+        },
+        {
+          "post_id": 11694068,
+          "selected_title": "트와일라잇",
+          "projected_title": "트와일라잇",
+          "current_projection_candidate": {
+            "official_title": "Twilight",
+            "official_url": "https://page.kakao.com/content/47180017",
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "llm_only_sentence_candidate_pruned",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "Twilight",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "different_title_candidate_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_SCOPE_UNSPECIFIED",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "candidate_preservation_or_scrub",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "candidate_preservation_or_scrub_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_recovered_conditional_tag_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "supported candidate가 serialized public identity에서 사라지지 않고 candidate ledger와 publish trace에 보존되어야 한다.",
+          "required_contract_tests": [
+            "llm-only sentence pruning 뒤에도 source-native supported candidate는 candidate ledger에 보존된다.",
+            "serialized_public_identity_scrubbed reason은 public identity와 candidate ledger의 불일치로 audit 가능해야 한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11694068",
+            "prior_runtime_expected_audit#post_id=11694068",
+            "current_projection_result#post_id=11694068"
+          ]
+        },
+        {
+          "post_id": 11669926,
+          "selected_title": "싸울아비 룬",
+          "projected_title": "싸울아비 룬",
+          "current_projection_candidate": {
+            "official_title": "싸울 아흔번째",
+            "official_url": null,
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "promotion_blocked",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "싸울 아흔번째",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "related_title_surface_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "search_gate": "SEARCH_BLIND_BLOCKER",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_SCOPE_UNSPECIFIED",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "candidate_preservation_or_scrub",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "promotion_blocked",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "candidate_preservation_or_scrub_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "supported candidate가 serialized public identity에서 사라지지 않고 candidate ledger와 publish trace에 보존되어야 한다.",
+          "required_contract_tests": [
+            "llm-only sentence pruning 뒤에도 source-native supported candidate는 candidate ledger에 보존된다.",
+            "serialized_public_identity_scrubbed reason은 public identity와 candidate ledger의 불일치로 audit 가능해야 한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11669926",
+            "prior_runtime_expected_audit#post_id=11669926",
+            "current_projection_result#post_id=11669926"
+          ]
+        }
+      ]
+    },
+    {
+      "primary_repair_lane": "image_or_alias_anchor_contract_repair",
+      "row_count": 5,
+      "search_gate_counts": {
+        "SEARCH_BLIND_BLOCKER": 2,
+        "SEARCH_EVIDENCE_MISSING": 2,
+        "SEARCH_RECOVERED_CONDITIONAL": 1
+      },
+      "facet_counts": {
+        "candidate_preservation_or_scrub": 5,
+        "current_projection_candidate_alignment_review": 3,
+        "image_or_alias_anchor_contract": 5,
+        "official_support_reconciliation": 5,
+        "public_identity_serialization_trace": 5,
+        "scope_or_nonwork_monotonicity": 2,
+        "search_blind_or_missing_preflight": 5
+      },
+      "projection_runtime_scope_conflict_rows": 0,
+      "projection_runtime_scope_conflict_kind_counts": {
+        "none": 5
+      },
+      "current_projection_candidate_alignment_counts": {
+        "different_title_candidate_review": 2,
+        "related_title_surface_review": 1,
+        "same_title_surface": 2
+      },
+      "current_projection_candidate_review_rows": 3,
+      "post_ids": [
+        11681172,
+        11710049,
+        11679547,
+        11682767,
+        11700483
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11681172,
+          "selected_title": "헌터갤러리의 국가권력급 기계공주",
+          "projected_title": "헌터갤러리의 국가권력급 기계공주",
+          "current_projection_candidate": {
+            "official_title": "파멸의 날, 밤하늘 속 별들이 빛나던 그 날을 잊지못한 소년은 기사를 자칭한다. 저 하늘에 빛나는 별하늘을 그릴 때 까지",
+            "official_url": "https://novelpia.com/novel/420052",
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "official_title_exists",
+              "row_discusses_work_as_work",
+              "scope_current_work",
+              "batch_alias_public_title_bridge",
+              "official_detail_url",
+              "official_title_looks_like_listing_description",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "파멸의 날, 밤하늘 속 별들이 빛나던 그 날을 잊지못한 소년은 기사를 자칭한다. 저 하늘에 빛나는 별하늘을 그릴 때 까지",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "different_title_candidate_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "None",
+          "search_gate": "SEARCH_EVIDENCE_MISSING",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_CURRENT_WORK",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "image_or_alias_anchor_contract_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "candidate_preservation_or_scrub",
+            "image_or_alias_anchor_contract",
+            "official_support_reconciliation",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "batch_alias_public_title_bridge",
+            "official_detail_url",
+            "official_title_exists",
+            "official_title_looks_like_listing_description",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "image_or_alias_anchor_contract_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "이미지/OCR/별칭 앵커가 direct work anchor인지 검증하고, 미검증 앵커는 candidate_only로 보존해야 한다.",
+          "required_contract_tests": [
+            "검증된 이미지/OCR/별칭 앵커만 _post_discusses_work_as_work 경유로 current-work bridge를 연다.",
+            "image_ocr_without_title_anchor 계열은 직접 제목 앵커 없이는 publish를 열지 않는다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11681172",
+            "prior_runtime_expected_audit#post_id=11681172",
+            "current_projection_result#post_id=11681172"
+          ]
+        },
+        {
+          "post_id": 11710049,
+          "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+          "projected_title": "[림월드]변방계에서 회귀자로 살아남기",
+          "current_projection_candidate": {
+            "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+            "official_url": "https://novelpia.com/novel/382324",
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "official_title_exists",
+              "row_discussion_missing",
+              "scope_context_only",
+              "scope_not_current_work",
+              "unresolved_body_character_work_anchor",
+              "missing_body_work_bridge",
+              "title_led_consumption_bridge",
+              "title_acceptance_accept",
+              "alias_bridge",
+              "official_detail_url",
+              "official_detail_bracket_visual_release_context",
+              "llm_only_sentence_candidate_pruned",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "[림월드]변방계에서 회귀자로 살아남기",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "same_title_surface",
+          "current_projection_candidate_alignment_requires_review": false,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "search_gate": "SEARCH_BLIND_BLOCKER",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "image_or_alias_anchor_contract_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "scope_or_nonwork_monotonicity",
+            "candidate_preservation_or_scrub",
+            "image_or_alias_anchor_contract",
+            "official_support_reconciliation",
+            "search_blind_or_missing_preflight"
+          ],
+          "reason_codes": [
+            "alias_bridge",
+            "llm_only_sentence_candidate_pruned",
+            "missing_body_work_bridge",
+            "official_detail_bracket_visual_release_context",
+            "official_detail_url",
+            "official_title_exists",
+            "row_discussion_missing",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed",
+            "title_acceptance_accept",
+            "title_led_consumption_bridge",
+            "unresolved_body_character_work_anchor"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "image_or_alias_anchor_contract_repair_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "이미지/OCR/별칭 앵커가 direct work anchor인지 검증하고, 미검증 앵커는 candidate_only로 보존해야 한다.",
+          "required_contract_tests": [
+            "검증된 이미지/OCR/별칭 앵커만 _post_discusses_work_as_work 경유로 current-work bridge를 연다.",
+            "image_ocr_without_title_anchor 계열은 직접 제목 앵커 없이는 publish를 열지 않는다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11710049",
+            "prior_runtime_expected_audit#post_id=11710049",
+            "current_projection_result#post_id=11710049"
+          ]
+        },
+        {
+          "post_id": 11679547,
+          "selected_title": "도굴왕",
+          "projected_title": "도굴왕",
+          "current_projection_candidate": {
+            "official_title": "나 혼자만 레벨업",
+            "official_url": "https://series.naver.com/novel/detail.series?productNo=3207276",
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "official_title_exists",
+              "row_discusses_work_as_work",
+              "scope_current_work",
+              "official_detail_url",
+              "work_consumption_marker",
+              "alias_bridge",
+              "official_url_recall_candidate_preserved",
+              "official_url_recall_candidate_source_preserved",
+              "llm_only_sentence_candidate_pruned",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "나 혼자만 레벨업",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "different_title_candidate_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_CURRENT_WORK",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "image_or_alias_anchor_contract_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "candidate_preservation_or_scrub",
+            "image_or_alias_anchor_contract",
+            "official_support_reconciliation",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "alias_bridge",
+            "llm_only_sentence_candidate_pruned",
+            "official_detail_url",
+            "official_title_exists",
+            "official_url_recall_candidate_preserved",
+            "official_url_recall_candidate_source_preserved",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_scrubbed",
+            "work_consumption_marker"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "image_or_alias_anchor_contract_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_recovered_conditional_tag_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "이미지/OCR/별칭 앵커가 direct work anchor인지 검증하고, 미검증 앵커는 candidate_only로 보존해야 한다.",
+          "required_contract_tests": [
+            "검증된 이미지/OCR/별칭 앵커만 _post_discusses_work_as_work 경유로 current-work bridge를 연다.",
+            "image_ocr_without_title_anchor 계열은 직접 제목 앵커 없이는 publish를 열지 않는다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11679547",
+            "prior_runtime_expected_audit#post_id=11679547",
+            "current_projection_result#post_id=11679547"
+          ]
+        },
+        {
+          "post_id": 11682767,
+          "selected_title": "묵향",
+          "projected_title": "묵향",
+          "current_projection_candidate": {
+            "official_title": "묵향 1권",
+            "official_url": "https://mm.munpia.com/?menu=novel&action=view&id=51088&entry_id=776982",
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "official_title_exists",
+              "row_discusses_work_as_work",
+              "scope_current_work",
+              "batch_alias_public_title_bridge",
+              "official_detail_url",
+              "weak_alias_surface_public_title_bridge",
+              "llm_only_sentence_candidate_pruned",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "묵향 1권",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "related_title_surface_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "search_gate": "SEARCH_BLIND_BLOCKER",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_CURRENT_WORK",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "image_or_alias_anchor_contract_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "candidate_preservation_or_scrub",
+            "image_or_alias_anchor_contract",
+            "official_support_reconciliation",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "batch_alias_public_title_bridge",
+            "llm_only_sentence_candidate_pruned",
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_scrubbed",
+            "weak_alias_surface_public_title_bridge"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "image_or_alias_anchor_contract_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "이미지/OCR/별칭 앵커가 direct work anchor인지 검증하고, 미검증 앵커는 candidate_only로 보존해야 한다.",
+          "required_contract_tests": [
+            "검증된 이미지/OCR/별칭 앵커만 _post_discusses_work_as_work 경유로 current-work bridge를 연다.",
+            "image_ocr_without_title_anchor 계열은 직접 제목 앵커 없이는 publish를 열지 않는다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11682767",
+            "prior_runtime_expected_audit#post_id=11682767",
+            "current_projection_result#post_id=11682767"
+          ]
+        },
+        {
+          "post_id": 11700483,
+          "selected_title": "니들 생각 다 들린다",
+          "projected_title": "니들 생각 다 들린다",
+          "current_projection_candidate": {
+            "official_title": "니들 생각 다 들린다",
+            "official_url": null,
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "official_title_exists",
+              "row_discussion_present_noncurrent_scope",
+              "batch_alias_public_title_bridge",
+              "unverified_promoted_image_work_title_without_official_support",
+              "scope_image_ocr_derived_work",
+              "scope_not_current_work",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "니들 생각 다 들린다",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "same_title_surface",
+          "current_projection_candidate_alignment_requires_review": false,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "None",
+          "search_gate": "SEARCH_EVIDENCE_MISSING",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "image_or_alias_anchor_contract_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "scope_or_nonwork_monotonicity",
+            "candidate_preservation_or_scrub",
+            "image_or_alias_anchor_contract",
+            "official_support_reconciliation",
+            "search_blind_or_missing_preflight"
+          ],
+          "reason_codes": [
+            "batch_alias_public_title_bridge",
+            "official_title_exists",
+            "row_discussion_present_noncurrent_scope",
+            "scope_image_ocr_derived_work",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed",
+            "unverified_promoted_image_work_title_without_official_support"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "image_or_alias_anchor_contract_repair_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "이미지/OCR/별칭 앵커가 direct work anchor인지 검증하고, 미검증 앵커는 candidate_only로 보존해야 한다.",
+          "required_contract_tests": [
+            "검증된 이미지/OCR/별칭 앵커만 _post_discusses_work_as_work 경유로 current-work bridge를 연다.",
+            "image_ocr_without_title_anchor 계열은 직접 제목 앵커 없이는 publish를 열지 않는다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11700483",
+            "prior_runtime_expected_audit#post_id=11700483",
+            "current_projection_result#post_id=11700483"
+          ]
+        }
+      ]
+    },
+    {
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "row_count": 10,
+      "search_gate_counts": {
+        "SEARCH_BLIND_BLOCKER": 3,
+        "SEARCH_EVIDENCE_MISSING": 3,
+        "SEARCH_OK": 1,
+        "SEARCH_RECOVERED_CONDITIONAL": 3
+      },
+      "facet_counts": {
+        "candidate_preservation_or_scrub": 10,
+        "current_projection_candidate_alignment_review": 9,
+        "official_support_reconciliation": 3,
+        "public_identity_serialization_trace": 10,
+        "scope_or_nonwork_monotonicity": 10,
+        "search_blind_or_missing_preflight": 9
+      },
+      "projection_runtime_scope_conflict_rows": 0,
+      "projection_runtime_scope_conflict_kind_counts": {
+        "none": 10
+      },
+      "current_projection_candidate_alignment_counts": {
+        "different_title_candidate_review": 4,
+        "related_title_surface_review": 5,
+        "same_title_surface": 1
+      },
+      "current_projection_candidate_review_rows": 9,
+      "post_ids": [
+        11660271,
+        11660273,
+        11669913,
+        11697256,
+        11710021,
+        11714887,
+        11718114,
+        11668300,
+        11698859,
+        11708470
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11660271,
+          "selected_title": "월야의 여인들",
+          "projected_title": "월야의 여인들",
+          "current_projection_candidate": {
+            "official_title": "경멸하는 여자를 굴복시키는 법",
+            "official_url": "https://novelpia.com/novel/121059",
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "official_title_exists",
+              "row_discussion_missing",
+              "scope_context_only",
+              "scope_not_current_work",
+              "recommendation_context_only_no_work_anchor",
+              "resolved_public_title_scope",
+              "official_detail_url",
+              "llm_only_sentence_candidate_pruned",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "경멸하는 여자를 굴복시키는 법",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "different_title_candidate_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "scope_or_nonwork_monotonicity",
+            "candidate_preservation_or_scrub",
+            "official_support_reconciliation",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "official_detail_url",
+            "official_title_exists",
+            "recommendation_context_only_no_work_anchor",
+            "resolved_public_title_scope",
+            "row_discussion_missing",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "scope_or_nonwork_monotonicity_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_recovered_conditional_tag_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "current-work 직접 브리지가 확인되기 전에는 hard-hold를 완화하지 않고, 확인된 경우 _post_discusses_work_as_work 경유로만 publish를 연다.",
+          "required_contract_tests": [
+            "_has_verified_contextual_alias_work_bridge는 _post_discusses_work_as_work를 경유한다.",
+            "scope_not_current_work/context_only/nonwork reason은 direct work bridge 없이는 monotonic hard-hold를 유지한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11660271",
+            "prior_runtime_expected_audit#post_id=11660271",
+            "current_projection_result#post_id=11660271"
+          ]
+        },
+        {
+          "post_id": 11660273,
+          "selected_title": "마도서를 줍다 마법사가 되다",
+          "projected_title": "마도서를 줍다 마법사가 되다",
+          "current_projection_candidate": {
+            "official_title": "투명인데 안키움",
+            "official_url": null,
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "scope_context_only",
+              "scope_not_current_work",
+              "blocked_candidate_scope_inferred_from_final_contract",
+              "exact_alias_candidate_preserved_without_work_discussion",
+              "image_ocr_without_title_anchor",
+              "nonwork_or_noise_context",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "투명인데 안키움",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "different_title_candidate_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "search_gate": "SEARCH_BLIND_BLOCKER",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "scope_or_nonwork_monotonicity",
+            "candidate_preservation_or_scrub",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "scope_or_nonwork_monotonicity_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "current-work 직접 브리지가 확인되기 전에는 hard-hold를 완화하지 않고, 확인된 경우 _post_discusses_work_as_work 경유로만 publish를 연다.",
+          "required_contract_tests": [
+            "_has_verified_contextual_alias_work_bridge는 _post_discusses_work_as_work를 경유한다.",
+            "scope_not_current_work/context_only/nonwork reason은 direct work bridge 없이는 monotonic hard-hold를 유지한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11660273",
+            "prior_runtime_expected_audit#post_id=11660273",
+            "current_projection_result#post_id=11660273"
+          ]
+        },
+        {
+          "post_id": 11669913,
+          "selected_title": "하룬",
+          "projected_title": "하룬",
+          "current_projection_candidate": {
+            "official_title": "팩트는",
+            "official_url": null,
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "scope_context_only",
+              "scope_not_current_work",
+              "blocked_candidate_scope_inferred_from_final_contract",
+              "exact_alias_candidate_preserved_without_work_discussion",
+              "image_ocr_without_title_anchor",
+              "nonwork_or_noise_context",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "팩트는",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "different_title_candidate_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "search_gate": "SEARCH_BLIND_BLOCKER",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "scope_or_nonwork_monotonicity",
+            "candidate_preservation_or_scrub",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "scope_or_nonwork_monotonicity_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "current-work 직접 브리지가 확인되기 전에는 hard-hold를 완화하지 않고, 확인된 경우 _post_discusses_work_as_work 경유로만 publish를 연다.",
+          "required_contract_tests": [
+            "_has_verified_contextual_alias_work_bridge는 _post_discusses_work_as_work를 경유한다.",
+            "scope_not_current_work/context_only/nonwork reason은 direct work bridge 없이는 monotonic hard-hold를 유지한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11669913",
+            "prior_runtime_expected_audit#post_id=11669913",
+            "current_projection_result#post_id=11669913"
+          ]
+        },
+        {
+          "post_id": 11697256,
+          "selected_title": "황제의 딸로 환생했다",
+          "projected_title": "황제의 딸로 환생했다",
+          "current_projection_candidate": {
+            "official_title": "황제딸",
+            "official_url": null,
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "official_title_exists",
+              "row_discussion_missing",
+              "context_only",
+              "scope_unknown",
+              "scope_not_current_work",
+              "scope_unclassified",
+              "official_detail_url",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "황제딸",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "related_title_surface_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "None",
+          "search_gate": "SEARCH_EVIDENCE_MISSING",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "scope_or_nonwork_monotonicity",
+            "candidate_preservation_or_scrub",
+            "official_support_reconciliation",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "context_only",
+            "official_detail_url",
+            "official_title_exists",
+            "row_discussion_missing",
+            "scope_not_current_work",
+            "scope_unclassified",
+            "scope_unknown",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "scope_or_nonwork_monotonicity_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "current-work 직접 브리지가 확인되기 전에는 hard-hold를 완화하지 않고, 확인된 경우 _post_discusses_work_as_work 경유로만 publish를 연다.",
+          "required_contract_tests": [
+            "_has_verified_contextual_alias_work_bridge는 _post_discusses_work_as_work를 경유한다.",
+            "scope_not_current_work/context_only/nonwork reason은 direct work bridge 없이는 monotonic hard-hold를 유지한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11697256",
+            "prior_runtime_expected_audit#post_id=11697256",
+            "current_projection_result#post_id=11697256"
+          ]
+        },
+        {
+          "post_id": 11710021,
+          "selected_title": "무한의 마법사",
+          "projected_title": "무한의 마법사",
+          "current_projection_candidate": {
+            "official_title": "무마",
+            "official_url": null,
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "row_discussion_missing",
+              "nonwork",
+              "community_banter",
+              "scope_platform_meta_nonwork",
+              "scope_not_current_work",
+              "non_novel_discourse",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "무마",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "related_title_surface_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "None",
+          "search_gate": "SEARCH_EVIDENCE_MISSING",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "scope_or_nonwork_monotonicity",
+            "candidate_preservation_or_scrub",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "community_banter",
+            "non_novel_discourse",
+            "nonwork",
+            "row_discussion_missing",
+            "scope_not_current_work",
+            "scope_platform_meta_nonwork",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "scope_or_nonwork_monotonicity_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "current-work 직접 브리지가 확인되기 전에는 hard-hold를 완화하지 않고, 확인된 경우 _post_discusses_work_as_work 경유로만 publish를 연다.",
+          "required_contract_tests": [
+            "_has_verified_contextual_alias_work_bridge는 _post_discusses_work_as_work를 경유한다.",
+            "scope_not_current_work/context_only/nonwork reason은 direct work bridge 없이는 monotonic hard-hold를 유지한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11710021",
+            "prior_runtime_expected_audit#post_id=11710021",
+            "current_projection_result#post_id=11710021"
+          ]
+        },
+        {
+          "post_id": 11714887,
+          "selected_title": "도굴왕 1 |",
+          "projected_title": "도굴왕 1 |",
+          "current_projection_candidate": {
+            "official_title": "[도굴왕] [fate] 도굴왕에서 에누마 엘리시를!!",
+            "official_url": "https://novelpia.com/novel/155741",
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "row_discussion_missing",
+              "nonwork",
+              "community_banter",
+              "scope_platform_meta_nonwork",
+              "scope_not_current_work",
+              "non_novel_discourse",
+              "official_url_recall_candidate_preserved",
+              "official_url_recall_candidate_source_preserved",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "[도굴왕] [fate] 도굴왕에서 에누마 엘리시를!!",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "related_title_surface_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "scope_or_nonwork_monotonicity",
+            "candidate_preservation_or_scrub",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "community_banter",
+            "non_novel_discourse",
+            "nonwork",
+            "official_url_recall_candidate_preserved",
+            "official_url_recall_candidate_source_preserved",
+            "row_discussion_missing",
+            "scope_not_current_work",
+            "scope_platform_meta_nonwork",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "scope_or_nonwork_monotonicity_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_recovered_conditional_tag_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "current-work 직접 브리지가 확인되기 전에는 hard-hold를 완화하지 않고, 확인된 경우 _post_discusses_work_as_work 경유로만 publish를 연다.",
+          "required_contract_tests": [
+            "_has_verified_contextual_alias_work_bridge는 _post_discusses_work_as_work를 경유한다.",
+            "scope_not_current_work/context_only/nonwork reason은 direct work bridge 없이는 monotonic hard-hold를 유지한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11714887",
+            "prior_runtime_expected_audit#post_id=11714887",
+            "current_projection_result#post_id=11714887"
+          ]
+        },
+        {
+          "post_id": 11718114,
+          "selected_title": "설정값 딸깍으로 판타지 시스템 정상화",
+          "projected_title": "설정값 딸깍으로 판타지 시스템 정상화",
+          "current_projection_candidate": {
+            "official_title": "시스템",
+            "official_url": "https://novelpia.com/novel/383584",
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "scope_context_only",
+              "scope_not_current_work",
+              "blocked_candidate_scope_inferred_from_final_contract",
+              "exact_alias_candidate_preserved_without_work_discussion",
+              "image_ocr_without_title_anchor",
+              "nonwork_or_noise_context",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "시스템",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "related_title_surface_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "scope_or_nonwork_monotonicity",
+            "candidate_preservation_or_scrub",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "scope_or_nonwork_monotonicity_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_recovered_conditional_tag_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "current-work 직접 브리지가 확인되기 전에는 hard-hold를 완화하지 않고, 확인된 경우 _post_discusses_work_as_work 경유로만 publish를 연다.",
+          "required_contract_tests": [
+            "_has_verified_contextual_alias_work_bridge는 _post_discusses_work_as_work를 경유한다.",
+            "scope_not_current_work/context_only/nonwork reason은 direct work bridge 없이는 monotonic hard-hold를 유지한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11718114",
+            "prior_runtime_expected_audit#post_id=11718114",
+            "current_projection_result#post_id=11718114"
+          ]
+        },
+        {
+          "post_id": 11668300,
+          "selected_title": "즉사기 들고 게임 속으로",
+          "projected_title": "즉사기 들고 게임 속으로",
+          "current_projection_candidate": {
+            "official_title": "즉사기 인 줄 알았는데 지옥이었다",
+            "official_url": "https://novel.munpia.com/467992",
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "scope_context_only",
+              "scope_not_current_work",
+              "blocked_candidate_scope_inferred_from_final_contract",
+              "exact_alias_candidate_preserved_without_work_discussion",
+              "image_ocr_without_title_anchor",
+              "nonwork_or_noise_context",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "즉사기 인 줄 알았는데 지옥이었다",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "different_title_candidate_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "ok",
+          "search_gate": "SEARCH_OK",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "scope_or_nonwork_monotonicity",
+            "candidate_preservation_or_scrub",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "scope_or_nonwork_monotonicity_repair_required",
+            "current_projection_candidate_recheck_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "current-work 직접 브리지가 확인되기 전에는 hard-hold를 완화하지 않고, 확인된 경우 _post_discusses_work_as_work 경유로만 publish를 연다.",
+          "required_contract_tests": [
+            "_has_verified_contextual_alias_work_bridge는 _post_discusses_work_as_work를 경유한다.",
+            "scope_not_current_work/context_only/nonwork reason은 direct work bridge 없이는 monotonic hard-hold를 유지한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11668300",
+            "prior_runtime_expected_audit#post_id=11668300",
+            "current_projection_result#post_id=11668300"
+          ]
+        }
+      ]
+    },
+    {
+      "primary_repair_lane": "title_url_or_variant_trace_repair",
+      "row_count": 3,
+      "search_gate_counts": {
+        "SEARCH_BLIND_BLOCKER": 3
+      },
+      "facet_counts": {
+        "candidate_preservation_or_scrub": 3,
+        "current_projection_candidate_alignment_review": 2,
+        "official_support_reconciliation": 3,
+        "public_identity_serialization_trace": 3,
+        "search_blind_or_missing_preflight": 3,
+        "title_url_or_variant_trace": 3
+      },
+      "projection_runtime_scope_conflict_rows": 0,
+      "projection_runtime_scope_conflict_kind_counts": {
+        "none": 3
+      },
+      "current_projection_candidate_alignment_counts": {
+        "different_title_candidate_review": 1,
+        "related_title_surface_review": 1,
+        "same_title_surface": 1
+      },
+      "current_projection_candidate_review_rows": 2,
+      "post_ids": [
+        11718099,
+        11718110,
+        11673080
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11718099,
+          "selected_title": "빌어먹을 환생",
+          "projected_title": "빌어먹을 환생",
+          "current_projection_candidate": {
+            "official_title": "빌어먹을 환생",
+            "official_url": "https://novel.munpia.com/222360",
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "official_title_exists",
+              "row_discusses_work_as_work",
+              "scope_current_work",
+              "resolved_public_title_scope",
+              "official_detail_url",
+              "promoted_image_work_title_conflicts_with_public_title",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "빌어먹을 환생",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "same_title_surface",
+          "current_projection_candidate_alignment_requires_review": false,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "search_gate": "SEARCH_BLIND_BLOCKER",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_CURRENT_WORK",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "title_url_or_variant_trace_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "candidate_preservation_or_scrub",
+            "title_url_or_variant_trace",
+            "official_support_reconciliation",
+            "search_blind_or_missing_preflight"
+          ],
+          "reason_codes": [
+            "official_detail_url",
+            "official_title_exists",
+            "promoted_image_work_title_conflicts_with_public_title",
+            "resolved_public_title_scope",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "title_url_or_variant_trace_repair_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "title/url mismatch, competing candidate, variant reason이 publish_contract_trace와 can_publish_title에서 같은 결정으로 수렴해야 한다.",
+          "required_contract_tests": [
+            "publish_contract_trace와 can_publish_title이 title/url mismatch를 같은 reason code로 노출한다.",
+            "공식 URL과 public title이 불일치하면 safe_resolved가 아니라 candidate_only로 보존한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11718099",
+            "prior_runtime_expected_audit#post_id=11718099",
+            "current_projection_result#post_id=11718099"
+          ]
+        },
+        {
+          "post_id": 11718110,
+          "selected_title": "지구온라인에서 쌀먹합니다",
+          "projected_title": "지구온라인에서 쌀먹합니다",
+          "current_projection_candidate": {
+            "official_title": "지구 온라인 의 플레이어가 되었다",
+            "official_url": "https://novelpia.com/novel/385052",
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "scope_current_work",
+              "blocked_candidate_scope_inferred_from_search_evidence",
+              "official_detail_url_recovered_from_search_evidence",
+              "character_bridge_variance_hold",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "지구 온라인 의 플레이어가 되었다",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "different_title_candidate_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "search_gate": "SEARCH_BLIND_BLOCKER",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_CURRENT_WORK",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "title_url_or_variant_trace_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "candidate_preservation_or_scrub",
+            "title_url_or_variant_trace",
+            "official_support_reconciliation",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "blocked_candidate_scope_inferred_from_search_evidence",
+            "character_bridge_variance_hold",
+            "official_detail_url_recovered_from_search_evidence",
+            "scope_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "title_url_or_variant_trace_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "title/url mismatch, competing candidate, variant reason이 publish_contract_trace와 can_publish_title에서 같은 결정으로 수렴해야 한다.",
+          "required_contract_tests": [
+            "publish_contract_trace와 can_publish_title이 title/url mismatch를 같은 reason code로 노출한다.",
+            "공식 URL과 public title이 불일치하면 safe_resolved가 아니라 candidate_only로 보존한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11718110",
+            "prior_runtime_expected_audit#post_id=11718110",
+            "current_projection_result#post_id=11718110"
+          ]
+        },
+        {
+          "post_id": 11673080,
+          "selected_title": "갤질하는 천재 의사",
+          "projected_title": "갤질하는 천재 의사",
+          "current_projection_candidate": {
+            "official_title": "댓글 보는 천재 의사",
+            "official_url": "https://novelpia.com/novel/372180",
+            "source": "candidate_ledger_or_serialized_identity",
+            "decision": null,
+            "reason_codes": [
+              "official_url_recall_candidate_preserved",
+              "official_url_recall_candidate_source_preserved",
+              "scope_current_work",
+              "blocked_candidate_scope_inferred_from_search_evidence",
+              "official_detail_url_recovered_from_search_evidence",
+              "character_bridge_variance_hold",
+              "serialized_public_identity_scrubbed"
+            ],
+            "blocked_official_title": "댓글 보는 천재 의사",
+            "blocked_official_url": null
+          },
+          "current_projection_candidate_alignment_state": "related_title_surface_review",
+          "current_projection_candidate_alignment_requires_review": true,
+          "source_native_verdict": null,
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "search_gate": "SEARCH_BLIND_BLOCKER",
+          "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+          "runtime_scope_claim": "RUNTIME_CURRENT_WORK",
+          "projection_runtime_scope_conflict": false,
+          "projection_runtime_scope_conflict_kind": "none",
+          "primary_repair_lane": "title_url_or_variant_trace_repair",
+          "repair_facets": [
+            "public_identity_serialization_trace",
+            "candidate_preservation_or_scrub",
+            "title_url_or_variant_trace",
+            "official_support_reconciliation",
+            "search_blind_or_missing_preflight",
+            "current_projection_candidate_alignment_review"
+          ],
+          "reason_codes": [
+            "blocked_candidate_scope_inferred_from_search_evidence",
+            "character_bridge_variance_hold",
+            "official_detail_url_recovered_from_search_evidence",
+            "official_url_recall_candidate_preserved",
+            "official_url_recall_candidate_source_preserved",
+            "scope_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "runtime_replay_allowed": false,
+          "runtime_replay_blocker": "contract_repair_required_before_replay",
+          "actions": [
+            "title_url_or_variant_trace_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "close_condition": "title/url mismatch, competing candidate, variant reason이 publish_contract_trace와 can_publish_title에서 같은 결정으로 수렴해야 한다.",
+          "required_contract_tests": [
+            "publish_contract_trace와 can_publish_title이 title/url mismatch를 같은 reason code로 노출한다.",
+            "공식 URL과 public title이 불일치하면 safe_resolved가 아니라 candidate_only로 보존한다.",
+            "runtime replay는 수리 전 금지한다.",
+            "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+            "full375 collateral 재확인 전 approval을 열지 않는다.",
+            "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+          ],
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11673080",
+            "prior_runtime_expected_audit#post_id=11673080",
+            "current_projection_result#post_id=11673080"
+          ]
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "post_id": 11660271,
+      "selected_title": "월야의 여인들",
+      "projected_title": "월야의 여인들",
+      "current_projection_candidate": {
+        "official_title": "경멸하는 여자를 굴복시키는 법",
+        "official_url": "https://novelpia.com/novel/121059",
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_missing",
+          "scope_context_only",
+          "scope_not_current_work",
+          "recommendation_context_only_no_work_anchor",
+          "resolved_public_title_scope",
+          "official_detail_url",
+          "llm_only_sentence_candidate_pruned",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "경멸하는 여자를 굴복시키는 법",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "scope_or_nonwork_monotonicity",
+        "candidate_preservation_or_scrub",
+        "official_support_reconciliation",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "official_detail_url",
+        "official_title_exists",
+        "recommendation_context_only_no_work_anchor",
+        "resolved_public_title_scope",
+        "row_discussion_missing",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_recovered_conditional_tag_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "current-work 직접 브리지가 확인되기 전에는 hard-hold를 완화하지 않고, 확인된 경우 _post_discusses_work_as_work 경유로만 publish를 연다.",
+      "required_contract_tests": [
+        "_has_verified_contextual_alias_work_bridge는 _post_discusses_work_as_work를 경유한다.",
+        "scope_not_current_work/context_only/nonwork reason은 direct work bridge 없이는 monotonic hard-hold를 유지한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11660271",
+        "prior_runtime_expected_audit#post_id=11660271",
+        "current_projection_result#post_id=11660271"
+      ]
+    },
+    {
+      "post_id": 11660273,
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "projected_title": "마도서를 줍다 마법사가 되다",
+      "current_projection_candidate": {
+        "official_title": "투명인데 안키움",
+        "official_url": null,
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "scope_context_only",
+          "scope_not_current_work",
+          "blocked_candidate_scope_inferred_from_final_contract",
+          "exact_alias_candidate_preserved_without_work_discussion",
+          "image_ocr_without_title_anchor",
+          "nonwork_or_noise_context",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "투명인데 안키움",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "scope_or_nonwork_monotonicity",
+        "candidate_preservation_or_scrub",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "current-work 직접 브리지가 확인되기 전에는 hard-hold를 완화하지 않고, 확인된 경우 _post_discusses_work_as_work 경유로만 publish를 연다.",
+      "required_contract_tests": [
+        "_has_verified_contextual_alias_work_bridge는 _post_discusses_work_as_work를 경유한다.",
+        "scope_not_current_work/context_only/nonwork reason은 direct work bridge 없이는 monotonic hard-hold를 유지한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11660273",
+        "prior_runtime_expected_audit#post_id=11660273",
+        "current_projection_result#post_id=11660273"
+      ]
+    },
+    {
+      "post_id": 11665124,
+      "selected_title": "화산파(화산귀환)",
+      "projected_title": "화산파(화산귀환)",
+      "current_projection_candidate": {
+        "official_title": "뿔 달고 귀환했다 뿔을 단 채 귀환해버렸다 표지는 ai그림입니다",
+        "official_url": "https://novelpia.com/novel/320490",
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "official_url_recall_candidate_preserved",
+          "official_url_recall_candidate_source_preserved",
+          "llm_only_sentence_candidate_pruned",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "뿔 달고 귀환했다 뿔을 단 채 귀환해버렸다 표지는 ai그림입니다",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_SCOPE_UNSPECIFIED",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "candidate_preservation_or_scrub",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "supported candidate가 serialized public identity에서 사라지지 않고 candidate ledger와 publish trace에 보존되어야 한다.",
+      "required_contract_tests": [
+        "llm-only sentence pruning 뒤에도 source-native supported candidate는 candidate ledger에 보존된다.",
+        "serialized_public_identity_scrubbed reason은 public identity와 candidate ledger의 불일치로 audit 가능해야 한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11665124",
+        "prior_runtime_expected_audit#post_id=11665124",
+        "current_projection_result#post_id=11665124"
+      ]
+    },
+    {
+      "post_id": 11669913,
+      "selected_title": "하룬",
+      "projected_title": "하룬",
+      "current_projection_candidate": {
+        "official_title": "팩트는",
+        "official_url": null,
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "scope_context_only",
+          "scope_not_current_work",
+          "blocked_candidate_scope_inferred_from_final_contract",
+          "exact_alias_candidate_preserved_without_work_discussion",
+          "image_ocr_without_title_anchor",
+          "nonwork_or_noise_context",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "팩트는",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "scope_or_nonwork_monotonicity",
+        "candidate_preservation_or_scrub",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "current-work 직접 브리지가 확인되기 전에는 hard-hold를 완화하지 않고, 확인된 경우 _post_discusses_work_as_work 경유로만 publish를 연다.",
+      "required_contract_tests": [
+        "_has_verified_contextual_alias_work_bridge는 _post_discusses_work_as_work를 경유한다.",
+        "scope_not_current_work/context_only/nonwork reason은 direct work bridge 없이는 monotonic hard-hold를 유지한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11669913",
+        "prior_runtime_expected_audit#post_id=11669913",
+        "current_projection_result#post_id=11669913"
+      ]
+    },
+    {
+      "post_id": 11677926,
+      "selected_title": "재앙급 막내 공자의 회귀",
+      "projected_title": "재앙급 막내 공자의 회귀",
+      "current_projection_candidate": {
+        "official_title": "무영자 가 돌아왔다",
+        "official_url": null,
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "llm_only_sentence_candidate_pruned",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "무영자 가 돌아왔다",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_SCOPE_UNSPECIFIED",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "candidate_preservation_or_scrub",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "supported candidate가 serialized public identity에서 사라지지 않고 candidate ledger와 publish trace에 보존되어야 한다.",
+      "required_contract_tests": [
+        "llm-only sentence pruning 뒤에도 source-native supported candidate는 candidate ledger에 보존된다.",
+        "serialized_public_identity_scrubbed reason은 public identity와 candidate ledger의 불일치로 audit 가능해야 한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11677926",
+        "prior_runtime_expected_audit#post_id=11677926",
+        "current_projection_result#post_id=11677926"
+      ]
+    },
+    {
+      "post_id": 11681172,
+      "selected_title": "헌터갤러리의 국가권력급 기계공주",
+      "projected_title": "헌터갤러리의 국가권력급 기계공주",
+      "current_projection_candidate": {
+        "official_title": "파멸의 날, 밤하늘 속 별들이 빛나던 그 날을 잊지못한 소년은 기사를 자칭한다. 저 하늘에 빛나는 별하늘을 그릴 때 까지",
+        "official_url": "https://novelpia.com/novel/420052",
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "batch_alias_public_title_bridge",
+          "official_detail_url",
+          "official_title_looks_like_listing_description",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "파멸의 날, 밤하늘 속 별들이 빛나던 그 날을 잊지못한 소년은 기사를 자칭한다. 저 하늘에 빛나는 별하늘을 그릴 때 까지",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "None",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_CURRENT_WORK",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "image_or_alias_anchor_contract_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "candidate_preservation_or_scrub",
+        "image_or_alias_anchor_contract",
+        "official_support_reconciliation",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "batch_alias_public_title_bridge",
+        "official_detail_url",
+        "official_title_exists",
+        "official_title_looks_like_listing_description",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "image_or_alias_anchor_contract_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "이미지/OCR/별칭 앵커가 direct work anchor인지 검증하고, 미검증 앵커는 candidate_only로 보존해야 한다.",
+      "required_contract_tests": [
+        "검증된 이미지/OCR/별칭 앵커만 _post_discusses_work_as_work 경유로 current-work bridge를 연다.",
+        "image_ocr_without_title_anchor 계열은 직접 제목 앵커 없이는 publish를 열지 않는다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11681172",
+        "prior_runtime_expected_audit#post_id=11681172",
+        "current_projection_result#post_id=11681172"
+      ]
+    },
+    {
+      "post_id": 11690841,
+      "selected_title": "블루 아카이브",
+      "projected_title": "블루 아카이브",
+      "current_projection_candidate": {
+        "official_title": "가츠동도 만들어줌",
+        "official_url": null,
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "promotion_blocked",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "가츠동도 만들어줌",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "None",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_SCOPE_UNSPECIFIED",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "candidate_preservation_or_scrub",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "supported candidate가 serialized public identity에서 사라지지 않고 candidate ledger와 publish trace에 보존되어야 한다.",
+      "required_contract_tests": [
+        "llm-only sentence pruning 뒤에도 source-native supported candidate는 candidate ledger에 보존된다.",
+        "serialized_public_identity_scrubbed reason은 public identity와 candidate ledger의 불일치로 audit 가능해야 한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11690841",
+        "prior_runtime_expected_audit#post_id=11690841",
+        "current_projection_result#post_id=11690841"
+      ]
+    },
+    {
+      "post_id": 11697242,
+      "selected_title": "유희왕",
+      "projected_title": "유희왕",
+      "current_projection_candidate": {
+        "official_title": "삼전의 재를 썼어야지",
+        "official_url": null,
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "promotion_blocked",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "삼전의 재를 썼어야지",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "None",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_SCOPE_UNSPECIFIED",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "candidate_preservation_or_scrub",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "supported candidate가 serialized public identity에서 사라지지 않고 candidate ledger와 publish trace에 보존되어야 한다.",
+      "required_contract_tests": [
+        "llm-only sentence pruning 뒤에도 source-native supported candidate는 candidate ledger에 보존된다.",
+        "serialized_public_identity_scrubbed reason은 public identity와 candidate ledger의 불일치로 audit 가능해야 한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11697242",
+        "prior_runtime_expected_audit#post_id=11697242",
+        "current_projection_result#post_id=11697242"
+      ]
+    },
+    {
+      "post_id": 11697256,
+      "selected_title": "황제의 딸로 환생했다",
+      "projected_title": "황제의 딸로 환생했다",
+      "current_projection_candidate": {
+        "official_title": "황제딸",
+        "official_url": null,
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_missing",
+          "context_only",
+          "scope_unknown",
+          "scope_not_current_work",
+          "scope_unclassified",
+          "official_detail_url",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "황제딸",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "None",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "scope_or_nonwork_monotonicity",
+        "candidate_preservation_or_scrub",
+        "official_support_reconciliation",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "context_only",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discussion_missing",
+        "scope_not_current_work",
+        "scope_unclassified",
+        "scope_unknown",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "current-work 직접 브리지가 확인되기 전에는 hard-hold를 완화하지 않고, 확인된 경우 _post_discusses_work_as_work 경유로만 publish를 연다.",
+      "required_contract_tests": [
+        "_has_verified_contextual_alias_work_bridge는 _post_discusses_work_as_work를 경유한다.",
+        "scope_not_current_work/context_only/nonwork reason은 direct work bridge 없이는 monotonic hard-hold를 유지한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11697256",
+        "prior_runtime_expected_audit#post_id=11697256",
+        "current_projection_result#post_id=11697256"
+      ]
+    },
+    {
+      "post_id": 11706871,
+      "selected_title": "파우스트",
+      "projected_title": "파우스트",
+      "current_projection_candidate": {
+        "official_title": "데빌게이머 파우스트",
+        "official_url": "https://series.naver.com/novel/detail.series?productNo=2179539",
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "llm_only_sentence_candidate_pruned",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "데빌게이머 파우스트",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_SCOPE_UNSPECIFIED",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "candidate_preservation_or_scrub",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_recovered_conditional_tag_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "supported candidate가 serialized public identity에서 사라지지 않고 candidate ledger와 publish trace에 보존되어야 한다.",
+      "required_contract_tests": [
+        "llm-only sentence pruning 뒤에도 source-native supported candidate는 candidate ledger에 보존된다.",
+        "serialized_public_identity_scrubbed reason은 public identity와 candidate ledger의 불일치로 audit 가능해야 한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11706871",
+        "prior_runtime_expected_audit#post_id=11706871",
+        "current_projection_result#post_id=11706871"
+      ]
+    },
+    {
+      "post_id": 11710021,
+      "selected_title": "무한의 마법사",
+      "projected_title": "무한의 마법사",
+      "current_projection_candidate": {
+        "official_title": "무마",
+        "official_url": null,
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "row_discussion_missing",
+          "nonwork",
+          "community_banter",
+          "scope_platform_meta_nonwork",
+          "scope_not_current_work",
+          "non_novel_discourse",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "무마",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "None",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "scope_or_nonwork_monotonicity",
+        "candidate_preservation_or_scrub",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "community_banter",
+        "non_novel_discourse",
+        "nonwork",
+        "row_discussion_missing",
+        "scope_not_current_work",
+        "scope_platform_meta_nonwork",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "current-work 직접 브리지가 확인되기 전에는 hard-hold를 완화하지 않고, 확인된 경우 _post_discusses_work_as_work 경유로만 publish를 연다.",
+      "required_contract_tests": [
+        "_has_verified_contextual_alias_work_bridge는 _post_discusses_work_as_work를 경유한다.",
+        "scope_not_current_work/context_only/nonwork reason은 direct work bridge 없이는 monotonic hard-hold를 유지한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11710021",
+        "prior_runtime_expected_audit#post_id=11710021",
+        "current_projection_result#post_id=11710021"
+      ]
+    },
+    {
+      "post_id": 11710049,
+      "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "projected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "current_projection_candidate": {
+        "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+        "official_url": "https://novelpia.com/novel/382324",
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_missing",
+          "scope_context_only",
+          "scope_not_current_work",
+          "unresolved_body_character_work_anchor",
+          "missing_body_work_bridge",
+          "title_led_consumption_bridge",
+          "title_acceptance_accept",
+          "alias_bridge",
+          "official_detail_url",
+          "official_detail_bracket_visual_release_context",
+          "llm_only_sentence_candidate_pruned",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "[림월드]변방계에서 회귀자로 살아남기",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "same_title_surface",
+      "current_projection_candidate_alignment_requires_review": false,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "image_or_alias_anchor_contract_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "scope_or_nonwork_monotonicity",
+        "candidate_preservation_or_scrub",
+        "image_or_alias_anchor_contract",
+        "official_support_reconciliation",
+        "search_blind_or_missing_preflight"
+      ],
+      "reason_codes": [
+        "alias_bridge",
+        "llm_only_sentence_candidate_pruned",
+        "missing_body_work_bridge",
+        "official_detail_bracket_visual_release_context",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discussion_missing",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "title_acceptance_accept",
+        "title_led_consumption_bridge",
+        "unresolved_body_character_work_anchor"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "image_or_alias_anchor_contract_repair_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "이미지/OCR/별칭 앵커가 direct work anchor인지 검증하고, 미검증 앵커는 candidate_only로 보존해야 한다.",
+      "required_contract_tests": [
+        "검증된 이미지/OCR/별칭 앵커만 _post_discusses_work_as_work 경유로 current-work bridge를 연다.",
+        "image_ocr_without_title_anchor 계열은 직접 제목 앵커 없이는 publish를 열지 않는다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11710049",
+        "prior_runtime_expected_audit#post_id=11710049",
+        "current_projection_result#post_id=11710049"
+      ]
+    },
+    {
+      "post_id": 11714887,
+      "selected_title": "도굴왕 1 |",
+      "projected_title": "도굴왕 1 |",
+      "current_projection_candidate": {
+        "official_title": "[도굴왕] [fate] 도굴왕에서 에누마 엘리시를!!",
+        "official_url": "https://novelpia.com/novel/155741",
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "row_discussion_missing",
+          "nonwork",
+          "community_banter",
+          "scope_platform_meta_nonwork",
+          "scope_not_current_work",
+          "non_novel_discourse",
+          "official_url_recall_candidate_preserved",
+          "official_url_recall_candidate_source_preserved",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "[도굴왕] [fate] 도굴왕에서 에누마 엘리시를!!",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "scope_or_nonwork_monotonicity",
+        "candidate_preservation_or_scrub",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "community_banter",
+        "non_novel_discourse",
+        "nonwork",
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved",
+        "row_discussion_missing",
+        "scope_not_current_work",
+        "scope_platform_meta_nonwork",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_recovered_conditional_tag_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "current-work 직접 브리지가 확인되기 전에는 hard-hold를 완화하지 않고, 확인된 경우 _post_discusses_work_as_work 경유로만 publish를 연다.",
+      "required_contract_tests": [
+        "_has_verified_contextual_alias_work_bridge는 _post_discusses_work_as_work를 경유한다.",
+        "scope_not_current_work/context_only/nonwork reason은 direct work bridge 없이는 monotonic hard-hold를 유지한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11714887",
+        "prior_runtime_expected_audit#post_id=11714887",
+        "current_projection_result#post_id=11714887"
+      ]
+    },
+    {
+      "post_id": 11718099,
+      "selected_title": "빌어먹을 환생",
+      "projected_title": "빌어먹을 환생",
+      "current_projection_candidate": {
+        "official_title": "빌어먹을 환생",
+        "official_url": "https://novel.munpia.com/222360",
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "resolved_public_title_scope",
+          "official_detail_url",
+          "promoted_image_work_title_conflicts_with_public_title",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "빌어먹을 환생",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "same_title_surface",
+      "current_projection_candidate_alignment_requires_review": false,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_CURRENT_WORK",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "title_url_or_variant_trace_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "candidate_preservation_or_scrub",
+        "title_url_or_variant_trace",
+        "official_support_reconciliation",
+        "search_blind_or_missing_preflight"
+      ],
+      "reason_codes": [
+        "official_detail_url",
+        "official_title_exists",
+        "promoted_image_work_title_conflicts_with_public_title",
+        "resolved_public_title_scope",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "title_url_or_variant_trace_repair_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "title/url mismatch, competing candidate, variant reason이 publish_contract_trace와 can_publish_title에서 같은 결정으로 수렴해야 한다.",
+      "required_contract_tests": [
+        "publish_contract_trace와 can_publish_title이 title/url mismatch를 같은 reason code로 노출한다.",
+        "공식 URL과 public title이 불일치하면 safe_resolved가 아니라 candidate_only로 보존한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11718099",
+        "prior_runtime_expected_audit#post_id=11718099",
+        "current_projection_result#post_id=11718099"
+      ]
+    },
+    {
+      "post_id": 11718110,
+      "selected_title": "지구온라인에서 쌀먹합니다",
+      "projected_title": "지구온라인에서 쌀먹합니다",
+      "current_projection_candidate": {
+        "official_title": "지구 온라인 의 플레이어가 되었다",
+        "official_url": "https://novelpia.com/novel/385052",
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "scope_current_work",
+          "blocked_candidate_scope_inferred_from_search_evidence",
+          "official_detail_url_recovered_from_search_evidence",
+          "character_bridge_variance_hold",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "지구 온라인 의 플레이어가 되었다",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_CURRENT_WORK",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "title_url_or_variant_trace_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "candidate_preservation_or_scrub",
+        "title_url_or_variant_trace",
+        "official_support_reconciliation",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_search_evidence",
+        "character_bridge_variance_hold",
+        "official_detail_url_recovered_from_search_evidence",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "title_url_or_variant_trace_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "title/url mismatch, competing candidate, variant reason이 publish_contract_trace와 can_publish_title에서 같은 결정으로 수렴해야 한다.",
+      "required_contract_tests": [
+        "publish_contract_trace와 can_publish_title이 title/url mismatch를 같은 reason code로 노출한다.",
+        "공식 URL과 public title이 불일치하면 safe_resolved가 아니라 candidate_only로 보존한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11718110",
+        "prior_runtime_expected_audit#post_id=11718110",
+        "current_projection_result#post_id=11718110"
+      ]
+    },
+    {
+      "post_id": 11718114,
+      "selected_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "projected_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "current_projection_candidate": {
+        "official_title": "시스템",
+        "official_url": "https://novelpia.com/novel/383584",
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "scope_context_only",
+          "scope_not_current_work",
+          "blocked_candidate_scope_inferred_from_final_contract",
+          "exact_alias_candidate_preserved_without_work_discussion",
+          "image_ocr_without_title_anchor",
+          "nonwork_or_noise_context",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "시스템",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "scope_or_nonwork_monotonicity",
+        "candidate_preservation_or_scrub",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_recovered_conditional_tag_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "current-work 직접 브리지가 확인되기 전에는 hard-hold를 완화하지 않고, 확인된 경우 _post_discusses_work_as_work 경유로만 publish를 연다.",
+      "required_contract_tests": [
+        "_has_verified_contextual_alias_work_bridge는 _post_discusses_work_as_work를 경유한다.",
+        "scope_not_current_work/context_only/nonwork reason은 direct work bridge 없이는 monotonic hard-hold를 유지한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11718114",
+        "prior_runtime_expected_audit#post_id=11718114",
+        "current_projection_result#post_id=11718114"
+      ]
+    },
+    {
+      "post_id": 11666741,
+      "selected_title": "별을 품은 소드마스터",
+      "projected_title": "별을 품은 소드마스터",
+      "current_projection_candidate": {
+        "official_title": "별품소",
+        "official_url": null,
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "promotion_blocked",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "별품소",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "None",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_SCOPE_UNSPECIFIED",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "candidate_preservation_or_scrub",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "supported candidate가 serialized public identity에서 사라지지 않고 candidate ledger와 publish trace에 보존되어야 한다.",
+      "required_contract_tests": [
+        "llm-only sentence pruning 뒤에도 source-native supported candidate는 candidate ledger에 보존된다.",
+        "serialized_public_identity_scrubbed reason은 public identity와 candidate ledger의 불일치로 audit 가능해야 한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11666741",
+        "prior_runtime_expected_audit#post_id=11666741",
+        "current_projection_result#post_id=11666741"
+      ]
+    },
+    {
+      "post_id": 11694068,
+      "selected_title": "트와일라잇",
+      "projected_title": "트와일라잇",
+      "current_projection_candidate": {
+        "official_title": "Twilight",
+        "official_url": "https://page.kakao.com/content/47180017",
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "llm_only_sentence_candidate_pruned",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "Twilight",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_SCOPE_UNSPECIFIED",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "candidate_preservation_or_scrub",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_recovered_conditional_tag_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "supported candidate가 serialized public identity에서 사라지지 않고 candidate ledger와 publish trace에 보존되어야 한다.",
+      "required_contract_tests": [
+        "llm-only sentence pruning 뒤에도 source-native supported candidate는 candidate ledger에 보존된다.",
+        "serialized_public_identity_scrubbed reason은 public identity와 candidate ledger의 불일치로 audit 가능해야 한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11694068",
+        "prior_runtime_expected_audit#post_id=11694068",
+        "current_projection_result#post_id=11694068"
+      ]
+    },
+    {
+      "post_id": 11668300,
+      "selected_title": "즉사기 들고 게임 속으로",
+      "projected_title": "즉사기 들고 게임 속으로",
+      "current_projection_candidate": {
+        "official_title": "즉사기 인 줄 알았는데 지옥이었다",
+        "official_url": "https://novel.munpia.com/467992",
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "scope_context_only",
+          "scope_not_current_work",
+          "blocked_candidate_scope_inferred_from_final_contract",
+          "exact_alias_candidate_preserved_without_work_discussion",
+          "image_ocr_without_title_anchor",
+          "nonwork_or_noise_context",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "즉사기 인 줄 알았는데 지옥이었다",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "ok",
+      "search_gate": "SEARCH_OK",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "scope_or_nonwork_monotonicity",
+        "candidate_preservation_or_scrub",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "current-work 직접 브리지가 확인되기 전에는 hard-hold를 완화하지 않고, 확인된 경우 _post_discusses_work_as_work 경유로만 publish를 연다.",
+      "required_contract_tests": [
+        "_has_verified_contextual_alias_work_bridge는 _post_discusses_work_as_work를 경유한다.",
+        "scope_not_current_work/context_only/nonwork reason은 direct work bridge 없이는 monotonic hard-hold를 유지한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11668300",
+        "prior_runtime_expected_audit#post_id=11668300",
+        "current_projection_result#post_id=11668300"
+      ]
+    },
+    {
+      "post_id": 11669926,
+      "selected_title": "싸울아비 룬",
+      "projected_title": "싸울아비 룬",
+      "current_projection_candidate": {
+        "official_title": "싸울 아흔번째",
+        "official_url": null,
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "promotion_blocked",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "싸울 아흔번째",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_SCOPE_UNSPECIFIED",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "candidate_preservation_or_scrub",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "supported candidate가 serialized public identity에서 사라지지 않고 candidate ledger와 publish trace에 보존되어야 한다.",
+      "required_contract_tests": [
+        "llm-only sentence pruning 뒤에도 source-native supported candidate는 candidate ledger에 보존된다.",
+        "serialized_public_identity_scrubbed reason은 public identity와 candidate ledger의 불일치로 audit 가능해야 한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11669926",
+        "prior_runtime_expected_audit#post_id=11669926",
+        "current_projection_result#post_id=11669926"
+      ]
+    },
+    {
+      "post_id": 11673080,
+      "selected_title": "갤질하는 천재 의사",
+      "projected_title": "갤질하는 천재 의사",
+      "current_projection_candidate": {
+        "official_title": "댓글 보는 천재 의사",
+        "official_url": "https://novelpia.com/novel/372180",
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "official_url_recall_candidate_preserved",
+          "official_url_recall_candidate_source_preserved",
+          "scope_current_work",
+          "blocked_candidate_scope_inferred_from_search_evidence",
+          "official_detail_url_recovered_from_search_evidence",
+          "character_bridge_variance_hold",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "댓글 보는 천재 의사",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_CURRENT_WORK",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "title_url_or_variant_trace_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "candidate_preservation_or_scrub",
+        "title_url_or_variant_trace",
+        "official_support_reconciliation",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_search_evidence",
+        "character_bridge_variance_hold",
+        "official_detail_url_recovered_from_search_evidence",
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "title_url_or_variant_trace_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "title/url mismatch, competing candidate, variant reason이 publish_contract_trace와 can_publish_title에서 같은 결정으로 수렴해야 한다.",
+      "required_contract_tests": [
+        "publish_contract_trace와 can_publish_title이 title/url mismatch를 같은 reason code로 노출한다.",
+        "공식 URL과 public title이 불일치하면 safe_resolved가 아니라 candidate_only로 보존한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11673080",
+        "prior_runtime_expected_audit#post_id=11673080",
+        "current_projection_result#post_id=11673080"
+      ]
+    },
+    {
+      "post_id": 11679547,
+      "selected_title": "도굴왕",
+      "projected_title": "도굴왕",
+      "current_projection_candidate": {
+        "official_title": "나 혼자만 레벨업",
+        "official_url": "https://series.naver.com/novel/detail.series?productNo=3207276",
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "official_detail_url",
+          "work_consumption_marker",
+          "alias_bridge",
+          "official_url_recall_candidate_preserved",
+          "official_url_recall_candidate_source_preserved",
+          "llm_only_sentence_candidate_pruned",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "나 혼자만 레벨업",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_CURRENT_WORK",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "image_or_alias_anchor_contract_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "candidate_preservation_or_scrub",
+        "image_or_alias_anchor_contract",
+        "official_support_reconciliation",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "alias_bridge",
+        "llm_only_sentence_candidate_pruned",
+        "official_detail_url",
+        "official_title_exists",
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed",
+        "work_consumption_marker"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "image_or_alias_anchor_contract_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_recovered_conditional_tag_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "이미지/OCR/별칭 앵커가 direct work anchor인지 검증하고, 미검증 앵커는 candidate_only로 보존해야 한다.",
+      "required_contract_tests": [
+        "검증된 이미지/OCR/별칭 앵커만 _post_discusses_work_as_work 경유로 current-work bridge를 연다.",
+        "image_ocr_without_title_anchor 계열은 직접 제목 앵커 없이는 publish를 열지 않는다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11679547",
+        "prior_runtime_expected_audit#post_id=11679547",
+        "current_projection_result#post_id=11679547"
+      ]
+    },
+    {
+      "post_id": 11682767,
+      "selected_title": "묵향",
+      "projected_title": "묵향",
+      "current_projection_candidate": {
+        "official_title": "묵향 1권",
+        "official_url": "https://mm.munpia.com/?menu=novel&action=view&id=51088&entry_id=776982",
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "batch_alias_public_title_bridge",
+          "official_detail_url",
+          "weak_alias_surface_public_title_bridge",
+          "llm_only_sentence_candidate_pruned",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "묵향 1권",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_CURRENT_WORK",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "image_or_alias_anchor_contract_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "candidate_preservation_or_scrub",
+        "image_or_alias_anchor_contract",
+        "official_support_reconciliation",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "batch_alias_public_title_bridge",
+        "llm_only_sentence_candidate_pruned",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed",
+        "weak_alias_surface_public_title_bridge"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "image_or_alias_anchor_contract_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "이미지/OCR/별칭 앵커가 direct work anchor인지 검증하고, 미검증 앵커는 candidate_only로 보존해야 한다.",
+      "required_contract_tests": [
+        "검증된 이미지/OCR/별칭 앵커만 _post_discusses_work_as_work 경유로 current-work bridge를 연다.",
+        "image_ocr_without_title_anchor 계열은 직접 제목 앵커 없이는 publish를 열지 않는다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11682767",
+        "prior_runtime_expected_audit#post_id=11682767",
+        "current_projection_result#post_id=11682767"
+      ]
+    },
+    {
+      "post_id": 11682775,
+      "selected_title": "여자가 되어서라도 복수한다",
+      "projected_title": "여자가 되어서라도 복수한다",
+      "current_projection_candidate": {
+        "official_title": "여자가 되어서라도 복수한다",
+        "official_url": null,
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "promotion_blocked",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "여자가 되어서라도 복수한다",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "same_title_surface",
+      "current_projection_candidate_alignment_requires_review": false,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_SCOPE_UNSPECIFIED",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "candidate_preservation_or_scrub",
+        "search_blind_or_missing_preflight"
+      ],
+      "reason_codes": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "search_recovered_conditional_tag_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "supported candidate가 serialized public identity에서 사라지지 않고 candidate ledger와 publish trace에 보존되어야 한다.",
+      "required_contract_tests": [
+        "llm-only sentence pruning 뒤에도 source-native supported candidate는 candidate ledger에 보존된다.",
+        "serialized_public_identity_scrubbed reason은 public identity와 candidate ledger의 불일치로 audit 가능해야 한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11682775",
+        "prior_runtime_expected_audit#post_id=11682775",
+        "current_projection_result#post_id=11682775"
+      ]
+    },
+    {
+      "post_id": 11698859,
+      "selected_title": "귤부인 대롱대롱",
+      "projected_title": "귤부인 대롱대롱",
+      "current_projection_candidate": {
+        "official_title": "귤부인",
+        "official_url": null,
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "scope_context_only",
+          "scope_not_current_work",
+          "blocked_candidate_scope_inferred_from_final_contract",
+          "exact_alias_candidate_preserved_without_work_discussion",
+          "image_ocr_without_title_anchor",
+          "nonwork_or_noise_context",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "귤부인",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "current_projection_candidate_alignment_requires_review": true,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "scope_or_nonwork_monotonicity",
+        "candidate_preservation_or_scrub",
+        "search_blind_or_missing_preflight",
+        "current_projection_candidate_alignment_review"
+      ],
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "current-work 직접 브리지가 확인되기 전에는 hard-hold를 완화하지 않고, 확인된 경우 _post_discusses_work_as_work 경유로만 publish를 연다.",
+      "required_contract_tests": [
+        "_has_verified_contextual_alias_work_bridge는 _post_discusses_work_as_work를 경유한다.",
+        "scope_not_current_work/context_only/nonwork reason은 direct work bridge 없이는 monotonic hard-hold를 유지한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다.",
+        "current projection pre_gate_candidate가 expected/source-native title과 다르면 shared gate 완화 전 source-native/blind canonicality를 재확인한다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11698859",
+        "prior_runtime_expected_audit#post_id=11698859",
+        "current_projection_result#post_id=11698859"
+      ]
+    },
+    {
+      "post_id": 11700483,
+      "selected_title": "니들 생각 다 들린다",
+      "projected_title": "니들 생각 다 들린다",
+      "current_projection_candidate": {
+        "official_title": "니들 생각 다 들린다",
+        "official_url": null,
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_present_noncurrent_scope",
+          "batch_alias_public_title_bridge",
+          "unverified_promoted_image_work_title_without_official_support",
+          "scope_image_ocr_derived_work",
+          "scope_not_current_work",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "니들 생각 다 들린다",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "same_title_surface",
+      "current_projection_candidate_alignment_requires_review": false,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "None",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "image_or_alias_anchor_contract_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "scope_or_nonwork_monotonicity",
+        "candidate_preservation_or_scrub",
+        "image_or_alias_anchor_contract",
+        "official_support_reconciliation",
+        "search_blind_or_missing_preflight"
+      ],
+      "reason_codes": [
+        "batch_alias_public_title_bridge",
+        "official_title_exists",
+        "row_discussion_present_noncurrent_scope",
+        "scope_image_ocr_derived_work",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "unverified_promoted_image_work_title_without_official_support"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "image_or_alias_anchor_contract_repair_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "이미지/OCR/별칭 앵커가 direct work anchor인지 검증하고, 미검증 앵커는 candidate_only로 보존해야 한다.",
+      "required_contract_tests": [
+        "검증된 이미지/OCR/별칭 앵커만 _post_discusses_work_as_work 경유로 current-work bridge를 연다.",
+        "image_ocr_without_title_anchor 계열은 직접 제목 앵커 없이는 publish를 열지 않는다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11700483",
+        "prior_runtime_expected_audit#post_id=11700483",
+        "current_projection_result#post_id=11700483"
+      ]
+    },
+    {
+      "post_id": 11708470,
+      "selected_title": "절대 꺾이지 않을거야!",
+      "projected_title": "절대 꺾이지 않을거야!",
+      "current_projection_candidate": {
+        "official_title": "절대 꺾이지 않을거야!",
+        "official_url": null,
+        "source": "candidate_ledger_or_serialized_identity",
+        "decision": null,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_missing",
+          "scope_context_only",
+          "scope_not_current_work",
+          "external_ip_unresolved_final_blocked",
+          "resolved_public_title_scope",
+          "official_detail_url",
+          "serialized_public_identity_scrubbed"
+        ],
+        "blocked_official_title": "절대 꺾이지 않을거야!",
+        "blocked_official_url": null
+      },
+      "current_projection_candidate_alignment_state": "same_title_surface",
+      "current_projection_candidate_alignment_requires_review": false,
+      "source_native_verdict": null,
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "None",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "projected_scope_claim": "PROJECTED_SCOPE_UNSPECIFIED",
+      "runtime_scope_claim": "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+      "projection_runtime_scope_conflict": false,
+      "projection_runtime_scope_conflict_kind": "none",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "repair_facets": [
+        "public_identity_serialization_trace",
+        "scope_or_nonwork_monotonicity",
+        "candidate_preservation_or_scrub",
+        "official_support_reconciliation",
+        "search_blind_or_missing_preflight"
+      ],
+      "reason_codes": [
+        "external_ip_unresolved_final_blocked",
+        "official_detail_url",
+        "official_title_exists",
+        "resolved_public_title_scope",
+        "row_discussion_missing",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "runtime_replay_allowed": false,
+      "runtime_replay_blocker": "contract_repair_required_before_replay",
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "close_condition": "current-work 직접 브리지가 확인되기 전에는 hard-hold를 완화하지 않고, 확인된 경우 _post_discusses_work_as_work 경유로만 publish를 연다.",
+      "required_contract_tests": [
+        "_has_verified_contextual_alias_work_bridge는 _post_discusses_work_as_work를 경유한다.",
+        "scope_not_current_work/context_only/nonwork reason은 direct work bridge 없이는 monotonic hard-hold를 유지한다.",
+        "runtime replay는 수리 전 금지한다.",
+        "수리 후 같은 packet safe_resolved는 단조 비감소해야 한다.",
+        "full375 collateral 재확인 전 approval을 열지 않는다."
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11708470",
+        "prior_runtime_expected_audit#post_id=11708470",
+        "current_projection_result#post_id=11708470"
+      ]
+    }
+  ]
+}
