@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260707-563 - P0 shared-gate projection and replay input
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | READY_NOT_RUN | input `30`, missing post id `0` | `--parallel 16`, dashboard ON으로 실행 |
+| Shared-gate projection | REVIEW-LOCKED | `41` rows, safe_resolved `41`, publish allowed `41`, validation issue `0` | runtime replay와 collateral recheck 필요 |
+| Follow-up queue | REVIEW-LOCKED | label `REPROCESS 33 / HOLD 8`, priority `P0 21 / P1 20` | lane별 선행 조건 유지 |
+| Seed replay lane | READY | `runtime_replay_with_projection_followup_seed_required 10` | seed가 publish_contract_trace에 반영되는지 확인 |
+| Projected exact replay lane | READY | `runtime_replay_projected_safe_resolved_exact_required 20` | 같은 title/url safe_resolved 확인 |
+| Official URL/contract repair | REVIEW-LOCKED | `4` rows | URL/contract 보강 전 반복 replay 금지 |
+| Prior title mismatch review | REVIEW-LOCKED | `7` rows | canonical/wrong-work review 후 replay |
+| Dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | manifest `requested/effective 16/16`, dashboard URL `http://127.0.0.1:8080` | 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: shared-gate projection `REVIEW-LOCKED / 41`, runtime input generation `GO_INPUT_ONLY / 30`, runtime replay `READY_NOT_RUN`, full375 collateral `NO-GO / adjusted residual 87`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-560-562 - Full375 P0 prior-compatible review and dashboard batch contract
 
 | 항목 | 상태 | 근거 | 다음 |

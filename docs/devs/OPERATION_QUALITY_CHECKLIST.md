@@ -1,5 +1,22 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop563 P0 shared-gate projection 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_563_REPORT_20260707.md`.
+  - [x] Shared-gate projection 기록 완료: `docs/devs/loop563_conflict_safe_p0_shared_gate_projection.json/.md`.
+  - [x] Follow-up queue 기록 완료: `docs/devs/loop563_conflict_safe_p0_shared_gate_followup_queue.json/.md`.
+  - [x] Runtime replay input/manifest 생성 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop563_conflict_safe_p0_shared_gate_runtime_replay_input.jsonl`, `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop563_conflict_safe_p0_shared_gate_runtime_replay_manifest.json`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 run은 실행하지 않았다.
+  - [x] P0 safe-loss `41`건은 shared `can_publish_title` projection을 거쳤고 projection validation issue는 `0`이다.
+  - [x] Runtime replay input `30`건은 실행 준비일 뿐 runtime approval이 아니다.
+  - [x] Official URL/contract repair `4`건과 prior title mismatch review `7`건은 replay 전에 별도 선행 lane으로 남겼다.
+  - [x] Runtime manifest는 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지 계약을 기록한다.
+  - [x] Dashboard는 진행 확인 도구이며 approval 근거가 아니다.
+  - [x] Full375 collateral `GO` 전 goal completion을 선언하지 않는다.
+- Gate: shared-gate projection `REVIEW-LOCKED / 41`, runtime input generation `GO_INPUT_ONLY / 30`, runtime replay `READY_NOT_RUN`, official URL/contract repair `REVIEW-LOCKED / 4`, title mismatch review `REVIEW-LOCKED / 7`, full375 collateral `NO-GO / adjusted residual 87`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop560-562 full375 P0 재회계와 테스트런 dashboard 계약
 
 - 근거:

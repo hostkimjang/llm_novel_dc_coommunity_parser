@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-07 - Loop563 P0 shared-gate projection and replay input
+
+- 새 runtime replay, bounded run, full375 대형 run은 실행하지 않았다.
+- Loop562 P0 code repair batch `55`건 중 shared-gate safe-loss `41`건을 shared `can_publish_title` projection으로 통과시켰다.
+- Projection은 `safe_resolved 41`, publish allowed `41`, exact title match `41`, validation issue `0`이다.
+- Follow-up queue는 `41`건이며 label은 `REPROCESS 33 / HOLD 8`, prior runtime audit은 `PASS_EXACT_SAFE_RESOLVED 19 / FAIL_RUNTIME_PROMOTION_BLOCKED 14 / FAIL_SAFE_RESOLVED_TITLE_MISMATCH 7 / NO_PRIOR_AUDIT 1`이다.
+- Runtime replay input `30`건과 manifest를 생성했다. Missing post id는 `0`, requested/effective parallel은 `16/16`이다.
+- 비실행 선행 lane은 official URL/contract repair `4`건과 prior title mismatch source-native/canonical review `7`건이다.
+- `tools/project_residual_queue_through_promotion_gate.py`는 action batch `batch_id`, 공통 row-level `source_review_id`, Munpia 모바일 official URL marker를 보존하도록 보강했다.
+- Report는 `docs/devs/loop_reports/LOOP_563_REPORT_20260707.md`다.
+- Gate는 shared-gate projection `REVIEW-LOCKED / 41`, runtime input generation `GO_INPUT_ONLY / 30`, runtime replay `READY_NOT_RUN`, full375 collateral `NO-GO / adjusted residual 87`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop560-562 full375 P0 prior-compatible review and dashboard batch contract
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

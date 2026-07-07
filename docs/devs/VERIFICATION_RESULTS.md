@@ -1,5 +1,29 @@
 # Verification Results
 
+## 2026-07-07 Loop563 P0 shared-gate projection and replay input
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_563_REPORT_20260707.md`
+  - `docs/devs/loop563_conflict_safe_p0_shared_gate_projection.json`
+  - `docs/devs/loop563_conflict_safe_p0_shared_gate_projection.md`
+  - `docs/devs/loop563_conflict_safe_p0_shared_gate_followup_queue.json`
+  - `docs/devs/loop563_conflict_safe_p0_shared_gate_followup_queue.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop563_conflict_safe_p0_shared_gate_runtime_replay_input.jsonl`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop563_conflict_safe_p0_shared_gate_runtime_replay_manifest.json`
+- 검증:
+  - py_compile: PASS, `tools/project_residual_queue_through_promotion_gate.py`, `tools/build_projection_followup_queue.py`, 관련 tests.
+  - unittest: PASS, `tests.test_project_residual_queue_through_promotion_gate`, `tests.test_projection_followup_queue`, `11` tests.
+  - Projection generation: PASS, projected rows `41`, safe_resolved `41`, publish allowed `41`, exact title match `41`, validation issue `0`.
+  - Follow-up queue generation: PASS, rows `41`, label `REPROCESS 33 / HOLD 8`, validation issue `0`.
+  - Runtime input generation: PASS, runtime candidate rows `30`, input rows `30`, missing post id `0`.
+  - Dashboard/run contract: PASS, requested/effective parallel `16/16`, dashboard policy `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`, forbidden flag `--no-dashboard`.
+- 결과:
+  - P0 shared-gate safe-loss `41`건을 runtime 반복 실행 전 projection/follow-up lane으로 분리했다.
+  - Runtime-ready lane은 projected exact replay `20`건과 projection follow-up seed replay `10`건이다.
+  - Official URL/contract repair `4`건과 prior title mismatch review `7`건은 runtime input에서 제외해 선행 review/repair로 남겼다.
+  - 이번 회차는 runtime replay를 실행하지 않았으므로 runtime/semantic/full_scan approval이 아니다.
+- Gate: shared-gate projection `REVIEW-LOCKED / 41`, runtime input generation `GO_INPUT_ONLY / 30`, runtime replay `READY_NOT_RUN`, official URL/contract repair `REVIEW-LOCKED / 4`, title mismatch review `REVIEW-LOCKED / 7`, full375 collateral `NO-GO / adjusted residual 87`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop560-562 full375 P0 prior-compatible review and dashboard batch contract
 
 - 산출물:

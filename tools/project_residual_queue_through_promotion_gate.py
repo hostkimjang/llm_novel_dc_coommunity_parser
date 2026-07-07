@@ -28,6 +28,8 @@ OFFICIAL_URL_MARKERS = (
     "novelpia.com/novel",
     "novel.munpia.com",
     "m.munpia.com/novel",
+    "mm.munpia.com/?menu=novel",
+    "munpia.com/?menu=novel",
     "series.naver.com/novel",
     "page.kakao.com/content",
     "ridibooks.com/books",
@@ -83,6 +85,15 @@ def _actions(row: dict[str, Any]) -> set[str]:
     else:
         values = []
     return {str(value or "").strip() for value in values if str(value or "").strip()}
+
+
+def _common_nonempty(values: list[Any]) -> Any:
+    normalized = sorted({str(value or "").strip() for value in values if str(value or "").strip()})
+    if not normalized:
+        return None
+    if len(normalized) == 1:
+        return normalized[0]
+    return normalized
 
 
 def _row_is_shared_gate_candidate(row: dict[str, Any], action: str) -> bool:
@@ -259,8 +270,9 @@ def project_queue(
         "report_type": "residual_queue_shared_promotion_gate_projection",
         "projection_id": projection_id,
         "generated_at": generated_at or datetime.now().replace(microsecond=0).isoformat(),
-        "source_queue_id": queue.get("queue_id"),
-        "source_review_id": queue.get("source_review_id"),
+        "source_queue_id": queue.get("queue_id") or queue.get("batch_id") or queue.get("source_queue_id"),
+        "source_review_id": queue.get("source_review_id")
+        or _common_nonempty([item.get("source_review_id") for item in projected_rows]),
         "source_gate": queue.get("gate"),
         "action_filter": action,
         "semantic_quality": "REVIEW-LOCKED",

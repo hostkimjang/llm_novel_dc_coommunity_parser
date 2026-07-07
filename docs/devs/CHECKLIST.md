@@ -1,5 +1,19 @@
 # Development Checklist
 
+## 2026-07-07 Loop563 P0 shared-gate projection 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 run을 실행하지 않았다.
+- [x] Loop562 P0 `55`건 중 shared-gate safe-loss `41`건을 `can_publish_title` projection으로 통과시켰다.
+- [x] Projection은 `safe_resolved 41`, publish allowed `41`, exact title match `41`, validation issue `0`이다.
+- [x] Follow-up queue `41`건을 runtime replay `30`, official URL/contract repair `4`, prior title mismatch review `7`로 나눴다.
+- [x] Runtime replay input `30`건과 manifest를 생성했고 missing post id는 `0`이다.
+- [x] Manifest는 requested/effective parallel `16/16`, dashboard `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`, forbidden `--no-dashboard`를 기록한다.
+- [x] Munpia 모바일 공식 URL `mm.munpia.com/?menu=novel` 추출을 테스트로 고정했다.
+- [ ] Loop563 runtime replay `30`건을 실행할 때 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지를 유지한다.
+- [ ] Official URL/contract repair `4`건과 title mismatch review `7`건을 닫기 전 full_scan approval을 열지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: shared-gate projection `REVIEW-LOCKED / 41`, runtime input generation `GO_INPUT_ONLY / 30`, runtime replay `READY_NOT_RUN`, full375 collateral `NO-GO / adjusted residual 87`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop560-562 full375 P0 재회계 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.
