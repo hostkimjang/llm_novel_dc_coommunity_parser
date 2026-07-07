@@ -352,6 +352,43 @@ def _repair_readiness_state(*, alignment_state: str, search_gate: str, candidate
     return "manual_review_required"
 
 
+def _repair_batch_lane(
+    *,
+    readiness_state: str,
+    alignment_state: str,
+    search_gate: str,
+) -> str:
+    if readiness_state == "candidate_alignment_review_required":
+        if alignment_state == "different_title_candidate_review":
+            return "B1_different_candidate_alignment_review"
+        if alignment_state == "related_title_surface_review":
+            return "B1_related_candidate_alignment_review"
+        return "B1_missing_candidate_alignment_review"
+    if readiness_state == "same_title_search_preflight_required":
+        if search_gate == "SEARCH_BLIND_BLOCKER":
+            return "B2_same_title_search_blind_preflight"
+        return "B2_same_title_search_missing_preflight"
+    if readiness_state == "same_title_preservation_only_contract_repair_candidate":
+        return "B3_same_title_preservation_only_contract"
+    if readiness_state == "same_title_search_recovered_contract_candidate":
+        return "B4_same_title_recovered_support_contract"
+    if readiness_state == "same_title_contract_candidate":
+        return "B4_same_title_official_support_contract"
+    return "B9_manual_review_required"
+
+
+def _runtime_release_gate(batch_lane: str) -> str:
+    if batch_lane.startswith("B1_"):
+        return "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK"
+    if batch_lane.startswith("B2_"):
+        return "BLOCKED_UNTIL_SEARCH_PREFLIGHT_GO"
+    if batch_lane.startswith("B3_"):
+        return "BLOCKED_UNTIL_OFFICIAL_SUPPORT_OR_NO_PUBLISH_CONTRACT"
+    if batch_lane.startswith("B4_"):
+        return "BLOCKED_UNTIL_CONTRACT_TESTS_PASS"
+    return "BLOCKED_UNTIL_MANUAL_REVIEW"
+
+
 def _actions(row: dict[str, Any]) -> list[str]:
     value = row.get("actions") or []
     if isinstance(value, str):
@@ -592,6 +629,12 @@ def classify_repair_row(
         actions.insert(1, "same_title_surface_contract_repair_candidate")
     elif readiness_state == "same_title_search_preflight_required":
         actions.insert(1, "same_title_surface_search_preflight_required")
+    batch_lane = _repair_batch_lane(
+        readiness_state=readiness_state,
+        alignment_state=alignment_state,
+        search_gate=search_gate,
+    )
+    release_gate = _runtime_release_gate(batch_lane)
 
     contract_tests = _contract_tests(lane)
     if alignment_requires_review:
@@ -613,6 +656,8 @@ def classify_repair_row(
         "current_projection_candidate_alignment_requires_review": alignment_requires_review,
         "candidate_support_state": candidate_support_state,
         "repair_readiness_state": readiness_state,
+        "repair_batch_lane": batch_lane,
+        "runtime_release_gate": release_gate,
         "source_native_verdict": row.get("source_native_verdict"),
         "prior_runtime_audit_status": _runtime_audit_status(row) or None,
         "prior_runtime_search_status": _runtime_search_status(row),
@@ -659,9 +704,13 @@ def build_repair_queue(
     alignment_counts = Counter(str(row.get("current_projection_candidate_alignment_state") or "not_checked") for row in out_rows)
     candidate_support_counts = Counter(str(row.get("candidate_support_state") or "candidate_support_review_required") for row in out_rows)
     readiness_counts = Counter(str(row.get("repair_readiness_state") or "manual_review_required") for row in out_rows)
+    batch_lane_counts = Counter(str(row.get("repair_batch_lane") or "B9_manual_review_required") for row in out_rows)
+    release_gate_counts = Counter(str(row.get("runtime_release_gate") or "BLOCKED_UNTIL_MANUAL_REVIEW") for row in out_rows)
     lane_groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    batch_groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in out_rows:
         lane_groups[str(row["primary_repair_lane"])].append(row)
+        batch_groups[str(row["repair_batch_lane"])].append(row)
         for facet in row["repair_facets"]:
             facet_counts[str(facet)] += 1
         for reason in row["reason_codes"]:
@@ -701,8 +750,40 @@ def build_repair_queue(
                 "repair_readiness_counts": _counter_to_dict(
                     Counter(str(row.get("repair_readiness_state") or "manual_review_required") for row in group_rows)
                 ),
+                "repair_batch_lane_counts": _counter_to_dict(
+                    Counter(str(row.get("repair_batch_lane") or "B9_manual_review_required") for row in group_rows)
+                ),
+                "runtime_release_gate_counts": _counter_to_dict(
+                    Counter(str(row.get("runtime_release_gate") or "BLOCKED_UNTIL_MANUAL_REVIEW") for row in group_rows)
+                ),
                 "post_ids": [row.get("post_id") for row in group_rows],
                 "sample_rows": group_rows[:8],
+            }
+        )
+
+    next_batches: list[dict[str, Any]] = []
+    for batch_lane in sorted(batch_groups):
+        group_rows = batch_groups[batch_lane]
+        next_batches.append(
+            {
+                "repair_batch_lane": batch_lane,
+                "row_count": len(group_rows),
+                "runtime_release_gate": _runtime_release_gate(batch_lane),
+                "runtime_replay_allowed_rows": sum(1 for row in group_rows if row.get("runtime_replay_allowed") is True),
+                "primary_repair_lane_counts": _counter_to_dict(
+                    Counter(str(row.get("primary_repair_lane")) for row in group_rows)
+                ),
+                "search_gate_counts": _counter_to_dict(Counter(str(row.get("search_gate")) for row in group_rows)),
+                "current_projection_candidate_alignment_counts": _counter_to_dict(
+                    Counter(
+                        str(row.get("current_projection_candidate_alignment_state") or "not_checked")
+                        for row in group_rows
+                    )
+                ),
+                "candidate_support_state_counts": _counter_to_dict(
+                    Counter(str(row.get("candidate_support_state") or "candidate_support_review_required") for row in group_rows)
+                ),
+                "post_ids": [row.get("post_id") for row in group_rows],
             }
         )
 
@@ -733,6 +814,8 @@ def build_repair_queue(
             ),
             "candidate_support_state_counts": _counter_to_dict(candidate_support_counts),
             "repair_readiness_counts": _counter_to_dict(readiness_counts),
+            "repair_batch_lane_counts": _counter_to_dict(batch_lane_counts),
+            "runtime_release_gate_counts": _counter_to_dict(release_gate_counts),
             "validation_issue_count": len(validation_issues),
         },
         "stop_condition": {
@@ -747,6 +830,7 @@ def build_repair_queue(
             "completion_gate": "full375 collateral GO + full_scan path",
         },
         "validation_issues": validation_issues,
+        "next_batches": next_batches,
         "action_groups": action_groups,
         "rows": out_rows,
     }
@@ -772,6 +856,8 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
         f"- current_projection_candidate_review_rows: `{summary.get('current_projection_candidate_review_rows')}`",
         f"- candidate_support_state_counts: `{summary.get('candidate_support_state_counts')}`",
         f"- repair_readiness_counts: `{summary.get('repair_readiness_counts')}`",
+        f"- repair_batch_lane_counts: `{summary.get('repair_batch_lane_counts')}`",
+        f"- runtime_release_gate_counts: `{summary.get('runtime_release_gate_counts')}`",
         f"- validation_issue_count: `{summary.get('validation_issue_count')}`",
         "- approval: `false`",
         "- semantic_quality: `REVIEW-LOCKED`",
@@ -783,9 +869,32 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
         "- search degraded 또는 missing 행은 `search-blind 조건부`를 보존한다.",
         "- 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다.",
         "",
-        "## Repair lanes",
+        "## Next repair batches",
         "",
     ]
+    for batch in queue.get("next_batches") or []:
+        sample = ", ".join(str(post_id) for post_id in batch.get("post_ids", [])[:16])
+        lines.extend(
+            [
+                f"### {batch.get('repair_batch_lane')}",
+                "",
+                f"- row_count: `{batch.get('row_count')}`",
+                f"- runtime_release_gate: `{batch.get('runtime_release_gate')}`",
+                f"- runtime_replay_allowed_rows: `{batch.get('runtime_replay_allowed_rows')}`",
+                f"- primary_repair_lane_counts: `{batch.get('primary_repair_lane_counts')}`",
+                f"- search_gate_counts: `{batch.get('search_gate_counts')}`",
+                f"- current_projection_candidate_alignment_counts: `{batch.get('current_projection_candidate_alignment_counts')}`",
+                f"- candidate_support_state_counts: `{batch.get('candidate_support_state_counts')}`",
+                f"- post_ids: `{sample}`",
+                "",
+            ]
+        )
+    lines.extend(
+        [
+            "## Repair lanes",
+            "",
+        ]
+    )
     for group in queue.get("action_groups") or []:
         sample = ", ".join(str(post_id) for post_id in group.get("post_ids", [])[:12])
         lines.extend(
@@ -801,6 +910,8 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
                 f"- current_projection_candidate_review_rows: `{group.get('current_projection_candidate_review_rows')}`",
                 f"- candidate_support_state_counts: `{group.get('candidate_support_state_counts')}`",
                 f"- repair_readiness_counts: `{group.get('repair_readiness_counts')}`",
+                f"- repair_batch_lane_counts: `{group.get('repair_batch_lane_counts')}`",
+                f"- runtime_release_gate_counts: `{group.get('runtime_release_gate_counts')}`",
                 f"- sample_post_ids: `{sample}`",
                 "",
             ]

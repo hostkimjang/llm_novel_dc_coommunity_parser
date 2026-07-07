@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-527 - batched repair release gate
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Batch lane split | GO_UNIT | `repair_batch_lane` 추가 | residual 단건 처리 대신 N건 배치로 처리 |
+| Runtime release gate | GO_UNIT | `runtime_release_gate` 추가 | release gate 충족 전 replay 금지 |
+| Canonical recheck batch | OPEN_REVIEW | B1 `12 + 10 = 22` rows | source-native/blind canonicality 재확인 |
+| Search preflight batch | OPEN_SEARCH | B2 `2 + 2 = 4` rows | search blind/missing preflight GO 필요 |
+| Preservation-only contract | OPEN_REPAIR | B3 `11682775` | official support 또는 no-publish 보존 계약 필요 |
+| Verification | GO_UNIT | py_compile PASS, focused unittest `11` PASS, queue generation PASS | full375 collateral 전 approval 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: queue schema `GO`, repair queue `REVIEW-LOCKED / 27`, batch release `REVIEW / canonical_recheck 22 + search_preflight 4 + preservation_contract 1`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-526 - same-title candidate support split
 
 | 항목 | 상태 | 근거 | 다음 |

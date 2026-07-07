@@ -1,5 +1,26 @@
 # Verification Results
 
+## 2026-07-07 Loop527 batched repair release gate
+
+- 코드:
+  - `tools/build_shared_gate_runtime_block_repair_queue.py`에 `repair_batch_lane`과 `runtime_release_gate`를 추가했다.
+  - `next_batches`를 JSON/Markdown에 출력해 residual queue를 단건이 아니라 N건 배치로 처리할 수 있게 했다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_527_REPORT_20260707.md`
+  - `docs/devs/loop527_batched_repair_release_gate_state_20260707.json`
+  - `docs/devs/loop527_batched_repair_release_gate27_queue.json`
+  - `docs/devs/loop527_batched_repair_release_gate27_queue.md`
+- 검증:
+  - `python -m py_compile tools\build_shared_gate_runtime_block_repair_queue.py tests\test_shared_gate_runtime_block_repair_queue.py`: PASS.
+  - `python -m unittest tests.test_shared_gate_runtime_block_repair_queue -v`: PASS, `11` tests.
+  - queue generation with `--projection-result` and `--fail-on-validation-issue`: PASS.
+  - generated queue JSON parse: PASS.
+- 결과:
+  - repair rows `27`, runtime replay allowed `0`, validation issue `0`.
+  - batch lane counts: `B1_different_candidate_alignment_review 12`, `B1_related_candidate_alignment_review 10`, `B2_same_title_search_blind_preflight 2`, `B2_same_title_search_missing_preflight 2`, `B3_same_title_preservation_only_contract 1`.
+  - release gate counts: `BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK 22`, `BLOCKED_UNTIL_SEARCH_PREFLIGHT_GO 4`, `BLOCKED_UNTIL_OFFICIAL_SUPPORT_OR_NO_PUBLISH_CONTRACT 1`.
+- Gate: queue schema `GO`, repair queue `REVIEW-LOCKED / 27`, batch release `REVIEW`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop526 same-title candidate support split
 
 - 코드:

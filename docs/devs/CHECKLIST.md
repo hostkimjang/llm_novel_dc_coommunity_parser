@@ -1,5 +1,21 @@
 # Development Checklist
 
+## 2026-07-07 Loop527 batched repair release gate 체크
+
+- [x] 새 runtime replay를 실행하지 않았다.
+- [x] Loop526 repair row `27`건을 batch lane으로 분리했다.
+- [x] `repair_batch_lane`과 `runtime_release_gate`를 repair queue row와 summary에 추가했다.
+- [x] Batch lane 분포는 `B1_different_candidate_alignment_review 12`, `B1_related_candidate_alignment_review 10`, `B2_same_title_search_blind_preflight 2`, `B2_same_title_search_missing_preflight 2`, `B3_same_title_preservation_only_contract 1`이다.
+- [x] Release gate 분포는 `BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK 22`, `BLOCKED_UNTIL_SEARCH_PREFLIGHT_GO 4`, `BLOCKED_UNTIL_OFFICIAL_SUPPORT_OR_NO_PUBLISH_CONTRACT 1`이다.
+- [x] `runtime_replay_allowed_rows`는 계속 `0`이다.
+- [x] `tests.test_shared_gate_runtime_block_repair_queue`는 `11` tests PASS다.
+- [x] Dashboard health는 `ok=true`, `standalone=true`, `pid=9320`이다.
+- [ ] B1 `22`건은 canonical candidate recheck 전 runtime replay로 넘기지 않는다.
+- [ ] B2 `4`건은 search preflight GO 전 publish 완화 대상으로 쓰지 않는다.
+- [ ] B3 `11682775`는 official support 또는 명시 no-publish 계약 전 safe_resolved로 승격하지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: queue schema `GO`, repair queue `REVIEW-LOCKED / 27`, batch release `REVIEW / canonical_recheck 22 + search_preflight 4 + preservation_contract 1`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop526 same-title candidate support 체크
 
 - [x] 새 runtime replay를 실행하지 않았다.

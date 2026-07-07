@@ -1,0 +1,119 @@
+{
+  "loop_id": "Loop527",
+  "date": "2026-07-07",
+  "mode": "projection_queue_accounting_only",
+  "runtime_replay": "NOT_RUN",
+  "source_queue": "docs/devs/loop523_direct_title_surface_safe57_expected_failure_queue.json",
+  "projection_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json",
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_527_REPORT_20260707.md",
+    "repair_queue_json": "docs/devs/loop527_batched_repair_release_gate27_queue.json",
+    "repair_queue_md": "docs/devs/loop527_batched_repair_release_gate27_queue.md"
+  },
+  "summary": {
+    "source_queue_rows": 38,
+    "repair_rows": 27,
+    "runtime_replay_allowed_rows": 0,
+    "validation_issue_count": 0,
+    "repair_batch_lane_counts": {
+      "B1_different_candidate_alignment_review": 12,
+      "B1_related_candidate_alignment_review": 10,
+      "B2_same_title_search_blind_preflight": 2,
+      "B2_same_title_search_missing_preflight": 2,
+      "B3_same_title_preservation_only_contract": 1
+    },
+    "runtime_release_gate_counts": {
+      "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK": 22,
+      "BLOCKED_UNTIL_SEARCH_PREFLIGHT_GO": 4,
+      "BLOCKED_UNTIL_OFFICIAL_SUPPORT_OR_NO_PUBLISH_CONTRACT": 1
+    },
+    "next_batches": [
+      {
+        "repair_batch_lane": "B1_different_candidate_alignment_review",
+        "row_count": 12,
+        "runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "post_ids": [
+          11660271,
+          11660273,
+          11665124,
+          11669913,
+          11677926,
+          11681172,
+          11690841,
+          11697242,
+          11718110,
+          11694068,
+          11668300,
+          11679547
+        ]
+      },
+      {
+        "repair_batch_lane": "B1_related_candidate_alignment_review",
+        "row_count": 10,
+        "runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "post_ids": [
+          11697256,
+          11706871,
+          11710021,
+          11714887,
+          11718114,
+          11666741,
+          11669926,
+          11673080,
+          11682767,
+          11698859
+        ]
+      },
+      {
+        "repair_batch_lane": "B2_same_title_search_blind_preflight",
+        "row_count": 2,
+        "runtime_release_gate": "BLOCKED_UNTIL_SEARCH_PREFLIGHT_GO",
+        "post_ids": [
+          11710049,
+          11718099
+        ]
+      },
+      {
+        "repair_batch_lane": "B2_same_title_search_missing_preflight",
+        "row_count": 2,
+        "runtime_release_gate": "BLOCKED_UNTIL_SEARCH_PREFLIGHT_GO",
+        "post_ids": [
+          11700483,
+          11708470
+        ]
+      },
+      {
+        "repair_batch_lane": "B3_same_title_preservation_only_contract",
+        "row_count": 1,
+        "runtime_release_gate": "BLOCKED_UNTIL_OFFICIAL_SUPPORT_OR_NO_PUBLISH_CONTRACT",
+        "post_ids": [
+          11682775
+        ]
+      }
+    ]
+  },
+  "validation": {
+    "py_compile": "PASS",
+    "unittest": "PASS / tests.test_shared_gate_runtime_block_repair_queue / 11 tests",
+    "queue_generation": "PASS",
+    "json_parse": "PASS"
+  },
+  "dashboard": {
+    "url": "http://127.0.0.1:8080",
+    "health": "ok=true / standalone=true / pid=9320",
+    "latest_attached_status": "progress_pct=100.0 / parallel_count=16 / batch_running=false",
+    "approval_evidence": false
+  },
+  "gates": {
+    "queue_schema": "GO",
+    "repair_queue": "REVIEW-LOCKED / 27",
+    "batch_release": "REVIEW / canonical_recheck 22 + search_preflight 4 + preservation_contract 1",
+    "runtime_replay": "NOT_RUN / replay_allowed_rows 0",
+    "full375_collateral": "NO-GO",
+    "search_evidence": "REVIEW",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "completion_gate": "full375 collateral GO + full_scan path"
+}

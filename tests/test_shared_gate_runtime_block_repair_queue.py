@@ -283,6 +283,8 @@ class SharedGateRuntimeBlockRepairQueueTest(unittest.TestCase):
         self.assertEqual(row["current_projection_candidate_alignment_state"], "different_title_candidate_review")
         self.assertTrue(row["current_projection_candidate_alignment_requires_review"])
         self.assertEqual(row["repair_readiness_state"], "candidate_alignment_review_required")
+        self.assertEqual(row["repair_batch_lane"], "B1_different_candidate_alignment_review")
+        self.assertEqual(row["runtime_release_gate"], "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK")
         self.assertEqual(
             row["current_projection_candidate"]["official_title"],
             "뿔 달고 귀환했다 뿔을 단 채 귀환해버렸다 표지는 ai그림입니다",
@@ -298,6 +300,16 @@ class SharedGateRuntimeBlockRepairQueueTest(unittest.TestCase):
             repair["summary"]["repair_readiness_counts"],
             {"candidate_alignment_review_required": 1},
         )
+        self.assertEqual(
+            repair["summary"]["repair_batch_lane_counts"],
+            {"B1_different_candidate_alignment_review": 1},
+        )
+        self.assertEqual(
+            repair["summary"]["runtime_release_gate_counts"],
+            {"BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK": 1},
+        )
+        self.assertEqual(repair["next_batches"][0]["repair_batch_lane"], "B1_different_candidate_alignment_review")
+        self.assertEqual(repair["next_batches"][0]["row_count"], 1)
         self.assertEqual(repair["summary"]["current_projection_candidate_review_rows"], 1)
 
     def test_matching_current_projection_candidate_with_recovered_search_becomes_conditional_candidate(self):
@@ -338,6 +350,8 @@ class SharedGateRuntimeBlockRepairQueueTest(unittest.TestCase):
         self.assertFalse(row["current_projection_candidate_alignment_requires_review"])
         self.assertEqual(row["candidate_support_state"], "official_url_candidate_support")
         self.assertEqual(row["repair_readiness_state"], "same_title_search_recovered_contract_candidate")
+        self.assertEqual(row["repair_batch_lane"], "B4_same_title_recovered_support_contract")
+        self.assertEqual(row["runtime_release_gate"], "BLOCKED_UNTIL_CONTRACT_TESTS_PASS")
         self.assertNotIn("current_projection_candidate_alignment_review", row["repair_facets"])
         self.assertNotIn("current_projection_candidate_recheck_required", row["actions"])
         self.assertIn("same_title_search_recovered_contract_repair_candidate", row["actions"])
@@ -391,6 +405,8 @@ class SharedGateRuntimeBlockRepairQueueTest(unittest.TestCase):
         self.assertEqual(row["current_projection_candidate_alignment_state"], "same_title_surface")
         self.assertEqual(row["candidate_support_state"], "candidate_preservation_only_no_official_detail")
         self.assertEqual(row["repair_readiness_state"], "same_title_preservation_only_contract_repair_candidate")
+        self.assertEqual(row["repair_batch_lane"], "B3_same_title_preservation_only_contract")
+        self.assertEqual(row["runtime_release_gate"], "BLOCKED_UNTIL_OFFICIAL_SUPPORT_OR_NO_PUBLISH_CONTRACT")
         self.assertFalse(row["runtime_replay_allowed"])
         self.assertIn("same_title_preservation_only_contract_repair_candidate", row["actions"])
         self.assertIn("candidate_preservation_only_no_publish_required", row["actions"])
@@ -402,6 +418,14 @@ class SharedGateRuntimeBlockRepairQueueTest(unittest.TestCase):
         self.assertEqual(
             repair["summary"]["repair_readiness_counts"],
             {"same_title_preservation_only_contract_repair_candidate": 1},
+        )
+        self.assertEqual(
+            repair["summary"]["repair_batch_lane_counts"],
+            {"B3_same_title_preservation_only_contract": 1},
+        )
+        self.assertEqual(
+            repair["summary"]["runtime_release_gate_counts"],
+            {"BLOCKED_UNTIL_OFFICIAL_SUPPORT_OR_NO_PUBLISH_CONTRACT": 1},
         )
 
     def test_matching_current_projection_candidate_with_blind_search_stays_preflight_blocked(self):
@@ -441,12 +465,18 @@ class SharedGateRuntimeBlockRepairQueueTest(unittest.TestCase):
         row = repair["rows"][0]
         self.assertEqual(row["current_projection_candidate_alignment_state"], "same_title_surface")
         self.assertEqual(row["repair_readiness_state"], "same_title_search_preflight_required")
+        self.assertEqual(row["repair_batch_lane"], "B2_same_title_search_blind_preflight")
+        self.assertEqual(row["runtime_release_gate"], "BLOCKED_UNTIL_SEARCH_PREFLIGHT_GO")
         self.assertFalse(row["runtime_replay_allowed"])
         self.assertIn("same_title_surface_search_preflight_required", row["actions"])
         self.assertIn("search_blind_preflight_required", row["actions"])
         self.assertEqual(
             repair["summary"]["repair_readiness_counts"],
             {"same_title_search_preflight_required": 1},
+        )
+        self.assertEqual(
+            repair["summary"]["repair_batch_lane_counts"],
+            {"B2_same_title_search_blind_preflight": 1},
         )
 
     def test_invalid_prior_status_is_validation_issue(self):

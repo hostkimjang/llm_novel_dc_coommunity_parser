@@ -1,5 +1,24 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop527 batched repair release gate 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_527_REPORT_20260707.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop527_batched_repair_release_gate_state_20260707.json`.
+  - [x] Repair queue 기록 완료: `docs/devs/loop527_batched_repair_release_gate27_queue.json/.md`.
+  - [x] Tool contract 갱신 완료: `tools/build_shared_gate_runtime_block_repair_queue.py`.
+  - [x] Test 갱신 완료: `tests/test_shared_gate_runtime_block_repair_queue.py`.
+- 품질 경계:
+  - [x] 새 runtime replay는 실행하지 않았다.
+  - [x] Repair rows는 `27`, replay allowed rows는 `0`이다.
+  - [x] `repair_batch_lane`과 `runtime_release_gate`로 다음 배치를 명시했다.
+  - [x] B1 `22`건은 canonical candidate recheck 전 blocked다.
+  - [x] B2 `4`건은 search preflight GO 전 blocked다.
+  - [x] B3 `1`건은 official support 또는 no-publish 계약 전 blocked다.
+  - [ ] Batch lane 회계를 semantic/full_scan approval 근거로 쓰지 않는다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- Gate: queue schema `GO`, repair queue `REVIEW-LOCKED / 27`, batch release `REVIEW / canonical_recheck 22 + search_preflight 4 + preservation_contract 1`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop526 same-title candidate support 품질 게이트
 
 - 근거:
