@@ -350,7 +350,7 @@ def write_markdown(path: Path, report: dict[str, Any]) -> None:
     lines = [
         f"# {report.get('projection_id')}",
         "",
-        "Loop532 expected-restore publish contract를 current projection row에 적용한 projection-only 산출물이다. "
+        "Post-verdict expected-restore publish contract를 current projection row에 적용한 projection-only 산출물이다. "
         "새 runtime replay가 아니며, release candidate가 생겨도 full375 collateral GO 전에는 approval 근거가 아니다.",
         "",
         "## 요약",
@@ -375,7 +375,7 @@ def write_markdown(path: Path, report: dict[str, Any]) -> None:
         )
     lines.extend(["", "## Gate 해석", ""])
     lines.append(
-        "expected restore pending 3건은 shared PromotionDecision을 projection identity, "
+        f"expected restore 적용 행 `{summary['applied_restore_rows']}`건은 shared PromotionDecision을 projection identity, "
         "publish_contract_trace, publish_ledger에 동기화했다. 이 결과는 release gate contract를 닫는 "
         "projection 증거이며 runtime replay 또는 full_scan approval이 아니다."
     )

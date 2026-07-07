@@ -12,6 +12,9 @@ RESTORE = "expected_title_restore_contract_case"
 SCRUB = "candidate_scrub_no_publish_contract_case"
 VARIANT_HOLD = "canonical_variant_policy_hold_contract_case"
 STRONGER_HOLD = "stronger_evidence_hard_hold_contract_case"
+EXPECTED_AUDIT_UPDATE = "expected_audit_update_exclusion_contract_case"
+NATIVE_WEB_HOLD = "native_web_disambiguation_hold_contract_case"
+CANONICAL_CLEANUP = "canonical_cleanup_or_url_correction_contract_case"
 
 
 def load_json(path: Path) -> Any:
@@ -109,8 +112,14 @@ def _audit_row(plan_row: dict[str, Any], projection_row: dict[str, Any] | None) 
     lane = _string(plan_row.get("contract_batch_lane"))
     target_title = _string(plan_row.get("target_title"))
     target_url = _string(plan_row.get("target_url"))
+    action = _string(plan_row.get("contract_action"))
     candidate_title = _string(plan_row.get("current_projection_candidate_title"))
     candidate_url = _string(plan_row.get("current_projection_candidate_url"))
+    if not candidate_title:
+        if action == EXPECTED_AUDIT_UPDATE:
+            candidate_title = _string(plan_row.get("expected_title"))
+        elif action == CANONICAL_CLEANUP:
+            candidate_title = _string(plan_row.get("actual_title"))
     if projection_row is None:
         return {
             "post_id": post_id,
@@ -184,6 +193,50 @@ def _audit_row(plan_row: dict[str, Any], projection_row: dict[str, Any] | None) 
         else:
             release_gate_state = "stronger_evidence_hold_preserved_no_release"
             satisfied_no_release = True
+    elif action == EXPECTED_AUDIT_UPDATE:
+        if candidate_leaked:
+            release_gate_state = "expected_audit_update_old_expected_leak_violation"
+            violation = True
+            violation_code = "old_expected_title_leaked_after_expected_audit_update_plan"
+        elif target_published:
+            release_gate_state = "expected_audit_update_contract_satisfied_release_candidate"
+            release_candidate = True
+        elif not has_public_identity and status == "promotion_blocked":
+            release_gate_state = "expected_audit_update_contract_pending_projection_not_restored"
+            pending_contract = True
+        elif has_public_identity:
+            release_gate_state = "expected_audit_update_unexpected_public_identity_violation"
+            violation = True
+            violation_code = "unexpected_public_identity_after_expected_audit_update_plan"
+        else:
+            release_gate_state = "expected_audit_update_contract_pending_unknown_projection_state"
+            pending_contract = True
+    elif action == NATIVE_WEB_HOLD:
+        if has_public_identity:
+            release_gate_state = "native_web_disambiguation_hold_public_identity_violation"
+            violation = True
+            violation_code = "native_web_hold_published_before_disambiguation"
+        else:
+            release_gate_state = "native_web_disambiguation_hold_preserved_no_release"
+            satisfied_no_release = True
+    elif action == CANONICAL_CLEANUP:
+        if candidate_leaked:
+            release_gate_state = "canonical_cleanup_contaminated_candidate_leak_violation"
+            violation = True
+            violation_code = "contaminated_candidate_leaked_before_canonical_cleanup"
+        elif target_published:
+            release_gate_state = "canonical_cleanup_contract_satisfied_release_candidate"
+            release_candidate = True
+        elif not has_public_identity and status == "promotion_blocked":
+            release_gate_state = "canonical_cleanup_contract_pending_projection_not_restored"
+            pending_contract = True
+        elif has_public_identity:
+            release_gate_state = "canonical_cleanup_unexpected_public_identity_violation"
+            violation = True
+            violation_code = "unexpected_public_identity_before_canonical_cleanup"
+        else:
+            release_gate_state = "canonical_cleanup_contract_pending_unknown_projection_state"
+            pending_contract = True
 
     return {
         "post_id": post_id,
@@ -275,7 +328,7 @@ def write_markdown(path: Path, audit: dict[str, Any]) -> None:
     lines = [
         f"# {audit.get('audit_id')}",
         "",
-        "Loop532 promotion-gate contract plan을 current projection 결과에 대조한 release gate 감사다. "
+        "Post-verdict promotion-gate contract plan을 current projection 결과에 대조한 release gate 감사다. "
         "이 감사는 새 runtime replay가 아니며, release candidate가 있더라도 full375 collateral GO 전에는 approval이나 full_scan 경로로 보지 않는다.",
         "",
         "## 요약",

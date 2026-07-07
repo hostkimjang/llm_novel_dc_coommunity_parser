@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-07 - Loop542 B1 expected-restore projection 적용과 title mismatch release audit
+
+- 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+- Loop541 B1 shared-gate plan의 `11669933 / 회귀수선전` expected-restore contract를 current full375 projection에 projection-only로 적용했다.
+- B1 pre-apply release audit은 pending `1`, no-release `10`, release candidate `0`, violation `0`이었다.
+- 적용 뒤 publication contract는 `GO / 375 rows / 0 violations`다.
+- B1 post-apply release audit은 pending `0`, no-release `10`, release candidate `1`, violation `0`, runtime allowed `0`이다.
+- `tools/audit_post_verdict_promotion_gate_release_contract.py`는 title mismatch `expected_audit_update`, `native_web_disambiguation_hold`, `canonical_cleanup` action을 해석한다.
+- Title mismatch release audit은 pending `2`, no-release `1`, release candidate `0`, violation `0`, runtime allowed `0`이다.
+- `11660277`과 `11718098`은 projection contract pending이고, `11694063`은 no-release hold가 보존됐다.
+- 검증은 JSON parse PASS, py_compile PASS, 관련 unittest `15` tests PASS, `git diff --check` PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_542_REPORT_20260707.md`다.
+- Gate는 B1 release `REVIEW-LOCKED / release candidate 1`, title mismatch `REVIEW-LOCKED / pending 2`, publication contract `GO`, full375 collateral `NO-GO / residual 100`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop541 verdict to shared-gate contract plan
 
 - 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.

@@ -1,5 +1,35 @@
 # Verification Results
 
+## 2026-07-07 Loop542 B1 expected-restore projection 적용과 title mismatch release audit
+
+- 코드:
+  - `tools/apply_post_verdict_expected_restore_projection_contract.py` Markdown의 stale Loop/pending 문구를 일반화했다.
+  - `tools/audit_post_verdict_promotion_gate_release_contract.py`가 title mismatch update/hold/cleanup action을 해석한다.
+  - `tests/test_audit_post_verdict_promotion_gate_release_contract.py`에 title mismatch release gate 테스트를 추가했다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_542_REPORT_20260707.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop542_b1_missing_candidate_expected_restore_projection_result.json`
+  - `docs/devs/loop542_b1_missing_candidate_expected_restore_projection_contract_application.json`
+  - `docs/devs/loop542_b1_missing_candidate_post_apply_release_gate_audit.json`
+  - `docs/devs/loop542_title_mismatch_release_gate_audit.json`
+- 검증:
+  - B1 pre-apply release audit: PASS, pending `1`, violation `0`.
+  - B1 expected-restore application: PASS, applied `1`, validation issue `0`.
+  - Publication contract: PASS, `GO / 375 rows / 0 violations`.
+  - B1 post-apply release audit: PASS, pending `0`, no-release `10`, release candidate `1`, runtime allowed `0`.
+  - Title mismatch release audit: PASS, pending `2`, no-release `1`, violation `0`, runtime allowed `0`.
+  - JSON parse: PASS, `6` files.
+  - py_compile: PASS, related tools/tests.
+  - unittest: PASS, `19` tests, release audit + dashboard runner/manifest attach.
+  - `git diff --check`: PASS.
+  - Dashboard health: PASS, `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`.
+  - Latest dashboard status: Loop538 `35/35`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`.
+- 결과:
+  - `11669933`은 projection-only release candidate가 됐지만 runtime/full_scan approval은 아니다.
+  - `11660277`과 `11718098`은 projection contract pending으로 남았다.
+  - `11694063`은 native-web disambiguation hold가 no-release로 보존됐다.
+- Gate: B1 release `REVIEW-LOCKED / release candidate 1 / runtime allowed 0`, title mismatch `REVIEW-LOCKED / pending 2 / no-release 1`, publication contract `GO`, full375 collateral `NO-GO / residual 100`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop541 verdict to shared-gate contract plan
 
 - 코드:

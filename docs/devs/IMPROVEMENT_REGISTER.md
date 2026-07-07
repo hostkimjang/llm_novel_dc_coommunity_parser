@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260707-542 - B1 expected-restore projection 적용과 title mismatch release audit
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | BLOCKED | 새 runtime/bounded/full375 실행 없음, allowed rows `0` | full375 collateral 전 replay 금지 |
+| B1 expected restore | REVIEW-LOCKED | `11669933` projection-only 적용, validation issue `0` | release candidate를 approval로 승격 금지 |
+| Publication contract | GO | `375` rows, violation `0` | collateral gate와 분리 유지 |
+| B1 release gate | REVIEW-LOCKED | pending `0`, no-release `10`, release candidate `1`, violation `0` | full375 collateral 재검증 전 hold |
+| Title mismatch release gate | REVIEW-LOCKED | pending `2`, no-release `1`, violation `0` | 11660277/11718098 contract 닫기 |
+| Tooling hygiene | GO_UNIT | stale Loop/pending Markdown 문구 일반화, title mismatch audit enum 추가 | future loop 재사용 |
+| Full375 collateral | NO-GO | residual `100` 유지 | contract repair 뒤 full375 재검증 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: B1 release `REVIEW-LOCKED / release candidate 1 / runtime allowed 0`, title mismatch `REVIEW-LOCKED / pending 2 / no-release 1`, publication contract `GO`, full375 collateral `NO-GO / residual 100`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-541 - Loop540 verdict의 shared-gate contract plan 전환
 
 | 항목 | 상태 | 근거 | 다음 |

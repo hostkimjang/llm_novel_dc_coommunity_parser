@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-07 Loop542 expected-restore/release audit 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.
+- [x] B1 pre-apply release audit을 실행했다: pending `1`, no-release `10`, violation `0`.
+- [x] `11669933 / 회귀수선전` expected-restore contract를 current full375 projection에 projection-only로 적용했다.
+- [x] Projection 적용 뒤 publication contract는 `GO / 375 rows / 0 violations`다.
+- [x] B1 post-apply release audit은 pending `0`, no-release `10`, release candidate `1`, violation `0`, runtime allowed `0`이다.
+- [x] Title mismatch release audit action enum을 확장했다.
+- [x] Title mismatch release audit은 pending `2`, no-release `1`, release candidate `0`, violation `0`, runtime allowed `0`이다.
+- [x] JSON parse PASS, py_compile PASS, 관련 unittest `15` tests PASS, `git diff --check` PASS다.
+- [ ] B1 release candidate `11669933`을 runtime/full_scan approval로 승격하지 않는다.
+- [ ] `11660277` expected audit update/exclusion projection contract를 별도로 닫는다.
+- [ ] `11718098` canonical cleanup/URL correction projection contract를 별도로 닫는다.
+- [ ] `11694063`은 native-web disambiguation 전 hard-hold를 유지한다.
+- [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: B1 release `REVIEW-LOCKED / release candidate 1 / runtime allowed 0`, title mismatch `REVIEW-LOCKED / pending 2 / no-release 1`, publication contract `GO`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop541 shared-gate contract plan 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.

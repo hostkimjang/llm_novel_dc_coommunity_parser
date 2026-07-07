@@ -147,6 +147,124 @@ class AuditPostVerdictPromotionGateReleaseContractTest(unittest.TestCase):
         self.assertEqual(audit["summary"]["satisfied_no_release_rows"], 1)
         self.assertEqual(audit["rows"][0]["release_gate_state"], "stronger_evidence_hold_preserved_no_release")
 
+    def test_expected_audit_update_release_candidate_when_actual_title_published(self):
+        audit = build_audit(
+            contract_plan={
+                "plan_id": "unit",
+                "gate": "REVIEW-LOCKED",
+                "full_scan_approval": False,
+                "rows": [
+                    {
+                        "post_id": 4,
+                        "contract_action": "expected_audit_update_exclusion_contract_case",
+                        "target_title": "Actual Work",
+                        "expected_title": "Actual Work 질문 표면",
+                    }
+                ],
+            },
+            projection_rows=[_projection(4, title="Actual Work", status="safe_resolved", publish=True)],
+            audit_id="unit",
+        )
+
+        self.assertEqual(audit["summary"]["release_candidate_after_contract_rows"], 1)
+        self.assertEqual(
+            audit["rows"][0]["release_gate_state"],
+            "expected_audit_update_contract_satisfied_release_candidate",
+        )
+
+    def test_expected_audit_update_old_expected_leak_is_violation(self):
+        audit = build_audit(
+            contract_plan={
+                "plan_id": "unit",
+                "gate": "REVIEW-LOCKED",
+                "full_scan_approval": False,
+                "rows": [
+                    {
+                        "post_id": 5,
+                        "contract_action": "expected_audit_update_exclusion_contract_case",
+                        "target_title": "Actual Work",
+                        "expected_title": "Actual Work 질문 표면",
+                    }
+                ],
+            },
+            projection_rows=[_projection(5, title="Actual Work 질문 표면", status="safe_resolved", publish=True)],
+            audit_id="unit",
+        )
+
+        self.assertEqual(audit["gate"], "NO-GO")
+        self.assertEqual(
+            audit["rows"][0]["violation_code"],
+            "old_expected_title_leaked_after_expected_audit_update_plan",
+        )
+
+    def test_native_web_hold_preserves_no_release(self):
+        audit = build_audit(
+            contract_plan={
+                "plan_id": "unit",
+                "gate": "REVIEW-LOCKED",
+                "full_scan_approval": False,
+                "rows": [_plan_row(6, "native_web_disambiguation_hold_contract_case")],
+            },
+            projection_rows=[_projection(6)],
+            audit_id="unit",
+        )
+
+        self.assertEqual(audit["summary"]["satisfied_no_release_rows"], 1)
+        self.assertEqual(
+            audit["rows"][0]["release_gate_state"],
+            "native_web_disambiguation_hold_preserved_no_release",
+        )
+
+    def test_canonical_cleanup_contaminated_actual_leak_is_violation(self):
+        audit = build_audit(
+            contract_plan={
+                "plan_id": "unit",
+                "gate": "REVIEW-LOCKED",
+                "full_scan_approval": False,
+                "rows": [
+                    {
+                        "post_id": 7,
+                        "contract_action": "canonical_cleanup_or_url_correction_contract_case",
+                        "target_title": "Clean Canonical",
+                        "actual_title": "Contaminated Candidate",
+                    }
+                ],
+            },
+            projection_rows=[_projection(7, title="Contaminated Candidate", status="safe_resolved", publish=True)],
+            audit_id="unit",
+        )
+
+        self.assertEqual(audit["gate"], "NO-GO")
+        self.assertEqual(
+            audit["rows"][0]["violation_code"],
+            "contaminated_candidate_leaked_before_canonical_cleanup",
+        )
+
+    def test_canonical_cleanup_target_publish_is_release_candidate(self):
+        audit = build_audit(
+            contract_plan={
+                "plan_id": "unit",
+                "gate": "REVIEW-LOCKED",
+                "full_scan_approval": False,
+                "rows": [
+                    {
+                        "post_id": 8,
+                        "contract_action": "canonical_cleanup_or_url_correction_contract_case",
+                        "target_title": "Clean Canonical",
+                        "actual_title": "Contaminated Candidate",
+                    }
+                ],
+            },
+            projection_rows=[_projection(8, title="Clean Canonical", status="safe_resolved", publish=True)],
+            audit_id="unit",
+        )
+
+        self.assertEqual(audit["summary"]["release_candidate_after_contract_rows"], 1)
+        self.assertEqual(
+            audit["rows"][0]["release_gate_state"],
+            "canonical_cleanup_contract_satisfied_release_candidate",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

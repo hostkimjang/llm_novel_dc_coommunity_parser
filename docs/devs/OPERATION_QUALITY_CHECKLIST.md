@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop542 expected-restore/release audit 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_542_REPORT_20260707.md`.
+  - [x] Projection result 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop542_b1_missing_candidate_expected_restore_projection_result.json`.
+  - [x] B1 application/audit 기록 완료: `docs/devs/loop542_b1_missing_candidate_expected_restore_projection_contract_application.json/.md`, `docs/devs/loop542_b1_missing_candidate_post_apply_release_gate_audit.json/.md`.
+  - [x] Title mismatch audit 기록 완료: `docs/devs/loop542_title_mismatch_release_gate_audit.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+  - [x] B1 release candidate `1`은 projection-only contract 결과이며 approval이 아니다.
+  - [x] B1 runtime replay allowed rows는 `0`이다.
+  - [x] Title mismatch runtime replay allowed rows는 `0`이다.
+  - [x] Publication contract `GO`를 full375 collateral GO로 승격하지 않았다.
+  - [x] JSON parse PASS, py_compile PASS, 관련 unittest `15` tests PASS, `git diff --check` PASS다.
+  - [ ] `11660277`/`11718098` pending contract를 닫기 전 runtime release하지 않는다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- Gate: B1 release `REVIEW-LOCKED / release candidate 1 / runtime allowed 0`, title mismatch `REVIEW-LOCKED / pending 2 / no-release 1`, publication contract `GO`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop541 shared-gate contract plan 품질 게이트
 
 - 근거:
