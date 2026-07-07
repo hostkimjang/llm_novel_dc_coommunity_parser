@@ -1,5 +1,35 @@
 # Verification Results
 
+## 2026-07-07 Loop540 B1 verdict 적용과 title mismatch 3건 분리
+
+- 실행:
+  - 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+  - Loop539 B1 missing-candidate `11`건 verdict를 적용했다.
+  - Loop539 title mismatch `3`건을 source-native verdict로 분리했다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_540_REPORT_20260707.md`
+  - `docs/devs/loop540_b1_missing_candidate_source_native_verdicts.json`
+  - `docs/devs/loop540_b1_missing_candidate_verdict_application_state_20260707.json`
+  - `docs/devs/loop540_b1_missing_candidate_verdict_application_state_20260707.md`
+  - `docs/devs/loop540_title_mismatch_hold3_source_native_verdicts.json`
+  - `docs/devs/loop540_title_mismatch_hold3_source_native_verdicts.md`
+- 검증:
+  - B1 verdict application: PASS, reviewed `11/11`, validation issue `0`.
+  - Verdict counts: `EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED 6`, `INSUFFICIENT_EVIDENCE_HOLD 5`.
+  - Runtime replay allowed rows: `0`.
+  - Title mismatch counts: `ACCEPT 1 / HOLD 1 / REPROCESS 1`.
+  - JSON parse: PASS, `3` files.
+  - py_compile: PASS, related tools/tests.
+  - unittest: PASS, `38` tests.
+  - `git diff --check`: PASS.
+  - Dashboard health: PASS, `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`.
+  - Latest dashboard status: Loop538 `35/35`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`.
+- 결과:
+  - B1 `6`건은 candidate scrub 또는 expected title restore contract test 전까지 runtime release하지 않는다.
+  - B1 `5`건은 stronger evidence/native-web review 전까지 hard-hold를 유지한다.
+  - `11660277`은 gate wiring 뒤 expected mismatch 제외 후보, `11694063`은 disambiguation HOLD, `11718098`은 canonical cleanup/URL correction 필요 상태다.
+- Gate: source-native verdict application `REVIEW-LOCKED / 11`, title mismatch review `REVIEW-LOCKED / 3`, runtime replay `BLOCKED_UNTIL_CONTRACT_TESTS_OR_STRONGER_EVIDENCE`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop539 shared-gate repair queue와 canonical recheck batch
 
 - 코드:

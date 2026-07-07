@@ -1,5 +1,24 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop540 verdict 적용 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_540_REPORT_20260707.md`.
+  - [x] B1 verdict 기록 완료: `docs/devs/loop540_b1_missing_candidate_source_native_verdicts.json`.
+  - [x] B1 application state 기록 완료: `docs/devs/loop540_b1_missing_candidate_verdict_application_state_20260707.json/.md`.
+  - [x] Title mismatch verdict 기록 완료: `docs/devs/loop540_title_mismatch_hold3_source_native_verdicts.json/.md`.
+  - [x] Dashboard 확인: `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+  - [x] B1 verdict application validation issue는 `0`이다.
+  - [x] B1 runtime replay allowed rows는 `0`이다.
+  - [x] Title mismatch `ACCEPT`는 gate wiring 뒤 제외 후보일 뿐 approval이 아니다.
+  - [x] 다음 테스트런 정책은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 기본 금지다.
+  - [x] JSON parse PASS, py_compile PASS, 관련 unittest `38` tests PASS, `git diff --check` PASS다.
+  - [ ] Contract test나 stronger evidence 없이 B1 row를 runtime release하지 않는다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- Gate: source-native verdict application `REVIEW-LOCKED / 11`, title mismatch review `REVIEW-LOCKED / 3`, runtime replay `BLOCKED_UNTIL_CONTRACT_TESTS_OR_STRONGER_EVIDENCE`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop539 repair/review batch 품질 게이트
 
 - 근거:

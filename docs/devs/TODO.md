@@ -1,5 +1,24 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop540 TODO
+
+- 상태 업데이트: Loop539 B1 missing-candidate `11`건과 title mismatch `3`건을 source-native verdict로 분리했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 런을 발주하지 않았다.
+- [x] B1 verdict application은 reviewed `11/11`, validation issue `0`이다.
+- [x] B1 verdict count는 `EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED 6`, `INSUFFICIENT_EVIDENCE_HOLD 5`다.
+- [x] B1 runtime replay allowed rows는 `0`이다.
+- [x] Title mismatch `3`건은 `ACCEPT 1 / HOLD 1 / REPROCESS 1`로 분리했다.
+- [x] Dashboard는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`로 확인했다.
+- [x] 다음 테스트런은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 기본 금지 정책을 유지한다.
+- [ ] B1 expected-confirmed `6`건의 contract test를 작성한다.
+- [ ] B1 HOLD `5`건의 stronger evidence/native-web review를 수행한다.
+- [ ] `11660277` gate wiring 제외 후보 처리를 계약으로 고정한다.
+- [ ] `11694063` native-web character-work disambiguation을 수행한다.
+- [ ] `11718098` canonical title cleanup과 official URL correction을 수행한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: source-native verdict application `REVIEW-LOCKED / 11`, title mismatch review `REVIEW-LOCKED / 3`, runtime replay `BLOCKED_UNTIL_CONTRACT_TESTS_OR_STRONGER_EVIDENCE`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop533 TODO
 
 - 상태 업데이트: Loop532 promotion-gate plan을 current projection release gate로 감사했다. Goal은 완료가 아니다.

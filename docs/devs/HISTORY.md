@@ -1,5 +1,20 @@
 # Development History
 
+## 2026-07-07 - Loop540 B1 verdict 적용과 title mismatch 3건 분리
+
+- 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+- Loop539 B1 missing-candidate `11`건에 source-native verdict를 작성하고 적용했다.
+- B1 적용 결과는 reviewed `11/11`, validation issue `0`, `EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED 6`, `INSUFFICIENT_EVIDENCE_HOLD 5`다.
+- Runtime replay allowed rows는 `0`이고 contract test required rows는 `11`이다.
+- Expected-confirmed `6`건은 candidate scrub 또는 expected title restore contract test가 필요하고, HOLD `5`건은 stronger evidence/native-web review가 필요하다.
+- Title mismatch `3`건은 `ACCEPT 1 / HOLD 1 / REPROCESS 1`로 분리했다.
+- `11660277`은 expected mismatch 제외 후보, `11694063`은 native-web disambiguation HOLD, `11718098`은 canonical cleanup/official URL correction 필요 상태다.
+- Dashboard는 `http://127.0.0.1:8080`에서 health `ok=true`, `standalone=true`, `pid=9320`로 응답했고, 최신 status는 Loop538 `35/35`, `parallel_count=16`, `batch_running=false`다.
+- 다음 테스트런도 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 기본 금지를 유지한다.
+- 검증은 JSON parse PASS, py_compile PASS, 관련 unittest `38` tests PASS, `git diff --check` PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_540_REPORT_20260707.md`다.
+- Gate는 source-native verdict application `REVIEW-LOCKED / 11`, title mismatch review `REVIEW-LOCKED / 3`, runtime replay `BLOCKED_UNTIL_CONTRACT_TESTS_OR_STRONGER_EVIDENCE`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop539 shared-gate repair queue와 canonical recheck batch
 
 - 새 runtime replay나 full375 대형 런은 실행하지 않았다.

@@ -1,0 +1,110 @@
+{
+  "review_id": "loop540_title_mismatch_hold3_source_native_verdicts",
+  "scope": "Loop539 title mismatch HOLD 3 source-native/blind verdicts",
+  "report_type": "title_mismatch_source_native_review",
+  "generated_at": "2026-07-07T18:50:00+09:00",
+  "source_batch": "docs/devs/loop539_title_mismatch_hold3_source_native_batch.json",
+  "source_packet": "docs/devs/loop539_title_mismatch_hold3_source_native_review_packet.json",
+  "source_runtime_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "REVIEW-LOCKED",
+  "summary": {
+    "review_rows": 3,
+    "review_label_counts": {
+      "ACCEPT": 1,
+      "HOLD": 1,
+      "REPROCESS": 1
+    },
+    "evidence_grade_counts": {
+      "Strong": 2,
+      "Medium": 1
+    },
+    "regression_exclusion_candidates_after_gate_wiring": 1,
+    "repair_required_rows": 1,
+    "hard_hold_or_native_review_rows": 1,
+    "runtime_replay_after_review": "NOT_RUN_AFTER_REVIEW",
+    "full375_collateral": "NO-GO",
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "rows": [
+    {
+      "post_id": 11660277,
+      "expected_title": "아카메디 아카데미 본 사람?",
+      "actual_title": "아카메디 아카데미",
+      "selected_option_id": "ACTUAL_IMAGE_OCR_CANONICAL",
+      "selected_title": "아카메디 아카데미",
+      "selected_url": "https://novelpia.com/novel/22299",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "actual_image_ocr_title_correct_expected_was_post_question_surface",
+      "evidence_grade": "Strong",
+      "native_web_checked": false,
+      "action": [
+        "expected_audit_baseline_update_required",
+        "exclude_from_expected_title_mismatch_after_gate_wiring",
+        "preserve_actual_public_title"
+      ],
+      "rationale_ko": "원문 제목은 추천/감상 문장이고 이미지 OCR은 노벨피아 작품 상세의 `아카메디 아카데미`를 직접 읽는다. expected `아카메디 아카데미 본 사람?`는 작품명이 아니라 과거 expected baseline이 글 표면 질문을 섞은 값이므로 actual public title을 정당 canonical로 본다.",
+      "evidence_refs": [
+        "docs/devs/loop539_title_mismatch_hold3_source_native_review_packet.json#post_id=11660277",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl#post_id=11660277",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json#post_id=11660277"
+      ]
+    },
+    {
+      "post_id": 11694063,
+      "expected_title": "빙의한 신의 아이, 엘리시아",
+      "actual_title": "엘리시아 전기",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "ambiguous_elisia_alias_requires_character_work_native_review",
+      "evidence_grade": "Medium",
+      "native_web_checked": false,
+      "action": [
+        "native_web_character_work_disambiguation_required",
+        "preserve_competing_candidates",
+        "do_not_relax_hard_hold_without_blind_judge"
+      ],
+      "rationale_ko": "원문은 `엘리시아`, `아레스`, 캐릭터 해석을 말하고 Loop538은 `빙의한 신의 아이, 엘리시아`와 `엘리시아 전기`를 모두 후보로 보존했다. actual이 더 높은 confidence로 올라왔지만 동일 별칭 경쟁과 character-only 이미지가 남아 있어 blind/native-web 검증 전에는 expected도 actual도 단독 정답으로 닫지 않는다.",
+      "evidence_refs": [
+        "docs/devs/loop539_title_mismatch_hold3_source_native_review_packet.json#post_id=11694063",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl#post_id=11694063",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json#post_id=11694063"
+      ]
+    },
+    {
+      "post_id": 11718098,
+      "expected_title": "마법 좋아좋아좋아",
+      "actual_title": "마법 좋아, 마법과 좋아",
+      "selected_option_id": "EXPECTED_CANONICAL",
+      "selected_title": "마법 좋아좋아좋아",
+      "selected_url": "https://novelpia.com/novel/326040",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "abbreviation_supports_expected_official_title_after_candidate_contaminated",
+      "evidence_grade": "Strong",
+      "native_web_checked": true,
+      "action": [
+        "repair_after_wrong_work",
+        "canonical_title_cleanup_required",
+        "official_url_correction_required",
+        "reuse_loop492_native_web_verdict"
+      ],
+      "rationale_ko": "Loop492 native-web verdict를 승계한다. 원문 `마좋좋좋`과 결말 반응은 공식 작품 `마법 좋아좋아좋아`를 직접 가리키며, actual `마법 좋아, 마법과 좋아`와 URL `3260401`은 후보/URL 오염으로 재처리해야 한다.",
+      "evidence_refs": [
+        "docs/devs/loop539_title_mismatch_hold3_source_native_review_packet.json#post_id=11718098",
+        "docs/devs/loop492_p0_hold9_source_native_verdicts.json#post_id=11718098",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl#post_id=11718098",
+        "https://novelpia.com/novel/326040"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "source_native_verdict_is_not_runtime_release": true,
+    "accept_rows_require_gate_wiring_before_count_exclusion": true,
+    "reprocess_rows_require_contract_or_runtime_followup": true,
+    "hold_rows_require_stronger_native_web_or_blind_judge": true,
+    "full_scan_approval": false
+  }
+}

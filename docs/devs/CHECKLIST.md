@@ -1,5 +1,26 @@
 # Development Checklist
 
+## 2026-07-07 Loop540 verdict 적용 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.
+- [x] B1 missing-candidate `11`건 verdict를 작성했다.
+- [x] B1 verdict application은 reviewed `11/11`, validation issue `0`이다.
+- [x] B1 verdict counts는 `EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED 6`, `INSUFFICIENT_EVIDENCE_HOLD 5`다.
+- [x] B1 runtime replay allowed rows는 `0`이다.
+- [x] Title mismatch `3`건을 `ACCEPT 1 / HOLD 1 / REPROCESS 1`로 분리했다.
+- [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`로 확인했다.
+- [x] 최신 dashboard status는 Loop538 `35/35`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`다.
+- [x] 다음 테스트런 정책은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 기본 금지다.
+- [x] JSON parse PASS, py_compile PASS, 관련 unittest `38` tests PASS, `git diff --check` PASS다.
+- [ ] B1 expected-confirmed `6`건은 contract test 전 runtime release하지 않는다.
+- [ ] B1 HOLD `5`건은 stronger evidence/native-web review 전 hard-hold를 완화하지 않는다.
+- [ ] `11660277`은 gate wiring 뒤 expected mismatch 제외 후보로만 처리한다.
+- [ ] `11694063`은 native-web character-work disambiguation 전 hard-hold를 유지한다.
+- [ ] `11718098`은 canonical cleanup과 official URL correction을 먼저 수행한다.
+- [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: source-native verdict application `REVIEW-LOCKED / 11`, title mismatch review `REVIEW-LOCKED / 3`, runtime replay `BLOCKED_UNTIL_CONTRACT_TESTS_OR_STRONGER_EVIDENCE`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop539 repair/review batch 체크
 
 - [x] 새 runtime replay나 full375 대형 런을 실행하지 않았다.

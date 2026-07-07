@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260707-540 - B1 verdict 적용과 title mismatch 3건 분리
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 실행 없음 | contract/evidence 전 replay 금지 |
+| B1 verdict application | REVIEW-LOCKED | reviewed `11/11`, validation issue `0` | expected-confirmed 6건 contract test |
+| B1 expected-confirmed | BLOCKED | `EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED 6`, runtime release `0` | candidate scrub 또는 expected restore 계약 |
+| B1 hard-hold | HOLD | `INSUFFICIENT_EVIDENCE_HOLD 5` | stronger evidence/native-web review |
+| Title mismatch 3 | REVIEW-LOCKED | `ACCEPT 1 / HOLD 1 / REPROCESS 1` | 11660277 gate wiring, 11694063 disambiguation, 11718098 cleanup |
+| Dashboard policy | GO_PROGRESS_VIEW_NOT_APPROVAL | `http://127.0.0.1:8080`, Loop538 `35/35`, `parallel_count=16` | 다음 테스트런도 dashboard ON |
+| Full375 collateral | NO-GO | residual `100` 유지 | contract repair 뒤 full375 재검증 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: source-native verdict application `REVIEW-LOCKED / 11`, title mismatch review `REVIEW-LOCKED / 3`, runtime replay `BLOCKED_UNTIL_CONTRACT_TESTS_OR_STRONGER_EVIDENCE`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-539 - shared-gate repair queue와 canonical recheck batch
 
 | 항목 | 상태 | 근거 | 다음 |
