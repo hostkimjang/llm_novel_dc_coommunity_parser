@@ -13,6 +13,7 @@ CANDIDATE_SCRUB = "candidate_scrub_no_publish_contract_case"
 VARIANT_HOLD = "canonical_variant_policy_hold_contract_case"
 STRONGER_HOLD = "stronger_evidence_hard_hold_contract_case"
 MISMATCH_REVIEW = "restore_target_runtime_mismatch_review_required"
+OFFICIAL_SUPPORT_MISSING_RESTORE_HOLD = "official_support_missing_restore_hold_contract_case"
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -83,6 +84,12 @@ def _classification_for(
             "restore_target_mismatch_source_native_review_required",
             issues,
         )
+    if action == OFFICIAL_SUPPORT_MISSING_RESTORE_HOLD:
+        return (
+            "ordinary_residual_unprocessed",
+            "official_support_missing_restore_followup_required",
+            issues,
+        )
     if action == VARIANT_HOLD:
         if not variant_row or _string(variant_row.get("policy_decision")) != "canonical_variant_quarantine_no_publish":
             issues.append("canonical_variant_policy_review_missing")
@@ -148,6 +155,12 @@ def build_accounting(
         actions = residual_row.get("actions") if isinstance(residual_row.get("actions"), list) else []
         if effect == "restore_target_mismatch_source_native_review_required":
             actions = [*actions, "source_native_or_blind_review_required", MISMATCH_REVIEW]
+        elif effect == "official_support_missing_restore_followup_required":
+            actions = [
+                *actions,
+                "official_detail_url_enrichment_required",
+                OFFICIAL_SUPPORT_MISSING_RESTORE_HOLD,
+            ]
         for action in actions:
             action_counts[str(action)] += 1
         label_counts[_string(residual_row.get("review_label"))] += 1
@@ -225,6 +238,9 @@ def build_accounting(
             "restore_target_mismatch_review_rows": effect_counts.get(
                 "restore_target_mismatch_source_native_review_required", 0
             ),
+            "official_support_missing_restore_followup_rows": effect_counts.get(
+                "official_support_missing_restore_followup_required", 0
+            ),
             "publish_allowed_rows": 0,
             "runtime_replay_allowed_rows": 0,
             "full375_collateral_gate": "NO-GO",
@@ -276,7 +292,7 @@ def _policy_ref_for(
             expected_restore_application,
             default_prefix="expected_restore_projection_contract_application",
         )
-    if action_text in {CANDIDATE_SCRUB, EXPECTED_RESTORE}:
+    if action_text in {CANDIDATE_SCRUB, EXPECTED_RESTORE, OFFICIAL_SUPPORT_MISSING_RESTORE_HOLD}:
         return _payload_ref(contract_plan, default_prefix="promotion_gate_contract_plan")
     if action_text == VARIANT_HOLD:
         return _payload_ref(variant_review, default_prefix="canonical_variant_policy_review")
@@ -309,6 +325,7 @@ def write_markdown(path: Path, accounting: dict[str, Any]) -> None:
         f"- validation_issue_count: `{summary['validation_issue_count']}`",
         f"- release_candidate_not_approval_rows: `{summary['release_candidate_not_approval_rows']}`",
         f"- no_publish_or_hold_contract_rows: `{summary['no_publish_or_hold_contract_rows']}`",
+        f"- official_support_missing_restore_followup_rows: `{summary['official_support_missing_restore_followup_rows']}`",
         f"- publish_allowed_rows: `{summary['publish_allowed_rows']}`",
         f"- runtime_replay_allowed_rows: `{summary['runtime_replay_allowed_rows']}`",
         f"- full375 collateral: `{summary['full375_collateral_gate']}`",
@@ -323,6 +340,7 @@ def write_markdown(path: Path, accounting: dict[str, Any]) -> None:
         f"Contract-processed `{summary['contract_processed_rows']}`건은 최신 shared gate 산출물로 처리 상태가 됐다. "
         f"하지만 release candidate `{summary['release_candidate_not_approval_rows']}`건은 approval이 아니고, "
         f"no-publish/hold `{summary['no_publish_or_hold_contract_rows']}`건은 public publish를 열지 않는다. "
+        f"공식 detail URL 보강 follow-up `{summary['official_support_missing_restore_followup_rows']}`건은 닫힌 행이 아니라 ordinary residual로 유지한다. "
         f"ordinary residual `{summary['ordinary_residual_unprocessed_rows']}`건과 full375 collateral 재확인이 남아 있으므로 goal은 `ACTIVE / NOT_COMPLETE`, "
         "`semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다."
     )

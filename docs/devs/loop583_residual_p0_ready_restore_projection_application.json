@@ -1,0 +1,48 @@
+{
+  "report_type": "post_verdict_projection_publish_contract_application",
+  "projection_id": "loop583_residual_p0_ready_restore_projection_contract",
+  "generated_at": "2026-07-08T04:09:52",
+  "source_contract_plan": "loop582_residual_p0_shared_gate_restore_contract_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 375,
+    "contract_plan_rows": 6,
+    "publish_contract_plan_rows": 1,
+    "applied_publish_contract_rows": 1,
+    "restore_plan_rows": 1,
+    "applied_restore_rows": 1,
+    "applied_expected_audit_update_rows": 0,
+    "applied_canonical_cleanup_rows": 0,
+    "applied_candidate_set_restore_rows": 0,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {
+      "official_support_missing_restore_hold_contract_case": 5
+    },
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11718114,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "target_url": "https://novelpia.com/novel/383584",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

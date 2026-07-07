@@ -1,5 +1,21 @@
 # Development History
 
+## 2026-07-08 - Loop583 ready restore projection contract and full375 collateral recheck
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop582 shared-gate restore plan의 publish-ready `1`건을 최신 Loop580 full375 projection에 projection-only로 적용했다.
+- Projection application은 rows `375`, applied publish/restore `1`, skipped `official_support_missing_restore_hold_contract_case 5`, validation issue `0`, runtime allowed `0`이다.
+- Publication contract는 `GO / 375 rows / 0 violations`다.
+- Release gate는 `REVIEW-LOCKED`, violation `0`, pending `0`, release candidate `1`, no-release hold `5`, runtime allowed `0`이다.
+- Full375 collateral은 changed `158`, raw regression `86 -> 85`로 줄었지만 `NO-GO / runtime counts missing`다.
+- Always-on gate는 golden18 `GO / 18 of 18`과 collateral `NO-GO / raw 85` 조합으로 전체 `NO-GO`다.
+- Residual46 accounting은 contract processed `1`, ordinary residual `45`, official support missing follow-up `5`다.
+- P0 residual19 accounting은 contract processed `1`, ordinary residual `18`, official support missing follow-up `5`다.
+- `tools/audit_post_verdict_promotion_gate_release_contract.py`와 `tools/reaccount_residual_after_contract_reviews.py`에 official-support-missing hold action 계약을 추가했다.
+- Focused unittest `23`개와 py_compile을 통과했다.
+- Report는 `docs/devs/loop_reports/LOOP_583_REPORT_20260708.md`다.
+- Gate는 projection `REVIEW-LOCKED`, publication `GO`, release `REVIEW-LOCKED`, residual46 `REVIEW-LOCKED / 45`, P0 residual `REVIEW-LOCKED / 18`, full375 collateral `NO-GO / raw 85`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop582 residual P0 contract queue and dashboard execution contract
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

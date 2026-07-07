@@ -1,5 +1,25 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop583 이후
+
+- 상태 업데이트: Loop582 shared-gate restore plan의 ready `1`건을 projection-only 적용했지만 full375 collateral은 여전히 `NO-GO`다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Projection application을 생성했다: `docs/devs/loop583_residual_p0_ready_restore_projection_application.json/.md`.
+- [x] Latest full375 projection result를 생성했다: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop583_residual_p0_ready_restore_projection_result.json`.
+- [x] Applied publish/restore `1`, skipped official-support-missing hold `5`, validation issue `0`, runtime allowed `0`을 확인했다.
+- [x] Publication contract `GO / 375 rows / 0 violations`를 확인했다.
+- [x] Release gate `REVIEW-LOCKED / violation 0 / pending 0 / release candidate 1 / no-release hold 5`를 확인했다.
+- [x] Full375 collateral compare를 실행했다. changed `158`, raw regression `85`, gate `NO-GO`.
+- [x] Always-on gate를 재산출했다. golden18 `GO`, collateral `NO-GO / raw 85 / runtime counts missing`, 전체 `NO-GO`.
+- [x] Residual46 accounting을 생성했다. contract processed `1`, ordinary residual `45`, official URL follow-up `5`.
+- [x] P0 residual19 accounting을 생성했다. contract processed `1`, ordinary residual `18`, official URL follow-up `5`.
+- [x] official-support-missing hold action을 release/residual 회계 도구에 추가했다.
+- [x] Focused unittest `23`개와 py_compile을 통과했다.
+- [ ] Official URL 보강 hold `5`건은 canonical official detail URL 보존 전 publish하지 않는다.
+- [ ] Residual46 `45`건과 P0 residual `18`건은 다음 batch lane으로 계속 처리한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: projection `REVIEW-LOCKED / applied 1 / official-url-hold 5`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 85`, residual46 `REVIEW-LOCKED / 45`, P0 residual `REVIEW-LOCKED / 18`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop582 이후
 
 - 상태 업데이트: Loop581 P0 residual `19`건을 새 runtime 없이 계약/검토 queue로 재분해했다. Goal은 완료가 아니다.

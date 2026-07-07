@@ -1,5 +1,22 @@
 # Improvement Register
 
+## IMP-20260708-583 - Ready restore projection and official URL hold accounting
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 필요한 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Ready restore projection | REVIEW-LOCKED | applied publish/restore `1`, validation issue `0` | full375 collateral 재확인 유지 |
+| Official URL hold | REVIEW-LOCKED | skipped/no-release hold `5`, residual follow-up `5` | canonical official detail URL 보강 전 publish 금지 |
+| Publication contract | GO | `375` rows, violation `0` | full_scan approval과 분리 |
+| Release gate | REVIEW-LOCKED | release candidate `1`, no-release hold `5`, runtime allowed `0` | release candidate를 approval로 세지 않음 |
+| Residual46 | REVIEW-LOCKED | contract processed `1`, ordinary residual `45` | residual batch lane 계속 처리 |
+| P0 residual19 | REVIEW-LOCKED | contract processed `1`, ordinary residual `18` | P0 batch follow-up 유지 |
+| Full375 collateral | NO-GO | raw regression `85`, runtime counts missing | collateral GO 전 approval 금지 |
+| Dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320` | 진행 관측용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: projection `REVIEW-LOCKED / applied 1 / hold 5`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 85`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-582 - Residual P0 contract queue and dashboard execution contract
 
 | 항목 | 상태 | 근거 | 다음 |

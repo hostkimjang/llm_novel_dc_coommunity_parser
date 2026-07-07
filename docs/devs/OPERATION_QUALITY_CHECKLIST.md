@@ -1,5 +1,26 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop583 ready restore projection 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_583_REPORT_20260708.md`.
+  - [x] Projection application 기록 완료: `docs/devs/loop583_residual_p0_ready_restore_projection_application.json/.md`.
+  - [x] Release gate audit 기록 완료: `docs/devs/loop583_residual_p0_ready_restore_release_gate_audit.json/.md`.
+  - [x] Full375 collateral compare 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop583_residual_p0_ready_restore_full375_collateral_compare.json/.md`.
+  - [x] Residual accounting 기록 완료: `docs/devs/loop583_residual46_ready_restore_contract_accounting.json/.md`, `docs/devs/loop583_residual_p0_ready_restore_contract_accounting.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Ready restore `1`건만 projection에 적용했다.
+  - [x] Official-support-missing hold `5`건은 no-release와 residual follow-up으로 유지했다.
+  - [x] Publication contract는 `GO / 375 rows / 0 violations`다.
+  - [x] Release gate는 violation `0`, release candidate `1`, no-release hold `5`, runtime allowed `0`이다.
+  - [x] Residual46은 `45`건 남고, P0 residual은 `18`건 남는다.
+  - [x] Full375 collateral은 `NO-GO / raw 85 / runtime counts missing`이다.
+  - [x] Dashboard는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`로 확인했다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+  - [x] Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+- Gate: projection `REVIEW-LOCKED`, publication `GO`, release `REVIEW-LOCKED`, residual46 `REVIEW-LOCKED / 45`, P0 residual `REVIEW-LOCKED / 18`, full375 collateral `NO-GO / raw 85`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop582 residual P0 contract queue 품질 게이트
 
 - 근거:

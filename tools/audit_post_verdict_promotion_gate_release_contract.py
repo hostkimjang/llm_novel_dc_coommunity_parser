@@ -19,6 +19,7 @@ CANONICAL_CLEANUP = "canonical_cleanup_or_url_correction_contract_case"
 CANDIDATE_SET_RESTORE = "candidate_set_expected_restore_contract_case"
 CANDIDATE_SET_REBUILD_HOLD = "candidate_set_rebuild_required_before_publish"
 NO_PUBLISH_INTENT_GUARD = "no_publish_intent_guard_contract_case"
+OFFICIAL_SUPPORT_MISSING_RESTORE_HOLD = "official_support_missing_restore_hold_contract_case"
 
 
 def load_json(path: Path) -> Any:
@@ -279,6 +280,14 @@ def _audit_row(plan_row: dict[str, Any], projection_row: dict[str, Any] | None) 
             violation_code = "intent_guard_published_before_no_publish_contract"
         else:
             release_gate_state = "no_publish_intent_guard_preserved_no_release"
+            satisfied_no_release = True
+    elif action == OFFICIAL_SUPPORT_MISSING_RESTORE_HOLD:
+        if has_public_identity:
+            release_gate_state = "official_support_missing_restore_hold_public_identity_violation"
+            violation = True
+            violation_code = "official_support_missing_hold_published_before_official_detail_url"
+        else:
+            release_gate_state = "official_support_missing_restore_hold_preserved_no_release"
             satisfied_no_release = True
 
     return {

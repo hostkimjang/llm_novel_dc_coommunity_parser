@@ -1,5 +1,36 @@
 # Verification Results
 
+## 2026-07-08 Loop583 ready restore projection contract와 full375 collateral 재검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_583_REPORT_20260708.md`
+  - `tools/audit_post_verdict_promotion_gate_release_contract.py`
+  - `tools/reaccount_residual_after_contract_reviews.py`
+  - `tests/test_audit_post_verdict_promotion_gate_release_contract.py`
+  - `tests/test_reaccount_residual_after_contract_reviews.py`
+  - `docs/devs/loop583_residual_p0_ready_restore_projection_application.json/.md`
+  - `docs/devs/loop583_residual_p0_ready_restore_publication_contract_audit.json/.md`
+  - `docs/devs/loop583_residual_p0_ready_restore_release_gate_audit.json/.md`
+  - `docs/devs/loop583_residual_p0_ready_restore_contract_accounting.json/.md`
+  - `docs/devs/loop583_residual46_ready_restore_contract_accounting.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop583_residual_p0_ready_restore_projection_result.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop583_residual_p0_ready_restore_full375_collateral_compare.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop583_always_on_golden18_full375_ready_restore_gate.json/.md`
+- 검증:
+  - Projection application: PASS, applied publish/restore `1`, skipped official-support-missing hold `5`, validation issue `0`.
+  - Publication contract audit: PASS, `GO / 375 rows / 0 violations`.
+  - Release gate audit: PASS, `REVIEW-LOCKED`, violation `0`, release candidate `1`, no-release hold `5`.
+  - Full375 collateral compare: PASS 산출, gate `NO-GO`, changed `158`, raw regression `85`, runtime counts missing.
+  - Always-on gate: PASS 산출, gate `NO-GO`, golden18 `GO`, collateral `NO-GO / raw 85`.
+  - Residual accounting: PASS, residual46 ordinary `45`, P0 ordinary `18`, official URL follow-up `5`, validation issue `0`.
+  - Focused unittest: PASS, `23` tests.
+  - py_compile: PASS.
+- 결과:
+  - Ready restore `1`건은 shared promotion gate projection contract로 적용됐다.
+  - Official URL 없는 `5`건은 닫힌 행이 아니며, official detail URL 보강 follow-up으로 남았다.
+  - Full375 collateral이 `NO-GO`이므로 golden18 PASS와 release candidate `1`건은 approval 근거가 아니다.
+- Gate: projection `REVIEW-LOCKED`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 85`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop582 residual P0 contract queue와 dashboard 실행 계약
 
 - 산출물:

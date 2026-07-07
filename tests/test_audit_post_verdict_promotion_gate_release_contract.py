@@ -142,6 +142,44 @@ class AuditPostVerdictPromotionGateReleaseContractTest(unittest.TestCase):
         self.assertEqual(audit["summary"]["satisfied_no_release_rows"], 1)
         self.assertEqual(audit["rows"][0]["release_gate_state"], "restore_target_mismatch_preserved_no_release")
 
+    def test_official_support_missing_hold_preserves_no_release_when_blocked(self):
+        audit = build_audit(
+            contract_plan={
+                "plan_id": "unit",
+                "gate": "REVIEW-LOCKED",
+                "full_scan_approval": False,
+                "rows": [_plan_row(1, "official_support_missing_restore_hold_contract_case")],
+            },
+            projection_rows=[_projection(1)],
+            audit_id="unit",
+        )
+
+        self.assertEqual(audit["gate"], "REVIEW-LOCKED")
+        self.assertEqual(audit["summary"]["satisfied_no_release_rows"], 1)
+        self.assertEqual(audit["summary"]["release_candidate_after_contract_rows"], 0)
+        self.assertEqual(
+            audit["rows"][0]["release_gate_state"],
+            "official_support_missing_restore_hold_preserved_no_release",
+        )
+
+    def test_official_support_missing_hold_blocks_public_identity(self):
+        audit = build_audit(
+            contract_plan={
+                "plan_id": "unit",
+                "gate": "REVIEW-LOCKED",
+                "full_scan_approval": False,
+                "rows": [_plan_row(1, "official_support_missing_restore_hold_contract_case")],
+            },
+            projection_rows=[_projection(1, title="Expected", status="safe_resolved", publish=True)],
+            audit_id="unit",
+        )
+
+        self.assertEqual(audit["gate"], "NO-GO")
+        self.assertEqual(
+            audit["rows"][0]["violation_code"],
+            "official_support_missing_hold_published_before_official_detail_url",
+        )
+
     def test_markdown_gate_interpretation_uses_summary_counts(self):
         audit = build_audit(
             contract_plan={

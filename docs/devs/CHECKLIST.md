@@ -1,5 +1,19 @@
 # Development Checklist
 
+## 2026-07-08 Loop583 ready restore projection 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop582 shared-gate restore plan의 ready `1`건만 projection-only 적용했다.
+- [x] Official-support-missing hold `5`건은 publish하지 않고 no-release hold와 residual follow-up으로 유지했다.
+- [x] Publication contract `GO / 375 rows / 0 violations`를 확인했다.
+- [x] Release gate `REVIEW-LOCKED / violation 0 / release candidate 1 / no-release hold 5`를 확인했다.
+- [x] Full375 collateral `NO-GO / raw 85 / runtime counts missing`를 확인했다.
+- [x] Residual46은 ordinary `45`, P0 residual은 ordinary `18`로 남음을 확인했다.
+- [x] Focused unittest `23`개와 py_compile을 통과했다.
+- [ ] Official URL 보강 hold `5`건은 canonical official detail URL 보존 전 publish하지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: projection `REVIEW-LOCKED`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop582 residual P0 contract queue 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.

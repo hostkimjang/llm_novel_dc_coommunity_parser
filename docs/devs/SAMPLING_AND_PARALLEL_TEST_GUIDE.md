@@ -1,5 +1,12 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-08 Loop583 projection/static 검증과 dashboard 상태
+
+- Loop583은 projection/static 검증이라 새 runtime 진행률은 없다.
+- 현재 standalone dashboard health는 `ok=true`, `standalone=true`, `pid=9320`이고 URL은 `http://127.0.0.1:8080`이다.
+- 다음 regression-safe grounding test/runtime run은 계속 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- Dashboard는 진행상황 관측 도구이며 `semantic_quality`, `full_scan_approval`, `full375 collateral GO`의 승인 근거가 아니다.
+
 ## 2026-07-08 Loop578 candidate-set 계약 계획과 dashboard 부착
 
 - Loop578은 projection/static 계약 계획이므로 새 runtime 진행률은 없다.

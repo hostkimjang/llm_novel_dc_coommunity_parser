@@ -142,6 +142,37 @@ class ReaccountResidualAfterContractReviewsTest(unittest.TestCase):
         self.assertEqual(accounting["summary"]["contract_processed_rows"], 1)
         self.assertEqual(accounting["summary"]["ordinary_residual_unprocessed_rows"], 0)
 
+    def test_official_support_missing_restore_hold_stays_unprocessed_followup(self):
+        accounting = build_accounting(
+            residual_queue={
+                "queue_id": "residual",
+                "summary": {"residual_action_queue_rows": 1},
+                "rows": [_residual_row(40, actions=["repair_safe_loss_restore_supported_title"])],
+            },
+            contract_plan={
+                "plan_id": "plan",
+                "rows": [
+                    _plan_row(
+                        40,
+                        "official_support_missing_restore_hold_contract_case",
+                        target_title="Expected Work",
+                    )
+                ],
+            },
+            accounting_id="unit",
+        )
+
+        row = accounting["rows"][0]
+        self.assertEqual(accounting["gate"], "REVIEW-LOCKED")
+        self.assertEqual(accounting["summary"]["validation_issue_count"], 0)
+        self.assertEqual(accounting["summary"]["contract_processed_rows"], 0)
+        self.assertEqual(accounting["summary"]["ordinary_residual_unprocessed_rows"], 1)
+        self.assertEqual(accounting["summary"]["official_support_missing_restore_followup_rows"], 1)
+        self.assertFalse(row["contract_processed"])
+        self.assertTrue(row["ordinary_residual_unprocessed"])
+        self.assertEqual(row["contract_accounting_effect"], "official_support_missing_restore_followup_required")
+        self.assertIn("official_detail_url_enrichment_required", row["actions"])
+
 
 if __name__ == "__main__":
     unittest.main()
