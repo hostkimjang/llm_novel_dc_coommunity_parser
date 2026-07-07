@@ -54,4 +54,4 @@ Loop532 promotion-gate contract plan을 current projection 결과에 대조한 r
 
 ## Gate 해석
 
-현재 projection 기준 release candidate는 `0`건이며, expected restore `3`건은 아직 projection public title로 복구되지 않아 pending이다. 나머지 scrub/variant/stronger-evidence hold `19`건은 no-release 상태로 유지된다. 따라서 runtime replay allowed는 `0`, full375 collateral은 `NO-GO`, goal은 `ACTIVE / NOT_COMPLETE`다.
+현재 projection 기준 pending contract는 `0`건이며 release candidate는 `3`건이다. no-release 유지 행은 `19`건이며, runtime replay allowed는 `0`건이다. full375 collateral은 `NO-GO`, goal은 `ACTIVE / NOT_COMPLETE`다.

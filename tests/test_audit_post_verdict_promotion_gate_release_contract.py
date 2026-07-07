@@ -1,6 +1,8 @@
+from pathlib import Path
+from tempfile import TemporaryDirectory
 import unittest
 
-from tools.audit_post_verdict_promotion_gate_release_contract import build_audit
+from tools.audit_post_verdict_promotion_gate_release_contract import build_audit, write_markdown
 
 
 def _plan_row(post_id, action, target="Expected", candidate="Wrong"):
@@ -78,6 +80,27 @@ class AuditPostVerdictPromotionGateReleaseContractTest(unittest.TestCase):
         self.assertEqual(audit["summary"]["release_candidate_after_contract_rows"], 1)
         self.assertEqual(audit["summary"]["runtime_replay_allowed_rows"], 0)
         self.assertEqual(audit["rows"][0]["release_gate_state"], "expected_restore_contract_satisfied_release_candidate")
+
+    def test_markdown_gate_interpretation_uses_summary_counts(self):
+        audit = build_audit(
+            contract_plan={
+                "plan_id": "unit",
+                "gate": "REVIEW-LOCKED",
+                "full_scan_approval": False,
+                "rows": [_plan_row(1, "expected_title_restore_contract_case")],
+            },
+            projection_rows=[_projection(1, title="Expected", status="safe_resolved", publish=True)],
+            audit_id="unit",
+        )
+
+        with TemporaryDirectory() as tmp_dir:
+            output_path = Path(tmp_dir) / "audit.md"
+            write_markdown(output_path, audit)
+            markdown = output_path.read_text(encoding="utf-8")
+
+        self.assertIn("pending contract는 `0`건", markdown)
+        self.assertIn("release candidate는 `1`건", markdown)
+        self.assertNotIn("release candidate는 `0`건", markdown)
 
     def test_scrub_plan_no_public_identity_is_satisfied_no_release(self):
         audit = build_audit(

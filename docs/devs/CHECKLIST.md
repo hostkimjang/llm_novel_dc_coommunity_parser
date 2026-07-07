@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-07 Loop536 current full375 residual 재회계 체크
+
+- [x] 새 runtime replay나 대형 런을 실행하지 않았다.
+- [x] 최신 full375 compare를 다시 회계했다: shared `375`, changed `199`, raw regression `139`.
+- [x] regression bucket을 `safe_loss_resolved_to_null 86`, `unsafe_promotion_from_hold 28`, `wrong_work_title_flip 25`로 분리했다.
+- [x] prior-compatible verdict `134`건을 승계하고 current 미판정 `5`건을 hold placeholder로 보강했다.
+- [x] review-adjusted residual을 `100`건으로 확정했다: `REPROCESS 74`, `HOLD 21`, `INFO_MISSING 5`.
+- [x] residual100 중 shared-gate 대상 `54`건을 projection으로 수렴했다: `safe_resolved 54/54`, publish allowed `54/54`.
+- [x] `promotion_decision`, `publish_contract_trace`, `publish_ledger` 일치 계약을 테스트로 고정했다.
+- [x] release audit Markdown stale 문구를 summary 기반으로 수정하고 Loop535 audit 두 쌍을 재생성했다.
+- [x] focused unittest `10` tests PASS, triage/summary/split unittest `11` tests PASS, JSON parse `9` PASS다.
+- [ ] Prior-runtime promotion block repair `29`건을 runtime replay 전에 수리한다.
+- [ ] Title mismatch `10`건은 source-native/blind judge로 variant/wrong-work를 분리한다.
+- [ ] Replay candidate `15`건은 수리 뒤 `--parallel 16`과 dashboard ON으로만 실행한다.
+- [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: shared-gate projection `GO_PROJECTION_ONLY`, runtime follow-up `REVIEW-LOCKED`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop533 B1 post-verdict release gate contract audit 체크
 
 - [x] 새 runtime replay를 실행하지 않았다.

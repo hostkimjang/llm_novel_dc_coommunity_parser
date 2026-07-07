@@ -268,6 +268,10 @@ def build_audit(
 
 def write_markdown(path: Path, audit: dict[str, Any]) -> None:
     summary = audit["summary"]
+    pending_contract_rows = summary["pending_contract_rows"]
+    release_candidate_rows = summary["release_candidate_after_contract_rows"]
+    satisfied_no_release_rows = summary["satisfied_no_release_rows"]
+    runtime_replay_allowed_rows = summary["runtime_replay_allowed_rows"]
     lines = [
         f"# {audit.get('audit_id')}",
         "",
@@ -311,10 +315,21 @@ def write_markdown(path: Path, audit: dict[str, Any]) -> None:
         for row in audit["violation_rows"]:
             lines.append(f"- `{row['post_id']}` `{row['violation_code']}` public=`{row.get('public_title')}`")
     lines.extend(["", "## Gate 해석", ""])
+    if pending_contract_rows:
+        release_sentence = (
+            f"현재 projection 기준 pending contract는 `{pending_contract_rows}`건이고 "
+            f"release candidate는 `{release_candidate_rows}`건이다."
+        )
+    else:
+        release_sentence = (
+            f"현재 projection 기준 pending contract는 `0`건이며 "
+            f"release candidate는 `{release_candidate_rows}`건이다."
+        )
     lines.append(
-        "현재 projection 기준 release candidate는 `0`건이며, expected restore `3`건은 아직 projection public title로 복구되지 않아 pending이다. "
-        "나머지 scrub/variant/stronger-evidence hold `19`건은 no-release 상태로 유지된다. "
-        "따라서 runtime replay allowed는 `0`, full375 collateral은 `NO-GO`, goal은 `ACTIVE / NOT_COMPLETE`다."
+        f"{release_sentence} "
+        f"no-release 유지 행은 `{satisfied_no_release_rows}`건이며, "
+        f"runtime replay allowed는 `{runtime_replay_allowed_rows}`건이다. "
+        f"full375 collateral은 `{summary['full375_collateral_gate']}`, goal은 `ACTIVE / NOT_COMPLETE`다."
     )
     lines.append("")
     path.parent.mkdir(parents=True, exist_ok=True)

@@ -18,6 +18,8 @@ from llm_batch.promotion_gate import (  # noqa: E402
     EvidenceRecord,
     GroundingState,
     ScopeState,
+    build_publish_contract_trace,
+    build_publish_ledger,
     can_publish_title,
 )
 
@@ -191,9 +193,29 @@ def project_queue(
             )
         decision = can_publish_title(state, evidence)
         decision_payload = decision.to_dict()
+        if isinstance(state.scope, ScopeState):
+            decision_payload["scope"] = state.scope.to_dict()
         projected_status = "safe_resolved" if decision.publish_allowed else "promotion_blocked"
         projected_title = decision.official_title
         projected_url = decision.official_url
+        post_gate_context = {
+            "title_resolution_allowed": decision.publish_allowed,
+            "title_resolution_state": "resolved" if decision.publish_allowed else state.title_resolution_state,
+            "work_resolution": "resolved" if decision.publish_allowed else state.work_resolution,
+            "candidate_ledger_status": projected_status,
+        }
+        trace = build_publish_contract_trace(
+            decision_payload,
+            scope_state=state.scope,
+            pre_gate_candidate={
+                "official_title": selected_title or None,
+                "official_url": selected_url or None,
+                "source": "source_native_residual_queue_shared_gate_projection",
+            },
+            post_gate_context=post_gate_context,
+        )
+        decision_payload = trace["gate_decision"]
+        publish_ledger = build_publish_ledger(trace)
         matches_title = (
             bool(selected_title)
             and bool(projected_title)
@@ -223,6 +245,8 @@ def project_queue(
                 "projected_url": projected_url,
                 "matches_source_native_title": matches_title,
                 "promotion_decision": decision_payload,
+                "publish_contract_trace": trace,
+                "publish_ledger": publish_ledger,
                 "projected_reasons": decision_payload.get("reason_codes") or [],
                 "promotion_gate_state": state.to_dict(),
                 "promotion_gate_evidence": [record.to_dict() for record in evidence],

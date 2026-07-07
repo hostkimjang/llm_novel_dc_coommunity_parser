@@ -1,5 +1,29 @@
 # Verification Results
 
+## 2026-07-07 Loop536 current full375 residual 재회계와 shared-gate 수렴
+
+- 코드:
+  - `tools/project_residual_queue_through_promotion_gate.py`가 projection row에 `promotion_decision`, `publish_contract_trace`, `publish_ledger`를 함께 기록한다.
+  - `tests/test_project_residual_queue_through_promotion_gate.py`가 세 계약 객체의 gate decision 일치를 검증한다.
+  - `tools/audit_post_verdict_promotion_gate_release_contract.py`의 Markdown gate 해석을 summary 기반으로 고쳐 stale release candidate 문구를 제거했다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_536_REPORT_20260707.md`
+  - `docs/devs/loop536_current_full375_review_adjusted_residual100_action_queue.json`
+  - `docs/devs/loop536_current_full375_shared_gate_residual54_projection.json`
+  - `docs/devs/loop536_shared_gate_residual54_prior_runtime_followup_queue.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_adjusted_summary.json`
+- 검증:
+  - py_compile: PASS.
+  - focused unittest: PASS, `10` tests.
+  - triage/summary/split unittest: PASS, `11` tests.
+  - Loop536 JSON 산출물 `9`개 parse: PASS.
+  - Loop535 release audit 재생성 `2`건: PASS, release candidate `3`, runtime replay allowed `0`.
+- 결과:
+  - full375 raw collateral regression은 `139`이고 review-adjusted residual은 `100`이다.
+  - residual100 중 shared-gate projection 대상 `54`건은 `safe_resolved 54/54`, publish allowed `54/54`, source-native title match `54/54`다.
+  - prior-runtime follow-up은 runtime promotion block repair `29`, title mismatch review `10`, replay candidate `15`로 분리했다.
+- Gate: shared-gate projection `GO_PROJECTION_ONLY`, runtime follow-up `REVIEW-LOCKED`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop535 post-verdict expected-restore projection contract
 
 - 코드:

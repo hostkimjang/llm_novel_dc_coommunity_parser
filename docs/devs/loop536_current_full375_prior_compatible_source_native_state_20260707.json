@@ -1,0 +1,111 @@
+{
+  "report_type": "prior_compatible_collateral_verdicts_state",
+  "review_id": "loop536_current_full375_prior_compatible_source_native",
+  "scope": "Loop536 current full375 prior-compatible source-native verdicts",
+  "generated_at": "2026-07-07T16:06:58",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "current_batch_rows": 139,
+    "source_verdict_rows": 141,
+    "overlap_rows": 136,
+    "compatible_rows": 134,
+    "unreviewed_current_batch_rows": 5,
+    "skip_counts": {
+      "post_id_not_in_current_batch": 5,
+      "ambiguous_current_option_match": 1,
+      "selected_title_or_url_not_in_current_options": 1
+    }
+  },
+  "source_verdicts": [
+    {
+      "path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop514_projected_loop511_after_safe_loss41_review_summary.json",
+      "expected_triage_bucket": "*"
+    }
+  ],
+  "skipped_rows": [
+    {
+      "post_id": 11697234,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop514_projected_loop511_after_safe_loss41_review_summary.json"
+    },
+    {
+      "post_id": 11660271,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop514_projected_loop511_after_safe_loss41_review_summary.json"
+    },
+    {
+      "post_id": 11706871,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop514_projected_loop511_after_safe_loss41_review_summary.json"
+    },
+    {
+      "post_id": 11663554,
+      "reason": "ambiguous_current_option_match",
+      "source_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop514_projected_loop511_after_safe_loss41_review_summary.json",
+      "source_bucket": "*",
+      "current_bucket": "wrong_work_title_flip",
+      "selected_option_id": "C1",
+      "selected_title": "전 버튜버가 하고 싶은데요",
+      "selected_url": "https://novelpia.com/novel/275975"
+    },
+    {
+      "post_id": 11666731,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop514_projected_loop511_after_safe_loss41_review_summary.json"
+    },
+    {
+      "post_id": 11703674,
+      "reason": "selected_title_or_url_not_in_current_options",
+      "source_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop514_projected_loop511_after_safe_loss41_review_summary.json",
+      "source_bucket": "*",
+      "current_bucket": "wrong_work_title_flip",
+      "selected_option_id": "C2",
+      "selected_title": "아카데미의 마피아가 되었다 - 웹소설",
+      "selected_url": null
+    },
+    {
+      "post_id": 11679547,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop514_projected_loop511_after_safe_loss41_review_summary.json"
+    }
+  ],
+  "unreviewed_batch": {
+    "gate": "REVIEW-LOCKED",
+    "summary": {
+      "source_review_rows": 139,
+      "prior_compatible_rows": 134,
+      "additional_covered_rows": 0,
+      "covered_post_ids": 134,
+      "unreviewed_rows": 5,
+      "counts_by_bucket": {
+        "wrong_work_title_flip": 5
+      },
+      "counts_by_collateral_status": {
+        "resolved_to_different_title": 5
+      },
+      "image_rows": 4,
+      "text_only_rows": 1
+    },
+    "artifacts": {
+      "json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop536_current_full375_p0_unreviewed_batch.json",
+      "jsonl": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop536_current_full375_p0_unreviewed_batch.jsonl",
+      "markdown": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop536_current_full375_p0_unreviewed_batch.md"
+    }
+  },
+  "unreviewed_placeholder_verdicts": {
+    "gate": "REVIEW-LOCKED",
+    "summary": {
+      "source_review_rows": 139,
+      "prior_compatible_rows": 134,
+      "additional_covered_rows": 0,
+      "covered_post_ids": 134,
+      "placeholder_rows": 5,
+      "counts_by_bucket": {
+        "wrong_work_title_flip": 5
+      }
+    },
+    "artifact": "docs\\devs\\loop536_current_full375_p0_unreviewed_placeholder_verdicts.json"
+  }
+}

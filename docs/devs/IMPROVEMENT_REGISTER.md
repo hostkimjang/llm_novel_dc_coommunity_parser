@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-536 - current full375 residual 재회계와 shared-gate 수렴
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Full375 residual 회계 | NO-GO | raw regression `139`, review-adjusted residual `100` | residual100을 배치 lane으로 처리 |
+| Prior-compatible verdict | REVIEWED_PARTIAL | current batch `139` 중 `134`건 승계, 미판정 `5`건 hold | 미판정 wrong-work `5`건 source-native 검토 |
+| Shared-gate projection | GO_PROJECTION_ONLY | residual100 중 `54/54` safe_resolved, publish allowed, title match | runtime 전 promotion block 수리 |
+| Runtime follow-up | REVIEW-LOCKED | repair `29`, title mismatch review `10`, replay candidate `15` | 29/10을 먼저 닫고 replay 후보 축소 |
+| Release audit Markdown | GO_DOC_FIX | release candidate `3`건을 stale `0`건으로 쓰던 문구 제거 | summary 기반 문구 유지 |
+| Dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | 테스트런 기본 ON, `--parallel 16` 정책 유지 | approval 근거로 쓰지 않음 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: shared-gate projection `GO_PROJECTION_ONLY`, runtime follow-up `REVIEW-LOCKED`, full375 collateral `NO-GO / residual 100`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-535 - post-verdict expected-restore projection contract
 
 | 항목 | 상태 | 근거 | 다음 |

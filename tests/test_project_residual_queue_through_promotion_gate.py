@@ -41,6 +41,16 @@ class ProjectResidualQueueThroughPromotionGateTest(unittest.TestCase):
         self.assertTrue(row["matches_source_native_title"])
         self.assertEqual(row["promotion_decision"]["status"], "publish")
         self.assertFalse(row["promotion_decision"]["bypassed_gate"])
+        self.assertEqual(row["publish_contract_trace"]["gate_decision"], row["promotion_decision"])
+        self.assertEqual(row["publish_ledger"]["gate_decision"], row["promotion_decision"])
+        self.assertEqual(
+            row["publish_contract_trace"]["post_gate_identity"]["official_title"],
+            "마도서를 줍다 마법사가 되다",
+        )
+        self.assertEqual(
+            row["publish_ledger"]["candidate_preservation"],
+            row["publish_contract_trace"]["pre_gate_candidate"],
+        )
         self.assertIn("row_discusses_work_as_work", row["projected_reasons"])
         self.assertIn("scope_current_work", row["projected_reasons"])
         self.assertIn("source_native_review_current_work", row["projected_reasons"])
@@ -72,6 +82,14 @@ class ProjectResidualQueueThroughPromotionGateTest(unittest.TestCase):
         self.assertEqual(projection["summary"]["validation_issue_count"], 0)
         self.assertEqual(projection["rows"][0]["projected_status"], "promotion_blocked")
         self.assertFalse(projection["rows"][0]["promotion_decision"]["publish_allowed"])
+        self.assertEqual(
+            projection["rows"][0]["publish_contract_trace"]["post_gate_identity"]["official_title"],
+            None,
+        )
+        self.assertEqual(
+            projection["rows"][0]["publish_ledger"]["public_publish"]["candidate_ledger_status"],
+            "promotion_blocked",
+        )
         self.assertIn("candidate_set_rebuild_required", projection["rows"][0]["projected_reasons"])
 
     def test_ignores_non_shared_gate_actions(self) -> None:

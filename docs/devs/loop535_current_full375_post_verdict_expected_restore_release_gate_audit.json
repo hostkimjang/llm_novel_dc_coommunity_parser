@@ -1,7 +1,7 @@
 {
   "report_type": "post_verdict_promotion_gate_release_contract_audit",
   "audit_id": "loop535_current_full375_post_verdict_expected_restore_release_gate_audit",
-  "generated_at": "2026-07-07T15:54:05",
+  "generated_at": "2026-07-07T16:13:45",
   "source_contract_plan": "loop532_b1_post_verdict_promotion_gate_contract_plan",
   "gate": "REVIEW-LOCKED",
   "semantic_quality": "REVIEW-LOCKED",

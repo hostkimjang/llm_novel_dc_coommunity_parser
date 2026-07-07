@@ -1,5 +1,14 @@
 # Slang DB Improvement TODO
 
+## 2026-07-07 Loop536 residual100 slang/alias 주의사항
+
+- [x] Loop536은 새 slang DB write-back이나 작품 전용 registry를 추가하지 않았다.
+- [x] full375 residual100은 source-native, shared-gate projection, prior-runtime follow-up으로만 회계했다.
+- [x] Shared-gate projection `54/54`는 runtime approval이 아니라 projection-only 수렴 근거다.
+- [x] 테스트런이 필요할 때는 `--parallel 16`, dashboard ON, `--slang-db off` 또는 read-only 경계를 유지한다.
+- [ ] residual100 또는 projection54를 alias/slang 전체 품질 승인, hard-hold 완화, full375 approval로 승격하지 않는다.
+- Gate: slang DB write-back 아님, shared-gate projection `GO_PROJECTION_ONLY`, runtime follow-up `REVIEW-LOCKED`, full375 collateral `NO-GO / residual 100`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-05 Loop475 11671517 기계공주 slang 주의사항
 
 - [x] `--slang-db off` 조건으로 Loop475 단건 runtime을 실행했다.

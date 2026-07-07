@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop536 current full375 residual 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_536_REPORT_20260707.md`.
+  - [x] Residual queue 기록 완료: `docs/devs/loop536_current_full375_review_adjusted_residual100_action_queue.json`.
+  - [x] Shared-gate projection 기록 완료: `docs/devs/loop536_current_full375_shared_gate_residual54_projection.json`.
+  - [x] Prior-runtime follow-up queue 기록 완료: `docs/devs/loop536_shared_gate_residual54_prior_runtime_followup_queue.json`.
+  - [x] Release audit Markdown 재생성 완료: `docs/devs/loop535_current_full375_post_verdict_expected_restore_release_gate_audit.md`.
+- 품질 경계:
+  - [x] 새 runtime replay나 대형 런은 실행하지 않았다.
+  - [x] Full375 raw regression `139`와 review-adjusted residual `100`을 분리했다.
+  - [x] Shared-gate projection `54/54`는 projection-only이며 runtime approval이 아니다.
+  - [x] Runtime follow-up은 repair `29`, title mismatch review `10`, replay candidate `15`로 분리했다.
+  - [x] 테스트런은 `--parallel 16`과 dashboard ON 정책을 유지한다.
+  - [ ] Projection result를 full375 collateral GO나 full_scan approval로 승격하지 않는다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- Gate: shared-gate projection `GO_PROJECTION_ONLY`, runtime follow-up `REVIEW-LOCKED`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop533 B1 post-verdict release gate 품질 게이트
 
 - 근거:
